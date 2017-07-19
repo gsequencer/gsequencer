@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,6 +41,7 @@ void ags_add_recall_container_get_property(GObject *gobject,
 					   GParamSpec *param_spec);
 void ags_add_recall_container_connect(AgsConnectable *connectable);
 void ags_add_recall_container_disconnect(AgsConnectable *connectable);
+void ags_add_recall_container_dispose(GObject *gobject);
 void ags_add_recall_container_finalize(GObject *gobject);
 
 void ags_add_recall_container_launch(AgsTask *task);
@@ -284,11 +285,45 @@ ags_add_recall_container_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_add_recall_container_dispose(GObject *gobject)
+{
+  AgsAddRecallContainer *add_recall_container;
+
+  add_recall_container = AGS_ADD_RECALL_CONTAINER(gobject);
+
+  if(add_recall_container->audio != NULL){
+    g_object_unref(add_recall_container->audio);
+
+    add_recall_container->audio = NULL;
+  }
+
+  if(add_recall_container->recall_container != NULL){
+    g_object_unref(add_recall_container->recall_container);
+
+    add_recall_container->recall_container = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_add_recall_container_parent_class)->dispose(gobject);
+}
+
+void
 ags_add_recall_container_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_add_recall_container_parent_class)->finalize(gobject);
+  AgsAddRecallContainer *add_recall_container;
 
-  /* empty */
+  add_recall_container = AGS_ADD_RECALL_CONTAINER(gobject);
+
+  if(add_recall_container->audio != NULL){
+    g_object_unref(add_recall_container->audio);
+  }
+
+  if(add_recall_container->recall_container != NULL){
+    g_object_unref(add_recall_container->recall_container);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_add_recall_container_parent_class)->finalize(gobject);
 }
 
 void
@@ -320,10 +355,9 @@ ags_add_recall_container_new(GObject *audio,
   AgsAddRecallContainer *add_recall_container;
 
   add_recall_container = (AgsAddRecallContainer *) g_object_new(AGS_TYPE_ADD_RECALL_CONTAINER,
+								"audio", audio,
+								"recall-container", recall_container,
 								NULL);  
-  
-  add_recall_container->audio = audio;
-  add_recall_container->recall_container = recall_container;
 
   return(add_recall_container);
 }

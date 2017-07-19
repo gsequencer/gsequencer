@@ -56,6 +56,7 @@ void ags_apply_presets_get_property(GObject *gobject,
 				    GParamSpec *param_spec);
 void ags_apply_presets_connect(AgsConnectable *connectable);
 void ags_apply_presets_disconnect(AgsConnectable *connectable);
+void ags_apply_presets_dispose(GObject *gobject);
 void ags_apply_presets_finalize(GObject *gobject);
 
 void ags_apply_presets_launch(AgsTask *task);
@@ -141,6 +142,7 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
   gobject->set_property = ags_apply_presets_set_property;
   gobject->get_property = ags_apply_presets_get_property;
 
+  gobject->dispose = ags_apply_presets_dispose;
   gobject->finalize = ags_apply_presets_finalize;
 
   /* properties */
@@ -162,6 +164,24 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SCOPE,
+				  param_spec);
+
+  /**
+   * AgsApplyPresets:pcm-channels:
+   *
+   * The count of pcm-channels to apply.
+   * 
+   * Since: 0.8.9
+   */
+  param_spec = g_param_spec_uint("pcm-channels",
+				 i18n_pspec("pcm channel count"),
+				 i18n_pspec("The count of pcm channels"),
+				 0,
+				 65535,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PCM_CHANNELS,
 				  param_spec);
 
   /**
@@ -374,11 +394,35 @@ ags_apply_presets_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_apply_presets_dispose(GObject *gobject)
+{
+  AgsApplyPresets *apply_presets;
+
+  apply_presets = AGS_APPLY_PRESETS(gobject);
+
+  if(apply_presets->scope != NULL){
+    g_object_unref(apply_presets->scope);
+
+    apply_presets->scope = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_apply_presets_parent_class)->dispose(gobject);
+}
+
+void
 ags_apply_presets_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_apply_presets_parent_class)->finalize(gobject);
+  AgsApplyPresets *apply_presets;
 
-  /* empty */
+  apply_presets = AGS_APPLY_PRESETS(gobject);
+
+  if(apply_presets->scope != NULL){
+    g_object_unref(apply_presets->scope);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_apply_presets_parent_class)->finalize(gobject);
 }
 
 void
@@ -544,14 +588,12 @@ ags_apply_presets_new(GObject *scope,
   AgsApplyPresets *apply_presets;
 
   apply_presets = (AgsApplyPresets *) g_object_new(AGS_TYPE_APPLY_PRESETS,
+						   "scope", scope,
+						   "pcm-channels", pcm_channels,
+						   "samplerate", samplerate,
+						   "buffer-size", buffer_size,
+						   "format", format,
 						   NULL);
-
-  apply_presets->scope = scope;
-
-  apply_presets->pcm_channels = pcm_channels;
-  apply_presets->samplerate = samplerate;
-  apply_presets->buffer_size = buffer_size;
-  apply_presets->format = format;
 
   return(apply_presets);
 }

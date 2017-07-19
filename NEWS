@@ -1,3 +1,9 @@
+Overview of Changes in AGS 0.8.9
+================================
+
+* Lots of properties applied during AgsTask sub-type instantiation.
+  Thus implemented missing ::finalize() and ::dispose().
+
 Overview of Changes in AGS 0.8.8
 ================================
 

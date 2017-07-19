@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,6 +37,7 @@ void ags_remove_audio_get_property(GObject *gobject,
 				   GParamSpec *param_spec);
 void ags_remove_audio_connect(AgsConnectable *connectable);
 void ags_remove_audio_disconnect(AgsConnectable *connectable);
+void ags_remove_audio_dispose(GObject *gobject);
 void ags_remove_audio_finalize(GObject *gobject);
 
 void ags_remove_audio_launch(AgsTask *task);
@@ -112,6 +113,7 @@ ags_remove_audio_class_init(AgsRemoveAudioClass *remove_audio)
   gobject->set_property = ags_remove_audio_set_property;
   gobject->get_property = ags_remove_audio_get_property;
 
+  gobject->dispose = ags_remove_audio_dispose;
   gobject->finalize = ags_remove_audio_finalize;
   
   /* properties */
@@ -272,11 +274,45 @@ ags_remove_audio_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_remove_audio_dispose(GObject *gobject)
+{
+  AgsRemoveAudio *remove_audio;
+
+  remove_audio = AGS_REMOVE_AUDIO(gobject);
+
+  if(remove_audio->soundcard != NULL){
+    g_object_unref(remove_audio->soundcard);
+
+    remove_audio->soundcard = NULL;
+  }
+
+  if(remove_audio->audio != NULL){
+    g_object_unref(remove_audio->audio);
+
+    remove_audio->audio = NULL;
+  }
+    
+  /* call parent */
+  G_OBJECT_CLASS(ags_remove_audio_parent_class)->dispose(gobject);
+}
+
+void
 ags_remove_audio_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_remove_audio_parent_class)->finalize(gobject);
+  AgsRemoveAudio *remove_audio;
 
-  /* empty */
+  remove_audio = AGS_REMOVE_AUDIO(gobject);
+
+  if(remove_audio->soundcard != NULL){
+    g_object_unref(remove_audio->soundcard);
+  }
+
+  if(remove_audio->audio != NULL){
+    g_object_unref(remove_audio->audio);
+  }
+    
+  /* call parent */
+  G_OBJECT_CLASS(ags_remove_audio_parent_class)->finalize(gobject);
 }
 
 void
@@ -310,14 +346,19 @@ ags_remove_audio_launch(AgsTask *task)
   }
   
   /* remove audio */
-  list = ags_soundcard_get_audio(AGS_SOUNDCARD(remove_audio->soundcard));
-  list = g_list_remove(list,
-		       remove_audio->audio);
-  ags_soundcard_set_audio(AGS_SOUNDCARD(remove_audio->soundcard),
-			  list);
-
+  if(remove_audio->soundcard != NULL){
+    list = ags_soundcard_get_audio(AGS_SOUNDCARD(remove_audio->soundcard));
+    list = g_list_remove(list,
+			 remove_audio->audio);
+    ags_soundcard_set_audio(AGS_SOUNDCARD(remove_audio->soundcard),
+			    list);
+  }
+  
   g_object_run_dispose(remove_audio->audio);
-  g_object_unref(remove_audio->audio);
+
+  if(remove_audio->soundcard != NULL){
+    g_object_unref(remove_audio->audio);
+  }
 }
 
 /**
@@ -338,10 +379,9 @@ ags_remove_audio_new(GObject *soundcard,
   AgsRemoveAudio *remove_audio;
 
   remove_audio = (AgsRemoveAudio *) g_object_new(AGS_TYPE_REMOVE_AUDIO,
+						 "soundcard", soundcard,
+						 "audio", audio,
 						 NULL);
-
-  remove_audio->soundcard = soundcard;
-  remove_audio->audio = audio;
 
   return(remove_audio);
 }

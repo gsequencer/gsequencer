@@ -42,6 +42,7 @@ void ags_notify_soundcard_get_property(GObject *gobject,
 				       GParamSpec *param_spec);
 void ags_notify_soundcard_connect(AgsConnectable *connectable);
 void ags_notify_soundcard_disconnect(AgsConnectable *connectable);
+void ags_notify_soundcard_dispose(GObject *gobject);
 void ags_notify_soundcard_finalize(GObject *gobject);
 
 void ags_notify_soundcard_launch(AgsTask *task);
@@ -116,6 +117,7 @@ ags_notify_soundcard_class_init(AgsNotifySoundcardClass *notify_soundcard)
   gobject->set_property = ags_notify_soundcard_set_property;
   gobject->get_property = ags_notify_soundcard_get_property;
 
+  gobject->dispose = ags_notify_soundcard_dispose;
   gobject->finalize = ags_notify_soundcard_finalize;
 
   /* properties */
@@ -255,6 +257,23 @@ ags_notify_soundcard_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_notify_soundcard_dispose(GObject *gobject)
+{
+  AgsNotifySoundcard *notify_soundcard;
+
+  notify_soundcard = AGS_NOTIFY_SOUNDCARD(gobject);
+
+  if(notify_soundcard->soundcard_thread != NULL){
+    g_object_unref(notify_soundcard->soundcard_thread);
+
+    notify_soundcard->soundcard_thread = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_notify_soundcard_parent_class)->dispose(gobject);
+}
+
+void
 ags_notify_soundcard_finalize(GObject *gobject)
 {
   AgsNotifySoundcard *notify_soundcard;
@@ -266,7 +285,12 @@ ags_notify_soundcard_finalize(GObject *gobject)
   
   pthread_cond_destroy(notify_soundcard->return_cond);
   free(notify_soundcard->return_cond);
+
+  if(notify_soundcard->soundcard_thread != NULL){
+    g_object_unref(notify_soundcard->soundcard_thread);
+  }
   
+  /* call parent */
   G_OBJECT_CLASS(ags_notify_soundcard_parent_class)->finalize(gobject);
 }
 
@@ -332,9 +356,8 @@ ags_notify_soundcard_new(GObject *soundcard_thread)
   AgsNotifySoundcard *notify_soundcard;
 
   notify_soundcard = (AgsNotifySoundcard *) g_object_new(AGS_TYPE_NOTIFY_SOUNDCARD,
+							 "soundcard-thread", soundcard_thread,
 							 NULL);
-
-  notify_soundcard->soundcard_thread = soundcard_thread;
 
   return(notify_soundcard);
 }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,6 +38,7 @@ void ags_remove_audio_signal_get_property(GObject *gobject,
 				       GParamSpec *param_spec);
 void ags_remove_audio_signal_connect(AgsConnectable *connectable);
 void ags_remove_audio_signal_disconnect(AgsConnectable *connectable);
+void ags_remove_audio_signal_dispose(GObject *gobject);
 void ags_remove_audio_signal_finalize(GObject *gobject);
 
 void ags_remove_audio_signal_launch(AgsTask *task);
@@ -113,6 +114,7 @@ ags_remove_audio_signal_class_init(AgsRemoveAudioSignalClass *remove_audio_signa
   gobject->set_property = ags_remove_audio_signal_set_property;
   gobject->get_property = ags_remove_audio_signal_get_property;
 
+  gobject->dispose = ags_remove_audio_signal_dispose;
   gobject->finalize = ags_remove_audio_signal_finalize;
 
   /* properties */
@@ -273,11 +275,45 @@ ags_remove_audio_signal_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_remove_audio_signal_dispose(GObject *gobject)
+{
+  AgsRemoveAudioSignal *remove_audio_signal;
+
+  remove_audio_signal = AGS_REMOVE_AUDIO_SIGNAL(gobject);
+
+  if(remove_audio_signal->recycling != NULL){
+    g_object_unref(remove_audio_signal->recycling);
+
+    remove_audio_signal->recycling = NULL;
+  }
+
+  if(remove_audio_signal->audio_signal != NULL){
+    g_object_unref(remove_audio_signal->audio_signal);
+
+    remove_audio_signal->audio_signal = NULL;
+  }
+    
+  /* call parent */
+  G_OBJECT_CLASS(ags_remove_audio_signal_parent_class)->dispose(gobject);
+}
+
+void
 ags_remove_audio_signal_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_remove_audio_signal_parent_class)->finalize(gobject);
+  AgsRemoveAudioSignal *remove_audio_signal;
 
-  /* empty */
+  remove_audio_signal = AGS_REMOVE_AUDIO_SIGNAL(gobject);
+
+  if(remove_audio_signal->recycling != NULL){
+    g_object_unref(remove_audio_signal->recycling);
+  }
+
+  if(remove_audio_signal->audio_signal != NULL){
+    g_object_unref(remove_audio_signal->audio_signal);
+  }
+    
+  /* call parent */
+  G_OBJECT_CLASS(ags_remove_audio_signal_parent_class)->finalize(gobject);
 }
 
 void
@@ -309,11 +345,9 @@ ags_remove_audio_signal_new(AgsRecycling *recycling,
   AgsRemoveAudioSignal *remove_audio_signal;
 
   remove_audio_signal = (AgsRemoveAudioSignal *) g_object_new(AGS_TYPE_REMOVE_AUDIO_SIGNAL,
-							      NULL);
-  
-
-  remove_audio_signal->recycling = recycling;
-  remove_audio_signal->audio_signal = audio_signal;
+							      "recycling", recycling,
+							      "audio-signal", audio_signal,
+							      NULL);  
 
   return(remove_audio_signal);
 }

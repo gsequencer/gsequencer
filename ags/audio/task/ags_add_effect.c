@@ -36,6 +36,7 @@ void ags_add_effect_get_property(GObject *gobject,
 				 GParamSpec *param_spec);
 void ags_add_effect_connect(AgsConnectable *connectable);
 void ags_add_effect_disconnect(AgsConnectable *connectable);
+void ags_add_effect_dispose(GObject *gobject);
 void ags_add_effect_finalize(GObject *gobject);
 
 void ags_add_effect_launch(AgsTask *task);
@@ -112,6 +113,7 @@ ags_add_effect_class_init(AgsAddEffectClass *add_effect)
   gobject->set_property = ags_add_effect_set_property;
   gobject->get_property = ags_add_effect_get_property;
 
+  gobject->dispose = ags_add_effect_dispose;
   gobject->finalize = ags_add_effect_finalize;
 
   /* properties */
@@ -307,11 +309,50 @@ ags_add_effect_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_add_effect_dispose(GObject *gobject)
+{
+  AgsAddEffect *add_effect;
+
+  add_effect = AGS_ADD_EFFECT(gobject);
+
+  if(add_effect->channel != NULL){
+    g_object_unref(add_effect->channel);
+
+    add_effect->channel = NULL;
+  }
+
+  if(add_effect->filename != NULL){
+    g_free(add_effect->filename);
+    
+    add_effect->filename = NULL;
+  }
+
+  if(add_effect->effect != NULL){
+    g_free(add_effect->effect);
+
+    add_effect->effect = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_add_effect_parent_class)->dispose(gobject);
+}
+
+void
 ags_add_effect_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_add_effect_parent_class)->finalize(gobject);
+  AgsAddEffect *add_effect;
 
-  /* empty */
+  add_effect = AGS_ADD_EFFECT(gobject);
+
+  if(add_effect->channel != NULL){
+    g_object_unref(add_effect->channel);
+  }
+
+  g_free(add_effect->filename);
+  g_free(add_effect->effect);
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_add_effect_parent_class)->finalize(gobject);
 }
 
 void
@@ -336,7 +377,7 @@ ags_add_effect_launch(AgsTask *task)
  *
  * Returns: an new #AgsAddEffect.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 AgsAddEffect*
 ags_add_effect_new(AgsChannel *channel,
@@ -346,11 +387,10 @@ ags_add_effect_new(AgsChannel *channel,
   AgsAddEffect *add_effect;
 
   add_effect = (AgsAddEffect *) g_object_new(AGS_TYPE_ADD_EFFECT,
+					     "channel", channel,
+					     "filename", filename,
+					     "effect", effect,
 					     NULL);
-
-  add_effect->channel = channel;
-  add_effect->filename = filename;
-  add_effect->effect = effect;
   
   return(add_effect);
 }

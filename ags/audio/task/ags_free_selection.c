@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,7 @@ void ags_free_selection_get_property(GObject *gobject,
 				     GParamSpec *param_spec);
 void ags_free_selection_connect(AgsConnectable *connectable);
 void ags_free_selection_disconnect(AgsConnectable *connectable);
+void ags_free_selection_dispose(GObject *gobject);
 void ags_free_selection_finalize(GObject *gobject);
 
 void ags_free_selection_launch(AgsTask *task);
@@ -110,6 +111,7 @@ ags_free_selection_class_init(AgsFreeSelectionClass *free_selection)
   gobject->set_property = ags_free_selection_set_property;
   gobject->get_property = ags_free_selection_get_property;
 
+  gobject->dispose = ags_free_selection_dispose;
   gobject->finalize = ags_free_selection_finalize;
 
   /* properties */
@@ -227,11 +229,35 @@ ags_free_selection_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_free_selection_dispose(GObject *gobject)
+{
+  AgsFreeSelection *free_selection;
+
+  free_selection = AGS_FREE_SELECTION(gobject);
+
+  if(free_selection->notation != NULL){
+    g_object_unref(free_selection->notation);
+
+    free_selection->notation = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_free_selection_parent_class)->dispose(gobject);
+}
+
+void
 ags_free_selection_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_free_selection_parent_class)->finalize(gobject);
+  AgsFreeSelection *free_selection;
 
-  /* empty */
+  free_selection = AGS_FREE_SELECTION(gobject);
+
+  if(free_selection->notation != NULL){
+    g_object_unref(free_selection->notation);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_free_selection_parent_class)->finalize(gobject);
 }
 
 void
@@ -261,9 +287,8 @@ ags_free_selection_new(AgsNotation *notation)
   AgsFreeSelection *free_selection;
 
   free_selection = (AgsFreeSelection *) g_object_new(AGS_TYPE_FREE_SELECTION,
+						     "notation", notation,
 						     NULL);
-
-  free_selection->notation = notation;
 
   return(free_selection);
 }

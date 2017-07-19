@@ -36,6 +36,7 @@ void ags_add_audio_signal_get_property(GObject *gobject,
 				       GParamSpec *param_spec);
 void ags_add_audio_signal_connect(AgsConnectable *connectable);
 void ags_add_audio_signal_disconnect(AgsConnectable *connectable);
+void ags_add_audio_signal_dispose(GObject *gobject);
 void ags_add_audio_signal_finalize(GObject *gobject);
 
 void ags_add_audio_signal_launch(AgsTask *task);
@@ -114,6 +115,7 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
   gobject->set_property = ags_add_audio_signal_set_property;
   gobject->get_property = ags_add_audio_signal_get_property;
 
+  gobject->dispose = ags_add_audio_signal_dispose;
   gobject->finalize = ags_add_audio_signal_finalize;
 
   /* properties */
@@ -388,20 +390,76 @@ ags_add_audio_signal_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_add_audio_signal_dispose(GObject *gobject)
+{
+  AgsAddAudioSignal *add_audio_signal;
+  
+  add_audio_signal = AGS_ADD_AUDIO_SIGNAL(gobject);
+
+  if(add_audio_signal->recycling != NULL){
+    g_object_unref(add_audio_signal->recycling);
+
+    add_audio_signal->recycling = NULL;
+  }
+
+  if(add_audio_signal->audio_signal != NULL){
+    g_object_unref(add_audio_signal->audio_signal);
+
+    add_audio_signal->audio_signal = NULL;
+  }
+
+  if(add_audio_signal->soundcard != NULL){
+    g_object_unref(add_audio_signal->soundcard);
+
+    add_audio_signal->soundcard = NULL;
+  }
+
+  if(add_audio_signal->recall_id != NULL){
+    g_object_unref(add_audio_signal->recall_id);
+
+    add_audio_signal->recall_id = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_add_audio_signal_parent_class)->dispose(gobject);
+}
+
+void
 ags_add_audio_signal_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_add_audio_signal_parent_class)->finalize(gobject);
+  AgsAddAudioSignal *add_audio_signal;
+  
+  add_audio_signal = AGS_ADD_AUDIO_SIGNAL(gobject);
 
-  /* empty */
+  if(add_audio_signal->recycling != NULL){
+    g_object_unref(add_audio_signal->recycling);
+  }
+
+  if(add_audio_signal->audio_signal != NULL){
+    g_object_unref(add_audio_signal->audio_signal);
+  }
+
+  if(add_audio_signal->soundcard != NULL){
+    g_object_unref(add_audio_signal->soundcard);
+  }
+
+  if(add_audio_signal->recall_id != NULL){
+    g_object_unref(add_audio_signal->recall_id);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_add_audio_signal_parent_class)->finalize(gobject);
 }
 
 void
 ags_add_audio_signal_launch(AgsTask *task)
 {
-  AgsSoundcard *soundcard;
   AgsAddAudioSignal *add_audio_signal;
   AgsAudioSignal *audio_signal, *old_template;
   AgsRecallID *recall_id;
+
+  AgsSoundcard *soundcard;
+
   gdouble delay;
   guint attack;
 
@@ -482,13 +540,12 @@ ags_add_audio_signal_new(AgsRecycling *recycling,
   AgsAddAudioSignal *add_audio_signal;
 
   add_audio_signal = (AgsAddAudioSignal *) g_object_new(AGS_TYPE_ADD_AUDIO_SIGNAL,
+							"recycling", recycling,
+							"audio-signal", audio_signal,
+							"soundcard", soundcard,
+							"recall-id", recall_id,
+							"audio-signal-flags", audio_signal_flags,
 							NULL);
-
-  add_audio_signal->recycling = recycling;
-  add_audio_signal->audio_signal = audio_signal;
-  add_audio_signal->soundcard = soundcard;
-  add_audio_signal->recall_id = recall_id;
-  add_audio_signal->audio_signal_flags = audio_signal_flags;
 
   return(add_audio_signal);
 }

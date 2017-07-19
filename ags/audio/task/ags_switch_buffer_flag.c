@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,6 +42,7 @@ void ags_switch_buffer_flag_get_property(GObject *gobject,
 					 GParamSpec *param_spec);
 void ags_switch_buffer_flag_connect(AgsConnectable *connectable);
 void ags_switch_buffer_flag_disconnect(AgsConnectable *connectable);
+void ags_switch_buffer_flag_dispose(GObject *gobject);
 void ags_switch_buffer_flag_finalize(GObject *gobject);
 
 void ags_switch_buffer_flag_launch(AgsTask *task);
@@ -116,6 +117,7 @@ ags_switch_buffer_flag_class_init(AgsSwitchBufferFlagClass *switch_buffer_flag)
   gobject->set_property = ags_switch_buffer_flag_set_property;
   gobject->get_property = ags_switch_buffer_flag_get_property;
 
+  gobject->dispose = ags_switch_buffer_flag_dispose;
   gobject->finalize = ags_switch_buffer_flag_finalize;
 
   /* properties */
@@ -233,11 +235,35 @@ ags_switch_buffer_flag_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_switch_buffer_flag_dispose(GObject *gobject)
+{
+  AgsSwitchBufferFlag *switch_buffer_flag;
+
+  switch_buffer_flag = AGS_SWITCH_BUFFER_FLAG(gobject);
+
+  if(switch_buffer_flag->device != NULL){
+    g_object_unref(switch_buffer_flag->device);
+
+    switch_buffer_flag->device = NULL;
+  }
+  
+  /* call parent*/
+  G_OBJECT_CLASS(ags_switch_buffer_flag_parent_class)->dispose(gobject);
+}
+
+void
 ags_switch_buffer_flag_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_switch_buffer_flag_parent_class)->finalize(gobject);
+  AgsSwitchBufferFlag *switch_buffer_flag;
 
-  /* empty */
+  switch_buffer_flag = AGS_SWITCH_BUFFER_FLAG(gobject);
+
+  if(switch_buffer_flag->device != NULL){
+    g_object_unref(switch_buffer_flag->device);
+  }
+  
+  /* call parent*/
+  G_OBJECT_CLASS(ags_switch_buffer_flag_parent_class)->finalize(gobject);
 }
 
 void
@@ -274,9 +300,8 @@ ags_switch_buffer_flag_new(GObject *device)
   AgsSwitchBufferFlag *switch_buffer_flag;
 
   switch_buffer_flag = (AgsSwitchBufferFlag *) g_object_new(AGS_TYPE_SWITCH_BUFFER_FLAG,
+							    "device", device,
 							    NULL);
-
-  switch_buffer_flag->device = device;
 
   return(switch_buffer_flag);
 }

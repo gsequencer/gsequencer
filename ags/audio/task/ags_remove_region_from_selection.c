@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,7 @@ void ags_remove_region_from_selection_get_property(GObject *gobject,
 						   GParamSpec *param_spec);
 void ags_remove_region_from_selection_connect(AgsConnectable *connectable);
 void ags_remove_region_from_selection_disconnect(AgsConnectable *connectable);
+void ags_remove_region_from_selection_dispose(GObject *gobject);
 void ags_remove_region_from_selection_finalize(GObject *gobject);
 
 void ags_remove_region_from_selection_launch(AgsTask *task);
@@ -114,6 +115,7 @@ ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *r
   gobject->set_property = ags_remove_region_from_selection_set_property;
   gobject->get_property = ags_remove_region_from_selection_get_property;
 
+  gobject->dispose = ags_remove_region_from_selection_dispose;
   gobject->finalize = ags_remove_region_from_selection_finalize;
 
   /* properties */
@@ -347,11 +349,31 @@ ags_remove_region_from_selection_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_remove_region_from_selection_dispose(GObject *gobject)
+{
+  AgsRemoveRegionFromSelection *remove_region_from_selection;
+
+  if(remove_region_from_selection->notation != NULL){
+    g_object_unref(remove_region_from_selection->notation);
+
+    remove_region_from_selection->notation = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_remove_region_from_selection_parent_class)->dispose(gobject);
+}
+
+void
 ags_remove_region_from_selection_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_remove_region_from_selection_parent_class)->finalize(gobject);
+  AgsRemoveRegionFromSelection *remove_region_from_selection;
 
-  /* empty */
+  if(remove_region_from_selection->notation != NULL){
+    g_object_unref(remove_region_from_selection->notation);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_remove_region_from_selection_parent_class)->finalize(gobject);
 }
 
 void
@@ -389,13 +411,12 @@ ags_remove_region_from_selection_new(AgsNotation *notation,
   AgsRemoveRegionFromSelection *remove_region_from_selection;
 
   remove_region_from_selection = (AgsRemoveRegionFromSelection *) g_object_new(AGS_TYPE_REMOVE_REGION_FROM_SELECTION,
+									       "notation", notation,
+									       "x0", x0,
+									       "y0", y0,
+									       "x1", x1,
+									       "y1", y1,
 									       NULL);
-
-  remove_region_from_selection->notation = notation;
-  remove_region_from_selection->x0 = x0;
-  remove_region_from_selection->y0 = y0;
-  remove_region_from_selection->x1 = x1;
-  remove_region_from_selection->y1 = y1;
 
   return(remove_region_from_selection);
 }

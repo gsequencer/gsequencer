@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,6 +44,7 @@ void ags_open_single_file_get_property(GObject *gobject,
 				       GParamSpec *param_spec);
 void ags_open_single_file_connect(AgsConnectable *connectable);
 void ags_open_single_file_disconnect(AgsConnectable *connectable);
+void ags_open_single_file_dispose(GObject *gobject);
 void ags_open_single_file_finalize(GObject *gobject);
 void ags_open_single_file_launch(AgsTask *task);
 
@@ -121,6 +122,7 @@ ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file)
   gobject->set_property = ags_open_single_file_set_property;
   gobject->get_property = ags_open_single_file_get_property;
 
+  gobject->dispose = ags_open_single_file_dispose;
   gobject->finalize = ags_open_single_file_finalize;
 
   /* properties */
@@ -378,11 +380,55 @@ ags_open_single_file_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_open_single_file_dispose(GObject *gobject)
+{
+  AgsOpenSingleFile *open_single_file;
+
+  open_single_file = AGS_OPEN_SINGLE_FILE(gobject);
+
+  if(open_single_file->channel != NULL){
+    g_object_unref(open_single_file->channel);
+
+    open_single_file->channel = NULL;
+  }
+
+  if(open_single_file->soundcard != NULL){
+    g_object_unref(open_single_file->soundcard);
+
+    open_single_file->soundcard = NULL;
+  }
+
+  if(open_single_file->filename != NULL){
+    g_free(open_single_file->filename);
+
+    open_single_file->filename = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_open_single_file_parent_class)->dispose(gobject);
+}
+
+void
 ags_open_single_file_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_open_single_file_parent_class)->finalize(gobject);
+  AgsOpenSingleFile *open_single_file;
 
-  /* empty */
+  open_single_file = AGS_OPEN_SINGLE_FILE(gobject);
+
+  if(open_single_file->channel != NULL){
+    g_object_unref(open_single_file->channel);
+  }
+
+  if(open_single_file->soundcard != NULL){
+    g_object_unref(open_single_file->soundcard);
+  }
+
+  if(open_single_file->filename != NULL){
+    g_free(open_single_file->filename);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_open_single_file_parent_class)->finalize(gobject);
 }
 
 void
@@ -460,13 +506,12 @@ ags_open_single_file_new(AgsChannel *channel,
   AgsOpenSingleFile *open_single_file;
 
   open_single_file = (AgsOpenSingleFile *) g_object_new(AGS_TYPE_OPEN_SINGLE_FILE,
+							"channel", channel,
+							"soundcard", soundcard,
+							"filename", filename,
+							"start-channel", start_channel,
+							"audio-channels", audio_channels,
 							NULL);
-
-  open_single_file->channel = channel;
-  open_single_file->soundcard = soundcard;
-  open_single_file->filename = filename;
-  open_single_file->start_channel = start_channel;
-  open_single_file->audio_channels = audio_channels;
 
   return(open_single_file);
 }

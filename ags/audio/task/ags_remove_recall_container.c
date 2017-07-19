@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,6 +41,7 @@ void ags_remove_recall_container_get_property(GObject *gobject,
 					      GParamSpec *param_spec);
 void ags_remove_recall_container_connect(AgsConnectable *connectable);
 void ags_remove_recall_container_disconnect(AgsConnectable *connectable);
+void ags_remove_recall_container_dispose(GObject *gobject);
 void ags_remove_recall_container_finalize(GObject *gobject);
 
 void ags_remove_recall_container_launch(AgsTask *task);
@@ -116,6 +117,7 @@ ags_remove_recall_container_class_init(AgsRemoveRecallContainerClass *remove_rec
   gobject->set_property = ags_remove_recall_container_set_property;
   gobject->get_property = ags_remove_recall_container_get_property;
 
+  gobject->dispose = ags_remove_recall_container_dispose;
   gobject->finalize = ags_remove_recall_container_finalize;
 
   /* properties */
@@ -276,11 +278,41 @@ ags_remove_recall_container_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_remove_recall_container_dispose(GObject *gobject)
+{
+  AgsRemoveRecallContainer *remove_recall_container;
+
+  if(remove_recall_container->audio != NULL){
+    g_object_unref(remove_recall_container->audio);
+
+    remove_recall_container->audio = NULL;
+  }
+
+  if(remove_recall_container->recall_container != NULL){
+    g_object_unref(remove_recall_container->recall_container);
+
+    remove_recall_container->recall_container = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_remove_recall_container_parent_class)->dispose(gobject);
+}
+
+void
 ags_remove_recall_container_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_remove_recall_container_parent_class)->finalize(gobject);
+  AgsRemoveRecallContainer *remove_recall_container;
 
-  /* empty */
+  if(remove_recall_container->audio != NULL){
+    g_object_unref(remove_recall_container->audio);
+  }
+
+  if(remove_recall_container->recall_container != NULL){
+    g_object_unref(remove_recall_container->recall_container);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_remove_recall_container_parent_class)->finalize(gobject);
 }
 
 void
@@ -312,10 +344,9 @@ ags_remove_recall_container_new(GObject *audio,
   AgsRemoveRecallContainer *remove_recall_container;
 
   remove_recall_container = (AgsRemoveRecallContainer *) g_object_new(AGS_TYPE_REMOVE_RECALL_CONTAINER,
+								      "audio", audio,
+								      "recall-container", recall_container,
 								      NULL);  
   
-  remove_recall_container->audio = audio;
-  remove_recall_container->recall_container = recall_container;
-
   return(remove_recall_container);
 }

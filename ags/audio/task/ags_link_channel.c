@@ -36,6 +36,7 @@ void ags_link_channel_get_property(GObject *gobject,
 				   GParamSpec *param_spec);
 void ags_link_channel_connect(AgsConnectable *connectable);
 void ags_link_channel_disconnect(AgsConnectable *connectable);
+void ags_link_channel_dispose(GObject *gobject);
 void ags_link_channel_finalize(GObject *gobject);
 
 void ags_link_channel_launch(AgsTask *task);
@@ -112,6 +113,7 @@ ags_link_channel_class_init(AgsLinkChannelClass *link_channel)
   gobject->set_property = ags_link_channel_set_property;
   gobject->get_property = ags_link_channel_get_property;
 
+  gobject->dispose = ags_link_channel_dispose;
   gobject->finalize = ags_link_channel_finalize;
 
   /* properties */
@@ -303,11 +305,45 @@ ags_link_channel_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_link_channel_dispose(GObject *gobject)
+{
+  AgsLinkChannel *link_channel;
+
+  link_channel = AGS_LINK_CHANNEL(gobject);
+
+  if(link_channel->channel != NULL){
+    g_object_unref(link_channel->channel);
+
+    link_channel->channel = NULL;
+  }
+
+  if(link_channel->link != NULL){
+    g_object_unref(link_channel->link);
+
+    link_channel->link = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_link_channel_parent_class)->dispose(gobject);
+}
+
+void
 ags_link_channel_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_link_channel_parent_class)->finalize(gobject);
+  AgsLinkChannel *link_channel;
 
-  /* empty */
+  link_channel = AGS_LINK_CHANNEL(gobject);
+
+  if(link_channel->channel != NULL){
+    g_object_unref(link_channel->channel);
+  }
+
+  if(link_channel->link != NULL){
+    g_object_unref(link_channel->link);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_link_channel_parent_class)->finalize(gobject);
 }
 
 void
@@ -346,10 +382,9 @@ ags_link_channel_new(AgsChannel *channel, AgsChannel *link)
   AgsLinkChannel *link_channel;
 
   link_channel = (AgsLinkChannel *) g_object_new(AGS_TYPE_LINK_CHANNEL,
+						 "channel", channel,
+						 "link", link,
 						 NULL);
-
-  link_channel->channel = channel;
-  link_channel->link = link;
 
   return(link_channel);
 }

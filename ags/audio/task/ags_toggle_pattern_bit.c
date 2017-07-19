@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,7 @@ void ags_toggle_pattern_bit_get_property(GObject *gobject,
 					 GParamSpec *param_spec);
 void ags_toggle_pattern_bit_connect(AgsConnectable *connectable);
 void ags_toggle_pattern_bit_disconnect(AgsConnectable *connectable);
+void ags_toggle_pattern_bit_dispose(GObject *gobject);
 void ags_toggle_pattern_bit_finalize(GObject *gobject);
 
 void ags_toggle_pattern_bit_launch(AgsTask *task);
@@ -120,6 +121,7 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
   gobject->set_property = ags_toggle_pattern_bit_set_property;
   gobject->get_property = ags_toggle_pattern_bit_get_property;
 
+  gobject->dispose = ags_toggle_pattern_bit_dispose;
   gobject->finalize = ags_toggle_pattern_bit_finalize;
 
   /* properties */
@@ -387,11 +389,35 @@ ags_toggle_pattern_bit_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_toggle_pattern_bit_dispose(GObject *gobject)
+{
+  AgsTogglePatternBit *toggle_pattern_bit;
+
+  toggle_pattern_bit = AGS_TOGGLE_PATTERN_BIT(gobject);
+
+  if(toggle_pattern_bit->pattern != NULL){
+    g_object_unref(toggle_pattern_bit->pattern);
+
+    toggle_pattern_bit->pattern = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_toggle_pattern_bit_parent_class)->dispose(gobject);
+}
+
+void
 ags_toggle_pattern_bit_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_toggle_pattern_bit_parent_class)->finalize(gobject);
+  AgsTogglePatternBit *toggle_pattern_bit;
 
-  /* empty */
+  toggle_pattern_bit = AGS_TOGGLE_PATTERN_BIT(gobject);
+
+  if(toggle_pattern_bit->pattern != NULL){
+    g_object_unref(toggle_pattern_bit->pattern);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_toggle_pattern_bit_parent_class)->finalize(gobject);
 }
 
 void
@@ -446,14 +472,12 @@ ags_toggle_pattern_bit_new(AgsPattern *pattern,
   AgsTogglePatternBit *toggle_pattern_bit;
   
   toggle_pattern_bit = (AgsTogglePatternBit *) g_object_new(AGS_TYPE_TOGGLE_PATTERN_BIT,
+							    "pattern", pattern,
+							    "line", line,
+							    "index-i", index_i,
+							    "index-j", index_j,
+							    "bit", bit,
 							    NULL);
-
-  toggle_pattern_bit->pattern = pattern;
-  toggle_pattern_bit->line = line;
-
-  toggle_pattern_bit->index_i = index_i;
-  toggle_pattern_bit->index_j = index_j;
-  toggle_pattern_bit->bit = bit;
 
   return(toggle_pattern_bit);
 }

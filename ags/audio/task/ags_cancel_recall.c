@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,7 @@ void ags_cancel_recall_get_property(GObject *gobject,
 				    GParamSpec *param_spec);
 void ags_cancel_recall_connect(AgsConnectable *connectable);
 void ags_cancel_recall_disconnect(AgsConnectable *connectable);
+void ags_cancel_recall_dispose(GObject *gobject);
 void ags_cancel_recall_finalize(GObject *gobject);
 
 void ags_cancel_recall_launch(AgsTask *task);
@@ -111,6 +112,7 @@ ags_cancel_recall_class_init(AgsCancelRecallClass *cancel_recall)
   gobject->set_property = ags_cancel_recall_set_property;
   gobject->get_property = ags_cancel_recall_get_property;
 
+  gobject->dispose = ags_cancel_recall_dispose;
   gobject->finalize = ags_cancel_recall_finalize;
 
   /* properties */
@@ -272,11 +274,45 @@ ags_cancel_recall_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_cancel_recall_dispose(GObject *gobject)
+{
+  AgsCancelRecall *cancel_recall;
+
+  cancel_recall = AGS_CANCEL_RECALL(gobject);
+
+  if(cancel_recall->recall != NULL){
+    g_object_unref(cancel_recall->recall);
+
+    cancel_recall->recall = NULL;
+  }
+
+  if(cancel_recall->playback != NULL){
+    g_object_unref(cancel_recall->playback);
+
+    cancel_recall->playback = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_cancel_recall_parent_class)->dispose(gobject);
+}
+
+void
 ags_cancel_recall_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_cancel_recall_parent_class)->finalize(gobject);
+  AgsCancelRecall *cancel_recall;
 
-  /* empty */
+  cancel_recall = AGS_CANCEL_RECALL(gobject);
+
+  if(cancel_recall->recall != NULL){
+    g_object_unref(cancel_recall->recall);
+  }
+
+  if(cancel_recall->playback != NULL){
+    g_object_unref(cancel_recall->playback);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_cancel_recall_parent_class)->finalize(gobject);
 }
 
 void
@@ -318,11 +354,9 @@ ags_cancel_recall_new(AgsRecall *recall,
   AgsCancelRecall *cancel_recall;
 
   cancel_recall = (AgsCancelRecall *) g_object_new(AGS_TYPE_CANCEL_RECALL,
+						   "recall", recall,
+						   "playback", playback,
 						   NULL);
-
-  cancel_recall->recall = recall;
-
-  cancel_recall->playback = playback;
 
   return(cancel_recall);
 }

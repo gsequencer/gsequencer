@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,6 +42,7 @@ void ags_set_format_get_property(GObject *gobject,
 				 GParamSpec *param_spec);
 void ags_set_format_connect(AgsConnectable *connectable);
 void ags_set_format_disconnect(AgsConnectable *connectable);
+void ags_set_format_dispose(GObject *gobject);
 void ags_set_format_finalize(GObject *gobject);
 
 void ags_set_format_launch(AgsTask *task);
@@ -123,6 +124,7 @@ ags_set_format_class_init(AgsSetFormatClass *set_format)
   gobject->set_property = ags_set_format_set_property;
   gobject->get_property = ags_set_format_get_property;
 
+  gobject->dispose = ags_set_format_dispose;
   gobject->finalize = ags_set_format_finalize;
 
   /* properties */
@@ -269,11 +271,35 @@ ags_set_format_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_set_format_dispose(GObject *gobject)
+{
+  AgsSetFormat *set_format;
+
+  set_format = AGS_SET_FORMAT(gobject);
+
+  if(set_format->scope != NULL){
+    g_object_unref(set_format->scope);
+
+    set_format->scope = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_set_format_parent_class)->dispose(gobject);
+}
+
+void
 ags_set_format_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_set_format_parent_class)->finalize(gobject);
+  AgsSetFormat *set_format;
 
-  /* empty */
+  set_format = AGS_SET_FORMAT(gobject);
+
+  if(set_format->scope != NULL){
+    g_object_unref(set_format->scope);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_set_format_parent_class)->finalize(gobject);
 }
 
 void
@@ -404,10 +430,9 @@ ags_set_format_new(GObject *scope,
   AgsSetFormat *set_format;
 
   set_format = (AgsSetFormat *) g_object_new(AGS_TYPE_SET_FORMAT,
+					     "scope", scope,
+					     "format", format,
 					     NULL);
-
-  set_format->scope = scope;
-  set_format->format = format;
 
   return(set_format);
 }

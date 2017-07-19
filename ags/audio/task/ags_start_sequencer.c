@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,6 +39,7 @@ void ags_start_sequencer_get_property(GObject *gobject,
 				      GParamSpec *param_spec);
 void ags_start_sequencer_connect(AgsConnectable *connectable);
 void ags_start_sequencer_disconnect(AgsConnectable *connectable);
+void ags_start_sequencer_dispose(GObject *gobject);
 void ags_start_sequencer_finalize(GObject *gobject);
 
 void ags_start_sequencer_launch(AgsTask *task);
@@ -113,6 +114,7 @@ ags_start_sequencer_class_init(AgsStartSequencerClass *start_sequencer)
   gobject->set_property = ags_start_sequencer_set_property;
   gobject->get_property = ags_start_sequencer_get_property;
 
+  gobject->dispose = ags_start_sequencer_dispose;
   gobject->finalize = ags_start_sequencer_finalize;
 
   /* properties */
@@ -230,6 +232,23 @@ ags_start_sequencer_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_start_sequencer_dispose(GObject *gobject)
+{
+  AgsStartSequencer *start_sequencer;
+
+  start_sequencer = AGS_START_SEQUENCER(gobject);
+
+  if(start_sequencer->application_context != NULL){
+    g_object_unref(start_sequencer->application_context);
+
+    start_sequencer->application_context = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_start_sequencer_parent_class)->dispose(gobject);
+}
+
+void
 ags_start_sequencer_finalize(GObject *gobject)
 {
   AgsAudioLoop *audio_loop;
@@ -238,23 +257,30 @@ ags_start_sequencer_finalize(GObject *gobject)
   AgsApplicationContext *application_context;
   AgsSequencer *sequencer;
 
-  application_context = AGS_START_SEQUENCER(gobject)->application_context;
-  audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
+  application_context = AGS_START_SEQUENCER(gobject)->application_context;  
 
-  sequencer_thread = ags_thread_find_type((AgsThread *) audio_loop,
-					  AGS_TYPE_SEQUENCER_THREAD);
+  if(application_context != NULL){
+    //FIXME:JK: wrong location of code
+    audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
 
-  while((sequencer_thread = ags_thread_find_type(sequencer_thread,
-						 AGS_TYPE_SEQUENCER_THREAD)) != NULL){
-    if(AGS_SEQUENCER_THREAD(sequencer_thread)->error != NULL){
-      g_error_free(AGS_SEQUENCER_THREAD(sequencer_thread)->error);
+    sequencer_thread = ags_thread_find_type((AgsThread *) audio_loop,
+					    AGS_TYPE_SEQUENCER_THREAD);
+
+    while((sequencer_thread = ags_thread_find_type(sequencer_thread,
+						   AGS_TYPE_SEQUENCER_THREAD)) != NULL){
+      if(AGS_SEQUENCER_THREAD(sequencer_thread)->error != NULL){
+	g_error_free(AGS_SEQUENCER_THREAD(sequencer_thread)->error);
       
-      AGS_SEQUENCER_THREAD(sequencer_thread)->error = NULL;
-    }
+	AGS_SEQUENCER_THREAD(sequencer_thread)->error = NULL;
+      }
 
-    sequencer_thread = g_atomic_pointer_get(&(sequencer_thread->next));    
+      sequencer_thread = g_atomic_pointer_get(&(sequencer_thread->next));    
+    }
+    
+    g_object_unref(application_context);
   }
 
+  /* call parent */
   G_OBJECT_CLASS(ags_start_sequencer_parent_class)->finalize(gobject);
 }
 
@@ -325,9 +351,8 @@ ags_start_sequencer_new(AgsApplicationContext *application_context)
   AgsStartSequencer *start_sequencer;
 
   start_sequencer = (AgsStartSequencer *) g_object_new(AGS_TYPE_START_SEQUENCER,
+						       "application-context", application_context,
 						       NULL);
-
-  start_sequencer->application_context = application_context;
 
   return(start_sequencer);
 }

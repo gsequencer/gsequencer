@@ -1026,11 +1026,13 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_change_soundcard.h \
 	ags/audio/task/ags_clear_audio_signal.h \
 	ags/audio/task/ags_clear_buffer.h \
+	ags/audio/task/ags_crop_note.h \
 	ags/audio/task/ags_export_output.h \
 	ags/audio/task/ags_free_selection.h \
 	ags/audio/task/ags_init_audio.h \
 	ags/audio/task/ags_init_channel.h \
 	ags/audio/task/ags_link_channel.h \
+	ags/audio/task/ags_move_note.h \
 	ags/audio/task/ags_notify_soundcard.h \
 	ags/audio/task/ags_open_file.h \
 	ags/audio/task/ags_open_sf2_sample.h \
@@ -1089,11 +1091,13 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_change_soundcard.c \
 	ags/audio/task/ags_clear_audio_signal.c \
 	ags/audio/task/ags_clear_buffer.c \
+	ags/audio/task/ags_crop_note.c \
 	ags/audio/task/ags_export_output.c \
 	ags/audio/task/ags_free_selection.c \
 	ags/audio/task/ags_init_audio.c \
 	ags/audio/task/ags_init_channel.c \
 	ags/audio/task/ags_link_channel.c \
+	ags/audio/task/ags_move_note.c \
 	ags/audio/task/ags_notify_soundcard.c \
 	ags/audio/task/ags_open_file.c \
 	ags/audio/task/ags_open_sf2_sample.c \

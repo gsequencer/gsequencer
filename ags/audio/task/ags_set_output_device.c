@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,6 +39,7 @@ void ags_set_output_device_get_property(GObject *gobject,
 					GParamSpec *param_spec);
 void ags_set_output_device_connect(AgsConnectable *connectable);
 void ags_set_output_device_disconnect(AgsConnectable *connectable);
+void ags_set_output_device_dispose(GObject *gobject);
 void ags_set_output_device_finalize(GObject *gobject);
 
 void ags_set_output_device_launch(AgsTask *task);
@@ -114,6 +115,7 @@ ags_set_output_device_class_init(AgsSetOutputDeviceClass *set_output_device)
   gobject->set_property = ags_set_output_device_set_property;
   gobject->get_property = ags_set_output_device_get_property;
 
+  gobject->dispose = ags_set_output_device_dispose;
   gobject->finalize = ags_set_output_device_finalize;
 
   /* properties */
@@ -270,11 +272,45 @@ ags_set_output_device_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_set_output_device_dispose(GObject *gobject)
+{
+  AgsSetOutputDevice *set_output_device;
+
+  set_output_device = AGS_SET_OUTPUT_DEVICE(gobject);
+  
+  if(set_output_device->soundcard != NULL){
+    g_object_unref(set_output_device->soundcard);
+
+    set_output_device->soundcard = NULL;
+  }
+
+  if(set_output_device->device != NULL){
+    g_free(set_output_device->device);
+
+    set_output_device->device = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_set_output_device_parent_class)->dispose(gobject);
+}
+
+void
 ags_set_output_device_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_set_output_device_parent_class)->finalize(gobject);
+  AgsSetOutputDevice *set_output_device;
 
-  /* empty */
+  set_output_device = AGS_SET_OUTPUT_DEVICE(gobject);
+  
+  if(set_output_device->soundcard != NULL){
+    g_object_unref(set_output_device->soundcard);
+  }
+
+  if(set_output_device->device != NULL){
+    g_free(set_output_device->device);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_set_output_device_parent_class)->finalize(gobject);
 }
 
 void
@@ -325,10 +361,9 @@ ags_set_output_device_new(GObject *soundcard,
   AgsSetOutputDevice *set_output_device;
 
   set_output_device = (AgsSetOutputDevice *) g_object_new(AGS_TYPE_SET_OUTPUT_DEVICE,
+							  "soundcard", soundcard,
+							  "device", device,
 							  NULL);
-
-  set_output_device->soundcard = soundcard;
-  set_output_device->device = device;
 
   return(set_output_device);
 }

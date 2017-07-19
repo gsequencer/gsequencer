@@ -12,6 +12,19 @@ ags (1.0.0)
 	* TODO:JK: extended AgsSoundProvider interface to provide plugin managers
 	* extended AgsServiceProvider interface to provide managers
 
+ags (0.8.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed orphaned AgsAudio after removing all soundcards to add again
+
+ags (0.8.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented move note task
+	* implmeneted crop note task
+	* implemented all task's finalize function
+	* improved all task's to use properties to instantiate
+
 ags (0.8.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

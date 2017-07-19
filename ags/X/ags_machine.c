@@ -1686,28 +1686,32 @@ ags_machine_set_run_extended(AgsMachine *machine,
       /* create init task */
       init_audio = ags_init_audio_new(machine->audio,
 				      FALSE, TRUE, FALSE);
-      list = g_list_prepend(list, init_audio);
+      list = g_list_prepend(list,
+			    init_audio);
     
       /* create append task */
       append_audio = ags_append_audio_new((GObject *) audio_loop,
 					  (GObject *) machine->audio,
 					  FALSE, TRUE, FALSE);
 
-      list = g_list_prepend(list, append_audio);
+      list = g_list_prepend(list,
+			    append_audio);
     }
 
     if(notation){
       /* create init task */
       init_audio = ags_init_audio_new(machine->audio,
 				      FALSE, FALSE, TRUE);
-      list = g_list_prepend(list, init_audio);
+      list = g_list_prepend(list,
+			    init_audio);
 
       /* create append task */
       append_audio = ags_append_audio_new((GObject *) audio_loop,
 					  (GObject *) machine->audio,
 					  FALSE, FALSE, TRUE);
 
-      list = g_list_prepend(list, append_audio);
+      list = g_list_prepend(list,
+			    append_audio);
     }
     
     /* create start task */
@@ -1720,7 +1724,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
 
       /* start soundcard */
       start_soundcard = ags_start_soundcard_new(window->application_context);
-      list = g_list_prepend(list, start_soundcard);
+      list = g_list_prepend(list,
+			    start_soundcard);
 
       /* task completion */
       task_completion = ags_task_completion_new((GObject *) start_soundcard,
@@ -1739,7 +1744,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
 
       /* start sequencer */
       start_sequencer = ags_start_sequencer_new(window->application_context);
-      list = g_list_prepend(list, start_sequencer);
+      list = g_list_prepend(list,
+			    start_sequencer);
       
       /* append AgsStartSoundcard and AgsStartSequencer */
       list = g_list_reverse(list);

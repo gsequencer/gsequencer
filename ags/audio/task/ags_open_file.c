@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,6 +44,7 @@ void ags_open_file_get_property(GObject *gobject,
 				GParamSpec *param_spec);
 void ags_open_file_connect(AgsConnectable *connectable);
 void ags_open_file_disconnect(AgsConnectable *connectable);
+void ags_open_file_dispose(GObject *gobject);
 void ags_open_file_finalize(GObject *gobject);
 void ags_open_file_launch(AgsTask *task);
 
@@ -120,6 +121,7 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
   gobject->set_property = ags_open_file_set_property;
   gobject->get_property = ags_open_file_get_property;
 
+  gobject->dispose = ags_open_file_dispose;
   gobject->finalize = ags_open_file_finalize;
 
   /* properties */
@@ -244,7 +246,19 @@ ags_open_file_set_property(GObject *gobject,
     break;
   case PROP_FILENAMES:
     {
-      open_file->filenames = g_value_get_pointer(value);
+      GSList *filenames;
+      
+      filenames = g_value_get_pointer(value);
+
+      if(open_file->filenames == filenames){
+	return;
+      }
+
+      if(open_file->filenames != NULL){
+	g_slist_free(open_file->filenames);
+      }
+      
+      open_file->filenames = g_slist_copy(filenames);
     }
     break;
   case PROP_OVERWRITE_CHANNELS:
@@ -281,7 +295,8 @@ ags_open_file_get_property(GObject *gobject,
     break;
   case PROP_FILENAMES:
     {
-      g_value_set_pointer(value, open_file->filenames);
+      g_value_set_pointer(value,
+			  g_slist_copy(open_file->filenames));
     }
     break;
   case PROP_OVERWRITE_CHANNELS:
@@ -317,11 +332,45 @@ ags_open_file_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_open_file_dispose(GObject *gobject)
+{
+  AgsOpenFile *open_file;
+
+  open_file = AGS_OPEN_FILE(gobject);
+
+  if(open_file->audio != NULL){
+    g_object_unref(open_file->audio);
+
+    open_file->audio = NULL;
+  }
+
+  if(open_file->filenames != NULL){
+    g_slist_free(open_file->filenames);
+
+    open_file->filenames = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_open_file_parent_class)->dispose(gobject);
+}
+
+void
 ags_open_file_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_open_file_parent_class)->finalize(gobject);
+  AgsOpenFile *open_file;
 
-  /* empty */
+  open_file = AGS_OPEN_FILE(gobject);
+
+  if(open_file->audio != NULL){
+    g_object_unref(open_file->audio);
+  }
+
+  if(open_file->filenames != NULL){
+    g_slist_free(open_file->filenames);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_open_file_parent_class)->finalize(gobject);
 }
 
 void
@@ -459,12 +508,11 @@ ags_open_file_new(AgsAudio *audio,
   AgsOpenFile *open_file;
 
   open_file = (AgsOpenFile *) g_object_new(AGS_TYPE_OPEN_FILE,
+					   "audio", audio,
+					   "filenames", filenames,
+					   "overwrite-channels", overwrite_channels,
+					   "create-channels", create_channels,
 					   NULL);
-
-  open_file->audio = audio;
-  open_file->filenames = filenames;
-  open_file->overwrite_channels = overwrite_channels;
-  open_file->create_channels = create_channels;
 
   return(open_file);
 }

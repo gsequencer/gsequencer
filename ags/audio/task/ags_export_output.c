@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,6 +42,7 @@ void ags_export_output_get_property(GObject *gobject,
 				    GParamSpec *param_spec);
 void ags_export_output_connect(AgsConnectable *connectable);
 void ags_export_output_disconnect(AgsConnectable *connectable);
+void ags_export_output_dispose(GObject *gobject);
 void ags_export_output_finalize(GObject *gobject);
 
 void ags_export_output_launch(AgsTask *task);
@@ -121,6 +122,7 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
   gobject->set_property = ags_export_output_set_property;
   gobject->get_property = ags_export_output_get_property;
 
+  gobject->dispose = ags_export_output_dispose;
   gobject->finalize = ags_export_output_finalize;
 
   /* properties */
@@ -406,11 +408,55 @@ ags_export_output_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_export_output_dispose(GObject *gobject)
+{
+  AgsExportOutput *export_output;
+
+  export_output = AGS_EXPORT_OUTPUT(gobject);
+
+  if(export_output->export_thread != NULL){
+    g_object_unref(export_output->export_thread);
+
+    export_output->export_thread = NULL;
+  }
+
+  if(export_output->soundcard != NULL){
+    g_object_unref(export_output->soundcard);
+
+    export_output->soundcard = NULL;
+  }
+
+  if(export_output->filename != NULL){
+    g_free(export_output->filename);
+
+    export_output->filename = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_export_output_parent_class)->dispose(gobject);
+}
+
+void
 ags_export_output_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_export_output_parent_class)->finalize(gobject);
+  AgsExportOutput *export_output;
 
-  /* empty */
+  export_output = AGS_EXPORT_OUTPUT(gobject);
+
+  if(export_output->export_thread != NULL){
+    g_object_unref(export_output->export_thread);
+  }
+
+  if(export_output->soundcard != NULL){
+    g_object_unref(export_output->soundcard);
+  }
+
+  if(export_output->filename != NULL){
+    g_free(export_output->filename);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_export_output_parent_class)->finalize(gobject);
 }
 
 void
@@ -530,13 +576,12 @@ ags_export_output_new(AgsExportThread *export_thread,
   AgsExportOutput *export_output;
 
   export_output = (AgsExportOutput *) g_object_new(AGS_TYPE_EXPORT_OUTPUT,
+						   "export-thread", export_thread,
+						   "soundcard", soundcard,
+						   "filename", filename,
+						   "tic", tic,
+						   "live-performance", live_performance,
 						   NULL);
-
-  export_output->export_thread = export_thread;
-  export_output->soundcard = soundcard;
-  export_output->filename = filename;
-  export_output->tic = tic;
-  export_output->live_performance = live_performance;
 
   return(export_output);
 }

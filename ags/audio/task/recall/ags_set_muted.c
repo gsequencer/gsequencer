@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,6 +44,7 @@ void ags_set_muted_get_property(GObject *gobject,
 				GParamSpec *param_spec);
 void ags_set_muted_connect(AgsConnectable *connectable);
 void ags_set_muted_disconnect(AgsConnectable *connectable);
+void ags_set_muted_dispose(GObject *gobject);
 void ags_set_muted_finalize(GObject *gobject);
 
 void ags_set_muted_launch(AgsTask *task);
@@ -123,6 +124,7 @@ ags_set_muted_class_init(AgsSetMutedClass *set_muted)
   gobject->set_property = ags_set_muted_set_property;
   gobject->get_property = ags_set_muted_get_property;
 
+  gobject->dispose = ags_set_muted_dispose;
   gobject->finalize = ags_set_muted_finalize;
 
   /* properties */
@@ -267,11 +269,35 @@ ags_set_muted_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_set_muted_dispose(GObject *gobject)
+{
+  AgsSetMuted *set_muted;
+
+  set_muted = AGS_SET_MUTED(gobject);
+
+  if(set_muted->scope != NULL){
+    g_object_unref(set_muted->scope);
+
+    set_muted->scope = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_set_muted_parent_class)->dispose(gobject);
+}
+
+void
 ags_set_muted_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_set_muted_parent_class)->finalize(gobject);
+  AgsSetMuted *set_muted;
 
-  /* empty */
+  set_muted = AGS_SET_MUTED(gobject);
+
+  if(set_muted->scope != NULL){
+    g_object_unref(set_muted->scope);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_set_muted_parent_class)->finalize(gobject);
 }
 
 void
@@ -393,10 +419,9 @@ ags_set_muted_new(GObject *scope,
   AgsSetMuted *set_muted;
   
   set_muted = (AgsSetMuted *) g_object_new(AGS_TYPE_SET_MUTED,
+					   "scope", scope,
+					   "muted", muted,
 					   NULL);
   
-  set_muted->scope = scope;
-  set_muted->muted = muted;
-
   return(set_muted);
 }

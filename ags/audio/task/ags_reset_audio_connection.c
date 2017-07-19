@@ -43,6 +43,7 @@ void ags_reset_audio_connection_get_property(GObject *gobject,
 					     GParamSpec *param_spec);
 void ags_reset_audio_connection_connect(AgsConnectable *connectable);
 void ags_reset_audio_connection_disconnect(AgsConnectable *connectable);
+void ags_reset_audio_connection_dispose(GObject *gobject);
 void ags_reset_audio_connection_finalize(GObject *gobject);
 
 void ags_reset_audio_connection_launch(AgsTask *task);
@@ -122,6 +123,7 @@ ags_reset_audio_connection_class_init(AgsResetAudioConnectionClass *reset_audio_
   gobject->set_property = ags_reset_audio_connection_set_property;
   gobject->get_property = ags_reset_audio_connection_get_property;
 
+  gobject->dispose = ags_reset_audio_connection_dispose;
   gobject->finalize = ags_reset_audio_connection_finalize;
 
   /* properties */
@@ -401,11 +403,45 @@ ags_reset_audio_connection_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_reset_audio_connection_dispose(GObject *gobject)
+{
+  AgsResetAudioConnection *reset_audio_connection;
+
+  reset_audio_connection = AGS_RESET_AUDIO_CONNECTION(gobject);
+
+  if(reset_audio_connection->soundcard != NULL){
+    g_object_unref(reset_audio_connection->soundcard);
+
+    reset_audio_connection->soundcard = NULL;
+  }
+
+  if(reset_audio_connection->audio != NULL){
+    g_object_unref(reset_audio_connection->audio);
+
+    reset_audio_connection->audio = NULL;
+  }
+    
+  /* call parent */
+  G_OBJECT_CLASS(ags_reset_audio_connection_parent_class)->dispose(gobject);
+}
+
+void
 ags_reset_audio_connection_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_reset_audio_connection_parent_class)->finalize(gobject);
+  AgsResetAudioConnection *reset_audio_connection;
 
-  /* empty */
+  reset_audio_connection = AGS_RESET_AUDIO_CONNECTION(gobject);
+
+  if(reset_audio_connection->soundcard != NULL){
+    g_object_unref(reset_audio_connection->soundcard);
+  }
+
+  if(reset_audio_connection->audio != NULL){
+    g_object_unref(reset_audio_connection->audio);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_reset_audio_connection_parent_class)->finalize(gobject);
 }
 
 void
@@ -517,17 +553,13 @@ ags_reset_audio_connection_new(GObject *soundcard,
   AgsResetAudioConnection *reset_audio_connection;
 
   reset_audio_connection = (AgsResetAudioConnection *) g_object_new(AGS_TYPE_RESET_AUDIO_CONNECTION,
-						 NULL);
-
-  reset_audio_connection->soundcard = soundcard;
-
-  reset_audio_connection->audio = audio;
-  reset_audio_connection->channel_type = channel_type;
-  
-  reset_audio_connection->pad = pad;
-  reset_audio_connection->audio_channel = audio_channel;
-
-  reset_audio_connection->mapped_line = mapped_line;
+								    "soundcard", soundcard,
+								    "audio", audio,
+								    "channel_type", channel_type,
+								    "pad", pad,
+								    "audio_channel", audio_channel,
+								    "mapped_line", mapped_line,
+								    NULL);
 
   return(reset_audio_connection);
 }

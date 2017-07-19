@@ -36,6 +36,7 @@ void ags_set_audio_channels_get_property(GObject *gobject,
 					 GParamSpec *param_spec);
 void ags_set_audio_channels_connect(AgsConnectable *connectable);
 void ags_set_audio_channels_disconnect(AgsConnectable *connectable);
+void ags_set_audio_channels_dispose(GObject *gobject);
 void ags_set_audio_channels_finalize(GObject *gobject);
 
 void ags_set_audio_channels_launch(AgsTask *task);
@@ -111,6 +112,7 @@ ags_set_audio_channels_class_init(AgsSetAudioChannelsClass *set_audio_channels)
   gobject->set_property = ags_set_audio_channels_set_property;
   gobject->get_property = ags_set_audio_channels_get_property;
 
+  gobject->dispose = ags_set_audio_channels_dispose;
   gobject->finalize = ags_set_audio_channels_finalize;
   
   /* properties */
@@ -257,11 +259,35 @@ ags_set_audio_channels_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_set_audio_channels_dispose(GObject *gobject)
+{
+  AgsSetAudioChannels *set_audio_channels;
+
+  set_audio_channels = AGS_SET_AUDIO_CHANNELS(gobject);
+  
+  if(set_audio_channels->soundcard != NULL){
+    g_object_unref(set_audio_channels->soundcard);
+
+    set_audio_channels->soundcard = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_set_audio_channels_parent_class)->dispose(gobject);
+}
+
+void
 ags_set_audio_channels_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_set_audio_channels_parent_class)->finalize(gobject);
+  AgsSetAudioChannels *set_audio_channels;
 
-  /* empty */
+  set_audio_channels = AGS_SET_AUDIO_CHANNELS(gobject);
+  
+  if(set_audio_channels->soundcard != NULL){
+    g_object_unref(set_audio_channels->soundcard);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_set_audio_channels_parent_class)->finalize(gobject);
 }
 
 void
@@ -306,11 +332,9 @@ ags_set_audio_channels_new(GObject *soundcard, guint audio_channels)
   AgsSetAudioChannels *set_audio_channels;
 
   set_audio_channels = (AgsSetAudioChannels *) g_object_new(AGS_TYPE_SET_AUDIO_CHANNELS,
+							    "soundcard", soundcard,
+							    "audio-channels", audio_channels,
 							    NULL);
-
-
-  set_audio_channels->soundcard = soundcard;
-  set_audio_channels->audio_channels = audio_channels;
 
   return(set_audio_channels);
 }

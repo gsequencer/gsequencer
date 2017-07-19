@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,6 +43,7 @@ void ags_add_recall_get_property(GObject *gobject,
 				 GParamSpec *param_spec);
 void ags_add_recall_connect(AgsConnectable *connectable);
 void ags_add_recall_disconnect(AgsConnectable *connectable);
+void ags_add_recall_dispose(GObject *gobject);
 void ags_add_recall_finalize(GObject *gobject);
 
 void ags_add_recall_launch(AgsTask *task);
@@ -119,6 +120,7 @@ ags_add_recall_class_init(AgsAddRecallClass *add_recall)
   gobject->set_property = ags_add_recall_set_property;
   gobject->get_property = ags_add_recall_get_property;
 
+  gobject->dispose = ags_add_recall_dispose;
   gobject->finalize = ags_add_recall_finalize;
 
   /**
@@ -317,11 +319,45 @@ ags_add_recall_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_add_recall_dispose(GObject *gobject)
+{
+  AgsAddRecall *add_recall;
+
+  add_recall = AGS_ADD_RECALL(gobject);
+
+  if(add_recall->context != NULL){
+    g_object_unref(add_recall->context);
+
+    add_recall->context = NULL;
+  }
+
+  if(add_recall->recall != NULL){
+    g_object_unref(add_recall->recall);
+
+    add_recall->recall = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_add_recall_parent_class)->dispose(gobject);
+}
+
+void
 ags_add_recall_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_add_recall_parent_class)->finalize(gobject);
+  AgsAddRecall *add_recall;
 
-  /* empty */
+  add_recall = AGS_ADD_RECALL(gobject);
+
+  if(add_recall->context != NULL){
+    g_object_unref(add_recall->context);
+  }
+
+  if(add_recall->recall != NULL){
+    g_object_unref(add_recall->recall);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_add_recall_parent_class)->finalize(gobject);
 }
 
 void
@@ -490,11 +526,10 @@ ags_add_recall_new(GObject *context,
   AgsAddRecall *add_recall;
 
   add_recall = (AgsAddRecall *) g_object_new(AGS_TYPE_ADD_RECALL,
+					     "context", context,
+					     "recall", recall,
+					     "is-play", is_play,
 					     NULL);
-
-  add_recall->context = context;
-  add_recall->recall = recall;
-  add_recall->is_play = is_play;
 
   return(add_recall);
 }

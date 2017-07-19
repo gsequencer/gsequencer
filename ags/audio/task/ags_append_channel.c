@@ -53,6 +53,7 @@ void ags_append_channel_get_property(GObject *gobject,
 				     GParamSpec *param_spec);
 void ags_append_channel_connect(AgsConnectable *connectable);
 void ags_append_channel_disconnect(AgsConnectable *connectable);
+void ags_append_channel_dispose(GObject *gobject);
 void ags_append_channel_finalize(GObject *gobject);
 
 void ags_append_channel_launch(AgsTask *task);
@@ -128,6 +129,7 @@ ags_append_channel_class_init(AgsAppendChannelClass *append_channel)
   gobject->set_property = ags_append_channel_set_property;
   gobject->get_property = ags_append_channel_get_property;
 
+  gobject->dispose = ags_append_channel_dispose;
   gobject->finalize = ags_append_channel_finalize;
 
   /* properties */
@@ -288,11 +290,45 @@ ags_append_channel_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_append_channel_dispose(GObject *gobject)
+{
+  AgsAppendChannel *append_channel;
+
+  append_channel = AGS_APPEND_CHANNEL(gobject);
+
+  if(append_channel->audio_loop != NULL){
+    g_object_unref(append_channel->audio_loop);
+
+    append_channel->audio_loop = NULL;
+  }
+
+  if(append_channel->channel != NULL){
+    g_object_unref(append_channel->channel);
+
+    append_channel->channel = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_append_channel_parent_class)->dispose(gobject);
+}
+
+void
 ags_append_channel_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_append_channel_parent_class)->finalize(gobject);
+  AgsAppendChannel *append_channel;
 
-  /* empty */
+  append_channel = AGS_APPEND_CHANNEL(gobject);
+
+  if(append_channel->audio_loop != NULL){
+    g_object_unref(append_channel->audio_loop);
+  }
+
+  if(append_channel->channel != NULL){
+    g_object_unref(append_channel->channel);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_append_channel_parent_class)->finalize(gobject);
 }
 
 void
@@ -423,10 +459,9 @@ ags_append_channel_new(GObject *audio_loop,
   AgsAppendChannel *append_channel;
 
   append_channel = (AgsAppendChannel *) g_object_new(AGS_TYPE_APPEND_CHANNEL,
+						     "audio-loop", audio_loop,
+						     "channel", channel,
 						     NULL);
-
-  append_channel->audio_loop = audio_loop;
-  append_channel->channel = channel;
 
   return(append_channel);
 }

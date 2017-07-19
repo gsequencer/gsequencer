@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,6 +39,7 @@ void ags_cancel_channel_get_property(GObject *gobject,
 				     GParamSpec *param_spec);
 void ags_cancel_channel_connect(AgsConnectable *connectable);
 void ags_cancel_channel_disconnect(AgsConnectable *connectable);
+void ags_cancel_channel_dispose(GObject *gobject);
 void ags_cancel_channel_finalize(GObject *gobject);
 
 void ags_cancel_channel_launch(AgsTask *task);
@@ -115,6 +116,7 @@ ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel)
   gobject->set_property = ags_cancel_channel_set_property;
   gobject->get_property = ags_cancel_channel_get_property;
 
+  gobject->dispose = ags_cancel_channel_dispose;
   gobject->finalize = ags_cancel_channel_finalize;
 
   /* properties */
@@ -319,11 +321,55 @@ ags_cancel_channel_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_cancel_channel_dispose(GObject *gobject)
+{
+  AgsCancelChannel *cancel_channel;
+
+  cancel_channel = AGS_CANCEL_CHANNEL(gobject);
+
+  if(cancel_channel->channel != NULL){
+    g_object_unref(cancel_channel->channel);
+
+    cancel_channel->channel = NULL;
+  }
+
+  if(cancel_channel->recall_id != NULL){
+    g_object_unref(cancel_channel->recall_id);
+
+    cancel_channel->recall_id = NULL;
+  }
+
+  if(cancel_channel->playback != NULL){
+    g_object_unref(cancel_channel->playback);
+
+    cancel_channel->playback = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_cancel_channel_parent_class)->dispose(gobject);
+}
+
+void
 ags_cancel_channel_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_cancel_channel_parent_class)->finalize(gobject);
+  AgsCancelChannel *cancel_channel;
 
-  /* empty */
+  cancel_channel = AGS_CANCEL_CHANNEL(gobject);
+
+  if(cancel_channel->channel != NULL){
+    g_object_unref(cancel_channel->channel);
+  }
+
+  if(cancel_channel->recall_id != NULL){
+    g_object_unref(cancel_channel->recall_id);
+  }
+
+  if(cancel_channel->playback != NULL){
+    g_object_unref(cancel_channel->playback);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_cancel_channel_parent_class)->finalize(gobject);
 }
 
 void
@@ -407,12 +453,10 @@ ags_cancel_channel_new(AgsChannel *channel, AgsRecallID *recall_id,
   AgsCancelChannel *cancel_channel;
 
   cancel_channel = (AgsCancelChannel *) g_object_new(AGS_TYPE_CANCEL_CHANNEL,
+						     "channel", channel,
+						     "recall-id", recall_id,
+						     "playback", playback,
 						     NULL);
-
-  cancel_channel->channel = channel;
-  cancel_channel->recall_id = recall_id;
-
-  cancel_channel->playback = playback;
 
   return(cancel_channel);
 }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,6 +39,7 @@ void ags_remove_soundcard_get_property(GObject *gobject,
 				       GParamSpec *param_spec);
 void ags_remove_soundcard_connect(AgsConnectable *connectable);
 void ags_remove_soundcard_disconnect(AgsConnectable *connectable);
+void ags_remove_soundcard_dispose(GObject *gobject);
 void ags_remove_soundcard_finalize(GObject *gobject);
 
 void ags_remove_soundcard_launch(AgsTask *task);
@@ -114,6 +115,7 @@ ags_remove_soundcard_class_init(AgsRemoveSoundcardClass *remove_soundcard)
   gobject->set_property = ags_remove_soundcard_set_property;
   gobject->get_property = ags_remove_soundcard_get_property;
 
+  gobject->dispose = ags_remove_soundcard_dispose;
   gobject->finalize = ags_remove_soundcard_finalize;
   
   /* properties */
@@ -275,11 +277,45 @@ ags_remove_soundcard_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_remove_soundcard_dispose(GObject *gobject)
+{
+  AgsRemoveSoundcard *remove_soundcard;
+
+  remove_soundcard = AGS_REMOVE_SOUNDCARD(gobject);
+  
+  if(remove_soundcard->application_context != NULL){
+    g_object_unref(remove_soundcard->application_context);
+
+    remove_soundcard->application_context = NULL;
+  }
+
+  if(remove_soundcard->soundcard != NULL){
+    g_object_unref(remove_soundcard->soundcard);
+
+    remove_soundcard->soundcard = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_remove_soundcard_parent_class)->dispose(gobject);
+}
+
+void
 ags_remove_soundcard_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_remove_soundcard_parent_class)->finalize(gobject);
+  AgsRemoveSoundcard *remove_soundcard;
 
-  /* empty */
+  remove_soundcard = AGS_REMOVE_SOUNDCARD(gobject);
+  
+  if(remove_soundcard->application_context != NULL){
+    g_object_unref(remove_soundcard->application_context);
+  }
+
+  if(remove_soundcard->soundcard != NULL){
+    g_object_unref(remove_soundcard->soundcard);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_remove_soundcard_parent_class)->finalize(gobject);
 }
 
 void
@@ -312,11 +348,9 @@ ags_remove_soundcard_new(AgsApplicationContext *application_context,
   AgsRemoveSoundcard *remove_soundcard;
 
   remove_soundcard = (AgsRemoveSoundcard *) g_object_new(AGS_TYPE_REMOVE_SOUNDCARD,
+							 "application-context", application_context,
+							 "soundcard", soundcard,
 							 NULL);
-
-  remove_soundcard->application_context = application_context;
-
-  remove_soundcard->soundcard = soundcard;
 
   return(remove_soundcard);
 }

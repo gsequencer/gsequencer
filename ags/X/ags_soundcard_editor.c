@@ -875,6 +875,8 @@ ags_soundcard_editor_add_jack(AgsSoundcardEditor *soundcard_editor,
   GList *distributed_manager;
   GList *card_name, *card_uri;
 
+  gboolean initial_soundcard;
+  
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
@@ -886,6 +888,8 @@ ags_soundcard_editor_add_jack(AgsSoundcardEditor *soundcard_editor,
   application_mutex = window->application_mutex;
 
   mutex_manager = ags_mutex_manager_get_instance();
+
+  initial_soundcard = FALSE;
   
   /* create soundcard */
   pthread_mutex_lock(application_mutex);
@@ -920,12 +924,39 @@ ags_soundcard_editor_add_jack(AgsSoundcardEditor *soundcard_editor,
   /* add new */
   main_loop = (AgsThread *) application_context->main_loop;
   
+  if(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)) == NULL){
+    initial_soundcard = TRUE;
+  }
+
   soundcard_editor->soundcard = jack_devout;
 
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)),
 						 jack_devout));
 
+  /* add AgsAudio to AgsSoundcard */
+  if(initial_soundcard){
+    GList *machine, *machine_start;
+    GList *list;
+    
+    machine = 
+      machine_start = gtk_container_get_children(window->machines);
+
+    while(machine != NULL){
+      g_object_ref(G_OBJECT(AGS_MACHINE(machine->data)->audio));
+  
+      list = ags_soundcard_get_audio(AGS_SOUNDCARD(jack_devout));
+      list = g_list_prepend(list,
+			    AGS_MACHINE(machine->data)->audio);
+      ags_soundcard_set_audio(AGS_SOUNDCARD(jack_devout),
+			      list);
+
+      machine = machine->next;
+    }
+
+    g_list_free(machine_start);
+  }
+  
   pthread_mutex_unlock(application_mutex);  
     
   g_object_ref(jack_devout);
@@ -1088,6 +1119,8 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
   
   AgsApplicationContext *application_context;
 
+  gboolean initial_soundcard;
+  
   pthread_mutex_t *application_mutex;
 
   if(soundcard == NULL ||
@@ -1098,9 +1131,12 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
+  
   application_context = (AgsApplicationContext *) window->application_context;
   application_mutex = window->application_mutex;
 
+  initial_soundcard = FALSE;
+  
   if(AGS_IS_DEVOUT(soundcard)){
     if((AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard)->flags)) != 0){
       ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
@@ -1126,6 +1162,10 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
   
     return;
   }
+
+  if(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)) == NULL){
+    initial_soundcard = TRUE;
+  }
   
   soundcard_editor->soundcard = soundcard;
 
@@ -1133,6 +1173,30 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
 				   g_list_append(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)),
 						 soundcard));
 
+  /* add AgsAudio to AgsSoundcard */
+  if(initial_soundcard){
+    GList *machine, *machine_start;
+    GList *list;
+    
+    machine = 
+      machine_start = gtk_container_get_children(window->machines);
+
+    while(machine != NULL){
+      g_object_ref(G_OBJECT(AGS_MACHINE(machine->data)->audio));
+  
+      list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
+      list = g_list_prepend(list,
+			    AGS_MACHINE(machine->data)->audio);
+      ags_soundcard_set_audio(AGS_SOUNDCARD(soundcard),
+			      list);
+
+      machine = machine->next;
+    }
+
+  
+    g_list_free(machine_start);
+  }
+  
   pthread_mutex_unlock(application_mutex);  
     
   g_object_ref(soundcard);

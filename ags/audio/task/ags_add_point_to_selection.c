@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,7 @@ void ags_add_point_to_selection_get_property(GObject *gobject,
 					     GParamSpec *param_spec);
 void ags_add_point_to_selection_connect(AgsConnectable *connectable);
 void ags_add_point_to_selection_disconnect(AgsConnectable *connectable);
+void ags_add_point_to_selection_dispose(GObject *gobject);
 void ags_add_point_to_selection_finalize(GObject *gobject);
 
 void ags_add_point_to_selection_launch(AgsTask *task);
@@ -113,6 +114,7 @@ ags_add_point_to_selection_class_init(AgsAddPointToSelectionClass *add_point_to_
   gobject->set_property = ags_add_point_to_selection_set_property;
   gobject->get_property = ags_add_point_to_selection_get_property;
 
+  gobject->dispose = ags_add_point_to_selection_dispose;
   gobject->finalize = ags_add_point_to_selection_finalize;
 
   /* properties */
@@ -315,11 +317,35 @@ ags_add_point_to_selection_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_add_point_to_selection_dispose(GObject *gobject)
+{
+  AgsAddPointToSelection *add_point_to_selection;
+
+  add_point_to_selection = AGS_ADD_POINT_TO_SELECTION(gobject);
+
+  if(add_point_to_selection->notation != NULL){
+    g_object_unref(add_point_to_selection->notation);
+
+    add_point_to_selection->notation = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_add_point_to_selection_parent_class)->dispose(gobject);
+}
+
+void
 ags_add_point_to_selection_finalize(GObject *gobject)
 {
-  G_OBJECT_CLASS(ags_add_point_to_selection_parent_class)->finalize(gobject);
+  AgsAddPointToSelection *add_point_to_selection;
 
-  /* empty */
+  add_point_to_selection = AGS_ADD_POINT_TO_SELECTION(gobject);
+
+  if(add_point_to_selection->notation != NULL){
+    g_object_unref(add_point_to_selection->notation);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_add_point_to_selection_parent_class)->finalize(gobject);
 }
 
 void
@@ -356,12 +382,11 @@ ags_add_point_to_selection_new(AgsNotation *notation,
   AgsAddPointToSelection *add_point_to_selection;
 
   add_point_to_selection = (AgsAddPointToSelection *) g_object_new(AGS_TYPE_ADD_POINT_TO_SELECTION,
+								   "notation", notation,
+								   "x", x,
+								   "y", y,
+								   "replace-current-selection", replace_current_selection,
 								   NULL);
-
-  add_point_to_selection->notation = notation;
-  add_point_to_selection->x = x;
-  add_point_to_selection->y = y;
-  add_point_to_selection->replace_current_selection = replace_current_selection;
 
   return(add_point_to_selection);
 }
