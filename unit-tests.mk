@@ -1,6 +1,8 @@
 # unit tests
 check_PROGRAMS += \
 	ags_thread_test \
+	ags_complex_test \
+	ags_log_test \
 	ags_turtle_test \
 	ags_audio_application_context_test \
 	ags_devout_test \
@@ -21,13 +23,25 @@ check_PROGRAMS += \
 ags_thread_test_SOURCES = ags/test/thread/ags_thread_test.c
 ags_thread_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_thread_test_LDFLAGS = -lcunit -lm -pthread -lrt $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-ags_thread_test_LDADD = libags_thread.la libags.la
+ags_thread_test_LDADD = libags_server.la libags_thread.la libags.la
+
+# complex unit test
+ags_complex_test_SOURCES = ags/test/lib/ags_complex_test.c
+ags_complex_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_complex_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_complex_test_LDADD = libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+
+# log unit test
+ags_log_test_SOURCES = ags/test/lib/ags_log_test.c
+ags_log_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_log_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_log_test_LDADD = libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # turtle unit test
 ags_turtle_test_SOURCES = ags/test/lib/ags_turtle_test.c
-ags_turtle_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_turtle_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_turtle_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_turtle_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_turtle_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # audio application context unit test
 ags_audio_application_context_test_SOURCES = ags/test/audio/ags_audio_application_context_test.c

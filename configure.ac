@@ -6,7 +6,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[0.8.10],[jkraehemann-guest@users.alioth.debian.org])
+AC_INIT([gsequencer],[0.9.0-SNAPSHOT],[jkraehemann-guest@users.alioth.debian.org])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])

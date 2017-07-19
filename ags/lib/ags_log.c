@@ -110,6 +110,10 @@ ags_log_finalize(GObject *gobject)
   g_list_free_full(g_atomic_pointer_get(&(log->messages)),
 		   g_free);
 
+  if(log == ags_log){
+    ags_log = NULL;
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_log_parent_class)->finalize(gobject);
 }
@@ -156,7 +160,7 @@ ags_log_add_message(AgsLog *log,
   
   g_atomic_pointer_set(&(log->messages),
 		       g_list_prepend(g_atomic_pointer_get(&(log->messages)),
-				      str));
+				      g_strdup(str)));
 
   pthread_mutex_unlock(log->mutex);
 }
