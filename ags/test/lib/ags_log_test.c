@@ -26,8 +26,6 @@
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
 
-#include <math.h>
-
 int ags_log_test_init_suite();
 int ags_log_test_clean_suite();
 
@@ -121,7 +119,7 @@ ags_log_test_get_messages()
   /* add messages - #0 */
   i  = 0;
 
-  str = g_strdup_printf("%s",
+  str = g_strdup_printf("%s %d",
 			AGS_LOG_TEST_GET_MESSAGES_DEFAULT,
 			i);
   i++;
@@ -130,7 +128,7 @@ ags_log_test_get_messages()
 		      str);
 
   /* add messages - #1 */
-  str = g_strdup_printf("%s",
+  str = g_strdup_printf("%s %d",
 			AGS_LOG_TEST_GET_MESSAGES_DEFAULT,
 			i);
   i++;
@@ -141,7 +139,7 @@ ags_log_test_get_messages()
   /* add messages - #2 */
   i  = 0;
 
-  str = g_strdup_printf("%s",
+  str = g_strdup_printf("%s %d",
 			AGS_LOG_TEST_GET_MESSAGES_DEFAULT,
 			i);
   i++;
