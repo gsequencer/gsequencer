@@ -75,14 +75,18 @@ ags_config_test_load_defaults()
 {
   AgsConfig *config;
 
+  gpointer ptr;
+  
   config = ags_config_get_instance();
 
   /* stub */
+  ptr = AGS_CONFIG_GET_CLASS(config)->load_defaults;
   AGS_CONFIG_GET_CLASS(config)->load_defaults = ags_config_test_stub_load_defaults;
 
   ags_config_load_defaults(config);
 
   CU_ASSERT(stub_load_defaults == TRUE);
+  AGS_CONFIG_GET_CLASS(config)->load_defaults = ptr;
   
   g_object_unref(config);
 }
@@ -144,15 +148,20 @@ ags_config_test_set_value()
 {
   AgsConfig *config;
 
+  gpointer ptr;
+  
   config = ags_config_get_instance();
 
   /* stub */
+  ptr = AGS_CONFIG_GET_CLASS(config)->set_value;
   AGS_CONFIG_GET_CLASS(config)->set_value = ags_config_test_stub_set_value;
 
   ags_config_set_value(config,
 		       NULL, NULL, NULL);
 
   CU_ASSERT(stub_set_value == TRUE);
+
+  AGS_CONFIG_GET_CLASS(config)->set_value = ptr;
   
   g_object_unref(config);
 }
@@ -162,15 +171,20 @@ ags_config_test_get_value()
 {
   AgsConfig *config;
 
+  gpointer ptr;
+  
   config = ags_config_get_instance();
 
   /* stub */
+  ptr = AGS_CONFIG_GET_CLASS(config)->get_value;
   AGS_CONFIG_GET_CLASS(config)->get_value = ags_config_test_stub_get_value;
   
   ags_config_get_value(config,
 		       NULL, NULL);
    
   CU_ASSERT(stub_get_value == TRUE);
+
+  AGS_CONFIG_GET_CLASS(config)->get_value = ptr;
   
   g_object_unref(config);
 }
@@ -194,15 +208,15 @@ ags_config_test_to_data()
   
   /* test default configuration */
   config = ags_config_get_instance();
-  ags_config_load_from_data(config,
-			    AGS_CONFIG_TEST_SAMPLE_CONF_DATA, sizeof(AGS_CONFIG_TEST_SAMPLE_CONF_DATA));
-
+  ags_config_load_defaults(config);
+  g_message("%s", g_key_file_to_data(config->key_file, NULL, NULL));
+  
   buffer = NULL;
   buffer_length = 0;
   
   ags_config_to_data(config,
 		     &buffer, &buffer_length);
-
+  
   CU_ASSERT(buffer != NULL);
   CU_ASSERT(buffer_length > 0);
   

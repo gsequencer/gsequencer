@@ -251,6 +251,7 @@ ags_config_init(AgsConfig *config)
   config->application_context == NULL;
 
   config->key_file = g_key_file_new();
+  g_key_file_ref(config->key_file);
 }
 
 void
@@ -516,9 +517,9 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
 				     *keys,
 				     NULL);
 	ags_config_set_value(config,
-		       *groups,
-		       *keys,
-		       value);
+			     *groups,
+			     *keys,
+			     value);
 	
 	keys++;
       }
@@ -716,6 +717,10 @@ ags_config_real_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *va
   
   pthread_mutex_t *application_mutex;
 
+  if(config == NULL){
+    return;
+  }
+  
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
