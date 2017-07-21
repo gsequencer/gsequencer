@@ -95,7 +95,7 @@ bin_PROGRAMS = gsequencer$(EXEEXT) midi2xml$(EXEEXT)
 check_PROGRAMS = ags_thread_test$(EXEEXT) ags_complex_test$(EXEEXT) \
 	ags_log_test$(EXEEXT) ags_turtle_test$(EXEEXT) \
 	ags_turtle_manager_test$(EXEEXT) ags_base_plugin_test$(EXEEXT) \
-	ags_dssi_manager_test$(EXEEXT) \
+	ags_dssi_manager_test$(EXEEXT) ags_dssi_plugin_test$(EXEEXT) \
 	ags_audio_application_context_test$(EXEEXT) \
 	ags_devout_test$(EXEEXT) ags_audio_test$(EXEEXT) \
 	ags_channel_test$(EXEEXT) ags_recycling_test$(EXEEXT) \
@@ -926,6 +926,17 @@ ags_dssi_manager_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_dssi_manager_test_CFLAGS) $(CFLAGS) \
 	$(ags_dssi_manager_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_dssi_plugin_test_OBJECTS = ags/test/plugin/ags_dssi_plugin_test-ags_dssi_plugin_test.$(OBJEXT)
+ags_dssi_plugin_test_OBJECTS = $(am_ags_dssi_plugin_test_OBJECTS)
+ags_dssi_plugin_test_DEPENDENCIES = libags_audio.la libags_server.la \
+	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+ags_dssi_plugin_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_dssi_plugin_test_CFLAGS) $(CFLAGS) \
+	$(ags_dssi_plugin_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_functional_audio_test_OBJECTS = ags/test/audio/ags_functional_audio_test-ags_functional_audio_test.$(OBJEXT)
 ags_functional_audio_test_OBJECTS =  \
 	$(am_ags_functional_audio_test_OBJECTS)
@@ -1238,6 +1249,7 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_automation_test_SOURCES) $(ags_base_plugin_test_SOURCES) \
 	$(ags_channel_test_SOURCES) $(ags_complex_test_SOURCES) \
 	$(ags_devout_test_SOURCES) $(ags_dssi_manager_test_SOURCES) \
+	$(ags_dssi_plugin_test_SOURCES) \
 	$(ags_functional_audio_test_SOURCES) \
 	$(ags_functional_drum_test_SOURCES) \
 	$(ags_functional_editor_workflow_test_SOURCES) \
@@ -1267,6 +1279,7 @@ DIST_SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_automation_test_SOURCES) $(ags_base_plugin_test_SOURCES) \
 	$(ags_channel_test_SOURCES) $(ags_complex_test_SOURCES) \
 	$(ags_devout_test_SOURCES) $(ags_dssi_manager_test_SOURCES) \
+	$(ags_dssi_plugin_test_SOURCES) \
 	$(ags_functional_audio_test_SOURCES) \
 	$(ags_functional_drum_test_SOURCES) \
 	$(ags_functional_editor_workflow_test_SOURCES) \
@@ -2041,6 +2054,12 @@ ags_dssi_manager_test_SOURCES = ags/test/plugin/ags_dssi_manager_test.c
 ags_dssi_manager_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_dssi_manager_test_LDFLAGS = $(LDFLAGS) -pthread
 ags_dssi_manager_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# dssi plugin unit test
+ags_dssi_plugin_test_SOURCES = ags/test/plugin/ags_dssi_plugin_test.c
+ags_dssi_plugin_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_dssi_plugin_test_LDFLAGS = $(LDFLAGS) -pthread
+ags_dssi_plugin_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # audio application context unit test
 ags_audio_application_context_test_SOURCES = ags/test/audio/ags_audio_application_context_test.c
@@ -5490,6 +5509,13 @@ ags/test/plugin/ags_dssi_manager_test-ags_dssi_manager_test.$(OBJEXT):  \
 ags_dssi_manager_test$(EXEEXT): $(ags_dssi_manager_test_OBJECTS) $(ags_dssi_manager_test_DEPENDENCIES) $(EXTRA_ags_dssi_manager_test_DEPENDENCIES) 
 	@rm -f ags_dssi_manager_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_dssi_manager_test_LINK) $(ags_dssi_manager_test_OBJECTS) $(ags_dssi_manager_test_LDADD) $(LIBS)
+ags/test/plugin/ags_dssi_plugin_test-ags_dssi_plugin_test.$(OBJEXT):  \
+	ags/test/plugin/$(am__dirstamp) \
+	ags/test/plugin/$(DEPDIR)/$(am__dirstamp)
+
+ags_dssi_plugin_test$(EXEEXT): $(ags_dssi_plugin_test_OBJECTS) $(ags_dssi_plugin_test_DEPENDENCIES) $(EXTRA_ags_dssi_plugin_test_DEPENDENCIES) 
+	@rm -f ags_dssi_plugin_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_dssi_plugin_test_LINK) $(ags_dssi_plugin_test_OBJECTS) $(ags_dssi_plugin_test_LDADD) $(LIBS)
 ags/test/audio/ags_functional_audio_test-ags_functional_audio_test.$(OBJEXT):  \
 	ags/test/audio/$(am__dirstamp) \
 	ags/test/audio/$(DEPDIR)/$(am__dirstamp)
@@ -6297,6 +6323,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/ags_turtle_test-ags_turtle_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/plugin/$(DEPDIR)/ags_base_plugin_test-ags_base_plugin_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/plugin/$(DEPDIR)/ags_dssi_manager_test-ags_dssi_manager_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/plugin/$(DEPDIR)/ags_dssi_plugin_test-ags_dssi_plugin_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/thread/$(DEPDIR)/ags_thread_test-ags_thread_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_autosave_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_concurrency_provider.Plo@am__quote@
@@ -10292,6 +10319,20 @@ ags/test/plugin/ags_dssi_manager_test-ags_dssi_manager_test.obj: ags/test/plugin
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_dssi_manager_test_CFLAGS) $(CFLAGS) -c -o ags/test/plugin/ags_dssi_manager_test-ags_dssi_manager_test.obj `if test -f 'ags/test/plugin/ags_dssi_manager_test.c'; then $(CYGPATH_W) 'ags/test/plugin/ags_dssi_manager_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/plugin/ags_dssi_manager_test.c'; fi`
 
+ags/test/plugin/ags_dssi_plugin_test-ags_dssi_plugin_test.o: ags/test/plugin/ags_dssi_plugin_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_dssi_plugin_test_CFLAGS) $(CFLAGS) -MT ags/test/plugin/ags_dssi_plugin_test-ags_dssi_plugin_test.o -MD -MP -MF ags/test/plugin/$(DEPDIR)/ags_dssi_plugin_test-ags_dssi_plugin_test.Tpo -c -o ags/test/plugin/ags_dssi_plugin_test-ags_dssi_plugin_test.o `test -f 'ags/test/plugin/ags_dssi_plugin_test.c' || echo '$(srcdir)/'`ags/test/plugin/ags_dssi_plugin_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/plugin/$(DEPDIR)/ags_dssi_plugin_test-ags_dssi_plugin_test.Tpo ags/test/plugin/$(DEPDIR)/ags_dssi_plugin_test-ags_dssi_plugin_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/plugin/ags_dssi_plugin_test.c' object='ags/test/plugin/ags_dssi_plugin_test-ags_dssi_plugin_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_dssi_plugin_test_CFLAGS) $(CFLAGS) -c -o ags/test/plugin/ags_dssi_plugin_test-ags_dssi_plugin_test.o `test -f 'ags/test/plugin/ags_dssi_plugin_test.c' || echo '$(srcdir)/'`ags/test/plugin/ags_dssi_plugin_test.c
+
+ags/test/plugin/ags_dssi_plugin_test-ags_dssi_plugin_test.obj: ags/test/plugin/ags_dssi_plugin_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_dssi_plugin_test_CFLAGS) $(CFLAGS) -MT ags/test/plugin/ags_dssi_plugin_test-ags_dssi_plugin_test.obj -MD -MP -MF ags/test/plugin/$(DEPDIR)/ags_dssi_plugin_test-ags_dssi_plugin_test.Tpo -c -o ags/test/plugin/ags_dssi_plugin_test-ags_dssi_plugin_test.obj `if test -f 'ags/test/plugin/ags_dssi_plugin_test.c'; then $(CYGPATH_W) 'ags/test/plugin/ags_dssi_plugin_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/plugin/ags_dssi_plugin_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/plugin/$(DEPDIR)/ags_dssi_plugin_test-ags_dssi_plugin_test.Tpo ags/test/plugin/$(DEPDIR)/ags_dssi_plugin_test-ags_dssi_plugin_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/plugin/ags_dssi_plugin_test.c' object='ags/test/plugin/ags_dssi_plugin_test-ags_dssi_plugin_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_dssi_plugin_test_CFLAGS) $(CFLAGS) -c -o ags/test/plugin/ags_dssi_plugin_test-ags_dssi_plugin_test.obj `if test -f 'ags/test/plugin/ags_dssi_plugin_test.c'; then $(CYGPATH_W) 'ags/test/plugin/ags_dssi_plugin_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/plugin/ags_dssi_plugin_test.c'; fi`
+
 ags/test/audio/ags_functional_audio_test-ags_functional_audio_test.o: ags/test/audio/ags_functional_audio_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_functional_audio_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/ags_functional_audio_test-ags_functional_audio_test.o -MD -MP -MF ags/test/audio/$(DEPDIR)/ags_functional_audio_test-ags_functional_audio_test.Tpo -c -o ags/test/audio/ags_functional_audio_test-ags_functional_audio_test.o `test -f 'ags/test/audio/ags_functional_audio_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_functional_audio_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/ags_functional_audio_test-ags_functional_audio_test.Tpo ags/test/audio/$(DEPDIR)/ags_functional_audio_test-ags_functional_audio_test.Po
@@ -11113,6 +11154,13 @@ ags_base_plugin_test.log: ags_base_plugin_test$(EXEEXT)
 ags_dssi_manager_test.log: ags_dssi_manager_test$(EXEEXT)
 	@p='ags_dssi_manager_test$(EXEEXT)'; \
 	b='ags_dssi_manager_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_dssi_plugin_test.log: ags_dssi_plugin_test$(EXEEXT)
+	@p='ags_dssi_plugin_test$(EXEEXT)'; \
+	b='ags_dssi_plugin_test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
