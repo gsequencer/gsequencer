@@ -1,5 +1,7 @@
 # unit tests
 check_PROGRAMS += \
+	ags_application_context_test \
+	ags_config_test \
 	ags_thread_test \
 	ags_complex_test \
 	ags_log_test \
@@ -22,6 +24,18 @@ check_PROGRAMS += \
 	ags_midi_buffer_util_test \
 	ags_midi_builder_test \
 	ags_xorg_application_context_test
+
+# application context unit test
+ags_application_context_test_SOURCES = ags/test/object/ags_application_context_test.c
+ags_application_context_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_application_context_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_application_context_test_LDADD = libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+
+# config unit test
+ags_config_test_SOURCES = ags/test/object/ags_config_test.c
+ags_config_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_config_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_config_test_LDADD = libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # thread unit test
 ags_thread_test_SOURCES = ags/test/thread/ags_thread_test.c

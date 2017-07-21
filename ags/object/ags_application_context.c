@@ -563,6 +563,10 @@ ags_application_context_finalize(GObject *gobject)
   if(application_context->file != NULL){
     g_object_unref(application_context->file);
   }
+
+  if(application_context == ags_application_context){
+    ags_application_context = NULL;
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_application_context_parent_class)->finalize(gobject);
