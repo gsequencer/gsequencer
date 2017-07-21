@@ -149,9 +149,28 @@ ags_dssi_manager_finalize(GObject *gobject)
 
   g_list_free_full(dssi_plugin,
 		   (GDestroyNotify) g_object_unref);
+
+  if(dssi_manager == ags_dssi_manager){
+    ags_dssi_manager = NULL;
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_dssi_manager_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_dssi_manager_get_default_path:
+ * 
+ * Get dssi manager default plugin path.
+ *
+ * Returns: the plugin default search path as a string vector
+ * 
+ * Since: 0.9.0
+ */
+gchar**
+ags_dssi_manager_get_default_path()
+{
+  return(ags_dssi_default_path);
 }
 
 /**
@@ -260,6 +279,11 @@ void
 ags_dssi_manager_load_blacklist(AgsDssiManager *dssi_manager,
 				gchar *blacklist_filename)
 {
+  if(dssi_manager == NULL ||
+     blacklist_filename == NULL){
+    return;
+  } 
+  
   if(g_file_test(blacklist_filename,
 		 (G_FILE_TEST_EXISTS |
 		  G_FILE_TEST_IS_REGULAR))){
@@ -304,6 +328,11 @@ ags_dssi_manager_load_file(AgsDssiManager *dssi_manager,
 
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
+  if(dssi_path == NULL ||
+     filename == NULL){
+    return;
+  }
+  
   pthread_mutex_lock(&(mutex));
 
   path = g_strdup_printf("%s/%s",

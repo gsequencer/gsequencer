@@ -46,6 +46,8 @@
 #include <sys/soundcard.h>
 #include <errno.h>
 
+#define _GNU_SOURCE
+#include <signal.h>
 #include <poll.h>
 
 #include <string.h>

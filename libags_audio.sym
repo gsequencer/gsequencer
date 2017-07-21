@@ -76,6 +76,7 @@ ags_lv2_event_manager_lv2_event_unref
 ags_lv2_event_manager_get_instance
 ags_lv2_event_manager_new
 ags_dssi_manager_get_type
+ags_dssi_manager_get_default_path
 ags_dssi_manager_get_filenames
 ags_dssi_manager_find_dssi_plugin
 ags_dssi_manager_load_blacklist
@@ -181,6 +182,7 @@ ags_recall_adaptor_run_get_type
 ags_recall_adaptor_run_new
 ags_midiin_get_type
 ags_midiin_error_quark
+ags_midiin_switch_buffer_flag
 ags_midiin_new
 ags_buffer_audio_signal_get_type
 ags_buffer_audio_signal_new
@@ -759,6 +761,7 @@ ags_recycling_is_active
 ags_recycling_new
 ags_jack_midiin_get_type
 ags_jack_midiin_error_quark
+ags_jack_midiin_switch_buffer_flag
 ags_jack_midiin_new
 ags_jack_server_get_type
 ags_jack_server_find_url

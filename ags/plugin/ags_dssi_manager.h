@@ -50,6 +50,8 @@ struct _AgsDssiManagerClass
 
 GType ags_dssi_manager_get_type(void);
 
+gchar** ags_dssi_manager_get_default_path();
+
 gchar** ags_dssi_manager_get_filenames(AgsDssiManager *dssi_manager);
 AgsDssiPlugin* ags_dssi_manager_find_dssi_plugin(AgsDssiManager *dssi_manager,
 						 gchar *filename, gchar *effect);

@@ -89,6 +89,8 @@
 
 #include <stdlib.h>
 
+#include <X11/Xlib.h>
+
 #include "config.h"
 
 void ags_signal_handler(int signr);

@@ -1263,7 +1263,7 @@ ags_turtle_test_read_hex()
 void
 ags_turtle_test_read_pn_local_esc()
 {
-  gchar *local_esc[3];
+  gchar local_esc[3];
   gchar *escapes = "\\_~.-!$&()*+,;=/?#@%\0";
   gchar *str;
 

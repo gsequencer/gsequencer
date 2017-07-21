@@ -19,6 +19,9 @@
 
 #include <ags/audio/ags_preset.h>
 
+#include <stdlib.h>
+#include <string.h>
+
 #include <ags/i18n.h>
 
 void ags_preset_class_init(AgsPresetClass *preset);
