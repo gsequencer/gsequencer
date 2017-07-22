@@ -1,3 +1,30 @@
+ags (0.9.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implemented AgsFunction to solve mathematical equations
+	* TODO:JK: implemented super-threaded recycling
+	* fixed finalize to call parent class of managers
+	* fixed finalize to reset global variable after finalize of managers
+	* fixed g_list_position() call to have nested g_list_find() in ags_polling_thread.c
+	* fixed missing return in ags_destroy_entry_alloc()
+	* fixed AGS_TASK_GET_CLASS() macro to remove not opened paranthesis
+	* new unit-test ags_complex_test.c
+	* new unit-test ags_turtle_manager_test.c
+	* new unit-test ags_log_test.c
+	* new unit-test ags_application_context_test.c
+	* new unit-test ags_connection_manager_test.c
+	* new unit-test ags_config_test.c
+	* new unit-test ags_polling_thread_test.c
+	* new unit-test ags_poll_fd_test.c
+	* new unit-test ags_returnable_thread_test.c
+	* new unit-test ags_task_test.c
+	* new unit-test ags_condition_manager_test.c
+	* new unit-test ags_mutex_manager_test.c
+	* new unit-test ags_destroy_worker_test.c
+	* new unit-test ags_dssi_plugin_test.c
+	* new unit-test ags_dssi_manager_test.c
+	* new unit-test ags_base_plugin_test.c
+
 ags (0.8.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

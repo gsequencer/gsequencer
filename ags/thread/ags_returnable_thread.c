@@ -179,6 +179,8 @@ ags_returnable_thread_init(AgsReturnableThread *returnable_thread)
   
   g_atomic_pointer_set(&(returnable_thread->safe_data),
 		       NULL);
+
+  returnable_thread->handler = 0;
 }
 
 void
@@ -294,6 +296,10 @@ ags_returnable_thread_resume(AgsThread *thread)
 void
 ags_returnable_thread_connect_safe_run(AgsReturnableThread *returnable_thread, AgsReturnableThreadCallback callback)
 {
+  if(returnable_thread->handler > 0){
+    return;
+  }
+
   returnable_thread->handler = g_signal_connect(G_OBJECT(returnable_thread), "safe-run",
 						G_CALLBACK(callback), returnable_thread);
 }
@@ -309,8 +315,14 @@ ags_returnable_thread_connect_safe_run(AgsReturnableThread *returnable_thread, A
 void
 ags_returnable_thread_disconnect_safe_run(AgsReturnableThread *returnable_thread)
 {
+  if(returnable_thread->handler == 0){
+    return;
+  }
+  
   g_signal_handler_disconnect(G_OBJECT(returnable_thread),
 			      returnable_thread->handler);
+
+  returnable_thread->handler = 0;
 }
 
 /**
