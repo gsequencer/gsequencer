@@ -168,9 +168,6 @@ ags_condition_manager_test_lookup()
   ags_condition_manager_insert(condition_manager,
 			       thread[0], cond[0]);
 
-  /* assert contains */
-  CU_ASSERT(g_hash_table_contains(condition_manager->lock_object, thread) == TRUE);
-
   /* create thread and insert */
   thread[1] = g_object_new(AGS_TYPE_THREAD,
 			   NULL);
@@ -224,4 +221,3 @@ main(int argc, char **argv)
   
   return(CU_get_error());
 }
-

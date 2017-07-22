@@ -5,6 +5,7 @@ check_PROGRAMS += \
 	ags_connection_manager_test \
 	ags_condition_manager_test \
 	ags_destroy_worker_test \
+	ags_mutex_manager_test \
 	ags_thread_test \
 	ags_complex_test \
 	ags_log_test \
@@ -57,6 +58,12 @@ ags_destroy_worker_test_SOURCES = ags/test/thread/ags_destroy_worker_test.c
 ags_destroy_worker_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_destroy_worker_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_destroy_worker_test_LDADD = libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+
+# mutex manager unit test
+ags_mutex_manager_test_SOURCES = ags/test/thread/ags_mutex_manager_test.c
+ags_mutex_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_mutex_manager_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_mutex_manager_test_LDADD = libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # thread unit test
 ags_thread_test_SOURCES = ags/test/thread/ags_thread_test.c
