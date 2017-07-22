@@ -116,6 +116,10 @@ ags_connection_manager_finalize(GObject *gobject)
 		     g_object_unref);
   }
 
+  if(connection_manager == ags_connection_manager){
+    ags_connection_manager = NULL;
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_connection_manager_parent_class)->finalize(gobject);
 }

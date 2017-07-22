@@ -64,8 +64,12 @@ ags_dssi_plugin_test_change_program()
 {
   AgsDssiPlugin *dssi_plugin;
 
+  gpointer ptr;
+  
   dssi_plugin = g_object_new(AGS_TYPE_DSSI_PLUGIN,
 			     NULL);
+
+  ptr = AGS_DSSI_PLUGIN_GET_CLASS(dssi_plugin)->change_program;
   AGS_DSSI_PLUGIN_GET_CLASS(dssi_plugin)->change_program = ags_dssi_plugin_test_stub_change_program;
 
   /* assert change program */
@@ -75,6 +79,7 @@ ags_dssi_plugin_test_change_program()
 				 0);
 
   CU_ASSERT(stub_change_program == TRUE);
+  AGS_DSSI_PLUGIN_GET_CLASS(dssi_plugin)->change_program = ptr;
 }
 
 void

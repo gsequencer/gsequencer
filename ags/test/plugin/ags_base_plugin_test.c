@@ -527,14 +527,19 @@ ags_base_plugin_test_instantiate()
 {
   AgsBasePlugin *base_plugin;
 
+  gpointer ptr;
+  
   base_plugin = g_object_new(AGS_TYPE_BASE_PLUGIN,
 			     NULL);
+
+  ptr = AGS_BASE_PLUGIN_GET_CLASS(base_plugin)->instantiate;
   AGS_BASE_PLUGIN_GET_CLASS(base_plugin)->instantiate = ags_base_plugin_test_stub_instantiate;
 
   ags_base_plugin_instantiate(base_plugin,
 			      AGS_BASE_PLUGIN_TEST_INSTANTIATE_SAMPLERATE);
 
   CU_ASSERT(stub_instantiate == TRUE);
+  AGS_BASE_PLUGIN_GET_CLASS(base_plugin)->instantiate = ptr;
 }
 
 void
@@ -542,8 +547,12 @@ ags_base_plugin_test_connect_port()
 {
   AgsBasePlugin *base_plugin;
 
+  gpointer ptr;
+  
   base_plugin = g_object_new(AGS_TYPE_BASE_PLUGIN,
 			     NULL);
+
+  ptr = AGS_BASE_PLUGIN_GET_CLASS(base_plugin)->connect_port;
   AGS_BASE_PLUGIN_GET_CLASS(base_plugin)->connect_port = ags_base_plugin_test_stub_connect_port;
 
   ags_base_plugin_connect_port(base_plugin,
@@ -552,6 +561,7 @@ ags_base_plugin_test_connect_port()
 			       NULL);
 
   CU_ASSERT(stub_connect_port == TRUE);
+  AGS_BASE_PLUGIN_GET_CLASS(base_plugin)->connect_port = ptr;
 }
 
 void
@@ -559,14 +569,20 @@ ags_base_plugin_test_activate()
 {
   AgsBasePlugin *base_plugin;
 
+  gpointer ptr;
+
   base_plugin = g_object_new(AGS_TYPE_BASE_PLUGIN,
 			     NULL);
+
+  ptr = AGS_BASE_PLUGIN_GET_CLASS(base_plugin)->activate;
   AGS_BASE_PLUGIN_GET_CLASS(base_plugin)->activate = ags_base_plugin_test_stub_activate;
 
   ags_base_plugin_activate(base_plugin,
 			   NULL);
 
   CU_ASSERT(stub_activate == TRUE);
+
+  AGS_BASE_PLUGIN_GET_CLASS(base_plugin)->activate = ptr;
 }
 
 void
@@ -574,14 +590,19 @@ ags_base_plugin_test_deactivate()
 {
   AgsBasePlugin *base_plugin;
 
+  gpointer ptr;
+  
   base_plugin = g_object_new(AGS_TYPE_BASE_PLUGIN,
 			     NULL);
+
+  ptr = AGS_BASE_PLUGIN_GET_CLASS(base_plugin)->deactivate;
   AGS_BASE_PLUGIN_GET_CLASS(base_plugin)->deactivate = ags_base_plugin_test_stub_deactivate;
 
   ags_base_plugin_deactivate(base_plugin,
 			     NULL);
 
   CU_ASSERT(stub_deactivate == TRUE);
+  AGS_BASE_PLUGIN_GET_CLASS(base_plugin)->deactivate = ptr;
 }
 
 void
@@ -589,8 +610,12 @@ ags_base_plugin_test_run()
 {
   AgsBasePlugin *base_plugin;
 
+  gpointer ptr;
+  
   base_plugin = g_object_new(AGS_TYPE_BASE_PLUGIN,
 			     NULL);
+
+  ptr = AGS_BASE_PLUGIN_GET_CLASS(base_plugin)->run;
   AGS_BASE_PLUGIN_GET_CLASS(base_plugin)->run = ags_base_plugin_test_stub_run;
 
   ags_base_plugin_run(base_plugin,
@@ -599,6 +624,7 @@ ags_base_plugin_test_run()
 		      AGS_BASE_PLUGIN_TEST_RUN_FRAME_COUNT);
 
   CU_ASSERT(stub_run == TRUE);
+  AGS_BASE_PLUGIN_GET_CLASS(base_plugin)->run = ptr;
 }
 
 void
