@@ -96,7 +96,8 @@ check_PROGRAMS = ags_application_context_test$(EXEEXT) \
 	ags_config_test$(EXEEXT) ags_connection_manager_test$(EXEEXT) \
 	ags_condition_manager_test$(EXEEXT) \
 	ags_destroy_worker_test$(EXEEXT) \
-	ags_mutex_manager_test$(EXEEXT) ags_thread_test$(EXEEXT) \
+	ags_mutex_manager_test$(EXEEXT) ags_poll_fd_test$(EXEEXT) \
+	ags_polling_thread_test$(EXEEXT) ags_thread_test$(EXEEXT) \
 	ags_complex_test$(EXEEXT) ags_log_test$(EXEEXT) \
 	ags_turtle_test$(EXEEXT) ags_turtle_manager_test$(EXEEXT) \
 	ags_base_plugin_test$(EXEEXT) ags_dssi_manager_test$(EXEEXT) \
@@ -833,7 +834,7 @@ am_ags_application_context_test_OBJECTS = ags/test/object/ags_application_contex
 ags_application_context_test_OBJECTS =  \
 	$(am_ags_application_context_test_OBJECTS)
 ags_application_context_test_DEPENDENCIES = libags_server.la \
-	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 ags_application_context_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -843,7 +844,7 @@ am_ags_audio_application_context_test_OBJECTS = ags/test/audio/ags_audio_applica
 ags_audio_application_context_test_OBJECTS =  \
 	$(am_ags_audio_application_context_test_OBJECTS)
 ags_audio_application_context_test_DEPENDENCIES = libags_audio.la \
-	libags_server.la libags_gui.la libags_thread.la libags.la \
+	libags_server.la libags_thread.la libags.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
@@ -854,7 +855,7 @@ ags_audio_application_context_test_LINK = $(LIBTOOL) $(AM_V_lt) \
 am_ags_audio_signal_test_OBJECTS = ags/test/audio/ags_audio_signal_test-ags_audio_signal_test.$(OBJEXT)
 ags_audio_signal_test_OBJECTS = $(am_ags_audio_signal_test_OBJECTS)
 ags_audio_signal_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
@@ -866,7 +867,7 @@ am_ags_audio_test_OBJECTS =  \
 	ags/test/audio/ags_audio_test-ags_audio_test.$(OBJEXT)
 ags_audio_test_OBJECTS = $(am_ags_audio_test_OBJECTS)
 ags_audio_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
@@ -877,7 +878,7 @@ ags_audio_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_automation_test_OBJECTS = ags/test/audio/ags_automation_test-ags_automation_test.$(OBJEXT)
 ags_automation_test_OBJECTS = $(am_ags_automation_test_OBJECTS)
 ags_automation_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
@@ -888,7 +889,7 @@ ags_automation_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_base_plugin_test_OBJECTS = ags/test/plugin/ags_base_plugin_test-ags_base_plugin_test.$(OBJEXT)
 ags_base_plugin_test_OBJECTS = $(am_ags_base_plugin_test_OBJECTS)
 ags_base_plugin_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
@@ -900,7 +901,7 @@ am_ags_channel_test_OBJECTS =  \
 	ags/test/audio/ags_channel_test-ags_channel_test.$(OBJEXT)
 ags_channel_test_OBJECTS = $(am_ags_channel_test_OBJECTS)
 ags_channel_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
@@ -911,9 +912,8 @@ ags_channel_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_complex_test_OBJECTS =  \
 	ags/test/lib/ags_complex_test-ags_complex_test.$(OBJEXT)
 ags_complex_test_OBJECTS = $(am_ags_complex_test_OBJECTS)
-ags_complex_test_DEPENDENCIES = libags_server.la libags_gui.la \
-	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+ags_complex_test_DEPENDENCIES = libags_server.la libags_thread.la \
+	libags.la $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 ags_complex_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_complex_test_CFLAGS) $(CFLAGS) \
@@ -922,7 +922,7 @@ am_ags_condition_manager_test_OBJECTS = ags/test/thread/ags_condition_manager_te
 ags_condition_manager_test_OBJECTS =  \
 	$(am_ags_condition_manager_test_OBJECTS)
 ags_condition_manager_test_DEPENDENCIES = libags_server.la \
-	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 ags_condition_manager_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -931,9 +931,8 @@ ags_condition_manager_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_config_test_OBJECTS =  \
 	ags/test/object/ags_config_test-ags_config_test.$(OBJEXT)
 ags_config_test_OBJECTS = $(am_ags_config_test_OBJECTS)
-ags_config_test_DEPENDENCIES = libags_server.la libags_gui.la \
-	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+ags_config_test_DEPENDENCIES = libags_server.la libags_thread.la \
+	libags.la $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 ags_config_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_config_test_CFLAGS) $(CFLAGS) $(ags_config_test_LDFLAGS) \
@@ -942,7 +941,7 @@ am_ags_connection_manager_test_OBJECTS = ags/test/object/ags_connection_manager_
 ags_connection_manager_test_OBJECTS =  \
 	$(am_ags_connection_manager_test_OBJECTS)
 ags_connection_manager_test_DEPENDENCIES = libags_server.la \
-	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 ags_connection_manager_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -951,7 +950,7 @@ ags_connection_manager_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_destroy_worker_test_OBJECTS = ags/test/thread/ags_destroy_worker_test-ags_destroy_worker_test.$(OBJEXT)
 ags_destroy_worker_test_OBJECTS =  \
 	$(am_ags_destroy_worker_test_OBJECTS)
-ags_destroy_worker_test_DEPENDENCIES = libags_server.la libags_gui.la \
+ags_destroy_worker_test_DEPENDENCIES = libags_server.la \
 	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 ags_destroy_worker_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
@@ -962,7 +961,7 @@ am_ags_devout_test_OBJECTS =  \
 	ags/test/audio/ags_devout_test-ags_devout_test.$(OBJEXT)
 ags_devout_test_OBJECTS = $(am_ags_devout_test_OBJECTS)
 ags_devout_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
@@ -973,7 +972,7 @@ ags_devout_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_dssi_manager_test_OBJECTS = ags/test/plugin/ags_dssi_manager_test-ags_dssi_manager_test.$(OBJEXT)
 ags_dssi_manager_test_OBJECTS = $(am_ags_dssi_manager_test_OBJECTS)
 ags_dssi_manager_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
@@ -984,7 +983,7 @@ ags_dssi_manager_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_dssi_plugin_test_OBJECTS = ags/test/plugin/ags_dssi_plugin_test-ags_dssi_plugin_test.$(OBJEXT)
 ags_dssi_plugin_test_OBJECTS = $(am_ags_dssi_plugin_test_OBJECTS)
 ags_dssi_plugin_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
@@ -1108,9 +1107,8 @@ ags_functional_synth_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_log_test_OBJECTS =  \
 	ags/test/lib/ags_log_test-ags_log_test.$(OBJEXT)
 ags_log_test_OBJECTS = $(am_ags_log_test_OBJECTS)
-ags_log_test_DEPENDENCIES = libags_server.la libags_gui.la \
-	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+ags_log_test_DEPENDENCIES = libags_server.la libags_thread.la \
+	libags.la $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 ags_log_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(ags_log_test_CFLAGS) \
 	$(CFLAGS) $(ags_log_test_LDFLAGS) $(LDFLAGS) -o $@
@@ -1118,7 +1116,7 @@ am_ags_midi_buffer_util_test_OBJECTS = ags/test/audio/midi/ags_midi_buffer_util_
 ags_midi_buffer_util_test_OBJECTS =  \
 	$(am_ags_midi_buffer_util_test_OBJECTS)
 ags_midi_buffer_util_test_DEPENDENCIES = libags_audio.la \
-	libags_server.la libags_gui.la libags_thread.la libags.la \
+	libags_server.la libags_thread.la libags.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
@@ -1129,7 +1127,7 @@ ags_midi_buffer_util_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_midi_builder_test_OBJECTS = ags/test/audio/midi/ags_midi_builder_test-ags_midi_builder_test.$(OBJEXT)
 ags_midi_builder_test_OBJECTS = $(am_ags_midi_builder_test_OBJECTS)
 ags_midi_builder_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
@@ -1139,7 +1137,7 @@ ags_midi_builder_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(ags_midi_builder_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_mutex_manager_test_OBJECTS = ags/test/thread/ags_mutex_manager_test-ags_mutex_manager_test.$(OBJEXT)
 ags_mutex_manager_test_OBJECTS = $(am_ags_mutex_manager_test_OBJECTS)
-ags_mutex_manager_test_DEPENDENCIES = libags_server.la libags_gui.la \
+ags_mutex_manager_test_DEPENDENCIES = libags_server.la \
 	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 ags_mutex_manager_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
@@ -1150,7 +1148,7 @@ am_ags_notation_test_OBJECTS =  \
 	ags/test/audio/ags_notation_test-ags_notation_test.$(OBJEXT)
 ags_notation_test_OBJECTS = $(am_ags_notation_test_OBJECTS)
 ags_notation_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
@@ -1162,7 +1160,7 @@ am_ags_pattern_test_OBJECTS =  \
 	ags/test/audio/ags_pattern_test-ags_pattern_test.$(OBJEXT)
 ags_pattern_test_OBJECTS = $(am_ags_pattern_test_OBJECTS)
 ags_pattern_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
@@ -1170,11 +1168,30 @@ ags_pattern_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_pattern_test_CFLAGS) $(CFLAGS) \
 	$(ags_pattern_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_poll_fd_test_OBJECTS =  \
+	ags/test/thread/ags_poll_fd_test-ags_poll_fd_test.$(OBJEXT)
+ags_poll_fd_test_OBJECTS = $(am_ags_poll_fd_test_OBJECTS)
+ags_poll_fd_test_DEPENDENCIES = libags_server.la libags_thread.la \
+	libags.la $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_poll_fd_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_poll_fd_test_CFLAGS) $(CFLAGS) \
+	$(ags_poll_fd_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_polling_thread_test_OBJECTS = ags/test/thread/ags_polling_thread_test-ags_polling_thread_test.$(OBJEXT)
+ags_polling_thread_test_OBJECTS =  \
+	$(am_ags_polling_thread_test_OBJECTS)
+ags_polling_thread_test_DEPENDENCIES = libags_server.la \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+ags_polling_thread_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_polling_thread_test_CFLAGS) $(CFLAGS) \
+	$(ags_polling_thread_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_port_test_OBJECTS =  \
 	ags/test/audio/ags_port_test-ags_port_test.$(OBJEXT)
 ags_port_test_OBJECTS = $(am_ags_port_test_OBJECTS)
 ags_port_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
@@ -1185,7 +1202,7 @@ am_ags_recall_test_OBJECTS =  \
 	ags/test/audio/ags_recall_test-ags_recall_test.$(OBJEXT)
 ags_recall_test_OBJECTS = $(am_ags_recall_test_OBJECTS)
 ags_recall_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
@@ -1196,7 +1213,7 @@ ags_recall_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_recycling_test_OBJECTS = ags/test/audio/ags_recycling_test-ags_recycling_test.$(OBJEXT)
 ags_recycling_test_OBJECTS = $(am_ags_recycling_test_OBJECTS)
 ags_recycling_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
@@ -1216,7 +1233,7 @@ ags_thread_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 am_ags_turtle_manager_test_OBJECTS = ags/test/lib/ags_turtle_manager_test-ags_turtle_manager_test.$(OBJEXT)
 ags_turtle_manager_test_OBJECTS =  \
 	$(am_ags_turtle_manager_test_OBJECTS)
-ags_turtle_manager_test_DEPENDENCIES = libags_server.la libags_gui.la \
+ags_turtle_manager_test_DEPENDENCIES = libags_server.la \
 	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 ags_turtle_manager_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
@@ -1227,7 +1244,7 @@ am_ags_turtle_test_OBJECTS =  \
 	ags/test/lib/ags_turtle_test-ags_turtle_test.$(OBJEXT)
 ags_turtle_test_OBJECTS = $(am_ags_turtle_test_OBJECTS)
 ags_turtle_test_DEPENDENCIES = libags_audio.la libags_server.la \
-	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 ags_turtle_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -1334,7 +1351,8 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_midi_buffer_util_test_SOURCES) \
 	$(ags_midi_builder_test_SOURCES) \
 	$(ags_mutex_manager_test_SOURCES) $(ags_notation_test_SOURCES) \
-	$(ags_pattern_test_SOURCES) $(ags_port_test_SOURCES) \
+	$(ags_pattern_test_SOURCES) $(ags_poll_fd_test_SOURCES) \
+	$(ags_polling_thread_test_SOURCES) $(ags_port_test_SOURCES) \
 	$(ags_recall_test_SOURCES) $(ags_recycling_test_SOURCES) \
 	$(ags_thread_test_SOURCES) $(ags_turtle_manager_test_SOURCES) \
 	$(ags_turtle_test_SOURCES) \
@@ -1370,7 +1388,8 @@ DIST_SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_midi_buffer_util_test_SOURCES) \
 	$(ags_midi_builder_test_SOURCES) \
 	$(ags_mutex_manager_test_SOURCES) $(ags_notation_test_SOURCES) \
-	$(ags_pattern_test_SOURCES) $(ags_port_test_SOURCES) \
+	$(ags_pattern_test_SOURCES) $(ags_poll_fd_test_SOURCES) \
+	$(ags_polling_thread_test_SOURCES) $(ags_port_test_SOURCES) \
 	$(ags_recall_test_SOURCES) $(ags_recycling_test_SOURCES) \
 	$(ags_thread_test_SOURCES) $(ags_turtle_manager_test_SOURCES) \
 	$(ags_turtle_test_SOURCES) \
@@ -2093,37 +2112,49 @@ gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.
 ags_application_context_test_SOURCES = ags/test/object/ags_application_context_test.c
 ags_application_context_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_application_context_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_application_context_test_LDADD = libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+ags_application_context_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # config unit test
 ags_config_test_SOURCES = ags/test/object/ags_config_test.c
 ags_config_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_config_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_config_test_LDADD = libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+ags_config_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # connection manager unit test
 ags_connection_manager_test_SOURCES = ags/test/object/ags_connection_manager_test.c
 ags_connection_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_connection_manager_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_connection_manager_test_LDADD = libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+ags_connection_manager_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # condition manager unit test
 ags_condition_manager_test_SOURCES = ags/test/thread/ags_condition_manager_test.c
 ags_condition_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_condition_manager_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_condition_manager_test_LDADD = libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+ags_condition_manager_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # destroy worker unit test
 ags_destroy_worker_test_SOURCES = ags/test/thread/ags_destroy_worker_test.c
 ags_destroy_worker_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_destroy_worker_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_destroy_worker_test_LDADD = libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+ags_destroy_worker_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # mutex manager unit test
 ags_mutex_manager_test_SOURCES = ags/test/thread/ags_mutex_manager_test.c
 ags_mutex_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_mutex_manager_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_mutex_manager_test_LDADD = libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+ags_mutex_manager_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+
+# poll fd unit test
+ags_poll_fd_test_SOURCES = ags/test/thread/ags_poll_fd_test.c
+ags_poll_fd_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_poll_fd_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_poll_fd_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+
+# polling thread unit test
+ags_polling_thread_test_SOURCES = ags/test/thread/ags_polling_thread_test.c
+ags_polling_thread_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_polling_thread_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_polling_thread_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # thread unit test
 ags_thread_test_SOURCES = ags/test/thread/ags_thread_test.c
@@ -2135,121 +2166,121 @@ ags_thread_test_LDADD = libags_server.la libags_thread.la libags.la
 ags_complex_test_SOURCES = ags/test/lib/ags_complex_test.c
 ags_complex_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_complex_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_complex_test_LDADD = libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+ags_complex_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # log unit test
 ags_log_test_SOURCES = ags/test/lib/ags_log_test.c
 ags_log_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_log_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_log_test_LDADD = libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+ags_log_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # turtle unit test
 ags_turtle_test_SOURCES = ags/test/lib/ags_turtle_test.c
 ags_turtle_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_turtle_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_turtle_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+ags_turtle_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # turtle manager unit test
 ags_turtle_manager_test_SOURCES = ags/test/lib/ags_turtle_manager_test.c
 ags_turtle_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_turtle_manager_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_turtle_manager_test_LDADD = libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+ags_turtle_manager_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # base plugin unit test
 ags_base_plugin_test_SOURCES = ags/test/plugin/ags_base_plugin_test.c
 ags_base_plugin_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_base_plugin_test_LDFLAGS = $(LDFLAGS) -pthread
-ags_base_plugin_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_base_plugin_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # dssi manager unit test
 ags_dssi_manager_test_SOURCES = ags/test/plugin/ags_dssi_manager_test.c
 ags_dssi_manager_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_dssi_manager_test_LDFLAGS = $(LDFLAGS) -pthread
-ags_dssi_manager_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_dssi_manager_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # dssi plugin unit test
 ags_dssi_plugin_test_SOURCES = ags/test/plugin/ags_dssi_plugin_test.c
 ags_dssi_plugin_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_dssi_plugin_test_LDFLAGS = $(LDFLAGS) -pthread
-ags_dssi_plugin_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_dssi_plugin_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # audio application context unit test
 ags_audio_application_context_test_SOURCES = ags/test/audio/ags_audio_application_context_test.c
 ags_audio_application_context_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_audio_application_context_test_LDFLAGS = $(LDFLAGS) -pthread
-ags_audio_application_context_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_audio_application_context_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # devout unit test
 ags_devout_test_SOURCES = ags/test/audio/ags_devout_test.c
 ags_devout_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_devout_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_devout_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_devout_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # audio unit test
 ags_audio_test_SOURCES = ags/test/audio/ags_audio_test.c
 ags_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_audio_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_audio_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # channel unit test
 ags_channel_test_SOURCES = ags/test/audio/ags_channel_test.c
 ags_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_channel_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_channel_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # recycling unit test
 ags_recycling_test_SOURCES = ags/test/audio/ags_recycling_test.c
 ags_recycling_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_recycling_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_recycling_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_recycling_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # audio signal unit test
 ags_audio_signal_test_SOURCES = ags/test/audio/ags_audio_signal_test.c
 ags_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # recall unit test
 ags_recall_test_SOURCES = ags/test/audio/ags_recall_test.c
 ags_recall_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_recall_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_recall_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_recall_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # port unit test
 ags_port_test_SOURCES = ags/test/audio/ags_port_test.c
 ags_port_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_port_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_port_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_port_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # pattern unit test
 ags_pattern_test_SOURCES = ags/test/audio/ags_pattern_test.c
 ags_pattern_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_pattern_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_pattern_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lm -lrt $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_pattern_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lm -lrt $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # notation unit test
 ags_notation_test_SOURCES = ags/test/audio/ags_notation_test.c
 ags_notation_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_notation_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_notation_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lm -lrt $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_notation_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lm -lrt $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # automation unit test
 ags_automation_test_SOURCES = ags/test/audio/ags_automation_test.c
 ags_automation_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_automation_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_automation_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lm -lrt $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_automation_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lm -lrt $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # midi buffer util unit test
 ags_midi_buffer_util_test_SOURCES = ags/test/audio/midi/ags_midi_buffer_util_test.c
 ags_midi_buffer_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_midi_buffer_util_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_midi_buffer_util_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_midi_buffer_util_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # midi builder unit test
 ags_midi_builder_test_SOURCES = ags/test/audio/midi/ags_midi_builder_test.c
 ags_midi_builder_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_midi_builder_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_midi_builder_test_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_midi_builder_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # xorg application context unit test
 ags_xorg_application_context_test_SOURCES = ags/test/X/ags_xorg_application_context_test.c
@@ -5813,6 +5844,20 @@ ags/test/audio/ags_pattern_test-ags_pattern_test.$(OBJEXT):  \
 ags_pattern_test$(EXEEXT): $(ags_pattern_test_OBJECTS) $(ags_pattern_test_DEPENDENCIES) $(EXTRA_ags_pattern_test_DEPENDENCIES) 
 	@rm -f ags_pattern_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_pattern_test_LINK) $(ags_pattern_test_OBJECTS) $(ags_pattern_test_LDADD) $(LIBS)
+ags/test/thread/ags_poll_fd_test-ags_poll_fd_test.$(OBJEXT):  \
+	ags/test/thread/$(am__dirstamp) \
+	ags/test/thread/$(DEPDIR)/$(am__dirstamp)
+
+ags_poll_fd_test$(EXEEXT): $(ags_poll_fd_test_OBJECTS) $(ags_poll_fd_test_DEPENDENCIES) $(EXTRA_ags_poll_fd_test_DEPENDENCIES) 
+	@rm -f ags_poll_fd_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_poll_fd_test_LINK) $(ags_poll_fd_test_OBJECTS) $(ags_poll_fd_test_LDADD) $(LIBS)
+ags/test/thread/ags_polling_thread_test-ags_polling_thread_test.$(OBJEXT):  \
+	ags/test/thread/$(am__dirstamp) \
+	ags/test/thread/$(DEPDIR)/$(am__dirstamp)
+
+ags_polling_thread_test$(EXEEXT): $(ags_polling_thread_test_OBJECTS) $(ags_polling_thread_test_DEPENDENCIES) $(EXTRA_ags_polling_thread_test_DEPENDENCIES) 
+	@rm -f ags_polling_thread_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_polling_thread_test_LINK) $(ags_polling_thread_test_OBJECTS) $(ags_polling_thread_test_LDADD) $(LIBS)
 ags/test/audio/ags_port_test-ags_port_test.$(OBJEXT):  \
 	ags/test/audio/$(am__dirstamp) \
 	ags/test/audio/$(DEPDIR)/$(am__dirstamp)
@@ -6491,6 +6536,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/thread/$(DEPDIR)/ags_condition_manager_test-ags_condition_manager_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/thread/$(DEPDIR)/ags_destroy_worker_test-ags_destroy_worker_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/thread/$(DEPDIR)/ags_mutex_manager_test-ags_mutex_manager_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/thread/$(DEPDIR)/ags_poll_fd_test-ags_poll_fd_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/thread/$(DEPDIR)/ags_polling_thread_test-ags_polling_thread_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/thread/$(DEPDIR)/ags_thread_test-ags_thread_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_autosave_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_concurrency_provider.Plo@am__quote@
@@ -10822,6 +10869,34 @@ ags/test/audio/ags_pattern_test-ags_pattern_test.obj: ags/test/audio/ags_pattern
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_pattern_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/ags_pattern_test-ags_pattern_test.obj `if test -f 'ags/test/audio/ags_pattern_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_pattern_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_pattern_test.c'; fi`
 
+ags/test/thread/ags_poll_fd_test-ags_poll_fd_test.o: ags/test/thread/ags_poll_fd_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_poll_fd_test_CFLAGS) $(CFLAGS) -MT ags/test/thread/ags_poll_fd_test-ags_poll_fd_test.o -MD -MP -MF ags/test/thread/$(DEPDIR)/ags_poll_fd_test-ags_poll_fd_test.Tpo -c -o ags/test/thread/ags_poll_fd_test-ags_poll_fd_test.o `test -f 'ags/test/thread/ags_poll_fd_test.c' || echo '$(srcdir)/'`ags/test/thread/ags_poll_fd_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/thread/$(DEPDIR)/ags_poll_fd_test-ags_poll_fd_test.Tpo ags/test/thread/$(DEPDIR)/ags_poll_fd_test-ags_poll_fd_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/thread/ags_poll_fd_test.c' object='ags/test/thread/ags_poll_fd_test-ags_poll_fd_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_poll_fd_test_CFLAGS) $(CFLAGS) -c -o ags/test/thread/ags_poll_fd_test-ags_poll_fd_test.o `test -f 'ags/test/thread/ags_poll_fd_test.c' || echo '$(srcdir)/'`ags/test/thread/ags_poll_fd_test.c
+
+ags/test/thread/ags_poll_fd_test-ags_poll_fd_test.obj: ags/test/thread/ags_poll_fd_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_poll_fd_test_CFLAGS) $(CFLAGS) -MT ags/test/thread/ags_poll_fd_test-ags_poll_fd_test.obj -MD -MP -MF ags/test/thread/$(DEPDIR)/ags_poll_fd_test-ags_poll_fd_test.Tpo -c -o ags/test/thread/ags_poll_fd_test-ags_poll_fd_test.obj `if test -f 'ags/test/thread/ags_poll_fd_test.c'; then $(CYGPATH_W) 'ags/test/thread/ags_poll_fd_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/thread/ags_poll_fd_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/thread/$(DEPDIR)/ags_poll_fd_test-ags_poll_fd_test.Tpo ags/test/thread/$(DEPDIR)/ags_poll_fd_test-ags_poll_fd_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/thread/ags_poll_fd_test.c' object='ags/test/thread/ags_poll_fd_test-ags_poll_fd_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_poll_fd_test_CFLAGS) $(CFLAGS) -c -o ags/test/thread/ags_poll_fd_test-ags_poll_fd_test.obj `if test -f 'ags/test/thread/ags_poll_fd_test.c'; then $(CYGPATH_W) 'ags/test/thread/ags_poll_fd_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/thread/ags_poll_fd_test.c'; fi`
+
+ags/test/thread/ags_polling_thread_test-ags_polling_thread_test.o: ags/test/thread/ags_polling_thread_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_polling_thread_test_CFLAGS) $(CFLAGS) -MT ags/test/thread/ags_polling_thread_test-ags_polling_thread_test.o -MD -MP -MF ags/test/thread/$(DEPDIR)/ags_polling_thread_test-ags_polling_thread_test.Tpo -c -o ags/test/thread/ags_polling_thread_test-ags_polling_thread_test.o `test -f 'ags/test/thread/ags_polling_thread_test.c' || echo '$(srcdir)/'`ags/test/thread/ags_polling_thread_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/thread/$(DEPDIR)/ags_polling_thread_test-ags_polling_thread_test.Tpo ags/test/thread/$(DEPDIR)/ags_polling_thread_test-ags_polling_thread_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/thread/ags_polling_thread_test.c' object='ags/test/thread/ags_polling_thread_test-ags_polling_thread_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_polling_thread_test_CFLAGS) $(CFLAGS) -c -o ags/test/thread/ags_polling_thread_test-ags_polling_thread_test.o `test -f 'ags/test/thread/ags_polling_thread_test.c' || echo '$(srcdir)/'`ags/test/thread/ags_polling_thread_test.c
+
+ags/test/thread/ags_polling_thread_test-ags_polling_thread_test.obj: ags/test/thread/ags_polling_thread_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_polling_thread_test_CFLAGS) $(CFLAGS) -MT ags/test/thread/ags_polling_thread_test-ags_polling_thread_test.obj -MD -MP -MF ags/test/thread/$(DEPDIR)/ags_polling_thread_test-ags_polling_thread_test.Tpo -c -o ags/test/thread/ags_polling_thread_test-ags_polling_thread_test.obj `if test -f 'ags/test/thread/ags_polling_thread_test.c'; then $(CYGPATH_W) 'ags/test/thread/ags_polling_thread_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/thread/ags_polling_thread_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/thread/$(DEPDIR)/ags_polling_thread_test-ags_polling_thread_test.Tpo ags/test/thread/$(DEPDIR)/ags_polling_thread_test-ags_polling_thread_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/thread/ags_polling_thread_test.c' object='ags/test/thread/ags_polling_thread_test-ags_polling_thread_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_polling_thread_test_CFLAGS) $(CFLAGS) -c -o ags/test/thread/ags_polling_thread_test-ags_polling_thread_test.obj `if test -f 'ags/test/thread/ags_polling_thread_test.c'; then $(CYGPATH_W) 'ags/test/thread/ags_polling_thread_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/thread/ags_polling_thread_test.c'; fi`
+
 ags/test/audio/ags_port_test-ags_port_test.o: ags/test/audio/ags_port_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_port_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/ags_port_test-ags_port_test.o -MD -MP -MF ags/test/audio/$(DEPDIR)/ags_port_test-ags_port_test.Tpo -c -o ags/test/audio/ags_port_test-ags_port_test.o `test -f 'ags/test/audio/ags_port_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_port_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/ags_port_test-ags_port_test.Tpo ags/test/audio/$(DEPDIR)/ags_port_test-ags_port_test.Po
@@ -11398,6 +11473,20 @@ ags_destroy_worker_test.log: ags_destroy_worker_test$(EXEEXT)
 ags_mutex_manager_test.log: ags_mutex_manager_test$(EXEEXT)
 	@p='ags_mutex_manager_test$(EXEEXT)'; \
 	b='ags_mutex_manager_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_poll_fd_test.log: ags_poll_fd_test$(EXEEXT)
+	@p='ags_poll_fd_test$(EXEEXT)'; \
+	b='ags_poll_fd_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_polling_thread_test.log: ags_polling_thread_test$(EXEEXT)
+	@p='ags_polling_thread_test$(EXEEXT)'; \
+	b='ags_polling_thread_test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
