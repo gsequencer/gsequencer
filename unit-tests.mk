@@ -10,7 +10,9 @@ check_PROGRAMS += \
 	ags_polling_thread_test \
 	ags_returnable_thread_test \
 	ags_task_test \
+	ags_task_thread_test \
 	ags_thread_test \
+	ags_thread_pool_test \
 	ags_complex_test \
 	ags_log_test \
 	ags_turtle_test \
@@ -93,11 +95,23 @@ ags_task_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_task_test_LDFLAGS = -lcunit -lm -pthread -lrt $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 ags_task_test_LDADD = libags_server.la libags_thread.la libags.la
 
+# task thread unit test
+ags_task_thread_test_SOURCES = ags/test/thread/ags_task_thread_test.c
+ags_task_thread_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_task_thread_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_task_thread_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+
 # thread unit test
 ags_thread_test_SOURCES = ags/test/thread/ags_thread_test.c
 ags_thread_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_thread_test_LDFLAGS = -lcunit -lm -pthread -lrt $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 ags_thread_test_LDADD = libags_server.la libags_thread.la libags.la
+
+# thread pool unit test
+ags_thread_pool_test_SOURCES = ags/test/thread/ags_thread_pool_test.c
+ags_thread_pool_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_thread_pool_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_thread_pool_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # complex unit test
 ags_complex_test_SOURCES = ags/test/lib/ags_complex_test.c

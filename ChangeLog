@@ -8,6 +8,7 @@ ags (0.9.0)
 	* fixed g_list_position() call to have nested g_list_find() in ags_polling_thread.c
 	* fixed missing return in ags_destroy_entry_alloc()
 	* fixed AGS_TASK_GET_CLASS() macro to remove not opened paranthesis
+	* fixed ags_thread_init() to correct assign condition manager
 	* extended chap3.xml to include documentation about workers
 	* extended chap3.xml to include documentation about poll fds
 	* extended chap3.xml to include documentation about mutex and condition managers
