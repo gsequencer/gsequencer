@@ -65,9 +65,6 @@ GList* ags_recall_factory_create(AgsAudio *audio,
 				 guint start_pad, guint stop_pad,
 				 guint create_flags, guint recall_flags);
 
-void ags_recall_factory_remove(AgsAudio *audio,
-			       AgsRecallContainer *recall_container);
-
 /*  */
 AgsRecallFactory* ags_recall_factory_get_instance();
 AgsRecallFactory* ags_recall_factory_new();

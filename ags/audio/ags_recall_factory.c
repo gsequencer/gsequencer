@@ -4517,13 +4517,6 @@ ags_recall_factory_create(AgsAudio *audio,
   return(recall);
 }
 
-void
-ags_recall_factory_remove(AgsAudio *audio,
-			  AgsRecallContainer *recall_container)
-{
-  //TODO:JK: implement me
-}
-
 /**
  * ags_recall_factory_new:
  *

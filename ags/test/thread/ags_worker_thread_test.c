@@ -26,21 +26,21 @@
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
 
-int ags_poll_fd_test_init_suite();
-int ags_poll_fd_test_clean_suite();
+int ags_worker_thread_test_init_suite();
+int ags_worker_thread_test_clean_suite();
 
-void ags_poll_fd_test_dispatch();
+void ags_worker_thread_test_do_poll();
 
-void ags_poll_fd_test_stub_dispatch(AgsPollFd *poll_fd);
+void ags_worker_thread_test_stub_do_poll(AgsWorkerThread *worker_thread);
 
-gboolean stub_dispatch = FALSE;
+gboolean stub_do_poll = FALSE;
 
 /* The suite initialization time.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_poll_fd_test_init_suite()
+ags_worker_thread_test_init_suite()
 {
   return(0);
 }
@@ -50,35 +50,35 @@ ags_poll_fd_test_init_suite()
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_poll_fd_test_clean_suite()
+ags_worker_thread_test_clean_suite()
 {
   return(0);
 }
 
 void
-ags_poll_fd_test_dispatch()
+ags_worker_thread_test_do_poll()
 {
-  AgsPollFd *poll_fd;
-
+  AgsWorkerThread *worker_thread;
+  
   gpointer ptr;
   
-  poll_fd = g_object_new(AGS_TYPE_POLL_FD,
-			 NULL);
+  worker_thread = g_object_new(AGS_TYPE_WORKER_THREAD,
+			       NULL);
+  
+  ptr = AGS_WORKER_THREAD_GET_CLASS(worker_thread)->do_poll;
+  AGS_WORKER_THREAD_GET_CLASS(worker_thread)->do_poll = ags_worker_thread_test_stub_do_poll;
 
-  ptr = AGS_POLL_FD_GET_CLASS(poll_fd)->dispatch;
-  AGS_POLL_FD_GET_CLASS(poll_fd)->dispatch = ags_poll_fd_test_stub_dispatch;
+  /* assert do poll */
+  ags_worker_thread_do_poll(worker_thread);
 
-  /* assert dispatch */
-  ags_poll_fd_dispatch(poll_fd);
-
-  CU_ASSERT(stub_dispatch == TRUE);
-  AGS_POLL_FD_GET_CLASS(poll_fd)->dispatch = ptr;
+  CU_ASSERT(stub_do_poll == TRUE);
+  AGS_WORKER_THREAD_GET_CLASS(worker_thread)->do_poll = ptr;
 }
 
 void
-ags_poll_fd_test_stub_dispatch(AgsPollFd *poll_fd)
+ags_worker_thread_test_stub_do_poll(AgsWorkerThread *worker_thread)
 {
-  stub_dispatch = TRUE;
+  stub_do_poll = TRUE;
 }
 
 int
@@ -92,7 +92,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsPollFdTest\0", ags_poll_fd_test_init_suite, ags_poll_fd_test_clean_suite);
+  pSuite = CU_add_suite("AgsWorkerThreadTest\0", ags_worker_thread_test_init_suite, ags_worker_thread_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -101,7 +101,7 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsPollFd dispatch\0", ags_poll_fd_test_dispatch) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsWorkerThread do poll\0", ags_worker_thread_test_do_poll) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

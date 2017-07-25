@@ -26,21 +26,21 @@
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
 
-int ags_poll_fd_test_init_suite();
-int ags_poll_fd_test_clean_suite();
+int ags_file_id_ref_test_init_suite();
+int ags_file_id_ref_test_clean_suite();
 
-void ags_poll_fd_test_dispatch();
+void ags_file_id_ref_test_resolved();
 
-void ags_poll_fd_test_stub_dispatch(AgsPollFd *poll_fd);
+void ags_file_id_ref_test_stub_resolved(AgsFileIdRef *file_id_ref);
 
-gboolean stub_dispatch = FALSE;
+gboolean stub_resolved;
 
 /* The suite initialization time.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_poll_fd_test_init_suite()
+ags_file_id_ref_test_init_suite()
 {
   return(0);
 }
@@ -50,35 +50,35 @@ ags_poll_fd_test_init_suite()
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_poll_fd_test_clean_suite()
+ags_file_id_ref_test_clean_suite()
 {
   return(0);
 }
 
 void
-ags_poll_fd_test_dispatch()
+ags_file_id_ref_test_resolved()
 {
-  AgsPollFd *poll_fd;
+  AgsFileIdRef *file_id_ref;
 
   gpointer ptr;
   
-  poll_fd = g_object_new(AGS_TYPE_POLL_FD,
-			 NULL);
+  file_id_ref = g_object_new(AGS_TYPE_FILE_ID_REF,
+			     NULL);
 
-  ptr = AGS_POLL_FD_GET_CLASS(poll_fd)->dispatch;
-  AGS_POLL_FD_GET_CLASS(poll_fd)->dispatch = ags_poll_fd_test_stub_dispatch;
+  ptr = AGS_FILE_ID_REF_GET_CLASS(file_id_ref)->resolved;
+  AGS_FILE_ID_REF_GET_CLASS(file_id_ref)->resolved = ags_file_id_ref_test_stub_resolved;
 
-  /* assert dispatch */
-  ags_poll_fd_dispatch(poll_fd);
+  /* assert resolved */
+  ags_file_id_ref_resolved(file_id_ref);
 
-  CU_ASSERT(stub_dispatch == TRUE);
-  AGS_POLL_FD_GET_CLASS(poll_fd)->dispatch = ptr;
+  CU_ASSERT(stub_resolved == TRUE);
+  AGS_FILE_ID_REF_GET_CLASS(file_id_ref)->resolved = ptr;
 }
 
 void
-ags_poll_fd_test_stub_dispatch(AgsPollFd *poll_fd)
+ags_file_id_ref_test_stub_resolved(AgsFileIdRef *file_id_ref)
 {
-  stub_dispatch = TRUE;
+  stub_resolved = TRUE;
 }
 
 int
@@ -92,7 +92,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsPollFdTest\0", ags_poll_fd_test_init_suite, ags_poll_fd_test_clean_suite);
+  pSuite = CU_add_suite("AgsFileIdRefTest\0", ags_file_id_ref_test_init_suite, ags_file_id_ref_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -101,7 +101,7 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsPollFd dispatch\0", ags_poll_fd_test_dispatch) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsFileIdRef resolved\0", ags_file_id_ref_test_resolved) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

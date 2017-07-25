@@ -35,7 +35,8 @@ typedef struct _AgsTimestampClass AgsTimestampClass;
 
 typedef enum{
   AGS_TIMESTAMP_UNIX      = 1,
-  AGS_TIMESTAMP_OUTDATED  = 1 << 1,
+  AGS_TIMESTAMP_OFFSET    = 1 <<  1,
+  AGS_TIMESTAMP_OUTDATED  = 1 <<  2,
 }AgsTimestampFlags;
 
 struct _AgsTimestamp
@@ -48,6 +49,9 @@ struct _AgsTimestamp
     struct _unix{
       time_t time_val;
     }unix_time;
+    struct _ags{
+      guint64 offset;
+    }ags_offset;
   }timer;
 
   guint delay;
