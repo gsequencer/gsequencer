@@ -17,6 +17,7 @@ check_PROGRAMS += \
 	ags_file_test \
 	ags_file_id_ref_test \
 	ags_file_launch_test \
+	ags_file_lookup_test \
 	ags_complex_test \
 	ags_log_test \
 	ags_turtle_test \
@@ -140,6 +141,12 @@ ags_file_launch_test_SOURCES = ags/test/file/ags_file_launch_test.c
 ags_file_launch_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_file_launch_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_file_launch_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+
+# file lookup unit test
+ags_file_lookup_test_SOURCES = ags/test/file/ags_file_lookup_test.c
+ags_file_lookup_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_file_lookup_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_file_lookup_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # complex unit test
 ags_complex_test_SOURCES = ags/test/lib/ags_complex_test.c

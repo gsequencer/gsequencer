@@ -19,6 +19,9 @@ ags (0.9.0)
 	* new unit-test ags_application_context_test.c
 	* new unit-test ags_connection_manager_test.c
 	* new unit-test ags_config_test.c
+	* new unit-test ags_condition_manager_test.c
+	* new unit-test ags_mutex_manager_test.c
+	* new unit-test ags_destroy_worker_test.c
 	* new unit-test ags_polling_thread_test.c
 	* new unit-test ags_poll_fd_test.c
 	* new unit-test ags_returnable_thread_test.c
@@ -28,9 +31,6 @@ ags (0.9.0)
 	* new unit-test ags_file_test
 	* new unit-test ags_file_id_ref_test
 	* new unit-test ags_file_launch_test
-	* new unit-test ags_condition_manager_test.c
-	* new unit-test ags_mutex_manager_test.c
-	* new unit-test ags_destroy_worker_test.c
 	* new unit-test ags_dssi_plugin_test.c
 	* new unit-test ags_dssi_manager_test.c
 	* new unit-test ags_base_plugin_test.c
