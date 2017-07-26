@@ -14,7 +14,9 @@ check_PROGRAMS += \
 	ags_thread_test \
 	ags_thread_pool_test \
 	ags_worker_thread_test \
+	ags_file_test \
 	ags_file_id_ref_test \
+	ags_file_launch_test \
 	ags_complex_test \
 	ags_log_test \
 	ags_turtle_test \
@@ -121,11 +123,23 @@ ags_worker_thread_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_worker_thread_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_worker_thread_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
+# file unit test
+ags_file_test_SOURCES = ags/test/file/ags_file_test.c
+ags_file_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_file_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_file_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+
 # file id ref unit test
 ags_file_id_ref_test_SOURCES = ags/test/file/ags_file_id_ref_test.c
 ags_file_id_ref_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_file_id_ref_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_file_id_ref_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+
+# file launch unit test
+ags_file_launch_test_SOURCES = ags/test/file/ags_file_launch_test.c
+ags_file_launch_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_file_launch_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_file_launch_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # complex unit test
 ags_complex_test_SOURCES = ags/test/lib/ags_complex_test.c

@@ -9,6 +9,7 @@ ags (0.9.0)
 	* fixed missing return in ags_destroy_entry_alloc()
 	* fixed AGS_TASK_GET_CLASS() macro to remove not opened paranthesis
 	* fixed ags_thread_init() to correct assign condition manager
+	* fixed AGS_FILE_CHECKSUM_LENGTH macro to use string representation length
 	* extended chap3.xml to include documentation about workers
 	* extended chap3.xml to include documentation about poll fds
 	* extended chap3.xml to include documentation about mutex and condition managers
@@ -22,6 +23,11 @@ ags (0.9.0)
 	* new unit-test ags_poll_fd_test.c
 	* new unit-test ags_returnable_thread_test.c
 	* new unit-test ags_task_test.c
+	* new unit-test ags_thread_pool_test
+	* new unit-test ags_worker_thread_test
+	* new unit-test ags_file_test
+	* new unit-test ags_file_id_ref_test
+	* new unit-test ags_file_launch_test
 	* new unit-test ags_condition_manager_test.c
 	* new unit-test ags_mutex_manager_test.c
 	* new unit-test ags_destroy_worker_test.c
