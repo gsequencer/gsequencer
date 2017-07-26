@@ -48,6 +48,8 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
   xmlNode *child;
   xmlChar *type_name;
 
+  xmlChar *str;
+  
   guint orig_flags;
   
   static gboolean thread_type_is_registered = FALSE;
@@ -102,14 +104,26 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 										  AGS_FILE_FLAGS_PROP),
 								       NULL,
 								       16)));
-  
-  g_atomic_int_set(&(gobject->sync_flags),
-		   ((~(AGS_THREAD_WAIT_0 |
-		       AGS_THREAD_WAIT_1 |
-		       AGS_THREAD_WAIT_2)) & (guint) g_ascii_strtoull(xmlGetProp(node,
-										 "sync-flags"),
-								      NULL,
-								      16)));
+
+  str = xmlGetProp(node,
+		   "sync-flags");
+
+  if(str != NULL){
+    g_atomic_int_set(&(gobject->sync_flags),
+		     ((~(AGS_THREAD_WAIT_0 |
+			 AGS_THREAD_WAIT_1 |
+			 AGS_THREAD_WAIT_2)) & (guint) g_ascii_strtoull(str,
+									NULL,
+									16)));
+  }
+
+  str = xmlGetProp(node,
+		   "frequency");
+
+  if(str != NULL){
+    gobject->freq = (guint) g_ascii_strtod(str,
+					   NULL);
+  }
 
   /* start */
   if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(orig_flags)))) != 0){
@@ -214,6 +228,10 @@ ags_file_write_thread(AgsFile *file, xmlNode *parent, AgsThread *thread)
 	     "sync-flags",
 	     g_strdup_printf("%x", g_atomic_int_get(&(thread->sync_flags))));
 
+  xmlNewProp(node,
+	     "frequency",
+	     g_strdup_printf("%.01f", thread->freq));
+
   /* add to parent */
   xmlAddChild(parent,
 	      node);
@@ -221,18 +239,22 @@ ags_file_write_thread(AgsFile *file, xmlNode *parent, AgsThread *thread)
   /* child elements */
   current = g_atomic_pointer_get(&(thread->children));
 
-  child = xmlNewNode(NULL,
-		     "ags-thread-list");
-  xmlAddChild(node,
-	      child);
+  if(current != NULL){
+    child = xmlNewNode(NULL,
+		       "ags-thread-list");
+    xmlAddChild(node,
+		child);
 
-  while(current != NULL){
-    ags_file_write_thread(file,
-			  child,
-			  current);
+    while(current != NULL){
+      ags_file_write_thread(file,
+			    child,
+			    current);
     
-    current = g_atomic_pointer_get(&(current->next));
+      current = g_atomic_pointer_get(&(current->next));
+    }
   }
+  
+  return(node);
 }
 
 void

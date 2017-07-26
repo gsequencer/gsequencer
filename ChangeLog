@@ -10,6 +10,8 @@ ags (0.9.0)
 	* fixed AGS_TASK_GET_CLASS() macro to remove not opened paranthesis
 	* fixed ags_thread_init() to correct assign condition manager
 	* fixed AGS_FILE_CHECKSUM_LENGTH macro to use string representation length
+	* fixed missing serialization of thread frequency
+	* fixed missing return of ags_file_write_thread()
 	* extended chap3.xml to include documentation about workers
 	* extended chap3.xml to include documentation about poll fds
 	* extended chap3.xml to include documentation about mutex and condition managers

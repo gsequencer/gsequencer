@@ -101,12 +101,12 @@ check_PROGRAMS = ags_application_context_test$(EXEEXT) \
 	ags_returnable_thread_test$(EXEEXT) ags_task_test$(EXEEXT) \
 	ags_task_thread_test$(EXEEXT) ags_thread_test$(EXEEXT) \
 	ags_thread_pool_test$(EXEEXT) ags_worker_thread_test$(EXEEXT) \
-	ags_file_test$(EXEEXT) ags_file_id_ref_test$(EXEEXT) \
-	ags_file_launch_test$(EXEEXT) ags_file_lookup_test$(EXEEXT) \
-	ags_complex_test$(EXEEXT) ags_log_test$(EXEEXT) \
-	ags_turtle_test$(EXEEXT) ags_turtle_manager_test$(EXEEXT) \
-	ags_base_plugin_test$(EXEEXT) ags_dssi_manager_test$(EXEEXT) \
-	ags_dssi_plugin_test$(EXEEXT) \
+	ags_thread_file_xml_test$(EXEEXT) ags_file_test$(EXEEXT) \
+	ags_file_id_ref_test$(EXEEXT) ags_file_launch_test$(EXEEXT) \
+	ags_file_lookup_test$(EXEEXT) ags_complex_test$(EXEEXT) \
+	ags_log_test$(EXEEXT) ags_turtle_test$(EXEEXT) \
+	ags_turtle_manager_test$(EXEEXT) ags_base_plugin_test$(EXEEXT) \
+	ags_dssi_manager_test$(EXEEXT) ags_dssi_plugin_test$(EXEEXT) \
 	ags_audio_application_context_test$(EXEEXT) \
 	ags_devout_test$(EXEEXT) ags_audio_test$(EXEEXT) \
 	ags_channel_test$(EXEEXT) ags_recycling_test$(EXEEXT) \
@@ -1284,6 +1284,16 @@ ags_task_thread_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_task_thread_test_CFLAGS) $(CFLAGS) \
 	$(ags_task_thread_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_thread_file_xml_test_OBJECTS = ags/test/thread/file/ags_thread_file_xml_test-ags_thread_file_xml_test.$(OBJEXT)
+ags_thread_file_xml_test_OBJECTS =  \
+	$(am_ags_thread_file_xml_test_OBJECTS)
+ags_thread_file_xml_test_DEPENDENCIES = libags_server.la \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+ags_thread_file_xml_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_thread_file_xml_test_CFLAGS) $(CFLAGS) \
+	$(ags_thread_file_xml_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_thread_pool_test_OBJECTS = ags/test/thread/ags_thread_pool_test-ags_thread_pool_test.$(OBJEXT)
 ags_thread_pool_test_OBJECTS = $(am_ags_thread_pool_test_OBJECTS)
 ags_thread_pool_test_DEPENDENCIES = libags_server.la libags_thread.la \
@@ -1439,6 +1449,7 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_recall_test_SOURCES) $(ags_recycling_test_SOURCES) \
 	$(ags_returnable_thread_test_SOURCES) $(ags_task_test_SOURCES) \
 	$(ags_task_thread_test_SOURCES) \
+	$(ags_thread_file_xml_test_SOURCES) \
 	$(ags_thread_pool_test_SOURCES) $(ags_thread_test_SOURCES) \
 	$(ags_turtle_manager_test_SOURCES) $(ags_turtle_test_SOURCES) \
 	$(ags_worker_thread_test_SOURCES) \
@@ -1482,6 +1493,7 @@ DIST_SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_recall_test_SOURCES) $(ags_recycling_test_SOURCES) \
 	$(ags_returnable_thread_test_SOURCES) $(ags_task_test_SOURCES) \
 	$(ags_task_thread_test_SOURCES) \
+	$(ags_thread_file_xml_test_SOURCES) \
 	$(ags_thread_pool_test_SOURCES) $(ags_thread_test_SOURCES) \
 	$(ags_turtle_manager_test_SOURCES) $(ags_turtle_test_SOURCES) \
 	$(ags_worker_thread_test_SOURCES) \
@@ -2283,6 +2295,12 @@ ags_worker_thread_test_SOURCES = ags/test/thread/ags_worker_thread_test.c
 ags_worker_thread_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_worker_thread_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_worker_thread_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+
+# thread file xml unit test
+ags_thread_file_xml_test_SOURCES = ags/test/thread/file/ags_thread_file_xml_test.c
+ags_thread_file_xml_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_thread_file_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_thread_file_xml_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # file unit test
 ags_file_test_SOURCES = ags/test/file/ags_file_test.c
@@ -6080,6 +6098,19 @@ ags/test/thread/ags_task_thread_test-ags_task_thread_test.$(OBJEXT):  \
 ags_task_thread_test$(EXEEXT): $(ags_task_thread_test_OBJECTS) $(ags_task_thread_test_DEPENDENCIES) $(EXTRA_ags_task_thread_test_DEPENDENCIES) 
 	@rm -f ags_task_thread_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_task_thread_test_LINK) $(ags_task_thread_test_OBJECTS) $(ags_task_thread_test_LDADD) $(LIBS)
+ags/test/thread/file/$(am__dirstamp):
+	@$(MKDIR_P) ags/test/thread/file
+	@: > ags/test/thread/file/$(am__dirstamp)
+ags/test/thread/file/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ags/test/thread/file/$(DEPDIR)
+	@: > ags/test/thread/file/$(DEPDIR)/$(am__dirstamp)
+ags/test/thread/file/ags_thread_file_xml_test-ags_thread_file_xml_test.$(OBJEXT):  \
+	ags/test/thread/file/$(am__dirstamp) \
+	ags/test/thread/file/$(DEPDIR)/$(am__dirstamp)
+
+ags_thread_file_xml_test$(EXEEXT): $(ags_thread_file_xml_test_OBJECTS) $(ags_thread_file_xml_test_DEPENDENCIES) $(EXTRA_ags_thread_file_xml_test_DEPENDENCIES) 
+	@rm -f ags_thread_file_xml_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_thread_file_xml_test_LINK) $(ags_thread_file_xml_test_OBJECTS) $(ags_thread_file_xml_test_LDADD) $(LIBS)
 ags/test/thread/ags_thread_pool_test-ags_thread_pool_test.$(OBJEXT):  \
 	ags/test/thread/$(am__dirstamp) \
 	ags/test/thread/$(DEPDIR)/$(am__dirstamp)
@@ -6198,6 +6229,7 @@ mostlyclean-compile:
 	-rm -f ags/test/object/*.$(OBJEXT)
 	-rm -f ags/test/plugin/*.$(OBJEXT)
 	-rm -f ags/test/thread/*.$(OBJEXT)
+	-rm -f ags/test/thread/file/*.$(OBJEXT)
 	-rm -f ags/thread/*.$(OBJEXT)
 	-rm -f ags/thread/*.lo
 	-rm -f ags/thread/file/*.$(OBJEXT)
@@ -6764,6 +6796,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/thread/$(DEPDIR)/ags_thread_pool_test-ags_thread_pool_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/thread/$(DEPDIR)/ags_thread_test-ags_thread_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/thread/$(DEPDIR)/ags_worker_thread_test-ags_worker_thread_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/thread/file/$(DEPDIR)/ags_thread_file_xml_test-ags_thread_file_xml_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_autosave_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_concurrency_provider.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_condition_manager.Plo@am__quote@
@@ -11262,6 +11295,20 @@ ags/test/thread/ags_task_thread_test-ags_task_thread_test.obj: ags/test/thread/a
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_task_thread_test_CFLAGS) $(CFLAGS) -c -o ags/test/thread/ags_task_thread_test-ags_task_thread_test.obj `if test -f 'ags/test/thread/ags_task_thread_test.c'; then $(CYGPATH_W) 'ags/test/thread/ags_task_thread_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/thread/ags_task_thread_test.c'; fi`
 
+ags/test/thread/file/ags_thread_file_xml_test-ags_thread_file_xml_test.o: ags/test/thread/file/ags_thread_file_xml_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_thread_file_xml_test_CFLAGS) $(CFLAGS) -MT ags/test/thread/file/ags_thread_file_xml_test-ags_thread_file_xml_test.o -MD -MP -MF ags/test/thread/file/$(DEPDIR)/ags_thread_file_xml_test-ags_thread_file_xml_test.Tpo -c -o ags/test/thread/file/ags_thread_file_xml_test-ags_thread_file_xml_test.o `test -f 'ags/test/thread/file/ags_thread_file_xml_test.c' || echo '$(srcdir)/'`ags/test/thread/file/ags_thread_file_xml_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/thread/file/$(DEPDIR)/ags_thread_file_xml_test-ags_thread_file_xml_test.Tpo ags/test/thread/file/$(DEPDIR)/ags_thread_file_xml_test-ags_thread_file_xml_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/thread/file/ags_thread_file_xml_test.c' object='ags/test/thread/file/ags_thread_file_xml_test-ags_thread_file_xml_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_thread_file_xml_test_CFLAGS) $(CFLAGS) -c -o ags/test/thread/file/ags_thread_file_xml_test-ags_thread_file_xml_test.o `test -f 'ags/test/thread/file/ags_thread_file_xml_test.c' || echo '$(srcdir)/'`ags/test/thread/file/ags_thread_file_xml_test.c
+
+ags/test/thread/file/ags_thread_file_xml_test-ags_thread_file_xml_test.obj: ags/test/thread/file/ags_thread_file_xml_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_thread_file_xml_test_CFLAGS) $(CFLAGS) -MT ags/test/thread/file/ags_thread_file_xml_test-ags_thread_file_xml_test.obj -MD -MP -MF ags/test/thread/file/$(DEPDIR)/ags_thread_file_xml_test-ags_thread_file_xml_test.Tpo -c -o ags/test/thread/file/ags_thread_file_xml_test-ags_thread_file_xml_test.obj `if test -f 'ags/test/thread/file/ags_thread_file_xml_test.c'; then $(CYGPATH_W) 'ags/test/thread/file/ags_thread_file_xml_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/thread/file/ags_thread_file_xml_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/thread/file/$(DEPDIR)/ags_thread_file_xml_test-ags_thread_file_xml_test.Tpo ags/test/thread/file/$(DEPDIR)/ags_thread_file_xml_test-ags_thread_file_xml_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/thread/file/ags_thread_file_xml_test.c' object='ags/test/thread/file/ags_thread_file_xml_test-ags_thread_file_xml_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_thread_file_xml_test_CFLAGS) $(CFLAGS) -c -o ags/test/thread/file/ags_thread_file_xml_test-ags_thread_file_xml_test.obj `if test -f 'ags/test/thread/file/ags_thread_file_xml_test.c'; then $(CYGPATH_W) 'ags/test/thread/file/ags_thread_file_xml_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/thread/file/ags_thread_file_xml_test.c'; fi`
+
 ags/test/thread/ags_thread_pool_test-ags_thread_pool_test.o: ags/test/thread/ags_thread_pool_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_thread_pool_test_CFLAGS) $(CFLAGS) -MT ags/test/thread/ags_thread_pool_test-ags_thread_pool_test.o -MD -MP -MF ags/test/thread/$(DEPDIR)/ags_thread_pool_test-ags_thread_pool_test.Tpo -c -o ags/test/thread/ags_thread_pool_test-ags_thread_pool_test.o `test -f 'ags/test/thread/ags_thread_pool_test.c' || echo '$(srcdir)/'`ags/test/thread/ags_thread_pool_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/thread/$(DEPDIR)/ags_thread_pool_test-ags_thread_pool_test.Tpo ags/test/thread/$(DEPDIR)/ags_thread_pool_test-ags_thread_pool_test.Po
@@ -11884,6 +11931,13 @@ ags_worker_thread_test.log: ags_worker_thread_test$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_thread_file_xml_test.log: ags_thread_file_xml_test$(EXEEXT)
+	@p='ags_thread_file_xml_test$(EXEEXT)'; \
+	b='ags_thread_file_xml_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 ags_file_test.log: ags_file_test$(EXEEXT)
 	@p='ags_file_test$(EXEEXT)'; \
 	b='ags_file_test'; \
@@ -12452,6 +12506,8 @@ distclean-generic:
 	-rm -f ags/test/plugin/$(am__dirstamp)
 	-rm -f ags/test/thread/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ags/test/thread/$(am__dirstamp)
+	-rm -f ags/test/thread/file/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ags/test/thread/file/$(am__dirstamp)
 	-rm -f ags/thread/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ags/thread/$(am__dirstamp)
 	-rm -f ags/thread/file/$(DEPDIR)/$(am__dirstamp)
@@ -12477,7 +12533,7 @@ clean-am: clean-binPROGRAMS clean-checkLTLIBRARIES clean-checkPROGRAMS \
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf ags/$(DEPDIR) ags/X/$(DEPDIR) ags/X/editor/$(DEPDIR) ags/X/export/$(DEPDIR) ags/X/file/$(DEPDIR) ags/X/import/$(DEPDIR) ags/X/machine/$(DEPDIR) ags/X/task/$(DEPDIR) ags/X/thread/$(DEPDIR) ags/audio/$(DEPDIR) ags/audio/client/$(DEPDIR) ags/audio/file/$(DEPDIR) ags/audio/jack/$(DEPDIR) ags/audio/midi/$(DEPDIR) ags/audio/recall/$(DEPDIR) ags/audio/task/$(DEPDIR) ags/audio/task/recall/$(DEPDIR) ags/audio/thread/$(DEPDIR) ags/file/$(DEPDIR) ags/lib/$(DEPDIR) ags/object/$(DEPDIR) ags/plugin/$(DEPDIR) ags/server/$(DEPDIR) ags/test/X/$(DEPDIR) ags/test/X/machine/$(DEPDIR) ags/test/audio/$(DEPDIR) ags/test/audio/midi/$(DEPDIR) ags/test/file/$(DEPDIR) ags/test/lib/$(DEPDIR) ags/test/object/$(DEPDIR) ags/test/plugin/$(DEPDIR) ags/test/thread/$(DEPDIR) ags/thread/$(DEPDIR) ags/thread/file/$(DEPDIR) ags/util/$(DEPDIR) ags/widget/$(DEPDIR)
+	-rm -rf ags/$(DEPDIR) ags/X/$(DEPDIR) ags/X/editor/$(DEPDIR) ags/X/export/$(DEPDIR) ags/X/file/$(DEPDIR) ags/X/import/$(DEPDIR) ags/X/machine/$(DEPDIR) ags/X/task/$(DEPDIR) ags/X/thread/$(DEPDIR) ags/audio/$(DEPDIR) ags/audio/client/$(DEPDIR) ags/audio/file/$(DEPDIR) ags/audio/jack/$(DEPDIR) ags/audio/midi/$(DEPDIR) ags/audio/recall/$(DEPDIR) ags/audio/task/$(DEPDIR) ags/audio/task/recall/$(DEPDIR) ags/audio/thread/$(DEPDIR) ags/file/$(DEPDIR) ags/lib/$(DEPDIR) ags/object/$(DEPDIR) ags/plugin/$(DEPDIR) ags/server/$(DEPDIR) ags/test/X/$(DEPDIR) ags/test/X/machine/$(DEPDIR) ags/test/audio/$(DEPDIR) ags/test/audio/midi/$(DEPDIR) ags/test/file/$(DEPDIR) ags/test/lib/$(DEPDIR) ags/test/object/$(DEPDIR) ags/test/plugin/$(DEPDIR) ags/test/thread/$(DEPDIR) ags/test/thread/file/$(DEPDIR) ags/thread/$(DEPDIR) ags/thread/file/$(DEPDIR) ags/util/$(DEPDIR) ags/widget/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-libtool distclean-tags
@@ -12523,7 +12579,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf ags/$(DEPDIR) ags/X/$(DEPDIR) ags/X/editor/$(DEPDIR) ags/X/export/$(DEPDIR) ags/X/file/$(DEPDIR) ags/X/import/$(DEPDIR) ags/X/machine/$(DEPDIR) ags/X/task/$(DEPDIR) ags/X/thread/$(DEPDIR) ags/audio/$(DEPDIR) ags/audio/client/$(DEPDIR) ags/audio/file/$(DEPDIR) ags/audio/jack/$(DEPDIR) ags/audio/midi/$(DEPDIR) ags/audio/recall/$(DEPDIR) ags/audio/task/$(DEPDIR) ags/audio/task/recall/$(DEPDIR) ags/audio/thread/$(DEPDIR) ags/file/$(DEPDIR) ags/lib/$(DEPDIR) ags/object/$(DEPDIR) ags/plugin/$(DEPDIR) ags/server/$(DEPDIR) ags/test/X/$(DEPDIR) ags/test/X/machine/$(DEPDIR) ags/test/audio/$(DEPDIR) ags/test/audio/midi/$(DEPDIR) ags/test/file/$(DEPDIR) ags/test/lib/$(DEPDIR) ags/test/object/$(DEPDIR) ags/test/plugin/$(DEPDIR) ags/test/thread/$(DEPDIR) ags/thread/$(DEPDIR) ags/thread/file/$(DEPDIR) ags/util/$(DEPDIR) ags/widget/$(DEPDIR)
+	-rm -rf ags/$(DEPDIR) ags/X/$(DEPDIR) ags/X/editor/$(DEPDIR) ags/X/export/$(DEPDIR) ags/X/file/$(DEPDIR) ags/X/import/$(DEPDIR) ags/X/machine/$(DEPDIR) ags/X/task/$(DEPDIR) ags/X/thread/$(DEPDIR) ags/audio/$(DEPDIR) ags/audio/client/$(DEPDIR) ags/audio/file/$(DEPDIR) ags/audio/jack/$(DEPDIR) ags/audio/midi/$(DEPDIR) ags/audio/recall/$(DEPDIR) ags/audio/task/$(DEPDIR) ags/audio/task/recall/$(DEPDIR) ags/audio/thread/$(DEPDIR) ags/file/$(DEPDIR) ags/lib/$(DEPDIR) ags/object/$(DEPDIR) ags/plugin/$(DEPDIR) ags/server/$(DEPDIR) ags/test/X/$(DEPDIR) ags/test/X/machine/$(DEPDIR) ags/test/audio/$(DEPDIR) ags/test/audio/midi/$(DEPDIR) ags/test/file/$(DEPDIR) ags/test/lib/$(DEPDIR) ags/test/object/$(DEPDIR) ags/test/plugin/$(DEPDIR) ags/test/thread/$(DEPDIR) ags/test/thread/file/$(DEPDIR) ags/thread/$(DEPDIR) ags/thread/file/$(DEPDIR) ags/util/$(DEPDIR) ags/widget/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

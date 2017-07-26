@@ -14,6 +14,7 @@ check_PROGRAMS += \
 	ags_thread_test \
 	ags_thread_pool_test \
 	ags_worker_thread_test \
+	ags_thread_file_xml_test \
 	ags_file_test \
 	ags_file_id_ref_test \
 	ags_file_launch_test \
@@ -123,6 +124,12 @@ ags_worker_thread_test_SOURCES = ags/test/thread/ags_worker_thread_test.c
 ags_worker_thread_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_worker_thread_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_worker_thread_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+
+# thread file xml unit test
+ags_thread_file_xml_test_SOURCES = ags/test/thread/file/ags_thread_file_xml_test.c
+ags_thread_file_xml_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_thread_file_xml_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_thread_file_xml_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # file unit test
 ags_file_test_SOURCES = ags/test/file/ags_file_test.c

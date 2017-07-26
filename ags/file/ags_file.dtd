@@ -204,12 +204,13 @@
 	  id               ID         #REQUIRED
 	  >
 
-<!ELEMENT ags-thread (ags-thread-list, (ags-audio-loop | ags-task-thread | ags-gui-thread | ags-soundcard-thread | ags-sequencer-thread | ags-export-thread | ags-audio-thread | ags-channel-thread | ags-recycling-thread | ags-timestamp-thread | ags-single-thread))>
+<!ELEMENT ags-thread (ags-thread-list?, (ags-audio-loop | ags-task-thread | ags-gui-thread | ags-soundcard-thread | ags-sequencer-thread | ags-export-thread | ags-audio-thread | ags-channel-thread | ags-recycling-thread | ags-timestamp-thread | ags-single-thread)?)>
 <!ATTLIST ags-thread
 	  type             CDATA      #REQUIRED
 	  id               ID         #REQUIRED
 	  flags            PCDATA     #REQUIRED
 	  frequency        NMTOKEN    #REQUIRED
+	  sync-flags       PCDATA     #IMPLIED
 >
 
 <!ELEMENT ags-thread-pool (ags-parameter?)>
