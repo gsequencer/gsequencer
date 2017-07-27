@@ -54,7 +54,7 @@ struct _AgsTimestamp
     }ags_offset;
   }timer;
 
-  guint delay;
+  gdouble delay;
   guint attack;
 };
 

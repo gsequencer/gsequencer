@@ -82,7 +82,7 @@ ags_timestamp_init(AgsTimestamp *timestamp)
 
   time(&(timestamp->timer.unix_time.time_val));
 
-  timestamp->delay = 0;
+  timestamp->delay = 0.0;
   timestamp->attack = 0;
 }
 

@@ -384,7 +384,7 @@ ags_file_write_thread_pool(AgsFile *file, xmlNode *parent, AgsThreadPool *thread
   id = ags_id_generator_create_uuid();
   
   node = xmlNewNode(NULL,
-		    "ags-thread_pool");
+		    "ags-thread-pool");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
@@ -401,6 +401,11 @@ ags_file_write_thread_pool(AgsFile *file, xmlNode *parent, AgsThreadPool *thread
   xmlNewProp(node,
 	     AGS_FILE_FLAGS_PROP,
 	     g_strdup_printf("%x", thread_pool->flags));
+
+  xmlAddChild(parent,
+	      node);
+
+  return(node);
 }
 
 void
@@ -438,17 +443,16 @@ ags_file_read_timestamp(AgsFile *file, xmlNode *node, AgsTimestamp **timestamp)
 					    NULL,
 					    16);
 
-  gobject->delay = (guint) g_ascii_strtoull((gchar *) xmlGetProp(node,
-								 (xmlChar *) "delay"),
-					    NULL,
-					    10);
+  gobject->delay = (guint) g_ascii_strtod((gchar *) xmlGetProp(node,
+							       (xmlChar *) "delay"),
+					  NULL);
   
   gobject->attack = (guint) g_ascii_strtoull((gchar *) xmlGetProp(node,
 								  (xmlChar *) "attack"),
 					     NULL,
 					     10);
 
-  gobject->timer.unix_time.time_val = (guint) g_ascii_strtoull((gchar *) node->content,
+  gobject->timer.unix_time.time_val = (guint) g_ascii_strtoull((gchar *) xmlNodeGetContent(node),
 							       NULL,
 							       10);
 }
@@ -486,7 +490,7 @@ ags_file_write_timestamp(AgsFile *file, xmlNode *parent, AgsTimestamp *timestamp
 
   xmlNewProp(node,
 	     (xmlChar *) "delay",
-	     (xmlChar *) g_strdup_printf("%d", timestamp->delay));
+	     (xmlChar *) g_strdup_printf("%.01f", timestamp->delay));
 
   xmlNewProp(node,
 	     (xmlChar *) "attack",

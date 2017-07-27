@@ -42,23 +42,41 @@ void ags_file_test_write_timestamp_list();
 
 #define AGS_THREAD_XML_FILE_TEST_DOCTYPE_TEMPLATE "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 #define AGS_THREAD_XML_FILE_TEST_DOC_TEMPLATE AGS_THREAD_XML_FILE_TEST_DOCTYPE_TEMPLATE \
-  "<ags-test>\n" \
+  "<ags-test>\n"							\
   "</ags-test>\n"
 
 #define AGS_FILE_TEST_READ_THREAD_DOC AGS_THREAD_XML_FILE_TEST_DOCTYPE_TEMPLATE \
-  "<ags-test>\n" \
+  "<ags-test>\n"							\
   "<ags-thread type=\"AgsThread\" id=\"test-id-thread-0\" flags=\"0\" frequency=\"125.0\"/>\n" \
   "</ags-test>\n"
 
 #define AGS_FILE_TEST_READ_THREAD_LIST_DOC AGS_THREAD_XML_FILE_TEST_DOCTYPE_TEMPLATE \
-  "<ags-test>\n" \
-  "<ags-thread-list id=\"test-id-thread-list-0\">\n" \
+  "<ags-test>\n"							\
+  "<ags-thread-list id=\"test-id-thread-list-0\">\n"			\
   "<ags-thread type=\"AgsThread\" id=\"test-id-thread-0\" flags=\"0\" frequency=\"125.0\"/>\n" \
   "<ags-thread type=\"AgsThread\" id=\"test-id-thread-1\" flags=\"0\" frequency=\"250.0\"/>\n" \
   "<ags-thread type=\"AgsThread\" id=\"test-id-thread-2\" flags=\"0\" frequency=\"48.0\"/>\n" \
-  "</ags-thread-list>\n" \
+  "</ags-thread-list>\n"						\
   "</ags-test>\n"
 
+#define AGS_FILE_TEST_READ_THREAD_POOL_DOC AGS_THREAD_XML_FILE_TEST_DOCTYPE_TEMPLATE \
+  "<ags-test>\n"							\
+  "<ags-thread-pool id=\"test-id-thread-pool-0\" flags=\"0\"/>\n"	\
+  "</ags-test>\n"
+
+#define AGS_FILE_TEST_READ_TIMESTAMP_DOC AGS_THREAD_XML_FILE_TEST_DOCTYPE_TEMPLATE \
+  "<ags-test>\n" \
+  "<ags-timestamp id=\"test-id-timestamp-0\" flags=\"0\" delay=\"0.0\" attack=\"0\">0</ags-timestamp>\n" \
+  "</ags-test>\n"
+
+#define AGS_FILE_TEST_READ_TIMESTAMP_LIST_DOC AGS_THREAD_XML_FILE_TEST_DOCTYPE_TEMPLATE \
+  "<ags-test>\n"							\
+  "<ags-timestamp-list id=\"test-id-timestamp-list-0\">\n"		\
+  "<ags-timestamp id=\"test-id-timestamp-0\" flags=\"0\" delay=\"0.0\" attack=\"0\">0</ags-timestamp>\n" \
+  "<ags-timestamp id=\"test-id-timestamp-0\" flags=\"0\" delay=\"0.0\" attack=\"0\">0</ags-timestamp>\n" \
+  "<ags-timestamp id=\"test-id-timestamp-0\" flags=\"0\" delay=\"0.0\" attack=\"0\">0</ags-timestamp>\n" \
+  "</ags-timestamp-list>\n"						\
+  "</ags-test>\n"
 
 /* The suite initialization time.
  * Opens the temporary file used by the tests.
@@ -178,7 +196,7 @@ ags_file_test_read_thread_list()
   file = g_object_new(AGS_TYPE_FILE,
 		      NULL);
   
-  doc = xmlReadMemory(AGS_FILE_TEST_READ_THREAD_DOC, strlen(AGS_FILE_TEST_READ_THREAD_DOC),
+  doc = xmlReadMemory(AGS_FILE_TEST_READ_THREAD_LIST_DOC, strlen(AGS_FILE_TEST_READ_THREAD_LIST_DOC),
 		      NULL, NULL, 0);
   root_node = xmlDocGetRootElement(doc);
   
@@ -193,7 +211,7 @@ ags_file_test_read_thread_list()
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp("ags-thread-list",
 		     child->name,
-		     11)){
+		     16)){
 	ags_file_read_thread_list(file, child, &list);
 
 	break;
@@ -210,43 +228,308 @@ ags_file_test_read_thread_list()
 void
 ags_file_test_write_thread_list()
 {
-  //TODO:JK: implement me
+  AgsThread *thread;
+
+  AgsFile *file;
+
+  xmlDoc *doc;
+  xmlNode *root_node, *child;
+
+  GList *list;
+
+  list = NULL;
+
+  /* create some threads */
+  thread = g_object_new(AGS_TYPE_THREAD,
+			NULL);
+  thread->freq = 250.0;
+  list = g_list_prepend(list,
+			thread);
+
+  thread = g_object_new(AGS_TYPE_THREAD,
+			NULL);
+  thread->freq = 125.0;
+  list = g_list_prepend(list,
+			thread);
+
+  thread = g_object_new(AGS_TYPE_THREAD,
+			NULL);
+  thread->freq = 48.0;
+  list = g_list_prepend(list,
+			thread);
+
+  /* create file object */
+  file = g_object_new(AGS_TYPE_FILE,
+		      NULL);
+
+  doc = xmlReadMemory(AGS_THREAD_XML_FILE_TEST_DOC_TEMPLATE, strlen(AGS_THREAD_XML_FILE_TEST_DOC_TEMPLATE),
+		      NULL, NULL, 0);
+  root_node = xmlDocGetRootElement(doc);
+
+  g_object_set(file,
+	       "xml-doc", doc,
+	       NULL);
+
+  /* write thread list */
+  child = ags_file_write_thread_list(file, root_node, list);
+
+  CU_ASSERT(child != NULL &&
+	    child->parent == root_node &&
+	    !xmlStrncmp(child->name,
+			"ags-thread-list",
+			16));
 }
 
 void
 ags_file_test_read_thread_pool()
 {
-  //TODO:JK: implement me
+  AgsThreadPool *thread_pool;
+
+  AgsFile *file;
+
+  xmlDoc *doc;
+  xmlNode *root_node, *child;
+  
+  thread_pool = NULL;
+
+  file = g_object_new(AGS_TYPE_FILE,
+		      NULL);
+  
+  doc = xmlReadMemory(AGS_FILE_TEST_READ_THREAD_POOL_DOC, strlen(AGS_FILE_TEST_READ_THREAD_POOL_DOC),
+		      NULL, NULL, 0);
+  root_node = xmlDocGetRootElement(doc);
+  
+  g_object_set(file,
+	       "xml-doc", doc,
+	       NULL);
+  
+  /* child */
+  child = root_node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp("ags-thread-pool",
+		     child->name,
+		     16)){
+	ags_file_read_thread_pool(file, child, &thread_pool);
+
+	break;
+      }
+    }
+
+    child = child->next;
+  }
+
+  CU_ASSERT(AGS_IS_THREAD_POOL(thread_pool));
 }
 
 void
 ags_file_test_write_thread_pool()
 {
-  //TODO:JK: implement me
+  AgsThreadPool *thread_pool;
+
+  AgsFile *file;
+
+  xmlDoc *doc;
+  xmlNode *root_node, *child;
+
+  thread_pool = g_object_new(AGS_TYPE_THREAD_POOL,
+			     NULL);
+
+  file = g_object_new(AGS_TYPE_FILE,
+		      NULL);
+
+  doc = xmlReadMemory(AGS_THREAD_XML_FILE_TEST_DOC_TEMPLATE, strlen(AGS_THREAD_XML_FILE_TEST_DOC_TEMPLATE),
+		      NULL, NULL, 0);
+  root_node = xmlDocGetRootElement(doc);
+
+  g_object_set(file,
+	       "xml-doc", doc,
+	       NULL);
+
+  /* node */
+  child = ags_file_write_thread_pool(file, root_node, thread_pool);
+
+  CU_ASSERT(child != NULL &&
+	    child->parent == root_node &&
+	    !xmlStrncmp(child->name,
+			"ags-thread-pool",
+			16));
 }
 
 void
 ags_file_test_read_timestamp()
 {
-  //TODO:JK: implement me
+  AgsTimestamp *timestamp;
+
+  AgsFile *file;
+
+  xmlDoc *doc;
+  xmlNode *root_node, *child;
+  
+  timestamp = NULL;
+
+  file = g_object_new(AGS_TYPE_FILE,
+		      NULL);
+  
+  doc = xmlReadMemory(AGS_FILE_TEST_READ_TIMESTAMP_DOC, strlen(AGS_FILE_TEST_READ_TIMESTAMP_DOC),
+		      NULL, NULL, 0);
+  root_node = xmlDocGetRootElement(doc);
+  
+  g_object_set(file,
+	       "xml-doc", doc,
+	       NULL);
+  
+  /* child */
+  child = root_node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp("ags-timestamp",
+		     child->name,
+		     14)){
+	ags_file_read_timestamp(file, child, &timestamp);
+
+	break;
+      }
+    }
+
+    child = child->next;
+  }
+
+  CU_ASSERT(AGS_IS_TIMESTAMP(timestamp) &&
+	    timestamp->delay == 0.0 &&
+	    timestamp->attack == 0);
 }
 
 void
 ags_file_test_write_timestamp()
 {
-  //TODO:JK: implement me
+  AgsTimestamp *timestamp;
+
+  AgsFile *file;
+
+  xmlDoc *doc;
+  xmlNode *root_node, *child;
+
+  timestamp = g_object_new(AGS_TYPE_TIMESTAMP,
+			   NULL);
+
+  file = g_object_new(AGS_TYPE_FILE,
+		      NULL);
+
+  doc = xmlReadMemory(AGS_THREAD_XML_FILE_TEST_DOC_TEMPLATE, strlen(AGS_THREAD_XML_FILE_TEST_DOC_TEMPLATE),
+		      NULL, NULL, 0);
+  root_node = xmlDocGetRootElement(doc);
+
+  g_object_set(file,
+	       "xml-doc", doc,
+	       NULL);
+
+  /* node */
+  child = ags_file_write_timestamp(file, root_node, timestamp);
+
+  CU_ASSERT(child != NULL &&
+	    child->parent == root_node &&
+	    !xmlStrncmp(child->name,
+			"ags-timestamp",
+			14));
 }
 
 void
 ags_file_test_read_timestamp_list()
 {
-  //TODO:JK: implement me
+  AgsFile *file;
+
+  xmlDoc *doc;
+  xmlNode *root_node, *child;
+
+  GList *list;
+  
+  list = NULL;
+
+  file = g_object_new(AGS_TYPE_FILE,
+		      NULL);
+  
+  doc = xmlReadMemory(AGS_FILE_TEST_READ_TIMESTAMP_LIST_DOC, strlen(AGS_FILE_TEST_READ_TIMESTAMP_LIST_DOC),
+		      NULL, NULL, 0);
+  root_node = xmlDocGetRootElement(doc);
+  
+  g_object_set(file,
+	       "xml-doc", doc,
+	       NULL);
+  
+  /* child */
+  child = root_node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp("ags-timestamp-list",
+		     child->name,
+		     18)){
+	ags_file_read_timestamp_list(file, child, &list);
+
+	break;
+      }
+    }
+
+    child = child->next;
+  }
+
+  CU_ASSERT(list != NULL &&
+	    g_list_length(list) == 3);
 }
 
 void
 ags_file_test_write_timestamp_list()
 {
-  //TODO:JK: implement me
+  AgsTimestamp *timestamp;
+
+  AgsFile *file;
+
+  xmlDoc *doc;
+  xmlNode *root_node, *child;
+
+  GList *list;
+
+  list = NULL;
+
+  /* create some timestamps */
+  timestamp = g_object_new(AGS_TYPE_TIMESTAMP,
+			NULL);
+  list = g_list_prepend(list,
+			timestamp);
+
+  timestamp = g_object_new(AGS_TYPE_TIMESTAMP,
+			NULL);
+  list = g_list_prepend(list,
+			timestamp);
+
+  timestamp = g_object_new(AGS_TYPE_TIMESTAMP,
+			NULL);
+  list = g_list_prepend(list,
+			timestamp);
+
+  /* create file object */
+  file = g_object_new(AGS_TYPE_FILE,
+		      NULL);
+
+  doc = xmlReadMemory(AGS_THREAD_XML_FILE_TEST_DOC_TEMPLATE, strlen(AGS_THREAD_XML_FILE_TEST_DOC_TEMPLATE),
+		      NULL, NULL, 0);
+  root_node = xmlDocGetRootElement(doc);
+
+  g_object_set(file,
+	       "xml-doc", doc,
+	       NULL);
+
+  /* write timestamp list */
+  child = ags_file_write_timestamp_list(file, root_node, list);
+
+  CU_ASSERT(child != NULL &&
+	    child->parent == root_node &&
+	    !xmlStrncmp(child->name,
+			"ags-timestamp-list",
+			18));
 }
 
 int
