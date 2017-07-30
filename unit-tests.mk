@@ -37,6 +37,7 @@ check_PROGRAMS += \
 	ags_pattern_test \
 	ags_notation_test \
 	ags_automation_test \
+	ags_acceleration_test \
 	ags_midi_buffer_util_test \
 	ags_midi_builder_test \
 	ags_xorg_application_context_test
@@ -262,6 +263,12 @@ ags_automation_test_SOURCES = ags/test/audio/ags_automation_test.c
 ags_automation_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_automation_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_automation_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lm -lrt $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# acceleration unit test
+ags_acceleration_test_SOURCES = ags/test/audio/ags_acceleration_test.c
+ags_acceleration_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_acceleration_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_acceleration_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # midi buffer util unit test
 ags_midi_buffer_util_test_SOURCES = ags/test/audio/midi/ags_midi_buffer_util_test.c

@@ -113,6 +113,7 @@ check_PROGRAMS = ags_application_context_test$(EXEEXT) \
 	ags_audio_signal_test$(EXEEXT) ags_recall_test$(EXEEXT) \
 	ags_port_test$(EXEEXT) ags_pattern_test$(EXEEXT) \
 	ags_notation_test$(EXEEXT) ags_automation_test$(EXEEXT) \
+	ags_acceleration_test$(EXEEXT) \
 	ags_midi_buffer_util_test$(EXEEXT) \
 	ags_midi_builder_test$(EXEEXT) \
 	ags_xorg_application_context_test$(EXEEXT) \
@@ -835,6 +836,17 @@ libgsequencer_test_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(libgsequencer_test_la_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 PROGRAMS = $(bin_PROGRAMS)
+am_ags_acceleration_test_OBJECTS = ags/test/audio/ags_acceleration_test-ags_acceleration_test.$(OBJEXT)
+ags_acceleration_test_OBJECTS = $(am_ags_acceleration_test_OBJECTS)
+ags_acceleration_test_DEPENDENCIES = libags_audio.la libags_server.la \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+ags_acceleration_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_acceleration_test_CFLAGS) $(CFLAGS) \
+	$(ags_acceleration_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_application_context_test_OBJECTS = ags/test/object/ags_application_context_test-ags_application_context_test.$(OBJEXT)
 ags_application_context_test_OBJECTS =  \
 	$(am_ags_application_context_test_OBJECTS)
@@ -1415,6 +1427,7 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(libags_gui_la_SOURCES) $(libags_server_la_SOURCES) \
 	$(libags_thread_la_SOURCES) $(libgsequencer_la_SOURCES) \
 	$(libgsequencer_test_la_SOURCES) \
+	$(ags_acceleration_test_SOURCES) \
 	$(ags_application_context_test_SOURCES) \
 	$(ags_audio_application_context_test_SOURCES) \
 	$(ags_audio_signal_test_SOURCES) $(ags_audio_test_SOURCES) \
@@ -1459,6 +1472,7 @@ DIST_SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(libags_gui_la_SOURCES) $(libags_server_la_SOURCES) \
 	$(libags_thread_la_SOURCES) $(libgsequencer_la_SOURCES) \
 	$(libgsequencer_test_la_SOURCES) \
+	$(ags_acceleration_test_SOURCES) \
 	$(ags_application_context_test_SOURCES) \
 	$(ags_audio_application_context_test_SOURCES) \
 	$(ags_audio_signal_test_SOURCES) $(ags_audio_test_SOURCES) \
@@ -2433,6 +2447,12 @@ ags_automation_test_SOURCES = ags/test/audio/ags_automation_test.c
 ags_automation_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_automation_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_automation_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lm -lrt $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# acceleration unit test
+ags_acceleration_test_SOURCES = ags/test/audio/ags_acceleration_test.c
+ags_acceleration_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_acceleration_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_acceleration_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # midi buffer util unit test
 ags_midi_buffer_util_test_SOURCES = ags/test/audio/midi/ags_midi_buffer_util_test.c
@@ -5735,6 +5755,19 @@ clean-checkPROGRAMS:
 	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
 	echo " rm -f" $$list; \
 	rm -f $$list
+ags/test/audio/$(am__dirstamp):
+	@$(MKDIR_P) ags/test/audio
+	@: > ags/test/audio/$(am__dirstamp)
+ags/test/audio/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ags/test/audio/$(DEPDIR)
+	@: > ags/test/audio/$(DEPDIR)/$(am__dirstamp)
+ags/test/audio/ags_acceleration_test-ags_acceleration_test.$(OBJEXT):  \
+	ags/test/audio/$(am__dirstamp) \
+	ags/test/audio/$(DEPDIR)/$(am__dirstamp)
+
+ags_acceleration_test$(EXEEXT): $(ags_acceleration_test_OBJECTS) $(ags_acceleration_test_DEPENDENCIES) $(EXTRA_ags_acceleration_test_DEPENDENCIES) 
+	@rm -f ags_acceleration_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_acceleration_test_LINK) $(ags_acceleration_test_OBJECTS) $(ags_acceleration_test_LDADD) $(LIBS)
 ags/test/object/$(am__dirstamp):
 	@$(MKDIR_P) ags/test/object
 	@: > ags/test/object/$(am__dirstamp)
@@ -5748,12 +5781,6 @@ ags/test/object/ags_application_context_test-ags_application_context_test.$(OBJE
 ags_application_context_test$(EXEEXT): $(ags_application_context_test_OBJECTS) $(ags_application_context_test_DEPENDENCIES) $(EXTRA_ags_application_context_test_DEPENDENCIES) 
 	@rm -f ags_application_context_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_application_context_test_LINK) $(ags_application_context_test_OBJECTS) $(ags_application_context_test_LDADD) $(LIBS)
-ags/test/audio/$(am__dirstamp):
-	@$(MKDIR_P) ags/test/audio
-	@: > ags/test/audio/$(am__dirstamp)
-ags/test/audio/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) ags/test/audio/$(DEPDIR)
-	@: > ags/test/audio/$(DEPDIR)/$(am__dirstamp)
 ags/test/audio/ags_audio_application_context_test-ags_audio_application_context_test.$(OBJEXT):  \
 	ags/test/audio/$(am__dirstamp) \
 	ags/test/audio/$(DEPDIR)/$(am__dirstamp)
@@ -6757,6 +6784,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/machine/$(DEPDIR)/ags_functional_mixer_test-ags_functional_mixer_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/machine/$(DEPDIR)/ags_functional_panel_test-ags_functional_panel_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/machine/$(DEPDIR)/ags_functional_synth_test-ags_functional_synth_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_acceleration_test-ags_acceleration_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_audio_application_context_test-ags_audio_application_context_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_audio_signal_test-ags_audio_signal_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_audio_test-ags_audio_test.Po@am__quote@
@@ -10665,6 +10693,20 @@ ags/test/X/libgsequencer_test_la-ags_functional_test_util.lo: ags/test/X/ags_fun
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgsequencer_test_la_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_test_la_CFLAGS) $(CFLAGS) -c -o ags/test/X/libgsequencer_test_la-ags_functional_test_util.lo `test -f 'ags/test/X/ags_functional_test_util.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_test_util.c
 
+ags/test/audio/ags_acceleration_test-ags_acceleration_test.o: ags/test/audio/ags_acceleration_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_acceleration_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/ags_acceleration_test-ags_acceleration_test.o -MD -MP -MF ags/test/audio/$(DEPDIR)/ags_acceleration_test-ags_acceleration_test.Tpo -c -o ags/test/audio/ags_acceleration_test-ags_acceleration_test.o `test -f 'ags/test/audio/ags_acceleration_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_acceleration_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/ags_acceleration_test-ags_acceleration_test.Tpo ags/test/audio/$(DEPDIR)/ags_acceleration_test-ags_acceleration_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/ags_acceleration_test.c' object='ags/test/audio/ags_acceleration_test-ags_acceleration_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_acceleration_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/ags_acceleration_test-ags_acceleration_test.o `test -f 'ags/test/audio/ags_acceleration_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_acceleration_test.c
+
+ags/test/audio/ags_acceleration_test-ags_acceleration_test.obj: ags/test/audio/ags_acceleration_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_acceleration_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/ags_acceleration_test-ags_acceleration_test.obj -MD -MP -MF ags/test/audio/$(DEPDIR)/ags_acceleration_test-ags_acceleration_test.Tpo -c -o ags/test/audio/ags_acceleration_test-ags_acceleration_test.obj `if test -f 'ags/test/audio/ags_acceleration_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_acceleration_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_acceleration_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/ags_acceleration_test-ags_acceleration_test.Tpo ags/test/audio/$(DEPDIR)/ags_acceleration_test-ags_acceleration_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/ags_acceleration_test.c' object='ags/test/audio/ags_acceleration_test-ags_acceleration_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_acceleration_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/ags_acceleration_test-ags_acceleration_test.obj `if test -f 'ags/test/audio/ags_acceleration_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_acceleration_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_acceleration_test.c'; fi`
+
 ags/test/object/ags_application_context_test-ags_application_context_test.o: ags/test/object/ags_application_context_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_application_context_test_CFLAGS) $(CFLAGS) -MT ags/test/object/ags_application_context_test-ags_application_context_test.o -MD -MP -MF ags/test/object/$(DEPDIR)/ags_application_context_test-ags_application_context_test.Tpo -c -o ags/test/object/ags_application_context_test-ags_application_context_test.o `test -f 'ags/test/object/ags_application_context_test.c' || echo '$(srcdir)/'`ags/test/object/ags_application_context_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/object/$(DEPDIR)/ags_application_context_test-ags_application_context_test.Tpo ags/test/object/$(DEPDIR)/ags_application_context_test-ags_application_context_test.Po
@@ -12088,6 +12130,13 @@ ags_notation_test.log: ags_notation_test$(EXEEXT)
 ags_automation_test.log: ags_automation_test$(EXEEXT)
 	@p='ags_automation_test$(EXEEXT)'; \
 	b='ags_automation_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_acceleration_test.log: ags_acceleration_test$(EXEEXT)
+	@p='ags_acceleration_test$(EXEEXT)'; \
+	b='ags_acceleration_test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

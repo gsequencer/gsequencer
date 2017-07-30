@@ -151,6 +151,17 @@ void ags_notation_insert_from_clipboard(AgsNotation *notation,
 
 GList* ags_notation_get_current(AgsNotation *notation);
 
+unsigned char* ags_notation_to_raw_midi(AgsNotation *notation,
+					gdouble bpm, gdouble delay_factor,
+					glong nn, glong dd, glong cc, glong bb,
+					glong tempo,
+					guint *buffer_length);
+AgsNotation* ags_notation_from_raw_midi(unsigned char *raw_midi,
+					glong nn, glong dd, glong cc, glong bb,
+					glong tempo,
+					gdouble bpm, gdouble delay_factor,
+					guint length);
+
 AgsNotation* ags_notation_new(GObject *audio,
 			      guint audio_channel);
 
