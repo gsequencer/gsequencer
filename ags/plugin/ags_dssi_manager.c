@@ -174,6 +174,20 @@ ags_dssi_manager_get_default_path()
 }
 
 /**
+ * ags_dssi_manager_set_default_path:
+ * @default_path: the string vector array to use as default path
+ * 
+ * Set dssi manager default plugin path.
+ * 
+ * Since: 0.9.0
+ */
+void
+ags_dssi_manager_set_default_path(gchar** default_path)
+{
+  ags_dssi_default_path = default_path;
+}
+
+/**
  * ags_dssi_manager_get_filenames:
  * @dssi_manager: the #AgsDssiManager
  * 
@@ -192,6 +206,10 @@ ags_dssi_manager_get_filenames(AgsDssiManager *dssi_manager)
 
   guint i;
   gboolean contains_filename;
+
+  if(!AGS_DSSI_MANAGER(dssi_manager)){
+    return(NULL);
+  }
   
   dssi_plugin = dssi_manager->dssi_plugin;
   filenames = NULL;
@@ -248,6 +266,10 @@ ags_dssi_manager_find_dssi_plugin(AgsDssiManager *dssi_manager,
   
   GList *list;
 
+  if(!AGS_DSSI_MANAGER(dssi_manager)){
+    return(NULL);
+  }
+  
   list = dssi_manager->dssi_plugin;
 
   while(list != NULL){
@@ -279,7 +301,7 @@ void
 ags_dssi_manager_load_blacklist(AgsDssiManager *dssi_manager,
 				gchar *blacklist_filename)
 {
-  if(dssi_manager == NULL ||
+  if(!AGS_DSSI_MANAGER(dssi_manager) ||
      blacklist_filename == NULL){
     return;
   } 
@@ -328,7 +350,8 @@ ags_dssi_manager_load_file(AgsDssiManager *dssi_manager,
 
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-  if(dssi_path == NULL ||
+  if(!AGS_IS_DSSI_MANAGER(dssi_manager) ||
+     dssi_path == NULL ||
      filename == NULL){
     return;
   }
@@ -396,6 +419,10 @@ ags_dssi_manager_load_default_directory(AgsDssiManager *dssi_manager)
   gchar *filename;
 
   GError *error;
+
+  if(!AGS_DSSI_MANAGER(dssi_manager)){
+    return;
+  }
 
   dssi_path = ags_dssi_default_path;
   

@@ -260,9 +260,9 @@ main(int argc, char **argv)
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "test of AgsDssiManager get filenames\0", ags_dssi_manager_test_get_filenames) == NULL) ||
      (CU_add_test(pSuite, "test of AgsDssiManager find dssi plugin\0", ags_dssi_manager_test_find_dssi_plugin) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsDssiManager find dssi plugin\0", ags_dssi_manager_test_load_blacklist) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsDssiManager find dssi plugin\0", ags_dssi_manager_test_load_file) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsDssiManager find dssi plugin\0", ags_dssi_manager_test_load_default_directory) == NULL)){
+     (CU_add_test(pSuite, "test of AgsDssiManager load blacklist\0", ags_dssi_manager_test_load_blacklist) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsDssiManager load file\0", ags_dssi_manager_test_load_file) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsDssiManager load default directory\0", ags_dssi_manager_test_load_default_directory) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

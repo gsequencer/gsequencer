@@ -58,6 +58,9 @@ struct _AgsLv2uiManagerClass
 
 GType ags_lv2ui_manager_get_type(void);
 
+gchar** ags_lv2ui_manager_get_default_path();
+void ags_lv2ui_manager_set_default_path(gchar** default_path);
+
 gchar** ags_lv2ui_manager_get_filenames(AgsLv2uiManager *lv2ui_manager);
 AgsLv2uiPlugin* ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
 						    gchar *filename,
