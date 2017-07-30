@@ -26,6 +26,8 @@ check_PROGRAMS += \
 	ags_base_plugin_test \
 	ags_dssi_manager_test \
 	ags_dssi_plugin_test \
+	ags_ladspa_manager_test \
+	ags_lv2_manager_test \
 	ags_audio_application_context_test \
 	ags_devout_test \
 	ags_audio_test \
@@ -198,6 +200,18 @@ ags_dssi_plugin_test_SOURCES = ags/test/plugin/ags_dssi_plugin_test.c
 ags_dssi_plugin_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_dssi_plugin_test_LDFLAGS = $(LDFLAGS) -pthread
 ags_dssi_plugin_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# ladspa manager unit test
+ags_ladspa_manager_test_SOURCES = ags/test/plugin/ags_ladspa_manager_test.c
+ags_ladspa_manager_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_ladspa_manager_test_LDFLAGS = $(LDFLAGS) -pthread
+ags_ladspa_manager_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# lv2 manager unit test
+ags_lv2_manager_test_SOURCES = ags/test/plugin/ags_lv2_manager_test.c
+ags_lv2_manager_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_lv2_manager_test_LDFLAGS = $(LDFLAGS) -pthread
+ags_lv2_manager_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # audio application context unit test
 ags_audio_application_context_test_SOURCES = ags/test/audio/ags_audio_application_context_test.c

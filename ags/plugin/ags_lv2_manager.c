@@ -241,6 +241,10 @@ ags_lv2_manager_finalize(GObject *gobject)
 
   g_list_free_full(lv2_plugin,
 		   g_object_unref);
+
+  if(lv2_manager == ags_lv2_manager){
+    ags_lv2_manager = NULL;
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_manager_parent_class)->finalize(gobject);

@@ -150,6 +150,10 @@ ags_ladspa_manager_finalize(GObject *gobject)
   g_list_free_full(ladspa_plugin,
 		   (GDestroyNotify) g_object_unref);
 
+  if(ladspa_manager == ags_ladspa_manager){
+    ags_ladspa_manager = NULL;
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_ladspa_manager_parent_class)->finalize(gobject);
 }

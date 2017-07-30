@@ -78,13 +78,13 @@ ags_note_test_find_prev()
     x0 = rand() % 256;
     y = rand() % 8;
     
-    note = g_object_new(AGS_TYPE_NOTE,
-			"x0", x0,
-			"x1", x0 + 1,
-			"y", y,
-			NULL);
+    note[i] = g_object_new(AGS_TYPE_NOTE,
+			   "x0", x0,
+			   "x1", x0 + 1,
+			   "y", y,
+			   NULL);
     list = g_list_prepend(list,
-			  note);
+			  note[i]);
   }
 
   list = g_list_sort(list,
@@ -101,7 +101,7 @@ ags_note_test_find_prev()
 				 x0, y);
 
     if(current != NULL &&
-       (AGS_NOTE(current->data)->x0 > x0 ||
+       (AGS_NOTE(current->data)->x[0] > x0 ||
 	AGS_NOTE(current->data)->y != y)){
       success = FALSE;
 
@@ -130,13 +130,13 @@ ags_note_test_find_next()
     x0 = rand() % 256;
     y = rand() % 8;
     
-    note = g_object_new(AGS_TYPE_NOTE,
-			"x0", x0,
-			"x1", x0 + 1,
-			"y", y,
-			NULL);
+    note[i] = g_object_new(AGS_TYPE_NOTE,
+			   "x0", x0,
+			   "x1", x0 + 1,
+			   "y", y,
+			   NULL);
     list = g_list_prepend(list,
-			  note);
+			  note[i]);
   }
 
   list = g_list_sort(list,
@@ -153,7 +153,7 @@ ags_note_test_find_next()
 				 x0, y);
 
     if(current != NULL &&
-       (AGS_NOTE(current->data)->x0 < x0 ||
+       (AGS_NOTE(current->data)->x[0] < x0 ||
 	AGS_NOTE(current->data)->y != y)){
       success = FALSE;
 
