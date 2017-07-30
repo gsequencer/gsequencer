@@ -62,9 +62,13 @@ void
 ags_thread_pool_test_pull()
 {
   AgsThreadPool *thread_pool;
+  AgsThread *parent;
   AgsReturnableThread *returnable_thread;
+
+  parent = g_object_new(AGS_TYPE_THREAD,
+			NULL);
   
-  thread_pool = ags_thread_pool_new(NULL);
+  thread_pool = ags_thread_pool_new(parent);
   ags_thread_pool_start(thread_pool);
 
   usleep(AGS_THREAD_POOL_TEST_INITIAL_DELAY);
@@ -115,6 +119,9 @@ int
 main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
+
+  putenv("LC_ALL=C\0");
+  putenv("LANG=C\0");
   
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){

@@ -1319,7 +1319,7 @@ am_ags_task_test_OBJECTS =  \
 	ags/test/thread/ags_task_test-ags_task_test.$(OBJEXT)
 ags_task_test_OBJECTS = $(am_ags_task_test_OBJECTS)
 ags_task_test_DEPENDENCIES = libags_server.la libags_thread.la \
-	libags.la
+	libags.la $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 ags_task_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(ags_task_test_CFLAGS) \
 	$(CFLAGS) $(ags_task_test_LDFLAGS) $(LDFLAGS) -o $@
@@ -1353,7 +1353,7 @@ am_ags_thread_test_OBJECTS =  \
 	ags/test/thread/ags_thread_test-ags_thread_test.$(OBJEXT)
 ags_thread_test_OBJECTS = $(am_ags_thread_test_OBJECTS)
 ags_thread_test_DEPENDENCIES = libags_server.la libags_thread.la \
-	libags.la
+	libags.la $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 ags_thread_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_thread_test_CFLAGS) $(CFLAGS) $(ags_thread_test_LDFLAGS) \
@@ -2325,7 +2325,7 @@ ags_returnable_thread_test_LDADD = libags_server.la libags_thread.la libags.la -
 ags_task_test_SOURCES = ags/test/thread/ags_task_test.c
 ags_task_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_task_test_LDFLAGS = -lcunit -lm -pthread -lrt $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-ags_task_test_LDADD = libags_server.la libags_thread.la libags.la
+ags_task_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # task thread unit test
 ags_task_thread_test_SOURCES = ags/test/thread/ags_task_thread_test.c
@@ -2337,7 +2337,7 @@ ags_task_thread_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit
 ags_thread_test_SOURCES = ags/test/thread/ags_thread_test.c
 ags_thread_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_thread_test_LDFLAGS = -lcunit -lm -pthread -lrt $(LDFLAGS) $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-ags_thread_test_LDADD = libags_server.la libags_thread.la libags.la
+ags_thread_test_LDADD = libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # thread pool unit test
 ags_thread_pool_test_SOURCES = ags/test/thread/ags_thread_pool_test.c

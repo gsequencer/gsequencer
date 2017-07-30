@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 0.8.10\n"
+"Project-Id-Version: gsequencer 0.9.0\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-07-18 16:15+0200\n"
+"POT-Creation-Date: 2017-07-30 20:52+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -439,7 +439,7 @@ msgstr ""
 msgid "server"
 msgstr ""
 
-#: ags/X/ags_property_editor.c:100 ags/X/editor/ags_envelope_editor.c:171
+#: ags/X/ags_property_editor.c:100 ags/X/editor/ags_envelope_editor.c:172
 #: ags/X/export/ags_machine_collection_entry.c:173
 #: ags/X/import/ags_track_collection_mapper.c:234
 msgid "enabled"
@@ -493,21 +493,21 @@ msgstr ""
 msgid "format"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:464
+#: ags/X/ags_xorg_application_context.c:467
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:474
+#: ags/X/ags_xorg_application_context.c:477
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:617
+#: ags/X/ags_xorg_application_context.c:620
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:627
+#: ags/X/ags_xorg_application_context.c:630
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
@@ -531,28 +531,28 @@ msgstr ""
 msgid "pattern"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_editor.c:181 ags/X/machine/ags_ffplayer.c:307
+#: ags/X/editor/ags_envelope_editor.c:182 ags/X/machine/ags_ffplayer.c:307
 #: ags/X/machine/ags_live_lv2_bridge.c:1438 ags/X/machine/ags_lv2_bridge.c:1679
 msgid "preset"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_editor.c:296 ags/X/machine/ags_oscillator.c:172
+#: ags/X/editor/ags_envelope_editor.c:297 ags/X/machine/ags_oscillator.c:172
 msgid "attack"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_editor.c:338
+#: ags/X/editor/ags_envelope_editor.c:339
 msgid "decay"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_editor.c:380
+#: ags/X/editor/ags_envelope_editor.c:381
 msgid "sustain"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_editor.c:422
+#: ags/X/editor/ags_envelope_editor.c:423
 msgid "release"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_editor.c:464
+#: ags/X/editor/ags_envelope_editor.c:465
 msgid "ratio"
 msgstr ""
 

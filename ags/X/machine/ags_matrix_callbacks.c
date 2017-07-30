@@ -179,19 +179,46 @@ void
 ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
 {
   AgsCountBeatsAudio *count_beats_audio;
+
+  AgsMutexManager *mutex_manager;
+
   GList *list;
+
   gboolean loop;
+
+  GValue value = {0,};
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+  
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) AGS_MACHINE(matrix)->audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(audio_mutex);
 
   loop = (GTK_TOGGLE_BUTTON(button)->active) ? TRUE: FALSE;
 
   /* AgsCopyPatternAudio */
   list = AGS_MACHINE(matrix)->audio->play;
 
+  g_value_init(&value,
+	       G_TYPE_BOOLEAN);
+  
   while((list = ags_recall_find_type(list,
 				     AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
     count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
 
-    count_beats_audio->sequencer_loop->port_value.ags_port_boolean = loop;
+    g_value_set_boolean(&value,
+			loop);
+    ags_port_safe_write(count_beats_audio->sequencer_loop,
+			&value);
 
     list = list->next;
   }
@@ -202,10 +229,15 @@ ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
 				     AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
     count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
 
-    count_beats_audio->sequencer_loop->port_value.ags_port_boolean = loop;
+    g_value_set_boolean(&value,
+			loop);
+    ags_port_safe_write(count_beats_audio->sequencer_loop,
+			&value);
 
     list = list->next;
   }
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void

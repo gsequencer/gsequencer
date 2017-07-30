@@ -276,6 +276,8 @@ ags_apply_bpm_dispose(GObject *gobject)
 {
   AgsApplyBpm *apply_bpm;
 
+  apply_bpm = AGS_APPLY_BPM(gobject);
+  
   if(apply_bpm->scope != NULL){
     g_object_unref(apply_bpm->scope);
 
@@ -290,6 +292,8 @@ void
 ags_apply_bpm_finalize(GObject *gobject)
 {
   AgsApplyBpm *apply_bpm;
+
+  apply_bpm = AGS_APPLY_BPM(gobject);
 
   if(apply_bpm->scope != NULL){
     g_object_unref(apply_bpm->scope);

@@ -404,14 +404,14 @@ ags_channel_thread_finalize(GObject *gobject)
   pthread_mutex_destroy(channel_thread->wakeup_mutex);
   free(channel_thread->wakeup_mutex);
   
-  pthread_mutex_destroy(channel_thread->wakeup_cond);
+  pthread_cond_destroy(channel_thread->wakeup_cond);
   free(channel_thread->wakeup_cond);
 
   /* sync mutex and cond */
   pthread_mutex_destroy(channel_thread->done_mutex);
   free(channel_thread->done_mutex);
   
-  pthread_mutex_destroy(channel_thread->done_cond);
+  pthread_cond_destroy(channel_thread->done_cond);
   free(channel_thread->done_cond);
 
   /* channel */

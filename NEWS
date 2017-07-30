@@ -1,7 +1,10 @@
 Overview of Changes in AGS 0.9.0
 ================================
 
+* Using destroy worker for AgsRecall related unref resulting in much
+  better performance.
 * Many new unit tests and improved code by detecting errors.
+* Extended chapter 3 about concurrency of developer's book.
 
 Overview of Changes in AGS 0.8.9
 ================================

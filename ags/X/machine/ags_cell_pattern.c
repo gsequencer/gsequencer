@@ -814,7 +814,6 @@ ags_cell_pattern_draw_cursor(AgsCellPattern *cell_pattern)
 {
   guint i, j;
 
-  
   if(cell_pattern->cursor_y >= GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value &&
      cell_pattern->cursor_y < GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value + cell_pattern->n_rows){
     i = cell_pattern->cursor_y - GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value;
@@ -833,6 +832,13 @@ ags_cell_pattern_redraw_gutter_point(AgsCellPattern *cell_pattern, AgsChannel *c
 {
   AgsMachine *machine;
 
+  AgsMutexManager *mutex_manager;
+
+  gboolean do_highlight;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+
   if(channel == NULL ||
      channel->pattern == NULL){
     return;
@@ -841,7 +847,25 @@ ags_cell_pattern_redraw_gutter_point(AgsCellPattern *cell_pattern, AgsChannel *c
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						   AGS_TYPE_MACHINE);
 
-  if(ags_pattern_get_bit((AgsPattern *) channel->pattern->data, machine->bank_0, machine->bank_1, j)){
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get channel mutex */
+  pthread_mutex_lock(application_mutex);
+  
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) channel);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* redraw */
+  pthread_mutex_lock(channel_mutex);
+
+  do_highlight = ags_pattern_get_bit((AgsPattern *) channel->pattern->data, machine->bank_0, machine->bank_1, j);
+  
+  pthread_mutex_unlock(channel_mutex);
+  
+  if(do_highlight){
     ags_cell_pattern_highlight_gutter_point(cell_pattern, j, i);
   }else{
     ags_cell_pattern_unpaint_gutter_point(cell_pattern, j, i);
