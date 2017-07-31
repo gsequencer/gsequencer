@@ -19,11 +19,14 @@
 
 #include <ags/audio/recall/ags_peak_channel.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_mutable.h>
 #include <ags/object/ags_plugin.h>
+
+#include <ags/thread/ags_mutex_manager.h>
 
 #include <ags/plugin/ags_base_plugin.h>
 
@@ -356,9 +359,12 @@ void
 ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
 			       gboolean is_play)
 {
+  AgsAudio *audio;
   AgsChannel *source;
-  AgsRecycling *recycling;
+  AgsRecycling *recycling, *recycling_end_region, *tmp;
   
+  AgsMutexManager *mutex_manager;
+
   GList *audio_signal;
 
   gchar *str;
@@ -371,25 +377,93 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
   guint limit;
   guint i;
   guint copy_mode;
+  gboolean output_has_recycling, input_has_recycling;
   
   GValue *value;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *recycling_mutex;
 
   if(peak_channel == NULL){
     return;
   }
   
   source = AGS_RECALL_CHANNEL(peak_channel)->source;
-  recycling = source->first_recycling;
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* lookup channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) source);
+	
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(channel_mutex);
+
+  audio = AGS_AUDIO(source->audio);
+  
+  recycling = source->first_recycling;
+  tmp = source->last_recycling;
+  
   buffer_size = source->buffer_size;
 
+  pthread_mutex_unlock(channel_mutex);
+
+  /* lookup audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some flags */
+  pthread_mutex_lock(audio_mutex);
+
+  input_has_recycling = ((AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(source->audio)->flags)) != 0) ? TRUE: FALSE;
+  output_has_recycling = ((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (AGS_AUDIO(source->audio)->flags)) != 0) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  /* lookup recycling mutex */
+  pthread_mutex_lock(application_mutex);
+
+  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) tmp);
+	
+  pthread_mutex_unlock(application_mutex);
+
+  /* get end region */
+  pthread_mutex_lock(recycling_mutex);
+
+  recycling_end_region = tmp->next;
+  
+  pthread_mutex_unlock(recycling_mutex);
+  
   /* initialize buffer */
   buffer = (signed short *) malloc(buffer_size * sizeof(signed short));
   memset(buffer,
 	 0,
 	 buffer_size * sizeof(signed short));
 
-  while(recycling != source->last_recycling->next){
+  while(recycling != recycling_end_region){
+    /* lookup recycling mutex */
+    pthread_mutex_lock(application_mutex);
+
+    recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) recycling);
+	
+    pthread_mutex_unlock(application_mutex);
+
+    /* get current peak */
+    pthread_mutex_lock(recycling_mutex);
+      
     audio_signal = recycling->audio_signal;
 
     while(audio_signal != NULL){
@@ -397,9 +471,9 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
 						      ags_audio_buffer_util_format_from_soundcard(AGS_AUDIO_SIGNAL(audio_signal->data)->format));
 
       if((AGS_IS_INPUT(source) &&
-	  (AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(source->audio)->flags)) != 0) ||
+	  input_has_recycling) ||
 	 (AGS_IS_OUTPUT(source) &&
-	  (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (AGS_AUDIO(source->audio)->flags)) != 0)){
+	  output_has_recycling)){
 	if((AGS_AUDIO_SIGNAL_TEMPLATE & (AGS_AUDIO_SIGNAL(audio_signal->data)->flags)) == 0 &&
 	   AGS_AUDIO_SIGNAL(audio_signal->data)->stream_current != NULL){
 	  /* copy buffer 1:1 */
@@ -421,6 +495,8 @@ ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
     }
 
     recycling = recycling->next;
+
+    pthread_mutex_unlock(recycling_mutex);
   }
 
   /* calculate average value */

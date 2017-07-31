@@ -1009,8 +1009,22 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
     /* get some recalls */
     pthread_mutex_lock(audio_mutex);
 
-    recall_id = ags_recall_id_find_parent_recycling_context(audio->recall_id,
-							    NULL);
+    list = audio->recall_id;
+
+    while(list != NULL){
+      recall_id = ags_recall_id_find_parent_recycling_context(list,
+							      NULL);
+      
+      if(recall_id != NULL &&
+	 (AGS_RECALL_ID_SEQUENCER & (recall_id->flags)) == 0){
+	list = g_list_find(list,
+			   recall_id);
+
+	list = list->next;
+      }else{
+	break;
+      }
+    }
 
     pthread_mutex_unlock(audio_mutex);
     
