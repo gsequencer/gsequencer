@@ -1,3 +1,8 @@
+ags (0.9.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed crash after drum restore and doing sequencer playback
+
 ags (0.9.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
