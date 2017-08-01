@@ -59,12 +59,13 @@ struct _AgsFunction
   
   gboolean is_pushing;
   gchar **equation;
+  gchar **transformed_equation;
   guint equation_count;
   
   gchar *source_function;
-
+  
   gchar *normalized_function;
-
+  
   gchar **symbol;
   guint symbol_count;
 
