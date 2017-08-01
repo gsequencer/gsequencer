@@ -446,14 +446,20 @@ ags_function_literal_solve(AgsFunction *function)
 {
   gchar *transformed_function;
   gchar *normalized_function;
+  gchar *str;
   
   guint max_exponent, available_exponent;
   guint i, j;
 
-  auto gchar* ags_function_literal_solve_numeric_exponent_only(gchar *source_function);
-  auto guint ags_function_literal_solve_find_max_exponent(gchar *normalized_function);
+  auto gchar* ags_function_literal_solve_expand_functions(gchar *transformed_function);
+  auto gchar* ags_function_literal_solve_numeric_exponent_only(gchar *transformed_function);
+  auto guint ags_function_literal_solve_find_max_exponent(gchar *transformed_function);
 
-  gchar* ags_function_literal_solve_numeric_exponent_only(gchar *source_function){
+  gchar* ags_function_literal_solve_expand_functions(gchar *transformed_function){
+    
+  }
+
+  gchar* ags_function_literal_solve_numeric_exponent_only(gchar *transformed_function){
     gchar *numeric_exponent_only;
     
     guint n_terms;
@@ -462,7 +468,7 @@ ags_function_literal_solve(AgsFunction *function)
     
   }
   
-  guint ags_function_literal_solve_find_max_exponent(gchar *normalized_function){
+  guint ags_function_literal_solve_find_max_exponent(gchar *transformed_function){
     regmatch_t match_arr[5];
 
     static gboolean regex_compiled = FALSE;
@@ -480,15 +486,23 @@ ags_function_literal_solve(AgsFunction *function)
   }
 
   /* compute dimensions */
+  transformed_function = g_strdup(function->source_function);
   max_exponent = function->symbol_count;
 
   /* step #0 of normalization - eliminate trigonometric functions */
+  str = transformed_function;
+  transformed_function = ags_function_literal_solve_expand_functions(transformed_function);
+
+  g_free(str);
 
   /* step #1 of normalization - numeric only exponents */
-  normalized_function = ags_function_literal_solve_numeric_exponent_only(function->source_function);
+  str = transformed_function;
+  transformed_function = ags_function_literal_solve_numeric_exponent_only(transformed_function);
 
+  g_free(str);
+  
   /* find maximum exponent */
-  available_exponent = ags_function_literal_solve_find_max_exponent(normalized_function);
+  available_exponent = ags_function_literal_solve_find_max_exponent(transformed_function);
 
   if(max_exponent < available_exponent){
     max_exponent = available_exponent;
@@ -535,7 +549,7 @@ ags_function_push_equation(AgsFunction *function,
   
   guint i;
   
-  if(function == NULL){
+  if(!AGS_IS_FUNCTION(function)){
     return(FALSE);
   }
 
@@ -629,7 +643,7 @@ ags_function_pop_equation(AgsFunction *function,
     length += strlen(function->equation[i]);
   }
 
-  /* allocate and memcpy equations - use addition */
+  /* allocate source function and memcpy equations - use addition */
   if(function->equation_count > 0){
     if(function->equation_count > 1){
       length += (function->equation_count * 2) + (function->equation_count - 1) + 1;

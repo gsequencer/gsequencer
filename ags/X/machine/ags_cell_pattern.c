@@ -1009,6 +1009,7 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
     /* get some recalls */
     pthread_mutex_lock(audio_mutex);
 
+    recall_id = NULL;
     list = audio->recall_id;
 
     while(list != NULL){

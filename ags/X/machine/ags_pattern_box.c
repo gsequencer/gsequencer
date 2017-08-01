@@ -835,8 +835,9 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     /* get some recalls */
     pthread_mutex_lock(audio_mutex);
 
+    recall_id = NULL;
     list = audio->recall_id;
-
+    
     while(list != NULL){
       recall_id = ags_recall_id_find_parent_recycling_context(list,
 							      NULL);

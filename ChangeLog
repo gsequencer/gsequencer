@@ -1,3 +1,8 @@
+ags (0.9.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed unitialized pointer in AgsCellPattern and AgsPatternBox animation
+
 ags (0.9.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
