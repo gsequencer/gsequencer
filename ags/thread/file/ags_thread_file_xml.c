@@ -48,6 +48,8 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
   xmlNode *child;
   xmlChar *type_name;
 
+  xmlChar *str;
+  
   guint orig_flags;
   
   static gboolean thread_type_is_registered = FALSE;
@@ -102,14 +104,26 @@ ags_file_read_thread(AgsFile *file, xmlNode *node, AgsThread **thread)
 										  AGS_FILE_FLAGS_PROP),
 								       NULL,
 								       16)));
-  
-  g_atomic_int_set(&(gobject->sync_flags),
-		   ((~(AGS_THREAD_WAIT_0 |
-		       AGS_THREAD_WAIT_1 |
-		       AGS_THREAD_WAIT_2)) & (guint) g_ascii_strtoull(xmlGetProp(node,
-										 "sync-flags"),
-								      NULL,
-								      16)));
+
+  str = xmlGetProp(node,
+		   "sync-flags");
+
+  if(str != NULL){
+    g_atomic_int_set(&(gobject->sync_flags),
+		     ((~(AGS_THREAD_WAIT_0 |
+			 AGS_THREAD_WAIT_1 |
+			 AGS_THREAD_WAIT_2)) & (guint) g_ascii_strtoull(str,
+									NULL,
+									16)));
+  }
+
+  str = xmlGetProp(node,
+		   "frequency");
+
+  if(str != NULL){
+    gobject->freq = (guint) g_ascii_strtod(str,
+					   NULL);
+  }
 
   /* start */
   if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(orig_flags)))) != 0){
@@ -214,6 +228,10 @@ ags_file_write_thread(AgsFile *file, xmlNode *parent, AgsThread *thread)
 	     "sync-flags",
 	     g_strdup_printf("%x", g_atomic_int_get(&(thread->sync_flags))));
 
+  xmlNewProp(node,
+	     "frequency",
+	     g_strdup_printf("%.01f", thread->freq));
+
   /* add to parent */
   xmlAddChild(parent,
 	      node);
@@ -221,18 +239,22 @@ ags_file_write_thread(AgsFile *file, xmlNode *parent, AgsThread *thread)
   /* child elements */
   current = g_atomic_pointer_get(&(thread->children));
 
-  child = xmlNewNode(NULL,
-		     "ags-thread-list");
-  xmlAddChild(node,
-	      child);
+  if(current != NULL){
+    child = xmlNewNode(NULL,
+		       "ags-thread-list");
+    xmlAddChild(node,
+		child);
 
-  while(current != NULL){
-    ags_file_write_thread(file,
-			  child,
-			  current);
+    while(current != NULL){
+      ags_file_write_thread(file,
+			    child,
+			    current);
     
-    current = g_atomic_pointer_get(&(current->next));
+      current = g_atomic_pointer_get(&(current->next));
+    }
   }
+  
+  return(node);
 }
 
 void
@@ -362,7 +384,7 @@ ags_file_write_thread_pool(AgsFile *file, xmlNode *parent, AgsThreadPool *thread
   id = ags_id_generator_create_uuid();
   
   node = xmlNewNode(NULL,
-		    "ags-thread_pool");
+		    "ags-thread-pool");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
@@ -379,6 +401,11 @@ ags_file_write_thread_pool(AgsFile *file, xmlNode *parent, AgsThreadPool *thread
   xmlNewProp(node,
 	     AGS_FILE_FLAGS_PROP,
 	     g_strdup_printf("%x", thread_pool->flags));
+
+  xmlAddChild(parent,
+	      node);
+
+  return(node);
 }
 
 void
@@ -416,17 +443,16 @@ ags_file_read_timestamp(AgsFile *file, xmlNode *node, AgsTimestamp **timestamp)
 					    NULL,
 					    16);
 
-  gobject->delay = (guint) g_ascii_strtoull((gchar *) xmlGetProp(node,
-								 (xmlChar *) "delay"),
-					    NULL,
-					    10);
+  gobject->delay = (guint) g_ascii_strtod((gchar *) xmlGetProp(node,
+							       (xmlChar *) "delay"),
+					  NULL);
   
   gobject->attack = (guint) g_ascii_strtoull((gchar *) xmlGetProp(node,
 								  (xmlChar *) "attack"),
 					     NULL,
 					     10);
 
-  gobject->timer.unix_time.time_val = (guint) g_ascii_strtoull((gchar *) node->content,
+  gobject->timer.unix_time.time_val = (guint) g_ascii_strtoull((gchar *) xmlNodeGetContent(node),
 							       NULL,
 							       10);
 }
@@ -464,7 +490,7 @@ ags_file_write_timestamp(AgsFile *file, xmlNode *parent, AgsTimestamp *timestamp
 
   xmlNewProp(node,
 	     (xmlChar *) "delay",
-	     (xmlChar *) g_strdup_printf("%d", timestamp->delay));
+	     (xmlChar *) g_strdup_printf("%.01f", timestamp->delay));
 
   xmlNewProp(node,
 	     (xmlChar *) "attack",

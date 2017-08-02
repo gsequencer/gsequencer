@@ -132,6 +132,8 @@ GType ags_jack_midiin_get_type();
 
 GQuark ags_jack_midiin_error_quark();
 
+void ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin);
+
 AgsJackMidiin* ags_jack_midiin_new(GObject *application_context);
 
 #endif /*__AGS_JACK_MIDIIN_H__*/

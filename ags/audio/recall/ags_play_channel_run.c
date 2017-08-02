@@ -564,6 +564,10 @@ ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
   
   channel = AGS_RECALL_CHANNEL_RUN(play_channel_run)->source;
 
+  if(channel == NULL){
+    return;
+  }
+  
   soundcard = AGS_AUDIO(channel->audio)->soundcard;
 
   mutex_manager = ags_mutex_manager_get_instance();

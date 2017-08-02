@@ -597,13 +597,19 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  pthread_mutex_lock(application_mutex);
-
-  parent_mutex = ags_mutex_manager_lookup(mutex_manager,
+  /* get parent mutex */
+  if(thread_pool->parent != NULL){
+    pthread_mutex_lock(application_mutex);
+    
+    parent_mutex = ags_mutex_manager_lookup(mutex_manager,
 					  (GObject *) thread_pool->parent);
-  
-  pthread_mutex_unlock(application_mutex);
+    
+    pthread_mutex_unlock(application_mutex);
+  }else{
+    parent_mutex = NULL;
+  }
 
+  /* set running */
   g_atomic_int_or(&(thread_pool->flags),
 		  AGS_THREAD_POOL_RUNNING);
 
@@ -615,9 +621,14 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
   start_queue = NULL;
 
   while(list != NULL){
-    ags_thread_add_child_extended(AGS_THREAD(thread_pool->parent),	
-				  AGS_THREAD(list->data),
-				  TRUE, TRUE);
+    if(thread_pool->parent != NULL){
+      ags_thread_add_child_extended(AGS_THREAD(thread_pool->parent),
+				    AGS_THREAD(list->data),
+				    TRUE, TRUE);
+    }else{
+      ags_thread_start(list->data);
+    }
+    
     ags_connectable_connect(AGS_CONNECTABLE(list->data));
     
     //    ags_thread_start(AGS_THREAD(list->data));
@@ -627,20 +638,22 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
     list = list->next;
   }
 
-  pthread_mutex_lock(parent_mutex);
+  if(parent_mutex != NULL){
+    pthread_mutex_lock(parent_mutex);
 
-  if(start_queue != NULL){
-    if(g_atomic_pointer_get(&(thread_pool->parent->start_queue)) != NULL){
-      g_atomic_pointer_set(&(thread_pool->parent->start_queue),
-			   g_list_concat(start_queue,
-					 g_atomic_pointer_get(&(thread_pool->parent->start_queue))));
-    }else{
-      g_atomic_pointer_set(&(thread_pool->parent->start_queue),
-			   start_queue);
+    if(start_queue != NULL){
+      if(g_atomic_pointer_get(&(thread_pool->parent->start_queue)) != NULL){
+	g_atomic_pointer_set(&(thread_pool->parent->start_queue),
+			     g_list_concat(start_queue,
+					   g_atomic_pointer_get(&(thread_pool->parent->start_queue))));
+      }else{
+	g_atomic_pointer_set(&(thread_pool->parent->start_queue),
+			     start_queue);
+      }
     }
-  }
 
-  pthread_mutex_unlock(parent_mutex);
+    pthread_mutex_unlock(parent_mutex);
+  }
 }
 
 /**

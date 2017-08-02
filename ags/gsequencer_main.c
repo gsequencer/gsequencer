@@ -89,6 +89,8 @@
 
 #include <stdlib.h>
 
+#include <X11/Xlib.h>
+
 #include "config.h"
 
 void ags_signal_handler(int signr);
@@ -1388,7 +1390,7 @@ main(int argc, char **argv)
 #ifdef AGS_WITH_LIBINSTPATCH
   ipatch_init();
 #endif
-  //  g_log_set_fatal_mask("GLib-GObject", // "Gtk" G_LOG_DOMAIN, // 
+  //  g_log_set_fatal_mask(NULL, // "Gtk" G_LOG_DOMAIN, // 
   //		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
 
   /* animate */

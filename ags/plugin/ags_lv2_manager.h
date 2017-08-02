@@ -59,6 +59,9 @@ struct _AgsLv2ManagerClass
 
 GType ags_lv2_manager_get_type(void);
 
+gchar** ags_lv2_manager_get_default_path();
+void ags_lv2_manager_set_default_path(gchar** default_path);
+
 gchar** ags_lv2_manager_get_filenames(AgsLv2Manager *lv2_manager);
 AgsLv2Plugin* ags_lv2_manager_find_lv2_plugin(AgsLv2Manager *lv2_manager,
 					      gchar *filename,

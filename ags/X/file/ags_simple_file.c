@@ -1191,12 +1191,10 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
   
   g_message("XML simple file resolved");
 
-    /* connect */
-  ags_connectable_connect(AGS_CONNECTABLE(AGS_XORG_APPLICATION_CONTEXT(application_context)->window));
-  
-  gtk_widget_show_all((GtkWidget *) AGS_XORG_APPLICATION_CONTEXT(application_context)->window);
-  
+  /* connect */  
   ags_connectable_connect(AGS_CONNECTABLE(application_context));
+
+  gtk_widget_show_all((GtkWidget *) AGS_XORG_APPLICATION_CONTEXT(application_context)->window);
 
   g_message("XML simple file connected");
 
@@ -2135,8 +2133,6 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     child = child->next;
   }
 
-  ags_connectable_connect(AGS_CONNECTABLE(gobject));
-
   if(AGS_IS_LADSPA_BRIDGE(gobject)){
     ags_ladspa_bridge_load((AgsLadspaBridge *) gobject);
   }else if(AGS_IS_DSSI_BRIDGE(gobject)){
@@ -2194,6 +2190,9 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 		 NULL);
   }
   
+  /* connect AgsMachine */
+  ags_connectable_connect(AGS_CONNECTABLE(gobject));
+
   gtk_widget_show_all((GtkWidget *) gobject);
 
   /* add audio to soundcard */
@@ -2204,10 +2203,6 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 			gobject->audio);
   ags_soundcard_set_audio(AGS_SOUNDCARD(soundcard),
 			  list);
-
-  /* connect AgsAudio */
-  ags_connectable_connect(AGS_CONNECTABLE(gobject->audio));
-
   
   /* children */
   child = node->children;
@@ -2853,7 +2848,8 @@ ags_simple_file_read_pad(AgsSimpleFile *simple_file, xmlNode *node, AgsPad **pad
 
   guint nth_pad;
   
-  if(*pad != NULL){
+  if(pad != NULL &&
+     *pad != NULL){
     gobject = *pad;
 
     nth_pad = gobject->channel->pad;
@@ -3483,7 +3479,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
     child = child->next;
   }
 
-  ags_connectable_connect(AGS_CONNECTABLE(gobject));
+  //  ags_connectable_connect(AGS_CONNECTABLE(gobject));
   
   /* launch AgsLine */
   if(AGS_IS_LINE(gobject)){

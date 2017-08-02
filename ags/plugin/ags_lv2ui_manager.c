@@ -150,6 +150,35 @@ ags_lv2ui_manager_finalize(GObject *gobject)
 }
 
 /**
+ * ags_lv2ui_manager_get_default_path:
+ * 
+ * Get lv2ui manager default plugin path.
+ *
+ * Returns: the plugin default search path as a string vector
+ * 
+ * Since: 0.9.0
+ */
+gchar**
+ags_lv2ui_manager_get_default_path()
+{
+  return(ags_lv2ui_default_path);
+}
+
+/**
+ * ags_lv2ui_manager_set_default_path:
+ * @default_path: the string vector array to use as default path
+ * 
+ * Set lv2ui manager default plugin path.
+ * 
+ * Since: 0.9.0
+ */
+void
+ags_lv2ui_manager_set_default_path(gchar** default_path)
+{
+  ags_lv2ui_default_path = default_path;
+}
+
+/**
  * ags_lv2ui_manager_get_filenames:
  * @lv2ui_manager: the #AgsLv2uiManager
  * 
@@ -168,6 +197,10 @@ ags_lv2ui_manager_get_filenames(AgsLv2uiManager *lv2ui_manager)
   
   guint i;
   gboolean contains_filename;
+
+  if(!AGS_IS_LV2UI_MANAGER(lv2ui_manager)){
+    return(NULL);
+  }
   
   lv2ui_plugin = lv2ui_manager->lv2ui_plugin;
   filenames = NULL;
@@ -224,7 +257,8 @@ ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
   
   GList *list;
 
-  if(ui_filename == NULL ||
+  if(!AGS_IS_LV2UI_MANAGER(lv2ui_manager) ||
+     ui_filename == NULL ||
      ui_effect == NULL){
     return(NULL);
   }
@@ -268,7 +302,8 @@ ags_lv2ui_manager_find_lv2ui_plugin_with_index(AgsLv2uiManager *lv2ui_manager,
   
   GList *list;
 
-  if(ui_filename == NULL){
+  if(!AGS_IS_LV2UI_MANAGER(lv2ui_manager) ||
+     ui_filename == NULL){
     return(NULL);
   }
   
@@ -302,6 +337,11 @@ void
 ags_lv2ui_manager_load_blacklist(AgsLv2uiManager *lv2ui_manager,
 				 gchar *blacklist_filename)
 {
+  if(!AGS_IS_LV2UI_MANAGER(lv2ui_manager) ||
+     blacklist_filename == NULL){
+    return;
+  }
+
   if(g_file_test(blacklist_filename,
 		 (G_FILE_TEST_EXISTS |
 		  G_FILE_TEST_IS_REGULAR))){
@@ -598,7 +638,10 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
   }
   
   /* entry point */
-  if(turtle == NULL ||
+  if(!AGS_IS_LV2UI_MANAGER(lv2ui_manager) ||
+     !AGS_IS_TURTLE(manifest) ||
+     !AGS_IS_TURTLE(turtle) ||
+     lv2ui_path == NULL ||
      filename == NULL){
     return;
   }
@@ -646,6 +689,10 @@ ags_lv2ui_manager_load_default_directory(AgsLv2uiManager *lv2ui_manager)
   gchar *str;
 
   GError *error;
+
+  if(!AGS_IS_LV2UI_MANAGER(lv2ui_manager)){
+    return;
+  }
 
   lv2ui_path = ags_lv2ui_default_path;
 

@@ -25,6 +25,9 @@ void ags_timestamp_factory_class_init(AgsTimestampFactoryClass *timestamp_factor
 void ags_timestamp_factory_init (AgsTimestampFactory *timestamp_factory);
 void ags_timestamp_factory_finalize(GObject *gobject);
 
+AgsTimestamp* ags_timestamp_factory_real_create(AgsTimestampFactory *timestamp_factory,
+						AgsTimestamp *predecor);
+
 /**
  * SECTION:ags_timestamp_factory
  * @short_description: Factory pattern
@@ -35,8 +38,6 @@ void ags_timestamp_factory_finalize(GObject *gobject);
  * #AgsTimestampFactory pattern.
  */
 
-AgsTimestamp* ags_timestamp_factory_real_create(AgsTimestampFactory *timestamp_factory,
-						AgsTimestamp *predecor);
 enum{
   CREATE,
   LAST_SIGNAL,
@@ -105,8 +106,6 @@ void
 ags_timestamp_factory_init(AgsTimestampFactory *timestamp_factory)
 {
   timestamp_factory->flags = 0;
-
-  timestamp_factory->timestamp = NULL;
 }
 
 void
@@ -123,9 +122,6 @@ ags_timestamp_factory_real_create(AgsTimestampFactory *timestamp_factory,
 
   timestamp = ags_timestamp_new();
 
-  timestamp_factory->timestamp = g_list_prepend(timestamp_factory->timestamp,
-						timestamp);
-
   if(predecor != NULL){
     //TODO:JK: implement me
   }
@@ -133,12 +129,31 @@ ags_timestamp_factory_real_create(AgsTimestampFactory *timestamp_factory,
   return(timestamp);
 }
 
-
+/**
+ * ags_timestamp_factory_create:
+ * @timestamp_factory: the #AgsTimestampFactory
+ * @predecor: the preceeding #AgsTimestamp
+ * 
+ * 
+ * Since: 0.9.0
+ */
 AgsTimestamp*
 ags_timestamp_factory_create(AgsTimestampFactory *timestamp_factory,
 			     AgsTimestamp *predecor)
 {
-  //TODO:JK: implement me
+  AgsTimestamp *timestamp;
+  
+  g_return_val_if_fail(AGS_IS_TIMESTAMP_FACTORY(timestamp_factory), NULL);
+
+  g_object_ref(G_OBJECT(timestamp_factory));
+  g_signal_emit(G_OBJECT(timestamp_factory),
+		timestamp_factory_signals[CREATE], 0,
+		predecor,
+		&timestamp);
+  g_object_unref(G_OBJECT(timestamp_factory));
+  g_object_unref(timestamp_factory);
+
+  return(timestamp);
 }
 
 AgsTimestampFactory*

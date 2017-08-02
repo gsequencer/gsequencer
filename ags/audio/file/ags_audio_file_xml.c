@@ -4657,8 +4657,8 @@ ags_file_read_note(AgsFile *file, xmlNode *node, AgsNote **note)
 					NULL,
 					10);
 
-  gobject->name = g_strdup((gchar *) xmlGetProp(node,
-						(xmlChar *) "name"));
+  gobject->note_name = g_strdup((gchar *) xmlGetProp(node,
+						     (xmlChar *) "name"));
 
   gobject->frequency = (gdouble) g_ascii_strtod((gchar *) xmlGetProp(node,
 								     (xmlChar *) "frequency"),
@@ -4706,7 +4706,7 @@ ags_file_write_note(AgsFile *file, xmlNode *parent, AgsNote *note)
 
   xmlNewProp(node,
 	     (xmlChar *) "name",
-	     (xmlChar *) note->name);
+	     (xmlChar *) note->note_name);
 
   xmlNewProp(node,
 	     (xmlChar *) "frequency",
@@ -5182,8 +5182,8 @@ ags_file_read_acceleration(AgsFile *file, xmlNode *node, AgsAcceleration **accel
 						   (xmlChar *) "y"),
 			      NULL);
 
-  gobject->name = g_strdup((gchar *) xmlGetProp(node,
-						(xmlChar *) "name"));
+  gobject->acceleration_name = g_strdup((gchar *) xmlGetProp(node,
+							     (xmlChar *) "name"));
 }
 
 xmlNode*
@@ -5223,7 +5223,7 @@ ags_file_write_acceleration(AgsFile *file, xmlNode *parent, AgsAcceleration *acc
 
   xmlNewProp(node,
 	     (xmlChar *) "name",
-	     (xmlChar *) acceleration->name);
+	     (xmlChar *) acceleration->acceleration_name);
 
   xmlAddChild(parent,
 	      node);

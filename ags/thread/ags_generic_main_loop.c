@@ -261,7 +261,7 @@ ags_generic_main_loop_new(GObject *application_context)
   AgsGenericMainLoop *generic_main_loop;
 
   generic_main_loop = (AgsGenericMainLoop *) g_object_new(AGS_TYPE_GENERIC_MAIN_LOOP,
-					     NULL);
+							  NULL);
 
   if(application_context != NULL){
     g_object_ref(G_OBJECT(application_context));

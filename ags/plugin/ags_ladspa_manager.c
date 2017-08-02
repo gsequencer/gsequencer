@@ -150,8 +150,41 @@ ags_ladspa_manager_finalize(GObject *gobject)
   g_list_free_full(ladspa_plugin,
 		   (GDestroyNotify) g_object_unref);
 
+  if(ladspa_manager == ags_ladspa_manager){
+    ags_ladspa_manager = NULL;
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_ladspa_manager_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_ladspa_manager_get_default_path:
+ * 
+ * Get ladspa manager default plugin path.
+ *
+ * Returns: the plugin default search path as a string vector
+ * 
+ * Since: 0.9.0
+ */
+gchar**
+ags_ladspa_manager_get_default_path()
+{
+  return(ags_ladspa_default_path);
+}
+
+/**
+ * ags_ladspa_manager_set_default_path:
+ * @default_path: the string vector array to use as default path
+ * 
+ * Set ladspa manager default plugin path.
+ * 
+ * Since: 0.9.0
+ */
+void
+ags_ladspa_manager_set_default_path(gchar** default_path)
+{
+  ags_ladspa_default_path = default_path;
 }
 
 /**
@@ -173,6 +206,10 @@ ags_ladspa_manager_get_filenames(AgsLadspaManager *ladspa_manager)
 
   guint i;
   gboolean contains_filename;
+
+  if(!AGS_IS_LADSPA_MANAGER(ladspa_manager)){
+    return(NULL);
+  }
   
   ladspa_plugin = ladspa_manager->ladspa_plugin;
   filenames = NULL;
@@ -229,6 +266,10 @@ ags_ladspa_manager_find_ladspa_plugin(AgsLadspaManager *ladspa_manager,
 
   GList *list;
 
+  if(!AGS_IS_LADSPA_MANAGER(ladspa_manager)){
+    return(NULL);
+  }
+  
   list = ladspa_manager->ladspa_plugin;
 
   while(list != NULL){
@@ -260,6 +301,11 @@ void
 ags_ladspa_manager_load_blacklist(AgsLadspaManager *ladspa_manager,
 				  gchar *blacklist_filename)
 {
+  if(!AGS_IS_LADSPA_MANAGER(ladspa_manager) ||
+     blacklist_filename == NULL){
+    return;
+  }
+  
   if(g_file_test(blacklist_filename,
 		 (G_FILE_TEST_EXISTS |
 		  G_FILE_TEST_IS_REGULAR))){
@@ -304,6 +350,12 @@ ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
   
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
+  if(!AGS_IS_LADSPA_MANAGER(ladspa_manager) ||
+     ladspa_path == NULL ||
+     filename == NULL){
+    return;
+  }
+  
   pthread_mutex_lock(&(mutex));
 
   path = g_strdup_printf("%s/%s",
@@ -367,6 +419,10 @@ ags_ladspa_manager_load_default_directory(AgsLadspaManager *ladspa_manager)
 
   GError *error;
 
+  if(!AGS_IS_LADSPA_MANAGER(ladspa_manager)){
+    return;
+  }
+  
   ladspa_path = ags_ladspa_default_path;
 
   while(*ladspa_path != NULL){

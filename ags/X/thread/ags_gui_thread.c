@@ -249,7 +249,7 @@ ags_gui_thread_start(AgsThread *thread)
 		  AGS_GUI_THREAD_RUNNING);
 
   pthread_create(thread->thread, thread->thread_attr,
-		 ags_gui_thread_do_poll_loop, thread);
+  		 ags_gui_thread_do_poll_loop, thread);
 }
 
 void

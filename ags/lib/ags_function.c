@@ -48,6 +48,12 @@ void ags_function_finalize(GObject *gobject);
  * function.
  */
 
+#define AGS_FUNCTION_EXPONENT_PATTERN "^((exp\\()(([0-9]|" \
+  AGS_SYMBOLIC_EULER "|" \
+  AGS_SYMBOLIC_PI "|" \
+  AGS_SYMBOLIC_INFINIT "|" \
+  AGS_SYMBOLIC_COMPLEX_UNIT ")+)(\\)))"
+
 #define ags_function_print_sin(str, term) (sprintf(str, "1 / 2 * %s * exp(- %s * (%s) * log(%s)) - 1 / 2 * %s * exp(%s * (%s) * log(%s))", \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
@@ -57,6 +63,7 @@ void ags_function_finalize(GObject *gobject);
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   term, \
 						   AGS_SYMBOLIC_EULER))
+
 #define ags_function_print_cos(str, term) (sprintf(str, "(%s * exp(- %s * (%s) * log(%s))) / 2 + (%s * exp(%s * (%s) * log(%s))) / 2", \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
@@ -66,6 +73,7 @@ void ags_function_finalize(GObject *gobject);
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   term, \
 						   AGS_SYMBOLIC_EULER))
+
 #define ags_function_print_tan(str, term) (sprintf(str, "(%s * (exp(- %s * (%s) * log(%s)) - exp(%s * (%s) *  log(%s)))) / (exp(- %s * (%s) *  log(%s)) + exp(%s * (%s) *  log(%s)))", \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
@@ -84,6 +92,28 @@ void ags_function_finalize(GObject *gobject);
 						   term, \
 						   AGS_SYMBOLIC_EULER))
 
+#define ags_function_print_asin(str, term) (sprintf(str, "(-%s * (log(exp(0.5 * log(1 - exp(2 * (%s)))) + %s * (%s))))", \
+						    AGS_SYMBOLIC_COMPLEX_UNIT, \
+						    term,		\
+						    AGS_SYMBOLIC_COMPLEX_UNIT, \
+						    term))
+
+#define ags_function_print_acos(str, term) (sprintf(str, "(%s / 2 + %s * log(exp(0.5 * log(1 - exp(2 * (%s)))) + %s * (%s))))", \
+						    AGS_SYMBOLIC_PI,	\
+						    AGS_SYMBOLIC_COMPLEX_UNIT, \
+						    AGS_SYMBOLIC_COMPLEX_UNIT, \
+						    term,		\
+						    AGS_SYMBOLIC_COMPLEX_UNIT, \
+						    term))
+
+#define ags_function_print_atan(str, term) (sprintf(str, "(0.5 * %s * log(1 - %s * %s) - 0.5 * %s * log(1 + %s * %s))", \
+						    AGS_SYMBOLIC_COMPLEX_UNIT, \
+						    AGS_SYMBOLIC_COMPLEX_UNIT, \
+						    term,		\
+						    AGS_SYMBOLIC_COMPLEX_UNIT, \
+						    AGS_SYMBOLIC_COMPLEX_UNIT, \
+						    term))
+
 enum{
   PROP_0,
   PROP_SOURCE_FUNCTION,
@@ -94,6 +124,8 @@ enum{
 };
 
 static gpointer ags_function_parent_class = NULL;
+
+static pthread_mutex_t regex_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_function_get_type(void)
@@ -194,9 +226,11 @@ ags_function_init(AgsFunction *function)
   
   function->is_pushing = TRUE;
   function->equation = NULL;
+  function->transformed_equation = NULL;
   function->equation_count = 0;
 
   function->source_function = NULL;
+
 
   function->normalized_function = NULL;
 
@@ -375,7 +409,7 @@ ags_function_find_literals(AgsFunction *function,
 
   static regex_t literal_regex;
 
-  static const char *literal_pattern = "^((?!log|exp|floor|ceil|round|sin|cos|tan|asin|acos|atan)([a-xA-X][0-9]*))";
+  static const char *literal_pattern = "^((?!log|exp|sin|cos|tan|asin|acos|atan)([a-zA-Z][0-9]*))";
 
   static const size_t max_matches = 1;
 
@@ -383,11 +417,15 @@ ags_function_find_literals(AgsFunction *function,
   n_literals = 0;
   
   /* compile regex */
+  pthread_mutex_lock(&regex_mutex);
+
   if(!regex_compiled){
     regex_compiled = TRUE;
 
     regcomp(&literal_regex, literal_pattern, REG_EXTENDED);
   }
+
+  pthread_mutex_unlock(&regex_mutex);
 
   /* find literals */
   str = function->source_function;
@@ -430,31 +468,152 @@ ags_function_find_literals(AgsFunction *function,
 void
 ags_function_literal_solve(AgsFunction *function)
 {
+  gchar *transformed_function;
   gchar *normalized_function;
+  gchar *str;
   
   guint max_exponent, available_exponent;
   guint i, j;
-  
-  auto guint ags_function_literal_solve_find_max_exponent(gchar *source_function);
 
-  guint ags_function_literal_solve_find_max_exponent(gchar *source_function){
-    max_exponent = 0;
+  auto gchar* ags_function_literal_solve_expand_functions(gchar *transformed_function);
+  auto gchar* ags_function_literal_solve_numeric_exponent_only(gchar *transformed_function);
+  auto guint ags_function_literal_solve_find_max_exponent(gchar *transformed_function);
+
+  gchar* ags_function_literal_solve_expand_functions(gchar *transformed_function){
+    gchar *expanded_functions;
+    gchar *offset, *close_offset;
+    gchar *str;
+    gchar *open_paranthesis, *close_paranthesis, *tmp_paranthesis;
+
+    int regexec_result;
+    
+    static gboolean regex_compiled = FALSE;
+
+    static regex_t function_regex;
+
+    static const char *function_pattern = "^(sin|cos|tan|asin|acos|atan)";
+
+    static const size_t max_matches = 1;
+    
+    /* compile regex */
+    pthread_mutex_lock(&regex_mutex);
+
+    if(!regex_compiled){
+      regex_compiled = TRUE;
+
+      regcomp(&function_regex, function_pattern, REG_EXTENDED);
+    }
+
+    pthread_mutex_unlock(&regex_mutex);
+
+    /*  */
+    expanded_functions = NULL;
+
+    str =
+      offset = g_strdup(transformed_function);
+    close_offset = NULL;
+
+    regexec_result = 0;
+    
+    while(regexec_result != REG_NOMATCH){
+      if((regexec_result = regexec(&function_regex, offset, max_matches, match_arr, 0)) == 0){
+	if(close_offset == NULL ||
+	   close_offset > match_arr[0].rm_so){
+	  offset = match_arr[0].rm_so;
+
+	  /* find close paranthesis */
+	  open_paranethesis = offset;
+	  
+	  while((open_paranthesis = strchr(open_paranethesis, '(')) != NULL &&
+		close_paranthesis == NULL){
+	    close_paranthesis = strchr(open_paranethesis, ')');
+	    tmp_paranthesis = strchr(open_paranethesis, '(');
+
+	    if(tmp_paranthesis < close_paranthesis){
+	      close_paranthesis = NULL;
+	    }
+	  }
+
+	  close_offset = close_paranthesis;
+	}else{
+	  if(close_offset != NULL){
+	    if(!g_strcmp0(offset,
+			  "sin")){
+	    }else if(!g_strcmp0(offset,
+				"cos")){
+	    }else if(!g_strcmp0(offset,
+				"tan")){
+	    }else if(!g_strcmp0(offset,
+				"asin")){
+	    }else if(!g_strcmp0(offset,
+				"acos")){
+	    }else if(!g_strcmp0(offset,
+				"atan")){
+	    }
+
+	    
+	  }else{
+	    //NOTE:JK: you should report paranthesis mismatch
+	    
+	    break;
+	  }
+	}
+      }
+    }
+  }
+
+  gchar* ags_function_literal_solve_numeric_exponent_only(gchar *transformed_function){
+    gchar *numeric_exponent_only;
+    
+    guint n_terms;
+
+
+    
+  }
+  
+  guint ags_function_literal_solve_find_max_exponent(gchar *transformed_function){
+    regmatch_t match_arr[5];
+
+    static gboolean regex_compiled = FALSE;
+
+    static regex_t exponent_regex;
+
+    static const char *exponent_pattern = AGS_FUNCTION_EXPONENT_PATTERN;
+    
+    static const size_t max_matches = 5;
+    
+    max_exponent = 1;
 
 
     return(max_exponent);
   }
 
   /* compute dimensions */
+  transformed_function = g_strdup(function->source_function);
   max_exponent = function->symbol_count;
-  available_exponent = ags_function_literal_solve_find_max_exponent(function->source_function);
+
+  /* step #0 of normalization - eliminate trigonometric functions */
+  str = transformed_function;
+  transformed_function = ags_function_literal_solve_expand_functions(transformed_function);
+
+  g_free(str);
+
+  /* step #1 of normalization - numeric only exponents */
+  str = transformed_function;
+  transformed_function = ags_function_literal_solve_numeric_exponent_only(transformed_function);
+
+  g_free(str);
+  
+  /* find maximum exponent */
+  available_exponent = ags_function_literal_solve_find_max_exponent(transformed_function);
 
   if(max_exponent < available_exponent){
     max_exponent = available_exponent;
   }
   
   /* allocate pivot table and function vector table */
-  function->n_rows = function->symbol_count * max_exponent;
-  function->n_cols = function->n_rows + 1;
+  function->n_rows = function->symbol_count;
+  function->n_cols = (function->symbol_count * max_exponent) + 1;
 
   function->pivot_table = (AgsComplex ***) malloc(function->n_rows * sizeof(AgsComplex **));
 
@@ -466,6 +625,8 @@ ags_function_literal_solve(AgsFunction *function)
     }
   }
   
+  //TODO:JK: implement me
+
   /* parse and merge terms */
   //TODO:JK: implement me
   
@@ -487,9 +648,11 @@ gboolean
 ags_function_push_equation(AgsFunction *function,
 			   gchar *equation)
 {
+  gchar *str;
+  
   guint i;
   
-  if(function == NULL){
+  if(!AGS_IS_FUNCTION(function)){
     return(FALSE);
   }
 
@@ -497,12 +660,59 @@ ags_function_push_equation(AgsFunction *function,
   
   if(function->equation_count == 0){
     function->equation = (gchar **) malloc(sizeof(gchar*));
+
+    function->transformed_equation = (gchar **) malloc(sizeof(gchar*));
   }else{
     function->equation = (gchar **) realloc(function->equation,
 					    (i + 1) * sizeof(gchar*));
+
+    function->transformed_equation = (gchar **) realloc(function->equation,
+							(i + 1) * sizeof(gchar*));
   }
 
-  function->equation[i] = equation;
+  /* assume normalized else use right side as term - use subtraction */
+  if((str = strchr(equation, '=')) == NULL){
+    function->equation[i] = g_strdup(equation);
+  }else{
+    gchar *offset;
+
+    guint num_bytes;
+    guint tmp0, tmp1;
+
+    tmp0 = 
+      num_bytes = strlen(equation);
+    num_bytes += 5;
+    
+    function->equation[i] = (gchar *) malloc(sizeof(gchar));
+    function->equation[i][num_bytes - 1] = '\0';
+
+    offset = function->equation[i];
+
+    *offset = '(';
+    offset++;
+
+    tmp1 = (str - equation);
+    memcpy(offset, equation, tmp1 * sizeof(gchar));
+    offset += tmp1;
+    
+    *offset = ')';
+    offset++;
+
+    *offset = '-';
+    offset++;
+
+    *offset = '(';
+    offset++;
+
+    tmp0 = tmp0 - tmp1 - 1;
+    memcpy(offset, equation + tmp1 + 1, tmp0 * sizeof(gchar));
+
+    *offset = ')';
+    offset++;
+  }
+  
+  function->transformed_equation[i] = NULL;
+  
   function->equation_count += 1;
   
   return(TRUE);
@@ -522,12 +732,64 @@ void
 ags_function_pop_equation(AgsFunction *function,
 			  GError **error)
 {
-  if(function == NULL){
+  guint length;
+  guint i;
+  
+  if(!AGS_IS_FUNCTION(function)){
     return;
   }
 
-  //TODO:JK: compute merged
+  /* retrieve of all equations string length */
+  length = 0;
   
+  for(i = 0; i < function->equation_count; i++){
+    length += strlen(function->equation[i]);
+  }
+
+  /* allocate source function and memcpy equations - use addition */
+  if(function->equation_count > 0){
+    if(function->equation_count > 1){
+      length += (function->equation_count * 2) + (function->equation_count - 1) + 1;
+    }else{
+      length += 1;
+    }
+    
+    function->source_function = (gchar *) malloc(length * sizeof(gchar));
+    function->source_function[length - 1] = '\0';
+    
+    if(function->equation_count > 1){
+      gchar *offset;
+
+      guint num_bytes;
+      
+      offset = function->source_function;
+      
+      for(i = 0; i < function->equation_count; i++){
+	if(i != 0){
+	  *offset = '+';
+	  offset++;
+	}
+
+	*offset = '(';
+	offset++;
+
+	num_bytes = strlen(function->equation[i]);
+	memcpy(offset, function->equation[i], num_bytes * sizeof(gchar));
+	offset += num_bytes;
+
+	*offset = ')';
+	offset++;	
+      }
+    }else{
+      memcpy(function->source_function, function->equation[0], strlen(function->equation[0]) * sizeof(gchar));
+    }
+  }else{
+    function->source_function = NULL;
+
+    return;
+  }
+
+  /* find literals and literal solve */
   function->symbol = ags_function_find_literals(function,
 						&(function->symbol_count));
   ags_function_literal_solve(function);
@@ -570,7 +832,7 @@ ags_function_get_expanded(AgsFunction *function,
 gchar*
 ags_funciton_get_normalized(AgsFunction *function)
 {
-  if(function == NULL){
+  if(!AGS_IS_FUNCTION(function)){
     return(NULL);
   }
 
@@ -632,7 +894,7 @@ ags_function_symbolic_translate_value(AgsFunction *function,
  * @symbol: the first symbol as string, or %NULL if no more symbol and value pair.
  * @...: %NULL terminated symbol and value pairs of list.
  *
- * Verify :source-function to be %TRUE or %FALSE by substiution.
+ * Verify :source-function to be %TRUE or %FALSE by substitution.
  *
  * Returns: %TRUE if function evaluates, otherwise %FALSE
  * 

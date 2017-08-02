@@ -33,10 +33,10 @@
 #define AGS_IS_FUNCTION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FUNCTION))
 #define AGS_FUNCTION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_FUNCTION, AgsFunctionClass))
 
-#define AGS_SYMBOLIC_EULER "ℯ\0"
-#define AGS_SYMBOLIC_PI "𝜋\0"
-#define AGS_SYMBOLIC_INFINIT "∞\0"
-#define AGS_SYMBOLIC_COMPLEX_UNIT "𝑖\0"
+#define AGS_SYMBOLIC_EULER "ℯ"
+#define AGS_SYMBOLIC_PI "𝜋"
+#define AGS_SYMBOLIC_INFINIT "∞"
+#define AGS_SYMBOLIC_COMPLEX_UNIT "𝑖"
 
 typedef struct _AgsFunction AgsFunction;
 typedef struct _AgsFunctionClass AgsFunctionClass;
@@ -59,12 +59,13 @@ struct _AgsFunction
   
   gboolean is_pushing;
   gchar **equation;
+  gchar **transformed_equation;
   guint equation_count;
   
   gchar *source_function;
-
+  
   gchar *normalized_function;
-
+  
   gchar **symbol;
   guint symbol_count;
 

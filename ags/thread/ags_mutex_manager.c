@@ -132,6 +132,13 @@ ags_mutex_manager_finalize(GObject *gobject)
   mutex_manager = AGS_MUTEX_MANAGER(gobject);
 
   g_hash_table_destroy(mutex_manager->lock_object);
+
+  if(mutex_manager == ags_mutex_manager){
+    ags_mutex_manager = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_mutex_manager_parent_class)->finalize(gobject);
 }
 
 void

@@ -341,13 +341,24 @@ ags_polling_thread_interrupted(AgsThread *thread,
   return(0);
 }
 
+/**
+ * ags_polling_thread_fd_position:
+ * @polling_thread: the #AgsPollingThread
+ * @fd: file descriptor to find
+ *
+ * Tell position of fd within pollfd struct array.
+ *
+ * Returns: the position if found, otherwise -1
+ *
+ * Since: 0.7.50
+ */
 gint
 ags_polling_thread_fd_position(AgsPollingThread *polling_thread,
 			       int fd)
 {
   gint i;
 
-  if(polling_thread == NULL ||
+  if(!AGS_IS_POLLING_THREAD(polling_thread) ||
      polling_thread->fds == NULL){
     return(-1);
   }
@@ -367,6 +378,15 @@ ags_polling_thread_fd_position(AgsPollingThread *polling_thread,
   return(-1);
 }
 
+/**
+ * ags_polling_thread_add_poll_fd:
+ * @polling_thread: the #AgsPollingThread
+ * @gobject: the #AgsPollFd to add
+ *
+ * Add a @gobject to #AgsPollingThread.
+ *
+ * Since: 0.7.50
+ */
 void
 ags_polling_thread_add_poll_fd(AgsPollingThread *polling_thread,
 			       GObject *gobject)
@@ -374,15 +394,16 @@ ags_polling_thread_add_poll_fd(AgsPollingThread *polling_thread,
   guint length;
   gint nth;
   
-  if(polling_thread == NULL ||
-     gobject == NULL){
+  if(!AGS_IS_POLLING_THREAD(polling_thread) ||
+     !(AGS_IS_POLL_FD(gobject))){
     return;
   }
 
   pthread_mutex_lock(polling_thread->fd_mutex);
 
   nth = g_list_position(polling_thread->poll_fd,
-			(gpointer) gobject);
+			(gpointer) g_list_find(polling_thread->poll_fd,
+					       gobject));
 
   if(nth >= 0){
     pthread_mutex_unlock(polling_thread->fd_mutex);
@@ -413,6 +434,15 @@ ags_polling_thread_add_poll_fd(AgsPollingThread *polling_thread,
   pthread_mutex_unlock(polling_thread->fd_mutex);
 }
 
+/**
+ * ags_polling_thread_new:
+ * @polling_thread: the #AgsPollingThread
+ * @gobject: the #AgsPollFd
+ *
+ * Remove @gobject from #AgsPollingThread.
+ *
+ * Since: 0.7.50
+ */
 void
 ags_polling_thread_remove_poll_fd(AgsPollingThread *polling_thread,
 				  GObject *gobject)
@@ -422,8 +452,8 @@ ags_polling_thread_remove_poll_fd(AgsPollingThread *polling_thread,
   guint length;
   gint nth;
   
-  if(polling_thread == NULL ||
-     gobject == NULL){
+  if(!AGS_IS_POLLING_THREAD(polling_thread) ||
+     !(AGS_IS_POLL_FD(gobject))){
     return;
   }
 
@@ -431,7 +461,8 @@ ags_polling_thread_remove_poll_fd(AgsPollingThread *polling_thread,
   
   /* find fd */
   nth = g_list_position(polling_thread->poll_fd,
-			(gpointer) gobject);
+			(gpointer) g_list_find(polling_thread->poll_fd,
+					       gobject));
 
   if(nth < 0){
     pthread_mutex_unlock(polling_thread->fd_mutex);

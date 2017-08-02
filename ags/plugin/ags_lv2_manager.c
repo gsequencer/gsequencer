@@ -241,9 +241,42 @@ ags_lv2_manager_finalize(GObject *gobject)
 
   g_list_free_full(lv2_plugin,
 		   g_object_unref);
+
+  if(lv2_manager == ags_lv2_manager){
+    ags_lv2_manager = NULL;
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_manager_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_lv2_manager_get_default_path:
+ * 
+ * Get lv2 manager default plugin path.
+ *
+ * Returns: the plugin default search path as a string vector
+ * 
+ * Since: 0.9.0
+ */
+gchar**
+ags_lv2_manager_get_default_path()
+{
+  return(ags_lv2_default_path);
+}
+
+/**
+ * ags_lv2_manager_set_default_path:
+ * @default_path: the string vector array to use as default path
+ * 
+ * Set lv2 manager default plugin path.
+ * 
+ * Since: 0.9.0
+ */
+void
+ags_lv2_manager_set_default_path(gchar** default_path)
+{
+  ags_lv2_default_path = default_path;
 }
 
 /**
@@ -265,6 +298,10 @@ ags_lv2_manager_get_filenames(AgsLv2Manager *lv2_manager)
   
   guint i;
   gboolean contains_filename;
+
+  if(!AGS_IS_LV2_MANAGER(lv2_manager)){
+    return(NULL);
+  }
   
   lv2_plugin = lv2_manager->lv2_plugin;
   filenames = NULL;
@@ -321,8 +358,7 @@ ags_lv2_manager_find_lv2_plugin(AgsLv2Manager *lv2_manager,
   
   GList *list;
 
-  if(lv2_manager == NULL ||
-     !AGS_IS_LV2_MANAGER(lv2_manager) ||
+  if(!AGS_IS_LV2_MANAGER(lv2_manager) ||
      filename == NULL ||
      effect == NULL){
     return(NULL);
@@ -359,6 +395,11 @@ void
 ags_lv2_manager_load_blacklist(AgsLv2Manager *lv2_manager,
 			       gchar *blacklist_filename)
 {
+  if(!AGS_IS_LV2_MANAGER(lv2_manager) ||
+     blacklist_filename == NULL){
+    return;
+  }
+  
   if(g_file_test(blacklist_filename,
 		 (G_FILE_TEST_EXISTS |
 		  G_FILE_TEST_IS_REGULAR))){
@@ -423,7 +464,10 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
 
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-  if(turtle == NULL ||
+  if(!AGS_IS_LV2_MANAGER(lv2_manager) ||
+     !AGS_IS_TURTLE(manifest) ||
+     !AGS_IS_TURTLE(turtle) ||
+     lv2_path == NULL ||
      filename == NULL){
     return;
   }
@@ -676,8 +720,10 @@ ags_lv2_manager_load_preset(AgsLv2Manager *lv2_manager,
   gchar *xpath;
   gchar *uri;
 
-  if(lv2_plugin == NULL ||
-     lv2_plugin->preset != NULL){
+  if(!AGS_IS_LV2_MANAGER(lv2_manager) ||
+     !AGS_IS_LV2_PLUGIN(lv2_plugin) ||
+     lv2_plugin->preset != NULL ||
+     !AGS_IS_TURTLE(preset)){
     return;
   }
   
@@ -826,6 +872,10 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 
   GError *error;
 
+  if(!AGS_IS_LV2_MANAGER(lv2_manager)){
+    return;
+  }
+  
   lv2_path = ags_lv2_default_path;
 
   while(*lv2_path != NULL){

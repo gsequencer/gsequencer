@@ -2087,7 +2087,8 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
 
   /* play */
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
-    if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0){
+    if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0 ||
+       ags_recall_find_type(audio->play, AGS_TYPE_COPY_PATTERN_AUDIO) == NULL){
       if(play_container == NULL){
 	play_container = ags_recall_container_new();
       }
@@ -2200,7 +2201,8 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
  
-    if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0){
+    if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0 ||
+       ags_recall_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO) == NULL){
       if(recall_container == NULL){
 	recall_container = ags_recall_container_new();
       }
@@ -4515,13 +4517,6 @@ ags_recall_factory_create(AgsAudio *audio,
   pthread_mutex_unlock(audio_mutex);
 
   return(recall);
-}
-
-void
-ags_recall_factory_remove(AgsAudio *audio,
-			  AgsRecallContainer *recall_container)
-{
-  //TODO:JK: implement me
 }
 
 /**

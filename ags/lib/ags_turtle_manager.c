@@ -121,6 +121,10 @@ ags_turtle_manager_finalize(GObject *gobject)
     g_list_free_full(turtle,
 		     g_object_unref);
   }
+
+  if(turtle_manager == ags_turtle_manager){
+    ags_turtle_manager = NULL;
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_turtle_manager_parent_class)->finalize(gobject);

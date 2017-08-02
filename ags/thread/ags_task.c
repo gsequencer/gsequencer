@@ -121,7 +121,7 @@ ags_task_class_init(AgsTaskClass *task)
   /**
    * AgsTask::failure:
    * @task: the #AgsTask failed to do its work.
-   * @error: the error
+   * @error: the #GError-struct
    *
    * The ::failure signal is emited if ::launch fails
    *

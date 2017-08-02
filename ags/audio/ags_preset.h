@@ -88,7 +88,7 @@ void ags_preset_remove_parameter(AgsPreset *preset,
 
 void ags_preset_get_parameter(AgsPreset *preset,
 			      gchar *param_name, GValue *value,
-			      GError *error);
+			      GError **error);
 
 AgsPreset* ags_preset_new();
 

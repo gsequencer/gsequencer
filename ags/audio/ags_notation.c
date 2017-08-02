@@ -882,35 +882,8 @@ ags_notation_add_note(AgsNotation *notation,
 		      AgsNote *note,
 		      gboolean use_selection_list)
 {
-  GList *list, *list_new;
-
-  auto gint ags_notation_add_note_compare_function(gpointer a, gpointer b);
-
-  gint ags_notation_add_note_compare_function(gpointer a, gpointer b){
-    if(a == NULL || b == NULL){
-      return(0);
-    }
-    
-    if(AGS_NOTE(a)->x[0] == AGS_NOTE(b)->x[0]){
-      if(AGS_NOTE(a)->y == AGS_NOTE(b)->y){
-	return(0);
-      }
-
-      if(AGS_NOTE(a)->y < AGS_NOTE(b)->y){
-	return(-1);
-      }else{
-	return(1);
-      }
-    }
-
-    if(AGS_NOTE(a)->x[0] < AGS_NOTE(b)->x[0]){
-      return(-1);
-    }else{
-      return(1);
-    }
-  }
-
-  if(note == NULL){
+  if(!AGS_IS_NOTATION(notation) ||
+     !AGS_IS_NOTE(note)){
     return;
   }
 
@@ -919,11 +892,11 @@ ags_notation_add_note(AgsNotation *notation,
   if(use_selection_list){
     notation->selection = g_list_insert_sorted(notation->selection,
 					       note,
-					       (GCompareFunc) ags_notation_add_note_compare_function);
+					       (GCompareFunc) ags_note_sort_func);
   }else{
     notation->notes = g_list_insert_sorted(notation->notes,
 					   note,
-					   (GCompareFunc) ags_notation_add_note_compare_function);
+					   (GCompareFunc) ags_note_sort_func);
   }
 }
 
@@ -1899,6 +1872,62 @@ ags_notation_get_current(AgsNotation *notation)
   //TODO:JK: get current
 
   return(list);
+}
+
+/**
+ * ags_notation_to_raw_midi:
+ * @notation: the #AgsNotation
+ * @bpm: the source bpm
+ * @delay_factor: the source delay factor
+ * @nn: numerator
+ * @dd: denominator
+ * @cc: clocks
+ * @bb: beats
+ * @tempo: tempo
+ * @buffer_length: the return location of buffer length
+ * 
+ * Convert @notation to raw-midi.
+ * 
+ * Returns: the raw-midi buffer
+ * 
+ * Since: 0.9.0
+ */
+unsigned char*
+ags_notation_to_raw_midi(AgsNotation *notation,
+			 gdouble bpm, gdouble delay_factor,
+			 glong nn, glong dd, glong cc, glong bb,
+			 glong tempo,
+			 guint *buffer_length)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_notation_from_raw_midi:
+ * @raw_midi: the data array
+ * @nn: numerator
+ * @dd: denominator
+ * @cc: clocks
+ * @bb: beats
+ * @tempo: tempo
+ * @bpm: the bpm to use
+ * @delay_factor: the segmentation delay factor
+ * @buffer_length: the buffer length
+ * 
+ * Parse @raw_midi data and convert to #AgsNotation.
+ * 
+ * Returns: the #AgsNotation
+ * 
+ * Since: 0.9.0
+ */
+AgsNotation*
+ags_notation_from_raw_midi(unsigned char *raw_midi,
+			   glong nn, glong dd, glong cc, glong bb,
+			   glong tempo,
+			   gdouble bpm, gdouble delay_factor,
+			   guint buffer_length)
+{
+  //TODO:JK: implement me
 }
 
 /**
