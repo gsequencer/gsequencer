@@ -113,8 +113,11 @@
 #include <ags/audio/thread/ags_recycling_thread.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 #include <ags/audio/thread/ags_sequencer_thread.h>
+#include <ags/audio/thread/ags_export_thread.h>
 
 #include <ags/widget/ags_led.h>
+#include <ags/widget/ags_hindicator.h>
+#include <ags/widget/ags_vindicator.h>
 
 #include <ags/X/ags_effect_pad.h>
 #include <ags/X/ags_effect_line.h>
@@ -806,7 +809,6 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   xorg_application_context->worker = NULL;
 
   /* AgsDestroyWorker */
-  /*
   destroy_worker = ags_destroy_worker_new();
   g_object_ref(destroy_worker);
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
@@ -815,7 +817,6 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   xorg_application_context->worker = g_list_prepend(xorg_application_context->worker,
 						    destroy_worker);
   ags_thread_start(destroy_worker);
-  */
   
   /* AgsThreadPool */
   xorg_application_context->thread_pool = AGS_TASK_THREAD(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread)->thread_pool;

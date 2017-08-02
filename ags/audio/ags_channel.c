@@ -4859,8 +4859,8 @@ ags_channel_cancel(AgsChannel *channel,
       continue;
     }
 
-    g_object_ref(recall_id);
-    g_object_ref(recall);
+    //    g_object_ref(recall_id);
+    //    g_object_ref(recall);
     ags_recall_cancel(recall);
     
     list = list_next;

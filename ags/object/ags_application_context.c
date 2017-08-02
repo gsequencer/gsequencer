@@ -317,15 +317,18 @@ ags_application_context_set_property(GObject *gobject,
       
       config = (AgsConfig *) g_value_get_object(value);
 
-      if(config == application_context->config)
+      if(config == application_context->config){
 	return;
+      }
 
-      if(application_context->config != NULL)
+      if(application_context->config != NULL){
 	g_object_unref(application_context->config);
-
-      if(config != NULL)
+      }
+      
+      if(config != NULL){
 	g_object_ref(G_OBJECT(config));
-
+      }
+      
       application_context->config = config;
     }
     break;
@@ -335,15 +338,18 @@ ags_application_context_set_property(GObject *gobject,
       
       main_loop = (GObject *) g_value_get_object(value);
 
-      if(main_loop == application_context->main_loop)
+      if(main_loop == application_context->main_loop){
 	return;
+      }
 
-      if(application_context->main_loop != NULL)
+      if(application_context->main_loop != NULL){
 	g_object_unref(application_context->main_loop);
-
-      if(main_loop != NULL)
+      }
+      
+      if(main_loop != NULL){
 	g_object_ref(G_OBJECT(main_loop));
-
+      }
+      
       application_context->main_loop = main_loop;
     }
     break;
@@ -353,15 +359,18 @@ ags_application_context_set_property(GObject *gobject,
       
       file = (AgsFile *) g_value_get_object(value);
 
-      if(file == application_context->file)
+      if(file == application_context->file){
 	return;
+      }
 
-      if(application_context->file != NULL)
+      if(application_context->file != NULL){
 	g_object_unref(application_context->file);
-
-      if(file != NULL)
+      }
+      
+      if(file != NULL){
 	g_object_ref(G_OBJECT(file));
-
+      }
+      
       application_context->file = (AgsFile *) file;
     }
     break;
@@ -562,6 +571,10 @@ ags_application_context_finalize(GObject *gobject)
   /* file */
   if(application_context->file != NULL){
     g_object_unref(application_context->file);
+  }
+
+  if(application_context == ags_application_context){
+    ags_application_context = NULL;
   }
   
   /* call parent */

@@ -220,7 +220,8 @@ ags_destroy_worker_do_poll(AgsWorkerThread *worker_thread)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_free);
 
   nanosleep(destroy_worker->destroy_interval,
 	    NULL);
@@ -246,6 +247,8 @@ ags_destroy_entry_alloc(gpointer ptr, AgsDestroyFunc destroy_func)
 
   destroy_entry->ptr = ptr;
   destroy_entry->destroy_func = destroy_func;
+
+  return(destroy_entry);
 }
 
 /**
@@ -264,7 +267,7 @@ ags_destroy_worker_add(AgsDestroyWorker *destroy_worker,
 {
   AgsDestroyEntry *destroy_entry;
 
-  if(destroy_worker == NULL ||
+  if(!AGS_IS_DESTROY_WORKER(destroy_worker) ||
      ptr == NULL ||
      destroy_func == NULL){
     return;

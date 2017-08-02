@@ -65,7 +65,7 @@ struct _AgsAcceleration
   guint x;
   gdouble y;
 
-  gchar *name;
+  gchar *acceleration_name;
 };
 
 struct _AgsAccelerationClass

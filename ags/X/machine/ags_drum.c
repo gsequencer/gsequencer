@@ -551,7 +551,7 @@ ags_drum_map_recall(AgsMachine *machine)
   AgsPlayNotationAudioRun *recall_notation_audio_run;
 
   GList *list;
-
+  
   if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
     return;
@@ -618,7 +618,7 @@ ags_drum_map_recall(AgsMachine *machine)
 			    0, 0,
 			    0, 0,
 			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_REMAP |
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
 

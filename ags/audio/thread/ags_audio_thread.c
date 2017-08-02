@@ -411,14 +411,14 @@ ags_audio_thread_finalize(GObject *gobject)
   pthread_mutex_destroy(audio_thread->wakeup_mutex);
   free(audio_thread->wakeup_mutex);
   
-  pthread_mutex_destroy(audio_thread->wakeup_cond);
+  pthread_cond_destroy(audio_thread->wakeup_cond);
   free(audio_thread->wakeup_cond);
 
   /* sync mutex and cond */
   pthread_mutex_destroy(audio_thread->done_mutex);
   free(audio_thread->done_mutex);
   
-  pthread_mutex_destroy(audio_thread->done_cond);
+  pthread_cond_destroy(audio_thread->done_cond);
   free(audio_thread->done_cond);
 
   /* audio */

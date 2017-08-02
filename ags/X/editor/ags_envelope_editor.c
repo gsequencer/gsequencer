@@ -34,6 +34,7 @@
 
 #include <ags/X/editor/ags_envelope_dialog.h>
 
+#include <math.h>
 #include <complex.h>
 
 #include <ags/i18n.h>

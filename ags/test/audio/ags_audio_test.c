@@ -288,7 +288,7 @@ ags_audio_test_set_pads()
       current = current->prev_pad;
     }
 
-    g_message("--- %d\0", j);
+    g_message("--- %d", j);
     CU_ASSERT(j == AGS_AUDIO_TEST_SET_PADS_INPUT_PADS);
     channel = channel->prev;
   }
@@ -637,10 +637,10 @@ ags_audio_test_link_channel()
       i++){
     //TODO:JK: implement me
     /*
-    g_signal_connect(G_OBJECT(channel), "set-link\0",
+    g_signal_connect(G_OBJECT(channel), "set-link",
 		     G_CALLBACK(ags_audio_test_set_link_callback), test_link_channel.master);
 
-    g_signal_connect(G_OBJECT(link), "set-link\0",
+    g_signal_connect(G_OBJECT(link), "set-link",
 		     G_CALLBACK(ags_audio_test_set_link_callback), test_link_channel.slave_0);
     */
     
@@ -699,10 +699,10 @@ ags_audio_test_link_channel()
       i++){
     //TODO:JK: implement me
     /*
-    g_signal_connect(G_OBJECT(channel), "set-link\0",
+    g_signal_connect(G_OBJECT(channel), "set-link",
 		     G_CALLBACK(ags_audio_test_set_link_callback), test_link_channel.master);
 
-    g_signal_connect(G_OBJECT(link), "set-link\0",
+    g_signal_connect(G_OBJECT(link), "set-link",
 		     G_CALLBACK(ags_audio_test_set_link_callback), test_link_channel.slave_1);
     */
     
@@ -766,10 +766,10 @@ ags_audio_test_link_channel()
       i++){
     //TODO:JK: implement me
     /*
-    g_signal_connect(G_OBJECT(channel), "set-link\0",
+    g_signal_connect(G_OBJECT(channel), "set-link",
 		     G_CALLBACK(ags_audio_test_set_link_callback), test_link_channel.master);
 
-    g_signal_connect(G_OBJECT(link), "set-link\0",
+    g_signal_connect(G_OBJECT(link), "set-link",
 		     G_CALLBACK(ags_audio_test_set_link_callback), test_link_channel.slave_2);
     */
     
@@ -1214,7 +1214,7 @@ ags_audio_test_duplicate_recall()
   recall_id = ags_recall_id_new(NULL);
   recall_id->flags |= AGS_RECALL_ID_PLAYBACK;
   g_object_set(recall_id,
-	       "recycling-context\0", recycling_context,
+	       "recycling-context", recycling_context,
 	       NULL);
 
   /* duplicate recall */
@@ -1248,13 +1248,13 @@ ags_audio_test_duplicate_recall()
   
   recycling_context = ags_recycling_context_new(0);
   g_object_set(recycling_context,
-	       "parent\0", parent_recycling_context,
+	       "parent", parent_recycling_context,
 	       NULL);
 
   recall_id = ags_recall_id_new(NULL);
   recall_id->flags |= AGS_RECALL_ID_PLAYBACK;
   g_object_set(recall_id,
-	       "recycling-context\0", recycling_context,
+	       "recycling-context", recycling_context,
 	       NULL);
 
   /* duplicate recall */
@@ -1283,7 +1283,7 @@ ags_audio_test_init_recall()
 		       recall,
 		       TRUE);
 
-  g_signal_connect(G_OBJECT(recall), "run-init-pre\0",
+  g_signal_connect(G_OBJECT(recall), "run-init-pre",
 		   G_CALLBACK(ags_audio_test_init_recall_callback), NULL);
   
   recall_audio_run = ags_recall_audio_run_new();
@@ -1291,7 +1291,7 @@ ags_audio_test_init_recall()
 		       recall_audio_run,
 		       TRUE);
 
-  g_signal_connect(G_OBJECT(recall_audio_run), "run-init-pre\0",
+  g_signal_connect(G_OBJECT(recall_audio_run), "run-init-pre",
 		   G_CALLBACK(ags_audio_test_init_recall_callback), NULL);
   
   /* instantiate recycling context and recall id */
@@ -1299,16 +1299,16 @@ ags_audio_test_init_recall()
 
   recall_id = ags_recall_id_new(NULL);
   g_object_set(recall_id,
-	       "recycling-context\0", recycling_context,
+	       "recycling-context", recycling_context,
 	       NULL);
   
   /* setup recalls */
   g_object_set(recall,
-	       "recall-id\0", recall_id,
+	       "recall-id", recall_id,
 	       NULL);
 
   g_object_set(recall_audio_run,
-	       "recall-id\0", recall_id,
+	       "recall-id", recall_id,
 	       NULL);
   
   /* init recall */
@@ -1336,7 +1336,7 @@ ags_audio_test_resolve_recall()
 		       slave_recall_audio_run,
 		       TRUE);
 
-  g_signal_connect(G_OBJECT(slave_recall_audio_run), "resolve-dependencies\0",
+  g_signal_connect(G_OBJECT(slave_recall_audio_run), "resolve-dependencies",
 		   G_CALLBACK(ags_audio_test_resolve_recall_callback), NULL);
   
   /* instantiate recycling context and recall id */
@@ -1344,12 +1344,12 @@ ags_audio_test_resolve_recall()
 
   recall_id = ags_recall_id_new(NULL);
   g_object_set(recall_id,
-	       "recycling-context\0", recycling_context,
+	       "recycling-context", recycling_context,
 	       NULL);
   
   /* setup recalls */
   g_object_set(slave_recall_audio_run,
-	       "recall-id\0", recall_id,
+	       "recall-id", recall_id,
 	       NULL);
 
   /* resolve recall */
@@ -1392,16 +1392,13 @@ main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
 
-  putenv("LC_ALL=C\0");
-  putenv("LANG=C\0");
-
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
     return CU_get_error();
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsAudioTest\0", ags_audio_test_init_suite, ags_audio_test_clean_suite);
+  pSuite = CU_add_suite("AgsAudioTest", ags_audio_test_init_suite, ags_audio_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -1409,23 +1406,23 @@ main(int argc, char **argv)
     return CU_get_error();
   }
 
-  g_log_set_fatal_mask("GLib-GObject\0", // "Gtk\0" G_LOG_DOMAIN,
-  		       G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING);
+  //  g_log_set_fatal_mask("GLib-GObject", // "Gtk" G_LOG_DOMAIN,
+  //		       G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING);
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsAudio dispose\0", ags_audio_test_dispose) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAudio finalize\0", ags_audio_test_finalize) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAudio set pads\0", ags_audio_test_set_pads) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAudio set audio channels\0", ags_audio_test_set_audio_channels) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAudio link channel\0", ags_audio_test_link_channel) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAudio finalize linked channel\0", ags_audio_test_finalize_linked_channel) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAudio add recall\0", ags_audio_test_add_recall) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAudio add recall container\0", ags_audio_test_add_recall_container) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAudio recall id\0", ags_audio_test_add_recall_id) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAudio recycling context\0", ags_audio_test_add_recycling_context) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAudio duplicate recall\0", ags_audio_test_duplicate_recall) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAudio initialize recall\0", ags_audio_test_init_recall) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAudio resolve recall\0", ags_audio_test_resolve_recall) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsAudio dispose", ags_audio_test_dispose) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio finalize", ags_audio_test_finalize) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio set pads", ags_audio_test_set_pads) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio set audio channels", ags_audio_test_set_audio_channels) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio link channel", ags_audio_test_link_channel) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio finalize linked channel", ags_audio_test_finalize_linked_channel) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio add recall", ags_audio_test_add_recall) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio add recall container", ags_audio_test_add_recall_container) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio recall id", ags_audio_test_add_recall_id) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio recycling context", ags_audio_test_add_recycling_context) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio duplicate recall", ags_audio_test_duplicate_recall) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio initialize recall", ags_audio_test_init_recall) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAudio resolve recall", ags_audio_test_resolve_recall) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

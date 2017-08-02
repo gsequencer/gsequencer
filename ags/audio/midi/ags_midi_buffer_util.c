@@ -2001,12 +2001,12 @@ ags_midi_buffer_util_put_sequencer_meta_event(unsigned char *buffer,
   switch(len){
   case 3:
     {
-      buffer[delta_time_size + 6] = (0xff << 16) & data;
+      buffer[delta_time_size + 6] = ((0xff << 16) & data) >> 16;
     }
   case 2:
     {
       buffer[delta_time_size + 4] = 0xff & data;
-      buffer[delta_time_size + 5] = (0xff << 8) & data;
+      buffer[delta_time_size + 5] = ((0xff << 8) & data) >> 8;
     }
   }
 }

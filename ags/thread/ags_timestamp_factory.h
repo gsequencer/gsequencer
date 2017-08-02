@@ -36,7 +36,8 @@ typedef struct _AgsTimestampFactory AgsTimestampFactory;
 typedef struct _AgsTimestampFactoryClass AgsTimestampFactoryClass;
 
 typedef enum{
-  AGS_TIMESTAMP_FACTORY_UNIX      = 1,
+  AGS_TIMESTAMP_FACTORY_UNIX        = 1,
+  AGS_TIMESTAMP_FACTORY_OFFSET      = 1 <<  1,
 }AgsTimestampFactoryFlags;
 
 struct _AgsTimestampFactory
@@ -45,7 +46,8 @@ struct _AgsTimestampFactory
 
   guint flags;
 
-  GList *timestamp;
+  time_t time_val;
+  guint64 offset;
 };
 
 struct _AgsTimestampFactoryClass
@@ -56,13 +58,13 @@ struct _AgsTimestampFactoryClass
 			  AgsTimestamp *predecor);
 };
 
-GType ags_timestamp_factory_get_type(void);
+G_DEPRECATED GType ags_timestamp_factory_get_type(void);
 
-AgsTimestamp* ags_timestamp_factory_create(AgsTimestampFactory *timestamp_factory,
-					   AgsTimestamp *predecor);
+G_DEPRECATED AgsTimestamp* ags_timestamp_factory_create(AgsTimestampFactory *timestamp_factory,
+							AgsTimestamp *predecor);
 
 /* */
-AgsTimestampFactory* ags_timestamp_factory_get_instance();
-AgsTimestampFactory* ags_timestamp_factory_new();
+G_DEPRECATED AgsTimestampFactory* ags_timestamp_factory_get_instance();
+G_DEPRECATED AgsTimestampFactory* ags_timestamp_factory_new();
 
 #endif /*__AGS_TIMESTAMP_FACTORY_H__*/

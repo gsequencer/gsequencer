@@ -26,6 +26,8 @@
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
 
+#include <math.h>
+
 int ags_complex_test_init_suite();
 int ags_complex_test_clean_suite();
 
@@ -56,25 +58,124 @@ ags_complex_test_clean_suite()
 void
 ags_complex_test_copy()
 {
-  AgsComplex a, b, c;
+  AgsComplex a;
   AgsComplex *ptr;
 
+  /* test x = 1.0 */
   a[0] = 1.0;
   a[1] = 0.0;
 
-  //TODO:JK: implement me
+  ptr = ags_complex_copy(&a);
+
+  CU_ASSERT(ptr[0][0] == a[0] &&
+	    ptr[0][1] == a[1]);
+
+  /* test y = 1.0 */
+  a[0] = 0.0;
+  a[1] = 1.0;
+
+  ptr = ags_complex_copy(&a);
+
+  CU_ASSERT(ptr[0][0] == a[0] &&
+	    ptr[0][1] == a[1]);
+
+  /* test x = 1.25, y = 2 * M_PI */
+  a[0] = 1.25;
+  a[1] = 2.0 * M_PI;
+
+  ptr = ags_complex_copy(&a);
+
+  CU_ASSERT(ptr[0][0] == a[0] &&
+	    ptr[0][1] == a[1]);
+
+  /* test x = 2 * M_PI, y = 1.25 */
+  a[0] = 2.0 * M_PI;
+  a[1] = 1.25;
+
+  ptr = ags_complex_copy(&a);
+
+  CU_ASSERT(ptr[0][0] == a[0] &&
+	    ptr[0][1] == a[1]);
 }
 
 void
 ags_complex_test_get()
 {
-  //TODO:JK: implement me
+  AgsComplex a;
+
+  complex z;
+  
+  /* test x = 1.0 */
+  a[0] = 1.0;
+  a[1] = 0.0;
+
+  z = ags_complex_get(&a);
+
+  CU_ASSERT(z == (a[0] + a[1] * I));
+  
+  /* test y = 1.0 */
+  a[0] = 0.0;
+  a[1] = 1.0;
+
+  z = ags_complex_get(&a);
+
+  CU_ASSERT(z == (a[0] + a[1] * I));
+
+  /* test x = 1.25, y = 2 * M_PI */
+  a[0] = 1.25;
+  a[1] = 2.0 * M_PI;
+
+  z = ags_complex_get(&a);
+
+  CU_ASSERT(z == (a[0] + a[1] * I));
+
+  /* test x = 2 * M_PI, y = 1.25 */
+  a[0] = 2.0 * M_PI;
+  a[1] = 1.25;
+
+  z = ags_complex_get(&a);
+
+  CU_ASSERT(z == (a[0] + a[1] * I));
 }
 
 void
 ags_complex_test_set()
 {
-  //TODO:JK: implement me
+  AgsComplex a;
+
+  complex z;
+
+  /* test x = 1.0 */
+  z = 1.0 + 0.0 * I;
+  
+  ags_complex_set(&a, z);
+
+  CU_ASSERT(a[0] == 1.0 &&
+	    a[1] == 0.0);
+  
+  /* test y = 1.0 */
+  z = 0.0 + 1.0 * I;
+
+  ags_complex_set(&a, z);
+
+  CU_ASSERT(a[0] == 0.0 &&
+	    a[1] == 1.0);
+  
+  /* test x = 1.25, y = 2 * M_PI */
+  z = 1.25 + (2.0 * M_PI) * I;
+
+  ags_complex_set(&a, z);
+
+  CU_ASSERT(a[0] == 1.25 &&
+	    a[1] == 2.0 * M_PI);
+  
+  /* test x = 2 * M_PI, y = 1.25 */
+  z = (2.0 * M_PI) + 1.25 * I;
+
+  ags_complex_set(&a, z);
+  
+  CU_ASSERT(a[0] == 2.0 * M_PI &&
+	    a[1] == 1.25);
 }
 
 int

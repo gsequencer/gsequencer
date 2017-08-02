@@ -149,9 +149,42 @@ ags_dssi_manager_finalize(GObject *gobject)
 
   g_list_free_full(dssi_plugin,
 		   (GDestroyNotify) g_object_unref);
+
+  if(dssi_manager == ags_dssi_manager){
+    ags_dssi_manager = NULL;
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_dssi_manager_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_dssi_manager_get_default_path:
+ * 
+ * Get dssi manager default plugin path.
+ *
+ * Returns: the plugin default search path as a string vector
+ * 
+ * Since: 0.9.0
+ */
+gchar**
+ags_dssi_manager_get_default_path()
+{
+  return(ags_dssi_default_path);
+}
+
+/**
+ * ags_dssi_manager_set_default_path:
+ * @default_path: the string vector array to use as default path
+ * 
+ * Set dssi manager default plugin path.
+ * 
+ * Since: 0.9.0
+ */
+void
+ags_dssi_manager_set_default_path(gchar** default_path)
+{
+  ags_dssi_default_path = default_path;
 }
 
 /**
@@ -173,6 +206,10 @@ ags_dssi_manager_get_filenames(AgsDssiManager *dssi_manager)
 
   guint i;
   gboolean contains_filename;
+
+  if(!AGS_DSSI_MANAGER(dssi_manager)){
+    return(NULL);
+  }
   
   dssi_plugin = dssi_manager->dssi_plugin;
   filenames = NULL;
@@ -229,6 +266,10 @@ ags_dssi_manager_find_dssi_plugin(AgsDssiManager *dssi_manager,
   
   GList *list;
 
+  if(!AGS_DSSI_MANAGER(dssi_manager)){
+    return(NULL);
+  }
+  
   list = dssi_manager->dssi_plugin;
 
   while(list != NULL){
@@ -260,6 +301,11 @@ void
 ags_dssi_manager_load_blacklist(AgsDssiManager *dssi_manager,
 				gchar *blacklist_filename)
 {
+  if(!AGS_DSSI_MANAGER(dssi_manager) ||
+     blacklist_filename == NULL){
+    return;
+  } 
+  
   if(g_file_test(blacklist_filename,
 		 (G_FILE_TEST_EXISTS |
 		  G_FILE_TEST_IS_REGULAR))){
@@ -304,6 +350,12 @@ ags_dssi_manager_load_file(AgsDssiManager *dssi_manager,
 
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
+  if(!AGS_IS_DSSI_MANAGER(dssi_manager) ||
+     dssi_path == NULL ||
+     filename == NULL){
+    return;
+  }
+  
   pthread_mutex_lock(&(mutex));
 
   path = g_strdup_printf("%s/%s",
@@ -367,6 +419,10 @@ ags_dssi_manager_load_default_directory(AgsDssiManager *dssi_manager)
   gchar *filename;
 
   GError *error;
+
+  if(!AGS_DSSI_MANAGER(dssi_manager)){
+    return;
+  }
 
   dssi_path = ags_dssi_default_path;
   

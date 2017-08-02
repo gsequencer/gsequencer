@@ -56,6 +56,7 @@ enum{
   PROP_0,
   PROP_X,
   PROP_Y,
+  PROP_ACCELERATION_NAME,
 };
 
 GType
@@ -146,6 +147,22 @@ ags_acceleration_class_init(AgsAccelerationClass *acceleration)
   g_object_class_install_property(gobject,
 				  PROP_Y,
 				  param_spec);
+
+  /**
+   * AgsAcceleration:acceleration-name:
+   *
+   * The acceleration's name.
+   * 
+   * Since: 0.9.0
+   */
+  param_spec = g_param_spec_string("acceleration-name",
+				   i18n_pspec("acceleration name"),
+				   i18n_pspec("The acceleration's name"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ACCELERATION_NAME,
+				  param_spec);
 }
 
 void
@@ -163,7 +180,7 @@ ags_acceleration_init(AgsAcceleration *acceleration)
   acceleration->x = 0;
   acceleration->y = 0;
 
-  acceleration->name = NULL;
+  acceleration->acceleration_name = NULL;
 }
 
 
@@ -188,7 +205,23 @@ ags_acceleration_set_property(GObject *gobject,
       acceleration->y = g_value_get_uint(value);
     }
     break;
+  case PROP_ACCELERATION_NAME:
+    {
+      gchar *acceleration_name;
+      
+      acceleration_name = g_value_get_string(value);
+      
+      if(acceleration_name == acceleration->acceleration_name){
+	return;
+      }
 
+      if(acceleration->acceleration_name != NULL){
+	g_free(acceleration->acceleration_name);
+      }
+
+      acceleration->acceleration_name = g_strdup(acceleration_name);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -214,6 +247,11 @@ ags_acceleration_get_property(GObject *gobject,
   case PROP_Y:
     {
       g_value_set_uint(value, acceleration->y);
+    }
+    break;
+  case PROP_ACCELERATION_NAME:
+    {
+      g_value_set_string(value, acceleration->acceleration_name);
     }
     break;
   default:
@@ -257,8 +295,8 @@ ags_acceleration_finalize(GObject *gobject)
 
   acceleration = AGS_ACCELERATION(gobject);
   
-  if(acceleration->name != NULL){
-    free(acceleration->name);
+  if(acceleration->acceleration_name != NULL){
+    free(acceleration->acceleration_name);
   }
   
   /* call parent */
@@ -287,7 +325,7 @@ ags_acceleration_duplicate(AgsAcceleration *acceleration)
   copy->x = acceleration->x;
   copy->y = acceleration->y;
 
-  copy->name = g_strdup(acceleration->name);
+  copy->acceleration_name = g_strdup(acceleration->acceleration_name);
   
   return(copy);
 }

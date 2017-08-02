@@ -71,7 +71,7 @@ struct _AgsNote
   
   AgsComplex ratio;
   
-  gchar *name;
+  gchar *note_name;
   gdouble frequency;
 };
 
@@ -82,24 +82,56 @@ struct _AgsNoteClass
 
 GType ags_note_get_type();
 
+gint ags_note_sort_func(gconstpointer a,
+			gconstpointer b);
+
 GList* ags_note_find_prev(GList *note,
 			  guint x0, guint y);
 GList* ags_note_find_next(GList *note,
 			  guint x0, guint y);
 
+glong ags_note_length_to_smf_delta_time(guint note_length,
+					gdouble bpm, gdouble delay_factor,
+					glong nn, glong dd, glong cc, glong bb,
+					glong tempo);
+guint ags_note_smf_delta_time_to_length(glong delta_time,
+					glong nn, glong dd, glong cc, glong bb,
+					glong tempo,
+					gdouble bpm, gdouble delay_factor);
+
 unsigned char* ags_note_to_raw_midi(AgsNote *note,
 				    gdouble bpm, gdouble delay_factor,
 				    guint *buffer_length);
+unsigned char* ags_note_to_raw_midi_extended(AgsNote *note,
+					     gdouble bpm, gdouble delay_factor,
+					     glong nn, glong dd, glong cc, glong bb,
+					     glong tempo,
+					     guint *buffer_length);
 snd_seq_event_t* ags_note_to_seq_event(AgsNote *note,
 				       gdouble bpm, gdouble delay_factor,
 				       guint *n_events);
+snd_seq_event_t* ags_note_to_seq_event_extended(AgsNote *note,
+						gdouble bpm, gdouble delay_factor,
+						glong nn, glong dd, glong cc, glong bb,
+						glong tempo,
+						guint *n_events);
 
 GList* ags_note_from_raw_midi(unsigned char *raw_midi,
 			      gdouble bpm, gdouble delay_factor,
 			      guint length);
+GList* ags_note_from_raw_midi_extended(unsigned char *raw_midi,
+				       glong nn, glong dd, glong cc, glong bb,
+				       glong tempo,
+				       gdouble bpm, gdouble delay_factor,
+				       guint length);
 GList* ags_note_from_seq_event(snd_seq_event_t *event,
 			       gdouble bpm, gdouble delay_factor,
 			       guint n_events);
+GList* ags_note_from_seq_event_extended(snd_seq_event_t *event,
+					glong nn, glong dd, glong cc, glong bb,
+					glong tempo,
+					gdouble bpm, gdouble delay_factor,
+					guint n_events);
 
 AgsNote* ags_note_duplicate(AgsNote *note);
 

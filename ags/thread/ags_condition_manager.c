@@ -131,6 +131,13 @@ ags_condition_manager_finalize(GObject *gobject)
   condition_manager = AGS_CONDITION_MANAGER(gobject);
 
   g_hash_table_destroy(condition_manager->lock_object);
+
+  if(condition_manager == ags_condition_manager){
+    ags_condition_manager = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_condition_manager_parent_class)->finalize(gobject);
 }
 
 void

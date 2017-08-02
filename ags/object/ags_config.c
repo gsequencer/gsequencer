@@ -251,6 +251,7 @@ ags_config_init(AgsConfig *config)
   config->application_context == NULL;
 
   config->key_file = g_key_file_new();
+  g_key_file_ref(config->key_file);
 }
 
 void
@@ -366,10 +367,6 @@ ags_config_finalize(GObject *gobject)
   AgsConfig *config;
 
   config = (AgsConfig *) gobject;
-
-  if(ags_config == config){
-    ags_config = NULL;
-  }
   
   if(config->application_context != NULL){
     g_object_unref(config->application_context);
@@ -377,6 +374,10 @@ ags_config_finalize(GObject *gobject)
 
   if(config->key_file != NULL){
     g_key_file_unref(config->key_file);
+  }
+
+  if(ags_config == config){
+    ags_config = NULL;
   }
 
   /* call parent */
@@ -466,6 +467,10 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
 {
   GFile *file;
 
+  if(config == NULL){
+    return;
+  }
+  
   file = g_file_new_for_path(filename);
 
   g_message("loading preferences for: %s", filename);
@@ -512,9 +517,9 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
 				     *keys,
 				     NULL);
 	ags_config_set_value(config,
-		       *groups,
-		       *keys,
-		       value);
+			     *groups,
+			     *keys,
+			     value);
 	
 	keys++;
       }
@@ -623,7 +628,7 @@ void
 ags_config_to_data(AgsConfig *config,
 		   char **buffer, gsize *buffer_length)
 {
-  char *data;
+  gchar *data;
   gsize length;
 
   GError *error;
@@ -712,6 +717,10 @@ ags_config_real_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *va
   
   pthread_mutex_t *application_mutex;
 
+  if(config == NULL){
+    return;
+  }
+  
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
@@ -780,7 +789,7 @@ gchar*
 ags_config_get_value(AgsConfig *config, gchar *group, gchar *key)
 {
   gchar *value;
-  
+
   g_return_val_if_fail(AGS_IS_CONFIG(config), NULL);
 
   g_object_ref(G_OBJECT(config));

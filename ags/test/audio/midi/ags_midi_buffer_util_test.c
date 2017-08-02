@@ -26,6 +26,8 @@
 
 #include <ags/audio/midi/ags_midi_buffer_util.h>
 
+#include <stdlib.h>
+
 int ags_midi_buffer_util_test_init_suite();
 int ags_midi_buffer_util_test_clean_suite();
 

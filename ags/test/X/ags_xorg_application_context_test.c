@@ -166,8 +166,8 @@ main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
 
-  putenv("LC_ALL=C\0");
-  putenv("LANG=C\0");
+  putenv("LC_ALL=C");
+  putenv("LANG=C");
 
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
@@ -175,7 +175,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsXorgApplicationContextTest\0", ags_xorg_application_context_test_init_suite, ags_xorg_application_context_test_clean_suite);
+  pSuite = CU_add_suite("AgsXorgApplicationContextTest", ags_xorg_application_context_test_init_suite, ags_xorg_application_context_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -185,12 +185,12 @@ main(int argc, char **argv)
 
   gtk_init(NULL,
 	   NULL);
-  //  g_log_set_fatal_mask(G_LOG_DOMAIN, // "GLib-GObject\0", // "Gtk\0" G_LOG_DOMAIN,
+  //  g_log_set_fatal_mask(G_LOG_DOMAIN, // "GLib-GObject", // "Gtk" G_LOG_DOMAIN,
   //		       G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING);
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsXorgApplicationContext doing dispose\0", ags_xorg_application_context_test_dispose) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsXorgApplicationContext doing finalize\0", ags_xorg_application_context_test_finalize) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsXorgApplicationContext doing dispose", ags_xorg_application_context_test_dispose) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsXorgApplicationContext doing finalize", ags_xorg_application_context_test_finalize) == NULL)){
     CU_cleanup_registry();
       
     return CU_get_error();

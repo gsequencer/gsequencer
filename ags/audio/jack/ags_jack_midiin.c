@@ -67,8 +67,6 @@ void ags_jack_midiin_connect(AgsConnectable *connectable);
 void ags_jack_midiin_dispose(GObject *gobject);
 void ags_jack_midiin_finalize(GObject *gobject);
 
-void ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin);
-
 void ags_jack_midiin_set_application_context(AgsSequencer *sequencer,
 					     AgsApplicationContext *application_context);
 AgsApplicationContext* ags_jack_midiin_get_application_context(AgsSequencer *sequencer);

@@ -50,6 +50,9 @@ struct _AgsLadspaManagerClass
 
 GType ags_ladspa_manager_get_type(void);
 
+gchar** ags_ladspa_manager_get_default_path();
+void ags_ladspa_manager_set_default_path(gchar** default_path);
+
 gchar** ags_ladspa_manager_get_filenames(AgsLadspaManager *ladspa_manager);
 AgsLadspaPlugin* ags_ladspa_manager_find_ladspa_plugin(AgsLadspaManager *ladspa_manager,
 						       gchar *filename, gchar *effect);

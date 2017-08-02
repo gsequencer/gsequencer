@@ -26,9 +26,10 @@
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
-#include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_audio.h>
@@ -388,7 +389,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 
     /* get offsets */
     start_position = g_list_position(source->stream_beginning,
-				       source->stream_current);
+				     source->stream_current);
 
     if(start_position == 0){
       start_frame = 0;

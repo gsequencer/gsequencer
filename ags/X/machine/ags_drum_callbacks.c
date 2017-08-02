@@ -170,6 +170,7 @@ ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
   AgsMutexManager *mutex_manager;
 
   GList *list;
+
   gboolean loop;
 
   pthread_mutex_t *application_mutex;

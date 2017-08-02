@@ -67,6 +67,7 @@ enum{
   PROP_SUSTAIN,
   PROP_RELEASE,
   PROP_RATIO,
+  PROP_NOTE_NAME,
 };
 
 GType
@@ -176,6 +177,7 @@ ags_note_class_init(AgsNoteClass *note)
 				  PROP_Y,
 				  param_spec);
 
+  
   /**
    * AgsNote:stream-delay:
    *
@@ -291,6 +293,22 @@ ags_note_class_init(AgsNoteClass *note)
   g_object_class_install_property(gobject,
 				  PROP_RATIO,
 				  param_spec);
+
+  /**
+   * AgsNote:note-name:
+   *
+   * The note's name.
+   * 
+   * Since: 0.9.0
+   */
+  param_spec = g_param_spec_string("note-name",
+				   i18n_pspec("note name"),
+				   i18n_pspec("The note's name"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NOTE_NAME,
+				  param_spec);
 }
 
 void
@@ -334,7 +352,7 @@ ags_note_init(AgsNote *note)
   ags_complex_set(&(note->ratio),
 		  z);
   
-  note->name = NULL;
+  note->note_name = NULL;
   note->frequency = 440.0;
 }
 
@@ -452,6 +470,23 @@ ags_note_set_property(GObject *gobject,
 		      ags_complex_get(ratio));
     }
     break;
+  case PROP_NOTE_NAME:
+    {
+      gchar *note_name;
+      
+      note_name = g_value_get_string(value);
+      
+      if(note_name == note->note_name){
+	return;
+      }
+
+      if(note->note_name != NULL){
+	g_free(note->note_name);
+      }
+
+      note->note_name = g_strdup(note_name);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -470,34 +505,59 @@ ags_note_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_X0:
-    g_value_set_uint(value, note->x[0]);
+    {
+      g_value_set_uint(value, note->x[0]);
+    }
     break;
   case PROP_X1:
-    g_value_set_uint(value, note->x[1]);
+    {
+      g_value_set_uint(value, note->x[1]);
+    }
     break;
   case PROP_Y:
-    g_value_set_uint(value, note->y);
+    {
+      g_value_set_uint(value, note->y);
+    }
     break;
   case PROP_STREAM_DELAY:
-    g_value_set_double(value, note->stream_delay);
+    {
+      g_value_set_double(value, note->stream_delay);
+    }
     break;
   case PROP_STREAM_ATTACK:
-    g_value_set_uint(value, note->stream_attack);
+    {
+      g_value_set_uint(value, note->stream_attack);
+    }
     break;
   case PROP_ATTACK:
-    g_value_set_boxed(value, note->attack);
+    {
+      g_value_set_boxed(value, note->attack);
+    }
     break;
   case PROP_SUSTAIN:
-    g_value_set_boxed(value, note->sustain);
+    {
+      g_value_set_boxed(value, note->sustain);
+    }
     break;
   case PROP_DECAY:
-    g_value_set_boxed(value, note->decay);
+    {
+      g_value_set_boxed(value, note->decay);
+    }
     break;
   case PROP_RELEASE:
-    g_value_set_boxed(value, note->release);
+    {
+      g_value_set_boxed(value, note->release);
+    }
     break;
   case PROP_RATIO:
-    g_value_set_boxed(value, note->ratio);
+    {
+      g_value_set_boxed(value, note->ratio);
+    }
+    break;
+  case PROP_NOTE_NAME:
+    {
+      g_value_set_string(value, note->note_name);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -512,13 +572,51 @@ ags_note_finalize(GObject *gobject)
 
   note = AGS_NOTE(gobject);
 
-  /* name */
-  if(note->name != NULL){
-    free(note->name);
+  /* note name */
+  if(note->note_name != NULL){
+    free(note->note_name);
   }
   
   /* call parent */
   G_OBJECT_CLASS(ags_note_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_note_sort_func:
+ * @a: an #AgsNote
+ * @b: an #AgsNote
+ * 
+ * Sort notes.
+ * 
+ * Returns: 0 if equal, -1 if smaller and 1 if bigger offset
+ *
+ * Since: 0.9.0
+ */
+gint
+ags_note_sort_func(gconstpointer a,
+		   gconstpointer b)
+{
+  if(a == NULL || b == NULL){
+    return(0);
+  }
+    
+  if(AGS_NOTE(a)->x[0] == AGS_NOTE(b)->x[0]){
+    if(AGS_NOTE(a)->y == AGS_NOTE(b)->y){
+      return(0);
+    }
+
+    if(AGS_NOTE(a)->y < AGS_NOTE(b)->y){
+      return(-1);
+    }else{
+      return(1);
+    }
+  }
+
+  if(AGS_NOTE(a)->x[0] < AGS_NOTE(b)->x[0]){
+    return(-1);
+  }else{
+    return(1);
+  }  
 }
 
 /**
@@ -527,9 +625,9 @@ ags_note_finalize(GObject *gobject)
  * @x0: x offset
  * @y:  y offset
  * 
- * Find prev note.
+ * Find prev note having the same y offset.
  *
- * Returns: the matching entry as #GList.
+ * Returns: the matching entry as #GList if first entry's x offset bigger than @x0, else %NULL
  *
  * Since: 0.7.2
  */
@@ -539,8 +637,13 @@ ags_note_find_prev(GList *note,
 {
   GList *current_match;
 
-  current_match = NULL;
+  if(note == NULL ||
+     AGS_NOTE(note->data)->x[0] > x0){
+    return(NULL);
+  }
 
+  current_match = NULL;
+  
   while(note != NULL){
     if(AGS_NOTE(note->data)->y == y){
       current_match = note;
@@ -565,9 +668,9 @@ ags_note_find_prev(GList *note,
  * @x0: x offset
  * @y:  y offset
  * 
- * Find next note.
+ * Find next note having the same y offset.
  *
- * Returns: the matching entry as #GList.
+ * Returns: the matching entry as #GList if last entry's x offset smaller than @x0, else %NULL
  *
  * Since: 0.7.2
  */
@@ -578,6 +681,12 @@ ags_note_find_next(GList *note,
   GList *current_match;
 
   note = g_list_last(note);
+
+  if(note == NULL ||
+     AGS_NOTE(note->data)->x[0] < x0){
+    return(NULL);
+  }
+
   current_match = NULL;
 
   while(note != NULL){
@@ -596,6 +705,58 @@ ags_note_find_next(GList *note,
   }
 
   return(current_match);
+}
+
+/**
+ * ags_note_length_to_smf_delta_time:
+ * @note_length: the note length to convert
+ * @bpm: the source bpm
+ * @delay_factor: the source delay factor
+ * @nn: numerator
+ * @dd: denominator
+ * @cc: clocks
+ * @bb: beats
+ * @tempo: tempo
+ * 
+ * Convert note length to SMF delta-time.
+ * 
+ * Returns: the delta-time
+ * 
+ * Since: 0.9.0
+ */
+glong
+ags_note_length_to_smf_delta_time(guint note_length,
+				  gdouble bpm, gdouble delay_factor,
+				  glong nn, glong dd, glong cc, glong bb,
+				  glong tempo)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_note_smf_delta_time_to_length:
+ * @delta_time: delta-time
+ * @nn: numerator
+ * @dd: denominator
+ * @cc: clocks
+ * @bb: beats
+ * @tempo: tempo
+ * @bpm: the target bpm
+ * @delay_factor: the target delay factor
+ * 
+ * Convert SMF delta-time to note length.
+ * 
+ * Returns: the note length
+ * 
+ * Since: 0.9.0
+ */
+guint
+ags_note_smf_delta_time_to_length(glong delta_time,
+				  glong nn, glong dd, glong cc, glong bb,
+				  glong tempo,
+				  gdouble bpm, gdouble delay_factor)
+{
+  //TODO:JK: implement me
 }
 
 /**
@@ -761,6 +922,34 @@ ags_note_to_raw_midi(AgsNote *note,
 }
 
 /**
+ * ags_note_to_raw_midi_extended:
+ * @note: the #AgsNote
+ * @bpm: the source bpm
+ * @delay_factor: the source delay factor
+ * @nn: numerator
+ * @dd: denominator
+ * @cc: clocks
+ * @bb: beats
+ * @tempo: tempo
+ * @buffer_length: the return location of buffer length
+ * 
+ * Convert @note to raw-midi.
+ * 
+ * Returns: the raw-midi buffer
+ * 
+ * Since: 0.9.0
+ */
+unsigned char*
+ags_note_to_raw_midi_extended(AgsNote *note,
+			      gdouble bpm, gdouble delay_factor,
+			      glong nn, glong dd, glong cc, glong bb,
+			      glong tempo,
+			      guint *buffer_length)
+{
+  //TODO:JK: implement me
+}
+
+/**
  * ags_note_to_seq_event:
  * @note: the #AgsNote
  * @bpm: the bpm to use
@@ -780,8 +969,40 @@ ags_note_to_seq_event(AgsNote *note,
 		      guint *n_events)
 {
   snd_seq_event_t *event;
+  
+  event = NULL;
+  
+  //TODO:JK: implement me
 
+  return(event);
+}
 
+/**
+ * ags_note_to_raw_midi_extended:
+ * @note: the #AgsNote
+ * @bpm: the source bpm
+ * @delay_factor: the source delay factor
+ * @nn: numerator
+ * @dd: denominator
+ * @cc: clocks
+ * @bb: beats
+ * @tempo: tempo
+ * @n_events: the return location of event count
+ * 
+ * Convert @note to raw-midi.
+ * 
+ * Returns: an array of snd_seq_event_t structs
+ * 
+ * Since: 0.9.0
+ */
+snd_seq_event_t*
+ags_note_to_seq_event_extended(AgsNote *note,
+			       gdouble bpm, gdouble delay_factor,
+			       glong nn, glong dd, glong cc, glong bb,
+			       glong tempo,
+			       guint *n_events)
+{
+  snd_seq_event_t *event;
   
   event = NULL;
   
@@ -807,6 +1028,40 @@ GList*
 ags_note_from_raw_midi(unsigned char *raw_midi,
 		       gdouble bpm, gdouble delay_factor,
 		       guint length)
+{
+  GList *list;
+
+  list = NULL;
+
+  //TODO:JK: implement me
+  
+  return(list);
+}
+
+/**
+ * ags_note_from_raw_midi:
+ * @raw_midi: the data array
+ * @nn: numerator
+ * @dd: denominator
+ * @cc: clocks
+ * @bb: beats
+ * @tempo: tempo
+ * @bpm: the bpm to use
+ * @delay_factor: the segmentation delay factor
+ * @length: the length of the array
+ *
+ * Parse @raw_midi data and convert to #AgsNote.
+ *
+ * Returns: a #GList containing the notes
+ *
+ * Since: 0.9.0
+ */
+GList*
+ags_note_from_raw_midi_extended(unsigned char *raw_midi,
+				glong nn, glong dd, glong cc, glong bb,
+				glong tempo,
+				gdouble bpm, gdouble delay_factor,
+				guint length)
 {
   GList *list;
 
@@ -845,6 +1100,40 @@ ags_note_from_seq_event(snd_seq_event_t *event,
 }
 
 /**
+ * ags_note_from_raw_midi:
+ * @event: the snd_seq_event_t struct array
+ * @nn: numerator
+ * @dd: denominator
+ * @cc: clocks
+ * @bb: beats
+ * @tempo: tempo
+ * @bpm: the bpm to use
+ * @delay_factor: the segmentation delay factor
+ * @n_events: the count snd_seq_event_t structs
+ *
+ * Parse @raw_midi data and convert to #AgsNote.
+ *
+ * Returns: a #GList containing the notes
+ *
+ * Since: 0.9.0
+ */
+GList*
+ags_note_from_seq_event_extended(snd_seq_event_t *event,
+				 glong nn, glong dd, glong cc, glong bb,
+				 glong tempo,
+				 gdouble bpm, gdouble delay_factor,
+				 guint n_events)
+{
+  GList *list;
+
+  list = NULL;
+
+  //TODO:JK: implement me
+  
+  return(list);
+}
+
+/**
  * ags_note_duplicate:
  * @note: an #AgsNote
  * 
@@ -867,6 +1156,8 @@ ags_note_duplicate(AgsNote *note)
 
   copy->flags = 0;
 
+  copy->note_name = g_strdup(note->note_name);
+  
   if(note->x[0] < note->x[1]){
     copy->x[0] = note->x[0];
     copy->x[1] = note->x[1];

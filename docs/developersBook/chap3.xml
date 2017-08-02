@@ -29,6 +29,12 @@
     returns on pull AgsReturnableThread instances. They can be used with
     a callback ::safe-run.
   </para>
+
+  <para>
+    There is a interface to implement by your application context. Thus the AgsConcurrencyProvider
+    interface is used. It has some common get/set functions to do basic multi-threaded work
+    by well defined objects.
+  </para>
   
   <sect1>
     <title>The main loop interface</title>
@@ -101,6 +107,61 @@
   </sect1>
 
   <sect1>
+    <title>Worker-threads to do tic-less parallelism</title>
+    <para>
+      Worker threads are used to perform heavy load tasks that run completely asynchronous. This
+      means they don't do any sync with the tree. You start worker threads like any other thread
+      by calling ags_thread_start() or ags_thread_stop() to stop it.
+    </para>
+
+    <para>
+      The AgsWorkerThread overrides ::start of AgsThread class and won't do any synchronization.
+      The worker implementation is responsible to delay computation by calling usleep() or nanosleep().
+    </para>
+
+    <para>
+      You can either connect to the ::do-poll signal or inherit of the AgsWorkerThread object. This
+      requires to override ::do-poll.
+    </para>
+
+    <sect2>
+    <title>Asynchronously destroy objects</title>
+    <para>
+      AgsDestroyWorker is intended to unref or free objects asynchrously. Note the use of this worker
+      for one certain instance, requires it to do it throughout with the worker for all unref calls.
+      Else you would probably end in a data-race ending in accessing a freed instance. This can especially
+      happen as using g_object_run_dispose().
+    </para>
+
+    <para>
+      The destroy function takes exactly one parameter like g_free() or g_object_unref(). To add an entry
+      call ags_destroy_worker_add(). The first parameter is the worker, second the pointer to free/unref
+      and third the destroy function.
+    </para>
+    </sect2>
+  </sect1>
+  
+  <sect1>
+    <title>Poll for file descriptors</title>
+    <para>
+      The AgsPollingThread polls your file descriptors. Since it is derived by AgsThread it runs
+      tic based like other threads.
+    </para>
+
+    <para>
+      Call ags_polling_thread_add_poll_fd() and pass an AgsPollFd to it, in order to poll a resource.
+      Note the resource won't be polled unless the thread was started by calling ags_thread_start().
+      The ::dispatch signal notifies about a ressource to be ready for Input/Output.
+    </para>
+    
+    <para>
+      To stop poll a resource either remove the poll file descriptor by calling
+      ags_polling_thread_remove_poll_fd(). Or just stop the polling thread by ags_thread_stop() so
+      any resource won't be polled.
+    </para>
+  </sect1>
+    
+  <sect1>
     <title>Launching tasks</title>
     <para>
       It's for thread-safety for sure to run tasks asynchronously exclusive. This means what ever
@@ -111,7 +172,32 @@
 
     <para>
       You can use either ags_task_thread_append_task() or ags_task_thread_append_tasks() to add one
-      respectively a GList of tasks.
+      respectively a GList of tasks. The task shall report failures by calling ::failure signal.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>Mutex and condition manager</title>
+    <para>
+      The AgsMutexManager and AgsConditionManager are singletons. You might want to retrieve an
+      instance by calling ags_mutex_manager_get_instance() or ags_condition_manager_get_instance().
+    </para>
+
+    <para>
+      To use the managers you call during instatiation of your object ags_mutex_manager_insert() by
+      providing the lock object and the initialized mutex. There is the ags_condition_manager_insert()
+      function available for conditions.
+    </para>
+
+    <para>
+      During finalization of your object you should remove the mutex of the manager. This is done
+      by calling ags_mutex_manager_remove() or ags_condition_manager_remove() for conditions.
+    </para>
+    
+    <para>
+      The benefit of providing these managers is, it can be used by interface implementations. For
+      instance AgsSoundcard derived objects can be reused by a generic procedure. Guaranteeing that
+      no concurrent access is performed by locking the mutex.
     </para>
   </sect1>
 </chapter>

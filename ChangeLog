@@ -12,6 +12,65 @@ ags (1.0.0)
 	* TODO:JK: extended AgsSoundProvider interface to provide plugin managers
 	* extended AgsServiceProvider interface to provide managers
 
+ags (0.9.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed unitialized pointer in AgsCellPattern and AgsPatternBox animation
+
+ags (0.9.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed possible concurrent access in ags-peak related code
+	* fixed led array related bug that didn't show animation of AgsCellPattern and AgsPatternBox
+
+ags (0.9.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed crash after drum restore and doing sequencer playback
+
+ags (0.9.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed possible concurrent access in ags_cell_pattern.c
+	* fixed finalize to call parent class of managers
+	* fixed finalize to reset global variable after finalize of managers
+	* fixed g_list_position() call to have nested g_list_find() in ags_polling_thread.c
+	* fixed missing return in ags_destroy_entry_alloc()
+	* fixed AGS_TASK_GET_CLASS() macro to remove not opened paranthesis
+	* fixed ags_thread_init() to correct assign condition manager
+	* fixed AGS_FILE_CHECKSUM_LENGTH macro to use string representation length
+	* fixed missing serialization of thread frequency
+	* fixed missing return of ags_file_write_thread()
+	* extended chap3.xml to include documentation about workers
+	* extended chap3.xml to include documentation about poll fds
+	* extended chap3.xml to include documentation about mutex and condition manager
+	* provide new prototypes in ags_notation.c and ags_note.c to work with SMF
+	* new unit-test ags_complex_test.c
+	* new unit-test ags_turtle_manager_test.c
+	* new unit-test ags_log_test.c
+	* new unit-test ags_application_context_test.c
+	* new unit-test ags_connection_manager_test.c
+	* new unit-test ags_config_test.c
+	* new unit-test ags_condition_manager_test.c
+	* new unit-test ags_mutex_manager_test.c
+	* new unit-test ags_destroy_worker_test.c
+	* new unit-test ags_polling_thread_test.c
+	* new unit-test ags_poll_fd_test.c
+	* new unit-test ags_returnable_thread_test.c
+	* new unit-test ags_task_test.c
+	* new unit-test ags_thread_pool_test
+	* new unit-test ags_worker_thread_test
+	* new unit-test ags_file_test
+	* new unit-test ags_file_id_ref_test
+	* new unit-test ags_file_launch_test
+	* new unit-test ags_base_plugin_test.c
+	* new unit-test ags_dssi_plugin_test.c
+	* new unit-test ags_dssi_manager_test.c
+	* new unit-test ags_ladspa_manager_test.c
+	* new unit-test ags_lv2_manager_test.c
+	* new unit-test ags_note_test.c
+	* new unit-test ags_acceleration_test.c
+
 ags (0.8.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

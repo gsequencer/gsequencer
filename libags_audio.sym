@@ -36,6 +36,8 @@ ags_lv2ui_plugin_get_type
 ags_lv2ui_plugin_find_gui_uri
 ags_lv2ui_plugin_new
 ags_lv2ui_manager_get_type
+ags_lv2ui_manager_get_default_path
+ags_lv2ui_manager_set_default_path
 ags_lv2ui_manager_get_filenames
 ags_lv2ui_manager_find_lv2ui_plugin
 ags_lv2ui_manager_find_lv2ui_plugin_with_index
@@ -76,6 +78,8 @@ ags_lv2_event_manager_lv2_event_unref
 ags_lv2_event_manager_get_instance
 ags_lv2_event_manager_new
 ags_dssi_manager_get_type
+ags_dssi_manager_get_default_path
+ags_dssi_manager_set_default_path
 ags_dssi_manager_get_filenames
 ags_dssi_manager_find_dssi_plugin
 ags_dssi_manager_load_blacklist
@@ -84,6 +88,8 @@ ags_dssi_manager_load_default_directory
 ags_dssi_manager_get_instance
 ags_dssi_manager_new
 ags_ladspa_manager_get_type
+ags_ladspa_manager_get_default_path
+ags_ladspa_manager_set_default_path
 ags_ladspa_manager_get_filenames
 ags_ladspa_manager_find_ladspa_plugin
 ags_ladspa_manager_load_blacklist
@@ -128,6 +134,8 @@ ags_lv2_option_manager_lv2_options_set
 ags_lv2_option_manager_get_instance
 ags_lv2_option_manager_new
 ags_lv2_manager_get_type
+ags_lv2_manager_get_default_path
+ags_lv2_manager_set_default_path
 ags_lv2_manager_get_filenames
 ags_lv2_manager_find_lv2_plugin
 ags_lv2_manager_load_blacklist
@@ -171,6 +179,8 @@ ags_notation_copy_selection
 ags_notation_cut_selection
 ags_notation_insert_from_clipboard
 ags_notation_get_current
+ags_notation_to_raw_midi
+ags_notation_from_raw_midi
 ags_notation_new
 ags_recall_recycling_dummy_get_type
 ags_recall_recycling_dummy_new
@@ -181,6 +191,7 @@ ags_recall_adaptor_run_get_type
 ags_recall_adaptor_run_new
 ags_midiin_get_type
 ags_midiin_error_quark
+ags_midiin_switch_buffer_flag
 ags_midiin_new
 ags_buffer_audio_signal_get_type
 ags_buffer_audio_signal_new
@@ -498,7 +509,6 @@ ags_remote_channel_error_quark
 ags_remote_channel_new
 ags_recall_factory_get_type
 ags_recall_factory_create
-ags_recall_factory_remove
 ags_recall_factory_get_instance
 ags_recall_factory_new
 ags_playable_get_type
@@ -700,12 +710,19 @@ ags_pattern_get_bit
 ags_pattern_toggle_bit
 ags_pattern_new
 ags_note_get_type
+ags_note_sort_func
 ags_note_find_prev
 ags_note_find_next
+ags_note_length_to_smf_delta_time
+ags_note_smf_delta_time_to_length
 ags_note_to_raw_midi
+ags_note_to_raw_midi_extended
 ags_note_to_seq_event
+ags_note_to_seq_event_extended
 ags_note_from_raw_midi
+ags_note_from_raw_midi_extended
 ags_note_from_seq_event
+ags_note_from_seq_event_extended
 ags_note_duplicate
 ags_note_new
 ags_note_new_with_offset
@@ -759,6 +776,7 @@ ags_recycling_is_active
 ags_recycling_new
 ags_jack_midiin_get_type
 ags_jack_midiin_error_quark
+ags_jack_midiin_switch_buffer_flag
 ags_jack_midiin_new
 ags_jack_server_get_type
 ags_jack_server_find_url
