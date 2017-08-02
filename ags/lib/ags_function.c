@@ -63,6 +63,7 @@ void ags_function_finalize(GObject *gobject);
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   term, \
 						   AGS_SYMBOLIC_EULER))
+
 #define ags_function_print_cos(str, term) (sprintf(str, "(%s * exp(- %s * (%s) * log(%s))) / 2 + (%s * exp(%s * (%s) * log(%s))) / 2", \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
@@ -72,6 +73,7 @@ void ags_function_finalize(GObject *gobject);
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   term, \
 						   AGS_SYMBOLIC_EULER))
+
 #define ags_function_print_tan(str, term) (sprintf(str, "(%s * (exp(- %s * (%s) * log(%s)) - exp(%s * (%s) *  log(%s)))) / (exp(- %s * (%s) *  log(%s)) + exp(%s * (%s) *  log(%s)))", \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
@@ -89,6 +91,28 @@ void ags_function_finalize(GObject *gobject);
 						   AGS_SYMBOLIC_COMPLEX_UNIT, \
 						   term, \
 						   AGS_SYMBOLIC_EULER))
+
+#define ags_function_print_asin(str, term) (sprintf(str, "(-%s * (log(exp(0.5 * log(1 - exp(2 * (%s)))) + %s * (%s))))", \
+						    AGS_SYMBOLIC_COMPLEX_UNIT, \
+						    term,		\
+						    AGS_SYMBOLIC_COMPLEX_UNIT, \
+						    term))
+
+#define ags_function_print_acos(str, term) (sprintf(str, "(%s / 2 + %s * log(exp(0.5 * log(1 - exp(2 * (%s)))) + %s * (%s))))", \
+						    AGS_SYMBOLIC_PI,	\
+						    AGS_SYMBOLIC_COMPLEX_UNIT, \
+						    AGS_SYMBOLIC_COMPLEX_UNIT, \
+						    term,		\
+						    AGS_SYMBOLIC_COMPLEX_UNIT, \
+						    term))
+
+#define ags_function_print_atan(str, term) (sprintf(str, "(0.5 * %s * log(1 - %s * %s) - 0.5 * %s * log(1 + %s * %s))", \
+						    AGS_SYMBOLIC_COMPLEX_UNIT, \
+						    AGS_SYMBOLIC_COMPLEX_UNIT, \
+						    term,		\
+						    AGS_SYMBOLIC_COMPLEX_UNIT, \
+						    AGS_SYMBOLIC_COMPLEX_UNIT, \
+						    term))
 
 enum{
   PROP_0,
@@ -385,7 +409,7 @@ ags_function_find_literals(AgsFunction *function,
 
   static regex_t literal_regex;
 
-  static const char *literal_pattern = "^((?!log|exp|floor|ceil|round|sin|cos|tan|asin|acos|atan)([a-zA-Z][0-9]*))";
+  static const char *literal_pattern = "^((?!log|exp|sin|cos|tan|asin|acos|atan)([a-zA-Z][0-9]*))";
 
   static const size_t max_matches = 1;
 
@@ -456,7 +480,86 @@ ags_function_literal_solve(AgsFunction *function)
   auto guint ags_function_literal_solve_find_max_exponent(gchar *transformed_function);
 
   gchar* ags_function_literal_solve_expand_functions(gchar *transformed_function){
+    gchar *expanded_functions;
+    gchar *offset, *close_offset;
+    gchar *str;
+    gchar *open_paranthesis, *close_paranthesis, *tmp_paranthesis;
+
+    int regexec_result;
     
+    static gboolean regex_compiled = FALSE;
+
+    static regex_t function_regex;
+
+    static const char *function_pattern = "^(sin|cos|tan|asin|acos|atan)";
+
+    static const size_t max_matches = 1;
+    
+    /* compile regex */
+    pthread_mutex_lock(&regex_mutex);
+
+    if(!regex_compiled){
+      regex_compiled = TRUE;
+
+      regcomp(&function_regex, function_pattern, REG_EXTENDED);
+    }
+
+    pthread_mutex_unlock(&regex_mutex);
+
+    /*  */
+    expanded_functions = NULL;
+
+    str =
+      offset = g_strdup(transformed_function);
+    close_offset = NULL;
+
+    regexec_result = 0;
+    
+    while(regexec_result != REG_NOMATCH){
+      if((regexec_result = regexec(&function_regex, offset, max_matches, match_arr, 0)) == 0){
+	if(close_offset == NULL ||
+	   close_offset > match_arr[0].rm_so){
+	  offset = match_arr[0].rm_so;
+
+	  /* find close paranthesis */
+	  open_paranethesis = offset;
+	  
+	  while((open_paranthesis = strchr(open_paranethesis, '(')) != NULL &&
+		close_paranthesis == NULL){
+	    close_paranthesis = strchr(open_paranethesis, ')');
+	    tmp_paranthesis = strchr(open_paranethesis, '(');
+
+	    if(tmp_paranthesis < close_paranthesis){
+	      close_paranthesis = NULL;
+	    }
+	  }
+
+	  close_offset = close_paranthesis;
+	}else{
+	  if(close_offset != NULL){
+	    if(!g_strcmp0(offset,
+			  "sin")){
+	    }else if(!g_strcmp0(offset,
+				"cos")){
+	    }else if(!g_strcmp0(offset,
+				"tan")){
+	    }else if(!g_strcmp0(offset,
+				"asin")){
+	    }else if(!g_strcmp0(offset,
+				"acos")){
+	    }else if(!g_strcmp0(offset,
+				"atan")){
+	    }
+
+	    
+	  }else{
+	    //NOTE:JK: you should report paranthesis mismatch
+	    
+	    break;
+	  }
+	}
+      }
+    }
   }
 
   gchar* ags_function_literal_solve_numeric_exponent_only(gchar *transformed_function){
