@@ -364,6 +364,8 @@ ags_synth_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   xmlAddChild(parent,
 	      node);
+
+  return(node);
 }
 
 /**

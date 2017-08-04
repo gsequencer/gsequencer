@@ -1,3 +1,10 @@
+ags (0.9.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed many missing return values
+	* fixed some unitialized pointers
+	* fixed 64 bit portability issue in ags_recall_template_find_all_type()
+
 ags (0.9.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

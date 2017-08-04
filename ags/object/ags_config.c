@@ -245,6 +245,8 @@ ags_config_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_config_init(AgsConfig *config)
 {
+  config->flags = 0;
+  
   config->version = AGS_CONFIG_DEFAULT_VERSION;
   config->build_id = AGS_CONFIG_DEFAULT_BUILD_ID;
 
@@ -329,7 +331,11 @@ ags_config_remove_from_registry(AgsConnectable *connectable)
 gboolean
 ags_config_is_connected(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  if((AGS_CONFIG_CONNECTED & (AGS_CONFIG(connectable)->flags)) != 0){
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 void

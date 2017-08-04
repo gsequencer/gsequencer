@@ -2846,6 +2846,8 @@ void*
 ags_thread_timer(void *ptr)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 void*
@@ -3434,6 +3436,8 @@ ags_thread_timelock_loop(void *ptr)
   }
 
   pthread_mutex_unlock(thread->timelock_mutex);
+
+  return(NULL);
 }
 
 void

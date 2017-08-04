@@ -590,6 +590,8 @@ ags_synth_generator_write(AgsFile *file,
 			     node,
 			     (AgsTimestamp *) synth_generator->timestamp);
   }
+
+  return(node);
 }
 
 void

@@ -440,7 +440,7 @@ ags_midi_buffer_util_get_track(unsigned char *buffer,
   static gchar track[] = "MTrk";
 
   if(buffer == NULL){
-    return;
+    return(0);
   }
   
   if(g_ascii_strncasecmp(buffer,

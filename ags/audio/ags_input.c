@@ -470,6 +470,8 @@ ags_input_apply_synth(AgsInput *input,
   pthread_mutex_t *mutex;
 
   //TODO:JK: implement me
+
+  return(TRUE);
 }
 
 gboolean

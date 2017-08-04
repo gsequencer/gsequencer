@@ -456,6 +456,8 @@ ags_export_soundcard_set_backend(AgsExportSoundcard *export_soundcard,
 
   gtk_combo_box_set_active(GTK_COMBO_BOX(export_soundcard->backend),
 			   i);
+
+  return(TRUE);
 }
 
 /**
@@ -590,6 +592,8 @@ ags_export_soundcard_set_card(AgsExportSoundcard *export_soundcard,
 
   gtk_combo_box_set_active(GTK_COMBO_BOX(export_soundcard->card),
 			   i);
+
+  return(TRUE);
 }
 
 /**

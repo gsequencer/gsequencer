@@ -23,6 +23,7 @@
 
 #include <ags/audio/midi/ags_midi_buffer_util.h>
 
+#include <stdlib.h>
 #include <string.h>
 
 /**
@@ -289,7 +290,6 @@ ags_midi_util_to_smf(unsigned char *midi_buffer, guint buffer_length,
 {
   unsigned char *midi_iter;
   unsigned char *smf_buffer;
-
   
   guint ret_smf_buffer_length;
   

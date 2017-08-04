@@ -295,6 +295,8 @@ ags_start_animation_thread(void *ptr)
   gtk_widget_destroy(window);
   
   gdk_threads_leave();
+
+  return(NULL);
 }
 
 void
@@ -307,7 +309,7 @@ ags_start_animation(pthread_t *thread)
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   g_object_set(window,
 	       "decorated", FALSE,
-	       0);
+	       NULL);
   gtk_widget_set_size_request(window,
 			      800, 450);
   gtk_widget_show_all(window);

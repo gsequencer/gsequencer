@@ -1630,6 +1630,8 @@ ags_lv2_plugin_clear_event_buffer(void *event_buffer,
 
   guint padded_buffer_size;
 
+  offset = event_buffer;
+  
   if(buffer_size < 8){
     padded_buffer_size = 8;
   }else{

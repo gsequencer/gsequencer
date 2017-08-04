@@ -826,7 +826,7 @@ ags_envelope_editor_get_active_preset(AgsEnvelopeEditor *envelope_editor)
   pthread_mutex_t *audio_mutex;
   
   if(!AGS_IS_ENVELOPE_EDITOR(envelope_editor)){
-    return;
+    return(NULL);
   }
     
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(envelope_editor,

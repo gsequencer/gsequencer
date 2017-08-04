@@ -713,7 +713,7 @@ ags_play_channel_run_master_streamer_alloc(AgsPlayChannelRunMaster *play_channel
 
   if(play_channel_run_master == NULL ||
      stream_channel_run == NULL){
-    return;
+    return(NULL);
   }
   
   streamer = (AgsPlayChannelRunMasterStreamer *) malloc(sizeof(AgsPlayChannelRunMasterStreamer));

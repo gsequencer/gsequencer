@@ -660,10 +660,13 @@ ags_apply_synth_launch(AgsTask *task)
   frame_count = apply_synth->frame_count;
   phase = apply_synth->phase;
 
+  audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
+  buffer_size = audio_signal->buffer_size;
+
   //TODO:JK: 
   //  attack = attack % (guint) buffer_size;
   
-  current_phase[0] = (guint) floor(phase + (buffer_size - attack) + i * buffer_size) % (guint) floor(frequency);
+  current_phase[0] = (guint) floor(phase + (buffer_size - attack)) % (guint) floor(frequency);
 
   factor = 1.0;
 

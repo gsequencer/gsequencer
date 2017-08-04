@@ -373,7 +373,7 @@ ags_playable_get_samplerate(AgsPlayable *playable)
   playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
   g_return_val_if_fail(playable_interface->get_samplerate,
 		       0);
-  playable_interface->get_samplerate(playable);
+  return(playable_interface->get_samplerate(playable));
 }
 
 /**
@@ -396,7 +396,7 @@ ags_playable_get_format(AgsPlayable *playable)
   playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
   g_return_val_if_fail(playable_interface->get_format,
 		       0);
-  playable_interface->get_format(playable);
+  return(playable_interface->get_format(playable));
 }
 
 /**
@@ -423,7 +423,7 @@ ags_playable_read(AgsPlayable *playable,
   playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
   g_return_val_if_fail(playable_interface->read,
 		       NULL);
-  playable_interface->read(playable, channel, error);
+  return(playable_interface->read(playable, channel, error));
 }
 
 /**

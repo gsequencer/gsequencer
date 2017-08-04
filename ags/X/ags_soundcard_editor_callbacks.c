@@ -114,7 +114,7 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 
   application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
+  mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   /* get audio loop */
@@ -228,7 +228,7 @@ ags_soundcard_editor_add_jack_callback(GtkWidget *button,
 							      AGS_TYPE_PREFERENCES))->window);
   application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
+  mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   /* get audio loop */
@@ -269,7 +269,7 @@ ags_soundcard_editor_remove_jack_callback(GtkWidget *button,
 							      AGS_TYPE_PREFERENCES))->window);
   application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
+  mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   /* get audio loop */
@@ -314,7 +314,7 @@ ags_soundcard_editor_audio_channels_changed_callback(GtkSpinButton *spin_button,
 
   application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
+  mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   /* get audio loop */
@@ -359,7 +359,7 @@ ags_soundcard_editor_samplerate_changed_callback(GtkSpinButton *spin_button,
 
   application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance(mutex_manager);
+  mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   /* get audio loop */

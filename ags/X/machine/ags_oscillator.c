@@ -385,6 +385,8 @@ ags_file_write_oscillator(AgsFile *file, xmlNode *parent, AgsOscillator *oscilla
 
   xmlAddChild(parent,
 	      node);  
+
+  return(node);
 }
 
 /**

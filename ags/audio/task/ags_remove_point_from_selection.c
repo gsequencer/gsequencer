@@ -293,6 +293,8 @@ ags_remove_point_from_selection_dispose(GObject *gobject)
 {
   AgsRemovePointFromSelection *remove_point_from_selection;
 
+  remove_point_from_selection = AGS_REMOVE_POINT_FROM_SELECTION(gobject);
+  
   if(remove_point_from_selection->notation != NULL){
     g_object_unref(remove_point_from_selection->notation);
   }
@@ -305,6 +307,8 @@ void
 ags_remove_point_from_selection_finalize(GObject *gobject)
 {
   AgsRemovePointFromSelection *remove_point_from_selection;
+
+  remove_point_from_selection = AGS_REMOVE_POINT_FROM_SELECTION(gobject);
 
   if(remove_point_from_selection->notation != NULL){
     g_object_unref(remove_point_from_selection->notation);

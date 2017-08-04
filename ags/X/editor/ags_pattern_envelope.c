@@ -1007,7 +1007,7 @@ ags_pattern_envelope_get_active_preset(AgsPatternEnvelope *pattern_envelope)
   pthread_mutex_t *audio_mutex;
 
   if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
-    return;
+    return(NULL);
   }
   
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,

@@ -357,6 +357,8 @@ int
 ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine)
 {
   machine->properties = NULL;
+
+  return(0);
 }
 
 int

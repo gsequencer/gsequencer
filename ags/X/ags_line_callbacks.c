@@ -69,6 +69,8 @@ ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *
   if(old_parent == NULL){
     //    gtk_widget_show_all(GTK_WIDGET(line));
   }
+
+  return(0);
 }
 
 void

@@ -515,6 +515,8 @@ ags_thread_pool_creation_thread(void *ptr)
     g_message("ags_thread_pool_creation_thread@loopEND");
 #endif
   }
+
+  return(NULL);
 }
 
 /**

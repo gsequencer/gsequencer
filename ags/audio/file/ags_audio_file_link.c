@@ -463,6 +463,8 @@ ags_audio_file_link_write(AgsFile *file,
 			     node,
 			     audio_file_link->timestamp);
   }
+
+  return(node);
 }
 
 void

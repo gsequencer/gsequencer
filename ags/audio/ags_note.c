@@ -731,6 +731,8 @@ ags_note_length_to_smf_delta_time(guint note_length,
 				  glong tempo)
 {
   //TODO:JK: implement me
+
+  return(0);
 }
 
 /**
@@ -757,6 +759,8 @@ ags_note_smf_delta_time_to_length(glong delta_time,
 				  gdouble bpm, gdouble delay_factor)
 {
   //TODO:JK: implement me
+
+  return(0);
 }
 
 /**
@@ -947,6 +951,8 @@ ags_note_to_raw_midi_extended(AgsNote *note,
 			      guint *buffer_length)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 /**
