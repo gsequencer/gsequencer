@@ -89,6 +89,19 @@ ags_local_factory_controller_class_init(AgsLocalFactoryControllerClass *local_fa
   local_factory_controller->create_instance = ags_local_factory_controller_real_create_instance;
 
   /* signals */
+  /**
+   * AgsLocalFactoryController::create-instance:
+   * @local_factory_controller: the #AgsLocalFactoryController
+   * @type_name: the type name
+   * @parameter: parameters to set as properties
+   * @n_params: the count of parameters
+   *
+   * The ::create-instance signal is used to create an instance.
+   *
+   * Returns: a pointer to the instance created
+   * 
+   * Since: 1.0.0
+   */
   local_factory_controller_signals[CREATE_INSTANCE] =
     g_signal_new("create-instance\0",
 		 G_TYPE_FROM_CLASS(local_factory_controller),

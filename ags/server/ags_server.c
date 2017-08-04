@@ -138,7 +138,7 @@ ags_server_class_init(AgsServerClass *server)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 0.4.0
+   * Since: 0.7.0
    */
   param_spec = g_param_spec_object("application-context\0",
 				   "the application context object\0",
@@ -154,6 +154,12 @@ ags_server_class_init(AgsServerClass *server)
 
   /* signals */
   /**
+   * AgsServer::start:
+   * @server: the #AgsServer
+   *
+   * The ::start signal is emitted as the server starts.
+   *
+   * Since: 1.0.0
    */
   server_signals[START] =
     g_signal_new("start\0",

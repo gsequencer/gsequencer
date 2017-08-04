@@ -48,71 +48,71 @@ void ags_function_finalize(GObject *gobject);
  * function.
  */
 
-#define AGS_FUNCTION_EXPONENT_PATTERN "^((exp\\()(([0-9]|" \
-  AGS_SYMBOLIC_EULER "|" \
-  AGS_SYMBOLIC_PI "|" \
-  AGS_SYMBOLIC_INFINIT "|" \
+#define AGS_FUNCTION_EXPONENT_PATTERN "^((exp\\()(([0-9]|"	\
+  AGS_SYMBOLIC_EULER "|"					\
+  AGS_SYMBOLIC_PI "|"						\
+  AGS_SYMBOLIC_INFINIT "|"					\
   AGS_SYMBOLIC_COMPLEX_UNIT ")+)(\\)))"
 
-#define ags_function_print_sin(str, term) (sprintf(str, "1 / 2 * %s * exp(- %s * (%s) * log(%s)) - 1 / 2 * %s * exp(%s * (%s) * log(%s))", \
-						   AGS_SYMBOLIC_COMPLEX_UNIT, \
-						   AGS_SYMBOLIC_COMPLEX_UNIT, \
-						   term, \
-						   AGS_SYMBOLIC_EULER,	\
-						   AGS_SYMBOLIC_COMPLEX_UNIT, \
-						   AGS_SYMBOLIC_COMPLEX_UNIT, \
-						   term, \
-						   AGS_SYMBOLIC_EULER))
+#define ags_function_print_sin(term) (g_strdup_printf("1 / 2 * %s * exp(- %s * (%s) * log(%s)) - 1 / 2 * %s * exp(%s * (%s) * log(%s))", \
+						      AGS_SYMBOLIC_COMPLEX_UNIT, \
+						      AGS_SYMBOLIC_COMPLEX_UNIT, \
+						      term,		\
+						      AGS_SYMBOLIC_EULER, \
+						      AGS_SYMBOLIC_COMPLEX_UNIT, \
+						      AGS_SYMBOLIC_COMPLEX_UNIT, \
+						      term,		\
+						      AGS_SYMBOLIC_EULER))
 
-#define ags_function_print_cos(str, term) (sprintf(str, "(%s * exp(- %s * (%s) * log(%s))) / 2 + (%s * exp(%s * (%s) * log(%s))) / 2", \
-						   AGS_SYMBOLIC_COMPLEX_UNIT, \
-						   AGS_SYMBOLIC_COMPLEX_UNIT, \
-						   term, \
-						   AGS_SYMBOLIC_EULER,	\
-						   AGS_SYMBOLIC_COMPLEX_UNIT, \
-						   AGS_SYMBOLIC_COMPLEX_UNIT, \
-						   term, \
-						   AGS_SYMBOLIC_EULER))
+#define ags_function_print_cos(term) (g_strdup_printf("(%s * exp(- %s * (%s) * log(%s))) / 2 + (%s * exp(%s * (%s) * log(%s))) / 2", \
+						      AGS_SYMBOLIC_COMPLEX_UNIT, \
+						      AGS_SYMBOLIC_COMPLEX_UNIT, \
+						      term,		\
+						      AGS_SYMBOLIC_EULER, \
+						      AGS_SYMBOLIC_COMPLEX_UNIT, \
+						      AGS_SYMBOLIC_COMPLEX_UNIT, \
+						      term,		\
+						      AGS_SYMBOLIC_EULER))
 
-#define ags_function_print_tan(str, term) (sprintf(str, "(%s * (exp(- %s * (%s) * log(%s)) - exp(%s * (%s) *  log(%s)))) / (exp(- %s * (%s) *  log(%s)) + exp(%s * (%s) *  log(%s)))", \
-						   AGS_SYMBOLIC_COMPLEX_UNIT, \
-						   AGS_SYMBOLIC_COMPLEX_UNIT, \
-						   term, \
-						   AGS_SYMBOLIC_EULER, \
-						   AGS_SYMBOLIC_COMPLEX_UNIT, \
-						   AGS_SYMBOLIC_COMPLEX_UNIT, \
-						   term, \
-						   AGS_SYMBOLIC_EULER, \
-						   AGS_SYMBOLIC_COMPLEX_UNIT, \
-						   AGS_SYMBOLIC_COMPLEX_UNIT, \
-						   term, \
-						   AGS_SYMBOLIC_EULER, \
-						   AGS_SYMBOLIC_COMPLEX_UNIT, \
-						   AGS_SYMBOLIC_COMPLEX_UNIT, \
-						   term, \
-						   AGS_SYMBOLIC_EULER))
+#define ags_function_print_tan(term) (g_strdup_printf("(%s * (exp(- %s * (%s) * log(%s)) - exp(%s * (%s) *  log(%s)))) / (exp(- %s * (%s) *  log(%s)) + exp(%s * (%s) *  log(%s)))", \
+						      AGS_SYMBOLIC_COMPLEX_UNIT, \
+						      AGS_SYMBOLIC_COMPLEX_UNIT, \
+						      term,		\
+						      AGS_SYMBOLIC_EULER, \
+						      AGS_SYMBOLIC_COMPLEX_UNIT, \
+						      AGS_SYMBOLIC_COMPLEX_UNIT, \
+						      term,		\
+						      AGS_SYMBOLIC_EULER, \
+						      AGS_SYMBOLIC_COMPLEX_UNIT, \
+						      AGS_SYMBOLIC_COMPLEX_UNIT, \
+						      term,		\
+						      AGS_SYMBOLIC_EULER, \
+						      AGS_SYMBOLIC_COMPLEX_UNIT, \
+						      AGS_SYMBOLIC_COMPLEX_UNIT, \
+						      term,		\
+						      AGS_SYMBOLIC_EULER))
 
-#define ags_function_print_asin(str, term) (sprintf(str, "(-%s * (log(exp(0.5 * log(1 - exp(2 * (%s)))) + %s * (%s))))", \
-						    AGS_SYMBOLIC_COMPLEX_UNIT, \
-						    term,		\
-						    AGS_SYMBOLIC_COMPLEX_UNIT, \
-						    term))
+#define ags_function_print_asin(term) (g_strdup_printf("(-%s * (log(exp(0.5 * log(1 - exp(2 * (%s)))) + %s * (%s))))", \
+						       AGS_SYMBOLIC_COMPLEX_UNIT, \
+						       term,		\
+						       AGS_SYMBOLIC_COMPLEX_UNIT, \
+						       term))
 
-#define ags_function_print_acos(str, term) (sprintf(str, "(%s / 2 + %s * log(exp(0.5 * log(1 - exp(2 * (%s)))) + %s * (%s))))", \
-						    AGS_SYMBOLIC_PI,	\
-						    AGS_SYMBOLIC_COMPLEX_UNIT, \
-						    AGS_SYMBOLIC_COMPLEX_UNIT, \
-						    term,		\
-						    AGS_SYMBOLIC_COMPLEX_UNIT, \
-						    term))
+#define ags_function_print_acos(term) (g_strdup_printf("(%s / 2 + %s * log(exp(0.5 * log(1 - exp(2 * (%s)))) + %s * (%s))))", \
+						       AGS_SYMBOLIC_PI,	\
+						       AGS_SYMBOLIC_COMPLEX_UNIT, \
+						       AGS_SYMBOLIC_COMPLEX_UNIT, \
+						       term,		\
+						       AGS_SYMBOLIC_COMPLEX_UNIT, \
+						       term))
 
-#define ags_function_print_atan(str, term) (sprintf(str, "(0.5 * %s * log(1 - %s * %s) - 0.5 * %s * log(1 + %s * %s))", \
-						    AGS_SYMBOLIC_COMPLEX_UNIT, \
-						    AGS_SYMBOLIC_COMPLEX_UNIT, \
-						    term,		\
-						    AGS_SYMBOLIC_COMPLEX_UNIT, \
-						    AGS_SYMBOLIC_COMPLEX_UNIT, \
-						    term))
+#define ags_function_print_atan(term) (g_strdup_printf("(0.5 * %s * log(1 - %s * %s) - 0.5 * %s * log(1 + %s * %s))", \
+						       AGS_SYMBOLIC_COMPLEX_UNIT, \
+						       AGS_SYMBOLIC_COMPLEX_UNIT, \
+						       term,		\
+						       AGS_SYMBOLIC_COMPLEX_UNIT, \
+						       AGS_SYMBOLIC_COMPLEX_UNIT, \
+						       term))
 
 enum{
   PROP_0,
