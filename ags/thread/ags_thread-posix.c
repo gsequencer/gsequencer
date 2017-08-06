@@ -362,7 +362,8 @@ ags_thread_init(AgsThread *thread)
   int err;
   
   /* insert audio loop mutex */
-  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  thread->obj_mutexattr =
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
 
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
@@ -377,7 +378,8 @@ ags_thread_init(AgsThread *thread)
   }
 #endif
   
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  thread->obj_mutex =
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
   
@@ -393,7 +395,10 @@ ags_thread_init(AgsThread *thread)
   pthread_mutex_unlock(application_mutex);
 
   /* the condition */
-  cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  thread->obj_condattr = NULL;
+
+  thread->obj_cond =
+    cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
   pthread_cond_init(cond, NULL);
 
   condition_manager = ags_condition_manager_get_instance();
@@ -674,7 +679,10 @@ ags_thread_finalize(GObject *gobject)
 
   ags_mutex_manager_remove(mutex_manager,
 			   (GObject *) thread);
-  
+
+  pthread_mutexattr_destroy(thread->obj_mutexattr);
+  free(thread->obj_mutexattr);
+
   ags_condition_manager_remove(condition_manager,
 			       (GObject *) thread);
   

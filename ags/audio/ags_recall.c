@@ -790,7 +790,8 @@ ags_recall_init(AgsRecall *recall)
   recall->recall_id = NULL;
 
   /* nested recall */
-  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  recall->children_attr =
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
@@ -1480,6 +1481,9 @@ ags_recall_finalize(GObject *gobject)
   /* children */
   g_list_free_full(recall->children,
 		   g_object_unref);
+
+  pthread_mutexattr_destroy(recall->children_attr);
+  free(recall->children_attr);
 
   pthread_mutex_destroy(recall->children_mutex);
   free(recall->children_mutex);

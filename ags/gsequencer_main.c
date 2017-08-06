@@ -89,6 +89,8 @@
 
 #include <stdlib.h>
 
+#include <locale.h>
+
 #include <X11/Xlib.h>
 
 #include "config.h"

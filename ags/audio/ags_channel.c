@@ -636,8 +636,8 @@ ags_channel_init(AgsChannel *channel)
   pthread_mutexattr_t *attr;
 
   /* create mutex */
-  //FIXME:JK: memory leak
-  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  channel->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
@@ -647,7 +647,8 @@ ags_channel_init(AgsChannel *channel)
 				PTHREAD_PRIO_INHERIT);
 #endif
 
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  channel->obj_mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
 
@@ -762,7 +763,8 @@ ags_channel_init(AgsChannel *channel)
   channel->recall_id = NULL;
 
   /* recall */
-  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  channel->recall_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
@@ -771,7 +773,8 @@ ags_channel_init(AgsChannel *channel)
   pthread_mutex_init(channel->recall_mutex,
 		     attr);
 
-  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  channel->play_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
@@ -1570,6 +1573,9 @@ ags_channel_finalize(GObject *gobject)
 
   channel = AGS_CHANNEL(gobject);
 
+  pthread_mutexattr_destroy(channel->obj_mutexattr);
+  free(channel->obj_mutexattr);
+
   /* audio */
   if(channel->audio != NULL){
     g_object_unref(channel->audio);
@@ -1623,9 +1629,17 @@ ags_channel_finalize(GObject *gobject)
 		   g_object_unref);
 
   pthread_mutex_destroy(channel->recall_mutex);
-  pthread_mutex_destroy(channel->play_mutex);
-
   free(channel->recall_mutex);
+
+  pthread_mutexattr_destroy(channel->recall_mutexattr);
+  free(channel->recall_mutexattr);
+
+  pthread_mutex_destroy(channel->play_mutex);
+  free(channel->play_mutex);
+
+  pthread_mutexattr_destroy(channel->play_mutexattr);
+  free(channel->play_mutexattr);
+
   free(channel->play_mutex);
   
   /* pattern */

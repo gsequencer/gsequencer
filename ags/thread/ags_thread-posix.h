@@ -126,6 +126,12 @@ struct _AgsThread
   
   sigset_t wait_mask;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  pthread_mutex_t *obj_cond;
+  pthread_mutexattr_t *obj_condattr;
+
   guint delay;
   guint tic_delay;
   guint current_tic;
