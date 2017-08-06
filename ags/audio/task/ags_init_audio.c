@@ -404,7 +404,8 @@ ags_init_audio_launch(AgsTask *task)
     g_list_free(list_start);
   }
 
-  if(init_audio->do_sequencer){    
+  if(init_audio->do_sequencer &&
+     (AGS_PLAYBACK_DOMAIN_SEQUENCER & (g_atomic_int_get(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags)))) == 0){
     g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
 		    AGS_PLAYBACK_DOMAIN_SEQUENCER);
 
@@ -424,8 +425,9 @@ ags_init_audio_launch(AgsTask *task)
 
     g_list_free(list_start);
   }
-
-  if(init_audio->do_notation){    
+  
+  if(init_audio->do_notation &&
+     (AGS_PLAYBACK_DOMAIN_NOTATION & (g_atomic_int_get(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags)))) == 0){
     g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
 		    AGS_PLAYBACK_DOMAIN_NOTATION);
 

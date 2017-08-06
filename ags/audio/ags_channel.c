@@ -9777,6 +9777,11 @@ ags_channel_tillrecycling_cancel(AgsChannel *channel,
   }
 
   /* entry point */
+  if(!AGS_IS_CHANNEL(channel) ||
+     !AGS_IS_RECALL_ID(recall_id)){
+    return;
+  } 
+  
   audio = (AgsAudio *) channel->audio;
 
   if(AGS_IS_OUTPUT(channel)){
