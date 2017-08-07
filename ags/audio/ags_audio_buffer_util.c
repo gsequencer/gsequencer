@@ -1291,6 +1291,200 @@ ags_audio_buffer_util_volume(void *buffer, guint channels,
 }
 
 /**
+ * ags_audio_buffer_util_peak_s8:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @harmonic_rate: the harmonic rate
+ * @max_rate: the max rate
+ * @pressure_factor: the pressure factor
+ * 
+ * Retrive peak of buffer.
+ * 
+ * Returns: the peak as gdouble
+ * 
+ * Since: 0.9.6
+ */
+gdouble
+ags_audio_buffer_util_peak_s8(signed char *buffer, guint channels,
+			      guint buffer_length,
+			      gdouble harmonic_rate,
+			      gdouble max_rate,
+			      gdouble pressure_factor)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_buffer_util_peak_s16:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @harmonic_rate: the harmonic rate
+ * @max_rate: the max rate
+ * @pressure_factor: the pressure factor
+ * 
+ * Retrive peak of buffer.
+ * 
+ * Returns: the peak as gdouble
+ * 
+ * Since: 0.9.6
+ */
+gdouble
+ags_audio_buffer_util_peak_s16(signed short *buffer, guint channels,
+			       guint buffer_length,
+			       gdouble harmonic_rate,
+			       gdouble max_rate,
+			       gdouble pressure_factor)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_buffer_util_peak_s24:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @harmonic_rate: the harmonic rate
+ * @max_rate: the max rate
+ * @pressure_factor: the pressure factor
+ * 
+ * Retrive peak of buffer.
+ * 
+ * Returns: the peak as gdouble
+ * 
+ * Since: 0.9.6
+ */
+gdouble
+ags_audio_buffer_util_peak_s24(signed long *buffer, guint channels,
+			       guint buffer_length,
+			       gdouble harmonic_rate,
+			       gdouble max_rate,
+			       gdouble pressure_factor)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_buffer_util_peak_32:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @harmonic_rate: the harmonic rate
+ * @max_rate: the max rate
+ * @pressure_factor: the pressure factor
+ * 
+ * Retrive peak of buffer.
+ * 
+ * Returns: the peak as gdouble
+ * 
+ * Since: 0.9.6
+ */
+gdouble
+ags_audio_buffer_util_peak_s32(signed long *buffer, guint channels,
+			       guint buffer_length,
+			       gdouble harmonic_rate,
+			       gdouble max_rate,
+			       gdouble pressure_factor)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_buffer_util_peak_64:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @harmonic_rate: the harmonic rate
+ * @max_rate: the max rate
+ * @pressure_factor: the pressure factor
+ * 
+ * Retrive peak of buffer.
+ * 
+ * Returns: the peak as gdouble
+ * 
+ * Since: 0.9.6
+ */
+gdouble
+ags_audio_buffer_util_peak_s64(signed long long *buffer, guint channels,
+			       guint buffer_length,
+			       gdouble harmonic_rate,
+			       gdouble max_rate,
+			       gdouble pressure_factor)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_buffer_util_peak_float:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @harmonic_rate: the harmonic rate
+ * @max_rate: the max rate
+ * @pressure_factor: the pressure factor
+ * 
+ * Retrive peak of buffer.
+ * 
+ * Returns: the peak as gdouble
+ * 
+ * Since: 0.9.6
+ */
+gdouble
+ags_audio_buffer_util_peak_float(float *buffer, guint channels,
+				 guint buffer_length,
+				 gdouble harmonic_rate,
+				 gdouble max_rate,
+				 gdouble pressure_factor)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_buffer_util_peak_double:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @harmonic_rate: the harmonic rate
+ * @max_rate: the max rate
+ * @pressure_factor: the pressure factor
+ * 
+ * Retrive peak of buffer.
+ * 
+ * Returns: the peak as gdouble
+ * 
+ * Since: 0.9.6
+ */
+gdouble
+ags_audio_buffer_util_peak_double(double *buffer, guint channels,
+				  guint buffer_length,
+				  gdouble harmonic_rate,
+				  gdouble max_rate,
+				  gdouble pressure_factor)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_audio_buffer_util_peak:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @format: the format to use
+ * @harmonic_rate: the harmonic rate
+ * @max_rate: the max rate
+ * @pressure_factor: the pressure factor
+ * 
+ * Retrive peak of buffer.
+ * 
+ * Returns: the peak as gdouble
+ * 
+ * Since: 0.9.6
+ */
+gdouble
+ags_audio_buffer_util_peak(void *buffer, guint channels,
+			   guint format,
+			   guint buffer_length,
+			   gdouble harmonic_rate,
+			   gdouble max_rate,
+			   gdouble pressure_factor)
+{
+  //TODO:JK: implement me
+}
+
+/**
  * ags_audio_buffer_util_resample_s8:
  * @buffer: the audio buffer
  * @samplerate: the current samplerate

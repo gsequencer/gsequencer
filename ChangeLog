@@ -1,7 +1,7 @@
 ags (0.9.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed memory leak related to to mutex attributes
+	* fixed memory leak related to mutex attributes
 	* fixed deny multi-start of AgsChannelThread or AgsAudioThread
 	* fixed deny multi-stop of AgsChannelThread or AgsAudioThread
 	* minor code improvements

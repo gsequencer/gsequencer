@@ -40,6 +40,17 @@ struct _AgsPeakChannel
 {
   AgsRecallChannel recall_channel;
 
+  pthread_mutex_t *buffer_mutex;
+  
+  guint samplerate;
+  guint buffer_size;
+  guint format;
+
+  void *buffer;
+
+  AgsPort *buffer_cleared;
+  AgsPort *buffer_computed;
+  
   AgsPort *peak;
 };
 
@@ -50,8 +61,13 @@ struct _AgsPeakChannelClass
 
 GType ags_peak_channel_get_type();
 
-void ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
-				    gboolean is_play);
+G_DEPRECATED void ags_peak_channel_retrieve_peak(AgsPeakChannel *peak_channel,
+						 gboolean is_play);
+
+void ags_peak_channel_buffer_add(AgsPeakChannel *peak_channel,
+				 void *buffer,
+				 guint samplerate, guint buffer_size, guint format);
+void ags_peak_channel_retrieve_peak_internal(AgsPeakChannel *peak_channel);
 
 AgsPeakChannel* ags_peak_channel_new(AgsChannel *source);
 

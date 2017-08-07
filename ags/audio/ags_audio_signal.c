@@ -516,7 +516,7 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   AgsConfig *config;
   
   gchar *str;
-  
+ 
   audio_signal->flags = 0;
 
   audio_signal->soundcard = NULL;
