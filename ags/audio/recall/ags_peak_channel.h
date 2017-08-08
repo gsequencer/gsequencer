@@ -50,6 +50,8 @@ struct _AgsPeakChannel
 
   AgsPort *buffer_cleared;
   AgsPort *buffer_computed;
+
+  AgsPort *scale_precision;
   
   AgsPort *peak;
 };

@@ -18,6 +18,7 @@
  */
 
 #include <ags/audio/recall/ags_peak_channel_run.h>
+#include <ags/audio/recall/ags_peak_channel.h>
 #include <ags/audio/recall/ags_peak_recycling.h>
 
 #include <ags/lib/ags_parameter.h>
@@ -43,8 +44,10 @@ void ags_peak_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_conn
 void ags_peak_channel_run_finalize(GObject *gobject);
 
 AgsRecall* ags_peak_channel_run_duplicate(AgsRecall *recall,
-					    AgsRecallID *recall_id,
-					    guint *n_params, GParameter *parameter);
+					  AgsRecallID *recall_id,
+					  guint *n_params, GParameter *parameter);
+void ags_peak_channel_run_run_pre(AgsRecall *recall);
+void ags_peak_channel_run_run_post(AgsRecall *recall);
 
 /**
  * SECTION:ags_peak_channel_run
@@ -124,6 +127,8 @@ ags_peak_channel_run_class_init(AgsPeakChannelRunClass *peak_channel_run)
   recall = (AgsRecallClass *) peak_channel_run;
 
   recall->duplicate = ags_peak_channel_run_duplicate;
+  recall->run_pre = ags_peak_channel_run_run_post;
+  recall->run_post = ags_peak_channel_run_run_pre;
 }
 
 void
@@ -204,6 +209,93 @@ ags_peak_channel_run_duplicate(AgsRecall *recall,
 											      n_params, parameter);
   
   return((AgsRecall *) copy);
+}
+
+void
+ags_peak_channel_run_run_pre(AgsRecall *recall)
+{
+  AgsPeakChannel *peak_channel;
+
+  gboolean buffer_cleared;
+  
+  GValue value = {0,};
+
+  peak_channel = AGS_RECALL_CHANNEL_RUN(recall)->recall_channel;
+
+  pthread_mutex_lock(peak_channel->buffer_mutex);
+  
+  g_value_init(&value,
+	       G_TYPE_BOOLEAN);
+
+  ags_port_safe_read(peak_channel->buffer_cleared,
+		     &value);
+  buffer_cleared = g_value_get_boolean(&value);
+
+  if(!buffer_cleared){
+    /* set buffer-cleared port to TRUE */
+    g_value_set_boolean(&value,
+			TRUE);
+  
+    ags_port_safe_write(peak_channel->buffer_cleared,
+			&value);
+    
+    ags_audio_buffer_util_clear_buffer(peak_channel->buffer, 1,
+				       peak_channel->buffer_size, ags_audio_buffer_util_format_from_soundcard(peak_channel->format));
+
+    /* reset buffer-computed port to FALSE */
+    g_value_set_boolean(&value,
+			FALSE);
+
+    ags_port_safe_write(peak_channel->buffer_computed,
+			&value);
+  }
+  
+  g_value_unset(&value);
+  
+  pthread_mutex_unlock(peak_channel->buffer_mutex);
+}
+
+void
+ags_peak_channel_run_run_post(AgsRecall *recall)
+{
+  AgsPeakChannel *peak_channel;
+
+  gboolean buffer_computed;
+  
+  GValue value = {0,};
+
+  peak_channel = AGS_RECALL_CHANNEL_RUN(recall)->recall_channel;
+
+  pthread_mutex_lock(peak_channel->buffer_mutex);
+  
+  g_value_init(&value,
+	       G_TYPE_BOOLEAN);
+
+  ags_port_safe_read(peak_channel->buffer_computed,
+		     &value);
+  buffer_computed = g_value_get_boolean(&value);
+
+  if(!buffer_computed){
+    /* set buffer-computed port to TRUE */
+    g_value_set_boolean(&value,
+			TRUE);
+  
+    ags_port_safe_write(peak_channel->buffer_computed,
+			&value);
+    
+    ags_peak_channel_retrieve_peak_internal(peak_channel);
+    
+    /* reset buffer-cleared port to FALSE */
+    g_value_set_boolean(&value,
+			FALSE);
+
+    ags_port_safe_write(peak_channel->buffer_cleared,
+			&value);
+  }
+  
+  g_value_unset(&value);
+  
+  pthread_mutex_unlock(peak_channel->buffer_mutex);
 }
 
 /**

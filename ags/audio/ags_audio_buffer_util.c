@@ -1311,7 +1311,65 @@ ags_audio_buffer_util_peak_s8(signed char *buffer, guint channels,
 			      gdouble max_rate,
 			      gdouble pressure_factor)
 {
-  //TODO:JK: implement me
+  double current_value;
+  guint limit;
+  guint i;
+
+  /* calculate average value */
+  current_value = 0.0;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(buffer_length > 0){
+    limit = buffer_length - 8;
+
+    for(; i < limit; i += 8){
+      if(buffer[i] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT8 * pressure_factor) * buffer[i]));
+      }
+
+      if(buffer[i + 1] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT8 * pressure_factor) * buffer[i + 1]));
+      }
+
+      if(buffer[i + 2] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT8 * pressure_factor) * buffer[i + 2]));
+      }
+
+      if(buffer[i + 3] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT8 * pressure_factor) * buffer[i + 3]));
+      }
+    
+      if(buffer[i + 4] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT8 * pressure_factor) * buffer[i + 4]));
+      }
+
+      if(buffer[i + 5] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT8 * pressure_factor) * buffer[i + 5]));
+      }
+    
+      if(buffer[i + 6] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT8 * pressure_factor) * buffer[i + 6]));
+      }
+
+      if(buffer[i + 7] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT8 * pressure_factor) * buffer[i + 7]));
+      }
+    }
+  }
+  
+  for(; i < buffer_length; i++){
+    if(buffer[i] != 0){
+      current_value += (1.0 / ((1.0 / (double) G_MAXUINT8 * pressure_factor) * buffer[i]));
+    }
+  }
+
+  if(current_value != 0.0){
+    current_value = (atan(1.0 / harmonic_rate) / sin(current_value / max_rate));
+  }
+
+  return(current_value);
 }
 
 /**
@@ -1335,7 +1393,65 @@ ags_audio_buffer_util_peak_s16(signed short *buffer, guint channels,
 			       gdouble max_rate,
 			       gdouble pressure_factor)
 {
-  //TODO:JK: implement me
+  double current_value;
+  guint limit;
+  guint i;
+
+  /* calculate average value */
+  current_value = 0.0;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(buffer_length > 0){
+    limit = buffer_length - 8;
+
+    for(; i < limit; i += 8){
+      if(buffer[i] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT16 * pressure_factor) * buffer[i]));
+      }
+
+      if(buffer[i + 1] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT16 * pressure_factor) * buffer[i + 1]));
+      }
+
+      if(buffer[i + 2] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT16 * pressure_factor) * buffer[i + 2]));
+      }
+
+      if(buffer[i + 3] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT16 * pressure_factor) * buffer[i + 3]));
+      }
+    
+      if(buffer[i + 4] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT16 * pressure_factor) * buffer[i + 4]));
+      }
+
+      if(buffer[i + 5] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT16 * pressure_factor) * buffer[i + 5]));
+      }
+    
+      if(buffer[i + 6] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT16 * pressure_factor) * buffer[i + 6]));
+      }
+
+      if(buffer[i + 7] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT16 * pressure_factor) * buffer[i + 7]));
+      }
+    }
+  }
+  
+  for(; i < buffer_length; i++){
+    if(buffer[i] != 0){
+      current_value += (1.0 / ((1.0 / (double) G_MAXUINT16 * pressure_factor) * buffer[i]));
+    }
+  }
+
+  if(current_value != 0.0){
+    current_value = (atan(1.0 / harmonic_rate) / sin(current_value / max_rate));
+  }
+
+  return(current_value);
 }
 
 /**
@@ -1359,7 +1475,65 @@ ags_audio_buffer_util_peak_s24(signed long *buffer, guint channels,
 			       gdouble max_rate,
 			       gdouble pressure_factor)
 {
-  //TODO:JK: implement me
+  double current_value;
+  guint limit;
+  guint i;
+
+  /* calculate average value */
+  current_value = 0.0;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(buffer_length > 0){
+    limit = buffer_length - 8;
+
+    for(; i < limit; i += 8){
+      if(buffer[i] != 0){
+	current_value += (1.0 / ((1.0 / (double) 0xffffff * pressure_factor) * buffer[i]));
+      }
+
+      if(buffer[i + 1] != 0){
+	current_value += (1.0 / ((1.0 / (double) 0xffffff * pressure_factor) * buffer[i + 1]));
+      }
+
+      if(buffer[i + 2] != 0){
+	current_value += (1.0 / ((1.0 / (double) 0xffffff * pressure_factor) * buffer[i + 2]));
+      }
+
+      if(buffer[i + 3] != 0){
+	current_value += (1.0 / ((1.0 / (double) 0xffffff * pressure_factor) * buffer[i + 3]));
+      }
+    
+      if(buffer[i + 4] != 0){
+	current_value += (1.0 / ((1.0 / (double) 0xffffff * pressure_factor) * buffer[i + 4]));
+      }
+
+      if(buffer[i + 5] != 0){
+	current_value += (1.0 / ((1.0 / (double) 0xffffff * pressure_factor) * buffer[i + 5]));
+      }
+    
+      if(buffer[i + 6] != 0){
+	current_value += (1.0 / ((1.0 / (double) 0xffffff * pressure_factor) * buffer[i + 6]));
+      }
+
+      if(buffer[i + 7] != 0){
+	current_value += (1.0 / ((1.0 / (double) 0xffffff * pressure_factor) * buffer[i + 7]));
+      }
+    }
+  }
+  
+  for(; i < buffer_length; i++){
+    if(buffer[i] != 0){
+      current_value += (1.0 / ((1.0 / (double) 0xffffff * pressure_factor) * buffer[i]));
+    }
+  }
+
+  if(current_value != 0.0){
+    current_value = (atan(1.0 / harmonic_rate) / sin(current_value / max_rate));
+  }
+
+  return(current_value);
 }
 
 /**
@@ -1383,7 +1557,65 @@ ags_audio_buffer_util_peak_s32(signed long *buffer, guint channels,
 			       gdouble max_rate,
 			       gdouble pressure_factor)
 {
-  //TODO:JK: implement me
+  double current_value;
+  guint limit;
+  guint i;
+
+  /* calculate average value */
+  current_value = 0.0;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(buffer_length > 0){
+    limit = buffer_length - 8;
+
+    for(; i < limit; i += 8){
+      if(buffer[i] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT32 * pressure_factor) * buffer[i]));
+      }
+
+      if(buffer[i + 1] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT32 * pressure_factor) * buffer[i + 1]));
+      }
+
+      if(buffer[i + 2] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT32 * pressure_factor) * buffer[i + 2]));
+      }
+
+      if(buffer[i + 3] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT32 * pressure_factor) * buffer[i + 3]));
+      }
+    
+      if(buffer[i + 4] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT32 * pressure_factor) * buffer[i + 4]));
+      }
+
+      if(buffer[i + 5] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT32 * pressure_factor) * buffer[i + 5]));
+      }
+    
+      if(buffer[i + 6] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT32 * pressure_factor) * buffer[i + 6]));
+      }
+
+      if(buffer[i + 7] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT32 * pressure_factor) * buffer[i + 7]));
+      }
+    }
+  }
+  
+  for(; i < buffer_length; i++){
+    if(buffer[i] != 0){
+      current_value += (1.0 / ((1.0 / (double) G_MAXUINT32 * pressure_factor) * buffer[i]));
+    }
+  }
+
+  if(current_value != 0.0){
+    current_value = (atan(1.0 / harmonic_rate) / sin(current_value / max_rate));
+  }
+
+  return(current_value);
 }
 
 /**
@@ -1407,7 +1639,65 @@ ags_audio_buffer_util_peak_s64(signed long long *buffer, guint channels,
 			       gdouble max_rate,
 			       gdouble pressure_factor)
 {
-  //TODO:JK: implement me
+  double current_value;
+  guint limit;
+  guint i;
+
+  /* calculate average value */
+  current_value = 0.0;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(buffer_length > 0){
+    limit = buffer_length - 8;
+
+    for(; i < limit; i += 8){
+      if(buffer[i] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT64 * pressure_factor) * buffer[i]));
+      }
+
+      if(buffer[i + 1] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT64 * pressure_factor) * buffer[i + 1]));
+      }
+
+      if(buffer[i + 2] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT64 * pressure_factor) * buffer[i + 2]));
+      }
+
+      if(buffer[i + 3] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT64 * pressure_factor) * buffer[i + 3]));
+      }
+    
+      if(buffer[i + 4] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT64 * pressure_factor) * buffer[i + 4]));
+      }
+
+      if(buffer[i + 5] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT64 * pressure_factor) * buffer[i + 5]));
+      }
+    
+      if(buffer[i + 6] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT64 * pressure_factor) * buffer[i + 6]));
+      }
+
+      if(buffer[i + 7] != 0){
+	current_value += (1.0 / ((1.0 / (double) G_MAXUINT64 * pressure_factor) * buffer[i + 7]));
+      }
+    }
+  }
+  
+  for(; i < buffer_length; i++){
+    if(buffer[i] != 0){
+      current_value += (1.0 / ((1.0 / (double) G_MAXUINT64 * pressure_factor) * buffer[i]));
+    }
+  }
+
+  if(current_value != 0.0){
+    current_value = (atan(1.0 / harmonic_rate) / sin(current_value / max_rate));
+  }
+
+  return(current_value);
 }
 
 /**
@@ -1431,7 +1721,65 @@ ags_audio_buffer_util_peak_float(float *buffer, guint channels,
 				 gdouble max_rate,
 				 gdouble pressure_factor)
 {
-  //TODO:JK: implement me
+  double current_value;
+  guint limit;
+  guint i;
+
+  /* calculate average value */
+  current_value = 0.0;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(buffer_length > 0){
+    limit = buffer_length - 8;
+
+    for(; i < limit; i += 8){
+      if(buffer[i] != 0){
+	current_value += (1.0 / ((0.5 * pressure_factor) * buffer[i]));
+      }
+
+      if(buffer[i + 1] != 0){
+	current_value += (1.0 / ((0.5 * pressure_factor) * buffer[i + 1]));
+      }
+
+      if(buffer[i + 2] != 0){
+	current_value += (1.0 / ((0.5 * pressure_factor) * buffer[i + 2]));
+      }
+
+      if(buffer[i + 3] != 0){
+	current_value += (1.0 / ((0.5 * pressure_factor) * buffer[i + 3]));
+      }
+    
+      if(buffer[i + 4] != 0){
+	current_value += (1.0 / ((0.5 * pressure_factor) * buffer[i + 4]));
+      }
+
+      if(buffer[i + 5] != 0){
+	current_value += (1.0 / ((0.5 * pressure_factor) * buffer[i + 5]));
+      }
+    
+      if(buffer[i + 6] != 0){
+	current_value += (1.0 / ((0.5 * pressure_factor) * buffer[i + 6]));
+      }
+
+      if(buffer[i + 7] != 0){
+	current_value += (1.0 / ((0.5 * pressure_factor) * buffer[i + 7]));
+      }
+    }
+  }
+  
+  for(; i < buffer_length; i++){
+    if(buffer[i] != 0){
+      current_value += (1.0 / ((0.5 * pressure_factor) * buffer[i]));
+    }
+  }
+  
+  if(current_value != 0.0){
+    current_value = (atan(1.0 / harmonic_rate) / sin(current_value / max_rate));
+  }
+
+  return(current_value);
 }
 
 /**
@@ -1455,7 +1803,65 @@ ags_audio_buffer_util_peak_double(double *buffer, guint channels,
 				  gdouble max_rate,
 				  gdouble pressure_factor)
 {
-  //TODO:JK: implement me
+  double current_value;
+  guint limit;
+  guint i;
+
+  /* calculate average value */
+  current_value = 0.0;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(buffer_length > 0){
+    limit = buffer_length - 8;
+
+    for(; i < limit; i += 8){
+      if(buffer[i] != 0){
+	current_value += (1.0 / ((0.5 * pressure_factor) * buffer[i]));
+      }
+
+      if(buffer[i + 1] != 0){
+	current_value += (1.0 / ((0.5 * pressure_factor) * buffer[i + 1]));
+      }
+
+      if(buffer[i + 2] != 0){
+	current_value += (1.0 / ((0.5 * pressure_factor) * buffer[i + 2]));
+      }
+
+      if(buffer[i + 3] != 0){
+	current_value += (1.0 / ((0.5 * pressure_factor) * buffer[i + 3]));
+      }
+    
+      if(buffer[i + 4] != 0){
+	current_value += (1.0 / ((0.5 * pressure_factor) * buffer[i + 4]));
+      }
+
+      if(buffer[i + 5] != 0){
+	current_value += (1.0 / ((0.5 * pressure_factor) * buffer[i + 5]));
+      }
+    
+      if(buffer[i + 6] != 0){
+	current_value += (1.0 / ((0.5 * pressure_factor) * buffer[i + 6]));
+      }
+
+      if(buffer[i + 7] != 0){
+	current_value += (1.0 / ((0.5 * pressure_factor) * buffer[i + 7]));
+      }
+    }
+  }
+  
+  for(; i < buffer_length; i++){
+    if(buffer[i] != 0){
+      current_value += (1.0 / ((0.5 * pressure_factor) * buffer[i]));
+    }
+  }
+
+  if(current_value != 0.0){
+    current_value = (atan(1.0 / harmonic_rate) / sin(current_value / max_rate));
+  }
+
+  return(current_value);
 }
 
 /**
@@ -1481,7 +1887,77 @@ ags_audio_buffer_util_peak(void *buffer, guint channels,
 			   gdouble max_rate,
 			   gdouble pressure_factor)
 {
-  //TODO:JK: implement me
+  gdouble current_value;
+  
+  switch(format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+    {
+      current_value = ags_audio_buffer_util_peak_s8((signed char *) buffer, channels,
+						    buffer_length,
+						    harmonic_rate,
+						    max_rate,
+						    pressure_factor);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+    {
+      current_value = ags_audio_buffer_util_peak_s16((signed short *) buffer, channels,
+						     buffer_length,
+						     harmonic_rate,
+						     max_rate,
+						     pressure_factor);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+    {
+      current_value = ags_audio_buffer_util_peak_s24((signed long *) buffer, channels,
+						     buffer_length,
+						     harmonic_rate,
+						     max_rate,
+						     pressure_factor);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+    {
+      current_value = ags_audio_buffer_util_peak_s32((signed long *) buffer, channels,
+						     buffer_length,
+						     harmonic_rate,
+						     max_rate,
+						     pressure_factor);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+    {
+      current_value = ags_audio_buffer_util_peak_s64((signed long long *) buffer, channels,
+						     buffer_length,
+						     harmonic_rate,
+						     max_rate,
+						     pressure_factor);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+    {
+      current_value = ags_audio_buffer_util_peak_float((float *) buffer, channels,
+						       buffer_length,
+						       harmonic_rate,
+						       max_rate,
+						       pressure_factor);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+    {
+      current_value = ags_audio_buffer_util_peak_double((double *) buffer, channels,
+							buffer_length,
+							harmonic_rate,
+							max_rate,
+							pressure_factor);
+    }
+    break;
+  default:
+    g_warning("ags_audio_buffer_util_peak() - unknown format");
+  }
+
+  return(current_value);
 }
 
 /**

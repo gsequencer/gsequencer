@@ -76,6 +76,7 @@ enum{
   PROP_FORMAT,
   PROP_BUFFER_CLEARED,
   PROP_BUFFER_COMPUTED,
+  PROP_SCALE_PRECISION,
   PROP_PEAK,
 };
 
@@ -87,12 +88,14 @@ static const gchar *ags_peak_channel_plugin_name = "ags-peak";
 static const gchar *ags_peak_channel_plugin_specifier[] = {
   "./buffer-cleared[0]",
   "./buffer-computed[0]",
+  "./scale-precision[0]",
   "./peak[0]",
 };
 static const gchar *ags_peak_channel_plugin_control_port[] = {
-  "1/3",
-  "2/3",
-  "3/3",
+  "1/4",
+  "2/4",
+  "3/4",
+  "4/4",
 };
 
 GType
@@ -264,6 +267,23 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
 				  param_spec);
 
   /**
+   * AgsPeakChannel:scale-precision:
+   * 
+   * The property indicating if scale was precision.
+   * 
+   * Since: 0.9.6
+   */
+  param_spec = g_param_spec_object("scale-precision",
+				   i18n_pspec("scale precision"),
+				   i18n_pspec("The scale precision to multiply the peak"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SCALE_PRECISION,
+				  param_spec);
+
+
+  /**
    * AgsPeakChannel:peak:
    * 
    * The peak of the channel.
@@ -378,11 +398,10 @@ ags_peak_channel_init(AgsPeakChannel *peak_channel)
 					      NULL);
   g_object_ref(peak_channel->buffer_cleared);
   
-  peak_channel->buffer_cleared->flags |= AGS_PORT_IS_OUTPUT;
   peak_channel->buffer_cleared->port_value.ags_port_boolean = FALSE;
 
   /* add to port */  
-  port = g_list_prepend(port, peak_channel->peak);
+  port = g_list_prepend(port, peak_channel->buffer_cleared);
   g_object_ref(peak_channel->buffer_cleared);
 
   /* buffer computed */
@@ -397,18 +416,35 @@ ags_peak_channel_init(AgsPeakChannel *peak_channel)
 					       NULL);
   g_object_ref(peak_channel->buffer_computed);
   
-  peak_channel->buffer_computed->flags |= AGS_PORT_IS_OUTPUT;
-  peak_channel->buffer_computed->port_value.ags_port_float = FALSE;
+  peak_channel->buffer_computed->port_value.ags_port_boolean = FALSE;
 
   /* add to port */  
-  port = g_list_prepend(port, peak_channel->peak);
-  g_object_ref(peak_channel->peak);
+  port = g_list_prepend(port, peak_channel->buffer_computed);
+  g_object_ref(peak_channel->buffer_computed);
+
+  /* peak */
+  peak_channel->scale_precision = g_object_new(AGS_TYPE_PORT,
+					       "plugin-name", ags_peak_channel_plugin_name,
+					       "specifier", ags_peak_channel_plugin_specifier[2],
+					       "control-port", ags_peak_channel_plugin_control_port[2],
+					       "port-value-is-pointer", FALSE,
+					       "port-value-type", G_TYPE_FLOAT,
+					       "port-value-size", sizeof(gfloat),
+					       "port-value-length", 1,
+					       NULL);
+  g_object_ref(peak_channel->scale_precision);
+  
+  peak_channel->scale_precision->port_value.ags_port_float = 10.0;
+  
+  /* add to port */  
+  port = g_list_prepend(port, peak_channel->scale_precision);
+  g_object_ref(peak_channel->scale_precision);
 
   /* peak */
   peak_channel->peak = g_object_new(AGS_TYPE_PORT,
 				    "plugin-name", ags_peak_channel_plugin_name,
-				    "specifier", ags_peak_channel_plugin_specifier[2],
-				    "control-port", ags_peak_channel_plugin_control_port[2],
+				    "specifier", ags_peak_channel_plugin_specifier[3],
+				    "control-port", ags_peak_channel_plugin_control_port[3],
 				    "port-value-is-pointer", FALSE,
 				    "port-value-type", G_TYPE_FLOAT,
 				    "port-value-size", sizeof(gfloat),
@@ -417,7 +453,7 @@ ags_peak_channel_init(AgsPeakChannel *peak_channel)
   g_object_ref(peak_channel->peak);
   
   peak_channel->peak->flags |= AGS_PORT_IS_OUTPUT;
-  peak_channel->peak->port_value.ags_port_float = FALSE;
+  peak_channel->peak->port_value.ags_port_float = 0.0;
   
   /* port descriptor */
   peak_channel->peak->port_descriptor = ags_peak_channel_get_peak_port_descriptor();
@@ -853,13 +889,12 @@ ags_peak_channel_buffer_add(AgsPeakChannel *peak_channel,
 void
 ags_peak_channel_retrieve_peak_internal(AgsPeakChannel *peak_channel)
 {
-  signed short *buffer;
-
-  double current_value;
-  guint limit;
-  guint i;
-
-  GValue *value;  
+  void *buffer;
+  
+  gdouble scale_precision;
+  gdouble current_value;
+  
+  GValue value = {0,};
 
   if(peak_channel == NULL){
     return;
@@ -867,78 +902,40 @@ ags_peak_channel_retrieve_peak_internal(AgsPeakChannel *peak_channel)
 
   pthread_mutex_lock(peak_channel->buffer_mutex);
 
-  //TODO:JK: support for different word size
   buffer = peak_channel->buffer;
-  
-  /* calculate average value */
-  current_value = 0.0;
-  
-  limit = peak_channel->buffer_size - 8;
-
-  for(i = 0; i < limit; i += 8){
-    /* unrolled loop */
-    if(buffer[i] != 0){
-      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i]));
-    }
-
-    if(buffer[i + 1] != 0){
-      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 1]));
-    }
-
-    if(buffer[i + 2] != 0){
-      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 2]));
-    }
-
-    if(buffer[i + 3] != 0){
-      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 3]));
-    }
-    
-    if(buffer[i + 4] != 0){
-      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 4]));
-    }
-
-    if(buffer[i + 5] != 0){
-      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 5]));
-    }
-    
-    if(buffer[i + 6] != 0){
-      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 6]));
-    }
-
-    if(buffer[i + 7] != 0){
-      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i + 7]));
-    }
-  }
-
-  for(; i < peak_channel->buffer_size; i++){
-    if(buffer[i] != 0){
-      current_value += (1.0 / (1.0 / (double) G_MAXUINT16 * buffer[i]));
-    }
-  }
   
   pthread_mutex_unlock(peak_channel->buffer_mutex);
 
+  /* calculate average value */
+  current_value = ags_audio_buffer_util_peak(buffer, 1,
+					     ags_audio_buffer_util_format_from_soundcard(peak_channel->format),
+					     peak_channel->buffer_size,
+					     440.0,
+					     22000.0,
+					     1.0);
+
   /* break down to scale */
-  //TODO:JK: verify me
-  if(current_value != 0.0){
-    current_value = scale_precision * (atan(1.0 / 440.0) / sin(current_value / 22000.0));
-  }
+  g_value_init(&value,
+	       G_TYPE_FLOAT);
 
-  value = g_new0(GValue,
-		 1);
-  g_value_init(value, G_TYPE_FLOAT);
+  ags_port_safe_read(peak_channel->scale_precision,
+		     &value);
 
+  scale_precision = g_value_get_float(&value);
+
+  current_value *= scale_precision;
+  
   if(current_value < 0.0){
     current_value *= -1.0;
   }
 
-  g_value_set_float(value,
+  /* set peak */
+  g_value_set_float(&value,
 		    current_value);
 
   ags_port_safe_write(peak_channel->peak,
-		      value);
-  g_value_unset(value);
-  g_free(value);
+		      &value);
+  g_value_unset(&value);
 }
 
 static AgsPortDescriptor*

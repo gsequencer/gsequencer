@@ -295,10 +295,17 @@ ags_peak_audio_signal_run_inter(AgsRecall *recall)
   if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current != NULL){
     AgsPeakChannel *peak_channel;
 
+    AgsAudioSignal *audio_signal;
+    
     peak_channel = AGS_PEAK_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
 
-    ags_peak_channel_retrieve_peak(peak_channel,
-				   TRUE);
+    audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
+    
+    ags_peak_channel_buffer_add(peak_channel,
+				audio_signal->stream_current->data,
+				audio_signal->samplerate,
+				audio_signal->buffer_size,
+				audio_signal->format);
   }else{
     ags_recall_done(recall);
   }
