@@ -199,8 +199,15 @@ ags_lv2_option_manager_finalize(GObject *gobject)
   AgsLv2OptionManager *lv2_option_manager;
 
   lv2_option_manager = AGS_LV2_OPTION_MANAGER(gobject);
-
+  
   g_hash_table_destroy(lv2_option_manager->ressource);
+
+  if(lv2_option_manager == ags_lv2_option_manager){
+    ags_lv2_option_manager = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_lv2_option_manager_parent_class)->finalize(gobject);  
 }
 
 void
@@ -288,7 +295,7 @@ gboolean
 ags_lv2_option_manager_ressource_insert(AgsLv2OptionManager *lv2_option_manager,
 					AgsLv2OptionRessource *lv2_option_ressource, gpointer data)
 {
-  if(lv2_option_manager == NULL ||
+  if(!AGS_IS_LV2_OPTION_MANAGER(lv2_option_manager) ||
      lv2_option_ressource == NULL ||
      data == NULL){
     return(FALSE);
@@ -317,13 +324,13 @@ ags_lv2_option_manager_ressource_remove(AgsLv2OptionManager *lv2_option_manager,
 {
   gpointer data;
 
-  data = g_hash_table_lookup(lv2_option_manager->ressource,
-			     lv2_option_ressource);
-
-  if(data != NULL){
-    g_hash_table_remove(lv2_option_manager->ressource,
-			data);
+  if(!AGS_IS_LV2_OPTION_MANAGER(lv2_option_manager) ||
+     lv2_option_ressource == NULL){
+    return(FALSE);
   }
+
+  g_hash_table_remove(lv2_option_manager->ressource,
+		      lv2_option_ressource);
   
   return(TRUE);
 }
@@ -345,6 +352,11 @@ ags_lv2_option_manager_ressource_lookup(AgsLv2OptionManager *lv2_option_manager,
 					AgsLv2OptionRessource *lv2_option_ressource)
 {
   gpointer data;
+
+  if(!AGS_IS_LV2_OPTION_MANAGER(lv2_option_manager) ||
+     lv2_option_ressource == NULL){
+    return(NULL);
+  }
   
   data = (gpointer) g_hash_table_lookup(lv2_option_manager->ressource,
 					lv2_option_ressource);
@@ -607,11 +619,17 @@ ags_lv2_option_manager_lv2_options_set(LV2_Handle instance,
 AgsLv2OptionManager*
 ags_lv2_option_manager_get_instance()
 {
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  pthread_mutex_lock(&mutex);
+
   if(ags_lv2_option_manager == NULL){
     ags_lv2_option_manager = ags_lv2_option_manager_new();
     
     //    ags_lv2_option_manager_load_default(ags_lv2_option_manager);
   }
+
+  pthread_mutex_unlock(&mutex);
 
   return(ags_lv2_option_manager);
 }

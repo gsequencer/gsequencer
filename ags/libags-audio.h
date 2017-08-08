@@ -34,6 +34,7 @@
 #include <ags/plugin/ags_lv2_preset.h>
 #include <ags/plugin/ags_lv2_event_manager.h>
 #include <ags/plugin/ags_lv2_log_manager.h>
+#include <ags/plugin/ags_lv2_option_manager.h>
 #include <ags/plugin/ags_lv2_uri_map_manager.h>
 #include <ags/plugin/ags_lv2_urid_manager.h>
 #include <ags/plugin/ags_lv2_worker_manager.h>
