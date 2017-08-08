@@ -1,3 +1,10 @@
+ags (0.9.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented new task AgsResetPeak
+	* implemented ags_audio_buffer_util_peak() and related
+	* refactored ags-peak recall to use above and compute only as needed
+
 ags (0.9.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

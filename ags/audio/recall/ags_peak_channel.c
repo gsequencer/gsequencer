@@ -35,6 +35,8 @@
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
+#include <ags/audio/task/recall/ags_reset_peak.h>
+
 #include <math.h>
 
 #include <ags/i18n.h>
@@ -303,11 +305,15 @@ ags_peak_channel_class_init(AgsPeakChannelClass *peak_channel)
 void
 ags_peak_channel_init(AgsPeakChannel *peak_channel)
 {
+  AgsResetPeak *reset_peak;
+  
   AgsConfig *config;
   
   GList *port;
 
   gchar *str;
+
+  pthread_mutexattr_t *attr;
   
   AGS_RECALL(peak_channel)->flags |= AGS_RECALL_HAS_OUTPUT_PORT;
 
@@ -318,10 +324,21 @@ ags_peak_channel_init(AgsPeakChannel *peak_channel)
 
   config = ags_config_get_instance();
 
-  /* buffer field */
+  /* buffer field */  
+  peak_channel->buffer_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(attr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
   peak_channel->buffer_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(peak_channel->buffer_mutex,
-		     NULL);
+		     attr);
 
   /* samplerate */
   str = ags_config_get_value(config,
@@ -382,6 +399,9 @@ ags_peak_channel_init(AgsPeakChannel *peak_channel)
   }else{
     peak_channel->format = AGS_SOUNDCARD_SIGNED_16_BIT;
   }
+
+  peak_channel->buffer = ags_stream_alloc(peak_channel->buffer_size,
+					  peak_channel->format);
   
   /* ports */
   port = NULL;
@@ -464,6 +484,11 @@ ags_peak_channel_init(AgsPeakChannel *peak_channel)
 
   /* set port */
   AGS_RECALL(peak_channel)->port = port;
+
+  /* add to reset peak task */
+  reset_peak = ags_reset_peak_get_instance();
+  ags_reset_peak_add(reset_peak,
+		     peak_channel);
 }
 
 void
@@ -531,6 +556,8 @@ ags_peak_channel_dispose(GObject *gobject)
 {
   AgsPeakChannel *peak_channel;
 
+  AgsResetPeak *reset_peak;
+
   peak_channel = AGS_PEAK_CHANNEL(gobject);
 
   /* buffer cleared */
@@ -547,12 +574,24 @@ ags_peak_channel_dispose(GObject *gobject)
     peak_channel->buffer_computed = NULL;
   }
 
+  /* scale precision */
+  if(peak_channel->scale_precision != NULL){
+    g_object_unref(G_OBJECT(peak_channel->scale_precision));
+
+    peak_channel->scale_precision = NULL;
+  }
+
   /* peak */
   if(peak_channel->peak != NULL){
     g_object_unref(G_OBJECT(peak_channel->peak));
 
     peak_channel->peak = NULL;
   }
+
+  /* reset peak task */
+  reset_peak = ags_reset_peak_get_instance();
+  ags_reset_peak_remove(reset_peak,
+			peak_channel);
 
   /* call parent */
   G_OBJECT_CLASS(ags_peak_channel_parent_class)->dispose(gobject);
@@ -563,11 +602,16 @@ ags_peak_channel_finalize(GObject *gobject)
 {
   AgsPeakChannel *peak_channel;
 
+  AgsResetPeak *reset_peak;
+
   peak_channel = AGS_PEAK_CHANNEL(gobject);
 
   /* buffer field */
   pthread_mutex_destroy(peak_channel->buffer_mutex);
   free(peak_channel->buffer_mutex);
+
+  pthread_mutexattr_destroy(peak_channel->buffer_mutexattr);
+  free(peak_channel->buffer_mutexattr);
   
   free(peak_channel->buffer);
 
@@ -580,11 +624,21 @@ ags_peak_channel_finalize(GObject *gobject)
   if(peak_channel->buffer_computed != NULL){
     g_object_unref(G_OBJECT(peak_channel->buffer_computed));
   }
+
+  /* scale precision */
+  if(peak_channel->scale_precision != NULL){
+    g_object_unref(G_OBJECT(peak_channel->scale_precision));
+  }
   
   /* peak */
   if(peak_channel->peak != NULL){
     g_object_unref(G_OBJECT(peak_channel->peak));
   }
+
+  /* reset peak task */
+  reset_peak = ags_reset_peak_get_instance();
+  ags_reset_peak_remove(reset_peak,
+			peak_channel);
 
   /* call parent */
   G_OBJECT_CLASS(ags_peak_channel_parent_class)->finalize(gobject);
@@ -861,7 +915,7 @@ ags_peak_channel_buffer_add(AgsPeakChannel *peak_channel,
   pthread_mutex_lock(peak_channel->buffer_mutex);
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(peak_channel->format),
-						  format);
+						  ags_audio_buffer_util_format_from_soundcard(format));
 
   if(samplerate != peak_channel->samplerate){
     buffer_source = ags_audio_buffer_util_resample(buffer, 1,

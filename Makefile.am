@@ -1012,6 +1012,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/recall/ags_apply_bpm.h \
 	ags/audio/task/recall/ags_apply_sequencer_length.h \
 	ags/audio/task/recall/ags_apply_tact.h \
+	ags/audio/task/recall/ags_reset_peak.h \
 	ags/audio/task/recall/ags_set_muted.h
 
 deprecated_libags_audio_task_c_sources =
@@ -1077,6 +1078,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/recall/ags_apply_bpm.c \
 	ags/audio/task/recall/ags_apply_sequencer_length.c \
 	ags/audio/task/recall/ags_apply_tact.c \
+	ags/audio/task/recall/ags_reset_peak.c \
 	ags/audio/task/recall/ags_set_muted.c
 
 # libags-gui all files

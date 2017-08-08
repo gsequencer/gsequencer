@@ -40,6 +40,7 @@ struct _AgsPeakChannel
 {
   AgsRecallChannel recall_channel;
 
+  pthread_mutexattr_t *buffer_mutexattr;
   pthread_mutex_t *buffer_mutex;
   
   guint samplerate;

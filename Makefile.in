@@ -394,6 +394,7 @@ am__objects_12 = $(am__objects_1) \
 	ags/audio/task/recall/libags_audio_la-ags_apply_bpm.lo \
 	ags/audio/task/recall/libags_audio_la-ags_apply_sequencer_length.lo \
 	ags/audio/task/recall/libags_audio_la-ags_apply_tact.lo \
+	ags/audio/task/recall/libags_audio_la-ags_reset_peak.lo \
 	ags/audio/task/recall/libags_audio_la-ags_set_muted.lo
 am__objects_13 = $(am__objects_1) \
 	ags/audio/recall/libags_audio_la-ags_buffer_audio_signal.lo \
@@ -3346,6 +3347,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/recall/ags_apply_bpm.h \
 	ags/audio/task/recall/ags_apply_sequencer_length.h \
 	ags/audio/task/recall/ags_apply_tact.h \
+	ags/audio/task/recall/ags_reset_peak.h \
 	ags/audio/task/recall/ags_set_muted.h
 
 deprecated_libags_audio_task_c_sources = 
@@ -3410,6 +3412,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/recall/ags_apply_bpm.c \
 	ags/audio/task/recall/ags_apply_sequencer_length.c \
 	ags/audio/task/recall/ags_apply_tact.c \
+	ags/audio/task/recall/ags_reset_peak.c \
 	ags/audio/task/recall/ags_set_muted.c
 
 
@@ -4670,6 +4673,9 @@ ags/audio/task/recall/libags_audio_la-ags_apply_sequencer_length.lo:  \
 	ags/audio/task/recall/$(am__dirstamp) \
 	ags/audio/task/recall/$(DEPDIR)/$(am__dirstamp)
 ags/audio/task/recall/libags_audio_la-ags_apply_tact.lo:  \
+	ags/audio/task/recall/$(am__dirstamp) \
+	ags/audio/task/recall/$(DEPDIR)/$(am__dirstamp)
+ags/audio/task/recall/libags_audio_la-ags_reset_peak.lo:  \
 	ags/audio/task/recall/$(am__dirstamp) \
 	ags/audio/task/recall/$(DEPDIR)/$(am__dirstamp)
 ags/audio/task/recall/libags_audio_la-ags_set_muted.lo:  \
@@ -6775,6 +6781,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/recall/$(DEPDIR)/libags_audio_la-ags_apply_bpm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/recall/$(DEPDIR)/libags_audio_la-ags_apply_sequencer_length.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/recall/$(DEPDIR)/libags_audio_la-ags_apply_tact.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/recall/$(DEPDIR)/libags_audio_la-ags_reset_peak.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/task/recall/$(DEPDIR)/libags_audio_la-ags_set_muted.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_audio_loop.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_audio_thread.Plo@am__quote@
@@ -8241,6 +8248,13 @@ ags/audio/task/recall/libags_audio_la-ags_apply_tact.lo: ags/audio/task/recall/a
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/task/recall/ags_apply_tact.c' object='ags/audio/task/recall/libags_audio_la-ags_apply_tact.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/recall/libags_audio_la-ags_apply_tact.lo `test -f 'ags/audio/task/recall/ags_apply_tact.c' || echo '$(srcdir)/'`ags/audio/task/recall/ags_apply_tact.c
+
+ags/audio/task/recall/libags_audio_la-ags_reset_peak.lo: ags/audio/task/recall/ags_reset_peak.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/recall/libags_audio_la-ags_reset_peak.lo -MD -MP -MF ags/audio/task/recall/$(DEPDIR)/libags_audio_la-ags_reset_peak.Tpo -c -o ags/audio/task/recall/libags_audio_la-ags_reset_peak.lo `test -f 'ags/audio/task/recall/ags_reset_peak.c' || echo '$(srcdir)/'`ags/audio/task/recall/ags_reset_peak.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/task/recall/$(DEPDIR)/libags_audio_la-ags_reset_peak.Tpo ags/audio/task/recall/$(DEPDIR)/libags_audio_la-ags_reset_peak.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/task/recall/ags_reset_peak.c' object='ags/audio/task/recall/libags_audio_la-ags_reset_peak.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/task/recall/libags_audio_la-ags_reset_peak.lo `test -f 'ags/audio/task/recall/ags_reset_peak.c' || echo '$(srcdir)/'`ags/audio/task/recall/ags_reset_peak.c
 
 ags/audio/task/recall/libags_audio_la-ags_set_muted.lo: ags/audio/task/recall/ags_set_muted.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/task/recall/libags_audio_la-ags_set_muted.lo -MD -MP -MF ags/audio/task/recall/$(DEPDIR)/libags_audio_la-ags_set_muted.Tpo -c -o ags/audio/task/recall/libags_audio_la-ags_set_muted.lo `test -f 'ags/audio/task/recall/ags_set_muted.c' || echo '$(srcdir)/'`ags/audio/task/recall/ags_set_muted.c

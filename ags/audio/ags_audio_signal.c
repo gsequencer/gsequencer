@@ -1081,6 +1081,7 @@ ags_audio_signal_finalize(GObject *gobject)
 /**
  * ags_stream_alloc:
  * @buffer_size: the buffer size
+ * @format: the format
  *
  * Allocs an audio buffer.
  *
