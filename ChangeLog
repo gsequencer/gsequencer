@@ -1,3 +1,8 @@
+ags (0.9.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsExportSoundcard to don't add device as being NULL
+
 ags (0.9.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

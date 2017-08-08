@@ -479,6 +479,7 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
   GList *card, *card_start;
   
   gchar *backend;
+  gchar *device;
 
   export_window = gtk_widget_get_ancestor(export_soundcard,
 					  AGS_TYPE_EXPORT_WINDOW);
@@ -499,8 +500,12 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
     while(soundcard != NULL){
       if(AGS_IS_DEVOUT(soundcard->data) &&
 	 (AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard->data)->flags)) != 0){
-	card_start = g_list_prepend(card_start,
-				    ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)));
+	device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+
+	if(device != NULL){
+	  card_start = g_list_prepend(card_start,
+				      device);
+	}
       }
       
       soundcard = soundcard->next;
@@ -511,8 +516,12 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
     while(soundcard != NULL){
       if(AGS_IS_DEVOUT(soundcard->data) &&
 	 (AGS_DEVOUT_OSS & (AGS_DEVOUT(soundcard->data)->flags)) != 0){
-	card_start = g_list_prepend(card_start,
-				    ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)));
+	device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+
+	if(device != NULL){
+	  card_start = g_list_prepend(card_start,
+				      device);
+	}
       }
       
       soundcard = soundcard->next;
@@ -522,8 +531,12 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
 				5)){
     while(soundcard != NULL){
       if(AGS_IS_JACK_DEVOUT(soundcard->data)){
-	card_start = g_list_prepend(card_start,
-				    ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)));
+	device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+
+	if(device != NULL){
+	  card_start = g_list_prepend(card_start,
+				      device);
+	}
       }
       
       soundcard = soundcard->next;
