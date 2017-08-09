@@ -27,6 +27,9 @@
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
 
+#include <lv2.h>
+#include <lv2/lv2plug.in/ns/ext/options/options.h>
+
 int ags_lv2_option_manager_test_init_suite();
 int ags_lv2_option_manager_test_clean_suite();
 
@@ -38,6 +41,15 @@ void ags_lv2_option_manager_test_set_option();
 void ags_lv2_option_manager_test_lv2_options_get();
 void ags_lv2_option_manager_test_lv2_options_set();
 
+#define AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_PLUGIN_FILENAME "/usr/lib/lv2/delay-swh.lv2/plugin-linux.so"
+#define AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_PLUGIN_EFFECT "Simple delay line, noninterpolating"
+#define AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_SAMPLERATE (44100)
+#define AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_SUBJECT (3)
+#define AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_SIZE (4)
+
+AgsLv2Manager *lv2_manager;
+AgsLv2UridManager *lv2_urid_manager;
+
 /* The suite initialization time.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -45,6 +57,11 @@ void ags_lv2_option_manager_test_lv2_options_set();
 int
 ags_lv2_option_manager_test_init_suite()
 {
+  lv2_manager = ags_lv2_manager_get_instance();
+  ags_lv2_manager_load_default_directory(lv2_manager);
+
+  lv2_urid_manager = ags_lv2_urid_manager_get_instance();
+
   return(0);
 }
 
@@ -145,7 +162,68 @@ ags_lv2_option_manager_test_ressource_lookup()
 void
 ags_lv2_option_manager_test_get_option()
 {
-  //TODO:JK: implement me
+  AgsLv2OptionManager *lv2_option_manager;
+  
+  AgsLv2OptionRessource *lv2_option_ressource;
+
+  AgsLv2Plugin *lv2_plugin;
+
+  LV2_Handle instance;
+  LV2_Options_Option *option, *current;
+
+  uint32_t retval;
+
+  GValue value = {0,};
+
+  g_value_init(&value,
+	       G_TYPE_UINT);
+  g_value_set_uint(&value,
+		   0);
+
+  lv2_option_manager = ags_lv2_option_manager_get_instance();
+  
+  /* creat plugin instance */
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_manager,
+					       AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_PLUGIN_FILENAME,
+					       AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_PLUGIN_EFFECT);
+  instance = ags_base_plugin_instantiate(AGS_BASE_PLUGIN(lv2_plugin),
+					 AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_SAMPLERATE);
+  
+  lv2_option_ressource = ags_lv2_option_ressource_alloc();
+  lv2_option_ressource->instance = instance;
+  option = lv2_option_ressource->option;
+
+  option->context = LV2_OPTIONS_RESOURCE;
+  option->subject = AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_SUBJECT;
+  option->key = ags_lv2_urid_manager_map(NULL,
+					 LV2_MIDI_URI);
+  option->type = ags_lv2_urid_manager_map(NULL,
+					 LV2_ATOM_URI);
+  option->size = AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_SIZE;
+  option->value = &value;
+
+  ags_lv2_option_manager_ressource_insert(lv2_option_manager,
+					  lv2_option_ressource, &value);
+
+  CU_ASSERT(ags_lv2_option_manager_ressource_lookup(lv2_option_manager,
+						    lv2_option_ressource) == &value);
+
+  /* assert */
+  current = (LV2_Options_Option *) malloc(sizeof(LV2_Options_Option));
+  current->context = LV2_OPTIONS_RESOURCE;
+  current->subject = option->subject;
+  current->key = option->key;
+
+  //  g_message("%x %x %x", lv2_option_manager, option, instance);
+
+  ags_lv2_option_manager_get_option(lv2_option_manager,
+				    (gpointer) instance,
+				    (gpointer) option,
+				    (gpointer) &retval);
+
+  CU_ASSERT(retval == 0);
+
+  g_object_unref(lv2_option_manager);
 }
 
 void

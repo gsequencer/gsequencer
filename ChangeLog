@@ -2,6 +2,8 @@ ags (0.9.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed AgsExportSoundcard to don't add device as being NULL
+	* fixed ags_lv2_option_manager_get_option() to lookup correctly
+	* new unit-test ags_lv2_option_manager_test.c
 
 ags (0.9.6)
 

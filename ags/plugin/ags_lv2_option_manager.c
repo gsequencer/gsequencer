@@ -22,6 +22,9 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_marshal.h>
 
+#include <stdlib.h>
+#include <string.h>
+
 void ags_lv2_option_manager_class_init(AgsLv2OptionManagerClass *lv2_option_manager);
 void ags_lv2_option_manager_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_lv2_option_manager_init(AgsLv2OptionManager *lv2_option_manager);
@@ -30,13 +33,13 @@ void ags_lv2_option_manager_disconnect(AgsConnectable *connectable);
 void ags_lv2_option_manager_finalize(GObject *gobject);
 
 void ags_lv2_option_manager_real_get_option(AgsLv2OptionManager *option_manager,
-					    LV2_Handle instance,
-					    LV2_Options_Option* options,
-					    uint32_t *retval);
+					    gpointer instance,
+					    gpointer options,
+					    gpointer retval);
 void ags_lv2_option_manager_real_set_option(AgsLv2OptionManager *option_manager,
-					    LV2_Handle instance,
-					    LV2_Options_Option* options,
-					    uint32_t *retval);
+					    gpointer instance,
+					    gpointer options,
+					    gpointer retval);
 
 void ags_lv2_option_manager_destroy_data(gpointer data);
 gboolean ags_lv2_option_ressource_equal(gpointer a, gpointer b);
@@ -176,9 +179,10 @@ ags_lv2_option_manager_connectable_interface_init(AgsConnectableInterface *conne
 void
 ags_lv2_option_manager_init(AgsLv2OptionManager *lv2_option_manager)
 {
-  lv2_option_manager->ressource = g_hash_table_new_full(g_direct_hash, ags_lv2_option_ressource_equal,
+  lv2_option_manager->ressource = g_hash_table_new_full(g_direct_hash, (GEqualFunc) ags_lv2_option_ressource_equal,
 							NULL,
 							(GDestroyNotify) ags_lv2_option_manager_destroy_data);
+  g_hash_table_ref(lv2_option_manager->ressource);
 }
 
 void
@@ -221,10 +225,11 @@ ags_lv2_option_ressource_equal(gpointer a, gpointer b)
 {
   AgsLv2OptionRessource *lv2_option_ressource, *requested_lv2_option_ressource;
 
-  lv2_option_ressource = a;
-  requested_lv2_option_ressource = b;
+  lv2_option_ressource = AGS_LV2_OPTION_RESSOURCE(a);
+  requested_lv2_option_ressource = AGS_LV2_OPTION_RESSOURCE(b);
   
-  if(lv2_option_ressource->option->subject == requested_lv2_option_ressource->option->subject &&
+  if(lv2_option_ressource->instance == requested_lv2_option_ressource->instance &&
+     lv2_option_ressource->option->subject == requested_lv2_option_ressource->option->subject &&
      lv2_option_ressource->option->key == requested_lv2_option_ressource->option->key){
     return(TRUE);
   }
@@ -237,10 +242,13 @@ ags_lv2_option_ressource_finder(gpointer key, gpointer value, gpointer user_data
 {
   AgsLv2OptionRessource *lv2_option_ressource, *requested_lv2_option_ressource;
 
-  lv2_option_ressource = key;
-  requested_lv2_option_ressource = user_data;
+  LV2_Options_Option *option;
+
+  lv2_option_ressource = AGS_LV2_OPTION_RESSOURCE(key);
+  requested_lv2_option_ressource = AGS_LV2_OPTION_RESSOURCE(user_data);
   
-  if(lv2_option_ressource->option->subject == requested_lv2_option_ressource->option->subject &&
+  if(lv2_option_ressource->instance == requested_lv2_option_ressource->instance &&
+     lv2_option_ressource->option->subject == requested_lv2_option_ressource->option->subject &&
      lv2_option_ressource->option->key == requested_lv2_option_ressource->option->key){
     return(TRUE);
   }
@@ -302,7 +310,7 @@ ags_lv2_option_manager_ressource_insert(AgsLv2OptionManager *lv2_option_manager,
   }
 
   g_hash_table_insert(lv2_option_manager->ressource,
-		      lv2_option_ressource, data);
+		      (gpointer) lv2_option_ressource, data);
 
   return(TRUE);
 }
@@ -366,22 +374,28 @@ ags_lv2_option_manager_ressource_lookup(AgsLv2OptionManager *lv2_option_manager,
 
 void
 ags_lv2_option_manager_real_get_option(AgsLv2OptionManager *lv2_option_manager,
-				       LV2_Handle instance,
-				       LV2_Options_Option *option,
-				       uint32_t *retval)
+				       gpointer instance,
+				       gpointer option,
+				       gpointer retval)
 {
+  AgsLv2OptionRessource *lv2_option_ressource;
+  
   gpointer data;
   gpointer key_ptr, value_ptr;
 
+  uint32_t *ret;
+  
   /* initial set to success */
-  if(retval != NULL){
-    *retval = 0;
+  ret = (uint32_t *) retval;
+  
+  if(ret != NULL){
+    *ret = 0;
   }
   
   /* check option to be non NULL */
   if(option == NULL){
-    if(retval != NULL){
-      *retval |= (LV2_OPTIONS_ERR_BAD_SUBJECT |
+    if(ret != NULL){
+      *ret |= (LV2_OPTIONS_ERR_BAD_SUBJECT |
 		  LV2_OPTIONS_ERR_BAD_KEY);
     }
 
@@ -389,22 +403,29 @@ ags_lv2_option_manager_real_get_option(AgsLv2OptionManager *lv2_option_manager,
   }
 
   /* get option */
-  if(option->context == LV2_OPTIONS_RESOURCE){
+  if(AGS_LV2_OPTIONS_OPTION(option)->context == LV2_OPTIONS_RESOURCE){
     key_ptr = NULL;
     value_ptr = NULL;
-      
+
+    lv2_option_ressource = (AgsLv2OptionRessource *) malloc(sizeof(AgsLv2OptionRessource));
+    
+    lv2_option_ressource->instance = (LV2_Handle) instance;
+    lv2_option_ressource->option = (LV2_Options_Option *) option;
+
+    //    g_message("%x %x %x", lv2_option_manager, option, instance);
+    
     if(g_hash_table_lookup_extended(lv2_option_manager->ressource,
-				    option,
+				    lv2_option_ressource,
 				    &key_ptr, &value_ptr)){
       /* set requested fields */
-      option->type = AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->type;
-      option->size = AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->size;
-      option->value = value_ptr;
-    }else{
+      AGS_LV2_OPTIONS_OPTION(option)->type = AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->type;
+      AGS_LV2_OPTIONS_OPTION(option)->size = AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->size;
+      AGS_LV2_OPTIONS_OPTION(option)->value = value_ptr;
+    }else{      
       /* do error reporting */
-      if(retval != NULL){
-	*retval |= (LV2_OPTIONS_ERR_BAD_SUBJECT |
-		    LV2_OPTIONS_ERR_BAD_KEY);
+      if(ret != NULL){
+	*ret |= (LV2_OPTIONS_ERR_BAD_SUBJECT |
+		 LV2_OPTIONS_ERR_BAD_KEY);
       }
     }
   }
@@ -423,9 +444,9 @@ ags_lv2_option_manager_real_get_option(AgsLv2OptionManager *lv2_option_manager,
  */
 void
 ags_lv2_option_manager_get_option(AgsLv2OptionManager *lv2_option_manager,
-				  LV2_Handle instance,
-				  LV2_Options_Option *option,
-				  uint32_t *retval)
+				  gpointer instance,
+				  gpointer option,
+				  gpointer retval)
 {
   g_return_if_fail(AGS_IS_LV2_OPTION_MANAGER(lv2_option_manager));
   g_object_ref(G_OBJECT(lv2_option_manager));
@@ -439,28 +460,32 @@ ags_lv2_option_manager_get_option(AgsLv2OptionManager *lv2_option_manager,
 
 void
 ags_lv2_option_manager_real_set_option(AgsLv2OptionManager *lv2_option_manager,
-				       LV2_Handle instance,
-				       LV2_Options_Option *option,
-				       uint32_t *retval)
+				       gpointer instance,
+				       gpointer option,
+				       gpointer retval)
 {
   gpointer data;
   gpointer key_ptr, value_ptr;
 
+  uint32_t *ret;
+  
   /* initial set to success */
-  if(retval != NULL){
-    *retval = 0;
+  ret = (uint32_t *) retval;
+
+  if(ret != NULL){
+    *ret = 0;
   }
 
   /* check option to be non NULL */
   if(option == NULL){
-    *retval |= (LV2_OPTIONS_ERR_BAD_SUBJECT |
+    *ret |= (LV2_OPTIONS_ERR_BAD_SUBJECT |
 		LV2_OPTIONS_ERR_BAD_KEY);
     
     return;
   }
 
   /* set option */
-  if(option->context == LV2_OPTIONS_RESOURCE){
+  if(AGS_LV2_OPTIONS_OPTION(option)->context == LV2_OPTIONS_RESOURCE){
     key_ptr = NULL;
     value_ptr = NULL;
       
@@ -468,9 +493,9 @@ ags_lv2_option_manager_real_set_option(AgsLv2OptionManager *lv2_option_manager,
 				    option,
 				    &key_ptr, &value_ptr)){
       /* set fields */
-      AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->type = option->type;
-      AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->size = option->size;
-      AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->value = option->value;
+      AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->type = AGS_LV2_OPTIONS_OPTION(option)->type;
+      AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->size = AGS_LV2_OPTIONS_OPTION(option)->size;
+      AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->value = AGS_LV2_OPTIONS_OPTION(option)->value;
     }else{
       AgsLv2OptionRessource *lv2_option_ressource;
       
@@ -480,16 +505,16 @@ ags_lv2_option_manager_real_set_option(AgsLv2OptionManager *lv2_option_manager,
       /* set fields */
       lv2_option_ressource->instance = instance;
       
-      lv2_option_ressource->option->context = option->context;
-      lv2_option_ressource->option->subject = option->subject;
-      lv2_option_ressource->option->key = option->key;
+      lv2_option_ressource->option->context = AGS_LV2_OPTIONS_OPTION(option)->context;
+      lv2_option_ressource->option->subject = AGS_LV2_OPTIONS_OPTION(option)->subject;
+      lv2_option_ressource->option->key = AGS_LV2_OPTIONS_OPTION(option)->key;
 
-      lv2_option_ressource->option->type = option->type;
-      lv2_option_ressource->option->size = option->size;
-      lv2_option_ressource->option->value = option->value;
+      lv2_option_ressource->option->type = AGS_LV2_OPTIONS_OPTION(option)->type;
+      lv2_option_ressource->option->size = AGS_LV2_OPTIONS_OPTION(option)->size;
+      lv2_option_ressource->option->value = AGS_LV2_OPTIONS_OPTION(option)->value;
 
       ags_lv2_option_manager_ressource_insert(lv2_option_manager,
-					      lv2_option_ressource, option->value);
+					      lv2_option_ressource, (gpointer) AGS_LV2_OPTIONS_OPTION(option)->value);
     }
   }
 }
@@ -507,9 +532,9 @@ ags_lv2_option_manager_real_set_option(AgsLv2OptionManager *lv2_option_manager,
  */
 void
 ags_lv2_option_manager_set_option(AgsLv2OptionManager *lv2_option_manager,
-				  LV2_Handle instance,
-				  LV2_Options_Option *option,
-				  uint32_t *retval)
+				  gpointer instance,
+				  gpointer option,
+				  gpointer retval)
 {
   g_return_if_fail(AGS_IS_LV2_OPTION_MANAGER(lv2_option_manager));
   g_object_ref(G_OBJECT(lv2_option_manager));

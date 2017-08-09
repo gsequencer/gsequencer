@@ -135,6 +135,10 @@ ags_lv2_urid_manager_finalize(GObject *gobject)
 
   g_hash_table_destroy(lv2_urid_manager->urid);
 
+  if(lv2_urid_manager == ags_lv2_urid_manager){
+    ags_lv2_urid_manager = NULL;
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_urid_manager_parent_class)->finalize(gobject);
 }
