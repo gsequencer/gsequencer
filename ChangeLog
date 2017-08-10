@@ -7,11 +7,15 @@ ags (0.9.7)
 	* implemented ags_lv2_plugin_event_buffer_concat()
 	* deprecated ags_lv2_plugin_alloc_event_buffer()
 	* deprecated ags_lv2_plugin_concat_event_buffer()
+	* implemented ags_lv2_urid_manager_unmap()
 	* fixed AgsExportSoundcard to don't add device as being NULL
 	* fixed ags_lv2_option_manager_get_option() to lookup correctly
 	* fixed ags_lv2_option_manager_set_option() to lookup correctly
 	* new unit-test ags_lv2_option_manager_test.c
 	* new unit-test ags_lv2_plugin_test.c
+	* new unit-test ags_lv2_preset_test.c
+	* new unit-test ags_lv2_uri_map_manager_test.c
+	* new unit-test ags_lv2_urid_manager_test.c
 
 ags (0.9.6)
 

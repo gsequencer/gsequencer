@@ -314,11 +314,17 @@ ags_lv2_uri_map_manager_uri_to_id(LV2_URI_Map_Callback_Data callback_data,
 AgsLv2UriMapManager*
 ags_lv2_uri_map_manager_get_instance()
 {
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  pthread_mutex_lock(&mutex);
+
   if(ags_lv2_uri_map_manager == NULL){
     ags_lv2_uri_map_manager = ags_lv2_uri_map_manager_new();
     
     //    ags_lv2_uri_map_manager_load_default(ags_lv2_uri_map_manager);
   }
+
+  pthread_mutex_unlock(&mutex);
 
   return(ags_lv2_uri_map_manager);
 }
