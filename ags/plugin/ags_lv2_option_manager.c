@@ -225,10 +225,17 @@ ags_lv2_option_ressource_equal(gpointer a, gpointer b)
 {
   AgsLv2OptionRessource *lv2_option_ressource, *requested_lv2_option_ressource;
 
+  if(a == NULL ||
+     b == NULL){
+    return(FALSE);
+  }
+  
   lv2_option_ressource = AGS_LV2_OPTION_RESSOURCE(a);
   requested_lv2_option_ressource = AGS_LV2_OPTION_RESSOURCE(b);
   
   if(lv2_option_ressource->instance == requested_lv2_option_ressource->instance &&
+     lv2_option_ressource->option != NULL &&
+     requested_lv2_option_ressource->option != NULL &&
      lv2_option_ressource->option->subject == requested_lv2_option_ressource->option->subject &&
      lv2_option_ressource->option->key == requested_lv2_option_ressource->option->key){
     return(TRUE);
@@ -359,17 +366,107 @@ gpointer
 ags_lv2_option_manager_ressource_lookup(AgsLv2OptionManager *lv2_option_manager,
 					AgsLv2OptionRessource *lv2_option_ressource)
 {
-  gpointer data;
+  GList *key, *key_start;
+  
+  gpointer data, tmp;
 
   if(!AGS_IS_LV2_OPTION_MANAGER(lv2_option_manager) ||
      lv2_option_ressource == NULL){
     return(NULL);
   }
+
+  key_start = 
+    key = g_hash_table_get_keys(lv2_option_manager->ressource);
+
+  data = NULL;
+
+  while(key != NULL){
+    tmp = (gpointer) g_hash_table_lookup(lv2_option_manager->ressource,
+					 key->data);
+
+    if(ags_lv2_option_ressource_equal(lv2_option_ressource,
+				      key->data)){
+      data = tmp;
+
+      break;
+    }
+
+    key = key->next;
+  }
   
-  data = (gpointer) g_hash_table_lookup(lv2_option_manager->ressource,
-					lv2_option_ressource);
+  g_list_free(key_start);
   
   return(data);
+}
+
+/**
+ * ags_lv2_option_manager_ressource_lookup_extended:
+ * @lv2_option_manager: the #AgsLv2OptionManager
+ * @lv2_option_ressource: the #AgsLv2OptionRessource to lookup
+ * @orig_key: the original key found
+ * @value: the matched value
+ *
+ * Lookup a ressource associated with @lv2_option_ressource in
+ * @lv2_option_manager.
+ *
+ * Returns: %TRUE if ressource found, else %FALSE
+ *
+ * Since: 0.9.7
+ */
+gboolean
+ags_lv2_option_manager_ressource_lookup_extended(AgsLv2OptionManager *lv2_option_manager,
+						 AgsLv2OptionRessource *lv2_option_ressource,
+						 gpointer *orig_key, gpointer *value)
+{
+  GList *key, *key_start;
+  
+  gpointer data, tmp;
+
+  if(orig_key != NULL){
+    *orig_key = NULL;
+  }
+
+  if(value != NULL){
+    *value = NULL;
+  }
+    
+  if(!AGS_IS_LV2_OPTION_MANAGER(lv2_option_manager) ||
+     lv2_option_ressource == NULL){
+    return(FALSE);
+  }
+
+  key_start = 
+    key = g_hash_table_get_keys(lv2_option_manager->ressource);
+
+  data = NULL;
+
+  while(key != NULL){
+    tmp = (gpointer) g_hash_table_lookup(lv2_option_manager->ressource,
+					 key->data);
+
+    if(ags_lv2_option_ressource_equal(lv2_option_ressource,
+				      key->data)){
+      data = tmp;
+
+      break;
+    }
+
+    key = key->next;
+  }
+  
+  if(orig_key != NULL &&
+     key != NULL){
+    *orig_key = key->data;
+  }
+
+  if(value != NULL &&
+     data != NULL){
+    *value = data;
+  }  
+  
+  g_list_free(key_start);
+
+  return(((data != NULL) ? TRUE: FALSE));  
 }
 
 void
@@ -414,9 +511,9 @@ ags_lv2_option_manager_real_get_option(AgsLv2OptionManager *lv2_option_manager,
 
     //    g_message("%x %x %x", lv2_option_manager, option, instance);
     
-    if(g_hash_table_lookup_extended(lv2_option_manager->ressource,
-				    lv2_option_ressource,
-				    &key_ptr, &value_ptr)){
+    if(ags_lv2_option_manager_ressource_lookup_extended(lv2_option_manager,
+							lv2_option_ressource,
+							&key_ptr, &value_ptr)){
       /* set requested fields */
       AGS_LV2_OPTIONS_OPTION(option)->type = AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->type;
       AGS_LV2_OPTIONS_OPTION(option)->size = AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->size;
@@ -489,9 +586,9 @@ ags_lv2_option_manager_real_set_option(AgsLv2OptionManager *lv2_option_manager,
     key_ptr = NULL;
     value_ptr = NULL;
       
-    if(g_hash_table_lookup_extended(lv2_option_manager->ressource,
-				    option,
-				    &key_ptr, &value_ptr)){
+    if(ags_lv2_option_manager_ressource_lookup_extended(lv2_option_manager,
+							option,
+							&key_ptr, &value_ptr)){
       /* set fields */
       AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->type = AGS_LV2_OPTIONS_OPTION(option)->type;
       AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->size = AGS_LV2_OPTIONS_OPTION(option)->size;

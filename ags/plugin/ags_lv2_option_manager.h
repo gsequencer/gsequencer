@@ -78,6 +78,9 @@ gboolean ags_lv2_option_manager_ressource_remove(AgsLv2OptionManager *lv2_option
 
 gpointer ags_lv2_option_manager_ressource_lookup(AgsLv2OptionManager *lv2_option_manager,
 						 AgsLv2OptionRessource *lv2_option_ressource);
+gboolean ags_lv2_option_manager_ressource_lookup_extended(AgsLv2OptionManager *lv2_option_manager,
+							  AgsLv2OptionRessource *lv2_option_ressource,
+							  gpointer *orig_key, gpointer *value);
 
 /* get and set option */
 void ags_lv2_option_manager_get_option(AgsLv2OptionManager *lv2_option_manager,

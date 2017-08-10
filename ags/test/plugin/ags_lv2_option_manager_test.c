@@ -205,9 +205,6 @@ ags_lv2_option_manager_test_get_option()
   ags_lv2_option_manager_ressource_insert(lv2_option_manager,
 					  lv2_option_ressource, &value);
 
-  CU_ASSERT(ags_lv2_option_manager_ressource_lookup(lv2_option_manager,
-						    lv2_option_ressource) == &value);
-
   /* assert */
   current = (LV2_Options_Option *) malloc(sizeof(LV2_Options_Option));
   current->context = LV2_OPTIONS_RESOURCE;
@@ -218,7 +215,7 @@ ags_lv2_option_manager_test_get_option()
 
   ags_lv2_option_manager_get_option(lv2_option_manager,
 				    (gpointer) instance,
-				    (gpointer) option,
+				    (gpointer) current,
 				    (gpointer) &retval);
 
   CU_ASSERT(retval == 0);
