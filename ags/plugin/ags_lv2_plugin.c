@@ -1730,12 +1730,12 @@ ags_lv2_plugin_event_buffer_remove_midi(void *event_buffer,
 
     memmove(offset,
 	    offset + (padded_buffer_size + sizeof(LV2_Event)),
-	    offset - ((void *) AGS_LV2_EVENT_BUFFER(event_buffer)->data) - (padded_buffer_size + sizeof(LV2_Event)));
+	    ((void *) AGS_LV2_EVENT_BUFFER(event_buffer)->data + buffer_size) - (offset + padded_buffer_size + sizeof(LV2_Event)));
     
     memset(AGS_LV2_EVENT_BUFFER(event_buffer)->data + buffer_size - (padded_buffer_size + sizeof(LV2_Event)),
 	   0,
 	   (padded_buffer_size + sizeof(LV2_Event)));
-
+    
     AGS_LV2_EVENT_BUFFER(event_buffer)->size -= (padded_buffer_size + sizeof(LV2_Event));
     AGS_LV2_EVENT_BUFFER(event_buffer)->event_count -= 1;
   }
@@ -1760,7 +1760,7 @@ ags_lv2_plugin_clear_event_buffer(void *event_buffer,
 
   guint padded_buffer_size;
 
-  offset = event_buffer;
+  offset = AGS_LV2_EVENT_BUFFER(event_buffer)->data;
   
   if(buffer_size < 8){
     padded_buffer_size = 8;
@@ -1768,7 +1768,7 @@ ags_lv2_plugin_clear_event_buffer(void *event_buffer,
     padded_buffer_size = buffer_size;
   }
   
-  memset(offset + sizeof(LV2_Event_Buffer), 0, padded_buffer_size);
+  memset(offset, 0, padded_buffer_size);
 }
 
 /**

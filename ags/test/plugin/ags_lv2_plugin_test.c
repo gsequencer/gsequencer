@@ -60,6 +60,11 @@ void ags_lv2_plugin_test_stub_change_program(AgsLv2Plugin *lv2_plugin,
 #define AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_APPEND_MIDI_NOTE_2 (64)
 #define AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_APPEND_MIDI_SIZE (1024)
 
+#define AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_NOTE_0 (32)
+#define AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_NOTE_1 (48)
+#define AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_NOTE_2 (64)
+#define AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_SIZE (1024)
+
 AgsLv2UriMapManager *uri_map_manager;
 
 gboolean stub_change_program = FALSE;
@@ -202,7 +207,82 @@ ags_lv2_plugin_test_event_buffer_append_midi()
 void
 ags_lv2_plugin_test_event_buffer_remove_midi()
 {
-  //TODO:JK: implement me
+  LV2_Event_Buffer *event_buffer;
+
+  snd_seq_event_t seq_event[3];
+
+  void *offset;
+  
+  uint32_t id;
+
+  id = ags_lv2_uri_map_manager_uri_to_id(NULL,
+					 LV2_EVENT_URI,
+					 LV2_MIDI__MidiEvent);
+  
+  memset(&seq_event, 0, 3 * sizeof(snd_seq_event_t));
+
+  /* note #0 */
+  seq_event[0].type = SND_SEQ_EVENT_NOTEON;
+
+  seq_event[0].data.note.channel = 0;
+  seq_event[0].data.note.note = 0x7f & AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_NOTE_0;
+  seq_event[0].data.note.velocity = 127;
+
+  /* note #1 */
+  seq_event[1].type = SND_SEQ_EVENT_NOTEON;
+
+  seq_event[1].data.note.channel = 0;
+  seq_event[1].data.note.note = 0x7f & AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_NOTE_1;
+  seq_event[1].data.note.velocity = 127;
+
+  /* note #2 */
+  seq_event[2].type = SND_SEQ_EVENT_NOTEON;
+
+  seq_event[2].data.note.channel = 0;
+  seq_event[2].data.note.note = 0x7f & AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_NOTE_2;
+  seq_event[2].data.note.velocity = 127;
+
+  /* event buffer and append midi */
+  event_buffer = ags_lv2_plugin_alloc_event_buffer(AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_SIZE);
+  
+  ags_lv2_plugin_event_buffer_append_midi(event_buffer,
+					  AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_SIZE,
+					  &seq_event,
+					  3);
+
+  /* remove midi and assert */
+  ags_lv2_plugin_event_buffer_remove_midi(event_buffer,
+					  AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_SIZE,
+					  AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_NOTE_1);
+
+  offset = event_buffer->data;
+
+  CU_ASSERT(AGS_LV2_EVENT(offset)->type == id &&
+	    ((uint8_t *) (offset + sizeof(LV2_Event)))[1] == AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_NOTE_0);
+  offset += (sizeof(LV2_Event) + 8);
+
+  CU_ASSERT(AGS_LV2_EVENT(offset)->type == id &&
+	    ((uint8_t *) (offset + sizeof(LV2_Event)))[1] == AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_NOTE_2);
+
+  ags_lv2_plugin_event_buffer_remove_midi(event_buffer,
+					  AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_SIZE,
+					  AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_NOTE_2);
+
+  offset = event_buffer->data;
+
+  CU_ASSERT(AGS_LV2_EVENT(offset)->type == id &&
+	    ((uint8_t *) (offset + sizeof(LV2_Event)))[1] == AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_NOTE_0);
+  offset += (sizeof(LV2_Event) + 8);
+
+  CU_ASSERT(((uint8_t *) (offset + sizeof(LV2_Event)))[1] == 0);
+
+  ags_lv2_plugin_event_buffer_remove_midi(event_buffer,
+					  AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_SIZE,
+					  AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_NOTE_0);
+
+  offset = event_buffer->data;
+
+  CU_ASSERT(((uint8_t *) (offset + sizeof(LV2_Event)))[1] == 0);
 }
 
 void
