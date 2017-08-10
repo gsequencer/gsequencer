@@ -475,7 +475,7 @@ ags_lv2_option_manager_real_get_option(AgsLv2OptionManager *lv2_option_manager,
 				       gpointer option,
 				       gpointer retval)
 {
-  AgsLv2OptionRessource *lv2_option_ressource;
+  AgsLv2OptionRessource *lookup_ressource;
   
   gpointer data;
   gpointer key_ptr, value_ptr;
@@ -493,7 +493,7 @@ ags_lv2_option_manager_real_get_option(AgsLv2OptionManager *lv2_option_manager,
   if(option == NULL){
     if(ret != NULL){
       *ret |= (LV2_OPTIONS_ERR_BAD_SUBJECT |
-		  LV2_OPTIONS_ERR_BAD_KEY);
+	       LV2_OPTIONS_ERR_BAD_KEY);
     }
 
     return;
@@ -504,15 +504,13 @@ ags_lv2_option_manager_real_get_option(AgsLv2OptionManager *lv2_option_manager,
     key_ptr = NULL;
     value_ptr = NULL;
 
-    lv2_option_ressource = (AgsLv2OptionRessource *) malloc(sizeof(AgsLv2OptionRessource));
+    lookup_ressource = (AgsLv2OptionRessource *) malloc(sizeof(AgsLv2OptionRessource));
     
-    lv2_option_ressource->instance = (LV2_Handle) instance;
-    lv2_option_ressource->option = (LV2_Options_Option *) option;
-
-    //    g_message("%x %x %x", lv2_option_manager, option, instance);
+    lookup_ressource->instance = (LV2_Handle) instance;
+    lookup_ressource->option = (LV2_Options_Option *) option;
     
     if(ags_lv2_option_manager_ressource_lookup_extended(lv2_option_manager,
-							lv2_option_ressource,
+							lookup_ressource,
 							&key_ptr, &value_ptr)){
       /* set requested fields */
       AGS_LV2_OPTIONS_OPTION(option)->type = AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->type;
@@ -525,6 +523,8 @@ ags_lv2_option_manager_real_get_option(AgsLv2OptionManager *lv2_option_manager,
 		 LV2_OPTIONS_ERR_BAD_KEY);
       }
     }
+
+    free(lookup_ressource);
   }
 }
 
@@ -561,6 +561,8 @@ ags_lv2_option_manager_real_set_option(AgsLv2OptionManager *lv2_option_manager,
 				       gpointer option,
 				       gpointer retval)
 {
+  AgsLv2OptionRessource *lookup_ressource;
+  
   gpointer data;
   gpointer key_ptr, value_ptr;
 
@@ -576,7 +578,7 @@ ags_lv2_option_manager_real_set_option(AgsLv2OptionManager *lv2_option_manager,
   /* check option to be non NULL */
   if(option == NULL){
     *ret |= (LV2_OPTIONS_ERR_BAD_SUBJECT |
-		LV2_OPTIONS_ERR_BAD_KEY);
+	     LV2_OPTIONS_ERR_BAD_KEY);
     
     return;
   }
@@ -585,9 +587,14 @@ ags_lv2_option_manager_real_set_option(AgsLv2OptionManager *lv2_option_manager,
   if(AGS_LV2_OPTIONS_OPTION(option)->context == LV2_OPTIONS_RESOURCE){
     key_ptr = NULL;
     value_ptr = NULL;
+
+    lookup_ressource = (AgsLv2OptionRessource *) malloc(sizeof(AgsLv2OptionRessource));
+    
+    lookup_ressource->instance = (LV2_Handle) instance;
+    lookup_ressource->option = (LV2_Options_Option *) option;
       
     if(ags_lv2_option_manager_ressource_lookup_extended(lv2_option_manager,
-							option,
+							lookup_ressource,
 							&key_ptr, &value_ptr)){
       /* set fields */
       AGS_LV2_OPTION_RESSOURCE(key_ptr)->option->type = AGS_LV2_OPTIONS_OPTION(option)->type;
@@ -613,6 +620,8 @@ ags_lv2_option_manager_real_set_option(AgsLv2OptionManager *lv2_option_manager,
       ags_lv2_option_manager_ressource_insert(lv2_option_manager,
 					      lv2_option_ressource, (gpointer) AGS_LV2_OPTIONS_OPTION(option)->value);
     }
+
+    free(lookup_ressource);
   }
 }
 

@@ -211,14 +211,15 @@ ags_lv2_option_manager_test_get_option()
   current->subject = option->subject;
   current->key = option->key;
 
-  //  g_message("%x %x %x", lv2_option_manager, option, instance);
-
   ags_lv2_option_manager_get_option(lv2_option_manager,
 				    (gpointer) instance,
 				    (gpointer) current,
 				    (gpointer) &retval);
 
-  CU_ASSERT(retval == 0);
+  CU_ASSERT(retval == 0 &&
+	    current->type == option->type &&
+	    current->size == option->size &&
+	    current->value == option->value);
 
   g_object_unref(lv2_option_manager);
 }
@@ -226,7 +227,59 @@ ags_lv2_option_manager_test_get_option()
 void
 ags_lv2_option_manager_test_set_option()
 {
-  //TODO:JK: implement me
+  AgsLv2OptionManager *lv2_option_manager;
+  
+  AgsLv2OptionRessource *lv2_option_ressource;
+
+  AgsLv2Plugin *lv2_plugin;
+
+  LV2_Handle instance;
+  LV2_Options_Option *option;
+
+  uint32_t retval;
+
+  GValue value = {0,};
+
+  g_value_init(&value,
+	       G_TYPE_UINT);
+  g_value_set_uint(&value,
+		   0);
+
+  lv2_option_manager = ags_lv2_option_manager_get_instance();
+  
+  /* creat plugin instance */
+  lv2_plugin = ags_lv2_manager_find_lv2_plugin(lv2_manager,
+					       AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_PLUGIN_FILENAME,
+					       AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_PLUGIN_EFFECT);
+  instance = ags_base_plugin_instantiate(AGS_BASE_PLUGIN(lv2_plugin),
+					 AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_SAMPLERATE);
+  
+  option = (LV2_Options_Option *) malloc(sizeof(LV2_Options_Option));
+
+  option->context = LV2_OPTIONS_RESOURCE;
+  option->subject = AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_SUBJECT;
+  option->key = ags_lv2_urid_manager_map(NULL,
+					 LV2_MIDI_URI);
+  option->type = ags_lv2_urid_manager_map(NULL,
+					 LV2_ATOM_URI);
+  option->size = AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_SIZE;
+  option->value = &value;
+
+  /* assert */
+  ags_lv2_option_manager_set_option(lv2_option_manager,
+				    (gpointer) instance,
+				    (gpointer) option,
+				    (gpointer) &retval);
+
+  lv2_option_ressource = ags_lv2_option_ressource_alloc();
+  lv2_option_ressource->instance = instance;
+  lv2_option_ressource->option = option;
+
+  CU_ASSERT(retval == 0 &&
+	    ags_lv2_option_manager_ressource_lookup(lv2_option_manager,
+						    lv2_option_ressource) == &value);
+  
+  g_object_unref(lv2_option_manager);
 }
 
 void
