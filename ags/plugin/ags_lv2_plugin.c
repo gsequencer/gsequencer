@@ -1424,8 +1424,6 @@ ags_lv2_plugin_alloc_event_buffer(guint buffer_size)
   AGS_LV2_EVENT_BUFFER(event_buffer)->event_count = 0;
   AGS_LV2_EVENT_BUFFER(event_buffer)->size = 0;
 
-  g_critical("deprecated use ags_lv2_plugin_alloc_event_buffer()");
-  
   return(event_buffer);
 }
 
@@ -1467,8 +1465,6 @@ ags_lv2_plugin_concat_event_buffer(void *buffer0, ...)
   }
 
   va_end(ap);
-
-  g_critical("deprecated use ags_lv2_plugin_concat_event_buffer()");
 
   return(buffer);
 }
@@ -1569,6 +1565,8 @@ ags_lv2_plugin_event_buffer_concat(LV2_Event_Buffer *event_buffer, ...)
 {
   LV2_Event_Buffer *buffer;
   LV2_Event_Buffer *current;
+
+  void *offset;
   
   va_list ap;
 
@@ -1580,10 +1578,18 @@ ags_lv2_plugin_event_buffer_concat(LV2_Event_Buffer *event_buffer, ...)
   va_start(ap, event_buffer);
   i = 1;
 
-  while((current = va_arg(ap, LV2_Event_Buffer*)) != NULL){
-    buffer = (void *) realloc(buffer,
-			      (i + 1) * sizeof(LV2_Event_Buffer));
-    memcpy(buffer + (i * sizeof(LV2_Event_Buffer)), current, sizeof(LV2_Event_Buffer));
+  while(TRUE){
+    current = va_arg(ap, LV2_Event_Buffer *);
+
+    if(current == NULL){
+      break;
+    }
+    
+    buffer = (LV2_Event_Buffer *) realloc(buffer,
+					  (i + 1) * sizeof(LV2_Event_Buffer));
+    offset = buffer;
+    offset += (i * sizeof(LV2_Event_Buffer));
+    memcpy(offset, current, sizeof(LV2_Event_Buffer));
 
     i++;
   }
