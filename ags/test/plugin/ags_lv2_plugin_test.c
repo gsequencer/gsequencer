@@ -65,7 +65,28 @@ void ags_lv2_plugin_test_stub_change_program(AgsLv2Plugin *lv2_plugin,
 #define AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_NOTE_2 (64)
 #define AGS_LV2_PLUGIN_TEST_EVENT_BUFFER_REMOVE_MIDI_SIZE (1024)
 
+#define AGS_LV2_PLUGIN_TEST_CLEAR_EVENT_BUFFER_NOTE_0 (17)
+#define AGS_LV2_PLUGIN_TEST_CLEAR_EVENT_BUFFER_SIZE (1024)
+
+#define AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_APPEND_MIDI_NOTE_0 (32)
+#define AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_APPEND_MIDI_NOTE_1 (48)
+#define AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_APPEND_MIDI_NOTE_2 (64)
+#define AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_APPEND_MIDI_SIZE (1024)
+
+#define AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_REMOVE_MIDI_NOTE_0 (32)
+#define AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_REMOVE_MIDI_NOTE_1 (48)
+#define AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_REMOVE_MIDI_NOTE_2 (64)
+#define AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_REMOVE_MIDI_SIZE (1024)
+
+#define AGS_LV2_PLUGIN_TEST_CLEAR_ATOM_SEQUENCE_NOTE_0 (17)
+#define AGS_LV2_PLUGIN_TEST_CLEAR_ATOM_SEQUENCE_SIZE (1024)
+
+#define AGS_LV2_PLUGIN_TEST_FIND_PNAME_SWH "swh"
+#define AGS_LV2_PLUGIN_TEST_FIND_PNAME_INVADA "invada"
+#define AGS_LV2_PLUGIN_TEST_FIND_PNAME_ZYN "zyn"
+
 AgsLv2UriMapManager *uri_map_manager;
+AgsLv2UridManager *urid_manager;
 
 gboolean stub_change_program = FALSE;
 
@@ -77,6 +98,7 @@ int
 ags_lv2_plugin_test_init_suite()
 {
   uri_map_manager = ags_lv2_uri_map_manager_get_instance();
+  urid_manager = ags_lv2_urid_manager_get_instance();
   
   return(0);
 }
@@ -288,43 +310,282 @@ ags_lv2_plugin_test_event_buffer_remove_midi()
 void
 ags_lv2_plugin_test_clear_event_buffer()
 {
-  //TODO:JK: implement me
+  LV2_Event_Buffer *event_buffer;
+
+  snd_seq_event_t seq_event[1];
+
+  void *offset;
+
+  memset(&seq_event, 0, sizeof(snd_seq_event_t));
+
+  /* note #0 */
+  seq_event[0].type = SND_SEQ_EVENT_NOTEON;
+
+  seq_event[0].data.note.channel = 0;
+  seq_event[0].data.note.note = 0x7f & AGS_LV2_PLUGIN_TEST_CLEAR_EVENT_BUFFER_NOTE_0;
+  seq_event[0].data.note.velocity = 127;
+
+  /* event buffer and append midi */
+  event_buffer = ags_lv2_plugin_alloc_event_buffer(AGS_LV2_PLUGIN_TEST_CLEAR_EVENT_BUFFER_SIZE);
+  
+  ags_lv2_plugin_event_buffer_append_midi(event_buffer,
+					  AGS_LV2_PLUGIN_TEST_CLEAR_EVENT_BUFFER_SIZE,
+					  &seq_event,
+					  1);
+
+  /* clear and assert */
+  ags_lv2_plugin_clear_event_buffer(event_buffer,
+				    AGS_LV2_PLUGIN_TEST_CLEAR_EVENT_BUFFER_SIZE);
+  
+  offset = event_buffer->data;
+
+  CU_ASSERT(((uint8_t *) (offset + sizeof(LV2_Event)))[1] == 0);
 }
 
 void
 ags_lv2_plugin_test_concat_atom_sequence()
 {
-  //TODO:JK: implement me
+  //TODO:JK: not implemented
 }
 
 void
 ags_lv2_plugin_test_atom_sequence_append_midi()
 {
-  //TODO:JK: implement me
+  LV2_Atom_Sequence *aseq;
+  LV2_Atom_Event *aev;
+
+  snd_seq_event_t seq_event[3];
+
+  uint32_t id;
+
+  id = ags_lv2_urid_manager_map(NULL,
+				LV2_MIDI__MidiEvent);
+
+  memset(&seq_event, 0, 3 * sizeof(snd_seq_event_t));
+
+  /* note #0 */
+  seq_event[0].type = SND_SEQ_EVENT_NOTEON;
+
+  seq_event[0].data.note.channel = 0;
+  seq_event[0].data.note.note = 0x7f & AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_APPEND_MIDI_NOTE_0;
+  seq_event[0].data.note.velocity = 127;
+
+  /* note #1 */
+  seq_event[1].type = SND_SEQ_EVENT_NOTEON;
+
+  seq_event[1].data.note.channel = 0;
+  seq_event[1].data.note.note = 0x7f & AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_APPEND_MIDI_NOTE_1;
+  seq_event[1].data.note.velocity = 127;
+
+  /* note #2 */
+  seq_event[2].type = SND_SEQ_EVENT_NOTEON;
+
+  seq_event[2].data.note.channel = 0;
+  seq_event[2].data.note.note = 0x7f & AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_APPEND_MIDI_NOTE_2;
+  seq_event[2].data.note.velocity = 127;
+
+  /* atom sequence */
+  aseq = ags_lv2_plugin_alloc_atom_sequence(AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_APPEND_MIDI_SIZE);
+  aev = (LV2_Atom_Event *) ((char *) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
+  
+  /* append midi and assert */
+  ags_lv2_plugin_atom_sequence_append_midi(aseq,
+					   AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_APPEND_MIDI_SIZE,
+					   &seq_event,
+					   3);
+  CU_ASSERT(aev->body.type == id &&
+	    ((uint8_t *) (LV2_ATOM_BODY(&(aev->body))))[1] == AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_APPEND_MIDI_NOTE_0);
+  aev += ((3 + 7) & (~7));
+
+  CU_ASSERT(aev->body.type == id &&
+	    ((uint8_t *) (LV2_ATOM_BODY(&(aev->body))))[1] == AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_APPEND_MIDI_NOTE_1);
+  aev += ((3 + 7) & (~7));
+  
+  CU_ASSERT(aev->body.type == id &&
+	    ((uint8_t *) (LV2_ATOM_BODY(&(aev->body))))[1] == AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_APPEND_MIDI_NOTE_2);
 }
 
 void
 ags_lv2_plugin_test_atom_sequence_remove_midi()
 {
-  //TODO:JK: implement me
+  LV2_Atom_Sequence *aseq;
+  LV2_Atom_Event *aev;
+
+  snd_seq_event_t seq_event[3];
+  
+  uint32_t id;
+
+  id = ags_lv2_urid_manager_map(NULL,
+				LV2_MIDI__MidiEvent);
+
+  memset(&seq_event, 0, 3 * sizeof(snd_seq_event_t));
+
+  /* note #0 */
+  seq_event[0].type = SND_SEQ_EVENT_NOTEON;
+
+  seq_event[0].data.note.channel = 0;
+  seq_event[0].data.note.note = 0x7f & AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_REMOVE_MIDI_NOTE_0;
+  seq_event[0].data.note.velocity = 127;
+
+  /* note #1 */
+  seq_event[1].type = SND_SEQ_EVENT_NOTEON;
+
+  seq_event[1].data.note.channel = 0;
+  seq_event[1].data.note.note = 0x7f & AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_REMOVE_MIDI_NOTE_1;
+  seq_event[1].data.note.velocity = 127;
+
+  /* note #2 */
+  seq_event[2].type = SND_SEQ_EVENT_NOTEON;
+
+  seq_event[2].data.note.channel = 0;
+  seq_event[2].data.note.note = 0x7f & AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_REMOVE_MIDI_NOTE_2;
+  seq_event[2].data.note.velocity = 127;
+
+  /* atom sequence */
+  aseq = ags_lv2_plugin_alloc_atom_sequence(AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_REMOVE_MIDI_SIZE);
+  
+  ags_lv2_plugin_atom_sequence_append_midi(aseq,
+					   AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_REMOVE_MIDI_SIZE,
+					   &seq_event,
+					   3);
+
+  /* remove midi and assert */
+  ags_lv2_plugin_atom_sequence_remove_midi(aseq,
+					   AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_REMOVE_MIDI_SIZE,
+					   AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_REMOVE_MIDI_NOTE_1);
+  
+  aev = (LV2_Atom_Event *) ((char *) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
+
+  CU_ASSERT(aev->body.type == id &&
+	    ((uint8_t *) (LV2_ATOM_BODY(&(aev->body))))[1] == AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_REMOVE_MIDI_NOTE_0);
+  aev += ((3 + 7) & (~7));
+
+  CU_ASSERT(aev->body.type == id &&
+	    ((uint8_t *) (LV2_ATOM_BODY(&(aev->body))))[1] == AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_REMOVE_MIDI_NOTE_2);
+
+  ags_lv2_plugin_atom_sequence_remove_midi(aseq,
+					   AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_REMOVE_MIDI_SIZE,
+					   AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_REMOVE_MIDI_NOTE_2);
+
+  aev = (LV2_Atom_Event *) ((char *) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
+
+  CU_ASSERT(aev->body.type == id &&
+	    ((uint8_t *) (LV2_ATOM_BODY(&(aev->body))))[1] == AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_REMOVE_MIDI_NOTE_0);
+  aev += ((3 + 7) & (~7));
+
+  CU_ASSERT(((uint8_t *) (LV2_ATOM_BODY(&(aev->body))))[1] == 0);
+
+  ags_lv2_plugin_atom_sequence_remove_midi(aseq,
+					   AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_REMOVE_MIDI_SIZE,
+					   AGS_LV2_PLUGIN_TEST_ATOM_SEQUENCE_REMOVE_MIDI_NOTE_0);
+
+  aev = (LV2_Atom_Event *) ((char *) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
+
+  CU_ASSERT(((uint8_t *) (LV2_ATOM_BODY(&(aev->body))))[1] == 0);
 }
 
 void
 ags_lv2_plugin_test_clear_atom_sequence()
 {
-  //TODO:JK: implement me
+  LV2_Atom_Sequence *aseq;
+  LV2_Atom_Event *aev;
+
+  snd_seq_event_t seq_event[1];
+
+  uint32_t id;
+
+  id = ags_lv2_urid_manager_map(NULL,
+				LV2_MIDI__MidiEvent);
+
+  memset(&seq_event, 0, sizeof(snd_seq_event_t));
+
+  /* note #0 */
+  seq_event[0].type = SND_SEQ_EVENT_NOTEON;
+
+  seq_event[0].data.note.channel = 0;
+  seq_event[0].data.note.note = 0x7f & AGS_LV2_PLUGIN_TEST_CLEAR_ATOM_SEQUENCE_NOTE_0;
+  seq_event[0].data.note.velocity = 127;
+
+  /* atom sequence */
+  aseq = ags_lv2_plugin_alloc_atom_sequence(AGS_LV2_PLUGIN_TEST_CLEAR_ATOM_SEQUENCE_SIZE);
+  
+  ags_lv2_plugin_atom_sequence_append_midi(aseq,
+					   AGS_LV2_PLUGIN_TEST_CLEAR_ATOM_SEQUENCE_SIZE,
+					   &seq_event,
+					   1);
+  
+  /* clear and assert */
+  ags_lv2_plugin_clear_atom_sequence(aseq,
+				     AGS_LV2_PLUGIN_TEST_CLEAR_ATOM_SEQUENCE_SIZE);
+  
+  aev = (LV2_Atom_Event *) ((char *) LV2_ATOM_CONTENTS(LV2_Atom_Sequence, aseq));
+
+  CU_ASSERT(((uint8_t *) (LV2_ATOM_BODY(&(aev->body))))[1] == 0);
 }
 
 void
 ags_lv2_plugin_test_find_pname()
 {
-  //TODO:JK: implement me
+  AgsLv2Plugin *lv2_plugin[3];
+  
+  GList *list, *current;
+
+  list = NULL;
+  
+  lv2_plugin[0] = (AgsLv2Plugin *) g_object_new(AGS_TYPE_LV2_PLUGIN,
+						"pname", AGS_LV2_PLUGIN_TEST_FIND_PNAME_SWH,
+						NULL);
+  list = g_list_prepend(list,
+			lv2_plugin[0]);
+  
+  lv2_plugin[1] = (AgsLv2Plugin *) g_object_new(AGS_TYPE_LV2_PLUGIN,
+						"pname", AGS_LV2_PLUGIN_TEST_FIND_PNAME_INVADA,
+						NULL);
+  list = g_list_prepend(list,
+			lv2_plugin[1]);
+  
+  lv2_plugin[2] = (AgsLv2Plugin *) g_object_new(AGS_TYPE_LV2_PLUGIN,
+						"pname", AGS_LV2_PLUGIN_TEST_FIND_PNAME_ZYN,
+						NULL);
+  list = g_list_prepend(list,
+			lv2_plugin[2]);
+
+  /* assert */
+  CU_ASSERT((current = ags_lv2_plugin_find_pname(list, AGS_LV2_PLUGIN_TEST_FIND_PNAME_SWH)) != NULL &&
+	    current->data == lv2_plugin[0]);
+
+  CU_ASSERT((current = ags_lv2_plugin_find_pname(list, AGS_LV2_PLUGIN_TEST_FIND_PNAME_INVADA)) != NULL &&
+	    current->data == lv2_plugin[1]);
+
+  CU_ASSERT((current = ags_lv2_plugin_find_pname(list, AGS_LV2_PLUGIN_TEST_FIND_PNAME_ZYN)) != NULL &&
+	    current->data == lv2_plugin[2]);
 }
 
 void
 ags_lv2_plugin_test_change_program()
 {
-  //TODO:JK: implement me
+  AgsLv2Plugin *lv2_plugin;
+
+  gpointer ptr;
+
+  lv2_plugin = (AgsLv2Plugin *) g_object_new(AGS_TYPE_LV2_PLUGIN,
+					     NULL);
+
+  /* stub */
+  ptr = AGS_LV2_PLUGIN_GET_CLASS(lv2_plugin)->change_program;
+
+  AGS_LV2_PLUGIN_GET_CLASS(lv2_plugin)->change_program = ags_lv2_plugin_test_stub_change_program;
+
+  /* assert */
+  ags_lv2_plugin_change_program(lv2_plugin,
+				NULL,
+				0,
+				0);
+  
+  CU_ASSERT(stub_change_program == TRUE);
+
+  /* reset */
+  AGS_LV2_PLUGIN_GET_CLASS(lv2_plugin)->change_program = ptr;
 }
 
 void

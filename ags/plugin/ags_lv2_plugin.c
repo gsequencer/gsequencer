@@ -1972,15 +1972,7 @@ void
 ags_lv2_plugin_clear_atom_sequence(void *atom_sequence,
 				   guint sequence_size)
 {
-  void *offset;
-
-  while(offset < atom_sequence + sequence_size){
-    AGS_LV2_ATOM_SEQUENCE(offset)->body.pad == 8;
-    
-    memset(offset + sizeof(LV2_Atom_Sequence), 0, 8);
-    
-    offset += (8 + sizeof(LV2_Atom_Sequence));
-  }
+  memset(atom_sequence, 0, sequence_size);
 }
 
 /**

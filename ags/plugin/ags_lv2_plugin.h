@@ -61,6 +61,7 @@
 #define AGS_LV2_EVENT_DATA(ptr) ((void *)(ptr + sizeof(LV2_Event)))
 
 #define AGS_LV2_ATOM_SEQUENCE(ptr) ((LV2_Atom_Sequence *)(ptr))
+#define AGS_LV2_ATOM_EVENT(ptr) ((LV2_Atom_Event *)(ptr))
 
 typedef struct _AgsLv2Plugin AgsLv2Plugin;
 typedef struct _AgsLv2PluginClass AgsLv2PluginClass;
