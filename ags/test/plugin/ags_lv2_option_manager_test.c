@@ -41,14 +41,30 @@ void ags_lv2_option_manager_test_set_option();
 void ags_lv2_option_manager_test_lv2_options_get();
 void ags_lv2_option_manager_test_lv2_options_set();
 
+void ags_lv2_option_manager_test_stub_get_option(AgsLv2OptionManager *lv2_option_manager,
+						 gpointer instance,
+						 gpointer option,
+						 gpointer retval);
+void ags_lv2_option_manager_test_stub_set_option(AgsLv2OptionManager *lv2_option_manager,
+						 gpointer instance,
+						 gpointer option,
+						 gpointer retval);
+
 #define AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_PLUGIN_FILENAME "/usr/lib/lv2/delay-swh.lv2/plugin-linux.so"
 #define AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_PLUGIN_EFFECT "Simple delay line, noninterpolating"
 #define AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_SAMPLERATE (44100)
 #define AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_SUBJECT (3)
 #define AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_SIZE (4)
 
+#define AGS_LV2_OPTION_MANAGER_TEST_LV2_OPTIONS_GET_SUBJECT (3)
+
+#define AGS_LV2_OPTION_MANAGER_TEST_LV2_OPTIONS_SET_SUBJECT (3)
+
 AgsLv2Manager *lv2_manager;
 AgsLv2UridManager *lv2_urid_manager;
+
+guint stub_get_option = 0;
+guint stub_set_option = 0;
 
 /* The suite initialization time.
  * Opens the temporary file used by the tests.
@@ -285,14 +301,87 @@ ags_lv2_option_manager_test_set_option()
 void
 ags_lv2_option_manager_test_lv2_options_get()
 {
-  //TODO:JK: implement me
+  AgsLv2OptionManager *lv2_option_manager;
+
+  LV2_Options_Option options[4];
+
+  gpointer ptr;
+  
+  lv2_option_manager = ags_lv2_option_manager_get_instance();
+
+  ptr = AGS_LV2_OPTION_MANAGER_GET_CLASS(lv2_option_manager)->get_option;
+  AGS_LV2_OPTION_MANAGER_GET_CLASS(lv2_option_manager)->get_option = ags_lv2_option_manager_test_stub_get_option;
+  
+  options[0].subject = AGS_LV2_OPTION_MANAGER_TEST_LV2_OPTIONS_GET_SUBJECT;
+  options[1].subject = AGS_LV2_OPTION_MANAGER_TEST_LV2_OPTIONS_GET_SUBJECT;
+  options[2].subject = AGS_LV2_OPTION_MANAGER_TEST_LV2_OPTIONS_GET_SUBJECT;
+
+  options[3].subject = 0;
+  options[3].key = 0;
+  options[3].type = 0;
+  options[3].size = 0;
+  options[3].value = NULL;
+  
+  ags_lv2_option_manager_lv2_options_get(NULL,
+					 &options);
+
+  CU_ASSERT(stub_get_option == 3);
+  
+  AGS_LV2_OPTION_MANAGER_GET_CLASS(lv2_option_manager)->get_option = ptr;
+  g_object_unref(lv2_option_manager);
+}
+
+void
+ags_lv2_option_manager_test_stub_get_option(AgsLv2OptionManager *lv2_option_manager,
+					    gpointer instance,
+					    gpointer option,
+					    gpointer retval)
+{
+  stub_get_option++;
 }
 
 void
 ags_lv2_option_manager_test_lv2_options_set()
 {
-  //TODO:JK: implement me
+  AgsLv2OptionManager *lv2_option_manager;
+
+  LV2_Options_Option options[4];
+
+  gpointer ptr;
+
+  lv2_option_manager = ags_lv2_option_manager_get_instance();
+
+  ptr = AGS_LV2_OPTION_MANAGER_GET_CLASS(lv2_option_manager)->set_option;
+  AGS_LV2_OPTION_MANAGER_GET_CLASS(lv2_option_manager)->set_option = ags_lv2_option_manager_test_stub_set_option;
+
+  options[0].subject = AGS_LV2_OPTION_MANAGER_TEST_LV2_OPTIONS_GET_SUBJECT;
+  options[1].subject = AGS_LV2_OPTION_MANAGER_TEST_LV2_OPTIONS_GET_SUBJECT;
+  options[2].subject = AGS_LV2_OPTION_MANAGER_TEST_LV2_OPTIONS_GET_SUBJECT;
+
+  options[3].subject = 0;
+  options[3].key = 0;
+  options[3].type = 0;
+  options[3].size = 0;
+  options[3].value = NULL;
+  
+  ags_lv2_option_manager_lv2_options_set(NULL,
+					 &options);
+
+  CU_ASSERT(stub_set_option == 3);
+  
+  AGS_LV2_OPTION_MANAGER_GET_CLASS(lv2_option_manager)->set_option = ptr;
+  g_object_unref(lv2_option_manager);
 }
+
+void
+ags_lv2_option_manager_test_stub_set_option(AgsLv2OptionManager *lv2_option_manager,
+					    gpointer instance,
+					    gpointer option,
+					    gpointer retval)
+{
+  stub_set_option++;
+}
+
 
 int
 main(int argc, char **argv)

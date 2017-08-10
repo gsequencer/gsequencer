@@ -663,7 +663,7 @@ ags_lv2_option_manager_set_option(AgsLv2OptionManager *lv2_option_manager,
  */
 uint32_t
 ags_lv2_option_manager_lv2_options_get(LV2_Handle instance,
-				       LV2_Options_Option* options)
+				       LV2_Options_Option *options)
 {
   guint retval, tmpval;
   guint i;
