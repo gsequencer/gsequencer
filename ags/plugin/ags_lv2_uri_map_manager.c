@@ -32,7 +32,7 @@ void ags_lv2_uri_map_manager_destroy_data(gpointer data);
 
 /**
  * SECTION:ags_lv2_uri_map_manager
- * @short_description: uri map
+ * @short_description: lv2 uri map manager
  * @title: AgsLv2UriMapManager
  * @section_id:
  * @include: ags/plugin/ags_lv2_uri_map_manager.h
@@ -134,6 +134,10 @@ ags_lv2_uri_map_manager_finalize(GObject *gobject)
 
   g_hash_table_destroy(lv2_uri_map_manager->uri_map);
 
+  if(lv2_uri_map_manager == ags_lv2_uri_map_manager){
+    ags_lv2_uri_map_manager = NULL;
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_uri_map_manager_parent_class)->finalize(gobject);
 }
@@ -160,7 +164,7 @@ gboolean
 ags_lv2_uri_map_manager_insert(AgsLv2UriMapManager *lv2_uri_map_manager,
 			       gchar *uri, GValue *id)
 {
-  if(lv2_uri_map_manager == NULL ||
+  if(!AGS_LV2_URI_MAP_MANAGER(lv2_uri_map_manager) ||
      uri == NULL ||
      id == NULL){
     return(FALSE);
@@ -189,6 +193,10 @@ ags_lv2_uri_map_manager_remove(AgsLv2UriMapManager *lv2_uri_map_manager,
 {
   GValue *id;
 
+  if(!AGS_LV2_URI_MAP_MANAGER(lv2_uri_map_manager)){
+    return(FALSE);
+  }
+  
   id = g_hash_table_lookup(lv2_uri_map_manager->uri_map,
 			   uri);
 
@@ -216,6 +224,10 @@ ags_lv2_uri_map_manager_lookup(AgsLv2UriMapManager *lv2_uri_map_manager,
 			       gchar *uri)
 {
   GValue *value;
+
+  if(!AGS_LV2_URI_MAP_MANAGER(lv2_uri_map_manager)){
+    return(NULL);
+  }
 
   value = (GValue *) g_hash_table_lookup(lv2_uri_map_manager->uri_map,
 					 uri);
