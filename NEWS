@@ -1,3 +1,10 @@
+Overview of Changes in AGS 0.9.7
+================================
+
+* Implement new functions to handle LV2_Event_Buffer. Note the old
+  functions to do so are deprecated and are incompatible to the
+  newer API.
+
 Overview of Changes in AGS 0.9.0
 ================================
 

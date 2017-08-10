@@ -1424,6 +1424,8 @@ ags_lv2_plugin_alloc_event_buffer(guint buffer_size)
   AGS_LV2_EVENT_BUFFER(event_buffer)->event_count = 0;
   AGS_LV2_EVENT_BUFFER(event_buffer)->size = 0;
 
+  g_critical("deprecated use ags_lv2_plugin_alloc_event_buffer()");
+  
   return(event_buffer);
 }
 
@@ -1462,6 +1464,128 @@ ags_lv2_plugin_concat_event_buffer(void *buffer0, ...)
     buffer = (void *) realloc(buffer,
 			      buffer_length);
     memcpy(buffer + prev_length, current, buffer_length - prev_length);
+  }
+
+  va_end(ap);
+
+  g_critical("deprecated use ags_lv2_plugin_concat_event_buffer()");
+
+  return(buffer);
+}
+
+/**
+ * ags_lv2_plugin_event_buffer_alloc:
+ * @buffer_size: the data's buffer size
+ * 
+ * Allocate LV2_Event_Buffer struct.
+ * 
+ * Returns: a new allocated LV2_Event_Buffer
+ * 
+ * Since: 0.9.7
+ */
+LV2_Event_Buffer*
+ags_lv2_plugin_event_buffer_alloc(guint buffer_size)
+{
+  LV2_Event_Buffer *event_buffer;
+
+  void *data;
+  
+  uint32_t padded_buffer_size;
+
+  if(buffer_size > G_MAXUINT16){
+    return(NULL);
+  }
+  
+  if(buffer_size < 8){
+    padded_buffer_size = 8;
+  }else{
+    padded_buffer_size = buffer_size;
+  }
+    
+  event_buffer = (LV2_Event_Buffer *) malloc(sizeof(LV2_Event_Buffer));
+
+  data = (void *) malloc(sizeof(LV2_Event) + padded_buffer_size * sizeof(uint8_t));
+  memset(data, 0, sizeof(LV2_Event) + padded_buffer_size * sizeof(uint8_t));
+  event_buffer->data = data;
+
+  event_buffer->header_size = sizeof(LV2_Event_Buffer);
+
+  event_buffer->stamp_type = 0;
+  event_buffer->capacity = padded_buffer_size;
+
+  event_buffer->event_count = 0;
+  event_buffer->size = 0;
+
+  return(event_buffer);
+}
+
+/**
+ * ags_lv2_plugin_event_buffer_realloc_data:
+ * @event_buffer: the LV2_Event_Buffer struct
+ * @buffer_size: the data's buffer size
+ * 
+ * Reallocate LV2_Event_Buffer struct's data field.
+ * 
+ * Since: 0.9.7
+ */
+void
+ags_lv2_plugin_event_buffer_realloc_data(LV2_Event_Buffer *event_buffer,
+					 guint buffer_size)
+{
+  void *data;
+  
+  uint32_t padded_buffer_size;
+
+  if(buffer_size > G_MAXUINT16){
+    return(NULL);
+  }
+  
+  if(buffer_size < 8){
+    padded_buffer_size = 8;
+  }else{
+    padded_buffer_size = buffer_size;
+  }
+
+  data = event_buffer->data;
+  data = (void *) realloc(data,
+			  sizeof(LV2_Event) + padded_buffer_size * sizeof(uint8_t));
+
+  event_buffer->data = data;
+}
+
+/**
+ * ags_lv2_plugin_event_buffer_concat:
+ * @event_buffer: the first buffer
+ * @...: %NULL terminated variadict arguments
+ *
+ * Concats the event buffers.
+ * 
+ * Returns: The newly allocated event buffer
+ * 
+ * Since: 0.9.7
+ */
+LV2_Event_Buffer*
+ags_lv2_plugin_event_buffer_concat(LV2_Event_Buffer *event_buffer, ...)
+{
+  LV2_Event_Buffer *buffer;
+  LV2_Event_Buffer *current;
+  
+  va_list ap;
+
+  guint i;
+
+  buffer = (LV2_Event_Buffer *) malloc(sizeof(LV2_Event_Buffer));  
+  memcpy(buffer, event_buffer, sizeof(LV2_Event_Buffer));
+  
+  va_start(ap, event_buffer);
+  i = 1;
+
+  while((current = va_arg(ap, LV2_Event_Buffer*)) != NULL){
+    buffer = (void *) realloc(buffer,
+			      (i + 1) * sizeof(LV2_Event_Buffer));
+    memcpy(buffer + (i * sizeof(LV2_Event_Buffer)), current, sizeof(LV2_Event_Buffer));
+
+    i++;
   }
 
   va_end(ap);
@@ -1904,9 +2028,20 @@ ags_lv2_plugin_real_change_program(AgsLv2Plugin *lv2_plugin,
   }
 }
 
+/**
+ * ags_lv2_plugin_change_program:
+ * @lv2_plugin: the #AgsLv2Plugin
+ * @lv2_handle: the lv2 handle
+ * @bank_index: the bank index
+ * @program_index: the program index
+ * 
+ * Change program of @lv2_handle.
+ * 
+ * Since: 0.8.0
+ */
 void
 ags_lv2_plugin_change_program(AgsLv2Plugin *lv2_plugin,
-			      gpointer ladspa_handle,
+			      gpointer lv2_handle,
 			      guint bank_index,
 			      guint program_index)
 {
@@ -1914,7 +2049,7 @@ ags_lv2_plugin_change_program(AgsLv2Plugin *lv2_plugin,
   g_object_ref(G_OBJECT(lv2_plugin));
   g_signal_emit(G_OBJECT(lv2_plugin),
 		lv2_plugin_signals[CHANGE_PROGRAM], 0,
-		ladspa_handle,
+		lv2_handle,
 		bank_index,
 		program_index);
   g_object_unref(G_OBJECT(lv2_plugin));

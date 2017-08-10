@@ -108,9 +108,14 @@ struct _AgsLv2PluginClass
 
 GType ags_lv2_plugin_get_type(void);
 
-void* ags_lv2_plugin_alloc_event_buffer(guint buffer_size);
-void* ags_lv2_plugin_concat_event_buffer(void *buffer0, ...);
+G_DEPRECATED_FOR(ags_lv2_plugin_event_buffer_alloc) void* ags_lv2_plugin_alloc_event_buffer(guint buffer_size);
+G_DEPRECATED_FOR(ags_lv2_plugin_event_buffer_concat) void* ags_lv2_plugin_concat_event_buffer(void *buffer0, ...);
 
+LV2_Event_Buffer* ags_lv2_plugin_event_buffer_alloc(guint buffer_size);
+void ags_lv2_plugin_event_buffer_realloc_data(LV2_Event_Buffer *event_buffer,
+					      guint buffer_size);
+LV2_Event_Buffer* ags_lv2_plugin_event_buffer_concat(LV2_Event_Buffer *event_buffer, ...);
+						     
 gboolean ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
 						 guint buffer_size,
 						 snd_seq_event_t *events,
@@ -138,7 +143,7 @@ GList* ags_lv2_plugin_find_pname(GList *lv2_plugin,
 				 gchar *pname);
 
 void ags_lv2_plugin_change_program(AgsLv2Plugin *lv2_plugin,
-				   gpointer ladspa_handle,
+				   gpointer lv2_handle,
 				   guint bank_index,
 				   guint program_index);
 

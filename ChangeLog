@@ -2,6 +2,11 @@ ags (0.9.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented ags_lv2_option_manager_lookup_extended()
+	* implemented ags_lv2_plugin_event_buffer_alloc()
+	* implemented ags_lv2_plugin_event_buffer_realloc_data()
+	* implemented ags_lv2_plugin_event_buffer_concat()
+	* deprecated ags_lv2_plugin_alloc_event_buffer()
+	* deprecated ags_lv2_plugin_concat_event_buffer()
 	* fixed AgsExportSoundcard to don't add device as being NULL
 	* fixed ags_lv2_option_manager_get_option() to lookup correctly
 	* fixed ags_lv2_option_manager_set_option() to lookup correctly
