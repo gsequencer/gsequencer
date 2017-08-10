@@ -67,6 +67,7 @@
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_port.h>
+#include <ags/audio/ags_preset.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_audio_signal.h>

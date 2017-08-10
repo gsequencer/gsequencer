@@ -142,3 +142,11 @@ Generated files with uncertain copyright done with glib-genmarshal
 
 ags/object/ags_marshal.c
 ags/object/ags_marshal.h
+
+Third-party files with uncertain copyright provided by http://kxstudio.sf.net:
+
+lv2/lv2plug.in/ns/lv2ext/lv2_programs.h
+
+Third-party files with uncertain copyright provided by http://drobilla.net:
+
+lv2.lib/mda/EPiano-presets.ttl

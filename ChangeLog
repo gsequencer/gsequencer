@@ -11,6 +11,7 @@ ags (0.9.7)
 	* fixed ags_lv2_option_manager_get_option() to lookup correctly
 	* fixed ags_lv2_option_manager_set_option() to lookup correctly
 	* new unit-test ags_lv2_option_manager_test.c
+	* new unit-test ags_lv2_plugin_test.c
 
 ags (0.9.6)
 
