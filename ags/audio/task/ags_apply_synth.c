@@ -69,6 +69,7 @@ enum{
   PROP_0,
   PROP_START_CHANNEL,
   PROP_COUNT,
+  PROP_FIXED_LENGTH,
   PROP_WAVE,
   PROP_ATTACK,
   PROP_FRAME_COUNT,
@@ -78,6 +79,8 @@ enum{
   PROP_VOLUME,
   PROP_LOOP_START,
   PROP_LOOP_END,
+  PROP_DO_SYNC,
+  PROP_SYNC_MODE,
 };
 
 GType
@@ -168,6 +171,22 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_COUNT,
+				  param_spec);
+
+  /**
+   * AgsApplySynth:fixed-length:
+   *
+   * If apply fixed length
+   * 
+   * Since: 0.9.7
+   */
+  param_spec = g_param_spec_boolean("fixed-length",
+				    i18n_pspec("fixed length"),
+				    i18n_pspec("Use fixed length to creat audio data"),
+				    TRUE,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FIXED_LENGTH,
 				  param_spec);
 
   /**
@@ -332,6 +351,40 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
 				  PROP_LOOP_END,
 				  param_spec);
 
+  /**
+   * AgsApplySynth:do-sync:
+   *
+   * If do sync
+   * 
+   * Since: 0.9.7
+   */
+  param_spec = g_param_spec_boolean("do-sync",
+				    i18n_pspec("do sync"),
+				    i18n_pspec("Do sync by zero-cross detection"),
+				    TRUE,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DO_SYNC,
+				  param_spec);
+
+  /**
+   * AgsApplySynth:sync-mode:
+   *
+   * The sync mode to use.
+   * 
+   * Since: 0.9.7
+   */
+  param_spec = g_param_spec_uint("sync-mode",
+				 i18n_pspec("sync mode"),
+				 i18n_pspec("The sync mode to use"),
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SYNC_MODE,
+				  param_spec);
+
   /* AgsTaskClass */
   task = (AgsTaskClass *) apply_synth;
 
@@ -353,6 +406,8 @@ ags_apply_synth_init(AgsApplySynth *apply_synth)
   apply_synth->start_channel = NULL;
   apply_synth->count = 0;
 
+  apply_synth->fixed_length = TRUE;
+
   apply_synth->wave = AGS_APPLY_SYNTH_INVALID;
   apply_synth->attack = 0;
   apply_synth->frame_count = 0;
@@ -363,6 +418,9 @@ ags_apply_synth_init(AgsApplySynth *apply_synth)
 
   apply_synth->loop_start = 0;
   apply_synth->loop_end = 0;
+
+  apply_synth->do_sync = FALSE;
+  apply_synth->sync_mode = 0;
 }
 
 void
@@ -400,6 +458,11 @@ ags_apply_synth_set_property(GObject *gobject,
   case PROP_COUNT:
     {
       apply_synth->count = g_value_get_uint(value);
+    }
+    break;
+  case PROP_FIXED_LENGTH:
+    {
+      apply_synth->fixed_length = g_value_get_boolean(value);
     }
     break;
   case PROP_WAVE:
@@ -447,6 +510,16 @@ ags_apply_synth_set_property(GObject *gobject,
       apply_synth->loop_end = g_value_get_uint(value);
     }
     break;
+  case PROP_DO_SYNC:
+    {
+      apply_synth->do_sync = g_value_get_boolean(value);
+    }
+    break;
+  case PROP_SYNC_MODE:
+    {
+      apply_synth->sync_mode = g_value_get_uint(value);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -472,6 +545,11 @@ ags_apply_synth_get_property(GObject *gobject,
   case PROP_COUNT:
     {
       g_value_set_uint(value, apply_synth->count);
+    }
+    break;
+  case PROP_FIXED_LENGTH:
+    {
+      g_value_set_boolean(value, apply_synth->fixed_length);
     }
     break;
   case PROP_WAVE:
@@ -512,6 +590,16 @@ ags_apply_synth_get_property(GObject *gobject,
   case PROP_LOOP_END:
     {
       g_value_set_uint(value, apply_synth->loop_end);
+    }
+    break;
+  case PROP_DO_SYNC:
+    {
+      g_value_set_boolean(value, apply_synth->do_sync);
+    }
+    break;
+  case PROP_SYNC_MODE:
+    {
+      g_value_set_uint(value, apply_synth->sync_mode);
     }
     break;
   default:
@@ -580,6 +668,8 @@ ags_apply_synth_launch(AgsTask *task)
 
   GList *stream;
 
+  gchar *str;
+  
   gint wave;
   guint attack, frame_count, stop;
   double phase, frequency, volume;
@@ -590,7 +680,8 @@ ags_apply_synth_launch(AgsTask *task)
   guint buffer_size;
   guint samplerate;
   guint audio_buffer_util_format;
-  gchar *str;
+  guint sync_mode;
+  gboolean do_sync;
 
   auto double ags_apply_synth_calculate_factor(guint base_frequency, guint wished_frequency, guint wave);
   auto void ags_apply_synth_launch_write(GList *stream,

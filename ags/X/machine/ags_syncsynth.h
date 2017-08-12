@@ -27,6 +27,8 @@
 
 #include <ags/X/ags_machine.h>
 
+#include <ags/X/machine/ags_oscillator.h>
+
 #define AGS_TYPE_SYNCSYNTH                (ags_syncsynth_get_type())
 #define AGS_SYNCSYNTH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SYNCSYNTH, AgsSyncsynth))
 #define AGS_SYNCSYNTH_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SYNCSYNTH, AgsSyncsynthClass))
@@ -53,14 +55,16 @@ struct _AgsSyncsynth
   guint mapped_input_pad;
   guint mapped_output_pad;
 
-  GtkVBox *input_pad;
+  GtkVBox *oscillator;
+  GtkButton *add;
+  GtkButton *remove;
+  
+  GtkCheckButton *auto_update;
+  GtkButton *update;
 
   GtkSpinButton *lower; // how many channels until to lowest freq
   GtkSpinButton *loop_start;
   GtkSpinButton *loop_end;
-
-  GtkCheckButton *auto_update;
-  GtkButton *update;
 };
 
 struct _AgsSyncsynthClass
@@ -70,6 +74,12 @@ struct _AgsSyncsynthClass
 
 GType ags_syncsynth_get_type(void);
 
+void ags_syncsynth_add_oscillator(AgsSyncsynth *syncsynth,
+				  AgsOscillator *oscillator);
+void ags_syncsynth_remove_oscillator(AgsSyncsynth *syncsynth,
+				     guint nth);
+
+void ags_syncsynth_reset_loop(AgsSyncsynth *syncsynth);
 void ags_syncsynth_update(AgsSyncsynth *syncsynth);
 
 AgsSyncsynth* ags_syncsynth_new(GObject *soundcard);

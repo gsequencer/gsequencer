@@ -68,7 +68,67 @@ ags_syncsynth_auto_update_callback(GtkToggleButton *toggle, AgsSyncsynth *syncsy
 }
 
 void
+ags_syncsynth_add_callback(GtkButton *button, AgsSyncsynth *syncsynth)
+{
+  AgsOscillator *oscillator;
+
+  oscillator = ags_oscillator_new();
+  
+  ags_syncsynth_add_oscillator(syncsynth,
+			       oscillator);
+  
+  ags_connectable_connect(AGS_CONNECTABLE(oscillator));
+  
+  g_signal_connect((GObject *) oscillator, "control-changed",
+		   G_CALLBACK(ags_syncsynth_oscillator_control_changed_callback), (gpointer) syncsynth);
+
+}
+
+void
+ags_syncsynth_remove_callback(GtkButton *button, AgsSyncsynth *syncsynth)
+{
+  GList *list, *list_start;
+  GList *child_start;
+
+  guint nth;
+  
+  list =
+    list_start = gtk_container_get_children(syncsynth->oscillator);
+
+  nth = 0;
+  
+  while(list != NULL){
+    child_start = gtk_container_get_children(list->data);
+
+    if(gtk_toggle_button_get_active(child_start->data)){
+      ags_syncsynth_remove_oscillator(syncsynth,
+				      nth);
+    }else{
+      nth++;
+    }
+    
+    g_list_free(child_start);
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+}
+
+void
 ags_syncsynth_update_callback(GtkButton *button, AgsSyncsynth *syncsynth)
 {
   ags_syncsynth_update(syncsynth);
+}
+
+void
+ags_syncsynth_oscillator_control_changed_callback(AgsOscillator *oscillator,
+						  AgsSyncsynth *syncsynth)
+{
+
+  ags_syncsynth_reset_loop(syncsynth);
+
+  if((AGS_SYNCSYNTH_AUTO_UPDATE & (syncsynth->flags)) != 0){
+    ags_syncsynth_update(syncsynth);
+  }
 }

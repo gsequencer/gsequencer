@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #include <ags/X/machine/ags_syncsynth.h>
@@ -32,5 +33,11 @@ void ags_syncsynth_lower_callback(GtkSpinButton *spin_button, AgsSyncsynth *sync
 
 void ags_syncsynth_auto_update_callback(GtkToggleButton *toggle, AgsSyncsynth *syncsynth);
 void ags_syncsynth_update_callback(GtkButton *button, AgsSyncsynth *syncsynth);
+
+void ags_syncsynth_add_callback(GtkButton *button, AgsSyncsynth *syncsynth);
+void ags_syncsynth_remove_callback(GtkButton *button, AgsSyncsynth *syncsynth);
+
+void ags_syncsynth_oscillator_control_changed_callback(AgsOscillator *oscillator,
+						       AgsSyncsynth *syncsynth);
 
 #endif /*__AGS_SYNCSYNTH_CALLBACKS_H__ */
