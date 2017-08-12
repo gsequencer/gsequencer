@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,7 @@
  */
 
 #include <ags/X/machine/ags_synth_input_line.h>
+#include <ags/X/machine/ags_synth_input_line_callbacks.h>
 
 #include <ags/util/ags_id_generator.h>
 
@@ -197,6 +198,9 @@ ags_synth_input_line_connect(AgsConnectable *connectable)
   ags_synth_input_line_parent_connectable_interface->connect(connectable);
 
   ags_connectable_connect(AGS_CONNECTABLE(synth_input_line->oscillator));
+
+  g_signal_connect_after((GObject *) synth_input_line->oscillator, "control-changed",
+			 G_CALLBACK(ags_synth_input_line_oscillator_control_changed_callback), (gpointer) synth_input_line);
 }
 
 void

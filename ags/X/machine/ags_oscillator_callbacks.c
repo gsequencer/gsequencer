@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,76 +18,39 @@
  */
 
 #include <ags/X/machine/ags_oscillator_callbacks.h>
-#include <ags/X/machine/ags_synth.h>
 
 void
 ags_oscillator_wave_callback(GtkComboBox *combo, AgsOscillator *oscillator)
 {
-  AgsSynth *synth;
-
-  synth = (AgsSynth *) gtk_widget_get_ancestor((GtkWidget *) oscillator, AGS_TYPE_SYNTH);
-
-  if((AGS_SYNTH_AUTO_UPDATE & (synth->flags)) != 0){
-    ags_synth_update(synth);
-  }
+  ags_oscillator_control_changed(oscillator);
 }
 
 void
 ags_oscillator_attack_callback(GtkSpinButton *spin_button, AgsOscillator *oscillator)
 {
-  AgsSynth *synth;
-
-  synth = (AgsSynth *) gtk_widget_get_ancestor((GtkWidget *) oscillator, AGS_TYPE_SYNTH);
-
-  if((AGS_SYNTH_AUTO_UPDATE & (synth->flags)) != 0){
-    ags_synth_update(synth);
-  }
+  ags_oscillator_control_changed(oscillator);
 }
 
 void
 ags_oscillator_frame_count_callback(GtkSpinButton *spin_button, AgsOscillator *oscillator)
 {
-  AgsSynth *synth;
-
-  synth = (AgsSynth *) gtk_widget_get_ancestor((GtkWidget *) oscillator, AGS_TYPE_SYNTH);
-
-  if((AGS_SYNTH_AUTO_UPDATE & (synth->flags)) != 0){
-    ags_synth_update(synth);
-  }
+  ags_oscillator_control_changed(oscillator);
 }
 
 void
 ags_oscillator_frequency_callback(GtkSpinButton *spin_button, AgsOscillator *oscillator)
 {
-  AgsSynth *synth;
-
-  synth = (AgsSynth *) gtk_widget_get_ancestor((GtkWidget *) oscillator, AGS_TYPE_SYNTH);
-
-  if((AGS_SYNTH_AUTO_UPDATE & (synth->flags)) != 0){
-    ags_synth_update(synth);
-  }
+  ags_oscillator_control_changed(oscillator);
 }
 
 void
 ags_oscillator_phase_callback(GtkSpinButton *spin_button, AgsOscillator *oscillator)
 {
-  AgsSynth *synth;
-
-  synth = (AgsSynth *) gtk_widget_get_ancestor((GtkWidget *) oscillator, AGS_TYPE_SYNTH);
-
-  if((AGS_SYNTH_AUTO_UPDATE & (synth->flags)) != 0){
-    ags_synth_update(synth);
-  }
+  ags_oscillator_control_changed(oscillator);
 }
 
 void
 ags_oscillator_volume_callback(GtkSpinButton *spin_button, AgsOscillator *oscillator)
 {
-  AgsSynth *synth;
-
-  synth = (AgsSynth *) gtk_widget_get_ancestor((GtkWidget *) oscillator, AGS_TYPE_SYNTH);
-
-  if((AGS_SYNTH_AUTO_UPDATE & (synth->flags)) != 0){
-    ags_synth_update(synth);
-  }
+  ags_oscillator_control_changed(oscillator);
 }

@@ -17,21 +17,20 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_OSCILLATOR_CALLBACKS_H__ 
-#define __AGS_OSCILLATOR_CALLBACKS_H__ 
+#ifndef __AGS_SYNCSYNTH_CALLBACKS_H__ 
+#define __AGS_SYNCSYNTH_CALLBACKS_H__ 
 
 #include <glib.h>
 #include <glib-object.h>
-
 #include <gtk/gtk.h>
 
-#include <ags/X/machine/ags_oscillator.h>
+#include <ags/X/machine/ags_syncsynth.h>
 
-void ags_oscillator_wave_callback(GtkComboBox *combo, AgsOscillator *oscillator);
-void ags_oscillator_attack_callback(GtkSpinButton *spin_button, AgsOscillator *oscillator);
-void ags_oscillator_frame_count_callback(GtkSpinButton *spin_button, AgsOscillator *oscillator);
-void ags_oscillator_frequency_callback(GtkSpinButton *spin_button, AgsOscillator *oscillator);
-void ags_oscillator_phase_callback(GtkSpinButton *spin_button, AgsOscillator *oscillator);
-void ags_oscillator_volume_callback(GtkSpinButton *spin_button, AgsOscillator *oscillator);
+void ags_syncsynth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsSyncsynth *syncsynth);
 
-#endif /*__AGS_OSCILLATOR_CALLBACKS_H__ */
+void ags_syncsynth_lower_callback(GtkSpinButton *spin_button, AgsSyncsynth *syncsynth);
+
+void ags_syncsynth_auto_update_callback(GtkToggleButton *toggle, AgsSyncsynth *syncsynth);
+void ags_syncsynth_update_callback(GtkButton *button, AgsSyncsynth *syncsynth);
+
+#endif /*__AGS_SYNCSYNTH_CALLBACKS_H__ */

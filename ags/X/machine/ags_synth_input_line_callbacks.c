@@ -17,20 +17,19 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_SYNTH_CALLBACKS_H__ 
-#define __AGS_SYNTH_CALLBACKS_H__ 
-
-#include <glib.h>
-#include <glib-object.h>
-#include <gtk/gtk.h>
-
+#include <ags/X/machine/ags_synth_input_line_callbacks.h>
 #include <ags/X/machine/ags_synth.h>
 
-void ags_synth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsSynth *synth);
+void
+ags_synth_input_line_oscillator_control_changed_callback(AgsOscillator *oscillator,
+							 AgsSynthInputLine *synth_input_line)
+{
+  AgsSynth *synth;
 
-void ags_synth_lower_callback(GtkSpinButton *spin_button, AgsSynth *synth);
+  synth = (AgsSynth *) gtk_widget_get_ancestor((GtkWidget *) synth_input_line,
+					       AGS_TYPE_SYNTH);
 
-void ags_synth_auto_update_callback(GtkToggleButton *toggle, AgsSynth *synth);
-void ags_synth_update_callback(GtkButton *button, AgsSynth *synth);
-
-#endif /*__AGS_SYNTH_CALLBACKS_H__ */
+  if((AGS_SYNTH_AUTO_UPDATE & (synth->flags)) != 0){
+    ags_synth_update(synth);
+  }
+}

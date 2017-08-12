@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/X/machine/ags_synth_callbacks.h>
+#include <ags/X/machine/ags_syncsynth_callbacks.h>
 #include <ags/X/machine/ags_oscillator.h>
 
 #include <ags/object/ags_connectable.h>
@@ -27,7 +27,7 @@
 #include <math.h>
 
 void
-ags_synth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsSynth *synth)
+ags_syncsynth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsSyncsynth *syncsynth)
 {
   AgsWindow *window;
 
@@ -40,35 +40,35 @@ ags_synth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsSynth
   window = (AgsWindow *) gtk_widget_get_toplevel(widget);
 
   str = g_strdup_printf("Default %d",
-			ags_window_find_machine_counter(window, AGS_TYPE_SYNTH)->counter);
+			ags_window_find_machine_counter(window, AGS_TYPE_SYNCSYNTH)->counter);
 
-  g_object_set(AGS_MACHINE(synth),
+  g_object_set(AGS_MACHINE(syncsynth),
 	       "machine-name", str,
 	       NULL);
 
   ags_window_increment_machine_counter(window,
-				       AGS_TYPE_SYNTH);
+				       AGS_TYPE_SYNCSYNTH);
 
   g_free(str);
 }
 
 void
-ags_synth_lower_callback(GtkSpinButton *spin_button, AgsSynth *synth)
+ags_syncsynth_lower_callback(GtkSpinButton *spin_button, AgsSyncsynth *syncsynth)
 {
 }
 
 void
-ags_synth_auto_update_callback(GtkToggleButton *toggle, AgsSynth *synth)
+ags_syncsynth_auto_update_callback(GtkToggleButton *toggle, AgsSyncsynth *syncsynth)
 {
   if(gtk_toggle_button_get_active(toggle)){
-    synth->flags |= AGS_SYNTH_AUTO_UPDATE;
+    syncsynth->flags |= AGS_SYNCSYNTH_AUTO_UPDATE;
   }else{
-    synth->flags &= (~AGS_SYNTH_AUTO_UPDATE);
+    syncsynth->flags &= (~AGS_SYNCSYNTH_AUTO_UPDATE);
   }
 }
 
 void
-ags_synth_update_callback(GtkButton *button, AgsSynth *synth)
+ags_syncsynth_update_callback(GtkButton *button, AgsSyncsynth *syncsynth)
 {
-  ags_synth_update(synth);
+  ags_syncsynth_update(syncsynth);
 }

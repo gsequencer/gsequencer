@@ -56,6 +56,7 @@
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_syncsynth.h>
 #include <ags/X/machine/ags_ffplayer.h>
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
@@ -594,6 +595,60 @@ ags_menu_bar_add_synth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
   ags_connectable_connect(AGS_CONNECTABLE(synth));
 
   gtk_widget_show_all((GtkWidget *) synth);
+}
+
+void
+ags_menu_bar_add_syncsynth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
+{
+  AgsWindow *window;
+  AgsSyncsynth *syncsynth;
+
+  AgsAddAudio *add_audio;
+
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_mutex;
+    
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) menu_bar, AGS_TYPE_WINDOW);
+
+  syncsynth = ags_syncsynth_new(G_OBJECT(window->soundcard));
+
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = (AgsThread *) application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_TASK_THREAD);
+
+  add_audio = ags_add_audio_new(window->soundcard,
+				AGS_MACHINE(syncsynth)->audio);
+  ags_task_thread_append_task(task_thread,
+			      AGS_TASK(add_audio));
+
+  gtk_box_pack_start((GtkBox *) window->machines,
+		     (GtkWidget *) syncsynth,
+		     FALSE, FALSE, 0);
+
+  syncsynth->machine.audio->audio_channels = 1;
+  ags_audio_set_pads((AgsAudio*) syncsynth->machine.audio, AGS_TYPE_INPUT, 2);
+  ags_audio_set_pads((AgsAudio*) syncsynth->machine.audio, AGS_TYPE_OUTPUT, 78);
+
+  ags_connectable_connect(AGS_CONNECTABLE(syncsynth));
+
+  gtk_widget_show_all((GtkWidget *) syncsynth);
 }
 
 void

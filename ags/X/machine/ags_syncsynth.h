@@ -17,8 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_SYNTH_H__
-#define __AGS_SYNTH_H__
+#ifndef __AGS_SYNCSYNTH_H__
+#define __AGS_SYNCSYNTH_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -27,21 +27,21 @@
 
 #include <ags/X/ags_machine.h>
 
-#define AGS_TYPE_SYNTH                (ags_synth_get_type())
-#define AGS_SYNTH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SYNTH, AgsSynth))
-#define AGS_SYNTH_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SYNTH, AgsSynthClass))
-#define AGS_IS_SYNTH(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_SYNTH))
-#define AGS_IS_SYNTH_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_SYNTH))
-#define AGS_SYNTH_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_SYNTH, AgsSynthClass))
+#define AGS_TYPE_SYNCSYNTH                (ags_syncsynth_get_type())
+#define AGS_SYNCSYNTH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SYNCSYNTH, AgsSyncsynth))
+#define AGS_SYNCSYNTH_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SYNCSYNTH, AgsSyncsynthClass))
+#define AGS_IS_SYNCSYNTH(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_SYNCSYNTH))
+#define AGS_IS_SYNCSYNTH_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_SYNCSYNTH))
+#define AGS_SYNCSYNTH_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_SYNCSYNTH, AgsSyncsynthClass))
 
-typedef struct _AgsSynth AgsSynth;
-typedef struct _AgsSynthClass AgsSynthClass;
+typedef struct _AgsSyncsynth AgsSyncsynth;
+typedef struct _AgsSyncsynthClass AgsSyncsynthClass;
 
 typedef enum{
-  AGS_SYNTH_AUTO_UPDATE          = 1,
-}AgsSynthFlags;
+  AGS_SYNCSYNTH_AUTO_UPDATE          = 1,
+}AgsSyncsynthFlags;
 
-struct _AgsSynth
+struct _AgsSyncsynth
 {
   AgsMachine machine;
 
@@ -63,15 +63,15 @@ struct _AgsSynth
   GtkButton *update;
 };
 
-struct _AgsSynthClass
+struct _AgsSyncsynthClass
 {
   AgsMachineClass machine;
 };
 
-GType ags_synth_get_type(void);
+GType ags_syncsynth_get_type(void);
 
-void ags_synth_update(AgsSynth *synth);
+void ags_syncsynth_update(AgsSyncsynth *syncsynth);
 
-AgsSynth* ags_synth_new(GObject *soundcard);
+AgsSyncsynth* ags_syncsynth_new(GObject *soundcard);
 
-#endif /*__AGS_SYNTH_H__*/
+#endif /*__AGS_SYNCSYNTH_H__*/

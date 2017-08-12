@@ -674,6 +674,19 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
   return(audio_signal);
 }
 
+/**
+ * ags_synth_generator_compute:
+ * @synth_generator: the #AgsSynthGenerator
+ * @audio_signal: the #AgsAudioSignal
+ * @note: the note to compute
+ * @sync_start: not used for now
+ * @sync_end: not used for now
+ * @compute_flags: computation flags
+ * 
+ * Compute synth for @note for @audio_signal.
+ * 
+ * Since: 0.9.7
+ */
 void
 ags_synth_generator_compute_with_audio_signal(AgsSynthGenerator *synth_generator,
 					      GObject *audio_signal,

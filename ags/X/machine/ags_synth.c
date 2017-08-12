@@ -206,19 +206,10 @@ void
 ags_synth_init(AgsSynth *synth)
 {
   AgsAudio *audio;
-  AgsRecallContainer *recall_container;
-  AgsDelayAudio *delay_audio;
-  AgsDelayAudioRun *play_delay_audio_run, *recall_delay_audio_run;
-  AgsCountBeatsAudio *play_count_beats_audio, *recall_count_beats_audio;
-  AgsCountBeatsAudioRun *play_count_beats_audio_run, *recall_count_beats_audio_run;
-  AgsPlayNotationAudioRun *play_notation, *recall_notation;
-  AgsRecallAudio *play_audio, *recall_audio;
-  GtkMenu *menu;
   GtkHBox *hbox;
   GtkVBox *vbox;
   GtkTable *table;
   GtkLabel *label;
-  GtkFrame *frame;
 
   g_signal_connect_after((GObject *) synth, "parent_set",
 			 G_CALLBACK(ags_synth_parent_set_callback), (gpointer) synth);
@@ -272,11 +263,11 @@ ags_synth_init(AgsSynth *synth)
   synth->update = (GtkButton *) gtk_button_new_with_label(i18n("update"));
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) synth->update, FALSE, FALSE, 0);
 
-
+  /* table */
   table = (GtkTable *) gtk_table_new(3, 2, FALSE);
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) table, FALSE, FALSE, 0);
 
-  
+  /* frequency */  
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("lower"),
 				    "xalign", 0.0,
@@ -296,7 +287,7 @@ ags_synth_init(AgsSynth *synth)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-
+  /* loop start */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("loop start"),
 				    "xalign", 0.0,
@@ -316,7 +307,7 @@ ags_synth_init(AgsSynth *synth)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-
+  /* loop end */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("loop end"),
 				    "xalign", 0.0,

@@ -1506,8 +1506,14 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_pattern_box_callbacks.h \
 	ags/X/machine/ags_pattern_box.h \
 	ags/X/machine/ags_synth_callbacks.h \
+	ags/X/machine/ags_syncsynth.h \
+	ags/X/machine/ags_syncsynth_callbacks.h \
+	ags/X/machine/ags_syncsynth_input_line.h \
+	ags/X/machine/ags_syncsynth_input_line_callbacks.h \
+	ags/X/machine/ags_syncsynth_input_pad.h \
 	ags/X/machine/ags_synth.h \
 	ags/X/machine/ags_synth_input_line.h \
+	ags/X/machine/ags_synth_input_line_callbacks.h \
 	ags/X/machine/ags_synth_input_pad.h
 
 deprecated_libgsequencer_machine_c_sources =
@@ -1565,9 +1571,15 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_panel_input_pad.c \
 	ags/X/machine/ags_pattern_box_callbacks.c \
 	ags/X/machine/ags_pattern_box.c \
+	ags/X/machine/ags_syncsynth.c \
+	ags/X/machine/ags_syncsynth_callbacks.c \
+	ags/X/machine/ags_syncsynth_input_line.c \
+	ags/X/machine/ags_syncsynth_input_line_callbacks.c \
+	ags/X/machine/ags_syncsynth_input_pad.c \
 	ags/X/machine/ags_synth.c \
 	ags/X/machine/ags_synth_callbacks.c \
 	ags/X/machine/ags_synth_input_line.c \
+	ags/X/machine/ags_synth_input_line_callbacks.c \
 	ags/X/machine/ags_synth_input_pad.c
 
 # libgsequencer - editor

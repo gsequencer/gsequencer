@@ -771,9 +771,15 @@ am__objects_27 = $(am__objects_1) \
 	ags/X/machine/libgsequencer_la-ags_panel_input_pad.lo \
 	ags/X/machine/libgsequencer_la-ags_pattern_box_callbacks.lo \
 	ags/X/machine/libgsequencer_la-ags_pattern_box.lo \
+	ags/X/machine/libgsequencer_la-ags_syncsynth.lo \
+	ags/X/machine/libgsequencer_la-ags_syncsynth_callbacks.lo \
+	ags/X/machine/libgsequencer_la-ags_syncsynth_input_line.lo \
+	ags/X/machine/libgsequencer_la-ags_syncsynth_input_line_callbacks.lo \
+	ags/X/machine/libgsequencer_la-ags_syncsynth_input_pad.lo \
 	ags/X/machine/libgsequencer_la-ags_synth.lo \
 	ags/X/machine/libgsequencer_la-ags_synth_callbacks.lo \
 	ags/X/machine/libgsequencer_la-ags_synth_input_line.lo \
+	ags/X/machine/libgsequencer_la-ags_synth_input_line_callbacks.lo \
 	ags/X/machine/libgsequencer_la-ags_synth_input_pad.lo
 am__objects_28 = $(am__objects_1) \
 	ags/X/editor/libgsequencer_la-ags_automation_edit.lo \
@@ -4029,8 +4035,14 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_pattern_box_callbacks.h \
 	ags/X/machine/ags_pattern_box.h \
 	ags/X/machine/ags_synth_callbacks.h \
+	ags/X/machine/ags_syncsynth.h \
+	ags/X/machine/ags_syncsynth_callbacks.h \
+	ags/X/machine/ags_syncsynth_input_line.h \
+	ags/X/machine/ags_syncsynth_input_line_callbacks.h \
+	ags/X/machine/ags_syncsynth_input_pad.h \
 	ags/X/machine/ags_synth.h \
 	ags/X/machine/ags_synth_input_line.h \
+	ags/X/machine/ags_synth_input_line_callbacks.h \
 	ags/X/machine/ags_synth_input_pad.h
 
 deprecated_libgsequencer_machine_c_sources = 
@@ -4087,9 +4099,15 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_panel_input_pad.c \
 	ags/X/machine/ags_pattern_box_callbacks.c \
 	ags/X/machine/ags_pattern_box.c \
+	ags/X/machine/ags_syncsynth.c \
+	ags/X/machine/ags_syncsynth_callbacks.c \
+	ags/X/machine/ags_syncsynth_input_line.c \
+	ags/X/machine/ags_syncsynth_input_line_callbacks.c \
+	ags/X/machine/ags_syncsynth_input_pad.c \
 	ags/X/machine/ags_synth.c \
 	ags/X/machine/ags_synth_callbacks.c \
 	ags/X/machine/ags_synth_input_line.c \
+	ags/X/machine/ags_synth_input_line_callbacks.c \
 	ags/X/machine/ags_synth_input_pad.c
 
 
@@ -5796,6 +5814,21 @@ ags/X/machine/libgsequencer_la-ags_pattern_box_callbacks.lo:  \
 ags/X/machine/libgsequencer_la-ags_pattern_box.lo:  \
 	ags/X/machine/$(am__dirstamp) \
 	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_syncsynth.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_syncsynth_callbacks.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_syncsynth_input_line.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_syncsynth_input_line_callbacks.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_syncsynth_input_pad.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
 ags/X/machine/libgsequencer_la-ags_synth.lo:  \
 	ags/X/machine/$(am__dirstamp) \
 	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
@@ -5803,6 +5836,9 @@ ags/X/machine/libgsequencer_la-ags_synth_callbacks.lo:  \
 	ags/X/machine/$(am__dirstamp) \
 	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
 ags/X/machine/libgsequencer_la-ags_synth_input_line.lo:  \
+	ags/X/machine/$(am__dirstamp) \
+	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
+ags/X/machine/libgsequencer_la-ags_synth_input_line_callbacks.lo:  \
 	ags/X/machine/$(am__dirstamp) \
 	ags/X/machine/$(DEPDIR)/$(am__dirstamp)
 ags/X/machine/libgsequencer_la-ags_synth_input_pad.lo:  \
@@ -6830,9 +6866,15 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_panel_input_pad.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pattern_box.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_pattern_box_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth_input_line.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth_input_line_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth_input_pad.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_synth.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_synth_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_synth_input_line.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_synth_input_line_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_synth_input_pad.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_bulk_member.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_line_member.Plo@am__quote@
@@ -10726,6 +10768,41 @@ ags/X/machine/libgsequencer_la-ags_pattern_box.lo: ags/X/machine/ags_pattern_box
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_pattern_box.lo `test -f 'ags/X/machine/ags_pattern_box.c' || echo '$(srcdir)/'`ags/X/machine/ags_pattern_box.c
 
+ags/X/machine/libgsequencer_la-ags_syncsynth.lo: ags/X/machine/ags_syncsynth.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_syncsynth.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth.Tpo -c -o ags/X/machine/libgsequencer_la-ags_syncsynth.lo `test -f 'ags/X/machine/ags_syncsynth.c' || echo '$(srcdir)/'`ags/X/machine/ags_syncsynth.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_syncsynth.c' object='ags/X/machine/libgsequencer_la-ags_syncsynth.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_syncsynth.lo `test -f 'ags/X/machine/ags_syncsynth.c' || echo '$(srcdir)/'`ags/X/machine/ags_syncsynth.c
+
+ags/X/machine/libgsequencer_la-ags_syncsynth_callbacks.lo: ags/X/machine/ags_syncsynth_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_syncsynth_callbacks.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth_callbacks.Tpo -c -o ags/X/machine/libgsequencer_la-ags_syncsynth_callbacks.lo `test -f 'ags/X/machine/ags_syncsynth_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_syncsynth_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth_callbacks.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_syncsynth_callbacks.c' object='ags/X/machine/libgsequencer_la-ags_syncsynth_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_syncsynth_callbacks.lo `test -f 'ags/X/machine/ags_syncsynth_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_syncsynth_callbacks.c
+
+ags/X/machine/libgsequencer_la-ags_syncsynth_input_line.lo: ags/X/machine/ags_syncsynth_input_line.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_syncsynth_input_line.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth_input_line.Tpo -c -o ags/X/machine/libgsequencer_la-ags_syncsynth_input_line.lo `test -f 'ags/X/machine/ags_syncsynth_input_line.c' || echo '$(srcdir)/'`ags/X/machine/ags_syncsynth_input_line.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth_input_line.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth_input_line.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_syncsynth_input_line.c' object='ags/X/machine/libgsequencer_la-ags_syncsynth_input_line.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_syncsynth_input_line.lo `test -f 'ags/X/machine/ags_syncsynth_input_line.c' || echo '$(srcdir)/'`ags/X/machine/ags_syncsynth_input_line.c
+
+ags/X/machine/libgsequencer_la-ags_syncsynth_input_line_callbacks.lo: ags/X/machine/ags_syncsynth_input_line_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_syncsynth_input_line_callbacks.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth_input_line_callbacks.Tpo -c -o ags/X/machine/libgsequencer_la-ags_syncsynth_input_line_callbacks.lo `test -f 'ags/X/machine/ags_syncsynth_input_line_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_syncsynth_input_line_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth_input_line_callbacks.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth_input_line_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_syncsynth_input_line_callbacks.c' object='ags/X/machine/libgsequencer_la-ags_syncsynth_input_line_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_syncsynth_input_line_callbacks.lo `test -f 'ags/X/machine/ags_syncsynth_input_line_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_syncsynth_input_line_callbacks.c
+
+ags/X/machine/libgsequencer_la-ags_syncsynth_input_pad.lo: ags/X/machine/ags_syncsynth_input_pad.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_syncsynth_input_pad.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth_input_pad.Tpo -c -o ags/X/machine/libgsequencer_la-ags_syncsynth_input_pad.lo `test -f 'ags/X/machine/ags_syncsynth_input_pad.c' || echo '$(srcdir)/'`ags/X/machine/ags_syncsynth_input_pad.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth_input_pad.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_syncsynth_input_pad.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_syncsynth_input_pad.c' object='ags/X/machine/libgsequencer_la-ags_syncsynth_input_pad.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_syncsynth_input_pad.lo `test -f 'ags/X/machine/ags_syncsynth_input_pad.c' || echo '$(srcdir)/'`ags/X/machine/ags_syncsynth_input_pad.c
+
 ags/X/machine/libgsequencer_la-ags_synth.lo: ags/X/machine/ags_synth.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_synth.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_synth.Tpo -c -o ags/X/machine/libgsequencer_la-ags_synth.lo `test -f 'ags/X/machine/ags_synth.c' || echo '$(srcdir)/'`ags/X/machine/ags_synth.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_synth.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_synth.Plo
@@ -10746,6 +10823,13 @@ ags/X/machine/libgsequencer_la-ags_synth_input_line.lo: ags/X/machine/ags_synth_
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_synth_input_line.c' object='ags/X/machine/libgsequencer_la-ags_synth_input_line.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_synth_input_line.lo `test -f 'ags/X/machine/ags_synth_input_line.c' || echo '$(srcdir)/'`ags/X/machine/ags_synth_input_line.c
+
+ags/X/machine/libgsequencer_la-ags_synth_input_line_callbacks.lo: ags/X/machine/ags_synth_input_line_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_synth_input_line_callbacks.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_synth_input_line_callbacks.Tpo -c -o ags/X/machine/libgsequencer_la-ags_synth_input_line_callbacks.lo `test -f 'ags/X/machine/ags_synth_input_line_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_synth_input_line_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_synth_input_line_callbacks.Tpo ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_synth_input_line_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/machine/ags_synth_input_line_callbacks.c' object='ags/X/machine/libgsequencer_la-ags_synth_input_line_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/machine/libgsequencer_la-ags_synth_input_line_callbacks.lo `test -f 'ags/X/machine/ags_synth_input_line_callbacks.c' || echo '$(srcdir)/'`ags/X/machine/ags_synth_input_line_callbacks.c
 
 ags/X/machine/libgsequencer_la-ags_synth_input_pad.lo: ags/X/machine/ags_synth_input_pad.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/machine/libgsequencer_la-ags_synth_input_pad.lo -MD -MP -MF ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_synth_input_pad.Tpo -c -o ags/X/machine/libgsequencer_la-ags_synth_input_pad.lo `test -f 'ags/X/machine/ags_synth_input_pad.c' || echo '$(srcdir)/'`ags/X/machine/ags_synth_input_pad.c

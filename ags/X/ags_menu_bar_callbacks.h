@@ -40,6 +40,7 @@ void ags_menu_bar_add_mixer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 void ags_menu_bar_add_drum_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_add_matrix_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_add_synth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
+void ags_menu_bar_add_syncsynth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 void ags_menu_bar_add_ffplayer_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);
 
 void ags_menu_bar_add_ladspa_bridge_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar);

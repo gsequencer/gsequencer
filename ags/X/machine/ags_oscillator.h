@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -59,17 +59,24 @@ struct _AgsOscillator
 
   GtkSpinButton *volume;
   gulong volume_handler;
+
+  GtkCheckButton *do_sync;
+  GtkComboBoxText *sync_mode;
 };
 
 struct _AgsOscillatorClass
 {
   GtkFrameClass frame;
+
+  void (*control_changed)(AgsOscillator *oscillator);
 };
 
 GType ags_oscillator_get_type(void);
 
 void ags_file_read_oscillator(AgsFile *file, xmlNode *node, AgsOscillator **oscillator);
 xmlNode* ags_file_write_oscillator(AgsFile *file, xmlNode *parent, AgsOscillator *oscillator);
+
+void ags_oscillator_control_changed(AgsOscillator *oscillator);
 
 AgsOscillator* ags_oscillator_new();
 
