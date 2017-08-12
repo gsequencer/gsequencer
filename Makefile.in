@@ -113,7 +113,7 @@ check_PROGRAMS = ags_application_context_test$(EXEEXT) \
 	ags_lv2_uri_map_manager_test$(EXEEXT) \
 	ags_lv2_urid_manager_test$(EXEEXT) \
 	ags_lv2_worker_manager_test$(EXEEXT) \
-	ags_lv2ui_manager_test$(EXEEXT) \
+	ags_lv2ui_manager_test$(EXEEXT) ags_lv2ui_plugin_test$(EXEEXT) \
 	ags_audio_application_context_test$(EXEEXT) \
 	ags_devout_test$(EXEEXT) ags_audio_test$(EXEEXT) \
 	ags_channel_test$(EXEEXT) ags_recycling_test$(EXEEXT) \
@@ -1273,6 +1273,17 @@ ags_lv2ui_manager_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_lv2ui_manager_test_CFLAGS) $(CFLAGS) \
 	$(ags_lv2ui_manager_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_lv2ui_plugin_test_OBJECTS = ags/test/plugin/ags_lv2ui_plugin_test-ags_lv2ui_plugin_test.$(OBJEXT)
+ags_lv2ui_plugin_test_OBJECTS = $(am_ags_lv2ui_plugin_test_OBJECTS)
+ags_lv2ui_plugin_test_DEPENDENCIES = libags_audio.la libags_server.la \
+	libags_thread.la libags.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+ags_lv2ui_plugin_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_lv2ui_plugin_test_CFLAGS) $(CFLAGS) \
+	$(ags_lv2ui_plugin_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_midi_buffer_util_test_OBJECTS = ags/test/audio/midi/ags_midi_buffer_util_test-ags_midi_buffer_util_test.$(OBJEXT)
 ags_midi_buffer_util_test_OBJECTS =  \
 	$(am_ags_midi_buffer_util_test_OBJECTS)
@@ -1585,6 +1596,7 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_lv2_urid_manager_test_SOURCES) \
 	$(ags_lv2_worker_manager_test_SOURCES) \
 	$(ags_lv2ui_manager_test_SOURCES) \
+	$(ags_lv2ui_plugin_test_SOURCES) \
 	$(ags_midi_buffer_util_test_SOURCES) \
 	$(ags_midi_builder_test_SOURCES) \
 	$(ags_mutex_manager_test_SOURCES) $(ags_notation_test_SOURCES) \
@@ -1639,6 +1651,7 @@ DIST_SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_lv2_urid_manager_test_SOURCES) \
 	$(ags_lv2_worker_manager_test_SOURCES) \
 	$(ags_lv2ui_manager_test_SOURCES) \
+	$(ags_lv2ui_plugin_test_SOURCES) \
 	$(ags_midi_buffer_util_test_SOURCES) \
 	$(ags_midi_builder_test_SOURCES) \
 	$(ags_mutex_manager_test_SOURCES) $(ags_notation_test_SOURCES) \
@@ -2576,6 +2589,12 @@ ags_lv2ui_manager_test_SOURCES = ags/test/plugin/ags_lv2ui_manager_test.c
 ags_lv2ui_manager_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_lv2ui_manager_test_LDFLAGS = $(LDFLAGS) -pthread
 ags_lv2ui_manager_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# lv2ui plugin unit test
+ags_lv2ui_plugin_test_SOURCES = ags/test/plugin/ags_lv2ui_plugin_test.c
+ags_lv2ui_plugin_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_lv2ui_plugin_test_LDFLAGS = $(LDFLAGS) -pthread
+ags_lv2ui_plugin_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # audio application context unit test
 ags_audio_application_context_test_SOURCES = ags/test/audio/ags_audio_application_context_test.c
@@ -6297,6 +6316,13 @@ ags/test/plugin/ags_lv2ui_manager_test-ags_lv2ui_manager_test.$(OBJEXT):  \
 ags_lv2ui_manager_test$(EXEEXT): $(ags_lv2ui_manager_test_OBJECTS) $(ags_lv2ui_manager_test_DEPENDENCIES) $(EXTRA_ags_lv2ui_manager_test_DEPENDENCIES) 
 	@rm -f ags_lv2ui_manager_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_lv2ui_manager_test_LINK) $(ags_lv2ui_manager_test_OBJECTS) $(ags_lv2ui_manager_test_LDADD) $(LIBS)
+ags/test/plugin/ags_lv2ui_plugin_test-ags_lv2ui_plugin_test.$(OBJEXT):  \
+	ags/test/plugin/$(am__dirstamp) \
+	ags/test/plugin/$(DEPDIR)/$(am__dirstamp)
+
+ags_lv2ui_plugin_test$(EXEEXT): $(ags_lv2ui_plugin_test_OBJECTS) $(ags_lv2ui_plugin_test_DEPENDENCIES) $(EXTRA_ags_lv2ui_plugin_test_DEPENDENCIES) 
+	@rm -f ags_lv2ui_plugin_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_lv2ui_plugin_test_LINK) $(ags_lv2ui_plugin_test_OBJECTS) $(ags_lv2ui_plugin_test_LDADD) $(LIBS)
 ags/test/audio/midi/$(am__dirstamp):
 	@$(MKDIR_P) ags/test/audio/midi
 	@: > ags/test/audio/midi/$(am__dirstamp)
@@ -7100,6 +7126,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/plugin/$(DEPDIR)/ags_lv2_urid_manager_test-ags_lv2_urid_manager_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/plugin/$(DEPDIR)/ags_lv2_worker_manager_test-ags_lv2_worker_manager_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/plugin/$(DEPDIR)/ags_lv2ui_manager_test-ags_lv2ui_manager_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/plugin/$(DEPDIR)/ags_lv2ui_plugin_test-ags_lv2ui_plugin_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/thread/$(DEPDIR)/ags_condition_manager_test-ags_condition_manager_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/thread/$(DEPDIR)/ags_destroy_worker_test-ags_destroy_worker_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/thread/$(DEPDIR)/ags_mutex_manager_test-ags_mutex_manager_test.Po@am__quote@
@@ -11575,6 +11602,20 @@ ags/test/plugin/ags_lv2ui_manager_test-ags_lv2ui_manager_test.obj: ags/test/plug
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_lv2ui_manager_test_CFLAGS) $(CFLAGS) -c -o ags/test/plugin/ags_lv2ui_manager_test-ags_lv2ui_manager_test.obj `if test -f 'ags/test/plugin/ags_lv2ui_manager_test.c'; then $(CYGPATH_W) 'ags/test/plugin/ags_lv2ui_manager_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/plugin/ags_lv2ui_manager_test.c'; fi`
 
+ags/test/plugin/ags_lv2ui_plugin_test-ags_lv2ui_plugin_test.o: ags/test/plugin/ags_lv2ui_plugin_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_lv2ui_plugin_test_CFLAGS) $(CFLAGS) -MT ags/test/plugin/ags_lv2ui_plugin_test-ags_lv2ui_plugin_test.o -MD -MP -MF ags/test/plugin/$(DEPDIR)/ags_lv2ui_plugin_test-ags_lv2ui_plugin_test.Tpo -c -o ags/test/plugin/ags_lv2ui_plugin_test-ags_lv2ui_plugin_test.o `test -f 'ags/test/plugin/ags_lv2ui_plugin_test.c' || echo '$(srcdir)/'`ags/test/plugin/ags_lv2ui_plugin_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/plugin/$(DEPDIR)/ags_lv2ui_plugin_test-ags_lv2ui_plugin_test.Tpo ags/test/plugin/$(DEPDIR)/ags_lv2ui_plugin_test-ags_lv2ui_plugin_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/plugin/ags_lv2ui_plugin_test.c' object='ags/test/plugin/ags_lv2ui_plugin_test-ags_lv2ui_plugin_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_lv2ui_plugin_test_CFLAGS) $(CFLAGS) -c -o ags/test/plugin/ags_lv2ui_plugin_test-ags_lv2ui_plugin_test.o `test -f 'ags/test/plugin/ags_lv2ui_plugin_test.c' || echo '$(srcdir)/'`ags/test/plugin/ags_lv2ui_plugin_test.c
+
+ags/test/plugin/ags_lv2ui_plugin_test-ags_lv2ui_plugin_test.obj: ags/test/plugin/ags_lv2ui_plugin_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_lv2ui_plugin_test_CFLAGS) $(CFLAGS) -MT ags/test/plugin/ags_lv2ui_plugin_test-ags_lv2ui_plugin_test.obj -MD -MP -MF ags/test/plugin/$(DEPDIR)/ags_lv2ui_plugin_test-ags_lv2ui_plugin_test.Tpo -c -o ags/test/plugin/ags_lv2ui_plugin_test-ags_lv2ui_plugin_test.obj `if test -f 'ags/test/plugin/ags_lv2ui_plugin_test.c'; then $(CYGPATH_W) 'ags/test/plugin/ags_lv2ui_plugin_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/plugin/ags_lv2ui_plugin_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/plugin/$(DEPDIR)/ags_lv2ui_plugin_test-ags_lv2ui_plugin_test.Tpo ags/test/plugin/$(DEPDIR)/ags_lv2ui_plugin_test-ags_lv2ui_plugin_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/plugin/ags_lv2ui_plugin_test.c' object='ags/test/plugin/ags_lv2ui_plugin_test-ags_lv2ui_plugin_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_lv2ui_plugin_test_CFLAGS) $(CFLAGS) -c -o ags/test/plugin/ags_lv2ui_plugin_test-ags_lv2ui_plugin_test.obj `if test -f 'ags/test/plugin/ags_lv2ui_plugin_test.c'; then $(CYGPATH_W) 'ags/test/plugin/ags_lv2ui_plugin_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/plugin/ags_lv2ui_plugin_test.c'; fi`
+
 ags/test/audio/midi/ags_midi_buffer_util_test-ags_midi_buffer_util_test.o: ags/test/audio/midi/ags_midi_buffer_util_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_midi_buffer_util_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/midi/ags_midi_buffer_util_test-ags_midi_buffer_util_test.o -MD -MP -MF ags/test/audio/midi/$(DEPDIR)/ags_midi_buffer_util_test-ags_midi_buffer_util_test.Tpo -c -o ags/test/audio/midi/ags_midi_buffer_util_test-ags_midi_buffer_util_test.o `test -f 'ags/test/audio/midi/ags_midi_buffer_util_test.c' || echo '$(srcdir)/'`ags/test/audio/midi/ags_midi_buffer_util_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/midi/$(DEPDIR)/ags_midi_buffer_util_test-ags_midi_buffer_util_test.Tpo ags/test/audio/midi/$(DEPDIR)/ags_midi_buffer_util_test-ags_midi_buffer_util_test.Po
@@ -12550,6 +12591,13 @@ ags_lv2_worker_manager_test.log: ags_lv2_worker_manager_test$(EXEEXT)
 ags_lv2ui_manager_test.log: ags_lv2ui_manager_test$(EXEEXT)
 	@p='ags_lv2ui_manager_test$(EXEEXT)'; \
 	b='ags_lv2ui_manager_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_lv2ui_plugin_test.log: ags_lv2ui_plugin_test$(EXEEXT)
+	@p='ags_lv2ui_plugin_test$(EXEEXT)'; \
+	b='ags_lv2ui_plugin_test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
