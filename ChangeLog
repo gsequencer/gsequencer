@@ -5,6 +5,9 @@ ags (0.9.7)
 	* implemented ags_lv2_plugin_event_buffer_alloc()
 	* implemented ags_lv2_plugin_event_buffer_realloc_data()
 	* implemented ags_lv2_plugin_event_buffer_concat()
+	* implemented ags_synth_util_get_xcross_count() and related type specific implementations
+	* implemented ags_synth_generator_compute()
+	* implemented ags_synth_generator_compute_with_audio_signal()
 	* deprecated ags_lv2_plugin_alloc_event_buffer()
 	* deprecated ags_lv2_plugin_concat_event_buffer()
 	* implemented ags_lv2_urid_manager_unmap()
@@ -20,6 +23,7 @@ ags (0.9.7)
 	* new unit-test ags_lv2ui_manager_test.c
 	* new unit-test ags_lv2ui_plugin_test.c
 	* new unit-test ags_audio_connection_test.c
+	* TODO:JK: new unit-test ags_input_test.c
 
 ags (0.9.6)
 
