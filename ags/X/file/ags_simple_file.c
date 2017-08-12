@@ -92,6 +92,7 @@
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_synth_input_line.h>
+#include <ags/X/machine/ags_syncsynth.h>
 #include <ags/X/machine/ags_oscillator.h>
 #include <ags/X/machine/ags_ffplayer.h>
 #include <ags/X/machine/ags_ladspa_bridge.h>
@@ -170,6 +171,9 @@ void ags_simple_file_read_effect_line_list(AgsSimpleFile *simple_file, xmlNode *
 void ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectLine **effect_line);
 void ags_simple_file_read_effect_line_launch(AgsFileLaunch *file_launch,
 					     AgsEffectLine *effect_line);
+void ags_simple_file_read_oscillator_list(AgsSimpleFile *simple_file, xmlNode *node, GList **oscillator);
+void ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOscillator **oscillator);
+
 void ags_simple_file_read_editor(AgsSimpleFile *simple_file, xmlNode *node, AgsEditor **editor);
 void ags_simple_file_read_editor_launch(AgsFileLaunch *file_launch,
 					AgsEditor *editor);
@@ -200,6 +204,9 @@ xmlNode* ags_simple_file_write_effect_pad_list(AgsSimpleFile *simple_file, xmlNo
 xmlNode* ags_simple_file_write_effect_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsEffectPad *effect_pad);
 xmlNode* ags_simple_file_write_effect_line_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *effect_line);
 xmlNode* ags_simple_file_write_effect_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsEffectLine *effect_line);
+xmlNode* ags_simple_file_write_oscillator_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *oscillator);
+xmlNode* ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, AgsOscillator *oscillator);
+
 xmlNode* ags_simple_file_write_editor(AgsSimpleFile *simple_file, xmlNode *parent, AgsEditor *editor);
 void ags_simple_file_write_editor_resolve_machine(AgsFileLookup *file_lookup,
 						  AgsEditor *editor);
@@ -1776,7 +1783,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	       "soundcard", soundcard,
 	       NULL);
 
-  /* machine specific */  
+  /* machine specific */
   if(AGS_IS_LADSPA_BRIDGE(gobject)){
     xmlChar *filename, *effect;
 
@@ -2013,6 +2020,29 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 				   NULL,
 				   filename,
 				   effect);
+      }else if(!xmlStrncmp(child->name,
+			   (xmlChar *) "ags-sf-oscillator-list",
+			   22)){
+	if(AGS_IS_SYNCSYNTH(gobject)){
+	  GList *oscillator, *list;
+
+	  oscillator = NULL;
+	  
+	  ags_simple_file_read_oscillator_list(simple_file,
+					       child,
+					       &oscillator);
+
+	  list = oscillator;
+	  
+	  while(list != NULL){
+	    ags_syncsynth_add_oscillator(gobject,
+					 list->data);
+
+	    list = list->next;
+	  }
+	  
+	  g_list_free(oscillator);
+	}
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-sf-pattern-list",
 			   20)){
@@ -3079,77 +3109,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
   guint nth_line;
   guint i;
   
-  auto void ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOscillator *oscillator);
   auto void ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsLineMember *line_member);
-
-  void ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOscillator *oscillator){
-    xmlChar *str;
-
-    gdouble val;
-    guint nth;
-
-    str = xmlGetProp(node,
-		     "wave");
-
-    if(str != NULL){
-      
-      nth = g_ascii_strtoull(str,
-			     NULL,
-			     10);
-      gtk_combo_box_set_active(oscillator->wave,
-			       nth);
-    }
-
-    str = xmlGetProp(node,
-		     "attack");
-
-    if(str != NULL){
-      val = g_ascii_strtod(str,
-			   NULL);
-      gtk_adjustment_set_value(oscillator->attack->adjustment,
-			       val);
-    }
-
-    str = xmlGetProp(node,
-		     "frequency");
-
-    if(str != NULL){
-      val = g_ascii_strtod(str,
-			   NULL);
-      gtk_adjustment_set_value(oscillator->frequency->adjustment,
-			       val);
-    }
-
-    str = xmlGetProp(node,
-		     "length");
-
-    if(str != NULL){
-      val = g_ascii_strtod(str,
-			   NULL);
-      gtk_adjustment_set_value(oscillator->frame_count->adjustment,
-			       val);
-    }
-
-    str = xmlGetProp(node,
-		     "phase");
-
-    if(str != NULL){
-      val = g_ascii_strtod(str,
-			   NULL);
-      gtk_adjustment_set_value(oscillator->phase->adjustment,
-			       val);
-    }
-
-    str = xmlGetProp(node,
-		     "volume");
-
-    if(str != NULL){
-      val = g_ascii_strtod(str,
-			   NULL);
-      gtk_adjustment_set_value(oscillator->volume->adjustment,
-			      val);
-    }
-  }
   
   void ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsLineMember *line_member){
     GtkWidget *child_widget;
@@ -3450,7 +3410,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-oscillator",
 			   15)){
-	ags_simple_file_read_oscillator(simple_file, child, AGS_SYNTH_INPUT_LINE(gobject)->oscillator);
+	ags_simple_file_read_oscillator(simple_file, child, &(AGS_SYNTH_INPUT_LINE(gobject)->oscillator));
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-sf-property-list",
 			   14)){
@@ -4095,6 +4055,135 @@ ags_simple_file_read_effect_line_launch(AgsFileLaunch *file_launch,
 					AgsEffectLine *effect_line)
 {
   /* empty */
+}
+
+void
+ags_simple_file_read_oscillator_list(AgsSimpleFile *simple_file, xmlNode *node, GList **oscillator)
+{
+  AgsOscillator *current;
+  
+  xmlNode *child;
+
+  GList *list;
+  
+  guint i;
+
+  child = node->children;
+  list = NULL;
+
+  i = 0;
+  
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-oscillator",
+		     11)){
+	current = NULL;
+
+	if(*oscillator != NULL){
+	  GList *iter;
+
+	  iter = g_list_nth(*oscillator,
+			    i);
+
+	  if(iter != NULL){
+	    current = iter->data;
+	  }
+	}
+	
+	ags_simple_file_read_oscillator(simple_file, child, &current);
+	list = g_list_prepend(list, current);
+
+	i++;
+      }
+    }
+
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+  *oscillator = list;
+}
+
+void
+ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOscillator **oscillator)
+{
+  AgsOscillator *gobject;
+  
+  xmlChar *str;
+
+  gdouble val;
+  guint nth;
+  
+  if(*oscillator != NULL){
+    gobject = *oscillator;
+  }else{
+    gobject = ags_oscillator_new();
+
+    *oscillator = gobject;
+  }
+
+  str = xmlGetProp(node,
+		   "wave");
+
+  if(str != NULL){
+      
+    nth = g_ascii_strtoull(str,
+			   NULL,
+			   10);
+    gtk_combo_box_set_active(gobject->wave,
+			     nth);
+  }
+
+  str = xmlGetProp(node,
+		   "attack");
+
+  if(str != NULL){
+    val = g_ascii_strtod(str,
+			 NULL);
+    gtk_adjustment_set_value(gobject->attack->adjustment,
+			     val);
+  }
+
+  str = xmlGetProp(node,
+		   "frequency");
+
+  if(str != NULL){
+    val = g_ascii_strtod(str,
+			 NULL);
+    gtk_adjustment_set_value(gobject->frequency->adjustment,
+			     val);
+  }
+
+  str = xmlGetProp(node,
+		   "length");
+
+  if(str != NULL){
+    val = g_ascii_strtod(str,
+			 NULL);
+    gtk_adjustment_set_value(gobject->frame_count->adjustment,
+			     val);
+  }
+
+  str = xmlGetProp(node,
+		   "phase");
+
+  if(str != NULL){
+    val = g_ascii_strtod(str,
+			 NULL);
+    gtk_adjustment_set_value(gobject->phase->adjustment,
+			     val);
+  }
+
+  str = xmlGetProp(node,
+		   "volume");
+
+  if(str != NULL){
+    val = g_ascii_strtod(str,
+			 NULL);
+    gtk_adjustment_set_value(gobject->volume->adjustment,
+			     val);
+  }
 }
 
 void
@@ -5814,6 +5903,36 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     }
   }
 
+  /* oscillator list */
+  if(AGS_IS_SYNCSYNTH(machine)){
+    xmlNode *child;
+    
+    GList *list, *list_start, *next, *oscillator;
+
+    list_start = 
+      list = gtk_container_get_children((GtkContainer *) AGS_SYNCSYNTH(machine)->oscillator);
+
+    oscillator = NULL;
+
+    while(list != NULL){
+      next = gtk_container_get_children(list->data);
+
+      oscillator = g_list_prepend(oscillator,
+				  next->next->data);
+
+      g_list_free(next);
+      
+      list = list->next;
+    }
+    
+    child = ags_simple_file_write_oscillator_list(simple_file,
+						  node,
+						  oscillator);
+    
+    g_list_free(list_start);
+    g_list_free(oscillator);
+  }
+  
   /* pattern list */
   if(machine->audio->input != NULL){
     AgsChannel *channel;
@@ -6103,42 +6222,7 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
 
   gboolean found_content;
   
-  auto void ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, AgsOscillator *oscillator);
   auto void ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsLineMember *line_member);
-
-  void ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, AgsOscillator *oscillator){
-    xmlNode *node;
-    
-    node = xmlNewNode(NULL,
-		      "ags-oscillator");
-    
-    xmlNewProp(node,
-	       "wave",
-	       g_strdup_printf("%d", gtk_combo_box_get_active(oscillator->wave)));
-
-    xmlNewProp(node,
-	       "attack",
-	       g_strdup_printf("%f", oscillator->attack->adjustment->value));
-
-    xmlNewProp(node,
-	       "length",
-	       g_strdup_printf("%f", oscillator->frame_count->adjustment->value));
-
-    xmlNewProp(node,
-	       "frequency",
-	       g_strdup_printf("%f", oscillator->frequency->adjustment->value));
-
-    xmlNewProp(node,
-	       "phase",
-	       g_strdup_printf("%f", oscillator->phase->adjustment->value));
-
-    xmlNewProp(node,
-	       "volume",
-	       g_strdup_printf("%f", oscillator->volume->adjustment->value));
-
-    xmlAddChild(parent,
-		node);
-  }
   
   void ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsLineMember *line_member){
     GtkWidget *child_widget;
@@ -6668,6 +6752,65 @@ ags_simple_file_write_effect_line(AgsSimpleFile *simple_file, xmlNode *parent, A
   }
 }
 
+xmlNode*
+ags_simple_file_write_oscillator_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *oscillator)
+{
+  xmlNode *node;
+    
+  node = xmlNewNode(NULL,
+		    "ags-oscillator-list");
+
+  while(oscillator != NULL){
+    ags_simple_file_write_oscillator(simple_file,
+				     node,
+				     oscillator->data);
+       
+    oscillator = oscillator->next;
+  }
+
+  xmlAddChild(parent,
+	      node);
+
+  return(node);
+}
+
+xmlNode*
+ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, AgsOscillator *oscillator)
+{
+  xmlNode *node;
+    
+  node = xmlNewNode(NULL,
+		    "ags-oscillator");
+    
+  xmlNewProp(node,
+	     "wave",
+	     g_strdup_printf("%d", gtk_combo_box_get_active(oscillator->wave)));
+
+  xmlNewProp(node,
+	     "attack",
+	     g_strdup_printf("%f", oscillator->attack->adjustment->value));
+
+  xmlNewProp(node,
+	     "length",
+	     g_strdup_printf("%f", oscillator->frame_count->adjustment->value));
+
+  xmlNewProp(node,
+	     "frequency",
+	     g_strdup_printf("%f", oscillator->frequency->adjustment->value));
+
+  xmlNewProp(node,
+	     "phase",
+	     g_strdup_printf("%f", oscillator->phase->adjustment->value));
+
+  xmlNewProp(node,
+	     "volume",
+	     g_strdup_printf("%f", oscillator->volume->adjustment->value));
+
+  xmlAddChild(parent,
+	      node);
+
+  return(node);
+}
 
 xmlNode*
 ags_simple_file_write_editor(AgsSimpleFile *simple_file, xmlNode *parent, AgsEditor *editor)

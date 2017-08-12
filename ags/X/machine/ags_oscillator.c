@@ -209,8 +209,8 @@ ags_oscillator_init(AgsOscillator *oscillator)
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new(i18n("length")),
 			    4, 5, 0, 1);
-  oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(AGS_OSCILLATOR_DEFAULT_FRAME_COUNT, 100000.0, 1.0);
-  oscillator->frame_count->adjustment->value = 3200;
+  oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
+  oscillator->frame_count->adjustment->value = AGS_OSCILLATOR_DEFAULT_FRAME_COUNT;
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->frame_count, 5, 6, 0, 1);
 
   gtk_table_attach_defaults(table,

@@ -241,7 +241,6 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
 
   AGS_MACHINE(syncsynth)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 				   AGS_MACHINE_REVERSE_NOTATION);
-  AGS_MACHINE(syncsynth)->file_input_flags |= AGS_MACHINE_ACCEPT_SOUNDFONT2;
   AGS_MACHINE(syncsynth)->mapping_flags |= AGS_MACHINE_MONO;
 
   AGS_MACHINE(syncsynth)->input_pad_type = G_TYPE_NONE;
@@ -425,9 +424,6 @@ ags_syncsynth_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) syncsynth->remove, "clicked",
 		   G_CALLBACK(ags_syncsynth_remove_callback), (gpointer) syncsynth);
 
-  g_signal_connect((GObject *) syncsynth->lower, "value-changed",
-		   G_CALLBACK(ags_syncsynth_lower_callback), syncsynth);
-
   g_signal_connect((GObject *) syncsynth->auto_update, "toggled",
 		   G_CALLBACK(ags_syncsynth_auto_update_callback), syncsynth);
 
@@ -483,12 +479,6 @@ ags_syncsynth_disconnect(AgsConnectable *connectable)
 		      "clicked",
 		      G_CALLBACK(ags_syncsynth_remove_callback),
 		      (gpointer) syncsynth,
-		      NULL);
-
-  g_object_disconnect((GObject *) syncsynth->lower,
-		      "value-changed",
-		      G_CALLBACK(ags_syncsynth_lower_callback),
-		      syncsynth,
 		      NULL);
 
   g_object_disconnect((GObject *) syncsynth->auto_update,
@@ -891,15 +881,46 @@ ags_syncsynth_set_pads(AgsAudio *audio, GType type,
 		       guint pads, guint pads_old,
 		       AgsSyncsynth *syncsynth)
 {
+  AgsWindow *window;
+  AgsMachine *machine;
+
+  AgsChannel *channel, *source;
+  AgsAudioSignal *audio_signal;
+
+  AgsMutexManager *mutex_manager;
+
+  AgsApplicationContext *application_context;
+  
+  guint i, j;
   gboolean grow;
 
-  if(pads_old == pads){
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *source_mutex;
+
+  if(pads == pads_old){
     return;
   }
 
-  if(pads_old == pads){
-    return;
-  }
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* lookup audio mutex */
+  pthread_mutex_lock(application_mutex);
+    
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  gdk_threads_enter();
+  
+  machine = AGS_MACHINE(syncsynth);
+  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
+
+  application_context = window->application_context;
+
+  gdk_threads_leave();
   
   if(pads_old < pads){
     grow = TRUE;
@@ -909,17 +930,96 @@ ags_syncsynth_set_pads(AgsAudio *audio, GType type,
   
   if(type == AGS_TYPE_INPUT){
     if(grow){
-      /* depending on destination */
-      ags_syncsynth_input_map_recall(syncsynth, pads_old);
+      pthread_mutex_lock(audio_mutex);
+
+      source = audio->input;
+
+      pthread_mutex_unlock(audio_mutex);
+      
+      /* create pattern */
+      source = ags_channel_nth(source, pads_old);
+      
+      while(source != NULL){
+	/* lookup source mutex */
+	pthread_mutex_lock(application_mutex);
+
+	source_mutex = ags_mutex_manager_lookup(mutex_manager,
+						(GObject *) source);
+  
+	pthread_mutex_unlock(application_mutex);
+
+	/* iterate pattern */
+	pthread_mutex_lock(source_mutex);
+	
+	source = source->next;
+
+	pthread_mutex_unlock(source_mutex);
+      }
+
+      if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
+	/* depending on destination */
+	ags_syncsynth_input_map_recall(syncsynth,
+				       pads_old);
+      }
+
     }else{
-      syncsynth->mapped_input_pad = audio->input_pads;
+      syncsynth->mapped_input_pad = pads;
     }
   }else{
     if(grow){
-      /* depending on destination */
-      ags_syncsynth_output_map_recall(syncsynth, pads_old);
+      AgsChannel *current, *output;
+
+      pthread_mutex_lock(audio_mutex);
+
+      source = audio->output;
+
+      pthread_mutex_unlock(audio_mutex);
+
+      source = ags_channel_nth(source,
+			       pads_old);
+
+      if(source != NULL){
+	AgsRecycling *recycling;
+	AgsAudioSignal *audio_signal;
+
+	GObject *soundcard;
+
+	pthread_mutex_lock(audio_mutex);
+	
+	soundcard = audio->soundcard;
+
+	pthread_mutex_unlock(audio_mutex);
+
+	/* lookup source mutex */
+	pthread_mutex_lock(application_mutex);
+
+	source_mutex = ags_mutex_manager_lookup(mutex_manager,
+						(GObject *) source);
+  
+	pthread_mutex_unlock(application_mutex);
+
+	/* get recycling */
+	pthread_mutex_lock(source_mutex);
+
+	recycling = source->first_recycling;
+
+	pthread_mutex_unlock(source_mutex);
+
+	/* instantiate template audio signal */
+	audio_signal = ags_audio_signal_new(soundcard,
+					    (GObject *) recycling,
+					    NULL);
+	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	ags_recycling_add_audio_signal(recycling,
+				       audio_signal);
+      }
+
+      if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
+	ags_syncsynth_output_map_recall(syncsynth,
+					pads_old);
+      }
     }else{
-      syncsynth->mapped_output_pad = audio->output_pads;
+      syncsynth->mapped_output_pad = pads;
     }
   }
 }
@@ -1359,6 +1459,45 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   loop_start = (guint) gtk_spin_button_get_value_as_int(syncsynth->loop_start);
   loop_end = (guint) gtk_spin_button_get_value_as_int(syncsynth->loop_end);
 
+  /* clear input */
+  pthread_mutex_lock(audio_mutex);
+
+  channel = audio->input;
+
+  pthread_mutex_unlock(audio_mutex);
+
+  task = NULL;
+
+  while(channel != NULL){
+    AgsAudioSignal *template;
+    
+    /* lookup channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* clear task */
+    pthread_mutex_lock(channel_mutex);
+
+    template = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
+
+    pthread_mutex_unlock(channel_mutex);
+
+    clear_audio_signal = ags_clear_audio_signal_new(template);
+    task = g_list_prepend(task,
+			  clear_audio_signal);
+    
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+
+    channel = channel->next;
+
+    pthread_mutex_unlock(channel_mutex);
+  }
+
   /* write input */
   list =
     list_start = gtk_container_get_children(syncsynth->oscillator);
@@ -1414,8 +1553,8 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
 		 "sync-mode", sync_mode,
 		 NULL);
     
-    ags_task_thread_append_task(task_thread,
-				AGS_TASK(apply_synth));
+    task = g_list_prepend(task,
+			  apply_synth);
 
     /* iterate */
     pthread_mutex_lock(channel_mutex);

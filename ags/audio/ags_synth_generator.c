@@ -710,11 +710,12 @@ ags_synth_generator_compute_with_audio_signal(AgsSynthGenerator *synth_generator
   guint offset;
   guint attack, frame_copy_count;
 
-  gdouble current_rate, current_offset;
+  gdouble current_rate;
   gdouble xcross_factor;
   guint xcross_count;
-  gboolean reset_phase;
-  
+  guint i;
+  gboolean initial_run;
+
   samplerate = AGS_AUDIO_SIGNAL(audio_signal)->samplerate;
   
   start_frequency = 48.0;
@@ -740,7 +741,13 @@ ags_synth_generator_compute_with_audio_signal(AgsSynthGenerator *synth_generator
       xcross_count += ags_synth_util_get_xcross_count(stream->data,
 						      audio_buffer_util_format,
 						      buffer_size);
+
+      stream = stream->next;
     }
+  }
+
+  if(xcross_count == 0){
+    xcross_count = 1;
   }
 
   attack = synth_generator->attack;
@@ -761,19 +768,26 @@ ags_synth_generator_compute_with_audio_signal(AgsSynthGenerator *synth_generator
   current_phase = phase;
 
   if((AGS_SYNTH_GENERATOR_COMPUTE_SYNC & compute_flags) != 0){
-    current_rate = (frame_count / xcross_count) * (frame_count / samplerate);
-    current_offset = 0.0;
-
+    if(xcross_count == 0){
+      current_rate = current_frequency;
+    }else{
+      current_rate = (frame_count / xcross_count) * (frame_count / samplerate);
+    }
+    
     if((AGS_SYNTH_GENERATOR_COMPUTE_16HZ & compute_flags) != 0){
       xcross_factor = current_rate * (16.0 / samplerate);
     }else if((AGS_SYNTH_GENERATOR_COMPUTE_440HZ & compute_flags) != 0){
       xcross_factor = current_rate * (440.0 / samplerate);
     }else if((AGS_SYNTH_GENERATOR_COMPUTE_22000HZ & compute_flags) != 0){
-      xcross_factor = current_rate * (22000 / samplerate);
+      xcross_factor = current_rate * (22000.0 / samplerate);
     }else if((AGS_SYNTH_GENERATOR_COMPUTE_LIMIT & compute_flags) != 0){
       xcross_factor = current_rate * (G_MAXDOUBLE / samplerate);
     }else if((AGS_SYNTH_GENERATOR_COMPUTE_NOHZ & compute_flags) != 0){
-      xcross_factor = (1.0 / xcross_count);
+      if(xcross_count != 0){
+	xcross_factor = (1.0 / xcross_count);
+      }else{
+	xcross_factor = 1.0;
+      }
     }else if((AGS_SYNTH_GENERATOR_COMPUTE_FREQUENCY & compute_flags) != 0){
       xcross_factor = current_rate * (frequency / samplerate);
     }else if((AGS_SYNTH_GENERATOR_COMPUTE_NOTE & compute_flags) != 0){
@@ -781,35 +795,17 @@ ags_synth_generator_compute_with_audio_signal(AgsSynthGenerator *synth_generator
     }
   }
 
-  reset_phase = FALSE;
+  i = 0;
+  
+  initial_run = TRUE;
   
   while(stream != NULL &&
 	offset < stop_frame){
-    if((AGS_SYNTH_GENERATOR_COMPUTE_SYNC & compute_flags) != 0){
-      if(xcross_factor * (offset + buffer_size) > current_offset + (frame_count / xcross_count)){
-	gint offset_break;
-
-	offset_break = (xcross_factor * (offset + buffer_size)) - (current_offset + (frame_count / xcross_count));
-	
-	if(offset_break < stop_frame){
-	  if(offset_break > 0){
-	    frame_copy_count = offset_break;
-	  }else{
-	    frame_copy_count = 0;
-	  }
-	}else{
-	  frame_copy_count = stop_frame - offset;
-	}
-	
-	current_offset += (frame_count / xcross_count);
-
-	reset_phase = TRUE;
+    if(initial_run){
+      if(buffer_size - attack < stop_frame){
+	frame_copy_count = buffer_size - attack;
       }else{
-	if(offset + buffer_size < stop_frame){
-	  frame_copy_count = buffer_size;
-	}else{
-	  frame_copy_count = stop_frame - offset;
-	}
+	frame_copy_count = stop_frame;
       }
     }else{
       if(offset + buffer_size < stop_frame){
@@ -818,7 +814,7 @@ ags_synth_generator_compute_with_audio_signal(AgsSynthGenerator *synth_generator
 	frame_copy_count = stop_frame - offset;
       }
     }
-      
+
     switch(synth_generator->oscillator){
     case AGS_SYNTH_GENERATOR_OSCILLATOR_SIN:
       {
@@ -852,21 +848,27 @@ ags_synth_generator_compute_with_audio_signal(AgsSynthGenerator *synth_generator
 			      attack, frame_copy_count);
       }
       break;
+    default:
+      g_message("unknown oscillator");
     }
 
+    stream = stream->next;
+    offset += frame_copy_count;
 
-    if((AGS_SYNTH_GENERATOR_COMPUTE_SYNC & compute_flags) != 0){
-      if(reset_phase){
-	current_phase = phase;
-	
-	reset_phase = FALSE;
-      }
-    }else{
-      stream = stream->next;
-      offset += frame_copy_count;
-      
+    if((AGS_SYNTH_GENERATOR_COMPUTE_SYNC & compute_flags) == 0 ||
+       (xcross_factor * i) > (frame_count / xcross_count)){
       current_phase = (guint) (offset - attack + phase) % (guint) floor(samplerate / current_frequency);
+
+      i = 0;
+    }else{
+      current_phase = phase;
+
+      i++;
     }
+    
+    attack = 0;
+
+    initial_run = FALSE;
   }
 
   free(buffer);

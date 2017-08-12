@@ -29,8 +29,6 @@
 
 void ags_syncsynth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsSyncsynth *syncsynth);
 
-void ags_syncsynth_lower_callback(GtkSpinButton *spin_button, AgsSyncsynth *syncsynth);
-
 void ags_syncsynth_auto_update_callback(GtkToggleButton *toggle, AgsSyncsynth *syncsynth);
 void ags_syncsynth_update_callback(GtkButton *button, AgsSyncsynth *syncsynth);
 

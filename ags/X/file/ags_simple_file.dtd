@@ -121,6 +121,8 @@
 	  value           NMTOKEN  #IMPLIED
 	  >
 
+<!ELEMENT ags-sf-oscillator-list (ags-sf-oscillator*)>
+
 <!ELEMENT ags-sf-oscillator EMPTY>
 <!ATTLIST ags-sf-oscillator
 	  wave           CDATA    0

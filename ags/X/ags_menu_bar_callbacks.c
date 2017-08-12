@@ -643,8 +643,8 @@ ags_menu_bar_add_syncsynth_callback(GtkWidget *menu_item, AgsMenuBar *menu_bar)
 		     FALSE, FALSE, 0);
 
   syncsynth->machine.audio->audio_channels = 1;
-  ags_audio_set_pads((AgsAudio*) syncsynth->machine.audio, AGS_TYPE_INPUT, 2);
-  ags_audio_set_pads((AgsAudio*) syncsynth->machine.audio, AGS_TYPE_OUTPUT, 78);
+  ags_audio_set_pads((AgsAudio*) syncsynth->machine.audio, AGS_TYPE_INPUT, 78);
+  ags_audio_set_pads((AgsAudio*) syncsynth->machine.audio, AGS_TYPE_OUTPUT, 1);
 
   ags_connectable_connect(AGS_CONNECTABLE(syncsynth));
 

@@ -652,6 +652,8 @@ ags_synth_update(AgsSynth *synth)
   
   pthread_mutex_unlock(audio_mutex);
 
+  task = NULL;
+
   while(input_pad != NULL){
     /* lookup channel mutex */
     pthread_mutex_lock(application_mutex);
@@ -679,8 +681,8 @@ ags_synth_update(AgsSynth *synth)
 				      volume,
 				      loop_start, loop_end);
 
-    ags_task_thread_append_task(task_thread,
-				AGS_TASK(apply_synth));
+    task = g_list_prepend(task,
+			  apply_synth);
 
     /* iterate */
     pthread_mutex_lock(channel_mutex);
@@ -704,8 +706,6 @@ ags_synth_update(AgsSynth *synth)
   output_lines = audio->output_lines;
 
   pthread_mutex_unlock(audio_mutex);
-
-  task = NULL;
 
   while(channel != NULL){
     AgsAudioSignal *template;
@@ -745,6 +745,9 @@ ags_synth_update(AgsSynth *synth)
   pthread_mutex_unlock(audio_mutex);
 
   while(input_pad != NULL){
+    guint sync_mode;
+    gboolean do_sync;
+
     /* do it so */
     input_line = gtk_container_get_children((GtkContainer *) AGS_PAD(input_pad->data)->expander_set);
     oscillator = AGS_OSCILLATOR(gtk_container_get_children((GtkContainer *) AGS_LINE(input_line->data)->expander->table)->data);
@@ -755,6 +758,15 @@ ags_synth_update(AgsSynth *synth)
     phase = (gdouble) gtk_spin_button_get_value_as_float(oscillator->phase);
     frequency = (gdouble) gtk_spin_button_get_value_as_float(oscillator->frequency);
     volume = (gdouble) gtk_spin_button_get_value_as_float(oscillator->volume);
+
+    do_sync = gtk_toggle_button_get_active(oscillator->do_sync);
+
+    sync_mode = 1 << gtk_combo_box_get_active(oscillator->sync_mode);
+    
+    g_object_set(apply_synth,
+		 "do-sync", do_sync,
+		 "sync-mode", sync_mode,
+		 NULL);
 
     apply_synth = ags_apply_synth_new(channel, output_lines,
 				      wave,
