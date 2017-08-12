@@ -325,6 +325,22 @@ ags_input_disconnect(AgsConnectable *connectable)
   ags_input_parent_connectable_interface->disconnect(connectable);
 }
 
+/**
+ * ags_input_open_file:
+ * @input: the #AgsInput
+ * @filename: the filename as string
+ * @preset: the preset to open
+ * @instrument: the instrument to open
+ * @sample: the sample to open
+ * @audio_channel: the audio channel to read
+ * 
+ * Open @filename and assign @audio_channel's data as AGS_AUDIO_SIGNAL_TEMPLATE
+ * audio signal to @input's own recycling.
+ * 
+ * Returns: %TRUE if open was successful, else %FALSE
+ * 
+ * Since: 0.9.7
+ */
 gboolean
 ags_input_open_file(AgsInput *input,
 		    gchar *filename,
@@ -456,6 +472,21 @@ ags_input_open_file(AgsInput *input,
   return(success);
 }
 
+/**
+ * ags_input_apply_synth:
+ * @input: the #AgsInput
+ * @oscillator: the oscillator to use
+ * @frequency: the frequency to use
+ * @phase: the phase to use
+ * @volume: the volume to use
+ * @n_frames: compute n_frames count of frames
+ * 
+ * Apply synth using specified parameters to input.
+ * 
+ * Returns: %TRUE if successful applied, else %FALSE
+ * 
+ * Since: 0.9.7
+ */
 gboolean
 ags_input_apply_synth(AgsInput *input,
 		      guint oscillator,
@@ -474,6 +505,17 @@ ags_input_apply_synth(AgsInput *input,
   return(TRUE);
 }
 
+/**
+ * ags_input_is_active:
+ * @input: the #AgsInput
+ * @recycling_context: the #AgsRecyclingContext to check
+ * 
+ * Check if @input is active and needs processing.
+ * 
+ * Returns: %TRUE if has a need to be processed, else %FALSE
+ * 
+ * Since: 0.9.7
+ */
 gboolean
 ags_input_is_active(AgsInput *input,
 		    GObject *recycling_context)
@@ -561,6 +603,17 @@ ags_input_is_active(AgsInput *input,
   return(FALSE);
 }
 
+/**
+ * ags_input_next_active:
+ * @input: the #AgsInput
+ * @recycling_context: the #AgsRecyclingContext to check
+ * 
+ * Find next #AgsInput needed to be processed.
+ * 
+ * Returns: next active #AgsInput, else %NULL if non available
+ * 
+ * Since: 0.9.7
+ */
 AgsInput*
 ags_input_next_active(AgsInput *input,
 		      GObject *recycling_context)
