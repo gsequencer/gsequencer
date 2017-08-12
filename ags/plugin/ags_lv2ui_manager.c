@@ -145,6 +145,10 @@ ags_lv2ui_manager_finalize(GObject *gobject)
   g_list_free_full(lv2ui_plugin,
 		   g_object_unref);
 
+  if(lv2ui_manager == ags_lv2ui_manager){
+    ags_lv2ui_manager = NULL;
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_lv2ui_manager_parent_class)->finalize(gobject);
 }
@@ -880,15 +884,13 @@ ags_lv2ui_manager_get_instance()
 {
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-  pthread_mutex_lock(&(mutex));
+  pthread_mutex_lock(&mutex);
 
   if(ags_lv2ui_manager == NULL){
     ags_lv2ui_manager = ags_lv2ui_manager_new();
-
-    pthread_mutex_unlock(&(mutex));
-  }else{
-    pthread_mutex_unlock(&(mutex));
   }
+
+  pthread_mutex_unlock(&mutex);
 
   return(ags_lv2ui_manager);
 }

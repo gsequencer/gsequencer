@@ -129,8 +129,17 @@ ags_lv2_worker_manager_disconnect(AgsConnectable *connectable)
 void
 ags_lv2_worker_manager_finalize(GObject *gobject)
 {
-  /* empty */
+  AgsLv2WorkerManager *lv2_worker_manager;
 
+  lv2_worker_manager = AGS_LV2_WORKER_MANAGER(gobject);
+
+  g_list_free_full(g_atomic_pointer_get(&(lv2_worker_manager->worker)),
+		   g_object_unref);
+  
+  if(lv2_worker_manager == ags_lv2_worker_manager){
+    ags_lv2_worker_manager = NULL;
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_worker_manager_parent_class)->finalize(gobject);
 }
@@ -178,11 +187,17 @@ ags_lv2_worker_manager_pull_worker(AgsLv2WorkerManager *worker_manager)
 AgsLv2WorkerManager*
 ags_lv2_worker_manager_get_instance()
 {
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  pthread_mutex_lock(&mutex);
+
   if(ags_lv2_worker_manager == NULL){
     ags_lv2_worker_manager = ags_lv2_worker_manager_new();
     
     //    ags_lv2_worker_manager_load_default(ags_lv2_worker_manager);
   }
+
+  pthread_mutex_unlock(&mutex);
 
   return(ags_lv2_worker_manager);
 }

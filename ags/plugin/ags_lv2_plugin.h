@@ -128,7 +128,8 @@ void ags_lv2_plugin_clear_event_buffer(void *event_buffer,
 				       guint buffer_size);
 
 void* ags_lv2_plugin_alloc_atom_sequence(guint sequence_size);
-void* ags_lv2_plugin_concat_atom_sequence(void *sequence0, ...);
+void* ags_lv2_plugin_concat_atom_sequence(void *sequence, guint sequence_size,
+					  ...); //TODO:JK: shall I implement this?
 
 gboolean ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
 						  guint sequence_size,
