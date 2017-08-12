@@ -131,6 +131,8 @@
 	  frequency      NMTOKEN  27.5
 	  length         NMTOKEN  3200
 	  volume         NMTOKEN  0.2
+	  sync           CDATA    "false"
+	  sync-mode      CDATA    #IMPLIED
 	  >
 
 <!-- effect pad -->

@@ -4184,6 +4184,45 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
     gtk_adjustment_set_value(gobject->volume->adjustment,
 			     val);
   }
+
+  str = xmlGetProp(node,
+		   "sync");
+
+  if(str != NULL &&
+     !xmlStrncmp(str,
+		 "true",
+		 5)){
+    gtk_toggle_button_set_active(gobject->do_sync,
+				 TRUE);
+  }
+
+  str = xmlGetProp(node,
+		   "sync-mode");
+
+  if(str != NULL){
+    GtkTreeModel *model;
+    GtkTreeIter iter;
+
+    gchar *value;
+
+    model = gtk_combo_box_get_model(gobject->sync_mode);
+    
+    if(gtk_tree_model_get_iter_first(model, &iter)){
+      do{
+	gtk_tree_model_get(model, &iter,
+			   0, &value,
+			   -1);
+
+	if(!g_strcmp0(str,
+		      value)){
+	  gtk_combo_box_set_active_iter((GtkComboBox *) gobject->sync_mode,
+					&iter);
+	  break;
+	}
+      }while(gtk_tree_model_iter_next(model,
+				      &iter));
+    }
+  }
 }
 
 void
@@ -6806,6 +6845,14 @@ ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, Ag
 	     "volume",
 	     g_strdup_printf("%f", oscillator->volume->adjustment->value));
 
+  xmlNewProp(node,
+	     "sync",
+	     g_strdup_printf("%s", (gtk_toggle_button_get_active(oscillator->do_sync) ? "true": "false")));
+
+  xmlNewProp(node,
+	     "sync-mode",
+	     g_strdup_printf("%s", gtk_combo_box_text_get_active_text(oscillator->sync_mode)));
+
   xmlAddChild(parent,
 	      node);
 
@@ -7283,11 +7330,11 @@ ags_simple_file_write_preset(AgsSimpleFile *simple_file, xmlNode *parent, AgsPre
   /* scope and preset name */
   xmlNewProp(node,
 	     "scope",
-	     g_strdup(g_type_name(preset->scope)));
+	     g_strdup(preset->scope));
 
   xmlNewProp(node,
 	     "preset-name",
-	     g_strdup(g_type_name(preset->preset_name)));
+	     g_strdup(preset->preset_name));
 
   /* mapping */
   xmlNewProp(node,

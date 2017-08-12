@@ -32,6 +32,8 @@ int ags_lv2_worker_manager_test_clean_suite();
 
 void ags_lv2_worker_manager_test_pull_worker();
 
+#define AGS_LV2_WORKER_MANAGER_TEST_PULL_WORKER_DELAY (5000000)
+
 /* Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
  */
@@ -55,11 +57,20 @@ void
 ags_lv2_worker_manager_test_pull_worker()
 {
   AgsLv2WorkerManager *lv2_worker_manager;
+  AgsThreadPool *thread_pool;
   
   GObject *worker;
   
   lv2_worker_manager = ags_lv2_worker_manager_get_instance();
 
+  thread_pool = g_object_new(AGS_TYPE_THREAD_POOL,
+			     NULL);
+  lv2_worker_manager->thread_pool = thread_pool;
+
+  ags_thread_pool_start(thread_pool);
+
+  usleep(AGS_LV2_WORKER_MANAGER_TEST_PULL_WORKER_DELAY);
+  
   worker = ags_lv2_worker_manager_pull_worker(lv2_worker_manager);
 
   CU_ASSERT(AGS_IS_LV2_WORKER(worker) == TRUE);

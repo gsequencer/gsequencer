@@ -538,6 +538,10 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
   GList *list;
   
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  if(!AGS_IS_THREAD_POOL(thread_pool)){
+    return(NULL);
+  }
   
   returnable_thread = NULL;
 

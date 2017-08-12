@@ -1,9 +1,13 @@
 Overview of Changes in AGS 0.9.7
 ================================
 
-* Implement new functions to handle LV2_Event_Buffer. Note the old
+* Implemented new functions to handle LV2_Event_Buffer. Note the old
   functions to do so are deprecated and are incompatible to the
   newer API.
+* AgsSyncsynth is a new AgsMachine object, allowing you to edit synth
+  notation.
+* Smaller refactoring of AgsApplySynth to use new AgsSynthGenerator
+  API.
 
 Overview of Changes in AGS 0.9.0
 ================================

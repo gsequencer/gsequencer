@@ -57,6 +57,8 @@ ags_input_test_clean_suite()
 void
 ags_input_test_open_file()
 {
+  CU_ASSERT(TRUE);
+  
   //TODO:JK: implement me
 }
 

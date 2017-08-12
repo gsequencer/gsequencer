@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 0.9.6\n"
+"Project-Id-Version: gsequencer 0.9.7\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-08-08 04:51+0200\n"
+"POT-Creation-Date: 2017-08-12 19:55+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -338,23 +338,27 @@ msgstr ""
 msgid "Synth"
 msgstr ""
 
-#: ags/X/ags_menu_bar.c:191
+#: ags/X/ags_menu_bar.c:190
+msgid "Syncsynth"
+msgstr ""
+
+#: ags/X/ags_menu_bar.c:194
 msgid "FPlayer"
 msgstr ""
 
-#: ags/X/ags_menu_bar.c:196
+#: ags/X/ags_menu_bar.c:199
 msgid "LADSPA"
 msgstr ""
 
-#: ags/X/ags_menu_bar.c:200 ags/X/ags_menu_bar.c:215
+#: ags/X/ags_menu_bar.c:203 ags/X/ags_menu_bar.c:218
 msgid "DSSI"
 msgstr ""
 
-#: ags/X/ags_menu_bar.c:204 ags/X/ags_menu_bar.c:219
+#: ags/X/ags_menu_bar.c:207 ags/X/ags_menu_bar.c:222
 msgid "Lv2"
 msgstr ""
 
-#: ags/X/ags_menu_bar.c:224
+#: ags/X/ags_menu_bar.c:227
 msgid "Automation"
 msgstr ""
 
@@ -441,7 +445,7 @@ msgstr ""
 
 #: ags/X/ags_property_editor.c:100 ags/X/editor/ags_envelope_editor.c:172
 #: ags/X/export/ags_machine_collection_entry.c:173
-#: ags/X/import/ags_track_collection_mapper.c:234
+#: ags/X/import/ags_track_collection_mapper.c:235
 msgid "enabled"
 msgstr ""
 
@@ -536,7 +540,7 @@ msgstr ""
 msgid "preset"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_editor.c:297 ags/X/machine/ags_oscillator.c:172
+#: ags/X/editor/ags_envelope_editor.c:297 ags/X/machine/ags_oscillator.c:203
 msgid "attack"
 msgstr ""
 
@@ -576,7 +580,7 @@ msgstr ""
 msgid "Note:y"
 msgstr ""
 
-#: ags/X/editor/ags_machine_selection.c:122
+#: ags/X/editor/ags_machine_selection.c:123
 msgid "select machines"
 msgstr ""
 
@@ -649,20 +653,20 @@ msgid "crop notes"
 msgstr ""
 
 #: ags/X/export/ags_machine_collection_entry.c:216
-#: ags/X/import/ags_track_collection_mapper.c:263
+#: ags/X/import/ags_track_collection_mapper.c:264
 msgid "sequence: "
 msgstr ""
 
-#: ags/X/import/ags_track_collection_mapper.c:253
+#: ags/X/import/ags_track_collection_mapper.c:254
 msgid "instrument: "
 msgstr ""
 
-#: ags/X/import/ags_track_collection_mapper.c:350
+#: ags/X/import/ags_track_collection_mapper.c:351
 #: ags/X/machine/ags_ffplayer.c:322
 msgid "instrument"
 msgstr ""
 
-#: ags/X/import/ags_track_collection_mapper.c:383
+#: ags/X/import/ags_track_collection_mapper.c:384
 msgid "sequence"
 msgstr ""
 
@@ -678,7 +682,7 @@ msgstr ""
 msgid "run"
 msgstr ""
 
-#: ags/X/machine/ags_drum.c:395 ags/X/machine/ags_oscillator.c:179
+#: ags/X/machine/ags_drum.c:395 ags/X/machine/ags_oscillator.c:210
 msgid "length"
 msgstr ""
 
@@ -699,50 +703,82 @@ msgstr ""
 msgid "show GUI"
 msgstr ""
 
-#: ags/X/machine/ags_oscillator.c:122
+#: ags/X/machine/ags_oscillator.c:153
 msgid "wave"
 msgstr ""
 
-#: ags/X/machine/ags_oscillator.c:154
+#: ags/X/machine/ags_oscillator.c:185
 msgid "sawtooth"
 msgstr ""
 
-#: ags/X/machine/ags_oscillator.c:159
+#: ags/X/machine/ags_oscillator.c:190
 msgid "square"
 msgstr ""
 
-#: ags/X/machine/ags_oscillator.c:164
+#: ags/X/machine/ags_oscillator.c:195
 msgid "triangle"
 msgstr ""
 
-#: ags/X/machine/ags_oscillator.c:186
+#: ags/X/machine/ags_oscillator.c:217
 msgid "phase"
 msgstr ""
 
-#: ags/X/machine/ags_oscillator.c:193
+#: ags/X/machine/ags_oscillator.c:224
 msgid "frequency"
 msgstr ""
 
-#: ags/X/machine/ags_oscillator.c:205
+#: ags/X/machine/ags_oscillator.c:236
 msgid "volume"
 msgstr ""
 
-#: ags/X/machine/ags_synth.c:269
+#: ags/X/machine/ags_oscillator.c:245
+msgid "sync"
+msgstr ""
+
+#: ags/X/machine/ags_oscillator.c:254
+msgid "16 HZ"
+msgstr ""
+
+#: ags/X/machine/ags_oscillator.c:256
+msgid "440 HZ"
+msgstr ""
+
+#: ags/X/machine/ags_oscillator.c:258
+msgid "22000 HZ"
+msgstr ""
+
+#: ags/X/machine/ags_oscillator.c:260
+msgid "limit"
+msgstr ""
+
+#: ags/X/machine/ags_oscillator.c:262
+msgid "no-Hertz"
+msgstr ""
+
+#: ags/X/machine/ags_oscillator.c:264
+msgid "start frequency"
+msgstr ""
+
+#: ags/X/machine/ags_oscillator.c:266
+msgid "current frequency"
+msgstr ""
+
+#: ags/X/machine/ags_synth.c:260
 msgid "auto update"
 msgstr ""
 
-#: ags/X/machine/ags_synth.c:272
+#: ags/X/machine/ags_synth.c:263
 msgid "update"
 msgstr ""
 
-#: ags/X/machine/ags_synth.c:281
+#: ags/X/machine/ags_synth.c:272
 msgid "lower"
 msgstr ""
 
-#: ags/X/machine/ags_synth.c:301
+#: ags/X/machine/ags_synth.c:292
 msgid "loop start"
 msgstr ""
 
-#: ags/X/machine/ags_synth.c:321
+#: ags/X/machine/ags_synth.c:312
 msgid "loop end"
 msgstr ""

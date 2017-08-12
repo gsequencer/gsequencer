@@ -11,6 +11,12 @@ ags (0.9.7)
 	* deprecated ags_lv2_plugin_alloc_event_buffer()
 	* deprecated ags_lv2_plugin_concat_event_buffer()
 	* implemented ags_lv2_urid_manager_unmap()
+	* implemented AgsSyncsynth in order to have true notation available to a synth
+	* implemented ags_synth_generator_compute()
+	* implemented ags_synth_generator_compute_with_audio_signal()
+	* refactored AgsOscillator in order to be reusable
+	* refactored AgsApplySynth task to use new synth generator functions
+	* completed missing gtk-doc comments in ags_input.c and other files
 	* fixed AgsExportSoundcard to don't add device as being NULL
 	* fixed ags_lv2_option_manager_get_option() to lookup correctly
 	* fixed ags_lv2_option_manager_set_option() to lookup correctly
@@ -23,7 +29,7 @@ ags (0.9.7)
 	* new unit-test ags_lv2ui_manager_test.c
 	* new unit-test ags_lv2ui_plugin_test.c
 	* new unit-test ags_audio_connection_test.c
-	* TODO:JK: new unit-test ags_input_test.c
+	* disabled new unit-test ags_input_test.c because not tested
 
 ags (0.9.6)
 
