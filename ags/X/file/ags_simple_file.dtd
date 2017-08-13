@@ -42,7 +42,7 @@
 <!-- machine -->
 <!ELEMENT ags-sf-machine-list (ags-sf-machine*)>
 
-<!ELEMENT ags-sf-machine (ags-sf-automated-port-list, ags-sf-effect-list*, ags-sf-pad-list*, ags-sf-effect-pad-list*, ags-sf-pattern-list?, ags-sf-notation-list?, ags-sf-automation-list?, ags-sf-property-list?, ags-sf-preset-list?)>
+<!ELEMENT ags-sf-machine (ags-sf-automated-port-list, ags-sf-effect-list*, ags-sf-pad-list*, ags-sf-effect-pad-list*, ags-sf-oscillator-list?, ags-sf-pattern-list?, ags-sf-notation-list?, ags-sf-automation-list?, ags-sf-property-list?, ags-sf-preset-list?)>
 <!ATTLIST ags-sf-machine
 	  id                      CDATA     #REQUIRED
 	  type                    CDATA     #REQUIRED
@@ -58,6 +58,7 @@
 	  bank_0                  NMTOKEN   0
 	  bank_1                  NMTOKEN   0
 	  loop                    CDATA     "false"
+	  length                  CDATA     #IMPLIED
 	  reverse-mapping         CDATA     "false"
 	  audio-start-mapping     NMTOKEN   0
 	  audio-end-mapping       NMTOKEN   127
@@ -66,6 +67,9 @@
 	  channels                NMTOKEN   #IMPLIED
 	  output-pads             NMTOKEN   #IMPLIED
 	  input-pads              NMTOKEN   #IMPLIED
+	  base-note               NMTOKEN   #IMPLIED
+	  audio-loop-start        NMTOKEN   #IMPLIED
+	  audio-loop-end          NMTOKEN   #IMPLIED
 	  >
 
 <!ELEMENT ags-sf-automated-port-list (ags-sf-automated-port*)>

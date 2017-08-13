@@ -2275,6 +2275,7 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 
   auto void ags_simple_file_read_drum_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDrum *drum);
   auto void ags_simple_file_read_matrix_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsMatrix *matrix);
+  auto void ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsSyncsynth *syncsynth);
   auto void ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsFFPlayer *ffplayer);
   auto void ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDssiBridge *dssi_bridge);
   auto void ags_simple_file_read_live_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLiveDssiBridge *live_dssi_bridge);
@@ -2325,8 +2326,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 		     "loop");
     
     if(str != NULL &&
-       g_strcmp0(str,
-		 "false")){
+       !g_strcmp0(str,
+		  "true")){
       gtk_toggle_button_set_active((GtkToggleButton *) drum->loop_button,
 				   TRUE);
     }
@@ -2372,8 +2373,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 		     "loop");
     
     if(str != NULL &&
-       g_strcmp0(str,
-		 "false")){
+       !g_strcmp0(str,
+		  "true")){
       gtk_toggle_button_set_active((GtkToggleButton *) matrix->loop_button,
 				   TRUE);
     }
@@ -2391,6 +2392,53 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
       
       gtk_adjustment_set_value(matrix->length_spin->adjustment,
 			       (gdouble) length);
+    }
+  }
+
+  void ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsSyncsynth *syncsynth){
+    /* base note */
+    str = xmlGetProp(node,
+		     "base-note");
+
+    if(str != NULL){
+      guint base_note;
+
+      base_note = g_ascii_strtoull(str,
+				   NULL,
+				   10);
+      
+      gtk_adjustment_set_value(syncsynth->lower->adjustment,
+			       (gdouble) base_note);
+    }
+
+    /* audio loop start */
+    str = xmlGetProp(node,
+		     "audio-loop-start");
+
+    if(str != NULL){
+      guint audio_loop_start;
+
+      audio_loop_start = g_ascii_strtoull(str,
+				   NULL,
+				   10);
+      
+      gtk_adjustment_set_value(syncsynth->loop_start->adjustment,
+			       (gdouble) audio_loop_start);
+    }
+
+    /* audio loop end */
+    str = xmlGetProp(node,
+		     "audio-loop-end");
+
+    if(str != NULL){
+      guint audio_loop_end;
+
+      audio_loop_end = g_ascii_strtoull(str,
+				   NULL,
+				   10);
+      
+      gtk_adjustment_set_value(syncsynth->loop_end->adjustment,
+			       (gdouble) audio_loop_end);
     }
   }
 
@@ -2763,6 +2811,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     ags_simple_file_read_drum_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsDrum *) machine);
   }else if(AGS_IS_MATRIX(machine)){
     ags_simple_file_read_matrix_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsMatrix *) machine);
+  }else if(AGS_IS_SYNCSYNTH(machine)){
+    ags_simple_file_read_syncsynth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsSyncsynth *) machine);
   }else if(AGS_IS_FFPLAYER(machine)){
     ags_simple_file_read_ffplayer_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsFFPlayer *) machine);
   }else if(AGS_IS_DSSI_BRIDGE(machine)){
@@ -5708,6 +5758,22 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     xmlNewProp(node,
 	       "length",
 	       g_strdup_printf("%u", (guint) matrix->length_spin->adjustment->value));
+  }else if(AGS_IS_SYNCSYNTH(machine)){
+    AgsSyncsynth *syncsynth;
+
+    syncsynth = (AgsSyncsynth *) machine;
+    
+    xmlNewProp(node,
+	       "base-note",
+	       g_strdup_printf("%u", (guint) syncsynth->lower->adjustment->value));
+
+    xmlNewProp(node,
+	       "audio-loop-start",
+	       g_strdup_printf("%u", (guint) syncsynth->loop_start->adjustment->value));
+
+    xmlNewProp(node,
+	       "audio-loop-end",
+	       g_strdup_printf("%u", (guint) syncsynth->loop_end->adjustment->value));
   }else if(AGS_IS_FFPLAYER(machine)){
     AgsFFPlayer *ffplayer;
 
