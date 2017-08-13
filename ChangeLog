@@ -1,3 +1,9 @@
+ags (0.9.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing base-note, audio-loop-start and audio-loop-end while read/write XML
+	* fixed ags_synth_util_get_xcross_count() and related functions
+
 ags (0.9.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

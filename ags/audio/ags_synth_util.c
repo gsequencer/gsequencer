@@ -54,9 +54,13 @@ ags_synth_util_get_xcross_count_s8(signed char *buffer,
     if(negative &&
        buffer[i] > 0){
       count++;
+
+      negative = FALSE;
     }else if(!negative &&
 	     buffer[i] < 0){
       count++;
+
+      negative = TRUE;
     }
   }
   
@@ -94,9 +98,13 @@ ags_synth_util_get_xcross_count_s16(signed short *buffer,
     if(negative &&
        buffer[i] > 0){
       count++;
+
+      negative = FALSE;
     }else if(!negative &&
 	     buffer[i] < 0){
       count++;
+
+      negative = TRUE;
     }
   }
   
@@ -134,9 +142,13 @@ ags_synth_util_get_xcross_count_s24(signed long *buffer,
     if(negative &&
        buffer[i] > 0){
       count++;
+
+      negative = FALSE;
     }else if(!negative &&
 	     buffer[i] < 0){
       count++;
+
+      negative = TRUE;
     }
   }
   
@@ -174,9 +186,13 @@ ags_synth_util_get_xcross_count_s32(signed long *buffer,
     if(negative &&
        buffer[i] > 0){
       count++;
+
+      negative = FALSE;
     }else if(!negative &&
 	     buffer[i] < 0){
       count++;
+
+      negative = TRUE;
     }
   }
   
@@ -214,9 +230,13 @@ ags_synth_util_get_xcross_count_s64(signed long long *buffer,
     if(negative &&
        buffer[i] > 0){
       count++;
+
+      negative = FALSE;
     }else if(!negative &&
 	     buffer[i] < 0){
       count++;
+
+      negative = TRUE;
     }
   }
   
@@ -254,9 +274,13 @@ ags_synth_util_get_xcross_count_float(float *buffer,
     if(negative &&
        buffer[i] > 0.0){
       count++;
+
+      negative = FALSE;
     }else if(!negative &&
 	     buffer[i] < 0.0){
       count++;
+
+      negative = TRUE;
     }
   }
   
@@ -295,9 +319,13 @@ ags_synth_util_get_xcross_count_double(double *buffer,
     if(negative &&
        buffer[i] > 0.0){
       count++;
+
+      negative = FALSE;
     }else if(!negative &&
 	     buffer[i] < 0.0){
       count++;
+
+      negative = TRUE;
     }
   }
   
