@@ -1,3 +1,10 @@
+ags (0.9.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_input_apply_synth() and ags_input_apply_synth_extended()
+	* fixed ags_syncsynth_reset_loop() to use attack to calculate loop upper
+	* enabled unit-test ags_input_test.c because not tested
+
 ags (0.9.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -543,6 +543,7 @@ ags_playable_read_audio_signal
 ags_input_get_type
 ags_input_open_file
 ags_input_apply_synth
+ags_input_apply_synth_extended
 ags_input_is_active
 ags_input_next_active
 ags_input_new

@@ -74,6 +74,8 @@ ags_lv2_worker_manager_test_pull_worker()
   worker = ags_lv2_worker_manager_pull_worker(lv2_worker_manager);
 
   CU_ASSERT(AGS_IS_LV2_WORKER(worker) == TRUE);
+
+  g_object_unref(lv2_worker_manager);
 }
 
 int
@@ -81,6 +83,9 @@ main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
   
+  putenv("LC_ALL=C");
+  putenv("LANG=C");
+
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
     return CU_get_error();

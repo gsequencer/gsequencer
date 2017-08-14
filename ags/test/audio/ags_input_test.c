@@ -31,8 +31,27 @@ int ags_input_test_clean_suite();
 
 void ags_input_test_open_file();
 void ags_input_test_apply_synth();
+void ags_input_test_apply_synth_extended();
 void ags_input_test_is_active();
 void ags_input_test_next_active();
+
+#define AGS_INPUT_TEST_OPEN_FILE_FILENAME "/usr/share/sounds/alsa/Noise.wav"
+#define AGS_INPUT_TEST_OPEN_FILE_AUDIO_CHANNEL (0)
+
+#define AGS_INPUT_TEST_APPLY_SYNTH_OSCILLATOR (AGS_SYNTH_GENERATOR_OSCILLATOR_SIN)
+#define AGS_INPUT_TEST_APPLY_SYNTH_FREQUENCY (440.0)
+#define AGS_INPUT_TEST_APPLY_SYNTH_PHASE (0.0)
+#define AGS_INPUT_TEST_APPLY_SYNTH_VOLUME (0.5)
+#define AGS_INPUT_TEST_APPLY_SYNTH_N_FRAMES (3200)
+
+#define AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_OSCILLATOR (AGS_SYNTH_GENERATOR_OSCILLATOR_SIN)
+#define AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_FREQUENCY (440.0)
+#define AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_PHASE (0.0)
+#define AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_VOLUME (0.5)
+#define AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_N_FRAMES (3200)
+#define AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_ATTACK (0)
+#define AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_BASE_NOTE (-48.0)
+#define AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_COMPUTE_FLAGS (AGS_SYNTH_GENERATOR_COMPUTE_FIXED_LENGTH)
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -57,21 +76,126 @@ ags_input_test_clean_suite()
 void
 ags_input_test_open_file()
 {
-  CU_ASSERT(TRUE);
+  AgsInput *input;
+
+  gboolean success;
   
-  //TODO:JK: implement me
+  input = g_object_new(AGS_TYPE_INPUT,
+		       NULL);
+  AGS_CHANNEL(input)->first_recycling =
+    AGS_CHANNEL(input)->last_recycling = g_object_new(AGS_TYPE_RECYCLING,
+						      NULL);
+  
+  success = ags_input_open_file(input,
+				AGS_INPUT_TEST_OPEN_FILE_FILENAME,
+				NULL,
+				NULL,
+				NULL,
+				AGS_INPUT_TEST_OPEN_FILE_AUDIO_CHANNEL);
+  
+  CU_ASSERT(success == TRUE &&
+	    input->file_link != NULL &&
+	    AGS_CHANNEL(input)->first_recycling->audio_signal != NULL);
 }
 
 void
 ags_input_test_apply_synth()
 {
-  //TODO:JK: implement me
+  AgsInput *input;
+
+  gboolean success;
+  
+  input = g_object_new(AGS_TYPE_INPUT,
+		       NULL);
+  AGS_CHANNEL(input)->first_recycling =
+    AGS_CHANNEL(input)->last_recycling = g_object_new(AGS_TYPE_RECYCLING,
+						      NULL);
+  
+  success = ags_input_apply_synth(input,
+				  AGS_INPUT_TEST_APPLY_SYNTH_OSCILLATOR,
+				  AGS_INPUT_TEST_APPLY_SYNTH_FREQUENCY,
+				  AGS_INPUT_TEST_APPLY_SYNTH_PHASE,
+				  AGS_INPUT_TEST_APPLY_SYNTH_VOLUME,
+				  AGS_INPUT_TEST_APPLY_SYNTH_N_FRAMES);
+  
+  CU_ASSERT(success == TRUE &&
+	    input->file_link != NULL &&
+	    AGS_CHANNEL(input)->first_recycling->audio_signal != NULL);
+}
+
+void
+ags_input_test_apply_synth_extended()
+{
+  AgsInput *input;
+
+  gboolean success;
+  
+  input = g_object_new(AGS_TYPE_INPUT,
+		       NULL);
+  AGS_CHANNEL(input)->first_recycling =
+    AGS_CHANNEL(input)->last_recycling = g_object_new(AGS_TYPE_RECYCLING,
+						      NULL);
+  
+  success = ags_input_apply_synth_extended(input,
+					   AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_OSCILLATOR,
+					   AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_FREQUENCY,
+					   AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_PHASE,
+					   AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_VOLUME,
+					   AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_N_FRAMES,
+					   AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_ATTACK,
+					   AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_BASE_NOTE,
+					   NULL, NULL,
+					   AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_COMPUTE_FLAGS);
+  
+  CU_ASSERT(success == TRUE &&
+	    input->file_link != NULL &&
+	    AGS_CHANNEL(input)->first_recycling->audio_signal != NULL);
 }
 
 void
 ags_input_test_is_active()
 {
-  //TODO:JK: implement me
+  AgsInput *input;
+  AgsAudioSignal *audio_signal;
+  AgsRecallID *recall_id;
+  AgsRecyclingContext *recycling_context, *parent_recycling_context;
+
+  gboolean is_active;
+  
+  input = g_object_new(AGS_TYPE_INPUT,
+		       NULL);
+  AGS_CHANNEL(input)->first_recycling =
+    AGS_CHANNEL(input)->last_recycling = g_object_new(AGS_TYPE_RECYCLING,
+						      NULL);
+
+  recycling_context = g_object_new(AGS_TYPE_RECYCLING_CONTEXT,
+				   NULL);
+  
+  parent_recycling_context = g_object_new(AGS_TYPE_RECYCLING_CONTEXT,
+					  "parent", recycling_context,
+					  NULL);
+  
+  /* assert - not active */
+  is_active = ags_input_is_active(input,
+				  recycling_context);
+
+  CU_ASSERT(is_active == FALSE);
+  
+  /* assert - active */
+  recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+			   "recycling-context", recycling_context,
+			   NULL);
+  
+  audio_signal = g_object_new(AGS_TYPE_AUDIO_SIGNAL,
+			      "recall-id", recall_id,
+			      NULL);
+  ags_recycling_add_audio_signal(AGS_CHANNEL(input)->first_recycling,
+				 audio_signal);
+  
+  is_active = ags_input_is_active(input,
+				  recycling_context);
+
+  CU_ASSERT(is_active == TRUE);
 }
 
 void
@@ -105,6 +229,7 @@ main(int argc, char **argv)
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "test of AgsInput open file", ags_input_test_open_file) == NULL) ||
      (CU_add_test(pSuite, "test of AgsInput apply synth", ags_input_test_apply_synth) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsInput apply synth extended", ags_input_test_apply_synth_extended) == NULL) ||
      (CU_add_test(pSuite, "test of AgsInput is active", ags_input_test_is_active) == NULL) ||
      (CU_add_test(pSuite, "test of AgsInput next active", ags_input_test_next_active) == NULL)){
     CU_cleanup_registry();

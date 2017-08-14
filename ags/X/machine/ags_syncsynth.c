@@ -1357,7 +1357,7 @@ ags_syncsynth_reset_loop(AgsSyncsynth *syncsynth)
   GList *list, *list_start;
   GList *child_start;
   
-  gdouble loop_upper, tmp;
+  gdouble loop_upper, tmp0, tmp1;
 
   loop_upper = 0.0;
 
@@ -1367,10 +1367,11 @@ ags_syncsynth_reset_loop(AgsSyncsynth *syncsynth)
   while(list != NULL){
     child_start = gtk_container_get_children(list->data);
 
-    tmp = gtk_spin_button_get_value(AGS_OSCILLATOR(child_start->next->data)->frame_count);
+    tmp0 = gtk_spin_button_get_value(AGS_OSCILLATOR(child_start->next->data)->frame_count);
+    tmp1 = gtk_spin_button_get_value(AGS_OSCILLATOR(child_start->next->data)->attack);
 
-    if(tmp > loop_upper){
-      loop_upper = tmp;
+    if(tmp0 + tmp1 > loop_upper){
+      loop_upper = tmp0 + tmp1;
     }
 
     g_list_free(child_start);
