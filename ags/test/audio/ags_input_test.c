@@ -119,7 +119,7 @@ ags_input_test_apply_synth()
 				  AGS_INPUT_TEST_APPLY_SYNTH_N_FRAMES);
   
   CU_ASSERT(success == TRUE &&
-	    input->file_link != NULL &&
+	    input->synth_generator != NULL &&
 	    AGS_CHANNEL(input)->first_recycling->audio_signal != NULL);
 }
 
@@ -148,7 +148,7 @@ ags_input_test_apply_synth_extended()
 					   AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_COMPUTE_FLAGS);
   
   CU_ASSERT(success == TRUE &&
-	    input->file_link != NULL &&
+	    input->synth_generator != NULL &&
 	    AGS_CHANNEL(input)->first_recycling->audio_signal != NULL);
 }
 
@@ -201,7 +201,97 @@ ags_input_test_is_active()
 void
 ags_input_test_next_active()
 {
-  //TODO:JK: implement me
+  AgsInput *input[3], *current;
+  AgsAudioSignal *audio_signal;
+  AgsRecallID *recall_id;
+  AgsRecyclingContext *recycling_context, *parent_recycling_context;
+
+  input[0] = g_object_new(AGS_TYPE_INPUT,
+			  NULL);
+  AGS_CHANNEL(input[0])->first_recycling =
+    AGS_CHANNEL(input[0])->last_recycling = g_object_new(AGS_TYPE_RECYCLING,
+							 NULL);
+
+  input[1] = g_object_new(AGS_TYPE_INPUT,
+			  NULL);
+  AGS_CHANNEL(input[1])->first_recycling =
+    AGS_CHANNEL(input[1])->last_recycling = g_object_new(AGS_TYPE_RECYCLING,
+							 NULL);
+  AGS_CHANNEL(input[1])->prev = input[0];
+  AGS_CHANNEL(input[1])->prev_pad = input[0];
+  AGS_CHANNEL(input[0])->next = input[1];
+  AGS_CHANNEL(input[0])->next_pad = input[1];
+  
+  input[2] = g_object_new(AGS_TYPE_INPUT,
+			  NULL);
+  AGS_CHANNEL(input[2])->first_recycling =
+    AGS_CHANNEL(input[2])->last_recycling = g_object_new(AGS_TYPE_RECYCLING,
+							 NULL);
+  AGS_CHANNEL(input[2])->prev = input[1];
+  AGS_CHANNEL(input[2])->prev_pad = input[1];
+  AGS_CHANNEL(input[1])->next = input[2];
+  AGS_CHANNEL(input[1])->next_pad = input[2];
+
+  recycling_context = g_object_new(AGS_TYPE_RECYCLING_CONTEXT,
+				   NULL);
+  
+  parent_recycling_context = g_object_new(AGS_TYPE_RECYCLING_CONTEXT,
+					  "parent", recycling_context,
+					  NULL);
+
+  /* assert - no active */
+  current = ags_input_next_active(input[0],
+				  recycling_context);
+
+  CU_ASSERT(current == NULL);
+  
+  /* assert - input[2] */
+  recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+			   "recycling-context", recycling_context,
+			   NULL);
+  
+  audio_signal = g_object_new(AGS_TYPE_AUDIO_SIGNAL,
+			      "recall-id", recall_id,
+			      NULL);
+  ags_recycling_add_audio_signal(AGS_CHANNEL(input[2])->first_recycling,
+				 audio_signal);
+  
+  current = ags_input_next_active(input[0],
+				  recycling_context);
+
+  CU_ASSERT(current == input[2]);
+
+  /* assert - input[1] */
+  recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+			   "recycling-context", recycling_context,
+			   NULL);
+  
+  audio_signal = g_object_new(AGS_TYPE_AUDIO_SIGNAL,
+			      "recall-id", recall_id,
+			      NULL);
+  ags_recycling_add_audio_signal(AGS_CHANNEL(input[1])->first_recycling,
+				 audio_signal);
+  
+  current = ags_input_next_active(input[0],
+				  recycling_context);
+
+  CU_ASSERT(current == input[1]);
+
+  /* assert - input[0] */
+  recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+			   "recycling-context", recycling_context,
+			   NULL);
+  
+  audio_signal = g_object_new(AGS_TYPE_AUDIO_SIGNAL,
+			      "recall-id", recall_id,
+			      NULL);
+  ags_recycling_add_audio_signal(AGS_CHANNEL(input[0])->first_recycling,
+				 audio_signal);
+  
+  current = ags_input_next_active(input[0],
+				  recycling_context);
+
+  CU_ASSERT(current == input[0]);
 }
 
 int
