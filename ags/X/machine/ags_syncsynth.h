@@ -36,6 +36,9 @@
 #define AGS_IS_SYNCSYNTH_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_SYNCSYNTH))
 #define AGS_SYNCSYNTH_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_SYNCSYNTH, AgsSyncsynthClass))
 
+#define AGS_SYNCSYNTH_BASE_NOTE_MAX (72.0)
+#define AGS_SYNCSYNTH_BASE_NOTE_MIN (-72.0)
+
 typedef struct _AgsSyncsynth AgsSyncsynth;
 typedef struct _AgsSyncsynthClass AgsSyncsynthClass;
 

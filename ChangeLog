@@ -1,7 +1,9 @@
 ags (0.9.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented pass base-note to AgsApplySynth
 	* fixed missing base-note, audio-loop-start and audio-loop-end while read/write XML
+	* fixed missing attack as calculating stream size
 	* fixed ags_synth_util_get_xcross_count() and related functions
 
 ags (0.9.7)

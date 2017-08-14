@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -721,7 +721,7 @@ ags_synth_generator_compute_with_audio_signal(AgsSynthGenerator *synth_generator
   start_frequency = 48.0;
   frequency = synth_generator->frequency;
   
-  current_frequency = (guint) ((double) frequency * exp2((double)((start_frequency * -1.0) + (double) note) / 12.0));
+  current_frequency = (guint) ((double) frequency * exp2((double)((double) note + 48.0) / 12.0));
 
   phase = synth_generator->phase;
   volume = synth_generator->volume;

@@ -81,6 +81,7 @@ enum{
   PROP_LOOP_END,
   PROP_DO_SYNC,
   PROP_SYNC_MODE,
+  PROP_BASE_NOTE,
 };
 
 GType
@@ -384,6 +385,24 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
   g_object_class_install_property(gobject,
 				  PROP_SYNC_MODE,
 				  param_spec);
+  
+  /**
+   * AgsApplySynth:base-note:
+   *
+   * The base-note to ramp up from.
+   * 
+   * Since: 0.9.7
+   */
+  param_spec = g_param_spec_double("base-note",
+				   i18n_pspec("base note"),
+				   i18n_pspec("The base note to ramp up from"),
+				   -78.0,
+				   78.0,
+				   -48.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BASE_NOTE,
+				  param_spec);
 
   /* AgsTaskClass */
   task = (AgsTaskClass *) apply_synth;
@@ -421,6 +440,8 @@ ags_apply_synth_init(AgsApplySynth *apply_synth)
 
   apply_synth->do_sync = FALSE;
   apply_synth->sync_mode = 0;
+
+  apply_synth->base_note = -48.0;
 }
 
 void
@@ -520,6 +541,11 @@ ags_apply_synth_set_property(GObject *gobject,
       apply_synth->sync_mode = g_value_get_uint(value);
     }
     break;
+  case PROP_BASE_NOTE:
+    {
+      apply_synth->base_note = g_value_get_double(value);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -600,6 +626,11 @@ ags_apply_synth_get_property(GObject *gobject,
   case PROP_SYNC_MODE:
     {
       g_value_set_uint(value, apply_synth->sync_mode);
+    }
+    break;
+  case PROP_BASE_NOTE:
+    {
+      g_value_set_double(value, apply_synth->base_note);
     }
     break;
   default:
@@ -759,9 +790,9 @@ ags_apply_synth_launch(AgsTask *task)
 	/* compute audio signal */
 	audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
 	ags_audio_signal_stream_resize(audio_signal,
-				       (guint) ceil(frame_count / audio_signal->buffer_size));
+				       (guint) ceil((attack + frame_count) / audio_signal->buffer_size));
 
-	note = 48.0 + (gdouble) i;
+	note = (apply_synth->base_note) + (gdouble) i;
 	  
 	ags_synth_generator_compute_with_audio_signal(AGS_INPUT(channel)->synth_generator,
 						      audio_signal,
@@ -802,9 +833,9 @@ ags_apply_synth_launch(AgsTask *task)
 	/* compute audio signal */
 	audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
 	ags_audio_signal_stream_resize(audio_signal,
-				       (guint) ceil(frame_count / audio_signal->buffer_size));
+				       (guint) ceil((attack + frame_count) / audio_signal->buffer_size));
 
-	note = 48.0;
+	note = (apply_synth->base_note);
 	  
 	ags_synth_generator_compute_with_audio_signal(AGS_INPUT(channel)->synth_generator,
 						      audio_signal,
@@ -826,7 +857,7 @@ ags_apply_synth_launch(AgsTask *task)
 
 	  audio_signal = ags_audio_signal_get_template(input->first_recycling->audio_signal);
 	  ags_audio_signal_stream_resize(audio_signal,
-					 (guint) ceil(frame_count / audio_signal->buffer_size));
+					 (guint) ceil((attack + frame_count) / audio_signal->buffer_size));
 
 	  g_object_set(AGS_INPUT(input)->synth_generator,
 		       "samplerate", audio_signal->samplerate,
@@ -851,9 +882,9 @@ ags_apply_synth_launch(AgsTask *task)
 	for(i = 0; channel != NULL && i < apply_synth->count; i++){
 	  audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
 	  ags_audio_signal_stream_resize(audio_signal,
-					 (guint) ceil(frame_count / audio_signal->buffer_size));
+					 (guint) ceil((attack + frame_count) / audio_signal->buffer_size));
 	  
-	  note = 48.0 + (gdouble) i;
+	  note = (apply_synth->base_note) + (gdouble) i;
 	  
 	  ags_synth_generator_compute_with_audio_signal(AGS_INPUT(input)->synth_generator,
 							audio_signal,

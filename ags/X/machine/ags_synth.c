@@ -279,7 +279,10 @@ ags_synth_init(AgsSynth *synth)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  synth->lower = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 0.0, 1.0);
+  synth->lower = (GtkSpinButton *) gtk_spin_button_new_with_range(AGS_SYNTH_BASE_NOTE_MIN,
+								  AGS_SYNTH_BASE_NOTE_MAX,
+								  1.0);
+  synth->lower->adjustment->value = -48.0;
   gtk_table_attach(table,
 		   GTK_WIDGET(synth->lower),
 		   1, 2,
@@ -766,6 +769,7 @@ ags_synth_update(AgsSynth *synth)
     g_object_set(apply_synth,
 		 "do-sync", do_sync,
 		 "sync-mode", sync_mode,
+		 "base-note", synth->lower->adjustment->value,
 		 NULL);
 
     apply_synth = ags_apply_synth_new(channel, output_lines,

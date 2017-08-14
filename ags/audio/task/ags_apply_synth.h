@@ -69,6 +69,8 @@ struct _AgsApplySynth
 
   gboolean do_sync;
   guint sync_mode;
+
+  gdouble base_note;
 };
 
 struct _AgsApplySynthClass
