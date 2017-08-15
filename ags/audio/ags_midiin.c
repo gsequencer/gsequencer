@@ -708,6 +708,13 @@ ags_midiin_dispose(GObject *gobject)
 
   midiin = AGS_MIDIIN(gobject);
 
+  /* application context */
+  if(midiin->application_context != NULL){
+    g_object_unref(midiin->application_context);
+
+    midiin->application_context = NULL;
+  }
+
   /* audio */  
   if(midiin->audio != NULL){
     list = midiin->audio;
@@ -770,6 +777,11 @@ ags_midiin_finalize(GObject *gobject)
   
   /* free buffer array */
   free(midiin->buffer);
+
+  /* application context */
+  if(midiin->application_context != NULL){
+    g_object_unref(midiin->application_context);
+  }
 
   /* audio */
   if(midiin->audio != NULL){

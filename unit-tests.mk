@@ -38,10 +38,12 @@ check_PROGRAMS += \
 	ags_lv2ui_plugin_test \
 	ags_audio_application_context_test \
 	ags_devout_test \
+	ags_midiin_test \
 	ags_audio_test \
 	ags_audio_connection_test \
 	ags_channel_test \
 	ags_input_test \
+	ags_output_test \
 	ags_recycling_test \
 	ags_audio_signal_test \
 	ags_recall_test \
@@ -283,6 +285,12 @@ ags_devout_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML
 ags_devout_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_devout_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
+# midiin unit test
+ags_midiin_test_SOURCES = ags/test/audio/ags_midiin_test.c
+ags_midiin_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_midiin_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_midiin_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
 # audio unit test
 ags_audio_test_SOURCES = ags/test/audio/ags_audio_test.c
 ags_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
@@ -306,6 +314,12 @@ ags_input_test_SOURCES = ags/test/audio/ags_input_test.c
 ags_input_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_input_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_input_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# output unit test
+ags_output_test_SOURCES = ags/test/audio/ags_output_test.c
+ags_output_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_output_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_output_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # recycling unit test
 ags_recycling_test_SOURCES = ags/test/audio/ags_recycling_test.c

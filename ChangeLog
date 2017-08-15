@@ -4,6 +4,8 @@ ags (0.9.9)
 	* implemented ags_input_apply_synth() and ags_input_apply_synth_extended()
 	* fixed ags_syncsynth_reset_loop() to use attack to calculate loop upper
 	* enabled unit-test ags_input_test.c because not tested
+	* new unit-test ags_midiin_test.c
+	* new unit-test ags_output_test.c
 
 ags (0.9.8)
 
