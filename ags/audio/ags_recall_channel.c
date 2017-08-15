@@ -664,8 +664,9 @@ ags_recall_channel_find_channel(GList *recall_channel_i, AgsChannel *source)
   while(recall_channel_i != NULL){
     recall_channel = AGS_RECALL_CHANNEL(recall_channel_i->data);
 
-    if(recall_channel->source == source)
+    if(recall_channel->source == source){
       return(recall_channel_i);
+    }
 
     recall_channel_i = recall_channel_i->next;
   }

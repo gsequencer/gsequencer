@@ -9,6 +9,8 @@ ags (0.9.9)
 	* new unit-test ags_playback_domain_test.c
 	* new unit-test ags_playback_test.c
 	* new unit-test ags_preset_test.c
+	* new unit-test ags_recall_channel_test.c
+	* new unit-test ags_recall_channel_run_test.c
 
 ags (0.9.8)
 
