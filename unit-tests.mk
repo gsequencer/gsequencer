@@ -42,6 +42,7 @@ check_PROGRAMS += \
 	ags_audio_test \
 	ags_audio_connection_test \
 	ags_playback_domain_test \
+	ags_playback_test \
 	ags_channel_test \
 	ags_input_test \
 	ags_output_test \
@@ -309,6 +310,12 @@ ags_playback_domain_test_SOURCES = ags/test/audio/ags_playback_domain_test.c
 ags_playback_domain_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_playback_domain_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_playback_domain_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# playback unit test
+ags_playback_test_SOURCES = ags/test/audio/ags_playback_test.c
+ags_playback_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_playback_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_playback_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # channel unit test
 ags_channel_test_SOURCES = ags/test/audio/ags_channel_test.c

@@ -34,6 +34,22 @@ void ags_playback_domain_test_get_audio_thread();
 void ags_playback_domain_test_add_playback();
 void ags_playback_domain_test_remove_playback();
 
+#define AGS_PLAYBACK_DOMAIN_TEST_CONFIG "[generic]\n" \
+  "autosave-thread=false\n"			       \
+  "simple-file=true\n"				       \
+  "disable-feature=experimental\n"		       \
+  "segmentation=4/4\n"				       \
+  "\n"						       \
+  "[thread]\n"					       \
+  "model=super-threaded\n"			       \
+  "super-threaded-scope=recycling\n"		       \
+  "lock-global=ags-thread\n"			       \
+  "lock-parent=ags-recycling-thread\n"		       \
+  "\n"						       \
+  "[recall]\n"					       \
+  "auto-sense=true\n"				       \
+  "\n"
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -41,6 +57,13 @@ void ags_playback_domain_test_remove_playback();
 int
 ags_playback_domain_test_init_suite()
 {
+  AgsConfig *config;
+
+  config = ags_config_get_instance();
+  ags_config_load_from_data(config,
+			    AGS_PLAYBACK_DOMAIN_TEST_CONFIG,
+			    strlen(AGS_PLAYBACK_DOMAIN_TEST_CONFIG));
+
   return(0);
 }
 
