@@ -6,6 +6,7 @@ ags (0.9.9)
 	* enabled unit-test ags_input_test.c because not tested
 	* new unit-test ags_midiin_test.c
 	* new unit-test ags_output_test.c
+	* new unit-test ags_playback_domain_test.c
 
 ags (0.9.8)
 
