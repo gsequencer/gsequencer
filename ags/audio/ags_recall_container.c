@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include <ags/audio/ags_recall_container.h>
 
 #include <ags/object/ags_connectable.h>
@@ -124,7 +125,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 
   /* properties */
   /**
-   * RecallContainer:recall-audio-type:
+   * AgsRecallContainer:recall-audio-type:
    *
    * The associated recall type within audio context.
    * 
@@ -140,7 +141,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * RecallContainer:recall-audio:
+   * AgsRecallContainer:recall-audio:
    *
    * The associated recall within audio context.
    * 
@@ -156,7 +157,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * RecallContainer:recall-audio-run-type:
+   * AgsRecallContainer:recall-audio-run-type:
    *
    * The associated recall type within dynamic audio context.
    * 
@@ -172,7 +173,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * RecallContainer:recall-audio-run:
+   * AgsRecallContainer:recall-audio-run:
    *
    * The associated recall within dynamic audio context.
    * 
@@ -188,7 +189,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * RecallContainer:recall-channel-type:
+   * AgsRecallContainer:recall-channel-type:
    *
    * The associated recall type within channel context.
    * 
@@ -204,7 +205,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * RecallContainer:recall-channel:
+   * AgsRecallContainer:recall-channel:
    *
    * The associated recall within channel context.
    * 
@@ -220,13 +221,13 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * RecallContainer:recall-channel-run-type:
+   * AgsRecallContainer:recall-channel-run-type:
    *
    * The associated recall type within dynamic channel context.
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_gtype("recall_channel_run_type",
+  param_spec = g_param_spec_gtype("recall-channel-run-type",
 				  i18n_pspec("channel runlevel recall type"),
 				  i18n_pspec("The recall type which this recall container has on audio level during a run"),
 				  G_TYPE_NONE,
@@ -236,13 +237,13 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * RecallContainer:recall-audio-run:
+   * AgsRecallContainer:recall-audio-run:
    *
    * The associated recall within dynamic channel context.
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("recall_channel_run",
+  param_spec = g_param_spec_object("recall-channel-run",
 				   i18n_pspec("channel runlevel recall"),
 				   i18n_pspec("The recall which this recall container has on audio level during a run"),
 				   AGS_TYPE_RECALL_CHANNEL_RUN,

@@ -59,31 +59,293 @@ ags_recall_container_test_clean_suite()
 void
 ags_recall_container_test_get_recall_audio()
 {
-  //TODO:JK: implement me
+  AgsRecall *recall, *current;
+  AgsRecallContainer *recall_container;
+
+  recall = g_object_new(AGS_TYPE_RECALL_AUDIO,
+			NULL);
+  
+  recall_container = g_object_new(AGS_TYPE_RECALL_CONTAINER,
+				  "recall-audio", recall,
+				  NULL);
+
+  /* get recall audio and assert*/
+  current = ags_recall_container_get_recall_audio(recall_container);
+
+  CU_ASSERT(current != NULL &&
+	    AGS_IS_RECALL_AUDIO(current) == TRUE);
 }
 
 void
 ags_recall_container_test_get_recall_audio_run()
 {
-  //TODO:JK: implement me
+  AgsRecall *recall[3];
+  AgsRecallContainer *recall_container;
+
+  GList *list, *current;
+  
+  recall_container = g_object_new(AGS_TYPE_RECALL_CONTAINER,
+				  NULL);
+
+  recall[0] = g_object_new(AGS_TYPE_RECALL_AUDIO_RUN,
+			NULL);
+  g_object_set(recall_container,
+	       "recall-audio-run", recall[0],
+	       NULL);
+
+  recall[1] = g_object_new(AGS_TYPE_RECALL_AUDIO_RUN,
+			NULL);
+  g_object_set(recall_container,
+	       "recall-audio-run", recall[1],
+	       NULL);
+  
+  recall[2] = g_object_new(AGS_TYPE_RECALL_AUDIO_RUN,
+			NULL);
+  g_object_set(recall_container,
+	       "recall-audio-run", recall[2],
+	       NULL);
+
+  /* get recall audio and assert*/
+  list = ags_recall_container_get_recall_audio_run(recall_container);
+
+  CU_ASSERT(list != NULL);
+  
+  CU_ASSERT(g_list_find(list,
+			recall[0]) != NULL);
+
+  CU_ASSERT(g_list_find(list,
+			recall[1]) != NULL);
+
+  CU_ASSERT(g_list_find(list,
+			recall[2]) != NULL);
 }
 
 void
 ags_recall_container_test_get_recall_channel()
 {
-  //TODO:JK: implement me
+  AgsRecall *recall[3];
+  AgsRecallContainer *recall_container;
+
+  GList *list, *current;
+  
+  recall_container = g_object_new(AGS_TYPE_RECALL_CONTAINER,
+				  NULL);
+
+  recall[0] = g_object_new(AGS_TYPE_RECALL_CHANNEL,
+			NULL);
+  g_object_set(recall_container,
+	       "recall-channel", recall[0],
+	       NULL);
+
+  recall[1] = g_object_new(AGS_TYPE_RECALL_CHANNEL,
+			NULL);
+  g_object_set(recall_container,
+	       "recall-channel", recall[1],
+	       NULL);
+  
+  recall[2] = g_object_new(AGS_TYPE_RECALL_CHANNEL,
+			NULL);
+  g_object_set(recall_container,
+	       "recall-channel", recall[2],
+	       NULL);
+
+  /* get recall channel and assert*/
+  list = ags_recall_container_get_recall_channel(recall_container);
+
+  CU_ASSERT(list != NULL);
+  
+  CU_ASSERT(g_list_find(list,
+			recall[0]) != NULL);
+
+  CU_ASSERT(g_list_find(list,
+			recall[1]) != NULL);
+
+  CU_ASSERT(g_list_find(list,
+			recall[2]) != NULL);
 }
 
 void
 ags_recall_container_test_get_recall_channel_run()
 {
-  //TODO:JK: implement me
+  AgsRecall *recall[3];
+  AgsRecallContainer *recall_container;
+
+  GList *list, *current;
+  
+  recall_container = g_object_new(AGS_TYPE_RECALL_CONTAINER,
+				  NULL);
+
+  recall[0] = g_object_new(AGS_TYPE_RECALL_CHANNEL_RUN,
+			NULL);
+  g_object_set(recall_container,
+	       "recall-channel-run", recall[0],
+	       NULL);
+
+  recall[1] = g_object_new(AGS_TYPE_RECALL_CHANNEL_RUN,
+			NULL);
+  g_object_set(recall_container,
+	       "recall-channel-run", recall[1],
+	       NULL);
+  
+  recall[2] = g_object_new(AGS_TYPE_RECALL_CHANNEL_RUN,
+			NULL);
+  g_object_set(recall_container,
+	       "recall-channel-run", recall[2],
+	       NULL);
+
+  /* get recall channel and assert*/
+  list = ags_recall_container_get_recall_channel_run(recall_container);
+
+  CU_ASSERT(list != NULL);
+  
+  CU_ASSERT(g_list_find(list,
+			recall[0]) != NULL);
+
+  CU_ASSERT(g_list_find(list,
+			recall[1]) != NULL);
+
+  CU_ASSERT(g_list_find(list,
+			recall[2]) != NULL);
 }
 
 void
 ags_recall_container_test_find()
 {
-  //TODO:JK: implement me
+  AgsRecall *recall[6];
+  AgsRecallContainer *recall_container;
+
+  GList *list, *current;
+  
+  /* assert #0 - type */
+  list = NULL;
+
+  /* ags-count-beats */
+  recall_container = g_object_new(AGS_TYPE_RECALL_CONTAINER,
+				  NULL);
+  list = g_list_prepend(list,
+			recall_container);
+  
+  recall[0] = g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+			   NULL);
+  g_object_set(recall_container,
+	       "recall-audio-run", recall[0],
+	       NULL);
+
+  /* ags-play */
+  recall_container = g_object_new(AGS_TYPE_RECALL_CONTAINER,
+				  NULL);
+  list = g_list_prepend(list,
+			recall_container);
+
+  recall[1] = g_object_new(AGS_TYPE_PLAY_CHANNEL_RUN,
+			   NULL);
+  g_object_set(recall_container,
+	       "recall-channel-run", recall[1],
+	       NULL);
+
+  /* ags-copy-pattern */
+  recall_container = g_object_new(AGS_TYPE_RECALL_CONTAINER,
+				  NULL);
+  list = g_list_prepend(list,
+			recall_container);
+  
+  recall[2] = g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
+			NULL);
+  g_object_set(recall_container,
+	       "recall-audio-run", recall[2],
+	       NULL);
+
+  recall[3] = g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL_RUN,
+			NULL);
+  g_object_set(recall_container,
+	       "recall-channel-run", recall[3],
+	       NULL);
+
+  /* ags-buffer */
+  recall_container = g_object_new(AGS_TYPE_RECALL_CONTAINER,
+				  NULL);
+  list = g_list_prepend(list,
+			recall_container);
+
+  recall[4] = g_object_new(AGS_TYPE_BUFFER_CHANNEL,
+			NULL);
+  g_object_set(recall_container,
+	       "recall-channel", recall[4],
+	       NULL);
+
+  /* ags-delay */
+  recall_container = g_object_new(AGS_TYPE_RECALL_CONTAINER,
+				  NULL);
+  list = g_list_prepend(list,
+			recall_container);
+
+  recall[5] = g_object_new(AGS_TYPE_DELAY_AUDIO,
+			NULL);
+  g_object_set(recall_container,
+	       "recall-audio", recall[5],
+	       NULL);
+
+  /* find and assert ags-count-beats */
+  current = ags_recall_container_find(list,
+				      AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+				      AGS_RECALL_CONTAINER_FIND_TYPE,
+				      NULL);
+
+  CU_ASSERT(current != NULL &&
+	    AGS_IS_RECALL_CONTAINER(current->data) == TRUE);
+  CU_ASSERT(g_list_find(AGS_RECALL_CONTAINER(current->data)->recall_audio_run, recall[0]) != NULL);
+  
+  /* find and assert ags-play */
+  current = ags_recall_container_find(list,
+				      AGS_TYPE_PLAY_CHANNEL_RUN,
+				      AGS_RECALL_CONTAINER_FIND_TYPE,
+				      NULL);
+
+  CU_ASSERT(current != NULL &&
+	    AGS_IS_RECALL_CONTAINER(current->data) == TRUE);
+  CU_ASSERT(g_list_find(AGS_RECALL_CONTAINER(current->data)->recall_channel_run, recall[1]) != NULL);
+
+  /* find and assert ags-copy-pattern */
+  current = ags_recall_container_find(list,
+				      AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
+				      AGS_RECALL_CONTAINER_FIND_TYPE,
+				      NULL);
+
+  CU_ASSERT(current != NULL &&
+	    AGS_IS_RECALL_CONTAINER(current->data) == TRUE &&
+	    g_list_find(AGS_RECALL_CONTAINER(current->data)->recall_audio_run,
+			recall[2]) != NULL);
+
+  current = ags_recall_container_find(list,
+				      AGS_TYPE_COPY_PATTERN_CHANNEL_RUN,
+				      AGS_RECALL_CONTAINER_FIND_TYPE,
+				      NULL);
+
+  CU_ASSERT(current != NULL &&
+	    AGS_IS_RECALL_CONTAINER(current->data) == TRUE &&
+	    g_list_find(AGS_RECALL_CONTAINER(current->data)->recall_channel_run,
+			recall[3]) != NULL);
+
+  /* find and assert ags-buffer */
+  current = ags_recall_container_find(list,
+				      AGS_TYPE_BUFFER_CHANNEL,
+				      AGS_RECALL_CONTAINER_FIND_TYPE,
+				      NULL);
+
+  CU_ASSERT(current != NULL &&
+	    AGS_IS_RECALL_CONTAINER(current->data) == TRUE &&
+	    g_list_find(AGS_RECALL_CONTAINER(current->data)->recall_channel,
+			recall[4]) != NULL);
+  
+  /* find and assert ags-delay */
+  current = ags_recall_container_find(list,
+				      AGS_TYPE_DELAY_AUDIO,
+				      AGS_RECALL_CONTAINER_FIND_TYPE,
+				      NULL);
+
+  CU_ASSERT(current != NULL &&
+	    AGS_IS_RECALL_CONTAINER(current->data) == TRUE &&
+	    AGS_RECALL_CONTAINER(current->data)->recall_audio == recall[5]);
 }
 
 int
