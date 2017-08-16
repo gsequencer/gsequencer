@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -90,4 +90,3 @@ void ags_jack_client_deactivate(AgsJackClient *jack_client);
 AgsJackClient* ags_jack_client_new(GObject *jack_server);
 
 #endif /*__AGS_JACK_CLIENT_H__*/
-
