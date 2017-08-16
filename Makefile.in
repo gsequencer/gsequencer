@@ -123,7 +123,8 @@ check_PROGRAMS = ags_application_context_test$(EXEEXT) \
 	ags_recycling_test$(EXEEXT) ags_audio_signal_test$(EXEEXT) \
 	ags_recall_test$(EXEEXT) ags_recall_channel_test$(EXEEXT) \
 	ags_recall_channel_run_test$(EXEEXT) \
-	ags_recall_container_test$(EXEEXT) ags_port_test$(EXEEXT) \
+	ags_recall_container_test$(EXEEXT) \
+	ags_recall_dependency_test$(EXEEXT) ags_port_test$(EXEEXT) \
 	ags_pattern_test$(EXEEXT) ags_notation_test$(EXEEXT) \
 	ags_note_test$(EXEEXT) ags_automation_test$(EXEEXT) \
 	ags_acceleration_test$(EXEEXT) \
@@ -1510,6 +1511,18 @@ ags_recall_container_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_recall_container_test_CFLAGS) $(CFLAGS) \
 	$(ags_recall_container_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_recall_dependency_test_OBJECTS = ags/test/audio/ags_recall_dependency_test-ags_recall_dependency_test.$(OBJEXT)
+ags_recall_dependency_test_OBJECTS =  \
+	$(am_ags_recall_dependency_test_OBJECTS)
+ags_recall_dependency_test_DEPENDENCIES = libags_audio.la \
+	libags_server.la libags_thread.la libags.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_recall_dependency_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_recall_dependency_test_CFLAGS) $(CFLAGS) \
+	$(ags_recall_dependency_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_recall_test_OBJECTS =  \
 	ags/test/audio/ags_recall_test-ags_recall_test.$(OBJEXT)
 ags_recall_test_OBJECTS = $(am_ags_recall_test_OBJECTS)
@@ -1739,6 +1752,7 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_recall_channel_run_test_SOURCES) \
 	$(ags_recall_channel_test_SOURCES) \
 	$(ags_recall_container_test_SOURCES) \
+	$(ags_recall_dependency_test_SOURCES) \
 	$(ags_recall_test_SOURCES) $(ags_recycling_test_SOURCES) \
 	$(ags_returnable_thread_test_SOURCES) $(ags_task_test_SOURCES) \
 	$(ags_task_thread_test_SOURCES) \
@@ -1801,6 +1815,7 @@ DIST_SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_recall_channel_run_test_SOURCES) \
 	$(ags_recall_channel_test_SOURCES) \
 	$(ags_recall_container_test_SOURCES) \
+	$(ags_recall_dependency_test_SOURCES) \
 	$(ags_recall_test_SOURCES) $(ags_recycling_test_SOURCES) \
 	$(ags_returnable_thread_test_SOURCES) $(ags_task_test_SOURCES) \
 	$(ags_task_thread_test_SOURCES) \
@@ -2840,6 +2855,12 @@ ags_recall_container_test_SOURCES = ags/test/audio/ags_recall_container_test.c
 ags_recall_container_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_recall_container_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_recall_container_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# recall dependency unit test
+ags_recall_dependency_test_SOURCES = ags/test/audio/ags_recall_dependency_test.c
+ags_recall_dependency_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_recall_dependency_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_recall_dependency_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # port unit test
 ags_port_test_SOURCES = ags/test/audio/ags_port_test.c
@@ -6680,6 +6701,13 @@ ags/test/audio/ags_recall_container_test-ags_recall_container_test.$(OBJEXT):  \
 ags_recall_container_test$(EXEEXT): $(ags_recall_container_test_OBJECTS) $(ags_recall_container_test_DEPENDENCIES) $(EXTRA_ags_recall_container_test_DEPENDENCIES) 
 	@rm -f ags_recall_container_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_recall_container_test_LINK) $(ags_recall_container_test_OBJECTS) $(ags_recall_container_test_LDADD) $(LIBS)
+ags/test/audio/ags_recall_dependency_test-ags_recall_dependency_test.$(OBJEXT):  \
+	ags/test/audio/$(am__dirstamp) \
+	ags/test/audio/$(DEPDIR)/$(am__dirstamp)
+
+ags_recall_dependency_test$(EXEEXT): $(ags_recall_dependency_test_OBJECTS) $(ags_recall_dependency_test_DEPENDENCIES) $(EXTRA_ags_recall_dependency_test_DEPENDENCIES) 
+	@rm -f ags_recall_dependency_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_recall_dependency_test_LINK) $(ags_recall_dependency_test_OBJECTS) $(ags_recall_dependency_test_LDADD) $(LIBS)
 ags/test/audio/ags_recall_test-ags_recall_test.$(OBJEXT):  \
 	ags/test/audio/$(am__dirstamp) \
 	ags/test/audio/$(DEPDIR)/$(am__dirstamp)
@@ -7400,6 +7428,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_recall_channel_run_test-ags_recall_channel_run_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_recall_channel_test-ags_recall_channel_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_recall_container_test-ags_recall_container_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_recall_dependency_test-ags_recall_dependency_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_recall_test-ags_recall_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/ags_recycling_test-ags_recycling_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/midi/$(DEPDIR)/ags_midi_buffer_util_test-ags_midi_buffer_util_test.Po@am__quote@
@@ -12204,6 +12233,20 @@ ags/test/audio/ags_recall_container_test-ags_recall_container_test.obj: ags/test
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_recall_container_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/ags_recall_container_test-ags_recall_container_test.obj `if test -f 'ags/test/audio/ags_recall_container_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_recall_container_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_recall_container_test.c'; fi`
 
+ags/test/audio/ags_recall_dependency_test-ags_recall_dependency_test.o: ags/test/audio/ags_recall_dependency_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_recall_dependency_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/ags_recall_dependency_test-ags_recall_dependency_test.o -MD -MP -MF ags/test/audio/$(DEPDIR)/ags_recall_dependency_test-ags_recall_dependency_test.Tpo -c -o ags/test/audio/ags_recall_dependency_test-ags_recall_dependency_test.o `test -f 'ags/test/audio/ags_recall_dependency_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_recall_dependency_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/ags_recall_dependency_test-ags_recall_dependency_test.Tpo ags/test/audio/$(DEPDIR)/ags_recall_dependency_test-ags_recall_dependency_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/ags_recall_dependency_test.c' object='ags/test/audio/ags_recall_dependency_test-ags_recall_dependency_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_recall_dependency_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/ags_recall_dependency_test-ags_recall_dependency_test.o `test -f 'ags/test/audio/ags_recall_dependency_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_recall_dependency_test.c
+
+ags/test/audio/ags_recall_dependency_test-ags_recall_dependency_test.obj: ags/test/audio/ags_recall_dependency_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_recall_dependency_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/ags_recall_dependency_test-ags_recall_dependency_test.obj -MD -MP -MF ags/test/audio/$(DEPDIR)/ags_recall_dependency_test-ags_recall_dependency_test.Tpo -c -o ags/test/audio/ags_recall_dependency_test-ags_recall_dependency_test.obj `if test -f 'ags/test/audio/ags_recall_dependency_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_recall_dependency_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_recall_dependency_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/ags_recall_dependency_test-ags_recall_dependency_test.Tpo ags/test/audio/$(DEPDIR)/ags_recall_dependency_test-ags_recall_dependency_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/ags_recall_dependency_test.c' object='ags/test/audio/ags_recall_dependency_test-ags_recall_dependency_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_recall_dependency_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/ags_recall_dependency_test-ags_recall_dependency_test.obj `if test -f 'ags/test/audio/ags_recall_dependency_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_recall_dependency_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_recall_dependency_test.c'; fi`
+
 ags/test/audio/ags_recall_test-ags_recall_test.o: ags/test/audio/ags_recall_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_recall_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/ags_recall_test-ags_recall_test.o -MD -MP -MF ags/test/audio/$(DEPDIR)/ags_recall_test-ags_recall_test.Tpo -c -o ags/test/audio/ags_recall_test-ags_recall_test.o `test -f 'ags/test/audio/ags_recall_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_recall_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/ags_recall_test-ags_recall_test.Tpo ags/test/audio/$(DEPDIR)/ags_recall_test-ags_recall_test.Po
@@ -13179,6 +13222,13 @@ ags_recall_channel_run_test.log: ags_recall_channel_run_test$(EXEEXT)
 ags_recall_container_test.log: ags_recall_container_test$(EXEEXT)
 	@p='ags_recall_container_test$(EXEEXT)'; \
 	b='ags_recall_container_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_recall_dependency_test.log: ags_recall_dependency_test$(EXEEXT)
+	@p='ags_recall_dependency_test$(EXEEXT)'; \
+	b='ags_recall_dependency_test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
