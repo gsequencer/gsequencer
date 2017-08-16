@@ -508,7 +508,7 @@ ags_soundcard_get_uptime(AgsSoundcard *soundcard)
 }
 
 /**
- * ags_soundcard_play:
+ * ags_soundcard_play_init:
  * @soundcard: the #AgsSoundcard
  * @error: an error that may occure
  *
@@ -552,7 +552,7 @@ ags_soundcard_play(AgsSoundcard *soundcard,
 }
 
 /**
- * ags_soundcard_record:
+ * ags_soundcard_record_init:
  * @soundcard: the #AgsSoundcard
  * @error: an error that may occure
  *
@@ -983,7 +983,7 @@ ags_soundcard_set_loop(AgsSoundcard *soundcard,
  * @soundcard: the #AgsSoundcard
  * @loop_left: return location of loop position's region
  * @loop_right: return location of loop position's region
- * @loop: return location of do loop
+ * @do_loop: return location of do loop
  *
  * Get loop parameters of @soundcard.
  * 

@@ -49,6 +49,9 @@ struct _AgsPulseServer
 
   GObject *application_context;
 
+  pa_mainloop *main_loop;
+  pa_mainloop_api *main_loop_lapi;
+  
   gchar *url;
 
   guint *port;

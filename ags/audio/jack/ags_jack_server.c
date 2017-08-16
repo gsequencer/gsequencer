@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -827,6 +827,8 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
 			     str,
 			     TRUE, FALSE,
 			     TRUE);
+
+      g_free(str);
     }
 
     if(jack_devout->port_name != NULL){

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -447,9 +447,6 @@ ags_jack_port_register(AgsJackPort *jack_port,
     jack_port->uuid = jack_port_uuid(jack_port->port);
   }
 #endif
-
-  g_free(uuid);
-  g_free(name);
 }
 
 void

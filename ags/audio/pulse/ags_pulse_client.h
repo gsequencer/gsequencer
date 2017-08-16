@@ -47,10 +47,16 @@ struct _AgsPulseClient
   GObject object;
 
   guint flags;
-
+  
   GObject *pulse_server;
 
+  gchar *uuid;
+  gchar *name;
+
+  pa_context *context;
+  
   GList *device;
+  GList *port;
 };
 
 struct _AgsPulseClientClass
@@ -60,12 +66,25 @@ struct _AgsPulseClientClass
 
 GType ags_pulse_client_get_type();
 
+GList* ags_pulse_client_find_uuid(GList *pulse_client,
+				  gchar *client_uuid);
+GList* ags_pulse_client_find(GList *pulse_client,
+			     gchar *client_name);
+
 void ags_pulse_client_open(AgsPulseClient *pulse_client);
 
 void ags_pulse_client_add_device(AgsPulseClient *pulse_client,
 				 GObject *pulse_device);
 void ags_pulse_client_remove_device(AgsPulseClient *pulse_client,
 				    GObject *pulse_device);
+
+void ags_pulse_client_add_port(AgsPulseClient *pulse_client,
+			       GObject *pulse_port);
+void ags_pulse_client_remove_port(AgsPulseClient *pulse_client,
+				  GObject *pulse_port);
+
+void ags_pulse_client_activate(AgsPulseClient *pulse_client);
+void ags_pulse_client_deactivate(AgsPulseClient *pulse_client);
 
 AgsPulseClient* ags_pulse_client_new(GObject *pulse_server);
 
