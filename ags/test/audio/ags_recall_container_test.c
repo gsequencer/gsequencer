@@ -292,8 +292,8 @@ ags_recall_container_test_find()
 				      NULL);
 
   CU_ASSERT(current != NULL &&
-	    AGS_IS_RECALL_CONTAINER(current->data) == TRUE);
-  CU_ASSERT(g_list_find(AGS_RECALL_CONTAINER(current->data)->recall_audio_run, recall[0]) != NULL);
+	    AGS_IS_RECALL_CONTAINER(current->data) == TRUE &&
+	    g_list_find(AGS_RECALL_CONTAINER(current->data)->recall_audio_run, recall[0]) != NULL);
   
   /* find and assert ags-play */
   current = ags_recall_container_find(list,
@@ -302,8 +302,8 @@ ags_recall_container_test_find()
 				      NULL);
 
   CU_ASSERT(current != NULL &&
-	    AGS_IS_RECALL_CONTAINER(current->data) == TRUE);
-  CU_ASSERT(g_list_find(AGS_RECALL_CONTAINER(current->data)->recall_channel_run, recall[1]) != NULL);
+	    AGS_IS_RECALL_CONTAINER(current->data) == TRUE &&
+	    g_list_find(AGS_RECALL_CONTAINER(current->data)->recall_channel_run, recall[1]) != NULL);
 
   /* find and assert ags-copy-pattern */
   current = ags_recall_container_find(list,

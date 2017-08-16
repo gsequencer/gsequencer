@@ -237,7 +237,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * AgsRecallContainer:recall-audio-run:
+   * AgsRecallContainer:recall-channel-run:
    *
    * The associated recall within dynamic channel context.
    * 
@@ -561,27 +561,30 @@ ags_recall_container_get_recall_channel_run(AgsRecallContainer *container)
  */
 GList*
 ags_recall_container_find(GList *recall_container,
-			  GType type,
+			  GType gtype,
 			  guint find_flags,
 			  AgsRecallID *recall_id)
 {
   AgsRecallContainer *current;
   AgsRecall *recall;
+
   guint mode;
 
-  if(g_type_is_a(type, AGS_TYPE_RECALL_AUDIO)){
+  if(g_type_is_a(gtype, AGS_TYPE_RECALL_AUDIO)){
     mode = 0;
-  }else if(g_type_is_a(type, AGS_TYPE_RECALL_AUDIO_RUN)){
+  }else if(g_type_is_a(gtype, AGS_TYPE_RECALL_AUDIO_RUN)){
     mode = 1;
-  }else if(g_type_is_a(type, AGS_TYPE_RECALL_CHANNEL)){
+  }else if(g_type_is_a(gtype, AGS_TYPE_RECALL_CHANNEL)){
     mode = 2;
-  }else if(g_type_is_a(type, AGS_TYPE_RECALL_CHANNEL_RUN)){
+  }else if(g_type_is_a(gtype, AGS_TYPE_RECALL_CHANNEL_RUN)){
     mode = 3;
   }else{
     g_message("ags_recall_container_find: invalid type\n");
     return(NULL);
   }
 
+  g_message("mode = %d", mode);
+  
   while(recall_container != NULL){
     current = AGS_RECALL_CONTAINER(recall_container->data);
 
@@ -616,14 +619,20 @@ ags_recall_container_find(GList *recall_container,
 	recall = AGS_RECALL(list->data);
     }
    
-    if(recall != NULL){
-      if(((AGS_RECALL_CONTAINER_FIND_TYPE & find_flags) == 0 || G_OBJECT_TYPE(recall) == type) &&
-	 ((AGS_RECALL_CONTAINER_FIND_TEMPLATE & find_flags) == 0 || (AGS_RECALL_TEMPLATE & (recall->flags)) != 0) &&
-	 ((AGS_RECALL_CONTAINER_FIND_RECALL_ID & find_flags) == 0 || (recall->recall_id != NULL && recall->recall_id == recall_id))){
+    if(recall != NULL){      
+      if((AGS_RECALL_CONTAINER_FIND_TYPE & find_flags) != 0 && G_OBJECT_TYPE(recall) == gtype){
+	break;
+      }
+      
+      if((AGS_RECALL_CONTAINER_FIND_TEMPLATE & find_flags) != 0 && (AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
+	break;
+      }
+      
+      if((AGS_RECALL_CONTAINER_FIND_RECALL_ID & find_flags) != 0 && (recall->recall_id != NULL && recall->recall_id == recall_id)){
 	break;
       }
     }
-
+      
     recall_container = recall_container->next;
   }
 

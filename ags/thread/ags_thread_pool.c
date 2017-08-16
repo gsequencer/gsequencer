@@ -496,21 +496,23 @@ ags_thread_pool_creation_thread(void *ptr)
     
     pthread_mutex_unlock(thread_pool->creation_mutex);
 
-    pthread_mutex_lock(parent_mutex);
+    if(thread_pool->parent != NULL){
+      pthread_mutex_lock(parent_mutex);
 
-    if(start_queue != NULL){
-      if(g_atomic_pointer_get(&(thread_pool->parent->start_queue)) != NULL){
-	g_atomic_pointer_set(&(thread_pool->parent->start_queue),
-			     g_list_concat(start_queue,
-					   g_atomic_pointer_get(&(thread_pool->parent->start_queue))));
-      }else{
-	g_atomic_pointer_set(&(thread_pool->parent->start_queue),
-			     start_queue);
+      if(start_queue != NULL){
+	if(g_atomic_pointer_get(&(thread_pool->parent->start_queue)) != NULL){
+	  g_atomic_pointer_set(&(thread_pool->parent->start_queue),
+			       g_list_concat(start_queue,
+					     g_atomic_pointer_get(&(thread_pool->parent->start_queue))));
+	}else{
+	  g_atomic_pointer_set(&(thread_pool->parent->start_queue),
+			       start_queue);
+	}
       }
+
+      pthread_mutex_unlock(parent_mutex);
     }
-
-   pthread_mutex_unlock(parent_mutex);
-
+    
 #ifdef AGS_DEBUG
     g_message("ags_thread_pool_creation_thread@loopEND");
 #endif

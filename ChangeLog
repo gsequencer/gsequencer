@@ -3,6 +3,8 @@ ags (0.9.9)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented ags_input_apply_synth() and ags_input_apply_synth_extended()
 	* fixed ags_syncsynth_reset_loop() to use attack to calculate loop upper
+	* fixed ags_recall_container_find() and its flags to enumerate correctly
+	* fixed ags_thread_pool_pull() to check parent for NULL
 	* enabled unit-test ags_input_test.c because not tested
 	* new unit-test ags_midiin_test.c
 	* new unit-test ags_output_test.c
