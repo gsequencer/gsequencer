@@ -45,15 +45,19 @@ typedef enum
   AGS_PULSE_DEVOUT_BUFFER1                        = 1 <<  1,
   AGS_PULSE_DEVOUT_BUFFER2                        = 1 <<  2,
   AGS_PULSE_DEVOUT_BUFFER3                        = 1 <<  3,
+  AGS_PULSE_DEVOUT_BUFFER4                        = 1 <<  4,
+  AGS_PULSE_DEVOUT_BUFFER5                        = 1 <<  5,
+  AGS_PULSE_DEVOUT_BUFFER6                        = 1 <<  6,
+  AGS_PULSE_DEVOUT_BUFFER7                        = 1 <<  7,
 
-  AGS_PULSE_DEVOUT_ATTACK_FIRST                   = 1 <<  4,
+  AGS_PULSE_DEVOUT_ATTACK_FIRST                   = 1 <<  8,
 
-  AGS_PULSE_DEVOUT_PLAY                           = 1 <<  5,
-  AGS_PULSE_DEVOUT_SHUTDOWN                       = 1 <<  6,
-  AGS_PULSE_DEVOUT_START_PLAY                     = 1 <<  7,
+  AGS_PULSE_DEVOUT_PLAY                           = 1 <<  9,
+  AGS_PULSE_DEVOUT_SHUTDOWN                       = 1 << 10,
+  AGS_PULSE_DEVOUT_START_PLAY                     = 1 << 11,
 
-  AGS_PULSE_DEVOUT_NONBLOCKING                    = 1 <<  8,
-  AGS_PULSE_DEVOUT_INITIALIZED                    = 1 <<  9,
+  AGS_PULSE_DEVOUT_NONBLOCKING                    = 1 << 12,
+  AGS_PULSE_DEVOUT_INITIALIZED                    = 1 << 13,
 }AgsPulseDevoutFlags;
 
 typedef enum{

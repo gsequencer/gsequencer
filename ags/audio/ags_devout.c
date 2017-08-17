@@ -2495,7 +2495,7 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
     nth_buffer = 1;
   }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
     nth_buffer = 2;
-  }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
+  }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
     nth_buffer = 3;
   }
 
@@ -3345,7 +3345,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     nth_buffer = 1;
   }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
     nth_buffer = 2;
-  }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
+  }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
     nth_buffer = 3;
   }
 

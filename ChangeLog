@@ -1,7 +1,10 @@
 ags (0.9.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_pulse_server.c, ags_pulse_client.c and ags_pulse_port.c
+	* implemented ags_pulse_devout.c
 	* fixed memory leak related to mutex and its attributes for AgsDevout, AgsMidiin, AgsJackDevout and AgsJackMidiin
+	* fixed missing paranthesis to check flags in ags_devout.c, ags_midiin.c, ags_jack_devout.c and ags_clear_buffer.c
 
 ags (0.9.9)
 

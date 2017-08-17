@@ -1322,7 +1322,7 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
   }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
     nth_buffer = 3;
     nth_ring_buffer = 0;
-  }else if((AGS_MIDIIN_BUFFER3 & midiin->flags) != 0){
+  }else if((AGS_MIDIIN_BUFFER3 & (midiin->flags)) != 0){
     nth_buffer = 0;
     nth_ring_buffer = 1;
   }
@@ -1408,7 +1408,7 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
   }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
     nth_buffer = 3;
     nth_ring_buffer = 0;
-  }else if((AGS_MIDIIN_BUFFER3 & midiin->flags) != 0){
+  }else if((AGS_MIDIIN_BUFFER3 & (midiin->flags)) != 0){
     nth_buffer = 0;
     nth_ring_buffer = 1;
   }
@@ -1631,7 +1631,7 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
   }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
     nth_buffer = 3;
     nth_ring_buffer = 0;
-  }else if((AGS_MIDIIN_BUFFER3 & midiin->flags) != 0){
+  }else if((AGS_MIDIIN_BUFFER3 & (midiin->flags)) != 0){
     nth_buffer = 0;
     nth_ring_buffer = 1;
   }
@@ -1717,7 +1717,7 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
   }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
     nth_buffer = 3;
     nth_ring_buffer = 0;
-  }else if((AGS_MIDIIN_BUFFER3 & midiin->flags) != 0){
+  }else if((AGS_MIDIIN_BUFFER3 & (midiin->flags)) != 0){
     nth_buffer = 0;
     nth_ring_buffer = 1;
   }

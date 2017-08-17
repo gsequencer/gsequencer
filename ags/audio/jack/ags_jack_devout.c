@@ -1951,7 +1951,7 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
       nth_buffer = 0;
     }else if((AGS_JACK_DEVOUT_BUFFER2 & (jack_devout->flags)) != 0){
       nth_buffer = 1;
-    }else if((AGS_JACK_DEVOUT_BUFFER3 & jack_devout->flags) != 0){
+    }else if((AGS_JACK_DEVOUT_BUFFER3 & (jack_devout->flags)) != 0){
       nth_buffer = 2;
     }
 

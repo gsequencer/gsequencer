@@ -28,6 +28,8 @@
 #include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_sequencer.h>
 
+#include <ags/thread/ags_thread-posix.h>
+
 #include <ags/audio/pulse/ags_pulse_devout.h>
 
 #include <string.h>
@@ -1122,7 +1124,16 @@ ags_pulse_server_do_poll_loop(void *ptr)
 {
   AgsPulseServer *pulse_server;
 
+  struct sched_param param;
+
   pulse_server = (AgsPulseServer *) ptr;
+    
+  /* Declare ourself as a real time task */
+  param.sched_priority = AGS_RT_PRIORITY;
+  
+  if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
+    perror("sched_setscheduler failed");
+  }
 
   pa_mainloop_run(pulse_server->main_loop,
 		  NULL);

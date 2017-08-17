@@ -55,10 +55,15 @@ struct _AgsPulsePort
   gchar *uuid;
   gchar *name;
 
+  guint format;
+  guint buffer_size;
+
   pa_stream *stream;
   pa_sample_spec *sample_spec;
   pa_buffer_attr *buffer_attr;
-
+  
+  void *empty_buffer;
+  
   volatile guint queued;
 };
 

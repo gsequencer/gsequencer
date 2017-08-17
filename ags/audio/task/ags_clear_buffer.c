@@ -323,7 +323,7 @@ ags_clear_buffer_launch(AgsTask *task)
       nth_buffer = 1;
     }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
       nth_buffer = 2;
-    }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
+    }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
       nth_buffer = 3;
     }
     
@@ -372,7 +372,7 @@ ags_clear_buffer_launch(AgsTask *task)
       nth_buffer = 0;
     }else if((AGS_JACK_DEVOUT_BUFFER2 & (jack_devout->flags)) != 0){
       nth_buffer = 1;
-    }else if((AGS_JACK_DEVOUT_BUFFER3 & jack_devout->flags) != 0){
+    }else if((AGS_JACK_DEVOUT_BUFFER3 & (jack_devout->flags)) != 0){
       nth_buffer = 2;
     }
       
@@ -406,13 +406,21 @@ ags_clear_buffer_launch(AgsTask *task)
     }
     
     if((AGS_PULSE_DEVOUT_BUFFER0 & (pulse_devout->flags)) != 0){
-      nth_buffer = 3;
+      nth_buffer = 6;
     }else if((AGS_PULSE_DEVOUT_BUFFER1 & (pulse_devout->flags)) != 0){
-      nth_buffer = 0;
+      nth_buffer = 7;
     }else if((AGS_PULSE_DEVOUT_BUFFER2 & (pulse_devout->flags)) != 0){
+      nth_buffer = 0;
+    }else if((AGS_PULSE_DEVOUT_BUFFER3 & (pulse_devout->flags)) != 0){
       nth_buffer = 1;
-    }else if((AGS_PULSE_DEVOUT_BUFFER3 & pulse_devout->flags) != 0){
+    }else if((AGS_PULSE_DEVOUT_BUFFER4 & (pulse_devout->flags)) != 0){
       nth_buffer = 2;
+    }else if((AGS_PULSE_DEVOUT_BUFFER5 & (pulse_devout->flags)) != 0){
+      nth_buffer = 3;
+    }else if((AGS_PULSE_DEVOUT_BUFFER6 & (pulse_devout->flags)) != 0){
+      nth_buffer = 4;
+    }else if((AGS_PULSE_DEVOUT_BUFFER7 & (pulse_devout->flags)) != 0){
+      nth_buffer = 5;
     }
       
     memset(pulse_devout->buffer[nth_buffer], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);

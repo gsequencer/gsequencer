@@ -462,7 +462,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
     if(str != NULL){
       if(!g_ascii_strncasecmp(str,
 			      "pulse",
-			      5)){
+			      6)){
 	soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(pulse_server),
 							       TRUE);
 

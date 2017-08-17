@@ -1,3 +1,9 @@
+Overview of Changes in AGS 0.9.10
+================================
+
+* Pulseaudio sink support. AgsPulseDevout has got a bigger ring-buffer
+  to avoid caching and allow slower write functions.
+
 Overview of Changes in AGS 0.9.8
 ================================
 
