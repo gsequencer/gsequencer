@@ -28,6 +28,8 @@
 #include <ags/audio/jack/ags_jack_devout.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
 
+#include <ags/audio/pulse/ags_pulse_devout.h>
+
 #include <ags/i18n.h>
 
 void ags_clear_buffer_class_init(AgsClearBufferClass *clear_buffer);
@@ -314,7 +316,6 @@ ags_clear_buffer_launch(AgsTask *task)
 
       return;
     }
-
     
     if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
       nth_buffer = 0;
@@ -376,6 +377,45 @@ ags_clear_buffer_launch(AgsTask *task)
     }
       
     memset(jack_devout->buffer[nth_buffer], 0, (size_t) jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
+  }else if(AGS_IS_PULSE_DEVOUT(clear_buffer->device)){
+    AgsPulseDevout *pulse_devout;
+    
+    pulse_devout = clear_buffer->device;
+
+    switch(pulse_devout->format){
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	word_size = sizeof(signed short);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {      
+	//NOTE:JK: The 24-bit linear samples use 32-bit physical space
+	word_size = sizeof(signed long);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	word_size = sizeof(signed long);
+      }
+      break;
+    default:    
+      g_warning("ags_clear_buffer_launch(): unsupported word size");
+    
+      return;
+    }
+    
+    if((AGS_PULSE_DEVOUT_BUFFER0 & (pulse_devout->flags)) != 0){
+      nth_buffer = 3;
+    }else if((AGS_PULSE_DEVOUT_BUFFER1 & (pulse_devout->flags)) != 0){
+      nth_buffer = 0;
+    }else if((AGS_PULSE_DEVOUT_BUFFER2 & (pulse_devout->flags)) != 0){
+      nth_buffer = 1;
+    }else if((AGS_PULSE_DEVOUT_BUFFER3 & pulse_devout->flags) != 0){
+      nth_buffer = 2;
+    }
+      
+    memset(pulse_devout->buffer[nth_buffer], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
   }else if(AGS_IS_MIDIIN(clear_buffer->device)){
     //TODO:JK: implement me
   }else if(AGS_IS_JACK_MIDIIN(clear_buffer->device)){

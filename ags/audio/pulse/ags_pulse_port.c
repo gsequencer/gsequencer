@@ -290,7 +290,7 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
   fixed_size = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS * AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE * word_size;
   
   pulse_port->buffer_attr = (pa_buffer_attr *) malloc(sizeof(pa_buffer_attr));
-  pulse_port->buffer_attr->fragsize = (uint32_t) -1;
+  pulse_port->buffer_attr->fragsize = (uint32_t) fixed_size;
   pulse_port->buffer_attr->maxlength = (uint32_t) fixed_size;
   pulse_port->buffer_attr->minreq = (uint32_t) fixed_size;
   pulse_port->buffer_attr->prebuf = (uint32_t) 0;
@@ -738,8 +738,6 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 
   stream = pulse_port->stream;
   
-  count = pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size;
-
   pthread_mutex_unlock(mutex);
 
   /*  */  
@@ -827,8 +825,11 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
     }
     
     /* write */
+    count = pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size;
     pa_stream_write(stream, pulse_devout->buffer[nth_buffer], count, NULL, 0LL, PA_SEEK_RELATIVE);
 
+    g_message("%d %d", length, count);
+    
     /* signal finish */
     callback_finish_mutex = pulse_devout->callback_finish_mutex;
 	
