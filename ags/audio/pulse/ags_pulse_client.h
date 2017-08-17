@@ -40,6 +40,7 @@ typedef struct _AgsPulseClientClass AgsPulseClientClass;
 typedef enum{
   AGS_PULSE_CLIENT_CONNECTED       = 1,
   AGS_PULSE_CLIENT_ACTIVATED       = 1 <<  1,
+  AGS_PULSE_CLIENT_READY           = 1 <<  2,
 }AgsPulseClientFlags;
 
 struct _AgsPulseClient
@@ -71,7 +72,8 @@ GList* ags_pulse_client_find_uuid(GList *pulse_client,
 GList* ags_pulse_client_find(GList *pulse_client,
 			     gchar *client_name);
 
-void ags_pulse_client_open(AgsPulseClient *pulse_client);
+void ags_pulse_client_open(AgsPulseClient *pulse_client,
+			   gchar *client_name);
 
 void ags_pulse_client_add_device(AgsPulseClient *pulse_client,
 				 GObject *pulse_device);

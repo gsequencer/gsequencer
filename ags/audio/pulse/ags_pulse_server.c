@@ -79,6 +79,8 @@ GObject* ags_pulse_server_register_sequencer(AgsDistributedManager *distributed_
 void ags_pulse_server_unregister_sequencer(AgsDistributedManager *distributed_manager,
 					   GObject *sequencer);
 
+void* ags_pulse_server_do_poll_loop(void *ptr);
+
 /**
  * SECTION:ags_pulse_server
  * @short_description: pulseaudio instance
@@ -274,12 +276,16 @@ void
 ags_pulse_server_init(AgsPulseServer *pulse_server)
 {
   pulse_server->flags = 0;
-
+  
+  g_atomic_int_set(&(pulse_server->running),
+		   TRUE);
+  pulse_server->thread = (pthread_t *) malloc(sizeof(pthread_t));
+  
   pulse_server->application_context = NULL;
 
-  pulse_server->main_loop = pa_threaded_mainloop_new();
-  pulse_server->main_loop_api = pa_threaded_mainloop_get_api(pulse_server->main_loop);
-  
+  pulse_server->main_loop = pa_mainloop_new();
+  pulse_server->main_loop_api = pa_mainloop_get_api(pulse_server->main_loop);
+
   pulse_server->url = NULL;
   
   pulse_server->port = NULL;
@@ -716,10 +722,10 @@ ags_pulse_server_get_sequencer(AgsDistributedManager *distributed_manager,
   list = NULL;
 
   while(device != NULL){
-    if(AGS_IS_PULSE_MIDIIN(device->data)){
-      list = g_list_prepend(list,
-			    device->data);
-    }
+    //    if(AGS_IS_PULSE_MIDIIN(device->data)){
+    //      list = g_list_prepend(list,
+    //			    device->data);
+    //    }
 
     device = device->next;
   }
@@ -761,12 +767,14 @@ ags_pulse_server_register_soundcard(AgsDistributedManager *distributed_manager,
 			  "ags-default-client");
     initial_set = TRUE;
     
-    if(AGS_PULSE_CLIENT(pulse_server->default_client)->client == NULL){
+    if(AGS_PULSE_CLIENT(pulse_server->default_client)->context == NULL){
       g_warning("ags_pulse_server.c - can't open pulseaudio client");
     }
   }
 
   default_client = (AgsPulseClient *) pulse_server->default_client;
+
+  pulse_devout = NULL;
 
   /* the soundcard */
   if(is_output){
@@ -791,6 +799,9 @@ ags_pulse_server_register_soundcard(AgsDistributedManager *distributed_manager,
 #endif
       
     pulse_port = ags_pulse_port_new((GObject *) default_client);
+    g_object_set(pulse_port,
+		 "pulse-devout", pulse_devout,
+		 NULL);
     ags_pulse_client_add_port(default_client,
 			      (GObject *) pulse_port);
 
@@ -890,7 +901,7 @@ ags_pulse_server_register_default_soundcard(AgsPulseServer *pulse_server)
     ags_pulse_client_open((AgsPulseClient *) pulse_server->default_client,
 			  "ags-default-client");
 
-    if(AGS_PULSE_CLIENT(pulse_server->default_client)->client == NULL){
+    if(AGS_PULSE_CLIENT(pulse_server->default_client)->context == NULL){
       g_warning("ags_pulse_server.c - can't open pulseaudio client");
       
       return(NULL);
@@ -917,6 +928,9 @@ ags_pulse_server_register_default_soundcard(AgsPulseServer *pulse_server)
 #endif
     
   pulse_port = ags_pulse_port_new((GObject *) default_client);
+  g_object_set(pulse_port,
+	       "pulse-devout", pulse_devout,
+	       NULL);
   ags_pulse_client_add_port(default_client,
 			    (GObject *) pulse_port);
 
@@ -1101,6 +1115,26 @@ ags_pulse_server_connect_client(AgsPulseServer *pulse_server)
 
     client = client->next;
   }
+}
+
+void*
+ags_pulse_server_do_poll_loop(void *ptr)
+{
+  AgsPulseServer *pulse_server;
+
+  pulse_server = (AgsPulseServer *) ptr;
+
+  pa_mainloop_run(pulse_server->main_loop,
+		  NULL);
+  
+  pthread_exit(NULL);
+}
+
+void
+ags_pulse_server_start_poll(AgsPulseServer *pulse_server)
+{
+  pthread_create(pulse_server->thread, NULL,
+		 ags_pulse_server_do_poll_loop, pulse_server);
 }
 
 /**

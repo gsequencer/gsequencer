@@ -418,8 +418,8 @@ ags_midiin_init(AgsMidiin *midiin)
   pthread_mutexattr_t *attr;
 
   /* insert midiin mutex */
-  //FIXME:JK: memory leak
-  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  midiin->mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
@@ -429,7 +429,8 @@ ags_midiin_init(AgsMidiin *midiin)
 				PTHREAD_PRIO_INHERIT);
 #endif
 
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  midiin->mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
 
@@ -799,6 +800,12 @@ ags_midiin_finalize(GObject *gobject)
 		     g_object_unref);
   }
   
+  pthread_mutex_destroy(midiin->mutex);
+  free(midiin->mutex);
+
+  pthread_mutexattr_destroy(midiin->mutexattr);
+  free(midiin->mutexattr);
+
   /* call parent */
   G_OBJECT_CLASS(ags_midiin_parent_class)->finalize(gobject);
 }

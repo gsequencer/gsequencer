@@ -26,7 +26,14 @@
 #include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_sequencer.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_task_thread.h>
+
 #include <ags/audio/ags_sound_provider.h>
+
+#include <ags/audio/task/ags_notify_soundcard.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/audio/pulse/ags_pulse_server.h>
 #include <ags/audio/pulse/ags_pulse_client.h>
@@ -69,10 +76,14 @@ void ags_pulse_port_stream_underflow_callback(pa_stream *stream, AgsPulsePort *p
 enum{
   PROP_0,
   PROP_PULSE_CLIENT,
+  PROP_PULSE_DEVOUT,
   PROP_PORT_NAME,
 };
 
 static gpointer ags_pulse_port_parent_class = NULL;
+
+const int ags_pulse_port_endian_i = 1;
+#define is_bigendian() ( (*(char*)&ags_pulse_port_endian_i) == 0 )
 
 GType
 ags_pulse_port_get_type()
@@ -146,6 +157,22 @@ ags_pulse_port_class_init(AgsPulsePortClass *pulse_port)
 				  param_spec);
 
   /**
+   * AgsPulsePort:pulse-devout:
+   *
+   * The assigned #AgsPulseDevout.
+   * 
+   * Since: 0.9.10
+   */
+  param_spec = g_param_spec_object("pulse-devout",
+				   i18n_pspec("assigned pulseaudio devout"),
+				   i18n_pspec("The assigned pulseaudio devout"),
+				   AGS_TYPE_PULSE_DEVOUT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PULSE_DEVOUT,
+				  param_spec);
+
+  /**
    * AgsPulsePort:port-name:
    *
    * The pulse soundcard indentifier
@@ -172,25 +199,105 @@ ags_pulse_port_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_pulse_port_init(AgsPulsePort *pulse_port)
 {
+  AgsMutexManager *mutex_manager;
+
+  guint word_size;
+  guint fixed_size;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t attr;
+
+  /* insert port mutex */
+  //FIXME:JK: memory leak
+  pthread_mutexattr_init(&attr);
+  pthread_mutexattr_settype(&attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     &attr);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+
+  ags_mutex_manager_insert(mutex_manager,
+			   (GObject *) pulse_port,
+			   mutex);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* flags */
   pulse_port->flags = 0;
 
+  /*  */
   pulse_port->pulse_client = NULL;
+  pulse_port->pulse_devout = NULL;
   
-  pulse_port->uuid = NULL;
+  pulse_port->uuid = ags_id_generator_create_uuid();
   pulse_port->name = NULL;
 
   pulse_port->stream = NULL;
 
   pulse_port->sample_spec = (pa_sample_spec *) malloc(sizeof(pa_sample_spec));
-  pulse_port->sample_spec->rate = 44100;
-  pulse_port->sample_spec->channels = 2;
-  pulse_port->sample_spec->format = PA_SAMPLE_S16LE;
+  pulse_port->sample_spec->rate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  pulse_port->sample_spec->channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
+
+  switch(AGS_SOUNDCARD_DEFAULT_FORMAT){
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      if(is_bigendian()){
+	pulse_port->sample_spec->format = PA_SAMPLE_S16BE;
+      }else{
+	pulse_port->sample_spec->format = PA_SAMPLE_S16LE;
+      }
+
+      word_size = sizeof(signed short);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      if(is_bigendian()){
+	pulse_port->sample_spec->format = PA_SAMPLE_S24_32BE;
+      }else{
+	pulse_port->sample_spec->format = PA_SAMPLE_S24_32LE;
+      }
+
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      if(is_bigendian()){
+	pulse_port->sample_spec->format = PA_SAMPLE_S32BE;
+      }else{
+	pulse_port->sample_spec->format = PA_SAMPLE_S32LE;
+      }
+
+      word_size = sizeof(signed long);
+    }
+    break;
+  default:
+    g_warning("pulse devout - unsupported format");
+  }
+
+  if(!pa_sample_spec_valid(pulse_port->sample_spec)){
+    g_warning("sample spec not valid");
+  }
   
-  bufattr.fragsize = (uint32_t)-1;
-  bufattr.maxlength = pa_usec_to_bytes(latency,&ss);
-  bufattr.minreq = pa_usec_to_bytes(0,&ss);
-  bufattr.prebuf = (uint32_t)-1;
-  bufattr.tlength = pa_usec_to_bytes(latency,&ss);
+  fixed_size = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS * AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE * word_size;
+  
+  pulse_port->buffer_attr = (pa_buffer_attr *) malloc(sizeof(pa_buffer_attr));
+  pulse_port->buffer_attr->fragsize = (uint32_t) -1;
+  pulse_port->buffer_attr->maxlength = (uint32_t) fixed_size;
+  pulse_port->buffer_attr->minreq = (uint32_t) fixed_size;
+  pulse_port->buffer_attr->prebuf = (uint32_t) 0;
+  pulse_port->buffer_attr->tlength = (uint32_t) fixed_size;
+
+  g_atomic_int_set(&(pulse_port->queued),
+		   0);
 }
 
 void
@@ -225,6 +332,27 @@ ags_pulse_port_set_property(GObject *gobject,
       pulse_port->pulse_client = (GObject *) pulse_client;
     }
     break;
+  case PROP_PULSE_DEVOUT:
+    {
+      AgsPulseDevout *pulse_devout;
+
+      pulse_devout = (AgsPulseDevout *) g_value_get_object(value);
+
+      if(pulse_port->pulse_devout == (GObject *) pulse_devout){
+	return;
+      }
+
+      if(pulse_port->pulse_devout != NULL){
+	g_object_unref(pulse_port->pulse_devout);
+      }
+
+      if(pulse_devout != NULL){
+	g_object_ref(pulse_devout);
+      }
+      
+      pulse_port->pulse_devout = (GObject *) pulse_devout;
+    }
+    break;
   case PROP_PORT_NAME:
     {
       gchar *port_name;
@@ -242,11 +370,6 @@ ags_pulse_port_set_property(GObject *gobject,
       }
 
       pulse_port->name = port_name;
-
-      if(pulse_port->port != NULL){
-	pulse_port_set_name(pulse_port->port,
-			    port_name);
-      }
     }
     break;
   default:
@@ -269,6 +392,11 @@ ags_pulse_port_get_property(GObject *gobject,
   case PROP_PULSE_CLIENT:
     {
       g_value_set_object(value, pulse_port->pulse_client);
+    }
+    break;
+  case PROP_PULSE_DEVOUT:
+    {
+      g_value_set_object(value, pulse_port->pulse_devout);
     }
     break;
   case PROP_PORT_NAME:
@@ -324,6 +452,13 @@ ags_pulse_port_dispose(GObject *gobject)
     pulse_port->pulse_client = NULL;
   }
 
+  /* pulse devout */
+  if(pulse_port->pulse_devout != NULL){
+    g_object_unref(pulse_port->pulse_devout);
+
+    pulse_port->pulse_devout = NULL;
+  }
+
   /* name */
   g_free(pulse_port->name);
 
@@ -343,8 +478,21 @@ ags_pulse_port_finalize(GObject *gobject)
     g_object_unref(pulse_port->pulse_client);
   }
 
+  /* pulse devout */
+  if(pulse_port->pulse_devout != NULL){
+    g_object_unref(pulse_port->pulse_devout);
+  }
+
   /* name */
   g_free(pulse_port->name);
+
+  if(pulse_port->sample_spec != NULL){
+    free(pulse_port->sample_spec);
+  }
+  
+  if(pulse_port->buffer_attr != NULL){
+    free(pulse_port->buffer_attr);
+  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_pulse_port_parent_class)->finalize(gobject);
@@ -366,7 +514,7 @@ ags_pulse_port_find(GList *pulse_port,
 		    gchar *port_name)
 {
   while(pulse_port != NULL){
-    if(!g_ascii_strcasecmp(pulse_port_name(AGS_PULSE_PORT(pulse_port->data)->port),
+    if(!g_ascii_strcasecmp(AGS_PULSE_PORT(pulse_port->data)->name,
 			   port_name)){
       return(pulse_port);
     }
@@ -424,7 +572,7 @@ ags_pulse_port_register(AgsPulsePort *pulse_port,
   uuid = pulse_port->uuid;
   name = pulse_port->name;
 
-  if(AGS_PULSE_CLIENT(pulse_port->pulse_client)->client == NULL){
+  if(AGS_PULSE_CLIENT(pulse_port->pulse_client)->context == NULL){
     return;
   }
   
@@ -435,13 +583,13 @@ ags_pulse_port_register(AgsPulsePort *pulse_port,
     pulse_port->flags |= AGS_PULSE_PORT_IS_OUTPUT;
   }
 
-  pulse_port->stream = pa_stream_new(AGS_PULSE_CLIENT(pulse_port->pulse_client)->context, "GSequencer Playback", pulse_port->sample_spec, NULL);
+  pulse_port->stream = pa_stream_new(AGS_PULSE_CLIENT(pulse_port->pulse_client)->context, "Playback", pulse_port->sample_spec, NULL);
 
-  if(pulse_port->stream){
+  if(pulse_port->stream == NULL){
     return;
   }
 
-  if(is_audio){
+  if(is_audio){  
     pulse_port->flags |= AGS_PULSE_PORT_IS_AUDIO;
 
     pa_stream_set_write_callback(pulse_port->stream,
@@ -452,9 +600,9 @@ ags_pulse_port_register(AgsPulsePort *pulse_port,
 				     pulse_port);
     
     r = pa_stream_connect_playback(pulse_port->stream, NULL, pulse_port->buffer_attr,
-				   (PA_STREAM_INTERPOLATE_TIMING |
-				    PA_STREAM_ADJUST_LATENCY |
-				    PA_STREAM_AUTO_TIMING_UPDATE),
+				   (PA_STREAM_FIX_RATE |
+				    PA_STREAM_FIX_FORMAT |
+				    PA_STREAM_FIX_CHANNELS),
 				   NULL,
 				   NULL);
 
@@ -496,13 +644,450 @@ ags_pulse_port_unregister(AgsPulsePort *pulse_port)
 void
 ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPulsePort *pulse_port)
 {
-  //TODO:JK: implement me
+  AgsPulseDevout *pulse_devout;
+  
+  AgsAudioLoop *audio_loop;
+
+  AgsMutexManager *mutex_manager;
+  AgsTaskThread *task_thread;
+  
+  AgsApplicationContext *application_context;
+
+  guint word_size;
+  guint count;
+  guint nth_buffer;
+  gboolean no_event;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  pthread_mutex_t *device_mutex;
+  pthread_mutex_t *callback_mutex;
+  pthread_mutex_t *callback_finish_mutex;
+  
+  if(pulse_port == NULL){
+    return;
+  }
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  application_context = ags_application_context_get_instance();
+  
+  /*  */  
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) pulse_port);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  if(g_atomic_int_get(&(pulse_port->queued)) > 0){
+    g_warning("drop pulseaudio callback");
+    
+    return;
+  }else{
+    g_atomic_int_inc(&(pulse_port->queued));
+  }
+
+  /*
+   * process audio
+   */
+  /*  */  
+  pthread_mutex_lock(application_mutex);
+
+  if(application_context != NULL){
+    audio_loop = (AgsAudioLoop *) application_context->main_loop;
+    task_thread = (AgsTaskThread *) application_context->task_thread;
+  }else{
+    audio_loop = NULL;
+    task_thread = NULL;
+  }
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* interrupt GUI */
+  if(task_thread != NULL){
+    pthread_mutex_lock(task_thread->launch_mutex);
+  }
+  
+  if(audio_loop != NULL){
+    pthread_mutex_lock(audio_loop->timing_mutex);
+  
+    g_atomic_int_set(&(audio_loop->time_spent),
+		     audio_loop->time_cycle);
+  
+    pthread_mutex_unlock(audio_loop->timing_mutex);
+  
+    //    ags_main_loop_interrupt(AGS_MAIN_LOOP(audio_loop),
+    //			    AGS_THREAD_SUSPEND_SIG,
+    //			    0, &time_spent);
+  }
+
+  if(task_thread != NULL){
+    pthread_mutex_unlock(task_thread->launch_mutex);
+  }
+
+  g_atomic_int_and(&(AGS_THREAD(audio_loop)->flags),
+		   (~(AGS_THREAD_TIMING)));
+
+
+  /*  */
+  pthread_mutex_lock(mutex);
+
+  pulse_devout = pulse_port->pulse_devout;
+
+  stream = pulse_port->stream;
+  
+  count = pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size;
+
+  pthread_mutex_unlock(mutex);
+
+  /*  */  
+  pthread_mutex_lock(application_mutex);
+  
+  device_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  (GObject *) pulse_devout);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(device_mutex);
+
+  /* wait callback */      
+  no_event = TRUE;
+
+  if((AGS_PULSE_DEVOUT_PASS_THROUGH & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0){
+    callback_mutex = pulse_devout->callback_mutex;
+
+    pthread_mutex_unlock(device_mutex);
+	
+    /* give back computing time until ready */
+    pthread_mutex_lock(callback_mutex);
+    
+    if((AGS_PULSE_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0){
+      g_atomic_int_or(&(pulse_devout->sync_flags),
+		      AGS_PULSE_DEVOUT_CALLBACK_WAIT);
+    
+      while((AGS_PULSE_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0 &&
+	    (AGS_PULSE_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(pulse_devout->sync_flags)))) != 0){
+	pthread_cond_wait(pulse_devout->callback_cond,
+			  callback_mutex);
+      }
+    }
+    
+    g_atomic_int_and(&(pulse_devout->sync_flags),
+		     (~(AGS_PULSE_DEVOUT_CALLBACK_WAIT |
+			AGS_PULSE_DEVOUT_CALLBACK_DONE)));
+    
+    pthread_mutex_unlock(callback_mutex);
+
+    no_event = FALSE;
+
+    pthread_mutex_lock(device_mutex);
+  }
+
+  if(!no_event){        
+    /* get buffer */
+    if((AGS_PULSE_DEVOUT_BUFFER0 & (pulse_devout->flags)) != 0){
+      nth_buffer = 3;
+    }else if((AGS_PULSE_DEVOUT_BUFFER1 & (pulse_devout->flags)) != 0){
+      nth_buffer = 0;
+    }else if((AGS_PULSE_DEVOUT_BUFFER2 & (pulse_devout->flags)) != 0){
+      nth_buffer = 1;
+    }else if((AGS_PULSE_DEVOUT_BUFFER3 & pulse_devout->flags) != 0){
+      nth_buffer = 2;
+    }else{
+      /* iterate */
+      pthread_mutex_unlock(device_mutex);
+	
+      goto ags_pulse_port_stream_request_callback_SKIP_0;
+    }
+
+    /* check buffer flag */
+    switch(pulse_devout->format){
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	word_size = sizeof(signed short);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {
+	word_size = sizeof(signed long);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	word_size = sizeof(signed long);
+      }
+      break;
+    default:
+      /* iterate */
+      pthread_mutex_unlock(device_mutex);
+	
+      goto ags_pulse_port_stream_request_callback_SKIP_0;
+    }
+    
+    /* write */
+    pa_stream_write(stream, pulse_devout->buffer[nth_buffer], count, NULL, 0LL, PA_SEEK_RELATIVE);
+
+    /* signal finish */
+    callback_finish_mutex = pulse_devout->callback_finish_mutex;
+	
+    pthread_mutex_lock(callback_finish_mutex);
+
+    g_atomic_int_or(&(pulse_devout->sync_flags),
+		    AGS_PULSE_DEVOUT_CALLBACK_FINISH_DONE);
+    
+    if((AGS_PULSE_DEVOUT_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(pulse_devout->sync_flags)))) != 0){
+      pthread_cond_signal(pulse_devout->callback_finish_cond);
+    }
+
+    pthread_mutex_unlock(callback_finish_mutex);
+  }
+
+  pthread_mutex_unlock(device_mutex);
+
+ ags_pulse_port_stream_request_callback_SKIP_0:
+      
+  g_atomic_int_dec_and_test(&(pulse_port->queued));
 }
 
 void
 ags_pulse_port_stream_underflow_callback(pa_stream *stream, AgsPulsePort *pulse_port)
 {
   //TODO:JK: implement me
+}
+
+guint
+ags_pulse_port_get_fixed_size(AgsPulsePort *pulse_port)
+{
+  AgsPulseDevout *pulse_devout;
+  
+  AgsMutexManager *mutex_manager;
+  
+  guint pcm_channels;
+  guint buffer_size;
+  guint format;
+  guint word_size;
+  guint fixed_size;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *devout_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* lock pulse port */
+  pthread_mutex_lock(application_mutex);
+
+  pulse_devout = pulse_port->pulse_devout;
+
+  devout_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  (GObject *) pulse_devout);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /*  */
+  pthread_mutex_lock(devout_mutex);
+
+  pcm_channels = pulse_devout->pcm_channels;
+  buffer_size = pulse_devout->buffer_size;
+  format = pulse_devout->format;
+  
+  pthread_mutex_unlock(devout_mutex);
+  
+  switch(format){
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      word_size = sizeof(signed short);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      word_size = sizeof(signed long);
+    }
+    break;
+  default:
+    g_warning("pulse devout - unsupported format");
+
+    return(0);
+  }
+
+  fixed_size = pcm_channels * buffer_size * word_size;
+  
+  return(fixed_size);
+}
+
+void
+ags_pulse_port_set_samplerate(AgsPulsePort *pulse_port,
+			      guint samplerate)
+{
+  AgsMutexManager *mutex_manager;
+
+  guint fixed_size;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  fixed_size = ags_pulse_port_get_fixed_size(pulse_port);
+  
+  /* lock pulse port */
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) pulse_port);
+
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(mutex);
+
+  pulse_port->sample_spec->rate = samplerate;
+
+  pulse_port->buffer_attr->maxlength = fixed_size;
+  pulse_port->buffer_attr->minreq = fixed_size;
+  pulse_port->buffer_attr->tlength = fixed_size;
+
+  pthread_mutex_unlock(mutex);
+}
+
+void
+ags_pulse_port_set_buffer_size(AgsPulsePort *pulse_port,
+			       guint buffer_size)
+{
+  AgsMutexManager *mutex_manager;
+
+  guint fixed_size;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  fixed_size = ags_pulse_port_get_fixed_size(pulse_port);
+
+  /* lock pulse port */
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) pulse_port);
+
+  pthread_mutex_unlock(application_mutex);
+  
+  pthread_mutex_lock(mutex);
+
+  pulse_port->buffer_attr->maxlength = fixed_size;
+  pulse_port->buffer_attr->minreq = fixed_size;
+  pulse_port->buffer_attr->tlength = fixed_size;
+
+  pthread_mutex_unlock(mutex);
+}
+
+void
+ags_pulse_port_set_pcm_channels(AgsPulsePort *pulse_port,
+				guint pcm_channels)
+{
+  AgsMutexManager *mutex_manager;
+
+  guint fixed_size;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  fixed_size = ags_pulse_port_get_fixed_size(pulse_port);
+
+  /* lock pulse port */
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) pulse_port);
+
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(mutex);
+
+  pulse_port->sample_spec->channels = pcm_channels;
+
+  pulse_port->buffer_attr->maxlength = fixed_size;
+  pulse_port->buffer_attr->minreq = fixed_size;
+  pulse_port->buffer_attr->tlength = fixed_size;
+
+  pthread_mutex_unlock(mutex);
+}
+
+void
+ags_pulse_port_set_format(AgsPulsePort *pulse_port,
+			  guint format)
+{
+  AgsMutexManager *mutex_manager;
+
+  guint fixed_size;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  fixed_size = ags_pulse_port_get_fixed_size(pulse_port);
+  
+  /* lock pulse port */
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) pulse_port);
+
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(mutex);
+
+  switch(format){
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      if(is_bigendian()){
+	pulse_port->sample_spec->format = PA_SAMPLE_S16BE;
+      }else{
+	pulse_port->sample_spec->format = PA_SAMPLE_S16LE;
+      }
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      if(is_bigendian()){
+	pulse_port->sample_spec->format = PA_SAMPLE_S24_32BE;
+      }else{
+	pulse_port->sample_spec->format = PA_SAMPLE_S24_32LE;
+      }
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      if(is_bigendian()){
+	pulse_port->sample_spec->format = PA_SAMPLE_S32BE;
+      }else{
+	pulse_port->sample_spec->format = PA_SAMPLE_S32LE;
+      }
+    }
+    break;
+  default:
+    g_warning("pulse devout - unsupported format");
+  }
+  
+  pulse_port->buffer_attr->maxlength = fixed_size;
+  pulse_port->buffer_attr->minreq = fixed_size;
+  pulse_port->buffer_attr->tlength = fixed_size;
+
+  pthread_mutex_unlock(mutex);
 }
 
 /**

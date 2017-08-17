@@ -56,6 +56,15 @@ typedef enum
   AGS_PULSE_DEVOUT_INITIALIZED                    = 1 <<  9,
 }AgsPulseDevoutFlags;
 
+typedef enum{
+  AGS_PULSE_DEVOUT_PASS_THROUGH                   = 1,
+  AGS_PULSE_DEVOUT_INITIAL_CALLBACK               = 1 <<  1,
+  AGS_PULSE_DEVOUT_CALLBACK_WAIT                  = 1 <<  2,
+  AGS_PULSE_DEVOUT_CALLBACK_DONE                  = 1 <<  3,
+  AGS_PULSE_DEVOUT_CALLBACK_FINISH_WAIT           = 1 <<  4,
+  AGS_PULSE_DEVOUT_CALLBACK_FINISH_DONE           = 1 <<  5,
+}AgsPulseDevoutSyncFlags;
+
 #define AGS_PULSE_DEVOUT_ERROR (ags_pulse_devout_error_quark())
 
 typedef enum{
@@ -69,6 +78,9 @@ struct _AgsPulseDevout
   guint flags;
   volatile guint sync_flags;
   
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *mutexattr;
+
   guint dsp_channels;
   guint pcm_channels;
   guint format;
@@ -96,10 +108,22 @@ struct _AgsPulseDevout
   
   guint loop_offset;
 
+  gchar *card_uri;
   GObject *pulse_client;
+
+  gchar **port_name;
+  GList *pulse_port;
+
+  pthread_mutex_t *callback_mutex;
+  pthread_cond_t *callback_cond;
+
+  pthread_mutex_t *callback_finish_mutex;
+  pthread_cond_t *callback_finish_cond;
 
   GObject *application_context;
   pthread_mutex_t *application_mutex;
+
+  GObject *notify_soundcard;
 
   GList *audio;
 };

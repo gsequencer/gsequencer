@@ -85,6 +85,9 @@ struct _AgsMidiin
 
   guint flags;
   volatile guint sync_flags;
+
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *mutexattr;
   
   char **ring_buffer;
   guint ring_buffer_size[2];

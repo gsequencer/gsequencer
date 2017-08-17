@@ -89,6 +89,9 @@ struct _AgsJackMidiin
   guint flags;
   volatile guint sync_flags;
   
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *mutexattr;
+  
   char **buffer;
   guint buffer_size[4];
 

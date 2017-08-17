@@ -27,6 +27,8 @@
 #include <pulse/stream.h>
 #include <pulse/error.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_PULSE_SERVER                (ags_pulse_server_get_type())
 #define AGS_PULSE_SERVER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PULSE_SERVER, AgsPulseServer))
 #define AGS_PULSE_SERVER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_PULSE_SERVER, AgsPulseServer))
@@ -47,10 +49,13 @@ struct _AgsPulseServer
 
   guint flags;
 
+  volatile gboolean running;
+  pthread_t *thread;
+  
   GObject *application_context;
 
   pa_mainloop *main_loop;
-  pa_mainloop_api *main_loop_lapi;
+  pa_mainloop_api *main_loop_api;
   
   gchar *url;
 
@@ -88,6 +93,8 @@ void ags_pulse_server_remove_client(AgsPulseServer *pulse_server,
 				    GObject *pulse_client);
 
 void ags_pulse_server_connect_client(AgsPulseServer *pulse_server);
+
+void ags_pulse_server_start_poll(AgsPulseServer *pulse_server);
 
 AgsPulseServer* ags_pulse_server_new(GObject *application_context,
 				     gchar *url);

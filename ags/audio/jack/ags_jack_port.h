@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
 #include <jack/jack.h>
 
 #define AGS_TYPE_JACK_PORT                (ags_jack_port_get_type())

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -482,11 +482,10 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("jack-port",
-				   i18n_pspec("jack port object"),
-				   i18n_pspec("The jack port object"),
-				   AGS_TYPE_JACK_PORT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("jack-port",
+				    i18n_pspec("jack port object"),
+				    i18n_pspec("The jack port object"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_JACK_PORT,
 				  param_spec);
@@ -540,6 +539,9 @@ ags_jack_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->list_cards = ags_jack_devout_list_cards;
   soundcard->pcm_info = ags_jack_devout_pcm_info;
+
+  soundcard->get_poll_fd = NULL;
+  soundcard->is_available = NULL;
 
   soundcard->is_starting =  ags_jack_devout_is_starting;
   soundcard->is_playing = ags_jack_devout_is_playing;
@@ -600,17 +602,19 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
   
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
-  pthread_mutexattr_t attr;
+  pthread_mutexattr_t *attr;
 
   /* insert devout mutex */
-  //FIXME:JK: memory leak
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_settype(&attr,
+  jack_devout->mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
 
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  jack_devout->mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
-		     &attr);
+		     attr);
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -832,7 +836,7 @@ ags_jack_devout_set_property(GObject *gobject,
 	AgsConfig *config;
 
 	gchar *segmentation;
-	guint discriminante, nominante;
+	guint denumerator, numerator;
 	
 	g_object_ref(G_OBJECT(application_context));
 
@@ -847,10 +851,10 @@ ags_jack_devout_set_property(GObject *gobject,
 
 	if(segmentation != NULL){
 	  sscanf(segmentation, "%d/%d",
-		 &discriminante,
-		 &nominante);
+		 &denumerator,
+		 &numerator);
     
-	  jack_devout->delay_factor = 1.0 / nominante * (nominante / discriminante);
+	  jack_devout->delay_factor = 1.0 / numerator * (numerator / denumerator);
 	}
 	
 	ags_jack_devout_adjust_delay_and_attack(jack_devout);
@@ -1011,9 +1015,10 @@ ags_jack_devout_set_property(GObject *gobject,
     {
       AgsJackPort *jack_port;
 
-      jack_port = (AgsJackPort *) g_value_get_object(value);
+      jack_port = (AgsJackPort *) g_value_get_pointer(value);
 
-      if(g_list_find(jack_devout->jack_port, jack_port) != NULL){
+      if(!AGS_IS_JACK_PORT(jack_port) ||
+	 g_list_find(jack_devout->jack_port, jack_port) != NULL){
 	return;
       }
 
@@ -1151,7 +1156,7 @@ ags_jack_devout_dispose(GObject *gobject)
   }
 
   /* call parent */
-  G_OBJECT_CLASS(ags_jack_devout_parent_class)->finalize(gobject);
+  G_OBJECT_CLASS(ags_jack_devout_parent_class)->dispose(gobject);
 }
 
 void
@@ -1217,6 +1222,12 @@ ags_jack_devout_finalize(GObject *gobject)
     g_list_free_full(jack_devout->audio,
 		     g_object_unref);
   }
+
+  pthread_mutex_destroy(jack_devout->mutex);
+  free(jack_devout->mutex);
+
+  pthread_mutexattr_destroy(jack_devout->mutexattr);
+  free(jack_devout->mutexattr);
 
   /* call parent */
   G_OBJECT_CLASS(ags_jack_devout_parent_class)->finalize(gobject);

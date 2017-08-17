@@ -1,3 +1,8 @@
+ags (0.9.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed memory leak related to mutex and its attributes for AgsDevout, AgsMidiin, AgsJackDevout and AgsJackMidiin
+
 ags (0.9.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

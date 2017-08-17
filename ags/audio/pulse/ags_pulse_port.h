@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <pulse/pulse.h>
+#include <pulse/pulseaudio.h>
 
 #define AGS_TYPE_PULSE_PORT                (ags_pulse_port_get_type())
 #define AGS_PULSE_PORT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PULSE_PORT, AgsPulsePort))
@@ -50,6 +50,7 @@ struct _AgsPulsePort
   guint flags;
 
   GObject *pulse_client;
+  GObject *pulse_devout;
   
   gchar *uuid;
   gchar *name;
@@ -57,6 +58,8 @@ struct _AgsPulsePort
   pa_stream *stream;
   pa_sample_spec *sample_spec;
   pa_buffer_attr *buffer_attr;
+
+  volatile guint queued;
 };
 
 struct _AgsPulsePortClass
@@ -74,6 +77,17 @@ void ags_pulse_port_register(AgsPulsePort *pulse_port,
 			     gboolean is_audio, gboolean is_midi,
 			     gboolean is_output);
 void ags_pulse_port_unregister(AgsPulsePort *pulse_port);
+
+guint ags_pulse_port_get_fixed_size(AgsPulsePort *pulse_port);
+
+void ags_pulse_port_set_samplerate(AgsPulsePort *pulse_port,
+				   guint samplerate);
+void ags_pulse_port_set_pcm_channels(AgsPulsePort *pulse_port,
+				     guint pcm_channels);
+void ags_pulse_port_set_buffer_size(AgsPulsePort *pulse_port,
+				    guint buffer_size);
+void ags_pulse_port_set_format(AgsPulsePort *pulse_port,
+			       guint format);
 
 AgsPulsePort* ags_pulse_port_new(GObject *pulse_client);
 

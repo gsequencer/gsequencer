@@ -90,6 +90,9 @@ struct _AgsDevout
 
   guint flags;
 
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *mutexattr;
+
   guint dsp_channels;
   guint pcm_channels;
   guint format;

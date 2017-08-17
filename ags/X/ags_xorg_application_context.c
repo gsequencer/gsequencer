@@ -69,6 +69,11 @@
 #include <ags/audio/jack/ags_jack_port.h>
 #include <ags/audio/jack/ags_jack_devout.h>
 
+#include <ags/audio/pulse/ags_pulse_server.h>
+#include <ags/audio/pulse/ags_pulse_client.h>
+#include <ags/audio/pulse/ags_pulse_port.h>
+#include <ags/audio/pulse/ags_pulse_devout.h>
+
 #include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_cancel_channel.h>
 
@@ -372,6 +377,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   GObject *soundcard;
   GObject *sequencer;
   AgsJackServer *jack_server;
+  AgsPulseServer *pulse_server;
 
   AgsThread *soundcard_thread;
   AgsThread *export_thread;
@@ -389,6 +395,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
   guint i;
   gboolean has_jack;
+  gboolean has_pulse;
 
   g_atomic_int_set(&(xorg_application_context->gui_ready),
 		   0);
@@ -409,11 +416,20 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   /* jack server */
   jack_server = ags_jack_server_new((GObject *) xorg_application_context,
 				    NULL);
-  xorg_application_context->distributed_manager = g_list_prepend(xorg_application_context->distributed_manager,
-								 jack_server);
+  xorg_application_context->distributed_manager = g_list_append(xorg_application_context->distributed_manager,
+								jack_server);
   g_object_ref(G_OBJECT(jack_server));
 
   has_jack = FALSE;
+
+  /* pulse server */
+  pulse_server = ags_pulse_server_new((GObject *) xorg_application_context,
+				      NULL);
+  xorg_application_context->distributed_manager = g_list_append(xorg_application_context->distributed_manager,
+								pulse_server);
+  g_object_ref(G_OBJECT(pulse_server));
+
+  has_pulse = FALSE;
   
   /* AgsSoundcard */
   xorg_application_context->soundcard = NULL;
@@ -445,6 +461,13 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
     /* change soundcard */
     if(str != NULL){
       if(!g_ascii_strncasecmp(str,
+			      "pulse",
+			      5)){
+	soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(pulse_server),
+							       TRUE);
+
+	has_pulse = TRUE;
+      }else if(!g_ascii_strncasecmp(str,
 			      "jack",
 			      5)){
 	soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
@@ -742,6 +765,11 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
       AGS_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
     }else if(AGS_IS_JACK_DEVOUT(list->data)){
       AGS_JACK_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+    }else if(AGS_IS_PULSE_DEVOUT(list->data)){
+      AGS_PULSE_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+
+      //      g_atomic_int_or(&(soundcard_thread->flags),
+      //	      AGS_THREAD_TIMING);
     }
 
     ags_task_thread_append_cyclic_task(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread,
@@ -824,6 +852,12 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   /* launch */
   if(has_jack){
     ags_jack_server_connect_client(jack_server);
+  }
+
+  if(has_pulse){
+    ags_pulse_server_connect_client(pulse_server);
+
+    ags_pulse_server_start_poll(pulse_server);
   }
 }
 

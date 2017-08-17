@@ -225,7 +225,7 @@ ags_pulse_client_init(AgsPulseClient *pulse_client)
   /* server */
   pulse_client->pulse_server = NULL;
   
-  pulse_client->uuid = NULL;
+  pulse_client->uuid = ags_id_generator_create_uuid();
   pulse_client->name = NULL;
 
   /* client */
@@ -494,7 +494,7 @@ ags_pulse_client_find_uuid(GList *pulse_client,
 			   gchar *client_uuid)
 {
   while(pulse_client != NULL){
-    if(AGS_PULSE_CLIENT(pulse_client->data)->client != NULL &&
+    if(AGS_PULSE_CLIENT(pulse_client->data)->context != NULL &&
        !g_ascii_strcasecmp(AGS_PULSE_CLIENT(pulse_client->data)->uuid,
 			   client_uuid)){
       return(pulse_client);
@@ -520,8 +520,8 @@ ags_pulse_client_find(GList *pulse_client,
 		      gchar *client_name)
 { 
   while(pulse_client != NULL){
-    if(AGS_PULSE_CLIENT(pulse_client->data)->client != NULL &&
-       !g_ascii_strcasecmp(pulse_get_client_name(AGS_PULSE_CLIENT(pulse_client->data)->client),
+    if(AGS_PULSE_CLIENT(pulse_client->data)->context != NULL &&
+       !g_ascii_strcasecmp(AGS_PULSE_CLIENT(pulse_client->data)->name,
 			   client_name)){
       return(pulse_client);
     }
@@ -533,10 +533,26 @@ ags_pulse_client_find(GList *pulse_client,
 void
 ags_pulse_client_state_callback(pa_context *c, AgsPulseClient *pulse_client)
 {
+  AgsMutexManager *mutex_manager;
+
   pa_context_state_t state;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   state = pa_context_get_state(c);
+
+  /*  */  
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) pulse_client);
   
+  pthread_mutex_unlock(application_mutex);
+
   switch(state){
   case PA_CONTEXT_UNCONNECTED:
   case PA_CONTEXT_CONNECTING:
@@ -545,10 +561,15 @@ ags_pulse_client_state_callback(pa_context *c, AgsPulseClient *pulse_client)
     break;
   case PA_CONTEXT_FAILED:
   case PA_CONTEXT_TERMINATED:
-    //TODO:JK: implement me
+    g_warning("pulseaudio not running");
     break;
   case PA_CONTEXT_READY:
-    //TODO:JK: implement me
+    pthread_mutex_lock(mutex);
+    
+    pulse_client->flags |= AGS_PULSE_CLIENT_READY;
+
+    pthread_mutex_unlock(mutex);
+
     break;
   }
 }
@@ -558,7 +579,7 @@ ags_pulse_client_state_callback(pa_context *c, AgsPulseClient *pulse_client)
  * @pulse_client: the #AgsPulseClient
  * @client_name: the client's name
  *
- * Open the PULSE client's connection and read uuid.
+ * Open the pulseaudio client's connection and read uuid.
  *
  * Since: 0.9.10
  */
@@ -566,22 +587,41 @@ void
 ags_pulse_client_open(AgsPulseClient *pulse_client,
 		      gchar *client_name)
 {
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  gboolean ready;
+  
   if(pulse_client == NULL ||
      client_name == NULL){
     return;
   }
 
-  if(pulse_client->client != NULL){
+  if(pulse_client->context != NULL){
     g_message("Advanced Gtk+ Sequencer pulseaudio client already open");
     
     return;
   } 
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
+  /*  */  
+  pthread_mutex_lock(application_mutex);
+  
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) pulse_client);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /*  */
   g_message("Advanced Gtk+ Sequencer open pulseaudio client");
   
   pulse_client->name = g_strdup(client_name);
-  pulse_client->context = pa_context_new(AGS_PULSE_SERVER(pulse_client->pulse_server)->main_loop_api, "Advanced Gtk+ Sequencer");
-  
+  pulse_client->context = pa_context_new(AGS_PULSE_SERVER(pulse_client->pulse_server)->main_loop_api, client_name);
+
   if(pulse_client->context != NULL){
     pa_context_connect(pulse_client->context,
 		       NULL,
@@ -590,6 +630,22 @@ ags_pulse_client_open(AgsPulseClient *pulse_client,
     pa_context_set_state_callback(pulse_client->context,
 				  ags_pulse_client_state_callback,
 				  pulse_client);
+    
+    ready = FALSE;
+    
+    while(!ready){
+      pthread_mutex_lock(mutex);
+      
+      ready = (((AGS_PULSE_CLIENT_READY & (pulse_client->flags)) != 0) ? TRUE: FALSE);
+      
+      pthread_mutex_unlock(mutex);
+
+      if(!ready){
+	pa_mainloop_iterate(AGS_PULSE_SERVER(pulse_client->pulse_server)->main_loop,
+			    TRUE,
+			    NULL);
+      }
+    }
   }
 }
 
@@ -629,7 +685,7 @@ ags_pulse_client_activate(AgsPulseClient *pulse_client)
   pthread_mutex_lock(mutex);
   
   if((AGS_PULSE_CLIENT_ACTIVATED & (pulse_client->flags)) != 0 ||
-     pulse_client->client == NULL){
+     pulse_client->context == NULL){
     pthread_mutex_unlock(mutex);
     
     return;
@@ -646,6 +702,8 @@ ags_pulse_client_activate(AgsPulseClient *pulse_client)
     port = port->next;
   }
 
+  pulse_client->flags |= AGS_PULSE_CLIENT_ACTIVATED;
+
   pthread_mutex_unlock(mutex);
 }
 
@@ -660,7 +718,7 @@ ags_pulse_client_activate(AgsPulseClient *pulse_client)
 void
 ags_pulse_client_deactivate(AgsPulseClient *pulse_client)
 {
-  if(pulse_client->client == NULL){
+  if(pulse_client->context == NULL){
     return;
   }
 
@@ -683,8 +741,8 @@ ags_pulse_client_add_device(AgsPulseClient *pulse_client,
 			    GObject *pulse_device)
 {
   if(!AGS_IS_PULSE_CLIENT(pulse_client) ||
-     (!AGS_IS_PULSE_DEVOUT(pulse_device) &&
-      !AGS_IS_PULSE_MIDIIN(pulse_device))){
+     (!AGS_IS_PULSE_DEVOUT(pulse_device) /* &&
+       !AGS_IS_PULSE_MIDIIN(pulse_device) */)){
     return;
   }
 

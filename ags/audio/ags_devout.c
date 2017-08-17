@@ -214,8 +214,8 @@ enum{
 static gpointer ags_devout_parent_class = NULL;
 static guint devout_signals[LAST_SIGNAL];
 
-const int endian_i = 1;
-#define is_bigendian() ( (*(char*)&endian_i) == 0 )
+const int ags_devout_endian_i = 1;
+#define is_bigendian() ( (*(char*)&ags_devout_endian_i) == 0 )
 
 GType
 ags_devout_get_type (void)
@@ -609,8 +609,8 @@ ags_devout_init(AgsDevout *devout)
   pthread_mutexattr_t *attr;
 
   /* insert devout mutex */
-  //FIXME:JK: memory leak
-  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  devout->mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
@@ -620,7 +620,8 @@ ags_devout_init(AgsDevout *devout)
 				PTHREAD_PRIO_INHERIT);
 #endif
 
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  devout->mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
 
@@ -864,7 +865,7 @@ ags_devout_set_property(GObject *gobject,
 	AgsConfig *config;
 
 	gchar *segmentation;
-	guint discriminante, nominante;
+	guint denumerator, numerator;
 	
 	g_object_ref(G_OBJECT(application_context));
 
@@ -879,10 +880,10 @@ ags_devout_set_property(GObject *gobject,
 
 	if(segmentation != NULL){
 	  sscanf(segmentation, "%d/%d",
-		 &discriminante,
-		 &nominante);
+		 &denumerator,
+		 &numerator);
     
-	  devout->delay_factor = 1.0 / nominante * (nominante / discriminante);
+	  devout->delay_factor = 1.0 / numerator * (numerator / denumerator);
 
 	  g_free(segmentation);
 	}
@@ -1239,6 +1240,12 @@ ags_devout_finalize(GObject *gobject)
 		     g_object_unref);
   }
   
+  pthread_mutex_destroy(devout->mutex);
+  free(devout->mutex);
+
+  pthread_mutexattr_destroy(devout->mutexattr);
+  free(devout->mutexattr);
+
   /* call parent */
   G_OBJECT_CLASS(ags_devout_parent_class)->finalize(gobject);
 }
