@@ -434,8 +434,8 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "1024");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
 
-  ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "backend", "jack");
-  ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "device", "ags-jack-midiin-0");
+  //ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "backend", "jack");
+  //ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "device", "ags-jack-midiin-0");
 
   ags_config_set_value(config, AGS_CONFIG_RECALL, "auto-sense", "true");
 }

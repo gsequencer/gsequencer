@@ -318,8 +318,7 @@ ags_notify_soundcard_launch(AgsTask *task)
   /* wait to complete */
   pthread_mutex_lock(notify_soundcard->return_mutex);
 
-  if((AGS_NOTIFY_SOUNDCARD_WAIT_RETURN & (g_atomic_int_get(&(notify_soundcard->flags)))) != 0 &&
-     (AGS_NOTIFY_SOUNDCARD_DONE_RETURN & (g_atomic_int_get(&(notify_soundcard->flags)))) == 0){
+  if((AGS_NOTIFY_SOUNDCARD_DONE_RETURN & (g_atomic_int_get(&(notify_soundcard->flags)))) == 0){
     g_atomic_int_or(&(notify_soundcard->flags),
 		    AGS_NOTIFY_SOUNDCARD_WAIT_RETURN);
     

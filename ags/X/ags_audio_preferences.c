@@ -173,7 +173,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 					(GtkWidget *) audio_preferences->soundcard_editor);
 
   /*  */
-  audio_preferences->connect_jack = NULL;
+  audio_preferences->connect_sink = NULL;
   audio_preferences->add = NULL;
   
   /*  */
@@ -272,9 +272,9 @@ ags_audio_preferences_connect(AgsConnectable *connectable)
 		     G_CALLBACK(ags_audio_preferences_add_callback), audio_preferences);
   }
   
-  if(audio_preferences->connect_jack != NULL){
-    g_signal_connect(G_OBJECT(audio_preferences->connect_jack), "clicked",
-		     G_CALLBACK(ags_audio_preferences_connect_jack_callback), audio_preferences);    
+  if(audio_preferences->connect_sink != NULL){
+    g_signal_connect(G_OBJECT(audio_preferences->connect_sink), "clicked",
+		     G_CALLBACK(ags_audio_preferences_connect_sink_callback), audio_preferences);    
   }
     
   /* experimental */
@@ -312,10 +312,10 @@ ags_audio_preferences_disconnect(AgsConnectable *connectable)
 			NULL);
   }
   
-  if(audio_preferences->connect_jack != NULL){
-    g_object_disconnect(G_OBJECT(audio_preferences->connect_jack),
+  if(audio_preferences->connect_sink != NULL){
+    g_object_disconnect(G_OBJECT(audio_preferences->connect_sink),
 			"clicked",
-			G_CALLBACK(ags_audio_preferences_connect_jack_callback),
+			G_CALLBACK(ags_audio_preferences_connect_sink_callback),
 			audio_preferences,
 			NULL);
   }

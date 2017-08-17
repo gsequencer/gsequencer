@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,6 +31,9 @@
 #include <ags/audio/jack/ags_jack_server.h>
 #include <ags/audio/jack/ags_jack_devout.h>
 
+#include <ags/audio/pulse/ags_pulse_server.h>
+#include <ags/audio/pulse/ags_pulse_devout.h>
+
 #include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/audio/task/ags_set_output_device.h>
@@ -43,8 +46,8 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
-#include <ags/X/task/ags_add_soundcard_editor_jack.h>
-#include <ags/X/task/ags_remove_soundcard_editor_jack.h>
+#include <ags/X/task/ags_add_soundcard_editor_sink.h>
+#include <ags/X/task/ags_remove_soundcard_editor_sink.h>
 
 #include <ags/config.h>
 
@@ -58,23 +61,29 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 
   if(str != NULL){
     if(!g_ascii_strncasecmp(str,
+			    "pulse",
+			    6)){
+      ags_soundcard_editor_load_pulse_card(soundcard_editor);
+
+      gtk_widget_show_all((GtkWidget *) soundcard_editor->sink_hbox);
+    }else if(!g_ascii_strncasecmp(str,
 			    "jack",
 			    5)){
       ags_soundcard_editor_load_jack_card(soundcard_editor);
 
-      gtk_widget_show_all((GtkWidget *) soundcard_editor->jack_hbox);
+      gtk_widget_show_all((GtkWidget *) soundcard_editor->sink_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "alsa",
 				  5)){
       ags_soundcard_editor_load_alsa_card(soundcard_editor);
 
-      gtk_widget_hide((GtkWidget *) soundcard_editor->jack_hbox);
+      gtk_widget_hide((GtkWidget *) soundcard_editor->sink_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "oss",
 				  4)){
       ags_soundcard_editor_load_oss_card(soundcard_editor);
 
-      gtk_widget_hide((GtkWidget *) soundcard_editor->jack_hbox);
+      gtk_widget_hide((GtkWidget *) soundcard_editor->sink_hbox);
     }
   }
 }
@@ -133,7 +142,9 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 
   str = NULL;
   
-  if(AGS_IS_JACK_DEVOUT(soundcard)){
+  if(AGS_IS_PULSE_DEVOUT(soundcard)){
+    str = "pulse";
+  }else if(AGS_IS_JACK_DEVOUT(soundcard)){
     str = "jack";
   }else if(AGS_IS_DEVOUT(soundcard)){
     if((AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard)->flags)) != 0){
@@ -210,11 +221,11 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 }
 
 void
-ags_soundcard_editor_add_jack_callback(GtkWidget *button,
+ags_soundcard_editor_add_sink_callback(GtkWidget *button,
 				       AgsSoundcardEditor *soundcard_editor)
 {
   AgsWindow *window;
-  AgsAddSoundcardEditorJack *add_soundcard_editor_jack;
+  AgsAddSoundcardEditorSink *add_soundcard_editor_sink;
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
@@ -243,19 +254,19 @@ ags_soundcard_editor_add_jack_callback(GtkWidget *button,
 						       AGS_TYPE_TASK_THREAD);
 
   /* create set output device task */
-  add_soundcard_editor_jack = ags_add_soundcard_editor_jack_new(soundcard_editor);
+  add_soundcard_editor_sink = ags_add_soundcard_editor_sink_new(soundcard_editor);
 
   /* append AgsSetAudioChannels */
   ags_task_thread_append_task(task_thread,
-			      AGS_TASK(add_soundcard_editor_jack));
+			      AGS_TASK(add_soundcard_editor_sink));
 }
 
 void
-ags_soundcard_editor_remove_jack_callback(GtkWidget *button,
+ags_soundcard_editor_remove_sink_callback(GtkWidget *button,
 					  AgsSoundcardEditor *soundcard_editor)
 {
   AgsWindow *window;
-  AgsRemoveSoundcardEditorJack *remove_soundcard_editor_jack;
+  AgsRemoveSoundcardEditorSink *remove_soundcard_editor_sink;
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
@@ -284,12 +295,12 @@ ags_soundcard_editor_remove_jack_callback(GtkWidget *button,
 						       AGS_TYPE_TASK_THREAD);
 
   /* create set output device task */
-  remove_soundcard_editor_jack = ags_remove_soundcard_editor_jack_new(soundcard_editor,
+  remove_soundcard_editor_sink = ags_remove_soundcard_editor_sink_new(soundcard_editor,
 								      gtk_combo_box_text_get_active_text(soundcard_editor->card));
 
   /* append AgsSetAudioChannels */
   ags_task_thread_append_task(task_thread,
-			      AGS_TASK(remove_soundcard_editor_jack));
+			      AGS_TASK(remove_soundcard_editor_sink));
 }
 
 void

@@ -609,7 +609,8 @@ ags_sequencer_editor_add_jack(AgsSequencerEditor *sequencer_editor,
 
   distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
 
-  if(distributed_manager != NULL){
+  if((distributed_manager = ags_list_util_find_type(distributed_manager,
+						    AGS_TYPE_JACK_SERVER)) != NULL){
     jack_server = AGS_JACK_SERVER(distributed_manager->data);
   }else{
     g_warning("distributed manager not found");
@@ -705,7 +706,8 @@ ags_sequencer_editor_remove_jack(AgsSequencerEditor *sequencer_editor,
   main_loop = application_context->main_loop;
   distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
 
-  if(distributed_manager == NULL){
+  if((distributed_manager = ags_list_util_find_type(distributed_manager,
+						    AGS_TYPE_JACK_SERVER)) == NULL){
     g_warning("distributed manager not found");
 
     pthread_mutex_unlock(application_mutex);
@@ -738,7 +740,8 @@ ags_sequencer_editor_remove_jack(AgsSequencerEditor *sequencer_editor,
   gtk_combo_box_set_active(GTK_COMBO_BOX(sequencer_editor->backend),
 			   -1);
 
-  if(distributed_manager != NULL){
+  if((distributed_manager = ags_list_util_find_type(distributed_manager,
+						    AGS_TYPE_JACK_SERVER)) != NULL){
     ags_distributed_manager_unregister_sequencer(AGS_DISTRIBUTED_MANAGER(distributed_manager->data),
 						 jack_midiin);
   }
@@ -918,7 +921,8 @@ ags_sequencer_editor_load_jack_card(AgsSequencerEditor *sequencer_editor)
 
   distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
 
-  if(distributed_manager == NULL){
+  if((distributed_manager = ags_list_util_find_type(distributed_manager,
+						    AGS_TYPE_JACK_SERVER)) == NULL){
     g_warning("distributed manager not found");
 
     pthread_mutex_unlock(application_mutex);

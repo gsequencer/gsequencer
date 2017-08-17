@@ -921,6 +921,11 @@ ags_pulse_devout_set_property(GObject *gobject,
       pulse_devout->pcm_channels = pcm_channels;
 
       ags_pulse_devout_realloc_buffer(pulse_devout);
+
+      if(pulse_devout->pulse_port != NULL){
+	ags_pulse_port_set_pcm_channels(pulse_devout->pulse_port->data,
+					pcm_channels);
+      }
     }
     break;
   case PROP_FORMAT:
@@ -935,7 +940,12 @@ ags_pulse_devout_set_property(GObject *gobject,
 
       pulse_devout->format = format;
 
-      ags_pulse_devout_realloc_buffer(pulse_devout);      
+      ags_pulse_devout_realloc_buffer(pulse_devout);
+
+      if(pulse_devout->pulse_port != NULL){
+	ags_pulse_port_set_format(pulse_devout->pulse_port->data,
+				  format);
+      }
     }
     break;
   case PROP_BUFFER_SIZE:
@@ -952,6 +962,11 @@ ags_pulse_devout_set_property(GObject *gobject,
 
       ags_pulse_devout_realloc_buffer(pulse_devout);
       ags_pulse_devout_adjust_delay_and_attack(pulse_devout);
+
+      if(pulse_devout->pulse_port != NULL){
+	ags_pulse_port_set_buffer_size(pulse_devout->pulse_port->data,
+				       buffer_size);
+      }
     }
     break;
   case PROP_SAMPLERATE:
@@ -968,6 +983,11 @@ ags_pulse_devout_set_property(GObject *gobject,
 
       ags_pulse_devout_realloc_buffer(pulse_devout);
       ags_pulse_devout_adjust_delay_and_attack(pulse_devout);
+
+      if(pulse_devout->pulse_port != NULL){
+	ags_pulse_port_set_samplerate(pulse_devout->pulse_port->data,
+				      samplerate);
+      }
     }
     break;
   case PROP_BUFFER:
@@ -1192,6 +1212,10 @@ ags_pulse_devout_finalize(GObject *gobject)
   free(pulse_devout->buffer[1]);
   free(pulse_devout->buffer[2]);
   free(pulse_devout->buffer[3]);
+  free(pulse_devout->buffer[4]);
+  free(pulse_devout->buffer[5]);
+  free(pulse_devout->buffer[6]);
+  free(pulse_devout->buffer[7]);
 
   /* free buffer array */
   free(pulse_devout->buffer);
@@ -1271,7 +1295,7 @@ ags_pulse_devout_disconnect(AgsConnectable *connectable)
  *
  * The buffer flag indicates the currently played buffer.
  *
- * Since: 0.3
+ * Since: 0.9.10
  */
 void
 ags_pulse_devout_switch_buffer_flag(AgsPulseDevout *pulse_devout)
@@ -1393,8 +1417,7 @@ ags_pulse_devout_set_device(AgsSoundcard *soundcard,
     pulse_port = g_list_copy(pulse_devout->pulse_port);
   
   str = g_strdup_printf("ags-soundcard%d",
-			nth_card,
-			i);
+			nth_card);
     
   g_object_set(pulse_port->data,
 	       "port-name", str,
@@ -1713,6 +1736,10 @@ ags_pulse_devout_port_init(AgsSoundcard *soundcard,
   memset(pulse_devout->buffer[1], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
   memset(pulse_devout->buffer[2], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
   memset(pulse_devout->buffer[3], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->buffer[4], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->buffer[5], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->buffer[6], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->buffer[7], 0, pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
 
   /*  */
   pulse_devout->tact_counter = 0.0;
@@ -1746,7 +1773,6 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
   AgsApplicationContext *application_context;
 
   guint word_size;
-  guint nth_buffer;
   gboolean pulse_client_activated;
 
   pthread_mutex_t *mutex;
@@ -1908,6 +1934,8 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
     ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
 				 task);
   }else{
+    guint nth_buffer;
+
     /* get buffer */  
     if((AGS_PULSE_DEVOUT_BUFFER0 & (pulse_devout->flags)) != 0){
       nth_buffer = 7;
@@ -2098,10 +2126,14 @@ ags_pulse_devout_port_free(AgsSoundcard *soundcard)
     g_critical("ags_pulse_devout_free(): unsupported word size");
   }
 
+  memset(pulse_devout->buffer[0], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
   memset(pulse_devout->buffer[1], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
   memset(pulse_devout->buffer[2], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
   memset(pulse_devout->buffer[3], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
-  memset(pulse_devout->buffer[0], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->buffer[4], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->buffer[5], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->buffer[6], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  memset(pulse_devout->buffer[7], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
 
   pthread_mutex_unlock(mutex);
 }

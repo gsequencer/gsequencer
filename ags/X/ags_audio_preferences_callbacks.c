@@ -49,9 +49,9 @@ ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_pare
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
 
-  audio_preferences->connect_jack = (GtkButton *) gtk_button_new_with_label(i18n("connect jack"));
+  audio_preferences->connect_sink = (GtkButton *) gtk_button_new_with_label(i18n("connect sink"));
   gtk_box_pack_end((GtkBox *) GTK_DIALOG(preferences)->action_area,
-		   (GtkWidget *) audio_preferences->connect_jack,
+		   (GtkWidget *) audio_preferences->connect_sink,
 		   TRUE, FALSE,
 		   0);  
 
@@ -65,14 +65,14 @@ ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_pare
 }
 
 void
-ags_audio_preferences_connect_jack_callback(GtkWidget *widget, AgsAudioPreferences *audio_preferences)
+ags_audio_preferences_connect_sink_callback(GtkWidget *widget, AgsAudioPreferences *audio_preferences)
 {
   AgsWindow *window;
   AgsPreferences *preferences;
-
-  AgsJackServer *jack_server;
   
   AgsApplicationContext *application_context;
+
+  GObject *server;
 
   GList *list;
   
@@ -89,10 +89,12 @@ ags_audio_preferences_connect_jack_callback(GtkWidget *widget, AgsAudioPreferenc
 
   list = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
 
-  if(list != NULL){
-    jack_server = (AgsJackServer *) list->data;
+  while(list != NULL){
+    server = (AgsJackServer *) list->data;
 
-    ags_jack_server_connect_client(jack_server);
+    ags_jack_server_connect_client(server);
+
+    list = list->next;
   }
 
   pthread_mutex_unlock(application_mutex);

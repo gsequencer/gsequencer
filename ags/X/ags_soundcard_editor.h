@@ -51,9 +51,9 @@ struct _AgsSoundcardEditor
   GtkComboBoxText *backend;  
   GtkComboBoxText *card;
   
-  GtkHBox *jack_hbox;
-  GtkButton *add_jack;
-  GtkButton *remove_jack;
+  GtkHBox *sink_hbox;
+  GtkButton *add_sink;
+  GtkButton *remove_sink;
   
   GtkSpinButton *audio_channels;
   GtkSpinButton *samplerate;
@@ -70,9 +70,9 @@ struct _AgsSoundcardEditorClass
 
 GType ags_soundcard_editor_get_type(void);
 
-void ags_soundcard_editor_add_jack(AgsSoundcardEditor *soundcard_editor,
+void ags_soundcard_editor_add_sink(AgsSoundcardEditor *soundcard_editor,
 				   gchar *device);
-void ags_soundcard_editor_remove_jack(AgsSoundcardEditor *soundcard_editor,
+void ags_soundcard_editor_remove_sink(AgsSoundcardEditor *soundcard_editor,
 				      gchar *device);
 
 void ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
@@ -80,6 +80,7 @@ void ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
 void ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
 					   GObject *soundcard);
 
+void ags_soundcard_editor_load_pulse_card(AgsSoundcardEditor *soundcard_editor);
 void ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor);
 void ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor);
 void ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor);

@@ -327,8 +327,8 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   gchar *str;
 
   guint i;
-  gboolean has_jack;
   gboolean has_pulse;
+  gboolean has_jack;
   
   AGS_APPLICATION_CONTEXT(audio_application_context)->log = NULL;
 
@@ -343,6 +343,15 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   /* distributed manager */
   audio_application_context->distributed_manager = NULL;
 
+  /* pulse server */
+  pulse_server = ags_pulse_server_new((GObject *) audio_application_context,
+				      NULL);
+  audio_application_context->distributed_manager = g_list_append(audio_application_context->distributed_manager,
+								 pulse_server);
+  g_object_ref(G_OBJECT(pulse_server));
+
+  has_pulse = FALSE;
+
   /* jack server */
   jack_server = ags_jack_server_new((GObject *) audio_application_context,
 				    NULL);
@@ -350,12 +359,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
 								 jack_server);
   g_object_ref(G_OBJECT(jack_server));
 
-  /* pulse server */
-  pulse_server = ags_pulse_server_new((GObject *) audio_application_context,
-				      NULL);
-  audio_application_context->distributed_manager = g_list_prepend(audio_application_context->distributed_manager,
-								  pulse_server);
-  g_object_ref(G_OBJECT(pulse_server));
+  has_jack = FALSE;
 
   /* soundcard */
   audio_application_context->soundcard = NULL;
@@ -386,14 +390,18 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
     if(str != NULL){
       if(!g_ascii_strncasecmp(str,
 			      "pulse",
-			      5)){
+			      6)){
 	soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(pulse_server),
 							       TRUE);
+
+	has_pulse = TRUE;
       }else if(!g_ascii_strncasecmp(str,
 			      "jack",
 			      5)){
 	soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
 							       TRUE);
+
+	has_jack = TRUE;
       }else if(!g_ascii_strncasecmp(str,
 				    "alsa",
 				    5)){
@@ -674,7 +682,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
 				       notify_soundcard);
 
     /* export thread */
-    export_thread = (AgsThread *) ags_export_thread_new(soundcard,
+    export_thread = (AgsThread *) ags_export_thread_new(list->data,
 							NULL);
     ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				  (AgsThread *) export_thread,
@@ -743,12 +751,14 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   audio_application_context->thread_pool = AGS_TASK_THREAD(AGS_APPLICATION_CONTEXT(audio_application_context)->task_thread)->thread_pool;
 
   /* launch */
-  if(has_jack){
-    ags_jack_server_connect_client(jack_server);
-  }
-
   if(has_pulse){
     ags_pulse_server_connect_client(pulse_server);
+
+    ags_pulse_server_start_poll(pulse_server);
+  }
+
+  if(has_jack){
+    ags_jack_server_connect_client(jack_server);
   }
 }
 

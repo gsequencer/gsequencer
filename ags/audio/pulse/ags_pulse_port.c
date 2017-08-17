@@ -589,7 +589,7 @@ ags_pulse_port_register(AgsPulsePort *pulse_port,
     pulse_port->flags |= AGS_PULSE_PORT_IS_OUTPUT;
   }
 
-  pulse_port->stream = pa_stream_new(AGS_PULSE_CLIENT(pulse_port->pulse_client)->context, name, pulse_port->sample_spec, NULL);
+  pulse_port->stream = pa_stream_new(AGS_PULSE_CLIENT(pulse_port->pulse_client)->context, "Playback", pulse_port->sample_spec, NULL);
 
   if(pulse_port->stream == NULL){
     return;
@@ -659,12 +659,9 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   
   AgsApplicationContext *application_context;
 
-  guint audio_buffer_util_format;
-  guint copy_mode;
   guint word_size;
   size_t count;
   guint nth_buffer;
-  guint i;
   gboolean no_event;
   gboolean empty_run;
   
@@ -758,13 +755,13 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   
   pthread_mutex_unlock(application_mutex);
 
+  /*  */
   pthread_mutex_lock(device_mutex);
 
-  audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(pulse_devout->format);
-  
-  /* wait callback */      
+  /* wait callback */
   no_event = TRUE;
-
+  empty_run = FALSE;
+  
   if((AGS_PULSE_DEVOUT_PASS_THROUGH & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0){
     callback_mutex = pulse_devout->callback_mutex;
 
@@ -794,6 +791,27 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 
     pthread_mutex_lock(device_mutex);
   }
+  
+  /* check buffer flag */
+  switch(pulse_devout->format){
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      word_size = sizeof(signed short);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      word_size = sizeof(signed long);
+    }
+    break;
+  default:
+    empty_run = TRUE;
+  }
 
   /* get buffer */  
   if((AGS_PULSE_DEVOUT_BUFFER0 & (pulse_devout->flags)) != 0){
@@ -813,62 +831,35 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   }else if((AGS_PULSE_DEVOUT_BUFFER7 & (pulse_devout->flags)) != 0){
     nth_buffer = 6;
   }else{
-    pthread_mutex_unlock(device_mutex);
-    
-    /* iterate */
-    pthread_mutex_lock(mutex);
-    
-    pa_stream_begin_write(stream, &(pulse_port->empty_buffer), &count);
-    pa_stream_write(stream, pulse_port->empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
-    
-    pthread_mutex_unlock(mutex);
-    
-    goto ags_pulse_port_stream_request_callback_SKIP_0;
-  }
-
-  /* check buffer flag */
-  switch(pulse_devout->format){
-  case AGS_SOUNDCARD_SIGNED_16_BIT:
-    {
-      word_size = sizeof(signed short);
-    }
-    break;
-  case AGS_SOUNDCARD_SIGNED_24_BIT:
-    {
-      word_size = sizeof(signed long);
-    }
-    break;
-  case AGS_SOUNDCARD_SIGNED_32_BIT:
-    {
-      word_size = sizeof(signed long);
-    }
-    break;
-  default:
-    pthread_mutex_unlock(device_mutex);
-    
-    /* iterate */
-    pthread_mutex_lock(mutex);
-    
-    pa_stream_begin_write(stream, &(pulse_port->empty_buffer), &count);
-    pa_stream_write(stream, pulse_port->empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
-    
-    pthread_mutex_unlock(mutex);
-
-    goto ags_pulse_port_stream_request_callback_SKIP_0;
+    empty_run = TRUE;
   }
         
-  /* write */
   count = pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size;
 
-  pa_stream_begin_write(stream,
-			&pulse_devout->buffer[nth_buffer],
-			&count);
-  pa_stream_write(stream,
-		  pulse_devout->buffer[nth_buffer],
-		  count,
-		  NULL,
-		  0,
-		  PA_SEEK_RELATIVE);
+  /* write */
+  if(empty_run){
+    pthread_mutex_unlock(device_mutex);
+    
+    /* iterate */
+    pthread_mutex_lock(mutex);
+    
+    pa_stream_begin_write(stream, &(pulse_port->empty_buffer), &count);
+    pa_stream_write(stream, pulse_port->empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
+    
+    pthread_mutex_unlock(mutex);
+    
+    goto ags_pulse_port_stream_request_callback_SKIP_0;
+  }else{    
+    pa_stream_begin_write(stream,
+			  &(pulse_devout->buffer[nth_buffer]),
+			  &count);
+    pa_stream_write(stream,
+		    pulse_devout->buffer[nth_buffer],
+		    count,
+		    NULL,
+		    0,
+		    PA_SEEK_RELATIVE);
+  }
   
   /* signal finish */
   if(!no_event){        

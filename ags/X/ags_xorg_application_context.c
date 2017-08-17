@@ -20,6 +20,7 @@
 #include <ags/X/ags_xorg_application_context.h>
 
 #include <ags/util/ags_id_generator.h>
+#include <ags/util/ags_list_util.h>
 
 #include <ags/lib/ags_complex.h>
 
@@ -394,8 +395,8 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   gchar *str;
 
   guint i;
-  gboolean has_jack;
   gboolean has_pulse;
+  gboolean has_jack;
 
   g_atomic_int_set(&(xorg_application_context->gui_ready),
 		   0);
@@ -413,15 +414,6 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   /* distributed manager */
   xorg_application_context->distributed_manager = NULL;
 
-  /* jack server */
-  jack_server = ags_jack_server_new((GObject *) xorg_application_context,
-				    NULL);
-  xorg_application_context->distributed_manager = g_list_append(xorg_application_context->distributed_manager,
-								jack_server);
-  g_object_ref(G_OBJECT(jack_server));
-
-  has_jack = FALSE;
-
   /* pulse server */
   pulse_server = ags_pulse_server_new((GObject *) xorg_application_context,
 				      NULL);
@@ -431,6 +423,15 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
   has_pulse = FALSE;
   
+  /* jack server */
+  jack_server = ags_jack_server_new((GObject *) xorg_application_context,
+				    NULL);
+  xorg_application_context->distributed_manager = g_list_append(xorg_application_context->distributed_manager,
+								jack_server);
+  g_object_ref(G_OBJECT(jack_server));
+
+  has_jack = FALSE;
+
   /* AgsSoundcard */
   xorg_application_context->soundcard = NULL;
   soundcard = NULL;
@@ -767,16 +768,13 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
       AGS_JACK_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
     }else if(AGS_IS_PULSE_DEVOUT(list->data)){
       AGS_PULSE_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
-
-      //      g_atomic_int_or(&(soundcard_thread->flags),
-      //	      AGS_THREAD_TIMING);
     }
 
     ags_task_thread_append_cyclic_task(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread,
 				       notify_soundcard);
 
     /* export thread */
-    export_thread = (AgsThread *) ags_export_thread_new(soundcard,
+    export_thread = (AgsThread *) ags_export_thread_new(list->data,
 							NULL);
     ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				  (AgsThread *) export_thread,
@@ -850,14 +848,14 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   xorg_application_context->thread_pool = AGS_TASK_THREAD(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread)->thread_pool;
 
   /* launch */
-  if(has_jack){
-    ags_jack_server_connect_client(jack_server);
-  }
-
   if(has_pulse){
     ags_pulse_server_connect_client(pulse_server);
 
     ags_pulse_server_start_poll(pulse_server);
+  }
+
+  if(has_jack){
+    ags_jack_server_connect_client(jack_server);
   }
 }
 
@@ -1382,6 +1380,8 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
   AgsDssiManager *dssi_manager;
   AgsLv2Manager *lv2_manager;
 
+  AgsPulseServer *pulse_server;
+
   AgsJackServer *jack_server;
 
   AgsConfig *config;
@@ -1474,26 +1474,38 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
     g_object_unref(autosave_file);
   }
 
+  /* retrieve pulseaudio server */
+  list = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
+  
+  while((list = ags_list_util_find_type(list,
+					AGS_TYPE_PULSE_SERVER)) != NULL){
+    pulse_server = list->data;
+
+    pa_mainloop_quit(pulse_server->main_loop,
+		     0);
+    
+    list = list->next;
+  }
+  
   /* retrieve JACK server */
   list = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
   
-  if(list != NULL){
+  if((list = ags_list_util_find_type(list,
+				     AGS_TYPE_JACK_SERVER)) != NULL){
     jack_server = list->data;
-  }else{
-    jack_server = NULL;
-  }
 
-  /* close client */
-  if(jack_server != NULL){
+    /* close client */
     jack_client = jack_server->client;
 
     while(jack_client != NULL){
       jack_client_close(AGS_JACK_CLIENT(jack_client->data)->client);
-
+      
       jack_client = jack_client->next;
     }
+    
+    list = list->next;
   }
-
+  
   exit(0);
 }
 
