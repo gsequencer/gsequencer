@@ -30,6 +30,7 @@
 
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_task_thread.h>
+#include <ags/thread/ags_polling_thread.h>
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio_signal.h>
@@ -254,6 +255,8 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
   pulse_port->stream = NULL;
   
   /* read config */
+  config = ags_config_get_instance();
+  
   samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
@@ -380,7 +383,7 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
 
   pulse_port->buffer_attr = (pa_buffer_attr *) malloc(sizeof(pa_buffer_attr));
   pulse_port->buffer_attr->fragsize = (uint32_t) -1;
-  pulse_port->buffer_attr->maxlength = (uint32_t) fixed_size;
+  pulse_port->buffer_attr->maxlength = (uint32_t) 4 * fixed_size;
   pulse_port->buffer_attr->minreq = (uint32_t) fixed_size;
   pulse_port->buffer_attr->prebuf = (uint32_t) 0;
   pulse_port->buffer_attr->tlength = (uint32_t) fixed_size;
@@ -980,7 +983,45 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 void
 ags_pulse_port_stream_underflow_callback(pa_stream *stream, AgsPulsePort *pulse_port)
 {
-  //TODO:JK: implement me
+  AgsAudioLoop *audio_loop;
+
+  AgsPollingThread *polling_thread;
+  AgsMutexManager *mutex_manager;
+
+  AgsApplicationContext *application_context;
+  
+  guint time_spent;
+  
+  pthread_mutex_t *application_mutex;
+    
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  application_context = ags_application_context_get_instance();
+  
+  pthread_mutex_lock(application_mutex);
+
+  audio_loop = (AgsAudioLoop *) application_context->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  polling_thread = ags_thread_find_type(audio_loop,
+					AGS_TYPE_POLLING_THREAD);
+  
+  pthread_mutex_lock(audio_loop->timing_mutex);
+
+  g_atomic_int_set(&(audio_loop->time_spent),
+		   audio_loop->time_cycle);
+
+  pthread_mutex_unlock(audio_loop->timing_mutex);
+
+  //    ags_main_loop_interrupt(AGS_MAIN_LOOP(audio_loop),
+  //			    AGS_THREAD_SUSPEND_SIG,
+  //			    0, &time_spent);
+
+  if(polling_thread != NULL){
+    polling_thread->flags |= AGS_POLLING_THREAD_OMIT;
+  }
 }
 
 guint
@@ -1076,7 +1117,7 @@ ags_pulse_port_set_samplerate(AgsPulsePort *pulse_port,
 
   pulse_port->sample_spec->rate = samplerate;
 
-  pulse_port->buffer_attr->maxlength = fixed_size;
+  pulse_port->buffer_attr->maxlength = 4 * fixed_size;
   pulse_port->buffer_attr->minreq = fixed_size;
   pulse_port->buffer_attr->tlength = fixed_size;
 
@@ -1109,7 +1150,7 @@ ags_pulse_port_set_buffer_size(AgsPulsePort *pulse_port,
   
   pthread_mutex_lock(mutex);
 
-  pulse_port->buffer_attr->maxlength = fixed_size;
+  pulse_port->buffer_attr->maxlength = 4 * fixed_size;
   pulse_port->buffer_attr->minreq = fixed_size;
   pulse_port->buffer_attr->tlength = fixed_size;
 
@@ -1153,7 +1194,7 @@ ags_pulse_port_set_pcm_channels(AgsPulsePort *pulse_port,
 
   pulse_port->sample_spec->channels = pcm_channels;
 
-  pulse_port->buffer_attr->maxlength = fixed_size;
+  pulse_port->buffer_attr->maxlength = 4 * fixed_size;
   pulse_port->buffer_attr->minreq = fixed_size;
   pulse_port->buffer_attr->tlength = fixed_size;
 
@@ -1225,7 +1266,7 @@ ags_pulse_port_set_format(AgsPulsePort *pulse_port,
     g_warning("pulse devout - unsupported format");
   }
   
-  pulse_port->buffer_attr->maxlength = fixed_size;
+  pulse_port->buffer_attr->maxlength = 4 * fixed_size;
   pulse_port->buffer_attr->minreq = fixed_size;
   pulse_port->buffer_attr->tlength = fixed_size;
 
