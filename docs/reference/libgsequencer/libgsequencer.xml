@@ -231,13 +231,13 @@
       <xi:include href="xml/ags_add_bulk_member.xml"/>
       <xi:include href="xml/ags_add_line_member.xml"/>
       <xi:include href="xml/ags_add_sequencer_editor_jack.xml"/>
-      <xi:include href="xml/ags_add_soundcard_editor_jack.xml"/>
+      <xi:include href="xml/ags_add_soundcard_editor_sink.xml"/>
       <xi:include href="xml/ags_blink_cell_pattern_cursor.xml"/>
       <xi:include href="xml/ags_change_indicator.xml"/>
       <xi:include href="xml/ags_change_tact.xml"/>
       <xi:include href="xml/ags_display_tact.xml"/>
       <xi:include href="xml/ags_remove_sequencer_editor_jack.xml"/>
-      <xi:include href="xml/ags_remove_soundcard_editor_jack.xml"/>
+      <xi:include href="xml/ags_remove_soundcard_editor_sink.xml"/>
       <xi:include href="xml/ags_resize_editor.xml"/>
       <xi:include href="xml/ags_scroll_on_play.xml"/>
       <xi:include href="xml/ags_simple_file_read.xml"/>

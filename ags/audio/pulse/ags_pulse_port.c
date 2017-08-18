@@ -205,6 +205,14 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
 {
   AgsMutexManager *mutex_manager;
 
+  AgsConfig *config;
+
+  gchar *str;
+
+  guint samplerate;
+  guint pcm_channels;
+  guint buffer_size;
+  guint format;
   guint word_size;
   guint fixed_size;
 
@@ -245,14 +253,92 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
 
   pulse_port->stream = NULL;
   
-  pulse_port->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  pulse_port->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  /* read config */
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+
+  /* pcm channels */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "pcm-channels");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "pcm-channels");
+  }
+  
+  if(str != NULL){
+    pcm_channels = g_ascii_strtoull(str,
+				    NULL,
+				    10);
+    g_free(str);
+  }
+
+  /* samplerate */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "samplerate");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "samplerate");
+  }
+  
+  if(str != NULL){
+    samplerate = g_ascii_strtoull(str,
+				  NULL,
+				  10);
+    free(str);
+  }
+
+  /* buffer size */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "buffer-size");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "buffer-size");
+  }
+  
+  if(str != NULL){
+    buffer_size = g_ascii_strtoull(str,
+				   NULL,
+				   10);
+    free(str);
+  }
+
+  /* format */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "format");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "format");
+  }
+  
+  if(str != NULL){
+    format = g_ascii_strtoull(str,
+			      NULL,
+			      10);
+    free(str);
+  }
+  
+  pulse_port->buffer_size = buffer_size;
+  pulse_port->format = format;
 
   pulse_port->sample_spec = (pa_sample_spec *) malloc(sizeof(pa_sample_spec));
-  pulse_port->sample_spec->rate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  pulse_port->sample_spec->channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
+  pulse_port->sample_spec->rate = samplerate;
+  pulse_port->sample_spec->channels = pcm_channels;
 
-  switch(AGS_SOUNDCARD_DEFAULT_FORMAT){
+  switch(format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
       if(is_bigendian()){
@@ -290,7 +376,7 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
     g_warning("pulse devout - unsupported format");
   }
   
-  fixed_size = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS * AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE * word_size;
+  fixed_size = pcm_channels * buffer_size * word_size;
 
   pulse_port->buffer_attr = (pa_buffer_attr *) malloc(sizeof(pa_buffer_attr));
   pulse_port->buffer_attr->fragsize = (uint32_t) -1;
@@ -299,7 +385,7 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
   pulse_port->buffer_attr->prebuf = (uint32_t) 0;
   pulse_port->buffer_attr->tlength = (uint32_t) fixed_size;
 
-  pulse_port->empty_buffer = ags_stream_alloc(AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS * AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
+  pulse_port->empty_buffer = ags_stream_alloc(pcm_channels * buffer_size,
 					      AGS_SOUNDCARD_DEFAULT_FORMAT);
 
   g_atomic_int_set(&(pulse_port->queued),
