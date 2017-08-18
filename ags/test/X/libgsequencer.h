@@ -184,8 +184,8 @@
 #include <ags/X/ags_output_collection_editor.h>
 #include <ags/X/task/ags_blink_cell_pattern_cursor.h>
 #include <ags/X/task/ags_toggle_led.h>
-#include <ags/X/task/ags_add_soundcard_editor_jack.h>
-#include <ags/X/task/ags_remove_soundcard_editor_jack.h>
+#include <ags/X/task/ags_add_soundcard_editor_sink.h>
+#include <ags/X/task/ags_remove_soundcard_editor_sink.h>
 #include <ags/X/task/ags_display_tact.h>
 #include <ags/X/task/ags_scroll_on_play.h>
 #include <ags/X/task/ags_change_tact.h>

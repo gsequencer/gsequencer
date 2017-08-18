@@ -427,8 +427,8 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-global", "ags-thread");
   ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-parent", "ags-recycling-thread");
 
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "jack");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "ags-jack-devout-0");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "pulse");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "ags-pulse-devout-0");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "48000");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "1024");
