@@ -205,17 +205,19 @@ ags_jack_client_init(AgsJackClient *jack_client)
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
-  pthread_mutexattr_t attr;
+  pthread_mutexattr_t *attr;
 
   /* insert client mutex */
-  //FIXME:JK: memory leak
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_settype(&attr,
+  jack_client->mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
 
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  jack_client->mutex =
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
-		     &attr);
+		     attr);
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -467,7 +469,22 @@ ags_jack_client_finalize(GObject *gobject)
 {
   AgsJackClient *jack_client;
 
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+
   jack_client = AGS_JACK_CLIENT(gobject);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* remove jack client mutex */
+  pthread_mutex_lock(application_mutex);  
+
+  ags_mutex_manager_remove(mutex_manager,
+			   gobject);
+  
+  pthread_mutex_unlock(application_mutex);
 
   /* jack server */
   if(jack_client->jack_server != NULL){
@@ -486,6 +503,12 @@ ags_jack_client_finalize(GObject *gobject)
 		     g_object_unref);
   }
   
+  pthread_mutex_destroy(jack_client->mutex);
+  free(jack_client->mutex);
+
+  pthread_mutexattr_destroy(jack_client->mutexattr);
+  free(jack_client->mutexattr);
+
   /* call parent */
   G_OBJECT_CLASS(ags_jack_client_parent_class)->finalize(gobject);
 }

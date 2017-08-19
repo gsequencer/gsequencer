@@ -26,6 +26,8 @@
 #include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_sequencer.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/audio/ags_sound_provider.h>
 
 #include <ags/audio/jack/ags_jack_server.h>
@@ -170,6 +172,36 @@ ags_jack_port_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_jack_port_init(AgsJackPort *jack_port)
 {
+  AgsMutexManager *mutex_manager;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
+
+  /* insert port mutex */
+  jack_port->mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+  jack_port->mutex =
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+
+  ags_mutex_manager_insert(mutex_manager,
+			   (GObject *) jack_port,
+			   mutex);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* flags */
   jack_port->flags = 0;
 
   jack_port->jack_client = NULL;
@@ -323,7 +355,22 @@ ags_jack_port_finalize(GObject *gobject)
 {
   AgsJackPort *jack_port;
 
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+
   jack_port = AGS_JACK_PORT(gobject);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* remove jack port mutex */
+  pthread_mutex_lock(application_mutex);  
+
+  ags_mutex_manager_remove(mutex_manager,
+			   gobject);
+  
+  pthread_mutex_unlock(application_mutex);
 
   /* jack client */
   if(jack_port->jack_client != NULL){
@@ -332,6 +379,12 @@ ags_jack_port_finalize(GObject *gobject)
 
   /* name */
   g_free(jack_port->name);
+
+  pthread_mutex_destroy(jack_port->mutex);
+  free(jack_port->mutex);
+
+  pthread_mutexattr_destroy(jack_port->mutexattr);
+  free(jack_port->mutexattr);
 
   /* call parent */
   G_OBJECT_CLASS(ags_jack_port_parent_class)->finalize(gobject);

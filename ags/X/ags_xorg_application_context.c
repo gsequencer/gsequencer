@@ -231,6 +231,8 @@ static AgsConnectableInterface* ags_xorg_application_context_parent_connectable_
 AgsXorgApplicationContext *ags_xorg_application_context;
 volatile gboolean ags_show_start_animation;
 
+extern AgsApplicationContext *ags_application_context;
+
 GType
 ags_xorg_application_context_get_type()
 {
@@ -398,6 +400,10 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   gboolean has_pulse;
   gboolean has_jack;
 
+  if(ags_application_context == NULL){
+    ags_application_context = xorg_application_context;
+  }
+  
   g_atomic_int_set(&(xorg_application_context->gui_ready),
 		   0);
   

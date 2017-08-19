@@ -1990,6 +1990,7 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
 void
 ags_pulse_devout_port_free(AgsSoundcard *soundcard)
 {
+  AgsPulsePort *pulse_port;
   AgsPulseDevout *pulse_devout;
 
   AgsNotifySoundcard *notify_soundcard;
@@ -2126,6 +2127,16 @@ ags_pulse_devout_port_free(AgsSoundcard *soundcard)
     g_critical("ags_pulse_devout_free(): unsupported word size");
   }
 
+  pthread_mutex_unlock(mutex);
+
+  if(pulse_devout->pulse_port != NULL){
+    pulse_port = pulse_devout->pulse_port->data;
+    
+    while(!g_atomic_int_get(&(pulse_port->is_empty))) usleep(500000);
+  }
+
+  pthread_mutex_lock(mutex);
+  
   memset(pulse_devout->buffer[0], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
   memset(pulse_devout->buffer[1], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
   memset(pulse_devout->buffer[2], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);

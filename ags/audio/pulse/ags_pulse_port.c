@@ -219,17 +219,19 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
-  pthread_mutexattr_t attr;
+  pthread_mutexattr_t *attr;
 
   /* insert port mutex */
-  //FIXME:JK: memory leak
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_settype(&attr,
+  pulse_port->mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
 
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pulse_port->mutex =
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
-		     &attr);
+		     attr);
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -390,6 +392,9 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
 
   pulse_port->empty_buffer = ags_stream_alloc(pcm_channels * buffer_size,
 					      AGS_SOUNDCARD_DEFAULT_FORMAT);
+
+  g_atomic_int_set(&(pulse_port->is_empty),
+		   TRUE);
 
   g_atomic_int_set(&(pulse_port->queued),
 		   0);
@@ -566,7 +571,14 @@ ags_pulse_port_finalize(GObject *gobject)
 {
   AgsPulsePort *pulse_port;
 
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+
   pulse_port = AGS_PULSE_PORT(gobject);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* pulse client */
   if(pulse_port->pulse_client != NULL){
@@ -588,6 +600,12 @@ ags_pulse_port_finalize(GObject *gobject)
   if(pulse_port->buffer_attr != NULL){
     free(pulse_port->buffer_attr);
   }
+
+  pthread_mutex_destroy(pulse_port->mutex);
+  free(pulse_port->mutex);
+
+  pthread_mutexattr_destroy(pulse_port->mutexattr);
+  free(pulse_port->mutexattr);
 
   /* call parent */
   G_OBJECT_CLASS(ags_pulse_port_parent_class)->finalize(gobject);
@@ -863,6 +881,9 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
     pa_stream_write(stream, pulse_port->empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
     
     pthread_mutex_unlock(mutex);
+
+    g_atomic_int_set(&(pulse_port->is_empty),
+		     TRUE);
   }
 
   pthread_mutex_lock(device_mutex);
@@ -957,6 +978,9 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 		    NULL,
 		    0,
 		    PA_SEEK_RELATIVE);
+
+    g_atomic_int_set(&(pulse_port->is_empty),
+		     FALSE);
   }
   
   /* signal finish */

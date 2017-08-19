@@ -49,6 +49,9 @@ struct _AgsPulseServer
 
   guint flags;
 
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *mutexattr;
+
   volatile gboolean running;
   pthread_t *thread;
   

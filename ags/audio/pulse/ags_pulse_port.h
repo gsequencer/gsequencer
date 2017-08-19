@@ -49,6 +49,9 @@ struct _AgsPulsePort
 
   guint flags;
 
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *mutexattr;
+
   GObject *pulse_client;
   GObject *pulse_devout;
   
@@ -63,6 +66,7 @@ struct _AgsPulsePort
   pa_buffer_attr *buffer_attr;
   
   void *empty_buffer;
+  volatile gboolean is_empty;
   
   volatile guint queued;
 };

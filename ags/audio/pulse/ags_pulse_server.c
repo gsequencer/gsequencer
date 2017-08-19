@@ -28,6 +28,7 @@
 #include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_sequencer.h>
 
+#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_thread-posix.h>
 
 #include <ags/audio/pulse/ags_pulse_devout.h>
@@ -277,6 +278,36 @@ ags_pulse_server_distributed_manager_interface_init(AgsDistributedManagerInterfa
 void
 ags_pulse_server_init(AgsPulseServer *pulse_server)
 {
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
+
+  /* insert server mutex */
+  pulse_server->mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+  pulse_server->mutex =
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+
+  ags_mutex_manager_insert(mutex_manager,
+			   (GObject *) pulse_server,
+			   mutex);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* flags */
   pulse_server->flags = 0;
   
   g_atomic_int_set(&(pulse_server->running),
@@ -555,7 +586,7 @@ ags_pulse_server_dispose(GObject *gobject)
   }
 
   /* call parent */
-  G_OBJECT_CLASS(ags_pulse_server_parent_class)->finalize(gobject);
+  G_OBJECT_CLASS(ags_pulse_server_parent_class)->dispose(gobject);
 }
 
 void
@@ -563,8 +594,23 @@ ags_pulse_server_finalize(GObject *gobject)
 {
   AgsPulseServer *pulse_server;
 
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+
   pulse_server = AGS_PULSE_SERVER(gobject);
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* remove pulse server mutex */
+  pthread_mutex_lock(application_mutex);  
+
+  ags_mutex_manager_remove(mutex_manager,
+			   gobject);
+  
+  pthread_mutex_unlock(application_mutex);
+  
   /* application context */
   if(pulse_server->application_context != NULL){
     g_object_unref(G_OBJECT(pulse_server->application_context));
@@ -588,6 +634,12 @@ ags_pulse_server_finalize(GObject *gobject)
     g_list_free_full(pulse_server->client,
 		     g_object_unref);
   }
+
+  pthread_mutex_destroy(pulse_server->mutex);
+  free(pulse_server->mutex);
+
+  pthread_mutexattr_destroy(pulse_server->mutexattr);
+  free(pulse_server->mutexattr);
   
   /* call parent */
   G_OBJECT_CLASS(ags_pulse_server_parent_class)->finalize(gobject);

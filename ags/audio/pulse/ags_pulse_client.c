@@ -196,17 +196,19 @@ ags_pulse_client_init(AgsPulseClient *pulse_client)
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
-  pthread_mutexattr_t attr;
+  pthread_mutexattr_t *attr;
 
   /* insert client mutex */
-  //FIXME:JK: memory leak
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_settype(&attr,
+  pulse_client->mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
 
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pulse_client->mutex =
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
-		     &attr);
+		     attr);
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -455,7 +457,22 @@ ags_pulse_client_finalize(GObject *gobject)
 {
   AgsPulseClient *pulse_client;
 
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+
   pulse_client = AGS_PULSE_CLIENT(gobject);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* remove pulse server mutex */
+  pthread_mutex_lock(application_mutex);  
+
+  ags_mutex_manager_remove(mutex_manager,
+			   gobject);
+  
+  pthread_mutex_unlock(application_mutex);
 
   /* pulse server */
   if(pulse_client->pulse_server != NULL){
@@ -473,6 +490,12 @@ ags_pulse_client_finalize(GObject *gobject)
     g_list_free_full(pulse_client->port,
 		     g_object_unref);
   }
+
+  pthread_mutex_destroy(pulse_client->mutex);
+  free(pulse_client->mutex);
+
+  pthread_mutexattr_destroy(pulse_client->mutexattr);
+  free(pulse_client->mutexattr);
   
   /* call parent */
   G_OBJECT_CLASS(ags_pulse_client_parent_class)->finalize(gobject);

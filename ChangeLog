@@ -1,3 +1,12 @@
+ags (0.9.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added mutices to AgsJackServer and AgsPulseServer
+	* fixed memory leaks of mutices in AgsPulseClient, AgsJackClient, AgsPulsePort and AgsJackPort
+	* fixed wrong parent class of dispose in ags_pulse_server.c and ags_jack_server.c
+	* fixed data-race during playback termination in ags_pulse_devout_port_free()
+	* fixed ags_application_context initialization if NULL (note might be reverted, soon)
+
 ags (0.9.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

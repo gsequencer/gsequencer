@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 0.9.11\n"
+"Project-Id-Version: gsequencer 0.9.12\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-08-19 01:55+0200\n"
+"POT-Creation-Date: 2017-08-19 09:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -498,21 +498,21 @@ msgstr ""
 msgid "format"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:491
+#: ags/X/ags_xorg_application_context.c:497
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:501
+#: ags/X/ags_xorg_application_context.c:507
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:644
+#: ags/X/ags_xorg_application_context.c:650
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:654
+#: ags/X/ags_xorg_application_context.c:660
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 

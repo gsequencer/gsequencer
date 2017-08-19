@@ -51,6 +51,9 @@ struct _AgsJackPort
 
   guint flags;
 
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *mutexattr;
+
   GObject *jack_client;
   
   gchar *uuid;

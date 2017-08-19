@@ -28,6 +28,8 @@
 #include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_sequencer.h>
 
+#include <ags/thread/ags_mutex_manager.h>
+
 #include <ags/audio/jack/ags_jack_devout.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
 
@@ -274,6 +276,36 @@ ags_jack_server_distributed_manager_interface_init(AgsDistributedManagerInterfac
 void
 ags_jack_server_init(AgsJackServer *jack_server)
 {
+  AgsMutexManager *mutex_manager;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
+
+  /* insert server mutex */
+  jack_server->mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+  jack_server->mutex =
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_lock(application_mutex);
+
+  ags_mutex_manager_insert(mutex_manager,
+			   (GObject *) jack_server,
+			   mutex);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* flags */
   jack_server->flags = 0;
 
   jack_server->application_context = NULL;
@@ -550,7 +582,7 @@ ags_jack_server_dispose(GObject *gobject)
   }
 
   /* call parent */
-  G_OBJECT_CLASS(ags_jack_server_parent_class)->finalize(gobject);
+  G_OBJECT_CLASS(ags_jack_server_parent_class)->dispose(gobject);
 }
 
 void
@@ -558,7 +590,22 @@ ags_jack_server_finalize(GObject *gobject)
 {
   AgsJackServer *jack_server;
 
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+
   jack_server = AGS_JACK_SERVER(gobject);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* remove jack server mutex */
+  pthread_mutex_lock(application_mutex);  
+
+  ags_mutex_manager_remove(mutex_manager,
+			   gobject);
+  
+  pthread_mutex_unlock(application_mutex);
 
   /* application context */
   if(jack_server->application_context != NULL){
@@ -584,6 +631,12 @@ ags_jack_server_finalize(GObject *gobject)
 		     g_object_unref);
   }
   
+  pthread_mutex_destroy(jack_server->mutex);
+  free(jack_server->mutex);
+
+  pthread_mutexattr_destroy(jack_server->mutexattr);
+  free(jack_server->mutexattr);
+
   /* call parent */
   G_OBJECT_CLASS(ags_jack_server_parent_class)->finalize(gobject);
 }

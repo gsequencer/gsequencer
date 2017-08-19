@@ -48,6 +48,9 @@ struct _AgsPulseClient
   GObject object;
 
   guint flags;
+
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *mutexattr;
   
   GObject *pulse_server;
 

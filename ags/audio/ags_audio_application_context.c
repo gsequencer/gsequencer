@@ -163,13 +163,15 @@ void ags_audio_application_context_set_value_callback(AgsConfig *config, gchar *
  * The #AgsAudioApplicationContext provides you sound processing, output and capturing.
  */
 
-static gpointer ags_audio_application_context_parent_class = NULL;
-static AgsConnectableInterface* ags_audio_application_context_parent_connectable_interface;
-
 enum{
   PROP_0,
   PROP_SOUNDCARD,
 };
+
+static gpointer ags_audio_application_context_parent_class = NULL;
+static AgsConnectableInterface* ags_audio_application_context_parent_connectable_interface;
+
+extern AgsApplicationContext *ags_application_context;
 
 GType
 ags_audio_application_context_get_type()
@@ -329,7 +331,11 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   guint i;
   gboolean has_pulse;
   gboolean has_jack;
-  
+
+  if(ags_application_context == NULL){
+    ags_application_context = audio_application_context;
+  }
+
   AGS_APPLICATION_CONTEXT(audio_application_context)->log = NULL;
 
   /**/
