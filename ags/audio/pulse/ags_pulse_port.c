@@ -383,7 +383,7 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
 
   pulse_port->buffer_attr = (pa_buffer_attr *) malloc(sizeof(pa_buffer_attr));
   pulse_port->buffer_attr->fragsize = (uint32_t) -1;
-  pulse_port->buffer_attr->maxlength = (uint32_t) 4 * fixed_size;
+  pulse_port->buffer_attr->maxlength = (uint32_t) -1;
   pulse_port->buffer_attr->minreq = (uint32_t) fixed_size;
   pulse_port->buffer_attr->prebuf = (uint32_t) 0;
   pulse_port->buffer_attr->tlength = (uint32_t) fixed_size;
@@ -1117,7 +1117,7 @@ ags_pulse_port_set_samplerate(AgsPulsePort *pulse_port,
 
   pulse_port->sample_spec->rate = samplerate;
 
-  pulse_port->buffer_attr->maxlength = 4 * fixed_size;
+  pulse_port->buffer_attr->maxlength = -1;
   pulse_port->buffer_attr->minreq = fixed_size;
   pulse_port->buffer_attr->tlength = fixed_size;
 
@@ -1150,7 +1150,7 @@ ags_pulse_port_set_buffer_size(AgsPulsePort *pulse_port,
   
   pthread_mutex_lock(mutex);
 
-  pulse_port->buffer_attr->maxlength = 4 * fixed_size;
+  pulse_port->buffer_attr->maxlength = -1;
   pulse_port->buffer_attr->minreq = fixed_size;
   pulse_port->buffer_attr->tlength = fixed_size;
 
@@ -1194,7 +1194,7 @@ ags_pulse_port_set_pcm_channels(AgsPulsePort *pulse_port,
 
   pulse_port->sample_spec->channels = pcm_channels;
 
-  pulse_port->buffer_attr->maxlength = 4 * fixed_size;
+  pulse_port->buffer_attr->maxlength = -1;
   pulse_port->buffer_attr->minreq = fixed_size;
   pulse_port->buffer_attr->tlength = fixed_size;
 
@@ -1266,7 +1266,7 @@ ags_pulse_port_set_format(AgsPulsePort *pulse_port,
     g_warning("pulse devout - unsupported format");
   }
   
-  pulse_port->buffer_attr->maxlength = 4 * fixed_size;
+  pulse_port->buffer_attr->maxlength = -1;
   pulse_port->buffer_attr->minreq = fixed_size;
   pulse_port->buffer_attr->tlength = fixed_size;
 

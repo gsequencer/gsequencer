@@ -2,6 +2,8 @@ ags (0.9.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed missing initial configuration of pulseaudio
+	* improved throughput of pulseaudio by using maxlength of stream -1
+	* improved clear buffer task to let ring-buffer being valid longer
 
 ags (0.9.10)
 
