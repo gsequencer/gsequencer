@@ -2536,6 +2536,8 @@ ags_pulse_devout_adjust_delay_and_attack(AgsPulseDevout *pulse_devout)
     g_message("%d", pulse_devout->attack[i]);
     //#endif
   }
+
+  pulse_devout->attack[0] = pulse_devout->attack[i - 2];
   
   for(i = 0; i < (int) 2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD - 1; i++){
     pulse_devout->delay[i] = ((gdouble) (default_tact_frames + pulse_devout->attack[i] - pulse_devout->attack[i + 1])) / (gdouble) pulse_devout->buffer_size;

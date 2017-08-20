@@ -2472,6 +2472,8 @@ ags_jack_devout_adjust_delay_and_attack(AgsJackDevout *jack_devout)
     g_message("%d", jack_devout->attack[i]);
 #endif
   }
+
+  jack_devout->attack[0] = jack_devout->attack[i - 2];
   
   for(i = 0; i < (int) 2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD - 1; i++){
     jack_devout->delay[i] = ((gdouble) (default_tact_frames + jack_devout->attack[i] - jack_devout->attack[i + 1])) / (gdouble) jack_devout->buffer_size;

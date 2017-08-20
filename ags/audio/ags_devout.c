@@ -3930,6 +3930,8 @@ ags_devout_adjust_delay_and_attack(AgsDevout *devout)
 #endif
   }
 
+  devout->attack[0] = devout->attack[i - 2];
+  
   for(i = 0; i < (int) 2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD - 1; i++){
     devout->delay[i] = ((gdouble) (default_tact_frames + devout->attack[i] - devout->attack[i + 1])) / (gdouble) devout->buffer_size;
     
