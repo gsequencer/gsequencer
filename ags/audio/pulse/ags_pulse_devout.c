@@ -2446,38 +2446,106 @@ ags_pulse_devout_adjust_delay_and_attack(AgsPulseDevout *pulse_devout)
 {
   gdouble delay;
   guint default_tact_frames;
+  guint delay_tact_frames;
+  guint default_period;
+  gint next_attack;
   guint i;
 
   if(pulse_devout == NULL){
     return;
   }
   
-  delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(pulse_devout));
+  delay = ags_pulse_devout_get_absolute_delay(AGS_SOUNDCARD(pulse_devout));
 
 #ifdef AGS_DEBUG
   g_message("delay : %f", delay);
 #endif
   
   default_tact_frames = (guint) (delay * pulse_devout->buffer_size);
+  delay_tact_frames = (guint) (floor(delay) * pulse_devout->buffer_size);
+  default_period = (1.0 / AGS_SOUNDCARD_DEFAULT_PERIOD) * (default_tact_frames);
 
-  pulse_devout->attack[0] = 0;
-  pulse_devout->delay[0] = delay;
+  i = 0;
   
-  for(i = 1; i < (int)  2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
-    pulse_devout->attack[i] = (guint) ((i * default_tact_frames + pulse_devout->attack[i - 1]) / (AGS_SOUNDCARD_DEFAULT_PERIOD / (delay * i))) % (guint) (pulse_devout->buffer_size);
+  pulse_devout->attack[0] = (guint) floor(0.5 * pulse_devout->buffer_size);
+  next_attack = (((pulse_devout->attack[i] + default_tact_frames) / pulse_devout->buffer_size) - delay) * pulse_devout->buffer_size;
+
+  if(next_attack < 0){
+    next_attack = 0;
+  }
+
+  if(next_attack >= pulse_devout->buffer_size){
+    next_attack = pulse_devout->buffer_size - 1;
+  }
+  
+  /* check if delay drops for next attack */
+  if(next_attack < 0){
+    pulse_devout->attack[i] = pulse_devout->attack[i] - ((gdouble) next_attack / 2.0);
+
+    if(pulse_devout->attack[i] < 0){
+      pulse_devout->attack[i] = 0;
+    }
     
-#ifdef AGS_DEBUG
-    g_message("%d", pulse_devout->attack[i]);
-#endif
+    if(pulse_devout->attack[i] >= pulse_devout->buffer_size){
+      pulse_devout->attack[i] = pulse_devout->buffer_size - 1;
+    }
+    
+    next_attack = next_attack + (next_attack / 2.0);
+
+    if(next_attack < 0){
+      next_attack = 0;
+    }
+
+    if(next_attack >= pulse_devout->buffer_size){
+      next_attack = pulse_devout->buffer_size - 1;
+    }
   }
   
   for(i = 1; i < (int) 2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
-    pulse_devout->delay[i] = ((gdouble) (default_tact_frames + pulse_devout->attack[i])) / (gdouble) pulse_devout->buffer_size;
+    pulse_devout->attack[i] = next_attack;
+    next_attack = (((pulse_devout->attack[i] + default_tact_frames) / pulse_devout->buffer_size) - delay) * pulse_devout->buffer_size;
+
+    if(next_attack >= pulse_devout->buffer_size){
+      next_attack = pulse_devout->buffer_size - 1;
+    }
+    
+    /* check if delay drops for next attack */
+    if(next_attack < 0){
+      pulse_devout->attack[i] = pulse_devout->attack[i] - ((gdouble) next_attack / 2.0);
+
+      if(pulse_devout->attack[i] < 0){
+	pulse_devout->attack[i] = 0;
+      }
+
+      if(pulse_devout->attack[i] >= pulse_devout->buffer_size){
+	pulse_devout->attack[i] = pulse_devout->buffer_size - 1;
+      }
+    
+      next_attack = next_attack + (next_attack / 2.0);
+
+      if(next_attack < 0){
+	next_attack = 0;
+      }
+
+      if(next_attack >= pulse_devout->buffer_size){
+	next_attack = pulse_devout->buffer_size - 1;
+      }
+    }
+    
+    //#ifdef AGS_DEBUG
+    g_message("%d", pulse_devout->attack[i]);
+    //#endif
+  }
+  
+  for(i = 0; i < (int) 2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD - 1; i++){
+    pulse_devout->delay[i] = ((gdouble) (default_tact_frames + pulse_devout->attack[i] - pulse_devout->attack[i + 1])) / (gdouble) pulse_devout->buffer_size;
     
 #ifdef AGS_DEBUG
     g_message("%f", pulse_devout->delay[i]);
 #endif
   }
+
+  pulse_devout->delay[i] = ((gdouble) (default_tact_frames + pulse_devout->attack[i] - pulse_devout->attack[0])) / (gdouble) pulse_devout->buffer_size;
 }
 
 /**
