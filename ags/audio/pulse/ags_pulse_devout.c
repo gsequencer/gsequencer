@@ -2467,7 +2467,7 @@ ags_pulse_devout_adjust_delay_and_attack(AgsPulseDevout *pulse_devout)
 
   i = 0;
   
-  pulse_devout->attack[0] = (guint) floor(0.5 * pulse_devout->buffer_size);
+  pulse_devout->attack[0] = (guint) floor(0.25 * pulse_devout->buffer_size);
   next_attack = (((pulse_devout->attack[i] + default_tact_frames) / pulse_devout->buffer_size) - delay) * pulse_devout->buffer_size;
 
   if(next_attack < 0){

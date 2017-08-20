@@ -2407,7 +2407,7 @@ ags_jack_devout_adjust_delay_and_attack(AgsJackDevout *jack_devout)
 
   i = 0;
   
-  jack_devout->attack[0] = (guint) floor(0.5 * jack_devout->buffer_size);
+  jack_devout->attack[0] = (guint) floor(0.25 * jack_devout->buffer_size);
   next_attack = (((jack_devout->attack[i] + default_tact_frames) / jack_devout->buffer_size) - delay) * jack_devout->buffer_size;
 
   if(next_attack >= jack_devout->buffer_size){

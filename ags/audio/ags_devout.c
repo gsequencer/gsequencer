@@ -3864,7 +3864,7 @@ ags_devout_adjust_delay_and_attack(AgsDevout *devout)
 
   i = 0;
   
-  devout->attack[0] = (guint) floor(0.5 * devout->buffer_size);
+  devout->attack[0] = (guint) floor(0.25 * devout->buffer_size);
   next_attack = (((devout->attack[i] + default_tact_frames) / devout->buffer_size) - delay) * devout->buffer_size;
 
   if(next_attack >= devout->buffer_size){
