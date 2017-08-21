@@ -1441,12 +1441,23 @@ ags_channel_dispose(GObject *gobject)
   }
   
   /* playback */
-  //  if(channel->playback != NULL){
-  //    g_object_run_dispose(channel->playback);
-  //    g_object_unref(channel->playback);
+  if(channel->playback != NULL){
+    AgsPlayback *playback;
+
+    playback = channel->playback;
+    
+    ags_thread_stop(playback->channel_thread[0]);
+    ags_thread_stop(playback->channel_thread[1]);
+    ags_thread_stop(playback->channel_thread[2]);
+    
+    g_object_set(playback,
+		 "source", NULL,
+		 NULL);
+    //    g_object_run_dispose(playback);
+    g_object_unref(playback);
   
-  //    channel->playback = NULL;
-  //  }
+    channel->playback = NULL;
+  }
 
   /* recall id */
   if(channel->recall_id != NULL){
@@ -1612,7 +1623,7 @@ ags_channel_finalize(GObject *gobject)
 
   /* playback */
   if(channel->playback != NULL){
-    g_object_unref(channel->playback);  
+    g_object_unref(channel->playback);
   }
 
   /* recall id */
