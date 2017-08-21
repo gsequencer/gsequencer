@@ -1039,6 +1039,8 @@ ags_pulse_port_stream_underflow_callback(pa_stream *stream, AgsPulsePort *pulse_
 
   pthread_mutex_unlock(audio_loop->timing_mutex);
 
+  g_atomic_int_set(&(((AgsThread *) audio_loop)->time_late),
+		   2 * audio_loop->time_cycle);
   //    ags_main_loop_interrupt(AGS_MAIN_LOOP(audio_loop),
   //			    AGS_THREAD_SUSPEND_SIG,
   //			    0, &time_spent);
