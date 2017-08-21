@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,12 +18,23 @@
  */
 
 #include <ags/thread/ags_task.h>
+#include <ags/thread/ags_task_thread.h>
 
 #include <ags/object/ags_connectable.h>
+
+#include <ags/i18n.h>
 
 void ags_task_class_init(AgsTaskClass *task);
 void ags_task_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_task_init(AgsTask *task);
+void ags_task_set_property(GObject *gobject,
+			   guint prop_id,
+			   const GValue *value,
+			   GParamSpec *param_spec);
+void ags_task_get_property(GObject *gobject,
+			   guint prop_id,
+			   GValue *value,
+			   GParamSpec *param_spec);
 void ags_task_connect(AgsConnectable *connectable);
 void ags_task_disconnect(AgsConnectable *connectable);
 void ags_task_finalize(GObject *gobject);
@@ -37,6 +48,11 @@ void ags_task_finalize(GObject *gobject);
  *
  * #AgsTask object acts an interceptor in a thread safe context.
  */
+
+enum{
+  PROP_0,
+  PROP_TASK_THREAD,
+};
 
 enum{
   LAUNCH,
@@ -88,13 +104,34 @@ void
 ags_task_class_init(AgsTaskClass *task)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_task_parent_class = g_type_class_peek_parent(task);
 
   /* GObjectClass */
   gobject = (GObjectClass *) task;
 
+  gobject->set_property = ags_task_set_property;
+  gobject->get_property = ags_task_get_property;
+
   gobject->finalize = ags_task_finalize;
+
+  /* properties */
+  /**
+   * AgsTask:task-thread:
+   *
+   * The assigned #AgsTaskThread
+   * 
+   * Since: 0.9.13
+   */
+  param_spec = g_param_spec_object("task-thread",
+				   i18n_pspec("the task thread object"),
+				   i18n_pspec("The task thread object"),
+				   AGS_TYPE_TASK_THREAD,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TASK_THREAD,
+				  param_spec);
 
   /* AgsTaskClass */
   task->launch = NULL;
@@ -159,6 +196,66 @@ ags_task_init(AgsTask *task)
   pthread_cond_init(&(task->wait_sync_task_cond), NULL);
 
   task->task_thread = NULL;
+}
+
+void
+ags_task_set_property(GObject *gobject,
+		      guint prop_id,
+		      const GValue *value,
+		      GParamSpec *param_spec)
+{
+  AgsTask *task;
+
+  task = AGS_TASK(gobject);
+
+  switch(prop_id){
+  case PROP_TASK_THREAD:
+    {
+      AgsTaskThread *task_thread;
+
+      task_thread = (AgsTaskThread *) g_value_get_object(value);
+
+      if(task->task_thread == (GObject *) task_thread){
+	return;
+      }
+
+      if(task->task_thread != NULL){
+	g_object_unref(G_OBJECT(task->task_thread));
+      }
+
+      if(task_thread != NULL){
+	g_object_ref(G_OBJECT(task_thread));
+      }
+      
+      task->task_thread = (GObject *) task_thread;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_task_get_property(GObject *gobject,
+		      guint prop_id,
+		      GValue *value,
+		      GParamSpec *param_spec)
+{
+  AgsTask *task;
+
+  task = AGS_TASK(gobject);
+
+  switch(prop_id){
+  case PROP_TASK_THREAD:
+    {
+      g_value_set_object(value, task->task_thread);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

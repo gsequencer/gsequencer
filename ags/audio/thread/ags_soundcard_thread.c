@@ -560,6 +560,8 @@ ags_soundcard_thread_dispatch_callback(AgsPollFd *poll_fd,
 				       AgsSoundcardThread *soundcard_thread)
 {
   AgsAudioLoop *audio_loop;
+
+  AgsPollingThread *polling_thread;
   
   guint time_spent;
 
@@ -577,8 +579,13 @@ ags_soundcard_thread_dispatch_callback(AgsPollFd *poll_fd,
     //			    AGS_THREAD_SUSPEND_SIG,
     //			    0, &time_spent);
 
-    if(poll_fd->polling_thread != NULL){
-      poll_fd->polling_thread->flags |= AGS_POLLING_THREAD_OMIT;
+    polling_thread = ags_thread_find_type(audio_loop,
+					  AGS_TYPE_POLLING_THREAD);
+
+    if(polling_thread != NULL){
+      g_atomic_int_or(&(polling_thread->flags),
+		      AGS_POLLING_THREAD_OMIT);
+      g_atomic_int_inc(&(polling_thread->omit_count));
     }
   }
 }

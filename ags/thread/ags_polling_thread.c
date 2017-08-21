@@ -135,7 +135,11 @@ ags_polling_thread_init(AgsPollingThread *polling_thread)
 
   thread->freq = AGS_POLLING_THREAD_DEFAULT_JIFFIE;
   
-  polling_thread->flags = 0;
+  g_atomic_int_set(&(polling_thread->flags),
+		   0);
+
+  g_atomic_int_set(&(polling_thread->omit_count),
+		   0);
 
   /* fd mutex */
   polling_thread->fd_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
@@ -243,7 +247,7 @@ ags_polling_thread_run(AgsThread *thread)
   
   pthread_mutex_lock(polling_thread->fd_mutex);
 
-  if((AGS_POLLING_THREAD_OMIT & (polling_thread->flags)) == 0){
+  if((AGS_POLLING_THREAD_OMIT & (g_atomic_int_get(&(polling_thread->flags)))) == 0){
     list = polling_thread->poll_fd;
 
     /* pre flag */

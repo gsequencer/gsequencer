@@ -2,6 +2,9 @@ ags (0.9.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved ags_devout_adjust_delay_and_attack() and related
+	* improved AgsPulsePort to omit polling thread twice
+	* fixed missing volatile of AgsPollingThread's flags
+	* fixed destroy machine crash during playback
 
 ags (0.9.12)
 
