@@ -395,6 +395,8 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
 
   g_atomic_int_set(&(pulse_port->is_empty),
 		   TRUE);
+  g_atomic_int_set(&(pulse_port->underflow),
+		   FALSE);
 
   g_atomic_int_set(&(pulse_port->queued),
 		   0);
@@ -844,7 +846,6 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   g_atomic_int_and(&(AGS_THREAD(audio_loop)->flags),
 		   (~(AGS_THREAD_TIMING)));
 
-
   /*  */
   pthread_mutex_lock(mutex);
 
@@ -854,6 +855,22 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 
   pthread_mutex_unlock(mutex);
 
+  if(g_atomic_int_get(&(pulse_port->underflow))){
+    /* feed */
+    pthread_mutex_lock(mutex);
+    
+    pa_stream_begin_write(stream, &(pulse_port->empty_buffer), &count);
+    pa_stream_write(stream, pulse_port->empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
+    
+    pthread_mutex_unlock(mutex);
+
+    g_atomic_int_set(&(pulse_port->underflow),
+		     FALSE);
+    g_atomic_int_dec_and_test(&(pulse_port->queued));
+
+    return;
+  }
+  
   /*  */  
   pthread_mutex_lock(application_mutex);
   
@@ -872,7 +889,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   }
 
   pthread_mutex_unlock(device_mutex);
-    
+
   if(empty_run){
     /* iterate */
     pthread_mutex_lock(mutex);
@@ -1039,11 +1056,8 @@ ags_pulse_port_stream_underflow_callback(pa_stream *stream, AgsPulsePort *pulse_
 
   pthread_mutex_unlock(audio_loop->timing_mutex);
 
-  g_atomic_int_set(&(((AgsThread *) audio_loop)->time_late),
-		   2 * audio_loop->time_cycle);
-  //    ags_main_loop_interrupt(AGS_MAIN_LOOP(audio_loop),
-  //			    AGS_THREAD_SUSPEND_SIG,
-  //			    0, &time_spent);
+  g_atomic_int_set(&(pulse_port->underflow),
+		   TRUE);
 
   if(polling_thread != NULL){
     g_atomic_int_or(&(polling_thread->flags),
@@ -1051,7 +1065,7 @@ ags_pulse_port_stream_underflow_callback(pa_stream *stream, AgsPulsePort *pulse_
 
     /* just omit three times since we don't poll pulse */
     g_atomic_int_add(&(polling_thread->omit_count),
-		     3);
+		     4);
   }
 }
 

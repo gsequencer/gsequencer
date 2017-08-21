@@ -67,6 +67,7 @@ struct _AgsPulsePort
   
   void *empty_buffer;
   volatile gboolean is_empty;
+  volatile gboolean underflow;
   
   volatile guint queued;
 };
