@@ -47,6 +47,8 @@
 #include <ags/config.h>
 #include <ags/i18n.h>
 
+#include <time.h>
+
 void ags_pulse_port_class_init(AgsPulsePortClass *pulse_port);
 void ags_pulse_port_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_pulse_port_distributed_manager_interface_init(AgsDistributedManagerInterface *distributed_manager);
@@ -854,22 +856,6 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   stream = pulse_port->stream;
 
   pthread_mutex_unlock(mutex);
-
-  if(g_atomic_int_get(&(pulse_port->underflow))){
-    /* feed */
-    pthread_mutex_lock(mutex);
-    
-    pa_stream_begin_write(stream, &(pulse_port->empty_buffer), &count);
-    pa_stream_write(stream, pulse_port->empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
-    
-    pthread_mutex_unlock(mutex);
-
-    g_atomic_int_set(&(pulse_port->underflow),
-		     FALSE);
-    g_atomic_int_dec_and_test(&(pulse_port->queued));
-
-    return;
-  }
   
   /*  */  
   pthread_mutex_lock(application_mutex);
@@ -917,13 +903,63 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
     pthread_mutex_lock(callback_mutex);
     
     if((AGS_PULSE_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0){
+      struct timespec timeout;
+
+      guint latency;
+      
       g_atomic_int_or(&(pulse_devout->sync_flags),
 		      AGS_PULSE_DEVOUT_CALLBACK_WAIT);
-    
+
+      pthread_mutex_lock(mutex);
+      
+      latency = ags_pulse_port_get_latency(pulse_port);
+
+      pthread_mutex_unlock(mutex);
+      
+      latency /= 8;
+      
+      if(timeout.tv_nsec + latency < NSEC_PER_SEC){
+	timeout.tv_nsec += latency;
+      }else{
+	timeout.tv_sec += 1;
+	timeout.tv_nsec = timeout.tv_nsec + latency - NSEC_PER_SEC;
+      }
+      
       while((AGS_PULSE_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0 &&
 	    (AGS_PULSE_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(pulse_devout->sync_flags)))) != 0){
-	pthread_cond_wait(pulse_devout->callback_cond,
-			  callback_mutex);
+	pthread_cond_timedwait(pulse_devout->callback_cond,
+			       callback_mutex,
+			       &timeout);
+
+	pthread_mutex_unlock(callback_mutex);
+
+	if(g_atomic_int_get(&(pulse_port->underflow))){
+	  /* feed */
+	  pthread_mutex_lock(mutex);
+    
+	  pa_stream_begin_write(stream, &(pulse_port->empty_buffer), &count);
+	  pa_stream_write(stream, pulse_port->empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
+
+	  latency = ags_pulse_port_get_latency(pulse_port);
+    
+	  pthread_mutex_unlock(mutex);
+
+	  g_atomic_int_set(&(pulse_port->underflow),
+			   FALSE);
+
+	  latency /= 8;
+
+	  clock_gettime(CLOCK_MONOTONIC, &timeout);
+	  
+	  if(timeout.tv_nsec + latency < NSEC_PER_SEC){
+	    timeout.tv_nsec += latency;
+	  }else{
+	    timeout.tv_sec += 1;
+	    timeout.tv_nsec = timeout.tv_nsec + latency - NSEC_PER_SEC;
+	  }
+	}
+
+	pthread_mutex_lock(callback_mutex);
       }
     }
     
@@ -1325,6 +1361,24 @@ ags_pulse_port_set_format(AgsPulsePort *pulse_port,
 					      format);
 
   pthread_mutex_unlock(mutex);
+}
+
+/**
+ * ags_pulse_port_get_latency:
+ * @pulse_port: the #AgsPulsePort
+ * 
+ * Gets latency.
+ * 
+ * Since: 0.9.14
+ */
+guint
+ags_pulse_port_get_latency(AgsPulsePort *pulse_port)
+{
+  guint latency;
+
+  latency = (guint) floor((gdouble) NSEC_PER_SEC / (gdouble) pulse_port->sample_spec->rate * (gdouble) pulse_port->buffer_size);
+
+  return(latency);
 }
 
 /**

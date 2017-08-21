@@ -9959,7 +9959,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       invalid_recall_id_list = invalid_recall_id_list->next;
     }
     
-    while(recall_id_list != NULL){
+    while(recall_id_list != NULL){      
       if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) == 0){
 	success = FALSE;
       
@@ -10378,8 +10378,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
     
     audio = AGS_AUDIO(output->audio);
 
-    if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0)
+    if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
       return(list);
+    }
 
     if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
       current = ags_channel_nth(audio->input,
@@ -10758,7 +10759,8 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       recall_id = current->recall_id;
     
       while(recall_id != NULL){
-	if(g_list_find(collected_recall_id,
+	if(recall_id->data != NULL &&
+	   g_list_find(collected_recall_id,
 		       recall_id->data) == NULL){
 	  list = g_list_prepend(list,
 				recall_id->data);
@@ -11862,6 +11864,8 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
   channel_recall_id_list = NULL;
   channel_recall_id_list = ags_channel_tillrecycling_collect_devout_play_down(channel,
 									      channel_recall_id_list, TRUE);
+  channel_recall_id_list = g_list_remove_all(channel_recall_id_list,
+					     NULL);
   
   /* retrieve upper */
   link_recall_id_list = NULL;
@@ -11871,17 +11875,23 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
   recycled_recall_id_list = NULL;
   recycled_recall_id_list = ags_channel_recursive_collect_recycled(link,
 								   link_recall_id_list);
-
+  recycled_recall_id_list = g_list_remove_all(recycled_recall_id_list,
+					      NULL);
+  
   /* retrieve invalid lower */
   channel_invalid_recall_id_list = NULL;
   channel_invalid_recall_id_list = ags_channel_tillrecycling_collect_devout_play_down(old_link_link,
 										      channel_invalid_recall_id_list,
 										      TRUE);
-
+  channel_invalid_recall_id_list = g_list_remove_all(channel_invalid_recall_id_list,
+						     NULL);
+  
   /* retrieve invalid upper */
   link_invalid_recall_id_list = NULL;
   link_invalid_recall_id_list = ags_channel_recursive_collect_devout_play_up(old_channel_link,
 									     TRUE);
+  link_invalid_recall_id_list = g_list_remove_all(link_invalid_recall_id_list,
+						  NULL);
 
   /* go down */
   ags_channel_recursive_reset_recall_id_down(channel,

@@ -1,3 +1,10 @@
+ags (0.9.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_pulse_port_get_latency()
+	* improved throughput of pulseaudio by timed cond on stream request callback
+	* fixed possible SIGSEGV as ags_channel_reset_recall_id()
+
 ags (0.9.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

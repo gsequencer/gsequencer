@@ -99,6 +99,8 @@ void ags_pulse_port_set_buffer_size(AgsPulsePort *pulse_port,
 void ags_pulse_port_set_format(AgsPulsePort *pulse_port,
 			       guint format);
 
+guint ags_pulse_port_get_latency(AgsPulsePort *pulse_port);
+
 AgsPulsePort* ags_pulse_port_new(GObject *pulse_client);
 
 #endif /*__AGS_PULSE_PORT_H__*/

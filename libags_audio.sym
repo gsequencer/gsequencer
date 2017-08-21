@@ -850,6 +850,7 @@ ags_pulse_port_set_samplerate
 ags_pulse_port_set_pcm_channels
 ags_pulse_port_set_buffer_size
 ags_pulse_port_set_format
+ags_pulse_port_get_latency
 ags_pulse_port_new
 ags_pulse_server_get_type
 ags_pulse_server_find_url
