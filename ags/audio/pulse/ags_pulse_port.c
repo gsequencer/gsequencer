@@ -1047,9 +1047,9 @@ ags_pulse_port_stream_underflow_callback(pa_stream *stream, AgsPulsePort *pulse_
     g_atomic_int_or(&(polling_thread->flags),
 		    AGS_POLLING_THREAD_OMIT);
 
-    /* just omit twice since we don't poll pulse */
-    g_atomic_int_inc(&(polling_thread->omit_count));
-    g_atomic_int_inc(&(polling_thread->omit_count));
+    /* just omit three times since we don't poll pulse */
+    g_atomic_int_add(&(polling_thread->omit_count),
+		     3);
   }
 }
 
