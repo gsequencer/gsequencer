@@ -2532,9 +2532,9 @@ ags_pulse_devout_adjust_delay_and_attack(AgsPulseDevout *pulse_devout)
       }
     }
     
-    //#ifdef AGS_DEBUG
+#ifdef AGS_DEBUG
     g_message("%d", pulse_devout->attack[i]);
-    //#endif
+#endif
   }
 
   pulse_devout->attack[0] = pulse_devout->attack[i - 2];

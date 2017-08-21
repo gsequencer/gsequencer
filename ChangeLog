@@ -1,3 +1,8 @@
+ags (0.9.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_devout_adjust_delay_and_attack() and related
+
 ags (0.9.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
