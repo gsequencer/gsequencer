@@ -19,6 +19,8 @@
 
 #include <ags/audio/pulse/ags_pulse_client.h>
 
+#include <ags/util/ags_id_generator.h>
+
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_distributed_manager.h>
 #include <ags/object/ags_main_loop.h>

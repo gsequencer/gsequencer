@@ -20,6 +20,8 @@
 #include <ags/X/ags_sequencer_editor.h>
 #include <ags/X/ags_sequencer_editor_callbacks.h>
 
+#include <ags/util/ags_list_util.h>
+
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
