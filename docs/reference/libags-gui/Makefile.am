@@ -23,7 +23,7 @@ SCANGOBJ_OPTIONS=--cflags="$(CFLAGS) $(GOBJECT_CFLAGS) $(FONTCONFIG_CFLAGS) $(GD
 
 # Extra options to supply to gtkdoc-scan.
 # e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
-SCAN_OPTIONS=--rebuild-types --rebuild-sections --rebuild-interfaces
+# SCAN_OPTIONS=--rebuild-types --rebuild-sections --rebuild-interfaces
 
 # Extra options to supply to gtkdoc-mkdb
 # e.g. MKDB_OPTIONS=--xml-mode --output-format=xml
