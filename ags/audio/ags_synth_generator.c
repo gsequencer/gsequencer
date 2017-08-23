@@ -675,7 +675,7 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 }
 
 /**
- * ags_synth_generator_compute:
+ * ags_synth_generator_compute_with_audio_signal:
  * @synth_generator: the #AgsSynthGenerator
  * @audio_signal: the #AgsAudioSignal
  * @note: the note to compute

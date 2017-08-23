@@ -537,7 +537,7 @@ ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
 }
 
 /**
- * ags_playback_domain_set_audio_thread:
+ * ags_playback_domain_get_audio_thread:
  * @playback_domain: the #AgsPlaybackDomain
  * @scope: the thread's scope
  * 

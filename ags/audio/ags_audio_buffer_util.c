@@ -1294,6 +1294,7 @@ ags_audio_buffer_util_volume(void *buffer, guint channels,
  * ags_audio_buffer_util_peak_s8:
  * @buffer: the audio buffer
  * @channels: number of audio channels
+ * @buffer_length: the buffer length
  * @harmonic_rate: the harmonic rate
  * @max_rate: the max rate
  * @pressure_factor: the pressure factor
@@ -1376,6 +1377,7 @@ ags_audio_buffer_util_peak_s8(signed char *buffer, guint channels,
  * ags_audio_buffer_util_peak_s16:
  * @buffer: the audio buffer
  * @channels: number of audio channels
+ * @buffer_length: the buffer length
  * @harmonic_rate: the harmonic rate
  * @max_rate: the max rate
  * @pressure_factor: the pressure factor
@@ -1458,6 +1460,7 @@ ags_audio_buffer_util_peak_s16(signed short *buffer, guint channels,
  * ags_audio_buffer_util_peak_s24:
  * @buffer: the audio buffer
  * @channels: number of audio channels
+ * @buffer_length: the buffer length
  * @harmonic_rate: the harmonic rate
  * @max_rate: the max rate
  * @pressure_factor: the pressure factor
@@ -1540,6 +1543,7 @@ ags_audio_buffer_util_peak_s24(signed long *buffer, guint channels,
  * ags_audio_buffer_util_peak_32:
  * @buffer: the audio buffer
  * @channels: number of audio channels
+ * @buffer_length: the buffer length
  * @harmonic_rate: the harmonic rate
  * @max_rate: the max rate
  * @pressure_factor: the pressure factor
@@ -1622,6 +1626,7 @@ ags_audio_buffer_util_peak_s32(signed long *buffer, guint channels,
  * ags_audio_buffer_util_peak_64:
  * @buffer: the audio buffer
  * @channels: number of audio channels
+ * @buffer_length: the buffer length
  * @harmonic_rate: the harmonic rate
  * @max_rate: the max rate
  * @pressure_factor: the pressure factor
@@ -1704,6 +1709,7 @@ ags_audio_buffer_util_peak_s64(signed long long *buffer, guint channels,
  * ags_audio_buffer_util_peak_float:
  * @buffer: the audio buffer
  * @channels: number of audio channels
+ * @buffer_length: the buffer length
  * @harmonic_rate: the harmonic rate
  * @max_rate: the max rate
  * @pressure_factor: the pressure factor
@@ -1786,6 +1792,7 @@ ags_audio_buffer_util_peak_float(float *buffer, guint channels,
  * ags_audio_buffer_util_peak_double:
  * @buffer: the audio buffer
  * @channels: number of audio channels
+ * @buffer_length: the buffer length
  * @harmonic_rate: the harmonic rate
  * @max_rate: the max rate
  * @pressure_factor: the pressure factor
@@ -1869,6 +1876,7 @@ ags_audio_buffer_util_peak_double(double *buffer, guint channels,
  * @buffer: the audio buffer
  * @channels: number of audio channels
  * @format: the format to use
+ * @buffer_length: the buffer length
  * @harmonic_rate: the harmonic rate
  * @max_rate: the max rate
  * @pressure_factor: the pressure factor

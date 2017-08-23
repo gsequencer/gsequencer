@@ -399,6 +399,7 @@ ags_midi_buffer_util_get_header(unsigned char *buffer,
 
 /**
  * ags_midi_buffer_util_put_track:
+ * @buffer: the midi buffer
  * @offset: start delta-time
  * 
  * Put track.
@@ -425,6 +426,7 @@ ags_midi_buffer_util_put_track(unsigned char *buffer,
 
 /**
  * ags_midi_buffer_util_get_track:
+ * @buffer: the midi buffer
  * @offset: start delta-time
  * 
  * Get track

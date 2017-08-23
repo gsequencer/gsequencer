@@ -563,7 +563,7 @@ ags_move_note_launch(AgsTask *task)
  * @first_x: the x offset to move from 
  * @first_y: the x padding to use
  * @move_x: the amout to move in x direction
- * @move_y the amout to move in y direction
+ * @move_y: the amout to move in y direction
  * @relative: if %TRUE move relative position
  * @absolute: if %TRUE move absolute position
  *

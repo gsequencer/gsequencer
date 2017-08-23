@@ -272,7 +272,7 @@ ags_midi_util_is_meta_event(unsigned char *buffer)
 
 /**
  * ags_midi_util_to_smf:
- * @buffer: the midi buffer
+ * @midi_buffer: the midi buffer
  * @buffer_length: the buffer length
  * @delta_time: the delta time
  * @smf_buffer_length: the return location of resulting length

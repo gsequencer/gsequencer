@@ -77,10 +77,10 @@ gboolean ags_input_apply_synth_extended(AgsInput *input,
 					guint compute_flags);
 
 gboolean ags_input_is_active(AgsInput *input,
-			     GObject *parent_recycling_context);
+			     GObject *recycling_context);
 
 AgsInput* ags_input_next_active(AgsInput *input,
-				GObject *parent_recycling_context);
+				GObject *recycling_context);
 
 AgsInput* ags_input_new(GObject *audio);
 

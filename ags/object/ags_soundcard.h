@@ -255,7 +255,7 @@ guint ags_soundcard_get_note_offset_absolute(AgsSoundcard *soundcard);
 
 void ags_soundcard_set_loop(AgsSoundcard *soundcard,
 			    guint loop_left, guint loop_right,
-			    gboolean loop);
+			    gboolean do_loop);
 void ags_soundcard_get_loop(AgsSoundcard *soundcard,
 			    guint *loop_left, guint *loop_right,
 			    gboolean *do_loop);

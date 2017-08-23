@@ -522,6 +522,9 @@ ags_input_apply_synth(AgsInput *input,
  * @n_frames: compute n_frames count of frames
  * @attack: the attack to use
  * @base_note: the base note to ramp up from
+ * @sync_start: safe to be %NULL
+ * @sync_end: safe to be %NULL
+ * @compute_flags: the flags to use to compute the synth
  * 
  * Apply synth using specified parameters to input.
  * 

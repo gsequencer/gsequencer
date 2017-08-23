@@ -895,7 +895,7 @@ ags_midi_builder_header_alloc()
 
 /**
  * ags_midi_builder_header_free:
- * @midi_builder_track: the #AgsMidiBuilderHeader-struct
+ * @midi_builder_header: the #AgsMidiBuilderHeader-struct
  * 
  * Free MIDI builder header.
  * 
@@ -998,6 +998,7 @@ ags_midi_builder_track_find_delta_time_with_track_name(GList *midi_builder_track
  * ags_midi_builder_track_insert_midi_message:
  * @midi_builder_track: the #AgsMidiBuilderTrack-struct
  * @buffer: the MIDI message
+ * @length: the buffer length
  * 
  * Insert MIDI message.
  * 
@@ -1128,6 +1129,7 @@ ags_midi_builder_real_midi_putc(AgsMidiBuilder *midi_builder,
 /**
  * ags_midi_builder_midi_putc:
  * @midi_builder: the #AgsMidiBuilder
+ * @c: the character to put
  *
  * Put char in MIDI file.
  *
@@ -1969,7 +1971,6 @@ ags_midi_builder_real_append_smtpe(AgsMidiBuilder *midi_builder,
  * @mn: minutes
  * @se: seconds
  * @fr: fraction
- * @ff: fraction functio
  * 
  * Appends smtpe.
  *

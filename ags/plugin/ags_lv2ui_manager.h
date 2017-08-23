@@ -63,11 +63,11 @@ void ags_lv2ui_manager_set_default_path(gchar** default_path);
 
 gchar** ags_lv2ui_manager_get_filenames(AgsLv2uiManager *lv2ui_manager);
 AgsLv2uiPlugin* ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
-						    gchar *filename,
-						    gchar *effect);
+						    gchar *ui_filename,
+						    gchar *ui_effect);
 AgsLv2uiPlugin* ags_lv2ui_manager_find_lv2ui_plugin_with_index(AgsLv2uiManager *lv2ui_manager,
-							       gchar *filename,
-							       guint index);
+							       gchar *ui_filename,
+							       guint ui_index);
 
 void ags_lv2ui_manager_load_blacklist(AgsLv2uiManager *lv2ui_manager,
 				      gchar *blacklist_filename);

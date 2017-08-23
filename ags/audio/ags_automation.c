@@ -1997,10 +1997,10 @@ ags_automation_find_specifier_with_type_and_line(GList *automation,
 /**
  * ags_automation_get_value:
  * @automation: the #AgsAutomation
- * @x:
- * @x_end:
- * @use_prev_on_failure:
- * @value:
+ * @x: the x-offset
+ * @x_end: the x-end-offset
+ * @use_prev_on_failure: if %TRUE use previous value, else return G_MAXUINT
+ * @value: the return location of value
  *
  * Get automation value.
  *

@@ -61,10 +61,16 @@ EXTRA_DIST += \
 EXTRA_DIST += \
 	docs/reference/libags/libags-sections.txt \
 	docs/reference/libags/libags.types \
+	docs/reference/libags/libags.interfaces \
 	docs/reference/libags-audio/libags_audio-sections.txt \
 	docs/reference/libags-audio/libags_audio.types \
+	docs/reference/libags-audio/libags_audio.interfaces \
 	docs/reference/libags-gui/libags_gui-sections.txt \
-	docs/reference/libags-gui/libags_gui.types
+	docs/reference/libags-gui/libags_gui.types \
+	docs/reference/libags-gui/libags_gui.interfaces \
+	docs/reference/libags-gui/libgsequencer-sections.txt \
+	docs/reference/libags-gui/libgsequencer.types \
+	docs/reference/libags-gui/libgsequencer.interfaces
 
 EXTRA_DIST += \
 	lv2/lv2plug.in/ns/lv2ext/lv2_programs.h

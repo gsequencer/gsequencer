@@ -61,7 +61,7 @@ gchar* ags_pattern_envelope_y_label_func(gdouble value,
  * @short_description: pack pad editors.
  * @title: AgsPatternEnvelope
  * @section_id:
- * @include: ags/X/ags_pattern_envelope.h
+ * @include: ags/X/editor/ags_pattern_envelope.h
  *
  * #AgsPatternEnvelope is a composite widget to show envelope controls
  * of selected AgsNote.
@@ -1168,7 +1168,7 @@ ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
 /**
  * ags_pattern_envelope_set_preset_property:
  * @pattern_envelope: the #AgsPatternEnvelope
- * @preset_name: the preset name
+ * @preset: the preset name
  * @property_name: the property name
  * @value: the #GValue-struct 
  * 

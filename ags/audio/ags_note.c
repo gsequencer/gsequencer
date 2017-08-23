@@ -984,7 +984,7 @@ ags_note_to_seq_event(AgsNote *note,
 }
 
 /**
- * ags_note_to_raw_midi_extended:
+ * ags_note_to_seq_event_extended:
  * @note: the #AgsNote
  * @bpm: the source bpm
  * @delay_factor: the source delay factor
@@ -1045,7 +1045,7 @@ ags_note_from_raw_midi(unsigned char *raw_midi,
 }
 
 /**
- * ags_note_from_raw_midi:
+ * ags_note_from_raw_midi_extended:
  * @raw_midi: the data array
  * @nn: numerator
  * @dd: denominator

@@ -23,7 +23,7 @@ SCANGOBJ_OPTIONS=--cflags="$(CFLAGS) $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(XMLRPC_C
 
 # Extra options to supply to gtkdoc-scan.
 # e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
-#SCAN_OPTIONS=--rebuild-types --rebuild-sections --rebuild-interfaces
+SCAN_OPTIONS=--rebuild-types --rebuild-sections --rebuild-interfaces
 
 # Extra options to supply to gtkdoc-mkdb
 # e.g. MKDB_OPTIONS=--xml-mode --output-format=xml
@@ -48,7 +48,7 @@ EXTRA_HFILES=
 
 # Header files or dirs to ignore when scanning. Use base file/dir names
 # e.g. IGNORE_HFILES=gtkdebug.h gtkintl.h private_code
-IGNORE_HFILES=
+IGNORE_HFILES=ags_lv2_state_manager.h
 
 # Images to copy into HTML directory.
 # e.g. HTML_IMAGES=$(top_srcdir)/gtk/stock-icons/stock_about_24.png

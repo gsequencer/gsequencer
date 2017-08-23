@@ -1318,7 +1318,7 @@ ags_syncsynth_add_oscillator(AgsSyncsynth *syncsynth,
 /**
  * ags_syncsynth_remove_oscillator:
  * @syncsynth: the #AgsSynthsync
- * @oscillator: the #AgsOscillator
+ * @nth: the nth #AgsOscillator
  * 
  * Remove nth oscillator.
  * 

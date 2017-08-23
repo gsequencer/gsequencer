@@ -27,10 +27,10 @@
     <xi:include href="xml/ags_hindicator.xml"/>
     <xi:include href="xml/ags_vindicator.xml"/>
     <xi:include href="xml/ags_led.xml"/>
-    <xi:include href="xml/ags_ruler.xml"/>
     <xi:include href="xml/ags_led_array.xml"/>
     <xi:include href="xml/ags_hled_array.xml"/>
     <xi:include href="xml/ags_vled_array.xml"/>
+    <xi:include href="xml/ags_ruler.xml"/>
   </chapter>
   
   <chapter id="object-tree">

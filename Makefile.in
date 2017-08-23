@@ -2340,10 +2340,16 @@ EXTRA_DIST = config.rpath COPYING.docs ags/config.h.in gtk-doc.make \
 	functional-system-tests.mk.am functional-system-tests.mk.in \
 	docs/reference/libags/libags-sections.txt \
 	docs/reference/libags/libags.types \
+	docs/reference/libags/libags.interfaces \
 	docs/reference/libags-audio/libags_audio-sections.txt \
 	docs/reference/libags-audio/libags_audio.types \
+	docs/reference/libags-audio/libags_audio.interfaces \
 	docs/reference/libags-gui/libags_gui-sections.txt \
 	docs/reference/libags-gui/libags_gui.types \
+	docs/reference/libags-gui/libags_gui.interfaces \
+	docs/reference/libags-gui/libgsequencer-sections.txt \
+	docs/reference/libags-gui/libgsequencer.types \
+	docs/reference/libags-gui/libgsequencer.interfaces \
 	lv2/lv2plug.in/ns/lv2ext/lv2_programs.h \
 	lv2.lib/mda/EPiano-presets.ttl libags.pc.in libags_audio.pc.in \
 	libags_gui.pc.in libgsequencer.pc.in gsequencer.desktop.in \
