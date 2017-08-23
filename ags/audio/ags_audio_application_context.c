@@ -58,6 +58,11 @@
 #include <ags/audio/jack/ags_jack_port.h>
 #include <ags/audio/jack/ags_jack_devout.h>
 
+#include <ags/audio/pulse/ags_pulse_server.h>
+#include <ags/audio/pulse/ags_pulse_client.h>
+#include <ags/audio/pulse/ags_pulse_port.h>
+#include <ags/audio/pulse/ags_pulse_devout.h>
+
 #include <ags/audio/recall/ags_play_audio.h>
 #include <ags/audio/recall/ags_play_channel.h>
 #include <ags/audio/recall/ags_play_channel_run.h>
@@ -158,13 +163,15 @@ void ags_audio_application_context_set_value_callback(AgsConfig *config, gchar *
  * The #AgsAudioApplicationContext provides you sound processing, output and capturing.
  */
 
-static gpointer ags_audio_application_context_parent_class = NULL;
-static AgsConnectableInterface* ags_audio_application_context_parent_connectable_interface;
-
 enum{
   PROP_0,
   PROP_SOUNDCARD,
 };
+
+static gpointer ags_audio_application_context_parent_class = NULL;
+static AgsConnectableInterface* ags_audio_application_context_parent_connectable_interface;
+
+extern AgsApplicationContext *ags_application_context;
 
 GType
 ags_audio_application_context_get_type()
@@ -306,6 +313,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   GObject *soundcard;
   GObject *sequencer;
   AgsJackServer *jack_server;
+  AgsPulseServer *pulse_server;
 
   AgsThread *soundcard_thread;
   AgsThread *sequencer_thread;
@@ -321,8 +329,13 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   gchar *str;
 
   guint i;
+  gboolean has_pulse;
   gboolean has_jack;
-  
+
+  if(ags_application_context == NULL){
+    ags_application_context = audio_application_context;
+  }
+
   AGS_APPLICATION_CONTEXT(audio_application_context)->log = NULL;
 
   /**/
@@ -336,12 +349,23 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   /* distributed manager */
   audio_application_context->distributed_manager = NULL;
 
+  /* pulse server */
+  pulse_server = ags_pulse_server_new((GObject *) audio_application_context,
+				      NULL);
+  audio_application_context->distributed_manager = g_list_append(audio_application_context->distributed_manager,
+								 pulse_server);
+  g_object_ref(G_OBJECT(pulse_server));
+
+  has_pulse = FALSE;
+
   /* jack server */
   jack_server = ags_jack_server_new((GObject *) audio_application_context,
 				    NULL);
-  audio_application_context->distributed_manager = g_list_prepend(audio_application_context->distributed_manager,
-								  jack_server);
+  audio_application_context->distributed_manager = g_list_append(audio_application_context->distributed_manager,
+								 jack_server);
   g_object_ref(G_OBJECT(jack_server));
+
+  has_jack = FALSE;
 
   /* soundcard */
   audio_application_context->soundcard = NULL;
@@ -371,10 +395,19 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
     
     if(str != NULL){
       if(!g_ascii_strncasecmp(str,
+			      "pulse",
+			      6)){
+	soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(pulse_server),
+							       TRUE);
+
+	has_pulse = TRUE;
+      }else if(!g_ascii_strncasecmp(str,
 			      "jack",
 			      5)){
 	soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(jack_server),
 							       TRUE);
+
+	has_jack = TRUE;
       }else if(!g_ascii_strncasecmp(str,
 				    "alsa",
 				    5)){
@@ -647,13 +680,15 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
       AGS_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
     }else if(AGS_IS_JACK_DEVOUT(list->data)){
       AGS_JACK_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+    }else if(AGS_IS_PULSE_DEVOUT(list->data)){
+      AGS_PULSE_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
     }
 
     ags_task_thread_append_cyclic_task(AGS_APPLICATION_CONTEXT(audio_application_context)->task_thread,
 				       notify_soundcard);
 
     /* export thread */
-    export_thread = (AgsThread *) ags_export_thread_new(soundcard,
+    export_thread = (AgsThread *) ags_export_thread_new(list->data,
 							NULL);
     ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				  (AgsThread *) export_thread,
@@ -720,6 +755,17 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   
   /* AgsThreadPool */
   audio_application_context->thread_pool = AGS_TASK_THREAD(AGS_APPLICATION_CONTEXT(audio_application_context)->task_thread)->thread_pool;
+
+  /* launch */
+  if(has_pulse){
+    ags_pulse_server_connect_client(pulse_server);
+
+    ags_pulse_server_start_poll(pulse_server);
+  }
+
+  if(has_jack){
+    ags_jack_server_connect_client(jack_server);
+  }
 }
 
 void

@@ -240,6 +240,8 @@ ags_link_editor_option_changed_callback(GtkWidget *widget, AgsLinkEditor *link_e
   line_editor = (AgsLineEditor *) gtk_widget_get_ancestor((GtkWidget *) link_editor, AGS_TYPE_LINE_EDITOR);
   link_editor->spin_button->adjustment->upper = (gdouble) (AGS_IS_OUTPUT(line_editor->channel) ? machine->audio->input_lines - 1: machine->audio->output_lines - 1);
   */
+
+  return(0);
 }
 
 int
@@ -280,6 +282,8 @@ ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint response
 
   link_editor->file_chooser = NULL;
   gtk_widget_destroy((GtkWidget *) file_chooser);
+
+  return(0);
 }
 
 int

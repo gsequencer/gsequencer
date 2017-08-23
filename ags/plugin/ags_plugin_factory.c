@@ -181,6 +181,8 @@ ags_plugin_factory_create(AgsPluginFactory *plugin_factory,
 			  gchar *plugin_name, gchar *version, gchar *build_id)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 AgsPluginFactory*

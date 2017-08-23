@@ -480,6 +480,8 @@ ags_function_literal_solve(AgsFunction *function)
   auto guint ags_function_literal_solve_find_max_exponent(gchar *transformed_function);
 
   gchar* ags_function_literal_solve_expand_functions(gchar *transformed_function){
+    regmatch_t match_arr[1];
+    
     gchar *expanded_functions;
     gchar *offset, *close_offset;
     gchar *str;
@@ -519,15 +521,15 @@ ags_function_literal_solve(AgsFunction *function)
       if((regexec_result = regexec(&function_regex, offset, max_matches, match_arr, 0)) == 0){
 	if(close_offset == NULL ||
 	   close_offset > match_arr[0].rm_so){
-	  offset = match_arr[0].rm_so;
+	  offset = (gchar *) match_arr[0].rm_so;
 
 	  /* find close paranthesis */
-	  open_paranethesis = offset;
+	  open_paranthesis = offset;
 	  
-	  while((open_paranthesis = strchr(open_paranethesis, '(')) != NULL &&
+	  while((open_paranthesis = strchr(open_paranthesis, '(')) != NULL &&
 		close_paranthesis == NULL){
-	    close_paranthesis = strchr(open_paranethesis, ')');
-	    tmp_paranthesis = strchr(open_paranethesis, '(');
+	    close_paranthesis = strchr(open_paranthesis, ')');
+	    tmp_paranthesis = strchr(open_paranthesis, '(');
 
 	    if(tmp_paranthesis < close_paranthesis){
 	      close_paranthesis = NULL;
@@ -560,6 +562,8 @@ ags_function_literal_solve(AgsFunction *function)
 	}
       }
     }
+
+    return(expanded_functions);
   }
 
   gchar* ags_function_literal_solve_numeric_exponent_only(gchar *transformed_function){
@@ -567,8 +571,9 @@ ags_function_literal_solve(AgsFunction *function)
     
     guint n_terms;
 
+    numeric_exponent_only = NULL;
 
-    
+    return(numeric_exponent_only);
   }
   
   guint ags_function_literal_solve_find_max_exponent(gchar *transformed_function){
@@ -588,6 +593,8 @@ ags_function_literal_solve(AgsFunction *function)
     return(max_exponent);
   }
 
+  normalized_function = NULL;
+  
   /* compute dimensions */
   transformed_function = g_strdup(function->source_function);
   max_exponent = function->symbol_count;
@@ -624,7 +631,7 @@ ags_function_literal_solve(AgsFunction *function)
       function->pivot_table[i][j] = ags_complex_alloc();
     }
   }
-  
+
   //TODO:JK: implement me
 
   /* parse and merge terms */

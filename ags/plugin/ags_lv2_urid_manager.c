@@ -135,6 +135,10 @@ ags_lv2_urid_manager_finalize(GObject *gobject)
 
   g_hash_table_destroy(lv2_urid_manager->urid);
 
+  if(lv2_urid_manager == ags_lv2_urid_manager){
+    ags_lv2_urid_manager = NULL;
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_urid_manager_parent_class)->finalize(gobject);
 }
@@ -299,23 +303,36 @@ ags_lv2_urid_manager_unmap(LV2_URID_Map_Handle handle,
 			   uint32_t urid)
 {
   AgsLv2UridManager *lv2_urid_manager;
-  gchar *retval;
-  
-  GValue value = {0,};
 
+  GList *key, *key_start;
+  
+  gpointer data, tmp;
+  
   lv2_urid_manager = ags_lv2_urid_manager_get_instance();
   
-  g_value_init(&value,
-	       G_TYPE_ULONG);
-  g_value_set_ulong(&value,
-		    urid);
+  key_start = 
+    key = g_hash_table_get_keys(lv2_urid_manager->urid);
 
-  retval = (gchar *) g_hash_table_find(lv2_urid_manager->urid,
-				       (GHRFunc) ags_lv2_urid_manager_finder,
-				       &value);
-  //TODO:JK: unmap
+  data = NULL;
+
+  while(key != NULL){
+    tmp = (gpointer) g_hash_table_lookup(lv2_urid_manager->urid,
+					 key->data);
+
+    if(urid == g_value_get_ulong((GValue *) tmp)){
+      ags_lv2_urid_manager_remove(lv2_urid_manager,
+				  key->data);
+      data = tmp;
+
+      break;
+    }
+
+    key = key->next;
+  }
   
-  return(retval);
+  g_list_free(key_start);
+  
+  return(data);
 }
 
 /**
@@ -330,11 +347,17 @@ ags_lv2_urid_manager_unmap(LV2_URID_Map_Handle handle,
 AgsLv2UridManager*
 ags_lv2_urid_manager_get_instance()
 {
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  pthread_mutex_lock(&mutex);
+
   if(ags_lv2_urid_manager == NULL){
     ags_lv2_urid_manager = ags_lv2_urid_manager_new();
     
     //    ags_lv2_urid_manager_load_default(ags_lv2_urid_manager);
   }
+
+  pthread_mutex_unlock(&mutex);
 
   return(ags_lv2_urid_manager);
 }

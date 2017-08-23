@@ -26,6 +26,10 @@
 #include <ags/server/ags_server.h>
 
 #include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <string.h>
 
 void ags_registry_class_init(AgsRegistryClass *registry);
 void ags_registry_connectable_interface_init(AgsConnectableInterface *connectable);

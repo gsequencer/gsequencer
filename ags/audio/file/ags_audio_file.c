@@ -494,14 +494,13 @@ ags_audio_file_open(AgsAudioFile *audio_file)
 	}
 
 	return(TRUE);
-      }else{
-	return(FALSE);
       }
     }else{
       g_message("ags_audio_file_open: unknown file type\n");
-      return(FALSE);
     }
   }
+
+  return(FALSE);
 }
 
 /**
@@ -614,14 +613,13 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
 	}
 
 	return(TRUE);
-      }else{
-	return(FALSE);
       }
     }else{
       g_message("ags_audio_file_open: unknown file type\n");
-      return(FALSE);
     }
   }
+
+  return(FALSE);
 }
 
 /**

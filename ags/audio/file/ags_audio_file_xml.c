@@ -5657,6 +5657,8 @@ ags_file_write_embedded_audio(AgsFile *file, xmlNode *parent, gchar *embedded_au
 
   xmlAddChild(parent,
 	      node);
+
+  return(node);
 }
 
 void
@@ -5715,6 +5717,8 @@ ags_file_write_embedded_audio_list(AgsFile *file, xmlNode *parent, GList *embedd
 	     AGS_FILE_ID_PROP,
 	     id);
 
+  list = embedded_audio;
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "application-context", file->application_context,
@@ -5726,8 +5730,6 @@ ags_file_write_embedded_audio_list(AgsFile *file, xmlNode *parent, GList *embedd
 
   xmlAddChild(parent,
 	      node);
-
-  list = embedded_audio;
 
   while(list != NULL){
     ags_file_write_embedded_audio(file, node, (gchar *) list->data);

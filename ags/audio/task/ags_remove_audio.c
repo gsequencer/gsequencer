@@ -22,6 +22,11 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
+
 #include <ags/i18n.h>
 
 void ags_remove_audio_class_init(AgsRemoveAudioClass *remove_audio);
@@ -319,15 +324,40 @@ void
 ags_remove_audio_launch(AgsTask *task)
 {
   AgsRemoveAudio *remove_audio;
+
+  AgsAudioLoop *audio_loop;
+
   AgsChannel *current;
+  AgsPlaybackDomain *playback_domain;
+  AgsPlayback *playback;
 
   GList *list;
   
   remove_audio = AGS_REMOVE_AUDIO(task);
 
+  audio_loop = ags_thread_get_toplevel(task->task_thread);
+  ags_audio_loop_remove_audio(audio_loop,
+			      remove_audio->audio);
+
+  playback_domain = remove_audio->audio->playback_domain;
+
+  if(playback_domain != NULL){
+    ags_thread_stop(playback_domain->audio_thread[0]);
+    ags_thread_stop(playback_domain->audio_thread[1]);
+    ags_thread_stop(playback_domain->audio_thread[2]);
+  }
+  
   current = remove_audio->audio->output;
 
   while(current != NULL){
+    playback = current->playback;
+
+    if(playback != NULL){
+      ags_thread_stop(playback->channel_thread[0]);
+      ags_thread_stop(playback->channel_thread[1]);
+      ags_thread_stop(playback->channel_thread[2]);
+    }
+    
     ags_channel_set_link(current,
 			 NULL,
 			 NULL);
@@ -338,6 +368,14 @@ ags_remove_audio_launch(AgsTask *task)
   current = remove_audio->audio->input;
 
   while(current != NULL){
+    playback = current->playback;
+
+    if(playback != NULL){
+      ags_thread_stop(playback->channel_thread[0]);
+      ags_thread_stop(playback->channel_thread[1]);
+      ags_thread_stop(playback->channel_thread[2]);
+    }
+
     ags_channel_set_link(current,
 			 NULL,
 			 NULL);

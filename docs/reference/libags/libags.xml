@@ -29,9 +29,12 @@
 
     <xi:include href="xml/ags_complex.xml"/>
     <xi:include href="xml/ags_conversion.xml"/>
+    <xi:include href="xml/ags_endian.xml"/>
     <xi:include href="xml/ags_function.xml"/>
     <xi:include href="xml/ags_log.xml"/>
     <xi:include href="xml/ags_parameter.xml"/>
+    <xi:include href="xml/ags_regex.xml"/>
+    <xi:include href="xml/ags_string_util.xml"/>
     <xi:include href="xml/ags_time.xml"/>
     <xi:include href="xml/ags_turtle.xml"/>
     <xi:include href="xml/ags_turtle_manager.xml"/>
@@ -40,7 +43,9 @@
   <part id="util">
     <title>Util - Helper functions</title>
 
+    <xi:include href="xml/ags_destroy_util.xml"/>
     <xi:include href="xml/ags_id_generator.xml"/>
+    <xi:include href="xml/ags_list_util.xml"/>
   </part>
   
   <part id="object">
@@ -88,6 +93,8 @@
 
     <xi:include href="xml/ags_autosave_thread.xml"/>
     <xi:include href="xml/ags_concurrency_provider.xml"/>
+    <xi:include href="xml/ags_condition_manager.xml"/>
+    <xi:include href="xml/ags_destroy_worker.xml"/>
     <xi:include href="xml/ags_generic_main_loop.xml"/>
     <xi:include href="xml/ags_history.xml"/>
     <xi:include href="xml/ags_mutex_manager.xml"/>
@@ -102,6 +109,7 @@
     <xi:include href="xml/ags_thread-posix.xml"/>
     <xi:include href="xml/ags_thread_application_context.xml"/>
     <xi:include href="xml/ags_thread_pool.xml"/>
+    <xi:include href="xml/ags_worker_thread.xml"/>
 
     <chapter id="thread-file">
       <title>Thread files - Reading/Writing audio data from disk</title>

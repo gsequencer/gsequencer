@@ -476,7 +476,6 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
   AgsAudioSignal *audio_signal;
 
   AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
 
   AgsApplicationContext *application_context;
   
@@ -484,7 +483,6 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
   gboolean grow;
 
   pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *source_mutex;
 
@@ -517,13 +515,6 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 
   application_context = window->application_context;
   
-  /* get main loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* set size request if needed */
   if(g_type_is_a(type, AGS_TYPE_INPUT)){
     gtk_adjustment_set_upper(GTK_RANGE(matrix->cell_pattern->vscrollbar)->adjustment,
@@ -550,10 +541,6 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
   }
   
   if(g_type_is_a(type, AGS_TYPE_INPUT)){
-    AgsPattern *pattern;
-
-    GList *list, *notation;
-
     pthread_mutex_lock(audio_mutex);
 
     source = audio->input;
@@ -596,13 +583,6 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
     }
   }else{
     if(grow){
-      AgsChannel *current, *output;
-
-      GList *recall;
-      GList *list;
-
-      guint stop;
-
       pthread_mutex_lock(audio_mutex);
 
       source = audio->output;
@@ -613,9 +593,10 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 			       pads_old);
 
       if(source != NULL){
-	GObject *soundcard;
 	AgsRecycling *recycling;
 	AgsAudioSignal *audio_signal;
+
+	GObject *soundcard;
 
 	pthread_mutex_lock(audio_mutex);
 	
@@ -645,7 +626,9 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 	ags_recycling_add_audio_signal(recycling,
 				       audio_signal);
+      }
 
+      if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
 	ags_matrix_output_map_recall(matrix,
 				     pads_old);
       }

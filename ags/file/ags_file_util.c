@@ -944,7 +944,13 @@ ags_file_read_history(AgsFile *file, xmlNode *node, AgsHistory **history)
 xmlNode*
 ags_file_write_history(AgsFile *file, xmlNode *parent, AgsHistory *history)
 {
+  xmlNode *node;
+
+  node = NULL;
+  
   //TODO:JK: implement me
+
+  return(node);
 }
 
 void
@@ -1047,6 +1053,8 @@ ags_file_write_file_link(AgsFile *file, xmlNode *parent, AgsFileLink *file_link)
   ags_plugin_write(file,
 		   node,
 		   AGS_PLUGIN(file_link));
+
+  return(node);
 }
 
 void
@@ -1119,6 +1127,8 @@ ags_file_write_file_link_list(AgsFile *file, xmlNode *parent, GList *file_link)
 	     AGS_FILE_ID_PROP,
 	     id);
 
+  list = file_link;
+
   /* add reference and node to file object */
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
@@ -1134,8 +1144,6 @@ ags_file_write_file_link_list(AgsFile *file, xmlNode *parent, GList *file_link)
 	      node);
 
   /* iterate list and write file link */
-  list = file_link;
-
   while(list != NULL){
     ags_file_write_file_link(file, node, AGS_FILE_LINK(list->data));
 

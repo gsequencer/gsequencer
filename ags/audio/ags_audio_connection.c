@@ -342,6 +342,19 @@ ags_audio_connection_finalize(GObject *gobject)
   }
 }
 
+/**
+ * ags_audio_connection_find:
+ * @list: the #GList-struct containing #AgsAudioConnection
+ * @channel_type: the channel type to match
+ * @pad: the pad to match
+ * @audio_channel: the audio channel to match
+ * 
+ * Find the specified audio connection matching @channel_type, @pad and @audio_channel.
+ * 
+ * Returns: the first matched #GList-struct, else %NULL if no match
+ * 
+ * Since: 0.9.7
+ */
 GList*
 ags_audio_connection_find(GList *list,
 			  GType channel_type,

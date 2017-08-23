@@ -25,6 +25,8 @@ ags_line_member_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
   if(old_parent == NULL){
     //TODO:JK: implement me
   }
+
+  return(0);
 }
 
 void

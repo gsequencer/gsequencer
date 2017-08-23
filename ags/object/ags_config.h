@@ -44,10 +44,16 @@
 typedef struct _AgsConfig AgsConfig;
 typedef struct _AgsConfigClass AgsConfigClass;
 
+typedef enum{
+  AGS_CONFIG_CONNECTED    = 1,
+}AgsConfigFlags;
+
 struct _AgsConfig
 {
   GObject object;
 
+  guint flags;
+  
   gchar *version;
   gchar *build_id;
   

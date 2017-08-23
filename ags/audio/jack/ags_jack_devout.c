@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -482,11 +482,10 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    * 
    * Since: 0.7.122.7
    */
-  param_spec = g_param_spec_object("jack-port",
-				   i18n_pspec("jack port object"),
-				   i18n_pspec("The jack port object"),
-				   AGS_TYPE_JACK_PORT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("jack-port",
+				    i18n_pspec("jack port object"),
+				    i18n_pspec("The jack port object"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_JACK_PORT,
 				  param_spec);
@@ -540,6 +539,9 @@ ags_jack_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->list_cards = ags_jack_devout_list_cards;
   soundcard->pcm_info = ags_jack_devout_pcm_info;
+
+  soundcard->get_poll_fd = NULL;
+  soundcard->is_available = NULL;
 
   soundcard->is_starting =  ags_jack_devout_is_starting;
   soundcard->is_playing = ags_jack_devout_is_playing;
@@ -600,17 +602,19 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
   
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
-  pthread_mutexattr_t attr;
+  pthread_mutexattr_t *attr;
 
   /* insert devout mutex */
-  //FIXME:JK: memory leak
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_settype(&attr,
+  jack_devout->mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
 
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  jack_devout->mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
-		     &attr);
+		     attr);
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -832,7 +836,7 @@ ags_jack_devout_set_property(GObject *gobject,
 	AgsConfig *config;
 
 	gchar *segmentation;
-	guint discriminante, nominante;
+	guint denumerator, numerator;
 	
 	g_object_ref(G_OBJECT(application_context));
 
@@ -847,10 +851,10 @@ ags_jack_devout_set_property(GObject *gobject,
 
 	if(segmentation != NULL){
 	  sscanf(segmentation, "%d/%d",
-		 &discriminante,
-		 &nominante);
+		 &denumerator,
+		 &numerator);
     
-	  jack_devout->delay_factor = 1.0 / nominante * (nominante / discriminante);
+	  jack_devout->delay_factor = 1.0 / numerator * (numerator / denumerator);
 	}
 	
 	ags_jack_devout_adjust_delay_and_attack(jack_devout);
@@ -1011,9 +1015,10 @@ ags_jack_devout_set_property(GObject *gobject,
     {
       AgsJackPort *jack_port;
 
-      jack_port = (AgsJackPort *) g_value_get_object(value);
+      jack_port = (AgsJackPort *) g_value_get_pointer(value);
 
-      if(g_list_find(jack_devout->jack_port, jack_port) != NULL){
+      if(!AGS_IS_JACK_PORT(jack_port) ||
+	 g_list_find(jack_devout->jack_port, jack_port) != NULL){
 	return;
       }
 
@@ -1151,7 +1156,7 @@ ags_jack_devout_dispose(GObject *gobject)
   }
 
   /* call parent */
-  G_OBJECT_CLASS(ags_jack_devout_parent_class)->finalize(gobject);
+  G_OBJECT_CLASS(ags_jack_devout_parent_class)->dispose(gobject);
 }
 
 void
@@ -1217,6 +1222,12 @@ ags_jack_devout_finalize(GObject *gobject)
     g_list_free_full(jack_devout->audio,
 		     g_object_unref);
   }
+
+  pthread_mutex_destroy(jack_devout->mutex);
+  free(jack_devout->mutex);
+
+  pthread_mutexattr_destroy(jack_devout->mutexattr);
+  free(jack_devout->mutexattr);
 
   /* call parent */
   G_OBJECT_CLASS(ags_jack_devout_parent_class)->finalize(gobject);
@@ -1940,7 +1951,7 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
       nth_buffer = 0;
     }else if((AGS_JACK_DEVOUT_BUFFER2 & (jack_devout->flags)) != 0){
       nth_buffer = 1;
-    }else if((AGS_JACK_DEVOUT_BUFFER3 & jack_devout->flags) != 0){
+    }else if((AGS_JACK_DEVOUT_BUFFER3 & (jack_devout->flags)) != 0){
       nth_buffer = 2;
     }
 
@@ -2375,38 +2386,104 @@ ags_jack_devout_adjust_delay_and_attack(AgsJackDevout *jack_devout)
 {
   gdouble delay;
   guint default_tact_frames;
+  guint delay_tact_frames;
+  guint default_period;
+  gint next_attack;
   guint i;
 
   if(jack_devout == NULL){
     return;
   }
   
-  delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(jack_devout));
+  delay = ags_jack_devout_get_absolute_delay(AGS_SOUNDCARD(jack_devout));
 
 #ifdef AGS_DEBUG
   g_message("delay : %f", delay);
 #endif
   
   default_tact_frames = (guint) (delay * jack_devout->buffer_size);
+  delay_tact_frames = (guint) (floor(delay) * jack_devout->buffer_size);
+  default_period = (1.0 / AGS_SOUNDCARD_DEFAULT_PERIOD) * (default_tact_frames);
 
-  jack_devout->attack[0] = 0;
-  jack_devout->delay[0] = delay;
+  i = 0;
+  
+  jack_devout->attack[0] = (guint) floor(0.25 * jack_devout->buffer_size);
+  next_attack = (((jack_devout->attack[i] + default_tact_frames) / jack_devout->buffer_size) - delay) * jack_devout->buffer_size;
+
+  if(next_attack >= jack_devout->buffer_size){
+    next_attack = jack_devout->buffer_size - 1;
+  }
+  
+  /* check if delay drops for next attack */
+  if(next_attack < 0){
+    jack_devout->attack[i] = jack_devout->attack[i] - ((gdouble) next_attack / 2.0);
+
+    if(jack_devout->attack[i] < 0){
+      jack_devout->attack[i] = 0;
+    }
+    
+    if(jack_devout->attack[i] >= jack_devout->buffer_size){
+      jack_devout->attack[i] = jack_devout->buffer_size - 1;
+    }
+    
+    next_attack = next_attack + (next_attack / 2.0);
+    
+    if(next_attack < 0){
+      next_attack = 0;
+    }
+
+    if(next_attack >= jack_devout->buffer_size){
+      next_attack = jack_devout->buffer_size - 1;
+    }
+  }
   
   for(i = 1; i < (int)  2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
-    jack_devout->attack[i] = (guint) ((i * default_tact_frames + jack_devout->attack[i - 1]) / (AGS_SOUNDCARD_DEFAULT_PERIOD / (delay * i))) % (guint) (jack_devout->buffer_size);
+    jack_devout->attack[i] = next_attack;
+    next_attack = (((jack_devout->attack[i] + default_tact_frames) / jack_devout->buffer_size) - delay) * jack_devout->buffer_size;
+
+    if(next_attack >= jack_devout->buffer_size){
+      next_attack = jack_devout->buffer_size - 1;
+    }
+    
+    /* check if delay drops for next attack */
+    if(next_attack < 0){
+      jack_devout->attack[i] = jack_devout->attack[i] - ((gdouble) next_attack / 2.0);
+
+      if(jack_devout->attack[i] < 0){
+	jack_devout->attack[i] = 0;
+      }
+
+      if(jack_devout->attack[i] >= jack_devout->buffer_size){
+	jack_devout->attack[i] = jack_devout->buffer_size - 1;
+      }
+    
+      next_attack = next_attack + (next_attack / 2.0);
+    
+      if(next_attack < 0){
+	next_attack = 0;
+      }
+
+      if(next_attack >= jack_devout->buffer_size){
+	next_attack = jack_devout->buffer_size - 1;
+      }
+    }
     
 #ifdef AGS_DEBUG
     g_message("%d", jack_devout->attack[i]);
 #endif
   }
+
+  jack_devout->attack[0] = jack_devout->attack[i - 2];
   
-  for(i = 1; i < (int) 2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
-    jack_devout->delay[i] = ((gdouble) (default_tact_frames + jack_devout->attack[i])) / (gdouble) jack_devout->buffer_size;
+  for(i = 0; i < (int) 2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD - 1; i++){
+    jack_devout->delay[i] = ((gdouble) (default_tact_frames + jack_devout->attack[i] - jack_devout->attack[i + 1])) / (gdouble) jack_devout->buffer_size;
     
 #ifdef AGS_DEBUG
     g_message("%f", jack_devout->delay[i]);
 #endif
   }
+
+  jack_devout->delay[i] = ((gdouble) (default_tact_frames + jack_devout->attack[i] - jack_devout->attack[0])) / (gdouble) jack_devout->buffer_size;
 }
 
 /**

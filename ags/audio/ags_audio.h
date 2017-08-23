@@ -65,6 +65,9 @@ struct _AgsAudio
 
   guint flags;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   GObject *soundcard;
   guint level;
 
@@ -107,7 +110,10 @@ struct _AgsAudio
   GList *recall_id;
   GList *recycling_context;
 
+  pthread_mutexattr_t *recall_mutexattr;
   pthread_mutex_t *recall_mutex;
+
+  pthread_mutexattr_t *play_mutexattr;
   pthread_mutex_t *play_mutex;
 
   GList *container;

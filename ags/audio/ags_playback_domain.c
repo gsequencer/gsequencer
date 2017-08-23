@@ -520,7 +520,7 @@ ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
 				     AgsThread *thread,
 				     guint scope)
 {
-  if(playback_domain == NULL ||
+  if(!AGS_PLAYBACK_DOMAIN(playback_domain) ||
      scope > 2){
     return;
   }
@@ -537,7 +537,7 @@ ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
 }
 
 /**
- * ags_playback_domain_set_audio_thread:
+ * ags_playback_domain_get_audio_thread:
  * @playback_domain: the #AgsPlaybackDomain
  * @scope: the thread's scope
  * 

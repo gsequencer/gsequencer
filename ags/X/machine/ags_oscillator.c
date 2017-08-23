@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -50,6 +50,14 @@ void ags_oscillator_show(GtkWidget *widget);
  * The #AgsOscillator is a composite widget to act as oscillator.
  */
 
+enum{
+  CONTROL_CHANGED,
+  LAST_SIGNAL,
+};
+
+static gpointer ags_oscillator_parent_class = NULL;
+static guint oscillator_signals[LAST_SIGNAL];
+
 static AgsConnectableInterface *ags_oscillator_parent_connectable_interface;
 
 GType
@@ -92,6 +100,29 @@ ags_oscillator_get_type(void)
 void
 ags_oscillator_class_init(AgsOscillatorClass *oscillator)
 {
+  GObjectClass *gobject;
+  GParamSpec *param_spec;
+
+  ags_oscillator_parent_class = g_type_class_peek_parent(oscillator);
+
+  /* GObjectClass */
+  gobject = G_OBJECT_CLASS(oscillator);
+
+  /* signals */
+  /**
+   * AgsOscillator::control-change:
+   * @oscillator: the #AgsOscillator
+   *
+   * The ::control-change signal notifies about controls modified.
+   */
+  oscillator_signals[CONTROL_CHANGED] =
+    g_signal_new("control-changed",
+		 G_TYPE_FROM_CLASS(oscillator),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscillatorClass, control_changed),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 }
 
 void
@@ -178,8 +209,8 @@ ags_oscillator_init(AgsOscillator *oscillator)
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new(i18n("length")),
 			    4, 5, 0, 1);
-  oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(44100.0 / 27.5, 100000.0, 1.0);
-  oscillator->frame_count->adjustment->value = 3200;
+  oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
+  oscillator->frame_count->adjustment->value = AGS_OSCILLATOR_DEFAULT_FRAME_COUNT;
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->frame_count, 5, 6, 0, 1);
 
   gtk_table_attach_defaults(table,
@@ -209,6 +240,35 @@ ags_oscillator_init(AgsOscillator *oscillator)
 			     3);
   oscillator->volume->adjustment->value = 0.2;
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->volume, 5, 6, 1, 2);
+
+  /* do sync */
+  oscillator->do_sync = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("sync"));
+  gtk_table_attach_defaults(table,
+			    (GtkWidget *) oscillator->do_sync,
+			    6, 7,
+			    0, 1);
+  
+  oscillator->sync_mode = (GtkComboBoxText *) gtk_combo_box_text_new();
+
+  gtk_combo_box_text_append_text(oscillator->sync_mode,
+				 i18n("16 HZ"));
+  gtk_combo_box_text_append_text(oscillator->sync_mode,
+				 i18n("440 HZ"));
+  gtk_combo_box_text_append_text(oscillator->sync_mode,
+				 i18n("22000 HZ"));
+  gtk_combo_box_text_append_text(oscillator->sync_mode,
+				 i18n("limit"));
+  gtk_combo_box_text_append_text(oscillator->sync_mode,
+				 i18n("no-Hertz"));
+  gtk_combo_box_text_append_text(oscillator->sync_mode,
+				 i18n("start frequency"));
+  gtk_combo_box_text_append_text(oscillator->sync_mode,
+				 i18n("current frequency"));
+
+  gtk_table_attach_defaults(table,
+			    (GtkWidget *) oscillator->sync_mode,
+			    6, 7,
+			    1, 2);
 }
 
 void
@@ -385,6 +445,27 @@ ags_file_write_oscillator(AgsFile *file, xmlNode *parent, AgsOscillator *oscilla
 
   xmlAddChild(parent,
 	      node);  
+
+  return(node);
+}
+
+/**
+ * ags_oscillator_control_changed:
+ * @oscillator: the #AgsOscillator
+ * 
+ * The control changed event notifies about changed controls.
+ * 
+ * Since: 0.9.7
+ */
+void
+ags_oscillator_control_changed(AgsOscillator *oscillator)
+{
+  g_return_if_fail(AGS_IS_OSCILLATOR(oscillator));
+
+  g_object_ref((GObject *) oscillator);
+  g_signal_emit(G_OBJECT(oscillator),
+		oscillator_signals[CONTROL_CHANGED], 0);
+  g_object_unref((GObject *) oscillator);
 }
 
 /**

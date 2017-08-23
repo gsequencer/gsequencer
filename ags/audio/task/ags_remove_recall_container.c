@@ -282,6 +282,8 @@ ags_remove_recall_container_dispose(GObject *gobject)
 {
   AgsRemoveRecallContainer *remove_recall_container;
 
+  remove_recall_container = AGS_REMOVE_RECALL_CONTAINER(gobject);
+
   if(remove_recall_container->audio != NULL){
     g_object_unref(remove_recall_container->audio);
 
@@ -302,6 +304,8 @@ void
 ags_remove_recall_container_finalize(GObject *gobject)
 {
   AgsRemoveRecallContainer *remove_recall_container;
+
+  remove_recall_container = AGS_REMOVE_RECALL_CONTAINER(gobject);
 
   if(remove_recall_container->audio != NULL){
     g_object_unref(remove_recall_container->audio);

@@ -580,11 +580,15 @@ ags_channel_thread_stop(AgsThread *thread)
 {
   AgsChannelThread *channel_thread;
 
-  g_message("channel thread stop");
-  
+  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) == 0){
+    return;
+  }
+
   /*  */
   channel_thread = AGS_CHANNEL_THREAD(thread);
 
+  g_message("channel thread stop");
+  
   /* call parent */
   AGS_THREAD_CLASS(ags_channel_thread_parent_class)->stop(thread);
 

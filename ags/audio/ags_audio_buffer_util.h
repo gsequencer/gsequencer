@@ -227,6 +227,50 @@ void* ags_audio_buffer_util_resample(void *buffer, guint channels,
 				     guint buffer_length,
 				     guint target_samplerate);
 
+/* peak */
+gdouble ags_audio_buffer_util_peak_s8(signed char *buffer, guint channels,
+				      guint buffer_length,
+				      gdouble harmonic_rate,
+				      gdouble max_rate,
+				      gdouble pressure_factor);
+gdouble ags_audio_buffer_util_peak_s16(signed short *buffer, guint channels,
+				       guint buffer_length,
+				       gdouble harmonic_rate,
+				       gdouble max_rate,
+				       gdouble pressure_factor);
+gdouble ags_audio_buffer_util_peak_s24(signed long *buffer, guint channels,
+				       guint buffer_length,
+				       gdouble harmonic_rate,
+				       gdouble max_rate,
+				       gdouble pressure_factor);
+gdouble ags_audio_buffer_util_peak_s32(signed long *buffer, guint channels,
+				       guint buffer_length,
+				       gdouble harmonic_rate,
+				       gdouble max_rate,
+				       gdouble pressure_factor);
+gdouble ags_audio_buffer_util_peak_s64(signed long long *buffer, guint channels,
+				       guint buffer_length,
+				       gdouble harmonic_rate,
+				       gdouble max_rate,
+				       gdouble pressure_factor);
+gdouble ags_audio_buffer_util_peak_float(float *buffer, guint channels,
+					 guint buffer_length,
+					 gdouble harmonic_rate,
+					 gdouble max_rate,
+					 gdouble pressure_factor);
+gdouble ags_audio_buffer_util_peak_double(double *buffer, guint channels,
+					  guint buffer_length,
+					  gdouble harmonic_rate,
+					  gdouble max_rate,
+					  gdouble pressure_factor);
+
+gdouble ags_audio_buffer_util_peak(void *buffer, guint channels,
+				   guint format,
+				   guint buffer_length,
+				   gdouble harmonic_rate,
+				   gdouble max_rate,
+				   gdouble pressure_factor);
+
 /* copy 8 bit */
 void ags_audio_buffer_util_copy_s8_to_s8(signed char *destination, guint dchannels,
 					 signed char *source, guint schannels,

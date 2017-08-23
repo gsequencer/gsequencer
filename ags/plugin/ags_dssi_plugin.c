@@ -296,8 +296,12 @@ gpointer
 ags_dssi_plugin_instantiate(AgsBasePlugin *base_plugin,
 			    guint samplerate)
 {
-  AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->instantiate(AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin,
-											 (unsigned long) samplerate);
+  gpointer ptr;
+  
+  ptr = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->instantiate(AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin,
+											       (unsigned long) samplerate);
+
+  return(ptr);
 }
 
 void

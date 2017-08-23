@@ -353,6 +353,8 @@ ags_remove_region_from_selection_dispose(GObject *gobject)
 {
   AgsRemoveRegionFromSelection *remove_region_from_selection;
 
+  remove_region_from_selection = AGS_REMOVE_REGION_FROM_SELECTION(gobject);
+
   if(remove_region_from_selection->notation != NULL){
     g_object_unref(remove_region_from_selection->notation);
 
@@ -367,6 +369,8 @@ void
 ags_remove_region_from_selection_finalize(GObject *gobject)
 {
   AgsRemoveRegionFromSelection *remove_region_from_selection;
+
+  remove_region_from_selection = AGS_REMOVE_REGION_FROM_SELECTION(gobject);
 
   if(remove_region_from_selection->notation != NULL){
     g_object_unref(remove_region_from_selection->notation);

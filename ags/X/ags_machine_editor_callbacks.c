@@ -26,6 +26,8 @@ int
 ags_machine_editor_switch_page_callback(GtkNotebook *notebook, GtkNotebookPage *page, guint page_num, AgsMachineEditor *machine_editor)
 {
   /* empty */
+
+  return(0);
 }
 
 int

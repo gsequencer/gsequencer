@@ -81,14 +81,16 @@ void ags_thread_application_context_set_value_callback(AgsConfig *config, gchar 
  * The #AgsThreadApplicationContext provides you multi-threaded functionality.
  */
 
-static gpointer ags_thread_application_context_parent_class = NULL;
-static AgsConnectableInterface* ags_thread_application_context_parent_connectable_interface;
-
 enum{
   PROP_0,
   PROP_AUTOSAVE_THREAD,
   PROP_THREAD_POOL,
 };
+
+static gpointer ags_thread_application_context_parent_class = NULL;
+static AgsConnectableInterface* ags_thread_application_context_parent_connectable_interface;
+
+extern AgsApplicationContext *ags_application_context;
 
 GType
 ags_thread_application_context_get_type()
@@ -220,6 +222,10 @@ ags_thread_application_context_init(AgsThreadApplicationContext *thread_applicat
 {
   AgsGenericMainLoop *generic_main_loop;
   
+  if(ags_application_context == NULL){
+    ags_application_context = thread_application_context;
+  }
+
   thread_application_context->flags = 0;
 
   /* AgsGenericMainLoop */

@@ -414,7 +414,7 @@ ags_ipatch_open(AgsPlayable *playable, gchar *filename)
   }
 
   if(ipatch->handle == NULL){
-    return;
+    return(FALSE);
   }
 
   if(IPATCH_IS_DLS_FILE(ipatch->handle->file)){

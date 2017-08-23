@@ -98,7 +98,7 @@ ags_portlet_get_port(AgsPortlet *portlet)
   g_return_val_if_fail(AGS_IS_PORTLET(portlet), NULL);
   portlet_interface = AGS_PORTLET_GET_INTERFACE(portlet);
   g_return_val_if_fail(portlet_interface->get_port, NULL);
-  portlet_interface->get_port(portlet);
+  return(portlet_interface->get_port(portlet));
 }
 
 /**
@@ -119,7 +119,7 @@ ags_portlet_list_safe_properties(AgsPortlet *portlet)
   g_return_val_if_fail(AGS_IS_PORTLET(portlet), NULL);
   portlet_interface = AGS_PORTLET_GET_INTERFACE(portlet);
   g_return_val_if_fail(portlet_interface->list_safe_properties, NULL);
-  portlet_interface->list_safe_properties(portlet);
+  return(portlet_interface->list_safe_properties(portlet));
 }
 
 /**

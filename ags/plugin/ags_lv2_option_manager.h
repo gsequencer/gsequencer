@@ -34,6 +34,7 @@
 #define AGS_LV2_OPTION_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2_OPTION_MANAGER, AgsLv2OptionManagerClass))
 
 #define AGS_LV2_OPTION_RESSOURCE(ptr) ((AgsLv2OptionRessource *)(ptr))
+#define AGS_LV2_OPTIONS_OPTION(ptr) ((LV2_Options_Option *)(ptr))
 
 typedef struct _AgsLv2OptionManager AgsLv2OptionManager;
 typedef struct _AgsLv2OptionManagerClass AgsLv2OptionManagerClass;
@@ -51,13 +52,13 @@ struct _AgsLv2OptionManagerClass
   GObjectClass gobject;
 
   void (*get_option)(AgsLv2OptionManager *option_manager,
-		     LV2_Handle instance,
-		     LV2_Options_Option *option,
-		     uint32_t *retval);
+		     gpointer instance,
+		     gpointer option,
+		     gpointer retval);
   void (*set_option)(AgsLv2OptionManager *option_manager,
-		     LV2_Handle instance,
-		     LV2_Options_Option *option,
-		     uint32_t *retval);
+		     gpointer instance,
+		     gpointer option,
+		     gpointer retval);
 };
 
 struct _AgsLv2OptionRessource{
@@ -77,22 +78,25 @@ gboolean ags_lv2_option_manager_ressource_remove(AgsLv2OptionManager *lv2_option
 
 gpointer ags_lv2_option_manager_ressource_lookup(AgsLv2OptionManager *lv2_option_manager,
 						 AgsLv2OptionRessource *lv2_option_ressource);
+gboolean ags_lv2_option_manager_ressource_lookup_extended(AgsLv2OptionManager *lv2_option_manager,
+							  AgsLv2OptionRessource *lv2_option_ressource,
+							  gpointer *orig_key, gpointer *value);
 
 /* get and set option */
 void ags_lv2_option_manager_get_option(AgsLv2OptionManager *lv2_option_manager,
-				       LV2_Handle instance,
-				       LV2_Options_Option *option,
-				       uint32_t *retval);
+				       gpointer instance,
+				       gpointer option,
+				       gpointer retval);
 void ags_lv2_option_manager_set_option(AgsLv2OptionManager *lv2_option_manager,
-				       LV2_Handle instance,
-				       LV2_Options_Option *option,
-				       uint32_t *retval);
+				       gpointer instance,
+				       gpointer option,
+				       gpointer retval);
 
 /* the lv2 interface */
 uint32_t ags_lv2_option_manager_lv2_options_get(LV2_Handle instance,
-						LV2_Options_Option* options);
+						LV2_Options_Option *options);
 uint32_t ags_lv2_option_manager_lv2_options_set(LV2_Handle instance,
-						LV2_Options_Option* options);
+						LV2_Options_Option *options);
 
 /*  */
 AgsLv2OptionManager* ags_lv2_option_manager_get_instance();

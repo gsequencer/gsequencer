@@ -1,3 +1,25 @@
+Overview of Changes in AGS 0.9.10
+================================
+
+* Pulseaudio sink support. AgsPulseDevout has got a bigger ring-buffer
+  to avoid caching and allow slower write functions.
+
+Overview of Changes in AGS 0.9.8
+================================
+
+* You may now specify base note of AgsSynth or AgsSyncsynth.
+
+Overview of Changes in AGS 0.9.7
+================================
+
+* Implemented new functions to handle LV2_Event_Buffer. Note the old
+  functions to do so are deprecated and are incompatible to the
+  newer API.
+* AgsSyncsynth is a new AgsMachine object, allowing you to edit synth
+  notation.
+* Smaller refactoring of AgsApplySynth to use new AgsSynthGenerator
+  API.
+
 Overview of Changes in AGS 0.9.0
 ================================
 

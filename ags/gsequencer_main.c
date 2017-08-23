@@ -89,6 +89,8 @@
 
 #include <stdlib.h>
 
+#include <locale.h>
+
 #include <X11/Xlib.h>
 
 #include "config.h"
@@ -295,6 +297,8 @@ ags_start_animation_thread(void *ptr)
   gtk_widget_destroy(window);
   
   gdk_threads_leave();
+
+  return(NULL);
 }
 
 void
@@ -307,7 +311,7 @@ ags_start_animation(pthread_t *thread)
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   g_object_set(window,
 	       "decorated", FALSE,
-	       0);
+	       NULL);
   gtk_widget_set_size_request(window,
 			      800, 450);
   gtk_widget_show_all(window);
@@ -1390,7 +1394,7 @@ main(int argc, char **argv)
 #ifdef AGS_WITH_LIBINSTPATCH
   ipatch_init();
 #endif
-  //  g_log_set_fatal_mask(NULL, // "Gtk" G_LOG_DOMAIN, // 
+  //  g_log_set_fatal_mask("GLib", // "Gtk" , // 
   //		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
 
   /* animate */

@@ -24,6 +24,388 @@
 #include <math.h>
 
 /**
+ * ags_synth_util_get_xcross_count_s8:
+ * @buffer: the buffer containing audio data
+ * @buffer_size: the buffer size
+ * 
+ * Get zero-cross count. 
+ *
+ * Returns: the count of zero-crossings
+ *
+ * Since: 0.9.7
+ */
+guint
+ags_synth_util_get_xcross_count_s8(signed char *buffer,
+				   guint buffer_size)
+{
+  guint count;
+  guint i;
+  gboolean negative;
+  
+  count = 0;
+
+  if(buffer[0] > 0){
+    negative = FALSE;
+  }else{
+    negative = TRUE;
+  }
+
+  for(i = 1; i < buffer_size; i++){
+    if(negative &&
+       buffer[i] > 0){
+      count++;
+
+      negative = FALSE;
+    }else if(!negative &&
+	     buffer[i] < 0){
+      count++;
+
+      negative = TRUE;
+    }
+  }
+  
+  return(count);
+}
+
+/**
+ * ags_synth_util_get_xcross_count_s16:
+ * @buffer: the buffer containing audio data
+ * @buffer_size: the buffer size
+ * 
+ * Get zero-cross count. 
+ *
+ * Returns: the count of zero-crossings
+ *
+ * Since: 0.9.7
+ */
+guint
+ags_synth_util_get_xcross_count_s16(signed short *buffer,
+				    guint buffer_size)
+{
+  guint count;
+  guint i;
+  gboolean negative;
+  
+  count = 0;
+
+  if(buffer[0] > 0){
+    negative = FALSE;
+  }else{
+    negative = TRUE;
+  }
+
+  for(i = 1; i < buffer_size; i++){
+    if(negative &&
+       buffer[i] > 0){
+      count++;
+
+      negative = FALSE;
+    }else if(!negative &&
+	     buffer[i] < 0){
+      count++;
+
+      negative = TRUE;
+    }
+  }
+  
+  return(count);
+}
+
+/**
+ * ags_synth_util_get_xcross_count_s24:
+ * @buffer: the buffer containing audio data
+ * @buffer_size: the buffer size
+ * 
+ * Get zero-cross count. 
+ *
+ * Returns: the count of zero-crossings
+ *
+ * Since: 0.9.7
+ */
+guint
+ags_synth_util_get_xcross_count_s24(signed long *buffer,
+				    guint buffer_size)
+{
+  guint count;
+  guint i;
+  gboolean negative;
+  
+  count = 0;
+
+  if(buffer[0] > 0){
+    negative = FALSE;
+  }else{
+    negative = TRUE;
+  }
+
+  for(i = 1; i < buffer_size; i++){
+    if(negative &&
+       buffer[i] > 0){
+      count++;
+
+      negative = FALSE;
+    }else if(!negative &&
+	     buffer[i] < 0){
+      count++;
+
+      negative = TRUE;
+    }
+  }
+  
+  return(count);
+}
+
+/**
+ * ags_synth_util_get_xcross_count_s32:
+ * @buffer: the buffer containing audio data
+ * @buffer_size: the buffer size
+ * 
+ * Get zero-cross count. 
+ *
+ * Returns: the count of zero-crossings
+ *
+ * Since: 0.9.7
+ */
+guint
+ags_synth_util_get_xcross_count_s32(signed long *buffer,
+				    guint buffer_size)
+{
+  guint count;
+  guint i;
+  gboolean negative;
+  
+  count = 0;
+
+  if(buffer[0] > 0){
+    negative = FALSE;
+  }else{
+    negative = TRUE;
+  }
+
+  for(i = 1; i < buffer_size; i++){
+    if(negative &&
+       buffer[i] > 0){
+      count++;
+
+      negative = FALSE;
+    }else if(!negative &&
+	     buffer[i] < 0){
+      count++;
+
+      negative = TRUE;
+    }
+  }
+  
+  return(count);
+}
+
+/**
+ * ags_synth_util_get_xcross_count_s64:
+ * @buffer: the buffer containing audio data
+ * @buffer_size: the buffer size
+ * 
+ * Get zero-cross count. 
+ *
+ * Returns: the count of zero-crossings
+ *
+ * Since: 0.9.7
+ */
+guint
+ags_synth_util_get_xcross_count_s64(signed long long *buffer,
+				    guint buffer_size)
+{
+  guint count;
+  guint i;
+  gboolean negative;
+  
+  count = 0;
+
+  if(buffer[0] > 0){
+    negative = FALSE;
+  }else{
+    negative = TRUE;
+  }
+
+  for(i = 1; i < buffer_size; i++){
+    if(negative &&
+       buffer[i] > 0){
+      count++;
+
+      negative = FALSE;
+    }else if(!negative &&
+	     buffer[i] < 0){
+      count++;
+
+      negative = TRUE;
+    }
+  }
+  
+  return(count);
+}
+
+/**
+ * ags_synth_util_get_xcross_count_float:
+ * @buffer: the buffer containing audio data
+ * @buffer_size: the buffer size
+ * 
+ * Get zero-cross count. 
+ *
+ * Returns: the count of zero-crossings
+ *
+ * Since: 0.9.7
+ */
+guint
+ags_synth_util_get_xcross_count_float(float *buffer,
+				      guint buffer_size)
+{
+  guint count;
+  guint i;
+  gboolean negative;
+  
+  count = 0;
+
+  if(buffer[0] > 0.0){
+    negative = FALSE;
+  }else{
+    negative = TRUE;
+  }
+
+  for(i = 1; i < buffer_size; i++){
+    if(negative &&
+       buffer[i] > 0.0){
+      count++;
+
+      negative = FALSE;
+    }else if(!negative &&
+	     buffer[i] < 0.0){
+      count++;
+
+      negative = TRUE;
+    }
+  }
+  
+  return(count);
+}
+
+/**
+ * ags_synth_util_get_xcross_count_double:
+ * @buffer: the buffer containing audio data
+ * @buffer_size: the buffer size
+ * 
+ * Get zero-cross count. 
+ *
+ * Returns: the count of zero-crossings
+ *
+ * Since: 0.9.7
+ */
+guint
+ags_synth_util_get_xcross_count_double(double *buffer,
+				       guint buffer_size)
+{
+  guint count;
+
+  guint i;
+  gboolean negative;
+  
+  count = 0;
+
+  if(buffer[0] > 0){
+    negative = FALSE;
+  }else{
+    negative = TRUE;
+  }
+
+  for(i = 1; i < buffer_size; i++){
+    if(negative &&
+       buffer[i] > 0.0){
+      count++;
+
+      negative = FALSE;
+    }else if(!negative &&
+	     buffer[i] < 0.0){
+      count++;
+
+      negative = TRUE;
+    }
+  }
+  
+  return(count);
+}
+
+/**
+ * ags_synth_util_get_xcross_count:
+ * @buffer: the buffer containing audio data
+ * @audio_buffer_util_format: the audio buffer util format
+ * @buffer_size: the buffer size
+ * 
+ * Get zero-cross count. 
+ *
+ * Returns: the count of zero-crossings
+ *
+ * Since: 0.9.7
+ */
+guint
+ags_synth_util_get_xcross_count(void *buffer,
+				guint audio_buffer_util_format,
+				guint buffer_size)
+{
+  guint count;
+
+  count = 0;
+
+  switch(audio_buffer_util_format){
+  case AGS_AUDIO_BUFFER_UTIL_S8:
+    {
+      ags_synth_util_get_xcross_count_s8((signed char *) buffer,
+					 buffer_size);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S16:
+    {
+      ags_synth_util_get_xcross_count_s16((signed short *) buffer,
+					  buffer_size);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S24:
+    {
+      ags_synth_util_get_xcross_count_s24((signed long *) buffer,
+					  buffer_size);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S32:
+    {
+      ags_synth_util_get_xcross_count_s32((signed long *) buffer,
+					  buffer_size);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_S64:
+    {
+      ags_synth_util_get_xcross_count_s64((signed long long *) buffer,
+					  buffer_size);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+    {
+      ags_synth_util_get_xcross_count_float((float *) buffer,
+					    buffer_size);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+    {
+      ags_synth_util_get_xcross_count_double((double *) buffer,
+					     buffer_size);
+    }
+    break;
+  default:
+    {
+      g_warning("ags_synth_util_get_xcross_count() - unsupported format");
+    }
+  }
+  
+  return(count);
+}
+
+/**
  * ags_synth_util_sin_s8:
  * @buffer: the audio buffer
  * @freq: the frequency of the sin wave

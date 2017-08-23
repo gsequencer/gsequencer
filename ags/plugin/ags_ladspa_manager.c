@@ -476,15 +476,13 @@ ags_ladspa_manager_get_instance()
 {
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-  pthread_mutex_lock(&(mutex));
+  pthread_mutex_lock(&mutex);
 
   if(ags_ladspa_manager == NULL){
     ags_ladspa_manager = ags_ladspa_manager_new();
-
-    pthread_mutex_unlock(&(mutex));
-  }else{
-    pthread_mutex_unlock(&(mutex));
   }
+
+  pthread_mutex_unlock(&mutex);
 
   return(ags_ladspa_manager);
 }

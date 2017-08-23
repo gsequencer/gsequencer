@@ -40,6 +40,8 @@ ags_link_collection_editor_parent_set_callback(GtkWidget *widget, GtkObject *old
 
     ags_link_collection_editor_check(link_collection_editor);
   }
+
+  return(0);
 }
 
 void ags_link_collection_editor_link_callback(GtkComboBox *combo,

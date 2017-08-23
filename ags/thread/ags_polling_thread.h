@@ -55,8 +55,10 @@ struct _AgsPollingThread
 {
   AgsThread thread;
 
-  guint flags;
+  volatile guint flags;
 
+  volatile guint omit_count;
+  
   pthread_mutexattr_t *fd_mutexattr;
   pthread_mutex_t *fd_mutex;
   

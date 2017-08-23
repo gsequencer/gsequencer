@@ -61,6 +61,7 @@
 #define AGS_LV2_EVENT_DATA(ptr) ((void *)(ptr + sizeof(LV2_Event)))
 
 #define AGS_LV2_ATOM_SEQUENCE(ptr) ((LV2_Atom_Sequence *)(ptr))
+#define AGS_LV2_ATOM_EVENT(ptr) ((LV2_Atom_Event *)(ptr))
 
 typedef struct _AgsLv2Plugin AgsLv2Plugin;
 typedef struct _AgsLv2PluginClass AgsLv2PluginClass;
@@ -108,9 +109,14 @@ struct _AgsLv2PluginClass
 
 GType ags_lv2_plugin_get_type(void);
 
-void* ags_lv2_plugin_alloc_event_buffer(guint buffer_size);
-void* ags_lv2_plugin_concat_event_buffer(void *buffer0, ...);
+G_DEPRECATED_FOR(ags_lv2_plugin_event_buffer_alloc) void* ags_lv2_plugin_alloc_event_buffer(guint buffer_size);
+G_DEPRECATED_FOR(ags_lv2_plugin_event_buffer_concat) void* ags_lv2_plugin_concat_event_buffer(void *buffer0, ...);
 
+LV2_Event_Buffer* ags_lv2_plugin_event_buffer_alloc(guint buffer_size);
+void ags_lv2_plugin_event_buffer_realloc_data(LV2_Event_Buffer *event_buffer,
+					      guint buffer_size);
+LV2_Event_Buffer* ags_lv2_plugin_event_buffer_concat(LV2_Event_Buffer *event_buffer, ...);
+						     
 gboolean ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
 						 guint buffer_size,
 						 snd_seq_event_t *events,
@@ -122,7 +128,8 @@ void ags_lv2_plugin_clear_event_buffer(void *event_buffer,
 				       guint buffer_size);
 
 void* ags_lv2_plugin_alloc_atom_sequence(guint sequence_size);
-void* ags_lv2_plugin_concat_atom_sequence(void *sequence0, ...);
+void* ags_lv2_plugin_concat_atom_sequence(void *sequence, guint sequence_size,
+					  ...); //TODO:JK: shall I implement this?
 
 gboolean ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
 						  guint sequence_size,
@@ -138,7 +145,7 @@ GList* ags_lv2_plugin_find_pname(GList *lv2_plugin,
 				 gchar *pname);
 
 void ags_lv2_plugin_change_program(AgsLv2Plugin *lv2_plugin,
-				   gpointer ladspa_handle,
+				   gpointer lv2_handle,
 				   guint bank_index,
 				   guint program_index);
 

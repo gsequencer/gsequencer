@@ -482,7 +482,7 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
   gchar *str;
   gchar *xpath;
   
-  if(lv2_preset == NULL ||
+  if(!AGS_LV2_PRESET(lv2_preset) ||
      lv2_preset->turtle == NULL ||
      lv2_preset->uri == NULL){
     return;

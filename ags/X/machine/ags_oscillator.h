@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,6 +35,8 @@
 #define AGS_IS_OSCILLATOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_OSCILLATOR))
 #define AGS_OSCILLATOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_OSCILLATOR, AgsOscillatorClass))
 
+#define AGS_OSCILLATOR_DEFAULT_FRAME_COUNT (44100.0 / 27.5)
+
 typedef struct _AgsOscillator AgsOscillator;
 typedef struct _AgsOscillatorClass AgsOscillatorClass;
 
@@ -59,17 +61,24 @@ struct _AgsOscillator
 
   GtkSpinButton *volume;
   gulong volume_handler;
+
+  GtkCheckButton *do_sync;
+  GtkComboBoxText *sync_mode;
 };
 
 struct _AgsOscillatorClass
 {
   GtkFrameClass frame;
+
+  void (*control_changed)(AgsOscillator *oscillator);
 };
 
 GType ags_oscillator_get_type(void);
 
 void ags_file_read_oscillator(AgsFile *file, xmlNode *node, AgsOscillator **oscillator);
 xmlNode* ags_file_write_oscillator(AgsFile *file, xmlNode *parent, AgsOscillator *oscillator);
+
+void ags_oscillator_control_changed(AgsOscillator *oscillator);
 
 AgsOscillator* ags_oscillator_new();
 

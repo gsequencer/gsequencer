@@ -76,7 +76,7 @@ ags_preferences_notebook_switch_page_callback(GtkNotebook *notebook,
   g_list_free(list_start);
   
   if(page_n == 1){
-    gtk_widget_show((GtkWidget *) preferences->audio_preferences->connect_jack);
+    gtk_widget_show((GtkWidget *) preferences->audio_preferences->connect_sink);
     gtk_widget_show((GtkWidget *) preferences->audio_preferences->add);
   }else if(page_n == 2){
     gtk_widget_show((GtkWidget *) preferences->midi_preferences->add);

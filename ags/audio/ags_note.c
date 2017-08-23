@@ -731,6 +731,8 @@ ags_note_length_to_smf_delta_time(guint note_length,
 				  glong tempo)
 {
   //TODO:JK: implement me
+
+  return(0);
 }
 
 /**
@@ -757,6 +759,8 @@ ags_note_smf_delta_time_to_length(glong delta_time,
 				  gdouble bpm, gdouble delay_factor)
 {
   //TODO:JK: implement me
+
+  return(0);
 }
 
 /**
@@ -947,6 +951,8 @@ ags_note_to_raw_midi_extended(AgsNote *note,
 			      guint *buffer_length)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 /**
@@ -978,7 +984,7 @@ ags_note_to_seq_event(AgsNote *note,
 }
 
 /**
- * ags_note_to_raw_midi_extended:
+ * ags_note_to_seq_event_extended:
  * @note: the #AgsNote
  * @bpm: the source bpm
  * @delay_factor: the source delay factor
@@ -1039,7 +1045,7 @@ ags_note_from_raw_midi(unsigned char *raw_midi,
 }
 
 /**
- * ags_note_from_raw_midi:
+ * ags_note_from_raw_midi_extended:
  * @raw_midi: the data array
  * @nn: numerator
  * @dd: denominator

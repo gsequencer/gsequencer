@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,8 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
+#include <pthread.h>
 
 #include <jack/jack.h>
 
@@ -48,6 +50,9 @@ struct _AgsJackPort
   GObject object;
 
   guint flags;
+
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *mutexattr;
 
   GObject *jack_client;
   
@@ -76,4 +81,3 @@ void ags_jack_port_unregister(AgsJackPort *jack_port);
 AgsJackPort* ags_jack_port_new(GObject *jack_client);
 
 #endif /*__AGS_JACK_PORT_H__*/
-

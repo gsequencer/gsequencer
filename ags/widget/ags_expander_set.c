@@ -256,6 +256,8 @@ ags_expander_set_expose(GtkWidget *widget,
 			GdkEventExpose *event)
 {
   //TODO:JK: implement me
+
+  return(FALSE);
 }
 
 void

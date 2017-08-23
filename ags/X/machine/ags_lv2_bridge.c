@@ -1697,9 +1697,11 @@ ags_lv2_bridge_load_preset(AgsLv2Bridge *lv2_bridge)
   list = lv2_plugin->preset;
 
   while(list != NULL){
-    gtk_combo_box_text_append_text(lv2_bridge->preset,
-				   AGS_LV2_PRESET(list->data)->preset_label);
-
+    if(AGS_LV2_PRESET(list->data)->preset_label != NULL){
+      gtk_combo_box_text_append_text(lv2_bridge->preset,
+				     AGS_LV2_PRESET(list->data)->preset_label);
+    }
+    
     list = list->next;
   }
 

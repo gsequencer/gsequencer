@@ -6,7 +6,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[0.9.3],[jkraehemann-guest@users.alioth.debian.org])
+AC_INIT([gsequencer],[0.9.15],[jkraehemann-guest@users.alioth.debian.org])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -117,6 +117,10 @@ AC_SUBST(JACK_LIBS)
 
 AC_CHECK_FUNC([jack_port_uuid],
 	      [AC_DEFINE([HAVE_JACK_PORT_UUID], [1], [Jack port uuid available])])
+
+PKG_CHECK_MODULES([PULSE], [libpulse])
+AC_SUBST(PULSE_CFLAGS)
+AC_SUBST(PULSE_LIBS)
 
 PKG_CHECK_MODULES([LIBXML2], [libxml-2.0 >= 2.8.0])
 AC_SUBST(LIBXML2_CFLAGS)

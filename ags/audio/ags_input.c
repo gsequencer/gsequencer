@@ -325,6 +325,22 @@ ags_input_disconnect(AgsConnectable *connectable)
   ags_input_parent_connectable_interface->disconnect(connectable);
 }
 
+/**
+ * ags_input_open_file:
+ * @input: the #AgsInput
+ * @filename: the filename as string
+ * @preset: the preset to open
+ * @instrument: the instrument to open
+ * @sample: the sample to open
+ * @audio_channel: the audio channel to read
+ * 
+ * Open @filename and assign @audio_channel's data as AGS_AUDIO_SIGNAL_TEMPLATE
+ * audio signal to @input's own recycling.
+ * 
+ * Returns: %TRUE if open was successful, else %FALSE
+ * 
+ * Since: 0.9.7
+ */
 gboolean
 ags_input_open_file(AgsInput *input,
 		    gchar *filename,
@@ -339,6 +355,10 @@ ags_input_open_file(AgsInput *input,
 
   gboolean success;
 
+  if(!AGS_IS_INPUT(input)){
+    return(FALSE);
+  }
+  
   audio_signal = NULL;
   success = FALSE;
 
@@ -436,6 +456,7 @@ ags_input_open_file(AgsInput *input,
 			       "filename", filename,
 			       "preset", preset,
 			       "instrument", instrument,
+			       "sample", sample,
 			       "audio-channel", audio_channel,
 			       NULL);
       g_object_set(input,
@@ -456,6 +477,21 @@ ags_input_open_file(AgsInput *input,
   return(success);
 }
 
+/**
+ * ags_input_apply_synth:
+ * @input: the #AgsInput
+ * @oscillator: the oscillator to use
+ * @frequency: the frequency to use
+ * @phase: the phase to use
+ * @volume: the volume to use
+ * @n_frames: compute n_frames count of frames
+ * 
+ * Apply synth using specified parameters to input.
+ * 
+ * Returns: %TRUE if successful applied, else %FALSE
+ * 
+ * Since: 0.9.7
+ */
 gboolean
 ags_input_apply_synth(AgsInput *input,
 		      guint oscillator,
@@ -464,14 +500,116 @@ ags_input_apply_synth(AgsInput *input,
 		      gdouble volume,
 		      guint n_frames)
 {
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
-
-  //TODO:JK: implement me
+  return(ags_input_apply_synth_extended(input,
+					oscillator,
+					frequency,
+					phase,
+					volume,
+					n_frames,
+					0,
+					AGS_INPUT_SYNTH_BASE_NOTE,
+					NULL, NULL,
+					AGS_SYNTH_GENERATOR_COMPUTE_FIXED_LENGTH));
 }
 
+/**
+ * ags_input_apply_synth_extended:
+ * @input: the #AgsInput
+ * @oscillator: the oscillator to use
+ * @frequency: the frequency to use
+ * @phase: the phase to use
+ * @volume: the volume to use
+ * @n_frames: compute n_frames count of frames
+ * @attack: the attack to use
+ * @base_note: the base note to ramp up from
+ * @sync_start: safe to be %NULL
+ * @sync_end: safe to be %NULL
+ * @compute_flags: the flags to use to compute the synth
+ * 
+ * Apply synth using specified parameters to input.
+ * 
+ * Returns: %TRUE if successful applied, else %FALSE
+ * 
+ * Since: 0.9.9
+ */
+gboolean
+ags_input_apply_synth_extended(AgsInput *input,
+			       guint oscillator,
+			       gdouble frequency,
+			       gdouble phase,
+			       gdouble volume,
+			       guint n_frames,
+			       guint attack,
+			       gdouble base_note,
+			       AgsComplex *sync_start, AgsComplex *sync_end,
+			       guint compute_flags)
+{
+  AgsAudioSignal *audio_signal;
+
+  if(!AGS_IS_INPUT(input)){
+    return(FALSE);
+  }
+
+  audio_signal = ags_audio_signal_get_template(AGS_CHANNEL(input)->first_recycling->audio_signal);
+
+  if(audio_signal == NULL){
+    audio_signal = g_object_new(AGS_TYPE_AUDIO_SIGNAL,
+				"soundcard", AGS_CHANNEL(input)->soundcard,
+				NULL);
+    
+    /* mark as template */
+    audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+      
+    ags_audio_signal_stream_resize(audio_signal,
+				   (guint) ceil((attack + n_frames) / audio_signal->buffer_size));
+
+    /* add as template */
+    ags_recycling_add_audio_signal(AGS_CHANNEL(input)->first_recycling,
+				   audio_signal);
+  }
+  
+  /* creat synth generator if needed */
+  if(input->synth_generator == NULL){
+    input->synth_generator = (GObject *) ags_synth_generator_new();
+
+    g_object_set(input->synth_generator,
+		 "samplerate", audio_signal->samplerate,
+		 "buffer-size", audio_signal->buffer_size,
+		 "format", audio_signal->format,
+		 NULL);
+  }
+
+  /* set properties */
+  g_object_set(input->synth_generator,
+	       "n-frames", n_frames,
+	       "attack", attack,
+	       "oscillator", oscillator,
+	       "frequency", frequency,
+	       "phase", phase,
+	       "volume", volume,
+	       NULL);
+
+  /* compute audio signal */
+  ags_synth_generator_compute_with_audio_signal(input->synth_generator,
+						audio_signal,
+						base_note,
+						sync_start, sync_end,
+						compute_flags);
+
+  return(TRUE);
+}
+
+/**
+ * ags_input_is_active:
+ * @input: the #AgsInput
+ * @recycling_context: the #AgsRecyclingContext to check
+ * 
+ * Check if @input is active and needs processing.
+ * 
+ * Returns: %TRUE if has a need to be processed, else %FALSE
+ * 
+ * Since: 0.9.7
+ */
 gboolean
 ags_input_is_active(AgsInput *input,
 		    GObject *recycling_context)
@@ -559,6 +697,17 @@ ags_input_is_active(AgsInput *input,
   return(FALSE);
 }
 
+/**
+ * ags_input_next_active:
+ * @input: the #AgsInput
+ * @recycling_context: the #AgsRecyclingContext to check
+ * 
+ * Find next #AgsInput needed to be processed.
+ * 
+ * Returns: next active #AgsInput, else %NULL if non available
+ * 
+ * Since: 0.9.7
+ */
 AgsInput*
 ags_input_next_active(AgsInput *input,
 		      GObject *recycling_context)

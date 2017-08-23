@@ -1,3 +1,129 @@
+ags (0.9.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing check for NULL of gtk_combo_box_text_append_text() parameter in all source code
+
+ags (0.9.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_pulse_port_get_latency()
+	* improved throughput of pulseaudio by timed cond on stream request callback
+	* fixed possible SIGSEGV as ags_channel_reset_recall_id()
+
+ags (0.9.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_devout_adjust_delay_and_attack() and related
+	* improved AgsPulsePort to omit polling thread twice
+	* fixed missing volatile of AgsPollingThread's flags
+	* fixed destroy machine crash during playback
+
+ags (0.9.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added mutices to AgsJackServer and AgsPulseServer
+	* fixed memory leaks of mutices in AgsPulseClient, AgsJackClient, AgsPulsePort and AgsJackPort
+	* fixed wrong parent class of dispose in ags_pulse_server.c and ags_jack_server.c
+	* fixed data-race during playback termination in ags_pulse_devout_port_free()
+	* fixed ags_application_context initialization if NULL (note might be reverted, soon)
+
+ags (0.9.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing initial configuration of pulseaudio
+	* improved throughput of pulseaudio by using maxlength of stream -1
+	* improved clear buffer task to let ring-buffer being valid longer
+
+ags (0.9.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_pulse_server.c, ags_pulse_client.c and ags_pulse_port.c
+	* implemented ags_pulse_devout.c
+	* refactored AgsSoundcardEditor to work with pulseaudio, too
+	* fixed memory leak related to mutex and its attributes for AgsDevout, AgsMidiin, AgsJackDevout and AgsJackMidiin
+	* fixed missing paranthesis to check flags in ags_devout.c, ags_midiin.c, ags_jack_devout.c and ags_clear_buffer.c
+
+ags (0.9.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_input_apply_synth() and ags_input_apply_synth_extended()
+	* fixed ags_syncsynth_reset_loop() to use attack to calculate loop upper
+	* fixed ags_recall_container_find() and its flags to enumerate correctly
+	* fixed ags_thread_pool_creation_thread() to check parent for NULL
+	* enabled unit-test ags_input_test.c because not tested
+	* new unit-test ags_midiin_test.c
+	* new unit-test ags_output_test.c
+	* new unit-test ags_playback_domain_test.c
+	* new unit-test ags_playback_test.c
+	* new unit-test ags_preset_test.c
+	* new unit-test ags_recall_channel_test.c
+	* new unit-test ags_recall_channel_run_test.c
+	* new unit-test ags_recall_container_test.c
+	* new unit-test ags_recall_dependency_test.c
+
+ags (0.9.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented pass base-note to AgsApplySynth
+	* fixed missing base-note, audio-loop-start and audio-loop-end while read/write XML
+	* fixed missing attack as calculating stream size
+	* fixed ags_synth_util_get_xcross_count() and related functions
+
+ags (0.9.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_lv2_option_manager_lookup_extended()
+	* implemented ags_lv2_plugin_event_buffer_alloc()
+	* implemented ags_lv2_plugin_event_buffer_realloc_data()
+	* implemented ags_lv2_plugin_event_buffer_concat()
+	* implemented ags_synth_util_get_xcross_count() and related type specific implementations
+	* implemented ags_synth_generator_compute()
+	* implemented ags_synth_generator_compute_with_audio_signal()
+	* deprecated ags_lv2_plugin_alloc_event_buffer()
+	* deprecated ags_lv2_plugin_concat_event_buffer()
+	* implemented ags_lv2_urid_manager_unmap()
+	* implemented AgsSyncsynth in order to have true notation available to a synth
+	* implemented ags_synth_generator_compute()
+	* implemented ags_synth_generator_compute_with_audio_signal()
+	* refactored AgsOscillator in order to be reusable
+	* refactored AgsApplySynth task to use new synth generator functions
+	* completed missing gtk-doc comments in ags_input.c and other files
+	* fixed AgsExportSoundcard to don't add device as being NULL
+	* fixed ags_lv2_option_manager_get_option() to lookup correctly
+	* fixed ags_lv2_option_manager_set_option() to lookup correctly
+	* new unit-test ags_lv2_option_manager_test.c
+	* new unit-test ags_lv2_plugin_test.c
+	* new unit-test ags_lv2_preset_test.c
+	* new unit-test ags_lv2_uri_map_manager_test.c
+	* new unit-test ags_lv2_urid_manager_test.c
+	* new unit-test ags_lv2_worker_manager_test.c
+	* new unit-test ags_lv2ui_manager_test.c
+	* new unit-test ags_lv2ui_plugin_test.c
+	* new unit-test ags_audio_connection_test.c
+	* disabled new unit-test ags_input_test.c because not tested
+
+ags (0.9.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented new task AgsResetPeak
+	* implemented ags_audio_buffer_util_peak() and related
+	* refactored ags-peak recall to use above and compute only as needed
+
+ags (0.9.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed memory leak related to mutex attributes
+	* fixed deny multi-start of AgsChannelThread or AgsAudioThread
+	* fixed deny multi-stop of AgsChannelThread or AgsAudioThread
+	* minor code improvements
+
+ags (0.9.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed many missing return values
+	* fixed some unitialized pointers
+	* fixed 64 bit portability issue in ags_recall_template_find_all_type()
+
 ags (0.9.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

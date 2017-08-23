@@ -313,6 +313,8 @@ ags_file_write_thread_list(AgsFile *file, xmlNode *parent, GList *thread)
 	     AGS_FILE_ID_PROP,
 	     id);
 
+  list = thread;
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "application-context", file->application_context,
@@ -326,8 +328,6 @@ ags_file_write_thread_list(AgsFile *file, xmlNode *parent, GList *thread)
 	      node);
 
   //TODO:JK: generate id and add id ref
-
-  list = thread;
 
   while(list != NULL){
     ags_file_write_thread(file, node, AGS_THREAD(list->data));

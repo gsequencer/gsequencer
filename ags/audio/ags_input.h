@@ -33,6 +33,8 @@
 #define AGS_IS_INPUT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_INPUT))
 #define AGS_INPUT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_INPUT, AgsInputClass))
 
+#define AGS_INPUT_SYNTH_BASE_NOTE (-48.0)
+
 typedef struct _AgsInput AgsInput;
 typedef struct _AgsInputClass AgsInputClass;
 
@@ -63,12 +65,22 @@ gboolean ags_input_apply_synth(AgsInput *input,
 			       gdouble phase,
 			       gdouble volume,
 			       guint n_frames);
+gboolean ags_input_apply_synth_extended(AgsInput *input,
+					guint oscillator,
+					gdouble frequency,
+					gdouble phase,
+					gdouble volume,
+					guint n_frames,
+					guint attack,
+					gdouble base_note,
+					AgsComplex *sync_start, AgsComplex *sync_end,
+					guint compute_flags);
 
 gboolean ags_input_is_active(AgsInput *input,
-			     GObject *parent_recycling_context);
+			     GObject *recycling_context);
 
 AgsInput* ags_input_next_active(AgsInput *input,
-				GObject *parent_recycling_context);
+				GObject *recycling_context);
 
 AgsInput* ags_input_new(GObject *audio);
 

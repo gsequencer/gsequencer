@@ -1470,6 +1470,136 @@ ags_lv2_plugin_concat_event_buffer(void *buffer0, ...)
 }
 
 /**
+ * ags_lv2_plugin_event_buffer_alloc:
+ * @buffer_size: the data's buffer size
+ * 
+ * Allocate LV2_Event_Buffer struct.
+ * 
+ * Returns: a new allocated LV2_Event_Buffer
+ * 
+ * Since: 0.9.7
+ */
+LV2_Event_Buffer*
+ags_lv2_plugin_event_buffer_alloc(guint buffer_size)
+{
+  LV2_Event_Buffer *event_buffer;
+
+  void *data;
+  
+  uint32_t padded_buffer_size;
+
+  if(buffer_size > G_MAXUINT16){
+    return(NULL);
+  }
+  
+  if(buffer_size < 8){
+    padded_buffer_size = 8;
+  }else{
+    padded_buffer_size = buffer_size;
+  }
+    
+  event_buffer = (LV2_Event_Buffer *) malloc(sizeof(LV2_Event_Buffer));
+
+  data = (void *) malloc(sizeof(LV2_Event) + padded_buffer_size * sizeof(uint8_t));
+  memset(data, 0, sizeof(LV2_Event) + padded_buffer_size * sizeof(uint8_t));
+  event_buffer->data = data;
+
+  event_buffer->header_size = sizeof(LV2_Event_Buffer);
+
+  event_buffer->stamp_type = 0;
+  event_buffer->capacity = padded_buffer_size;
+
+  event_buffer->event_count = 0;
+  event_buffer->size = 0;
+
+  return(event_buffer);
+}
+
+/**
+ * ags_lv2_plugin_event_buffer_realloc_data:
+ * @event_buffer: the LV2_Event_Buffer struct
+ * @buffer_size: the data's buffer size
+ * 
+ * Reallocate LV2_Event_Buffer struct's data field.
+ * 
+ * Since: 0.9.7
+ */
+void
+ags_lv2_plugin_event_buffer_realloc_data(LV2_Event_Buffer *event_buffer,
+					 guint buffer_size)
+{
+  void *data;
+  
+  uint32_t padded_buffer_size;
+
+  if(buffer_size > G_MAXUINT16){
+    return(NULL);
+  }
+  
+  if(buffer_size < 8){
+    padded_buffer_size = 8;
+  }else{
+    padded_buffer_size = buffer_size;
+  }
+
+  data = event_buffer->data;
+  data = (void *) realloc(data,
+			  sizeof(LV2_Event) + padded_buffer_size * sizeof(uint8_t));
+
+  event_buffer->data = data;
+}
+
+/**
+ * ags_lv2_plugin_event_buffer_concat:
+ * @event_buffer: the first buffer
+ * @...: %NULL terminated variadict arguments
+ *
+ * Concats the event buffers.
+ * 
+ * Returns: The newly allocated event buffer
+ * 
+ * Since: 0.9.7
+ */
+LV2_Event_Buffer*
+ags_lv2_plugin_event_buffer_concat(LV2_Event_Buffer *event_buffer, ...)
+{
+  LV2_Event_Buffer *buffer;
+  LV2_Event_Buffer *current;
+
+  void *offset;
+  
+  va_list ap;
+
+  guint i;
+
+  buffer = (LV2_Event_Buffer *) malloc(sizeof(LV2_Event_Buffer));  
+  memcpy(buffer, event_buffer, sizeof(LV2_Event_Buffer));
+  
+  va_start(ap, event_buffer);
+  i = 1;
+
+  while(TRUE){
+    current = va_arg(ap, LV2_Event_Buffer *);
+
+    if(current == NULL){
+      break;
+    }
+    
+    buffer = (LV2_Event_Buffer *) realloc(buffer,
+					  (i + 1) * sizeof(LV2_Event_Buffer));
+    offset = buffer;
+    offset += (i * sizeof(LV2_Event_Buffer));
+    memcpy(offset, current, sizeof(LV2_Event_Buffer));
+
+    i++;
+  }
+
+  va_end(ap);
+
+  return(buffer);
+}
+
+/**
  * ags_lv2_plugin_event_buffer_append_midi:
  * @event_buffer: the event buffer
  * @buffer_size: the event buffer size
@@ -1600,12 +1730,12 @@ ags_lv2_plugin_event_buffer_remove_midi(void *event_buffer,
 
     memmove(offset,
 	    offset + (padded_buffer_size + sizeof(LV2_Event)),
-	    offset - ((void *) AGS_LV2_EVENT_BUFFER(event_buffer)->data) - (padded_buffer_size + sizeof(LV2_Event)));
+	    ((void *) AGS_LV2_EVENT_BUFFER(event_buffer)->data + buffer_size) - (offset + padded_buffer_size + sizeof(LV2_Event)));
     
     memset(AGS_LV2_EVENT_BUFFER(event_buffer)->data + buffer_size - (padded_buffer_size + sizeof(LV2_Event)),
 	   0,
 	   (padded_buffer_size + sizeof(LV2_Event)));
-
+    
     AGS_LV2_EVENT_BUFFER(event_buffer)->size -= (padded_buffer_size + sizeof(LV2_Event));
     AGS_LV2_EVENT_BUFFER(event_buffer)->event_count -= 1;
   }
@@ -1630,13 +1760,15 @@ ags_lv2_plugin_clear_event_buffer(void *event_buffer,
 
   guint padded_buffer_size;
 
+  offset = AGS_LV2_EVENT_BUFFER(event_buffer)->data;
+  
   if(buffer_size < 8){
     padded_buffer_size = 8;
   }else{
     padded_buffer_size = buffer_size;
   }
   
-  memset(offset + sizeof(LV2_Event_Buffer), 0, padded_buffer_size);
+  memset(offset, 0, padded_buffer_size);
 }
 
 /**
@@ -1840,15 +1972,7 @@ void
 ags_lv2_plugin_clear_atom_sequence(void *atom_sequence,
 				   guint sequence_size)
 {
-  void *offset;
-
-  while(offset < atom_sequence + sequence_size){
-    AGS_LV2_ATOM_SEQUENCE(offset)->body.pad == 8;
-    
-    memset(offset + sizeof(LV2_Atom_Sequence), 0, 8);
-    
-    offset += (8 + sizeof(LV2_Atom_Sequence));
-  }
+  memset(atom_sequence, 0, sequence_size);
 }
 
 /**
@@ -1902,9 +2026,20 @@ ags_lv2_plugin_real_change_program(AgsLv2Plugin *lv2_plugin,
   }
 }
 
+/**
+ * ags_lv2_plugin_change_program:
+ * @lv2_plugin: the #AgsLv2Plugin
+ * @lv2_handle: the lv2 handle
+ * @bank_index: the bank index
+ * @program_index: the program index
+ * 
+ * Change program of @lv2_handle.
+ * 
+ * Since: 0.8.0
+ */
 void
 ags_lv2_plugin_change_program(AgsLv2Plugin *lv2_plugin,
-			      gpointer ladspa_handle,
+			      gpointer lv2_handle,
 			      guint bank_index,
 			      guint program_index)
 {
@@ -1912,7 +2047,7 @@ ags_lv2_plugin_change_program(AgsLv2Plugin *lv2_plugin,
   g_object_ref(G_OBJECT(lv2_plugin));
   g_signal_emit(G_OBJECT(lv2_plugin),
 		lv2_plugin_signals[CHANGE_PROGRAM], 0,
-		ladspa_handle,
+		lv2_handle,
 		bank_index,
 		program_index);
   g_object_unref(G_OBJECT(lv2_plugin));

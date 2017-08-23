@@ -875,9 +875,18 @@ ags_audio_loop_run(AgsThread *thread)
   /* reset polling thread */
   if(polling_thread != NULL){
     pthread_mutex_lock(polling_thread->fd_mutex);
-      
-    g_atomic_int_and(&(polling_thread->flags),
-		     (~AGS_POLLING_THREAD_OMIT));
+
+    if(g_atomic_int_get(&(polling_thread->omit_count)) != 0){
+      g_atomic_int_dec_and_test(&(polling_thread->omit_count));
+
+      if(g_atomic_int_get(&(polling_thread->omit_count)) == 0){
+	g_atomic_int_and(&(polling_thread->flags),
+			 (~AGS_POLLING_THREAD_OMIT));
+      }
+    }else{
+      g_atomic_int_and(&(polling_thread->flags),
+		       (~AGS_POLLING_THREAD_OMIT));
+    }
     
     pthread_mutex_unlock(polling_thread->fd_mutex);
   }

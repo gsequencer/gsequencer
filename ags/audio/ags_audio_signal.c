@@ -516,7 +516,7 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   AgsConfig *config;
   
   gchar *str;
-  
+ 
   audio_signal->flags = 0;
 
   audio_signal->soundcard = NULL;
@@ -1081,6 +1081,7 @@ ags_audio_signal_finalize(GObject *gobject)
 /**
  * ags_stream_alloc:
  * @buffer_size: the buffer size
+ * @format: the format
  *
  * Allocs an audio buffer.
  *
