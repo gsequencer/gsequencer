@@ -943,8 +943,10 @@ ags_envelope_editor_load_preset(AgsEnvelopeEditor *envelope_editor)
   preset = audio->preset;
 
   while(preset != NULL){
-    gtk_combo_box_text_append_text(envelope_editor->preset,
-				   AGS_PRESET(preset->data)->preset_name);
+    if(AGS_PRESET(preset->data)->preset_name != NULL){
+      gtk_combo_box_text_append_text(envelope_editor->preset,
+				     AGS_PRESET(preset->data)->preset_name);
+    }
 
     preset = preset->next;
   }

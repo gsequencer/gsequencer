@@ -775,19 +775,24 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
     //FIXME:JK: work-around for alsa-handle
     tmp = card_id->data;
     
-    if(use_alsa){
+    if(card_id->data != NULL &&
+       use_alsa){
       tmp = g_strdup_printf("%s,0",
 			    card_id->data);
     }
     
-    if(!g_ascii_strcasecmp(tmp,
+    if(tmp != NULL &&
+       device != NULL &&
+       !g_ascii_strcasecmp(tmp,
 			   device)){
       found_card = TRUE;
     }
 
-    gtk_combo_box_text_append_text(soundcard_editor->card,
-				   tmp);
-
+    if(tmp != NULL){
+      gtk_combo_box_text_append_text(soundcard_editor->card,
+				     tmp);
+    }
+    
     if(use_alsa){
       g_free(tmp);
     }
@@ -1097,8 +1102,10 @@ ags_soundcard_editor_add_sink(AgsSoundcardEditor *soundcard_editor,
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
 
   while(card_uri != NULL){
-    gtk_combo_box_text_append_text(soundcard_editor->card,
-    				   card_uri->data);
+    if(card_uri->data != NULL){
+      gtk_combo_box_text_append_text(soundcard_editor->card,
+				     card_uri->data);
+    }
     
     card_uri = card_uri->next;
   }
@@ -1504,9 +1511,10 @@ ags_soundcard_editor_load_pulse_card(AgsSoundcardEditor *soundcard_editor)
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
 
   while(card_id != NULL){
-    gtk_combo_box_text_append_text(soundcard_editor->card,
-				   card_id->data);
-
+    if(card_id->data != NULL){
+      gtk_combo_box_text_append_text(soundcard_editor->card,
+				     card_id->data);
+    }
     
     card_id = card_id->next;
   }
@@ -1575,9 +1583,10 @@ ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor)
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
 
   while(card_id != NULL){
-    gtk_combo_box_text_append_text(soundcard_editor->card,
-				   card_id->data);
-
+    if(card_id->data != NULL){
+      gtk_combo_box_text_append_text(soundcard_editor->card,
+				     card_id->data);
+    }
     
     card_id = card_id->next;
   }
@@ -1631,9 +1640,10 @@ ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
 
   while(card_id != NULL){
-    gtk_combo_box_text_append_text(soundcard_editor->card,
-				   card_id->data);
-
+    if(card_id != NULL){
+      gtk_combo_box_text_append_text(soundcard_editor->card,
+				     card_id->data);
+    }
     
     card_id = card_id->next;
   }
@@ -1704,9 +1714,10 @@ ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
 
   while(card_id != NULL){
-    gtk_combo_box_text_append_text(soundcard_editor->card,
-				   card_id->data);
-
+    if(card_id != NULL){
+      gtk_combo_box_text_append_text(soundcard_editor->card,
+				     card_id->data);
+    }
     
     card_id = card_id->next;
   }

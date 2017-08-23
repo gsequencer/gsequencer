@@ -551,8 +551,10 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
     card = card_start;
 
     while(card != NULL){
-      gtk_combo_box_text_append_text(export_soundcard->card,
-				     (gchar *) card->data);
+      if(card->data != NULL){
+	gtk_combo_box_text_append_text(export_soundcard->card,
+				       (gchar *) card->data);
+      }
 
       card = card->next;
     }
