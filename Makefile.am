@@ -1760,6 +1760,28 @@ install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/
 	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(datadir)/doc/gsequencer/changelog.gz
 
+fix-local-html: html
+	find $(top_srcdir)/docs/reference/libags/html -name "*.html" -type f -exec sed -i 's/..\/gobject/https\:\/\/usr\/share\/gtk-doc\/\/html\/gobject\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-audio/html -name "*.html" -type f -exec sed -i 's/..\/gobject/https\:\/\/usr\/share\/gtk-doc\/\/html\/gobject\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/html -name "*.html" -type f -exec sed -i 's/..\/gobject/https\:\/\/usr\/share\/gtk-doc\/\/html\/gobject\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/html -name "*.html" -type f -exec sed -i 's/..\/gtk2/https\:\/\/usr\/share\/gtk-doc\/\/html\/gtk2\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/html -name "*.html" -type f -exec sed -i 's/..\/gtk3/https\:\/\/usr\/share\/gtk-doc\/\/html\/gtk2\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/html -name "*.html" -type f -exec sed -i 's/..\/gobject/https\:\/\/usr\/share\/gtk-doc\/\/html\/gobject\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/html -name "*.html" -type f -exec sed -i 's/..\/gtk2/https\:\/\/usr\/share\/gtk-doc\/\/html\/gtk2\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/html -name "*.html" -type f -exec sed -i 's/..\/gtk3/https\:\/\/usr\/share\/gtk-doc\/\/html\/gtk2\//' {} \;
+
+fix-online-html: html
+	find $(top_srcdir)/docs/reference/libags/html -name "*.html" -type f -exec sed -i 's/..\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-audio/html -name "*.html" -type f -exec sed -i 's/..\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-audio/html -name "*.html" -type f -exec sed -i 's/..\/html/https\:\/\/nongnu\.org\/gsequencer\/api\/libags\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/html -name "*.html" -type f -exec sed -i 's/..\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/html -name "*.html" -type f -exec sed -i 's/..\/gtk2/https\:\/\/developer\.gnome\.org\/gtk2\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/html -name "*.html" -type f -exec sed -i 's/..\/gtk3/https\:\/\/developer\.gnome\.org\/gtk2\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/html -name "*.html" -type f -exec sed -i 's/..\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/html -name "*.html" -type f -exec sed -i 's/..\/gtk2/https\:\/\/developer\.gnome\.org\/gtk2\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/html -name "*.html" -type f -exec sed -i 's/..\/gtk3/https\:\/\/developer\.gnome\.org\/gtk2\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/html -name "*.html" -type f -exec sed -i 's/..\/html/https\:\/\/nongnu\.org\/gsequencer\/api\/libags\//' {} \;
+
 install-html: html 
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/{images,html}/
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/{images,html}/
