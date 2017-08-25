@@ -4,6 +4,7 @@ ags (0.9.15)
 	* fixed missing check for NULL of gtk_combo_box_text_append_text()
 	parameter in all source code
 	* fixed missing LV2_UI cleanup handling
+	* fixed missing pulseaudio backend in AgsExportSoundcard
 
 ags (0.9.14)
 

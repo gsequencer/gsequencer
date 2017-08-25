@@ -781,7 +781,7 @@ ags_synth_generator_compute_with_audio_signal(AgsSynthGenerator *synth_generator
     }else if((AGS_SYNTH_GENERATOR_COMPUTE_22000HZ & compute_flags) != 0){
       xcross_factor = current_rate * (22000.0 / samplerate);
     }else if((AGS_SYNTH_GENERATOR_COMPUTE_LIMIT & compute_flags) != 0){
-      xcross_factor = current_rate * (G_MAXDOUBLE / samplerate);
+      xcross_factor = current_rate * samplerate;
     }else if((AGS_SYNTH_GENERATOR_COMPUTE_NOHZ & compute_flags) != 0){
       if(xcross_count != 0){
 	xcross_factor = (1.0 / xcross_count);
