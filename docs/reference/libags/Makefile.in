@@ -339,7 +339,7 @@ am__set_b = \
     *) \
       b='$*';; \
   esac
-am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/gtk-doc.make \
+am__DIST_COMMON = $(srcdir)/./gtk-doc.make $(srcdir)/Makefile.in \
 	$(top_srcdir)/mkinstalldirs $(top_srcdir)/test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
@@ -521,6 +521,7 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -561,7 +562,7 @@ MKHTML_OPTIONS =
 
 # Extra options to supply to gtkdoc-fixref. Normally not needed.
 # e.g. FIXXREF_OPTIONS=--extra-dir=../gdk-pixbuf/html --extra-dir=../gdk/html
-FIXXREF_OPTIONS = --module=libags --module-dir=./html/ --html-dir=$(DESTDIR)/$(datadir)/doc/libags-doc/api
+FIXXREF_OPTIONS = --module=libags --module-dir=./libags-html/ --html-dir=$(DESTDIR)/$(datadir)/doc/libags-doc/api
 
 # Used for dependencies. The docs will be rebuilt if any of these change.
 # e.g. HFILE_GLOB=$(top_srcdir)/gtk/*.h
@@ -695,7 +696,7 @@ all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .log .test .test$(EXEEXT) .trs
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/gtk-doc.make $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(srcdir)/./gtk-doc.make $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -704,9 +705,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/gtk-doc.make $(am__c
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign docs/reference/libags/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu docs/reference/libags/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign docs/reference/libags/Makefile
+	  $(AUTOMAKE) --gnu docs/reference/libags/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -715,7 +716,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
-$(top_srcdir)/gtk-doc.make $(am__empty):
+$(srcdir)/./gtk-doc.make $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -1136,7 +1137,7 @@ xml/gtkdocentities.ent: Makefile
 	) > $@
 
 html-build.stamp: sgml.stamp $(DOC_MAIN_SGML_FILE) $(content_files) $(expand_content_files)
-	$(GTK_DOC_V_HTML)rm -rf html && mkdir html && \
+	$(GTK_DOC_V_HTML)rm -rf libags-html && mkdir libags-html && \
 	mkhtml_options=""; \
 	gtkdoc-mkhtml 2>&1 --help | grep  >/dev/null "\-\-verbose"; \
 	if test "$$?" = "0"; then \
@@ -1148,17 +1149,18 @@ html-build.stamp: sgml.stamp $(DOC_MAIN_SGML_FILE) $(content_files) $(expand_con
 	if test "$$?" = "0"; then \
 	  mkhtml_options="$$mkhtml_options --path=\"$(abs_srcdir)\""; \
 	fi; \
-	cd html && gtkdoc-mkhtml $$mkhtml_options $(MKHTML_OPTIONS) $(DOC_MODULE) ../$(DOC_MAIN_SGML_FILE)
+	cd libags-html && gtkdoc-mkhtml $$mkhtml_options $(MKHTML_OPTIONS) $(DOC_MODULE) ../$(DOC_MAIN_SGML_FILE)
 	-@test "x$(HTML_IMAGES)" = "x" || \
 	for file in $(HTML_IMAGES) ; do \
 	  if test -f $(abs_srcdir)/$$file ; then \
-	    cp $(abs_srcdir)/$$file $(abs_builddir)/html; \
+	    cp $(abs_srcdir)/$$file $(abs_builddir)/libags-html; \
 	  fi; \
 	  if test -f $(abs_builddir)/$$file ; then \
-	    cp $(abs_builddir)/$$file $(abs_builddir)/html; \
+	    cp $(abs_builddir)/$$file $(abs_builddir)/libags-html; \
 	  fi; \
+	  test -f $$file && cp $$file $(abs_builddir)/libags-html; \
 	done;
-	$(GTK_DOC_V_XREF)gtkdoc-fixxref --module=$(DOC_MODULE) --module-dir=html --html-dir=$(HTML_DIR) $(FIXXREF_OPTIONS)
+	$(GTK_DOC_V_XREF)gtkdoc-fixxref --module=$(DOC_MODULE) --module-dir=libags-html --html-dir=$(HTML_DIR) $(FIXXREF_OPTIONS)
 	$(AM_V_at)touch html-build.stamp
 
 pdf-build.stamp: sgml.stamp $(DOC_MAIN_SGML_FILE) $(content_files) $(expand_content_files)
@@ -1195,18 +1197,18 @@ clean-local:
 	fi
 
 distclean-local:
-	@rm -rf xml html $(REPORT_FILES) $(DOC_MODULE).pdf \
+	@rm -rf xml libags-html $(REPORT_FILES) $(DOC_MODULE).pdf \
 	    $(DOC_MODULE)-decl-list.txt $(DOC_MODULE)-decl.txt
 	@if test "$(abs_srcdir)" != "$(abs_builddir)" ; then \
 	    rm -f $(SETUP_FILES) $(DOC_MODULE).types; \
 	fi
 
 maintainer-clean-local:
-	@rm -rf xml html
+	@rm -rf xml libags-html
 
 install-data-local:
-	@installfiles=`echo $(builddir)/html/*`; \
-	if test "$$installfiles" = '$(builddir)/html/*'; \
+	@installfiles=`echo $(builddir)/libags-html/*`; \
+	if test "$$installfiles" = '$(builddir)/libags-html/*'; \
 	then echo 1>&2 'Nothing to install' ; \
 	else \
 	  if test -n "$(DOC_MODULE_VERSION)"; then \
@@ -1245,13 +1247,13 @@ uninstall-local:
 @HAVE_GTK_DOC_FALSE@	@false
 
 dist-hook: dist-check-gtkdoc all-gtk-doc dist-hook-local
-	@mkdir $(distdir)/html
-	@cp ./html/* $(distdir)/html
+	@mkdir $(distdir)/libags-html
+	@cp ./libags-html/* $(distdir)/libags-html
 	@-cp ./$(DOC_MODULE).pdf $(distdir)/
 	@-cp ./$(DOC_MODULE).types $(distdir)/
 	@-cp ./$(DOC_MODULE)-sections.txt $(distdir)/
 	@cd $(distdir) && rm -f $(DISTCLEANFILES)
-	@$(GTKDOC_REBASE) --online --relative --html-dir=$(distdir)/html
+	@$(GTKDOC_REBASE) --online --relative --html-dir=$(distdir)/libags-html
 
 .PHONY : dist-hook-local docs
 

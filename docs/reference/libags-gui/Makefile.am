@@ -34,7 +34,7 @@ MKHTML_OPTIONS=
 
 # Extra options to supply to gtkdoc-fixref. Normally not needed.
 # e.g. FIXXREF_OPTIONS=--extra-dir=../gdk-pixbuf/html --extra-dir=../gdk/html
-FIXXREF_OPTIONS=--module=libags_gui --module-dir=./html/ --html-dir=$(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
+FIXXREF_OPTIONS=--module=libags_gui --module-dir=./libags-gui-html/ --html-dir=$(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
 
 # Used for dependencies. The docs will be rebuilt if any of these change.
 # e.g. HFILE_GLOB=$(top_srcdir)/gtk/*.h
@@ -76,7 +76,7 @@ GTKDOC_LIBS = \
 	$(top_builddir)/libags_gui.la
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
-include $(top_srcdir)/gtk-doc.make
+include ./gtk-doc.make
 
 # Comment this out if you want 'make check' to test you doc status
 # and run some sanity checks
