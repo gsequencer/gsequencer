@@ -2347,9 +2347,9 @@ EXTRA_DIST = config.rpath COPYING.docs ags/config.h.in gtk-doc.make \
 	docs/reference/libags-gui/libags_gui-sections.txt \
 	docs/reference/libags-gui/libags_gui.types \
 	docs/reference/libags-gui/libags_gui.interfaces \
-	docs/reference/libags-gui/libgsequencer-sections.txt \
-	docs/reference/libags-gui/libgsequencer.types \
-	docs/reference/libags-gui/libgsequencer.interfaces \
+	docs/reference/libgsequencer/libgsequencer-sections.txt \
+	docs/reference/libgsequencer/libgsequencer.types \
+	docs/reference/libgsequencer/libgsequencer.interfaces \
 	clean-gtk-doc.sh lv2/lv2plug.in/ns/lv2ext/lv2_programs.h \
 	lv2.lib/mda/EPiano-presets.ttl libags.pc.in libags_audio.pc.in \
 	libags_gui.pc.in libgsequencer.pc.in gsequencer.desktop.in \

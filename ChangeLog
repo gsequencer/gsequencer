@@ -1,6 +1,7 @@
 ags (0.9.15)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved gtk-doc installation and introduced fix-local-html and fix-online-html target
 	* fixed missing check for NULL of gtk_combo_box_text_append_text() parameter in all source code
 	* fixed missing LV2_UI cleanup handling
 	* fixed missing pulseaudio backend in AgsExportSoundcard

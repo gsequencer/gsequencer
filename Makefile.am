@@ -68,9 +68,9 @@ EXTRA_DIST += \
 	docs/reference/libags-gui/libags_gui-sections.txt \
 	docs/reference/libags-gui/libags_gui.types \
 	docs/reference/libags-gui/libags_gui.interfaces \
-	docs/reference/libags-gui/libgsequencer-sections.txt \
-	docs/reference/libags-gui/libgsequencer.types \
-	docs/reference/libags-gui/libgsequencer.interfaces \
+	docs/reference/libgsequencer/libgsequencer-sections.txt \
+	docs/reference/libgsequencer/libgsequencer.types \
+	docs/reference/libgsequencer/libgsequencer.interfaces \
 	clean-gtk-doc.sh
 
 EXTRA_DIST += \
