@@ -521,7 +521,6 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
-runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -709,9 +708,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(top_srcdir)/gtk-doc.make $(am__c
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu docs/reference/libgsequencer/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign docs/reference/libgsequencer/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu docs/reference/libgsequencer/Makefile
+	  $(AUTOMAKE) --foreign docs/reference/libgsequencer/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -1162,7 +1161,6 @@ html-build.stamp: sgml.stamp $(DOC_MAIN_SGML_FILE) $(content_files) $(expand_con
 	  if test -f $(abs_builddir)/$$file ; then \
 	    cp $(abs_builddir)/$$file $(abs_builddir)/html; \
 	  fi; \
-	  test -f $$file && cp $$file $(abs_builddir)/html; \
 	done;
 	$(GTK_DOC_V_XREF)gtkdoc-fixxref --module=$(DOC_MODULE) --module-dir=html --html-dir=$(HTML_DIR) $(FIXXREF_OPTIONS)
 	$(AM_V_at)touch html-build.stamp
