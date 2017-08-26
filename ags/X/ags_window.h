@@ -22,8 +22,10 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
+#include <ags/X/ags_context_menu.h>
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_editor.h>
@@ -68,7 +70,8 @@ struct _AgsWindow
   GObject *soundcard;
 
   AgsMenuBar *menu_bar;
-
+  AgsContextMenu *context_menu;
+  
   GtkVPaned *paned;
 
   GtkVBox *machines;

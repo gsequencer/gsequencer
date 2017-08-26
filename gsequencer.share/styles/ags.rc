@@ -99,6 +99,7 @@ widget_class "*GtkHandleBox*" style "default_widget"
 widget_class "*AgsToolbar*" style "inverse_widget"
 widget_class "*AgsAutomationToolbar*" style "inverse_widget"
 widget_class "*AgsMenuBar*" style "inverse_widget"
+widget_class "*AgsContextMenu*" style "inverse_widget"
 widget_class "*AgsNotebook*" style "default_widget"
 widget_class "*AgsNaviation*" style "inverse_widget"
 
