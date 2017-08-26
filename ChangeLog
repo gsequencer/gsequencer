@@ -1,3 +1,11 @@
+ags (0.9.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed read of not finished write buffer during export audio file
+	* fixed AgsExportWindow file exists response
+	* fixed AgsExportWindow dead-lock during cancel of not existing playback
+	* improved gsequencer.desktop to provide png file
+
 ags (0.9.16)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

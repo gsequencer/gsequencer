@@ -157,6 +157,7 @@ guint ags_devout_get_attack(AgsSoundcard *soundcard);
 
 void* ags_devout_get_buffer(AgsSoundcard *soundcard);
 void* ags_devout_get_next_buffer(AgsSoundcard *soundcard);
+void* ags_devout_get_prev_buffer(AgsSoundcard *soundcard);
 
 guint ags_devout_get_delay_counter(AgsSoundcard *soundcard);
 
@@ -575,6 +576,7 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->get_buffer = ags_devout_get_buffer;
   soundcard->get_next_buffer = ags_devout_get_next_buffer;
+  soundcard->get_prev_buffer = ags_devout_get_prev_buffer;
 
   soundcard->get_delay_counter = ags_devout_get_delay_counter;
 
@@ -3693,7 +3695,7 @@ void*
 ags_devout_get_buffer(AgsSoundcard *soundcard)
 {
   AgsDevout *devout;
-  signed short *buffer;
+  void *buffer;
   
   devout = AGS_DEVOUT(soundcard);
 
@@ -3716,7 +3718,7 @@ void*
 ags_devout_get_next_buffer(AgsSoundcard *soundcard)
 {
   AgsDevout *devout;
-  signed short *buffer;
+  void *buffer;
   
   devout = AGS_DEVOUT(soundcard);
 
@@ -3733,6 +3735,29 @@ ags_devout_get_next_buffer(AgsSoundcard *soundcard)
     buffer = devout->buffer[3];
   }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
     buffer = devout->buffer[0];
+  }else{
+    buffer = NULL;
+  }
+
+  return(buffer);
+}
+
+void*
+ags_devout_get_prev_buffer(AgsSoundcard *soundcard)
+{
+  AgsDevout *devout;
+  void *buffer;
+  
+  devout = AGS_DEVOUT(soundcard);
+
+  if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
+    buffer = devout->buffer[3];
+  }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
+    buffer = devout->buffer[0];
+  }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
+    buffer = devout->buffer[1];
+  }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
+    buffer = devout->buffer[2];
   }else{
     buffer = NULL;
   }

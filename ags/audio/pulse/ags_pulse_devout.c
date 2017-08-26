@@ -130,6 +130,7 @@ guint ags_pulse_devout_get_attack(AgsSoundcard *soundcard);
 
 void* ags_pulse_devout_get_buffer(AgsSoundcard *soundcard);
 void* ags_pulse_devout_get_next_buffer(AgsSoundcard *soundcard);
+void* ags_pulse_devout_get_prev_buffer(AgsSoundcard *soundcard);
 
 guint ags_pulse_devout_get_delay_counter(AgsSoundcard *soundcard);
 
@@ -576,6 +577,7 @@ ags_pulse_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->get_buffer = ags_pulse_devout_get_buffer;
   soundcard->get_next_buffer = ags_pulse_devout_get_next_buffer;
+  soundcard->get_prev_buffer = ags_pulse_devout_get_prev_buffer;
 
   soundcard->get_delay_counter = ags_pulse_devout_get_delay_counter;
 
@@ -2336,6 +2338,37 @@ ags_pulse_devout_get_next_buffer(AgsSoundcard *soundcard)
     buffer = pulse_devout->buffer[7];
   }else if((AGS_PULSE_DEVOUT_BUFFER7 & (pulse_devout->flags)) != 0){
     buffer = pulse_devout->buffer[0];
+  }else{
+    buffer = NULL;
+  }
+
+  return(buffer);
+}
+
+void*
+ags_pulse_devout_get_prev_buffer(AgsSoundcard *soundcard)
+{
+  AgsPulseDevout *pulse_devout;
+  void *buffer;
+  
+  pulse_devout = AGS_PULSE_DEVOUT(soundcard);
+
+  if((AGS_PULSE_DEVOUT_BUFFER0 & (pulse_devout->flags)) != 0){
+    buffer = pulse_devout->buffer[7];
+  }else if((AGS_PULSE_DEVOUT_BUFFER1 & (pulse_devout->flags)) != 0){
+    buffer = pulse_devout->buffer[0];
+  }else if((AGS_PULSE_DEVOUT_BUFFER2 & (pulse_devout->flags)) != 0){
+    buffer = pulse_devout->buffer[1];
+  }else if((AGS_PULSE_DEVOUT_BUFFER3 & (pulse_devout->flags)) != 0){
+    buffer = pulse_devout->buffer[2];
+  }else if((AGS_PULSE_DEVOUT_BUFFER4 & (pulse_devout->flags)) != 0){
+    buffer = pulse_devout->buffer[3];
+  }else if((AGS_PULSE_DEVOUT_BUFFER5 & (pulse_devout->flags)) != 0){
+    buffer = pulse_devout->buffer[4];
+  }else if((AGS_PULSE_DEVOUT_BUFFER6 & (pulse_devout->flags)) != 0){
+    buffer = pulse_devout->buffer[5];
+  }else if((AGS_PULSE_DEVOUT_BUFFER7 & (pulse_devout->flags)) != 0){
+    buffer = pulse_devout->buffer[6];
   }else{
     buffer = NULL;
   }
