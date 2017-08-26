@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 0.9.15\n"
+"Project-Id-Version: gsequencer 0.9.16\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-08-25 22:39+0200\n"
+"POT-Creation-Date: 2017-08-26 18:14+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -69,6 +69,57 @@ msgstr ""
 
 #: ags/X/ags_connection_editor.c:224
 msgid "connect output"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:151 ags/X/ags_export_window.c:353
+#: ags/X/ags_menu_bar.c:147
+msgid "export"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:179 ags/X/ags_menu_bar.c:175
+msgid "Panel"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:182 ags/X/ags_menu_bar.c:178
+msgid "Mixer"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:185 ags/X/ags_menu_bar.c:181
+msgid "Drum"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:188 ags/X/ags_menu_bar.c:184
+msgid "Matrix"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:191 ags/X/ags_menu_bar.c:187
+msgid "Synth"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:194 ags/X/ags_menu_bar.c:190
+msgid "Syncsynth"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:198 ags/X/ags_menu_bar.c:194
+msgid "FPlayer"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:203 ags/X/ags_menu_bar.c:199
+msgid "LADSPA"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:207 ags/X/ags_context_menu.c:222
+#: ags/X/ags_menu_bar.c:203 ags/X/ags_menu_bar.c:218
+msgid "DSSI"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:211 ags/X/ags_context_menu.c:226
+#: ags/X/ags_menu_bar.c:207 ags/X/ags_menu_bar.c:222
+msgid "Lv2"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:231 ags/X/ags_menu_bar.c:227
+msgid "Automation"
 msgstr ""
 
 #: ags/X/ags_dssi_browser.c:160 ags/X/ags_ladspa_browser.c:155
@@ -179,10 +230,6 @@ msgstr ""
 
 #: ags/X/ags_export_window.c:296
 msgid "time"
-msgstr ""
-
-#: ags/X/ags_export_window.c:353 ags/X/ags_menu_bar.c:147
-msgid "export"
 msgstr ""
 
 #: ags/X/ags_generic_preferences.c:139
@@ -317,50 +364,6 @@ msgstr ""
 
 #: ags/X/ags_machine_editor.c:247
 msgid "resize channels"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:175
-msgid "Panel"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:178
-msgid "Mixer"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:181
-msgid "Drum"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:184
-msgid "Matrix"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:187
-msgid "Synth"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:190
-msgid "Syncsynth"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:194
-msgid "FPlayer"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:199
-msgid "LADSPA"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:203 ags/X/ags_menu_bar.c:218
-msgid "DSSI"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:207 ags/X/ags_menu_bar.c:222
-msgid "Lv2"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:227
-msgid "Automation"
 msgstr ""
 
 #: ags/X/ags_midi_dialog.c:219

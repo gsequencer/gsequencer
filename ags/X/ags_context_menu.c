@@ -18,6 +18,7 @@
  */
 
 #include <ags/X/ags_context_menu.h>
+#include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_menu_action_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
