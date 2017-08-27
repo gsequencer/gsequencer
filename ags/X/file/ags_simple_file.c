@@ -2021,18 +2021,31 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 				   filename,
 				   effect);
       }else if(!xmlStrncmp(child->name,
-			   (xmlChar *) "ags-sf-oscillator-list",
-			   22)){
+			   (xmlChar *) "ags-oscillator-list",
+			   19)){
 	if(AGS_IS_SYNCSYNTH(gobject)){
 	  GList *oscillator, *list;
 
+	  guint count;
+	  guint i;
+	  
+	  list = gtk_container_get_children(AGS_SYNCSYNTH(gobject)->oscillator);
+	  count = g_list_length(list);
+
+	  for(i = 0; i < count; i++){
+	    ags_syncsynth_remove_oscillator(gobject,
+					    0);
+	  }
+
+	  g_list_free(list);
+	  
 	  oscillator = NULL;
 	  
 	  ags_simple_file_read_oscillator_list(simple_file,
 					       child,
 					       &oscillator);
 
-	  list = oscillator;
+	  list = g_list_reverse(oscillator);
 	  
 	  while(list != NULL){
 	    ags_syncsynth_add_oscillator(gobject,
@@ -2394,23 +2407,56 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 			       (gdouble) length);
     }
   }
-
-  void ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsSyncsynth *syncsynth){
+  void ags_simple_file_read_synth_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsSynth *synth){
+    xmlChar *str;
+    
     /* base note */
     str = xmlGetProp(node,
 		     "base-note");
 
     if(str != NULL){
-      guint base_note;
+      gdouble base_note;
 
-      base_note = g_ascii_strtoull(str,
-				   NULL,
-				   10);
-      
-      gtk_adjustment_set_value(syncsynth->lower->adjustment,
-			       (gdouble) base_note);
+      base_note = g_ascii_strtod(str,
+				 NULL);
+
+      if(base_note > AGS_SYNTH_BASE_NOTE_MIN &&
+	 base_note < AGS_SYNTH_BASE_NOTE_MAX){
+	gtk_adjustment_set_value(synth->lower->adjustment,
+				 (gdouble) base_note);
+      }
+    }
+  }
+  
+  void ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsSyncsynth *syncsynth){
+    GList *list, *list_start;
+    GList *child_start;
+
+    xmlChar *str;
+
+    gdouble tmp0, tmp1;
+    gdouble loop_upper;
+    
+    /* base note */
+    str = xmlGetProp(node,
+		     "base-note");
+
+    if(str != NULL){
+      gdouble base_note;
+
+      base_note = g_ascii_strtod(str,
+				 NULL);
+
+      if(base_note > AGS_SYNCSYNTH_BASE_NOTE_MIN &&
+	 base_note < AGS_SYNCSYNTH_BASE_NOTE_MAX){
+	gtk_adjustment_set_value(syncsynth->lower->adjustment,
+				 (gdouble) base_note);
+      }
     }
 
+    /* set range of loop start and loop end */
+    ags_syncsynth_reset_loop(syncsynth);
+    
     /* audio loop start */
     str = xmlGetProp(node,
 		     "audio-loop-start");
@@ -2419,8 +2465,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
       guint audio_loop_start;
 
       audio_loop_start = g_ascii_strtoull(str,
-				   NULL,
-				   10);
+					  NULL,
+					  10);
       
       gtk_adjustment_set_value(syncsynth->loop_start->adjustment,
 			       (gdouble) audio_loop_start);
@@ -2434,8 +2480,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
       guint audio_loop_end;
 
       audio_loop_end = g_ascii_strtoull(str,
-				   NULL,
-				   10);
+					NULL,
+					10);
       
       gtk_adjustment_set_value(syncsynth->loop_end->adjustment,
 			       (gdouble) audio_loop_end);
@@ -2811,6 +2857,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     ags_simple_file_read_drum_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsDrum *) machine);
   }else if(AGS_IS_MATRIX(machine)){
     ags_simple_file_read_matrix_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsMatrix *) machine);
+  }else if(AGS_IS_SYNTH(machine)){
+    ags_simple_file_read_synth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsSynth *) machine);
   }else if(AGS_IS_SYNCSYNTH(machine)){
     ags_simple_file_read_syncsynth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsSyncsynth *) machine);
   }else if(AGS_IS_FFPLAYER(machine)){
@@ -4126,8 +4174,8 @@ ags_simple_file_read_oscillator_list(AgsSimpleFile *simple_file, xmlNode *node, 
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
-		     (xmlChar *) "ags-sf-oscillator",
-		     11)){
+		     (xmlChar *) "ags-oscillator",
+		     14)){
 	current = NULL;
 
 	if(*oscillator != NULL){
@@ -5755,9 +5803,18 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 		 "true");
     }    
 
+
     xmlNewProp(node,
 	       "length",
 	       g_strdup_printf("%u", (guint) matrix->length_spin->adjustment->value));
+  }else if(AGS_IS_SYNTH(machine)){
+    AgsSynth *synth;
+
+    synth = (AgsSynth *) machine;
+    
+    xmlNewProp(node,
+	       "base-note",
+	       g_strdup_printf("%f", synth->lower->adjustment->value));
   }else if(AGS_IS_SYNCSYNTH(machine)){
     AgsSyncsynth *syncsynth;
 
@@ -5765,7 +5822,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       "base-note",
-	       g_strdup_printf("%u", (guint) syncsynth->lower->adjustment->value));
+	       g_strdup_printf("%f", syncsynth->lower->adjustment->value));
 
     xmlNewProp(node,
 	       "audio-loop-start",
