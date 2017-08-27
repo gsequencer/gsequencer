@@ -392,14 +392,16 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
   pulse_port->buffer_attr->prebuf = (uint32_t) 0;
   pulse_port->buffer_attr->tlength = (uint32_t) fixed_size;
 
-  pulse_port->empty_buffer = ags_stream_alloc(pcm_channels * buffer_size,
+  pulse_port->empty_buffer = ags_stream_alloc(8 * pcm_channels * buffer_size,
 					      AGS_SOUNDCARD_DEFAULT_FORMAT);
 
   g_atomic_int_set(&(pulse_port->is_empty),
 		   TRUE);
   g_atomic_int_set(&(pulse_port->underflow),
-		   FALSE);
-
+		   0);
+  
+  pulse_port->nth_empty_buffer = 0;
+  
   g_atomic_int_set(&(pulse_port->queued),
 		   0);
 }
@@ -773,6 +775,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   guint word_size;
   size_t count;
   guint nth_buffer;
+  guint nth_empty_buffer, next_nth_empty_buffer;
   gboolean no_event;
   gboolean empty_run;
   
@@ -855,6 +858,14 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 
   stream = pulse_port->stream;
 
+  nth_empty_buffer = pulse_port->nth_empty_buffer;
+
+  if(nth_empty_buffer >= 7){
+    next_nth_empty_buffer = 0;
+  }else{
+    next_nth_empty_buffer = nth_empty_buffer + 1;
+  }
+  
   pthread_mutex_unlock(mutex);
   
   /*  */  
@@ -873,18 +884,52 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   if(!ags_soundcard_is_playing(AGS_SOUNDCARD(pulse_devout))){
     empty_run = TRUE;
   }
-
+  
   pthread_mutex_unlock(device_mutex);
 
+  /* check buffer flag */
+  pthread_mutex_lock(mutex);
+  
+  switch(pulse_port->format){
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      word_size = sizeof(signed short);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      word_size = sizeof(signed long);
+    }
+    break;
+  }
+        
+  count = pulse_port->sample_spec->channels * pulse_port->buffer_size * word_size;
+
+  pthread_mutex_unlock(mutex);
+
   if(empty_run){
+    void *empty_buffer;
+    void *next_empty_buffer;
+    
     /* iterate */
     pthread_mutex_lock(mutex);
+
+    empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[nth_empty_buffer * count]);
+    next_empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[next_nth_empty_buffer * count]);
     
-    pa_stream_begin_write(stream, &(pulse_port->empty_buffer), &count);
-    pa_stream_write(stream, pulse_port->empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
+    pa_stream_begin_write(stream, &empty_buffer, &count);
+  
+    pa_stream_write(stream, empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
     
     pthread_mutex_unlock(mutex);
 
+    memset(next_empty_buffer, 0, count * sizeof(unsigned char));
+    
     g_atomic_int_set(&(pulse_port->is_empty),
 		     TRUE);
   }
@@ -933,19 +978,36 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 
 	pthread_mutex_unlock(callback_mutex);
 
-	if(g_atomic_int_get(&(pulse_port->underflow))){
+	while(g_atomic_int_get(&(pulse_port->underflow)) > 0){
+	  void *empty_buffer;
+	  void *next_empty_buffer;
+
 	  /* feed */
 	  pthread_mutex_lock(mutex);
-    
-	  pa_stream_begin_write(stream, &(pulse_port->empty_buffer), &count);
-	  pa_stream_write(stream, pulse_port->empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
 
-	  latency = ags_pulse_port_get_latency(pulse_port);
-    
+	  empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[nth_empty_buffer * count]);
+	  next_empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[next_nth_empty_buffer * count]);
+
+	  pa_stream_begin_write(stream, &empty_buffer, &count);
+	  pa_stream_write(stream, empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
+
+	  latency = ags_pulse_port_get_latency(pulse_port);    
+
+	  nth_empty_buffer = next_nth_empty_buffer;
+	  
+      	  if(nth_empty_buffer >= 7){
+	    next_nth_empty_buffer = 0;
+	  }else{
+	    next_nth_empty_buffer = nth_empty_buffer + 1;
+	  }
+
+	  pulse_port->nth_empty_buffer = nth_empty_buffer;
+	  
 	  pthread_mutex_unlock(mutex);
 
-	  g_atomic_int_set(&(pulse_port->underflow),
-			   FALSE);
+	  memset(next_empty_buffer, 0, count * sizeof(unsigned char));
+
+	  g_atomic_int_dec_and_test(&(pulse_port->underflow));
 
 	  latency /= 8;
 
@@ -994,9 +1056,8 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   }else{
     empty_run = TRUE;
   }
-  
-  /* check buffer flag */
-  switch(pulse_devout->format){
+
+  switch(pulse_port->format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
       word_size = sizeof(signed short);
@@ -1015,16 +1076,14 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   default:
     empty_run = TRUE;
   }
-        
-  count = pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size;
-
+  
   /* write */
+  count = pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size;
+  
   if(!empty_run){
     //    g_message("%d", ags_synth_util_get_xcross_count_s16(pulse_devout->buffer[nth_buffer],
     //							pulse_devout->pcm_channels * pulse_devout->buffer_size));    
-    pa_stream_begin_write(stream,
-			  &(pulse_devout->buffer[nth_buffer]),
-			  &count);
+    pa_stream_begin_write(stream, &(pulse_devout->buffer[nth_buffer]), &count);
     pa_stream_write(stream,
 		    pulse_devout->buffer[nth_buffer],
 		    count,
@@ -1053,6 +1112,44 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   }
 
   pthread_mutex_unlock(device_mutex);
+
+  if(empty_run){
+    pthread_mutex_lock(mutex);
+
+    pulse_port->nth_empty_buffer = next_nth_empty_buffer;
+    
+    pthread_mutex_unlock(mutex);
+
+    while(g_atomic_int_get(&(pulse_port->underflow)) > 0){
+      void *empty_buffer;
+      void *next_empty_buffer;
+
+      /* feed */
+      pthread_mutex_lock(mutex);
+
+      empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[nth_empty_buffer * count]);
+      next_empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[next_nth_empty_buffer * count]);
+
+      pa_stream_begin_write(stream, &empty_buffer, &count);
+      pa_stream_write(stream, empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
+
+      nth_empty_buffer = next_nth_empty_buffer;
+      
+      if(nth_empty_buffer >= 7){
+	next_nth_empty_buffer = 0;
+      }else{
+	next_nth_empty_buffer = nth_empty_buffer + 1;
+      }
+
+      pulse_port->nth_empty_buffer = nth_empty_buffer;
+	  
+      pthread_mutex_unlock(mutex);
+
+      memset(next_empty_buffer, 0, count * sizeof(unsigned char));
+
+      g_atomic_int_dec_and_test(&(pulse_port->underflow));
+    }
+  }
   
   g_atomic_int_dec_and_test(&(pulse_port->queued));
 }
@@ -1092,8 +1189,7 @@ ags_pulse_port_stream_underflow_callback(pa_stream *stream, AgsPulsePort *pulse_
 
   pthread_mutex_unlock(audio_loop->timing_mutex);
 
-  g_atomic_int_set(&(pulse_port->underflow),
-		   TRUE);
+  g_atomic_int_inc(&(pulse_port->underflow));
 
   if(polling_thread != NULL){
     g_atomic_int_or(&(polling_thread->flags),
@@ -1198,6 +1294,7 @@ ags_pulse_port_set_samplerate(AgsPulsePort *pulse_port,
 
   pulse_port->sample_spec->rate = samplerate;
 
+  pulse_port->buffer_attr->fragsize = -1;
   pulse_port->buffer_attr->maxlength = -1;
   pulse_port->buffer_attr->minreq = fixed_size;
   pulse_port->buffer_attr->tlength = fixed_size;
@@ -1231,6 +1328,7 @@ ags_pulse_port_set_buffer_size(AgsPulsePort *pulse_port,
   
   pthread_mutex_lock(mutex);
 
+  pulse_port->buffer_attr->fragsize = -1;
   pulse_port->buffer_attr->maxlength = -1;
   pulse_port->buffer_attr->minreq = fixed_size;
   pulse_port->buffer_attr->tlength = fixed_size;
@@ -1275,6 +1373,7 @@ ags_pulse_port_set_pcm_channels(AgsPulsePort *pulse_port,
 
   pulse_port->sample_spec->channels = pcm_channels;
 
+  pulse_port->buffer_attr->fragsize = -1;
   pulse_port->buffer_attr->maxlength = -1;
   pulse_port->buffer_attr->minreq = fixed_size;
   pulse_port->buffer_attr->tlength = fixed_size;
@@ -1347,6 +1446,7 @@ ags_pulse_port_set_format(AgsPulsePort *pulse_port,
     g_warning("pulse devout - unsupported format");
   }
   
+  pulse_port->buffer_attr->fragsize = -1;
   pulse_port->buffer_attr->maxlength = -1;
   pulse_port->buffer_attr->minreq = fixed_size;
   pulse_port->buffer_attr->tlength = fixed_size;
