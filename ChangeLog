@@ -1,3 +1,8 @@
+ags (0.9.20)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved pulseaudio eliminate feedback
+
 ags (0.9.19)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

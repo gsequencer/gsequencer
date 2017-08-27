@@ -2133,7 +2133,7 @@ ags_pulse_devout_port_free(AgsSoundcard *soundcard)
 
   if(pulse_devout->pulse_port != NULL){
     pulse_port = pulse_devout->pulse_port->data;
-    
+
     while(!g_atomic_int_get(&(pulse_port->is_empty))) usleep(500000);
   }
 

@@ -921,9 +921,18 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 
     empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[nth_empty_buffer * count]);
     next_empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[next_nth_empty_buffer * count]);
+
+    nth_empty_buffer = next_nth_empty_buffer;
+	  
+    if(nth_empty_buffer >= 7){
+      next_nth_empty_buffer = 0;
+    }else{
+      next_nth_empty_buffer = nth_empty_buffer + 1;
+    }
+
+    pulse_port->nth_empty_buffer = nth_empty_buffer;
     
-    pa_stream_begin_write(stream, &empty_buffer, &count);
-  
+    //    pa_stream_begin_write(stream, &empty_buffer, &count);  
     pa_stream_write(stream, empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
     
     pthread_mutex_unlock(mutex);
@@ -988,7 +997,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 	  empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[nth_empty_buffer * count]);
 	  next_empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[next_nth_empty_buffer * count]);
 
-	  pa_stream_begin_write(stream, &empty_buffer, &count);
+	  //	  pa_stream_begin_write(stream, &empty_buffer, &count);
 	  pa_stream_write(stream, empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
 
 	  latency = ags_pulse_port_get_latency(pulse_port);    
@@ -1083,7 +1092,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   if(!empty_run){
     //    g_message("%d", ags_synth_util_get_xcross_count_s16(pulse_devout->buffer[nth_buffer],
     //							pulse_devout->pcm_channels * pulse_devout->buffer_size));    
-    pa_stream_begin_write(stream, &(pulse_devout->buffer[nth_buffer]), &count);
+    //    pa_stream_begin_write(stream, &(pulse_devout->buffer[nth_buffer]), &count);
     pa_stream_write(stream,
 		    pulse_devout->buffer[nth_buffer],
 		    count,
@@ -1114,12 +1123,6 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   pthread_mutex_unlock(device_mutex);
 
   if(empty_run){
-    pthread_mutex_lock(mutex);
-
-    pulse_port->nth_empty_buffer = next_nth_empty_buffer;
-    
-    pthread_mutex_unlock(mutex);
-
     while(g_atomic_int_get(&(pulse_port->underflow)) > 0){
       void *empty_buffer;
       void *next_empty_buffer;
@@ -1130,9 +1133,6 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
       empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[nth_empty_buffer * count]);
       next_empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[next_nth_empty_buffer * count]);
 
-      pa_stream_begin_write(stream, &empty_buffer, &count);
-      pa_stream_write(stream, empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
-
       nth_empty_buffer = next_nth_empty_buffer;
       
       if(nth_empty_buffer >= 7){
@@ -1142,6 +1142,9 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
       }
 
       pulse_port->nth_empty_buffer = nth_empty_buffer;
+
+      //      pa_stream_begin_write(stream, &empty_buffer, &count);
+      pa_stream_write(stream, empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
 	  
       pthread_mutex_unlock(mutex);
 
