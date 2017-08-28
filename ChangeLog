@@ -1,3 +1,8 @@
+ags (0.9.22)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* trick pulseaudio pass to pa_stream_begin_write() n_bytes 0
+
 ags (0.9.21)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
