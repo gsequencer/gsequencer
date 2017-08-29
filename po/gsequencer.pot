@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 0.9.14\n"
+"Project-Id-Version: gsequencer 0.9.22\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-08-21 20:33+0200\n"
+"POT-Creation-Date: 2017-08-28 11:56+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -71,6 +71,57 @@ msgstr ""
 msgid "connect output"
 msgstr ""
 
+#: ags/X/ags_context_menu.c:151 ags/X/ags_export_window.c:353
+#: ags/X/ags_menu_bar.c:147
+msgid "export"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:179 ags/X/ags_menu_bar.c:175
+msgid "Panel"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:182 ags/X/ags_menu_bar.c:178
+msgid "Mixer"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:185 ags/X/ags_menu_bar.c:181
+msgid "Drum"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:188 ags/X/ags_menu_bar.c:184
+msgid "Matrix"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:191 ags/X/ags_menu_bar.c:187
+msgid "Synth"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:194 ags/X/ags_menu_bar.c:190
+msgid "Syncsynth"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:198 ags/X/ags_menu_bar.c:194
+msgid "FPlayer"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:203 ags/X/ags_menu_bar.c:199
+msgid "LADSPA"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:207 ags/X/ags_context_menu.c:222
+#: ags/X/ags_menu_bar.c:203 ags/X/ags_menu_bar.c:218
+msgid "DSSI"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:211 ags/X/ags_context_menu.c:226
+#: ags/X/ags_menu_bar.c:207 ags/X/ags_menu_bar.c:222
+msgid "Lv2"
+msgstr ""
+
+#: ags/X/ags_context_menu.c:231 ags/X/ags_menu_bar.c:227
+msgid "Automation"
+msgstr ""
+
 #: ags/X/ags_dssi_browser.c:160 ags/X/ags_ladspa_browser.c:155
 #: ags/X/ags_lv2_browser.c:156
 msgid "filename: "
@@ -94,36 +145,36 @@ msgid "Copyright: "
 msgstr ""
 
 #: ags/X/ags_dssi_browser.c:236 ags/X/ags_ladspa_browser.c:233
-#: ags/X/ags_lv2_browser_callbacks.c:137
+#: ags/X/ags_lv2_browser_callbacks.c:139
 msgid "Ports: "
 msgstr ""
 
-#: ags/X/ags_dssi_browser_callbacks.c:139
-#: ags/X/ags_dssi_browser_callbacks.c:229
-#: ags/X/ags_ladspa_browser_callbacks.c:132
-#: ags/X/ags_ladspa_browser_callbacks.c:243
+#: ags/X/ags_dssi_browser_callbacks.c:137
+#: ags/X/ags_dssi_browser_callbacks.c:227
+#: ags/X/ags_ladspa_browser_callbacks.c:128
+#: ags/X/ags_ladspa_browser_callbacks.c:239
 msgid "Label"
 msgstr ""
 
-#: ags/X/ags_dssi_browser_callbacks.c:150
-#: ags/X/ags_dssi_browser_callbacks.c:238
-#: ags/X/ags_ladspa_browser_callbacks.c:143
-#: ags/X/ags_ladspa_browser_callbacks.c:252
+#: ags/X/ags_dssi_browser_callbacks.c:148
+#: ags/X/ags_dssi_browser_callbacks.c:236
+#: ags/X/ags_ladspa_browser_callbacks.c:139
+#: ags/X/ags_ladspa_browser_callbacks.c:248
 msgid "Maker"
 msgstr ""
 
-#: ags/X/ags_dssi_browser_callbacks.c:161
-#: ags/X/ags_dssi_browser_callbacks.c:247
-#: ags/X/ags_ladspa_browser_callbacks.c:154
-#: ags/X/ags_ladspa_browser_callbacks.c:261
+#: ags/X/ags_dssi_browser_callbacks.c:159
+#: ags/X/ags_dssi_browser_callbacks.c:245
+#: ags/X/ags_ladspa_browser_callbacks.c:150
+#: ags/X/ags_ladspa_browser_callbacks.c:257
 msgid "Copyright"
 msgstr ""
 
-#: ags/X/ags_dssi_browser_callbacks.c:176
-#: ags/X/ags_dssi_browser_callbacks.c:256
-#: ags/X/ags_ladspa_browser_callbacks.c:169
-#: ags/X/ags_ladspa_browser_callbacks.c:270 ags/X/ags_lv2_browser.c:245
-#: ags/X/ags_lv2_browser_callbacks.c:241
+#: ags/X/ags_dssi_browser_callbacks.c:174
+#: ags/X/ags_dssi_browser_callbacks.c:254
+#: ags/X/ags_ladspa_browser_callbacks.c:165
+#: ags/X/ags_ladspa_browser_callbacks.c:266 ags/X/ags_lv2_browser.c:245
+#: ags/X/ags_lv2_browser_callbacks.c:243
 msgid "Ports"
 msgstr ""
 
@@ -135,54 +186,50 @@ msgstr ""
 msgid "channel"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:169 ags/X/ags_sequencer_editor.c:166
+#: ags/X/ags_export_soundcard.c:171 ags/X/ags_sequencer_editor.c:168
 #: ags/X/ags_soundcard_editor.c:173
 msgid "backend"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:205 ags/X/ags_output_collection_editor.c:250
+#: ags/X/ags_export_soundcard.c:210 ags/X/ags_output_collection_editor.c:250
 #: ags/X/ags_soundcard_editor.c:212
 msgid "soundcard"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:225
+#: ags/X/ags_export_soundcard.c:230
 msgid "file"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:253
+#: ags/X/ags_export_soundcard.c:258
 msgid "open"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:260
+#: ags/X/ags_export_soundcard.c:265
 msgid "output format"
 msgstr ""
 
-#: ags/X/ags_export_window.c:193
+#: ags/X/ags_export_window.c:195
 msgid "export to audio data"
 msgstr ""
 
-#: ags/X/ags_export_window.c:217
+#: ags/X/ags_export_window.c:219
 msgid "live export"
 msgstr ""
 
-#: ags/X/ags_export_window.c:229 ags/X/ags_navigation.c:308
+#: ags/X/ags_export_window.c:231 ags/X/ags_navigation.c:308
 msgid "exclude sequencers"
 msgstr ""
 
-#: ags/X/ags_export_window.c:245 ags/X/editor/ags_toolbar.c:209
+#: ags/X/ags_export_window.c:247 ags/X/editor/ags_toolbar.c:209
 msgid "mode"
 msgstr ""
 
-#: ags/X/ags_export_window.c:272
+#: ags/X/ags_export_window.c:274
 msgid "tact"
 msgstr ""
 
-#: ags/X/ags_export_window.c:294
+#: ags/X/ags_export_window.c:296
 msgid "time"
-msgstr ""
-
-#: ags/X/ags_export_window.c:351 ags/X/ags_menu_bar.c:147
-msgid "export"
 msgstr ""
 
 #: ags/X/ags_generic_preferences.c:139
@@ -227,18 +274,18 @@ msgstr ""
 msgid "audio channel: "
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:206 ags/X/ags_lv2_browser_callbacks.c:107
-#: ags/X/ags_lv2_browser_callbacks.c:214
+#: ags/X/ags_lv2_browser.c:206 ags/X/ags_lv2_browser_callbacks.c:109
+#: ags/X/ags_lv2_browser_callbacks.c:216
 msgid "Name"
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:219 ags/X/ags_lv2_browser_callbacks.c:117
-#: ags/X/ags_lv2_browser_callbacks.c:223
+#: ags/X/ags_lv2_browser.c:219 ags/X/ags_lv2_browser_callbacks.c:119
+#: ags/X/ags_lv2_browser_callbacks.c:225
 msgid "Homepage"
 msgstr ""
 
-#: ags/X/ags_lv2_browser.c:232 ags/X/ags_lv2_browser_callbacks.c:127
-#: ags/X/ags_lv2_browser_callbacks.c:232
+#: ags/X/ags_lv2_browser.c:232 ags/X/ags_lv2_browser_callbacks.c:129
+#: ags/X/ags_lv2_browser_callbacks.c:234
 msgid "M-Box"
 msgstr ""
 
@@ -317,50 +364,6 @@ msgstr ""
 
 #: ags/X/ags_machine_editor.c:247
 msgid "resize channels"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:175
-msgid "Panel"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:178
-msgid "Mixer"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:181
-msgid "Drum"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:184
-msgid "Matrix"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:187
-msgid "Synth"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:190
-msgid "Syncsynth"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:194
-msgid "FPlayer"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:199
-msgid "LADSPA"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:203 ags/X/ags_menu_bar.c:218
-msgid "DSSI"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:207 ags/X/ags_menu_bar.c:222
-msgid "Lv2"
-msgstr ""
-
-#: ags/X/ags_menu_bar.c:227
-msgid "Automation"
 msgstr ""
 
 #: ags/X/ags_midi_dialog.c:219
@@ -462,7 +465,7 @@ msgstr ""
 msgid "inputs"
 msgstr ""
 
-#: ags/X/ags_sequencer_editor.c:202
+#: ags/X/ags_sequencer_editor.c:204
 msgid "MIDI card"
 msgstr ""
 
@@ -563,7 +566,7 @@ msgstr ""
 
 #: ags/X/editor/ags_envelope_editor.c:182
 #: ags/X/editor/ags_pattern_envelope.c:248 ags/X/machine/ags_ffplayer.c:307
-#: ags/X/machine/ags_live_lv2_bridge.c:1438 ags/X/machine/ags_lv2_bridge.c:1679
+#: ags/X/machine/ags_live_lv2_bridge.c:1448 ags/X/machine/ags_lv2_bridge.c:1689
 msgid "preset"
 msgstr ""
 
@@ -766,11 +769,11 @@ msgid "channel: "
 msgstr ""
 
 #: ags/X/machine/ags_dssi_bridge.c:356 ags/X/machine/ags_live_dssi_bridge.c:355
-#: ags/X/machine/ags_live_lv2_bridge.c:1377 ags/X/machine/ags_lv2_bridge.c:1618
+#: ags/X/machine/ags_live_lv2_bridge.c:1387 ags/X/machine/ags_lv2_bridge.c:1628
 msgid "program"
 msgstr ""
 
-#: ags/X/machine/ags_live_lv2_bridge.c:488 ags/X/machine/ags_lv2_bridge.c:470
+#: ags/X/machine/ags_live_lv2_bridge.c:495 ags/X/machine/ags_lv2_bridge.c:477
 msgid "show GUI"
 msgstr ""
 

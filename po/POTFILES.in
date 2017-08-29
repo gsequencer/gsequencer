@@ -8,6 +8,7 @@
 ./ags/X/ags_bulk_member_callbacks.c
 ./ags/X/ags_connection_editor.c
 ./ags/X/ags_connection_editor_callbacks.c
+./ags/X/ags_context_menu.c
 ./ags/X/ags_dssi_browser.c
 ./ags/X/ags_dssi_browser_callbacks.c
 ./ags/X/ags_editor.c
@@ -51,8 +52,8 @@
 ./ags/X/ags_machine_callbacks.c
 ./ags/X/ags_machine_editor.c
 ./ags/X/ags_machine_editor_callbacks.c
+./ags/X/ags_menu_action_callbacks.c
 ./ags/X/ags_menu_bar.c
-./ags/X/ags_menu_bar_callbacks.c
 ./ags/X/ags_midi_dialog.c
 ./ags/X/ags_midi_dialog_callbacks.c
 ./ags/X/ags_midi_preferences.c

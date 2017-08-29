@@ -257,7 +257,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       response = gtk_dialog_run(dialog);
       gtk_widget_destroy((GtkWidget *) dialog);
 
-      if(response == GTK_RESPONSE_REJECT){
+      if(response == GTK_RESPONSE_REJECT ||
+	 response == GTK_RESPONSE_CANCEL){
 	return;
       }
 

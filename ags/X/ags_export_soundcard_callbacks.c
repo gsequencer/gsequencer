@@ -25,8 +25,9 @@
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_devout.h>
 
-#include <ags/audio/jack/ags_jack_devout.h>
+#include <ags/audio/pulse/ags_pulse_devout.h>
 
+#include <ags/audio/jack/ags_jack_devout.h>
 
 #include <ags/X/ags_export_window.h>
 
@@ -67,7 +68,8 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
   backend = gtk_combo_box_text_get_active_text(export_soundcard->backend);
   device = gtk_combo_box_text_get_active_text(export_soundcard->card);
 
-  if(device == NULL){
+  if(backend == NULL ||
+     device == NULL){
     return;
   }
   
@@ -108,6 +110,20 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
 				  "jack",
 				  5)){
       if(AGS_IS_JACK_DEVOUT(soundcard->data) &&
+	 !g_ascii_strcasecmp(device,
+			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
+	g_object_set(export_soundcard,
+		     "soundcard", soundcard->data,
+		     NULL);
+
+	found_card = TRUE;	
+
+	break;
+      }
+    }else if(!g_ascii_strncasecmp(backend,
+				  "pulse",
+				  6)){
+      if(AGS_IS_PULSE_DEVOUT(soundcard->data) &&
 	 !g_ascii_strcasecmp(device,
 			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
 	g_object_set(export_soundcard,
@@ -164,7 +180,8 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
   backend = gtk_combo_box_text_get_active_text(export_soundcard->backend);
   device = gtk_combo_box_text_get_active_text(export_soundcard->card);
 
-  if(device == NULL){
+  if(backend == NULL ||
+     device == NULL){
     return;
   }
   
@@ -205,6 +222,20 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
 				  "jack",
 				  5)){
       if(AGS_IS_JACK_DEVOUT(soundcard->data) &&
+	 !g_ascii_strcasecmp(device,
+			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
+	g_object_set(export_soundcard,
+		     "soundcard", soundcard->data,
+		     NULL);
+
+	found_card = TRUE;
+
+	break;
+      }
+    }else if(!g_ascii_strncasecmp(backend,
+				  "pulse",
+				  5)){
+      if(AGS_IS_PULSE_DEVOUT(soundcard->data) &&
 	 !g_ascii_strcasecmp(device,
 			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
 	g_object_set(export_soundcard,

@@ -1,7 +1,50 @@
+ags (0.9.22)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* trick pulseaudio pass to pa_stream_begin_write() n_bytes 0
+
+ags (0.9.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved pulseaudio restart stream
+
+ags (0.9.20)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved pulseaudio eliminate feedback
+
+ags (0.9.19)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* provide quadratic and practical icon size
+	* improved pulseaudio underflow detection
+	* fixed pulseaudio non-initialized value might be a buffer-overflow
+
+ags (0.9.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-oscillator-list restore failed due to typo
+
+ags (0.9.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed read of not finished write buffer during export audio file
+	* fixed AgsExportWindow file exists response
+	* fixed AgsExportWindow dead-lock during cancel of not existing playback
+	* improved gsequencer.desktop to provide png file
+
+ags (0.9.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* provide context menu
+
 ags (0.9.15)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved gtk-doc installation and introduced fix-local-html and fix-online-html target
 	* fixed missing check for NULL of gtk_combo_box_text_append_text() parameter in all source code
+	* fixed missing LV2_UI cleanup handling
+	* fixed missing pulseaudio backend in AgsExportSoundcard
 
 ags (0.9.14)
 

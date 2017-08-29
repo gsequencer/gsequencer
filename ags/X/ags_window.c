@@ -214,6 +214,15 @@ ags_window_init(AgsWindow *window)
   gtk_container_add((GtkContainer *) window, (GtkWidget*) vbox);
 
   /* menubar */
+  window->context_menu = ags_context_menu_new();
+  gtk_widget_set_events(GTK_WIDGET(window), 
+			(GDK_BUTTON_PRESS_MASK
+			 | GDK_BUTTON_RELEASE_MASK));
+  gtk_widget_show_all(window->context_menu);
+
+  g_signal_connect((GObject *) window, "button-press-event",
+		   G_CALLBACK(ags_window_button_press_event), (gpointer) window);
+  
   window->menu_bar = ags_menu_bar_new();
   gtk_box_pack_start((GtkBox *) vbox,
   		     (GtkWidget *) window->menu_bar,
@@ -386,6 +395,7 @@ ags_window_connect(AgsConnectable *connectable)
   g_signal_connect(G_OBJECT(window), "delete_event",
 		   G_CALLBACK(ags_window_delete_event_callback), NULL);
 
+  ags_connectable_connect(AGS_CONNECTABLE(window->context_menu));
   ags_connectable_connect(AGS_CONNECTABLE(window->menu_bar));
 
   list_start = 

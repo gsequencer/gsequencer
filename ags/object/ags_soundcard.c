@@ -689,6 +689,28 @@ ags_soundcard_get_next_buffer(AgsSoundcard *soundcard)
 }
 
 /**
+ * ags_soundcard_get_prev_buffer:
+ * @soundcard: the #AgsSoundcard
+ *
+ * Get future playback buffer.
+ *
+ * Returns: prev playback buffer
+ *
+ * Since: 0.9.17
+ */
+void*
+ags_soundcard_get_prev_buffer(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_prev_buffer, NULL);
+
+  return(soundcard_interface->get_prev_buffer(soundcard));
+}
+
+/**
  * ags_soundcard_set_bpm:
  * @soundcard: the #AgsSoundcard
  * @bpm: the bpm to set

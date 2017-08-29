@@ -68,9 +68,10 @@ EXTRA_DIST += \
 	docs/reference/libags-gui/libags_gui-sections.txt \
 	docs/reference/libags-gui/libags_gui.types \
 	docs/reference/libags-gui/libags_gui.interfaces \
-	docs/reference/libags-gui/libgsequencer-sections.txt \
-	docs/reference/libags-gui/libgsequencer.types \
-	docs/reference/libags-gui/libgsequencer.interfaces
+	docs/reference/libgsequencer/libgsequencer-sections.txt \
+	docs/reference/libgsequencer/libgsequencer.types \
+	docs/reference/libgsequencer/libgsequencer.interfaces \
+	clean-gtk-doc.sh
 
 EXTRA_DIST += \
 	lv2/lv2plug.in/ns/lv2ext/lv2_programs.h
@@ -1169,6 +1170,7 @@ libgsequencer_h_sources = \
 	ags/X/ags_bulk_member.h \
 	ags/X/ags_connection_editor_callbacks.h \
 	ags/X/ags_connection_editor.h \
+	ags/X/ags_context_menu.h \
 	ags/X/ags_dssi_browser_callbacks.h \
 	ags/X/ags_dssi_browser.h \
 	ags/X/ags_editor_callbacks.h \
@@ -1212,7 +1214,7 @@ libgsequencer_h_sources = \
 	ags/X/ags_machine_editor_callbacks.h \
 	ags/X/ags_machine_editor.h \
 	ags/X/ags_machine.h \
-	ags/X/ags_menu_bar_callbacks.h \
+	ags/X/ags_menu_action_callbacks.h \
 	ags/X/ags_menu_bar.h \
 	ags/X/ags_midi_dialog_callbacks.h \
 	ags/X/ags_midi_dialog.h \
@@ -1270,6 +1272,7 @@ libgsequencer_c_sources = \
 	ags/X/ags_bulk_member_callbacks.c \
 	ags/X/ags_connection_editor_callbacks.c \
 	ags/X/ags_connection_editor.c \
+	ags/X/ags_context_menu.c \
 	ags/X/ags_dssi_browser_callbacks.c \
 	ags/X/ags_dssi_browser.c \
 	ags/X/ags_editor.c \
@@ -1313,8 +1316,8 @@ libgsequencer_c_sources = \
 	ags/X/ags_machine_callbacks.c \
 	ags/X/ags_machine_editor.c \
 	ags/X/ags_machine_editor_callbacks.c \
+	ags/X/ags_menu_action_callbacks.c \
 	ags/X/ags_menu_bar.c \
-	ags/X/ags_menu_bar_callbacks.c \
 	ags/X/ags_midi_dialog.c \
 	ags/X/ags_midi_dialog_callbacks.c \
 	ags/X/ags_midi_preferences.c \
@@ -1748,6 +1751,8 @@ install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/styles
 	mkdir -p $(DESTDIR)/$(datadir)/xml/gsequencer/{schema/dtd/$(PACKAGE_VERSION)/,stylesheet/ags-xsl/midi-xml/}
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags.xpm $(DESTDIR)/$(datadir)/gsequencer/icons/ags.xpm
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/jumper.png $(DESTDIR)/$(datadir)/gsequencer/icons/jumper.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags.png $(DESTDIR)/$(datadir)/gsequencer/icons/ags.png
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/ags_supermoon-800x450.png $(DESTDIR)/$(datadir)/gsequencer/images/ags_supermoon-800x450.png
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/styles/ags.rc $(DESTDIR)/$(datadir)/gsequencer/styles/ags.rc
@@ -1760,7 +1765,35 @@ install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/
 	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(datadir)/doc/gsequencer/changelog.gz
 
-install-html: html 
+fix-local-html: html
+	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i 's/..\/gobject/\/usr\/share\/doc\/libglib2.0-doc\/gobject\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i 's/..\/gobject/\/usr\/share\/doc\/libglib2.0-doc\/gobject\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i 's/..\/libags-html/\/usr\/share\/doc\/libags-doc\/api\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i 's/..\/gobject/\/usr\/share\/doc\/libglib2.0-doc\/gobject\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i 's/..\/gtk2/\/usr\/share\/doc\/libgtk2.0-doc\/gtk2\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i 's/..\/gtk3/\/usr\/share\/doc\/libgtk2.0-doc\/gtk2\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/gobject/\/usr\/share\/doc\/libglib2.0-doc\/gobject\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/gtk2/\/usr\/share\/doc\/libgtk2.0-doc\/gtk2\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/gtk3/\/usr\/share\/doc\/libgtk2.0-doc\/gtk2\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/libags-html/\/usr\/share\/doc\/libags-doc\/api\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/libags-audio-html/\/usr\/share\/doc\/libags-audio-doc\/api\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/libags-gui-html/\/usr\/share\/doc\/libags-gui-doc\/api\//' {} \;
+
+fix-online-html: html
+	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i 's/..\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i 's/..\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i 's/..\/libags-html/\.\.\/libags\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i 's/..\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i 's/..\/gtk2/https\:\/\/developer\.gnome\.org\/gtk2\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i 's/..\/gtk3/https\:\/\/developer\.gnome\.org\/gtk2\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/gtk2/https\:\/\/developer\.gnome\.org\/gtk2\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/gtk3/https\:\/\/developer\.gnome\.org\/gtk2\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/libags-html/\.\.\/libags\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/libags-audio-html/\.\.\/libags-audio\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/libags-gui-html/\.\.\/libags-gui\//' {} \;
+
+install-html: fix-local-html 
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/{images,html}/
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/{images,html}/
 	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(datadir)/doc/gsequencer/images/
@@ -1772,14 +1805,14 @@ install-html: html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
-	ln -s ../../gtk-doc/html/libags $(DESTDIR)/$(datadir)/doc/libags-doc/api
-	ln -s ../../gtk-doc/html/libags_audio $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
-	ln -s ../../gtk-doc/html/libags_gui $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
-	ln -s ../../gtk-doc/html/libgsequencer $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/html/* $(DESTDIR)/$(datadir)/doc/libags-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/html/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/html/* $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
+	ln -s ../../../gtk-doc/html/libags $(DESTDIR)/$(datadir)/doc/libags-doc/api
+	ln -s ../../../gtk-doc/html/libags_audio $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
+	ln -s ../../../gtk-doc/html/libags_gui $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
+	ln -s ../../../gtk-doc/html/libgsequencer $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/libags-html/* $(DESTDIR)/$(datadir)/doc/libags-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/libags-audio-html/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/libags-gui-html/* $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
@@ -1802,16 +1835,16 @@ uninstall-hook:
 clean-local:
 	rm -rf $(top_srcdir)/html
 	rm -rf $(top_srcdir)/docs/reference/libags/xml
-	rm -rf $(top_srcdir)/docs/reference/libags/html
+	rm -rf $(top_srcdir)/docs/reference/libags/libags-html
 	rm -rf $(top_srcdir)/docs/reference/libags/tmpl
 	rm -rf $(top_srcdir)/docs/reference/libags-audio/xml
-	rm -rf $(top_srcdir)/docs/reference/libags-audio/html
+	rm -rf $(top_srcdir)/docs/reference/libags-audio/libags-audio-html
 	rm -rf $(top_srcdir)/docs/reference/libags-audio/tmpl
 	rm -rf $(top_srcdir)/docs/reference/libags-gui/xml
-	rm -rf $(top_srcdir)/docs/reference/libags-gui/html
+	rm -rf $(top_srcdir)/docs/reference/libags-gui/libags-gui-html
 	rm -rf $(top_srcdir)/docs/reference/libags-gui/tmpl
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/xml
-	rm -rf $(top_srcdir)/docs/reference/libgsequencer/html
+	rm -rf $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/tmpl
 	rm -f $(top_builddir)/docs/reference/libags/Makefile
 	rm -f $(top_builddir)/docs/reference/libags-audio/Makefile

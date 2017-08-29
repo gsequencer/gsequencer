@@ -609,6 +609,7 @@ am__objects_22 = $(am__objects_1) \
 	ags/X/libgsequencer_la-ags_bulk_member_callbacks.lo \
 	ags/X/libgsequencer_la-ags_connection_editor_callbacks.lo \
 	ags/X/libgsequencer_la-ags_connection_editor.lo \
+	ags/X/libgsequencer_la-ags_context_menu.lo \
 	ags/X/libgsequencer_la-ags_dssi_browser_callbacks.lo \
 	ags/X/libgsequencer_la-ags_dssi_browser.lo \
 	ags/X/libgsequencer_la-ags_editor.lo \
@@ -652,8 +653,8 @@ am__objects_22 = $(am__objects_1) \
 	ags/X/libgsequencer_la-ags_machine_callbacks.lo \
 	ags/X/libgsequencer_la-ags_machine_editor.lo \
 	ags/X/libgsequencer_la-ags_machine_editor_callbacks.lo \
+	ags/X/libgsequencer_la-ags_menu_action_callbacks.lo \
 	ags/X/libgsequencer_la-ags_menu_bar.lo \
-	ags/X/libgsequencer_la-ags_menu_bar_callbacks.lo \
 	ags/X/libgsequencer_la-ags_midi_dialog.lo \
 	ags/X/libgsequencer_la-ags_midi_dialog_callbacks.lo \
 	ags/X/libgsequencer_la-ags_midi_preferences.lo \
@@ -2347,10 +2348,10 @@ EXTRA_DIST = config.rpath COPYING.docs ags/config.h.in gtk-doc.make \
 	docs/reference/libags-gui/libags_gui-sections.txt \
 	docs/reference/libags-gui/libags_gui.types \
 	docs/reference/libags-gui/libags_gui.interfaces \
-	docs/reference/libags-gui/libgsequencer-sections.txt \
-	docs/reference/libags-gui/libgsequencer.types \
-	docs/reference/libags-gui/libgsequencer.interfaces \
-	lv2/lv2plug.in/ns/lv2ext/lv2_programs.h \
+	docs/reference/libgsequencer/libgsequencer-sections.txt \
+	docs/reference/libgsequencer/libgsequencer.types \
+	docs/reference/libgsequencer/libgsequencer.interfaces \
+	clean-gtk-doc.sh lv2/lv2plug.in/ns/lv2ext/lv2_programs.h \
 	lv2.lib/mda/EPiano-presets.ttl libags.pc.in libags_audio.pc.in \
 	libags_gui.pc.in libgsequencer.pc.in gsequencer.desktop.in \
 	libags.sym libags_thread.sym libags_server.sym \
@@ -3892,6 +3893,7 @@ libgsequencer_h_sources = \
 	ags/X/ags_bulk_member.h \
 	ags/X/ags_connection_editor_callbacks.h \
 	ags/X/ags_connection_editor.h \
+	ags/X/ags_context_menu.h \
 	ags/X/ags_dssi_browser_callbacks.h \
 	ags/X/ags_dssi_browser.h \
 	ags/X/ags_editor_callbacks.h \
@@ -3935,7 +3937,7 @@ libgsequencer_h_sources = \
 	ags/X/ags_machine_editor_callbacks.h \
 	ags/X/ags_machine_editor.h \
 	ags/X/ags_machine.h \
-	ags/X/ags_menu_bar_callbacks.h \
+	ags/X/ags_menu_action_callbacks.h \
 	ags/X/ags_menu_bar.h \
 	ags/X/ags_midi_dialog_callbacks.h \
 	ags/X/ags_midi_dialog.h \
@@ -3992,6 +3994,7 @@ libgsequencer_c_sources = \
 	ags/X/ags_bulk_member_callbacks.c \
 	ags/X/ags_connection_editor_callbacks.c \
 	ags/X/ags_connection_editor.c \
+	ags/X/ags_context_menu.c \
 	ags/X/ags_dssi_browser_callbacks.c \
 	ags/X/ags_dssi_browser.c \
 	ags/X/ags_editor.c \
@@ -4035,8 +4038,8 @@ libgsequencer_c_sources = \
 	ags/X/ags_machine_callbacks.c \
 	ags/X/ags_machine_editor.c \
 	ags/X/ags_machine_editor_callbacks.c \
+	ags/X/ags_menu_action_callbacks.c \
 	ags/X/ags_menu_bar.c \
-	ags/X/ags_menu_bar_callbacks.c \
 	ags/X/ags_midi_dialog.c \
 	ags/X/ags_midi_dialog_callbacks.c \
 	ags/X/ags_midi_preferences.c \
@@ -5585,6 +5588,8 @@ ags/X/libgsequencer_la-ags_connection_editor_callbacks.lo:  \
 	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_connection_editor.lo:  \
 	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
+ags/X/libgsequencer_la-ags_context_menu.lo: ags/X/$(am__dirstamp) \
+	ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_dssi_browser_callbacks.lo:  \
 	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_dssi_browser.lo: ags/X/$(am__dirstamp) \
@@ -5671,10 +5676,10 @@ ags/X/libgsequencer_la-ags_machine_editor.lo: ags/X/$(am__dirstamp) \
 	ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_machine_editor_callbacks.lo:  \
 	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
+ags/X/libgsequencer_la-ags_menu_action_callbacks.lo:  \
+	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_menu_bar.lo: ags/X/$(am__dirstamp) \
 	ags/X/$(DEPDIR)/$(am__dirstamp)
-ags/X/libgsequencer_la-ags_menu_bar_callbacks.lo:  \
-	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_midi_dialog.lo: ags/X/$(am__dirstamp) \
 	ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_midi_dialog_callbacks.lo:  \
@@ -6953,6 +6958,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_bulk_member_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_connection_editor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_connection_editor_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_context_menu.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_dssi_browser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_dssi_browser_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_editor.Plo@am__quote@
@@ -6996,8 +7002,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_machine_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_machine_editor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_machine_editor_callbacks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_menu_action_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_menu_bar.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_menu_bar_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_midi_dialog.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_midi_dialog_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_midi_preferences.Plo@am__quote@
@@ -9911,6 +9917,13 @@ ags/X/libgsequencer_la-ags_connection_editor.lo: ags/X/ags_connection_editor.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_connection_editor.lo `test -f 'ags/X/ags_connection_editor.c' || echo '$(srcdir)/'`ags/X/ags_connection_editor.c
 
+ags/X/libgsequencer_la-ags_context_menu.lo: ags/X/ags_context_menu.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_context_menu.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_context_menu.Tpo -c -o ags/X/libgsequencer_la-ags_context_menu.lo `test -f 'ags/X/ags_context_menu.c' || echo '$(srcdir)/'`ags/X/ags_context_menu.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/$(DEPDIR)/libgsequencer_la-ags_context_menu.Tpo ags/X/$(DEPDIR)/libgsequencer_la-ags_context_menu.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/ags_context_menu.c' object='ags/X/libgsequencer_la-ags_context_menu.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_context_menu.lo `test -f 'ags/X/ags_context_menu.c' || echo '$(srcdir)/'`ags/X/ags_context_menu.c
+
 ags/X/libgsequencer_la-ags_dssi_browser_callbacks.lo: ags/X/ags_dssi_browser_callbacks.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_dssi_browser_callbacks.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_dssi_browser_callbacks.Tpo -c -o ags/X/libgsequencer_la-ags_dssi_browser_callbacks.lo `test -f 'ags/X/ags_dssi_browser_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_dssi_browser_callbacks.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/$(DEPDIR)/libgsequencer_la-ags_dssi_browser_callbacks.Tpo ags/X/$(DEPDIR)/libgsequencer_la-ags_dssi_browser_callbacks.Plo
@@ -10212,19 +10225,19 @@ ags/X/libgsequencer_la-ags_machine_editor_callbacks.lo: ags/X/ags_machine_editor
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_machine_editor_callbacks.lo `test -f 'ags/X/ags_machine_editor_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_machine_editor_callbacks.c
 
+ags/X/libgsequencer_la-ags_menu_action_callbacks.lo: ags/X/ags_menu_action_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_menu_action_callbacks.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_menu_action_callbacks.Tpo -c -o ags/X/libgsequencer_la-ags_menu_action_callbacks.lo `test -f 'ags/X/ags_menu_action_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_menu_action_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/$(DEPDIR)/libgsequencer_la-ags_menu_action_callbacks.Tpo ags/X/$(DEPDIR)/libgsequencer_la-ags_menu_action_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/ags_menu_action_callbacks.c' object='ags/X/libgsequencer_la-ags_menu_action_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_menu_action_callbacks.lo `test -f 'ags/X/ags_menu_action_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_menu_action_callbacks.c
+
 ags/X/libgsequencer_la-ags_menu_bar.lo: ags/X/ags_menu_bar.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_menu_bar.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_menu_bar.Tpo -c -o ags/X/libgsequencer_la-ags_menu_bar.lo `test -f 'ags/X/ags_menu_bar.c' || echo '$(srcdir)/'`ags/X/ags_menu_bar.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/$(DEPDIR)/libgsequencer_la-ags_menu_bar.Tpo ags/X/$(DEPDIR)/libgsequencer_la-ags_menu_bar.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/ags_menu_bar.c' object='ags/X/libgsequencer_la-ags_menu_bar.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_menu_bar.lo `test -f 'ags/X/ags_menu_bar.c' || echo '$(srcdir)/'`ags/X/ags_menu_bar.c
-
-ags/X/libgsequencer_la-ags_menu_bar_callbacks.lo: ags/X/ags_menu_bar_callbacks.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_menu_bar_callbacks.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_menu_bar_callbacks.Tpo -c -o ags/X/libgsequencer_la-ags_menu_bar_callbacks.lo `test -f 'ags/X/ags_menu_bar_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_menu_bar_callbacks.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/$(DEPDIR)/libgsequencer_la-ags_menu_bar_callbacks.Tpo ags/X/$(DEPDIR)/libgsequencer_la-ags_menu_bar_callbacks.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/ags_menu_bar_callbacks.c' object='ags/X/libgsequencer_la-ags_menu_bar_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_menu_bar_callbacks.lo `test -f 'ags/X/ags_menu_bar_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_menu_bar_callbacks.c
 
 ags/X/libgsequencer_la-ags_midi_dialog.lo: ags/X/ags_midi_dialog.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_midi_dialog.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_midi_dialog.Tpo -c -o ags/X/libgsequencer_la-ags_midi_dialog.lo `test -f 'ags/X/ags_midi_dialog.c' || echo '$(srcdir)/'`ags/X/ags_midi_dialog.c
@@ -13947,6 +13960,8 @@ install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/styles
 	mkdir -p $(DESTDIR)/$(datadir)/xml/gsequencer/{schema/dtd/$(PACKAGE_VERSION)/,stylesheet/ags-xsl/midi-xml/}
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags.xpm $(DESTDIR)/$(datadir)/gsequencer/icons/ags.xpm
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/jumper.png $(DESTDIR)/$(datadir)/gsequencer/icons/jumper.png
+	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags.png $(DESTDIR)/$(datadir)/gsequencer/icons/ags.png
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/ags.png $(DESTDIR)/$(datadir)/gsequencer/images/ags.png
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/images/ags_supermoon-800x450.png $(DESTDIR)/$(datadir)/gsequencer/images/ags_supermoon-800x450.png
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/styles/ags.rc $(DESTDIR)/$(datadir)/gsequencer/styles/ags.rc
@@ -13959,7 +13974,35 @@ install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/
 	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(datadir)/doc/gsequencer/changelog.gz
 
-install-html: html 
+fix-local-html: html
+	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i 's/..\/gobject/\/usr\/share\/doc\/libglib2.0-doc\/gobject\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i 's/..\/gobject/\/usr\/share\/doc\/libglib2.0-doc\/gobject\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i 's/..\/libags-html/\/usr\/share\/doc\/libags-doc\/api\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i 's/..\/gobject/\/usr\/share\/doc\/libglib2.0-doc\/gobject\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i 's/..\/gtk2/\/usr\/share\/doc\/libgtk2.0-doc\/gtk2\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i 's/..\/gtk3/\/usr\/share\/doc\/libgtk2.0-doc\/gtk2\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/gobject/\/usr\/share\/doc\/libglib2.0-doc\/gobject\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/gtk2/\/usr\/share\/doc\/libgtk2.0-doc\/gtk2\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/gtk3/\/usr\/share\/doc\/libgtk2.0-doc\/gtk2\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/libags-html/\/usr\/share\/doc\/libags-doc\/api\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/libags-audio-html/\/usr\/share\/doc\/libags-audio-doc\/api\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/libags-gui-html/\/usr\/share\/doc\/libags-gui-doc\/api\//' {} \;
+
+fix-online-html: html
+	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i 's/..\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i 's/..\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-audio/libags-audio-html -name "*.html" -type f -exec sed -i 's/..\/libags-html/\.\.\/libags\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i 's/..\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i 's/..\/gtk2/https\:\/\/developer\.gnome\.org\/gtk2\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libags-gui/libags-gui-html -name "*.html" -type f -exec sed -i 's/..\/gtk3/https\:\/\/developer\.gnome\.org\/gtk2\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/gtk2/https\:\/\/developer\.gnome\.org\/gtk2\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/gtk3/https\:\/\/developer\.gnome\.org\/gtk2\/stable\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/libags-html/\.\.\/libags\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/libags-audio-html/\.\.\/libags-audio\//' {} \;
+	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/..\/libags-gui-html/\.\.\/libags-gui\//' {} \;
+
+install-html: fix-local-html 
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/{images,html}/
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/{images,html}/
 	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(datadir)/doc/gsequencer/images/
@@ -13971,14 +14014,14 @@ install-html: html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
-	ln -s ../../gtk-doc/html/libags $(DESTDIR)/$(datadir)/doc/libags-doc/api
-	ln -s ../../gtk-doc/html/libags_audio $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
-	ln -s ../../gtk-doc/html/libags_gui $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
-	ln -s ../../gtk-doc/html/libgsequencer $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/html/* $(DESTDIR)/$(datadir)/doc/libags-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/html/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/html/* $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
-	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
+	ln -s ../../../gtk-doc/html/libags $(DESTDIR)/$(datadir)/doc/libags-doc/api
+	ln -s ../../../gtk-doc/html/libags_audio $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
+	ln -s ../../../gtk-doc/html/libags_gui $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
+	ln -s ../../../gtk-doc/html/libgsequencer $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags/libags-html/* $(DESTDIR)/$(datadir)/doc/libags-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-audio/libags-audio-html/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libags-gui/libags-gui-html/* $(DESTDIR)/$(datadir)/doc/libags-gui-doc/api
+	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
@@ -14001,16 +14044,16 @@ uninstall-hook:
 clean-local:
 	rm -rf $(top_srcdir)/html
 	rm -rf $(top_srcdir)/docs/reference/libags/xml
-	rm -rf $(top_srcdir)/docs/reference/libags/html
+	rm -rf $(top_srcdir)/docs/reference/libags/libags-html
 	rm -rf $(top_srcdir)/docs/reference/libags/tmpl
 	rm -rf $(top_srcdir)/docs/reference/libags-audio/xml
-	rm -rf $(top_srcdir)/docs/reference/libags-audio/html
+	rm -rf $(top_srcdir)/docs/reference/libags-audio/libags-audio-html
 	rm -rf $(top_srcdir)/docs/reference/libags-audio/tmpl
 	rm -rf $(top_srcdir)/docs/reference/libags-gui/xml
-	rm -rf $(top_srcdir)/docs/reference/libags-gui/html
+	rm -rf $(top_srcdir)/docs/reference/libags-gui/libags-gui-html
 	rm -rf $(top_srcdir)/docs/reference/libags-gui/tmpl
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/xml
-	rm -rf $(top_srcdir)/docs/reference/libgsequencer/html
+	rm -rf $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html
 	rm -rf $(top_srcdir)/docs/reference/libgsequencer/tmpl
 	rm -f $(top_builddir)/docs/reference/libags/Makefile
 	rm -f $(top_builddir)/docs/reference/libags-audio/Makefile

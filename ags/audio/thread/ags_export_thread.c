@@ -465,7 +465,13 @@ ags_export_thread_run(AgsThread *thread)
 
   soundcard = AGS_SOUNDCARD(export_thread->soundcard);
 
-  soundcard_buffer = ags_soundcard_get_buffer(soundcard);
+  if(AGS_IS_DEVOUT(soundcard)){
+    soundcard_buffer = ags_soundcard_get_buffer(soundcard);
+  }else if(AGS_IS_JACK_DEVOUT(soundcard) ||
+	   AGS_IS_PULSE_DEVOUT(soundcard)){
+    soundcard_buffer = ags_soundcard_get_prev_buffer(soundcard);
+  }
+  
   ags_soundcard_get_presets(soundcard,
 			    &pcm_channels,
 			    NULL,

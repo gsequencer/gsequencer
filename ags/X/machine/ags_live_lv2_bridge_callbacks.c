@@ -49,6 +49,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+extern GHashTable *ags_live_lv2_bridge_lv2ui_handle;
 extern GHashTable *ags_live_lv2_bridge_lv2ui_idle;
 
 void
@@ -110,13 +111,13 @@ ags_live_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveLv2Bridge *live_
 
     feature[2] = NULL;
     
-    if(AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so == NULL){
-      AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so = dlopen(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_filename,
-							RTLD_NOW);
+    if(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_plugin_so == NULL){
+      AGS_BASE_PLUGIN(lv2ui_plugin)->ui_plugin_so = dlopen(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_filename,
+							   RTLD_NOW);
     }
     
-    if(AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so){
-      lv2ui_descriptor = (LV2UI_Descriptor *) dlsym(AGS_BASE_PLUGIN(lv2ui_plugin)->plugin_so,
+    if(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_plugin_so){
+      lv2ui_descriptor = (LV2UI_Descriptor *) dlsym(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_plugin_so,
 						    "lv2ui_descriptor");
       
       if(dlerror() == NULL && lv2ui_descriptor){
@@ -136,14 +137,18 @@ ags_live_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveLv2Bridge *live_
 								live_lv2_bridge,
 								&plugin_widget,
 								feature);
+	g_hash_table_insert(ags_live_lv2_bridge_lv2ui_handle,
+			    live_lv2_bridge->ui_handle, live_lv2_bridge);
+
+	ui_descriptor->cleanup = ags_live_lv2_bridge_lv2ui_cleanup_function;
 
 	if(ui_descriptor->extension_data != NULL){
 	  live_lv2_bridge->ui_feature[0]->data = ui_descriptor->extension_data(LV2_UI__idleInterface);
 	  live_lv2_bridge->ui_feature[1]->data = ui_descriptor->extension_data(LV2_UI__showInterface);
 
 	  g_hash_table_insert(ags_live_lv2_bridge_lv2ui_idle,
-			      live_lv2_bridge, ags_live_lv2_bridge_lv2ui_idle_timeout);
-	  g_timeout_add(1000 / 30, (GSourceFunc) ags_live_lv2_bridge_lv2ui_idle_timeout, (gpointer) live_lv2_bridge);
+			      live_lv2_bridge->ui_handle, live_lv2_bridge);
+	  g_timeout_add(1000 / 30, (GSourceFunc) ags_live_lv2_bridge_lv2ui_idle_timeout, (gpointer) live_lv2_bridge->ui_handle);
 	}	
       }
     }
@@ -160,6 +165,36 @@ ags_live_lv2_bridge_delete_event_callback(GtkWidget *widget, GdkEvent *event, Ag
 {
   
   return(TRUE);
+}
+
+void
+ags_live_lv2_bridge_lv2ui_cleanup_function(LV2UI_Handle handle)
+{
+  AgsLiveLv2Bridge *live_lv2_bridge;
+
+  AgsLv2uiPlugin *lv2ui_plugin;
+
+  GList *list;
+
+  live_lv2_bridge = g_hash_table_lookup(ags_live_lv2_bridge_lv2ui_handle,
+					handle);
+
+  if(live_lv2_bridge != NULL){
+    list = ags_lv2ui_plugin_find_gui_uri(ags_lv2ui_manager_get_instance()->lv2ui_plugin,
+					 live_lv2_bridge->gui_uri);
+
+    g_message("%s", live_lv2_bridge->gui_uri);
+  
+    if(list != NULL){
+      lv2ui_plugin = list->data;
+      AGS_BASE_PLUGIN(lv2ui_plugin)->ui_plugin_so = NULL;
+    }
+
+    g_hash_table_remove(ags_live_lv2_bridge_lv2ui_handle,
+			live_lv2_bridge->ui_handle);
+
+    live_lv2_bridge->ui_handle = NULL;
+  }
 }
 
 void
@@ -203,8 +238,39 @@ ags_live_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t p
   default:
     g_warning("unknown lv2 port protocol");
   }
-    
+
+  /* play */
   recall = ags_recall_get_by_effect(audio->play,
+				    live_lv2_bridge->filename, live_lv2_bridge->effect);
+  
+  if(recall != NULL){
+    play_lv2_audio = recall->data;
+
+    port = AGS_RECALL(play_lv2_audio)->port;
+    control_port = g_strdup_printf("%d/%d",
+				   port_index + 1,
+				   g_list_length(port));
+	
+    while(port != NULL){
+      if(!g_ascii_strncasecmp(AGS_PORT(port->data)->control_port,
+			      control_port,
+			      strlen(control_port))){
+	ags_port_safe_write(port->data,
+			    &value);
+	    
+	break;
+      }
+	  
+      port = port->next;
+    }
+
+    free(control_port);
+  }
+
+  g_list_free(recall);
+
+  /* recall */
+  recall = ags_recall_get_by_effect(audio->recall,
 				    live_lv2_bridge->filename, live_lv2_bridge->effect);
   
   if(recall != NULL){

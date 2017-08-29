@@ -108,3 +108,12 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
   return(TRUE);
 }
 
+void
+ags_window_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsWindow *window)
+{
+  if(event->type == GDK_BUTTON_PRESS && event->button == 3){
+    gtk_menu_popup(GTK_MENU(window->context_menu), NULL, NULL, NULL, NULL,
+                   (event != NULL) ? event->button : 0,
+                   gdk_event_get_time((GdkEvent*)event));
+  }
+}

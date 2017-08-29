@@ -175,7 +175,7 @@ GTK_DOC_V_XREF_=$(GTK_DOC_V_XREF_$(AM_DEFAULT_VERBOSITY))
 GTK_DOC_V_XREF_0=@echo "  DOC   Fixing cross-references";
 
 html-build.stamp: sgml.stamp $(DOC_MAIN_SGML_FILE) $(content_files) $(expand_content_files)
-	$(GTK_DOC_V_HTML)rm -rf html && mkdir html && \
+	$(GTK_DOC_V_HTML)rm -rf libgsequencer-html && mkdir libgsequencer-html && \
 	mkhtml_options=""; \
 	gtkdoc-mkhtml 2>&1 --help | grep  >/dev/null "\-\-verbose"; \
 	if test "$$?" = "0"; then \
@@ -187,17 +187,18 @@ html-build.stamp: sgml.stamp $(DOC_MAIN_SGML_FILE) $(content_files) $(expand_con
 	if test "$$?" = "0"; then \
 	  mkhtml_options="$$mkhtml_options --path=\"$(abs_srcdir)\""; \
 	fi; \
-	cd html && gtkdoc-mkhtml $$mkhtml_options $(MKHTML_OPTIONS) $(DOC_MODULE) ../$(DOC_MAIN_SGML_FILE)
+	cd libgsequencer-html && gtkdoc-mkhtml $$mkhtml_options $(MKHTML_OPTIONS) $(DOC_MODULE) ../$(DOC_MAIN_SGML_FILE)
 	-@test "x$(HTML_IMAGES)" = "x" || \
 	for file in $(HTML_IMAGES) ; do \
 	  if test -f $(abs_srcdir)/$$file ; then \
-	    cp $(abs_srcdir)/$$file $(abs_builddir)/html; \
+	    cp $(abs_srcdir)/$$file $(abs_builddir)/libgsequencer-html; \
 	  fi; \
 	  if test -f $(abs_builddir)/$$file ; then \
-	    cp $(abs_builddir)/$$file $(abs_builddir)/html; \
+	    cp $(abs_builddir)/$$file $(abs_builddir)/libgsequencer-html; \
 	  fi; \
+	  test -f $$file && cp $$file $(abs_builddir)/libgsequencer-html; \
 	done;
-	$(GTK_DOC_V_XREF)gtkdoc-fixxref --module=$(DOC_MODULE) --module-dir=html --html-dir=$(HTML_DIR) $(FIXXREF_OPTIONS)
+	$(GTK_DOC_V_XREF)gtkdoc-fixxref --module=$(DOC_MODULE) --module-dir=libgsequencer-html --html-dir=$(HTML_DIR) $(FIXXREF_OPTIONS)
 	$(AM_V_at)touch html-build.stamp
 
 #### pdf ####
@@ -240,18 +241,18 @@ clean-local:
 	fi
 
 distclean-local:
-	@rm -rf xml html $(REPORT_FILES) $(DOC_MODULE).pdf \
+	@rm -rf xml libgsequencer-html $(REPORT_FILES) $(DOC_MODULE).pdf \
 	    $(DOC_MODULE)-decl-list.txt $(DOC_MODULE)-decl.txt
 	@if test "$(abs_srcdir)" != "$(abs_builddir)" ; then \
 	    rm -f $(SETUP_FILES) $(DOC_MODULE).types; \
 	fi
 
 maintainer-clean-local:
-	@rm -rf xml html
+	@rm -rf xml libgsequencer-html
 
 install-data-local:
-	@installfiles=`echo $(builddir)/html/*`; \
-	if test "$$installfiles" = '$(builddir)/html/*'; \
+	@installfiles=`echo $(builddir)/libgsequencer-html/*`; \
+	if test "$$installfiles" = '$(builddir)/libgsequencer-html/*'; \
 	then echo 1>&2 'Nothing to install' ; \
 	else \
 	  if test -n "$(DOC_MODULE_VERSION)"; then \
@@ -293,12 +294,12 @@ dist-check-gtkdoc:
 endif
 
 dist-hook: dist-check-gtkdoc all-gtk-doc dist-hook-local
-	@mkdir $(distdir)/html
-	@cp ./html/* $(distdir)/html
+	@mkdir $(distdir)/libgsequencer-html
+	@cp ./libgsequencer-html/* $(distdir)/libgsequencer-html
 	@-cp ./$(DOC_MODULE).pdf $(distdir)/
 	@-cp ./$(DOC_MODULE).types $(distdir)/
 	@-cp ./$(DOC_MODULE)-sections.txt $(distdir)/
 	@cd $(distdir) && rm -f $(DISTCLEANFILES)
-	@$(GTKDOC_REBASE) --online --relative --html-dir=$(distdir)/html
+	@$(GTKDOC_REBASE) --online --relative --html-dir=$(distdir)/libgsequencer-html
 
 .PHONY : dist-hook-local docs
