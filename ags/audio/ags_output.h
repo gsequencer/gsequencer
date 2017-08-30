@@ -48,6 +48,8 @@ struct _AgsOutputClass
 
 GType ags_output_get_type();
 
+G_DEPRECATED GList* ags_output_map_audio_signal(AgsOutput *output, AgsRecallID *recall_id);
+
 AgsRecycling* ags_output_find_first_input_recycling(AgsOutput *output);
 AgsRecycling* ags_output_find_last_input_recycling(AgsOutput *output);
 

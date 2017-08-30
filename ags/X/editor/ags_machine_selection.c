@@ -27,6 +27,7 @@
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_syncsynth.h>
 #include <ags/X/machine/ags_ffplayer.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
@@ -174,6 +175,7 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
       if(AGS_IS_FFPLAYER(list->data) ||
 	 AGS_IS_DRUM(list->data) ||
 	 AGS_IS_MATRIX(list->data)  ||
+	 AGS_IS_SYNCSYNTH(list->data)  ||
 	 AGS_IS_DSSI_BRIDGE(list->data) ||
 	 (AGS_IS_LV2_BRIDGE(list->data) && (AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(list->data)->flags)) != 0) ||
 	 AGS_IS_LIVE_DSSI_BRIDGE(list->data) ||

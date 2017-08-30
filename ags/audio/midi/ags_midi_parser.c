@@ -2070,6 +2070,8 @@ ags_midi_parser_real_sysex(AgsMidiParser *midi_parser, guint status)
 #ifdef AGS_DEBUG
   g_message("discarded sysex");
 #endif
+
+  return(NULL);
 }
 
 /**

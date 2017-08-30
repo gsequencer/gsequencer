@@ -31,8 +31,9 @@
 
 #include <ags/audio/ags_devout.h>
 
-#include <ags/audio/jack/ags_jack_client.h>
 #include <ags/audio/jack/ags_jack_devout.h>
+
+#include <ags/audio/pulse/ags_pulse_devout.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
@@ -278,7 +279,8 @@ ags_soundcard_thread_set_property(GObject *gobject,
 	if(AGS_IS_DEVOUT(soundcard)){
 	  g_atomic_int_or(&(AGS_THREAD(soundcard_thread)->flags),
 			  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
-	}else if(AGS_IS_JACK_DEVOUT(soundcard)){
+	}else if(AGS_IS_JACK_DEVOUT(soundcard) ||
+		 AGS_IS_PULSE_DEVOUT(soundcard)){
 	  g_atomic_int_and(&(AGS_THREAD(soundcard_thread)->flags),
 			   (~AGS_THREAD_INTERMEDIATE_POST_SYNC));
 	}
@@ -558,6 +560,8 @@ ags_soundcard_thread_dispatch_callback(AgsPollFd *poll_fd,
 				       AgsSoundcardThread *soundcard_thread)
 {
   AgsAudioLoop *audio_loop;
+
+  AgsPollingThread *polling_thread;
   
   guint time_spent;
 
@@ -575,8 +579,13 @@ ags_soundcard_thread_dispatch_callback(AgsPollFd *poll_fd,
     //			    AGS_THREAD_SUSPEND_SIG,
     //			    0, &time_spent);
 
-    if(poll_fd->polling_thread != NULL){
-      poll_fd->polling_thread->flags |= AGS_POLLING_THREAD_OMIT;
+    polling_thread = ags_thread_find_type(audio_loop,
+					  AGS_TYPE_POLLING_THREAD);
+
+    if(polling_thread != NULL){
+      g_atomic_int_or(&(polling_thread->flags),
+		      AGS_POLLING_THREAD_OMIT);
+      g_atomic_int_inc(&(polling_thread->omit_count));
     }
   }
 }

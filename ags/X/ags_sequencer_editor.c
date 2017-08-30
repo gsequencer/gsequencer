@@ -20,6 +20,8 @@
 #include <ags/X/ags_sequencer_editor.h>
 #include <ags/X/ags_sequencer_editor_callbacks.h>
 
+#include <ags/util/ags_list_util.h>
+
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_applicable.h>
@@ -534,19 +536,24 @@ ags_sequencer_editor_reset(AgsApplicable *applicable)
     //FIXME:JK: work-around for alsa-handle
     tmp = card_id->data;
     
-    if(use_alsa){
+    if(card_id->data != NULL &&
+       use_alsa){
       tmp = g_strdup_printf("%s,0",
 			    card_id->data);
     }
     
-    if(!g_ascii_strcasecmp(tmp,
+    if(tmp != NULL &&
+       device != NULL &&
+       !g_ascii_strcasecmp(tmp,
 			   device)){
       found_card = TRUE;
     }
 
-    gtk_combo_box_text_append_text(sequencer_editor->card,
-				   tmp);
-
+    if(tmp != NULL){
+      gtk_combo_box_text_append_text(sequencer_editor->card,
+				     tmp);
+    }
+    
     if(use_alsa){
       g_free(tmp);
     }
@@ -610,7 +617,8 @@ ags_sequencer_editor_add_jack(AgsSequencerEditor *sequencer_editor,
 
   distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
 
-  if(distributed_manager != NULL){
+  if((distributed_manager = ags_list_util_find_type(distributed_manager,
+						    AGS_TYPE_JACK_SERVER)) != NULL){
     jack_server = AGS_JACK_SERVER(distributed_manager->data);
   }else{
     g_warning("distributed manager not found");
@@ -668,8 +676,10 @@ ags_sequencer_editor_add_jack(AgsSequencerEditor *sequencer_editor,
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(sequencer_editor->card))));
 
   while(card_uri != NULL){
-    gtk_combo_box_text_append_text(sequencer_editor->card,
-    				   card_uri->data);
+    if(card_uri->data != NULL){
+      gtk_combo_box_text_append_text(sequencer_editor->card,
+				     card_uri->data);
+    }
     
     card_uri = card_uri->next;
   }
@@ -706,7 +716,8 @@ ags_sequencer_editor_remove_jack(AgsSequencerEditor *sequencer_editor,
   main_loop = application_context->main_loop;
   distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
 
-  if(distributed_manager == NULL){
+  if((distributed_manager = ags_list_util_find_type(distributed_manager,
+						    AGS_TYPE_JACK_SERVER)) == NULL){
     g_warning("distributed manager not found");
 
     pthread_mutex_unlock(application_mutex);
@@ -739,7 +750,8 @@ ags_sequencer_editor_remove_jack(AgsSequencerEditor *sequencer_editor,
   gtk_combo_box_set_active(GTK_COMBO_BOX(sequencer_editor->backend),
 			   -1);
 
-  if(distributed_manager != NULL){
+  if((distributed_manager = ags_list_util_find_type(distributed_manager,
+						    AGS_TYPE_JACK_SERVER)) != NULL){
     ags_distributed_manager_unregister_sequencer(AGS_DISTRIBUTED_MANAGER(distributed_manager->data),
 						 jack_midiin);
   }
@@ -919,7 +931,8 @@ ags_sequencer_editor_load_jack_card(AgsSequencerEditor *sequencer_editor)
 
   distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
 
-  if(distributed_manager == NULL){
+  if((distributed_manager = ags_list_util_find_type(distributed_manager,
+						    AGS_TYPE_JACK_SERVER)) == NULL){
     g_warning("distributed manager not found");
 
     pthread_mutex_unlock(application_mutex);
@@ -946,9 +959,10 @@ ags_sequencer_editor_load_jack_card(AgsSequencerEditor *sequencer_editor)
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(sequencer_editor->card))));
 
   while(card_id != NULL){
-    gtk_combo_box_text_append_text(sequencer_editor->card,
-				   card_id->data);
-
+    if(card_id->data != NULL){
+      gtk_combo_box_text_append_text(sequencer_editor->card,
+				     card_id->data);
+    }
     
     card_id = card_id->next;
   }
@@ -997,9 +1011,10 @@ ags_sequencer_editor_load_alsa_card(AgsSequencerEditor *sequencer_editor)
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(sequencer_editor->card))));
 
   while(card_id != NULL){
-    gtk_combo_box_text_append_text(sequencer_editor->card,
-				   card_id->data);
-
+    if(card_id->data != NULL){
+      gtk_combo_box_text_append_text(sequencer_editor->card,
+				     card_id->data);
+    }
     
     card_id = card_id->next;
   }
@@ -1057,9 +1072,10 @@ ags_sequencer_editor_load_oss_card(AgsSequencerEditor *sequencer_editor)
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(sequencer_editor->card))));
 
   while(card_id != NULL){
-    gtk_combo_box_text_append_text(sequencer_editor->card,
-				   card_id->data);
-
+    if(card_id->data != NULL){
+      gtk_combo_box_text_append_text(sequencer_editor->card,
+				     card_id->data);
+    }
     
     card_id = card_id->next;
   }

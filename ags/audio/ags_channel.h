@@ -65,6 +65,9 @@ struct _AgsChannel
 
   guint flags;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   GObject *audio;
   GObject *soundcard;
 
@@ -90,7 +93,10 @@ struct _AgsChannel
   // GObject *recycling_context; // contains child recycling
   GList *recall_id; // there may be several recall's running
 
+  pthread_mutexattr_t *recall_mutexattr;
   pthread_mutex_t *recall_mutex;
+
+  pthread_mutexattr_t *play_mutexattr;
   pthread_mutex_t *play_mutex;
 
   GList *container;

@@ -283,34 +283,8 @@ ags_server_add_to_registry(AgsConnectable *connectable)
   AgsServer *server;
   //  AgsRegistry *registry;
 
-#ifdef AGS_WITH_XMLRPC_C
-  struct xmlrpc_method_info3 *method_info;
-#endif /* AGS_WITH_XMLRPC_C */
-
   server = AGS_SERVER(connectable);
   
-  //  registry = AGS_REGISTRY(server->registry);
-
-
-#ifdef AGS_WITH_XMLRPC_C
-  /* create object */
-  method_info = (struct xmlrpc_method_info3 *) malloc(sizeof(struct xmlrpc_method_info3));
-  method_info->methodName = "ags_server_create_object\0";
-  method_info->methodFunction = &ags_server_create_object;
-  method_info->serverInfo = NULL;
-  xmlrpc_registry_add_method3(&(ags_service_provider_get_env(AGS_SERVICE_PROVIDER(server->application_context))),
-			      registry->registry,
-			      method_info);
-
-  /* set property */
-  method_info = (struct xmlrpc_method_info3 *) malloc(sizeof(struct xmlrpc_method_info3));
-  method_info->methodName = "ags_server_object_set_property\0";
-  method_info->methodFunction = &ags_server_object_set_property;
-  method_info->serverInfo = NULL;
-  xmlrpc_registry_add_method3(&(ags_service_provider_get_env(AGS_SERVICE_PROVIDER(server->application_context))),
-			      registry->registry,
-			      method_info);
-#endif /* AGS_WITH_XMLRPC_C */
 
   /* children */
   //  ags_connectable_add_to_registry(AGS_CONNECTABLE(server->registry));

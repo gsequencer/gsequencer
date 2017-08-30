@@ -26,6 +26,10 @@
 #include <ags/server/ags_server.h>
 
 #include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <string.h>
 
 void ags_registry_class_init(AgsRegistryClass *registry);
 void ags_registry_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -108,9 +112,7 @@ ags_registry_init(AgsRegistry *registry)
   registry->previous = NULL;
   registry->current = NULL;
 
-#ifdef AGS_WITH_XMLRPC_C
   registry->registry = NULL;
-#endif
   
   registry->id_length = AGS_REGISTRY_DEFAULT_ID_LENGTH;
   registry->counter = 0;

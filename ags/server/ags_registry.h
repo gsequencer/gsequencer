@@ -64,6 +64,8 @@ struct _AgsRegistry
 
 #ifdef AGS_WITH_XMLRPC_C
   xmlrpc_registry *registry;
+#else
+  gpointer registry;
 #endif
 
   GObject *server;

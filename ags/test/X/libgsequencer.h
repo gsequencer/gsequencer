@@ -170,12 +170,13 @@
 #include <ags/X/ags_listing_editor.h>
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_automation_window_callbacks.h>
-#include <ags/X/ags_menu_bar_callbacks.h>
+#include <ags/X/ags_menu_action_callbacks.h>
 #include <ags/X/ags_plugin_browser_callbacks.h>
 #include <ags/X/ags_generic_preferences_callbacks.h>
 #include <ags/X/ags_property_collection_editor.h>
 #include <ags/X/ags_automation_window.h>
 #include <ags/X/ags_connection_editor_callbacks.h>
+#include <ags/X/ags_context_menu.h>
 #include <ags/X/ags_property_collection_editor_callbacks.h>
 #include <ags/X/ags_server_preferences_callbacks.h>
 #include <ags/X/ags_link_collection_editor.h>
@@ -184,8 +185,8 @@
 #include <ags/X/ags_output_collection_editor.h>
 #include <ags/X/task/ags_blink_cell_pattern_cursor.h>
 #include <ags/X/task/ags_toggle_led.h>
-#include <ags/X/task/ags_add_soundcard_editor_jack.h>
-#include <ags/X/task/ags_remove_soundcard_editor_jack.h>
+#include <ags/X/task/ags_add_soundcard_editor_sink.h>
+#include <ags/X/task/ags_remove_soundcard_editor_sink.h>
 #include <ags/X/task/ags_display_tact.h>
 #include <ags/X/task/ags_scroll_on_play.h>
 #include <ags/X/task/ags_change_tact.h>

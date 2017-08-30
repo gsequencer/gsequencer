@@ -53,6 +53,7 @@
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_syncsynth.h>
 #include <ags/X/machine/ags_ffplayer.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
@@ -236,6 +237,9 @@ ags_pattern_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *ev
       }else if(AGS_IS_SYNTH(machine)){
 	ags_pattern_edit_draw_segment(pattern_edit, cr);
 	ags_pattern_edit_draw_notation(pattern_edit, cr);
+      }else if(AGS_IS_SYNCSYNTH(machine)){
+	ags_pattern_edit_draw_segment(pattern_edit, cr);
+	ags_pattern_edit_draw_notation(pattern_edit, cr);
       }else if(AGS_IS_FFPLAYER(machine)){
 	ags_pattern_edit_draw_segment(pattern_edit, cr);
 	ags_pattern_edit_draw_notation(pattern_edit, cr);
@@ -357,6 +361,8 @@ ags_pattern_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButt
       }else if(AGS_IS_MATRIX(machine)){
 	ags_pattern_edit_drawing_area_button_press_event_set_control();
       }else if(AGS_IS_SYNTH(machine)){
+	ags_pattern_edit_drawing_area_button_press_event_set_control();
+      }else if(AGS_IS_SYNCSYNTH(machine)){
 	ags_pattern_edit_drawing_area_button_press_event_set_control();
       }else if(AGS_IS_FFPLAYER(machine)){
 	ags_pattern_edit_drawing_area_button_press_event_set_control();
@@ -761,6 +767,8 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
 	ags_pattern_edit_draw_position(pattern_edit, cr);
       }else if(AGS_IS_MATRIX(machine)){
 	ags_pattern_edit_draw_position(pattern_edit, cr);
+      }else if(AGS_IS_SYNCSYNTH(machine)){
+	ags_pattern_edit_draw_position(pattern_edit, cr);
       }else if(AGS_IS_FFPLAYER(machine)){
 	ags_pattern_edit_draw_position(pattern_edit, cr);
       }else if(AGS_IS_SYNTH(machine)){
@@ -780,6 +788,8 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
 	ags_pattern_edit_drawing_area_button_release_event_set_control();
       }else if(AGS_IS_MATRIX(machine)){
 	ags_pattern_edit_drawing_area_button_release_event_set_control();
+      }else if(AGS_IS_SYNCSYNTH(machine)){
+	ags_pattern_edit_drawing_area_button_release_event_set_control();
       }else if(AGS_IS_FFPLAYER(machine)){
 	ags_pattern_edit_drawing_area_button_release_event_set_control();
       }else if(AGS_IS_SYNTH(machine)){
@@ -793,6 +803,8 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
       }else if(AGS_IS_DRUM(machine)){
 	ags_pattern_edit_drawing_area_button_release_event_draw_control(cr);
       }else if(AGS_IS_MATRIX(machine)){
+	ags_pattern_edit_drawing_area_button_release_event_draw_control(cr);
+      }else if(AGS_IS_SYNCSYNTH(machine)){
 	ags_pattern_edit_drawing_area_button_release_event_draw_control(cr);
       }else if(AGS_IS_FFPLAYER(machine)){
 	ags_pattern_edit_drawing_area_button_release_event_draw_control(cr);
@@ -1056,6 +1068,9 @@ ags_pattern_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMo
 	ags_pattern_edit_drawing_area_motion_notify_event_set_control();
 	ags_pattern_edit_drawing_area_motion_notify_event_draw_control(cr);
       }else if(AGS_IS_MATRIX(machine)){
+	ags_pattern_edit_drawing_area_motion_notify_event_set_control();
+	ags_pattern_edit_drawing_area_motion_notify_event_draw_control(cr);
+      }else if(AGS_IS_SYNCSYNTH(machine)){
 	ags_pattern_edit_drawing_area_motion_notify_event_set_control();
 	ags_pattern_edit_drawing_area_motion_notify_event_draw_control(cr);
       }else if(AGS_IS_FFPLAYER(machine)){

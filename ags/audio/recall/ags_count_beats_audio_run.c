@@ -779,7 +779,7 @@ ags_count_beats_audio_run_seek(AgsSeekable *seekable,
   if(delay_audio->sequencer_duration->port_value.ags_port_double != 0.0){
     seq_steps = (steps % (guint) delay_audio->sequencer_duration->port_value.ags_port_double);
   }else{
-    seq_steps = (steps % 16);
+    return;
   }
   
   if(move_forward){

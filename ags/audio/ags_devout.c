@@ -157,6 +157,7 @@ guint ags_devout_get_attack(AgsSoundcard *soundcard);
 
 void* ags_devout_get_buffer(AgsSoundcard *soundcard);
 void* ags_devout_get_next_buffer(AgsSoundcard *soundcard);
+void* ags_devout_get_prev_buffer(AgsSoundcard *soundcard);
 
 guint ags_devout_get_delay_counter(AgsSoundcard *soundcard);
 
@@ -214,8 +215,8 @@ enum{
 static gpointer ags_devout_parent_class = NULL;
 static guint devout_signals[LAST_SIGNAL];
 
-const int endian_i = 1;
-#define is_bigendian() ( (*(char*)&endian_i) == 0 )
+const int ags_devout_endian_i = 1;
+#define is_bigendian() ( (*(char*)&ags_devout_endian_i) == 0 )
 
 GType
 ags_devout_get_type (void)
@@ -575,6 +576,7 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->get_buffer = ags_devout_get_buffer;
   soundcard->get_next_buffer = ags_devout_get_next_buffer;
+  soundcard->get_prev_buffer = ags_devout_get_prev_buffer;
 
   soundcard->get_delay_counter = ags_devout_get_delay_counter;
 
@@ -609,8 +611,8 @@ ags_devout_init(AgsDevout *devout)
   pthread_mutexattr_t *attr;
 
   /* insert devout mutex */
-  //FIXME:JK: memory leak
-  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  devout->mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
@@ -620,7 +622,8 @@ ags_devout_init(AgsDevout *devout)
 				PTHREAD_PRIO_INHERIT);
 #endif
 
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  devout->mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
 
@@ -864,7 +867,7 @@ ags_devout_set_property(GObject *gobject,
 	AgsConfig *config;
 
 	gchar *segmentation;
-	guint discriminante, nominante;
+	guint denumerator, numerator;
 	
 	g_object_ref(G_OBJECT(application_context));
 
@@ -879,10 +882,10 @@ ags_devout_set_property(GObject *gobject,
 
 	if(segmentation != NULL){
 	  sscanf(segmentation, "%d/%d",
-		 &discriminante,
-		 &nominante);
+		 &denumerator,
+		 &numerator);
     
-	  devout->delay_factor = 1.0 / nominante * (nominante / discriminante);
+	  devout->delay_factor = 1.0 / numerator * (numerator / denumerator);
 
 	  g_free(segmentation);
 	}
@@ -1239,6 +1242,12 @@ ags_devout_finalize(GObject *gobject)
 		     g_object_unref);
   }
   
+  pthread_mutex_destroy(devout->mutex);
+  free(devout->mutex);
+
+  pthread_mutexattr_destroy(devout->mutexattr);
+  free(devout->mutexattr);
+
   /* call parent */
   G_OBJECT_CLASS(ags_devout_parent_class)->finalize(gobject);
 }
@@ -2488,7 +2497,7 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
     nth_buffer = 1;
   }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
     nth_buffer = 2;
-  }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
+  }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
     nth_buffer = 3;
   }
 
@@ -3338,7 +3347,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     nth_buffer = 1;
   }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
     nth_buffer = 2;
-  }else if((AGS_DEVOUT_BUFFER3 & devout->flags) != 0){
+  }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
     nth_buffer = 3;
   }
 
@@ -3686,7 +3695,7 @@ void*
 ags_devout_get_buffer(AgsSoundcard *soundcard)
 {
   AgsDevout *devout;
-  signed short *buffer;
+  void *buffer;
   
   devout = AGS_DEVOUT(soundcard);
 
@@ -3709,7 +3718,7 @@ void*
 ags_devout_get_next_buffer(AgsSoundcard *soundcard)
 {
   AgsDevout *devout;
-  signed short *buffer;
+  void *buffer;
   
   devout = AGS_DEVOUT(soundcard);
 
@@ -3726,6 +3735,29 @@ ags_devout_get_next_buffer(AgsSoundcard *soundcard)
     buffer = devout->buffer[3];
   }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
     buffer = devout->buffer[0];
+  }else{
+    buffer = NULL;
+  }
+
+  return(buffer);
+}
+
+void*
+ags_devout_get_prev_buffer(AgsSoundcard *soundcard)
+{
+  AgsDevout *devout;
+  void *buffer;
+  
+  devout = AGS_DEVOUT(soundcard);
+
+  if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
+    buffer = devout->buffer[3];
+  }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
+    buffer = devout->buffer[0];
+  }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
+    buffer = devout->buffer[1];
+  }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
+    buffer = devout->buffer[2];
   }else{
     buffer = NULL;
   }
@@ -3836,7 +3868,9 @@ ags_devout_adjust_delay_and_attack(AgsDevout *devout)
 {
   gdouble delay;
   guint default_tact_frames;
+  guint delay_tact_frames;
   guint default_period;
+  gint next_attack;
   guint i;
 
   if(devout == NULL){
@@ -3850,26 +3884,88 @@ ags_devout_adjust_delay_and_attack(AgsDevout *devout)
 #endif
   
   default_tact_frames = (guint) (delay * devout->buffer_size);
+  delay_tact_frames = (guint) (floor(delay) * devout->buffer_size);
   default_period = (1.0 / AGS_SOUNDCARD_DEFAULT_PERIOD) * (default_tact_frames);
 
-  devout->attack[0] = 0;
-  devout->delay[0] = delay;
+  i = 0;
+  
+  devout->attack[0] = (guint) floor(0.25 * devout->buffer_size);
+  next_attack = (((devout->attack[i] + default_tact_frames) / devout->buffer_size) - delay) * devout->buffer_size;
+
+  if(next_attack >= devout->buffer_size){
+    next_attack = devout->buffer_size - 1;
+  }
+  
+  /* check if delay drops for next attack */
+  if(next_attack < 0){
+    devout->attack[i] = devout->attack[i] - ((gdouble) next_attack / 2.0);
+
+    if(devout->attack[i] < 0){
+      devout->attack[i] = 0;
+    }
+    
+    if(devout->attack[i] >= devout->buffer_size){
+      devout->attack[i] = devout->buffer_size - 1;
+    }
+    
+    next_attack = next_attack + (next_attack / 2.0);
+
+    if(next_attack < 0){
+      next_attack = 0;
+    }
+
+    if(next_attack >= devout->buffer_size){
+      next_attack = devout->buffer_size - 1;
+    }
+  }
   
   for(i = 1; i < (int)  2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
-    devout->attack[i] = (guint) ((i * default_tact_frames + devout->attack[i - 1]) / (AGS_SOUNDCARD_DEFAULT_PERIOD / (delay * i))) % (guint) (devout->buffer_size);
+    devout->attack[i] = next_attack;
+    next_attack = (((devout->attack[i] + default_tact_frames) / devout->buffer_size) - delay) * devout->buffer_size;
+
+    if(next_attack >= devout->buffer_size){
+      next_attack = devout->buffer_size - 1;
+    }
+    
+    /* check if delay drops for next attack */
+    if(next_attack < 0){
+      devout->attack[i] = devout->attack[i] - ((gdouble) next_attack / 2.0);
+
+      if(devout->attack[i] < 0){
+	devout->attack[i] = 0;
+      }
+
+      if(devout->attack[i] >= devout->buffer_size){
+	devout->attack[i] = devout->buffer_size - 1;
+      }
+    
+      next_attack = next_attack + (next_attack / 2.0);
+      
+      if(next_attack < 0){
+	next_attack = 0;
+      }
+
+      if(next_attack >= devout->buffer_size){
+	next_attack = devout->buffer_size - 1;
+      }
+    }
     
 #ifdef AGS_DEBUG
     g_message("%d", devout->attack[i]);
 #endif
   }
+
+  devout->attack[0] = devout->attack[i - 2];
   
-  for(i = 1; i < (int) 2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
-    devout->delay[i] = ((gdouble) (default_tact_frames + devout->attack[i])) / (gdouble) devout->buffer_size;
+  for(i = 0; i < (int) 2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD - 1; i++){
+    devout->delay[i] = ((gdouble) (default_tact_frames + devout->attack[i] - devout->attack[i + 1])) / (gdouble) devout->buffer_size;
     
 #ifdef AGS_DEBUG
     g_message("%f", devout->delay[i]);
 #endif
   }
+
+  devout->delay[i] = ((gdouble) (default_tact_frames + devout->attack[i] - devout->attack[0])) / (gdouble) devout->buffer_size;
 }
 
 /**

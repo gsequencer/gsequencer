@@ -23,6 +23,26 @@
 #include <glib.h>
 #include <glib-object.h>
 
+/* zero-crossing */
+guint ags_synth_util_get_xcross_count_s8(signed char *buffer,
+					 guint buffer_size);
+guint ags_synth_util_get_xcross_count_s16(signed short *buffer,
+					  guint buffer_size);
+guint ags_synth_util_get_xcross_count_s24(signed long *buffer,
+					  guint buffer_size);
+guint ags_synth_util_get_xcross_count_s32(signed long *buffer,
+					  guint buffer_size);
+guint ags_synth_util_get_xcross_count_s64(signed long long *buffer,
+					  guint buffer_size);
+guint ags_synth_util_get_xcross_count_float(float *buffer,
+					    guint buffer_size);
+guint ags_synth_util_get_xcross_count_double(double *buffer,
+					     guint buffer_size);
+
+guint ags_synth_util_get_xcross_count(void *buffer,
+				      guint audio_buffer_util_format,
+				      guint buffer_size);
+
 /* sin oscillator */
 void ags_synth_util_sin_s8(signed char *buffer,
 			   gdouble freq, gdouble phase, gdouble volume,

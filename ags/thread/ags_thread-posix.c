@@ -362,7 +362,8 @@ ags_thread_init(AgsThread *thread)
   int err;
   
   /* insert audio loop mutex */
-  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  thread->obj_mutexattr =
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
 
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
@@ -377,7 +378,8 @@ ags_thread_init(AgsThread *thread)
   }
 #endif
   
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  thread->obj_mutex =
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
   
@@ -393,7 +395,10 @@ ags_thread_init(AgsThread *thread)
   pthread_mutex_unlock(application_mutex);
 
   /* the condition */
-  cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  thread->obj_condattr = NULL;
+
+  thread->obj_cond =
+    cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
   pthread_cond_init(cond, NULL);
 
   condition_manager = ags_condition_manager_get_instance();
@@ -674,7 +679,10 @@ ags_thread_finalize(GObject *gobject)
 
   ags_mutex_manager_remove(mutex_manager,
 			   (GObject *) thread);
-  
+
+  pthread_mutexattr_destroy(thread->obj_mutexattr);
+  free(thread->obj_mutexattr);
+
   ags_condition_manager_remove(condition_manager,
 			       (GObject *) thread);
   
@@ -2628,18 +2636,26 @@ ags_thread_real_clock(AgsThread *thread)
 
     time_cycle = NSEC_PER_SEC / thread->freq;
       
-    relative_time_spent = time_cycle - time_spent - g_atomic_int_get(&(thread->time_late)) - AGS_THREAD_TOLERANCE;
+    relative_time_spent = time_cycle - time_spent - AGS_THREAD_TOLERANCE;
 
-    if(relative_time_spent < 0.0){
-      g_atomic_int_set(&(thread->time_late),
-		       (guint) ceil(-1.25 * relative_time_spent));
+    if(relative_time_spent - (gdouble) g_atomic_int_get(&(thread->time_late)) < 0.0){
+      if(g_atomic_int_get(&(thread->time_late)) - (gint) ceil(1.25 * relative_time_spent) < 0){
+	g_atomic_int_set(&(thread->time_late),
+			 0);
+      }else{
+	g_atomic_int_set(&(thread->time_late),
+			 g_atomic_int_get(&(thread->time_late)) - (gint) ceil(1.25 * relative_time_spent));
+      }
     }else if(relative_time_spent > 0.0 &&
-	     relative_time_spent < time_cycle){
+	     relative_time_spent - (gdouble) g_atomic_int_get(&(thread->time_late)) < (44.0 / 45.0) * time_cycle){
       g_atomic_int_set(&(thread->time_late),
 		       0);
-      timed_sleep.tv_nsec = (long) relative_time_spent - (1.0 / 45.0) * time_cycle;
+      timed_sleep.tv_nsec = (long) relative_time_spent - (gdouble) g_atomic_int_get(&(thread->time_late)) - (1.0 / 45.0) * time_cycle;
       
       nanosleep(&timed_sleep, NULL);
+    }else{
+      g_atomic_int_set(&(thread->time_late),
+		       0);
     }
 
     clock_gettime(CLOCK_MONOTONIC, thread->computing_time);
@@ -2846,6 +2862,8 @@ void*
 ags_thread_timer(void *ptr)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 void*
@@ -3434,6 +3452,8 @@ ags_thread_timelock_loop(void *ptr)
   }
 
   pthread_mutex_unlock(thread->timelock_mutex);
+
+  return(NULL);
 }
 
 void

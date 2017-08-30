@@ -47,10 +47,10 @@ struct _AgsLocalTaskControllerClass
 {
   AgsControllerClass controller;
 
-  void (*launch)(AgsLocalTaskController *local_task_controller,
-		 AgsTask *task);
-  void (*launch_timed)(AgsLocalTaskController *local_task_controller,
-		       AgsTask *task, AgsTimestamp *timestamp);
+  gpointer (*launch)(AgsLocalTaskController *local_task_controller,
+		     AgsTask *task);
+  gpointer (*launch_timed)(AgsLocalTaskController *local_task_controller,
+			   AgsTask *task, AgsTimestamp *timestamp);
 };
 
 GType ags_local_task_controller_get_type();

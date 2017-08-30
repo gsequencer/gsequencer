@@ -636,8 +636,8 @@ ags_channel_init(AgsChannel *channel)
   pthread_mutexattr_t *attr;
 
   /* create mutex */
-  //FIXME:JK: memory leak
-  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  channel->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
@@ -647,7 +647,8 @@ ags_channel_init(AgsChannel *channel)
 				PTHREAD_PRIO_INHERIT);
 #endif
 
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  channel->obj_mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
 
@@ -762,7 +763,8 @@ ags_channel_init(AgsChannel *channel)
   channel->recall_id = NULL;
 
   /* recall */
-  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  channel->recall_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
@@ -771,7 +773,8 @@ ags_channel_init(AgsChannel *channel)
   pthread_mutex_init(channel->recall_mutex,
 		     attr);
 
-  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  channel->play_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
@@ -1438,12 +1441,23 @@ ags_channel_dispose(GObject *gobject)
   }
   
   /* playback */
-  //  if(channel->playback != NULL){
-  //    g_object_run_dispose(channel->playback);
-  //    g_object_unref(channel->playback);
+  if(channel->playback != NULL){
+    AgsPlayback *playback;
+
+    playback = channel->playback;
+    
+    ags_thread_stop(playback->channel_thread[0]);
+    ags_thread_stop(playback->channel_thread[1]);
+    ags_thread_stop(playback->channel_thread[2]);
+    
+    g_object_set(playback,
+		 "source", NULL,
+		 NULL);
+    //    g_object_run_dispose(playback);
+    g_object_unref(playback);
   
-  //    channel->playback = NULL;
-  //  }
+    channel->playback = NULL;
+  }
 
   /* recall id */
   if(channel->recall_id != NULL){
@@ -1570,6 +1584,9 @@ ags_channel_finalize(GObject *gobject)
 
   channel = AGS_CHANNEL(gobject);
 
+  pthread_mutexattr_destroy(channel->obj_mutexattr);
+  free(channel->obj_mutexattr);
+
   /* audio */
   if(channel->audio != NULL){
     g_object_unref(channel->audio);
@@ -1606,7 +1623,7 @@ ags_channel_finalize(GObject *gobject)
 
   /* playback */
   if(channel->playback != NULL){
-    g_object_unref(channel->playback);  
+    g_object_unref(channel->playback);
   }
 
   /* recall id */
@@ -1623,9 +1640,17 @@ ags_channel_finalize(GObject *gobject)
 		   g_object_unref);
 
   pthread_mutex_destroy(channel->recall_mutex);
-  pthread_mutex_destroy(channel->play_mutex);
-
   free(channel->recall_mutex);
+
+  pthread_mutexattr_destroy(channel->recall_mutexattr);
+  free(channel->recall_mutexattr);
+
+  pthread_mutex_destroy(channel->play_mutex);
+  free(channel->play_mutex);
+
+  pthread_mutexattr_destroy(channel->play_mutexattr);
+  free(channel->play_mutexattr);
+
   free(channel->play_mutex);
   
   /* pattern */
@@ -9763,6 +9788,11 @@ ags_channel_tillrecycling_cancel(AgsChannel *channel,
   }
 
   /* entry point */
+  if(!AGS_IS_CHANNEL(channel) ||
+     !AGS_IS_RECALL_ID(recall_id)){
+    return;
+  } 
+  
   audio = (AgsAudio *) channel->audio;
 
   if(AGS_IS_OUTPUT(channel)){
@@ -9929,7 +9959,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       invalid_recall_id_list = invalid_recall_id_list->next;
     }
     
-    while(recall_id_list != NULL){
+    while(recall_id_list != NULL){      
       if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) == 0){
 	success = FALSE;
       
@@ -10348,8 +10378,9 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
     
     audio = AGS_AUDIO(output->audio);
 
-    if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0)
+    if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
       return(list);
+    }
 
     if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
       current = ags_channel_nth(audio->input,
@@ -10728,7 +10759,8 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       recall_id = current->recall_id;
     
       while(recall_id != NULL){
-	if(g_list_find(collected_recall_id,
+	if(recall_id->data != NULL &&
+	   g_list_find(collected_recall_id,
 		       recall_id->data) == NULL){
 	  list = g_list_prepend(list,
 				recall_id->data);
@@ -11832,6 +11864,8 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
   channel_recall_id_list = NULL;
   channel_recall_id_list = ags_channel_tillrecycling_collect_devout_play_down(channel,
 									      channel_recall_id_list, TRUE);
+  channel_recall_id_list = g_list_remove_all(channel_recall_id_list,
+					     NULL);
   
   /* retrieve upper */
   link_recall_id_list = NULL;
@@ -11841,17 +11875,23 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
   recycled_recall_id_list = NULL;
   recycled_recall_id_list = ags_channel_recursive_collect_recycled(link,
 								   link_recall_id_list);
-
+  recycled_recall_id_list = g_list_remove_all(recycled_recall_id_list,
+					      NULL);
+  
   /* retrieve invalid lower */
   channel_invalid_recall_id_list = NULL;
   channel_invalid_recall_id_list = ags_channel_tillrecycling_collect_devout_play_down(old_link_link,
 										      channel_invalid_recall_id_list,
 										      TRUE);
-
+  channel_invalid_recall_id_list = g_list_remove_all(channel_invalid_recall_id_list,
+						     NULL);
+  
   /* retrieve invalid upper */
   link_invalid_recall_id_list = NULL;
   link_invalid_recall_id_list = ags_channel_recursive_collect_devout_play_up(old_channel_link,
 									     TRUE);
+  link_invalid_recall_id_list = g_list_remove_all(link_invalid_recall_id_list,
+						  NULL);
 
   /* go down */
   ags_channel_recursive_reset_recall_id_down(channel,

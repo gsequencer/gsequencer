@@ -92,6 +92,28 @@ ags_service_provider_server_status(AgsServiceProvider *service_provider)
 }
 
 /**
+ * ags_service_provider_get_env:
+ * @service_provider: the #AgsServiceProvider
+ * 
+ * Get xmlrpc_env.
+ *
+ * Returns: the xmlrpc_env
+ *
+ * Since: 1.0.0
+ */
+gpointer
+ags_service_provider_get_env(AgsServiceProvider *service_provider)
+{
+  AgsServiceProviderInterface *service_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_SERVICE_PROVIDER(service_provider), NULL);
+  service_provider_interface = AGS_SERVICE_PROVIDER_GET_INTERFACE(service_provider);
+  g_return_val_if_fail(service_provider_interface->get_env, NULL);
+
+  return(service_provider_interface->get_env(service_provider));
+}
+
+/**
  * ags_service_provider_set_registry:
  * @service_provider: the #AgsServiceProvider
  * @registry: the #AgsRegistry

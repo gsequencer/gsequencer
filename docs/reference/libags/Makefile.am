@@ -23,18 +23,18 @@ SCANGOBJ_OPTIONS=--cflags="$(CFLAGS) $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_
 
 # Extra options to supply to gtkdoc-scan.
 # e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
-#SCAN_OPTIONS=--rebuild-types --rebuild-sections --rebuild-interfaces
+# SCAN_OPTIONS=--rebuild-types --rebuild-sections --rebuild-interfaces
 
 # Extra options to supply to gtkdoc-mkdb
 # e.g. MKDB_OPTIONS=--xml-mode --output-format=xml
-MKDB_OPTIONS=--xml-mode --output-format=xml --name-space="libags" --module="libags"
+MKDB_OPTIONS=--xml-mode --output-format=xml --name-space=libags --module=libags
 
 # Extra options to supply to gtkdoc-mkhtml
 MKHTML_OPTIONS=
 
 # Extra options to supply to gtkdoc-fixref. Normally not needed.
 # e.g. FIXXREF_OPTIONS=--extra-dir=../gdk-pixbuf/html --extra-dir=../gdk/html
-FIXXREF_OPTIONS=--extra-dir=../libags/html
+FIXXREF_OPTIONS=--module=libags --module-dir=./libags-html/ --html-dir=$(DESTDIR)/$(datadir)/doc/libags-doc/api
 
 # Used for dependencies. The docs will be rebuilt if any of these change.
 # e.g. HFILE_GLOB=$(top_srcdir)/gtk/*.h
@@ -78,7 +78,7 @@ GTKDOC_LIBS = \
 	$(top_builddir)/libags_server.la
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
-include $(top_srcdir)/gtk-doc.make
+include ./gtk-doc.make
 
 # Comment this out if you want 'make check' to test you doc status
 # and run some sanity checks

@@ -65,12 +65,10 @@ ags_dssi_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   str = gtk_combo_box_text_get_active_text(filename);
   
   while((base_plugin = ags_base_plugin_find_filename(base_plugin, str)) != NULL){
-    str = g_strdup_printf("%s",
-			  AGS_BASE_PLUGIN(base_plugin->data)->effect);
-    gtk_combo_box_text_append_text(effect,
-				   str);
-
-    g_free(str);
+    if(AGS_BASE_PLUGIN(base_plugin->data)->effect != NULL){
+      gtk_combo_box_text_append_text(effect,
+				     AGS_BASE_PLUGIN(base_plugin->data)->effect);
+    }
     
     base_plugin = base_plugin->next;
   }

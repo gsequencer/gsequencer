@@ -253,9 +253,9 @@ ags_destroy_entry_alloc(gpointer ptr, AgsDestroyFunc destroy_func)
 
 /**
  * ags_destroy_worker_add:
- * @destroy_worker:
- * @ptr:
- * @destroy_func:
+ * @destroy_worker: the #AgsDestroyWorker
+ * @ptr: the gpointer to destroy
+ * @destroy_func: the AgsDestroyFunc
  * 
  * Add @ptr for destruction using @destroy_func.
  * 

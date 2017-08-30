@@ -339,6 +339,8 @@ ags_remove_recall_dispose(GObject *gobject)
 {
   AgsRemoveRecall *remove_recall;
 
+  remove_recall = AGS_REMOVE_RECALL(gobject);
+
   if(remove_recall->context != NULL){
     g_object_unref(remove_recall->context);
 
@@ -359,6 +361,8 @@ void
 ags_remove_recall_finalize(GObject *gobject)
 {
   AgsRemoveRecall *remove_recall;
+
+  remove_recall = AGS_REMOVE_RECALL(gobject);
 
   if(remove_recall->context != NULL){
     g_object_unref(remove_recall->context);

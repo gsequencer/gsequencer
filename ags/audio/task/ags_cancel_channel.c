@@ -386,7 +386,8 @@ ags_cancel_channel_launch(AgsTask *task)
   playback = AGS_PLAYBACK(channel->playback);
   
   /* cancel playback */
-  if(cancel_channel->recall_id == AGS_PLAYBACK(channel->playback)->recall_id[0]){
+  if(cancel_channel->recall_id != NULL &&
+     cancel_channel->recall_id == AGS_PLAYBACK(channel->playback)->recall_id[0]){
     g_atomic_int_and(&(playback->flags),
 		     (~AGS_PLAYBACK_PLAYBACK));
 
@@ -396,12 +397,13 @@ ags_cancel_channel_launch(AgsTask *task)
     AGS_PLAYBACK(channel->playback)->recall_id[0] = NULL;
 
     if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
-      //      ags_thread_stop(playback->channel_thread[0]);
+      ags_thread_stop(playback->channel_thread[0]);
     }
   }
 
   /* cancel sequencer */
-  if(cancel_channel->recall_id == AGS_PLAYBACK(channel->playback)->recall_id[1]){
+  if(cancel_channel->recall_id != NULL &&
+     cancel_channel->recall_id == AGS_PLAYBACK(channel->playback)->recall_id[1]){
     g_atomic_int_and(&(playback->flags),
 		     (~AGS_PLAYBACK_SEQUENCER));
 
@@ -411,12 +413,13 @@ ags_cancel_channel_launch(AgsTask *task)
     AGS_PLAYBACK(channel->playback)->recall_id[1] = NULL;
 
     if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
-      //      ags_thread_stop(playback->channel_thread[1]);
+      ags_thread_stop(playback->channel_thread[1]);
     }
   }
 
   /* cancel notation */
-  if(cancel_channel->recall_id == AGS_PLAYBACK(channel->playback)->recall_id[2]){
+  if(cancel_channel->recall_id != NULL &&
+     cancel_channel->recall_id == AGS_PLAYBACK(channel->playback)->recall_id[2]){
     g_atomic_int_and(&(playback->flags),
 		     (~AGS_PLAYBACK_NOTATION));
 
@@ -426,7 +429,7 @@ ags_cancel_channel_launch(AgsTask *task)
     AGS_PLAYBACK(channel->playback)->recall_id[2] = NULL;
 
     if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
-      //      ags_thread_stop(playback->channel_thread[2]);
+      ags_thread_stop(playback->channel_thread[2]);
     }
   }
 

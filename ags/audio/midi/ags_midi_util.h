@@ -47,7 +47,7 @@ gboolean ags_midi_util_is_tune_request(unsigned char *buffer);
 gboolean ags_midi_util_is_meta_event(unsigned char *buffer);
 
 /*  */
-unsigned char* ags_midi_util_to_smf(unsigned char *midi_buffer, guint midi_buffer_length,
+unsigned char* ags_midi_util_to_smf(unsigned char *midi_buffer, guint buffer_length,
 				    glong delta_time,
 				    guint *smf_buffer_length);
 

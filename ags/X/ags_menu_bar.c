@@ -18,7 +18,7 @@
  */
 
 #include <ags/X/ags_menu_bar.h>
-#include <ags/X/ags_menu_bar_callbacks.h>
+#include <ags/X/ags_menu_action_callbacks.h>
 
 #include <ags/object/ags_connectable.h>
 
@@ -187,6 +187,9 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Synth"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Syncsynth"));
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
 #ifdef AGS_WITH_LIBINSTPATCH
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("FPlayer"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
@@ -287,23 +290,23 @@ ags_menu_bar_connect(AgsConnectable *connectable)
     list1 = gtk_container_get_children ((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
 
   g_signal_connect (G_OBJECT (list1->data), "activate",
-                    G_CALLBACK (ags_menu_bar_open_callback), (gpointer) menu_bar);
+                    G_CALLBACK (ags_menu_action_open_callback), (gpointer) menu_bar);
   list1 = list1->next;
 
   g_signal_connect (G_OBJECT (list1->data), "activate",
-                    G_CALLBACK (ags_menu_bar_save_callback), (gpointer) menu_bar);
+                    G_CALLBACK (ags_menu_action_save_callback), (gpointer) menu_bar);
   list1 = list1->next;
 
   g_signal_connect (G_OBJECT (list1->data), "activate",
-                    G_CALLBACK (ags_menu_bar_save_as_callback), menu_bar);
+                    G_CALLBACK (ags_menu_action_save_as_callback), menu_bar);
   list1 = list1->next->next;
 
   g_signal_connect (G_OBJECT (list1->data), "activate",
-                    G_CALLBACK (ags_menu_bar_export_callback), menu_bar);
+                    G_CALLBACK (ags_menu_action_export_callback), menu_bar);
   list1 = list1->next->next;
 
   g_signal_connect (G_OBJECT (list1->data), "activate",
-                    G_CALLBACK (ags_menu_bar_quit_callback), (gpointer) menu_bar);
+                    G_CALLBACK (ags_menu_action_quit_callback), (gpointer) menu_bar);
 
   g_list_free(list1_start);
 
@@ -313,7 +316,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
     list1 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
 
   g_signal_connect (G_OBJECT (list1->data), "activate",
-                    G_CALLBACK (ags_menu_bar_add_callback), (gpointer) menu_bar);
+                    G_CALLBACK (ags_menu_action_add_callback), (gpointer) menu_bar);
 
   list2_start = 
     list2 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list1->data));
@@ -321,28 +324,32 @@ ags_menu_bar_connect(AgsConnectable *connectable)
 
   /* machines */
   g_signal_connect (G_OBJECT (list2->data), "activate",
-                    G_CALLBACK (ags_menu_bar_add_panel_callback), (gpointer) menu_bar);
+                    G_CALLBACK (ags_menu_action_add_panel_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
   g_signal_connect (G_OBJECT (list2->data), "activate",
-                    G_CALLBACK (ags_menu_bar_add_mixer_callback), (gpointer) menu_bar);
+                    G_CALLBACK (ags_menu_action_add_mixer_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
   g_signal_connect (G_OBJECT (list2->data), "activate",
-                    G_CALLBACK (ags_menu_bar_add_drum_callback), (gpointer) menu_bar);
+                    G_CALLBACK (ags_menu_action_add_drum_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
   g_signal_connect (G_OBJECT (list2->data), "activate",
-                    G_CALLBACK (ags_menu_bar_add_matrix_callback), (gpointer) menu_bar);
+                    G_CALLBACK (ags_menu_action_add_matrix_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
   g_signal_connect (G_OBJECT (list2->data), "activate",
-                    G_CALLBACK (ags_menu_bar_add_synth_callback), (gpointer) menu_bar);
+                    G_CALLBACK (ags_menu_action_add_synth_callback), (gpointer) menu_bar);
+  list2 = list2->next;
+
+  g_signal_connect (G_OBJECT (list2->data), "activate",
+                    G_CALLBACK (ags_menu_action_add_syncsynth_callback), (gpointer) menu_bar);
   list2 = list2->next;
 
 #ifdef AGS_WITH_LIBINSTPATCH
   g_signal_connect (G_OBJECT (list2->data), "activate",
-                    G_CALLBACK (ags_menu_bar_add_ffplayer_callback), (gpointer) menu_bar);
+                    G_CALLBACK (ags_menu_action_add_ffplayer_callback), (gpointer) menu_bar);
   list2 = list2->next;
 #endif
   
@@ -353,7 +360,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
 
   while(list3 != NULL){
     g_signal_connect(G_OBJECT(list3->data), "activate",
-		     G_CALLBACK(ags_menu_bar_add_ladspa_bridge_callback), (gpointer) menu_bar);
+		     G_CALLBACK(ags_menu_action_add_ladspa_bridge_callback), (gpointer) menu_bar);
     
     list3 = list3->next;
   }
@@ -367,7 +374,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
 
   while(list3 != NULL){
     g_signal_connect(G_OBJECT(list3->data), "activate",
-		     G_CALLBACK(ags_menu_bar_add_dssi_bridge_callback), (gpointer) menu_bar);
+		     G_CALLBACK(ags_menu_action_add_dssi_bridge_callback), (gpointer) menu_bar);
 
     list3 = list3->next;
   }
@@ -381,7 +388,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   
   while(list3 != NULL){
     g_signal_connect(G_OBJECT(list3->data), "activate",
-		     G_CALLBACK(ags_menu_bar_add_lv2_bridge_callback), (gpointer) menu_bar);
+		     G_CALLBACK(ags_menu_action_add_lv2_bridge_callback), (gpointer) menu_bar);
     
     list3 = list3->next;
   }
@@ -399,7 +406,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
 
   while(list4 != NULL){
     g_signal_connect(G_OBJECT(list4->data), "activate",
-		     G_CALLBACK(ags_menu_bar_add_live_dssi_bridge_callback), (gpointer) menu_bar);
+		     G_CALLBACK(ags_menu_action_add_live_dssi_bridge_callback), (gpointer) menu_bar);
 
     list4 = list4->next;
   }
@@ -413,7 +420,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   
   while(list4 != NULL){
     g_signal_connect(G_OBJECT(list4->data), "activate",
-		     G_CALLBACK(ags_menu_bar_add_live_lv2_bridge_callback), (gpointer) menu_bar);
+		     G_CALLBACK(ags_menu_action_add_live_lv2_bridge_callback), (gpointer) menu_bar);
     
     list4 = list4->next;
   }
@@ -424,12 +431,12 @@ ags_menu_bar_connect(AgsConnectable *connectable)
 
   /* automation and preferences */
   g_signal_connect (G_OBJECT (list1->data), "activate",
-                    G_CALLBACK (ags_menu_bar_automation_callback), (gpointer) menu_bar);
+                    G_CALLBACK (ags_menu_action_automation_callback), (gpointer) menu_bar);
   list1 = list1->next;
   list1 = list1->next;
 
   g_signal_connect (G_OBJECT (list1->data), "activate",
-                    G_CALLBACK (ags_menu_bar_preferences_callback), (gpointer) menu_bar);
+                    G_CALLBACK (ags_menu_action_preferences_callback), (gpointer) menu_bar);
 
   g_list_free(list1_start);
 
@@ -439,16 +446,16 @@ ags_menu_bar_connect(AgsConnectable *connectable)
     list1 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
 
   g_signal_connect(G_OBJECT(list1->data), "activate",
-		   G_CALLBACK(ags_menu_bar_midi_import_callback), (gpointer) menu_bar);
+		   G_CALLBACK(ags_menu_action_midi_import_callback), (gpointer) menu_bar);
   list1 = list1->next;
 
   g_signal_connect(G_OBJECT(list1->data), "activate",
-		   G_CALLBACK(ags_menu_bar_midi_export_track_callback), (gpointer) menu_bar);
+		   G_CALLBACK(ags_menu_action_midi_export_track_callback), (gpointer) menu_bar);
   list1 = list1->next;
   list1 = list1->next;
 
   g_signal_connect(G_OBJECT(list1->data), "activate",
-		   G_CALLBACK(ags_menu_bar_midi_playback_callback), (gpointer) menu_bar);
+		   G_CALLBACK(ags_menu_action_midi_playback_callback), (gpointer) menu_bar);
   
   g_list_free(list1_start);
   
@@ -458,7 +465,7 @@ ags_menu_bar_connect(AgsConnectable *connectable)
     list1 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list0->data));
 
   g_signal_connect (G_OBJECT (list1->data), "activate",
-                    G_CALLBACK (ags_menu_bar_about_callback), (gpointer) menu_bar);
+                    G_CALLBACK (ags_menu_action_about_callback), (gpointer) menu_bar);
 
   g_list_free(list1_start);
 }

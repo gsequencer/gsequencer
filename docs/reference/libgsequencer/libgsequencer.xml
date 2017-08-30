@@ -43,6 +43,9 @@
     <xi:include href="xml/ags_bulk_member_callbacks.xml"/>
     <xi:include href="xml/ags_connection_editor.xml"/>
     <xi:include href="xml/ags_connection_editor_callbacks.xml"/>
+    <!--
+	<xi:include href="xml/ags_context_menu.xml"/>
+    -->
     <xi:include href="xml/ags_dssi_browser.xml"/>
     <xi:include href="xml/ags_dssi_browser_callbacks.xml"/>
     <xi:include href="xml/ags_editor.xml"/>
@@ -54,6 +57,7 @@
     <xi:include href="xml/ags_effect_line.xml"/>
     <xi:include href="xml/ags_effect_line_callbacks.xml"/>
     <xi:include href="xml/ags_effect_pad.xml"/>
+    <xi:include href="xml/ags_effect_separator.xml"/>
     <xi:include href="xml/ags_export_soundcard.xml"/>
     <xi:include href="xml/ags_export_soundcard_callbacks.xml"/>
     <xi:include href="xml/ags_export_window.xml"/>
@@ -84,8 +88,10 @@
     <xi:include href="xml/ags_machine_callbacks.xml"/>
     <xi:include href="xml/ags_machine_editor.xml"/>
     <xi:include href="xml/ags_machine_editor_callbacks.xml"/>
+    <!--
+	<xi:include href="xml/ags_menu_action_callbacks.xml"/>
+    -->
     <xi:include href="xml/ags_menu_bar.xml"/>
-    <xi:include href="xml/ags_menu_bar_callbacks.xml"/>
     <xi:include href="xml/ags_midi_dialog.xml"/>
     <xi:include href="xml/ags_midi_dialog_callbacks.xml"/>
     <xi:include href="xml/ags_midi_import_wizard.xml"/>
@@ -186,6 +192,10 @@
       <xi:include href="xml/ags_ffplayer_input_line_callbacks.xml"/>
       <xi:include href="xml/ags_ffplayer_input_pad.xml"/>
       <xi:include href="xml/ags_ladspa_bridge.xml"/>      
+      <xi:include href="xml/ags_live_dssi_bridge.xml"/>
+      <xi:include href="xml/ags_live_dssi_bridge_callbacks.xml"/>
+      <xi:include href="xml/ags_live_lv2_bridge.xml"/>
+      <xi:include href="xml/ags_live_lv2_bridge_callbacks.xml"/>
       <xi:include href="xml/ags_lv2_bridge.xml"/>
       <xi:include href="xml/ags_lv2_bridge_callbacks.xml"/>
       <xi:include href="xml/ags_matrix.xml"/>
@@ -209,6 +219,8 @@
       <xi:include href="xml/ags_synth_callbacks.xml"/>
       <xi:include href="xml/ags_synth_input_line.xml"/>
       <xi:include href="xml/ags_synth_input_pad.xml"/>
+      <xi:include href="xml/ags_syncsynth.xml"/>
+      <xi:include href="xml/ags_syncsynth_callbacks.xml"/>
     </chapter>
     
     <chapter id="file">
@@ -231,13 +243,13 @@
       <xi:include href="xml/ags_add_bulk_member.xml"/>
       <xi:include href="xml/ags_add_line_member.xml"/>
       <xi:include href="xml/ags_add_sequencer_editor_jack.xml"/>
-      <xi:include href="xml/ags_add_soundcard_editor_jack.xml"/>
+      <xi:include href="xml/ags_add_soundcard_editor_sink.xml"/>
       <xi:include href="xml/ags_blink_cell_pattern_cursor.xml"/>
       <xi:include href="xml/ags_change_indicator.xml"/>
       <xi:include href="xml/ags_change_tact.xml"/>
       <xi:include href="xml/ags_display_tact.xml"/>
       <xi:include href="xml/ags_remove_sequencer_editor_jack.xml"/>
-      <xi:include href="xml/ags_remove_soundcard_editor_jack.xml"/>
+      <xi:include href="xml/ags_remove_soundcard_editor_sink.xml"/>
       <xi:include href="xml/ags_resize_editor.xml"/>
       <xi:include href="xml/ags_scroll_on_play.xml"/>
       <xi:include href="xml/ags_simple_file_read.xml"/>

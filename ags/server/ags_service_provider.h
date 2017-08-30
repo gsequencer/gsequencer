@@ -45,6 +45,8 @@ struct _AgsServiceProviderInterface
   
   gboolean (*is_operating)(AgsServiceProvider *service_provider);
   AgsServerStatus* (*server_status)(AgsServiceProvider *service_provider);
+
+  gpointer (*get_env)(AgsServiceProvider *service_provider);
   
   void (*set_registry)(AgsServiceProvider *service_provider,
 		       GObject *registry);
@@ -71,6 +73,8 @@ GType ags_service_provider_get_type();
 
 gboolean ags_service_provider_is_operating(AgsServiceProvider *service_provider);
 AgsServerStatus* ags_service_provider_server_status(AgsServiceProvider *service_provider);
+
+gpointer ags_service_provider_get_env(AgsServiceProvider *service_provider);
 
 void ags_service_provider_set_registry(AgsServiceProvider *service_provider,
 				       GObject *registry);

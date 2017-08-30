@@ -136,6 +136,7 @@ static gpointer ags_lv2_bridge_parent_class = NULL;
 static AgsConnectableInterface* ags_lv2_bridge_parent_connectable_interface;
 static AgsPluginInterface* ags_lv2_bridge_parent_plugin_interface;
 
+GHashTable *ags_lv2_bridge_lv2ui_handle = NULL;
 GHashTable *ags_lv2_bridge_lv2ui_idle = NULL;
 
 GType
@@ -378,6 +379,12 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 
   g_signal_connect_after((GObject *) lv2_bridge, "parent-set",
 			 G_CALLBACK(ags_lv2_bridge_parent_set_callback), (gpointer) lv2_bridge);
+
+  if(ags_lv2_bridge_lv2ui_handle == NULL){
+    ags_lv2_bridge_lv2ui_handle = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+						      NULL,
+						      NULL);
+  }
 
   if(ags_lv2_bridge_lv2ui_idle == NULL){
     ags_lv2_bridge_lv2ui_idle = g_hash_table_new_full(g_direct_hash, g_direct_equal,
@@ -692,8 +699,11 @@ ags_lv2_bridge_finalize(GObject *gobject)
   lv2_bridge = AGS_LV2_BRIDGE(gobject);
   
   if(lv2_bridge->ui_handle != NULL){
+    g_hash_table_remove(ags_lv2_bridge_lv2ui_handle,
+			lv2_bridge->ui_handle);
+
     g_hash_table_remove(ags_lv2_bridge_lv2ui_idle,
-			lv2_bridge);
+			lv2_bridge->ui_handle);
   }
   
   G_OBJECT_CLASS(ags_lv2_bridge_parent_class)->finalize(gobject);
@@ -1697,9 +1707,11 @@ ags_lv2_bridge_load_preset(AgsLv2Bridge *lv2_bridge)
   list = lv2_plugin->preset;
 
   while(list != NULL){
-    gtk_combo_box_text_append_text(lv2_bridge->preset,
-				   AGS_LV2_PRESET(list->data)->preset_label);
-
+    if(AGS_LV2_PRESET(list->data)->preset_label != NULL){
+      gtk_combo_box_text_append_text(lv2_bridge->preset,
+				     AGS_LV2_PRESET(list->data)->preset_label);
+    }
+    
     list = list->next;
   }
 
@@ -1793,7 +1805,7 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
 
 /**
  * ags_lv2_bridge_lv2ui_idle_timeout:
- * @widget: the #AgsLv2Bridge
+ * @widget: LV2UI_Handle
  *
  * Idle lv2 ui.
  *
@@ -1804,12 +1816,10 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
 gboolean
 ags_lv2_bridge_lv2ui_idle_timeout(GtkWidget *widget)
 {
-  if(g_hash_table_lookup(ags_lv2_bridge_lv2ui_idle,
-			 widget) != NULL){
-    AgsLv2Bridge *lv2_bridge;
-    
-    lv2_bridge = AGS_LV2_BRIDGE(widget);
-    
+  AgsLv2Bridge *lv2_bridge;
+  
+  if((lv2_bridge = g_hash_table_lookup(ags_lv2_bridge_lv2ui_idle,
+				       widget)) != NULL){
     if(lv2_bridge->ui_feature != NULL &&
        lv2_bridge->ui_feature[0]->data != NULL){
       ((struct _LV2UI_Idle_Interface *) lv2_bridge->ui_feature[0]->data)->idle(lv2_bridge->ui_handle);
@@ -1831,7 +1841,7 @@ ags_lv2_bridge_lv2ui_idle_timeout(GtkWidget *widget)
  *
  * Returns: a new #AgsLv2Bridge
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 AgsLv2Bridge*
 ags_lv2_bridge_new(GObject *soundcard,

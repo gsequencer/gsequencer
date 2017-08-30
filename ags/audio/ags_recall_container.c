@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include <ags/audio/ags_recall_container.h>
 
 #include <ags/object/ags_connectable.h>
@@ -124,7 +125,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 
   /* properties */
   /**
-   * RecallContainer:recall-audio-type:
+   * AgsRecallContainer:recall-audio-type:
    *
    * The associated recall type within audio context.
    * 
@@ -140,7 +141,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * RecallContainer:recall-audio:
+   * AgsRecallContainer:recall-audio:
    *
    * The associated recall within audio context.
    * 
@@ -156,7 +157,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * RecallContainer:recall-audio-run-type:
+   * AgsRecallContainer:recall-audio-run-type:
    *
    * The associated recall type within dynamic audio context.
    * 
@@ -172,7 +173,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * RecallContainer:recall-audio-run:
+   * AgsRecallContainer:recall-audio-run:
    *
    * The associated recall within dynamic audio context.
    * 
@@ -188,7 +189,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * RecallContainer:recall-channel-type:
+   * AgsRecallContainer:recall-channel-type:
    *
    * The associated recall type within channel context.
    * 
@@ -204,7 +205,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * RecallContainer:recall-channel:
+   * AgsRecallContainer:recall-channel:
    *
    * The associated recall within channel context.
    * 
@@ -220,13 +221,13 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * RecallContainer:recall-channel-run-type:
+   * AgsRecallContainer:recall-channel-run-type:
    *
    * The associated recall type within dynamic channel context.
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_gtype("recall_channel_run_type",
+  param_spec = g_param_spec_gtype("recall-channel-run-type",
 				  i18n_pspec("channel runlevel recall type"),
 				  i18n_pspec("The recall type which this recall container has on audio level during a run"),
 				  G_TYPE_NONE,
@@ -236,13 +237,13 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				  param_spec);
 
   /**
-   * RecallContainer:recall-audio-run:
+   * AgsRecallContainer:recall-channel-run:
    *
    * The associated recall within dynamic channel context.
    * 
    * Since: 0.4.0
    */
-  param_spec = g_param_spec_object("recall_channel_run",
+  param_spec = g_param_spec_object("recall-channel-run",
 				   i18n_pspec("channel runlevel recall"),
 				   i18n_pspec("The recall which this recall container has on audio level during a run"),
 				   AGS_TYPE_RECALL_CHANNEL_RUN,
@@ -560,27 +561,30 @@ ags_recall_container_get_recall_channel_run(AgsRecallContainer *container)
  */
 GList*
 ags_recall_container_find(GList *recall_container,
-			  GType type,
+			  GType gtype,
 			  guint find_flags,
 			  AgsRecallID *recall_id)
 {
   AgsRecallContainer *current;
   AgsRecall *recall;
+
   guint mode;
 
-  if(g_type_is_a(type, AGS_TYPE_RECALL_AUDIO)){
+  if(g_type_is_a(gtype, AGS_TYPE_RECALL_AUDIO)){
     mode = 0;
-  }else if(g_type_is_a(type, AGS_TYPE_RECALL_AUDIO_RUN)){
+  }else if(g_type_is_a(gtype, AGS_TYPE_RECALL_AUDIO_RUN)){
     mode = 1;
-  }else if(g_type_is_a(type, AGS_TYPE_RECALL_CHANNEL)){
+  }else if(g_type_is_a(gtype, AGS_TYPE_RECALL_CHANNEL)){
     mode = 2;
-  }else if(g_type_is_a(type, AGS_TYPE_RECALL_CHANNEL_RUN)){
+  }else if(g_type_is_a(gtype, AGS_TYPE_RECALL_CHANNEL_RUN)){
     mode = 3;
   }else{
     g_message("ags_recall_container_find: invalid type\n");
     return(NULL);
   }
 
+  g_message("mode = %d", mode);
+  
   while(recall_container != NULL){
     current = AGS_RECALL_CONTAINER(recall_container->data);
 
@@ -615,14 +619,20 @@ ags_recall_container_find(GList *recall_container,
 	recall = AGS_RECALL(list->data);
     }
    
-    if(recall != NULL){
-      if(((AGS_RECALL_CONTAINER_FIND_TYPE & find_flags) == 0 || G_OBJECT_TYPE(recall) == type) &&
-	 ((AGS_RECALL_CONTAINER_FIND_TEMPLATE & find_flags) == 0 || (AGS_RECALL_TEMPLATE & (recall->flags)) != 0) &&
-	 ((AGS_RECALL_CONTAINER_FIND_RECALL_ID & find_flags) == 0 || (recall->recall_id != NULL && recall->recall_id == recall_id))){
+    if(recall != NULL){      
+      if((AGS_RECALL_CONTAINER_FIND_TYPE & find_flags) != 0 && G_OBJECT_TYPE(recall) == gtype){
+	break;
+      }
+      
+      if((AGS_RECALL_CONTAINER_FIND_TEMPLATE & find_flags) != 0 && (AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
+	break;
+      }
+      
+      if((AGS_RECALL_CONTAINER_FIND_RECALL_ID & find_flags) != 0 && (recall->recall_id != NULL && recall->recall_id == recall_id)){
 	break;
       }
     }
-
+      
     recall_container = recall_container->next;
   }
 

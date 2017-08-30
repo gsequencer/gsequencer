@@ -115,8 +115,8 @@ void ags_file_read_navigation_resolve_soundcard(AgsFileLookup *file_lookup,
 
 void ags_file_write_automation_area_resolve_audio(AgsFileLookup *file_lookup,
 						    AgsAutomationArea *automation_area);
-xmlNode* ags_file_read_automation_area_resolve_audio(AgsFileLookup *file_lookup,
-						     AgsAutomationArea *automation_area);
+void ags_file_read_automation_area_resolve_audio(AgsFileLookup *file_lookup,
+						 AgsAutomationArea *automation_area);
 
 void
 ags_file_read_widget(AgsFile *file, xmlNode *node, GtkWidget *widget)
@@ -127,7 +127,13 @@ ags_file_read_widget(AgsFile *file, xmlNode *node, GtkWidget *widget)
 xmlNode*
 ags_file_write_widget(AgsFile *file, xmlNode *parent, GtkWidget *widget)
 {
+  xmlNode *node;
+
+  node = NULL;
+  
   //TODO:JK: implement me
+
+  return(node);
 }
 
 void
@@ -317,6 +323,8 @@ ags_file_write_window(AgsFile *file, xmlNode *parent, AgsWindow *window)
   ags_file_write_navigation(file,
 			    node,
 			    window->navigation);
+
+  return(node);
 }
 
 void
@@ -386,6 +394,8 @@ ags_file_write_menu_bar(AgsFile *file, xmlNode *parent, AgsMenuBar *menu_bar)
 
   xmlAddChild(parent,
 	      node);
+
+  return(node);
 }
 
 void
@@ -469,6 +479,8 @@ ags_file_write_machine_counter(AgsFile *file, xmlNode *parent, AgsMachineCounter
 
   xmlAddChild(parent,
 	      node);
+
+  return(node);
 }
 
 void
@@ -522,6 +534,8 @@ ags_file_write_machine_counter_list(AgsFile *file, xmlNode *parent, GList *machi
 	     AGS_FILE_ID_PROP,
 	     id);
 
+  list = machine_counter;
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "application-context", file->application_context,
@@ -533,8 +547,6 @@ ags_file_write_machine_counter_list(AgsFile *file, xmlNode *parent, GList *machi
 
   xmlAddChild(parent,
 	      node);
-
-  list = machine_counter;
 
   while(list != NULL){
     ags_file_write_machine_counter(file, node, AGS_MACHINE_COUNTER(list->data));
@@ -997,6 +1009,8 @@ ags_file_write_machine_list(AgsFile *file, xmlNode *parent, GList *machine)
 	     AGS_FILE_ID_PROP,
 	     id);
 
+  list = machine;
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "application-context", file->application_context,
@@ -1008,8 +1022,6 @@ ags_file_write_machine_list(AgsFile *file, xmlNode *parent, GList *machine)
 
   xmlAddChild(parent,
 	      node);
-
-  list = machine;
 
   while(list != NULL){
     ags_file_write_machine(file, node, AGS_MACHINE(list->data));
@@ -1340,6 +1352,8 @@ ags_file_write_pad(AgsFile *file, xmlNode *parent, AgsPad *pad)
   }
 
   g_list_free(line_start);
+
+  return(node);
 }
 
 void
@@ -1399,6 +1413,8 @@ ags_file_write_pad_list(AgsFile *file, xmlNode *parent, GList *pad)
 	     AGS_FILE_ID_PROP,
 	     id);
 
+  list = pad;
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "application-context", file->application_context,
@@ -1410,8 +1426,6 @@ ags_file_write_pad_list(AgsFile *file, xmlNode *parent, GList *pad)
 
   xmlAddChild(parent,
 	      node);
-
-  list = pad;
 
   while(list != NULL){
     ags_file_write_pad(file, node, AGS_PAD(list->data));
@@ -1777,6 +1791,8 @@ ags_file_write_line(AgsFile *file, xmlNode *parent, AgsLine *line)
   }
 
   g_list_free(line_member_start);
+
+  return(node);
 }
 
 void
@@ -1835,6 +1851,8 @@ ags_file_write_line_list(AgsFile *file, xmlNode *parent, GList *line)
 	     AGS_FILE_ID_PROP,
 	     id);
 
+  list = line;
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "application-context", file->application_context,
@@ -1846,8 +1864,6 @@ ags_file_write_line_list(AgsFile *file, xmlNode *parent, GList *line)
 
   xmlAddChild(parent,
 	      node);
-
-  list = line;
 
   while(list != NULL){
     ags_file_write_line(file, node, AGS_LINE(list->data));
@@ -2238,6 +2254,8 @@ ags_file_write_line_member(AgsFile *file, xmlNode *parent, AgsLineMember *line_m
 
   xmlAddChild(parent,
 	      node);
+
+  return(node);
 }
 
 void
@@ -2330,6 +2348,8 @@ ags_file_write_line_member_list(AgsFile *file, xmlNode *parent, GList *line_memb
 	     AGS_FILE_ID_PROP,
 	     id);
 
+  list = line_member;
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "application-context", file->application_context,
@@ -2341,8 +2361,6 @@ ags_file_write_line_member_list(AgsFile *file, xmlNode *parent, GList *line_memb
 
   xmlAddChild(parent,
 	      node);
-
-  list = line_member;
 
   while(list != NULL){
     if(AGS_IS_LINE_MEMBER(list->data)){
@@ -2754,6 +2772,8 @@ ags_file_write_effect_bridge_list(AgsFile *file, xmlNode *parent, GList *effect_
 	     AGS_FILE_ID_PROP,
 	     id);
 
+  list = effect_bridge;
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "application-context", file->application_context,
@@ -2765,8 +2785,6 @@ ags_file_write_effect_bridge_list(AgsFile *file, xmlNode *parent, GList *effect_
 
   xmlAddChild(parent,
 	      node);
-
-  list = effect_bridge;
 
   while(list != NULL){
     ags_file_write_effect_bridge(file, node, AGS_EFFECT_BRIDGE(list->data));
@@ -3064,6 +3082,8 @@ ags_file_write_effect_bulk_list(AgsFile *file, xmlNode *parent, GList *effect_bu
 	     AGS_FILE_ID_PROP,
 	     id);
 
+  list = effect_bulk;
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "application-context", file->application_context,
@@ -3075,8 +3095,6 @@ ags_file_write_effect_bulk_list(AgsFile *file, xmlNode *parent, GList *effect_bu
 
   xmlAddChild(parent,
 	      node);
-
-  list = effect_bulk;
 
   while(list != NULL){
     ags_file_write_effect_bulk(file, node, AGS_EFFECT_BULK(list->data));
@@ -3600,6 +3618,8 @@ ags_file_write_bulk_member(AgsFile *file, xmlNode *parent, AgsBulkMember *bulk_m
   
   xmlAddChild(parent,
 	      node);
+
+  return(node);
 }
 
 void
@@ -3696,6 +3716,8 @@ ags_file_write_bulk_member_list(AgsFile *file, xmlNode *parent, GList *bulk_memb
 	     AGS_FILE_ID_PROP,
 	     id);
 
+  list = bulk_member;
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "application-context", file->application_context,
@@ -3707,8 +3729,6 @@ ags_file_write_bulk_member_list(AgsFile *file, xmlNode *parent, GList *bulk_memb
 
   xmlAddChild(parent,
 	      node);
-
-  list = bulk_member;
 
   while(list != NULL){
     ags_file_write_bulk_member(file, node, AGS_BULK_MEMBER(list->data));
@@ -3952,6 +3972,8 @@ ags_file_write_effect_pad(AgsFile *file, xmlNode *parent, AgsEffectPad *effect_p
   }
 
   g_list_free(effect_line_start);
+
+  return(node);
 }
 
 void
@@ -4115,6 +4137,8 @@ ags_file_write_effect_pad_list(AgsFile *file, xmlNode *parent, GList *effect_pad
 	     AGS_FILE_ID_PROP,
 	     id);
 
+  list = effect_pad;
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "application-context", file->application_context,
@@ -4126,8 +4150,6 @@ ags_file_write_effect_pad_list(AgsFile *file, xmlNode *parent, GList *effect_pad
 
   xmlAddChild(parent,
 	      node);
-
-  list = effect_pad;
 
   while(list != NULL){
     ags_file_write_effect_pad(file, node, AGS_EFFECT_PAD(list->data));
@@ -4388,6 +4410,8 @@ ags_file_write_effect_line(AgsFile *file, xmlNode *parent, AgsEffectLine *effect
   }
 
   g_list_free(line_member_start);
+
+  return(node);
 }
 
 void
@@ -4574,6 +4598,8 @@ ags_file_write_effect_line_list(AgsFile *file, xmlNode *parent, GList *effect_li
 	     AGS_FILE_ID_PROP,
 	     id);
 
+  list = effect_line;
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "application-context", file->application_context,
@@ -4585,8 +4611,6 @@ ags_file_write_effect_line_list(AgsFile *file, xmlNode *parent, GList *effect_li
 
   xmlAddChild(parent,
 	      node);
-
-  list = effect_line;
 
   while(list != NULL){
     ags_file_write_effect_line(file, node, AGS_EFFECT_LINE(list->data));
@@ -4606,7 +4630,13 @@ ags_file_read_dialog(AgsFile *file, xmlNode *node, GtkDialog **dialog)
 xmlNode*
 ags_file_write_dialog(AgsFile *file, xmlNode *parent, GtkDialog *dialog)
 {
+  xmlNode *node;
+
+  node = NULL;
+  
   //TODO:JK: implement me
+
+  return(node);
 }
 
 void
@@ -4618,7 +4648,13 @@ ags_file_read_dialog_list(AgsFile *file, xmlNode *node, GList **dialog)
 xmlNode*
 ags_file_write_dialog_list(AgsFile *file, xmlNode *parent, GList *dialog)
 {
+  xmlNode *node;
+
+  node = NULL;
+
   //TODO:JK: implement me
+
+  return(node);
 }
 
 void
@@ -4654,6 +4690,8 @@ ags_file_write_machine_editor(AgsFile *file, xmlNode *parent, AgsMachineEditor *
 
   xmlAddChild(parent,
 	      node);  
+
+  return(node);
 }
 
 void
@@ -4665,7 +4703,13 @@ ags_file_read_machine_editor_list(AgsFile *file, xmlNode *node, GList **machine_
 xmlNode*
 ags_file_write_machine_editor_list(AgsFile *file, xmlNode *parent, GList *machine_editor)
 {
+  xmlNode *node;
+
+  node = NULL;
+
   //TODO:JK: implement me
+
+  return(node);
 }
 
 void
@@ -4677,7 +4721,13 @@ ags_file_read_pad_editor(AgsFile *file, xmlNode *node, AgsPadEditor **pad_editor
 xmlNode*
 ags_file_write_pad_editor(AgsFile *file, xmlNode *parent, AgsPadEditor *pad_editor)
 {
+  xmlNode *node;
+
+  node = NULL;
+
   //TODO:JK: implement me
+
+  return(node);
 }
 
 void
@@ -4689,7 +4739,13 @@ ags_file_read_line_editor(AgsFile *file, xmlNode *node, AgsLineEditor **line_edi
 xmlNode*
 ags_file_write_line_editor(AgsFile *file, xmlNode *parent, AgsLineEditor *line_editor)
 {
+  xmlNode *node;
+
+  node = NULL;
+
   //TODO:JK: implement me
+
+  return(node);
 }
 
 void
@@ -4701,7 +4757,13 @@ ags_file_read_link_editor(AgsFile *file, xmlNode *node, AgsLinkEditor **link_edi
 xmlNode*
 ags_file_write_link_editor(AgsFile *file, xmlNode *parent, AgsLinkEditor *link_editor)
 {
+  xmlNode *node;
+
+  node = NULL;
+
   //TODO:JK: implement me
+
+  return(node);
 }
 
 void
@@ -4713,7 +4775,13 @@ ags_file_read_line_member_editor(AgsFile *file, xmlNode *node, AgsLineMemberEdit
 xmlNode*
 ags_file_write_line_member_editor(AgsFile *file, xmlNode *parent, AgsLineMemberEditor *line_member_editor)
 {
+  xmlNode *node;
+
+  node = NULL;
+
   //TODO:JK: implement me
+
+  return(node);
 }
 
 void
@@ -4725,7 +4793,13 @@ ags_file_read_link_collection_editor(AgsFile *file, xmlNode *node, AgsLinkCollec
 xmlNode*
 ags_file_write_link_collection_editor(AgsFile *file, xmlNode *parent, AgsLinkCollectionEditor *link_collection_editor)
 {
+  xmlNode *node;
+
+  node = NULL;
+
   //TODO:JK: implement me
+
+  return(node);
 }
 
 void
@@ -4737,7 +4811,13 @@ ags_file_read_resize_editor(AgsFile *file, xmlNode *node, AgsResizeEditor **resi
 xmlNode*
 ags_file_write_resize_editor(AgsFile *file, xmlNode *parent, AgsResizeEditor *resize_editor)
 {
+  xmlNode *node;
+
+  node = NULL;
+
   //TODO:JK: implement me
+
+  return(node);
 }
 
 void
@@ -4949,6 +5029,8 @@ ags_file_write_editor(AgsFile *file, xmlNode *parent, AgsEditor *editor)
   ags_file_write_machine_selector(file, node, editor->machine_selector);
   ags_file_write_toolbar(file, node, editor->toolbar);
   ags_file_write_notebook(file, node, editor->current_notebook);
+
+  return(node);
 }
 
 void
@@ -5310,7 +5392,13 @@ ags_file_read_notebook(AgsFile *file, xmlNode *node, AgsNotebook **notebook)
 xmlNode*
 ags_file_write_notebook(AgsFile *file, xmlNode *parent, AgsNotebook *notebook)
 {
+  xmlNode *node;
+
+  node = NULL;
+  
   //TODO:JK: implement me
+
+  return(node);
 }
 
 void
@@ -5322,7 +5410,13 @@ ags_file_read_notebook_tab_list(AgsFile *file, xmlNode *node, GList **notebook_t
 xmlNode*
 ags_file_write_notebook_tab_list(AgsFile *file, xmlNode *parent, GList *notebook_tab_list)
 {
+  xmlNode *node;
+
+  node = NULL;
+  
   //TODO:JK: implement me
+
+  return(node);
 }
 
 void
@@ -5334,7 +5428,13 @@ ags_file_read_notebook_tab(AgsFile *file, xmlNode *node, AgsNotebookTab **notebo
 xmlNode*
 ags_file_write_notebook_tab(AgsFile *file, xmlNode *parent, AgsNotebookTab *notebook_tab)
 {
+  xmlNode *node;
+
+  node = NULL;
+  
   //TODO:JK: implement me
+
+  return(node);
 }
 
 void
@@ -5477,7 +5577,9 @@ ags_file_write_navigation(AgsFile *file, xmlNode *parent, AgsNavigation *navigat
 	     g_strdup_printf("%.3f", gtk_spin_button_get_value(navigation->loop_right_tact)));
 
   xmlAddChild(parent,
-	      node);  
+	      node);
+
+  return(node);
 }
 
 void
@@ -5563,6 +5665,8 @@ ags_file_write_automation_window(AgsFile *file, xmlNode *parent, AgsAutomationWi
   ags_file_write_automation_editor(file,
 				   node,
 				   automation_window->automation_editor);
+
+  return(node);
 }
 
 void
@@ -5622,6 +5726,8 @@ ags_file_write_automation_window_list(AgsFile *file, xmlNode *parent, GList *aut
 	     AGS_FILE_ID_PROP,
 	     id);
 
+  list = automation_window_list;
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "application-context", file->application_context,
@@ -5633,8 +5739,6 @@ ags_file_write_automation_window_list(AgsFile *file, xmlNode *parent, GList *aut
 
   xmlAddChild(parent,
 	      node);
-
-  list = automation_window_list;
 
   while(list != NULL){
     ags_file_write_automation_window(file, node, AGS_AUTOMATION_WINDOW(list->data));
@@ -5743,6 +5847,8 @@ ags_file_write_automation_editor(AgsFile *file, xmlNode *parent, AgsAutomationEd
 				    node,
 				    automation_editor->automation_toolbar);
   //TODO:JK: implement me
+
+  return(node);
 }
 
 void
@@ -5802,6 +5908,8 @@ ags_file_write_automation_editor_list(AgsFile *file, xmlNode *parent, GList *aut
 	     AGS_FILE_ID_PROP,
 	     id);
 
+  list = automation_editor_list;
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "application-context", file->application_context,
@@ -5813,8 +5921,6 @@ ags_file_write_automation_editor_list(AgsFile *file, xmlNode *parent, GList *aut
 
   xmlAddChild(parent,
 	      node);
-
-  list = automation_editor_list;
 
   while(list != NULL){
     ags_file_write_automation_editor(file, node, AGS_AUTOMATION_EDITOR(list->data));
@@ -5969,6 +6075,8 @@ ags_file_write_automation_edit(AgsFile *file, xmlNode *parent, AgsAutomationEdit
   ags_file_write_automation_area_list(file,
 				      node,
 				      automation_edit->automation_area);
+
+  return(node);
 }
 
 void
@@ -6028,6 +6136,8 @@ ags_file_write_automation_edit_list(AgsFile *file, xmlNode *parent, GList *autom
 	     AGS_FILE_ID_PROP,
 	     id);
 
+  list = automation_edit_list;
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "application-context", file->application_context,
@@ -6039,8 +6149,6 @@ ags_file_write_automation_edit_list(AgsFile *file, xmlNode *parent, GList *autom
 
   xmlAddChild(parent,
 	      node);
-
-  list = automation_edit_list;
 
   while(list != NULL){
     ags_file_write_automation_edit(file, node, AGS_AUTOMATION_EDIT(list->data));
@@ -6231,6 +6339,8 @@ ags_file_write_automation_toolbar_list(AgsFile *file, xmlNode *parent, GList *au
 	     AGS_FILE_ID_PROP,
 	     id);
 
+  list = automation_toolbar_list;
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "application-context", file->application_context,
@@ -6242,8 +6352,6 @@ ags_file_write_automation_toolbar_list(AgsFile *file, xmlNode *parent, GList *au
 
   xmlAddChild(parent,
 	      node);
-
-  list = automation_toolbar_list;
 
   while(list != NULL){
     ags_file_write_automation_toolbar(file, node, AGS_AUTOMATION_TOOLBAR(list->data));
@@ -6367,6 +6475,8 @@ ags_file_write_automation_area(AgsFile *file, xmlNode *parent, AgsAutomationArea
   ags_file_add_lookup(file, (GObject *) file_lookup);
   g_signal_connect(G_OBJECT(file_lookup), "resolve",
 		   G_CALLBACK(ags_file_write_automation_area_resolve_audio), automation_area);
+
+  return(node);
 }
 
 void
@@ -6385,7 +6495,7 @@ ags_file_write_automation_area_resolve_audio(AgsFileLookup *file_lookup,
 	     g_strdup_printf("xpath=//ags-audio[@id='%s']", id));
 }
 
-xmlNode*
+void
 ags_file_read_automation_area_resolve_audio(AgsFileLookup *file_lookup,
 					    AgsAutomationArea *automation_area)
 {
@@ -6459,6 +6569,8 @@ ags_file_write_automation_area_list(AgsFile *file, xmlNode *parent, GList *autom
 	     AGS_FILE_ID_PROP,
 	     id);
 
+  list = automation_area_list;
+
   ags_file_add_id_ref(file,
 		      g_object_new(AGS_TYPE_FILE_ID_REF,
 				   "application-context", file->application_context,
@@ -6471,8 +6583,6 @@ ags_file_write_automation_area_list(AgsFile *file, xmlNode *parent, GList *autom
   xmlAddChild(parent,
 	      node);
 
-  list = automation_area_list;
-
   while(list != NULL){
     ags_file_write_automation_area(file, node, AGS_AUTOMATION_AREA(list->data));
 
@@ -6481,4 +6591,3 @@ ags_file_write_automation_area_list(AgsFile *file, xmlNode *parent, GList *autom
 
   return(node);
 }
-

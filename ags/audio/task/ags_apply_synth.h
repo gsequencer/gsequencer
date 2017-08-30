@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,6 +52,8 @@ struct _AgsApplySynth
   AgsChannel *start_channel;
   guint count;
 
+  gboolean fixed_length;
+  
   guint wave;
 
   guint attack;
@@ -64,6 +66,11 @@ struct _AgsApplySynth
 
   guint loop_start;
   guint loop_end;
+
+  gboolean do_sync;
+  guint sync_mode;
+
+  gdouble base_note;
 };
 
 struct _AgsApplySynthClass

@@ -138,6 +138,7 @@ static AgsPluginInterface* ags_live_lv2_bridge_parent_plugin_interface;
 
 extern GHashTable *ags_effect_bulk_indicator_queue_draw;
 
+GHashTable *ags_live_lv2_bridge_lv2ui_handle = NULL;
 GHashTable *ags_live_lv2_bridge_lv2ui_idle = NULL;
 
 GType
@@ -377,6 +378,12 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
   GtkImageMenuItem *item;
 
   AgsAudio *audio;
+
+  if(ags_live_lv2_bridge_lv2ui_handle == NULL){
+    ags_live_lv2_bridge_lv2ui_handle = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+							   NULL,
+							   NULL);
+  }
 
   if(ags_live_lv2_bridge_lv2ui_idle == NULL){
     ags_live_lv2_bridge_lv2ui_idle = g_hash_table_new_full(g_direct_hash, g_direct_equal,
@@ -710,8 +717,11 @@ ags_live_lv2_bridge_finalize(GObject *gobject)
   live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(gobject);
   
   if(live_lv2_bridge->ui_handle != NULL){
+    g_hash_table_remove(ags_live_lv2_bridge_lv2ui_handle,
+			live_lv2_bridge->ui_handle);
+    
     g_hash_table_remove(ags_live_lv2_bridge_lv2ui_idle,
-			live_lv2_bridge);
+			live_lv2_bridge->ui_handle);
   }
   
   G_OBJECT_CLASS(ags_live_lv2_bridge_parent_class)->finalize(gobject);
@@ -1456,9 +1466,11 @@ ags_live_lv2_bridge_load_preset(AgsLiveLv2Bridge *live_lv2_bridge)
   list = lv2_plugin->preset;
 
   while(list != NULL){
-    gtk_combo_box_text_append_text(live_lv2_bridge->preset,
-				   AGS_LV2_PRESET(list->data)->preset_label);
-
+    if(AGS_LV2_PRESET(list->data)->preset_label != NULL){
+      gtk_combo_box_text_append_text(live_lv2_bridge->preset,
+				     AGS_LV2_PRESET(list->data)->preset_label);
+    }
+    
     list = list->next;
   }
 
@@ -1783,7 +1795,7 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 
 /**
  * ags_live_lv2_bridge_lv2ui_idle_timeout:
- * @widget: the #AgsLiveLv2Bridge
+ * @widget: the LV2UI_Handle
  *
  * Idle lv2 ui.
  *
@@ -1794,12 +1806,10 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 gboolean
 ags_live_lv2_bridge_lv2ui_idle_timeout(GtkWidget *widget)
 {
-  if(g_hash_table_lookup(ags_live_lv2_bridge_lv2ui_idle,
-			 widget) != NULL){
-    AgsLiveLv2Bridge *live_lv2_bridge;
+  AgsLiveLv2Bridge *live_lv2_bridge;
     
-    live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(widget);
-    
+  if((live_lv2_bridge = g_hash_table_lookup(ags_live_lv2_bridge_lv2ui_idle,
+					    widget)) != NULL){    
     if(live_lv2_bridge->ui_feature != NULL &&
        live_lv2_bridge->ui_feature[0]->data != NULL){
       ((struct _LV2UI_Idle_Interface *) live_lv2_bridge->ui_feature[0]->data)->idle(live_lv2_bridge->ui_handle);

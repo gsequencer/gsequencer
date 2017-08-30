@@ -843,8 +843,8 @@ ags_audio_init(AgsAudio *audio)
   pthread_mutexattr_t *attr;
 
   /* insert audio mutex */
-  //FIXME:JK: memory leak
-  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  audio->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
@@ -854,7 +854,8 @@ ags_audio_init(AgsAudio *audio)
 				PTHREAD_PRIO_INHERIT);
 #endif
 
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  audio->obj_mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
 
@@ -987,7 +988,8 @@ ags_audio_init(AgsAudio *audio)
   audio->recycling_context = NULL;
 
   /* recall */
-  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  audio->recall_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
@@ -996,7 +998,8 @@ ags_audio_init(AgsAudio *audio)
   pthread_mutex_init(audio->recall_mutex,
 		     attr);
 
-  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  audio->play_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
@@ -1793,6 +1796,9 @@ ags_audio_finalize(GObject *gobject)
 
   audio = AGS_AUDIO(gobject);
 
+  pthread_mutexattr_destroy(audio->obj_mutexattr);
+  free(audio->obj_mutexattr);
+
   if(audio->soundcard != NULL){
     g_object_unref(audio->soundcard);
   }
@@ -1927,6 +1933,18 @@ ags_audio_finalize(GObject *gobject)
     g_list_free_full(audio->play,
 		     g_object_unref);
   }
+
+  pthread_mutex_destroy(audio->recall_mutex);
+  free(audio->recall_mutex);
+
+  pthread_mutexattr_destroy(audio->recall_mutexattr);
+  free(audio->recall_mutexattr);
+
+  pthread_mutex_destroy(audio->play_mutex);
+  free(audio->play_mutex);
+
+  pthread_mutexattr_destroy(audio->play_mutexattr);
+  free(audio->play_mutexattr);
   
   /* remove */
   if(audio->recall_remove != NULL){

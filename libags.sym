@@ -109,6 +109,7 @@ ags_soundcard_tic
 ags_soundcard_offset_changed
 ags_soundcard_get_buffer
 ags_soundcard_get_next_buffer
+ags_soundcard_get_prev_buffer
 ags_soundcard_set_bpm
 ags_soundcard_get_bpm
 ags_soundcard_set_delay_factor

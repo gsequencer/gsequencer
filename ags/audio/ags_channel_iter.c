@@ -117,6 +117,8 @@ ags_channel_iter_next(AgsChannelIter *iter, guint mode)
 	return(next_iter->current);
       }
     }
+
+    return(NULL);
   }
 
   /*

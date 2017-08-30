@@ -102,6 +102,7 @@ struct _AgsRecall
 
   AgsRecallID *recall_id;
 
+  pthread_mutexattr_t *children_attr;
   pthread_mutex_t *children_mutex;
 
   AgsRecall *parent;

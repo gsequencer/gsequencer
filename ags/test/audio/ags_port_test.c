@@ -166,30 +166,31 @@ ags_port_test_safe_read()
 void
 ags_port_test_safe_write()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_port_test_safe_write_raw()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_port_test_safe_get_property()
 {
+  //TODO:JK: implement me
 }
 
 void
 ags_port_test_safe_set_property()
 {
+  //TODO:JK: implement me
 }
 
 int
 main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
-
-  putenv("LC_ALL=C\0");
-  putenv("LANG=C\0");
   
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
@@ -197,7 +198,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsPortTest\0", ags_port_test_init_suite, ags_port_test_clean_suite);
+  pSuite = CU_add_suite("AgsPortTest", ags_port_test_init_suite, ags_port_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -206,11 +207,11 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsPort safe read\0", ags_port_test_safe_read) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsPort safe write\0", ags_port_test_safe_write) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsPort safe write raw\0", ags_port_test_safe_write_raw) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsPort safe get property\0", ags_port_test_safe_get_property) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsPort safe set property\0", ags_port_test_safe_set_property) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsPort safe read", ags_port_test_safe_read) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsPort safe write", ags_port_test_safe_write) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsPort safe write raw", ags_port_test_safe_write_raw) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsPort safe get property", ags_port_test_safe_get_property) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsPort safe set property", ags_port_test_safe_set_property) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

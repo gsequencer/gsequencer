@@ -310,16 +310,23 @@ ags_recycling_init(AgsRecycling *recycling)
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
-  pthread_mutexattr_t attr;
+  pthread_mutexattr_t *attr;
 
-  //FIXME:JK: memory leak
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_settype(&attr,
+  recycling->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
 
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(attr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  recycling->obj_mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
-		     &attr);
+		     attr);
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -697,6 +704,9 @@ ags_recycling_finalize(GObject *gobject)
   pthread_mutex_unlock(application_mutex);
 
   recycling = AGS_RECYCLING(gobject);
+
+  pthread_mutexattr_destroy(recycling->obj_mutexattr);
+  free(recycling->obj_mutexattr);
 
   /* channel */
   if(recycling->channel != NULL){

@@ -91,7 +91,7 @@ void ags_play_lv2_audio_load_conversion(AgsPlayLv2Audio *play_lv2_audio,
 					gpointer port_descriptor);
 
 GList* ags_play_lv2_audio_find(GList *recall,
-			       gchar *filename, gchar *effect);
+			       gchar *filename, gchar *uri);
 
 AgsPlayLv2Audio* ags_play_lv2_audio_new();
 

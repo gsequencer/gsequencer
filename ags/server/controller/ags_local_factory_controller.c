@@ -98,7 +98,7 @@ ags_local_factory_controller_class_init(AgsLocalFactoryControllerClass *local_fa
    *
    * The ::create-instance signal is used to create an instance.
    *
-   * Returns: a pointer to the instance created
+   * Returns: the response
    * 
    * Since: 1.0.0
    */

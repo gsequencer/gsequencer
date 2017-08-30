@@ -95,6 +95,8 @@ ags_local_task_controller_class_init(AgsLocalTaskControllerClass *local_task_con
    *
    * The ::launch signal is used to launch a task.
    *
+   * Returns: the response
+   * 
    * Since: 1.0.0
    */
   local_task_controller_signals[LAUNCH] =
@@ -103,8 +105,8 @@ ags_local_task_controller_class_init(AgsLocalTaskControllerClass *local_task_con
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLocalTaskControllerClass, launch),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__OBJECT,
-		 G_TYPE_NONE, 1,
+		 g_cclosure_marshal_POINTER__OBJECT,
+		 G_TYPE_POINTER, 1,
 		 G_TYPE_OBJECT);
 
   /**
@@ -114,6 +116,8 @@ ags_local_task_controller_class_init(AgsLocalTaskControllerClass *local_task_con
    *
    * The ::launch-timed signal is used to launch a task delayed.
    *
+   * Returns: the response
+   * 
    * Since: 1.0.0
    */
   local_task_controller_signals[LAUNCH_TIMED] =
@@ -122,8 +126,8 @@ ags_local_task_controller_class_init(AgsLocalTaskControllerClass *local_task_con
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLocalTaskControllerClass, launch_timed),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__OBJECT_OBJECT,
-		 G_TYPE_NONE, 2,
+		 g_cclosure_user_marshal_POINTER__OBJECT_OBJECT,
+		 G_TYPE_POINTER, 2,
 		 G_TYPE_OBJECT,
 		 G_TYPE_OBJECT);
 }

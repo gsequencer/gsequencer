@@ -44,8 +44,6 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   
   GList *list;
 
-  gchar *str;
-  
   list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
 
   filename = GTK_COMBO_BOX_TEXT(list->next->data);
@@ -57,12 +55,10 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   list = ladspa_manager->ladspa_plugin;
 
   while((list = ags_base_plugin_find_filename(list, gtk_combo_box_text_get_active_text(filename))) != NULL){
-    str = g_strdup_printf("%s",
-			  AGS_BASE_PLUGIN(list->data)->effect);
-    gtk_combo_box_text_append_text(effect,
-				   str);
-
-    g_free(str);
+    if(AGS_BASE_PLUGIN(list->data)->effect != NULL) {
+      gtk_combo_box_text_append_text(effect,
+				     AGS_BASE_PLUGIN(list->data)->effect);
+    }
     
     list = list->next;
   }

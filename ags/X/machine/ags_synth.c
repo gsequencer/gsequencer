@@ -206,19 +206,10 @@ void
 ags_synth_init(AgsSynth *synth)
 {
   AgsAudio *audio;
-  AgsRecallContainer *recall_container;
-  AgsDelayAudio *delay_audio;
-  AgsDelayAudioRun *play_delay_audio_run, *recall_delay_audio_run;
-  AgsCountBeatsAudio *play_count_beats_audio, *recall_count_beats_audio;
-  AgsCountBeatsAudioRun *play_count_beats_audio_run, *recall_count_beats_audio_run;
-  AgsPlayNotationAudioRun *play_notation, *recall_notation;
-  AgsRecallAudio *play_audio, *recall_audio;
-  GtkMenu *menu;
   GtkHBox *hbox;
   GtkVBox *vbox;
   GtkTable *table;
   GtkLabel *label;
-  GtkFrame *frame;
 
   g_signal_connect_after((GObject *) synth, "parent_set",
 			 G_CALLBACK(ags_synth_parent_set_callback), (gpointer) synth);
@@ -272,11 +263,11 @@ ags_synth_init(AgsSynth *synth)
   synth->update = (GtkButton *) gtk_button_new_with_label(i18n("update"));
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) synth->update, FALSE, FALSE, 0);
 
-
+  /* table */
   table = (GtkTable *) gtk_table_new(3, 2, FALSE);
   gtk_box_pack_start((GtkBox *) vbox, (GtkWidget *) table, FALSE, FALSE, 0);
 
-  
+  /* frequency */  
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("lower"),
 				    "xalign", 0.0,
@@ -288,7 +279,10 @@ ags_synth_init(AgsSynth *synth)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  synth->lower = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 0.0, 1.0);
+  synth->lower = (GtkSpinButton *) gtk_spin_button_new_with_range(AGS_SYNTH_BASE_NOTE_MIN,
+								  AGS_SYNTH_BASE_NOTE_MAX,
+								  1.0);
+  synth->lower->adjustment->value = -48.0;
   gtk_table_attach(table,
 		   GTK_WIDGET(synth->lower),
 		   1, 2,
@@ -296,7 +290,7 @@ ags_synth_init(AgsSynth *synth)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-
+  /* loop start */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("loop start"),
 				    "xalign", 0.0,
@@ -316,7 +310,7 @@ ags_synth_init(AgsSynth *synth)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-
+  /* loop end */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("loop end"),
 				    "xalign", 0.0,
@@ -661,6 +655,8 @@ ags_synth_update(AgsSynth *synth)
   
   pthread_mutex_unlock(audio_mutex);
 
+  task = NULL;
+
   while(input_pad != NULL){
     /* lookup channel mutex */
     pthread_mutex_lock(application_mutex);
@@ -688,8 +684,8 @@ ags_synth_update(AgsSynth *synth)
 				      volume,
 				      loop_start, loop_end);
 
-    ags_task_thread_append_task(task_thread,
-				AGS_TASK(apply_synth));
+    task = g_list_prepend(task,
+			  apply_synth);
 
     /* iterate */
     pthread_mutex_lock(channel_mutex);
@@ -713,8 +709,6 @@ ags_synth_update(AgsSynth *synth)
   output_lines = audio->output_lines;
 
   pthread_mutex_unlock(audio_mutex);
-
-  task = NULL;
 
   while(channel != NULL){
     AgsAudioSignal *template;
@@ -754,6 +748,9 @@ ags_synth_update(AgsSynth *synth)
   pthread_mutex_unlock(audio_mutex);
 
   while(input_pad != NULL){
+    guint sync_mode;
+    gboolean do_sync;
+
     /* do it so */
     input_line = gtk_container_get_children((GtkContainer *) AGS_PAD(input_pad->data)->expander_set);
     oscillator = AGS_OSCILLATOR(gtk_container_get_children((GtkContainer *) AGS_LINE(input_line->data)->expander->table)->data);
@@ -764,6 +761,16 @@ ags_synth_update(AgsSynth *synth)
     phase = (gdouble) gtk_spin_button_get_value_as_float(oscillator->phase);
     frequency = (gdouble) gtk_spin_button_get_value_as_float(oscillator->frequency);
     volume = (gdouble) gtk_spin_button_get_value_as_float(oscillator->volume);
+
+    do_sync = gtk_toggle_button_get_active(oscillator->do_sync);
+
+    sync_mode = 1 << gtk_combo_box_get_active(oscillator->sync_mode);
+    
+    g_object_set(apply_synth,
+		 "do-sync", do_sync,
+		 "sync-mode", sync_mode,
+		 "base-note", synth->lower->adjustment->value,
+		 NULL);
 
     apply_synth = ags_apply_synth_new(channel, output_lines,
 				      wave,

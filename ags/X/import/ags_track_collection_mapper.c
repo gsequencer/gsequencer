@@ -50,6 +50,7 @@
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_syncsynth.h>
 #include <ags/X/machine/ags_ffplayer.h>
 
 #include <math.h>
@@ -496,6 +497,9 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
 			       g_type_name(AGS_TYPE_MATRIX))){
     machine = (AgsMachine *) ags_matrix_new(window->soundcard);
   }else if(!g_ascii_strcasecmp(machine_type,
+			       g_type_name(AGS_TYPE_SYNCSYNTH))){
+    machine = (AgsMachine *) ags_syncsynth_new(window->soundcard);
+  }else if(!g_ascii_strcasecmp(machine_type,
 			       g_type_name(AGS_TYPE_FFPLAYER))){
     machine = (AgsMachine *) ags_ffplayer_new(window->soundcard);
   }else if(!g_ascii_strcasecmp(machine_type,
@@ -739,6 +743,9 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   }
 
   /* populate machine_type */
+  gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
+				 g_type_name(AGS_TYPE_SYNCSYNTH));
+
   gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
 				 g_type_name(AGS_TYPE_FFPLAYER));
 

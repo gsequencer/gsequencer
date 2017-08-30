@@ -116,9 +116,18 @@ And so for the glib-object marshallers file:
 
 Third-party files with uncertain copyright provided by gtk-doc:
 
-* docs/reference/ags/Makefile.am
-* docs/reference/ags/git.mk
-* docs/reference/ags/gtk-doc.make
+* docs/reference/libags/Makefile.am
+* docs/reference/libags/git.mk
+* docs/reference/libags/gtk-doc.make
+* docs/reference/libags-audio/Makefile.am
+* docs/reference/libags-audio/git.mk
+* docs/reference/libags-audio/gtk-doc.make
+* docs/reference/libags-gui/Makefile.am
+* docs/reference/libags-gui/git.mk
+* docs/reference/libags-gui/gtk-doc.make
+* docs/reference/libgsequencer/Makefile.am
+* docs/reference/libgsequencer/git.mk
+* docs/reference/libgsequencer/gtk-doc.make
 * gtk-doc.make
 * m4/gtk-doc.m4
 
@@ -142,3 +151,11 @@ Generated files with uncertain copyright done with glib-genmarshal
 
 ags/object/ags_marshal.c
 ags/object/ags_marshal.h
+
+Third-party files with uncertain copyright provided by http://kxstudio.sf.net:
+
+lv2/lv2plug.in/ns/lv2ext/lv2_programs.h
+
+Third-party files with uncertain copyright provided by http://drobilla.net:
+
+lv2.lib/mda/EPiano-presets.ttl

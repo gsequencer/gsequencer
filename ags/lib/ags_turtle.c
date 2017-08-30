@@ -1980,6 +1980,8 @@ ags_turtle_load(AgsTurtle *turtle,
     look_ahead = ags_turtle_load_skip_comments_and_blanks(&look_ahead);
 
     /* read numeric */
+    str = NULL;
+    
     if(str == NULL){
       str = ags_turtle_read_decimal(look_ahead,
 				    &(buffer[sb->st_size]));

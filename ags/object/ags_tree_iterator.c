@@ -78,7 +78,7 @@ ags_tree_iterator_is_inverse_mode(AgsTreeIterator *tree_iterator)
   g_return_val_if_fail(AGS_IS_TREE_ITERATOR(tree_iterator), FALSE);
   tree_iterator_interface = AGS_TREE_ITERATOR_GET_INTERFACE(tree_iterator);
   g_return_val_if_fail(tree_iterator_interface->is_inverse_mode, FALSE);
-  tree_iterator_interface->is_inverse_mode(tree_iterator);
+  return(tree_iterator_interface->is_inverse_mode(tree_iterator));
 }
 
 void

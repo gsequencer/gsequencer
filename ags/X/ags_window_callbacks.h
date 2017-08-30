@@ -27,4 +27,6 @@
 
 gboolean ags_window_delete_event_callback(GtkWidget *widget, gpointer data);
 
+void ags_window_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsWindow *window);
+
 #endif /*__AGS_WINDOW_CALLBACKS_H__*/

@@ -31,7 +31,7 @@
 
 int ags_audio_preferences_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsAudioPreferences *audio_preferences);
 
-void ags_audio_preferences_connect_jack_callback(GtkWidget *widget, AgsAudioPreferences *audio_preferences);
+void ags_audio_preferences_connect_sink_callback(GtkWidget *widget, AgsAudioPreferences *audio_preferences);
 
 void ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio_preferences);
 void ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *soundcard_editor,

@@ -19,7 +19,11 @@
 
 #include <ags/server/controller/ags_front_controller.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_marshal.h>
+
+#include <ags/server/ags_service_provider.h>
 
 #include <ags/server/security/ags_authentication_manager.h>
 
@@ -33,7 +37,12 @@
 #endif
 
 void ags_front_controller_class_init(AgsFrontControllerClass *front_controller);
+void ags_front_controller_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_front_controller_init(AgsFrontController *front_controller);
+void ags_front_controller_add_to_registry(AgsConnectable *connectable);
+void ags_front_controller_remove_from_registry(AgsConnectable *connectable);
+void ags_front_controller_connect(AgsConnectable *connectable);
+void ags_front_controller_disconnect(AgsConnectable *connectable);
 void ags_front_controller_finalize(GObject *gobject);
 
 #ifdef AGS_WITH_XMLRPC_C
@@ -90,11 +99,21 @@ ags_front_controller_get_type()
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_front_controller_init,
     };
+
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_front_controller_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
     
     ags_type_front_controller = g_type_register_static(G_TYPE_OBJECT,
 						       "AgsFrontController",
 						       &ags_front_controller_info,
 						       0);
+
+    g_type_add_interface_static(ags_type_front_controller,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
   return (ags_type_front_controller);
@@ -156,6 +175,8 @@ ags_front_controller_class_init(AgsFrontControllerClass *front_controller)
    * 
    * Do a request on the front controller.
    * 
+   * Returns: the response
+   * 
    * Since: 1.0.0
    */
   front_controller_signals[DO_REQUEST] =
@@ -174,9 +195,67 @@ ags_front_controller_class_init(AgsFrontControllerClass *front_controller)
 }
 
 void
+ags_front_controller_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->add_to_registry = ags_front_controller_add_to_registry;
+  connectable->remove_from_registry = ags_front_controller_remove_from_registry;
+  connectable->connect = ags_front_controller_connect;
+  connectable->disconnect = ags_front_controller_disconnect;
+}
+
+void
 ags_front_controller_init(AgsFrontController *front_controller)
 {
   //TODO:JK: implement me
+}
+
+void
+ags_front_controller_add_to_registry(AgsConnectable *connectable)
+{
+  AgsServer *server;
+  AgsRegistry *registry;
+  
+  AgsFrontController *front_controller;
+
+  AgsApplicationContext *application_context;
+  
+  struct xmlrpc_method_info3 *method_info;
+
+  front_controller = AGS_FRONT_CONTROLLER(connectable);
+  server = AGS_SERVER(AGS_CONTROLLER(front_controller)->server);
+
+  application_context = server->application_context;
+
+  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
+  
+#ifdef AGS_WITH_XMLRPC_C
+  /* bulk */
+  method_info = (struct xmlrpc_method_info3 *) malloc(sizeof(struct xmlrpc_method_info3));
+  method_info->methodName = "ags_front_controller_xmlrpc_request\0";
+  method_info->methodFunction = &ags_front_controller_xmlrpc_request;
+  method_info->serverInfo = NULL;
+  xmlrpc_registry_add_method3(ags_service_provider_get_env(AGS_SERVICE_PROVIDER(application_context)),
+			      registry->registry,
+			      method_info);
+#endif /* AGS_WITH_XMLRPC_C */
+}
+
+void
+ags_front_controller_remove_from_registry(AgsConnectable *connectable)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_front_controller_connect(AgsConnectable *connectable)
+{
+  /* empty */
+}
+
+void
+ags_front_controller_disconnect(AgsConnectable *connectable)
+{
+  /* empty */
 }
 
 void
@@ -281,7 +360,7 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
  *
  * Do a XML-RPC request for the given @context_path with @params.
  * 
- * Returns: on success the #GParameter-struct containing requested parameters, otherwise %NULL.
+ * Returns: the response, on success the #GParameter-struct containing requested parameters, otherwise %NULL.
  *
  * Since: 1.0.0
  */

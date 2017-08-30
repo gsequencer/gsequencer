@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,6 +35,9 @@
 #include <ags/file/ags_file_lookup.h>
 #include <ags/file/ags_file_launch.h>
 #include <ags/file/ags_file_link.h>
+
+#include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_synth_util.h>
 
 #include <math.h>
 
@@ -74,11 +77,12 @@ enum{
   PROP_SAMPLERATE,
   PROP_BUFFER_SIZE,
   PROP_FORMAT,
+  PROP_N_FRAMES,
+  PROP_ATTACK,
   PROP_OSCILLATOR,
   PROP_FREQUENCY,
   PROP_PHASE,
   PROP_VOLUME,
-  PROP_N_FRAMES,
   PROP_TIMESTAMP,
 };
 
@@ -211,6 +215,24 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_N_FRAMES,
+				  param_spec);
+
+  /**
+   * AgsSynthGenerator:attack:
+   *
+   * The attack to be used.
+   * 
+   * Since: 0.7.45
+   */
+  param_spec = g_param_spec_uint("attack",
+				 i18n_pspec("apply attack"),
+				 i18n_pspec("To apply attack"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ATTACK,
 				  param_spec);
 
   /**
@@ -387,6 +409,7 @@ ags_synth_generator_init(AgsSynthGenerator *synth_generator)
 
   /* more base init */
   synth_generator->n_frames = 0;
+  synth_generator->attack = 0;
 
   synth_generator->oscillator = 0;
   
@@ -427,6 +450,11 @@ ags_synth_generator_set_property(GObject *gobject,
   case PROP_N_FRAMES:
     {
       synth_generator->n_frames = g_value_get_uint(value);
+    }
+    break;
+  case PROP_ATTACK:
+    {
+      synth_generator->attack = g_value_get_uint(value);
     }
     break;
   case PROP_OSCILLATOR:
@@ -505,6 +533,11 @@ ags_synth_generator_get_property(GObject *gobject,
   case PROP_N_FRAMES:
     {
       g_value_set_uint(value, synth_generator->n_frames);
+    }
+    break;
+  case PROP_ATTACK:
+    {
+      g_value_set_uint(value, synth_generator->attack);
     }
     break;
   case PROP_OSCILLATOR:
@@ -590,6 +623,8 @@ ags_synth_generator_write(AgsFile *file,
 			     node,
 			     (AgsTimestamp *) synth_generator->timestamp);
   }
+
+  return(node);
 }
 
 void
@@ -602,6 +637,241 @@ ags_synth_generator_finalize(GObject *gobject)
   if(synth_generator->timestamp != NULL){
     g_object_unref(synth_generator->timestamp);
   }
+
+  /* finalize */
+  G_OBJECT_CLASS(ags_synth_generator_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_synth_generator_compute:
+ * @synth_generator: the #AgsSynthGenerator
+ * @note: the note to compute
+ * 
+ * Compute synth for @note.
+ *
+ * Returns: an #AgsAudioSignal applied specified synth to stream
+ * 
+ * Since: 0.9.7
+ */
+GObject*
+ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
+			    gdouble note)
+{
+  AgsAudioSignal *audio_signal;
+
+  audio_signal = ags_audio_signal_new(NULL,
+				      NULL,
+				      NULL);
+  ags_audio_signal_stream_resize(audio_signal,
+				 ceil(synth_generator->n_frames / synth_generator->buffer_size));
+
+  ags_synth_generator_compute_with_audio_signal(synth_generator,
+						audio_signal,
+						note,
+						NULL, NULL,
+						AGS_SYNTH_GENERATOR_COMPUTE_FIXED_LENGTH);
+  
+  return(audio_signal);
+}
+
+/**
+ * ags_synth_generator_compute_with_audio_signal:
+ * @synth_generator: the #AgsSynthGenerator
+ * @audio_signal: the #AgsAudioSignal
+ * @note: the note to compute
+ * @sync_start: not used for now
+ * @sync_end: not used for now
+ * @compute_flags: computation flags
+ * 
+ * Compute synth for @note for @audio_signal.
+ * 
+ * Since: 0.9.7
+ */
+void
+ags_synth_generator_compute_with_audio_signal(AgsSynthGenerator *synth_generator,
+					      GObject *audio_signal,
+					      gdouble note,
+					      AgsComplex *sync_start, AgsComplex *sync_end,
+					      guint compute_flags)
+{
+  GList *stream;
+  
+  void *buffer;
+  
+  gdouble samplerate;
+  gdouble start_frequency, frequency;
+  gdouble current_frequency;
+  gdouble phase, volume;
+  gdouble current_phase;
+  guint format;
+  guint audio_buffer_util_format;
+  guint frame_count, stop_frame;
+  guint buffer_size;
+  guint offset;
+  guint attack, frame_copy_count;
+
+  gdouble current_rate;
+  gdouble xcross_factor;
+  guint xcross_count;
+  guint i;
+  gboolean initial_run;
+
+  samplerate = AGS_AUDIO_SIGNAL(audio_signal)->samplerate;
+  
+  start_frequency = 48.0;
+  frequency = synth_generator->frequency;
+  
+  current_frequency = (guint) ((double) frequency * exp2((double)((double) note + 48.0) / 12.0));
+
+  phase = synth_generator->phase;
+  volume = synth_generator->volume;
+
+  format = AGS_AUDIO_SIGNAL(audio_signal)->format;
+  audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
+
+  frame_count = AGS_AUDIO_SIGNAL(audio_signal)->frame_count;
+  buffer_size = AGS_AUDIO_SIGNAL(audio_signal)->buffer_size;
+  
+  /* generate synth */
+  if((AGS_SYNTH_GENERATOR_COMPUTE_SYNC & compute_flags) != 0){
+    stream = AGS_AUDIO_SIGNAL(audio_signal)->stream_beginning;
+    xcross_count = 0;
+    
+    while(stream != NULL){
+      xcross_count += ags_synth_util_get_xcross_count(stream->data,
+						      audio_buffer_util_format,
+						      buffer_size);
+
+      stream = stream->next;
+    }
+  }
+
+  if(xcross_count == 0){
+    xcross_count = 1;
+  }
+
+  attack = synth_generator->attack;
+
+  if((AGS_SYNTH_GENERATOR_COMPUTE_FIXED_LENGTH & compute_flags) != 0){
+    stop_frame = synth_generator->n_frames;
+  }else{
+    stop_frame = frame_count;
+  }
+  
+  stream = AGS_AUDIO_SIGNAL(audio_signal)->stream_beginning;
+  stream = g_list_nth(stream,
+		      floor(attack / buffer_size));
+
+  attack %= buffer_size;
+
+  offset = 0;
+  current_phase = phase;
+
+  if((AGS_SYNTH_GENERATOR_COMPUTE_SYNC & compute_flags) != 0){
+    if(xcross_count == 0){
+      current_rate = current_frequency;
+    }else{
+      current_rate = (frame_count / xcross_count) * (frame_count / samplerate);
+    }
+    
+    if((AGS_SYNTH_GENERATOR_COMPUTE_16HZ & compute_flags) != 0){
+      xcross_factor = current_rate * (16.0 / samplerate);
+    }else if((AGS_SYNTH_GENERATOR_COMPUTE_440HZ & compute_flags) != 0){
+      xcross_factor = current_rate * (440.0 / samplerate);
+    }else if((AGS_SYNTH_GENERATOR_COMPUTE_22000HZ & compute_flags) != 0){
+      xcross_factor = current_rate * (22000.0 / samplerate);
+    }else if((AGS_SYNTH_GENERATOR_COMPUTE_LIMIT & compute_flags) != 0){
+      xcross_factor = current_rate * samplerate;
+    }else if((AGS_SYNTH_GENERATOR_COMPUTE_NOHZ & compute_flags) != 0){
+      if(xcross_count != 0){
+	xcross_factor = (1.0 / xcross_count);
+      }else{
+	xcross_factor = 1.0;
+      }
+    }else if((AGS_SYNTH_GENERATOR_COMPUTE_FREQUENCY & compute_flags) != 0){
+      xcross_factor = current_rate * (frequency / samplerate);
+    }else if((AGS_SYNTH_GENERATOR_COMPUTE_NOTE & compute_flags) != 0){
+      xcross_factor = current_rate * (current_frequency / samplerate);
+    }
+  }
+
+  i = 0;
+  
+  initial_run = TRUE;
+  
+  while(stream != NULL &&
+	offset < stop_frame){
+    if(initial_run){
+      if(buffer_size - attack < stop_frame){
+	frame_copy_count = buffer_size - attack;
+      }else{
+	frame_copy_count = stop_frame;
+      }
+    }else{
+      if(offset + buffer_size < stop_frame){
+	frame_copy_count = buffer_size;
+      }else{
+	frame_copy_count = stop_frame - offset;
+      }
+    }
+
+    switch(synth_generator->oscillator){
+    case AGS_SYNTH_GENERATOR_OSCILLATOR_SIN:
+      {
+	ags_synth_util_sin(stream->data,
+			   current_frequency, current_phase, volume,
+			   samplerate, audio_buffer_util_format,
+			   attack, frame_copy_count);
+      }
+      break;
+    case AGS_SYNTH_GENERATOR_OSCILLATOR_SAWTOOTH:
+      {
+	ags_synth_util_sawtooth(stream->data,
+				current_frequency, current_phase, volume,
+				samplerate, audio_buffer_util_format,
+				attack, frame_copy_count);
+      }
+      break;
+    case AGS_SYNTH_GENERATOR_OSCILLATOR_TRIANGLE:
+      {
+	ags_synth_util_triangle(stream->data,
+				current_frequency, current_phase, volume,
+				samplerate, audio_buffer_util_format,
+				attack, frame_copy_count);
+      }
+      break;
+    case AGS_SYNTH_GENERATOR_OSCILLATOR_SQUARE:
+      {
+	ags_synth_util_square(stream->data,
+			      current_frequency, current_phase, volume,
+			      samplerate, audio_buffer_util_format,
+			      attack, frame_copy_count);
+      }
+      break;
+    default:
+      g_message("unknown oscillator");
+    }
+
+    stream = stream->next;
+    offset += frame_copy_count;
+
+    if((AGS_SYNTH_GENERATOR_COMPUTE_SYNC & compute_flags) == 0 ||
+       (xcross_factor * i) > (frame_count / xcross_count)){
+      current_phase = (guint) (offset - attack + phase) % (guint) floor(samplerate / current_frequency);
+
+      i = 0;
+    }else{
+      current_phase = phase;
+
+      i++;
+    }
+    
+    attack = 0;
+
+    initial_run = FALSE;
+  }
+
+  free(buffer);
 }
 
 /**

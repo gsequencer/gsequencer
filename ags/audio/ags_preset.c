@@ -469,6 +469,9 @@ ags_preset_finalize(GObject *gobject)
 
   g_free(preset->scope);
   g_free(preset->preset_name);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_preset_parent_class)->finalize(gobject);
 }
 
 /**

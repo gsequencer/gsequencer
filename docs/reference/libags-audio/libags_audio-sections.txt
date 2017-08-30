@@ -322,6 +322,8 @@ ags_audio_set_format
 ags_audio_set_sequence_length
 ags_audio_add_audio_connection
 ags_audio_remove_audio_connection
+ags_audio_add_preset
+ags_audio_remove_preset
 ags_audio_add_notation
 ags_audio_remove_notation
 ags_audio_add_automation
@@ -366,8 +368,8 @@ ags_audio_get_type
 <FILE>ags_audio_application_context</FILE>
 <TITLE>AgsAudioApplicationContext</TITLE>
 AGS_AUDIO_RT_PRIORITY
-AGS_AUDIO_BUILD_ID
 AGS_AUDIO_DEFAULT_VERSION
+AGS_AUDIO_BUILD_ID
 AGS_EFFECTS_DEFAULT_VERSION
 AgsAudioApplicationContextFlags
 ags_audio_application_context_new
@@ -424,6 +426,14 @@ ags_audio_buffer_util_resample_s64
 ags_audio_buffer_util_resample_float
 ags_audio_buffer_util_resample_double
 ags_audio_buffer_util_resample
+ags_audio_buffer_util_peak_s8
+ags_audio_buffer_util_peak_s16
+ags_audio_buffer_util_peak_s24
+ags_audio_buffer_util_peak_s32
+ags_audio_buffer_util_peak_s64
+ags_audio_buffer_util_peak_float
+ags_audio_buffer_util_peak_double
+ags_audio_buffer_util_peak
 ags_audio_buffer_util_copy_s8_to_s8
 ags_audio_buffer_util_copy_s8_to_s16
 ags_audio_buffer_util_copy_s8_to_s24
@@ -674,6 +684,7 @@ ags_audio_signal_tile
 ags_audio_signal_scale
 ags_audio_signal_feed
 ags_audio_signal_envelope
+ags_audio_signal_is_active
 ags_audio_signal_new
 ags_audio_signal_new_with_length
 <SUBSECTION Public>
@@ -716,6 +727,7 @@ AGS_AUTOMATION_DEFAULT_LENGTH
 AGS_AUTOMATION_DEFAULT_JIFFIE
 AGS_AUTOMATION_DEFAULT_DURATION
 AGS_AUTOMATION_DEFAULT_PRECISION
+AGS_AUTOMATION_MAXIMUM_STEPS
 AgsAutomationFlags
 ags_automation_find_port
 ags_automation_find_near_timestamp
@@ -762,8 +774,10 @@ AgsPortDescriptorFlags
 AgsPortDescriptor
 ags_port_descriptor_alloc
 ags_port_descriptor_free
+ags_port_descriptor_find_symbol
 ags_base_plugin_find_filename
 ags_base_plugin_find_effect
+ags_base_plugin_find_ui_effect_index
 ags_base_plugin_sort
 ags_base_plugin_apply_port_group_by_prefix
 ags_base_plugin_instantiate
@@ -1010,6 +1024,38 @@ ags_channel_thread_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_clear_audio_signal</FILE>
+<TITLE>AgsClearAudioSignal</TITLE>
+ags_clear_audio_signal_new
+<SUBSECTION Public>
+AGS_CLEAR_AUDIO_SIGNAL
+AGS_CLEAR_AUDIO_SIGNAL_CLASS
+AGS_CLEAR_AUDIO_SIGNAL_GET_CLASS
+AGS_IS_CLEAR_AUDIO_SIGNAL
+AGS_IS_CLEAR_AUDIO_SIGNAL_CLASS
+AGS_TYPE_CLEAR_AUDIO_SIGNAL
+AgsClearAudioSignal
+AgsClearAudioSignalClass
+ags_clear_audio_signal_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_clear_buffer</FILE>
+<TITLE>AgsClearBuffer</TITLE>
+ags_clear_buffer_new
+<SUBSECTION Public>
+AGS_CLEAR_BUFFER
+AGS_CLEAR_BUFFER_CLASS
+AGS_CLEAR_BUFFER_GET_CLASS
+AGS_IS_CLEAR_BUFFER
+AGS_IS_CLEAR_BUFFER_CLASS
+AGS_TYPE_CLEAR_BUFFER
+AgsClearBuffer
+AgsClearBufferClass
+ags_clear_buffer_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_copy_audio_signal</FILE>
 <TITLE>AgsCopyAudioSignal</TITLE>
 ags_copy_audio_signal_new
@@ -1211,6 +1257,23 @@ ags_count_beats_audio_run_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_crop_note</FILE>
+<TITLE>AgsCropNote</TITLE>
+AGS_CROP_NOTE_DEFAULT_X_LENGTH
+ags_crop_note_new
+<SUBSECTION Public>
+AGS_CROP_NOTE
+AGS_CROP_NOTE_CLASS
+AGS_CROP_NOTE_GET_CLASS
+AGS_IS_CROP_NOTE
+AGS_IS_CROP_NOTE_CLASS
+AGS_TYPE_CROP_NOTE
+AgsCropNote
+AgsCropNoteClass
+ags_crop_note_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_delay_audio</FILE>
 <TITLE>AgsDelayAudio</TITLE>
 ags_delay_audio_notation_duration_changed
@@ -1255,6 +1318,7 @@ ags_delay_audio_run_get_type
 <TITLE>AgsDevout</TITLE>
 AGS_DEVOUT_DEFAULT_ALSA_DEVICE
 AGS_DEVOUT_DEFAULT_OSS_DEVICE
+AGS_DEVOUT_DEFAULT_RING_BUFFER_SIZE
 AgsDevoutFlags
 AGS_DEVOUT_ERROR
 AgsDevoutError
@@ -1278,6 +1342,8 @@ ags_devout_get_type
 <SECTION>
 <FILE>ags_dssi_manager</FILE>
 <TITLE>AgsDssiManager</TITLE>
+ags_dssi_manager_get_default_path
+ags_dssi_manager_set_default_path
 ags_dssi_manager_get_filenames
 ags_dssi_manager_find_dssi_plugin
 ags_dssi_manager_load_blacklist
@@ -1389,6 +1455,7 @@ ags_envelope_recycling_get_type
 <SECTION>
 <FILE>ags_export_output</FILE>
 <TITLE>AgsExportOutput</TITLE>
+AgsExportOutputFormat
 ags_export_output_new
 <SUBSECTION Public>
 AGS_EXPORT_OUTPUT
@@ -1407,6 +1474,7 @@ ags_export_output_get_type
 <TITLE>AgsExportThread</TITLE>
 AGS_EXPORT_THREAD_DEFAULT_JIFFIE
 AgsExportThreadFlags
+ags_export_thread_find_soundcard
 ags_export_thread_new
 <SUBSECTION Public>
 AGS_EXPORT_THREAD
@@ -1559,8 +1627,12 @@ ags_init_channel_get_type
 <SECTION>
 <FILE>ags_input</FILE>
 <TITLE>AgsInput</TITLE>
+AGS_INPUT_SYNTH_BASE_NOTE
 ags_input_open_file
 ags_input_apply_synth
+ags_input_apply_synth_extended
+ags_input_is_active
+ags_input_next_active
 ags_input_new
 <SUBSECTION Public>
 AGS_INPUT
@@ -1706,6 +1778,7 @@ AgsJackMidiinSyncFlags
 AGS_JACK_MIDIIN_ERROR
 AgsJackMidiinError
 ags_jack_midiin_error_quark
+ags_jack_midiin_switch_buffer_flag
 ags_jack_midiin_new
 <SUBSECTION Public>
 AGS_IS_JACK_MIDIIN
@@ -1785,6 +1858,8 @@ ags_ladspa_conversion_get_type
 <SECTION>
 <FILE>ags_ladspa_manager</FILE>
 <TITLE>AgsLadspaManager</TITLE>
+ags_ladspa_manager_get_default_path
+ags_ladspa_manager_set_default_path
 ags_ladspa_manager_get_filenames
 ags_ladspa_manager_find_ladspa_plugin
 ags_ladspa_manager_load_blacklist
@@ -1928,10 +2003,13 @@ ags_lv2_log_manager_get_type
 <FILE>ags_lv2_manager</FILE>
 <TITLE>AgsLv2Manager</TITLE>
 AGS_LV2_MANAGER_DEFAULT_LOCALE
+ags_lv2_manager_get_default_path
+ags_lv2_manager_set_default_path
 ags_lv2_manager_get_filenames
 ags_lv2_manager_find_lv2_plugin
 ags_lv2_manager_load_blacklist
 ags_lv2_manager_load_file
+ags_lv2_manager_load_preset
 ags_lv2_manager_load_default_directory
 ags_lv2_manager_get_instance
 ags_lv2_manager_new
@@ -1948,6 +2026,35 @@ ags_lv2_manager_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_lv2_option_manager</FILE>
+<TITLE>AgsLv2OptionManager</TITLE>
+AGS_LV2_OPTION_RESSOURCE
+AGS_LV2_OPTIONS_OPTION
+AgsLv2OptionRessource
+ags_lv2_option_ressource_alloc
+ags_lv2_option_manager_ressource_insert
+ags_lv2_option_manager_ressource_remove
+ags_lv2_option_manager_ressource_lookup
+ags_lv2_option_manager_ressource_lookup_extended
+ags_lv2_option_manager_get_option
+ags_lv2_option_manager_set_option
+ags_lv2_option_manager_lv2_options_get
+ags_lv2_option_manager_lv2_options_set
+ags_lv2_option_manager_get_instance
+ags_lv2_option_manager_new
+<SUBSECTION Public>
+AGS_IS_LV2_OPTION_MANAGER
+AGS_IS_LV2_OPTION_MANAGER_CLASS
+AGS_LV2_OPTION_MANAGER
+AGS_LV2_OPTION_MANAGER_CLASS
+AGS_LV2_OPTION_MANAGER_GET_CLASS
+AGS_TYPE_LV2_OPTION_MANAGER
+AgsLv2OptionManager
+AgsLv2OptionManagerClass
+ags_lv2_option_manager_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_lv2_plugin</FILE>
 <TITLE>AgsLv2Plugin</TITLE>
 AGS_LV2_PLUGIN_DESCRIPTOR
@@ -1955,15 +2062,21 @@ AGS_LV2_EVENT_BUFFER
 AGS_LV2_EVENT
 AGS_LV2_EVENT_DATA
 AGS_LV2_ATOM_SEQUENCE
+AGS_LV2_ATOM_EVENT
 AgsLv2PluginFlags
-ags_lv2_plugin_alloc_event_buffer
-ags_lv2_plugin_concat_event_buffer
+ags_lv2_plugin_event_buffer_alloc
+ags_lv2_plugin_event_buffer_realloc_data
+ags_lv2_plugin_event_buffer_concat
 ags_lv2_plugin_event_buffer_append_midi
+ags_lv2_plugin_event_buffer_remove_midi
 ags_lv2_plugin_clear_event_buffer
 ags_lv2_plugin_alloc_atom_sequence
 ags_lv2_plugin_concat_atom_sequence
 ags_lv2_plugin_atom_sequence_append_midi
+ags_lv2_plugin_atom_sequence_remove_midi
 ags_lv2_plugin_clear_atom_sequence
+ags_lv2_plugin_find_pname
+ags_lv2_plugin_change_program
 ags_lv2_plugin_new
 <SUBSECTION Public>
 AGS_IS_LV2_PLUGIN
@@ -1975,6 +2088,29 @@ AGS_TYPE_LV2_PLUGIN
 AgsLv2Plugin
 AgsLv2PluginClass
 ags_lv2_plugin_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_lv2_preset</FILE>
+<TITLE>AgsLv2Preset</TITLE>
+AGS_LV2_PORT_PRESET
+AgsLv2PresetFlags
+AgsLv2PortPreset
+ags_lv2_port_preset_alloc
+ags_lv2_port_preset_free
+ags_lv2_preset_parse_turtle
+ags_lv2_preset_find_preset_label
+ags_lv2_preset_new
+<SUBSECTION Public>
+AGS_IS_LV2_PRESET
+AGS_IS_LV2_PRESET_CLASS
+AGS_LV2_PRESET
+AGS_LV2_PRESET_CLASS
+AGS_LV2_PRESET_GET_CLASS
+AGS_TYPE_LV2_PRESET
+AgsLv2Preset
+AgsLv2PresetClass
+ags_lv2_preset_get_type
 </SECTION>
 
 <SECTION>
@@ -2068,8 +2204,11 @@ ags_lv2_worker_manager_get_type
 <SECTION>
 <FILE>ags_lv2ui_manager</FILE>
 <TITLE>AgsLv2uiManager</TITLE>
+ags_lv2ui_manager_get_default_path
+ags_lv2ui_manager_set_default_path
 ags_lv2ui_manager_get_filenames
 ags_lv2ui_manager_find_lv2ui_plugin
+ags_lv2ui_manager_find_lv2ui_plugin_with_index
 ags_lv2ui_manager_load_blacklist
 ags_lv2ui_manager_load_file
 ags_lv2ui_manager_load_default_directory
@@ -2091,6 +2230,7 @@ ags_lv2ui_manager_get_type
 <FILE>ags_lv2ui_plugin</FILE>
 <TITLE>AgsLv2uiPlugin</TITLE>
 AgsLv2uiFlags
+ags_lv2ui_plugin_find_gui_uri
 ags_lv2ui_plugin_new
 <SUBSECTION Public>
 AGS_IS_LV2UI_PLUGIN
@@ -2419,6 +2559,7 @@ AgsMidiinSyncFlags
 AGS_MIDIIN_ERROR
 AgsMidiinError
 ags_midiin_error_quark
+ags_midiin_switch_buffer_flag
 ags_midiin_new
 <SUBSECTION Public>
 AGS_IS_MIDIIN
@@ -2430,6 +2571,24 @@ AGS_TYPE_MIDIIN
 AgsMidiin
 AgsMidiinClass
 ags_midiin_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_move_note</FILE>
+<TITLE>AgsMoveNote</TITLE>
+AGS_MOVE_NOTE_DEFAULT_X_LENGTH
+AGS_MOVE_NOTE_DEFAULT_Y_LENGTH
+ags_move_note_new
+<SUBSECTION Public>
+AGS_IS_MOVE_NOTE
+AGS_IS_MOVE_NOTE_CLASS
+AGS_MOVE_NOTE
+AGS_MOVE_NOTE_CLASS
+AGS_MOVE_NOTE_GET_CLASS
+AGS_TYPE_MOVE_NOTE
+AgsMoveNote
+AgsMoveNoteClass
+ags_move_note_get_type
 </SECTION>
 
 <SECTION>
@@ -2544,6 +2703,7 @@ AGS_NOTATION_CLIPBOARD_FORMAT
 AgsNotationFlags
 ags_notation_find_near_timestamp
 ags_notation_add_note
+ags_notation_remove_note
 ags_notation_remove_note_at_position
 ags_notation_get_selection
 ags_notation_is_note_selected
@@ -2559,6 +2719,8 @@ ags_notation_copy_selection
 ags_notation_cut_selection
 ags_notation_insert_from_clipboard
 ags_notation_get_current
+ags_notation_to_raw_midi
+ags_notation_from_raw_midi
 ags_notation_new
 <SUBSECTION Public>
 AGS_IS_NOTATION
@@ -2576,12 +2738,19 @@ ags_notation_get_type
 <FILE>ags_note</FILE>
 <TITLE>AgsNote</TITLE>
 AgsNoteFlags
+ags_note_sort_func
 ags_note_find_prev
 ags_note_find_next
+ags_note_length_to_smf_delta_time
+ags_note_smf_delta_time_to_length
 ags_note_to_raw_midi
+ags_note_to_raw_midi_extended
 ags_note_to_seq_event
+ags_note_to_seq_event_extended
 ags_note_from_raw_midi
+ags_note_from_raw_midi_extended
 ags_note_from_seq_event
+ags_note_from_seq_event_extended
 ags_note_duplicate
 ags_note_new
 ags_note_new_with_offset
@@ -2691,6 +2860,7 @@ AGS_PATTERN_MAXIMUM_NOTE_LENGTH
 AGS_PATTERN_DEFAULT_LENGTH
 AGS_PATTERN_DEFAULT_JIFFIE
 AGS_PATTERN_DEFAULT_DURATION
+AgsPatternFlags
 ags_pattern_find_near_timestamp
 ags_pattern_set_dim
 ags_pattern_is_empty
@@ -2728,7 +2898,8 @@ ags_peak_audio_signal_get_type
 <SECTION>
 <FILE>ags_peak_channel</FILE>
 <TITLE>AgsPeakChannel</TITLE>
-ags_peak_channel_retrieve_peak
+ags_peak_channel_buffer_add
+ags_peak_channel_retrieve_peak_internal
 ags_peak_channel_new
 <SUBSECTION Public>
 AGS_IS_PEAK_CHANNEL
@@ -2878,6 +3049,85 @@ ags_play_channel_run_master_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_play_dssi_audio</FILE>
+<TITLE>AgsPlayDssiAudio</TITLE>
+ags_play_dssi_audio_load
+ags_play_dssi_audio_load_ports
+ags_play_dssi_audio_load_conversion
+ags_play_dssi_audio_find
+ags_play_dssi_audio_new
+<SUBSECTION Public>
+AGS_IS_PLAY_DSSI_AUDIO
+AGS_IS_PLAY_DSSI_AUDIO_CLASS
+AGS_PLAY_DSSI_AUDIO
+AGS_PLAY_DSSI_AUDIO_CLASS
+AGS_PLAY_DSSI_AUDIO_GET_CLASS
+AGS_TYPE_PLAY_DSSI_AUDIO
+AgsPlayDssiAudio
+AgsPlayDssiAudioClass
+ags_play_dssi_audio_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_play_dssi_audio_run</FILE>
+<TITLE>AgsPlayDssiAudioRun</TITLE>
+AGS_PLAY_DSSI_AUDIO_DEFAULT_MIDI_LENGHT
+AgsPlayDssiAudioRunFlags
+ags_play_dssi_audio_run_load_ports
+ags_play_dssi_audio_run_new
+<SUBSECTION Public>
+AGS_IS_PLAY_DSSI_AUDIO_RUN
+AGS_IS_PLAY_DSSI_AUDIO_RUN_CLASS
+AGS_PLAY_DSSI_AUDIO_RUN
+AGS_PLAY_DSSI_AUDIO_RUN_CLASS
+AGS_PLAY_DSSI_AUDIO_RUN_GET_CLASS
+AGS_TYPE_PLAY_DSSI_AUDIO_RUN
+AgsPlayDssiAudioRun
+AgsPlayDssiAudioRunClass
+ags_play_dssi_audio_run_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_play_lv2_audio</FILE>
+<TITLE>AgsPlayLv2Audio</TITLE>
+AgsPlayLv2AudioFLags
+ags_play_lv2_audio_load
+ags_play_lv2_audio_load_ports
+ags_play_lv2_audio_load_conversion
+ags_play_lv2_audio_find
+ags_play_lv2_audio_new
+<SUBSECTION Public>
+AGS_IS_PLAY_LV2_AUDIO
+AGS_IS_PLAY_LV2_AUDIO_CLASS
+AGS_PLAY_LV2_AUDIO
+AGS_PLAY_LV2_AUDIO_CLASS
+AGS_PLAY_LV2_AUDIO_GET_CLASS
+AGS_TYPE_PLAY_LV2_AUDIO
+AgsPlayLv2Audio
+AgsPlayLv2AudioClass
+ags_play_lv2_audio_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_play_lv2_audio_run</FILE>
+<TITLE>AgsPlayLv2AudioRun</TITLE>
+AGS_PLAY_LV2_AUDIO_DEFAULT_MIDI_LENGHT
+AgsPlayLv2AudioRunFlags
+ags_play_lv2_audio_run_load_ports
+ags_play_lv2_audio_run_new
+<SUBSECTION Public>
+AGS_IS_PLAY_LV2_AUDIO_RUN
+AGS_IS_PLAY_LV2_AUDIO_RUN_CLASS
+AGS_PLAY_LV2_AUDIO_RUN
+AGS_PLAY_LV2_AUDIO_RUN_CLASS
+AGS_PLAY_LV2_AUDIO_RUN_GET_CLASS
+AGS_TYPE_PLAY_LV2_AUDIO_RUN
+AgsPlayLv2AudioRun
+AgsPlayLv2AudioRunClass
+ags_play_lv2_audio_run_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_play_notation_audio</FILE>
 <TITLE>AgsPlayNotationAudio</TITLE>
 ags_play_notation_audio_new
@@ -2983,6 +3233,15 @@ ags_playable_get_type
 <FILE>ags_playback</FILE>
 <TITLE>AgsPlayback</TITLE>
 AgsPlaybackFlags
+AgsPlaybackScope
+ags_playback_set_channel_thread
+ags_playback_get_channel_thread
+ags_playback_set_iterator_thread
+ags_playback_get_iterator_thread
+ags_playback_set_recycling_thread
+ags_playback_get_recycling_thread
+ags_playback_set_recall_id
+ags_playback_get_recall_id
 ags_playback_find_source
 ags_playback_new
 <SUBSECTION Public>
@@ -3001,6 +3260,11 @@ ags_playback_get_type
 <FILE>ags_playback_domain</FILE>
 <TITLE>AgsPlaybackDomain</TITLE>
 AgsPlaybackDomainFlags
+AgsPlaybackDomainScope
+ags_playback_domain_set_audio_thread
+ags_playback_domain_get_audio_thread
+ags_playback_domain_add_playback
+ags_playback_domain_remove_playback
 ags_playback_domain_new
 <SUBSECTION Public>
 AGS_IS_PLAYBACK_DOMAIN
@@ -3063,6 +3327,193 @@ AGS_TYPE_PORT
 AgsPort
 AgsPortClass
 ags_port_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_prepare_audio_signal</FILE>
+<TITLE>AgsPrepareAudioSignal</TITLE>
+ags_prepare_audio_signal_new
+<SUBSECTION Public>
+AGS_IS_PREPARE_AUDIO_SIGNAL
+AGS_IS_PREPARE_AUDIO_SIGNAL_CLASS
+AGS_PREPARE_AUDIO_SIGNAL
+AGS_PREPARE_AUDIO_SIGNAL_CLASS
+AGS_PREPARE_AUDIO_SIGNAL_GET_CLASS
+AGS_TYPE_PREPARE_AUDIO_SIGNAL
+AgsPrepareAudioSignal
+AgsPrepareAudioSignalClass
+ags_prepare_audio_signal_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_prepare_channel</FILE>
+<TITLE>AgsPrepareChannel</TITLE>
+ags_prepare_channel_new
+<SUBSECTION Public>
+AGS_IS_PREPARE_CHANNEL
+AGS_IS_PREPARE_CHANNEL_CLASS
+AGS_PREPARE_CHANNEL
+AGS_PREPARE_CHANNEL_CLASS
+AGS_PREPARE_CHANNEL_GET_CLASS
+AGS_TYPE_PREPARE_CHANNEL
+AgsPrepareChannel
+AgsPrepareChannelClass
+ags_prepare_channel_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_prepare_channel_run</FILE>
+<TITLE>AgsPrepareChannelRun</TITLE>
+ags_prepare_channel_run_new
+<SUBSECTION Public>
+AGS_IS_PREPARE_CHANNEL_RUN
+AGS_IS_PREPARE_CHANNEL_RUN_CLASS
+AGS_PREPARE_CHANNEL_RUN
+AGS_PREPARE_CHANNEL_RUN_CLASS
+AGS_PREPARE_CHANNEL_RUN_GET_CLASS
+AGS_TYPE_PREPARE_CHANNEL_RUN
+AgsPrepareChannelRun
+AgsPrepareChannelRunClass
+ags_prepare_channel_run_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_prepare_recycling</FILE>
+<TITLE>AgsPrepareRecycling</TITLE>
+ags_prepare_recycling_new
+<SUBSECTION Public>
+AGS_IS_PREPARE_RECYCLING
+AGS_IS_PREPARE_RECYCLING_CLASS
+AGS_PREPARE_RECYCLING
+AGS_PREPARE_RECYCLING_CLASS
+AGS_PREPARE_RECYCLING_GET_CLASS
+AGS_TYPE_PREPARE_RECYCLING
+AgsPrepareRecycling
+AgsPrepareRecyclingClass
+ags_prepare_recycling_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_preset</FILE>
+<TITLE>AgsPreset</TITLE>
+AgsPresetFlags
+AGS_PRESET_ERROR
+AgsPresetError
+ags_preset_error_quark
+ags_preset_find_scope
+ags_preset_find_name
+ags_preset_add_parameter
+ags_preset_remove_parameter
+ags_preset_get_parameter
+ags_preset_new
+<SUBSECTION Public>
+AGS_IS_PRESET
+AGS_IS_PRESET_CLASS
+AGS_PRESET
+AGS_PRESET_CLASS
+AGS_PRESET_GET_CLASS
+AGS_TYPE_PRESET
+AgsPreset
+AgsPresetClass
+ags_preset_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_pulse_client</FILE>
+<TITLE>AgsPulseClient</TITLE>
+AgsPulseClientFlags
+ags_pulse_client_find_uuid
+ags_pulse_client_find
+ags_pulse_client_open
+ags_pulse_client_add_device
+ags_pulse_client_remove_device
+ags_pulse_client_add_port
+ags_pulse_client_remove_port
+ags_pulse_client_activate
+ags_pulse_client_deactivate
+ags_pulse_client_new
+<SUBSECTION Public>
+AGS_IS_PULSE_CLIENT
+AGS_IS_PULSE_CLIENT_CLASS
+AGS_PULSE_CLIENT
+AGS_PULSE_CLIENT_CLASS
+AGS_PULSE_CLIENT_GET_CLASS
+AGS_TYPE_PULSE_CLIENT
+AgsPulseClient
+AgsPulseClientClass
+ags_pulse_client_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_pulse_devout</FILE>
+<TITLE>AgsPulseDevout</TITLE>
+AgsPulseDevoutFlags
+AgsPulseDevoutSyncFlags
+AGS_PULSE_DEVOUT_ERROR
+AgsPulseDevoutError
+ags_pulse_devout_error_quark
+ags_pulse_devout_switch_buffer_flag
+ags_pulse_devout_new
+<SUBSECTION Public>
+AGS_IS_PULSE_DEVOUT
+AGS_IS_PULSE_DEVOUT_CLASS
+AGS_PULSE_DEVOUT
+AGS_PULSE_DEVOUT_CLASS
+AGS_PULSE_DEVOUT_GET_CLASS
+AGS_TYPE_PULSE_DEVOUT
+AgsPulseDevout
+AgsPulseDevoutClass
+ags_pulse_devout_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_pulse_port</FILE>
+<TITLE>AgsPulsePort</TITLE>
+AgsPulsePortFlags
+ags_pulse_port_find
+ags_pulse_port_register
+ags_pulse_port_unregister
+ags_pulse_port_get_fixed_size
+ags_pulse_port_set_samplerate
+ags_pulse_port_set_pcm_channels
+ags_pulse_port_set_buffer_size
+ags_pulse_port_set_format
+ags_pulse_port_get_latency
+ags_pulse_port_new
+<SUBSECTION Public>
+AGS_IS_PULSE_PORT
+AGS_IS_PULSE_PORT_CLASS
+AGS_PULSE_PORT
+AGS_PULSE_PORT_CLASS
+AGS_PULSE_PORT_GET_CLASS
+AGS_TYPE_PULSE_PORT
+AgsPulsePort
+AgsPulsePortClass
+ags_pulse_port_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_pulse_server</FILE>
+<TITLE>AgsPulseServer</TITLE>
+AgsPulseServerFlags
+ags_pulse_server_find_url
+ags_pulse_server_find_client
+ags_pulse_server_find_port
+ags_pulse_server_add_client
+ags_pulse_server_remove_client
+ags_pulse_server_connect_client
+ags_pulse_server_start_poll
+ags_pulse_server_new
+<SUBSECTION Public>
+AGS_IS_PULSE_SERVER
+AGS_IS_PULSE_SERVER_CLASS
+AGS_PULSE_SERVER
+AGS_PULSE_SERVER_CLASS
+AGS_PULSE_SERVER_GET_CLASS
+AGS_TYPE_PULSE_SERVER
+AgsPulseServer
+AgsPulseServerClass
+ags_pulse_server_get_type
 </SECTION>
 
 <SECTION>
@@ -3132,8 +3583,25 @@ ags_recall_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_recall_adaptor_run</FILE>
+<TITLE>AgsRecallAdaptorRun</TITLE>
+ags_recall_adaptor_run_new
+<SUBSECTION Public>
+AGS_IS_RECALL_ADAPTOR_RUN
+AGS_IS_RECALL_ADAPTOR_RUN_CLASS
+AGS_RECALL_ADAPTOR_RUN
+AGS_RECALL_ADAPTOR_RUN_CLASS
+AGS_RECALL_ADAPTOR_RUN_GET_CLASS
+AGS_TYPE_RECALL_ADAPTOR_RUN
+AgsRecallAdaptorRun
+AgsRecallAdaptorRunClass
+ags_recall_adaptor_run_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_recall_audio</FILE>
 <TITLE>AgsRecallAudio</TITLE>
+AgsRecallAudioFlags
 ags_recall_audio_new
 <SUBSECTION Public>
 AGS_IS_RECALL_AUDIO
@@ -3201,7 +3669,6 @@ ags_recall_channel_get_type
 <FILE>ags_recall_channel_run</FILE>
 <TITLE>AgsRecallChannelRun</TITLE>
 ags_recall_channel_run_run_order_changed
-ags_recall_channel_run_get_run_order
 ags_recall_channel_run_new
 <SUBSECTION Public>
 AGS_IS_RECALL_CHANNEL_RUN
@@ -3257,6 +3724,7 @@ ags_recall_container_get_type
 <SECTION>
 <FILE>ags_recall_dependency</FILE>
 <TITLE>AgsRecallDependency</TITLE>
+AgsRecallDependencyFlags
 ags_recall_dependency_find_dependency
 ags_recall_dependency_find_dependency_by_provider
 ags_recall_dependency_resolve
@@ -3314,7 +3782,6 @@ ags_recall_dssi_run_get_type
 <TITLE>AgsRecallFactory</TITLE>
 AgsRecallFactoryCreateFlags
 ags_recall_factory_create
-ags_recall_factory_remove
 ags_recall_factory_get_instance
 ags_recall_factory_new
 <SUBSECTION Public>
@@ -3520,6 +3987,7 @@ ags_recycling_create_audio_signal_with_defaults
 ags_recycling_create_audio_signal_with_frame_count
 ags_recycling_position
 ags_recycling_find_next_channel
+ags_recycling_is_active
 ags_recycling_new
 <SUBSECTION Public>
 AGS_IS_RECYCLING
@@ -3786,6 +4254,25 @@ AGS_TYPE_RESET_AUDIO_CONNECTION
 AgsResetAudioConnection
 AgsResetAudioConnectionClass
 ags_reset_audio_connection_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_reset_peak</FILE>
+<TITLE>AgsResetPeak</TITLE>
+ags_reset_peak_add
+ags_reset_peak_remove
+ags_reset_peak_get_instance
+ags_reset_peak_new
+<SUBSECTION Public>
+AGS_IS_RESET_PEAK
+AGS_IS_RESET_PEAK_CLASS
+AGS_RESET_PEAK
+AGS_RESET_PEAK_CLASS
+AGS_RESET_PEAK_GET_CLASS
+AGS_TYPE_RESET_PEAK
+AgsResetPeak
+AgsResetPeakClass
+ags_reset_peak_get_type
 </SECTION>
 
 <SECTION>
@@ -4205,6 +4692,9 @@ ags_switch_buffer_flag_get_type
 <FILE>ags_synth_generator</FILE>
 <TITLE>AgsSynthGenerator</TITLE>
 AgsSynthGeneratorOscillator
+AgsSynthGeneratorComputeFlags
+ags_synth_generator_compute
+ags_synth_generator_compute_with_audio_signal
 ags_synth_generator_new
 <SUBSECTION Public>
 AGS_IS_SYNTH_GENERATOR
@@ -4220,6 +4710,14 @@ ags_synth_generator_get_type
 
 <SECTION>
 <FILE>ags_synth_util</FILE>
+ags_synth_util_get_xcross_count_s8
+ags_synth_util_get_xcross_count_s16
+ags_synth_util_get_xcross_count_s24
+ags_synth_util_get_xcross_count_s32
+ags_synth_util_get_xcross_count_s64
+ags_synth_util_get_xcross_count_float
+ags_synth_util_get_xcross_count_double
+ags_synth_util_get_xcross_count
 ags_synth_util_sin_s8
 ags_synth_util_sin_s16
 ags_synth_util_sin_s24

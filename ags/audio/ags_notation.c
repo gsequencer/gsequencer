@@ -1900,6 +1900,8 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 			 guint *buffer_length)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 /**
@@ -1928,6 +1930,8 @@ ags_notation_from_raw_midi(unsigned char *raw_midi,
 			   guint buffer_length)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 /**

@@ -27,6 +27,8 @@
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_devout.h>
 
+#include <ags/audio/pulse/ags_pulse_devout.h>
+
 #include <ags/audio/jack/ags_jack_devout.h>
 
 #include <ags/X/ags_export_window.h>
@@ -184,6 +186,9 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
+  gtk_combo_box_text_append_text(export_soundcard->backend,
+				 "pulse");
+  
   gtk_combo_box_text_append_text(export_soundcard->backend,
 				 "jack");
   
@@ -456,6 +461,8 @@ ags_export_soundcard_set_backend(AgsExportSoundcard *export_soundcard,
 
   gtk_combo_box_set_active(GTK_COMBO_BOX(export_soundcard->backend),
 			   i);
+
+  return(TRUE);
 }
 
 /**
@@ -477,6 +484,7 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
   GList *card, *card_start;
   
   gchar *backend;
+  gchar *device;
 
   export_window = gtk_widget_get_ancestor(export_soundcard,
 					  AGS_TYPE_EXPORT_WINDOW);
@@ -491,40 +499,69 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
   card_start = NULL;
   backend = gtk_combo_box_text_get_active_text(export_soundcard->backend);
 
-  if(!g_ascii_strncasecmp(backend,
-			  "alsa",
-			  5)){
-    while(soundcard != NULL){
-      if(AGS_IS_DEVOUT(soundcard->data) &&
-	 (AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard->data)->flags)) != 0){
-	card_start = g_list_prepend(card_start,
-				    ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)));
-      }
+  if(backend != NULL){
+    if(!g_ascii_strncasecmp(backend,
+			    "alsa",
+			    5)){
+      while(soundcard != NULL){
+	if(AGS_IS_DEVOUT(soundcard->data) &&
+	   (AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard->data)->flags)) != 0){
+	  device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+
+	  if(device != NULL){
+	    card_start = g_list_prepend(card_start,
+					device);
+	  }
+	}
       
-      soundcard = soundcard->next;
-    }
-  }else if(!g_ascii_strncasecmp(backend,
-				"oss",
-				4)){    
-    while(soundcard != NULL){
-      if(AGS_IS_DEVOUT(soundcard->data) &&
-	 (AGS_DEVOUT_OSS & (AGS_DEVOUT(soundcard->data)->flags)) != 0){
-	card_start = g_list_prepend(card_start,
-				    ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)));
+	soundcard = soundcard->next;
       }
+    }else if(!g_ascii_strncasecmp(backend,
+				  "oss",
+				  4)){    
+      while(soundcard != NULL){
+	if(AGS_IS_DEVOUT(soundcard->data) &&
+	   (AGS_DEVOUT_OSS & (AGS_DEVOUT(soundcard->data)->flags)) != 0){
+	  device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+
+	  if(device != NULL){
+	    card_start = g_list_prepend(card_start,
+					device);
+	  }
+	}
       
-      soundcard = soundcard->next;
-    }
-  }else if(!g_ascii_strncasecmp(backend,
-				"jack",
-				5)){
-    while(soundcard != NULL){
-      if(AGS_IS_JACK_DEVOUT(soundcard->data)){
-	card_start = g_list_prepend(card_start,
-				    ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)));
+	soundcard = soundcard->next;
       }
+    }else if(!g_ascii_strncasecmp(backend,
+				  "jack",
+				  5)){
+      while(soundcard != NULL){
+	if(AGS_IS_JACK_DEVOUT(soundcard->data)){
+	  device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+
+	  if(device != NULL){
+	    card_start = g_list_prepend(card_start,
+					device);
+	  }
+	}
       
-      soundcard = soundcard->next;
+	soundcard = soundcard->next;
+      }
+    }else if(!g_ascii_strncasecmp(backend,
+				  "pulse",
+				  6)){
+      while(soundcard != NULL){
+	if(AGS_IS_PULSE_DEVOUT(soundcard->data)){
+	  device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+
+	  if(device != NULL){
+	    card_start = g_list_prepend(card_start,
+					device);
+	  }
+	}
+      
+	soundcard = soundcard->next;
+      }
     }
   }
   
@@ -536,8 +573,10 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
     card = card_start;
 
     while(card != NULL){
-      gtk_combo_box_text_append_text(export_soundcard->card,
-				     (gchar *) card->data);
+      if(card->data != NULL){
+	gtk_combo_box_text_append_text(export_soundcard->card,
+				       (gchar *) card->data);
+      }
 
       card = card->next;
     }
@@ -590,6 +629,8 @@ ags_export_soundcard_set_card(AgsExportSoundcard *export_soundcard,
 
   gtk_combo_box_set_active(GTK_COMBO_BOX(export_soundcard->card),
 			   i);
+
+  return(TRUE);
 }
 
 /**

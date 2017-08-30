@@ -23,18 +23,18 @@ SCANGOBJ_OPTIONS=--cflags="$(CFLAGS) $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(XMLRPC_C
 
 # Extra options to supply to gtkdoc-scan.
 # e.g. SCAN_OPTIONS=--deprecated-guards="GTK_DISABLE_DEPRECATED"
-#SCAN_OPTIONS=--rebuild-types --rebuild-sections --rebuild-interfaces
+# SCAN_OPTIONS=--rebuild-types --rebuild-sections --rebuild-interfaces
 
 # Extra options to supply to gtkdoc-mkdb
 # e.g. MKDB_OPTIONS=--xml-mode --output-format=xml
-MKDB_OPTIONS=--xml-mode --output-format=xml --name-space="libags_audio" --module="libags_audio"
+MKDB_OPTIONS=--xml-mode --output-format=xml --name-space=libags_audio --module=libags_audio
 
 # Extra options to supply to gtkdoc-mkhtml
 MKHTML_OPTIONS=
 
 # Extra options to supply to gtkdoc-fixref. Normally not needed.
 # e.g. FIXXREF_OPTIONS=--extra-dir=../gdk-pixbuf/html --extra-dir=../gdk/html
-FIXXREF_OPTIONS=--extra-dir=../libags/html
+FIXXREF_OPTIONS=--module=libags_audio --module-dir=./libags-audio-html/ --html-dir=$(DESTDIR)/$(datadir)/doc/libags-audio-doc/api --extra-dir=$(top_srcdir)/docs/reference/libags/libags-html
 
 # Used for dependencies. The docs will be rebuilt if any of these change.
 # e.g. HFILE_GLOB=$(top_srcdir)/gtk/*.h
@@ -48,7 +48,7 @@ EXTRA_HFILES=
 
 # Header files or dirs to ignore when scanning. Use base file/dir names
 # e.g. IGNORE_HFILES=gtkdebug.h gtkintl.h private_code
-IGNORE_HFILES=
+IGNORE_HFILES=ags_lv2_state_manager.h
 
 # Images to copy into HTML directory.
 # e.g. HTML_IMAGES=$(top_srcdir)/gtk/stock-icons/stock_about_24.png
@@ -79,7 +79,7 @@ GTKDOC_LIBS = \
 	$(top_builddir)/libags_audio.la
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
-include $(top_srcdir)/gtk-doc.make
+include ./gtk-doc.make
 
 # Comment this out if you want 'make check' to test you doc status
 # and run some sanity checks

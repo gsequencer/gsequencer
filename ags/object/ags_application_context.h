@@ -35,7 +35,7 @@
 #define AGS_APPLICATION_CONTEXT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_APPLICATION_CONTEXT, AgsApplicationContextClass))
 
 #ifndef PACKAGE_VERSION
-#define AGS_VERSION "0.7.0\0"
+#define AGS_VERSION "1.0.0\0"
 #else
 #define AGS_VERSION PACKAGE_VERSION
 #endif

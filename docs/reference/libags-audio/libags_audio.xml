@@ -38,14 +38,15 @@
     <xi:include href="xml/ags_lv2_log_manager.xml"/>
     <xi:include href="xml/ags_lv2_manager.xml"/>
     <xi:include href="xml/ags_lv2_plugin.xml"/>
+    <xi:include href="xml/ags_lv2_preset.xml"/>
     <xi:include href="xml/ags_lv2_uri_map_manager.xml"/>
     <xi:include href="xml/ags_lv2_urid_manager.xml"/>
     <xi:include href="xml/ags_lv2_worker.xml"/>
     <xi:include href="xml/ags_lv2_worker_manager.xml"/>
     <xi:include href="xml/ags_lv2ui_manager.xml"/>
     <xi:include href="xml/ags_lv2ui_plugin.xml"/>
-    <xi:include href="xml/ags_plugin_factory.xml"/>
     <xi:include href="xml/ags_plugin_stock.xml"/>
+    <xi:include href="xml/ags_plugin_factory.xml"/>
   </part>
     
   <part id="audio">
@@ -60,6 +61,7 @@
     <xi:include href="xml/ags_automation.xml"/>
     <xi:include href="xml/ags_channel.xml"/>
     <xi:include href="xml/ags_channel_iter.xml"/>
+    <xi:include href="xml/ags_fifoout.xml"/>
     <xi:include href="xml/ags_devout.xml"/>
     <xi:include href="xml/ags_input.xml"/>
     <xi:include href="xml/ags_message.xml"/>
@@ -72,6 +74,7 @@
     <xi:include href="xml/ags_playback.xml"/>
     <xi:include href="xml/ags_playback_domain.xml"/>
     <xi:include href="xml/ags_port.xml"/>
+    <xi:include href="xml/ags_preset.xml"/>
     <xi:include href="xml/ags_recall.xml"/>
     <xi:include href="xml/ags_recall_audio.xml"/>
     <xi:include href="xml/ags_recall_audio_run.xml"/>
@@ -104,8 +107,11 @@
       <xi:include href="xml/ags_audio_thread.xml"/>
       <xi:include href="xml/ags_channel_thread.xml"/>
       <xi:include href="xml/ags_export_thread.xml"/>
+      <xi:include href="xml/ags_iterator_thread.xml"/>
+      <xi:include href="xml/ags_record_thread.xml"/>
       <xi:include href="xml/ags_recycling_thread.xml"/>
       <xi:include href="xml/ags_recycling_thread_callbacks.xml"/>
+      <xi:include href="xml/ags_sequencer_thread.xml"/>
       <xi:include href="xml/ags_soundcard_thread.xml"/>
     </chapter>
 
@@ -119,11 +125,22 @@
       <xi:include href="xml/ags_jack_midiin.xml"/>
     </chapter>
 
+    <chapter id="audio-pulse">
+      <title>Audio Pulseaudio - pulseaudio server support</title>
+      
+      <xi:include href="xml/ags_pulse_server.xml"/>
+      <xi:include href="xml/ags_pulse_client.xml"/>
+      <xi:include href="xml/ags_pulse_port.xml"/>
+      <xi:include href="xml/ags_pulse_devout.xml"/>
+    </chapter>
+
     <chapter id="audio-midi">
       <title>Audio MIDI - MIDI support</title>
       
       <xi:include href="xml/ags_midi_buffer_util.xml"/>
       <xi:include href="xml/ags_midi_file.xml"/>
+      <xi:include href="xml/ags_midi_file_reader.xml"/>
+      <xi:include href="xml/ags_midi_file_writer.xml"/>
       <xi:include href="xml/ags_midi_util.xml"/>
       <xi:include href="xml/ags_midi_builder.xml"/>
       <xi:include href="xml/ags_midi_parser.xml"/>
@@ -139,7 +156,6 @@
       <xi:include href="xml/ags_ipatch_sf2_reader.xml"/>
       <xi:include href="xml/ags_ipatch_dls2_reader.xml"/>
       <xi:include href="xml/ags_sndfile.xml"/>
-      <xi:include href="xml/ags_playable.xml"/>
     </chapter>
 
     <chapter id="audio-recall">
@@ -183,10 +199,6 @@
       <xi:include href="xml/ags_peak_channel.xml"/>
       <xi:include href="xml/ags_peak_channel_run.xml"/>
       <xi:include href="xml/ags_peak_recycling.xml"/>
-      <xi:include href="xml/ags_volume_audio_signal.xml"/>
-      <xi:include href="xml/ags_volume_channel.xml"/>
-      <xi:include href="xml/ags_volume_channel_run.xml"/>
-      <xi:include href="xml/ags_volume_recycling.xml"/>
       <xi:include href="xml/ags_play_audio.xml"/>
       <xi:include href="xml/ags_play_audio_file.xml"/>
       <xi:include href="xml/ags_play_audio_signal.xml"/>
@@ -197,6 +209,10 @@
       <xi:include href="xml/ags_play_notation_audio_run.xml"/>
       <xi:include href="xml/ags_play_note.xml"/>
       <xi:include href="xml/ags_play_recycling.xml"/>
+      <xi:include href="xml/ags_play_dssi_audio.xml"/>
+      <xi:include href="xml/ags_play_dssi_audio_run.xml"/>
+      <xi:include href="xml/ags_play_lv2_audio.xml"/>
+      <xi:include href="xml/ags_play_lv2_audio_run.xml"/>
       <xi:include href="xml/ags_record_midi_audio.xml"/>
       <xi:include href="xml/ags_record_midi_audio_run.xml"/>
       <xi:include href="xml/ags_route_dssi_audio.xml"/>
@@ -207,6 +223,10 @@
       <xi:include href="xml/ags_stream_channel.xml"/>
       <xi:include href="xml/ags_stream_channel_run.xml"/>
       <xi:include href="xml/ags_stream_recycling.xml"/>
+      <xi:include href="xml/ags_volume_audio_signal.xml"/>
+      <xi:include href="xml/ags_volume_channel.xml"/>
+      <xi:include href="xml/ags_volume_channel_run.xml"/>
+      <xi:include href="xml/ags_volume_recycling.xml"/>
     </chapter>
 
     <chapter id="audio-task">
@@ -220,6 +240,7 @@
       <xi:include href="xml/ags_add_recall.xml"/>
       <xi:include href="xml/ags_add_recall_container.xml"/>
       <xi:include href="xml/ags_add_region_to_selection.xml"/>
+      <xi:include href="xml/ags_add_soundcard.xml"/>
       <xi:include href="xml/ags_append_audio.xml"/>
       <xi:include href="xml/ags_append_audio_threaded.xml"/>
       <xi:include href="xml/ags_append_channel.xml"/>
@@ -232,10 +253,17 @@
       <xi:include href="xml/ags_cancel_audio.xml"/>
       <xi:include href="xml/ags_cancel_channel.xml"/>
       <xi:include href="xml/ags_cancel_recall.xml"/>
+      <xi:include href="xml/ags_change_soundcard.xml"/>
+      <xi:include href="xml/ags_clear_audio_signal.xml"/>
+      <xi:include href="xml/ags_clear_buffer.xml"/>
+      <xi:include href="xml/ags_crop_note.xml"/>
       <xi:include href="xml/ags_export_output.xml"/>
       <xi:include href="xml/ags_free_selection.xml"/>
       <xi:include href="xml/ags_init_audio.xml"/>
       <xi:include href="xml/ags_init_channel.xml"/>
+      <xi:include href="xml/ags_link_channel.xml"/>
+      <xi:include href="xml/ags_move_note.xml"/>
+      <xi:include href="xml/ags_notify_soundcard.xml"/>
       <xi:include href="xml/ags_open_file.xml"/>
       <xi:include href="xml/ags_open_single_file.xml"/>
       <xi:include href="xml/ags_open_sf2_sample.xml"/>
@@ -245,18 +273,23 @@
       <xi:include href="xml/ags_remove_point_from_selection.xml"/>
       <xi:include href="xml/ags_remove_recall.xml"/>
       <xi:include href="xml/ags_remove_recall_container.xml"/>
-      <xi:include href="xml/ags_remove_audio_signal.xml"/>
+      <xi:include href="xml/ags_remove_region_from_selection.xml"/>
+      <xi:include href="xml/ags_remove_soundcard.xml"/>
+      <xi:include href="xml/ags_reset_audio_connection.xml"/>
       <xi:include href="xml/ags_resize_audio.xml"/>
-      <xi:include href="xml/ags_tic_device.xml"/>
       <xi:include href="xml/ags_save_file.xml"/>
+      <xi:include href="xml/ags_seek_soundcard.xml"/>
       <xi:include href="xml/ags_set_audio_channels.xml"/>
       <xi:include href="xml/ags_set_buffer_size.xml"/>
+      <xi:include href="xml/ags_set_format.xml"/>
       <xi:include href="xml/ags_set_input_device.xml"/>
-      <xi:include href="xml/ags_set_muted.xml"/>
       <xi:include href="xml/ags_set_output_device.xml"/>
       <xi:include href="xml/ags_set_samplerate.xml"/>
       <xi:include href="xml/ags_start_sequencer.xml"/>
       <xi:include href="xml/ags_start_soundcard.xml"/>
+      <xi:include href="xml/ags_switch_buffer_flag.xml"/>
+      <xi:include href="xml/ags_tic_device.xml"/>
+      <xi:include href="xml/ags_toggle_pattern_bit.xml"/>
       <xi:include href="xml/ags_unref_audio_signal.xml"/>
     </chapter>
   </part>

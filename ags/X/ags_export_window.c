@@ -30,6 +30,8 @@
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_notation.h>
 
+#include <ags/audio/pulse/ags_pulse_devout.h>
+
 #include <ags/audio/jack/ags_jack_devout.h>
 
 #include <ags/X/ags_window.h>
@@ -665,6 +667,8 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
       }
     }else if(AGS_IS_JACK_DEVOUT(list->data)){
       backend = "jack";
+    }else if(AGS_IS_PULSE_DEVOUT(list->data)){
+      backend = "pulse";
     }
 
     ags_export_soundcard_set_backend(export_soundcard,

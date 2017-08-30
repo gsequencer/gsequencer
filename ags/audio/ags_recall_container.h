@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,9 +40,9 @@ typedef enum{
 }AgsRecallContainerFlags;
 
 typedef enum{
-  AGS_RECALL_CONTAINER_FIND_TYPE,
-  AGS_RECALL_CONTAINER_FIND_TEMPLATE,
-  AGS_RECALL_CONTAINER_FIND_RECALL_ID,
+  AGS_RECALL_CONTAINER_FIND_TYPE          = 1,
+  AGS_RECALL_CONTAINER_FIND_TEMPLATE      = 1 <<  1,
+  AGS_RECALL_CONTAINER_FIND_RECALL_ID     = 1 <<  2,
 }AgsRecallContainerFindFlags;
 
 struct _AgsRecallContainer

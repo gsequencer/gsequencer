@@ -624,10 +624,14 @@ ags_audio_thread_stop(AgsThread *thread)
 {
   AgsAudioThread *audio_thread;
   AgsThread *child;
-
-  g_message("audio thread stop");
   
+  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) == 0){
+    return;
+  }
+
   audio_thread = AGS_AUDIO_THREAD(thread);
+  
+  g_message("audio thread stop");  
 
   /* call parent */
   AGS_THREAD_CLASS(ags_audio_thread_parent_class)->stop(thread);

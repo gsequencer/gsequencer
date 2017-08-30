@@ -26,8 +26,6 @@ AGS_DEFAULT_CONFIG
 AgsApplicationContextFlags
 ags_application_context_load_config
 ags_application_context_register_types
-ags_application_read
-ags_application_write
 ags_application_context_add_sibling
 ags_application_context_remove_sibling
 ags_application_context_find_default
@@ -109,6 +107,8 @@ ags_concurrency_provider_get_mutex_manager
 ags_concurrency_provider_get_main_loop
 ags_concurrency_provider_get_task_thread
 ags_concurrency_provider_get_thread_pool
+ags_concurrency_provider_get_worker
+ags_concurrency_provider_set_worker
 <SUBSECTION Public>
 AGS_CONCURRENCY_PROVIDER
 AGS_CONCURRENCY_PROVIDER_GET_INTERFACE
@@ -143,6 +143,47 @@ ags_concurrent_tree_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_cond_manager</FILE>
+<TITLE>AgsConditionManager</TITLE>
+ags_condition_manager_get_application_condition
+ags_condition_manager_insert
+ags_condition_manager_remove
+ags_condition_manager_lookup
+ags_condition_manager_get_instance
+ags_condition_manager_new
+<SUBSECTION Public>
+AGS_CONDITION_MANAGER
+AGS_CONDITION_MANAGER_CLASS
+AGS_CONDITION_MANAGER_GET_CLASS
+AGS_IS_CONDITION_MANAGER
+AGS_IS_CONDITION_MANAGER_CLASS
+AGS_TYPE_CONDITION_MANAGER
+AgsConditionManager
+AgsConditionManagerClass
+ags_condition_manager_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_condition_manager</FILE>
+<TITLE>AgsConditionManager</TITLE>
+ags_condition_manager_insert
+ags_condition_manager_remove
+ags_condition_manager_lookup
+ags_condition_manager_get_instance
+ags_condition_manager_new
+<SUBSECTION Public>
+AGS_CONDITION_MANAGER
+AGS_CONDITION_MANAGER_CLASS
+AGS_CONDITION_MANAGER_GET_CLASS
+AGS_IS_CONDITION_MANAGER
+AGS_IS_CONDITION_MANAGER_CLASS
+AGS_TYPE_CONDITION_MANAGER
+AgsConditionManager
+AgsConditionManagerClass
+ags_condition_manager_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_config</FILE>
 <TITLE>AgsConfig</TITLE>
 AGS_CONFIG_DEFAULT_VERSION
@@ -154,6 +195,7 @@ AGS_CONFIG_SOUNDCARD_0
 AGS_CONFIG_SEQUENCER
 AGS_CONFIG_SEQUENCER_0
 AGS_CONFIG_RECALL
+AgsConfigFlags
 ags_config_load_defaults
 ags_config_load_from_file
 ags_config_load_from_data
@@ -270,6 +312,32 @@ AGS_TYPE_COUNTABLE
 AgsCountable
 AgsCountableInterface
 ags_countable_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_destroy_util</FILE>
+ags_destroy_util_dispose_and_unref
+</SECTION>
+
+<SECTION>
+<FILE>ags_destroy_worker</FILE>
+<TITLE>AgsDestroyWorker</TITLE>
+AGS_DESTROY_ENTRY
+AgsDestroyFunc
+AgsDestroyEntry
+ags_destroy_entry_alloc
+ags_destroy_worker_add
+ags_destroy_worker_new
+<SUBSECTION Public>
+AGS_DESTROY_WORKER
+AGS_DESTROY_WORKER_CLASS
+AGS_DESTROY_WORKER_GET_CLASS
+AGS_IS_DESTROY_WORKER
+AGS_IS_DESTROY_WORKER_CLASS
+AGS_TYPE_DESTROY_WORKER
+AgsDestroyWorker
+AgsDestroyWorkerClass
+ags_destroy_worker_get_type
 </SECTION>
 
 <SECTION>
@@ -563,6 +631,12 @@ ags_id_generator_create_uuid
 </SECTION>
 
 <SECTION>
+<FILE>ags_list_util</FILE>
+ags_list_util_find_type
+ags_list_util_copy_and_ref
+</SECTION>
+
+<SECTION>
 <FILE>ags_log</FILE>
 <TITLE>AgsLog</TITLE>
 ags_log_add_message
@@ -600,6 +674,7 @@ ags_main_loop_set_last_sync
 ags_main_loop_get_last_sync
 ags_main_loop_interrupt
 ags_main_loop_monitor
+ags_main_loop_change_frequency
 <SUBSECTION Public>
 AGS_IS_MAIN_LOOP
 AGS_IS_MAIN_LOOP_INTERFACE
@@ -627,6 +702,8 @@ g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT_UINT_UINT_UINT
 g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT
 g_cclosure_user_marshal_VOID__UINT_INT
 g_cclosure_user_marshal_VOID__UINT_DOUBLE
+g_cclosure_user_marshal_VOID__UINT_STRING_UINT
+g_cclosure_user_marshal_VOID__UINT_POINTER_UINT
 g_cclosure_user_marshal_VOID__ULONG_UINT
 g_cclosure_user_marshal_VOID__ULONG_UINT_BOOLEAN
 g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE
@@ -641,6 +718,7 @@ g_cclosure_user_marshal_VOID__POINTER_UINT
 g_cclosure_user_marshal_VOID__POINTER_UINT_UINT
 g_cclosure_user_marshal_VOID__POINTER_UINT_POINTER
 g_cclosure_user_marshal_VOID__POINTER_POINTER_UINT
+g_cclosure_user_marshal_VOID__POINTER_POINTER_POINTER
 g_cclosure_user_marshal_VOID__OBJECT_UINT
 g_cclosure_user_marshal_VOID__OBJECT_OBJECT
 g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN
@@ -814,6 +892,12 @@ AGS_TYPE_PORTLET
 AgsPortlet
 AgsPortletInterface
 ags_portlet_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_regex</FILE>
+ags_regcomp
+ags_regexec
 </SECTION>
 
 <SECTION>
@@ -1273,8 +1357,8 @@ ags_thread_get_type
 <SECTION>
 <FILE>ags_thread_application_context</FILE>
 <TITLE>AgsThreadApplicationContext</TITLE>
-AGS_THREAD_BUILD_ID
 AGS_THREAD_DEFAULT_VERSION
+AGS_THREAD_BUILD_ID
 AgsThreadApplicationContextFlags
 ags_thread_application_context_register_types
 ags_thread_application_context_new
@@ -1353,9 +1437,6 @@ ags_timestamp_get_type
 <FILE>ags_timestamp_factory</FILE>
 <TITLE>AgsTimestampFactory</TITLE>
 AgsTimestampFactoryFlags
-ags_timestamp_factory_create
-ags_timestamp_factory_get_instance
-ags_timestamp_factory_new
 <SUBSECTION Public>
 AGS_IS_TIMESTAMP_FACTORY
 AGS_IS_TIMESTAMP_FACTORY_CLASS
@@ -1365,7 +1446,6 @@ AGS_TIMESTAMP_FACTORY_GET_CLASS
 AGS_TYPE_TIMESTAMP_FACTORY
 AgsTimestampFactory
 AgsTimestampFactoryClass
-ags_timestamp_factory_get_type
 </SECTION>
 
 <SECTION>
@@ -1479,5 +1559,25 @@ AGS_TYPE_TURTLE_MANAGER
 AgsTurtleManager
 AgsTurtleManagerClass
 ags_turtle_manager_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_worker_thread</FILE>
+<TITLE>AgsWorkerThread</TITLE>
+AGS_WORKER_THREAD_DEFAULT_JIFFIE
+AgsWorkerThreadFlags
+ags_woker_thread_do_poll_loop
+ags_worker_thread_do_poll
+ags_worker_thread_new
+<SUBSECTION Public>
+AGS_IS_WORKER_THREAD
+AGS_IS_WORKER_THREAD_CLASS
+AGS_TYPE_WORKER_THREAD
+AGS_WORKER_THREAD
+AGS_WORKER_THREAD_CLASS
+AGS_WORKER_THREAD_GET_CLASS
+AgsWorkerThread
+AgsWorkerThreadClass
+ags_worker_thread_get_type
 </SECTION>
 

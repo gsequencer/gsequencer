@@ -245,6 +245,8 @@ ags_config_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_config_init(AgsConfig *config)
 {
+  config->flags = 0;
+  
   config->version = AGS_CONFIG_DEFAULT_VERSION;
   config->build_id = AGS_CONFIG_DEFAULT_BUILD_ID;
 
@@ -329,7 +331,11 @@ ags_config_remove_from_registry(AgsConnectable *connectable)
 gboolean
 ags_config_is_connected(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  if((AGS_CONFIG_CONNECTED & (AGS_CONFIG(connectable)->flags)) != 0){
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 void
@@ -421,15 +427,15 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-global", "ags-thread");
   ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-parent", "ags-recycling-thread");
 
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "jack");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "ags-jack-devout-0");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "pulse");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "ags-pulse-devout-0");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "48000");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "1024");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
 
-  ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "backend", "jack");
-  ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "device", "ags-jack-midiin-0");
+  //ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "backend", "jack");
+  //ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "device", "ags-jack-midiin-0");
 
   ags_config_set_value(config, AGS_CONFIG_RECALL, "auto-sense", "true");
 }
