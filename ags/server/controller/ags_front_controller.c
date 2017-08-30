@@ -24,6 +24,8 @@
 #include <ags/object/ags_marshal.h>
 
 #include <ags/server/ags_service_provider.h>
+#include <ags/server/ags_server.h>
+#include <ags/server/ags_registry.h>
 
 #include <ags/server/security/ags_authentication_manager.h>
 
@@ -231,7 +233,7 @@ ags_front_controller_add_to_registry(AgsConnectable *connectable)
 #ifdef AGS_WITH_XMLRPC_C
   /* bulk */
   method_info = (struct xmlrpc_method_info3 *) malloc(sizeof(struct xmlrpc_method_info3));
-  method_info->methodName = "ags_front_controller_xmlrpc_request\0";
+  method_info->methodName = "ags_front_controller_xmlrpc_request";
   method_info->methodFunction = &ags_front_controller_xmlrpc_request;
   method_info->serverInfo = NULL;
   xmlrpc_registry_add_method3(ags_service_provider_get_env(AGS_SERVICE_PROVIDER(application_context)),

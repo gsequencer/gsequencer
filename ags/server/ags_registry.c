@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,24 +21,45 @@
 
 #include <ags/util/ags_id_generator.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 
 #include <ags/server/ags_server.h>
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <string.h>
+#include <ags/i18n.h>
 
 void ags_registry_class_init(AgsRegistryClass *registry);
 void ags_registry_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_registry_init(AgsRegistry *registry);
+void ags_registry_set_property(GObject *gobject,
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *param_spec);
+void ags_registry_get_property(GObject *gobject,
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *param_spec);
 void ags_registry_add_to_registry(AgsConnectable *connectable);
 void ags_registry_remove_from_registry(AgsConnectable *connectable);
 void ags_registry_connect(AgsConnectable *connectable);
 void ags_registry_disconnect(AgsConnectable *connectable);
+void ags_registry_dispose(GObject *gobject);
 void ags_registry_finalize(GObject *gobject);
+
+/**
+ * SECTION:ags_registry
+ * @short_description: remote control registry
+ * @title: AgsRegistry
+ * @section_id:
+ * @include: ags/server/ags_registry.h
+ *
+ * The #AgsRegistry is a registry where you are able to lookup objects.
+ */
+
+enum{
+  PROP_0,
+  PROP_SERVER,
+};
 
 static gpointer ags_registry_parent_class = NULL;
 
@@ -67,7 +88,7 @@ ags_registry_get_type()
     };
 
     ags_type_registry = g_type_register_static(G_TYPE_OBJECT,
-					       "AgsRegistry\0",
+					       "AgsRegistry",
 					       &ags_registry_info,
 					       0);
 
@@ -83,13 +104,35 @@ void
 ags_registry_class_init(AgsRegistryClass *registry)
 {
   GObjectClass *gobject;
+  GParamSpec *param_spec;
 
   ags_registry_parent_class = g_type_class_peek_parent(registry);
 
   /* GObjectClass */
   gobject = (GObjectClass *) registry;
 
+  gobject->set_property = ags_registry_set_property;
+  gobject->get_property = ags_registry_get_property;
+
+  gobject->dispose = ags_registry_dispose;
   gobject->finalize = ags_registry_finalize;
+
+  /* properties */
+  /**
+   * AgsRegistry:server:
+   *
+   * The assigned #AgsServer
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("server",
+				   i18n("assigned server"),
+				   i18n("The assigned server"),
+				   AGS_TYPE_SERVER,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SERVER,
+				  param_spec);
 }
 
 void
@@ -104,15 +147,34 @@ ags_registry_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_registry_init(AgsRegistry *registry)
 {
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+  
   registry->flags = 0;
 
-  pthread_mutex_init(&(registry->mutex),
-		     NULL);
+  registry->mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(registry->mutexattr);
+  pthread_mutexattr_settype(registry->mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(registry->mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+  
+  registry->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(registry->mutex,
+		     registry->mutexattr);
 
   registry->previous = NULL;
   registry->current = NULL;
 
+#ifdef AGS_WITH_XMLRPC_C
+  registry->registry = xmlrpc_registry_new(ags_service_provider_get_env(AGS_SERVICE_PROVIDER(application_context)));
+#else
   registry->registry = NULL;
+#endif
   
   registry->id_length = AGS_REGISTRY_DEFAULT_ID_LENGTH;
   registry->counter = 0;
@@ -121,25 +183,73 @@ ags_registry_init(AgsRegistry *registry)
 }
 
 void
+ags_registry_set_property(GObject *gobject,
+			  guint prop_id,
+			  const GValue *value,
+			  GParamSpec *param_spec)
+{
+  AgsRegistry *registry;
+
+  registry = AGS_REGISTRY(gobject);
+  
+  switch(prop_id){
+  case PROP_SERVER:
+    {
+      AgsServer *server;
+
+      server = (AgsServer *) g_value_get_object(value);
+
+      if(registry->server == (GObject *) server){
+	return;
+      }
+
+      if(registry->server != NULL){
+	g_object_unref(G_OBJECT(registry->server));
+      }
+
+      if(server != NULL){
+	g_object_ref(G_OBJECT(server));
+      }
+      
+      registry->server = server;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_registry_get_property(GObject *gobject,
+			  guint prop_id,
+			  GValue *value,
+			  GParamSpec *param_spec)
+{
+  AgsRegistry *registry;
+
+  registry = AGS_REGISTRY(gobject);
+  
+  switch(prop_id){
+  case PROP_SERVER:
+    {
+      g_value_set_object(value, registry->server);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
 ags_registry_add_to_registry(AgsConnectable *connectable)
 {
-  AgsServer *server;
   AgsRegistry *registry;
-  struct xmlrpc_method_info3 *method_info;
 
   registry = AGS_REGISTRY(connectable);
-  server = AGS_SERVER(registry->server);
 
-#ifdef AGS_WITH_XMLRPC_C
-  /* bulk */
-  method_info = (struct xmlrpc_method_info3 *) malloc(sizeof(struct xmlrpc_method_info3));
-  method_info->methodName = "ags_registry_entry_bulk\0";
-  method_info->methodFunction = &ags_registry_entry_bulk;
-  method_info->serverInfo = NULL;
-  xmlrpc_registry_add_method3(&(AGS_MAIN(server->main)->env),
-			      registry->registry,
-			      method_info);
-#endif /* AGS_WITH_XMLRPC_C */
+  //TODO:JK: implement me
 }
 
 void
@@ -161,12 +271,69 @@ ags_registry_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_registry_dispose(GObject *gobject)
+{
+  AgsRegistry *registry;
+
+  registry = AGS_REGISTRY(gobject);
+
+  if(registry->previous != NULL){
+    g_object_unref(registry->previous);
+    
+    registry->previous = NULL;
+  }
+
+  if(registry->current != NULL){
+    g_object_unref(registry->current);
+
+    registry->current = NULL;
+  }
+    
+  if(registry->server != NULL){
+    g_object_unref(registry->server);
+
+    registry->server = NULL;
+  }
+
+  g_list_free_full(registry->entry,
+		   ags_registry_entry_free);
+
+  registry->entry = NULL;
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_registry_parent_class)->dispose(gobject);
+}
+
+void
 ags_registry_finalize(GObject *gobject)
 {
   AgsRegistry *registry;
 
   registry = AGS_REGISTRY(gobject);
 
+  if(registry->previous != NULL){
+    g_object_unref(registry->previous);
+  }
+
+  if(registry->current != NULL){
+    g_object_unref(registry->current);
+  }
+    
+  if(registry->server != NULL){
+    g_object_unref(registry->server);
+  }
+
+  g_list_free_full(registry->entry,
+		   ags_registry_entry_free);
+  
+  /* mutex */
+  pthread_mutex_destroy(registry->mutex);
+  free(registry->mutex);
+
+  pthread_mutexattr_destroy(registry->mutexattr);
+  free(registry->mutexattr);
+
+  /* call parent */
   G_OBJECT_CLASS(ags_registry_parent_class)->finalize(gobject);
 }
 
@@ -186,27 +353,41 @@ ags_registry_entry_alloc(AgsRegistry *registry)
 }
 
 void
+ags_registry_entry_free(AgsRegistryEntry *registry_entry)
+{
+  GObject *gobject;
+
+  gobject = g_value_get_object(&(registry_entry->entry));
+
+  if(gobject != NULL){
+    g_object_unref(gobject);
+  }
+  
+  g_value_unset(&(registry_entry->entry));
+
+  free(registry_entry);
+}
+
+void
 ags_registry_add(AgsRegistry *registry,
 		 AgsRegistryEntry *registry_entry)
 {
-  pthread_mutex_lock(&(registry->mutex));
+  pthread_mutex_lock(registry->mutex);
 
   registry->entry = g_list_prepend(registry->entry,
 				   registry_entry);
 
-  pthread_mutex_unlock(&(registry->mutex));
+  pthread_mutex_unlock(registry->mutex);
 }
 
 AgsRegistryEntry*
 ags_registry_entry_find(AgsRegistry *registry,
 			gchar *id)
 {
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-
   GList *current;
   AgsRegistryEntry *entry;
 
-  pthread_mutex_lock(&(registry->mutex));
+  pthread_mutex_lock(registry->mutex);
 
   current = registry->entry;
   
@@ -222,7 +403,7 @@ ags_registry_entry_find(AgsRegistry *registry,
     current = current->next;
   }
 
-  pthread_mutex_unlock(&(registry->mutex));
+  pthread_mutex_unlock(registry->mutex);
 
   return(entry);
 }

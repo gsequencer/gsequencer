@@ -62,6 +62,9 @@ struct _AgsServer
 
   guint flags;
 
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *mutexattr;
+
   AgsServerInfo *server_info;
 
 #ifdef AGS_WITH_XMLRPC_C

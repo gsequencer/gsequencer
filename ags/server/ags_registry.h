@@ -58,6 +58,7 @@ struct _AgsRegistry
   guint flags;
 
   pthread_mutex_t *mutex;
+  pthread_mutexattr_t *mutexattr;
 
   AgsFile *previous;
   AgsFile *current;
@@ -67,7 +68,7 @@ struct _AgsRegistry
 #else
   gpointer registry;
 #endif
-
+  
   GObject *server;
 
   guint id_length;
@@ -90,18 +91,13 @@ struct _AgsRegistryEntry
 GType ags_registry_get_type();
 
 AgsRegistryEntry* ags_registry_entry_alloc(AgsRegistry *registry);
+void ags_registry_entry_free(AgsRegistryEntry *registry_entry);
 
 void ags_registry_add(AgsRegistry *registry,
 		      AgsRegistryEntry *registry_entry);
 
 AgsRegistryEntry* ags_registry_entry_find(AgsRegistry *registry,
 					  gchar *id);
-
-#ifdef AGS_WITH_XMLRPC_C
-xmlrpc_value* ags_registry_entry_bulk(xmlrpc_env *env,
-				      xmlrpc_value *param_array,
-				      void *server_info);
-#endif
 
 AgsRegistry* ags_registry_new();
 

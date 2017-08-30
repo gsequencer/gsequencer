@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,19 +19,38 @@
 
 #include <ags/server/controller/ags_controller.h>
 
+#include <ags/server/ags_server.h>
+
+#include <ags/i18n.h>
+
 void ags_controller_class_init(AgsControllerClass *controller);
 void ags_controller_init(AgsController *controller);
+void ags_controller_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec);
+void ags_controller_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec);
+void ags_controller_dispose(GObject *gobject);
 void ags_controller_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_controller
- * @short_description: authentication by XML file
+ * @short_description: base controller
  * @title: AgsController
  * @section_id:
  * @include: ags/server/controller/ags_controller.h
  *
  * The #AgsController is a base object to implement controllers.
  */
+
+enum{
+  PROP_0,
+  PROP_SERVER,
+  PROP_CONTEXT_PATH,
+};
 
 static gpointer ags_controller_parent_class = NULL;
 
@@ -54,7 +73,7 @@ ags_controller_get_type()
     };
     
     ags_type_controller = g_type_register_static(G_TYPE_OBJECT,
-						 "AgsController\0",
+						 "AgsController",
 						 &ags_controller_info,
 						 0);
   }
@@ -73,8 +92,45 @@ ags_controller_class_init(AgsControllerClass *controller)
   /* GObjectClass */
   gobject = (GObjectClass *) controller;
 
+  gobject->set_property = ags_controller_set_property;
+  gobject->get_property = ags_controller_get_property;
+
+  gobject->dispose = ags_controller_dispose;
   gobject->finalize = ags_controller_finalize;
-}
+
+  /* properties */
+  /**
+   * AgsController:server:
+   *
+   * The assigned #AgsServer
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("server",
+				   i18n("assigned server"),
+				   i18n("The assigned server"),
+				   AGS_TYPE_SERVER,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SERVER,
+				  param_spec);
+  
+  /**
+   * AgsController:context-path:
+   *
+   * The context path provided.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_string("context-path",
+				   i18n_pspec("context path to provide"),
+				   i18n_pspec("The context path provided by this controller"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CONTEXT_PATH,
+				  param_spec);
+  }
 
 void
 ags_controller_init(AgsController *controller)
@@ -85,12 +141,110 @@ ags_controller_init(AgsController *controller)
 }
 
 void
+ags_controller_set_property(GObject *gobject,
+			    guint prop_id,
+			    const GValue *value,
+			    GParamSpec *param_spec)
+{
+  AgsController *controller;
+
+  controller = AGS_CONTROLLER(gobject);
+  
+  switch(prop_id){
+  case PROP_SERVER:
+    {
+      AgsServer *server;
+
+      server = (AgsServer *) g_value_get_object(value);
+
+      if(controller->server == (GObject *) server){
+	return;
+      }
+
+      if(controller->server != NULL){
+	g_object_unref(G_OBJECT(controller->server));
+      }
+
+      if(server != NULL){
+	g_object_ref(G_OBJECT(server));
+      }
+      
+      controller->server = server;
+    }
+    break;
+  case PROP_CONTEXT_PATH:
+    {
+      char *context_path;
+
+      context_path = (char *) g_value_get_string(value);
+
+      controller->context_path = g_strdup(context_path);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_controller_get_property(GObject *gobject,
+			    guint prop_id,
+			    GValue *value,
+			    GParamSpec *param_spec)
+{
+  AgsController *controller;
+
+  controller = AGS_CONTROLLER(gobject);
+  
+  switch(prop_id){
+  case PROP_SERVER:
+    {
+      g_value_set_object(value, controller->server);
+    }
+    break;
+  case PROP_CONTEXT_PATH:
+    {
+      g_value_set_string(value, controller->context_path);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_controller_dispose(GObject *gobject)
+{
+  AgsController *controller;
+
+  controller = AGS_CONTROLLER(gobject);
+
+  if(controller->server != NULL){
+    g_object_unref(controller->server);
+
+    controller->server = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_controller_parent_class)->dispose(gobject);
+}
+
+void
 ags_controller_finalize(GObject *gobject)
 {
   AgsController *controller;
 
   controller = AGS_CONTROLLER(gobject);
 
+  if(controller->server != NULL){
+    g_object_unref(controller->server);
+  }
+
+  g_free(controller->context_path);
+  
+  /* call parent */
   G_OBJECT_CLASS(ags_controller_parent_class)->finalize(gobject);
 }
 

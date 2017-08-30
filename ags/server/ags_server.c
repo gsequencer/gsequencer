@@ -21,8 +21,8 @@
 
 #include <ags/util/ags_id_generator.h>
 
-#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 
@@ -34,6 +34,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+
+#include <ags/i18n.h>
 
 void ags_server_class_init(AgsServerClass *server);
 void ags_server_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -61,7 +63,7 @@ void ags_server_real_start(AgsServer *server);
  * @section_id:
  * @include: ags/server/ags_server.h
  *
- * The #AgsServer is a XML-RPC server calling remote tasks.
+ * The #AgsServer is a XML-RPC server.
  */
 
 enum{
@@ -104,7 +106,7 @@ ags_server_get_type()
     };
     
     ags_type_server = g_type_register_static(G_TYPE_OBJECT,
-					     "AgsServer\0",
+					     "AgsServer",
 					     &ags_server,
 					     0);
 
@@ -140,9 +142,9 @@ ags_server_class_init(AgsServerClass *server)
    * 
    * Since: 0.7.0
    */
-  param_spec = g_param_spec_object("application-context\0",
-				   "the application context object\0",
-				   "The application context object\0",
+  param_spec = g_param_spec_object("application-context",
+				   i18n("application context object"),
+				   i18n("The application context object"),
 				   AGS_TYPE_APPLICATION_CONTEXT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -162,7 +164,7 @@ ags_server_class_init(AgsServerClass *server)
    * Since: 1.0.0
    */
   server_signals[START] =
-    g_signal_new("start\0",
+    g_signal_new("start",
 		 G_TYPE_FROM_CLASS(server),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsServerClass, start),
@@ -185,8 +187,22 @@ ags_server_init(AgsServer *server)
 {
   server->flags = 0;
 
-  server->server_info = ags_server_info_alloc("localhost\0");
+  server->mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(server->mutexattr);
+  pthread_mutexattr_settype(server->mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
 
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(server->mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+  
+  server->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(server->mutex,
+		     server->mutexattr);
+
+  /*  */
+  server->server_info = ags_server_info_alloc("localhost");
 
 #ifdef AGS_WITH_XMLRPC_C
   server->abyss_server = (TServer *) malloc(sizeof(TServer));
@@ -203,7 +219,7 @@ ags_server_init(AgsServer *server)
   server->address->sin_port = 8080;
   server->address->sin_family = AF_INET;
 
-  inet_aton("127.0.0.1\0", &(server->address->sin_addr.s_addr));
+  inet_aton("127.0.0.1", &(server->address->sin_addr.s_addr));
 
   server->controller = NULL;
   
@@ -276,7 +292,6 @@ ags_server_get_property(GObject *gobject,
     break;
   }
 }
-
 void
 ags_server_add_to_registry(AgsConnectable *connectable)
 {
@@ -316,6 +331,14 @@ ags_server_finalize(GObject *gobject)
 
   server = AGS_SERVER(gobject);
 
+  /* mutex */
+  pthread_mutex_destroy(server->mutex);
+  free(server->mutex);
+
+  pthread_mutexattr_destroy(server->mutexattr);
+  free(server->mutexattr);
+
+  /* call parent */
   G_OBJECT_CLASS(ags_server_parent_class)->finalize(gobject);
 }
 
@@ -487,7 +510,7 @@ ags_server_create_object(xmlrpc_env *env,
     g_free(registry_id);
 
     if(error){
-      g_warning ("%s: %s\0", G_STRFUNC, error);
+      g_warning ("%s: %s", G_STRFUNC, error);
       g_free (error);
       g_value_unset (&parameter[i].value);
       break;
@@ -576,7 +599,7 @@ ags_server_new(GObject *application_context)
   AgsServer *server;
 
   server = (AgsServer *) g_object_new(AGS_TYPE_SERVER,
-				      "application-context\0", application_context,
+				      "application-context", application_context,
 				      NULL);
 
   return(server);
