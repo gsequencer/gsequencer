@@ -663,8 +663,11 @@ XMLRPC_SERVER_CGI_LIBS
 XMLRPC_SERVER_CGI_CFLAGS
 XMLRPC_SERVER_LIBS
 XMLRPC_SERVER_CFLAGS
+XMLRPC_CLIENT_LIBS
+XMLRPC_CLIENT_CFLAGS
 XMLRPC_UTIL_LIBS
 XMLRPC_UTIL_CFLAGS
+XMLRPC_C_CONFIG
 GTK_LIBS
 GTK_CFLAGS
 CAIRO_LIBS
@@ -908,14 +911,6 @@ CAIRO_CFLAGS
 CAIRO_LIBS
 GTK_CFLAGS
 GTK_LIBS
-XMLRPC_UTIL_CFLAGS
-XMLRPC_UTIL_LIBS
-XMLRPC_SERVER_CFLAGS
-XMLRPC_SERVER_LIBS
-XMLRPC_SERVER_CGI_CFLAGS
-XMLRPC_SERVER_CGI_LIBS
-XMLRPC_SERVER_ABYSS_CFLAGS
-XMLRPC_SERVER_ABYSS_LIBS
 GTKDOC_DEPS_CFLAGS
 GTKDOC_DEPS_LIBS'
 
@@ -1645,22 +1640,6 @@ Some influential environment variables:
   CAIRO_LIBS  linker flags for CAIRO, overriding pkg-config
   GTK_CFLAGS  C compiler flags for GTK, overriding pkg-config
   GTK_LIBS    linker flags for GTK, overriding pkg-config
-  XMLRPC_UTIL_CFLAGS
-              C compiler flags for XMLRPC_UTIL, overriding pkg-config
-  XMLRPC_UTIL_LIBS
-              linker flags for XMLRPC_UTIL, overriding pkg-config
-  XMLRPC_SERVER_CFLAGS
-              C compiler flags for XMLRPC_SERVER, overriding pkg-config
-  XMLRPC_SERVER_LIBS
-              linker flags for XMLRPC_SERVER, overriding pkg-config
-  XMLRPC_SERVER_CGI_CFLAGS
-              C compiler flags for XMLRPC_SERVER_CGI, overriding pkg-config
-  XMLRPC_SERVER_CGI_LIBS
-              linker flags for XMLRPC_SERVER_CGI, overriding pkg-config
-  XMLRPC_SERVER_ABYSS_CFLAGS
-              C compiler flags for XMLRPC_SERVER_ABYSS, overriding pkg-config
-  XMLRPC_SERVER_ABYSS_LIBS
-              linker flags for XMLRPC_SERVER_ABYSS, overriding pkg-config
   GTKDOC_DEPS_CFLAGS
               C compiler flags for GTKDOC_DEPS, overriding pkg-config
   GTKDOC_DEPS_LIBS
@@ -18003,378 +17982,83 @@ fi
 
 
 if test "x$enable_xmlrpc" != xno; then :
-
-pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for xmlrpc_util >= 1.16.33" >&5
-$as_echo_n "checking for xmlrpc_util >= 1.16.33... " >&6; }
-
-if test -n "$XMLRPC_UTIL_CFLAGS"; then
-    pkg_cv_XMLRPC_UTIL_CFLAGS="$XMLRPC_UTIL_CFLAGS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"xmlrpc_util >= 1.16.33\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "xmlrpc_util >= 1.16.33") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_XMLRPC_UTIL_CFLAGS=`$PKG_CONFIG --cflags "xmlrpc_util >= 1.16.33" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
+  # Extract the first word of "xmlrpc-c-config", so it can be a program name with args.
+set dummy xmlrpc-c-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_XMLRPC_C_CONFIG+:} false; then :
+  $as_echo_n "(cached) " >&6
 else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
-fi
-if test -n "$XMLRPC_UTIL_LIBS"; then
-    pkg_cv_XMLRPC_UTIL_LIBS="$XMLRPC_UTIL_LIBS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"xmlrpc_util >= 1.16.33\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "xmlrpc_util >= 1.16.33") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_XMLRPC_UTIL_LIBS=`$PKG_CONFIG --libs "xmlrpc_util >= 1.16.33" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
+  if test -n "$XMLRPC_C_CONFIG"; then
+  ac_cv_prog_XMLRPC_C_CONFIG="$XMLRPC_C_CONFIG" # Let the user override the test.
 else
-  pkg_failed=yes
+  ac_prog_rejected=no
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    if test "$as_dir/$ac_word$ac_exec_ext" = "1"; then
+       ac_prog_rejected=yes
+       continue
+     fi
+    ac_cv_prog_XMLRPC_C_CONFIG="1"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+if test $ac_prog_rejected = yes; then
+  # We found a bogon in the path, so make sure we never use it.
+  set dummy $ac_cv_prog_XMLRPC_C_CONFIG
+  shift
+  if test $# != 0; then
+    # We chose a different compiler from the bogus one.
+    # However, it has the same basename, so the bogon will be chosen
+    # first if we set XMLRPC_C_CONFIG to just the basename; use the full file name.
+    shift
+    ac_cv_prog_XMLRPC_C_CONFIG="$as_dir/$ac_word${1+' '}$@"
+  fi
 fi
- else
-    pkg_failed=untried
+  test -z "$ac_cv_prog_XMLRPC_C_CONFIG" && ac_cv_prog_XMLRPC_C_CONFIG="0"
 fi
-
-
-
-if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+fi
+XMLRPC_C_CONFIG=$ac_cv_prog_XMLRPC_C_CONFIG
+if test -n "$XMLRPC_C_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $XMLRPC_C_CONFIG" >&5
+$as_echo "$XMLRPC_C_CONFIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-
-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-        _pkg_short_errors_supported=yes
-else
-        _pkg_short_errors_supported=no
-fi
-        if test $_pkg_short_errors_supported = yes; then
-	        XMLRPC_UTIL_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "xmlrpc_util >= 1.16.33" 2>&1`
-        else
-	        XMLRPC_UTIL_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "xmlrpc_util >= 1.16.33" 2>&1`
-        fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$XMLRPC_UTIL_PKG_ERRORS" >&5
-
-	as_fn_error $? "Package requirements (xmlrpc_util >= 1.16.33) were not met:
-
-$XMLRPC_UTIL_PKG_ERRORS
-
-Consider adjusting the PKG_CONFIG_PATH environment variable if you
-installed software in a non-standard prefix.
-
-Alternatively, you may set the environment variables XMLRPC_UTIL_CFLAGS
-and XMLRPC_UTIL_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details." "$LINENO" 5
-elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
-is in your PATH or set the PKG_CONFIG environment variable to the full
-path to pkg-config.
-
-Alternatively, you may set the environment variables XMLRPC_UTIL_CFLAGS
-and XMLRPC_UTIL_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details.
-
-To get pkg-config, see <http://pkg-config.freedesktop.org/>.
-See \`config.log' for more details" "$LINENO" 5; }
-else
-	XMLRPC_UTIL_CFLAGS=$pkg_cv_XMLRPC_UTIL_CFLAGS
-	XMLRPC_UTIL_LIBS=$pkg_cv_XMLRPC_UTIL_LIBS
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-
 fi
 
 
-
-pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for xmlrpc_client >= 1.16.33" >&5
-$as_echo_n "checking for xmlrpc_client >= 1.16.33... " >&6; }
-
-if test -n "$XMLRPC_SERVER_CFLAGS"; then
-    pkg_cv_XMLRPC_SERVER_CFLAGS="$XMLRPC_SERVER_CFLAGS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"xmlrpc_client >= 1.16.33\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "xmlrpc_client >= 1.16.33") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_XMLRPC_SERVER_CFLAGS=`$PKG_CONFIG --cflags "xmlrpc_client >= 1.16.33" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
-else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
-fi
-if test -n "$XMLRPC_SERVER_LIBS"; then
-    pkg_cv_XMLRPC_SERVER_LIBS="$XMLRPC_SERVER_LIBS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"xmlrpc_client >= 1.16.33\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "xmlrpc_client >= 1.16.33") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_XMLRPC_SERVER_LIBS=`$PKG_CONFIG --libs "xmlrpc_client >= 1.16.33" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
-else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
-fi
+      XMLRPC_UTIL_CFLAGS=$(xmlrpc-c-config server-util --cflags)
+      XMLRPC_UTIL_LIBS=$(xmlrpc-c-config server-util --libs)
 
 
-
-if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-
-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-        _pkg_short_errors_supported=yes
-else
-        _pkg_short_errors_supported=no
-fi
-        if test $_pkg_short_errors_supported = yes; then
-	        XMLRPC_SERVER_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "xmlrpc_client >= 1.16.33" 2>&1`
-        else
-	        XMLRPC_SERVER_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "xmlrpc_client >= 1.16.33" 2>&1`
-        fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$XMLRPC_SERVER_PKG_ERRORS" >&5
-
-	as_fn_error $? "Package requirements (xmlrpc_client >= 1.16.33) were not met:
-
-$XMLRPC_SERVER_PKG_ERRORS
-
-Consider adjusting the PKG_CONFIG_PATH environment variable if you
-installed software in a non-standard prefix.
-
-Alternatively, you may set the environment variables XMLRPC_SERVER_CFLAGS
-and XMLRPC_SERVER_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details." "$LINENO" 5
-elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
-is in your PATH or set the PKG_CONFIG environment variable to the full
-path to pkg-config.
-
-Alternatively, you may set the environment variables XMLRPC_SERVER_CFLAGS
-and XMLRPC_SERVER_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details.
-
-To get pkg-config, see <http://pkg-config.freedesktop.org/>.
-See \`config.log' for more details" "$LINENO" 5; }
-else
-	XMLRPC_SERVER_CFLAGS=$pkg_cv_XMLRPC_SERVER_CFLAGS
-	XMLRPC_SERVER_LIBS=$pkg_cv_XMLRPC_SERVER_LIBS
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-
-fi
+      XMLRPC_CLIENT_CFLAGS=$(xmlrpc-c-config client --cflags)
+      XMLRPC_CLIENT_LIBS=$(xmlrpc-c-config client --libs)
 
 
-
-pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for xmlrpc_server_cgi >= 1.16.33" >&5
-$as_echo_n "checking for xmlrpc_server_cgi >= 1.16.33... " >&6; }
-
-if test -n "$XMLRPC_SERVER_CGI_CFLAGS"; then
-    pkg_cv_XMLRPC_SERVER_CGI_CFLAGS="$XMLRPC_SERVER_CGI_CFLAGS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"xmlrpc_server_cgi >= 1.16.33\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "xmlrpc_server_cgi >= 1.16.33") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_XMLRPC_SERVER_CGI_CFLAGS=`$PKG_CONFIG --cflags "xmlrpc_server_cgi >= 1.16.33" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
-else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
-fi
-if test -n "$XMLRPC_SERVER_CGI_LIBS"; then
-    pkg_cv_XMLRPC_SERVER_CGI_LIBS="$XMLRPC_SERVER_CGI_LIBS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"xmlrpc_server_cgi >= 1.16.33\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "xmlrpc_server_cgi >= 1.16.33") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_XMLRPC_SERVER_CGI_LIBS=`$PKG_CONFIG --libs "xmlrpc_server_cgi >= 1.16.33" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
-else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
-fi
+      XMLRPC_SERVER_CFLAGS=$(xmlrpc-c-config abyss --cflags)
+      XMLRPC_SERVER_LIBS=$(xmlrpc-c-config abyss --libs)
 
 
-
-if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-
-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-        _pkg_short_errors_supported=yes
-else
-        _pkg_short_errors_supported=no
-fi
-        if test $_pkg_short_errors_supported = yes; then
-	        XMLRPC_SERVER_CGI_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "xmlrpc_server_cgi >= 1.16.33" 2>&1`
-        else
-	        XMLRPC_SERVER_CGI_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "xmlrpc_server_cgi >= 1.16.33" 2>&1`
-        fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$XMLRPC_SERVER_CGI_PKG_ERRORS" >&5
-
-	as_fn_error $? "Package requirements (xmlrpc_server_cgi >= 1.16.33) were not met:
-
-$XMLRPC_SERVER_CGI_PKG_ERRORS
-
-Consider adjusting the PKG_CONFIG_PATH environment variable if you
-installed software in a non-standard prefix.
-
-Alternatively, you may set the environment variables XMLRPC_SERVER_CGI_CFLAGS
-and XMLRPC_SERVER_CGI_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details." "$LINENO" 5
-elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
-is in your PATH or set the PKG_CONFIG environment variable to the full
-path to pkg-config.
-
-Alternatively, you may set the environment variables XMLRPC_SERVER_CGI_CFLAGS
-and XMLRPC_SERVER_CGI_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details.
-
-To get pkg-config, see <http://pkg-config.freedesktop.org/>.
-See \`config.log' for more details" "$LINENO" 5; }
-else
-	XMLRPC_SERVER_CGI_CFLAGS=$pkg_cv_XMLRPC_SERVER_CGI_CFLAGS
-	XMLRPC_SERVER_CGI_LIBS=$pkg_cv_XMLRPC_SERVER_CGI_LIBS
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-
-fi
+      XMLRPC_SERVER_CGI_CFLAGS=$(xmlrpc-c-config cgi-server --cflags)
+      XMLRPC_SERVER_CGI_LIBS=$(xmlrpc-c-config cgi-server --libs)
 
 
-
-pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for xmlrpc_server_abyss >= 1.16.33" >&5
-$as_echo_n "checking for xmlrpc_server_abyss >= 1.16.33... " >&6; }
-
-if test -n "$XMLRPC_SERVER_ABYSS_CFLAGS"; then
-    pkg_cv_XMLRPC_SERVER_ABYSS_CFLAGS="$XMLRPC_SERVER_ABYSS_CFLAGS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"xmlrpc_server_abyss >= 1.16.33\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "xmlrpc_server_abyss >= 1.16.33") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_XMLRPC_SERVER_ABYSS_CFLAGS=`$PKG_CONFIG --cflags "xmlrpc_server_abyss >= 1.16.33" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
-else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
-fi
-if test -n "$XMLRPC_SERVER_ABYSS_LIBS"; then
-    pkg_cv_XMLRPC_SERVER_ABYSS_LIBS="$XMLRPC_SERVER_ABYSS_LIBS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"xmlrpc_server_abyss >= 1.16.33\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "xmlrpc_server_abyss >= 1.16.33") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_XMLRPC_SERVER_ABYSS_LIBS=`$PKG_CONFIG --libs "xmlrpc_server_abyss >= 1.16.33" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
-else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
-fi
+      XMLRPC_SERVER_ABYSS_CFLAGS=$(xmlrpc-c-config abyss-server --cflags)
+      XMLRPC_SERVER_ABYSS_LIBS=$(xmlrpc-c-config abyss-server --libs)
 
 
-
-if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-
-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-        _pkg_short_errors_supported=yes
-else
-        _pkg_short_errors_supported=no
-fi
-        if test $_pkg_short_errors_supported = yes; then
-	        XMLRPC_SERVER_ABYSS_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "xmlrpc_server_abyss >= 1.16.33" 2>&1`
-        else
-	        XMLRPC_SERVER_ABYSS_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "xmlrpc_server_abyss >= 1.16.33" 2>&1`
-        fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$XMLRPC_SERVER_ABYSS_PKG_ERRORS" >&5
-
-	as_fn_error $? "Package requirements (xmlrpc_server_abyss >= 1.16.33) were not met:
-
-$XMLRPC_SERVER_ABYSS_PKG_ERRORS
-
-Consider adjusting the PKG_CONFIG_PATH environment variable if you
-installed software in a non-standard prefix.
-
-Alternatively, you may set the environment variables XMLRPC_SERVER_ABYSS_CFLAGS
-and XMLRPC_SERVER_ABYSS_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details." "$LINENO" 5
-elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
-is in your PATH or set the PKG_CONFIG environment variable to the full
-path to pkg-config.
-
-Alternatively, you may set the environment variables XMLRPC_SERVER_ABYSS_CFLAGS
-and XMLRPC_SERVER_ABYSS_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details.
-
-To get pkg-config, see <http://pkg-config.freedesktop.org/>.
-See \`config.log' for more details" "$LINENO" 5; }
-else
-	XMLRPC_SERVER_ABYSS_CFLAGS=$pkg_cv_XMLRPC_SERVER_ABYSS_CFLAGS
-	XMLRPC_SERVER_ABYSS_LIBS=$pkg_cv_XMLRPC_SERVER_ABYSS_LIBS
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-
-fi
-
-
+      { $as_echo "$as_me:${as_lineno-$LINENO}: xmlrpc-c enabled" >&5
+$as_echo "$as_me: xmlrpc-c enabled" >&6;}
 
 $as_echo "#define AGS_WITH_XMLRPC_C 1" >>confdefs.h
 

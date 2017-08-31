@@ -27,6 +27,11 @@ void ags_local_task_controller_class_init(AgsLocalTaskControllerClass *local_tas
 void ags_local_task_controller_init(AgsLocalTaskController *local_task_controller);
 void ags_local_task_controller_finalize(GObject *gobject);
 
+gpointer ags_local_task_controller_real_launch(AgsLocalTaskController *local_task_controller,
+					       AgsTask *task);
+gpointer ags_local_task_controller_real_launch_timed(AgsLocalTaskController *local_task_controller,
+						     AgsTask *task, AgsTimestamp *timestamp);
+
 /**
  * SECTION:ags_local_task_controller
  * @short_description: local task controller
@@ -38,8 +43,8 @@ void ags_local_task_controller_finalize(GObject *gobject);
  */
 
 enum{
-  CREATE_LAUNCH,
-  CREATE_LAUNCH_TIMED,
+  LAUNCH,
+  LAUNCH_TIMED,
   LAST_SIGNAL,
 };
 
@@ -87,12 +92,14 @@ ags_local_task_controller_class_init(AgsLocalTaskControllerClass *local_task_con
   gobject->finalize = ags_local_task_controller_finalize;
 
   /* AgsLocalTaskController */
-  local_task_controller->create_instance = ags_local_task_controller_real_create_instance;
+  local_task_controller->launch = ags_local_task_controller_real_launch;
+  local_task_controller->launch_timed = ags_local_task_controller_real_launch_timed;
 
   /* signals */
   /**
    * AgsLocalTaskController::launch:
    * @local_task_controller: the #AgsLocalTaskController
+   * @task: the #AgsTask to launch
    *
    * The ::launch signal is used to launch a task.
    *
@@ -106,13 +113,14 @@ ags_local_task_controller_class_init(AgsLocalTaskControllerClass *local_task_con
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLocalTaskControllerClass, launch),
 		 NULL, NULL,
-		 g_cclosure_marshal_POINTER__OBJECT,
+		 g_cclosure_user_marshal_POINTER__OBJECT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_OBJECT);
 
   /**
    * AgsLocalTaskController::launch:
    * @local_task_controller: the #AgsLocalTaskController
+   * @task: the #AgsTask to launch
    * @timestamp: the #AgsTimestamp specify the start time
    *
    * The ::launch-timed signal is used to launch a task delayed.
@@ -136,6 +144,16 @@ ags_local_task_controller_class_init(AgsLocalTaskControllerClass *local_task_con
 void
 ags_local_task_controller_init(AgsLocalTaskController *local_task_controller)
 {
+  gchar *context_path;
+
+  context_path = g_strdup_printf("%s%s",
+				 AGS_CONTROLLER_BASE_PATH,
+				 AGS_LOCAL_TASK_CONTROLLER_CONTEXT_PATH);
+  g_object_set(local_task_controller,
+	       "context-path", context_path,
+	       NULL);
+  g_free(context_path);
+
   //TODO:JK: implement me
 }
 
@@ -149,6 +167,91 @@ ags_local_task_controller_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_local_task_controller_parent_class)->finalize(gobject);
 }
 
+gpointer
+ags_local_task_controller_real_launch(AgsLocalTaskController *local_task_controller,
+				      AgsTask *task)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_local_task_controller_launch:
+ * @local_task_controller: the #AgsLocalTaskController
+ * @task: the #AgsTask
+ * 
+ * Launch task.
+ * 
+ * Returns: the response
+ * 
+ * Since: 1.0.0
+ */
+gpointer
+ags_local_task_controller_launch(AgsLocalTaskController *local_task_controller,
+				 AgsTask *task)
+{
+  gpointer retval;
+
+  g_return_val_if_fail(AGS_IS_LOCAL_TASK_CONTROLLER(local_task_controller),
+		       NULL);
+
+  g_object_ref((GObject *) local_task_controller);
+  g_signal_emit(G_OBJECT(local_task_controller),
+		local_task_controller_signals[LAUNCH], 0,
+		task,
+		&retval);
+  g_object_unref((GObject *) local_task_controller);
+
+  return(retval);
+}
+
+gpointer
+ags_local_task_controller_real_launch_timed(AgsLocalTaskController *local_task_controller,
+					    AgsTask *task, AgsTimestamp *timestamp)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_local_task_controller_launch_timed:
+ * @local_task_controller: the #AgsLocalTaskController
+ * @task: the #AgsTask
+ * @timestamp: the #AgsTimestamp
+ * 
+ * Launch task.
+ * 
+ * Returns: the response
+ * 
+ * Since: 1.0.0
+ */
+gpointer
+ags_local_task_controller_launch_timed(AgsLocalTaskController *local_task_controller,
+				       AgsTask *task, AgsTimestamp *timestamp)
+{
+  gpointer retval;
+
+  g_return_val_if_fail(AGS_IS_LOCAL_TASK_CONTROLLER(local_task_controller),
+		       NULL);
+
+  g_object_ref((GObject *) local_task_controller);
+  g_signal_emit(G_OBJECT(local_task_controller),
+		local_task_controller_signals[LAUNCH_TIMED], 0,
+		task,
+		timestamp,
+		&retval);
+  g_object_unref((GObject *) local_task_controller);
+
+  return(retval);
+}
+
+/**
+ * ags_local_task_controller_new:
+ * 
+ * Instantiate new #AgsLocalTaskController
+ * 
+ * Returns: the #AgsLocalTaskController
+ * 
+ * Since: 1.0.0
+ */
 AgsLocalTaskController*
 ags_local_task_controller_new()
 {

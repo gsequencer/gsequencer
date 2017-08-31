@@ -32,6 +32,8 @@
 #define AGS_IS_LOCAL_FACTORY_CONTROLLER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LOCAL_FACTORY_CONTROLLER))
 #define AGS_LOCAL_FACTORY_CONTROLLER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_LOCAL_FACTORY_CONTROLLER, AgsLocalFactoryControllerClass))
 
+#define AGS_LOCAL_FACTORY_CONTROLLER_CONTEXT_PATH "/local-factory"
+
 typedef struct _AgsLocalFactoryController AgsLocalFactoryController;
 typedef struct _AgsLocalFactoryControllerClass AgsLocalFactoryControllerClass;
 
@@ -43,7 +45,7 @@ struct _AgsLocalFactoryController
 struct _AgsLocalFactoryControllerClass
 {
   AgsControllerClass controller;
-
+  
   gpointer (*create_instance)(AgsLocalFactoryController *local_factory_controller,
 			      GType type_name,
 			      GParameter *parameter,

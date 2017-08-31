@@ -35,6 +35,8 @@
 #define AGS_IS_LOCAL_TASK_CONTROLLER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LOCAL_TASK_CONTROLLER))
 #define AGS_LOCAL_TASK_CONTROLLER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_LOCAL_TASK_CONTROLLER, AgsLocalTaskControllerClass))
 
+#define AGS_LOCAL_TASK_CONTROLLER_CONTEXT_PATH "/task"
+
 typedef struct _AgsLocalTaskController AgsLocalTaskController;
 typedef struct _AgsLocalTaskControllerClass AgsLocalTaskControllerClass;
 
@@ -46,7 +48,7 @@ struct _AgsLocalTaskController
 struct _AgsLocalTaskControllerClass
 {
   AgsControllerClass controller;
-
+  
   gpointer (*launch)(AgsLocalTaskController *local_task_controller,
 		     AgsTask *task);
   gpointer (*launch_timed)(AgsLocalTaskController *local_task_controller,

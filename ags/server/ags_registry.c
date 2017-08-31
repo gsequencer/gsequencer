@@ -24,6 +24,7 @@
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 
+#include <ags/server/ags_service_provider.h>
 #include <ags/server/ags_server.h>
 
 #include <ags/i18n.h>
@@ -422,7 +423,8 @@ ags_registry_entry_bulk(xmlrpc_env *env,
   xmlrpc_value *item;
 
   server = ags_server_lookup(server_info);
-  registry = server->registry;
+
+  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(server->application_context));
 
   bulk = xmlrpc_array_new(env);
 

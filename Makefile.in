@@ -559,7 +559,11 @@ am__objects_18 = $(am__objects_1) \
 	ags/server/security/libags_server_la-ags_xml_password_store.lo
 am__objects_19 = $(am__objects_1) \
 	ags/server/controller/libags_server_la-ags_controller.lo \
-	ags/server/controller/libags_server_la-ags_front_controller.lo
+	ags/server/controller/libags_server_la-ags_front_controller.lo \
+	ags/server/controller/libags_server_la-ags_local_factory_controller.lo \
+	ags/server/controller/libags_server_la-ags_local_registry_controller.lo \
+	ags/server/controller/libags_server_la-ags_local_serialization_controller.lo \
+	ags/server/controller/libags_server_la-ags_local_task_controller.lo
 am__objects_20 = $(am__objects_1) \
 	ags/server/thread/libags_server_la-ags_remote_task.lo
 am_libags_server_la_OBJECTS = $(am__objects_17) $(am__objects_18) \
@@ -2251,6 +2255,9 @@ XGETTEXT = @XGETTEXT@
 XGETTEXT_015 = @XGETTEXT_015@
 XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
 XMKMF = @XMKMF@
+XMLRPC_CLIENT_CFLAGS = @XMLRPC_CLIENT_CFLAGS@
+XMLRPC_CLIENT_LIBS = @XMLRPC_CLIENT_LIBS@
+XMLRPC_C_CONFIG = @XMLRPC_C_CONFIG@
 XMLRPC_SERVER_ABYSS_CFLAGS = @XMLRPC_SERVER_ABYSS_CFLAGS@
 XMLRPC_SERVER_ABYSS_LIBS = @XMLRPC_SERVER_ABYSS_LIBS@
 XMLRPC_SERVER_CFLAGS = @XMLRPC_SERVER_CFLAGS@
@@ -2336,9 +2343,14 @@ gsequencer_CFLAGS = @GSEQUENCER_CFLAGS@ $(LIBASOUND2_CFLAGS) \
 	$(PULSE_CFLAGS)
 gsequencer_LDFLAGS = @GSEQUENCER_LDFLAGS@ -pthread
 midi2xml_CFLAGS = @GSEQUENCER_CFLAGS@ -I./ -I/usr/include \
-	$(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS)
+	$(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) \
+	$(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) \
+	$(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) \
+	$(XMLRPC_SERVER_CFLAGS)
 midi2xml_LDFLAGS = @GSEQUENCER_LDFLAGS@ -ldl $(LIBXML2_LIBS) \
-	$(GOBJECT_LIBS)
+	$(GOBJECT_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) \
+	$(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) \
+	$(XMLRPC_SERVER_LIBS)
 
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
@@ -3301,13 +3313,21 @@ deprecated_libags_server_controller_h_sources =
 libags_server_controller_h_sources = \
 	$(deprecated_libags_server_controller_h_sources) \
 	ags/server/controller/ags_controller.h \
-	ags/server/controller/ags_front_controller.h
+	ags/server/controller/ags_front_controller.h \
+	ags/server/controller/ags_local_factory_controller.h \
+	ags/server/controller/ags_local_registry_controller.h \
+	ags/server/controller/ags_local_serialization_controller.h \
+	ags/server/controller/ags_local_task_controller.h
 
 deprecated_libags_server_controller_c_sources = 
 libags_server_controller_c_sources = \
 	$(deprecated_libags_server_controller_c_sources) \
 	ags/server/controller/ags_controller.c \
-	ags/server/controller/ags_front_controller.c
+	ags/server/controller/ags_front_controller.c \
+	ags/server/controller/ags_local_factory_controller.c \
+	ags/server/controller/ags_local_registry_controller.c \
+	ags/server/controller/ags_local_serialization_controller.c \
+	ags/server/controller/ags_local_task_controller.c
 
 
 # libags-server - file
@@ -5583,6 +5603,18 @@ ags/server/controller/libags_server_la-ags_controller.lo:  \
 ags/server/controller/libags_server_la-ags_front_controller.lo:  \
 	ags/server/controller/$(am__dirstamp) \
 	ags/server/controller/$(DEPDIR)/$(am__dirstamp)
+ags/server/controller/libags_server_la-ags_local_factory_controller.lo:  \
+	ags/server/controller/$(am__dirstamp) \
+	ags/server/controller/$(DEPDIR)/$(am__dirstamp)
+ags/server/controller/libags_server_la-ags_local_registry_controller.lo:  \
+	ags/server/controller/$(am__dirstamp) \
+	ags/server/controller/$(DEPDIR)/$(am__dirstamp)
+ags/server/controller/libags_server_la-ags_local_serialization_controller.lo:  \
+	ags/server/controller/$(am__dirstamp) \
+	ags/server/controller/$(DEPDIR)/$(am__dirstamp)
+ags/server/controller/libags_server_la-ags_local_task_controller.lo:  \
+	ags/server/controller/$(am__dirstamp) \
+	ags/server/controller/$(DEPDIR)/$(am__dirstamp)
 ags/server/thread/$(am__dirstamp):
 	@$(MKDIR_P) ags/server/thread
 	@: > ags/server/thread/$(am__dirstamp)
@@ -7574,6 +7606,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/$(DEPDIR)/libags_server_la-ags_service_provider.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/controller/$(DEPDIR)/libags_server_la-ags_controller.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/controller/$(DEPDIR)/libags_server_la-ags_front_controller.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/server/controller/$(DEPDIR)/libags_server_la-ags_local_factory_controller.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/server/controller/$(DEPDIR)/libags_server_la-ags_local_registry_controller.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/server/controller/$(DEPDIR)/libags_server_la-ags_local_serialization_controller.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/server/controller/$(DEPDIR)/libags_server_la-ags_local_task_controller.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_authentication.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_authentication_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_business_group.Plo@am__quote@
@@ -9884,6 +9920,34 @@ ags/server/controller/libags_server_la-ags_front_controller.lo: ags/server/contr
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/server/controller/ags_front_controller.c' object='ags/server/controller/libags_server_la-ags_front_controller.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o ags/server/controller/libags_server_la-ags_front_controller.lo `test -f 'ags/server/controller/ags_front_controller.c' || echo '$(srcdir)/'`ags/server/controller/ags_front_controller.c
+
+ags/server/controller/libags_server_la-ags_local_factory_controller.lo: ags/server/controller/ags_local_factory_controller.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT ags/server/controller/libags_server_la-ags_local_factory_controller.lo -MD -MP -MF ags/server/controller/$(DEPDIR)/libags_server_la-ags_local_factory_controller.Tpo -c -o ags/server/controller/libags_server_la-ags_local_factory_controller.lo `test -f 'ags/server/controller/ags_local_factory_controller.c' || echo '$(srcdir)/'`ags/server/controller/ags_local_factory_controller.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/server/controller/$(DEPDIR)/libags_server_la-ags_local_factory_controller.Tpo ags/server/controller/$(DEPDIR)/libags_server_la-ags_local_factory_controller.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/server/controller/ags_local_factory_controller.c' object='ags/server/controller/libags_server_la-ags_local_factory_controller.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o ags/server/controller/libags_server_la-ags_local_factory_controller.lo `test -f 'ags/server/controller/ags_local_factory_controller.c' || echo '$(srcdir)/'`ags/server/controller/ags_local_factory_controller.c
+
+ags/server/controller/libags_server_la-ags_local_registry_controller.lo: ags/server/controller/ags_local_registry_controller.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT ags/server/controller/libags_server_la-ags_local_registry_controller.lo -MD -MP -MF ags/server/controller/$(DEPDIR)/libags_server_la-ags_local_registry_controller.Tpo -c -o ags/server/controller/libags_server_la-ags_local_registry_controller.lo `test -f 'ags/server/controller/ags_local_registry_controller.c' || echo '$(srcdir)/'`ags/server/controller/ags_local_registry_controller.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/server/controller/$(DEPDIR)/libags_server_la-ags_local_registry_controller.Tpo ags/server/controller/$(DEPDIR)/libags_server_la-ags_local_registry_controller.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/server/controller/ags_local_registry_controller.c' object='ags/server/controller/libags_server_la-ags_local_registry_controller.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o ags/server/controller/libags_server_la-ags_local_registry_controller.lo `test -f 'ags/server/controller/ags_local_registry_controller.c' || echo '$(srcdir)/'`ags/server/controller/ags_local_registry_controller.c
+
+ags/server/controller/libags_server_la-ags_local_serialization_controller.lo: ags/server/controller/ags_local_serialization_controller.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT ags/server/controller/libags_server_la-ags_local_serialization_controller.lo -MD -MP -MF ags/server/controller/$(DEPDIR)/libags_server_la-ags_local_serialization_controller.Tpo -c -o ags/server/controller/libags_server_la-ags_local_serialization_controller.lo `test -f 'ags/server/controller/ags_local_serialization_controller.c' || echo '$(srcdir)/'`ags/server/controller/ags_local_serialization_controller.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/server/controller/$(DEPDIR)/libags_server_la-ags_local_serialization_controller.Tpo ags/server/controller/$(DEPDIR)/libags_server_la-ags_local_serialization_controller.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/server/controller/ags_local_serialization_controller.c' object='ags/server/controller/libags_server_la-ags_local_serialization_controller.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o ags/server/controller/libags_server_la-ags_local_serialization_controller.lo `test -f 'ags/server/controller/ags_local_serialization_controller.c' || echo '$(srcdir)/'`ags/server/controller/ags_local_serialization_controller.c
+
+ags/server/controller/libags_server_la-ags_local_task_controller.lo: ags/server/controller/ags_local_task_controller.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT ags/server/controller/libags_server_la-ags_local_task_controller.lo -MD -MP -MF ags/server/controller/$(DEPDIR)/libags_server_la-ags_local_task_controller.Tpo -c -o ags/server/controller/libags_server_la-ags_local_task_controller.lo `test -f 'ags/server/controller/ags_local_task_controller.c' || echo '$(srcdir)/'`ags/server/controller/ags_local_task_controller.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/server/controller/$(DEPDIR)/libags_server_la-ags_local_task_controller.Tpo ags/server/controller/$(DEPDIR)/libags_server_la-ags_local_task_controller.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/server/controller/ags_local_task_controller.c' object='ags/server/controller/libags_server_la-ags_local_task_controller.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o ags/server/controller/libags_server_la-ags_local_task_controller.lo `test -f 'ags/server/controller/ags_local_task_controller.c' || echo '$(srcdir)/'`ags/server/controller/ags_local_task_controller.c
 
 ags/server/thread/libags_server_la-ags_remote_task.lo: ags/server/thread/ags_remote_task.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT ags/server/thread/libags_server_la-ags_remote_task.lo -MD -MP -MF ags/server/thread/$(DEPDIR)/libags_server_la-ags_remote_task.Tpo -c -o ags/server/thread/libags_server_la-ags_remote_task.lo `test -f 'ags/server/thread/ags_remote_task.c' || echo '$(srcdir)/'`ags/server/thread/ags_remote_task.c

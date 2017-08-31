@@ -551,14 +551,22 @@ deprecated_libags_server_controller_h_sources =
 libags_server_controller_h_sources = \
 	$(deprecated_libags_server_controller_h_sources) \
 	ags/server/controller/ags_controller.h \
-	ags/server/controller/ags_front_controller.h
+	ags/server/controller/ags_front_controller.h \
+	ags/server/controller/ags_local_factory_controller.h \
+	ags/server/controller/ags_local_registry_controller.h \
+	ags/server/controller/ags_local_serialization_controller.h \
+	ags/server/controller/ags_local_task_controller.h
 
 deprecated_libags_server_controller_c_sources =
 
 libags_server_controller_c_sources = \
 	$(deprecated_libags_server_controller_c_sources) \
 	ags/server/controller/ags_controller.c \
-	ags/server/controller/ags_front_controller.c
+	ags/server/controller/ags_front_controller.c \
+	ags/server/controller/ags_local_factory_controller.c \
+	ags/server/controller/ags_local_registry_controller.c \
+	ags/server/controller/ags_local_serialization_controller.c \
+	ags/server/controller/ags_local_task_controller.c
 
 # libags-server - file
 deprecated_libags_server_file_h_sources =
@@ -1761,8 +1769,8 @@ gsequencerheaders = \
 gsequencer_c_sources = \
 	ags/gsequencer_main.c
 
-midi2xml_CFLAGS += -I./ -I/usr/include $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS)
-midi2xml_LDFLAGS += -ldl $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+midi2xml_CFLAGS += -I./ -I/usr/include $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) $(XMLRPC_SERVER_ABYSS_CFLAGS) $(XMLRPC_SERVER_CGI_CFLAGS) $(XMLRPC_SERVER_CFLAGS)
+midi2xml_LDFLAGS += -ldl $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS)
 midi2xml_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
 
 midi2xml_SOURCES = ags/midi2xml_main.c

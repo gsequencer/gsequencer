@@ -25,15 +25,14 @@
 
 #include <ags/server/controller/ags_controller.h>
 
-#include <ags/thread/ags_serialization.h>
-#include <ags/thread/ags_timestamp.h>
-
 #define AGS_TYPE_LOCAL_SERIALIZATION_CONTROLLER                (ags_local_serialization_controller_get_type())
 #define AGS_LOCAL_SERIALIZATION_CONTROLLER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LOCAL_SERIALIZATION_CONTROLLER, AgsLocalSerializationController))
 #define AGS_LOCAL_SERIALIZATION_CONTROLLER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_LOCAL_SERIALIZATION_CONTROLLER, AgsLocalSerializationControllerClass))
 #define AGS_IS_LOCAL_SERIALIZATION_CONTROLLER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_LOCAL_SERIALIZATION_CONTROLLER))
 #define AGS_IS_LOCAL_SERIALIZATION_CONTROLLER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LOCAL_SERIALIZATION_CONTROLLER))
 #define AGS_LOCAL_SERIALIZATION_CONTROLLER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_LOCAL_SERIALIZATION_CONTROLLER, AgsLocalSerializationControllerClass))
+
+#define AGS_LOCAL_SERIALIZATION_CONTROLLER_CONTEXT_PATH "serialization"
 
 typedef struct _AgsLocalSerializationController AgsLocalSerializationController;
 typedef struct _AgsLocalSerializationControllerClass AgsLocalSerializationControllerClass;

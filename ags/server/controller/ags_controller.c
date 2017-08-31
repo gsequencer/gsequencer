@@ -248,6 +248,15 @@ ags_controller_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_controller_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_controller_new:
+ * 
+ * Instantiate new #AgsController
+ * 
+ * Returns: the #AgsController
+ * 
+ * Since: 1.0.0
+ */
 AgsController*
 ags_controller_new()
 {

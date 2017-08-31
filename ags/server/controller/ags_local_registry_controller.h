@@ -25,8 +25,9 @@
 
 #include <ags/server/controller/ags_controller.h>
 
-#include <ags/thread/ags_registry.h>
 #include <ags/thread/ags_timestamp.h>
+
+#include <ags/server/ags_registry.h>
 
 #define AGS_TYPE_LOCAL_REGISTRY_CONTROLLER                (ags_local_registry_controller_get_type())
 #define AGS_LOCAL_REGISTRY_CONTROLLER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LOCAL_REGISTRY_CONTROLLER, AgsLocalRegistryController))
@@ -34,6 +35,8 @@
 #define AGS_IS_LOCAL_REGISTRY_CONTROLLER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_LOCAL_REGISTRY_CONTROLLER))
 #define AGS_IS_LOCAL_REGISTRY_CONTROLLER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LOCAL_REGISTRY_CONTROLLER))
 #define AGS_LOCAL_REGISTRY_CONTROLLER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_LOCAL_REGISTRY_CONTROLLER, AgsLocalRegistryControllerClass))
+
+#define AGS_LOCAL_REGISTRY_CONTROLLER_CONTEXT_PATH "/registry"
 
 typedef struct _AgsLocalRegistryController AgsLocalRegistryController;
 typedef struct _AgsLocalRegistryControllerClass AgsLocalRegistryControllerClass;

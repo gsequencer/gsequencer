@@ -287,6 +287,15 @@ ags_front_controller_real_authenticate(AgsFrontController *front_controller,
 				       gchar *password,
 				       gchar *certs)
 {
+  gchar *context_path;
+
+  context_path = g_strdup_printf("%s",
+				 AGS_CONTROLLER_BASE_PATH);
+  g_object_set(front_controller,
+	       "context-path", context_path,
+	       NULL);
+  g_free(context_path);
+
   //TODO:JK: implement me
 }
 
@@ -392,6 +401,15 @@ ags_front_controller_do_request(AgsFrontController *front_controller,
   return(retval);
 }
 
+/**
+ * ags_front__controller_new:
+ * 
+ * Instantiate new #AgsFrontController
+ * 
+ * Returns: the #AgsFrontController
+ * 
+ * Since: 1.0.0
+ */
 AgsFrontController*
 ags_front_controller_new()
 {

@@ -123,6 +123,16 @@ ags_local_factory_controller_class_init(AgsLocalFactoryControllerClass *local_fa
 void
 ags_local_factory_controller_init(AgsLocalFactoryController *local_factory_controller)
 {
+  gchar *context_path;
+
+  context_path = g_strdup_printf("%s%s",
+				 AGS_CONTROLLER_BASE_PATH,
+				 AGS_LOCAL_FACTORY_CONTROLLER_CONTEXT_PATH);
+  g_object_set(local_factory_controller,
+	       "context-path", context_path,
+	       NULL);
+  g_free(context_path);
+  
   //TODO:JK: implement me
 }
 
@@ -142,16 +152,54 @@ ags_local_factory_controller_real_create_instance(AgsLocalFactoryController *loc
 						  GParameter *parameter,
 						  guint n_params)
 {
+  //TODO:JK: implement me
 }
 
+/**
+ * ags_local_factory_controller_create_instance:
+ * @local_factory_controller: the #AgsLocalFactoryController
+ * @type_name: the type name
+ * @parameter: the #GParameter-struct
+ * @n_params: the parameter count
+ * 
+ * Creates an instance of @type_name and passes @parameter to g_object_newv()
+ * 
+ * Returns: the response
+ * 
+ * Since: 1.0.0
+ */
 gpointer
 ags_local_factory_controller_create_instance(AgsLocalFactoryController *local_factory_controller,
 					     GType type_name,
 					     GParameter *parameter,
 					     guint n_params)
 {
+  gpointer retval;
+
+  g_return_val_if_fail(AGS_IS_LOCAL_FACTORY_CONTROLLER(local_factory_controller),
+		       NULL);
+
+  g_object_ref((GObject *) local_factory_controller);
+  g_signal_emit(G_OBJECT(local_factory_controller),
+		local_factory_controller_signals[CREATE_INSTANCE], 0,
+		type_name,
+		parameter,
+		n_params,
+		&retval);
+  g_object_unref((GObject *) local_factory_controller);
+
+  return(retval);
 }
 
+/**
+ * ags_local_factory_controller_new:
+ * 
+ * Instantiate new #AgsLocalFactoryController
+ * 
+ * Returns: the #AgsLocalFactoryController
+ * 
+ * Since: 1.0.0
+ */
 AgsLocalFactoryController*
 ags_local_factory_controller_new()
 {

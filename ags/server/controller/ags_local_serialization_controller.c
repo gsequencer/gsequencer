@@ -194,6 +194,16 @@ ags_local_serialization_controller_class_init(AgsLocalSerializationControllerCla
 void
 ags_local_serialization_controller_init(AgsLocalSerializationController *local_serialization_controller)
 {
+  gchar *context_path;
+
+  context_path = g_strdup_printf("%s%s",
+				 AGS_CONTROLLER_BASE_PATH,
+				 AGS_LOCAL_SERIALIZATION_CONTROLLER_CONTEXT_PATH);
+  g_object_set(local_serialization_controller,
+	       "context-path", context_path,
+	       NULL);
+  g_free(context_path);
+
   //TODO:JK: implement me
 }
 
@@ -214,11 +224,34 @@ ags_local_serialization_controller_real_send_object(AgsLocalSerializationControl
   //TODO:JK: implement me
 }
 
+/**
+ * ags_local_serialization_controller_send_object:
+ * @local_serialization_controller: the #AgsLocalSerializationController
+ * @gobject: the #GObject to send
+ * 
+ * Send object.
+ * 
+ * Returns: the response
+ * 
+ * Since: 1.0.0
+ */
 gpointer
 ags_local_serialization_controller_send_object(AgsLocalSerializationController *local_serialization_controller,
 					       GObject *gobject)
 {
-  //TODO:JK: implement me
+  gpointer retval;
+
+  g_return_val_if_fail(AGS_IS_LOCAL_SERIALIZATION_CONTROLLER(local_serialization_controller),
+		       NULL);
+
+  g_object_ref((GObject *) local_serialization_controller);
+  g_signal_emit(G_OBJECT(local_serialization_controller),
+		local_serialization_controller_signals[SEND_OBJECT], 0,
+		gobject,
+		&retval);
+  g_object_unref((GObject *) local_serialization_controller);
+
+  return(retval);
 }
 
 gpointer
@@ -228,11 +261,36 @@ ags_local_serialization_controller_real_send_object_property(AgsLocalSerializati
   //TODO:JK: implement me
 }
 
+/**
+ * ags_local_serialization_controller_send_object_property:
+ * @local_serialization_controller: the #AgsLocalSerializationController
+ * @gobject: the #GObject containing the properties to send
+ * @property_name: the property names as %NULL terminated string vector
+ * 
+ * Send object property.
+ * 
+ * Returns: the response
+ * 
+ * Since: 1.0.0
+ */
 gpointer
 ags_local_serialization_controller_send_object_property(AgsLocalSerializationController *local_serialization_controller,
 							GObject *gobject, gchar **property_name)
 {
-  //TODO:JK: implement me
+  gpointer retval;
+
+  g_return_val_if_fail(AGS_IS_LOCAL_SERIALIZATION_CONTROLLER(local_serialization_controller),
+		       NULL);
+
+  g_object_ref((GObject *) local_serialization_controller);
+  g_signal_emit(G_OBJECT(local_serialization_controller),
+		local_serialization_controller_signals[SEND_OBJECT_PROPERTY], 0,
+		gobject,
+		property_name,
+		&retval);
+  g_object_unref((GObject *) local_serialization_controller);
+
+  return(retval);
 }
 
 gpointer
@@ -242,11 +300,34 @@ ags_local_serialization_controller_real_receive_object(AgsLocalSerializationCont
   //TODO:JK: implement me
 }
 
+/**
+ * ags_local_serialization_controller_receive_object:
+ * @local_serialization_controller: the #AgsLocalSerializationController
+ * @str: the string representation of the object
+ * 
+ * Receive object.
+ * 
+ * Returns: the response
+ * 
+ * Since: 1.0.0
+ */
 gpointer
 ags_local_serialization_controller_receive_object(AgsLocalSerializationController *local_serialization_controller,
 						  gchar *str)
 {
-  //TODO:JK: implement me
+  gpointer retval;
+
+  g_return_val_if_fail(AGS_IS_LOCAL_SERIALIZATION_CONTROLLER(local_serialization_controller),
+		       NULL);
+
+  g_object_ref((GObject *) local_serialization_controller);
+  g_signal_emit(G_OBJECT(local_serialization_controller),
+		local_serialization_controller_signals[RECEIVE_OBJECT], 0,
+		str,
+		&retval);
+  g_object_unref((GObject *) local_serialization_controller);
+
+  return(retval);
 }
 
 gpointer
@@ -256,13 +337,47 @@ ags_local_serialization_controller_real_receive_object_property(AgsLocalSerializ
   //TODO:JK: implement me
 }
 
+/**
+ * ags_local_serialization_controller_receive_object_property:
+ * @local_serialization_controller: the #AgsLocalSerializationController
+ * @object_id: the id of the object to set the properties
+ * @str: the string representation of the object properties
+ * 
+ * Receive object.
+ * 
+ * Returns: the response
+ * 
+ * Since: 1.0.0
+ */
 gpointer
 ags_local_serialization_controller_receive_object_property(AgsLocalSerializationController *local_serialization_controller,
 							   gchar *object_id, gchar *str)
 {
-  //TODO:JK: implement me
+  gpointer retval;
+
+  g_return_val_if_fail(AGS_IS_LOCAL_SERIALIZATION_CONTROLLER(local_serialization_controller),
+		       NULL);
+
+  g_object_ref((GObject *) local_serialization_controller);
+  g_signal_emit(G_OBJECT(local_serialization_controller),
+		local_serialization_controller_signals[RECEIVE_OBJECT_PROPERTY], 0,
+		object_id,
+		str,
+		&retval);
+  g_object_unref((GObject *) local_serialization_controller);
+
+  return(retval);
 }
 
+/**
+ * ags_local_serialization_controller_new:
+ * 
+ * Instantiate new #AgsLocalSerializationController
+ * 
+ * Returns: the #AgsLocalSerializationController
+ * 
+ * Since: 1.0.0
+ */
 AgsLocalSerializationController*
 ags_local_serialization_controller_new()
 {

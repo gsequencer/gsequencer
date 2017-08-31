@@ -40,7 +40,7 @@ gpointer ags_local_registry_controller_real_entry_bulk(AgsLocalRegistryControlle
  */
 
 enum{
-  CREATE_ENTRY_BULK,
+  ENTRY_BULK,
   LAST_SIGNAL,
 };
 
@@ -114,6 +114,16 @@ ags_local_registry_controller_class_init(AgsLocalRegistryControllerClass *local_
 void
 ags_local_registry_controller_init(AgsLocalRegistryController *local_registry_controller)
 {
+  gchar *context_path;
+
+  context_path = g_strdup_printf("%s%s",
+				 AGS_CONTROLLER_BASE_PATH,
+				 AGS_LOCAL_REGISTRY_CONTROLLER_CONTEXT_PATH);
+  g_object_set(local_registry_controller,
+	       "context-path", context_path,
+	       NULL);
+  g_free(context_path);
+  
   //TODO:JK: implement me
 }
 
@@ -132,11 +142,42 @@ ags_local_registry_controller_real_entry_bulk(AgsLocalRegistryController *local_
 {
 }
 
+/**
+ * ags_local_registry_controller_entry_bulk:
+ * @local_registry_controller: the #AgsLocalRegistryController
+ * 
+ * Retrieve entry bulk of registry.
+ * 
+ * Returns: the response
+ * 
+ * Since: 1.0.0
+ */
 gpointer
 ags_local_registry_controller_entry_bulk(AgsLocalRegistryController *local_registry_controller)
 {
+  gpointer retval;
+
+  g_return_val_if_fail(AGS_IS_LOCAL_REGISTRY_CONTROLLER(local_registry_controller),
+		       NULL);
+
+  g_object_ref((GObject *) local_registry_controller);
+  g_signal_emit(G_OBJECT(local_registry_controller),
+		local_registry_controller_signals[ENTRY_BULK], 0,
+		&retval);
+  g_object_unref((GObject *) local_registry_controller);
+
+  return(retval);
 }
 
+/**
+ * ags_local_registry_controller_new:
+ * 
+ * Instantiate new #AgsLocalRegistryController
+ * 
+ * Returns: the #AgsLocalRegistryController
+ * 
+ * Since: 1.0.0
+ */
 AgsLocalRegistryController*
 ags_local_registry_controller_new()
 {

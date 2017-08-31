@@ -27,6 +27,7 @@
 #include <ags/thread/ags_mutex_manager.h>
 
 #include <ags/server/ags_service_provider.h>
+#include <ags/server/ags_registry.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -368,14 +369,11 @@ ags_server_info_alloc(gchar *server_name)
 void
 ags_server_real_start(AgsServer *server)
 {
-  //  AgsRegistry *registry;
+  AgsRegistry *registry;
   const char *error;
 
-  //  registry = AGS_REGISTRY(server->registry);
-#ifdef AGS_WITH_XMLRPC_C
-  registry->registry = xmlrpc_registry_new(&(ags_service_provider_get_env(AGS_SERVICE_PROVIDER(server->application_context))));
-#endif /* AGS_WITH_XMLRPC_C */
-
+  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(server->application_context));
+  
   ags_connectable_add_to_registry(AGS_CONNECTABLE(server->application_context));
 
   //  xmlrpc_registry_set_shutdown(registry,
@@ -446,6 +444,7 @@ ags_server_create_object(xmlrpc_env *env,
 			 void *server_info)
 {
   AgsServer *server;
+  AgsRegistry *registry;
   GType type;
   GObjectClass *object_class;
   GParameter *parameter;
@@ -462,6 +461,8 @@ ags_server_create_object(xmlrpc_env *env,
 
   server = ags_server_lookup(server_info);
 
+  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(server->application_context));
+ 
   /* read type */
   xmlrpc_array_read_item(env, param_array, 0, &item);
   xmlrpc_read_string(env, item, &type_name);
@@ -497,7 +498,7 @@ ags_server_create_object(xmlrpc_env *env,
     xmlrpc_DECREF(item);
 
     /* find registry entry */
-    registry_entry = ags_registry_entry_find(server->registry,
+    registry_entry = ags_registry_entry_find(registry,
 					     registry_id);
 
     /* copy GValue from registry entry to parameter array */
@@ -522,7 +523,7 @@ ags_server_create_object(xmlrpc_env *env,
 			 n_params,
 			 parameter);
 
-  registry_entry = ags_registry_entry_alloc(server->registry);
+  registry_entry = ags_registry_entry_alloc(registry);
   g_value_init(&(registry_entry->entry),
 	       G_TYPE_OBJECT);
   g_value_set_object(&(registry_entry->entry),
@@ -540,6 +541,7 @@ ags_server_object_set_property(xmlrpc_env *env,
 			       void *server_info)
 {
   AgsServer *server;
+  AgsRegistry *registry;
   GObject *object, *property;
   AgsRegistryEntry *registry_entry;
   gchar *param_name, *registry_id;
@@ -551,12 +553,14 @@ ags_server_object_set_property(xmlrpc_env *env,
 
   server = ags_server_lookup(server_info);
 
+  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(server->application_context));
+
   /* read registry id */
   xmlrpc_array_read_item(env, param_array, 1, &item);
   xmlrpc_read_string(env, item, &registry_id);
   xmlrpc_DECREF(item);
 
-  registry_entry = ags_registry_entry_find(server->registry,
+  registry_entry = ags_registry_entry_find(registry,
 					   registry_id);
   object = g_value_get_object(&(registry_entry->entry));
 
@@ -570,7 +574,7 @@ ags_server_object_set_property(xmlrpc_env *env,
   xmlrpc_read_string(env, item, &registry_id);
   xmlrpc_DECREF(item);
 
-  registry_entry = ags_registry_entry_find(server->registry,
+  registry_entry = ags_registry_entry_find(registry,
 					   registry_id);
   property = g_value_get_object(&(registry_entry->entry));
  
