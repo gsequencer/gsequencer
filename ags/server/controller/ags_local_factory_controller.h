@@ -34,6 +34,8 @@
 
 #define AGS_LOCAL_FACTORY_CONTROLLER_CONTEXT_PATH "/local-factory"
 
+#define AGS_LOCAL_FACTORY_CONTROLLER_RESOURCE_CREATE_INSTANCE "/create-instance"
+
 typedef struct _AgsLocalFactoryController AgsLocalFactoryController;
 typedef struct _AgsLocalFactoryControllerClass AgsLocalFactoryControllerClass;
 

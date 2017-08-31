@@ -43,7 +43,7 @@ struct _AgsConnectableInterface
   void (*remove_from_registry)(AgsConnectable *connectable);
 
   xmlNode* (*update)(AgsConnectable *connectable);
-
+  
   gboolean (*is_ready)(AgsConnectable *connectable);
   gboolean (*is_connected)(AgsConnectable *connectable);
 

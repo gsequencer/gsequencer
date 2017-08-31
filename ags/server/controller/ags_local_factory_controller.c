@@ -186,9 +186,13 @@ ags_local_factory_controller_real_create_instance(AgsLocalFactoryController *loc
 		     gobject);
   
   /* create return value */
+#ifdef AGS_WITH_XMLRPC_C
   response = xmlrpc_string_new(ags_service_provider_get_env(AGS_SERVICE_PROVIDER(application_context)),
 			       registry_entry->id);
-
+#else
+  response = NULL;
+#endif
+  
   return(response);
 }
 

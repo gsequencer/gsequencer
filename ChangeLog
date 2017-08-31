@@ -1,4 +1,4 @@
-ags (1.0.0)
+ags (1.0.0-beta)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsPasswordStore and AgsAuthentication interfaces

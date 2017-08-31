@@ -62,7 +62,8 @@ gpointer ags_front_controller_real_authenticate(AgsFrontController *front_contro
 						gchar *password,
 						gchar *certs);
 
-gpointer ags_front_controller_delegate_local_factory_controller(AgsLocalFactoryController *local_factory_controller,
+gpointer ags_front_controller_delegate_local_factory_controller(AgsFrontController *front_controller,
+								AgsLocalFactoryController *local_factory_controller,
 								GObject *security_context,
 								gchar *context_path,
 								gchar *login,
@@ -313,6 +314,89 @@ ags_front_controller_xmlrpc_request(xmlrpc_env *env,
   guint n_params;
   guint i;
 
+  auto void ags_front_controller_xmlrpc_request_read_certs();
+  auto void ags_front_controller_xmlrpc_request_read_parameter();
+
+  void ags_front_controller_xmlrpc_request_read_certs(){
+    xmlrpc_array_read_item(env, param_array, 3, &item);
+    xmlrpc_read_string(env, item, &security_token);
+    xmlrpc_DECREF(item);
+
+    /*
+     * read certs
+     */
+    if(entry_count > 6){
+      /* read parameter name */
+      xmlrpc_array_read_item(env, param_array, 6, &item);
+      xmlrpc_read_string(env, item, &param_name);
+      xmlrpc_DECREF(item);
+
+      /* read certs */
+      if(param_name != NULL &&
+	 !g_ascii_strncasecmp(param_name,
+			      "certs",
+			      6)){
+	xmlrpc_array_read_item(env, param_array, 7, &item);
+	xmlrpc_read_string(env, item, &certs);
+	xmlrpc_DECREF(item);
+      }
+
+      i = 1;
+    }
+  }
+  
+  void ags_front_controller_xmlrpc_request_read_parameter(){    
+    /*
+     * read parameters
+     */
+    n_params = entry_count / 2 - 3;
+
+    if(n_params > 0){
+      parameter = g_new(GParameter, n_params);
+    }else{
+      parameter = NULL;
+    }
+  
+    for(; i < n_params; i++){
+      AgsRegistryEntry *registry_entry;
+      gchar *registry_id;
+      gchar *error;
+
+      /* read parameter name */
+      xmlrpc_array_read_item(env, param_array, 6 + i * 2, &item);
+      xmlrpc_read_string(env, item, &param_name);
+      xmlrpc_DECREF(item);
+
+      parameter[i].name = param_name;
+      parameter[i].value.g_type = G_TYPE_NONE;
+
+      /* read registry id */
+      xmlrpc_array_read_item(env, param_array, 7 + i * 2 + 1, &item);
+      xmlrpc_read_string(env, item, &registry_id);
+      xmlrpc_DECREF(item);
+
+      /* find registry entry */
+      registry_entry = ags_registry_entry_find(registry,
+					       registry_id);
+
+      /* copy GValue from registry entry to parameter array */
+      g_value_init(&(parameter[i].value), G_VALUE_TYPE(&(registry_entry->entry)));
+      g_value_copy(&(registry_entry->entry),
+		   &(parameter[i].value));
+
+      /* free not needed strings */
+      g_free(param_name);
+      g_free(registry_id);
+
+      if(error){
+	g_warning ("%s: %s", G_STRFUNC, error);
+	g_free (error);
+	g_value_unset (&parameter[i].value);
+	break;
+      }
+    }
+  }
+  
   entry_count = xmlrpc_array_size(env, param_array);
   
   if(entry_count % 2 != 0 &&
@@ -384,6 +468,9 @@ ags_front_controller_xmlrpc_request(xmlrpc_env *env,
   xmlrpc_read_string(env, item, &param_name);
   xmlrpc_DECREF(item);
 
+  certs = NULL;
+  i = 0;
+  
   /* read password/security-token */
   if(param_name != NULL &&
      !g_ascii_strncasecmp(param_name,
@@ -424,83 +511,8 @@ ags_front_controller_xmlrpc_request(xmlrpc_env *env,
 	   !g_ascii_strncasecmp(param_name,
 				"security-token",
 				15)){
-    xmlrpc_array_read_item(env, param_array, 3, &item);
-    xmlrpc_read_string(env, item, &security_token);
-    xmlrpc_DECREF(item);
-
-    /*
-     * read certs
-     */
-    certs = NULL;
-    i = 0;
+    ags_front_controller_xmlrpc_request_read_certs();
     
-    if(entry_count > 6){
-      /* read parameter name */
-      xmlrpc_array_read_item(env, param_array, 6, &item);
-      xmlrpc_read_string(env, item, &param_name);
-      xmlrpc_DECREF(item);
-
-      /* read certs */
-      if(param_name != NULL &&
-	 !g_ascii_strncasecmp(param_name,
-			      "certs",
-			      6)){
-	xmlrpc_array_read_item(env, param_array, 7, &item);
-	xmlrpc_read_string(env, item, &certs);
-	xmlrpc_DECREF(item);
-      }
-
-      i = 1;
-    }
-    
-    /* read parameters */
-    n_params = entry_count / 2 - 3;
-
-    if(n_params > 0){
-      parameter = g_new(GParameter, n_params);
-    }else{
-      parameter = NULL;
-    }
-  
-    for(; i < n_params; i++){
-      AgsRegistryEntry *registry_entry;
-      gchar *registry_id;
-      gchar *error;
-
-      /* read parameter name */
-      xmlrpc_array_read_item(env, param_array, 6 + i * 2, &item);
-      xmlrpc_read_string(env, item, &param_name);
-      xmlrpc_DECREF(item);
-
-      parameter[i].name = param_name;
-      parameter[i].value.g_type = G_TYPE_NONE;
-
-      /* read registry id */
-      xmlrpc_array_read_item(env, param_array, 7 + i * 2 + 1, &item);
-      xmlrpc_read_string(env, item, &registry_id);
-      xmlrpc_DECREF(item);
-
-      /* find registry entry */
-      registry_entry = ags_registry_entry_find(registry,
-					       registry_id);
-
-      /* copy GValue from registry entry to parameter array */
-      g_value_init(&(parameter[i].value), G_VALUE_TYPE(&(registry_entry->entry)));
-      g_value_copy(&(registry_entry->entry),
-		   &(parameter[i].value));
-
-      /* free not needed strings */
-      g_free(param_name);
-      g_free(registry_id);
-
-      if(error){
-	g_warning ("%s: %s", G_STRFUNC, error);
-	g_free (error);
-	g_value_unset (&parameter[i].value);
-	break;
-      }
-    }
-
     security_context = ags_security_context_new();
     g_object_set(security_context,
 		 "certs", certs,
@@ -513,6 +525,8 @@ ags_front_controller_xmlrpc_request(xmlrpc_env *env,
 						    security_context,
 						    login,
 						    security_token)){
+      ags_front_controller_xmlrpc_request_read_parameter();
+      
       response = ags_front_controller_do_request(front_controller,
 						 security_context,
 						 context_path,
@@ -590,7 +604,8 @@ ags_front_controller_authenticate(AgsFrontController *front_controller,
 }
 
 gpointer
-ags_front_controller_delegate_local_factory_controller(AgsLocalFactoryController *local_factory_controller,
+ags_front_controller_delegate_local_factory_controller(AgsFrontController *front_controller,
+						       AgsLocalFactoryController *local_factory_controller,
 						       GObject *security_context,
 						       gchar *context_path,
 						       gchar *login,
@@ -599,15 +614,35 @@ ags_front_controller_delegate_local_factory_controller(AgsLocalFactoryController
 						       guint n_params)
 {
   gpointer response;
+
+  gchar *resource;
+
+  response = NULL;
+
+  resource = strstr(context_path,
+		    AGS_CONTROLLER(local_factory_controller)->context_path);
   
-  if(n_params < 1){
+  if(n_params < 1 ||
+     resource == NULL){
     return(NULL);
   }
 
-  response = ags_local_factory_controller_create_instance(local_factory_controller,
-							  g_value_get_ulong(&(params[0].value)),
-							  ((n_params > 1) ? &(params[1]): NULL),
-							  n_params - 1);
+  resource += strlen(AGS_CONTROLLER(local_factory_controller)->context_path);
+  
+  if(ags_controller_query_security_context(local_factory_controller,
+					   security_context, login)){
+    if(!g_ascii_strncasecmp(resource,
+			    AGS_LOCAL_FACTORY_CONTROLLER_RESOURCE_CREATE_INSTANCE,
+			    strlen(AGS_LOCAL_FACTORY_CONTROLLER_RESOURCE_CREATE_INSTANCE))){
+      if(g_strv_contains(AGS_SECURITY_CONTEXT(security_context)->permitted_context,
+			 resource)){
+	response = ags_local_factory_controller_create_instance(local_factory_controller,
+								g_value_get_ulong(&(params[0].value)),
+								((n_params > 1) ? &(params[1]): NULL),
+								n_params - 1);
+      }
+    }
+  }
 
   return(response);
 }
@@ -656,7 +691,8 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
      !g_ascii_strncasecmp(context_path,
 			  AGS_CONTROLLER(local_factory_controller)->context_path,
 			  strlen(AGS_CONTROLLER(local_factory_controller)->context_path))){
-    response = ags_front_controller_delegate_local_factory_controller(local_factory_controller,
+    response = ags_front_controller_delegate_local_factory_controller(front_controller,
+								      local_factory_controller,
 								      security_context,
 								      context_path,
 								      login,
