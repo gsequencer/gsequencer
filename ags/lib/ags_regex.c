@@ -22,6 +22,17 @@
 #include <locale.h>
 #include <pthread.h>
 
+/**
+ * SECTION:ags_regex
+ * @short_description: coding-neutral regex
+ * @title: AgsRegex
+ * @section_id:
+ * @include: ags/lib/ags_regex.h
+ *
+ * Wrapper around glibc regex functions to provide language coding-neutral
+ * processing.
+ */
+
 static pthread_mutex_t locale_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static locale_t c_locale;
@@ -72,7 +83,7 @@ ags_regcomp(regex_t *preg, const char *regex, int cflags)
  * @pmatch: match array
  * @eflags: error flags
  * 
- * Execute regular expression languange independent. It sets temporaly
+ * Execute regular expression language independent. It sets temporaly
  * the locale to C and then reverts it.
  * 
  * Since: 0.8.6

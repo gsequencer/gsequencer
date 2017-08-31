@@ -403,6 +403,14 @@ ags_server_real_start(AgsServer *server)
 #endif /* AGS_WITH_XMLRPC_C */
 }
 
+/**
+ * ags_server_start:
+ * @server: the #AgsServer
+ * 
+ * Start the XMLRPC-C abyss server.
+ * 
+ * Since: 1.0.0
+ */
 void
 ags_server_start(AgsServer *server)
 {
@@ -414,6 +422,16 @@ ags_server_start(AgsServer *server)
   g_object_unref((GObject *) server);
 }
 
+/**
+ * ags_server_lookup:
+ * @server_info: the #AgsServerInfo-struct
+ *
+ * Lookup #AgsServer by @server_info.
+ *
+ * Returns: the associated #AgsServer if found, else %NULL
+ * 
+ * Since: 1.0.0
+ */
 AgsServer*
 ags_server_lookup(AgsServerInfo *server_info)
 {

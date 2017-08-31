@@ -338,8 +338,17 @@ ags_registry_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_registry_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_registry_entry_alloc:
+ * 
+ * Allocated #AgsRegistryEntry-struct.
+ * 
+ * Returns: the newly allocated #AgsRegistryEntry-struct
+ * 
+ * Since: 1.0.0
+ */
 AgsRegistryEntry*
-ags_registry_entry_alloc(AgsRegistry *registry)
+ags_registry_entry_alloc()
 {
   AgsRegistryEntry *registry_entry;
 
@@ -353,6 +362,14 @@ ags_registry_entry_alloc(AgsRegistry *registry)
   return(registry_entry);
 }
 
+/**
+ * ags_registry_entry_free:
+ * @registry_entry: the #AgsRegistryEntry-struct
+ * 
+ * Free @registry_entry
+ * 
+ * Since: 1.0.0
+ */
 void
 ags_registry_entry_free(AgsRegistryEntry *registry_entry)
 {
@@ -369,9 +386,18 @@ ags_registry_entry_free(AgsRegistryEntry *registry_entry)
   free(registry_entry);
 }
 
+/**
+ * ags_registry_add_entry:
+ * @registry: the #AgsRegistry
+ * @registry_entry: the #AgsRegistryEntry-struct to add
+ * 
+ * Add @registry_entry to @registry.
+ * 
+ * Since: 1.0.0
+ */
 void
-ags_registry_add(AgsRegistry *registry,
-		 AgsRegistryEntry *registry_entry)
+ags_registry_add_entry(AgsRegistry *registry,
+		       AgsRegistryEntry *registry_entry)
 {
   pthread_mutex_lock(registry->mutex);
 
@@ -381,8 +407,17 @@ ags_registry_add(AgsRegistry *registry,
   pthread_mutex_unlock(registry->mutex);
 }
 
+/**
+ * ags_registry_find_entry:
+ * @registry: the #AgsRegistry
+ * @id: the id to find
+ * 
+ * Find @id as #AgsRegistryEntry-struct in @registry.
+ * 
+ * Since: 1.0.0
+ */
 AgsRegistryEntry*
-ags_registry_entry_find(AgsRegistry *registry,
+ags_registry_find_entry(AgsRegistry *registry,
 			gchar *id)
 {
   GList *current;

@@ -19,6 +19,24 @@
 
 #include <ags/util/ags_destroy_util.h>
 
+/**
+ * SECTION:ags_destroy_util
+ * @short_description: destroy util
+ * @title: AgsDestroyUtil
+ * @section_id:
+ * @include: ags/util/ags_destroy_util.h
+ * 
+ * Destroying items utility.
+ */
+
+/**
+ * ags_destroy_util_dispose_and_unref:
+ * @gobject: the #GObject to destroy
+ * 
+ * Run dispose and unref @gobject.
+ * 
+ * Since: 1.0.0
+ */
 void
 ags_destroy_util_dispose_and_unref(GObject *gobject)
 {

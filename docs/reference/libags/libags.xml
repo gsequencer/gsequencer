@@ -130,6 +130,8 @@
     <xi:include href="xml/ags_service_provider.xml"/>
 
     <chapter id="server-controller">
+      <title>Controller - providing context path</title>
+
       <xi:include href="xml/ags_controller.xml"/>
       <xi:include href="xml/ags_front_controller.xml"/>
       <xi:include href="xml/ags_local_factory_controller.xml"/>
@@ -139,6 +141,8 @@
     </chapter>
 
     <chapter id="server-security">
+      <title>Security - basic authentication</title>
+
       <xi:include href="xml/ags_authentication.xml"/>
       <xi:include href="xml/ags_authentication_manager.xml"/>
       <xi:include href="xml/ags_business_group.xml"/>
@@ -153,6 +157,8 @@
     </chapter>
 
     <chapter id="server-thread">
+      <title>Thread - multi-threaded routines</title>
+
       <xi:include href="xml/ags_remote_task.xml"/>
       <xi:include href="xml/ags_remote_task_thread.xml"/>
     </chapter>

@@ -25,7 +25,7 @@ void ags_tree_iterator_base_init(AgsTreeIteratorInterface *interface);
 
 /**
  * SECTION:ags_tree_iterator
- * @short_description: treehronous run
+ * @short_description: concurrent iterating tree
  * @title: AgsTreeIterator
  * @section_id: AgsTreeIterator
  * @include: ags/object/ags_tree_iterator.h

@@ -19,6 +19,26 @@
 
 #include <ags/lib/ags_endian.h>
 
+/**
+ * SECTION:ags_endian
+ * @short_description: dealing with endiannes
+ * @title: AgsEndian
+ * @section_id:
+ * @include: ags/lib/ags_endian.h
+ *
+ * Some common routines dealing with endiannes.
+ */
+
+/**
+ * ags_endian_swap_float:
+ * @x: the float to swap
+ * 
+ * Swaps the floating point numbers endianness.
+ *
+ * Returns: the byte-swapped float
+ * 
+ * Since: 1.0.0
+ */
 gfloat
 ags_endian_swap_float(gfloat x)
 {

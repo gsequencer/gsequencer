@@ -91,13 +91,13 @@ struct _AgsRegistryEntry
 
 GType ags_registry_get_type();
 
-AgsRegistryEntry* ags_registry_entry_alloc(AgsRegistry *registry);
+AgsRegistryEntry* ags_registry_entry_alloc();
 void ags_registry_entry_free(AgsRegistryEntry *registry_entry);
 
-void ags_registry_add(AgsRegistry *registry,
-		      AgsRegistryEntry *registry_entry);
+void ags_registry_add_entry(AgsRegistry *registry,
+			    AgsRegistryEntry *registry_entry);
 
-AgsRegistryEntry* ags_registry_entry_find(AgsRegistry *registry,
+AgsRegistryEntry* ags_registry_find_entry(AgsRegistry *registry,
 					  gchar *id);
 
 AgsRegistry* ags_registry_new();

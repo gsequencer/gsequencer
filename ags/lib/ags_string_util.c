@@ -22,6 +22,26 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * SECTION:ags_string_util
+ * @short_description: string util
+ * @title: AgsStringUtil
+ * @section_id:
+ * @include: ags/lib/ags_string_util.h
+ *
+ * Common string utility functions.
+ */
+
+/**
+ * ags_string_util_escape_single_quote:
+ * @str: the string to escape
+ * 
+ * Escape all occurence of single quotes.
+ * 
+ * Returns: the newly allocated string
+ * 
+ * Since: 1.0.0
+ */
 gchar*
 ags_string_util_escape_single_quote(gchar *str)
 {
@@ -71,6 +91,16 @@ ags_string_util_escape_single_quote(gchar *str)
   return(retval);
 }
 
+/**
+ * ags_strv_length:
+ * @str_array: the string vector
+ * 
+ * Count the number of non-%NULL entries in the array.
+ * 
+ * Returns: the length of the vector
+ * 
+ * Since: 1.0.0
+ */
 guint
 ags_strv_length(gchar **str_array)
 {
@@ -85,6 +115,17 @@ ags_strv_length(gchar **str_array)
   return(i);
 }
 
+/**
+ * ags_strv_contains:
+ * @str_array: the string vector
+ * @str: the string to match
+ * 
+ * Check occurence of @str within @str_array
+ * 
+ * Returns: %TRUE if found, else %FALSE
+ * 
+ * Since: 1.0.0
+ */
 gboolean
 ags_strv_contains(gchar **str_array,
 		  gchar *str)

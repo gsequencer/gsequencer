@@ -35,7 +35,7 @@ void ags_simple_file_write_launch(AgsTask *task);
 /**
  * SECTION:ags_simple_file_write
  * @short_description: task to write simple file format
- * @title: AgsConfig
+ * @title: AgsSimpleFileWrite
  * @section_id:
  * @include: ags/X/task/ags_simple_file_write.h
  *

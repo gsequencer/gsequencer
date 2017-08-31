@@ -19,6 +19,27 @@
 
 #include <ags/util/ags_list_util.h>
 
+/**
+ * SECTION:ags_list_util
+ * @short_description: list util
+ * @title: AgsListUtil
+ * @section_id:
+ * @include: ags/util/ags_list_util.h
+ * 
+ * List utility.
+ */
+
+/**
+ * ags_list_util_find_type:
+ * @list: the #GList-struct
+ * @gtype: the GType to find
+ * 
+ * Find @gtype within @list.
+ * 
+ * Returns: the next matching #GList-struct
+ * 
+ * Since: 1.0.0
+ */
 GList*
 ags_list_util_find_type(GList *list,
 			GType gtype)
@@ -39,6 +60,16 @@ ags_list_util_find_type(GList *list,
   return(NULL);
 }
 
+/**
+ * ags_list_util_copy_and_ref:
+ * @list: the #GList-struct
+ * 
+ * Copy @list and increase ref count on entries.
+ * 
+ * Returns: the start of the copied #GList-struct
+ * 
+ * Since: 1.0.0
+ */
 GList*
 ags_list_util_copy_and_ref(GList *list)
 {
