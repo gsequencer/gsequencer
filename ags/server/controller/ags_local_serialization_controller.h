@@ -60,6 +60,16 @@ struct _AgsLocalSerializationControllerClass
 
 GType ags_local_serialization_controller_get_type();
 
+gpointer ags_local_serialization_controller_send_object(AgsLocalSerializationController *local_serialization_controller,
+							GObject *gobject);
+gpointer ags_local_serialization_controller_send_object_property(AgsLocalSerializationController *local_serialization_controller,
+								 GObject *gobject, gchar **property_name);
+  
+gpointer ags_local_serialization_controller_receive_object(AgsLocalSerializationController *local_serialization_controller,
+							   gchar *str);
+gpointer ags_local_serialization_controller_receive_object_property(AgsLocalSerializationController *local_serialization_controller,
+								    gchar *object_id, gchar *str);
+
 AgsLocalSerializationController* ags_local_serialization_controller_new();
 
 #endif /*__AGS_LOCAL_SERIALIZATION_CONTROLLER_H__*/

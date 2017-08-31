@@ -38,7 +38,8 @@ void ags_local_task_controller_finalize(GObject *gobject);
  */
 
 enum{
-  CREATE_INSTANCE,
+  CREATE_LAUNCH,
+  CREATE_LAUNCH_TIMED,
   LAST_SIGNAL,
 };
 
@@ -64,7 +65,7 @@ ags_local_task_controller_get_type()
     };
     
     ags_type_local_task_controller = g_type_register_static(G_TYPE_OBJECT,
-							    "AgsLocalTaskController\0",
+							    "AgsLocalTaskController",
 							    &ags_local_task_controller_info,
 							    0);
   }
@@ -100,7 +101,7 @@ ags_local_task_controller_class_init(AgsLocalTaskControllerClass *local_task_con
    * Since: 1.0.0
    */
   local_task_controller_signals[LAUNCH] =
-    g_signal_new("launch\0",
+    g_signal_new("launch",
 		 G_TYPE_FROM_CLASS(local_task_controller),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLocalTaskControllerClass, launch),
@@ -121,7 +122,7 @@ ags_local_task_controller_class_init(AgsLocalTaskControllerClass *local_task_con
    * Since: 1.0.0
    */
   local_task_controller_signals[LAUNCH_TIMED] =
-    g_signal_new("launch-timed\0",
+    g_signal_new("launch-timed",
 		 G_TYPE_FROM_CLASS(local_task_controller),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLocalTaskControllerClass, launch_timed),

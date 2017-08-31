@@ -27,6 +27,11 @@ void ags_local_factory_controller_class_init(AgsLocalFactoryControllerClass *loc
 void ags_local_factory_controller_init(AgsLocalFactoryController *local_factory_controller);
 void ags_local_factory_controller_finalize(GObject *gobject);
 
+gpointer ags_local_factory_controller_real_create_instance(AgsLocalFactoryController *local_factory_controller,
+							   GType type_name,
+							   GParameter *parameter,
+							   guint n_params);
+
 /**
  * SECTION:ags_local_factory_controller
  * @short_description: local factory controller
@@ -64,7 +69,7 @@ ags_local_factory_controller_get_type()
     };
     
     ags_type_local_factory_controller = g_type_register_static(G_TYPE_OBJECT,
-							       "AgsLocalFactoryController\0",
+							       "AgsLocalFactoryController",
 							       &ags_local_factory_controller_info,
 							       0);
   }
@@ -103,7 +108,7 @@ ags_local_factory_controller_class_init(AgsLocalFactoryControllerClass *local_fa
    * Since: 1.0.0
    */
   local_factory_controller_signals[CREATE_INSTANCE] =
-    g_signal_new("create-instance\0",
+    g_signal_new("create-instance",
 		 G_TYPE_FROM_CLASS(local_factory_controller),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLocalFactoryControllerClass, create_instance),
@@ -129,6 +134,22 @@ ags_local_factory_controller_finalize(GObject *gobject)
   local_factory_controller = AGS_LOCAL_FACTORY_CONTROLLER(gobject);
 
   G_OBJECT_CLASS(ags_local_factory_controller_parent_class)->finalize(gobject);
+}
+
+gpointer
+ags_local_factory_controller_real_create_instance(AgsLocalFactoryController *local_factory_controller,
+						  GType type_name,
+						  GParameter *parameter,
+						  guint n_params)
+{
+}
+
+gpointer
+ags_local_factory_controller_create_instance(AgsLocalFactoryController *local_factory_controller,
+					     GType type_name,
+					     GParameter *parameter,
+					     guint n_params)
+{
 }
 
 AgsLocalFactoryController*
