@@ -14,6 +14,7 @@ ags_cell_pattern_get_type
 ags_change_indicator_get_type
 ags_change_tact_get_type
 ags_connection_editor_get_type
+ags_context_menu_get_type
 ags_crop_note_dialog_get_type
 ags_display_tact_get_type
 ags_drum_get_type

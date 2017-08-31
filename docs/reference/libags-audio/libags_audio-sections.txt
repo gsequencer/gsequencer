@@ -718,6 +718,24 @@ ags_audio_thread_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_audio_xml_serialization_factory</FILE>
+<TITLE>AgsAudioXmlSerializationFactory</TITLE>
+ags_audio_xml_serialization_factory_create
+ags_audio_xml_serialization_factory_get_instance
+ags_audio_xml_serialization_factory_new
+<SUBSECTION Public>
+AGS_AUDIO_XML_SERIALIZATION_FACTORY
+AGS_AUDIO_XML_SERIALIZATION_FACTORY_CLASS
+AGS_AUDIO_XML_SERIALIZATION_FACTORY_GET_CLASS
+AGS_IS_AUDIO_XML_SERIALIZATION_FACTORY
+AGS_IS_AUDIO_XML_SERIALIZATION_FACTORY_CLASS
+AGS_TYPE_AUDIO_XML_SERIALIZATION_FACTORY
+AgsAudioXmlSerializationFactory
+AgsAudioXmlSerializationFactoryClass
+ags_audio_xml_serialization_factory_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_automation</FILE>
 <TITLE>AgsAutomation</TITLE>
 AGS_AUTOMATION_DEFAULT_BPM
@@ -2430,43 +2448,6 @@ AGS_TYPE_MIDI_FILE
 AgsMidiFile
 AgsMidiFileClass
 ags_midi_file_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_midi_file_reader</FILE>
-<TITLE>AgsMidiFileReader</TITLE>
-ags_midi_file_reader_read_channel_message
-ags_midi_file_reader_read_status_message
-ags_midi_file_reader_new
-<SUBSECTION Public>
-AGS_IS_MIDI_FILE_READER
-AGS_IS_MIDI_FILE_READER_CLASS
-AGS_MIDI_FILE_READER
-AGS_MIDI_FILE_READER_CLASS
-AGS_MIDI_FILE_READER_GET_CLASS
-AGS_TYPE_MIDI_FILE_READER
-AgsMidiFileReader
-AgsMidiFileReaderClass
-ags_midi_file_reader_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_midi_file_writer</FILE>
-<TITLE>AgsMidiFileWriter</TITLE>
-ags_midi_file_writer_write_bytes
-ags_midi_file_writer_write_channel_message
-ags_midi_file_writer_write_status_message
-ags_midi_file_writer_new
-<SUBSECTION Public>
-AGS_IS_MIDI_FILE_WRITER
-AGS_IS_MIDI_FILE_WRITER_CLASS
-AGS_MIDI_FILE_WRITER
-AGS_MIDI_FILE_WRITER_CLASS
-AGS_MIDI_FILE_WRITER_GET_CLASS
-AGS_TYPE_MIDI_FILE_WRITER
-AgsMidiFileWriter
-AgsMidiFileWriterClass
-ags_midi_file_writer_get_type
 </SECTION>
 
 <SECTION>

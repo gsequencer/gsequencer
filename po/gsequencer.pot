@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 0.9.22\n"
+"Project-Id-Version: gsequencer 1.0.0-beta\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-08-28 11:56+0200\n"
+"POT-Creation-Date: 2017-08-31 19:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -186,7 +186,7 @@ msgstr ""
 msgid "channel"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:171 ags/X/ags_sequencer_editor.c:168
+#: ags/X/ags_export_soundcard.c:171 ags/X/ags_sequencer_editor.c:169
 #: ags/X/ags_soundcard_editor.c:173
 msgid "backend"
 msgstr ""
@@ -465,7 +465,7 @@ msgstr ""
 msgid "inputs"
 msgstr ""
 
-#: ags/X/ags_sequencer_editor.c:204
+#: ags/X/ags_sequencer_editor.c:205
 msgid "MIDI card"
 msgstr ""
 
@@ -855,4 +855,28 @@ msgstr ""
 
 #: ags/X/machine/ags_syncsynth.c:364 ags/X/machine/ags_synth.c:315
 msgid "loop end"
+msgstr ""
+
+#: ags/server/ags_registry.c:130 ags/server/controller/ags_controller.c:110
+msgid "assigned server"
+msgstr ""
+
+#: ags/server/ags_registry.c:131 ags/server/controller/ags_controller.c:111
+msgid "The assigned server"
+msgstr ""
+
+#: ags/server/ags_server.c:147
+msgid "application context object"
+msgstr ""
+
+#: ags/server/ags_server.c:148
+msgid "The application context object"
+msgstr ""
+
+#: ags/server/security/ags_security_context.c:105
+msgid "certificates as string"
+msgstr ""
+
+#: ags/server/security/ags_security_context.c:106
+msgid "The certificates as string"
 msgstr ""

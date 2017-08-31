@@ -56,6 +56,6 @@ struct _AgsServerStatusClass
 
 GType ags_server_status_get_type();
 
-AgsServerStatus* ags_server_status_new(GObject *application_context);
+AgsServerStatus* ags_server_status_new();
 
 #endif /*__AGS_SERVER_STATUS_H__*/

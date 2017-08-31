@@ -661,8 +661,6 @@ XMLRPC_SERVER_ABYSS_LIBS
 XMLRPC_SERVER_ABYSS_CFLAGS
 XMLRPC_SERVER_CGI_LIBS
 XMLRPC_SERVER_CGI_CFLAGS
-XMLRPC_SERVER_LIBS
-XMLRPC_SERVER_CFLAGS
 XMLRPC_CLIENT_LIBS
 XMLRPC_CLIENT_CFLAGS
 XMLRPC_UTIL_LIBS
@@ -821,6 +819,7 @@ infodir
 docdir
 oldincludedir
 includedir
+runstatedir
 localstatedir
 sharedstatedir
 sysconfdir
@@ -951,6 +950,7 @@ datadir='${datarootdir}'
 sysconfdir='${prefix}/etc'
 sharedstatedir='${prefix}/com'
 localstatedir='${prefix}/var'
+runstatedir='${localstatedir}/run'
 includedir='${prefix}/include'
 oldincludedir='/usr/include'
 docdir='${datarootdir}/doc/${PACKAGE_TARNAME}'
@@ -1203,6 +1203,15 @@ do
   | -silent | --silent | --silen | --sile | --sil)
     silent=yes ;;
 
+  -runstatedir | --runstatedir | --runstatedi | --runstated \
+  | --runstate | --runstat | --runsta | --runst | --runs \
+  | --run | --ru | --r)
+    ac_prev=runstatedir ;;
+  -runstatedir=* | --runstatedir=* | --runstatedi=* | --runstated=* \
+  | --runstate=* | --runstat=* | --runsta=* | --runst=* | --runs=* \
+  | --run=* | --ru=* | --r=*)
+    runstatedir=$ac_optarg ;;
+
   -sbindir | --sbindir | --sbindi | --sbind | --sbin | --sbi | --sb)
     ac_prev=sbindir ;;
   -sbindir=* | --sbindir=* | --sbindi=* | --sbind=* | --sbin=* \
@@ -1340,7 +1349,7 @@ fi
 for ac_var in	exec_prefix prefix bindir sbindir libexecdir datarootdir \
 		datadir sysconfdir sharedstatedir localstatedir includedir \
 		oldincludedir docdir infodir htmldir dvidir pdfdir psdir \
-		libdir localedir mandir
+		libdir localedir mandir runstatedir
 do
   eval ac_val=\$$ac_var
   # Remove trailing slashes.
@@ -1493,6 +1502,7 @@ Fine tuning of the installation directories:
   --sysconfdir=DIR        read-only single-machine data [PREFIX/etc]
   --sharedstatedir=DIR    modifiable architecture-independent data [PREFIX/com]
   --localstatedir=DIR     modifiable single-machine data [PREFIX/var]
+  --runstatedir=DIR       modifiable per-process data [LOCALSTATEDIR/run]
   --libdir=DIR            object code libraries [EPREFIX/lib]
   --includedir=DIR        C header files [PREFIX/include]
   --oldincludedir=DIR     C header files for non-gcc [/usr/include]
@@ -8699,7 +8709,7 @@ linux* | k*bsd*-gnu | kopensolaris*-gnu | gnu*)
   lt_cv_deplibs_check_method=pass_all
   ;;
 
-netbsd*)
+netbsd* | netbsdelf*-gnu)
   if echo __ELF__ | $CC -E - | $GREP __ELF__ > /dev/null; then
     lt_cv_deplibs_check_method='match_pattern /lib[^/]+(\.so\.[0-9]+\.[0-9]+|_pic\.a)$'
   else
@@ -12253,6 +12263,9 @@ $as_echo_n "checking whether the $compiler linker ($LD) supports shared librarie
   openbsd* | bitrig*)
     with_gnu_ld=no
     ;;
+  linux* | k*bsd*-gnu | gnu*)
+    link_all_deplibs=no
+    ;;
   esac
 
   ld_shlibs=yes
@@ -12507,7 +12520,7 @@ _LT_EOF
       fi
       ;;
 
-    netbsd*)
+    netbsd* | netbsdelf*-gnu)
       if echo __ELF__ | $CC -E - | $GREP __ELF__ >/dev/null; then
 	archive_cmds='$LD -Bshareable $libobjs $deplibs $linker_flags -o $lib'
 	wlarc=
@@ -13177,6 +13190,7 @@ $as_echo "$lt_cv_irix_exported_symbol" >&6; }
 	if test yes = "$lt_cv_irix_exported_symbol"; then
           archive_expsym_cmds='$CC -shared $pic_flag $libobjs $deplibs $compiler_flags $wl-soname $wl$soname `test -n "$verstring" && func_echo_all "$wl-set_version $wl$verstring"` $wl-update_registry $wl$output_objdir/so_locations $wl-exports_file $wl$export_symbols -o $lib'
 	fi
+	link_all_deplibs=no
       else
 	archive_cmds='$CC -shared $libobjs $deplibs $compiler_flags -soname $soname `test -n "$verstring" && func_echo_all "-set_version $verstring"` -update_registry $output_objdir/so_locations -o $lib'
 	archive_expsym_cmds='$CC -shared $libobjs $deplibs $compiler_flags -soname $soname `test -n "$verstring" && func_echo_all "-set_version $verstring"` -update_registry $output_objdir/so_locations -exports_file $export_symbols -o $lib'
@@ -13198,7 +13212,7 @@ $as_echo "$lt_cv_irix_exported_symbol" >&6; }
       esac
       ;;
 
-    netbsd*)
+    netbsd* | netbsdelf*-gnu)
       if echo __ELF__ | $CC -E - | $GREP __ELF__ >/dev/null; then
 	archive_cmds='$LD -Bshareable -o $lib $libobjs $deplibs $linker_flags'  # a.out
       else
@@ -14311,6 +14325,18 @@ fi
   # people can always --disable-shared, the test was removed, and we
   # assume the GNU/Linux dynamic linker is in use.
   dynamic_linker='GNU/Linux ld.so'
+  ;;
+
+netbsdelf*-gnu)
+  version_type=linux
+  need_lib_prefix=no
+  need_version=no
+  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major ${libname}${shared_ext}'
+  soname_spec='${libname}${release}${shared_ext}$major'
+  shlibpath_var=LD_LIBRARY_PATH
+  shlibpath_overrides_runpath=no
+  hardcode_into_libs=yes
+  dynamic_linker='NetBSD ld.elf_so'
   ;;
 
 netbsd*)
@@ -16292,8 +16318,8 @@ $as_echo "no" >&6; }
 fi
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for uuid >= 1.0.2" >&5
-$as_echo_n "checking for uuid >= 1.0.2... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for UUID" >&5
+$as_echo_n "checking for UUID... " >&6; }
 
 if test -n "$UUID_CFLAGS"; then
     pkg_cv_UUID_CFLAGS="$UUID_CFLAGS"
@@ -16333,7 +16359,7 @@ fi
 
 
 if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
@@ -16360,7 +16386,7 @@ Alternatively, you may set the environment variables UUID_CFLAGS
 and UUID_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
@@ -16387,8 +16413,8 @@ fi
 if test "x$enable_alsa" != xno; then :
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for alsa >= 1.0.25" >&5
-$as_echo_n "checking for alsa >= 1.0.25... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for LIBASOUND2" >&5
+$as_echo_n "checking for LIBASOUND2... " >&6; }
 
 if test -n "$LIBASOUND2_CFLAGS"; then
     pkg_cv_LIBASOUND2_CFLAGS="$LIBASOUND2_CFLAGS"
@@ -16428,7 +16454,7 @@ fi
 
 
 if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
@@ -16455,7 +16481,7 @@ Alternatively, you may set the environment variables LIBASOUND2_CFLAGS
 and LIBASOUND2_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
@@ -16504,8 +16530,8 @@ $as_echo "#define HAVE_ALSA_SEQ_EVENT_H 1" >>confdefs.h
 
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for alsa >= 1.0.5" >&5
-$as_echo_n "checking for alsa >= 1.0.5... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for LIBASOUND2" >&5
+$as_echo_n "checking for LIBASOUND2... " >&6; }
 
 if test -n "$LIBASOUND2_CFLAGS"; then
     pkg_cv_LIBASOUND2_CFLAGS="$LIBASOUND2_CFLAGS"
@@ -16545,7 +16571,7 @@ fi
 
 
 if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
@@ -16572,7 +16598,7 @@ Alternatively, you may set the environment variables LIBASOUND2_CFLAGS
 and LIBASOUND2_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
@@ -16617,8 +16643,8 @@ fi
 
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for jack" >&5
-$as_echo_n "checking for jack... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for JACK" >&5
+$as_echo_n "checking for JACK... " >&6; }
 
 if test -n "$JACK_CFLAGS"; then
     pkg_cv_JACK_CFLAGS="$JACK_CFLAGS"
@@ -16658,7 +16684,7 @@ fi
 
 
 if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
@@ -16685,7 +16711,7 @@ Alternatively, you may set the environment variables JACK_CFLAGS
 and JACK_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
@@ -16719,8 +16745,8 @@ fi
 
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libpulse" >&5
-$as_echo_n "checking for libpulse... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for PULSE" >&5
+$as_echo_n "checking for PULSE... " >&6; }
 
 if test -n "$PULSE_CFLAGS"; then
     pkg_cv_PULSE_CFLAGS="$PULSE_CFLAGS"
@@ -16760,7 +16786,7 @@ fi
 
 
 if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
@@ -16787,7 +16813,7 @@ Alternatively, you may set the environment variables PULSE_CFLAGS
 and PULSE_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
@@ -16813,8 +16839,8 @@ fi
 
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libxml-2.0 >= 2.8.0" >&5
-$as_echo_n "checking for libxml-2.0 >= 2.8.0... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for LIBXML2" >&5
+$as_echo_n "checking for LIBXML2... " >&6; }
 
 if test -n "$LIBXML2_CFLAGS"; then
     pkg_cv_LIBXML2_CFLAGS="$LIBXML2_CFLAGS"
@@ -16854,7 +16880,7 @@ fi
 
 
 if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
@@ -16881,7 +16907,7 @@ Alternatively, you may set the environment variables LIBXML2_CFLAGS
 and LIBXML2_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
@@ -16907,8 +16933,8 @@ fi
 
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for samplerate >= 0.1.8" >&5
-$as_echo_n "checking for samplerate >= 0.1.8... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for SAMPLERATE" >&5
+$as_echo_n "checking for SAMPLERATE... " >&6; }
 
 if test -n "$SAMPLERATE_CFLAGS"; then
     pkg_cv_SAMPLERATE_CFLAGS="$SAMPLERATE_CFLAGS"
@@ -16948,7 +16974,7 @@ fi
 
 
 if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
@@ -16975,7 +17001,7 @@ Alternatively, you may set the environment variables SAMPLERATE_CFLAGS
 and SAMPLERATE_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
@@ -17001,8 +17027,8 @@ fi
 
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for sndfile >= 1.0.25" >&5
-$as_echo_n "checking for sndfile >= 1.0.25... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for SNDFILE" >&5
+$as_echo_n "checking for SNDFILE... " >&6; }
 
 if test -n "$SNDFILE_CFLAGS"; then
     pkg_cv_SNDFILE_CFLAGS="$SNDFILE_CFLAGS"
@@ -17042,7 +17068,7 @@ fi
 
 
 if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
@@ -17069,7 +17095,7 @@ Alternatively, you may set the environment variables SNDFILE_CFLAGS
 and SNDFILE_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
@@ -17095,8 +17121,8 @@ fi
 
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for gobject-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3" >&5
-$as_echo_n "checking for gobject-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for GOBJECT" >&5
+$as_echo_n "checking for GOBJECT... " >&6; }
 
 if test -n "$GOBJECT_CFLAGS"; then
     pkg_cv_GOBJECT_CFLAGS="$GOBJECT_CFLAGS"
@@ -17136,7 +17162,7 @@ fi
 
 
 if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
@@ -17163,7 +17189,7 @@ Alternatively, you may set the environment variables GOBJECT_CFLAGS
 and GOBJECT_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
@@ -17274,8 +17300,8 @@ fi
 
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for gio-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3" >&5
-$as_echo_n "checking for gio-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for GIO" >&5
+$as_echo_n "checking for GIO... " >&6; }
 
 if test -n "$GIO_CFLAGS"; then
     pkg_cv_GIO_CFLAGS="$GIO_CFLAGS"
@@ -17315,7 +17341,7 @@ fi
 
 
 if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
@@ -17342,7 +17368,7 @@ Alternatively, you may set the environment variables GIO_CFLAGS
 and GIO_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
@@ -17368,8 +17394,8 @@ fi
 
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libpcre >= 3.39" >&5
-$as_echo_n "checking for libpcre >= 3.39... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for PCRE" >&5
+$as_echo_n "checking for PCRE... " >&6; }
 
 if test -n "$PCRE_CFLAGS"; then
     pkg_cv_PCRE_CFLAGS="$PCRE_CFLAGS"
@@ -17409,7 +17435,7 @@ fi
 
 
 if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
@@ -17436,7 +17462,7 @@ Alternatively, you may set the environment variables PCRE_CFLAGS
 and PCRE_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
@@ -17506,8 +17532,8 @@ fi
 if test "x$enable_libinstpatch" != xno; then :
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libinstpatch-1.0 >= 1.0" >&5
-$as_echo_n "checking for libinstpatch-1.0 >= 1.0... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for LIBINSTPATCH" >&5
+$as_echo_n "checking for LIBINSTPATCH... " >&6; }
 
 if test -n "$LIBINSTPATCH_CFLAGS"; then
     pkg_cv_LIBINSTPATCH_CFLAGS="$LIBINSTPATCH_CFLAGS"
@@ -17547,7 +17573,7 @@ fi
 
 
 if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
@@ -17574,7 +17600,7 @@ Alternatively, you may set the environment variables LIBINSTPATCH_CFLAGS
 and LIBINSTPATCH_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
@@ -17607,8 +17633,8 @@ fi
 
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for fontconfig >= 2.9.0" >&5
-$as_echo_n "checking for fontconfig >= 2.9.0... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for FONTCONFIG" >&5
+$as_echo_n "checking for FONTCONFIG... " >&6; }
 
 if test -n "$FONTCONFIG_CFLAGS"; then
     pkg_cv_FONTCONFIG_CFLAGS="$FONTCONFIG_CFLAGS"
@@ -17648,7 +17674,7 @@ fi
 
 
 if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
@@ -17675,7 +17701,7 @@ Alternatively, you may set the environment variables FONTCONFIG_CFLAGS
 and FONTCONFIG_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
@@ -17701,8 +17727,8 @@ fi
 
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for gdk-pixbuf-2.0 >= 2.26.1" >&5
-$as_echo_n "checking for gdk-pixbuf-2.0 >= 2.26.1... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for GDKPIXBUF" >&5
+$as_echo_n "checking for GDKPIXBUF... " >&6; }
 
 if test -n "$GDKPIXBUF_CFLAGS"; then
     pkg_cv_GDKPIXBUF_CFLAGS="$GDKPIXBUF_CFLAGS"
@@ -17742,7 +17768,7 @@ fi
 
 
 if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
@@ -17769,7 +17795,7 @@ Alternatively, you may set the environment variables GDKPIXBUF_CFLAGS
 and GDKPIXBUF_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
@@ -17795,8 +17821,8 @@ fi
 
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for cairo >= 1.12.0" >&5
-$as_echo_n "checking for cairo >= 1.12.0... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for CAIRO" >&5
+$as_echo_n "checking for CAIRO... " >&6; }
 
 if test -n "$CAIRO_CFLAGS"; then
     pkg_cv_CAIRO_CFLAGS="$CAIRO_CFLAGS"
@@ -17836,7 +17862,7 @@ fi
 
 
 if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
@@ -17863,7 +17889,7 @@ Alternatively, you may set the environment variables CAIRO_CFLAGS
 and CAIRO_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
@@ -17889,8 +17915,8 @@ fi
 
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for gtk+-2.0 >= 2.24.10" >&5
-$as_echo_n "checking for gtk+-2.0 >= 2.24.10... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for GTK" >&5
+$as_echo_n "checking for GTK... " >&6; }
 
 if test -n "$GTK_CFLAGS"; then
     pkg_cv_GTK_CFLAGS="$GTK_CFLAGS"
@@ -17930,7 +17956,7 @@ fi
 
 
 if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
@@ -17957,7 +17983,7 @@ Alternatively, you may set the environment variables GTK_CFLAGS
 and GTK_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
 $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
@@ -18045,10 +18071,8 @@ fi
 
       XMLRPC_CLIENT_LIBS=$(xmlrpc-c-config client --libs)
 
-      XMLRPC_SERVER_CFLAGS=$(xmlrpc-c-config abyss --cflags)
-
-      XMLRPC_SERVER_LIBS=$(xmlrpc-c-config abyss --libs)
-
+#      AC_SUBST(XMLRPC_SERVER_CFLAGS, $(xmlrpc-c-config abyss --cflags))
+#      AC_SUBST(XMLRPC_SERVER_LIBS, $(xmlrpc-c-config abyss --libs))
       XMLRPC_SERVER_CGI_CFLAGS=$(xmlrpc-c-config cgi-server --cflags)
 
       XMLRPC_SERVER_CGI_LIBS=$(xmlrpc-c-config cgi-server --libs)
@@ -18314,6 +18338,8 @@ main ()
     if (*(data + i) != *(data3 + i))
       return 14;
   close (fd);
+  free (data);
+  free (data3);
   return 0;
 }
 _ACEOF
@@ -18644,8 +18670,8 @@ $as_echo "$enable_gtk_doc" >&6; }
     if test "x$PACKAGE_NAME" != "xglib"; then
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for glib-2.0 >= 2.10.0 gobject-2.0  >= 2.10.0" >&5
-$as_echo_n "checking for glib-2.0 >= 2.10.0 gobject-2.0  >= 2.10.0... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for GTKDOC_DEPS" >&5
+$as_echo_n "checking for GTKDOC_DEPS... " >&6; }
 
 if test -n "$GTKDOC_DEPS_CFLAGS"; then
     pkg_cv_GTKDOC_DEPS_CFLAGS="$GTKDOC_DEPS_CFLAGS"
@@ -18685,7 +18711,7 @@ fi
 
 
 if test $pkg_failed = yes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
 if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
@@ -18703,7 +18729,7 @@ fi
 
 	:
 elif test $pkg_failed = untried; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 	:
 else

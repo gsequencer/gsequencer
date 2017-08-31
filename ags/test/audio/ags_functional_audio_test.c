@@ -44,6 +44,7 @@
 #include <ags/audio/ags_playable.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/audio/thread/ags_soundcard_thread.h>
 
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>

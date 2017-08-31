@@ -139,8 +139,6 @@
       
       <xi:include href="xml/ags_midi_buffer_util.xml"/>
       <xi:include href="xml/ags_midi_file.xml"/>
-      <xi:include href="xml/ags_midi_file_reader.xml"/>
-      <xi:include href="xml/ags_midi_file_writer.xml"/>
       <xi:include href="xml/ags_midi_util.xml"/>
       <xi:include href="xml/ags_midi_builder.xml"/>
       <xi:include href="xml/ags_midi_parser.xml"/>
@@ -156,6 +154,7 @@
       <xi:include href="xml/ags_ipatch_sf2_reader.xml"/>
       <xi:include href="xml/ags_ipatch_dls2_reader.xml"/>
       <xi:include href="xml/ags_sndfile.xml"/>
+      <xi:include href="xml/ags_audio_xml_serialization_factory.xml"/>
     </chapter>
 
     <chapter id="audio-recall">

@@ -510,6 +510,7 @@ libags_server_h_sources = \
 	ags/server/ags_registry.h \
 	ags/server/ags_server.h \
 	ags/server/ags_server_application_context.h \
+	ags/server/ags_server_status.h \
 	ags/server/ags_service_provider.h
 
 deprecated_libags_server_c_sources =
@@ -519,6 +520,7 @@ libags_server_c_sources = \
 	ags/server/ags_registry.c \
 	ags/server/ags_server.c \
 	ags/server/ags_server_application_context.c \
+	ags/server/ags_server_status.c \
 	ags/server/ags_service_provider.c
 
 # libags-server - security
@@ -593,13 +595,15 @@ deprecated_libags_server_thread_h_sources =
 
 libags_server_thread_h_sources = \
 	$(deprecated_libags_server_thread_h_sources) \
-	ags/server/thread/ags_remote_task.h
+	ags/server/thread/ags_remote_task.h \
+	ags/server/thread/ags_remote_task_thread.h
 
 deprecated_libags_server_thread_c_sources =
 
 libags_server_thread_c_sources = \
 	$(deprecated_libags_server_thread_c_sources) \
-	ags/server/thread/ags_remote_task.c
+	ags/server/thread/ags_remote_task.c \
+	ags/server/thread/ags_remote_task_thread.c
 
 # libags-audio all files
 deprecated_libags_audio_h_sources =

@@ -25,6 +25,7 @@ ags_audio_get_type
 ags_audio_loop_get_type
 ags_audio_signal_get_type
 ags_audio_thread_get_type
+ags_audio_xml_serialization_factory_get_type
 ags_automation_get_type
 ags_base_plugin_get_type
 ags_buffer_audio_signal_get_type
@@ -102,8 +103,6 @@ ags_lv2ui_manager_get_type
 ags_lv2ui_plugin_get_type
 ags_midi_builder_get_type
 ags_midi_file_get_type
-ags_midi_file_reader_get_type
-ags_midi_file_writer_get_type
 ags_midi_parser_get_type
 ags_midiin_get_type
 ags_move_note_get_type

@@ -547,6 +547,7 @@ am__objects_17 = $(am__objects_1) \
 	ags/server/libags_server_la-ags_registry.lo \
 	ags/server/libags_server_la-ags_server.lo \
 	ags/server/libags_server_la-ags_server_application_context.lo \
+	ags/server/libags_server_la-ags_server_status.lo \
 	ags/server/libags_server_la-ags_service_provider.lo
 am__objects_18 = $(am__objects_1) \
 	ags/server/security/libags_server_la-ags_authentication.lo \
@@ -568,7 +569,8 @@ am__objects_19 = $(am__objects_1) \
 	ags/server/controller/libags_server_la-ags_local_serialization_controller.lo \
 	ags/server/controller/libags_server_la-ags_local_task_controller.lo
 am__objects_20 = $(am__objects_1) \
-	ags/server/thread/libags_server_la-ags_remote_task.lo
+	ags/server/thread/libags_server_la-ags_remote_task.lo \
+	ags/server/thread/libags_server_la-ags_remote_task_thread.lo
 am_libags_server_la_OBJECTS = $(am__objects_17) $(am__objects_18) \
 	$(am__objects_19) $(am__objects_20)
 libags_server_la_OBJECTS = $(am_libags_server_la_OBJECTS)
@@ -1683,8 +1685,7 @@ gsequencer_DEPENDENCIES = libgsequencer.la libags_audio.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 gsequencer_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(gsequencer_CFLAGS) \
 	$(CFLAGS) $(gsequencer_LDFLAGS) $(LDFLAGS) -o $@
@@ -2264,10 +2265,8 @@ XMLRPC_CLIENT_LIBS = @XMLRPC_CLIENT_LIBS@
 XMLRPC_C_CONFIG = @XMLRPC_C_CONFIG@
 XMLRPC_SERVER_ABYSS_CFLAGS = @XMLRPC_SERVER_ABYSS_CFLAGS@
 XMLRPC_SERVER_ABYSS_LIBS = @XMLRPC_SERVER_ABYSS_LIBS@
-XMLRPC_SERVER_CFLAGS = @XMLRPC_SERVER_CFLAGS@
 XMLRPC_SERVER_CGI_CFLAGS = @XMLRPC_SERVER_CGI_CFLAGS@
 XMLRPC_SERVER_CGI_LIBS = @XMLRPC_SERVER_CGI_LIBS@
-XMLRPC_SERVER_LIBS = @XMLRPC_SERVER_LIBS@
 XMLRPC_UTIL_CFLAGS = @XMLRPC_UTIL_CFLAGS@
 XMLRPC_UTIL_LIBS = @XMLRPC_UTIL_LIBS@
 abs_builddir = @abs_builddir@
@@ -2320,6 +2319,7 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -3278,6 +3278,7 @@ libags_server_h_sources = \
 	ags/server/ags_registry.h \
 	ags/server/ags_server.h \
 	ags/server/ags_server_application_context.h \
+	ags/server/ags_server_status.h \
 	ags/server/ags_service_provider.h
 
 deprecated_libags_server_c_sources = 
@@ -3286,6 +3287,7 @@ libags_server_c_sources = \
 	ags/server/ags_registry.c \
 	ags/server/ags_server.c \
 	ags/server/ags_server_application_context.c \
+	ags/server/ags_server_status.c \
 	ags/server/ags_service_provider.c
 
 
@@ -3357,12 +3359,14 @@ libags_server_file_c_sources = \
 deprecated_libags_server_thread_h_sources = 
 libags_server_thread_h_sources = \
 	$(deprecated_libags_server_thread_h_sources) \
-	ags/server/thread/ags_remote_task.h
+	ags/server/thread/ags_remote_task.h \
+	ags/server/thread/ags_remote_task_thread.h
 
 deprecated_libags_server_thread_c_sources = 
 libags_server_thread_c_sources = \
 	$(deprecated_libags_server_thread_c_sources) \
-	ags/server/thread/ags_remote_task.c
+	ags/server/thread/ags_remote_task.c \
+	ags/server/thread/ags_remote_task_thread.c
 
 
 # libags-audio all files
@@ -5572,6 +5576,9 @@ ags/server/libags_server_la-ags_server.lo: ags/server/$(am__dirstamp) \
 ags/server/libags_server_la-ags_server_application_context.lo:  \
 	ags/server/$(am__dirstamp) \
 	ags/server/$(DEPDIR)/$(am__dirstamp)
+ags/server/libags_server_la-ags_server_status.lo:  \
+	ags/server/$(am__dirstamp) \
+	ags/server/$(DEPDIR)/$(am__dirstamp)
 ags/server/libags_server_la-ags_service_provider.lo:  \
 	ags/server/$(am__dirstamp) \
 	ags/server/$(DEPDIR)/$(am__dirstamp)
@@ -5645,6 +5652,9 @@ ags/server/thread/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) ags/server/thread/$(DEPDIR)
 	@: > ags/server/thread/$(DEPDIR)/$(am__dirstamp)
 ags/server/thread/libags_server_la-ags_remote_task.lo:  \
+	ags/server/thread/$(am__dirstamp) \
+	ags/server/thread/$(DEPDIR)/$(am__dirstamp)
+ags/server/thread/libags_server_la-ags_remote_task_thread.lo:  \
 	ags/server/thread/$(am__dirstamp) \
 	ags/server/thread/$(DEPDIR)/$(am__dirstamp)
 
@@ -7631,6 +7641,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/$(DEPDIR)/libags_server_la-ags_registry.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/$(DEPDIR)/libags_server_la-ags_server.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/$(DEPDIR)/libags_server_la-ags_server_application_context.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/server/$(DEPDIR)/libags_server_la-ags_server_status.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/$(DEPDIR)/libags_server_la-ags_service_provider.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/controller/$(DEPDIR)/libags_server_la-ags_controller.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/controller/$(DEPDIR)/libags_server_la-ags_front_controller.Plo@am__quote@
@@ -7650,6 +7661,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_certificate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_password_store.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/thread/$(DEPDIR)/libags_server_la-ags_remote_task.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/server/thread/$(DEPDIR)/libags_server_la-ags_remote_task_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/ags_functional_editor_workflow_test-ags_functional_editor_workflow_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/ags_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/ags_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.Po@am__quote@
@@ -9874,6 +9886,13 @@ ags/server/libags_server_la-ags_server_application_context.lo: ags/server/ags_se
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o ags/server/libags_server_la-ags_server_application_context.lo `test -f 'ags/server/ags_server_application_context.c' || echo '$(srcdir)/'`ags/server/ags_server_application_context.c
 
+ags/server/libags_server_la-ags_server_status.lo: ags/server/ags_server_status.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT ags/server/libags_server_la-ags_server_status.lo -MD -MP -MF ags/server/$(DEPDIR)/libags_server_la-ags_server_status.Tpo -c -o ags/server/libags_server_la-ags_server_status.lo `test -f 'ags/server/ags_server_status.c' || echo '$(srcdir)/'`ags/server/ags_server_status.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/server/$(DEPDIR)/libags_server_la-ags_server_status.Tpo ags/server/$(DEPDIR)/libags_server_la-ags_server_status.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/server/ags_server_status.c' object='ags/server/libags_server_la-ags_server_status.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o ags/server/libags_server_la-ags_server_status.lo `test -f 'ags/server/ags_server_status.c' || echo '$(srcdir)/'`ags/server/ags_server_status.c
+
 ags/server/libags_server_la-ags_service_provider.lo: ags/server/ags_service_provider.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT ags/server/libags_server_la-ags_service_provider.lo -MD -MP -MF ags/server/$(DEPDIR)/libags_server_la-ags_service_provider.Tpo -c -o ags/server/libags_server_la-ags_service_provider.lo `test -f 'ags/server/ags_service_provider.c' || echo '$(srcdir)/'`ags/server/ags_service_provider.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/server/$(DEPDIR)/libags_server_la-ags_service_provider.Tpo ags/server/$(DEPDIR)/libags_server_la-ags_service_provider.Plo
@@ -10006,6 +10025,13 @@ ags/server/thread/libags_server_la-ags_remote_task.lo: ags/server/thread/ags_rem
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/server/thread/ags_remote_task.c' object='ags/server/thread/libags_server_la-ags_remote_task.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o ags/server/thread/libags_server_la-ags_remote_task.lo `test -f 'ags/server/thread/ags_remote_task.c' || echo '$(srcdir)/'`ags/server/thread/ags_remote_task.c
+
+ags/server/thread/libags_server_la-ags_remote_task_thread.lo: ags/server/thread/ags_remote_task_thread.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT ags/server/thread/libags_server_la-ags_remote_task_thread.lo -MD -MP -MF ags/server/thread/$(DEPDIR)/libags_server_la-ags_remote_task_thread.Tpo -c -o ags/server/thread/libags_server_la-ags_remote_task_thread.lo `test -f 'ags/server/thread/ags_remote_task_thread.c' || echo '$(srcdir)/'`ags/server/thread/ags_remote_task_thread.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/server/thread/$(DEPDIR)/libags_server_la-ags_remote_task_thread.Tpo ags/server/thread/$(DEPDIR)/libags_server_la-ags_remote_task_thread.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/server/thread/ags_remote_task_thread.c' object='ags/server/thread/libags_server_la-ags_remote_task_thread.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o ags/server/thread/libags_server_la-ags_remote_task_thread.lo `test -f 'ags/server/thread/ags_remote_task_thread.c' || echo '$(srcdir)/'`ags/server/thread/ags_remote_task_thread.c
 
 ags/thread/libags_thread_la-ags_autosave_thread.lo: ags/thread/ags_autosave_thread.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT ags/thread/libags_thread_la-ags_autosave_thread.lo -MD -MP -MF ags/thread/$(DEPDIR)/libags_thread_la-ags_autosave_thread.Tpo -c -o ags/thread/libags_thread_la-ags_autosave_thread.lo `test -f 'ags/thread/ags_autosave_thread.c' || echo '$(srcdir)/'`ags/thread/ags_autosave_thread.c

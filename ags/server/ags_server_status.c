@@ -19,6 +19,8 @@
 
 #include <ags/server/ags_server_status.h>
 
+#include <ags/object/ags_connectable.h>
+
 void ags_server_status_class_init(AgsServerStatusClass *server_status);
 void ags_server_status_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_server_status_init(AgsServerStatus *server_status);
@@ -162,6 +164,7 @@ ags_server_status_finalize(GObject *gobject)
 
   server_status = AGS_SERVER_STATUS(gobject);
 
+  /* call parent */
   G_OBJECT_CLASS(ags_server_status_parent_class)->finalize(gobject);
 }
 

@@ -79,6 +79,7 @@ AgsSequencerThread AgsConnectable
 AgsSoundcardThread AgsConnectable
 AgsTaskThread AgsConnectable AgsAsyncQueue
 AgsAudioSignal AgsConnectable
+AgsAudioXmlSerializationFactory AgsConnectable
 AgsAutomation AgsConnectable AgsPortlet
 AgsRecall AgsConnectable AgsPackable AgsDynamicConnectable AgsPlugin
 AgsRecallAudioSignal AgsConnectable AgsPackable AgsDynamicConnectable AgsPlugin
