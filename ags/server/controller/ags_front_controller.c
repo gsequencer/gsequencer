@@ -396,6 +396,8 @@ ags_front_controller_xmlrpc_request(xmlrpc_env *env,
     /*
      * read certs
      */
+    certs = NULL;
+    
     if(entry_count > 6){
       /* read parameter name */
       xmlrpc_array_read_item(env, param_array, 6, &item);
@@ -426,6 +428,30 @@ ags_front_controller_xmlrpc_request(xmlrpc_env *env,
     xmlrpc_read_string(env, item, &security_token);
     xmlrpc_DECREF(item);
 
+    /*
+     * read certs
+     */
+    certs = NULL;
+    i = 0;
+    
+    if(entry_count > 6){
+      /* read parameter name */
+      xmlrpc_array_read_item(env, param_array, 6, &item);
+      xmlrpc_read_string(env, item, &param_name);
+      xmlrpc_DECREF(item);
+
+      /* read certs */
+      if(param_name != NULL &&
+	 !g_ascii_strncasecmp(param_name,
+			      "certs",
+			      6)){
+	xmlrpc_array_read_item(env, param_array, 7, &item);
+	xmlrpc_read_string(env, item, &certs);
+	xmlrpc_DECREF(item);
+      }
+
+      i = 1;
+    }
     
     /* read parameters */
     n_params = entry_count / 2 - 3;
@@ -436,13 +462,13 @@ ags_front_controller_xmlrpc_request(xmlrpc_env *env,
       parameter = NULL;
     }
   
-    for(i = 0; i < n_params; i++){
+    for(; i < n_params; i++){
       AgsRegistryEntry *registry_entry;
       gchar *registry_id;
       gchar *error;
 
       /* read parameter name */
-      xmlrpc_array_read_item(env, param_array, i * 2, &item);
+      xmlrpc_array_read_item(env, param_array, 6 + i * 2, &item);
       xmlrpc_read_string(env, item, &param_name);
       xmlrpc_DECREF(item);
 
@@ -450,7 +476,7 @@ ags_front_controller_xmlrpc_request(xmlrpc_env *env,
       parameter[i].value.g_type = G_TYPE_NONE;
 
       /* read registry id */
-      xmlrpc_array_read_item(env, param_array, i * 2 + 1, &item);
+      xmlrpc_array_read_item(env, param_array, 7 + i * 2 + 1, &item);
       xmlrpc_read_string(env, item, &registry_id);
       xmlrpc_DECREF(item);
 
@@ -475,8 +501,13 @@ ags_front_controller_xmlrpc_request(xmlrpc_env *env,
       }
     }
 
-    //TODO:JK: implement me
-    security_context = NULL;
+    security_context = ags_security_context_new();
+    g_object_set(security_context,
+		 "certs", certs,
+		 NULL);
+    ags_security_context_add_server_context(security_context,
+					    context_path);
+    g_object_ref(security_context);    
 
     if(ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
 						    security_context,
@@ -490,6 +521,8 @@ ags_front_controller_xmlrpc_request(xmlrpc_env *env,
 						 parameter,
 						 n_params);
     }
+
+    g_object_unref(security_context);
   }else{
     return(NULL);
   }

@@ -19,8 +19,18 @@
 
 #include <ags/server/security/ags_security_context.h>
 
+#include <ags/i18n.h>
+
 void ags_security_context_class_init(AgsSecurityContextClass *security_context);
 void ags_security_context_init(AgsSecurityContext *security_context);
+void ags_security_context_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+void ags_security_context_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
 void ags_security_context_finalize(GObject *gobject);
 
 /**
@@ -32,6 +42,11 @@ void ags_security_context_finalize(GObject *gobject);
  *
  * The #AgsSecurityContext is an object to track active server contices.
  */
+
+enum{
+  PROP_0,
+  PROP_CERTS,
+};
 
 static gpointer ags_security_context_parent_class = NULL;
 
@@ -53,20 +68,10 @@ ags_security_context_get_type()
       (GInstanceInitFunc) ags_security_context_init,
     };
 
-    static const GInterfaceInfo ags_authentication_interface_info = {
-      (GInterfaceInitFunc) ags_security_context_authentication_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-    
     ags_type_security_context = g_type_register_static(G_TYPE_OBJECT,
 						       "AgsSecurityContext\0",
 						       &ags_security_context_info,
 						       0);
-
-    g_type_add_interface_static(ags_type_security_context,
-				AGS_TYPE_AUTHENTICATION,
-				&ags_authentication_interface_info);
   }
 
   return (ags_type_security_context);
@@ -83,7 +88,27 @@ ags_security_context_class_init(AgsSecurityContextClass *security_context)
   /* GObjectClass */
   gobject = (GObjectClass *) security_context;
 
+  gobject->set_property = ags_security_context_set_property;
+  gobject->get_property = ags_security_context_get_property;
+
   gobject->finalize = ags_security_context_finalize;
+
+  /* properties */
+  /**
+   * AgsSecurityContext:certs:
+   *
+   * The assigned certificates as string.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_string("certs",
+				   i18n("certificates as string"),
+				   i18n("The certificates as string"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CERTS,
+				  param_spec);
 }
 
 void
@@ -96,12 +121,87 @@ ags_security_context_init(AgsSecurityContext *security_context)
 }
 
 void
-ags_security_context_finalize(GObject *gobject)
+ags_security_context_set_property(GObject *gobject,
+			guint prop_id,
+			const GValue *value,
+			GParamSpec *param_spec)
 {
   AgsSecurityContext *security_context;
 
   security_context = AGS_SECURITY_CONTEXT(gobject);
+  
+  switch(prop_id){
+  case PROP_CERTS:
+    {
+      gchar *certs;
 
+      certs = g_value_get_string(value);
+
+      security_context->certs = g_strdup(certs);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_security_context_get_property(GObject *gobject,
+			guint prop_id,
+			GValue *value,
+			GParamSpec *param_spec)
+{
+  AgsSecurityContext *security_context;
+
+  security_context = AGS_SECURITY_CONTEXT(gobject);
+  
+  switch(prop_id){
+  case PROP_CERTS:
+    {
+      g_value_set_string(value, security_context->certs);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_security_context_finalize(GObject *gobject)
+{
+  AgsSecurityContext *security_context;
+
+  gchar *strv;
+  
+  security_context = AGS_SECURITY_CONTEXT(gobject);
+
+  g_free(security_context->certs);
+
+  /* permitted contex */
+  if(security_context->permitted_context != NULL){
+    strv = security_context->permitted_context;
+
+    for(; *strv != NULL; strv++){
+      free(*strv);
+    }
+    
+    free(security_context->permitted_context);
+  }
+
+  /* server context */
+  if(security_context->server_context != NULL){
+    strv = security_context->server_context;
+
+    for(; *strv != NULL; strv++){
+      free(*strv);
+    }
+    
+    free(security_context->server_context);
+  }
+
+  /* call parent */
   G_OBJECT_CLASS(ags_security_context_parent_class)->finalize(gobject);
 }
 

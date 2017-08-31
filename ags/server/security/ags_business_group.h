@@ -30,7 +30,7 @@
 #define AGS_IS_BUSINESS_GROUP_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_BUSINESS_GROUP))
 #define AGS_BUSINESS_GROUP_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_BUSINESS_GROUP, AgsBusinessGroupInterface))
 
-typedef struct _AgsBusinessGroup AgsBusinessGroup;
+  typedef struct _AgsBusinessGroup AgsBusinessGroup;
 typedef struct _AgsBusinessGroupInterface AgsBusinessGroupInterface;
 
 struct _AgsBusinessGroupInterface
@@ -41,29 +41,29 @@ struct _AgsBusinessGroupInterface
 				  GObject *security_context,
 				  gchar *login,
 				  gchar *security_token,
-				  gchar *group_uuid,
+				  gchar *group_id,
 				  gchar *business_group_name,
 				  GError **error);
   gchar* (*get_business_group_name)(AgsBusinessGroup *business_group,
 				    GObject *security_context,
 				    gchar *login,
 				    gchar *security_token,
-				    gchar *group_uuid,
+				    gchar *group_id,
 				    GError **error);
   
-  void (*set_user_uuid)(AgsBusinessGroup *business_group,
-			GObject *security_context,
-			gchar *login,
-			gchar *security_token,
-			gchar *business_group_name,
-			gchar** user_uuid,
-			GError **error);
-  gchar** (*get_user_uuid)(AgsBusinessGroup *business_group,
-			   GObject *security_context,
-			   gchar *login,
-			   gchar *security_token,
-			   gchar *business_group_name,
-			   GError **error);
+  void (*set_user_id)(AgsBusinessGroup *business_group,
+		      GObject *security_context,
+		      gchar *login,
+		      gchar *security_token,
+		      gchar *business_group_name,
+		      gchar** user_id,
+		      GError **error);
+  gchar** (*get_user_id)(AgsBusinessGroup *business_group,
+			 GObject *security_context,
+			 gchar *login,
+			 gchar *security_token,
+			 gchar *business_group_name,
+			 GError **error);
   
   void (*set_context_path_with_read_permission)(AgsBusinessGroup *business_group,
 						GObject *security_context,
@@ -114,30 +114,30 @@ void ags_business_group_set_business_group_name(AgsBusinessGroup *business_group
 						GObject *security_context,
 						gchar *login,
 						gchar *security_token,
-						gchar *group_uuid,
+						gchar *group_id,
 						gchar *business_group_name,
 						GError **error);
 gchar* ags_business_group_get_business_group_name(AgsBusinessGroup *business_group,
 						  GObject *security_context,
 						  gchar *login,
 						  gchar *security_token,
-						  gchar *group_uuid,
+						  gchar *group_id,
 						  GError **error);
   
-void ags_business_group_set_user_uuid(AgsBusinessGroup *business_group,
-				      GObject *security_context,
-				      gchar *login,
-				      gchar *security_token,
-				      gchar *business_group_name,
-				      gchar** user_uuid,
-				      GError **error);
-gchar** ags_business_group_get_user_uuid(AgsBusinessGroup *business_group,
-					 GObject *security_context,
-					 gchar *login,
-					 gchar *security_token,
-					 gchar *business_group_name,
-					 GError **error);
-  
+void ags_business_group_set_user_id(AgsBusinessGroup *business_group,
+				    GObject *security_context,
+				    gchar *login,
+				    gchar *security_token,
+				    gchar *business_group_name,
+				    gchar** user_id,
+				    GError **error);
+gchar** ags_business_group_get_user_id(AgsBusinessGroup *business_group,
+				       GObject *security_context,
+				       gchar *login,
+				       gchar *security_token,
+				       gchar *business_group_name,
+				       GError **error);
+
 void ags_business_group_set_context_path_with_read_permission(AgsBusinessGroup *business_group,
 							      GObject *security_context,
 							      gchar *login,

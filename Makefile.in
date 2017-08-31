@@ -554,6 +554,7 @@ am__objects_18 = $(am__objects_1) \
 	ags/server/security/libags_server_la-ags_certificate_manager.lo \
 	ags/server/security/libags_server_la-ags_password_store.lo \
 	ags/server/security/libags_server_la-ags_password_store_manager.lo \
+	ags/server/security/libags_server_la-ags_security_context.lo \
 	ags/server/security/libags_server_la-ags_xml_authentication.lo \
 	ags/server/security/libags_server_la-ags_xml_certificate.lo \
 	ags/server/security/libags_server_la-ags_xml_password_store.lo
@@ -3289,6 +3290,7 @@ libags_server_security_h_sources = \
 	ags/server/security/ags_certificate_manager.h \
 	ags/server/security/ags_password_store.h \
 	ags/server/security/ags_password_store_manager.h \
+	ags/server/security/ags_security_context.h \
 	ags/server/security/ags_xml_authentication.h \
 	ags/server/security/ags_xml_certificate.h \
 	ags/server/security/ags_xml_password_store.h
@@ -3303,6 +3305,7 @@ libags_server_security_c_sources = \
 	ags/server/security/ags_certificate_manager.c \
 	ags/server/security/ags_password_store.c \
 	ags/server/security/ags_password_store_manager.c \
+	ags/server/security/ags_security_context.c \
 	ags/server/security/ags_xml_authentication.c \
 	ags/server/security/ags_xml_certificate.c \
 	ags/server/security/ags_xml_password_store.c
@@ -5582,6 +5585,9 @@ ags/server/security/libags_server_la-ags_password_store.lo:  \
 ags/server/security/libags_server_la-ags_password_store_manager.lo:  \
 	ags/server/security/$(am__dirstamp) \
 	ags/server/security/$(DEPDIR)/$(am__dirstamp)
+ags/server/security/libags_server_la-ags_security_context.lo:  \
+	ags/server/security/$(am__dirstamp) \
+	ags/server/security/$(DEPDIR)/$(am__dirstamp)
 ags/server/security/libags_server_la-ags_xml_authentication.lo:  \
 	ags/server/security/$(am__dirstamp) \
 	ags/server/security/$(DEPDIR)/$(am__dirstamp)
@@ -7617,6 +7623,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_certificate_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_password_store.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_password_store_manager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_security_context.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_authentication.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_certificate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_password_store.Plo@am__quote@
@@ -9885,6 +9892,13 @@ ags/server/security/libags_server_la-ags_password_store_manager.lo: ags/server/s
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/server/security/ags_password_store_manager.c' object='ags/server/security/libags_server_la-ags_password_store_manager.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o ags/server/security/libags_server_la-ags_password_store_manager.lo `test -f 'ags/server/security/ags_password_store_manager.c' || echo '$(srcdir)/'`ags/server/security/ags_password_store_manager.c
+
+ags/server/security/libags_server_la-ags_security_context.lo: ags/server/security/ags_security_context.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT ags/server/security/libags_server_la-ags_security_context.lo -MD -MP -MF ags/server/security/$(DEPDIR)/libags_server_la-ags_security_context.Tpo -c -o ags/server/security/libags_server_la-ags_security_context.lo `test -f 'ags/server/security/ags_security_context.c' || echo '$(srcdir)/'`ags/server/security/ags_security_context.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/server/security/$(DEPDIR)/libags_server_la-ags_security_context.Tpo ags/server/security/$(DEPDIR)/libags_server_la-ags_security_context.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/server/security/ags_security_context.c' object='ags/server/security/libags_server_la-ags_security_context.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -c -o ags/server/security/libags_server_la-ags_security_context.lo `test -f 'ags/server/security/ags_security_context.c' || echo '$(srcdir)/'`ags/server/security/ags_security_context.c
 
 ags/server/security/libags_server_la-ags_xml_authentication.lo: ags/server/security/ags_xml_authentication.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_server_la_CFLAGS) $(CFLAGS) -MT ags/server/security/libags_server_la-ags_xml_authentication.lo -MD -MP -MF ags/server/security/$(DEPDIR)/libags_server_la-ags_xml_authentication.Tpo -c -o ags/server/security/libags_server_la-ags_xml_authentication.lo `test -f 'ags/server/security/ags_xml_authentication.c' || echo '$(srcdir)/'`ags/server/security/ags_xml_authentication.c

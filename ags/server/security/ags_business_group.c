@@ -63,7 +63,7 @@ ags_business_group_base_init(AgsBusinessGroupInterface *interface)
  * @security_context: the #AgsSecurityContext
  * @login: the login
  * @security_token: the security token
- * @group_uuid: the group's uuid
+ * @group_id: the group's id
  * @business_group_name: the business group name
  * @error: the #GError-struct
  *
@@ -76,7 +76,7 @@ ags_business_group_set_business_group_name(AgsBusinessGroup *business_group,
 					   GObject *security_context,
 					   gchar *login,
 					   gchar *security_token,
-					   gchar *group_uuid,
+					   gchar *group_id,
 					   gchar *business_group_name,
 					   GError **error)
 {
@@ -89,7 +89,7 @@ ags_business_group_set_business_group_name(AgsBusinessGroup *business_group,
 						    security_context,
 						    login,
 						    security_token,
-						    group_uuid,
+						    group_id,
 						    business_group_name,
 						    error);
 }
@@ -100,7 +100,7 @@ ags_business_group_set_business_group_name(AgsBusinessGroup *business_group,
  * @security_context: the #AgsSecurityContext
  * @login: the login
  * @security_token: the security token
- * @group_uuid: the group's uuid
+ * @group_id: the group's id
  * @error: the #GError-struct
  *
  * Get business group name.
@@ -114,7 +114,7 @@ ags_business_group_get_business_group_name(AgsBusinessGroup *business_group,
 					   GObject *security_context,
 					   gchar *login,
 					   gchar *security_token,
-					   gchar *group_uuid,
+					   gchar *group_id,
 					   GError **error)
 {
   AgsBusinessGroupInterface *business_group_interface;
@@ -127,49 +127,49 @@ ags_business_group_get_business_group_name(AgsBusinessGroup *business_group,
 							   security_context,
 							   login,
 							   security_token,
-							   group_uuid,
+							   group_id,
 							   error));
 }
 
 /**
- * ags_business_group_set_user_uuid:
+ * ags_business_group_set_user_id:
  * @business_group: the #AgsBusinessGroup
  * @security_context: the #AgsSecurityContext
  * @login: the login
  * @security_token: the security token
  * @business_group_name: the business group name
- * @user_uuid: the string array containing uuids of users
+ * @user_id: the string array containing ids of users
  * @error: the #GError-struct
  *
- * Set business group uuids of users as string array.
+ * Set business group ids of users as string array.
  *
  * Since: 1.0.0
  */
 void
-ags_business_group_set_user_uuid(AgsBusinessGroup *business_group,
-				 GObject *security_context,
-				 gchar *login,
-				 gchar *security_token,
-				 gchar *business_group_name,
-				 gchar** user_uuid,
-				 GError **error)
+ags_business_group_set_user_id(AgsBusinessGroup *business_group,
+			       GObject *security_context,
+			       gchar *login,
+			       gchar *security_token,
+			       gchar *business_group_name,
+			       gchar** user_id,
+			       GError **error)
 {
   AgsBusinessGroupInterface *business_group_interface;
 
   g_return_if_fail(AGS_IS_BUSINESS_GROUP(business_group));
   business_group_interface = AGS_BUSINESS_GROUP_GET_INTERFACE(business_group);
-  g_return_if_fail(business_group_interface->set_user_uuid);
-  business_group_interface->set_user_uuid(business_group,
-					  security_context,
-					  login,
-					  security_token,
-					  business_group_name,
-					  user_uuid,
-					  error);
+  g_return_if_fail(business_group_interface->set_user_id);
+  business_group_interface->set_user_id(business_group,
+					security_context,
+					login,
+					security_token,
+					business_group_name,
+					user_id,
+					error);
 }
 
 /**
- * ags_business_group_get_user_uuid:
+ * ags_business_group_get_user_id:
  * @business_group: the #AgsBusinessGroup
  * @security_context: the #AgsSecurityContext
  * @login: the login
@@ -179,30 +179,30 @@ ags_business_group_set_user_uuid(AgsBusinessGroup *business_group,
  *
  * Get business group name.
  *
- * Returns: the business group's uuids of users as string array
+ * Returns: the business group's ids of users as string array
  * 
  * Since: 1.0.0
  */
 gchar**
-ags_business_group_get_user_uuid(AgsBusinessGroup *business_group,
-				 GObject *security_context,
-				 gchar *login,
-				 gchar *security_token,
-				 gchar *business_group_name,
-				 GError **error)
+ags_business_group_get_user_id(AgsBusinessGroup *business_group,
+			       GObject *security_context,
+			       gchar *login,
+			       gchar *security_token,
+			       gchar *business_group_name,
+			       GError **error)
 {
   AgsBusinessGroupInterface *business_group_interface;
 
   g_return_val_if_fail(AGS_IS_BUSINESS_GROUP(business_group), NULL);
   business_group_interface = AGS_BUSINESS_GROUP_GET_INTERFACE(business_group);
-  g_return_val_if_fail(business_group_interface->get_user_uuid, NULL);
+  g_return_val_if_fail(business_group_interface->get_user_id, NULL);
 
-  return(business_group_interface->get_user_uuid(business_group,
-						 security_context,
-						 login,
-						 security_token,
-						 business_group_name,
-						 error));
+  return(business_group_interface->get_user_id(business_group,
+					       security_context,
+					       login,
+					       security_token,
+					       business_group_name,
+					       error));
 }
 
 /**

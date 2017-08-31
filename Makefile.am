@@ -526,6 +526,7 @@ libags_server_security_h_sources = \
 	ags/server/security/ags_certificate_manager.h \
 	ags/server/security/ags_password_store.h \
 	ags/server/security/ags_password_store_manager.h \
+	ags/server/security/ags_security_context.h \
 	ags/server/security/ags_xml_authentication.h \
 	ags/server/security/ags_xml_certificate.h \
 	ags/server/security/ags_xml_password_store.h
@@ -541,6 +542,7 @@ libags_server_security_c_sources = \
 	ags/server/security/ags_certificate_manager.c \
 	ags/server/security/ags_password_store.c \
 	ags/server/security/ags_password_store_manager.c \
+	ags/server/security/ags_security_context.c \
 	ags/server/security/ags_xml_authentication.c \
 	ags/server/security/ags_xml_certificate.c \
 	ags/server/security/ags_xml_password_store.c

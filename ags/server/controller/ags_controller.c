@@ -138,6 +138,10 @@ ags_controller_init(AgsController *controller)
   controller->server = NULL;
 
   controller->context_path = NULL;
+
+  controller->resource = g_hash_table_new_full(g_str_hash, g_str_equal,
+					       g_free,
+					       (GDestroyNotify) ags_controller_resource_free);
 }
 
 void
@@ -246,6 +250,150 @@ ags_controller_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_controller_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_controller_resource_alloc:
+ * @group_id: the group id
+ * @user_id: the user id
+ * @access_mode: the access mode
+ * 
+ * Allocated #AgsControllerResource-struct.
+ * 
+ * Returns: the newly allocated #AgsControllerResource-struct
+ * 
+ * Since: 1.0.0
+ */
+AgsControllerResource*
+ags_controller_resource_alloc(gchar *group_id, gchar *user_id,
+			      guint access_mode)
+{
+  AgsControllerResource *controller_resource;
+
+  controller_resource = (AgsControllerResource *) malloc(sizeof(AgsControllerResource));
+
+  controller_resource->group_id = g_strdup(group_id);
+  controller_resource->user_id = g_strdup(user_id);
+
+  controller_resource->access_mode = access_mode;
+  
+  return(controller_resource);
+}
+
+/**
+ * ags_controller_resource_free:
+ * @controller_resource: the #AgsControllerResource-struct
+ * 
+ * Free @controller_resource.
+ * 
+ * Since: 1.0.0
+ */
+void
+ags_controller_resource_free(AgsControllerResource *controller_resource)
+{
+  if(controller_resource == NULL){
+    return;
+  }
+  
+  g_free(controller_resource->group_id);
+  g_free(controller_resource->user_id);
+
+  g_free(controller_resource);
+}
+
+/**
+ * ags_controller_add_resource:
+ * @controller: the #AgsController
+ * @resource_name: the resource name as string
+ * @controller_resource: the #AgsControllerResource-struct
+ * 
+ * Add @controller_resource with key @resource_name to hash table.
+ * 
+ * Since: 1.0.0
+ */
+void
+ags_controller_add_resource(AgsController *controller,
+			    gchar *resource_name, AgsControllerResource *controller_resource)
+{
+  if(!AGS_IS_CONTROLLER(controller) ||
+     resource_name == NULL ||
+     controller_resource == NULL){
+    return;
+  }
+  
+  g_hash_table_insert(controller->resource,
+		      g_strdup(resource_name), controller_resource);
+}
+
+/**
+ * ags_controller_remove_resource:
+ * @controller: the #AgsController
+ * @resource_name: the resource name as string
+ * 
+ * Remove key @resource_name from hash table.
+ * 
+ * Since: 1.0.0
+ */
+void
+ags_controller_remove_resource(AgsController *controller,
+			       gchar *resource_name)
+{
+  if(!AGS_IS_CONTROLLER(controller) ||
+     resource_name == NULL){
+    return;
+  }
+
+  g_hash_table_remove(controller->resource,
+		      resource_name);
+}
+
+/**
+ * ags_controller_lookup_resource:
+ * @controller: the #AgsController
+ * @resource_name: the resource name as string
+ * 
+ * Lookup key @resource_name in hash table.
+ * 
+ * Returns: the matchin #AgsControllerResource-struct
+ * 
+ * Since: 1.0.0
+ */
+AgsControllerResource*
+ags_controller_lookup_resource(AgsController *controller,
+			       gchar *resource_name)
+{
+  AgsControllerResource *resource;
+
+  if(!AGS_IS_CONTROLLER(controller) ||
+     resource_name == NULL){
+    return(NULL);
+  }
+
+  resource = (AgsControllerResource *) g_hash_table_lookup(controller->resource,
+							   resource_name);
+
+  return(resource);
+}
+
+/**
+ * ags_controller_query_security_context:
+ * @controller: the #AgsController
+ * @security_context: the #AgsSecurityContext
+ * @login: the login to query
+ * 
+ * Query @security_context for @login.
+ * 
+ * Returns: %TRUE if allowed to proceed, otherwise %FALSE
+ * 
+ * Since: 1.0.0
+ */
+gboolean
+ags_controller_query_security_context(AgsController *controller,
+				      GObject *security_context, gchar *login)
+{
+  //TODO:JK: implement me
+
+  return(FALSE);
 }
 
 /**

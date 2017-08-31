@@ -34,6 +34,7 @@
 
 typedef struct _AgsController AgsController;
 typedef struct _AgsControllerClass AgsControllerClass;
+typedef struct _AgsControllerResource AgsControllerResource;
 
 struct _AgsController
 {
@@ -42,14 +43,42 @@ struct _AgsController
   GObject *server;
 
   gchar *context_path;
+
+  GHashTable *resource;
 };
 
 struct _AgsControllerClass
 {
   GObjectClass gobject;
+  
+  gboolean (*query_security_context)(AgsController *controller,
+				     GObject *security_context, gchar *login);
+};
+
+struct _AgsControllerResource
+{
+  gchar *group_id;
+  gchar *user_id;
+
+  guint access_mode;
 };
 
 GType ags_controller_get_type();
+
+AgsControllerResource* ags_controller_resource_alloc(gchar *group_id, gchar *user_id,
+						     guint access_mode);
+void ags_controller_resource_free(AgsControllerResource *controller_resource);
+
+void ags_controller_add_resource(AgsController *controller,
+				 gchar *resource_name, AgsControllerResource *controller_resource);
+void ags_controller_remove_resource(AgsController *controller,
+				    gchar *resource_name);
+
+AgsControllerResource* ags_controller_lookup_resource(AgsController *controller,
+						      gchar *resource_name);
+
+gboolean ags_controller_query_security_context(AgsController *controller,
+					       GObject *security_context, gchar *login);
 
 AgsController* ags_controller_new();
 

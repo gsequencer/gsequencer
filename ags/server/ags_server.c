@@ -295,6 +295,7 @@ ags_server_get_property(GObject *gobject,
     break;
   }
 }
+
 void
 ags_server_add_to_registry(AgsConnectable *connectable)
 {
