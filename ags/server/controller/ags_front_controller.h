@@ -55,7 +55,8 @@ struct _AgsFrontControllerClass
 			 gchar *context_path,
 			 gchar *user,
 			 gchar *security_token,
-			 GParameter *params);
+			 GParameter *params,
+			 guint n_params);
 };
 
 GType ags_front_controller_get_type();
@@ -71,7 +72,8 @@ gpointer ags_front_controller_do_request(AgsFrontController *front_controller,
 					 gchar *context_path,
 					 gchar *user,
 					 gchar *security_token,
-					 GParameter *params);
+					 GParameter *params,
+					 guint n_params);
 
 AgsFrontController* ags_front_controller_new();
 

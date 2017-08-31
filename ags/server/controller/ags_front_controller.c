@@ -28,6 +28,9 @@
 #include <ags/server/ags_registry.h>
 
 #include <ags/server/security/ags_authentication_manager.h>
+#include <ags/server/security/ags_security_context.h>
+
+#include <ags/server/controller/ags_local_factory_controller.h>
 
 #ifdef AGS_WITH_XMLRPC_C
 #include <xmlrpc-c/util.h>
@@ -58,12 +61,22 @@ gpointer ags_front_controller_real_authenticate(AgsFrontController *front_contro
 						gchar *login,
 						gchar *password,
 						gchar *certs);
+
+gpointer ags_front_controller_delegate_local_factory_controller(AgsLocalFactoryController *local_factory_controller,
+								GObject *security_context,
+								gchar *context_path,
+								gchar *login,
+								gchar *security_token,
+								GParameter *params,
+								guint n_params);
+
 gpointer ags_front_controller_real_do_request(AgsFrontController *front_controller,
 					      GObject *security_context,
 					      gchar *context_path,
 					      gchar *user_uuid,
 					      gchar *security_token,
-					      GParameter *params);
+					      GParameter *params,
+					      guint n_params);
 
 /**
  * SECTION:ags_front_controller
@@ -235,7 +248,7 @@ ags_front_controller_add_to_registry(AgsConnectable *connectable)
   method_info = (struct xmlrpc_method_info3 *) malloc(sizeof(struct xmlrpc_method_info3));
   method_info->methodName = "ags_front_controller_xmlrpc_request";
   method_info->methodFunction = &ags_front_controller_xmlrpc_request;
-  method_info->serverInfo = NULL;
+  method_info->serverInfo = server->server_info;
   xmlrpc_registry_add_method3(ags_service_provider_get_env(AGS_SERVICE_PROVIDER(application_context)),
 			      registry->registry,
 			      method_info);
@@ -276,7 +289,212 @@ ags_front_controller_xmlrpc_request(xmlrpc_env *env,
 				    xmlrpc_value *param_array,
 				    void *server_info)
 {
-  //TODO:JK: implement me
+  AgsServer *server;
+  AgsRegistry *registry;
+
+  AgsSecurityContext *security_context;
+  
+  AgsFrontController *front_controller;
+
+  GParameter *parameter;
+  GType gtype;
+
+  GList *list;
+
+  xmlrpc_value *item;
+  gpointer response;
+
+  gchar *param_name;
+  gchar *context_path;
+  gchar *login, *password, *certs;
+  gchar *security_token;
+  
+  guint entry_count;
+  guint n_params;
+  guint i;
+
+  entry_count = xmlrpc_array_size(env, param_array);
+  
+  if(entry_count % 2 != 0 &&
+     entry_count < 6){
+    return(NULL);
+  }
+
+  server = ags_server_lookup(server_info);
+
+  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(server->application_context));
+
+  front_controller = NULL;
+  list = ags_list_util_find_type(server->controller,
+				 AGS_TYPE_FRONT_CONTROLLER);
+
+  if(list != NULL){
+    front_controller = AGS_FRONT_CONTROLLER(list->data);    
+  }else{
+    return(NULL);
+  }
+
+  /*
+   * read context path
+   */
+  /* read parameter name */
+  xmlrpc_array_read_item(env, param_array, 0, &item);
+  xmlrpc_read_string(env, item, &param_name);
+  xmlrpc_DECREF(item);
+
+  /* read context_path */
+  if(param_name != NULL &&
+     !g_ascii_strncasecmp(param_name,
+			  "context-path",
+			  11)){
+    xmlrpc_array_read_item(env, param_array, 1, &item);
+    xmlrpc_read_string(env, item, &context_path);
+    xmlrpc_DECREF(item);
+  }else{
+    return(NULL);
+  }
+
+  /*
+   * read login
+   */
+  /* read parameter name */
+  xmlrpc_array_read_item(env, param_array, 2, &item);
+  xmlrpc_read_string(env, item, &param_name);
+  xmlrpc_DECREF(item);
+
+  /* read login */
+  if(param_name != NULL &&
+     !g_ascii_strncasecmp(param_name,
+			  "login",
+			  6)){
+    xmlrpc_array_read_item(env, param_array, 3, &item);
+    xmlrpc_read_string(env, item, &login);
+    xmlrpc_DECREF(item);
+  }else{
+    return(NULL);
+  }
+
+  /*
+   * read password/security-token
+   */
+  response = NULL;
+  
+  /* read parameter name */
+  xmlrpc_array_read_item(env, param_array, 4, &item);
+  xmlrpc_read_string(env, item, &param_name);
+  xmlrpc_DECREF(item);
+
+  /* read password/security-token */
+  if(param_name != NULL &&
+     !g_ascii_strncasecmp(param_name,
+			  "password",
+			  9)){
+    xmlrpc_array_read_item(env, param_array, 5, &item);
+    xmlrpc_read_string(env, item, &password);
+    xmlrpc_DECREF(item);
+
+    /*
+     * read certs
+     */
+    if(entry_count > 6){
+      /* read parameter name */
+      xmlrpc_array_read_item(env, param_array, 6, &item);
+      xmlrpc_read_string(env, item, &param_name);
+      xmlrpc_DECREF(item);
+
+      /* read certs */
+      if(param_name != NULL &&
+	 !g_ascii_strncasecmp(param_name,
+			      "certs",
+			      6)){
+	xmlrpc_array_read_item(env, param_array, 7, &item);
+	xmlrpc_read_string(env, item, &certs);
+	xmlrpc_DECREF(item);
+      }
+    }
+    
+    response = ags_front_controller_authenticate(front_controller,
+						 server->auth_module,
+						 login,
+						 password,
+						 certs);
+  }else if(param_name != NULL &&
+	   !g_ascii_strncasecmp(param_name,
+				"security-token",
+				15)){
+    xmlrpc_array_read_item(env, param_array, 3, &item);
+    xmlrpc_read_string(env, item, &security_token);
+    xmlrpc_DECREF(item);
+
+    
+    /* read parameters */
+    n_params = entry_count / 2 - 3;
+
+    if(n_params > 0){
+      parameter = g_new(GParameter, n_params);
+    }else{
+      parameter = NULL;
+    }
+  
+    for(i = 0; i < n_params; i++){
+      AgsRegistryEntry *registry_entry;
+      gchar *registry_id;
+      gchar *error;
+
+      /* read parameter name */
+      xmlrpc_array_read_item(env, param_array, i * 2, &item);
+      xmlrpc_read_string(env, item, &param_name);
+      xmlrpc_DECREF(item);
+
+      parameter[i].name = param_name;
+      parameter[i].value.g_type = G_TYPE_NONE;
+
+      /* read registry id */
+      xmlrpc_array_read_item(env, param_array, i * 2 + 1, &item);
+      xmlrpc_read_string(env, item, &registry_id);
+      xmlrpc_DECREF(item);
+
+      /* find registry entry */
+      registry_entry = ags_registry_entry_find(registry,
+					       registry_id);
+
+      /* copy GValue from registry entry to parameter array */
+      g_value_init(&(parameter[i].value), G_VALUE_TYPE(&(registry_entry->entry)));
+      g_value_copy(&(registry_entry->entry),
+		   &(parameter[i].value));
+
+      /* free not needed strings */
+      g_free(param_name);
+      g_free(registry_id);
+
+      if(error){
+	g_warning ("%s: %s", G_STRFUNC, error);
+	g_free (error);
+	g_value_unset (&parameter[i].value);
+	break;
+      }
+    }
+
+    //TODO:JK: implement me
+    security_context = NULL;
+
+    if(ags_authentication_manager_is_session_active(ags_authentication_manager_get_instance(),
+						    security_context,
+						    login,
+						    security_token)){
+      response = ags_front_controller_do_request(front_controller,
+						 security_context,
+						 context_path,
+						 login,
+						 security_token,
+						 parameter,
+						 n_params);
+    }
+  }else{
+    return(NULL);
+  }
+
+  return(response);
 }
 #endif
 
@@ -339,14 +557,46 @@ ags_front_controller_authenticate(AgsFrontController *front_controller,
 }
 
 gpointer
+ags_front_controller_delegate_local_factory_controller(AgsLocalFactoryController *local_factory_controller,
+						       GObject *security_context,
+						       gchar *context_path,
+						       gchar *login,
+						       gchar *security_token,
+						       GParameter *params,
+						       guint n_params)
+{
+  gpointer response;
+  
+  if(n_params < 1){
+    return(NULL);
+  }
+
+  response = ags_local_factory_controller_create_instance(local_factory_controller,
+							  g_value_get_ulong(&(params[0].value)),
+							  ((n_params > 1) ? &(params[1]): NULL),
+							  n_params - 1);
+
+  return(response);
+}
+
+gpointer
 ags_front_controller_real_do_request(AgsFrontController *front_controller,
 				     GObject *security_context,
 				     gchar *context_path,
 				     gchar *login,
 				     gchar *security_token,
-				     GParameter *params)
+				     GParameter *params,
+				     guint n_params)
 {
+  AgsServer *server;
+  
   AgsAuthenticationManager *authentication_manager;
+
+  AgsLocalFactoryController *local_factory_controller;
+
+  GList *list;
+
+  gpointer response;
   
   if(context_path == NULL ||
      security_context == NULL ||
@@ -354,9 +604,37 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
      security_token == NULL){
     return(NULL);
   }
-  
+
   //TODO:JK: use certs
+
+  server = AGS_CONTROLLER(front_controller)->server;
+
+  local_factory_controller = NULL;
+  list = ags_list_util_find_type(server->controller,
+				 AGS_TYPE_LOCAL_FACTORY_CONTROLLER);
+
+  if(list != NULL){
+    local_factory_controller = AGS_LOCAL_FACTORY_CONTROLLER(list->data);    
+  }
+  
+  response = NULL;
+  
+  if(local_factory_controller != NULL &&
+     !g_ascii_strncasecmp(context_path,
+			  AGS_CONTROLLER(local_factory_controller)->context_path,
+			  strlen(AGS_CONTROLLER(local_factory_controller)->context_path))){
+    response = ags_front_controller_delegate_local_factory_controller(local_factory_controller,
+								      security_context,
+								      context_path,
+								      login,
+								      security_token,
+								      params,
+								      n_params);
+  }
+
   //TODO:JK: implement me
+
+  return(response);
 }
 
 /**
@@ -368,6 +646,7 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
  * @security_token: the security token
  * @certs: the certs
  * @params: the #GParameter-struct containing parameters
+ * @n_params: the count of @params
  *
  * Do a XML-RPC request for the given @context_path with @params.
  * 
@@ -381,7 +660,8 @@ ags_front_controller_do_request(AgsFrontController *front_controller,
 				gchar *context_path,
 				gchar *login,
 				gchar *security_token,
-				GParameter *params)
+				GParameter *params,
+				guint n_params)
 {
   gpointer retval;
 
@@ -395,6 +675,7 @@ ags_front_controller_do_request(AgsFrontController *front_controller,
 		login,
 		security_token,
 		params,
+		n_params,
 		&retval);
   g_object_unref((GObject *) front_controller);
 

@@ -47,7 +47,7 @@ struct _AgsLocalFactoryControllerClass
   AgsControllerClass controller;
   
   gpointer (*create_instance)(AgsLocalFactoryController *local_factory_controller,
-			      GType type_name,
+			      GType gtype,
 			      GParameter *parameter,
 			      guint n_params);
 };
@@ -55,7 +55,7 @@ struct _AgsLocalFactoryControllerClass
 GType ags_local_factory_controller_get_type();
 
 gpointer ags_local_factory_controller_create_instance(AgsLocalFactoryController *local_factory_controller,
-						      GType type_name,
+						      GType gtype,
 						      GParameter *parameter,
 						      guint n_params);
 

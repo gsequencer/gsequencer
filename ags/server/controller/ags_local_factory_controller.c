@@ -19,7 +19,13 @@
 
 #include <ags/server/controller/ags_local_factory_controller.h>
 
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_marshal.h>
+
+#include <ags/server/ags_service_provider.h>
+#include <ags/server/ags_server.h>
+#include <ags/server/ags_registry.h>
 
 #include <ags/server/security/ags_authentication_manager.h>
 
@@ -148,21 +154,52 @@ ags_local_factory_controller_finalize(GObject *gobject)
 
 gpointer
 ags_local_factory_controller_real_create_instance(AgsLocalFactoryController *local_factory_controller,
-						  GType type_name,
+						  GType gtype,
 						  GParameter *parameter,
 						  guint n_params)
 {
-  //TODO:JK: implement me
+  AgsServer *server;
+  AgsRegistry *registry;
+
+  AgsApplicationContext *application_context;
+
+  GObject *gobject;
+  
+  AgsRegistryEntry *registry_entry;
+  gpointer response;
+  
+  server = AGS_CONTROLLER(local_factory_controller)->server;
+
+  application_context = server->application_context;
+
+  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
+
+  /* instantiate object */
+  gobject = g_object_newv(gtype,
+			  n_params,
+			  parameter);
+
+  registry_entry = ags_registry_entry_alloc(registry);
+  g_value_init(&(registry_entry->entry),
+	       G_TYPE_OBJECT);
+  g_value_set_object(&(registry_entry->entry),
+		     gobject);
+  
+  /* create return value */
+  response = xmlrpc_string_new(ags_service_provider_get_env(AGS_SERVICE_PROVIDER(application_context)),
+			       registry_entry->id);
+
+  return(response);
 }
 
 /**
  * ags_local_factory_controller_create_instance:
  * @local_factory_controller: the #AgsLocalFactoryController
- * @type_name: the type name
+ * @gtype: the type name
  * @parameter: the #GParameter-struct
  * @n_params: the parameter count
  * 
- * Creates an instance of @type_name and passes @parameter to g_object_newv()
+ * Creates an instance of @gtype and passes @parameter to g_object_newv()
  * 
  * Returns: the response
  * 
@@ -170,7 +207,7 @@ ags_local_factory_controller_real_create_instance(AgsLocalFactoryController *loc
  */
 gpointer
 ags_local_factory_controller_create_instance(AgsLocalFactoryController *local_factory_controller,
-					     GType type_name,
+					     GType gtype,
 					     GParameter *parameter,
 					     guint n_params)
 {
@@ -182,7 +219,7 @@ ags_local_factory_controller_create_instance(AgsLocalFactoryController *local_fa
   g_object_ref((GObject *) local_factory_controller);
   g_signal_emit(G_OBJECT(local_factory_controller),
 		local_factory_controller_signals[CREATE_INSTANCE], 0,
-		type_name,
+		gtype,
 		parameter,
 		n_params,
 		&retval);

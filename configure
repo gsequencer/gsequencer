@@ -18038,24 +18038,24 @@ fi
 
 
       XMLRPC_UTIL_CFLAGS=$(xmlrpc-c-config server-util --cflags)
+
       XMLRPC_UTIL_LIBS=$(xmlrpc-c-config server-util --libs)
 
-
       XMLRPC_CLIENT_CFLAGS=$(xmlrpc-c-config client --cflags)
+
       XMLRPC_CLIENT_LIBS=$(xmlrpc-c-config client --libs)
 
-
       XMLRPC_SERVER_CFLAGS=$(xmlrpc-c-config abyss --cflags)
+
       XMLRPC_SERVER_LIBS=$(xmlrpc-c-config abyss --libs)
 
-
       XMLRPC_SERVER_CGI_CFLAGS=$(xmlrpc-c-config cgi-server --cflags)
+
       XMLRPC_SERVER_CGI_LIBS=$(xmlrpc-c-config cgi-server --libs)
 
-
       XMLRPC_SERVER_ABYSS_CFLAGS=$(xmlrpc-c-config abyss-server --cflags)
-      XMLRPC_SERVER_ABYSS_LIBS=$(xmlrpc-c-config abyss-server --libs)
 
+      XMLRPC_SERVER_ABYSS_LIBS=$(xmlrpc-c-config abyss-server --libs)
 
       { $as_echo "$as_me:${as_lineno-$LINENO}: xmlrpc-c enabled" >&5
 $as_echo "$as_me: xmlrpc-c enabled" >&6;}
