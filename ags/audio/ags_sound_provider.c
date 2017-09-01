@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,8 +19,6 @@
 
 #include <ags/audio/ags_sound_provider.h>
 
-#include <math.h>
-
 void ags_sound_provider_class_init(AgsSoundProviderInterface *interface);
 
 /**
@@ -28,7 +26,7 @@ void ags_sound_provider_class_init(AgsSoundProviderInterface *interface);
  * @short_description: provide accoustics
  * @title: AgsSoundProvider
  * @section_id: AgsSoundProvider
- * @include: ags/thread/ags_sound_provider.h
+ * @include: ags/audio/ags_sound_provider.h
  *
  * The #AgsSoundProvider provides you the advanced audio capabilities.
  */

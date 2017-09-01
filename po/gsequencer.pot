@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 1.0.0-beta\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-08-31 19:20+0200\n"
+"POT-Creation-Date: 2017-09-01 04:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,30 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: ags/server/ags_registry.c:130 ags/server/controller/ags_controller.c:110
+msgid "assigned server"
+msgstr ""
+
+#: ags/server/ags_registry.c:131 ags/server/controller/ags_controller.c:111
+msgid "The assigned server"
+msgstr ""
+
+#: ags/server/ags_server.c:147
+msgid "application context object"
+msgstr ""
+
+#: ags/server/ags_server.c:148
+msgid "The application context object"
+msgstr ""
+
+#: ags/server/security/ags_security_context.c:105
+msgid "certificates as string"
+msgstr ""
+
+#: ags/server/security/ags_security_context.c:106
+msgid "The certificates as string"
+msgstr ""
 
 #: ags/X/ags_audio_preferences.c:200
 msgid "JACK driver"
@@ -855,28 +879,4 @@ msgstr ""
 
 #: ags/X/machine/ags_syncsynth.c:364 ags/X/machine/ags_synth.c:315
 msgid "loop end"
-msgstr ""
-
-#: ags/server/ags_registry.c:130 ags/server/controller/ags_controller.c:110
-msgid "assigned server"
-msgstr ""
-
-#: ags/server/ags_registry.c:131 ags/server/controller/ags_controller.c:111
-msgid "The assigned server"
-msgstr ""
-
-#: ags/server/ags_server.c:147
-msgid "application context object"
-msgstr ""
-
-#: ags/server/ags_server.c:148
-msgid "The application context object"
-msgstr ""
-
-#: ags/server/security/ags_security_context.c:105
-msgid "certificates as string"
-msgstr ""
-
-#: ags/server/security/ags_security_context.c:106
-msgid "The certificates as string"
 msgstr ""

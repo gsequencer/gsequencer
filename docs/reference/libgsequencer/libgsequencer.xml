@@ -43,9 +43,7 @@
     <xi:include href="xml/ags_bulk_member_callbacks.xml"/>
     <xi:include href="xml/ags_connection_editor.xml"/>
     <xi:include href="xml/ags_connection_editor_callbacks.xml"/>
-    <!--
-	<xi:include href="xml/ags_context_menu.xml"/>
-    -->
+    <xi:include href="xml/ags_context_menu.xml"/>
     <xi:include href="xml/ags_dssi_browser.xml"/>
     <xi:include href="xml/ags_dssi_browser_callbacks.xml"/>
     <xi:include href="xml/ags_editor.xml"/>
@@ -88,9 +86,7 @@
     <xi:include href="xml/ags_machine_callbacks.xml"/>
     <xi:include href="xml/ags_machine_editor.xml"/>
     <xi:include href="xml/ags_machine_editor_callbacks.xml"/>
-    <!--
-	<xi:include href="xml/ags_menu_action_callbacks.xml"/>
-    -->
+    <xi:include href="xml/ags_menu_action_callbacks.xml"/>
     <xi:include href="xml/ags_menu_bar.xml"/>
     <xi:include href="xml/ags_midi_dialog.xml"/>
     <xi:include href="xml/ags_midi_dialog_callbacks.xml"/>
@@ -131,6 +127,7 @@
     <xi:include href="xml/ags_soundcard_editor_callbacks.xml"/>
     <xi:include href="xml/ags_track_collection.xml"/>
     <xi:include href="xml/ags_track_collection_mapper.xml"/>
+    <xi:include href="xml/ags_ui_provider.xml"/>
     <xi:include href="xml/ags_window.xml"/>
     <xi:include href="xml/ags_window_callbacks.xml"/>
     <xi:include href="xml/ags_xorg_application_context.xml"/>
