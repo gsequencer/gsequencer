@@ -57,7 +57,7 @@ void ags_open_sf2_sample_launch(AgsTask *task);
 
 /**
  * SECTION:ags_open_sf2_sample
- * @short_description: open sf2_sample object
+ * @short_description: open SF2 sample object
  * @title: AgsOpenSf2Sample
  * @section_id:
  * @include: ags/audio/task/ags_open_sf2_sample.h
