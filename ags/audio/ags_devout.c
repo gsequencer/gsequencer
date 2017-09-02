@@ -2292,7 +2292,9 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
   
   ags_soundcard_get_poll_fd(soundcard);
   
+#ifdef AGS_WITH_OSS
   devout->flags |= AGS_DEVOUT_INITIALIZED;
+#endif
   devout->flags |= AGS_DEVOUT_BUFFER0;
   devout->flags &= (~(AGS_DEVOUT_BUFFER1 |
 		      AGS_DEVOUT_BUFFER2 |
@@ -3116,7 +3118,9 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   
   ags_soundcard_get_poll_fd(soundcard);
   
+#ifdef AGS_WITH_ALSA
   devout->flags |= AGS_DEVOUT_INITIALIZED;
+#endif
   devout->flags |= AGS_DEVOUT_BUFFER0;
   devout->flags &= (~(AGS_DEVOUT_BUFFER1 |
 		      AGS_DEVOUT_BUFFER2 |

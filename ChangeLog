@@ -1,3 +1,8 @@
+ags (0.9.23)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed possible SIGSEGV as accessing removed soundcard or midi sequencer
+
 ags (0.9.22)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
