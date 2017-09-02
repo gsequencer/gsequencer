@@ -1329,6 +1329,7 @@ libgsequencer_h_sources = \
 	ags/X/ags_server_preferences.h \
 	ags/X/ags_soundcard_editor_callbacks.h \
 	ags/X/ags_soundcard_editor.h \
+	ags/X/ags_ui_provider.h \
 	ags/X/ags_window.h \
 	ags/X/ags_window_callbacks.h \
 	ags/X/ags_xorg_application_context.h
@@ -1429,6 +1430,7 @@ libgsequencer_c_sources = \
 	ags/X/ags_sequencer_editor.c \
 	ags/X/ags_server_preferences.c \
 	ags/X/ags_server_preferences_callbacks.c \
+	ags/X/ags_ui_provider.c \
 	ags/X/ags_window.c \
 	ags/X/ags_soundcard_editor_callbacks.c \
 	ags/X/ags_soundcard_editor.c \

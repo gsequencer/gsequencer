@@ -125,6 +125,7 @@
 #include <ags/widget/ags_hindicator.h>
 #include <ags/widget/ags_vindicator.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_effect_pad.h>
 #include <ags/X/ags_effect_line.h>
 #include <ags/X/ags_effect_separator.h>
@@ -194,6 +195,9 @@ GList* ags_xorg_application_context_get_sequencer(AgsSoundProvider *sound_provid
 void ags_xorg_application_context_set_sequencer(AgsSoundProvider *sound_provider,
 						GList *sequencer);
 GList* ags_xorg_application_context_get_distributed_manager(AgsSoundProvider *sound_provider);
+GtkWidget* ags_xorg_application_context_get_window(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_window(AgsUiProvider *ui_provider,
+					     GtkWidget *widget);
 void ags_xorg_application_context_dispose(GObject *gobject);
 void ags_xorg_application_context_finalize(GObject *gobject);
 
@@ -269,6 +273,12 @@ ags_xorg_application_context_get_type()
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_ui_provider_interface_info = {
+      (GInterfaceInitFunc) ags_xorg_application_context_ui_provider_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_xorg_application_context = g_type_register_static(AGS_TYPE_APPLICATION_CONTEXT,
 							       "AgsXorgApplicationContext",
 							       &ags_xorg_application_context_info,
@@ -285,6 +295,10 @@ ags_xorg_application_context_get_type()
     g_type_add_interface_static(ags_type_xorg_application_context,
 				AGS_TYPE_SOUND_PROVIDER,
 				&ags_sound_provider_interface_info);
+
+    g_type_add_interface_static(ags_type_xorg_application_context,
+				AGS_TYPE_UI_PROVIDER,
+				&ags_ui_provider_interface_info);
   }
 
   return (ags_type_xorg_application_context);
@@ -367,6 +381,13 @@ ags_xorg_application_context_sound_provider_interface_init(AgsSoundProviderInter
   sound_provider->get_sequencer = ags_xorg_application_context_get_sequencer;
   sound_provider->set_sequencer = ags_xorg_application_context_set_sequencer;
   sound_provider->get_distributed_manager = ags_xorg_application_context_get_distributed_manager;
+}
+
+void
+ags_xorg_application_context_ui_provider_interface_init(AgsUiProviderInterface *ui_provider)
+{
+  ui_provider->get_window = ags_xorg_application_context_get_window;
+  ui_provider->set_window = ags_xorg_application_context_set_window;
 }
 
 void
@@ -1049,6 +1070,19 @@ GList*
 ags_xorg_application_context_get_distributed_manager(AgsSoundProvider *sound_provider)
 {
   return(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->distributed_manager);
+}
+
+GtkWidget*
+ags_xorg_application_context_get_window(AgsUiProvider *ui_provider)
+{
+  return(AGS_XORG_APPLICATION_CONTEXT(ui_provider)->window);
+}
+
+void
+ags_xorg_application_context_set_window(AgsUiProvider *ui_provider,
+					GtkWidget *widget)
+{
+  AGS_XORG_APPLICATION_CONTEXT(ui_provider)->window = widget;
 }
 
 void
