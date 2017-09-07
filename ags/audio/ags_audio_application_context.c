@@ -104,9 +104,6 @@
 #include <sys/types.h>
 #include <pwd.h>
 
-#include <jack/jslist.h>
-#include <jack/jack.h>
-#include <jack/control.h>
 #include <stdbool.h>
 
 #include <ags/i18n.h>
@@ -322,7 +319,6 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   AgsConfig *config;
 
   GList *list;
-  JSList *jslist;
 
   gchar *soundcard_group;
   gchar *sequencer_group;

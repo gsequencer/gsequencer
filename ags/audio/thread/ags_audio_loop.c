@@ -857,6 +857,7 @@ ags_audio_loop_run(AgsThread *thread)
 
   /* real-time setup */
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
+#ifdef AGS_WITH_RT
     struct sched_param param;
     
     /* Declare ourself as a real time task */
@@ -865,6 +866,7 @@ ags_audio_loop_run(AgsThread *thread)
     if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
       perror("sched_setscheduler failed");
     }
+#endif
 
     g_atomic_int_or(&(thread->flags),
 		    AGS_THREAD_RT_SETUP);

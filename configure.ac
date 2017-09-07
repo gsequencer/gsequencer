@@ -16,6 +16,11 @@ AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.19.8])
 
 # options
+AC_ARG_ENABLE(rt, [AS_HELP_STRING([--enable-rt],
+			          [enable rt (default is yes)])],
+	      [],
+	      [enable_rt=yes])
+
 AC_ARG_ENABLE(alsa, [AS_HELP_STRING([--enable-alsa],
 				    [enable alsa (default is yes)])],
 	      [],
@@ -26,6 +31,21 @@ AC_ARG_ENABLE(oss, [AS_HELP_STRING([--enable-oss],
 	      [],
 	      [enable_oss=yes])
 
+AC_ARG_ENABLE(jack, [AS_HELP_STRING([--enable-jack],
+				    [enable jack (default is yes)])],
+	      [],
+	      [enable_jack=yes])
+
+AC_ARG_ENABLE(pulse, [AS_HELP_STRING([--enable-pulse],
+				     [enable pulse (default is yes)])],
+	      [],
+	      [enable_pulse=yes])
+
+AC_ARG_ENABLE(coreaudio, [AS_HELP_STRING([--enable-coreaudio],
+					 [enable coreaudio (default is no)])],
+	      [],
+	      [enable_coreaudio=no])
+
 AC_ARG_ENABLE(libinstpatch, [AS_HELP_STRING([--enable-libinstpatch],
 					    [enable libinstpatch (default is yes)])],
 	      [],
@@ -35,6 +55,11 @@ AC_ARG_ENABLE(xmlrpc, [AS_HELP_STRING([--enable-xmlrpc],
 				      [enable xmlrpc (default is no)])],
 	      [],
 	      [enable_xmlrpc=no])
+
+AC_ARG_ENABLE(quartz, [AS_HELP_STRING([--enable-quartz],
+				      [enable quartz (default is no)])],
+	      [],
+	      [enable_quartz=no])
 
 # Checks for programs.
 AC_PROG_CC
@@ -59,18 +84,35 @@ AC_SUBST([GSEQUENCER_FUNCTIONAL_TEST_LDADD])
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lX11':
-AC_CHECK_LIB([X11], [main], , AC_MSG_ERROR("No X11 library present"))
+AS_IF([test "x$enable_quartz" != xno],
+      [AC_DEFINE([AGS_WITH_QUARTZ], [1], [quartz enabled])
+       PKG_CHECK_MODULES([GTK_MAC_INTEGRATION], [gtk-mac-integration-gtk2 >= 2.0.7])
+       AC_SUBST(GTK_MAC_INTEGRATION_CFLAGS)
+       AC_SUBST(GTK_MAC_INTEGRATION_LIBS)
+       AC_MSG_NOTICE([quartz enabled])],
+      [AC_MSG_NOTICE([quartz disabled])
+       AC_CHECK_LIB([X11], [main], , AC_MSG_ERROR("No X11 library present"))
+       X11_LIBS="-lX11"
+       ])
+
 # FIXME: Replace `main' with a function in `-ldl':
 AC_CHECK_LIB([dl], [main], , AC_MSG_ERROR("No dl library present"))
+
 # FIXME: Replace `main' with a function in `-lm':
 AC_CHECK_LIB([m], [main], , AC_MSG_ERROR("No math library present"))
-# FIXME: Replace `main' with a function in `-lrt':
-AC_CHECK_LIB([rt], [main], , AC_MSG_ERROR("No rt library present"))
 
+# FIXME: Replace `main' with a function in `-lrt':
+AS_IF([test "x$enable_rt" != xno],
+      [AC_DEFINE([AGS_WITH_RT], [1], [rt enabled])
+      RT_LIBS="-lrt"
+      AC_CHECK_LIB([rt], [main], , AC_MSG_ERROR("No rt library present"))
+      AC_MSG_NOTICE([rt enabled])],
+      [AC_MSG_NOTICE([rt disabled])
+       ])
 # Checks for header files.
 AC_PATH_X
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([argz.h fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h malloc.h netinet/in.h stddef.h stdint.h stdio_ext.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h ladspa.h dssi.h lv2.h], , AC_MSG_ERROR("missing headers"))
+AC_CHECK_HEADERS([fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h ladspa.h dssi.h lv2.h], , AC_MSG_ERROR("missing headers"))
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -111,16 +153,27 @@ AS_IF([test "x$enable_oss" != xno],
        AC_MSG_NOTICE([OSS enabled])],
       AC_MSG_NOTICE([OSS disabled]))
 
-PKG_CHECK_MODULES([JACK], [jack])
-AC_SUBST(JACK_CFLAGS)
-AC_SUBST(JACK_LIBS)
+AS_IF([test "x$enable_jack" != xno],
+      [AC_DEFINE([AGS_WITH_JACK], [1], [JACK enabled])
 
-AC_CHECK_FUNC([jack_port_uuid],
-	      [AC_DEFINE([HAVE_JACK_PORT_UUID], [1], [Jack port uuid available])])
+      PKG_CHECK_MODULES([JACK], [jack])
+      AC_SUBST(JACK_CFLAGS)
+      AC_SUBST(JACK_LIBS)
 
-PKG_CHECK_MODULES([PULSE], [libpulse])
-AC_SUBST(PULSE_CFLAGS)
-AC_SUBST(PULSE_LIBS)
+      AC_CHECK_FUNC([jack_port_uuid],
+		    [AC_DEFINE([HAVE_JACK_PORT_UUID], [1], [Jack port uuid available])])
+      AC_MSG_NOTICE([JACK enabled])],
+      AC_MSG_NOTICE([JACK disabled]))
+
+AS_IF([test "x$enable_pulse" != xno],
+      [AC_DEFINE([AGS_WITH_PULSE], [1], [PULSE enabled])
+
+      PKG_CHECK_MODULES([PULSE], [libpulse])
+      AC_SUBST(PULSE_CFLAGS)
+      AC_SUBST(PULSE_LIBS)
+
+      AC_MSG_NOTICE([PULSE enabled])],
+      AC_MSG_NOTICE([PULSE disabled]))
 
 PKG_CHECK_MODULES([LIBXML2], [libxml-2.0 >= 2.8.0])
 AC_SUBST(LIBXML2_CFLAGS)
@@ -161,7 +214,7 @@ PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.9.0])
 AC_SUBST(FONTCONFIG_CFLAGS)
 AC_SUBST(FONTCONFIG_LIBS)
 
-PKG_CHECK_MODULES([GDKPIXBUF], [gdk-pixbuf-2.0 >= 2.26.1])
+PKG_CHECK_MODULES([GDKPIXBUF], [gdk-pixbuf-2.0 >= 2.36.9])
 AC_SUBST(GDKPIXBUF_CFLAGS)
 AC_SUBST(GDKPIXBUF_LIBS)
 

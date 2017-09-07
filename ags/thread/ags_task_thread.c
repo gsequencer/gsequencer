@@ -392,10 +392,12 @@ void
 ags_task_thread_run(AgsThread *thread)
 {
   AgsTaskThread *task_thread;
+
   GList *list;
+
   guint prev_pending;
   static gboolean initialized = FALSE;
-  
+
   task_thread = AGS_TASK_THREAD(thread);
   
   if(!initialized){
@@ -407,6 +409,7 @@ ags_task_thread_run(AgsThread *thread)
   }
 
   /* real-time setup */
+#ifdef AGS_WITH_RT
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
     struct sched_param param;
     
@@ -420,8 +423,11 @@ ags_task_thread_run(AgsThread *thread)
     g_atomic_int_or(&(thread->flags),
 		    AGS_THREAD_RT_SETUP);
   }
+#endif
   
   /*  */
+  g_mutex_lock((GMutex *) g_main_context_default());
+
   pthread_mutex_lock(task_thread->read_mutex);
 
   g_atomic_pointer_set(&(task_thread->exec),
@@ -438,7 +444,7 @@ ags_task_thread_run(AgsThread *thread)
 		   g_atomic_int_get(&(task_thread->queued)) - prev_pending);
 
   pthread_mutex_unlock(task_thread->read_mutex);
-
+  
   /* launch tasks */
   if(list != NULL){
     AgsTask *task;
@@ -495,7 +501,9 @@ ags_task_thread_run(AgsThread *thread)
   }
   
   pthread_mutex_unlock(task_thread->cyclic_task_mutex);
-
+  
+  g_mutex_unlock((GMutex *) g_main_context_default());
+ 
   /* async queue */
   pthread_mutex_lock(task_thread->run_mutex);
   
@@ -510,7 +518,7 @@ ags_task_thread_run(AgsThread *thread)
 		   0);
   
   pthread_mutex_unlock(task_thread->run_mutex);
-  
+
   /* clean-up */
   ags_task_thread_clear_cache(task_thread);
 }

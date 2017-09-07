@@ -457,6 +457,7 @@ ags_channel_thread_run(AgsThread *thread)
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
 
+#ifdef AGS_WITH_RT
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
     struct sched_param param;
     
@@ -470,6 +471,7 @@ ags_channel_thread_run(AgsThread *thread)
     g_atomic_int_or(&(thread->flags),
 		    AGS_THREAD_RT_SETUP);
   }
+#endif
 
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
     return;

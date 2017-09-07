@@ -478,6 +478,7 @@ ags_soundcard_thread_run(AgsThread *thread)
   pthread_mutex_unlock(application_mutex);
   
   /* real-time setup */
+#ifdef AGS_WITH_RT
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
     struct sched_param param;
     
@@ -491,6 +492,7 @@ ags_soundcard_thread_run(AgsThread *thread)
     g_atomic_int_or(&(thread->flags),
 		    AGS_THREAD_RT_SETUP);
   }
+#endif
 
   /* playback */
   pthread_mutex_lock(mutex);

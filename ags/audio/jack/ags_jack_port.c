@@ -35,7 +35,6 @@
 #include <ags/audio/jack/ags_jack_devout.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
 
-#include <ags/config.h>
 #include <ags/i18n.h>
 
 void ags_jack_port_class_init(AgsJackPortClass *jack_port);
@@ -262,10 +261,12 @@ ags_jack_port_set_property(GObject *gobject,
 
       jack_port->name = port_name;
 
+#ifdef AGS_WITH_JACK
       if(jack_port->port != NULL){
 	jack_port_set_name(jack_port->port,
 			   port_name);
       }
+#endif
     }
     break;
   default:
@@ -405,12 +406,14 @@ GList*
 ags_jack_port_find(GList *jack_port,
 		   gchar *port_name)
 {
+#ifdef AGS_WITH_JACK
   while(jack_port != NULL){
     if(!g_ascii_strcasecmp(jack_port_name(AGS_JACK_PORT(jack_port->data)->port),
 			   port_name)){
       return(jack_port);
     }
   }
+#endif
 
   return(NULL);
 }
@@ -473,6 +476,7 @@ ags_jack_port_register(AgsJackPort *jack_port,
     jack_port->flags |= AGS_JACK_PORT_IS_OUTPUT;
   }
 
+#ifdef AGS_WITH_JACK
   if(is_audio){
     jack_port->flags |= AGS_JACK_PORT_IS_AUDIO;
     
@@ -500,6 +504,7 @@ ags_jack_port_register(AgsJackPort *jack_port,
     jack_port->uuid = jack_port_uuid(jack_port->port);
   }
 #endif
+#endif
 }
 
 void
@@ -510,10 +515,12 @@ ags_jack_port_unregister(AgsJackPort *jack_port)
     return;
   }
 
+#ifdef AGS_WITH_JACK
   if(jack_port->port != NULL){
     jack_port_unregister(AGS_JACK_CLIENT(jack_port->jack_client)->client,
 			 jack_port->port);
   }
+#endif
 }
 
 /**

@@ -131,6 +131,7 @@ ags_indicator_init(AgsIndicator *indicator)
 	       "app-paintable\0", TRUE,
 	       NULL);
   
+  indicator_style = gtk_style_copy(gtk_widget_get_style(indicator));
   gtk_widget_set_style((GtkWidget *) indicator,
 		       indicator_style);
 

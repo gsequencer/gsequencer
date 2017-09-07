@@ -37,9 +37,13 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#ifdef AGS_WITH_ALSA
 #include <sys/soundcard.h>
+#endif
 #include <sys/utsname.h>
+#ifdef AGS_WITH_ALSA
 #include <alsa/rawmidi.h>
+#endif
 #include <errno.h>
 
 #include <string.h>
@@ -1601,7 +1605,11 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
 
   GList *task;
 
+#ifdef AGS_WITH_ALSA
   snd_rawmidi_t *device_handle;
+#else
+  gpointer device_handle;
+#endif
 
   char **ring_buffer;
   

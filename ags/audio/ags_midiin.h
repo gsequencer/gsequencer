@@ -115,7 +115,11 @@ struct _AgsMidiin
     struct _AgsAlsaMidi{
       char *device;
       int rc;
+#ifdef AGS_WITH_ALSA
       snd_rawmidi_t *handle;
+#else
+      gpointer handle;
+#endif
     }alsa;
   }in;
 

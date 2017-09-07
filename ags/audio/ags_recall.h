@@ -38,8 +38,8 @@
 
 #define AGS_RECALL_HANDLER(handler)    ((AgsRecallHandler *)(handler))
 
-#define AGS_RECALL_DEFAULT_VERSION "0.4.2\0"
-#define AGS_RECALL_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
+#define AGS_RECALL_DEFAULT_VERSION "0.4.2"
+#define AGS_RECALL_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36"
 
 typedef struct _AgsRecall AgsRecall;
 typedef struct _AgsRecallClass AgsRecallClass;

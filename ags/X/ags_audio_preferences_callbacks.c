@@ -243,10 +243,15 @@ ags_audio_preferences_start_jack_callback(GtkButton *button,
 
   AgsApplicationContext *application_context;
 
+#ifdef AGS_WITH_JACK
   jackctl_driver_t *driver;
-  
+#endif
+
   GList *list;
+
+#ifdef AGS_WITH_JACK
   JSList *jslist;
+#endif
 
   //  gchar *driver_name;
   
@@ -277,6 +282,7 @@ ags_audio_preferences_start_jack_callback(GtkButton *button,
   
   pthread_mutex_unlock(application_mutex);
 
+#ifdef AGS_WITH_JACK
   /* find driver */
   driver = NULL;
   
@@ -298,6 +304,7 @@ ags_audio_preferences_start_jack_callback(GtkButton *button,
   if(jack_server != NULL){
     //    jackctl_server_start(jack_server->jackctl);
   }
+#endif
 }
 
 void
@@ -342,6 +349,8 @@ ags_audio_preferences_stop_jack_callback(GtkButton *button,
   pthread_mutex_unlock(application_mutex);
 
   if(jack_server != NULL){
+#ifdef AGS_WITH_JACK
     //    jackctl_server_stop(jack_server->jackctl);
+#endif
   }
 }

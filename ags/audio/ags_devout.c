@@ -43,7 +43,9 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#ifdef AGS_WITH_ALSA
 #include <sys/soundcard.h>
+#endif
 #include <errno.h>
 
 #define _GNU_SOURCE

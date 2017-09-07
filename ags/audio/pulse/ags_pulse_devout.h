@@ -25,10 +25,6 @@
 
 #include <pthread.h>
 
-#include <pulse/pulseaudio.h>
-#include <pulse/stream.h>
-#include <pulse/error.h>
-
 #define AGS_TYPE_PULSE_DEVOUT                (ags_pulse_devout_get_type())
 #define AGS_PULSE_DEVOUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PULSE_DEVOUT, AgsPulseDevout))
 #define AGS_PULSE_DEVOUT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_PULSE_DEVOUT, AgsPulseDevout))

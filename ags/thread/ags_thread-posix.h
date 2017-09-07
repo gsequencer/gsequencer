@@ -156,7 +156,11 @@ struct _AgsThread
   volatile gboolean start_wait;
   volatile gboolean start_done;
 
+#ifndef __APPLE__
   pthread_barrier_t **barrier;
+#else
+  gpointer barrier;
+#endif  
   gboolean first_barrier;
   int wait_count[2];
 

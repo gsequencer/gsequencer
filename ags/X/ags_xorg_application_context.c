@@ -149,16 +149,20 @@
 #include <ags/X/machine/ags_dssi_bridge.h>
 
 #include <pango/pango.h>
+
+#ifndef __APPLE__
 #include <pango/pangofc-fontmap.h>
+#endif
+
+#ifdef AGS_WITH_QUARTZ
+#include <gtkmacintegration-gtk2/gtkosxapplication.h>
+#endif
 
 #include <sys/types.h>
 #include <pwd.h>
 
 #include <sys/mman.h>
 
-#include <jack/jslist.h>
-#include <jack/jack.h>
-#include <jack/control.h>
 #include <stdbool.h>
 
 #include <ags/i18n.h>
@@ -390,7 +394,6 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   AgsConfig *config;
 
   GList *list;  
-  JSList *jslist;
 
   gchar *soundcard_group;
   gchar *sequencer_group;
@@ -709,6 +712,11 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   */
     
   /* AgsWindow */
+#ifdef AGS_WITH_QUARTZ
+  g_object_new(GTKOSX_TYPE_APPLICATION,
+	       NULL);
+#endif
+
   window = g_object_new(AGS_TYPE_WINDOW,
 			"soundcard", soundcard,
 			"application-context", xorg_application_context,
@@ -1487,9 +1495,11 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
 					AGS_TYPE_PULSE_SERVER)) != NULL){
     pulse_server = list->data;
 
+#ifdef AGS_WITH_PULSE
     pa_mainloop_quit(pulse_server->main_loop,
 		     0);
-    
+#endif
+ 
     list = list->next;
   }
   
@@ -1504,8 +1514,10 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
     jack_client = jack_server->client;
 
     while(jack_client != NULL){
+#ifdef AGS_WITH_JACK
       jack_client_close(AGS_JACK_CLIENT(jack_client->data)->client);
-      
+#endif
+
       jack_client = jack_client->next;
     }
     

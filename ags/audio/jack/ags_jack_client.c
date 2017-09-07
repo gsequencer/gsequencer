@@ -41,9 +41,11 @@
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
+#ifdef AGS_WITH_JACK
 #include <jack/midiport.h>
 #include <jack/weakmacros.h>
 #include <jack/types.h>
+#endif
 
 #include <ags/i18n.h>
 
@@ -64,9 +66,11 @@ void ags_jack_client_disconnect(AgsConnectable *connectable);
 void ags_jack_client_dispose(GObject *gobject);
 void ags_jack_client_finalize(GObject *gobject);
 
+#ifdef AGS_WITH_JACK
 void ags_jack_client_shutdown(void *arg);
 int ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr);
 int ags_jack_client_xrun_callback(void *ptr);
+#endif
 
 /**
  * SECTION:ags_jack_client
@@ -528,6 +532,7 @@ GList*
 ags_jack_client_find_uuid(GList *jack_client,
 			  gchar *client_uuid)
 {
+#ifdef AGS_WITH_JACK
   while(jack_client != NULL){
     if(AGS_JACK_CLIENT(jack_client->data)->client != NULL &&
        !g_ascii_strcasecmp(jack_get_uuid_for_client_name(AGS_JACK_CLIENT(jack_client->data)->client,
@@ -536,6 +541,7 @@ ags_jack_client_find_uuid(GList *jack_client,
       return(jack_client);
     }
   }
+#endif
 
   return(NULL);
 }
@@ -555,6 +561,7 @@ GList*
 ags_jack_client_find(GList *jack_client,
 		     gchar *client_name)
 { 
+#ifdef AGS_WITH_JACK
   while(jack_client != NULL){
     if(AGS_JACK_CLIENT(jack_client->data)->client != NULL &&
        !g_ascii_strcasecmp(jack_get_client_name(AGS_JACK_CLIENT(jack_client->data)->client),
@@ -562,6 +569,7 @@ ags_jack_client_find(GList *jack_client,
       return(jack_client);
     }
   }
+#endif
 
   return(NULL);
 }
@@ -593,6 +601,8 @@ ags_jack_client_open(AgsJackClient *jack_client,
   g_message("Advanced Gtk+ Sequencer open JACK client");
   
   jack_client->name = g_strdup(client_name);
+
+#ifdef AGS_WITH_JACK
   jack_client->client = jack_client_open(jack_client->name,
 					 0,
 					 NULL,
@@ -613,6 +623,7 @@ ags_jack_client_open(AgsJackClient *jack_client,
 			   ags_jack_client_xrun_callback,
 			   jack_client);
   }
+#endif
 }
 
 /**
@@ -657,7 +668,11 @@ ags_jack_client_activate(AgsJackClient *jack_client)
     return;
   }
   
+#ifdef AGS_WITH_JACK
   ret = jack_activate(jack_client->client);
+#else
+  ret = -1;
+#endif
 
   if(ret == 0){
     jack_client->flags |= AGS_JACK_CLIENT_ACTIVATED;
@@ -696,9 +711,11 @@ ags_jack_client_deactivate(AgsJackClient *jack_client)
     return;
   }
   
+#ifdef AGS_WITH_JACK
   jack_deactivate(jack_client->client);
 
   jack_client->flags &= (~AGS_JACK_CLIENT_ACTIVATED);
+#endif
 }
 
 /**
@@ -792,6 +809,7 @@ ags_jack_client_remove_port(AgsJackClient *jack_client,
   g_object_unref(jack_port);
 }
 
+#ifdef AGS_WITH_JACK
 void
 ags_jack_client_shutdown(void *ptr)
 {
@@ -1275,6 +1293,7 @@ ags_jack_client_xrun_callback(void *ptr)
   
   return(0);
 }
+#endif
 
 /**
  * ags_jack_client_new:
