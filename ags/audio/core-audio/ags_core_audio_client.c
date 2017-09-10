@@ -479,6 +479,11 @@ ags_core_audio_client_finalize(GObject *gobject)
     g_object_unref(core_audio_client->core_audio_server);
   }
 
+  /* core audio graph */
+  if(core_audio_client->graph != NULL){
+    free(core_audio_client->graph);
+  }
+
   /* device */
   if(core_audio_client->device != NULL){
     g_list_free_full(core_audio_client->device,
@@ -610,9 +615,7 @@ ags_core_audio_client_open(AgsCoreAudioClient *core_audio_client,
   
   retval = NewAUGraph(core_audio_client->graph);
 
-  if(retval == kAudioServicesNoError){
-    AUGraphOpen(core_audio_client->graph);
-  }else{
+  if(retval != noErr){
     free(core_audio_client->graph);
     
     core_audio_client->graph = NULL;
@@ -673,6 +676,9 @@ ags_core_audio_client_activate(AgsCoreAudioClient *core_audio_client)
     port = port->next;
   }
 
+  //AUGraphOpen(core_audio_client->graph);
+  //AUGraphStart(core_audio_client->graph);
+  
   core_audio_client->flags |= AGS_CORE_AUDIO_CLIENT_ACTIVATED;
 
   pthread_mutex_unlock(mutex);
@@ -693,7 +699,7 @@ ags_core_audio_client_deactivate(AgsCoreAudioClient *core_audio_client)
     return;
   }
 
-  //TODO:JK: implement me
+  //AUGraphStop(core_audio_client->graph);
   
   core_audio_client->flags &= (~AGS_CORE_AUDIO_CLIENT_ACTIVATED);
 }

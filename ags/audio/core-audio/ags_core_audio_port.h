@@ -51,6 +51,7 @@ typedef enum{
   AGS_CORE_AUDIO_PORT_IS_AUDIO        = 1 <<  2,
   AGS_CORE_AUDIO_PORT_IS_MIDI         = 1 <<  3,
   AGS_CORE_AUDIO_PORT_IS_OUTPUT       = 1 <<  4,
+  AGS_CORE_AUDIO_PORT_IS_INPUT        = 1 <<  5,
 }AgsCoreAudioPortFlags;
 
 struct _AgsCoreAudioPort
@@ -71,32 +72,35 @@ struct _AgsCoreAudioPort
   guint format;
   guint buffer_size;
   guint pcm_channels;
+  guint samplerate;
   
 #ifdef AGS_WITH_CORE_AUDIO
-  AudioComponent *comp;
-  AudioComponentDescription *desc;
-  AudioComponentInstance *au_hal;
+  AudioComponentDescription desc;
+  AudioComponent comp;
 
-  AUNode *device_node;
+  AudioStreamBasicDescription data_format;
 
-  MIDIClientRef *client;
+  AURenderCallbackStruct input;
+  AudioUnit au_unit;
+  
+  MIDIClientRef *midi_client;
   MIDIPortRef *midi_port;
 #else
   gpointer comp;
   gpointer desc;
-  gpointer au_hal;
 
-  gpointer device_node;
+  gpointer data_format;
+  gpointer packet_descs;
+
+  gpointer input;
+  gpointer au_unit;
+  
+  gpointer midi_client;
+  gpointer midi_port;
 #endif
-  
-  void *empty_buffer;
 
+  volatile gboolean running;
   volatile gboolean is_empty;
-  volatile gint underflow;
-  volatile gboolean restart;
-  
-  guint nth_empty_buffer;
-  
   volatile guint queued;
 };
 
@@ -115,6 +119,13 @@ void ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 				  gboolean is_audio, gboolean is_midi,
 				  gboolean is_output);
 void ags_core_audio_port_unregister(AgsCoreAudioPort *core_audio_port);
+
+void ags_core_audio_port_set_samplerate(AgsCoreAudioPort *core_audio_port,
+					guint samplerate);
+void ags_core_audio_port_set_pcm_channels(AgsCoreAudioPort *core_audio_port,
+					  guint pcm_channels);
+void ags_core_audio_port_set_buffer_size(AgsCoreAudioPort *core_audio_port,
+					 guint buffer_size);
 
 AgsCoreAudioPort* ags_core_audio_port_new(GObject *core_audio_client);
 

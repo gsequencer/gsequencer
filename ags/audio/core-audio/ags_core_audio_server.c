@@ -819,7 +819,7 @@ ags_core_audio_server_register_soundcard(AgsDistributedManager *distributed_mana
 			       "ags-default-client");
     initial_set = TRUE;
     
-    if(AGS_CORE_AUDIO_CLIENT(core_audio_server->default_client)->context == NULL){
+    if(AGS_CORE_AUDIO_CLIENT(core_audio_server->default_client)->graph == NULL){
       g_warning("ags_core_audio_server.c - can't open core audio client");
     }
   }
@@ -852,7 +852,7 @@ ags_core_audio_server_register_soundcard(AgsDistributedManager *distributed_mana
       
     core_audio_port = ags_core_audio_port_new((GObject *) default_client);
     g_object_set(core_audio_port,
-		 "core-audio-devout", core_audio_devout,
+		 "core-audio-device", core_audio_devout,
 		 NULL);
     ags_core_audio_client_add_port(default_client,
 				   (GObject *) core_audio_port);
@@ -860,7 +860,7 @@ ags_core_audio_server_register_soundcard(AgsDistributedManager *distributed_mana
     g_object_set(core_audio_devout,
 		 "core-audio-port", core_audio_port,
 		 NULL);
-      
+    
     core_audio_devout->port_name = (gchar **) malloc(2 * sizeof(gchar *));
     core_audio_devout->port_name[0] = g_strdup(str);
     core_audio_devout->port_name[1] = NULL;
@@ -953,7 +953,7 @@ ags_core_audio_server_register_default_soundcard(AgsCoreAudioServer *core_audio_
     ags_core_audio_client_open((AgsCoreAudioClient *) core_audio_server->default_client,
 			       "ags-default-client");
 
-    if(AGS_CORE_AUDIO_CLIENT(core_audio_server->default_client)->context == NULL){
+    if(AGS_CORE_AUDIO_CLIENT(core_audio_server->default_client)->graph == NULL){
       g_warning("ags_core_audio_server.c - can't open core audio client");
       
       return(NULL);
@@ -981,7 +981,7 @@ ags_core_audio_server_register_default_soundcard(AgsCoreAudioServer *core_audio_
     
   core_audio_port = ags_core_audio_port_new((GObject *) default_client);
   g_object_set(core_audio_port,
-	       "core-audio-devout", core_audio_devout,
+	       "core-audio-device", core_audio_devout,
 	       NULL);
   ags_core_audio_client_add_port(default_client,
 				 (GObject *) core_audio_port);
@@ -1167,36 +1167,6 @@ ags_core_audio_server_connect_client(AgsCoreAudioServer *core_audio_server)
 
     client = client->next;
   }
-}
-
-void*
-ags_core_audio_server_do_poll_loop(void *ptr)
-{
-  AgsCoreAudioServer *core_audio_server;
-
-#ifndef __APPLE__
-  struct sched_param param;
-#endif
-
-  core_audio_server = (AgsCoreAudioServer *) ptr;
-    
-  /* Declare ourself as a real time task */
-#ifndef __APPLE__
-  param.sched_priority = AGS_RT_PRIORITY;
-  
-  if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-    perror("sched_setscheduler failed");
-  }
-#endif
-
-  pthread_exit(NULL);
-}
-
-void
-ags_core_audio_server_start_poll(AgsCoreAudioServer *core_audio_server)
-{
-  pthread_create(core_audio_server->thread, NULL,
-		 ags_core_audio_server_do_poll_loop, core_audio_server);
 }
 
 /**

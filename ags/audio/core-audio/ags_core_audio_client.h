@@ -63,7 +63,7 @@ struct _AgsCoreAudioClient
   gchar *name;
 
 #ifdef AGS_WITH_CORE_AUDIO
-  AUGraph graph;
+  AUGraph *graph;
 #else
   gpointer graph;
 #endif

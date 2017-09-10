@@ -473,7 +473,7 @@ ags_core_audio_devout_class_init(AgsCoreAudioDevoutClass *core_audio_devout)
   param_spec = g_param_spec_object("core-audio-client",
 				   i18n_pspec("core audio client object"),
 				   i18n_pspec("The core audio client object"),
-				   AGS_TYPE_PULSE_CLIENT,
+				   AGS_TYPE_CORE_AUDIO_CLIENT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CORE_AUDIO_CLIENT,

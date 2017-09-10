@@ -605,7 +605,7 @@ ags_core_audio_midiin_set_property(GObject *gobject,
     break;
   case PROP_CORE_AUDIO_CLIENT:
     {
-      AgsJackClient *core_audio_client;
+      AgsCoreAudioClient *core_audio_client;
 
       core_audio_client = g_value_get_object(value);
 
@@ -626,9 +626,9 @@ ags_core_audio_midiin_set_property(GObject *gobject,
     break;
   case PROP_CORE_AUDIO_PORT:
     {
-      AgsJackPort *core_audio_port;
+      AgsCoreAudioPort *core_audio_port;
 
-      core_audio_port = (AgsJackPort *) g_value_get_object(value);
+      core_audio_port = (AgsCoreAudioPort *) g_value_get_object(value);
 
       if(g_list_find(core_audio_midiin->core_audio_port, core_audio_port) != NULL){
 	return;
@@ -1171,7 +1171,7 @@ void
 ags_core_audio_midiin_port_record(AgsSequencer *sequencer,
 				  GError **error)
 {
-  AgsJackClient *core_audio_client;
+  AgsCoreAudioClient *core_audio_client;
   AgsCoreAudioMidiin *core_audio_midiin;
 
   AgsMutexManager *mutex_manager;
@@ -1204,7 +1204,7 @@ ags_core_audio_midiin_port_record(AgsSequencer *sequencer,
   /* client */
   pthread_mutex_lock(mutex);
 
-  core_audio_client = (AgsJackClient *) core_audio_midiin->core_audio_client;
+  core_audio_client = (AgsCoreAudioClient *) core_audio_midiin->core_audio_client;
   
   callback_mutex = core_audio_midiin->callback_mutex;
   callback_finish_mutex = core_audio_midiin->callback_finish_mutex;

@@ -48,6 +48,10 @@
 #include <ags/config.h>
 #include <ags/i18n.h>
 
+#ifdef AGS_WITH_CORE_AUDIO
+#include <CoreFoundation/CoreFoundation.h>
+#endif
+
 #include <time.h>
 
 void ags_core_audio_port_class_init(AgsCoreAudioPortClass *core_audio_port);
@@ -68,9 +72,18 @@ void ags_core_audio_port_dispose(GObject *gobject);
 void ags_core_audio_port_finalize(GObject *gobject);
 
 #ifdef AGS_WITH_CORE_AUDIO
-void ags_core_audio_port_output_callback(void *in_user_data,
-					 AudioQueueRef in_aq,
-					 AudioQueueBufferRef in_complete_aq_buffer);
+void* ags_core_audio_port_output_thread(void **data);
+OSStatus ags_core_audio_port_output_callback(void *in_user_data, AudioUnitRenderActionFlags* ioActionFlags,
+					     const AudioTimeStamp* in_time_stamp,
+					     UInt32 in_bus_number,
+					     UInt32 in_number_frames,
+					     AudioBufferList* io_data);
+
+void ags_core_audio_port_midi_notify_callback(const MIDINotification  *message,
+					      void *ref_con);
+void ags_core_audio_port_midi_read_callback(const MIDIPacketList *pkt_list,
+					    void *ref_con,
+					    void *conn_ref_con);
 #endif
 
 /**
@@ -168,7 +181,7 @@ ags_core_audio_port_class_init(AgsCoreAudioPortClass *core_audio_port)
 				  param_spec);
 
   /**
-   * AgsCoreAudioPort:core-audio-devout:
+   * AgsCoreAudioPort:core-audio-device:
    *
    * The assigned #AgsCoreAudioDevout.
    * 
@@ -259,8 +272,6 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   
   core_audio_port->uuid = ags_id_generator_create_uuid();
   core_audio_port->name = NULL;
-
-  core_audio_port->stream = NULL;
   
   /* read config */
   config = ags_config_get_instance();
@@ -345,21 +356,55 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   core_audio_port->buffer_size = buffer_size;
   core_audio_port->format = format;
   core_audio_port->pcm_channels = pcm_channels;
+  core_audio_port->samplerate = samplerate;
 
+  word_size = sizeof(Float32);
+  
 #ifdef AGS_WITH_CORE_AUDIO
-  core_audio_port->comp = (AudioComponent *) malloc(sizeof(AudioComponent));
-  memset(core_audio_port->comp, 0, sizeof(AudioComponent));
+  /* Audio */
+  core_audio_port->comp = NULL;
   
-  core_audio_port->desc = (AudioComponentDescription *) malloc(sizeof(AudioComponentDescription));
-  memset(core_audio_port->desc, 0, sizeof(AudioComponentDescription));
+  memset(&(core_audio_port->desc), 0, sizeof(AudioComponentDescription));
+
+  memset(&(core_audio_port->data_format), 0, sizeof(AudioStreamBasicDescription));
+
+  size_t bytesPerSample = sizeof (AudioUnitSampleType);
   
-  core_audio_port->au_hal = (AudioComponentInstance *) malloc(sizeof(AudioComponentInstance));
-  memset(core_audio_port->au_hal, 0, sizeof(AudioComponentInstance));
+  core_audio_port->data_format.mBitsPerChannel = 8 * bytesPerSample;
+  core_audio_port->data_format.mBytesPerPacket = bytesPerSample;
+  core_audio_port->data_format.mBytesPerFrame = bytesPerSample;
+  
+  core_audio_port->data_format.mFramesPerPacket = 1;
+  core_audio_port->data_format.mChannelsPerFrame = pcm_channels;
+
+  core_audio_port->data_format.mFormatID = kAudioFormatLinearPCM;
+  core_audio_port->data_format.mFormatFlags = kAudioFormatFlagsAudioUnitCanonical;
+  
+  core_audio_port->data_format.mSampleRate = (float) samplerate;
+
+  /* MIDI */
+  core_audio_port->midi_client = (MIDIClientRef *) malloc(sizeof(MIDIClientRef));
+  memset(core_audio_port->midi_client, 0, sizeof(MIDIClientRef));
+  
+  core_audio_port->midi_port = (MIDIPortRef *) malloc(sizeof(MIDIPortRef));
+  memset(core_audio_port->midi_port, 0, sizeof(MIDIPortRef));
 #else
   core_audio_port->comp = NULL;
   core_audio_port->desc = NULL;
-  core_audio_port->au_hal = NULL;
+
+  core_audio_port->data_format = NULL;
+
+  core_audio_port->input = NULL;
+  
+  core_audio_port->midi_client = NULL;
+  core_audio_port->midi_port = NULL;
 #endif
+
+  g_atomic_int_set(&(core_audio_port->is_empty),
+		   FALSE);
+  
+  g_atomic_int_set(&(core_audio_port->queued),
+		   0);  
 }
 
 void
@@ -555,12 +600,12 @@ ags_core_audio_port_finalize(GObject *gobject)
   /* name */
   g_free(core_audio_port->name);
 
-  if(core_audio_port->sample_spec != NULL){
-    free(core_audio_port->sample_spec);
+  if(core_audio_port->midi_client != NULL){
+    free(core_audio_port->midi_client);
   }
-  
-  if(core_audio_port->buffer_attr != NULL){
-    free(core_audio_port->buffer_attr);
+
+  if(core_audio_port->midi_port != NULL){
+    free(core_audio_port->midi_port);
   }
 
   pthread_mutex_destroy(core_audio_port->mutex);
@@ -596,6 +641,21 @@ ags_core_audio_port_find(GList *core_audio_port,
   }
 
   return(NULL);
+}
+
+OSStatus
+SetCurrentIOBufferFrameSize(AudioObjectID inDeviceID,
+			    UInt32 inIOBufferFrameSize)
+{
+    AudioObjectPropertyAddress theAddress = { kAudioDevicePropertyBufferFrameSize,
+                                              kAudioObjectPropertyScopeGlobal,
+                                              kAudioObjectPropertyElementMaster };
+ 
+    return AudioObjectSetPropertyData(inDeviceID,
+                                      &theAddress,
+                                      0,
+                                      NULL,
+                                      sizeof(UInt32), &inIOBufferFrameSize);
 }
 
 /**
@@ -658,25 +718,103 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
   /* create sequencer or soundcard */
   if(is_output){
     core_audio_port->flags |= AGS_CORE_AUDIO_PORT_IS_OUTPUT;
+  }else{
+    core_audio_port->flags |= AGS_CORE_AUDIO_PORT_IS_INPUT;
   }
-
+  
   if(is_audio){  
     core_audio_port->flags |= AGS_CORE_AUDIO_PORT_IS_AUDIO;
 
     if(is_output){
-      core_audio_port->desc->componentType = kAudioUnitType_Output;
-      core_audio_port->desc->componentSubType = kAudioUnitSubType_DefaultOutput;
-      core_audio_port->desc->componentManufacturer = kAudioUnitManufacturer_Apple;
+      pthread_t *thread;
 
-      core_audio_port->device_node = (AUNode *) malloc(sizeof(AUNode));
+      void **arr;
+      
+      guint word_size;
 
-      retval = AUGraphAddNode(AGS_CORE_AUDIO_CLIENT(core_audio_port->core_audio_client)->graph,
-			      core_audio_port->desc,
-			      core_audio_port->device_node);
+      switch(core_audio_port->format){
+      case AGS_SOUNDCARD_SIGNED_8_BIT:
+	{
+	  word_size = sizeof(signed char);
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_16_BIT:
+	{
+	  word_size = sizeof(signed short);
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_24_BIT:
+	{
+	  word_size = sizeof(signed long);
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_32_BIT:
+	{
+	  word_size = sizeof(signed long);
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_64_BIT:
+	{
+	  word_size = sizeof(signed long long);
+	}
+	break;
+      default:
+	g_message("core audio - unsupported word size");
+      }
 
-      if(retval != kAudioServicesNoError){
+      core_audio_port->desc.componentType = kAudioUnitType_Output;
+      core_audio_port->desc.componentSubType = kAudioUnitSubType_DefaultOutput;
+      core_audio_port->desc.componentManufacturer = kAudioUnitManufacturer_Apple;
+
+      core_audio_port->comp = AudioComponentFindNext(NULL,
+						     &(core_audio_port->desc));
+
+      if(core_audio_port->comp == NULL) {
+	g_message("can't get output unit");
 	return;
       }
+      
+      retval = AudioComponentInstanceNew(core_audio_port->comp,
+					 &(core_audio_port->au_unit));
+
+      if(retval != noErr){
+	return;
+      }
+     
+      core_audio_port->input.inputProc = ags_core_audio_port_output_callback;
+      core_audio_port->input.inputProcRefCon = core_audio_port;
+      retval = AudioUnitSetProperty(core_audio_port->au_unit,
+				    kAudioUnitProperty_SetRenderCallback,
+				    kAudioUnitScope_Input,
+				    0, &(core_audio_port->input), sizeof(AURenderCallbackStruct));
+      
+      if(retval != noErr){
+	return;
+      }
+
+      retval = AudioUnitSetProperty(core_audio_port->au_unit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0,
+				    &(core_audio_port->data_format), sizeof(AudioStreamBasicDescription));
+      retval = AudioUnitSetProperty(core_audio_port->au_unit,
+				    kAudioUnitProperty_StreamFormat,
+				    kAudioUnitScope_Input,
+				    0, &(core_audio_port->data_format), sizeof(AudioStreamBasicDescription));
+
+      if(retval != noErr){
+	return;
+      }
+
+      SetCurrentIOBufferFrameSize(core_audio_port->au_unit,
+				  core_audio_port->buffer_size);
+      
+      retval = AudioUnitInitialize(core_audio_port->au_unit);
+      
+      if(retval != noErr){
+	return;
+      }
+      
+      g_message("start audio unit");
+      AudioOutputUnitStart(core_audio_port->au_unit);
+
     }else{
       //NOTE:JK: not implemented
     }
@@ -686,7 +824,23 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
     if(is_output){
       //NOTE:JK: not implemented
     }else{
+      retval = MIDIClientCreate(CFSTR("Advanced Gtk+ Sequencer - Core MIDI to System Sounds Demo"),
+				ags_core_audio_port_midi_notify_callback,
+				core_audio_port,
+				core_audio_port->midi_client);
+
+      if(retval != noErr){
+	return;
+      }
       
+      retval = MIDIInputPortCreate(*(core_audio_port->midi_client), CFSTR("Input port"),
+				   ags_core_audio_port_midi_read_callback,
+				   core_audio_port,
+				   core_audio_port->midi_port);
+	
+      if(retval != noErr){
+	return;
+      }
     }
   }
   
@@ -700,17 +854,459 @@ ags_core_audio_port_unregister(AgsCoreAudioPort *core_audio_port)
     return;
   }
 
-  //NOTE:JK: not implemented
+  if((AGS_CORE_AUDIO_PORT_IS_AUDIO & (core_audio_port->flags)) != 0){
+    if((AGS_CORE_AUDIO_PORT_IS_OUTPUT & (core_audio_port->flags)) != 0){
+      //NOTE:JK: not implemented
+    }else if((AGS_CORE_AUDIO_PORT_IS_INPUT & (core_audio_port->flags)) != 0){
+    }
+  }else if((AGS_CORE_AUDIO_PORT_IS_MIDI & (core_audio_port->flags)) != 0){
+    if((AGS_CORE_AUDIO_PORT_IS_OUTPUT & (core_audio_port->flags)) != 0){
+      //NOTE:JK: not implemented
+    }else if((AGS_CORE_AUDIO_PORT_IS_INPUT & (core_audio_port->flags)) != 0){
+    }
+  }
+
+  core_audio_port->flags &= (~AGS_CORE_AUDIO_PORT_REGISTERED);
 }
 
 #ifdef AGS_WITH_CORE_AUDIO
+void*
+ags_core_audio_port_output_thread(void **data)
+{
+  AgsCoreAudioPort *core_audio_port;
+  AudioQueueRef in_aq;
+  AudioQueueBufferRef in_complete_aq_buffer;
+  
+  core_audio_port = data[0];
+  in_aq = data[1];
+  in_complete_aq_buffer = data[2];
+  
+  g_atomic_int_set(&(core_audio_port->running),
+		     TRUE);
+    
+  while(g_atomic_int_get(&(core_audio_port->running))){
+    CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.10, TRUE);
+  }
+
+  pthread_exit(NULL);
+}
+
+OSStatus
+ags_core_audio_port_output_callback(void *in_user_data, AudioUnitRenderActionFlags* ioActionFlags,
+				    const AudioTimeStamp* in_time_stamp,
+				    UInt32 in_bus_number,
+				    UInt32 in_number_frames,
+				    AudioBufferList* io_data)
+{
+  AgsCoreAudioPort *core_audio_port;
+  AgsCoreAudioDevout *core_audio_devout;
+  
+  AgsAudioLoop *audio_loop;
+
+  AgsMutexManager *mutex_manager;
+  AgsTaskThread *task_thread;
+  
+  AgsApplicationContext *application_context;
+
+  guint word_size;
+  guint nth_buffer;
+  guint copy_mode;
+  guint count;
+  gboolean no_event;
+  gboolean empty_run;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  pthread_mutex_t *device_mutex;
+  pthread_mutex_t *callback_mutex;
+  pthread_mutex_t *callback_finish_mutex;
+
+  core_audio_port = (AgsCoreAudioPort *) in_user_data;
+
+  if(core_audio_port == NULL){
+    return(noErr);
+  }
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  application_context = ags_application_context_get_instance();
+  
+  /*  */  
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) core_audio_port);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  if(g_atomic_int_get(&(core_audio_port->queued)) > 0){
+    g_warning("drop core audio output callback");
+    
+    return(noErr);
+  }else{
+    g_atomic_int_inc(&(core_audio_port->queued));
+  }
+
+  /*
+   * process audio
+   */
+  /*  */  
+  pthread_mutex_lock(application_mutex);
+
+  if(application_context != NULL){
+    audio_loop = (AgsAudioLoop *) application_context->main_loop;
+    task_thread = (AgsTaskThread *) application_context->task_thread;
+  }else{
+    audio_loop = NULL;
+    task_thread = NULL;
+  }
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* interrupt GUI */
+  if(task_thread != NULL){
+    pthread_mutex_lock(task_thread->launch_mutex);
+  }
+  
+  if(audio_loop != NULL){
+    pthread_mutex_lock(audio_loop->timing_mutex);
+  
+    g_atomic_int_set(&(audio_loop->time_spent),
+		     audio_loop->time_cycle);
+  
+    pthread_mutex_unlock(audio_loop->timing_mutex);
+  
+    //    ags_main_loop_interrupt(AGS_MAIN_LOOP(audio_loop),
+    //			    AGS_THREAD_SUSPEND_SIG,
+    //			    0, &time_spent);
+  }
+
+  if(task_thread != NULL){
+    pthread_mutex_unlock(task_thread->launch_mutex);
+  }
+
+  ags_audio_buffer_util_clear_float32(io_data->mBuffers[0].mData, 1,
+				      core_audio_port->pcm_channels * core_audio_port->buffer_size);
+  
+  if(audio_loop == NULL){
+    g_atomic_int_dec_and_test(&(core_audio_port->queued));
+
+    return(noErr);
+  }
+  
+  g_atomic_int_and(&(AGS_THREAD(audio_loop)->flags),
+		   (~(AGS_THREAD_TIMING)));
+
+  /*  */
+  pthread_mutex_lock(mutex);
+
+  core_audio_devout = core_audio_port->core_audio_device;
+
+  pthread_mutex_unlock(mutex);
+  
+  /*  */  
+  pthread_mutex_lock(application_mutex);
+  
+  device_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  (GObject *) core_audio_devout);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /*  */
+  pthread_mutex_lock(device_mutex);
+
+  empty_run = FALSE;
+
+  if(!ags_soundcard_is_playing(AGS_SOUNDCARD(core_audio_devout))){
+    empty_run = TRUE;
+  }
+  
+  pthread_mutex_unlock(device_mutex);
+
+  pthread_mutex_lock(mutex);
+
+  switch(core_audio_port->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      word_size = sizeof(signed char);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      word_size = sizeof(signed short);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      word_size = sizeof(signed long long);
+    }
+    break;
+  default:
+    empty_run = TRUE;
+  }
+
+  count = core_audio_port->pcm_channels * core_audio_port->buffer_size;
+
+  pthread_mutex_unlock(mutex);
+
+  pthread_mutex_lock(device_mutex);
+  
+  /* wait callback */
+  no_event = TRUE;
+  
+  if((AGS_CORE_AUDIO_DEVOUT_PASS_THROUGH & (g_atomic_int_get(&(core_audio_devout->sync_flags)))) == 0){
+    callback_mutex = core_audio_devout->callback_mutex;
+    
+    pthread_mutex_unlock(device_mutex);
+	
+    /* give back computing time until ready */
+    pthread_mutex_lock(callback_mutex);
+    
+    if((AGS_CORE_AUDIO_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(core_audio_devout->sync_flags)))) == 0){
+      g_atomic_int_or(&(core_audio_devout->sync_flags),
+		      AGS_CORE_AUDIO_DEVOUT_CALLBACK_WAIT);
+      
+      while((AGS_CORE_AUDIO_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(core_audio_devout->sync_flags)))) == 0 &&
+	    (AGS_CORE_AUDIO_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(core_audio_devout->sync_flags)))) != 0){
+	pthread_cond_wait(core_audio_devout->callback_cond,
+			  callback_mutex);
+      }
+    
+      g_atomic_int_and(&(core_audio_devout->sync_flags),
+		       (~(AGS_CORE_AUDIO_DEVOUT_CALLBACK_WAIT |
+			  AGS_CORE_AUDIO_DEVOUT_CALLBACK_DONE)));
+    }
+    
+    pthread_mutex_unlock(callback_mutex);
+    
+    no_event = FALSE;
+
+    pthread_mutex_lock(device_mutex);
+  }
+
+  /* get buffer */  
+  if((AGS_CORE_AUDIO_DEVOUT_BUFFER0 & (core_audio_devout->flags)) != 0){
+    nth_buffer = 7;
+  }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER1 & (core_audio_devout->flags)) != 0){
+    nth_buffer = 0;
+  }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER2 & (core_audio_devout->flags)) != 0){
+    nth_buffer = 1;
+  }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER3 & (core_audio_devout->flags)) != 0){
+    nth_buffer = 2;
+  }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER4 & (core_audio_devout->flags)) != 0){
+    nth_buffer = 3;
+  }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER5 & (core_audio_devout->flags)) != 0){
+    nth_buffer = 4;
+  }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER6 & (core_audio_devout->flags)) != 0){
+    nth_buffer = 5;
+  }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER7 & (core_audio_devout->flags)) != 0){
+    nth_buffer = 6;
+  }else{
+    empty_run = TRUE;
+  }
+
+  switch(core_audio_port->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      word_size = sizeof(signed char);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      word_size = sizeof(signed short);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      word_size = sizeof(signed long long);
+    }
+    break;
+  default:
+    empty_run = TRUE;
+  }
+
+  /* get copy mode */
+  if(!empty_run){
+    guint i;
+    
+    g_atomic_int_set(&(core_audio_port->is_empty),
+		     FALSE);
+
+    copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT32,
+						    ags_audio_buffer_util_format_from_soundcard(core_audio_devout->format));
+
+    for(i = 0; i < core_audio_port->pcm_channels; i++){
+      ags_audio_buffer_util_copy_buffer_to_buffer(io_data->mBuffers[0].mData, 1, 0,
+						  core_audio_devout->buffer[nth_buffer], core_audio_port->pcm_channels, i,
+						  core_audio_port->buffer_size, copy_mode);
+    }
+  }
+
+  /* signal finish */
+  if(!no_event){        
+    callback_finish_mutex = core_audio_devout->callback_finish_mutex;
+	
+    pthread_mutex_lock(callback_finish_mutex);
+
+    g_atomic_int_or(&(core_audio_devout->sync_flags),
+		    AGS_CORE_AUDIO_DEVOUT_CALLBACK_FINISH_DONE);
+    
+    if((AGS_CORE_AUDIO_DEVOUT_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(core_audio_devout->sync_flags)))) != 0){
+      pthread_cond_signal(core_audio_devout->callback_finish_cond);
+    }
+
+    pthread_mutex_unlock(callback_finish_mutex);
+  }
+  
+  pthread_mutex_unlock(device_mutex);
+
+  if(empty_run){
+    pthread_mutex_lock(mutex);
+    
+    pthread_mutex_unlock(mutex);
+    
+    g_atomic_int_set(&(core_audio_port->is_empty),
+		     TRUE);
+  }
+  
+  g_atomic_int_dec_and_test(&(core_audio_port->queued));
+
+  return(noErr);
+}
+  
 void
-ags_core_audio_port_output_callback(void *in_user_data,
-				    AudioQueueRef in_aq,
-				    AudioQueueBufferRef in_complete_aq_buffer)
+ags_core_audio_port_midi_notify_callback(const MIDINotification  *message,
+					 void *ref_con)
+{
+}
+
+void
+ags_core_audio_port_midi_read_callback(const MIDIPacketList *pkt_list,
+				       void *ref_con,
+				       void *conn_ref_con)
 {
 }
 #endif
+
+void
+ags_core_audio_port_set_samplerate(AgsCoreAudioPort *core_audio_port,
+				   guint samplerate)
+{
+  AgsMutexManager *mutex_manager;
+
+  guint fixed_size;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* lock core_audio port */
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) core_audio_port);
+
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(mutex);
+
+#ifdef AGS_WITH_CORE_AUDIO
+  core_audio_port->data_format.mSampleRate = (float) samplerate;
+#endif
+
+  core_audio_port->samplerate = samplerate;
+  
+  pthread_mutex_unlock(mutex);
+}
+
+void
+ags_core_audio_port_set_buffer_size(AgsCoreAudioPort *core_audio_port,
+				    guint buffer_size)
+{
+  AgsMutexManager *mutex_manager;
+
+  guint fixed_size;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* lock core_audio port */
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) core_audio_port);
+
+  pthread_mutex_unlock(application_mutex);
+  
+  pthread_mutex_lock(mutex);
+
+#ifdef AGS_WITH_CORE_AUDIO
+  core_audio_port->data_format.mBytesPerPacket = buffer_size;
+#endif
+
+  core_audio_port->buffer_size = buffer_size;
+  
+  pthread_mutex_unlock(mutex);
+}
+
+void
+ags_core_audio_port_set_pcm_channels(AgsCoreAudioPort *core_audio_port,
+				     guint pcm_channels)
+{
+  AgsMutexManager *mutex_manager;
+
+  guint fixed_size;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* lock core_audio port */
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) core_audio_port);
+
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(mutex);
+
+  core_audio_port->pcm_channels = pcm_channels;
+
+#ifdef AGS_WITH_CORE_AUDIO
+  core_audio_port->data_format.mChannelsPerFrame = pcm_channels;
+#endif
+
+  pthread_mutex_unlock(mutex);
+}
 
 /**
  * ags_core_audio_port_new:
