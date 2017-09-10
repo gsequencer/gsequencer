@@ -75,6 +75,12 @@
 #include <ags/audio/pulse/ags_pulse_port.h>
 #include <ags/audio/pulse/ags_pulse_devout.h>
 
+#include <ags/audio/core-audio/ags_core_audio_midiin.h>
+#include <ags/audio/core-audio/ags_core_audio_server.h>
+#include <ags/audio/core-audio/ags_core_audio_client.h>
+#include <ags/audio/core-audio/ags_core_audio_port.h>
+#include <ags/audio/core-audio/ags_core_audio_devout.h>
+
 #include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_cancel_channel.h>
 
@@ -385,6 +391,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   GObject *sequencer;
   AgsJackServer *jack_server;
   AgsPulseServer *pulse_server;
+  AgsCoreAudioServer *core_audio_server;
 
   AgsThread *soundcard_thread;
   AgsThread *export_thread;
@@ -400,6 +407,7 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   gchar *str;
 
   guint i;
+  gboolean has_core_audio;
   gboolean has_pulse;
   gboolean has_jack;
 
@@ -422,6 +430,15 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
   /* distributed manager */
   xorg_application_context->distributed_manager = NULL;
+
+  /* core audio server */
+  core_audio_server = ags_core_audio_server_new((GObject *) xorg_application_context,
+						NULL);
+  xorg_application_context->distributed_manager = g_list_append(xorg_application_context->distributed_manager,
+								core_audio_server);
+  g_object_ref(G_OBJECT(core_audio_server));
+
+  has_core_audio = FALSE;
 
   /* pulse server */
   pulse_server = ags_pulse_server_new((GObject *) xorg_application_context,
@@ -471,6 +488,13 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
     /* change soundcard */
     if(str != NULL){
       if(!g_ascii_strncasecmp(str,
+			      "core-audio",
+			      11)){
+	soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(core_audio_server),
+							       TRUE);
+
+	has_core_audio = TRUE;
+      }else if(!g_ascii_strncasecmp(str,
 			      "pulse",
 			      6)){
 	soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(pulse_server),
@@ -782,6 +806,8 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
       AGS_JACK_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
     }else if(AGS_IS_PULSE_DEVOUT(list->data)){
       AGS_PULSE_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+    }else if(AGS_IS_CORE_AUDIO_DEVOUT(list->data)){
+      AGS_CORE_AUDIO_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
     }
 
     ags_task_thread_append_cyclic_task(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread,
@@ -862,6 +888,10 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   xorg_application_context->thread_pool = AGS_TASK_THREAD(AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread)->thread_pool;
 
   /* launch */
+  if(has_core_audio){
+    ags_core_audio_server_connect_client(core_audio_server);
+  }
+
   if(has_pulse){
     ags_pulse_server_connect_client(pulse_server);
 
@@ -1394,12 +1424,15 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
   AgsDssiManager *dssi_manager;
   AgsLv2Manager *lv2_manager;
 
+  AgsCoreAudioServer *core_audio_server;
+
   AgsPulseServer *pulse_server;
 
   AgsJackServer *jack_server;
 
   AgsConfig *config;
 
+  GList *core_audio_client;
   GList *jack_client;
   GList *list;
 
@@ -1488,6 +1521,27 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
     g_object_unref(autosave_file);
   }
 
+  /* retrieve core audio server */
+  list = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
+  
+  while((list = ags_list_util_find_type(list,
+					AGS_TYPE_CORE_AUDIO_SERVER)) != NULL){
+    core_audio_server = list->data;
+
+    /* close client */
+    core_audio_client = core_audio_server->client;
+
+    while(core_audio_client != NULL){
+#ifdef AGS_WITH_CORE_AUDIO
+      AUGraphStop(AGS_CORE_AUDIO_CLIENT(core_audio_client->data)->graph);
+#endif
+
+      core_audio_client = core_audio_client->next;
+    }
+
+    list = list->next;
+  }
+  
   /* retrieve pulseaudio server */
   list = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
   

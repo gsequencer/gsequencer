@@ -30,6 +30,9 @@
 
 #include <ags/audio/pulse/ags_pulse_devout.h>
 
+#include <ags/audio/core-audio/ags_core_audio_devout.h>
+#include <ags/audio/core-audio/ags_core_audio_midiin.h>
+
 #include <ags/i18n.h>
 
 void ags_clear_buffer_class_init(AgsClearBufferClass *clear_buffer);
@@ -424,9 +427,68 @@ ags_clear_buffer_launch(AgsTask *task)
     }
       
     memset(pulse_devout->buffer[nth_buffer], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  }else if(AGS_IS_CORE_AUDIO_DEVOUT(clear_buffer->device)){
+    AgsCoreAudioDevout *core_audio_devout;
+    
+    core_audio_devout = clear_buffer->device;
+
+    switch(core_audio_devout->format){
+    case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	word_size = sizeof(signed char);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	word_size = sizeof(signed short);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {      
+	//NOTE:JK: The 24-bit linear samples use 32-bit physical space
+	word_size = sizeof(signed long);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	word_size = sizeof(signed long);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_64_BIT:
+      {
+	word_size = sizeof(signed long long);
+      }
+      break;
+    default:    
+      g_warning("ags_clear_buffer_launch(): unsupported word size");
+    
+      return;
+    }
+
+    if((AGS_CORE_AUDIO_DEVOUT_BUFFER0 & (core_audio_devout->flags)) != 0){
+      nth_buffer = 2;
+    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER1 & (core_audio_devout->flags)) != 0){
+      nth_buffer = 3;
+    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER2 & (core_audio_devout->flags)) != 0){
+      nth_buffer = 4;
+    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER3 & (core_audio_devout->flags)) != 0){
+      nth_buffer = 5;
+    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER4 & (core_audio_devout->flags)) != 0){
+      nth_buffer = 6;
+    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER5 & (core_audio_devout->flags)) != 0){
+      nth_buffer = 7;
+    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER6 & (core_audio_devout->flags)) != 0){
+      nth_buffer = 0;
+    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER7 & (core_audio_devout->flags)) != 0){
+      nth_buffer = 1;
+    }
+      
+    memset(core_audio_devout->buffer[nth_buffer], 0, (size_t) core_audio_devout->pcm_channels * core_audio_devout->buffer_size * word_size);
   }else if(AGS_IS_MIDIIN(clear_buffer->device)){
     //TODO:JK: implement me
   }else if(AGS_IS_JACK_MIDIIN(clear_buffer->device)){
+    //TODO:JK: implement me
+  }else if(AGS_IS_CORE_AUDIO_MIDIIN(clear_buffer->device)){
     //TODO:JK: implement me
   }
 }

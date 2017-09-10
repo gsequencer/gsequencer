@@ -426,8 +426,6 @@ ags_task_thread_run(AgsThread *thread)
 #endif
   
   /*  */
-  g_mutex_lock((GMutex *) g_main_context_default());
-
   pthread_mutex_lock(task_thread->read_mutex);
 
   g_atomic_pointer_set(&(task_thread->exec),
@@ -502,8 +500,6 @@ ags_task_thread_run(AgsThread *thread)
   
   pthread_mutex_unlock(task_thread->cyclic_task_mutex);
   
-  g_mutex_unlock((GMutex *) g_main_context_default());
- 
   /* async queue */
   pthread_mutex_lock(task_thread->run_mutex);
   

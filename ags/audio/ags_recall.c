@@ -2768,7 +2768,13 @@ ags_recall_template_find_all_type(GList *recall_i, ...)
 
   i = 0;
   
-  while((current = va_arg(ap, GType)) != G_TYPE_NONE){
+  while(TRUE){
+    current = va_arg(ap, GType);
+
+    if(current == G_TYPE_NONE){
+      break;
+    }
+    
     recall_types = (GType *) realloc(recall_types,
 				     (i + 2) * sizeof(GType));
     recall_types[i] = current;

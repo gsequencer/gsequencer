@@ -455,6 +455,7 @@ ags_cell_pattern_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
 				       channel,
 				       toggle_pattern_bit->bit,
 				       line);
+  gtk_widget_queue_draw(cell_pattern);
 }
 
 void

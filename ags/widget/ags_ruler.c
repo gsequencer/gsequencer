@@ -20,7 +20,10 @@
 #include <ags/widget/ags_ruler.h>
 
 #include <pango/pango.h>
+
+#ifndef AGS_WITH_QUARTZ
 #include <pango/pangofc-fontmap.h>
+#endif
 
 #include <math.h>
 
@@ -344,7 +347,10 @@ ags_ruler_draw(AgsRuler *ruler)
     pango_cairo_update_layout(cr, layout);
     pango_cairo_show_layout(cr, layout);
 
+#ifndef AGS_WITH_QUARTZ
     pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
+#endif
+    
     g_object_unref(layout);
   }
   

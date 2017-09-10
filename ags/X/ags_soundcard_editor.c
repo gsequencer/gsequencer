@@ -39,6 +39,9 @@
 #include <ags/audio/pulse/ags_pulse_server.h>
 #include <ags/audio/pulse/ags_pulse_devout.h>
 
+#include <ags/audio/core-audio/ags_core_audio_server.h>
+#include <ags/audio/core-audio/ags_core_audio_devout.h>
+
 #include <ags/audio/task/ags_notify_soundcard.h>
 
 #include <ags/audio/thread/ags_sequencer_thread.h>
@@ -188,11 +191,20 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
+#ifdef AGS_WITH_CORE_AUDIO
+  gtk_combo_box_text_append_text(soundcard_editor->backend,
+				 "core-audio");
+#endif
+
+#ifdef AGS_WITH_PULSE
   gtk_combo_box_text_append_text(soundcard_editor->backend,
 				 "pulse");
+#endif
 
+#ifdef AGS_WITH_JACK
   gtk_combo_box_text_append_text(soundcard_editor->backend,
 				 "jack");
+#endif
   
 #ifdef AGS_WITH_ALSA
   gtk_combo_box_text_append_text(soundcard_editor->backend,
@@ -506,7 +518,7 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
   guint samplerate;
   guint buffer_size;
   guint format;
-  gboolean use_pulse, use_jack, use_alsa, use_oss;
+  gboolean use_core_audio, use_pulse, use_jack, use_alsa, use_oss;
   
   GValue value =  {0,};
 
@@ -532,7 +544,12 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
   g_list_free(list);
   
   /* backend */
+#ifdef AGS_WITH_CORE_AUDIO
+  use_core_audio = TRUE;
+#else
   use_pulse = TRUE;
+#endif
+  
   use_jack = FALSE;
   use_alsa = FALSE;
   use_oss = FALSE;
@@ -545,6 +562,10 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
 
   if(backend != NULL){
     if(!g_ascii_strncasecmp(backend,
+			    "core-audio",
+			    11)){
+      use_pulse = TRUE;
+    }else if(!g_ascii_strncasecmp(backend,
 			    "pulse",
 			    6)){
       use_pulse = TRUE;
@@ -639,7 +660,12 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
   /* handle */
   g_message("%s", device);
 
-  if(use_pulse){
+  if(use_core_audio){
+    ags_config_set_value(config,
+			 soundcard_group,
+			 "device",
+			 device);
+  }else if(use_pulse){
     ags_config_set_value(config,
 			 soundcard_group,
 			 "device",
@@ -693,7 +719,9 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 
   backend = NULL;
   
-  if(AGS_IS_PULSE_DEVOUT(soundcard)){
+  if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
+    backend = "core-audio";
+  }else if(AGS_IS_PULSE_DEVOUT(soundcard)){
     backend = "pulse";
   }else if(AGS_IS_JACK_DEVOUT(soundcard)){
     backend = "jack";
@@ -707,6 +735,13 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 
   if(backend != NULL){
     if(!g_ascii_strncasecmp(backend,
+			    "core-audio",
+			    11)){
+      gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
+			       0);
+      
+      ags_soundcard_editor_load_core_audio_card(soundcard_editor);
+    }else if(!g_ascii_strncasecmp(backend,
 			    "pulse",
 			    6)){
       gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
@@ -906,6 +941,9 @@ ags_soundcard_editor_add_sink(AgsSoundcardEditor *soundcard_editor,
   AgsJackServer *jack_server;
   AgsJackDevout *jack_devout;
 
+  AgsCoreAudioServer *core_audio_server;
+  AgsCoreAudioDevout *core_audio_devout;
+
   AgsNotifySoundcard *notify_soundcard;
   
   AgsMutexManager *mutex_manager;
@@ -924,7 +962,7 @@ ags_soundcard_editor_add_sink(AgsSoundcardEditor *soundcard_editor,
 
   gchar *backend;
   
-  gboolean use_pulse, use_jack;
+  gboolean use_core_audio, use_pulse, use_jack;
   gboolean initial_soundcard;
   
   pthread_mutex_t *application_mutex;
@@ -939,6 +977,9 @@ ags_soundcard_editor_add_sink(AgsSoundcardEditor *soundcard_editor,
 
   mutex_manager = ags_mutex_manager_get_instance();
 
+  core_audio_server = NULL;
+  core_audio_devout = NULL;
+  
   pulse_server = NULL;
   pulse_devout = NULL;
   
@@ -951,6 +992,7 @@ ags_soundcard_editor_add_sink(AgsSoundcardEditor *soundcard_editor,
   
   backend = NULL;
 
+  use_core_audio = FALSE;
   use_pulse = FALSE;
   use_jack = FALSE;
 
@@ -961,6 +1003,12 @@ ags_soundcard_editor_add_sink(AgsSoundcardEditor *soundcard_editor,
 
   if(backend != NULL){
     if(!g_ascii_strncasecmp(backend,
+			    "core-audio",
+			    11)){
+      server_type = AGS_TYPE_CORE_AUDIO_SERVER;
+      
+      use_core_audio = TRUE;
+    }else if(!g_ascii_strncasecmp(backend,
 			    "pulse",
 			    6)){
       server_type = AGS_TYPE_PULSE_SERVER;
@@ -982,7 +1030,13 @@ ags_soundcard_editor_add_sink(AgsSoundcardEditor *soundcard_editor,
 
   if((distributed_manager = ags_list_util_find_type(distributed_manager,
 						    server_type)) != NULL){
-    if(use_pulse){
+    if(use_core_audio){
+      core_audio_server = AGS_CORE_AUDIO_SERVER(distributed_manager->data);
+
+      soundcard = 
+	core_audio_devout = (AgsCoreAudioDevout *) ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(core_audio_server),
+											      TRUE);
+    }else if(use_pulse){
       pulse_server = AGS_PULSE_SERVER(distributed_manager->data);
 
       soundcard = 
@@ -1066,7 +1120,9 @@ ags_soundcard_editor_add_sink(AgsSoundcardEditor *soundcard_editor,
   notify_soundcard = ags_notify_soundcard_new(soundcard_thread);
   AGS_TASK(notify_soundcard)->task_thread = application_context->task_thread;
 
-  if(use_pulse){
+  if(use_core_audio){
+    core_audio_devout->notify_soundcard = notify_soundcard;
+  }else if(use_pulse){
     pulse_devout->notify_soundcard = notify_soundcard;
   }else if(use_jack){
     jack_devout->notify_soundcard = notify_soundcard;
@@ -1118,6 +1174,9 @@ ags_soundcard_editor_remove_sink(AgsSoundcardEditor *soundcard_editor,
   AgsWindow *window;
   AgsPreferences *preferences;
 
+  AgsCoreAudioServer *core_audio_server;
+  AgsCoreAudioDevout *core_audio_devout;
+
   AgsPulseServer *pulse_server;
   AgsPulseDevout *pulse_devout;
 
@@ -1138,7 +1197,7 @@ ags_soundcard_editor_remove_sink(AgsSoundcardEditor *soundcard_editor,
 
   gchar *backend;
   
-  gboolean use_pulse, use_jack;
+  gboolean use_core_audio, use_pulse, use_jack;
 
   pthread_mutex_t *application_mutex;
 
@@ -1149,6 +1208,9 @@ ags_soundcard_editor_remove_sink(AgsSoundcardEditor *soundcard_editor,
 
   application_mutex = window->application_mutex;
 
+  core_audio_server = NULL;
+  core_audio_devout = NULL;
+  
   pulse_server = NULL;
   pulse_devout = NULL;
   
@@ -1162,6 +1224,7 @@ ags_soundcard_editor_remove_sink(AgsSoundcardEditor *soundcard_editor,
   
   backend = NULL;
 
+  use_core_audio = FALSE;
   use_pulse = FALSE;
   use_jack = FALSE;
 
@@ -1170,6 +1233,12 @@ ags_soundcard_editor_remove_sink(AgsSoundcardEditor *soundcard_editor,
 
   if(backend != NULL){
     if(!g_ascii_strncasecmp(backend,
+			    "core-audio",
+			    11)){
+      server_type = AGS_TYPE_CORE_AUDIO_SERVER;
+      
+      use_core_audio = TRUE;
+    }else if(!g_ascii_strncasecmp(backend,
 			    "pulse",
 			    6)){
       server_type = AGS_TYPE_PULSE_SERVER;
@@ -1192,7 +1261,10 @@ ags_soundcard_editor_remove_sink(AgsSoundcardEditor *soundcard_editor,
 
   if((distributed_manager = ags_list_util_find_type(distributed_manager,
 						    server_type)) != NULL){
-    if(use_pulse){
+    if(use_core_audio){
+      server = 
+	core_audio_server = AGS_CORE_AUDIO_SERVER(distributed_manager->data);
+    }else if(use_pulse){
       server = 
 	pulse_server = AGS_PULSE_SERVER(distributed_manager->data);
     }else if(use_jack){
@@ -1210,7 +1282,15 @@ ags_soundcard_editor_remove_sink(AgsSoundcardEditor *soundcard_editor,
   list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   
   while(list != NULL){
-    if(use_pulse){
+    if(use_core_audio){
+      if(AGS_IS_CORE_AUDIO_DEVOUT(list->data) &&
+	 !g_ascii_strcasecmp(ags_soundcard_get_device(AGS_SOUNDCARD(list->data)),
+			     device)){
+	soundcard = 
+	  core_audio_devout = list->data;
+	break;
+      }
+    }else if(use_pulse){
       if(AGS_IS_PULSE_DEVOUT(list->data) &&
 	 !g_ascii_strcasecmp(ags_soundcard_get_device(AGS_SOUNDCARD(list->data)),
 			     device)){
@@ -1291,6 +1371,7 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
   pthread_mutex_t *application_mutex;
 
   if(soundcard == NULL ||
+     AGS_IS_CORE_AUDIO_DEVOUT(soundcard) ||
      AGS_IS_PULSE_DEVOUT(soundcard) ||
      AGS_IS_JACK_DEVOUT(soundcard)){
     return;
@@ -1415,6 +1496,7 @@ ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
   pthread_mutex_t *application_mutex;
 
   if(soundcard == NULL ||
+     AGS_IS_CORE_AUDIO_DEVOUT(soundcard) ||
      AGS_IS_PULSE_DEVOUT(soundcard) ||
      AGS_IS_JACK_DEVOUT(soundcard)){
     return;
@@ -1453,6 +1535,78 @@ ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
     soundcard_editor->soundcard_thread = NULL;
   }
 
+  pthread_mutex_unlock(application_mutex);
+}
+
+void
+ags_soundcard_editor_load_core_audio_card(AgsSoundcardEditor *soundcard_editor)
+{
+  AgsWindow *window;
+  AgsPreferences *preferences;
+
+  AgsCoreAudioDevout *core_audio_devout;
+
+  AgsApplicationContext *application_context;
+
+  GList *distributed_manager;
+  GList *soundcard;
+  GList *card_id;
+
+  pthread_mutex_t *application_mutex;
+
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
+							   AGS_TYPE_PREFERENCES);
+  window = AGS_WINDOW(preferences->window);
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  application_mutex = window->application_mutex;
+
+  /* create soundcard */
+  pthread_mutex_lock(application_mutex);
+
+  distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
+
+  if(distributed_manager == NULL){
+    g_warning("distributed manager not found");
+
+    pthread_mutex_unlock(application_mutex);
+
+    return;
+  }
+
+  soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+  core_audio_devout = NULL;
+  
+  while(soundcard != NULL){
+    if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard->data)){
+      core_audio_devout = soundcard->data;
+      break;
+    }
+    
+    soundcard = soundcard->next;
+  }
+
+  card_id = NULL;
+  ags_soundcard_list_cards(AGS_SOUNDCARD(core_audio_devout),
+			   &card_id, NULL);
+
+  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
+
+  while(card_id != NULL){
+    if(card_id->data != NULL){
+      gtk_combo_box_text_append_text(soundcard_editor->card,
+				     card_id->data);
+    }
+    
+    card_id = card_id->next;
+  }
+
+  /*  */
+  gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
+			   FALSE);
+  
+  gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->samplerate,
+			   FALSE);
   pthread_mutex_unlock(application_mutex);
 }
 

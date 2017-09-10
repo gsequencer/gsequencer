@@ -108,18 +108,21 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
 		     FALSE, FALSE,
 		     0);
 
-  if(drum_input_pad->pad.group->active)
+  if(drum_input_pad->pad.group->active){
     gtk_widget_set_sensitive((GtkWidget *) spin_button,
 			     FALSE);
+  }
 
-  //  play = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-  //					  "label", GTK_STOCK_MEDIA_PLAY,
-  //					  "use-stock", TRUE,
-  //					  "use-underline", TRUE,
-  //					  NULL);
+#if 0
+  play = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
+  					  "label", GTK_STOCK_MEDIA_PLAY,
+  					  "use-stock", TRUE,
+  					  "use-underline", TRUE,
+  					  NULL);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->action_area, (GtkWidget *) play, FALSE, FALSE, 0);
   gtk_box_reorder_child((GtkBox *) GTK_DIALOG(file_chooser)->action_area, (GtkWidget *) play, 0);
-
+#endif
+  
   gtk_widget_show_all((GtkWidget *) file_chooser);
 
   g_signal_connect((GObject *) file_chooser, "response",

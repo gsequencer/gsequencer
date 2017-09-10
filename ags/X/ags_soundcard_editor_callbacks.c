@@ -34,6 +34,9 @@
 #include <ags/audio/pulse/ags_pulse_server.h>
 #include <ags/audio/pulse/ags_pulse_devout.h>
 
+#include <ags/audio/core-audio/ags_core_audio_server.h>
+#include <ags/audio/core-audio/ags_core_audio_devout.h>
+
 #include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/audio/task/ags_set_output_device.h>
@@ -61,6 +64,12 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 
   if(str != NULL){
     if(!g_ascii_strncasecmp(str,
+			    "core-audio",
+			    11)){
+      ags_soundcard_editor_load_core_audio_card(soundcard_editor);
+
+      gtk_widget_show_all((GtkWidget *) soundcard_editor->sink_hbox);
+    }else if(!g_ascii_strncasecmp(str,
 			    "pulse",
 			    6)){
       ags_soundcard_editor_load_pulse_card(soundcard_editor);
@@ -142,7 +151,9 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 
   str = NULL;
   
-  if(AGS_IS_PULSE_DEVOUT(soundcard)){
+  if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
+    str = "core-audio";
+  }else if(AGS_IS_PULSE_DEVOUT(soundcard)){
     str = "pulse";
   }else if(AGS_IS_JACK_DEVOUT(soundcard)){
     str = "jack";
