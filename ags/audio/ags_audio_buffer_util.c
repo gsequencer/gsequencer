@@ -94,6 +94,8 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT);
       case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_DOUBLE);
+      case AGS_AUDIO_BUFFER_UTIL_FLOAT32:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT32);
       default:
 	{
 	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
@@ -120,6 +122,8 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT);
       case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_DOUBLE);
+      case AGS_AUDIO_BUFFER_UTIL_FLOAT32:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT32);
       default:
 	{
 	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
@@ -147,6 +151,8 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT);
       case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_DOUBLE);
+      case AGS_AUDIO_BUFFER_UTIL_FLOAT32:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT32);
       default:
 	{
 	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
@@ -173,6 +179,8 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT);
       case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_DOUBLE);
+      case AGS_AUDIO_BUFFER_UTIL_FLOAT32:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT32);
       default:
 	{
 	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
@@ -199,6 +207,8 @@ ags_audio_buffer_util_get_copy_mode(guint destination_format,
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT);
       case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
 	return(AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_DOUBLE);
+      case AGS_AUDIO_BUFFER_UTIL_FLOAT32:
+	return(AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT32);
       default:
 	{
 	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
@@ -311,6 +321,52 @@ ags_audio_buffer_util_clear_float(float *buffer, guint channels,
     buffer += channels;
   }
 }
+
+#ifdef __APPLE__
+/**
+ * ags_audio_buffer_util_clear_float32:
+ * @buffer: the buffer to clear
+ * @channels: number of channels
+ * @count: count frames
+ * 
+ * Clears a buffer.
+ *
+ * Since: 0.7.65
+ */
+void
+ags_audio_buffer_util_clear_float32(Float32 *buffer, guint channels,
+				    guint count)
+{
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *buffer = 0.0;
+      buffer[1 * channels] = 0.0;
+      buffer[2 * channels] = 0.0;
+      buffer[3 * channels] = 0.0;
+      buffer[4 * channels] = 0.0;
+      buffer[5 * channels] = 0.0;
+      buffer[6 * channels] = 0.0;
+      buffer[7 * channels] = 0.0;
+
+      buffer += (8 * channels);
+    }
+  }
+
+  for(; i < count; i++){
+    *buffer = 0.0;
+
+    buffer += channels;
+  }
+}
+#endif
 
 /**
  * ags_audio_buffer_util_clear_double:
@@ -4861,6 +4917,263 @@ ags_audio_buffer_util_copy_double_to_double(double *destination, guint dchannels
   }
 }
 
+#ifdef __APPLE__
+/**
+ * ags_audio_buffer_util_copy_s8_to_float32:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.9.24
+ */
+void
+ags_audio_buffer_util_copy_s8_to_float32(Float32 *destination, guint dchannels,
+					 signed char *source, guint schannels,
+					 guint count)
+{
+  //NOTE:JK: scale = 1.0 / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 0.00787401574803149606;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = ((double) ((*destination) + (double) (scale * source[0])));
+      destination[1 * dchannels] = ((double) (destination[1 * dchannels] + (double) (scale * source[1 * schannels])));
+      destination[2 * dchannels] = ((double) (destination[2 * dchannels] + (double) (scale * source[2 * schannels])));
+      destination[3 * dchannels] = ((double) (destination[3 * dchannels] + (double) (scale * source[3 * schannels])));
+      destination[4 * dchannels] = ((double) (destination[4 * dchannels] + (double) (scale * source[4 * schannels])));
+      destination[5 * dchannels] = ((double) (destination[5 * dchannels] + (double) (scale * source[5 * schannels])));
+      destination[6 * dchannels] = ((double) (destination[6 * dchannels] + (double) (scale * source[6 * schannels])));
+      destination[7 * dchannels] = ((double) (destination[7 * dchannels] + (double) (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = ((double) ((*destination) + (double) (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
+}
+
+/**
+ * ags_audio_buffer_util_copy_s16_to_float32:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.9.24
+ */
+void
+ags_audio_buffer_util_copy_s16_to_float32(Float32 *destination, guint dchannels,
+					  signed short *source, guint schannels,
+					  guint count)
+{
+  //NOTE:JK: scale = 1.0 / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 0.00003051850947599719;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = (Float32) ((double) ((*destination) + (double) (scale * source[0])));
+      destination[1 * dchannels] = (Float32) ((double) (destination[1 * dchannels] + (double) (scale * source[1 * schannels])));
+      destination[2 * dchannels] = (Float32) ((double) (destination[2 * dchannels] + (double) (scale * source[2 * schannels])));
+      destination[3 * dchannels] = (Float32) ((double) (destination[3 * dchannels] + (double) (scale * source[3 * schannels])));
+      destination[4 * dchannels] = (Float32) ((double) (destination[4 * dchannels] + (double) (scale * source[4 * schannels])));
+      destination[5 * dchannels] = (Float32) ((double) (destination[5 * dchannels] + (double) (scale * source[5 * schannels])));
+      destination[6 * dchannels] = (Float32) ((double) (destination[6 * dchannels] + (double) (scale * source[6 * schannels])));
+      destination[7 * dchannels] = (Float32) ((double) (destination[7 * dchannels] + (double) (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = (Float32) ((double) ((*destination) + (double) (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
+}
+
+/**
+ * ags_audio_buffer_util_copy_s24_to_float32:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.9.24
+ */
+void
+ags_audio_buffer_util_copy_s24_to_float32(Float32 *destination, guint dchannels,
+					  signed long *source, guint schannels,
+					  guint count)
+{
+  //NOTE:JK: scale = 1.0 / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 0.00000011920930376163;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = ((double) ((*destination) + (double) (scale * source[0])));
+      destination[1 * dchannels] = ((double) (destination[1 * dchannels] + (double) (scale * source[1 * schannels])));
+      destination[2 * dchannels] = ((double) (destination[2 * dchannels] + (double) (scale * source[2 * schannels])));
+      destination[3 * dchannels] = ((double) (destination[3 * dchannels] + (double) (scale * source[3 * schannels])));
+      destination[4 * dchannels] = ((double) (destination[4 * dchannels] + (double) (scale * source[4 * schannels])));
+      destination[5 * dchannels] = ((double) (destination[5 * dchannels] + (double) (scale * source[5 * schannels])));
+      destination[6 * dchannels] = ((double) (destination[6 * dchannels] + (double) (scale * source[6 * schannels])));
+      destination[7 * dchannels] = ((double) (destination[7 * dchannels] + (double) (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = ((double) ((*destination) + (double) (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
+}
+
+/**
+ * ags_audio_buffer_util_copy_s32_to_float32:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.9.24
+ */
+void
+ags_audio_buffer_util_copy_s32_to_float32(Float32 *destination, guint dchannels,
+					  signed long *source, guint schannels,
+					  guint count)
+{
+  //NOTE:JK: scale = 1.0 / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 0.00000000465661291210;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = ((double) ((*destination) + (double) (scale * source[0])));
+      destination[1 * dchannels] = ((double) (destination[1 * dchannels] + (double) (scale * source[1 * schannels])));
+      destination[2 * dchannels] = ((double) (destination[2 * dchannels] + (double) (scale * source[2 * schannels])));
+      destination[3 * dchannels] = ((double) (destination[3 * dchannels] + (double) (scale * source[3 * schannels])));
+      destination[4 * dchannels] = ((double) (destination[4 * dchannels] + (double) (scale * source[4 * schannels])));
+      destination[5 * dchannels] = ((double) (destination[5 * dchannels] + (double) (scale * source[5 * schannels])));
+      destination[6 * dchannels] = ((double) (destination[6 * dchannels] + (double) (scale * source[6 * schannels])));
+      destination[7 * dchannels] = ((double) (destination[7 * dchannels] + (double) (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = ((double) ((*destination) + (double) (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
+}
+
+/**
+ * ags_audio_buffer_util_copy_s64_to_float32o:
+ * @destination: destination buffer
+ * @dchannels: destination buffer's count of channels
+ * @source: source buffer
+ * @schannels: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Copy audio data using additive strategy.
+ *
+ * Since: 0.9.24
+ */
+void
+ags_audio_buffer_util_copy_s64_to_float32(Float32 *destination, guint dchannels,
+					  signed long long *source, guint schannels,
+					  guint count)
+{
+  //NOTE:JK: scale = 1.0 / (2^bits_source / 2.0 - 1.0)
+  static const gdouble scale = 0.00000000000000000010;
+  guint limit;
+  guint i;
+
+  i = 0;
+  
+  /* unrolled function */
+  if(count > 8){
+    limit = count - 8;
+  
+    for(; i < limit; i += 8){
+      *destination = ((double) ((*destination) + (double) (scale * source[0])));
+      destination[1 * dchannels] = ((double) (destination[1 * dchannels] + (double) (scale * source[1 * schannels])));
+      destination[2 * dchannels] = ((double) (destination[2 * dchannels] + (double) (scale * source[2 * schannels])));
+      destination[3 * dchannels] = ((double) (destination[3 * dchannels] + (double) (scale * source[3 * schannels])));
+      destination[4 * dchannels] = ((double) (destination[4 * dchannels] + (double) (scale * source[4 * schannels])));
+      destination[5 * dchannels] = ((double) (destination[5 * dchannels] + (double) (scale * source[5 * schannels])));
+      destination[6 * dchannels] = ((double) (destination[6 * dchannels] + (double) (scale * source[6 * schannels])));
+      destination[7 * dchannels] = ((double) (destination[7 * dchannels] + (double) (scale * source[7 * schannels])));
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+
+  for(; i < count; i++){
+    *destination = ((double) ((*destination) + (double) (scale * source[0])));
+
+    destination += dchannels;
+    source += schannels;
+  }
+}
+#endif
+
 /**
  * ags_audio_buffer_util_copy_buffer_to_buffer:
  * @destination: destination buffer
@@ -5223,6 +5536,61 @@ ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, 
       ags_audio_buffer_util_copy_double_to_double((double *) destination + doffset, dchannels,
 						  (double *) source + soffset, schannels,
 						  count);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT32:
+    {
+#ifdef __APPLE__
+      ags_audio_buffer_util_copy_s8_to_float32((Float32 *) destination + doffset, dchannels,
+					       (signed char *) source + soffset, schannels,
+					       count);
+#else
+      g_message("ags_audio_audio_buffer_util_copy_buffer_to_buffer() - unsupported type");
+#endif
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT32:
+    {
+#ifdef __APPLE__
+      ags_audio_buffer_util_copy_s16_to_float32((Float32 *) destination + doffset, dchannels,
+						(signed short *) source + soffset, schannels,
+						count);
+#else
+      g_message("ags_audio_audio_buffer_util_copy_buffer_to_buffer() - unsupported type");
+#endif
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT32:
+    {
+#ifdef __APPLE__
+      ags_audio_buffer_util_copy_s24_to_float32((Float32 *) destination + doffset, dchannels,
+						(signed long *) source + soffset, schannels,
+						count);
+#else
+      g_message("ags_audio_audio_buffer_util_copy_buffer_to_buffer() - unsupported type");
+#endif
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT32:
+    {
+#ifdef __APPLE__
+      ags_audio_buffer_util_copy_s32_to_float32((Float32 *) destination + doffset, dchannels,
+						(signed long *) source + soffset, schannels,
+						count);
+#else
+      g_message("ags_audio_audio_buffer_util_copy_buffer_to_buffer() - unsupported type");
+#endif
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT32:
+    {
+#ifdef __APPLE__
+      ags_audio_buffer_util_copy_s64_to_float32((Float32 *) destination + doffset, dchannels,
+						(signed long long *) source + soffset, schannels,
+						count);
+#else
+      g_message("ags_audio_audio_buffer_util_copy_buffer_to_buffer() - unsupported type");
+#endif
     }
     break;
   default:
