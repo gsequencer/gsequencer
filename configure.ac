@@ -6,7 +6,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[0.9.23],[jkraehemann-guest@users.alioth.debian.org])
+AC_INIT([gsequencer],[0.9.24],[jkraehemann-guest@users.alioth.debian.org])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -41,10 +41,10 @@ AC_ARG_ENABLE(pulse, [AS_HELP_STRING([--enable-pulse],
 	      [],
 	      [enable_pulse=yes])
 
-AC_ARG_ENABLE(coreaudio, [AS_HELP_STRING([--enable-coreaudio],
-					 [enable coreaudio (default is no)])],
+AC_ARG_ENABLE(core-audio, [AS_HELP_STRING([--enable-core-audio],
+					  [enable core audio (default is no)])],
 	      [],
-	      [enable_coreaudio=no])
+	      [enable_core_audio=no])
 
 AC_ARG_ENABLE(libinstpatch, [AS_HELP_STRING([--enable-libinstpatch],
 					    [enable libinstpatch (default is yes)])],
@@ -112,7 +112,7 @@ AS_IF([test "x$enable_rt" != xno],
 # Checks for header files.
 AC_PATH_X
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h ladspa.h dssi.h lv2.h], , AC_MSG_ERROR("missing headers"))
+AC_CHECK_HEADERS([fcntl.h float.h inttypes.h langinfo.h libintl.h limits.h locale.h netinet/in.h stddef.h stdint.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h unistd.h ladspa.h lv2.h], , AC_MSG_ERROR("missing headers"))
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -152,6 +152,17 @@ AS_IF([test "x$enable_oss" != xno],
       [AC_DEFINE([AGS_WITH_OSS], [1], [OSS enabled])
        AC_MSG_NOTICE([OSS enabled])],
       AC_MSG_NOTICE([OSS disabled]))
+
+AS_IF([test "x$enable_core_audio" != xno],
+      [AC_DEFINE([AGS_WITH_CORE_AUDIO], [1], [core-audio enabled])
+
+      CORE_AUDIO_CFLAGS= 
+      CORE_AUDIO_LIBS="-framework CoreAudio -framework AudioUnit -framework AudioToolbox -framework CoreMIDI"
+      AC_SUBST(CORE_AUDIO_CFLAGS)
+      AC_SUBST(CORE_AUDIO_LIBS)
+
+      AC_MSG_NOTICE([core audio enabled])],
+      AC_MSG_NOTICE([core audio disabled]))
 
 AS_IF([test "x$enable_jack" != xno],
       [AC_DEFINE([AGS_WITH_JACK], [1], [JACK enabled])
@@ -214,7 +225,7 @@ PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.9.0])
 AC_SUBST(FONTCONFIG_CFLAGS)
 AC_SUBST(FONTCONFIG_LIBS)
 
-PKG_CHECK_MODULES([GDKPIXBUF], [gdk-pixbuf-2.0 >= 2.36.9])
+PKG_CHECK_MODULES([GDKPIXBUF], [gdk-pixbuf-2.0 >= 2.36.5])
 AC_SUBST(GDKPIXBUF_CFLAGS)
 AC_SUBST(GDKPIXBUF_LIBS)
 

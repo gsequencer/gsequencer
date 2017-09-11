@@ -3,11 +3,26 @@
 /* ALSA enabled */
 #undef AGS_WITH_ALSA
 
+/* core-audio enabled */
+#undef AGS_WITH_CORE_AUDIO
+
+/* JACK enabled */
+#undef AGS_WITH_JACK
+
 /* Disable if you don't want libinstpatch */
 #undef AGS_WITH_LIBINSTPATCH
 
 /* OSS enabled */
 #undef AGS_WITH_OSS
+
+/* PULSE enabled */
+#undef AGS_WITH_PULSE
+
+/* quartz enabled */
+#undef AGS_WITH_QUARTZ
+
+/* rt enabled */
+#undef AGS_WITH_RT
 
 /* Disable if you don't want xmlrpc-c */
 #undef AGS_WITH_XMLRPC_C
@@ -34,9 +49,6 @@
 /* ALSA sequencer event available */
 #undef HAVE_ALSA_SEQ_EVENT_H
 
-/* Define to 1 if you have the <argz.h> header file. */
-#undef HAVE_ARGZ_H
-
 /* Define to 1 if you have the `atexit' function. */
 #undef HAVE_ATEXIT
 
@@ -60,9 +72,6 @@
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
-
-/* Define to 1 if you have the <dssi.h> header file. */
-#undef HAVE_DSSI_H
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
@@ -134,9 +143,6 @@
    to 0 otherwise. */
 #undef HAVE_MALLOC
 
-/* Define to 1 if you have the <malloc.h> header file. */
-#undef HAVE_MALLOC_H
-
 /* Define to 1 if you have the `mblen' function. */
 #undef HAVE_MBLEN
 
@@ -188,9 +194,6 @@
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
-
-/* Define to 1 if you have the <stdio_ext.h> header file. */
-#undef HAVE_STDIO_EXT_H
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
