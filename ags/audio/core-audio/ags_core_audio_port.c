@@ -912,6 +912,7 @@ ags_core_audio_port_output_callback(void *in_user_data, AudioUnitRenderActionFla
   guint nth_buffer;
   guint copy_mode;
   guint count;
+  guint i;
   gboolean no_event;
   gboolean empty_run;
 
@@ -986,8 +987,10 @@ ags_core_audio_port_output_callback(void *in_user_data, AudioUnitRenderActionFla
     pthread_mutex_unlock(task_thread->launch_mutex);
   }
 
-  ags_audio_buffer_util_clear_float32(io_data->mBuffers[0].mData, 1,
-				      core_audio_port->pcm_channels * core_audio_port->buffer_size);
+  for(i = 0; i < core_audio_port->pcm_channels; i++){
+    ags_audio_buffer_util_clear_float32(io_data->mBuffers[i].mData, 1,
+					core_audio_port->buffer_size);
+  }
   
   if(audio_loop == NULL){
     g_atomic_int_dec_and_test(&(core_audio_port->queued));
@@ -1148,8 +1151,6 @@ ags_core_audio_port_output_callback(void *in_user_data, AudioUnitRenderActionFla
 
   /* get copy mode */
   if(!empty_run){
-    guint i;
-    
     g_atomic_int_set(&(core_audio_port->is_empty),
 		     FALSE);
 
@@ -1157,7 +1158,7 @@ ags_core_audio_port_output_callback(void *in_user_data, AudioUnitRenderActionFla
 						    ags_audio_buffer_util_format_from_soundcard(core_audio_devout->format));
 
     for(i = 0; i < core_audio_port->pcm_channels; i++){
-      ags_audio_buffer_util_copy_buffer_to_buffer(io_data->mBuffers[0].mData, 1, 0,
+      ags_audio_buffer_util_copy_buffer_to_buffer(io_data->mBuffers[i].mData, 1, 0,
 						  core_audio_devout->buffer[nth_buffer], core_audio_port->pcm_channels, i,
 						  core_audio_port->buffer_size, copy_mode);
     }

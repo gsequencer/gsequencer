@@ -251,6 +251,9 @@ ags_pattern_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *ev
 
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
+
+      cairo_surface_mark_dirty(cairo_get_target(cr));
+      cairo_destroy(cr);
     }
 
     ags_meter_paint(editor->current_meter);
@@ -837,6 +840,9 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
 
     cairo_pop_group_to_source(cr);
     cairo_paint(cr);
+
+    cairo_surface_mark_dirty(cairo_get_target(cr));
+    cairo_destroy(cr);
   }
 
   return(FALSE);
@@ -1086,8 +1092,11 @@ ags_pattern_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMo
     
     cairo_pop_group_to_source(cr);
     cairo_paint(cr);
-  }
 
+    cairo_surface_mark_dirty(cairo_get_target(cr));
+    cairo_destroy(cr);
+  }
+  
   return(FALSE);
 }
 

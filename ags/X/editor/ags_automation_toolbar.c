@@ -126,7 +126,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 
   automation_toolbar->edit = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
 					  "image", gtk_image_new_from_stock(GTK_STOCK_EDIT,
-									      GTK_ICON_SIZE_LARGE_TOOLBAR),
+									    GTK_ICON_SIZE_LARGE_TOOLBAR),
 					  "relief", GTK_RELIEF_NONE,
 					  NULL);
   automation_toolbar->selected_edit_mode = automation_toolbar->edit;

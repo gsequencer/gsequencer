@@ -652,7 +652,15 @@ ags_dial_realize(GtkWidget *widget)
     cairo_t *cr;
     cairo_text_extents_t te_up, te_down;
 
+    gdk_threads_enter();
+
     cr = gdk_cairo_create(widget->parent->window);
+
+    if(cr == NULL){
+      gdk_threads_leave();
+
+      return;
+    }
     
     cairo_select_font_face (cr, "Georgia\0",
 			    CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
@@ -675,6 +683,8 @@ ags_dial_realize(GtkWidget *widget)
     }
 
     cairo_destroy(cr);
+
+    gdk_threads_leave();
   }
 
   /*  */
@@ -1293,8 +1303,16 @@ ags_dial_draw(AgsDial *dial)
 
   widget = GTK_WIDGET(dial);
   dial_style = gtk_widget_get_style(widget);
+
+  gdk_threads_enter();
   
   cr = gdk_cairo_create(widget->window);
+
+  if(cr == NULL){
+    gdk_threads_leave();
+
+    return;
+  }
   
   radius = (gdouble) dial->radius;
   outline_strength = (gdouble) dial->outline_strength;
@@ -1544,6 +1562,8 @@ ags_dial_draw(AgsDial *dial)
   cairo_stroke(cr);
 
   cairo_destroy(cr);
+
+  gdk_threads_leave();
 }
 
 void

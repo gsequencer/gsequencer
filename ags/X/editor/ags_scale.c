@@ -158,6 +158,9 @@ ags_scale_paint(AgsScale *scale)
         
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
+  
+  cairo_surface_mark_dirty(cairo_get_target(cr));
+  cairo_destroy(cr);
 }
 
 /**

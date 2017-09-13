@@ -265,6 +265,9 @@ ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event
 
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
+      
+      cairo_surface_mark_dirty(cairo_get_target(cr));
+      cairo_destroy(cr);
     }
 
     ags_meter_paint(editor->current_meter);
@@ -891,6 +894,9 @@ ags_note_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
 
     cairo_pop_group_to_source(cr);
     cairo_paint(cr);
+    
+    cairo_surface_mark_dirty(cairo_get_target(cr));
+    cairo_destroy(cr);
   }
 
   return(FALSE);
@@ -1154,6 +1160,9 @@ ags_note_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion
     
     cairo_pop_group_to_source(cr);
     cairo_paint(cr);
+    
+    cairo_surface_mark_dirty(cairo_get_target(cr));
+    cairo_destroy(cr);
   }
 
   return(FALSE);
