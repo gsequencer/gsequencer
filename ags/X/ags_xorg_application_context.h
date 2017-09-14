@@ -103,8 +103,6 @@ struct _AgsXorgApplicationContextClass
 
 GType ags_xorg_application_context_get_type();
 
-void* ags_xorg_application_context_setup_thread(void *ptr);
-
 AgsXorgApplicationContext* ags_xorg_application_context_new();
 
 #endif /*__AGS_XORG_APPLICATION_CONTEXT_H__*/

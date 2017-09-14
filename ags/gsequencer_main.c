@@ -23,6 +23,21 @@
 #include <gdk/gdk.h>
 #include <pango/pangocairo.h>
 
+#include <ags/lib/ags_log.h>
+
+#include <ags/object/ags_application_context.h>
+
+#include <ags/X/ags_xorg_application_context.h>
+
+#include <libxml/parser.h>
+#include <libxml/xlink.h>
+#include <libxml/xpath.h>
+#include <libxml/valid.h>
+#include <libxml/xmlIO.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/xmlsave.h>
+
+
 #include "gsequencer_main.h"
 
 #include "config.h"

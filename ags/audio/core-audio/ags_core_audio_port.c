@@ -72,6 +72,9 @@ void ags_core_audio_port_dispose(GObject *gobject);
 void ags_core_audio_port_finalize(GObject *gobject);
 
 #ifdef AGS_WITH_CORE_AUDIO
+OSStatus SetCurrentIOBufferFrameSize(AudioObjectID inDeviceID,
+				     UInt32 inIOBufferFrameSize);
+
 void* ags_core_audio_port_output_thread(void **data);
 OSStatus ags_core_audio_port_output_callback(void *in_user_data, AudioUnitRenderActionFlags* ioActionFlags,
 					     const AudioTimeStamp* in_time_stamp,
@@ -233,8 +236,6 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   guint pcm_channels;
   guint buffer_size;
   guint format;
-  guint word_size;
-  guint fixed_size;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
@@ -358,8 +359,6 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   core_audio_port->pcm_channels = pcm_channels;
   core_audio_port->samplerate = samplerate;
 
-  word_size = sizeof(Float32);
-  
 #ifdef AGS_WITH_CORE_AUDIO
   /* Audio */
   core_audio_port->comp = NULL;
@@ -643,20 +642,22 @@ ags_core_audio_port_find(GList *core_audio_port,
   return(NULL);
 }
 
+#ifdef AGS_WITH_CORE_AUDIO
 OSStatus
 SetCurrentIOBufferFrameSize(AudioObjectID inDeviceID,
 			    UInt32 inIOBufferFrameSize)
 {
-    AudioObjectPropertyAddress theAddress = { kAudioDevicePropertyBufferFrameSize,
-                                              kAudioObjectPropertyScopeGlobal,
-                                              kAudioObjectPropertyElementMaster };
+  AudioObjectPropertyAddress theAddress = { kAudioDevicePropertyBufferFrameSize,
+					    kAudioObjectPropertyScopeGlobal,
+					    kAudioObjectPropertyElementMaster };
  
-    return AudioObjectSetPropertyData(inDeviceID,
-                                      &theAddress,
-                                      0,
-                                      NULL,
-                                      sizeof(UInt32), &inIOBufferFrameSize);
+  return AudioObjectSetPropertyData(inDeviceID,
+				    &theAddress,
+				    0,
+				    NULL,
+				    sizeof(UInt32), &inIOBufferFrameSize);
 }
+#endif
 
 /**
  * ags_core_audio_port_register:
@@ -762,6 +763,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	g_message("core audio - unsupported word size");
       }
 
+#ifdef AGS_WITH_CORE_AUDIO
       core_audio_port->desc.componentType = kAudioUnitType_Output;
       core_audio_port->desc.componentSubType = kAudioUnitSubType_DefaultOutput;
       core_audio_port->desc.componentManufacturer = kAudioUnitManufacturer_Apple;
@@ -814,7 +816,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       
       g_message("start audio unit");
       AudioOutputUnitStart(core_audio_port->au_unit);
-
+#endif
     }else{
       //NOTE:JK: not implemented
     }
@@ -824,6 +826,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
     if(is_output){
       //NOTE:JK: not implemented
     }else{
+#ifdef AGS_WITH_CORE_AUDIO
       retval = MIDIClientCreate(CFSTR("Advanced Gtk+ Sequencer - Core MIDI to System Sounds Demo"),
 				ags_core_audio_port_midi_notify_callback,
 				core_audio_port,
@@ -841,6 +844,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       if(retval != noErr){
 	return;
       }
+#endif
     }
   }
   
@@ -1204,12 +1208,10 @@ ags_core_audio_port_midi_read_callback(const MIDIPacketList *pkt_list,
 #endif
 
 void
-ags_core_audio_port_set_samplerate(AgsCoreAudioPort *core_audio_port,
-				   guint samplerate)
+ags_core_audio_port_set_format(AgsCoreAudioPort *core_audio_port,
+			       guint format)
 {
   AgsMutexManager *mutex_manager;
-
-  guint fixed_size;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
@@ -1217,7 +1219,34 @@ ags_core_audio_port_set_samplerate(AgsCoreAudioPort *core_audio_port,
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  /* lock core_audio port */
+  /* lock core audio port */
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) core_audio_port);
+
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(mutex);
+
+  core_audio_port->format = format;
+  
+  pthread_mutex_unlock(mutex);
+}
+
+void
+ags_core_audio_port_set_samplerate(AgsCoreAudioPort *core_audio_port,
+				   guint samplerate)
+{
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* lock core audio port */
   pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
@@ -1242,15 +1271,13 @@ ags_core_audio_port_set_buffer_size(AgsCoreAudioPort *core_audio_port,
 {
   AgsMutexManager *mutex_manager;
 
-  guint fixed_size;
-
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  /* lock core_audio port */
+  /* lock core audio port */
   pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
@@ -1276,15 +1303,13 @@ ags_core_audio_port_set_pcm_channels(AgsCoreAudioPort *core_audio_port,
 {
   AgsMutexManager *mutex_manager;
 
-  guint fixed_size;
-
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  /* lock core_audio port */
+  /* lock core audio port */
   pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,

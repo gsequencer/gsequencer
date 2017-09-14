@@ -120,6 +120,8 @@ void ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 				  gboolean is_output);
 void ags_core_audio_port_unregister(AgsCoreAudioPort *core_audio_port);
 
+void ags_core_audio_port_set_format(AgsCoreAudioPort *core_audio_port,
+				    guint format);
 void ags_core_audio_port_set_samplerate(AgsCoreAudioPort *core_audio_port,
 					guint samplerate);
 void ags_core_audio_port_set_pcm_channels(AgsCoreAudioPort *core_audio_port,

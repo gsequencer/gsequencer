@@ -144,10 +144,10 @@ __thread struct sigaction ags_gui_thread_sigact;
 
 //TODO:JK: implement get functions
 #ifndef AGS_USE_TIMER
-extern static sigset_t ags_wait_mask;
+extern sigset_t ags_wait_mask;
 extern struct sigaction ags_sigact;
 #else
-extern static sigset_t ags_timer_mask;
+extern sigset_t ags_timer_mask;
 
 extern struct sigaction ags_sigact_timer;
 
@@ -353,6 +353,7 @@ ags_gui_thread_do_poll_loop(void *ptr)
 {
   AgsGuiThread *gui_thread;
   AgsTaskThread *task_thread;
+  AgsPollingThread *polling_thread;
   AgsThread *thread;
   
   AgsXorgApplicationContext *xorg_application_context;
@@ -404,10 +405,6 @@ ags_gui_thread_do_poll_loop(void *ptr)
     
   g_main_context_push_thread_default(main_context);
 
-  g_signal_connect(polling_thread, "run",
-		   G_CALLBACK(ags_gui_thread_polling_thread_run_callback), gui_thread);
-
-
   g_main_context_release(main_context);
 
   /* source functions */
@@ -415,7 +412,7 @@ ags_gui_thread_do_poll_loop(void *ptr)
   source_funcs.check = ags_gui_thread_task_check;
   source_funcs.dispatch = ags_gui_thread_task_dispatch;
 
-  gui_thread->source = 
+  gui_thread->task_source = 
     source = g_source_new(&source_funcs,
 			  sizeof(GSource));
   g_source_attach(source,
@@ -428,8 +425,14 @@ ags_gui_thread_do_poll_loop(void *ptr)
 
   task_thread = ags_thread_find_type(AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop,
 				     AGS_TYPE_TASK_THREAD);
+
+  polling_thread = (AgsPollingThread *) ags_thread_find_type(AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop,
+							     AGS_TYPE_POLLING_THREAD);
   
-  /* poll */  
+  /* poll */
+  g_signal_connect(polling_thread, "run",
+		   G_CALLBACK(ags_gui_thread_polling_thread_run_callback), gui_thread);
+  
   while((AGS_GUI_THREAD_RUNNING & (g_atomic_int_get(&(gui_thread->flags)))) != 0){
     nanosleep(&idle,
 	      NULL);
@@ -806,7 +809,7 @@ ags_gui_thread_launch(AgsGuiThread *gui_thread,
   AgsApplicationContext *application_context;
   
   AgsMutexManager *mutex_manager;
-  AgsThread *audio_loop;
+  AgsThread *audio_loop, *task_thread;
 
   AgsConfig *config;
 
@@ -827,6 +830,9 @@ ags_gui_thread_launch(AgsGuiThread *gui_thread,
   config = application_context->config;
   
   pthread_mutex_unlock(application_mutex);
+
+  task_thread = ags_thread_find_type(audio_loop,
+				     AGS_TYPE_TASK_THREAD);
 
   start_queue = NULL;
 
@@ -963,7 +969,7 @@ ags_gui_thread_timer_launch(AgsGuiThread *gui_thread,
   AgsApplicationContext *application_context;
   
   AgsMutexManager *mutex_manager;
-  AgsThread *audio_loop;
+  AgsThread *audio_loop, *task_thread;
 
   AgsConfig *config;
 
@@ -984,6 +990,9 @@ ags_gui_thread_timer_launch(AgsGuiThread *gui_thread,
   config = application_context->config;
   
   pthread_mutex_unlock(application_mutex);
+
+  task_thread = ags_thread_find_type(audio_loop,
+				     AGS_TYPE_TASK_THREAD);
   
   /* autosave thread */
   if(!g_strcmp0(ags_config_get_value(config,
@@ -1081,12 +1090,12 @@ ags_gui_thread_timer_launch_filename(AgsGuiThread *gui_thread,
 	
       pthread_mutex_unlock(audio_loop->start_mutex);
     }
-  }
     
-  /* now start read task */
-  simple_file_read = ags_simple_file_read_new(simple_file);
-  ags_task_thread_append_task((AgsTaskThread *) task_thread,
-			      (AgsTask *) simple_file_read);
+    /* now start read task */
+    simple_file_read = ags_simple_file_read_new(simple_file);
+    ags_task_thread_append_task((AgsTaskThread *) task_thread,
+				(AgsTask *) simple_file_read);
+  }
 }
 
 void
@@ -1236,8 +1245,8 @@ ags_gui_thread_do_animation(AgsGuiThread *gui_thread)
     
     gdk_flush();
 
-    g_main_context_iteration(main_context,
-			     FALSE);
+    //    g_main_context_iteration(main_context,
+    //			     FALSE);
     usleep(12500);
   }
 
@@ -1270,6 +1279,8 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
   xorg_application_context = ags_application_context_get_instance();
 
   thread = (AgsThread *) gui_thread;
+  g_atomic_int_or(&(gui_thread->flags),
+		  AGS_GUI_THREAD_RUNNING);
   
   main_context = gui_thread->main_context;
   
@@ -1307,29 +1318,23 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
   source_funcs.check = ags_gui_thread_task_check;
   source_funcs.dispatch = ags_gui_thread_task_dispatch;
 
-  gui_thread->source = 
+  gui_thread->task_source = 
     source = g_source_new(&source_funcs,
 			  sizeof(GSource));
   g_source_attach(source,
 		  main_context);
   
   /* show animation */
+  g_atomic_int_set(&(xorg_application_context->gui_ready),
+		   TRUE);
+  
   ags_gui_thread_do_animation(gui_thread);
-
-  /* wait for audio loop */
-  while(g_atomic_int_get(&(xorg_application_context->gui_ready)) == 0){
-    usleep(500000);
-  }
-
+  
   /* main context iteration */
   while((AGS_GUI_THREAD_RUNNING & (g_atomic_int_get(&(gui_thread->flags)))) != 0){
     g_main_context_iteration(main_context,
-			     FALSE);
-
-    ags_gui_thread_complete_task(gui_thread);  
-
-    g_main_context_iteration(main_context,
 			     TRUE);
+    ags_gui_thread_complete_task(gui_thread);  
   }
   
   pthread_exit(NULL);

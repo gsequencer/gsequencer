@@ -27,7 +27,11 @@
 
 #include <pthread.h>
 
+#include <ags/config.h>
+
+#ifdef AGS_WITH_ALSA
 #include <alsa/asoundlib.h>
+#endif
 
 #define AGS_TYPE_MIDIIN                (ags_midiin_get_type())
 #define AGS_MIDIIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MIDIIN, AgsMidiin))

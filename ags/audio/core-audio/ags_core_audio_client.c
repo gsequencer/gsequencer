@@ -39,6 +39,7 @@
 #include <ags/audio/core-audio/ags_core_audio_server.h>
 #include <ags/audio/core-audio/ags_core_audio_port.h>
 #include <ags/audio/core-audio/ags_core_audio_devout.h>
+#include <ags/audio/core-audio/ags_core_audio_midiin.h>
 
 #include <ags/i18n.h>
 

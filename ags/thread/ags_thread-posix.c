@@ -110,8 +110,6 @@ static pthread_key_t ags_thread_key;
 /* Once-only initialisation of the key */
 static pthread_once_t ags_thread_key_once = PTHREAD_ONCE_INIT;
 
-static pthread_mutex_t class_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 GType
 ags_thread_get_type()
 {

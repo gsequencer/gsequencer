@@ -23,6 +23,7 @@
 #include <ags/util/ags_list_util.h>
 
 #include <ags/lib/ags_complex.h>
+#include <ags/lib/ags_log.h>
 
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
@@ -49,6 +50,7 @@
 #include <ags/plugin/ags_ladspa_manager.h>
 #include <ags/plugin/ags_dssi_manager.h>
 #include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_lv2ui_manager.h>
 #include <ags/plugin/ags_lv2_worker_manager.h>
 #include <ags/plugin/ags_lv2_worker.h>
 #include <ags/plugin/ags_lv2_urid_manager.h>
@@ -155,6 +157,14 @@
 #include <ags/X/machine/ags_dssi_bridge.h>
 
 #include <pango/pango.h>
+
+#include <libxml/parser.h>
+#include <libxml/xlink.h>
+#include <libxml/xpath.h>
+#include <libxml/valid.h>
+#include <libxml/xmlIO.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/xmlsave.h>
 
 #ifndef __APPLE__
 #include <pango/pangofc-fontmap.h>
@@ -448,6 +458,8 @@ ags_xorg_application_context_sound_provider_interface_init(AgsSoundProviderInter
 void
 ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_context)
 {
+  AgsConfig *config;
+
   /* fundamental instances */
   config = ags_config_get_instance();
   AGS_APPLICATION_CONTEXT(xorg_application_context)->config = config;
@@ -877,6 +889,8 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   AgsThread *gui_thread;
   AgsThreadPool *thread_pool;
 
+  GList *start_queue;
+  
   xorg_application_context = (AgsXorgApplicationContext *) application_context;
 
   /* call parent */
@@ -910,6 +924,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   /* AgsTaskThread */
   task_thread = 
     application_context->task_thread = (GObject *) ags_task_thread_new();
+  thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
   ags_main_loop_set_async_queue(AGS_MAIN_LOOP(audio_loop),
 				task_thread);
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
@@ -962,28 +977,6 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
 
   /* start gui thread */
   ags_gui_thread_do_run(gui_thread);
-    
-  /* wait for gui thread */
-  pthread_mutex_lock(gui_thread->start_mutex);
-
-  if(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
-      
-    g_atomic_int_set(&(gui_thread->start_wait),
-		     TRUE);
-
-    while(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
-      g_atomic_int_set(&(gui_thread->start_wait),
-		       TRUE);
-	
-      pthread_cond_wait(gui_thread->start_cond,
-			gui_thread->start_mutex);
-    }
-  }
-    
-  pthread_mutex_unlock(gui_thread->start_mutex);
-    
-  g_atomic_int_set(&(xorg_application_context->gui_ready),
-		   1);  
 }
 
 void
@@ -992,6 +985,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
 
+  AgsGuiThread *gui_thread;
+  
   AgsServer *server;
 
   AgsAudioLoop *audio_loop;
@@ -1001,31 +996,282 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   AgsPulseServer *pulse_server;
   AgsCoreAudioServer *core_audio_server;
 
+  AgsLadspaManager *ladspa_manager;
+  AgsDssiManager *dssi_manager;
+  AgsLv2Manager *lv2_manager;
+  AgsLv2uiManager *lv2ui_manager;
+  AgsLv2WorkerManager *lv2_worker_manager;
+
   AgsThread *soundcard_thread;
   AgsThread *export_thread;
   AgsThread *sequencer_thread;
   AgsDestroyWorker *destroy_worker;
-  
+  AgsThread *main_loop;
+  AgsMutexManager *mutex_manager;
+
+  AgsLog *log;
   AgsConfig *config;
 
   GList *list;  
+  
+  struct passwd *pw;
 
+#ifdef AGS_USE_TIMER
+  timer_t *timer_id;
+#endif
+
+  gchar *blacklist_filename;
+  gchar *filename;
   gchar *soundcard_group;
   gchar *sequencer_group;
   gchar *str;
-
+      
+  uid_t uid;
+  
   guint i;
+  gboolean single_thread_enabled;
   gboolean has_core_audio;
   gboolean has_pulse;
   gboolean has_jack;
-
+  
+  pthread_mutex_t *application_mutex;
+  
   xorg_application_context = (AgsXorgApplicationContext *) application_context;
 
   audio_loop = AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop;
 
+  config = ags_config_get_instance();
+
   /* call parent */
   AGS_APPLICATION_CONTEXT_CLASS(ags_xorg_application_context_parent_class)->setup(application_context);
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+    
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop;
+  
+  pthread_mutex_unlock(application_mutex);
+
+  gui_thread = ags_thread_find_type(main_loop,
+				    AGS_TYPE_GUI_THREAD);
+
+  log = ags_log_get_instance();
+
+#ifndef AGS_USE_TIMER
+  atexit(ags_xorg_application_context_signal_cleanup);
+
+  /* Ignore interactive and job-control signals.  */
+  signal(SIGINT, SIG_IGN);
+  signal(SIGQUIT, SIG_IGN);
+  signal(SIGTSTP, SIG_IGN);
+  signal(SIGTTIN, SIG_IGN);
+  signal(SIGTTOU, SIG_IGN);
+  signal(SIGCHLD, SIG_IGN);
+  signal(AGS_THREAD_RESUME_SIG, SIG_IGN);
+  signal(AGS_THREAD_SUSPEND_SIG, SIG_IGN);
+
+  ags_sigact.sa_handler = ags_xorg_application_context_signal_handler;
+  sigemptyset(&ags_sigact.sa_mask);
+  ags_sigact.sa_flags = 0;
+  sigaction(SIGINT, &ags_sigact, (struct sigaction *) NULL);
+  sigaction(SA_RESTART, &ags_sigact, (struct sigaction *) NULL);
+#else
+  timer_id = (timer_t *) malloc(sizeof(timer_t));
+  
+  /* create timer */
+  ags_sigact_timer.sa_flags = SA_SIGINFO;
+  ags_sigact_timer.sa_sigaction = ags_xorg_application_context_signal_handler_timer;
+  sigemptyset(&ags_sigact_timer.sa_mask);
+  
+  if(sigaction(SIGRTMIN, &ags_sigact_timer, NULL) == -1){
+    perror("sigaction");
+    exit(EXIT_FAILURE);
+  }
+  
+  /* Block timer signal temporarily */
+  sigemptyset(&ags_timer_mask);
+  sigaddset(&ags_timer_mask, SIGRTMIN);
+  
+  if(sigprocmask(SIG_SETMASK, &ags_timer_mask, NULL) == -1){
+    perror("sigprocmask");
+    exit(EXIT_FAILURE);
+  }
+
+  /* Create the timer */
+  ags_sev_timer.sigev_notify = SIGEV_SIGNAL;
+  ags_sev_timer.sigev_signo = SIGRTMIN;
+  ags_sev_timer.sigev_value.sival_ptr = timer_id;
+  
+  if(timer_create(CLOCK_MONOTONIC, &ags_sev_timer, timer_id) == -1){
+    perror("timer_create");
+    exit(EXIT_FAILURE);
+  }
+#endif
+  
+  /* check filename */
+  filename = NULL;
+
+  for(i = 0; i < AGS_APPLICATION_CONTEXT(xorg_application_context)->argc; i++){
+    if(!strncmp(AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i], "--filename", 11)){
+      AgsSimpleFile *simple_file;
+
+      xmlXPathContext *xpath_context; 
+      xmlXPathObject *xpath_object;
+      xmlNode **node;
+
+      xmlChar *xpath;
+
+      gchar *buffer;
+      guint buffer_length;
+      
+      filename = AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i + 1];
+      simple_file = ags_simple_file_new();
+      g_object_set(simple_file,
+		   "filename", filename,
+		   NULL);
+      ags_simple_file_open(simple_file,
+			   NULL);
+
+      str = g_strdup_printf("* Read config from file: %s", filename);
+      ags_log_add_message(log,
+			  str);
+
+      xpath = "/ags-simple-file/ags-sf-config";
+
+      /* Create xpath evaluation context */
+      xpath_context = xmlXPathNewContext(simple_file->doc);
+
+      if(xpath_context == NULL) {
+	g_warning("Error: unable to create new XPath context");
+
+	break;
+      }
+
+      /* Evaluate xpath expression */
+      xpath_object = xmlXPathEval(xpath, xpath_context);
+
+      if(xpath_object == NULL) {
+	g_warning("Error: unable to evaluate xpath expression \"%s\"", xpath);
+	xmlXPathFreeContext(xpath_context); 
+
+	break;
+      }
+
+      node = xpath_object->nodesetval->nodeTab;
+  
+      for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
+	if(node[i]->type == XML_ELEMENT_NODE){
+	  buffer = xmlNodeGetContent(node[i]);
+	  buffer_length = strlen(buffer);
+	  
+	  break;
+	}
+      }
+      
+      if(buffer != NULL){
+	//	ags_config_clear(ags_config_get_instance());
+	ags_config_load_from_data(ags_config_get_instance(),
+				  buffer, buffer_length);
+      }
+      
+      break;
+    }
+  }
+
+  /* get user information */
+  uid = getuid();
+  pw = getpwuid(uid);
+
+  /* load ladspa manager */
+  ladspa_manager = ags_ladspa_manager_get_instance();
+
+  blacklist_filename = g_strdup_printf("%s/%s/ladspa_plugin.blacklist",
+				       pw->pw_dir,
+				       AGS_DEFAULT_DIRECTORY);
+  ags_ladspa_manager_load_blacklist(ladspa_manager,
+				    blacklist_filename);
+
+  ags_log_add_message(log,
+		      "* Loading LADSPA plugins");
+  
+  ags_ladspa_manager_load_default_directory(ladspa_manager);
+
+  /* load dssi manager */
+  dssi_manager = ags_dssi_manager_get_instance();
+
+  blacklist_filename = g_strdup_printf("%s/%s/dssi_plugin.blacklist",
+				       pw->pw_dir,
+				       AGS_DEFAULT_DIRECTORY);
+  ags_dssi_manager_load_blacklist(dssi_manager,
+				  blacklist_filename);
+
+  ags_log_add_message(log,
+		      "* Loading DSSI plugins");
+
+  ags_dssi_manager_load_default_directory(dssi_manager);
+
+  /* load lv2 manager */
+  lv2_manager = ags_lv2_manager_get_instance();
+  lv2_worker_manager = ags_lv2_worker_manager_get_instance();    
+
+  blacklist_filename = g_strdup_printf("%s/%s/lv2_plugin.blacklist",
+				       pw->pw_dir,
+				       AGS_DEFAULT_DIRECTORY);
+  ags_lv2_manager_load_blacklist(lv2_manager,
+				 blacklist_filename);
+
+  ags_log_add_message(log,
+		      "* Loading Lv2 plugins");
+
+  ags_lv2_manager_load_default_directory(lv2_manager);
+
+  /* load lv2ui manager */
+  lv2ui_manager = ags_lv2ui_manager_get_instance();  
+
+  blacklist_filename = g_strdup_printf("%s/%s/lv2ui_plugin.blacklist",
+				       pw->pw_dir,
+				       AGS_DEFAULT_DIRECTORY);
+  ags_lv2ui_manager_load_blacklist(lv2ui_manager,
+				   blacklist_filename);
+  
+  ags_log_add_message(log,
+		      "* Loading Lv2ui plugins");
+
+  ags_lv2ui_manager_load_default_directory(lv2ui_manager);
+  
+  /* fix cross-references in managers */
+  lv2_worker_manager->thread_pool = ((AgsXorgApplicationContext *) ags_application_context)->thread_pool;
+
+  /* launch GUI */
+  ags_log_add_message(log,
+		      "* Launch user interface");
+
+  single_thread_enabled = FALSE;
+
+  if(filename != NULL){
+#ifdef AGS_USE_TIMER
+    ags_gui_thread_timer_launch_filename(gui_thread,
+					 timer_id,
+					 filename,
+					 single_thread_enabled);
+#else
+    ags_gui_thread_launch_filename(gui_thread,
+				   filename,
+				   single_thread_enabled);
+#endif
+  }else{
+#ifdef AGS_USE_TIMER
+    ags_gui_thread_timer_launch(gui_thread,
+				timer_id,
+				single_thread_enabled);
+#else
+    ags_gui_thread_launch(gui_thread,
+			  single_thread_enabled);
+#endif
+  }
+  
   /* distributed manager */
   xorg_application_context->distributed_manager = NULL;
 
@@ -1321,22 +1567,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
   g_free(sequencer_group);
   
-  //TODO:JK: comment out  
-  if(jack_enabled){
-    GObject *tmp;
-    
-    tmp = ags_distributed_manager_register_sequencer(AGS_DISTRIBUTED_MANAGER(jack_server),
-						     FALSE);
-
-    if(tmp != NULL){
-      sequencer = tmp;
-      
-      xorg_application_context->sequencer = g_list_prepend(xorg_application_context->sequencer,
-							   sequencer);
-      g_object_ref(G_OBJECT(sequencer));
-    }
-  }
-    
   /* AgsWindow */
 #ifdef AGS_WITH_QUARTZ
   g_object_new(GTKOSX_TYPE_APPLICATION,
@@ -1468,6 +1698,10 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   if(has_jack){
     ags_jack_server_connect_client(jack_server);
   }
+  
+  /* stop animation */
+  g_atomic_int_set(&(xorg_application_context->show_animation),
+		   FALSE);  
 }
 
 void
@@ -1988,253 +2222,6 @@ ags_xorg_application_context_clear_cache(AgsTaskThread *task_thread,
   //  FcFini();
 
   gdk_threads_leave();
-}
-
-void*
-ags_xorg_application_context_setup_thread(void *ptr)
-{
-  AgsXorgApplicationContext *xorg_application_context;
-
-  AgsLadspaManager *ladspa_manager;
-  AgsDssiManager *dssi_manager;
-  AgsLv2Manager *lv2_manager;
-  AgsLv2uiManager *lv2ui_manager;
-  AgsLv2WorkerManager *lv2_worker_manager;
-
-  AgsLog *log;
-  
-  struct passwd *pw;
-
-  gchar *blacklist_filename;
-  gchar *filename;
-  gchar *str;
-      
-  uid_t uid;
-  
-#ifdef AGS_USE_TIMER
-  timer_t *timer_id;
-#endif
-  
-  guint i;
-
-  xorg_application_context = (AgsXorgApplicationContext *) ptr;
-
-  log = ags_log_get_instance();
-
-#ifndef AGS_USE_TIMER
-  atexit(ags_xorg_application_context_signal_cleanup);
-
-  /* Ignore interactive and job-control signals.  */
-  signal(SIGINT, SIG_IGN);
-  signal(SIGQUIT, SIG_IGN);
-  signal(SIGTSTP, SIG_IGN);
-  signal(SIGTTIN, SIG_IGN);
-  signal(SIGTTOU, SIG_IGN);
-  signal(SIGCHLD, SIG_IGN);
-  signal(AGS_THREAD_RESUME_SIG, SIG_IGN);
-  signal(AGS_THREAD_SUSPEND_SIG, SIG_IGN);
-
-  ags_sigact.sa_handler = ags_xorg_application_context_signal_handler;
-  sigemptyset(&ags_sigact.sa_mask);
-  ags_sigact.sa_flags = 0;
-  sigaction(SIGINT, &ags_sigact, (struct sigaction *) NULL);
-  sigaction(SA_RESTART, &ags_sigact, (struct sigaction *) NULL);
-#endif
-  timer_id = (timer_t *) malloc(sizeof(timer_t));
-  
-  /* create timer */
-  ags_sigact_timer.sa_flags = SA_SIGINFO;
-  ags_sigact_timer.sa_sigaction = ags_xorg_application_context_signal_handler_timer;
-  sigemptyset(&ags_sigact_timer.sa_mask);
-  
-  if(sigaction(SIGRTMIN, &ags_sigact_timer, NULL) == -1){
-    perror("sigaction");
-    exit(EXIT_FAILURE);
-  }
-  
-  /* Block timer signal temporarily */
-  sigemptyset(&ags_timer_mask);
-  sigaddset(&ags_timer_mask, SIGRTMIN);
-  
-  if(sigprocmask(SIG_SETMASK, &ags_timer_mask, NULL) == -1){
-    perror("sigprocmask");
-    exit(EXIT_FAILURE);
-  }
-
-  /* Create the timer */
-  ags_sev_timer.sigev_notify = SIGEV_SIGNAL;
-  ags_sev_timer.sigev_signo = SIGRTMIN;
-  ags_sev_timer.sigev_value.sival_ptr = timer_id;
-  
-  if(timer_create(CLOCK_MONOTONIC, &ags_sev_timer, timer_id) == -1){
-    perror("timer_create");
-    exit(EXIT_FAILURE);
-  }
-#endif
-  
-  /* check filename */
-  filename = NULL;
-
-  for(i = 0; i < xorg_application_context->argc; i++){
-    if(!strncmp(xorg_application_context->argv[i], "--filename", 11)){
-      AgsSimpleFile *simple_file;
-
-      xmlXPathContext *xpath_context; 
-      xmlXPathObject *xpath_object;
-      xmlNode **node;
-
-      xmlChar *xpath;
-
-      gchar *buffer;
-      guint buffer_length;
-      
-      filename = xorg_application_context->argv[i + 1];
-      simple_file = ags_simple_file_new();
-      g_object_set(simple_file,
-		   "filename", filename,
-		   NULL);
-      ags_simple_file_open(simple_file,
-			   NULL);
-
-      str = g_strdup_printf("* Read config from file: %s", filename);
-      ags_log_add_message(log,
-			  str);
-
-      xpath = "/ags-simple-file/ags-sf-config";
-
-      /* Create xpath evaluation context */
-      xpath_context = xmlXPathNewContext(simple_file->doc);
-
-      if(xpath_context == NULL) {
-	g_warning("Error: unable to create new XPath context");
-
-	break;
-      }
-
-      /* Evaluate xpath expression */
-      xpath_object = xmlXPathEval(xpath, xpath_context);
-
-      if(xpath_object == NULL) {
-	g_warning("Error: unable to evaluate xpath expression \"%s\"", xpath);
-	xmlXPathFreeContext(xpath_context); 
-
-	break;
-      }
-
-      node = xpath_object->nodesetval->nodeTab;
-  
-      for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
-	if(node[i]->type == XML_ELEMENT_NODE){
-	  buffer = xmlNodeGetContent(node[i]);
-	  buffer_length = strlen(buffer);
-	  
-	  break;
-	}
-      }
-      
-      if(buffer != NULL){
-	//	ags_config_clear(ags_config_get_instance());
-	ags_config_load_from_data(ags_config_get_instance(),
-				  buffer, buffer_length);
-      }
-      
-      break;
-    }
-  }
-
-  /* get user information */
-  uid = getuid();
-  pw = getpwuid(uid);
-
-  /* load ladspa manager */
-  ladspa_manager = ags_ladspa_manager_get_instance();
-
-  blacklist_filename = g_strdup_printf("%s/%s/ladspa_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
-  ags_ladspa_manager_load_blacklist(ladspa_manager,
-				    blacklist_filename);
-
-  ags_log_add_message(log,
-		      "* Loading LADSPA plugins");
-  
-  ags_ladspa_manager_load_default_directory(ladspa_manager);
-
-  /* load dssi manager */
-  dssi_manager = ags_dssi_manager_get_instance();
-
-  blacklist_filename = g_strdup_printf("%s/%s/dssi_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
-  ags_dssi_manager_load_blacklist(dssi_manager,
-				  blacklist_filename);
-
-  ags_log_add_message(log,
-		      "* Loading DSSI plugins");
-
-  ags_dssi_manager_load_default_directory(dssi_manager);
-
-  /* load lv2 manager */
-  lv2_manager = ags_lv2_manager_get_instance();
-  lv2_worker_manager = ags_lv2_worker_manager_get_instance();    
-
-  blacklist_filename = g_strdup_printf("%s/%s/lv2_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
-  ags_lv2_manager_load_blacklist(lv2_manager,
-				 blacklist_filename);
-
-  ags_log_add_message(log,
-		      "* Loading Lv2 plugins");
-
-  ags_lv2_manager_load_default_directory(lv2_manager);
-
-  /* load lv2ui manager */
-  lv2ui_manager = ags_lv2ui_manager_get_instance();  
-
-  blacklist_filename = g_strdup_printf("%s/%s/lv2ui_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
-  ags_lv2ui_manager_load_blacklist(lv2ui_manager,
-				   blacklist_filename);
-  
-  ags_log_add_message(log,
-		      "* Loading Lv2ui plugins");
-
-  ags_lv2ui_manager_load_default_directory(lv2ui_manager);
-  
-  /* fix cross-references in managers */
-  lv2_worker_manager->thread_pool = ((AgsXorgApplicationContext *) ags_application_context)->thread_pool;
-
-  /* launch GUI */
-  ags_log_add_message(log,
-		      "* Launch user interface");
-
-  if(filename != NULL){
-#ifdef AGS_USE_TIMER
-    ags_gui_thread_timer_launch_filename(gui_thread,
-					 timer_id,
-					 filename,
-					 single_thread_enabled);
-#else
-    ags_gui_thread_launch_filename(gui_thread,
-				   filename,
-				   single_thread_enabled);
-#endif
-  }else{
-#ifdef AGS_USE_TIMER
-    ags_gui_thread_timer_launch(gui_thread,
-				timer_id,
-				single_thread_enabled);
-#else
-    ags_gui_thread_launch(gui_thread,
-			  single_thread_enabled);
-#endif
-  }
-  
-  /* stop animation */
-  g_atomic_int_set(&(xorg_application_context->show_animation),
-		   FALSE);  
 }
 
 AgsXorgApplicationContext*
