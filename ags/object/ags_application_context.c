@@ -49,6 +49,10 @@ void ags_application_context_dispose(GObject *gobject);
 void ags_application_context_finalize(GObject *gobject);
 
 void ags_application_context_real_load_config(AgsApplicationContext *application_context);
+
+void ags_application_context_real_prepare(AgsApplicationContext *application_context);
+void ags_application_context_real_setup(AgsApplicationContext *application_context);
+
 void ags_application_context_real_register_types(AgsApplicationContext *application_context);
 
 void ags_application_context_real_quit(AgsApplicationContext *application_context);
@@ -67,6 +71,8 @@ void ags_application_context_real_quit(AgsApplicationContext *application_contex
 
 enum{
   LOAD_CONFIG,
+  PREPARE,
+  SETUP,
   REGISTER_TYPES,
   QUIT,
   LAST_SIGNAL,
@@ -191,6 +197,9 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
   /* AgsApplicationContextClass */
   application_context->load_config = ags_application_context_real_load_config;
 
+  application_context->prepare = ags_application_context_real_prepare;
+  application_context->setup = ags_application_context_real_setup;
+
   application_context->register_types = ags_application_context_real_register_types;
   
   application_context->quit = ags_application_context_real_quit;
@@ -209,6 +218,42 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
 		 G_TYPE_FROM_CLASS (application_context),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsApplicationContextClass, load_config),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsApplicationContext::prepare:
+   * @application_context: the  #AgsApplicationContext
+   *
+   * The ::prepare signal should be implemented to prepare
+   * your application context.
+   *
+   * Since: 0.9.24
+   */
+  application_context_signals[PREPARE] =
+    g_signal_new("prepare",
+		 G_TYPE_FROM_CLASS (application_context),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsApplicationContextClass, prepare),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsApplicationContext::setup:
+   * @application_context: the  #AgsApplicationContext
+   *
+   * The ::setup signal should be implemented to setup
+   * your application context.
+   *
+   * Since: 0.9.24
+   */
+  application_context_signals[SETUP] =
+    g_signal_new("setup",
+		 G_TYPE_FROM_CLASS (application_context),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsApplicationContextClass, setup),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
@@ -296,8 +341,6 @@ ags_application_context_init(AgsApplicationContext *application_context)
   application_context->file = NULL;
   
   application_context->history = NULL;
-  
-  // ags_log_message(ags_default_log, "starting Advanced Gtk+ Sequencer\n");
 }
 
 void
@@ -615,6 +658,42 @@ ags_application_context_load_config(AgsApplicationContext *application_context)
   g_object_ref(G_OBJECT(application_context));
   g_signal_emit(G_OBJECT(application_context),
 		application_context_signals[LOAD_CONFIG], 0);
+  g_object_unref(G_OBJECT(application_context));
+  g_object_unref(application_context);
+}
+
+void
+ags_application_context_real_prepare(AgsApplicationContext *application_context)
+{
+  ags_log_message(ags_log_get_instance(), "prepare Advanced Gtk+ Sequencer\n");
+}
+
+void
+ags_application_context_prepare(AgsApplicationContext *application_context)
+{
+  g_return_if_fail(AGS_IS_APPLICATION_CONTEXT(application_context));
+
+  g_object_ref(G_OBJECT(application_context));
+  g_signal_emit(G_OBJECT(application_context),
+		application_context_signals[PREPARE], 0);
+  g_object_unref(G_OBJECT(application_context));
+  g_object_unref(application_context);
+}
+
+void
+ags_application_context_real_setup(AgsApplicationContext *application_context)
+{
+  ags_log_message(ags_log_get_instance(), "setup Advanced Gtk+ Sequencer\n");
+}
+
+void
+ags_application_context_setup(AgsApplicationContext *application_context)
+{
+  g_return_if_fail(AGS_IS_APPLICATION_CONTEXT(application_context));
+
+  g_object_ref(G_OBJECT(application_context));
+  g_signal_emit(G_OBJECT(application_context),
+		application_context_signals[SETUP], 0);
   g_object_unref(G_OBJECT(application_context));
   g_object_unref(application_context);
 }

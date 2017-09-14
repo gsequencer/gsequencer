@@ -71,6 +71,7 @@ struct _AgsXorgApplicationContext
   AgsApplicationContext application_context;
 
   volatile gboolean gui_ready;
+  volatile gboolean show_animation;
   
   AgsThreadPool *thread_pool;
 
@@ -102,7 +103,7 @@ struct _AgsXorgApplicationContextClass
 
 GType ags_xorg_application_context_get_type();
 
-void ags_xorg_application_context_register_types(AgsApplicationContext *application_context);
+void* ags_xorg_application_context_setup_thread(void *ptr);
 
 AgsXorgApplicationContext* ags_xorg_application_context_new();
 

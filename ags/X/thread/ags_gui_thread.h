@@ -73,6 +73,9 @@ struct _AgsGuiThread
   volatile GList *task_completion;
 
   pthread_mutex_t *dispatch_mutex;
+
+  GList *collected_task;
+  GSource *task_source;
 };
 
 struct _AgsGuiThreadClass
@@ -81,6 +84,28 @@ struct _AgsGuiThreadClass
 };
 
 GType ags_gui_thread_get_type();
+
+void ags_gui_thread_show_file_error(AgsGuiThread *gui_thread,
+				    gchar *filename,
+				    GError *error);
+
+void ags_gui_thread_launch(AgsGuiThread *gui_thread,
+			   gboolean single_thread);
+void ags_gui_thread_launch_filename(AgsGuiThread *gui_thread,
+				    gchar *filename,
+				    gboolean single_thread);
+
+void ags_gui_thread_timer_start(AgsGuiThread *gui_thread,
+				void *timer_id);
+void ags_gui_thread_timer_launch(AgsGuiThread *gui_thread,
+				 void *timer_id,
+				 gboolean single_thread);
+void ags_gui_thread_timer_launch_filename(AgsGuiThread *gui_thread,
+					  void *timer_id, gchar *filename,
+					  gboolean single_thread);
+
+void ags_gui_thread_do_animation(AgsGuiThread *gui_thread);
+void ags_gui_thread_do_run(AgsGuiThread *gui_thread);
 
 AgsGuiThread* ags_gui_thread_new();
 

@@ -35,12 +35,12 @@
 #define AGS_APPLICATION_CONTEXT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_APPLICATION_CONTEXT, AgsApplicationContextClass))
 
 #ifndef PACKAGE_VERSION
-#define AGS_VERSION "0.7.0\0"
+#define AGS_VERSION "0.9.0\0"
 #else
 #define AGS_VERSION PACKAGE_VERSION
 #endif
 
-#define AGS_BUILD_ID "CEST 13-10-2015 04:33\0"
+#define AGS_BUILD_ID "CEST 14-09-2017 04:33\0"
 
 #define AGS_DEFAULT_DIRECTORY ".gsequencer\0"
 #define AGS_DEFAULT_CONFIG "ags.conf\0"
@@ -96,6 +96,9 @@ struct _AgsApplicationContextClass
 
   void (*load_config)(AgsApplicationContext *application_context);
   
+  void (*prepare)(AgsApplicationContext *application_context);
+  void (*setup)(AgsApplicationContext *application_context);
+
   void (*register_types)(AgsApplicationContext *application_context);
 
   void (*read)(AgsFile *file, xmlNode *node, GObject **gobject);
@@ -107,6 +110,10 @@ struct _AgsApplicationContextClass
 GType ags_application_context_get_type();
 
 void ags_application_context_load_config(AgsApplicationContext *application_context);
+
+void ags_application_context_prepare(AgsApplicationContext *application_context);
+void ags_application_context_setup(AgsApplicationContext *application_context);
+
 void ags_application_context_register_types(AgsApplicationContext *application_context);
 
 void ags_application_context_add_sibling(AgsApplicationContext *application_context,
