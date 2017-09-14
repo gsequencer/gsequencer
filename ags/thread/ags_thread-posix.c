@@ -2757,12 +2757,7 @@ ags_thread_clock(AgsThread *thread)
   guint thread_signal;
   guint cycles;
   
-  pthread_mutex_lock(&class_mutex);
-
-  thread_signal = thread_signals[CLOCK];
-
-  pthread_mutex_unlock(&class_mutex);
-  
+  thread_signal = thread_signals[CLOCK];  
   g_return_val_if_fail(AGS_IS_THREAD(thread), 0);
 
   g_object_ref(thread);
@@ -2888,12 +2883,7 @@ ags_thread_start(AgsThread *thread)
 {
   guint thread_signal;
   
-  pthread_mutex_lock(&class_mutex);
-
   thread_signal = thread_signals[START];
-  
-  pthread_mutex_unlock(&class_mutex);
-
   g_return_if_fail(AGS_IS_THREAD(thread));
 
   if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
@@ -3429,12 +3419,7 @@ ags_thread_run(AgsThread *thread)
 {
   guint thread_signal;
   
-  pthread_mutex_lock(&class_mutex);
-
   thread_signal = thread_signals[RUN];
-  
-  pthread_mutex_unlock(&class_mutex);
-
   g_return_if_fail(AGS_IS_THREAD(thread));
 
   g_object_ref(thread);
@@ -3572,12 +3557,7 @@ ags_thread_stop(AgsThread *thread)
 {
   guint thread_signal;
 
-  pthread_mutex_lock(&class_mutex);
-
   thread_signal = thread_signals[STOP];
-
-  pthread_mutex_unlock(&class_mutex);
-
   g_return_if_fail(AGS_IS_THREAD(thread));
 
   if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) == 0){
@@ -3613,12 +3593,7 @@ ags_thread_interrupted(AgsThread *thread,
 
   return(0);
   
-  pthread_mutex_lock(&class_mutex);
-
   thread_signal = thread_signals[INTERRUPTED];
-
-  pthread_mutex_unlock(&class_mutex);
-
   g_return_val_if_fail(AGS_IS_THREAD(thread),
 		       0);
 
@@ -3907,12 +3882,8 @@ ags_thread_new(gpointer data)
 {
   AgsThread *thread;
 
-  pthread_mutex_lock(&class_mutex);
-
   thread = (AgsThread *) g_object_new(AGS_TYPE_THREAD,
 				      NULL);
-
-  pthread_mutex_unlock(&class_mutex);
 
   thread->data = data;
 

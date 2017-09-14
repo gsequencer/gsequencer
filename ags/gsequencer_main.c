@@ -91,7 +91,9 @@
 
 #include <locale.h>
 
+#ifdef AGS_WITH_X11
 #include <X11/Xlib.h>
+#endif
 
 #include "config.h"
 
@@ -206,9 +208,13 @@ ags_start_animation_thread(void *ptr)
   image_size = 4 * 800 * 450;
   
   gdk_cr = gdk_cairo_create(window->window);
-  
-  filename = g_strdup_printf("%s%s", DESTDIR, "/gsequencer/images/ags_supermoon-800x450.png");
 
+#ifdef AGS_ANIMATION_FILENAME
+  filename = g_strdup(AGS_ANIMATION_FILENAME);
+#else
+  filename = g_strdup_printf("%s%s", DESTDIR, "/gsequencer/images/ags_supermoon-800x450.png");
+#endif
+  
   surface = cairo_image_surface_create_from_png(filename);
   image_data = cairo_image_surface_get_data(surface);
 
@@ -1241,8 +1247,10 @@ main(int argc, char **argv)
   gboolean builtin_theme_disabled;
   guint i;
 
+#ifdef AGS_WITH_RT
   struct sched_param param;
   struct rlimit rl;
+#endif
   struct sigaction sa;
   struct passwd *pw;
 
@@ -1345,7 +1353,9 @@ main(int argc, char **argv)
     }
   }
 
+#ifdef AGS_WITH_X11
   XInitThreads();
+#endif
   
   uid = getuid();
   pw = getpwuid(uid);
@@ -1359,9 +1369,14 @@ main(int argc, char **argv)
     if(!g_file_test(rc_filename,
 		    G_FILE_TEST_IS_REGULAR)){
       g_free(rc_filename);
+
+#ifdef AGS_RC_FILENAME
+      rc_filename = g_strdup(AGS_RC_FILENAME);
+#else
       rc_filename = g_strdup_printf("%s%s",
 				    DESTDIR,
 				    "/gsequencer/styles/ags.rc");
+#endif
     }
   
     gtk_rc_parse(rc_filename);

@@ -998,9 +998,6 @@ ags_core_audio_port_output_callback(void *in_user_data, AudioUnitRenderActionFla
     return(noErr);
   }
   
-  g_atomic_int_and(&(AGS_THREAD(audio_loop)->flags),
-		   (~(AGS_THREAD_TIMING)));
-
   /*  */
   pthread_mutex_lock(mutex);
 
@@ -1183,10 +1180,6 @@ ags_core_audio_port_output_callback(void *in_user_data, AudioUnitRenderActionFla
   pthread_mutex_unlock(device_mutex);
 
   if(empty_run){
-    pthread_mutex_lock(mutex);
-    
-    pthread_mutex_unlock(mutex);
-    
     g_atomic_int_set(&(core_audio_port->is_empty),
 		     TRUE);
   }
@@ -1268,7 +1261,8 @@ ags_core_audio_port_set_buffer_size(AgsCoreAudioPort *core_audio_port,
   pthread_mutex_lock(mutex);
 
 #ifdef AGS_WITH_CORE_AUDIO
-  core_audio_port->data_format.mBytesPerPacket = buffer_size;
+  SetCurrentIOBufferFrameSize(core_audio_port->au_unit,
+			      buffer_size);
 #endif
 
   core_audio_port->buffer_size = buffer_size;

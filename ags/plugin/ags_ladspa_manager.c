@@ -110,11 +110,60 @@ ags_ladspa_manager_init(AgsLadspaManager *ladspa_manager)
   ladspa_manager->ladspa_plugin = NULL;
 
   if(ags_ladspa_default_path == NULL){
-    ags_ladspa_default_path = (gchar **) malloc(3 * sizeof(gchar *));
+    gchar *ladspa_env;
 
-    ags_ladspa_default_path[0] = g_strdup("/usr/lib/ladspa");
-    ags_ladspa_default_path[1] = g_strdup("/usr/lib64/ladspa");
-    ags_ladspa_default_path[2] = NULL;
+    if((ladspa_env = getenv("LADSPA_PATH")) != NULL){
+      gchar *iter, *next;
+      guint i;
+      
+      ags_ladspa_default_path = (gchar **) malloc(sizeof(gchar *));
+
+      iter = ladspa_env;
+      i = 0;
+      
+      while((next = index(iter, ':')) != NULL){
+	ags_ladspa_default_path = (gchar **) realloc(ags_ladspa_default_path,
+						     (i + 2) * sizeof(gchar *));
+	ags_ladspa_default_path[i] = g_strndup(iter,
+					       next - iter);
+
+	iter = next + 1;
+	i++;
+      }
+
+      if(*iter != '\0'){
+	ags_ladspa_default_path = (gchar **) realloc(ags_ladspa_default_path,
+						     (i + 2) * sizeof(gchar *));
+	ags_ladspa_default_path[i] = g_strdup(iter);
+
+	i++;	
+      }
+
+      ags_ladspa_default_path[i] = NULL;
+    }else{
+      gchar *home_dir;
+      guint i;
+
+      if((home_dir = getenv("HOME")) != NULL){
+	ags_ladspa_default_path = (gchar **) malloc(6 * sizeof(gchar *));
+      }else{
+	ags_ladspa_default_path = (gchar **) malloc(5 * sizeof(gchar *));
+      }
+    
+      i = 0;
+    
+      ags_ladspa_default_path[i++] = g_strdup("/usr/lib64/ladspa");
+      ags_ladspa_default_path[i++] = g_strdup("/usr/local/lib64/ladspa");
+      ags_ladspa_default_path[i++] = g_strdup("/usr/lib/ladspa");
+      ags_ladspa_default_path[i++] = g_strdup("/usr/local/lib/ladspa");
+
+      if(home_dir != NULL){
+	ags_ladspa_default_path[i++] = g_strdup_printf("%s/.ladspa",
+						       home_dir);
+      }
+    
+      ags_ladspa_default_path[i++] = NULL;
+    }
   }
 }
 
@@ -448,7 +497,7 @@ ags_ladspa_manager_load_default_directory(AgsLadspaManager *ladspa_manager)
 
     while((filename = g_dir_read_name(dir)) != NULL){
       if(g_str_has_suffix(filename,
-			  ".so") &&
+			  AGS_LIBRARY_SUFFIX) &&
 	 !g_list_find_custom(ladspa_manager->ladspa_plugin_blacklist,
 			     filename,
 			     strcmp)){

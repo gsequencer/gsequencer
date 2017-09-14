@@ -1234,7 +1234,7 @@ ags_soundcard_editor_remove_sink(AgsSoundcardEditor *soundcard_editor,
   if(backend != NULL){
     if(!g_ascii_strncasecmp(backend,
 			    "core-audio",
-			    11)){
+			    6)){
       server_type = AGS_TYPE_CORE_AUDIO_SERVER;
       
       use_core_audio = TRUE;

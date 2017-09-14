@@ -575,7 +575,7 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
       }
     }else if(!g_ascii_strncasecmp(backend,
 				  "core-audio",
-				  11)){
+				  6)){
       while(soundcard != NULL){
 	if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard->data)){
 	  device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));

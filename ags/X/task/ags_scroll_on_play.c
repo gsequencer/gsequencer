@@ -299,7 +299,10 @@ ags_scroll_on_play_launch(AgsTask *task)
 
 	  cairo_pop_group_to_source(cr);
 	  cairo_paint(cr);
-
+	  
+	  cairo_surface_mark_dirty(cairo_get_target(cr));
+	  cairo_destroy(cr);
+	  
 	  /* draw fader */
 	  cairo_push_group(cr);
 
@@ -379,7 +382,10 @@ ags_scroll_on_play_launch(AgsTask *task)
 
 	  cairo_pop_group_to_source(cr);
 	  cairo_paint(cr);
-
+	  
+	  cairo_surface_mark_dirty(cairo_get_target(cr));
+	  cairo_destroy(cr);
+	  
 	  /* draw fader */
 	  cairo_push_group(cr);
 

@@ -288,9 +288,6 @@ ags_soundcard_thread_set_property(GObject *gobject,
 	}else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
 	  g_atomic_int_or(&(AGS_THREAD(soundcard_thread)->flags),
 	  		  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
-
-	  //g_atomic_int_or(&(AGS_THREAD(soundcard_thread)->flags),
-	  //		  AGS_THREAD_TIMING);
 	}
       }
 

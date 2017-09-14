@@ -65,7 +65,7 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
   if(str != NULL){
     if(!g_ascii_strncasecmp(str,
 			    "core-audio",
-			    11)){
+			    6)){
       ags_soundcard_editor_load_core_audio_card(soundcard_editor);
 
       gtk_widget_show_all((GtkWidget *) soundcard_editor->sink_hbox);

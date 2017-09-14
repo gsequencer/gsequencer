@@ -138,7 +138,7 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
       }
     }else if(!g_ascii_strncasecmp(backend,
 				  "core-audio",
-				  11)){
+				  6)){
       if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard->data) &&
 	 !g_ascii_strcasecmp(device,
 			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
@@ -250,7 +250,7 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
       }
     }else if(!g_ascii_strncasecmp(backend,
 				  "pulse",
-				  6)){
+				  5)){
       if(AGS_IS_PULSE_DEVOUT(soundcard->data) &&
 	 !g_ascii_strcasecmp(device,
 			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
@@ -264,7 +264,7 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
       }
     }else if(!g_ascii_strncasecmp(backend,
 				  "core-audio",
-				  11)){
+				  5)){
       if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard->data) &&
 	 !g_ascii_strcasecmp(device,
 			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){

@@ -442,7 +442,14 @@ ags_open_file_launch(AgsTask *task)
 				    audio->soundcard,
 				    0, open_file->audio->audio_channels);
 
-    ags_audio_file_open(audio_file);
+    if(!ags_audio_file_open(audio_file)){
+      g_message("unable to open file - %s", current_filename);
+      
+      current = current->next;
+
+      continue;
+    }
+    
     ags_audio_file_read_audio_signal(audio_file);
 
     iter = channel;
