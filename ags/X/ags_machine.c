@@ -27,7 +27,6 @@
 #include <ags/object/ags_plugin.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_task_completion.h>
 
 #include <ags/file/ags_file.h>
@@ -1622,7 +1621,7 @@ ags_machine_set_run_extended(AgsMachine *machine,
 
   AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
 
@@ -1670,8 +1669,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type((AgsThread *) audio_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) audio_loop,
+						       AGS_TYPE_GUI_THREAD);
 
   if(run){
     AgsInitAudio *init_audio;
@@ -1750,8 +1749,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
       /* append AgsStartSoundcard and AgsStartSequencer */
       list = g_list_reverse(list);
       
-      ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
-				   list);
+      ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
+					list);
     }
   }else{
     AgsCancelAudio *cancel_audio;
@@ -1761,8 +1760,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
 					FALSE, sequencer, notation);
     
     /* append AgsCancelAudio */
-    ags_task_thread_append_task((AgsTaskThread *) task_thread,
-				(AgsTask *) cancel_audio);
+    ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+				 cancel_audio);
   }
 }
 
@@ -1936,7 +1935,7 @@ ags_machine_open_files(AgsMachine *machine,
 
   AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
 
@@ -1966,8 +1965,8 @@ ags_machine_open_files(AgsMachine *machine,
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type((AgsThread *) audio_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) audio_loop,
+						       AGS_TYPE_GUI_THREAD);
 
   /* instantiate open file task */
   open_file = ags_open_file_new(machine->audio,
@@ -1975,8 +1974,8 @@ ags_machine_open_files(AgsMachine *machine,
 				overwrite_channels,
 				create_channels);
 
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(open_file));
+  ags_gui_thread_schedule_task(gui_thread,
+			       open_file);
 
 }
 

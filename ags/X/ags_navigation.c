@@ -26,7 +26,6 @@
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
@@ -34,6 +33,8 @@
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/X/editor/ags_note_edit.h>
 #include <ags/X/editor/ags_pattern_edit.h>
@@ -453,7 +454,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
   
@@ -487,8 +488,8 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_GUI_THREAD);
 
   /* seek soundcard */
   pthread_mutex_lock(soundcard_mutex);
@@ -514,8 +515,8 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 					  steps,
 					  move_forward);
   
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(seek_soundcard));
+  ags_gui_thread_schedule_task(gui_thread,
+			       seek_soundcard);
 
   /* update GUI */
   tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));

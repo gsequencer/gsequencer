@@ -25,7 +25,6 @@
 #include <ags/object/ags_applicable.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
@@ -37,6 +36,8 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_editor.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/i18n.h>
 
@@ -447,7 +448,7 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 
     AgsMutexManager *mutex_manager;
     AgsThread *main_loop;
-    AgsTaskThread *task_thread;
+    AgsGuiThread *gui_thread;
 
     AgsApplicationContext *application_context;
 
@@ -481,8 +482,8 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
     pthread_mutex_unlock(application_mutex);
 
     /* get task and soundcard thread */
-    task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-							 AGS_TYPE_TASK_THREAD);
+    gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+							 AGS_TYPE_GUI_THREAD);
 
     /* lookup audio mutex */
     pthread_mutex_lock(application_mutex);
@@ -553,8 +554,8 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
       
       /* append AgsLinkChannel */
       task = g_list_reverse(task);
-      ags_task_thread_append_tasks(task_thread,
-				   task);
+      ags_gui_thread_schedule_task_list(gui_thread,
+					task);
     }else{
       guint first_link;
 
@@ -626,8 +627,8 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
       }
 
       task = g_list_reverse(task);
-      ags_task_thread_append_tasks(task_thread,
-				   task);
+      ags_gui_thread_schedule_task_list(gui_thread,
+					task);
     }
   }
 }

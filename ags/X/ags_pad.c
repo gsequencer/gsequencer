@@ -27,7 +27,6 @@
 #include <ags/object/ags_plugin.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_task_completion.h>
 
 #include <ags/audio/ags_sound_provider.h>
@@ -792,7 +791,7 @@ ags_pad_play(AgsPad *pad)
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
   
@@ -837,8 +836,8 @@ ags_pad_play(AgsPad *pad)
   pthread_mutex_unlock(application_mutex);
 
   /* get task */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_GUI_THREAD);
 
   /*  */
   tasks = NULL;
@@ -936,8 +935,8 @@ ags_pad_play(AgsPad *pad)
       /* append AgsStartSoundcard */
       tasks = g_list_reverse(tasks);
 
-      ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
-				   tasks);
+      ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
+					tasks);
     }
   }else{
     AgsPlayback *playback;
@@ -1003,7 +1002,8 @@ ags_pad_play(AgsPad *pad)
 	  cancel_channel = ags_cancel_channel_new(channel, recall_id,
 						  (GObject *) playback);
 
-	  ags_task_thread_append_task(task_thread, (AgsTask *) cancel_channel);
+	  ags_gui_thread_schedule_task(gui_thread,
+				       cancel_channel);
 
 	  channel = channel->next;
 	}
@@ -1066,7 +1066,8 @@ ags_pad_play(AgsPad *pad)
 	cancel_channel = ags_cancel_channel_new(channel, recall_id,
 						(GObject *) playback);
 
-	ags_task_thread_append_task(task_thread, (AgsTask *) cancel_channel);
+	ags_gui_thread_schedule_task(gui_thread,
+				     cancel_channel);
       }else{
 	/* done */
 	pthread_mutex_lock(channel_mutex);

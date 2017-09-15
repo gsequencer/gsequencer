@@ -2,6 +2,7 @@ ags (0.9.24)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented core-audio related code but without MIDI instrument support
+	* refactored UI to schedule tasks by AgsGuiThread
 	* fixed memory-leaks related to cairo_t
 	* improved plugins search path you may now specify by environment variable
 

@@ -24,7 +24,6 @@
 #include <ags/object/ags_connectable.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_id.h>
@@ -38,6 +37,8 @@
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/X/task/ags_blink_cell_pattern_cursor.h>
 
@@ -902,7 +903,7 @@ ags_cell_pattern_blink_worker(void *data)
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
   
   AgsApplicationContext *application_context;
 
@@ -927,15 +928,15 @@ ags_cell_pattern_blink_worker(void *data)
   pthread_mutex_unlock(application_mutex);
   
   /* find task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_GUI_THREAD);
 
   while(gtk_widget_has_focus((GtkWidget *) cell_pattern)){
     /* blink cursor */
     blink_cell_pattern_cursor = ags_blink_cell_pattern_cursor_new(cell_pattern,
 								  !(AGS_CELL_PATTERN_CURSOR_ON & (cell_pattern->flags)));
-    ags_task_thread_append_task(task_thread,
-				(AgsTask *) blink_cell_pattern_cursor);
+    ags_gui_thread_schedule_task(gui_thread,
+				 blink_cell_pattern_cursor);
 
     /* delay */
     usleep(blink_delay);
@@ -944,8 +945,8 @@ ags_cell_pattern_blink_worker(void *data)
   /* unset cursor */
   blink_cell_pattern_cursor = ags_blink_cell_pattern_cursor_new(cell_pattern,
 								FALSE);
-  ags_task_thread_append_task(task_thread,
-			      (AgsTask *) blink_cell_pattern_cursor);
+  ags_gui_thread_schedule_task(gui_thread,
+			       blink_cell_pattern_cursor);
 
   return(NULL);
 }

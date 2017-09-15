@@ -286,6 +286,10 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
 		     &attr);
 
   /* task */
+  gui_thread->task_schedule_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(gui_thread->task_schedule_mutex,
+		     NULL);
+
   gui_thread->collected_task = NULL;
   gui_thread->task_source = NULL;
 }
@@ -451,19 +455,79 @@ gboolean
 ags_gui_thread_task_prepare(GSource *source,
 			    gint *timeout_)
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+
+  AgsGuiThread *gui_thread;
+  
+  AgsThread *main_loop;
+
+  application_context = ags_application_context_get_instance();
+  main_loop = application_context->main_loop;
+
+  gui_thread = ags_thread_find_type(main_loop,
+				    AGS_TYPE_GUI_THREAD);
+
+  if(timeout_ != NULL){
+    *timeout_ = -1;
+  }
+
+  if(gui_thread->collected_task != NULL){
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 gboolean
 ags_gui_thread_task_check(GSource *source)
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+
+  AgsGuiThread *gui_thread;
+  
+  AgsThread *main_loop;
+
+  application_context = ags_application_context_get_instance();
+  main_loop = application_context->main_loop;
+  
+  gui_thread = ags_thread_find_type(main_loop,
+				    AGS_TYPE_GUI_THREAD);
+  
+  if(gui_thread->collected_task != NULL){
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 gboolean
 ags_gui_thread_task_dispatch(GSource *source)
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+
+  AgsGuiThread *gui_thread;
+  
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+
+  application_context = ags_application_context_get_instance();
+  main_loop = application_context->main_loop;
+  
+  gui_thread = ags_thread_find_type(main_loop,
+				    AGS_TYPE_GUI_THREAD);
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
+
+  pthread_mutex_lock(task_thread->launch_mutex);
+
+  ags_task_thread_append_tasks(task_thread,
+			       g_list_reverse(gui_thread->collected_task));
+
+  pthread_mutex_unlock(task_thread->launch_mutex);
+
+  gui_thread->collected_task = NULL;
+  
+  return(G_SOURCE_CONTINUE);
 }
 
 void
@@ -1243,10 +1307,10 @@ ags_gui_thread_do_animation(AgsGuiThread *gui_thread)
     cairo_paint(gdk_cr);
     cairo_surface_flush(surface);
     
-    gdk_flush();
+    //    gdk_flush();
 
-    //    g_main_context_iteration(main_context,
-    //			     FALSE);
+    g_main_context_iteration(main_context,
+    			     FALSE);
     usleep(12500);
   }
 
@@ -1334,10 +1398,44 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
   while((AGS_GUI_THREAD_RUNNING & (g_atomic_int_get(&(gui_thread->flags)))) != 0){
     g_main_context_iteration(main_context,
 			     TRUE);
-    ags_gui_thread_complete_task(gui_thread);  
+    ags_gui_thread_complete_task(gui_thread);
   }
   
   pthread_exit(NULL);
+}
+
+void
+ags_gui_thread_schedule_task(AgsGuiThread *gui_thread,
+			     GObject *task)
+{
+  if(!AGS_IS_GUI_THREAD(gui_thread) ||
+     !AGS_IS_TASK(task)){
+    return;
+  }
+
+  pthread_mutex_lock(gui_thread->task_schedule_mutex);
+
+  gui_thread->collected_task = g_list_prepend(gui_thread->collected_task,
+					      task);
+  
+  pthread_mutex_unlock(gui_thread->task_schedule_mutex);
+}
+
+void
+ags_gui_thread_schedule_task_list(AgsGuiThread *gui_thread,
+				  GList *task)
+{
+  if(!AGS_IS_GUI_THREAD(gui_thread) ||
+     task == NULL){
+    return;
+  }
+
+  pthread_mutex_lock(gui_thread->task_schedule_mutex);
+
+  gui_thread->collected_task = g_list_concat(g_list_reverse(task),
+					     gui_thread->collected_task);
+  
+  pthread_mutex_unlock(gui_thread->task_schedule_mutex);
 }
 
 /**

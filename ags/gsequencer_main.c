@@ -227,6 +227,10 @@ main(int argc, char **argv)
   //  g_thread_init(NULL);
   gtk_init(&argc, &argv);
 
+#ifdef AGS_WITH_X11
+  XInitThreads();
+#endif
+  
   if(!builtin_theme_disabled){
     g_object_set(gtk_settings_get_default(),
 		 "gtk-theme-name", "Raleigh",

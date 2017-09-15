@@ -22,7 +22,6 @@
 #include <ags/object/ags_application_context.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
@@ -47,6 +46,8 @@
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include <math.h>
 
@@ -140,7 +141,7 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
   
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
   
   AgsApplicationContext *application_context;
   
@@ -162,17 +163,17 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 
   pthread_mutex_unlock(application_mutex);
   
-  /* find task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  /* find gui_thread */
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_GUI_THREAD);
 
   length = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
 
   apply_sequencer_length = ags_apply_sequencer_length_new(G_OBJECT(AGS_MACHINE(matrix)->audio),
 							  length);
 
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(apply_sequencer_length));
+  ags_gui_thread_schedule_task(gui_thread,
+			       apply_sequencer_length);
 }
 
 void
@@ -252,7 +253,7 @@ ags_matrix_tact_callback(AgsAudio *audio,
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
   
   AgsApplicationContext *application_context;
 
@@ -287,9 +288,9 @@ ags_matrix_tact_callback(AgsAudio *audio,
 
   pthread_mutex_unlock(application_mutex);
   
-  /* find task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  /* find gui_thread */
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_GUI_THREAD);
 
   /* get audio mutex */
   pthread_mutex_lock(application_mutex);

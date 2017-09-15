@@ -28,8 +28,6 @@
 #include <ags/object/ags_distributed_manager.h>
 #include <ags/object/ags_soundcard.h>
 
-#include <ags/thread/ags_task_thread.h>
-
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_devout.h>
 

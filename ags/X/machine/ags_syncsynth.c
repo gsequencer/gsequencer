@@ -35,7 +35,6 @@
 #include <ags/file/ags_file_launch.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -68,15 +67,14 @@
 
 #include <ags/widget/ags_expander_set.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
 
-#include <ags/X/file/ags_gui_file_xml.h>
-
-#include <ags/X/ags_window.h>
-
 #include <ags/X/thread/ags_gui_thread.h>
+
+#include <ags/X/file/ags_gui_file_xml.h>
 
 #include <math.h>
 
@@ -1409,7 +1407,7 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
   
@@ -1446,8 +1444,8 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_GUI_THREAD);
 
   /* lookup audio mutex */
   pthread_mutex_lock(application_mutex);
@@ -1575,8 +1573,8 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   
   gdk_threads_leave();
 
-  ags_task_thread_append_tasks(task_thread,
-			       g_list_reverse(task));
+  ags_gui_thread_schedule_task_list(gui_thread,
+				    g_list_reverse(task));
 }
 
 /**

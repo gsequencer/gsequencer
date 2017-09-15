@@ -74,6 +74,8 @@ struct _AgsGuiThread
 
   pthread_mutex_t *dispatch_mutex;
 
+  pthread_mutex_t *task_schedule_mutex;
+
   GList *collected_task;
   GSource *task_source;
 };
@@ -106,6 +108,11 @@ void ags_gui_thread_timer_launch_filename(AgsGuiThread *gui_thread,
 
 void ags_gui_thread_do_animation(AgsGuiThread *gui_thread);
 void ags_gui_thread_do_run(AgsGuiThread *gui_thread);
+
+void ags_gui_thread_schedule_task(AgsGuiThread *gui_thread,
+				  GObject *task);
+void ags_gui_thread_schedule_task_list(AgsGuiThread *gui_thread,
+				       GList *task);
 
 AgsGuiThread* ags_gui_thread_new();
 

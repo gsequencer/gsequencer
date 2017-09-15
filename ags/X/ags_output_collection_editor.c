@@ -26,18 +26,19 @@
 #include <ags/object/ags_applicable.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
 
-#include <ags/audio/task/ags_reset_audio_connection.h>
-
 #include <ags/audio/thread/ags_audio_loop.h>
+
+#include <ags/audio/task/ags_reset_audio_connection.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_connection_editor.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/i18n.h>
 
@@ -382,7 +383,7 @@ ags_output_collection_editor_apply(AgsApplicable *applicable)
     
     AgsMutexManager *mutex_manager;
     AgsAudioLoop *audio_loop;
-    AgsTaskThread *task_thread;
+    AgsGuiThread *gui_thread;
 
     AgsApplicationContext *application_context;
     GObject *soundcard;
@@ -435,8 +436,8 @@ ags_output_collection_editor_apply(AgsApplicable *applicable)
     pthread_mutex_unlock(audio_mutex);
 
     /* get task and soundcard thread */
-    task_thread = (AgsTaskThread *) ags_thread_find_type((AgsThread *) audio_loop,
-							 AGS_TYPE_TASK_THREAD);
+    gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) audio_loop,
+							 AGS_TYPE_GUI_THREAD);
 
     /* get mapping and soundcard */
     first_line = (guint) gtk_spin_button_get_value_as_int(output_collection_editor->first_line);
@@ -464,8 +465,8 @@ ags_output_collection_editor_apply(AgsApplicable *applicable)
 			    reset_audio_connection);
     }
     
-    ags_task_thread_append_tasks(task_thread,
-				 (AgsTask *) task);
+    ags_gui_thread_schedule_task_list(gui_thread,
+				      task);
   }
 }
 
@@ -593,3 +594,4 @@ ags_output_collection_editor_new(GType channel_type)
   
   return(output_collection_editor);
 }
+

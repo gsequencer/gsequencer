@@ -24,7 +24,6 @@
 #include <ags/object/ags_applicable.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
@@ -45,11 +44,11 @@
 #include <ags/X/ags_connection_editor.h>
 #include <ags/X/ags_midi_dialog.h>
 
+#include <ags/X/thread/ags_gui_thread.h>
+
 #include <ags/X/editor/ags_envelope_dialog.h>
 #include <ags/X/editor/ags_machine_radio_button.h>
 #include <ags/X/editor/ags_file_selection.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/i18n.h>
 
@@ -248,7 +247,7 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
 
   AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
 
@@ -269,20 +268,20 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type((AgsThread *) audio_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) audio_loop,
+						       AGS_TYPE_GUI_THREAD);
 
   g_object_ref(machine->audio);
   remove_audio = ags_remove_audio_new(window->soundcard,
 				      machine->audio);
   g_object_set(remove_audio,
-	       "task-thread", task_thread,
+	       "task-thread", gui_thread,
 	       NULL);
   
   g_signal_connect(remove_audio, "launch",
 		   G_CALLBACK(ags_machine_remove_audio_launch_callback), machine);
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(remove_audio));
+  ags_gui_thread_schedule_task(gui_thread,
+			       remove_audio);
 }
 
 int

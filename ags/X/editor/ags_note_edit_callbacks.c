@@ -25,7 +25,6 @@
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio.h>
@@ -1297,7 +1296,7 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 
     AgsMutexManager *mutex_manager;
     AgsThread *main_loop;
-    AgsTaskThread *task_thread;
+    AgsGuiThread *gui_thread;
     AgsSoundcardThread *soundcard_thread;
 
     AgsApplicationContext *application_context;
@@ -1381,8 +1380,8 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 
     /* get task thread and soundcard thread */
 
-    task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-							 AGS_TYPE_TASK_THREAD);
+    gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_GUI_THREAD);
     soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type(main_loop,
 								   AGS_TYPE_SOUNDCARD_THREAD);
 
@@ -1408,7 +1407,8 @@ ags_note_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 
     /* perform playback */
     tasks = g_list_reverse(tasks);
-    ags_task_thread_append_tasks(task_thread, tasks);
+    ags_gui_thread_schedule_task_list(gui_thread,
+				      tasks);
   }
 
   if(event->keyval == GDK_KEY_Tab ||
@@ -1777,7 +1777,6 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
   AgsAddAudioSignal *add_audio_signal;
 
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
   AgsConfig *config;
@@ -1802,8 +1801,6 @@ ags_note_edit_init_channel_launch_callback(AgsTask *task, AgsNote *note)
 			    NULL);
   
   main_loop = (AgsThread *) application_context->main_loop;
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
 
 #ifdef AGS_DEBUG
   g_message("launch");

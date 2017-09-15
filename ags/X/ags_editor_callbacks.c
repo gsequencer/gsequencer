@@ -23,13 +23,14 @@
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_notation.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/X/ags_window.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/X/task/ags_scroll_on_play.h>
 
@@ -69,7 +70,7 @@ ags_editor_tic_callback(GObject *soundcard,
 
   AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
 
@@ -95,8 +96,8 @@ ags_editor_tic_callback(GObject *soundcard,
   pthread_mutex_unlock(application_mutex);
 
   /* get task and soundcard thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type((AgsThread *) audio_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) audio_loop,
+						     AGS_TYPE_GUI_THREAD);
 
   if(window->navigation->scroll != NULL &&
      gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(window->navigation->scroll))){
@@ -116,8 +117,8 @@ ags_editor_tic_callback(GObject *soundcard,
       
       scroll_on_play = ags_scroll_on_play_new((GtkWidget *) editor,
 					      64.0);
-      ags_task_thread_append_task(task_thread,
-				  AGS_TASK(scroll_on_play));
+      ags_gui_thread_schedule_task(gui_thread,
+				   scroll_on_play);
     }
   }
 

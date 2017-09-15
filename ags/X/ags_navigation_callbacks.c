@@ -23,7 +23,6 @@
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/recall/ags_count_beats_audio.h>
 
@@ -92,7 +91,7 @@ ags_navigation_bpm_callback(GtkWidget *widget,
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
 
@@ -114,14 +113,14 @@ ags_navigation_bpm_callback(GtkWidget *widget,
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_GUI_THREAD);
 
   apply_bpm = ags_apply_bpm_new(G_OBJECT(window->soundcard),
 				navigation->bpm->adjustment->value);
 
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(apply_bpm));
+  ags_gui_thread_schedule_task(gui_thread,
+			       apply_bpm);
 }
 
 void

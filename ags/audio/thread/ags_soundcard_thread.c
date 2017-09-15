@@ -406,6 +406,10 @@ ags_soundcard_thread_start(AgsThread *thread)
     return;
   }
 
+  /* disable timing */
+  g_atomic_int_and(&(thread->flags),
+		   (~AGS_THREAD_TIMING));
+  
   /* check if already initialized */
   soundcard_thread->error = NULL;
 
@@ -542,6 +546,9 @@ ags_soundcard_thread_stop(AgsThread *thread)
 
   //FIXME:JK: is this safe?
   ags_soundcard_stop(soundcard);
+
+  g_atomic_int_or(&(thread->flags),
+		  AGS_THREAD_TIMING);
 
   /* find polling thread */
   polling_thread = (AgsPollingThread *) ags_thread_find_type(main_loop,

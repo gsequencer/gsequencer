@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -312,6 +312,9 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   /* calculate frequency */
   thread = (AgsThread *) audio_loop;
 
+  g_atomic_int_or(&(thread->flags),
+		  AGS_THREAD_TIMING);
+  
   g_signal_connect_after(thread, "notify::frequency",
 			 G_CALLBACK(ags_audio_loop_notify_frequency), NULL);
   
