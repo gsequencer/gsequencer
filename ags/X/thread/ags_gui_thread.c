@@ -126,6 +126,8 @@ void ags_gui_thread_dispatch_callback(AgsPollFd *poll,
 				      AgsGuiThread *gui_thread);
 void ags_gui_thread_polling_thread_run_callback(AgsThread *thread,
 						AgsGuiThread *gui_thread);
+static void ags_gui_thread_sigact_create();
+struct sigaction* ags_gui_thread_get_sigact();
 
 /**
  * SECTION:ags_gui_thread
@@ -140,7 +142,11 @@ void ags_gui_thread_polling_thread_run_callback(AgsThread *thread,
 static gpointer ags_gui_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_gui_thread_parent_connectable_interface;
 
-__thread struct sigaction ags_gui_thread_sigact;
+/* Key for the thread-specific AgsGuiThread */
+static pthread_key_t ags_gui_thread_sigact_key;
+
+/* Once-only initialisation of the key */
+static pthread_once_t ags_gui_thread_sigact_key_once = PTHREAD_ONCE_INIT;
 
 //TODO:JK: implement get functions
 #ifndef AGS_USE_TIMER
@@ -163,7 +169,7 @@ ags_gui_thread_signal_handler(int signr)
     
     exit(-1);
   }else{
-    sigemptyset(&(ags_gui_thread_sigact.sa_mask));
+    sigemptyset(&(ags_gui_thread_get_sigact()->sa_mask));
   }
 }
 
@@ -609,12 +615,12 @@ ags_gui_thread_run(AgsThread *thread)
     g_atomic_int_or(&(thread->flags),
 		    AGS_THREAD_RT_SETUP);
 
-    ags_gui_thread_sigact.sa_handler = ags_gui_thread_signal_handler;
+    ags_gui_thread_get_sigact()->sa_handler = ags_gui_thread_signal_handler;
 
-    sigemptyset(&ags_gui_thread_sigact.sa_mask);
-    ags_gui_thread_sigact.sa_flags = 0;
+    sigemptyset(&ags_gui_thread_get_sigact()->sa_mask);
+    ags_gui_thread_get_sigact()->sa_flags = 0;
 
-    sigaction(SIGIO, &ags_gui_thread_sigact, (struct sigaction *) NULL);    
+    sigaction(SIGIO, ags_gui_thread_get_sigact(), (struct sigaction *) NULL);    
   }
   
   if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
@@ -1162,171 +1168,182 @@ ags_gui_thread_timer_launch_filename(AgsGuiThread *gui_thread,
   }
 }
 
-void
-ags_gui_thread_do_animation(AgsGuiThread *gui_thread)
+gboolean
+ags_gui_thread_do_animation_callback(GtkWidget *widget, GdkEventExpose *event,
+				     AgsGuiThread *gui_thread)
 {
-  AgsXorgApplicationContext *xorg_application_context;
-
-  GtkWindow *window;
-
   AgsLog *log;
-
-  GMainContext *main_context;
 
   GdkRectangle rectangle;
 
-  cairo_t *gdk_cr, *cr;
-  cairo_surface_t *surface;
+  cairo_t *i_cr, *cr;
+  static cairo_surface_t *surface;
 
-  gchar *filename;
-  unsigned char *bg_data, *image_data;
+  static gchar *filename;
   
   /* create a buffer suitable to image size */
   GList *list, *start;
 
-  guint image_size;
+  static unsigned char *image_data, *bg_data;
+  
+  static guint image_size;
   gdouble x0, y0;
-  guint i, nth;
+  guint i;
+  static guint nth = 0;
+
+  log = ags_log_get_instance();  
+  
+  if(filename == NULL){
+    /* create gdk cairo graphics context */
+#ifdef AGS_ANIMATION_FILENAME
+    filename = g_strdup(AGS_ANIMATION_FILENAME);
+#else
+    if((filename = getenv("AGS_ANIMATION_FILENAME")) == NULL){
+      filename = g_strdup_printf("%s%s", DESTDIR, "/gsequencer/images/ags_supermoon-800x450.png");
+    }else{
+      filename = g_strdup(filename);
+    }
+#endif
+
+    /* create surface and get image data */
+    surface = cairo_image_surface_create_from_png(filename);
+    cairo_surface_reference(surface);
+    
+    image_data = cairo_image_surface_get_data(surface);
+    image_size = 3 * 800 * 600;
+
+    bg_data = (unsigned char *) malloc(image_size * sizeof(unsigned char));
+  }
+  
+  cr = gdk_cairo_create(widget->window);
+  
+  start = 
+    list = ags_log_get_messages(log);
+
+  pthread_mutex_lock(log->mutex);
+    
+  i = g_list_length(start);
+
+  pthread_mutex_unlock(log->mutex);
+  
+  x0 = 4.0;
+  y0 = 4.0 + (i * 12.0);
+
+  gdk_threads_enter();
+  
+  if(nth < i){
+    /* create image cairo graphics context */
+    i_cr = cairo_create(surface);
+    cairo_select_font_face(i_cr, "Georgia",
+			   CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+    cairo_set_font_size(i_cr, (gdouble) 11.0);
+    
+    /* show ... */
+    cairo_move_to(i_cr,
+		  x0, 4.0 + (i + 1) * 12.0);
+    cairo_show_text(i_cr, "...");
+
+    /* show all text */
+    while(i >= 0 && i > nth && list != NULL){
+      cairo_set_source_rgb(i_cr,
+			   1.0,
+			   0.0,
+			   1.0);
+	
+      cairo_move_to(i_cr,
+		    x0, y0);
+
+      pthread_mutex_lock(log->mutex);
+
+      cairo_show_text(i_cr, list->data);
+      cairo_stroke(i_cr);
+    
+      list = list->next;
+
+      pthread_mutex_unlock(log->mutex);
+
+      y0 -= 12.0;
+      i--;
+    }
+
+    nth = g_list_length(start);
+    
+    memcpy(bg_data, cairo_image_surface_get_data(surface), image_size * sizeof(unsigned char));
+
+    cairo_destroy(i_cr);
+
+    cairo_set_source_surface(cr, surface, 0, 0);
+
+    cairo_paint(cr);
+    
+    cairo_destroy(cr);
+  }else{
+    /* create image cairo graphics context */
+    i_cr = cairo_create(surface);
+    memcpy(cairo_image_surface_get_data(surface), bg_data, image_size * sizeof(unsigned char));
+
+    cairo_destroy(i_cr);
+
+    cairo_set_source_surface(cr, surface, 0, 0);
+
+    //    cairo_surface_mark_dirty(surface);
+    cairo_paint(cr);    
+
+    cairo_destroy(cr);
+  }
+
+  gdk_threads_leave();
+}
+
+void
+ags_gui_thread_do_animation(AgsGuiThread *gui_thread)
+ {
+  AgsXorgApplicationContext *xorg_application_context;
+
+  GtkWindow *window;
+  GtkWidget *widget;
+  
+  GMainContext *main_context;
 
   xorg_application_context = ags_application_context_get_instance();
 
   main_context = g_main_context_default();
 
-  window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  g_object_set(window,
-	       "decorated", FALSE,
-	       NULL);
+  window = g_object_new(GTK_TYPE_WINDOW,
+			"app-paintable", TRUE,
+			"type", GTK_WINDOW_TOPLEVEL,
+			"decorated", FALSE,
+			"window-position", GTK_WIN_POS_CENTER,
+			NULL);
+  
   gtk_widget_set_size_request(window,
 			      800, 450);
-  gtk_widget_show_all(window);
 
-  /* specifiy region */
-  rectangle.x = 0;
-  rectangle.y = 0;
-  rectangle.width = 800;
-  rectangle.height = 450;
+  widget = gtk_drawing_area_new();
+  gtk_container_add(window,
+		    widget);
 
-  image_size = 4 * 800 * 450;
+  gtk_widget_show_all((GtkWidget *) window);
 
-  /* create gdk cairo graphics context */
-  gdk_threads_enter();
+  g_signal_connect(widget, "expose-event",
+		   G_CALLBACK(ags_gui_thread_do_animation_callback), gui_thread);
   
-  gdk_cr = gdk_cairo_create(GTK_WIDGET(window)->window);
-
-#ifdef AGS_ANIMATION_FILENAME
-  filename = g_strdup(AGS_ANIMATION_FILENAME);
-#else
-  filename = g_strdup_printf("%s%s", DESTDIR, "/gsequencer/images/ags_supermoon-800x450.png");
-#endif
-
-  /* create surface and get image data */
-  surface = cairo_image_surface_create_from_png(filename);
-  image_data = cairo_image_surface_get_data(surface);
-
-  if(image_size > 0){
-    bg_data = (unsigned char *) malloc(image_size * sizeof(unsigned char));
-  }else{
-    bg_data = NULL;
-  }
-  
-  if(image_data != NULL){
-    memcpy(bg_data, image_data, image_size * sizeof(unsigned char));
-  }
-
-  /* create image cairo graphics context */
-  cr = cairo_create(surface);
-  
-  cairo_select_font_face(cr, "Georgia",
-			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-  cairo_set_font_size(cr, (gdouble) 11.0);
-  
-  gtk_widget_show((GtkWidget *) window);
-
-  /* get log */
-  gdk_threads_leave();
-
-  log = ags_log_get_instance();  
-  nth = 0;
-
-  /* iterat log messages */
+  /* iterate log messages */
   while(g_atomic_int_get(&(xorg_application_context->show_animation))){
-    start = 
-      list = ags_log_get_messages(log);
+    gtk_widget_queue_draw(widget);
 
-    pthread_mutex_lock(log->mutex);
+    gdk_threads_enter();
     
-    i = g_list_length(start);
-
-    pthread_mutex_unlock(log->mutex);
-
-    /* check for new messages */
-    if(i > nth){
-      if(image_data != NULL){
-	memcpy(image_data, bg_data, image_size * sizeof(unsigned char));
-      }
-
-      /* paint png surface on image graphics context */
-      cairo_set_source_surface(cr, surface, 0, 0);
-      cairo_paint(cr);
-      cairo_surface_flush(surface);
-
-      /* show all text */
-      x0 = 4.0;
-      y0 = 4.0 + (i * 12.0);
-
-      while(y0 > 4.0 && list != NULL){
-	cairo_set_source_rgb(cr,
-			     1.0,
-			     0.0,
-			     1.0);
-	
-	cairo_move_to(cr,
-		      x0, y0);
-
-	pthread_mutex_lock(log->mutex);
-
-	cairo_show_text(cr, list->data);
-
-	list = list->next;
-
-	pthread_mutex_unlock(log->mutex);
-
-	y0 -= 12.0;
-      }
-
-      /* show ... */
-      cairo_move_to(cr,
-		    x0, 4.0 + (i + 1) * 12.0);
-      cairo_show_text(cr, "...");
-      
-      nth = g_list_length(start);
-    }
-
-    /* paint png surface to gdk graphcics context */
-    cairo_set_source_surface(gdk_cr, surface, 0, 0);
-    cairo_paint(gdk_cr);
-    cairo_surface_flush(surface);
-    
-    //    gdk_flush();
-
     g_main_context_iteration(main_context,
     			     FALSE);
+
+    gdk_threads_leave();
+    //gdk_flush();
+        
     usleep(12500);
   }
 
-  /* free resources */
-  if(bg_data != NULL){
-    free(bg_data);
-  }
-  
-  gdk_threads_enter();
-
-  cairo_destroy(gdk_cr);
-  cairo_destroy(cr);
-
   gtk_widget_destroy(window);
-  
-  gdk_threads_leave();
 }
 
 void
@@ -1347,6 +1364,15 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
 		  AGS_GUI_THREAD_RUNNING);
   
   main_context = gui_thread->main_context;
+
+  pthread_once(&ags_gui_thread_sigact_key_once, ags_gui_thread_sigact_create);
+
+  ags_gui_thread_get_sigact()->sa_handler = ags_gui_thread_signal_handler;
+
+  sigemptyset(&(ags_gui_thread_get_sigact()->sa_mask));
+  ags_gui_thread_get_sigact()->sa_flags = 0;
+
+  sigaction(SIGIO, ags_gui_thread_get_sigact(), (struct sigaction *) NULL);
   
   /* notify start */
   pthread_mutex_lock(thread->start_mutex);
@@ -1436,6 +1462,19 @@ ags_gui_thread_schedule_task_list(AgsGuiThread *gui_thread,
 					     gui_thread->collected_task);
   
   pthread_mutex_unlock(gui_thread->task_schedule_mutex);
+}
+
+static void
+ags_gui_thread_sigact_create()
+{
+  pthread_key_create(&ags_gui_thread_sigact_key, NULL);
+  pthread_setspecific(ags_gui_thread_sigact_key, (struct sigaction *) malloc(sizeof(struct sigaction)));
+}
+
+struct sigaction*
+ags_gui_thread_get_sigact()
+{
+  return((AgsThread *) pthread_getspecific(ags_gui_thread_sigact_key));
 }
 
 /**

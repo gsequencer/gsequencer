@@ -42,10 +42,134 @@
 
 #include "config.h"
 
+#ifdef AGS_MAC_BUNDLE
+void premain() __attribute__ ((constructor));
+#endif
+
 void* ags_setup_thread(void *ptr);
 void ags_setup(int argc, char **argv);
 
 extern AgsApplicationContext *ags_application_context;
+
+gchar *base_dir;
+
+#ifdef AGS_MAC_BUNDLE
+void
+premain()
+{
+  gchar path[PATH_MAX];
+  uint32_t size = sizeof(path);  
+
+  if(_NSGetExecutablePath(path, &size) == 0){
+    gchar *ld_library_path;
+    gchar *gdk_pixbuf_module_file;
+    gchar *frameworks_dir;
+    gchar *data_dir;
+    gchar *plugin_dir;
+    gchar *str;
+    
+    base_dir = strndup(path,
+		       rindex(path, '/') - path);
+    printf("base dir %s\n", base_dir);
+
+    sprintf(path, "%s/../Frameworks",
+	    base_dir);
+    gdk_pixbuf_module_file = realpath(path,
+				      NULL);
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "GDK_PIXBUF_MODULE_FILE=%s/gdk-pixbuf-2.0/2.10.0/loaders.cache",
+	    gdk_pixbuf_module_file);
+    putenv(str);
+
+    ld_library_path = realpath(path,
+			       NULL);
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "DT_RUNPATH=%s/gdk-pixbuf-2.0/2.10.0/loaders",
+	    ld_library_path);
+    putenv(str);
+
+    frameworks_dir = realpath(path,
+			      NULL);
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "DYLD_FALLBACK_LIBRARY_PATH=%s",
+	    frameworks_dir);
+    putenv(str);
+
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "GDK_PIXBUF_MODULEDIR=%s",
+	    frameworks_dir);
+    putenv(str);
+
+    printf(".. %s", str);
+    
+    sprintf(path, "%s/../Resources",
+	    base_dir);
+    data_dir = realpath(path,
+			NULL);
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "GSEQUENCER_DATA_DIR=%s",
+	    data_dir);
+    putenv(str);
+
+    sprintf(path, "%s/../Resources",
+	    base_dir);
+    data_dir = realpath(path,
+			NULL);
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "AGS_RC_FILENAME=%s/ags.rc",
+	    data_dir);
+    putenv(str);
+
+    sprintf(path, "%s/../Resources",
+	    base_dir);
+    data_dir = realpath(path,
+			NULL);
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "AGS_ANIMATION_FILENAME=%s/ags_supermoon-800x450.png",
+	    data_dir);
+    putenv(str);
+
+    sprintf(path, "%s/../Resources",
+	    base_dir);
+    data_dir = realpath(path,
+			NULL);
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "AGS_LOGO_FILENAME=%s/ags.png",
+	    data_dir);
+    putenv(str);
+
+    sprintf(path, "%s/../Resources",
+	    base_dir);
+    data_dir = realpath(path,
+			NULL);
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "AGS_LICENSE_FILENAME=%s/GPL-3",
+	    data_dir);
+    putenv(str);
+
+    sprintf(path, "%s/../Plugins",
+	    base_dir);
+    plugin_dir = realpath(path,
+			  NULL);
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "GSEQUENCER_PLUGIN_DIR=%s",
+	    plugin_dir);
+    putenv(str);
+  }else{
+    base_dir = NULL;
+  }
+}
+#endif
 
 void*
 ags_setup_thread(void *ptr)
@@ -70,14 +194,16 @@ ags_setup_thread(void *ptr)
 void
 ags_setup(int argc, char **argv)
 {
+  AgsApplicationContext *application_context;
   AgsLog *log;
 
   pthread_t thread;
 
   /* application context */
-  ags_application_context = (AgsApplicationContext *) ags_xorg_application_context_new();
-  ags_application_context->argc = argc;
-  ags_application_context->argv = argv;
+  application_context = 
+    ags_application_context = (AgsApplicationContext *) ags_xorg_application_context_new();
+  application_context->argc = argc;
+  application_context->argv = argv;
 
   log = ags_log_get_instance();
 
@@ -86,9 +212,9 @@ ags_setup(int argc, char **argv)
   
   /* application context */
   pthread_create(&thread, NULL,
-		 ags_setup_thread, ags_application_context);
+		 ags_setup_thread, application_context);
   
-  ags_application_context_prepare(ags_application_context);
+  ags_application_context_prepare(application_context);
 }
 
 int
@@ -208,9 +334,13 @@ main(int argc, char **argv)
 #ifdef AGS_RC_FILENAME
       rc_filename = g_strdup(AGS_RC_FILENAME);
 #else
-      rc_filename = g_strdup_printf("%s%s",
-				    DESTDIR,
-				    "/gsequencer/styles/ags.rc");
+      if((rc_filename = getenv("AGS_RC_FILENAME")) == NULL){
+	rc_filename = g_strdup_printf("%s%s",
+				      DESTDIR,
+				      "/gsequencer/styles/ags.rc");
+      }else{
+	rc_filename = g_strdup(rc_filename);
+      }
 #endif
     }
   

@@ -140,14 +140,27 @@ ags_lv2ui_manager_init(AgsLv2uiManager *lv2ui_manager)
       guint i;
 
 #ifdef __APPLE__
+#ifdef AGS_MAC_BUNDLE
+      if((home_dir = getenv("HOME")) != NULL){
+	ags_lv2ui_default_path = (gchar **) malloc(6 * sizeof(gchar *));
+      }else{
+	ags_lv2ui_default_path = (gchar **) malloc(5 * sizeof(gchar *));
+      }
+#else
       if((home_dir = getenv("HOME")) != NULL){
 	ags_lv2ui_default_path = (gchar **) malloc(5 * sizeof(gchar *));
       }else{
 	ags_lv2ui_default_path = (gchar **) malloc(4 * sizeof(gchar *));
       }
+#endif
     
       i = 0;
-    
+
+#ifdef AGS_MAC_BUNDLE
+      ags_lv2ui_default_path[i++] = g_strdup_printf("%s/lv2",
+						    getenv("GSEQUENCER_PLUGIN_DIR"));
+#endif
+
       ags_lv2ui_default_path[i++] = g_strdup("/Library/Audio/Plug-Ins/LV2");
       ags_lv2ui_default_path[i++] = g_strdup("/usr/lib/lv2");
       ags_lv2ui_default_path[i++] = g_strdup("/usr/local/lib/lv2");

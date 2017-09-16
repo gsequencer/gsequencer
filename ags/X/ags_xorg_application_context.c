@@ -274,48 +274,6 @@ struct sigevent ags_sev_timer;
 struct itimerspec its;
 #endif
 
-#ifndef AGS_USE_TIMER
-void
-ags_xorg_application_context_signal_handler(int signr)
-{
-  if(signr == SIGINT){
-    //TODO:JK: do backup
-    
-    exit(-1);
-  }else{
-    sigemptyset(&(ags_sigact.sa_mask));
-    
-    //    if(signr == AGS_ASYNC_QUEUE_SIGNAL_HIGH){
-    // pthread_yield();
-    //    }
-  }
-}
-
-static void
-ags_xorg_application_context_signal_cleanup()
-{
-  sigemptyset(&(ags_sigact.sa_mask));
-}
-#endif
-
-#ifdef AGS_USE_TIMER
-void
-ags_xorg_application_context_signal_handler_timer(int sig, siginfo_t *si, void *uc)
-{
-  pthread_mutex_lock(AGS_THREAD(ags_application_context->main_loop)->timer_mutex);
-
-  g_atomic_int_set(&(AGS_THREAD(ags_application_context->main_loop)->timer_expired),
-		   TRUE);
-  
-  if(AGS_THREAD(ags_application_context->main_loop)->timer_wait){
-    pthread_cond_signal(AGS_THREAD(ags_application_context->main_loop)->timer_cond);
-  }
-    
-  pthread_mutex_unlock(AGS_THREAD(ags_application_context->main_loop)->timer_mutex);
-  //  signal(sig, SIG_IGN);
-}
-#endif
-
 GType
 ags_xorg_application_context_get_type()
 {
@@ -372,6 +330,48 @@ ags_xorg_application_context_get_type()
 
   return (ags_type_xorg_application_context);
 }
+
+#ifndef AGS_USE_TIMER
+void
+ags_xorg_application_context_signal_handler(int signr)
+{
+  if(signr == SIGINT){
+    //TODO:JK: do backup
+    
+    exit(-1);
+  }else{
+    sigemptyset(&(ags_sigact.sa_mask));
+    
+    //    if(signr == AGS_ASYNC_QUEUE_SIGNAL_HIGH){
+    // pthread_yield();
+    //    }
+  }
+}
+
+static void
+ags_xorg_application_context_signal_cleanup()
+{
+  sigemptyset(&(ags_sigact.sa_mask));
+}
+#endif
+
+#ifdef AGS_USE_TIMER
+void
+ags_xorg_application_context_signal_handler_timer(int sig, siginfo_t *si, void *uc)
+{
+  pthread_mutex_lock(AGS_THREAD(ags_application_context->main_loop)->timer_mutex);
+
+  g_atomic_int_set(&(AGS_THREAD(ags_application_context->main_loop)->timer_expired),
+		   TRUE);
+  
+  if(AGS_THREAD(ags_application_context->main_loop)->timer_wait){
+    pthread_cond_signal(AGS_THREAD(ags_application_context->main_loop)->timer_cond);
+  }
+    
+  pthread_mutex_unlock(AGS_THREAD(ags_application_context->main_loop)->timer_mutex);
+  //  signal(sig, SIG_IGN);
+}
+#endif
 
 void
 ags_xorg_application_context_class_init(AgsXorgApplicationContextClass *xorg_application_context)

@@ -79,6 +79,10 @@ EXTRA_DIST += \
 EXTRA_DIST += \
 	lv2.lib/mda/EPiano-presets.ttl
 
+EXTRA_DIST += \
+	apple_script.sh \
+	gsequencer-mac-os-x.patch
+
 man1_MANS = gsequencer.1 midi2xml.1
 
 CLEANFILES = \

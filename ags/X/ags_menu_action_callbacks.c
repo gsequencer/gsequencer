@@ -1204,7 +1204,9 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 #ifdef AGS_LICENSE_FILENAME
   license_filename = AGS_LICENSE_FILENAME;
 #else
-  license_filename = "/usr/share/common-licenses/GPL-3";
+  if((license_filename = getenv("AGS_LICENSE_FILENAME")) == NULL){
+    license_filename = "/usr/share/common-licenses/GPL-3";
+  }
 #endif
   
   if(g_file_test(license_filename,
@@ -1223,28 +1225,25 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
       license[sb.st_size] = '\0';
       fclose(file);
 
-      error = NULL;
-
-    }
-  }
-
 #ifdef AGS_LOGO_FILENAME
-  logo_filename = g_strdup(AGS_LOGO_FILENAME);
+      logo_filename = g_strdup(AGS_LOGO_FILENAME);
 #else
-  logo_filename = g_strdup_printf("%s%s", DESTDIR, "/gsequencer/images/ags.png");
+      if((logo_filename = getenv("AGS_LOGO_FILENAME")) == NULL){
+	logo_filename = g_strdup_printf("%s%s", DESTDIR, "/gsequencer/images/ags.png");
+      }else{
+	logo_filename = g_strdup(logo_filename);
+      }
 #endif
-  
-  if(g_file_test(logo_filename,
-		 G_FILE_TEST_EXISTS)){
-    if(logo == NULL){
+
       error = NULL;
       logo = gdk_pixbuf_new_from_file(logo_filename,
 				      &error);
+  
+      //g_free(logo_filename);
+  
     }
   }
-  
-  g_free(logo_filename);
-  
+
   application_context = ags_application_context_get_instance();
   window = application_context->window;
 

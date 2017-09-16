@@ -144,14 +144,27 @@ ags_ladspa_manager_init(AgsLadspaManager *ladspa_manager)
       gchar *home_dir;
       guint i;
 
+#ifdef AGS_MAC_BUNDLE
+      if((home_dir = getenv("HOME")) != NULL){
+	ags_ladspa_default_path = (gchar **) malloc(7 * sizeof(gchar *));
+      }else{
+	ags_ladspa_default_path = (gchar **) malloc(6 * sizeof(gchar *));
+      }
+#else
       if((home_dir = getenv("HOME")) != NULL){
 	ags_ladspa_default_path = (gchar **) malloc(6 * sizeof(gchar *));
       }else{
 	ags_ladspa_default_path = (gchar **) malloc(5 * sizeof(gchar *));
       }
-    
+#endif
+      
       i = 0;
-    
+
+#ifdef AGS_MAC_BUNDLE
+      ags_ladspa_default_path[i++] = g_strdup_printf("%s/ladspa",
+						     getenv("GSEQUENCER_PLUGIN_DIR"));
+#endif
+      
       ags_ladspa_default_path[i++] = g_strdup("/usr/lib64/ladspa");
       ags_ladspa_default_path[i++] = g_strdup("/usr/local/lib64/ladspa");
       ags_ladspa_default_path[i++] = g_strdup("/usr/lib/ladspa");
