@@ -283,8 +283,11 @@ ags_soundcard_thread_set_property(GObject *gobject,
 			  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
 	}else if(AGS_IS_JACK_DEVOUT(soundcard) ||
 		 AGS_IS_PULSE_DEVOUT(soundcard)){
-	  g_atomic_int_and(&(AGS_THREAD(soundcard_thread)->flags),
-			   (~AGS_THREAD_INTERMEDIATE_POST_SYNC));
+	  g_atomic_int_or(&(AGS_THREAD(soundcard_thread)->flags),
+			  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
+
+	  //	  g_atomic_int_and(&(AGS_THREAD(soundcard_thread)->flags),
+	  //		   (~AGS_THREAD_INTERMEDIATE_POST_SYNC));
 	}else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
 	  g_atomic_int_or(&(AGS_THREAD(soundcard_thread)->flags),
 	  		  (AGS_THREAD_INTERMEDIATE_POST_SYNC));

@@ -167,8 +167,8 @@ ags_add_soundcard_editor_sink_launch(AgsTask *task)
   /* lock gdk threads */
   gdk_threads_enter();
 
-  preferences = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) AGS_ADD_SOUNDCARD_EDITOR_SINK(task)->soundcard_editor);
-  window = preferences->window;
+  preferences = (AgsPreferences *) gtk_widget_get_toplevel((GtkWidget *) AGS_ADD_SOUNDCARD_EDITOR_SINK(task)->soundcard_editor);
+  window = (AgsWindow *) preferences->window;
   
   application_context = (AgsApplicationContext *) window->application_context;
 

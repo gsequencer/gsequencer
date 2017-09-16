@@ -667,7 +667,7 @@ ags_application_context_load_config(AgsApplicationContext *application_context)
 void
 ags_application_context_real_prepare(AgsApplicationContext *application_context)
 {
-  ags_log_add_message(ags_log_get_instance(), "prepare Advanced Gtk+ Sequencer\n");
+  ags_log_add_message(ags_log_get_instance(), "prepare Advanced Gtk+ Sequencer");
 }
 
 void
@@ -685,7 +685,7 @@ ags_application_context_prepare(AgsApplicationContext *application_context)
 void
 ags_application_context_real_setup(AgsApplicationContext *application_context)
 {
-  ags_log_add_message(ags_log_get_instance(), "setup Advanced Gtk+ Sequencer\n");
+  ags_log_add_message(ags_log_get_instance(), "setup Advanced Gtk+ Sequencer");
 }
 
 void

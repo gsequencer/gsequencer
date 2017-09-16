@@ -460,6 +460,10 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 {
   AgsConfig *config;
 
+  if(ags_application_context == NULL){
+    ags_application_context = xorg_application_context;
+  }
+  
   /* fundamental instances */
   config = ags_config_get_instance();
   AGS_APPLICATION_CONTEXT(xorg_application_context)->config = config;
@@ -1113,6 +1117,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   /* check filename */
   filename = NULL;
 
+  gdk_threads_enter();
+  
   for(i = 0; i < AGS_APPLICATION_CONTEXT(xorg_application_context)->argc; i++){
     if(!strncmp(AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i], "--filename", 11)){
       AgsSimpleFile *simple_file;
@@ -1576,14 +1582,14 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 			"soundcard", soundcard,
 			"application-context", xorg_application_context,
 			NULL);
-  AGS_XORG_APPLICATION_CONTEXT(xorg_application_context)->window = window;
-  g_object_ref(G_OBJECT(window));
+  g_object_set(xorg_application_context,
+	       "window", window,
+	       NULL);
 
   gtk_window_set_default_size((GtkWindow *) window, 500, 500);
   gtk_paned_set_position((GtkPaned *) window->paned, 300);
 
   ags_connectable_connect(AGS_CONNECTABLE(window));
-  gtk_widget_show_all((GtkWidget *) window);
 
   /* AgsServer */
   xorg_application_context->server = ags_server_new((GObject *) xorg_application_context);
@@ -1702,6 +1708,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   /* stop animation */
   g_atomic_int_set(&(xorg_application_context->show_animation),
 		   FALSE);  
+
+  gdk_threads_leave();
 }
 
 void

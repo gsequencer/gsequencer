@@ -118,6 +118,14 @@ gboolean ags_gui_thread_task_prepare(GSource *source,
 gboolean ags_gui_thread_task_check(GSource *source);
 gboolean ags_gui_thread_task_dispatch(GSource *source);
 
+gboolean ags_gui_thread_animation_prepare(GSource *source,
+					  gint *timeout_);
+gboolean ags_gui_thread_animation_check(GSource *source);
+gboolean ags_gui_thread_animation_dispatch(GSource *source);
+
+gboolean ags_gui_thread_do_animation_callback(GtkWidget *widget, GdkEventExpose *event,
+					      AgsGuiThread *gui_thread);
+
 guint ags_gui_thread_interrupted(AgsThread *thread,
 				 int sig,
 				 guint time_cycle, guint *time_spent);
@@ -296,6 +304,8 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   pthread_mutex_init(gui_thread->task_schedule_mutex,
 		     NULL);
 
+  gui_thread->animation_source = NULL;
+
   gui_thread->collected_task = NULL;
   gui_thread->task_source = NULL;
 }
@@ -369,8 +379,8 @@ ags_gui_thread_do_poll_loop(void *ptr)
   AgsXorgApplicationContext *xorg_application_context;
 
   GMainContext *main_context;
-  GSource *source;
-  GSourceFuncs source_funcs;
+  GSourceFuncs task_funcs;
+  GSourceFuncs animation_funcs;
 
   struct timespec idle = {
     0,
@@ -417,15 +427,24 @@ ags_gui_thread_do_poll_loop(void *ptr)
 
   g_main_context_release(main_context);
 
-  /* source functions */
-  source_funcs.prepare = ags_gui_thread_task_prepare;
-  source_funcs.check = ags_gui_thread_task_check;
-  source_funcs.dispatch = ags_gui_thread_task_dispatch;
+  /* animation functions */
+  animation_funcs.prepare = ags_gui_thread_animation_prepare;
+  animation_funcs.check = ags_gui_thread_animation_check;
+  animation_funcs.dispatch = ags_gui_thread_animation_dispatch;
 
-  gui_thread->task_source = 
-    source = g_source_new(&source_funcs,
-			  sizeof(GSource));
-  g_source_attach(source,
+  gui_thread->animation_source = g_source_new(&animation_funcs,
+					      sizeof(GSource));
+  g_source_attach(gui_thread->animation_source,
+		  main_context);
+
+  /* task functions */
+  task_funcs.prepare = ags_gui_thread_task_prepare;
+  task_funcs.check = ags_gui_thread_task_check;
+  task_funcs.dispatch = ags_gui_thread_task_dispatch;
+
+  gui_thread->task_source = g_source_new(&task_funcs,
+					 sizeof(GSource));
+  g_source_attach(gui_thread->task_source,
 		  main_context);
 
   /* wait for audio loop */
@@ -455,6 +474,96 @@ ags_gui_thread_do_poll_loop(void *ptr)
   }
   
   pthread_exit(NULL);
+}
+
+gboolean
+ags_gui_thread_animation_prepare(GSource *source,
+			    gint *timeout_)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = ags_application_context_get_instance();
+
+  if(timeout_ != NULL){
+    *timeout_ = -1;
+  }
+
+  return(TRUE);
+}
+
+gboolean
+ags_gui_thread_animation_check(GSource *source)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = ags_application_context_get_instance();
+
+  return(TRUE);
+}
+
+gboolean
+ags_gui_thread_animation_dispatch(GSource *source)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  static GtkWindow *window = NULL;
+  static GtkWidget *widget;
+
+  AgsGuiThread *gui_thread;
+
+  GMainContext *main_context;
+  
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+
+  xorg_application_context = ags_application_context_get_instance();
+  main_loop = AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop;
+  
+  gui_thread = ags_thread_find_type(main_loop,
+				    AGS_TYPE_GUI_THREAD);
+
+  main_context = g_main_context_default();
+
+  if(window == NULL){
+    window = g_object_new(GTK_TYPE_WINDOW,
+			  "app-paintable", TRUE,
+			  "type", GTK_WINDOW_TOPLEVEL,
+			  "decorated", FALSE,
+			  "window-position", GTK_WIN_POS_CENTER,
+			  NULL);
+  
+    gtk_widget_set_size_request(window,
+				800, 450);
+
+    widget = gtk_drawing_area_new();
+    gtk_container_add(window,
+		      widget);
+
+    gtk_widget_show_all((GtkWidget *) window);
+
+    g_signal_connect(widget, "expose-event",
+		     G_CALLBACK(ags_gui_thread_do_animation_callback), gui_thread);
+  }
+
+  gtk_widget_queue_draw(widget);
+
+  gdk_threads_enter();
+    
+  g_main_context_iteration(main_context,
+			   FALSE);
+
+  gdk_threads_leave();
+  
+  if(g_atomic_int_get(&(xorg_application_context->show_animation))){
+    return(G_SOURCE_CONTINUE);
+  }else{
+    gtk_widget_destroy(window);
+    window = NULL;
+    
+    gtk_widget_show_all(xorg_application_context->window);
+    
+    return(G_SOURCE_REMOVE);
+  }
 }
 
 gboolean
@@ -524,14 +633,12 @@ ags_gui_thread_task_dispatch(GSource *source)
   task_thread = ags_thread_find_type(main_loop,
 				     AGS_TYPE_TASK_THREAD);
 
-  pthread_mutex_lock(task_thread->launch_mutex);
-
   ags_task_thread_append_tasks(task_thread,
 			       g_list_reverse(gui_thread->collected_task));
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
-
   gui_thread->collected_task = NULL;
+
+  ags_gui_thread_complete_task(gui_thread);
   
   return(G_SOURCE_CONTINUE);
 }
@@ -1179,7 +1286,7 @@ ags_gui_thread_do_animation_callback(GtkWidget *widget, GdkEventExpose *event,
   cairo_t *i_cr, *cr;
   static cairo_surface_t *surface;
 
-  static gchar *filename;
+  static gchar *filename = NULL;
   
   /* create a buffer suitable to image size */
   GList *list, *start;
@@ -1267,9 +1374,11 @@ ags_gui_thread_do_animation_callback(GtkWidget *widget, GdkEventExpose *event,
     }
 
     nth = g_list_length(start);
-    
-    memcpy(bg_data, cairo_image_surface_get_data(surface), image_size * sizeof(unsigned char));
 
+    if((image_data = cairo_image_surface_get_data(surface)) != NULL){
+      memcpy(bg_data, image_data, image_size * sizeof(unsigned char));
+    }
+    
     cairo_destroy(i_cr);
 
     cairo_set_source_surface(cr, surface, 0, 0);
@@ -1280,8 +1389,11 @@ ags_gui_thread_do_animation_callback(GtkWidget *widget, GdkEventExpose *event,
   }else{
     /* create image cairo graphics context */
     i_cr = cairo_create(surface);
-    memcpy(cairo_image_surface_get_data(surface), bg_data, image_size * sizeof(unsigned char));
 
+    if((image_data = cairo_image_surface_get_data(surface)) != NULL){
+      memcpy(image_data, bg_data, image_size * sizeof(unsigned char));
+    }
+    
     cairo_destroy(i_cr);
 
     cairo_set_source_surface(cr, surface, 0, 0);
@@ -1352,17 +1464,26 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
   AgsXorgApplicationContext *xorg_application_context;
 
   AgsThread *thread;
+  AgsTaskThread *task_thread;
   
   GMainContext *main_context;
-  GSource *source;
-  GSourceFuncs source_funcs;
+
+  GSourceFuncs animation_funcs;
+  GSourceFuncs task_funcs;
+
+  struct timespec idle = {
+    0,
+    4000000,
+  };
 
   xorg_application_context = ags_application_context_get_instance();
 
   thread = (AgsThread *) gui_thread;
   g_atomic_int_or(&(gui_thread->flags),
 		  AGS_GUI_THREAD_RUNNING);
-  
+
+  task_thread = (AgsThread *) AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread;
+
   main_context = gui_thread->main_context;
 
   pthread_once(&ags_gui_thread_sigact_key_once, ags_gui_thread_sigact_create);
@@ -1403,31 +1524,43 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
     
   g_main_context_push_thread_default(main_context);
 
-  /* source functions */
-  source_funcs.prepare = ags_gui_thread_task_prepare;
-  source_funcs.check = ags_gui_thread_task_check;
-  source_funcs.dispatch = ags_gui_thread_task_dispatch;
+  /* animation functions */
+  animation_funcs.prepare = ags_gui_thread_animation_prepare;
+  animation_funcs.check = ags_gui_thread_animation_check;
+  animation_funcs.dispatch = ags_gui_thread_animation_dispatch;
 
-  gui_thread->task_source = 
-    source = g_source_new(&source_funcs,
-			  sizeof(GSource));
-  g_source_attach(source,
+  gui_thread->animation_source = g_source_new(&animation_funcs,
+					      sizeof(GSource));
+  g_source_attach(gui_thread->animation_source,
+		  main_context);
+
+  /* task functions */
+  task_funcs.prepare = ags_gui_thread_task_prepare;
+  task_funcs.check = ags_gui_thread_task_check;
+  task_funcs.dispatch = ags_gui_thread_task_dispatch;
+
+  gui_thread->task_source = g_source_new(&task_funcs,
+					 sizeof(GSource));
+  g_source_attach(gui_thread->task_source,
 		  main_context);
   
   /* show animation */
   g_atomic_int_set(&(xorg_application_context->gui_ready),
 		   TRUE);
   
-  ags_gui_thread_do_animation(gui_thread);
-  
   /* main context iteration */
   while((AGS_GUI_THREAD_RUNNING & (g_atomic_int_get(&(gui_thread->flags)))) != 0){
-    g_main_context_iteration(main_context,
-			     TRUE);
-    ags_gui_thread_complete_task(gui_thread);
+    nanosleep(&idle,
+	      NULL);
+
+    pthread_mutex_lock(task_thread->launch_mutex);
+
+    AGS_THREAD_GET_CLASS(gui_thread)->run(gui_thread);
+
+    pthread_mutex_unlock(task_thread->launch_mutex);
   }
-  
-  pthread_exit(NULL);
+
+  //  gtk_main();
 }
 
 void

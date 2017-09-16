@@ -24,6 +24,7 @@
 #include <ags/object/ags_applicable.h>
 
 #include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
@@ -248,6 +249,7 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
   AgsGuiThread *gui_thread;
+  AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
 
@@ -268,14 +270,17 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
+  task_thread = (AgsTaskThread *) ags_thread_find_type((AgsThread *) audio_loop,
+						       AGS_TYPE_TASK_THREAD);
+
   gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) audio_loop,
-						       AGS_TYPE_GUI_THREAD);
+						     AGS_TYPE_GUI_THREAD);
 
   g_object_ref(machine->audio);
   remove_audio = ags_remove_audio_new(window->soundcard,
 				      machine->audio);
   g_object_set(remove_audio,
-	       "task-thread", gui_thread,
+	       "task-thread", task_thread,
 	       NULL);
   
   g_signal_connect(remove_audio, "launch",

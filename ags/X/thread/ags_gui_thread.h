@@ -76,6 +76,8 @@ struct _AgsGuiThread
 
   pthread_mutex_t *task_schedule_mutex;
 
+  GSource *animation_source;
+  
   GList *collected_task;
   GSource *task_source;
 };

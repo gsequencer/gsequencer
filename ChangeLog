@@ -1,3 +1,8 @@
+ags (0.9.25)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved JACK latency but may cause bigger load
+
 ags (0.9.24)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

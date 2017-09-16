@@ -370,13 +370,13 @@ ags_clear_buffer_launch(AgsTask *task)
     }
     
     if((AGS_JACK_DEVOUT_BUFFER0 & (jack_devout->flags)) != 0){
-      nth_buffer = 3;
-    }else if((AGS_JACK_DEVOUT_BUFFER1 & (jack_devout->flags)) != 0){
-      nth_buffer = 0;
-    }else if((AGS_JACK_DEVOUT_BUFFER2 & (jack_devout->flags)) != 0){
-      nth_buffer = 1;
-    }else if((AGS_JACK_DEVOUT_BUFFER3 & (jack_devout->flags)) != 0){
       nth_buffer = 2;
+    }else if((AGS_JACK_DEVOUT_BUFFER1 & (jack_devout->flags)) != 0){
+      nth_buffer = 3;
+    }else if((AGS_JACK_DEVOUT_BUFFER2 & (jack_devout->flags)) != 0){
+      nth_buffer = 0;
+    }else if((AGS_JACK_DEVOUT_BUFFER3 & (jack_devout->flags)) != 0){
+      nth_buffer = 1;
     }
       
     memset(jack_devout->buffer[nth_buffer], 0, (size_t) jack_devout->pcm_channels * jack_devout->buffer_size * word_size);

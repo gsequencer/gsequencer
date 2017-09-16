@@ -154,6 +154,7 @@ ags_remove_soundcard_editor_sink_finalize(GObject *gobject)
 void
 ags_remove_soundcard_editor_sink_launch(AgsTask *task)
 {
+  AgsPreferences *preferences;
   AgsWindow *window;
 
   AgsGuiThread *gui_thread;
@@ -168,8 +169,9 @@ ags_remove_soundcard_editor_sink_launch(AgsTask *task)
   /* lock gdk threads */
   gdk_threads_enter();
 
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) AGS_REMOVE_SOUNDCARD_EDITOR_SINK(task)->soundcard_editor);
-
+  preferences = (AgsPreferences *) gtk_widget_get_toplevel((GtkWidget *) AGS_REMOVE_SOUNDCARD_EDITOR_SINK(task)->soundcard_editor);
+  window = (AgsWindow *) preferences->window;
+  
   application_context = (AgsApplicationContext *) window->application_context;
 
   mutex_manager = ags_mutex_manager_get_instance();

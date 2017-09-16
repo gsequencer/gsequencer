@@ -202,6 +202,8 @@ ags_setup(int argc, char **argv)
   /* application context */
   application_context = 
     ags_application_context = (AgsApplicationContext *) ags_xorg_application_context_new();
+  g_object_ref(application_context);
+  
   application_context->argc = argc;
   application_context->argv = argv;
 

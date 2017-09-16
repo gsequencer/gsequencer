@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 0.9.24\n"
+"Project-Id-Version: gsequencer 0.9.25\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-09-15 02:34+0200\n"
+"POT-Creation-Date: 2017-09-16 20:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -317,7 +317,7 @@ msgstr ""
 msgid "destroy"
 msgstr ""
 
-#: ags/X/ags_machine.c:2188 ags/X/ags_machine_callbacks.c:298
+#: ags/X/ags_machine.c:2188 ags/X/ags_machine_callbacks.c:303
 msgid "rename"
 msgstr ""
 
@@ -501,21 +501,21 @@ msgstr ""
 msgid "format"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1368
+#: ags/X/ags_xorg_application_context.c:1374
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1378
+#: ags/X/ags_xorg_application_context.c:1384
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1527
+#: ags/X/ags_xorg_application_context.c:1533
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1537
+#: ags/X/ags_xorg_application_context.c:1543
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
