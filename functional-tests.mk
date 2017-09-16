@@ -8,6 +8,7 @@ gsequencer_functional_test_LDADD += libgsequencer.la libags_audio.la libags_serv
 
 check_LTLIBRARIES = libgsequencer_test.la
 
+#TODO:JK: fix tests after refactoring
 # functional tests
 check_PROGRAMS += \
 	ags_functional_audio_test \

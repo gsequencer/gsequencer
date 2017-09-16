@@ -269,7 +269,6 @@ AM_CONDITIONAL([ENABLE_GTK_DOC], false)
 AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
 Makefile
-functional-system-tests.mk
 docs/reference/libags/Makefile
 docs/reference/libags-audio/Makefile
 docs/reference/libags-gui/Makefile
