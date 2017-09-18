@@ -54,6 +54,17 @@ struct timespec ags_functional_test_util_default_timeout = {
 };
 
 void
+ags_functional_test_util_add_test(AgsFunctionalTestUtilAddTest add_test,
+				  volatile gboolean *is_available)
+{
+}
+
+void
+ags_functional_test_util_notify_add_test(volatile gboolean *is_available)
+{
+}
+
+void
 ags_functional_test_util_clear_application_context()
 {  
   ags_application_context = NULL;

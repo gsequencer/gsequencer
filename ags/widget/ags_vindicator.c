@@ -136,13 +136,9 @@ ags_vindicator_draw(AgsVIndicator *indicator)
   
   //  g_message("draw %f\0", adjustment->value);
 
-  gdk_threads_enter();
-  
   cr = gdk_cairo_create(widget->window);
 
   if(cr == NULL){
-    gdk_threads_leave();
-
     return;
   }
   
@@ -194,8 +190,6 @@ ags_vindicator_draw(AgsVIndicator *indicator)
 
   cairo_surface_mark_dirty(cairo_get_target(cr));
   cairo_destroy(cr);
-
-  gdk_threads_leave();
 }
 
 /**

@@ -914,14 +914,10 @@ ags_syncsynth_set_pads(AgsAudio *audio, GType type,
   
   pthread_mutex_unlock(application_mutex);
 
-  gdk_threads_enter();
-  
   machine = AGS_MACHINE(syncsynth);
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
   application_context = window->application_context;
-
-  gdk_threads_leave();
   
   if(pads_old < pads){
     grow = TRUE;
@@ -1426,8 +1422,6 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *application_mutex;
 
-  gdk_threads_enter();
-  
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) syncsynth);
   application_context = (AgsApplicationContext *) window->application_context;
 
@@ -1570,8 +1564,6 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   }
   
   g_list_free(list_start);
-  
-  gdk_threads_leave();
 
   ags_gui_thread_schedule_task_list(gui_thread,
 				    g_list_reverse(task));

@@ -610,8 +610,6 @@ ags_synth_update(AgsSynth *synth)
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *application_mutex;
 
-  gdk_threads_enter();
-  
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) synth);
   application_context = (AgsApplicationContext *) window->application_context;
 
@@ -787,8 +785,6 @@ ags_synth_update(AgsSynth *synth)
   
   g_list_free(input_pad_start);
   
-  gdk_threads_leave();
-
   ags_gui_thread_schedule_task_list(gui_thread,
 				    g_list_reverse(task));
 }

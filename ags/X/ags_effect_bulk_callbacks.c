@@ -158,15 +158,11 @@ ags_effect_bulk_set_audio_channels_callback(AgsAudio *audio,
 {
   AgsWindow *window;
 
-  gdk_threads_enter();
-
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) effect_bulk);
 
   ags_effect_bulk_resize_audio_channels(effect_bulk,
 					audio_channels,
 					audio_channels_old);
-
-  gdk_threads_leave();
 }
 
 void
@@ -178,8 +174,6 @@ ags_effect_bulk_set_pads_callback(AgsAudio *audio,
 {
   AgsWindow *window;
   
-  gdk_threads_enter();
-
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) effect_bulk);
 
   if(channel_type == effect_bulk->channel_type){
@@ -187,8 +181,6 @@ ags_effect_bulk_set_pads_callback(AgsAudio *audio,
 				pads,
 				pads_old);    
   }
-
-  gdk_threads_leave();
 }
 
 void
@@ -200,9 +192,6 @@ ags_effect_bulk_output_port_run_post_callback(AgsRecall *recall,
   GList *list, *list_start;
   GList *port, *port_start;
 
-  /* lock gdk threads */
-  gdk_threads_enter();
-  
   list_start = 
     list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
 
@@ -330,7 +319,4 @@ ags_effect_bulk_output_port_run_post_callback(AgsRecall *recall,
   }
 
   g_list_free(list_start);
-
-  /* unlock gdk threads */
-  gdk_threads_leave();
 }

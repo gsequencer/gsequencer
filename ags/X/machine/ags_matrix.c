@@ -508,8 +508,6 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
 
   pthread_mutex_unlock(audio_mutex);
 
-  gdk_threads_enter();
-  
   machine = AGS_MACHINE(matrix);
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
@@ -532,8 +530,6 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
     }
   }
 
-  gdk_threads_leave();
-  
   if(pads_old < pads){
     grow = TRUE;
   }else{

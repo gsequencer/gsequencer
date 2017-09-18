@@ -106,9 +106,6 @@ ags_effect_line_add_effect_callback(AgsChannel *channel,
   
   pthread_mutex_t *application_mutex;
   
-  /* lock gdk threads */
-  gdk_threads_enter();
-
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) effect_line);
 
   application_context = (AgsApplicationContext *) window->application_context;
@@ -126,9 +123,6 @@ ags_effect_line_add_effect_callback(AgsChannel *channel,
   /* get task thread */
   gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
 						      AGS_TYPE_GUI_THREAD);
-
-  /*  */
-  gdk_threads_enter();
 
   /* get machine and machine editor */
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) effect_line,
@@ -268,11 +262,6 @@ ags_effect_line_add_effect_callback(AgsChannel *channel,
   /* free container children list */
   g_list_free(pad_editor_start);
   g_list_free(line_editor_start);
-
-  gdk_threads_leave();
-
-  /* unlock gdk threads */
-  gdk_threads_leave();
 }
 
 void
@@ -290,9 +279,6 @@ ags_effect_line_remove_effect_callback(AgsChannel *channel,
   AgsApplicationContext *application_context;
 
   pthread_mutex_t *application_mutex;
-
-  /* lock gdk threads */
-  gdk_threads_enter();
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) effect_line);
 
@@ -312,17 +298,9 @@ ags_effect_line_remove_effect_callback(AgsChannel *channel,
   gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
 						      AGS_TYPE_GUI_THREAD);
 
-  /*  */
-  gdk_threads_enter();
-
   /* remove effect */
   ags_effect_line_remove_effect(effect_line,
 				nth);
-
-  gdk_threads_leave();
-
-  /* unlock gdk threads */
-  gdk_threads_leave();
 }
 
 void
@@ -332,9 +310,6 @@ ags_effect_line_output_port_run_post_callback(AgsRecall *recall,
   GtkWidget *child;
 
   GList *list, *list_start;
-  
-  /* lock gdk threads */
-  gdk_threads_enter();
   
   list_start = 
     list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_LINE(effect_line)->table);
@@ -474,7 +449,4 @@ ags_effect_line_output_port_run_post_callback(AgsRecall *recall,
   }
 
   g_list_free(list_start);
-
-  /* unlock gdk threads */
-  gdk_threads_leave();
 }

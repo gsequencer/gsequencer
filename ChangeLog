@@ -1,3 +1,8 @@
+ags (0.9.26)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* non-destructive soundcard/sequencer preferences notify about restart GSequencer
+
 ags (0.9.25)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -77,8 +77,6 @@ ags_editor_tic_callback(GObject *soundcard,
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *soundcard_mutex;
 
-  gdk_threads_enter();
-  
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(editor)));
 
   application_context = (AgsApplicationContext *) window->application_context;
@@ -121,8 +119,6 @@ ags_editor_tic_callback(GObject *soundcard,
 				   scroll_on_play);
     }
   }
-
-  gdk_threads_leave();
 }
 
 void

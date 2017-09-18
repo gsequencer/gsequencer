@@ -179,8 +179,6 @@ ags_scroll_on_play_launch(AgsTask *task)
 
   scroll_on_play = AGS_SCROLL_ON_PLAY(task);
 
-  gdk_threads_enter();
-
   if(AGS_IS_EDITOR(scroll_on_play->editor)){
     editor = AGS_EDITOR(scroll_on_play->editor);
     automation_editor = NULL;
@@ -404,8 +402,6 @@ ags_scroll_on_play_launch(AgsTask *task)
   
     editor_child = editor_child->next;
   }
-  
-  gdk_threads_leave();
 }
 
 /**

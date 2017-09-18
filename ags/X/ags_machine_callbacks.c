@@ -143,8 +143,6 @@ ags_machine_remove_audio_launch_callback(AgsTask *task, AgsMachine *machine)
 
   GList *list, *list_start;
 
-  gdk_threads_enter();
-  
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
   
   /* destroy editor */
@@ -236,8 +234,6 @@ ags_machine_remove_audio_launch_callback(AgsTask *task, AgsMachine *machine)
   /* destroy machine */
   ags_connectable_disconnect(AGS_CONNECTABLE(machine));
   gtk_widget_destroy((GtkWidget *) machine);
-
-  gdk_threads_leave();
 }
 
 void
@@ -667,8 +663,6 @@ ags_machine_set_audio_channels_callback(AgsAudio *audio,
   
   guint i;
   
-  gdk_threads_enter();
-
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
   /* resize */
@@ -714,8 +708,6 @@ ags_machine_set_audio_channels_callback(AgsAudio *audio,
       }
     }
   }
-
-  gdk_threads_leave();
 }
 
 void
@@ -727,8 +719,6 @@ ags_machine_set_pads_callback(AgsAudio *audio, GType channel_type,
 
   GList *pad_list;
   
-  gdk_threads_enter();
-
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
   /* resize */
@@ -765,8 +755,6 @@ ags_machine_set_pads_callback(AgsAudio *audio, GType channel_type,
       }
     }
   }
-
-  gdk_threads_leave();
 }
 
 void
@@ -787,8 +775,6 @@ ags_machine_done_callback(AgsAudio *audio,
   if((AGS_MACHINE_BLOCK_STOP & (machine->flags)) != 0){
     return;
   }
-
-  gdk_threads_enter();
   
   machine->flags |= AGS_MACHINE_BLOCK_STOP;
 
@@ -797,8 +783,6 @@ ags_machine_done_callback(AgsAudio *audio,
   }
   
   machine->flags &= (~AGS_MACHINE_BLOCK_STOP);
-
-  gdk_threads_leave();
 }
 
 void
@@ -816,8 +800,6 @@ ags_machine_start_complete_callback(AgsTaskCompletion *task_completion,
   AgsApplicationContext *application_context;
 
   pthread_mutex_t *application_mutex;
-
-  gdk_threads_enter();
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
 						 AGS_TYPE_WINDOW);
@@ -849,8 +831,6 @@ ags_machine_start_complete_callback(AgsTaskCompletion *task_completion,
 		     G_CALLBACK(ags_machine_start_complete_response), machine);
     gtk_widget_show_all((GtkWidget *) dialog);
   }
-
-  gdk_threads_leave();
 }
 
 void

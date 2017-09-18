@@ -204,6 +204,7 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
   gtk_widget_destroy((GtkWidget *) soundcard_editor);
 
   /* reset default card */
+#if 0
   soundcard = NULL;
   
   pthread_mutex_lock(application_mutex);
@@ -219,7 +220,8 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
   g_object_set(window,
 	       "soundcard", soundcard,
 	       NULL);
-
+#endif
+  
   /*  */
   list = gtk_container_get_children((GtkContainer *) audio_preferences->soundcard_editor);
   

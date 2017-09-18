@@ -1171,7 +1171,8 @@ ags_soundcard_editor_remove_sink(AgsSoundcardEditor *soundcard_editor,
 {
   AgsWindow *window;
   AgsPreferences *preferences;
-
+  GtkDialog *dialog;
+  
   AgsCoreAudioServer *core_audio_server;
   AgsCoreAudioDevout *core_audio_devout;
 
@@ -1188,7 +1189,8 @@ ags_soundcard_editor_remove_sink(AgsSoundcardEditor *soundcard_editor,
   GObject *soundcard;
 
   GType server_type;
-  
+
+  GList *machine, *machine_start;
   GList *distributed_manager;
   GList *list;
   GList *card_id;
@@ -1314,22 +1316,47 @@ ags_soundcard_editor_remove_sink(AgsSoundcardEditor *soundcard_editor,
   if(soundcard == NULL){
     return;
   }
+
+  /* remove AgsSoundcard from AgsAudio */
+#if 0
+  machine = 
+    machine_start = gtk_container_get_children(window->machines);
+  
+  while(machine != NULL){
+    if(AGS_MACHINE(machine->data)->audio->soundcard == soundcard){
+      g_object_set(AGS_MACHINE(machine->data)->audio,
+		   "soundcard", NULL,
+		   NULL);
+
+      g_object_unref(G_OBJECT(AGS_MACHINE(machine->data)->audio));
+    }
+    
+    machine = machine->next;
+  }
+
+  ags_soundcard_set_audio(AGS_SOUNDCARD(soundcard),
+			  NULL);
+  g_list_free(machine_start);
+#endif
   
   /*  */
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
   gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
 			   -1);
 
+#if 0
   if(server != NULL){
     ags_distributed_manager_unregister_soundcard(AGS_DISTRIBUTED_MANAGER(server),
 						 soundcard);
   }
-
+#endif
+  
   /* remove */
   if(soundcard == soundcard_editor->soundcard){
     soundcard_editor->soundcard = NULL;
   }
-  
+    
+#if 0  
   if(soundcard != NULL){
     ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				     g_list_remove(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)),
@@ -1347,6 +1374,17 @@ ags_soundcard_editor_remove_sink(AgsSoundcardEditor *soundcard_editor,
     
     soundcard_editor->soundcard_thread = NULL;
   }
+#endif
+
+  /* notify user about restarting GSequencer */
+  dialog = gtk_message_dialog_new(preferences,
+				  GTK_DIALOG_MODAL,
+				  GTK_MESSAGE_INFO,
+				  GTK_BUTTONS_OK,
+				  "After finished your modifications you should safe your file and restart GSequencer");
+  g_signal_connect(dialog, "response",
+		   G_CALLBACK(gtk_widget_destroy), NULL);
+  gtk_widget_show_all(dialog);
 }
 
 void
@@ -1437,6 +1475,10 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
       ags_soundcard_set_audio(AGS_SOUNDCARD(soundcard),
 			      list);
 
+      g_object_set(AGS_MACHINE(machine->data)->audio,
+		   "soundcard", soundcard,
+		   NULL);
+      
       machine = machine->next;
     }
 
@@ -1445,7 +1487,7 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
   }
   
   pthread_mutex_unlock(application_mutex);  
-    
+  
   g_object_ref(soundcard);
 
   soundcard_thread = (AgsThread *) ags_soundcard_thread_new(soundcard);
@@ -1485,11 +1527,14 @@ ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
 {
   AgsWindow *window;
   AgsPreferences *preferences;
-
+  GtkDialog *dialog;
+  
   AgsThread *main_loop;
   AgsThread *soundcard_thread;
 
   AgsApplicationContext *application_context;
+
+  GList *machine, *machine_start;
 
   pthread_mutex_t *application_mutex;
 
@@ -1510,18 +1555,44 @@ ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
   pthread_mutex_lock(application_mutex);
 
   main_loop = (AgsThread *) application_context->main_loop;
+
+  /* remove AgsSoundcard from AgsAudio */
+#if 0
+  machine = 
+    machine_start = gtk_container_get_children(window->machines);
+  
+  while(machine != NULL){
+    if(AGS_MACHINE(machine->data)->audio->soundcard == soundcard){
+      g_object_set(AGS_MACHINE(machine->data)->audio,
+		   "soundcard", NULL,
+		   NULL);
+
+      g_object_unref(G_OBJECT(AGS_MACHINE(machine->data)->audio));
+    }
     
+    machine = machine->next;
+  }
+
+  ags_soundcard_set_audio(AGS_SOUNDCARD(soundcard),
+			  NULL);
+  g_list_free(machine_start);
+#endif
+  
+  /*  */  
   if(soundcard == soundcard_editor->soundcard){
     soundcard_editor->soundcard = NULL;
   }
   
+#if 0
   if(soundcard != NULL){
     ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
 				     g_list_remove(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)),
 						   soundcard));
     g_object_unref(soundcard);
   }
-  
+#endif
+
+#if 0
   if(soundcard_editor->soundcard_thread != NULL){
     ags_thread_stop((AgsThread *) soundcard_editor->soundcard_thread);
 
@@ -1532,8 +1603,19 @@ ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
     
     soundcard_editor->soundcard_thread = NULL;
   }
+#endif
 
   pthread_mutex_unlock(application_mutex);
+
+  /* notify user about restarting GSequencer */
+  dialog = gtk_message_dialog_new(preferences,
+				  GTK_DIALOG_MODAL,
+				  GTK_MESSAGE_INFO,
+				  GTK_BUTTONS_OK,
+				  "After finished your modifications you should safe your file and restart GSequencer");
+  g_signal_connect(dialog, "response",
+		   G_CALLBACK(gtk_widget_destroy), NULL);
+  gtk_widget_show_all(dialog);
 }
 
 void

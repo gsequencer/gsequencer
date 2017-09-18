@@ -62,8 +62,6 @@ ags_automation_edit_set_audio_channels_callback(AgsAudio *audio,
   guint i, j;
   gboolean is_output;
 
-  gdk_threads_enter();
-
   window = (AgsWindow *) AGS_AUTOMATION_WINDOW(gtk_widget_get_toplevel((GtkWidget *) automation_edit))->parent_window;
   
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
@@ -74,8 +72,6 @@ ags_automation_edit_set_audio_channels_callback(AgsAudio *audio,
   
   while(list != NULL){
     if(AGS_AUTOMATION_EDITOR_CHILD(list->data)->audio_automation_edit == (GtkWidget *) automation_edit){
-      gdk_threads_leave();
-    
       return;
     }else if(AGS_AUTOMATION_EDITOR_CHILD(list->data)->output_automation_edit == (GtkWidget *) automation_edit){
       editor_child = AGS_AUTOMATION_EDITOR_CHILD(list->data);
@@ -101,8 +97,6 @@ ags_automation_edit_set_audio_channels_callback(AgsAudio *audio,
   }
 
   if(editor_child == NULL){    
-    gdk_threads_leave();
-    
     return;
   }
 
@@ -123,8 +117,6 @@ ags_automation_edit_set_audio_channels_callback(AgsAudio *audio,
       }
     }
   }
-
-  gdk_threads_leave();
 }
 
 void
@@ -144,8 +136,6 @@ ags_automation_edit_set_pads_callback(AgsAudio *audio,
   guint i, j;
   gboolean is_output;
   
-  gdk_threads_enter();
-
   window = (AgsWindow *) AGS_AUTOMATION_WINDOW(gtk_widget_get_toplevel((GtkWidget *) automation_edit))->parent_window;
 
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
@@ -161,8 +151,6 @@ ags_automation_edit_set_pads_callback(AgsAudio *audio,
   
   while(list != NULL){
     if(AGS_AUTOMATION_EDITOR_CHILD(list->data)->audio_automation_edit == (GtkWidget *) automation_edit){
-      gdk_threads_leave();
-    
       return;
     }else if(AGS_AUTOMATION_EDITOR_CHILD(list->data)->output_automation_edit == (GtkWidget *) automation_edit){
       editor_child = AGS_AUTOMATION_EDITOR_CHILD(list->data);
@@ -186,8 +174,6 @@ ags_automation_edit_set_pads_callback(AgsAudio *audio,
   }
 
   if(editor_child == NULL){    
-    gdk_threads_leave();
-    
     return;
   }
 
@@ -208,8 +194,6 @@ ags_automation_edit_set_pads_callback(AgsAudio *audio,
       }
     }
   }
-
-  gdk_threads_leave();
 }
 
 gboolean

@@ -43,6 +43,8 @@
 
 typedef struct _AgsFunctionalTestUtilContainerTest AgsFunctionalTestUtilContainerTest;
 
+typedef void (*AgsFunctionalTestUtilAddTest)();
+
 typedef gboolean (*AgsFunctionalTestUtilIdleCondition)(gpointer data);
 
 struct _AgsFunctionalTestUtilContainerTest
@@ -51,6 +53,10 @@ struct _AgsFunctionalTestUtilContainerTest
 
   guint count;
 };
+
+void ags_functional_test_util_add_test(AgsFunctionalTestUtilAddTest add_test,
+				       volatile gboolean *is_available);
+void ags_functional_test_util_notify_add_test(volatile gboolean *is_available);
 
 void ags_functional_test_util_setup_and_launch();
 void ags_functional_test_util_setup_and_launch_filename(gchar *filename);

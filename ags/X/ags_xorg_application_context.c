@@ -906,7 +906,6 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   /*
    * fundamental thread setup
    */
-  
   /* AgsAudioLoop */
   audio_loop =
     application_context->main_loop = ags_audio_loop_new((GObject *) NULL,
@@ -1117,7 +1116,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   /* check filename */
   filename = NULL;
 
-  gdk_threads_enter();
+  pthread_mutex_lock(ags_gui_thread_get_dispatch_mutex());
   
   for(i = 0; i < AGS_APPLICATION_CONTEXT(xorg_application_context)->argc; i++){
     if(!strncmp(AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i], "--filename", 11)){
@@ -1709,7 +1708,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   g_atomic_int_set(&(xorg_application_context->show_animation),
 		   FALSE);  
 
-  gdk_threads_leave();
+  pthread_mutex_unlock(ags_gui_thread_get_dispatch_mutex());
 }
 
 void
@@ -2221,15 +2220,11 @@ void
 ags_xorg_application_context_clear_cache(AgsTaskThread *task_thread,
 					 gpointer data)
 {
-  gdk_threads_enter();
-
   //TODO:JK: improve me
   //  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
   //  pango_cairo_font_map_set_default(NULL);
   //  cairo_debug_reset_static_data();
   //  FcFini();
-
-  gdk_threads_leave();
 }
 
 AgsXorgApplicationContext*

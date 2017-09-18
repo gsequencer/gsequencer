@@ -136,11 +136,7 @@ ags_change_tact_launch(AgsTask *task)
 {
   gdouble tact;
   
-  gdk_threads_enter();
-  
-  if(!gtk_toggle_button_get_active((GtkToggleButton *) AGS_CHANGE_TACT(task)->navigation->scroll)){
-    gdk_threads_leave();
-  
+  if(!gtk_toggle_button_get_active((GtkToggleButton *) AGS_CHANGE_TACT(task)->navigation->scroll)){  
     return;
   }
 
@@ -159,8 +155,6 @@ ags_change_tact_launch(AgsTask *task)
   }
 
   AGS_CHANGE_TACT(task)->navigation->flags &= (~AGS_NAVIGATION_BLOCK_TACT);
-
-  gdk_threads_leave();
 }
 
 AgsChangeTact*

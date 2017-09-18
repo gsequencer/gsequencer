@@ -76,8 +76,6 @@ ags_pattern_edit_set_audio_channels_callback(AgsAudio *audio,
 
   guint i;
 
-  gdk_threads_enter();
-  
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) pattern_edit);
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
@@ -96,8 +94,6 @@ ags_pattern_edit_set_audio_channels_callback(AgsAudio *audio,
   }
   
   if(editor_child == NULL){
-    gdk_threads_leave();
-    
     return;
   }
 
@@ -123,8 +119,6 @@ ags_pattern_edit_set_audio_channels_callback(AgsAudio *audio,
 			      audio_channels);
     }
   }
-
-  gdk_threads_leave();
 }
 
 void
@@ -146,8 +140,6 @@ ags_pattern_edit_set_pads_callback(AgsAudio *audio,
     }
   }
 
-  gdk_threads_enter();
-
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) pattern_edit);
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
@@ -162,8 +154,6 @@ ags_pattern_edit_set_pads_callback(AgsAudio *audio,
   }
   
   gtk_widget_queue_draw((GtkWidget *) editor->current_meter);
-
-  gdk_threads_leave();
 }
 
 gboolean

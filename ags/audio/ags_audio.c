@@ -2154,9 +2154,13 @@ void
 ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
 {
   AgsChannel *channel;
-  GList *list;
+
   AgsMutexManager *mutex_manager;
+
+  GObject *old_soundcard;
   
+  GList *list;
+
   guint samplerate;
   guint buffer_size;
   guint format;
@@ -2178,15 +2182,13 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
   pthread_mutex_lock(mutex);
   
   /* audio */
-  if(audio->soundcard == soundcard){
+  old_soundcard = audio->soundcard;
+  
+  if(old_soundcard == soundcard){
     pthread_mutex_unlock(mutex);
     return;
   }
 
-  if(audio->soundcard != NULL){
-    g_object_unref(audio->soundcard);
-  }
-  
   if(soundcard != NULL){
     g_object_ref(soundcard);
   }
@@ -2208,24 +2210,30 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
   
   /* playback domain */
   if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1] != NULL){
-    g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1],
-		 "soundcard", soundcard,
-		 NULL);
+    if(AGS_AUDIO_THREAD(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1])->soundcard == old_soundcard){
+      g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1],
+		   "soundcard", soundcard,
+		   NULL);
+    }
   }
 
   if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2] != NULL){
-    g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2],
-		 "soundcard", soundcard,
-		 NULL);
+    if(AGS_AUDIO_THREAD(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2])->soundcard == old_soundcard){
+      g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2],
+		   "soundcard", soundcard,
+		   NULL);
+    }
   }
   
   /* recall */
   list = audio->play;
   
   while(list != NULL){
-    g_object_set(G_OBJECT(list->data),
-		 "soundcard", soundcard,
-		 NULL);
+    if(AGS_RECALL(list->data)->soundcard == old_soundcard){
+      g_object_set(G_OBJECT(list->data),
+		   "soundcard", soundcard,
+		   NULL);
+    }
     
     list = list->next;
   }
@@ -2233,9 +2241,11 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
   list = audio->recall;
   
   while(list != NULL){
-    g_object_set(G_OBJECT(list->data),
-		 "soundcard", soundcard,
-		 NULL);
+    if(AGS_RECALL(list->data)->soundcard == old_soundcard){
+      g_object_set(G_OBJECT(list->data),
+		   "soundcard", soundcard,
+		   NULL);
+    }
     
     list = list->next;
   }
@@ -2244,9 +2254,11 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
   channel = audio->input;
 
   while(channel != NULL){
-    g_object_set(G_OBJECT(channel),
-		 "soundcard", soundcard,
-		 NULL);
+    if(channel->soundcard == old_soundcard){
+      g_object_set(G_OBJECT(channel),
+		   "soundcard", soundcard,
+		   NULL);
+    }
     
     channel = channel->next;
   }
@@ -2255,13 +2267,19 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
   channel = audio->output;
 
   while(channel != NULL){
-    g_object_set(G_OBJECT(channel),
-		 "soundcard", soundcard,
-		 NULL);
+    if(channel->soundcard == old_soundcard){
+      g_object_set(G_OBJECT(channel),
+		   "soundcard", soundcard,
+		   NULL);
+    }
     
     channel = channel->next;
   }
-  
+
+  if(old_soundcard != NULL){
+    g_object_unref(old_soundcard);
+  }
+    
   pthread_mutex_unlock(mutex);
 }
 

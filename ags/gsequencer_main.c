@@ -29,6 +29,8 @@
 
 #include <ags/X/ags_xorg_application_context.h>
 
+#include <ags/X/thread/ags_gui_thread.h>
+
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
 #include <libxml/xpath.h>
@@ -36,7 +38,6 @@
 #include <libxml/xmlIO.h>
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
-
 
 #include "gsequencer_main.h"
 
@@ -182,11 +183,11 @@ ags_setup_thread(void *ptr)
     usleep(500000);
   }
 
-  gdk_threads_enter();
+  pthread_mutex_lock(ags_gui_thread_get_dispatch_mutex());
   
   ags_xorg_application_context_setup(xorg_application_context);
 
-  gdk_threads_leave();
+  pthread_mutex_unlock(ags_gui_thread_get_dispatch_mutex());
   
   pthread_exit(NULL);
 }
@@ -357,10 +358,11 @@ main(int argc, char **argv)
 
   //  gdk_threads_enter();
   //  g_thread_init(NULL);
+  ags_gui_init(&argc, &argv);  
   gtk_init(&argc, &argv);
 
 #ifdef AGS_WITH_X11
-  XInitThreads();
+  //  XInitThreads();
 #endif
   
   if(!builtin_theme_disabled){

@@ -164,9 +164,6 @@ ags_add_soundcard_editor_sink_launch(AgsTask *task)
   
   pthread_mutex_t *application_mutex;
   
-  /* lock gdk threads */
-  gdk_threads_enter();
-
   preferences = (AgsPreferences *) gtk_widget_get_toplevel((GtkWidget *) AGS_ADD_SOUNDCARD_EDITOR_SINK(task)->soundcard_editor);
   window = (AgsWindow *) preferences->window;
   
@@ -185,16 +182,9 @@ ags_add_soundcard_editor_sink_launch(AgsTask *task)
   /* get task thread */
   gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
 						      AGS_TYPE_GUI_THREAD);
-  /*  */
-  gdk_threads_enter();
 
   ags_soundcard_editor_add_sink(AGS_ADD_SOUNDCARD_EDITOR_SINK(task)->soundcard_editor,
 				NULL);
-
-  gdk_threads_leave();
-
-  /* unlock gdk threads */
-  gdk_threads_leave();
 }
 
 /**

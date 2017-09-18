@@ -113,15 +113,28 @@ void ags_gui_thread_stop(AgsThread *thread);
 void ags_gui_thread_complete_task(AgsGuiThread *gui_thread);
 void* ags_gui_thread_do_poll_loop(void *ptr);
 
-gboolean ags_gui_thread_task_prepare(GSource *source,
-				     gint *timeout_);
-gboolean ags_gui_thread_task_check(GSource *source);
-gboolean ags_gui_thread_task_dispatch(GSource *source);
+static void ags_gui_thread_dispatch_mutex_create();
 
 gboolean ags_gui_thread_animation_prepare(GSource *source,
 					  gint *timeout_);
 gboolean ags_gui_thread_animation_check(GSource *source);
-gboolean ags_gui_thread_animation_dispatch(GSource *source);
+gboolean ags_gui_thread_animation_dispatch(GSource *source,
+					   GSourceFunc callback,
+					   gpointer user_data);
+
+gboolean ags_gui_thread_sync_task_prepare(GSource *source,
+					  gint *timeout_);
+gboolean ags_gui_thread_sync_task_check(GSource *source);
+gboolean ags_gui_thread_sync_task_dispatch(GSource *source,
+					   GSourceFunc callback,
+					   gpointer user_data);
+
+gboolean ags_gui_thread_task_prepare(GSource *source,
+				     gint *timeout_);
+gboolean ags_gui_thread_task_check(GSource *source);
+gboolean ags_gui_thread_task_dispatch(GSource *source,
+				      GSourceFunc callback,
+				      gpointer user_data);
 
 gboolean ags_gui_thread_do_animation_callback(GtkWidget *widget, GdkEventExpose *event,
 					      AgsGuiThread *gui_thread);
@@ -149,6 +162,8 @@ struct sigaction* ags_gui_thread_get_sigact();
 
 static gpointer ags_gui_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_gui_thread_parent_connectable_interface;
+
+static pthread_mutex_t* gui_dispatch_mutex = NULL;
 
 /* Key for the thread-specific AgsGuiThread */
 static pthread_key_t ags_gui_thread_sigact_key;
@@ -257,7 +272,7 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
 {
   AgsThread *thread;
 
-  pthread_mutexattr_t attr;
+  pthread_mutexattr_t *attr;
 
   thread = AGS_THREAD(gui_thread);
 
@@ -283,28 +298,30 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   gui_thread->max_priority = 0;
   
   /* task completion */
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_settype(&attr,
+  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
 
   gui_thread->task_completion_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(gui_thread->task_completion_mutex,
-		     &attr);
+		     attr);
 
   g_atomic_pointer_set(&(gui_thread->task_completion),
 		       NULL);
 
   /*  */
-  gui_thread->dispatch_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(gui_thread->dispatch_mutex,
-		     &attr);
-
+  gui_thread->dispatch_mutex = ags_gui_thread_get_dispatch_mutex();
+  
   /* task */
   gui_thread->task_schedule_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(gui_thread->task_schedule_mutex,
 		     NULL);
 
   gui_thread->animation_source = NULL;
+
+  gui_thread->queued_sync = 0;
+  gui_thread->sync_source = NULL;
 
   gui_thread->collected_task = NULL;
   gui_thread->task_source = NULL;
@@ -380,6 +397,7 @@ ags_gui_thread_do_poll_loop(void *ptr)
 
   GMainContext *main_context;
   GSourceFuncs task_funcs;
+  GSourceFuncs sync_funcs;
   GSourceFuncs animation_funcs;
 
   struct timespec idle = {
@@ -437,6 +455,16 @@ ags_gui_thread_do_poll_loop(void *ptr)
   g_source_attach(gui_thread->animation_source,
 		  main_context);
 
+  /* sync functions */
+  sync_funcs.prepare = ags_gui_thread_sync_task_prepare;
+  sync_funcs.check = ags_gui_thread_sync_task_check;
+  sync_funcs.dispatch = ags_gui_thread_sync_task_dispatch;
+
+  gui_thread->sync_source = g_source_new(&sync_funcs,
+					 sizeof(GSource));
+  g_source_attach(gui_thread->sync_source,
+		  main_context);
+  
   /* task functions */
   task_funcs.prepare = ags_gui_thread_task_prepare;
   task_funcs.check = ags_gui_thread_task_check;
@@ -476,16 +504,33 @@ ags_gui_thread_do_poll_loop(void *ptr)
   pthread_exit(NULL);
 }
 
+void
+ags_gui_init(int *argc, char ***argv)
+{
+  ags_gui_thread_get_dispatch_mutex();
+
+  gdk_threads_set_lock_functions(ags_gui_thread_enter,
+				 ags_gui_thread_leave);
+}
+
+void
+ags_gui_thread_enter()
+{
+  pthread_mutex_lock(ags_gui_thread_get_dispatch_mutex());
+}
+
+void
+ags_gui_thread_leave()
+{
+  pthread_mutex_unlock(ags_gui_thread_get_dispatch_mutex());
+}
+
 gboolean
 ags_gui_thread_animation_prepare(GSource *source,
 			    gint *timeout_)
 {
-  AgsXorgApplicationContext *xorg_application_context;
-
-  xorg_application_context = ags_application_context_get_instance();
-
   if(timeout_ != NULL){
-    *timeout_ = -1;
+    *timeout_ = 0;
   }
 
   return(TRUE);
@@ -494,15 +539,13 @@ ags_gui_thread_animation_prepare(GSource *source,
 gboolean
 ags_gui_thread_animation_check(GSource *source)
 {
-  AgsXorgApplicationContext *xorg_application_context;
-
-  xorg_application_context = ags_application_context_get_instance();
-
   return(TRUE);
 }
 
 gboolean
-ags_gui_thread_animation_dispatch(GSource *source)
+ags_gui_thread_animation_dispatch(GSource *source,
+				  GSourceFunc callback,
+				  gpointer user_data)
 {
   AgsXorgApplicationContext *xorg_application_context;
 
@@ -567,6 +610,170 @@ ags_gui_thread_animation_dispatch(GSource *source)
 }
 
 gboolean
+ags_gui_thread_sync_task_prepare(GSource *source,
+				 gint *timeout_)
+{  
+  AgsGuiThread *gui_thread;
+
+  AgsApplicationContext *application_context;
+  
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+
+  application_context = ags_application_context_get_instance();
+  main_loop = application_context->main_loop;
+  
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
+
+  gui_thread = ags_thread_find_type(main_loop,
+				    AGS_TYPE_GUI_THREAD);
+  
+  if(gui_thread->queued_sync > 0){
+    if(timeout_ != NULL){
+      *timeout_ = 0;
+    }
+
+    return(TRUE);
+  }else{
+    if(timeout_ != NULL){
+      *timeout_ = -1;
+    }
+    
+    return(FALSE);
+  }
+}
+
+gboolean
+ags_gui_thread_sync_task_check(GSource *source)
+{
+  AgsGuiThread *gui_thread;
+
+  AgsApplicationContext *application_context;
+  
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+
+  application_context = ags_application_context_get_instance();
+  main_loop = application_context->main_loop;
+  
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
+
+  gui_thread = ags_thread_find_type(main_loop,
+				    AGS_TYPE_GUI_THREAD);
+
+  if(gui_thread->queued_sync > 0){    
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
+}
+
+gboolean
+ags_gui_thread_sync_task_dispatch(GSource *source,
+				  GSourceFunc callback,
+				  gpointer user_data)
+{
+  AgsGuiThread *gui_thread;
+
+  AgsApplicationContext *application_context;
+
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+
+  GMainContext *main_context;
+  
+  struct timespec timeout = {
+    0,
+    AGS_GUI_THREAD_SYNC_AVAILABLE_TIMEOUT,
+  };
+  
+  application_context = ags_application_context_get_instance();
+  main_loop = application_context->main_loop;
+  
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
+
+  gui_thread = ags_thread_find_type(main_loop,
+				    AGS_TYPE_GUI_THREAD);
+
+  main_context = gui_thread->main_context;
+
+  if(g_atomic_int_get(&(AGS_XORG_APPLICATION_CONTEXT(application_context)->show_animation)) == TRUE){
+    return(G_SOURCE_CONTINUE);
+  }
+
+  /* ask for sync */
+  while((AGS_TASK_THREAD_EXTERN_AVAILABLE & (g_atomic_int_get(&(task_thread->flags)))) == 0){
+    nanosleep(&timeout,
+	      NULL);
+  }
+  
+  if(g_atomic_pointer_get(&(task_thread->queue)) == NULL){
+    gui_thread->queued_sync -= 1;
+  }
+
+  g_atomic_int_and(&(task_thread->flags),
+		   (~AGS_TASK_THREAD_EXTERN_AVAILABLE));
+  
+  /* signal */
+  if(!g_main_context_acquire(main_context)){
+    gboolean got_ownership = FALSE;
+
+    g_mutex_lock(&(gui_thread->mutex));
+    
+    while(!got_ownership){
+      got_ownership = g_main_context_wait(main_context,
+					  &(gui_thread->cond),
+					  &(gui_thread->mutex));
+    }
+
+    g_mutex_unlock(&(gui_thread->mutex));
+  }
+
+  pthread_mutex_lock(gui_thread->dispatch_mutex);
+
+  pthread_mutex_lock(task_thread->sync_mutex);
+    
+  g_atomic_int_and(&(task_thread->flags),
+		   (~AGS_TASK_THREAD_SYNC_WAIT));
+  
+  if((AGS_TASK_THREAD_SYNC_DONE & (g_atomic_int_get(&(task_thread->flags)))) == 0){
+    pthread_cond_signal(task_thread->sync_cond);
+  }  
+
+  pthread_mutex_unlock(task_thread->sync_mutex);
+  
+  /* wait */
+  pthread_mutex_lock(task_thread->extern_sync_mutex);
+  
+  if((AGS_TASK_THREAD_EXTERN_SYNC_WAIT & (g_atomic_int_get(&(task_thread->flags)))) != 0 &&
+     (AGS_TASK_THREAD_EXTERN_SYNC_DONE & (g_atomic_int_get(&(task_thread->flags)))) == 0){
+    g_atomic_int_and(&(task_thread->flags),
+		     (~AGS_TASK_THREAD_EXTERN_SYNC_DONE));
+      
+    while((AGS_TASK_THREAD_EXTERN_SYNC_WAIT & (g_atomic_int_get(&(task_thread->flags)))) != 0 &&
+	  (AGS_TASK_THREAD_EXTERN_SYNC_DONE & (g_atomic_int_get(&(task_thread->flags)))) == 0){
+      pthread_cond_wait(task_thread->extern_sync_cond,
+			task_thread->extern_sync_mutex);
+    }
+  }
+
+  g_atomic_int_or(&(task_thread->flags),
+		  (AGS_TASK_THREAD_EXTERN_SYNC_WAIT |
+		   AGS_TASK_THREAD_EXTERN_SYNC_DONE));
+  
+  pthread_mutex_unlock(task_thread->extern_sync_mutex);
+
+  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  
+  g_main_context_release(main_context);
+  
+  return(G_SOURCE_CONTINUE);
+}
+
+gboolean
 ags_gui_thread_task_prepare(GSource *source,
 			    gint *timeout_)
 {
@@ -616,7 +823,9 @@ ags_gui_thread_task_check(GSource *source)
 }
 
 gboolean
-ags_gui_thread_task_dispatch(GSource *source)
+ags_gui_thread_task_dispatch(GSource *source,
+			     GSourceFunc callback,
+			     gpointer user_data)
 {
   AgsApplicationContext *application_context;
 
@@ -708,6 +917,7 @@ ags_gui_thread_run(AgsThread *thread)
   main_context = gui_thread->main_context;
 
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
+#ifdef AGS_WITH_RT
     struct sched_param param;
 
     sigset_t sigmask;
@@ -718,7 +928,8 @@ ags_gui_thread_run(AgsThread *thread)
     if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
       perror("sched_setscheduler failed");
     }
-
+#endif
+    
     g_atomic_int_or(&(thread->flags),
 		    AGS_THREAD_RT_SETUP);
 
@@ -1405,11 +1616,13 @@ ags_gui_thread_do_animation_callback(GtkWidget *widget, GdkEventExpose *event,
   }
 
   gdk_threads_leave();
+
+  return(TRUE);
 }
 
 void
 ags_gui_thread_do_animation(AgsGuiThread *gui_thread)
- {
+{
   AgsXorgApplicationContext *xorg_application_context;
 
   GtkWindow *window;
@@ -1470,6 +1683,7 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
 
   GSourceFuncs animation_funcs;
   GSourceFuncs task_funcs;
+  GSourceFuncs sync_funcs;
 
   struct timespec idle = {
     0,
@@ -1523,54 +1737,77 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
   }
     
   g_main_context_push_thread_default(main_context);
-
+  
   /* animation functions */
   animation_funcs.prepare = ags_gui_thread_animation_prepare;
   animation_funcs.check = ags_gui_thread_animation_check;
   animation_funcs.dispatch = ags_gui_thread_animation_dispatch;
-
+  animation_funcs.finalize = NULL;
+  
   gui_thread->animation_source = g_source_new(&animation_funcs,
 					      sizeof(GSource));
   g_source_attach(gui_thread->animation_source,
-		  main_context);
+  		  main_context);
 
   /* task functions */
   task_funcs.prepare = ags_gui_thread_task_prepare;
   task_funcs.check = ags_gui_thread_task_check;
   task_funcs.dispatch = ags_gui_thread_task_dispatch;
+  task_funcs.finalize = NULL;
 
   gui_thread->task_source = g_source_new(&task_funcs,
 					 sizeof(GSource));
   g_source_attach(gui_thread->task_source,
-		  main_context);
+  		  main_context);
+
+  /* sync functions */
+  sync_funcs.prepare = ags_gui_thread_sync_task_prepare;
+  sync_funcs.check = ags_gui_thread_sync_task_check;
+  sync_funcs.dispatch = ags_gui_thread_sync_task_dispatch;
+  sync_funcs.finalize = NULL;
+
+  gui_thread->sync_source = g_source_new(&sync_funcs,
+					 sizeof(GSource));
+  g_source_attach(gui_thread->sync_source,
+  		  main_context);
   
   /* show animation */
   g_atomic_int_set(&(xorg_application_context->gui_ready),
 		   TRUE);
-  
-  /* main context iteration */
-  while((AGS_GUI_THREAD_RUNNING & (g_atomic_int_get(&(gui_thread->flags)))) != 0){
-    nanosleep(&idle,
-	      NULL);
 
-    pthread_mutex_lock(task_thread->launch_mutex);
-
-    AGS_THREAD_GET_CLASS(gui_thread)->run(gui_thread);
-
-    pthread_mutex_unlock(task_thread->launch_mutex);
-  }
-
-  //  gtk_main();
+  /* gtk+-2.0 main */    
+  gtk_main();
 }
 
 void
 ags_gui_thread_schedule_task(AgsGuiThread *gui_thread,
 			     GObject *task)
 {
+  AgsApplicationContext *application_context;
+
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+
   if(!AGS_IS_GUI_THREAD(gui_thread) ||
      !AGS_IS_TASK(task)){
     return;
   }
+
+  application_context = ags_application_context_get_instance();
+  main_loop = application_context->main_loop;
+
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
+
+  if(task_thread == NULL){
+    return;
+  }
+  
+  g_atomic_int_or(&(task_thread->flags),
+		  (AGS_TASK_THREAD_EXTERN_SYNC |
+		   AGS_TASK_THREAD_EXTERN_READY));
+
+  gui_thread->queued_sync = 3;
 
   pthread_mutex_lock(gui_thread->task_schedule_mutex);
 
@@ -1584,10 +1821,32 @@ void
 ags_gui_thread_schedule_task_list(AgsGuiThread *gui_thread,
 				  GList *task)
 {
+  AgsApplicationContext *application_context;
+
+  AgsThread *main_loop;
+  AgsTaskThread *task_thread;
+
   if(!AGS_IS_GUI_THREAD(gui_thread) ||
      task == NULL){
     return;
   }
+
+  application_context = ags_application_context_get_instance();
+  main_loop = application_context->main_loop;
+
+  task_thread = ags_thread_find_type(main_loop,
+				     AGS_TYPE_TASK_THREAD);
+
+  if(task_thread == NULL){
+    return;
+  }
+  
+  g_atomic_int_or(&(task_thread->flags),
+		  (AGS_TASK_THREAD_EXTERN_SYNC |
+		   AGS_TASK_THREAD_EXTERN_READY));
+
+  gui_thread->queued_sync = 3;
+
 
   pthread_mutex_lock(gui_thread->task_schedule_mutex);
 
@@ -1595,6 +1854,40 @@ ags_gui_thread_schedule_task_list(AgsGuiThread *gui_thread,
 					     gui_thread->collected_task);
   
   pthread_mutex_unlock(gui_thread->task_schedule_mutex);
+}
+
+static void
+ags_gui_thread_dispatch_mutex_create()
+{
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
+
+  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+  
+  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);
+
+  gui_dispatch_mutex = mutex;
+}
+
+pthread_mutex_t*
+ags_gui_thread_get_dispatch_mutex()
+{
+  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  pthread_mutex_lock(&mutex);
+  
+  if(gui_dispatch_mutex == NULL){
+    ags_gui_thread_dispatch_mutex_create();
+  }
+
+  pthread_mutex_unlock(&mutex);
+  
+  return(gui_dispatch_mutex);
 }
 
 static void

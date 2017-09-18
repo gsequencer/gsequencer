@@ -441,11 +441,7 @@ ags_drum_done_callback(AgsAudio *audio,
     playback = playback->next;
   }
   
-  gdk_threads_enter();  
-
   if(all_done){
     ags_led_array_unset_all(drum->pattern_box->hled_array);
   }
-  
-  gdk_threads_leave();
 }

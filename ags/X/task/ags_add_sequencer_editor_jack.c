@@ -164,9 +164,6 @@ ags_add_sequencer_editor_jack_launch(AgsTask *task)
   
   pthread_mutex_t *application_mutex;
   
-  /* lock gdk threads */
-  gdk_threads_enter();
-
   preferences = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) AGS_ADD_SEQUENCER_EDITOR_JACK(task)->sequencer_editor);
   window = preferences->window;
   
@@ -185,16 +182,9 @@ ags_add_sequencer_editor_jack_launch(AgsTask *task)
   /* get task thread */
   gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
 						      AGS_TYPE_GUI_THREAD);
-  /*  */
-  gdk_threads_enter();
 
   ags_sequencer_editor_add_jack(AGS_ADD_SEQUENCER_EDITOR_JACK(task)->sequencer_editor,
 				NULL);
-
-  gdk_threads_leave();
-
-  /* unlock gdk threads */
-  gdk_threads_leave();
 }
 
 /**

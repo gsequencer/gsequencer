@@ -953,8 +953,6 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
   
   pthread_mutex_unlock(application_mutex);
 
-  gdk_threads_enter();
-  
   if(audio_channels > audio_channels_old){
     /* grow lines */
     AgsPad *pad;
@@ -1210,8 +1208,6 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
       g_list_free(list_input_pad_start);
     }
   }
-
-  gdk_threads_leave();
 }
 
 /**
@@ -1271,8 +1267,6 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
 					 (GObject *) audio);
   
   pthread_mutex_unlock(application_mutex);
-
-  gdk_threads_enter();
   
   if(pads_old < pads){
     pthread_mutex_lock(audio_mutex);
@@ -1405,8 +1399,6 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
       }
     }
   }
-
-  gdk_threads_leave();
 }
 
 /**

@@ -297,7 +297,7 @@ gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.
 check_PROGRAMS = 
 
 include $(top_srcdir)/unit-tests.mk
-# include $(top_srcdir)/functional-tests.mk
+include $(top_srcdir)/functional-tests.mk
 
 TESTS = $(check_PROGRAMS)
 

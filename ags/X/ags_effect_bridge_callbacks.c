@@ -34,14 +34,10 @@ ags_effect_bridge_set_audio_channels_callback(AgsAudio *audio,
 {
   AgsWindow *window;
   
-  gdk_threads_enter();
-
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) effect_bridge);
 
   ags_effect_bridge_resize_audio_channels(effect_bridge,
 					  audio_channels, audio_channels_old);
-
-  gdk_threads_leave();
 }
 
 void
@@ -52,13 +48,9 @@ ags_effect_bridge_set_pads_callback(AgsAudio *audio,
 {  
   AgsWindow *window;
 
-  gdk_threads_enter();
-
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) effect_bridge);
   ags_effect_bridge_resize_pads(effect_bridge,
 				channel_type,
 				pads, pads_old);
-
-  gdk_threads_leave();
 }
 

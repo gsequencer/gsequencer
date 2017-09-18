@@ -42,6 +42,9 @@
 
 #define AGS_GUI_THREAD_DEFAULT_JIFFIE (60.0)
 
+#define AGS_GUI_THREAD_SYNC_DELAY (50000)
+#define AGS_GUI_THREAD_SYNC_AVAILABLE_TIMEOUT (400)
+
 typedef struct _AgsGuiThread AgsGuiThread;
 typedef struct _AgsGuiThreadClass AgsGuiThreadClass;
 
@@ -77,7 +80,10 @@ struct _AgsGuiThread
   pthread_mutex_t *task_schedule_mutex;
 
   GSource *animation_source;
-  
+
+  guint queued_sync;
+  GSource *sync_source;
+
   GList *collected_task;
   GSource *task_source;
 };
@@ -88,6 +94,13 @@ struct _AgsGuiThreadClass
 };
 
 GType ags_gui_thread_get_type();
+
+void ags_gui_init(int *argc, char ***argv);
+
+void ags_gui_thread_enter();
+void ags_gui_thread_leave();
+
+pthread_mutex_t* ags_gui_thread_get_dispatch_mutex();
 
 void ags_gui_thread_show_file_error(AgsGuiThread *gui_thread,
 				    gchar *filename,

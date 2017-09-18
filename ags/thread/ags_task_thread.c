@@ -198,6 +198,8 @@ ags_task_thread_init(AgsTaskThread *task_thread)
 
   thread->freq = AGS_TASK_THREAD_DEFAULT_JIFFIE;
 
+  task_thread->flags = 0;
+  
   /* async queue */
   g_atomic_int_set(&(task_thread->is_run),
 		   FALSE);
@@ -205,6 +207,42 @@ ags_task_thread_init(AgsTaskThread *task_thread)
   g_atomic_int_set(&(task_thread->wait_ref),
 		   0);
 
+  /* sync mutex and cond */
+  task_thread->sync_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+
+  pthread_mutexattr_init(task_thread->sync_mutexattr);
+  pthread_mutexattr_settype(task_thread->sync_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(task_thread->sync_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  task_thread->sync_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(task_thread->sync_mutex, task_thread->sync_mutexattr);
+
+  task_thread->sync_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  pthread_cond_init(task_thread->sync_cond, NULL);
+
+  /* extern sync mutex and cond */
+  task_thread->extern_sync_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+
+  pthread_mutexattr_init(task_thread->extern_sync_mutexattr);
+  pthread_mutexattr_settype(task_thread->extern_sync_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(task_thread->extern_sync_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  task_thread->extern_sync_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(task_thread->extern_sync_mutex, task_thread->extern_sync_mutexattr);
+
+  task_thread->extern_sync_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  pthread_cond_init(task_thread->extern_sync_cond, NULL);
+  
   /* run mutex and cond */
   task_thread->run_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
 
@@ -292,6 +330,26 @@ ags_task_thread_finalize(GObject *gobject)
 
   task_thread = AGS_TASK_THREAD(gobject);
 
+  /* sync mutex and cond */
+  pthread_mutexattr_destroy(task_thread->sync_mutexattr);
+  free(task_thread->sync_mutexattr);
+
+  pthread_mutex_destroy(task_thread->sync_mutex);
+  free(task_thread->sync_mutex);
+
+  pthread_cond_destroy(task_thread->sync_cond);
+  free(task_thread->sync_cond);
+
+  /* extern sync mutex and cond */
+  pthread_mutexattr_destroy(task_thread->extern_sync_mutexattr);
+  free(task_thread->extern_sync_mutexattr);
+
+  pthread_mutex_destroy(task_thread->extern_sync_mutex);
+  free(task_thread->extern_sync_mutex);
+
+  pthread_cond_destroy(task_thread->extern_sync_cond);
+  free(task_thread->extern_sync_cond);
+    
   /* run mutex and cond */
   pthread_mutexattr_destroy(task_thread->run_mutexattr);
   free(task_thread->run_mutexattr);
@@ -395,7 +453,9 @@ ags_task_thread_run(AgsThread *thread)
 
   GList *list;
 
+  guint flags;
   guint prev_pending;
+  gboolean do_sync;
   static gboolean initialized = FALSE;
 
   task_thread = AGS_TASK_THREAD(thread);
@@ -442,7 +502,40 @@ ags_task_thread_run(AgsThread *thread)
 		   g_atomic_int_get(&(task_thread->queued)) - prev_pending);
 
   pthread_mutex_unlock(task_thread->read_mutex);
-  
+
+  /*  */
+  flags = g_atomic_int_get(&(task_thread->flags));
+  do_sync = FALSE;
+
+  if((AGS_TASK_THREAD_EXTERN_SYNC & flags) != 0){
+    if((AGS_TASK_THREAD_EXTERN_READY & flags) != 0){
+      g_atomic_int_or(&(task_thread->flags),
+		      AGS_TASK_THREAD_EXTERN_AVAILABLE);
+
+      do_sync = TRUE;
+      
+      pthread_mutex_lock(task_thread->sync_mutex);
+    
+      if((AGS_TASK_THREAD_SYNC_WAIT & (g_atomic_int_get(&(task_thread->flags)))) != 0 &&
+	 (AGS_TASK_THREAD_SYNC_DONE & (g_atomic_int_get(&(task_thread->flags)))) == 0){
+	g_atomic_int_and(&(task_thread->flags),
+			 (~AGS_TASK_THREAD_SYNC_DONE));
+      
+	while((AGS_TASK_THREAD_SYNC_WAIT & (g_atomic_int_get(&(task_thread->flags)))) != 0 &&
+	      (AGS_TASK_THREAD_SYNC_DONE & (g_atomic_int_get(&(task_thread->flags)))) == 0){
+	  pthread_cond_wait(task_thread->sync_cond,
+			    task_thread->sync_mutex);
+	}
+      }
+
+      g_atomic_int_or(&(task_thread->flags),
+		      (AGS_TASK_THREAD_SYNC_WAIT |
+		       AGS_TASK_THREAD_SYNC_DONE));		       
+
+      pthread_mutex_unlock(task_thread->sync_mutex);
+    }
+  }
+
   /* launch tasks */
   if(list != NULL){
     AgsTask *task;
@@ -499,7 +592,20 @@ ags_task_thread_run(AgsThread *thread)
   }
   
   pthread_mutex_unlock(task_thread->cyclic_task_mutex);
+
+  if(do_sync){
+    pthread_mutex_lock(task_thread->extern_sync_mutex);
+
+    g_atomic_int_and(&(task_thread->flags),
+		     (~AGS_TASK_THREAD_EXTERN_SYNC_WAIT));
   
+    if((AGS_TASK_THREAD_EXTERN_SYNC_DONE & (g_atomic_int_get(&(task_thread->flags)))) == 0){
+      pthread_cond_signal(task_thread->extern_sync_cond);
+    }
+
+    pthread_mutex_unlock(task_thread->extern_sync_mutex);
+  }
+    
   /* async queue */
   pthread_mutex_lock(task_thread->run_mutex);
   

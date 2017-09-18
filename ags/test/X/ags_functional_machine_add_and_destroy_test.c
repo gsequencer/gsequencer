@@ -239,14 +239,7 @@ main(int argc, char **argv)
   int result;
 
   const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
-
-#ifdef AGS_USE_TIMER
-  timer_t *timer_id
-#endif
   
-  putenv("LC_ALL=C\0");
-  putenv("LANG=C\0");
-
   //  mtrace();
   atexit(ags_test_signal_cleanup);
 

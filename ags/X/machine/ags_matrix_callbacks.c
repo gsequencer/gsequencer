@@ -271,8 +271,6 @@ ags_matrix_tact_callback(AgsAudio *audio,
     return;
   }
 
-  gdk_threads_enter();
-  
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) matrix,
 						 AGS_TYPE_WINDOW);
 
@@ -321,8 +319,6 @@ ags_matrix_tact_callback(AgsAudio *audio,
   if(play_count_beats_audio == NULL ||
      play_count_beats_audio_run == NULL){
     pthread_mutex_unlock(audio_mutex);
-
-    gdk_threads_leave();
     
     return;
   }
@@ -343,8 +339,6 @@ ags_matrix_tact_callback(AgsAudio *audio,
   }
 
   pthread_mutex_unlock(audio_mutex);
-
-  gdk_threads_leave();
 }
 
 void
@@ -369,11 +363,7 @@ ags_matrix_done_callback(AgsAudio *audio,
     playback = playback->next;
   }
 
-  gdk_threads_enter();  
-
   if(all_done){
     ags_led_array_unset_all(matrix->cell_pattern->hled_array);
   }
-
-  gdk_threads_leave();
 }
