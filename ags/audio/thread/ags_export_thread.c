@@ -30,6 +30,8 @@
 
 #include <ags/audio/pulse/ags_pulse_devout.h>
 
+#include <ags/audio/core-audio/ags_core_audio_devout.h>
+
 #include <math.h>
 
 #include <ags/i18n.h>
@@ -287,6 +289,9 @@ ags_export_thread_set_property(GObject *gobject,
 		 AGS_IS_PULSE_DEVOUT(soundcard)){
 	  g_atomic_int_and(&(AGS_THREAD(export_thread)->flags),
 			   (~AGS_THREAD_INTERMEDIATE_POST_SYNC));
+	}else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
+	  g_atomic_int_or(&(AGS_THREAD(export_thread)->flags),
+			  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
 	}
       }
 
@@ -470,6 +475,8 @@ ags_export_thread_run(AgsThread *thread)
   }else if(AGS_IS_JACK_DEVOUT(soundcard) ||
 	   AGS_IS_PULSE_DEVOUT(soundcard)){
     soundcard_buffer = ags_soundcard_get_prev_buffer(soundcard);
+  }else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
+    soundcard_buffer = ags_soundcard_get_buffer(soundcard);
   }
   
   ags_soundcard_get_presets(soundcard,

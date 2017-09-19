@@ -105,11 +105,94 @@ ags_lv2ui_manager_init(AgsLv2uiManager *lv2ui_manager)
   lv2ui_manager->lv2ui_plugin = NULL;
 
   if(ags_lv2ui_default_path == NULL){
-    ags_lv2ui_default_path = (gchar **) malloc(3 * sizeof(gchar *));
+    gchar *lv2ui_env;
 
-    ags_lv2ui_default_path[0] = g_strdup("/usr/lib/lv2");
-    ags_lv2ui_default_path[1] = g_strdup("/usr/lib64/lv2");
-    ags_lv2ui_default_path[2] = NULL;
+    if((lv2ui_env = getenv("LV2_PATH")) != NULL){
+      gchar *iter, *next;
+      guint i;
+      
+      ags_lv2ui_default_path = (gchar **) malloc(sizeof(gchar *));
+
+      iter = lv2ui_env;
+      i = 0;
+      
+      while((next = index(iter, ':')) != NULL){
+	ags_lv2ui_default_path = (gchar **) realloc(ags_lv2ui_default_path,
+						    (i + 2) * sizeof(gchar *));
+	ags_lv2ui_default_path[i] = g_strndup(iter,
+					      next - iter);
+
+	iter = next + 1;
+	i++;
+      }
+
+      if(*iter != '\0'){
+	ags_lv2ui_default_path = (gchar **) realloc(ags_lv2ui_default_path,
+						    (i + 2) * sizeof(gchar *));
+	ags_lv2ui_default_path[i] = g_strdup(iter);
+
+	i++;	
+      }
+
+      ags_lv2ui_default_path[i] = NULL;
+    }else{
+      gchar *home_dir;
+      guint i;
+
+#ifdef __APPLE__
+#ifdef AGS_MAC_BUNDLE
+      if((home_dir = getenv("HOME")) != NULL){
+	ags_lv2ui_default_path = (gchar **) malloc(6 * sizeof(gchar *));
+      }else{
+	ags_lv2ui_default_path = (gchar **) malloc(5 * sizeof(gchar *));
+      }
+#else
+      if((home_dir = getenv("HOME")) != NULL){
+	ags_lv2ui_default_path = (gchar **) malloc(5 * sizeof(gchar *));
+      }else{
+	ags_lv2ui_default_path = (gchar **) malloc(4 * sizeof(gchar *));
+      }
+#endif
+    
+      i = 0;
+
+#ifdef AGS_MAC_BUNDLE
+      ags_lv2ui_default_path[i++] = g_strdup_printf("%s/lv2",
+						    getenv("GSEQUENCER_PLUGIN_DIR"));
+#endif
+
+      ags_lv2ui_default_path[i++] = g_strdup("/Library/Audio/Plug-Ins/LV2");
+      ags_lv2ui_default_path[i++] = g_strdup("/usr/lib/lv2");
+      ags_lv2ui_default_path[i++] = g_strdup("/usr/local/lib/lv2");
+
+      if(home_dir != NULL){
+	ags_lv2ui_default_path[i++] = g_strdup_printf("%s/Library/Audio/Plug-Ins/LV2",
+						      home_dir);
+      }
+    
+      ags_lv2ui_default_path[i++] = NULL;
+#else
+      if((home_dir = getenv("HOME")) != NULL){
+	ags_lv2ui_default_path = (gchar **) malloc(6 * sizeof(gchar *));
+      }else{
+	ags_lv2ui_default_path = (gchar **) malloc(5 * sizeof(gchar *));
+      }
+    
+      i = 0;
+    
+      ags_lv2ui_default_path[i++] = g_strdup("/usr/lib64/lv2");
+      ags_lv2ui_default_path[i++] = g_strdup("/usr/local/lib64/lv2");
+      ags_lv2ui_default_path[i++] = g_strdup("/usr/lib/lv2");
+      ags_lv2ui_default_path[i++] = g_strdup("/usr/local/lib/lv2");
+
+      if(home_dir != NULL){
+	ags_lv2ui_default_path[i++] = g_strdup_printf("%s/.lv2",
+						      home_dir);
+      }
+    
+      ags_lv2ui_default_path[i++] = NULL;
+#endif
+    }
   }
 }
 

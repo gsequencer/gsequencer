@@ -1,3 +1,16 @@
+Overview of Changes in AGS 0.9.26
+================================
+
+* full gtk_main() support you might want to run it by calling
+  ags_gui_thread_do_run().
+
+Overview of Changes in AGS 0.9.24
+================================
+
+* Support for LADSPA_PATH, DSSI_PATH and LV2_PATH environment variables
+* Core-audio audio unit backend in order to port the application to
+  Apple OS X.
+
 Overview of Changes in AGS 0.9.10
 ================================
 

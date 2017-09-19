@@ -760,7 +760,7 @@ ags_synth_generator_compute_with_audio_signal(AgsSynthGenerator *synth_generator
   
   stream = AGS_AUDIO_SIGNAL(audio_signal)->stream_beginning;
   stream = g_list_nth(stream,
-		      floor(attack / buffer_size));
+		      (guint) floor(attack / buffer_size));
 
   attack %= buffer_size;
 

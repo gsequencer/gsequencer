@@ -39,6 +39,8 @@
 #include "../gsequencer_setup_util.h"
 #include "../ags_functional_test_util.h"
 
+void ags_functional_mixer_test_add_test();
+
 int ags_functional_mixer_test_init_suite();
 int ags_functional_mixer_test_clean_suite();
 
@@ -75,14 +77,33 @@ void ags_functional_mixer_test_resize_audio_channels();
   "auto-sense=true\n"					\
   "\n"
 
+CU_pSuite pSuite = NULL;
+volatile gboolean is_available;
+
 extern AgsApplicationContext *ags_application_context;
-
-extern struct sigaction ags_test_sigact;
-
-extern volatile gboolean ags_show_start_animation;
 
 AgsGuiThread *gui_thread;
 AgsTaskThread *task_thread;
+
+void
+ags_functional_mixer_test_add_test()
+{
+  /* add the tests to the suite */
+  if((CU_add_test(pSuite, "functional test of AgsMixer resize pads\0", ags_functional_mixer_test_resize_pads) == NULL) ||
+     (CU_add_test(pSuite, "functional test of AgsMixer resize audio channels\0", ags_functional_mixer_test_resize_audio_channels) == NULL)){
+    CU_cleanup_registry();
+      
+    exit(CU_get_error());
+  }
+  
+  /* Run all tests using the CUnit Basic interface */
+  CU_basic_set_mode(CU_BRM_VERBOSE);
+  CU_basic_run_tests();
+  
+  CU_cleanup_registry();
+  
+  exit(CU_get_error());
+}
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -91,15 +112,6 @@ AgsTaskThread *task_thread;
 int
 ags_functional_mixer_test_init_suite()
 {
-  AgsConfig *config;
-
-  config = ags_config_get_instance();
-  ags_config_load_from_data(config,
-			    AGS_FUNCTIONAL_MIXER_TEST_CONFIG,
-			    strlen(AGS_FUNCTIONAL_MIXER_TEST_CONFIG));
-
-  ags_functional_test_util_setup_and_launch();
-
   /* get gui thread */
   gui_thread = ags_thread_find_type(ags_application_context->main_loop,
 				    AGS_TYPE_GUI_THREAD);
@@ -283,112 +295,6 @@ ags_functional_mixer_test_resize_audio_channels()
 int
 main(int argc, char **argv)
 {
-  CU_pSuite pSuite = NULL;
-
-  AgsConfig *config;
-
-  pthread_t *animation_thread;
-
-  struct sched_param param;
-  struct rlimit rl;
-  struct sigaction sa;
-
-  gchar *rc_filename;
-  
-  int result;
-
-  const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
-
-#ifdef AGS_USE_TIMER
-  timer_t *timer_id
-#endif
-  
-    putenv("LC_ALL=C\0");
-  putenv("LANG=C\0");
-
-  //  mtrace();
-  atexit(ags_test_signal_cleanup);
-
-  result = getrlimit(RLIMIT_STACK, &rl);
-
-  /* set stack size 64M */
-  if(result == 0){
-    if(rl.rlim_cur < kStackSize){
-      rl.rlim_cur = kStackSize;
-      result = setrlimit(RLIMIT_STACK, &rl);
-
-      if(result != 0){
-	//TODO:JK
-      }
-    }
-  }
-
-  param.sched_priority = GSEQUENCER_RT_PRIORITY;
-      
-  if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-    perror("sched_setscheduler failed\0");
-  }
-
-  /* Ignore interactive and job-control signals.  */
-  signal(SIGINT, SIG_IGN);
-  signal(SIGQUIT, SIG_IGN);
-  signal(SIGTSTP, SIG_IGN);
-  signal(SIGTTIN, SIG_IGN);
-  signal(SIGTTOU, SIG_IGN);
-  signal(SIGCHLD, SIG_IGN);
-  signal(AGS_THREAD_RESUME_SIG, SIG_IGN);
-  signal(AGS_THREAD_SUSPEND_SIG, SIG_IGN);
-
-  ags_test_sigact.sa_handler = ags_test_signal_handler;
-  sigemptyset(&ags_test_sigact.sa_mask);
-  ags_test_sigact.sa_flags = 0;
-  sigaction(SIGINT, &ags_test_sigact, (struct sigaction *) NULL);
-  sigaction(SA_RESTART, &ags_test_sigact, (struct sigaction *) NULL);
-
-  XInitThreads();
-      
-  /* parse rc file */
-  rc_filename = g_strdup_printf("%s/%s\0",
-				SRCDIR,
-				"gsequencer.share/styles/ags.rc\0");
-  
-  gtk_rc_parse(rc_filename);
-  g_free(rc_filename);
-  
-  /**/
-  LIBXML_TEST_VERSION;
-
-  //ao_initialize();
-
-  gdk_threads_enter();
-  //  g_thread_init(NULL);
-  gtk_init(&argc, &argv);
-
-  g_object_set(gtk_settings_get_default(),
-	       "gtk-theme-name\0", "Raleigh\0",
-	       NULL);
-  g_signal_handlers_block_matched(gtk_settings_get_default(),
-				  G_SIGNAL_MATCH_DETAIL,
-				  g_signal_lookup("set-property\0",
-						  GTK_TYPE_SETTINGS),
-				  g_quark_from_string("gtk-theme-name\0"),
-				  NULL,
-				  NULL,
-				  NULL);
-  
-#ifdef AGS_WITH_LIBINSTPATCH
-  ipatch_init();
-#endif
-  g_log_set_fatal_mask("GLib-GObject\0", // "Gtk\0" G_LOG_DOMAIN, // 
-		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
-
-  /* animate */
-  animation_thread = (pthread_t *) malloc(sizeof(pthread_t));
-  g_atomic_int_set(&(ags_show_start_animation),
-		   TRUE);
-  
-  ags_test_start_animation(animation_thread);
-  
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
     return CU_get_error();
@@ -403,24 +309,13 @@ main(int argc, char **argv)
     return CU_get_error();
   }
 
-  gtk_init(NULL,
-	   NULL);
-  //  g_log_set_fatal_mask(G_LOG_DOMAIN, // , // "Gtk\0" G_LOG_DOMAIN,"GLib-GObject\0",
-  //		       G_LOG_LEVEL_CRITICAL);
+  g_atomic_int_set(&is_available,
+		   FALSE);
+  
+  ags_test_init(&argc, &argv,
+		AGS_FUNCTIONAL_MIXER_TEST_CONFIG);
+  ags_functional_test_util_do_run(argc, argv,
+				  ags_functional_mixer_test_add_test, &is_available);
 
-  /* add the tests to the suite */
-  if((CU_add_test(pSuite, "functional test of AgsMixer resize pads\0", ags_functional_mixer_test_resize_pads) == NULL) ||
-     (CU_add_test(pSuite, "functional test of AgsMixer resize audio channels\0", ags_functional_mixer_test_resize_audio_channels) == NULL)){
-    CU_cleanup_registry();
-      
-    return CU_get_error();
-  }
-  
-  /* Run all tests using the CUnit Basic interface */
-  CU_basic_set_mode(CU_BRM_VERBOSE);
-  CU_basic_run_tests();
-  
-  CU_cleanup_registry();
-  
-  return(CU_get_error());
+  return(-1);
 }

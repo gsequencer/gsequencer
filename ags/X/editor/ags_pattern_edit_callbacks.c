@@ -25,7 +25,6 @@
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio.h>
@@ -77,8 +76,6 @@ ags_pattern_edit_set_audio_channels_callback(AgsAudio *audio,
 
   guint i;
 
-  gdk_threads_enter();
-  
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) pattern_edit);
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
@@ -97,8 +94,6 @@ ags_pattern_edit_set_audio_channels_callback(AgsAudio *audio,
   }
   
   if(editor_child == NULL){
-    gdk_threads_leave();
-    
     return;
   }
 
@@ -124,8 +119,6 @@ ags_pattern_edit_set_audio_channels_callback(AgsAudio *audio,
 			      audio_channels);
     }
   }
-
-  gdk_threads_leave();
 }
 
 void
@@ -147,8 +140,6 @@ ags_pattern_edit_set_pads_callback(AgsAudio *audio,
     }
   }
 
-  gdk_threads_enter();
-
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) pattern_edit);
 
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
@@ -163,8 +154,6 @@ ags_pattern_edit_set_pads_callback(AgsAudio *audio,
   }
   
   gtk_widget_queue_draw((GtkWidget *) editor->current_meter);
-
-  gdk_threads_leave();
 }
 
 gboolean
@@ -251,6 +240,9 @@ ags_pattern_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *ev
 
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
+
+      cairo_surface_mark_dirty(cairo_get_target(cr));
+      cairo_destroy(cr);
     }
 
     ags_meter_paint(editor->current_meter);
@@ -837,6 +829,9 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
 
     cairo_pop_group_to_source(cr);
     cairo_paint(cr);
+
+    cairo_surface_mark_dirty(cairo_get_target(cr));
+    cairo_destroy(cr);
   }
 
   return(FALSE);
@@ -1086,8 +1081,11 @@ ags_pattern_edit_drawing_area_motion_notify_event (GtkWidget *widget, GdkEventMo
     
     cairo_pop_group_to_source(cr);
     cairo_paint(cr);
-  }
 
+    cairo_surface_mark_dirty(cairo_get_target(cr));
+    cairo_destroy(cr);
+  }
+  
   return(FALSE);
 }
 
@@ -1205,7 +1203,7 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     AgsAppendChannel *append_channel;
 
     AgsThread *main_loop;
-    AgsTaskThread *task_thread;
+    AgsGuiThread *gui_thread;
     AgsSoundcardThread *soundcard_thread;
 
     AgsMutexManager *mutex_manager;
@@ -1290,8 +1288,8 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     pthread_mutex_unlock(application_mutex);
 
     /* get task thread and soundcard thread */
-    task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-							 AGS_TYPE_TASK_THREAD);
+    gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_GUI_THREAD);
     soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type(main_loop,
 							     AGS_TYPE_SOUNDCARD_THREAD);
 
@@ -1317,7 +1315,8 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
     /* perform playback */
     tasks = g_list_reverse(tasks);
-    ags_task_thread_append_tasks(task_thread, tasks);
+    ags_gui_thread_schedule_task_list(gui_thread,
+				      tasks);
   }
   
   if(event->keyval == GDK_KEY_Tab ||
@@ -1600,7 +1599,6 @@ ags_pattern_edit_init_channel_launch_callback(AgsTask *task, gpointer data)
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
 
@@ -1615,8 +1613,6 @@ ags_pattern_edit_init_channel_launch_callback(AgsTask *task, gpointer data)
   application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
   
   main_loop = (AgsThread *) application_context->main_loop;
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
 
 #ifdef AGS_DEBUG
   g_message("launch");

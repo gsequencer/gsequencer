@@ -684,8 +684,6 @@ ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
   
   pthread_mutex_t *application_mutex;
 
-  gdk_threads_enter();
-  
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) midi_dialog->machine,
 						 AGS_TYPE_WINDOW);
 
@@ -727,8 +725,6 @@ ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
 
   gtk_combo_box_set_model(GTK_COMBO_BOX(midi_dialog->midi_device),
 			  GTK_TREE_MODEL(model));
-
-  gdk_threads_leave();
 }
 
 void

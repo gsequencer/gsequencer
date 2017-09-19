@@ -454,7 +454,12 @@ ags_open_single_file_launch(AgsTask *task)
 				  open_single_file->soundcard,
 				  open_single_file->start_channel, open_single_file->audio_channels);
 
-  ags_audio_file_open(audio_file);
+  if(!ags_audio_file_open(audio_file)){
+    g_message("unable to open file - %s", open_single_file->filename);
+
+    return;
+  }
+  
   ags_audio_file_read_audio_signal(audio_file);
 
   /* iterate channels */

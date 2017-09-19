@@ -29,6 +29,9 @@
 
 #include <ags/audio/pulse/ags_pulse_devout.h>
 
+#include <ags/audio/core-audio/ags_core_audio_devout.h>
+#include <ags/audio/core-audio/ags_core_audio_midiin.h>
+
 #include <ags/i18n.h>
 
 void ags_switch_buffer_flag_class_init(AgsSwitchBufferFlagClass *switch_buffer_flag);
@@ -281,10 +284,14 @@ ags_switch_buffer_flag_launch(AgsTask *task)
     ags_jack_devout_switch_buffer_flag(switch_buffer_flag->device);
   }else if(AGS_IS_PULSE_DEVOUT(switch_buffer_flag->device)){
     ags_pulse_devout_switch_buffer_flag(switch_buffer_flag->device);
+  }else if(AGS_IS_CORE_AUDIO_DEVOUT(switch_buffer_flag->device)){
+    ags_core_audio_devout_switch_buffer_flag(switch_buffer_flag->device);
   }else if(AGS_IS_MIDIIN(switch_buffer_flag->device)){
     ags_midiin_switch_buffer_flag(switch_buffer_flag->device);
   }else if(AGS_IS_JACK_MIDIIN(switch_buffer_flag->device)){
     ags_jack_midiin_switch_buffer_flag(switch_buffer_flag->device);
+  }else if(AGS_IS_CORE_AUDIO_MIDIIN(switch_buffer_flag->device)){
+    ags_core_audio_midiin_switch_buffer_flag(switch_buffer_flag->device);
   }
 }
 

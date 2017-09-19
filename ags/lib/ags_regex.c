@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,12 +19,20 @@
 
 #include <ags/lib/ags_regex.h>
 
+#define _GNU_SOURCE
 #include <locale.h>
 #include <pthread.h>
 
-static pthread_mutex_t locale_mutex = PTHREAD_MUTEX_INITIALIZER;
+#ifdef __APPLE__
+#include <stdlib.h>
+#endif
 
+static pthread_mutex_t locale_mutex = PTHREAD_MUTEX_INITIALIZER;
+#ifndef __APPLE__
 static locale_t c_locale;
+#else
+static char *locale_env;
+#endif
 static gboolean locale_initialized = FALSE;
 
 /**
@@ -43,23 +51,37 @@ ags_regcomp(regex_t *preg, const char *regex, int cflags)
 {
   int retval;
 
+#ifndef __APPLE__
   locale_t current;
+#endif
 
   pthread_mutex_lock(&locale_mutex);
-  
+
   if(!locale_initialized){
+#ifndef __APPLE__
     c_locale = newlocale(LC_ALL_MASK, "C", (locale_t) 0);
+#else
+    locale_env = getenv("LC_ALL");
+#endif
     
     locale_initialized = TRUE;
   }
 
   pthread_mutex_unlock(&locale_mutex);
 
+#ifndef __APPLE__
   current = uselocale(c_locale);
-  
+#else
+  setlocale(LC_ALL, "C");
+#endif
+
   retval = regcomp(preg, regex, cflags);
 
+#ifndef __APPLE__  
   uselocale(current);
+#else
+  setlocale(LC_ALL, locale_env);
+#endif
   
   return(retval);
 }
@@ -83,23 +105,37 @@ ags_regexec(const regex_t *preg, const char *string, size_t nmatch,
 {
   int retval;
 
+#ifndef __APPLE__
   locale_t current;
+#endif
 
   pthread_mutex_lock(&locale_mutex);
   
   if(!locale_initialized){
+#ifndef __APPLE__
     c_locale = newlocale(LC_ALL_MASK, "C", (locale_t) 0);
+#else
+    locale_env = getenv("LC_ALL");
+#endif
     
     locale_initialized = TRUE;
   }
 
   pthread_mutex_unlock(&locale_mutex);
 
+#ifndef __APPLE__
   current = uselocale(c_locale);
+#else
+  setlocale(LC_ALL, "C");
+#endif
 
   retval = regexec(preg, string, nmatch, pmatch, eflags);
 
+#ifndef __APPLE__
   uselocale(current);
-  
+#else
+  setlocale(LC_ALL, locale_env);
+#endif
+    
   return(retval);
 }

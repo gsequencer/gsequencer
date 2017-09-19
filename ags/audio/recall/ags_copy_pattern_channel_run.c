@@ -460,8 +460,6 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
     guint pad;
     guint audio_channel;
-    gdouble delay;
-    guint attack;
   
     pthread_mutex_t *link_mutex;
     

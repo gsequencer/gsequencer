@@ -26,9 +26,7 @@
 #include <ags/thread/ags_thread-kthreads.h>
 #else
 #include <ags/thread/ags_thread-posix.h>
-#endif 
-#include <ags/thread/ags_task_thread.h>
-
+#endif
 
 #include <ags/plugin/ags_ladspa_manager.h>
 #include <ags/plugin/ags_lv2_manager.h>
@@ -49,6 +47,8 @@
 #include <ags/X/ags_line_editor.h>
 #include <ags/X/ags_lv2_browser.h>
 #include <ags/X/ags_ladspa_browser.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -77,7 +77,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
   AgsLineEditor *line_editor;
 
   AgsThread *main_loop;
-  AgsThread *task_thread;
+  AgsThread *gui_thread;
   
   AgsApplicationContext *application_context;
   
@@ -135,8 +135,8 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
       main_loop = (AgsThread *) application_context->main_loop;
 
-      task_thread = ags_thread_find_type(main_loop,
-					 AGS_TYPE_TASK_THREAD);
+      gui_thread = ags_thread_find_type(main_loop,
+					 AGS_TYPE_GUI_THREAD);
       
       if(AGS_IS_OUTPUT(line_editor->channel)){
 	is_output = TRUE;
@@ -208,8 +208,8 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	    add_effect = ags_add_effect_new(line->channel,
 					    filename,
 					    effect);
-	    ags_task_thread_append_task((AgsTaskThread *) task_thread,
-					(AgsTask *) add_effect);
+	    ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+					 add_effect);
 	  }
 	}
       }else{
@@ -272,8 +272,8 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	    add_effect = ags_add_effect_new(effect_line->channel,
 					    filename,
 					    effect);
-	    ags_task_thread_append_task((AgsTaskThread *) task_thread,
-					(AgsTask *) add_effect);
+	    ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+					 add_effect);
 	  }
 	}
       }

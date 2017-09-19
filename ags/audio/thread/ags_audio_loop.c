@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -312,6 +312,9 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   /* calculate frequency */
   thread = (AgsThread *) audio_loop;
 
+  g_atomic_int_or(&(thread->flags),
+		  AGS_THREAD_TIMING);
+  
   g_signal_connect_after(thread, "notify::frequency",
 			 G_CALLBACK(ags_audio_loop_notify_frequency), NULL);
   
@@ -857,6 +860,7 @@ ags_audio_loop_run(AgsThread *thread)
 
   /* real-time setup */
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
+#ifdef AGS_WITH_RT
     struct sched_param param;
     
     /* Declare ourself as a real time task */
@@ -865,6 +869,7 @@ ags_audio_loop_run(AgsThread *thread)
     if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
       perror("sched_setscheduler failed");
     }
+#endif
 
     g_atomic_int_or(&(thread->flags),
 		    AGS_THREAD_RT_SETUP);

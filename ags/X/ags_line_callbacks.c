@@ -356,13 +356,9 @@ ags_line_remove_effect_callback(AgsChannel *channel,
 
   pthread_mutex_t *application_mutex;
 
-  gdk_threads_enter();
-
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) line);
 
   application_context = (AgsApplicationContext *) window->application_context;
-
-  gdk_threads_leave();
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -433,8 +429,6 @@ ags_line_channel_done_callback(AgsChannel *source, AgsRecallID *recall_id,
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  gdk_threads_enter();
   
   /* retrieve channel */
   channel = AGS_PAD(AGS_LINE(line)->pad)->channel;
@@ -488,6 +482,4 @@ ags_line_channel_done_callback(AgsChannel *source, AgsRecallID *recall_id,
       gtk_toggle_button_set_active(pad->play, FALSE);
     }
   }
-
-  gdk_threads_leave();
 }

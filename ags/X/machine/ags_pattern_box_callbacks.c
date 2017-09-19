@@ -23,7 +23,6 @@
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
@@ -33,6 +32,8 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include <gdk/gdkkeysyms.h>
 
@@ -89,7 +90,7 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
   
   AgsApplicationContext *application_context;
 
@@ -133,8 +134,8 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   pthread_mutex_unlock(application_mutex);
   
   /* find task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_GUI_THREAD);
 
   /* get audio mutex */
   pthread_mutex_lock(application_mutex);
@@ -195,8 +196,8 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   g_list_free(line_start);
 
   /* append AgsTogglePatternBit */
-  ags_task_thread_append_tasks(task_thread,
-			       tasks);
+  ags_gui_thread_schedule_task_list(gui_thread,
+				    tasks);
 
   pthread_mutex_unlock(audio_mutex);
 }
@@ -251,7 +252,7 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
   
   AgsApplicationContext *application_context;
 
@@ -280,8 +281,8 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
   pthread_mutex_unlock(application_mutex);
   
   /* find task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						     AGS_TYPE_GUI_THREAD);
 
   
   switch(event->keyval){
@@ -460,8 +461,8 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
       g_list_free(line_start);
 
       /* append tasks to task thread */
-      ags_task_thread_append_tasks(task_thread,
-				   tasks);
+      ags_gui_thread_schedule_task_list(gui_thread,
+					tasks);
 
       /* give audible feedback */
       ags_pad_play((AgsPad *) machine->selected_input_pad);

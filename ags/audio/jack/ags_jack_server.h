@@ -23,10 +23,14 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/config.h>
+
+#ifdef AGS_WITH_JACK
 #include <jack/jslist.h>
 #include <jack/jack.h>
 #include <jack/control.h>
 #include <stdbool.h>
+#endif
 
 #define AGS_TYPE_JACK_SERVER                (ags_jack_server_get_type())
 #define AGS_JACK_SERVER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_JACK_SERVER, AgsJackServer))

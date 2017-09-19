@@ -316,8 +316,13 @@ ags_pulse_server_init(AgsPulseServer *pulse_server)
   
   pulse_server->application_context = NULL;
 
+#ifdef AGS_WITH_PULSE
   pulse_server->main_loop = pa_mainloop_new();
   pulse_server->main_loop_api = pa_mainloop_get_api(pulse_server->main_loop);
+#else
+  pulse_server->main_loop = NULL;
+  pulse_server->main_loop_api = NULL;
+#endif
 
   pulse_server->url = NULL;
   
@@ -1176,20 +1181,26 @@ ags_pulse_server_do_poll_loop(void *ptr)
 {
   AgsPulseServer *pulse_server;
 
+#ifndef __APPLE__
   struct sched_param param;
+#endif
 
   pulse_server = (AgsPulseServer *) ptr;
     
   /* Declare ourself as a real time task */
+#ifndef __APPLE__
   param.sched_priority = AGS_RT_PRIORITY;
   
   if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
     perror("sched_setscheduler failed");
   }
+#endif
 
+#ifdef AGS_WITH_PULSE
   pa_mainloop_run(pulse_server->main_loop,
 		  NULL);
-  
+#endif
+
   pthread_exit(NULL);
 }
 

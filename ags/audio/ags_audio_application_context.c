@@ -52,6 +52,12 @@
 #include <ags/audio/ags_recall_dssi.h>
 #include <ags/audio/ags_recall_dssi_run.h>
 
+#include <ags/audio/core-audio/ags_core_audio_midiin.h>
+#include <ags/audio/core-audio/ags_core_audio_server.h>
+#include <ags/audio/core-audio/ags_core_audio_client.h>
+#include <ags/audio/core-audio/ags_core_audio_port.h>
+#include <ags/audio/core-audio/ags_core_audio_devout.h>
+
 #include <ags/audio/jack/ags_jack_midiin.h>
 #include <ags/audio/jack/ags_jack_server.h>
 #include <ags/audio/jack/ags_jack_client.h>
@@ -104,9 +110,6 @@
 #include <sys/types.h>
 #include <pwd.h>
 
-#include <jack/jslist.h>
-#include <jack/jack.h>
-#include <jack/control.h>
 #include <stdbool.h>
 
 #include <ags/i18n.h>
@@ -314,7 +317,8 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   GObject *sequencer;
   AgsJackServer *jack_server;
   AgsPulseServer *pulse_server;
-
+  AgsCoreAudioServer *core_audio_server;
+  
   AgsThread *soundcard_thread;
   AgsThread *sequencer_thread;
   AgsThread *export_thread;
@@ -322,13 +326,13 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   AgsConfig *config;
 
   GList *list;
-  JSList *jslist;
 
   gchar *soundcard_group;
   gchar *sequencer_group;
   gchar *str;
 
   guint i;
+  gboolean has_core_audio;
   gboolean has_pulse;
   gboolean has_jack;
 
@@ -348,6 +352,15 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
 
   /* distributed manager */
   audio_application_context->distributed_manager = NULL;
+
+  /* core audio server */
+  core_audio_server = ags_core_audio_server_new((GObject *) audio_application_context,
+						NULL);
+  audio_application_context->distributed_manager = g_list_append(audio_application_context->distributed_manager,
+								 core_audio_server);
+  g_object_ref(G_OBJECT(core_audio_server));
+
+  has_core_audio = FALSE;
 
   /* pulse server */
   pulse_server = ags_pulse_server_new((GObject *) audio_application_context,
@@ -395,6 +408,13 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
     
     if(str != NULL){
       if(!g_ascii_strncasecmp(str,
+			      "core-audio",
+			      11)){
+	soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(core_audio_server),
+							       TRUE);
+
+	has_core_audio = TRUE;
+      }else if(!g_ascii_strncasecmp(str,
 			      "pulse",
 			      6)){
 	soundcard = ags_distributed_manager_register_soundcard(AGS_DISTRIBUTED_MANAGER(pulse_server),
@@ -682,6 +702,8 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
       AGS_JACK_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
     }else if(AGS_IS_PULSE_DEVOUT(list->data)){
       AGS_PULSE_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+    }else if(AGS_IS_CORE_AUDIO_DEVOUT(list->data)){
+      AGS_CORE_AUDIO_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
     }
 
     ags_task_thread_append_cyclic_task(AGS_APPLICATION_CONTEXT(audio_application_context)->task_thread,
@@ -757,6 +779,10 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   audio_application_context->thread_pool = AGS_TASK_THREAD(AGS_APPLICATION_CONTEXT(audio_application_context)->task_thread)->thread_pool;
 
   /* launch */
+  if(has_core_audio){
+    ags_core_audio_server_connect_client(core_audio_server);
+  }
+
   if(has_pulse){
     ags_pulse_server_connect_client(pulse_server);
 

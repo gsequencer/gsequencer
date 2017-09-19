@@ -151,8 +151,6 @@ ags_display_tact_launch(AgsTask *task)
   gchar *timestr;
   gdouble delay, tact;
 
-  gdk_threads_enter();
-  
   display_tact = AGS_DISPLAY_TACT(task);
 
   navigation = AGS_NAVIGATION(display_tact->navigation);
@@ -171,8 +169,6 @@ ags_display_tact_launch(AgsTask *task)
 		      timestr);
   gtk_widget_queue_draw((GtkWidget *) navigation->duration_time);
   g_free(timestr);
-
-  gdk_threads_leave();
 }
 
 /**

@@ -1450,8 +1450,12 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   /* entry point */
   widget = GTK_WIDGET(cartesian);
   cartesian_style = gtk_widget_get_style(widget);
-  
+
   cr = gdk_cairo_create(widget->window);
+
+  if(cr == NULL){
+    return;
+  }
   
   /* clear bg */
   cairo_set_source_rgb(cr,
@@ -1582,6 +1586,9 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   
   /* paint */
   cairo_paint(cr);
+
+  cairo_surface_mark_dirty(cairo_get_target(cr));
+  cairo_destroy(cr);
 }
 
 AgsPlot*

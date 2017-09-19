@@ -38,7 +38,6 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
-#include <sys/soundcard.h>
 #include <errno.h>
 
 #include <poll.h>

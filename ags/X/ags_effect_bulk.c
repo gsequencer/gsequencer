@@ -32,7 +32,6 @@
 #include <ags/thread/ags_thread-posix.h>
 #endif 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_ladspa_manager.h>
@@ -72,6 +71,8 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_plugin_browser.h>
 #include <ags/X/ags_bulk_member.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/X/task/ags_add_bulk_member.h>
 #include <ags/X/task/ags_update_bulk_member.h>
@@ -875,7 +876,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   AgsLadspaPlugin *ladspa_plugin;
   
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
@@ -924,8 +925,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 
   pthread_mutex_unlock(application_mutex);
 
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						     AGS_TYPE_GUI_THREAD);
 
   /* get audio mutex */
   pthread_mutex_lock(application_mutex);
@@ -1317,8 +1318,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 
   /* launch tasks */
   task = g_list_reverse(task);      
-  ags_task_thread_append_tasks(task_thread,
-			       task);
+  ags_gui_thread_schedule_task_list(gui_thread,
+				    task);
 
   return(retport);
 }
@@ -1348,7 +1349,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   AgsDssiPlugin *dssi_plugin;
   
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
@@ -1397,8 +1398,8 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 
   pthread_mutex_unlock(application_mutex);
 
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						     AGS_TYPE_GUI_THREAD);
 
   /* get audio mutex */
   pthread_mutex_lock(application_mutex);
@@ -1797,8 +1798,8 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 
   /* launch tasks */
   task = g_list_reverse(task);      
-  ags_task_thread_append_tasks(task_thread,
-			       task);
+  ags_gui_thread_schedule_task_list(gui_thread,
+				    task);
 
   return(retport);
 }
@@ -1828,7 +1829,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   AgsLv2Plugin *lv2_plugin;
   
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
@@ -1885,8 +1886,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
   pthread_mutex_unlock(application_mutex);
 
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						     AGS_TYPE_GUI_THREAD);
 
   /* get audio mutex */
   pthread_mutex_lock(application_mutex);
@@ -2254,8 +2255,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
   /* launch tasks */
   task = g_list_reverse(task);      
-  ags_task_thread_append_tasks(task_thread,
-			       task);
+  ags_gui_thread_schedule_task_list(gui_thread,
+				    task);
 
   return(retport);
 }
@@ -2531,7 +2532,7 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
   AgsChannel *current;
 
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
@@ -2563,8 +2564,8 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 
   pthread_mutex_unlock(application_mutex);
 
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						     AGS_TYPE_GUI_THREAD);
   
   /* get audio mutex */
   pthread_mutex_lock(application_mutex);
@@ -2652,8 +2653,8 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
   
   /* launch tasks */
   task = g_list_reverse(task);      
-  ags_task_thread_append_tasks(task_thread,
-			       task);
+  ags_gui_thread_schedule_task_list(gui_thread,
+				    task);
 }
 
 void
@@ -2682,7 +2683,7 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
   AgsChannel *current;
 
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
@@ -2714,8 +2715,8 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 
   pthread_mutex_unlock(application_mutex);
 
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						     AGS_TYPE_GUI_THREAD);
 
   /* get audio mutex */
   pthread_mutex_lock(application_mutex);
@@ -2802,8 +2803,8 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
   
   /* launch tasks */
   task = g_list_reverse(task);      
-  ags_task_thread_append_tasks(task_thread,
-			       task);
+  ags_gui_thread_schedule_task_list(gui_thread,
+				    task);
 }
 
 void

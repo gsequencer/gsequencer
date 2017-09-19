@@ -204,6 +204,7 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
   gtk_widget_destroy((GtkWidget *) soundcard_editor);
 
   /* reset default card */
+#if 0
   soundcard = NULL;
   
   pthread_mutex_lock(application_mutex);
@@ -219,7 +220,8 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
   g_object_set(window,
 	       "soundcard", soundcard,
 	       NULL);
-
+#endif
+  
   /*  */
   list = gtk_container_get_children((GtkContainer *) audio_preferences->soundcard_editor);
   
@@ -243,10 +245,15 @@ ags_audio_preferences_start_jack_callback(GtkButton *button,
 
   AgsApplicationContext *application_context;
 
+#ifdef AGS_WITH_JACK
   jackctl_driver_t *driver;
-  
+#endif
+
   GList *list;
+
+#ifdef AGS_WITH_JACK
   JSList *jslist;
+#endif
 
   //  gchar *driver_name;
   
@@ -277,6 +284,7 @@ ags_audio_preferences_start_jack_callback(GtkButton *button,
   
   pthread_mutex_unlock(application_mutex);
 
+#ifdef AGS_WITH_JACK
   /* find driver */
   driver = NULL;
   
@@ -298,6 +306,7 @@ ags_audio_preferences_start_jack_callback(GtkButton *button,
   if(jack_server != NULL){
     //    jackctl_server_start(jack_server->jackctl);
   }
+#endif
 }
 
 void
@@ -342,6 +351,8 @@ ags_audio_preferences_stop_jack_callback(GtkButton *button,
   pthread_mutex_unlock(application_mutex);
 
   if(jack_server != NULL){
+#ifdef AGS_WITH_JACK
     //    jackctl_server_stop(jack_server->jackctl);
+#endif
   }
 }

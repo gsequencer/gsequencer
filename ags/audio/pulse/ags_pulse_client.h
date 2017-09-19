@@ -23,9 +23,13 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/config.h>
+
+#ifdef AGS_WITH_PULSE
 #include <pulse/pulseaudio.h>
 #include <pulse/stream.h>
 #include <pulse/error.h>
+#endif
 
 #define AGS_TYPE_PULSE_CLIENT                (ags_pulse_client_get_type())
 #define AGS_PULSE_CLIENT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PULSE_CLIENT, AgsPulseClient))
@@ -57,8 +61,12 @@ struct _AgsPulseClient
   gchar *uuid;
   gchar *name;
 
+#ifdef AGS_WITH_PULSE
   pa_context *context;
-  
+#else
+  gpointer context;
+#endif
+
   GList *device;
   GList *port;
 };

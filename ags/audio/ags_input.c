@@ -37,6 +37,8 @@
 
 #include <ags/i18n.h>
 
+#include <math.h>
+
 void ags_input_class_init (AgsInputClass *input_class);
 void ags_input_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_input_set_property(GObject *gobject,

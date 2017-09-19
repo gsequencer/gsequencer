@@ -23,7 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/config.h>
+
+#ifdef AGS_WITH_PULSE
 #include <pulse/pulseaudio.h>
+#endif
 
 #define AGS_TYPE_PULSE_PORT                (ags_pulse_port_get_type())
 #define AGS_PULSE_PORT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PULSE_PORT, AgsPulsePort))
@@ -60,10 +64,17 @@ struct _AgsPulsePort
 
   guint format;
   guint buffer_size;
+  guint pcm_channels;
 
+#ifdef AGS_WITH_PULSE
   pa_stream *stream;
   pa_sample_spec *sample_spec;
   pa_buffer_attr *buffer_attr;
+#else
+  gpointer stream;
+  gpointer sample_spec;
+  gpointer buffer_attr;
+#endif
   
   void *empty_buffer;
 

@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #include <ags/object/ags_application_context.h>
@@ -71,6 +72,8 @@ struct _AgsXorgApplicationContext
   AgsApplicationContext application_context;
 
   volatile gboolean gui_ready;
+  volatile gboolean show_animation;
+  volatile gboolean file_ready;
   
   AgsThreadPool *thread_pool;
 
@@ -101,8 +104,6 @@ struct _AgsXorgApplicationContextClass
 };
 
 GType ags_xorg_application_context_get_type();
-
-void ags_xorg_application_context_register_types(AgsApplicationContext *application_context);
 
 AgsXorgApplicationContext* ags_xorg_application_context_new();
 

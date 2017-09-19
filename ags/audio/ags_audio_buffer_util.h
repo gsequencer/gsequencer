@@ -25,6 +25,10 @@
 
 #include <ags/lib/ags_complex.h>
 
+#ifdef __APPLE__
+#include <AudioToolbox/AudioToolbox.h>
+#endif
+
 #define AGS_AUDIO_BUFFER_S8(ptr) ((signed char *)(ptr))
 #define AGS_AUDIO_BUFFER_S16(ptr) ((signed short *)(ptr))
 #define AGS_AUDIO_BUFFER_S24(ptr) ((signed long *)(ptr))
@@ -41,6 +45,7 @@ typedef enum{
   AGS_AUDIO_BUFFER_UTIL_S64,
   AGS_AUDIO_BUFFER_UTIL_FLOAT,
   AGS_AUDIO_BUFFER_UTIL_DOUBLE,
+  AGS_AUDIO_BUFFER_UTIL_FLOAT32,
 }AgsAudioBufferUtilFormat;
 
 typedef enum{
@@ -112,6 +117,11 @@ typedef enum{
   AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S64,
   AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT,
   AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT32,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT32,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT32,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT32,
+  AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT32,
 }AgsAudioBufferUtilCopyMode;
 
 typedef signed short v8s16 __attribute__ ((vector_size(8 * sizeof(signed short))));
@@ -123,6 +133,12 @@ guint ags_audio_buffer_util_get_copy_mode(guint destination_format,
 /* clear */
 void ags_audio_buffer_util_clear_float(float *buffer, guint channels,
 				       guint count);
+
+#ifdef __APPLE__
+void ags_audio_buffer_util_clear_float32(Float32 *buffer, guint channels,
+					 guint count);
+#endif
+
 void ags_audio_buffer_util_clear_double(double *buffer, guint channels,
 					guint count);
 void ags_audio_buffer_util_clear_buffer(void *buffer, guint channels,
@@ -431,6 +447,28 @@ void ags_audio_buffer_util_copy_double_to_float(float *destination, guint dchann
 void ags_audio_buffer_util_copy_double_to_double(double *destination, guint dchannels,
 						 double *source, guint schannels,
 						 guint count);
+
+#ifdef __APPLE__
+void ags_audio_buffer_util_copy_s8_to_float32(Float32 *destination, guint dchannels,
+					      signed char *source, guint schannels,
+					      guint count);
+
+void ags_audio_buffer_util_copy_s16_to_float32(Float32 *destination, guint dchannels,
+					       signed short *source, guint schannels,
+					       guint count);
+
+void ags_audio_buffer_util_copy_s24_to_float32(Float32 *destination, guint dchannels,
+					       signed long *source, guint schannels,
+					       guint count);
+
+void ags_audio_buffer_util_copy_s32_to_float32(Float32 *destination, guint dchannels,
+					       signed long *source, guint schannels,
+					       guint count);
+
+void ags_audio_buffer_util_copy_s64_to_float32(Float32 *destination, guint dchannels,
+					       signed long long *source, guint schannels,
+					       guint count);
+#endif
 
 /* copy */
 void ags_audio_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, guint doffset,

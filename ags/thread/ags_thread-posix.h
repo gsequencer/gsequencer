@@ -43,7 +43,9 @@
 #define AGS_THREAD_RESUME_SIG SIGUSR2
 #define AGS_THREAD_SUSPEND_SIG SIGUSR1
 
+#ifndef AGS_RT_PRIORITY
 #define AGS_RT_PRIORITY (45)
+#endif
 
 #define AGS_THREAD_HERTZ_JIFFIE (1000.0)
 #define AGS_THREAD_YIELD_JIFFIE (2.0)
@@ -156,7 +158,11 @@ struct _AgsThread
   volatile gboolean start_wait;
   volatile gboolean start_done;
 
+#ifndef __APPLE__
   pthread_barrier_t **barrier;
+#else
+  gpointer barrier;
+#endif  
   gboolean first_barrier;
   int wait_count[2];
 

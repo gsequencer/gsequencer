@@ -24,7 +24,6 @@
 #include <ags/object/ags_connectable.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_playback.h>
@@ -43,6 +42,8 @@
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include <gdk/gdkkeysyms.h>
 
@@ -91,7 +92,7 @@ ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventB
 
     AgsMutexManager *mutex_manager;
     AgsThread *main_loop;
-    AgsTaskThread *task_thread;
+    AgsGuiThread *gui_thread;
 
     AgsApplicationContext *application_context;
   
@@ -118,8 +119,8 @@ ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventB
 
     pthread_mutex_unlock(application_mutex);
   
-    task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-							 AGS_TYPE_TASK_THREAD);
+    gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+							 AGS_TYPE_GUI_THREAD);
         
     i = (guint) floor((double) event->y / (double) cell_pattern->cell_height);
     j = (guint) floor((double) event->x / (double) cell_pattern->cell_width);
@@ -135,8 +136,8 @@ ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventB
     g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui",
 		     G_CALLBACK(ags_cell_pattern_refresh_gui_callback), cell_pattern);
 
-    ags_task_thread_append_task(task_thread,
-				AGS_TASK(toggle_pattern_bit));
+    ags_gui_thread_schedule_task(gui_thread,
+				 toggle_pattern_bit);
   }else if (event->button == 3){
   }
 
@@ -188,7 +189,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   AgsChannel *channel;
 
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   auto void ags_cell_pattern_drawing_area_key_release_event_play_channel(AgsChannel *channel);
 
@@ -202,7 +203,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
     AgsMutexManager *mutex_manager;
     AgsThread *main_loop;
-    AgsTaskThread *task_thread;
+    AgsGuiThread *gui_thread;
     AgsSoundcardThread *soundcard_thread;
 
     AgsApplicationContext *application_context;
@@ -263,8 +264,8 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   
     main_loop = (AgsThread *) application_context->main_loop;
     
-    task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-							 AGS_TYPE_TASK_THREAD);
+    gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+							 AGS_TYPE_GUI_THREAD);
     soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type(main_loop,
 								   AGS_TYPE_SOUNDCARD_THREAD);
 
@@ -289,7 +290,8 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
     /* perform playback */
     tasks = g_list_reverse(tasks);
-    ags_task_thread_append_tasks(task_thread, tasks);
+    ags_gui_thread_schedule_task_list(gui_thread,
+				      tasks);
 
     pthread_mutex_unlock(audio_mutex);
   }
@@ -304,8 +306,8 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 						 AGS_TYPE_WINDOW);
 
   main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(window->application_context)->main_loop;
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_GUI_THREAD);
 
   switch(event->keyval){
   case GDK_KEY_Control_L:
@@ -419,8 +421,8 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	ags_cell_pattern_drawing_area_key_release_event_play_channel(channel);
       }
       
-      ags_task_thread_append_task(task_thread,
-				  AGS_TASK(toggle_pattern_bit));
+      ags_gui_thread_schedule_task(gui_thread,
+				   toggle_pattern_bit);
     }
     break;
   }
@@ -455,6 +457,7 @@ ags_cell_pattern_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
 				       channel,
 				       toggle_pattern_bit->bit,
 				       line);
+  gtk_widget_queue_draw(cell_pattern);
 }
 
 void
@@ -468,7 +471,7 @@ ags_cell_pattern_init_channel_launch_callback(AgsTask *task, gpointer data)
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
   
@@ -495,8 +498,8 @@ ags_cell_pattern_init_channel_launch_callback(AgsTask *task, gpointer data)
   pthread_mutex_lock(audio_mutex);
   
   main_loop = (AgsThread *) application_context->main_loop;
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_GUI_THREAD);
 
 #ifdef AGS_DEBUG
   g_message("launch");

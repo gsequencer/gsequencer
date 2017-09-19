@@ -34,6 +34,11 @@
 #include <unistd.h>
 #include <math.h>
 
+#ifdef __MACH__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
+
 #include <ags/i18n.h>
 
 #include <errno.h>
@@ -104,8 +109,6 @@ static pthread_key_t ags_thread_key;
 
 /* Once-only initialisation of the key */
 static pthread_once_t ags_thread_key_once = PTHREAD_ONCE_INIT;
-
-static pthread_mutex_t class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_thread_get_type()
@@ -470,10 +473,14 @@ ags_thread_init(AgsThread *thread)
 		   FALSE);
 
   /* barrier */
+#ifndef __APPLE__
   thread->barrier = (pthread_barrier_t **) malloc(2 * sizeof(pthread_barrier_t *));
   thread->barrier[0] = (pthread_barrier_t *) malloc(sizeof(pthread_barrier_t));
   thread->barrier[1] = (pthread_barrier_t *) malloc(sizeof(pthread_barrier_t));
-  
+#else
+  thread->barrier = NULL;
+#endif
+
   thread->first_barrier = TRUE;
   thread->wait_count[0] = 1;
   thread->wait_count[1] = 1;
@@ -690,11 +697,15 @@ ags_thread_finalize(GObject *gobject)
   free(thread->computing_time);
 
   /*  */
-  free(thread->barrier[0]);
-  free(thread->barrier[1]);
-
-  free(thread->barrier);
+  if(thread->barrier != NULL){
+#ifndef __APPLE__
+    free(thread->barrier[0]);
+    free(thread->barrier[1]);
     
+    free(thread->barrier);
+#endif
+  }
+
   /*  */
   pthread_attr_getstack(thread_attr,
 			&stackaddr, &stacksize);
@@ -756,7 +767,7 @@ ags_thread_finalize(GObject *gobject)
   free(thread_ptr);
 
   if(stackaddr != NULL){
-    free(stackaddr);
+    //   free(stackaddr);
   }
   
   if(do_exit){
@@ -2321,6 +2332,11 @@ ags_thread_real_clock(AgsThread *thread)
 {
   AgsThread *main_loop, *async_queue;
   AgsMutexManager *mutex_manager;
+
+#ifdef __MACH__
+  clock_serv_t cclock;
+  mach_timespec_t mts;
+#endif
   
   struct timespec time_now;
 
@@ -2574,7 +2590,17 @@ ags_thread_real_clock(AgsThread *thread)
   if((AGS_THREAD_IMMEDIATE_SYNC & (g_atomic_int_get(&(thread->flags)))) == 0){
     if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0 &&
        (AGS_THREAD_INITIAL_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
+#ifdef __MACH__
+      host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+      
+      clock_get_time(cclock, &mts);
+      mach_port_deallocate(mach_task_self(), cclock);
+      
+      thread->computing_time->tv_sec = mts.tv_sec;
+      thread->computing_time->tv_nsec = mts.tv_nsec;
+#else
       clock_gettime(CLOCK_MONOTONIC, thread->computing_time);
+#endif
 
       g_atomic_int_and(&(thread->flags),
 		       (~AGS_THREAD_INITIAL_SYNC));
@@ -2623,7 +2649,17 @@ ags_thread_real_clock(AgsThread *thread)
       0,
     };
 
+#ifdef __MACH__
+    host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+    
+    clock_get_time(cclock, &mts);
+    mach_port_deallocate(mach_task_self(), cclock);
+    
+    time_now.tv_sec = mts.tv_sec;
+    time_now.tv_nsec = mts.tv_nsec;
+#else
     clock_gettime(CLOCK_MONOTONIC, &time_now);
+#endif
       
     if(time_now.tv_sec == thread->computing_time->tv_sec + 1){
       time_spent = (time_now.tv_nsec) + (NSEC_PER_SEC - thread->computing_time->tv_nsec);
@@ -2658,7 +2694,17 @@ ags_thread_real_clock(AgsThread *thread)
 		       0);
     }
 
+#ifdef __MACH__
+    host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+    
+    clock_get_time(cclock, &mts);
+    mach_port_deallocate(mach_task_self(), cclock);
+    
+    thread->computing_time->tv_sec = mts.tv_sec;
+    thread->computing_time->tv_nsec = mts.tv_nsec;
+#else
     clock_gettime(CLOCK_MONOTONIC, thread->computing_time);
+#endif
   }
 #endif
   
@@ -2709,12 +2755,7 @@ ags_thread_clock(AgsThread *thread)
   guint thread_signal;
   guint cycles;
   
-  pthread_mutex_lock(&class_mutex);
-
-  thread_signal = thread_signals[CLOCK];
-
-  pthread_mutex_unlock(&class_mutex);
-  
+  thread_signal = thread_signals[CLOCK];  
   g_return_val_if_fail(AGS_IS_THREAD(thread), 0);
 
   g_object_ref(thread);
@@ -2840,12 +2881,7 @@ ags_thread_start(AgsThread *thread)
 {
   guint thread_signal;
   
-  pthread_mutex_lock(&class_mutex);
-
   thread_signal = thread_signals[START];
-  
-  pthread_mutex_unlock(&class_mutex);
-
   g_return_if_fail(AGS_IS_THREAD(thread));
 
   if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
@@ -2920,9 +2956,24 @@ ags_thread_loop(void *ptr)
   /* get start computing time */
 #ifndef AGS_USE_TIMER
   if(g_atomic_pointer_get(&(thread->parent)) == NULL){
+#ifdef __MACH__
+    clock_serv_t cclock;
+    mach_timespec_t mts;
+#endif
+
     thread->delay = 
       thread->tic_delay = (AGS_THREAD_HERTZ_JIFFIE / thread->freq) / (AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION);
+#ifdef __MACH__
+    host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+
+    clock_get_time(cclock, &mts);
+    mach_port_deallocate(mach_task_self(), cclock);
+
+    thread->computing_time->tv_sec = mts.tv_sec;
+    thread->computing_time->tv_nsec = mts.tv_nsec;
+#else
     clock_gettime(CLOCK_MONOTONIC, thread->computing_time);
+#endif
   }
 #endif
   
@@ -3030,8 +3081,10 @@ ags_thread_loop(void *ptr)
 	ags_thread_unlock(thread);
 
 	/* init and wait */
+#ifndef __APPLE__
 	pthread_barrier_init(thread->barrier[0], NULL, wait_count);
 	pthread_barrier_wait(thread->barrier[0]);
+#endif
       }else{
 	/* retrieve wait count */
 	ags_thread_lock(thread);
@@ -3041,8 +3094,10 @@ ags_thread_loop(void *ptr)
 	ags_thread_unlock(thread);
 
 	/* init and wait */
+#ifndef __APPLE__
 	pthread_barrier_init(thread->barrier[1], NULL, wait_count);
 	pthread_barrier_wait(thread->barrier[1]);
+#endif
       }
     }
       
@@ -3223,11 +3278,13 @@ ags_thread_loop(void *ptr)
     }
     
     /* yield */
+#ifndef __APPLE__
     if(main_loop != NULL &&
        main_loop->tic_delay != main_loop->delay &&
        thread->cycle_iteration % (guint) floor(AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_YIELD_JIFFIE) == 0){
       pthread_yield();
-    }    
+    }
+#endif
   }
 
   //  g_object_ref(thread);
@@ -3360,12 +3417,7 @@ ags_thread_run(AgsThread *thread)
 {
   guint thread_signal;
   
-  pthread_mutex_lock(&class_mutex);
-
   thread_signal = thread_signals[RUN];
-  
-  pthread_mutex_unlock(&class_mutex);
-
   g_return_if_fail(AGS_IS_THREAD(thread));
 
   g_object_ref(thread);
@@ -3503,12 +3555,7 @@ ags_thread_stop(AgsThread *thread)
 {
   guint thread_signal;
 
-  pthread_mutex_lock(&class_mutex);
-
   thread_signal = thread_signals[STOP];
-
-  pthread_mutex_unlock(&class_mutex);
-
   g_return_if_fail(AGS_IS_THREAD(thread));
 
   if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) == 0){
@@ -3544,12 +3591,7 @@ ags_thread_interrupted(AgsThread *thread,
 
   return(0);
   
-  pthread_mutex_lock(&class_mutex);
-
   thread_signal = thread_signals[INTERRUPTED];
-
-  pthread_mutex_unlock(&class_mutex);
-
   g_return_val_if_fail(AGS_IS_THREAD(thread),
 		       0);
 
@@ -3838,12 +3880,8 @@ ags_thread_new(gpointer data)
 {
   AgsThread *thread;
 
-  pthread_mutex_lock(&class_mutex);
-
   thread = (AgsThread *) g_object_new(AGS_TYPE_THREAD,
 				      NULL);
-
-  pthread_mutex_unlock(&class_mutex);
 
   thread->data = data;
 

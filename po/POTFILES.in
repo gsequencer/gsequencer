@@ -278,6 +278,11 @@
 ./ags/audio/client/ags_remote_channel.c
 ./ags/audio/client/ags_remote_input.c
 ./ags/audio/client/ags_remote_output.c
+./ags/audio/core-audio/ags_core_audio_client.c
+./ags/audio/core-audio/ags_core_audio_devout.c
+./ags/audio/core-audio/ags_core_audio_midiin.c
+./ags/audio/core-audio/ags_core_audio_port.c
+./ags/audio/core-audio/ags_core_audio_server.c
 ./ags/audio/file/ags_audio_file.c
 ./ags/audio/file/ags_audio_file_link.c
 ./ags/audio/file/ags_audio_file_xml.c

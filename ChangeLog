@@ -1,3 +1,31 @@
+ags (0.9.26)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* non-destructive soundcard/sequencer preferences notify about restart GSequencer
+	* removed all calls to gdk_threads_enter() and gdk_threads_leave() because the
+	  GSource it is synced with owns the lock.
+	* full gtk_main() support by calling ags_gui_thread_do_run()
+	* refactored ags_gui_thread.[ch]
+	* refactored functional tests to run with gtk_main()
+
+ags (0.9.25)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved JACK latency but may cause bigger load
+
+ags (0.9.24)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented core-audio related code but without MIDI instrument support
+	* refactored UI to schedule tasks by AgsGuiThread
+	* fixed memory-leaks related to cairo_t
+	* improved plugins search path you may now specify by environment variable
+
+ags (0.9.23)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed possible SIGSEGV as accessing removed soundcard or midi sequencer
+
 ags (0.9.22)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

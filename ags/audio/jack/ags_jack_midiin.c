@@ -38,10 +38,6 @@
 #include <ags/audio/task/ags_tic_device.h>
 #include <ags/audio/task/ags_switch_buffer_flag.h>
 
-#include <jack/midiport.h>
-#include <jack/weakmacros.h>
-#include <jack/types.h>
-
 #include <string.h>
 #include <math.h>
 #include <time.h>

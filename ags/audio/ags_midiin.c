@@ -37,9 +37,13 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#ifdef AGS_WITH_ALSA
 #include <sys/soundcard.h>
+#endif
 #include <sys/utsname.h>
+#ifdef AGS_WITH_ALSA
 #include <alsa/rawmidi.h>
+#endif
 #include <errno.h>
 
 #include <string.h>
@@ -1256,7 +1260,10 @@ ags_midiin_oss_init(AgsSequencer *sequencer,
   midiin->delay_counter = 0.0;
   midiin->tic_counter = 0;
 
+#ifdef AGS_WITH_OSS
   midiin->flags |= AGS_MIDIIN_INITIALIZED;
+#endif
+  
   midiin->flags |= AGS_MIDIIN_BUFFER0;
   midiin->flags &= (~(AGS_MIDIIN_BUFFER1 |
 		      AGS_MIDIIN_BUFFER2 |
@@ -1309,6 +1316,14 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
 
   /* poll MIDI device */
   pthread_mutex_lock(mutex);
+
+  midiin->flags &= (~AGS_MIDIIN_START_RECORD);
+
+  if((AGS_MIDIIN_INITIALIZED & (midiin->flags)) == 0){
+    pthread_mutex_unlock(mutex);
+    
+    return;
+  }
 
   device_fd = midiin->in.oss.device_fd;
 
@@ -1548,14 +1563,13 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
   
   if((err = snd_rawmidi_open(&handle, NULL, midiin->in.alsa.device, mode)) < 0) {
     pthread_mutex_unlock(mutex);
+
     printf("Record midi open error: %s\n", snd_strerror(err));
     g_set_error(error,
 		AGS_MIDIIN_ERROR,
 		AGS_MIDIIN_ERROR_LOCKED_SEQUENCER,
 		"unable to open midi device: %s\n",
 		snd_strerror(err));
-
-    pthread_mutex_unlock(mutex);
 
     return;
   }
@@ -1568,7 +1582,9 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
   midiin->delay_counter = 0.0;
   midiin->tic_counter = 0;
 
+#ifdef AGS_WITH_ALSA
   midiin->flags |= AGS_MIDIIN_INITIALIZED;
+#endif
 
   pthread_mutex_unlock(mutex);
 }
@@ -1589,7 +1605,11 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
 
   GList *task;
 
+#ifdef AGS_WITH_ALSA
   snd_rawmidi_t *device_handle;
+#else
+  gpointer device_handle;
+#endif
 
   char **ring_buffer;
   
@@ -1618,6 +1638,14 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
 
   /* prepare poll */
   pthread_mutex_lock(mutex);
+
+  midiin->flags &= (~AGS_MIDIIN_START_RECORD);
+
+  if((AGS_MIDIIN_INITIALIZED & (midiin->flags)) == 0){
+    pthread_mutex_unlock(mutex);
+    
+    return;
+  }
 
   device_handle = midiin->in.alsa.handle;
       

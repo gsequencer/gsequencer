@@ -23,9 +23,10 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_main_loop.h>
 
-#include <ags/thread/ags_task_thread.h>
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/X/file/ags_simple_file.h>
+
 #include <ags/X/task/ags_simple_file_write.h>
 
 #include <string.h>
@@ -293,10 +294,11 @@ ags_simple_autosave_thread_run(AgsThread *thread)
 {
   AgsSimpleAutosaveThread *simple_autosave_thread;
 
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
   
   simple_autosave_thread = AGS_SIMPLE_AUTOSAVE_THREAD(thread);
-  task_thread = (AgsTaskThread *) AGS_APPLICATION_CONTEXT(simple_autosave_thread->application_context)->task_thread;
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(AGS_APPLICATION_CONTEXT(simple_autosave_thread->application_context)->main_loop,
+						     AGS_TYPE_GUI_THREAD);
 
   if(simple_autosave_thread->counter != simple_autosave_thread->delay){
     simple_autosave_thread->counter += 1;
@@ -314,8 +316,8 @@ ags_simple_autosave_thread_run(AgsThread *thread)
     simple_file_write = ags_simple_file_write_new((AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
 										 "filename", simple_autosave_thread->filename,
 										 NULL));
-    ags_task_thread_append_task(task_thread,
-				(AgsTask *) simple_file_write);
+    ags_gui_thread_schedule_task(gui_thread,
+				 simple_file_write);
 
     g_object_unref(simple_file);
   }

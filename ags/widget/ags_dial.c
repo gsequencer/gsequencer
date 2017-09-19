@@ -653,6 +653,10 @@ ags_dial_realize(GtkWidget *widget)
     cairo_text_extents_t te_up, te_down;
 
     cr = gdk_cairo_create(widget->parent->window);
+
+    if(cr == NULL){
+      return;
+    }
     
     cairo_select_font_face (cr, "Georgia\0",
 			    CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
@@ -1293,8 +1297,12 @@ ags_dial_draw(AgsDial *dial)
 
   widget = GTK_WIDGET(dial);
   dial_style = gtk_widget_get_style(widget);
-  
+
   cr = gdk_cairo_create(widget->window);
+
+  if(cr == NULL){
+    return;
+  }
   
   radius = (gdouble) dial->radius;
   outline_strength = (gdouble) dial->outline_strength;

@@ -23,6 +23,11 @@
 
 #include <math.h>
 
+#ifdef __MACH__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
+
 void ags_single_thread_class_init(AgsSingleThreadClass *single_thread);
 void ags_single_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_single_thread_init(AgsSingleThread *single_thread);
@@ -171,6 +176,11 @@ ags_single_thread_run(AgsThread *thread)
 
   AgsThread *child;
   
+#ifdef __MACH__
+  clock_serv_t cclock;
+  mach_timespec_t mts;
+#endif
+  
   struct timespec play_start, play_exceeded, play_idle, current;
 
   single_thread = AGS_SINGLE_THREAD(thread);
@@ -180,7 +190,17 @@ ags_single_thread_run(AgsThread *thread)
 
   while((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
     /* initial value to calculate timing */
+#ifdef __MACH__
+    host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+
+    clock_get_time(cclock, &mts);
+    mach_port_deallocate(mach_task_self(), cclock);
+
+    play_start.tv_sec = mts.tv_sec;
+    play_start.tv_nsec = mts.tv_nsec;
+#else
     clock_gettime(CLOCK_MONOTONIC, &play_start);
+#endif
 
     child = g_atomic_pointer_get(&(AGS_THREAD(single_thread)->children));
 
@@ -191,7 +211,17 @@ ags_single_thread_run(AgsThread *thread)
     }
     
     /* do timing */
+#ifdef __MACH__
+    host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+
+    clock_get_time(cclock, &mts);
+    mach_port_deallocate(mach_task_self(), cclock);
+
+    play_exceeded.tv_sec = mts.tv_sec;
+    play_exceeded.tv_nsec = mts.tv_nsec;
+#else
     clock_gettime(CLOCK_MONOTONIC, &play_exceeded);
+#endif
 
     if(play_start.tv_sec < play_exceeded.tv_sec){
       play_exceeded.tv_nsec += NSEC_PER_SEC;

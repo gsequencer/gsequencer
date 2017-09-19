@@ -395,6 +395,7 @@ ags_thread_pool_creation_thread(void *ptr)
   pthread_mutex_unlock(application_mutex);
 
   /* real-time setup */
+#ifdef AGS_WITH_RT
   if((AGS_THREAD_POOL_RT_SETUP & (g_atomic_int_get(&(thread_pool->flags)))) == 0){
     struct sched_param param;
     
@@ -408,7 +409,7 @@ ags_thread_pool_creation_thread(void *ptr)
     g_atomic_int_or(&(thread_pool->flags),
 		    AGS_THREAD_POOL_RT_SETUP);
   }
-
+#endif
   
 #ifdef AGS_DEBUG
   g_message("ags_thread_pool_creation_thread");

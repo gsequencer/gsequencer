@@ -33,6 +33,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <string.h>
+
 #include <dssi.h>
 
 #include <ags/config.h>
@@ -110,11 +112,73 @@ ags_dssi_manager_init(AgsDssiManager *dssi_manager)
   dssi_manager->dssi_plugin = NULL;
 
   if(ags_dssi_default_path == NULL){
-    ags_dssi_default_path = (gchar **) malloc(3 * sizeof(gchar *));
+    gchar *dssi_env;
 
-    ags_dssi_default_path[0] = g_strdup("/usr/lib/dssi");
-    ags_dssi_default_path[1] = g_strdup("/usr/lib64/dssi");
-    ags_dssi_default_path[2] = NULL;
+    if((dssi_env = getenv("DSSI_PATH")) != NULL){
+      gchar *iter, *next;
+      guint i;
+      
+      ags_dssi_default_path = (gchar **) malloc(sizeof(gchar *));
+
+      iter = dssi_env;
+      i = 0;
+      
+      while((next = index(iter, ':')) != NULL){
+	ags_dssi_default_path = (gchar **) realloc(ags_dssi_default_path,
+						   (i + 2) * sizeof(gchar *));
+	ags_dssi_default_path[i] = g_strndup(iter,
+					     next - iter);
+
+	iter = next + 1;
+	i++;
+      }
+
+      if(*iter != '\0'){
+	ags_dssi_default_path = (gchar **) realloc(ags_dssi_default_path,
+						   (i + 2) * sizeof(gchar *));
+	ags_dssi_default_path[i] = g_strdup(iter);
+
+	i++;	
+      }
+
+      ags_dssi_default_path[i] = NULL;
+    }else{
+      gchar *home_dir;
+      guint i;
+
+#ifdef AGS_MAC_BUNDLE
+      if((home_dir = getenv("HOME")) != NULL){
+	ags_dssi_default_path = (gchar **) malloc(7 * sizeof(gchar *));
+      }else{
+	ags_dssi_default_path = (gchar **) malloc(6 * sizeof(gchar *));
+      }
+#else
+      if((home_dir = getenv("HOME")) != NULL){
+	ags_dssi_default_path = (gchar **) malloc(6 * sizeof(gchar *));
+      }else{
+	ags_dssi_default_path = (gchar **) malloc(5 * sizeof(gchar *));
+      }
+#endif
+      
+      i = 0;
+
+#ifdef AGS_MAC_BUNDLE
+      ags_dssi_default_path[i++] = g_strdup_printf("%s/dssi",
+						   getenv("GSEQUENCER_PLUGIN_DIR"));
+#endif
+      
+      ags_dssi_default_path[i++] = g_strdup("/usr/lib64/dssi");
+      ags_dssi_default_path[i++] = g_strdup("/usr/local/lib64/dssi");
+      ags_dssi_default_path[i++] = g_strdup("/usr/lib/dssi");
+      ags_dssi_default_path[i++] = g_strdup("/usr/local/lib/dssi");
+
+      if(home_dir != NULL){
+	ags_dssi_default_path[i++] = g_strdup_printf("%s/.dssi",
+						     home_dir);
+      }
+    
+      ags_dssi_default_path[i++] = NULL;
+    }
   }
 }
 
@@ -449,7 +513,7 @@ ags_dssi_manager_load_default_directory(AgsDssiManager *dssi_manager)
 
     while((filename = g_dir_read_name(dir)) != NULL){
       if(g_str_has_suffix(filename,
-			  ".so") &&
+			  AGS_LIBRARY_SUFFIX) &&
 	 !g_list_find_custom(dssi_manager->dssi_plugin_blacklist,
 			     filename,
 			     strcmp)){

@@ -24,7 +24,6 @@
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
@@ -47,6 +46,8 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_line_callbacks.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 void ags_pad_start_complete_response(GtkWidget *dialog,
 				     gint response,
@@ -112,7 +113,7 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
 
@@ -140,8 +141,8 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_GUI_THREAD);
 
   /*  */
   current = pad->channel;
@@ -243,8 +244,8 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
     }
   }
 
-  ags_task_thread_append_tasks(task_thread,
-			       tasks);
+  ags_gui_thread_schedule_task_list(gui_thread,
+				    tasks);
 }
 
 void
