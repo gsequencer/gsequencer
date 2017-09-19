@@ -1208,8 +1208,9 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
   /* start */
   ags_simple_file_read_start(simple_file);
 
-  g_atomic_int_set(&(AGS_XORG_APPLICATION_CONTEXT(application_context)->gui_ready),
-		     1);
+  /* set file ready */
+  g_atomic_int_set(&(AGS_XORG_APPLICATION_CONTEXT(application_context)->file_ready),
+		   TRUE);
     
 }
 

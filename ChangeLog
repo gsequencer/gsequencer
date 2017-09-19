@@ -6,6 +6,7 @@ ags (0.9.26)
 	  GSource it is synced with owns the lock.
 	* full gtk_main() support by calling ags_gui_thread_do_run()
 	* refactored ags_gui_thread.[ch]
+	* refactored functional tests to run with gtk_main()
 
 ags (0.9.25)
 

@@ -192,8 +192,8 @@ ags_test_init(int *argc, char ***argv,
   /* parse command line parameter */
   filename = NULL;
 
-  for(i = 0; i < *argc; i++){
-    if(!strncmp(*argv[i], "--help", 7)){
+  for(i = 0; i < argc[0]; i++){
+    if(!strncmp(argv[0][i], "--help", 7)){
       printf("GSequencer is an audio sequencer and notation editor\n\n");
 
       printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
@@ -205,7 +205,7 @@ ags_test_init(int *argc, char ***argv,
 	     "--version           output version information and exit");
       
       exit(0);
-    }else if(!strncmp(*argv[i], "--version", 10)){
+    }else if(!strncmp(argv[0][i], "--version", 10)){
       printf("GSequencer %s\n\n", AGS_VERSION);
       
       printf("%s\n%s\n%s\n\n",
@@ -216,11 +216,11 @@ ags_test_init(int *argc, char ***argv,
       printf("Written by Joël Krähemann\n");
 
       exit(0);
-    }else if(!strncmp(*argv[i], "--single-thread", 16)){
+    }else if(!strncmp(argv[0][i], "--single-thread", 16)){
       single_thread_enabled = TRUE;
-    }else if(!strncmp(*argv[i], "--no-builtin-theme", 19)){
+    }else if(!strncmp(argv[0][i], "--no-builtin-theme", 19)){
       builtin_theme_disabled = TRUE;
-    }else if(!strncmp(*argv[i], "--filename", 11)){
+    }else if(!strncmp(argv[0][i], "--filename", 11)){
       filename = *argv[i + 1];
       i++;
     }

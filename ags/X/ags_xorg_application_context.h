@@ -73,6 +73,7 @@ struct _AgsXorgApplicationContext
 
   volatile gboolean gui_ready;
   volatile gboolean show_animation;
+  volatile gboolean file_ready;
   
   AgsThreadPool *thread_pool;
 

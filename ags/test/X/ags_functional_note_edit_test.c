@@ -155,6 +155,10 @@ ags_functional_note_edit_test_file_setup()
   task_thread = ags_thread_find_type(ags_application_context->main_loop,
 				     AGS_TYPE_TASK_THREAD);
 
+  while(!g_atomic_int_get(&(AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->file_ready))){
+    usleep(500000);
+  }
+  
   /* get buttons */
   pthread_mutex_lock(task_thread->launch_mutex);
 
@@ -202,6 +206,8 @@ ags_functional_note_edit_test_file_setup()
 int
 main(int argc, char **argv)
 {
+  char **new_argv;
+  
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
     return CU_get_error();
@@ -219,15 +225,16 @@ main(int argc, char **argv)
   g_atomic_int_set(&is_available,
 		   FALSE);
 
-  argv = (char **) realloc(argv,
-			   argc + 2 * sizeof(char *));
-  argv[argc] = AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_FILENAME;
-  argv[argc + 1] = NULL;
-  argc += 1;
+  new_argv = (char **) malloc(argc + 2 * sizeof(char *));
+  memcpy(new_argv, argv, argc * sizeof(char **));
+  new_argv[argc] = "--filename";
+  new_argv[argc + 1] = AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_FILENAME;
+  new_argv[argc + 2] = NULL;
+  argc += 2;
   
-  ags_test_init(&argc, &argv,
+  ags_test_init(&argc, &new_argv,
 		AGS_FUNCTIONAL_NOTE_EDIT_TEST_CONFIG);
-  ags_functional_test_util_do_run(argc, argv,
+  ags_functional_test_util_do_run(argc, new_argv,
 				  ags_functional_note_edit_test_add_test, &is_available);
 
   return(-1);

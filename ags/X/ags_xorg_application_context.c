@@ -481,6 +481,9 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   g_atomic_int_set(&(xorg_application_context->show_animation),
 		   TRUE);
 
+  g_atomic_int_set(&(xorg_application_context->file_ready),
+		   FALSE);
+
   xorg_application_context->thread_pool = NULL;
 
   xorg_application_context->polling_thread = NULL;

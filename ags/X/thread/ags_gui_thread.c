@@ -982,10 +982,15 @@ ags_gui_thread_launch_filename(AgsGuiThread *gui_thread,
 				    "simple-file"),
 	       "false")){
     AgsSimpleFile *simple_file;
-
+    
     AgsSimpleFileRead *simple_file_read;
-      
+
+    AgsGuiThread *gui_thread;
+    
     GError *error;
+
+    gui_thread = ags_thread_find_type(audio_loop,
+				      AGS_TYPE_GUI_THREAD);
 
     simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
 						 "application-context", application_context,
@@ -1021,8 +1026,8 @@ ags_gui_thread_launch_filename(AgsGuiThread *gui_thread,
     
     /* now start read task */
     simple_file_read = ags_simple_file_read_new(simple_file);
-    ags_task_thread_append_task((AgsTaskThread *) task_thread,
-				(AgsTask *) simple_file_read);
+    ags_gui_thread_schedule_task(gui_thread,
+				 simple_file_read);
   }
 }
 
