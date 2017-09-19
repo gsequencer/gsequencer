@@ -87,7 +87,7 @@ ags_functional_panel_test_add_test()
      (CU_add_test(pSuite, "functional test of AgsPanel resize audio channels\0", ags_functional_panel_test_resize_audio_channels) == NULL)){
     CU_cleanup_registry();
       
-    return CU_get_error();
+    exit(CU_get_error());
   }
   
   /* Run all tests using the CUnit Basic interface */
@@ -96,7 +96,7 @@ ags_functional_panel_test_add_test()
   
   CU_cleanup_registry();
   
-  return(CU_get_error());
+  exit(CU_get_error());
 }
 
 /* The suite initialization function.
