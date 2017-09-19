@@ -2,6 +2,10 @@ ags (0.9.26)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* non-destructive soundcard/sequencer preferences notify about restart GSequencer
+	* removed all calls to gdk_threads_enter() and gdk_threads_leave() because the
+	  GSource it is synced with owns the lock.
+	* full gtk_main() support by calling ags_gui_thread_do_run()
+	* refactored ags_gui_thread.[ch]
 
 ags (0.9.25)
 

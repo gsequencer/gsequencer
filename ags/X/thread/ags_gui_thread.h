@@ -95,6 +95,14 @@ struct _AgsGuiThreadClass
 
 GType ags_gui_thread_get_type();
 
+void ags_gui_thread_complete_task(AgsGuiThread *gui_thread);
+
+/* legacy sync and run */
+void* ags_gui_thread_do_poll_loop(void *ptr);
+
+void ags_gui_thread_run(AgsThread *thread);
+
+/* gtk_main() related */
 void ags_gui_init(int *argc, char ***argv);
 
 void ags_gui_thread_enter();
@@ -129,6 +137,7 @@ void ags_gui_thread_schedule_task(AgsGuiThread *gui_thread,
 void ags_gui_thread_schedule_task_list(AgsGuiThread *gui_thread,
 				       GList *task);
 
+/* AgsGuiThread */
 AgsGuiThread* ags_gui_thread_new();
 
 #endif /*__AGS_GUI_THREAD_H__*/

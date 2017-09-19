@@ -45,7 +45,6 @@ EXTRA_DIST = config.rpath \
 	gsequencer.1 \
 	README \
 	ags_example.xml \
-	gsequencer-documentation \
 	midi2xml.1 \
 	ags_functional_note_edit_test.xml \
 	mkinstalldirs \
@@ -1786,7 +1785,6 @@ install-data-local:
 	install -c -p -m 644 $(top_srcdir)/ags/file/ags_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	install -c -p -m 644 $(top_srcdir)/ags.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
 	install -c -p -m 644 $(top_srcdir)/ags-simple.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
-	install -c -p -m 644 $(top_srcdir)/gsequencer-documentation $(DESTDIR)/$(datadir)/doc-base/
 	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/
 	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(datadir)/doc/gsequencer/changelog.gz
 
@@ -1847,7 +1845,6 @@ uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/doc/libags-audio-doc
 	rm -rf $(DESTDIR)/$(datadir)/doc/libags-gui-doc
 	rm -rf $(DESTDIR)/$(datadir)/doc/libgsequencer-doc
-	rm -f $(DESTDIR)/$(datadir)/doc-base/gsequencer-documentation
 	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libags
 	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libags_audio
 	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libags_gui

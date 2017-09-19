@@ -23,6 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#define GSEQUENCER_RT_PRIORITY (95)
+
+void ags_test_init(int *argc, char ***argv,
+		   gchar *conf_str);
+
 void ags_test_show_file_error(gchar *filename,
 			      GError *error);
 

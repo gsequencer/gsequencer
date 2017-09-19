@@ -225,10 +225,7 @@ main(int argc, char **argv)
 {  
   AgsConfig *config;
 
-  pthread_t *animation_thread;
-  
   gchar *filename;
-  gchar *str;
 
   gboolean single_thread_enabled;
   gboolean builtin_theme_disabled;
@@ -238,7 +235,6 @@ main(int argc, char **argv)
   struct sched_param param;
   struct rlimit rl;
 #endif
-  struct sigaction sa;
   struct passwd *pw;
 
   gchar *wdir, *config_file;
@@ -248,10 +244,6 @@ main(int argc, char **argv)
   int result;
 
   const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
-
-#ifdef AGS_USE_TIMER
-  timer_t *timer_id
-#endif
 
   setlocale(LC_ALL, "");
   bindtextdomain(PACKAGE, LOCALEDIR);
@@ -360,10 +352,6 @@ main(int argc, char **argv)
   //  g_thread_init(NULL);
   ags_gui_init(&argc, &argv);  
   gtk_init(&argc, &argv);
-
-#ifdef AGS_WITH_X11
-  //  XInitThreads();
-#endif
   
   if(!builtin_theme_disabled){
     g_object_set(gtk_settings_get_default(),

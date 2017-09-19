@@ -54,12 +54,19 @@ struct _AgsFunctionalTestUtilContainerTest
   guint count;
 };
 
+/* legacy setup */
+void ags_functional_test_util_setup_and_launch();
+void ags_functional_test_util_setup_and_launch_filename(gchar *filename);
+
+/* gtk_main() related */
 void ags_functional_test_util_add_test(AgsFunctionalTestUtilAddTest add_test,
 				       volatile gboolean *is_available);
 void ags_functional_test_util_notify_add_test(volatile gboolean *is_available);
 
-void ags_functional_test_util_setup_and_launch();
-void ags_functional_test_util_setup_and_launch_filename(gchar *filename);
+void ags_functional_test_util_do_run(int argc, char **argv,
+				     AgsFunctionalTestUtilAddTest add_test, volatile gboolean *is_available);
+
+/* synchronization */
 void ags_functional_test_util_reaction_time();
 void ags_functional_test_util_reaction_time_long();
 void ags_functional_test_util_idle();

@@ -515,12 +515,12 @@ ags_task_thread_run(AgsThread *thread)
       do_sync = TRUE;
       
       pthread_mutex_lock(task_thread->sync_mutex);
+
+      g_atomic_int_and(&(task_thread->flags),
+		       (~AGS_TASK_THREAD_SYNC_DONE));
     
       if((AGS_TASK_THREAD_SYNC_WAIT & (g_atomic_int_get(&(task_thread->flags)))) != 0 &&
 	 (AGS_TASK_THREAD_SYNC_DONE & (g_atomic_int_get(&(task_thread->flags)))) == 0){
-	g_atomic_int_and(&(task_thread->flags),
-			 (~AGS_TASK_THREAD_SYNC_DONE));
-      
 	while((AGS_TASK_THREAD_SYNC_WAIT & (g_atomic_int_get(&(task_thread->flags)))) != 0 &&
 	      (AGS_TASK_THREAD_SYNC_DONE & (g_atomic_int_get(&(task_thread->flags)))) == 0){
 	  pthread_cond_wait(task_thread->sync_cond,
