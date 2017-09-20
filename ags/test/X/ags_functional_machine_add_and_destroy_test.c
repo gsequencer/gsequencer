@@ -130,8 +130,6 @@ ags_functional_machine_add_and_destroy_test_init_suite()
 int
 ags_functional_machine_add_and_destroy_test_clean_suite()
 {  
-  ags_thread_stop(gui_thread);  
-
   return(0);
 }
 

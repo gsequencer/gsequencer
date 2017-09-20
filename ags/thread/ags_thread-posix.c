@@ -34,7 +34,7 @@
 #include <unistd.h>
 #include <math.h>
 
-#ifdef __MACH__
+#ifdef __APPLE__
 #include <mach/clock.h>
 #include <mach/mach.h>
 #endif
@@ -2333,7 +2333,7 @@ ags_thread_real_clock(AgsThread *thread)
   AgsThread *main_loop, *async_queue;
   AgsMutexManager *mutex_manager;
 
-#ifdef __MACH__
+#ifdef __APPLE__
   clock_serv_t cclock;
   mach_timespec_t mts;
 #endif
@@ -2590,7 +2590,7 @@ ags_thread_real_clock(AgsThread *thread)
   if((AGS_THREAD_IMMEDIATE_SYNC & (g_atomic_int_get(&(thread->flags)))) == 0){
     if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0 &&
        (AGS_THREAD_INITIAL_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
-#ifdef __MACH__
+#ifdef __APPLE__
       host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
       
       clock_get_time(cclock, &mts);
@@ -2649,7 +2649,7 @@ ags_thread_real_clock(AgsThread *thread)
       0,
     };
 
-#ifdef __MACH__
+#ifdef __APPLE__
     host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
     
     clock_get_time(cclock, &mts);
@@ -2694,7 +2694,7 @@ ags_thread_real_clock(AgsThread *thread)
 		       0);
     }
 
-#ifdef __MACH__
+#ifdef __APPLE__
     host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
     
     clock_get_time(cclock, &mts);
@@ -2956,14 +2956,14 @@ ags_thread_loop(void *ptr)
   /* get start computing time */
 #ifndef AGS_USE_TIMER
   if(g_atomic_pointer_get(&(thread->parent)) == NULL){
-#ifdef __MACH__
+#ifdef __APPLE__
     clock_serv_t cclock;
     mach_timespec_t mts;
 #endif
 
     thread->delay = 
       thread->tic_delay = (AGS_THREAD_HERTZ_JIFFIE / thread->freq) / (AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION);
-#ifdef __MACH__
+#ifdef __APPLE__
     host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
 
     clock_get_time(cclock, &mts);

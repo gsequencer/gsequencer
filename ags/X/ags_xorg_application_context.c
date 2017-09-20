@@ -473,7 +473,8 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 	       NULL);
 
   AGS_APPLICATION_CONTEXT(xorg_application_context)->log = ags_log_get_instance();
-
+  g_object_ref(AGS_APPLICATION_CONTEXT(xorg_application_context)->log);
+  
   /* Xorg application context */
   g_atomic_int_set(&(xorg_application_context->gui_ready),
 		   FALSE);

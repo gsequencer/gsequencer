@@ -83,6 +83,9 @@ volatile gboolean is_available;
 
 extern AgsApplicationContext *ags_application_context;
 
+AgsGuiThread *gui_thread;
+AgsTaskThread *task_thread;
+
 void
 ags_functional_note_edit_test_add_test()
 {
@@ -109,6 +112,13 @@ ags_functional_note_edit_test_add_test()
 int
 ags_functional_note_edit_test_init_suite()
 {    
+  /* get gui thread */
+  gui_thread = ags_thread_find_type(ags_application_context->main_loop,
+				    AGS_TYPE_GUI_THREAD);
+
+  task_thread = ags_thread_find_type(ags_application_context->main_loop,
+				     AGS_TYPE_TASK_THREAD);
+
   return(0);
 }
 
@@ -133,39 +143,26 @@ ags_functional_note_edit_test_file_setup()
 {
   GtkButton *play_button;
   GtkButton *stop_button;
-
-  AgsGuiThread *gui_thread;
-  
-  AgsTaskThread *task_thread;
   
   struct timespec start_time, current_time;
-
-  gchar *start_arg[] = {
-    "./gsequencer\0"
-  };
   
   guint i;
   gboolean expired;
   gboolean success;
   
-  /* get gui thread */
-  gui_thread = ags_thread_find_type(ags_application_context->main_loop,
-				    AGS_TYPE_GUI_THREAD);
-
-  task_thread = ags_thread_find_type(ags_application_context->main_loop,
-				     AGS_TYPE_TASK_THREAD);
-
   while(!g_atomic_int_get(&(AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->file_ready))){
     usleep(500000);
   }
+
+  usleep(500000);  
   
   /* get buttons */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  pthread_mutex_lock(gui_thread->dispatch_mutex);
 
   play_button = AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->window->navigation->play;
   stop_button = AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->window->navigation->stop;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  pthread_mutex_unlock(gui_thread->dispatch_mutex);
 
   /* get initial time */
   success = TRUE;
@@ -198,8 +195,6 @@ ags_functional_note_edit_test_file_setup()
     }
   }
 
-  ags_thread_stop(gui_thread);
-  
   CU_ASSERT(success == TRUE);
 }
 

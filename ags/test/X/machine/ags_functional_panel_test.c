@@ -123,8 +123,6 @@ ags_functional_panel_test_init_suite()
 int
 ags_functional_panel_test_clean_suite()
 {  
-  ags_thread_stop(gui_thread);  
-
   return(0);
 }
 
@@ -150,7 +148,7 @@ ags_functional_panel_test_resize_pads()
   CU_ASSERT(success == TRUE);
 
   /*  */
-  gdk_threads_enter();
+  pthread_mutex_lock(gui_thread->dispatch_mutex);
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -161,7 +159,7 @@ ags_functional_panel_test_resize_pads()
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  pthread_mutex_unlock(gui_thread->dispatch_mutex);
 
   if(list != NULL &&
      AGS_IS_PANEL(list->data)){
@@ -197,11 +195,11 @@ ags_functional_panel_test_resize_pads()
 							    AGS_FUNCTIONAL_PANEL_TEST_RESIZE_INPUT_PADS);
 
   /* response ok */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  pthread_mutex_lock(gui_thread->dispatch_mutex);
 
   properties = AGS_MACHINE(panel)->properties;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  pthread_mutex_unlock(gui_thread->dispatch_mutex);
 
   ags_functional_test_util_dialog_ok(properties);
 
@@ -231,7 +229,7 @@ ags_functional_panel_test_resize_audio_channels()
   CU_ASSERT(success == TRUE);
 
   /*  */
-  gdk_threads_enter();
+  pthread_mutex_lock(gui_thread->dispatch_mutex);
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -242,7 +240,7 @@ ags_functional_panel_test_resize_audio_channels()
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  pthread_mutex_unlock(gui_thread->dispatch_mutex);
 
   if(list != NULL &&
      AGS_IS_PANEL(list->data)){
@@ -274,11 +272,11 @@ ags_functional_panel_test_resize_audio_channels()
 								    AGS_FUNCTIONAL_PANEL_TEST_RESIZE_AUDIO_CHANNELS);
 
   /* response ok */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  pthread_mutex_lock(gui_thread->dispatch_mutex);
 
   properties = AGS_MACHINE(panel)->properties;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  pthread_mutex_unlock(gui_thread->dispatch_mutex);
 
   ags_functional_test_util_dialog_ok(properties);
 

@@ -23,7 +23,7 @@
 
 #include <math.h>
 
-#ifdef __MACH__
+#ifdef __APPLE__
 #include <mach/clock.h>
 #include <mach/mach.h>
 #endif
@@ -176,7 +176,7 @@ ags_single_thread_run(AgsThread *thread)
 
   AgsThread *child;
   
-#ifdef __MACH__
+#ifdef __APPLE__
   clock_serv_t cclock;
   mach_timespec_t mts;
 #endif
@@ -190,7 +190,7 @@ ags_single_thread_run(AgsThread *thread)
 
   while((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0){
     /* initial value to calculate timing */
-#ifdef __MACH__
+#ifdef __APPLE__
     host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
 
     clock_get_time(cclock, &mts);
@@ -211,7 +211,7 @@ ags_single_thread_run(AgsThread *thread)
     }
     
     /* do timing */
-#ifdef __MACH__
+#ifdef __APPLE__
     host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
 
     clock_get_time(cclock, &mts);

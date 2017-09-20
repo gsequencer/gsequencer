@@ -1630,7 +1630,7 @@ ags_gui_thread_do_animation_callback(GtkWidget *widget, GdkEventExpose *event,
   x0 = 4.0;
   y0 = 4.0 + (i * 12.0);
 
-  gdk_threads_enter();
+  pthread_mutex_lock(gui_thread->dispatch_mutex);
   
   if(nth < i){
     /* create image cairo graphics context */
@@ -1698,7 +1698,7 @@ ags_gui_thread_do_animation_callback(GtkWidget *widget, GdkEventExpose *event,
     cairo_destroy(cr);
   }
 
-  gdk_threads_leave();
+  pthread_mutex_unlock(gui_thread->dispatch_mutex);
 
   return(TRUE);
 }

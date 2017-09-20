@@ -37,7 +37,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
-#ifdef AGS_WITH_ALSA
+#ifndef __APPLE__
 #include <sys/soundcard.h>
 #endif
 #include <sys/utsname.h>

@@ -1,3 +1,8 @@
+ags (0.9.27)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved conversion to floating point numbers by division instead of multiplication
+
 ags (0.9.26)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
