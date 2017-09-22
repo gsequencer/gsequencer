@@ -1120,7 +1120,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   /* check filename */
   filename = NULL;
 
-  pthread_mutex_lock(ags_gui_thread_get_dispatch_mutex());
+  //  pthread_mutex_lock(ags_gui_thread_get_dispatch_mutex());
   
   for(i = 0; i < AGS_APPLICATION_CONTEXT(xorg_application_context)->argc; i++){
     if(!strncmp(AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i], "--filename", 11)){
@@ -1256,7 +1256,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   /* launch GUI */
   ags_log_add_message(log,
 		      "* Launch user interface");
-
+  
   single_thread_enabled = FALSE;
 
   if(filename != NULL){
@@ -1594,6 +1594,10 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
   ags_connectable_connect(AGS_CONNECTABLE(window));
 
+  /* stop animation */
+  g_atomic_int_set(&(xorg_application_context->show_animation),
+		   FALSE);  
+
   /* AgsServer */
   xorg_application_context->server = ags_server_new((GObject *) xorg_application_context);
   
@@ -1708,11 +1712,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     ags_jack_server_connect_client(jack_server);
   }
   
-  /* stop animation */
-  g_atomic_int_set(&(xorg_application_context->show_animation),
-		   FALSE);  
-
-  pthread_mutex_unlock(ags_gui_thread_get_dispatch_mutex());
+  //  pthread_mutex_unlock(ags_gui_thread_get_dispatch_mutex());
 }
 
 void

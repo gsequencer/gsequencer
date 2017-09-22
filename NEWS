@@ -1,3 +1,8 @@
+Overview of Changes in AGS 0.9.28
+================================
+
+* all functional tests pass now again, since  gtk_main() integration.
+
 Overview of Changes in AGS 0.9.26
 ================================
 

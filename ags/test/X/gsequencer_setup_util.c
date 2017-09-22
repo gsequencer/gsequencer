@@ -53,6 +53,8 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
 
+#include <pthread.h>
+
 #include <string.h>
 
 #include <unistd.h>
@@ -71,11 +73,63 @@
 
 #include "config.h"
 
+static void ags_test_driver_mutex_create();
+
+static pthread_mutex_t *ags_test_driver_mutex = NULL;
+
 struct sigaction ags_test_sigact;
 
 extern AgsApplicationContext *ags_application_context;
 
 extern volatile gboolean ags_show_start_animation;
+
+void
+ags_test_enter()
+{
+  pthread_mutex_lock(ags_test_get_driver_mutex());
+  gdk_threads_enter();
+}
+
+void
+ags_test_leave()
+{
+  gdk_threads_leave();
+  pthread_mutex_unlock(ags_test_get_driver_mutex());
+}
+
+static void
+ags_test_driver_mutex_create()
+{
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
+
+  attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+  
+  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);
+
+  ags_test_driver_mutex = mutex;
+}
+
+pthread_mutex_t*
+ags_test_get_driver_mutex()
+{
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  pthread_mutex_lock(&mutex);
+  
+  if(ags_test_driver_mutex == NULL){
+    ags_test_driver_mutex_create();
+  }
+
+  pthread_mutex_unlock(&mutex);
+  
+  return(ags_test_driver_mutex);
+}
 
 void
 ags_test_init(int *argc, char ***argv,
@@ -260,6 +314,7 @@ ags_test_init(int *argc, char ***argv,
   LIBXML_TEST_VERSION;
 
   ags_gui_init(argc, argv);
+  
   gtk_init(argc, argv);
 
   if(!builtin_theme_disabled){

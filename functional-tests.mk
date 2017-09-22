@@ -28,6 +28,7 @@ check_PROGRAMS += \
 libgsequencer_test_la_SOURCES = ags/test/X/gsequencer_setup_util.c ags/test/X/gsequencer_setup_util.h ags/test/X/ags_functional_test_util.c ags/test/X/ags_functional_test_util.h ags/test/X/libgsequencer.h
 libgsequencer_test_la_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 libgsequencer_test_la_CPPFLAGS = -DSRCDIR=\"$(top_srcdir)\" -DDESTDIR=\"gsequencer.share\"
+libgsequencer_test_la_LDFLAGS = -pthread $(LDFLAGS)
 libgsequencer_test_la_LIBADD = $(libgsequencer_test_LIBADD)
 
 # functional audio test

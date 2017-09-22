@@ -157,12 +157,12 @@ ags_functional_note_edit_test_file_setup()
   usleep(500000);  
   
   /* get buttons */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   play_button = AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->window->navigation->play;
   stop_button = AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->window->navigation->stop;
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   /* get initial time */
   success = TRUE;

@@ -154,7 +154,7 @@ ags_functional_matrix_test_resize_pads()
   CU_ASSERT(success == TRUE);
 
   /*  */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -165,7 +165,7 @@ ags_functional_matrix_test_resize_pads()
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_MATRIX(list->data)){
@@ -201,11 +201,11 @@ ags_functional_matrix_test_resize_pads()
 							    AGS_FUNCTIONAL_MATRIX_TEST_RESIZE_INPUT_PADS);
 
   /* response ok */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   properties = AGS_MACHINE(matrix)->properties;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_dialog_ok(properties);
 
@@ -235,7 +235,7 @@ ags_functional_matrix_test_resize_audio_channels()
   CU_ASSERT(success == TRUE);
 
   /*  */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -246,7 +246,7 @@ ags_functional_matrix_test_resize_audio_channels()
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_MATRIX(list->data)){
@@ -278,11 +278,11 @@ ags_functional_matrix_test_resize_audio_channels()
 								    AGS_FUNCTIONAL_MATRIX_TEST_RESIZE_AUDIO_CHANNELS);
 
   /* response ok */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   properties = AGS_MACHINE(matrix)->properties;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_dialog_ok(properties);
 

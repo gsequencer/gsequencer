@@ -174,8 +174,8 @@ ags_toolbar_init(AgsToolbar *toolbar)
 
   /* invert */
   toolbar->invert = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-					       "image", (GtkWidget *) gtk_image_new_from_stock("gtk-object-flip-horizontal",
-											       GTK_ICON_SIZE_LARGE_TOOLBAR),
+					       "image", (GtkWidget *) gtk_image_new_from_icon_name("object-flip-vertical",
+												   GTK_ICON_SIZE_LARGE_TOOLBAR),
 					       "relief", GTK_RELIEF_NONE,
 					       NULL);
   gtk_toolbar_append_widget((GtkToolbar *) toolbar, (GtkWidget *) toolbar->invert, i18n("invert notes"), NULL);

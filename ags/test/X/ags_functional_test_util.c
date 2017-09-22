@@ -28,13 +28,24 @@
 
 #include <ags/gsequencer_main.h>
 
+#include <ags/test/X/gsequencer_setup_util.h>
 #include <ags/test/X/libgsequencer.h>
 
 #include <gdk/gdk.h>
 #include <gdk/gdkevents.h>
 
+#include <pthread.h>
+
 #define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME (125000)
 #define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME_LONG (500000)
+
+gboolean ags_functional_test_util_driver_prepare(GSource *source,
+						 gint *timeout_);
+gboolean ags_functional_test_util_driver_check(GSource *source);
+gboolean ags_functional_test_util_driver_dispatch(GSource *source,
+						  GSourceFunc callback,
+						  gpointer user_data);
+
 
 void* ags_functional_test_util_add_test_thread(void *ptr);
 void* ags_functional_test_util_do_run_thread(void *ptr);
@@ -60,6 +71,41 @@ struct timespec ags_functional_test_util_default_timeout = {
   20,
   0,
 };
+
+
+gboolean
+ags_functional_test_util_driver_prepare(GSource *source,
+					gint *timeout_)
+{
+  if(timeout_ != NULL){
+    *timeout_ = -1;
+  }
+  
+  return(TRUE);
+}
+
+gboolean
+ags_functional_test_util_driver_check(GSource *source)
+{
+  return(TRUE);
+}
+
+gboolean
+ags_functional_test_util_driver_dispatch(GSource *source,
+					 GSourceFunc callback,
+					 gpointer user_data)
+{
+  pthread_mutex_unlock(ags_test_get_driver_mutex());
+  
+  usleep(4000);
+  
+  pthread_mutex_lock(ags_test_get_driver_mutex());
+
+  g_main_context_iteration(g_main_context_default(),
+			   FALSE);
+  
+  return(G_SOURCE_CONTINUE);
+}
 
 void*
 ags_functional_test_util_add_test_thread(void *ptr)
@@ -116,13 +162,10 @@ ags_functional_test_util_do_run_thread(void *ptr)
     usleep(500000);
   }
   
-  pthread_mutex_lock(ags_gui_thread_get_dispatch_mutex());
-  
   ags_xorg_application_context_setup(xorg_application_context);
-  g_atomic_int_set(&(xorg_application_context->gui_ready),
-		   FALSE);
   
-  pthread_mutex_unlock(ags_gui_thread_get_dispatch_mutex());
+  //  g_atomic_int_set(&(xorg_application_context->gui_ready),
+  //		   FALSE);
 
   /*  */
   while(g_atomic_int_get(&(xorg_application_context->show_animation))){
@@ -151,6 +194,10 @@ ags_functional_test_util_do_run(int argc, char **argv,
   AgsLog *log;
 
   pthread_t thread;
+  pthread_mutex_t *mutex;
+  
+  GSource *driver_source;
+  GSourceFuncs driver_funcs;
 
   /* application context */
   application_context = 
@@ -168,10 +215,23 @@ ags_functional_test_util_do_run(int argc, char **argv,
   ags_functional_test_util_add_test(add_test, is_available);
   
   /* application context */
+  mutex = ags_test_get_driver_mutex();
+  pthread_mutex_lock(mutex);
+
   pthread_create(&thread, NULL,
 		 ags_functional_test_util_do_run_thread, is_available);
+
+  driver_funcs.prepare = ags_functional_test_util_driver_prepare;
+  driver_funcs.check = ags_functional_test_util_driver_check;
+  driver_funcs.dispatch = ags_functional_test_util_driver_dispatch;
+  driver_funcs.finalize = NULL;
+
+  driver_source = g_source_new(&driver_funcs,
+			       sizeof(GSource));
+  g_source_attach(driver_source,
+  		  g_main_context_default());
   
-  ags_application_context_prepare(application_context);  
+  ags_application_context_prepare(application_context);
 }
 
 void
@@ -301,7 +361,7 @@ ags_functional_test_util_idle_test_widget_visible(GtkWidget **widget)
 
   do_idle = TRUE;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   if(*widget != NULL &&
      GTK_IS_WIDGET(*widget) &&
@@ -309,7 +369,7 @@ ags_functional_test_util_idle_test_widget_visible(GtkWidget **widget)
     do_idle = FALSE;
   }
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   return(do_idle);
 }
@@ -321,7 +381,7 @@ ags_functional_test_util_idle_test_widget_hidden(GtkWidget **widget)
 
   do_idle = TRUE;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   if(*widget != NULL &&
      GTK_IS_WIDGET(*widget) &&
@@ -329,7 +389,7 @@ ags_functional_test_util_idle_test_widget_hidden(GtkWidget **widget)
     do_idle = FALSE;
   }
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   return(do_idle);
 }
@@ -341,13 +401,13 @@ ags_functional_test_util_idle_test_null(GtkWidget **widget)
 
   do_idle = TRUE;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   if(*widget == NULL){
     do_idle = FALSE;
   }
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   return(do_idle);
 }
@@ -359,7 +419,7 @@ ags_functional_test_util_idle_test_container_children_count(AgsFunctionalTestUti
 
   do_idle = TRUE;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   if(*(container_test->container) != NULL &&
      GTK_IS_CONTAINER(*(container_test->container))){
@@ -374,7 +434,7 @@ ags_functional_test_util_idle_test_container_children_count(AgsFunctionalTestUti
     g_list_free(list);
   }
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   return(do_idle);
 }
@@ -394,7 +454,7 @@ ags_functional_test_util_submenu_find(GtkMenu *menu,
     return(NULL);
   }
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   list =
     list_start = gtk_container_get_children(menu);
@@ -422,7 +482,7 @@ ags_functional_test_util_submenu_find(GtkMenu *menu,
 
   g_list_free(list_start);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   return(submenu);
 }
@@ -443,7 +503,7 @@ ags_functional_test_util_menu_bar_click(gchar *item_label)
     return(FALSE);
   }
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
   menu_bar = xorg_application_context->window->menu_bar;
@@ -452,7 +512,7 @@ ags_functional_test_util_menu_bar_click(gchar *item_label)
     list_start = gtk_container_get_children(menu_bar);
   success = FALSE;
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   while(list != NULL){
     if(GTK_IS_MENU_ITEM(list->data)){
@@ -480,7 +540,7 @@ ags_functional_test_util_menu_bar_click(gchar *item_label)
 	}
 
 	/*  */
-	pthread_mutex_lock(gui_thread->dispatch_mutex);
+	ags_test_enter();
 
 	x = widget->allocation.x + widget->allocation.width / 2.0;
 	y = widget->allocation.y + widget->allocation.height / 2.0;
@@ -496,7 +556,7 @@ ags_functional_test_util_menu_bar_click(gchar *item_label)
 				 gtk_widget_get_screen(widget),
 				 origin_x + x + 15, origin_y + y + 5);
 	
-	pthread_mutex_unlock(gui_thread->dispatch_mutex);
+	ags_test_leave();
 
 	/*  */
 	ags_functional_test_util_reaction_time();
@@ -520,12 +580,12 @@ ags_functional_test_util_menu_bar_click(gchar *item_label)
 	ags_functional_test_util_reaction_time();
 
 	/*  */
-	pthread_mutex_lock(gui_thread->dispatch_mutex);
+	ags_test_enter();
 
 	g_signal_emit_by_name(widget,
 			      "activate-item\0");
 	
-	pthread_mutex_unlock(gui_thread->dispatch_mutex);
+	ags_test_leave();
 
 	success = TRUE;
 
@@ -559,13 +619,13 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
     return(FALSE);
   }
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   list =
     list_start = gtk_container_get_children(menu);
   success = FALSE;
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   while(list != NULL){
     if(GTK_IS_MENU_ITEM(list->data)){
@@ -590,7 +650,7 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
 	}
 
 	/*  */
-	pthread_mutex_lock(gui_thread->dispatch_mutex);
+	ags_test_enter();
 
 	window = gtk_widget_get_window(widget);
 
@@ -603,7 +663,7 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
 				 gtk_widget_get_screen(widget),
 				 origin_x + x + 15, origin_y + y + 5);
 
-	pthread_mutex_unlock(gui_thread->dispatch_mutex);
+	ags_test_leave();
 
 	ags_functional_test_util_reaction_time();
 	
@@ -629,12 +689,12 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
 	success = TRUE;
 
 	/*  */
-	pthread_mutex_lock(gui_thread->dispatch_mutex);
+	ags_test_enter();
 
 	g_signal_emit_by_name(widget,
 			      "activate-item\0");
 	
-	pthread_mutex_unlock(gui_thread->dispatch_mutex);
+	ags_test_leave();
 
 	break;
       }
@@ -673,7 +733,7 @@ ags_functional_test_util_combo_box_click(GtkComboBox *combo_box,
   }
   
   /*  */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   window = gtk_widget_get_window(widget);
 
@@ -686,7 +746,7 @@ ags_functional_test_util_combo_box_click(GtkComboBox *combo_box,
 			   gtk_widget_get_screen(widget),
 			   origin_x + x + 15, origin_y + y + 5);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   /*
   ags_functional_test_util_reaction_time();
@@ -712,12 +772,12 @@ ags_functional_test_util_combo_box_click(GtkComboBox *combo_box,
   */
   
   /*  */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   gtk_combo_box_set_active(combo_box,
 			   nth);
 	
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
   
@@ -746,7 +806,7 @@ ags_functional_test_util_button_click(GtkButton *button)
   }
   
   /*  */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   window = gtk_widget_get_window(widget);
 
@@ -759,7 +819,7 @@ ags_functional_test_util_button_click(GtkButton *button)
 			   gtk_widget_get_screen(widget),
 			   origin_x + x + 15, origin_y + y + 5);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   /*  */
   ags_functional_test_util_reaction_time();
@@ -792,7 +852,8 @@ gboolean
 ags_functional_test_util_menu_tool_button_click(GtkButton *button)
 {
   GtkWidget *widget;
-
+  GtkWidget *arrow_button = NULL;
+  
   GdkWindow *window;
 
   gint x, y;
@@ -805,24 +866,28 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
   
   widget = button;
 
+  if(arrow_button == NULL){
+    arrow_button = gtk_container_get_children(gtk_bin_get_child(button))->next->data;
+  }
+  
   if(!GTK_WIDGET_REALIZED(widget)){
     ags_functional_test_util_reaction_time_long();
   }
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   window = gtk_widget_get_window(widget);
 
-  x = widget->allocation.x + widget->allocation.width / 2.0;
-  y = widget->allocation.y + widget->allocation.height / 2.0;
+  x = widget->allocation.x + widget->allocation.width - (arrow_button->allocation.width / 2.0);
+  y = widget->allocation.y + widget->allocation.height - (arrow_button->allocation.height / 2.0);
 
   gdk_window_get_origin(window, &origin_x, &origin_y);
 
   gdk_display_warp_pointer(gtk_widget_get_display(widget),
 			   gtk_widget_get_screen(widget),
-			   origin_x + x + 15, origin_y + y + 5);
+			   origin_x + x, origin_y + y);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time();
 	
@@ -845,18 +910,19 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
   	
   ags_functional_test_util_reaction_time_long();
 
+#if 0
   /*  */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   g_signal_emit_by_name(widget,
 			"clicked\0");
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_idle();
 
   /*  */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   gtk_menu_popup(gtk_menu_tool_button_get_menu(widget),
 		 NULL,
@@ -866,9 +932,10 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
 		 1,
 		 gtk_get_current_event_time());
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
+#endif
   
   return(TRUE);
 }
@@ -880,12 +947,12 @@ ags_functional_test_util_dialog_apply(GtkDialog *dialog)
     return(FALSE);
   }
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   gtk_dialog_response(dialog,
 		      GTK_RESPONSE_APPLY);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
   
@@ -905,7 +972,7 @@ ags_functional_test_util_dialog_ok(GtkDialog *dialog)
     return(FALSE);
   }
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   ok_button = NULL;
   
@@ -922,7 +989,7 @@ ags_functional_test_util_dialog_ok(GtkDialog *dialog)
     list = list->next;
   }
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   g_list_free(list_start);
 
@@ -950,7 +1017,7 @@ ags_functional_test_util_dialog_cancel(GtkDialog *dialog)
     return(FALSE);
   }
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   cancel_button = NULL;
   
@@ -967,7 +1034,7 @@ ags_functional_test_util_dialog_cancel(GtkDialog *dialog)
     list = list->next;
   }
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   g_list_free(list_start);
 
@@ -992,12 +1059,12 @@ ags_functional_test_util_file_chooser_open_path(GtkFileChooser *file_chooser,
     return(FALSE);
   }
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   gtk_file_chooser_set_current_folder(file_chooser,
 				      path);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
   
@@ -1014,12 +1081,12 @@ ags_functional_test_util_file_chooser_select_filename(GtkFileChooser *file_choos
     return(FALSE);
   }
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   gtk_file_chooser_select_filename(file_chooser,
 				   filename);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
   
@@ -1036,7 +1103,7 @@ ags_functional_test_util_file_chooser_select_filenames(GtkFileChooser *file_choo
     return(FALSE);
   }
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   while(filename != NULL){
     gtk_file_chooser_select_filename(file_chooser,
@@ -1045,7 +1112,7 @@ ags_functional_test_util_file_chooser_select_filenames(GtkFileChooser *file_choo
     filename = filename->next;
   }
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
   
@@ -1060,11 +1127,11 @@ ags_functional_test_util_file_chooser_select_all(GtkFileChooser *file_chooser)
     return(FALSE);
   }
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   gtk_file_chooser_select_all(file_chooser);
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
   
@@ -1077,7 +1144,7 @@ ags_functional_test_util_file_default_window_resize()
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
     
   xorg_application_context = ags_application_context_get_instance();
   window = xorg_application_context->window;
@@ -1086,7 +1153,7 @@ ags_functional_test_util_file_default_window_resize()
 			 64, 0,
 			 1920 - 128, 1080 - 64);
     
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
 
@@ -1105,7 +1172,7 @@ ags_functional_test_util_file_default_editor_resize()
   
   GdkRectangle allocation;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
     
   xorg_application_context = ags_application_context_get_instance();
   window = xorg_application_context->window;
@@ -1120,7 +1187,7 @@ ags_functional_test_util_file_default_editor_resize()
   gtk_paned_set_position(editor_paned,
 			 (1920 - 128) / 6);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
 
@@ -1140,7 +1207,7 @@ ags_functional_test_util_open()
     return(FALSE);
   }
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
     
   xorg_application_context = ags_application_context_get_instance();
   menu = xorg_application_context->window->menu_bar->file;
@@ -1148,7 +1215,7 @@ ags_functional_test_util_open()
   success = ags_functional_test_util_menu_click(menu,
 						"open\0");
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
   
@@ -1168,7 +1235,7 @@ ags_functional_test_util_save()
     return(FALSE);
   }
     
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   xorg_application_context = ags_application_context_get_instance();
   menu = xorg_application_context->window->menu_bar->file;
@@ -1176,7 +1243,7 @@ ags_functional_test_util_save()
   success = ags_functional_test_util_menu_click(menu,
 						"save\0");
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
   
@@ -1196,7 +1263,7 @@ ags_functional_test_util_save_as()
     return(FALSE);
   }
     
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   xorg_application_context = ags_application_context_get_instance();
   menu = xorg_application_context->window->menu_bar->file;
@@ -1204,7 +1271,7 @@ ags_functional_test_util_save_as()
   success = ags_functional_test_util_menu_click(menu,
 						"save as\0");
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   ags_functional_test_util_reaction_time_long();
   
@@ -1225,14 +1292,14 @@ ags_functional_test_util_export_open()
     return(FALSE);
   }
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
     
   xorg_application_context = ags_application_context_get_instance();
   menu = xorg_application_context->window->menu_bar->file;
 
   export_window = xorg_application_context->window->export_window;
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   success = ags_functional_test_util_menu_click(menu,
 						"export\0");
@@ -1253,12 +1320,12 @@ ags_functional_test_util_export_close()
   
   gboolean success;
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   xorg_application_context = ags_application_context_get_instance();
   export_window = xorg_application_context->window->export_window;
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_close(export_window);
   
@@ -1283,7 +1350,7 @@ ags_funcitonal_test_util_export_add()
   
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   xorg_application_context = ags_application_context_get_instance();
   export_window = xorg_application_context->window->export_window;
@@ -1296,7 +1363,7 @@ ags_funcitonal_test_util_export_add()
 
   container_test.count = g_list_length(list_start) + 1;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   g_list_free(list_start);
   
@@ -1315,7 +1382,7 @@ ags_funcitonal_test_util_export_tact(gdouble tact)
 
   AgsExportWindow *export_window;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   xorg_application_context = ags_application_context_get_instance();
   export_window = xorg_application_context->window->export_window;
@@ -1323,7 +1390,7 @@ ags_funcitonal_test_util_export_tact(gdouble tact)
   gtk_spin_button_set_value(export_window->tact,
 			    tact);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
   
@@ -1346,7 +1413,7 @@ ags_funcitonal_test_util_export_remove(guint nth)
   guint i;
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   xorg_application_context = ags_application_context_get_instance();
   export_window = xorg_application_context->window->export_window;
@@ -1386,7 +1453,7 @@ ags_funcitonal_test_util_export_remove(guint nth)
 
     g_list_free(list_start);
   
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     g_list_free(list);
   
@@ -1416,7 +1483,7 @@ ags_funcitonal_test_util_export_set_backend(guint nth,
   guint i;
   gboolean success;
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
   export_window = xorg_application_context->window->export_window;
@@ -1473,7 +1540,7 @@ ags_funcitonal_test_util_export_set_backend(guint nth,
 
   g_list_free(list_start);
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
   
@@ -1493,7 +1560,7 @@ ags_funcitonal_test_util_export_set_device(guint nth,
   guint i;
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   xorg_application_context = ags_application_context_get_instance();
   export_window = xorg_application_context->window->export_window;
@@ -1550,7 +1617,7 @@ ags_funcitonal_test_util_export_set_device(guint nth,
 
   g_list_free(list_start);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   ags_functional_test_util_reaction_time_long();
   
@@ -1570,7 +1637,7 @@ ags_funcitonal_test_util_export_set_filename(guint nth,
   guint i;
   gboolean success;
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
   export_window = xorg_application_context->window->export_window;
@@ -1605,7 +1672,7 @@ ags_funcitonal_test_util_export_set_filename(guint nth,
 
   g_list_free(list_start);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   ags_functional_test_util_reaction_time_long();
   
@@ -1663,7 +1730,7 @@ ags_functional_test_util_add_machine(gchar *submenu,
     return(FALSE);
   }
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -1673,7 +1740,7 @@ ags_functional_test_util_add_machine(gchar *submenu,
   container_test.container = &(window->machines);
   list_start = gtk_container_get_children(window->machines);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   container_test.count = g_list_length(list_start) + 1;
   
@@ -1708,13 +1775,13 @@ ags_functional_test_util_add_machine(gchar *submenu,
 							&container_test);
     ags_functional_test_util_reaction_time_long();
 
-    pthread_mutex_lock(gui_thread->dispatch_mutex);
+    ags_test_enter();
 
     list_start = gtk_container_get_children(window->machines);
     machine = g_list_nth_data(list_start,
 			      container_test.count - 1);
 
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
     
     ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
 							&ags_functional_test_util_default_timeout,
@@ -1850,7 +1917,7 @@ ags_functional_test_util_toolbar_cursor_click()
 
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -1860,7 +1927,7 @@ ags_functional_test_util_toolbar_cursor_click()
 
   position = toolbar->position;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_button_click(position);
 
@@ -1879,7 +1946,7 @@ ags_functional_test_util_toolbar_edit_click()
 
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -1889,7 +1956,7 @@ ags_functional_test_util_toolbar_edit_click()
 
   edit = toolbar->edit;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_button_click(edit);
 
@@ -1908,7 +1975,7 @@ ags_functional_test_util_toolbar_delete_click()
 
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -1918,7 +1985,7 @@ ags_functional_test_util_toolbar_delete_click()
 
   clear = toolbar->clear;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_button_click(clear);
 
@@ -1937,7 +2004,7 @@ ags_functional_test_util_toolbar_select_click()
 
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -1947,7 +2014,7 @@ ags_functional_test_util_toolbar_select_click()
 
   select = toolbar->select;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_button_click(select);
 
@@ -1966,7 +2033,7 @@ ags_functional_test_util_toolbar_invert_click()
 
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -1976,7 +2043,7 @@ ags_functional_test_util_toolbar_invert_click()
 
   invert = toolbar->invert;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_button_click(invert);
 
@@ -1995,7 +2062,7 @@ ags_functional_test_util_toolbar_paste_click()
 
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -2005,7 +2072,7 @@ ags_functional_test_util_toolbar_paste_click()
 
   paste = toolbar->paste;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_button_click(paste);
 
@@ -2024,7 +2091,7 @@ ags_functional_test_util_toolbar_copy_click()
 
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -2034,7 +2101,7 @@ ags_functional_test_util_toolbar_copy_click()
 
   copy = toolbar->copy;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_button_click(copy);
 
@@ -2053,7 +2120,7 @@ ags_functional_test_util_toolbar_cut_click()
 
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -2063,7 +2130,7 @@ ags_functional_test_util_toolbar_cut_click()
 
   cut = toolbar->cut;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_button_click(cut);
 
@@ -2082,7 +2149,7 @@ ags_functional_test_util_toolbar_zoom(guint nth_zoom)
 
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -2092,7 +2159,7 @@ ags_functional_test_util_toolbar_zoom(guint nth_zoom)
 
   zoom = toolbar->zoom;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_combo_box_click(zoom,
 						     nth_zoom);
@@ -2113,7 +2180,7 @@ ags_functional_test_util_machine_selector_select(guint nth_index)
   
   gboolean success;
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -2123,7 +2190,7 @@ ags_functional_test_util_machine_selector_select(guint nth_index)
   
   list_start = gtk_container_get_children(machine_selector);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   list = g_list_nth(list_start,
 		    nth_index + 1);
@@ -2161,7 +2228,7 @@ ags_functional_test_util_machine_selection_select(gchar *machine)
     return(FALSE);
   }
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -2194,7 +2261,7 @@ ags_functional_test_util_machine_selection_select(gchar *machine)
     list = list->next;
   }
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   g_list_free(list_start);
 
@@ -2222,7 +2289,7 @@ ags_functional_test_util_machine_selection_remove_index()
   
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -2233,7 +2300,7 @@ ags_functional_test_util_machine_selection_remove_index()
   menu_tool_button = machine_selector->menu_button;
   popup = machine_selector->popup;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_menu_tool_button_click(menu_tool_button);
 
@@ -2264,7 +2331,7 @@ ags_functional_test_util_machine_selection_add_index()
   
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -2275,7 +2342,7 @@ ags_functional_test_util_machine_selection_add_index()
   menu_tool_button = machine_selector->menu_button;
   popup = machine_selector->popup;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_menu_tool_button_click(menu_tool_button);
 
@@ -2306,7 +2373,7 @@ ags_functional_test_util_machine_selection_link_index()
   
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -2317,7 +2384,7 @@ ags_functional_test_util_machine_selection_link_index()
   menu_tool_button = machine_selector->menu_button;
   popup = machine_selector->popup;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_menu_tool_button_click(menu_tool_button);
 
@@ -2348,7 +2415,7 @@ ags_functional_test_util_machine_selection_reverse_mapping()
   
   gboolean success;
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -2359,7 +2426,7 @@ ags_functional_test_util_machine_selection_reverse_mapping()
   menu_tool_button = machine_selector->menu_button;
   popup = machine_selector->popup;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_menu_tool_button_click(menu_tool_button);
 
@@ -2415,7 +2482,7 @@ ags_functional_test_util_pattern_edit_add_point(guint x,
   guint widget_x, widget_y;
   gboolean success;
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -2424,7 +2491,7 @@ ags_functional_test_util_pattern_edit_add_point(guint x,
 
   if(editor->current_edit_widget == NULL ||
      !AGS_PATTERN_EDIT(editor->current_edit_widget)){
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -2438,10 +2505,10 @@ ags_functional_test_util_pattern_edit_add_point(guint x,
   history = gtk_combo_box_get_active(GTK_COMBO_BOX(toolbar->zoom));
   zoom = exp2((double) history - 2.0);
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   /*  */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   hscrollbar = pattern_edit->hscrollbar;
   vscrollbar = pattern_edit->vscrollbar;
@@ -2492,7 +2559,7 @@ ags_functional_test_util_pattern_edit_add_point(guint x,
     y = y * 14;
   }
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   /*  */
   gdk_display_warp_pointer(display,
@@ -2561,7 +2628,7 @@ ags_functional_test_util_note_edit_add_point(guint x0, guint x1,
   guint widget_x, widget_y;
   gboolean success;
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -2570,7 +2637,7 @@ ags_functional_test_util_note_edit_add_point(guint x0, guint x1,
 
   if(editor->current_edit_widget == NULL ||
      !AGS_NOTE_EDIT(editor->current_edit_widget)){
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -2584,10 +2651,10 @@ ags_functional_test_util_note_edit_add_point(guint x0, guint x1,
   history = gtk_combo_box_get_active(GTK_COMBO_BOX(toolbar->zoom));
   zoom = exp2((double) history - 2.0);
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   /*  */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   hscrollbar = note_edit->hscrollbar;
   vscrollbar = note_edit->vscrollbar;
@@ -2639,7 +2706,7 @@ ags_functional_test_util_note_edit_add_point(guint x0, guint x1,
     y = y * 14;
   }
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   /*  */
   gdk_display_warp_pointer(display,
@@ -2796,7 +2863,7 @@ ags_functional_test_util_machine_hide(guint nth_machine)
   
   gboolean success;
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -2805,7 +2872,7 @@ ags_functional_test_util_machine_hide(guint nth_machine)
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -2816,11 +2883,11 @@ ags_functional_test_util_machine_hide(guint nth_machine)
   
   g_list_free(list_start);
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   popup = machine->popup;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   /* activate hide */
   success = ags_functional_test_util_menu_tool_button_click(machine->menu_tool_button);
@@ -2850,7 +2917,7 @@ ags_functional_test_util_machine_show(guint nth_machine)
   
   gboolean success;
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -2859,7 +2926,7 @@ ags_functional_test_util_machine_show(guint nth_machine)
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -2870,11 +2937,11 @@ ags_functional_test_util_machine_show(guint nth_machine)
   
   g_list_free(list_start);
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   popup = machine->popup;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   /* activate show */
   success = ags_functional_test_util_menu_tool_button_click(machine->menu_tool_button);
@@ -2902,7 +2969,7 @@ ags_functional_test_util_machine_destroy(guint nth_machine)
   
   gboolean success;
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -2915,7 +2982,7 @@ ags_functional_test_util_machine_destroy(guint nth_machine)
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -2928,11 +2995,11 @@ ags_functional_test_util_machine_destroy(guint nth_machine)
 
   g_list_free(list_start);
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   popup = machine->popup;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   /* activate destroy */
   success = ags_functional_test_util_menu_tool_button_click(machine->menu_tool_button);
@@ -2981,7 +3048,7 @@ ags_functional_test_util_get_line_editor(GtkWidget *machine_editor,
     return(NULL);
   }
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   if(is_output){
     listing_editor = AGS_LISTING_EDITOR(AGS_MACHINE_EDITOR(machine_editor)->output_editor);
@@ -3020,7 +3087,7 @@ ags_functional_test_util_get_line_editor(GtkWidget *machine_editor,
     return(NULL);
   }
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   return(line_editor);
 }
@@ -3038,7 +3105,7 @@ ags_functional_test_util_machine_properties_open(guint nth_machine)
   
   gboolean success;
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -3049,7 +3116,7 @@ ags_functional_test_util_machine_properties_open(guint nth_machine)
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -3061,13 +3128,13 @@ ags_functional_test_util_machine_properties_open(guint nth_machine)
   g_list_free(list_start);
 
   /* activate destroy */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   properties = &(machine->properties);
 
   menu_tool_button = machine->menu_tool_button;
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   success = ags_functional_test_util_menu_tool_button_click(menu_tool_button);
 
@@ -3094,7 +3161,7 @@ ags_functional_test_util_machine_properties_click_tab(guint nth_machine,
   
   gboolean success;
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -3103,7 +3170,7 @@ ags_functional_test_util_machine_properties_click_tab(guint nth_machine,
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -3115,14 +3182,14 @@ ags_functional_test_util_machine_properties_click_tab(guint nth_machine,
   g_list_free(list_start);
 
   /* click tab */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
   gtk_notebook_set_current_page(machine_editor->notebook,
 				nth_tab);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
 
@@ -3142,7 +3209,7 @@ ags_functional_test_util_machine_properties_click_enable(guint nth_machine)
   guint nth_tab;
   gboolean success;
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -3153,7 +3220,7 @@ ags_functional_test_util_machine_properties_click_enable(guint nth_machine)
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -3165,7 +3232,7 @@ ags_functional_test_util_machine_properties_click_enable(guint nth_machine)
   g_list_free(list_start);
 
   /* click tab */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -3199,7 +3266,7 @@ ags_functional_test_util_machine_properties_click_enable(guint nth_machine)
     break;
   }
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_button_click(enable_button);
 
@@ -3231,7 +3298,7 @@ ags_functional_test_util_machine_properties_link_set(guint nth_machine,
   guint nth_tab;
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -3240,7 +3307,7 @@ ags_functional_test_util_machine_properties_link_set(guint nth_machine,
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -3252,7 +3319,7 @@ ags_functional_test_util_machine_properties_link_set(guint nth_machine,
   g_list_free(list_start);
 
   /* set link */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -3270,7 +3337,7 @@ ags_functional_test_util_machine_properties_link_set(guint nth_machine,
     }
     break;
   default:
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -3287,7 +3354,7 @@ ags_functional_test_util_machine_properties_link_set(guint nth_machine,
   }else{
     g_list_free(list_start);
 
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -3296,12 +3363,12 @@ ags_functional_test_util_machine_properties_link_set(guint nth_machine,
   gtk_expander_set_expanded(pad_editor->line_editor_expander,
 			    TRUE);
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
   
   /* line editor */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   list_start = gtk_container_get_children(pad_editor->line_editor);
   list = g_list_nth(list_start,
@@ -3315,7 +3382,7 @@ ags_functional_test_util_machine_properties_link_set(guint nth_machine,
   }else{
     g_list_free(list_start);
 
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -3345,7 +3412,7 @@ ags_functional_test_util_machine_properties_link_set(guint nth_machine,
 				    &iter));
   }      
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
   
@@ -3354,13 +3421,13 @@ ags_functional_test_util_machine_properties_link_set(guint nth_machine,
   }
   
   /* set link line */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   success = TRUE;
   gtk_spin_button_set_value(link_editor->spin_button,
 			    link_nth_line);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
  
@@ -3398,7 +3465,7 @@ ags_functional_test_util_machine_properties_effect_add(guint nth_machine,
   guint nth_tab;
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -3407,7 +3474,7 @@ ags_functional_test_util_machine_properties_effect_add(guint nth_machine,
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -3419,7 +3486,7 @@ ags_functional_test_util_machine_properties_effect_add(guint nth_machine,
   g_list_free(list_start);
 
   /* get tab */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -3437,7 +3504,7 @@ ags_functional_test_util_machine_properties_effect_add(guint nth_machine,
     }
     break;
   default:
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -3454,7 +3521,7 @@ ags_functional_test_util_machine_properties_effect_add(guint nth_machine,
   }else{
     g_list_free(list_start);
 
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -3463,12 +3530,12 @@ ags_functional_test_util_machine_properties_effect_add(guint nth_machine,
   gtk_expander_set_expanded(pad_editor->line_editor_expander,
 			    TRUE);
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
   
   /* line editor */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   list_start = gtk_container_get_children(pad_editor->line_editor);
   list = g_list_nth(list_start,
@@ -3482,7 +3549,7 @@ ags_functional_test_util_machine_properties_effect_add(guint nth_machine,
   }else{
     g_list_free(list_start);
 
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -3494,7 +3561,7 @@ ags_functional_test_util_machine_properties_effect_add(guint nth_machine,
   effect_dialog = &(member_editor->plugin_browser);
   add_button = member_editor->add;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_button_click(add_button);
   
@@ -3535,7 +3602,7 @@ ags_functional_test_util_machine_properties_effect_remove(guint nth_machine,
   guint nth_tab;
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -3544,7 +3611,7 @@ ags_functional_test_util_machine_properties_effect_remove(guint nth_machine,
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -3556,7 +3623,7 @@ ags_functional_test_util_machine_properties_effect_remove(guint nth_machine,
   g_list_free(list_start);
 
   /* get tab */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -3574,7 +3641,7 @@ ags_functional_test_util_machine_properties_effect_remove(guint nth_machine,
     }
     break;
   default:
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -3591,7 +3658,7 @@ ags_functional_test_util_machine_properties_effect_remove(guint nth_machine,
   }else{
     g_list_free(list_start);
 
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -3600,12 +3667,12 @@ ags_functional_test_util_machine_properties_effect_remove(guint nth_machine,
   gtk_expander_set_expanded(pad_editor->line_editor_expander,
 			    TRUE);
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
   
   /* line editor */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   list_start = gtk_container_get_children(pad_editor->line_editor);
   list = g_list_nth(list_start,
@@ -3619,7 +3686,7 @@ ags_functional_test_util_machine_properties_effect_remove(guint nth_machine,
   }else{
     g_list_free(list_start);
 
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -3654,7 +3721,7 @@ ags_functional_test_util_machine_properties_effect_remove(guint nth_machine,
     g_list_free(list_start);
   }
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   /* click check button */
   success = ags_functional_test_util_button_click(check_button);
@@ -3699,7 +3766,7 @@ ags_functional_test_util_machine_properties_effect_plugin_type(guint nth_machine
   guint nth_tab;
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -3708,7 +3775,7 @@ ags_functional_test_util_machine_properties_effect_plugin_type(guint nth_machine
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -3720,7 +3787,7 @@ ags_functional_test_util_machine_properties_effect_plugin_type(guint nth_machine
   g_list_free(list_start);
 
   /* get tab */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -3738,7 +3805,7 @@ ags_functional_test_util_machine_properties_effect_plugin_type(guint nth_machine
     }
     break;
   default:
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -3756,7 +3823,7 @@ ags_functional_test_util_machine_properties_effect_plugin_type(guint nth_machine
   }else{
     g_list_free(list_start);
 
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -3774,7 +3841,7 @@ ags_functional_test_util_machine_properties_effect_plugin_type(guint nth_machine
   }else{
     g_list_free(list_start);
 
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -3805,7 +3872,7 @@ ags_functional_test_util_machine_properties_effect_plugin_type(guint nth_machine
 				    &iter));
   }      
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
  
@@ -3837,7 +3904,7 @@ ags_functional_test_util_machine_properties_ladspa_filename(guint nth_machine,
   guint nth_tab;
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -3846,7 +3913,7 @@ ags_functional_test_util_machine_properties_ladspa_filename(guint nth_machine,
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -3858,7 +3925,7 @@ ags_functional_test_util_machine_properties_ladspa_filename(guint nth_machine,
   g_list_free(list_start);
 
   /* get tab */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -3876,7 +3943,7 @@ ags_functional_test_util_machine_properties_ladspa_filename(guint nth_machine,
     }
     break;
   default:
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -3893,7 +3960,7 @@ ags_functional_test_util_machine_properties_ladspa_filename(guint nth_machine,
   }else{
     g_list_free(list_start);
 
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -3911,7 +3978,7 @@ ags_functional_test_util_machine_properties_ladspa_filename(guint nth_machine,
   }else{
     g_list_free(list_start);
 
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -3943,7 +4010,7 @@ ags_functional_test_util_machine_properties_ladspa_filename(guint nth_machine,
 				    &iter));
   }      
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
  
@@ -3975,7 +4042,7 @@ ags_functional_test_util_machine_properties_ladspa_effect(guint nth_machine,
   guint nth_tab;
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -3984,7 +4051,7 @@ ags_functional_test_util_machine_properties_ladspa_effect(guint nth_machine,
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -3996,7 +4063,7 @@ ags_functional_test_util_machine_properties_ladspa_effect(guint nth_machine,
   g_list_free(list_start);
 
   /* get tab */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -4014,7 +4081,7 @@ ags_functional_test_util_machine_properties_ladspa_effect(guint nth_machine,
     }
     break;
   default:
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -4031,7 +4098,7 @@ ags_functional_test_util_machine_properties_ladspa_effect(guint nth_machine,
   }else{
     g_list_free(list_start);
 
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -4049,7 +4116,7 @@ ags_functional_test_util_machine_properties_ladspa_effect(guint nth_machine,
   }else{
     g_list_free(list_start);
 
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -4081,7 +4148,7 @@ ags_functional_test_util_machine_properties_ladspa_effect(guint nth_machine,
 				    &iter));
   }      
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
  
@@ -4113,7 +4180,7 @@ ags_functional_test_util_machine_properties_lv2_filename(guint nth_machine,
   guint nth_tab;
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -4122,7 +4189,7 @@ ags_functional_test_util_machine_properties_lv2_filename(guint nth_machine,
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -4134,7 +4201,7 @@ ags_functional_test_util_machine_properties_lv2_filename(guint nth_machine,
   g_list_free(list_start);
 
   /* get tab */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -4152,7 +4219,7 @@ ags_functional_test_util_machine_properties_lv2_filename(guint nth_machine,
     }
     break;
   default:
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -4169,7 +4236,7 @@ ags_functional_test_util_machine_properties_lv2_filename(guint nth_machine,
   }else{
     g_list_free(list_start);
 
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -4187,7 +4254,7 @@ ags_functional_test_util_machine_properties_lv2_filename(guint nth_machine,
   }else{
     g_list_free(list_start);
 
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -4219,7 +4286,7 @@ ags_functional_test_util_machine_properties_lv2_filename(guint nth_machine,
 				    &iter));
   }      
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
  
@@ -4251,7 +4318,7 @@ ags_functional_test_util_machine_properties_lv2_effect(guint nth_machine,
   guint nth_tab;
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -4260,7 +4327,7 @@ ags_functional_test_util_machine_properties_lv2_effect(guint nth_machine,
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -4272,7 +4339,7 @@ ags_functional_test_util_machine_properties_lv2_effect(guint nth_machine,
   g_list_free(list_start);
 
   /* get tab */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -4290,7 +4357,7 @@ ags_functional_test_util_machine_properties_lv2_effect(guint nth_machine,
     }
     break;
   default:
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -4307,7 +4374,7 @@ ags_functional_test_util_machine_properties_lv2_effect(guint nth_machine,
   }else{
     g_list_free(list_start);
 
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -4325,7 +4392,7 @@ ags_functional_test_util_machine_properties_lv2_effect(guint nth_machine,
   }else{
     g_list_free(list_start);
 
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -4357,7 +4424,7 @@ ags_functional_test_util_machine_properties_lv2_effect(guint nth_machine,
 				    &iter));
   }      
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
  
@@ -4378,7 +4445,7 @@ ags_functional_test_util_machine_properties_bulk_add(guint nth_machine)
   guint nth_tab;
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -4387,7 +4454,7 @@ ags_functional_test_util_machine_properties_bulk_add(guint nth_machine)
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -4399,7 +4466,7 @@ ags_functional_test_util_machine_properties_bulk_add(guint nth_machine)
   g_list_free(list_start);
 
   /* get tab */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -4417,14 +4484,14 @@ ags_functional_test_util_machine_properties_bulk_add(guint nth_machine)
     }
     break;
   default:
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
 
   add_collection = property_collection_editor->add_collection;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   /* add collection */
   success = ags_functional_test_util_button_click(add_collection);
@@ -4463,7 +4530,7 @@ ags_functional_test_util_machine_properties_bulk_link(guint nth_machine,
   guint nth_tab;
   gboolean success;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -4472,7 +4539,7 @@ ags_functional_test_util_machine_properties_bulk_link(guint nth_machine,
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -4484,7 +4551,7 @@ ags_functional_test_util_machine_properties_bulk_link(guint nth_machine,
   g_list_free(list_start);
 
   /* get notebook tab */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -4502,7 +4569,7 @@ ags_functional_test_util_machine_properties_bulk_link(guint nth_machine,
     }
     break;
   default:
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -4523,7 +4590,7 @@ ags_functional_test_util_machine_properties_bulk_link(guint nth_machine,
   }else{
     g_list_free(list_start);
 
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -4550,7 +4617,7 @@ ags_functional_test_util_machine_properties_bulk_link(guint nth_machine,
 				    &iter));
   }      
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
 
@@ -4578,7 +4645,7 @@ ags_functional_test_util_machine_properties_bulk_first_line(guint nth_machine,
 
   guint nth_tab;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -4587,7 +4654,7 @@ ags_functional_test_util_machine_properties_bulk_first_line(guint nth_machine,
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -4599,7 +4666,7 @@ ags_functional_test_util_machine_properties_bulk_first_line(guint nth_machine,
   g_list_free(list_start);
 
   /* get notebook tab */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -4617,7 +4684,7 @@ ags_functional_test_util_machine_properties_bulk_first_line(guint nth_machine,
     }
     break;
   default:
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -4638,7 +4705,7 @@ ags_functional_test_util_machine_properties_bulk_first_line(guint nth_machine,
   }else{
     g_list_free(list_start);
 
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -4646,7 +4713,7 @@ ags_functional_test_util_machine_properties_bulk_first_line(guint nth_machine,
   gtk_spin_button_set_value(link_collection_editor->first_line,
 			    first_line);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
 
@@ -4674,7 +4741,7 @@ ags_functional_test_util_machine_properties_bulk_link_line(guint nth_machine,
 
   guint nth_tab;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -4683,7 +4750,7 @@ ags_functional_test_util_machine_properties_bulk_link_line(guint nth_machine,
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -4695,7 +4762,7 @@ ags_functional_test_util_machine_properties_bulk_link_line(guint nth_machine,
   g_list_free(list_start);
 
   /* get notebook tab */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -4713,7 +4780,7 @@ ags_functional_test_util_machine_properties_bulk_link_line(guint nth_machine,
     }
     break;
   default:
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -4735,7 +4802,7 @@ ags_functional_test_util_machine_properties_bulk_link_line(guint nth_machine,
   }else{
     g_list_free(list_start);
 
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -4743,7 +4810,7 @@ ags_functional_test_util_machine_properties_bulk_link_line(guint nth_machine,
   gtk_spin_button_set_value(link_collection_editor->first_link,
 			    first_link_line);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
 
@@ -4771,7 +4838,7 @@ ags_functional_test_util_machine_properties_bulk_count(guint nth_machine,
 
   guint nth_tab;
   
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -4780,7 +4847,7 @@ ags_functional_test_util_machine_properties_bulk_count(guint nth_machine,
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -4792,7 +4859,7 @@ ags_functional_test_util_machine_properties_bulk_count(guint nth_machine,
   g_list_free(list_start);
 
   /* get notebook tab */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -4810,7 +4877,7 @@ ags_functional_test_util_machine_properties_bulk_count(guint nth_machine,
     }
     break;
   default:
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -4831,7 +4898,7 @@ ags_functional_test_util_machine_properties_bulk_count(guint nth_machine,
   }else{
     g_list_free(list_start);
 
-    pthread_mutex_unlock(gui_thread->dispatch_mutex);
+    ags_test_leave();
 
     return(FALSE);
   }
@@ -4839,7 +4906,7 @@ ags_functional_test_util_machine_properties_bulk_count(guint nth_machine,
   gtk_spin_button_set_value(link_collection_editor->count,
 			    count);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
 
@@ -4856,7 +4923,7 @@ ags_functional_test_util_machine_properties_resize_audio_channels(guint nth_mach
   
   GList *list_start, *list;
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -4865,7 +4932,7 @@ ags_functional_test_util_machine_properties_resize_audio_channels(guint nth_mach
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -4877,13 +4944,13 @@ ags_functional_test_util_machine_properties_resize_audio_channels(guint nth_mach
   g_list_free(list_start);
 
   /* resize audio channels */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
   gtk_spin_button_set_value(machine_editor->resize_editor->audio_channels,
 			    audio_channels);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
 
@@ -4900,7 +4967,7 @@ ags_functional_test_util_machine_properties_resize_inputs(guint nth_machine,
   
   GList *list_start, *list;
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -4909,7 +4976,7 @@ ags_functional_test_util_machine_properties_resize_inputs(guint nth_machine,
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -4921,13 +4988,13 @@ ags_functional_test_util_machine_properties_resize_inputs(guint nth_machine,
   g_list_free(list_start);
 
   /* resize input pads */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
   gtk_spin_button_set_value(machine_editor->resize_editor->input_pads,
 			    inputs);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
 
@@ -4944,7 +5011,7 @@ ags_functional_test_util_machine_properties_resize_outputs(guint nth_machine,
   
   GList *list_start, *list;
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -4953,7 +5020,7 @@ ags_functional_test_util_machine_properties_resize_outputs(guint nth_machine,
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_MACHINE(list->data)){
@@ -4965,13 +5032,13 @@ ags_functional_test_util_machine_properties_resize_outputs(guint nth_machine,
   g_list_free(list_start);
 
   /* resize output pads */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
   gtk_spin_button_set_value(machine_editor->resize_editor->output_pads,
 			    outputs);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();
 
@@ -5209,7 +5276,7 @@ ags_functional_test_util_drum_open(guint nth_machine)
   
   gboolean success;
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -5218,7 +5285,7 @@ ags_functional_test_util_drum_open(guint nth_machine)
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_DRUM(list->data)){
@@ -5230,12 +5297,12 @@ ags_functional_test_util_drum_open(guint nth_machine)
   g_list_free(list_start);
 
   /* open dialog */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   open_button = drum->open;
   open_dialog = &(drum->open_dialog);
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   /* click open */
   success = ags_functional_test_util_button_click(open_button);
@@ -5427,7 +5494,7 @@ ags_functional_test_util_ffplayer_open(guint nth_machine)
   
   gboolean success;
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -5436,7 +5503,7 @@ ags_functional_test_util_ffplayer_open(guint nth_machine)
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   if(list != NULL &&
      AGS_IS_FFPLAYER(list->data)){
@@ -5448,12 +5515,12 @@ ags_functional_test_util_ffplayer_open(guint nth_machine)
   g_list_free(list_start);
 
   /* open dialog */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
   
   open_button = ffplayer->open;
   open_dialog = &(ffplayer->open_dialog);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   /* click open */
   success = ags_functional_test_util_button_click(open_button);

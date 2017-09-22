@@ -172,13 +172,13 @@ ags_functional_editor_workflow_test_drum()
   ags_functional_test_util_idle();
 
   /* get machine */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   list_start = gtk_container_get_children(xorg_application_context->window->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_DRUM(list->data)){
@@ -193,12 +193,12 @@ ags_functional_editor_workflow_test_drum()
    *  add machine to editor
    */
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   window = xorg_application_context->window;
   editor = window->editor;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   /* add index and link */
   success = ags_functional_test_util_machine_selection_add_index();
@@ -214,7 +214,7 @@ ags_functional_editor_workflow_test_drum()
   CU_ASSERT(success == TRUE);
 
   /* select machine */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   machine_selector = editor->machine_selector;
   machine_selection = machine_selector->machine_selection;
@@ -223,7 +223,7 @@ ags_functional_editor_workflow_test_drum()
 				G_OBJECT_TYPE_NAME(machine),
 				machine->machine_name);
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_machine_selection_select(machine_str);
   
@@ -264,13 +264,13 @@ ags_functional_editor_workflow_test_matrix()
   ags_functional_test_util_idle();
 
   /* get machine */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   list_start = gtk_container_get_children(xorg_application_context->window->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_MATRIX(list->data)){
@@ -285,12 +285,12 @@ ags_functional_editor_workflow_test_matrix()
    *  add machine to editor
    */
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   window = xorg_application_context->window;
   editor = window->editor;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   /* add index set link */
   success = ags_functional_test_util_machine_selection_add_index();
@@ -306,7 +306,7 @@ ags_functional_editor_workflow_test_matrix()
   CU_ASSERT(success == TRUE);
 
   /* select machine */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   machine_selector = editor->machine_selector;
   machine_selection = machine_selector->machine_selection;
@@ -315,7 +315,7 @@ ags_functional_editor_workflow_test_matrix()
 				G_OBJECT_TYPE_NAME(machine),
 				machine->machine_name);
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
   
   success = ags_functional_test_util_machine_selection_select(machine_str);
   
@@ -357,13 +357,13 @@ ags_functional_editor_workflow_test_ffplayer()
   ags_functional_test_util_idle();
 
   /* get machine */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   list_start = gtk_container_get_children(xorg_application_context->window->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_FFPLAYER(list->data)){
@@ -378,12 +378,12 @@ ags_functional_editor_workflow_test_ffplayer()
    *  add machine to editor
    */
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   window = xorg_application_context->window;
   editor = window->editor;
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   /* add index and link */
   success = ags_functional_test_util_machine_selection_add_index();
@@ -399,7 +399,7 @@ ags_functional_editor_workflow_test_ffplayer()
   CU_ASSERT(success == TRUE);
 
   /* select machine */
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_test_enter();
 
   machine_selector = editor->machine_selector;
   machine_selection = machine_selector->machine_selection;
@@ -408,7 +408,7 @@ ags_functional_editor_workflow_test_ffplayer()
 				G_OBJECT_TYPE_NAME(machine),
 				machine->machine_name);
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_machine_selection_select(machine_str);
   
