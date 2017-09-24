@@ -3171,6 +3171,10 @@ ags_turtle_load(AgsTurtle *turtle,
     /* skip blanks and comments */
     iter = ags_turtle_load_skip_comments_and_blanks(&iter);
 
+    if(iter >= &(buffer[sb->st_size])){
+      break;
+    }
+    
     rdf_statement_node = ags_turtle_load_read_statement(&iter);
 
     if(rdf_statement_node != NULL){

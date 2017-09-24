@@ -1674,6 +1674,7 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_scale.h \
 	ags/X/editor/ags_sf2_chooser_callbacks.h \
 	ags/X/editor/ags_sf2_chooser.h \
+	ags/X/editor/ags_select_note_dialog.h \
 	ags/X/editor/ags_toolbar_callbacks.h \
 	ags/X/editor/ags_toolbar.h \
 	ags/X/editor/ags_toolbar_mode_stock.h
@@ -1721,6 +1722,7 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_scale_area_callbacks.c \
 	ags/X/editor/ags_scale.c \
 	ags/X/editor/ags_scale_callbacks.c \
+	ags/X/editor/ags_select_note_dialog.c \
 	ags/X/editor/ags_sf2_chooser.c \
 	ags/X/editor/ags_sf2_chooser_callbacks.c \
 	ags/X/editor/ags_toolbar.c \

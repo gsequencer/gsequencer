@@ -220,7 +220,7 @@ main(int argc, char **argv)
   g_atomic_int_set(&is_available,
 		   FALSE);
 
-  new_argv = (char **) malloc(argc + 2 * sizeof(char *));
+  new_argv = (char **) malloc((argc + 3) * sizeof(char *));
   memcpy(new_argv, argv, argc * sizeof(char **));
   new_argv[argc] = "--filename";
   new_argv[argc + 1] = AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_FILENAME;

@@ -1,3 +1,13 @@
+ags (0.9.29)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implemented AgsAutomationEditor ramp value
+	* implemented AgsSelectNoteDialog
+	* improved functional-tests.mk to solve linker issue with circular dependency
+	* improved unit-tests.mk to linker issue with circular dependency
+	* fixed ags_turtle_load() buffer index excess
+	* fixed ags_functional_note_edit_test.c array index excess in main()
+
 ags (0.9.28)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
