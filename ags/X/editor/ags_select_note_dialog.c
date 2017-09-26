@@ -31,13 +31,9 @@
 #include <ags/audio/ags_notation.h>
 #include <ags/audio/ags_note.h>
 
-#include <ags/audio/task/ags_select_note.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
 #include <ags/X/ags_machine.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/i18n.h>
 
@@ -487,8 +483,6 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
   gint i;
   
   gboolean copy_selection;
-  gboolean in_place;
-  gboolean do_resize;
   
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
@@ -532,7 +526,7 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
   /* select note */
   pthread_mutex_lock(audio_mutex);
 
-  if(gtk_toggle_button_get_active(select_note_dialog->copy_selection)){
+  if(copy_selection){
     /* create document */
     clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
   
@@ -554,7 +548,7 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
 					     x1, y1,
 					     TRUE);
 
-    if(gtk_toggle_button_get_active(select_note_dialog->copy_selection)){
+    if(copy_selection){
       notation_node = ags_notation_copy_selection(AGS_NOTATION(list_notation->data));
       xmlAddChild(audio_node, notation_node);      
     }
@@ -565,7 +559,7 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
   pthread_mutex_unlock(audio_mutex);
 
   /* write to clipboard */
-  if(gtk_toggle_button_get_active(select_note_dialog->copy_selection)){
+  if(copy_selection){
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
 			   buffer, size);
