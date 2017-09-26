@@ -37,6 +37,9 @@
 #include <ags/X/ags_line.h>
 #include <ags/X/ags_line_member.h>
 
+#include <ags/X/editor/ags_select_acceleration_dialog.h>
+#include <ags/X/editor/ags_ramp_acceleration_dialog.h>
+
 #include <ags/config.h>
 #include <ags/i18n.h>
 
@@ -48,10 +51,10 @@ void ags_automation_toolbar_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_automation_toolbar
- * @short_description: edit tool
+ * @short_description: automation toolbar
  * @title: AgsAutomationToolbar
  * @section_id:
- * @include: ags/X/editor/ags_note_edit.h
+ * @include: ags/X/editor/ags_automation_toolbar.h
  *
  * The #AgsAutomationToolbar lets you choose edit tool.
  */
@@ -116,7 +119,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
   
   automation_toolbar->position = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
 					      "image", gtk_image_new_from_stock(GTK_STOCK_JUMP_TO,
-										  GTK_ICON_SIZE_LARGE_TOOLBAR),
+										GTK_ICON_SIZE_LARGE_TOOLBAR),
 					      "relief", GTK_RELIEF_NONE,
 					      NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
@@ -137,7 +140,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 
   automation_toolbar->clear = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
 					   "image", gtk_image_new_from_stock(GTK_STOCK_CLEAR,
-									       GTK_ICON_SIZE_LARGE_TOOLBAR),
+									     GTK_ICON_SIZE_LARGE_TOOLBAR),
 					   "relief", GTK_RELIEF_NONE,
 					   NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
@@ -147,7 +150,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
   
   automation_toolbar->select = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
 					    "image", gtk_image_new_from_stock(GTK_STOCK_SELECT_ALL,
-										GTK_ICON_SIZE_LARGE_TOOLBAR),
+									      GTK_ICON_SIZE_LARGE_TOOLBAR),
 					    "relief", GTK_RELIEF_NONE,
 					    NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
@@ -156,10 +159,10 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 			    NULL);
 
   automation_toolbar->copy = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-					     "image", gtk_image_new_from_stock(GTK_STOCK_COPY,
-										 GTK_ICON_SIZE_LARGE_TOOLBAR),
-					     "relief", GTK_RELIEF_NONE,
-					     NULL);
+							"image", gtk_image_new_from_stock(GTK_STOCK_COPY,
+											  GTK_ICON_SIZE_LARGE_TOOLBAR),
+							"relief", GTK_RELIEF_NONE,
+							NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->copy,
 			    "copy automation",
@@ -167,7 +170,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 
   automation_toolbar->cut = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
 						       "image", gtk_image_new_from_stock(GTK_STOCK_CUT,
-											   GTK_ICON_SIZE_LARGE_TOOLBAR),
+											 GTK_ICON_SIZE_LARGE_TOOLBAR),
 						       "relief", GTK_RELIEF_NONE,
 						       NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
@@ -177,13 +180,29 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 
   automation_toolbar->paste = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
 							 "image", gtk_image_new_from_stock(GTK_STOCK_PASTE,
-											     GTK_ICON_SIZE_LARGE_TOOLBAR),
+											   GTK_ICON_SIZE_LARGE_TOOLBAR),
 							 "relief", GTK_RELIEF_NONE,
 							 NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->paste,
 			    "paste automation",
 			    NULL);
+  
+  /* menu tool */
+  automation_toolbar->menu_tool = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
+								     "label", i18n("tool"),
+								     "stock-id", GTK_STOCK_EXECUTE,
+								     NULL);
+  gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar, (GtkWidget *) automation_toolbar->menu_tool, i18n("additional tools"), NULL);
+
+  /* menu tool - tool popup */
+  automation_toolbar->tool_popup = ags_toolbar_tool_popup_new(automation_toolbar);
+  gtk_menu_tool_button_set_menu(automation_toolbar->menu_tool,
+				automation_toolbar->tool_popup);
+
+  /* menu tool - dialogs */
+  automation_toolbar->select_acceleration = ags_select_acceleration_dialog_new(NULL);
+  automation_toolbar->ramp_acceleration = ags_ramp_acceleration_dialog_new(NULL);
 
   /*  */
   automation_toolbar->zoom_history = 4;
@@ -234,12 +253,32 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 void
 ags_automation_toolbar_connect(AgsConnectable *connectable)
 {
+  AgsWindow *window;
+  AgsAutomationWindow *automation_window;
   AgsAutomationEditor *automation_editor;
   AgsAutomationToolbar *automation_toolbar;
 
   automation_toolbar = AGS_AUTOMATION_TOOLBAR(connectable);
+
+  if((AGS_AUTOMATION_TOOLBAR_CONNECTED & (automation_toolbar->flags)) != 0){
+    return;
+  }
+
+  automation_toolbar->flags |= AGS_AUTOMATION_TOOLBAR_CONNECTED;
+  
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
 								      AGS_TYPE_AUTOMATION_EDITOR);
+
+  automation_window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) toolbar,
+							 AGS_TYPE_AUTOMATION_WINDOW));
+  window = automation_window->parent_window;
+  
+  g_object_set(automation_toolbar->select_acceleration,
+	       "main-window", window,
+	       NULL);
+  g_object_set(automation_toolbar->ramp_acceleration,
+	       "main-window", window,
+	       NULL);
 
   /*  */
   g_signal_connect_after(G_OBJECT(automation_editor), "machine-changed",
@@ -268,6 +307,11 @@ ags_automation_toolbar_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) automation_toolbar->paste, "clicked",
 		   G_CALLBACK(ags_automation_toolbar_paste_callback), (gpointer) automation_toolbar);
 
+  /* additional tools */
+  ags_connectable_connect(AGS_CONNECTABLE(automation_toolbar->select_acceleration));
+
+  ags_connectable_connect(AGS_CONNECTABLE(automation_toolbar->ramp_acceleration));
+  
   /* zoom */
   g_signal_connect_after((GObject *) automation_toolbar->zoom, "changed",
 			 G_CALLBACK(ags_automation_toolbar_zoom_callback), (gpointer) automation_toolbar);
@@ -280,7 +324,78 @@ ags_automation_toolbar_connect(AgsConnectable *connectable)
 void
 ags_automation_toolbar_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsAutomationToolbar *automation_toolbar;
+
+  automation_toolbar = AGS_AUTOMATION_TOOLBAR(connectable);
+
+  if((AGS_AUTOMATION_TOOLBAR_CONNECTED & (automation_toolbar->flags)) == 0){
+    return;
+  }
+
+  automation_toolbar->flags &= (~AGS_AUTOMATION_TOOLBAR_CONNECTED);
+
+  /* tool */
+  g_object_disconnect(G_OBJECT(automation_toolbar->position),
+		      "toggled",
+		      G_CALLBACK(ags_automation_toolbar_position_callback),
+		      automation_toolbar,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(automation_toolbar->edit),
+		      "toggled",
+		      G_CALLBACK(ags_automation_toolbar_edit_callback),
+		      automation_toolbar,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(automation_toolbar->clear),
+		      "toggled",
+		      G_CALLBACK(ags_automation_toolbar_clear_callback),
+		      automation_toolbar,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(automation_toolbar->select),
+		      "toggled",
+		      G_CALLBACK(ags_automation_toolbar_select_callback),
+		      automation_toolbar,
+		      NULL);
+
+  /* edit */
+  g_object_disconnect(G_OBJECT(automation_toolbar->copy),
+		      "clicked",
+		      G_CALLBACK(ags_automation_toolbar_copy_or_cut_callback),
+		      automation_toolbar,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(automation_toolbar->cut),
+		      "clicked",
+		      G_CALLBACK(ags_automation_toolbar_copy_or_cut_callback),
+		      automation_toolbar,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(automation_toolbar->paste),
+		      "clicked",
+		      G_CALLBACK(ags_automation_toolbar_paste_callback),
+		      automation_toolbar,
+		      NULL);
+  
+  /* additional tools */
+  ags_connectable_disconnect(AGS_CONNECTABLE(automation_toolbar->select_acceleration));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(automation_toolbar->ramp_acceleration));
+
+  /* zoom */
+  g_object_disconnect(G_OBJECT(automation_toolbar->zoom),
+		      "changed",
+		      G_CALLBACK(ags_automation_toolbar_zoom_callback),
+		      automation_toolbar,
+		      NULL);
+
+  /* port */
+  g_object_disconnect(G_OBJECT(automation_toolbar->port),
+		      "changed",
+		      G_CALLBACK(ags_automation_toolbar_port_callback),
+		      automation_toolbar,
+		      NULL);
 }
 
 /**
@@ -289,7 +404,7 @@ ags_automation_toolbar_disconnect(AgsConnectable *connectable)
  *
  * Fill in port field with available ports.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 void
 ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
@@ -376,7 +491,7 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
  *
  * Applies all port to appropriate #AgsMachine.
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 void
 ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
@@ -692,13 +807,57 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 }
 
 /**
+ * ags_automation_toolbar_tool_popup_new:
+ *
+ * Create a new #GtkMenu suitable for menu tool button.
+ *
+ * Returns: a new #GtkMenu
+ *
+ * Since: 0.9.29
+ */
+GtkMenu*
+ags_automation_toolbar_tool_popup_new(GtkToolbar *automation_toolbar)
+{
+  GtkMenu *tool_popup;
+  GtkMenuItem *item;
+
+  GList *list, *list_start;
+
+  tool_popup = (GtkMenu *) gtk_menu_new();
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("select accelerations"));
+  gtk_menu_shell_append((GtkMenuShell *) tool_popup, (GtkWidget *) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("ramp accelerations"));
+  gtk_menu_shell_append((GtkMenuShell *) tool_popup, (GtkWidget *) item);
+
+  /* connect */
+  list_start = 
+    list = gtk_container_get_children((GtkContainer *) tool_popup);
+
+  g_signal_connect(G_OBJECT(list->data), "activate",
+		   G_CALLBACK(ags_automation_toolbar_tool_popup_select_acceleration_callback), (gpointer) automation_toolbar);
+
+  list = list->next;
+  g_signal_connect(G_OBJECT(list->data), "activate",
+		   G_CALLBACK(ags_automation_toolbar_tool_popup_ramp_acceleration_callback), (gpointer) automation_toolbar);
+  
+  g_list_free(list_start);
+
+  /* show */
+  gtk_widget_show_all((GtkWidget *) tool_popup);
+  
+  return(tool_popup);
+}
+
+/**
  * ags_automation_toolbar_new:
  *
  * Create a new #AgsAutomationToolbar.
  *
  * Returns: a new #AgsAutomationToolbar
  *
- * Since: 0.4.3
+ * Since: 0.7.0
  */
 AgsAutomationToolbar*
 ags_automation_toolbar_new()

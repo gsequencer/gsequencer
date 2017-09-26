@@ -134,6 +134,18 @@ ags_automation_toolbar_paste_callback(GtkWidget *widget, AgsAutomationToolbar *a
 }
 
 void
+ags_automation_toolbar_tool_popup_select_acceleration_callback(GtkWidget *item, AgsAutomationToolbar *automation_toolbar)
+{
+  gtk_widget_show_all(automation_toolbar->select_acceleration);
+}
+
+void
+ags_automation_toolbar_tool_popup_ramp_acceleration_callback(GtkWidget *item, AgsAutomationToolbar *automation_toolbar)
+{
+  gtk_widget_show_all(automation_toolbar->ramp_acceleration);
+}
+
+void
 ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolbar *automation_toolbar)
 {
   AgsAutomationEditor *automation_editor;

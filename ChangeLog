@@ -1,8 +1,8 @@
 ags (0.9.29)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented AgsAutomationEditor ramp value
-	* TODO:JK: implemented AgsSelectAccelerationDialog
+	* TODO:JK: implemented AgsRampAccelerationDialog
+	* implemented AgsSelectAccelerationDialog
 	* implemented AgsSelectNoteDialog
 	* improved functional-tests.mk to solve linker issue with circular dependency
 	* improved unit-tests.mk to linker issue with circular dependency

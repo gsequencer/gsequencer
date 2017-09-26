@@ -125,12 +125,13 @@ ags_select_acceleration_dialog_add_callback(GtkWidget *button,
   
   /* remove button */
   remove = (GtkCheckButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
-  g_signal_connect(remove, "clicked",
-		   G_CALLBACK(ags_select_acceleration_dialog_remove_callback), select_acceleration_dialog);
   gtk_box_pack_start((GtkBox *) hbox,
 		     remove,
 		     FALSE, FALSE,
 		     0);
+
+  g_signal_connect(remove, "clicked",
+		   G_CALLBACK(ags_select_acceleration_dialog_remove_callback), select_acceleration_dialog);
 }
 
 void

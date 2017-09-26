@@ -45,13 +45,13 @@ void ags_select_acceleration_dialog_connectable_interface_init(AgsConnectableInt
 void ags_select_acceleration_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_acceleration_dialog);
 void ags_select_acceleration_dialog_set_property(GObject *gobject,
-					 guint prop_id,
-					 const GValue *value,
-					 GParamSpec *param_spec);
+						 guint prop_id,
+						 const GValue *value,
+						 GParamSpec *param_spec);
 void ags_select_acceleration_dialog_get_property(GObject *gobject,
-					 guint prop_id,
-					 GValue *value,
-					 GParamSpec *param_spec);
+						 guint prop_id,
+						 GValue *value,
+						 GParamSpec *param_spec);
 void ags_select_acceleration_dialog_finalize(GObject *gobject);
 void ags_select_acceleration_dialog_connect(AgsConnectable *connectable);
 void ags_select_acceleration_dialog_disconnect(AgsConnectable *connectable);
@@ -109,8 +109,8 @@ ags_select_acceleration_dialog_get_type(void)
     };
 
     ags_type_select_acceleration_dialog = g_type_register_static(GTK_TYPE_DIALOG,
-							 "AgsSelectAccelerationDialog", &ags_select_acceleration_dialog_info,
-							 0);
+								 "AgsSelectAccelerationDialog", &ags_select_acceleration_dialog_info,
+								 0);
     
     g_type_add_interface_static(ags_type_select_acceleration_dialog,
 				AGS_TYPE_CONNECTABLE,
@@ -229,7 +229,7 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
 
   /* automation */
   select_acceleration_dialog->port = (GtkVBox *) gtk_vbox_new(FALSE,
-								    0);
+							      0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(select_acceleration_dialog->port),
 		     FALSE, FALSE,
@@ -274,6 +274,13 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
 		     FALSE, FALSE,
 		     0);
 
+  /* select x1 - label */
+  label = (GtkLabel *) gtk_label_new(i18n("select x1"));
+  gtk_box_pack_start((GtkBox *) hbox,
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+
   /* select x1 - spin button */
   select_acceleration_dialog->select_x1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 											   AGS_SELECT_ACCELERATION_MAX_BEATS,
@@ -295,9 +302,9 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
 
 void
 ags_select_acceleration_dialog_set_property(GObject *gobject,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *param_spec)
+					    guint prop_id,
+					    const GValue *value,
+					    GParamSpec *param_spec)
 {
   AgsSelectAccelerationDialog *select_acceleration_dialog;
 
@@ -354,9 +361,9 @@ ags_select_acceleration_dialog_set_property(GObject *gobject,
 
 void
 ags_select_acceleration_dialog_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec)
+					    guint prop_id,
+					    GValue *value,
+					    GParamSpec *param_spec)
 {
   AgsSelectAccelerationDialog *select_acceleration_dialog;
 
@@ -640,8 +647,8 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 	    
 	/* select */
 	ags_automation_add_region_to_selection(list_automation->data,
-					       x0, c_y0,
-					       x1, c_y1,
+					       x0 * AGS_SELECT_ACCELERATION_DEFAULT_WIDTH, c_y0,
+					       x1 * AGS_SELECT_ACCELERATION_DEFAULT_WIDTH, c_y1,
 					       TRUE);
 
 
@@ -707,8 +714,8 @@ ags_select_acceleration_dialog_new(GtkWidget *main_window)
   AgsSelectAccelerationDialog *select_acceleration_dialog;
 
   select_acceleration_dialog = (AgsSelectAccelerationDialog *) g_object_new(AGS_TYPE_SELECT_ACCELERATION_DIALOG,
-							    "main-window", main_window,
-							    NULL);
+									    "main-window", main_window,
+									    NULL);
 
   return(select_acceleration_dialog);
 }

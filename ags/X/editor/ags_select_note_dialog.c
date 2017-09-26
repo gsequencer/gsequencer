@@ -255,6 +255,13 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
 		     FALSE, FALSE,
 		     0);
 
+  /* select y0 - label */
+  label = (GtkLabel *) gtk_label_new(i18n("select y0"));
+  gtk_box_pack_start((GtkBox *) hbox,
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+
   /* select y0 - spin button */
   select_note_dialog->select_y0 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 										   AGS_SELECT_NOTE_MAX_KEYS,
@@ -273,6 +280,13 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
 		     FALSE, FALSE,
 		     0);
 
+  /* select x1 - label */
+  label = (GtkLabel *) gtk_label_new(i18n("select x1"));
+  gtk_box_pack_start((GtkBox *) hbox,
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+
   /* select x1 - spin button */
   select_note_dialog->select_x1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 										   AGS_SELECT_NOTE_MAX_BEATS,
@@ -288,6 +302,13 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
   hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(hbox),
+		     FALSE, FALSE,
+		     0);
+
+  /* select y1 - label */
+  label = (GtkLabel *) gtk_label_new(i18n("select y1"));
+  gtk_box_pack_start((GtkBox *) hbox,
+		     GTK_WIDGET(label),
 		     FALSE, FALSE,
 		     0);
 

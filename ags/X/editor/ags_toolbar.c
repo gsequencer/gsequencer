@@ -28,6 +28,7 @@
 
 #include <ags/X/editor/ags_move_note_dialog.h>
 #include <ags/X/editor/ags_crop_note_dialog.h>
+#include <ags/X/editor/ags_select_note_dialog.h>
 
 #include <gtk/gtkstock.h>
 
@@ -41,7 +42,7 @@ void ags_toolbar_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_toolbar
- * @short_description: edit tool
+ * @short_description: toolbar
  * @title: AgsToolbar
  * @section_id:
  * @include: ags/X/editor/ags_toolbar.h
@@ -195,6 +196,7 @@ ags_toolbar_init(AgsToolbar *toolbar)
   /* menu tool - dialogs */
   toolbar->move_note = ags_move_note_dialog_new(NULL);
   toolbar->crop_note = ags_crop_note_dialog_new(NULL);
+  toolbar->select_note = ags_select_note_dialog_new(NULL);
   
   /* zoom */
   label = (GtkLabel *) gtk_label_new(i18n("zoom"));
@@ -244,7 +246,10 @@ ags_toolbar_connect(AgsConnectable *connectable)
   g_object_set(toolbar->crop_note,
 	       "main-window", window,
 	       NULL);
-  
+  g_object_set(toolbar->select_note,
+	       "main-window", window,
+	       NULL);
+
   /* tool */
   g_signal_connect_after((GObject *) toolbar->position, "toggled",
 			 G_CALLBACK(ags_toolbar_position_callback), (gpointer) toolbar);
@@ -271,14 +276,16 @@ ags_toolbar_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) toolbar->invert, "clicked",
 		   G_CALLBACK(ags_toolbar_invert_callback), (gpointer) toolbar);
 
-  /* zoom */
-  g_signal_connect_after((GObject *) toolbar->zoom, "changed",
-			 G_CALLBACK(ags_toolbar_zoom_callback), (gpointer) toolbar);
-
-  /*  */
+  /* additional tools */
   ags_connectable_connect(AGS_CONNECTABLE(toolbar->crop_note));
 
   ags_connectable_connect(AGS_CONNECTABLE(toolbar->move_note));
+
+  ags_connectable_connect(AGS_CONNECTABLE(toolbar->select_note));
+
+  /* zoom */
+  g_signal_connect_after((GObject *) toolbar->zoom, "changed",
+			 G_CALLBACK(ags_toolbar_zoom_callback), (gpointer) toolbar);
 
   /* mode */
   g_signal_connect_after((GObject *) toolbar->mode, "changed",
@@ -348,6 +355,13 @@ ags_toolbar_disconnect(AgsConnectable *connectable)
 		      toolbar,
 		      NULL);
 
+  /* additional tools */
+  ags_connectable_disconnect(AGS_CONNECTABLE(toolbar->move_note));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(toolbar->crop_note));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(toolbar->select_note));
+
   /* zoom */
   g_object_disconnect(G_OBJECT(toolbar->zoom),
 		      "changed",
@@ -355,11 +369,6 @@ ags_toolbar_disconnect(AgsConnectable *connectable)
 		      toolbar,
 		      NULL);
   
-  /*  */
-  ags_connectable_disconnect(AGS_CONNECTABLE(toolbar->crop_note));
-
-  ags_connectable_disconnect(AGS_CONNECTABLE(toolbar->move_note));
-
   /* mode */
   g_object_disconnect(G_OBJECT(toolbar->mode),
 		      "changed",
@@ -393,6 +402,9 @@ ags_toolbar_tool_popup_new(GtkToolbar *toolbar)
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("crop notes"));
   gtk_menu_shell_append((GtkMenuShell *) tool_popup, (GtkWidget *) item);
 
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("select notes"));
+  gtk_menu_shell_append((GtkMenuShell *) tool_popup, (GtkWidget *) item);
+
   /* connect */
   list_start = 
     list = gtk_container_get_children((GtkContainer *) tool_popup);
@@ -404,6 +416,10 @@ ags_toolbar_tool_popup_new(GtkToolbar *toolbar)
   g_signal_connect(G_OBJECT(list->data), "activate",
 		   G_CALLBACK(ags_toolbar_tool_popup_crop_note_callback), (gpointer) toolbar);
 
+  list = list->next;
+  g_signal_connect(G_OBJECT(list->data), "activate",
+		   G_CALLBACK(ags_toolbar_tool_popup_select_note_callback), (gpointer) toolbar);
+  
   g_list_free(list_start);
 
   /* show */

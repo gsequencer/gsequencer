@@ -40,6 +40,9 @@ void ags_automation_toolbar_select_callback(GtkToggleButton *toggle_button, AgsA
 void ags_automation_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsAutomationToolbar *automation_toolbar);
 void ags_automation_toolbar_paste_callback(GtkWidget *widget, AgsAutomationToolbar *automation_toolbar);
 
+void ags_automation_toolbar_tool_popup_select_acceleration_callback(GtkWidget *item, AgsToolbar *automation_toolbar);
+void ags_automation_toolbar_tool_popup_ramp_acceleration_callback(GtkWidget *item, AgsToolbar *automation_toolbar);
+
 void ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolbar *automation_toolbar);
 
 void ags_automation_toolbar_port_changed_callback(GtkComboBox *combo_box,
