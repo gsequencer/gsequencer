@@ -34,6 +34,8 @@
 
 #define AGS_SELECT_ACCELERATION(ptr) ((AgsSelectAcceleration *)(ptr))
 
+#define AGS_SELECT_ACCELERATION_MAX_BEATS (16 * 1200)
+
 typedef struct _AgsSelectAccelerationDialog AgsSelectAccelerationDialog;
 typedef struct _AgsSelectAccelerationDialogClass AgsSelectAccelerationDialogClass;
 typedef struct _AgsSelectAutomation AgsSelectAutomation;

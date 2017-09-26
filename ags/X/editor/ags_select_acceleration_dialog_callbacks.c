@@ -19,7 +19,15 @@
 
 #include <ags/X/editor/ags_select_acceleration_dialog_callbacks.h>
 
+#include <ags/object/ags_application_context.h>
 #include <ags/object/ags_applicable.h>
+
+#include <ags/thread/ags_mutex_manager.h>
+
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_automation_window.h>
+#include <ags/X/ags_automation_editor.h>
+#include <ags/X/ags_machine.h>
 
 void
 ags_select_acceleration_dialog_response_callback(GtkWidget *dialog, gint response,
@@ -69,7 +77,7 @@ ags_select_acceleration_dialog_add_callback(GtkWidget *button,
   pthread_mutex_t *audio_mutex;
 
 
-  window = select_note_dialog->main_window;
+  window = select_acceleration_dialog->main_window;
   automation_editor = window->automation_window->automation_editor;
 
   machine = automation_editor->selected_machine;
@@ -83,6 +91,10 @@ ags_select_acceleration_dialog_add_callback(GtkWidget *button,
   /* select automation */
   hbox = (GtkVBox *) gtk_hbox_new(FALSE,
 				  0);
+  gtk_box_pack_start((GtkBox *) select_acceleration_dialog->port,
+		     GTK_WIDGET(hbox),
+		     FALSE, FALSE,
+		     0);
 
   /* automation combo box */
   combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();

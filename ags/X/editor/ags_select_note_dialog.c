@@ -462,8 +462,6 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
   AgsEditor *editor;
   AgsMachine *machine;
 
-  AgsSelectNote *select_note;  
-
   AgsAudio *audio;
 
   AgsMutexManager *mutex_manager;
@@ -503,11 +501,11 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
   /* get some values */
   copy_selection = gtk_toggle_button_get_active(select_note_dialog->copy_selection);
 
-  x0 = gtk_spin_button_get_value_as_int(select_note_dialog->x0);
-  y0 = gtk_spin_button_get_value_as_int(select_note_dialog->y0);
+  x0 = gtk_spin_button_get_value_as_int(select_note_dialog->select_x0);
+  y0 = gtk_spin_button_get_value_as_int(select_note_dialog->select_y0);
 
-  x1 = gtk_spin_button_get_value_as_int(select_note_dialog->x1);
-  y1 = gtk_spin_button_get_value_as_int(select_note_dialog->y1);
+  x1 = gtk_spin_button_get_value_as_int(select_note_dialog->select_x1);
+  y1 = gtk_spin_button_get_value_as_int(select_note_dialog->select_y1);
   
   /* application context and mutex manager */
   application_context = window->application_context;
@@ -543,10 +541,10 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
 					  i)) != -1){
     list_notation = g_list_nth(audio->notation,
 			       i);
-    ags_notation_add_add_region_to_selection(AGS_NOTATION(list_notation->data),
-					     x0, y0,
-					     x1, y1,
-					     TRUE);
+    ags_notation_add_region_to_selection(AGS_NOTATION(list_notation->data),
+					 x0, y0,
+					 x1, y1,
+					 TRUE);
 
     if(copy_selection){
       notation_node = ags_notation_copy_selection(AGS_NOTATION(list_notation->data));
