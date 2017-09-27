@@ -198,7 +198,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar, (GtkWidget *) automation_toolbar->menu_tool, i18n("additional tools"), NULL);
 
   /* menu tool - tool popup */
-  automation_toolbar->tool_popup = ags_toolbar_tool_popup_new(automation_toolbar);
+  automation_toolbar->tool_popup = ags_automation_toolbar_tool_popup_new(automation_toolbar);
   gtk_menu_tool_button_set_menu(automation_toolbar->menu_tool,
 				automation_toolbar->tool_popup);
 
@@ -271,8 +271,8 @@ ags_automation_toolbar_connect(AgsConnectable *connectable)
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
 								      AGS_TYPE_AUTOMATION_EDITOR);
 
-  automation_window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
-							 AGS_TYPE_AUTOMATION_WINDOW));
+  automation_window = (AgsAutomationWindow *) gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
+								      AGS_TYPE_AUTOMATION_WINDOW);
   window = automation_window->parent_window;
   
   g_object_set(automation_toolbar->select_acceleration,

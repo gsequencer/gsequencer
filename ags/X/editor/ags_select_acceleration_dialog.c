@@ -410,8 +410,8 @@ ags_select_acceleration_dialog_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_select_acceleration_dialog_add_callback), select_acceleration_dialog);
 
   /* machine changed */
-  g_signal_connect(automation_editor, "machine-changed",
-		   G_CALLBACK(ags_select_acceleration_dialog_machine_changed_callback), select_acceleration_dialog);  
+  g_signal_connect_after(automation_editor, "machine-changed",
+			 G_CALLBACK(ags_select_acceleration_dialog_machine_changed_callback), select_acceleration_dialog);  
 }
 
 void

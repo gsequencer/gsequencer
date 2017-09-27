@@ -81,6 +81,8 @@ void ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar);
 void ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 				       gchar *control_name);
 
+GtkMenu* ags_automation_toolbar_tool_popup_new(GtkToolbar *automation_toolbar);
+
 AgsAutomationToolbar* ags_automation_toolbar_new();
 
 #endif /*__AGS_AUTOMATION_TOOLBAR_H__*/

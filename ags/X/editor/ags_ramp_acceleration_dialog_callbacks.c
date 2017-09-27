@@ -74,7 +74,7 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
 
-  window = ramp_acceleration_dialog->main_window;
+  window = AGS_WINDOW(ramp_acceleration_dialog->main_window);
   automation_editor = window->automation_window->automation_editor;
 
   machine = automation_editor->selected_machine;

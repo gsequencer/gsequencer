@@ -76,7 +76,7 @@ ags_select_acceleration_dialog_add_callback(GtkWidget *button,
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
 
-  window = select_acceleration_dialog->main_window;
+  window = AGS_WINDOW(select_acceleration_dialog->main_window);
   automation_editor = window->automation_window->automation_editor;
 
   machine = automation_editor->selected_machine;
