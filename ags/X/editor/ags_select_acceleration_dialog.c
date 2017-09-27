@@ -389,6 +389,7 @@ ags_select_acceleration_dialog_get_property(GObject *gobject,
 void
 ags_select_acceleration_dialog_connect(AgsConnectable *connectable)
 {
+  AgsAutomationEditor *automation_editor;
   AgsSelectAccelerationDialog *select_acceleration_dialog;
 
   select_acceleration_dialog = AGS_SELECT_ACCELERATION_DIALOG(connectable);
@@ -399,18 +400,24 @@ ags_select_acceleration_dialog_connect(AgsConnectable *connectable)
 
   select_acceleration_dialog->flags |= AGS_SELECT_ACCELERATION_DIALOG_CONNECTED;
 
+  automation_editor = AGS_WINDOW(select_acceleration_dialog->main_window)->automation_window->automation_editor;
+
   g_signal_connect(select_acceleration_dialog, "response",
 		   G_CALLBACK(ags_select_acceleration_dialog_response_callback), select_acceleration_dialog);
 
   /* add automation */
   g_signal_connect(select_acceleration_dialog->add, "clicked",
 		   G_CALLBACK(ags_select_acceleration_dialog_add_callback), select_acceleration_dialog);
-  
+
+  /* machine changed */
+  g_signal_connect(automation_editor, "machine-changed",
+		   G_CALLBACK(ags_select_acceleration_dialog_machine_changed_callback), select_acceleration_dialog);  
 }
 
 void
 ags_select_acceleration_dialog_disconnect(AgsConnectable *connectable)
 {
+  AgsAutomationEditor *automation_editor;
   AgsSelectAccelerationDialog *select_acceleration_dialog;
 
   select_acceleration_dialog = AGS_SELECT_ACCELERATION_DIALOG(connectable);
@@ -421,6 +428,8 @@ ags_select_acceleration_dialog_disconnect(AgsConnectable *connectable)
 
   select_acceleration_dialog->flags &= (~AGS_SELECT_ACCELERATION_DIALOG_CONNECTED);
 
+  automation_editor = AGS_WINDOW(select_acceleration_dialog->main_window)->automation_window->automation_editor;
+
   g_object_disconnect(G_OBJECT(select_acceleration_dialog),
 		      "response",
 		      G_CALLBACK(ags_select_acceleration_dialog_response_callback),
@@ -430,6 +439,12 @@ ags_select_acceleration_dialog_disconnect(AgsConnectable *connectable)
   g_object_disconnect(G_OBJECT(select_acceleration_dialog->add),
 		      "clicked",
 		      G_CALLBACK(ags_select_acceleration_dialog_add_callback),
+		      select_acceleration_dialog,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(automation_editor),
+		      "machine-changed",
+		      G_CALLBACK(ags_select_acceleration_dialog_machine_changed_callback),
 		      select_acceleration_dialog,
 		      NULL);
 }
@@ -685,7 +700,22 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 void
 ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
 {
-  //TODO:JK: implement me
+  AgsSelectAccelerationDialog *select_acceleration_dialog;
+
+  GList *list_start, *list;
+  
+  select_acceleration_dialog = AGS_SELECT_ACCELERATION_DIALOG(applicable);
+
+  list =
+    list_start = gtk_container_get_children(select_acceleration_dialog->port);
+
+  while(list != NULL){
+    gtk_widget_destroy(list->data);
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 gboolean

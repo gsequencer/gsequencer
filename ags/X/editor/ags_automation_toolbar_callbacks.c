@@ -142,7 +142,7 @@ ags_automation_toolbar_tool_popup_select_acceleration_callback(GtkWidget *item, 
 void
 ags_automation_toolbar_tool_popup_ramp_acceleration_callback(GtkWidget *item, AgsAutomationToolbar *automation_toolbar)
 {
-  gtk_widget_show_all(automation_toolbar->ramp_acceleration);
+  gtk_widget_show_all(automation_toolbar->ramp_acceleration);  
 }
 
 void

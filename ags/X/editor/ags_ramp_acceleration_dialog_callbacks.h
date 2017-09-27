@@ -25,9 +25,19 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/X/ags_automation_editor.h>
+#include <ags/X/ags_machine.h>
+
 #include <ags/X/editor/ags_ramp_acceleration_dialog.h>
 
 void ags_ramp_acceleration_dialog_response_callback(GtkWidget *dialog, gint response,
 						    AgsRampAccelerationDialog *ramp_acceleration_dialog);
+
+void ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
+						AgsRampAccelerationDialog *ramp_acceleration_dialog);
+
+void ags_ramp_acceleration_dialog_machine_changed_callback(AgsAutomationEditor *automation_editor,
+							   AgsMachine *machine,
+							   AgsRampAccelerationDialog *ramp_acceleration_dialog);
 
 #endif /*__AGS_RAMP_ACCELERATION_DIALOG_CALLBACKS_H__*/

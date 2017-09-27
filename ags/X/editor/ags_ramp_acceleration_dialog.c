@@ -447,6 +447,7 @@ ags_ramp_acceleration_dialog_get_property(GObject *gobject,
 void
 ags_ramp_acceleration_dialog_connect(AgsConnectable *connectable)
 {
+  AgsAutomationEditor *automation_editor;
   AgsRampAccelerationDialog *ramp_acceleration_dialog;
 
   ramp_acceleration_dialog = AGS_RAMP_ACCELERATION_DIALOG(connectable);
@@ -457,13 +458,23 @@ ags_ramp_acceleration_dialog_connect(AgsConnectable *connectable)
 
   ramp_acceleration_dialog->flags |= AGS_RAMP_ACCELERATION_DIALOG_CONNECTED;
 
+  automation_editor = AGS_WINDOW(ramp_acceleration_dialog->main_window)->automation_window->automation_editor;
+  
   g_signal_connect(ramp_acceleration_dialog, "response",
-		   G_CALLBACK(ags_ramp_acceleration_dialog_response_callback), ramp_acceleration_dialog);  
+		   G_CALLBACK(ags_ramp_acceleration_dialog_response_callback), ramp_acceleration_dialog);
+
+  g_signal_connect(ramp_acceleration_dialog->port, "changed",
+		   G_CALLBACK(ags_ramp_acceleration_dialog_port_callback), ramp_acceleration_dialog);
+
+  /* machine changed */
+  g_signal_connect(automation_editor, "machine-changed",
+		   G_CALLBACK(ags_ramp_acceleration_dialog_machine_changed_callback), ramp_acceleration_dialog);
 }
 
 void
 ags_ramp_acceleration_dialog_disconnect(AgsConnectable *connectable)
 {
+  AgsAutomationEditor *automation_editor;
   AgsRampAccelerationDialog *ramp_acceleration_dialog;
 
   ramp_acceleration_dialog = AGS_RAMP_ACCELERATION_DIALOG(connectable);
@@ -474,9 +485,23 @@ ags_ramp_acceleration_dialog_disconnect(AgsConnectable *connectable)
 
   ramp_acceleration_dialog->flags &= (~AGS_RAMP_ACCELERATION_DIALOG_CONNECTED);
 
+  automation_editor = AGS_WINDOW(ramp_acceleration_dialog->main_window)->automation_window->automation_editor;
+
   g_object_disconnect(G_OBJECT(ramp_acceleration_dialog),
 		      "response",
 		      G_CALLBACK(ags_ramp_acceleration_dialog_response_callback),
+		      ramp_acceleration_dialog,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(ramp_acceleration_dialog->port),
+		      "changed",
+		      G_CALLBACK(ags_ramp_acceleration_dialog_port_callback),
+		      ramp_acceleration_dialog,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(automation_editor),
+		      "machine-changed",
+		      G_CALLBACK(ags_ramp_acceleration_dialog_machine_changed_callback),
 		      ramp_acceleration_dialog,
 		      NULL);
 }
@@ -777,7 +802,52 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 void
 ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
 {
-  //TODO:JK: implement me
+  AgsWindow *window;
+  AgsAutomationEditor *automation_editor;
+  AgsMachine *machine;
+  AgsRampAccelerationDialog *ramp_acceleration_dialog;
+
+  AgsAudio *audio;
+  
+  AgsMutexManager *mutex_manager;
+
+  gchar **specifier;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  ramp_acceleration_dialog = AGS_RAMP_ACCELERATION_DIALOG(applicable);
+
+  window = ramp_acceleration_dialog->main_window;
+  automation_editor = window->automation_window->automation_editor;
+
+  machine = automation_editor->selected_machine;
+
+  audio = machine->audio;
+  
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /*  */  
+  pthread_mutex_lock(audio_mutex);
+
+  specifier = ags_automation_get_specifier_unique(audio->automation);
+
+  for(; *specifier != NULL; specifier++){
+    gtk_combo_box_text_append_text(ramp_acceleration_dialog->port,
+				   g_strdup(*specifier));
+  }
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 gboolean

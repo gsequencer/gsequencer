@@ -76,7 +76,6 @@ ags_select_acceleration_dialog_add_callback(GtkWidget *button,
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
 
-
   window = select_acceleration_dialog->main_window;
   automation_editor = window->automation_window->automation_editor;
 
@@ -116,13 +115,13 @@ ags_select_acceleration_dialog_add_callback(GtkWidget *button,
 
   specifier = ags_automation_get_specifier_unique(audio->automation);
 
-  pthread_mutex_unlock(audio_mutex);
-
   for(; *specifier != NULL; specifier++){
-    gtk_combo_box_text_append_text(select_acceleration_dialog->port,
+    gtk_combo_box_text_append_text(combo_box,
 				   g_strdup(*specifier));
   }
   
+  pthread_mutex_unlock(audio_mutex);
+
   /* remove button */
   remove = (GtkCheckButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
   gtk_box_pack_start((GtkBox *) hbox,
@@ -140,3 +139,12 @@ ags_select_acceleration_dialog_remove_callback(GtkWidget *button,
 {
   gtk_widget_destroy(button->parent);
 }
+
+void
+ags_select_acceleration_dialog_machine_changed_callback(AgsAutomationEditor *automation_editor,
+							AgsMachine *machine,
+							AgsSelectAccelerationDialog *select_acceleration_dialog)
+{
+  ags_applicable_reset(AGS_APPLICABLE(select_acceleration_dialog));
+}
+

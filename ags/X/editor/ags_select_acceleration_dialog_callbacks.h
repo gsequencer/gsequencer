@@ -25,6 +25,9 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/X/ags_automation_editor.h>
+#include <ags/X/ags_machine.h>
+
 #include <ags/X/editor/ags_select_acceleration_dialog.h>
 
 void ags_select_acceleration_dialog_response_callback(GtkWidget *dialog, gint response,
@@ -34,5 +37,9 @@ void ags_select_acceleration_dialog_add_callback(GtkWidget *button,
 						 AgsSelectAccelerationDialog *select_acceleration_dialog);
 void ags_select_acceleration_dialog_remove_callback(GtkWidget *button,
 						    AgsSelectAccelerationDialog *select_acceleration_dialog);
+
+void ags_select_acceleration_dialog_machine_changed_callback(AgsAutomationEditor *automation_editor,
+							     AgsMachine *machine,
+							     AgsSelectAccelerationDialog *select_acceleration_dialog);
 
 #endif /*__AGS_SELECT_ACCELERATION_DIALOG_CALLBACKS_H__*/

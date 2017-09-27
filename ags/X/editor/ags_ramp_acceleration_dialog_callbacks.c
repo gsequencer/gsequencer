@@ -54,3 +54,108 @@ ags_ramp_acceleration_dialog_response_callback(GtkWidget *dialog, gint response,
     }
   }
 }
+
+void
+ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
+					   AgsRampAccelerationDialog *ramp_acceleration_dialog)
+{
+  AgsWindow *window;
+  AgsAutomationEditor *automation_editor;
+  AgsMachine *machine;
+
+  AgsAudio *audio;
+  
+  AgsMutexManager *mutex_manager;
+
+  GList *list_automation;
+  
+  gchar *specifier;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  window = ramp_acceleration_dialog->main_window;
+  automation_editor = window->automation_window->automation_editor;
+
+  machine = automation_editor->selected_machine;
+
+  audio = machine->audio;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* specifier */
+  list_automation = NULL;
+  
+  specifier = gtk_combo_box_text_get_active_text(ramp_acceleration_dialog->port);
+
+  if(specifier != NULL &&
+     strlen(specifier) > 0){
+    pthread_mutex_lock(audio_mutex);
+    
+    list_automation = ags_automation_find_specifier(audio->automation,
+						    specifier);
+    
+    pthread_mutex_unlock(audio_mutex);
+  }
+    
+  /* reset range */
+  if(list_automation != NULL){
+    AgsAutomation *automation;
+
+    automation = AGS_AUTOMATION(list_automation->data);
+    
+    gtk_spin_button_set_range(ramp_acceleration_dialog->ramp_y0,
+			      automation->lower,
+			      automation->upper);
+    gtk_spin_button_set_increments(ramp_acceleration_dialog->ramp_y0,
+				   (automation->upper - automation->lower) / automation->steps,
+				   (automation->upper - automation->lower) / automation->steps);
+    
+    gtk_spin_button_set_range(ramp_acceleration_dialog->ramp_y1,
+			      automation->lower,
+			      automation->upper);
+    gtk_spin_button_set_increments(ramp_acceleration_dialog->ramp_y1,
+				   (automation->upper - automation->lower) / automation->steps,
+				   (automation->upper - automation->lower) / automation->steps);
+    
+    gtk_spin_button_set_range(ramp_acceleration_dialog->ramp_step_count,
+			      0.0,
+			      automation->steps);
+  }else{
+    gtk_spin_button_set_range(ramp_acceleration_dialog->ramp_y0,
+			      0.0,
+			      0.0);
+    gtk_spin_button_set_increments(ramp_acceleration_dialog->ramp_y0,
+				   1.0,
+				   1.0);
+    
+    gtk_spin_button_set_range(ramp_acceleration_dialog->ramp_y1,
+			      0.0,
+			      0.0);
+    gtk_spin_button_set_increments(ramp_acceleration_dialog->ramp_y1,
+				   1.0,
+				   1.0);
+    
+    gtk_spin_button_set_range(ramp_acceleration_dialog->ramp_step_count,
+			      0.0,
+			      0.0);
+  }
+}
+
+void
+ags_ramp_acceleration_dialog_machine_changed_callback(AgsAutomationEditor *automation_editor,
+						      AgsMachine *machine,
+						      AgsRampAccelerationDialog *ramp_acceleration_dialog)
+{
+  ags_applicable_reset(AGS_APPLICABLE(ramp_acceleration_dialog));
+}
