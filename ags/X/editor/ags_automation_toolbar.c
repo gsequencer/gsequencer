@@ -31,6 +31,8 @@
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_port.h>
 
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_automation_window.h>
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_automation_editor.h>
 #include <ags/X/ags_pad.h>
@@ -269,7 +271,7 @@ ags_automation_toolbar_connect(AgsConnectable *connectable)
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
 								      AGS_TYPE_AUTOMATION_EDITOR);
 
-  automation_window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) toolbar,
+  automation_window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
 							 AGS_TYPE_AUTOMATION_WINDOW));
   window = automation_window->parent_window;
   
@@ -318,7 +320,7 @@ ags_automation_toolbar_connect(AgsConnectable *connectable)
 
   /* port */
   g_signal_connect_after(automation_toolbar->port, "changed",
-			 G_CALLBACK(ags_automation_toolbar_port_changed_callback), automation_toolbar);
+			 G_CALLBACK(ags_automation_toolbar_port_callback), automation_toolbar);
 }
 
 void

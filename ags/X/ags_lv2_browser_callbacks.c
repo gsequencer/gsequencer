@@ -135,11 +135,14 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
 
     list = list->next;
     label = GTK_LABEL(list->data);
+
+    str = g_strdup_printf("%s: ",
+			  i18n("Ports"));
     gtk_label_set_text(label,
-		       i18n("Ports: "));
+		       str);
 
     g_free(str);
-
+    
     list = list->next;
     table = GTK_TABLE(list->data);
 

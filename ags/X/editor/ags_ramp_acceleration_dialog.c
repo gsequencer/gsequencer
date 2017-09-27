@@ -218,15 +218,6 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
 		     FALSE, FALSE,
 		     0);  
 
-  /* copy rampion */
-  ramp_acceleration_dialog->copy_rampion = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("copy rampion"));
-  gtk_toggle_button_set_active(ramp_acceleration_dialog->copy_rampion,
-			       TRUE);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(ramp_acceleration_dialog->copy_rampion),
-		     FALSE, FALSE,
-		     0);  
-
   /* automation */
   ramp_acceleration_dialog->port = (GtkVBox *) gtk_combo_box_text_new();
   gtk_box_pack_start((GtkBox *) vbox,
@@ -520,19 +511,16 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
   AgsNotebook *notebook;
 
   AgsAudio *audio;
+  AgsAcceleration *acceleration;
 
   AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
 
-  xmlDoc *clipboard;
-  xmlNode *audio_node, *automation_node;
-
   GList *list_automation;
-  GList *port, *port_start;
-  GList *list;
-  
-  gchar *str;
+  GList *list_acceleration, *list_acceleration_start;
+
+  gchar *specifier;
   
   GType channel_type;
 
@@ -543,11 +531,11 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
   gdouble upper, lower, range, step;
   gdouble c_upper, c_lower, c_range;
 
-  int size;
-  guint x0, y0;
-  guint x1, y1;
-  guint i;
+  guint x0, x1;
+  gdouble y0, y1;
+  guint step_count;
   gint line;
+  guint i;
 
   gboolean is_audio, is_output, is_input;
   
@@ -559,7 +547,7 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
   window = ramp_acceleration_dialog->main_window;
   automation_editor = window->automation_window->automation_editor;
 
-  machine = automation_editor->ramped_machine;
+  machine = automation_editor->selected_machine;
 
   if(machine == NULL){
     return;
@@ -586,9 +574,13 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 
   /* get some values */
   x0 = gtk_spin_button_get_value_as_int(ramp_acceleration_dialog->ramp_x0);
+  y0 = gtk_spin_button_get_value(ramp_acceleration_dialog->ramp_y0);
 
   x1 = gtk_spin_button_get_value_as_int(ramp_acceleration_dialog->ramp_x1);
+  y1 = gtk_spin_button_get_value(ramp_acceleration_dialog->ramp_y1);
   
+  step_count = gtk_spin_button_get_value_as_int(ramp_acceleration_dialog->ramp_step_count);
+
   /* application context and mutex manager */
   application_context = window->application_context;
 
@@ -603,8 +595,94 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
   
   pthread_mutex_unlock(application_mutex);
 
+  /* remove acceleration of region */
+  line = 0;
+  
+  while((line = ags_notebook_next_active_tab(notebook,
+					     line)) != -1){
+    list_automation = audio->automation;
+
+    while((list_automation = ags_automation_find_specifier_with_type_and_line(list_automation,
+									      specifier,
+									      channel_type,
+									      line)) != NULL){
+      upper = AGS_AUTOMATION(list_automation->data)->upper;
+      lower = AGS_AUTOMATION(list_automation->data)->lower;
+	
+      range = upper - lower;
+
+      if(AGS_PORT(AGS_AUTOMATION(list_automation->data)->port)->conversion != NULL){
+	c_upper = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(list_automation->data)->port)->conversion,
+					 upper,
+					 FALSE);
+	c_lower = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(list_automation->data)->port)->conversion,
+					 lower,
+					 FALSE);
+	c_range = c_upper - c_lower;
+      }else{
+	c_upper = upper;
+	c_lower = lower;
+	  
+	c_range = range;
+      }
+	
+      if(range == 0.0){
+	list_automation = list_automation->next;
+	g_warning("ags_ramp_acceleration_dialog.c - range = 0.0");
+	  
+	continue;
+      }
+	
+      /* check steps */
+      gui_y = AGS_AUTOMATION(list_automation->data)->steps;
+
+      val = c_lower + (gui_y * (c_range / AGS_AUTOMATION(list_automation->data)->steps));
+      c_y0 = val;
+
+      /* conversion */
+      if(AGS_PORT(AGS_AUTOMATION(list_automation->data)->port)->conversion != NULL){
+	c_y0 = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(list_automation->data)->port)->conversion,
+				      c_y0,
+				      TRUE);
+      }
+
+      /* check steps */
+      gui_y = 0;
+
+      val = c_lower + (gui_y * (c_range / AGS_AUTOMATION(list_automation->data)->steps));
+      c_y1 = val;
+
+      /* conversion */
+      if(AGS_PORT(AGS_AUTOMATION(list_automation->data)->port)->conversion != NULL){
+	c_y1 = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(list_automation->data)->port)->conversion,
+				      c_y1,
+				      TRUE);
+      }
+
+      /* find and remove region */
+      list_acceleration =
+	list_acceleration_start = ags_automation_find_region(list_automation->data,
+							     x0, c_y0,
+							     x1, c_y1,
+							     FALSE);
+      
+      while(list_acceleration != NULL){
+	AGS_AUTOMATION(list_automation->data)->acceleration = g_list_remove(AGS_AUTOMATION(list_automation->data)->acceleration,
+									    list_acceleration->data);
+	
+	list_acceleration = list_acceleration->next;
+      }
+
+      g_list_free(list_acceleration_start);
+      
+      list_automation = list_automation->next;
+    }
+
+    line++;
+  }
+  
   /* ramp acceleration */
-  str = gtk_combo_box_text_get_active_text(ramp_acceleration_dialog->port);
+  specifier = gtk_combo_box_text_get_active_text(ramp_acceleration_dialog->port);
   
   line = 0;
   
@@ -613,10 +691,9 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
     list_automation = audio->automation;
 
     while((list_automation = ags_automation_find_specifier_with_type_and_line(list_automation,
-									      specifier[i],
+									      specifier,
 									      channel_type,
 									      line)) != NULL){
-
       upper = AGS_AUTOMATION(list_automation->data)->upper;
       lower = AGS_AUTOMATION(list_automation->data)->lower;
 	
@@ -670,16 +747,31 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 				      TRUE);
       }
 	    
-      /* ramp */
-      //TODO:JK: implement me
+      /* ramp value and move offset */
+      for(i = 0; i < step_count; i++){
+	acceleration = ags_acceleration_new();
+	acceleration->x = x0 + ((x1 - x0) * (i / (step_count + 1)));
+	acceleration->y = y0 + ((y1 - y0) * (i / (step_count + 1)));
+
+	ags_automation_add_acceleration(list_automation->data,
+					acceleration,
+					FALSE);
+      }
       
+      acceleration = ags_acceleration_new();
+      acceleration->x = x0 + ((x1 - x0) * (i / (step_count + 1)));
+      acceleration->y = y0 + ((y1 - y0) * (i / (step_count + 1)));
+
+      ags_automation_add_acceleration(list_automation->data,
+				      acceleration,
+				      FALSE);
+
+      /* iterate */
       list_automation = list_automation->next;
     }
 
     line++;
   }
-
-  g_list_free(port_start);
 }
 
 void

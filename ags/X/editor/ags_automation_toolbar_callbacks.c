@@ -189,8 +189,8 @@ ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolba
 }
 
 void
-ags_automation_toolbar_port_changed_callback(GtkComboBox *combo_box,
-					     AgsAutomationToolbar *automation_toolbar)
+ags_automation_toolbar_port_callback(GtkComboBox *combo_box,
+				     AgsAutomationToolbar *automation_toolbar)
 {
   GtkTreeModel *model;
   GtkTreeIter iter;

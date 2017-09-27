@@ -95,6 +95,9 @@ ags_functional_test_util_driver_dispatch(GSource *source,
 					 GSourceFunc callback,
 					 gpointer user_data)
 {
+  g_main_context_iteration(g_main_context_default(),
+			   FALSE);
+
   pthread_mutex_unlock(ags_test_get_driver_mutex());
   
   usleep(4000);

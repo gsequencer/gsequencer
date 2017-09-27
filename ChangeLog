@@ -1,13 +1,15 @@
 ags (0.9.29)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented AgsRampAccelerationDialog
+	* implemented AgsRampAccelerationDialog
 	* implemented AgsSelectAccelerationDialog
 	* implemented AgsSelectNoteDialog
 	* improved functional-tests.mk to solve linker issue with circular dependency
 	* improved unit-tests.mk to linker issue with circular dependency
+	* added AGS_RECALL_RUN_FIRST and AGS_RECALL_RUN_LAST flags
 	* fixed ags_turtle_load() buffer index excess
 	* fixed ags_functional_note_edit_test.c array index excess in main()
+	* fixed double free of string in ags_lv2_browser_plugin_uri_callback()
 
 ags (0.9.28)
 
