@@ -129,6 +129,8 @@ ags_select_acceleration_dialog_add_callback(GtkWidget *button,
 		     FALSE, FALSE,
 		     0);
 
+  gtk_widget_show_all(hbox);
+  
   g_signal_connect(remove, "clicked",
 		   G_CALLBACK(ags_select_acceleration_dialog_remove_callback), select_acceleration_dialog);
 }
@@ -147,4 +149,3 @@ ags_select_acceleration_dialog_machine_changed_callback(AgsAutomationEditor *aut
 {
   ags_applicable_reset(AGS_APPLICABLE(select_acceleration_dialog));
 }
-

@@ -259,7 +259,7 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
   /* select x0 - spin button */
   select_acceleration_dialog->select_x0 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 											   AGS_SELECT_ACCELERATION_MAX_BEATS,
-											   0.001);
+											   0.25);
   gtk_spin_button_set_value(select_acceleration_dialog->select_x0,
 			    0.0);
   gtk_box_pack_start((GtkBox *) hbox,
@@ -284,7 +284,7 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
   /* select x1 - spin button */
   select_acceleration_dialog->select_x1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 											   AGS_SELECT_ACCELERATION_MAX_BEATS,
-											   0.001);
+											   0.25);
   gtk_spin_button_set_value(select_acceleration_dialog->select_x1,
 			    0.0);
   gtk_box_pack_start((GtkBox *) hbox,
@@ -549,9 +549,9 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
   /* get some values */
   copy_selection = gtk_toggle_button_get_active(select_acceleration_dialog->copy_selection);
 
-  x0 = gtk_spin_button_get_value_as_int(select_acceleration_dialog->select_x0);
+  x0 = (AGS_SELECT_ACCELERATION_DEFAULT_WIDTH / 16) * gtk_spin_button_get_value_as_int(select_acceleration_dialog->select_x0);
 
-  x1 = gtk_spin_button_get_value_as_int(select_acceleration_dialog->select_x1);
+  x1 = (AGS_SELECT_ACCELERATION_DEFAULT_WIDTH / 16) * gtk_spin_button_get_value_as_int(select_acceleration_dialog->select_x1);
   
   /* application context and mutex manager */
   application_context = window->application_context;
@@ -573,13 +573,23 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
   
   specifier = NULL;
 
-  for(i = 0; ;){
+  if(copy_selection){
+    /* create document */
+    clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
+  
+    /* create root node */
+    audio_node = xmlNewNode(NULL, BAD_CAST "audio");
+    xmlDocSetRootElement(clipboard, audio_node);
+  }
+
+  for(i = 0; port != NULL;){
     list = gtk_container_get_children(port->data);
     str = gtk_combo_box_text_get_active_text(list->data);
 
     g_list_free(list);
     
-    if(g_strv_contains(specifier,
+    if(specifier != NULL &&
+       g_strv_contains(specifier,
 		       str)){
       port = port->next;
 

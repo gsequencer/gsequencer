@@ -79,6 +79,10 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
 
   machine = automation_editor->selected_machine;
 
+  if(machine == NULL){
+    return;
+  }
+  
   audio = machine->audio;
 
   /* get mutex manager and application mutex */

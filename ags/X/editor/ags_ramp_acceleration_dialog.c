@@ -242,7 +242,7 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
   /* ramp x0 - spin button */
   ramp_acceleration_dialog->ramp_x0 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 										       AGS_RAMP_ACCELERATION_MAX_BEATS,
-										       1.0);
+										       0.25);
   gtk_spin_button_set_value(ramp_acceleration_dialog->ramp_x0,
 			    0.0);
   gtk_box_pack_start((GtkBox *) hbox,
@@ -292,7 +292,7 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
   /* ramp x1 - spin button */
   ramp_acceleration_dialog->ramp_x1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 										       AGS_RAMP_ACCELERATION_MAX_BEATS,
-										       1.0);
+										       0.25);
   gtk_spin_button_set_value(ramp_acceleration_dialog->ramp_x1,
 			    0.0);
   gtk_box_pack_start((GtkBox *) hbox,
