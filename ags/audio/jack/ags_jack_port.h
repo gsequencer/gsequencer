@@ -25,7 +25,11 @@
 
 #include <pthread.h>
 
+#include <ags/config.h>
+
+#ifdef AGS_WITH_JACK
 #include <jack/jack.h>
+#endif
 
 #define AGS_TYPE_JACK_PORT                (ags_jack_port_get_type())
 #define AGS_JACK_PORT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_JACK_PORT, AgsJackPort))
@@ -59,7 +63,11 @@ struct _AgsJackPort
   gchar *uuid;
   gchar *name;
   
+#ifdef AGS_WITH_JACK
   jack_port_t *port;
+#else
+  gpointer port;
+#endif
 };
 
 struct _AgsJackPortClass

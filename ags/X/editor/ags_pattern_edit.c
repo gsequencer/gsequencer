@@ -292,13 +292,13 @@ ags_pattern_edit_connect(AgsConnectable *connectable)
     g_signal_connect_after(editor->selected_machine->audio, "set-pads",
 			   G_CALLBACK(ags_pattern_edit_set_pads_callback), pattern_edit);
   }
-  
+
   g_signal_connect_after((GObject *) pattern_edit->drawing_area, "expose_event",
 			 G_CALLBACK (ags_pattern_edit_drawing_area_expose_event), (gpointer) pattern_edit);
 
   g_signal_connect_after((GObject *) pattern_edit->drawing_area, "configure_event",
 			 G_CALLBACK (ags_pattern_edit_drawing_area_configure_event), (gpointer) pattern_edit);
-
+  
   g_signal_connect((GObject *) pattern_edit->drawing_area, "button_press_event",
 		   G_CALLBACK (ags_pattern_edit_drawing_area_button_press_event), (gpointer) pattern_edit);
 

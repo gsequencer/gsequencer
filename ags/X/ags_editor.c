@@ -582,7 +582,7 @@ ags_editor_select_all(AgsEditor *editor)
     i = 0;
 
     while((i = ags_notebook_next_active_tab(editor->current_notebook,
-							   i)) != -1){
+					    i)) != -1){
       list_notation = g_list_nth(machine->audio->notation,
 				 i);
       ags_notation_add_all_to_selection(AGS_NOTATION(list_notation->data));
@@ -603,6 +603,9 @@ ags_editor_select_all(AgsEditor *editor)
 
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
+      
+      cairo_surface_mark_dirty(cairo_get_target(cr));
+      cairo_destroy(cr);
     }else if(AGS_IS_PATTERN_EDIT(editor->current_edit_widget)){
       cr = gdk_cairo_create(GTK_WIDGET(AGS_PATTERN_EDIT(editor->current_edit_widget)->drawing_area)->window);
       cairo_push_group(cr);
@@ -614,6 +617,9 @@ ags_editor_select_all(AgsEditor *editor)
 
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
+      
+      cairo_surface_mark_dirty(cairo_get_target(cr));
+      cairo_destroy(cr);
     }
   }
 }
@@ -891,6 +897,9 @@ ags_editor_paste(AgsEditor *editor)
     
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
+      
+      cairo_surface_mark_dirty(cairo_get_target(cr));
+      cairo_destroy(cr);
     }else if(AGS_IS_PATTERN_EDIT(editor->current_edit_widget)){
       cr = gdk_cairo_create(GTK_WIDGET(AGS_PATTERN_EDIT(editor->current_edit_widget)->drawing_area)->window);
       cairo_push_group(cr);
@@ -918,6 +927,9 @@ ags_editor_paste(AgsEditor *editor)
       
       cairo_pop_group_to_source(cr);
       cairo_paint(cr);
+      
+      cairo_surface_mark_dirty(cairo_get_target(cr));
+      cairo_destroy(cr);
     }
   }
 }
@@ -1061,12 +1073,18 @@ ags_editor_cut(AgsEditor *editor)
 
     i = 0;
 
+    cr = NULL;
+    
     if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
       cr = gdk_cairo_create(GTK_WIDGET(AGS_NOTE_EDIT(editor->current_edit_widget)->drawing_area)->window);
     }else if(AGS_IS_PATTERN_EDIT(editor->current_edit_widget)){
       cr = gdk_cairo_create(GTK_WIDGET(AGS_PATTERN_EDIT(editor->current_edit_widget)->drawing_area)->window);
     }
 
+    if(cr == NULL){
+      return;
+    }
+    
     cairo_push_group(cr);
     
     while((i = ags_notebook_next_active_tab(editor->current_notebook,
@@ -1097,6 +1115,9 @@ ags_editor_cut(AgsEditor *editor)
     cairo_pop_group_to_source(cr);
     cairo_paint(cr);
     
+    cairo_surface_mark_dirty(cairo_get_target(cr));
+    cairo_destroy(cr);
+
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
@@ -1108,7 +1129,7 @@ ags_editor_cut(AgsEditor *editor)
 }
 
 /**
- * ags_editor_select_all:
+ * ags_editor_invert:
  * @editor: an #AgsEditor
  *
  * Invert all notation of @editor's selected machine.
@@ -1207,12 +1228,18 @@ ags_editor_invert(AgsEditor *editor)
 
     pthread_mutex_unlock(audio_mutex);
 
+    cr = NULL;
+    
     if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
       cr = gdk_cairo_create(GTK_WIDGET(AGS_NOTE_EDIT(editor->current_edit_widget)->drawing_area)->window);
     }else if(AGS_IS_PATTERN_EDIT(editor->current_edit_widget)){
       cr = gdk_cairo_create(GTK_WIDGET(AGS_PATTERN_EDIT(editor->current_edit_widget)->drawing_area)->window);
     }
 
+    if(cr == NULL){
+      return;
+    }
+    
     cairo_push_group(cr);
     
     if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
@@ -1225,6 +1252,9 @@ ags_editor_invert(AgsEditor *editor)
 
     cairo_pop_group_to_source(cr);
     cairo_paint(cr);
+
+    cairo_surface_mark_dirty(cairo_get_target(cr));
+    cairo_destroy(cr);
   }
 }
 

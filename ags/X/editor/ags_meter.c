@@ -351,6 +351,9 @@ ags_meter_paint(AgsMeter *meter)
       cairo_stroke(cr);
     }
   }
+
+  cairo_surface_mark_dirty(cairo_get_target(cr));
+  cairo_destroy(cr);
 }
 
 /**

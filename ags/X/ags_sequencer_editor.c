@@ -691,7 +691,8 @@ ags_sequencer_editor_remove_jack(AgsSequencerEditor *sequencer_editor,
 {
   AgsWindow *window;
   AgsPreferences *preferences;
-
+  GtkDialog *dialog;
+ 
   AgsJackMidiin *jack_midiin;
 
   AgsApplicationContext *application_context;
@@ -750,24 +751,29 @@ ags_sequencer_editor_remove_jack(AgsSequencerEditor *sequencer_editor,
   gtk_combo_box_set_active(GTK_COMBO_BOX(sequencer_editor->backend),
 			   -1);
 
+#if 0
   if((distributed_manager = ags_list_util_find_type(distributed_manager,
 						    AGS_TYPE_JACK_SERVER)) != NULL){
     ags_distributed_manager_unregister_sequencer(AGS_DISTRIBUTED_MANAGER(distributed_manager->data),
 						 jack_midiin);
   }
+#endif
 
   /* remove */
   if(jack_midiin == sequencer_editor->sequencer){
     sequencer_editor->sequencer = NULL;
   }
-  
+
+#if 0
   if(jack_midiin != NULL){
     ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
 				     g_list_remove(ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context)),
 						   jack_midiin));
     g_object_unref(jack_midiin);
   }
+#endif
   
+#if 0
   if(sequencer_editor->sequencer_thread != NULL){
     ags_thread_stop((AgsThread *) sequencer_editor->sequencer_thread);
 
@@ -778,6 +784,17 @@ ags_sequencer_editor_remove_jack(AgsSequencerEditor *sequencer_editor,
     
     sequencer_editor->sequencer_thread = NULL;
   }
+#endif
+  
+  /* notify user about restarting GSequencer */
+  dialog = gtk_message_dialog_new(preferences,
+				  GTK_DIALOG_MODAL,
+				  GTK_MESSAGE_INFO,
+				  GTK_BUTTONS_OK,
+				  "After finished your modifications you should safe your file and restart GSequencer");
+  g_signal_connect(dialog, "response",
+		   G_CALLBACK(gtk_widget_destroy), NULL);
+  gtk_widget_show_all(dialog);
 }
 
 void
@@ -855,6 +872,7 @@ ags_sequencer_editor_remove_sequencer(AgsSequencerEditor *sequencer_editor,
 {
   AgsWindow *window;
   AgsPreferences *preferences;
+  GtkDialog *dialog;
 
   AgsThread *main_loop;
   AgsThread *sequencer_thread;
@@ -881,14 +899,17 @@ ags_sequencer_editor_remove_sequencer(AgsSequencerEditor *sequencer_editor,
   if(sequencer == sequencer_editor->sequencer){
     sequencer_editor->sequencer = NULL;
   }
-  
+
+#if 0
   if(sequencer != NULL){
     ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
 				     g_list_remove(ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context)),
 						   sequencer));
     g_object_unref(sequencer);
   }
+#endif
   
+#if 0
   if(sequencer_editor->sequencer_thread != NULL){
     ags_thread_stop((AgsThread *) sequencer_editor->sequencer_thread);
 
@@ -899,8 +920,19 @@ ags_sequencer_editor_remove_sequencer(AgsSequencerEditor *sequencer_editor,
     
     sequencer_editor->sequencer_thread = NULL;
   }
-
+#endif
+  
   pthread_mutex_unlock(application_mutex);
+
+  /* notify user about restarting GSequencer */
+  dialog = gtk_message_dialog_new(preferences,
+				  GTK_DIALOG_MODAL,
+				  GTK_MESSAGE_INFO,
+				  GTK_BUTTONS_OK,
+				  "After finished your modifications you should safe your file and restart GSequencer");
+  g_signal_connect(dialog, "response",
+		   G_CALLBACK(gtk_widget_destroy), NULL);
+  gtk_widget_show_all(dialog);
 }
 
 void

@@ -23,55 +23,13 @@
 #include <gdk/gdk.h>
 #include <pango/pangocairo.h>
 
-#include "gsequencer_main.h"
-
 #include <ags/lib/ags_log.h>
 
 #include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_main_loop.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_concurrency_provider.h>
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif
-#include <ags/thread/ags_single_thread.h>
-#include <ags/thread/ags_autosave_thread.h>
-#include <ags/thread/ags_task_thread.h>
-#include <ags/thread/ags_thread_pool.h>
-
-#include <ags/server/ags_server.h>
-
-#include <ags/plugin/ags_ladspa_manager.h>
-#include <ags/plugin/ags_dssi_manager.h>
-#include <ags/plugin/ags_lv2_manager.h>
-#include <ags/plugin/ags_lv2_worker_manager.h>
-#include <ags/plugin/ags_lv2ui_manager.h>
-
-#include <ags/audio/ags_sound_provider.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-#include <ags/audio/thread/ags_soundcard_thread.h>
-#include <ags/audio/thread/ags_export_thread.h>
 
 #include <ags/X/ags_xorg_application_context.h>
-#include <ags/X/ags_window.h>
-
-#include <ags/X/file/ags_simple_file.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
-#include <ags/X/thread/ags_simple_autosave_thread.h>
-
-#include <ags/X/task/ags_simple_file_read.h>
-
-#include <ags/config.h>
-
-#ifdef AGS_WITH_LIBINSTPATCH
-#include <libinstpatch/libinstpatch.h>
-#endif
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
@@ -81,1150 +39,185 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
 
-#include <pthread.h>
-#include <string.h>
-
-#include <unistd.h>
-#include <sys/types.h>
-
-#include <stdlib.h>
-
-#include <locale.h>
-
-#include <X11/Xlib.h>
+#include "gsequencer_main.h"
 
 #include "config.h"
 
-void ags_signal_handler(int signr);
-void ags_signal_handler_timer(int sig, siginfo_t *si, void *uc);
-static void ags_signal_cleanup();
+#ifdef AGS_MAC_BUNDLE
+void premain() __attribute__ ((constructor));
+#endif
 
-void* ags_start_animation_thread(void *ptr);
-void ags_start_animation(pthread_t *thread);
-
+void* ags_setup_thread(void *ptr);
 void ags_setup(int argc, char **argv);
-
-void ags_launch(gboolean single_thread);
-void ags_launch_filename(gchar *filename,
-			 gboolean single_thread);
-
-timer_t* ags_timer_setup();
-void ags_timer_start(timer_t *timer_id);
-void ags_timer_launch(timer_t *timer_id,
-		      gboolean single_thread);
-void ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
-			       gboolean single_thread);
-
-void ags_show_file_error(gchar *filename,
-			 GError *error);
-
-static sigset_t ags_wait_mask;
-static sigset_t ags_timer_mask;
-
-struct sigaction ags_sigact;
-struct sigaction ags_sigact_timer;
-
-struct sigevent ags_sev_timer;
-struct itimerspec its;
 
 extern AgsApplicationContext *ags_application_context;
 
-extern volatile gboolean ags_show_start_animation;
+gchar *base_dir;
 
-#ifndef AGS_USE_TIMER
+#ifdef AGS_MAC_BUNDLE
 void
-ags_signal_handler(int signr)
+premain()
 {
-  if(signr == SIGINT){
-    //TODO:JK: do backup
+  gchar path[PATH_MAX];
+  uint32_t size = sizeof(path);  
+
+  if(_NSGetExecutablePath(path, &size) == 0){
+    gchar *ld_library_path;
+    gchar *gdk_pixbuf_module_file;
+    gchar *frameworks_dir;
+    gchar *data_dir;
+    gchar *plugin_dir;
+    gchar *str;
     
-    exit(-1);
+    base_dir = strndup(path,
+		       rindex(path, '/') - path);
+    printf("base dir %s\n", base_dir);
+
+    sprintf(path, "%s/../Frameworks",
+	    base_dir);
+    gdk_pixbuf_module_file = realpath(path,
+				      NULL);
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "GDK_PIXBUF_MODULE_FILE=%s/gdk-pixbuf-2.0/2.10.0/loaders.cache",
+	    gdk_pixbuf_module_file);
+    putenv(str);
+
+    ld_library_path = realpath(path,
+			       NULL);
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "DT_RUNPATH=%s/gdk-pixbuf-2.0/2.10.0/loaders",
+	    ld_library_path);
+    putenv(str);
+
+    frameworks_dir = realpath(path,
+			      NULL);
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "DYLD_FALLBACK_LIBRARY_PATH=%s",
+	    frameworks_dir);
+    putenv(str);
+
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "GDK_PIXBUF_MODULEDIR=%s",
+	    frameworks_dir);
+    putenv(str);
+
+    printf(".. %s", str);
+    
+    sprintf(path, "%s/../Resources",
+	    base_dir);
+    data_dir = realpath(path,
+			NULL);
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "GSEQUENCER_DATA_DIR=%s",
+	    data_dir);
+    putenv(str);
+
+    sprintf(path, "%s/../Resources",
+	    base_dir);
+    data_dir = realpath(path,
+			NULL);
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "AGS_RC_FILENAME=%s/ags.rc",
+	    data_dir);
+    putenv(str);
+
+    sprintf(path, "%s/../Resources",
+	    base_dir);
+    data_dir = realpath(path,
+			NULL);
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "AGS_ANIMATION_FILENAME=%s/ags_supermoon-800x450.png",
+	    data_dir);
+    putenv(str);
+
+    sprintf(path, "%s/../Resources",
+	    base_dir);
+    data_dir = realpath(path,
+			NULL);
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "AGS_LOGO_FILENAME=%s/ags.png",
+	    data_dir);
+    putenv(str);
+
+    sprintf(path, "%s/../Resources",
+	    base_dir);
+    data_dir = realpath(path,
+			NULL);
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "AGS_LICENSE_FILENAME=%s/GPL-3",
+	    data_dir);
+    putenv(str);
+
+    sprintf(path, "%s/../Plugins",
+	    base_dir);
+    plugin_dir = realpath(path,
+			  NULL);
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "GSEQUENCER_PLUGIN_DIR=%s",
+	    plugin_dir);
+    putenv(str);
   }else{
-    sigemptyset(&(ags_sigact.sa_mask));
-    
-    //    if(signr == AGS_ASYNC_QUEUE_SIGNAL_HIGH){
-    // pthread_yield();
-    //    }
+    base_dir = NULL;
   }
 }
 #endif
-
-#ifdef AGS_USE_TIMER
-void
-ags_signal_handler_timer(int sig, siginfo_t *si, void *uc)
-{
-  pthread_mutex_lock(AGS_THREAD(ags_application_context->main_loop)->timer_mutex);
-
-  g_atomic_int_set(&(AGS_THREAD(ags_application_context->main_loop)->timer_expired),
-		   TRUE);
-  
-  if(AGS_THREAD(ags_application_context->main_loop)->timer_wait){
-    pthread_cond_signal(AGS_THREAD(ags_application_context->main_loop)->timer_cond);
-  }
-    
-  pthread_mutex_unlock(AGS_THREAD(ags_application_context->main_loop)->timer_mutex);
-  //  signal(sig, SIG_IGN);
-}
-#endif
-
-static void
-ags_signal_cleanup()
-{
-  sigemptyset(&(ags_sigact.sa_mask));
-}
 
 void*
-ags_start_animation_thread(void *ptr)
+ags_setup_thread(void *ptr)
 {
-  GtkWidget *window;
-  GdkRectangle rectangle;
-
-  cairo_t *gdk_cr, *cr;
-  cairo_surface_t *surface;
-
-  AgsLog *log;
-
-  gchar *filename;
-  unsigned char *bg_data, *image_data;
+  AgsXorgApplicationContext *xorg_application_context;
   
-  /* create a buffer suitable to image size */
-  GList *list, *start;
+  xorg_application_context = (AgsXorgApplicationContext *) ptr;
 
-  guint image_size;
-  gdouble x0, y0;
-  guint i, nth;
-  
-  gdk_threads_enter();
-  
-  window = (GtkWidget *) ptr;
-
-  rectangle.x = 0;
-  rectangle.y = 0;
-  rectangle.width = 800;
-  rectangle.height = 450;
-
-  image_size = 4 * 800 * 450;
-  
-  gdk_cr = gdk_cairo_create(window->window);
-  
-  filename = g_strdup_printf("%s%s", DESTDIR, "/gsequencer/images/ags_supermoon-800x450.png");
-
-  surface = cairo_image_surface_create_from_png(filename);
-  image_data = cairo_image_surface_get_data(surface);
-
-  if(image_size > 0){
-    bg_data = (unsigned char *) malloc(image_size * sizeof(unsigned char));
-  }else{
-    bg_data = NULL;
-  }
-  
-  if(image_data != NULL){
-    memcpy(bg_data, image_data, image_size * sizeof(unsigned char));
-  }
-  
-  cr = cairo_create(surface);
-  
-  cairo_select_font_face(cr, "Georgia",
-			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-  cairo_set_font_size(cr, (gdouble) 11.0);
-  
-  gdk_window_show(window->window);
-  
-  gdk_threads_leave();
-
-  log = ags_log_get_instance();  
-  nth = 0;
-  
-  while(g_atomic_int_get(&(ags_show_start_animation))){
-    start = 
-      list = ags_log_get_messages(log);
-
-    pthread_mutex_lock(log->mutex);
-    
-    i = g_list_length(start);
-
-    pthread_mutex_unlock(log->mutex);
-
-    if(i > nth){
-      if(image_data != NULL){
-	memcpy(image_data, bg_data, image_size * sizeof(unsigned char));
-      }
-      
-      cairo_set_source_surface(cr, surface, 0, 0);
-      cairo_paint(cr);
-      cairo_surface_flush(surface);
-    
-      x0 = 4.0;
-      y0 = 4.0 + (i * 12.0);
-
-      while(y0 > 4.0 && list != NULL){
-	cairo_set_source_rgb(cr,
-			     1.0,
-			     0.0,
-			     1.0);
-	
-	cairo_move_to(cr,
-		      x0, y0);
-
-	pthread_mutex_lock(log->mutex);
-
-	cairo_show_text(cr, list->data);
-
-	list = list->next;
-
-	pthread_mutex_unlock(log->mutex);
-
-	y0 -= 12.0;
-      }
-
-      cairo_move_to(cr,
-		    x0, 4.0 + (i + 1) * 12.0);
-      cairo_show_text(cr, "...");
-      
-      nth = g_list_length(start);
-    }
-
-    cairo_set_source_surface(gdk_cr, surface, 0, 0);
-    cairo_paint(gdk_cr);
-    cairo_surface_flush(surface);
-    gdk_flush();
+  while(g_atomic_int_get(&(xorg_application_context->gui_ready)) == 0){
+    usleep(500000);
   }
 
-  free(bg_data);
+  //  pthread_mutex_lock(ags_gui_thread_get_dispatch_mutex());
   
-  gdk_threads_enter();
+  ags_xorg_application_context_setup(xorg_application_context);
 
-  gtk_widget_destroy(window);
+  //  pthread_mutex_unlock(ags_gui_thread_get_dispatch_mutex());
   
-  gdk_threads_leave();
-
-  return(NULL);
+  pthread_exit(NULL);
 }
 
-void
-ags_start_animation(pthread_t *thread)
-{
-  GtkWindow *window;
-
-  GdkWindowAttr *attr;
-
-  window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  g_object_set(window,
-	       "decorated", FALSE,
-	       NULL);
-  gtk_widget_set_size_request(window,
-			      800, 450);
-  gtk_widget_show_all(window);
-
-  pthread_create(thread, NULL,
-		 ags_start_animation_thread, window);
-}
-
-#ifndef AGS_USE_TIMER
 void
 ags_setup(int argc, char **argv)
 {
-  AgsLadspaManager *ladspa_manager;
-  AgsDssiManager *dssi_manager;
-  AgsLv2Manager *lv2_manager;
-  AgsLv2uiManager *lv2ui_manager;
-  AgsLv2WorkerManager *lv2_worker_manager;
-
+  AgsApplicationContext *application_context;
   AgsLog *log;
-  
-  struct passwd *pw;
 
-  gchar *blacklist_filename;
-  gchar *filename;
-  
-  uid_t uid;
+  pthread_t thread;
 
-  guint i;
+  /* application context */
+  application_context = 
+    ags_application_context = (AgsApplicationContext *) ags_xorg_application_context_new();
+  g_object_ref(application_context);
   
-  /* check filename */
+  application_context->argc = argc;
+  application_context->argv = argv;
+
   log = ags_log_get_instance();
-  filename = NULL;
 
   ags_log_add_message(log,
 		      "Welcome to Advanced Gtk+ Sequencer");
   
-  for(i = 0; i < argc; i++){
-    if(!strncmp(argv[i], "--filename", 11)){
-      AgsSimpleFile *simple_file;
-
-      xmlXPathContext *xpath_context; 
-      xmlXPathObject *xpath_object;
-      xmlNode **node;
-
-      xmlChar *xpath;
-      
-      gchar *buffer;
-      guint buffer_length;
-      
-      filename = argv[i + 1];
-      simple_file = ags_simple_file_new();
-      g_object_set(simple_file,
-		   "filename", filename,
-		   NULL);
-      ags_simple_file_open(simple_file,
-			   NULL);
-
-      xpath = "/ags-simple-file/ags-sf-config";
-
-      /* Create xpath evaluation context */
-      xpath_context = xmlXPathNewContext(simple_file->doc);
-
-      if(xpath_context == NULL) {
-	g_warning("Error: unable to create new XPath context");
-
-	break;
-      }
-
-      /* Evaluate xpath expression */
-      xpath_object = xmlXPathEval(xpath, xpath_context);
-
-      if(xpath_object == NULL) {
-	g_warning("Error: unable to evaluate xpath expression \"%s\"", xpath);
-	xmlXPathFreeContext(xpath_context); 
-
-	break;
-      }
-
-      node = xpath_object->nodesetval->nodeTab;
+  /* application context */
+  pthread_create(&thread, NULL,
+		 ags_setup_thread, application_context);
   
-      for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
-	if(node[i]->type == XML_ELEMENT_NODE){
-	  buffer = xmlNodeGetContent(node[i]);
-	  buffer_length = strlen(buffer);
-	  
-	  break;
-	}
-      }
-      
-      if(buffer != NULL){
-	//	ags_config_clear(ags_config_get_instance());
-	ags_config_load_from_data(ags_config_get_instance(),
-				  buffer, buffer_length);
-      }
-      
-      break;
-    }
-  }
-
-  /* get user information */
-  uid = getuid();
-  pw = getpwuid(uid);
-
-  /* load ladspa manager */
-  ladspa_manager = ags_ladspa_manager_get_instance();
-
-  blacklist_filename = g_strdup_printf("%s/%s/ladspa_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
-  ags_ladspa_manager_load_blacklist(ladspa_manager,
-				    blacklist_filename);
-
-  ags_log_add_message(ags_log_get_instance(),
-		      "* Loading LADSPA plugins");
-  
-  ags_ladspa_manager_load_default_directory(ladspa_manager);
-
-  /* load dssi manager */
-  dssi_manager = ags_dssi_manager_get_instance();
-
-  blacklist_filename = g_strdup_printf("%s/%s/dssi_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
-  ags_dssi_manager_load_blacklist(dssi_manager,
-				  blacklist_filename);
-
-  ags_log_add_message(ags_log_get_instance(),
-		      "* Loading DSSI plugins");
-
-  ags_dssi_manager_load_default_directory(dssi_manager);
-
-  /* load lv2 manager */
-  lv2_manager = ags_lv2_manager_get_instance();
-  lv2_worker_manager = ags_lv2_worker_manager_get_instance();    
-
-  blacklist_filename = g_strdup_printf("%s/%s/lv2_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
-  ags_lv2_manager_load_blacklist(lv2_manager,
-				 blacklist_filename);
-
-  ags_log_add_message(ags_log_get_instance(),
-		      "* Loading Lv2 plugins");
-
-  ags_lv2_manager_load_default_directory(lv2_manager);
-
-  /* load lv2ui manager */
-  lv2ui_manager = ags_lv2ui_manager_get_instance();  
-
-  blacklist_filename = g_strdup_printf("%s/%s/lv2ui_plugin.blacklist",
-				       pw->pw_dir,
-				       AGS_DEFAULT_DIRECTORY);
-  ags_lv2ui_manager_load_blacklist(lv2ui_manager,
-				   blacklist_filename);
-  
-  ags_log_add_message(ags_log_get_instance(),
-		      "* Loading Lv2ui plugins");
-
-  ags_lv2ui_manager_load_default_directory(lv2ui_manager);
-  
-  /* application contex */
-  ags_application_context = (AgsApplicationContext *) ags_xorg_application_context_new();
-  ags_application_context->argc = argc;
-  ags_application_context->argv = argv;
-
-  ags_application_context_register_types(ags_application_context);
-
-  /* fix cross-references in managers */
-  lv2_worker_manager->thread_pool = ((AgsXorgApplicationContext *) ags_application_context)->thread_pool;
-
-  g_atomic_int_set(&(ags_show_start_animation),
-		   FALSE);
-}
-#endif
-
-#ifndef AGS_USE_TIMER
-void
-ags_launch(gboolean single_thread)
-{
-  AgsMutexManager *mutex_manager;
-  AgsThread *audio_loop, *polling_thread, *gui_thread, *task_thread;
-  AgsThreadPool *thread_pool;
-
-  AgsConfig *config;
-
-  GList *start_queue;  
-
-  pthread_mutex_t *application_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
-  /* get threads, thread pool and config */
-  pthread_mutex_lock(application_mutex);
-  
-  audio_loop = (AgsThread *) ags_application_context->main_loop;
-  task_thread = (AgsThread *) ags_application_context->task_thread;
-  thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
-
-  config = ags_application_context->config;
-  
-  pthread_mutex_unlock(application_mutex);
-  
-  polling_thread = ags_thread_find_type(audio_loop,
-					AGS_TYPE_POLLING_THREAD);
-  gui_thread = ags_thread_find_type(audio_loop,
-				    AGS_TYPE_GUI_THREAD);
-
-  /* start engine */
-  pthread_mutex_lock(audio_loop->start_mutex);
-  
-  start_queue = NULL;
-  start_queue = g_list_prepend(start_queue,
-			       polling_thread);
-  start_queue = g_list_prepend(start_queue,
-			       task_thread);
-  //  start_queue = g_list_prepend(start_queue,
-  //			       gui_thread);
-  g_atomic_pointer_set(&(audio_loop->start_queue),
-		       start_queue);
-  
-  pthread_mutex_unlock(audio_loop->start_mutex);
-
-  /* start audio loop and thread pool*/
-  ags_thread_start(audio_loop);
-  
-  ags_thread_pool_start(thread_pool);
-
-  if(!single_thread){
-    /* wait for audio loop */
-    pthread_mutex_lock(audio_loop->start_mutex);
-
-    if(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE){	
-      g_atomic_int_set(&(audio_loop->start_done),
-		       FALSE);
-      
-      while(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE &&
-	    g_atomic_int_get(&(audio_loop->start_done)) == FALSE){
-	pthread_cond_wait(audio_loop->start_cond,
-			  audio_loop->start_mutex);
-      }
-    }
-    
-    pthread_mutex_unlock(audio_loop->start_mutex);
-
-    /* start gui thread */
-    ags_thread_start(gui_thread);
-    
-    /* wait for gui thread */
-    pthread_mutex_lock(gui_thread->start_mutex);
-
-    if(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
-      
-      g_atomic_int_set(&(gui_thread->start_wait),
-		       TRUE);
-
-      while(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
-	g_atomic_int_set(&(gui_thread->start_wait),
-			 TRUE);
-	
-	pthread_cond_wait(gui_thread->start_cond,
-			  gui_thread->start_mutex);
-      }
-    }
-    
-    pthread_mutex_unlock(gui_thread->start_mutex);
-    
-    g_atomic_int_set(&(AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->gui_ready),
-		     1);
-    
-    /* autosave thread */
-    if(!g_strcmp0(ags_config_get_value(config,
-				       AGS_CONFIG_GENERIC,
-				       "autosave-thread"),
-		  "true")){
-      pthread_mutex_lock(audio_loop->start_mutex);
-
-      start_queue = g_atomic_pointer_get(&(audio_loop->start_queue));
-      start_queue = g_list_prepend(start_queue,
-				   task_thread);
-
-      g_atomic_pointer_set(&(audio_loop->start_queue),
-			   start_queue);
-	
-      pthread_mutex_unlock(audio_loop->start_mutex);
-    }
-
-    /* join gui thread */
-    //    gtk_main();
-    pthread_join(*(gui_thread->thread),
-    		 NULL);
-  }else{
-    AgsSingleThread *single_thread;
-
-    /* single thread */
-    single_thread = ags_single_thread_new((GObject *) ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(ags_application_context))->data);
-
-    /* add known threads to single_thread */
-    ags_thread_add_child(AGS_THREAD(single_thread),
-			 audio_loop);
-    
-    /* autosave thread */
-    if(!g_strcmp0(ags_config_get_value(config,
-				       AGS_CONFIG_GENERIC,
-				       "autosave-thread"),
-		  "true")){
-      pthread_mutex_lock(audio_loop->start_mutex);
-
-      start_queue = g_atomic_pointer_get(&(audio_loop->start_queue));
-      start_queue = g_list_prepend(start_queue,
-				   task_thread);
-
-      g_atomic_pointer_set(&(audio_loop->start_queue),
-			   start_queue);
-	
-      pthread_mutex_unlock(audio_loop->start_mutex);
-    }
-
-    /* start thread tree */
-    ags_thread_start((AgsThread *) single_thread);
-  }
-}
-#endif
-
-#ifndef AGS_USE_TIMER
-void
-ags_launch_filename(gchar *filename,
-		    gboolean single_thread)
-{
-  AgsMutexManager *mutex_manager;
-  AgsThread *audio_loop, *polling_thread, *gui_thread, *task_thread;
-  AgsThreadPool *thread_pool;
-
-  AgsConfig *config;
-
-  GList *start_queue;  
-
-  pthread_mutex_t *application_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
-  /* get threads, thread pool and config */
-  pthread_mutex_lock(application_mutex);
-
-  audio_loop = (AgsThread *) ags_application_context->main_loop;
-  task_thread =(AgsThread *)  ags_application_context->task_thread;
-  thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
-
-  config = ags_application_context->config;
-  
-  pthread_mutex_unlock(application_mutex);
-
-  polling_thread = ags_thread_find_type(audio_loop,
-					AGS_TYPE_POLLING_THREAD);
-  gui_thread = ags_thread_find_type(audio_loop,
-				    AGS_TYPE_GUI_THREAD);
-
-  /* open file */
-  if(g_strcmp0(ags_config_get_value(config,
-				    AGS_CONFIG_GENERIC,
-				    "simple-file"),
-	       "false")){
-    AgsSimpleFile *simple_file;
-
-    AgsSimpleFileRead *simple_file_read;
-      
-    GError *error;
-
-    simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-						 "application-context", ags_application_context,
-						 "filename", filename,
-						 NULL);
-    error = NULL;
-    ags_simple_file_open(simple_file,
-			 &error);
-
-    if(error != NULL){
-      ags_show_file_error(filename,
-			  error);
-      ags_application_context_quit(ags_application_context);
-    }
-    
-    /* start engine */  
-    pthread_mutex_lock(audio_loop->start_mutex);
-    
-    start_queue = NULL;
-    start_queue = g_list_prepend(start_queue,
-				 polling_thread);
-    start_queue = g_list_prepend(start_queue,
-				 task_thread);
-    //    start_queue = g_list_prepend(start_queue,
-    //				 gui_thread);
-    g_atomic_pointer_set(&(audio_loop->start_queue),
-			 start_queue);
-  
-    pthread_mutex_unlock(audio_loop->start_mutex);
-
-    /* start audio loop and thread pool */
-    ags_thread_start(audio_loop);
-
-    ags_thread_pool_start(thread_pool);
-
-    if(!single_thread){
-      /* wait for audio loop */
-      pthread_mutex_lock(audio_loop->start_mutex);
-
-      if(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE){	
-	g_atomic_int_set(&(audio_loop->start_done),
-			 FALSE);
-      
-	while(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE &&
-	      g_atomic_int_get(&(audio_loop->start_done)) == FALSE){
-	  pthread_cond_wait(audio_loop->start_cond,
-			    audio_loop->start_mutex);
-	}
-      }
-    
-      pthread_mutex_unlock(audio_loop->start_mutex);
-
-      /* start gui thread */
-      ags_thread_start(gui_thread);
-      
-      /* wait for gui thread */
-      pthread_mutex_lock(gui_thread->start_mutex);
-
-      if(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
-      
-	g_atomic_int_set(&(gui_thread->start_wait),
-			 TRUE);
-
-	while(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
-	  g_atomic_int_set(&(gui_thread->start_wait),
-			   TRUE);
-	
-	  pthread_cond_wait(gui_thread->start_cond,
-			    gui_thread->start_mutex);
-	}
-      }
-    
-      pthread_mutex_unlock(gui_thread->start_mutex);
-      
-      /* autosave thread */
-      if(!g_strcmp0(ags_config_get_value(config,
-					 AGS_CONFIG_GENERIC,
-					 "autosave-thread"),
-		    "true")){
-	pthread_mutex_lock(audio_loop->start_mutex);
-
-	start_queue = g_atomic_pointer_get(&(audio_loop->start_queue));
-	start_queue = g_list_prepend(start_queue,
-				     task_thread);
-
-	g_atomic_pointer_set(&(audio_loop->start_queue),
-			     start_queue);
-	
-	pthread_mutex_unlock(audio_loop->start_mutex);
-      }
-    
-      /* now start read task */
-      simple_file_read = ags_simple_file_read_new(simple_file);
-      ags_task_thread_append_task((AgsTaskThread *) task_thread,
-				  (AgsTask *) simple_file_read);
-    }else{
-      AgsFile *file;
-
-      GError *error;
-    
-      file = g_object_new(AGS_TYPE_FILE,
-			  "application-context", ags_application_context,
-			  "filename", filename,
-			  NULL);
-      error = NULL;
-      ags_file_open(file,
-		    &error);
-
-      if(error != NULL){
-	ags_show_file_error(filename,
-			    error);
-	
-	ags_application_context_quit(ags_application_context);
-      }
-    
-      ags_file_read(file);
-      ags_file_close(file);
-    }
-  }
-
-  if(!single_thread){
-    /* join gui thread */
-    //    gtk_main();
-    pthread_join(*(gui_thread->thread),
-    		 NULL);
-  }
-}
-#endif
-
-#ifdef AGS_USE_TIMER
-timer_t*
-ags_timer_setup()
-{
-  timer_t *timer_id;
-
-  timer_id = (timer_t *) malloc(sizeof(timer_t));
-  
-  /* create timer */
-  ags_sigact_timer.sa_flags = SA_SIGINFO;
-  ags_sigact_timer.sa_sigaction = ags_signal_handler_timer;
-  sigemptyset(&ags_sigact_timer.sa_mask);
-  
-  if(sigaction(SIGRTMIN, &ags_sigact_timer, NULL) == -1){
-    perror("sigaction");
-    exit(EXIT_FAILURE);
-  }
-  
-  /* Block timer signal temporarily */
-  sigemptyset(&ags_timer_mask);
-  sigaddset(&ags_timer_mask, SIGRTMIN);
-  
-  if(sigprocmask(SIG_SETMASK, &ags_timer_mask, NULL) == -1){
-    perror("sigprocmask");
-    exit(EXIT_FAILURE);
-  }
-
-  /* Create the timer */
-  ags_sev_timer.sigev_notify = SIGEV_SIGNAL;
-  ags_sev_timer.sigev_signo = SIGRTMIN;
-  ags_sev_timer.sigev_value.sival_ptr = timer_id;
-  
-  if(timer_create(CLOCK_MONOTONIC, &ags_sev_timer, timer_id) == -1){
-    perror("timer_create");
-    exit(EXIT_FAILURE);
-  }  
-
-  return(timer_id);
-}
-#endif
-
-#ifdef AGS_USE_TIMER
-void
-ags_timer_start(timer_t *timer_id)
-{
-  struct itimerspec value;
-
-  /* Start the timer */
-  its.it_value.tv_sec = 0;
-  its.it_value.tv_nsec = NSEC_PER_SEC / AGS_THREAD_MAX_PRECISION;
-  its.it_interval.tv_sec = its.it_value.tv_sec;
-  its.it_interval.tv_nsec = its.it_value.tv_nsec;
-
-  if(timer_settime(timer_id, 0, &its, NULL) == -1){
-    perror("timer_settime");
-    exit(EXIT_FAILURE);
-    
-  }
-
-  if(sigprocmask(SIG_UNBLOCK, &ags_timer_mask, NULL) == -1){
-    perror("sigprocmask");
-    exit(EXIT_FAILURE);
-  }  
-}
-#endif
-
-#ifdef AGS_USE_TIMER
-void
-ags_timer_launch(timer_t *timer_id,
-		 gboolean single_thread)
-{
-  AgsMutexManager *mutex_manager;
-  AgsThread *audio_loop, *polling_thread, *gui_thread, *task_thread;
-  AgsThreadPool *thread_pool;
-
-  AgsConfig *config;
-
-  GList *start_queue;  
-
-  pthread_mutex_t *application_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get threads, thread pool and config */
-  pthread_mutex_lock(application_mutex);
-  
-  audio_loop = (AgsThread *) ags_application_context->main_loop;
-  task_thread = (AgsThread *) ags_application_context->task_thread;
-  thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
-
-  config = ags_application_context->config;
-  
-  pthread_mutex_unlock(application_mutex);
-  
-  polling_thread = ags_thread_find_type(audio_loop,
-					AGS_TYPE_POLLING_THREAD);
-  gui_thread = ags_thread_find_type(audio_loop,
-				    AGS_TYPE_GUI_THREAD);
-
-  /* start queue */
-  pthread_mutex_lock(audio_loop->start_mutex);
-    
-  start_queue = NULL;
-  start_queue = g_list_prepend(start_queue,
-			       polling_thread);
-  start_queue = g_list_prepend(start_queue,
-			       task_thread);
-  //  start_queue = g_list_prepend(start_queue,
-  //			       gui_thread);
-  g_atomic_pointer_set(&(audio_loop->start_queue),
-		       start_queue);
-
-  pthread_mutex_unlock(audio_loop->start_mutex);
-    
-  /* start audio loop and thread pool */
-  ags_thread_start(audio_loop);
-
-  ags_thread_pool_start(thread_pool);
-
-  /* Start the timer */
-  ags_timer_start(timer_id);
-
-  if(!single_thread){
-    /* wait for audio loop */
-    pthread_mutex_lock(audio_loop->start_mutex);
-
-    if(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE){
-	
-      g_atomic_int_set(&(audio_loop->start_done),
-		       FALSE);
-      
-      while(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE &&
-	    g_atomic_int_get(&(audio_loop->start_done)) == FALSE){
-	pthread_cond_wait(audio_loop->start_cond,
-			  audio_loop->start_mutex);
-      }
-    }
-  
-    pthread_mutex_unlock(audio_loop->start_mutex);
-
-    /* start gui thread */
-    ags_thread_start(gui_thread);
-    
-    /* wait for gui thread */
-    pthread_mutex_lock(gui_thread->start_mutex);
-
-    if(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
-      
-      g_atomic_int_set(&(gui_thread->start_wait),
-    		       TRUE);
-
-      while(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
-	g_atomic_int_set(&(gui_thread->start_wait),
-    			 TRUE);
-	
-	pthread_cond_wait(gui_thread->start_cond,
-			  gui_thread->start_mutex);
-      }
-    }
-    
-    pthread_mutex_unlock(gui_thread->start_mutex);
-
-    g_atomic_int_set(&(AGS_XORG_APPLICATION_CONTEXT(ags_application_context)->gui_ready),
-		     1);
-
-    /* autosave thread */
-    if(!g_strcmp0(ags_config_get_value(config,
-				       AGS_CONFIG_GENERIC,
-				       "autosave-thread"),
-		  "true")){
-      pthread_mutex_lock(audio_loop->start_mutex);
-
-      start_queue = g_atomic_pointer_get(&(audio_loop->start_queue));
-      start_queue = g_list_prepend(start_queue,
-				   task_thread);
-
-      g_atomic_pointer_set(&(audio_loop->start_queue),
-			   start_queue);
-	
-      pthread_mutex_unlock(audio_loop->start_mutex);
-    }
-
-    /* join gui thread */
-    pthread_join(*(gui_thread->thread),
-		 NULL);
-  }else{
-    AgsSingleThread *single_thread;
-
-    /* single thread */
-    single_thread = ags_single_thread_new((GObject *) ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(ags_application_context))->data);
-
-    /* add known threads to single_thread */
-    ags_thread_add_child(AGS_THREAD(single_thread),
-			 audio_loop);
-
-    /* autosave thread */
-    if(!g_strcmp0(ags_config_get_value(config,
-				       AGS_CONFIG_GENERIC,
-				       "autosave-thread"),
-		  "true")){
-      pthread_mutex_lock(audio_loop->start_mutex);
-
-      start_queue = g_atomic_pointer_get(&(audio_loop->start_queue));
-      start_queue = g_list_prepend(start_queue,
-				   task_thread);
-
-      g_atomic_pointer_set(&(audio_loop->start_queue),
-			   start_queue);
-	
-      pthread_mutex_unlock(audio_loop->start_mutex);
-    }
-
-    /* start thread tree */
-    ags_thread_start((AgsThread *) single_thread);
-  }
-}
-#endif
-
-#ifdef AGS_USE_TIMER
-void
-ags_timer_launch_filename(timer_t *timer_id, gchar *filename,
-			  gboolean single_thread)
-{
-  AgsMutexManager *mutex_manager;
-  AgsThread *audio_loop, *polling_thread, *gui_thread, *task_thread;
-  AgsThreadPool *thread_pool;
-
-  AgsConfig *config;
-      
-  GList *start_queue;
-
-  pthread_mutex_t *application_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get thread, thread pool and config */
-  pthread_mutex_lock(application_mutex);
-
-  audio_loop = (AgsThread *) ags_application_context->main_loop;
-  task_thread = (AgsThread *) ags_application_context->task_thread;
-  thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
-
-  config = ags_application_context->config;
-  
-  pthread_mutex_unlock(application_mutex);
-  
-  polling_thread = ags_thread_find_type(audio_loop,
-					AGS_TYPE_POLLING_THREAD);
-  gui_thread = ags_thread_find_type(audio_loop,
-				    AGS_TYPE_GUI_THREAD);
-
-  /* open file */
-  if(g_strcmp0(ags_config_get_value(config,
-				    AGS_CONFIG_GENERIC,
-				    "simple-file"),
-	       "false")){
-    AgsSimpleFile *simple_file;
-
-    AgsSimpleFileRead *simple_file_read;
-
-    GError *error;    
-
-    simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
-						 "application-context", ags_application_context,
-						 "filename", filename,
-						 NULL);
-    error = NULL;
-    ags_simple_file_open(simple_file,
-			 &error);
-
-    if(error != NULL){
-      ags_show_file_error(filename,
-			  error);
-      exit(-1);
-    }
-
-    /* start queue */
-    pthread_mutex_lock(audio_loop->start_mutex);
-    
-    start_queue = NULL;
-    start_queue = g_list_prepend(start_queue,
-				 polling_thread);
-    start_queue = g_list_prepend(start_queue,
-				 task_thread);
-    //    start_queue = g_list_prepend(start_queue,
-    //				 gui_thread);
-    g_atomic_pointer_set(&(audio_loop->start_queue),
-			 start_queue);
-
-    pthread_mutex_unlock(audio_loop->start_mutex);
-  
-    /* start audio loop and thread pool*/
-    ags_thread_start(audio_loop);
-
-    ags_thread_pool_start(thread_pool);
-
-    /* Start the timer */
-    ags_timer_start(timer_id);
-
-    if(!single_thread){
-      /* wait for audio loop */
-      pthread_mutex_lock(audio_loop->start_mutex);
-
-      if(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE){
-	
-	g_atomic_int_set(&(audio_loop->start_done),
-			 FALSE);
-      
-	while(g_atomic_int_get(&(audio_loop->start_wait)) == TRUE &&
-	      g_atomic_int_get(&(audio_loop->start_done)) == FALSE){
-	  pthread_cond_wait(audio_loop->start_cond,
-			    audio_loop->start_mutex);
-	}
-      }
-  
-      pthread_mutex_unlock(audio_loop->start_mutex);
-    
-      /* start gui thread */
-      ags_thread_start(gui_thread);
-
-      /* wait for gui thread */
-      pthread_mutex_lock(gui_thread->start_mutex);
-
-      if(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
-      
-      	g_atomic_int_set(&(gui_thread->start_wait),
-			 TRUE);
-
-      	while(g_atomic_int_get(&(gui_thread->start_done)) == FALSE){
-      	  g_atomic_int_set(&(gui_thread->start_wait),
-      			   TRUE);
-	
-	  pthread_cond_wait(gui_thread->start_cond,
-			    gui_thread->start_mutex);
-	}
-      }
-    
-      pthread_mutex_unlock(gui_thread->start_mutex);
-
-      /* autosave thread */
-      if(!g_strcmp0(ags_config_get_value(config,
-					 AGS_CONFIG_GENERIC,
-					 "autosave-thread"),
-		    "true")){
-	pthread_mutex_lock(audio_loop->start_mutex);
-
-	start_queue = g_atomic_pointer_get(&(audio_loop->start_queue));
-	start_queue = g_list_prepend(start_queue,
-				     task_thread);
-
-	g_atomic_pointer_set(&(audio_loop->start_queue),
-			     start_queue);
-	
-	pthread_mutex_unlock(audio_loop->start_mutex);
-      }
-    }
-    
-    /* now start read task */
-    simple_file_read = ags_simple_file_read_new(simple_file);
-    ags_task_thread_append_task((AgsTaskThread *) task_thread,
-				(AgsTask *) simple_file_read);
-  }else{
-    AgsFile *file;
-
-    GError *error;
-    
-    file = g_object_new(AGS_TYPE_FILE,
-			"application-context", ags_application_context,
-			"filename", filename,
-			NULL);
-    error = NULL;
-    ags_file_open(file,
-		  &error);
-
-    if(error != NULL){
-      ags_show_file_error(filename,
-			  error);
-      exit(-1);
-    }
-    
-    ags_file_read(file);
-      
-    /* Start the timer */
-    ags_timer_start(timer_id);
-    
-    ags_file_close(file);
-  }
-  
-  if(!single_thread){
-    /* join gui thread */
-    pthread_join(*(gui_thread->thread),
-		 NULL);
-  }
-}
-#endif
-
-void
-ags_show_file_error(gchar *filename,
-		    GError *error)
-{
-  GtkDialog *dialog;
-      
-  g_warning("could not parse file %s", filename);
-      
-  dialog = gtk_message_dialog_new(NULL,
-				  0,
-				  GTK_MESSAGE_WARNING,
-				  GTK_BUTTONS_OK,
-				  "Failed to open '%s'",
-				  filename);
-  gtk_widget_show_all((GtkWidget *) dialog);
-  g_signal_connect(dialog, "response",
-		   G_CALLBACK(gtk_main_quit), NULL);
-  gtk_main();
+  ags_application_context_prepare(application_context);
 }
 
 int
@@ -1232,18 +225,16 @@ main(int argc, char **argv)
 {  
   AgsConfig *config;
 
-  pthread_t *animation_thread;
-  
   gchar *filename;
-  gchar *str;
 
   gboolean single_thread_enabled;
   gboolean builtin_theme_disabled;
   guint i;
 
+#ifdef AGS_WITH_RT
   struct sched_param param;
   struct rlimit rl;
-  struct sigaction sa;
+#endif
   struct passwd *pw;
 
   gchar *wdir, *config_file;
@@ -1254,10 +245,6 @@ main(int argc, char **argv)
 
   const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
 
-#ifdef AGS_USE_TIMER
-  timer_t *timer_id
-#endif
-
   setlocale(LC_ALL, "");
   bindtextdomain(PACKAGE, LOCALEDIR);
   textdomain(PACKAGE);
@@ -1266,8 +253,8 @@ main(int argc, char **argv)
   builtin_theme_disabled = FALSE;
   
   //  mtrace();
-  atexit(ags_signal_cleanup);
 
+#ifdef AGS_WITH_RT
   result = getrlimit(RLIMIT_STACK, &rl);
 
   /* set stack size 64M */
@@ -1287,27 +274,8 @@ main(int argc, char **argv)
   if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
     perror("sched_setscheduler failed");
   }
-
-  /* Ignore interactive and job-control signals.  */
-  signal(SIGINT, SIG_IGN);
-  signal(SIGQUIT, SIG_IGN);
-  signal(SIGTSTP, SIG_IGN);
-  signal(SIGTTIN, SIG_IGN);
-  signal(SIGTTOU, SIG_IGN);
-  signal(SIGCHLD, SIG_IGN);
-  signal(AGS_THREAD_RESUME_SIG, SIG_IGN);
-  signal(AGS_THREAD_SUSPEND_SIG, SIG_IGN);
-
-  ags_sigact.sa_handler = ags_signal_handler;
-  sigemptyset(&ags_sigact.sa_mask);
-  ags_sigact.sa_flags = 0;
-  sigaction(SIGINT, &ags_sigact, (struct sigaction *) NULL);
-  sigaction(SA_RESTART, &ags_sigact, (struct sigaction *) NULL);
-
-#ifdef AGS_USE_TIMER
-  timer_id = ags_timer_setup();
 #endif
-  
+
   /* parse command line parameter */
   filename = NULL;
 
@@ -1345,8 +313,6 @@ main(int argc, char **argv)
     }
   }
 
-  XInitThreads();
-  
   uid = getuid();
   pw = getpwuid(uid);
     
@@ -1359,9 +325,18 @@ main(int argc, char **argv)
     if(!g_file_test(rc_filename,
 		    G_FILE_TEST_IS_REGULAR)){
       g_free(rc_filename);
-      rc_filename = g_strdup_printf("%s%s",
-				    DESTDIR,
-				    "/gsequencer/styles/ags.rc");
+
+#ifdef AGS_RC_FILENAME
+      rc_filename = g_strdup(AGS_RC_FILENAME);
+#else
+      if((rc_filename = getenv("AGS_RC_FILENAME")) == NULL){
+	rc_filename = g_strdup_printf("%s%s",
+				      DESTDIR,
+				      "/gsequencer/styles/ags.rc");
+      }else{
+	rc_filename = g_strdup(rc_filename);
+      }
+#endif
     }
   
     gtk_rc_parse(rc_filename);
@@ -1375,8 +350,9 @@ main(int argc, char **argv)
 
   //  gdk_threads_enter();
   //  g_thread_init(NULL);
+  ags_gui_init(&argc, &argv);  
   gtk_init(&argc, &argv);
-
+  
   if(!builtin_theme_disabled){
     g_object_set(gtk_settings_get_default(),
 		 "gtk-theme-name", "Raleigh",
@@ -1396,13 +372,6 @@ main(int argc, char **argv)
 #endif
   //  g_log_set_fatal_mask("GLib", // "Gtk" , // 
   //		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
-
-  /* animate */
-  animation_thread = (pthread_t *) malloc(sizeof(pthread_t));
-  g_atomic_int_set(&(ags_show_start_animation),
-		   TRUE);
-  
-  ags_start_animation(animation_thread);
   
   /* setup */
   wdir = g_strdup_printf("%s/%s",
@@ -1422,25 +391,6 @@ main(int argc, char **argv)
   g_free(config_file);
   
   ags_setup(argc, argv);
-
-  /* launch GUI */
-  if(filename != NULL){
-#ifdef AGS_USE_TIMER
-    ags_timer_launch_filename(timer_id,
-			      filename,
-			      single_thread_enabled);
-#else
-    ags_launch_filename(filename,
-			single_thread_enabled);
-#endif
-  }else{
-#ifdef AGS_USE_TIMER
-    ags_timer_launch(timer_id,
-		     single_thread_enabled);
-#else
-    ags_launch(single_thread_enabled);
-#endif
-  }
   
   ags_application_context_quit(ags_application_context);
   g_free(rc_filename);

@@ -24,7 +24,6 @@
 #include <ags/object/ags_applicable.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_output.h>
@@ -36,6 +35,8 @@
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine_editor.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/i18n.h>
 
@@ -259,7 +260,7 @@ ags_resize_editor_apply(AgsApplicable *applicable)
     
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
   
   AgsApplicationContext *application_context;
 
@@ -292,8 +293,8 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						      AGS_TYPE_GUI_THREAD);
 
   /* create task */
   resize_audio = ags_resize_audio_new(audio,
@@ -302,8 +303,8 @@ ags_resize_editor_apply(AgsApplicable *applicable)
 				      (guint) gtk_spin_button_get_value_as_int(resize_editor->audio_channels));
       
   /* append AgsResizeAudio */
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(resize_audio));
+  ags_gui_thread_schedule_task(gui_thread,
+			       resize_audio);
 }
 
 void

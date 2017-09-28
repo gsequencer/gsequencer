@@ -66,8 +66,10 @@ void ags_pulse_port_disconnect(AgsConnectable *connectable);
 void ags_pulse_port_dispose(GObject *gobject);
 void ags_pulse_port_finalize(GObject *gobject);
 
+#ifdef AGS_WITH_PULSE
 void ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPulsePort *pulse_port);
 void ags_pulse_port_stream_underflow_callback(pa_stream *stream, AgsPulsePort *pulse_port);
+#endif
 
 /**
  * SECTION:ags_pulse_port
@@ -340,41 +342,52 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
   
   pulse_port->buffer_size = buffer_size;
   pulse_port->format = format;
+  pulse_port->pcm_channels = pcm_channels;
 
+#ifdef AGS_WITH_PULSE
   pulse_port->sample_spec = (pa_sample_spec *) malloc(sizeof(pa_sample_spec));
   pulse_port->sample_spec->rate = samplerate;
   pulse_port->sample_spec->channels = pcm_channels;
+#else
+  pulse_port->sample_spec = NULL;
+#endif
 
   switch(format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
+#ifdef AGS_WITH_PULSE
       if(is_bigendian()){
 	pulse_port->sample_spec->format = PA_SAMPLE_S16BE;
       }else{
 	pulse_port->sample_spec->format = PA_SAMPLE_S16LE;
       }
+#endif
 
       word_size = sizeof(signed short);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
+#ifdef AGS_WITH_PULSE
       if(is_bigendian()){
 	pulse_port->sample_spec->format = PA_SAMPLE_S24_32BE;
       }else{
 	pulse_port->sample_spec->format = PA_SAMPLE_S24_32LE;
       }
+#endif
 
       word_size = sizeof(signed long);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
+#ifdef AGS_WITH_PULSE
       if(is_bigendian()){
 	pulse_port->sample_spec->format = PA_SAMPLE_S32BE;
       }else{
 	pulse_port->sample_spec->format = PA_SAMPLE_S32LE;
       }
+#endif
 
       word_size = sizeof(signed long);
     }
@@ -385,12 +398,16 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
   
   fixed_size = pcm_channels * buffer_size * word_size;
 
+#ifdef AGS_WITH_PULSE
   pulse_port->buffer_attr = (pa_buffer_attr *) malloc(sizeof(pa_buffer_attr));
   pulse_port->buffer_attr->fragsize = (uint32_t) -1;
   pulse_port->buffer_attr->maxlength = (uint32_t) -1;
   pulse_port->buffer_attr->minreq = (uint32_t) fixed_size;
   pulse_port->buffer_attr->prebuf = (uint32_t) 0;
   pulse_port->buffer_attr->tlength = (uint32_t) fixed_size;
+#else
+  pulse_port->buffer_attr = NULL;
+#endif
 
   pulse_port->empty_buffer = ags_stream_alloc(8 * pcm_channels * buffer_size,
 					      AGS_SOUNDCARD_DEFAULT_FORMAT);
@@ -704,12 +721,17 @@ ags_pulse_port_register(AgsPulsePort *pulse_port,
     pulse_port->flags |= AGS_PULSE_PORT_IS_OUTPUT;
   }
 
+#ifdef AGS_WITH_PULSE
   pulse_port->stream = pa_stream_new(AGS_PULSE_CLIENT(pulse_port->pulse_client)->context, "Playback", pulse_port->sample_spec, NULL);
+#else
+  pulse_port->stream = NULL;
+#endif
 
   if(pulse_port->stream == NULL){
     return;
   }
 
+#ifdef AGS_WITH_PULSE
   if(is_audio){  
     pulse_port->flags |= AGS_PULSE_PORT_IS_AUDIO;
 
@@ -748,6 +770,7 @@ ags_pulse_port_register(AgsPulsePort *pulse_port,
   if(pulse_port->stream != NULL){
     pulse_port->flags |= AGS_PULSE_PORT_REGISTERED;
   }
+#endif
 }
 
 void
@@ -757,11 +780,14 @@ ags_pulse_port_unregister(AgsPulsePort *pulse_port)
     return;
   }
 
+#ifdef AGS_WITH_PULSE
   if(pulse_port->stream != NULL){
     pa_stream_disconnect(pulse_port->stream);
   }
+#endif
 }
 
+#ifdef AGS_WITH_PULSE
 void
 ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPulsePort *pulse_port)
 {
@@ -1246,6 +1272,7 @@ ags_pulse_port_stream_underflow_callback(pa_stream *stream, AgsPulsePort *pulse_
 		     4);
   }
 }
+#endif
 
 guint
 ags_pulse_port_get_fixed_size(AgsPulsePort *pulse_port)
@@ -1338,12 +1365,14 @@ ags_pulse_port_set_samplerate(AgsPulsePort *pulse_port,
 
   pthread_mutex_lock(mutex);
 
+#ifdef AGS_WITH_PULSE
   pulse_port->sample_spec->rate = samplerate;
 
   pulse_port->buffer_attr->fragsize = -1;
   pulse_port->buffer_attr->maxlength = -1;
   pulse_port->buffer_attr->minreq = fixed_size;
   pulse_port->buffer_attr->tlength = fixed_size;
+#endif
 
   pthread_mutex_unlock(mutex);
 }
@@ -1374,10 +1403,12 @@ ags_pulse_port_set_buffer_size(AgsPulsePort *pulse_port,
   
   pthread_mutex_lock(mutex);
 
+#ifdef AGS_WITH_PULSE
   pulse_port->buffer_attr->fragsize = -1;
   pulse_port->buffer_attr->maxlength = -1;
   pulse_port->buffer_attr->minreq = fixed_size;
   pulse_port->buffer_attr->tlength = fixed_size;
+#endif
 
   pulse_port->buffer_size = buffer_size;
   
@@ -1385,7 +1416,7 @@ ags_pulse_port_set_buffer_size(AgsPulsePort *pulse_port,
     free(pulse_port->empty_buffer);
   }
   
-  pulse_port->empty_buffer = ags_stream_alloc(pulse_port->sample_spec->channels * buffer_size,
+  pulse_port->empty_buffer = ags_stream_alloc(pulse_port->pcm_channels * buffer_size,
 					      pulse_port->format);
 
   pthread_mutex_unlock(mutex);
@@ -1417,12 +1448,16 @@ ags_pulse_port_set_pcm_channels(AgsPulsePort *pulse_port,
 
   pthread_mutex_lock(mutex);
 
+  pulse_port->pcm_channels = pcm_channels;
+
+#ifdef AGS_WITH_PULSE
   pulse_port->sample_spec->channels = pcm_channels;
 
   pulse_port->buffer_attr->fragsize = -1;
   pulse_port->buffer_attr->maxlength = -1;
   pulse_port->buffer_attr->minreq = fixed_size;
   pulse_port->buffer_attr->tlength = fixed_size;
+#endif
 
   if(pulse_port->empty_buffer != NULL){
     free(pulse_port->empty_buffer);
@@ -1460,6 +1495,7 @@ ags_pulse_port_set_format(AgsPulsePort *pulse_port,
 
   pthread_mutex_lock(mutex);
 
+#ifdef AGS_WITH_PULSE
   switch(format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
@@ -1496,6 +1532,7 @@ ags_pulse_port_set_format(AgsPulsePort *pulse_port,
   pulse_port->buffer_attr->maxlength = -1;
   pulse_port->buffer_attr->minreq = fixed_size;
   pulse_port->buffer_attr->tlength = fixed_size;
+#endif
 
   pulse_port->format = format;
   
@@ -1503,7 +1540,7 @@ ags_pulse_port_set_format(AgsPulsePort *pulse_port,
     free(pulse_port->empty_buffer);
   }
   
-  pulse_port->empty_buffer = ags_stream_alloc(pulse_port->sample_spec->channels * pulse_port->buffer_size,
+  pulse_port->empty_buffer = ags_stream_alloc(pulse_port->pcm_channels * pulse_port->buffer_size,
 					      format);
 
   pthread_mutex_unlock(mutex);
@@ -1522,7 +1559,9 @@ ags_pulse_port_get_latency(AgsPulsePort *pulse_port)
 {
   guint latency;
 
+#ifdef AGS_WITH_PULSE
   latency = (guint) floor((gdouble) NSEC_PER_SEC / (gdouble) pulse_port->sample_spec->rate * (gdouble) pulse_port->buffer_size);
+#endif
 
   return(latency);
 }

@@ -31,6 +31,8 @@
 
 #include <ags/audio/jack/ags_jack_devout.h>
 
+#include <ags/audio/core-audio/ags_core_audio_devout.h>
+
 #include <ags/X/ags_export_window.h>
 
 #include <ags/config.h>
@@ -185,12 +187,21 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
 		   0, 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-
+  
+#ifdef AGS_WITH_CORE_AUDIO
+  gtk_combo_box_text_append_text(export_soundcard->backend,
+				 "core-audio");
+#endif
+  
+#ifdef AGS_WITH_PULSE
   gtk_combo_box_text_append_text(export_soundcard->backend,
 				 "pulse");
+#endif
   
+#ifdef AGS_WITH_JACK
   gtk_combo_box_text_append_text(export_soundcard->backend,
 				 "jack");
+#endif
   
 #ifdef AGS_WITH_ALSA
   gtk_combo_box_text_append_text(export_soundcard->backend,
@@ -552,6 +563,21 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
 				  6)){
       while(soundcard != NULL){
 	if(AGS_IS_PULSE_DEVOUT(soundcard->data)){
+	  device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
+
+	  if(device != NULL){
+	    card_start = g_list_prepend(card_start,
+					device);
+	  }
+	}
+      
+	soundcard = soundcard->next;
+      }
+    }else if(!g_ascii_strncasecmp(backend,
+				  "core-audio",
+				  6)){
+      while(soundcard != NULL){
+	if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard->data)){
 	  device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
 
 	  if(device != NULL){

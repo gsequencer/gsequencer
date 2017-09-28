@@ -25,7 +25,6 @@
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
@@ -53,6 +52,8 @@
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_line_callbacks.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include <math.h>
 
@@ -108,18 +109,21 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
 		     FALSE, FALSE,
 		     0);
 
-  if(drum_input_pad->pad.group->active)
+  if(drum_input_pad->pad.group->active){
     gtk_widget_set_sensitive((GtkWidget *) spin_button,
 			     FALSE);
+  }
 
-  //  play = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-  //					  "label", GTK_STOCK_MEDIA_PLAY,
-  //					  "use-stock", TRUE,
-  //					  "use-underline", TRUE,
-  //					  NULL);
+#if 0
+  play = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
+  					  "label", GTK_STOCK_MEDIA_PLAY,
+  					  "use-stock", TRUE,
+  					  "use-underline", TRUE,
+  					  NULL);
   gtk_box_pack_start((GtkBox *) GTK_DIALOG(file_chooser)->action_area, (GtkWidget *) play, FALSE, FALSE, 0);
   gtk_box_reorder_child((GtkBox *) GTK_DIALOG(file_chooser)->action_area, (GtkWidget *) play, 0);
-
+#endif
+  
   gtk_widget_show_all((GtkWidget *) file_chooser);
 
   g_signal_connect((GObject *) file_chooser, "response",
@@ -138,7 +142,7 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
   
   AgsApplicationContext *application_context;
   
@@ -169,8 +173,8 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
   pthread_mutex_unlock(application_mutex);
 
   /* find task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_GUI_THREAD);
 		  
   if(toggle_button->active){
     AgsPlayback *playback;
@@ -280,8 +284,8 @@ ags_drum_input_pad_open_play_callback(GtkToggleButton *toggle_button, AgsDrumInp
     start_soundcard = ags_start_soundcard_new(application_context);
     tasks = g_list_prepend(tasks, start_soundcard);
 
-    ags_task_thread_append_tasks(task_thread,
-				 tasks);
+    ags_gui_thread_schedule_task_list(gui_thread,
+				      tasks);
   }else{
     if((AGS_DRUM_INPUT_PAD_OPEN_PLAY_DONE & (drum_input_pad->flags)) == 0){
       GList *list;
@@ -348,7 +352,7 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
   
   AgsApplicationContext *application_context;
   
@@ -378,8 +382,8 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
   pthread_mutex_unlock(application_mutex);
 
   /* find task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_GUI_THREAD);
 
   if(response == GTK_RESPONSE_ACCEPT){
     name0 = gtk_file_chooser_get_filename((GtkFileChooser *) file_chooser);
@@ -416,8 +420,8 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
       g_list_free(list);
     }
 
-    ags_task_thread_append_task(task_thread,
-				AGS_TASK(open_single_file));
+    ags_gui_thread_schedule_task(gui_thread,
+				open_single_file);
 
     gtk_widget_destroy((GtkWidget *) file_chooser);
   }else if(response == GTK_RESPONSE_CANCEL){

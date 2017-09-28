@@ -150,8 +150,6 @@ ags_toggle_led_launch(AgsTask *task)
 
   guint i;
 
-  gdk_threads_enter();
-  
   toggle_led = AGS_TOGGLE_LED(task);
 
   list = toggle_led->led;
@@ -175,8 +173,6 @@ ags_toggle_led_launch(AgsTask *task)
   }
 
   g_list_free(toggle_led->led);
-  
-  gdk_threads_leave();
 }
 
 /**

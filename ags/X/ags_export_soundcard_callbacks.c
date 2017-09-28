@@ -29,6 +29,8 @@
 
 #include <ags/audio/jack/ags_jack_devout.h>
 
+#include <ags/audio/core-audio/ags_core_audio_devout.h>
+
 #include <ags/X/ags_export_window.h>
 
 void
@@ -124,6 +126,20 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
 				  "pulse",
 				  6)){
       if(AGS_IS_PULSE_DEVOUT(soundcard->data) &&
+	 !g_ascii_strcasecmp(device,
+			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
+	g_object_set(export_soundcard,
+		     "soundcard", soundcard->data,
+		     NULL);
+
+	found_card = TRUE;	
+
+	break;
+      }
+    }else if(!g_ascii_strncasecmp(backend,
+				  "core-audio",
+				  6)){
+      if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard->data) &&
 	 !g_ascii_strcasecmp(device,
 			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
 	g_object_set(export_soundcard,
@@ -236,6 +252,20 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
 				  "pulse",
 				  5)){
       if(AGS_IS_PULSE_DEVOUT(soundcard->data) &&
+	 !g_ascii_strcasecmp(device,
+			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
+	g_object_set(export_soundcard,
+		     "soundcard", soundcard->data,
+		     NULL);
+
+	found_card = TRUE;
+
+	break;
+      }
+    }else if(!g_ascii_strncasecmp(backend,
+				  "core-audio",
+				  5)){
+      if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard->data) &&
 	 !g_ascii_strcasecmp(device,
 			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
 	g_object_set(export_soundcard,

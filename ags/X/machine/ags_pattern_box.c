@@ -809,14 +809,10 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
 
-    gdk_threads_enter();
-
     machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pattern_box,
 						     AGS_TYPE_MACHINE);
 
     if(machine == NULL){
-      gdk_threads_leave();
-      
       return(TRUE);
     }
     
@@ -856,8 +852,6 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     pthread_mutex_unlock(audio_mutex);
     
     if(recall_id == NULL){      
-      gdk_threads_leave();
-      
       return(TRUE);
     }
 
@@ -890,9 +884,7 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     g_list_free(list_start);  
 
     if(play_count_beats_audio == NULL ||
-       play_count_beats_audio_run == NULL){      
-      gdk_threads_leave();
-      
+       play_count_beats_audio_run == NULL){
       return(TRUE);
     }
 
@@ -906,8 +898,6 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     ags_led_array_set_nth(pattern_box->hled_array,
 			  active_led_new);
         
-    gdk_threads_leave();
-    
     return(TRUE);
   }else{
     return(FALSE);

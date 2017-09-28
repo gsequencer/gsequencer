@@ -26,9 +26,6 @@
 
 #include <gtk/gtk.h>
 
-#include <jack/jslist.h>
-#include <jack/jack.h>
-//#include <jack/control.h>
 #include <stdbool.h>
 
 #include <libintl.h>

@@ -26,7 +26,6 @@
 
 #include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
@@ -37,6 +36,8 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
 #include <ags/X/ags_machine.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/i18n.h>
 
@@ -466,7 +467,7 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   AgsAudio *audio;
 
   AgsMutexManager *mutex_manager;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
 
@@ -514,8 +515,9 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
 
   /* get task thread */
   pthread_mutex_lock(application_mutex);
-
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(application_context->main_loop,
+						     AGS_TYPE_GUI_THREAD);
   
   pthread_mutex_unlock(application_mutex);
 
@@ -551,8 +553,8 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   pthread_mutex_unlock(audio_mutex);
 
   /* append tasks */
-  ags_task_thread_append_tasks(task_thread,
-			       task);
+  ags_gui_thread_schedule_task_list(gui_thread,
+				    task);
 }
 
 void

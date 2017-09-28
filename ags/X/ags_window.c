@@ -33,6 +33,10 @@
 #include <ags/X/machine/ags_dssi_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
 
+#ifdef AGS_WITH_QUARTZ
+#include <gtkmacintegration-gtk2/gtkosxapplication.h>
+#endif
+
 #include <stdlib.h>
 
 #include <ags/i18n.h>
@@ -447,11 +451,36 @@ ags_window_show(GtkWidget *widget)
 {
   AgsWindow *window;
 
+#ifdef AGS_WITH_QUARTZ
+  GtkosxApplication *app;
+
+  GList *list;
+#endif
+
   window = (AgsWindow *) widget;
 
-  gtk_widget_show((GtkWidget *) window->menu_bar);
-
   GTK_WIDGET_CLASS(ags_window_parent_class)->show(widget);
+
+#ifndef AGS_WITH_QUARTZ
+  gtk_widget_show((GtkWidget *) window->menu_bar);
+#else
+  app = gtkosx_application_get();
+
+  gtk_widget_hide((GtkWidget *) window->menu_bar);
+  gtkosx_application_set_menu_bar(app,
+				  window->menu_bar);
+
+  list = gtk_container_get_children(window->menu_bar);
+
+  while(list != NULL){
+    gtk_widget_show(list->data);
+
+    list = list->next;
+  }
+
+  gtkosx_application_sync_menubar(app);
+  gtkosx_application_ready(app);
+#endif
 }
 
 gboolean

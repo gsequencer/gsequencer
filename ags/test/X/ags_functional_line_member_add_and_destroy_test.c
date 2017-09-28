@@ -39,6 +39,8 @@
 #include "gsequencer_setup_util.h"
 #include "ags_functional_test_util.h"
 
+void ags_functional_line_member_add_and_destroy_test_add_test();
+
 int ags_functional_line_member_add_and_destroy_test_init_suite();
 int ags_functional_line_member_add_and_destroy_test_clean_suite();
 
@@ -83,14 +85,41 @@ void ags_functional_line_member_add_and_destroy_test_ffplayer();
   "auto-sense=true\n"				       \
   "\n"
 
+CU_pSuite pSuite = NULL;
+volatile gboolean is_available;
+
 extern AgsApplicationContext *ags_application_context;
-
-extern struct sigaction ags_test_sigact;
-
-extern volatile gboolean ags_show_start_animation;
 
 AgsGuiThread *gui_thread;
 AgsTaskThread *task_thread;
+
+void
+ags_functional_line_member_add_and_destroy_test_add_test()
+{
+
+  /* add the tests to the suite */
+  if((CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsPanel\0", ags_functional_line_member_add_and_destroy_test_panel) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsMixer\0", ags_functional_line_member_add_and_destroy_test_mixer) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsDrum\0", ags_functional_line_member_add_and_destroy_test_drum) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsMatrix\0", ags_functional_line_member_add_and_destroy_test_matrix) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsSynth\0", ags_functional_line_member_add_and_destroy_test_synth) == NULL)
+#ifdef AGS_WITH_LIBINSTPATCH
+     || (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsFFPlayer\0", ags_functional_line_member_add_and_destroy_test_ffplayer) == NULL)
+#endif
+     ){
+    CU_cleanup_registry();
+      
+    exit(CU_get_error());
+  }
+  
+  /* Run all tests using the CUnit Basic interface */
+  CU_basic_set_mode(CU_BRM_VERBOSE);
+  CU_basic_run_tests();
+  
+  CU_cleanup_registry();
+  
+  exit(CU_get_error());
+}
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -99,15 +128,6 @@ AgsTaskThread *task_thread;
 int
 ags_functional_line_member_add_and_destroy_test_init_suite()
 {
-  AgsConfig *config;
-
-  config = ags_config_get_instance();
-  ags_config_load_from_data(config,
-			    AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_CONFIG,
-			    strlen(AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_CONFIG));
-
-  ags_functional_test_util_setup_and_launch();
-
   /* get gui thread */
   gui_thread = ags_thread_find_type(ags_application_context->main_loop,
 				    AGS_TYPE_GUI_THREAD);
@@ -126,8 +146,6 @@ ags_functional_line_member_add_and_destroy_test_init_suite()
 int
 ags_functional_line_member_add_and_destroy_test_clean_suite()
 {  
-  ags_thread_stop(gui_thread);  
-
   return(0);
 }
 
@@ -157,13 +175,13 @@ ags_functional_line_member_add_and_destroy_test_panel()
   ags_functional_test_util_idle();
 
   /* get machine */
-  gdk_threads_enter();
+  ags_test_enter();
 
   list_start = gtk_container_get_children(xorg_application_context->window->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_PANEL(list->data)){
@@ -218,7 +236,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -228,7 +246,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
@@ -264,7 +282,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
   CU_ASSERT(success == TRUE);
   
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = AGS_MACHINE(machine)->properties;
 
@@ -274,18 +292,18 @@ ags_functional_line_member_add_and_destroy_test_panel()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -329,7 +347,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -339,18 +357,18 @@ ags_functional_line_member_add_and_destroy_test_panel()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -392,11 +410,11 @@ ags_functional_line_member_add_and_destroy_test_panel()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -434,13 +452,13 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   ags_functional_test_util_idle();
 
   /* get machine */
-  gdk_threads_enter();
+  ags_test_enter();
 
   list_start = gtk_container_get_children(xorg_application_context->window->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_MIXER(list->data)){
@@ -495,7 +513,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -505,7 +523,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
@@ -541,7 +559,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   CU_ASSERT(success == TRUE);
   
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = AGS_MACHINE(machine)->properties;
 
@@ -551,18 +569,18 @@ ags_functional_line_member_add_and_destroy_test_mixer()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -606,7 +624,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -616,18 +634,18 @@ ags_functional_line_member_add_and_destroy_test_mixer()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -669,11 +687,11 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -711,13 +729,13 @@ ags_functional_line_member_add_and_destroy_test_drum()
   ags_functional_test_util_idle();
 
   /* get machine */
-  gdk_threads_enter();
+  ags_test_enter();
 
   list_start = gtk_container_get_children(xorg_application_context->window->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_DRUM(list->data)){
@@ -772,7 +790,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -782,7 +800,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
@@ -818,7 +836,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
   CU_ASSERT(success == TRUE);
   
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = AGS_MACHINE(machine)->properties;
 
@@ -828,18 +846,18 @@ ags_functional_line_member_add_and_destroy_test_drum()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -883,7 +901,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -893,18 +911,18 @@ ags_functional_line_member_add_and_destroy_test_drum()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -946,11 +964,11 @@ ags_functional_line_member_add_and_destroy_test_drum()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -984,13 +1002,13 @@ ags_functional_line_member_add_and_destroy_test_matrix()
   ags_functional_test_util_idle();
 
   /* get machine */
-  gdk_threads_enter();
+  ags_test_enter();
 
   list_start = gtk_container_get_children(xorg_application_context->window->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_MATRIX(list->data)){
@@ -1032,13 +1050,13 @@ ags_functional_line_member_add_and_destroy_test_synth()
   ags_functional_test_util_idle();
 
   /* get machine */
-  gdk_threads_enter();
+  ags_test_enter();
 
   list_start = gtk_container_get_children(xorg_application_context->window->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_SYNTH(list->data)){
@@ -1085,13 +1103,13 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   ags_functional_test_util_idle();
 
   /* get machine */
-  gdk_threads_enter();
+  ags_test_enter();
 
   list_start = gtk_container_get_children(xorg_application_context->window->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_FFPLAYER(list->data)){
@@ -1146,7 +1164,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -1156,7 +1174,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
@@ -1192,7 +1210,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   CU_ASSERT(success == TRUE);
   
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = AGS_MACHINE(machine)->properties;
 
@@ -1202,18 +1220,18 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -1257,7 +1275,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -1267,18 +1285,18 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -1320,11 +1338,11 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -1340,111 +1358,6 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
 int
 main(int argc, char **argv)
 {
-  CU_pSuite pSuite = NULL;
-
-  AgsConfig *config;
-
-  pthread_t *animation_thread;
-
-  struct sched_param param;
-  struct rlimit rl;
-  struct sigaction sa;
-
-  gchar *rc_filename;
-  
-  int result;
-
-  const rlim_t kStackSize = 64L * 1024L * 1024L;   // min stack size = 64 Mb
-
-#ifdef AGS_USE_TIMER
-  timer_t *timer_id
-#endif
-  
-  putenv("LC_ALL=C\0");
-  putenv("LANG=C\0");
-
-  //  mtrace();
-  atexit(ags_test_signal_cleanup);
-
-  result = getrlimit(RLIMIT_STACK, &rl);
-
-  /* set stack size 64M */
-  if(result == 0){
-    if(rl.rlim_cur < kStackSize){
-      rl.rlim_cur = kStackSize;
-      result = setrlimit(RLIMIT_STACK, &rl);
-
-      if(result != 0){
-	//TODO:JK
-      }
-    }
-  }
-
-  param.sched_priority = GSEQUENCER_RT_PRIORITY;
-      
-  if(sched_setscheduler(0, SCHED_FIFO, &param) == -1) {
-    perror("sched_setscheduler failed\0");
-  }
-
-  /* Ignore interactive and job-control signals.  */
-  signal(SIGINT, SIG_IGN);
-  signal(SIGQUIT, SIG_IGN);
-  signal(SIGTSTP, SIG_IGN);
-  signal(SIGTTIN, SIG_IGN);
-  signal(SIGTTOU, SIG_IGN);
-  signal(SIGCHLD, SIG_IGN);
-  signal(AGS_THREAD_RESUME_SIG, SIG_IGN);
-  signal(AGS_THREAD_SUSPEND_SIG, SIG_IGN);
-
-  ags_test_sigact.sa_handler = ags_test_signal_handler;
-  sigemptyset(&ags_test_sigact.sa_mask);
-  ags_test_sigact.sa_flags = 0;
-  sigaction(SIGINT, &ags_test_sigact, (struct sigaction *) NULL);
-  sigaction(SA_RESTART, &ags_test_sigact, (struct sigaction *) NULL);
-
-  XInitThreads();
-      
-  /* parse rc file */
-  rc_filename = g_strdup_printf("%s/%s\0",
-				SRCDIR,
-				"gsequencer.share/styles/ags.rc\0");
-  
-  gtk_rc_parse(rc_filename);
-  g_free(rc_filename);
-  
-  /**/
-  LIBXML_TEST_VERSION;
-
-  //ao_initialize();
-
-  //  g_thread_init(NULL);
-  gtk_init(&argc, &argv);
-
-  g_object_set(gtk_settings_get_default(),
-	       "gtk-theme-name\0", "Raleigh\0",
-	       NULL);
-  g_signal_handlers_block_matched(gtk_settings_get_default(),
-				  G_SIGNAL_MATCH_DETAIL,
-				  g_signal_lookup("set-property\0",
-						  GTK_TYPE_SETTINGS),
-				  g_quark_from_string("gtk-theme-name\0"),
-				  NULL,
-				  NULL,
-				  NULL);
-  
-#ifdef AGS_WITH_LIBINSTPATCH
-  ipatch_init();
-#endif
-  //  g_log_set_fatal_mask("GLib-GObject\0", // "Gtk\0" G_LOG_DOMAIN, // 
-		       //		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
-
-  /* animate */
-  animation_thread = (pthread_t *) malloc(sizeof(pthread_t));
-  g_atomic_int_set(&(ags_show_start_animation),
-		   TRUE);
-  
-  ags_test_start_animation(animation_thread);
-  
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
     return CU_get_error();
@@ -1459,32 +1372,14 @@ main(int argc, char **argv)
     return CU_get_error();
   }
 
-  gtk_init(NULL,
-	   NULL);
-  //  g_log_set_fatal_mask(G_LOG_DOMAIN, // , // "Gtk\0" G_LOG_DOMAIN,"GLib-GObject\0",
-  //		       G_LOG_LEVEL_CRITICAL);
+  g_atomic_int_set(&is_available,
+		   FALSE);
+  
+  ags_test_init(&argc, &argv,
+		AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_CONFIG);
+  ags_functional_test_util_do_run(argc, argv,
+				  ags_functional_line_member_add_and_destroy_test_add_test, &is_available);
 
-  /* add the tests to the suite */
-  if((CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsPanel\0", ags_functional_line_member_add_and_destroy_test_panel) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsMixer\0", ags_functional_line_member_add_and_destroy_test_mixer) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsDrum\0", ags_functional_line_member_add_and_destroy_test_drum) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsMatrix\0", ags_functional_line_member_add_and_destroy_test_matrix) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsSynth\0", ags_functional_line_member_add_and_destroy_test_synth) == NULL)
-#ifdef AGS_WITH_LIBINSTPATCH
-     || (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsFFPlayer\0", ags_functional_line_member_add_and_destroy_test_ffplayer) == NULL)
-#endif
-     ){
-    CU_cleanup_registry();
-      
-    return CU_get_error();
-  }
-  
-  /* Run all tests using the CUnit Basic interface */
-  CU_basic_set_mode(CU_BRM_VERBOSE);
-  CU_basic_run_tests();
-  
-  CU_cleanup_registry();
-  
-  return(CU_get_error());
+  return(-1);
 }
 

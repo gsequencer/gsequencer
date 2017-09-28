@@ -445,7 +445,8 @@ ags_audio_file_check_suffix(gchar *filename)
 {
   if(g_str_has_suffix(filename, ".wav") ||
      g_str_has_suffix(filename, ".ogg") ||
-     g_str_has_suffix(filename, ".flac")){
+     g_str_has_suffix(filename, ".flac") ||
+     g_str_has_suffix(filename, ".aiff")){
     return(TRUE);
   }
 
@@ -472,7 +473,8 @@ ags_audio_file_open(AgsAudioFile *audio_file)
   if(g_file_test(audio_file->filename, G_FILE_TEST_EXISTS)){
     if(g_str_has_suffix(audio_file->filename, ".wav") ||
        g_str_has_suffix(audio_file->filename, ".ogg") ||
-       g_str_has_suffix(audio_file->filename, ".flac")){
+       g_str_has_suffix(audio_file->filename, ".flac") ||
+       g_str_has_suffix(audio_file->filename, ".aiff")){
       GError *error;
       guint loop_start, loop_end;
 
@@ -529,7 +531,8 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
 
   if(g_str_has_suffix(audio_file->filename, ".wav") ||
      g_str_has_suffix(audio_file->filename, ".ogg") ||
-     g_str_has_suffix(audio_file->filename, ".flac")){
+     g_str_has_suffix(audio_file->filename, ".flac") ||
+     g_str_has_suffix(audio_file->filename, ".aiff")){
     GError *error;
     guint loop_start, loop_end;
 
@@ -588,7 +591,8 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
   if(data != NULL){
     if(g_str_has_suffix(audio_file->filename, ".wav") ||
        g_str_has_suffix(audio_file->filename, ".ogg") ||
-       g_str_has_suffix(audio_file->filename, ".flac")){
+       g_str_has_suffix(audio_file->filename, ".flac") ||
+       g_str_has_suffix(audio_file->filename, ".aiff")){
       GError *error;
       guint loop_start, loop_end;
 

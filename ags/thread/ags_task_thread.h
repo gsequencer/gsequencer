@@ -39,7 +39,9 @@
 #define AGS_IS_TASK_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_TASK_THREAD))
 #define AGS_TASK_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_TASK_THREAD, AgsTaskThreadClass))
 
+#ifndef AGS_TASK_THREAD_RT_PRIORITY
 #define AGS_TASK_THREAD_RT_PRIORITY (95)
+#endif
 
 #define AGS_TASK_THREAD_DEFAULT_JIFFIE (AGS_THREAD_MAX_PRECISION)
 
@@ -47,15 +49,33 @@ typedef struct _AgsTaskThread AgsTaskThread;
 typedef struct _AgsTaskThreadClass AgsTaskThreadClass;
 typedef struct _AgsTaskThreadAppend AgsTaskThreadAppend;
 
+typedef enum{
+  AGS_TASK_THREAD_EXTERN_SYNC                = 1,
+  AGS_TASK_THREAD_EXTERN_READY               = 1 <<  1,
+  AGS_TASK_THREAD_EXTERN_AVAILABLE           = 1 <<  2,
+  AGS_TASK_THREAD_SYNC_WAIT                  = 1 <<  3,
+  AGS_TASK_THREAD_SYNC_DONE                  = 1 <<  4,
+  AGS_TASK_THREAD_EXTERN_SYNC_WAIT           = 1 <<  5,
+  AGS_TASK_THREAD_EXTERN_SYNC_DONE           = 1 <<  6,
+}AgsTaskThreadFlags;
+
 struct _AgsTaskThread
 {
   AgsThread thread;
 
-  guint flags;
+  volatile guint flags;
 
   volatile gboolean is_run;
   volatile guint wait_ref;  
 
+  pthread_mutexattr_t *sync_mutexattr;
+  pthread_mutex_t *sync_mutex;
+  pthread_cond_t *sync_cond;
+
+  pthread_mutexattr_t *extern_sync_mutexattr;
+  pthread_mutex_t *extern_sync_mutex;
+  pthread_cond_t *extern_sync_cond;
+  
   pthread_mutexattr_t *run_mutexattr;
   pthread_mutex_t *run_mutex;
   pthread_cond_t *run_cond;

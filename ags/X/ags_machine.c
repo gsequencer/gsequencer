@@ -27,7 +27,6 @@
 #include <ags/object/ags_plugin.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 #include <ags/thread/ags_task_completion.h>
 
 #include <ags/file/ags_file.h>
@@ -954,8 +953,6 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
   
   pthread_mutex_unlock(application_mutex);
 
-  gdk_threads_enter();
-  
   if(audio_channels > audio_channels_old){
     /* grow lines */
     AgsPad *pad;
@@ -1211,8 +1208,6 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
       g_list_free(list_input_pad_start);
     }
   }
-
-  gdk_threads_leave();
 }
 
 /**
@@ -1272,8 +1267,6 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
 					 (GObject *) audio);
   
   pthread_mutex_unlock(application_mutex);
-
-  gdk_threads_enter();
   
   if(pads_old < pads){
     pthread_mutex_lock(audio_mutex);
@@ -1376,38 +1369,38 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
       }
     }
   }else if(pads_old > pads){
-    GList *list, *list_next;
-
+    GList *list, *list_start;
+    
     /* input - destroy AgsPad's */
-    if(type == AGS_TYPE_INPUT){
-      list = gtk_container_get_children(GTK_CONTAINER(machine->input));
-      list = g_list_nth(list, pads);
+    if(type == AGS_TYPE_INPUT &&
+       machine->input != NULL){
+      for(i = 0; i < pads_old - pads; i++){
+	list_start = gtk_container_get_children(GTK_CONTAINER(machine->input));
+	list = g_list_nth(list_start, pads);
 
-      while(list != NULL){
-	list_next = list->next;
-
-	gtk_widget_destroy(GTK_WIDGET(list->data));
-
-	list = list_next;
+	if(list != NULL){
+	  gtk_widget_destroy(GTK_WIDGET(list->data));
+	}
+	
+	g_list_free(list_start);
       }
     }
     
     /* output - destroy AgsPad's */
-    if(type == AGS_TYPE_OUTPUT){
-      list = gtk_container_get_children(GTK_CONTAINER(machine->output));
-      list = g_list_nth(list, pads);
+    if(type == AGS_TYPE_OUTPUT &&
+       machine->output != NULL){
+      for(i = 0; i < pads_old - pads; i++){
+	list_start = gtk_container_get_children(GTK_CONTAINER(machine->output));
+	list = g_list_nth(list_start, pads);
 
-      while(list != NULL){
-	list_next = list->next;
-
-	gtk_widget_destroy(GTK_WIDGET(list->data));
-
-	list = list_next;
+	if(list != NULL){
+	  gtk_widget_destroy(GTK_WIDGET(list->data));
+	}
+	
+	g_list_free(list_start);
       }
     }
   }
-
-  gdk_threads_leave();
 }
 
 /**
@@ -1622,7 +1615,7 @@ ags_machine_set_run_extended(AgsMachine *machine,
 
   AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
 
@@ -1670,8 +1663,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type((AgsThread *) audio_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) audio_loop,
+						       AGS_TYPE_GUI_THREAD);
 
   if(run){
     AgsInitAudio *init_audio;
@@ -1750,8 +1743,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
       /* append AgsStartSoundcard and AgsStartSequencer */
       list = g_list_reverse(list);
       
-      ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
-				   list);
+      ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
+					list);
     }
   }else{
     AgsCancelAudio *cancel_audio;
@@ -1761,8 +1754,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
 					FALSE, sequencer, notation);
     
     /* append AgsCancelAudio */
-    ags_task_thread_append_task((AgsTaskThread *) task_thread,
-				(AgsTask *) cancel_audio);
+    ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+				 cancel_audio);
   }
 }
 
@@ -1936,7 +1929,7 @@ ags_machine_open_files(AgsMachine *machine,
 
   AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
 
@@ -1966,8 +1959,8 @@ ags_machine_open_files(AgsMachine *machine,
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type((AgsThread *) audio_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) audio_loop,
+						       AGS_TYPE_GUI_THREAD);
 
   /* instantiate open file task */
   open_file = ags_open_file_new(machine->audio,
@@ -1975,8 +1968,8 @@ ags_machine_open_files(AgsMachine *machine,
 				overwrite_channels,
 				create_channels);
 
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(open_file));
+  ags_gui_thread_schedule_task(gui_thread,
+			       open_file);
 
 }
 

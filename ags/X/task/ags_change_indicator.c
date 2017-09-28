@@ -143,8 +143,6 @@ ags_change_indicator_launch(AgsTask *task)
   AgsChangeIndicator *change_indicator;
   GtkAdjustment *adjustment;
 
-  gdk_threads_enter();
-  
   change_indicator = AGS_CHANGE_INDICATOR(task);
 
   g_object_get(change_indicator->indicator,
@@ -155,8 +153,6 @@ ags_change_indicator_launch(AgsTask *task)
 			   change_indicator->value);
 
   gtk_widget_queue_draw((GtkWidget *) change_indicator->indicator);
-
-  gdk_threads_leave();
 }
 
 /**

@@ -41,7 +41,6 @@ void ags_hindicator_draw(AgsHIndicator *indicator);
  */
 
 static gpointer ags_hindicator_parent_class = NULL;
-GtkStyle *indicator_style;
 
 GType
 ags_hindicator_get_type(void)

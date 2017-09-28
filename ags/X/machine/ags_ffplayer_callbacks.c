@@ -24,8 +24,10 @@
 #include <ags/object/ags_main_loop.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_output.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_playable.h>
 
@@ -35,15 +37,13 @@
 #include <ags/audio/task/ags_open_sf2_sample.h>
 #include <ags/audio/task/ags_add_audio_signal.h>
 
+#include <ags/audio/file/ags_audio_file.h>
+#include <ags/audio/file/ags_ipatch_sf2_reader.h>
+
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_editor.h>
 
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_output.h>
-
-#include <ags/audio/file/ags_audio_file.h>
-#include <ags/audio/file/ags_ipatch_sf2_reader.h>
+#include <ags/X/thread/ags_gui_thread.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <libinstpatch/libinstpatch.h>
@@ -179,7 +179,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
   
@@ -221,8 +221,8 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						       AGS_TYPE_GUI_THREAD);
 
   /* lookup audio mutex */
   pthread_mutex_lock(application_mutex);
@@ -362,8 +362,8 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
       
   /* append tasks */
   task = g_list_reverse(task);
-  ags_task_thread_append_tasks(task_thread,
-			       task);
+  ags_gui_thread_schedule_task_list(gui_thread,
+				    task);
 #endif
 }
 

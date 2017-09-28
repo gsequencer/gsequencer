@@ -64,11 +64,11 @@ ags_toolbar_position_callback(GtkToggleButton *toggle_button, AgsToolbar *toolba
       rectangle->width = width;
       rectangle->height = height;
 
-      gdk_window_invalidate_rect(GTK_WIDGET(AGS_PATTERN_EDIT(editor->current_edit_widget)->drawing_area)->window,
-				 rectangle,
-				 TRUE);
-      gdk_window_process_updates(GTK_WIDGET(AGS_PATTERN_EDIT(editor->current_edit_widget)->drawing_area)->window,
-				 TRUE);
+      //      gdk_window_invalidate_rect(GTK_WIDGET(AGS_PATTERN_EDIT(editor->current_edit_widget)->drawing_area)->window,
+      //				 rectangle,
+      //				 TRUE);
+      //      gdk_window_process_updates(GTK_WIDGET(AGS_PATTERN_EDIT(editor->current_edit_widget)->drawing_area)->window,
+      //				 TRUE);
     }
     
     g_free(rectangle);
@@ -89,10 +89,19 @@ ags_toolbar_position_callback(GtkToggleButton *toggle_button, AgsToolbar *toolba
       cr = gdk_cairo_create(GTK_WIDGET(AGS_NOTE_EDIT(editor->current_edit_widget)->drawing_area)->window);
     
       ags_note_edit_draw_position(AGS_NOTE_EDIT(editor->current_edit_widget), cr);
+
+      cairo_paint(cr);
+
+      cairo_surface_mark_dirty(cairo_get_target(cr));
+      cairo_destroy(cr);
     }else if(AGS_IS_PATTERN_EDIT(editor->current_edit_widget)){
       cr = gdk_cairo_create(GTK_WIDGET(AGS_PATTERN_EDIT(editor->current_edit_widget)->drawing_area)->window);
     
       ags_pattern_edit_draw_position(AGS_PATTERN_EDIT(editor->current_edit_widget), cr);
+cairo_paint(cr);
+
+      cairo_surface_mark_dirty(cairo_get_target(cr));
+      cairo_destroy(cr);
     }
   }
 }
@@ -190,6 +199,12 @@ void
 ags_toolbar_tool_popup_crop_note_callback(GtkWidget *item, AgsToolbar *toolbar)
 {
   gtk_widget_show_all(toolbar->crop_note);
+}
+
+void
+ags_toolbar_tool_popup_select_note_callback(GtkWidget *item, AgsToolbar *toolbar)
+{
+  gtk_widget_show_all(toolbar->select_note);
 }
 
 void

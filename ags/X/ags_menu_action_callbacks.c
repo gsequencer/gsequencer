@@ -28,7 +28,6 @@
 #include <ags/file/ags_file.h>
 
 #include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2_plugin.h>
@@ -45,6 +44,8 @@
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_export_window.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/X/import/ags_midi_import_wizard.h>
 
@@ -330,7 +331,7 @@ ags_menu_action_add_panel_callback(GtkWidget *menu_item, gpointer data)
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   pthread_mutex_t *application_mutex;
     
@@ -348,15 +349,15 @@ ags_menu_action_add_panel_callback(GtkWidget *menu_item, gpointer data)
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						     AGS_TYPE_GUI_THREAD);
 
   panel = ags_panel_new(G_OBJECT(window->soundcard));
 
   add_audio = ags_add_audio_new(window->soundcard,
 				AGS_MACHINE(panel)->audio);
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(add_audio));
+  ags_gui_thread_schedule_task(gui_thread,
+			       add_audio);
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(panel),
@@ -385,7 +386,7 @@ ags_menu_action_add_mixer_callback(GtkWidget *menu_item, gpointer data)
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   pthread_mutex_t *application_mutex;
     
@@ -403,15 +404,15 @@ ags_menu_action_add_mixer_callback(GtkWidget *menu_item, gpointer data)
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						     AGS_TYPE_GUI_THREAD);
 
   mixer = ags_mixer_new(G_OBJECT(window->soundcard));
 
   add_audio = ags_add_audio_new(window->soundcard,
 				AGS_MACHINE(mixer)->audio);
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(add_audio));
+  ags_gui_thread_schedule_task(gui_thread,
+			       add_audio);
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(mixer),
@@ -439,7 +440,7 @@ ags_menu_action_add_drum_callback(GtkWidget *menu_item, gpointer data)
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   pthread_mutex_t *application_mutex;
     
@@ -459,13 +460,13 @@ ags_menu_action_add_drum_callback(GtkWidget *menu_item, gpointer data)
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						     AGS_TYPE_GUI_THREAD);
   
   add_audio = ags_add_audio_new(window->soundcard,
 				AGS_MACHINE(drum)->audio);
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(add_audio));
+  ags_gui_thread_schedule_task(gui_thread,
+			       add_audio);
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(drum),
@@ -496,7 +497,7 @@ ags_menu_action_add_matrix_callback(GtkWidget *menu_item, gpointer data)
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   pthread_mutex_t *application_mutex;
   
@@ -516,13 +517,13 @@ ags_menu_action_add_matrix_callback(GtkWidget *menu_item, gpointer data)
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						     AGS_TYPE_GUI_THREAD);
 
   add_audio = ags_add_audio_new(window->soundcard,
 				AGS_MACHINE(matrix)->audio);
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(add_audio));
+  ags_gui_thread_schedule_task(gui_thread,
+			       add_audio);
   
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(matrix),
@@ -553,7 +554,7 @@ ags_menu_action_add_synth_callback(GtkWidget *menu_item, gpointer data)
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   pthread_mutex_t *application_mutex;
     
@@ -573,13 +574,13 @@ ags_menu_action_add_synth_callback(GtkWidget *menu_item, gpointer data)
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						     AGS_TYPE_GUI_THREAD);
 
   add_audio = ags_add_audio_new(window->soundcard,
 				AGS_MACHINE(synth)->audio);
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(add_audio));
+  ags_gui_thread_schedule_task(gui_thread,
+			       add_audio);
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     (GtkWidget *) synth,
@@ -605,7 +606,7 @@ ags_menu_action_add_syncsynth_callback(GtkWidget *menu_item, gpointer data)
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   pthread_mutex_t *application_mutex;
   
@@ -625,13 +626,13 @@ ags_menu_action_add_syncsynth_callback(GtkWidget *menu_item, gpointer data)
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						     AGS_TYPE_GUI_THREAD);
 
   add_audio = ags_add_audio_new(window->soundcard,
 				AGS_MACHINE(syncsynth)->audio);
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(add_audio));
+  ags_gui_thread_schedule_task(gui_thread,
+			       add_audio);
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     (GtkWidget *) syncsynth,
@@ -657,7 +658,7 @@ ags_menu_action_add_ffplayer_callback(GtkWidget *menu_item, gpointer data)
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   pthread_mutex_t *application_mutex;
   
@@ -677,13 +678,13 @@ ags_menu_action_add_ffplayer_callback(GtkWidget *menu_item, gpointer data)
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						     AGS_TYPE_GUI_THREAD);
 
   add_audio = ags_add_audio_new(window->soundcard,
 				AGS_MACHINE(ffplayer)->audio);
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(add_audio));
+  ags_gui_thread_schedule_task(gui_thread,
+			       add_audio);
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     (GtkWidget *) ffplayer,
@@ -710,7 +711,7 @@ ags_menu_action_add_ladspa_bridge_callback(GtkWidget *menu_item, gpointer data)
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   gchar *filename, *effect;
   
@@ -738,13 +739,13 @@ ags_menu_action_add_ladspa_bridge_callback(GtkWidget *menu_item, gpointer data)
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						     AGS_TYPE_GUI_THREAD);
   
   add_audio = ags_add_audio_new(window->soundcard,
 				AGS_MACHINE(ladspa_bridge)->audio);
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(add_audio));
+  ags_gui_thread_schedule_task(gui_thread,
+			       add_audio);
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(ladspa_bridge),
@@ -778,7 +779,7 @@ ags_menu_action_add_dssi_bridge_callback(GtkWidget *menu_item, gpointer data)
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   gchar *filename, *effect;
   
@@ -806,13 +807,13 @@ ags_menu_action_add_dssi_bridge_callback(GtkWidget *menu_item, gpointer data)
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						     AGS_TYPE_GUI_THREAD);
   
   add_audio = ags_add_audio_new(window->soundcard,
 				AGS_MACHINE(dssi_bridge)->audio);
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(add_audio));
+  ags_gui_thread_schedule_task(gui_thread,
+			       add_audio);
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(dssi_bridge),
@@ -846,7 +847,7 @@ ags_menu_action_add_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   AgsLv2Plugin *lv2_plugin;
 
@@ -905,13 +906,13 @@ ags_menu_action_add_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						     AGS_TYPE_GUI_THREAD);
   
   add_audio = ags_add_audio_new(window->soundcard,
 				AGS_MACHINE(lv2_bridge)->audio);
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(add_audio));
+  ags_gui_thread_schedule_task(gui_thread,
+			       add_audio);
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(lv2_bridge),
@@ -952,7 +953,7 @@ ags_menu_action_add_live_dssi_bridge_callback(GtkWidget *menu_item, gpointer dat
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   gchar *filename, *effect;
   
@@ -980,13 +981,13 @@ ags_menu_action_add_live_dssi_bridge_callback(GtkWidget *menu_item, gpointer dat
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						     AGS_TYPE_GUI_THREAD);
   
   add_audio = ags_add_audio_new(window->soundcard,
 				AGS_MACHINE(live_dssi_bridge)->audio);
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(add_audio));
+  ags_gui_thread_schedule_task(gui_thread,
+			       add_audio);
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(live_dssi_bridge),
@@ -1020,7 +1021,7 @@ ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data
 
   AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   AgsLv2Plugin *lv2_plugin;
 
@@ -1053,13 +1054,13 @@ ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						     AGS_TYPE_GUI_THREAD);
   
   add_audio = ags_add_audio_new(window->soundcard,
 				AGS_MACHINE(live_lv2_bridge)->audio);
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(add_audio));
+  ags_gui_thread_schedule_task(gui_thread,
+			       add_audio);
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(live_lv2_bridge),
@@ -1188,8 +1189,10 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
   static FILE *file = NULL;
   struct stat sb;
   static gchar *license;
-  static GdkPixbuf *logo;
+  static GdkPixbuf *logo = NULL;
 
+  gchar *license_filename;
+  gchar *logo_filename;
   gchar *str;
   
   int n_read;
@@ -1198,11 +1201,19 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 
   gchar *authors[] = { "Joël Krähemann", NULL }; 
 
-  if(g_file_test("/usr/share/common-licenses/GPL-3",
+#ifdef AGS_LICENSE_FILENAME
+  license_filename = AGS_LICENSE_FILENAME;
+#else
+  if((license_filename = getenv("AGS_LICENSE_FILENAME")) == NULL){
+    license_filename = "/usr/share/common-licenses/GPL-3";
+  }
+#endif
+  
+  if(g_file_test(license_filename,
 		 G_FILE_TEST_EXISTS)){
     if(file == NULL){
-      file = fopen("/usr/share/common-licenses/GPL-3", "r");
-      stat("/usr/share/common-licenses/GPL-3", &sb);
+      file = fopen(license_filename, "r");
+      stat(license_filename, &sb);
       license = (gchar *) malloc((sb.st_size + 1) * sizeof(gchar));
 
       n_read = fread(license, sizeof(char), sb.st_size, file);
@@ -1214,12 +1225,22 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
       license[sb.st_size] = '\0';
       fclose(file);
 
+#ifdef AGS_LOGO_FILENAME
+      logo_filename = g_strdup(AGS_LOGO_FILENAME);
+#else
+      if((logo_filename = getenv("AGS_LOGO_FILENAME")) == NULL){
+	logo_filename = g_strdup_printf("%s%s", DESTDIR, "/gsequencer/images/ags.png");
+      }else{
+	logo_filename = g_strdup(logo_filename);
+      }
+#endif
+
       error = NULL;
-
-      str = g_strdup_printf("%s%s", DESTDIR, "/gsequencer/images/ags.png");
-      logo = gdk_pixbuf_new_from_file(str, &error);
-
-      g_free(str);
+      logo = gdk_pixbuf_new_from_file(logo_filename,
+				      &error);
+  
+      //g_free(logo_filename);
+  
     }
   }
 

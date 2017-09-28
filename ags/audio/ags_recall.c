@@ -54,7 +54,10 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_port.h>
+#include <ags/audio/ags_recycling_context.h>
+#include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
+#include <ags/audio/ags_recall_dependency.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_channel.h>
@@ -65,13 +68,11 @@
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <ags/i18n.h>
 
 #include <libxml/tree.h>
 
-#include <ags/i18n.h>
+#include <string.h>
 
 void ags_recall_class_init(AgsRecallClass *recall_class);
 void ags_recall_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -870,8 +871,9 @@ ags_recall_set_property(GObject *gobject,
 	 !(AGS_IS_RECALL_AUDIO(recall) ||
 	   AGS_IS_RECALL_AUDIO_RUN(recall) ||
 	   AGS_IS_RECALL_CHANNEL(recall) ||
-	   AGS_IS_RECALL_CHANNEL_RUN(recall)))
+	   AGS_IS_RECALL_CHANNEL_RUN(recall))){
 	return;
+      }
 
       if(recall->container != NULL){
 	ags_packable_unpack(AGS_PACKABLE(recall));
@@ -1152,8 +1154,9 @@ ags_recall_pack(AgsPackable *packable, GObject *container)
 
   if(recall == NULL ||
      recall->container == container ||
-     (container != NULL && !AGS_IS_RECALL_CONTAINER(container)))
+     (container != NULL && !AGS_IS_RECALL_CONTAINER(container))){
     return(TRUE);
+  }
 
 #ifdef AGS_DEBUG
   g_message("===== packing: %s", G_OBJECT_TYPE_NAME(recall));
@@ -2338,8 +2341,9 @@ void
 ags_recall_add_dependency(AgsRecall *recall, AgsRecallDependency *recall_dependency)
 {
   if(recall == NULL ||
-     recall_dependency == NULL)
+     recall_dependency == NULL){
     return;
+  }
 
   g_object_ref(recall_dependency);
   
@@ -2365,13 +2369,15 @@ ags_recall_remove_dependency(AgsRecall *recall, AgsRecall *dependency)
   GList *dependencies;
 
   if(recall == NULL ||
-     dependency == NULL)
+     dependency == NULL){
     return;
+  }
 
   dependencies = ags_recall_dependency_find_dependency(recall->dependencies, (GObject *) dependency);
 
-  if(dependencies == NULL)
+  if(dependencies == NULL){
     return;
+  }
 
   recall_dependency = AGS_RECALL_DEPENDENCY(dependencies->data);
   recall->dependencies = g_list_delete_link(recall->dependencies, dependencies);
@@ -2681,14 +2687,14 @@ ags_recall_find_recall_id_with_effect(GList *list, AgsRecallID *recall_id, gchar
  * Since: 0.4
  */
 GList*
-ags_recall_find_type(GList *recall_i, GType type)
+ags_recall_find_type(GList *recall_i, GType gtype)
 {
   AgsRecall *recall;
 
   while(recall_i != NULL){
     recall = AGS_RECALL(recall_i->data);
 
-    if(G_OBJECT_TYPE(recall) == type){
+    if(G_OBJECT_TYPE(recall) == gtype){
       break;
     }
 
@@ -2717,8 +2723,9 @@ ags_recall_find_template(GList *recall_i)
   while(recall_i != NULL){
     recall = AGS_RECALL(recall_i->data);
 
-    if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0)
+    if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
       return(recall_i);
+    }
 
     recall_i = recall_i->next;
   }
@@ -2739,7 +2746,7 @@ ags_recall_find_template(GList *recall_i)
  * Since: 0.4
  */
 GList*
-ags_recall_template_find_type(GList *recall_i, GType type)
+ags_recall_template_find_type(GList *recall_i, GType gtype)
 {
   AgsRecall *recall;
 
@@ -2748,8 +2755,9 @@ ags_recall_template_find_type(GList *recall_i, GType type)
 
     if(AGS_IS_RECALL(recall) &&
        (AGS_RECALL_TEMPLATE & (recall->flags)) != 0 &&
-       G_OBJECT_TYPE(recall) == type)
+       G_OBJECT_TYPE(recall) == gtype){
       break;
+    }
 
     recall_i = recall_i->next;
   }
@@ -2788,7 +2796,13 @@ ags_recall_template_find_all_type(GList *recall_i, ...)
 
   i = 0;
   
-  while((current = va_arg(ap, GType)) != G_TYPE_NONE){
+  while(TRUE){
+    current = va_arg(ap, GType);
+
+    if(current == G_TYPE_NONE){
+      break;
+    }
+    
     recall_types = (GType *) realloc(recall_types,
 				     (i + 2) * sizeof(GType));
     recall_types[i] = current;
@@ -2840,14 +2854,14 @@ ags_recall_template_find_all_type(GList *recall_i, ...)
  * Since: 0.4
  */
 GList*
-ags_recall_find_type_with_recycling_context(GList *recall_i, GType type, GObject *recycling_context)
+ags_recall_find_type_with_recycling_context(GList *recall_i, GType gtype, GObject *recycling_context)
 {
   AgsRecall *recall;
 
   while(recall_i != NULL){
     recall = AGS_RECALL(recall_i->data);
 
-    if(g_type_is_a(G_OBJECT_TYPE(recall), type) &&
+    if(g_type_is_a(G_OBJECT_TYPE(recall), gtype) &&
        recall->recall_id != NULL &&
        recall->recall_id->recycling_context == (AgsRecyclingContext *) recycling_context){
       return(recall_i);
@@ -2883,14 +2897,15 @@ ags_recall_find_recycling_context(GList *recall_i, GObject *recycling_context)
   while(recall_i != NULL){
     recall = AGS_RECALL(recall_i->data);
 
-    if(recall->recall_id != NULL)
 #ifdef AGS_DEBUG
+    if(recall->recall_id != NULL){
       g_message("ags_recall_find_recycling_context: recall_id->recycling_contianer = %llx\n", (long long unsigned int) recall->recall_id->recycling_context);
+    }
 #endif
 
     if(recall->recall_id != NULL &&
        recall->recall_id->recycling_context == (AgsRecyclingContext *) recycling_context){
-	return(recall_i);
+      return(recall_i);
     }
 
     recall_i = recall_i->next;
@@ -2922,8 +2937,9 @@ ags_recall_find_provider(GList *recall_i, GObject *provider)
 
     if(AGS_IS_AUDIO(provider)){
       if(AGS_IS_RECALL_AUDIO(recall)){
-	if(((GObject *) AGS_RECALL_AUDIO(recall)->audio) == provider)
+	if(((GObject *) AGS_RECALL_AUDIO(recall)->audio) == provider){
 	  return(recall_i);
+	}
       }else if(AGS_IS_RECALL_AUDIO_RUN(recall)){
 	AgsRecallAudio *recall_audio;
 
@@ -3177,7 +3193,8 @@ ags_recall_new()
 {
   AgsRecall *recall;
 
-  recall = (AgsRecall *) g_object_new(AGS_TYPE_RECALL, NULL);
+  recall = (AgsRecall *) g_object_new(AGS_TYPE_RECALL,
+				      NULL);
 
   return(recall);
 }

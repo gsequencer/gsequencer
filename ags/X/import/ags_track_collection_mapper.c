@@ -32,7 +32,6 @@
 #else
 #include <ags/thread/ags_thread-posix.h>
 #endif 
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
@@ -41,6 +40,8 @@
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/X/import/ags_midi_import_wizard.h>
 #include <ags/X/import/ags_track_collection.h>
@@ -461,7 +462,7 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
   AgsAddAudio *add_audio;
 
   AgsThread *main_loop;
-  AgsTaskThread *task_thread;
+  AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
 
@@ -484,8 +485,8 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
   application_context = (AgsApplicationContext *) window->application_context;
   
   main_loop = (AgsThread *) application_context->main_loop;
-  task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						     AGS_TYPE_GUI_THREAD);
 
   /* create machine */
   machine_type = gtk_combo_box_text_get_active_text(track_collection_mapper->machine_type);
@@ -535,8 +536,8 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
   /* add audio */  
   add_audio = ags_add_audio_new(window->soundcard,
 				machine->audio);
-  ags_task_thread_append_task(task_thread,
-			      AGS_TASK(add_audio));
+  ags_gui_thread_schedule_task(gui_thread,
+			       add_audio);
   
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(machine),

@@ -36,7 +36,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <stdio.h>
+#include <string.h>
 
 #include <ags/config.h>
 
@@ -146,11 +146,81 @@ ags_lv2_manager_init(AgsLv2Manager *lv2_manager)
 
   /* initiliaze ags_lv2_default_path string vector */
   if(ags_lv2_default_path == NULL){
-    ags_lv2_default_path = (gchar **) malloc(3 * sizeof(gchar *));
+    gchar *lv2_env;
 
-    ags_lv2_default_path[0] = g_strdup("/usr/lib/lv2");
-    ags_lv2_default_path[1] = g_strdup("/usr/lib64/lv2");
-    ags_lv2_default_path[2] = NULL;
+    if((lv2_env = getenv("LV2_PATH")) != NULL){
+      gchar *iter, *next;
+      guint i;
+      
+      ags_lv2_default_path = (gchar **) malloc(sizeof(gchar *));
+
+      iter = lv2_env;
+      i = 0;
+      
+      while((next = index(iter, ':')) != NULL){
+	ags_lv2_default_path = (gchar **) realloc(ags_lv2_default_path,
+						  (i + 2) * sizeof(gchar *));
+	ags_lv2_default_path[i] = g_strndup(iter,
+					    next - iter);
+
+	iter = next + 1;
+	i++;
+      }
+
+      if(*iter != '\0'){
+	ags_lv2_default_path = (gchar **) realloc(ags_lv2_default_path,
+						  (i + 2) * sizeof(gchar *));
+	ags_lv2_default_path[i] = g_strdup(iter);
+
+	i++;	
+      }
+
+      ags_lv2_default_path[i] = NULL;
+    }else{
+      gchar *home_dir;
+      guint i;
+
+#ifdef __APPLE__
+      if((home_dir = getenv("HOME")) != NULL){
+	ags_lv2_default_path = (gchar **) malloc(5 * sizeof(gchar *));
+      }else{
+	ags_lv2_default_path = (gchar **) malloc(4 * sizeof(gchar *));
+      }
+    
+      i = 0;
+    
+      ags_lv2_default_path[i++] = g_strdup("/Library/Audio/Plug-Ins/LV2");
+      ags_lv2_default_path[i++] = g_strdup("/usr/lib/lv2");
+      ags_lv2_default_path[i++] = g_strdup("/usr/local/lib/lv2");
+
+      if(home_dir != NULL){
+	ags_lv2_default_path[i++] = g_strdup_printf("%s/Library/Audio/Plug-Ins/LV2",
+						    home_dir);
+      }
+    
+      ags_lv2_default_path[i++] = NULL;
+#else
+      if((home_dir = getenv("HOME")) != NULL){
+	ags_lv2_default_path = (gchar **) malloc(6 * sizeof(gchar *));
+      }else{
+	ags_lv2_default_path = (gchar **) malloc(5 * sizeof(gchar *));
+      }
+    
+      i = 0;
+    
+      ags_lv2_default_path[i++] = g_strdup("/usr/lib64/lv2");
+      ags_lv2_default_path[i++] = g_strdup("/usr/local/lib64/lv2");
+      ags_lv2_default_path[i++] = g_strdup("/usr/lib/lv2");
+      ags_lv2_default_path[i++] = g_strdup("/usr/local/lib/lv2");
+
+      if(home_dir != NULL){
+	ags_lv2_default_path[i++] = g_strdup_printf("%s/.lv2",
+						    home_dir);
+      }
+    
+      ags_lv2_default_path[i++] = NULL;
+#endif
+    }
   }
 }
 
@@ -954,8 +1024,12 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 			NULL);
 
 	/* read binary from turtle */
+	str = g_strdup_printf("//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('%s>') + 1) = '%s>']",
+			      AGS_LIBRARY_SUFFIX,
+			      AGS_LIBRARY_SUFFIX);
+	
 	binary_list = ags_turtle_find_xpath(manifest,
-					    "//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.so>') + 1) = '.so>']");
+					    str);
 
 	/* persist XML */
 	//NOTE:JK: no need for it

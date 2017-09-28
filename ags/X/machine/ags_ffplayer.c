@@ -1497,6 +1497,9 @@ ags_ffplayer_paint(AgsFFPlayer *ffplayer)
       cairo_stroke(cr);
     }
   }
+  
+  cairo_surface_mark_dirty(cairo_get_target(cr));
+  cairo_destroy(cr);
 }
 
 void

@@ -23,7 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/config.h>
+
+#ifdef AGS_WITH_JACK
 #include <jack/jack.h>
+#endif
 
 #define AGS_TYPE_JACK_CLIENT                (ags_jack_client_get_type())
 #define AGS_JACK_CLIENT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_JACK_CLIENT, AgsJackClient))
@@ -54,7 +58,11 @@ struct _AgsJackClient
   gchar *uuid;
   gchar *name;
   
+#ifdef AGS_WITH_JACK
   jack_client_t *client;
+#else
+  gpointer client;
+#endif
 
   GList *device;
   GList *port;

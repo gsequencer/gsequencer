@@ -38,7 +38,8 @@ typedef struct _AgsAutomationToolbar AgsAutomationToolbar;
 typedef struct _AgsAutomationToolbarClass AgsAutomationToolbarClass;
 
 typedef enum{
-  AGS_AUTOMATION_TOOLBAR_RESET_PORT   = 1,
+  AGS_AUTOMATION_TOOLBAR_CONNECTED    = 1,
+  AGS_AUTOMATION_TOOLBAR_RESET_PORT   = 1 << 1,
 }AgsAutomationToolbarFlags;
 
 struct _AgsAutomationToolbar
@@ -57,6 +58,12 @@ struct _AgsAutomationToolbar
   GtkButton *cut;
   GtkButton *paste;
 
+  GtkMenuToolButton *menu_tool;
+  GtkMenu *tool_popup;
+
+  GtkDialog *select_acceleration;
+  GtkDialog *ramp_acceleration;
+
   guint zoom_history;
   GtkComboBox *zoom;
 
@@ -73,6 +80,8 @@ GType ags_automation_toolbar_get_type(void);
 void ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar);
 void ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 				       gchar *control_name);
+
+GtkMenu* ags_automation_toolbar_tool_popup_new(GtkToolbar *automation_toolbar);
 
 AgsAutomationToolbar* ags_automation_toolbar_new();
 

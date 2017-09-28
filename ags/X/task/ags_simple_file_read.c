@@ -143,12 +143,8 @@ ags_simple_file_read_finalize(GObject *gobject)
 void
 ags_simple_file_read_launch(AgsTask *task)
 {  
-  gdk_threads_enter();
-
   ags_simple_file_read(AGS_SIMPLE_FILE_READ(task)->simple_file);
   ags_simple_file_close(AGS_SIMPLE_FILE_READ(task)->simple_file);
-
-  gdk_threads_leave();
 }
 
 /**

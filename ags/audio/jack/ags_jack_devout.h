@@ -25,8 +25,6 @@
 
 #include <pthread.h>
 
-#include <jack/jack.h>
-
 #define AGS_TYPE_JACK_DEVOUT                (ags_jack_devout_get_type())
 #define AGS_JACK_DEVOUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_JACK_DEVOUT, AgsJackDevout))
 #define AGS_JACK_DEVOUT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_JACK_DEVOUT, AgsJackDevout))

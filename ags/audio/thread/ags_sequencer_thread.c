@@ -277,8 +277,11 @@ ags_sequencer_thread_set_property(GObject *gobject,
 	  g_atomic_int_or(&(AGS_THREAD(sequencer_thread)->flags),
 			  (AGS_THREAD_INTERMEDIATE_PRE_SYNC));
 	}else if(AGS_IS_JACK_MIDIIN(sequencer)){
-	  g_atomic_int_and(&(AGS_THREAD(sequencer_thread)->flags),
-			   (~AGS_THREAD_INTERMEDIATE_PRE_SYNC));
+	  g_atomic_int_or(&(AGS_THREAD(sequencer_thread)->flags),
+			  (AGS_THREAD_INTERMEDIATE_PRE_SYNC));
+
+	  //	  g_atomic_int_and(&(AGS_THREAD(sequencer_thread)->flags),
+	  //		   (~AGS_THREAD_INTERMEDIATE_PRE_SYNC));
 	}
       }
 
@@ -417,6 +420,7 @@ ags_sequencer_thread_run(AgsThread *thread)
   sequencer = AGS_SEQUENCER(sequencer_thread->sequencer);
 
   /* real-time setup */
+#ifdef AGS_WITH_RT
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
     struct sched_param param;
     
@@ -430,6 +434,7 @@ ags_sequencer_thread_run(AgsThread *thread)
     g_atomic_int_or(&(thread->flags),
 		    AGS_THREAD_RT_SETUP);
   }
+#endif
 
   if(ags_sequencer_is_recording(sequencer)){
     error = NULL;

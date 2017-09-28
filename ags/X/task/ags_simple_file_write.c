@@ -143,13 +143,9 @@ ags_simple_file_write_finalize(GObject *gobject)
 void
 ags_simple_file_write_launch(AgsTask *task)
 {  
-  gdk_threads_enter();
-
   ags_simple_file_write(AGS_SIMPLE_FILE_WRITE(task)->simple_file);
   ags_simple_file_close(AGS_SIMPLE_FILE_WRITE(task)->simple_file);
   g_object_unref(AGS_SIMPLE_FILE_WRITE(task)->simple_file);
-
-  gdk_threads_leave();
 }
 
 /**

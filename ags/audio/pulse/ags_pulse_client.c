@@ -59,7 +59,9 @@ void ags_pulse_client_disconnect(AgsConnectable *connectable);
 void ags_pulse_client_dispose(GObject *gobject);
 void ags_pulse_client_finalize(GObject *gobject);
 
+#ifdef AGS_WITH_PULSE
 void ags_pulse_client_state_callback(pa_context *c, AgsPulseClient *pulse_client);
+#endif
 
 /**
  * SECTION:ags_pulse_client
@@ -555,6 +557,7 @@ ags_pulse_client_find(GList *pulse_client,
   return(NULL);
 }
 
+#ifdef AGS_WITH_PULSE
 void
 ags_pulse_client_state_callback(pa_context *c, AgsPulseClient *pulse_client)
 {
@@ -598,6 +601,7 @@ ags_pulse_client_state_callback(pa_context *c, AgsPulseClient *pulse_client)
     break;
   }
 }
+#endif
 
 /**
  * ags_pulse_client_open:
@@ -645,9 +649,15 @@ ags_pulse_client_open(AgsPulseClient *pulse_client,
   g_message("Advanced Gtk+ Sequencer open pulseaudio client");
   
   pulse_client->name = g_strdup(client_name);
+
+#ifdef AGS_WITH_PULSE
   pulse_client->context = pa_context_new(AGS_PULSE_SERVER(pulse_client->pulse_server)->main_loop_api, client_name);
+#else
+  pulse_client->context = NULL;
+#endif
 
   if(pulse_client->context != NULL){
+#ifdef AGS_WITH_PULSE
     pa_context_connect(pulse_client->context,
 		       NULL,
 		       0,
@@ -670,6 +680,7 @@ ags_pulse_client_open(AgsPulseClient *pulse_client,
 			    NULL);
       }
     }
+#endif
   }
 }
 

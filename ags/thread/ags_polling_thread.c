@@ -209,6 +209,7 @@ ags_polling_thread_run(AgsThread *thread)
   main_loop = ags_thread_get_toplevel(thread);
   
   /* real-time setup */
+#ifdef AGS_WITH_RT
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
     struct sched_param param;
     
@@ -222,6 +223,7 @@ ags_polling_thread_run(AgsThread *thread)
     g_atomic_int_or(&(thread->flags),
 		    AGS_THREAD_RT_SETUP);
   }
+#endif
 
   sigemptyset(&sigmask);
 
@@ -265,10 +267,16 @@ ags_polling_thread_run(AgsThread *thread)
 
     /* poll */	
     if(polling_thread->fds != NULL){
+#ifndef __APPLE__
       ppoll(polling_thread->fds,
 	    g_list_length(polling_thread->poll_fd),
 	    &timeout,
 	    &sigmask);
+#else
+      poll(polling_thread->fds,
+	   g_list_length(polling_thread->poll_fd),
+	   timeout.tv_nsec / 1000);
+#endif
     }
 
     /* post flag */

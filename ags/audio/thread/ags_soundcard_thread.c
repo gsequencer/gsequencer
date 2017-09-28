@@ -35,6 +35,8 @@
 
 #include <ags/audio/pulse/ags_pulse_devout.h>
 
+#include <ags/audio/core-audio/ags_core_audio_devout.h>
+
 #include <ags/audio/thread/ags_audio_loop.h>
 
 #include <ags/i18n.h>
@@ -281,8 +283,14 @@ ags_soundcard_thread_set_property(GObject *gobject,
 			  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
 	}else if(AGS_IS_JACK_DEVOUT(soundcard) ||
 		 AGS_IS_PULSE_DEVOUT(soundcard)){
-	  g_atomic_int_and(&(AGS_THREAD(soundcard_thread)->flags),
-			   (~AGS_THREAD_INTERMEDIATE_POST_SYNC));
+	  g_atomic_int_or(&(AGS_THREAD(soundcard_thread)->flags),
+			  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
+
+	  //	  g_atomic_int_and(&(AGS_THREAD(soundcard_thread)->flags),
+	  //		   (~AGS_THREAD_INTERMEDIATE_POST_SYNC));
+	}else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
+	  g_atomic_int_or(&(AGS_THREAD(soundcard_thread)->flags),
+	  		  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
 	}
       }
 
@@ -401,6 +409,10 @@ ags_soundcard_thread_start(AgsThread *thread)
     return;
   }
 
+  /* disable timing */
+  g_atomic_int_and(&(thread->flags),
+		   (~AGS_THREAD_TIMING));
+  
   /* check if already initialized */
   soundcard_thread->error = NULL;
 
@@ -478,6 +490,7 @@ ags_soundcard_thread_run(AgsThread *thread)
   pthread_mutex_unlock(application_mutex);
   
   /* real-time setup */
+#ifdef AGS_WITH_RT
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
     struct sched_param param;
     
@@ -491,6 +504,7 @@ ags_soundcard_thread_run(AgsThread *thread)
     g_atomic_int_or(&(thread->flags),
 		    AGS_THREAD_RT_SETUP);
   }
+#endif
 
   /* playback */
   pthread_mutex_lock(mutex);
@@ -535,6 +549,9 @@ ags_soundcard_thread_stop(AgsThread *thread)
 
   //FIXME:JK: is this safe?
   ags_soundcard_stop(soundcard);
+
+  g_atomic_int_or(&(thread->flags),
+		  AGS_THREAD_TIMING);
 
   /* find polling thread */
   polling_thread = (AgsPollingThread *) ags_thread_find_type(main_loop,
