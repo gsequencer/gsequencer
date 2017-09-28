@@ -596,7 +596,35 @@ ags_thread_set_property(GObject *gobject,
       }
 
       thread->freq = freq;
-      thread->delay = (guint) ceil((AGS_THREAD_HERTZ_JIFFIE / thread->freq) / (AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION));
+      thread->delay = (guint) ceil((AGS_THREAD_HERTZ_JIFFIE / thread->freq) / (AGS_THREAD_HERTZ_JIFFIE / thread->max_precision));
+      thread->tic_delay = 0;
+
+      if((AGS_THREAD_INTERMEDIATE_POST_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
+	thread->tic_delay = thread->delay;
+      }else if((AGS_THREAD_INTERMEDIATE_PRE_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
+	thread->tic_delay = 1;
+      }else{
+	thread->tic_delay = 0;
+      }
+    }
+    break;
+  case PROP_MAX_PRECISION:
+    {
+      gdouble max_precision;
+      gdouble old_max_precision;
+
+      max_precision = g_value_get_double(value);
+
+      if(max_precision == thread->max_precision){
+	return;
+      }
+
+      old_max_precision = thread->max_precision;
+      
+      thread->max_precision = max_precision;
+
+      thread->freq = thread->freq / old_max_precision * max_precision;
+      thread->delay = (guint) ceil((AGS_THREAD_HERTZ_JIFFIE / thread->freq) / (AGS_THREAD_HERTZ_JIFFIE / thread->max_precision));
       thread->tic_delay = 0;
 
       if((AGS_THREAD_INTERMEDIATE_POST_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
@@ -628,6 +656,11 @@ ags_thread_get_property(GObject *gobject,
   case PROP_FREQUENCY:
     {
       g_value_set_double(value, thread->freq);
+    }
+    break;
+  case PROP_MAX_PRECISION:
+    {
+      g_value_set_double(value, thread->max_precision);
     }
     break;
   default:
@@ -1003,7 +1036,7 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
     }
     
     /* increment delay counter and set run per cycle */
-    if(thread->freq >= AGS_THREAD_MAX_PRECISION){
+    if(thread->freq >= thread->max_precision){
       thread->tic_delay = 0;
     }else{
       if(thread->tic_delay < thread->delay){
@@ -2409,7 +2442,7 @@ ags_thread_real_clock(AgsThread *thread)
 	thread->tic_delay = chaos_tree->tic_delay;
 
 	if((AGS_THREAD_INTERMEDIATE_PRE_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
-	  if(thread->freq >= AGS_THREAD_MAX_PRECISION){
+	  if(thread->freq >= thread->max_precision){
 	    thread->tic_delay = 0;
 	  }else{
 	    if(thread->tic_delay < thread->delay){
@@ -2421,7 +2454,7 @@ ags_thread_real_clock(AgsThread *thread)
 	}
 	
 	if((AGS_THREAD_INTERMEDIATE_POST_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
-	  if(thread->freq >= AGS_THREAD_MAX_PRECISION){
+	  if(thread->freq >= thread->max_precision){
 	    thread->tic_delay = 0;
 	  }else{
 	    if(thread->tic_delay > 0){
@@ -2560,7 +2593,7 @@ ags_thread_real_clock(AgsThread *thread)
 
   if(!AGS_IS_MAIN_LOOP(main_loop)){
     if(thread->tic_delay == 0){
-      if(thread->freq >= AGS_THREAD_MAX_PRECISION){
+      if(thread->freq >= thread->max_precision){
 	steps = 1.0 / thread->delay;
       }else{
 	steps = 1;
@@ -2603,15 +2636,15 @@ ags_thread_real_clock(AgsThread *thread)
   /* calculate main loop delay */
   pthread_mutex_lock(main_loop_mutex);
   
-  main_loop_delay = AGS_THREAD_MAX_PRECISION / main_loop->freq / (AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION);
+  main_loop_delay = main_loop->max_precision / main_loop->freq / (AGS_THREAD_HERTZ_JIFFIE / main_loop->max_precision);
   
   pthread_mutex_unlock(main_loop_mutex);
   
   /* calculate thread delay */
   pthread_mutex_lock(mutex);
 
-  thread->delay = (guint) ceil((AGS_THREAD_HERTZ_JIFFIE / thread->freq) / (AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION));
-  delay_per_hertz = AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION;
+  thread->delay = (guint) ceil((AGS_THREAD_HERTZ_JIFFIE / thread->freq) / (AGS_THREAD_HERTZ_JIFFIE / thread->max_precision));
+  delay_per_hertz = AGS_THREAD_HERTZ_JIFFIE / thread->max_precision;
 
   if(thread->delay < thread->tic_delay){
     thread->tic_delay = thread->delay;
@@ -2757,7 +2790,7 @@ ags_thread_real_clock(AgsThread *thread)
   //  pthread_mutex_unlock(thread->mutex);
   /* increment delay counter and set run per cycle */
   if(thread->tic_delay == 0){
-    if(thread->freq >= AGS_THREAD_MAX_PRECISION){
+    if(thread->freq >= thread->max_precision){
       steps = 1.0 / thread->delay;
     }else{
       steps = 1;
@@ -2767,7 +2800,7 @@ ags_thread_real_clock(AgsThread *thread)
   }
 
   /* nth cycle */
-  if(thread->cycle_iteration != AGS_THREAD_MAX_PRECISION){
+  if(thread->cycle_iteration != thread->max_precision){
     thread->cycle_iteration++;
   }else{
     thread->cycle_iteration = 0;
@@ -2999,7 +3032,7 @@ ags_thread_loop(void *ptr)
 #endif
 
     thread->delay = 
-      thread->tic_delay = (AGS_THREAD_HERTZ_JIFFIE / thread->freq) / (AGS_THREAD_HERTZ_JIFFIE / AGS_THREAD_MAX_PRECISION);
+      thread->tic_delay = (AGS_THREAD_HERTZ_JIFFIE / thread->freq) / (AGS_THREAD_HERTZ_JIFFIE / thread->max_precision);
 #ifdef __APPLE__
     host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
 
@@ -3046,7 +3079,7 @@ ags_thread_loop(void *ptr)
 	queued_thread->tic_delay = thread->tic_delay;
 
 	if((AGS_THREAD_INTERMEDIATE_PRE_SYNC & (g_atomic_int_get(&(queued_thread->flags)))) != 0){
-	  if(queued_thread->freq >= AGS_THREAD_MAX_PRECISION){
+	  if(queued_thread->freq >= queued_thread->max_precision){
 	    queued_thread->tic_delay = 0;
 	  }else{
 	    if(queued_thread->tic_delay < queued_thread->delay){
@@ -3058,7 +3091,7 @@ ags_thread_loop(void *ptr)
 	}
 	
 	if((AGS_THREAD_INTERMEDIATE_POST_SYNC & (g_atomic_int_get(&(queued_thread->flags)))) != 0){
-	  if(queued_thread->freq >= AGS_THREAD_MAX_PRECISION){
+	  if(queued_thread->freq >= queued_thread->max_precision){
 	    queued_thread->tic_delay = 0;
 	  }else{
 	    if(queued_thread->tic_delay > 0){
@@ -3341,7 +3374,7 @@ ags_thread_loop(void *ptr)
     thread->tic_delay = chaos_tree->tic_delay;
 
     if((AGS_THREAD_INTERMEDIATE_PRE_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
-      if(thread->freq >= AGS_THREAD_MAX_PRECISION){
+      if(thread->freq >= thread->max_precision){
 	thread->tic_delay = 0;
       }else{
 	if(thread->tic_delay > 0){
@@ -3353,7 +3386,7 @@ ags_thread_loop(void *ptr)
     }
 	
     if((AGS_THREAD_INTERMEDIATE_POST_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
-      if(thread->freq >= AGS_THREAD_MAX_PRECISION){
+      if(thread->freq >= thread->max_precision){
 	thread->tic_delay = 0;
       }else{
 	if(thread->tic_delay < thread->delay){

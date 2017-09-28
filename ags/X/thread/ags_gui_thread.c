@@ -1041,7 +1041,7 @@ ags_gui_thread_timer_start(AgsGuiThread *gui_thread,
 
   /* Start the timer */
   its.it_value.tv_sec = 0;
-  its.it_value.tv_nsec = NSEC_PER_SEC / AGS_THREAD_MAX_PRECISION;
+  its.it_value.tv_nsec = NSEC_PER_SEC / AGS_THREAD(gui_thread)->max_precision;
   its.it_interval.tv_sec = its.it_value.tv_sec;
   its.it_interval.tv_nsec = its.it_value.tv_nsec;
 
