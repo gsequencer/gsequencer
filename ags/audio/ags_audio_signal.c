@@ -37,7 +37,6 @@
 
 #include <ags/i18n.h>
 
-
 void ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal_class);
 void ags_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_audio_signal_init(AgsAudioSignal *audio_signal);
@@ -139,6 +138,7 @@ void
 ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_audio_signal_parent_class = g_type_class_peek_parent(audio_signal);
@@ -859,13 +859,19 @@ ags_audio_signal_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_SOUNDCARD:
-    g_value_set_object(value, audio_signal->soundcard);
+    {
+      g_value_set_object(value, audio_signal->soundcard);
+    }
     break;
   case PROP_RECYCLING:
-    g_value_set_object(value, audio_signal->recycling);
+    {
+      g_value_set_object(value, audio_signal->recycling);
+    }
     break;
   case PROP_RECALL_ID:
-    g_value_set_object(value, audio_signal->recall_id);
+    {
+      g_value_set_object(value, audio_signal->recall_id);
+    }
     break;
   case PROP_SAMPLERATE:
     {
@@ -942,7 +948,9 @@ ags_audio_signal_get_property(GObject *gobject,
     }
     break;
   case PROP_NOTE:
-    g_value_set_object(value, audio_signal->note);
+    {
+      g_value_set_object(value, audio_signal->note);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

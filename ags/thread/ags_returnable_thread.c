@@ -32,11 +32,22 @@
 #include <unistd.h>
 #include <errno.h>
 
+#include <ags/i18n.h>
+
 void ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread);
 void ags_returnable_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_returnable_thread_init(AgsReturnableThread *returnable_thread);
+void ags_returnable_thread_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+void ags_returnable_thread_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
 void ags_returnable_thread_connect(AgsConnectable *connectable);
 void ags_returnable_thread_disconnect(AgsConnectable *connectable);
+void ags_returnable_thread_dispose(GObject *gobject);
 void ags_returnable_thread_finalize(GObject *gobject);
 
 void ags_returnable_thread_start(AgsThread *thread);
@@ -56,6 +67,11 @@ void ags_returnable_thread_resume(AgsThread *thread);
  */
 
 enum{
+  PROP_0,
+  PROP_THREAD_POOL,
+};
+
+enum{
   SAFE_RUN,
   LAST_SIGNAL,
 };
@@ -63,8 +79,6 @@ enum{
 static gpointer ags_returnable_thread_parent_class = NULL;
 static AgsConnectableInterface *ags_returnable_thread_parent_connectable_interface;
 static guint returnable_thread_signals[LAST_SIGNAL];
-
-static pthread_mutex_t class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_returnable_thread_get_type()
@@ -106,15 +120,39 @@ ags_returnable_thread_get_type()
 void
 ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
 {
-  GObjectClass *gobject;
   AgsThreadClass *thread;
+
+  GObjectClass *gobject;
+
+  GParamSpec *param_spec;
 
   ags_returnable_thread_parent_class = g_type_class_peek_parent(returnable_thread);
 
   /* GObjectClass */
   gobject = (GObjectClass *) returnable_thread;
 
+  gobject->set_property = ags_returnable_thread_set_property;
+  gobject->get_property = ags_returnable_thread_get_property;
+
+  gobject->dispose = ags_returnable_thread_dispose;
   gobject->finalize = ags_returnable_thread_finalize;
+
+  /* properties */
+  /**
+   * AgsReturnableThread:thread-pool:
+   *
+   * The assigned #AgsThreadPool providing default settings.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("thread-pool",
+				   i18n_pspec("assigned thread pool"),
+				   i18n_pspec("The thread pool it is assigned with"),
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_THREAD_POOL,
+				  param_spec);
 
   /* AgsThreadClass */
   thread = (AgsThreadClass *) returnable_thread;
@@ -184,6 +222,65 @@ ags_returnable_thread_init(AgsReturnableThread *returnable_thread)
 }
 
 void
+ags_returnable_thread_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec)
+{
+  AgsReturnableThread *returnable_thread;
+
+  returnable_thread = AGS_RETURNABLE_THREAD(gobject);
+
+  switch(prop_id){
+  case PROP_THREAD_POOL:
+    {
+      GObject *thread_pool;
+
+      thread_pool = g_value_get_object(value);
+
+      if(returnable_thread->thread_pool == thread_pool)
+	return;
+
+      if(returnable_thread->thread_pool != NULL){
+	g_object_unref(returnable_thread->thread_pool);
+      }
+      
+      if(thread_pool != NULL){
+	g_object_ref(thread_pool);
+      }
+      
+      returnable_thread->thread_pool = thread_pool;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_returnable_thread_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec)
+{
+  AgsReturnableThread *returnable_thread;
+
+  returnable_thread = AGS_RETURNABLE_THREAD(gobject);
+
+  switch(prop_id){
+  case PROP_THREAD_POOL:
+    {
+      g_value_set_object(value, returnable_thread->thread_pool);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
 ags_returnable_thread_connect(AgsConnectable *connectable)
 {
   ags_returnable_thread_parent_connectable_interface->connect(connectable);
@@ -200,9 +297,38 @@ ags_returnable_thread_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_returnable_thread_dispose(GObject *gobject)
+{
+  AgsReturnableThread *returnable_thread;
+
+  returnable_thread = (AgsReturnableThread *) gobject;
+
+  /* thread pool */
+  if(returnable_thread->thread_pool != NULL){
+    g_object_unref(returnable_thread->thread_pool);
+
+    returnable_thread->thread_pool = NULL;
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_returnable_thread_parent_class)->dispose(gobject);
+}
+
+void
 ags_returnable_thread_finalize(GObject *gobject)
 {
+  AgsReturnableThread *returnable_thread;
+
+  returnable_thread = (AgsReturnableThread *) gobject;
+
+  /* thread pool */
+  if(returnable_thread->thread_pool != NULL){
+    g_object_unref(returnable_thread->thread_pool);
+  }
+
+  /* reset mutex */
   pthread_mutex_destroy(AGS_RETURNABLE_THREAD(gobject)->reset_mutex);
+
   free(AGS_RETURNABLE_THREAD(gobject)->reset_mutex);
   
   /* call parent */
@@ -258,11 +384,7 @@ ags_returnable_thread_safe_run(AgsReturnableThread *returnable_thread)
 {
   guint returnable_thread_signal;
 
-  pthread_mutex_lock(&class_mutex);
-
   returnable_thread_signal = returnable_thread_signals[SAFE_RUN];
-  
-  pthread_mutex_unlock(&class_mutex);
 
   g_return_if_fail(AGS_IS_RETURNABLE_THREAD(returnable_thread));
 
@@ -340,14 +462,9 @@ ags_returnable_thread_new(GObject *thread_pool)
 {
   AgsReturnableThread *returnable_thread;
 
-  pthread_mutex_lock(&class_mutex);
-
   returnable_thread = (AgsReturnableThread *) g_object_new(AGS_TYPE_RETURNABLE_THREAD,
+							   "thread-pool", thread_pool,
 							   NULL);
-
-  returnable_thread->thread_pool = thread_pool;
-
-  pthread_mutex_unlock(&class_mutex);
   
   return(returnable_thread);
 }

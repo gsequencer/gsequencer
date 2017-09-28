@@ -19,11 +19,11 @@
 
 #include <ags/thread/ags_thread-posix.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/object/ags_marshal.h>
 #include <ags/object/ags_main_loop.h>
+#include <ags/object/ags_config.h>
+#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_async_queue.h>
+#include <ags/object/ags_marshal.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_condition_manager.h>
@@ -87,6 +87,7 @@ static void ags_thread_self_create();
 enum{
   PROP_0,
   PROP_FREQUENCY,
+  PROP_MAX_PRECISION,
 };
 
 enum{
@@ -173,11 +174,29 @@ ags_thread_class_init(AgsThreadClass *thread)
    * Since: 0.4.0
    */
   param_spec = g_param_spec_double("frequency",
-				   i18n_pspec("JIFFIE"),
-				   i18n_pspec("JIFFIE"),
+				   i18n_pspec("frequency as JIFFIE"),
+				   i18n_pspec("frequency as JIFFIE"),
 				   0.01,
-				   1000.0,
-				   1000.0,
+				   AGS_THREAD_DEFAULT_MAX_PRECISION,
+				   AGS_THREAD_DEFAULT_JIFFIE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FREQUENCY,
+				  param_spec);
+  
+  /**
+   * AgsThread:max-precision:
+   *
+   * The max-frequency to run at in Hz.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_double("max-precision",
+				   i18n_pspec("max precision as JIFFIE"),
+				   i18n_pspec("The max precision as JIFFIE"),
+				   0.01,
+				   AGS_THREAD_MAX_PRECISION,
+				   AGS_THREAD_DEFAULT_MAX_PRECISION,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FREQUENCY,
@@ -356,6 +375,10 @@ ags_thread_init(AgsThread *thread)
 {
   AgsMutexManager *mutex_manager;
   AgsConditionManager *condition_manager;
+
+  AgsConfig *config;
+  
+  gchar *str;
   
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
@@ -363,7 +386,9 @@ ags_thread_init(AgsThread *thread)
   pthread_mutexattr_t *attr;
 
   int err;
-  
+
+  config = ags_config_get_instance();
+
   /* insert audio loop mutex */
   thread->obj_mutexattr =
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
@@ -440,6 +465,18 @@ ags_thread_init(AgsThread *thread)
 
   thread->freq = AGS_THREAD_DEFAULT_JIFFIE;
 
+  thread->max_precision = AGS_THREAD_DEFAULT_MAX_PRECISION;
+
+  /* max precision */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_THREAD,
+			     "max-precision");
+  
+  if(str != NULL){
+    thread->max_precision = g_ascii_strtod(str,
+					   NULL);
+  }
+  
   thread->mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
 
   pthread_mutexattr_init(thread->mutexattr);

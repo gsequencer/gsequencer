@@ -49,8 +49,11 @@
 
 #define AGS_THREAD_HERTZ_JIFFIE (1000.0)
 #define AGS_THREAD_YIELD_JIFFIE (2.0)
+
 #define AGS_THREAD_DEFAULT_JIFFIE (250.0)
-#define AGS_THREAD_MAX_PRECISION (250.0)
+#define AGS_THREAD_DEFAULT_MAX_PRECISION (1000.0)
+
+#define AGS_THREAD_MAX_PRECISION (1000.0)
 
 #define AGS_THREAD_DEFAULT_ATTACK (1.0)
 
@@ -146,7 +149,8 @@ struct _AgsThread
   pthread_attr_t *thread_attr;
 
   gdouble freq;
-
+  gdouble max_precision;
+  
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *mutexattr;
   pthread_cond_t *cond;
