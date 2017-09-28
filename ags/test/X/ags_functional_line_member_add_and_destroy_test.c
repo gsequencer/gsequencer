@@ -146,8 +146,6 @@ ags_functional_line_member_add_and_destroy_test_init_suite()
 int
 ags_functional_line_member_add_and_destroy_test_clean_suite()
 {  
-  ags_thread_stop(gui_thread);  
-
   return(0);
 }
 
@@ -177,13 +175,13 @@ ags_functional_line_member_add_and_destroy_test_panel()
   ags_functional_test_util_idle();
 
   /* get machine */
-  gdk_threads_enter();
+  ags_test_enter();
 
   list_start = gtk_container_get_children(xorg_application_context->window->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_PANEL(list->data)){
@@ -238,7 +236,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -248,7 +246,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
@@ -284,7 +282,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
   CU_ASSERT(success == TRUE);
   
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = AGS_MACHINE(machine)->properties;
 
@@ -294,18 +292,18 @@ ags_functional_line_member_add_and_destroy_test_panel()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -349,7 +347,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -359,18 +357,18 @@ ags_functional_line_member_add_and_destroy_test_panel()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -412,11 +410,11 @@ ags_functional_line_member_add_and_destroy_test_panel()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -454,13 +452,13 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   ags_functional_test_util_idle();
 
   /* get machine */
-  gdk_threads_enter();
+  ags_test_enter();
 
   list_start = gtk_container_get_children(xorg_application_context->window->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_MIXER(list->data)){
@@ -515,7 +513,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -525,7 +523,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
@@ -561,7 +559,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   CU_ASSERT(success == TRUE);
   
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = AGS_MACHINE(machine)->properties;
 
@@ -571,18 +569,18 @@ ags_functional_line_member_add_and_destroy_test_mixer()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -626,7 +624,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -636,18 +634,18 @@ ags_functional_line_member_add_and_destroy_test_mixer()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -689,11 +687,11 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -731,13 +729,13 @@ ags_functional_line_member_add_and_destroy_test_drum()
   ags_functional_test_util_idle();
 
   /* get machine */
-  gdk_threads_enter();
+  ags_test_enter();
 
   list_start = gtk_container_get_children(xorg_application_context->window->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_DRUM(list->data)){
@@ -792,7 +790,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -802,7 +800,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
@@ -838,7 +836,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
   CU_ASSERT(success == TRUE);
   
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = AGS_MACHINE(machine)->properties;
 
@@ -848,18 +846,18 @@ ags_functional_line_member_add_and_destroy_test_drum()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -903,7 +901,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -913,18 +911,18 @@ ags_functional_line_member_add_and_destroy_test_drum()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -966,11 +964,11 @@ ags_functional_line_member_add_and_destroy_test_drum()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -1004,13 +1002,13 @@ ags_functional_line_member_add_and_destroy_test_matrix()
   ags_functional_test_util_idle();
 
   /* get machine */
-  gdk_threads_enter();
+  ags_test_enter();
 
   list_start = gtk_container_get_children(xorg_application_context->window->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_MATRIX(list->data)){
@@ -1052,13 +1050,13 @@ ags_functional_line_member_add_and_destroy_test_synth()
   ags_functional_test_util_idle();
 
   /* get machine */
-  gdk_threads_enter();
+  ags_test_enter();
 
   list_start = gtk_container_get_children(xorg_application_context->window->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_SYNTH(list->data)){
@@ -1105,13 +1103,13 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   ags_functional_test_util_idle();
 
   /* get machine */
-  gdk_threads_enter();
+  ags_test_enter();
 
   list_start = gtk_container_get_children(xorg_application_context->window->machines);
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_FFPLAYER(list->data)){
@@ -1166,7 +1164,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -1176,7 +1174,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
@@ -1212,7 +1210,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   CU_ASSERT(success == TRUE);
   
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = AGS_MACHINE(machine)->properties;
 
@@ -1222,18 +1220,18 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -1277,7 +1275,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
@@ -1287,18 +1285,18 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
 
   plugin_browser = line_editor->member_editor->plugin_browser;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(plugin_browser);
   
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   
@@ -1340,11 +1338,11 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   CU_ASSERT(success == TRUE);
 
   /* response OK */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   machine_editor = machine->properties;
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(machine_editor);
   

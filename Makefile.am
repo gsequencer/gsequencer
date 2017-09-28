@@ -1668,12 +1668,18 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_pattern_edit.h \
 	ags/X/editor/ags_pattern_envelope_callbacks.h \
 	ags/X/editor/ags_pattern_envelope.h \
+	ags/X/editor/ags_ramp_acceleration_dialog.h \
+	ags/X/editor/ags_ramp_acceleration_dialog_callbacks.h \
 	ags/X/editor/ags_scale_area_callbacks.h \
 	ags/X/editor/ags_scale_area.h \
 	ags/X/editor/ags_scale_callbacks.h \
 	ags/X/editor/ags_scale.h \
 	ags/X/editor/ags_sf2_chooser_callbacks.h \
 	ags/X/editor/ags_sf2_chooser.h \
+	ags/X/editor/ags_select_acceleration_dialog.h \
+	ags/X/editor/ags_select_acceleration_dialog_callbacks.h \
+	ags/X/editor/ags_select_note_dialog.h \
+	ags/X/editor/ags_select_note_dialog_callbacks.h \
 	ags/X/editor/ags_toolbar_callbacks.h \
 	ags/X/editor/ags_toolbar.h \
 	ags/X/editor/ags_toolbar_mode_stock.h
@@ -1717,10 +1723,16 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_pattern_edit_callbacks.c \
 	ags/X/editor/ags_pattern_envelope_callbacks.c \
 	ags/X/editor/ags_pattern_envelope.c \
+	ags/X/editor/ags_ramp_acceleration_dialog.c \
+	ags/X/editor/ags_ramp_acceleration_dialog_callbacks.c \
 	ags/X/editor/ags_scale_area.c \
 	ags/X/editor/ags_scale_area_callbacks.c \
 	ags/X/editor/ags_scale.c \
 	ags/X/editor/ags_scale_callbacks.c \
+	ags/X/editor/ags_select_acceleration_dialog.c \
+	ags/X/editor/ags_select_acceleration_dialog_callbacks.c \
+	ags/X/editor/ags_select_note_dialog.c \
+	ags/X/editor/ags_select_note_dialog_callbacks.c \
 	ags/X/editor/ags_sf2_chooser.c \
 	ags/X/editor/ags_sf2_chooser_callbacks.c \
 	ags/X/editor/ags_toolbar.c \

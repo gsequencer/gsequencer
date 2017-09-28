@@ -582,7 +582,7 @@ ags_editor_select_all(AgsEditor *editor)
     i = 0;
 
     while((i = ags_notebook_next_active_tab(editor->current_notebook,
-							   i)) != -1){
+					    i)) != -1){
       list_notation = g_list_nth(machine->audio->notation,
 				 i);
       ags_notation_add_all_to_selection(AGS_NOTATION(list_notation->data));

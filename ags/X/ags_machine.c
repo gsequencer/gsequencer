@@ -1369,33 +1369,35 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
       }
     }
   }else if(pads_old > pads){
-    GList *list, *list_next;
-
+    GList *list, *list_start;
+    
     /* input - destroy AgsPad's */
-    if(type == AGS_TYPE_INPUT){
-      list = gtk_container_get_children(GTK_CONTAINER(machine->input));
-      list = g_list_nth(list, pads);
+    if(type == AGS_TYPE_INPUT &&
+       machine->input != NULL){
+      for(i = 0; i < pads_old - pads; i++){
+	list_start = gtk_container_get_children(GTK_CONTAINER(machine->input));
+	list = g_list_nth(list_start, pads);
 
-      while(list != NULL){
-	list_next = list->next;
-
-	gtk_widget_destroy(GTK_WIDGET(list->data));
-
-	list = list_next;
+	if(list != NULL){
+	  gtk_widget_destroy(GTK_WIDGET(list->data));
+	}
+	
+	g_list_free(list_start);
       }
     }
     
     /* output - destroy AgsPad's */
-    if(type == AGS_TYPE_OUTPUT){
-      list = gtk_container_get_children(GTK_CONTAINER(machine->output));
-      list = g_list_nth(list, pads);
+    if(type == AGS_TYPE_OUTPUT &&
+       machine->output != NULL){
+      for(i = 0; i < pads_old - pads; i++){
+	list_start = gtk_container_get_children(GTK_CONTAINER(machine->output));
+	list = g_list_nth(list_start, pads);
 
-      while(list != NULL){
-	list_next = list->next;
-
-	gtk_widget_destroy(GTK_WIDGET(list->data));
-
-	list = list_next;
+	if(list != NULL){
+	  gtk_widget_destroy(GTK_WIDGET(list->data));
+	}
+	
+	g_list_free(list_start);
       }
     }
   }

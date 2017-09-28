@@ -1980,8 +1980,13 @@ ags_automation_find_specifier_with_type_and_line(GList *automation,
 						 GType channel_type,
 						 guint line)
 {
+  if(specifier == NULL){
+    return(NULL);
+  }
+  
   while(automation != NULL){
-    if(!g_ascii_strcasecmp(AGS_AUTOMATION(automation->data)->control_name,
+    if(AGS_AUTOMATION(automation->data)->control_name != NULL &&
+       !g_ascii_strcasecmp(AGS_AUTOMATION(automation->data)->control_name,
 			   specifier) &&
        AGS_AUTOMATION(automation->data)->channel_type == channel_type &&
        AGS_AUTOMATION(automation->data)->line == AGS_AUTOMATION(automation->data)->line){

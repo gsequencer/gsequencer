@@ -315,6 +315,7 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   pthread_mutex_init(gui_thread->task_schedule_mutex,
 		     NULL);
 
+  gui_thread->nth_message = 0;
   gui_thread->animation_source = NULL;
 
   gui_thread->queued_sync = 0;
@@ -1213,19 +1214,81 @@ ags_gui_thread_get_dispatch_mutex()
 
 gboolean
 ags_gui_thread_animation_prepare(GSource *source,
-			    gint *timeout_)
+				 gint *timeout_)
 {
-  if(timeout_ != NULL){
-    *timeout_ = 0;
-  }
+  AgsXorgApplicationContext *xorg_application_context;
 
-  return(TRUE);
+  AgsGuiThread *gui_thread;
+  
+  AgsThread *main_loop;
+
+  AgsLog *log;
+
+  guint nth;
+  
+  xorg_application_context = ags_application_context_get_instance();
+  main_loop = AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop;
+  
+  gui_thread = ags_thread_find_type(main_loop,
+				    AGS_TYPE_GUI_THREAD);
+
+  log = ags_log_get_instance();
+  
+  pthread_mutex_lock(log->mutex);
+  
+  nth = g_list_length(g_atomic_pointer_get(&(log->messages)));
+
+  pthread_mutex_unlock(log->mutex);
+
+  if(nth > gui_thread->nth_message ||
+     !g_atomic_int_get(&(xorg_application_context->show_animation))){
+    if(timeout_ != NULL){
+      *timeout_ = 0;
+    }
+
+    return(TRUE);
+  }else{
+    if(timeout_ != NULL){
+      *timeout_ = 0;
+    }
+
+    return(FALSE);
+  }
 }
 
 gboolean
 ags_gui_thread_animation_check(GSource *source)
 {
-  return(TRUE);
+  AgsXorgApplicationContext *xorg_application_context;
+
+  AgsGuiThread *gui_thread;
+  
+  AgsThread *main_loop;
+
+  AgsLog *log;
+
+  guint nth;
+
+  xorg_application_context = ags_application_context_get_instance();
+  main_loop = AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop;
+  
+  gui_thread = ags_thread_find_type(main_loop,
+				    AGS_TYPE_GUI_THREAD);
+
+  log = ags_log_get_instance();
+  
+  pthread_mutex_lock(log->mutex);
+  
+  nth = g_list_length(g_atomic_pointer_get(&(log->messages)));
+
+  pthread_mutex_unlock(log->mutex);
+
+  if(nth > gui_thread->nth_message ||
+     !g_atomic_int_get(&(xorg_application_context->show_animation))){
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 gboolean
@@ -1276,21 +1339,17 @@ ags_gui_thread_animation_dispatch(GSource *source,
 
   gtk_widget_queue_draw(widget);
 
-  gdk_threads_enter();
-    
   g_main_context_iteration(main_context,
-			   FALSE);
-
-  gdk_threads_leave();
+  			   FALSE);
   
   if(g_atomic_int_get(&(xorg_application_context->show_animation))){
     return(G_SOURCE_CONTINUE);
   }else{
     gtk_widget_destroy(window);
     window = NULL;
-    
+
     gtk_widget_show_all(xorg_application_context->window);
-    
+
     return(G_SOURCE_REMOVE);
   }
 }
@@ -1323,7 +1382,7 @@ ags_gui_thread_sync_task_prepare(GSource *source,
     return(TRUE);
   }else{
     if(timeout_ != NULL){
-      *timeout_ = -1;
+      *timeout_ = 0;
     }
     
     return(FALSE);
@@ -1424,7 +1483,7 @@ ags_gui_thread_sync_task_dispatch(GSource *source,
     g_mutex_unlock(&(gui_thread->mutex));
   }
 
-  pthread_mutex_lock(gui_thread->dispatch_mutex);
+  ags_gui_thread_enter();
 
   do_sync = FALSE;
   
@@ -1483,7 +1542,7 @@ ags_gui_thread_sync_task_dispatch(GSource *source,
     pthread_mutex_unlock(task_thread->extern_sync_mutex);
   }
   
-  pthread_mutex_unlock(gui_thread->dispatch_mutex);
+  ags_gui_thread_leave();
   
   g_main_context_release(main_context);
   
@@ -1507,7 +1566,7 @@ ags_gui_thread_task_prepare(GSource *source,
 				    AGS_TYPE_GUI_THREAD);
 
   if(timeout_ != NULL){
-    *timeout_ = -1;
+    *timeout_ = 0;
   }
 
   if(gui_thread->collected_task != NULL){
@@ -1590,7 +1649,7 @@ ags_gui_thread_do_animation_callback(GtkWidget *widget, GdkEventExpose *event,
   static guint image_size;
   gdouble x0, y0;
   guint i;
-  static guint nth = 0;
+  guint nth = 0;
 
   log = ags_log_get_instance();  
   
@@ -1630,7 +1689,9 @@ ags_gui_thread_do_animation_callback(GtkWidget *widget, GdkEventExpose *event,
   x0 = 4.0;
   y0 = 4.0 + (i * 12.0);
 
-  gdk_threads_enter();
+  nth = gui_thread->nth_message;
+
+  //  ags_gui_thread_enter();
   
   if(nth < i){
     /* create image cairo graphics context */
@@ -1668,7 +1729,8 @@ ags_gui_thread_do_animation_callback(GtkWidget *widget, GdkEventExpose *event,
     }
 
     nth = g_list_length(start);
-
+    gui_thread->nth_message = nth;
+    
     if((image_data = cairo_image_surface_get_data(surface)) != NULL){
       memcpy(bg_data, image_data, image_size * sizeof(unsigned char));
     }
@@ -1698,7 +1760,7 @@ ags_gui_thread_do_animation_callback(GtkWidget *widget, GdkEventExpose *event,
     cairo_destroy(cr);
   }
 
-  gdk_threads_leave();
+  //  ags_gui_thread_leave();
 
   return(TRUE);
 }
@@ -1890,7 +1952,7 @@ ags_gui_thread_schedule_task(AgsGuiThread *gui_thread,
 		  (AGS_TASK_THREAD_EXTERN_SYNC |
 		   AGS_TASK_THREAD_EXTERN_READY));
 
-  gui_thread->queued_sync = 3;
+  gui_thread->queued_sync = 4;
 
   pthread_mutex_lock(gui_thread->task_schedule_mutex);
 
@@ -1928,8 +1990,7 @@ ags_gui_thread_schedule_task_list(AgsGuiThread *gui_thread,
 		  (AGS_TASK_THREAD_EXTERN_SYNC |
 		   AGS_TASK_THREAD_EXTERN_READY));
 
-  gui_thread->queued_sync = 3;
-
+  gui_thread->queued_sync = 4;
 
   pthread_mutex_lock(gui_thread->task_schedule_mutex);
 

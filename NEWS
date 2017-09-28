@@ -1,3 +1,14 @@
+Overview of Changes in AGS 0.9.29
+================================
+
+* New automation editor dialogs to select or ramp acceleration.
+* New editor dialog to select notes.
+
+Overview of Changes in AGS 0.9.28
+================================
+
+* all functional tests pass now again, since  gtk_main() integration.
+
 Overview of Changes in AGS 0.9.26
 ================================
 

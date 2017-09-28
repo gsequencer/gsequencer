@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 0.9.26\n"
+"Project-Id-Version: gsequencer 0.9.29\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-09-19 14:17+0200\n"
+"POT-Creation-Date: 2017-09-28 01:38+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -145,7 +145,6 @@ msgid "Copyright: "
 msgstr ""
 
 #: ags/X/ags_dssi_browser.c:236 ags/X/ags_ladspa_browser.c:233
-#: ags/X/ags_lv2_browser_callbacks.c:139
 msgid "Ports: "
 msgstr ""
 
@@ -174,7 +173,7 @@ msgstr ""
 #: ags/X/ags_dssi_browser_callbacks.c:254
 #: ags/X/ags_ladspa_browser_callbacks.c:165
 #: ags/X/ags_ladspa_browser_callbacks.c:266 ags/X/ags_lv2_browser.c:245
-#: ags/X/ags_lv2_browser_callbacks.c:243
+#: ags/X/ags_lv2_browser_callbacks.c:140 ags/X/ags_lv2_browser_callbacks.c:246
 msgid "Ports"
 msgstr ""
 
@@ -220,7 +219,7 @@ msgstr ""
 msgid "exclude sequencers"
 msgstr ""
 
-#: ags/X/ags_export_window.c:249 ags/X/editor/ags_toolbar.c:209
+#: ags/X/ags_export_window.c:249 ags/X/editor/ags_toolbar.c:211
 msgid "mode"
 msgstr ""
 
@@ -275,82 +274,82 @@ msgid "audio channel: "
 msgstr ""
 
 #: ags/X/ags_lv2_browser.c:206 ags/X/ags_lv2_browser_callbacks.c:109
-#: ags/X/ags_lv2_browser_callbacks.c:216
+#: ags/X/ags_lv2_browser_callbacks.c:219
 msgid "Name"
 msgstr ""
 
 #: ags/X/ags_lv2_browser.c:219 ags/X/ags_lv2_browser_callbacks.c:119
-#: ags/X/ags_lv2_browser_callbacks.c:225
+#: ags/X/ags_lv2_browser_callbacks.c:228
 msgid "Homepage"
 msgstr ""
 
 #: ags/X/ags_lv2_browser.c:232 ags/X/ags_lv2_browser_callbacks.c:129
-#: ags/X/ags_lv2_browser_callbacks.c:234
+#: ags/X/ags_lv2_browser_callbacks.c:237
 msgid "M-Box"
 msgstr ""
 
-#: ags/X/ags_machine.c:1894
+#: ags/X/ags_machine.c:1896
 msgid "open in new channel"
 msgstr ""
 
-#: ags/X/ags_machine.c:1899
+#: ags/X/ags_machine.c:1901
 msgid "overwrite existing links"
 msgstr ""
 
-#: ags/X/ags_machine.c:2165 ags/X/editor/ags_pattern_envelope.c:665
+#: ags/X/ags_machine.c:2167 ags/X/editor/ags_pattern_envelope.c:665
 msgid "move up"
 msgstr ""
 
-#: ags/X/ags_machine.c:2168 ags/X/editor/ags_pattern_envelope.c:672
+#: ags/X/ags_machine.c:2170 ags/X/editor/ags_pattern_envelope.c:672
 msgid "move down"
 msgstr ""
 
-#: ags/X/ags_machine.c:2171
+#: ags/X/ags_machine.c:2173
 msgid "hide"
 msgstr ""
 
-#: ags/X/ags_machine.c:2174
+#: ags/X/ags_machine.c:2176
 msgid "show"
 msgstr ""
 
-#: ags/X/ags_machine.c:2177
+#: ags/X/ags_machine.c:2179
 msgid "destroy"
 msgstr ""
 
-#: ags/X/ags_machine.c:2180 ags/X/ags_machine_callbacks.c:299
+#: ags/X/ags_machine.c:2182 ags/X/ags_machine_callbacks.c:299
 msgid "rename"
 msgstr ""
 
-#: ags/X/ags_machine.c:2183 ags/X/ags_machine_editor.c:198
+#: ags/X/ags_machine.c:2185 ags/X/ags_machine_editor.c:198
 msgid "properties"
 msgstr ""
 
-#: ags/X/ags_machine.c:2237 ags/X/editor/ags_pattern_envelope.c:234
+#: ags/X/ags_machine.c:2239 ags/X/editor/ags_pattern_envelope.c:234
 #: ags/X/machine/ags_drum_input_pad.c:195
 msgid "edit"
 msgstr ""
 
-#: ags/X/ags_machine.c:2248
+#: ags/X/ags_machine.c:2250
 msgid "copy pattern"
 msgstr ""
 
-#: ags/X/ags_machine.c:2258
+#: ags/X/ags_machine.c:2260
 msgid "paste pattern"
 msgstr ""
 
-#: ags/X/ags_machine.c:2268
+#: ags/X/ags_machine.c:2270
 msgid "envelope"
 msgstr ""
 
-#: ags/X/ags_machine.c:2297
+#: ags/X/ags_machine.c:2299
 msgid "connection"
 msgstr ""
 
-#: ags/X/ags_machine.c:2308
+#: ags/X/ags_machine.c:2310
 msgid "audio connection"
 msgstr ""
 
-#: ags/X/ags_machine.c:2318
+#: ags/X/ags_machine.c:2320
 msgid "MIDI dialog"
 msgstr ""
 
@@ -477,7 +476,7 @@ msgstr ""
 msgid "address"
 msgstr ""
 
-#: ags/X/ags_server_preferences.c:186 ags/X/editor/ags_automation_toolbar.c:204
+#: ags/X/ags_server_preferences.c:186 ags/X/editor/ags_automation_toolbar.c:225
 msgid "port"
 msgstr ""
 
@@ -501,29 +500,45 @@ msgstr ""
 msgid "format"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1376
+#: ags/X/ags_xorg_application_context.c:1377
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1386
+#: ags/X/ags_xorg_application_context.c:1387
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1535
+#: ags/X/ags_xorg_application_context.c:1536
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1545
+#: ags/X/ags_xorg_application_context.c:1546
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:191 ags/X/editor/ags_toolbar.c:200
+#: ags/X/editor/ags_automation_toolbar.c:195 ags/X/editor/ags_toolbar.c:186
+msgid "tool"
+msgstr ""
+
+#: ags/X/editor/ags_automation_toolbar.c:198 ags/X/editor/ags_toolbar.c:189
+msgid "additional tools"
+msgstr ""
+
+#: ags/X/editor/ags_automation_toolbar.c:212 ags/X/editor/ags_toolbar.c:202
 msgid "zoom"
 msgstr ""
 
-#: ags/X/editor/ags_crop_note_dialog.c:212 ags/X/editor/ags_toolbar.c:393
+#: ags/X/editor/ags_automation_toolbar.c:830
+msgid "select accelerations"
+msgstr ""
+
+#: ags/X/editor/ags_automation_toolbar.c:833
+msgid "ramp accelerations"
+msgstr ""
+
+#: ags/X/editor/ags_crop_note_dialog.c:212 ags/X/editor/ags_toolbar.c:402
 msgid "crop notes"
 msgstr ""
 
@@ -640,7 +655,7 @@ msgstr ""
 msgid "shift piano"
 msgstr ""
 
-#: ags/X/editor/ags_move_note_dialog.c:212 ags/X/editor/ags_toolbar.c:390
+#: ags/X/editor/ags_move_note_dialog.c:212 ags/X/editor/ags_toolbar.c:399
 msgid "move notes"
 msgstr ""
 
@@ -686,44 +701,36 @@ msgstr ""
 msgid "x end"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:117
+#: ags/X/editor/ags_toolbar.c:118
 msgid "position cursor"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:126
+#: ags/X/editor/ags_toolbar.c:127
 msgid "edit notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:135
+#: ags/X/editor/ags_toolbar.c:136
 msgid "clear notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:145
+#: ags/X/editor/ags_toolbar.c:146 ags/X/editor/ags_toolbar.c:405
 msgid "select notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:156
+#: ags/X/editor/ags_toolbar.c:157
 msgid "copy notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:165
+#: ags/X/editor/ags_toolbar.c:166
 msgid "cut notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:173
+#: ags/X/editor/ags_toolbar.c:174
 msgid "paste notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:181
+#: ags/X/editor/ags_toolbar.c:182
 msgid "invert notes"
-msgstr ""
-
-#: ags/X/editor/ags_toolbar.c:185
-msgid "tool"
-msgstr ""
-
-#: ags/X/editor/ags_toolbar.c:188
-msgid "additional tools"
 msgstr ""
 
 #: ags/X/export/ags_machine_collection_entry.c:216

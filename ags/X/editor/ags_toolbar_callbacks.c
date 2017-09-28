@@ -202,6 +202,12 @@ ags_toolbar_tool_popup_crop_note_callback(GtkWidget *item, AgsToolbar *toolbar)
 }
 
 void
+ags_toolbar_tool_popup_select_note_callback(GtkWidget *item, AgsToolbar *toolbar)
+{
+  gtk_widget_show_all(toolbar->select_note);
+}
+
+void
 ags_toolbar_zoom_callback(GtkComboBox *combo_box, AgsToolbar *toolbar)
 {
   AgsEditor *editor;

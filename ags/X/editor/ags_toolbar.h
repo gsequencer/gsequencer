@@ -61,6 +61,7 @@ struct _AgsToolbar
 
   GtkDialog *move_note;
   GtkDialog *crop_note;  
+  GtkDialog *select_note;
   
   guint zoom_history;
   GtkComboBoxText *zoom;

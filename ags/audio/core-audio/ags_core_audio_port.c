@@ -782,7 +782,16 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       if(retval != noErr){
 	return;
       }
-     
+
+      retval = AudioUnitSetParameter(core_audio_port->au_unit,
+				     kHALOutputParam_Volume,
+				     kAudioUnitScope_Global,
+				     0, 1.0f, 0);
+      
+      if(retval != noErr){
+	return;
+      }
+      
       core_audio_port->input.inputProc = ags_core_audio_port_output_callback;
       core_audio_port->input.inputProcRefCon = core_audio_port;
       retval = AudioUnitSetProperty(core_audio_port->au_unit,

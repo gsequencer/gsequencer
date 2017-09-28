@@ -79,6 +79,7 @@ struct _AgsGuiThread
 
   pthread_mutex_t *task_schedule_mutex;
 
+  guint nth_message;
   GSource *animation_source;
 
   guint queued_sync;

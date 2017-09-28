@@ -160,7 +160,7 @@ ags_functional_machine_link_test_init_suite()
 				       "Panel");
 
   /*  */
-  gdk_threads_enter();
+  ags_test_enter();
   
   xorg_application_context = ags_application_context_get_instance();
 
@@ -171,7 +171,7 @@ ags_functional_machine_link_test_init_suite()
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_PANEL(list->data)){
@@ -191,9 +191,7 @@ ags_functional_machine_link_test_init_suite()
  */
 int
 ags_functional_machine_link_test_clean_suite()
-{  
-  ags_thread_stop(gui_thread);  
-
+{
   return(0);
 }
 
@@ -218,7 +216,7 @@ ags_functional_machine_link_test_master_mixer()
   CU_ASSERT(success == TRUE);
 
   /*  */
-  gdk_threads_enter();
+  ags_test_enter();
   
   /* retrieve master mixer */
   nth_machine = 1;
@@ -227,7 +225,7 @@ ags_functional_machine_link_test_master_mixer()
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_MIXER(list->data)){
@@ -267,11 +265,11 @@ ags_functional_machine_link_test_master_mixer()
   CU_ASSERT(success == TRUE);
 
   /* response ok */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   properties = AGS_MACHINE(master_mixer)->properties;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(properties);
 
@@ -300,13 +298,13 @@ ags_functional_machine_link_test_master_mixer()
   CU_ASSERT(success == TRUE);
 
   /* set link */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(panel),
 			      AGS_MACHINE(panel)->machine_name);
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_machine_properties_link_set(nth_machine,
 								 0, 0,
@@ -321,11 +319,11 @@ ags_functional_machine_link_test_master_mixer()
   CU_ASSERT(success == TRUE);
 
   /* response ok */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   properties = AGS_MACHINE(master_mixer)->properties;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(properties);
 
@@ -358,7 +356,7 @@ ags_functional_machine_link_test_slave_mixer()
   CU_ASSERT(success == TRUE);
 
   /*  */
-  gdk_threads_enter();
+  ags_test_enter();
   
   /* retrieve master mixer */
   nth_machine = 2;
@@ -367,7 +365,7 @@ ags_functional_machine_link_test_slave_mixer()
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_MIXER(list->data)){
@@ -401,13 +399,13 @@ ags_functional_machine_link_test_slave_mixer()
   CU_ASSERT(success == TRUE);
 
   /* set link */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(master_mixer),
 			      AGS_MACHINE(master_mixer)->machine_name);
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_machine_properties_link_set(nth_machine,
 								 0, 0,
@@ -422,11 +420,11 @@ ags_functional_machine_link_test_slave_mixer()
   CU_ASSERT(success == TRUE);
 
   /* response ok */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   properties = AGS_MACHINE(slave_mixer)->properties;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(properties);
 
@@ -460,7 +458,7 @@ ags_functional_machine_link_test_drum()
   CU_ASSERT(success == TRUE);
 
   /*  */
-  gdk_threads_enter();
+  ags_test_enter();
   
   /* retrieve drum */
   nth_parent_machine = 2;
@@ -470,7 +468,7 @@ ags_functional_machine_link_test_drum()
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_DRUM(list->data)){
@@ -504,13 +502,13 @@ ags_functional_machine_link_test_drum()
   CU_ASSERT(success == TRUE);
 
   /* set link */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(drum),
 			      AGS_MACHINE(drum)->machine_name);
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
 								 0, 0,
@@ -525,11 +523,11 @@ ags_functional_machine_link_test_drum()
   CU_ASSERT(success == TRUE);
 
   /* response ok */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   properties = AGS_MACHINE(slave_mixer)->properties;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(properties);
 
@@ -563,7 +561,7 @@ ags_functional_machine_link_test_matrix()
   CU_ASSERT(success == TRUE);
 
   /*  */
-  gdk_threads_enter();
+  ags_test_enter();
   
   /* retrieve matrix */
   nth_parent_machine = 2;
@@ -573,7 +571,7 @@ ags_functional_machine_link_test_matrix()
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_MATRIX(list->data)){
@@ -613,11 +611,11 @@ ags_functional_machine_link_test_matrix()
   CU_ASSERT(success == TRUE);
 
   /* response ok */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   properties = AGS_MACHINE(matrix)->properties;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(properties);
 
@@ -646,13 +644,13 @@ ags_functional_machine_link_test_matrix()
   CU_ASSERT(success == TRUE);
 
   /* set link */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(matrix),
 			      AGS_MACHINE(matrix)->machine_name);
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
 								 1, 0,
@@ -667,11 +665,11 @@ ags_functional_machine_link_test_matrix()
   CU_ASSERT(success == TRUE);
 
   /* response ok */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   properties = AGS_MACHINE(slave_mixer)->properties;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(properties);
 
@@ -705,7 +703,7 @@ ags_functional_machine_link_test_synth()
   CU_ASSERT(success == TRUE);
 
   /*  */
-  gdk_threads_enter();
+  ags_test_enter();
   
   /* retrieve synth */
   nth_parent_machine = 4;
@@ -715,7 +713,7 @@ ags_functional_machine_link_test_synth()
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_SYNTH(list->data)){
@@ -749,7 +747,7 @@ ags_functional_machine_link_test_synth()
   CU_ASSERT(success == TRUE);
 
   /* set link */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(synth),
@@ -757,7 +755,7 @@ ags_functional_machine_link_test_synth()
 
   input_line_count = matrix->audio->input_lines;  
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_machine_properties_bulk_add(nth_parent_machine);
 
@@ -776,11 +774,11 @@ ags_functional_machine_link_test_synth()
   CU_ASSERT(success == TRUE);
 
   /* response ok */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   properties = AGS_MACHINE(matrix)->properties;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(properties);
 
@@ -815,7 +813,7 @@ ags_functional_machine_link_test_ffplayer_0()
   CU_ASSERT(success == TRUE);
 
   /*  */
-  gdk_threads_enter();
+  ags_test_enter();
   
   /* retrieve ffplayer #0 */
   nth_parent_machine = 2;
@@ -825,7 +823,7 @@ ags_functional_machine_link_test_ffplayer_0()
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_FFPLAYER(list->data)){
@@ -859,13 +857,13 @@ ags_functional_machine_link_test_ffplayer_0()
   CU_ASSERT(success == TRUE);
 
   /* set link */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(ffplayer_0),
 			      AGS_MACHINE(ffplayer_0)->machine_name);
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
 								 2, 0,
@@ -880,11 +878,11 @@ ags_functional_machine_link_test_ffplayer_0()
   CU_ASSERT(success == TRUE);
 
   /* response ok */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   properties = AGS_MACHINE(slave_mixer)->properties;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(properties);
 
@@ -918,7 +916,7 @@ ags_functional_machine_link_test_ffplayer_1()
   CU_ASSERT(success == TRUE);
 
   /*  */
-  gdk_threads_enter();
+  ags_test_enter();
   
   /* retrieve ffplayer #1 */
   nth_parent_machine = 2;
@@ -928,7 +926,7 @@ ags_functional_machine_link_test_ffplayer_1()
   list = g_list_nth(list_start,
 		    nth_machine);
 
-  gdk_threads_leave();
+  ags_test_leave();
 
   if(list != NULL &&
      AGS_IS_FFPLAYER(list->data)){
@@ -962,13 +960,13 @@ ags_functional_machine_link_test_ffplayer_1()
   CU_ASSERT(success == TRUE);
 
   /* set link */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(ffplayer_1),
 			      AGS_MACHINE(ffplayer_1)->machine_name);
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
 								 3, 0,
@@ -983,11 +981,11 @@ ags_functional_machine_link_test_ffplayer_1()
   CU_ASSERT(success == TRUE);
 
   /* response ok */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   properties = AGS_MACHINE(slave_mixer)->properties;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(properties);
 
@@ -1043,13 +1041,13 @@ ags_functional_machine_link_test_relink_all()
   CU_ASSERT(success == TRUE);
 
   /* set link */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(ffplayer_0),
 			      AGS_MACHINE(ffplayer_0)->machine_name);
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
 								 7, 0,
@@ -1064,11 +1062,11 @@ ags_functional_machine_link_test_relink_all()
   CU_ASSERT(success == TRUE);
 
   /* response ok */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   properties = AGS_MACHINE(slave_mixer)->properties;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(properties);
 
@@ -1102,13 +1100,13 @@ ags_functional_machine_link_test_relink_all()
   CU_ASSERT(success == TRUE);
 
   /* set link */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(drum),
 			      AGS_MACHINE(drum)->machine_name);
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
 								 6, 0,
@@ -1123,11 +1121,11 @@ ags_functional_machine_link_test_relink_all()
   CU_ASSERT(success == TRUE);
 
   /* response ok */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   properties = AGS_MACHINE(slave_mixer)->properties;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(properties);
 
@@ -1160,13 +1158,13 @@ ags_functional_machine_link_test_relink_all()
   CU_ASSERT(success == TRUE);
 
   /* set link */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(matrix),
 			      AGS_MACHINE(matrix)->machine_name);
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
 								 0, 0,
@@ -1181,11 +1179,11 @@ ags_functional_machine_link_test_relink_all()
   CU_ASSERT(success == TRUE);
 
   /* response ok */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   properties = AGS_MACHINE(slave_mixer)->properties;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(properties);
 
@@ -1235,13 +1233,13 @@ ags_functional_machine_link_test_reset_link_all()
   CU_ASSERT(success == TRUE);
 
   /* set link */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(ffplayer_0),
 			      AGS_MACHINE(ffplayer_0)->machine_name);
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
 								 0, 0,
@@ -1256,11 +1254,11 @@ ags_functional_machine_link_test_reset_link_all()
   CU_ASSERT(success == TRUE);
 
   /* response ok */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   properties = AGS_MACHINE(slave_mixer)->properties;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(properties);
 
@@ -1294,13 +1292,13 @@ ags_functional_machine_link_test_reset_link_all()
   CU_ASSERT(success == TRUE);
 
   /* set link */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(drum),
 			      AGS_MACHINE(drum)->machine_name);
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
 								 1, 0,
@@ -1315,11 +1313,11 @@ ags_functional_machine_link_test_reset_link_all()
   CU_ASSERT(success == TRUE);
 
   /* response ok */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   properties = AGS_MACHINE(slave_mixer)->properties;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(properties);
 
@@ -1352,13 +1350,13 @@ ags_functional_machine_link_test_reset_link_all()
   CU_ASSERT(success == TRUE);
 
   /* set link */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(matrix),
 			      AGS_MACHINE(matrix)->machine_name);
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
 								 1, 0,
@@ -1373,11 +1371,11 @@ ags_functional_machine_link_test_reset_link_all()
   CU_ASSERT(success == TRUE);
 
   /* response ok */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   properties = AGS_MACHINE(slave_mixer)->properties;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(properties);
 
@@ -1410,13 +1408,13 @@ ags_functional_machine_link_test_reset_link_all()
   CU_ASSERT(success == TRUE);
 
   /* set link */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   link_name = g_strdup_printf("%s: %s\0",
 			      G_OBJECT_TYPE_NAME(drum),
 			      AGS_MACHINE(drum)->machine_name);
 
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_machine_properties_link_set(nth_parent_machine,
 								 2, 0,
@@ -1431,11 +1429,11 @@ ags_functional_machine_link_test_reset_link_all()
   CU_ASSERT(success == TRUE);
 
   /* response ok */
-  pthread_mutex_lock(task_thread->launch_mutex);
+  ags_test_enter();
 
   properties = AGS_MACHINE(slave_mixer)->properties;
   
-  pthread_mutex_unlock(task_thread->launch_mutex);
+  ags_test_leave();
 
   success = ags_functional_test_util_dialog_ok(properties);
 
