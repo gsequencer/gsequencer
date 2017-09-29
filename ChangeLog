@@ -4,8 +4,8 @@ ags (1.0.0)
 	* implemented :thread-pool property of AgsReturnableThread
 	* implemented :max-precision of AgsThread
 	* implemented configuration option of thread's max-precision property
-	* TODO:JK: implemented sticky controls
-	* TODO:JK: improved LV2UI plugin support to set controls value
+	* implemented sticky controls
+	* improved LV2UI plugin support to set controls value
 	* TODO:JK: fixed wrecked widget allocation of AgsEditor and AgsAutomationEditor
 	* TODO:JK: add more functional tests
 	* TODO:JK: add more unit tests

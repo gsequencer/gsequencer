@@ -794,26 +794,26 @@ ags_bulk_member_connect(AgsConnectable *connectable)
 
   /* widget callback */
   if(bulk_member->widget_type == AGS_TYPE_DIAL){
-    g_signal_connect(GTK_WIDGET(control), "value-changed",
-		     G_CALLBACK(ags_bulk_member_dial_changed_callback), bulk_member);
+    g_signal_connect_after(GTK_WIDGET(control), "value-changed",
+			   G_CALLBACK(ags_bulk_member_dial_changed_callback), bulk_member);
   }else if(bulk_member->widget_type == GTK_TYPE_VSCALE){
-    g_signal_connect(GTK_WIDGET(control), "value-changed",
-		     G_CALLBACK(ags_bulk_member_vscale_changed_callback), bulk_member);
+    g_signal_connect_after(GTK_WIDGET(control), "value-changed",
+			   G_CALLBACK(ags_bulk_member_vscale_changed_callback), bulk_member);
   }else if(bulk_member->widget_type == GTK_TYPE_HSCALE){
-    g_signal_connect(GTK_WIDGET(control), "value-changed",
-		     G_CALLBACK(ags_bulk_member_hscale_changed_callback), bulk_member);
+    g_signal_connect_after(GTK_WIDGET(control), "value-changed",
+			   G_CALLBACK(ags_bulk_member_hscale_changed_callback), bulk_member);
   }else if(bulk_member->widget_type == GTK_TYPE_SPIN_BUTTON){
-    g_signal_connect(GTK_WIDGET(control), "value-changed",
-		     G_CALLBACK(ags_bulk_member_spin_button_changed_callback), bulk_member);
+    g_signal_connect_after(GTK_WIDGET(control), "value-changed",
+			   G_CALLBACK(ags_bulk_member_spin_button_changed_callback), bulk_member);
   }else if(bulk_member->widget_type == GTK_TYPE_CHECK_BUTTON){
-    g_signal_connect(GTK_WIDGET(control), "clicked",
-		     G_CALLBACK(ags_bulk_member_check_button_clicked_callback), bulk_member);
+    g_signal_connect_after(GTK_WIDGET(control), "clicked",
+			   G_CALLBACK(ags_bulk_member_check_button_clicked_callback), bulk_member);
   }else if(bulk_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
-    g_signal_connect(GTK_WIDGET(control), "clicked",
-		     G_CALLBACK(ags_bulk_member_toggle_button_clicked_callback), bulk_member);
+    g_signal_connect_after(GTK_WIDGET(control), "clicked",
+			   G_CALLBACK(ags_bulk_member_toggle_button_clicked_callback), bulk_member);
   }else if(bulk_member->widget_type == GTK_TYPE_BUTTON){
-    g_signal_connect(GTK_WIDGET(control), "clicked",
-		     G_CALLBACK(ags_bulk_member_button_clicked_callback), bulk_member);
+    g_signal_connect_after(GTK_WIDGET(control), "clicked",
+			   G_CALLBACK(ags_bulk_member_button_clicked_callback), bulk_member);
   }
 }
 

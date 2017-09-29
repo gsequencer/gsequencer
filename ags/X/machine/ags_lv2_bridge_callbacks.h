@@ -40,4 +40,12 @@ void ags_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t p
 void ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv2_bridge);
 void ags_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv2_bridge);
 
+void ags_lv2_bridge_dial_changed_callback(GtkWidget *dial, AgsLv2Bridge *lv2_bridge);
+void ags_lv2_bridge_vscale_changed_callback(GtkWidget *vscale, AgsLv2Bridge *lv2_bridge);
+void ags_lv2_bridge_hscale_changed_callback(GtkWidget *hscale, AgsLv2Bridge *lv2_bridge);
+void ags_lv2_bridge_spin_button_changed_callback(GtkWidget *spin_button, AgsLv2Bridge *lv2_bridge);
+void ags_lv2_bridge_check_button_clicked_callback(GtkWidget *check_button, AgsLv2Bridge *lv2_bridge);
+void ags_lv2_bridge_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsLv2Bridge *lv2_bridge);
+void ags_lv2_bridge_button_clicked_callback(GtkWidget *button, AgsLv2Bridge *lv2_bridge);
+
 #endif /*__AGS_LV2_BRIDGE_CALLBACKS_H__*/
