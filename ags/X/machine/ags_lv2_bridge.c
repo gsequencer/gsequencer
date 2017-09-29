@@ -699,6 +699,8 @@ ags_lv2_bridge_finalize(GObject *gobject)
   lv2_bridge = AGS_LV2_BRIDGE(gobject);
   
   if(lv2_bridge->ui_handle != NULL){
+    lv2_bridge->ui_descriptor->cleanup(lv2_bridge->ui_handle);
+    
     g_hash_table_remove(ags_lv2_bridge_lv2ui_handle,
 			lv2_bridge->ui_handle);
 
@@ -1862,12 +1864,23 @@ gboolean
 ags_lv2_bridge_lv2ui_idle_timeout(GtkWidget *widget)
 {
   AgsLv2Bridge *lv2_bridge;
+
+  int retval;
   
   if((lv2_bridge = g_hash_table_lookup(ags_lv2_bridge_lv2ui_idle,
 				       widget)) != NULL){
     if(lv2_bridge->ui_feature != NULL &&
        lv2_bridge->ui_feature[0]->data != NULL){
-      ((struct _LV2UI_Idle_Interface *) lv2_bridge->ui_feature[0]->data)->idle(lv2_bridge->ui_handle);
+      retval = ((struct _LV2UI_Idle_Interface *) lv2_bridge->ui_feature[0]->data)->idle(lv2_bridge->ui_handle);
+
+      if(retval != 0){
+	g_hash_table_remove(ags_lv2_bridge_lv2ui_handle,
+			    lv2_bridge->ui_handle);
+	
+	lv2_bridge->ui_handle = NULL;
+
+	return(FALSE);
+      }
     }
     
     return(TRUE);

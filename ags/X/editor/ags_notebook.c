@@ -333,7 +333,7 @@ ags_notebook_size_request(AgsNotebook *notebook,
   }
   
   if(requisition->width < GTK_WIDGET(notebook)->parent->allocation.width){
-    requisition->width = GTK_WIDGET(notebook)->parent->allocation.width;
+    requisition->width = -1; // GTK_WIDGET(notebook)->parent->allocation.width;
   }
 }
 

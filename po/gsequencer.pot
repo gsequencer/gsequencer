@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 1.0.0\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-09-28 09:52+0200\n"
+"POT-Creation-Date: 2017-09-29 21:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -185,6 +185,10 @@ msgstr ""
 msgid "channel"
 msgstr ""
 
+#: ags/X/ags_effect_line.c:365 ags/X/ags_line.c:422
+msgid "group"
+msgstr ""
+
 #: ags/X/ags_export_soundcard.c:173 ags/X/ags_sequencer_editor.c:169
 #: ags/X/ags_soundcard_editor.c:174
 msgid "backend"
@@ -241,10 +245,6 @@ msgstr ""
 
 #: ags/X/ags_generic_preferences.c:177
 msgid "engine mode"
-msgstr ""
-
-#: ags/X/ags_line.c:422
-msgid "group"
 msgstr ""
 
 #: ags/X/ags_link_collection_editor.c:210
@@ -316,7 +316,7 @@ msgstr ""
 msgid "destroy"
 msgstr ""
 
-#: ags/X/ags_machine.c:2182 ags/X/ags_machine_callbacks.c:299
+#: ags/X/ags_machine.c:2182 ags/X/ags_machine_callbacks.c:291
 msgid "rename"
 msgstr ""
 
@@ -324,32 +324,36 @@ msgstr ""
 msgid "properties"
 msgstr ""
 
-#: ags/X/ags_machine.c:2239 ags/X/editor/ags_pattern_envelope.c:234
+#: ags/X/ags_machine.c:2188
+msgid "sticky controls"
+msgstr ""
+
+#: ags/X/ags_machine.c:2246 ags/X/editor/ags_pattern_envelope.c:234
 #: ags/X/machine/ags_drum_input_pad.c:195
 msgid "edit"
 msgstr ""
 
-#: ags/X/ags_machine.c:2250
+#: ags/X/ags_machine.c:2257
 msgid "copy pattern"
 msgstr ""
 
-#: ags/X/ags_machine.c:2260
+#: ags/X/ags_machine.c:2267
 msgid "paste pattern"
 msgstr ""
 
-#: ags/X/ags_machine.c:2270
+#: ags/X/ags_machine.c:2277
 msgid "envelope"
 msgstr ""
 
-#: ags/X/ags_machine.c:2299
+#: ags/X/ags_machine.c:2306
 msgid "connection"
 msgstr ""
 
-#: ags/X/ags_machine.c:2310
+#: ags/X/ags_machine.c:2317
 msgid "audio connection"
 msgstr ""
 
-#: ags/X/ags_machine.c:2320
+#: ags/X/ags_machine.c:2327
 msgid "MIDI dialog"
 msgstr ""
 
@@ -414,12 +418,16 @@ msgstr ""
 msgid "pad"
 msgstr ""
 
-#: ags/X/ags_performance_preferences.c:143
+#: ags/X/ags_performance_preferences.c:149
 msgid "Auto-sense on stream"
 msgstr ""
 
-#: ags/X/ags_performance_preferences.c:149
+#: ags/X/ags_performance_preferences.c:156
 msgid "Super threaded"
+msgstr ""
+
+#: ags/X/ags_performance_preferences.c:172
+msgid "max precision of threads [Hz]"
 msgstr ""
 
 #: ags/X/ags_plugin_browser.c:156
@@ -500,21 +508,21 @@ msgstr ""
 msgid "format"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1411
+#: ags/X/ags_xorg_application_context.c:1412
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1421
+#: ags/X/ags_xorg_application_context.c:1422
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1570
+#: ags/X/ags_xorg_application_context.c:1571
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1580
+#: ags/X/ags_xorg_application_context.c:1581
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
@@ -583,7 +591,7 @@ msgstr ""
 
 #: ags/X/editor/ags_envelope_editor.c:182
 #: ags/X/editor/ags_pattern_envelope.c:248 ags/X/machine/ags_ffplayer.c:307
-#: ags/X/machine/ags_live_lv2_bridge.c:1448 ags/X/machine/ags_lv2_bridge.c:1689
+#: ags/X/machine/ags_live_lv2_bridge.c:1448 ags/X/machine/ags_lv2_bridge.c:1736
 msgid "preset"
 msgstr ""
 
@@ -822,7 +830,7 @@ msgid "channel: "
 msgstr ""
 
 #: ags/X/machine/ags_dssi_bridge.c:356 ags/X/machine/ags_live_dssi_bridge.c:355
-#: ags/X/machine/ags_live_lv2_bridge.c:1387 ags/X/machine/ags_lv2_bridge.c:1628
+#: ags/X/machine/ags_live_lv2_bridge.c:1387 ags/X/machine/ags_lv2_bridge.c:1675
 msgid "program"
 msgstr ""
 

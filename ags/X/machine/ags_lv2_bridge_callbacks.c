@@ -172,7 +172,7 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 							   feature);
 	g_hash_table_insert(ags_lv2_bridge_lv2ui_handle,
 			    lv2_bridge->ui_handle, lv2_bridge);
-	ui_descriptor->cleanup = ags_lv2_bridge_lv2ui_cleanup_function;
+	//	ui_descriptor->cleanup = ags_lv2_bridge_lv2ui_cleanup_function;
 	
 	if(ui_descriptor->extension_data != NULL){
 	  lv2_bridge->ui_feature[0]->data = ui_descriptor->extension_data(LV2_UI__idleInterface);
