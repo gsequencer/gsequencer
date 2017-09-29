@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,9 @@
 #ifndef __AGS_PERFORMANCE_PREFERENCES_H__
 #define __AGS_PERFORMANCE_PREFERENCES_H__
 
+#include <glib.h>
+#include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_PERFORMANCE_PREFERENCES                (ags_performance_preferences_get_type())
@@ -38,6 +41,8 @@ struct _AgsPerformancePreferences
 
   GtkCheckButton *stream_auto_sense;
   GtkCheckButton *super_threaded;
+
+  GtkComboBoxText *max_precision;
 };
 
 struct _AgsPerformancePreferencesClass

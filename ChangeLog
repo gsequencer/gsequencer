@@ -3,7 +3,7 @@ ags (1.0.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented :thread-pool property of AgsReturnableThread
 	* implemented :max-precision of AgsThread
-	* TODO:JK: implemented configuration option of thread's base frequency
+	* TODO:JK: implemented configuration option of thread's max-precision property
 	* TODO:JK: implemented sticky controls
 	* TODO:JK: fixed wrecked widget allocation of AgsEditor and AgsAutomationEditor
 	* TODO:JK: add more functional tests

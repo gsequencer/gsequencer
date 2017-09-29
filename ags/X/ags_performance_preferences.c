@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -140,12 +140,17 @@ ags_performance_preferences_applicable_interface_init(AgsApplicableInterface *ap
 void
 ags_performance_preferences_init(AgsPerformancePreferences *performance_preferences)
 {
+  GtkHBox *hbox;
+  GtkLabel *label;
+
+  /* auto-sense */
   performance_preferences->stream_auto_sense = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("Auto-sense on stream"));
   gtk_box_pack_start(GTK_BOX(performance_preferences),
 		     GTK_WIDGET(performance_preferences->stream_auto_sense),
 		     FALSE, FALSE,
 		     0);
-  
+
+  /* super threaded */
   performance_preferences->super_threaded = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("Super threaded"));
   gtk_box_pack_start(GTK_BOX(performance_preferences),
 		     GTK_WIDGET(performance_preferences->super_threaded),
@@ -153,6 +158,32 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
 		     0);
   gtk_widget_set_sensitive((GtkWidget *) performance_preferences->super_threaded,
 			   FALSE);
+
+  /* max precision */
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				  0);
+  gtk_box_pack_start(GTK_BOX(performance_preferences),
+		     GTK_WIDGET(hbox),
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) gtk_label_new(i18n("max precision of threads [Hz]"));
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+
+  performance_preferences->max_precision = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_combo_box_text_append_text(performance_preferences->max_precision,
+				 "125");
+  gtk_combo_box_text_append_text(performance_preferences->max_precision,
+				 "250");
+  gtk_combo_box_text_append_text(performance_preferences->max_precision,
+				 "1000");
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(performance_preferences->max_precision),
+		     FALSE, FALSE,
+		     0);
 }
 
 void
