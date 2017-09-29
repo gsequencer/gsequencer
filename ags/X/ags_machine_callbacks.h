@@ -29,26 +29,24 @@
 
 #include <ags/X/ags_machine.h>
 
-int ags_machine_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMachine *machine);
-int ags_machine_destroy_callback(GtkObject *object, AgsMachine *machine);
-
 /* controls */
 int ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine);
 
-int ags_machine_popup_move_up_activate_callback(GtkWidget *widget, AgsMachine *machine);
-int ags_machine_popup_move_down_activate_callback(GtkWidget *widget, AgsMachine *machine);
-int ags_machine_popup_hide_activate_callback(GtkWidget *widget, AgsMachine *machine);
-int ags_machine_popup_show_activate_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_popup_move_up_activate_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_popup_move_down_activate_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_popup_hide_activate_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_popup_show_activate_callback(GtkWidget *widget, AgsMachine *machine);
 void ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machine);
-int ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machine);
-int ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_popup_sticky_controls_toggled_callback(GtkWidget *widget, AgsMachine *machine);
 
-int ags_machine_popup_copy_pattern_callback(GtkWidget *widget, AgsMachine *machine);
-int ags_machine_popup_paste_pattern_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_popup_copy_pattern_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_popup_paste_pattern_callback(GtkWidget *widget, AgsMachine *machine);
 void ags_machine_popup_envelope_callback(GtkWidget *widget, AgsMachine *machine);
 
-int ags_machine_popup_connection_editor_callback(GtkWidget *widget, AgsMachine *machine);
-int ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_popup_connection_editor_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine);
 
 void ags_machine_open_response_callback(GtkDialog *dialog, gint response, AgsMachine *machine);
 

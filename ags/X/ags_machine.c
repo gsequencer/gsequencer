@@ -2185,6 +2185,9 @@ ags_machine_popup_new(AgsMachine *machine)
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("properties"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
+  item = (GtkMenuItem *) gtk_check_menu_item_new_with_label(i18n("sticky controls"));
+  gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
+
   list_start = 
     list = gtk_container_get_children((GtkContainer *) popup);
 
@@ -2214,6 +2217,10 @@ ags_machine_popup_new(AgsMachine *machine)
 
   g_signal_connect((GObject*) list->data, "activate",
 		   G_CALLBACK(ags_machine_popup_properties_activate_callback), (gpointer) machine);
+  list = list->next;
+
+  g_signal_connect_after((GObject*) list->data, "toggled",
+			 G_CALLBACK(ags_machine_popup_sticky_controls_toggled_callback), (gpointer) machine);
 
   g_list_free(list_start);
   gtk_widget_show_all((GtkWidget*) popup);

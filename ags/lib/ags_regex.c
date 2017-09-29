@@ -40,7 +40,6 @@
 
 static pthread_mutex_t locale_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static pthread_mutex_t locale_mutex = PTHREAD_MUTEX_INITIALIZER;
 #ifndef __APPLE__
 static locale_t c_locale;
 #else

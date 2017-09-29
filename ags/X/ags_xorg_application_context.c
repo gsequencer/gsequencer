@@ -191,6 +191,7 @@ void ags_xorg_application_context_class_init(AgsXorgApplicationContextClass *xor
 void ags_xorg_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_xorg_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider);
 void ags_xorg_application_context_sound_provider_interface_init(AgsSoundProviderInterface *sound_provider);
+void ags_xorg_application_context_ui_provider_interface_init(AgsUiProviderInterface *ui_provider);
 void ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_context);
 void ags_xorg_application_context_set_property(GObject *gobject,
 					       guint prop_id,

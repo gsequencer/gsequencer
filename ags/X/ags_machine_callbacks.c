@@ -76,7 +76,7 @@ ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, 
   return(0);
 }
 
-int
+void
 ags_machine_popup_move_up_activate_callback(GtkWidget *widget, AgsMachine *machine)
 {
   GValue val={0,};
@@ -94,11 +94,9 @@ ags_machine_popup_move_up_activate_callback(GtkWidget *widget, AgsMachine *machi
   }
 
   g_value_unset (&val);
-
-  return(0);
 }
 
-int
+void
 ags_machine_popup_move_down_activate_callback(GtkWidget *widget, AgsMachine *machine)
 {
   GValue val={0,};
@@ -116,24 +114,18 @@ ags_machine_popup_move_down_activate_callback(GtkWidget *widget, AgsMachine *mac
   }
 
   g_value_unset (&val);
-
-  return(0);
 }
 
-int
+void
 ags_machine_popup_hide_activate_callback(GtkWidget *widget, AgsMachine *machine)
 {
   gtk_widget_hide(GTK_BIN(gtk_container_get_children((GtkContainer *) GTK_WIDGET(machine))->data)->child);
-
-  return(0);
 }
 
-int
+void
 ags_machine_popup_show_activate_callback(GtkWidget *widget, AgsMachine *machine)
 {
   gtk_widget_show(GTK_BIN(gtk_container_get_children((GtkContainer *) GTK_WIDGET(machine))->data)->child);
-
-  return(0);
 }
 
 void
@@ -285,14 +277,14 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
 			       remove_audio);
 }
 
-int
+void
 ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machine)
 {
   GtkDialog *dialog;
   GtkEntry *entry;
 
   if(machine->rename != NULL){
-    return(0);
+    return;
   }
   
   machine->rename =
@@ -317,7 +309,7 @@ ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machin
   g_signal_connect((GObject *) dialog, "response",
 		   G_CALLBACK(ags_machine_popup_rename_response_callback), (gpointer) machine);
 
-  return(0);
+  return;
 }
 
 int
@@ -339,7 +331,7 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
   return(0);
 }
 
-int
+void
 ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine *machine)
 {
   machine->properties = (GtkDialog *) ags_machine_editor_new(machine);
@@ -353,8 +345,12 @@ ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine *ma
   ags_applicable_reset(AGS_APPLICABLE(machine->properties));
 
   gtk_widget_show_all((GtkWidget *) machine->properties);
+}
 
-  return(0);
+void
+ags_machine_popup_sticky_controls_toggled_callback(GtkWidget *widget, AgsMachine *machine)
+{
+  //TODO:JK: implement me
 }
 
 int
@@ -365,20 +361,16 @@ ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *mac
   return(0);
 }
 
-int
+void
 ags_machine_popup_copy_pattern_callback(GtkWidget *widget, AgsMachine *machine)
 {
   ags_machine_copy_pattern(machine);
-
-  return(0);
 }
 
-int
+void
 ags_machine_popup_paste_pattern_callback(GtkWidget *widget, AgsMachine *machine)
 {
   //TODO:JK: implement me
-  
-  return(0);
 }
 
 void
@@ -402,7 +394,7 @@ ags_machine_popup_envelope_callback(GtkWidget *widget, AgsMachine *machine)
   }
 }
 
-int
+void
 ags_machine_popup_connection_editor_callback(GtkWidget *widget, AgsMachine *machine)
 {
   AgsConnectionEditor *connection_editor;
@@ -420,11 +412,9 @@ ags_machine_popup_connection_editor_callback(GtkWidget *widget, AgsMachine *mach
   }
 
   gtk_widget_show_all((GtkWidget *) connection_editor);
-  
-  return(0);
 }
 
-int
+void
 ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine)
 {
   AgsMidiDialog *midi_dialog;
@@ -445,8 +435,6 @@ ags_machine_popup_midi_dialog_callback(GtkWidget *widget, AgsMachine *machine)
   }
 
   gtk_widget_show_all((GtkWidget *) midi_dialog);
-  
-  return(0);
 }
 
 void

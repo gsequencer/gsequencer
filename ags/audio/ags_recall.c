@@ -1064,8 +1064,8 @@ ags_recall_add_to_registry(AgsConnectable *connectable)
     entry = ags_registry_entry_alloc(registry);
     g_value_set_object(&(entry->entry),
 		       (gpointer) recall);
-    ags_registry_add(registry,
-		     entry);
+    ags_registry_add_entry(registry,
+			   entry);
   }
 }
 

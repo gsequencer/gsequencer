@@ -1177,12 +1177,14 @@ ags_channel_add_to_registry(AgsConnectable *connectable)
 
   registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
 
-  entry = ags_registry_entry_alloc(registry);
-  g_value_set_object(&(entry->entry),
-		     (gpointer) channel);
-  ags_registry_add(registry,
-		   entry);
-
+  if(registry != NULL){
+    entry = ags_registry_entry_alloc(registry);
+    g_value_set_object(&(entry->entry),
+		       (gpointer) channel);
+    ags_registry_add_entry(registry,
+			   entry);
+  }
+  
   /* add play */
   list = channel->play;
 
