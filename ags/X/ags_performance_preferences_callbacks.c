@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,3 +19,25 @@
 
 #include <ags/X/ags_performance_preferences_callbacks.h>
 
+#include <ags/X/ags_preferences.h>
+
+void
+ags_performance_preferences_max_precision_callback(GtkWidget *combo_box,
+						   AgsPerformancePreferences *performance_preferences)
+{
+  AgsPreferences *preferences;
+  GtkDialog *dialog;
+
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(performance_preferences),
+							   AGS_TYPE_PREFERENCES);
+
+  /* notify user about restarting GSequencer */
+  dialog = gtk_message_dialog_new(preferences,
+				  GTK_DIALOG_MODAL,
+				  GTK_MESSAGE_INFO,
+				  GTK_BUTTONS_OK,
+				  "After finished your modifications you should safe your file and restart GSequencer");
+  g_signal_connect(dialog, "response",
+		   G_CALLBACK(gtk_widget_destroy), NULL);
+  gtk_widget_show_all(dialog);
+}

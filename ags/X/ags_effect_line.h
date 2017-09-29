@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #include <ags/audio/ags_channel.h>
@@ -63,6 +64,7 @@ struct _AgsEffectLine
   AgsChannel *channel;
 
   GtkLabel *label;
+  GtkToggleButton *group;
   
   GtkTable *table;
 
@@ -101,6 +103,8 @@ void ags_effect_line_remove_effect(AgsEffectLine *effect_line,
 void ags_effect_line_map_recall(AgsEffectLine *effect_line,
 				guint output_pad_start);
 GList* ags_effect_line_find_port(AgsEffectLine *effect_line);
+
+GList* ags_effect_line_find_next_grouped(GList *line);
 
 gboolean ags_effect_line_indicator_queue_draw_timeout(GtkWidget *widget);
 

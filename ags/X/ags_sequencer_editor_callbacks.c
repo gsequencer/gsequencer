@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -241,9 +241,9 @@ ags_sequencer_editor_remove_jack_callback(GtkWidget *button,
 
   pthread_mutex_unlock(application_mutex);
 
-  /* get task and sequencer thread */
+  /* get gui thread */
   gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
+						     AGS_TYPE_GUI_THREAD);
 
   /* create set input device task */
   remove_sequencer_editor_jack = ags_remove_sequencer_editor_jack_new(sequencer_editor,

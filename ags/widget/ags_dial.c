@@ -267,6 +267,8 @@ ags_dial_class_init(AgsDialClass *dial)
    * @port_data: the port's data
    *
    * The ::value-changed signal notifies adjustment value changed.
+   *
+   * Since: 0.4.0
    */
   dial_signals[VALUE_CHANGED] =
     g_signal_new("value-changed\0",
@@ -1554,6 +1556,14 @@ ags_dial_draw(AgsDial *dial)
   cairo_destroy(cr);
 }
 
+/**
+ * ags_dial_value_changed:
+ * @dial: an #AgsDial
+ *
+ * draws the widget
+ *
+ * Since: 0.4.0
+ */
 void
 ags_dial_value_changed(AgsDial *dial)
 {
@@ -1570,6 +1580,28 @@ ags_dial_adjustment_changed_callback(GtkAdjustment *adjustment,
 				     AgsDial *dial)
 {
   ags_dial_value_changed(dial);
+}
+
+/**
+ * ags_dial_value_changed:
+ * @dial: an #AgsDial
+ * @value: the value to set
+ * 
+ * Set value
+ *
+ * Since: 1.0.0
+ */
+void
+ags_dial_set_value(AgsDial *dial,
+		   gdouble value)
+{
+  if(!AGS_IS_DIAL(dial)){
+    return;
+  }
+
+  gtk_adjustment_set_value(dial->adjustment,
+			   value);
+  gtk_widget_queue_draw(dial);
 }
 
 /**

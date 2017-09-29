@@ -143,6 +143,8 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
   GtkHBox *hbox;
   GtkLabel *label;
 
+  performance_preferences->flags = 0;
+  
   /* auto-sense */
   performance_preferences->stream_auto_sense = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("Auto-sense on stream"));
   gtk_box_pack_start(GTK_BOX(performance_preferences),
@@ -189,13 +191,38 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
 void
 ags_performance_preferences_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsPerformancePreferences *performance_preferences;
+  
+  performance_preferences = AGS_PERFORMANCE_PREFERENCES(connectable);
+
+  if((AGS_PERFORMANCE_PREFERENCES_CONNECTED & (performance_preferences->flags)) != 0){
+    return;
+  }
+
+  performance_preferences->flags |= AGS_PERFORMANCE_PREFERENCES_CONNECTED;
+  
+  g_signal_connect(G_OBJECT(performance_preferences->max_precision), "changed",
+		   G_CALLBACK(ags_performance_preferences_max_precision_callback), performance_preferences);
 }
 
 void
 ags_performance_preferences_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsPerformancePreferences *performance_preferences;
+  
+  performance_preferences = AGS_PERFORMANCE_PREFERENCES(connectable);
+
+  if((AGS_PERFORMANCE_PREFERENCES_CONNECTED & (performance_preferences->flags)) == 0){
+    return;
+  }
+
+  performance_preferences->flags &= (~AGS_PERFORMANCE_PREFERENCES_CONNECTED);
+  
+  g_object_disconnect(G_OBJECT(performance_preferences->max_precision),
+		      "changed",
+		      G_CALLBACK(ags_performance_preferences_max_precision_callback),
+		      performance_preferences,
+		      NULL);
 }
 
 void
@@ -246,6 +273,13 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
 		       str);
   g_free(str);
 
+  /* max-precision */
+  str = gtk_combo_box_get_active_text(performance_preferences->max_precision);
+  ags_config_set_value(config,
+		       AGS_CONFIG_THREAD,
+		       "max-precision",
+		       str);
+  
   //TODO:JK: implement me
 }
 

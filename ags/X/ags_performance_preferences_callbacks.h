@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,5 +24,7 @@
 
 #include <ags/X/ags_performance_preferences.h>
 
+void ags_performance_preferences_max_precision_callback(GtkWidget *combo_box,
+							AgsPerformancePreferences *performance_preferences);
 
 #endif /*__AGS_PERFORMANCE_PREFERENCES_CALLBACKS_H__*/

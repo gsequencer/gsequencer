@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -912,26 +912,26 @@ ags_line_member_connect(AgsConnectable *connectable)
   
   /* widget callback */
   if(line_member->widget_type == AGS_TYPE_DIAL){
-    g_signal_connect(GTK_WIDGET(control), "value-changed",
-		     G_CALLBACK(ags_line_member_dial_changed_callback), line_member);
+    g_signal_connect_after(GTK_WIDGET(control), "value-changed",
+			   G_CALLBACK(ags_line_member_dial_changed_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_VSCALE){
-    g_signal_connect(GTK_WIDGET(control), "value-changed",
-		     G_CALLBACK(ags_line_member_vscale_changed_callback), line_member);
+    g_signal_connect_after(GTK_WIDGET(control), "value-changed",
+			   G_CALLBACK(ags_line_member_vscale_changed_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_HSCALE){
-    g_signal_connect(GTK_WIDGET(control), "value-changed",
-		     G_CALLBACK(ags_line_member_hscale_changed_callback), line_member);
+    g_signal_connect_after(GTK_WIDGET(control), "value-changed",
+			   G_CALLBACK(ags_line_member_hscale_changed_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_SPIN_BUTTON){
-    g_signal_connect(GTK_WIDGET(control), "value-changed",
-		     G_CALLBACK(ags_line_member_spin_button_changed_callback), line_member);
+    g_signal_connect_after(GTK_WIDGET(control), "value-changed",
+			   G_CALLBACK(ags_line_member_spin_button_changed_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_CHECK_BUTTON){
-    g_signal_connect(GTK_WIDGET(control), "clicked",
-		     G_CALLBACK(ags_line_member_check_button_clicked_callback), line_member);
+    g_signal_connect_after(GTK_WIDGET(control), "clicked",
+			   G_CALLBACK(ags_line_member_check_button_clicked_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
-    g_signal_connect(GTK_WIDGET(control), "clicked",
-		     G_CALLBACK(ags_line_member_toggle_button_clicked_callback), line_member);
+    g_signal_connect_after(GTK_WIDGET(control), "clicked",
+			   G_CALLBACK(ags_line_member_toggle_button_clicked_callback), line_member);
   }else if(line_member->widget_type == GTK_TYPE_BUTTON){
-    g_signal_connect(GTK_WIDGET(control), "clicked",
-		     G_CALLBACK(ags_line_member_button_clicked_callback), line_member);
+    g_signal_connect_after(GTK_WIDGET(control), "clicked",
+			   G_CALLBACK(ags_line_member_button_clicked_callback), line_member);
   }
 
   /* port callback */
@@ -1459,6 +1459,171 @@ ags_line_member_find_port(AgsLineMember *line_member)
   g_object_unref((GObject *) line_member);
 
   return(list);
+}
+
+/**
+ * ags_line_member_chained_event:
+ * @line_member: an #AgsLineMember
+ * 
+ * Chain changed control and apply the very same value to grouped
+ * controls if sticky controls set.
+ * 
+ * Since: 1.0.0
+ */
+void
+ags_line_member_chained_event(AgsLineMember *line_member)
+{
+  AgsMachine *machine;
+
+  if(!AGS_IS_LINE_MEMBER(line_member) ||
+     (AGS_LINE_MEMBER_BLOCK_CHAINED & (line_member->flags)) != 0){
+    return;
+  }
+  
+  machine = gtk_widget_get_ancestor(line_member,
+				    AGS_TYPE_MACHINE);
+
+  if((AGS_MACHINE_STICKY_CONTROLS & (machine->flags)) != 0){
+    AgsPad *pad;
+    AgsEffectPad *effect_pad;
+    GtkWidget *child_widget;
+    
+    GtkAdjustment *adjustment;
+    
+    gboolean is_active;
+
+    pad = gtk_widget_get_ancestor(line_member,
+				  AGS_TYPE_PAD);
+
+    effect_pad = gtk_widget_get_ancestor(line_member,
+					 AGS_TYPE_EFFECT_PAD);
+
+    is_active = FALSE;
+
+    child_widget = gtk_bin_get_child(line_member);
+    
+    if(AGS_IS_DIAL(child_widget) ||
+       GTK_IS_SPIN_BUTTON(child_widget) ||
+       GTK_IS_SCALE(child_widget)){
+      g_object_get(gtk_bin_get_child(line_member),
+		   "adjustment", &adjustment,
+		   NULL);
+    }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
+      is_active = gtk_toggle_button_get_active(gtk_bin_get_child(line_member));
+    }
+
+    if(pad != NULL){
+      AgsLine *line;
+
+      GList *list_line, *list_line_start;
+      GList *list_line_member, *list_line_member_start;
+
+      line = gtk_widget_get_ancestor(line_member,
+				     AGS_TYPE_LINE);
+      
+      list_line =
+	list_line_start = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
+
+      while((list_line = ags_line_find_next_grouped(list_line)) != NULL){
+	if(list_line->data != line){
+	  list_line_member =
+	    list_line_member_start = gtk_container_get_children((GtkContainer *) AGS_LINE(list_line->data)->expander->table);
+
+	  while(list_line_member != NULL){
+	    if(!g_strcmp0(line_member->specifier,
+			  AGS_LINE_MEMBER(list_line_member->data)->specifier)){
+	      AGS_LINE_MEMBER(list_line_member->data)->flags |= AGS_LINE_MEMBER_BLOCK_CHAINED;
+
+	      child_widget = gtk_bin_get_child(AGS_LINE_MEMBER(list_line_member->data));
+
+	      if(AGS_IS_DIAL(child_widget)){
+		ags_dial_set_value(gtk_bin_get_child(AGS_LINE_MEMBER(list_line_member->data)),
+				   adjustment->value);
+	      }else if(GTK_IS_SPIN_BUTTON(child_widget)){
+		gtk_spin_button_set_value(gtk_bin_get_child(AGS_LINE_MEMBER(list_line_member->data)),
+					  adjustment->value);
+	      }else if(GTK_IS_SCALE(child_widget)){
+		gtk_range_set_value(gtk_bin_get_child(AGS_LINE_MEMBER(list_line_member->data)),
+				    adjustment->value);
+	      }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
+		gtk_toggle_button_set_active(gtk_bin_get_child(list_line_member->data),
+					     is_active);
+	      }else if(GTK_IS_BUTTON(child_widget)){
+		gtk_button_clicked(gtk_bin_get_child(AGS_LINE_MEMBER(list_line_member->data)));
+	      }
+	      
+	      AGS_LINE_MEMBER(list_line_member->data)->flags &= (~AGS_LINE_MEMBER_BLOCK_CHAINED);
+
+	      break;
+	    }
+	      
+	    list_line_member = list_line_member->next;
+	  }
+	  
+	  g_list_free(list_line_member_start);
+	}
+	
+	list_line = list_line->next;
+      }
+
+      g_list_free(list_line_start);
+    }else if(effect_pad != NULL){
+      AgsEffectLine *effect_line;
+
+      GList *list_effect_line, *list_effect_line_start;
+      GList *list_line_member, *list_line_member_start;
+
+      effect_line = gtk_widget_get_ancestor(line_member,
+					    AGS_TYPE_EFFECT_LINE);
+      
+      list_effect_line =
+	list_effect_line_start = gtk_container_get_children(GTK_CONTAINER(effect_pad->table));
+
+      while((list_effect_line = ags_effect_line_find_next_grouped(list_effect_line)) != NULL){
+	if(list_effect_line->data != effect_line){
+	  list_line_member =
+	    list_line_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_LINE(list_effect_line->data)->table);
+
+	  while(list_line_member != NULL){
+	    if(!g_strcmp0(line_member->specifier,
+			 AGS_LINE_MEMBER(list_line_member->data)->specifier)){
+	      AGS_LINE_MEMBER(list_line_member->data)->flags |= AGS_LINE_MEMBER_BLOCK_CHAINED;
+
+	      child_widget = gtk_bin_get_child(AGS_LINE_MEMBER(list_line_member->data));
+
+	      if(AGS_IS_DIAL(child_widget)){
+		ags_dial_set_value(gtk_bin_get_child(AGS_LINE_MEMBER(list_line_member->data)),
+				   adjustment->value);
+	      }else if(GTK_IS_SPIN_BUTTON(child_widget)){
+		gtk_spin_button_set_value(gtk_bin_get_child(AGS_LINE_MEMBER(list_line_member->data)),
+					  adjustment->value);
+	      }else if(GTK_IS_SCALE(child_widget)){
+		gtk_range_set_value(gtk_bin_get_child(AGS_LINE_MEMBER(list_line_member->data)),
+				    adjustment->value);
+	      }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
+		gtk_toggle_button_set_active(gtk_bin_get_child(list_line_member->data),
+					     is_active);
+	      }else if(GTK_IS_BUTTON(child_widget)){
+		gtk_button_clicked(gtk_bin_get_child(AGS_LINE_MEMBER(list_line_member->data)));
+	      }
+	      
+	      AGS_LINE_MEMBER(list_line_member->data)->flags &= (~AGS_LINE_MEMBER_BLOCK_CHAINED);
+
+	      break;
+	    }
+
+	    list_line_member = list_line_member->next;
+	  }
+	  
+	  g_list_free(list_line_member_start);
+	}
+	
+	list_effect_line = list_effect_line->next;
+      }
+
+      g_list_free(list_effect_line_start);
+    }
+  }
 }
 
 /**

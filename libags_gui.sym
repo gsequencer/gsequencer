@@ -57,5 +57,6 @@ ags_led_array_new
 ags_dial_get_type
 ags_dial_draw
 ags_dial_value_changed
+ags_dial_set_value
 ags_dial_new
 ags_timebar_new

@@ -35,10 +35,16 @@
 typedef struct _AgsPerformancePreferences AgsPerformancePreferences;
 typedef struct _AgsPerformancePreferencesClass AgsPerformancePreferencesClass;
 
+typedef enum{
+  AGS_PERFORMANCE_PREFERENCES_CONNECTED    = 1,
+}AgsPerformancePreferencesFlags;
+
 struct _AgsPerformancePreferences
 {
   GtkVBox vbox;
 
+  guint flags;
+  
   GtkCheckButton *stream_auto_sense;
   GtkCheckButton *super_threaded;
 

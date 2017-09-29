@@ -52,8 +52,7 @@ typedef enum{
   AGS_MACHINE_BLOCK_STOP              = 1 <<  8,
   AGS_MACHINE_CONNECTED               = 1 <<  9,
   AGS_MACHINE_REVERSE_NOTATION        = 1 << 10,
-  AGS_MACHINE_STICKY_INPUT_CONTROLS   = 1 << 11,
-  AGS_MACHINE_STICKY_OUTPUT_CONTROLS  = 1 << 12,
+  AGS_MACHINE_STICKY_CONTROLS         = 1 << 11,
 }AgsMachineFlags;
 
 typedef enum{

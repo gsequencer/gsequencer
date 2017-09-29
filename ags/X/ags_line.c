@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1618,7 +1618,7 @@ ags_line_real_find_port(AgsLine *line)
  *
  * Returns: an #GList containing all related #AgsPort
  *
- * Since: 0.4
+ * Since: 0.4.0
  */
 GList*
 ags_line_find_port(AgsLine *line)
@@ -1646,7 +1646,7 @@ ags_line_find_port(AgsLine *line)
  *
  * Returns: next matching #GList-struct containing #AgsLine
  * 
- * Since: 0.4
+ * Since: 0.4.0
  */
 GList*
 ags_line_find_next_grouped(GList *line)

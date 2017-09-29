@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #include <ags/lib/ags_conversion.h>
@@ -55,6 +56,7 @@ typedef enum{
   AGS_LINE_MEMBER_CALLBACK_READ_BLOCK   = 1 <<  7,
   AGS_LINE_MEMBER_CALLBACK_WRITE_BLOCK  = 1 <<  8,
   AGS_LINE_MEMBER_APPLY_INITIAL         = 1 <<  9,
+  AGS_LINE_MEMBER_BLOCK_CHAINED         = 1 << 10,
 }Agslinememberflags;
 
 typedef enum{
@@ -115,6 +117,8 @@ void ags_line_member_change_port(AgsLineMember *line_member,
 				 gpointer port_data);
 
 GList* ags_line_member_find_port(AgsLineMember *line_member);
+
+void ags_line_member_chained_event(AgsLineMember *line_member);
 
 AgsLineMember* ags_line_member_new();
 

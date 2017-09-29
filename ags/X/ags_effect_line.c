@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -359,6 +359,12 @@ ags_effect_line_init(AgsEffectLine *effect_line)
 						 NULL);
   gtk_box_pack_start(GTK_BOX(effect_line),
 		     GTK_WIDGET(effect_line->label),
+		     FALSE, FALSE,
+		     0);
+
+  effect_line->group = (GtkLabel *) gtk_toggle_button_new_with_label(i18n("group"));
+  gtk_box_pack_start(GTK_BOX(effect_line),
+		     GTK_WIDGET(effect_line->group),
 		     FALSE, FALSE,
 		     0);
 
@@ -1645,6 +1651,26 @@ ags_effect_line_find_port(AgsEffectLine *effect_line)
   g_object_unref((GObject *) effect_line);
 
   return(list);
+}
+
+/**
+ * ags_effect_line_find_next_grouped:
+ * @effect_line: a #GList-struct of #AgsEffectLine objects
+ *
+ * Retrieve next grouped effect_line.
+ *
+ * Returns: next matching #GList-struct containing #AgsEffectLine
+ * 
+ * Since: 0.4
+ */
+GList*
+ags_effect_line_find_next_grouped(GList *effect_line)
+{
+  while(effect_line != NULL && !gtk_toggle_button_get_active(AGS_EFFECT_LINE(effect_line->data)->group)){
+    effect_line = effect_line->next;
+  }
+
+  return(effect_line);
 }
 
 /**

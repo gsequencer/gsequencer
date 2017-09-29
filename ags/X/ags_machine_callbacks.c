@@ -350,7 +350,11 @@ ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine *ma
 void
 ags_machine_popup_sticky_controls_toggled_callback(GtkWidget *widget, AgsMachine *machine)
 {
-  //TODO:JK: implement me
+  if(gtk_check_menu_item_get_active(widget)){
+    machine->flags |= AGS_MACHINE_STICKY_CONTROLS;
+  }else{
+    machine->flags &= (~AGS_MACHINE_STICKY_CONTROLS);
+  }
 }
 
 int

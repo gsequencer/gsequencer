@@ -33,12 +33,13 @@ void
 ags_line_member_dial_changed_callback(GtkWidget *dial, AgsLineMember *line_member)
 {
   GtkAdjustment *adjustment;
-
+  
   g_object_get(dial,
 	       "adjustment", &adjustment,
 	       NULL);
   ags_line_member_change_port(line_member,
 			      (gpointer) &(adjustment->value));
+  ags_line_member_chained_event(line_member);
 }
 
 void
@@ -49,6 +50,7 @@ ags_line_member_vscale_changed_callback(GtkWidget *vscale, AgsLineMember *line_m
   adjustment = gtk_range_get_adjustment(GTK_RANGE(vscale));
   ags_line_member_change_port(line_member,
 			      (gpointer) &(adjustment->value));
+  ags_line_member_chained_event(line_member);
 }
 
 void
@@ -59,6 +61,7 @@ ags_line_member_hscale_changed_callback(GtkWidget *hscale, AgsLineMember *line_m
   adjustment = gtk_range_get_adjustment(GTK_RANGE(hscale));
   ags_line_member_change_port(line_member,
 			      &(adjustment->value));
+  ags_line_member_chained_event(line_member);
 }
 
 void
@@ -69,6 +72,7 @@ ags_line_member_spin_button_changed_callback(GtkWidget *spin_button, AgsLineMemb
   adjustment = gtk_spin_button_get_adjustment((GtkSpinButton *) spin_button);
   ags_line_member_change_port(line_member,
 			      &(adjustment->value));
+  ags_line_member_chained_event(line_member);
 }
 
 void
@@ -77,6 +81,7 @@ ags_line_member_check_button_clicked_callback(GtkWidget *check_button, AgsLineMe
   line_member->active = gtk_toggle_button_get_active((GtkToggleButton *) check_button);
   ags_line_member_change_port(line_member,
 			      &(line_member->active));
+  ags_line_member_chained_event(line_member);
 }
 
 void
@@ -85,6 +90,7 @@ ags_line_member_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsLine
   line_member->active = gtk_toggle_button_get_active((GtkToggleButton *) toggle_button);
   ags_line_member_change_port(line_member,
 			      &(line_member->active));
+  ags_line_member_chained_event(line_member);
 }
 
 void
@@ -92,7 +98,9 @@ ags_line_member_button_clicked_callback(GtkWidget *button, AgsLineMember *line_m
 {
   ags_line_member_change_port(line_member,
 			      &(line_member->active));
+  ags_line_member_chained_event(line_member);
 }
+
 void
 ags_line_member_port_safe_write_callback(AgsPort *port, GValue *value,
 					 AgsLineMember *line_member)

@@ -100,6 +100,9 @@ void ags_dial_draw(AgsDial *dial);
 
 void ags_dial_value_changed(AgsDial *dial);
 
+void ags_dial_set_value(AgsDial *dial,
+			gdouble value);
+
 AgsDial* ags_dial_new();
 
 #endif /*__AGS_DIAL_H__*/
