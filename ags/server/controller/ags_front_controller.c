@@ -19,7 +19,7 @@
 
 #include <ags/server/controller/ags_front_controller.h>
 
-#include <ags/lib/ags_list_util.h>
+#include <ags/util/ags_list_util.h>
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
