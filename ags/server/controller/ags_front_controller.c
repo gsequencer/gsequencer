@@ -34,6 +34,8 @@
 
 #include <ags/server/controller/ags_local_factory_controller.h>
 
+#include <string.h>
+
 #ifdef AGS_WITH_XMLRPC_C
 #include <xmlrpc-c/util.h>
 
