@@ -19,6 +19,8 @@
 
 #include <ags/server/controller/ags_front_controller.h>
 
+#include <ags/lib/ags_list_util.h>
+
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_marshal.h>
@@ -562,6 +564,8 @@ ags_front_controller_real_authenticate(AgsFrontController *front_controller,
   g_free(context_path);
 
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 /**
@@ -688,6 +692,7 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
   response = NULL;
   
   if(local_factory_controller != NULL &&
+     AGS_CONTROLLER(local_factory_controller)->context_path != NULL &&
      !g_ascii_strncasecmp(context_path,
 			  AGS_CONTROLLER(local_factory_controller)->context_path,
 			  strlen(AGS_CONTROLLER(local_factory_controller)->context_path))){

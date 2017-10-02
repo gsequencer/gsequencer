@@ -222,6 +222,8 @@ ags_local_serialization_controller_real_send_object(AgsLocalSerializationControl
 						    GObject *gobject)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 /**
@@ -259,6 +261,8 @@ ags_local_serialization_controller_real_send_object_property(AgsLocalSerializati
 							     GObject *gobject, gchar **property_name)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 /**
@@ -298,6 +302,8 @@ ags_local_serialization_controller_real_receive_object(AgsLocalSerializationCont
 						       gchar *str)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 /**
@@ -335,6 +341,8 @@ ags_local_serialization_controller_real_receive_object_property(AgsLocalSerializ
 								gchar *object_id, gchar *str)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 /**

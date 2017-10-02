@@ -180,6 +180,8 @@ ags_xml_password_store_get_login_name(AgsPasswordStore *password_store,
 				      GError **error)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 void
@@ -201,6 +203,8 @@ ags_xml_password_store_get_password(AgsPasswordStore *password_store,
 				    GError **error)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 gchar*

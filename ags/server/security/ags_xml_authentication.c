@@ -224,6 +224,8 @@ ags_xml_authentication_logout(AgsAuthentication *authentication,
 			      GError **error)
 {
   //TODO:JK: implement me
+
+  return(FALSE);
 }
 
 gchar*
@@ -231,6 +233,8 @@ ags_xml_authentication_generate_token(AgsAuthentication *authentication,
 				      GError **error)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 gchar**
@@ -240,6 +244,8 @@ ags_xml_authentication_get_groups(AgsAuthentication *authentication,
 				  GError **error)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 gchar*
@@ -250,6 +256,8 @@ ags_xml_authentication_get_permission(AgsAuthentication *authentication,
 				      GError **error)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 gboolean
@@ -259,6 +267,8 @@ ags_xml_authentication_is_session_active(AgsAuthentication *authentication,
 					 GError **error)
 {
   //TODO:JK: implement me
+
+  return(FALSE);
 }
 
 xmlNode*

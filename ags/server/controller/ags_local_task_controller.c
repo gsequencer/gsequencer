@@ -172,6 +172,8 @@ ags_local_task_controller_real_launch(AgsLocalTaskController *local_task_control
 				      AgsTask *task)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 /**
@@ -209,6 +211,8 @@ ags_local_task_controller_real_launch_timed(AgsLocalTaskController *local_task_c
 					    AgsTask *task, AgsTimestamp *timestamp)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 /**

@@ -140,6 +140,7 @@ ags_local_registry_controller_finalize(GObject *gobject)
 gpointer
 ags_local_registry_controller_real_entry_bulk(AgsLocalRegistryController *local_registry_controller)
 {
+  return(NULL);
 }
 
 /**

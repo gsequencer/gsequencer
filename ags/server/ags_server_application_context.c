@@ -352,12 +352,16 @@ gboolean
 ags_server_application_context_is_operating(AgsServiceProvider *service_provider)
 {
   //TODO:JK: implement me
+
+  return(FALSE);
 }
 
 AgsServerStatus*
 ags_server_application_context_server_status(AgsServiceProvider *service_provider)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 void
@@ -371,6 +375,8 @@ GObject*
 ags_server_application_context_get_registry(AgsServiceProvider *service_provider)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 void
@@ -384,6 +390,8 @@ GList*
 ags_server_application_context_get_server(AgsServiceProvider *service_provider)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 void
@@ -397,6 +405,8 @@ AgsCertificateManager*
 ags_server_application_context_get_certificate_manager(AgsServiceProvider *service_provider)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 void
@@ -410,6 +420,8 @@ AgsPasswordStoreManager*
 ags_server_application_context_get_password_store_manager(AgsServiceProvider *service_provider)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 void
@@ -423,6 +435,8 @@ AgsAuthenticationManager*
 ags_server_application_context_get_authentication_manager(AgsServiceProvider *service_provider)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 AgsServerApplicationContext*

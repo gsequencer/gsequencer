@@ -173,7 +173,7 @@ ags_security_context_finalize(GObject *gobject)
 {
   AgsSecurityContext *security_context;
 
-  gchar *strv;
+  gchar **strv;
   
   security_context = AGS_SECURITY_CONTEXT(gobject);
 
