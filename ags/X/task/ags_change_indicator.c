@@ -164,7 +164,7 @@ ags_change_indicator_launch(AgsTask *task)
  *
  * Returns: an new #AgsChangeIndicator.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsChangeIndicator*
 ags_change_indicator_new(AgsIndicator *indicator,

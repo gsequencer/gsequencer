@@ -124,7 +124,7 @@ ags_set_input_device_class_init(AgsSetInputDeviceClass *set_input_device)
    *
    * The assigned #AgsSequencer instance.
    * 
-   * Since: 0.7.111
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("sequencer",
 				   i18n_pspec("sequencer of set audio channels"),
@@ -140,7 +140,7 @@ ags_set_input_device_class_init(AgsSetInputDeviceClass *set_input_device)
    *
    * The sequencer indentifier
    * 
-   * Since: 0.7.111
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("device",
 				   i18n_pspec("device identifier"),
@@ -352,7 +352,7 @@ ags_set_input_device_launch(AgsTask *task)
  *
  * Returns: an new #AgsSetInputDevice.
  *
- * Since: 0.7.111
+ * Since: 1.0.0
  */
 AgsSetInputDevice*
 ags_set_input_device_new(GObject *sequencer,

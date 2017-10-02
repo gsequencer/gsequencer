@@ -202,7 +202,7 @@ ags_message_class_init(AgsMessageInterface *interface)
  *
  * Notifies about key-on event.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_message_key_on(AgsMessage *message,
@@ -230,7 +230,7 @@ ags_message_key_on(AgsMessage *message,
  *
  * Notifies about key-off event.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_message_key_off(AgsMessage *message,
@@ -258,7 +258,7 @@ ags_message_key_off(AgsMessage *message,
  *
  * Notifies about key pressure event.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_message_key_pressure(AgsMessage *message,
@@ -287,7 +287,7 @@ ags_message_key_pressure(AgsMessage *message,
  *
  * Notifies about changed parameter.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_message_change_parameter(AgsMessage *message,
@@ -317,7 +317,7 @@ ags_message_change_parameter(AgsMessage *message,
  *
  * Notifies about changed mode.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_message_change_mode(AgsMessage *message,
@@ -344,7 +344,7 @@ ags_message_change_mode(AgsMessage *message,
  *
  * Notifies about pitch bend.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_message_pitch_bend(AgsMessage *message,
@@ -368,7 +368,7 @@ ags_message_pitch_bend(AgsMessage *message,
  *
  * Notifies about modified bpm.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_message_set_bpm(AgsMessage *message,
@@ -390,7 +390,7 @@ ags_message_set_bpm(AgsMessage *message,
  *
  * Notifies about modified bpm.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_message_set_delay_factor(AgsMessage *message,

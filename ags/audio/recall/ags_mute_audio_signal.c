@@ -293,7 +293,7 @@ ags_mute_audio_signal_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsMuteAudioSignal
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsMuteAudioSignal*
 ags_mute_audio_signal_new(AgsAudioSignal *source)

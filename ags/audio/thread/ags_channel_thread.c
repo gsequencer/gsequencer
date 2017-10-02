@@ -132,7 +132,7 @@ ags_channel_thread_class_init(AgsChannelThreadClass *channel_thread)
    *
    * The assigned #AgsChannel.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard assigned to"),
@@ -148,7 +148,7 @@ ags_channel_thread_class_init(AgsChannelThreadClass *channel_thread)
    *
    * The assigned #AgsChannel.
    * 
-   * Since: 0.4.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("channel assigned to"),
@@ -616,7 +616,7 @@ ags_channel_thread_stop(AgsThread *thread)
  *
  * Returns: the new #AgsChannelThread
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 AgsChannelThread*
 ags_channel_thread_new(GObject *soundcard,

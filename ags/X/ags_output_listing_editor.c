@@ -294,7 +294,7 @@ ags_output_listing_editor_reset(AgsApplicable *applicable)
  *
  * Creates new pad editors or destroys them.
  *
- * Since: 0.7.131
+ * Since: 1.0.0
  */
 void
 ags_output_listing_editor_add_children(AgsOutputListingEditor *output_listing_editor,
@@ -411,7 +411,7 @@ ags_output_listing_editor_add_children(AgsOutputListingEditor *output_listing_ed
  *
  * Returns: a new #AgsOutputListingEditor
  *
- * Since: 0.7.131
+ * Since: 1.0.0
  */
 AgsOutputListingEditor*
 ags_output_listing_editor_new(GType channel_type)

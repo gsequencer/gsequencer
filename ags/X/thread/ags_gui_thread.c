@@ -2007,7 +2007,7 @@ ags_gui_thread_schedule_task_list(AgsGuiThread *gui_thread,
  *
  * Returns: the new #AgsGuiThread
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 AgsGuiThread*
 ags_gui_thread_new()

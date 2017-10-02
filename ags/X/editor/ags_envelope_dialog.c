@@ -135,7 +135,7 @@ ags_envelope_dialog_class_init(AgsEnvelopeDialogClass *envelope_dialog)
    *
    * The #AgsMachine to edit.
    * 
-   * Since: 0.8.1
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("machine",
 				   i18n_pspec("assigned machine"),
@@ -414,7 +414,7 @@ ags_envelope_dialog_reset(AgsApplicable *applicable)
  * 
  * Load presets.
  * 
- * Since: 0.8.6
+ * Since: 1.0.0
  */
 void
 ags_envelope_dialog_load_preset(AgsEnvelopeDialog *envelope_dialog)
@@ -432,7 +432,7 @@ ags_envelope_dialog_load_preset(AgsEnvelopeDialog *envelope_dialog)
  * 
  * Add pattern tab.
  * 
- * Since: 0.8.5
+ * Since: 1.0.0
  */
 void
 ags_envelope_dialog_add_pattern_tab(AgsEnvelopeDialog *envelope_dialog)
@@ -466,7 +466,7 @@ ags_envelope_dialog_add_pattern_tab(AgsEnvelopeDialog *envelope_dialog)
  *
  * Returns: a new #AgsEnvelopeDialog
  *
- * Since: 0.8.1
+ * Since: 1.0.0
  */
 AgsEnvelopeDialog*
 ags_envelope_dialog_new(AgsMachine *machine)

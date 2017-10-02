@@ -161,7 +161,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    *
    * The assigned pname.
    * 
-   * Since: 0.122.8
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("pname",
 				   i18n_pspec("pname of the plugin"),
@@ -177,7 +177,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    *
    * The assigned uri.
    * 
-   * Since: 0.7.6
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("uri",
 				   i18n_pspec("uri of the plugin"),
@@ -193,7 +193,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    *
    * The assigned ui-uri.
    * 
-   * Since: 0.7.127
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("ui-uri",
 				   i18n_pspec("ui-uri of the plugin"),
@@ -209,7 +209,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    *
    * The assigned manifest.
    * 
-   * Since: 0.7.127
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("manifest",
 				   i18n_pspec("manifest of the plugin"),
@@ -225,7 +225,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    *
    * The assigned turtle.
    * 
-   * Since: 0.7.6
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("turtle",
 				   i18n_pspec("turtle of the plugin"),
@@ -262,7 +262,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    *
    * The ::change-program signal creates a new instance of plugin.
    *
-   * Since: 0.7.134
+   * Since: 1.0.0
    */
   lv2_plugin_signals[CHANGE_PROGRAM] =
     g_signal_new("change-program",
@@ -1392,7 +1392,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
  * 
  * Returns: the new event buffer
  * 
- * Since: 0.7.7
+ * Since: 1.0.0
  */
 void*
 ags_lv2_plugin_alloc_event_buffer(guint buffer_size)
@@ -1436,7 +1436,7 @@ ags_lv2_plugin_alloc_event_buffer(guint buffer_size)
  * 
  * Returns: The newly allocated event buffer
  * 
- * Since: 0.7.7
+ * Since: 1.0.0
  */
 void*
 ags_lv2_plugin_concat_event_buffer(void *buffer0, ...)
@@ -1477,7 +1477,7 @@ ags_lv2_plugin_concat_event_buffer(void *buffer0, ...)
  * 
  * Returns: a new allocated LV2_Event_Buffer
  * 
- * Since: 0.9.7
+ * Since: 1.0.0
  */
 LV2_Event_Buffer*
 ags_lv2_plugin_event_buffer_alloc(guint buffer_size)
@@ -1522,7 +1522,7 @@ ags_lv2_plugin_event_buffer_alloc(guint buffer_size)
  * 
  * Reallocate LV2_Event_Buffer struct's data field.
  * 
- * Since: 0.9.7
+ * Since: 1.0.0
  */
 void
 ags_lv2_plugin_event_buffer_realloc_data(LV2_Event_Buffer *event_buffer,
@@ -1558,7 +1558,7 @@ ags_lv2_plugin_event_buffer_realloc_data(LV2_Event_Buffer *event_buffer,
  * 
  * Returns: The newly allocated event buffer
  * 
- * Since: 0.9.7
+ * Since: 1.0.0
  */
 LV2_Event_Buffer*
 ags_lv2_plugin_event_buffer_concat(LV2_Event_Buffer *event_buffer, ...)
@@ -1610,7 +1610,7 @@ ags_lv2_plugin_event_buffer_concat(LV2_Event_Buffer *event_buffer, ...)
  *
  * Returns: %TRUE on success otherwise %FALSE
  *
- * Since: 0.7.7
+ * Since: 1.0.0
  */
 gboolean
 ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
@@ -1681,7 +1681,7 @@ ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
  *
  * Returns: %TRUE on success otherwise %FALSE
  *
- * Since: 0.7.134
+ * Since: 1.0.0
  */
 gboolean
 ags_lv2_plugin_event_buffer_remove_midi(void *event_buffer,
@@ -1750,7 +1750,7 @@ ags_lv2_plugin_event_buffer_remove_midi(void *event_buffer,
  *
  * Clear the event buffer.
  *
- * Since: 0.7.7 
+ * Since: 1.0.0 
  */
 void
 ags_lv2_plugin_clear_event_buffer(void *event_buffer,
@@ -1779,7 +1779,7 @@ ags_lv2_plugin_clear_event_buffer(void *event_buffer,
  * 
  * Returns: the new atom sequence
  * 
- * Since: 0.7.7
+ * Since: 1.0.0
  */
 void*
 ags_lv2_plugin_alloc_atom_sequence(guint sequence_size)
@@ -1815,7 +1815,7 @@ ags_lv2_plugin_alloc_atom_sequence(guint sequence_size)
  *
  * Returns: %TRUE on success otherwise %FALSE
  *
- * Since: 0.7.7
+ * Since: 1.0.0
  */
 gboolean
 ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
@@ -1895,7 +1895,7 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
  *
  * Returns: %TRUE on success otherwise %FALSE
  *
- * Since: 0.7.134
+ * Since: 1.0.0
  */
 gboolean
 ags_lv2_plugin_atom_sequence_remove_midi(void *atom_sequence,
@@ -1966,7 +1966,7 @@ ags_lv2_plugin_atom_sequence_remove_midi(void *atom_sequence,
  *
  * Clear the atom sequence.
  *
- * Since: 0.7.7 
+ * Since: 1.0.0 
  */
 void
 ags_lv2_plugin_clear_atom_sequence(void *atom_sequence,
@@ -1984,7 +1984,7 @@ ags_lv2_plugin_clear_atom_sequence(void *atom_sequence,
  * 
  * Returns: the matching #GList-struct containing #AgsLv2Plugin
  * 
- * Since: 0.7.122.8
+ * Since: 1.0.0.8
  */
 GList*
 ags_lv2_plugin_find_pname(GList *lv2_plugin,
@@ -2035,7 +2035,7 @@ ags_lv2_plugin_real_change_program(AgsLv2Plugin *lv2_plugin,
  * 
  * Change program of @lv2_handle.
  * 
- * Since: 0.8.0
+ * Since: 1.0.0
  */
 void
 ags_lv2_plugin_change_program(AgsLv2Plugin *lv2_plugin,
@@ -2065,7 +2065,7 @@ ags_lv2_plugin_change_program(AgsLv2Plugin *lv2_plugin,
  *
  * Returns: a new #AgsLv2Plugin
  *
- * Since: 0.7.6
+ * Since: 1.0.0
  */
 AgsLv2Plugin*
 ags_lv2_plugin_new(AgsTurtle *turtle, gchar *filename, gchar *effect, gchar *uri, guint effect_index)

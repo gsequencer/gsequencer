@@ -180,7 +180,7 @@ ags_ffplayer_input_line_finalize(GObject *gobject)
  *
  * Returns: a new #AgsFFPlayerInputLine
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsFFPlayerInputLine*
 ags_ffplayer_input_line_new(AgsChannel *channel)

@@ -169,7 +169,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of automation"),
@@ -186,7 +186,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's line.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_uint("line",
 				  i18n_pspec("line of effect"),
@@ -204,7 +204,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's assigned channel type.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_gtype("channel-type",
 				   i18n_pspec("channel type to apply"),
@@ -221,7 +221,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's assigned control name.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_string("control-name",
 				    i18n_pspec("control name"),
@@ -237,7 +237,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The assigned #AgsPort
    * 
-   * Since: 0.4.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("port",
 				   i18n_pspec("port of automation"),
@@ -253,7 +253,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's steps.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_uint("steps",
 				  i18n_pspec("steps of effect"),
@@ -271,7 +271,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's upper.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_double("upper",
 				    i18n_pspec("upper of effect"),
@@ -289,7 +289,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's lower.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_double("lower",
 				    i18n_pspec("lower of effect"),
@@ -308,7 +308,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's default-value.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_double("default-value",
 				    i18n_pspec("default value of effect"),
@@ -327,7 +327,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The acceleration list.
    * 
-   * Since: 0.7.122.8
+   * Since: 1.0.0.8
    */
   param_spec = g_param_spec_pointer("acceleration",
 				    i18n_pspec("acceleration"),
@@ -342,7 +342,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * Offset of current position.
    * 
-   * Since: 0.4.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("current-accelerations",
 				    i18n_pspec("current accelerations for offset"),
@@ -357,7 +357,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * Offset of next position.
    * 
-   * Since: 0.4.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("next-accelerations",
 				    i18n_pspec("next accelerations for offset"),
@@ -372,7 +372,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The automation's timestamp.
    * 
-   * Since: 0.7.56
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("timestamp",
 				   i18n_pspec("timestamp of automation"),
@@ -973,7 +973,7 @@ ags_automation_find_port(GList *automation,
  *
  * Returns: Next match.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 GList*
 ags_automation_find_near_timestamp(GList *automation, guint line,
@@ -1018,7 +1018,7 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
  *
  * Adds a acceleration to automation.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_automation_add_acceleration(AgsAutomation *automation,
@@ -1068,7 +1068,7 @@ ags_automation_add_acceleration(AgsAutomation *automation,
  *
  * Returns: %TRUE if successfully removed acceleration.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 gboolean
 ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
@@ -1110,7 +1110,7 @@ ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
  *
  * Returns: the selection.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 GList*
 ags_automation_get_selection(AgsAutomation *automation)
@@ -1127,7 +1127,7 @@ ags_automation_get_selection(AgsAutomation *automation)
  *
  * Returns: %TRUE if selected
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 gboolean
 ags_automation_is_acceleration_selected(AgsAutomation *automation, AgsAcceleration *acceleration)
@@ -1158,7 +1158,7 @@ ags_automation_is_acceleration_selected(AgsAutomation *automation, AgsAccelerati
  *
  * Returns: the matching acceleration.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */ 
 AgsAcceleration*
 ags_automation_find_point(AgsAutomation *automation,
@@ -1201,7 +1201,7 @@ ags_automation_find_point(AgsAutomation *automation,
  *
  * Returns: the matching acceleration as #GList.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 GList*
 ags_automation_find_region(AgsAutomation *automation,
@@ -1254,7 +1254,7 @@ ags_automation_find_region(AgsAutomation *automation,
  *
  * Clear selection.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_automation_free_selection(AgsAutomation *automation)
@@ -1286,7 +1286,7 @@ ags_automation_free_selection(AgsAutomation *automation)
  *
  * Select acceleration at position.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */ 
 void
 ags_automation_add_point_to_selection(AgsAutomation *automation,
@@ -1333,7 +1333,7 @@ ags_automation_add_point_to_selection(AgsAutomation *automation,
  *
  * Remove acceleration at position of selection.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */ 
 void
 ags_automation_remove_point_from_selection(AgsAutomation *automation,
@@ -1411,7 +1411,7 @@ ags_automation_add_region_to_selection(AgsAutomation *automation,
  *
  * Remove acceleration within region of selection.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */ 
 void
 ags_automation_remove_region_from_selection(AgsAutomation *automation,
@@ -1467,7 +1467,7 @@ ags_automation_add_all_to_selection(AgsAutomation *automation)
  *
  * Returns: the selection as XML.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 xmlNode*
 ags_automation_copy_selection(AgsAutomation *automation)
@@ -1528,7 +1528,7 @@ ags_automation_copy_selection(AgsAutomation *automation)
  *
  * Returns: the selection as XML.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 xmlNode*
 ags_automation_cut_selection(AgsAutomation *automation)
@@ -1894,7 +1894,7 @@ ags_automation_get_current(AgsAutomation *automation)
  *
  * Returns: a %NULL terminated string array
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 gchar**
 ags_automation_get_specifier_unique(GList *automation)
@@ -1943,7 +1943,7 @@ ags_automation_get_specifier_unique(GList *automation)
  *
  * Returns: Next matching #GList
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 GList*
 ags_automation_find_specifier(GList *automation,
@@ -1972,7 +1972,7 @@ ags_automation_find_specifier(GList *automation,
  *
  * Returns: Next matching #GList-struct
  *
- * Since: 0.7.30
+ * Since: 1.0.0
  */
 GList*
 ags_automation_find_specifier_with_type_and_line(GList *automation,
@@ -2011,7 +2011,7 @@ ags_automation_find_specifier_with_type_and_line(GList *automation,
  *
  * Returns: the x_offset
  *
- * Since: 0.7.32
+ * Since: 1.0.0
  */
 guint
 ags_automation_get_value(AgsAutomation *automation,
@@ -2138,7 +2138,7 @@ ags_automation_get_value(AgsAutomation *automation,
  *
  * Returns: a new #AgsAutomation
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 AgsAutomation*
 ags_automation_new(GObject *audio,

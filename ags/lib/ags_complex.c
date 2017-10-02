@@ -53,7 +53,7 @@ ags_complex_get_type(void)
  *
  * Returns: a new #AgsComplex
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 AgsComplex*
 ags_complex_alloc()
@@ -76,7 +76,7 @@ ags_complex_alloc()
  *
  * Returns: a pointer of the new #AgsComplex
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 gpointer
 ags_complex_copy(AgsComplex *ptr)
@@ -97,7 +97,7 @@ ags_complex_copy(AgsComplex *ptr)
  *
  * Frees the memory of @ptr.
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 void
 ags_complex_free(AgsComplex *ptr)
@@ -113,7 +113,7 @@ ags_complex_free(AgsComplex *ptr)
  *
  * Returns: number as complex data type
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 complex
 ags_complex_get(AgsComplex *ptr)
@@ -132,7 +132,7 @@ ags_complex_get(AgsComplex *ptr)
  * 
  * Set complex number.
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 void
 ags_complex_set(AgsComplex *ptr, complex z)

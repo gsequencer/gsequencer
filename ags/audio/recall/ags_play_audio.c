@@ -101,7 +101,7 @@ ags_play_audio_finalize(GObject *gobject)
  *
  * Returns: a new #AgsPlayAudio
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsPlayAudio*
 ags_play_audio_new()

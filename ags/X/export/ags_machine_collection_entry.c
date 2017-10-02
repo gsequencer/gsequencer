@@ -130,7 +130,7 @@ ags_machine_collection_entry_class_init(AgsMachineCollectionEntryClass *machine_
    *
    * The assigned #AgsMachine.
    * 
-   * Since: 0.8.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("machine",
 				   i18n_pspec("assigned machine"),
@@ -554,7 +554,7 @@ ags_machine_collection_entry_reset(AgsApplicable *applicable)
  *
  * Returns: a new #AgsMachineCollectionEntry
  *
- * Since: 0.8.0
+ * Since: 1.0.0
  */
 AgsMachineCollectionEntry*
 ags_machine_collection_entry_new()

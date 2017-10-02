@@ -127,7 +127,7 @@ ags_remove_audio_class_init(AgsRemoveAudioClass *remove_audio)
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of remove audio"),
@@ -143,7 +143,7 @@ ags_remove_audio_class_init(AgsRemoveAudioClass *remove_audio)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of remove audio"),
@@ -408,7 +408,7 @@ ags_remove_audio_launch(AgsTask *task)
  *
  * Returns: an new #AgsRemoveAudio.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsRemoveAudio*
 ags_remove_audio_new(GObject *soundcard,

@@ -139,7 +139,7 @@ ags_midi_import_wizard_class_init(AgsMidiImportWizardClass *midi_import_wizard)
    *
    * The assigned #AgsApplicationContext to give control of application.
    * 
-   * Since: 0.8.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("assigned application context"),
@@ -155,7 +155,7 @@ ags_midi_import_wizard_class_init(AgsMidiImportWizardClass *midi_import_wizard)
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 0.8.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -423,7 +423,7 @@ ags_midi_import_wizard_show(GtkWidget *widget)
  *
  * Returns: a new #AgsMidiImportWizard
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsMidiImportWizard*
 ags_midi_import_wizard_new()

@@ -165,7 +165,7 @@ ags_blink_cell_pattern_cursor_launch(AgsTask *task)
  *
  * Returns: an new #AgsBlinkCellPatternCursor.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsBlinkCellPatternCursor*
 ags_blink_cell_pattern_cursor_new(AgsCellPattern *cell_pattern,

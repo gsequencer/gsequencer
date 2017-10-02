@@ -124,7 +124,7 @@ ags_automation_window_class_init(AgsAutomationWindowClass *automation_window)
    *
    * The assigned #AgsSoundcard acting as default sink.
    * 
-   * Since: 0.7.65
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),

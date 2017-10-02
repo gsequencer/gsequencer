@@ -219,7 +219,7 @@ ags_prepare_recycling_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsPrepareRecycling
  *
- * Since: 0.7.122.8
+ * Since: 1.0.0.8
  */
 AgsPrepareRecycling*
 ags_prepare_recycling_new(AgsRecycling *recycling)

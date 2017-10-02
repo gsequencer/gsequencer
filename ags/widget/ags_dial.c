@@ -212,7 +212,7 @@ ags_dial_class_init(AgsDialClass *dial)
    *
    * The adjustment storing current value and boundaries.
    * 
-   * Since: 0.7.21
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("adjustment\0",
 				   "assigned adjustment\0",
@@ -228,7 +228,7 @@ ags_dial_class_init(AgsDialClass *dial)
    *
    * The precision of the scale.
    * 
-   * Since: 0.7.21
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("scale-precision\0",
 				 "scale precision\0",
@@ -268,7 +268,7 @@ ags_dial_class_init(AgsDialClass *dial)
    *
    * The ::value-changed signal notifies adjustment value changed.
    *
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   dial_signals[VALUE_CHANGED] =
     g_signal_new("value-changed\0",
@@ -1274,7 +1274,7 @@ ags_dial_motion_notify(GtkWidget *widget,
  *
  * draws the widget
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_dial_draw(AgsDial *dial)
@@ -1562,7 +1562,7 @@ ags_dial_draw(AgsDial *dial)
  *
  * draws the widget
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_dial_value_changed(AgsDial *dial)
@@ -1611,7 +1611,7 @@ ags_dial_set_value(AgsDial *dial,
  *
  * Returns: a new #AgsDial
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsDial*
 ags_dial_new()

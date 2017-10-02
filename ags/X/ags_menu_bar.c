@@ -613,7 +613,7 @@ ags_tact_menu_new()
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GtkComboBox*
 ags_zoom_combo_box_new()
@@ -651,7 +651,7 @@ ags_zoom_combo_box_new()
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GtkComboBox*
 ags_tact_combo_box_new()
@@ -862,7 +862,7 @@ ags_live_lv2_bridge_menu_new()
  *
  * Returns: a new #AgsMenuBar
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsMenuBar*
 ags_menu_bar_new()

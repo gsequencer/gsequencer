@@ -208,7 +208,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    *
    * The start of a bunch of #AgsChannel to visualize.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("assigned channel"),
@@ -237,7 +237,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    *
    * Returns: the #GList-struct containing the #AgsPort objects added
    *
-   * Since: 0.7.42
+   * Since: 1.0.0
    */
   effect_line_signals[ADD_EFFECT] =
     g_signal_new("add-effect",
@@ -258,7 +258,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    *
    * The ::remove-effect signal notifies about removed effect.
    *
-   * Since: 0.7.42
+   * Since: 1.0.0
    */
   effect_line_signals[REMOVE_EFFECT] =
     g_signal_new("remove-effect",
@@ -278,7 +278,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    * The ::map-recall should be used to add the effect_line's default recall. This function
    * may call ags_effect_line_find_port().
    *
-   * Since: 0.7.42
+   * Since: 1.0.0
    */
   effect_line_signals[MAP_RECALL] =
     g_signal_new("map-recall",
@@ -299,7 +299,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
    *
    * Returns: an #GList containing all related #AgsPort
    *
-   * Since: 0.7.8
+   * Since: 1.0.0
    */
   effect_line_signals[FIND_PORT] =
     g_signal_new("find-port",
@@ -1327,7 +1327,7 @@ ags_effect_line_real_add_effect(AgsEffectLine *effect_line,
  *
  * Returns: the #GList-struct containing the #AgsPort objects added
  *
- * Since: 0.7.42
+ * Since: 1.0.0
  */
 GList*
 ags_effect_line_add_effect(AgsEffectLine *effect_line,
@@ -1537,7 +1537,7 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
  *
  * Remove an effect by its position.
  *
- * Since: 0.7.42
+ * Since: 1.0.0
  */
 void
 ags_effect_line_remove_effect(AgsEffectLine *effect_line,
@@ -1573,7 +1573,7 @@ ags_effect_line_real_map_recall(AgsEffectLine *effect_line,
  * You may want the @effect_line to add its default recall. This function
  * may call ags_effect_line_find_port().
  *
- * Since: 0.7.42
+ * Since: 1.0.0
  */
 void
 ags_effect_line_map_recall(AgsEffectLine *effect_line,
@@ -1633,7 +1633,7 @@ ags_effect_line_real_find_port(AgsEffectLine *effect_line)
  *
  * Returns: an #GList containing all related #AgsPort
  *
- * Since: 0.7.8
+ * Since: 1.0.0
  */
 GList*
 ags_effect_line_find_port(AgsEffectLine *effect_line)
@@ -1661,7 +1661,7 @@ ags_effect_line_find_port(AgsEffectLine *effect_line)
  *
  * Returns: next matching #GList-struct containing #AgsEffectLine
  * 
- * Since: 0.4
+ * Since: 1.0.0
  */
 GList*
 ags_effect_line_find_next_grouped(GList *effect_line)
@@ -1681,7 +1681,7 @@ ags_effect_line_find_next_grouped(GList *effect_line)
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  *
- * Since: 0.7.128
+ * Since: 1.0.0
  */
 gboolean
 ags_effect_line_indicator_queue_draw_timeout(GtkWidget *widget)
@@ -1704,7 +1704,7 @@ ags_effect_line_indicator_queue_draw_timeout(GtkWidget *widget)
  *
  * Returns: a new #AgsEffectLine
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsEffectLine*
 ags_effect_line_new(AgsChannel *channel)

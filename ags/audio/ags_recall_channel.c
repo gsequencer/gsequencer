@@ -153,7 +153,7 @@ ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel)
    *
    * The assigned destination channel.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("destination",
 				   i18n_pspec("assigned destination channel"),
@@ -169,7 +169,7 @@ ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel)
    *
    * The assigned source channel.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
    param_spec = g_param_spec_object("source",
 				    i18n_pspec("assigned source channel"),
@@ -654,7 +654,7 @@ ags_recall_channel_duplicate(AgsRecall *recall,
  *
  * Returns: Next match.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GList*
 ags_recall_channel_find_channel(GList *recall_channel_i, AgsChannel *source)
@@ -681,7 +681,7 @@ ags_recall_channel_find_channel(GList *recall_channel_i, AgsChannel *source)
  *
  * Returns: a new #AgsRecallChannel.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsRecallChannel*
 ags_recall_channel_new()

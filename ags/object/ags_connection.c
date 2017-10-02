@@ -101,7 +101,7 @@ ags_connection_class_init(AgsConnectionClass *connection)
    *
    * The assigned #GObject acting as data object.
    * 
-   * Since: 0.7.65
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("data-object",
 				   "assigned data object",
@@ -219,7 +219,7 @@ ags_connection_finalize(GObject *gobject)
  *
  * Returns: a matching #GList-struct
  * 
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 GList*
 ags_connection_find_type(GList *connection,
@@ -253,7 +253,7 @@ ags_connection_find_type(GList *connection,
  *
  * Returns: a matching #GList-struct
  *
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 GList*
 ags_connection_find_type_and_data_object_type(GList *connection,
@@ -286,7 +286,7 @@ ags_connection_find_type_and_data_object_type(GList *connection,
  *
  * Returns: a new #AgsConnection
  *
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 AgsConnection*
 ags_connection_new()

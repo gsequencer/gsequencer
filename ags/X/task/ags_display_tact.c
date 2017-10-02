@@ -179,7 +179,7 @@ ags_display_tact_launch(AgsTask *task)
  *
  * Returns: an new #AgsDisplayTact.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsDisplayTact*
 ags_display_tact_new(GtkWidget *navigation)

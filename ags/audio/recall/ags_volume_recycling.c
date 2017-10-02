@@ -223,7 +223,7 @@ ags_volume_recycling_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsVolumeRecycling
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsVolumeRecycling*
 ags_volume_recycling_new(AgsRecycling *recycling)

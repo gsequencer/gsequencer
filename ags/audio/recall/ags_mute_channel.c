@@ -172,7 +172,7 @@ ags_mute_channel_class_init(AgsMuteChannelClass *mute_channel)
    *
    * The mute port.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("muted",
 				   i18n_pspec("mute channel"),
@@ -409,7 +409,7 @@ ags_mute_channel_get_muted_port_descriptor()
  *
  * Returns: a new #AgsMuteChannel
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsMuteChannel*
 ags_mute_channel_new()

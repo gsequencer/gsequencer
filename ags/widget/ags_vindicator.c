@@ -199,7 +199,7 @@ ags_vindicator_draw(AgsVIndicator *indicator)
  *
  * Returns: a new #AgsVIndicator
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsVIndicator*
 ags_vindicator_new()

@@ -124,7 +124,7 @@ ags_remove_soundcard_class_init(AgsRemoveSoundcardClass *remove_soundcard)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("application context of remove soundcard"),
@@ -140,7 +140,7 @@ ags_remove_soundcard_class_init(AgsRemoveSoundcardClass *remove_soundcard)
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of remove soundcard"),
@@ -339,7 +339,7 @@ ags_remove_soundcard_launch(AgsTask *task)
  *
  * Returns: an new #AgsRemoveSoundcard.
  *
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 AgsRemoveSoundcard*
 ags_remove_soundcard_new(AgsApplicationContext *application_context,

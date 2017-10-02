@@ -124,7 +124,7 @@ ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *r
    *
    * The assigned #AgsNotation
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("notation",
 				   i18n_pspec("notation of remove note"),
@@ -140,7 +140,7 @@ ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *r
    *
    * Note offset x0.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("x0",
 				 i18n_pspec("offset x0"),
@@ -158,7 +158,7 @@ ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *r
    *
    * Note offset x1.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("x1",
 				 i18n_pspec("offset x1"),
@@ -176,7 +176,7 @@ ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *r
    *
    * Note offset y0.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("y0",
 				 i18n_pspec("offset y0"),
@@ -194,7 +194,7 @@ ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *r
    *
    * Note offset y1.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("y1",
 				 i18n_pspec("offset y1"),
@@ -405,7 +405,7 @@ ags_remove_region_from_selection_launch(AgsTask *task)
  *
  * Returns: an new #AgsRemoveRegionFromSelection.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsRemoveRegionFromSelection*
 ags_remove_region_from_selection_new(AgsNotation *notation,

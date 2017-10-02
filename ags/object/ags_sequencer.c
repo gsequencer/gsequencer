@@ -65,7 +65,7 @@ ags_sequencer_class_init(AgsSequencerInterface *interface)
    * The ::tic signal is emitted every tic of the sequencer. This notifies
    * about a newly played buffer.
    * 
-   * Since: 0.7.122
+   * Since: 1.0.0
    */
   g_signal_new("tic",
 	       G_TYPE_FROM_INTERFACE(interface),
@@ -83,7 +83,7 @@ ags_sequencer_class_init(AgsSequencerInterface *interface)
    * The ::offset-changed signal notifies about changed position within
    * notation.
    * 
-   * Since: 0.7.122
+   * Since: 1.0.0
    */
   g_signal_new("offset-changed",
 	       G_TYPE_FROM_INTERFACE(interface),
@@ -102,7 +102,7 @@ ags_sequencer_class_init(AgsSequencerInterface *interface)
  *
  * Set application context.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_sequencer_set_application_context(AgsSequencer *sequencer,
@@ -125,7 +125,7 @@ ags_sequencer_set_application_context(AgsSequencer *sequencer,
  *
  * Returns: #AgsApplicationContext
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsApplicationContext*
 ags_sequencer_get_application_context(AgsSequencer *sequencer)
@@ -146,7 +146,7 @@ ags_sequencer_get_application_context(AgsSequencer *sequencer)
  *
  * Set application mutex.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_sequencer_set_application_mutex(AgsSequencer *sequencer,
@@ -169,7 +169,7 @@ ags_sequencer_set_application_mutex(AgsSequencer *sequencer,
  *
  * Returns: #AgsApplicationMutex
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 pthread_mutex_t*
 ags_sequencer_get_application_mutex(AgsSequencer *sequencer)
@@ -190,7 +190,7 @@ ags_sequencer_get_application_mutex(AgsSequencer *sequencer)
  *
  * Set device.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_sequencer_set_device(AgsSequencer *sequencer,
@@ -213,7 +213,7 @@ ags_sequencer_set_device(AgsSequencer *sequencer,
  *
  * Returns: the device's identifier
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 gchar*
 ags_sequencer_get_device(AgsSequencer *sequencer)
@@ -235,7 +235,7 @@ ags_sequencer_get_device(AgsSequencer *sequencer)
  *
  * Retrieve @card_id and @card_name as a list of strings.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_sequencer_list_cards(AgsSequencer *sequencer,
@@ -257,7 +257,7 @@ ags_sequencer_list_cards(AgsSequencer *sequencer,
  *
  * Returns: %TRUE if starting, else %FALSE
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 gboolean
 ags_sequencer_is_starting(AgsSequencer *sequencer)
@@ -279,7 +279,7 @@ ags_sequencer_is_starting(AgsSequencer *sequencer)
  *
  * Returns: %TRUE if playing, else %FALSE
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 gboolean
 ags_sequencer_is_playing(AgsSequencer *sequencer)
@@ -301,7 +301,7 @@ ags_sequencer_is_playing(AgsSequencer *sequencer)
  *
  * Returns: %TRUE if recording, else %FALSE
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 gboolean
 ags_sequencer_is_recording(AgsSequencer *sequencer)
@@ -322,7 +322,7 @@ ags_sequencer_is_recording(AgsSequencer *sequencer)
  *
  * Initializes the sequencer for playback.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_sequencer_play_init(AgsSequencer *sequencer,
@@ -344,7 +344,7 @@ ags_sequencer_play_init(AgsSequencer *sequencer,
  *
  * Plays the current buffer of sequencer.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_sequencer_play(AgsSequencer *sequencer,
@@ -366,7 +366,7 @@ ags_sequencer_play(AgsSequencer *sequencer,
  *
  * Initializes the sequencer for recordback.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_sequencer_record_init(AgsSequencer *sequencer,
@@ -388,7 +388,7 @@ ags_sequencer_record_init(AgsSequencer *sequencer,
  *
  * Records the current buffer of sequencer.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_sequencer_record(AgsSequencer *sequencer,
@@ -409,7 +409,7 @@ ags_sequencer_record(AgsSequencer *sequencer,
  *
  * Stops the sequencer from playing to it.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_sequencer_stop(AgsSequencer *sequencer)
@@ -428,7 +428,7 @@ ags_sequencer_stop(AgsSequencer *sequencer)
  *
  * Every call to play may generate a tic. 
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_sequencer_tic(AgsSequencer *sequencer)
@@ -447,7 +447,7 @@ ags_sequencer_tic(AgsSequencer *sequencer)
  *
  * Callback when counter expires minor note offset.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_sequencer_offset_changed(AgsSequencer *sequencer,
@@ -471,7 +471,7 @@ ags_sequencer_offset_changed(AgsSequencer *sequencer,
  *
  * Returns: current playback buffer
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void*
 ags_sequencer_get_buffer(AgsSequencer *sequencer,
@@ -496,7 +496,7 @@ ags_sequencer_get_buffer(AgsSequencer *sequencer,
  *
  * Returns: next playback buffer
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void*
 ags_sequencer_get_next_buffer(AgsSequencer *sequencer,
@@ -519,7 +519,7 @@ ags_sequencer_get_next_buffer(AgsSequencer *sequencer,
  *
  * Set current playback bpm. 
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_sequencer_set_bpm(AgsSequencer *sequencer,
@@ -542,7 +542,7 @@ ags_sequencer_set_bpm(AgsSequencer *sequencer,
  *
  * Returns: bpm
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 gdouble
 ags_sequencer_get_bpm(AgsSequencer *sequencer)
@@ -563,7 +563,7 @@ ags_sequencer_get_bpm(AgsSequencer *sequencer)
  *
  * Set current playback delay factor. 
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_sequencer_set_delay_factor(AgsSequencer *sequencer,
@@ -586,7 +586,7 @@ ags_sequencer_set_delay_factor(AgsSequencer *sequencer,
  *
  * Returns: delay factor
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 gdouble
 ags_sequencer_get_delay_factor(AgsSequencer *sequencer)
@@ -608,7 +608,7 @@ ags_sequencer_get_delay_factor(AgsSequencer *sequencer)
  *
  * Returns: offset
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 guint
 ags_sequencer_get_note_offset(AgsSequencer *sequencer)
@@ -629,7 +629,7 @@ ags_sequencer_get_note_offset(AgsSequencer *sequencer)
  *
  * Set current playback note offset. 
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_sequencer_set_note_offset(AgsSequencer *sequencer,
@@ -651,7 +651,7 @@ ags_sequencer_set_note_offset(AgsSequencer *sequencer,
  *
  * Set audio. 
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_sequencer_set_audio(AgsSequencer *sequencer,
@@ -674,7 +674,7 @@ ags_sequencer_set_audio(AgsSequencer *sequencer,
  *
  * Returns: a #GList container #AgsAudio
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 GList*
 ags_sequencer_get_audio(AgsSequencer *sequencer)

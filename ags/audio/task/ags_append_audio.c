@@ -142,7 +142,7 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
    *
    * The assigned #AgsAudioLoop
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio-loop",
 				   i18n_pspec("audio loop of append audio"),
@@ -158,7 +158,7 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of append audio"),
@@ -174,7 +174,7 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
    *
    * The effects do-playback.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_boolean("do-playback",
 				     i18n_pspec("do playback"),
@@ -190,7 +190,7 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
    *
    * The effects do-sequencer.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_boolean("do-sequencer",
 				     i18n_pspec("do sequencer"),
@@ -206,7 +206,7 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
    *
    * The effects do-notation.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_boolean("do-notation",
 				     i18n_pspec("do notation"),
@@ -685,7 +685,7 @@ ags_append_audio_launch(AgsTask *task)
  *
  * Returns: an new #AgsAppendAudio.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsAppendAudio*
 ags_append_audio_new(GObject *audio_loop,

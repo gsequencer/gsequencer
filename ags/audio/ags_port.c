@@ -138,7 +138,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The assigned plugin.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("plugin-name",
 				   i18n_pspec("plugin-name of port"),
@@ -154,7 +154,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The assigned plugin identifier.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("specifier",
 				   i18n_pspec("specifier of port"),
@@ -170,7 +170,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The assigned plugin control port.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("control-port",
 				   i18n_pspec("control-port of port"),
@@ -186,7 +186,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * Specify port data as pointer.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_boolean("port-value-is-pointer",
 				    i18n_pspec("port-value-is-pointer indicates if value is a pointer"),
@@ -202,7 +202,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The port's data type.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_gtype("port-value-type",
 				  i18n_pspec("port-value-type tells you the type of the values"),
@@ -218,7 +218,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The port's data type size.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("port-value-size",
 				 i18n_pspec("port-value-size is the size of a single entry"),
@@ -235,7 +235,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The port's data array length.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("port-value-length",
 				 i18n_pspec("port-value-length is the array size"),
@@ -252,7 +252,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The port's conversion object.
    * 
-   * Since: 0.7.9
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("conversion",
 				   i18n_pspec("conversion converts values"),
@@ -654,7 +654,7 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
  *
  * Perform safe read.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_port_safe_read(AgsPort *port, GValue *value)
@@ -760,7 +760,7 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
  *
  * Perform safe write.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_port_safe_write(AgsPort *port, GValue *value)
@@ -856,7 +856,7 @@ ags_port_real_safe_get_property(AgsPort *port, gchar *property_name, GValue *val
  *
  * Perform safe get property.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_port_safe_get_property(AgsPort *port, gchar *property_name, GValue *value)
@@ -889,7 +889,7 @@ ags_port_real_safe_set_property(AgsPort *port, gchar *property_name, GValue *val
  *
  * Perform safe set property.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
@@ -911,7 +911,7 @@ ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
  *
  * Returns: Next match.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GList*
 ags_port_find_specifier(GList *port, gchar *specifier)
@@ -935,7 +935,7 @@ ags_port_find_specifier(GList *port, gchar *specifier)
  *
  * Returns: a new #AgsPort.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsPort*
 ags_port_new()

@@ -185,7 +185,7 @@ ags_toggle_led_launch(AgsTask *task)
  *
  * Returns: an new #AgsToggleLed.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsToggleLed*
 ags_toggle_led_new(GList *led,

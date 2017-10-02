@@ -138,7 +138,7 @@ ags_output_disconnect(AgsConnectable *connectable)
  *
  * Returns: a new #GList containing #AgsAudioSignal
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GList*
 ags_output_map_audio_signal(AgsOutput *output, AgsRecallID *recall_id)
@@ -191,7 +191,7 @@ ags_output_map_audio_signal(AgsOutput *output, AgsRecallID *recall_id)
  *
  * Returns: the first #AgsRecycling of #AgsAudio
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsRecycling*
 ags_output_find_first_input_recycling(AgsOutput *output)
@@ -227,7 +227,7 @@ ags_output_find_first_input_recycling(AgsOutput *output)
  *
  * Returns: the last #AgsRecycling of #AgsAudio
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsRecycling*
 ags_output_find_last_input_recycling(AgsOutput *output)
@@ -263,7 +263,7 @@ ags_output_find_last_input_recycling(AgsOutput *output)
  *
  * Returns: a new #AgsOutput
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsOutput*
 ags_output_new(GObject *audio)

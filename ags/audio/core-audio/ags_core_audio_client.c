@@ -139,7 +139,7 @@ ags_core_audio_client_class_init(AgsCoreAudioClientClass *core_audio_client)
    *
    * The assigned #AgsCoreAudioServer.
    * 
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("core-audio-server",
 				   i18n_pspec("assigned core audio server"),
@@ -155,7 +155,7 @@ ags_core_audio_client_class_init(AgsCoreAudioClientClass *core_audio_client)
    *
    * The assigned devices.
    * 
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("device",
 				   i18n_pspec("assigned device"),
@@ -171,7 +171,7 @@ ags_core_audio_client_class_init(AgsCoreAudioClientClass *core_audio_client)
    *
    * The assigned ports.
    * 
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("port",
 				   i18n_pspec("assigned port"),
@@ -516,7 +516,7 @@ ags_core_audio_client_finalize(GObject *gobject)
  *
  * Returns: a #GList or %NULL
  * 
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 GList*
 ags_core_audio_client_find_uuid(GList *core_audio_client,
@@ -542,7 +542,7 @@ ags_core_audio_client_find_uuid(GList *core_audio_client,
  *
  * Returns: a #GList or %NULL
  * 
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 GList*
 ags_core_audio_client_find(GList *core_audio_client,
@@ -566,7 +566,7 @@ ags_core_audio_client_find(GList *core_audio_client,
  *
  * Open the core audio client's connection and read uuid.
  *
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 void
 ags_core_audio_client_open(AgsCoreAudioClient *core_audio_client,
@@ -630,7 +630,7 @@ ags_core_audio_client_open(AgsCoreAudioClient *core_audio_client,
  *
  * Activate client.
  *
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 void
 ags_core_audio_client_activate(AgsCoreAudioClient *core_audio_client)
@@ -691,7 +691,7 @@ ags_core_audio_client_activate(AgsCoreAudioClient *core_audio_client)
  *
  * Deactivate client.
  *
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 void
 ags_core_audio_client_deactivate(AgsCoreAudioClient *core_audio_client)
@@ -712,7 +712,7 @@ ags_core_audio_client_deactivate(AgsCoreAudioClient *core_audio_client)
  *
  * Add @core_audio_device to @core_audio_client.
  *
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 void
 ags_core_audio_client_add_device(AgsCoreAudioClient *core_audio_client,
@@ -736,7 +736,7 @@ ags_core_audio_client_add_device(AgsCoreAudioClient *core_audio_client,
  *
  * Remove @core_audio_device from @core_audio_client.
  *
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 void
 ags_core_audio_client_remove_device(AgsCoreAudioClient *core_audio_client,
@@ -758,7 +758,7 @@ ags_core_audio_client_remove_device(AgsCoreAudioClient *core_audio_client,
  *
  * Add @core_audio_port to @core_audio_client.
  *
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 void
 ags_core_audio_client_add_port(AgsCoreAudioClient *core_audio_client,
@@ -781,7 +781,7 @@ ags_core_audio_client_add_port(AgsCoreAudioClient *core_audio_client,
  *
  * Remove @core_audio_port from @core_audio_client.
  *
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 void
 ags_core_audio_client_remove_port(AgsCoreAudioClient *core_audio_client,
@@ -804,7 +804,7 @@ ags_core_audio_client_remove_port(AgsCoreAudioClient *core_audio_client,
  *
  * Returns: the new #AgsCoreAudioClient
  *
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 AgsCoreAudioClient*
 ags_core_audio_client_new(GObject *core_audio_server)

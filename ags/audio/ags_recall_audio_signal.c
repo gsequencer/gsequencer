@@ -173,7 +173,7 @@ ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signa
    *
    * The audio channel to write use.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("audio-channel",
 				 i18n_pspec("output to audio channel"),
@@ -191,7 +191,7 @@ ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signa
    *
    * The destination audio signal
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("destination",
 				   i18n_pspec("destination of output"),
@@ -207,7 +207,7 @@ ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signa
    *
    * The source audio signal
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("source",
 				   i18n_pspec("source of input"),
@@ -589,7 +589,7 @@ ags_recall_audio_signal_notify_soundcard_after(AgsRecallAudioSignal *recall_audi
  *
  * Returns: a new #AgsRecallAudioSignal.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsRecallAudioSignal*
 ags_recall_audio_signal_new(AgsAudioSignal *destination,

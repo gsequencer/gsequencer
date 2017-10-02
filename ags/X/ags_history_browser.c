@@ -120,7 +120,7 @@ ags_history_browser_class_init(AgsHistoryBrowserClass *history_browser)
    *
    * The assigned #AgsApplicationContext to give control of application.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("assigned application context"),

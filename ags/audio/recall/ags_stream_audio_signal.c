@@ -371,7 +371,7 @@ ags_stream_audio_signal_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsStreamAudioSignal
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsStreamAudioSignal*
 ags_stream_audio_signal_new(AgsAudioSignal *audio_signal)

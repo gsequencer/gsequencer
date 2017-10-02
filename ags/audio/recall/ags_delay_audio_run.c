@@ -687,7 +687,7 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode, gint
  *
  * Emitted as notation allocs output.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_delay_audio_run_notation_alloc_output(AgsDelayAudioRun *delay_audio_run, guint run_order,
@@ -712,7 +712,7 @@ ags_delay_audio_run_notation_alloc_output(AgsDelayAudioRun *delay_audio_run, gui
  *
  * Emitted as notation allocs output.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_delay_audio_run_notation_alloc_input(AgsDelayAudioRun *delay_audio_run, guint run_order,
@@ -737,7 +737,7 @@ ags_delay_audio_run_notation_alloc_input(AgsDelayAudioRun *delay_audio_run, guin
  *
  * Emitted as notation counts.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_delay_audio_run_notation_count(AgsDelayAudioRun *delay_audio_run, guint run_order,
@@ -762,7 +762,7 @@ ags_delay_audio_run_notation_count(AgsDelayAudioRun *delay_audio_run, guint run_
  *
  * Emitted as sequencer allocs output.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_delay_audio_run_sequencer_alloc_output(AgsDelayAudioRun *delay_audio_run, guint run_order,
@@ -787,7 +787,7 @@ ags_delay_audio_run_sequencer_alloc_output(AgsDelayAudioRun *delay_audio_run, gu
  *
  * Emitted as sequencer allocs output.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_delay_audio_run_sequencer_alloc_input(AgsDelayAudioRun *delay_audio_run, guint run_order,
@@ -812,7 +812,7 @@ ags_delay_audio_run_sequencer_alloc_input(AgsDelayAudioRun *delay_audio_run, gui
  *
  * Emitted as sequencer counts.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_delay_audio_run_sequencer_count(AgsDelayAudioRun *delay_audio_run, guint run_order,
@@ -835,7 +835,7 @@ ags_delay_audio_run_sequencer_count(AgsDelayAudioRun *delay_audio_run, guint run
  *
  * Returns: a new #AgsDelayAudioRun
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsDelayAudioRun*
 ags_delay_audio_run_new()

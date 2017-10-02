@@ -384,7 +384,7 @@ ags_toolbar_disconnect(AgsConnectable *connectable)
  *
  * Returns: a new #GtkMenu
  *
- * Since: 0.8.8
+ * Since: 1.0.0
  */
 GtkMenu*
 ags_toolbar_tool_popup_new(GtkToolbar *toolbar)
@@ -435,7 +435,7 @@ ags_toolbar_tool_popup_new(GtkToolbar *toolbar)
  *
  * Returns: a new #AgsToolbar
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsToolbar*
 ags_toolbar_new()

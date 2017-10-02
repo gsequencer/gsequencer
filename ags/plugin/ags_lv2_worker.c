@@ -266,7 +266,7 @@ ags_lv2_worker_schedule_work(LV2_Worker_Schedule_Handle handle,
  *
  * Returns: the new #AgsLv2Worker
  *
- * Since: 0.7.7
+ * Since: 1.0.0
  */ 
 AgsLv2Worker*
 ags_lv2_worker_new(AgsThread *returnable_thread)

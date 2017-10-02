@@ -133,7 +133,7 @@ ags_input_class_init(AgsInputClass *input)
    *
    * The file containing audio data.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("file-link",
 				   i18n_pspec("file link assigned to"),
@@ -149,7 +149,7 @@ ags_input_class_init(AgsInputClass *input)
    *
    * An optional synth generator that might be used.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("synth-generator",
 				   i18n_pspec("the synth generator"),
@@ -341,7 +341,7 @@ ags_input_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE if open was successful, else %FALSE
  * 
- * Since: 0.9.7
+ * Since: 1.0.0
  */
 gboolean
 ags_input_open_file(AgsInput *input,
@@ -492,7 +492,7 @@ ags_input_open_file(AgsInput *input,
  * 
  * Returns: %TRUE if successful applied, else %FALSE
  * 
- * Since: 0.9.7
+ * Since: 1.0.0
  */
 gboolean
 ags_input_apply_synth(AgsInput *input,
@@ -532,7 +532,7 @@ ags_input_apply_synth(AgsInput *input,
  * 
  * Returns: %TRUE if successful applied, else %FALSE
  * 
- * Since: 0.9.9
+ * Since: 1.0.0
  */
 gboolean
 ags_input_apply_synth_extended(AgsInput *input,
@@ -610,7 +610,7 @@ ags_input_apply_synth_extended(AgsInput *input,
  * 
  * Returns: %TRUE if has a need to be processed, else %FALSE
  * 
- * Since: 0.9.7
+ * Since: 1.0.0
  */
 gboolean
 ags_input_is_active(AgsInput *input,
@@ -708,7 +708,7 @@ ags_input_is_active(AgsInput *input,
  * 
  * Returns: next active #AgsInput, else %NULL if non available
  * 
- * Since: 0.9.7
+ * Since: 1.0.0
  */
 AgsInput*
 ags_input_next_active(AgsInput *input,
@@ -815,7 +815,7 @@ ags_input_next_active(AgsInput *input,
  *
  * Returns: a new #AgsInput
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsInput*
 ags_input_new(GObject *audio)

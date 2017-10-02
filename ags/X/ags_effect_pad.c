@@ -151,7 +151,7 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
    *
    * The start of a bunch of #AgsChannel to visualize.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("assigned channel"),
@@ -590,7 +590,7 @@ ags_effect_pad_real_find_port(AgsEffectPad *effect_pad)
  *
  * Lookup ports of associated recalls.
  *
- * Since: 0.7.8
+ * Since: 1.0.0
  */
 GList*
 ags_effect_pad_find_port(AgsEffectPad *effect_pad)
@@ -618,7 +618,7 @@ ags_effect_pad_find_port(AgsEffectPad *effect_pad)
  *
  * Returns: a new #AgsEffectPad
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsEffectPad*
 ags_effect_pad_new(AgsChannel *channel)

@@ -131,7 +131,7 @@ ags_switch_buffer_flag_class_init(AgsSwitchBufferFlagClass *switch_buffer_flag)
    *
    * The assigned #AgsSoundcard or #AgsSequencer
    * 
-   * Since: 0.7.111
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("device",
 				   i18n_pspec("device of change device"),
@@ -303,7 +303,7 @@ ags_switch_buffer_flag_launch(AgsTask *task)
  *
  * Returns: an new #AgsSwitchBufferFlag.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsSwitchBufferFlag*
 ags_switch_buffer_flag_new(GObject *device)

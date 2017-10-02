@@ -130,7 +130,7 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of open file"),
@@ -146,7 +146,7 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
    *
    * The assigned #GSList-struct providing filenames as string
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("filenames",
 				    i18n_pspec("filenames of open file"),
@@ -161,7 +161,7 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
    *
    * As open files overwrite #AgsChannel.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_boolean("overwrite-channels",
 				     i18n_pspec("open file overwriting channels"),
@@ -177,7 +177,7 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
    *
    * As open files create #AgsChannel.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_boolean("create-channels",
 				     i18n_pspec("open file creating channels"),
@@ -504,7 +504,7 @@ ags_open_file_launch(AgsTask *task)
  *
  * Returns: an new #AgsOpenFile.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsOpenFile*
 ags_open_file_new(AgsAudio *audio,

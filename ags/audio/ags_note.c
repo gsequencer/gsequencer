@@ -128,7 +128,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Note offset x0.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("x0",
 				 i18n_pspec("offset x0"),
@@ -146,7 +146,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Note offset x1.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("x1",
 				 i18n_pspec("offset x1"),
@@ -164,7 +164,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Note offset y.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("y",
 				 i18n_pspec("offset y"),
@@ -183,7 +183,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * The stream's delay.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("stream-delay",
 				   i18n_pspec("delay of stream"),
@@ -201,7 +201,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * The stream's attack.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("stream-attack",
 				 i18n_pspec("offset stream-attack"),
@@ -219,7 +219,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Envelope attack.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_boxed("attack",
 				  i18n_pspec("envelope's attack"),
@@ -235,7 +235,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Envelope decay.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_boxed("decay",
 				  i18n_pspec("envelope's decay"),
@@ -251,7 +251,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Envelope sustain.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_boxed("sustain",
 				  i18n_pspec("envelope's sustain"),
@@ -267,7 +267,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Envelope release.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_boxed("release",
 				  i18n_pspec("envelope's release"),
@@ -283,7 +283,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Envelope ratio.
    * 
-   * Since: 0.7.42
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_boxed("ratio",
 				  i18n_pspec("envelope's ratio"),
@@ -299,7 +299,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * The note's name.
    * 
-   * Since: 0.9.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("note-name",
 				   i18n_pspec("note name"),
@@ -590,7 +590,7 @@ ags_note_finalize(GObject *gobject)
  * 
  * Returns: 0 if equal, -1 if smaller and 1 if bigger offset
  *
- * Since: 0.9.0
+ * Since: 1.0.0
  */
 gint
 ags_note_sort_func(gconstpointer a,
@@ -629,7 +629,7 @@ ags_note_sort_func(gconstpointer a,
  *
  * Returns: the matching entry as #GList if first entry's x offset bigger than @x0, else %NULL
  *
- * Since: 0.7.2
+ * Since: 1.0.0
  */
 GList*
 ags_note_find_prev(GList *note,
@@ -672,7 +672,7 @@ ags_note_find_prev(GList *note,
  *
  * Returns: the matching entry as #GList if last entry's x offset smaller than @x0, else %NULL
  *
- * Since: 0.7.2
+ * Since: 1.0.0
  */
 GList*
 ags_note_find_next(GList *note,
@@ -722,7 +722,7 @@ ags_note_find_next(GList *note,
  * 
  * Returns: the delta-time
  * 
- * Since: 0.9.0
+ * Since: 1.0.0
  */
 glong
 ags_note_length_to_smf_delta_time(guint note_length,
@@ -750,7 +750,7 @@ ags_note_length_to_smf_delta_time(guint note_length,
  * 
  * Returns: the note length
  * 
- * Since: 0.9.0
+ * Since: 1.0.0
  */
 guint
 ags_note_smf_delta_time_to_length(glong delta_time,
@@ -775,7 +775,7 @@ ags_note_smf_delta_time_to_length(glong delta_time,
  *
  * Returns: The sequencer raw midi as array.
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 unsigned char*
 ags_note_to_raw_midi(AgsNote *note,
@@ -941,7 +941,7 @@ ags_note_to_raw_midi(AgsNote *note,
  * 
  * Returns: the raw-midi buffer
  * 
- * Since: 0.9.0
+ * Since: 1.0.0
  */
 unsigned char*
 ags_note_to_raw_midi_extended(AgsNote *note,
@@ -967,7 +967,7 @@ ags_note_to_raw_midi_extended(AgsNote *note,
  *
  * Returns: The sequencer events as array.
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 snd_seq_event_t*
 ags_note_to_seq_event(AgsNote *note,
@@ -999,7 +999,7 @@ ags_note_to_seq_event(AgsNote *note,
  * 
  * Returns: an array of snd_seq_event_t structs
  * 
- * Since: 0.9.0
+ * Since: 1.0.0
  */
 snd_seq_event_t*
 ags_note_to_seq_event_extended(AgsNote *note,
@@ -1028,7 +1028,7 @@ ags_note_to_seq_event_extended(AgsNote *note,
  *
  * Returns: a #GList containing the notes
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 GList*
 ags_note_from_raw_midi(unsigned char *raw_midi,
@@ -1060,7 +1060,7 @@ ags_note_from_raw_midi(unsigned char *raw_midi,
  *
  * Returns: a #GList containing the notes
  *
- * Since: 0.9.0
+ * Since: 1.0.0
  */
 GList*
 ags_note_from_raw_midi_extended(unsigned char *raw_midi,
@@ -1089,7 +1089,7 @@ ags_note_from_raw_midi_extended(unsigned char *raw_midi,
  *
  * Returns: a #GList containing the notes
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 GList*
 ags_note_from_seq_event(snd_seq_event_t *event,
@@ -1121,7 +1121,7 @@ ags_note_from_seq_event(snd_seq_event_t *event,
  *
  * Returns: a #GList containing the notes
  *
- * Since: 0.9.0
+ * Since: 1.0.0
  */
 GList*
 ags_note_from_seq_event_extended(snd_seq_event_t *event,
@@ -1147,7 +1147,7 @@ ags_note_from_seq_event_extended(snd_seq_event_t *event,
  *
  * Returns: the duplicated #AgsNote.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsNote*
 ags_note_duplicate(AgsNote *note)
@@ -1202,7 +1202,7 @@ ags_note_duplicate(AgsNote *note)
  *
  * Returns: a new #AgsNote
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsNote*
 ags_note_new()
@@ -1221,7 +1221,7 @@ ags_note_new()
  *
  * Returns: a new #AgsNote
  *
- * Since: 0.7.2
+ * Since: 1.0.0
  */
 AgsNote*
 ags_note_new_with_offset(guint x0, guint x1,

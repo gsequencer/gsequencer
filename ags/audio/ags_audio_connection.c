@@ -104,7 +104,7 @@ ags_audio_connection_class_init(AgsAudioConnectionClass *audio_connection)
    *
    * The #AgsAudio belonging to.
    * 
-   * Since: 0.7.65
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio"),
@@ -120,7 +120,7 @@ ags_audio_connection_class_init(AgsAudioConnectionClass *audio_connection)
    *
    * The #GType of #AgsChannel belonging to.
    * 
-   * Since: 0.7.65
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_ulong("channel-type",
 				  i18n_pspec("channel type"),
@@ -137,7 +137,7 @@ ags_audio_connection_class_init(AgsAudioConnectionClass *audio_connection)
    *
    * The nth pad assigned with.
    * 
-   * Since: 0.7.65
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("pad",
 				 i18n_pspec("pad"),
@@ -155,7 +155,7 @@ ags_audio_connection_class_init(AgsAudioConnectionClass *audio_connection)
    *
    * The nth audio channel assigned with.
    * 
-   * Since: 0.7.65
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("audio-channel",
 				 i18n_pspec("audio-channel"),
@@ -173,7 +173,7 @@ ags_audio_connection_class_init(AgsAudioConnectionClass *audio_connection)
    *
    * The nth line assigned with.
    * 
-   * Since: 0.7.65
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("line",
 				 i18n_pspec("line"),
@@ -191,7 +191,7 @@ ags_audio_connection_class_init(AgsAudioConnectionClass *audio_connection)
    *
    * The nth mapped line assigned with.
    * 
-   * Since: 0.7.65
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("mapped-line",
 				 i18n_pspec("mapped line"),
@@ -353,7 +353,7 @@ ags_audio_connection_finalize(GObject *gobject)
  * 
  * Returns: the first matched #GList-struct, else %NULL if no match
  * 
- * Since: 0.9.7
+ * Since: 1.0.0
  */
 GList*
 ags_audio_connection_find(GList *list,
@@ -381,7 +381,7 @@ ags_audio_connection_find(GList *list,
  *
  * Returns: a new #AgsAudioConnection
  *
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 AgsAudioConnection*
 ags_audio_connection_new()

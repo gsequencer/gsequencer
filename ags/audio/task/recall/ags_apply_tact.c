@@ -134,7 +134,7 @@ ags_apply_tact_class_init(AgsApplyTactClass *apply_tact)
    *
    * The assigned #GObject as scope.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("scope",
 				   i18n_pspec("scope of set buffer size"),
@@ -150,7 +150,7 @@ ags_apply_tact_class_init(AgsApplyTactClass *apply_tact)
    *
    * The tact to apply to scope.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("tact",
 				   i18n_pspec("tact"),
@@ -440,7 +440,7 @@ ags_apply_tact_soundcard(AgsApplyTact *apply_tact, GObject *soundcard)
  *
  * Returns: an new #AgsApplyTact.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsApplyTact*
 ags_apply_tact_new(GObject *scope,

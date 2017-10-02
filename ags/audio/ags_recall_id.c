@@ -120,7 +120,7 @@ ags_recall_id_class_init(AgsRecallIDClass *recall_id)
    *
    * The assigned #AgsRecycling.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("recycling",
 				   i18n_pspec("assigned recycling"),
@@ -136,7 +136,7 @@ ags_recall_id_class_init(AgsRecallIDClass *recall_id)
    *
    * The dynamic run context belonging to.
    * 
-   * Since: 0.4.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("recycling-context",
 				   i18n_pspec("assigned recycling context"),
@@ -331,7 +331,7 @@ ags_recall_id_finalize(GObject *gobject)
  *
  * Returns: %TRUE if the stage isn't run yet otherwise %FALSE
  * 
- * Since: 0.3
+ * Since: 1.0.0
  */
 gboolean
 ags_recall_id_get_run_stage(AgsRecallID *id, gint stage)
@@ -370,7 +370,7 @@ ags_recall_id_get_run_stage(AgsRecallID *id, gint stage)
  *
  * Marks the run stage to be passed for audio channel.
  * 
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_recall_id_set_run_stage(AgsRecallID *recall_id, gint stage)
@@ -393,7 +393,7 @@ ags_recall_id_set_run_stage(AgsRecallID *recall_id, gint stage)
  *
  * Unmarks the run stage to be passed for audio channel.
  * 
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_recall_id_unset_run_stage(AgsRecallID *recall_id, gint stage)
@@ -416,7 +416,7 @@ ags_recall_id_unset_run_stage(AgsRecallID *recall_id, gint stage)
  *
  * Returns: the newly allocated #GList which is the new start of the #GList, too.
  * 
- * Since: 0.4
+ * Since: 1.0.0
  */
 GList*
 ags_recall_id_add(GList *recall_id_list,
@@ -439,7 +439,7 @@ ags_recall_id_add(GList *recall_id_list,
  *
  * Returns: Matching recall id.
  * 
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 AgsRecallID*
 ags_recall_id_find_recycling_context(GList *recall_id_list,
@@ -469,7 +469,7 @@ ags_recall_id_find_recycling_context(GList *recall_id_list,
  *
  * Returns: Matching recall id.
  * 
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 AgsRecallID*
 ags_recall_id_find_parent_recycling_context(GList *recall_id_list,
@@ -499,7 +499,7 @@ ags_recall_id_find_parent_recycling_context(GList *recall_id_list,
  *
  * Returns: a new #AgsRecallID
  * 
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsRecallID*
 ags_recall_id_new(AgsRecycling *recycling)

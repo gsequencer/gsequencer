@@ -302,7 +302,7 @@ ags_plugin_browser_reset(AgsApplicable *applicable)
  *
  * Returns: the active plugin filename
  *
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 gchar*
 ags_plugin_browser_get_plugin_filename(AgsPluginBrowser *plugin_browser)
@@ -324,7 +324,7 @@ ags_plugin_browser_get_plugin_filename(AgsPluginBrowser *plugin_browser)
  *
  * Returns: the active plugin effect
  *
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 gchar*
 ags_plugin_browser_get_plugin_effect(AgsPluginBrowser *plugin_browser)
@@ -346,7 +346,7 @@ ags_plugin_browser_get_plugin_effect(AgsPluginBrowser *plugin_browser)
  *
  * Returns: a new #AgsPluginBrowser
  *
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 AgsPluginBrowser*
 ags_plugin_browser_new(GtkWidget *parent)

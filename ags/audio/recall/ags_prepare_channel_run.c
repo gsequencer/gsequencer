@@ -240,7 +240,7 @@ ags_prepare_channel_run_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsPrepareChannelRun
  *
- * Since: 0.7.122.8
+ * Since: 1.0.0.8
  */
 AgsPrepareChannelRun*
 ags_prepare_channel_run_new()

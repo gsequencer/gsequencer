@@ -44,7 +44,7 @@
  * Returns: the string containing the time, a minus sign is prepend if factors
  *   are invalid
  *
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 gchar*
 ags_time_get_uptime_from_offset(guint offset,

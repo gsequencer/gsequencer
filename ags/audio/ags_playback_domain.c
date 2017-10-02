@@ -126,7 +126,7 @@ ags_playback_domain_class_init(AgsPlaybackDomainClass *playback_domain)
    *
    * The assigned domain.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("domain",
 				   i18n_pspec("assigned domain"),
@@ -142,7 +142,7 @@ ags_playback_domain_class_init(AgsPlaybackDomainClass *playback_domain)
    *
    * The assigned playback.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("playback",
 				   i18n_pspec("assigned playback"),
@@ -513,7 +513,7 @@ ags_playback_domain_disconnect(AgsConnectable *connectable)
  * 
  * Set audio thread to specified scope.
  * 
- * Since: 0.7.122.7
+ * Since: 1.0.0.7
  */
 void
 ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
@@ -545,7 +545,7 @@ ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
  * 
  * Returns: the matching #AgsThread or %NULL
  * 
- * Since: 0.7.122.7
+ * Since: 1.0.0.7
  */
 AgsThread*
 ags_playback_domain_get_audio_thread(AgsPlaybackDomain *playback_domain,
@@ -568,7 +568,7 @@ ags_playback_domain_get_audio_thread(AgsPlaybackDomain *playback_domain,
  * 
  * Add @playback to @playback_domain.
  * 
- * Since: 0.7.122.7
+ * Since: 1.0.0.7
  */
 void
 ags_playback_domain_add_playback(AgsPlaybackDomain *playback_domain,
@@ -592,7 +592,7 @@ ags_playback_domain_add_playback(AgsPlaybackDomain *playback_domain,
  * 
  * Remove @playback of @playback_domain.
  * 
- * Since: 0.7.122.7
+ * Since: 1.0.0.7
  */
 void
 ags_playback_domain_remove_playback(AgsPlaybackDomain *playback_domain,
@@ -615,7 +615,7 @@ ags_playback_domain_remove_playback(AgsPlaybackDomain *playback_domain,
  *
  * Returns: a new #AgsPlaybackDomain
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsPlaybackDomain*
 ags_playback_domain_new()

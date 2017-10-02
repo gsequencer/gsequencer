@@ -198,7 +198,7 @@ ags_remove_soundcard_editor_sink_launch(AgsTask *task)
  *
  * Returns: an new #AgsRemoveSoundcardEditorSink.
  *
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 AgsRemoveSoundcardEditorSink*
 ags_remove_soundcard_editor_sink_new(AgsSoundcardEditor *soundcard_editor,

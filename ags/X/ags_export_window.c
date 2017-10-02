@@ -137,7 +137,7 @@ ags_export_window_class_init(AgsExportWindowClass *export_window)
    *
    * The assigned #AgsApplicationContext to give control of application.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("assigned application context"),
@@ -153,7 +153,7 @@ ags_export_window_class_init(AgsExportWindowClass *export_window)
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 0.7.119
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -571,7 +571,7 @@ ags_export_window_delete_event(GtkWidget *widget, GdkEventAny *event)
  * 
  * Reload soundcard editor.
  * 
- * Since: 0.7.119
+ * Since: 1.0.0
  */
 void
 ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
@@ -717,7 +717,7 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
  * 
  * Returns: an #AgsExportWindow
  * 
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsExportWindow*
 ags_export_window_new()

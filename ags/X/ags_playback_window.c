@@ -123,7 +123,7 @@ ags_playback_window_class_init(AgsPlaybackWindowClass *playback_window)
    *
    * The assigned #AgsApplicationContext to give control of application.
    * 
-   * Since: 0.8.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("assigned application context"),
@@ -139,7 +139,7 @@ ags_playback_window_class_init(AgsPlaybackWindowClass *playback_window)
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 0.8.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -331,7 +331,7 @@ ags_playback_window_delete_event(GtkWidget *widget, GdkEventAny *event)
  * 
  * Returns: an #AgsPlaybackWindow
  * 
- * Since: 0.8.0
+ * Since: 1.0.0
  */
 AgsPlaybackWindow*
 ags_playback_window_new()

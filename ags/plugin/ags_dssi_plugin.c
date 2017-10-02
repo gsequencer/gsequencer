@@ -140,7 +140,7 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
    *
    * The assigned unique-id.
    * 
-   * Since: 0.7.6
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("unique-id",
 				 i18n_pspec("unique-id of the plugin"),
@@ -158,7 +158,7 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
    *
    * The assigned program.
    * 
-   * Since: 0.7.6
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("program",
 				   i18n_pspec("program of the plugin"),
@@ -195,7 +195,7 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
    *
    * The ::change-program signal creates a new instance of plugin.
    *
-   * Since: 0.7.122
+   * Since: 1.0.0
    */
   dssi_plugin_signals[CHANGE_PROGRAM] =
     g_signal_new("change-program",
@@ -575,7 +575,7 @@ ags_dssi_plugin_change_program(AgsDssiPlugin *dssi_plugin,
  *
  * Returns: a new #AgsDssiPlugin
  *
- * Since: 0.7.6
+ * Since: 1.0.0
  */
 AgsDssiPlugin*
 ags_dssi_plugin_new(gchar *filename, gchar *effect, guint effect_index)

@@ -460,7 +460,7 @@ ags_ruler_draw(AgsRuler *ruler)
  *
  * Returns: a new #AgsRuler
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsRuler*
 ags_ruler_new()

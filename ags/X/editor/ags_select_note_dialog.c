@@ -145,7 +145,7 @@ ags_select_note_dialog_class_init(AgsSelectNoteDialogClass *select_note_dialog)
    *
    * The assigned #AgsApplicationContext to give control of application.
    * 
-   * Since: 0.9.29
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("assigned application context"),
@@ -161,7 +161,7 @@ ags_select_note_dialog_class_init(AgsSelectNoteDialogClass *select_note_dialog)
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 0.9.29
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -612,7 +612,7 @@ ags_select_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
  *
  * Returns: a new #AgsSelectNoteDialog
  *
- * Since: 0.9.29
+ * Since: 1.0.0
  */
 AgsSelectNoteDialog*
 ags_select_note_dialog_new(GtkWidget *main_window)

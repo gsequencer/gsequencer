@@ -138,7 +138,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("channel of open sf2 sample"),
@@ -154,7 +154,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
    *
    * The assigned filename.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("the filename"),
@@ -170,7 +170,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
    *
    * The assigned preset.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("preset",
 				   i18n_pspec("the preset"),
@@ -186,7 +186,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
    *
    * The assigned instrument.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("instrument",
 				   i18n_pspec("the instrument"),
@@ -202,7 +202,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
    *
    * The assigned sample.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("sample",
 				   i18n_pspec("the sample"),
@@ -593,7 +593,7 @@ ags_open_sf2_sample_launch(AgsTask *task)
  *
  * Returns: an new #AgsOpenSf2Sample.
  *
- * Since: 0.7.15
+ * Since: 1.0.0
  */
 AgsOpenSf2Sample*
 ags_open_sf2_sample_new(AgsChannel *channel,

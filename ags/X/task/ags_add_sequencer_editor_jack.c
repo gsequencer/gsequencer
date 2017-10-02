@@ -195,7 +195,7 @@ ags_add_sequencer_editor_jack_launch(AgsTask *task)
  *
  * Returns: an new #AgsAddSequencerEditorJack.
  *
- * Since: 0.7.111
+ * Since: 1.0.0
  */
 AgsAddSequencerEditorJack*
 ags_add_sequencer_editor_jack_new(AgsSequencerEditor *sequencer_editor)

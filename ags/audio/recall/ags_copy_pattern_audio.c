@@ -135,7 +135,7 @@ ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
    *
    * The bank index 0 port.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("bank-index-0",
 				   i18n_pspec("current bank index 0"),
@@ -151,7 +151,7 @@ ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
    *
    * The bank index 1 port.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("bank-index-1",
 				   i18n_pspec("current bank index 1"),
@@ -380,7 +380,7 @@ ags_copy_pattern_audio_finalize(GObject *gobject)
  *
  * Returns: a new #AgsCopyPatternAudio
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsCopyPatternAudio*
 ags_copy_pattern_audio_new(GObject *soundcard,

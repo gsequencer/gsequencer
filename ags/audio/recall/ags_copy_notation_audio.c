@@ -101,7 +101,7 @@ ags_copy_notation_audio_class_init(AgsCopyNotationAudioClass *copy_notation_audi
    *
    * The notation.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("notation",
 				   i18n_pspec("the assigned notation"),
@@ -117,7 +117,7 @@ ags_copy_notation_audio_class_init(AgsCopyNotationAudioClass *copy_notation_audi
    *
    * The audio channel.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_uint("audio_channel",
 				 i18n_pspec("the audio channel to play"),
@@ -254,7 +254,7 @@ ags_copy_notation_audio_finalize(GObject *gobject)
  *
  * Returns: a new #AgsCopyNotationAudio
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsCopyNotationAudio*
 ags_copy_notation_audio_new(GObject *soundcard,

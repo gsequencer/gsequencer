@@ -333,7 +333,7 @@ ags_recall_channel_run_dummy_write(AgsFile *file, xmlNode *parent, AgsPlugin *pl
  *
  * Returns: a new #AgsRecallChannelRunDummy.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsRecallChannelRunDummy*
 ags_recall_channel_run_dummy_new(AgsChannel *source,

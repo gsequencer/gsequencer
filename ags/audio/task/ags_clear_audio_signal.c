@@ -123,7 +123,7 @@ ags_clear_audio_signal_class_init(AgsClearAudioSignalClass *clear_audio_signal)
    *
    * The assigned #AgsAudioSignal
    * 
-   * Since: 0.7.122.17
+   * Since: 1.0.0.17
    */
   param_spec = g_param_spec_object("audio-signal",
 				   i18n_pspec("audio signal of clear audio signal"),
@@ -296,7 +296,7 @@ ags_clear_audio_signal_launch(AgsTask *task)
  *
  * Returns: an new #AgsClearAudioSignal.
  *
- * Since: 0.7.122.17
+ * Since: 1.0.0.17
  */
 AgsClearAudioSignal*
 ags_clear_audio_signal_new(AgsAudioSignal *audio_signal)

@@ -249,7 +249,7 @@ ags_scale_area_paint(AgsScaleArea *scale_area,
  *
  * Returns: a new #AgsScaleArea
  *
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 AgsScaleArea*
 ags_scale_area_new(GtkDrawingArea *drawing_area,

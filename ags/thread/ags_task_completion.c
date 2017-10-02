@@ -196,7 +196,7 @@ ags_task_completion_launch_callback(AgsTask *task,
  *
  * Returns: the new #AgsTaskCompletion
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsTaskCompletion*
 ags_task_completion_new(GObject *task,

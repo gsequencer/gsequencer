@@ -165,7 +165,7 @@ ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run)
    *
    * The assigned audio.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("assigned audio"),
@@ -181,7 +181,7 @@ ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run)
    *
    * The recall audio belonging to.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("recall-audio",
 				   i18n_pspec("AgsRecallAudio of this recall"),
@@ -594,7 +594,7 @@ ags_recall_audio_run_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsRecallAudioRun.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsRecallAudioRun*
 ags_recall_audio_run_new()

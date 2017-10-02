@@ -241,7 +241,7 @@ ags_feed_channel_run_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsFeedChannelRun
  *
- * Since: 0.7.111
+ * Since: 1.0.0
  */
 AgsFeedChannelRun*
 ags_feed_channel_run_new(AgsChannel *channel)

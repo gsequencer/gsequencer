@@ -141,7 +141,7 @@ ags_connection_manager_get_connection(AgsConnectionManager *connection_manager)
  * 
  * Add an #AgsConnection to @connection_manager.
  * 
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 void
 ags_connection_manager_add_connection(AgsConnectionManager *connection_manager,
@@ -162,7 +162,7 @@ ags_connection_manager_add_connection(AgsConnectionManager *connection_manager,
  * 
  * Remove an #AgsConnection from @connection_manager.
  * 
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 void
 ags_connection_manager_remove_connection(AgsConnectionManager *connection_manager,
@@ -183,7 +183,7 @@ ags_connection_manager_remove_connection(AgsConnectionManager *connection_manage
  *
  * Returns: the #AgsConnectionManager
  *
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 AgsConnectionManager*
 ags_connection_manager_get_instance()
@@ -210,7 +210,7 @@ ags_connection_manager_get_instance()
  *
  * Returns: a new #AgsConnectionManager
  *
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 AgsConnectionManager*
 ags_connection_manager_new()

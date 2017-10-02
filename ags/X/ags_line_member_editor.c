@@ -320,7 +320,7 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
  *
  * Returns: a new #AgsLineMemberEditor
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsLineMemberEditor*
 ags_line_member_editor_new()

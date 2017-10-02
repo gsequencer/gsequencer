@@ -204,7 +204,7 @@ ags_play_dssi_audio_run_class_init(AgsPlayDssiAudioRunClass *play_dssi_audio_run
    *
    * The delay audio run dependency.
    * 
-   * Since: 0.7.134
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("delay-audio-run",
 				   i18n_pspec("assigned AgsDelayAudioRun"),
@@ -220,7 +220,7 @@ ags_play_dssi_audio_run_class_init(AgsPlayDssiAudioRunClass *play_dssi_audio_run
    *
    * The count beats audio run dependency.
    * 
-   * Since: 0.7.134
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("count-beats-audio-run",
 				   i18n_pspec("assigned AgsCountBeatsAudioRun"),
@@ -236,7 +236,7 @@ ags_play_dssi_audio_run_class_init(AgsPlayDssiAudioRunClass *play_dssi_audio_run
    *
    * The notation containing the notes.
    * 
-   * Since: 0.7.134
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("notation",
 				   i18n_pspec("assigned AgsNotation"),
@@ -1445,7 +1445,7 @@ ags_play_dssi_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
  *
  * Set up DSSI ports.
  *
- * Since: 0.7.134
+ * Since: 1.0.0
  */
 void
 ags_play_dssi_audio_run_load_ports(AgsPlayDssiAudioRun *play_dssi_audio_run)
@@ -1539,7 +1539,7 @@ ags_play_dssi_audio_run_load_ports(AgsPlayDssiAudioRun *play_dssi_audio_run)
  *
  * Returns: a new #AgsPlayDssiAudioRun
  *
- * Since: 0.7.134
+ * Since: 1.0.0
  */
 AgsPlayDssiAudioRun*
 ags_play_dssi_audio_run_new()

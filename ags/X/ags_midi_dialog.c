@@ -148,7 +148,7 @@ ags_midi_dialog_class_init(AgsMidiDialogClass *midi_dialog)
    *
    * The #AgsMachine to edit.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("machine",
 				   i18n_pspec("assigned machine"),
@@ -760,7 +760,7 @@ ags_midi_dialog_show_all(GtkWidget *widget)
  *
  * Returns: a new #AgsMidiDialog
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsMidiDialog*
 ags_midi_dialog_new(AgsMachine *machine)

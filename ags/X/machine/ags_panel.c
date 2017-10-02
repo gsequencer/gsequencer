@@ -580,7 +580,7 @@ ags_panel_set_pads(AgsAudio *audio, GType type,
  *
  * Returns: a new #AgsPanel
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsPanel*
 ags_panel_new(GObject *soundcard)

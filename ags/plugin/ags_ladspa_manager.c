@@ -227,7 +227,7 @@ ags_ladspa_manager_finalize(GObject *gobject)
  *
  * Returns: the plugin default search path as a string vector
  * 
- * Since: 0.9.0
+ * Since: 1.0.0
  */
 gchar**
 ags_ladspa_manager_get_default_path()
@@ -241,7 +241,7 @@ ags_ladspa_manager_get_default_path()
  * 
  * Set ladspa manager default plugin path.
  * 
- * Since: 0.9.0
+ * Since: 1.0.0
  */
 void
 ags_ladspa_manager_set_default_path(gchar** default_path)
@@ -257,7 +257,7 @@ ags_ladspa_manager_set_default_path(gchar** default_path)
  *
  * Returns: a %NULL-terminated array of filenames
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 gchar**
 ags_ladspa_manager_get_filenames(AgsLadspaManager *ladspa_manager)
@@ -318,7 +318,7 @@ ags_ladspa_manager_get_filenames(AgsLadspaManager *ladspa_manager)
  *
  * Returns: the #AgsLadspaPlugin-struct
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsLadspaPlugin*
 ags_ladspa_manager_find_ladspa_plugin(AgsLadspaManager *ladspa_manager,
@@ -357,7 +357,7 @@ ags_ladspa_manager_find_ladspa_plugin(AgsLadspaManager *ladspa_manager,
  * 
  * Load blacklisted plugin filenames.
  * 
- * Since: 0.7.108
+ * Since: 1.0.0
  */
 void
 ags_ladspa_manager_load_blacklist(AgsLadspaManager *ladspa_manager,
@@ -393,7 +393,7 @@ ags_ladspa_manager_load_blacklist(AgsLadspaManager *ladspa_manager,
  *
  * Load @filename specified plugin.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
@@ -467,7 +467,7 @@ ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
  * 
  * Loads all available plugins.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_ladspa_manager_load_default_directory(AgsLadspaManager *ladspa_manager)
@@ -531,7 +531,7 @@ ags_ladspa_manager_load_default_directory(AgsLadspaManager *ladspa_manager)
  *
  * Returns: the #AgsLadspaManager
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsLadspaManager*
 ags_ladspa_manager_get_instance()
@@ -556,7 +556,7 @@ ags_ladspa_manager_get_instance()
  *
  * Returns: a new #AgsLadspaManager
  *
- * Since: 0.7.6
+ * Since: 1.0.0
  */
 AgsLadspaManager*
 ags_ladspa_manager_new()

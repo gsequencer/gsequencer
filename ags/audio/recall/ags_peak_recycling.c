@@ -223,7 +223,7 @@ ags_peak_recycling_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsPeakRecycling
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsPeakRecycling*
 ags_peak_recycling_new(AgsRecycling *recycling)

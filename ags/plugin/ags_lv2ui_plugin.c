@@ -134,7 +134,7 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
    *
    * The assigned GUI URI.
    * 
-   * Since: 0.7.127
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("gui-uri",
 				   "GUI URI of the plugin",
@@ -150,7 +150,7 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
    *
    * The assigned manifest.
    * 
-   * Since: 0.7.6
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("manifest",
 				   "manifest of the plugin",
@@ -166,7 +166,7 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
    *
    * The assigned GUI turtle.
    * 
-   * Since: 0.7.127
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("gui-turtle",
 				   "GUI turtle of the plugin",
@@ -182,7 +182,7 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
    *
    * The assigned LV2 plugin.
    * 
-   * Since: 0.7.127
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("lv2-plugin",
 				   "LV2 plugin of the plugin",
@@ -415,7 +415,7 @@ ags_lv2ui_plugin_load_plugin(AgsBasePlugin *base_plugin)
  * 
  * Returns: the next matching #GList-struct
  * 
- * Since: 0.7.127
+ * Since: 1.0.0
  */
 GList*
 ags_lv2ui_plugin_find_gui_uri(GList *lv2ui_plugin,
@@ -450,7 +450,7 @@ ags_lv2ui_plugin_find_gui_uri(GList *lv2ui_plugin,
  *
  * Returns: a new #AgsLv2uiPlugin
  *
- * Since: 0.7.6
+ * Since: 1.0.0
  */
 AgsLv2uiPlugin*
 ags_lv2ui_plugin_new(AgsTurtle *gui_turtle, gchar *filename, gchar *effect, gchar *gui_uri, guint effect_index)

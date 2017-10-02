@@ -120,7 +120,7 @@ ags_unref_audio_signal_class_init(AgsUnrefAudioSignalClass *unref_audio_signal)
    *
    * The assigned #AgsAudioSignal
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio-signal",
 				   i18n_pspec("audio signal of unref audio signal"),

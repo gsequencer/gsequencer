@@ -148,7 +148,7 @@ ags_ramp_acceleration_dialog_class_init(AgsRampAccelerationDialogClass *ramp_acc
    *
    * The assigned #AgsApplicationContext to give control of application.
    * 
-   * Since: 0.9.29
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("assigned application context"),
@@ -164,7 +164,7 @@ ags_ramp_acceleration_dialog_class_init(AgsRampAccelerationDialogClass *ramp_acc
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 0.9.29
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -833,7 +833,7 @@ ags_ramp_acceleration_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
  *
  * Returns: a new #AgsRampAccelerationDialog
  *
- * Since: 0.9.29
+ * Since: 1.0.0
  */
 AgsRampAccelerationDialog*
 ags_ramp_acceleration_dialog_new(GtkWidget *main_window)

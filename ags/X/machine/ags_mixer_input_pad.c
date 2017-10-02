@@ -169,7 +169,7 @@ ags_mixer_input_pad_resize_lines(AgsPad *pad, GType line_type,
  *
  * Returns: a new #AgsMixerInputPad
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsMixerInputPad*
 ags_mixer_input_pad_new(AgsChannel *channel)

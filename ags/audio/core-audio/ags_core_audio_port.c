@@ -172,7 +172,7 @@ ags_core_audio_port_class_init(AgsCoreAudioPortClass *core_audio_port)
    *
    * The assigned #AgsCoreAudioClient.
    * 
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("core-audio-client",
 				   i18n_pspec("assigned core audio client"),
@@ -188,7 +188,7 @@ ags_core_audio_port_class_init(AgsCoreAudioPortClass *core_audio_port)
    *
    * The assigned #AgsCoreAudioDevout.
    * 
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("core-audio-device",
 				   i18n_pspec("assigned core audio devout"),
@@ -204,7 +204,7 @@ ags_core_audio_port_class_init(AgsCoreAudioPortClass *core_audio_port)
    *
    * The core audio soundcard indentifier
    * 
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("port-name",
 				   i18n_pspec("port name"),
@@ -626,7 +626,7 @@ ags_core_audio_port_finalize(GObject *gobject)
  *
  * Returns: a #GList or %NULL
  * 
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 GList*
 ags_core_audio_port_find(GList *core_audio_port,
@@ -670,7 +670,7 @@ SetCurrentIOBufferFrameSize(AudioObjectID inDeviceID,
  * Register a new core audio port and read uuid. Creates a new AgsSequencer or AgsSoundcard
  * object.
  *
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 void
 ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
@@ -1345,7 +1345,7 @@ ags_core_audio_port_set_pcm_channels(AgsCoreAudioPort *core_audio_port,
  *
  * Returns: the new #AgsCoreAudioPort
  *
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 AgsCoreAudioPort*
 ags_core_audio_port_new(GObject *core_audio_client)

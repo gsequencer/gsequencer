@@ -154,7 +154,7 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
 <<<<<<< HEAD
    * Since: 1.0.0
 =======
-   * Since: 0.7.117
+   * Since: 1.0.0
 >>>>>>> master
    */
   param_spec = g_param_spec_object("scope",
@@ -171,7 +171,7 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
    *
    * The count of pcm-channels to apply.
    * 
-   * Since: 0.8.9
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("pcm-channels",
 				 i18n_pspec("pcm channel count"),
@@ -192,7 +192,7 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
 <<<<<<< HEAD
    * Since: 1.0.0
 =======
-   * Since: 0.7.117
+   * Since: 1.0.0
 >>>>>>> master
    */
   param_spec = g_param_spec_uint("samplerate",
@@ -215,7 +215,7 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
 <<<<<<< HEAD
    * Since: 1.0.0
 =======
-   * Since: 0.7.117
+   * Since: 1.0.0
 >>>>>>> master
    */
   param_spec = g_param_spec_uint("buffer-size",
@@ -237,7 +237,7 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
 <<<<<<< HEAD
    * Since: 1.0.0
 =======
-   * Since: 0.7.117
+   * Since: 1.0.0
 >>>>>>> master
    */
   param_spec = g_param_spec_uint("format",
@@ -576,7 +576,7 @@ ags_apply_presets_audio_signal(AgsApplyPresets *apply_presets,
  *
  * Returns: an new #AgsApplyPresets.
  *
- * Since: 0.7.45
+ * Since: 1.0.0
  */
 AgsApplyPresets*
 ags_apply_presets_new(GObject *scope,

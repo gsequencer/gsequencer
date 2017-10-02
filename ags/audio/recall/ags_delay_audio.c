@@ -188,7 +188,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    *
    * The beats per minute.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("bpm",
 				   i18n_pspec("bpm of recall"),
@@ -204,7 +204,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    *
    * The tact segmentation.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("tact",
 				   i18n_pspec("tact of recall"),
@@ -220,7 +220,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    *
    * The sequencer's delay.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("sequencer-delay",
 				   i18n_pspec("sequencer-delay of recall"),
@@ -236,7 +236,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    *
    * The notation's delay.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("notation-delay",
 				   i18n_pspec("notation-delay of recall"),
@@ -252,7 +252,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    *
    * The sequencer's duration.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("sequencer-duration",
 				   i18n_pspec("sequencer-duration of recall"),
@@ -268,7 +268,7 @@ ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
    *
    * The notation's duration.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("notation-duration",
 				   i18n_pspec("notation-duration of recall"),
@@ -1170,7 +1170,7 @@ ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration
  *
  * Notation duration changed of #AgsDelayAudio
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_delay_audio_notation_duration_changed(AgsDelayAudio *delay_audio)
@@ -1189,7 +1189,7 @@ ags_delay_audio_notation_duration_changed(AgsDelayAudio *delay_audio)
  *
  * Sequencer duration changed of #AgsDelayAudio
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_delay_audio_sequencer_duration_changed(AgsDelayAudio *delay_audio)
@@ -1209,7 +1209,7 @@ ags_delay_audio_sequencer_duration_changed(AgsDelayAudio *delay_audio)
  *
  * Returns: a new #AgsDelayAudio
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsDelayAudio*
 ags_delay_audio_new()

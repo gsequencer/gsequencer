@@ -68,7 +68,7 @@ ags_dynamic_connectable_base_init(AgsDynamicConnectableInterface *interface)
  *
  * Connect signal handlers within dynamic context.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_dynamic_connectable_connect_dynamic(AgsDynamicConnectable *connectable)
@@ -87,7 +87,7 @@ ags_dynamic_connectable_connect_dynamic(AgsDynamicConnectable *connectable)
  *
  * Disconnect signal handlers within dynamic context.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_dynamic_connectable_disconnect_dynamic(AgsDynamicConnectable *connectable)

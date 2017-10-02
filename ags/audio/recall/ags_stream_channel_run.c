@@ -242,7 +242,7 @@ ags_stream_channel_run_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsStreamChannelRun
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsStreamChannelRun*
 ags_stream_channel_run_new()

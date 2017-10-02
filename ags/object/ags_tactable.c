@@ -70,7 +70,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
    * The ::change-sequencer-duration signal notifies about changed duration
    * of sequencer.
    *
-   * Since: 0.7.46
+   * Since: 1.0.0
    */
   tactable_signals[CHANGE_SEQUENCER_DURATION] = 
     g_signal_new("change-sequencer-duration",
@@ -90,7 +90,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
    * The ::change-notation-duration signal notifies about changed duration
    * of notation.
    *
-   * Since: 0.7.46
+   * Since: 1.0.0
    */
   tactable_signals[CHANGE_NOTATION_DURATION] = 
     g_signal_new("change-notation-duration",
@@ -109,7 +109,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
    *
    * The ::change-tact signal notifies about changed tact.
    *
-   * Since: 0.7.46
+   * Since: 1.0.0
    */
   tactable_signals[CHANGE_TACT] = 
     g_signal_new("change-tact",
@@ -128,7 +128,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
    *
    * The ::change-bpm signal notifies about changed bpm.
    *
-   * Since: 0.7.46
+   * Since: 1.0.0
    */
   tactable_signals[CHANGE_BPM] = 
     g_signal_new("change-bpm",
@@ -149,7 +149,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
  *
  * Returns: the sequencer duration
  *
- * Since: 0.7.43
+ * Since: 1.0.0
  */
 gdouble
 ags_tactable_get_sequencer_duration(AgsTactable *tactable)
@@ -171,7 +171,7 @@ ags_tactable_get_sequencer_duration(AgsTactable *tactable)
  *
  * Returns: the notation duration
  *
- * Since: 0.7.43
+ * Since: 1.0.0
  */
 gdouble
 ags_tactable_get_notation_duration(AgsTactable *tactable)
@@ -193,7 +193,7 @@ ags_tactable_get_notation_duration(AgsTactable *tactable)
  *
  * Returns: the tact
  *
- * Since: 0.7.43
+ * Since: 1.0.0
  */
 gdouble
 ags_tactable_get_tact(AgsTactable *tactable)
@@ -215,7 +215,7 @@ ags_tactable_get_tact(AgsTactable *tactable)
  *
  * Returns: the bpm
  *
- * Since: 0.7.43
+ * Since: 1.0.0
  */
 gdouble
 ags_tactable_get_bpm(AgsTactable *tactable)
@@ -236,7 +236,7 @@ ags_tactable_get_bpm(AgsTactable *tactable)
  *
  * Sequencer duration changed.
  * 
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_tactable_change_sequencer_duration(AgsTactable *tactable, double duration)
@@ -254,7 +254,7 @@ ags_tactable_change_sequencer_duration(AgsTactable *tactable, double duration)
  *
  * Notation duration changed.
  * 
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_tactable_change_notation_duration(AgsTactable *tactable, double duration)
@@ -273,7 +273,7 @@ ags_tactable_change_notation_duration(AgsTactable *tactable, double duration)
  *
  * Tact changed.
  * 
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_tactable_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_tact)
@@ -293,7 +293,7 @@ ags_tactable_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_ta
  *
  * Bpm changed.
  * 
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_tactable_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm)

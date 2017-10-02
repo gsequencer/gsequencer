@@ -372,7 +372,7 @@ ags_mixer_set_pads(AgsAudio *audio, GType type,
  *
  * Returns: a new #AgsMixer
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsMixer*
 ags_mixer_new(GObject *soundcard)

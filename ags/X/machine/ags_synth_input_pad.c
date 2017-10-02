@@ -283,7 +283,7 @@ ags_synth_input_pad_resize_lines(AgsPad *pad, GType line_type,
  *
  * Returns: a new #AgsSynthInputPad
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsSynthInputPad*
 ags_synth_input_pad_new(AgsChannel *channel)

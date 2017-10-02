@@ -259,7 +259,7 @@ ags_audio_application_context_class_init(AgsAudioApplicationContextClass *audio_
    *
    * The assigned soundcard.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of audio application context"),

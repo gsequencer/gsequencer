@@ -144,7 +144,7 @@ ags_soundcard_thread_class_init(AgsSoundcardThreadClass *soundcard_thread)
    *
    * The assigned #AgsSoundcard.
    * 
-   * Since: 0.7.121
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard assigned to"),
@@ -628,7 +628,7 @@ ags_soundcard_thread_stopped_all_callback(AgsAudioLoop *audio_loop,
  * Returns: the matching #AgsSoundcardThread, if not
  * found %NULL.
  * 
- * Since: 0.7.119
+ * Since: 1.0.0
  */
 AgsSoundcardThread*
 ags_soundcard_thread_find_soundcard(AgsSoundcardThread *soundcard_thread,
@@ -659,7 +659,7 @@ ags_soundcard_thread_find_soundcard(AgsSoundcardThread *soundcard_thread,
  *
  * Returns: the new #AgsSoundcardThread
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsSoundcardThread*
 ags_soundcard_thread_new(GObject *soundcard)

@@ -128,7 +128,7 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
 <<<<<<< HEAD
    * Since: 1.0.0
 =======
-   * Since: 0.7.117
+   * Since: 1.0.0
 >>>>>>> master
    */
   param_spec = g_param_spec_object("notation",
@@ -148,7 +148,7 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
 <<<<<<< HEAD
    * Since: 1.0.0
 =======
-   * Since: 0.7.117
+   * Since: 1.0.0
 >>>>>>> master
    */
   param_spec = g_param_spec_uint("x0",
@@ -169,7 +169,7 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
 <<<<<<< HEAD
    * Since: 1.0.0
 =======
-   * Since: 0.7.117
+   * Since: 1.0.0
 >>>>>>> master
    */
   param_spec = g_param_spec_uint("x1",
@@ -191,7 +191,7 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
 <<<<<<< HEAD
    * Since: 1.0.0
 =======
-   * Since: 0.7.117
+   * Since: 1.0.0
 >>>>>>> master
    */
   param_spec = g_param_spec_uint("y0",
@@ -213,7 +213,7 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
 <<<<<<< HEAD
    * Since: 1.0.0
 =======
-   * Since: 0.7.117
+   * Since: 1.0.0
 >>>>>>> master
    */
   param_spec = g_param_spec_uint("y1",
@@ -235,7 +235,7 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
 <<<<<<< HEAD
    * Since: 1.0.0
 =======
-   * Since: 0.7.117
+   * Since: 1.0.0
 >>>>>>> master
    */
   param_spec =  g_param_spec_boolean("replace-current-selection",
@@ -458,7 +458,7 @@ ags_add_region_to_selection_launch(AgsTask *task)
  *
  * Returns: an new #AgsAddRegionToSelection.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsAddRegionToSelection*
 ags_add_region_to_selection_new(AgsNotation *notation,

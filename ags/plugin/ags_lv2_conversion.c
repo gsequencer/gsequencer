@@ -135,7 +135,7 @@ ags_lv2_conversion_convert(AgsConversion *conversion,
  *
  * Returns: the new instance
  *
- * Since: 0.7.9
+ * Since: 1.0.0
  */
 AgsLv2Conversion*
 ags_lv2_conversion_new()

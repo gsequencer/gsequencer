@@ -131,7 +131,7 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    *
    * The assigned #AgsExportThread
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("export-thread",
 				   i18n_pspec("export thread of export output"),
@@ -147,7 +147,7 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of export output"),
@@ -163,7 +163,7 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    *
    * The assigned filename.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("the filename"),
@@ -179,7 +179,7 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    *
    * Format to use.
    * 
-   * Since: 0.7.119
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("audio format"),
@@ -197,7 +197,7 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    *
    * Tic offset of output as end tic of it.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("tic",
 				 i18n_pspec("tic offset"),
@@ -215,7 +215,7 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    *
    * Do output the audio export live.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_boolean("live-performance",
 				     i18n_pspec("export output live"),
@@ -564,7 +564,7 @@ ags_export_output_launch(AgsTask *task)
  *
  * Returns: an new #AgsExportOutput.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsExportOutput*
 ags_export_output_new(AgsExportThread *export_thread,

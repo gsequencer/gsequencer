@@ -264,7 +264,7 @@ ags_pulse_devout_class_init(AgsPulseDevoutClass *pulse_devout)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("the application context object"),
@@ -280,7 +280,7 @@ ags_pulse_devout_class_init(AgsPulseDevoutClass *pulse_devout)
    *
    * The assigned application mutex
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("application-mutex",
 				    i18n_pspec("the application mutex object"),
@@ -295,7 +295,7 @@ ags_pulse_devout_class_init(AgsPulseDevoutClass *pulse_devout)
    *
    * The pulse soundcard indentifier
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("device",
 				   i18n_pspec("the device identifier"),
@@ -311,7 +311,7 @@ ags_pulse_devout_class_init(AgsPulseDevoutClass *pulse_devout)
    *
    * The dsp channel count
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("dsp-channels",
 				 i18n_pspec("count of DSP channels"),
@@ -329,7 +329,7 @@ ags_pulse_devout_class_init(AgsPulseDevoutClass *pulse_devout)
    *
    * The pcm channel count
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("pcm-channels",
 				 i18n_pspec("count of PCM channels"),
@@ -347,7 +347,7 @@ ags_pulse_devout_class_init(AgsPulseDevoutClass *pulse_devout)
    *
    * The precision of the buffer
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("precision of buffer"),
@@ -365,7 +365,7 @@ ags_pulse_devout_class_init(AgsPulseDevoutClass *pulse_devout)
    *
    * The buffer size
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("frame count of a buffer"),
@@ -383,7 +383,7 @@ ags_pulse_devout_class_init(AgsPulseDevoutClass *pulse_devout)
    *
    * The samplerate
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("frames per second"),
@@ -401,7 +401,7 @@ ags_pulse_devout_class_init(AgsPulseDevoutClass *pulse_devout)
    *
    * The buffer
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("buffer",
 				    i18n_pspec("the buffer"),
@@ -416,7 +416,7 @@ ags_pulse_devout_class_init(AgsPulseDevoutClass *pulse_devout)
    *
    * Beats per minute
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("bpm",
 				   i18n_pspec("beats per minute"),
@@ -434,7 +434,7 @@ ags_pulse_devout_class_init(AgsPulseDevoutClass *pulse_devout)
    *
    * tact
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -452,7 +452,7 @@ ags_pulse_devout_class_init(AgsPulseDevoutClass *pulse_devout)
    *
    * Attack of the buffer
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),
@@ -468,7 +468,7 @@ ags_pulse_devout_class_init(AgsPulseDevoutClass *pulse_devout)
    *
    * The assigned #AgsPulseClient
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("pulse-client",
 				   i18n_pspec("pulse client object"),
@@ -484,7 +484,7 @@ ags_pulse_devout_class_init(AgsPulseDevoutClass *pulse_devout)
    *
    * The assigned #AgsPulsePort
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("pulse-port",
 				    i18n_pspec("pulse port object"),
@@ -499,7 +499,7 @@ ags_pulse_devout_class_init(AgsPulseDevoutClass *pulse_devout)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("channel"),
@@ -1297,7 +1297,7 @@ ags_pulse_devout_disconnect(AgsConnectable *connectable)
  *
  * The buffer flag indicates the currently played buffer.
  *
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 void
 ags_pulse_devout_switch_buffer_flag(AgsPulseDevout *pulse_devout)
@@ -1493,7 +1493,7 @@ ags_pulse_devout_get_presets(AgsSoundcard *soundcard,
  *
  * List available soundcards.
  *
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 void
 ags_pulse_devout_list_cards(AgsSoundcard *soundcard,
@@ -2472,7 +2472,7 @@ ags_pulse_devout_get_audio(AgsSoundcard *soundcard)
  *
  * Calculate delay and attack and reset it.
  *
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 void
 ags_pulse_devout_adjust_delay_and_attack(AgsPulseDevout *pulse_devout)
@@ -2589,7 +2589,7 @@ ags_pulse_devout_adjust_delay_and_attack(AgsPulseDevout *pulse_devout)
  *
  * Reallocate the internal audio buffer.
  *
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 void
 ags_pulse_devout_realloc_buffer(AgsPulseDevout *pulse_devout)
@@ -2686,7 +2686,7 @@ ags_pulse_devout_realloc_buffer(AgsPulseDevout *pulse_devout)
  *
  * Returns: a new #AgsPulseDevout
  *
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 AgsPulseDevout*
 ags_pulse_devout_new(GObject *application_context)

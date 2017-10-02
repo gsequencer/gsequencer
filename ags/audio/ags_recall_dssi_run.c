@@ -468,7 +468,7 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
  *
  * Set up DSSI ports.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
@@ -563,7 +563,7 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
  *
  * Returns: a new #AgsRecallDssiRun
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsRecallDssiRun*
 ags_recall_dssi_run_new(AgsAudioSignal *audio_signal)

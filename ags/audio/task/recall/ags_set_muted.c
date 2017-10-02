@@ -133,7 +133,7 @@ ags_set_muted_class_init(AgsSetMutedClass *set_muted)
    *
    * The assigned #GObject as scope.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("scope",
 				   i18n_pspec("scope of set buffer size"),
@@ -149,7 +149,7 @@ ags_set_muted_class_init(AgsSetMutedClass *set_muted)
    *
    * The muted to set to scope.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_boolean("muted",
 				    i18n_pspec("muted"),
@@ -410,7 +410,7 @@ ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio)
  *
  * Returns: an new #AgsSetMuted.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsSetMuted*
 ags_set_muted_new(GObject *scope,

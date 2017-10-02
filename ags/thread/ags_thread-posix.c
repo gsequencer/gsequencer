@@ -171,7 +171,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    *
    * The frequency to run at in Hz.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("frequency",
 				   i18n_pspec("frequency as JIFFIE"),
@@ -222,7 +222,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    *
    * Returns: the number of cycles to perform
    * 
-   * Since: 0.6.0
+   * Since: 1.0.0
    */
   thread_signals[CLOCK] =
     g_signal_new("clock",
@@ -240,7 +240,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    *
    * The ::start() signal is invoked as thread started.
    * 
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   thread_signals[START] =
     g_signal_new("start",
@@ -257,7 +257,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    *
    * The ::run() signal is invoked during run loop.
    * 
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   thread_signals[RUN] =
     g_signal_new("run",
@@ -274,7 +274,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    *
    * The ::suspend() signal is invoked during suspending.
    * 
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   thread_signals[SUSPEND] =
     g_signal_new("suspend",
@@ -291,7 +291,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    *
    * The ::resume() signal is invoked during resuming.
    * 
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   thread_signals[RESUME] =
     g_signal_new("resume",
@@ -309,7 +309,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    * The ::timelock() signal is invoked as standard compution
    * time exceeded.
    * 
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   thread_signals[TIMELOCK] =
     g_signal_new("timelock",
@@ -326,7 +326,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    *
    * The ::stop() signal is invoked as @thread stopped.
    * 
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   thread_signals[STOP] =
     g_signal_new("stop",
@@ -348,7 +348,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    *
    * Returns: the time spent
    *
-   * Since: 0.7.46
+   * Since: 1.0.0
    */
   thread_signals[INTERRUPTED] =
     g_signal_new("interrupted",
@@ -891,7 +891,7 @@ ags_thread_suspend_handler(int sig)
  * Unsets AGS_THREAD_WAIT_0, AGS_THREAD_WAIT_1 or AGS_THREAD_WAIT_2.
  * Additionaly the thread is woken up by this function if waiting.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_set_sync(AgsThread *thread, guint tic)
@@ -1009,7 +1009,7 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
  * 
  * Calls ags_thread_set_sync() on all threads.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_set_sync_all(AgsThread *thread, guint tic)
@@ -1075,7 +1075,7 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
  * Reset all threads. E.g. suspended threads. A synchronization
  * stage after #AgsAsyncQueue run.
  * 
- * Since: 0.7.109
+ * Since: 1.0.0
  */
 void
 ags_thread_reset_all(AgsThread *thread)
@@ -1149,7 +1149,7 @@ ags_thread_reset_all(AgsThread *thread)
  * 
  * Locks the threads own mutex and sets the appropriate flag.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_lock(AgsThread *thread)
@@ -1190,7 +1190,7 @@ ags_thread_lock(AgsThread *thread)
  *
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 gboolean
 ags_thread_trylock(AgsThread *thread)
@@ -1232,7 +1232,7 @@ ags_thread_trylock(AgsThread *thread)
  *
  * Unlocks the threads own mutex and unsets the appropriate flag.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_unlock(AgsThread *thread)
@@ -1272,7 +1272,7 @@ ags_thread_unlock(AgsThread *thread)
  *
  * Returns: the toplevevel #AgsThread
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 AgsThread*
 ags_thread_get_toplevel(AgsThread *thread)
@@ -1296,7 +1296,7 @@ ags_thread_get_toplevel(AgsThread *thread)
  *
  * Returns: the very first #AgsThread within same tree level
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 AgsThread*
 ags_thread_first(AgsThread *thread)
@@ -1320,7 +1320,7 @@ ags_thread_first(AgsThread *thread)
  *
  * Returns: the very last @AgsThread within same tree level
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 AgsThread*
 ags_thread_last(AgsThread *thread)
@@ -1343,7 +1343,7 @@ ags_thread_last(AgsThread *thread)
  * 
  * Remove child of thread.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_remove_child(AgsThread *thread, AgsThread *child)
@@ -1395,7 +1395,7 @@ ags_thread_remove_child(AgsThread *thread, AgsThread *child)
  * 
  * Add child to thread.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_add_child(AgsThread *thread, AgsThread *child)
@@ -1413,7 +1413,7 @@ ags_thread_add_child(AgsThread *thread, AgsThread *child)
  * 
  * Add child to thread.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
@@ -1498,7 +1498,7 @@ ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
  *
  * Returns: %TRUE if locked otherwise %FALSE
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 gboolean
 ags_thread_parental_is_locked(AgsThread *thread, AgsThread *parent)
@@ -1531,7 +1531,7 @@ ags_thread_parental_is_locked(AgsThread *thread, AgsThread *parent)
  *
  * Returns: %TRUE if locked otherwise %FALSE
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 gboolean
 ags_thread_sibling_is_locked(AgsThread *thread)
@@ -1565,7 +1565,7 @@ ags_thread_sibling_is_locked(AgsThread *thread)
  *
  * Returns: %TRUE if locked otherwise %FALSE
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 gboolean
 ags_thread_children_is_locked(AgsThread *thread)
@@ -1800,7 +1800,7 @@ ags_thread_is_tree_ready(AgsThread *thread,
  *
  * Returns: next matching #AgsThread
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 AgsThread*
 ags_thread_next_parent_locked(AgsThread *thread, AgsThread *parent)
@@ -1832,7 +1832,7 @@ ags_thread_next_parent_locked(AgsThread *thread, AgsThread *parent)
  *
  * Returns: next matching #AgsThread
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 AgsThread*
 ags_thread_next_sibling_locked(AgsThread *thread)
@@ -1870,7 +1870,7 @@ ags_thread_next_sibling_locked(AgsThread *thread)
  *
  * Returns: next matching #AgsThread
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 AgsThread*
 ags_thread_next_children_locked(AgsThread *thread)
@@ -1913,7 +1913,7 @@ ags_thread_next_children_locked(AgsThread *thread)
  *
  * Lock parent tree structure.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_lock_parent(AgsThread *thread, AgsThread *parent)
@@ -1943,7 +1943,7 @@ ags_thread_lock_parent(AgsThread *thread, AgsThread *parent)
  *
  * Lock sibling tree structure.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_lock_sibling(AgsThread *thread)
@@ -1979,7 +1979,7 @@ ags_thread_lock_sibling(AgsThread *thread)
  *
  * Lock child tree structure.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_lock_children(AgsThread *thread)
@@ -2022,7 +2022,7 @@ ags_thread_lock_all(AgsThread *thread)
  *
  * Unlock parent tree structure.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent)
@@ -2059,7 +2059,7 @@ ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent)
  *
  * Unlock sibling tree structure.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_unlock_sibling(AgsThread *thread)
@@ -2102,7 +2102,7 @@ ags_thread_unlock_sibling(AgsThread *thread)
  *
  * Unlock child tree structure.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_unlock_children(AgsThread *thread)
@@ -2164,7 +2164,7 @@ ags_thread_unlock_all(AgsThread *thread)
  *
  * Wait on parent tree structure.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_wait_parent(AgsThread *thread, AgsThread *parent)
@@ -2202,7 +2202,7 @@ ags_thread_wait_parent(AgsThread *thread, AgsThread *parent)
  *
  * Wait on sibling tree structure.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_wait_sibling(AgsThread *thread)
@@ -2246,7 +2246,7 @@ ags_thread_wait_sibling(AgsThread *thread)
  *
  * Wait on child tree structure.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_wait_children(AgsThread *thread)
@@ -2304,7 +2304,7 @@ ags_thread_wait_children(AgsThread *thread)
  *
  * Signals the tree in higher levels.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_signal_parent(AgsThread *thread, AgsThread *parent,
@@ -2334,7 +2334,7 @@ ags_thread_signal_parent(AgsThread *thread, AgsThread *parent,
  *
  * Signals the tree on same level.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast)
@@ -2363,7 +2363,7 @@ ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast)
  *
  * Signals the tree in lower levels.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_signal_children(AgsThread *thread, gboolean broadcast)
@@ -2817,7 +2817,7 @@ ags_thread_real_clock(AgsThread *thread)
  *
  * Returns: the cycles to be performed
  * 
- * Since: 0.6.42
+ * Since: 1.0.0
  */
 guint
 ags_thread_clock(AgsThread *thread)
@@ -2891,7 +2891,7 @@ ags_thread_real_start(AgsThread *thread)
  *
  * Add @child to @thread's start queue.
  *
- * Since: 0.7.56
+ * Since: 1.0.0
  */
 void
 ags_thread_add_start_queue(AgsThread *thread,
@@ -2918,7 +2918,7 @@ ags_thread_add_start_queue(AgsThread *thread,
  *
  * Add @child to @thread's start queue.
  *
- * Since: 0.7.56
+ * Since: 1.0.0
  */
 void
 ags_thread_add_start_queue_all(AgsThread *thread,
@@ -2944,7 +2944,7 @@ ags_thread_add_start_queue_all(AgsThread *thread,
  *
  * Start the thread.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_start(AgsThread *thread)
@@ -3480,7 +3480,7 @@ ags_thread_loop(void *ptr)
  * Only for internal use of ags_thread_loop but you may want to set the your very own
  * class function namely your thread's routine.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_run(AgsThread *thread)
@@ -3618,7 +3618,7 @@ ags_thread_real_stop(AgsThread *thread)
  * 
  * Stop the threads loop by unsetting AGS_THREAD_RUNNING flag.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_stop(AgsThread *thread)
@@ -3649,7 +3649,7 @@ ags_thread_stop(AgsThread *thread)
  * 
  * Returns: the time spent
  *
- * Since: 0.7.46
+ * Since: 1.0.0
  */
 guint
 ags_thread_interrupted(AgsThread *thread,
@@ -3688,7 +3688,7 @@ ags_thread_interrupted(AgsThread *thread,
  *
  * Performs hangcheck of thread.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_thread_hangcheck(AgsThread *thread)
@@ -3846,7 +3846,7 @@ ags_thread_self(void)
  *
  * Returns: the first ordered thread
  *
- * Since: 0.7.40
+ * Since: 1.0.0
  */
 AgsThread*
 ags_thread_chaos_tree(AgsThread *thread)
@@ -3869,7 +3869,7 @@ ags_thread_chaos_tree(AgsThread *thread)
  *
  * Returns: %TRUE if tree is in chaos, otherwise %FALSE
  *
- * Since: 0.7.43
+ * Since: 1.0.0
  */
 gboolean
 ags_thread_is_chaos_tree(AgsThread *thread,
@@ -3942,7 +3942,7 @@ ags_thread_is_chaos_tree(AgsThread *thread,
  *
  * Returns: the new #AgsThread
  * 
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 AgsThread*
 ags_thread_new(gpointer data)

@@ -155,7 +155,7 @@ ags_mutex_manager_destroy_data(gpointer data)
  *
  * Returns: the application mutex
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 pthread_mutex_t*
 ags_mutex_manager_get_application_mutex(AgsMutexManager *mutex_manager)
@@ -193,7 +193,7 @@ ags_mutex_manager_get_application_mutex(AgsMutexManager *mutex_manager)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 gboolean
 ags_mutex_manager_insert(AgsMutexManager *mutex_manager,
@@ -220,7 +220,7 @@ ags_mutex_manager_insert(AgsMutexManager *mutex_manager,
  *
  * Returns: %TRUE as successfully removed, otherwise %FALSE
  *
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 gboolean
 ags_mutex_manager_remove(AgsMutexManager *mutex_manager,
@@ -256,7 +256,7 @@ ags_mutex_manager_remove(AgsMutexManager *mutex_manager,
  *
  * Returns: the mutex on success, else %NULL
  *
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 pthread_mutex_t*
 ags_mutex_manager_lookup(AgsMutexManager *mutex_manager,
@@ -277,7 +277,7 @@ ags_mutex_manager_lookup(AgsMutexManager *mutex_manager,
  *
  * Returns: an instance of #AgsMutexManager
  *
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 AgsMutexManager*
 ags_mutex_manager_get_instance()
@@ -296,7 +296,7 @@ ags_mutex_manager_get_instance()
  *
  * Returns: a new #AgsMutexManager
  *
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 AgsMutexManager*
 ags_mutex_manager_new()

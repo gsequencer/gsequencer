@@ -236,7 +236,7 @@ ags_destroy_worker_do_poll(AgsWorkerThread *worker_thread)
  * 
  * Returns: the allocated #AgsDestroyEntry
  * 
- * Since: 0.7.122.8
+ * Since: 1.0.0.8
  */
 AgsDestroyEntry*
 ags_destroy_entry_alloc(gpointer ptr, AgsDestroyFunc destroy_func)
@@ -259,7 +259,7 @@ ags_destroy_entry_alloc(gpointer ptr, AgsDestroyFunc destroy_func)
  * 
  * Add @ptr for destruction using @destroy_func.
  * 
- * Since: 0.7.122.8
+ * Since: 1.0.0.8
  */
 void
 ags_destroy_worker_add(AgsDestroyWorker *destroy_worker,
@@ -290,7 +290,7 @@ ags_destroy_worker_add(AgsDestroyWorker *destroy_worker,
  *
  * Returns: the new #AgsDestroyWorker
  *
- * Since: 0.7.122.8
+ * Since: 1.0.0.8
  */
 AgsDestroyWorker*
 ags_destroy_worker_new()

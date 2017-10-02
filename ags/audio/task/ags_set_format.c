@@ -133,7 +133,7 @@ ags_set_format_class_init(AgsSetFormatClass *set_format)
    *
    * The assigned #GObject as scope.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("scope",
 				   i18n_pspec("scope of set format"),
@@ -149,7 +149,7 @@ ags_set_format_class_init(AgsSetFormatClass *set_format)
    *
    * The format to apply to scope.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("format"),
@@ -421,7 +421,7 @@ ags_set_format_soundcard(AgsSetFormat *set_format, GObject *soundcard)
  *
  * Returns: an new #AgsSetFormat.
  *
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 AgsSetFormat*
 ags_set_format_new(GObject *scope,

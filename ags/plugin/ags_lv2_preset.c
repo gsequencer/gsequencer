@@ -123,7 +123,7 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    *
    * The assigned lv2 plugin.
    * 
-   * Since: 0.7.122.8
+   * Since: 1.0.0.8
    */
   param_spec = g_param_spec_object("lv2-plugin",
 				   i18n_pspec("lv2 plugin of the preset"),
@@ -139,7 +139,7 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    *
    * The assigned uri.
    * 
-   * Since: 0.7.122.8
+   * Since: 1.0.0.8
    */
   param_spec = g_param_spec_string("uri",
 				   i18n_pspec("uri of the preset"),
@@ -155,7 +155,7 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    *
    * The assigned bank.
    * 
-   * Since: 0.7.122.8
+   * Since: 1.0.0.8
    */
   param_spec = g_param_spec_string("bank",
 				   i18n_pspec("bank of the preset"),
@@ -171,7 +171,7 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    *
    * The preset label.
    * 
-   * Since: 0.7.122.8
+   * Since: 1.0.0.8
    */
   param_spec = g_param_spec_string("preset-label",
 				   i18n_pspec("preset label"),
@@ -187,7 +187,7 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    *
    * The assigned turtle.
    * 
-   * Since: 0.7.122.8
+   * Since: 1.0.0.8
    */
   param_spec = g_param_spec_object("turtle",
 				   i18n_pspec("turtle of the preset"),
@@ -619,7 +619,7 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
  * 
  * Returns: the matching #GList-struct containing #AgsLv2Preset
  * 
- * Since: 0.7.122.8
+ * Since: 1.0.0.8
  */
 GList*
 ags_lv2_preset_find_preset_label(GList *lv2_preset,
@@ -651,7 +651,7 @@ ags_lv2_preset_find_preset_label(GList *lv2_preset,
  *
  * Returns: the new #AgsLv2Preset
  *
- * Since: 0.7.122.8
+ * Since: 1.0.0.8
  */ 
 AgsLv2Preset*
 ags_lv2_preset_new(GObject *lv2_plugin,

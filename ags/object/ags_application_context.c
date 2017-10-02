@@ -153,7 +153,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    *
    * The assigned main-loop.
    * 
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("main-loop",
 				   i18n_pspec("main-loop of application context"),
@@ -169,7 +169,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    *
    * The assigned config.
    * 
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("config",
 				   i18n_pspec("config of application context"),
@@ -185,7 +185,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    *
    * The assigned file.
    * 
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("file",
 				   i18n_pspec("file of application context"),
@@ -213,7 +213,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    *
    * The ::load-config notifies to load configuration.
    *
-   * Since: 0.7.68
+   * Since: 1.0.0
    */
   application_context_signals[LOAD_CONFIG] =
     g_signal_new("load-config",
@@ -231,7 +231,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * The ::prepare signal should be implemented to prepare
    * your application context.
    *
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   application_context_signals[PREPARE] =
     g_signal_new("prepare",
@@ -249,7 +249,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * The ::setup signal should be implemented to setup
    * your application context.
    *
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   application_context_signals[SETUP] =
     g_signal_new("setup",
@@ -267,7 +267,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * The ::register-types signal should be implemented to load
    * your types.
    *
-   * Since: 0.7.68
+   * Since: 1.0.0
    */
   application_context_signals[REGISTER_TYPES] =
     g_signal_new("register-types",
@@ -284,7 +284,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    *
    * The ::quit notifies to load configuration.
    *
-   * Since: 0.7.68
+   * Since: 1.0.0
    */
   application_context_signals[QUIT] =
     g_signal_new("quit",
@@ -747,7 +747,7 @@ ags_application_context_remove_sibling(AgsApplicationContext *application_contex
  * Find default context in @application_context #GList-struct containing
  * #AgsApplicationContext.
  *
- * Since: 0.7.111
+ * Since: 1.0.0
  */
 AgsApplicationContext*
 ags_application_context_find_default(GList *application_context)
@@ -770,7 +770,7 @@ ags_application_context_find_default(GList *application_context)
  * Find :main-loop in @application_context #GList-struct containing
  * #AgsApplicationContext.
  *
- * Since: 0.7.111
+ * Since: 1.0.0
  */
 GList*
 ags_application_context_find_main_loop(GList *application_context)
@@ -799,7 +799,7 @@ ags_application_context_real_quit(AgsApplicationContext *application_context)
  *
  * Calls exit()
  *
- * Since: 0.7.111
+ * Since: 1.0.0
  */
 void
 ags_application_context_quit(AgsApplicationContext *application_context)
@@ -820,7 +820,7 @@ ags_application_context_quit(AgsApplicationContext *application_context)
  *
  * Returns: the #AgsApplicationContext instance
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsApplicationContext*
 ags_application_context_get_instance()
@@ -842,7 +842,7 @@ ags_application_context_get_instance()
  * 
  * Returns: the #AgsApplicationContext instance
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsApplicationContext*
 ags_application_context_new(GObject *main_loop,

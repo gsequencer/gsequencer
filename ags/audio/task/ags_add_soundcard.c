@@ -123,7 +123,7 @@ ags_add_soundcard_class_init(AgsAddSoundcardClass *add_soundcard)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("application context of add soundcard"),
@@ -139,7 +139,7 @@ ags_add_soundcard_class_init(AgsAddSoundcardClass *add_soundcard)
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of add soundcard"),
@@ -338,7 +338,7 @@ ags_add_soundcard_launch(AgsTask *task)
  *
  * Returns: an new #AgsAddSoundcard.
  *
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 AgsAddSoundcard*
 ags_add_soundcard_new(AgsApplicationContext *application_context,

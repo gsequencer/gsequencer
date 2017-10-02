@@ -187,7 +187,7 @@ ags_play_channel_run_class_init(AgsPlayChannelRunClass *play_channel_run)
    * 
    * The stream channel run dependency.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("stream-channel-run",
 				   i18n_pspec("assigned AgsStreamChannelRun"),
@@ -617,7 +617,7 @@ ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
  *
  * Returns: a new #AgsPlayChannelRun
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsPlayChannelRun*
 ags_play_channel_run_new(AgsStreamChannelRun *stream_channel_run)

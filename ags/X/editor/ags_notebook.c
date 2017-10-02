@@ -571,7 +571,7 @@ ags_notebook_remove_child(AgsNotebook *notebook,
  *
  * Returns: a new #AgsNotebook
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsNotebook*
 ags_notebook_new()

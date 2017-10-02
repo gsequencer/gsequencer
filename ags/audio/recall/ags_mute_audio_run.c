@@ -212,7 +212,7 @@ ags_mute_audio_run_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsMuteAudioRun
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsMuteAudioRun*
 ags_mute_audio_run_new()

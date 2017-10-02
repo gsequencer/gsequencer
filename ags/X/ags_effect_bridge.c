@@ -158,7 +158,7 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    *
    * The start of a bunch of #AgsAudio to visualize.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("assigned audio"),
@@ -737,7 +737,7 @@ ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
  *
  * Resize audio channel allocation.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_effect_bridge_resize_audio_channels(AgsEffectBridge *effect_bridge,
@@ -861,7 +861,7 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
  *
  * Resize pad allocation.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_effect_bridge_resize_pads(AgsEffectBridge *effect_bridge,
@@ -995,7 +995,7 @@ ags_effect_bridge_real_find_port(AgsEffectBridge *effect_bridge)
  *
  * Lookup ports of associated recalls.
  *
- * Since: 0.7.8
+ * Since: 1.0.0
  */
 GList*
 ags_effect_bridge_find_port(AgsEffectBridge *effect_bridge)
@@ -1023,7 +1023,7 @@ ags_effect_bridge_find_port(AgsEffectBridge *effect_bridge)
  *
  * Returns: a new #AgsEffectBridge
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsEffectBridge*
 ags_effect_bridge_new(AgsAudio *audio)

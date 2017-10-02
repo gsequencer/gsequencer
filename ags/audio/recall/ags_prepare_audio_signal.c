@@ -322,7 +322,7 @@ ags_prepare_audio_signal_run_pre(AgsRecall *recall)
  *
  * Returns: a new #AgsPrepareAudioSignal
  *
- * Since: 0.7.122.8
+ * Since: 1.0.0.8
  */
 AgsPrepareAudioSignal*
 ags_prepare_audio_signal_new(AgsAudioSignal *audio_signal)

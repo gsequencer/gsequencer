@@ -122,7 +122,7 @@ ags_add_audio_class_init(AgsAddAudioClass *add_audio)
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of add audio"),
@@ -138,7 +138,7 @@ ags_add_audio_class_init(AgsAddAudioClass *add_audio)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of add audio"),
@@ -350,7 +350,7 @@ ags_add_audio_launch(AgsTask *task)
  *
  * Returns: an new #AgsAddAudio.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsAddAudio*
 ags_add_audio_new(GObject *soundcard,

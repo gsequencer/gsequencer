@@ -126,7 +126,7 @@ ags_remove_recall_container_class_init(AgsRemoveRecallContainerClass *remove_rec
    *
    * The assigned #AgsAudio
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of remove recall container"),
@@ -142,7 +142,7 @@ ags_remove_recall_container_class_init(AgsRemoveRecallContainerClass *remove_rec
    *
    * The assigned #AgsRecall_Container
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("recall-container",
 				   i18n_pspec("recall container of remove recall container"),
@@ -339,7 +339,7 @@ ags_remove_recall_container_launch(AgsTask *task)
  *
  * Returns: an new #AgsRemoveRecallContainer.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsRemoveRecallContainer*
 ags_remove_recall_container_new(GObject *audio,

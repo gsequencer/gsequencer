@@ -127,7 +127,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * The assigned #AgsNotation
    * 
-   * Since: 0.8.9
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("notation",
 				   i18n_pspec("notation of move note"),
@@ -143,7 +143,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * The assigned #AgsNote
    * 
-   * Since: 0.8.9
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("selection",
 				    i18n_pspec("selection to move"),
@@ -158,7 +158,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * Move notation from x offset.
    * 
-   * Since: 0.8.9
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_uint("first-x",
 				  i18n_pspec("move from x offset"),
@@ -176,7 +176,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * Move notation with x padding.
    * 
-   * Since: 0.8.9
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_uint("first-y",
 				  i18n_pspec("move with x padding"),
@@ -194,7 +194,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * Move notation by move-x amount.
    * 
-   * Since: 0.8.9
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_int("move-x",
 				i18n_pspec("move with move-x amount"),
@@ -212,7 +212,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * Move notation by move-y amount.
    * 
-   * Since: 0.8.9
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_int("move-y",
 				 i18n_pspec("move with move-y amount"),
@@ -230,7 +230,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * Move notation by relative position.
    * 
-   * Since: 0.8.9
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_boolean("relative",
 				     i18n_pspec("move relative"),
@@ -246,7 +246,7 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
    *
    * Move notation by absolute position.
    * 
-   * Since: 0.8.9
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_boolean("absolute",
 				     i18n_pspec("move absolute"),
@@ -572,7 +572,7 @@ ags_move_note_launch(AgsTask *task)
  *
  * Returns: a new #AgsMoveNote
  *
- * Since: 0.8.9
+ * Since: 1.0.0
  */
 AgsMoveNote*
 ags_move_note_new(AgsNotation *notation,

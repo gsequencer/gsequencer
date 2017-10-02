@@ -412,7 +412,7 @@ ags_output_editor_reset(AgsApplicable *applicable)
  *
  * Checks for possible channels to output. And modifies its ranges.
  * 
- * Since: 0.7.131
+ * Since: 1.0.0
  */
 void
 ags_output_editor_check(AgsOutputEditor *output_editor)
@@ -464,7 +464,7 @@ ags_output_editor_check(AgsOutputEditor *output_editor)
  *
  * Returns: a new #AgsOutputEditor
  *
- * Since: 0.7.131
+ * Since: 1.0.0
  */
 AgsOutputEditor*
 ags_output_editor_new()

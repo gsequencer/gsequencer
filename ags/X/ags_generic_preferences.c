@@ -332,7 +332,7 @@ ags_generic_preferences_create_segmentation()
  *
  * Returns: a new #AgsGenericPreferences
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsGenericPreferences*
 ags_generic_preferences_new()

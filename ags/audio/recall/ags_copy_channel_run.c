@@ -249,7 +249,7 @@ ags_copy_channel_run_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsCopyChannelRun
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsCopyChannelRun*
 ags_copy_channel_run_new(AgsChannel *destination,

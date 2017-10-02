@@ -160,7 +160,7 @@ ags_recall_dssi_class_init(AgsRecallDssiClass *recall_dssi)
    *
    * The plugins filename.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_string("filename",
 				    i18n_pspec("the object file"),
@@ -176,7 +176,7 @@ ags_recall_dssi_class_init(AgsRecallDssiClass *recall_dssi)
    *
    * The effect's name.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_string("effect",
 				    i18n_pspec("the effect"),
@@ -192,7 +192,7 @@ ags_recall_dssi_class_init(AgsRecallDssiClass *recall_dssi)
    *
    * The effect's index.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_ulong("index",
 				   i18n_pspec("index of effect"),
@@ -564,7 +564,7 @@ ags_recall_dssi_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  *
  * Set up DSSI handle.
  * 
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
@@ -600,7 +600,7 @@ ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
  *
  * Returns: a #GList containing #AgsPort.
  * 
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 GList*
 ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
@@ -709,7 +709,7 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
  * 
  * Loads conversion object by using @port_descriptor and sets in on @port.
  * 
- * Since: 0.7.9
+ * Since: 1.0.0
  */
 void
 ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
@@ -779,7 +779,7 @@ ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
  *
  * Returns: Next match.
  * 
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 GList*
 ags_recall_dssi_find(GList *recall,
@@ -812,7 +812,7 @@ ags_recall_dssi_find(GList *recall,
  *
  * Returns: a new #AgsRecallDssi
  * 
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsRecallDssi*
 ags_recall_dssi_new(AgsChannel *source,

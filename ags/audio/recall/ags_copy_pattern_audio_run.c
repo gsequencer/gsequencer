@@ -169,7 +169,7 @@ ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_
    *
    * The delay audio run dependency.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("delay-audio-run",
 				   i18n_pspec("assigned AgsDelayAudioRun"),
@@ -185,7 +185,7 @@ ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_
    *
    * The count beats audio run dependency.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("count-beats-audio-run",
 				   i18n_pspec("assigned AgsCountBeatsAudioRun"),
@@ -684,7 +684,7 @@ ags_copy_pattern_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
  *
  * Returns: a new #AgsCopyPatternAudioRun
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsCopyPatternAudioRun*
 ags_copy_pattern_audio_run_new(AgsCountBeatsAudioRun *count_beats_audio_run)

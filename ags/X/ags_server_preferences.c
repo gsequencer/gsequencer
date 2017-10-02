@@ -305,7 +305,7 @@ ags_server_preferences_show(GtkWidget *widget)
  *
  * Returns: a new #AgsServerPreferences
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsServerPreferences*
 ags_server_preferences_new()

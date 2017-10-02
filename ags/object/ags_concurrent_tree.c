@@ -67,7 +67,7 @@ ags_concurrent_tree_base_init(AgsConcurrentTreeInterface *interface)
  *
  * Set context owns parent lock
  *
- * Since: 0.7.4
+ * Since: 1.0.0
  */
 void
 ags_concurrent_tree_set_parent_locked(AgsConcurrentTree *concurrent_tree,
@@ -91,7 +91,7 @@ ags_concurrent_tree_set_parent_locked(AgsConcurrentTree *concurrent_tree,
  *
  * Returns: the %TRUE if parent locked, else %FALSE
  *
- * Since: 0.7.4
+ * Since: 1.0.0
  */
 gboolean
 ags_concurrent_tree_get_parent_locked(AgsConcurrentTree *concurrent_tree)
@@ -157,7 +157,7 @@ ags_concurrent_tree_get_parent_lock(AgsConcurrentTree *concurrent_tree)
  *
  * Returns: %TRUE if parent locked
  *
- * Since: 0.6.0
+ * Since: 1.0.0
  */
 gboolean
 ags_concurrent_tree_lock_context(AgsConcurrentTree *concurrent_tree)
@@ -192,7 +192,7 @@ ags_concurrent_tree_lock_context(AgsConcurrentTree *concurrent_tree)
  * 
  * Unlocks the context of @concurrent_tree.
  *
- * Since: 0.6.0
+ * Since: 1.0.0
  */
 void
 ags_concurrent_tree_unlock_context(AgsConcurrentTree *concurrent_tree)

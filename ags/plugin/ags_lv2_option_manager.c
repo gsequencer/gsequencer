@@ -131,7 +131,7 @@ ags_lv2_option_manager_class_init(AgsLv2OptionManagerClass *lv2_option_manager)
    *
    * The ::get-option signal gets options of the manager.
    * 
-   * Since: 0.7.128
+   * Since: 1.0.0
    */
   lv2_option_manager_signals[GET_OPTION] =
     g_signal_new("get-option",
@@ -154,7 +154,7 @@ ags_lv2_option_manager_class_init(AgsLv2OptionManagerClass *lv2_option_manager)
    *
    * The ::set-option signal sets options for the manager.
    * 
-   * Since: 0.7.128
+   * Since: 1.0.0
    */
   lv2_option_manager_signals[SET_OPTION] =
     g_signal_new("set-option",
@@ -270,7 +270,7 @@ ags_lv2_option_ressource_finder(gpointer key, gpointer value, gpointer user_data
  * 
  * Returns: the newly created #AgsLv2OptionRessource-struct
  *
- * Since: 0.7.128
+ * Since: 1.0.0
  */
 AgsLv2OptionRessource*
 ags_lv2_option_ressource_alloc()
@@ -304,7 +304,7 @@ ags_lv2_option_ressource_alloc()
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 0.7.128
+ * Since: 1.0.0
  */
 gboolean
 ags_lv2_option_manager_ressource_insert(AgsLv2OptionManager *lv2_option_manager,
@@ -331,7 +331,7 @@ ags_lv2_option_manager_ressource_insert(AgsLv2OptionManager *lv2_option_manager,
  *
  * Returns: %TRUE as successfully removed, otherwise %FALSE
  *
- * Since: 0.7.128
+ * Since: 1.0.0
  */
 gboolean
 ags_lv2_option_manager_ressource_remove(AgsLv2OptionManager *lv2_option_manager,
@@ -360,7 +360,7 @@ ags_lv2_option_manager_ressource_remove(AgsLv2OptionManager *lv2_option_manager,
  *
  * Returns: the pointer on success, else NULL
  *
- * Since: 0.7.128
+ * Since: 1.0.0
  */
 gpointer
 ags_lv2_option_manager_ressource_lookup(AgsLv2OptionManager *lv2_option_manager,
@@ -411,7 +411,7 @@ ags_lv2_option_manager_ressource_lookup(AgsLv2OptionManager *lv2_option_manager,
  *
  * Returns: %TRUE if ressource found, else %FALSE
  *
- * Since: 0.9.7
+ * Since: 1.0.0
  */
 gboolean
 ags_lv2_option_manager_ressource_lookup_extended(AgsLv2OptionManager *lv2_option_manager,
@@ -537,7 +537,7 @@ ags_lv2_option_manager_real_get_option(AgsLv2OptionManager *lv2_option_manager,
  * 
  * Get option.
  * 
- * Since: 0.7.128
+ * Since: 1.0.0
  */
 void
 ags_lv2_option_manager_get_option(AgsLv2OptionManager *lv2_option_manager,
@@ -634,7 +634,7 @@ ags_lv2_option_manager_real_set_option(AgsLv2OptionManager *lv2_option_manager,
  * 
  * Set option.
  * 
- * Since: 0.7.128
+ * Since: 1.0.0
  */
 void
 ags_lv2_option_manager_set_option(AgsLv2OptionManager *lv2_option_manager,
@@ -659,7 +659,7 @@ ags_lv2_option_manager_set_option(AgsLv2OptionManager *lv2_option_manager,
  * 
  * The LV2 options interface's get method.
  * 
- * Since: 0.7.128
+ * Since: 1.0.0
  */
 uint32_t
 ags_lv2_option_manager_lv2_options_get(LV2_Handle instance,
@@ -702,7 +702,7 @@ ags_lv2_option_manager_lv2_options_get(LV2_Handle instance,
  * 
  * The LV2 options interface's set method.
  * 
- * Since: 0.7.128
+ * Since: 1.0.0
  */
 uint32_t
 ags_lv2_option_manager_lv2_options_set(LV2_Handle instance,
@@ -745,7 +745,7 @@ ags_lv2_option_manager_lv2_options_set(LV2_Handle instance,
  *
  * Returns: an instance of #AgsLv2OptionManager
  *
- * Since: 0.7.128
+ * Since: 1.0.0
  */
 AgsLv2OptionManager*
 ags_lv2_option_manager_get_instance()
@@ -772,7 +772,7 @@ ags_lv2_option_manager_get_instance()
  *
  * Returns: a new #AgsLv2OptionManager
  *
- * Since: 0.7.128
+ * Since: 1.0.0
  */
 AgsLv2OptionManager*
 ags_lv2_option_manager_new()

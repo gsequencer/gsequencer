@@ -608,7 +608,7 @@ ags_link_editor_reset(AgsApplicable *applicable)
  *
  * Returns: a new #AgsLinkEditor
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsLinkEditor*
 ags_link_editor_new()

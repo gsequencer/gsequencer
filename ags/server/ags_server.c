@@ -141,7 +141,7 @@ ags_server_class_init(AgsServerClass *server)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n("application context object"),
@@ -466,7 +466,7 @@ ags_server_lookup(AgsServerInfo *server_info)
  * 
  * Returns: a new #AgsServer
  * 
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsServer*
 ags_server_new(GObject *application_context)

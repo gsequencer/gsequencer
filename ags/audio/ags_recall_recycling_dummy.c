@@ -219,7 +219,7 @@ ags_recall_recycling_dummy_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsRecallRecyclingDummy.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsRecallRecyclingDummy*
 ags_recall_recycling_dummy_new(AgsRecycling *recycling, GType child_type)

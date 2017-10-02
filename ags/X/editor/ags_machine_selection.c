@@ -303,7 +303,7 @@ ags_machine_selection_run(AgsMachineSelection *machine_selection)
  *
  * Returns: a new #AgsMachineSelection
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsMachineSelection*
 ags_machine_selection_new(AgsWindow *window)

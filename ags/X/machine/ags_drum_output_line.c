@@ -444,7 +444,7 @@ ags_drum_output_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  *
  * Returns: a new #AgsDrumOutputLine
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsDrumOutputLine*
 ags_drum_output_line_new(AgsChannel *channel)

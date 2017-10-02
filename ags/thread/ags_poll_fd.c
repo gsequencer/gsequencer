@@ -106,7 +106,7 @@ ags_poll_fd_class_init(AgsPollFdClass *poll_fd)
    *
    * The ::dispatch signal is emited during poll
    *
-   * Since: 0.7.50
+   * Since: 1.0.0
    */
   poll_fd_signals[DISPATCH] =
     g_signal_new("dispatch",
@@ -195,7 +195,7 @@ ags_poll_fd_finalize(GObject *gobject)
  *
  * Dispatch IO.
  *
- * Since: 0.7.50
+ * Since: 1.0.0
  */
 void
 ags_poll_fd_dispatch(AgsPollFd *poll_fd)
@@ -234,7 +234,7 @@ ags_poll_fd_dispatch(AgsPollFd *poll_fd)
  *
  * Returns: a new #AgsPollFd
  *
- * Since: 0.7.50
+ * Since: 1.0.0
  */
 AgsPollFd*
 ags_poll_fd_new()

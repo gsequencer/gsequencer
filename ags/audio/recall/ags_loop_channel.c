@@ -140,7 +140,7 @@ ags_loop_channel_class_init(AgsLoopChannelClass *loop_channel)
    *
    * The assigned #AgsDelayAudio.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("delay-audio",
 				   "assigned delay audio",
@@ -339,7 +339,7 @@ ags_loop_channel_sequencer_duration_changed_callback(AgsDelayAudio *delay_audio,
  *
  * Returns: a new #AgsLoopChannel
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsLoopChannel*
 ags_loop_channel_new()

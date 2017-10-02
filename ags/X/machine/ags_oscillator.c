@@ -455,7 +455,7 @@ ags_file_write_oscillator(AgsFile *file, xmlNode *parent, AgsOscillator *oscilla
  * 
  * The control changed event notifies about changed controls.
  * 
- * Since: 0.9.7
+ * Since: 1.0.0
  */
 void
 ags_oscillator_control_changed(AgsOscillator *oscillator)
@@ -475,7 +475,7 @@ ags_oscillator_control_changed(AgsOscillator *oscillator)
  *
  * Returns: a new #AgsOscillator
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsOscillator*
 ags_oscillator_new()

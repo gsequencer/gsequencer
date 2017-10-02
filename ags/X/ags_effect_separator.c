@@ -110,7 +110,7 @@ ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator)
    *
    * The filename.
    * 
-   * Since: 0.7.122.19
+   * Since: 1.0.0.19
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("filename"),
@@ -126,7 +126,7 @@ ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator)
    *
    * The effect.
    * 
-   * Since: 0.7.122.19
+   * Since: 1.0.0.19
    */
   param_spec = g_param_spec_string("effect",
 				   i18n_pspec("effect"),
@@ -142,7 +142,7 @@ ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator)
    *
    * The text.
    * 
-   * Since: 0.7.122.19
+   * Since: 1.0.0.19
    */
   param_spec = g_param_spec_string("text",
 				   i18n_pspec("text"),
@@ -286,7 +286,7 @@ ags_effect_separator_get_property(GObject *gobject,
  *
  * Returns: a new #AgsEffectSeparator
  *
- * Since: 0.7.122.19
+ * Since: 1.0.0.19
  */
 AgsEffectSeparator*
 ags_effect_separator_new()

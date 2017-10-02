@@ -141,7 +141,7 @@ ags_stream_channel_class_init(AgsStreamChannelClass *stream_channel)
    * 
    * The auto-sense port.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("auto-sense",
 				   i18n_pspec("mute channel"),
@@ -356,7 +356,7 @@ ags_stream_channel_set_ports(AgsPlugin *plugin, GList *port)
  *
  * Returns: a new #AgsStreamChannel
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsStreamChannel*
 ags_stream_channel_new()

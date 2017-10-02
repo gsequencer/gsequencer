@@ -62,7 +62,7 @@ ags_seekable_class_init(AgsSeekableInterface *interface)
    * The ::seek signal notifies about changed position
    * of sequencer.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   g_signal_new("seek",
 	       G_TYPE_FROM_INTERFACE(interface),
@@ -89,7 +89,7 @@ ags_seekable_base_init(AgsSeekableInterface *interface)
  *
  * Seek relatively.
  *
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 void
 ags_seekable_seek(AgsSeekable *seekable, guint steps, gboolean forward)

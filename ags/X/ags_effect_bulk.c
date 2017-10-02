@@ -242,7 +242,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    *
    * The #AgsAudio to visualize.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("assigned audio"),
@@ -258,7 +258,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
    *
    * The target channel.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_gtype("channel-type",
 				  i18n_pspec("assigned channel type"),
@@ -803,7 +803,7 @@ ags_effect_bulk_show(GtkWidget *widget)
  * 
  * Returns: the newly allocated #AgsEffectBulkPlugin-struct
  * 
- * Since: 0.7.128
+ * Since: 1.0.0
  */
 AgsEffectBulkPlugin*
 ags_effect_bulk_plugin_alloc(gchar *filename,
@@ -827,7 +827,7 @@ ags_effect_bulk_plugin_alloc(gchar *filename,
  * 
  * Free @effect_bulk_plugin.
  * 
- * Since: 0.7.128
+ * Since: 1.0.0
  */
 void
 ags_effect_bulk_plugin_free(AgsEffectBulkPlugin *effect_bulk_plugin)
@@ -2892,7 +2892,7 @@ ags_effect_bulk_real_find_port(AgsEffectBulk *effect_bulk)
  *
  * Lookup ports of associated recalls.
  *
- * Since: 0.7.8
+ * Since: 1.0.0
  */
 GList*
 ags_effect_bulk_find_port(AgsEffectBulk *effect_bulk)
@@ -2920,7 +2920,7 @@ ags_effect_bulk_find_port(AgsEffectBulk *effect_bulk)
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  *
- * Since: 0.7.128
+ * Since: 1.0.0
  */
 gboolean
 ags_effect_bulk_indicator_queue_draw_timeout(GtkWidget *widget)
@@ -2944,7 +2944,7 @@ ags_effect_bulk_indicator_queue_draw_timeout(GtkWidget *widget)
  *
  * Returns: a new #AgsEffectBulk
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsEffectBulk*
 ags_effect_bulk_new(AgsAudio *audio,

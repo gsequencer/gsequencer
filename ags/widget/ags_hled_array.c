@@ -84,7 +84,7 @@ ags_hled_array_init(AgsHLedArray *hled_array)
  *
  * Returns: a new #AgsHLedArray
  *
- * Since: 0.7.122.7
+ * Since: 1.0.0.7
  */
 AgsHLedArray*
 ags_hled_array_new()

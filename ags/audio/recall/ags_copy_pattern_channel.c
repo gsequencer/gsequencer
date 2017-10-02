@@ -132,7 +132,7 @@ ags_copy_pattern_channel_class_init(AgsCopyPatternChannelClass *copy_pattern_cha
    *
    * The pattern port.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("pattern",
 				   i18n_pspec("pattern to play"),
@@ -321,7 +321,7 @@ ags_copy_pattern_channel_template_find_source_and_destination(GList *recall,
  *
  * Returns: a new #AgsCopyPatternChannel
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsCopyPatternChannel*
 ags_copy_pattern_channel_new(AgsChannel *destination,

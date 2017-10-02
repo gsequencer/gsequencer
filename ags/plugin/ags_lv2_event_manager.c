@@ -154,7 +154,7 @@ ags_lv2_event_manager_lv2_event_unref(LV2_Event_Callback_Data callback_data,
  *
  * Returns: an instance of #AgsLv2EventManager
  *
- * Since: 0.7.7
+ * Since: 1.0.0
  */
 AgsLv2EventManager*
 ags_lv2_event_manager_get_instance()
@@ -175,7 +175,7 @@ ags_lv2_event_manager_get_instance()
  *
  * Returns: a new #AgsLv2EventManager
  *
- * Since: 0.7.7
+ * Since: 1.0.0
  */
 AgsLv2EventManager*
 ags_lv2_event_manager_new()

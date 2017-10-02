@@ -1261,7 +1261,7 @@ ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  *
  * Returns: a new #AgsMatrix
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsMatrix*
 ags_matrix_new(GObject *soundcard)

@@ -699,7 +699,7 @@ ags_accessible_note_edit_get_localized_name(AtkAction *action,
  *
  * Set the map height in pixel.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_note_edit_set_map_height(AgsNoteEdit *note_edit, guint map_height)
@@ -722,7 +722,7 @@ ags_note_edit_set_map_height(AgsNoteEdit *note_edit, guint map_height)
  *
  * Reset @note_edit as configured vertically.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_note_edit_reset_vertically(AgsNoteEdit *note_edit, guint flags)
@@ -860,7 +860,7 @@ ags_note_edit_reset_vertically(AgsNoteEdit *note_edit, guint flags)
  *
  * Reset @note_edit as configured horizontally.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
@@ -1063,7 +1063,7 @@ ags_note_edit_reset_horizontally(AgsNoteEdit *note_edit, guint flags)
  *
  * Draws horizontal and vertical lines.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr)
@@ -1179,7 +1179,7 @@ ags_note_edit_draw_segment(AgsNoteEdit *note_edit, cairo_t *cr)
  *
  * Draws the cursor.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_note_edit_draw_position(AgsNoteEdit *note_edit, cairo_t *cr)
@@ -1266,7 +1266,7 @@ ags_note_edit_draw_position(AgsNoteEdit *note_edit, cairo_t *cr)
  *
  * Draw the #AgsNotation of selected #AgsMachine on @note_edit.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
@@ -1585,7 +1585,7 @@ ags_note_edit_draw_notation(AgsNoteEdit *note_edit, cairo_t *cr)
  *
  * Change visible x-position of @note_edit.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_note_edit_draw_scroll(AgsNoteEdit *note_edit, cairo_t *cr,
@@ -1625,7 +1625,7 @@ ags_note_edit_draw_scroll(AgsNoteEdit *note_edit, cairo_t *cr,
  *
  * Returns: a new #AgsNoteEdit
  * 
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsNoteEdit*
 ags_note_edit_new()

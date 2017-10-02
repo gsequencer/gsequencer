@@ -135,7 +135,7 @@ ags_timestamp_factory_real_create(AgsTimestampFactory *timestamp_factory,
  * @predecor: the preceeding #AgsTimestamp
  * 
  * 
- * Since: 0.9.0
+ * Since: 1.0.0
  */
 AgsTimestamp*
 ags_timestamp_factory_create(AgsTimestampFactory *timestamp_factory,
@@ -179,7 +179,7 @@ ags_timestamp_factory_get_instance()
  *
  * Returns: a new #AgsTimestampFactory
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsTimestampFactory*
 ags_timestamp_factory_new()

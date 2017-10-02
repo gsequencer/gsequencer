@@ -196,7 +196,7 @@ ags_remove_sequencer_editor_jack_launch(AgsTask *task)
  *
  * Returns: an new #AgsRemoveSequencerEditorJack.
  *
- * Since: 0.7.111
+ * Since: 1.0.0
  */
 AgsRemoveSequencerEditorJack*
 ags_remove_sequencer_editor_jack_new(AgsSequencerEditor *sequencer_editor,

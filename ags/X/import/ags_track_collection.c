@@ -135,7 +135,7 @@ ags_track_collection_class_init(AgsTrackCollectionClass *track_collection)
    *
    * The assigned midi document.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("midi-document",
 				    i18n_pspec("midi document of track collection"),
@@ -585,7 +585,7 @@ ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
  *
  * Returns: a new #AgsTrackCollection
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsTrackCollection*
 ags_track_collection_new(GType child_type,

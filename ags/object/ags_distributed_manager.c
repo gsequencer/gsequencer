@@ -60,7 +60,7 @@ ags_distributed_manager_class_init(AgsDistributedManagerInterface *interface)
  *
  * Sets the url of @distributed_manager.
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 void
 ags_distributed_manager_set_url(AgsDistributedManager *distributed_manager,
@@ -84,7 +84,7 @@ ags_distributed_manager_set_url(AgsDistributedManager *distributed_manager,
  *
  * Returns: the URL as string
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 gchar*
 ags_distributed_manager_get_url(AgsDistributedManager *distributed_manager)
@@ -106,7 +106,7 @@ ags_distributed_manager_get_url(AgsDistributedManager *distributed_manager)
  *
  * Sets the ports of @distributed_manager.
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 void
 ags_distributed_manager_set_ports(AgsDistributedManager *distributed_manager,
@@ -131,7 +131,7 @@ ags_distributed_manager_set_ports(AgsDistributedManager *distributed_manager,
  *
  * Returns: the port as string %NULL-terminated array
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 guint*
 ags_distributed_manager_get_ports(AgsDistributedManager *distributed_manager,
@@ -155,7 +155,7 @@ ags_distributed_manager_get_ports(AgsDistributedManager *distributed_manager,
  *
  * Sets the soundcard at @client_uuid.
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 void
 ags_distributed_manager_set_soundcard(AgsDistributedManager *distributed_manager,
@@ -182,7 +182,7 @@ ags_distributed_manager_set_soundcard(AgsDistributedManager *distributed_manager
  *
  * Returns: the soundcard as #GList-struct
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 GList*
 ags_distributed_manager_get_soundcard(AgsDistributedManager *distributed_manager,
@@ -206,7 +206,7 @@ ags_distributed_manager_get_soundcard(AgsDistributedManager *distributed_manager
  *
  * Sets the sequencer at @client_uuid.
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 void
 ags_distributed_manager_set_sequencer(AgsDistributedManager *distributed_manager,
@@ -233,7 +233,7 @@ ags_distributed_manager_set_sequencer(AgsDistributedManager *distributed_manager
  *
  * Returns: the sequencer as #GList-struct
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 GList*
 ags_distributed_manager_get_sequencer(AgsDistributedManager *distributed_manager,
@@ -258,7 +258,7 @@ ags_distributed_manager_get_sequencer(AgsDistributedManager *distributed_manager
  *
  * Returns: a new #AgsSoundcard
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 GObject*
 ags_distributed_manager_register_soundcard(AgsDistributedManager *distributed_manager,
@@ -281,7 +281,7 @@ ags_distributed_manager_register_soundcard(AgsDistributedManager *distributed_ma
  *
  * Releases @soundcard in @distributed_manager.
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 void
 ags_distributed_manager_unregister_soundcard(AgsDistributedManager *distributed_manager,
@@ -306,7 +306,7 @@ ags_distributed_manager_unregister_soundcard(AgsDistributedManager *distributed_
  *
  * Returns: a new #AgsSequencer
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 GObject*
 ags_distributed_manager_register_sequencer(AgsDistributedManager *distributed_manager,
@@ -329,7 +329,7 @@ ags_distributed_manager_register_sequencer(AgsDistributedManager *distributed_ma
  *
  * Releases @sequencer in @distributed_manager.
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 void
 ags_distributed_manager_unregister_sequencer(AgsDistributedManager *distributed_manager,

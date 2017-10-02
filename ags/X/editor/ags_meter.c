@@ -363,7 +363,7 @@ ags_meter_paint(AgsMeter *meter)
  *
  * Returns: a new #AgsMeter
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsMeter*
 ags_meter_new()

@@ -150,7 +150,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The samplerate to be used.
    * 
-   * Since: 0.7.45
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("using samplerate"),
@@ -168,7 +168,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The buffer size to be used.
    * 
-   * Since: 0.7.45
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("using buffer size"),
@@ -186,7 +186,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The format to be used.
    * 
-   * Since: 0.7.45
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("using format"),
@@ -204,7 +204,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The n-frames to be used.
    * 
-   * Since: 0.7.45
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("n-frames",
 				 i18n_pspec("apply n-frames"),
@@ -222,7 +222,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The attack to be used.
    * 
-   * Since: 0.7.45
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("attack",
 				 i18n_pspec("apply attack"),
@@ -240,7 +240,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The oscillator to be used.
    * 
-   * Since: 0.7.45
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("oscillator",
 				 i18n_pspec("using oscillator"),
@@ -258,7 +258,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The frequency to be used.
    * 
-   * Since: 0.7.45
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("frequency",
 				   i18n_pspec("using frequency"),
@@ -276,7 +276,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The phase to be used.
    * 
-   * Since: 0.7.45
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("phase",
 				   i18n_pspec("using phase"),
@@ -294,7 +294,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The volume to be used.
    * 
-   * Since: 0.7.45
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("volume",
 				   i18n_pspec("using volume"),
@@ -312,7 +312,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The assigned timestamp.
    * 
-   * Since: 0.7.45
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("timestamp",
 				   i18n_pspec("timestamp"),
@@ -651,7 +651,7 @@ ags_synth_generator_finalize(GObject *gobject)
  *
  * Returns: an #AgsAudioSignal applied specified synth to stream
  * 
- * Since: 0.9.7
+ * Since: 1.0.0
  */
 GObject*
 ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
@@ -685,7 +685,7 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
  * 
  * Compute synth for @note for @audio_signal.
  * 
- * Since: 0.9.7
+ * Since: 1.0.0
  */
 void
 ags_synth_generator_compute_with_audio_signal(AgsSynthGenerator *synth_generator,
@@ -881,7 +881,7 @@ ags_synth_generator_compute_with_audio_signal(AgsSynthGenerator *synth_generator
  *
  * Returns: a new #AgsSynthGenerator
  *
- * Since: 0.7.45
+ * Since: 1.0.0
  */
 AgsSynthGenerator*
 ags_synth_generator_new()

@@ -221,7 +221,7 @@ ags_buffer_recycling_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsBufferRecycling
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsBufferRecycling*
 ags_buffer_recycling_new(AgsRecycling *recycling)

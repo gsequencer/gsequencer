@@ -122,7 +122,7 @@ ags_remove_point_from_selection_class_init(AgsRemovePointFromSelectionClass *rem
    *
    * The assigned #AgsNotation
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("notation",
 				   i18n_pspec("notation of remove point from selection"),
@@ -138,7 +138,7 @@ ags_remove_point_from_selection_class_init(AgsRemovePointFromSelectionClass *rem
    *
    * Note offset x.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("x",
 				 i18n_pspec("offset x"),
@@ -156,7 +156,7 @@ ags_remove_point_from_selection_class_init(AgsRemovePointFromSelectionClass *rem
    *
    * Note offset y.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("y",
 				 i18n_pspec("offset y"),
@@ -342,7 +342,7 @@ ags_remove_point_from_selection_launch(AgsTask *task)
  *
  * Returns: an new #AgsRemovePointFromSelection.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsRemovePointFromSelection*
 ags_remove_point_from_selection_new(AgsNotation *notation,

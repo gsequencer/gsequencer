@@ -65,7 +65,7 @@ ags_async_queue_base_init(AgsAsyncQueueInterface *interface)
  * 
  * Increments wait ref.
  * 
- * Since: 0.7.13
+ * Since: 1.0.0
  */
 void
 ags_async_queue_increment_wait_ref(AgsAsyncQueue *async_queue)
@@ -86,7 +86,7 @@ ags_async_queue_increment_wait_ref(AgsAsyncQueue *async_queue)
  *
  * Returns: The number of threads waiting.
  *
- * Since: 0.7.13
+ * Since: 1.0.0
  */
 guint
 ags_async_queue_get_wait_ref(AgsAsyncQueue *async_queue)
@@ -107,7 +107,7 @@ ags_async_queue_get_wait_ref(AgsAsyncQueue *async_queue)
  *
  * Sets the mutex to access the condition variable.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_async_queue_set_run_mutex(AgsAsyncQueue *async_queue, pthread_mutex_t *run_mutex)
@@ -128,7 +128,7 @@ ags_async_queue_set_run_mutex(AgsAsyncQueue *async_queue, pthread_mutex_t *run_m
  *
  * Returns: a pthread_mutex_t
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 pthread_mutex_t*
 ags_async_queue_get_run_mutex(AgsAsyncQueue *async_queue)
@@ -149,7 +149,7 @@ ags_async_queue_get_run_mutex(AgsAsyncQueue *async_queue)
  *
  * Sets the condition to determine if @async_queue was run.
  * 
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_async_queue_set_run_cond(AgsAsyncQueue *async_queue, pthread_cond_t *run_cond)
@@ -170,7 +170,7 @@ ags_async_queue_set_run_cond(AgsAsyncQueue *async_queue, pthread_cond_t *run_con
  *
  * Returns: the pthread_cond_t
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 pthread_cond_t*
 ags_async_queue_get_run_cond(AgsAsyncQueue *async_queue)
@@ -191,7 +191,7 @@ ags_async_queue_get_run_cond(AgsAsyncQueue *async_queue)
  * 
  * Determine if you are allowed to pass the condition.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_async_queue_set_run(AgsAsyncQueue *async_queue, gboolean is_run)
@@ -212,7 +212,7 @@ ags_async_queue_set_run(AgsAsyncQueue *async_queue, gboolean is_run)
  *
  * Returns: if %TRUE it is safe to continue, else you should wait for the condition.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 gboolean
 ags_async_queue_is_run(AgsAsyncQueue *async_queue)

@@ -453,7 +453,7 @@ ags_buffer_audio_signal_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsBufferAudioSignal
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsBufferAudioSignal*
 ags_buffer_audio_signal_new(AgsAudioSignal *audio_signal)

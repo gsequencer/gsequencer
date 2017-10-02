@@ -240,7 +240,7 @@ ags_play_recycling_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsPlayRecycling
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsPlayRecycling*
 ags_play_recycling_new(AgsRecycling *source,

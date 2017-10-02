@@ -164,7 +164,7 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
    * 
    * The audio channel port.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("audio-channel",
 				   i18n_pspec("assigned audio channel"),
@@ -180,7 +180,7 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
    * 
    * The muted port.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("muted",
 				   i18n_pspec("mute channel"),
@@ -461,7 +461,7 @@ ags_play_channel_set_muted(AgsMutable *mutable, gboolean muted)
  *
  * Returns: a new #AgsPlayChannel
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsPlayChannel*
 ags_play_channel_new(GObject *soundcard,

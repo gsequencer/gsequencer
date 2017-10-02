@@ -132,7 +132,7 @@ ags_ladspa_plugin_class_init(AgsLadspaPluginClass *ladspa_plugin)
    *
    * The assigned unique-id.
    * 
-   * Since: 0.7.6
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("unique-id",
 				 i18n_pspec("unique-id of the plugin"),
@@ -452,7 +452,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
  *
  * Returns: a new #AgsLadspaPlugin
  *
- * Since: 0.7.6
+ * Since: 1.0.0
  */
 AgsLadspaPlugin*
 ags_ladspa_plugin_new(gchar *filename, gchar *effect, guint effect_index)

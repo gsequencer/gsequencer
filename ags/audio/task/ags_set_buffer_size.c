@@ -136,7 +136,7 @@ ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size)
    *
    * The assigned #GObject as scope.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("scope",
 				   i18n_pspec("scope of set buffer size"),
@@ -152,7 +152,7 @@ ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size)
    *
    * The buffer size to apply to scope.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("buffer size"),
@@ -477,7 +477,7 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
  *
  * Returns: an new #AgsSetBufferSize.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsSetBufferSize*
 ags_set_buffer_size_new(GObject *scope,

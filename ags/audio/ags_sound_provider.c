@@ -60,7 +60,7 @@ ags_sound_provider_class_init(AgsSoundProviderInterface *interface)
  * 
  * Set soundcards.
  *
- * Since: 0.7.4
+ * Since: 1.0.0
  */
 void
 ags_sound_provider_set_soundcard(AgsSoundProvider *sound_provider,
@@ -84,7 +84,7 @@ ags_sound_provider_set_soundcard(AgsSoundProvider *sound_provider,
  *
  * Returns: a #GList-struct containing #AgsSoundcard
  * 
- * Since: 0.7.4
+ * Since: 1.0.0
  */
 GList*
 ags_sound_provider_get_soundcard(AgsSoundProvider *sound_provider)
@@ -107,7 +107,7 @@ ags_sound_provider_get_soundcard(AgsSoundProvider *sound_provider)
  *
  * Returns: the #AgsThread
  * 
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 void
 ags_sound_provider_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
@@ -131,7 +131,7 @@ ags_sound_provider_set_default_soundcard_thread(AgsSoundProvider *sound_provider
  *
  * Returns: the #AgsThread
  * 
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 GObject*
 ags_sound_provider_get_default_soundcard_thread(AgsSoundProvider *sound_provider)
@@ -152,7 +152,7 @@ ags_sound_provider_get_default_soundcard_thread(AgsSoundProvider *sound_provider
  * 
  * Set sequencers.
  *
- * Since: 0.7.4
+ * Since: 1.0.0
  */
 void
 ags_sound_provider_set_sequencer(AgsSoundProvider *sound_provider,
@@ -176,7 +176,7 @@ ags_sound_provider_set_sequencer(AgsSoundProvider *sound_provider,
  *
  * Returns: a #GList-struct containing #AgsSequencer
  * 
- * Since: 0.7.4
+ * Since: 1.0.0
  */
 GList*
 ags_sound_provider_get_sequencer(AgsSoundProvider *sound_provider)
@@ -197,7 +197,7 @@ ags_sound_provider_get_sequencer(AgsSoundProvider *sound_provider)
  *
  * Set distributed manager.
  * 
- * Since: 0.7.4
+ * Since: 1.0.0
  */
 void
 ags_sound_provider_set_distributed_manager(AgsSoundProvider *sound_provider,
@@ -221,7 +221,7 @@ ags_sound_provider_set_distributed_manager(AgsSoundProvider *sound_provider,
  * 
  * Returns: a #GList-struct containing #AgsDistributedManager
  *
- * Since: 0.7.4
+ * Since: 1.0.0
  */
 GList*
 ags_sound_provider_get_distributed_manager(AgsSoundProvider *sound_provider)

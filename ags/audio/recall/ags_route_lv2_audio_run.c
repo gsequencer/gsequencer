@@ -1188,7 +1188,7 @@ ags_route_lv2_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
  *
  * Returns: a new #AgsRouteLv2AudioRun
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 AgsRouteLv2AudioRun*
 ags_route_lv2_audio_run_new()

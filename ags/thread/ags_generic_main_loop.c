@@ -253,7 +253,7 @@ ags_generic_main_loop_start(AgsThread *thread)
  *
  * Returns: the new #AgsGenericMainLoop
  *
- * Since: 0.7.11
+ * Since: 1.0.0
  */
 AgsGenericMainLoop*
 ags_generic_main_loop_new(GObject *application_context)

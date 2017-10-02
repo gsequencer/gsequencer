@@ -186,7 +186,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The assigned #AgsAudio to visualize.
    * 
-   * Since: 0.3
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("assigned audio"),
@@ -202,7 +202,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The machine's name.
    * 
-   * Since: 0.8.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("machine-name",
 				   i18n_pspec("machine name"),
@@ -1218,7 +1218,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
  *
  * Resize audio channel allocation.
  *
- * Since: 0.7.8
+ * Since: 1.0.0
  */
 void
 ags_machine_resize_audio_channels(AgsMachine *machine,
@@ -1412,7 +1412,7 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
  *
  * Resize pad allocation.
  *
- * Since: 0.7.8
+ * Since: 1.0.0
  */
 void
 ags_machine_resize_pads(AgsMachine *machine,
@@ -1533,7 +1533,7 @@ ags_machine_real_find_port(AgsMachine *machine)
  *
  * Lookup ports of associated recalls.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GList*
 ags_machine_find_port(AgsMachine *machine)
@@ -1562,7 +1562,7 @@ ags_machine_find_port(AgsMachine *machine)
  *
  * Returns: the matching #AgsMachine, or %NULL
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsMachine*
 ags_machine_find_by_name(GList *list, char *name)
@@ -1584,7 +1584,7 @@ ags_machine_find_by_name(GList *list, char *name)
  *
  * Start/stop playback of @machine.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_machine_set_run(AgsMachine *machine,
@@ -1604,7 +1604,7 @@ ags_machine_set_run(AgsMachine *machine,
  *
  * Start/stop playback of @machine.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_machine_set_run_extended(AgsMachine *machine,
@@ -1768,7 +1768,7 @@ ags_machine_set_run_extended(AgsMachine *machine,
  * Returns: a #GtkListStore containing one column with a string representing
  * machines by its type and name.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GtkListStore*
 ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
@@ -1829,7 +1829,7 @@ ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
  * Returns: a #GtkListStore containing one column with a string representing
  * machines by its type and name.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GtkListStore*
 ags_machine_get_possible_links(AgsMachine *machine)
@@ -1877,7 +1877,7 @@ ags_machine_get_possible_links(AgsMachine *machine)
  *
  * Returns: a new #GtkFileChooserDialog
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GtkFileChooserDialog*
 ags_machine_file_chooser_dialog_new(AgsMachine *machine)
@@ -1915,7 +1915,7 @@ ags_machine_file_chooser_dialog_new(AgsMachine *machine)
  *
  * Opens audio files and modifies or creates new channels if wished.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_machine_open_files(AgsMachine *machine,
@@ -2125,7 +2125,7 @@ ags_machine_copy_pattern(AgsMachine *machine)
  *
  * Returns: a new #AgsMachine
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsMachine*
 ags_machine_new(GObject *soundcard)
@@ -2153,7 +2153,7 @@ ags_machine_new(GObject *soundcard)
  *
  * Returns: a new #GtkMenu containing basic actions.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 GtkMenu*
 ags_machine_popup_new(AgsMachine *machine)
@@ -2235,7 +2235,7 @@ ags_machine_popup_new(AgsMachine *machine)
  *
  * Add options to edit submenu
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
@@ -2293,7 +2293,7 @@ ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
  *
  * Add options to connection submenu
  *
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 void
 ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_options)

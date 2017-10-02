@@ -147,7 +147,7 @@ ags_recall_audio_class_init(AgsRecallAudioClass *recall_audio)
    *
    * The assigned audio.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("assigned audio"),
@@ -570,7 +570,7 @@ ags_recall_audio_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsRecallAudio.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsRecallAudio*
 ags_recall_audio_new(AgsAudio *audio)

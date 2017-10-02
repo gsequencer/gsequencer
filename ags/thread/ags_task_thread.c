@@ -148,7 +148,7 @@ ags_task_thread_class_init(AgsTaskThreadClass *task_thread)
    * The ::clear-cache signal is invoked to clear the cache libraries
    * might have been allocated.
    *
-   * Since: 0.7.122
+   * Since: 1.0.0
    */
   task_thread_signals[CLEAR_CACHE] =
     g_signal_new("clear-cache",
@@ -670,7 +670,7 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
  *
  * Adds the task to @task_thread.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
@@ -750,7 +750,7 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpoin
  * Concats the list with @task_thread's internal task list. Don't
  * free the list you pass. It will be freed for you.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
@@ -796,7 +796,7 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
  *
  * Add cyclic task.
  * 
- * Since: 0.7.86
+ * Since: 1.0.0
  */
 void
 ags_task_thread_append_cyclic_task(AgsTaskThread *task_thread,
@@ -818,7 +818,7 @@ ags_task_thread_append_cyclic_task(AgsTaskThread *task_thread,
  *
  * Remove cyclic task.
  * 
- * Since: 0.7.86
+ * Since: 1.0.0
  */
 void
 ags_task_thread_remove_cyclic_task(AgsTaskThread *task_thread,
@@ -839,7 +839,7 @@ ags_task_thread_remove_cyclic_task(AgsTaskThread *task_thread,
  *
  * Clear cache signal.
  *
- * Since: 0.7.28
+ * Since: 1.0.0
  */
 void
 ags_task_thread_clear_cache(AgsTaskThread *task_thread)
@@ -859,7 +859,7 @@ ags_task_thread_clear_cache(AgsTaskThread *task_thread)
  *
  * Returns: the new #AgsTaskThread
  *
- * Since: 0.4
+ * Since: 1.0.0
  */ 
 AgsTaskThread*
 ags_task_thread_new()

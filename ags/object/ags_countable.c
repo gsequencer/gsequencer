@@ -69,7 +69,7 @@ ags_countable_base_init(AgsCountableInterface *interface)
  *
  * Returns: the current position
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 guint
 ags_countable_get_notation_counter(AgsCountable *countable)
@@ -90,7 +90,7 @@ ags_countable_get_notation_counter(AgsCountable *countable)
  *
  * Returns: the current position
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 guint
 ags_countable_get_sequencer_counter(AgsCountable *countable)

@@ -229,7 +229,7 @@ ags_property_collection_editor_reset(AgsApplicable *applicable)
  *
  * Returns: a new #AgsPropertyCollectionEditor
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsPropertyCollectionEditor*
 ags_property_collection_editor_new(GType child_type,

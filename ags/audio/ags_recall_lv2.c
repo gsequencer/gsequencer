@@ -161,7 +161,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The assigned turtle.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("turtle",
 				   i18n_pspec("turtle of recall lv2"),
@@ -177,7 +177,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The plugins filename.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_string("filename",
 				    i18n_pspec("the object file"),
@@ -193,7 +193,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The effect's name.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_string("effect",
 				    i18n_pspec("the effect"),
@@ -209,7 +209,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The uri's name.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_string("uri",
 				    i18n_pspec("the uri"),
@@ -225,7 +225,7 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
    *
    * The uri's index.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_ulong("index",
 				   i18n_pspec("index of uri"),
@@ -691,7 +691,7 @@ ags_recall_lv2_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  *
  * Set up LV2 handle.
  * 
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
@@ -736,7 +736,7 @@ ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
  *
  * Returns: a #GList containing #AgsPort.
  * 
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 GList*
 ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
@@ -877,7 +877,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
  * 
  * Loads conversion object by using @port_descriptor and sets in on @port.
  * 
- * Since: 0.7.9
+ * Since: 1.0.0
  */
 void
 ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_lv2,
@@ -914,7 +914,7 @@ ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_lv2,
  *
  * Returns: Next match.
  * 
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 GList*
 ags_recall_lv2_find(GList *recall,
@@ -949,7 +949,7 @@ ags_recall_lv2_find(GList *recall,
  *
  * Returns: a new #AgsRecallLv2
  * 
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsRecallLv2*
 ags_recall_lv2_new(AgsChannel *source,

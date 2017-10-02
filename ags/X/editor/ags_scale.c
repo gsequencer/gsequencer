@@ -170,7 +170,7 @@ ags_scale_paint(AgsScale *scale)
  *
  * Adds @scale_area to @scale.
  * 
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 void
 ags_scale_add_area(AgsScale *scale,
@@ -201,7 +201,7 @@ ags_scale_add_area(AgsScale *scale,
  *
  * Removes @scale_area of @scale.
  * 
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 void
 ags_scale_remove_area(AgsScale *scale,
@@ -234,7 +234,7 @@ ags_scale_remove_area(AgsScale *scale,
  *
  * Returns: a new #AgsScale
  *
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 AgsScale*
 ags_scale_new()

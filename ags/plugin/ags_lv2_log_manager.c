@@ -166,7 +166,7 @@ ags_lv2_log_manager_printf(LV2_Log_Handle handle,
  *
  * Returns: 0
  *
- * Since: 0.7.7
+ * Since: 1.0.0
  */
 int
 ags_lv2_log_manager_vprintf(LV2_Log_Handle handle,
@@ -189,7 +189,7 @@ ags_lv2_log_manager_vprintf(LV2_Log_Handle handle,
  *
  * Returns: an instance of #AgsLv2LogManager
  *
- * Since: 0.7.7
+ * Since: 1.0.0
  */
 AgsLv2LogManager*
 ags_lv2_log_manager_get_instance()
@@ -210,7 +210,7 @@ ags_lv2_log_manager_get_instance()
  *
  * Returns: a new #AgsLv2LogManager
  *
- * Since: 0.7.7
+ * Since: 1.0.0
  */
 AgsLv2LogManager*
 ags_lv2_log_manager_new()

@@ -418,7 +418,7 @@ ags_expander_set_remove_child(AgsExpanderSet *expander_set,
  *
  * Adds a #GtkWidget to #AgsExpanderSet
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_expander_set_add(AgsExpanderSet *expander_set,
@@ -450,7 +450,7 @@ ags_expander_set_add(AgsExpanderSet *expander_set,
  *
  * Removes a #GtkWidget of #AgsExpanderSet
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_expander_set_remove(AgsExpanderSet *expander_set,
@@ -471,7 +471,7 @@ ags_expander_set_remove(AgsExpanderSet *expander_set,
  *
  * Returns: a new #AgsExpanderSet
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsExpanderSet*
 ags_expander_set_new(guint width, guint height)

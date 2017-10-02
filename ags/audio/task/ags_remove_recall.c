@@ -129,7 +129,7 @@ ags_remove_recall_class_init(AgsRemoveRecallClass *remove_recall)
    *
    * The assigned #AgsContext
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("context",
 				   i18n_pspec("context of remove recall"),
@@ -145,7 +145,7 @@ ags_remove_recall_class_init(AgsRemoveRecallClass *remove_recall)
    *
    * The assigned #AgsRecall
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("recall",
 				   i18n_pspec("recall of remove recall"),
@@ -161,7 +161,7 @@ ags_remove_recall_class_init(AgsRemoveRecallClass *remove_recall)
    *
    * The recall's context is-play.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_boolean("is-play",
 				     i18n_pspec("is play context"),
@@ -177,7 +177,7 @@ ags_remove_recall_class_init(AgsRemoveRecallClass *remove_recall)
    *
    * Do remove-all related recalls.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_boolean("remove-all",
 				     i18n_pspec("remove all"),
@@ -447,7 +447,7 @@ ags_remove_recall_launch(AgsTask *task)
  *
  * Returns: an new #AgsRemoveRecall.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsRemoveRecall*
 ags_remove_recall_new(GObject *context,

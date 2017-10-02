@@ -188,7 +188,7 @@ ags_lv2_worker_manager_pull_worker(AgsLv2WorkerManager *worker_manager)
  *
  * Returns: an instance of #AgsLv2WorkerManager
  *
- * Since: 0.7.7
+ * Since: 1.0.0
  */
 AgsLv2WorkerManager*
 ags_lv2_worker_manager_get_instance()
@@ -215,7 +215,7 @@ ags_lv2_worker_manager_get_instance()
  *
  * Returns: a new #AgsLv2WorkerManager
  *
- * Since: 0.7.7
+ * Since: 1.0.0
  */
 AgsLv2WorkerManager*
 ags_lv2_worker_manager_new()

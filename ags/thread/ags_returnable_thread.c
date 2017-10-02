@@ -173,7 +173,7 @@ ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
    * The ::safe-run is invoked durin AgsThread::run as
    * a context safe wrapper.
    *
-   * Since: 0.7.122
+   * Since: 1.0.0
    */
   returnable_thread_signals[SAFE_RUN] =
     g_signal_new("safe-run",
@@ -413,7 +413,7 @@ ags_returnable_thread_resume(AgsThread *thread)
  *
  * Connects @callback to @thread.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_returnable_thread_connect_safe_run(AgsReturnableThread *returnable_thread, AgsReturnableThreadCallback callback)
@@ -432,7 +432,7 @@ ags_returnable_thread_connect_safe_run(AgsReturnableThread *returnable_thread, A
  *
  * Disconnects callback of @thread.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_returnable_thread_disconnect_safe_run(AgsReturnableThread *returnable_thread)
@@ -455,7 +455,7 @@ ags_returnable_thread_disconnect_safe_run(AgsReturnableThread *returnable_thread
  *
  * Returns: the new #AgsReturnableThread
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsReturnableThread*
 ags_returnable_thread_new(GObject *thread_pool)

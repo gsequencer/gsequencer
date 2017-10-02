@@ -1609,7 +1609,7 @@ ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer)
  *
  * Returns: a new #AgsFFPlayer
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsFFPlayer*
 ags_ffplayer_new(GObject *soundcard)

@@ -138,7 +138,7 @@ ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor)
    *
    * The #AgsMachine to edit.
    * 
-   * Since: 0.3
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("machine",
 				   i18n_pspec("assigned machine"),
@@ -414,7 +414,7 @@ ags_machine_editor_reset(AgsApplicable *applicable)
  *
  * Add all child editors.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_machine_editor_add_children(AgsMachineEditor *machine_editor)
@@ -494,7 +494,7 @@ ags_machine_editor_real_set_machine(AgsMachineEditor *machine_editor, AgsMachine
  *
  * Is emitted as machine gets modified.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_machine_editor_set_machine(AgsMachineEditor *machine_editor, AgsMachine *machine)
@@ -516,7 +516,7 @@ ags_machine_editor_set_machine(AgsMachineEditor *machine_editor, AgsMachine *mac
  *
  * Returns: a new #AgsMachineEditor
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsMachineEditor*
 ags_machine_editor_new(AgsMachine *machine)

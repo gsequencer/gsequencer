@@ -125,7 +125,7 @@ ags_log_finalize(GObject *gobject)
  *
  * Returns: the #AgsLog instance
  *
- * Since: 0.7.104
+ * Since: 1.0.0
  */
 AgsLog*
 ags_log_get_instance()
@@ -150,7 +150,7 @@ ags_log_get_instance()
  * 
  * Add a message to @log.
  *
- * Since: 0.7.104
+ * Since: 1.0.0
  */
 void
 ags_log_add_message(AgsLog *log,
@@ -173,7 +173,7 @@ ags_log_add_message(AgsLog *log,
  *
  * Returns: the #GList-struct containing log messages
  *
- * Since: 0.7.104
+ * Since: 1.0.0
  */
 GList*
 ags_log_get_messages(AgsLog *log)
@@ -188,7 +188,7 @@ ags_log_get_messages(AgsLog *log)
  *
  * Returns: the new instance
  *
- * Since: 0.7.104
+ * Since: 1.0.0
  */
 AgsLog*
 ags_log_new()

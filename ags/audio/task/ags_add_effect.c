@@ -122,7 +122,7 @@ ags_add_effect_class_init(AgsAddEffectClass *add_effect)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("channel of add effect"),
@@ -138,7 +138,7 @@ ags_add_effect_class_init(AgsAddEffectClass *add_effect)
    *
    * The assigned filename.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("the filename"),
@@ -154,7 +154,7 @@ ags_add_effect_class_init(AgsAddEffectClass *add_effect)
    *
    * The assigned effect.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("effect",
 				   i18n_pspec("the effect"),
@@ -377,7 +377,7 @@ ags_add_effect_launch(AgsTask *task)
  *
  * Returns: an new #AgsAddEffect.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsAddEffect*
 ags_add_effect_new(AgsChannel *channel,

@@ -125,7 +125,7 @@ ags_machine_radio_button_class_init(AgsMachineRadioButtonClass *machine_radio_bu
    *
    * The assigned #AgsMachine
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("machine",
 				   i18n_pspec("assigned machine"),
@@ -251,7 +251,7 @@ ags_machine_radio_button_finalize(GObject *gobject)
  *
  * Returns: a new #AgsMachineRadioButton
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsMachineRadioButton*
 ags_machine_radio_button_new()

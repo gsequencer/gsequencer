@@ -158,7 +158,7 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    *
    * The pattern's port.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("port",
 				   "port of pattern",
@@ -174,7 +174,7 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    *
    * Selected bank 0.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("first-index",
 				 "the first index",
@@ -191,7 +191,7 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    *
    * Selected bank 1.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("second-index",
 				 "the second index",
@@ -208,7 +208,7 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    *
    * Position of pattern.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("offset",
 				 "the offset",
@@ -225,7 +225,7 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    *
    * Offset of current position.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_boolean("current-bit",
 				    "current bit for offset",
@@ -241,7 +241,7 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    *
    * The pattern's timestamp.
    * 
-   * Since: 0.7.12
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("timestamp",
 				   "timestamp of pattern",
@@ -683,7 +683,7 @@ ags_pattern_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue 
  *
  * Returns: Next match.
  *
- * Since: 0.7.12
+ * Since: 1.0.0
  */
 GList*
 ags_pattern_find_near_timestamp(GList *pattern, GObject *timestamp)
@@ -721,7 +721,7 @@ ags_pattern_find_near_timestamp(GList *pattern, GObject *timestamp)
  *
  * Reallocates the pattern's dimensions.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void 
 ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
@@ -910,7 +910,7 @@ ags_pattern_is_empty(AgsPattern *pattern, guint i, guint j)
  *
  * Returns: %TRUE if tone is enabled.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 gboolean
 ags_pattern_get_bit(AgsPattern *pattern, guint i, guint j, guint bit)
@@ -936,7 +936,7 @@ ags_pattern_get_bit(AgsPattern *pattern, guint i, guint j, guint bit)
  *
  * Toggle tone.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_pattern_toggle_bit(AgsPattern *pattern, guint i, guint j, guint bit)
@@ -960,7 +960,7 @@ ags_pattern_toggle_bit(AgsPattern *pattern, guint i, guint j, guint bit)
  *
  * Returns: a new #AgsPattern
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsPattern*
 ags_pattern_new()

@@ -152,7 +152,7 @@ ags_config_class_init(AgsConfigClass *config)
    *
    * The assigned application context.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("application context of config"),
@@ -175,7 +175,7 @@ ags_config_class_init(AgsConfigClass *config)
    *
    * The ::load-defaults signal notifies about loading defaults
    *
-   * Since: 0.4.2
+   * Since: 1.0.0
    */
   config_signals[LOAD_DEFAULTS] =
     g_signal_new("load-defaults",
@@ -195,7 +195,7 @@ ags_config_class_init(AgsConfigClass *config)
    *
    * The ::set-value signal notifies about value been setting.
    *
-   * Since: 0.4.2
+   * Since: 1.0.0
    */
   config_signals[SET_VALUE] =
     g_signal_new("set-value",
@@ -217,7 +217,7 @@ ags_config_class_init(AgsConfigClass *config)
    *
    * Returns: the value
    *
-   * Since: 0.4.2
+   * Since: 1.0.0
    */
   config_signals[GET_VALUE] =
     g_signal_new("get-value",
@@ -452,7 +452,7 @@ ags_config_real_load_defaults(AgsConfig *config)
  *
  * Load configuration from default values.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_config_load_defaults(AgsConfig *config)
@@ -472,7 +472,7 @@ ags_config_load_defaults(AgsConfig *config)
  *
  * Load configuration from @filename.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_config_load_from_file(AgsConfig *config, gchar *filename)
@@ -556,7 +556,7 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
  *
  * Read configuration in memory.
  *
- * Since: 0.5.4
+ * Since: 1.0.0
  */
 void
 ags_config_load_from_data(AgsConfig *config,
@@ -634,7 +634,7 @@ ags_config_load_from_data(AgsConfig *config,
  *
  * Save configuration.
  *
- * Since: 0.5.4
+ * Since: 1.0.0
  */
 void
 ags_config_to_data(AgsConfig *config,
@@ -669,7 +669,7 @@ ags_config_to_data(AgsConfig *config,
  *
  * Save configuration.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_config_save(AgsConfig *config)
@@ -752,7 +752,7 @@ ags_config_real_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *va
  *
  * Set config by @group and @key, applying @value.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_config_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *value)
@@ -795,7 +795,7 @@ ags_config_real_get_value(AgsConfig *config, gchar *group, gchar *key)
  *
  * Returns: the property's value
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 gchar*
 ags_config_get_value(AgsConfig *config, gchar *group, gchar *key)
@@ -820,7 +820,7 @@ ags_config_get_value(AgsConfig *config, gchar *group, gchar *key)
  *
  * Clears configuration.
  *
- * Since: 0.7.72
+ * Since: 1.0.0
  */
 void
 ags_config_clear(AgsConfig *config)
@@ -847,7 +847,7 @@ ags_config_clear(AgsConfig *config)
  *
  * Returns: the config instance
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsConfig*
 ags_config_get_instance()
@@ -867,7 +867,7 @@ ags_config_get_instance()
  *
  * Returns: a new #AgsConfig.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 AgsConfig*
 ags_config_new(GObject *application_context)

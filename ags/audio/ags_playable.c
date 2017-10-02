@@ -84,7 +84,7 @@ ags_playable_base_init(AgsPlayableInterface *interface)
  *
  * Returns: %TRUE on success
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 gboolean
 ags_playable_open(AgsPlayable *playable, gchar *name)
@@ -114,7 +114,7 @@ ags_playable_open(AgsPlayable *playable, gchar *name)
  *
  * Returns: %TRUE on success.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 gboolean
 ags_playable_rw_open(AgsPlayable *playable, gchar *name,
@@ -146,7 +146,7 @@ ags_playable_rw_open(AgsPlayable *playable, gchar *name,
  *
  * Returns: level count
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 guint
 ags_playable_level_count(AgsPlayable *playable)
@@ -170,7 +170,7 @@ ags_playable_level_count(AgsPlayable *playable)
  *
  * Returns: nth level
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 guint
 ags_playable_nth_level(AgsPlayable *playable)
@@ -194,7 +194,7 @@ ags_playable_nth_level(AgsPlayable *playable)
  *
  * Returns: nth level name
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 gchar*
 ags_playable_selected_level(AgsPlayable *playable)
@@ -219,7 +219,7 @@ ags_playable_selected_level(AgsPlayable *playable)
  *
  * Returns: sub-level names
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 gchar**
 ags_playable_sublevel_names(AgsPlayable *playable)
@@ -245,7 +245,7 @@ ags_playable_sublevel_names(AgsPlayable *playable)
  * Select a level in an monolythic file where @nth_level and @sublevel_name are equivalent.
  * If @sublevel_name is NULL @nth_level will be chosen.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_playable_level_select(AgsPlayable *playable,
@@ -268,7 +268,7 @@ ags_playable_level_select(AgsPlayable *playable,
  *
  * Move up in hierarchy.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_playable_level_up(AgsPlayable *playable,
@@ -289,7 +289,7 @@ ags_playable_level_up(AgsPlayable *playable,
  *
  * Start iterating current level.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_playable_iter_start(AgsPlayable *playable)
@@ -310,7 +310,7 @@ ags_playable_iter_start(AgsPlayable *playable)
  *
  * Returns: %TRUE if has more, otherwise %FALSE
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 gboolean
 ags_playable_iter_next(AgsPlayable *playable)
@@ -337,7 +337,7 @@ ags_playable_iter_next(AgsPlayable *playable)
  *
  * Retrieve information about selected audio data.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_playable_info(AgsPlayable *playable,
@@ -361,7 +361,7 @@ ags_playable_info(AgsPlayable *playable,
  *
  * Returns: the samplerate
  * 
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 guint
 ags_playable_get_samplerate(AgsPlayable *playable)
@@ -384,7 +384,7 @@ ags_playable_get_samplerate(AgsPlayable *playable)
  *
  * Returns: the format
  * 
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 guint
 ags_playable_get_format(AgsPlayable *playable)
@@ -409,7 +409,7 @@ ags_playable_get_format(AgsPlayable *playable)
  * 
  * Returns: audio buffer
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 double*
 ags_playable_read(AgsPlayable *playable,
@@ -434,7 +434,7 @@ ags_playable_read(AgsPlayable *playable,
  *
  * Write @buffer_length of @buffer audio data.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_playable_write(AgsPlayable *playable,
@@ -454,7 +454,7 @@ ags_playable_write(AgsPlayable *playable,
  *
  * Flush internal audio buffer.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_playable_flush(AgsPlayable *playable)
@@ -475,7 +475,7 @@ ags_playable_flush(AgsPlayable *playable)
  *
  * Seek @playable to address.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_playable_seek(AgsPlayable *playable,
@@ -495,7 +495,7 @@ ags_playable_seek(AgsPlayable *playable,
  *
  * Close audio file.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_playable_close(AgsPlayable *playable)
@@ -519,7 +519,7 @@ ags_playable_close(AgsPlayable *playable)
  *
  * Returns: a #GList of #AgsAudioSignal
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 GList*
 ags_playable_read_audio_signal(AgsPlayable *playable,

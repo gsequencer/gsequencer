@@ -156,7 +156,7 @@ ags_simple_file_write_launch(AgsTask *task)
  *
  * Returns: the #AgsSimpleFileWrite task
  * 
- * Since: 0.7.42
+ * Since: 1.0.0
  */
 AgsSimpleFileWrite*
 ags_simple_file_write_new(AgsSimpleFile *simple_file)

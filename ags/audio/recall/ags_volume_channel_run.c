@@ -241,7 +241,7 @@ ags_volume_channel_run_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsVolumeChannelRun
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsVolumeChannelRun*
 ags_volume_channel_run_new(AgsChannel *channel)

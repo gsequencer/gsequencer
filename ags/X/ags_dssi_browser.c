@@ -315,7 +315,7 @@ ags_dssi_browser_reset(AgsApplicable *applicable)
  *
  * Returns: the active dssi filename
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 gchar*
 ags_dssi_browser_get_plugin_filename(AgsDssiBrowser *dssi_browser)
@@ -339,7 +339,7 @@ ags_dssi_browser_get_plugin_filename(AgsDssiBrowser *dssi_browser)
  *
  * Returns: the active dssi effect
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 gchar*
 ags_dssi_browser_get_plugin_effect(AgsDssiBrowser *dssi_browser)
@@ -362,7 +362,7 @@ ags_dssi_browser_get_plugin_effect(AgsDssiBrowser *dssi_browser)
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 GtkWidget*
 ags_dssi_browser_combo_box_controls_new()
@@ -405,7 +405,7 @@ ags_dssi_browser_preview_new()
  *
  * Returns: a new #AgsDssiBrowser
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 AgsDssiBrowser*
 ags_dssi_browser_new()

@@ -786,7 +786,7 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
  *
  * Returns: %TRUE if continue timeout, otherwise %FALSE
  *
- * Since: 0.7.53
+ * Since: 1.0.0
  */
 gboolean
 ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)

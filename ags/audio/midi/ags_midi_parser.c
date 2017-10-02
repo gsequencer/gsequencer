@@ -164,7 +164,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * The file to parse data from.
    * 
-   * Since: 0.4.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("file",
 				    i18n_pspec("the file stream"),
@@ -214,7 +214,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The character read
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[MIDI_GETC] =
     g_signal_new("midi-getc",
@@ -231,7 +231,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * The ::on-error signal is emited as error occurs.
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[ON_ERROR] =
     g_signal_new("on-error",
@@ -252,7 +252,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[PARSE_FULL] =
     g_signal_new("parse-full",
@@ -273,7 +273,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   midi_parser_signals[PARSE_BYTES] =
     g_signal_new("parse-bytes",
@@ -294,7 +294,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the header
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[PARSE_HEADER] =
     g_signal_new("parse-header",
@@ -313,7 +313,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the track
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[PARSE_TRACK] =
     g_signal_new("parse-track",
@@ -332,7 +332,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[KEY_ON] =
     g_signal_new("key-on",
@@ -352,7 +352,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[KEY_OFF] =
     g_signal_new("key-off",
@@ -372,7 +372,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[KEY_PRESSURE] =
     g_signal_new("key-pressure",
@@ -392,7 +392,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[CHANGE_PARAMETER] =
     g_signal_new("change-parameter",
@@ -412,7 +412,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[CHANGE_PITCH_BEND] =
     g_signal_new("change-pitch-bend",
@@ -432,7 +432,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[CHANGE_PROGRAM] =
     g_signal_new("change-program",
@@ -452,7 +452,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[CHANGE_CHANNEL_PRESSURE] =
     g_signal_new("change-channel-pressure",
@@ -472,7 +472,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[NOT_DEFINED] =
     g_signal_new("not-defined",
@@ -492,7 +492,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[SYSEX] =
     g_signal_new("sysex",
@@ -512,7 +512,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[SYSTEM_COMMON] =
     g_signal_new("system-common",
@@ -532,7 +532,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[META_EVENT] =
     g_signal_new("meta-event",
@@ -552,7 +552,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[SEQUENCE_NUMBER] =
     g_signal_new("sequence-number",
@@ -572,7 +572,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[END_OF_TRACK] =
     g_signal_new("end-of-track",
@@ -592,7 +592,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[SMTPE] =
     g_signal_new("smtpe",
@@ -612,7 +612,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[TEMPO] =
     g_signal_new("tempo",
@@ -632,7 +632,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[TIME_SIGNATURE] =
     g_signal_new("time-signature",
@@ -652,7 +652,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[KEY_SIGNATURE] =
     g_signal_new("key-signature",
@@ -672,7 +672,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[SEQUENCER_META_EVENT] =
     g_signal_new("sequencer-meta-event",
@@ -692,7 +692,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
    *
    * Returns: The XML node representing the event
    *
-   * Since: 0.5.0
+   * Since: 1.0.0
    */
   midi_parser_signals[TEXT_EVENT] =
     g_signal_new("text-event",
@@ -790,7 +790,7 @@ ags_midi_parser_finalize(GObject *gobject)
  * 
  * Returns: the read gint16
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 gint16
 ags_midi_parser_read_gint16(AgsMidiParser *midi_parser)
@@ -815,7 +815,7 @@ ags_midi_parser_read_gint16(AgsMidiParser *midi_parser)
  * 
  * Returns: the read gint32
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 gint32
 ags_midi_parser_read_gint24(AgsMidiParser *midi_parser)
@@ -843,7 +843,7 @@ ags_midi_parser_read_gint24(AgsMidiParser *midi_parser)
  * 
  * Returns: the read gint32
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 gint32
 ags_midi_parser_read_gint32(AgsMidiParser *midi_parser)
@@ -872,7 +872,7 @@ ags_midi_parser_read_gint32(AgsMidiParser *midi_parser)
  * 
  * Returns: the read varlength
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 long
 ags_midi_parser_read_varlength(AgsMidiParser *midi_parser)
@@ -907,7 +907,7 @@ ags_midi_parser_read_varlength(AgsMidiParser *midi_parser)
  * 
  * Returns: the text read as string
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 gchar*
 ags_midi_parser_read_text(AgsMidiParser *midi_parser,
@@ -951,7 +951,7 @@ ags_midi_parser_read_text(AgsMidiParser *midi_parser,
  * 
  * Returns: the seconds read from ticks
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 gdouble
 ags_midi_parser_ticks_to_sec(AgsMidiParser *midi_parser,
@@ -1005,7 +1005,7 @@ ags_midi_parser_real_midi_getc(AgsMidiParser *midi_parser)
  * 
  * Returns: the byte read
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 int
 ags_midi_parser_midi_getc(AgsMidiParser *midi_parser)
@@ -1037,7 +1037,7 @@ ags_midi_parser_real_on_error(AgsMidiParser *midi_parser,
  * 
  * Error reporting.
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 void
 ags_midi_parser_on_error(AgsMidiParser *midi_parser,
@@ -1107,7 +1107,7 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
  * 
  * Returns: the xmlDoc representing your MIDI file
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlDoc*  
 ags_midi_parser_parse_full(AgsMidiParser *midi_parser)
@@ -1224,7 +1224,7 @@ ags_midi_parser_real_parse_header(AgsMidiParser *midi_parser)
  * 
  * Returns: the xmlNode containing parsed data
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlNode*  
 ags_midi_parser_parse_header(AgsMidiParser *midi_parser)
@@ -1387,7 +1387,7 @@ ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser)
  * 
  * Returns: the xmlNode containing parsed data
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlNode*  
 ags_midi_parser_parse_track(AgsMidiParser *midi_parser)
@@ -1413,7 +1413,7 @@ ags_midi_parser_parse_track(AgsMidiParser *midi_parser)
  * 
  * Returns: the xmlNode containing parsed data
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlNode*
 ags_midi_parser_channel_message(AgsMidiParser *midi_parser, guint status)
@@ -1542,7 +1542,7 @@ ags_midi_parser_real_key_on(AgsMidiParser *midi_parser, guint status)
  * 
  * Returns: the xmlNode containing parsed data
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlNode*  
 ags_midi_parser_key_on(AgsMidiParser *midi_parser, guint status)
@@ -1607,7 +1607,7 @@ ags_midi_parser_real_key_off(AgsMidiParser *midi_parser, guint status)
  * 
  * Returns: the xmlNode containing parsed data
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlNode*  
 ags_midi_parser_key_off(AgsMidiParser *midi_parser, guint status)
@@ -1671,7 +1671,7 @@ ags_midi_parser_real_key_pressure(AgsMidiParser *midi_parser, guint status)
  * 
  * Returns: the xmlNode containing parsed data
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlNode*
 ags_midi_parser_key_pressure(AgsMidiParser *midi_parser, guint status)
@@ -1818,7 +1818,7 @@ ags_midi_parser_real_change_parameter(AgsMidiParser *midi_parser, guint status)
  * 
  * Returns: the xmlNode containing parsed data
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlNode*  
 ags_midi_parser_change_parameter(AgsMidiParser *midi_parser, guint status)
@@ -1882,7 +1882,7 @@ ags_midi_parser_real_change_pitch_bend(AgsMidiParser *midi_parser, guint status)
  * 
  * Returns: the xmlNode containing parsed data
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlNode*  
 ags_midi_parser_change_pitch_bend(AgsMidiParser *midi_parser, guint status)
@@ -1941,7 +1941,7 @@ ags_midi_parser_real_change_program(AgsMidiParser *midi_parser, guint status)
  * 
  * Returns: the xmlNode containing parsed data
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlNode*  
 ags_midi_parser_change_program(AgsMidiParser *midi_parser, guint status)
@@ -2001,7 +2001,7 @@ ags_midi_parser_real_change_channel_pressure(AgsMidiParser *midi_parser, guint s
  * 
  * Returns: the xmlNode containing parsed data
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlNode*  
 ags_midi_parser_change_channel_pressure(AgsMidiParser *midi_parser, guint status)
@@ -2039,7 +2039,7 @@ ags_midi_parser_real_not_defined(AgsMidiParser *midi_parser, guint status)
  * 
  * Returns: the xmlNode containing parsed data
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlNode*  
 ags_midi_parser_not_defined(AgsMidiParser *midi_parser, guint status)
@@ -2083,7 +2083,7 @@ ags_midi_parser_real_sysex(AgsMidiParser *midi_parser, guint status)
  * 
  * Returns: the xmlNode containing parsed data
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlNode*
 ags_midi_parser_sysex(AgsMidiParser *midi_parser, guint status)
@@ -2190,7 +2190,7 @@ ags_midi_parser_real_system_common(AgsMidiParser *midi_parser, guint status)
  * 
  * Returns: the xmlNode containing parsed data
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlNode*
 ags_midi_parser_system_common(AgsMidiParser *midi_parser, guint status)
@@ -2314,7 +2314,7 @@ ags_midi_parser_real_meta_event(AgsMidiParser *midi_parser, guint status)
  * 
  * Returns: the xmlNode containing parsed data
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlNode*  
 ags_midi_parser_meta_event(AgsMidiParser *midi_parser, guint status)
@@ -2368,7 +2368,7 @@ ags_midi_parser_real_sequence_number(AgsMidiParser *midi_parser, guint meta_type
  * 
  * Returns: the xmlNode containing parsed data
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlNode*  
 ags_midi_parser_sequence_number(AgsMidiParser *midi_parser, guint meta_type)
@@ -2419,7 +2419,7 @@ ags_midi_parser_real_end_of_track(AgsMidiParser *midi_parser, guint meta_type)
  * 
  * Returns: the xmlNode containing parsed data
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlNode*  
 ags_midi_parser_end_of_track(AgsMidiParser *midi_parser, guint meta_type)
@@ -2489,7 +2489,7 @@ ags_midi_parser_real_smtpe(AgsMidiParser *midi_parser, guint meta_type)
  * 
  * Returns: the xmlNode containing parsed data
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlNode*  
 ags_midi_parser_smtpe(AgsMidiParser *midi_parser, guint meta_type)
@@ -2547,7 +2547,7 @@ ags_midi_parser_real_tempo(AgsMidiParser *midi_parser, guint meta_type)
  * 
  * Returns: the xmlNode containing parsed data
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlNode*  
 ags_midi_parser_tempo(AgsMidiParser *midi_parser, guint meta_type)
@@ -2613,7 +2613,7 @@ ags_midi_parser_real_time_signature(AgsMidiParser *midi_parser, guint meta_type)
  * 
  * Returns: the xmlNode containing parsed data
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlNode*  
 ags_midi_parser_time_signature(AgsMidiParser *midi_parser, guint meta_type)
@@ -2671,7 +2671,7 @@ ags_midi_parser_real_key_signature(AgsMidiParser *midi_parser, guint meta_type)
  * 
  * Returns: the xmlNode containing parsed data
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlNode*  
 ags_midi_parser_key_signature(AgsMidiParser *midi_parser, guint meta_type)
@@ -2828,7 +2828,7 @@ ags_midi_parser_real_text_event(AgsMidiParser *midi_parser, guint meta_type)
  * 
  * Returns: the xmlNode containing parsed data
  * 
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 xmlNode*  
 ags_midi_parser_text_event(AgsMidiParser *midi_parser, guint meta_type)

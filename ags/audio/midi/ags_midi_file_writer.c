@@ -98,7 +98,7 @@ ags_midi_file_writer_class_init(AgsMidiFileWriterClass *midi_file_writer)
    *
    * The assigned #AgsMidiFile to read from.
    * 
-   * Since: 0.7.74
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("midi-file",
 				   i18n_pspec("assigned midi file"),
@@ -199,7 +199,7 @@ ags_midi_file_writer_finalize(GObject *gobject)
  *
  * Write @buffer_length count bytes from @buffer to MIDI file.
  *
- * Since: 0.7.2
+ * Since: 1.0.0
  */
 void
 ags_midi_file_writer_write_bytes(AgsMidiFileWriter *midi_file_writer,
@@ -218,7 +218,7 @@ ags_midi_file_writer_write_bytes(AgsMidiFileWriter *midi_file_writer,
  * 
  * Writes a channel message.
  * 
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 void
 ags_midi_file_writer_write_channel_message(AgsMidiFileWriter *midi_file_writer,
@@ -237,7 +237,7 @@ ags_midi_file_writer_write_channel_message(AgsMidiFileWriter *midi_file_writer,
  * 
  * Writes a status message.
  * 
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 void
 ags_midi_file_writer_write_status_message(AgsMidiFileWriter *midi_file_writer,
@@ -255,7 +255,7 @@ ags_midi_file_writer_write_status_message(AgsMidiFileWriter *midi_file_writer,
  *
  * Returns: a new #AgsMidiFileWriter
  * 
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 AgsMidiFileWriter*
 ags_midi_file_writer_new(gchar *filename)

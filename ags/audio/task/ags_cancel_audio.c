@@ -131,7 +131,7 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of cancel audio"),
@@ -147,7 +147,7 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
    *
    * The effects do-playback.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_boolean("do-playback",
 				     i18n_pspec("do playback"),
@@ -163,7 +163,7 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
    *
    * The effects do-sequencer.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_boolean("do-sequencer",
 				     i18n_pspec("do sequencer"),
@@ -179,7 +179,7 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
    *
    * The effects do-notation.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_boolean("do-notation",
 				     i18n_pspec("do notation"),
@@ -527,7 +527,7 @@ ags_cancel_audio_launch(AgsTask *task)
  *
  * Returns: an new #AgsCancelAudio.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsCancelAudio*
 ags_cancel_audio_new(AgsAudio *audio,

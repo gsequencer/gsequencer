@@ -35,7 +35,7 @@
  * 
  * Adds all #GtkWidget pointed by #GList to @container. 
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_container_add_all(GtkContainer *container,

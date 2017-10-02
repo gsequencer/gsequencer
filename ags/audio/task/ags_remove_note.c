@@ -122,7 +122,7 @@ ags_remove_note_class_init(AgsRemoveNoteClass *remove_note)
    *
    * The assigned #AgsNotation
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("notation",
 				   i18n_pspec("notation of add note"),
@@ -138,7 +138,7 @@ ags_remove_note_class_init(AgsRemoveNoteClass *remove_note)
    *
    * Note offset x.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("x",
 				 i18n_pspec("offset x"),
@@ -156,7 +156,7 @@ ags_remove_note_class_init(AgsRemoveNoteClass *remove_note)
    *
    * Note offset y.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("y",
 				 i18n_pspec("offset y"),
@@ -342,7 +342,7 @@ ags_remove_note_launch(AgsTask *task)
  *
  * Returns: an new #AgsRemoveNote.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsRemoveNote*
 ags_remove_note_new(AgsNotation *notation,

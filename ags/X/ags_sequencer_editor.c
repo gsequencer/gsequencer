@@ -1132,7 +1132,7 @@ ags_sequencer_editor_load_oss_card(AgsSequencerEditor *sequencer_editor)
  *
  * Returns: a new #AgsSequencerEditor
  *
- * Since: 0.7.111
+ * Since: 1.0.0
  */
 AgsSequencerEditor*
 ags_sequencer_editor_new()

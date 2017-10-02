@@ -173,7 +173,7 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 0.7.1
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("the application context object"),
@@ -189,7 +189,7 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    *
    * The assigned URL.
    * 
-   * Since: 0.7.1
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("url",
 				   i18n_pspec("the URL"),
@@ -205,7 +205,7 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    *
    * The default soundcard.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("default-soundcard",
 				   i18n_pspec("default soundcard"),
@@ -221,7 +221,7 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    *
    * The default jack client.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("default-jack-client",
 				   i18n_pspec("default jack client"),
@@ -237,7 +237,7 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    *
    * The jack client list.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("jack-client",
 				   i18n_pspec("jack client list"),
@@ -1147,7 +1147,7 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
  *
  * Returns: the #GList containing a #AgsJackServer matching @url or %NULL
  *
- * Since: 0.7.3
+ * Since: 1.0.0
  */
 GList*
 ags_jack_server_find_url(GList *jack_server,
@@ -1174,7 +1174,7 @@ ags_jack_server_find_url(GList *jack_server,
  *
  * Returns: the #AgsJackClient found or %NULL
  *
- * Since: 0.7.3
+ * Since: 1.0.0
  */
 GObject*
 ags_jack_server_find_client(AgsJackServer *jack_server,
@@ -1205,7 +1205,7 @@ ags_jack_server_find_client(AgsJackServer *jack_server,
  *
  * Returns: the #AgsJackPort found or %NULL
  *
- * Since: 0.7.3
+ * Since: 1.0.0
  */
 GObject*
 ags_jack_server_find_port(AgsJackServer *jack_server,
@@ -1240,7 +1240,7 @@ ags_jack_server_find_port(AgsJackServer *jack_server,
  *
  * Add @jack_client to @jack_server
  *
- * Since: 0.7.3
+ * Since: 1.0.0
  */
 void
 ags_jack_server_add_client(AgsJackServer *jack_server,
@@ -1263,7 +1263,7 @@ ags_jack_server_add_client(AgsJackServer *jack_server,
  *
  * Remove @jack_client to @jack_server
  *
- * Since: 0.7.3
+ * Since: 1.0.0
  */
 void
 ags_jack_server_remove_client(AgsJackServer *jack_server,
@@ -1285,7 +1285,7 @@ ags_jack_server_remove_client(AgsJackServer *jack_server,
  *
  * Connect all clients.
  *
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 void
 ags_jack_server_connect_client(AgsJackServer *jack_server)
@@ -1312,7 +1312,7 @@ ags_jack_server_connect_client(AgsJackServer *jack_server)
  *
  * Returns: the new #AgsJackServer
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 AgsJackServer*
 ags_jack_server_new(GObject *application_context,

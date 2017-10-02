@@ -151,7 +151,7 @@ ags_jack_client_class_init(AgsJackClientClass *jack_client)
    *
    * The assigned #AgsJackServer.
    * 
-   * Since: 0.7.1
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("jack-server",
 				   i18n_pspec("assigned JACK server"),
@@ -167,7 +167,7 @@ ags_jack_client_class_init(AgsJackClientClass *jack_client)
    *
    * The assigned devices.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("device",
 				   i18n_pspec("assigned device"),
@@ -183,7 +183,7 @@ ags_jack_client_class_init(AgsJackClientClass *jack_client)
    *
    * The assigned ports.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("port",
 				   i18n_pspec("assigned port"),
@@ -526,7 +526,7 @@ ags_jack_client_finalize(GObject *gobject)
  *
  * Returns: a #GList or %NULL
  * 
- * Since: 0.7.71
+ * Since: 1.0.0
  */
 GList*
 ags_jack_client_find_uuid(GList *jack_client,
@@ -555,7 +555,7 @@ ags_jack_client_find_uuid(GList *jack_client,
  *
  * Returns: a #GList or %NULL
  * 
- * Since: 0.7.3
+ * Since: 1.0.0
  */
 GList*
 ags_jack_client_find(GList *jack_client,
@@ -581,7 +581,7 @@ ags_jack_client_find(GList *jack_client,
  *
  * Open the JACK client's connection and read uuid.
  *
- * Since: 0.7.2
+ * Since: 1.0.0
  */
 void
 ags_jack_client_open(AgsJackClient *jack_client,
@@ -632,7 +632,7 @@ ags_jack_client_open(AgsJackClient *jack_client,
  *
  * Activate client.
  *
- * Since: 0.7.2
+ * Since: 1.0.0
  */
 void
 ags_jack_client_activate(AgsJackClient *jack_client)
@@ -702,7 +702,7 @@ ags_jack_client_activate(AgsJackClient *jack_client)
  *
  * Deactivate client.
  *
- * Since: 0.7.2
+ * Since: 1.0.0
  */
 void
 ags_jack_client_deactivate(AgsJackClient *jack_client)
@@ -725,7 +725,7 @@ ags_jack_client_deactivate(AgsJackClient *jack_client)
  *
  * Add @jack_device to @jack_client.
  *
- * Since: 0.7.71
+ * Since: 1.0.0
  */
 void
 ags_jack_client_add_device(AgsJackClient *jack_client,
@@ -749,7 +749,7 @@ ags_jack_client_add_device(AgsJackClient *jack_client,
  *
  * Remove @jack_device from @jack_client.
  *
- * Since: 0.7.71
+ * Since: 1.0.0
  */
 void
 ags_jack_client_remove_device(AgsJackClient *jack_client,
@@ -771,7 +771,7 @@ ags_jack_client_remove_device(AgsJackClient *jack_client,
  *
  * Add @jack_port to @jack_client.
  *
- * Since: 0.7.2
+ * Since: 1.0.0
  */
 void
 ags_jack_client_add_port(AgsJackClient *jack_client,
@@ -794,7 +794,7 @@ ags_jack_client_add_port(AgsJackClient *jack_client,
  *
  * Remove @jack_port from @jack_client.
  *
- * Since: 0.7.2
+ * Since: 1.0.0
  */
 void
 ags_jack_client_remove_port(AgsJackClient *jack_client,
@@ -1308,7 +1308,7 @@ ags_jack_client_xrun_callback(void *ptr)
  *
  * Returns: the new #AgsJackClient
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 AgsJackClient*
 ags_jack_client_new(GObject *jack_server)

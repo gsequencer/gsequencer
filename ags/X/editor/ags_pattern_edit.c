@@ -639,7 +639,7 @@ ags_accessible_pattern_edit_get_localized_name(AtkAction *action,
  *
  * Set the map height in pixel.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_pattern_edit_set_map_height(AgsPatternEdit *pattern_edit, guint map_height)
@@ -662,7 +662,7 @@ ags_pattern_edit_set_map_height(AgsPatternEdit *pattern_edit, guint map_height)
  *
  * Reset @pattern_edit as configured vertically.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_pattern_edit_reset_vertically(AgsPatternEdit *pattern_edit, guint flags)
@@ -800,7 +800,7 @@ ags_pattern_edit_reset_vertically(AgsPatternEdit *pattern_edit, guint flags)
  *
  * Reset @pattern_edit as configured horizontally.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_pattern_edit_reset_horizontally(AgsPatternEdit *pattern_edit, guint flags)
@@ -997,7 +997,7 @@ ags_pattern_edit_reset_horizontally(AgsPatternEdit *pattern_edit, guint flags)
  *
  * Draws horizontal and vertical lines.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_pattern_edit_draw_segment(AgsPatternEdit *pattern_edit, cairo_t *cr)
@@ -1115,7 +1115,7 @@ ags_pattern_edit_draw_segment(AgsPatternEdit *pattern_edit, cairo_t *cr)
  *
  * Draws the cursor.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_pattern_edit_draw_position(AgsPatternEdit *pattern_edit, cairo_t *cr)
@@ -1203,7 +1203,7 @@ ags_pattern_edit_draw_position(AgsPatternEdit *pattern_edit, cairo_t *cr)
  *
  * Draw the #AgsNotation of selected #AgsMachine on @pattern_edit.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
@@ -1522,7 +1522,7 @@ ags_pattern_edit_draw_notation(AgsPatternEdit *pattern_edit, cairo_t *cr)
  *
  * Change visible x-position of @pattern_edit.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_pattern_edit_draw_scroll(AgsPatternEdit *pattern_edit, cairo_t *cr,
@@ -1562,7 +1562,7 @@ ags_pattern_edit_draw_scroll(AgsPatternEdit *pattern_edit, cairo_t *cr,
  *
  * Returns: a new #AgsPatternEdit
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 AgsPatternEdit*
 ags_pattern_edit_new()

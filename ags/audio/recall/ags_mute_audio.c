@@ -149,7 +149,7 @@ ags_mute_audio_class_init(AgsMuteAudioClass *mute_audio)
    *
    * The mute port.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("muted",
 				   i18n_pspec("mute audio"),
@@ -410,7 +410,7 @@ ags_mute_audio_get_muted_port_descriptor()
  *
  * Returns: a new #AgsMuteAudio
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsMuteAudio*
 ags_mute_audio_new()

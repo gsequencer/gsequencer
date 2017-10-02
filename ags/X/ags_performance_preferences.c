@@ -326,7 +326,7 @@ ags_performance_preferences_show(GtkWidget *widget)
  *
  * Returns: a new #AgsPerformancePreferences
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsPerformancePreferences*
 ags_performance_preferences_new()

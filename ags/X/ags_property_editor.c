@@ -156,7 +156,7 @@ ags_property_editor_show(GtkWidget *widget)
  *
  * Returns: a new #AgsPropertyEditor
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsPropertyEditor*
 ags_property_editor_new()

@@ -157,7 +157,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The assigned #AgsChannel.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   "assigned channel",
@@ -173,7 +173,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The assigned #GObject acting as default sink.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   "assigned soundcard",
@@ -189,7 +189,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The assigned parent #AgsRecycling.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("parent",
 				   "assigned parent",
@@ -205,7 +205,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The assigned prev #AgsRecycling.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("prev",
 				   "assigned prev",
@@ -221,7 +221,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The assigned next #AgsRecycling.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("next",
 				   "assigned next",
@@ -237,7 +237,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The containing  #AgsAudioSignal.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio-signal",
 				   "containing audio signal",
@@ -747,7 +747,7 @@ ags_recycling_finalize(GObject *gobject)
  *
  * Sets #GObject to recycling.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_recycling_set_soundcard(AgsRecycling *recycling, GObject *soundcard)
@@ -775,7 +775,7 @@ ags_recycling_set_soundcard(AgsRecycling *recycling, GObject *soundcard)
  *
  * Add #AgsAudioSignal to recycling.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_recycling_add_audio_signal(AgsRecycling *recycling,
@@ -860,7 +860,7 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
  *
  * Remove #AgsAudioSignal of recycling.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_recycling_remove_audio_signal(AgsRecycling *recycling,
@@ -939,7 +939,7 @@ ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
  *
  * Create audio signal with defaults.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
@@ -1039,7 +1039,7 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
  *
  * Create audio signal with frame count.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
@@ -1228,7 +1228,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
  *
  * Returns: Matching recycling.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsRecycling*
 ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_region,
@@ -1303,7 +1303,7 @@ ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_re
  *
  * Returns: position within boundary.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 gint
 ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
@@ -1368,7 +1368,7 @@ ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
  * 
  * Returns: %TRUE if related audio signal to recall id is available, otherwise %FALSE
  * 
- * Since: 0.7.122.9
+ * Since: 1.0.0.9
  */
 gboolean
 ags_recycling_is_active(AgsRecycling *start_region, AgsRecycling *end_region,
@@ -1428,7 +1428,7 @@ ags_recycling_is_active(AgsRecycling *start_region, AgsRecycling *end_region,
  *
  * Returns: a new #AgsRecycling
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsRecycling*
 ags_recycling_new(GObject *soundcard)

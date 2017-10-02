@@ -481,7 +481,7 @@ ags_copy_audio_signal_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsCopyAudioSignal
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsCopyAudioSignal*
 ags_copy_audio_signal_new(AgsAudioSignal *destination,

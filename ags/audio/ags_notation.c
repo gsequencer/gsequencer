@@ -171,7 +171,7 @@ ags_notation_class_init(AgsNotationClass *notation)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 0.4.3
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of notation"),
@@ -188,7 +188,7 @@ ags_notation_class_init(AgsNotationClass *notation)
    *
    * The effect's audio-channel.
    * 
-   * Since: 0.4.3
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_uint("audio-channel",
 				  i18n_pspec("audio-channel of effect"),
@@ -206,7 +206,7 @@ ags_notation_class_init(AgsNotationClass *notation)
    *
    * The assigned #AgsPort
    * 
-   * Since: 0.4.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("port",
 				   i18n_pspec("port of notation"),
@@ -222,7 +222,7 @@ ags_notation_class_init(AgsNotationClass *notation)
    *
    * The assigned #AgsNote
    * 
-   * Since: 0.4.3
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("note",
 				   i18n_pspec("note of notation"),
@@ -238,7 +238,7 @@ ags_notation_class_init(AgsNotationClass *notation)
    *
    * Offset of current position.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("current-notes",
 				    i18n_pspec("current notes for offset"),
@@ -253,7 +253,7 @@ ags_notation_class_init(AgsNotationClass *notation)
    *
    * Offset of next position.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("next-notes",
 				    i18n_pspec("next notes for offset"),
@@ -268,7 +268,7 @@ ags_notation_class_init(AgsNotationClass *notation)
    *
    * The pattern's timestamp.
    * 
-   * Since: 0.7.12
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("timestamp",
 				   i18n_pspec("timestamp of pattern"),
@@ -830,7 +830,7 @@ ags_notation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue
  *
  * Returns: Next match.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GList*
 ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
@@ -875,7 +875,7 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
  *
  * Adds a note to notation.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_notation_add_note(AgsNotation *notation,
@@ -908,7 +908,7 @@ ags_notation_add_note(AgsNotation *notation,
  *
  * Removes a note from notation.
  *
- * Since: 0.8.9
+ * Since: 1.0.0
  */
 void
 ags_notation_remove_note(AgsNotation *notation,
@@ -939,7 +939,7 @@ ags_notation_remove_note(AgsNotation *notation,
  *
  * Returns: %TRUE if successfully removed note.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 gboolean
 ags_notation_remove_note_at_position(AgsNotation *notation,
@@ -1053,7 +1053,7 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
  *
  * Returns: the selection.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GList*
 ags_notation_get_selection(AgsNotation *notation)
@@ -1070,7 +1070,7 @@ ags_notation_get_selection(AgsNotation *notation)
  *
  * Returns: %TRUE if selected
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 gboolean
 ags_notation_is_note_selected(AgsNotation *notation, AgsNote *note)
@@ -1100,7 +1100,7 @@ ags_notation_is_note_selected(AgsNotation *notation, AgsNote *note)
  *
  * Returns: the matching note.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */ 
 AgsNote*
 ags_notation_find_point(AgsNotation *notation,
@@ -1158,7 +1158,7 @@ ags_notation_find_point(AgsNotation *notation,
  *
  * Returns: the matching notes as #GList.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GList*
 ags_notation_find_region(AgsNotation *notation,
@@ -1217,7 +1217,7 @@ ags_notation_find_region(AgsNotation *notation,
  *
  * Clear selection.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_notation_free_selection(AgsNotation *notation)
@@ -1246,7 +1246,7 @@ ags_notation_free_selection(AgsNotation *notation)
  *
  * Select all.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_notation_add_all_to_selection(AgsNotation *notation)
@@ -1276,7 +1276,7 @@ ags_notation_add_all_to_selection(AgsNotation *notation)
  *
  * Select notes at position.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */ 
 void
 ags_notation_add_point_to_selection(AgsNotation *notation,
@@ -1323,7 +1323,7 @@ ags_notation_add_point_to_selection(AgsNotation *notation,
  *
  * Remove notes at position of selection.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */ 
 void
 ags_notation_remove_point_from_selection(AgsNotation *notation,
@@ -1356,7 +1356,7 @@ ags_notation_remove_point_from_selection(AgsNotation *notation,
  *
  * Select notes within region.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_notation_add_region_to_selection(AgsNotation *notation,
@@ -1415,7 +1415,7 @@ ags_notation_add_region_to_selection(AgsNotation *notation,
  *
  * Remove notes within region of selection.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */ 
 void
 ags_notation_remove_region_from_selection(AgsNotation *notation,
@@ -1451,7 +1451,7 @@ ags_notation_remove_region_from_selection(AgsNotation *notation,
  *
  * Returns: the selection as XML.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 xmlNodePtr
 ags_notation_copy_selection(AgsNotation *notation)
@@ -1511,7 +1511,7 @@ ags_notation_copy_selection(AgsNotation *notation)
  *
  * Returns: the selection as XML.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 xmlNode*
 ags_notation_cut_selection(AgsNotation *notation)
@@ -1572,7 +1572,7 @@ ags_notation_cut_selection(AgsNotation *notation)
  *
  * Paste previously copied notes. 
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
@@ -1818,7 +1818,7 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
  *
  * Paste previously copied notes. 
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_notation_insert_from_clipboard(AgsNotation *notation,
@@ -1890,7 +1890,7 @@ ags_notation_get_current(AgsNotation *notation)
  * 
  * Returns: the raw-midi buffer
  * 
- * Since: 0.9.0
+ * Since: 1.0.0
  */
 unsigned char*
 ags_notation_to_raw_midi(AgsNotation *notation,
@@ -1920,7 +1920,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
  * 
  * Returns: the #AgsNotation
  * 
- * Since: 0.9.0
+ * Since: 1.0.0
  */
 AgsNotation*
 ags_notation_from_raw_midi(unsigned char *raw_midi,
@@ -1943,7 +1943,7 @@ ags_notation_from_raw_midi(unsigned char *raw_midi,
  *
  * Returns: a new #AgsNotation
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsNotation*
 ags_notation_new(GObject *audio,

@@ -142,7 +142,7 @@ ags_pulse_client_class_init(AgsPulseClientClass *pulse_client)
    *
    * The assigned #AgsPulseServer.
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("pulse-server",
 				   i18n_pspec("assigned pulseaudio server"),
@@ -158,7 +158,7 @@ ags_pulse_client_class_init(AgsPulseClientClass *pulse_client)
    *
    * The assigned devices.
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("device",
 				   i18n_pspec("assigned device"),
@@ -174,7 +174,7 @@ ags_pulse_client_class_init(AgsPulseClientClass *pulse_client)
    *
    * The assigned ports.
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("port",
 				   i18n_pspec("assigned port"),
@@ -514,7 +514,7 @@ ags_pulse_client_finalize(GObject *gobject)
  *
  * Returns: a #GList or %NULL
  * 
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 GList*
 ags_pulse_client_find_uuid(GList *pulse_client,
@@ -540,7 +540,7 @@ ags_pulse_client_find_uuid(GList *pulse_client,
  *
  * Returns: a #GList or %NULL
  * 
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 GList*
 ags_pulse_client_find(GList *pulse_client,
@@ -610,7 +610,7 @@ ags_pulse_client_state_callback(pa_context *c, AgsPulseClient *pulse_client)
  *
  * Open the pulseaudio client's connection and read uuid.
  *
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 void
 ags_pulse_client_open(AgsPulseClient *pulse_client,
@@ -690,7 +690,7 @@ ags_pulse_client_open(AgsPulseClient *pulse_client,
  *
  * Activate client.
  *
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 void
 ags_pulse_client_activate(AgsPulseClient *pulse_client)
@@ -748,7 +748,7 @@ ags_pulse_client_activate(AgsPulseClient *pulse_client)
  *
  * Deactivate client.
  *
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 void
 ags_pulse_client_deactivate(AgsPulseClient *pulse_client)
@@ -769,7 +769,7 @@ ags_pulse_client_deactivate(AgsPulseClient *pulse_client)
  *
  * Add @pulse_device to @pulse_client.
  *
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 void
 ags_pulse_client_add_device(AgsPulseClient *pulse_client,
@@ -793,7 +793,7 @@ ags_pulse_client_add_device(AgsPulseClient *pulse_client,
  *
  * Remove @pulse_device from @pulse_client.
  *
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 void
 ags_pulse_client_remove_device(AgsPulseClient *pulse_client,
@@ -815,7 +815,7 @@ ags_pulse_client_remove_device(AgsPulseClient *pulse_client,
  *
  * Add @pulse_port to @pulse_client.
  *
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 void
 ags_pulse_client_add_port(AgsPulseClient *pulse_client,
@@ -838,7 +838,7 @@ ags_pulse_client_add_port(AgsPulseClient *pulse_client,
  *
  * Remove @pulse_port from @pulse_client.
  *
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 void
 ags_pulse_client_remove_port(AgsPulseClient *pulse_client,
@@ -861,7 +861,7 @@ ags_pulse_client_remove_port(AgsPulseClient *pulse_client,
  *
  * Returns: the new #AgsPulseClient
  *
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 AgsPulseClient*
 ags_pulse_client_new(GObject *pulse_server)

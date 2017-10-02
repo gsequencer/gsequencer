@@ -145,7 +145,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("start-channel",
 				   i18n_pspec("start channel of apply synth"),
@@ -161,7 +161,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The count of channels to apply.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("count",
 				 i18n_pspec("count of channels"),
@@ -179,7 +179,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * If apply fixed length
    * 
-   * Since: 0.9.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_boolean("fixed-length",
 				    i18n_pspec("fixed length"),
@@ -195,7 +195,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The attack of audio data.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("attack",
 				 i18n_pspec("attack of audio data"),
@@ -213,7 +213,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The frame count of audio data.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("frame-count",
 				 i18n_pspec("frame count of audio data"),
@@ -231,7 +231,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The wave of wave.
    * 
-   * Since: 0.8.9
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("wave",
 				 i18n_pspec("wave"),
@@ -249,7 +249,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The frequency of wave.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("frequency",
 				   i18n_pspec("frequency of wave"),
@@ -267,7 +267,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The phase of wave.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("phase",
 				   i18n_pspec("phase of wave"),
@@ -285,7 +285,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The start frequency as base of wave.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("start-frequency",
 				   i18n_pspec("start frequency"),
@@ -303,7 +303,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The volume of wave.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("volume",
 				   i18n_pspec("volume of wave"),
@@ -321,7 +321,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The loop start of audio data.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("loop-start",
 				 i18n_pspec("loop start of audio data"),
@@ -339,7 +339,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The loop end of audio data.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("loop-end",
 				 i18n_pspec("loop end of audio data"),
@@ -357,7 +357,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * If do sync
    * 
-   * Since: 0.9.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_boolean("do-sync",
 				    i18n_pspec("do sync"),
@@ -373,7 +373,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The sync mode to use.
    * 
-   * Since: 0.9.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("sync-mode",
 				 i18n_pspec("sync mode"),
@@ -391,7 +391,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
    *
    * The base-note to ramp up from.
    * 
-   * Since: 0.9.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("base-note",
 				   i18n_pspec("base note"),
@@ -919,7 +919,7 @@ ags_apply_synth_launch(AgsTask *task)
  *
  * Returns: an new #AgsApplySynth.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsApplySynth*
 ags_apply_synth_new(AgsChannel *start_channel, guint count,

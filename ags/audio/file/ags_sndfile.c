@@ -559,7 +559,7 @@ ags_sndfile_vio_tell(const void *ptr, sf_count_t count, void *user_data)
  *
  * Returns: an empty #AgsSndfile.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsSndfile*
 ags_sndfile_new()

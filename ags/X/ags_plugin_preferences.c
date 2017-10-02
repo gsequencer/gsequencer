@@ -183,7 +183,7 @@ ags_ladspa_plugin_preferences_alloc(gchar *ladspa_path)
  *
  * Returns: a new #AgsPluginPreferences
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsPluginPreferences*
 ags_plugin_preferences_new()

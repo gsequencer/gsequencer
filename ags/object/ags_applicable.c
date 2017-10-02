@@ -66,7 +66,7 @@ ags_applicable_base_init(AgsApplicableInterface *interface)
  *
  * Update behaviour.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_applicable_set_update(AgsApplicable *applicable, gboolean update)
@@ -85,7 +85,7 @@ ags_applicable_set_update(AgsApplicable *applicable, gboolean update)
  *
  * Apply all changes done so far.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_applicable_apply(AgsApplicable *applicable)
@@ -104,7 +104,7 @@ ags_applicable_apply(AgsApplicable *applicable)
  *
  * Reset all changes within the user interface.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_applicable_reset(AgsApplicable *applicable)

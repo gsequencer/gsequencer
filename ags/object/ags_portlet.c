@@ -67,7 +67,7 @@ ags_portlet_base_init(AgsPortletInterface *interface)
  *
  * Set port.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_portlet_set_port(AgsPortlet *portlet, GObject *port)
@@ -88,7 +88,7 @@ ags_portlet_set_port(AgsPortlet *portlet, GObject *port)
  *
  * Returns: the #GObject
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GObject*
 ags_portlet_get_port(AgsPortlet *portlet)
@@ -109,7 +109,7 @@ ags_portlet_get_port(AgsPortlet *portlet)
  *
  * Returns: a #GList containing properties
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GList*
 ags_portlet_list_safe_properties(AgsPortlet *portlet)
@@ -130,7 +130,7 @@ ags_portlet_list_safe_properties(AgsPortlet *portlet)
  *
  * Get property thread safe.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_portlet_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
@@ -151,7 +151,7 @@ ags_portlet_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue 
  *
  * Set property thread safe.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_portlet_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value)

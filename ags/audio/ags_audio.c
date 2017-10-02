@@ -211,7 +211,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The assigned #AgsSoundcard acting as default sink.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -227,7 +227,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The assigned #AgsSequencer acting as default sink.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("sequencer",
 				   i18n_pspec("assigned sequencer"),
@@ -243,7 +243,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The assigned #AgsMidiFile acting as default sink.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("midi-file",
 				   i18n_pspec("assigned midi_file"),
@@ -259,7 +259,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The samplerate.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("samplerate"),
@@ -277,7 +277,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The buffer length.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("buffer size"),
@@ -295,7 +295,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The format.
    * 
-   * Since: 0.7.45
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("format"),
@@ -313,7 +313,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The sequence length.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("sequence-length",
 				 i18n_pspec("sequence-length"),
@@ -331,7 +331,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The audio channels count.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("audio-channels",
 				 i18n_pspec("audio channels count"),
@@ -350,7 +350,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The input pads count.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("input-pads",
 				 i18n_pspec("input pads count"),
@@ -368,7 +368,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The input lines count.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("input-lines",
 				 i18n_pspec("input lines count"),
@@ -386,7 +386,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The output pads count.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("output-pads",
 				 i18n_pspec("output pads count"),
@@ -404,7 +404,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The output lines count.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("output-lines",
 				 i18n_pspec("output lines count"),
@@ -422,7 +422,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The audio start mapping.
    * 
-   * Since: 0.7.3
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("audio-start-mapping",
 				 i18n_pspec("audio start mapping"),
@@ -440,7 +440,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The audio end mapping.
    * 
-   * Since: 0.7.3
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("audio-end-mapping",
 				 i18n_pspec("audio end mapping"),
@@ -458,7 +458,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The midi start mapping.
    * 
-   * Since: 0.7.3
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_uint("midi-start-mapping",
 				  i18n_pspec("midi start mapping range"),
@@ -476,7 +476,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The midi end mapping.
    * 
-   * Since: 0.7.3
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("midi-end-mapping",
 				 i18n_pspec("midi end mapping range"),
@@ -494,7 +494,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The midi channel.
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("midi-channel",
 				 i18n_pspec("midi channel"),
@@ -512,7 +512,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The assigned #GList-struct containing #AgsAudioConnection information.
    * 
-   * Since: 0.7.65
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio-connection",
 				   i18n_pspec("audio connection"),
@@ -528,7 +528,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The assigned #GList-struct containing #AgsPreset information.
    * 
-   * Since: 0.8.5
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("preset",
 				   i18n_pspec("preset"),
@@ -544,7 +544,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The #AgsOutput it contains.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("output",
 				   i18n_pspec("containing output"),
@@ -560,7 +560,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The #AgsInput it contains.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("input",
 				   i18n_pspec("containing input"),
@@ -576,7 +576,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The assigned #AgsPlaybackDomain.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("playback-domain",
 				   i18n_pspec("assigned playback domain"),
@@ -592,7 +592,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The #AgsNotation it contains.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("notation",
 				    i18n_pspec("containing notation"),
@@ -607,7 +607,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The #AgsAutomation it contains.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("automation",
 				    i18n_pspec("containing automation"),
@@ -622,7 +622,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The assigned #AgsRecallID.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("recall-id",
 				    i18n_pspec("assigned recall id"),
@@ -637,7 +637,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The assigned #AgsRecyclingContext.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("recycling-context",
 				    i18n_pspec("assigned recycling context"),
@@ -652,7 +652,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The #AgsRecallContainer it contains in container-context.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("recall-container",
 				    i18n_pspec("containing recall container"),
@@ -667,7 +667,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The #AgsRecall it contains in play-context.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("play",
 				    i18n_pspec("containing play"),
@@ -682,7 +682,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The #AgsRecall it contains in recall-context.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("recall",
 				    i18n_pspec("containing recall"),
@@ -710,7 +710,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The ::check-connection checks your audio connections.
    *
-   * Since: 0.7.65
+   * Since: 1.0.0
    */
   audio_signals[CHECK_CONNECTION] = 
     g_signal_new("check-connection",
@@ -2149,7 +2149,7 @@ ags_audio_disconnect(AgsConnectable *connectable)
  *
  * Sets a soundcard object on audio.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
@@ -2291,7 +2291,7 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
  *
  * Enable a feature of AgsAudio.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_set_flags(AgsAudio *audio, guint flags)
@@ -2398,7 +2398,7 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
  *
  * Disable a feature of AgsAudio.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_unset_flags(AgsAudio *audio, guint flags)
@@ -3021,7 +3021,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
  *
  * Resize audio channels AgsInput will be allocated first.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_audio_set_audio_channels(AgsAudio *audio, guint audio_channels)
@@ -3630,7 +3630,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
  *
  * Sets pad count for the apropriate @type
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_audio_set_pads(AgsAudio *audio, GType type, guint pads)
@@ -3678,7 +3678,7 @@ ags_audio_set_pads(AgsAudio *audio, GType type, guint pads)
  *
  * Sets samplerate.
  *
- * Since: 0.7.3
+ * Since: 1.0.0
  */
 void
 ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
@@ -3753,7 +3753,7 @@ ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
  *
  * Sets buffer length.
  *
- * Since: 0.7.3
+ * Since: 1.0.0
  */
 void
 ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
@@ -3828,7 +3828,7 @@ ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
  *
  * Sets buffer length.
  *
- * Since: 0.7.45
+ * Since: 1.0.0
  */
 void
 ags_audio_set_format(AgsAudio *audio, guint format)
@@ -3856,7 +3856,7 @@ ags_audio_set_format(AgsAudio *audio, guint format)
  *
  * Sets sequence length.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length)
@@ -3871,7 +3871,7 @@ ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length)
  *
  * Adds an audio connection.
  *
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 void
 ags_audio_add_audio_connection(AgsAudio *audio,
@@ -3909,7 +3909,7 @@ ags_audio_add_audio_connection(AgsAudio *audio,
  *
  * Removes an audio connection.
  *
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 void
 ags_audio_remove_audio_connection(AgsAudio *audio,
@@ -3947,7 +3947,7 @@ ags_audio_remove_audio_connection(AgsAudio *audio,
  *
  * Adds an preset.
  *
- * Since: 0.8.5
+ * Since: 1.0.0
  */
 void
 ags_audio_add_preset(AgsAudio *audio,
@@ -3985,7 +3985,7 @@ ags_audio_add_preset(AgsAudio *audio,
  *
  * Removes an preset.
  *
- * Since: 0.8.5
+ * Since: 1.0.0
  */
 void
 ags_audio_remove_preset(AgsAudio *audio,
@@ -4023,7 +4023,7 @@ ags_audio_remove_preset(AgsAudio *audio,
  *
  * Adds a recall id.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_add_notation(AgsAudio *audio, GObject *notation)
@@ -4060,7 +4060,7 @@ ags_audio_add_notation(AgsAudio *audio, GObject *notation)
  *
  * Removes a recall id.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_remove_notation(AgsAudio *audio, GObject *notation)
@@ -4097,7 +4097,7 @@ ags_audio_remove_notation(AgsAudio *audio, GObject *notation)
  *
  * Adds a recall id.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_audio_add_automation(AgsAudio *audio, GObject *automation)
@@ -4134,7 +4134,7 @@ ags_audio_add_automation(AgsAudio *audio, GObject *automation)
  *
  * Removes a recall id.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_audio_remove_automation(AgsAudio *audio, GObject *automation)
@@ -4171,7 +4171,7 @@ ags_audio_remove_automation(AgsAudio *audio, GObject *automation)
  *
  * Adds a recall id.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id)
@@ -4208,7 +4208,7 @@ ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id)
  *
  * Removes a recall id.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id)
@@ -4245,7 +4245,7 @@ ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id)
  *
  * Adds a recycling container.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_add_recycling_context(AgsAudio *audio, GObject *recycling_context)
@@ -4282,7 +4282,7 @@ ags_audio_add_recycling_context(AgsAudio *audio, GObject *recycling_context)
  *
  * Removes a recycling container.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_remove_recycling_context(AgsAudio *audio, GObject *recycling_context)
@@ -4319,7 +4319,7 @@ ags_audio_remove_recycling_context(AgsAudio *audio, GObject *recycling_context)
  *
  * Adds a recall container.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container)
@@ -4356,7 +4356,7 @@ ags_audio_add_recall_container(AgsAudio *audio, GObject *recall_container)
  *
  * Removes a recall container.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container)
@@ -4394,7 +4394,7 @@ ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container)
  *
  * Adds a recall.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play)
@@ -4430,7 +4430,7 @@ ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play)
  *
  * Removes a recall.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play)
@@ -4466,7 +4466,7 @@ ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play)
  *
  * Returns: the current #AgsRecallID
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsRecallID*
 ags_audio_init_run(AgsAudio *audio)
@@ -4514,7 +4514,7 @@ ags_audio_init_run(AgsAudio *audio)
  * 
  * Duplicate all #AgsRecall templates of this #AgsAudio.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_duplicate_recall(AgsAudio *audio,
@@ -4663,7 +4663,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
  *
  * Initializes the recalls of @audio
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_init_recall(AgsAudio *audio, gint stage,
@@ -4765,7 +4765,7 @@ ags_audio_init_recall(AgsAudio *audio, gint stage,
  *
  * Performs resolving of recalls.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void ags_audio_resolve_recall(AgsAudio *audio,
 			      AgsRecallID *recall_id)
@@ -4828,7 +4828,7 @@ void ags_audio_resolve_recall(AgsAudio *audio,
  *
  * Returns: TRUE if it's playing otherwise FALSE
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 gboolean
 ags_audio_is_playing(AgsAudio *audio)
@@ -4885,7 +4885,7 @@ ags_audio_is_playing(AgsAudio *audio)
  *
  * Performs on single play call of appropriate stage.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_play(AgsAudio *audio,
@@ -5043,7 +5043,7 @@ ags_audio_play(AgsAudio *audio,
  *
  * Is emitted as audio is played.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_tact(AgsAudio *audio, AgsRecallID *recall_id)
@@ -5158,7 +5158,7 @@ ags_audio_real_done(AgsAudio *audio,
  *
  * Is emitted as playing audio is done.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_done(AgsAudio *audio, AgsRecallID *recall_id)
@@ -5210,7 +5210,7 @@ ags_audio_done(AgsAudio *audio, AgsRecallID *recall_id)
  *
  * Cancel processing audio data.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_cancel(AgsAudio *audio,
@@ -5288,7 +5288,7 @@ ags_audio_cancel(AgsAudio *audio,
  *
  * Remove processing audio data.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_remove(AgsAudio *audio,
@@ -5364,7 +5364,7 @@ ags_audio_remove(AgsAudio *audio,
  *
  * Returns: a new #GList containing #AgsPort
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GList*
 ags_audio_find_port(AgsAudio *audio)
@@ -5443,7 +5443,7 @@ ags_audio_find_port(AgsAudio *audio)
  *
  * Open some files.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_open_files(AgsAudio *audio,
@@ -5650,7 +5650,7 @@ ags_audio_open_files(AgsAudio *audio,
  *
  * Recursive set property for #AgsAudio.
  *
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 void
 ags_audio_recursive_set_property(AgsAudio *audio,
@@ -5744,7 +5744,7 @@ ags_audio_recursive_set_property(AgsAudio *audio,
  *
  * Returns: a list containing all #AgsRecallID
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GList*
 ags_audio_recursive_play_init(AgsAudio *audio,
@@ -5846,7 +5846,7 @@ ags_audio_recursive_play_init(AgsAudio *audio,
  *
  * Returns: a new #AgsAudio
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsAudio*
 ags_audio_new(GObject *soundcard)

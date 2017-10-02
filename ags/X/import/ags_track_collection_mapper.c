@@ -157,7 +157,7 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
    *
    * The tracks as xmlNode to parse.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("track",
 				    i18n_pspec("assigned track"),
@@ -172,7 +172,7 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
    *
    * The instruments as string to parse.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("instrument",
 				   i18n_pspec("assigned instrument"),
@@ -188,7 +188,7 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
    *
    * The sequences as string to parse.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("sequence",
 				   i18n_pspec("assigned sequence"),
@@ -568,7 +568,7 @@ ags_track_collection_mapper_reset(AgsApplicable *applicable)
  *
  * Returns: the next matching #GList
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 GList*
 ags_track_collection_mapper_find_instrument_with_sequence(GList *track_collection_mapper,
@@ -599,7 +599,7 @@ ags_track_collection_mapper_find_instrument_with_sequence(GList *track_collectio
  *
  * Maps XML tracks to #AgsNotation
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mapper)
@@ -767,7 +767,7 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
  *
  * Returns: a new #AgsTrackCollectionMapper
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsTrackCollectionMapper*
 ags_track_collection_mapper_new()

@@ -224,7 +224,7 @@ ags_reset_peak_launch(AgsTask *task)
  *
  * Add @peak_channel.
  *
- * Since: 0.9.6
+ * Since: 1.0.0
  */
 void
 ags_reset_peak_add(AgsResetPeak *reset_peak,
@@ -246,7 +246,7 @@ ags_reset_peak_add(AgsResetPeak *reset_peak,
  *
  * Remove @peak_channel.
  *
- * Since: 0.9.6
+ * Since: 1.0.0
  */
 void
 ags_reset_peak_remove(AgsResetPeak *reset_peak,
@@ -271,7 +271,7 @@ ags_reset_peak_remove(AgsResetPeak *reset_peak,
  *
  * Returns: the #AgsResetPeak
  *
- * Since: 0.9.6
+ * Since: 1.0.0
  */
 AgsResetPeak*
 ags_reset_peak_get_instance()
@@ -327,7 +327,7 @@ ags_reset_peak_get_instance()
  *
  * Returns: an new #AgsResetPeak.
  *
- * Since: 0.9.6
+ * Since: 1.0.0
  */
 AgsResetPeak*
 ags_reset_peak_new()

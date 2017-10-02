@@ -205,7 +205,7 @@ ags_live_dssi_bridge_class_init(AgsLiveDssiBridgeClass *live_dssi_bridge)
    *
    * The plugins filename.
    * 
-   * Since: 0.7.134
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_string("filename",
 				    i18n_pspec("the object file"),
@@ -221,7 +221,7 @@ ags_live_dssi_bridge_class_init(AgsLiveDssiBridgeClass *live_dssi_bridge)
    *
    * The effect's name.
    * 
-   * Since: 0.7.134
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_string("effect",
 				    i18n_pspec("the effect"),
@@ -237,7 +237,7 @@ ags_live_dssi_bridge_class_init(AgsLiveDssiBridgeClass *live_dssi_bridge)
    *
    * The effect's index.
    * 
-   * Since: 0.7.134
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_uint("index",
 				  i18n_pspec("index of effect"),
@@ -1514,7 +1514,7 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
  *
  * Returns: a new #AgsLiveDssiBridge
  *
- * Since: 0.7.134
+ * Since: 1.0.0
  */
 AgsLiveDssiBridge*
 ags_live_dssi_bridge_new(GObject *soundcard,

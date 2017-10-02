@@ -176,7 +176,7 @@ ags_pad_class_init(AgsPadClass *pad)
    *
    * The start of a bunch of #AgsChannel to visualize.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("assigned channel"),
@@ -555,7 +555,7 @@ ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
  *
  * Is emitted as channel gets modified.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_pad_set_channel(AgsPad *pad, AgsChannel *channel)
@@ -668,7 +668,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
  *
  * Resize the count of #AgsLine packe by #AgsPad.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_pad_resize_lines(AgsPad *pad, GType line_type,
@@ -705,7 +705,7 @@ ags_pad_real_map_recall(AgsPad *pad, guint output_pad_start)
  *
  * Start of output pad
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_pad_map_recall(AgsPad *pad, guint output_pad_start)
@@ -757,7 +757,7 @@ ags_pad_real_find_port(AgsPad *pad)
  *
  * Returns: an #GList containing all related #AgsPort
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GList*
 ags_pad_find_port(AgsPad *pad)
@@ -1089,7 +1089,7 @@ ags_pad_play(AgsPad *pad)
  *
  * Returns: a new #AgsPad
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsPad*
 ags_pad_new(AgsChannel *channel)

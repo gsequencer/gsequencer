@@ -210,7 +210,7 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
    *
    * The audio channel to output.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("audio-channel",
 				 i18n_pspec("assigned audio channel"),
@@ -228,7 +228,7 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
    *
    * The audio run opposite of this recall.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("recall-audio-run",
 				   i18n_pspec("AgsRecallAudioRun of this recall"),
@@ -244,7 +244,7 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
    *
    * The channel context of this recall.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("recall-channel",
 				   i18n_pspec("AsgRecallChannel of this recall"),
@@ -260,7 +260,7 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
    *
    * The channel to do output to.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("destination",
 				   i18n_pspec("destination of output"),
@@ -276,7 +276,7 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
    *
    * The channel to do input from.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("source",
 				   i18n_pspec("source of input"),
@@ -1142,7 +1142,7 @@ ags_recall_channel_run_real_run_order_changed(AgsRecallChannelRun *recall_channe
  *
  * Modify run order.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_recall_channel_run_run_order_changed(AgsRecallChannelRun *recall_channel_run,
@@ -1164,7 +1164,7 @@ ags_recall_channel_run_run_order_changed(AgsRecallChannelRun *recall_channel_run
  *
  * Returns: a new #AgsRecallChannelRun
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsRecallChannelRun*
 ags_recall_channel_run_new()

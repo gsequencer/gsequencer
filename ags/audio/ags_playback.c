@@ -127,7 +127,7 @@ ags_playback_class_init(AgsPlaybackClass *playback)
    *
    * The parent playback domain.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("playback-domain",
 				   i18n_pspec("parent playback domain"),
@@ -143,7 +143,7 @@ ags_playback_class_init(AgsPlaybackClass *playback)
    *
    * The assigned source.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("source",
 				   i18n_pspec("assigned source"),
@@ -159,7 +159,7 @@ ags_playback_class_init(AgsPlaybackClass *playback)
    *
    * The assigned audio channel.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_uint("audio-channel",
 				 i18n_pspec("assigned audio channel"),
@@ -699,7 +699,7 @@ ags_playback_disconnect(AgsConnectable *connectable)
  * 
  * Set channel thread of appropriate scope.
  * 
- * Since: 0.7.122.7
+ * Since: 1.0.0.7
  */
 void
 ags_playback_set_channel_thread(AgsPlayback *playback,
@@ -731,7 +731,7 @@ ags_playback_set_channel_thread(AgsPlayback *playback,
  * 
  * Returns: the matching #AgsThread or %NULL
  * 
- * Since: 0.7.122.7
+ * Since: 1.0.0.7
  */
 AgsThread*
 ags_playback_get_channel_thread(AgsPlayback *playback,
@@ -754,7 +754,7 @@ ags_playback_get_channel_thread(AgsPlayback *playback,
  * 
  * Set iterator thread of appropriate scope.
  * 
- * Since: 0.7.122.7
+ * Since: 1.0.0.7
  */
 void
 ags_playback_set_iterator_thread(AgsPlayback *playback,
@@ -786,7 +786,7 @@ ags_playback_set_iterator_thread(AgsPlayback *playback,
  * 
  * Returns: the matching #AgsThread or %NULL
  * 
- * Since: 0.7.122.7
+ * Since: 1.0.0.7
  */
 AgsThread*
 ags_playback_get_iterator_thread(AgsPlayback *playback,
@@ -809,7 +809,7 @@ ags_playback_get_iterator_thread(AgsPlayback *playback,
  * 
  * Set recycling thread of appropriate scope.
  * 
- * Since: 0.7.122.7
+ * Since: 1.0.0.7
  */
 void
 ags_playback_set_recycling_thread(AgsPlayback *playback,
@@ -841,7 +841,7 @@ ags_playback_set_recycling_thread(AgsPlayback *playback,
  * 
  * Returns: the matching #AgsThread or %NULL
  * 
- * Since: 0.7.122.7
+ * Since: 1.0.0.7
  */
 AgsThread*
 ags_playback_get_recycling_thread(AgsPlayback *playback,
@@ -864,7 +864,7 @@ ags_playback_get_recycling_thread(AgsPlayback *playback,
  * 
  * Set recall id of appropriate scope.
  * 
- * Since: 0.7.122.7
+ * Since: 1.0.0.7
  */
 void
 ags_playback_set_recall_id(AgsPlayback *playback,
@@ -896,7 +896,7 @@ ags_playback_set_recall_id(AgsPlayback *playback,
  * 
  * Returns: the matching #AgsRecallID or %NULL
  * 
- * Since: 0.7.122.7
+ * Since: 1.0.0.7
  */
 AgsRecallID*
 ags_playback_get_recall_id(AgsPlayback *playback,
@@ -919,7 +919,7 @@ ags_playback_get_recall_id(AgsPlayback *playback,
  *
  * Returns: the matching playback play
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsPlayback*
 ags_playback_find_source(GList *playback,
@@ -943,7 +943,7 @@ ags_playback_find_source(GList *playback,
  *
  * Returns: a new #AgsPlayback
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsPlayback*
 ags_playback_new()

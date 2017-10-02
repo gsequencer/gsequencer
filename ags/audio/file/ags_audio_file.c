@@ -141,7 +141,7 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    *
    * The assigned soundcard.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of audio file"),
@@ -157,7 +157,7 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    *
    * The assigned filename.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("filename of lv2 manager"),
@@ -173,7 +173,7 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    *
    * The audio file's offset to start reading from.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("start-channel",
 				 i18n_pspec("start-channel is the start offset"),
@@ -191,7 +191,7 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    *
    * The audio file's count of channels to be read.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("audio-channels",
 				 i18n_pspec("read audio-channels of channels"),
@@ -208,7 +208,7 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    *
    * The samplerate to be used.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("using samplerate"),
@@ -226,7 +226,7 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    *
    * The buffer size to be used.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("using buffer size"),
@@ -244,7 +244,7 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    *
    * The containing  #AgsAudioSignal.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("playable",
 				   i18n_pspec("containing playable"),
@@ -260,7 +260,7 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    *
    * The containing  #AgsAudioSignal.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio-signal",
 				   i18n_pspec("containing audio signal"),
@@ -461,7 +461,7 @@ ags_audio_file_check_suffix(gchar *filename)
  *
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 gboolean
 ags_audio_file_open(AgsAudioFile *audio_file)
@@ -514,7 +514,7 @@ ags_audio_file_open(AgsAudioFile *audio_file)
  *
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 gboolean
 ags_audio_file_rw_open(AgsAudioFile *audio_file,
@@ -579,7 +579,7 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
  *
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 gboolean
 ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
@@ -632,7 +632,7 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
  *
  * Close the #AgsAudioFile.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_audio_file_close(AgsAudioFile *audio_file)
@@ -646,7 +646,7 @@ ags_audio_file_close(AgsAudioFile *audio_file)
  *
  * Convert the #AgsAudioFile to a #GList of buffers.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_audio_file_read_audio_signal(AgsAudioFile *audio_file)
@@ -668,7 +668,7 @@ ags_audio_file_read_audio_signal(AgsAudioFile *audio_file)
  *
  * Position the #AgsAudioFile's internal data address.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_file_seek(AgsAudioFile *audio_file, guint frames, gint whence)
@@ -685,7 +685,7 @@ ags_audio_file_seek(AgsAudioFile *audio_file, guint frames, gint whence)
  *
  * Write the buffer to #AgsAudioFile.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_file_write(AgsAudioFile *audio_file,
@@ -726,7 +726,7 @@ ags_audio_file_write(AgsAudioFile *audio_file,
  *
  * Flushes the #AgsAudioFile's internal buffer.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_file_flush(AgsAudioFile *audio_file)
@@ -745,7 +745,7 @@ ags_audio_file_flush(AgsAudioFile *audio_file)
  *
  * Returns: an empty #AgsAudioFile.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsAudioFile*
 ags_audio_file_new(gchar *filename,

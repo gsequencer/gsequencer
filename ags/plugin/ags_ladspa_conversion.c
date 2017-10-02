@@ -165,7 +165,7 @@ ags_ladspa_conversion_convert(AgsConversion *conversion,
  *
  * Returns: the new instance
  *
- * Since: 0.7.9
+ * Since: 1.0.0
  */
 AgsLadspaConversion*
 ags_ladspa_conversion_new()

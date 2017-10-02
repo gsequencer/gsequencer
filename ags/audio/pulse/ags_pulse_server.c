@@ -175,7 +175,7 @@ ags_pulse_server_class_init(AgsPulseServerClass *pulse_server)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("the application context object"),
@@ -191,7 +191,7 @@ ags_pulse_server_class_init(AgsPulseServerClass *pulse_server)
    *
    * The assigned URL.
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("url",
 				   i18n_pspec("the URL"),
@@ -207,7 +207,7 @@ ags_pulse_server_class_init(AgsPulseServerClass *pulse_server)
    *
    * The default soundcard.
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("default-soundcard",
 				   i18n_pspec("default soundcard"),
@@ -223,7 +223,7 @@ ags_pulse_server_class_init(AgsPulseServerClass *pulse_server)
    *
    * The default pulse client.
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("default-pulse-client",
 				   i18n_pspec("default pulse client"),
@@ -239,7 +239,7 @@ ags_pulse_server_class_init(AgsPulseServerClass *pulse_server)
    *
    * The pulse client list.
    * 
-   * Since: 0.9.10
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("pulse-client",
 				   i18n_pspec("pulse client list"),
@@ -1020,7 +1020,7 @@ ags_pulse_server_register_default_soundcard(AgsPulseServer *pulse_server)
  *
  * Returns: the #GList containing a #AgsPulseServer matching @url or %NULL
  *
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 GList*
 ags_pulse_server_find_url(GList *pulse_server,
@@ -1047,7 +1047,7 @@ ags_pulse_server_find_url(GList *pulse_server,
  *
  * Returns: the #AgsPulseClient found or %NULL
  *
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 GObject*
 ags_pulse_server_find_client(AgsPulseServer *pulse_server,
@@ -1078,7 +1078,7 @@ ags_pulse_server_find_client(AgsPulseServer *pulse_server,
  *
  * Returns: the #AgsPulsePort found or %NULL
  *
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 GObject*
 ags_pulse_server_find_port(AgsPulseServer *pulse_server,
@@ -1113,7 +1113,7 @@ ags_pulse_server_find_port(AgsPulseServer *pulse_server,
  *
  * Add @pulse_client to @pulse_server
  *
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 void
 ags_pulse_server_add_client(AgsPulseServer *pulse_server,
@@ -1136,7 +1136,7 @@ ags_pulse_server_add_client(AgsPulseServer *pulse_server,
  *
  * Remove @pulse_client to @pulse_server
  *
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 void
 ags_pulse_server_remove_client(AgsPulseServer *pulse_server,
@@ -1158,7 +1158,7 @@ ags_pulse_server_remove_client(AgsPulseServer *pulse_server,
  *
  * Connect all clients.
  *
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 void
 ags_pulse_server_connect_client(AgsPulseServer *pulse_server)
@@ -1220,7 +1220,7 @@ ags_pulse_server_start_poll(AgsPulseServer *pulse_server)
  *
  * Returns: the new #AgsPulseServer
  *
- * Since: 0.9.10
+ * Since: 1.0.0
  */
 AgsPulseServer*
 ags_pulse_server_new(GObject *application_context,

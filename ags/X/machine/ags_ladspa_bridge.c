@@ -159,7 +159,7 @@ ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge)
    *
    * The plugins filename.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_string("filename",
 				    i18n_pspec("the object file"),
@@ -175,7 +175,7 @@ ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge)
    *
    * The effect's name.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_string("effect",
 				    i18n_pspec("the effect"),
@@ -191,7 +191,7 @@ ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge)
    *
    * The effect's index.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_ulong("index",
 				   i18n_pspec("index of effect"),
@@ -645,7 +645,7 @@ ags_ladspa_bridge_load(AgsLadspaBridge *ladspa_bridge)
  *
  * Returns: a new #AgsLadspaBridge
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsLadspaBridge*
 ags_ladspa_bridge_new(GObject *soundcard,

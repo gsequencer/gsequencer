@@ -144,7 +144,7 @@ ags_link_collection_editor_class_init(AgsLinkCollectionEditorClass *link_collect
    *
    * The channel type to apply to. Either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT.
    * 
-   * Since: 0.3
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_gtype("channel-type",
 				  i18n_pspec("assigned channel type"),
@@ -645,7 +645,7 @@ ags_link_collection_editor_reset(AgsApplicable *applicable)
  *
  * Checks for possible channels to link. And modifies its ranges.
  * 
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_link_collection_editor_check(AgsLinkCollectionEditor *link_collection_editor)
@@ -728,7 +728,7 @@ ags_link_collection_editor_check(AgsLinkCollectionEditor *link_collection_editor
  *
  * Returns: a new #AgsLinkCollectionEditor
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsLinkCollectionEditor*
 ags_link_collection_editor_new(GType channel_type)

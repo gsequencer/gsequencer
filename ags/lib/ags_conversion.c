@@ -113,7 +113,7 @@ ags_conversion_class_init(AgsConversionClass *conversion)
    *
    * The name of the conversion.
    * 
-   * Since: 0.7.8
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("name",
 				   i18n_pspec("name of conversion"),
@@ -129,7 +129,7 @@ ags_conversion_class_init(AgsConversionClass *conversion)
    *
    * The description of the conversion.
    * 
-   * Since: 0.7.8
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("description",
 				   i18n_pspec("description of conversion"),
@@ -155,7 +155,7 @@ ags_conversion_class_init(AgsConversionClass *conversion)
    *
    * Returns: the converted value
    * 
-   * Since: 0.7.8
+   * Since: 1.0.0
    */
   conversion_signals[CONVERT] =
     g_signal_new("convert",
@@ -288,7 +288,7 @@ ags_conversion_real_convert(AgsConversion *conversion,
  *
  * Returns: the converted value as gdouble
  *
- * Since: 0.7.8
+ * Since: 1.0.0
  */
 gdouble
 ags_conversion_convert(AgsConversion *conversion,
@@ -318,7 +318,7 @@ ags_conversion_convert(AgsConversion *conversion,
  *
  * Returns: the new instance
  *
- * Since: 0.7.8
+ * Since: 1.0.0
  */
 AgsConversion*
 ags_conversion_new()

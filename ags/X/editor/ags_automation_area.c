@@ -139,7 +139,7 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    *
    * The y offset.
    * 
-   * Since: 0.7.74
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_uint("y",
 				  i18n_pspec("y offset"),
@@ -157,7 +157,7 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    *
    * The nth height.
    * 
-   * Since: 0.7.74
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_uint("height",
 				  i18n_pspec("height of the area"),
@@ -175,7 +175,7 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    *
    * The #GtkDrawingArea to perform drawing on.
    * 
-   * Since: 0.7.74
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("drawing-area",
 				   i18n_pspec("assigned drawing area"),
@@ -191,7 +191,7 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    *
    * The #AgsAudio to visualize.
    * 
-   * Since: 0.7.74
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("assigned audio"),
@@ -207,7 +207,7 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    *
    * The target channel.
    * 
-   * Since: 0.7.74
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_gtype("channel-type",
 				  i18n_pspec("assigned channel type"),
@@ -223,7 +223,7 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    *
    * The assigned #AgsFilename representing this channel.
    * 
-   * Since: 0.7.74
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("filename assigned with"),
@@ -239,7 +239,7 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    *
    * The assigned #AgsEffect representing this channel.
    * 
-   * Since: 0.7.74
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("effect",
 				   i18n_pspec("effect assigned with"),
@@ -255,7 +255,7 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    *
    * The assigned #AgsControl-Specifier representing this channel.
    * 
-   * Since: 0.7.74
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("control-specifier",
 				   i18n_pspec("assigned control specifier"),
@@ -271,7 +271,7 @@ ags_automation_area_class_init(AgsAutomationAreaClass *automation_area)
    *
    * The assigned #AgsControl-Name representing this channel.
    * 
-   * Since: 0.7.74
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("control-name",
 				   i18n_pspec("displayed control name"),
@@ -512,7 +512,7 @@ ags_automation_area_disconnect(AgsConnectable *connectable)
  *
  * Returns: the matching #GList-struct
  *
- * Since: 0.7.2
+ * Since: 1.0.0
  */
 GList*
 ags_automation_area_find_specifier(GList *automation_area,
@@ -540,7 +540,7 @@ ags_automation_area_find_specifier(GList *automation_area,
  *
  * Returns: the matching #GList-struct
  *
- * Since: 0.7.64
+ * Since: 1.0.0
  */
 GList*
 ags_automation_area_find_position(GList *automation_area,
@@ -567,7 +567,7 @@ ags_automation_area_find_position(GList *automation_area,
  *
  * Plot data.
  *
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 void
 ags_automation_area_draw_strip(AgsAutomationArea *automation_area,
@@ -618,7 +618,7 @@ ags_automation_area_draw_strip(AgsAutomationArea *automation_area,
  *
  * Draws horizontal and vertical lines.
  *
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 void
 ags_automation_area_draw_segment(AgsAutomationArea *automation_area,
@@ -713,7 +713,7 @@ ags_automation_area_draw_segment(AgsAutomationArea *automation_area,
  *
  * Draw a scale and its boundaries.
  *
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 void
 ags_automation_area_draw_scale(AgsAutomationArea *automation_area,
@@ -789,7 +789,7 @@ ags_automation_area_draw_scale(AgsAutomationArea *automation_area,
  *
  * Draw the #AgsAutomation of selected #AgsMachine on @automation_edit.
  *
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 void
 ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
@@ -1152,7 +1152,7 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
  *
  * Draw a portion of data.
  *
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 void
 ags_automation_area_draw_surface(AgsAutomationArea *automation_area, cairo_t *cr,
@@ -1283,7 +1283,7 @@ ags_automation_area_paint(AgsAutomationArea *automation_area,
  *
  * Returns: a new #AgsAutomationArea
  *
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 AgsAutomationArea*
 ags_automation_area_new(GtkDrawingArea *drawing_area,

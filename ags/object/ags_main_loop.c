@@ -73,7 +73,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
    *
    * Notify about interrupt threads.
    *
-   * Since: 0.7.46
+   * Since: 1.0.0
    */
   main_loop_signals[INTERRUPT] = 
     g_signal_new("interrupt",
@@ -95,7 +95,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
    *
    * Returns: if monitor is allowed
    * 
-   * Since: 0.7.46
+   * Since: 1.0.0
    */
   main_loop_signals[MONITOR] =
     g_signal_new("monitor",
@@ -114,7 +114,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
    *
    * Change frequency.
    * 
-   * Since: 0.7.122.2
+   * Since: 1.0.0.2
    */
   main_loop_signals[CHANGE_FREQUENCY] =
     g_signal_new("change-frequency",
@@ -156,7 +156,7 @@ ags_main_loop_get_tree_lock(AgsMainLoop *main_loop)
  *
  * Sets the application context.
  *
- * Since: 0.6.0
+ * Since: 1.0.0
  */
 void
 ags_main_loop_set_application_context(AgsMainLoop *main_loop, AgsApplicationContext *application_context)
@@ -177,7 +177,7 @@ ags_main_loop_set_application_context(AgsMainLoop *main_loop, AgsApplicationCont
  *
  * Returns: the #AgsApplicationContext
  *
- * Since: 0.6.0
+ * Since: 1.0.0
  */
 AgsApplicationContext*
 ags_main_loop_get_application_context(AgsMainLoop *main_loop)
@@ -197,7 +197,7 @@ ags_main_loop_get_application_context(AgsMainLoop *main_loop)
  *
  * Sets the asynchronous queue.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_main_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue)
@@ -218,7 +218,7 @@ ags_main_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue)
  *
  * Returns: the #AgsAsyncQueue
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GObject*
 ags_main_loop_get_async_queue(AgsMainLoop *main_loop)
@@ -239,7 +239,7 @@ ags_main_loop_get_async_queue(AgsMainLoop *main_loop)
  *
  * Sets tic to @tic. 
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_main_loop_set_tic(AgsMainLoop *main_loop, guint tic)
@@ -260,7 +260,7 @@ ags_main_loop_set_tic(AgsMainLoop *main_loop, guint tic)
  *
  * Returns: current tic
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 guint
 ags_main_loop_get_tic(AgsMainLoop *main_loop)
@@ -281,7 +281,7 @@ ags_main_loop_get_tic(AgsMainLoop *main_loop)
  *
  * Sets last sync to @last_sync. 
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_main_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync)
@@ -302,7 +302,7 @@ ags_main_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync)
  *
  * Returns: last synced tic
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 guint
 ags_main_loop_get_last_sync(AgsMainLoop *main_loop)
@@ -325,7 +325,7 @@ ags_main_loop_get_last_sync(AgsMainLoop *main_loop)
  * 
  * Notify about interrupt threads.
  *
- * Since: 0.7.46
+ * Since: 1.0.0
  */
 void
 ags_main_loop_interrupt(AgsMainLoop *main_loop,
@@ -350,7 +350,7 @@ ags_main_loop_interrupt(AgsMainLoop *main_loop,
  *
  * Returns: if monitor is allowed
  *
- * Since: 0.7.46
+ * Since: 1.0.0
  */
 gboolean
 ags_main_loop_monitor(AgsMainLoop *main_loop,
@@ -375,7 +375,7 @@ ags_main_loop_monitor(AgsMainLoop *main_loop,
  *
  * Change frequency.
  *
- * Since: 0.7.122.2
+ * Since: 1.0.0.2
  */
 void
 ags_main_loop_change_frequency(AgsMainLoop *main_loop,

@@ -158,7 +158,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The assigned #AgsSoundcard providing default settings.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -174,7 +174,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The assigned #AgsRecycling linking tree.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("recycling",
 				   i18n_pspec("assigned recycling"),
@@ -190,7 +190,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The assigned #AgsRecallID providing context.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("recall_id",
 				   i18n_pspec("assigned recall id"),
@@ -206,7 +206,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The samplerate to be used.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("using samplerate"),
@@ -224,7 +224,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The buffer size to be used.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("using buffer size"),
@@ -242,7 +242,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The format to be used.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("using format"),
@@ -260,7 +260,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The word size of frame.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("word-size",
 				 i18n_pspec("frame word size"),
@@ -278,7 +278,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The length of the stream.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("length",
 				 i18n_pspec("stream length"),
@@ -296,7 +296,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The first frame of stream.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("first-frame",
 				 i18n_pspec("stream's first frame"),
@@ -314,7 +314,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The last frame of stream.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("last-frame",
 				 i18n_pspec("stream's last frame"),
@@ -350,7 +350,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The loop start of stream.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("loop-start",
 				 i18n_pspec("stream's loop start"),
@@ -368,7 +368,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The loop end of stream.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("loop-end",
 				 i18n_pspec("stream's loop end"),
@@ -386,7 +386,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The delay to be used.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("delay",
 				   i18n_pspec("using delay"),
@@ -404,7 +404,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The attack to be used.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("attack",
 				 i18n_pspec("using attack"),
@@ -423,7 +423,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The stream it contains.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("stream",
 				    i18n_pspec("containing stream"),
@@ -438,7 +438,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The end of stream.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("stream-end",
 				    i18n_pspec("end of stream"),
@@ -453,7 +453,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The current stream.
    * 
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("stream-current",
 				    i18n_pspec("current stream"),
@@ -468,7 +468,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The assigned #AgsNote providing default settings.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("note",
 				   i18n_pspec("assigned note"),
@@ -1095,7 +1095,7 @@ ags_audio_signal_finalize(GObject *gobject)
  *
  * Returns: the audio data array
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void*
 ags_stream_alloc(guint buffer_size,
@@ -1159,7 +1159,7 @@ ags_stream_free(signed short *buffer)
  *
  * Set samplerate.
  *
- * Since: 0.7.45
+ * Since: 1.0.0
  */
 void
 ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
@@ -1174,7 +1174,7 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
  *
  * Set buffer size.
  *
- * Since: 0.7.45
+ * Since: 1.0.0
  */
 void
 ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size)
@@ -1232,7 +1232,7 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
  *
  * Set format.
  *
- * Since: 0.7.45
+ * Since: 1.0.0
  */
 void
 ags_audio_signal_set_format(AgsAudioSignal *audio_signal, guint format)
@@ -1291,7 +1291,7 @@ ags_audio_signal_set_format(AgsAudioSignal *audio_signal, guint format)
  *
  * Returns: the counted length.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 guint
 ags_audio_signal_get_length_till_current(AgsAudioSignal *audio_signal)
@@ -1326,7 +1326,7 @@ ags_audio_signal_get_length_till_current(AgsAudioSignal *audio_signal)
  *
  * Adds a buffer at the end of the stream.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_audio_signal_add_stream(AgsAudioSignal *audio_signal)
@@ -1362,7 +1362,7 @@ ags_audio_signal_add_stream(AgsAudioSignal *audio_signal)
  * Resizes an #AgsAudioSignal's stream but be carefull with shrinking.
  * This function may crash the application.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
@@ -1438,7 +1438,7 @@ ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length)
  * Resizes an #AgsAudioSignal's stream but doesn't shrink more than the
  * current stream position.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_signal_stream_safe_resize(AgsAudioSignal *audio_signal, guint length)
@@ -1516,7 +1516,7 @@ ags_audio_signal_real_realloc_buffer_size(AgsAudioSignal *audio_signal, guint bu
  *
  * Realloc the stream to the new buffer size. 
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_signal_realloc_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size)
@@ -1539,7 +1539,7 @@ ags_audio_signal_realloc_buffer_size(AgsAudioSignal *audio_signal, guint buffer_
  *
  * Copy a buffer to an other buffer.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_signal_copy_double_buffer_to_buffer(signed short *destination, guint dchannels,
@@ -1561,7 +1561,7 @@ ags_audio_signal_copy_double_buffer_to_buffer(signed short *destination, guint d
  * 
  * Copy stream of one audio signal to another
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
@@ -1646,7 +1646,7 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
  *
  * Returns: the template #AgsAudioSignal
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsAudioSignal*
 ags_audio_signal_get_template(GList *audio_signal)
@@ -1674,7 +1674,7 @@ ags_audio_signal_get_template(GList *audio_signal)
  *
  * Returns: next #GList matching #AgsRecallID
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GList*
 ags_audio_signal_get_stream_current(GList *list_audio_signal,
@@ -1711,7 +1711,7 @@ ags_audio_signal_get_stream_current(GList *list_audio_signal,
  *
  * Returns: matching #AgsAudioSignal
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 GList*
 ags_audio_signal_get_by_recall_id(GList *list_audio_signal,
@@ -1747,7 +1747,7 @@ ags_audio_signal_get_by_recall_id(GList *list_audio_signal,
  *
  * Tile audio signal data.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_signal_tile(AgsAudioSignal *audio_signal,
@@ -1929,7 +1929,7 @@ ags_audio_signal_tile(AgsAudioSignal *audio_signal,
  *
  * Scale audio signal data.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_audio_signal_scale(AgsAudioSignal *audio_signal,
@@ -2667,7 +2667,7 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
  *
  * Envelope audio signal.
  *
- * Since: 0.6.7
+ * Since: 1.0.0
  */
 void
 ags_audio_signal_envelope(AgsAudioSignal *audio_signal,
@@ -2738,7 +2738,7 @@ ags_audio_signal_envelope(AgsAudioSignal *audio_signal,
  * 
  * Returns: %TRUE if related audio signal to recall id is available, otherwise %FALSE
  * 
- * Since: 0.7.122.9
+ * Since: 1.0.0.9
  */
 gboolean
 ags_audio_signal_is_active(GList *audio_signal,
@@ -2779,7 +2779,7 @@ ags_audio_signal_is_active(GList *audio_signal,
  *
  * Returns: a new #AgsAudioSignal
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsAudioSignal*
 ags_audio_signal_new(GObject *soundcard,
@@ -2810,7 +2810,7 @@ ags_audio_signal_new(GObject *soundcard,
  *
  * Returns: a new #AgsAudioSignal
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsAudioSignal*
 ags_audio_signal_new_with_length(GObject *soundcard,

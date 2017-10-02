@@ -413,7 +413,7 @@ ags_scroll_on_play_launch(AgsTask *task)
  *
  * Returns: an new #AgsScrollOnPlay.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsScrollOnPlay*
 ags_scroll_on_play_new(GtkWidget *editor, gdouble step)

@@ -797,7 +797,7 @@ ags_synth_update(AgsSynth *synth)
  *
  * Returns: a new #AgsSynth
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsSynth*
 ags_synth_new(GObject *soundcard)

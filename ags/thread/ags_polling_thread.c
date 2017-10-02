@@ -362,7 +362,7 @@ ags_polling_thread_interrupted(AgsThread *thread,
  *
  * Returns: the position if found, otherwise -1
  *
- * Since: 0.7.50
+ * Since: 1.0.0
  */
 gint
 ags_polling_thread_fd_position(AgsPollingThread *polling_thread,
@@ -397,7 +397,7 @@ ags_polling_thread_fd_position(AgsPollingThread *polling_thread,
  *
  * Add a @gobject to #AgsPollingThread.
  *
- * Since: 0.7.50
+ * Since: 1.0.0
  */
 void
 ags_polling_thread_add_poll_fd(AgsPollingThread *polling_thread,
@@ -453,7 +453,7 @@ ags_polling_thread_add_poll_fd(AgsPollingThread *polling_thread,
  *
  * Remove @gobject from #AgsPollingThread.
  *
- * Since: 0.7.50
+ * Since: 1.0.0
  */
 void
 ags_polling_thread_remove_poll_fd(AgsPollingThread *polling_thread,
@@ -519,7 +519,7 @@ ags_polling_thread_remove_poll_fd(AgsPollingThread *polling_thread,
  *
  * Returns: the new #AgsPollingThread
  *
- * Since: 0.7.50
+ * Since: 1.0.0
  */
 AgsPollingThread*
 ags_polling_thread_new()

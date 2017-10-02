@@ -122,7 +122,7 @@ ags_task_class_init(AgsTaskClass *task)
    *
    * The assigned #AgsTaskThread
    * 
-   * Since: 0.9.13
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("task-thread",
 				   i18n_pspec("the task thread object"),
@@ -144,7 +144,7 @@ ags_task_class_init(AgsTaskClass *task)
    *
    * The ::launch signal is emited in a thread safe context
    *
-   * Since: 0.4.2
+   * Since: 1.0.0
    */
   task_signals[LAUNCH] =
     g_signal_new("launch",
@@ -162,7 +162,7 @@ ags_task_class_init(AgsTaskClass *task)
    *
    * The ::failure signal is emited if ::launch fails
    *
-   * Since: 0.4.2
+   * Since: 1.0.0
    */
   task_signals[FAILURE] =
     g_signal_new("failure",
@@ -292,7 +292,7 @@ ags_task_finalize(GObject *gobject)
  *
  * Intercept task.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_task_launch(AgsTask *task)
@@ -312,7 +312,7 @@ ags_task_launch(AgsTask *task)
  *
  * Signals failure of task.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_task_failure(AgsTask *task, GError *error)
@@ -333,7 +333,7 @@ ags_task_failure(AgsTask *task, GError *error)
  *
  * Returns: a new #AgsTask
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsTask*
 ags_task_new()

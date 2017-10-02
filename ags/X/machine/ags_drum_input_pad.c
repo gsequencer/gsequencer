@@ -387,7 +387,7 @@ ags_drum_input_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  *
  * Returns: a new #AgsDrumInputPad
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsDrumInputPad*
 ags_drum_input_pad_new(AgsChannel *channel)

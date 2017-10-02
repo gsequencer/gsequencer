@@ -201,7 +201,7 @@ ags_matrix_bridge_finalize(GObject *gobject)
  *
  * Returns: a new #AgsMatrixBridge
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsMatrixBridge*
 ags_matrix_bridge_new(AgsAudio *audio)

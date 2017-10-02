@@ -129,7 +129,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    *
    * The associated recall type within audio context.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_gtype("recall-audio-type",
 				  i18n_pspec("audio level recall type"),
@@ -145,7 +145,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    *
    * The associated recall within audio context.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("recall-audio",
 				   i18n_pspec("audio level recall"),
@@ -161,7 +161,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    *
    * The associated recall type within dynamic audio context.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_gtype("recall-audio-run-type",
 				  i18n_pspec("audio runlevel recall type"),
@@ -177,7 +177,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    *
    * The associated recall within dynamic audio context.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("recall-audio-run",
 				   i18n_pspec("audio runlevel recall"),
@@ -193,7 +193,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    *
    * The associated recall type within channel context.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_gtype("recall-channel-type",
 				  i18n_pspec("channel level recall type"),
@@ -209,7 +209,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    *
    * The associated recall within channel context.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
  param_spec = g_param_spec_object("recall-channel",
 				  i18n_pspec("channel level recall"),
@@ -225,7 +225,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    *
    * The associated recall type within dynamic channel context.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_gtype("recall-channel-run-type",
 				  i18n_pspec("channel runlevel recall type"),
@@ -241,7 +241,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    *
    * The associated recall within dynamic channel context.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("recall-channel-run",
 				   i18n_pspec("channel runlevel recall"),
@@ -490,7 +490,7 @@ ags_recall_container_finalize(GObject *gobject)
  *
  * Returns: the #AgsRecallAudio
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsRecall*
 ags_recall_container_get_recall_audio(AgsRecallContainer *container)
@@ -506,7 +506,7 @@ ags_recall_container_get_recall_audio(AgsRecallContainer *container)
  *
  * Returns: the #AgsRecallAudioRun as list
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GList*
 ags_recall_container_get_recall_audio_run(AgsRecallContainer *container)
@@ -522,7 +522,7 @@ ags_recall_container_get_recall_audio_run(AgsRecallContainer *container)
  *
  * Returns: the #AgsRecallChannel
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GList*
 ags_recall_container_get_recall_channel(AgsRecallContainer *container)
@@ -538,7 +538,7 @@ ags_recall_container_get_recall_channel(AgsRecallContainer *container)
  *
  * Returns: the #AgsRecall
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GList*
 ags_recall_container_get_recall_channel_run(AgsRecallContainer *container)
@@ -557,7 +557,7 @@ ags_recall_container_get_recall_channel_run(AgsRecallContainer *container)
  *
  * Returns: the matching recalls
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 GList*
 ags_recall_container_find(GList *recall_container,
@@ -646,7 +646,7 @@ ags_recall_container_find(GList *recall_container,
  *
  * Returns: a new #AgsRecallContainer
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsRecallContainer*
 ags_recall_container_new()

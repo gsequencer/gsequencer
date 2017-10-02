@@ -380,7 +380,7 @@ ags_synth_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  *
  * Returns: a new #AgsSynthInputLine
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsSynthInputLine*
 ags_synth_input_line_new(AgsChannel *channel)

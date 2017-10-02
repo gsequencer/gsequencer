@@ -99,7 +99,7 @@ ags_timestamp_finalize(GObject *gobject)
  *
  * Returns: a new #AgsTimestamp
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsTimestamp*
 ags_timestamp_new()

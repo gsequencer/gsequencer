@@ -121,7 +121,7 @@ ags_cancel_recall_class_init(AgsCancelRecallClass *cancel_recall)
    *
    * The assigned #AgsRecall
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("recall",
 				   i18n_pspec("recall of cancel recall"),
@@ -137,7 +137,7 @@ ags_cancel_recall_class_init(AgsCancelRecallClass *cancel_recall)
    *
    * The assigned #AgsPlayback
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("playback",
 				   i18n_pspec("playback of cancel recall"),
@@ -345,7 +345,7 @@ ags_cancel_recall_launch(AgsTask *task)
  *
  * Returns: an new #AgsCancelRecall.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsCancelRecall*
 ags_cancel_recall_new(AgsRecall *recall,

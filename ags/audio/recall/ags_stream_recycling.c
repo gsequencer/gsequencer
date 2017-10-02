@@ -215,7 +215,7 @@ ags_stream_recycling_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsStreamRecycling
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsStreamRecycling*
 ags_stream_recycling_new(AgsRecycling *recycling)

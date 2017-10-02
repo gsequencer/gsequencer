@@ -205,7 +205,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The assigned #AgsPad.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("pad",
 				   i18n_pspec("parent pad"),
@@ -221,7 +221,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The assigned #AgsChannel to visualize.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("assigned channel"),
@@ -250,7 +250,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The ::set-channel signal notifies about changed channel.
    *
-   * Since: 0.4.3
+   * Since: 1.0.0
    */
   line_signals[SET_CHANNEL] =
     g_signal_new("set-channel",
@@ -269,7 +269,7 @@ ags_line_class_init(AgsLineClass *line)
    * The ::group-changed signal notifies about changed grouping. This
    * normally happens as toggling group button in #AgsPad or #AgsLine.
    *
-   * Since: 0.4.3
+   * Since: 1.0.0
    */
   line_signals[GROUP_CHANGED] =
     g_signal_new("group-changed",
@@ -291,7 +291,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * Returns: a #GList-struct containing new #AgsPort objects
    *
-   * Since: 0.4.3
+   * Since: 1.0.0
    */
   line_signals[ADD_EFFECT] =
     g_signal_new("add-effect",
@@ -312,7 +312,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The ::remove-effect signal notifies about removed effect.
    *
-   * Since: 0.4.3
+   * Since: 1.0.0
    */
   line_signals[REMOVE_EFFECT] =
     g_signal_new("remove-effect",
@@ -331,7 +331,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The ::map-recall as recalls should be mapped.
    *
-   * Since: 0.4.3
+   * Since: 1.0.0
    */
   line_signals[MAP_RECALL] =
     g_signal_new("map-recall",
@@ -351,7 +351,7 @@ ags_line_class_init(AgsLineClass *line)
    * 
    * Returns: a #GList with associated ports
    *
-   * Since: 0.4.3
+   * Since: 1.0.0
    */
   line_signals[FIND_PORT] =
     g_signal_new("find-port",
@@ -735,7 +735,7 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
  *
  * Is emitted as channel gets modified.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_line_set_channel(AgsLine *line, AgsChannel *channel)
@@ -755,7 +755,7 @@ ags_line_set_channel(AgsLine *line, AgsChannel *channel)
  *
  * Is emitted as group is changed.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_line_group_changed(AgsLine *line)
@@ -1312,7 +1312,7 @@ ags_line_real_add_effect(AgsLine *line,
  *
  * Returns: a #GList-struct containing new #AgsPort objects
  *
- * Since: 0.4.3 
+ * Since: 1.0.0 
  */
 GList*
 ags_line_add_effect(AgsLine *line,
@@ -1523,7 +1523,7 @@ ags_line_real_remove_effect(AgsLine *line,
  *
  * Remove a line member.
  *
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 void
 ags_line_remove_effect(AgsLine *line,
@@ -1558,7 +1558,7 @@ ags_line_real_map_recall(AgsLine *line,
  *
  * Is emitted as group is changed.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_line_map_recall(AgsLine *line,
@@ -1618,7 +1618,7 @@ ags_line_real_find_port(AgsLine *line)
  *
  * Returns: an #GList containing all related #AgsPort
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 GList*
 ags_line_find_port(AgsLine *line)
@@ -1646,7 +1646,7 @@ ags_line_find_port(AgsLine *line)
  *
  * Returns: next matching #GList-struct containing #AgsLine
  * 
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 GList*
 ags_line_find_next_grouped(GList *line)
@@ -1666,7 +1666,7 @@ ags_line_find_next_grouped(GList *line)
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  *
- * Since: 0.7.8
+ * Since: 1.0.0
  */
 gboolean
 ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
@@ -1838,7 +1838,7 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
  *
  * Returns: a new #AgsLine
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsLine*
 ags_line_new(GtkWidget *pad, AgsChannel *channel)

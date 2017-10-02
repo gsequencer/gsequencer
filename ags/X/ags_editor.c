@@ -144,7 +144,7 @@ ags_editor_class_init(AgsEditorClass *editor)
    *
    * The assigned #AgsSoundcard acting as default sink.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -525,7 +525,7 @@ ags_editor_real_machine_changed(AgsEditor *editor, AgsMachine *machine)
  *
  * Is emitted as machine changed of editor.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_editor_machine_changed(AgsEditor *editor, AgsMachine *machine)
@@ -545,7 +545,7 @@ ags_editor_machine_changed(AgsEditor *editor, AgsMachine *machine)
  *
  * Is emitted as machine changed of editor.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_editor_select_all(AgsEditor *editor)
@@ -630,7 +630,7 @@ ags_editor_select_all(AgsEditor *editor)
  *
  * Is emitted as machine changed of editor.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_editor_paste(AgsEditor *editor)
@@ -940,7 +940,7 @@ ags_editor_paste(AgsEditor *editor)
  *
  * Is emitted as machine changed of editor.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_editor_copy(AgsEditor *editor)
@@ -1020,7 +1020,7 @@ ags_editor_copy(AgsEditor *editor)
  *
  * Is emitted as machine changed of editor.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_editor_cut(AgsEditor *editor)
@@ -1134,7 +1134,7 @@ ags_editor_cut(AgsEditor *editor)
  *
  * Invert all notation of @editor's selected machine.
  *
- * Since: 0.5.0
+ * Since: 1.0.0
  */
 void
 ags_editor_invert(AgsEditor *editor)
@@ -1265,7 +1265,7 @@ ags_editor_invert(AgsEditor *editor)
  *
  * Returns: a new #AgsEditor
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsEditor*
 ags_editor_new()

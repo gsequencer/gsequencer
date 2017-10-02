@@ -212,7 +212,7 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("the application context object"),
@@ -228,7 +228,7 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    *
    * The assigned application mutex
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("application-mutex",
 				    i18n_pspec("the application mutex object"),
@@ -243,7 +243,7 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    *
    * The JACK sequencer indentifier
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("device",
 				   i18n_pspec("the device identifier"),
@@ -259,7 +259,7 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    *
    * The buffer
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("buffer",
 				    i18n_pspec("the buffer"),
@@ -274,7 +274,7 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    *
    * Beats per minute
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("bpm",
 				   i18n_pspec("beats per minute"),
@@ -292,7 +292,7 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    *
    * tact
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -310,7 +310,7 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    *
    * Attack of the buffer
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),
@@ -326,7 +326,7 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    *
    * The assigned #AgsJackClient
    * 
-   * Since: 0.7.3
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("jack-client",
 				   i18n_pspec("jack client object"),
@@ -342,7 +342,7 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    *
    * The assigned #AgsJackPort
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("jack-port",
 				   i18n_pspec("jack port object"),
@@ -860,7 +860,7 @@ ags_jack_midiin_disconnect(AgsConnectable *connectable)
  *
  * The buffer flag indicates the currently recorded buffer.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin)
@@ -1616,7 +1616,7 @@ ags_jack_midiin_get_audio(AgsSequencer *sequencer)
  *
  * Returns: a new #AgsJackMidiin
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsJackMidiin*
 ags_jack_midiin_new(GObject *application_context)

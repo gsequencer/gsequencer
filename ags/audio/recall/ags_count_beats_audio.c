@@ -196,7 +196,7 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    *
    * Count until notation-loop-end and start at notation-loop-start.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("notation-loop",
 				   i18n_pspec("notation-loop playing"),
@@ -212,7 +212,7 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    *
    * The notation's notation-loop-start.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("notation-loop-start",
 				   i18n_pspec("start beat of notation loop"),
@@ -228,7 +228,7 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    *
    * The notation's loop-end.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("notation-loop-end",
 				   i18n_pspec("end beat of notation loop"),
@@ -244,7 +244,7 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    *
    * Count until loop-end and start at loop-start.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("sequencer-loop",
 				   i18n_pspec("sequencer loop playing"),
@@ -260,7 +260,7 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    *
    * The sequencer's loop-start.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("sequencer_loop_start",
 				   i18n_pspec("start beat of loop"),
@@ -276,7 +276,7 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
    *
    * The sequencer's loop-end.
    * 
-   * Since: 0.4
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("sequencer-loop-end",
 				   i18n_pspec("end beat of sequencer loop"),
@@ -821,7 +821,7 @@ ags_count_beats_audio_change_notation_duration(AgsTactable *tactable, gdouble du
  *
  * Returns: a new #AgsCountBeatsAudio
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsCountBeatsAudio*
 ags_count_beats_audio_new(gboolean loop)

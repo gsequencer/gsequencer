@@ -63,7 +63,7 @@ ags_concurrency_provider_class_init(AgsConcurrencyProviderInterface *interface)
  *
  * Returns: the assigned #AgsMutexManager
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsMutexManager*
 ags_concurrency_provider_get_mutex_manager(AgsConcurrencyProvider *concurrency_provider)
@@ -85,7 +85,7 @@ ags_concurrency_provider_get_mutex_manager(AgsConcurrencyProvider *concurrency_p
  *
  * Returns: the #AgsThread implementing #AgsMainLoop interface
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsThread*
 ags_concurrency_provider_get_main_loop(AgsConcurrencyProvider *concurrency_provider)
@@ -107,7 +107,7 @@ ags_concurrency_provider_get_main_loop(AgsConcurrencyProvider *concurrency_provi
  *
  * Returns: the #AgsThread implementing #AgsAsyncQueue interface
  * 
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsThread*
 ags_concurrency_provider_get_task_thread(AgsConcurrencyProvider *concurrency_provider)
@@ -129,7 +129,7 @@ ags_concurrency_provider_get_task_thread(AgsConcurrencyProvider *concurrency_pro
  *
  * Returns: the #AgsThreadPool
  * 
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsThreadPool*
 ags_concurrency_provider_get_thread_pool(AgsConcurrencyProvider *concurrency_provider)
@@ -151,7 +151,7 @@ ags_concurrency_provider_get_thread_pool(AgsConcurrencyProvider *concurrency_pro
  *
  * Returns: the #GList-struct containing workers
  * 
- * Since: 0.7.122.8
+ * Since: 1.0.0.8
  */
 GList*
 ags_concurrency_provider_get_worker(AgsConcurrencyProvider *concurrency_provider)
@@ -172,7 +172,7 @@ ags_concurrency_provider_get_worker(AgsConcurrencyProvider *concurrency_provider
  * 
  * Set workers of application context.
  * 
- * Since: 0.7.122.8
+ * Since: 1.0.0.8
  */
 void
 ags_concurrency_provider_set_worker(AgsConcurrencyProvider *concurrency_provider,

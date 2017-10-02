@@ -112,7 +112,7 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
    *
    * The adjustment giving indicator value.
    * 
-   * Since: 0.7.21
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("adjustment\0",
 				   "assigned adjustment\0",
@@ -296,7 +296,7 @@ ags_indicator_size_allocate(GtkWidget *widget,
  *
  * Returns: a new #AgsIndicator
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsIndicator*
 ags_indicator_new()

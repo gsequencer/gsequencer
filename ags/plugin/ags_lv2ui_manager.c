@@ -243,7 +243,7 @@ ags_lv2ui_manager_finalize(GObject *gobject)
  *
  * Returns: the plugin default search path as a string vector
  * 
- * Since: 0.9.0
+ * Since: 1.0.0
  */
 gchar**
 ags_lv2ui_manager_get_default_path()
@@ -257,7 +257,7 @@ ags_lv2ui_manager_get_default_path()
  * 
  * Set lv2ui manager default plugin path.
  * 
- * Since: 0.9.0
+ * Since: 1.0.0
  */
 void
 ags_lv2ui_manager_set_default_path(gchar** default_path)
@@ -273,7 +273,7 @@ ags_lv2ui_manager_set_default_path(gchar** default_path)
  *
  * Returns: a %NULL-terminated array of filenames
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 gchar**
 ags_lv2ui_manager_get_filenames(AgsLv2uiManager *lv2ui_manager)
@@ -334,7 +334,7 @@ ags_lv2ui_manager_get_filenames(AgsLv2uiManager *lv2ui_manager)
  *
  * Returns: the #AgsLv2uiPlugin-struct
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsLv2uiPlugin*
 ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
@@ -378,7 +378,7 @@ ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
  *
  * Returns: the #AgsLv2uiPlugin-struct
  *
- * Since: 0.7.127
+ * Since: 1.0.0
  */
 AgsLv2uiPlugin*
 ags_lv2ui_manager_find_lv2ui_plugin_with_index(AgsLv2uiManager *lv2ui_manager,
@@ -418,7 +418,7 @@ ags_lv2ui_manager_find_lv2ui_plugin_with_index(AgsLv2uiManager *lv2ui_manager,
  * 
  * Load blacklisted plugin filenames.
  * 
- * Since: 0.7.108
+ * Since: 1.0.0
  */
 void
 ags_lv2ui_manager_load_blacklist(AgsLv2uiManager *lv2ui_manager,
@@ -456,7 +456,7 @@ ags_lv2ui_manager_load_blacklist(AgsLv2uiManager *lv2ui_manager,
  *
  * Load @filename specified plugin.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
@@ -763,7 +763,7 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
  * 
  * Loads all available plugins.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_lv2ui_manager_load_default_directory(AgsLv2uiManager *lv2ui_manager)
@@ -957,7 +957,7 @@ ags_lv2ui_manager_load_default_directory(AgsLv2uiManager *lv2ui_manager)
  *
  * Returns: the #AgsLv2uiManager
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsLv2uiManager*
 ags_lv2ui_manager_get_instance()
@@ -982,7 +982,7 @@ ags_lv2ui_manager_get_instance()
  *
  * Returns: a new #AgsLv2uiManager
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsLv2uiManager*
 ags_lv2ui_manager_new()

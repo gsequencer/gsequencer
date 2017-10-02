@@ -131,7 +131,7 @@ ags_add_recall_class_init(AgsAddRecallClass *add_recall)
 <<<<<<< HEAD
    * Since: 1.0.0
 =======
-   * Since: 0.7.117
+   * Since: 1.0.0
 >>>>>>> master
    */
   param_spec = g_param_spec_object("context",
@@ -151,7 +151,7 @@ ags_add_recall_class_init(AgsAddRecallClass *add_recall)
 <<<<<<< HEAD
    * Since: 1.0.0
 =======
-   * Since: 0.7.117
+   * Since: 1.0.0
 >>>>>>> master
    */
   param_spec = g_param_spec_object("recall",
@@ -171,7 +171,7 @@ ags_add_recall_class_init(AgsAddRecallClass *add_recall)
 <<<<<<< HEAD
    * Since: 1.0.0
 =======
-   * Since: 0.7.117
+   * Since: 1.0.0
 >>>>>>> master
    */
   param_spec =  g_param_spec_boolean("is-play",
@@ -516,7 +516,7 @@ ags_add_recall_launch(AgsTask *task)
  *
  * Returns: an new #AgsAddRecall.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsAddRecall*
 ags_add_recall_new(GObject *context,

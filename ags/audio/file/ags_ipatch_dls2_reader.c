@@ -117,7 +117,7 @@ ags_ipatch_dls2_reader_class_init(AgsIpatchDLS2ReaderClass *ipatch_dls2_reader)
    *
    * The assigned #AgsIpatch
    * 
-   * Since: 0.8.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("ipatch",
 				   i18n_pspec("the ipatch"),
@@ -239,7 +239,7 @@ ags_ipatch_dls2_reader_finalize(GObject *gobject)
  *
  * Returns: an empty #AgsIpatchDLS2Reader.
  *
- * Since: 0.7.1
+ * Since: 1.0.0
  */
 AgsIpatchDLS2Reader*
 ags_ipatch_dls2_reader_new()

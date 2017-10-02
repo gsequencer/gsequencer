@@ -393,7 +393,7 @@ ags_recall_adaptor_run_run_inter(AgsRecall *recall)
  *
  * Returns: a new #AgsRecallAdaptorRun
  *
- * Since: 0.7.128
+ * Since: 1.0.0
  */
 AgsRecallAdaptorRun*
 ags_recall_adaptor_run_new()

@@ -194,7 +194,7 @@ ags_add_line_member_launch(AgsTask *task)
  *
  * Returns: an new #AgsAddLineMember.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsAddLineMember*
 ags_add_line_member_new(GtkWidget *line,

@@ -145,7 +145,7 @@ ags_output_collection_editor_class_init(AgsOutputCollectionEditorClass *output_c
    *
    * The channel type to apply to. Either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT.
    * 
-   * Since: 0.7.65
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_gtype("channel-type",
 				  i18n_pspec("assigned channel type"),
@@ -482,7 +482,7 @@ ags_output_collection_editor_reset(AgsApplicable *applicable)
  *
  * Checks for possible channels to output. And modifies its ranges.
  * 
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 void
 ags_output_collection_editor_check(AgsOutputCollectionEditor *output_collection_editor)
@@ -581,7 +581,7 @@ ags_output_collection_editor_check(AgsOutputCollectionEditor *output_collection_
  *
  * Returns: a new #AgsOutputCollectionEditor
  *
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 AgsOutputCollectionEditor*
 ags_output_collection_editor_new(GType channel_type)

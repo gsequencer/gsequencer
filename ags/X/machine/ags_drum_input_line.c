@@ -595,7 +595,7 @@ ags_drum_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  *
  * Returns: a new #AgsDrumInputLine
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsDrumInputLine*
 ags_drum_input_line_new(AgsChannel *channel)

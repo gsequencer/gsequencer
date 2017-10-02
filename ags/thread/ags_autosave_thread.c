@@ -355,7 +355,7 @@ ags_autosave_thread_run(AgsThread *thread)
  *
  * Returns: the new #AgsAutosaveThread
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsAutosaveThread*
 ags_autosave_thread_new(GObject *application_context)

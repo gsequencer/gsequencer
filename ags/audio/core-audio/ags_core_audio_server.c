@@ -176,7 +176,7 @@ ags_core_audio_server_class_init(AgsCoreAudioServerClass *core_audio_server)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("the application context object"),
@@ -192,7 +192,7 @@ ags_core_audio_server_class_init(AgsCoreAudioServerClass *core_audio_server)
    *
    * The assigned URL.
    * 
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("url",
 				   i18n_pspec("the URL"),
@@ -208,7 +208,7 @@ ags_core_audio_server_class_init(AgsCoreAudioServerClass *core_audio_server)
    *
    * The default soundcard.
    * 
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("default-soundcard",
 				   i18n_pspec("default soundcard"),
@@ -224,7 +224,7 @@ ags_core_audio_server_class_init(AgsCoreAudioServerClass *core_audio_server)
    *
    * The default core audio client.
    * 
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("default-core-audio-client",
 				   i18n_pspec("default core audio client"),
@@ -240,7 +240,7 @@ ags_core_audio_server_class_init(AgsCoreAudioServerClass *core_audio_server)
    *
    * The core audio client list.
    * 
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("core-audio-client",
 				   i18n_pspec("core audio client list"),
@@ -1013,7 +1013,7 @@ ags_core_audio_server_register_default_soundcard(AgsCoreAudioServer *core_audio_
  *
  * Returns: the #GList containing a #AgsCoreAudioServer matching @url or %NULL
  *
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 GList*
 ags_core_audio_server_find_url(GList *core_audio_server,
@@ -1040,7 +1040,7 @@ ags_core_audio_server_find_url(GList *core_audio_server,
  *
  * Returns: the #AgsCoreAudioClient found or %NULL
  *
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 GObject*
 ags_core_audio_server_find_client(AgsCoreAudioServer *core_audio_server,
@@ -1071,7 +1071,7 @@ ags_core_audio_server_find_client(AgsCoreAudioServer *core_audio_server,
  *
  * Returns: the #AgsCoreAudioPort found or %NULL
  *
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 GObject*
 ags_core_audio_server_find_port(AgsCoreAudioServer *core_audio_server,
@@ -1106,7 +1106,7 @@ ags_core_audio_server_find_port(AgsCoreAudioServer *core_audio_server,
  *
  * Add @core_audio_client to @core_audio_server
  *
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 void
 ags_core_audio_server_add_client(AgsCoreAudioServer *core_audio_server,
@@ -1129,7 +1129,7 @@ ags_core_audio_server_add_client(AgsCoreAudioServer *core_audio_server,
  *
  * Remove @core_audio_client to @core_audio_server
  *
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 void
 ags_core_audio_server_remove_client(AgsCoreAudioServer *core_audio_server,
@@ -1151,7 +1151,7 @@ ags_core_audio_server_remove_client(AgsCoreAudioServer *core_audio_server,
  *
  * Connect all clients.
  *
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 void
 ags_core_audio_server_connect_client(AgsCoreAudioServer *core_audio_server)
@@ -1178,7 +1178,7 @@ ags_core_audio_server_connect_client(AgsCoreAudioServer *core_audio_server)
  *
  * Returns: the new #AgsCoreAudioServer
  *
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 AgsCoreAudioServer*
 ags_core_audio_server_new(GObject *application_context,

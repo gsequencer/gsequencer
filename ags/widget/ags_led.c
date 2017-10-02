@@ -260,7 +260,7 @@ ags_led_unset_active(AgsLed *led)
  *
  * Returns: a new #AgsLed
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsLed*
 ags_led_new()

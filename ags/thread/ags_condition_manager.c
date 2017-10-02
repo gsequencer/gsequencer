@@ -156,7 +156,7 @@ ags_condition_manager_destroy_data(gpointer data)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 0.7.122.8
+ * Since: 1.0.0.8
  */
 gboolean
 ags_condition_manager_insert(AgsConditionManager *condition_manager,
@@ -183,7 +183,7 @@ ags_condition_manager_insert(AgsConditionManager *condition_manager,
  *
  * Returns: %TRUE as successfully removed, otherwise %FALSE
  *
- * Since: 0.7.122.8
+ * Since: 1.0.0.8
  */
 gboolean
 ags_condition_manager_remove(AgsConditionManager *condition_manager,
@@ -215,7 +215,7 @@ ags_condition_manager_remove(AgsConditionManager *condition_manager,
  *
  * Returns: the condition on success, else %NULL
  *
- * Since: 0.7.122.8
+ * Since: 1.0.0.8
  */
 pthread_cond_t*
 ags_condition_manager_lookup(AgsConditionManager *condition_manager,
@@ -236,7 +236,7 @@ ags_condition_manager_lookup(AgsConditionManager *condition_manager,
  *
  * Returns: an instance of #AgsConditionManager
  *
- * Since: 0.7.122.8
+ * Since: 1.0.0.8
  */
 AgsConditionManager*
 ags_condition_manager_get_instance()
@@ -255,7 +255,7 @@ ags_condition_manager_get_instance()
  *
  * Returns: a new #AgsConditionManager
  *
- * Since: 0.7.122.8
+ * Since: 1.0.0.8
  */
 AgsConditionManager*
 ags_condition_manager_new()

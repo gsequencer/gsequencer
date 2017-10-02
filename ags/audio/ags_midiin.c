@@ -229,7 +229,7 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("the application context object"),
@@ -245,7 +245,7 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    *
    * The assigned application mutex
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("application-mutex",
 				    i18n_pspec("the application mutex object"),
@@ -260,7 +260,7 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    *
    * The alsa sequencer indentifier
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("device",
 				   i18n_pspec("the device identifier"),
@@ -276,7 +276,7 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    *
    * The buffer
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("buffer",
 				    i18n_pspec("the buffer"),
@@ -291,7 +291,7 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    *
    * Beats per minute
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("bpm",
 				   i18n_pspec("beats per minute"),
@@ -309,7 +309,7 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    *
    * tact
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -327,7 +327,7 @@ ags_midiin_class_init(AgsMidiinClass *midiin)
    *
    * Attack of the buffer
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),
@@ -871,7 +871,7 @@ ags_midiin_disconnect(AgsConnectable *connectable)
  *
  * The buffer flag indicates the currently played buffer.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_midiin_switch_buffer_flag(AgsMidiin *midiin)
@@ -2061,7 +2061,7 @@ ags_midiin_get_audio(AgsSequencer *sequencer)
  *
  * Returns: a new #AgsMidiin
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsMidiin*
 ags_midiin_new(GObject *application_context)

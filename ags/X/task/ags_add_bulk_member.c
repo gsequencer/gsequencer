@@ -223,7 +223,7 @@ ags_add_bulk_member_launch(AgsTask *task)
  *
  * Returns: an new #AgsAddBulkMember.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsAddBulkMember*
 ags_add_bulk_member_new(GtkWidget *effect_bulk,

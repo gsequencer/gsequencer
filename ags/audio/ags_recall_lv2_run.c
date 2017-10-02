@@ -621,7 +621,7 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
  *
  * Set up LV2 ports.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
@@ -684,7 +684,7 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
  *
  * Returns: a new #AgsRecallLv2Run
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsRecallLv2Run*
 ags_recall_lv2_run_new(AgsAudioSignal *audio_signal)

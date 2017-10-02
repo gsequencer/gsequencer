@@ -129,7 +129,7 @@ ags_notify_soundcard_class_init(AgsNotifySoundcardClass *notify_soundcard)
 <<<<<<< HEAD
    * Since: 1.0.0
 =======
-   * Since: 0.7.117
+   * Since: 1.0.0
 >>>>>>> master
    */
   param_spec = g_param_spec_object("soundcard-thread",
@@ -348,7 +348,7 @@ ags_notify_soundcard_launch(AgsTask *task)
  *
  * Returns: an new #AgsNotifySoundcard.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsNotifySoundcard*
 ags_notify_soundcard_new(GObject *soundcard_thread)

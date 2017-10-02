@@ -174,7 +174,7 @@ ags_prepare_channel_disconnect(AgsConnectable *connectable)
  *
  * Returns: a new #AgsPrepareChannel
  *
- * Since: 0.7.122.8
+ * Since: 1.0.0.8
  */
 AgsPrepareChannel*
 ags_prepare_channel_new()

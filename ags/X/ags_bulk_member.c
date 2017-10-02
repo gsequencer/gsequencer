@@ -156,7 +156,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The widget type to instantiate and use as control.
    * 
-   * Since: 0.4.3
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_ulong("widget-type",
 				  i18n_pspec("widget type of bulk member"),
@@ -173,7 +173,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The widget's label to use.
    * 
-   * Since: 0.4.3
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("widget-label",
 				   i18n_pspec("label to display"),
@@ -189,7 +189,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The plugin name of the recall to use.
    * 
-   * Since: 0.4.3
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("plugin-name",
 				   i18n_pspec("plugin name to control"),
@@ -205,7 +205,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The plugin specifier of the recall to apply.
    * 
-   * Since: 0.4.3
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("specifier",
 				   i18n_pspec("port specifier"),
@@ -221,7 +221,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The plugin filename of the recall to apply.
    * 
-   * Since: 0.4.3
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("the filename"),
@@ -237,7 +237,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The plugin effect of the recall to apply.
    * 
-   * Since: 0.4.3
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("effect",
 				   i18n_pspec("the effect"),
@@ -253,7 +253,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The control port of the recall.
    * 
-   * Since: 0.4.3
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("control-port",
 				   i18n_pspec("control port index"),
@@ -269,7 +269,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * If bulk member has integer ports, this is the number of steps.
    * 
-   * Since: 0.7.21
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("steps",
 				 i18n_pspec("steps of bulk members port"),
@@ -287,7 +287,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The playback bulk port to be added.
    * 
-   * Since: 0.7.8
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("bulk-port",
 				   i18n_pspec("a bulk port"),
@@ -303,7 +303,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The recall bulk port to be added.
    * 
-   * Since: 0.7.8
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("recall-bulk-port",
 				   i18n_pspec("a recall bulk port"),
@@ -319,7 +319,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The task type to apply the ports.
    * 
-   * Since: 0.7.8
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_ulong("task-type",
 				  i18n_pspec("task type to apply"),
@@ -343,7 +343,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * The ::change-port signal notifies modified port.
    *
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   bulk_member_signals[CHANGE_PORT] =
     g_signal_new("change-port",
@@ -363,7 +363,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
    *
    * Returns: a #GList with associated ports
    *
-   * Since: 0.7.2
+   * Since: 1.0.0
    */
   bulk_member_signals[FIND_PORT] =
     g_signal_new("find-port",
@@ -843,7 +843,7 @@ ags_bulk_member_get_widget(AgsBulkMember *bulk_member)
  *
  * Returns: the newly allocated #AgsBulkPort-struct
  *
- * Since: 0.7.8
+ * Since: 1.0.0
  */
 AgsBulkPort*
 ags_bulk_port_alloc(AgsPort *port)
@@ -868,7 +868,7 @@ ags_bulk_port_alloc(AgsPort *port)
  *
  * Returns: the #GList-struct containing port if found otherwise %NULL
  *
- * Since: 0.7.8
+ * Since: 1.0.0
  */
 GList*
 ags_bulk_port_find(GList *list, AgsPort *port)
@@ -1154,7 +1154,7 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
  *
  * Is emitted as port's value is modified.
  *
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 void
 ags_bulk_member_change_port(AgsBulkMember *bulk_member,
@@ -1297,7 +1297,7 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
  *
  * Returns: an #GList containing all related #AgsPort
  *
- * Since: 0.7.8
+ * Since: 1.0.0
  */
 GList*
 ags_bulk_member_find_port(AgsBulkMember *bulk_member)
@@ -1324,7 +1324,7 @@ ags_bulk_member_find_port(AgsBulkMember *bulk_member)
  *
  * Returns: a new #AgsBulkMember
  *
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 AgsBulkMember*
 ags_bulk_member_new()

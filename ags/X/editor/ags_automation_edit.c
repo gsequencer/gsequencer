@@ -714,7 +714,7 @@ ags_accessible_automation_edit_get_localized_name(AtkAction *action,
  *
  * Reset @automation_edit as configured vertically.
  *
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 void
 ags_automation_edit_reset_vertically(AgsAutomationEdit *automation_edit, guint flags)
@@ -767,7 +767,7 @@ ags_automation_edit_reset_vertically(AgsAutomationEdit *automation_edit, guint f
  *
  * Reset @automation_edit as configured horizontally.
  *
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 void
 ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint flags)
@@ -858,7 +858,7 @@ ags_automation_edit_reset_horizontally(AgsAutomationEdit *automation_edit, guint
  *
  * Draws the cursor.
  *
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 void
 ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit,
@@ -942,7 +942,7 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit,
  *
  * Change visible x-position of @automation_edit.
  *
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 void
 ags_automation_edit_draw_scroll(AgsAutomationEdit *automation_edit, cairo_t *cr,
@@ -1036,7 +1036,7 @@ ags_automation_edit_paint(AgsAutomationEdit *automation_edit,
  *
  * Adds @automation_area to @automation_edit.
  * 
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 void
 ags_automation_edit_add_area(AgsAutomationEdit *automation_edit,
@@ -1070,7 +1070,7 @@ ags_automation_edit_add_area(AgsAutomationEdit *automation_edit,
  *
  * Removes @automation_area of @automation_edit.
  * 
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 void
 ags_automation_edit_remove_area(AgsAutomationEdit *automation_edit,
@@ -1105,7 +1105,7 @@ ags_automation_edit_remove_area(AgsAutomationEdit *automation_edit,
  *
  * Returns: a new #AgsAutomationEdit
  *
- * Since: 0.4.3
+ * Since: 1.0.0
  */
 AgsAutomationEdit*
 ags_automation_edit_new()

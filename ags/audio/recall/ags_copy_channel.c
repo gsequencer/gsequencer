@@ -179,7 +179,7 @@ ags_copy_channel_class_init(AgsCopyChannelClass *copy_channel)
    *
    * The mute port.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("muted",
 				   i18n_pspec("mute channel"),
@@ -367,7 +367,7 @@ ags_copy_channel_set_muted(AgsMutable *mutable, gboolean muted)
  *
  * Returns: a new #AgsCopyChannel
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsCopyChannel*
 ags_copy_channel_new(AgsChannel *destination,

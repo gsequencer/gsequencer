@@ -212,7 +212,7 @@ ags_core_audio_midiin_class_init(AgsCoreAudioMidiinClass *core_audio_midiin)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("the application context object"),
@@ -228,7 +228,7 @@ ags_core_audio_midiin_class_init(AgsCoreAudioMidiinClass *core_audio_midiin)
    *
    * The assigned application mutex
    * 
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("application-mutex",
 				    i18n_pspec("the application mutex object"),
@@ -243,7 +243,7 @@ ags_core_audio_midiin_class_init(AgsCoreAudioMidiinClass *core_audio_midiin)
    *
    * The core audio sequencer indentifier
    * 
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("device",
 				   i18n_pspec("the device identifier"),
@@ -259,7 +259,7 @@ ags_core_audio_midiin_class_init(AgsCoreAudioMidiinClass *core_audio_midiin)
    *
    * The buffer
    * 
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("buffer",
 				    i18n_pspec("the buffer"),
@@ -274,7 +274,7 @@ ags_core_audio_midiin_class_init(AgsCoreAudioMidiinClass *core_audio_midiin)
    *
    * Beats per minute
    * 
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("bpm",
 				   i18n_pspec("beats per minute"),
@@ -292,7 +292,7 @@ ags_core_audio_midiin_class_init(AgsCoreAudioMidiinClass *core_audio_midiin)
    *
    * tact
    * 
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -310,7 +310,7 @@ ags_core_audio_midiin_class_init(AgsCoreAudioMidiinClass *core_audio_midiin)
    *
    * Attack of the buffer
    * 
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),
@@ -326,7 +326,7 @@ ags_core_audio_midiin_class_init(AgsCoreAudioMidiinClass *core_audio_midiin)
    *
    * The assigned #AgsCoreAudioClient
    * 
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("core-audio-client",
 				   i18n_pspec("core audio client object"),
@@ -342,7 +342,7 @@ ags_core_audio_midiin_class_init(AgsCoreAudioMidiinClass *core_audio_midiin)
    *
    * The assigned #AgsCoreAudioPort
    * 
-   * Since: 0.9.24
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("core-audio-port",
 				   i18n_pspec("core audio port object"),
@@ -860,7 +860,7 @@ ags_core_audio_midiin_disconnect(AgsConnectable *connectable)
  *
  * The buffer flag indicates the currently recorded buffer.
  *
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 void
 ags_core_audio_midiin_switch_buffer_flag(AgsCoreAudioMidiin *core_audio_midiin)
@@ -1616,7 +1616,7 @@ ags_core_audio_midiin_get_audio(AgsSequencer *sequencer)
  *
  * Returns: a new #AgsCoreAudioMidiin
  *
- * Since: 0.9.24
+ * Since: 1.0.0
  */
 AgsCoreAudioMidiin*
 ags_core_audio_midiin_new(GObject *application_context)

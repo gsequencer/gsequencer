@@ -138,7 +138,7 @@ ags_append_channel_class_init(AgsAppendChannelClass *append_channel)
    *
    * The assigned #AgsAudioLoop
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio-loop",
 				   i18n_pspec("audio loop of append channel"),
@@ -154,7 +154,7 @@ ags_append_channel_class_init(AgsAppendChannelClass *append_channel)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("channel of append channel"),
@@ -450,7 +450,7 @@ ags_append_channel_launch(AgsTask *task)
  *
  * Returns: an new #AgsAppendChannel.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsAppendChannel*
 ags_append_channel_new(GObject *audio_loop,

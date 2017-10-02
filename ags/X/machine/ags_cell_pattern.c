@@ -959,7 +959,7 @@ ags_cell_pattern_blink_worker(void *data)
  *
  * Returns: %TRUE if continue timeout, otherwise %FALSE
  *
- * Since: 0.7.53
+ * Since: 1.0.0
  */
 gboolean
 ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)

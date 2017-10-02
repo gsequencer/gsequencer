@@ -149,7 +149,7 @@ ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor)
    *
    * The assigned #AgsSoundcard acting as default sink.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -416,7 +416,7 @@ ags_automation_editor_child_alloc(AgsMachine *machine,
  *
  * Reset port if removed automation.
  *
- * Since: 0.7.38
+ * Since: 1.0.0
  */
 void
 ags_automation_editor_reset_port(AgsAutomationEditor *automation_editor,
@@ -852,7 +852,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
  *
  * Is emitted as machine changed of automation editor.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_automation_editor_machine_changed(AgsAutomationEditor *automation_editor, AgsMachine *machine)
@@ -1709,7 +1709,7 @@ ags_automation_editor_invert(AgsAutomationEditor *automation_editor)
  *
  * Returns: a new #AgsAutomationEditor
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsAutomationEditor*
 ags_automation_editor_new()

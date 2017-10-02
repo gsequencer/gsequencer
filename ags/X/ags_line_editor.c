@@ -121,7 +121,7 @@ ags_line_editor_class_init(AgsLineEditorClass *line_editor)
    *
    * The assigned #AgsChannel to edit.
    * 
-   * Since: 0.3
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("assigned channel"),
@@ -324,7 +324,7 @@ ags_line_editor_reset(AgsApplicable *applicable)
  *
  * Is called as channel gets modified.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_line_editor_set_channel(AgsLineEditor *line_editor,
@@ -381,7 +381,7 @@ ags_line_editor_set_channel(AgsLineEditor *line_editor,
  *
  * Returns: a new #AgsLineEditor
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsLineEditor*
 ags_line_editor_new(AgsChannel *channel)

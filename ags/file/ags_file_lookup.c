@@ -107,7 +107,7 @@ ags_file_lookup_class_init(AgsFileLookupClass *file_lookup)
    *
    * The assigned #AgsFile to resolve.
    *
-   * Since: 0.4.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("file",
 				   i18n_pspec("assigned file"),
@@ -123,7 +123,7 @@ ags_file_lookup_class_init(AgsFileLookupClass *file_lookup)
    *
    * The assigned #xmlNode to resolve.
    *
-   * Since: 0.4.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("node",
 				    i18n_pspec("assigned node"),
@@ -138,7 +138,7 @@ ags_file_lookup_class_init(AgsFileLookupClass *file_lookup)
    *
    * The assigned #gpointer to resolve.
    *
-   * Since: 0.4.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("reference",
 				    i18n_pspec("assigned reference"),
@@ -158,7 +158,7 @@ ags_file_lookup_class_init(AgsFileLookupClass *file_lookup)
    * Resolve @file_lookup either for reading or writing XPath and retrieving
    * appropriate UUID.
    *
-   * Since: 0.4.2
+   * Since: 1.0.0
    */
   file_lookup_signals[RESOLVE] =
     g_signal_new("resolve",
@@ -279,7 +279,7 @@ ags_file_lookup_finalize(GObject *gobject)
  *
  * The ::resolve signal. 
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 void
 ags_file_lookup_resolve(AgsFileLookup *file_lookup)
@@ -301,7 +301,7 @@ ags_file_lookup_resolve(AgsFileLookup *file_lookup)
  *
  * Returns: The list containing #AgsFileLookup if found otherwise %NULL
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 GList*
 ags_file_lookup_find_by_node(GList *file_lookup,
@@ -323,7 +323,7 @@ ags_file_lookup_find_by_node(GList *file_lookup,
  *
  * Returns: The list containing #AgsFileLookup if found otherwise %NULL
  *
- * Since: 0.7.8
+ * Since: 1.0.0
  */
 GList*
 ags_file_lookup_find_by_reference(GList *file_lookup,
@@ -343,7 +343,7 @@ ags_file_lookup_find_by_reference(GList *file_lookup,
  *
  * Returns: a new #AgsFileLookup
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsFileLookup*
 ags_file_lookup_new()

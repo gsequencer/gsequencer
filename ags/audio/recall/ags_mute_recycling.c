@@ -245,7 +245,7 @@ ags_mute_recycling_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsMuteRecycling
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsMuteRecycling*
 ags_mute_recycling_new(AgsRecycling *source)

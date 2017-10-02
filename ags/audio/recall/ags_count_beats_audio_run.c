@@ -323,7 +323,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    *
    * The assigned #AgsDelayAudioRun dependency.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("delay-audio-run",
 				   i18n_pspec("assigned AgsDelayAudioRun"),
@@ -339,7 +339,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    *
    * The notation counter.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("notation-counter",
 				 i18n_pspec("notation counter indicates offset"),
@@ -357,7 +357,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
    *
    * The sequencer counter.
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("sequencer-counter",
 				 i18n_pspec("sequencer counter indicates offset"),
@@ -1153,7 +1153,7 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
  *
  * Emitted as notation starts playback.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_count_beats_audio_run_notation_start(AgsCountBeatsAudioRun *count_beats_audio_run,
@@ -1175,7 +1175,7 @@ ags_count_beats_audio_run_notation_start(AgsCountBeatsAudioRun *count_beats_audi
  *
  * Emitted as notation loops playback.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_count_beats_audio_run_notation_loop(AgsCountBeatsAudioRun *count_beats_audio_run,
@@ -1197,7 +1197,7 @@ ags_count_beats_audio_run_notation_loop(AgsCountBeatsAudioRun *count_beats_audio
  *
  * Emitted as notation stops playback.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_count_beats_audio_run_notation_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
@@ -1219,7 +1219,7 @@ ags_count_beats_audio_run_notation_stop(AgsCountBeatsAudioRun *count_beats_audio
  *
  * Emitted as sequencer starts playback.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_count_beats_audio_run_sequencer_start(AgsCountBeatsAudioRun *count_beats_audio_run,
@@ -1241,7 +1241,7 @@ ags_count_beats_audio_run_sequencer_start(AgsCountBeatsAudioRun *count_beats_aud
  *
  * Emitted as sequencer loops playback.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_count_beats_audio_run_sequencer_loop(AgsCountBeatsAudioRun *count_beats_audio_run,
@@ -1263,7 +1263,7 @@ ags_count_beats_audio_run_sequencer_loop(AgsCountBeatsAudioRun *count_beats_audi
  *
  * Emitted as sequencer stops playback.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_count_beats_audio_run_sequencer_stop(AgsCountBeatsAudioRun *count_beats_audio_run,
@@ -1732,7 +1732,7 @@ ags_count_beats_audio_run_change_tact(AgsTactable *tactable, gdouble new_tact, g
  *
  * Returns: a new #AgsCountBeatsAudioRun
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsCountBeatsAudioRun*
 ags_count_beats_audio_run_new(AgsDelayAudioRun *delay_audio_run)

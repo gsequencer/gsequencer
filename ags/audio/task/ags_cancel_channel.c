@@ -125,7 +125,7 @@ ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("channel of cancel channel"),
@@ -141,7 +141,7 @@ ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel)
    *
    * The assigned #AgsRecallID
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("recall-id",
 				   i18n_pspec("recall id of cancel channel"),
@@ -157,7 +157,7 @@ ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel)
    *
    * The assigned #AgsPlayback
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("playback",
 				   i18n_pspec("playback of cancel channel"),
@@ -447,7 +447,7 @@ ags_cancel_channel_launch(AgsTask *task)
  *
  * Returns: an new #AgsCancelChannel.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsCancelChannel*
 ags_cancel_channel_new(AgsChannel *channel, AgsRecallID *recall_id,

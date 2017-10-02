@@ -311,7 +311,7 @@ ags_ladspa_browser_reset(AgsApplicable *applicable)
  *
  * Returns: the active ladspa filename
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 gchar*
 ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser)
@@ -334,7 +334,7 @@ ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser)
  *
  * Returns: the active ladspa effect
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 gchar*
 ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
@@ -367,7 +367,7 @@ ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 0.7.128
+ * Since: 1.0.0
  */
 GtkWidget*
 ags_ladspa_browser_combo_box_output_boolean_controls_new()
@@ -392,7 +392,7 @@ ags_ladspa_browser_combo_box_output_boolean_controls_new()
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 0.7.128
+ * Since: 1.0.0
  */
 GtkWidget*
 ags_ladspa_browser_combo_box_output_controls_new()
@@ -419,7 +419,7 @@ ags_ladspa_browser_combo_box_output_controls_new()
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 0.7.4
+ * Since: 1.0.0
  */
 GtkWidget*
 ags_ladspa_browser_combo_box_boolean_controls_new()
@@ -446,7 +446,7 @@ ags_ladspa_browser_combo_box_boolean_controls_new()
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 GtkWidget*
 ags_ladspa_browser_combo_box_controls_new()
@@ -489,7 +489,7 @@ ags_ladspa_browser_preview_new()
  *
  * Returns: a new #AgsLadspaBrowser
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 AgsLadspaBrowser*
 ags_ladspa_browser_new()

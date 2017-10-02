@@ -84,7 +84,7 @@ ags_vled_array_init(AgsVLedArray *vled_array)
  *
  * Returns: a new #AgsVLedArray
  *
- * Since: 0.7.122.7
+ * Since: 1.0.0.7
  */
 AgsVLedArray*
 ags_vled_array_new()

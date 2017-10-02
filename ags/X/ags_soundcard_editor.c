@@ -1989,7 +1989,7 @@ ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
  *
  * Returns: a new #AgsSoundcardEditor
  *
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 AgsSoundcardEditor*
 ags_soundcard_editor_new()

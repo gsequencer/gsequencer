@@ -400,7 +400,7 @@ ags_panel_input_line_map_recall(AgsLine *line,
  *
  * Returns: a new #AgsPanelInputLine
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsPanelInputLine*
 ags_panel_input_line_new(AgsChannel *channel)

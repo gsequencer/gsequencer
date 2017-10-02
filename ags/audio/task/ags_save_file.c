@@ -123,7 +123,7 @@ ags_save_file_class_init(AgsSaveFileClass *save_file)
 <<<<<<< HEAD
    * Since: 1.0.0
 =======
-   * Since: 0.7.117
+   * Since: 1.0.0
 >>>>>>> master
    */
   param_spec = g_param_spec_object("file",
@@ -289,7 +289,7 @@ ags_save_file_launch(AgsTask *task)
  *
  * Returns: an new #AgsSaveFile.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsSaveFile*
 ags_save_file_new(AgsFile *file)

@@ -64,7 +64,7 @@ ags_connectable_base_init(AgsConnectableInterface *interface)
  *
  * Add connectable to registry.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_connectable_add_to_registry(AgsConnectable *connectable)
@@ -83,7 +83,7 @@ ags_connectable_add_to_registry(AgsConnectable *connectable)
  *
  * Remove connectable from registry.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_connectable_remove_from_registry(AgsConnectable *connectable)
@@ -104,7 +104,7 @@ ags_connectable_remove_from_registry(AgsConnectable *connectable)
  *
  * Returns: the #xmlNode-struct describing howto update
  *
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 xmlNode*
 ags_connectable_update(AgsConnectable *connectable)
@@ -126,7 +126,7 @@ ags_connectable_update(AgsConnectable *connectable)
  *
  * Returns: %TRUE if is added to registry, otherwise %FALSE.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 gboolean
 ags_connectable_is_ready(AgsConnectable *connectable)
@@ -150,7 +150,7 @@ ags_connectable_is_ready(AgsConnectable *connectable)
  *
  * Returns: %TRUE if is connected, otherwise %FALSE.
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 gboolean
 ags_connectable_is_connected(AgsConnectable *connectable)
@@ -170,7 +170,7 @@ ags_connectable_is_connected(AgsConnectable *connectable)
  *
  * Connect the connectable.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_connectable_connect(AgsConnectable *connectable)
@@ -194,7 +194,7 @@ ags_connectable_connect(AgsConnectable *connectable)
  *
  * Disconnect the connectable.
  *
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 void
 ags_connectable_disconnect(AgsConnectable *connectable)
@@ -214,7 +214,7 @@ ags_connectable_disconnect(AgsConnectable *connectable)
  *
  * Disconnect the connectable.
  *
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 void
 ags_connectable_connect_scope(AgsConnectable *connectable,
@@ -236,7 +236,7 @@ ags_connectable_connect_scope(AgsConnectable *connectable,
  *
  * Disconnect the connectable.
  *
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 void
 ags_connectable_disconnect_scope(AgsConnectable *connectable,

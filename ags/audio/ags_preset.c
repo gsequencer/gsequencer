@@ -110,7 +110,7 @@ ags_preset_class_init(AgsPresetClass *preset)
    *
    * The #AgsAudio belonging to.
    * 
-   * Since: 0.8.5
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio"),
@@ -126,7 +126,7 @@ ags_preset_class_init(AgsPresetClass *preset)
    *
    * The preset's scope.
    * 
-   * Since: 0.8.5
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("scope",
 				   i18n_pspec("scope"),
@@ -142,7 +142,7 @@ ags_preset_class_init(AgsPresetClass *preset)
    *
    * The preset name.
    * 
-   * Since: 0.8.5
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("preset-name",
 				   i18n_pspec("preset-name"),
@@ -158,7 +158,7 @@ ags_preset_class_init(AgsPresetClass *preset)
    *
    * The start audio channel to apply.
    * 
-   * Since: 0.8.5
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("audio-channel-start",
 				 i18n_pspec("audio-channel-start"),
@@ -176,7 +176,7 @@ ags_preset_class_init(AgsPresetClass *preset)
    *
    * The end audio channel to apply.
    * 
-   * Since: 0.8.5
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("audio-channel-end",
 				 i18n_pspec("audio-channel-end"),
@@ -194,7 +194,7 @@ ags_preset_class_init(AgsPresetClass *preset)
    *
    * The start pad to apply.
    * 
-   * Since: 0.8.5
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("pad-start",
 				 i18n_pspec("pad-start"),
@@ -212,7 +212,7 @@ ags_preset_class_init(AgsPresetClass *preset)
    *
    * The end pad to apply.
    * 
-   * Since: 0.8.5
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("pad-end",
 				 i18n_pspec("pad-end"),
@@ -230,7 +230,7 @@ ags_preset_class_init(AgsPresetClass *preset)
    *
    * The start x to apply.
    * 
-   * Since: 0.8.5
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("x-start",
 				 i18n_pspec("x-start"),
@@ -248,7 +248,7 @@ ags_preset_class_init(AgsPresetClass *preset)
    *
    * The end x to apply.
    * 
-   * Since: 0.8.5
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("x-end",
 				 i18n_pspec("x-end"),
@@ -483,7 +483,7 @@ ags_preset_finalize(GObject *gobject)
  * 
  * Returns: the next matching #AgsPreset
  * 
- * Since: 0.8.5
+ * Since: 1.0.0
  */
 GList*
 ags_preset_find_scope(GList *preset,
@@ -510,7 +510,7 @@ ags_preset_find_scope(GList *preset,
  * 
  * Returns: the next matching #AgsPreset
  * 
- * Since: 0.8.5
+ * Since: 1.0.0
  */
 GList*
 ags_preset_find_name(GList *preset,
@@ -536,7 +536,7 @@ ags_preset_find_name(GList *preset,
  *
  * Add parameter to @preset.
  *
- * Since: 0.8.5
+ * Since: 1.0.0
  */
 gboolean
 ags_preset_add_parameter(AgsPreset *preset,
@@ -609,7 +609,7 @@ ags_preset_add_parameter(AgsPreset *preset,
  * 
  * Remove parameter of @preset.
  * 
- * Since: 0.8.5
+ * Since: 1.0.0
  */
 void
 ags_preset_remove_parameter(AgsPreset *preset,
@@ -660,7 +660,7 @@ ags_preset_remove_parameter(AgsPreset *preset,
  * Get parameter specified by @param_name. If parameter not available
  * the @error is set to indicate the failure.
  *
- * Since: 0.8.5
+ * Since: 1.0.0
  */
 void
 ags_preset_get_parameter(AgsPreset *preset,
@@ -711,7 +711,7 @@ ags_preset_get_parameter(AgsPreset *preset,
  *
  * Returns: a new #AgsPreset
  *
- * Since: 0.8.5
+ * Since: 1.0.0
  */
 AgsPreset*
 ags_preset_new()

@@ -369,7 +369,7 @@ ags_preferences_show_all(GtkWidget *widget)
  *
  * Returns: a new #AgsPreferences
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsPreferences*
 ags_preferences_new()

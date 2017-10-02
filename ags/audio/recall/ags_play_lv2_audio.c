@@ -170,7 +170,7 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    *
    * The assigned turtle.
    * 
-   * Since: 0.7.134
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("turtle",
 				   i18n_pspec("turtle of recall lv2"),
@@ -186,7 +186,7 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    *
    * The plugins filename.
    * 
-   * Since: 0.7.134
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_string("filename",
 				    i18n_pspec("the object file"),
@@ -202,7 +202,7 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    *
    * The effect's name.
    * 
-   * Since: 0.7.134
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_string("effect",
 				    i18n_pspec("the effect"),
@@ -218,7 +218,7 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    *
    * The uri's name.
    * 
-   * Since: 0.7.134
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_string("uri",
 				    i18n_pspec("the uri"),
@@ -234,7 +234,7 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    *
    * The uri's index.
    * 
-   * Since: 0.7.134
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_ulong("index",
 				   i18n_pspec("index of uri"),
@@ -699,7 +699,7 @@ ags_play_lv2_audio_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  *
  * Set up LV2 handle.
  * 
- * Since: 0.7.134
+ * Since: 1.0.0
  */
 void
 ags_play_lv2_audio_load(AgsPlayLv2Audio *play_lv2_audio)
@@ -739,7 +739,7 @@ ags_play_lv2_audio_load(AgsPlayLv2Audio *play_lv2_audio)
  *
  * Returns: a #GList containing #AgsPort.
  * 
- * Since: 0.7.134
+ * Since: 1.0.0
  */
 GList*
 ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
@@ -880,7 +880,7 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
  * 
  * Loads conversion object by using @port_descriptor and sets in on @port.
  * 
- * Since: 0.7.134
+ * Since: 1.0.0
  */
 void
 ags_play_lv2_audio_load_conversion(AgsPlayLv2Audio *play_lv2_audio,
@@ -917,7 +917,7 @@ ags_play_lv2_audio_load_conversion(AgsPlayLv2Audio *play_lv2_audio,
  *
  * Returns: Next match.
  * 
- * Since: 0.7.134
+ * Since: 1.0.0
  */
 GList*
 ags_play_lv2_audio_find(GList *recall,
@@ -946,7 +946,7 @@ ags_play_lv2_audio_find(GList *recall,
  *
  * Returns: a new #AgsPlayLv2Audio
  *
- * Since: 0.7.134
+ * Since: 1.0.0
  */
 AgsPlayLv2Audio*
 ags_play_lv2_audio_new()

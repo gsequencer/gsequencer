@@ -958,7 +958,7 @@ ags_drum_set_pads(AgsAudio *audio, GType gtype,
  *
  * Returns: a new #AgsDrum
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsDrum*
 ags_drum_new(GObject *soundcard)

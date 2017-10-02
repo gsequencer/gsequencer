@@ -440,7 +440,7 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
  *
  * Returns: a new #AgsAudioPreferences
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsAudioPreferences*
 ags_audio_preferences_new()

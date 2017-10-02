@@ -501,7 +501,7 @@ ags_midi_util_to_smf(unsigned char *midi_buffer, guint buffer_length,
  *
  * Returns: the velocity
  *
- * Since: 0.7.2
+ * Since: 1.0.0
  */
 glong
 ags_midi_util_envelope_to_velocity(AgsComplex *attack,
@@ -536,7 +536,7 @@ ags_midi_util_envelope_to_velocity(AgsComplex *attack,
  *
  * Velocity to envelope.
  *
- * Since: 0.7.2
+ * Since: 1.0.0
  */
 void
 ags_midi_util_velocity_to_envelope(glong delta_time,
@@ -567,7 +567,7 @@ ags_midi_util_velocity_to_envelope(glong delta_time,
  *
  * Returns: the pressure
  *
- * Since: 0.7.2
+ * Since: 1.0.0
  */
 glong
 ags_midi_util_envelope_to_pressure(AgsComplex *attack,
@@ -602,7 +602,7 @@ ags_midi_util_envelope_to_pressure(AgsComplex *attack,
  *
  * Pressure to envelope.
  *
- * Since: 0.7.2
+ * Since: 1.0.0
  */
 void
 ags_midi_util_pressure_to_envelope(glong delta_time,
@@ -629,7 +629,7 @@ ags_midi_util_pressure_to_envelope(glong delta_time,
  *
  * Returns: the offset
  *
- * Since: 0.7.2
+ * Since: 1.0.0
  */
 guint
 ags_midi_util_delta_time_to_offset(glong division,
@@ -661,7 +661,7 @@ ags_midi_util_delta_time_to_offset(glong division,
  *
  * Returns: the delta time
  *
- * Since: 0.7.2
+ * Since: 1.0.0
  */
 glong
 ags_midi_util_offset_to_delta_time(glong division,

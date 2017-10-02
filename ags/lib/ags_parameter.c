@@ -46,7 +46,7 @@ static GParamSpecPool *pspec_pool = NULL;
  *
  * Returns: the resized GParameter array
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 GParameter*
 ags_parameter_grow(GType object_type,

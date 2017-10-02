@@ -195,7 +195,7 @@ ags_add_soundcard_editor_sink_launch(AgsTask *task)
  *
  * Returns: an new #AgsAddSoundcardEditorSink.
  *
- * Since: 0.7.65
+ * Since: 1.0.0
  */
 AgsAddSoundcardEditorSink*
 ags_add_soundcard_editor_sink_new(AgsSoundcardEditor *soundcard_editor)

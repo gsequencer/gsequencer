@@ -250,7 +250,7 @@ ags_buffer_channel_run_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsBufferChannelRun
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsBufferChannelRun*
 ags_buffer_channel_run_new()

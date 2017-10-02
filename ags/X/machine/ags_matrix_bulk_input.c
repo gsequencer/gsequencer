@@ -174,7 +174,7 @@ ags_matrix_bulk_input_finalize(GObject *gobject)
  *
  * Returns: a new #AgsMatrixBulkInput
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsMatrixBulkInput*
 ags_matrix_bulk_input_new(AgsAudio *audio,

@@ -139,7 +139,7 @@ ags_audio_thread_class_init(AgsAudioThreadClass *audio_thread)
    *
    * The assigned #AgsAudio.
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard assigned to"),
@@ -155,7 +155,7 @@ ags_audio_thread_class_init(AgsAudioThreadClass *audio_thread)
    *
    * The assigned #AgsAudio.
    * 
-   * Since: 0.4.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio assigned to"),
@@ -794,7 +794,7 @@ ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
  *
  * Returns: the new #AgsAudioThread
  *
- * Since: 0.4.2
+ * Since: 1.0.0
  */
 AgsAudioThread*
 ags_audio_thread_new(GObject *soundcard,

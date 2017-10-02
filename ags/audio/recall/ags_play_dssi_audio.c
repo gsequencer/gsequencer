@@ -163,7 +163,7 @@ ags_play_dssi_audio_class_init(AgsPlayDssiAudioClass *play_dssi_audio)
    *
    * The plugins filename.
    * 
-   * Since: 0.7.134
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_string("filename",
 				    i18n_pspec("the object file"),
@@ -179,7 +179,7 @@ ags_play_dssi_audio_class_init(AgsPlayDssiAudioClass *play_dssi_audio)
    *
    * The effect's name.
    * 
-   * Since: 0.7.134
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_string("effect",
 				    i18n_pspec("the effect"),
@@ -195,7 +195,7 @@ ags_play_dssi_audio_class_init(AgsPlayDssiAudioClass *play_dssi_audio)
    *
    * The effect's index.
    * 
-   * Since: 0.7.134
+   * Since: 1.0.0
    */
   param_spec =  g_param_spec_ulong("index",
 				   i18n_pspec("index of effect"),
@@ -470,7 +470,7 @@ ags_play_dssi_audio_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  *
  * Set up DSSI handle.
  * 
- * Since: 0.7.134
+ * Since: 1.0.0
  */
 void
 ags_play_dssi_audio_load(AgsPlayDssiAudio *play_dssi_audio)
@@ -506,7 +506,7 @@ ags_play_dssi_audio_load(AgsPlayDssiAudio *play_dssi_audio)
  *
  * Returns: a #GList containing #AgsPort.
  * 
- * Since: 0.7.134
+ * Since: 1.0.0
  */
 GList*
 ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
@@ -615,7 +615,7 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
  * 
  * Loads conversion object by using @port_descriptor and sets in on @port.
  * 
- * Since: 0.7.134
+ * Since: 1.0.0
  */
 void
 ags_play_dssi_audio_load_conversion(AgsPlayDssiAudio *play_dssi_audio,
@@ -685,7 +685,7 @@ ags_play_dssi_audio_load_conversion(AgsPlayDssiAudio *play_dssi_audio,
  *
  * Returns: Next match.
  * 
- * Since: 0.7.134
+ * Since: 1.0.0
  */
 GList*
 ags_play_dssi_audio_find(GList *recall,
@@ -714,7 +714,7 @@ ags_play_dssi_audio_find(GList *recall,
  *
  * Returns: a new #AgsPlayDssiAudio
  *
- * Since: 0.7.134
+ * Since: 1.0.0
  */
 AgsPlayDssiAudio*
 ags_play_dssi_audio_new()

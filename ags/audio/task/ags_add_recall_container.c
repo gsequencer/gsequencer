@@ -128,7 +128,7 @@ ags_add_recall_container_class_init(AgsAddRecallContainerClass *add_recall_conta
 <<<<<<< HEAD
    * Since: 1.0.0
 =======
-   * Since: 0.7.117
+   * Since: 1.0.0
 >>>>>>> master
    */
   param_spec = g_param_spec_object("audio",
@@ -148,7 +148,7 @@ ags_add_recall_container_class_init(AgsAddRecallContainerClass *add_recall_conta
 <<<<<<< HEAD
    * Since: 1.0.0
 =======
-   * Since: 0.7.117
+   * Since: 1.0.0
 >>>>>>> master
    */
   param_spec = g_param_spec_object("recall-container",
@@ -346,7 +346,7 @@ ags_add_recall_container_launch(AgsTask *task)
  *
  * Returns: an new #AgsAddRecallContainer.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsAddRecallContainer*
 ags_add_recall_container_new(GObject *audio,

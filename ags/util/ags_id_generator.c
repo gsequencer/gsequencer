@@ -42,7 +42,7 @@
  *
  * Returns: the UUID as string
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 gchar*
 ags_id_generator_create_uuid()

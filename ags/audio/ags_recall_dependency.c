@@ -124,7 +124,7 @@ ags_recall_dependency_class_init(AgsRecallDependencyClass *recall_dependency)
    *
    * The dependency.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("dependency",
 				   i18n_pspec("dependency of recall"),
@@ -282,7 +282,7 @@ ags_recall_dependency_finalize(GObject *gobject)
  *
  * Returns: Next match.
  * 
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 GList*
 ags_recall_dependency_find_dependency(GList *recall_dependencies, GObject *dependency)
@@ -311,7 +311,7 @@ ags_recall_dependency_find_dependency(GList *recall_dependencies, GObject *depen
  *
  * Returns: Next match.
  * 
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 GList*
 ags_recall_dependency_find_dependency_by_provider(GList *recall_dependencies,
@@ -347,7 +347,7 @@ ags_recall_dependency_find_dependency_by_provider(GList *recall_dependencies,
  *
  * Returns: the #AgsRecall dependency.
  * 
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 GObject*
 ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallID *recall_id)
@@ -434,7 +434,7 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
  *
  * Returns: a new #AgsRecallDependency
  * 
- * Since: 0.4.0
+ * Since: 1.0.0
  */
 AgsRecallDependency*
 ags_recall_dependency_new(GObject *dependency)

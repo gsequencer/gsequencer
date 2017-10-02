@@ -300,7 +300,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("the application context object"),
@@ -316,7 +316,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
    *
    * The assigned application mutex
    * 
-   * Since: 0.7.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("application-mutex",
 				    i18n_pspec("the application mutex object"),
@@ -331,7 +331,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
    *
    * The alsa soundcard indentifier
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("device",
 				   i18n_pspec("the device identifier"),
@@ -347,7 +347,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
    *
    * The dsp channel count
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("dsp-channels",
 				 i18n_pspec("count of DSP channels"),
@@ -365,7 +365,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
    *
    * The pcm channel count
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("pcm-channels",
 				 i18n_pspec("count of PCM channels"),
@@ -386,7 +386,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
    *
    * The precision of the buffer
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("precision of buffer"),
@@ -404,7 +404,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
    *
    * The buffer size
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("frame count of a buffer"),
@@ -422,7 +422,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
    *
    * The samplerate
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("frames per second"),
@@ -440,7 +440,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
    *
    * The buffer
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("buffer",
 				    i18n_pspec("the buffer"),
@@ -455,7 +455,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
    *
    * Beats per minute
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("bpm",
 				   i18n_pspec("beats per minute"),
@@ -473,7 +473,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
    *
    * tact
    * 
-   * Since: 0.4.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -491,7 +491,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
    *
    * Attack of the buffer
    * 
-   * Since: 0.4.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),
@@ -1285,7 +1285,7 @@ ags_devout_disconnect(AgsConnectable *connectable)
  *
  * The buffer flag indicates the currently played buffer.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_devout_switch_buffer_flag(AgsDevout *devout)
@@ -1481,7 +1481,7 @@ ags_devout_get_presets(AgsSoundcard *soundcard,
  *
  * List available soundcards.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 void
 ags_devout_list_cards(AgsSoundcard *soundcard,
@@ -3867,7 +3867,7 @@ ags_devout_get_audio(AgsSoundcard *soundcard)
  *
  * Calculate delay and attack and reset it.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_devout_adjust_delay_and_attack(AgsDevout *devout)
@@ -3980,7 +3980,7 @@ ags_devout_adjust_delay_and_attack(AgsDevout *devout)
  *
  * Reallocate the internal audio buffer.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 void
 ags_devout_realloc_buffer(AgsDevout *devout)
@@ -4059,7 +4059,7 @@ ags_devout_realloc_buffer(AgsDevout *devout)
  *
  * Returns: a new #AgsDevout
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsDevout*
 ags_devout_new(GObject *application_context)

@@ -154,7 +154,7 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
    *
    * The assigned soundcard.
    * 
-   * Since: 0.7.45
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of ipatch"),
@@ -170,7 +170,7 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
    *
    * The assigned filename.
    * 
-   * Since: 0.4.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("filename",
 				    i18n_pspec("the filename"),
@@ -185,7 +185,7 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
    *
    * The assigned mode.
    * 
-   * Since: 0.4.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("mode",
 				    i18n_pspec("the mode"),
@@ -1116,7 +1116,7 @@ ags_ipatch_finalize(GObject *gobject)
  *
  * Returns: an empty #AgsIpatch.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsIpatch*
 ags_ipatch_new()

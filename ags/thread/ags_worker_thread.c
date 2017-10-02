@@ -121,7 +121,7 @@ ags_worker_thread_class_init(AgsWorkerThreadClass *worker_thread)
    * The ::do-poll() signal runs independently of ::run() but
    * might be synchronized using a conditional lock.
    * 
-   * Since: 0.7.122.8
+   * Since: 1.0.0.8
    */
   worker_thread_signals[DO_POLL] =
     g_signal_new("do-poll",
@@ -309,7 +309,7 @@ ags_worker_thread_stop(AgsThread *thread)
  * Do loop and invoke ags_worker_thread_do_poll() unless flag
  * AGS_WORKER_THREAD_RUNNING was unset.
  * 
- * Since: 0.7.122.8
+ * Since: 1.0.0.8
  */
 void*
 ags_woker_thread_do_poll_loop(void *ptr)
@@ -331,7 +331,7 @@ ags_woker_thread_do_poll_loop(void *ptr)
  *
  * Do poll your work. It is called of the worker thread.
  *
- * Since: 0.7.122.8
+ * Since: 1.0.0.8
  */
 void
 ags_worker_thread_do_poll(AgsWorkerThread *worker_thread)
@@ -350,7 +350,7 @@ ags_worker_thread_do_poll(AgsWorkerThread *worker_thread)
  *
  * Returns: the new #AgsWorkerThread
  *
- * Since: 0.7.122.8
+ * Since: 1.0.0.8
  */
 AgsWorkerThread*
 ags_worker_thread_new()

@@ -137,7 +137,7 @@ ags_turtle_manager_finalize(GObject *gobject)
  * 
  * Find @filename in @turtle_manager.
  *
- * Since: 0.7.111
+ * Since: 1.0.0
  */
 GObject*
 ags_turtle_manager_find(AgsTurtleManager *turtle_manager,
@@ -166,7 +166,7 @@ ags_turtle_manager_find(AgsTurtleManager *turtle_manager,
  * 
  * Adds @turtle to @turtle_manager.
  *
- * Since: 0.7.111
+ * Since: 1.0.0
  */
 void
 ags_turtle_manager_add(AgsTurtleManager *turtle_manager,
@@ -188,7 +188,7 @@ ags_turtle_manager_add(AgsTurtleManager *turtle_manager,
  *
  * Returns: the #AgsTurtleManager
  *
- * Since: 0.7.111
+ * Since: 1.0.0
  */
 AgsTurtleManager*
 ags_turtle_manager_get_instance()
@@ -215,7 +215,7 @@ ags_turtle_manager_get_instance()
  *
  * Returns: a new #AgsTurtleManager
  *
- * Since: 0.7.111
+ * Since: 1.0.0
  */
 AgsTurtleManager*
 ags_turtle_manager_new()

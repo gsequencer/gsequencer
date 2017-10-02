@@ -100,7 +100,7 @@ ags_led_array_class_init(AgsLedArrayClass *led_array)
    *
    * The width of one led.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_uint("led-width\0",
 				 "width of led\0",
@@ -118,7 +118,7 @@ ags_led_array_class_init(AgsLedArrayClass *led_array)
    *
    * The height of one led.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_uint("led-height\0",
 				 "height of led\0",
@@ -136,7 +136,7 @@ ags_led_array_class_init(AgsLedArrayClass *led_array)
    *
    * The count of leds available.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_uint("led-count\0",
 				 "count of leds\0",
@@ -317,7 +317,7 @@ ags_led_array_set_nth(AgsLedArray *led_array,
  *
  * Returns: a new #AgsLedArray
  *
- * Since: 0.7.122.7
+ * Since: 1.0.0.7
  */
 AgsLedArray*
 ags_led_array_new()

@@ -498,7 +498,7 @@ ags_context_menu_disconnect(AgsConnectable *connectable)
  *
  * Returns: a new #AgsContextMenu
  *
- * Since: 0.9.16
+ * Since: 1.0.0
  */
 AgsContextMenu*
 ags_context_menu_new()

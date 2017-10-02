@@ -143,7 +143,7 @@ ags_play_notation_audio_set_ports(AgsPlugin *plugin, GList *port)
  *
  * Returns: a new #AgsPlayNotationAudio
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsPlayNotationAudio*
 ags_play_notation_audio_new()

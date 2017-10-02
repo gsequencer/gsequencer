@@ -123,7 +123,7 @@ ags_remove_audio_signal_class_init(AgsRemoveAudioSignalClass *remove_audio_signa
    *
    * The assigned #AgsRecycling
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("recycling",
 				   i18n_pspec("recycling of remove audio signal"),
@@ -139,7 +139,7 @@ ags_remove_audio_signal_class_init(AgsRemoveAudioSignalClass *remove_audio_signa
    *
    * The assigned #AgsAudioSignal
    * 
-   * Since: 0.7.117
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio-signal",
 				   i18n_pspec("audio signal of remove audio signal"),
@@ -336,7 +336,7 @@ ags_remove_audio_signal_launch(AgsTask *task)
  *
  * Returns: an new #AgsRemoveAudioSignal.
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsRemoveAudioSignal*
 ags_remove_audio_signal_new(AgsRecycling *recycling,

@@ -184,7 +184,7 @@ ags_buffer_channel_class_init(AgsBufferChannelClass *buffer_channel)
    *
    * The mute port.
    * 
-   * Since: 0.7.122.7
+   * Since: 1.0.0.7
    */
   param_spec = g_param_spec_object("muted",
 				   i18n_pspec("mute channel"),
@@ -419,7 +419,7 @@ ags_buffer_channel_get_muted_port_descriptor()
  *
  * Returns: a new #AgsBufferChannel
  *
- * Since: 0.4
+ * Since: 1.0.0
  */
 AgsBufferChannel*
 ags_buffer_channel_new()

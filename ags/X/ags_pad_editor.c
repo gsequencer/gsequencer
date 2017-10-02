@@ -319,7 +319,7 @@ ags_pad_editor_reset(AgsApplicable *applicable)
  *
  * Is called as channel gets modified.
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 void
 ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
@@ -429,7 +429,7 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
  *
  * Returns: a new #AgsPadEditor
  *
- * Since: 0.3
+ * Since: 1.0.0
  */
 AgsPadEditor*
 ags_pad_editor_new(AgsChannel *channel)

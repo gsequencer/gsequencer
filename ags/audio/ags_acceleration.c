@@ -117,7 +117,7 @@ ags_acceleration_class_init(AgsAccelerationClass *acceleration)
    *
    * Acceleration offset x.
    * 
-   * Since: 0.8.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("x",
 				 i18n_pspec("offset x"),
@@ -135,7 +135,7 @@ ags_acceleration_class_init(AgsAccelerationClass *acceleration)
    *
    * Acceleration offset y.
    * 
-   * Since: 0.8.2
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("y",
 				 i18n_pspec("offset y"),
@@ -153,7 +153,7 @@ ags_acceleration_class_init(AgsAccelerationClass *acceleration)
    *
    * The acceleration's name.
    * 
-   * Since: 0.9.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("acceleration-name",
 				   i18n_pspec("acceleration name"),
@@ -311,7 +311,7 @@ ags_acceleration_finalize(GObject *gobject)
  *
  * Returns: the duplicated #AgsAcceleration.
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsAcceleration*
 ags_acceleration_duplicate(AgsAcceleration *acceleration)
@@ -337,7 +337,7 @@ ags_acceleration_duplicate(AgsAcceleration *acceleration)
  *
  * Returns: a new #AgsAcceleration
  *
- * Since: 0.7.0
+ * Since: 1.0.0
  */
 AgsAcceleration*
 ags_acceleration_new()
