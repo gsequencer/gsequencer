@@ -36,7 +36,7 @@ void ags_playable_base_init(AgsPlayableInterface *interface);
  * @short_description: read/write audio
  * @title: AgsPlayable
  * @section_id:
- * @include: ags/object/ags_playable.h
+ * @include: ags/audio/ags_playable.h
  *
  * The #AgsPlayable interface gives you a unique access to file related
  * IO operations.
