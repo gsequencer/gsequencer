@@ -1,3 +1,11 @@
+ags (1.0.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved max-precision configuration preferences to proper reset
+	* improved ags_notebook_size_request() to always use -1 as requisition width
+	* updated gtk-doc related Since field to have value 1.0.0
+	* TODO:JK: extended user manual
+
 ags (1.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

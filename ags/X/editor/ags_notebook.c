@@ -314,8 +314,8 @@ ags_notebook_size_request(AgsNotebook *notebook,
   GList *list, *list_start;
   
   requisition->height = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
-  requisition->width = (2 * AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT) + (5 * AGS_NOTEBOOK_TAB_DEFAULT_WIDTH);
-
+  requisition->width = -1;
+  
   list_start =
     list = gtk_container_get_children((GtkContainer *) notebook);
   
@@ -330,10 +330,6 @@ ags_notebook_size_request(AgsNotebook *notebook,
   
   if(GTK_WIDGET(notebook)->parent == NULL){
     return;
-  }
-  
-  if(requisition->width < GTK_WIDGET(notebook)->parent->allocation.width){
-    requisition->width = -1; // GTK_WIDGET(notebook)->parent->allocation.width;
   }
 }
 

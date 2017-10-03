@@ -239,6 +239,8 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
   AgsConfig *config;
 
   gchar *str;
+
+  guint max_precision;
   
   performance_preferences = AGS_PERFORMANCE_PREFERENCES(applicable);
 
@@ -275,11 +277,36 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
 
   /* max-precision */
   str = gtk_combo_box_get_active_text(performance_preferences->max_precision);
-  ags_config_set_value(config,
-		       AGS_CONFIG_THREAD,
-		       "max-precision",
-		       str);
+  max_precision = 0;
   
+  if(str != NULL){
+    max_precision = g_ascii_strtoull(str,
+				     NULL,
+				     10);
+  }
+    
+  switch(max_precision){
+  case 0:
+    {
+      g_critical("invalid max-precision configuration");
+
+      max_precision = AGS_THREAD_DEFAULT_MAX_PRECISION;
+    }
+  case 125:
+  case 250:
+  case 1000:
+  default:
+    str = g_strdup_printf("%d",
+			  max_precision);
+      
+    ags_config_set_value(config,
+			 AGS_CONFIG_THREAD,
+			 "max-precision",
+			 str);
+
+    g_free(str);
+  }
+
   //TODO:JK: implement me
 }
 
@@ -291,10 +318,12 @@ ags_performance_preferences_reset(AgsApplicable *applicable)
   AgsConfig *config;
 
   gchar *str;
+
+  guint max_precision;
   
   performance_preferences = AGS_PERFORMANCE_PREFERENCES(applicable);
 
-  /*  */
+  /* auto-sense */
   config = ags_config_get_instance();
 
   str = ags_config_get_value(config,
@@ -303,7 +332,41 @@ ags_performance_preferences_reset(AgsApplicable *applicable)
   gtk_toggle_button_set_active((GtkToggleButton *) performance_preferences->stream_auto_sense,
 			       !g_strcmp0("true",
 					  str));
-  
+
+  /* max-precision */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_THREAD,
+			     "max-precision");
+
+  if(str != NULL){
+    max_precision = g_ascii_strtoull(str,
+				     NULL,
+				     10);
+
+    switch(max_precision){
+    case 125:
+      {
+	gtk_combo_box_set_active(performance_preferences->max_precision,
+				 0);
+      }
+      break;
+    case 250:
+      {
+	gtk_combo_box_set_active(performance_preferences->max_precision,
+				 1);
+      }
+      break;
+    case 1000:
+      {
+	gtk_combo_box_set_active(performance_preferences->max_precision,
+				 2);
+      }
+      break;
+    default:
+      g_warning("unknown max-precision configuration");
+    }
+  }
+
   //TODO:JK: implement me
 }
 
