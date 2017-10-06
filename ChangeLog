@@ -3,10 +3,17 @@ ags (1.0.1)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved max-precision configuration preferences to proper reset
 	* improved ags_notebook_size_request() to always use -1 as requisition width
-	* extended user's manual
+	* improved AgsRampAccelerationDialog to use 2 digits after decimal point
+	* improved AgsSelectAccelerationDialog to use 2 digits after decimal point
+	* extended user's manual and replaced all screenshots
+	* added section "Envelope editor" to chapter 2
+	* added section "Envelope info" to chapter 2
+	* added section "Envelope pattern" to chapter 2
 	* added section "Move notes" to chapter 3
 	* added section "Crop notes" to chapter 3
 	* added section "Select notes" to chapter 3
+	* added section "Select acceleration" to chapter 5
+	* added section "Ramp acceleration" to chapter 5
 	* updated gtk-doc related Since field to have value 1.0.0
 	* fixed missing ags.rc entries of AgsSelectNoteDialog, AgsMoveAccelerationDialog, AgsSelectAccelerationDialog and AgsRampAccelerationDialog
 

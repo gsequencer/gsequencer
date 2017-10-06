@@ -2,7 +2,7 @@
 <!DOCTYPE book [
 <!ENTITY indexMenuIcon "/usr/share/icons/Adwaita/32x32/actions/system-run.png">
 <!ENTITY cursorIcon "/usr/share/icons/Adwaita/32x32/actions/go-jump.png">
-<!ENTITY notesIcon "/usr/share/icons/Adwaita/32x32/mimetypes/audio-x-generic.png">
+<!ENTITY notesIcon "/usr/share/icons/Adwaita/32x32/apps/accessories-text-editor.png">
 <!ENTITY deleteIcon "/usr/share/icons/Adwaita/32x32/actions/edit-clear-all.png">
 <!ENTITY selectIcon "/usr/share/icons/Adwaita/32x32/actions/edit-select-all.png">
 <!ENTITY copyIcon "/usr/share/icons/Adwaita/32x32/actions/edit-copy.png">
@@ -119,7 +119,7 @@
 	    </entry>
 	  </row>
 	  <row>
-	    <entry><imagedata fileref="&invertIcon;"></entry>
+	    <entry><imagedata fileref="&invertIcon;" /></entry>
 	    <entry>invert</entry>
 	    <entry>
 	      Invert entire notation in conjunction with reverse mapping or MIDI import.

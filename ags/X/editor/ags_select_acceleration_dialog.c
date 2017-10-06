@@ -260,6 +260,8 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
   select_acceleration_dialog->select_x0 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 											   AGS_SELECT_ACCELERATION_MAX_BEATS,
 											   0.25);
+  gtk_spin_button_set_digits(select_acceleration_dialog->select_x0,
+			     2);
   gtk_spin_button_set_value(select_acceleration_dialog->select_x0,
 			    0.0);
   gtk_box_pack_start((GtkBox *) hbox,
@@ -285,6 +287,8 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
   select_acceleration_dialog->select_x1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 											   AGS_SELECT_ACCELERATION_MAX_BEATS,
 											   0.25);
+  gtk_spin_button_set_digits(select_acceleration_dialog->select_x1,
+			     2);
   gtk_spin_button_set_value(select_acceleration_dialog->select_x1,
 			    0.0);
   gtk_box_pack_start((GtkBox *) hbox,

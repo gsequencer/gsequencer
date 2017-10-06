@@ -185,7 +185,7 @@
     </para>
 
     <sect2>
-      <title></title>
+      <title>Audio connection output line</title>
       <mediaobject>
 	<imageobject>
 	  <imagedata fileref="../images/ags_audio_connection_output_line.png" />
@@ -204,10 +204,10 @@
     </sect2>
 
     <sect2>
-      <title></title>
+      <title>Audio connection output bulk</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/ags_audio_connection_bulk_line.png" />
+	  <imagedata fileref="../images/ags_audio_connection_output_bulk.png" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -222,6 +222,70 @@
     </sect2>
     
   </sect1>
+
+  <sect1>
+    <title>Envelope dialog</title>
+    <para>
+      The envelope dialog allows you to display and display envlope information assigned either as preset
+      or to a specific note.
+    </para>
+
+    <sect2>
+      <title>Envelope editor</title>
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_machine_envelope_editor.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The envelope dialog's editor tab screenshot
+	  </para>
+	</caption>
+      </mediaobject>
+      
+      <para>
+	Modify or create presets and apply it to selected notes.
+      </para>    
+    </sect2>
+
+    <sect2>
+      <title>Envelope info</title>
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_machine_envelope_info.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The envelope dialog's info tab screenshot
+	  </para>
+	</caption>
+      </mediaobject>
+      
+      <para>
+	Show envelope information of selected notes.
+      </para>    
+    </sect2>
+
+    <sect2>
+      <title>Envelope pattern</title>
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_machine_envelope_pattern.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The envelope dialog's pattern tab screenshot
+	  </para>
+	</caption>
+      </mediaobject>
+      
+      <para>
+	Modify and create pattern related envelope presets.
+      </para>    
+    </sect2>
+
+  </sect1>
+
   
   <sect1>
     <title>MIDI dialog</title>
@@ -582,8 +646,28 @@
     <para>
       Produce audio data using its oscillators. The count of oscillators depends on number of
       input lines. They are adjusted vertically. You have on the right the option to auto-update
-      changes you do with the controls or do it manually with the update button.
+      changes you do with the controls or do it manually by the update button.
       Warning: There are some disabled controls.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>Syncsynth</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/ags_syncsynth.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The synced synth screenshot
+	</para>
+      </caption>
+    </mediaobject>
+    <para>
+      Produce audio data using its oscillators. The count of oscillators can be adjusted by clicking add/remove.
+      You have on the right the option to auto-update changes you do with the controls or do it manually by the
+      update button. Loop start and loop end allows you to specify what region of the audio data shall be looped
+      in order to get the desired note length.
     </para>
   </sect1>
 

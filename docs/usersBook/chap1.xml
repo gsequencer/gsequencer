@@ -236,6 +236,10 @@
 	  Auto-sense on stream is required for certain plugins and recalls but may cause additional performance
 	  losses.
 	</para>
+	<para>
+	  The maximum precision of threads allows you to fine tune performance. A higher frequency allows you
+	  to use smaller buffer size and a higher samplerate. But causes a higher synchronization over-head.
+	</para>
       </sect3>
 
     </sect2>

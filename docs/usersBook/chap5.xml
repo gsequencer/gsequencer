@@ -1,4 +1,14 @@
 <?xml version='1.0' encoding="utf-8"?>
+<!DOCTYPE book [
+<!ENTITY indexMenuIcon "/usr/share/icons/Adwaita/32x32/actions/system-run.png">
+<!ENTITY cursorIcon "/usr/share/icons/Adwaita/32x32/actions/go-jump.png">
+<!ENTITY accelerationsIcon "/usr/share/icons/Adwaita/32x32/apps/accessories-text-editor.png">
+<!ENTITY deleteIcon "/usr/share/icons/Adwaita/32x32/actions/edit-clear-all.png">
+<!ENTITY selectIcon "/usr/share/icons/Adwaita/32x32/actions/edit-select-all.png">
+<!ENTITY copyIcon "/usr/share/icons/Adwaita/32x32/actions/edit-copy.png">
+<!ENTITY cutIcon "/usr/share/icons/Adwaita/32x32/actions/edit-cut.png">
+<!ENTITY pasteIcon "/usr/share/icons/Adwaita/32x32/actions/edit-paste.png">
+]>
 
 <!-- Permission is granted to copy, distribute and/or modify this document -->
 <!-- under the terms of the GNU Free Documentation License, Version 1.3 -->
@@ -11,11 +21,11 @@
   <title>The automation window</title>
   <mediaobject>
     <imageobject>
-      <imagedata fileref="../images/ags_automation_window_dssi_xsynth.png" />
+      <imagedata fileref="../images/ags_automation_window_drum.png" />
     </imageobject>
     <caption>
       <para>
-	The automation window screenshot showing DSSI plugin XSynth
+	The automation window screenshot showing drum
       </para>
     </caption>
   </mediaobject>
@@ -68,4 +78,221 @@
   <para>
     Adjust zoom by combo-box and add/remove automation area to editor by combo-box selection.
   </para>
+
+  <sect1>
+    <title>Automation toolbar</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/ags-automation-toolbar.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The automation editor's toolbar screenshot
+	</para>
+      </caption>
+    </mediaobject>
+    <para>
+      In the table below are the various buttons explained you may use for editing.
+    </para>
+    
+    <table>
+      <title>AGS automation editor toolbar controls table.</title>
+      <tgroup cols="3" align="left" colsep='1' rowsep='1'>
+	<thead>
+	  <row>
+	    <entry>icon</entry>
+	    <entry>action</entry>
+	    <entry>description</entry>
+	  </row>
+	</thead>
+	<tbody>
+	  <row>
+	    <entry><imagedata fileref="&cursorIcon;" /></entry>
+	    <entry>cursor</entry>
+	    <entry>
+	      You may want to set the cursor to paste accelerations at the position where it
+	      is located.
+	    </entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&accelerationsIcon;" /></entry>
+	    <entry>accelerations</entry>
+	    <entry>
+	      Add accelerations by clicking within the automation area.
+	    </entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&deleteIcon;" /></entry>
+	    <entry>delete</entry>
+	    <entry>
+	      Delete accelerations by clicking on the acceleration you don't want anymore.
+	    </entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&selectIcon;" /></entry>
+	    <entry>select</entry>
+	    <entry>
+	      Select accelerations to copy or cut them.
+	    </entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&copyIcon;" /></entry>
+	    <entry>copy</entry>
+	    <entry>
+	      Copy accelerations to the clipboard.
+	    </entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&cutIcon;" /></entry>
+	    <entry>cut</entry>
+	    <entry>
+	      Cut accelerations to the clipboard.
+	    </entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&pasteIcon;" /></entry>
+	    <entry>paste</entry>
+	    <entry>
+	      Paste the previously copied or cutted accelerations at the cursor position or
+	      just insert them where they are/were located. 
+	    </entry>
+	  </row>
+	</tbody>
+      </tgroup>
+    </table>
+
+    <sect2>
+      <title>Editing tools</title>
+      <para>
+	The tools menu button contains items that opens dialogs to do common editing tasks. Like move,
+	crop or select accelerations.
+      </para>
+    </sect2>
+
+    <sect2>
+      <title>Select accelerations</title>
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_select_accelerations_dialog.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The select acceleration dialog screenshot
+	  </para>
+	</caption>
+      </mediaobject>
+      <para>
+	The select acceleration dialog allows you to select accelerations of given position and selected
+	controls.
+      </para>
+
+      <table>
+	<title>AGS select acceleration dialog controls.</title>
+	<tgroup cols="3" align="left" colsep='1' rowsep='1'>
+	  <thead>
+	    <row>
+	      <entry>control</entry>
+	      <entry>description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry>copy selection</entry>
+	      <entry>
+		Check button to say if you would like to copy selection to clipboard.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry>add/remove</entry>
+	      <entry>
+		Add/remove controls to enable/disable for selecting automation area.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry>select x0</entry>
+	      <entry>
+		Set the x0 offset of region to select.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry>select x1</entry>
+	      <entry>
+		Set the x1 offset of region to select.
+	      </entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>      
+    </sect2>
+
+    <sect2>
+      <title>Ramp accelerations</title>
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_ramp_accelerations_dialog.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The ramp acceleration dialog screenshot
+	  </para>
+	</caption>
+      </mediaobject>
+      <para>
+	The ramp acceleration dialog allows you to ramp accelerations to a specified value using
+	given number of steps.
+      </para>
+
+      <table>
+	<title>AGS ramp acceleration dialog controls.</title>
+	<tgroup cols="3" align="left" colsep='1' rowsep='1'>
+	  <thead>
+	    <row>
+	      <entry>control</entry>
+	      <entry>description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry>ramp control</entry>
+	      <entry>
+		Select the control to ramp.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry>ramp x0</entry>
+	      <entry>
+		The x0-offset to start ramp from.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry>ramp y0</entry>
+	      <entry>
+		The y0-value to use as first value.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry>ramp x1</entry>
+	      <entry>
+		The x1-offset to stop ramp to.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry>ramp y1</entry>
+	      <entry>
+		The y1-value to use as last value.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry>step count</entry>
+	      <entry>
+		The number of steps to use to ramp value y0 to y1 from offset x0 to x1.
+	      </entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>      
+    </sect2>
+
+  </sect1>
+
 </chapter>
