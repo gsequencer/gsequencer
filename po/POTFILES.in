@@ -306,7 +306,6 @@
 ./ags/audio/midi/ags_midi_buffer_util.c
 ./ags/audio/midi/ags_midi_builder.c
 ./ags/audio/midi/ags_midi_file.c
-./ags/audio/midi/ags_midi_file_writer.c
 ./ags/audio/midi/ags_midi_parser.c
 ./ags/audio/midi/ags_midi_util.c
 ./ags/audio/pulse/ags_pulse_client.c
