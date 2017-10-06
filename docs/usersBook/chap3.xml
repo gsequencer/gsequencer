@@ -155,7 +155,7 @@
 
       <table>
 	<title>AGS move note dialog controls.</title>
-	<tgroup cols="3" align="left" colsep='1' rowsep='1'>
+	<tgroup cols="2" align="left" colsep='1' rowsep='1'>
 	  <thead>
 	    <row>
 	      <entry>control</entry>
@@ -214,7 +214,7 @@
 
       <table>
 	<title>AGS crop note dialog controls.</title>
-	<tgroup cols="3" align="left" colsep='1' rowsep='1'>
+	<tgroup cols="2" align="left" colsep='1' rowsep='1'>
 	  <thead>
 	    <row>
 	      <entry>control</entry>
@@ -277,7 +277,7 @@
 
       <table>
 	<title>AGS select note dialog controls.</title>
-	<tgroup cols="3" align="left" colsep='1' rowsep='1'>
+	<tgroup cols="2" align="left" colsep='1' rowsep='1'>
 	  <thead>
 	    <row>
 	      <entry>control</entry>

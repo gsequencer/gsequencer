@@ -188,7 +188,7 @@
 
       <table>
 	<title>AGS select acceleration dialog controls.</title>
-	<tgroup cols="3" align="left" colsep='1' rowsep='1'>
+	<tgroup cols="2" align="left" colsep='1' rowsep='1'>
 	  <thead>
 	    <row>
 	      <entry>control</entry>
@@ -244,7 +244,7 @@
 
       <table>
 	<title>AGS ramp acceleration dialog controls.</title>
-	<tgroup cols="3" align="left" colsep='1' rowsep='1'>
+	<tgroup cols="2" align="left" colsep='1' rowsep='1'>
 	  <thead>
 	    <row>
 	      <entry>control</entry>
