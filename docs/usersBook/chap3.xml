@@ -8,7 +8,7 @@
 <!ENTITY copyIcon "/usr/share/icons/Adwaita/32x32/actions/edit-copy.png">
 <!ENTITY cutIcon "/usr/share/icons/Adwaita/32x32/actions/edit-cut.png">
 <!ENTITY pasteIcon "/usr/share/icons/Adwaita/32x32/actions/edit-paste.png">
-<!-- <!ENTITY invertIcon "/usr/share/icons/Adwaita/32x32/actions/gtk-convert.png"> -->
+<!ENTITY invertIcon "/usr/share/icons/Adwaita/32x32/actions/object-flip-vertical.png">
 ]>
 
 <!-- Permission is granted to copy, distribute and/or modify this document -->
@@ -54,6 +54,7 @@
     <para>
       In the table below are the various buttons explained you may use for editing.
     </para>
+    
     <table>
       <title>AGS editor toolbar controls table.</title>
       <tgroup cols="3" align="left" colsep='1' rowsep='1'>
@@ -118,8 +119,7 @@
 	    </entry>
 	  </row>
 	  <row>
-	    <!-- FIXME:JK: missing icon -->
-	    <entry>missing</entry><!-- imagedata fileref="&invertIcon;" -->
+	    <entry><imagedata fileref="&invertIcon;"></entry>
 	    <entry>invert</entry>
 	    <entry>
 	      Invert entire notation in conjunction with reverse mapping or MIDI import.
@@ -128,6 +128,197 @@
 	</tbody>
       </tgroup>
     </table>
+
+    <sect2>
+      <title>Editing tools</title>
+      <para>
+	The tools menu button contains items that opens dialogs to do common editing tasks. Like move,
+	crop or select notes.
+      </para>
+    </sect2>      
+
+    <sect2>
+      <title>Move notes</title>
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_move_notes_dialog.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The move note dialog screenshot
+	  </para>
+	</caption>
+      </mediaobject>
+      <para>
+	The move notes dialog allows you to move selected notes to a given position.
+      </para>
+
+      <table>
+	<title>AGS move note dialog controls.</title>
+	<tgroup cols="3" align="left" colsep='1' rowsep='1'>
+	  <thead>
+	    <row>
+	      <entry>control</entry>
+	      <entry>description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry>relative</entry>
+	      <entry>
+		Radio button to choose relative positioning. The x- and y-offset are going to be added
+		to current selections insets.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry>absolute</entry>
+	      <entry>
+		Radio button to choose absolute positioning. The x- and y-offset are goint to be added
+		to most upper-left position x = 0 and y = 0.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry>x</entry>
+	      <entry>
+		The x-offset to position the selected notes.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry>y</entry>
+	      <entry>
+		The y-offset to position the selected notes.
+	      </entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>      
+    </sect2>
+
+    <sect2>
+      <title>Crop notes</title>
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_crop_notes_dialog.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The crop note dialog screenshot
+	  </para>
+	</caption>
+      </mediaobject>
+      <para>
+	The crop notes dialog allows you to crop selected notes to a specified width or insert
+	desired padding. Per default the values are added or subtracted of each note and doesn't
+	require any additional space.
+      </para>
+
+      <table>
+	<title>AGS crop note dialog controls.</title>
+	<tgroup cols="3" align="left" colsep='1' rowsep='1'>
+	  <thead>
+	    <row>
+	      <entry>control</entry>
+	      <entry>description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry>absolute</entry>
+	      <entry>
+		Modify behavior of crop, if checked it does use crop note control as absolute value,
+		rather than add/subtract the value of current insets.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry>in-place</entry>
+	      <entry>
+		Radio button to specify that all crop happens in-place i.e. no additional space is used.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry>do resize</entry>
+	      <entry>
+		Radio button to specify that all crop adds some extra space i.e. the padding is increased
+		as well.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry>crop note</entry>
+	      <entry>
+		Set the crop note value to resize the selected notes. This may be a relative or absolute value.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry>padding</entry>
+	      <entry>
+		Set the padding per tic to use.
+	      </entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>      
+    </sect2>
+
+    <sect2>
+      <title>Select notes</title>
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_select_notes_dialog.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The select note dialog screenshot
+	  </para>
+	</caption>
+      </mediaobject>
+      <para>
+	The select note dialog allows you to select notes of given position and region.
+      </para>
+
+      <table>
+	<title>AGS select note dialog controls.</title>
+	<tgroup cols="3" align="left" colsep='1' rowsep='1'>
+	  <thead>
+	    <row>
+	      <entry>control</entry>
+	      <entry>description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry>copy selection</entry>
+	      <entry>
+		Check button to say if you would like to copy selection to clipboard.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry>select x0</entry>
+	      <entry>
+		Set the x0 offset of region to select.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry>select y0</entry>
+	      <entry>
+		Set the y0 offset of region to select.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry>select x1</entry>
+	      <entry>
+		Set the x1 offset of region to select.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry>select y1</entry>
+	      <entry>
+		Set the y1 offset of region to select.
+	      </entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>      
+    </sect2>
     
   </sect1>
   

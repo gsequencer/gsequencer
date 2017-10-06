@@ -2397,12 +2397,12 @@ libgsequencer_LTLIBRARIES = libgsequencer.la
 # pkgconfig_DATA += libgsequencer.pc
 
 # extra
-EXTRA_DIST = config.rpath COPYING.docs ags/config.h.in gtk-doc.make \
-	gsequencer.share acsite.m4 aclocal.m4 gsequencer.1 README \
-	ags_example.xml midi2xml.1 ags_functional_note_edit_test.xml \
-	mkinstalldirs m4/Makefile.am m4/Makefile.in ags/i18n.h \
-	ags/gettext.h functional-system-tests.mk.am \
-	functional-system-tests.mk.in \
+EXTRA_DIST = config.rpath COPYING.server COPYING.docs ags/config.h.in \
+	gtk-doc.make gsequencer.share acsite.m4 aclocal.m4 \
+	gsequencer.1 README ags_example.xml midi2xml.1 \
+	ags_functional_note_edit_test.xml mkinstalldirs m4/Makefile.am \
+	m4/Makefile.in ags/i18n.h ags/gettext.h \
+	functional-system-tests.mk.am functional-system-tests.mk.in \
 	docs/reference/libags/libags-sections.txt \
 	docs/reference/libags/libags.types \
 	docs/reference/libags/libags.interfaces \

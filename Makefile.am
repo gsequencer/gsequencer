@@ -36,6 +36,7 @@ libgsequencerdir = $(libdir)/gsequencer
 libgsequencer_LTLIBRARIES = libgsequencer.la
 
 EXTRA_DIST = config.rpath \
+	COPYING.server \
 	COPYING.docs \
 	ags/config.h.in \
 	gtk-doc.make \
