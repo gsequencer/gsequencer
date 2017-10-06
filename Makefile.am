@@ -201,12 +201,14 @@ devdocimages = \
 	$(top_srcdir)/docs/images/AGS_linking.png
 
 userdocimages = \
-	$(top_srcdir)/docs/images/ags_automation_window_dssi_xsynth.png \
+	$(top_srcdir)/docs/images/ags-automation-toolbar.png \
+	$(top_srcdir)/docs/images/ags_automation_window_drum.png \
 	$(top_srcdir)/docs/images/ags_export_window.png \
 	$(top_srcdir)/docs/images/ags_machine_properties-input.png \
 	$(top_srcdir)/docs/images/ags_machine_properties-resize_channels.png \
 	$(top_srcdir)/docs/images/ags_navigation.png \
 	$(top_srcdir)/docs/images/ags_synth.png \
+	$(top_srcdir)/docs/images/ags_syncsynth.png \
 	$(top_srcdir)/docs/images/ags_audio_preferences.png \
 	$(top_srcdir)/docs/images/ags_audio_connection_output_bulk.png \
 	$(top_srcdir)/docs/images/ags_audio_connection_output_line.png \
@@ -227,7 +229,15 @@ userdocimages = \
 	$(top_srcdir)/docs/images/ags_machine_properties-output.png \
 	$(top_srcdir)/docs/images/ags_mixer.png \
 	$(top_srcdir)/docs/images/ags_performance_preferences.png \
-	$(top_srcdir)/docs/images/ags_server_preferences.png
+	$(top_srcdir)/docs/images/ags_server_preferences.png \
+	$(top_srcdir)/docs/images/ags_machine_envelope_editor.png \
+	$(top_srcdir)/docs/images/ags_machine_envelope_info.png \
+	$(top_srcdir)/docs/images/ags_machine_envelope_pattern.png \
+	$(top_srcdir)/docs/images/ags_move_notes_dialog.png \
+	$(top_srcdir)/docs/images/ags_crop_notes_dialog.png \
+	$(top_srcdir)/docs/images/ags_select_notes_dialog.png \
+	$(top_srcdir)/docs/images/ags_select_accelerations_dialog.png \
+	$(top_srcdir)/docs/images/ags_ramp_accelerations_dialog.png
 
 EXTRA_DIST += $(manpages) $(userdoc) $(userdocimages) $(devdoc) $(devdocimages) $(devdoclistings)
 
