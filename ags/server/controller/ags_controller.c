@@ -23,6 +23,8 @@
 
 #include <ags/i18n.h>
 
+#include <stdlib.h>
+
 void ags_controller_class_init(AgsControllerClass *controller);
 void ags_controller_init(AgsController *controller);
 void ags_controller_set_property(GObject *gobject,

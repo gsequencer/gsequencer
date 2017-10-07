@@ -24,6 +24,7 @@
 
 #include <math.h>
 #include <string.h>
+#include <stdlib.h>
 
 /**
  * SECTION:ags_midi_buffer_util

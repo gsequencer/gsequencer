@@ -21,6 +21,8 @@
 
 #include <ags/i18n.h>
 
+#include <stdlib.h>
+
 void ags_security_context_class_init(AgsSecurityContextClass *security_context);
 void ags_security_context_init(AgsSecurityContext *security_context);
 void ags_security_context_set_property(GObject *gobject,
