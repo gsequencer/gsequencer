@@ -696,8 +696,6 @@ ags_synth_generator_compute_with_audio_signal(AgsSynthGenerator *synth_generator
 {
   GList *stream;
   
-  void *buffer;
-  
   gdouble samplerate;
   gdouble start_frequency, frequency;
   gdouble current_frequency;
@@ -870,8 +868,6 @@ ags_synth_generator_compute_with_audio_signal(AgsSynthGenerator *synth_generator
 
     initial_run = FALSE;
   }
-
-  free(buffer);
 }
 
 /**

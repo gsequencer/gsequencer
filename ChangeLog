@@ -1,3 +1,10 @@
+ags (1.0.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed possible SIGSEGV in ags_synth_generator_compute_with_audio_signal()
+	* fixed missing includes of stdlib.h
+	* fixed user's handbook removed unneeded column in tables
+
 ags (1.0.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
