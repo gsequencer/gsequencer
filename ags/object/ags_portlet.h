@@ -35,7 +35,7 @@ typedef struct _AgsPortletInterface AgsPortletInterface;
 
 struct _AgsPortletInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
 
   GObject* (*get_port)(AgsPortlet *portlet);
   void (*set_port)(AgsPortlet *portlet, GObject *port);

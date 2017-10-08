@@ -20,6 +20,7 @@
 #ifndef __AGS_PLAYABLE_H__
 #define __AGS_PLAYABLE_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #define AGS_TYPE_PLAYABLE                    (ags_playable_get_type())
@@ -29,7 +30,7 @@
 #define AGS_IS_PLAYABLE_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_PLAYABLE))
 #define AGS_PLAYABLE_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_PLAYABLE, AgsPlayableInterface))
 
-typedef void AgsPlayable;
+typedef struct _AgsPlayable AgsPlayable;
 typedef struct _AgsPlayableInterface AgsPlayableInterface;
 
 #define AGS_PLAYABLE_ERROR (ags_playable_error_quark())
@@ -41,7 +42,7 @@ typedef enum{
 
 struct _AgsPlayableInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
 
   gboolean (*open)(AgsPlayable *playable, gchar *name);
   gboolean (*rw_open)(AgsPlayable *playable, gchar *name,

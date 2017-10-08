@@ -35,7 +35,7 @@ typedef struct _AgsSoundProviderInterface AgsSoundProviderInterface;
 
 struct _AgsSoundProviderInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
 
   void (*set_soundcard)(AgsSoundProvider *sound_provider,
 			GList *soundcard);

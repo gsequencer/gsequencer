@@ -37,7 +37,7 @@ typedef struct _AgsConnectableInterface AgsConnectableInterface;
 
 struct _AgsConnectableInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
 
   void (*add_to_registry)(AgsConnectable *connectable);
   void (*remove_from_registry)(AgsConnectable *connectable);

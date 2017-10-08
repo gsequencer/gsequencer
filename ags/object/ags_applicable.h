@@ -35,7 +35,7 @@ typedef struct _AgsApplicableInterface AgsApplicableInterface;
 
 struct _AgsApplicableInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
   
   void (*set_update)(AgsApplicable *applicable, gboolean update);
   void (*apply)(AgsApplicable *applicable);

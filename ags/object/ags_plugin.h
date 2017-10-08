@@ -37,7 +37,7 @@ typedef struct _AgsPluginInterface AgsPluginInterface;
 
 struct _AgsPluginInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
   
   gchar* (*get_name)(AgsPlugin *plugin);
   void (*set_name)(AgsPlugin *plugin, gchar *name);

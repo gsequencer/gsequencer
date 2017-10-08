@@ -70,7 +70,7 @@ typedef enum{
 
 struct _AgsSoundcardInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
 
   void (*set_application_context)(AgsSoundcard *soundcard,
 				  AgsApplicationContext *application_context);

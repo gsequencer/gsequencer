@@ -35,7 +35,7 @@ typedef struct _AgsMutableInterface AgsMutableInterface;
 
 struct _AgsMutableInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
 
   void (*set_muted)(AgsMutable *mutable, gboolean muted);
 };

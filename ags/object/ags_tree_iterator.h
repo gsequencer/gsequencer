@@ -20,6 +20,7 @@
 #ifndef __AGS_TREE_ITERATOR_H__
 #define __AGS_TREE_ITERATOR_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #define AGS_TYPE_TREE_ITERATOR                    (ags_tree_iterator_get_type())
@@ -34,7 +35,7 @@ typedef struct _AgsTreeIteratorInterface AgsTreeIteratorInterface;
 
 struct _AgsTreeIteratorInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
 
   void (*set_inverse_mode)(AgsTreeIterator *tree, gboolean mode);
   gboolean (*is_inverse_mode)(AgsTreeIterator *tree);

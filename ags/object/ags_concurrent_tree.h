@@ -37,7 +37,7 @@ typedef struct _AgsConcurrentTreeInterface AgsConcurrentTreeInterface;
 
 struct _AgsConcurrentTreeInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
 
   void (*set_parent_locked)(AgsConcurrentTree *concurrent_tree,
 			    gboolean parent_locked);

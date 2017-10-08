@@ -35,7 +35,7 @@ typedef struct _AgsPackableInterface AgsPackableInterface;
 
 struct _AgsPackableInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
 
   gboolean (*pack)(AgsPackable *packable, GObject *container);
   gboolean (*unpack)(AgsPackable *packable);

@@ -37,7 +37,7 @@ typedef struct _AgsUiProviderInterface AgsUiProviderInterface;
 
 struct _AgsUiProviderInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
   
   GtkWidget* (*get_window)(AgsUiProvider *ui_provider);
   void (*set_window)(AgsUiProvider *ui_provider,

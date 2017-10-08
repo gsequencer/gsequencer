@@ -35,7 +35,7 @@ typedef struct _AgsSeekableInterface AgsSeekableInterface;
 
 struct _AgsSeekableInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
 
   void (*seek)(AgsSeekable *seekable, guint steps, gboolean forward);
 };

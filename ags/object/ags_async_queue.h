@@ -37,7 +37,7 @@ typedef struct _AgsAsyncQueueInterface AgsAsyncQueueInterface;
 
 struct _AgsAsyncQueueInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
   
   void (*increment_wait_ref)(AgsAsyncQueue *async_queue);
   guint (*get_wait_ref)(AgsAsyncQueue *async_queue);

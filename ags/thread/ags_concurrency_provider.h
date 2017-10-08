@@ -45,10 +45,10 @@ typedef struct _AgsConcurrencyProviderInterface AgsConcurrencyProviderInterface;
 
 struct _AgsConcurrencyProviderInterface
 {
-  GTypeInterface interface;
-  
+  GTypeInterface ginterface;
+
   AgsMutexManager* (*get_mutex_manager)(AgsConcurrencyProvider *concurrency_provider);
-  
+
   AgsThread* (*get_main_loop)(AgsConcurrencyProvider *concurrency_provider);
   AgsThread* (*get_task_thread)(AgsConcurrencyProvider *concurrency_provider);
   

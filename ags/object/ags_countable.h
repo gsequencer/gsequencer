@@ -20,6 +20,7 @@
 #ifndef __AGS_COUNTABLE_H__
 #define __AGS_COUNTABLE_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #define AGS_TYPE_COUNTABLE                    (ags_countable_get_type())
@@ -29,12 +30,12 @@
 #define AGS_IS_COUNTABLE_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_COUNTABLE))
 #define AGS_COUNTABLE_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_COUNTABLE, AgsCountableInterface))
 
-typedef void AgsCountable;
+typedef struct _AgsCountable AgsCountable;
 typedef struct _AgsCountableInterface AgsCountableInterface;
 
 struct _AgsCountableInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
 
   guint (*get_notation_counter)(AgsCountable *countable);
   guint (*get_sequencer_counter)(AgsCountable *countable);

@@ -36,12 +36,12 @@
 #define AGS_IS_SERVICE_PROVIDER_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_SERVICE_PROVIDER))
 #define AGS_SERVICE_PROVIDER_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_SERVICE_PROVIDER, AgsServiceProviderInterface))
 
-typedef void AgsServiceProvider;
+typedef struct _AgsServiceProvider AgsServiceProvider;
 typedef struct _AgsServiceProviderInterface AgsServiceProviderInterface;
 
 struct _AgsServiceProviderInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
   
   gboolean (*is_operating)(AgsServiceProvider *service_provider);
   AgsServerStatus* (*server_status)(AgsServiceProvider *service_provider);

@@ -35,7 +35,7 @@ typedef struct _AgsDynamicConnectableInterface AgsDynamicConnectableInterface;
 
 struct _AgsDynamicConnectableInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
 
   void (*connect_dynamic)(AgsDynamicConnectable *connectable);
   void (*disconnect_dynamic)(AgsDynamicConnectable *connectable);

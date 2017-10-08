@@ -2,6 +2,9 @@ ags (1.0.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed missing ags-prepare recall related gtk-doc
+	* fixed all interfaces to name inherited type field ginterface instead of interface
+	* fixed gtk-doc fixup to do sed using globbing
+	* fixed following additional / by gtk-doc fixup
 
 ags (1.0.3)
 

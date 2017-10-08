@@ -35,7 +35,7 @@ typedef struct _AgsTactableInterface AgsTactableInterface;
 
 struct _AgsTactableInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
 
   gdouble (*get_sequencer_duration)(AgsTactable *tactable);
   gdouble (*get_notation_duration)(AgsTactable *tactable);

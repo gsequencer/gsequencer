@@ -39,8 +39,8 @@ typedef struct _AgsMainLoopInterface AgsMainLoopInterface;
 
 struct _AgsMainLoopInterface
 {
-  GTypeInterface interface;
-
+  GTypeInterface ginterface;
+  
   pthread_mutex_t* (*get_tree_lock)(AgsMainLoop *main_loop);
   
   void (*set_application_context)(AgsMainLoop *main_loop, AgsApplicationContext *application_context);

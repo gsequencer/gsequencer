@@ -35,7 +35,7 @@ typedef struct _AgsDistributedManagerInterface AgsDistributedManagerInterface;
 
 struct _AgsDistributedManagerInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
 
   void (*set_url)(AgsDistributedManager *distributed_manager,
 		  gchar *url);

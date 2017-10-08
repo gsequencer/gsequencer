@@ -57,7 +57,7 @@ typedef struct _AgsSequencerInterface AgsSequencerInterface;
 
 struct _AgsSequencerInterface
 {
-  GTypeInterface interface;
+  GTypeInterface ginterface;
 
   void (*set_application_context)(AgsSequencer *sequencer,
 				  AgsApplicationContext *application_context);
