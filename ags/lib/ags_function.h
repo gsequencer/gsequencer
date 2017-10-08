@@ -41,6 +41,19 @@
 typedef struct _AgsFunction AgsFunction;
 typedef struct _AgsFunctionClass AgsFunctionClass;
 
+/**
+ * AgsFunctionFlags:
+ * @AGS_FUNCTION_LINEAR: the function is linear
+ * @AGS_FUNCTION_EXPONENTIAL: the function is exponential
+ * @AGS_FUNCTION_LOGARITHMIC: the function is logarithmic
+ * @AGS_FUNCTION_IS_UNIQUE: the function is unique
+ * @AGS_FUNCTION_SOLVE_PIVOT_TABLE: do solve using pivot table
+ * @AGS_FUNCTION_SOLVE_MAXIMUM_COLON: solve using maximum colon strategy
+ * @AGS_FUNCTION_SOLVE_GAUSS: solve using gauss strategy
+ * 
+ * Enum values to control the behavior of #AgsFunction by enable/disable
+ * as flags.
+ */
 typedef enum{
   AGS_FUNCTION_LINEAR               = 1,
   AGS_FUNCTION_EXPONENTIAL          = 1 <<  1,

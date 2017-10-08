@@ -43,7 +43,7 @@ struct _AgsFrontController
 struct _AgsFrontControllerClass
 {
   AgsControllerClass controller;
-  
+
   gpointer (*authenticate)(AgsFrontController *front_controller,
 			   gchar *authentication_module,
 			   gchar *login,
@@ -53,7 +53,7 @@ struct _AgsFrontControllerClass
   gpointer (*do_request)(AgsFrontController *front_controller,
 			 GObject *security_context,
 			 gchar *context_path,
-			 gchar *user,
+			 gchar *login,
 			 gchar *security_token,
 			 GParameter *params,
 			 guint n_params);
@@ -70,7 +70,7 @@ gpointer ags_front_controller_authenticate(AgsFrontController *front_controller,
 gpointer ags_front_controller_do_request(AgsFrontController *front_controller,
 					 GObject *security_context,
 					 gchar *context_path,
-					 gchar *user,
+					 gchar *login,
 					 gchar *security_token,
 					 GParameter *params,
 					 guint n_params);

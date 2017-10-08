@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/server/security/ags_security_context.h>
+
 #define AGS_TYPE_PASSWORD_STORE                    (ags_password_store_get_type())
 #define AGS_PASSWORD_STORE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PASSWORD_STORE, AgsPasswordStore))
 #define AGS_PASSWORD_STORE_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_PASSWORD_STORE, AgsPasswordStoreInterface))
@@ -32,14 +34,6 @@
 
 typedef struct _AgsPasswordStore AgsPasswordStore;
 typedef struct _AgsPasswordStoreInterface AgsPasswordStoreInterface;
-
-typedef enum{
-  AGS_SECURITY_CONTEXT_RPC_READ       = 1,
-  AGS_SECURITY_CONTEXT_RPC_WRITE      = 1 <<  1,
-  AGS_SECURITY_CONTEXT_RPC_EXECUTE    = 1 <<  2,
-  AGS_SECURITY_CONTEXT_ACCOUNT_READ   = 1 <<  3,
-  AGS_SECURITY_CONTEXT_ACCOUNT_WRITE  = 1 <<  4,
-}AgsSecurityContextMode;
 
 struct _AgsPasswordStoreInterface
 {
@@ -79,13 +73,13 @@ GType ags_password_store_get_type();
 
 void ags_password_store_set_login_name(AgsPasswordStore *password_store,
 				       GObject *security_context,
-				       gchar *user,
+				       gchar *user_uuid,
 				       gchar *security_token,
 				       gchar *login_name,
 				       GError **error);
 gchar* ags_password_store_get_login_name(AgsPasswordStore *password_store,
 					 GObject *security_context,
-					 gchar *user,
+					 gchar *user_uuid,
 					 gchar *security_token,
 					 GError **error);
 

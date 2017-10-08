@@ -573,9 +573,10 @@ ags_front_controller_real_authenticate(AgsFrontController *front_controller,
 /**
  * ags_front_controller_authenticate:
  * @front_controller: the #AgsFrontController
- * @login:
- * @password:
- * @certs:
+ * @authentication_module: the authentication module to use
+ * @login: the login
+ * @password: the password
+ * @certs: the certs data
  *
  * Authenticate to the server.
  *

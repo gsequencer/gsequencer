@@ -50,6 +50,19 @@
 typedef struct _AgsApplicationContext AgsApplicationContext;
 typedef struct _AgsApplicationContextClass AgsApplicationContextClass;
 
+/**
+ * AgsApplicationContextFlags:
+ * @AGS_APPLICATION_CONTEXT_DEFAULT: indicates the default context, used if siblings available
+ * @AGS_APPLICATION_CONTEXT_REGISTER_TYPES: enable to register types
+ * @AGS_APPLICATION_CONTEXT_ADD_TO_REGISTRY: add to #AgsRegistry
+ * @AGS_APPLICATION_CONTEXT_CONNECT: call connect of #AgsConnectable descending objects
+ * @AGS_APPLICATION_CONTEXT_TYPES_REGISTERED: indicates the types have been registered
+ * @AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY: indicates the application context was added to #AgsRegistry
+ * @AGS_APPLICATION_CONTEXT_CONNECTED: indicates the application context is connected by calling #AgsConnectable::connect()
+ * 
+ * Enum values to control the behavior of #AgsApplicationContext by enable/disable
+ * as flags.
+ */
 typedef enum{
   AGS_APPLICATION_CONTEXT_DEFAULT            = 1,
   AGS_APPLICATION_CONTEXT_REGISTER_TYPES     = 1 << 1,

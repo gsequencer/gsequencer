@@ -25,7 +25,7 @@ void ags_authentication_base_init(AgsAuthenticationInterface *interface);
  * SECTION:ags_authentication
  * @short_description: base password authentication
  * @title: AgsAuthentication
- * @section_id: AgsAuthentication
+ * @section_id:
  * @include: ags/server/security/ags_authentication.h
  *
  * The #AgsAuthentication interface gives you base authentication functions.
@@ -173,7 +173,7 @@ ags_authentication_generate_token(AgsAuthentication *authentication,
 }
 
 /**
- *
+ * ags_authentication_get_groups:
  * @authentication: the #AgsAuthentication
  * @security_context: the #AgsSecurityContext
  * @login: the login

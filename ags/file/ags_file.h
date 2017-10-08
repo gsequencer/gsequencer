@@ -43,6 +43,18 @@
 typedef struct _AgsFile AgsFile;
 typedef struct _AgsFileClass AgsFileClass;
 
+/**
+ * AgsFileFlags:
+ * @AGS_FILE_READ: opened file for reading
+ * @AGS_FILE_READ_AUDIO_SIGNAL: read audio signal
+ * @AGS_FILE_READ_EMBEDDED_AUDIO: read embedded audio data
+ * @AGS_FILE_WRITE: opened file for writing
+ * @AGS_FILE_WRITE_AUDIO_SIGNAL: write audio signal
+ * @AGS_FILE_WRITE_EMBEDDED_AUDIO: write embedded audio data
+ * 
+ * Enum values to control the behavior of #AgsFile by enable/disable
+ * as flags.
+ */
 typedef enum{
   AGS_FILE_READ                    = 1,
   AGS_FILE_READ_AUDIO_SIGNAL       = 1 << 1,
@@ -54,6 +66,12 @@ typedef enum{
 
 #define AGS_FILE_ERROR (ags_file_error_quark())
 
+/**
+ * AgsFileError:
+ * @AGS_FILE_ERROR_PARSER_FAILURE: the parser failed
+ * 
+ * Enum values to indicated failures to used with #GError-struct.
+ */
 typedef enum{
   AGS_FILE_ERROR_PARSER_FAILURE,
 }AgsFileError;

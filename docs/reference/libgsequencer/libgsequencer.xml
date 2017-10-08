@@ -85,7 +85,6 @@
     <xi:include href="xml/ags_machine.xml"/>
     <xi:include href="xml/ags_machine_callbacks.xml"/>
     <xi:include href="xml/ags_machine_collection.xml"/>
-    <xi:include href="xml/ags_machine_collection_callbacks.xml"/>
     <xi:include href="xml/ags_machine_editor.xml"/>
     <xi:include href="xml/ags_machine_editor_callbacks.xml"/>
     <xi:include href="xml/ags_menu_action_callbacks.xml"/>
@@ -174,7 +173,6 @@
       <xi:include href="xml/ags_pattern_envelope.xml"/>
       <xi:include href="xml/ags_pattern_envelope_callbacks.xml"/>
       <xi:include href="xml/ags_playback_window.xml"/>
-      <xi:include href="xml/ags_playback_window_callbacks.xml"/>
       <xi:include href="xml/ags_ramp_acceleration_dialog.xml"/>
       <xi:include href="xml/ags_ramp_acceleration_dialog_callbacks.xml"/>
       <xi:include href="xml/ags_scale.xml"/>

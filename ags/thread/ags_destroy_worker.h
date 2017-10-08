@@ -60,6 +60,13 @@ struct _AgsDestroyWorkerClass
   AgsWorkerThreadClass worker_thread;
 };
 
+/**
+ * AgsDestroyEntry:
+ * @ptr: the entry to destroy
+ * @destroy_func: the destroy function
+ * 
+ * The struct to specify an entry to destroy.
+ */
 struct _AgsDestroyEntry
 {
   gpointer ptr;

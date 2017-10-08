@@ -33,6 +33,24 @@
 typedef struct _AgsSecurityContext AgsSecurityContext;
 typedef struct _AgsSecurityContextClass AgsSecurityContextClass;
 
+/**
+ * AgsSecurityContextMode:
+ * @AGS_SECURITY_CONTEXT_RPC_READ: allowed to read using RPC
+ * @AGS_SECURITY_CONTEXT_RPC_WRITE: allowed to write using RPC
+ * @AGS_SECURITY_CONTEXT_RPC_EXECUTE: allowed to execute using RPC
+ * @AGS_SECURITY_CONTEXT_ACCOUNT_READ: allowed to read account information
+ * @AGS_SECURITY_CONTEXT_ACCOUNT_WRITE: allowed to write account information
+ * 
+ * The #AgsSecurityContextMode specifies basic account permissions.
+ */
+typedef enum{
+  AGS_SECURITY_CONTEXT_RPC_READ       = 1,
+  AGS_SECURITY_CONTEXT_RPC_WRITE      = 1 <<  1,
+  AGS_SECURITY_CONTEXT_RPC_EXECUTE    = 1 <<  2,
+  AGS_SECURITY_CONTEXT_ACCOUNT_READ   = 1 <<  3,
+  AGS_SECURITY_CONTEXT_ACCOUNT_WRITE  = 1 <<  4,
+}AgsSecurityContextMode;
+
 struct _AgsSecurityContext
 {
   GObject object;

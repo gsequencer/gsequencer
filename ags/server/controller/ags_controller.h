@@ -55,6 +55,14 @@ struct _AgsControllerClass
 				     GObject *security_context, gchar *login);
 };
 
+/**
+ * AgsControllerResource:
+ * @group_id: the group id of permissions
+ * @user_id: the user id of permissions
+ * @access_mode: the access mode of permissions
+ * 
+ * Specifing attributes of resources.
+ */
 struct _AgsControllerResource
 {
   gchar *group_id;

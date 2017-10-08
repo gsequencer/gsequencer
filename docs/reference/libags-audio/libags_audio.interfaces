@@ -170,6 +170,11 @@ AgsPlayNote AgsConnectable AgsPackable AgsDynamicConnectable AgsPlugin
 AgsChannel AgsConnectable
 AgsInput AgsConnectable
 AgsOutput AgsConnectable
+AgsCoreAudioClient AgsConnectable
+AgsCoreAudioDevout AgsConnectable AgsSoundcard
+AgsCoreAudioMidiin AgsConnectable AgsSequencer
+AgsCoreAudioPort AgsConnectable
+AgsCoreAudioServer AgsConnectable AgsDistributedManager
 AgsDevout AgsConnectable AgsSoundcard AgsConcurrentTree
 AgsFifoout AgsConnectable AgsSoundcard AgsConcurrentTree
 AgsIpatchDLS2Reader AgsConnectable
