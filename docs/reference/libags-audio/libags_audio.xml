@@ -37,6 +37,7 @@
     <xi:include href="xml/ags_lv2_event_manager.xml"/>
     <xi:include href="xml/ags_lv2_log_manager.xml"/>
     <xi:include href="xml/ags_lv2_manager.xml"/>
+    <xi:include href="xml/ags_lv2_option_manager.xml"/>
     <xi:include href="xml/ags_lv2_plugin.xml"/>
     <xi:include href="xml/ags_lv2_preset.xml"/>
     <xi:include href="xml/ags_lv2_uri_map_manager.xml"/>
@@ -279,6 +280,7 @@
       <xi:include href="xml/ags_remove_region_from_selection.xml"/>
       <xi:include href="xml/ags_remove_soundcard.xml"/>
       <xi:include href="xml/ags_reset_audio_connection.xml"/>
+      <xi:include href="xml/ags_reset_peak.xml"/>
       <xi:include href="xml/ags_resize_audio.xml"/>
       <xi:include href="xml/ags_save_file.xml"/>
       <xi:include href="xml/ags_seek_soundcard.xml"/>
@@ -286,6 +288,7 @@
       <xi:include href="xml/ags_set_buffer_size.xml"/>
       <xi:include href="xml/ags_set_format.xml"/>
       <xi:include href="xml/ags_set_input_device.xml"/>
+      <xi:include href="xml/ags_set_muted.xml"/>
       <xi:include href="xml/ags_set_output_device.xml"/>
       <xi:include href="xml/ags_set_samplerate.xml"/>
       <xi:include href="xml/ags_start_sequencer.xml"/>
