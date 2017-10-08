@@ -212,6 +212,10 @@
       <xi:include href="xml/ags_play_dssi_audio_run.xml"/>
       <xi:include href="xml/ags_play_lv2_audio.xml"/>
       <xi:include href="xml/ags_play_lv2_audio_run.xml"/>
+      <xi:include href="xml/ags_prepare_audio_signal.xml"/>
+      <xi:include href="xml/ags_prepare_channel.xml"/>
+      <xi:include href="xml/ags_prepare_channel_run.xml"/>
+      <xi:include href="xml/ags_prepare_recycling.xml"/>
       <xi:include href="xml/ags_record_midi_audio.xml"/>
       <xi:include href="xml/ags_record_midi_audio_run.xml"/>
       <xi:include href="xml/ags_route_dssi_audio.xml"/>
