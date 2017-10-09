@@ -45,6 +45,16 @@ typedef struct _AgsRegistry AgsRegistry;
 typedef struct _AgsRegistryClass AgsRegistryClass;
 typedef struct _AgsRegistryEntry AgsRegistryEntry;
 
+/**
+ * AgsRegistryFlags:
+ * @AGS_REGISTRY_CONNECTED: the registry was connected by #AgsConnectable::connect()
+ * @AGS_REGISTRY_XML_DOCUMENT: //TODO:JK: implement me
+ * @AGS_REGISTRY_XML_RPC: //TODO:JK: implement me
+ * @AGS_REGISTRY_DIRTY: //TODO:JK: implement me
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsRegistry by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_REGISTRY_CONNECTED     = 1,
   AGS_REGISTRY_XML_DOCUMENT  = 1 <<  1,
@@ -83,6 +93,13 @@ struct _AgsRegistryClass
   GObjectClass object;
 };
 
+/**
+ * AgsRegistryEntry:
+ * @id: the id
+ * @value: the actual entry
+ * 
+ * #AgsRegistryEntry is an entry that you might want to lookup remotely.
+ */
 struct _AgsRegistryEntry
 {
   gchar *id;

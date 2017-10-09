@@ -60,8 +60,8 @@ typedef struct _AgsApplicationContextClass AgsApplicationContextClass;
  * @AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY: indicates the application context was added to #AgsRegistry
  * @AGS_APPLICATION_CONTEXT_CONNECTED: indicates the application context is connected by calling #AgsConnectable::connect()
  * 
- * Enum values to control the behavior of #AgsApplicationContext by enable/disable
- * as flags.
+ * Enum values to control the behavior or indicate internal state of #AgsApplicationContext by
+ * enable/disable as flags.
  */
 typedef enum{
   AGS_APPLICATION_CONTEXT_DEFAULT            = 1,

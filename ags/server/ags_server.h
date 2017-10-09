@@ -54,6 +54,15 @@ typedef struct _AgsServer AgsServer;
 typedef struct _AgsServerClass AgsServerClass;
 typedef struct _AgsServerInfo AgsServerInfo;
 
+/**
+ * AgsServerFlags:
+ * @AGS_SERVER_CONNECTED: the server was connected by #AgsConnectable::connect()
+ * @AGS_SERVER_STARTED: the server was started
+ * @AGS_SERVER_RUNNING: the server is up and running
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsServer by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_SERVER_CONNECTED      = 1,
   AGS_SERVER_STARTED        = 1 << 1,
@@ -97,6 +106,13 @@ struct _AgsServerClass
   void (*start)(AgsServer *server);
 };
 
+/**
+ * AgsServerInfo:
+ * @uuid: the assigned uuid
+ * @server_name: the server's name
+ * 
+ * #AgsServerInfo does identify the server and provides some basic information about it.
+ */
 struct _AgsServerInfo
 {
   gchar *uuid;

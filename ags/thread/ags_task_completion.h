@@ -33,6 +33,16 @@
 typedef struct _AgsTaskCompletion AgsTaskCompletion;
 typedef struct _AgsTaskCompletionClass AgsTaskCompletionClass;
 
+/**
+ * AgsTaskCompletionFlags:
+ * @AGS_TASK_COMPLETION_QUEUED: the assigned task has been queued
+ * @AGS_TASK_COMPLETION_BUSY: the assigned task is busy
+ * @AGS_TASK_COMPLETION_READY: the assigned task is ready
+ * @AGS_TASK_COMPLETION_COMPLETED: the assigned task has been completed
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsTaskCompletion by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_TASK_COMPLETION_QUEUED      = 1,
   AGS_TASK_COMPLETION_BUSY        = 1 << 1,

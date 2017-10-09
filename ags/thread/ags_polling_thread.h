@@ -48,6 +48,14 @@
 typedef struct _AgsPollingThread AgsPollingThread;
 typedef struct _AgsPollingThreadClass AgsPollingThreadClass;
 
+/**
+ * AgsPollingThreadFlags:
+ * @AGS_POLLING_THREAD_PERFORMANCE: not used
+ * @AGS_POLLING_THREAD_OMIT: omit poll
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsPollingThread by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_POLLING_THREAD_PERFORMANCE          = 1,
   AGS_POLLING_THREAD_OMIT                 = 1 <<  1,

@@ -54,6 +54,13 @@
 typedef struct _AgsServerApplicationContext AgsServerApplicationContext;
 typedef struct _AgsServerApplicationContextClass AgsServerApplicationContextClass;
 
+/**
+ * AgsServerApplicationContextFlags:
+ * @AGS_SERVER_APPLICATION_CONTEXT_ENABLE_SERVER: enable the server
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsServerApplicationContext by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_SERVER_APPLICATION_CONTEXT_ENABLE_SERVER      = 1,
 }AgsServerApplicationContextFlags;

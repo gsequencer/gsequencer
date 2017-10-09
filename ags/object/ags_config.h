@@ -48,8 +48,8 @@ typedef struct _AgsConfigClass AgsConfigClass;
  * AgsConfigFlags:
  * @AGS_CONFIG_CONNECTED: the config was connected by calling #AgsConnectable::connect()
  * 
- * Enum values to control the behavior of #AgsConfig by enable/disable
- * as flags.
+ * Enum values to control the behavior or indicate internal state of #AgsConfig by
+ * enable/disable as flags.
  */
 typedef enum{
   AGS_CONFIG_CONNECTED    = 1,

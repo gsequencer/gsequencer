@@ -49,6 +49,19 @@ typedef struct _AgsTaskThread AgsTaskThread;
 typedef struct _AgsTaskThreadClass AgsTaskThreadClass;
 typedef struct _AgsTaskThreadAppend AgsTaskThreadAppend;
 
+/**
+ * AgsTaskThreadFlags:
+ * @AGS_TASK_THREAD_EXTERN_SYNC: sync with external thread
+ * @AGS_TASK_THREAD_EXTERN_READY: sync with exeternal thread ready
+ * @AGS_TASK_THREAD_EXTERN_AVAILABLE: the external thread is available
+ * @AGS_TASK_THREAD_SYNC_WAIT: sync external thread wait - producer
+ * @AGS_TASK_THREAD_SYNC_DONE: sync external thread done - producer
+ * @AGS_TASK_THREAD_EXTERN_SYNC_WAIT: sync external thread wait - consumer
+ * @AGS_TASK_THREAD_EXTERN_SYNC_DONE: sync external thread done - consumer
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsTaskThread by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_TASK_THREAD_EXTERN_SYNC                = 1,
   AGS_TASK_THREAD_EXTERN_READY               = 1 <<  1,
@@ -107,6 +120,13 @@ struct _AgsTaskThreadClass
   void (*clear_cache)(AgsTaskThread *task_thread);
 };
 
+/**
+ * AgsTaskThreadAppend:
+ * @task_thread: the #AgsTaskThread
+ * @data: the #AgsTask
+ * 
+ * #AgsTaskThreadAppend is used to add tasks non-blocking.
+ */
 struct _AgsTaskThreadAppend
 {
   volatile AgsTaskThread *task_thread;

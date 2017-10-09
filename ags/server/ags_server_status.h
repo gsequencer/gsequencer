@@ -33,6 +33,13 @@
 typedef struct _AgsServerStatus AgsServerStatus;
 typedef struct _AgsServerStatusClass AgsServerStatusClass;
 
+/**
+ * AgsServerStatusFlags:
+ * @AGS_SERVER_STATUS_CONNECTED: the server status was connected by #AgsConnectable::connect()
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsServerStatus by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_SERVER_STATUS_CONNECTED      = 1,
 }AgsServerStatusFlags;

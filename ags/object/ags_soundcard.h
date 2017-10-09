@@ -60,6 +60,16 @@
 typedef struct _AgsSoundcard AgsSoundcard;
 typedef struct _AgsSoundcardInterface AgsSoundcardInterface;
 
+/**
+ * AgsSoundcardFormat:
+ * @AGS_SOUNDCARD_SIGNED_8_BIT: signed 8 bit raw pcm data
+ * @AGS_SOUNDCARD_SIGNED_16_BIT: signed 16 bit raw pcm data
+ * @AGS_SOUNDCARD_SIGNED_24_BIT: signed 24 bit raw pcm data
+ * @AGS_SOUNDCARD_SIGNED_32_BIT: signed 32 bit raw pcm data
+ * @AGS_SOUNDCARD_SIGNED_64_BIT: signed 64 bit raw pcm data
+ *
+ * #AgsSoundcardFormat specifies the audio data representation to be used.
+ */
 typedef enum{
   AGS_SOUNDCARD_SIGNED_8_BIT    = 8,
   AGS_SOUNDCARD_SIGNED_16_BIT   = 16,

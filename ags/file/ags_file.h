@@ -52,8 +52,8 @@ typedef struct _AgsFileClass AgsFileClass;
  * @AGS_FILE_WRITE_AUDIO_SIGNAL: write audio signal
  * @AGS_FILE_WRITE_EMBEDDED_AUDIO: write embedded audio data
  * 
- * Enum values to control the behavior of #AgsFile by enable/disable
- * as flags.
+ * Enum values to control the behavior or indicate internal state of #AgsFile by
+ * enable/disable as flags.
  */
 typedef enum{
   AGS_FILE_READ                    = 1,

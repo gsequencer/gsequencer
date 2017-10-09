@@ -34,6 +34,14 @@
 typedef struct _AgsTask AgsTask;
 typedef struct _AgsTaskClass AgsTaskClass;
 
+/**
+ * AgsTaskFlags:
+ * @AGS_TASK_LOCKED: the task is locked
+ * @AGS_TASK_CYCLIC: call task repeatedly
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsTask by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_TASK_LOCKED   = 1,
   AGS_TASK_CYCLIC   = 1 <<  1,

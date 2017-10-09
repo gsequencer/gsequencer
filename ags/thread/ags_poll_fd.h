@@ -37,6 +37,18 @@
 typedef struct _AgsPollFd AgsPollFd;
 typedef struct _AgsPollFdClass AgsPollFdClass;
 
+/**
+ * AgsPollFdFlags:
+ * @AGS_POLL_FD_READY: not used
+ * @AGS_POLL_FD_THROUGHPUT: not used
+ * @AGS_POLL_FD_INPUT: there is input to read
+ * @AGS_POLL_FD_PRIORITY_INPUT: there is priority input to read
+ * @AGS_POLL_FD_OUTPUT: there is output available
+ * @AGS_POLL_FD_HANG_UP: hang up
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsPollFd by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_POLL_FD_READY            = 1,
   AGS_POLL_FD_THROUGHPUT       = 1 <<  1,

@@ -51,8 +51,8 @@ typedef struct _AgsFunctionClass AgsFunctionClass;
  * @AGS_FUNCTION_SOLVE_MAXIMUM_COLON: solve using maximum colon strategy
  * @AGS_FUNCTION_SOLVE_GAUSS: solve using gauss strategy
  * 
- * Enum values to control the behavior of #AgsFunction by enable/disable
- * as flags.
+ * Enum values to control the behavior or indicate internal state of #AgsFunction by
+ * enable/disable as flags.
  */
 typedef enum{
   AGS_FUNCTION_LINEAR               = 1,

@@ -43,6 +43,15 @@ typedef struct _AgsReturnableThreadClass AgsReturnableThreadClass;
 
 typedef void (*AgsReturnableThreadCallback)(AgsReturnableThread *returnable_thread, gpointer data);
 
+/**
+ * AgsReturnableThreadFlags:
+ * @AGS_RETURNABLE_THREAD_IN_USE: the thread is in use
+ * @AGS_RETURNABLE_THREAD_RESET: not used
+ * @AGS_RETURNABLE_THREAD_RUN_ONCE: call #AgsThread::run() only one time
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsReturnableThread by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_RETURNABLE_THREAD_IN_USE              = 1,
   AGS_RETURNABLE_THREAD_RESET               = 1 << 1,
