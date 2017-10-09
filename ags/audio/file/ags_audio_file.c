@@ -682,6 +682,7 @@ ags_audio_file_seek(AgsAudioFile *audio_file, guint frames, gint whence)
  * @audio_file: the #AgsAudioFile
  * @buffer: the audio data
  * @buffer_size: the count of frames to write
+ * @format: the format
  *
  * Write the buffer to #AgsAudioFile.
  *

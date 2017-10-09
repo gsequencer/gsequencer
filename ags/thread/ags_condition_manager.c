@@ -150,7 +150,7 @@ ags_condition_manager_destroy_data(gpointer data)
  * ags_condition_manager_insert:
  * @condition_manager: the #AgsConditionManager
  * @lock_object: the object as key
- * @condition: the condition to insert
+ * @cond: the condition to insert
  *
  * Inserts a condition into hash map associated with @lock_object.
  * 

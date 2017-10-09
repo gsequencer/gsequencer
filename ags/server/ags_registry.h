@@ -96,7 +96,7 @@ struct _AgsRegistryClass
 /**
  * AgsRegistryEntry:
  * @id: the id
- * @value: the actual entry
+ * @entry: the actual entry
  * 
  * #AgsRegistryEntry is an entry that you might want to lookup remotely.
  */

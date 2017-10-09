@@ -721,7 +721,6 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
  * @context_path: the context path to access
  * @login: the login
  * @security_token: the security token
- * @certs: the certs
  * @params: the #GParameter-struct containing parameters
  * @n_params: the count of @params
  *
