@@ -38,6 +38,30 @@
 typedef struct _AgsAudio AgsAudio;
 typedef struct _AgsAudioClass AgsAudioClass;
 
+/**
+ * AgsAudioFlags:
+ * @AGS_AUDIO_SYNC: input/output is mapped synchronously
+ * @AGS_AUDIO_ASYNC: input/output is mapped asynchronously
+ * @AGS_AUDIO_OUTPUT_HAS_RECYCLING: output has recycling
+ * @AGS_AUDIO_INPUT_HAS_RECYCLING: input has recycling
+ * @AGS_AUDIO_INPUT_TAKES_FILE: input takes file
+ * @AGS_AUDIO_INPUT_TAKES_SYNTH: input takes synth
+ * @AGS_AUDIO_REVERSE_MAPPING: interpret notation reverse
+ * @AGS_AUDIO_HAS_NOTATION: has notation
+ * @AGS_AUDIO_NOTATION_DEFAULT: notation default mapped on input channels
+ * @AGS_AUDIO_PATTERN_MODE: notation only contains fixed size notes
+ * @AGS_AUDIO_RUNNING: it is running
+ * @AGS_AUDIO_PLAYING: it is playing
+ * @AGS_AUDIO_CONNECTED: the audio was connected by #AgsConnectable::connect()
+ * @AGS_AUDIO_CAN_NEXT_ACTIVE: can determine next active input
+ * @AGS_AUDIO_NO_OUTPUT: no output provided
+ * @AGS_AUDIO_NO_INPUT: no input provided
+ * @AGS_AUDIO_SKIP_OUTPUT: skip output as processing audio data
+ * @AGS_AUDIO_SKIP_INPUT: skip input as processing audio data
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsAudio by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_AUDIO_SYNC                        = 1, // can be combined with below
   AGS_AUDIO_ASYNC                       = 1 <<  1,

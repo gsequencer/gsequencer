@@ -135,6 +135,16 @@
       <xi:include href="xml/ags_pulse_devout.xml"/>
     </chapter>
 
+    <chapter id="audio-core-audio">
+      <title>Audio core-audio - core-audio server support</title>
+      
+      <xi:include href="xml/ags_core_audio_server.xml"/>
+      <xi:include href="xml/ags_core_audio_client.xml"/>
+      <xi:include href="xml/ags_core_audio_port.xml"/>
+      <xi:include href="xml/ags_core_audio_devout.xml"/>
+      <xi:include href="xml/ags_core_audio_midiin.xml"/>
+    </chapter>
+    
     <chapter id="audio-midi">
       <title>Audio MIDI - MIDI support</title>
       

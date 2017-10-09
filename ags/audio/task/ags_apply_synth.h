@@ -37,6 +37,16 @@
 typedef struct _AgsApplySynth AgsApplySynth;
 typedef struct _AgsApplySynthClass AgsApplySynthClass;
 
+/**
+ * AgsApplySynthWave:
+ * @AGS_APPLY_SYNTH_INVALID: invalid
+ * @AGS_APPLY_SYNTH_SIN: sin wave
+ * @AGS_APPLY_SYNTH_SAW: sawtooth wave
+ * @AGS_APPLY_SYNTH_SQUARE: square
+ * @AGS_APPLY_SYNTH_TRIANGLE: triangle wave
+ *
+ * Specify the wave of the synth to apply
+ */
 typedef enum{
   AGS_APPLY_SYNTH_INVALID,
   AGS_APPLY_SYNTH_SIN,

@@ -2200,7 +2200,7 @@ ags_midi_buffer_util_put_end_of_track(unsigned char *buffer,
 }
 
 /**
- * 
+ * ags_midi_buffer_util_get_end_of_track:
  * @buffer: the character buffer
  * @delta_time: the return location of timing information
  * 

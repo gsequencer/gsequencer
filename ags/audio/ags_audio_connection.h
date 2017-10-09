@@ -35,6 +35,22 @@
 typedef struct _AgsAudioConnection AgsAudioConnection;
 typedef struct _AgsAudioConnectionClass AgsAudioConnectionClass;
 
+/**
+ * AgsAudioConnectionFlags:
+ * @AGS_AUDIO_CONNECTION_IS_AUDIO: the connection is related to audio
+ * @AGS_AUDIO_CONNECTION_IS_OUTPUT: the connection is related to output
+ * @AGS_AUDIO_CONNECTION_IS_INPUT: the connection is related to input
+ * @AGS_AUDIO_CONNECTION_IS_REMOTE: the connection is related to remote
+ * @AGS_AUDIO_CONNECTION_IS_SOUNDCARD_DATA: the connection is related to soundcard data
+ * @AGS_AUDIO_CONNECTION_IS_SEQUENCER_DATA: the connection is related to sequencer data
+ * @AGS_AUDIO_CONNECTION_SCOPE_AUDIO: it applies to audio scope
+ * @AGS_AUDIO_CONNECTION_SCOPE_CHANNEL: it applies to audio scope
+ * @AGS_AUDIO_CONNECTION_SCOPE_PAD: it applies to audio scope
+ * @AGS_AUDIO_CONNECTION_SCOPE_LINE: it applies to audio scope
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsAudioConnection by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_AUDIO_CONNECTION_IS_AUDIO           = 1,
   AGS_AUDIO_CONNECTION_IS_OUTPUT          = 1,

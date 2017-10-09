@@ -46,14 +46,21 @@
 
 #define AGS_AUDIO_RT_PRIORITY (49)
 
-#define AGS_AUDIO_DEFAULT_VERSION "0.7.122.8\0"
-#define AGS_AUDIO_BUILD_ID "Tue Mar 21 20:03:29 CET 2017\0"
+#define AGS_AUDIO_DEFAULT_VERSION "0.7.122.8"
+#define AGS_AUDIO_BUILD_ID "Tue Mar 21 20:03:29 CET 2017"
 
-#define AGS_EFFECTS_DEFAULT_VERSION "0.7.13\0"
+#define AGS_EFFECTS_DEFAULT_VERSION "0.7.13"
 
 typedef struct _AgsAudioApplicationContext AgsAudioApplicationContext;
 typedef struct _AgsAudioApplicationContextClass AgsAudioApplicationContextClass;
 
+/**
+ * AgsAudioApplicationContextFlags:
+ * @AGS_AUDIO_APPLICATION_CONTEXT_USE_ALSA: use alsa backend
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsAudioApplicationContextFlags by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_AUDIO_APPLICATION_CONTEXT_USE_ALSA      = 1,
 }AgsAudioApplicationContextFlags;
