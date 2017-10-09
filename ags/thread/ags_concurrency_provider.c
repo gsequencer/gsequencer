@@ -151,7 +151,7 @@ ags_concurrency_provider_get_thread_pool(AgsConcurrencyProvider *concurrency_pro
  *
  * Returns: the #GList-struct containing workers
  * 
- * Since: 1.0.0.8
+ * Since: 1.0.0
  */
 GList*
 ags_concurrency_provider_get_worker(AgsConcurrencyProvider *concurrency_provider)
@@ -172,7 +172,7 @@ ags_concurrency_provider_get_worker(AgsConcurrencyProvider *concurrency_provider
  * 
  * Set workers of application context.
  * 
- * Since: 1.0.0.8
+ * Since: 1.0.0
  */
 void
 ags_concurrency_provider_set_worker(AgsConcurrencyProvider *concurrency_provider,

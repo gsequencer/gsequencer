@@ -39,6 +39,13 @@
 typedef struct _AgsTurtle AgsTurtle;
 typedef struct _AgsTurtleClass AgsTurtleClass;
 
+/**
+ * AgsTurtleFlags:
+ * AGS_TURTLE_TOLOWER: make all tags and attributes lower case
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsTurtle by
+ * enable/disable as sync_flags.
+ */
 typedef enum{
   AGS_TURTLE_TOLOWER    = 1,
 }AgsTurtleFlags;

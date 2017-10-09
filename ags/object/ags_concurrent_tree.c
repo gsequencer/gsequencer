@@ -62,7 +62,7 @@ ags_concurrent_tree_base_init(AgsConcurrentTreeInterface *interface)
 
 /**
  * ags_concurrent_tree_set_parent_locked:
- * @concurrent_tree: an #AgsConcurrent_Tree
+ * @concurrent_tree: an #AgsConcurrentTree
  * @parent_locked: %TRUE means the parent is locked
  *
  * Set context owns parent lock
@@ -85,7 +85,7 @@ ags_concurrent_tree_set_parent_locked(AgsConcurrentTree *concurrent_tree,
 
 /**
  * ags_concurrent_tree_get_parent_locked:
- * @concurrent_tree: an #AgsConcurrent_Tree
+ * @concurrent_tree: an #AgsConcurrentTree
  *
  * If context owns parent lock
  *
@@ -107,13 +107,13 @@ ags_concurrent_tree_get_parent_locked(AgsConcurrentTree *concurrent_tree)
 
 /**
  * ags_concurrent_tree_get_lock:
- * @concurrent_tree: an #AgsConcurrent_Tree
+ * @concurrent_tree: an #AgsConcurrentTree
  *
  * Get tree node's lock.
  *
  * Returns: the pthread_mutex_t
  *
- * Since: 0.6
+ * Since: 1.0.0
  */
 pthread_mutex_t*
 ags_concurrent_tree_get_lock(AgsConcurrentTree *concurrent_tree)
@@ -129,13 +129,13 @@ ags_concurrent_tree_get_lock(AgsConcurrentTree *concurrent_tree)
 
 /**
  * ags_concurrent_tree_get_parent_lock:
- * @concurrent_tree: an #AgsConcurrent_Tree
+ * @concurrent_tree: an #AgsConcurrentTree
  *
  * Get tree node's parent lock.
  *
  * Returns: the pthread_mutex_t
  *
- * Since: 0.6
+ * Since: 1.0.0
  */
 pthread_mutex_t*
 ags_concurrent_tree_get_parent_lock(AgsConcurrentTree *concurrent_tree)

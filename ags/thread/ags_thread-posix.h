@@ -62,6 +62,31 @@
 typedef struct _AgsThread AgsThread;
 typedef struct _AgsThreadClass AgsThreadClass;
 
+/**
+ * AgsThreadFlags:
+ * @AGS_THREAD_CONNECTED: the thread was connected by #AgsConnectable::connect()
+ * @AGS_THREAD_SINGLE_LOOP: the thread doesn't actually run in its owns thread
+ * @AGS_THREAD_INITIAL_SYNC: initial sync indicates the thread wasn't synced before
+ * @AGS_THREAD_INITIAL_RUN: the first call to #AgsThread:run()
+ * @AGS_THREAD_RT_SETUP: realtime setup was performed
+ * @AGS_THREAD_WAITING: the thread is waiting
+ * @AGS_THREAD_RUNNING: the thread is running
+ * @AGS_THREAD_IDLE: the thread is in idle mode
+ * @AGS_THREAD_LOCKED: the thread is locked
+ * @AGS_THREAD_SUSPENDED: the thread is suspended
+ * @AGS_THREAD_READY: the thread is ready
+ * @AGS_THREAD_UNREF_ON_EXIT: call g_object_unref() before pthread_exit()
+ * @AGS_THREAD_IS_CHAOS_TREE: the thread is not synced
+ * @AGS_THREAD_IMMEDIATE_SYNC: do sync immediately
+ * @AGS_THREAD_RECOVER_INTERRUPTED: check if thread was interrupted
+ * @AGS_THREAD_RESUME_INTERRUPTED: call ags_thread_resume() if @AGS_THREAD_SUSPENDED is set
+ * @AGS_THREAD_TIMING: do timing
+ * @AGS_THREAD_INTERMEDIATE_PRE_SYNC: intermediate pre sync to parent thread
+ * @AGS_THREAD_INTERMEDIATE_POST_SYNC: intermediate post sync to parent thread
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsThread by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_THREAD_CONNECTED               = 1,
   AGS_THREAD_SINGLE_LOOP             = 1 <<  1,
@@ -84,6 +109,41 @@ typedef enum{
   AGS_THREAD_INTERMEDIATE_POST_SYNC  = 1 << 18,
 }AgsThreadFlags;
 
+/**
+ * AgsThreadSyncFlags:
+ * @AGS_THREAD_WAIT_FOR_PARENT: wait for parent
+ * @AGS_THREAD_WAIT_FOR_SIBLING: wait for sibling
+ * @AGS_THREAD_WAIT_FOR_CHILDREN: wait for children
+ * @AGS_THREAD_WAIT_FOR_BARRIER: wait for barrier
+ * @AGS_THREAD_WAITING_FOR_PARENT: the thread is waiting for parent
+ * @AGS_THREAD_WAITING_FOR_SIBLING: the thread is waiting for sibling
+ * @AGS_THREAD_WAITING_FOR_CHILDREN: the thread is waiting for children
+ * @AGS_THREAD_WAITING_FOR_BARRIER: the thread is waiting for barrier
+ * @AGS_THREAD_BROADCAST_PARENT: broadcast parent
+ * @AGS_THREAD_BROADCAST_SIBLING: broadcast sibling
+ * @AGS_THREAD_BROADCAST_CHILDREN: broadcast children
+ * @AGS_THREAD_TREE_SYNC_0: exclusively synced tic group
+ * @AGS_THREAD_WAIT_0: wait tree to be synced
+ * @AGS_THREAD_TREE_SYNC_1: exclusively synced tic group
+ * @AGS_THREAD_WAIT_1: wait tree to be synced
+ * @AGS_THREAD_TREE_SYNC_2: exclusively synced tic group
+ * @AGS_THREAD_WAIT_2: wait tree to be synced
+ * @AGS_THREAD_TIMELOCK_RUN: run timelock
+ * @AGS_THREAD_TIMELOCK_WAIT: timelock wait
+ * @AGS_THREAD_TIMELOCK_RESUME: timelock resume
+ * @AGS_THREAD_SKIP_NON_GREEDY: skip non greedy
+ * @AGS_THREAD_SKIPPED_BY_TIMELOCK: thread was skipped by timelock
+ * @AGS_THREAD_LOCK_GREEDY_RUN_MUTEX: you shall lock run mutex of greedy locks
+ * @AGS_THREAD_START_SYNCED_FREQ: sync frequency as starting thread
+ * @AGS_THREAD_SYNCED_FREQ: the frequency was synced
+ * @AGS_THREAD_INTERRUPTED: the thread is interrupted
+ * @AGS_THREAD_MONITORING: the thread is monitoring interrupts
+ * @AGS_THREAD_WAIT_ASYNC_QUEUE: wait exclusive async running queue
+ * @AGS_THREAD_DONE_ASYNC_QUEUE: done exclusive async running queue
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsThread by
+ * enable/disable as sync_flags.
+ */
 typedef enum{
   AGS_THREAD_WAIT_FOR_PARENT         = 1,
   AGS_THREAD_WAIT_FOR_SIBLING        = 1 <<  1,

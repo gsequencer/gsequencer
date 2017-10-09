@@ -742,7 +742,7 @@ ags_application_context_remove_sibling(AgsApplicationContext *application_contex
 
 /**
  * ags_application_context_find_default:
- * @application_context: the #GList-struct containing #AgsAppilcationContext
+ * @application_context: the #GList-struct containing #AgsApplicationContext
  *
  * Find default context in @application_context #GList-struct containing
  * #AgsApplicationContext.
@@ -765,7 +765,7 @@ ags_application_context_find_default(GList *application_context)
 
 /**
  * ags_application_context_find_main_loop:
- * @application_context: the #GList-struct containing #AgsAppilcationContext
+ * @application_context: the #GList-struct containing #AgsApplicationContext
  *
  * Find :main-loop in @application_context #GList-struct containing
  * #AgsApplicationContext.

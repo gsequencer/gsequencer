@@ -246,7 +246,7 @@ ags_connection_find_type(GList *connection,
  * ags_connection_find_type_and_data_object_type:
  * @connection: the #GList-struct to search
  * @connection_type: the #GType to find
- * @data_object_type: the #Gtype to find
+ * @data_object_type: the #GType to find
  *
  * Find next matching @connection_type and @data_object_type
  * within @connection.

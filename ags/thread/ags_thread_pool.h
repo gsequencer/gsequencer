@@ -45,6 +45,14 @@
 typedef struct _AgsThreadPool AgsThreadPool;
 typedef struct _AgsThreadPoolClass AgsThreadPoolClass;
 
+/**
+ * AgsThreadPoolFlags:
+ * @AGS_THREAD_POOL_RUNNING: the thread pool is running
+ * @AGS_THREAD_POOL_RT_SETUP: realtime setup has been performed
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsThreadPool by
+ * enable/disable as sync_flags.
+ */
 typedef enum{
   AGS_THREAD_POOL_RUNNING    = 1,
   AGS_THREAD_POOL_RT_SETUP   = 1 <<  1,

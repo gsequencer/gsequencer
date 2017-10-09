@@ -167,7 +167,7 @@ ags_sequencer_set_application_mutex(AgsSequencer *sequencer,
  *
  * Get application mutex. 
  *
- * Returns: #AgsApplicationMutex
+ * Returns: the application mutex
  *
  * Since: 1.0.0
  */

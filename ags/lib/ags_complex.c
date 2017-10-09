@@ -70,7 +70,7 @@ ags_complex_alloc()
 
 /**
  * ags_complex_copy:
- * @ptr: the original #AgsCopy
+ * @ptr: the original #AgsComplex
  *
  * Create a copy of @ptr.
  *

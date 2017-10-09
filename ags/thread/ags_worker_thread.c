@@ -118,7 +118,7 @@ ags_worker_thread_class_init(AgsWorkerThreadClass *worker_thread)
    * AgsWorkerThread::do-poll:
    * @thread: the #AgsWorkerThread
    *
-   * The ::do-poll() signal runs independently of ::run() but
+   * The ::do_poll() signal runs independently of ::run() but
    * might be synchronized using a conditional lock.
    * 
    * Since: 1.0.0.8

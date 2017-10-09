@@ -114,7 +114,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
    *
    * Change frequency.
    * 
-   * Since: 1.0.0.2
+   * Since: 1.0.0
    */
   main_loop_signals[CHANGE_FREQUENCY] =
     g_signal_new("change-frequency",
@@ -135,7 +135,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
  *
  * Returns: the mutex
  *
- * Since: 0.6
+ * Since: 1.0.0
  */
 pthread_mutex_t*
 ags_main_loop_get_tree_lock(AgsMainLoop *main_loop)
@@ -375,7 +375,7 @@ ags_main_loop_monitor(AgsMainLoop *main_loop,
  *
  * Change frequency.
  *
- * Since: 1.0.0.2
+ * Since: 1.0.0
  */
 void
 ags_main_loop_change_frequency(AgsMainLoop *main_loop,

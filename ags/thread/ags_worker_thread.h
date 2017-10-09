@@ -41,6 +41,16 @@
 typedef struct _AgsWorkerThread AgsWorkerThread;
 typedef struct _AgsWorkerThreadClass AgsWorkerThreadClass;
 
+/**
+ * AgsWorkerThreadFlags:
+ * @AGS_WORKER_THREAD_RUNNING: the worker is running
+ * @AGS_WORKER_THREAD_RUN_WAIT: sync wait
+ * @AGS_WORKER_THREAD_RUN_DONE: sync done
+ * @AGS_WORKER_THREAD_RUN_SYNC: do sync
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsWorkerThread by
+ * enable/disable as sync_flags.
+ */
 typedef enum{
   AGS_WORKER_THREAD_RUNNING    = 1,
   AGS_WORKER_THREAD_RUN_WAIT   = 1 <<  1,

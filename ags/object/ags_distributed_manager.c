@@ -28,7 +28,7 @@ void ags_distributed_manager_class_init(AgsDistributedManagerInterface *interfac
  * @section_id:
  * @include: ags/object/ags_distributed_manager.h
  *
- * The #AgsDistributed_Manager interface gives you a unique access distributed resources.
+ * The #AgsDistributedManager interface gives you a unique access distributed resources.
  */
 
 GType

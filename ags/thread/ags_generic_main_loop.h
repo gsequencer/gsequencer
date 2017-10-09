@@ -20,6 +20,7 @@
 #ifndef __AGS_GENERIC_MAIN_LOOP_H__
 #define __AGS_GENERIC_MAIN_LOOP_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #ifdef AGS_USE_LINUX_THREADS

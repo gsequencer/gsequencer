@@ -46,6 +46,13 @@
 typedef struct _AgsThreadApplicationContext AgsThreadApplicationContext;
 typedef struct _AgsThreadApplicationContextClass AgsThreadApplicationContextClass;
 
+/**
+ * AgsThreadApplicationContextFlags:
+ * @AGS_THREAD_APPLICATION_CONTEXT_SINGLE_THREAD: run as threads in one single loop
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsThreadApplicationContext by
+ * enable/disable as sync_flags.
+ */
 typedef enum{
   AGS_THREAD_APPLICATION_CONTEXT_SINGLE_THREAD      = 1,
 }AgsThreadApplicationContextFlags;

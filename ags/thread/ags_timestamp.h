@@ -33,6 +33,15 @@
 typedef struct _AgsTimestamp AgsTimestamp;
 typedef struct _AgsTimestampClass AgsTimestampClass;
 
+/**
+ * AgsTimestampFlags:
+ * @AGS_TIMESTAMP_UNIX: unix timestamp is used
+ * @AGS_TIMESTAMP_OFFSET: internal offset is used
+ * @AGS_TIMESTAMP_OUTDATED: the timestamp is outdated
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsTimestamp by
+ * enable/disable as sync_flags.
+ */
 typedef enum{
   AGS_TIMESTAMP_UNIX      = 1,
   AGS_TIMESTAMP_OFFSET    = 1 <<  1,
