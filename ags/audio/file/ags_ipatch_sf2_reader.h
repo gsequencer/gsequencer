@@ -41,6 +41,15 @@
 typedef struct _AgsIpatchSF2Reader AgsIpatchSF2Reader;
 typedef struct _AgsIpatchSF2ReaderClass AgsIpatchSF2ReaderClass;
 
+/**
+ * AgsSF2Levels:
+ * @AGS_SF2_FILENAME: filename
+ * @AGS_SF2_PHDR: preset header
+ * @AGS_SF2_IHDR: instrument header
+ * @AGS_SF2_SHDR: sample header
+ * 
+ * Enum values to describe the different levels of a Soundfont2 file.
+ */
 typedef enum{
   AGS_SF2_FILENAME = 0,
   AGS_SF2_PHDR = 1,

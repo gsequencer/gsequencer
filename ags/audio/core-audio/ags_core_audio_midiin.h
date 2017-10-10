@@ -37,6 +37,22 @@
 typedef struct _AgsCoreAudioMidiin AgsCoreAudioMidiin;
 typedef struct _AgsCoreAudioMidiinClass AgsCoreAudioMidiinClass;
 
+/**
+ * AgsCoreAudioMidiinFlags:
+ * @AGS_CORE_AUDIO_MIDIIN_BUFFER0: ring-buffer 0
+ * @AGS_CORE_AUDIO_MIDIIN_BUFFER1: ring-buffer 1
+ * @AGS_CORE_AUDIO_MIDIIN_BUFFER2: ring-buffer 2
+ * @AGS_CORE_AUDIO_MIDIIN_BUFFER3: ring-buffer 3
+ * @AGS_CORE_AUDIO_MIDIIN_ATTACK_FIRST: use first attack, instead of second one
+ * @AGS_CORE_AUDIO_MIDIIN_RECORD: is recording
+ * @AGS_CORE_AUDIO_MIDIIN_SHUTDOWN: stop recording
+ * @AGS_CORE_AUDIO_MIDIIN_START_RECORD: just started recording
+ * @AGS_CORE_AUDIO_MIDIIN_NONBLOCKING: do non-blocking calls
+ * @AGS_CORE_AUDIO_MIDIIN_INITIALIZED: recording is initialized
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsCoreAudioMidiin by
+ * enable/disable as flags.
+ */
 typedef enum
 {
   AGS_CORE_AUDIO_MIDIIN_BUFFER0                        = 1,
@@ -52,17 +68,19 @@ typedef enum
 
   AGS_CORE_AUDIO_MIDIIN_NONBLOCKING                    = 1 <<  8,
   AGS_CORE_AUDIO_MIDIIN_INITIALIZED                    = 1 <<  9,
-
-  AGS_CORE_AUDIO_MIDIIN_DUMMY                          = 1 << 10,
-  AGS_CORE_AUDIO_MIDIIN_OSS                            = 1 << 11,
-  AGS_CORE_AUDIO_MIDIIN_ALSA                           = 1 << 12,
-  AGS_CORE_AUDIO_MIDIIN_FREEBOB                        = 1 << 13,
-  AGS_CORE_AUDIO_MIDIIN_FIREWIRE                       = 1 << 14,
-  AGS_CORE_AUDIO_MIDIIN_NET                            = 1 << 15,
-  AGS_CORE_AUDIO_MIDIIN_SUN                            = 1 << 16,
-  AGS_CORE_AUDIO_MIDIIN_PORTAUDIO                      = 1 << 17,
 }AgsCoreAudioMidiinFlags;
 
+/**
+ * AgsCoreAudioMidiinSyncFlags:
+ * @AGS_CORE_AUDIO_MIDIIN_PASS_THROUGH: do not sync
+ * @AGS_CORE_AUDIO_MIDIIN_INITIAL_CALLBACK: initial callback
+ * @AGS_CORE_AUDIO_MIDIIN_CALLBACK_WAIT: sync wait, soundcard conditional lock
+ * @AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE: sync done, soundcard conditional lock
+ * @AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT: sync wait, client conditional lock
+ * @AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE: sync done, client conditional lock
+ * 
+ * Enum values to control the synchronization between soundcard and client.
+ */
 typedef enum{
   AGS_CORE_AUDIO_MIDIIN_PASS_THROUGH                   = 1,
   AGS_CORE_AUDIO_MIDIIN_INITIAL_CALLBACK               = 1 <<  1,

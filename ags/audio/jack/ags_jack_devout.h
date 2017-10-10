@@ -35,6 +35,22 @@
 typedef struct _AgsJackDevout AgsJackDevout;
 typedef struct _AgsJackDevoutClass AgsJackDevoutClass;
 
+/**
+ * AgsJackDevoutFlags:
+ * @AGS_JACK_DEVOUT_BUFFER0: ring-buffer 0
+ * @AGS_JACK_DEVOUT_BUFFER1: ring-buffer 1
+ * @AGS_JACK_DEVOUT_BUFFER2: ring-buffer 2
+ * @AGS_JACK_DEVOUT_BUFFER3: ring-buffer 3
+ * @AGS_JACK_DEVOUT_ATTACK_FIRST: use first attack, instead of second one
+ * @AGS_JACK_DEVOUT_PLAY: do playback
+ * @AGS_JACK_DEVOUT_SHUTDOWN: stop playback
+ * @AGS_JACK_DEVOUT_START_PLAY: playback starting
+ * @AGS_JACK_DEVOUT_NONBLOCKING: do non-blocking calls
+ * @AGS_JACK_DEVOUT_INITIALIZED: the soundcard was initialized
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsJackDevout by
+ * enable/disable as flags.
+ */
 typedef enum
 {
   AGS_JACK_DEVOUT_BUFFER0                        = 1,
@@ -61,6 +77,17 @@ typedef enum
   AGS_JACK_DEVOUT_PORTAUDIO                      = 1 << 17,
 }AgsJackDevoutFlags;
 
+/**
+ * AgsJackDevoutSyncFlags:
+ * @AGS_JACK_DEVOUT_PASS_THROUGH: do not sync
+ * @AGS_JACK_DEVOUT_INITIAL_CALLBACK: initial callback
+ * @AGS_JACK_DEVOUT_CALLBACK_WAIT: sync wait, soundcard conditional lock
+ * @AGS_JACK_DEVOUT_CALLBACK_DONE: sync done, soundcard conditional lock
+ * @AGS_JACK_DEVOUT_CALLBACK_FINISH_WAIT: sync wait, client conditional lock
+ * @AGS_JACK_DEVOUT_CALLBACK_FINISH_DONE: sync done, client conditional lock
+ * 
+ * Enum values to control the synchronization between soundcard and client.
+ */
 typedef enum{
   AGS_JACK_DEVOUT_PASS_THROUGH                   = 1,
   AGS_JACK_DEVOUT_INITIAL_CALLBACK               = 1 <<  1,

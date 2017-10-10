@@ -36,14 +36,28 @@
 #define AGS_IS_FIFOOUT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FIFOOUT))
 #define AGS_FIFOOUT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_FIFOOUT, AgsFifooutClass))
 
-#define __AGS_WITHOUT_ALSA__
-
 #define AGS_FIFOOUT_DEFAULT_ALSA_DEVICE "hw:0,0\0"
 #define AGS_FIFOOUT_DEFAULT_OSS_DEVICE "/dev/dsp\0"
 
 typedef struct _AgsFifoout AgsFifoout;
 typedef struct _AgsFifooutClass AgsFifooutClass;
 
+/**
+ * AgsFifooutFlags:
+ * @AGS_FIFOOUT_BUFFER0: ring-buffer 0
+ * @AGS_FIFOOUT_BUFFER1: ring-buffer 1
+ * @AGS_FIFOOUT_BUFFER2: ring-buffer 2
+ * @AGS_FIFOOUT_BUFFER3: ring-buffer 3
+ * @AGS_FIFOOUT_ATTACK_FIRST: use first attack, instead of second one
+ * @AGS_FIFOOUT_PLAY: use first attack, instead of second one
+ * @AGS_FIFOOUT_SHUTDOWN: stop playback
+ * @AGS_FIFOOUT_START_PLAY: playback starting
+ * @AGS_FIFOOUT_NONBLOCKING: do non-blocking calls
+ * @AGS_FIFOOUT_INITIALIZED: the soundcard was initialized
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsFifoout by
+ * enable/disable as flags.
+ */
 typedef enum
 {
   AGS_FIFOOUT_BUFFER0                        = 1,

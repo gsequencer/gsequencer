@@ -35,6 +35,13 @@
 typedef struct _AgsLv2Conversion AgsLv2Conversion;
 typedef struct _AgsLv2ConversionClass AgsLv2ConversionClass;
 
+/**
+ * AgsLv2ConversionFlags:
+ * @AGS_LV2_CONVERSION_LOGARITHMIC: logarithmic
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsLv2Conversion by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_LV2_CONVERSION_LOGARITHMIC        = 1,
 }AgsLv2ConversionFlaags;

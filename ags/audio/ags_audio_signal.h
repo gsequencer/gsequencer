@@ -33,6 +33,16 @@
 typedef struct _AgsAudioSignal AgsAudioSignal;
 typedef struct _AgsAudioSignalClass AgsAudioSignalClass;
 
+/**
+ * AgsAudioSignalFlags:
+ * @AGS_AUDIO_SIGNAL_CONNECTED: indicates the audio signal was connected by calling #AgsConnectable::connect()
+ * @AGS_AUDIO_SIGNAL_TEMPLATE: the audio signal acts as a template
+ * @AGS_AUDIO_SIGNAL_PLAY_DONE: playback done
+ * @AGS_AUDIO_SIGNAL_STANDALONE: standalone
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsAudioSignal by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_AUDIO_SIGNAL_CONNECTED            = 1,
   AGS_AUDIO_SIGNAL_TEMPLATE             = 1 <<  1,

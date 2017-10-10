@@ -42,6 +42,15 @@
 typedef struct _AgsChannel AgsChannel;
 typedef struct _AgsChannelClass AgsChannelClass;
 
+/**
+ * AgsChannelFlags:
+ * @AGS_CHANNEL_ADDED_TO_REGISTRY: added to registry
+ * @AGS_CHANNEL_CONNECTED: indicates the automation was connected by calling #AgsConnectable::connect()
+ * @AGS_CHANNEL_RUNNING: channel running
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsChannel by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_CHANNEL_ADDED_TO_REGISTRY  = 1,
   AGS_CHANNEL_CONNECTED          = 1 <<  1,

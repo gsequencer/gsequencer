@@ -37,6 +37,14 @@
 typedef struct _AgsExportOutput AgsExportOutput;
 typedef struct _AgsExportOutputClass AgsExportOutputClass;
 
+/**
+ * AgsExportOutputFormat:
+ * @AGS_EXPORT_OUTPUT_FORMAT_WAV: use WAV format
+ * @AGS_EXPORT_OUTPUT_FORMAT_OGG: use OGG format
+ * @AGS_EXPORT_OUTPUT_FORMAT_FLAC: use FLAC format
+ * 
+ * Enum values to control output format of #AgsExportOutput.
+ */
 typedef enum{
   AGS_EXPORT_OUTPUT_FORMAT_WAV    =  1,
   AGS_EXPORT_OUTPUT_FORMAT_OGG    =  1 <<  1,

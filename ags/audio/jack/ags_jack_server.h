@@ -46,6 +46,13 @@
 typedef struct _AgsJackServer AgsJackServer;
 typedef struct _AgsJackServerClass AgsJackServerClass;
 
+/**
+ * AgsJackServerFlags:
+ * @AGS_JACK_SERVER_CONNECTED: indicates the server was connected by calling #AgsConnectable::connect()
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsJackPort by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_JACK_SERVER_CONNECTED       = 1,
 }AgsJackServerFlags;

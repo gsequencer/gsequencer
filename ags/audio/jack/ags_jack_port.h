@@ -41,12 +41,25 @@
 typedef struct _AgsJackPort AgsJackPort;
 typedef struct _AgsJackPortClass AgsJackPortClass;
 
+/**
+ * AgsJackPortFlags:
+ * @AGS_JACK_PORT_CONNECTED: indicates the port was connected by calling #AgsConnectable::connect()
+ * @AGS_JACK_PORT_REGISTERED: the port was registered
+ * @AGS_JACK_PORT_IS_AUDIO: the port provides audio data
+ * @AGS_JACK_PORT_IS_MIDI: the port provides midi data
+ * @AGS_JACK_PORT_IS_OUTPUT: the port does output
+ * @AGS_JACK_PORT_IS_INPUT: the port does input
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsJackPort by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_JACK_PORT_CONNECTED       = 1,
   AGS_JACK_PORT_REGISTERED      = 1 <<  1,
   AGS_JACK_PORT_IS_AUDIO        = 1 <<  2,
   AGS_JACK_PORT_IS_MIDI         = 1 <<  3,
   AGS_JACK_PORT_IS_OUTPUT       = 1 <<  4,
+  AGS_JACK_PORT_IS_INPUT        = 1 <<  5,
 }AgsJackPortFlags;
 
 struct _AgsJackPort

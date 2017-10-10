@@ -45,6 +45,23 @@
 typedef struct _AgsAudioLoop AgsAudioLoop;
 typedef struct _AgsAudioLoopClass AgsAudioLoopClass;
 
+/**
+ * AgsAudioLoopFlags:
+ * @AGS_AUDIO_LOOP_PLAY_RECALL: play recall
+ * @AGS_AUDIO_LOOP_PLAYING_RECALL: plaing recall
+ * @AGS_AUDIO_LOOP_PLAY_RECALL_TERMINATING: play recall terminating
+ * @AGS_AUDIO_LOOP_PLAY_CHANNEL: play channel
+ * @AGS_AUDIO_LOOP_PLAYING_CHANNEL: playing channnel
+ * @AGS_AUDIO_LOOP_PLAY_CHANNEL_TERMINATING: play channe terminating
+ * @AGS_AUDIO_LOOP_PLAY_AUDIO: play audio
+ * @AGS_AUDIO_LOOP_PLAYING_AUDIO: playing audio
+ * @AGS_AUDIO_LOOP_PLAY_NOTATION: play notation
+ * @AGS_AUDIO_LOOP_PLAYING_NOTATION: playing notation
+ * @AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING: play audio terminating
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsAudioLoop by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_AUDIO_LOOP_PLAY_RECALL                    = 1,
   AGS_AUDIO_LOOP_PLAYING_RECALL                 = 1 << 1,
@@ -59,6 +76,13 @@ typedef enum{
   AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING         = 1 << 10,
 }AgsAudioLoopFlags;
 
+/**
+ * AgsAudioLoopTimingFlags:
+ * @AGS_AUDIO_LOOP_TIMING_WAITING: timing waiting
+ * @AGS_AUDIO_LOOP_TIMING_WAKEUP: timing wakeup
+ * 
+ * Enum values to control timing.
+ */
 typedef enum{
   AGS_AUDIO_LOOP_TIMING_WAITING                 = 1,
   AGS_AUDIO_LOOP_TIMING_WAKEUP                  = 1 <<  1,

@@ -58,7 +58,7 @@ typedef struct _AgsApplicationContextClass AgsApplicationContextClass;
  * @AGS_APPLICATION_CONTEXT_CONNECT: call connect of #AgsConnectable descending objects
  * @AGS_APPLICATION_CONTEXT_TYPES_REGISTERED: indicates the types have been registered
  * @AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY: indicates the application context was added to #AgsRegistry
- * @AGS_APPLICATION_CONTEXT_CONNECTED: indicates the application context is connected by calling #AgsConnectable::connect()
+ * @AGS_APPLICATION_CONTEXT_CONNECTED: indicates the application context was connected by calling #AgsConnectable::connect()
  * 
  * Enum values to control the behavior or indicate internal state of #AgsApplicationContext by
  * enable/disable as flags.

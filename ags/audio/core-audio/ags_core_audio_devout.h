@@ -35,6 +35,26 @@
 typedef struct _AgsCoreAudioDevout AgsCoreAudioDevout;
 typedef struct _AgsCoreAudioDevoutClass AgsCoreAudioDevoutClass;
 
+/**
+ * AgsCoreAudioDevoutFlags:
+ * @AGS_CORE_AUDIO_DEVOUT_BUFFER0: ring-buffer 0
+ * @AGS_CORE_AUDIO_DEVOUT_BUFFER1: ring-buffer 1
+ * @AGS_CORE_AUDIO_DEVOUT_BUFFER2: ring-buffer 2
+ * @AGS_CORE_AUDIO_DEVOUT_BUFFER3: ring-buffer 3
+ * @AGS_CORE_AUDIO_DEVOUT_BUFFER4: ring-buffer 4
+ * @AGS_CORE_AUDIO_DEVOUT_BUFFER5: ring-buffer 5
+ * @AGS_CORE_AUDIO_DEVOUT_BUFFER6: ring-buffer 6
+ * @AGS_CORE_AUDIO_DEVOUT_BUFFER7: ring-buffer 7
+ * @AGS_CORE_AUDIO_DEVOUT_ATTACK_FIRST: use first attack, instead of second one
+ * @AGS_CORE_AUDIO_DEVOUT_PLAY: do playback
+ * @AGS_CORE_AUDIO_DEVOUT_SHUTDOWN: stop playback
+ * @AGS_CORE_AUDIO_DEVOUT_START_PLAY: playback starting
+ * @AGS_CORE_AUDIO_DEVOUT_NONBLOCKING: do non-blocking calls
+ * @AGS_CORE_AUDIO_DEVOUT_INITIALIZED: the soundcard was initialized
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsCoreAudioDevout by
+ * enable/disable as flags.
+ */
 typedef enum
 {
   AGS_CORE_AUDIO_DEVOUT_BUFFER0                        = 1,
@@ -56,6 +76,17 @@ typedef enum
   AGS_CORE_AUDIO_DEVOUT_INITIALIZED                    = 1 << 13,
 }AgsCoreAudioDevoutFlags;
 
+/**
+ * AgsCoreAudioDevoutSyncFlags:
+ * @AGS_CORE_AUDIO_DEVOUT_PASS_THROUGH: do not sync
+ * @AGS_CORE_AUDIO_DEVOUT_INITIAL_CALLBACK: initial callback
+ * @AGS_CORE_AUDIO_DEVOUT_CALLBACK_WAIT: sync wait, soundcard conditional lock
+ * @AGS_CORE_AUDIO_DEVOUT_CALLBACK_DONE: sync done, soundcard conditional lock
+ * @AGS_CORE_AUDIO_DEVOUT_CALLBACK_FINISH_WAIT: sync wait, client conditional lock
+ * @AGS_CORE_AUDIO_DEVOUT_CALLBACK_FINISH_DONE: sync done, client conditional lock
+ * 
+ * Enum values to control the synchronization between soundcard and client.
+ */
 typedef enum{
   AGS_CORE_AUDIO_DEVOUT_PASS_THROUGH                   = 1,
   AGS_CORE_AUDIO_DEVOUT_INITIAL_CALLBACK               = 1 <<  1,

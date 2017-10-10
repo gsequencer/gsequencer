@@ -35,12 +35,22 @@
 typedef struct _AgsLadspaConversion AgsLadspaConversion;
 typedef struct _AgsLadspaConversionClass AgsLadspaConversionClass;
 
+/**
+ * AgsLadspaConversionFlags:
+ * @AGS_LADSPA_CONVERSION_SAMPLERATE: samplerate
+ * @AGS_LADSPA_CONVERSION_BOUNDED_BELOW: bounded below
+ * @AGS_LADSPA_CONVERSION_BOUNDED_ABOVE: bounded above
+ * @AGS_LADSPA_CONVERSION_LOGARITHMIC: logarithmic
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsLadspaConversion by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_LADSPA_CONVERSION_SAMPLERATE         = 1,
   AGS_LADSPA_CONVERSION_BOUNDED_BELOW      = 1 <<  1,
   AGS_LADSPA_CONVERSION_BOUNDED_ABOVE      = 1 <<  2,
   AGS_LADSPA_CONVERSION_LOGARITHMIC        = 1 <<  3,
-}AgsLadspaConversionFlaags;
+}AgsLadspaConversionFlags;
 
 struct _AgsLadspaConversion
 {

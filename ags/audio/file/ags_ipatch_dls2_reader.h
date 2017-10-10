@@ -41,6 +41,14 @@
 typedef struct _AgsIpatchDLS2Reader AgsIpatchDLS2Reader;
 typedef struct _AgsIpatchDLS2ReaderClass AgsIpatchDLS2ReaderClass;
 
+/**
+ * AgsDLS2Levels:
+ * @AGS_DLS2_FILENAME: filename
+ * @AGS_DLS2_IHDR: instrument header
+ * @AGS_DLS2_SHDR: sample header
+ * 
+ * Enum values to describe the different levels of a DLS2 file.
+ */
 typedef enum{
   AGS_DLS2_FILENAME = 0,
   AGS_DLS2_IHDR = 1,

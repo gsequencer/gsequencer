@@ -39,6 +39,14 @@
 typedef struct _AgsJackClient AgsJackClient;
 typedef struct _AgsJackClientClass AgsJackClientClass;
 
+/**
+ * AgsJackClientFlags:
+ * @AGS_JACK_CLIENT_CONNECTED: indicates the client was connected by calling #AgsConnectable::connect()
+ * @AGS_JACK_CLIENT_ACTIVATED: the client was activated
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsJackClient by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_JACK_CLIENT_CONNECTED       = 1,
   AGS_JACK_CLIENT_ACTIVATED       = 1 <<  1,

@@ -42,6 +42,15 @@
 typedef struct _AgsCoreAudioClient AgsCoreAudioClient;
 typedef struct _AgsCoreAudioClientClass AgsCoreAudioClientClass;
 
+/**
+ * AgsCoreAudioClientFlags:
+ * @AGS_CORE_AUDIO_CLIENT_CONNECTED: indicates the client was connected by calling #AgsConnectable::connect()
+ * @AGS_CORE_AUDIO_CLIENT_ACTIVATED: the client was activated
+ * @AGS_CORE_AUDIO_CLIENT_READY: the client is ready
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsCoreAudioClient by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_CORE_AUDIO_CLIENT_CONNECTED       = 1,
   AGS_CORE_AUDIO_CLIENT_ACTIVATED       = 1 <<  1,
@@ -100,6 +109,6 @@ void ags_core_audio_client_remove_port(AgsCoreAudioClient *core_audio_client,
 void ags_core_audio_client_activate(AgsCoreAudioClient *core_audio_client);
 void ags_core_audio_client_deactivate(AgsCoreAudioClient *core_audio_client);
 
-AgsCoreAudioClient* ags_core_audio_client_new(GObject *pulse_server);
+AgsCoreAudioClient* ags_core_audio_client_new(GObject *core_audio_server);
 
 #endif /*__AGS_CORE_AUDIO_CLIENT_H__*/

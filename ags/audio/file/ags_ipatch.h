@@ -46,6 +46,15 @@
 typedef struct _AgsIpatch AgsIpatch;
 typedef struct _AgsIpatchClass AgsIpatchClass;
 
+/**
+ * AgsIpatchFlags:
+ * @AGS_IPATCH_DLS2: DLS2 format
+ * @AGS_IPATCH_SF2: Soundfont2 format
+ * @AGS_IPATCH_GIG: Gigasampler format
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsFifoout by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_IPATCH_DLS2   = 1,
   AGS_IPATCH_SF2    = 1 << 1,

@@ -50,6 +50,24 @@
 typedef struct _AgsDevout AgsDevout;
 typedef struct _AgsDevoutClass AgsDevoutClass;
 
+/**
+ * AgsDevoutFlags:
+ * @AGS_DEVOUT_BUFFER0: ring-buffer 0
+ * @AGS_DEVOUT_BUFFER1: ring-buffer 1
+ * @AGS_DEVOUT_BUFFER2: ring-buffer 2
+ * @AGS_DEVOUT_BUFFER3: ring-buffer 3
+ * @AGS_DEVOUT_ATTACK_FIRST: use first attack, instead of second one
+ * @AGS_DEVOUT_PLAY: use first attack, instead of second one
+ * @AGS_DEVOUT_OSS: use OSS4 backend
+ * @AGS_DEVOUT_ALSA: use ALSA backend
+ * @AGS_DEVOUT_SHUTDOWN: stop playback
+ * @AGS_DEVOUT_START_PLAY: playback starting
+ * @AGS_DEVOUT_NONBLOCKING: do non-blocking calls
+ * @AGS_DEVOUT_INITIALIZED: the soundcard was initialized
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsDevout by
+ * enable/disable as flags.
+ */
 typedef enum
 {
   AGS_DEVOUT_BUFFER0                        = 1,

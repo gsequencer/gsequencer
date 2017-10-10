@@ -45,6 +45,13 @@
 typedef struct _AgsExportThread AgsExportThread;
 typedef struct _AgsExportThreadClass AgsExportThreadClass;
 
+/**
+ * AgsExportThreadFlags:
+ * @AGS_EXPORT_THREAD_LIVE_PERFORMANCE: do live export
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsExportThread by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_EXPORT_THREAD_LIVE_PERFORMANCE       = 1,
 }AgsExportThreadFlags;

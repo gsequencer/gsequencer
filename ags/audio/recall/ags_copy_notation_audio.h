@@ -36,6 +36,13 @@
 typedef struct _AgsCopyNotationAudio AgsCopyNotationAudio;
 typedef struct _AgsCopyNotationAudioClass AgsCopyNotationAudioClass;
 
+/**
+ * AgsCopyNotationAudioFlags:
+ * @AGS_COPY_NOTATION_AUDIO_FIT_AUDIO_SIGNAL: consider assigned note to get audio signal length
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsCopyNotationAudio by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_COPY_NOTATION_AUDIO_FIT_AUDIO_SIGNAL  = 1,
 }AgsCopyNotationAudioFlags;

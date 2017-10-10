@@ -38,6 +38,14 @@
 typedef struct _AgsCopyChannelRun AgsCopyChannelRun;
 typedef struct _AgsCopyChannelRunClass AgsCopyChannelRunClass;
 
+/**
+ * AgsCopyChannelRunFlags:
+ * @AGS_COPY_CHANNEL_RUN_EXACT_LENGTH: 
+ * @AGS_COPY_CHANNEL_RUN_OMIT_FURTHER_ATTACK: 
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsCopyChannelRun by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_COPY_CHANNEL_RUN_EXACT_LENGTH         = 1,
   AGS_COPY_CHANNEL_RUN_OMIT_FURTHER_ATTACK  = 1 << 1,

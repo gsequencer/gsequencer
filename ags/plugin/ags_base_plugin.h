@@ -38,10 +38,37 @@ typedef struct _AgsBasePlugin AgsBasePlugin;
 typedef struct _AgsBasePluginClass AgsBasePluginClass;
 typedef struct _AgsPortDescriptor AgsPortDescriptor;
 
+/**
+ * AgsBasePluginFlags:
+ * @AGS_BASE_PLUGIN_IS_INSTRUMENT: plugin is instrument
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsBasePlugin by
+ * enable/disable as flags.
+*/
 typedef enum{
   AGS_BASE_PLUGIN_IS_INSTRUMENT      =  1,
 }AgsBasePluginFlags;
 
+/**
+ * AgsPortDescriptorFlags:
+ * @AGS_PORT_DESCRIPTOR_ATOM: atom port
+ * @AGS_PORT_DESCRIPTOR_AUDIO: audio port
+ * @AGS_PORT_DESCRIPTOR_CONTROL: control port
+ * @AGS_PORT_DESCRIPTOR_MIDI: MIDI port
+ * @AGS_PORT_DESCRIPTOR_EVENT: event port
+ * @AGS_PORT_DESCRIPTOR_OUTPUT: is output
+ * @AGS_PORT_DESCRIPTOR_INPUT: is input
+ * @AGS_PORT_DESCRIPTOR_TOGGLED: toggle control
+ * @AGS_PORT_DESCRIPTOR_ENUMERATION: enumerated
+ * @AGS_PORT_DESCRIPTOR_LOGARITHMIC: logarithmic
+ * @AGS_PORT_DESCRIPTOR_INTEGER: integer
+ * @AGS_PORT_DESCRIPTOR_SAMPLERATE: samplerate
+ * @AGS_PORT_DESCRIPTOR_BOUNDED_BELOW: bounded below
+ * @AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE: bounded above
+ * @AGS_PORT_DESCRIPTOR_UI_NOTIFICATION: ui notification
+ * 
+ * Common port attributes.
+ */
 typedef enum{
   AGS_PORT_DESCRIPTOR_ATOM            = 1,
   AGS_PORT_DESCRIPTOR_AUDIO           = 1 <<  1,

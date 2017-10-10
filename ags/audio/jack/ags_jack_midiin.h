@@ -39,6 +39,22 @@
 typedef struct _AgsJackMidiin AgsJackMidiin;
 typedef struct _AgsJackMidiinClass AgsJackMidiinClass;
 
+/**
+ * AgsJackMidiinFlags:
+ * @AGS_JACK_MIDIIN_BUFFER0: ring-buffer 0
+ * @AGS_JACK_MIDIIN_BUFFER1: ring-buffer 1
+ * @AGS_JACK_MIDIIN_BUFFER2: ring-buffer 2
+ * @AGS_JACK_MIDIIN_BUFFER3: ring-buffer 3
+ * @AGS_JACK_MIDIIN_ATTACK_FIRST: use first attack, instead of second one
+ * @AGS_JACK_MIDIIN_RECORD: is recording
+ * @AGS_JACK_MIDIIN_SHUTDOWN: stop recording
+ * @AGS_JACK_MIDIIN_START_RECORD: just started recording
+ * @AGS_JACK_MIDIIN_NONBLOCKING: do non-blocking calls
+ * @AGS_JACK_MIDIIN_INITIALIZED: recording is initialized
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsJackMidiin by
+ * enable/disable as flags.
+ */
 typedef enum
 {
   AGS_JACK_MIDIIN_BUFFER0                        = 1,
@@ -65,6 +81,17 @@ typedef enum
   AGS_JACK_MIDIIN_PORTAUDIO                      = 1 << 17,
 }AgsJackMidiinFlags;
 
+/**
+ * AgsJackMidiinSyncFlags:
+ * @AGS_JACK_MIDIIN_PASS_THROUGH: do not sync
+ * @AGS_JACK_MIDIIN_INITIAL_CALLBACK: initial callback
+ * @AGS_JACK_MIDIIN_CALLBACK_WAIT: sync wait, soundcard conditional lock
+ * @AGS_JACK_MIDIIN_CALLBACK_DONE: sync done, soundcard conditional lock
+ * @AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT: sync wait, client conditional lock
+ * @AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE: sync done, client conditional lock
+ * 
+ * Enum values to control the synchronization between soundcard and client.
+ */
 typedef enum{
   AGS_JACK_MIDIIN_PASS_THROUGH                   = 1,
   AGS_JACK_MIDIIN_INITIAL_CALLBACK               = 1 <<  1,

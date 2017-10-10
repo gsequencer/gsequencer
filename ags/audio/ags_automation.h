@@ -50,6 +50,14 @@
 typedef struct _AgsAutomation AgsAutomation;
 typedef struct _AgsAutomationClass AgsAutomationClass;
 
+/**
+ * AgsAutomationFlags:
+ * @AGS_AUTOMATION_CONNECTED: indicates the automation was connected by calling #AgsConnectable::connect()
+ * @AGS_AUTOMATION_BYPASS: ignore any automation data
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsAutomation by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_AUTOMATION_CONNECTED            = 1,
   AGS_AUTOMATION_BYPASS               = 1 <<  1,

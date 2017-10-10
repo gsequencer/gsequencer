@@ -45,6 +45,18 @@
 typedef struct _AgsCoreAudioPort AgsCoreAudioPort;
 typedef struct _AgsCoreAudioPortClass AgsCoreAudioPortClass;
 
+/**
+ * AgsCoreAudioPortFlags:
+ * @AGS_CORE_AUDIO_PORT_CONNECTED: indicates the port was connected by calling #AgsConnectable::connect()
+ * @AGS_CORE_AUDIO_PORT_REGISTERED: the port was registered
+ * @AGS_CORE_AUDIO_PORT_IS_AUDIO: the port provides audio data
+ * @AGS_CORE_AUDIO_PORT_IS_MIDI: the port provides midi data
+ * @AGS_CORE_AUDIO_PORT_IS_OUTPUT: the port does output
+ * @AGS_CORE_AUDIO_PORT_IS_INPUT: the port does input
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsCoreAudioPort by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_CORE_AUDIO_PORT_CONNECTED       = 1,
   AGS_CORE_AUDIO_PORT_REGISTERED      = 1 <<  1,

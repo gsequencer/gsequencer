@@ -43,6 +43,16 @@
 typedef struct _AgsChannelThread AgsChannelThread;
 typedef struct _AgsChannelThreadClass AgsChannelThreadClass;
 
+/**
+ * AgsChannelThreadFlags:
+ * @AGS_CHANNEL_THREAD_DONE: sync done parent thread, initial wait during #AgsThread::run()
+ * @AGS_CHANNEL_THREAD_WAIT: sync wait parent thread, initial wait during #AgsThread::run()
+ * @AGS_CHANNEL_THREAD_DONE_SYNC: sync done parent thread, signal completed during #AgsThread::run()
+ * @AGS_CHANNEL_THREAD_WAIT_SYNC: sync wait parent thread, signal completed during #AgsThread::run()
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsChannelThread by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_CHANNEL_THREAD_DONE            = 1,
   AGS_CHANNEL_THREAD_WAIT            = 1 <<  1,

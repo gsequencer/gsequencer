@@ -44,6 +44,13 @@
 typedef struct _AgsCoreAudioServer AgsCoreAudioServer;
 typedef struct _AgsCoreAudioServerClass AgsCoreAudioServerClass;
 
+/**
+ * AgsCoreAudioServerFlags:
+ * @AGS_CORE_AUDIO_SERVER_CONNECTED: indicates the server was connected by calling #AgsConnectable::connect()
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsCoreAudioPort by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_CORE_AUDIO_SERVER_CONNECTED       = 1,
 }AgsCoreAudioServerFlags;
