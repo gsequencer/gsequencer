@@ -69,7 +69,7 @@ void ags_delay_audio_run_notify_dependency(AgsRecall *recall, guint notify_mode,
  * @section_id:
  * @include: ags/audio/recall/ags_delay_audio_run.h
  *
- * The #AgsDelayNotationAudioRun class delays.
+ * The #AgsDelayAudioRun class delays.
  */
 
 enum{

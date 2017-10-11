@@ -85,12 +85,12 @@ typedef enum
  * AgsJackMidiinSyncFlags:
  * @AGS_JACK_MIDIIN_PASS_THROUGH: do not sync
  * @AGS_JACK_MIDIIN_INITIAL_CALLBACK: initial callback
- * @AGS_JACK_MIDIIN_CALLBACK_WAIT: sync wait, soundcard conditional lock
- * @AGS_JACK_MIDIIN_CALLBACK_DONE: sync done, soundcard conditional lock
+ * @AGS_JACK_MIDIIN_CALLBACK_WAIT: sync wait, sequencer conditional lock
+ * @AGS_JACK_MIDIIN_CALLBACK_DONE: sync done, sequencer conditional lock
  * @AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT: sync wait, client conditional lock
  * @AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE: sync done, client conditional lock
  * 
- * Enum values to control the synchronization between soundcard and client.
+ * Enum values to control the synchronization between sequencer and client.
  */
 typedef enum{
   AGS_JACK_MIDIIN_PASS_THROUGH                   = 1,

@@ -44,6 +44,13 @@
 typedef struct _AgsPlayLv2AudioRun AgsPlayLv2AudioRun;
 typedef struct _AgsPlayLv2AudioRunClass AgsPlayLv2AudioRunClass;
 
+/**
+ * AgsPlayLv2AudioRunFlags:
+ * @AGS_PLAY_LV2_AUDIO_RUN_DEFAULT: not used
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsPlayLv2AudioRun by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_PLAY_LV2_AUDIO_RUN_DEFAULT  =  1,
 }AgsPlayLv2AudioRunFlags;

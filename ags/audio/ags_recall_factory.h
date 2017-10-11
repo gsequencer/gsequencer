@@ -36,6 +36,18 @@
 typedef struct _AgsRecallFactory AgsRecallFactory;
 typedef struct _AgsRecallFactoryClass AgsRecallFactoryClass;
 
+/**
+ * AgsRecallFactoryCreateFlags:
+ * @AGS_RECALL_FACTORY_OUTPUT: output related
+ * @AGS_RECALL_FACTORY_INPUT: input related
+ * @AGS_RECALL_FACTORY_REMAP: remap
+ * @AGS_RECALL_FACTORY_ADD: do add
+ * @AGS_RECALL_FACTORY_PLAY: bounded to play
+ * @AGS_RECALL_FACTORY_RECALL: bounded to recall
+ * @AGS_RECALL_FACTORY_BULK: operates on bulk mode
+ * 
+ * Enum values controlling instantiating the recall implementation.
+ */
 typedef enum{
   AGS_RECALL_FACTORY_OUTPUT    = 1,
   AGS_RECALL_FACTORY_INPUT     = 1 << 1,

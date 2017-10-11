@@ -41,6 +41,15 @@
 typedef struct _AgsPlayLv2Audio AgsPlayLv2Audio;
 typedef struct _AgsPlayLv2AudioClass AgsPlayLv2AudioClass;
 
+/**
+ * AgsPlayLv2AudioFlags:
+ * @AGS_PLAY_LV2_AUDIO_HAS_EVENT_PORT: use lv2 event port
+ * @AGS_PLAY_LV2_AUDIO_HAS_ATOM_PORT: use lv2 atom port
+ * @AGS_PLAY_LV2_AUDIO_HAS_WORKER: provide worker to lv2 plugin
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsPlayLv2Audio by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_PLAY_LV2_AUDIO_HAS_EVENT_PORT   = 1,
   AGS_PLAY_LV2_AUDIO_HAS_ATOM_PORT    = 1 <<  1,

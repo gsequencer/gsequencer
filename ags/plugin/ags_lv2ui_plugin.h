@@ -39,13 +39,24 @@
 typedef struct _AgsLv2uiPlugin AgsLv2uiPlugin;
 typedef struct _AgsLv2uiPluginClass AgsLv2uiPluginClass;
 
+/**
+ * AgsLv2uiPluginFlags:
+ * @AGS_LV2UI_PLUGIN_IS_SYNTHESIZER: is synthesizer
+ * @AGS_LV2UI_PLUGIN_GTK2: has Gtk+-2.0 UI
+ * @AGS_LV2UI_PLUGIN_GTK3: has Gtk3 UI
+ * @AGS_LV2UI_PLUGIN_QT4: has Qt4 UI
+ * @AGS_LV2UI_PLUGIN_QT5: has Qt5 UI
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsLv2uiPlugin by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_LV2UI_PLUGIN_IS_SYNTHESIZER  = 1,
-  AGS_LV2UI_GTK2                   = 1 <<  1,
-  AGS_LV2UI_GTK3                   = 1 <<  2,
-  AGS_LV2UI_QT4                    = 1 <<  3,
-  AGS_LV2UI_QT5                    = 1 <<  4,
-}AgsLv2uiFlags;
+  AGS_LV2UI_PLUGIN_GTK2            = 1 <<  1,
+  AGS_LV2UI_PLUGIN_GTK3            = 1 <<  2,
+  AGS_LV2UI_PLUGIN_QT4             = 1 <<  3,
+  AGS_LV2UI_PLUGIN_QT5             = 1 <<  4,
+}AgsLv2uiPluginFlags;
 
 struct _AgsLv2uiPlugin
 {

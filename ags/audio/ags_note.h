@@ -40,6 +40,20 @@
 typedef struct _AgsNote AgsNote;
 typedef struct _AgsNoteClass AgsNoteClass;
 
+/**
+ * AgsNoteFlags:
+ * @AGS_NOTE_CONNECTED: indicates the note was connected by calling #AgsConnectable::connect()
+ * @AGS_NOTE_GUI: gui format
+ * @AGS_NOTE_RUNTIME: runtime format
+ * @AGS_NOTE_HUMAN_READABLE: human readable format
+ * @AGS_NOTE_DEFAULT_LENGTH: default length
+ * @AGS_NOTE_IS_SELECTED: is selected
+ * @AGS_NOTE_FEED: feed note
+ * @AGS_NOTE_ENVELOPE: do envelope
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsNote by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_NOTE_CONNECTED       = 1,
   AGS_NOTE_GUI             = 1 <<  1,

@@ -151,11 +151,7 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
    *
    * The assigned #GObject
    * 
-<<<<<<< HEAD
    * Since: 1.0.0
-=======
-   * Since: 1.0.0
->>>>>>> master
    */
   param_spec = g_param_spec_object("scope",
 				   i18n_pspec("scope of apply presets"),
@@ -189,11 +185,7 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
    *
    * The count of samplerate to apply.
    * 
-<<<<<<< HEAD
    * Since: 1.0.0
-=======
-   * Since: 1.0.0
->>>>>>> master
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("samplerate"),
@@ -212,11 +204,7 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
    *
    * The count of buffer-size to apply.
    * 
-<<<<<<< HEAD
    * Since: 1.0.0
-=======
-   * Since: 1.0.0
->>>>>>> master
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("buffer size"),
@@ -234,11 +222,7 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
    *
    * The count of format to apply.
    * 
-<<<<<<< HEAD
    * Since: 1.0.0
-=======
-   * Since: 1.0.0
->>>>>>> master
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("format"),

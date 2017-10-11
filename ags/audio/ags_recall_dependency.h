@@ -35,6 +35,13 @@
 typedef struct _AgsRecallDependency AgsRecallDependency;
 typedef struct _AgsRecallDependencyClass AgsRecallDependencyClass;
 
+/**
+ * AgsRecallDependencyFlags:
+ * @AGS_RECALL_DEPENDENCY_CONNECTED: indicates the recall dependency was connected by calling #AgsConnectable::connect()
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsPlayback by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_RECALL_DEPENDENCY_CONNECTED      = 1,
 }AgsRecallDependencyFlags;

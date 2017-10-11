@@ -34,6 +34,14 @@
 typedef struct _AgsSndfile AgsSndfile;
 typedef struct _AgsSndfileClass AgsSndfileClass;
 
+/**
+ * AgsSndfileFlags:
+ * @AGS_SNDFILE_ITER_START: iter start
+ * @AGS_SNDFILE_VIRTUAL: virtual IO
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsSndfile by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_SNDFILE_ITER_START    = 1,
   AGS_SNDFILE_VIRTUAL       = 1 << 1,

@@ -47,6 +47,13 @@ typedef struct _AgsLv2Worker AgsLv2Worker;
 typedef struct _AgsLv2WorkerClass AgsLv2WorkerClass;
 typedef struct _AgsLv2WorkerResponseData AgsLv2WorkerResponseData;
 
+/**
+ * AgsLv2WorkerFlags:
+ * @AGS_LV2_WORKER_RUN: the worker is running
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsLv2Worker by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_LV2_WORKER_RUN    = 1,
 }AgsLv2WorkerFlags;

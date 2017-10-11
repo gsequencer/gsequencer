@@ -1946,7 +1946,7 @@ ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, gpointer playback)
 /**
  * ags_audio_loop_new:
  * @soundcard: the #GObject
- * @application_context: the #AgsMain
+ * @application_context: the #AgsApplicationContext
  *
  * Create a new #AgsAudioLoop.
  *

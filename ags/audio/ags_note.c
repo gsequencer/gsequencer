@@ -1106,7 +1106,7 @@ ags_note_from_seq_event(snd_seq_event_t *event,
 }
 
 /**
- * ags_note_from_raw_midi:
+ * ags_note_from_seq_event_extended:
  * @event: the snd_seq_event_t struct array
  * @nn: numerator
  * @dd: denominator

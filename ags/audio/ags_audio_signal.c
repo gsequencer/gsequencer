@@ -2738,7 +2738,7 @@ ags_audio_signal_envelope(AgsAudioSignal *audio_signal,
  * 
  * Returns: %TRUE if related audio signal to recall id is available, otherwise %FALSE
  * 
- * Since: 1.0.0.9
+ * Since: 1.0.0
  */
 gboolean
 ags_audio_signal_is_active(GList *audio_signal,

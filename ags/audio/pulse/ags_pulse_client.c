@@ -765,7 +765,7 @@ ags_pulse_client_deactivate(AgsPulseClient *pulse_client)
 /**
  * ags_pulse_client_add_device:
  * @pulse_client: the #AgsPulseClient
- * @pulse_device: an #AgsPulseeDevout or #AgsPulseMidiin
+ * @pulse_device: an #AgsPulseDevout or #AgsPulseMidiin
  *
  * Add @pulse_device to @pulse_client.
  *
@@ -789,7 +789,7 @@ ags_pulse_client_add_device(AgsPulseClient *pulse_client,
 /**
  * ags_pulse_client_remove_device:
  * @pulse_client: the #AgsPulseClient
- * @pulse_device: an #AgsPulseeDevout or #AgsPulseMidiin
+ * @pulse_device: an #AgsPulseDevout or #AgsPulseMidiin
  *
  * Remove @pulse_device from @pulse_client.
  *

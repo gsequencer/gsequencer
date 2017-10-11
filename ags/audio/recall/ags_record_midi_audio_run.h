@@ -40,6 +40,13 @@
 typedef struct _AgsRecordMidiAudioRun AgsRecordMidiAudioRun;
 typedef struct _AgsRecordMidiAudioRunClass AgsRecordMidiAudioRunClass;
 
+/**
+ * AgsRecordMidiAudioRunFlags:
+ * @AGS_RECORD_MIDI_AUDIO_RUN_DEFAULT: run default
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsRecordMidiAudioRun by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_RECORD_MIDI_AUDIO_RUN_DEFAULT  =  1,
 }AgsRecordMidiAudioRunFlags;

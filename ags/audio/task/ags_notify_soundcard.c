@@ -126,11 +126,7 @@ ags_notify_soundcard_class_init(AgsNotifySoundcardClass *notify_soundcard)
    *
    * The assigned #AgsSoundcardThread
    * 
-<<<<<<< HEAD
    * Since: 1.0.0
-=======
-   * Since: 1.0.0
->>>>>>> master
    */
   param_spec = g_param_spec_object("soundcard-thread",
 				   i18n_pspec("soundcard thread of notify soundcard"),

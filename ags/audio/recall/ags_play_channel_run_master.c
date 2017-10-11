@@ -87,11 +87,11 @@ void ags_play_channel_run_master_stream_channel_done_callback(AgsRecall *recall,
 /**
  * SECTION:ags_play_channel_run_master
  * @short_description: plays channel as toplevel
- * @title: AgsPlayChannelMaster
+ * @title: AgsPlayChannelRunMaster
  * @section_id:
  * @include: ags/audio/recall/ags_play_channel_master.h
  *
- * The #AgsPlayChannelMaster class plays the channel within toplevel context.
+ * The #AgsPlayChannelRunMaster class plays the channel within toplevel context.
  */
 
 enum{
@@ -744,9 +744,9 @@ ags_play_channel_run_master_find_streamer(GList *list,
 /**
  * ags_play_channel_master_run_new:
  *
- * Creates an #AgsPlayChannelMasterRun
+ * Creates an #AgsPlayChannelRunMaster
  *
- * Returns: a new #AgsPlayChannelMasterRun
+ * Returns: a new #AgsPlayChannelRunMaster
  *
  * Since: 1.0.0
  */

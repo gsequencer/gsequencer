@@ -34,6 +34,14 @@
 typedef struct _AgsRecycling AgsRecycling;
 typedef struct _AgsRecyclingClass AgsRecyclingClass;
 
+/**
+ * AgsRecyclingFlags:
+ * @AGS_RECYCLING_CONNECTED: indicates the port was connected by calling #AgsConnectable::connect()
+ * @AGS_RECYCLING_MUTED: recycling is muted
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsRecycling by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_RECYCLING_CONNECTED       = 1,
   AGS_RECYCLING_MUTED           = 1 <<  1,

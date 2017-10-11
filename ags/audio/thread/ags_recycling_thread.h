@@ -44,6 +44,18 @@ typedef struct _AgsRecyclingThread AgsRecyclingThread;
 typedef struct _AgsRecyclingThreadClass AgsRecyclingThreadClass;
 typedef struct _AgsRecyclingThreadWorker AgsRecyclingThreadWorker;
 
+/**
+ * AgsRecyclingThreadFlags:
+ * @AGS_RECYCLING_THREAD_WAIT: TODO:JK: implement me
+ * @AGS_RECYCLING_THREAD_DONE: TODO:JK: implement me
+ * @AGS_RECYCLING_THREAD_LOCKED: TODO:JK: implement me
+ * @AGS_RECYCLING_THREAD_LOCKED_PARENT: TODO:JK: implement me
+ * @AGS_RECYCLING_THREAD_WORKER_WAIT: TODO:JK: implement me
+ * @AGS_RECYCLING_THREAD_WORKER_DONE: TODO:JK: implement me
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsRecyclingThread by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_RECYCLING_THREAD_WAIT           = 1,
   AGS_RECYCLING_THREAD_DONE           = 1 <<  1,

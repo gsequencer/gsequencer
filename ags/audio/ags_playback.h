@@ -41,6 +41,24 @@
 typedef struct _AgsPlayback AgsPlayback;
 typedef struct _AgsPlaybackClass AgsPlaybackClass;
 
+/**
+ * AgsPlaybackFlags:
+ * @AGS_PLAYBACK_CONNECTED: indicates the playback was connected by calling #AgsConnectable::connect()
+ * @AGS_PLAYBACK_DONE: done doing playback
+ * @AGS_PLAYBACK_REMOVE: does remove playback
+ * @AGS_PLAYBACK_CHANNEL: play channel
+ * @AGS_PLAYBACK_PAD: play pad
+ * @AGS_PLAYBACK_AUDIO: play audio
+ * @AGS_PLAYBACK_PLAYBACK: do playback
+ * @AGS_PLAYBACK_SEQUENCER: do sequencer
+ * @AGS_PLAYBACK_NOTATION: do notation
+ * @AGS_PLAYBACK_SINGLE_THREADED: single threaded
+ * @AGS_PLAYBACK_SUPER_THREADED_CHANNEL: super threaded channel
+ * @AGS_PLAYBACK_SUPER_THREADED_RECYCLING: super threaded recycling
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsPlayback by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_PLAYBACK_CONNECTED                    = 1,
   AGS_PLAYBACK_DONE                         = 1 <<  1,

@@ -1408,6 +1408,7 @@ ags_midi_parser_parse_track(AgsMidiParser *midi_parser)
 /**
  * ags_midi_parser_channel_message:
  * @midi_parser: the #AgsMidiParser
+ * @status: the status byte
  * 
  * Parse channel message.
  * 

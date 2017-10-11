@@ -43,6 +43,15 @@
 typedef struct _AgsRecallLv2 AgsRecallLv2;
 typedef struct _AgsRecallLv2Class AgsRecallLv2Class;
 
+/**
+ * AgsRecallLv2FLags:
+ * @AGS_RECALL_LV2_HAS_EVENT_PORT: has event port
+ * @AGS_RECALL_LV2_HAS_ATOM_PORT: has atom port
+ * @AGS_RECALL_LV2_HAS_WORKER: has worker
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsRecallLv2 by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_RECALL_LV2_HAS_EVENT_PORT   = 1,
   AGS_RECALL_LV2_HAS_ATOM_PORT    = 1 <<  1,

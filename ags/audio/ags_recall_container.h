@@ -35,10 +35,25 @@
 typedef struct _AgsRecallContainer AgsRecallContainer;
 typedef struct _AgsRecallContainerClass AgsRecallContainerClass;
 
+/**
+ * AgsRecallContainerFlags:
+ * @AGS_RECALL_CONTAINER_PLAY: bound to play context
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsRecallContainer by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_RECALL_CONTAINER_PLAY    =  1,
 }AgsRecallContainerFlags;
 
+/**
+ * AgsRecallContainerFindFlags:
+ * @AGS_RECALL_CONTAINER_FIND_TYPE: find type
+ * @AGS_RECALL_CONTAINER_FIND_TEMPLATE: find template
+ * @AGS_RECALL_CONTAINER_FIND_RECALL_ID: find recall id
+ * 
+ * Enum values to specify find criteria.
+ */
 typedef enum{
   AGS_RECALL_CONTAINER_FIND_TYPE          = 1,
   AGS_RECALL_CONTAINER_FIND_TEMPLATE      = 1 <<  1,

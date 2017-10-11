@@ -721,7 +721,7 @@ ags_jack_client_deactivate(AgsJackClient *jack_client)
 /**
  * ags_jack_client_add_device:
  * @jack_client: the #AgsJackClient
- * @jack_device: an #AgsJackeDevout or #AgsJackMidiin
+ * @jack_device: an #AgsJackDevout or #AgsJackMidiin
  *
  * Add @jack_device to @jack_client.
  *
@@ -745,7 +745,7 @@ ags_jack_client_add_device(AgsJackClient *jack_client,
 /**
  * ags_jack_client_remove_device:
  * @jack_client: the #AgsJackClient
- * @jack_device: an #AgsJackeDevout or #AgsJackMidiin
+ * @jack_device: an #AgsJackDevout or #AgsJackMidiin
  *
  * Remove @jack_device from @jack_client.
  *

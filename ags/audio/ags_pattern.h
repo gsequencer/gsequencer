@@ -46,6 +46,13 @@
 typedef struct _AgsPattern AgsPattern;
 typedef struct _AgsPatternClass AgsPatternClass;
 
+/**
+ * AgsPatternFlags:
+ * @AGS_PATTERN_CONNECTED: indicates the pattern was connected by calling #AgsConnectable::connect()
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsPattern by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_PATTERN_CONNECTED   = 1,
 }AgsPatternFlags;

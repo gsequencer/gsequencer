@@ -297,7 +297,7 @@ ags_lv2_option_ressource_alloc()
 /**
  * ags_lv2_option_manager_ressource_insert:
  * @lv2_option_manager: the #AgsLv2OptionManager
- * @lv2_option_ressource: the #AgsOptionRessource-struct as key
+ * @lv2_option_ressource: the #AgsLv2OptionRessource-struct as key
  * @data: the data
  *
  * Inserts a data into hash associated with @lv2_option_ressource.

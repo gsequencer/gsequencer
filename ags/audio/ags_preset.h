@@ -33,6 +33,13 @@
 typedef struct _AgsPreset AgsPreset;
 typedef struct _AgsPresetClass AgsPresetClass;
 
+/**
+ * AgsPresetFlags:
+ * @AGS_PRESET_CONNECTED: indicates the playback was connected by calling #AgsConnectable::connect()
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsPreset by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_PRESET_CONNECTED      = 1,
 }AgsPresetFlags;

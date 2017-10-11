@@ -4479,7 +4479,7 @@ ags_channel_resolve_recall(AgsChannel *channel,
  * ags_channel_init_recall:
  * @channel: an #AgsChannel that contains the recalls
  * @stage: the stage to init
- * @recall_id: the #AgsRecallId this recall belongs to
+ * @recall_id: the #AgsRecallID this recall belongs to
  *
  * Prepare #AgsRecall objects to become runnning, ags_channel_recursive_play_init()
  * may call this function for you.

@@ -41,6 +41,13 @@ typedef struct _AgsLv2Preset AgsLv2Preset;
 typedef struct _AgsLv2PresetClass AgsLv2PresetClass;
 typedef struct _AgsLv2PortPreset AgsLv2PortPreset;
 
+/**
+ * AgsLv2PresetFlags:
+ * @AGS_LV2_PRESET_CONNECTED: indicates the port was connected by calling #AgsConnectable::connect()
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsLv2Preset by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_LV2_PRESET_CONNECTED    = 1,
 }AgsLv2PresetFlags;

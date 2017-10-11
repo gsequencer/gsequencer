@@ -35,6 +35,14 @@
 typedef struct _AgsNotifySoundcard AgsNotifySoundcard;
 typedef struct _AgsNotifySoundcardClass AgsNotifySoundcardClass;
 
+/**
+ * AgsNotifySoundcardFlags:
+ * @AGS_NOTIFY_SOUNDCARD_WAIT_RETURN: sync wait
+ * @AGS_NOTIFY_SOUNDCARD_DONE_RETURN: sync done
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsNotifySoundcard by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_NOTIFY_SOUNDCARD_WAIT_RETURN   = 1,
   AGS_NOTIFY_SOUNDCARD_DONE_RETURN   = 1 <<  1,

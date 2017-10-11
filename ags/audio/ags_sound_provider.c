@@ -56,7 +56,7 @@ ags_sound_provider_class_init(AgsSoundProviderInterface *interface)
 /**
  * ags_sound_provider_set_soundcard:
  * @sound_provider: the #AgsSoundProvider
- * @soundcard: a #GList-struc containing #AgsSoundcard
+ * @soundcard: a #GList-struct containing #AgsSoundcard
  * 
  * Set soundcards.
  *
@@ -148,7 +148,7 @@ ags_sound_provider_get_default_soundcard_thread(AgsSoundProvider *sound_provider
 /**
  * ags_sound_provider_set_sequencer:
  * @sound_provider: the #AgsSoundProvider
- * @sequencer: a #GList-struc containing #AgsSequencer
+ * @sequencer: a #GList-struct containing #AgsSequencer
  * 
  * Set sequencers.
  *

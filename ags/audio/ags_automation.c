@@ -327,7 +327,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The acceleration list.
    * 
-   * Since: 1.0.0.8
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("acceleration",
 				    i18n_pspec("acceleration"),

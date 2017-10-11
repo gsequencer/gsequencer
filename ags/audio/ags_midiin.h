@@ -47,6 +47,22 @@
 typedef struct _AgsMidiin AgsMidiin;
 typedef struct _AgsMidiinClass AgsMidiinClass;
 
+/**
+ * AgsMidiinFlags:
+ * @AGS_MIDIIN_BUFFER0: ring-buffer 0
+ * @AGS_MIDIIN_BUFFER1: ring-buffer 1
+ * @AGS_MIDIIN_BUFFER2: ring-buffer 2
+ * @AGS_MIDIIN_BUFFER3: ring-buffer 3
+ * @AGS_MIDIIN_ATTACK_FIRST: use first attack, instead of second one
+ * @AGS_MIDIIN_RECORD: is recording
+ * @AGS_MIDIIN_SHUTDOWN: stop recording
+ * @AGS_MIDIIN_START_RECORD: just started recording
+ * @AGS_MIDIIN_NONBLOCKING: do non-blocking calls
+ * @AGS_MIDIIN_INITIALIZED: recording is initialized
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsMidiin by
+ * enable/disable as flags.
+ */
 typedef enum
 {
   AGS_MIDIIN_BUFFER0                        = 1,
@@ -67,6 +83,18 @@ typedef enum
   AGS_MIDIIN_INITIALIZED                    = 1 << 11,
 }AgsMidiinFlags;
 
+/**
+ * AgsMidiinSyncFlags:
+ * @AGS_MIDIIN_PASS_THROUGH: do not sync
+ * @AGS_MIDIIN_INITIAL_POLL: initial poll
+ * @AGS_MIDIIN_POLL_WAIT: sync wait, sequencer conditional lock
+ * @AGS_MIDIIN_POLL_DONE: sync done, sequencer conditional lock
+ * @AGS_MIDIIN_POLL_FINISH_WAIT: sync wait, client conditional lock
+ * @AGS_MIDIIN_POLL_FINISH_DONE: sync done, client conditional lock
+ * @AGS_MIDIIN_POLL_SWITCH_BUFFER: switch buffer
+ * 
+ * Enum values to control the synchronization between sequencer and poll.
+ */
 typedef enum{
   AGS_MIDIIN_PASS_THROUGH                   = 1,
   AGS_MIDIIN_INITIAL_POLL                   = 1 <<  1,

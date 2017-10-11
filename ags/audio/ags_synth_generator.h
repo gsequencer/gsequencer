@@ -35,6 +35,15 @@
 typedef struct _AgsSynthGenerator AgsSynthGenerator;
 typedef struct _AgsSynthGeneratorClass AgsSynthGeneratorClass;
 
+/**
+ * AgsSynthGeneratorOscillator:
+ * @AGS_SYNTH_GENERATOR_OSCILLATOR_SIN: sinus
+ * @AGS_SYNTH_GENERATOR_OSCILLATOR_SAWTOOTH: sawtooth
+ * @AGS_SYNTH_GENERATOR_OSCILLATOR_TRIANGLE: triangle
+ * @AGS_SYNTH_GENERATOR_OSCILLATOR_SQUARE: square
+ * 
+ * Enum values to specify oscillator.
+ */
 typedef enum{
   AGS_SYNTH_GENERATOR_OSCILLATOR_SIN,
   AGS_SYNTH_GENERATOR_OSCILLATOR_SAWTOOTH,
@@ -42,6 +51,20 @@ typedef enum{
   AGS_SYNTH_GENERATOR_OSCILLATOR_SQUARE,
 }AgsSynthGeneratorOscillator;
 
+/**
+ * AgsSynthGeneratorComputeFlags:
+ * @AGS_SYNTH_GENERATOR_COMPUTE_FIXED_LENGTH: fixed length
+ * @AGS_SYNTH_GENERATOR_COMPUTE_SYNC: sync
+ * @AGS_SYNTH_GENERATOR_COMPUTE_16HZ: 16 Hz
+ * @AGS_SYNTH_GENERATOR_COMPUTE_440HZ: 440 Hz
+ * @AGS_SYNTH_GENERATOR_COMPUTE_22000HZ: 22000 Hz
+ * @AGS_SYNTH_GENERATOR_COMPUTE_LIMIT: limit
+ * @AGS_SYNTH_GENERATOR_COMPUTE_NOHZ: no Hertz
+ * @AGS_SYNTH_GENERATOR_COMPUTE_FREQUENCY: frequency
+ * @AGS_SYNTH_GENERATOR_COMPUTE_NOTE: note
+ * 
+ * Enum values to specify compute flags.
+ */
 typedef enum{
   AGS_SYNTH_GENERATOR_COMPUTE_FIXED_LENGTH  = 1,
   AGS_SYNTH_GENERATOR_COMPUTE_SYNC          = 1 <<  1,

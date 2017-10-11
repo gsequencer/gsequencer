@@ -66,10 +66,19 @@
 typedef struct _AgsLv2Plugin AgsLv2Plugin;
 typedef struct _AgsLv2PluginClass AgsLv2PluginClass;
 
+/**
+ * AgsLv2PluginFlags:
+ * @AGS_LV2_PLUGIN_IS_SYNTHESIZER: plugin is synthesizer
+ * @AGS_LV2_PLUGIN_NEEDS_WORKER: plugin needs worker
+ * @AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE: plugin has program interface
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsLv2Plugin by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_LV2_PLUGIN_IS_SYNTHESIZER            = 1,
   AGS_LV2_PLUGIN_NEEDS_WORKER              = 1 <<  1,
-  AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE    = 1 <<  2,
+  AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE     = 1 <<  2,
 }AgsLv2PluginFlags;
 
 struct _AgsLv2Plugin

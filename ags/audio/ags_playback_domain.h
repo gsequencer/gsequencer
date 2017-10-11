@@ -39,6 +39,18 @@
 typedef struct _AgsPlaybackDomain AgsPlaybackDomain;
 typedef struct _AgsPlaybackDomainClass AgsPlaybackDomainClass;
 
+/**
+ * AgsPlaybackDomainFlags:
+ * @AGS_PLAYBACK_DOMAIN_CONNECTED: indicates the playback domain was connected by calling #AgsConnectable::connect()
+ * @AGS_PLAYBACK_DOMAIN_PLAYBACK: do playback
+ * @AGS_PLAYBACK_DOMAIN_SEQUENCER: do sequencer
+ * @AGS_PLAYBACK_DOMAIN_NOTATION: do notation
+ * @AGS_PLAYBACK_DOMAIN_SINGLE_THREADED: single threaded
+ * @AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO: super threaded audio
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsPlaybackDomain by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_PLAYBACK_DOMAIN_CONNECTED                  = 1,
   AGS_PLAYBACK_DOMAIN_PLAYBACK                   = 1 <<  1,
@@ -48,10 +60,18 @@ typedef enum{
   AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO       = 1 <<  5,
 }AgsPlaybackDomainFlags;
 
+/**
+ * AgsPlaybackDomainScope:
+ * @AGS_PLAYBACK_DOMAIN_SCOPE_PLAYBACK: scope playback
+ * @AGS_PLAYBACK_DOMAIN_SCOPE_SEQUENCER: scope sequencer
+ * @AGS_PLAYBACK_DOMAIN_SCOPE_NOTATION: scope notation
+ * 
+ * Enum values to specify playback domain scope.
+ */
 typedef enum{
   AGS_PLAYBACK_DOMAIN_SCOPE_PLAYBACK,
   AGS_PLAYBACK_DOMAIN_SCOPE_SEQUENCER,
-  AGS_PLAYBACK_DOMAIN_SCOPE_NOTATION,  
+  AGS_PLAYBACK_DOMAIN_SCOPE_NOTATION,
 }AgsPlaybackDomainScope;
 
 struct _AgsPlaybackDomain

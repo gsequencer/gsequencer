@@ -125,11 +125,7 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
    *
    * The assigned #AgsNotation
    * 
-<<<<<<< HEAD
    * Since: 1.0.0
-=======
-   * Since: 1.0.0
->>>>>>> master
    */
   param_spec = g_param_spec_object("notation",
 				   i18n_pspec("notation of add note"),
@@ -145,11 +141,7 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
    *
    * Note offset x0.
    * 
-<<<<<<< HEAD
    * Since: 1.0.0
-=======
-   * Since: 1.0.0
->>>>>>> master
    */
   param_spec = g_param_spec_uint("x0",
 				 i18n_pspec("offset x0"),
@@ -166,11 +158,7 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
    *
    * Note offset x1.
    * 
-<<<<<<< HEAD
    * Since: 1.0.0
-=======
-   * Since: 1.0.0
->>>>>>> master
    */
   param_spec = g_param_spec_uint("x1",
 				 i18n_pspec("offset x1"),
@@ -188,11 +176,7 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
    *
    * Note offset y0.
    * 
-<<<<<<< HEAD
    * Since: 1.0.0
-=======
-   * Since: 1.0.0
->>>>>>> master
    */
   param_spec = g_param_spec_uint("y0",
 				 i18n_pspec("offset y0"),
@@ -210,11 +194,7 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
    *
    * Note offset y1.
    * 
-<<<<<<< HEAD
    * Since: 1.0.0
-=======
-   * Since: 1.0.0
->>>>>>> master
    */
   param_spec = g_param_spec_uint("y1",
 				 i18n_pspec("offset y1"),
@@ -232,11 +212,7 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
    *
    * The notation's replace-current-selection.
    * 
-<<<<<<< HEAD
    * Since: 1.0.0
-=======
-   * Since: 1.0.0
->>>>>>> master
    */
   param_spec =  g_param_spec_boolean("replace-current-selection",
 				     i18n_pspec("replace current selection"),

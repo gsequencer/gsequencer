@@ -52,6 +52,15 @@
 typedef struct _AgsNotation AgsNotation;
 typedef struct _AgsNotationClass AgsNotationClass;
 
+/**
+ * AgsNotationFlags:
+ * @AGS_NOTATION_CONNECTED: indicates the notation was connected by calling #AgsConnectable::connect()
+ * @AGS_NOTATION_STICKY: sticky
+ * @AGS_NOTATION_PATTERN_MODE: pattern mode
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsNotation by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_NOTATION_CONNECTED           = 1,
   AGS_NOTATION_STICKY              = 1 <<  1,
@@ -160,7 +169,7 @@ AgsNotation* ags_notation_from_raw_midi(unsigned char *raw_midi,
 					glong nn, glong dd, glong cc, glong bb,
 					glong tempo,
 					gdouble bpm, gdouble delay_factor,
-					guint length);
+					guint buffer_length);
 
 AgsNotation* ags_notation_new(GObject *audio,
 			      guint audio_channel);

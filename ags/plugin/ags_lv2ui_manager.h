@@ -67,7 +67,7 @@ AgsLv2uiPlugin* ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manag
 						    gchar *ui_effect);
 AgsLv2uiPlugin* ags_lv2ui_manager_find_lv2ui_plugin_with_index(AgsLv2uiManager *lv2ui_manager,
 							       gchar *ui_filename,
-							       guint ui_index);
+							       guint ui_effect_index);
 
 void ags_lv2ui_manager_load_blacklist(AgsLv2uiManager *lv2ui_manager,
 				      gchar *blacklist_filename);

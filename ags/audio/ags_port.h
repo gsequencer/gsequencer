@@ -40,6 +40,18 @@
 typedef struct _AgsPort AgsPort;
 typedef struct _AgsPortClass AgsPortClass;
 
+/**
+ * AgsPortFlags:
+ * @AGS_PORT_ADDED_TO_REGISTRY: add to registry
+ * @AGS_PORT_CONNECTED: indicates the port was connected by calling #AgsConnectable::connect()
+ * @AGS_PORT_CONVERT_ALWAYS: convert always
+ * @AGS_PORT_USE_LADSPA_FLOAT: use ladspa float
+ * @AGS_PORT_IS_OUTPUT: is output
+ * @AGS_PORT_INFINITE_RANGE: infinite range
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsPort by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_PORT_ADDED_TO_REGISTRY  = 1,
   AGS_PORT_CONNECTED          = 1 <<  1,

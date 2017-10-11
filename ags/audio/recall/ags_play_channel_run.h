@@ -40,6 +40,14 @@
 typedef struct _AgsPlayChannelRun AgsPlayChannelRun;
 typedef struct _AgsPlayChannelRunClass AgsPlayChannelRunClass;
 
+/**
+ * AgsPlayChannelRunFlags:
+ * @AGS_PLAY_CHANNEL_RUN_TERMINATING: recall is terminating
+ * @AGS_PLAY_CHANNEL_RUN_INITIAL_RUN: recall does initial run
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsPlayChannelRun by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_PLAY_CHANNEL_RUN_TERMINATING        = 1,
   AGS_PLAY_CHANNEL_RUN_INITIAL_RUN        = 1 << 1,

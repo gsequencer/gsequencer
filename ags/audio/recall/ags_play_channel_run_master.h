@@ -42,6 +42,13 @@ typedef struct _AgsPlayChannelRunMaster AgsPlayChannelRunMaster;
 typedef struct _AgsPlayChannelRunMasterClass AgsPlayChannelRunMasterClass;
 typedef struct _AgsPlayChannelRunMasterStreamer AgsPlayChannelRunMasterStreamer;
 
+/**
+ * AgsPlayChannelRunMasterFlags:
+ * @AGS_PLAY_CHANNEL_RUN_MASTER_TERMINATING: recall is terminating
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsPlayChannelRun by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_PLAY_CHANNEL_RUN_MASTER_TERMINATING        = 1,
 }AgsPlayChannelRunMasterFlags;

@@ -35,6 +35,13 @@
 typedef struct _AgsRemoteChannel AgsRemoteChannel;
 typedef struct _AgsRemoteChannelClass AgsRemoteChannelClass;
 
+/**
+ * AgsRemoteChannelFlags:
+ * @AGS_REMOTE_CHANNEL_KEEP_ALIVE: TODO:JK: implement me
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsRemoteChannel by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_REMOTE_CHANNEL_KEEP_ALIVE         =  1,
 }AgsRemoteChannelFlags;

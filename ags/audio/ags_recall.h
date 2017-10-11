@@ -45,6 +45,38 @@ typedef struct _AgsRecall AgsRecall;
 typedef struct _AgsRecallClass AgsRecallClass;
 typedef struct _AgsRecallHandler AgsRecallHandler;
 
+/**
+ * AgsRecallFlags:
+ * @AGS_RECALL_ADDED_TO_REGISTRY: recall has been added to registry
+ * @AGS_RECALL_CONNECTED: indicates the port was connected by calling #AgsConnectable::connect()
+ * @AGS_RECALL_RUN_INITIALIZED: run initialized
+ * @AGS_RECALL_TEMPLATE: is template
+ * @AGS_RECALL_PLAYBACK: does playback
+ * @AGS_RECALL_SEQUENCER: does sequencer
+ * @AGS_RECALL_NOTATION: does notation
+ * @AGS_RECALL_DEFAULT_TEMPLATE: 
+ * @AGS_RECALL_DYNAMIC_CONNECTED: dynamic connected
+ * @AGS_RECALL_INPUT_ORIENTATED: input orientated
+ * @AGS_RECALL_OUTPUT_ORIENTATED: output orientated
+ * @AGS_RECALL_PERSISTENT: persistent processing
+ * @AGS_RECALL_INITIAL_RUN: initial call to #AgsRecall::run()
+ * @AGS_RECALL_TERMINATING: is terminating
+ * @AGS_RECALL_DONE: is done
+ * @AGS_RECALL_REMOVE: is remove
+ * @AGS_RECALL_HIDE: is hidden
+ * @AGS_RECALL_PROPAGATE_DONE: propagate done 
+ * @AGS_RECALL_PERSISTENT_PLAYBACK: persistent playback
+ * @AGS_RECALL_PERSISTENT_SEQUENCER: persistent sequencer
+ * @AGS_RECALL_PERSISTENT_NOTATION: persistent notation
+ * @AGS_RECALL_SKIP_DEPENDENCIES: skip dependencies
+ * @AGS_RECALL_BULK_MODE: the recall operates on bulk mode
+ * @AGS_RECALL_HAS_OUTPUT_PORT: has output port
+ * @AGS_RECALL_RUN_FIRST: scheduled for run-first
+ * @AGS_RECALL_RUN_LAST: scheduled for run-last
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsRecall by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_RECALL_ADDED_TO_REGISTRY     = 1,
   AGS_RECALL_CONNECTED             = 1 <<  1,
@@ -74,6 +106,16 @@ typedef enum{
   AGS_RECALL_RUN_LAST              = 1 << 25,
 }AgsRecallFlags;
 
+/**
+ * AgsRecallNotifyDependencyMode:
+ * @AGS_RECALL_NOTIFY_RUN: notify dependency as calling run
+ * @AGS_RECALL_NOTIFY_AUDIO: notify dependency audio
+ * @AGS_RECALL_NOTIFY_AUDIO_RUN: notifiy dependency audio run
+ * @AGS_RECALL_NOTIFY_CHANNEL: notifiy dependency channel
+ * @AGS_RECALL_NOTIFY_CHANNEL_RUN: notifiy dependency channel run
+ * @AGS_RECALL_NOTIFY_RECALL: notifiy dependency recall
+ * 
+ */
 typedef enum{
   AGS_RECALL_NOTIFY_RUN,
   AGS_RECALL_NOTIFY_AUDIO,

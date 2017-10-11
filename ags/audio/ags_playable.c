@@ -511,7 +511,7 @@ ags_playable_close(AgsPlayable *playable)
 /**
  * ags_playable_read_audio_signal:
  * @playable: an #AgsPlayable
- * @soundcard: the #AgsSoundcar defaulting to
+ * @soundcard: the #AgsSoundcard defaulting to
  * @start_channel: read from channel
  * @channels_to_read: n-times
  *

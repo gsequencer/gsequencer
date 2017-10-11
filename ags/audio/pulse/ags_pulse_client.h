@@ -41,6 +41,15 @@
 typedef struct _AgsPulseClient AgsPulseClient;
 typedef struct _AgsPulseClientClass AgsPulseClientClass;
 
+/**
+ * AgsPulseClientFlags:
+ * @AGS_PULSE_CLIENT_CONNECTED: indicates the client was connected by calling #AgsConnectable::connect()
+ * @AGS_PULSE_CLIENT_ACTIVATED: the client was activated
+ * @AGS_PULSE_CLIENT_READY: the client is ready
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsPulseClient by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_PULSE_CLIENT_CONNECTED       = 1,
   AGS_PULSE_CLIENT_ACTIVATED       = 1 <<  1,

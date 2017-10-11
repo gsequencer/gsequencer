@@ -45,6 +45,13 @@
 typedef struct _AgsPlayDssiAudioRun AgsPlayDssiAudioRun;
 typedef struct _AgsPlayDssiAudioRunClass AgsPlayDssiAudioRunClass;
 
+/**
+ * AgsPlayDssiAudioRunFlags:
+ * @AGS_PLAY_DSSI_AUDIO_RUN_DEFAULT: not used
+ *
+ * Enum values to control the behavior or indicate internal state of #AgsPlayDssiAudioRun by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_PLAY_DSSI_AUDIO_RUN_DEFAULT  =  1,
 }AgsPlayDssiAudioRunFlags;

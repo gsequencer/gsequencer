@@ -38,6 +38,13 @@
 typedef struct _AgsRecallAudioSignal AgsRecallAudioSignal;
 typedef struct _AgsRecallAudioSignalClass AgsRecallAudioSignalClass;
 
+/**
+ * AgsRecallAudioSignalFlags:
+ * @AGS_RECALL_AUDIO_SIGNAL_INITIAL_RUN: initial run
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsRecallAudioSignal by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_RECALL_AUDIO_SIGNAL_INITIAL_RUN      = 1,
 }AgsRecallAudioSignalFlags;

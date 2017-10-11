@@ -39,6 +39,16 @@
 typedef struct _AgsRecallRecycling AgsRecallRecycling;
 typedef struct _AgsRecallRecyclingClass AgsRecallRecyclingClass;
 
+/**
+ * AgsRecallRecyclingFlags:
+ * @AGS_RECALL_RECYCLING_GARBAGE_COLLECTOR: not used
+ * @AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION: not used
+ * @AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE: not used
+ * @AGS_RECALL_RECYCLING_CREATE_DESTINATION_ON_MAP_SOURCE: not used
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsRecallRecycling by
+ * enable/disable as flags.
+ */
 typedef enum{
   AGS_RECALL_RECYCLING_GARBAGE_COLLECTOR                = 1,
   AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION            = 1 <<  1,

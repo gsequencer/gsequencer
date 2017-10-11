@@ -1625,7 +1625,7 @@ ags_recall_resolve_dependencies(AgsRecall *recall)
 
 /**
  * ags_recall_child_added:
- * @recall: an #AgsRecall
+ * @parent: an #AgsRecall
  * @child: another #AgsRecall
  *
  * A signal indicating that the a child has been added.
