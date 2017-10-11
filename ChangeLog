@@ -1,6 +1,7 @@
 ags (1.0.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* extended documentation of libags and libags-audio to have comments for enums
 	* fixed missing xinclude
 
 ags (1.0.4)

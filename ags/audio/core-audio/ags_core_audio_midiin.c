@@ -454,7 +454,7 @@ ags_core_audio_midiin_init(AgsCoreAudioMidiin *core_audio_midiin)
   pthread_mutex_unlock(application_mutex);
 
   /* flags */
-  core_audio_midiin->flags = (AGS_CORE_AUDIO_MIDIIN_ALSA);
+  core_audio_midiin->flags = 0;
   g_atomic_int_set(&(core_audio_midiin->sync_flags),
 		   AGS_CORE_AUDIO_MIDIIN_PASS_THROUGH);
 
