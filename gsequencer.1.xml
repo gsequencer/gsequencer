@@ -9,7 +9,11 @@
 <refentry id="gsequencer">
 
   <refentryinfo>
-    <date>2015-06-15</date>
+    <date>2017-10-12</date>
+    <copyright>
+      <year>2017</year>
+      <holder>Joël Krähemann</holder>
+    </copyright>
   </refentryinfo>
   
   <refmeta>
@@ -17,7 +21,7 @@
       <application>gsequencer</application>
     </refentrytitle>
     <manvolnum>1</manvolnum>
-    <refmiscinfo>gsequencer v0.4.2</refmiscinfo>
+    <refmiscinfo>gsequencer v1.0.0</refmiscinfo>
   </refmeta>
 
   <refnamediv>
@@ -35,7 +39,7 @@
       <arg rep='repeat'>--filename <replaceable>file</replaceable></arg>
     </cmdsynopsis>
   </refsynopsisdiv>
-
+  
   <refsect1><title>Description</title>
   <para>
     Advanced GTK+ Sequencer is intended to use for music composition.
@@ -46,21 +50,23 @@
     network of engines, thus there is a link editor for linking audio lines.
   </para>
   <para>
-    LADSPA support has been added to version 0.4.2 as well export to
-    WAV audio file.
+    As version 1.0.0 it supports LADSPA, DSSI and Lv2 plugin format. And provides
+    the ability to export to WAV, FLAC and OGG audio files. It can run on various
+    soundcard backends including ALSA, OSS4, JACK Audio Connection Kit, Pulseaudio
+    and Core-Audio.
   </para>
   <para>&hellip;</para>
   </refsect1>
 
-    <refsect1 id="options">
+  <refsect1 id="options">
     <title>OPTIONS</title>
     <para>The program follows the usual GNU command line syntax,
-      with long options starting with two dashes (`-').  A summary of
-      options is included below.  For a complete description, see the
-      <citerefentry>
-        <refentrytitle>info</refentrytitle>
-        <manvolnum>1</manvolnum>
-      </citerefentry> files.</para>
+    with long options starting with two dashes (`-').  A summary of
+    options is included below.  For a complete description, see the
+    <citerefentry>
+      <refentrytitle>info</refentrytitle>
+      <manvolnum>1</manvolnum>
+    </citerefentry> files.</para>
     <variablelist>
       <varlistentry>
         <term><option>--single-thread</option></term>
@@ -90,6 +96,31 @@
         <term><option>--version</option></term>
         <listitem>
           <para>Show version of program.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1 id="envs">
+    <title>ENVIRONMENT VARIABLES</title>
+    <para>The program interprets following environment variables if set.</para>
+    <variablelist>
+      <varlistentry>
+        <term>LADSPA_PATH</term>
+        <listitem>
+          <para>LADSPA plugin search path</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>DSSI_PATH</term>
+        <listitem>
+          <para>DSSI plugin search path</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>LV2_PATH</term>
+        <listitem>
+          <para>LV2 plugin search path</para>
         </listitem>
       </varlistentry>
     </variablelist>
