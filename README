@@ -53,27 +53,47 @@ General Notes on Licensing
 Following images are used by the documentation and hence are distributed under the GNU Free Documentation License, Version 1.3 or
 any later version published by the Free Software Foundation.
 
-* docs/images/ags_export_window.png
-* docs/images/ags_machine_properties-input.png
-* docs/images/ags_machine_properties-resize_channels.png
-* docs/images/ags_navigation.png
-* docs/images/ags_synth.png
-* docs/images/ags_audio_preferences.png
 * docs/images/ags_ffplayer.png
-* docs/images/ags_ladspa_browser.png
-* docs/images/ags_machine_properties-link_input.png
-* docs/images/ags_matrix.png
-* docs/images/ags_panel.png
-* docs/images/ags-toolbar.png
-* docs/images/ags_drum.png
-* docs/images/ags_generic_preferences.png
-* docs/images/ags_machine_properties-output.png
-* docs/images/ags_mixer.png
+* docs/images/ags_navigation.png
 * docs/images/ags_performance_preferences.png
+* docs/images/ags_midi_preferences.png
+* docs/images/ags_machine_properties-link_input.png
+* docs/images/ags_machine_properties-input.png
+* docs/images/ags_mixer.png
+* docs/images/ags_select_accelerations_dialog.png
+* docs/images/ags_machine_properties-resize_channels.png
 * docs/images/ags_server_preferences.png
-* docs/images/AGS_iterator.png \
-* docs/images/AGS_recall_lifecycle.png \
+* docs/images/ags_midi_import_wizard_no2.png
+* docs/images/ags_machine_envelope_info.png
+* docs/images/ags_drum.png
+* docs/images/ags_matrix.png
+* docs/images/ags_midi_export_wizard_no1.png
+* docs/images/ags_crop_notes_dialog.png
 * docs/images/AGS_super-threaded.png
+* docs/images/ags_midi_import_wizard_no1.png
+* docs/images/AGS_recall_lifecycle.png
+* docs/images/AGS_linking.png
+* docs/images/AGS_iterator.png
+* docs/images/ags_automation_window_drum.png
+* docs/images/ags_audio_connection_output_line.png
+* docs/images/ags_machine_envelope_editor.png
+* docs/images/ags_select_notes_dialog.png
+* docs/images/ags_move_notes_dialog.png
+* docs/images/ags_ladspa_browser.png
+* docs/images/ags-automation-toolbar.png
+* docs/images/ags_ramp_accelerations_dialog.png
+* docs/images/ags_export_window.png
+* docs/images/ags_midi_export_wizard_no2.png
+* docs/images/ags_audio_connection_output_bulk.png
+* docs/images/ags_machine_envelope_pattern.png
+* docs/images/ags-toolbar.png
+* docs/images/ags_midi_dialog.png
+* docs/images/ags_machine_properties-output.png
+* docs/images/ags_syncsynth.png
+* docs/images/ags_generic_preferences.png
+* docs/images/ags_panel.png
+* docs/images/ags_audio_preferences.png
+* docs/images/ags_synth.png
 
 Following listings are used by the documentation and hence are distributed under the GNU Free Documentation License, Version 1.3 or
 any later version published by the Free Software Foundation.
@@ -109,6 +129,12 @@ the Free Software Foundation, either version 3 of the License, or (at your optio
 As well the desktop file:
 
 * gsequencer.desktop.in
+
+The generated symbol files have the very same license as their origin:
+
+* libags.sym (GPLv3+ and AGPLv3+)
+* libags-audio.sym (GPLv3+)
+* libags-gui.sym (GPLv3+)
 
 And so for the glib-object marshallers file:
 
@@ -146,6 +172,23 @@ Third-party files with uncertain copyright provided by autotools:
 * Makefile.in
 * missing
 * test-driver
+
+Third-party files with uncertain copyright provided by gettext:
+
+* po/Makevars
+* po/gsequencer.pot
+* po/quot.sed
+* po/Rules-quot
+* po/Makevars.template
+* po/Makefile.in.in
+* po/en@boldquot.header
+* po/POTFILES.in
+* po/en@quot.header
+* po/stamp-po
+* po/remove-potcdate.sin
+* po/ChangeLog
+* po/insert-header.sin
+* po/boldquot.sed
 
 Generated files with uncertain copyright done with glib-genmarshal
 
