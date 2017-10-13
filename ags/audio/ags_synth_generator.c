@@ -77,8 +77,9 @@ enum{
   PROP_SAMPLERATE,
   PROP_BUFFER_SIZE,
   PROP_FORMAT,
-  PROP_N_FRAMES,
+  PROP_DELAY,
   PROP_ATTACK,
+  PROP_N_FRAMES,
   PROP_OSCILLATOR,
   PROP_FREQUENCY,
   PROP_PHASE,
@@ -215,6 +216,24 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_N_FRAMES,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:delay:
+   *
+   * The delay to be used.
+   * 
+   * Since: 1.1.0
+   */
+  param_spec = g_param_spec_double("delay",
+				   i18n_pspec("using delay"),
+				   i18n_pspec("The delay to be used"),
+				   0.0,
+				   65535.0,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DELAY,
 				  param_spec);
 
   /**
@@ -408,8 +427,9 @@ ags_synth_generator_init(AgsSynthGenerator *synth_generator)
   }
 
   /* more base init */
-  synth_generator->n_frames = 0;
+  synth_generator->delay = 0.0;
   synth_generator->attack = 0;
+  synth_generator->n_frames = 0;
 
   synth_generator->oscillator = 0;
   
@@ -447,14 +467,19 @@ ags_synth_generator_set_property(GObject *gobject,
       synth_generator->format = g_value_get_uint(value);
     }
     break;
-  case PROP_N_FRAMES:
+  case PROP_DELAY:
     {
-      synth_generator->n_frames = g_value_get_uint(value);
+      synth_generator->delay = g_value_get_double(value);
     }
     break;
   case PROP_ATTACK:
     {
       synth_generator->attack = g_value_get_uint(value);
+    }
+    break;
+  case PROP_N_FRAMES:
+    {
+      synth_generator->n_frames = g_value_get_uint(value);
     }
     break;
   case PROP_OSCILLATOR:
@@ -530,14 +555,19 @@ ags_synth_generator_get_property(GObject *gobject,
       g_value_set_uint(value, synth_generator->format);
     }
     break;
-  case PROP_N_FRAMES:
+  case PROP_DELAY:
     {
-      g_value_set_uint(value, synth_generator->n_frames);
+      g_value_set_uint(value, synth_generator->delay);
     }
     break;
   case PROP_ATTACK:
     {
       g_value_set_uint(value, synth_generator->attack);
+    }
+    break;
+  case PROP_N_FRAMES:
+    {
+      g_value_set_uint(value, synth_generator->n_frames);
     }
     break;
   case PROP_OSCILLATOR:
@@ -890,12 +920,13 @@ ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
 				     GObject *audio_signal,
 				     gdouble note,
 				     AgsComplex **sync_point,
-				     guint sync_point_count,
-				     guint frame_count,
-				     gdouble delay, guint attack)
+				     guint sync_point_count)
 {
   GList *stream_start, *stream;
 
+  gdouble delay;
+  guint attack;
+  guint frame_count;
   guint buffer_size;
   guint current_frame_count, requested_frame_count;
   gdouble samplerate;
@@ -910,6 +941,11 @@ ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
   guint i, j;
   gboolean synced;
 
+  delay = synth_generator->delay;
+  attack = synth_generator->attack;
+
+  frame_count = synth_generator->frame_count;
+  
   buffer_size = AGS_AUDIO_SIGNAL(audio_signal)->buffer_size;
   
   current_frame_count = AGS_AUDIO_SIGNAL(audio_signal)->length * buffer_size;

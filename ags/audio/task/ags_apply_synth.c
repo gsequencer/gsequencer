@@ -71,17 +71,20 @@ enum{
   PROP_COUNT,
   PROP_FIXED_LENGTH,
   PROP_WAVE,
-  PROP_ATTACK,
-  PROP_FRAME_COUNT,
+  PROP_BASE_NOTE,
   PROP_FREQUENCY,
+  PROP_VOLUME,
   PROP_PHASE,
   PROP_START_FREQUENCY,
-  PROP_VOLUME,
+  PROP_DELAY,
+  PROP_ATTACK,
+  PROP_FRAME_COUNT,
   PROP_LOOP_START,
   PROP_LOOP_END,
   PROP_DO_SYNC,
   PROP_SYNC_MODE,
-  PROP_BASE_NOTE,
+  PROP_SYNC_POINT,
+  PROP_SYNC_POINT_COUNT,
 };
 
 GType
@@ -191,42 +194,6 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
 				  param_spec);
 
   /**
-   * AgsApplySynth:attack:
-   *
-   * The attack of audio data.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_uint("attack",
-				 i18n_pspec("attack of audio data"),
-				 i18n_pspec("The attack of audio data"),
-				 0,
-				 G_MAXUINT,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_ATTACK,
-				  param_spec);
-
-  /**
-   * AgsApplySynth:frame-count:
-   *
-   * The frame count of audio data.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_uint("frame-count",
-				 i18n_pspec("frame count of audio data"),
-				 i18n_pspec("The frame count of audio data"),
-				 0,
-				 G_MAXUINT,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_FRAME_COUNT,
-				  param_spec);
-
-  /**
    * AgsApplySynth:wave:
    *
    * The wave of wave.
@@ -242,6 +209,24 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_WAVE,
+				  param_spec);
+
+  /**
+   * AgsApplySynth:base-note:
+   *
+   * The base-note to ramp up from.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_double("base-note",
+				   i18n_pspec("base note"),
+				   i18n_pspec("The base note to ramp up from"),
+				   -78.0,
+				   78.0,
+				   -48.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BASE_NOTE,
 				  param_spec);
 
   /**
@@ -262,6 +247,23 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
 				  PROP_FREQUENCY,
 				  param_spec);
 
+  /**
+   * AgsApplySynth:volume:
+   *
+   * The volume of wave.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_double("volume",
+				   i18n_pspec("volume of wave"),
+				   i18n_pspec("The volume of wave"),
+				   0.0,
+				   G_MAXDOUBLE,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_VOLUME,
+				  param_spec);
   /**
    * AgsApplySynth:phase:
    *
@@ -299,22 +301,59 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
 				  param_spec);
 
   /**
-   * AgsApplySynth:volume:
+   * AgsApplySynth:delay:
    *
-   * The volume of wave.
+   * The delay.
    * 
-   * Since: 1.0.0
+   * Since: 1.1.0
    */
-  param_spec = g_param_spec_double("volume",
-				   i18n_pspec("volume of wave"),
-				   i18n_pspec("The volume of wave"),
+  param_spec = g_param_spec_double("delay",
+				   i18n_pspec("delay"),
+				   i18n_pspec("The delay"),
 				   0.0,
 				   G_MAXDOUBLE,
 				   0.0,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_VOLUME,
+				  PROP_DELAY,
 				  param_spec);
+
+  /**
+   * AgsApplySynth:attack:
+   *
+   * The attack of audio data.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("attack",
+				 i18n_pspec("attack of audio data"),
+				 i18n_pspec("The attack of audio data"),
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ATTACK,
+				  param_spec);
+
+  /**
+   * AgsApplySynth:frame-count:
+   *
+   * The frame count of audio data.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("frame-count",
+				 i18n_pspec("frame count of audio data"),
+				 i18n_pspec("The frame count of audio data"),
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FRAME_COUNT,
+				  param_spec);
+
   
   /**
    * AgsApplySynth:loop-start:
@@ -387,23 +426,39 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
 				  param_spec);
   
   /**
-   * AgsApplySynth:base-note:
+   * AgsApplySynth:sync-point:
    *
-   * The base-note to ramp up from.
+   * The sync point to use.
    * 
-   * Since: 1.0.0
+   * Since: 1.1.0
    */
-  param_spec = g_param_spec_double("base-note",
-				   i18n_pspec("base note"),
-				   i18n_pspec("The base note to ramp up from"),
-				   -78.0,
-				   78.0,
-				   -48.0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("sync-point",
+				    i18n_pspec("sync point"),
+				    i18n_pspec("The sync point to use"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_BASE_NOTE,
+				  PROP_SYNC_POINT,
 				  param_spec);
 
+  /**
+   * AgsApplySynth:sync-point-count:
+   *
+   * The sync point count of audio data.
+   * 
+   * Since: 1.1.0
+   */
+  param_spec = g_param_spec_uint("sync-point-count",
+				 i18n_pspec("sync point count of audio data"),
+				 i18n_pspec("The sync point count of audio data"),
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SYNC_POINT_COUNT,
+				  param_spec);
+
+  
   /* AgsTaskClass */
   task = (AgsTaskClass *) apply_synth;
 
@@ -428,20 +483,26 @@ ags_apply_synth_init(AgsApplySynth *apply_synth)
   apply_synth->fixed_length = TRUE;
 
   apply_synth->wave = AGS_APPLY_SYNTH_INVALID;
-  apply_synth->attack = 0;
-  apply_synth->frame_count = 0;
+  apply_synth->base_note = -48.0;
+
   apply_synth->frequency = 0.0;
+  apply_synth->volume = 1.0;
+  
   apply_synth->phase = 0.0;
   apply_synth->start_frequency = 0.0;
-  apply_synth->volume = 1.0;
 
+  apply_synth->delay = 0.0;
+  apply_synth->attack = 0;
+  
+  apply_synth->frame_count = 0;
   apply_synth->loop_start = 0;
   apply_synth->loop_end = 0;
 
   apply_synth->do_sync = FALSE;
   apply_synth->sync_mode = 0;
 
-  apply_synth->base_note = -48.0;
+  apply_synth->sync_point = NULL;
+  apply_synth->sync_point_count = 0;
 }
 
 void
@@ -491,19 +552,19 @@ ags_apply_synth_set_property(GObject *gobject,
       apply_synth->wave = g_value_get_uint(value);
     }
     break;
-  case PROP_ATTACK:
+  case PROP_BASE_NOTE:
     {
-      apply_synth->attack = g_value_get_uint(value);
-    }
-    break;
-  case PROP_FRAME_COUNT:
-    {
-      apply_synth->frame_count = g_value_get_uint(value);
+      apply_synth->base_note = g_value_get_double(value);
     }
     break;
   case PROP_FREQUENCY:
     {
       apply_synth->frequency = g_value_get_double(value);
+    }
+    break;
+  case PROP_VOLUME:
+    {
+      apply_synth->volume = g_value_get_double(value);
     }
     break;
   case PROP_PHASE:
@@ -516,9 +577,19 @@ ags_apply_synth_set_property(GObject *gobject,
       apply_synth->start_frequency = g_value_get_double(value);
     }
     break;
-  case PROP_VOLUME:
+  case PROP_DELAY:
     {
-      apply_synth->volume = g_value_get_double(value);
+      apply_synth->delay = g_value_get_double(value);
+    }
+    break;
+  case PROP_ATTACK:
+    {
+      apply_synth->attack = g_value_get_uint(value);
+    }
+    break;
+  case PROP_FRAME_COUNT:
+    {
+      apply_synth->frame_count = g_value_get_uint(value);
     }
     break;
   case PROP_LOOP_START:
@@ -541,9 +612,29 @@ ags_apply_synth_set_property(GObject *gobject,
       apply_synth->sync_mode = g_value_get_uint(value);
     }
     break;
-  case PROP_BASE_NOTE:
+  case PROP_SYNC_POINT:
     {
-      apply_synth->base_note = g_value_get_double(value);
+      gpointer sync_point;
+      
+      sync_point = g_value_get_pointer(value);
+
+
+      if(apply_synth->sync_point != NULL){
+	guint i;
+
+	for(i = 0; i < apply_synth->sync_point_count; i++){
+	  ags_complex_free(apply_synth->sync_point[i]);
+	}
+	
+	g_free(apply_synth->sync_point);
+      }
+      
+      apply_synth->sync_point = sync_point;
+    }
+    break;
+  case PROP_SYNC_POINT_COUNT:
+    {
+      apply_synth->sync_point_count = g_value_get_uint(value);
     }
     break;
   default:
@@ -583,14 +674,19 @@ ags_apply_synth_get_property(GObject *gobject,
       g_value_set_uint(value, apply_synth->wave);
     }
     break;
-  case PROP_FRAME_COUNT:
+  case PROP_BASE_NOTE:
     {
-      g_value_set_uint(value, apply_synth->frame_count);
+      g_value_set_double(value, apply_synth->base_note);
     }
     break;
   case PROP_FREQUENCY:
     {
       g_value_set_double(value, apply_synth->frequency);
+    }
+    break;
+  case PROP_VOLUME:
+    {
+      g_value_set_double(value, apply_synth->volume);
     }
     break;
   case PROP_PHASE:
@@ -603,9 +699,19 @@ ags_apply_synth_get_property(GObject *gobject,
       g_value_set_double(value, apply_synth->start_frequency);
     }
     break;
-  case PROP_VOLUME:
+  case PROP_DELAY:
     {
-      g_value_set_double(value, apply_synth->volume);
+      g_value_set_double(value, apply_synth->delay);
+    }
+    break;
+  case PROP_ATTACK:
+    {
+      g_value_set_uint(value, apply_synth->attack);
+    }
+    break;
+  case PROP_FRAME_COUNT:
+    {
+      g_value_set_uint(value, apply_synth->frame_count);
     }
     break;
   case PROP_LOOP_START:
@@ -628,9 +734,14 @@ ags_apply_synth_get_property(GObject *gobject,
       g_value_set_uint(value, apply_synth->sync_mode);
     }
     break;
-  case PROP_BASE_NOTE:
+  case PROP_SYNC_POINT:
     {
-      g_value_set_double(value, apply_synth->base_note);
+      g_value_set_uint(value, apply_synth->sync_point_count);
+    }
+    break;
+  case PROP_SYNC_POINT_COUNT:
+    {
+      g_value_set_pointer(value, apply_synth->sync_point);
     }
     break;
   default:
@@ -683,6 +794,16 @@ ags_apply_synth_finalize(GObject *gobject)
     g_object_unref(apply_synth->start_channel);    
   }
 
+  if(apply_synth->sync_point != NULL){
+    guint i;
+
+    for(i = 0; i < apply_synth->sync_point_count; i++){
+      ags_complex_free(apply_synth->sync_point[i]);
+    }
+	
+    g_free(apply_synth->sync_point);
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_apply_synth_parent_class)->finalize(gobject);
 }
@@ -704,10 +825,13 @@ ags_apply_synth_launch(AgsTask *task)
   guint oscillator;
 
   gdouble note;
-  guint attack, frame_count;
   double phase, frequency, volume;
-  guint compute_flags;
+  gdouble delay;
+  guint attack;
+  guint frame_count;
   gboolean do_sync;
+  AgsComplex **sync_point;
+  guint sync_point_count;
 
   guint i;
   
@@ -728,6 +852,8 @@ ags_apply_synth_launch(AgsTask *task)
 
   /* some settings */
   frame_count = apply_synth->frame_count;
+
+  delay = apply_synth->delay;
   attack = apply_synth->attack;
 
   wave = (gint) apply_synth->wave;
@@ -757,6 +883,9 @@ ags_apply_synth_launch(AgsTask *task)
   phase = apply_synth->phase;  
   volume = apply_synth->volume;
 
+  sync_point = apply_synth->sync_point;
+  sync_point_count = apply_synth->sync_point_count;
+  
   /* fill */
   if(AGS_IS_INPUT(channel)){
     if((AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0){
@@ -780,6 +909,7 @@ ags_apply_synth_launch(AgsTask *task)
 	/* set properties */
 	g_object_set(AGS_INPUT(channel)->synth_generator,
 		     "n-frames", frame_count,
+		     "delay", delay,
 		     "attack", attack,
 		     "oscillator", oscillator,
 		     "frequency", frequency,
@@ -789,16 +919,13 @@ ags_apply_synth_launch(AgsTask *task)
 
 	/* compute audio signal */
 	audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
-	ags_audio_signal_stream_resize(audio_signal,
-				       (guint) ceil((attack + frame_count) / audio_signal->buffer_size));
-
 	note = (apply_synth->base_note) + (gdouble) i;
 	  
-	ags_synth_generator_compute_with_audio_signal(AGS_INPUT(channel)->synth_generator,
-						      audio_signal,
-						      note,
-						      NULL, NULL,
-						      compute_flags);
+	ags_synth_generator_compute_extended(AGS_INPUT(channel)->synth_generator,
+					     audio_signal,
+					     note,
+					     sync_point,
+					     sync_point_count);
 
 	channel = channel->next;
       }
@@ -823,6 +950,7 @@ ags_apply_synth_launch(AgsTask *task)
 	/* set properties */
 	g_object_set(AGS_INPUT(channel)->synth_generator,
 		     "n-frames", frame_count,
+		     "delay", delay,
 		     "attack", attack,
 		     "oscillator", oscillator,
 		     "frequency", frequency,
@@ -832,16 +960,14 @@ ags_apply_synth_launch(AgsTask *task)
 
 	/* compute audio signal */
 	audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
-	ags_audio_signal_stream_resize(audio_signal,
-				       (guint) ceil((attack + frame_count) / audio_signal->buffer_size));
 
 	note = (apply_synth->base_note);
 	  
-	ags_synth_generator_compute_with_audio_signal(AGS_INPUT(channel)->synth_generator,
-						      audio_signal,
-						      note,
-						      NULL, NULL,
-						      compute_flags);
+	ags_synth_generator_compute_extended(AGS_INPUT(channel)->synth_generator,
+					     audio_signal,
+					     note,
+					     sync_point,
+					     sync_point_count);
 
 	channel = channel->next;
       }
@@ -856,8 +982,6 @@ ags_apply_synth_launch(AgsTask *task)
 	  AGS_INPUT(input)->synth_generator = (GObject *) ags_synth_generator_new();
 
 	  audio_signal = ags_audio_signal_get_template(input->first_recycling->audio_signal);
-	  ags_audio_signal_stream_resize(audio_signal,
-					 (guint) ceil((attack + frame_count) / audio_signal->buffer_size));
 
 	  g_object_set(AGS_INPUT(input)->synth_generator,
 		       "samplerate", audio_signal->samplerate,
@@ -869,6 +993,7 @@ ags_apply_synth_launch(AgsTask *task)
 	/* set properties */
 	g_object_set(AGS_INPUT(input)->synth_generator,
 		     "n-frames", frame_count,
+		     "delay", delay, 
 		     "attack", attack,
 		     "oscillator", oscillator,
 		     "frequency", frequency,
@@ -881,16 +1006,14 @@ ags_apply_synth_launch(AgsTask *task)
 	
 	for(i = 0; channel != NULL && i < apply_synth->count; i++){
 	  audio_signal = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
-	  ags_audio_signal_stream_resize(audio_signal,
-					 (guint) ceil((attack + frame_count) / audio_signal->buffer_size));
 	  
 	  note = (apply_synth->base_note) + (gdouble) i;
 	  
-	  ags_synth_generator_compute_with_audio_signal(AGS_INPUT(input)->synth_generator,
-							audio_signal,
-							note,
-							NULL, NULL,
-							compute_flags);
+	  ags_synth_generator_compute_extended(AGS_INPUT(input)->synth_generator,
+					       audio_signal,
+					       note,
+					       sync_point,
+					       sync_point_count);
 
 	  channel = channel->next;
 	}

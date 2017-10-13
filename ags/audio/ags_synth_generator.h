@@ -88,6 +88,8 @@ struct _AgsSynthGenerator
   guint format;
 
   guint n_frames;
+
+  gdouble delay;
   guint attack;
   
   guint oscillator;
@@ -117,9 +119,7 @@ void ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
 					  GObject *audio_signal,
 					  gdouble note,
 					  AgsComplex **sync_point,
-					  guint sync_point_count,
-					  guint frame_count,
-					  gdouble delay, guint attack);
+					  guint sync_point_count);
 
 AgsSynthGenerator* ags_synth_generator_new();
 

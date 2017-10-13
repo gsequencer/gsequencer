@@ -65,22 +65,26 @@ struct _AgsApplySynth
   gboolean fixed_length;
   
   guint wave;
+  gdouble base_note;
 
-  guint attack;
-  guint frame_count;
   gdouble frequency;
+  gdouble volume;
+
   gdouble phase;
   gdouble start_frequency;
 
-  gdouble volume;
+  gdouble delay;
+  guint attack;
 
+  guint frame_count;
   guint loop_start;
   guint loop_end;
-
+  
   gboolean do_sync;
   guint sync_mode;
-
-  gdouble base_note;
+  
+  AgsComplex **sync_point;
+  guint sync_point_count;  
 };
 
 struct _AgsApplySynthClass
