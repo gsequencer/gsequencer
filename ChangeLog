@@ -1,7 +1,8 @@
 ags (1.1.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implement AgsPositionNotationCursor and AgsPositionAutomationCursor
+	* implemented ags_synth_generator_compute_extended()
+	* TODO:JK: implemented AgsPositionNotationCursor and AgsPositionAutomationCursor
 	* TODO:JK: fix and implement auto-scroll
 
 ags (1.0.5)

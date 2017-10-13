@@ -113,6 +113,13 @@ void ags_synth_generator_compute_with_audio_signal(AgsSynthGenerator *synth_gene
 						   gdouble note,
 						   AgsComplex *sync_start, AgsComplex *sync_end,
 						   guint compute_flags);
+void ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
+					  GObject *audio_signal,
+					  gdouble note,
+					  AgsComplex **sync_point,
+					  guint sync_point_count,
+					  guint frame_count,
+					  gdouble delay, guint attack);
 
 AgsSynthGenerator* ags_synth_generator_new();
 

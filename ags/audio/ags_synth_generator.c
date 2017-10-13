@@ -871,6 +871,178 @@ ags_synth_generator_compute_with_audio_signal(AgsSynthGenerator *synth_generator
 }
 
 /**
+ * ags_synth_generator_compute_with_audio_signal:
+ * @synth_generator: the #AgsSynthGenerator
+ * @audio_signal: the #AgsAudioSignal
+ * @note: the note to compute
+ * @sync_point: the frame offset to sync
+ * @sync_point_count: the count of sync points
+ * @frame_count: the amount of frames to produce
+ * @delay: the delay
+ * @attack: the attack
+ * 
+ * Compute synth for @note for @audio_signal.
+ * 
+ * Since: 1.1.0
+ */
+void
+ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
+				     GObject *audio_signal,
+				     gdouble note,
+				     AgsComplex **sync_point,
+				     guint sync_point_count,
+				     guint frame_count,
+				     gdouble delay, guint attack)
+{
+  GList *stream_start, *stream;
+
+  guint buffer_size;
+  guint current_frame_count, requested_frame_count;
+  gdouble samplerate;
+  gdouble current_frequency;
+  gdouble phase, volume;
+  gdouble current_phase;
+  guint format;
+  guint audio_buffer_util_format;
+  guint current_attack, current_count;
+  guint offset;
+  guint last_sync;
+  guint i, j;
+  gboolean synced;
+
+  buffer_size = AGS_AUDIO_SIGNAL(audio_signal)->buffer_size;
+  
+  current_frame_count = AGS_AUDIO_SIGNAL(audio_signal)->length * buffer_size;
+  requested_frame_count = floor(delay) * buffer_size + attack + frame_count;
+  
+  if(current_frame_count < requested_frame_count){
+    if(ceil(current_frame_count / buffer_size) < ceil(requested_frame_count / buffer_size)){
+      ags_audio_signal_stream_resize(audio_signal,
+				     ceil(requested_frame_count / buffer_size));
+    }
+  }
+  
+  /*  */
+  stream = 
+    stream_start = g_list_nth(AGS_AUDIO_SIGNAL(audio_signal)->stream_beginning,
+			      (guint) floor(delay));
+  
+  samplerate = AGS_AUDIO_SIGNAL(audio_signal)->samplerate;
+
+  current_frequency = (guint) ((double) frequency * exp2((double)((double) note + 48.0) / 12.0));
+
+  phase =
+    current_phase = synth_generator->phase;
+  volume = synth_generator->volume;
+
+  format = AGS_AUDIO_SIGNAL(audio_signal)->format;
+  audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
+
+  current_attack = attack;
+  current_count = buffer_size - attack;
+  
+  offset = 0;
+  last_sync = 0;
+
+  if(sync_point[0][0][0] == 0.0){
+    current_phase = sync_point[0][0][1];
+  }
+
+  if(sync_point_count > 1){
+    if(sync_point[1][0][0] < current_count){
+      current_count = sync_point[1][0][0];
+    }
+  }else{
+    if(sync_point[0][0][0] < current_count){
+      current_count = sync_point[0][0][0];
+    }
+  }
+
+  synced = FALSE;
+  
+  for(i = attack, j = 0; i < frame_count + attack && stream != NULL;){
+    if(i != 0 &&
+       i % buffer_size == 0){
+      stream = stream->next;
+    }
+
+    switch(synth_generator->oscillator){
+    case AGS_SYNTH_GENERATOR_OSCILLATOR_SIN:
+      {
+	ags_synth_util_sin(stream->data,
+			   current_frequency, current_phase, volume,
+			   samplerate, audio_buffer_util_format,
+			   current_attack, current_count);
+      }
+      break;
+    case AGS_SYNTH_GENERATOR_OSCILLATOR_SAWTOOTH:
+      {
+	ags_synth_util_sawtooth(stream->data,
+				current_frequency, current_phase, volume,
+				samplerate, audio_buffer_util_format,
+				current_attack, current_count);
+      }
+      break;
+    case AGS_SYNTH_GENERATOR_OSCILLATOR_TRIANGLE:
+      {
+	ags_synth_util_triangle(stream->data,
+				current_frequency, current_phase, volume,
+				samplerate, audio_buffer_util_format,
+				current_attack, current_count);
+      }
+      break;
+    case AGS_SYNTH_GENERATOR_OSCILLATOR_SQUARE:
+      {
+	ags_synth_util_square(stream->data,
+			      current_frequency, current_phase, volume,
+			      samplerate, audio_buffer_util_format,
+			      current_attack, current_count);
+      }
+      break;
+    default:
+      g_message("unknown oscillator");
+    }
+    
+    current_phase = (guint) ((offset + current_count) + phase) % (guint) floor(samplerate / current_frequency);
+
+    if(last_sync + sync_point[j][0][0] < offset + current_count){
+      current_phase = sync_point[j][0][1];
+
+      synced = TRUE;
+    }
+
+    offset += current_count;
+    i += current_count;
+
+
+    if(buffer_size > (current_attack + current_count)){
+      current_count = buffer_size - (current_attack + current_count);
+    }else{
+      current_count = buffer_size;
+    }
+    
+    if(j + 1 < sync_point_count){
+      if(sync_point[j + 1][0][0] < current_count){
+	current_count = sync_point[j + 1][0][0];
+      }
+    }else{
+      if(sync_point[0][0][0] < current_count){
+	current_count = sync_point[0][0][0];
+      }
+    }
+    
+    if(synced){
+      last_sync = last_sync + sync_point[j][0][0];
+      j++;
+
+      if(j >= sync_point_count){
+	j = 0;
+      }
+    }    
+  }  
+}
+
+/**
  * ags_synth_generator_new:
  *
  * Creates an #AgsSynthGenerator
