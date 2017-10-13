@@ -4210,7 +4210,7 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
   AgsOscillator *gobject;
   
   xmlChar *str;
-
+  
   gdouble val;
   guint nth;
   
@@ -4225,8 +4225,7 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
   str = xmlGetProp(node,
 		   "wave");
 
-  if(str != NULL){
-      
+  if(str != NULL){      
     nth = g_ascii_strtoull(str,
 			   NULL,
 			   10);
@@ -4296,30 +4295,22 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
   }
 
   str = xmlGetProp(node,
-		   "sync-mode");
+		   "sync-point");
 
   if(str != NULL){
-    GtkTreeModel *model;
-    GtkTreeIter iter;
+    gchar *endptr;
 
-    gchar *value;
+    gdouble current;
+    guint i;
 
-    model = gtk_combo_box_get_model(gobject->sync_mode);
+    endptr = str;
     
-    if(gtk_tree_model_get_iter_first(model, &iter)){
-      do{
-	gtk_tree_model_get(model, &iter,
-			   0, &value,
-			   -1);
+    for(i = 0; *endptr != '\0' && i < 2 * gobject->sync_point_count; i++){
+      current = g_strtod(endptr,
+			 &endptr);
 
-	if(!g_strcmp0(str,
-		      value)){
-	  gtk_combo_box_set_active_iter((GtkComboBox *) gobject->sync_mode,
-					&iter);
-	  break;
-	}
-      }while(gtk_tree_model_iter_next(model,
-				      &iter));
+      gtk_spin_button_set_value(gobject->sync_point[i],
+				current);
     }
   }
 }
@@ -6941,7 +6932,11 @@ xmlNode*
 ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, AgsOscillator *oscillator)
 {
   xmlNode *node;
-    
+
+  xmlChar *str, *tmp;
+
+  guint i;
+  
   node = xmlNewNode(NULL,
 		    "ags-oscillator");
     
@@ -6973,10 +6968,26 @@ ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, Ag
 	     "sync",
 	     g_strdup_printf("%s", (gtk_toggle_button_get_active(oscillator->do_sync) ? "true": "false")));
 
-  xmlNewProp(node,
-	     "sync-mode",
-	     g_strdup_printf("%s", gtk_combo_box_text_get_active_text(oscillator->sync_mode)));
+  str = NULL;
 
+  for(i = 0; i < oscillator->sync_point_count; i++){
+    tmp = str;
+
+    if(str != NULL){
+      str = g_strdup_printf("%s %f",
+			    str, gtk_spin_button_get_value(oscillator->sync_point[i]));
+    }else{
+      str = g_strdup_printf("%f",
+			    gtk_spin_button_get_value(oscillator->sync_point[i]));
+    }
+    
+    g_free(tmp);
+  }
+
+  xmlNewProp(node,
+	     "sync-point",
+	     str);
+  
   xmlAddChild(parent,
 	      node);
 

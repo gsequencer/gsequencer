@@ -6,7 +6,8 @@ ags (1.1.0)
 	* implemented needed properties of AgsApplySynth in order to use ags_synth_generator_compute_extended()
 	* refactored AgsApplySynth to use ags_synth_generator_compute_extended()
 	* refactored AgsOscillator to have triple sync
-	* TODO:JK: refactored AgsOscillator persistence in ags_simple_file.c
+	* refactored ags_oscillator_disconnect() to use g_object_disconnect()
+	* refactored AgsOscillator persistence in ags_simple_file.c
 	* TODO:JK: implemented AgsPositionNotationCursor and AgsPositionAutomationCursor
 	* TODO:JK: fix and implement auto-scroll
 

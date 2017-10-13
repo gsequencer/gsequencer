@@ -142,7 +142,8 @@ void
 ags_oscillator_init(AgsOscillator *oscillator)
 {
   GtkTable *table;
-  GtkBox *sync_box;
+  GtkVBox *vbox;
+  GtkHBox *sync_box;
 
   GtkCellRenderer *cell_renderer;
 
@@ -253,22 +254,37 @@ ags_oscillator_init(AgsOscillator *oscillator)
 			    6, 7,
 			    0, 1);
 
-  sync_box = (GtkBox *) gtk_hbox_new(TRUE,
-				     0);
+  vbox = (GtkBox *) gtk_vbox_new(TRUE,
+				 0);
   gtk_table_attach_defaults(table,
-			    (GtkWidget *) sync_box,
+			    (GtkWidget *) vbox,
 			    6, 7,
 			    1, 2);
 
   oscillator->sync_point_count = AGS_OSCILLATOR_DEFAULT_SYNC_POINT_COUNT; 
-  oscillator->sync_point = (GtkSpinButton **) malloc(oscillator->sync_point_count * sizeof(GtkSpinButton *));
+  oscillator->sync_point = (GtkSpinButton **) malloc(2 * oscillator->sync_point_count * sizeof(GtkSpinButton *));
 
-  for(i = 0; i < oscillator->sync_point_count; i++){
+  for(i = 0; i < oscillator->sync_point_count;){
+    sync_box = (GtkBox *) gtk_hbox_new(TRUE,
+				       0);
+    gtk_box_pack_start(vbox,
+		       sync_box,
+		       FALSE, FALSE,
+		       0);
+    
     oscillator->sync_point[i] = gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
     gtk_box_pack_start(sync_box,
 		       oscillator->sync_point[i],
 		       FALSE, FALSE,
 		       0);
+
+    oscillator->sync_point[i + 1] = gtk_spin_button_new_with_range(0.0, 1.0, 0.001);
+    gtk_box_pack_start(sync_box,
+		       oscillator->sync_point[i + 1],
+		       FALSE, FALSE,
+		       0);
+
+    i += 2;
   }
 }
 
@@ -299,7 +315,7 @@ ags_oscillator_connect(AgsConnectable *connectable)
   g_signal_connect(G_OBJECT(oscillator->volume), "value-changed",
 		   G_CALLBACK(ags_oscillator_volume_callback), oscillator);
 
-  for(i = 0; i < oscillator->sync_point_count; i++){
+  for(i = 0; i < 2 * oscillator->sync_point_count; i++){
     g_signal_connect(G_OBJECT(oscillator->sync_point[i]), "value-changed",
 		     G_CALLBACK(ags_oscillator_sync_point_callback), oscillator);
   }
@@ -317,12 +333,14 @@ ags_oscillator_disconnect(AgsConnectable *connectable)
   g_object_disconnect((GObject *) oscillator->wave, "changed",
 		      G_CALLBACK(ags_oscillator_wave_callback), (gpointer) oscillator,
 		      NULL);
+  
   g_object_disconnect((GObject *) oscillator->frame_count, "value-changed",
 		      G_CALLBACK(ags_oscillator_frame_count_callback), (gpointer) oscillator,
 		      NULL);
   g_object_disconnect((GObject *) oscillator->attack, "value-changed",
 		      G_CALLBACK(ags_oscillator_attack_callback), (gpointer) oscillator,
 		      NULL);
+
   g_object_disconnect((GObject *) oscillator->frequency, "value-changed",
 		      G_CALLBACK(ags_oscillator_frequency_callback), (gpointer) oscillator,
 		      NULL);
@@ -330,9 +348,13 @@ ags_oscillator_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_oscillator_phase_callback), (gpointer) oscillator,
 		      NULL);
 
-  for(i = 0; i < oscillator->sync_point_count; i++){
+  g_object_disconnect((GObject *) oscillator->volume, "value-changed",
+		      G_CALLBACK(ags_oscillator_volume_callback), (gpointer) oscillator,
+		      NULL);
+
+  for(i = 0; i < 2 * oscillator->sync_point_count; i++){
     g_object_disconnect((GObject *) oscillator->sync_point[i], "value-changed",
-			G_CALLBACK(ags_oscillator_phase_callback), (gpointer) oscillator,
+			G_CALLBACK(ags_oscillator_sync_point_callback), (gpointer) oscillator,
 			NULL);
   }
 }
