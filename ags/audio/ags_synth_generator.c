@@ -79,7 +79,7 @@ enum{
   PROP_FORMAT,
   PROP_DELAY,
   PROP_ATTACK,
-  PROP_N_FRAMES,
+  PROP_FRAME_COUNT,
   PROP_OSCILLATOR,
   PROP_FREQUENCY,
   PROP_PHASE,
@@ -201,21 +201,21 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
 				  param_spec);
 
   /**
-   * AgsSynthGenerator:n-frames:
+   * AgsSynthGenerator:frame-count:
    *
-   * The n-frames to be used.
+   * The frame count to be used.
    * 
-   * Since: 1.0.0
+   * Since: 1.1.0
    */
-  param_spec = g_param_spec_uint("n-frames",
-				 i18n_pspec("apply n-frames"),
-				 i18n_pspec("To apply n-frames"),
+  param_spec = g_param_spec_uint("frame-count",
+				 i18n_pspec("apply frame count"),
+				 i18n_pspec("To apply frame count"),
 				 0,
 				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_N_FRAMES,
+				  PROP_FRAME_COUNT,
 				  param_spec);
 
   /**
@@ -429,7 +429,7 @@ ags_synth_generator_init(AgsSynthGenerator *synth_generator)
   /* more base init */
   synth_generator->delay = 0.0;
   synth_generator->attack = 0;
-  synth_generator->n_frames = 0;
+  synth_generator->frame_count = 0;
 
   synth_generator->oscillator = 0;
   
@@ -477,9 +477,9 @@ ags_synth_generator_set_property(GObject *gobject,
       synth_generator->attack = g_value_get_uint(value);
     }
     break;
-  case PROP_N_FRAMES:
+  case PROP_FRAME_COUNT:
     {
-      synth_generator->n_frames = g_value_get_uint(value);
+      synth_generator->frame_count = g_value_get_uint(value);
     }
     break;
   case PROP_OSCILLATOR:
@@ -565,9 +565,9 @@ ags_synth_generator_get_property(GObject *gobject,
       g_value_set_uint(value, synth_generator->attack);
     }
     break;
-  case PROP_N_FRAMES:
+  case PROP_FRAME_COUNT:
     {
-      g_value_set_uint(value, synth_generator->n_frames);
+      g_value_set_uint(value, synth_generator->frame_count);
     }
     break;
   case PROP_OSCILLATOR:
@@ -693,7 +693,7 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 				      NULL,
 				      NULL);
   ags_audio_signal_stream_resize(audio_signal,
-				 ceil(synth_generator->n_frames / synth_generator->buffer_size));
+				 ceil(synth_generator->frame_count / synth_generator->buffer_size));
 
   ags_synth_generator_compute_with_audio_signal(synth_generator,
 						audio_signal,
@@ -781,7 +781,7 @@ ags_synth_generator_compute_with_audio_signal(AgsSynthGenerator *synth_generator
   attack = synth_generator->attack;
 
   if((AGS_SYNTH_GENERATOR_COMPUTE_FIXED_LENGTH & compute_flags) != 0){
-    stop_frame = synth_generator->n_frames;
+    stop_frame = synth_generator->frame_count;
   }else{
     stop_frame = frame_count;
   }
@@ -965,7 +965,7 @@ ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
   
   samplerate = AGS_AUDIO_SIGNAL(audio_signal)->samplerate;
 
-  current_frequency = (guint) ((double) frequency * exp2((double)((double) note + 48.0) / 12.0));
+  current_frequency = (guint) ((double) synth_generator->frequency * exp2((double)((double) note + 48.0) / 12.0));
 
   phase =
     current_phase = synth_generator->phase;

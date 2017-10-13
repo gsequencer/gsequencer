@@ -1,10 +1,3 @@
-ags_condition_manager_get_type
-ags_condition_manager_get_application_condition
-ags_condition_manager_insert
-ags_condition_manager_remove
-ags_condition_manager_lookup
-ags_condition_manager_get_instance
-ags_condition_manager_new
 ags_history_get_type
 ags_history_new
 ags_timestamp_factory_get_type
@@ -47,6 +40,7 @@ ags_timestamp_new
 ags_task_completion_get_type
 ags_task_completion_complete
 ags_task_completion_new
+ags_thread_resume
 ags_thread_get_type
 ags_thread_resume_handler
 ags_thread_suspend_handler

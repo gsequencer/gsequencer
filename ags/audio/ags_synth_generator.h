@@ -87,7 +87,7 @@ struct _AgsSynthGenerator
   guint buffer_size;
   guint format;
 
-  guint n_frames;
+  guint frame_count;
 
   gdouble delay;
   guint attack;

@@ -142,7 +142,7 @@ void
 ags_oscillator_init(AgsOscillator *oscillator)
 {
   GtkTable *table;
-  GtkVBox *vbox;
+  GtkHBox *hbox;
   GtkHBox *sync_box;
 
   GtkCellRenderer *cell_renderer;
@@ -254,10 +254,10 @@ ags_oscillator_init(AgsOscillator *oscillator)
 			    6, 7,
 			    0, 1);
 
-  vbox = (GtkBox *) gtk_vbox_new(TRUE,
+  hbox = (GtkBox *) gtk_hbox_new(TRUE,
 				 0);
   gtk_table_attach_defaults(table,
-			    (GtkWidget *) vbox,
+			    (GtkWidget *) hbox,
 			    6, 7,
 			    1, 2);
 
@@ -267,7 +267,7 @@ ags_oscillator_init(AgsOscillator *oscillator)
   for(i = 0; i < oscillator->sync_point_count;){
     sync_box = (GtkBox *) gtk_hbox_new(TRUE,
 				       0);
-    gtk_box_pack_start(vbox,
+    gtk_box_pack_start(hbox,
 		       sync_box,
 		       FALSE, FALSE,
 		       0);

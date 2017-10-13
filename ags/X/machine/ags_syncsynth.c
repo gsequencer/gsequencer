@@ -1418,6 +1418,9 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   guint loop_start, loop_end;
   gdouble volume;
 
+  AgsComplex **sync_point;
+  guint sync_point_count;
+
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *application_mutex;
@@ -1508,7 +1511,7 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   pthread_mutex_unlock(audio_mutex);
 
   while(list != NULL){
-    guint sync_mode;
+    guint i;
     gboolean do_sync;
     
     /* lookup channel mutex */
@@ -1541,13 +1544,22 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
 				      loop_start, loop_end);
 
     do_sync = gtk_toggle_button_get_active(oscillator->do_sync);
-
-    sync_mode = 1 << gtk_combo_box_get_active(oscillator->sync_mode);
     
+    sync_point_count = gtk_spin_button_get_value(oscillator->sync_point_count);
+    sync_point = (AgsComplex **) malloc(sync_point_count * sizeof(AgsComplex *));
+    
+    for(i = 0; i < sync_point_count; i++){
+      sync_point[i] = ags_complex_alloc();
+
+      sync_point[i][0][0] = gtk_spin_button_get_value(oscillator->sync_point[2 * i]);
+      sync_point[i][0][1] = gtk_spin_button_get_value(oscillator->sync_point[2 * i + 1]);
+    }
+
     g_object_set(apply_synth,
-		 "do-sync", do_sync,
-		 "sync-mode", sync_mode,
 		 "base-note", syncsynth->lower->adjustment->value,
+		 "do-sync", do_sync,
+		 "sync-point", sync_point,
+		 "sync-point-count", sync_point_count,
 		 NULL);
     
     task = g_list_prepend(task,

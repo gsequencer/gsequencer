@@ -840,16 +840,6 @@ ags_apply_synth_launch(AgsTask *task)
   channel = apply_synth->start_channel;
   audio = channel->audio;
 
-  compute_flags = (apply_synth->sync_mode << 2);
-
-  if(apply_synth->fixed_length){
-    compute_flags |= AGS_SYNTH_GENERATOR_COMPUTE_FIXED_LENGTH;
-  }
-
-  if(apply_synth->do_sync){
-    compute_flags |= AGS_SYNTH_GENERATOR_COMPUTE_SYNC;
-  }
-
   /* some settings */
   frame_count = apply_synth->frame_count;
 

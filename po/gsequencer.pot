@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 1.0.5\n"
+"Project-Id-Version: gsequencer 1.1.0\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-10-11 15:34+0200\n"
+"POT-Creation-Date: 2017-10-13 18:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -596,7 +596,7 @@ msgid "preset"
 msgstr ""
 
 #: ags/X/editor/ags_envelope_editor.c:297
-#: ags/X/editor/ags_pattern_envelope.c:462 ags/X/machine/ags_oscillator.c:203
+#: ags/X/editor/ags_pattern_envelope.c:462 ags/X/machine/ags_oscillator.c:209
 msgid "attack"
 msgstr ""
 
@@ -817,7 +817,7 @@ msgstr ""
 msgid "run"
 msgstr ""
 
-#: ags/X/machine/ags_drum.c:395 ags/X/machine/ags_oscillator.c:210
+#: ags/X/machine/ags_drum.c:395 ags/X/machine/ags_oscillator.c:216
 msgid "length"
 msgstr ""
 
@@ -838,64 +838,36 @@ msgstr ""
 msgid "show GUI"
 msgstr ""
 
-#: ags/X/machine/ags_oscillator.c:153
+#: ags/X/machine/ags_oscillator.c:159
 msgid "wave"
 msgstr ""
 
-#: ags/X/machine/ags_oscillator.c:185
+#: ags/X/machine/ags_oscillator.c:191
 msgid "sawtooth"
 msgstr ""
 
-#: ags/X/machine/ags_oscillator.c:190
+#: ags/X/machine/ags_oscillator.c:196
 msgid "square"
 msgstr ""
 
-#: ags/X/machine/ags_oscillator.c:195
+#: ags/X/machine/ags_oscillator.c:201
 msgid "triangle"
 msgstr ""
 
-#: ags/X/machine/ags_oscillator.c:217
+#: ags/X/machine/ags_oscillator.c:223
 msgid "phase"
 msgstr ""
 
-#: ags/X/machine/ags_oscillator.c:224
+#: ags/X/machine/ags_oscillator.c:230
 msgid "frequency"
 msgstr ""
 
-#: ags/X/machine/ags_oscillator.c:236
+#: ags/X/machine/ags_oscillator.c:242
 msgid "volume"
 msgstr ""
 
-#: ags/X/machine/ags_oscillator.c:245
+#: ags/X/machine/ags_oscillator.c:251
 msgid "sync"
-msgstr ""
-
-#: ags/X/machine/ags_oscillator.c:254
-msgid "16 HZ"
-msgstr ""
-
-#: ags/X/machine/ags_oscillator.c:256
-msgid "440 HZ"
-msgstr ""
-
-#: ags/X/machine/ags_oscillator.c:258
-msgid "22000 HZ"
-msgstr ""
-
-#: ags/X/machine/ags_oscillator.c:260
-msgid "limit"
-msgstr ""
-
-#: ags/X/machine/ags_oscillator.c:262
-msgid "no-Hertz"
-msgstr ""
-
-#: ags/X/machine/ags_oscillator.c:264
-msgid "start frequency"
-msgstr ""
-
-#: ags/X/machine/ags_oscillator.c:266
-msgid "current frequency"
 msgstr ""
 
 #: ags/X/machine/ags_syncsynth.c:307 ags/X/machine/ags_synth.c:261

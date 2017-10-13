@@ -371,6 +371,7 @@ ags_play_recycling_new
 ags_synth_generator_get_type
 ags_synth_generator_compute
 ags_synth_generator_compute_with_audio_signal
+ags_synth_generator_compute_extended
 ags_synth_generator_new
 ags_recall_ladspa_get_type
 ags_recall_ladspa_load
