@@ -30,4 +30,8 @@
 void ags_position_automation_cursor_dialog_response_callback(GtkWidget *dialog, gint response,
 							     AgsPositionAutomationCursorDialog *position_automation_cursor_dialog);
 
+void ags_position_automation_cursor_dialog_machine_changed_callback(AgsAutomationEditor *automation_editor,
+								    AgsMachine *machine,
+								    AgsPositionAutomationCursorDialog *position_automation_cursor_dialog);
+
 #endif /*__AGS_POSITION_AUTOMATION_CURSOR_DIALOG_CALLBACKS_H__*/
