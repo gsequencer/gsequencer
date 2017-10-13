@@ -766,16 +766,26 @@ ags_synth_update(AgsSynth *synth)
 
     do_sync = gtk_toggle_button_get_active(oscillator->do_sync);
     
-    sync_point_count = gtk_spin_button_get_value(oscillator->sync_point_count);
-    sync_point = (AgsComplex **) malloc(sync_point_count * sizeof(AgsComplex *));
-    
-    for(i = 0; i < sync_point_count; i++){
-      sync_point[i] = ags_complex_alloc();
+    if(do_sync){
+      sync_point_count = gtk_spin_button_get_value(oscillator->sync_point_count);
 
-      sync_point[i][0][0] = gtk_spin_button_get_value(oscillator->sync_point[2 * i]);
-      sync_point[i][0][1] = gtk_spin_button_get_value(oscillator->sync_point[2 * i + 1]);
+      if(sync_point_count > 0){
+	sync_point = (AgsComplex **) malloc(sync_point_count * sizeof(AgsComplex *));
+      }else{
+	sync_point = NULL;
+      }
+
+      for(i = 0; i < sync_point_count; i++){
+	sync_point[i] = ags_complex_alloc();
+
+	sync_point[i][0][0] = gtk_spin_button_get_value(oscillator->sync_point[2 * i]);
+	sync_point[i][0][1] = gtk_spin_button_get_value(oscillator->sync_point[2 * i + 1]);
+      }
+    }else{
+      sync_point = NULL;
+      sync_point_count = NULL;
     }
-    
+  
     g_object_set(apply_synth,
 		 "base-note", synth->lower->adjustment->value,
 		 "do-sync", do_sync,

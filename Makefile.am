@@ -235,6 +235,8 @@ userdocimages = \
 	$(top_srcdir)/docs/images/ags_machine_envelope_pattern.png \
 	$(top_srcdir)/docs/images/ags_move_notes_dialog.png \
 	$(top_srcdir)/docs/images/ags_crop_notes_dialog.png \
+	$(top_srcdir)/docs/images/ags_position_notation_cursor_dialog.png \
+	$(top_srcdir)/docs/images/ags_position_automation_cursor_dialog.png \
 	$(top_srcdir)/docs/images/ags_select_notes_dialog.png \
 	$(top_srcdir)/docs/images/ags_select_accelerations_dialog.png \
 	$(top_srcdir)/docs/images/ags_ramp_accelerations_dialog.png
@@ -1756,6 +1758,10 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_pattern_edit.h \
 	ags/X/editor/ags_pattern_envelope_callbacks.h \
 	ags/X/editor/ags_pattern_envelope.h \
+	ags/X/editor/ags_position_automation_cursor_dialog.h \
+	ags/X/editor/ags_position_automation_cursor_dialog_callbacks.h \
+	ags/X/editor/ags_position_notation_cursor_dialog.h \
+	ags/X/editor/ags_position_notation_cursor_dialog_callbacks.h \
 	ags/X/editor/ags_ramp_acceleration_dialog.h \
 	ags/X/editor/ags_ramp_acceleration_dialog_callbacks.h \
 	ags/X/editor/ags_scale_area_callbacks.h \
@@ -1811,6 +1817,10 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_pattern_edit_callbacks.c \
 	ags/X/editor/ags_pattern_envelope_callbacks.c \
 	ags/X/editor/ags_pattern_envelope.c \
+	ags/X/editor/ags_position_automation_cursor_dialog.c \
+	ags/X/editor/ags_position_automation_cursor_dialog_callbacks.c \
+	ags/X/editor/ags_position_notation_cursor_dialog.c \
+	ags/X/editor/ags_position_notation_cursor_dialog_callbacks.c \
 	ags/X/editor/ags_ramp_acceleration_dialog.c \
 	ags/X/editor/ags_ramp_acceleration_dialog_callbacks.c \
 	ags/X/editor/ags_scale_area.c \

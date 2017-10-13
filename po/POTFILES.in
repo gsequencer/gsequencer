@@ -131,6 +131,10 @@
 ./ags/X/editor/ags_pattern_edit_callbacks.c
 ./ags/X/editor/ags_pattern_envelope.c
 ./ags/X/editor/ags_pattern_envelope_callbacks.c
+./ags/X/editor/ags_position_automation_cursor.c
+./ags/X/editor/ags_position_automation_cursor_callbacks.c
+./ags/X/editor/ags_position_notation_cursor.c
+./ags/X/editor/ags_position_notation_cursor_callbacks.c
 ./ags/X/editor/ags_ramp_acceleration_dialog.c
 ./ags/X/editor/ags_ramp_acceleration_dialog_callbacks.c
 ./ags/X/editor/ags_scale.c

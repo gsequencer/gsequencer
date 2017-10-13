@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 1.1.0\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-10-13 18:07+0200\n"
+"POT-Creation-Date: 2017-10-13 19:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -709,6 +709,32 @@ msgstr ""
 #: ags/X/editor/ags_pattern_envelope.c:290
 #: ags/X/editor/ags_pattern_envelope.c:431
 msgid "x end"
+msgstr ""
+
+#: ags/X/editor/ags_position_automation_cursor.c:202
+msgid "position automation cursor"
+msgstr ""
+
+#: ags/X/editor/ags_position_automation_cursor.c:212
+#: ags/X/editor/ags_position_notation_cursor.c:211
+msgid "set focus"
+msgstr ""
+
+#: ags/X/editor/ags_position_automation_cursor.c:228
+#: ags/X/editor/ags_position_notation_cursor.c:227
+msgid "position x"
+msgstr ""
+
+#: ags/X/editor/ags_position_automation_cursor.c:253
+msgid "position automation area"
+msgstr ""
+
+#: ags/X/editor/ags_position_notation_cursor.c:201
+msgid "position notation cursor"
+msgstr ""
+
+#: ags/X/editor/ags_position_notation_cursor.c:252
+msgid "position y"
 msgstr ""
 
 #: ags/X/editor/ags_ramp_acceleration_dialog.c:236
