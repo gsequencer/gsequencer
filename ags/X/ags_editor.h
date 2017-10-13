@@ -49,6 +49,8 @@
 
 #define AGS_EDITOR_DEFAULT "default\0"
 
+#define AGS_EDITOR_MAX_CONTROLS (1200)
+
 typedef struct _AgsEditor AgsEditor;
 typedef struct _AgsEditorClass AgsEditorClass;
 typedef struct _AgsEditorChild AgsEditorChild;

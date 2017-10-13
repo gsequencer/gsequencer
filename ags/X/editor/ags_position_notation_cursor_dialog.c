@@ -28,6 +28,9 @@
 #include <ags/X/ags_editor.h>
 #include <ags/X/ags_machine.h>
 
+#include <ags/X/editor/ags_note_edit.h>
+#include <ags/X/editor/ags_pattern_edit.h>
+
 #include <ags/i18n.h>
 
 void ags_position_notation_cursor_dialog_class_init(AgsPositionNotationCursorDialogClass *position_notation_cursor_dialog);
@@ -420,6 +423,95 @@ ags_position_notation_cursor_dialog_set_update(AgsApplicable *applicable, gboole
 void
 ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
 {
+  AgsPositionNotationCursorDialog *position_notation_cursor_dialog;
+
+  AgsWindow *window;
+  AgsEditor *editor;
+  AgsToolbar *toolbar;
+  AgsMachine *machine;
+
+  GtkAdjustment *vadjustment, *hadjustment;
+
+  gdouble zoom;
+  guint map_height, height;
+  guint history;
+
+  position_notation_cursor_dialog = AGS_POSITION_NOTATION_CURSOR_DIALOG(applicable);
+
+  window = position_notation_cursor_dialog->main_window;
+  editor = window->editor;
+
+  machine = editor->selected_machine;
+
+  if(machine == NULL ||
+     editor->current_edit_widget == NULL){
+    return;
+  }
+
+  toolbar = editor->toolbar;
+
+  history = gtk_combo_box_get_active(GTK_COMBO_BOX(toolbar->zoom));
+  zoom = exp2((double) history - 2.0);
+
+  if(AGS_IS_PATTERN_EDIT(editor->current_edit_widget)){
+    AgsPatternEdit *pattern_edit;
+
+    pattern_edit = editor->current_edit_widget;
+    
+    pattern_edit->selected_x = gtk_spin_button_get_value_as_int(position_notation_cursor_dialog->position_x);
+    pattern_edit->selected_y = gtk_spin_button_get_value_as_int(position_notation_cursor_dialog->position_y);
+
+    vadjustment = GTK_RANGE(pattern_edit->vscrollbar)->adjustment;
+    hadjustment = GTK_RANGE(pattern_edit->hscrollbar)->adjustment;
+
+    map_height = pattern_edit->map_height;
+    height = GTK_WIDGET(pattern_edit->drawing_area)->allocation.height;
+  }else if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
+    AgsNoteEdit *note_edit;
+
+    note_edit = editor->current_edit_widget;
+    
+    note_edit->selected_x = gtk_spin_button_get_value_as_int(position_notation_cursor_dialog->position_x);
+    note_edit->selected_y = gtk_spin_button_get_value_as_int(position_notation_cursor_dialog->position_y);
+
+    vadjustment = GTK_RANGE(note_edit->vscrollbar)->adjustment;
+    hadjustment = GTK_RANGE(note_edit->hscrollbar)->adjustment;
+
+    map_height = note_edit->map_height;
+    height = GTK_WIDGET(note_edit->drawing_area)->allocation.height;
+  }
+
+  /* make visible */  
+  if(hadjustment != NULL){
+    if((x * 64 / zoom) * (hadjustment->upper / (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom)) > ((hadjustment->value / hadjustment->upper) * (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom)) + ((4.0 * hadjustment->page_increment / hadjustment->upper) * (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom))){
+      gtk_hadjustment_set_value(hadjustment,
+			       (x * 64 / zoom) * (hadjustment->upper / (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom)));
+    }else if((x * 64 / zoom) * (hadjustment->upper / (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom)) < ((hadjustment->value / hadjustment->upper) * (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom))){
+      gtk_hadjustment_set_value(hadjustment,
+			       (x * 64 / zoom) * (hadjustment->upper / (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom)));
+    }
+  }
+
+  if(vadjustment != NULL){
+    if(height < map_height){
+      if((y * 14) > (vadjustment->value / vadjustment->upper) * (map_height) + (8 * 14)){
+	gtk_vadjustment_set_value(vadjustment,
+				 (y * 14) * (vadjustment->upper / map_height));
+
+	ags_functional_test_util_reaction_time_long();
+      }else if((y * 14) < (vadjustment->value / vadjustment->upper) * (map_height)){
+	gtk_vadjustment_set_value(vadjustment,
+				 (y * 14) * (vadjustment->upper / map_height));
+
+	ags_functional_test_util_reaction_time_long();
+      }
+
+      y = (y * 14) - ((vadjustment->value / vadjustment->upper) * (map_height));
+    }else{
+      y = y * 14;
+    }
+
+  }
 }
 
 void
