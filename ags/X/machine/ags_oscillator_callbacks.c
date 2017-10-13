@@ -54,3 +54,9 @@ ags_oscillator_volume_callback(GtkSpinButton *spin_button, AgsOscillator *oscill
 {
   ags_oscillator_control_changed(oscillator);
 }
+
+void
+ags_oscillator_sync_point_callback(GtkSpinButton *spin_button, AgsOscillator *oscillator)
+{
+  ags_oscillator_control_changed(oscillator);
+}

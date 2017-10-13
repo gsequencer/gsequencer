@@ -37,8 +37,6 @@ void ags_oscillator_connectable_interface_init(AgsConnectableInterface *connecta
 void ags_oscillator_init(AgsOscillator *oscillator);
 void ags_oscillator_connect(AgsConnectable *connectable);
 void ags_oscillator_disconnect(AgsConnectable *connectable);
-void ags_oscillator_destroy(GtkObject *object);
-void ags_oscillator_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_oscillator
@@ -114,6 +112,8 @@ ags_oscillator_class_init(AgsOscillatorClass *oscillator)
    * @oscillator: the #AgsOscillator
    *
    * The ::control-change signal notifies about controls modified.
+   * 
+   * Since: 1.0.0
    */
   oscillator_signals[CONTROL_CHANGED] =
     g_signal_new("control-changed",
@@ -142,10 +142,15 @@ void
 ags_oscillator_init(AgsOscillator *oscillator)
 {
   GtkTable *table;
+  GtkBox *sync_box;
+
   GtkCellRenderer *cell_renderer;
+
   GtkListStore *model;
   GtkTreeIter iter;
 
+  guint i;
+  
   table = (GtkTable *) gtk_table_new(8, 2, FALSE);
   gtk_container_add((GtkContainer *) oscillator, (GtkWidget *) table);
 
@@ -247,28 +252,24 @@ ags_oscillator_init(AgsOscillator *oscillator)
 			    (GtkWidget *) oscillator->do_sync,
 			    6, 7,
 			    0, 1);
-  
-  oscillator->sync_mode = (GtkComboBoxText *) gtk_combo_box_text_new();
 
-  gtk_combo_box_text_append_text(oscillator->sync_mode,
-				 i18n("16 HZ"));
-  gtk_combo_box_text_append_text(oscillator->sync_mode,
-				 i18n("440 HZ"));
-  gtk_combo_box_text_append_text(oscillator->sync_mode,
-				 i18n("22000 HZ"));
-  gtk_combo_box_text_append_text(oscillator->sync_mode,
-				 i18n("limit"));
-  gtk_combo_box_text_append_text(oscillator->sync_mode,
-				 i18n("no-Hertz"));
-  gtk_combo_box_text_append_text(oscillator->sync_mode,
-				 i18n("start frequency"));
-  gtk_combo_box_text_append_text(oscillator->sync_mode,
-				 i18n("current frequency"));
-
+  sync_box = (GtkBox *) gtk_hbox_new(TRUE,
+				     0);
   gtk_table_attach_defaults(table,
-			    (GtkWidget *) oscillator->sync_mode,
+			    (GtkWidget *) sync_box,
 			    6, 7,
 			    1, 2);
+
+  oscillator->sync_point_count = AGS_OSCILLATOR_DEFAULT_SYNC_POINT_COUNT; 
+  oscillator->sync_point = (GtkSpinButton **) malloc(oscillator->sync_point_count * sizeof(GtkSpinButton *));
+
+  for(i = 0; i < oscillator->sync_point_count; i++){
+    oscillator->sync_point[i] = gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
+    gtk_box_pack_start(sync_box,
+		       oscillator->sync_point[i],
+		       FALSE, FALSE,
+		       0);
+  }
 }
 
 void
@@ -276,25 +277,32 @@ ags_oscillator_connect(AgsConnectable *connectable)
 {
   AgsOscillator *oscillator;
 
+  guint i;
+  
   oscillator = AGS_OSCILLATOR(connectable);
 
-  oscillator->wave_handler = g_signal_connect(G_OBJECT(oscillator->wave), "changed",
-					      G_CALLBACK(ags_oscillator_wave_callback), oscillator);
-
-  oscillator->attack_handler = g_signal_connect(G_OBJECT(oscillator->attack), "value-changed",
-						G_CALLBACK(ags_oscillator_attack_callback), oscillator);
+  g_signal_connect(G_OBJECT(oscillator->wave), "changed",
+		   G_CALLBACK(ags_oscillator_wave_callback), oscillator);
   
-  oscillator->frame_count_handler = g_signal_connect(G_OBJECT(oscillator->frame_count), "value-changed",
-						     G_CALLBACK(ags_oscillator_frame_count_callback), oscillator);
+  g_signal_connect(G_OBJECT(oscillator->attack), "value-changed",
+		   G_CALLBACK(ags_oscillator_attack_callback), oscillator);
+  
+  g_signal_connect(G_OBJECT(oscillator->frame_count), "value-changed",
+		   G_CALLBACK(ags_oscillator_frame_count_callback), oscillator);
+  
+  g_signal_connect(G_OBJECT(oscillator->frequency), "value-changed",
+		   G_CALLBACK(ags_oscillator_frequency_callback), oscillator);
 
-  oscillator->frequency_handler = g_signal_connect(G_OBJECT(oscillator->frequency), "value-changed",
-						   G_CALLBACK(ags_oscillator_frequency_callback), oscillator);
+  g_signal_connect(G_OBJECT(oscillator->phase), "value-changed",
+		   G_CALLBACK(ags_oscillator_phase_callback), oscillator);
 
-  oscillator->phase_handler = g_signal_connect(G_OBJECT(oscillator->phase), "value-changed",
-					       G_CALLBACK(ags_oscillator_phase_callback), oscillator);
+  g_signal_connect(G_OBJECT(oscillator->volume), "value-changed",
+		   G_CALLBACK(ags_oscillator_volume_callback), oscillator);
 
-  oscillator->volume_handler = g_signal_connect(G_OBJECT(oscillator->volume), "value-changed",
-						G_CALLBACK(ags_oscillator_volume_callback), oscillator);
+  for(i = 0; i < oscillator->sync_point_count; i++){
+    g_signal_connect(G_OBJECT(oscillator->sync_point[i]), "value-changed",
+		     G_CALLBACK(ags_oscillator_sync_point_callback), oscillator);
+  }
 }
 
 void
@@ -302,24 +310,31 @@ ags_oscillator_disconnect(AgsConnectable *connectable)
 {
   AgsOscillator *oscillator;
 
+  guint i;
+  
   oscillator = AGS_OSCILLATOR(connectable);
 
-  g_signal_handler_disconnect(G_OBJECT(oscillator->wave), oscillator->wave_handler);
-  g_signal_handler_disconnect(G_OBJECT(oscillator->attack), oscillator->attack_handler);
-  g_signal_handler_disconnect(G_OBJECT(oscillator->frame_count), oscillator->frame_count_handler);
-  g_signal_handler_disconnect(G_OBJECT(oscillator->frequency), oscillator->frequency_handler);
-  g_signal_handler_disconnect(G_OBJECT(oscillator->phase), oscillator->phase_handler);
-  g_signal_handler_disconnect(G_OBJECT(oscillator->volume), oscillator->volume_handler);
-}
+  g_object_disconnect((GObject *) oscillator->wave, "changed",
+		      G_CALLBACK(ags_oscillator_wave_callback), (gpointer) oscillator,
+		      NULL);
+  g_object_disconnect((GObject *) oscillator->frame_count, "value-changed",
+		      G_CALLBACK(ags_oscillator_frame_count_callback), (gpointer) oscillator,
+		      NULL);
+  g_object_disconnect((GObject *) oscillator->attack, "value-changed",
+		      G_CALLBACK(ags_oscillator_attack_callback), (gpointer) oscillator,
+		      NULL);
+  g_object_disconnect((GObject *) oscillator->frequency, "value-changed",
+		      G_CALLBACK(ags_oscillator_frequency_callback), (gpointer) oscillator,
+		      NULL);
+  g_object_disconnect((GObject *) oscillator->phase, "value-changed",
+		      G_CALLBACK(ags_oscillator_phase_callback), (gpointer) oscillator,
+		      NULL);
 
-void
-ags_oscillator_destroy(GtkObject *object)
-{
-}
-
-void
-ags_oscillator_show(GtkWidget *widget)
-{
+  for(i = 0; i < oscillator->sync_point_count; i++){
+    g_object_disconnect((GObject *) oscillator->sync_point[i], "value-changed",
+			G_CALLBACK(ags_oscillator_phase_callback), (gpointer) oscillator,
+			NULL);
+  }
 }
 
 void

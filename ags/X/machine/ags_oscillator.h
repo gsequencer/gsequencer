@@ -36,6 +36,7 @@
 #define AGS_OSCILLATOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_OSCILLATOR, AgsOscillatorClass))
 
 #define AGS_OSCILLATOR_DEFAULT_FRAME_COUNT (44100.0 / 27.5)
+#define AGS_OSCILLATOR_DEFAULT_SYNC_POINT_COUNT (3)
 
 typedef struct _AgsOscillator AgsOscillator;
 typedef struct _AgsOscillatorClass AgsOscillatorClass;
@@ -48,22 +49,17 @@ struct _AgsOscillator
   gulong wave_handler;
 
   GtkSpinButton *attack;
-  gulong attack_handler;
-
   GtkSpinButton *frame_count;
-  gulong frame_count_handler;
 
   GtkSpinButton *frequency;
-  gulong frequency_handler;
-
   GtkSpinButton *phase;
-  gulong phase_handler;
 
   GtkSpinButton *volume;
-  gulong volume_handler;
 
   GtkCheckButton *do_sync;
-  GtkComboBoxText *sync_mode;
+
+  GtkSpinButton **sync_point;
+  guint sync_point_count;
 };
 
 struct _AgsOscillatorClass
