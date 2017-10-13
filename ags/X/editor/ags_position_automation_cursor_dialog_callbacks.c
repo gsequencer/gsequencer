@@ -46,11 +46,3 @@ ags_position_automation_cursor_dialog_response_callback(GtkWidget *dialog, gint 
     }
   }
 }
-
-void
-ags_position_automation_cursor_dialog_machine_changed_callback(AgsAutomationEditor *automation_editor,
-							       AgsMachine *machine,
-							       AgsPositionAutomationCursorDialog *position_automation_cursor_dialog)
-{
-  ags_applicable_reset(AGS_APPLICABLE(position_automation_cursor_dialog));
-}

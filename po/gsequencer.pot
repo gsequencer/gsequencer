@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 1.1.0\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-10-13 20:55+0200\n"
+"POT-Creation-Date: 2017-10-13 21:38+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -711,29 +711,25 @@ msgstr ""
 msgid "x end"
 msgstr ""
 
-#: ags/X/editor/ags_position_automation_cursor_dialog.c:202
+#: ags/X/editor/ags_position_automation_cursor_dialog.c:205
 msgid "position automation cursor"
 msgstr ""
 
-#: ags/X/editor/ags_position_automation_cursor_dialog.c:212
-#: ags/X/editor/ags_position_notation_cursor_dialog.c:211
+#: ags/X/editor/ags_position_automation_cursor_dialog.c:215
+#: ags/X/editor/ags_position_notation_cursor_dialog.c:215
 msgid "set focus"
 msgstr ""
 
-#: ags/X/editor/ags_position_automation_cursor_dialog.c:228
-#: ags/X/editor/ags_position_notation_cursor_dialog.c:227
+#: ags/X/editor/ags_position_automation_cursor_dialog.c:231
+#: ags/X/editor/ags_position_notation_cursor_dialog.c:231
 msgid "position x"
 msgstr ""
 
-#: ags/X/editor/ags_position_automation_cursor_dialog.c:253
-msgid "position automation area"
-msgstr ""
-
-#: ags/X/editor/ags_position_notation_cursor_dialog.c:201
+#: ags/X/editor/ags_position_notation_cursor_dialog.c:205
 msgid "position notation cursor"
 msgstr ""
 
-#: ags/X/editor/ags_position_notation_cursor_dialog.c:252
+#: ags/X/editor/ags_position_notation_cursor_dialog.c:256
 msgid "position y"
 msgstr ""
 

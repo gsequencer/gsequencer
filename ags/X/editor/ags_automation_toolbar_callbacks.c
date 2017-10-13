@@ -146,6 +146,12 @@ ags_automation_toolbar_tool_popup_ramp_acceleration_callback(GtkWidget *item, Ag
 }
 
 void
+ags_automation_toolbar_tool_popup_position_cursor_callback(GtkWidget *item, AgsAutomationToolbar *automation_toolbar)
+{
+  gtk_widget_show_all(automation_toolbar->position_automation_cursor);  
+}
+
+void
 ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolbar *automation_toolbar)
 {
   AgsAutomationEditor *automation_editor;

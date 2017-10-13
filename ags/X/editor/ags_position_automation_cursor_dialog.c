@@ -29,6 +29,9 @@
 #include <ags/X/ags_automation_editor.h>
 #include <ags/X/ags_machine.h>
 
+#include <ags/X/editor/ags_automation_toolbar.h>
+#include <ags/X/editor/ags_automation_edit.h>
+
 #include <ags/i18n.h>
 
 void ags_position_automation_cursor_dialog_class_init(AgsPositionAutomationCursorDialogClass *position_automation_cursor_dialog);
@@ -242,27 +245,6 @@ ags_position_automation_cursor_dialog_init(AgsPositionAutomationCursorDialog *po
 		     FALSE, FALSE,
 		     0);
   
-  /* position automation area - hbox */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) vbox,
-		     GTK_WIDGET(hbox),
-		     FALSE, FALSE,
-		     0);
-
-  /* position automation area - label */
-  label = (GtkLabel *) gtk_label_new(i18n("position automation area"));
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(label),
-		     FALSE, FALSE,
-		     0);
-
-  /* position automation_area - spin button */
-  position_automation_cursor_dialog->position_automation_area = (GtkComboBoxText *) gtk_combo_box_text_new();
-  gtk_box_pack_start((GtkBox *) hbox,
-		     GTK_WIDGET(position_automation_cursor_dialog->position_automation_area),
-		     FALSE, FALSE,
-		     0);
-
   /* dialog buttons */
   gtk_dialog_add_buttons((GtkDialog *) position_automation_cursor_dialog,
 			 GTK_STOCK_APPLY, GTK_RESPONSE_APPLY,
@@ -417,6 +399,77 @@ ags_position_automation_cursor_dialog_set_update(AgsApplicable *applicable, gboo
 void
 ags_position_automation_cursor_dialog_apply(AgsApplicable *applicable)
 {
+  AgsPositionAutomationCursorDialog *position_automation_cursor_dialog;
+
+  AgsWindow *window;
+  AgsAutomationWindow *automation_window;
+  AgsAutomationEditor *automation_editor;
+  AgsAutomationToolbar *automation_toolbar;
+  AgsAutomationEdit *automation_edit;
+  AgsMachine *machine;
+  GtkWidget *widget;
+
+  GtkAdjustment *hadjustment;
+
+  gdouble zoom;
+  guint history;
+  gint current_page;
+  guint x;
+
+  position_automation_cursor_dialog = AGS_POSITION_AUTOMATION_CURSOR_DIALOG(applicable);
+
+  window = position_automation_cursor_dialog->main_window;
+
+  automation_window = window->automation_window;
+  automation_editor = automation_window->automation_editor;
+
+  machine = automation_editor->selected_machine;
+
+  if(machine == NULL){
+    return;
+  }
+
+  automation_toolbar = automation_editor->automation_toolbar;
+
+  history = gtk_combo_box_get_active(GTK_COMBO_BOX(automation_toolbar->zoom));
+  zoom = exp2((double) history - 2.0);
+
+  current_page = gtk_notebook_get_current_page(automation_editor->notebook);
+  
+  if(current_page == 0){
+    automation_edit = automation_editor->current_audio_automation_edit;
+  }else if(current_page == 1){
+    automation_edit = automation_editor->current_output_automation_edit;
+  }else{
+    automation_edit = automation_editor->current_input_automation_edit;
+  }
+
+  if(automation_edit == NULL){
+    return;
+  }
+  
+  x = 
+    automation_edit->edit_x = gtk_spin_button_get_value_as_int(position_automation_cursor_dialog->position_x);
+  automation_edit->edit_y = 0;
+
+  hadjustment = GTK_RANGE(automation_edit->hscrollbar)->adjustment;
+
+  widget = automation_edit->drawing_area;
+    
+  /* make visible */  
+  if(hadjustment != NULL){
+    if((x * 64 / zoom) * (hadjustment->upper / (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom)) > ((hadjustment->value / hadjustment->upper) * (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom)) + ((4.0 * hadjustment->page_increment / hadjustment->upper) * (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom))){
+      gtk_adjustment_set_value(hadjustment,
+			       (x * 64 / zoom) * (hadjustment->upper / (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom)));
+    }else if((x * 64 / zoom) * (hadjustment->upper / (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom)) < ((hadjustment->value / hadjustment->upper) * (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom))){
+      gtk_adjustment_set_value(hadjustment,
+			       (x * 64 / zoom) * (hadjustment->upper / (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom)));
+    }
+  }
+  
+  if(gtk_toggle_button_get_active(position_automation_cursor_dialog->set_focus)){
+    gtk_widget_grab_focus(widget);
+  }
 }
 
 void

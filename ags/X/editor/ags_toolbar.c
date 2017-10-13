@@ -29,6 +29,7 @@
 #include <ags/X/editor/ags_move_note_dialog.h>
 #include <ags/X/editor/ags_crop_note_dialog.h>
 #include <ags/X/editor/ags_select_note_dialog.h>
+#include <ags/X/editor/ags_position_notation_cursor_dialog.h>
 
 #include <gtk/gtkstock.h>
 
@@ -197,6 +198,7 @@ ags_toolbar_init(AgsToolbar *toolbar)
   toolbar->move_note = ags_move_note_dialog_new(NULL);
   toolbar->crop_note = ags_crop_note_dialog_new(NULL);
   toolbar->select_note = ags_select_note_dialog_new(NULL);
+  toolbar->position_notation_cursor = ags_position_notation_cursor_dialog_new(NULL);
   
   /* zoom */
   label = (GtkLabel *) gtk_label_new(i18n("zoom"));
@@ -249,6 +251,9 @@ ags_toolbar_connect(AgsConnectable *connectable)
   g_object_set(toolbar->select_note,
 	       "main-window", window,
 	       NULL);
+  g_object_set(toolbar->position_notation_cursor,
+	       "main-window", window,
+	       NULL);
 
   /* tool */
   g_signal_connect_after((GObject *) toolbar->position, "toggled",
@@ -277,6 +282,8 @@ ags_toolbar_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_toolbar_invert_callback), (gpointer) toolbar);
 
   /* additional tools */
+  ags_connectable_connect(AGS_CONNECTABLE(toolbar->position_notation_cursor));
+
   ags_connectable_connect(AGS_CONNECTABLE(toolbar->crop_note));
 
   ags_connectable_connect(AGS_CONNECTABLE(toolbar->move_note));
@@ -356,9 +363,11 @@ ags_toolbar_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   /* additional tools */
-  ags_connectable_disconnect(AGS_CONNECTABLE(toolbar->move_note));
+  ags_connectable_disconnect(AGS_CONNECTABLE(toolbar->position_notation_cursor));
 
   ags_connectable_disconnect(AGS_CONNECTABLE(toolbar->crop_note));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(toolbar->move_note));
 
   ags_connectable_disconnect(AGS_CONNECTABLE(toolbar->select_note));
 
@@ -405,6 +414,9 @@ ags_toolbar_tool_popup_new(GtkToolbar *toolbar)
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("select notes"));
   gtk_menu_shell_append((GtkMenuShell *) tool_popup, (GtkWidget *) item);
 
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("position cursor"));
+  gtk_menu_shell_append((GtkMenuShell *) tool_popup, (GtkWidget *) item);
+
   /* connect */
   list_start = 
     list = gtk_container_get_children((GtkContainer *) tool_popup);
@@ -419,6 +431,11 @@ ags_toolbar_tool_popup_new(GtkToolbar *toolbar)
   list = list->next;
   g_signal_connect(G_OBJECT(list->data), "activate",
 		   G_CALLBACK(ags_toolbar_tool_popup_select_note_callback), (gpointer) toolbar);
+
+  list = list->next;
+  g_signal_connect(G_OBJECT(list->data), "activate",
+		   G_CALLBACK(ags_toolbar_tool_popup_position_cursor_callback), (gpointer) toolbar);
+  
   
   g_list_free(list_start);
 

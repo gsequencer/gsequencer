@@ -41,6 +41,7 @@
 
 #include <ags/X/editor/ags_select_acceleration_dialog.h>
 #include <ags/X/editor/ags_ramp_acceleration_dialog.h>
+#include <ags/X/editor/ags_position_automation_cursor_dialog.h>
 
 #include <ags/config.h>
 #include <ags/i18n.h>
@@ -205,6 +206,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
   /* menu tool - dialogs */
   automation_toolbar->select_acceleration = ags_select_acceleration_dialog_new(NULL);
   automation_toolbar->ramp_acceleration = ags_ramp_acceleration_dialog_new(NULL);
+  automation_toolbar->position_automation_cursor = ags_position_automation_cursor_dialog_new(NULL);
 
   /*  */
   automation_toolbar->zoom_history = 4;
@@ -281,6 +283,9 @@ ags_automation_toolbar_connect(AgsConnectable *connectable)
   g_object_set(automation_toolbar->ramp_acceleration,
 	       "main-window", window,
 	       NULL);
+  g_object_set(automation_toolbar->position_automation_cursor,
+	       "main-window", window,
+	       NULL);
 
   /*  */
   g_signal_connect_after(G_OBJECT(automation_editor), "machine-changed",
@@ -313,7 +318,9 @@ ags_automation_toolbar_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(automation_toolbar->select_acceleration));
 
   ags_connectable_connect(AGS_CONNECTABLE(automation_toolbar->ramp_acceleration));
-  
+
+  ags_connectable_connect(AGS_CONNECTABLE(automation_toolbar->position_automation_cursor));
+
   /* zoom */
   g_signal_connect_after((GObject *) automation_toolbar->zoom, "changed",
 			 G_CALLBACK(ags_automation_toolbar_zoom_callback), (gpointer) automation_toolbar);
@@ -384,6 +391,8 @@ ags_automation_toolbar_disconnect(AgsConnectable *connectable)
   ags_connectable_disconnect(AGS_CONNECTABLE(automation_toolbar->select_acceleration));
 
   ags_connectable_disconnect(AGS_CONNECTABLE(automation_toolbar->ramp_acceleration));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(automation_toolbar->position_automation_cursor));
 
   /* zoom */
   g_object_disconnect(G_OBJECT(automation_toolbar->zoom),
@@ -832,6 +841,9 @@ ags_automation_toolbar_tool_popup_new(GtkToolbar *automation_toolbar)
 
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("ramp accelerations"));
   gtk_menu_shell_append((GtkMenuShell *) tool_popup, (GtkWidget *) item);
+  
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("position cursor"));
+  gtk_menu_shell_append((GtkMenuShell *) tool_popup, (GtkWidget *) item);
 
   /* connect */
   list_start = 
@@ -843,7 +855,11 @@ ags_automation_toolbar_tool_popup_new(GtkToolbar *automation_toolbar)
   list = list->next;
   g_signal_connect(G_OBJECT(list->data), "activate",
 		   G_CALLBACK(ags_automation_toolbar_tool_popup_ramp_acceleration_callback), (gpointer) automation_toolbar);
-  
+
+  list = list->next;
+  g_signal_connect(G_OBJECT(list->data), "activate",
+		   G_CALLBACK(ags_automation_toolbar_tool_popup_position_cursor_callback), (gpointer) automation_toolbar);
+
   g_list_free(list_start);
 
   /* show */

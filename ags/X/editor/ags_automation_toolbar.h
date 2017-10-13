@@ -63,6 +63,7 @@ struct _AgsAutomationToolbar
 
   GtkDialog *select_acceleration;
   GtkDialog *ramp_acceleration;
+  GtkDialog *position_automation_cursor;
 
   guint zoom_history;
   GtkComboBox *zoom;

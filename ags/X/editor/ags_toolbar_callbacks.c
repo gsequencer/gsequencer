@@ -208,6 +208,12 @@ ags_toolbar_tool_popup_select_note_callback(GtkWidget *item, AgsToolbar *toolbar
 }
 
 void
+ags_toolbar_tool_popup_position_cursor_callback(GtkWidget *item, AgsToolbar *toolbar)
+{
+  gtk_widget_show_all(toolbar->position_notation_cursor);
+}
+
+void
 ags_toolbar_zoom_callback(GtkComboBox *combo_box, AgsToolbar *toolbar)
 {
   AgsEditor *editor;
