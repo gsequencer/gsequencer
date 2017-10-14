@@ -140,7 +140,7 @@ And so for the glib-object marshallers file:
 
 * ags/object/ags_marshallers.list
 
-Third-party files with uncertain copyright provided by gtk-doc:
+Third-party files of gtk-doc TODO:JK: add missing information, copyright provided by http://www.gnome.org:
 
 * docs/reference/libags/Makefile.am
 * docs/reference/libags/git.mk
@@ -157,7 +157,7 @@ Third-party files with uncertain copyright provided by gtk-doc:
 * gtk-doc.make
 * m4/gtk-doc.m4
 
-Third-party files with uncertain copyright provided by autotools:
+Third-party files of autotools permissive licensed see specific files for warranty disclaimer and a notice preservation requirement, copyright provided by http://www.fsf.org:
 
 * compile
 * compile.guess
@@ -173,7 +173,7 @@ Third-party files with uncertain copyright provided by autotools:
 * missing
 * test-driver
 
-Third-party files with uncertain copyright provided by gettext:
+Third-party files of gettext TODO:JK: add missing information, copyright provided by http://www.fsf.org:
 
 * po/Makevars
 * po/gsequencer.pot
@@ -190,15 +190,15 @@ Third-party files with uncertain copyright provided by gettext:
 * po/insert-header.sin
 * po/boldquot.sed
 
-Generated files by glib-genmarshal licensed under the terms of GNU LGPLv2.1+, copyright provided by http://www.gnome.org
+Generated files by glib-genmarshal licensed under the terms of GNU LGPLv2.1+, copyright provided by http://www.gnome.org:
 
 ags/object/ags_marshal.c
 ags/object/ags_marshal.h
 
-Third-party files with uncertain copyright provided by http://kxstudio.sf.net:
+Third-party files of Filipe Coelho BSD licensed please consider copyright notice, copyright provided by falktx.com:
 
 lv2/lv2plug.in/ns/lv2ext/lv2_programs.h
 
-Third-party files with uncertain copyright provided by http://drobilla.net:
+Third-party files of David Robillard licensed under the terms of GNU GPLv3+, copyright provided by http://drobilla.net:
 
 lv2.lib/mda/EPiano-presets.ttl
