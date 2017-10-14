@@ -50,11 +50,12 @@ ags_toolbar_position_callback(GtkToggleButton *toggle_button, AgsToolbar *toolba
       rectangle->width = width;
       rectangle->height = height;
 
-      gdk_window_invalidate_rect(GTK_WIDGET(AGS_NOTE_EDIT(editor->current_edit_widget)->drawing_area)->window,
-				 rectangle,
-				 TRUE);
-      gdk_window_process_updates(GTK_WIDGET(AGS_NOTE_EDIT(editor->current_edit_widget)->drawing_area)->window,
-				 TRUE);
+      gtk_widget_queue_draw(GTK_WIDGET(AGS_NOTE_EDIT(editor->current_edit_widget)->drawing_area));
+      //      gdk_window_invalidate_rect(GTK_WIDGET(AGS_NOTE_EDIT(editor->current_edit_widget)->drawing_area)->window,
+      //			 rectangle,
+      //			 TRUE);
+      //      gdk_window_process_updates(GTK_WIDGET(AGS_NOTE_EDIT(editor->current_edit_widget)->drawing_area)->window,
+      //			 TRUE);
     }else if(AGS_IS_PATTERN_EDIT(editor->current_edit_widget)){
       /* refresh editor */
       gtk_widget_get_size_request(GTK_WIDGET(AGS_PATTERN_EDIT(editor->current_edit_widget)->drawing_area),
@@ -64,6 +65,7 @@ ags_toolbar_position_callback(GtkToggleButton *toggle_button, AgsToolbar *toolba
       rectangle->width = width;
       rectangle->height = height;
 
+      gtk_widget_queue_draw(GTK_WIDGET(AGS_NOTE_EDIT(editor->current_edit_widget)->drawing_area));
       //      gdk_window_invalidate_rect(GTK_WIDGET(AGS_PATTERN_EDIT(editor->current_edit_widget)->drawing_area)->window,
       //				 rectangle,
       //				 TRUE);

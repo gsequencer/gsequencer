@@ -189,9 +189,9 @@ ags_append_channel_init(AgsAppendChannel *append_channel)
 
 void
 ags_append_channel_set_property(GObject *gobject,
-			      guint prop_id,
-			      const GValue *value,
-			      GParamSpec *param_spec)
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec)
 {
   AgsAppendChannel *append_channel;
 
@@ -340,8 +340,6 @@ ags_append_channel_launch(AgsTask *task)
 
   AgsAudioLoop *audio_loop;
 
-  AgsMutexManager *mutex_manager;
-
   AgsServer *server;
 
   AgsConfig *config;
@@ -349,25 +347,12 @@ ags_append_channel_launch(AgsTask *task)
   GList *start_queue;
   
   gchar *str0, *str1;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_loop_mutex;
   
   append_channel = AGS_APPEND_CHANNEL(task);
 
   audio_loop = AGS_AUDIO_LOOP(append_channel->audio_loop);
 
   channel = (AgsChannel *) append_channel->channel;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  pthread_mutex_lock(application_mutex);
-
-  audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
-					      (GObject *) audio_loop);
-  
-  pthread_mutex_unlock(application_mutex);
 
   /* append to AgsDevout */
   ags_audio_loop_add_channel(audio_loop,
@@ -393,7 +378,8 @@ ags_append_channel_launch(AgsTask *task)
     if(!g_ascii_strncasecmp(str1,
 			    "channel",
 			    8)){
-      if((AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(AGS_PLAYBACK(channel->playback)->flags)))) != 0){
+      if((AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(AGS_PLAYBACK(channel->playback)->flags)))) != 0 &&
+	 (AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(AGS_PLAYBACK(channel->playback)->channel_thread[0])->flags)))) == 0){
 	g_atomic_int_or(&(AGS_CHANNEL_THREAD(AGS_PLAYBACK(channel->playback)->channel_thread[0])->flags),
 			(AGS_CHANNEL_THREAD_WAIT |
 			 AGS_CHANNEL_THREAD_DONE |
@@ -412,15 +398,13 @@ ags_append_channel_launch(AgsTask *task)
     }
   }
 
-  free(str0);
-  free(str1);
+  g_free(str0);
+  g_free(str1);
 
   /* start queue */
-  start_queue = g_list_reverse(start_queue);
-
-  pthread_mutex_lock(audio_loop_mutex);
-
   if(start_queue != NULL){
+    start_queue = g_list_reverse(start_queue);
+
     if(g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue)) != NULL){
       g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
 			   g_list_concat(start_queue,
@@ -430,8 +414,6 @@ ags_append_channel_launch(AgsTask *task)
 			   start_queue);
     }
   }
-
-  pthread_mutex_unlock(audio_loop_mutex);
 
   /* add to server registry */
   //  server = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(audio_loop->application_context));

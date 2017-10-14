@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 1.1.0\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-10-13 21:38+0200\n"
+"POT-Creation-Date: 2017-10-14 02:42+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -223,7 +223,7 @@ msgstr ""
 msgid "exclude sequencers"
 msgstr ""
 
-#: ags/X/ags_export_window.c:249 ags/X/editor/ags_toolbar.c:211
+#: ags/X/ags_export_window.c:249 ags/X/editor/ags_toolbar.c:213
 msgid "mode"
 msgstr ""
 
@@ -484,7 +484,7 @@ msgstr ""
 msgid "address"
 msgstr ""
 
-#: ags/X/ags_server_preferences.c:186 ags/X/editor/ags_automation_toolbar.c:225
+#: ags/X/ags_server_preferences.c:186 ags/X/editor/ags_automation_toolbar.c:227
 msgid "port"
 msgstr ""
 
@@ -526,29 +526,34 @@ msgstr ""
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:195 ags/X/editor/ags_toolbar.c:186
+#: ags/X/editor/ags_automation_toolbar.c:196 ags/X/editor/ags_toolbar.c:187
 msgid "tool"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:198 ags/X/editor/ags_toolbar.c:189
+#: ags/X/editor/ags_automation_toolbar.c:199 ags/X/editor/ags_toolbar.c:190
 msgid "additional tools"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:212 ags/X/editor/ags_toolbar.c:202
+#: ags/X/editor/ags_automation_toolbar.c:214 ags/X/editor/ags_toolbar.c:204
 msgid "zoom"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:830
+#: ags/X/editor/ags_automation_toolbar.c:839
 #: ags/X/editor/ags_select_acceleration_dialog.c:211
 msgid "select accelerations"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:833
+#: ags/X/editor/ags_automation_toolbar.c:842
 #: ags/X/editor/ags_ramp_acceleration_dialog.c:211
 msgid "ramp accelerations"
 msgstr ""
 
-#: ags/X/editor/ags_crop_note_dialog.c:212 ags/X/editor/ags_toolbar.c:402
+#: ags/X/editor/ags_automation_toolbar.c:845 ags/X/editor/ags_toolbar.c:119
+#: ags/X/editor/ags_toolbar.c:417
+msgid "position cursor"
+msgstr ""
+
+#: ags/X/editor/ags_crop_note_dialog.c:212 ags/X/editor/ags_toolbar.c:411
 msgid "crop notes"
 msgstr ""
 
@@ -665,7 +670,7 @@ msgstr ""
 msgid "shift piano"
 msgstr ""
 
-#: ags/X/editor/ags_move_note_dialog.c:212 ags/X/editor/ags_toolbar.c:399
+#: ags/X/editor/ags_move_note_dialog.c:212 ags/X/editor/ags_toolbar.c:408
 msgid "move notes"
 msgstr ""
 
@@ -768,8 +773,8 @@ msgstr ""
 msgid "select x1"
 msgstr ""
 
-#: ags/X/editor/ags_select_note_dialog.c:208 ags/X/editor/ags_toolbar.c:146
-#: ags/X/editor/ags_toolbar.c:405
+#: ags/X/editor/ags_select_note_dialog.c:208 ags/X/editor/ags_toolbar.c:147
+#: ags/X/editor/ags_toolbar.c:414
 msgid "select notes"
 msgstr ""
 
@@ -781,31 +786,27 @@ msgstr ""
 msgid "select y1"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:118
-msgid "position cursor"
-msgstr ""
-
-#: ags/X/editor/ags_toolbar.c:127
+#: ags/X/editor/ags_toolbar.c:128
 msgid "edit notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:136
+#: ags/X/editor/ags_toolbar.c:137
 msgid "clear notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:157
+#: ags/X/editor/ags_toolbar.c:158
 msgid "copy notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:166
+#: ags/X/editor/ags_toolbar.c:167
 msgid "cut notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:174
+#: ags/X/editor/ags_toolbar.c:175
 msgid "paste notes"
 msgstr ""
 
-#: ags/X/editor/ags_toolbar.c:182
+#: ags/X/editor/ags_toolbar.c:183
 msgid "invert notes"
 msgstr ""
 

@@ -461,8 +461,8 @@ ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
 
     pattern_edit = editor->current_edit_widget;
 
-    x = 
-      pattern_edit->selected_x = gtk_spin_button_get_value_as_int(position_notation_cursor_dialog->position_x);
+    x = gtk_spin_button_get_value_as_int(position_notation_cursor_dialog->position_x);
+    pattern_edit->selected_x = 16 * x;
     y = 
       pattern_edit->selected_y = gtk_spin_button_get_value_as_int(position_notation_cursor_dialog->position_y);
 
@@ -478,8 +478,8 @@ ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
 
     note_edit = editor->current_edit_widget;
     
-    x =
-      note_edit->selected_x = gtk_spin_button_get_value_as_int(position_notation_cursor_dialog->position_x);
+    x = gtk_spin_button_get_value_as_int(position_notation_cursor_dialog->position_x);
+    note_edit->selected_x = 16 * x;
     y = 
       note_edit->selected_y = gtk_spin_button_get_value_as_int(position_notation_cursor_dialog->position_y);
 
@@ -494,25 +494,13 @@ ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
 
   /* make visible */  
   if(hadjustment != NULL){
-    if((x * 64 / zoom) * (hadjustment->upper / (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom)) > ((hadjustment->value / hadjustment->upper) * (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom)) + ((4.0 * hadjustment->page_increment / hadjustment->upper) * (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom))){
-      gtk_adjustment_set_value(hadjustment,
-			       (x * 64 / zoom) * (hadjustment->upper / (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom)));
-    }else if((x * 64 / zoom) * (hadjustment->upper / (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom)) < ((hadjustment->value / hadjustment->upper) * (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom))){
-      gtk_adjustment_set_value(hadjustment,
-			       (x * 64 / zoom) * (hadjustment->upper / (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom)));
-    }
+    gtk_adjustment_set_value(hadjustment,
+			     (x * 16 * 64 / zoom) * (hadjustment->upper / (AGS_EDITOR_MAX_CONTROLS * 16 * 16 * 64 / zoom)));
   }
 
   if(vadjustment != NULL){
-    if(height < map_height){
-      if((y * 14) > (vadjustment->value / vadjustment->upper) * (map_height) + (8 * 14)){
-	gtk_adjustment_set_value(vadjustment,
-				 (y * 14) * (vadjustment->upper / map_height));
-      }else if((y * 14) < (vadjustment->value / vadjustment->upper) * (map_height)){
-	gtk_adjustment_set_value(vadjustment,
-				 (y * 14) * (vadjustment->upper / map_height));
-      }
-    }
+    gtk_adjustment_set_value(vadjustment,
+			     (y * 14) * (vadjustment->upper / map_height));
   }
 
   if(gtk_toggle_button_get_active(position_notation_cursor_dialog->set_focus)){

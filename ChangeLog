@@ -11,6 +11,7 @@ ags (1.1.0)
 	* refactored AgsOscillator to have triple sync
 	* refactored AgsOscillator persistence in ags_simple_file.c
 	* refactored ags_oscillator_disconnect() to use g_object_disconnect()
+	* fixed possible SIGSEGV due to AgsXorgApplicationContext::dispose() as not using property in ags_start_soundcard_new()
 
 ags (1.0.5)
 

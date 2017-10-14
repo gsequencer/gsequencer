@@ -448,8 +448,8 @@ ags_position_automation_cursor_dialog_apply(AgsApplicable *applicable)
     return;
   }
   
-  x = 
-    automation_edit->edit_x = gtk_spin_button_get_value_as_int(position_automation_cursor_dialog->position_x);
+  x = gtk_spin_button_get_value_as_int(position_automation_cursor_dialog->position_x);
+  automation_edit->edit_x = 16 * x;
   automation_edit->edit_y = 0;
 
   hadjustment = GTK_RANGE(automation_edit->hscrollbar)->adjustment;
@@ -458,13 +458,8 @@ ags_position_automation_cursor_dialog_apply(AgsApplicable *applicable)
     
   /* make visible */  
   if(hadjustment != NULL){
-    if((x * 64 / zoom) * (hadjustment->upper / (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom)) > ((hadjustment->value / hadjustment->upper) * (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom)) + ((4.0 * hadjustment->page_increment / hadjustment->upper) * (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom))){
-      gtk_adjustment_set_value(hadjustment,
-			       (x * 64 / zoom) * (hadjustment->upper / (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom)));
-    }else if((x * 64 / zoom) * (hadjustment->upper / (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom)) < ((hadjustment->value / hadjustment->upper) * (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom))){
-      gtk_adjustment_set_value(hadjustment,
-			       (x * 64 / zoom) * (hadjustment->upper / (AGS_EDITOR_MAX_CONTROLS * 16 * 64 * zoom)));
-    }
+    gtk_adjustment_set_value(hadjustment,
+			     ((x * 16 * 64 / zoom) * (hadjustment->upper / (AGS_EDITOR_MAX_CONTROLS * 16 * 16 * 64 / zoom))));
   }
   
   if(gtk_toggle_button_get_active(position_automation_cursor_dialog->set_focus)){

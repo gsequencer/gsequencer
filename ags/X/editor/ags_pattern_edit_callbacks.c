@@ -463,7 +463,11 @@ ags_pattern_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventBu
       i++;
     }
 
-    fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
+#ifdef AGS_DEBUG
+    if(note != NULL){
+      fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
+    }
+#endif
   }
   void ags_pattern_edit_drawing_area_button_release_event_draw_control(cairo_t *cr){
     guint x, y, width, height;
@@ -1291,7 +1295,7 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
 						       AGS_TYPE_GUI_THREAD);
     soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type(main_loop,
-							     AGS_TYPE_SOUNDCARD_THREAD);
+								   AGS_TYPE_SOUNDCARD_THREAD);
 
     /* create tasks */
     tasks = NULL;
@@ -1461,7 +1465,9 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     case GDK_KEY_space:
       {
 	AgsNote *note;
-      
+
+	note = NULL;
+	
 	i = 0;
 	do_feedback = TRUE;
 
@@ -1473,9 +1479,9 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 				     i);
 
 	  if(list_notation == NULL){
-	    i++;
-
 	    pthread_mutex_unlock(audio_mutex);
+
+	    i++;
 	    
 	    continue;
 	  }
@@ -1494,7 +1500,11 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
 	gtk_widget_queue_draw((GtkWidget *) pattern_edit);
 
-	fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
+#ifdef AGS_DEBUG
+	if(note != NULL){
+	  fprintf(stdout, "x0 = %llu\nx1 = %llu\ny  = %llu\n\n", (long long unsigned int) note->x[0], (long long unsigned int) note->x[1], (long long unsigned int) note->y);
+	}
+#endif
       }
       break;
     case GDK_KEY_Delete:
@@ -1511,10 +1521,10 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 				     i);
 
 	  if(list_notation == NULL){
+	    pthread_mutex_unlock(audio_mutex);
+
 	    i++;
 
-	    pthread_mutex_unlock(audio_mutex);
-	    
 	    continue;
 	  }
 
@@ -1531,7 +1541,7 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
       break;
     }
   }
-  
+
   if(do_feedback){
     AgsChannel *input;
     AgsNote *current_note;
@@ -1562,6 +1572,7 @@ ags_pattern_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
       input_pads = audio->input_pads;
       input = audio->input;
+      
       current_note = ags_notation_find_point(list_notation->data,
 					     pattern_edit->selected_x, pattern_edit->selected_y,
 					     FALSE);

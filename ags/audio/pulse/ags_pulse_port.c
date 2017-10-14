@@ -1001,7 +1001,10 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
     pthread_mutex_lock(callback_mutex);
     
     if((AGS_PULSE_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0){
-      struct timespec timeout;
+      struct timespec timeout = {
+	0,
+	0,
+      };
 
       guint latency;
       

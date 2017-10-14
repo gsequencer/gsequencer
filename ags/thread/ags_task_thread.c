@@ -561,10 +561,12 @@ ags_task_thread_run(AgsThread *thread)
 
   pthread_mutex_lock(task_thread->read_mutex);
 
-  g_list_free_full(g_atomic_pointer_get(&(task_thread->exec)),
-		   g_object_unref);
+  list = g_atomic_pointer_get(&(task_thread->exec));
   g_atomic_pointer_set(&(task_thread->exec),
 		       NULL);
+
+  g_list_free_full(list,
+		   g_object_unref);
 
   pthread_mutex_unlock(task_thread->read_mutex);
 

@@ -312,23 +312,25 @@ ags_start_soundcard_launch(AgsTask *task)
   
   while((soundcard_thread = ags_thread_find_type(soundcard_thread,
 						 AGS_TYPE_SOUNDCARD_THREAD)) != NULL){
-    /* append to AgsSoundcard */
-    AGS_SOUNDCARD_THREAD(soundcard_thread)->error = NULL;
+    if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(soundcard_thread->flags)))) == 0){
+      /* append to AgsSoundcard */
+      AGS_SOUNDCARD_THREAD(soundcard_thread)->error = NULL;
 
-    g_message("start soundcard");
+      g_message("start soundcard");
 
-    start_queue = NULL;    
-    start_queue = g_list_prepend(start_queue,
-				 soundcard_thread);
+      start_queue = NULL;    
+      start_queue = g_list_prepend(start_queue,
+				   soundcard_thread);
 
-    if(start_queue != NULL){
-      if(g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue)) != NULL){
-	g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
-			     g_list_concat(start_queue,
-					   g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue))));
-      }else{
-	g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
-			     start_queue);
+      if(start_queue != NULL){
+	if(g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue)) != NULL){
+	  g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
+			       g_list_concat(start_queue,
+					     g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue))));
+	}else{
+	  g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
+			       start_queue);
+	}
       }
     }
 
@@ -352,9 +354,8 @@ ags_start_soundcard_new(AgsApplicationContext *application_context)
   AgsStartSoundcard *start_soundcard;
 
   start_soundcard = (AgsStartSoundcard *) g_object_new(AGS_TYPE_START_SOUNDCARD,
+						       "application-context", application_context,
 						       NULL);
-
-  start_soundcard->application_context = application_context;
 
   return(start_soundcard);
 }
