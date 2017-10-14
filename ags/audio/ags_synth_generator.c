@@ -982,12 +982,12 @@ ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
 
   if(sync_point != NULL){
     if(sync_point_count > 1){
-      if(sync_point[1][0][0] > 0.0 &&
+      if(floor(sync_point[1][0][0]) > 0.0 &&
 	 sync_point[1][0][0] < current_count){
 	current_count = sync_point[1][0][0];
       }
     }else{
-      if(sync_point[0][0][0] > 0.0 &&
+      if(floor(sync_point[0][0][0]) > 0.0 &&
 	 sync_point[0][0][0] < current_count){
 	current_count = sync_point[0][0][0];
       }
@@ -1037,7 +1037,7 @@ ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
     current_phase = (guint) ((offset + current_count) + phase) % (guint) floor(samplerate / current_frequency);
 
     if(sync_point != NULL){
-      if(sync_point[j][0][0] > 0.0 &&
+      if(floor(sync_point[j][0][0]) > 0.0 &&
 	 last_sync + sync_point[j][0][0] < offset + current_count){
 	current_phase = sync_point[j][0][1];
 
@@ -1055,13 +1055,13 @@ ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
     }
     
     if(sync_point != NULL){
-      if(sync_point[j + 1][0][0] > 0.0 &&
+      if(floor(sync_point[j + 1][0][0]) > 0.0 &&
 	 j + 1 < sync_point_count){
 	if(sync_point[j + 1][0][0] < current_count){
 	  current_count = sync_point[j + 1][0][0];
 	}
       }else{
-	if(sync_point[0][0][0] > 0.0 &&
+	if(floor(sync_point[0][0][0]) > 0.0 &&
 	   sync_point[0][0][0] < current_count){
 	  current_count = sync_point[0][0][0];
 	}
@@ -1073,7 +1073,7 @@ ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
 	last_sync = last_sync + sync_point[j][0][0];
 	j++;
 
-	if(sync_point[j][0][0] == 0.0 ||
+	if(floor(sync_point[j][0][0]) == 0.0 ||
 	   j >= sync_point_count){
 	  j = 0;
 	}
