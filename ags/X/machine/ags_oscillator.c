@@ -264,7 +264,7 @@ ags_oscillator_init(AgsOscillator *oscillator)
   oscillator->sync_point_count = AGS_OSCILLATOR_DEFAULT_SYNC_POINT_COUNT; 
   oscillator->sync_point = (GtkSpinButton **) malloc(2 * oscillator->sync_point_count * sizeof(GtkSpinButton *));
 
-  for(i = 0; i < oscillator->sync_point_count;){
+  for(i = 0; i < oscillator->sync_point_count; i++){
     sync_box = (GtkBox *) gtk_hbox_new(TRUE,
 				       0);
     gtk_box_pack_start(hbox,
@@ -272,19 +272,17 @@ ags_oscillator_init(AgsOscillator *oscillator)
 		       FALSE, FALSE,
 		       0);
     
-    oscillator->sync_point[i] = gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
+    oscillator->sync_point[2 * i] = gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
     gtk_box_pack_start(sync_box,
-		       oscillator->sync_point[i],
+		       oscillator->sync_point[2 * i],
 		       FALSE, FALSE,
 		       0);
 
-    oscillator->sync_point[i + 1] = gtk_spin_button_new_with_range(0.0, 1.0, 0.001);
+    oscillator->sync_point[2 * i + 1] = gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
     gtk_box_pack_start(sync_box,
-		       oscillator->sync_point[i + 1],
+		       oscillator->sync_point[2 * i + 1],
 		       FALSE, FALSE,
 		       0);
-
-    i += 2;
   }
 }
 

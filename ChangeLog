@@ -1,6 +1,12 @@
 ags (1.1.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed SIGSEGV in ags_synth_generator_compute_extended() because NULL pointer dereference
+	* fixed SIGSEGV in ags_oscillator.c caused by wrong assigned array index
+
+ags (1.1.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented ags_synth_generator_compute_extended()
 	* implemented AgsSynthGenerator:delay property
 	* implemented needed properties of AgsApplySynth in order to use ags_synth_generator_compute_extended()

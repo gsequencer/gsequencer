@@ -1546,7 +1546,7 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
     do_sync = gtk_toggle_button_get_active(oscillator->do_sync);
 
     if(do_sync){
-      sync_point_count = gtk_spin_button_get_value(oscillator->sync_point_count);
+      sync_point_count = oscillator->sync_point_count;
 
       if(sync_point_count > 0){
 	sync_point = (AgsComplex **) malloc(sync_point_count * sizeof(AgsComplex *));

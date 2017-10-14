@@ -980,28 +980,25 @@ ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
   offset = 0;
   last_sync = 0;
 
-  if(sync_point[0][0][0] == 0.0){
-    current_phase = sync_point[0][0][1];
-  }
-
-  if(sync_point_count > 1){
-    if(sync_point[1][0][0] < current_count){
-      current_count = sync_point[1][0][0];
+  if(sync_point != NULL){
+    if(sync_point[0][0][0] == 0.0){
+      current_phase = sync_point[0][0][1];
     }
-  }else{
-    if(sync_point[0][0][0] < current_count){
-      current_count = sync_point[0][0][0];
+
+    if(sync_point_count > 1){
+      if(sync_point[1][0][0] < current_count){
+	current_count = sync_point[1][0][0];
+      }
+    }else{
+      if(sync_point[0][0][0] < current_count){
+	current_count = sync_point[0][0][0];
+      }
     }
   }
-
+  
   synced = FALSE;
   
   for(i = attack, j = 0; i < frame_count + attack && stream != NULL;){
-    if(i != 0 &&
-       i % buffer_size == 0){
-      stream = stream->next;
-    }
-
     switch(synth_generator->oscillator){
     case AGS_SYNTH_GENERATOR_OSCILLATOR_SIN:
       {
@@ -1041,15 +1038,16 @@ ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
     
     current_phase = (guint) ((offset + current_count) + phase) % (guint) floor(samplerate / current_frequency);
 
-    if(last_sync + sync_point[j][0][0] < offset + current_count){
-      current_phase = sync_point[j][0][1];
+    if(sync_point != NULL){
+      if(last_sync + sync_point[j][0][0] < offset + current_count){
+	current_phase = sync_point[j][0][1];
 
-      synced = TRUE;
+	synced = TRUE;
+      }
     }
-
+    
     offset += current_count;
     i += current_count;
-
 
     if(buffer_size > (current_attack + current_count)){
       current_count = buffer_size - (current_attack + current_count);
@@ -1057,24 +1055,35 @@ ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
       current_count = buffer_size;
     }
     
-    if(j + 1 < sync_point_count){
-      if(sync_point[j + 1][0][0] < current_count){
-	current_count = sync_point[j + 1][0][0];
-      }
-    }else{
-      if(sync_point[0][0][0] < current_count){
-	current_count = sync_point[0][0][0];
+    if(sync_point != NULL){
+      if(j + 1 < sync_point_count){
+	if(sync_point[j + 1][0][0] < current_count){
+	  current_count = sync_point[j + 1][0][0];
+	}
+      }else{
+	if(sync_point[0][0][0] < current_count){
+	  current_count = sync_point[0][0][0];
+	}
       }
     }
     
-    if(synced){
-      last_sync = last_sync + sync_point[j][0][0];
-      j++;
+    if(sync_point != NULL){
+      if(synced){
+	last_sync = last_sync + sync_point[j][0][0];
+	j++;
 
-      if(j >= sync_point_count){
-	j = 0;
+	if(j >= sync_point_count){
+	  j = 0;
+	}
+
+	synced = FALSE;
       }
-    }    
+    }
+
+    if(i != 0 &&
+       i % buffer_size == 0){
+      stream = stream->next;
+    }
   }  
 }
 

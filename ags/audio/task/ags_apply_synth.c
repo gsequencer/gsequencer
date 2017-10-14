@@ -898,7 +898,7 @@ ags_apply_synth_launch(AgsTask *task)
 
 	/* set properties */
 	g_object_set(AGS_INPUT(channel)->synth_generator,
-		     "n-frames", frame_count,
+		     "frame-count", frame_count,
 		     "delay", delay,
 		     "attack", attack,
 		     "oscillator", oscillator,
@@ -939,7 +939,7 @@ ags_apply_synth_launch(AgsTask *task)
 
 	/* set properties */
 	g_object_set(AGS_INPUT(channel)->synth_generator,
-		     "n-frames", frame_count,
+		     "frame-count", frame_count,
 		     "delay", delay,
 		     "attack", attack,
 		     "oscillator", oscillator,
@@ -982,7 +982,7 @@ ags_apply_synth_launch(AgsTask *task)
 
 	/* set properties */
 	g_object_set(AGS_INPUT(input)->synth_generator,
-		     "n-frames", frame_count,
+		     "frame-count", frame_count,
 		     "delay", delay, 
 		     "attack", attack,
 		     "oscillator", oscillator,
