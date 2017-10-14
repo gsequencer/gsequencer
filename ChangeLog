@@ -1,3 +1,8 @@
+ags (1.1.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_synth_generator_compute_extended() to deal with x <= 0.0
+
 ags (1.1.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
