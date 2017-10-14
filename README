@@ -195,7 +195,7 @@ Generated files by glib-genmarshal licensed under the terms of GNU LGPLv2.1+, co
 ags/object/ags_marshal.c
 ags/object/ags_marshal.h
 
-Third-party files of Filipe Coelho BSD licensed please consider copyright notice, copyright provided by falktx.com:
+Third-party files of Filipe Coelho ISC licensed please consider copyright notice, copyright provided by falktx.com:
 
 lv2/lv2plug.in/ns/lv2ext/lv2_programs.h
 
