@@ -492,10 +492,9 @@ ags_set_samplerate_new(GObject *scope,
   AgsSetSamplerate *set_samplerate;
 
   set_samplerate = (AgsSetSamplerate *) g_object_new(AGS_TYPE_SET_SAMPLERATE,
+						     "scope", scope,
+						     "samplerate", samplerate,
 						     NULL);
-
-  set_samplerate->scope = scope;
-  set_samplerate->samplerate = samplerate;
 
   return(set_samplerate);
 }

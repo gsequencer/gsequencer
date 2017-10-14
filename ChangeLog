@@ -1,4 +1,10 @@
-ags (1.1.0)
+ags (1.1.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_cancel_audio_new() to use properties
+	* fixed ags_set_samplerate_new() to use properties
+
+ags (1.1.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed SIGSEGV in ags_synth_generator_compute_extended() because NULL pointer dereference

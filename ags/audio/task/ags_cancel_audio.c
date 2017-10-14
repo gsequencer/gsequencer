@@ -536,13 +536,12 @@ ags_cancel_audio_new(AgsAudio *audio,
   AgsCancelAudio *cancel_audio;
 
   cancel_audio = (AgsCancelAudio *) g_object_new(AGS_TYPE_CANCEL_AUDIO,
+						 "audio", audio,
+						 "do-playback", do_playback,
+						 "do-sequencer", do_sequencer,
+						 "do-notation", do_notation,
 						 NULL);
 
-  cancel_audio->audio = audio;
-
-  cancel_audio->do_playback = do_playback;
-  cancel_audio->do_sequencer = do_sequencer;
-  cancel_audio->do_notation = do_notation;
 
   return(cancel_audio);
 }
