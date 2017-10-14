@@ -190,7 +190,7 @@ Third-party files with uncertain copyright provided by gettext:
 * po/insert-header.sin
 * po/boldquot.sed
 
-Generated files with uncertain copyright done with glib-genmarshal
+Generated files by glib-genmarshal licensed under the terms of GNU LGPLv2.1+, copyright provided by http://www.gnome.org
 
 ags/object/ags_marshal.c
 ags/object/ags_marshal.h
