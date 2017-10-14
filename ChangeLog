@@ -2,6 +2,7 @@ ags (1.1.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed ags_synth_generator_compute_extended() to deal with x <= 0.0 using floor()
+	* fixed if-statements in ags_synth_generator_compute_extended() not to do array index excess
 
 ags (1.1.3)
 

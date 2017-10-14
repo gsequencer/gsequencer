@@ -981,14 +981,14 @@ ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
   last_sync = 0;
 
   if(sync_point != NULL){
-    if(sync_point_count > 1){
-      if(floor(sync_point[1][0][0]) > 0.0 &&
-	 sync_point[1][0][0] < current_count){
+    if(sync_point_count > 1 &&
+       floor(sync_point[1][0][0]) > 0.0){
+      if(sync_point[1][0][0] < current_count){
 	current_count = sync_point[1][0][0];
       }
     }else{
-      if(floor(sync_point[0][0][0]) > 0.0 &&
-	 sync_point[0][0][0] < current_count){
+      if(sync_point[0][0][0] < current_count &&
+	 floor(sync_point[0][0][0]) > 0.0){
 	current_count = sync_point[0][0][0];
       }
     }
@@ -1055,8 +1055,8 @@ ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
     }
     
     if(sync_point != NULL){
-      if(floor(sync_point[j + 1][0][0]) > 0.0 &&
-	 j + 1 < sync_point_count){
+      if(j + 1 < sync_point_count &&
+	 floor(sync_point[j + 1][0][0]) > 0.0){
 	if(sync_point[j + 1][0][0] < current_count){
 	  current_count = sync_point[j + 1][0][0];
 	}
@@ -1073,8 +1073,8 @@ ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
 	last_sync = last_sync + sync_point[j][0][0];
 	j++;
 
-	if(floor(sync_point[j][0][0]) == 0.0 ||
-	   j >= sync_point_count){
+	if(j >= sync_point_count ||
+	   floor(sync_point[j][0][0]) == 0.0){
 	  j = 0;
 	}
 
