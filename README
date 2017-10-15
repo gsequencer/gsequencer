@@ -175,32 +175,44 @@ Third-party files of autotools permissive licensed see specific files for warran
 * missing
 * test-driver
 
-Third-party files of gettext TODO:JK: add missing information, copyright provided by http://www.fsf.org:
+Derived files of gsequencer licensed under the terms of GNU GPLv3+, copyright provided by http://www.nongnu.org/gsequencer:
 
-* po/Makevars
 * po/gsequencer.pot
-* po/quot.sed
-* po/Rules-quot
-* po/Makevars.template
-* po/Makefile.in.in
-* po/en@boldquot.header
-* po/POTFILES.in
-* po/en@quot.header
-* po/stamp-po
-* po/remove-potcdate.sin
+
+Third-party files of Ulrich Drepper (gettext) without any copyrightable content:
+
 * po/ChangeLog
-* po/insert-header.sin
+* po/POTFILES.in
+* po/stamp-po
+
+Third-party files of Ulrich Drepper (gettext) permissive licensed see specific files for warranty disclaimer and a notice preservation requirement, copyright provided by http://www.fsf.org:
+
+* po/Makefile.in.in
+* po/remove-potcdate.sin
+
+Third-party files of Ulrich Drepper (gettext) free software licensed, copyright provided by http://www.fsf.org:
+
+* po/Makevars.template
+* po/Makevars
+* po/Rules-quot
+
+Third-party files of Ulrich Drepper (gettext) all-permissive licensed, copyright provided by http://www.fsf.org:
+
+* po/quot.sed
 * po/boldquot.sed
+* po/en@quot.header
+* po/en@boldquot.header
+* po/insert-header.sin
 
 Generated files by glib-genmarshal licensed under the terms of GNU LGPLv2.1+, copyright provided by http://www.gnome.org:
 
 ags/object/ags_marshal.c
 ags/object/ags_marshal.h
 
-Third-party files of Filipe Coelho ISC licensed please consider copyright notice, copyright provided by falktx.com:
+Third-party files of Filipe Coelho ISC licensed please consider copyright notice, copyright provided by http://www.falktx.com:
 
 lv2/lv2plug.in/ns/lv2ext/lv2_programs.h
 
-Third-party files of David Robillard licensed under the terms of GNU GPLv3+, copyright provided by http://drobilla.net:
+Third-party files of David Robillard licensed under the terms of GNU GPLv3+, copyright provided by http://www.drobilla.net:
 
 lv2.lib/mda/EPiano-presets.ttl
