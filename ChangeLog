@@ -1,3 +1,14 @@
+ags (1.2.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implemented AgsRecordBox
+	* TODO:JK: implemented audio input properties
+	* TODO:JK: implemented AgsWaveEdit
+	* TODO:JK: implemented AgsDevin
+	* TODO:JK: implemented AgsJackDevin
+	* TODO:JK: implemented AgsPulseDevin
+	* use $(docdir) in Makefile.am
+
 ags (1.1.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

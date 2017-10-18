@@ -134,7 +134,7 @@ nobase_include_HEADERS = $(libags_la_HEADERS_0) $(libags_thread_la_HEADERS_0) $(
 # nobase_include_HEADERS += $(libgsequencer_la_HEADERS_0)
 
 # doc
-docdir = $(datadir)/doc/gsequencer
+# docdir = $(datadir)/doc/gsequencer
 doc_DATA = README ags_example.xml
 
 # documentation
@@ -1895,8 +1895,8 @@ install-data-local:
 	install -c -p -m 644 $(top_srcdir)/ags/file/ags_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	install -c -p -m 644 $(top_srcdir)/ags.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
 	install -c -p -m 644 $(top_srcdir)/ags-simple.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
-	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/
-	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(datadir)/doc/gsequencer/changelog.gz
+	mkdir -p $(DESTDIR)/$(datadir)/$(docdir)/
+	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(datadir)/$(docdir)/changelog.gz
 
 fix-local-html: html
 	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/\/usr\/share\/doc\/libglib2.0-doc\/gobject/g' {} \;
@@ -1927,11 +1927,11 @@ fix-online-html: html
 	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-gui-html/\.\.\/libags-gui/g' {} \;
 
 install-html: fix-local-html 
-	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/{images,html}/
+	mkdir -p $(DESTDIR)/$(datadir)/$(docdir)/{images,html}/
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/{images,html}/
-	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(datadir)/doc/gsequencer/images/
+	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(datadir)/$(docdir)/images/
 	install -c -p -m 644 $(devdocimages) $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images/
-	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
+	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(datadir)/$(docdir)/html/
 	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
 	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-doc/api
@@ -1949,7 +1949,7 @@ install-html: fix-local-html
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
-	rm -rf $(DESTDIR)/$(datadir)/doc/gsequencer
+	rm -rf $(DESTDIR)/$(datadir)/$(docdir)
 	rm -rf $(DESTDIR)/$(datadir)/xml/gsequencer
 	rm -rf $(DESTDIR)/$(datadir)/doc/libags-doc
 	rm -rf $(DESTDIR)/$(datadir)/doc/libags-audio-doc
