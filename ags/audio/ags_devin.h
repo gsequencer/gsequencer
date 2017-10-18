@@ -57,11 +57,11 @@ typedef struct _AgsDevinClass AgsDevinClass;
  * @AGS_DEVIN_BUFFER2: ring-buffer 2
  * @AGS_DEVIN_BUFFER3: ring-buffer 3
  * @AGS_DEVIN_ATTACK_FIRST: use first attack, instead of second one
- * @AGS_DEVIN_CAPTURE: devin is capturing
+ * @AGS_DEVIN_RECORD: do capture
  * @AGS_DEVIN_OSS: use OSS4 backend
  * @AGS_DEVIN_ALSA: use ALSA backend
  * @AGS_DEVIN_SHUTDOWN: stop capture
- * @AGS_DEVIN_START_CAPTURE: capture starting
+ * @AGS_DEVIN_START_RECORD: capture starting
  * @AGS_DEVIN_NONBLOCKING: do non-blocking calls
  * @AGS_DEVIN_INITIALIZED: the soundcard was initialized
  * 
@@ -77,13 +77,13 @@ typedef enum
 
     AGS_DEVIN_ATTACK_FIRST                   = 1 <<  4,
 
-    AGS_DEVIN_CAPTURE                        = 1 <<  5,
+    AGS_DEVIN_RECORD                         = 1 <<  5,
 
     AGS_DEVIN_OSS                            = 1 <<  6,
     AGS_DEVIN_ALSA                           = 1 <<  7,
 
     AGS_DEVIN_SHUTDOWN                       = 1 <<  8,
-    AGS_DEVIN_START_CAPTURE                  = 1 <<  9,
+    AGS_DEVIN_START_RECORD                   = 1 <<  9,
 
     AGS_DEVIN_NONBLOCKING                    = 1 << 10,
     AGS_DEVIN_INITIALIZED                    = 1 << 11,

@@ -4,8 +4,8 @@ ags (1.2.0)
 	* TODO:JK: implemented AgsRecordBox
 	* TODO:JK: implemented audio input properties
 	* TODO:JK: implemented AgsWaveEdit
-	* TODO:JK: implemented AgsDevin
-	* TODO:JK: implemented AgsJackDevin
+	* implemented AgsDevin
+	* implemented AgsJackDevin
 	* TODO:JK: implemented AgsPulseDevin
 	* use $(docdir) in Makefile.am
 

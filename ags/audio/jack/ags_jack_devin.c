@@ -101,14 +101,14 @@ void ags_jack_devout_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			      GError **error);
 
 gboolean ags_jack_devout_is_starting(AgsSoundcard *soundcard);
-gboolean ags_jack_devout_is_playing(AgsSoundcard *soundcard);
+gboolean ags_jack_devout_is_recording(AgsSoundcard *soundcard);
 
 gchar* ags_jack_devout_get_uptime(AgsSoundcard *soundcard);
 
 void ags_jack_devout_port_init(AgsSoundcard *soundcard,
 			       GError **error);
-void ags_jack_devout_port_play(AgsSoundcard *soundcard,
-			       GError **error);
+void ags_jack_devout_port_record(AgsSoundcard *soundcard,
+				 GError **error);
 void ags_jack_devout_port_free(AgsSoundcard *soundcard);
 
 void ags_jack_devout_tic(AgsSoundcard *soundcard);
@@ -261,7 +261,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 1.0.0
+   * Since: 1.2.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("the application context object"),
@@ -277,7 +277,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The assigned application mutex
    * 
-   * Since: 1.0.0
+   * Since: 1.2.0
    */
   param_spec = g_param_spec_pointer("application-mutex",
 				    i18n_pspec("the application mutex object"),
@@ -292,7 +292,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The jack soundcard indentifier
    * 
-   * Since: 1.0.0
+   * Since: 1.2.0
    */
   param_spec = g_param_spec_string("device",
 				   i18n_pspec("the device identifier"),
@@ -308,7 +308,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The dsp channel count
    * 
-   * Since: 1.0.0
+   * Since: 1.2.0
    */
   param_spec = g_param_spec_uint("dsp-channels",
 				 i18n_pspec("count of DSP channels"),
@@ -326,7 +326,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The pcm channel count
    * 
-   * Since: 1.0.0
+   * Since: 1.2.0
    */
   param_spec = g_param_spec_uint("pcm-channels",
 				 i18n_pspec("count of PCM channels"),
@@ -344,7 +344,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The precision of the buffer
    * 
-   * Since: 1.0.0
+   * Since: 1.2.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("precision of buffer"),
@@ -362,7 +362,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The buffer size
    * 
-   * Since: 1.0.0
+   * Since: 1.2.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("frame count of a buffer"),
@@ -380,11 +380,11 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The samplerate
    * 
-   * Since: 1.0.0
+   * Since: 1.2.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("frames per second"),
-				 i18n_pspec("The frames count played during a second"),
+				 i18n_pspec("The frames count recorded during a second"),
 				 8000,
 				 96000,
 				 44100,
@@ -398,11 +398,11 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The buffer
    * 
-   * Since: 1.0.0
+   * Since: 1.2.0
    */
   param_spec = g_param_spec_pointer("buffer",
 				    i18n_pspec("the buffer"),
-				    i18n_pspec("The buffer to play"),
+				    i18n_pspec("The buffer to record"),
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
 				  PROP_BUFFER,
@@ -413,7 +413,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * Beats per minute
    * 
-   * Since: 1.0.0
+   * Since: 1.2.0
    */
   param_spec = g_param_spec_double("bpm",
 				   i18n_pspec("beats per minute"),
@@ -431,7 +431,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * tact
    * 
-   * Since: 1.0.0
+   * Since: 1.2.0
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -449,7 +449,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * Attack of the buffer
    * 
-   * Since: 1.0.0
+   * Since: 1.2.0
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),
@@ -465,7 +465,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The assigned #AgsJackClient
    * 
-   * Since: 1.0.0
+   * Since: 1.2.0
    */
   param_spec = g_param_spec_object("jack-client",
 				   i18n_pspec("jack client object"),
@@ -481,7 +481,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The assigned #AgsJackPort
    * 
-   * Since: 1.0.0
+   * Since: 1.2.0
    */
   param_spec = g_param_spec_pointer("jack-port",
 				    i18n_pspec("jack port object"),
@@ -496,7 +496,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 1.0.0
+   * Since: 1.2.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("channel"),
@@ -545,13 +545,13 @@ ags_jack_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->is_available = NULL;
 
   soundcard->is_starting =  ags_jack_devout_is_starting;
-  soundcard->is_playing = ags_jack_devout_is_playing;
+  soundcard->is_recording = ags_jack_devout_is_recording;
   soundcard->is_recording = NULL;
 
   soundcard->get_uptime = ags_jack_devout_get_uptime;
   
-  soundcard->play_init = ags_jack_devout_port_init;
-  soundcard->play = ags_jack_devout_port_play;
+  soundcard->record_init = ags_jack_devout_port_init;
+  soundcard->record = ags_jack_devout_port_record;
 
   soundcard->record_init = NULL;
   soundcard->record = NULL;
@@ -1264,9 +1264,9 @@ ags_jack_devout_disconnect(AgsConnectable *connectable)
  * ags_jack_devout_switch_buffer_flag:
  * @jack_devout: an #AgsJackDevout
  *
- * The buffer flag indicates the currently played buffer.
+ * The buffer flag indicates the currently recorded buffer.
  *
- * Since: 1.0.0
+ * Since: 1.2.0
  */
 void
 ags_jack_devout_switch_buffer_flag(AgsJackDevout *jack_devout)
@@ -1455,7 +1455,7 @@ ags_jack_devout_get_presets(AgsSoundcard *soundcard,
  *
  * List available soundcards.
  *
- * Since: 1.0.0
+ * Since: 1.2.0
  */
 void
 ags_jack_devout_list_cards(AgsSoundcard *soundcard,
@@ -1572,17 +1572,17 @@ ags_jack_devout_is_starting(AgsSoundcard *soundcard)
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
   
-  return((((AGS_JACK_DEVOUT_START_PLAY & (jack_devout->flags)) != 0) ? TRUE: FALSE));
+  return((((AGS_JACK_DEVOUT_START_RECORD & (jack_devout->flags)) != 0) ? TRUE: FALSE));
 }
 
 gboolean
-ags_jack_devout_is_playing(AgsSoundcard *soundcard)
+ags_jack_devout_is_recording(AgsSoundcard *soundcard)
 {
   AgsJackDevout *jack_devout;
 
   jack_devout = AGS_JACK_DEVOUT(soundcard);
   
-  return((((AGS_JACK_DEVOUT_PLAY & (jack_devout->flags)) != 0) ? TRUE: FALSE));
+  return((((AGS_JACK_DEVOUT_RECORD & (jack_devout->flags)) != 0) ? TRUE: FALSE));
 }
 
 gchar*
@@ -1590,7 +1590,7 @@ ags_jack_devout_get_uptime(AgsSoundcard *soundcard)
 {
   gchar *uptime;
 
-  if(ags_soundcard_is_playing(soundcard)){
+  if(ags_soundcard_is_recording(soundcard)){
     guint samplerate;
     guint buffer_size;
 
@@ -1690,10 +1690,10 @@ ags_jack_devout_port_init(AgsSoundcard *soundcard,
     return;
   }
   
-  /* prepare for playback */
+  /* prepare for capture */
   jack_devout->flags |= (AGS_JACK_DEVOUT_BUFFER3 |
-			 AGS_JACK_DEVOUT_START_PLAY |
-			 AGS_JACK_DEVOUT_PLAY |
+			 AGS_JACK_DEVOUT_START_RECORD |
+			 AGS_JACK_DEVOUT_RECORD |
 			 AGS_JACK_DEVOUT_NONBLOCKING);
 
   memset(jack_devout->buffer[0], 0, jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
@@ -1707,8 +1707,8 @@ ags_jack_devout_port_init(AgsSoundcard *soundcard,
   jack_devout->tic_counter = 0;
 
   jack_devout->flags |= (AGS_JACK_DEVOUT_INITIALIZED |
-			 AGS_JACK_DEVOUT_START_PLAY |
-			 AGS_JACK_DEVOUT_PLAY);
+			 AGS_JACK_DEVOUT_START_RECORD |
+			 AGS_JACK_DEVOUT_RECORD);
   
   g_atomic_int_and(&(jack_devout->sync_flags),
 		   (~(AGS_JACK_DEVOUT_PASS_THROUGH)));
@@ -1719,8 +1719,8 @@ ags_jack_devout_port_init(AgsSoundcard *soundcard,
 }
 
 void
-ags_jack_devout_port_play(AgsSoundcard *soundcard,
-			  GError **error)
+ags_jack_devout_port_record(AgsSoundcard *soundcard,
+			    GError **error)
 {
   AgsJackClient *jack_client;
   AgsJackDevout *jack_devout;
@@ -1764,10 +1764,10 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
 
   pthread_mutex_unlock(mutex);
 
-  /* do playback */
+  /* do capture */
   pthread_mutex_lock(mutex);
   
-  jack_devout->flags &= (~AGS_JACK_DEVOUT_START_PLAY);
+  jack_devout->flags &= (~AGS_JACK_DEVOUT_START_RECORD);
   notify_soundcard = AGS_NOTIFY_SOUNDCARD(jack_devout->notify_soundcard);
   
   if((AGS_JACK_DEVOUT_INITIALIZED & (jack_devout->flags)) == 0){
@@ -1806,7 +1806,7 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
   default:
     pthread_mutex_unlock(mutex);
     
-    g_warning("ags_jack_devout_port_play(): unsupported word size");
+    g_warning("ags_jack_devout_port_record(): unsupported word size");
     
     return;
   }
@@ -1942,7 +1942,7 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
       }
       break;
     default:
-      g_warning("ags_jack_devout_port_play(): unsupported word size");
+      g_warning("ags_jack_devout_port_record(): unsupported word size");
       return;
     }
         
@@ -2018,7 +2018,7 @@ ags_jack_devout_port_free(AgsSoundcard *soundcard)
 			   AGS_JACK_DEVOUT_BUFFER1 |
 			   AGS_JACK_DEVOUT_BUFFER2 |
 			   AGS_JACK_DEVOUT_BUFFER3 |
-			   AGS_JACK_DEVOUT_PLAY));
+			   AGS_JACK_DEVOUT_RECORD));
 
   g_atomic_int_or(&(jack_devout->sync_flags),
 		  AGS_JACK_DEVOUT_PASS_THROUGH);
@@ -2404,7 +2404,7 @@ ags_jack_devout_get_audio(AgsSoundcard *soundcard)
  *
  * Calculate delay and attack and reset it.
  *
- * Since: 1.0.0
+ * Since: 1.2.0
  */
 void
 ags_jack_devout_adjust_delay_and_attack(AgsJackDevout *jack_devout)
@@ -2517,7 +2517,7 @@ ags_jack_devout_adjust_delay_and_attack(AgsJackDevout *jack_devout)
  *
  * Reallocate the internal audio buffer.
  *
- * Since: 1.0.0
+ * Since: 1.2.0
  */
 void
 ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
@@ -2666,7 +2666,7 @@ ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
  *
  * Returns: a new #AgsJackDevout
  *
- * Since: 1.0.0
+ * Since: 1.2.0
  */
 AgsJackDevout*
 ags_jack_devout_new(GObject *application_context)
