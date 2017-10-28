@@ -32,6 +32,7 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 void ags_peak_channel_run_class_init(AgsPeakChannelRunClass *peak_channel_run);
 void ags_peak_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);

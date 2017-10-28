@@ -166,6 +166,9 @@ GQuark ags_pulse_devout_error_quark();
 
 void ags_pulse_devout_switch_buffer_flag(AgsPulseDevout *pulse_devout);
 
+void ags_pulse_devout_adjust_delay_and_attack(AgsPulseDevout *pulse_devout);
+void ags_pulse_devout_realloc_buffer(AgsPulseDevout *pulse_devout);
+
 AgsPulseDevout* ags_pulse_devout_new(GObject *application_context);
 
 #endif /*__AGS_PULSE_DEVOUT_H__*/

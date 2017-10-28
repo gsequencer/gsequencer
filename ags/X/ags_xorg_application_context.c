@@ -128,6 +128,7 @@
 #include <ags/audio/thread/ags_soundcard_thread.h>
 #include <ags/audio/thread/ags_sequencer_thread.h>
 #include <ags/audio/thread/ags_export_thread.h>
+#include <ags/audio/thread/ags_iterator_thread.h>
 
 #include <ags/widget/ags_led.h>
 #include <ags/widget/ags_hindicator.h>

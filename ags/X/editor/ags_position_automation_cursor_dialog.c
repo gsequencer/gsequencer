@@ -32,6 +32,8 @@
 #include <ags/X/editor/ags_automation_toolbar.h>
 #include <ags/X/editor/ags_automation_edit.h>
 
+#include <math.h>
+
 #include <ags/i18n.h>
 
 void ags_position_automation_cursor_dialog_class_init(AgsPositionAutomationCursorDialogClass *position_automation_cursor_dialog);

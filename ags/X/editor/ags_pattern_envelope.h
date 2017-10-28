@@ -125,7 +125,7 @@ void ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
 void ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
 					guint nth);
 
-void ags_pattern_envelope_reset_controls(AgsPatternEnvelope *pattern_envelope);
+void ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope);
 void ags_pattern_envelope_reset_tree_view(AgsPatternEnvelope *pattern_envelope);
 
 void ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope);

@@ -1,4 +1,4 @@
-/* GSequencer - Advanced GTK Sequencer
+</* GSequencer - Advanced GTK Sequencer
  * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
@@ -22,6 +22,10 @@
 
 #include <gdk/gdk.h>
 #include <pango/pangocairo.h>
+
+#ifdef AGS_WITH_LIBINSTPATCH
+#include <libinstpatch/libinstpatch.h>
+#endif
 
 #include <ags/lib/ags_log.h>
 
@@ -185,7 +189,7 @@ ags_setup_thread(void *ptr)
 
   //  pthread_mutex_lock(ags_gui_thread_get_dispatch_mutex());
   
-  ags_xorg_application_context_setup(xorg_application_context);
+  ags_application_context_setup(xorg_application_context);
 
   //  pthread_mutex_unlock(ags_gui_thread_get_dispatch_mutex());
   

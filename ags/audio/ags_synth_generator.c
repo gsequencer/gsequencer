@@ -37,6 +37,7 @@
 #include <ags/file/ags_file_link.h>
 
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_synth_util.h>
 
 #include <math.h>
