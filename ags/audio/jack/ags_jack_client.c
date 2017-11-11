@@ -37,6 +37,7 @@
 #include <ags/audio/jack/ags_jack_server.h>
 #include <ags/audio/jack/ags_jack_port.h>
 #include <ags/audio/jack/ags_jack_devout.h>
+#include <ags/audio/jack/ags_jack_devin.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
@@ -721,7 +722,7 @@ ags_jack_client_deactivate(AgsJackClient *jack_client)
 /**
  * ags_jack_client_add_device:
  * @jack_client: the #AgsJackClient
- * @jack_device: an #AgsJackDevout or #AgsJackMidiin
+ * @jack_device: an #AgsJackDevout, #AgsJackDevin or #AgsJackMidiin
  *
  * Add @jack_device to @jack_client.
  *
@@ -733,7 +734,8 @@ ags_jack_client_add_device(AgsJackClient *jack_client,
 {
   if(!AGS_IS_JACK_CLIENT(jack_client) ||
      (!AGS_IS_JACK_DEVOUT(jack_device) &&
-      !AGS_IS_JACK_MIDIIN(jack_device))){
+      !AGS_IS_JACK_MIDIIN(jack_device) &&
+      !AGS_IS_JACK_DEVIN(jack_device))){
     return;
   }
 
@@ -745,7 +747,7 @@ ags_jack_client_add_device(AgsJackClient *jack_client,
 /**
  * ags_jack_client_remove_device:
  * @jack_client: the #AgsJackClient
- * @jack_device: an #AgsJackDevout or #AgsJackMidiin
+ * @jack_device: an #AgsJackDevout, #AgsJackDevin or #AgsJackMidiin
  *
  * Remove @jack_device from @jack_client.
  *
@@ -760,7 +762,7 @@ ags_jack_client_remove_device(AgsJackClient *jack_client,
   }
   
   jack_client->device = g_list_remove(jack_client->device,
-				    jack_device);
+				      jack_device);
   g_object_unref(jack_device);
 }
 
@@ -858,6 +860,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   AgsJackClient *jack_client;
   AgsJackPort *jack_port;
   AgsJackDevout *jack_devout;
+  AgsJackDevout *jack_devin;
   AgsJackMidiin *jack_midiin;
   
   AgsAudioLoop *audio_loop;
@@ -868,7 +871,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   AgsApplicationContext *application_context;
 
   jack_client_t *client;
-  jack_default_audio_sample_t *out;
+  jack_default_audio_sample_t *out, *in;
   jack_midi_event_t in_event;
 
   GList *device, *device_start, *port;
@@ -994,9 +997,45 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 
     pthread_mutex_lock(device_mutex);
 
+    jack_devin = NULL;
     jack_midiin = NULL;
 
-    if(AGS_IS_JACK_MIDIIN(device->data)){
+    if(AGS_IS_JACK_DEVIN(device->data)){
+      jack_devin = (AgsJackDevin *) device->data;
+
+      /* wait callback */      
+      no_event = TRUE;
+      
+      if((AGS_JACK_DEVIN_PASS_THROUGH & (g_atomic_int_get(&(jack_devin->sync_flags)))) == 0){
+	callback_mutex = jack_devin->callback_mutex;
+
+	pthread_mutex_unlock(device_mutex);
+	
+	/* give back computing time until ready */
+	pthread_mutex_lock(callback_mutex);
+    
+	if((AGS_JACK_DEVIN_CALLBACK_DONE & (g_atomic_int_get(&(jack_devin->sync_flags)))) == 0){
+	  g_atomic_int_or(&(jack_devin->sync_flags),
+			  AGS_JACK_DEVIN_CALLBACK_WAIT);
+    
+	  while((AGS_JACK_DEVIN_CALLBACK_DONE & (g_atomic_int_get(&(jack_devin->sync_flags)))) == 0 &&
+		(AGS_JACK_DEVIN_CALLBACK_WAIT & (g_atomic_int_get(&(jack_devin->sync_flags)))) != 0){
+	    pthread_cond_wait(jack_devin->callback_cond,
+			      callback_mutex);
+	  }
+	}
+    
+	g_atomic_int_and(&(jack_devin->sync_flags),
+			 (~(AGS_JACK_DEVIN_CALLBACK_WAIT |
+			    AGS_JACK_DEVIN_CALLBACK_DONE)));
+	  
+	pthread_mutex_unlock(callback_mutex);
+
+	no_event = FALSE;
+	
+	pthread_mutex_lock(device_mutex);
+      }      
+    }else if(AGS_IS_JACK_MIDIIN(device->data)){
       jack_midiin = (AgsJackMidiin *) device->data;
 
       /* wait callback */      
@@ -1032,66 +1071,180 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	pthread_mutex_lock(device_mutex);
       }
 
-      /*  */
-      if(!no_event){
-	port = jack_midiin->jack_port;
+      /* audio input */
+      if(jack_devin != NULL){      
+	/* get buffer */
+	if((AGS_JACK_DEVIN_BUFFER0 & (jack_devin->flags)) != 0){
+	  nth_buffer = 3;
+	}else if((AGS_JACK_DEVIN_BUFFER1 & (jack_devin->flags)) != 0){
+	  nth_buffer = 0;
+	}else if((AGS_JACK_DEVIN_BUFFER2 & (jack_devin->flags)) != 0){
+	  nth_buffer = 1;
+	}else if((AGS_JACK_DEVIN_BUFFER3 & jack_devin->flags) != 0){
+	  nth_buffer = 2;
+	}else{
+	  /* iterate */
+	  device = device->next;
 
+	  pthread_mutex_unlock(device_mutex);
+	
+	  continue;
+	}
+
+	/* get copy mode */
+	copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(jack_devin->format),
+							AGS_AUDIO_BUFFER_UTIL_FLOAT);
+
+	/* check buffer flag */
+	switch(jack_devin->format){
+	case AGS_SOUNDCARD_SIGNED_8_BIT:
+	  {
+	    word_size = sizeof(signed char);
+	  }
+	  break;
+	case AGS_SOUNDCARD_SIGNED_16_BIT:
+	  {
+	    word_size = sizeof(signed short);
+	  }
+	  break;
+	case AGS_SOUNDCARD_SIGNED_24_BIT:
+	  {
+	    word_size = sizeof(signed long);
+	  }
+	  break;
+	case AGS_SOUNDCARD_SIGNED_32_BIT:
+	  {
+	    word_size = sizeof(signed long);
+	  }
+	  break;
+	case AGS_SOUNDCARD_SIGNED_64_BIT:
+	  {
+	    word_size = sizeof(signed long long);
+	  }
+	  break;
+	default:
+	  /* iterate */
+	  device = device->next;
+
+	  pthread_mutex_unlock(device_mutex);
+	
+	  continue;
+	}
+
+	/* retrieve buffer */
+	port = jack_devin->jack_port;
+      
 	for(i = 0; port != NULL; i++){
 	  jack_port = port->data;
-
-	  port_buf = jack_port_get_buffer(jack_port->port,
-					  4096);
-	  event_count = jack_midi_get_event_count(port_buf);
-		
-	  for(j = 0; j < event_count; j++){
-	    jack_midi_event_get(&in_event, port_buf, j);
-
-	    if(in_event.size > 0){
-	      if((AGS_JACK_MIDIIN_BUFFER0 & (jack_midiin->flags)) != 0){
-		nth_buffer = 1;
-	      }else if((AGS_JACK_MIDIIN_BUFFER1 & (jack_midiin->flags)) != 0){
-		nth_buffer = 2;
-	      }else if((AGS_JACK_MIDIIN_BUFFER2 & (jack_midiin->flags)) != 0){
-		nth_buffer = 3;
-	      }else if((AGS_JACK_MIDIIN_BUFFER3 & jack_midiin->flags) != 0){
-		nth_buffer = 0;
-	      }
-
-	      if(ceil((jack_midiin->buffer_size[nth_buffer] + in_event.size) / 4096.0) > ceil(jack_midiin->buffer_size[nth_buffer] / 4096.0)){
-		if(jack_midiin->buffer[nth_buffer] == NULL){
-		  jack_midiin->buffer[nth_buffer] = malloc(4096 * sizeof(char));
-		}else{
-		  jack_midiin->buffer[nth_buffer] = realloc(jack_midiin->buffer[nth_buffer],
-							    (ceil(jack_midiin->buffer_size[nth_buffer] / 4096.0) * 4096 + 4096) * sizeof(char));
-		}
-	      }
-
-	      memcpy(&(jack_midiin->buffer[nth_buffer][jack_midiin->buffer_size[nth_buffer]]),
-		     in_event.buffer,
-		     in_event.size);
-	      jack_midiin->buffer_size[nth_buffer] += in_event.size;
-	    }
-
-	  }	  
-
-	  jack_midi_clear_buffer(port_buf);
 	
+	  in = jack_port_get_buffer(jack_port->port,
+				    jack_devin->buffer_size);
+	
+	  if(!no_event && in != NULL){
+	    ags_audio_buffer_util_copy_buffer_to_buffer(jack_devin->buffer[nth_buffer], jack_devin->pcm_channels, i,
+							in, 1, 0,
+							jack_devin->buffer_size, copy_mode);
+	  }
+
 	  port = port->next;
 	}
 
-	/* signal finish */
-	callback_finish_mutex = jack_midiin->callback_finish_mutex;
+	/* clear buffer */
+	port = jack_devin->jack_port;
+      
+	for(i = 0; port != NULL; i++){
+	  jack_port = port->data;
 	
-	pthread_mutex_lock(callback_finish_mutex);
+	  in = jack_port_get_buffer(jack_port->port,
+				    jack_devin->buffer_size);
 
-	g_atomic_int_or(&(jack_midiin->sync_flags),
-			AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE);
-    
-	if((AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
-	  pthread_cond_signal(jack_midiin->callback_finish_cond);
+	  if(in != NULL){
+	    ags_audio_buffer_util_clear_float(in, 1,
+					      jack_devin->buffer_size);
+	  }
+
+	  port = port->next;
 	}
+	  
+	if(!no_event){
+	  /* signal finish */
+	  callback_finish_mutex = jack_devin->callback_finish_mutex;
+	
+	  pthread_mutex_lock(callback_finish_mutex);
 
-	pthread_mutex_unlock(callback_finish_mutex);
+	  g_atomic_int_or(&(jack_devin->sync_flags),
+			  AGS_JACK_DEVIN_CALLBACK_FINISH_DONE);
+    
+	  if((AGS_JACK_DEVIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_devin->sync_flags)))) != 0){
+	    pthread_cond_signal(jack_devin->callback_finish_cond);
+	  }
+
+	  pthread_mutex_unlock(callback_finish_mutex);
+	}
+      }
+      
+      /* MIDI input */
+      if(jack_midiin != NULL){
+	if(!no_event){
+	  port = jack_midiin->jack_port;
+
+	  for(i = 0; port != NULL; i++){
+	    jack_port = port->data;
+
+	    port_buf = jack_port_get_buffer(jack_port->port,
+					    4096);
+	    event_count = jack_midi_get_event_count(port_buf);
+		
+	    for(j = 0; j < event_count; j++){
+	      jack_midi_event_get(&in_event, port_buf, j);
+
+	      if(in_event.size > 0){
+		if((AGS_JACK_MIDIIN_BUFFER0 & (jack_midiin->flags)) != 0){
+		  nth_buffer = 1;
+		}else if((AGS_JACK_MIDIIN_BUFFER1 & (jack_midiin->flags)) != 0){
+		  nth_buffer = 2;
+		}else if((AGS_JACK_MIDIIN_BUFFER2 & (jack_midiin->flags)) != 0){
+		  nth_buffer = 3;
+		}else if((AGS_JACK_MIDIIN_BUFFER3 & jack_midiin->flags) != 0){
+		  nth_buffer = 0;
+		}
+
+		if(ceil((jack_midiin->buffer_size[nth_buffer] + in_event.size) / 4096.0) > ceil(jack_midiin->buffer_size[nth_buffer] / 4096.0)){
+		  if(jack_midiin->buffer[nth_buffer] == NULL){
+		    jack_midiin->buffer[nth_buffer] = malloc(4096 * sizeof(char));
+		  }else{
+		    jack_midiin->buffer[nth_buffer] = realloc(jack_midiin->buffer[nth_buffer],
+							      (ceil(jack_midiin->buffer_size[nth_buffer] / 4096.0) * 4096 + 4096) * sizeof(char));
+		  }
+		}
+
+		memcpy(&(jack_midiin->buffer[nth_buffer][jack_midiin->buffer_size[nth_buffer]]),
+		       in_event.buffer,
+		       in_event.size);
+		jack_midiin->buffer_size[nth_buffer] += in_event.size;
+	      }
+
+	    }	  
+
+	    jack_midi_clear_buffer(port_buf);
+	
+	    port = port->next;
+	  }
+
+	  /* signal finish */
+	  callback_finish_mutex = jack_midiin->callback_finish_mutex;
+	
+	  pthread_mutex_lock(callback_finish_mutex);
+
+	  g_atomic_int_or(&(jack_midiin->sync_flags),
+			  AGS_JACK_MIDIIN_CALLBACK_FINISH_DONE);
+    
+	  if((AGS_JACK_MIDIIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_midiin->sync_flags)))) != 0){
+	    pthread_cond_signal(jack_midiin->callback_finish_cond);
+	  }
+
+	  pthread_mutex_unlock(callback_finish_mutex);
+	}
       }
     }
         
