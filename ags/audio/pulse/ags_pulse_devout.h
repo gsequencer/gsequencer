@@ -41,6 +41,10 @@ typedef struct _AgsPulseDevoutClass AgsPulseDevoutClass;
  * @AGS_PULSE_DEVOUT_BUFFER1: ring-buffer 1
  * @AGS_PULSE_DEVOUT_BUFFER2: ring-buffer 2
  * @AGS_PULSE_DEVOUT_BUFFER3: ring-buffer 3
+ * @AGS_PULSE_DEVOUT_BUFFER4: ring-buffer 4
+ * @AGS_PULSE_DEVOUT_BUFFER5: ring-buffer 5
+ * @AGS_PULSE_DEVOUT_BUFFER6: ring-buffer 6
+ * @AGS_PULSE_DEVOUT_BUFFER7: ring-buffer 7
  * @AGS_PULSE_DEVOUT_ATTACK_FIRST: use first attack, instead of second one
  * @AGS_PULSE_DEVOUT_PLAY: do playback
  * @AGS_PULSE_DEVOUT_SHUTDOWN: stop playback

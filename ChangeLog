@@ -6,7 +6,7 @@ ags (1.2.0)
 	* TODO:JK: implemented AgsWaveEdit
 	* implemented AgsDevin
 	* implemented AgsJackDevin
-	* TODO:JK: implemented AgsPulseDevin
+	* implemented AgsPulseDevin
 	* use $(docdir) in Makefile.am
 
 ags (1.1.4)
