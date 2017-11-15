@@ -1,3 +1,15 @@
+Overview of Changes in AGS 1.2.0
+================================
+
+* Audio input support for all common backends like ALSA, OSS4, JACK and
+  Pulseaudio. 
+
+Overview of Changes in AGS 1.0.0
+================================
+
+* Sticky controls allows you to adjust multiple controls at once.
+* Various bug-fixes especially improved Lv2ui syncing controls.
+
 Overview of Changes in AGS 1.0.0-beta
 ================================
 

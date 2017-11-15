@@ -32,6 +32,7 @@
 #include <ags/thread/ags_thread-posix.h>
 
 #include <ags/audio/pulse/ags_pulse_devout.h>
+#include <ags/audio/pulse/ags_pulse_devin.h>
 
 #include <string.h>
 
@@ -726,7 +727,8 @@ ags_pulse_server_get_soundcard(AgsDistributedManager *distributed_manager,
   list = NULL;
 
   while(device != NULL){
-    if(AGS_IS_PULSE_DEVOUT(device->data)){
+    if(AGS_IS_PULSE_DEVOUT(device->data) ||
+       AGS_IS_PULSE_DEVIN(device->data)){
       list = g_list_prepend(list,
 			    device->data);
     }
@@ -800,16 +802,14 @@ ags_pulse_server_register_soundcard(AgsDistributedManager *distributed_manager,
   AgsPulseClient *default_client;
   AgsPulsePort *pulse_port;
   AgsPulseDevout *pulse_devout;
+  AgsPulseDevin *pulse_devin;
 
+  GObject *soundcard;
+  
   gchar *str;  
 
   gboolean initial_set;
-  guint i;
-  
-  if(!is_output){
-    g_warning("GSequencer - audio input not implemented");
-    return(NULL);
-  }
+  guint i;  
 
   pulse_server = AGS_PULSE_SERVER(distributed_manager);
   initial_set = FALSE;
@@ -833,11 +833,12 @@ ags_pulse_server_register_soundcard(AgsDistributedManager *distributed_manager,
 
   default_client = (AgsPulseClient *) pulse_server->default_client;
 
-  pulse_devout = NULL;
+  soundcard = NULL;
 
   /* the soundcard */
   if(is_output){
-    pulse_devout = ags_pulse_devout_new(pulse_server->application_context);
+    soundcard = 
+      pulse_devout = ags_pulse_devout_new(pulse_server->application_context);
     str = g_strdup_printf("ags-pulse-devout-%d",
 			  pulse_server->n_soundcards);
     g_object_set(AGS_PULSE_DEVOUT(pulse_devout),
@@ -879,9 +880,53 @@ ags_pulse_server_register_soundcard(AgsDistributedManager *distributed_manager,
 
     ags_pulse_devout_realloc_buffer(pulse_devout);
     pulse_server->n_soundcards += 1;
+  }else{
+    soundcard = 
+      pulse_devin = ags_pulse_devin_new(pulse_server->application_context);
+    str = g_strdup_printf("ags-pulse-devin-%d",
+			  pulse_server->n_soundcards);
+    g_object_set(AGS_PULSE_DEVIN(pulse_devin),
+		 "pulse-client", default_client,
+		 "device", str,
+		 NULL);
+    g_free(str);
+    g_object_set(default_client,
+		 "device", pulse_devin,
+		 NULL);
+        
+    /* register ports */
+    str = g_strdup_printf("ags-soundcard%d",
+			  pulse_server->n_soundcards);
+    
+#ifdef AGS_DEBUG
+    g_message("%s", str);
+#endif
+      
+    pulse_port = ags_pulse_port_new((GObject *) default_client);
+    g_object_set(pulse_port,
+		 "pulse-devin", pulse_devin,
+		 NULL);
+    ags_pulse_client_add_port(default_client,
+			      (GObject *) pulse_port);
+
+    g_object_set(pulse_devin,
+		 "pulse-port", pulse_port,
+		 NULL);
+      
+    pulse_devin->port_name = (gchar **) malloc(2 * sizeof(gchar *));
+    pulse_devin->port_name[0] = g_strdup(str);
+    pulse_devin->port_name[1] = NULL;
+    
+    ags_pulse_port_register(pulse_port,
+			    str,
+			    TRUE, FALSE,
+			    TRUE);
+
+    ags_pulse_devin_realloc_buffer(pulse_devin);
+    pulse_server->n_soundcards += 1;
   }
   
-  return((GObject *) pulse_devout);
+  return((GObject *) pulse_devin);
 }
 
 void
@@ -903,17 +948,29 @@ ags_pulse_server_unregister_soundcard(AgsDistributedManager *distributed_manager
     
     return;
   }
-  
-  list = AGS_PULSE_DEVOUT(soundcard)->pulse_port;
 
-  while(list != NULL){
-    ags_pulse_port_unregister(list->data);
-    ags_pulse_client_remove_port(default_client,
-				 list->data);
+  if(AGS_IS_PULSE_DEVOUT(soundcard)){
+    list = AGS_PULSE_DEVOUT(soundcard)->pulse_port;
+
+    while(list != NULL){
+      ags_pulse_port_unregister(list->data);
+      ags_pulse_client_remove_port(default_client,
+				   list->data);
     
-    list = list->next;
-  }
+      list = list->next;
+    }
+  }else if(AGS_IS_PULSE_DEVIN(soundcard)){
+    list = AGS_PULSE_DEVIN(soundcard)->pulse_port;
 
+    while(list != NULL){
+      ags_pulse_port_unregister(list->data);
+      ags_pulse_client_remove_port(default_client,
+				   list->data);
+    
+      list = list->next;
+    }
+  }
+  
   ags_pulse_client_remove_device(default_client,
 				 soundcard);
   

@@ -7,6 +7,7 @@ ags (1.2.0)
 	* implemented AgsDevin
 	* implemented AgsJackDevin
 	* implemented AgsPulseDevin
+	* extended AgsJackServer and AgsJackClient to support AgsJackDevin
 	* use $(docdir) in Makefile.am
 
 ags (1.1.4)

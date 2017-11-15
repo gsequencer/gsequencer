@@ -71,6 +71,7 @@ struct _AgsPulsePort
 
   GObject *pulse_client;
   GObject *pulse_devout;
+  GObject *pulse_devin;
   
   gchar *uuid;
   gchar *name;
