@@ -216,8 +216,6 @@ void ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_containe
 void ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play);
 void ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play);
 
-void ags_audio_recall_change_state(AgsAudio *audio, gboolean enable);
-
 AgsRecallID* ags_audio_init_run(AgsAudio *audio);
 void ags_audio_duplicate_recall(AgsAudio *audio,
 				AgsRecallID *recall_id);
