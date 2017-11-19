@@ -8,6 +8,8 @@ ags (1.2.0)
 	* implemented AgsJackDevin
 	* implemented AgsPulseDevin
 	* extended AgsJackServer and AgsJackClient to support AgsJackDevin
+	* extended AgsPulseServer, AgsPulseClient and AgsPulsePort to support AgsPulseDevin
+	* extended AgsSwitchBufferFlag and AgsClearBuffer to support AgsDevin, AgsJackDevin and AgsPulseDevin
 	* use $(docdir) in Makefile.am
 
 ags (1.1.4)

@@ -1215,8 +1215,8 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
       
 	while((AGS_PULSE_DEVIN_CALLBACK_DONE & (g_atomic_int_get(&(pulse_devin->sync_flags)))) == 0 &&
 	      (AGS_PULSE_DEVIN_CALLBACK_WAIT & (g_atomic_int_get(&(pulse_devin->sync_flags)))) != 0){
-	  pthread_cond(pulse_devin->callback_cond,
-		       callback_mutex);
+	  pthread_cond_wait(pulse_devin->callback_cond,
+			    callback_mutex);
 	}
 	
 	g_atomic_int_and(&(pulse_devin->sync_flags),

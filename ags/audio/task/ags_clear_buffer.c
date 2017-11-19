@@ -23,12 +23,15 @@
 #include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_devin.h>
 #include <ags/audio/ags_midiin.h>
 
 #include <ags/audio/jack/ags_jack_devout.h>
+#include <ags/audio/jack/ags_jack_devin.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
 
 #include <ags/audio/pulse/ags_pulse_devout.h>
+#include <ags/audio/pulse/ags_pulse_devin.h>
 
 #include <ags/audio/core-audio/ags_core_audio_devout.h>
 #include <ags/audio/core-audio/ags_core_audio_midiin.h>
@@ -331,6 +334,55 @@ ags_clear_buffer_launch(AgsTask *task)
     }
     
     memset(devout->buffer[nth_buffer], 0, (size_t) devout->pcm_channels * devout->buffer_size * word_size);
+  }else if(AGS_IS_DEVIN(clear_buffer->device)){
+    AgsDevin *devin;
+
+    devin = clear_buffer->device;
+
+    /* retrieve word size */
+    switch(devin->format){
+    case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	word_size = sizeof(signed char);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	word_size = sizeof(signed short);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {
+	word_size = sizeof(signed long);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	word_size = sizeof(signed long);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_64_BIT:
+      {
+	word_size = sizeof(signed long long);
+      }
+      break;
+    default:
+      g_warning("ags_clear_buffer_launch(): unsupported word size");
+
+      return;
+    }
+    
+    if((AGS_DEVIN_BUFFER0 & (devin->flags)) != 0){
+      nth_buffer = 0;
+    }else if((AGS_DEVIN_BUFFER1 & (devin->flags)) != 0){
+      nth_buffer = 1;
+    }else if((AGS_DEVIN_BUFFER2 & (devin->flags)) != 0){
+      nth_buffer = 2;
+    }else if((AGS_DEVIN_BUFFER3 & (devin->flags)) != 0){
+      nth_buffer = 3;
+    }
+    
+    memset(devin->buffer[nth_buffer], 0, (size_t) devin->pcm_channels * devin->buffer_size * word_size);
   }else if(AGS_IS_JACK_DEVOUT(clear_buffer->device)){
     AgsJackDevout *jack_devout;
     
@@ -380,6 +432,55 @@ ags_clear_buffer_launch(AgsTask *task)
     }
       
     memset(jack_devout->buffer[nth_buffer], 0, (size_t) jack_devout->pcm_channels * jack_devout->buffer_size * word_size);
+  }else if(AGS_IS_JACK_DEVIN(clear_buffer->device)){
+    AgsJackDevin *jack_devin;
+    
+    jack_devin = clear_buffer->device;
+
+    switch(jack_devin->format){
+    case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	word_size = sizeof(signed char);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	word_size = sizeof(signed short);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {      
+	//NOTE:JK: The 24-bit linear samples use 32-bit physical space
+	word_size = sizeof(signed long);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	word_size = sizeof(signed long);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_64_BIT:
+      {
+	word_size = sizeof(signed long long);
+      }
+      break;
+    default:    
+      g_warning("ags_clear_buffer_launch(): unsupported word size");
+    
+      return;
+    }
+    
+    if((AGS_JACK_DEVIN_BUFFER0 & (jack_devin->flags)) != 0){
+      nth_buffer = 2;
+    }else if((AGS_JACK_DEVIN_BUFFER1 & (jack_devin->flags)) != 0){
+      nth_buffer = 3;
+    }else if((AGS_JACK_DEVIN_BUFFER2 & (jack_devin->flags)) != 0){
+      nth_buffer = 0;
+    }else if((AGS_JACK_DEVIN_BUFFER3 & (jack_devin->flags)) != 0){
+      nth_buffer = 1;
+    }
+      
+    memset(jack_devin->buffer[nth_buffer], 0, (size_t) jack_devin->pcm_channels * jack_devin->buffer_size * word_size);
   }else if(AGS_IS_PULSE_DEVOUT(clear_buffer->device)){
     AgsPulseDevout *pulse_devout;
     
@@ -427,6 +528,53 @@ ags_clear_buffer_launch(AgsTask *task)
     }
       
     memset(pulse_devout->buffer[nth_buffer], 0, (size_t) pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size);
+  }else if(AGS_IS_PULSE_DEVIN(clear_buffer->device)){
+    AgsPulseDevin *pulse_devin;
+    
+    pulse_devin = clear_buffer->device;
+
+    switch(pulse_devin->format){
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	word_size = sizeof(signed short);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {      
+	//NOTE:JK: The 24-bit linear samples use 32-bit physical space
+	word_size = sizeof(signed long);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	word_size = sizeof(signed long);
+      }
+      break;
+    default:    
+      g_warning("ags_clear_buffer_launch(): unsupported word size");
+    
+      return;
+    }
+    
+    if((AGS_PULSE_DEVIN_BUFFER0 & (pulse_devin->flags)) != 0){
+      nth_buffer = 2;
+    }else if((AGS_PULSE_DEVIN_BUFFER1 & (pulse_devin->flags)) != 0){
+      nth_buffer = 3;
+    }else if((AGS_PULSE_DEVIN_BUFFER2 & (pulse_devin->flags)) != 0){
+      nth_buffer = 4;
+    }else if((AGS_PULSE_DEVIN_BUFFER3 & (pulse_devin->flags)) != 0){
+      nth_buffer = 5;
+    }else if((AGS_PULSE_DEVIN_BUFFER4 & (pulse_devin->flags)) != 0){
+      nth_buffer = 6;
+    }else if((AGS_PULSE_DEVIN_BUFFER5 & (pulse_devin->flags)) != 0){
+      nth_buffer = 7;
+    }else if((AGS_PULSE_DEVIN_BUFFER6 & (pulse_devin->flags)) != 0){
+      nth_buffer = 0;
+    }else if((AGS_PULSE_DEVIN_BUFFER7 & (pulse_devin->flags)) != 0){
+      nth_buffer = 1;
+    }
+      
+    memset(pulse_devin->buffer[nth_buffer], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
   }else if(AGS_IS_CORE_AUDIO_DEVOUT(clear_buffer->device)){
     AgsCoreAudioDevout *core_audio_devout;
     

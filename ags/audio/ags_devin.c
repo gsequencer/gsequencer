@@ -1649,7 +1649,7 @@ ags_devin_list_cards(AgsSoundcard *soundcard,
 	}
       }
 
-      next = ai.next_record_engine;
+      next = ai.next_rec_engine;
       
       if(next <= 0){
 	break;

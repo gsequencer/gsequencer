@@ -636,6 +636,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_channel.h \
 	ags/audio/ags_channel_iter.h \
 	ags/audio/ags_devout.h \
+	ags/audio/ags_devin.h \
 	ags/audio/ags_effect.h \
 	ags/audio/ags_fifoout.h \
 	ags/audio/ags_input.h \
@@ -690,6 +691,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_channel.c \
 	ags/audio/ags_channel_iter.c \
 	ags/audio/ags_devout.c \
+	ags/audio/ags_devin.c \
 	ags/audio/ags_input.c \
 	ags/audio/ags_fifoout.c \
 	ags/audio/ags_message.c \
@@ -895,6 +897,7 @@ libags_audio_jack_c_sources = \
 	ags/audio/jack/ags_jack_client.c \
 	ags/audio/jack/ags_jack_midiin.c \
 	ags/audio/jack/ags_jack_devout.c \
+	ags/audio/jack/ags_jack_devin.c \
 	ags/audio/jack/ags_jack_port.c \
 	ags/audio/jack/ags_jack_server.c
 
@@ -905,6 +908,7 @@ libags_audio_pulse_h_sources = \
 	$(deprecated_libags_audio_pulse_h_sources) \
 	ags/audio/pulse/ags_pulse_client.h \
 	ags/audio/pulse/ags_pulse_devout.h \
+	ags/audio/pulse/ags_pulse_devin.h \
 	ags/audio/pulse/ags_pulse_port.h \
 	ags/audio/pulse/ags_pulse_server.h
 
@@ -914,6 +918,7 @@ libags_audio_pulse_c_sources = \
 	$(deprecated_libags_audio_pulse_c_sources) \
 	ags/audio/pulse/ags_pulse_client.c \
 	ags/audio/pulse/ags_pulse_devout.c \
+	ags/audio/pulse/ags_pulse_devin.c \
 	ags/audio/pulse/ags_pulse_port.c \
 	ags/audio/pulse/ags_pulse_server.c
 

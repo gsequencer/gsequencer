@@ -146,12 +146,12 @@ struct _AgsDevin
   guint loop_offset;
   
   union{
-    struct _AgsOss{
+    struct _AgsOssIn{
       int device_fd;
       char *device;
     }oss;
 #ifdef AGS_WITH_ALSA
-    struct _AgsAlsa{
+    struct _AgsAlsaIn{
       char *device;
       int rc;
       snd_pcm_t *handle;
@@ -159,7 +159,7 @@ struct _AgsDevin
       snd_pcm_hw_params_t *params;
     }alsa;
 #else
-    struct _AgsAlsaDummy{
+    struct _AgsAlsaDummyIn{
       char *device;
       int rc;
       void *handle;

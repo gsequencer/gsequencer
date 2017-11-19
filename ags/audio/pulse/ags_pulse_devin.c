@@ -192,7 +192,7 @@ static gpointer ags_pulse_devin_parent_class = NULL;
 static guint pulse_devin_signals[LAST_SIGNAL];
 
 GType
-ags_pulse_devin_get_type (void)
+ags_pulse_devin_get_type(void)
 {
   static GType ags_type_pulse_devin = 0;
 
