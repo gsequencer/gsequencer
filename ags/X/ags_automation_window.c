@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -50,7 +50,7 @@ gboolean ags_automation_window_delete_event(GtkWidget *widget, GdkEventAny *even
 
 /**
  * SECTION:ags_automation_window
- * @short_description: The automation dialog
+ * @short_description: The automation window
  * @title: AgsAutomationWindow
  * @section_id:
  * @include: ags/X/ags_automation_window.h
@@ -286,6 +286,16 @@ ags_automation_window_delete_event(GtkWidget *widget, GdkEventAny *event)
   return(TRUE);
 }
 
+/**
+ * ags_automation_window_new:
+ * @parent_window: the parent #AgsWindow
+ * 
+ * Instantiate #AgsAutomationWindow
+ * 
+ * Returns: the new #AgsAutomationWindow instance
+ * 
+ * Since: 1.0.0
+ */
 AgsAutomationWindow*
 ags_automation_window_new(GtkWidget *parent_window)
 {

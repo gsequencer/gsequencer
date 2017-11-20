@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -170,6 +170,8 @@ ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor)
    * @machine: the #AgsMachine to set
    *
    * The ::machine-changed signal notifies about changed machine.
+   * 
+   * Since: 1.0.0
    */
   automation_editor_signals[MACHINE_CHANGED] =
     g_signal_new("machine-changed",

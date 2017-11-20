@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,8 +40,8 @@
 
 #define AGS_AUTOMATION_EDITOR_CHILD(ptr) ((AgsAutomationEditorChild *)(ptr))
 
-#define AGS_AUTOMATION_EDITOR_DEFAULT_VERSION "0.7.29\0"
-#define AGS_AUTOMATION_EDITOR_DEFAULT_BUILD_ID "Mon Jun 13 11:50:58 UTC 2016\0"
+#define AGS_AUTOMATION_EDITOR_DEFAULT_VERSION "0.7.29"
+#define AGS_AUTOMATION_EDITOR_DEFAULT_BUILD_ID "Mon Jun 13 11:50:58 UTC 2016"
 
 typedef struct _AgsAutomationEditor AgsAutomationEditor;
 typedef struct _AgsAutomationEditorClass AgsAutomationEditorClass;
