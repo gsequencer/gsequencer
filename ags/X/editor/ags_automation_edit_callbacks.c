@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -137,9 +137,6 @@ ags_automation_edit_set_pads_callback(AgsAudio *audio,
   gboolean is_output;
   
   window = (AgsWindow *) AGS_AUTOMATION_WINDOW(gtk_widget_get_toplevel((GtkWidget *) automation_edit))->parent_window;
-
-  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
-								      AGS_TYPE_AUTOMATION_EDITOR);
 
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
 								      AGS_TYPE_AUTOMATION_EDITOR);

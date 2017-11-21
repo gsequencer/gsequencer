@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/X/ags_automation_editor_callbacks.h>
+#include <ags/X/ags_wave_editor_callbacks.h>
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_soundcard.h>
@@ -42,7 +42,7 @@
 #include <cairo.h>
 
 void
-ags_automation_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent, AgsAutomationEditor *automation_editor)
+ags_wave_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent, AgsWaveEditor *wave_editor)
 {
   if(old_parent != NULL){
     return;
@@ -50,12 +50,12 @@ ags_automation_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_par
 }
 
 void
-ags_automation_editor_tic_callback(GObject *soundcard,
-				   AgsAutomationEditor *automation_editor)
+ags_wave_editor_tic_callback(GObject *soundcard,
+			     AgsWaveEditor *wave_editor)
 
 {
   AgsWindow *window;
-  AgsAutomationWindow *automation_window;
+  AgsWaveWindow *wave_window;
   
   AgsMutexManager *mutex_manager;
   AgsAudioLoop *audio_loop;
@@ -65,8 +65,8 @@ ags_automation_editor_tic_callback(GObject *soundcard,
 
   pthread_mutex_t *application_mutex;
 
-  automation_window = AGS_AUTOMATION_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(automation_editor)));
-  window = (AgsWindow *) automation_window->parent_window;
+  wave_window = AGS_WAVE_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(wave_editor)));
+  window = (AgsWindow *) wave_window->parent_window;
 
   application_context = (AgsApplicationContext *) window->application_context;
 
@@ -82,17 +82,17 @@ ags_automation_editor_tic_callback(GObject *soundcard,
 
   /* get task and soundcard thread */
   gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) audio_loop,
-						       AGS_TYPE_GUI_THREAD);
+						     AGS_TYPE_GUI_THREAD);
 
   if(window->navigation->scroll != NULL &&
      gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(window->navigation->scroll))){
     AgsScrollOnPlay *scroll_on_play;
     gdouble step;
     
-    if(ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard)) > automation_editor->current_tact){
-      automation_editor->current_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
+    if(ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard)) > wave_editor->current_tact){
+      wave_editor->current_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
       
-      scroll_on_play = ags_scroll_on_play_new((GtkWidget *) automation_editor,
+      scroll_on_play = ags_scroll_on_play_new((GtkWidget *) wave_editor,
 					      64.0);
       ags_gui_thread_schedule_task(gui_thread,
 				   scroll_on_play);
@@ -101,8 +101,8 @@ ags_automation_editor_tic_callback(GObject *soundcard,
 }
 
 void
-ags_automation_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,
-					       AgsAutomationEditor *automation_editor)
+ags_wave_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,
+					 AgsWaveEditor *wave_editor)
 {
-  ags_automation_editor_machine_changed(automation_editor, machine);
+  ags_wave_editor_machine_changed(wave_editor, machine);
 }

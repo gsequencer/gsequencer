@@ -17,12 +17,4 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_AUTOMATION_WINDOW_CALLBACKS_H__
-#define __AGS_AUTOMATION_WINDOW_CALLBACKS_H__
-
-#include <glib-object.h>
-#include <gtk/gtk.h>
-
-#include <ags/X/ags_automation_window.h>
-
-#endif /*__AGS_AUTOMATION_WINDOW_CALLBACKS_H__*/
+#include <ags/X/ags_wave_window_callbacks.h>
