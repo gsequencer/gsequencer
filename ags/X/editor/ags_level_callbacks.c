@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,17 +17,17 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/X/editor/ags_meter_callbacks.h>
+#include <ags/X/editor/ags_level_callbacks.h>
 
 #include <ags/X/ags_editor.h>
 
 #include <math.h>
 
 gboolean
-ags_meter_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsMeter *meter)
+ags_level_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsLevel *level)
 {
   cairo_t *cr;
-
+  
   if(!gtk_widget_get_visible(widget) ||
      !gtk_widget_is_drawable(widget) ||
      !gtk_widget_get_mapped(widget) ||
@@ -37,7 +37,8 @@ ags_meter_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsMeter *meter
 
   cr = gdk_cairo_create(widget->window);
 
-  ags_meter_paint(meter);
+  ags_level_paint(level,
+		  cr);
 
   cairo_surface_mark_dirty(cairo_get_target(cr));
   cairo_destroy(cr);
@@ -46,7 +47,7 @@ ags_meter_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsMeter *meter
 }
 
 gboolean
-ags_meter_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsMeter *meter)
+ags_level_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsLevel *level)
 {
   cairo_t *cr;
 
@@ -54,12 +55,13 @@ ags_meter_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsMeter 
      !gtk_widget_is_drawable(widget) ||
      !gtk_widget_get_mapped(widget) ||
      !gtk_widget_get_realized(widget)){
-    return(TRUE);
+    return(FALSE);
   }
 
   cr = gdk_cairo_create(widget->window);
 
-  ags_meter_paint(meter);
+  ags_level_paint(level,
+		  cr);
 
   cairo_surface_mark_dirty(cairo_get_target(cr));
   cairo_destroy(cr);

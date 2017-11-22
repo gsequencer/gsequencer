@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,17 +17,17 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_METER_CALLBACKS_H__
-#define __AGS_METER_CALLBACKS_H__
+#ifndef __AGS_LEVEL_CALLBACKS_H__
+#define __AGS_LEVEL_CALLBACKS_H__
 
 #include <glib.h>
 #include <glib-object.h>
 
 #include <gtk/gtk.h>
 
-#include <ags/X/editor/ags_meter.h>
+#include <ags/X/editor/ags_level.h>
 
-gboolean ags_meter_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsMeter *meter); 
-gboolean ags_meter_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsMeter *meter); 
+gboolean ags_level_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsLevel *level); 
+gboolean ags_level_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsLevel *level); 
 
-#endif /*__AGS_METER_CALLBACKS_H__*/
+#endif /*__AGS_LEVEL_CALLBACKS_H__*/

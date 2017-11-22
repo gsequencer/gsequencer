@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,8 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_METER_H__
-#define __AGS_METER_H__
+#ifndef __AGS_LEVEL_H__
+#define __AGS_LEVEL_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -27,32 +27,31 @@
 
 #include <cairo.h>
 
-#define AGS_TYPE_METER                (ags_meter_get_type())
-#define AGS_METER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_METER, AgsMeter))
-#define AGS_METER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_METER, AgsMeterClass))
-#define AGS_IS_METER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_METER))
-#define AGS_IS_METER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_METER))
-#define AGS_METER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_METER, AgsMeterClass))
+#define AGS_TYPE_LEVEL                (ags_level_get_type())
+#define AGS_LEVEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LEVEL, AgsLevel))
+#define AGS_LEVEL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LEVEL, AgsLevelClass))
+#define AGS_IS_LEVEL(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_LEVEL))
+#define AGS_IS_LEVEL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LEVEL))
+#define AGS_LEVEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_LEVEL, AgsLevelClass))
 
-typedef struct _AgsMeter AgsMeter;
-typedef struct _AgsMeterClass AgsMeterClass;
+typedef struct _AgsLevel AgsLevel;
+typedef struct _AgsLevelClass AgsLevelClass;
 
-struct _AgsMeter
+struct _AgsLevel
 {
   GtkDrawingArea drawing_area;
 };
 
-struct _AgsMeterClass
+struct _AgsLevelClass
 {
   GtkDrawingAreaClass drawing_area;
 };
 
-GType ags_meter_get_type(void);
+GType ags_level_get_type(void);
 
-char* ags_meter_sound_string();
-void ags_meter_paint(AgsMeter *meter,
+void ags_level_paint(AgsLevel *level,
 		     cairo_t *cr);
 
-AgsMeter* ags_meter_new();
+AgsLevel* ags_level_new();
 
-#endif /*__AGS_METER_H__*/
+#endif /*__AGS_LEVEL_H__*/

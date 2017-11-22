@@ -45,7 +45,7 @@ void ags_meter_disconnect(AgsConnectable *connectable);
  * The #AgsMeter draws you a piano.
  */
 
-GtkStyle *meter_style;
+// GtkStyle *meter_style = NULL;
 
 GType
 ags_meter_get_type(void)
@@ -103,7 +103,7 @@ ags_meter_init(AgsMeter *meter)
   GtkWidget *widget;
 
   widget = (GtkWidget *) meter;
-  gtk_widget_set_style(widget, meter_style);
+  //  gtk_widget_set_style(widget, meter_style);
   gtk_widget_set_size_request(widget, 60, -1);
   gtk_widget_set_events (GTK_WIDGET (meter), GDK_EXPOSURE_MASK
                          | GDK_LEAVE_NOTIFY_MASK
@@ -129,10 +129,16 @@ ags_meter_connect(AgsConnectable *connectable)
 void
 ags_meter_disconnect(AgsConnectable *connectable)
 {
+  AgsMeter *meter;
+
+  meter = AGS_METER(connectable);
+
+  //TODO:JK: implement me
 }
 
 void
-ags_meter_paint(AgsMeter *meter)
+ags_meter_paint(AgsMeter *meter,
+		cairo_t *cr)
 {
   AgsEditor *editor;
   GtkWidget *widget;
@@ -144,15 +150,12 @@ ags_meter_paint(AgsMeter *meter)
   guint border_top;
   guint control_height;
 
-  widget = (GtkWidget *) meter;
-
-  if(!gtk_widget_get_visible(widget) ||
-     !gtk_widget_is_drawable(widget) ||
-     !gtk_widget_get_mapped(widget) ||
-     !gtk_widget_get_realized(widget)){
+  if(!AGS_IS_METER(meter) ||
+     cr == NULL){
     return;
   }
   
+  widget = (GtkWidget *) meter;
   editor = (AgsEditor *) gtk_widget_get_ancestor(widget, AGS_TYPE_EDITOR);
 
   border_top = 24; // see ags_ruler.c
@@ -243,12 +246,7 @@ ags_meter_paint(AgsMeter *meter)
   y[1] = ((guint) (widget->allocation.height - border_top) - y[0]) % control_height;
   i_stop = ((widget->allocation.height - border_top) - y[0] - y[1]) / control_height;
 
-  cr = gdk_cairo_create(widget->window);
-
-  if(cr == NULL){
-    return;
-  }
-  
+  /* draw */
   cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
   cairo_rectangle(cr, 0.0, (double) border_top, (double) widget->allocation.width, (double) widget->allocation.height - border_top);
   cairo_fill(cr);
@@ -351,9 +349,6 @@ ags_meter_paint(AgsMeter *meter)
       cairo_stroke(cr);
     }
   }
-
-  cairo_surface_mark_dirty(cairo_get_target(cr));
-  cairo_destroy(cr);
 }
 
 /**
