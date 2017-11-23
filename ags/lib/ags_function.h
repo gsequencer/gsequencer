@@ -40,6 +40,8 @@
 
 typedef struct _AgsFunction AgsFunction;
 typedef struct _AgsFunctionClass AgsFunctionClass;
+typedef struct _AgsSolverMatrix AgsSolverMatrix;
+typedef struct _AgsSolverVector AgsSolverVector;
 
 /**
  * AgsFunctionFlags:
@@ -71,19 +73,24 @@ struct _AgsFunction
   guint flags;
   
   gboolean is_pushing;
+
   gchar **equation;
-  gchar **transformed_equation;
   guint equation_count;
   
+  gchar **transformed_equation;
+  guint transformed_equation_count;
+
   gchar *source_function;
-  
   gchar *normalized_function;
   
   gchar **symbol;
   guint symbol_count;
 
-  guint n_rows;
-  guint n_cols;
+  GList *solver_matrix;
+
+  guint pivot_table_count;
+  guint *row_count;
+  guint *column_count;
   AgsComplex*** pivot_table;
   
   guint solver_level;
@@ -97,10 +104,34 @@ struct _AgsFunctionClass
   void (*literal_solve)(AgsFunction *function);
 };
 
+struct _AgsSolverMatrix
+{
+  gchar **function_history;
+
+  gchar *source_function;
+  
+  AgsSolverVector **term_table;
+  guint row_count;
+  guint column_count;
+};
+
+struct _AgsSolverVector
+{
+  gchar *term;
+  gchar *term_exp;
+
+  AgsComplex *numeric_value;
+  gchar *symbol;
+  AgsComplex *exp_value;
+};
+
 GType ags_function_get_type(void);
 
+gchar** ags_function_collapse_parantheses(AgsFunction *function,
+					  guint *function_count);
+
 gchar** ags_function_find_literals(AgsFunction *function,
-				   guint *n_symbols);
+				   guint *symbol_count);
 void ags_function_literal_solve(AgsFunction *function);
 
 gboolean ags_function_push_equation(AgsFunction *function,
@@ -109,8 +140,8 @@ void ags_function_pop_equation(AgsFunction *function,
 			       GError **error);
 
 gchar* ags_function_get_expanded(AgsFunction *function,
-				 gchar **symbols,
-				 guint n_symbols);
+				 gchar **symbol,
+				 guint symbol_count);
 gchar* ags_funciton_get_normalized(AgsFunction *function);
 
 AgsComplex* ags_function_compute_term(gchar *term,

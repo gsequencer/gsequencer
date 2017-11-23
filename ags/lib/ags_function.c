@@ -384,9 +384,32 @@ ags_function_finalize(GObject *gobject)
 }
 
 /**
+ * ags_function_collapse_parantheses:
+ * @function: the @AgsFunction
+ * @function_count: return location of count of possible functions
+ * 
+ * Collapse parantheses by respecting many possibilities.
+ * 
+ * Returns: the one-dimensional array of possible functions as strings
+ * 
+ * Since: 1.2.0
+ */
+gchar**
+ags_function_collapse_parantheses(AgsFunction *function,
+				  guint *function_count)
+{
+  gchar **functions;
+
+  functions = NULL;
+
+  
+  //TODO:JK: implement me
+}
+
+/**
  * ags_function_find_literals:
  * @function: The #AgsFunction
- * @n_symbols: return location of symbols count
+ * @symbol_count: return location of symbols count
  *
  * Find literal symbols i.e. variable names.
  *
@@ -396,7 +419,7 @@ ags_function_finalize(GObject *gobject)
  */
 gchar**
 ags_function_find_literals(AgsFunction *function,
-			   guint *n_symbols)
+			   guint *symbol_count)
 { 
   regmatch_t match_arr[1];
 
@@ -432,12 +455,30 @@ ags_function_find_literals(AgsFunction *function,
   
   while(str != NULL && *str != '\0'){
     if(regexec(&literal_regex, str, max_matches, match_arr, 0) == 0){
-      literals = (gchar **) malloc((n_literals + 1) * sizeof(gchar *));
+      if(literals == NULL){
+	literals = (gchar **) malloc((n_literals + 1) * sizeof(gchar *));
 
-      literals[n_literals] = g_strndup(str,
-				       match_arr[0].rm_eo - match_arr[0].rm_so);
-      n_literals++;
+	literals[n_literals] = g_strndup(str,
+					 match_arr[0].rm_eo - match_arr[0].rm_so);
+	n_literals++;
+      }else{
+	gchar *current_literal;
 
+	current_literal = g_strndup(str,
+				    match_arr[0].rm_eo - match_arr[0].rm_so);
+	
+	if(!g_strv_contains(literals,
+			    current_literal)){
+	  literals = (gchar **) realloc(literals,
+					(n_literals + 1) * sizeof(gchar *));
+
+	  literals[n_literals] = current_literal;
+	  n_literals++;
+	}else{
+	  g_free(current_literal);
+	}
+      }
+      
       if(str[match_arr[0].rm_eo - match_arr[0].rm_so] != '\0'){
 	str += (match_arr[0].rm_eo - match_arr[0].rm_so);
       }else{
@@ -449,8 +490,8 @@ ags_function_find_literals(AgsFunction *function,
   }
 
   /* return symbols and its count*/
-  if(n_symbols != NULL){
-    *n_symbols = n_literals;
+  if(symbol_count != NULL){
+    *symbol_count = n_literals;
   }
 
   return(literals);
@@ -807,8 +848,8 @@ ags_function_pop_equation(AgsFunction *function,
 /**
  * ags_function_get_expanded:
  * @function: the #AgsFunction
- * @symbols: the symbols to compute
- * @n_symbols: the count of symbols
+ * @symbol: the symbols to compute
+ * @symbol_count: the count of symbols
  * 
  * Expands @symbols to normalized form.
  *
@@ -818,8 +859,8 @@ ags_function_pop_equation(AgsFunction *function,
  */
 gchar*
 ags_function_get_expanded(AgsFunction *function,
-			  gchar **symbols,
-			  guint count)
+			  gchar **symbol,
+			  guint symbol_count)
 {
   //TODO:JK: implement me
   
