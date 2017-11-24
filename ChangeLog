@@ -3,7 +3,8 @@ ags (1.2.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented AgsWaverec
 	* TODO:JK: implemented audio input properties
-	* TODO:JK: implemented AgsWaveWindow, AgsWaveEditor and AgsWaveEdit
+	* TODO:JK: implemented AgsWaveWindow, AgsWaveEditor, AgsWaveToolbar and AgsWaveEdit
+	* TODO:JK: implemented AgsSelectAudioData and AgsPositionWaveCursor
 	* TODO:JK: implemented AgsLevel
 	* implemented AgsDevin
 	* implemented AgsJackDevin
