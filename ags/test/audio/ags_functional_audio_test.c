@@ -89,29 +89,29 @@ void ags_functional_audio_test_playback();
 #define AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_NOTES (4 * (guint) (1.0 / AGS_NOTATION_MINIMUM_NOTE_LENGTH) * 120)
 #define AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_STOP_DELAY (120)
 
-#define AGS_FUNCTIONAL_AUDIO_TEST_CONFIG "[generic]\n" \
-  "autosave-thread=false\n"			       \
-  "simple-file=true\n"				       \
-  "disable-feature=experimental\n"		       \
-  "segmentation=4/4\n"				       \
-  "\n"						       \
-  "[thread]\n"					       \
-  "model=super-threaded\n"			       \
-  "super-threaded-scope=channel\n"		       \
-  "lock-global=ags-thread\n"			       \
-  "lock-parent=ags-recycling-thread\n"		       \
-  "\n"						       \
-  "[soundcard]\n"				       \
-  "backend=jack\n"                                     \
-  "device=ags-jack-devout-0\n"                                     \
-  "samplerate=48000\n"				       \
-  "buffer-size=1024\n"				       \
-  "pcm-channels=2\n"				       \
-  "dsp-channels=2\n"				       \
-  "format=16\n"					       \
-  "\n"						       \
-  "[recall]\n"					       \
-  "auto-sense=true\n"				       \
+#define AGS_FUNCTIONAL_AUDIO_TEST_CONFIG "[generic]\n"	\
+  "autosave-thread=false\n"				\
+  "simple-file=true\n"					\
+  "disable-feature=experimental\n"			\
+  "segmentation=4/4\n"					\
+  "\n"							\
+  "[thread]\n"						\
+  "model=super-threaded\n"				\
+  "super-threaded-scope=channel\n"			\
+  "lock-global=ags-thread\n"				\
+  "lock-parent=ags-recycling-thread\n"			\
+  "\n"							\
+  "[soundcard]\n"					\
+  "backend=alsa\n"					\
+  "device=default\n"					\
+  "samplerate=48000\n"					\
+  "buffer-size=1024\n"					\
+  "pcm-channels=2\n"					\
+  "dsp-channels=2\n"					\
+  "format=16\n"						\
+  "\n"							\
+  "[recall]\n"						\
+  "auto-sense=true\n"					\
   "\n"
 
 AgsAudioApplicationContext *audio_application_context;

@@ -67,7 +67,7 @@ void ags_functional_note_edit_test_file_setup();
   "\n"						       \
   "[soundcard-0]\n"				       \
   "backend=alsa\n"                                     \
-  "device=hw:0,0\n"                                    \
+  "device=default\n"				       \
   "samplerate=44100\n"				       \
   "buffer-size=1024\n"				       \
   "pcm-channels=2\n"				       \
