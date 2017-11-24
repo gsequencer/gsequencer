@@ -1512,6 +1512,49 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
     int device;
     int error;
 
+    /* the default device */
+    str = g_strdup("default");
+    error = snd_ctl_open(&card_handle, str, 0);
+
+    if(error >= 0){
+      snd_ctl_card_info_alloca(&card_info);
+      error = snd_ctl_card_info(card_handle, card_info);
+
+      if(error < 0){
+	g_free(str);
+	
+	goto ags_devout_list_cards_NO_DEFAULT_0;
+      }
+
+      if(error < 0){
+	g_free(str);
+
+	goto ags_devout_list_cards_NO_DEFAULT_0;
+      }
+
+      device = -1;
+      error = snd_ctl_pcm_next_device(card_handle, &device);
+
+      if(error < 0){
+	g_free(str);
+
+	goto ags_devout_list_cards_NO_DEFAULT_0;
+      }
+
+      if(card_id != NULL){
+	*card_id = g_list_prepend(*card_id, str);
+      }
+
+      if(card_name != NULL){
+	*card_name = g_list_prepend(*card_name, g_strdup(snd_ctl_card_info_get_name(card_info)));
+      }
+    
+      snd_ctl_close(card_handle);
+    }
+
+  ags_devout_list_cards_NO_DEFAULT_0:
+
+    /* enumerated devices */
     card_num = -1;
 
     while(TRUE){
