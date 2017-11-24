@@ -710,6 +710,13 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
   GError *error;
   
   soundcard_editor = AGS_SOUNDCARD_EDITOR(applicable);
+
+  if((AGS_SOUNDCARD_EDITOR_BLOCK_RESET & (soundcard_editor->flags)) != 0){
+    return;
+  }
+
+  soundcard_editor->flags |= AGS_SOUNDCARD_EDITOR_BLOCK_RESET;
+  
   soundcard = soundcard_editor->soundcard;
   
   /* refresh */
@@ -738,21 +745,21 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
       gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
 			       0);
       
-      ags_soundcard_editor_load_core_audio_card(soundcard_editor);
+      //      ags_soundcard_editor_load_core_audio_card(soundcard_editor);
     }else if(!g_ascii_strncasecmp(backend,
 			    "pulse",
 			    6)){
       gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
 			       0);
       
-      ags_soundcard_editor_load_pulse_card(soundcard_editor);
+      //      ags_soundcard_editor_load_pulse_card(soundcard_editor);
     }else if(!g_ascii_strncasecmp(backend,
 			    "jack",
 			    5)){
       gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
 			       1);
       
-      ags_soundcard_editor_load_jack_card(soundcard_editor);
+      //      ags_soundcard_editor_load_jack_card(soundcard_editor);
     }else if(!g_ascii_strncasecmp(backend,
 				  "alsa",
 				  5)){
@@ -763,7 +770,7 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 			       2);
 #endif
       
-      ags_soundcard_editor_load_alsa_card(soundcard_editor);
+      //      ags_soundcard_editor_load_alsa_card(soundcard_editor);
     }else if(!g_ascii_strncasecmp(backend,
 				  "oss",
 				  4)){
@@ -783,7 +790,7 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 			       -1);
 #endif
       
-      ags_soundcard_editor_load_oss_card(soundcard_editor);
+      //      ags_soundcard_editor_load_oss_card(soundcard_editor);
     }
   }
 
@@ -807,13 +814,7 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
   while(card_id != NULL){
     //FIXME:JK: work-around for alsa-handle
     tmp = card_id->data;
-    
-    if(card_id->data != NULL &&
-       use_alsa){
-      tmp = g_strdup_printf("%s,0",
-			    card_id->data);
-    }
-    
+        
     if(tmp != NULL &&
        device != NULL &&
        !g_ascii_strcasecmp(tmp,
@@ -825,11 +826,7 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
       gtk_combo_box_text_append_text(soundcard_editor->card,
 				     tmp);
     }
-    
-    if(use_alsa){
-      g_free(tmp);
-    }
-    
+        
     if(!found_card){
       nth++;
     }
@@ -924,6 +921,8 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 			    samplerate_min, samplerate_max);
   gtk_spin_button_set_range(soundcard_editor->buffer_size,
 			    buffer_size_min, buffer_size_max);
+
+  soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_RESET);
 }
 
 void
@@ -1057,7 +1056,7 @@ ags_soundcard_editor_add_sink(AgsSoundcardEditor *soundcard_editor,
   
   pthread_mutex_unlock(application_mutex);
 
-  if(jack_devout == NULL){
+  if(soundcard == NULL){
     return;
   }
 
@@ -1412,7 +1411,13 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
      AGS_IS_JACK_DEVOUT(soundcard)){
     return;
   }
-  
+
+  if((AGS_SOUNDCARD_EDITOR_BLOCK_ADD & (soundcard_editor->flags)) != 0){
+    return;
+  }
+
+  soundcard_editor->flags |= AGS_SOUNDCARD_EDITOR_BLOCK_ADD;
+
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
@@ -1445,6 +1450,8 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
 		 soundcard) != NULL){
     pthread_mutex_unlock(application_mutex);  
   
+    soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_ADD);
+    
     return;
   }
 
@@ -1519,6 +1526,8 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
   ags_thread_add_child_extended(main_loop,
 				(AgsThread *) export_thread,
 				TRUE, TRUE);
+
+  soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_ADD);
 }
 
 void
@@ -1849,6 +1858,12 @@ ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
 
   pthread_mutex_t *application_mutex;
 
+  if((AGS_SOUNDCARD_EDITOR_BLOCK_LOAD & (soundcard_editor->flags)) != 0){
+    return;
+  }
+
+  soundcard_editor->flags |= AGS_SOUNDCARD_EDITOR_BLOCK_LOAD;
+
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							   AGS_TYPE_PREFERENCES);
   window = AGS_WINDOW(preferences->window);
@@ -1906,6 +1921,8 @@ ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
 			   TRUE);
 
   pthread_mutex_unlock(application_mutex);
+
+  soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_LOAD);
 }
 
 void

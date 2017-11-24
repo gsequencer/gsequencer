@@ -127,6 +127,12 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 
   pthread_mutex_t *application_mutex;
 
+  if((AGS_SOUNDCARD_EDITOR_BLOCK_CARD & (soundcard_editor->flags)) != 0){
+    return;
+  }
+
+  soundcard_editor->flags |= AGS_SOUNDCARD_EDITOR_BLOCK_CARD;
+  
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							      AGS_TYPE_PREFERENCES))->window);
   soundcard = soundcard_editor->soundcard;
@@ -145,7 +151,7 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 
   /* get task and soundcard thread */
   gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
+						     AGS_TYPE_GUI_THREAD);
   
   /*  */
   use_alsa = FALSE;
@@ -175,19 +181,6 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 
   card = gtk_combo_box_text_get_active_text(soundcard_editor->card);
   
-  if(card != NULL &&
-     use_alsa){
-    if(index(card,
-	     ',') != NULL){
-      str = g_strndup(card,
-		      index(card,
-			    ',') - card);
-
-      g_free(card);      
-      card = str;
-    }
-  }
-  
   /* reset dialog */
   error = NULL;
   ags_soundcard_pcm_info(AGS_SOUNDCARD(soundcard),
@@ -214,6 +207,8 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
     gtk_spin_button_set_range(soundcard_editor->samplerate, 1.0, 192000.0);
     gtk_spin_button_set_range(soundcard_editor->buffer_size, 1.0, 65535.0);
 
+    soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_CARD);
+    
     return;
   }
 
@@ -230,6 +225,8 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
     gtk_spin_button_set_range(soundcard_editor->buffer_size,
 			      buffer_size_min, buffer_size_max);
   }
+
+  soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_CARD);
 }
 
 void

@@ -1516,44 +1516,33 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
     str = g_strdup("default");
     error = snd_ctl_open(&card_handle, str, 0);
 
-    if(error >= 0){
-      snd_ctl_card_info_alloca(&card_info);
-      error = snd_ctl_card_info(card_handle, card_info);
-
-      if(error < 0){
-	g_free(str);
-	
-	goto ags_devout_list_cards_NO_DEFAULT_0;
-      }
-
-      if(error < 0){
-	g_free(str);
-
-	goto ags_devout_list_cards_NO_DEFAULT_0;
-      }
-
-      device = -1;
-      error = snd_ctl_pcm_next_device(card_handle, &device);
-
-      if(error < 0){
-	g_free(str);
-
-	goto ags_devout_list_cards_NO_DEFAULT_0;
-      }
-
-      if(card_id != NULL){
-	*card_id = g_list_prepend(*card_id, str);
-      }
-
-      if(card_name != NULL){
-	*card_name = g_list_prepend(*card_name, g_strdup(snd_ctl_card_info_get_name(card_info)));
-      }
-    
-      snd_ctl_close(card_handle);
+    if(error < 0){
+      g_free(str);
+      
+      goto ags_devout_list_cards_NO_DEFAULT_0;
     }
 
-  ags_devout_list_cards_NO_DEFAULT_0:
+    snd_ctl_card_info_alloca(&card_info);
+    error = snd_ctl_card_info(card_handle, card_info);
 
+    if(error < 0){
+      g_free(str);
+
+      goto ags_devout_list_cards_NO_DEFAULT_0;
+    }
+
+    if(card_id != NULL){
+      *card_id = g_list_prepend(*card_id, str);
+    }
+
+    if(card_name != NULL){
+      *card_name = g_list_prepend(*card_name, g_strdup(snd_ctl_card_info_get_name(card_info)));
+    }
+    
+    snd_ctl_close(card_handle);
+
+  ags_devout_list_cards_NO_DEFAULT_0:
+    
     /* enumerated devices */
     card_num = -1;
 
@@ -1745,21 +1734,34 @@ ags_devout_pcm_info(AgsSoundcard *soundcard,
 
     rc = snd_pcm_open(&handle, card_id, SND_PCM_STREAM_PLAYBACK, 0);
 
-    if(rc < 0) {
+    if(rc < 0){      
       str = snd_strerror(rc);
-      g_message("unable to open pcm device: %s\n", str);
+      g_message("unable to open pcm device (attempting fixup): %s", str);
 
-      if(error != NULL){
-	g_set_error(error,
-		    AGS_DEVOUT_ERROR,
-		    AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
-		    "unable to open pcm device: %s\n",
-		    str);
+      if(index(card_id,
+	       ',') != NULL){
+	gchar *device_fixup;
+	
+	device_fixup = g_strndup(card_id,
+				 index(card_id,
+				       ',') - card_id);
+	
+	rc = snd_pcm_open(&handle, device_fixup, SND_PCM_STREAM_PLAYBACK, 0);
+      
+	if(rc < 0){
+	  if(error != NULL){
+	    g_set_error(error,
+			AGS_DEVOUT_ERROR,
+			AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
+			"unable to open pcm device: %s\n",
+			str);
+	  }
+	  
+	  //    free(str);
+	  
+	  return;
+	}
       }
-    
-      //    free(str);
-    
-      return;
     }
 
     /* Allocate a hardware parameters object. */
@@ -2768,7 +2770,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   static unsigned int buffer_time = 100000;
 
   devout = AGS_DEVOUT(soundcard);
-
+    
   application_context = ags_soundcard_get_application_context(soundcard);
   
   pthread_mutex_lock(application_context->mutex);
@@ -2782,6 +2784,12 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 
   /* retrieve word size */
   pthread_mutex_lock(mutex);
+
+  if(devout->out.alsa.device == NULL){
+    pthread_mutex_unlock(mutex);
+    
+    return;
+  }
 
   switch(devout->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -2862,23 +2870,28 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   period_event = 0;
   
   /* Open PCM device for playback. */
-  if ((err = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
-    pthread_mutex_unlock(mutex);
-
-    str = snd_strerror(err);
-    g_warning("Playback open error: %s", str);
-
-    if(error != NULL){
-      g_set_error(error,
-		  AGS_DEVOUT_ERROR,
-		  AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
-		  "unable to open pcm device: %s",
-		  str);
-    }
+  if((err = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, 0)) < 0){
+    gchar *device_fixup;
     
-    //    free(str);
-
-    return;
+    str = snd_strerror(err);
+    g_warning("Playback open error (attempting fixup): %s", str);
+    
+    device_fixup = g_strdup_printf("%s,0",
+				   devout->out.alsa.device);
+    
+    if((err = snd_pcm_open(&handle, device_fixup, SND_PCM_STREAM_PLAYBACK, 0)) < 0){
+      pthread_mutex_unlock(mutex);
+      
+      if(error != NULL){
+	g_set_error(error,
+		    AGS_DEVOUT_ERROR,
+		    AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
+		    "unable to open pcm device: %s",
+		    str);
+      }
+      
+      return;
+    }
   }
 
   snd_pcm_hw_params_alloca(&hwparams);
