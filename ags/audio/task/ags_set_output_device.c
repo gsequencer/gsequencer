@@ -284,12 +284,6 @@ ags_set_output_device_dispose(GObject *gobject)
     set_output_device->soundcard = NULL;
   }
 
-  if(set_output_device->device != NULL){
-    g_free(set_output_device->device);
-
-    set_output_device->device = NULL;
-  }
-
   /* call parent */
   G_OBJECT_CLASS(ags_set_output_device_parent_class)->dispose(gobject);
 }
@@ -305,9 +299,7 @@ ags_set_output_device_finalize(GObject *gobject)
     g_object_unref(set_output_device->soundcard);
   }
 
-  if(set_output_device->device != NULL){
-    g_free(set_output_device->device);
-  }
+  g_free(set_output_device->device);
 
   /* call parent */
   G_OBJECT_CLASS(ags_set_output_device_parent_class)->finalize(gobject);
@@ -327,20 +319,25 @@ ags_set_output_device_launch(AgsTask *task)
 
   if(AGS_IS_DEVOUT(soundcard) &&
      (AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard)->flags)) != 0){
-    if(index(device, ',') == NULL){
+    if(device != NULL &&
+       !g_str_has_prefix(device,
+			 "hw:") &&
+       index(device, ',') == NULL){
       gchar *tmp;
     
       tmp = g_strdup_printf("%s,0",
 			    device);
-      
-      g_free(device);
       device = tmp;
+      
+      g_object_set(set_output_device,
+		   "device", device,
+		   NULL);
     }
   }
   
   /* perform task */
   ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
-			   device);
+			   g_strdup(device));
 }
 
 /**

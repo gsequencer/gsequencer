@@ -220,7 +220,8 @@ ags_check_system_functional_machine_add_and_destroy_test_LINK =  \
 am_ags_check_system_functional_machine_link_test_OBJECTS = ags/test/X/ags_check_system_functional_machine_link_test-ags_functional_machine_link_test.$(OBJEXT)
 ags_check_system_functional_machine_link_test_OBJECTS =  \
 	$(am_ags_check_system_functional_machine_link_test_OBJECTS)
-ags_check_system_functional_machine_link_test_DEPENDENCIES =
+ags_check_system_functional_machine_link_test_DEPENDENCIES =  \
+	$(am__DEPENDENCIES_3)
 ags_check_system_functional_machine_link_test_LINK = $(LIBTOOL) \
 	$(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) \
@@ -680,7 +681,7 @@ ags_check_system_functional_machine_link_test_SOURCES = ags/test/X/ags_functiona
 ags_check_system_functional_machine_link_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
 ags_check_system_functional_machine_link_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" $(AGS_RESOURCES)
 ags_check_system_functional_machine_link_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_functional_machine_link_test_LDADD = $(gsequencer_functional_test_LDADD)
+ags_check_system_functional_machine_link_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
 
 # functional line member add and destroy test
 ags_check_system_functional_line_member_add_and_destroy_test_SOURCES = ags/test/X/ags_functional_line_member_add_and_destroy_test.c

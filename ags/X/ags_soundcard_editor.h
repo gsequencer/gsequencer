@@ -36,7 +36,12 @@ typedef struct _AgsSoundcardEditor AgsSoundcardEditor;
 typedef struct _AgsSoundcardEditorClass AgsSoundcardEditorClass;
 
 typedef enum{
-  AGS_SOUNDCARD_EDITOR_CONNECTED    = 1,
+  AGS_SOUNDCARD_EDITOR_CONNECTED     = 1,
+  AGS_SOUNDCARD_EDITOR_BLOCK_RESET   = 1 <<  1,
+  AGS_SOUNDCARD_EDITOR_BLOCK_BACKEND = 1 <<  2,
+  AGS_SOUNDCARD_EDITOR_BLOCK_CARD    = 1 <<  3,
+  AGS_SOUNDCARD_EDITOR_BLOCK_ADD     = 1 <<  4,
+  AGS_SOUNDCARD_EDITOR_BLOCK_LOAD    = 1 <<  5,
 }AgsSoundcardEditorFlags;
 
 struct _AgsSoundcardEditor

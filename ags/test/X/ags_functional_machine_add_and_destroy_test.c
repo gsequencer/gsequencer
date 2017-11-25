@@ -64,7 +64,7 @@ void ags_functional_machine_add_and_destroy_test_ffplayer();
   "\n"						       \
   "[soundcard-0]\n"				       \
   "backend=alsa\n"                                     \
-  "device=hw:0,0\n"                                    \
+  "device=default\n"				       \
   "samplerate=44100\n"				       \
   "buffer-size=1024\n"				       \
   "pcm-channels=2\n"				       \

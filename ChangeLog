@@ -14,6 +14,14 @@ ags (1.2.0)
 	* extended AgsSwitchBufferFlag and AgsClearBuffer to support AgsDevin, AgsJackDevin and AgsPulseDevin
 	* use $(docdir) in Makefile.am
 
+ags (1.1.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added support for ALSA default device
+	* modified functional tests to use default device
+	* modified ags_devout.c to apply device identifier fixup
+	* minor bug-fixes
+
 ags (1.1.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
