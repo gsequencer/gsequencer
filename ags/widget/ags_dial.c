@@ -115,7 +115,7 @@ static guint dial_signals[LAST_SIGNAL];
 
 static GQuark quark_accessible_object = 0;
 
-GtkStyle *dial_style;
+GtkStyle *dial_style = NULL;
 
 GType
 ags_dial_get_type(void)
@@ -278,7 +278,6 @@ ags_dial_class_init(AgsDialClass *dial)
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
-
 }
 
 void
@@ -336,9 +335,10 @@ ags_dial_init(AgsDial *dial)
   	       "app-paintable\0", TRUE,
 	       "can-focus\0", TRUE,
   	       NULL);
-  
-  gtk_widget_set_style((GtkWidget *) dial,
-		       dial_style);
+
+  //FIXME:JK: not style set
+  //  gtk_widget_set_style((GtkWidget *) dial,
+  //		       dial_style);
 
   dial->flags = (AGS_DIAL_WITH_BUTTONS |
 		 AGS_DIAL_SEEMLESS_MODE);
@@ -635,7 +635,9 @@ void
 ags_dial_realize(GtkWidget *widget)
 {
   AgsDial *dial;
+
   GdkWindowAttr attributes;
+
   gint attributes_mask;
   gint buttons_width;
   gint border_left, border_top;

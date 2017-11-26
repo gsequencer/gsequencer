@@ -19,6 +19,8 @@
 
 #include <ags/widget/ags_piano.h>
 
+#include <ags/widget/ags_widget_marshal.h>
+
 void ags_piano_class_init(AgsPianoClass *piano);
 void ags_piano_init(AgsPiano *piano);
 void ags_piano_set_property(GObject *gobject,
@@ -51,6 +53,23 @@ void ags_piano_real_key_released(AgsPiano *piano,
 void ags_piano_real_key_clicked(AgsPiano *piano,
 				gchar *note, gint key_code);
 
+/**
+ * SECTION:ags_piano
+ * @short_description: A piano widget
+ * @title: AgsPiano
+ * @section_id:
+ * @include: ags/widget/ags_piano.h
+ *
+ * #AgsPiano is a widget representing a clavier.
+ */
+
+enum{
+  KEY_PRESSED,
+  KEY_RELEASED,
+  KEY_CLICKED,
+  LAST_SIGNAL,
+};
+
 enum{
   PROP_0,
   PROP_BASE_NOTE,
@@ -60,6 +79,7 @@ enum{
 };
 
 static gpointer ags_piano_parent_class = NULL;
+static guint piano_signals[LAST_SIGNAL];
 
 GType
 ags_piano_get_type(void)
@@ -184,6 +204,76 @@ ags_piano_class_init(AgsPianoClass *piano)
   widget->size_request = ags_piano_size_request;
   widget->size_allocate = ags_piano_size_allocate;
   widget->show = ags_piano_show;
+
+  /* AgsPianoClass */
+  piano->key_pressed = ags_piano_real_key_pressed;
+  piano->key_released = ags_piano_real_key_released;
+  
+  piano->key_clicked = ags_piano_real_key_clicked;
+
+  /* signals */
+  /**
+   * AgsPiano::key-pressed:
+   * @piano: the #AgsPiano
+   * @note: the note as string
+   * @key_code: the numeric representation of the note
+   *
+   * The ::key-pressed signal notifies about key pressed.
+   *
+   * Since: 1.2.0
+   */
+  piano_signals[KEY_PRESSED] =
+    g_signal_new("key-pressed\0",
+		 G_TYPE_FROM_CLASS(piano),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsPianoClass, key_pressed),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__STRING_INT,
+		 G_TYPE_NONE, 0,
+		 G_TYPE_STRING,
+		 G_TYPE_INT);
+
+  /**
+   * AgsPiano::key-released:
+   * @piano: the #AgsPiano
+   * @note: the note as string
+   * @key_code: the numeric representation of the note
+   *
+   * The ::key-released signal notifies about key released.
+   *
+   * Since: 1.2.0
+   */
+  piano_signals[KEY_RELEASED] =
+    g_signal_new("key-released\0",
+		 G_TYPE_FROM_CLASS(piano),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsPianoClass, key_released),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__STRING_INT,
+		 G_TYPE_NONE, 0,
+		 G_TYPE_STRING,
+		 G_TYPE_INT);
+
+  /**
+   * AgsPiano::key-clicked:
+   * @piano: the #AgsPiano
+   * @note: the note as string
+   * @key_code: the numeric representation of the note
+   *
+   * The ::key-clicked signal notifies about key clicked.
+   *
+   * Since: 1.2.0
+   */
+  piano_signals[KEY_CLICKED] =
+    g_signal_new("key-clicked\0",
+		 G_TYPE_FROM_CLASS(piano),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsPianoClass, key_clicked),
+		 NULL, NULL,
+		 g_cclosure_user_marshal_VOID__STRING_INT,
+		 G_TYPE_NONE, 0,
+		 G_TYPE_STRING,
+		 G_TYPE_INT);
 }
 
 void
@@ -193,7 +283,7 @@ ags_piano_init(AgsPiano *piano)
 	       "app-paintable", TRUE,
 	       NULL);
 
-  piano->base_note = AGS_PIANO_DEFAULT_BASE_NOTE;
+  piano->base_note = g_strdup(AGS_PIANO_DEFAULT_BASE_NOTE);
   
   piano->key_width = AGS_PIANO_DEFAULT_KEY_WIDTH;
   piano->key_height = AGS_PIANO_DEFAULT_KEY_HEIGHT;
@@ -210,7 +300,45 @@ ags_piano_set_property(GObject *gobject,
 		       const GValue *value,
 		       GParamSpec *param_spec)
 {
-  //TODO:JK: implement me
+  AgsPiano *piano;
+
+  piano = AGS_PIANO(gobject);
+
+  switch(prop_id){
+  case PROP_BASE_NOTE:
+    {
+      gchar *base_note;
+
+      base_note = g_value_get_string(value);
+
+      if(base_note == piano->base_note){
+	return;
+      }
+
+      g_free(piano->base_note);
+      
+      piano->base_note = g_strdup(base_note);
+    }
+    break;
+  case PROP_KEY_WIDTH:
+    {
+      piano->key_width = g_value_get_uint(value);
+    }
+    break;
+  case PROP_KEY_HEIGHT:
+    {
+      piano->key_height = g_value_get_uint(value);
+    }
+    break;
+  case PROP_KEY_COUNT:
+    {
+      piano->key_count = g_value_get_uint(value);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -219,14 +347,47 @@ ags_piano_get_property(GObject *gobject,
 		       GValue *value,
 		       GParamSpec *param_spec)
 {
-  //TODO:JK: implement me
+  AgsPiano *piano;
+
+  piano = AGS_PIANO(gobject);
+
+  switch(prop_id){
+  case PROP_BASE_NOTE:
+    {
+      g_value_set_string(value, piano->base_note);
+    }
+    break;
+  case PROP_KEY_WIDTH:
+    {
+      g_value_set_uint(value, piano->key_width);
+    }
+    break;
+  case PROP_KEY_HEIGHT:
+    {
+      g_value_set_uint(value, piano->key_height);
+    }
+    break;
+  case PROP_KEY_COUNT:
+    {
+      g_value_set_uint(value, piano->key_count);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
 ags_piano_finalize(GObject *gobject)
 {
-  //TODO:JK: implement me
+  AgsPiano *piano;
 
+  piano = AGS_PIANO(gobject);
+  
+  g_free(piano->base_note);
+
+  /* call parent */
   G_OBJECT_CLASS(ags_piano_parent_class)->finalize(gobject);
 }
 
@@ -245,7 +406,9 @@ void
 ags_piano_realize(GtkWidget *widget)
 {
   AgsPiano *piano;
+
   GdkWindowAttr attributes;
+
   gint attributes_mask;
 
   g_return_if_fail(widget != NULL);
@@ -256,6 +419,31 @@ ags_piano_realize(GtkWidget *widget)
   gtk_widget_set_realized(widget, TRUE);
 
   /*  */
+  attributes.window_type = GDK_WINDOW_CHILD;
+  
+  attributes.x = widget->allocation.x;
+  attributes.y = widget->allocation.y;
+  attributes.width = widget->allocation.width;
+  attributes.height = widget->allocation.height;
+
+  attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
+
+  attributes.wclass = GDK_INPUT_OUTPUT;
+  attributes.visual = gtk_widget_get_visual (widget);
+  attributes.colormap = gtk_widget_get_colormap (widget);
+  attributes.event_mask = gtk_widget_get_events (widget);
+  attributes.event_mask |= (GDK_EXPOSURE_MASK);
+
+  widget->window = gdk_window_new(gtk_widget_get_parent_window (widget),
+				  &attributes, attributes_mask);
+  gdk_window_set_user_data(widget->window, cartesian);
+
+  widget->style = gtk_style_attach(widget->style,
+				   widget->window);
+  gtk_style_set_background(widget->style,
+			   widget->window,
+			   GTK_STATE_NORMAL);
+
   gtk_widget_queue_resize(widget);
 }
 
@@ -269,20 +457,22 @@ void
 ags_piano_size_request(GtkWidget *widget,
 		       GtkRequisition *requisition)
 {
-  GTK_WIDGET_CLASS(ags_piano_parent_class)->size_request(widget,
-							 requisition);
-
-  //TODO:JK: implement me
+  requisition->width = -1;
+  requisition->height = -1;
 }
 
 void
 ags_piano_size_allocate(GtkWidget *widget,
 			GtkAllocation *allocation)
 {
-  GTK_WIDGET_CLASS(ags_piano_parent_class)->size_allocate(widget,
-							  allocation);
+  AgsPiano *piano;
 
-  //TODO:JK: implement me
+  piano = AGS_PIANO(widget);
+  
+  widget->allocation = *allocation;
+
+  allocation->width = piano->key_width;
+  allocation->height = piano->key_height;
 }
 
 gboolean
@@ -311,7 +501,13 @@ void
 ags_piano_key_pressed(AgsPiano *piano,
 		      gchar *note, gint key_code)
 {
-  //TODO:JK: implement me
+  g_return_if_fail(AGS_IS_PIANO(piano));
+  
+  g_object_ref((GObject *) piano);
+  g_signal_emit(G_OBJECT(piano),
+		piano_signals[key_pressed], 0,
+		note, key_code);
+  g_object_unref((GObject *) piano);
 }
 
 void
@@ -325,7 +521,13 @@ void
 ags_piano_key_released(AgsPiano *piano,
 		       gchar *note, gint key_code)
 {
-  //TODO:JK: implement me
+  g_return_if_fail(AGS_IS_PIANO(piano));
+  
+  g_object_ref((GObject *) piano);
+  g_signal_emit(G_OBJECT(piano),
+		piano_signals[key_released], 0,
+		note, key_code);
+  g_object_unref((GObject *) piano);
 }
 
 void
@@ -339,7 +541,13 @@ void
 ags_piano_key_clicked(AgsPiano *piano,
 		      gchar *note, gint key_code)
 {
-  //TODO:JK: implement me
+  g_return_if_fail(AGS_IS_PIANO(piano));
+  
+  g_object_ref((GObject *) piano);
+  g_signal_emit(G_OBJECT(piano),
+		piano_signals[key_clicked], 0,
+		note, key_code);
+  g_object_unref((GObject *) piano);
 }
 
 /**
