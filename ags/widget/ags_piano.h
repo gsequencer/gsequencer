@@ -45,13 +45,31 @@ typedef struct _AgsPianoClass AgsPianoClass;
 typedef enum{
   AGS_PIANO_DRAW_FULL_SCALE      = 1,
   AGS_PIANO_DRAW_OCTAVE_SCALE    = 1 <<  1,
-};
+}AgsPianoFlags;
+
+typedef enum{
+  AGS_PIANO_BUTTON_1_PRESSED     = 1,
+}AgsPianoButtonState;
+
+typedef enum{
+  AGS_PIANO_LAYOUT_VERTICAL,
+  AGS_PIANO_LAYOUT_HORIZONTAL,
+}AgsPianoLayout;
+
+typedef enum{
+  AGS_PIANO_MOVE_CURSOR_UP,
+  AGS_PIANO_MOVE_CURSOR_DOWN,
+  AGS_PIANO_HIT_KEY,
+}AgsPianoAction;
 
 struct _AgsPiano
 {
   GtkWidget widget;
 
   guint flags;
+
+  guint button_state;
+  guint layout;
   
   gchar *base_note;
   gint base_key_code;
@@ -60,6 +78,8 @@ struct _AgsPiano
   guint key_height;
 
   guint key_count;
+
+  gint cursor_position;
 
   gint *active_key;
   guint active_key_count;

@@ -136,7 +136,7 @@ ags_dial_get_type(void)
     };
 
     ags_type_dial = g_type_register_static(GTK_TYPE_WIDGET,
-					   "AgsDial\0", &ags_dial_info,
+					   "AgsDial", &ags_dial_info,
 					   0);
   }
 
@@ -174,7 +174,7 @@ ags_accessible_dial_get_type(void)
     };
 
     ags_type_accessible_dial = g_type_register_static(GTK_TYPE_ACCESSIBLE,
-						      "AgsAccessibleDial\0", &ags_accesssible_dial_info,
+						      "AgsAccessibleDial", &ags_accesssible_dial_info,
 						      0);
 
     g_type_add_interface_static(ags_type_accessible_dial,
@@ -198,7 +198,7 @@ ags_dial_class_init(AgsDialClass *dial)
 
   ags_dial_parent_class = g_type_class_peek_parent(dial);
 
-  quark_accessible_object = g_quark_from_static_string("ags-accessible-object\0");
+  quark_accessible_object = g_quark_from_static_string("ags-accessible-object");
   
   /* GObjectClass */
   gobject = (GObjectClass *) dial;
@@ -214,9 +214,9 @@ ags_dial_class_init(AgsDialClass *dial)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_object("adjustment\0",
-				   "assigned adjustment\0",
-				   "The adjustment it is assigned with\0",
+  param_spec = g_param_spec_object("adjustment",
+				   "assigned adjustment",
+				   "The adjustment it is assigned with",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -230,9 +230,9 @@ ags_dial_class_init(AgsDialClass *dial)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_uint("scale-precision\0",
-				 "scale precision\0",
-				 "The precision of the scale\0",
+  param_spec = g_param_spec_uint("scale-precision",
+				 "scale precision",
+				 "The precision of the scale",
 				 0,
 				 G_MAXUINT,
 				 AGS_DIAL_DEFAULT_PRECISION,
@@ -271,7 +271,7 @@ ags_dial_class_init(AgsDialClass *dial)
    * Since: 1.0.0
    */
   dial_signals[VALUE_CHANGED] =
-    g_signal_new("value-changed\0",
+    g_signal_new("value-changed",
 		 G_TYPE_FROM_CLASS(dial),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDialClass, value_changed),
@@ -327,13 +327,13 @@ ags_dial_init(AgsDial *dial)
   accessible = gtk_widget_get_accessible((GtkWidget *) dial);
 
   g_object_set(accessible,
-	       "accessible-name\0", "dial\0",
-	       "accessible-description\0", "Adjust a value\0",
+	       "accessible-name", "dial",
+	       "accessible-description", "Adjust a value",
 	       NULL);
   
   g_object_set(G_OBJECT(dial),
-  	       "app-paintable\0", TRUE,
-	       "can-focus\0", TRUE,
+  	       "app-paintable", TRUE,
+	       "can-focus", TRUE,
   	       NULL);
 
   //FIXME:JK: not style set
@@ -392,7 +392,7 @@ ags_dial_set_property(GObject *gobject,
 
       if(adjustment != NULL){
 	g_object_ref(G_OBJECT(adjustment));
-	g_signal_connect(adjustment, "value-changed\0",
+	g_signal_connect(adjustment, "value-changed",
 			 G_CALLBACK(ags_dial_adjustment_changed_callback), dial);
       }
 
@@ -459,7 +459,7 @@ ags_accessible_dial_get_value_and_text(AtkValue *value,
   }
 
   if(text != NULL){
-    *text = g_strdup_printf("%f\0",
+    *text = g_strdup_printf("%f",
 			    gtk_adjustment_get_value(dial->adjustment));
   }
 }
@@ -475,7 +475,7 @@ ags_accessible_dial_get_range(AtkValue *value)
 
   range = atk_range_new(gtk_adjustment_get_lower(dial->adjustment),
 			gtk_adjustment_get_upper(dial->adjustment),
-			"Valid lower and upper input range of this dial\0");
+			"Valid lower and upper input range of this dial");
 }
 #endif
 
@@ -559,8 +559,8 @@ ags_accessible_dial_get_description(AtkAction *action,
 				    gint i)
 {
   static const gchar **actions = {
-    "increment dial value\0",
-    "decrement dial value\0",
+    "increment dial value",
+    "decrement dial value",
   };
 
   if(i >= 0 && i < 2){
@@ -575,8 +575,8 @@ ags_accessible_dial_get_name(AtkAction *action,
 			     gint i)
 {
   static const gchar **actions = {
-    "increment\0",
-    "decrement\0",
+    "increment",
+    "decrement",
   };
   
   if(i >= 0 && i < 2){
@@ -591,8 +591,8 @@ ags_accessible_dial_get_keybinding(AtkAction *action,
 				   gint i)
 {
   static const gchar **actions = {
-    "up\0",
-    "down\0",
+    "up",
+    "down",
   };
   
   if(i >= 0 && i < 2){
@@ -662,11 +662,11 @@ ags_dial_realize(GtkWidget *widget)
       return;
     }
     
-    cairo_select_font_face (cr, "Georgia\0",
+    cairo_select_font_face (cr, "Georgia",
 			    CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
     cairo_set_font_size (cr, (gdouble) dial->font_size);
-    cairo_text_extents (cr, "-\0", &te_down);
-    cairo_text_extents (cr, "+\0", &te_up);
+    cairo_text_extents (cr, "-", &te_down);
+    cairo_text_extents (cr, "+", &te_up);
     
     if(te_down.width < te_up.width){
       dial->button_width = te_up.width * 3;
@@ -1314,11 +1314,11 @@ ags_dial_draw(AgsDial *dial)
   margin_left = (gdouble) dial->margin_left;
   margin_right = (gdouble) dial->margin_right;
 
-  cairo_select_font_face (cr, "Georgia\0",
+  cairo_select_font_face (cr, "Georgia",
 			  CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
   cairo_set_font_size (cr, (gdouble) dial->font_size);
-  cairo_text_extents (cr, "-\0", &te_down);
-  cairo_text_extents (cr, "+\0", &te_up);
+  cairo_text_extents (cr, "-", &te_down);
+  cairo_text_extents (cr, "+", &te_up);
 
   button_width = dial->button_width;
   button_height = dial->button_height;
@@ -1363,7 +1363,7 @@ ags_dial_draw(AgsDial *dial)
     cairo_move_to (cr,
 		   1.0 + 0.5 - te_down.width / 2.0 - te_down.x_bearing + button_width / 2.25,
 		   0.5 - te_down.height / 2.0 - te_down.y_bearing + (radius * 2.0) - button_height / 2.0 + outline_strength);
-    cairo_show_text (cr, "-\0");
+    cairo_show_text (cr, "-");
   }
 
   
@@ -1397,7 +1397,7 @@ ags_dial_draw(AgsDial *dial)
     cairo_move_to (cr,
 		   1.0 + 0.5 - te_up.width / 2.0 - te_up.x_bearing + (radius * 2.0) + margin_left + margin_right + button_width + button_width / 2.25,
 		   0.5 - te_up.height / 2.0 - te_up.y_bearing + (radius * 2.0) - button_height / 2.0 + outline_strength);
-    cairo_show_text (cr, "+\0");
+    cairo_show_text (cr, "+");
   }
 
   /* border fill * /
@@ -1532,7 +1532,7 @@ ags_dial_draw(AgsDial *dial)
   range = (dial->adjustment->upper - dial->adjustment->lower);
 
   if(range == 0.0){
-    g_warning("ags_dial.c - range = 0.0\0");
+    g_warning("ags_dial.c - range = 0.0");
     return;
   }
 
@@ -1540,7 +1540,7 @@ ags_dial_draw(AgsDial *dial)
   translated_value = (dial->adjustment->value - dial->adjustment->lower);
   translated_value = (gdouble) scale_precision * (translated_value / range);
 
-  //  g_message("value: %f\nupper: %f\ntranslated_value: %f\n\0", GTK_RANGE(dial)->adjustment->value, GTK_RANGE(dial)->adjustment->upper, translated_value);
+  //  g_message("value: %f\nupper: %f\ntranslated_value: %f\n", GTK_RANGE(dial)->adjustment->value, GTK_RANGE(dial)->adjustment->upper, translated_value);
   cairo_set_line_width(cr, 4.0);
   cairo_set_source_rgb(cr,
 		       dial_style->fg[0].red / white_gc,
@@ -1624,7 +1624,7 @@ ags_dial_new()
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
 
   dial = (AgsDial *) g_object_new(AGS_TYPE_DIAL,
-				  "adjustment\0", adjustment,
+				  "adjustment", adjustment,
 				  NULL);
   
   return(dial);
