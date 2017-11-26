@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -114,7 +114,7 @@ void ags_ffplayer_paint(AgsFFPlayer *ffplayer);
 static gpointer ags_ffplayer_parent_class = NULL;
 static AgsConnectableInterface *ags_ffplayer_parent_connectable_interface;
 
-GtkStyle *ffplayer_style;
+GtkStyle *ffplayer_style = NULL;
 
 GType
 ags_ffplayer_get_type(void)

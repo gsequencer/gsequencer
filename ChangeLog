@@ -1,8 +1,10 @@
-ags (1.2.0)
+ags (2.0.0-beta)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented ags-capture recall
-	* TODO:JK: implemented AgsWaverec
+	* TODO:JK: implemented AgsFunction
+	* TODO:JK: implemented AgsServer, AgsRegistry and AgsServerStatus
+	* TODO:JK: implemented AgsXmlAuthentication, AgsXmlCertificate and AgsXmlPasswordStore
+	* TODO:JK: implemented AgsFrontController, AgsFactoryController, AgsLocalRegistryController, AgsLocalSerializationController and AgsLocalTaskController
 	* TODO:JK: implemented audio input properties
 	* TODO:JK: implemented AgsWaveWindow, AgsWaveEditor, AgsWaveToolbar and AgsWaveEdit
 	* TODO:JK: implemented AgsSelectAudioData and AgsPositionWaveCursor
@@ -12,6 +14,12 @@ ags (1.2.0)
 	* TODO:JK: refactored AgsEditor
 	* TODO:JK: replaced AgsNoteEdit and AgsPatternEdit by AgsNotationEdit
 	* TODO:JK: refactored AgsAutomationEditor to be more light-weight
+
+ags (1.2.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implemented ags-capture recall
+	* TODO:JK: implemented AgsAudiorec
 	* implemented AgsDevin
 	* implemented AgsJackDevin
 	* implemented AgsPulseDevin
