@@ -1,7 +1,7 @@
 /* GSequencer - Advanced GTK Sequencer
  * Copyright (C) 2005-2017 Joël Krähemann
  *
- * This file is part of GSequencer.
+ * Th file is part of GSequencer.
  *
  * GSequencer is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@
 #define AGS_PIANO_KEYS_OCTAVE_0_GIS "G#,,"
 #define AGS_PIANO_KEYS_OCTAVE_0_A "A,,"
 #define AGS_PIANO_KEYS_OCTAVE_0_AIS "A#,,"
-#define AGS_PIANO_KEYS_OCTAVE_0_HIS "H#,,"
+#define AGS_PIANO_KEYS_OCTAVE_0_H "H,,"
 
 #define AGS_PIANO_KEYS_OCTAVE_1_C "C,"
 #define AGS_PIANO_KEYS_OCTAVE_1_CIS "C#,"
@@ -44,7 +44,7 @@
 #define AGS_PIANO_KEYS_OCTAVE_1_GIS "G#,"
 #define AGS_PIANO_KEYS_OCTAVE_1_A "A,"
 #define AGS_PIANO_KEYS_OCTAVE_1_AIS "A#,"
-#define AGS_PIANO_KEYS_OCTAVE_1_HIS "H#,"
+#define AGS_PIANO_KEYS_OCTAVE_1_H "H,"
 
 #define AGS_PIANO_KEYS_OCTAVE_2_C "C"
 #define AGS_PIANO_KEYS_OCTAVE_2_CIS "C#"
@@ -57,7 +57,7 @@
 #define AGS_PIANO_KEYS_OCTAVE_2_GIS "G#"
 #define AGS_PIANO_KEYS_OCTAVE_2_A "A"
 #define AGS_PIANO_KEYS_OCTAVE_2_AIS "A#"
-#define AGS_PIANO_KEYS_OCTAVE_2_HIS "H#"
+#define AGS_PIANO_KEYS_OCTAVE_2_H "H"
 
 #define AGS_PIANO_KEYS_OCTAVE_3_C "c"
 #define AGS_PIANO_KEYS_OCTAVE_3_CIS "c#"
@@ -70,7 +70,7 @@
 #define AGS_PIANO_KEYS_OCTAVE_3_GIS "g#"
 #define AGS_PIANO_KEYS_OCTAVE_3_A "a"
 #define AGS_PIANO_KEYS_OCTAVE_3_AIS "a#"
-#define AGS_PIANO_KEYS_OCTAVE_3_HIS "h#"
+#define AGS_PIANO_KEYS_OCTAVE_3_H "h"
 
 #define AGS_PIANO_KEYS_OCTAVE_4_C "c'"
 #define AGS_PIANO_KEYS_OCTAVE_4_CIS "c#'"
@@ -83,7 +83,7 @@
 #define AGS_PIANO_KEYS_OCTAVE_4_GIS "g#'"
 #define AGS_PIANO_KEYS_OCTAVE_4_A "a'"
 #define AGS_PIANO_KEYS_OCTAVE_4_AIS "a#'"
-#define AGS_PIANO_KEYS_OCTAVE_4_HIS "h#'"
+#define AGS_PIANO_KEYS_OCTAVE_4_H "h'"
 
 #define AGS_PIANO_KEYS_OCTAVE_5_C "c''"
 #define AGS_PIANO_KEYS_OCTAVE_5_CIS "c#''"
@@ -96,7 +96,7 @@
 #define AGS_PIANO_KEYS_OCTAVE_5_GIS "g#''"
 #define AGS_PIANO_KEYS_OCTAVE_5_A "a''"
 #define AGS_PIANO_KEYS_OCTAVE_5_AIS "a#''"
-#define AGS_PIANO_KEYS_OCTAVE_5_HIS "h#''"
+#define AGS_PIANO_KEYS_OCTAVE_5_H "h''"
 
 #define AGS_PIANO_KEYS_OCTAVE_6_C "c'''"
 #define AGS_PIANO_KEYS_OCTAVE_6_CIS "c#'''"
@@ -109,7 +109,7 @@
 #define AGS_PIANO_KEYS_OCTAVE_6_GIS "g#'''"
 #define AGS_PIANO_KEYS_OCTAVE_6_A "a'''"
 #define AGS_PIANO_KEYS_OCTAVE_6_AIS "a#'''"
-#define AGS_PIANO_KEYS_OCTAVE_6_HIS "h#'''"
+#define AGS_PIANO_KEYS_OCTAVE_6_H "h'''"
 
 #define AGS_PIANO_KEYS_OCTAVE_7_C "c''''"
 #define AGS_PIANO_KEYS_OCTAVE_7_CIS "c#''''"
@@ -122,7 +122,7 @@
 #define AGS_PIANO_KEYS_OCTAVE_7_GIS "g#''''"
 #define AGS_PIANO_KEYS_OCTAVE_7_A "a''''"
 #define AGS_PIANO_KEYS_OCTAVE_7_AIS "a#''''"
-#define AGS_PIANO_KEYS_OCTAVE_7_HIS "h#''''"
+#define AGS_PIANO_KEYS_OCTAVE_7_H "h''''"
 
 #define AGS_PIANO_KEYS_OCTAVE_8_C "c'''''"
 #define AGS_PIANO_KEYS_OCTAVE_8_CIS "c#'''''"
@@ -135,7 +135,7 @@
 #define AGS_PIANO_KEYS_OCTAVE_8_GIS "g#'''''"
 #define AGS_PIANO_KEYS_OCTAVE_8_A "a'''''"
 #define AGS_PIANO_KEYS_OCTAVE_8_AIS "a#'''''"
-#define AGS_PIANO_KEYS_OCTAVE_8_HIS "h#'''''"
+#define AGS_PIANO_KEYS_OCTAVE_8_H "h'''''"
 
 #define AGS_PIANO_KEYS_OCTAVE_9_C "c''''''"
 #define AGS_PIANO_KEYS_OCTAVE_9_CIS "c#''''''"
@@ -148,7 +148,7 @@
 #define AGS_PIANO_KEYS_OCTAVE_9_GIS "g#''''''"
 #define AGS_PIANO_KEYS_OCTAVE_9_A "a''''''"
 #define AGS_PIANO_KEYS_OCTAVE_9_AIS "a#''''''"
-#define AGS_PIANO_KEYS_OCTAVE_9_HIS "h#''''''"
+#define AGS_PIANO_KEYS_OCTAVE_9_H "h''''''"
 
 #define AGS_PIANO_KEYS_OCTAVE_10_C "c'''''''"
 #define AGS_PIANO_KEYS_OCTAVE_10_CIS "c#'''''''"
@@ -161,7 +161,7 @@
 #define AGS_PIANO_KEYS_OCTAVE_10_GIS "g#'''''''"
 #define AGS_PIANO_KEYS_OCTAVE_10_A "a'''''''"
 #define AGS_PIANO_KEYS_OCTAVE_10_AIS "a#'''''''"
-#define AGS_PIANO_KEYS_OCTAVE_10_HIS "h#'''''''"
+#define AGS_PIANO_KEYS_OCTAVE_10_H "h'''''''"
 
 typedef enum{
   AGS_PIANO_NOTE_C,
@@ -175,7 +175,7 @@ typedef enum{
   AGS_PIANO_NOTE_GIS,
   AGS_PIANO_NOTE_A,
   AGS_PIANO_NOTE_AIS,
-  AGS_PIANO_NOTE_HIS,
+  AGS_PIANO_NOTE_H,
 }AgsPianoNote;
 
 #endif /*__AGS_PIANO_KEYS_H__*/
