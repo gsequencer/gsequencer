@@ -34,12 +34,13 @@
 #define AGS_IS_PIANO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_PIANO))
 #define AGS_PIANO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_PIANO, AgsPianoClass))
 
-#define AGS_PIANO_DEFAULT_BASE_NOTE "A"
+#define AGS_PIANO_DEFAULT_BASE_NOTE AGS_PIANO_KEYS_OCTAVE_0_C
 
 #define AGS_PIANO_DEFAULT_KEY_WIDTH (60)
 #define AGS_PIANO_DEFAULT_KEY_HEIGHT (14)
 
-#define AGS_PIANO_DEFAULT_KEY_COUNT (88)
+#define AGS_PIANO_DEFAULT_BASE_KEY_CODE (0)
+#define AGS_PIANO_DEFAULT_KEY_COUNT (128)
 
 typedef struct _AgsPiano AgsPiano;
 typedef struct _AgsPianoClass AgsPianoClass;
@@ -64,6 +65,21 @@ typedef enum{
   AGS_PIANO_HIT_KEY,
 }AgsPianoAction;
 
+typedef enum{
+  AGS_PIANO_NOTE_C,
+  AGS_PIANO_NOTE_CIS,
+  AGS_PIANO_NOTE_D,
+  AGS_PIANO_NOTE_DIS,
+  AGS_PIANO_NOTE_E,
+  AGS_PIANO_NOTE_F,
+  AGS_PIANO_NOTE_FIS,
+  AGS_PIANO_NOTE_G,
+  AGS_PIANO_NOTE_GIS,
+  AGS_PIANO_NOTE_A,
+  AGS_PIANO_NOTE_AIS,
+  AGS_PIANO_NOTE_H,
+}AgsPianoNote;
+
 struct _AgsPiano
 {
   GtkWidget widget;
@@ -72,6 +88,8 @@ struct _AgsPiano
 
   guint button_state;
   guint layout;
+
+  guint font_size;
   
   gchar *base_note;
   gint base_key_code;

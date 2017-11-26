@@ -1314,8 +1314,8 @@ ags_dial_draw(AgsDial *dial)
   margin_left = (gdouble) dial->margin_left;
   margin_right = (gdouble) dial->margin_right;
 
-  cairo_select_font_face (cr, "Georgia",
-			  CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+  cairo_select_font_face(cr, "Georgia",
+			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
   cairo_set_font_size (cr, (gdouble) dial->font_size);
   cairo_text_extents (cr, "-", &te_down);
   cairo_text_extents (cr, "+", &te_up);

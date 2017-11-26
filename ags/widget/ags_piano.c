@@ -426,9 +426,13 @@ ags_piano_init(AgsPiano *piano)
 
   piano->flags = 0;
 
+  piano->button_state = 0;
   piano->layout = AGS_PIANO_LAYOUT_VERTICAL;
+
+  piano->font_size = 12;
   
   piano->base_note = g_strdup(AGS_PIANO_DEFAULT_BASE_NOTE);
+  piano->base_key_code = AGS_PIANO_DEFAULT_BASE_KEY_CODE;
   
   piano->key_width = AGS_PIANO_DEFAULT_KEY_WIDTH;
   piano->key_height = AGS_PIANO_DEFAULT_KEY_HEIGHT;
@@ -970,7 +974,140 @@ ags_piano_motion_notify(GtkWidget *widget,
 void
 ags_piano_draw(AgsPiano *piano)
 {
-  //TODO:JK: implement me
+  cairo_t *cr;
+
+  guint width, height;
+  guint x_start, y_start;
+
+  guint big_control_width, big_control_height;
+  guint small_control_width, small_control_height;
+  
+  guint control_x0, control_y0;
+  
+  gint *active_key;
+  guint active_key_count;
+  gint active_position;
+  gboolean current_is_active;
+  guint i, j;
+  
+  static const gdouble white_gc = 65535.0;
+  static const guint bitmap = 0x52a52a;
+
+  if(!AGS_IS_PIANO(piano)){
+    return;
+  }
+
+  cr = gdk_cairo_create(GTK_WIDGET(piano)->window);
+  
+  if(cr == NULL){
+    return;
+  }
+
+  width = widget->allocation.width;
+  height = widget->allocation.height;
+
+  x_start = 0;
+  y_start = 0;
+  
+  /* fill bg */
+  cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+  cairo_rectangle(cr,
+		  (double) x_start, (double) y_start,
+		  (double) width, (double) height);
+  cairo_fill(cr);
+
+  /* draw */
+  control_x0 = x_start;
+  control_y0 = y_start;
+  
+  if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
+    big_control_width = piano->key_width;
+    big_control_height = piano->key_height;
+    
+    small_control_width = (2.0 / 3.0) * piano->key_width;
+    small_control_height = piano->key_height;
+  }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
+    big_control_width = piano->key_height;
+    big_control_height = piano->key_width;
+    
+    small_control_width = piano->key_height;
+    small_control_height = (2.0 / 3.0) * piano->key_width;
+  }
+  
+  active_key = ags_piano_get_active_key(piano,
+					&active_key_count);
+
+  active_position = -1;
+
+  cairo_set_line_width(cr,
+		       1.0);
+
+  for(i = 0; i < piano->key_count; i++){
+    /* check active */
+    current_is_active = FALSE;
+    
+    if(active_key != NULL &&
+       active_position + 1 < active_key_count &&
+       active_key[active_position] == piano->base_key_code + i){
+      current_is_active = TRUE;
+      
+      active_position++;
+    }
+    
+    if(((1 << j) & bitmap) != 0){
+      /* draw semi tone key */
+      cairo_set_source_rgb(cr,
+			   0.2, 0.2, 0.2);
+
+      cairo_rectangle(cr,
+		      (double) control_x0, (double) control_y0,
+		      small_control_width, (double) small_control_height);
+      cairo_fill(cr); 	
+
+      cairo_set_source_rgb(cr,
+			   0.68, 0.68, 0.68);
+
+      cairo_move_to(cr,
+		    (double) (control_x0 + small_control_width), (double) (control_y0 + small_control_height / 2));
+      cairo_line_to(cr,
+		    (double) (control_x0 + big_control_width), (double) (control_y0 + small_control_height / 2));
+      cairo_stroke(cr);
+    }else{
+      /* draw no semi tone key */
+      cairo_set_source_rgb(cr,
+			   0.68, 0.68, 0.68);
+
+      if(((1 << (j + 1)) & bitmap) == 0){
+	cairo_move_to(cr,
+		      (double) control_x0, (double) (control_y0 + big_control_height));
+	cairo_line_to(cr,
+		      (double) (control_x0 + big_control_width), (double) (control_y0 + big_control_height));
+	cairo_stroke(cr);
+      }
+
+      cairo_move_to(cr,
+		    (double) (control_x0 + big_control_width), (double) control_y0);
+      cairo_line_to(cr,
+		    (double) (control_x0 + big_control_width), (double) (control_y0 + big_control_height));
+      cairo_stroke(cr);
+    }
+
+    /* iterate - offset */
+    if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
+      control_y0 += piano->key_height;
+    }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
+      control_x0 += piano->key_height;
+    }
+
+    /* iterate - bitmap */
+    if(j == 11){
+      j = 0;
+    }else{
+      j++;
+    }
+  }
+
+  g_free(active_key);
 }
 
 void
@@ -995,6 +1132,16 @@ ags_piano_real_key_pressed(AgsPiano *piano,
   gtk_widget_queue_draw(piano);
 }
 
+/**
+ * ags_piano_key_pressed:
+ * @piano: the #AgsPiano
+ * @note: the string representation of key
+ * @key_code: the key code
+ * 
+ * Emits ::key-pressed event.
+ * 
+ * Since: 1.2.0
+ */
 void
 ags_piano_key_pressed(AgsPiano *piano,
 		      gchar *note, gint key_code)
@@ -1054,6 +1201,16 @@ ags_piano_real_key_released(AgsPiano *piano,
   gtk_widget_queue_draw(piano);
 }
 
+/**
+ * ags_piano_key_released:
+ * @piano: the #AgsPiano
+ * @note: the string representation of key
+ * @key_code: the key code
+ * 
+ * Emits ::key-released event.
+ * 
+ * Since: 1.2.0
+ */
 void
 ags_piano_key_released(AgsPiano *piano,
 		       gchar *note, gint key_code)
@@ -1067,6 +1224,16 @@ ags_piano_key_released(AgsPiano *piano,
   g_object_unref((GObject *) piano);
 }
 
+/**
+ * ags_piano_key_clicked:
+ * @piano: the #AgsPiano
+ * @note: the string representation of key
+ * @key_code: the key code
+ * 
+ * Emits ::key-clicked event.
+ * 
+ * Since: 1.2.0
+ */
 void
 ags_piano_key_clicked(AgsPiano *piano,
 		      gchar *note, gint key_code)

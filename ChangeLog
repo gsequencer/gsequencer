@@ -20,6 +20,7 @@ ags (1.2.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented ags-capture recall
 	* TODO:JK: implemented AgsAudiorec
+	* TODO:JK: implemented AgsCartesian properties
 	* implemented AgsDevin
 	* implemented AgsJackDevin
 	* implemented AgsPulseDevin
