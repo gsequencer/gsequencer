@@ -1051,6 +1051,8 @@ ags_piano_motion_notify(GtkWidget *widget,
        event->y < height){
       gchar *note;
 
+      piano->current_key = new_current_key;
+      
       note = ags_piano_key_code_to_note(new_current_key);
 
       ags_piano_key_pressed(piano,
