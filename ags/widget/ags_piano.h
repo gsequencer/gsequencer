@@ -100,7 +100,8 @@ struct _AgsPiano
   guint key_count;
 
   gint cursor_position;
-
+  gint current_key;
+  
   gint *active_key;
   guint active_key_count;
 };
@@ -119,6 +120,8 @@ struct _AgsPianoClass
 };
 
 GType ags_piano_get_type(void);
+
+gchar* ags_piano_key_code_to_note(gint key_code);
 
 void ags_piano_key_pressed(AgsPiano *piano,
 			   gchar *note, gint key_code);

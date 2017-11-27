@@ -440,6 +440,7 @@ ags_piano_init(AgsPiano *piano)
   piano->key_count = AGS_PIANO_DEFAULT_KEY_COUNT;
 
   piano->cursor_position = -1;
+  piano->current_key = 0;
   
   piano->active_key = NULL;
   piano->active_key_count = 0;
@@ -836,12 +837,41 @@ ags_piano_button_press(GtkWidget *widget,
 {
   AgsPiano *piano;
 
+  guint width, height;
+  guint x_start, y_start;
+
   piano = AGS_PIANO(widget);
 
-  if(event->button == 1){
-    piano->button_state |= AGS_PIANO_BUTTON_1_PRESSED;
-  }
+  width = widget->allocation.width;
+  height = widget->allocation.height;
 
+  x_start = 0;
+  y_start = 0;
+
+  if(event->x >= x_start &&
+     event->x < width &&
+     event->y >= y_start &&
+     event->y < height){
+    if(event->button == 1){
+      gchar *note;
+      
+      piano->button_state |= AGS_PIANO_BUTTON_1_PRESSED;
+
+      if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
+	piano->current_key = floor(event->y / piano->key_height);
+      }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
+	piano->current_key = floor(event->x / piano->key_height);
+      }
+
+      note = ags_piano_key_code_to_note(piano->current_key);
+
+      ags_piano_key_pressed(piano,
+			    note, piano->current_key);
+
+      g_free(note);
+    }
+  }
+  
   return(FALSE);
 }
 
@@ -854,8 +884,21 @@ ags_piano_button_release(GtkWidget *widget,
   gtk_widget_grab_focus(widget);
 
   piano = AGS_PIANO(widget);
-
+  
   if(event->button == 1){
+    if((AGS_PIANO_BUTTON_1_PRESSED & (piano->button_state)) != 0){
+      gchar *note;
+
+      note = ags_piano_key_code_to_note(piano->current_key);
+      
+      ags_piano_key_released(piano,
+			    note, piano->current_key);
+      ags_piano_key_clicked(piano,
+			    note, piano->current_key);
+      
+      g_free(note);
+    }
+    
     piano->button_state &= (~AGS_PIANO_BUTTON_1_PRESSED);
   }
 
@@ -876,7 +919,7 @@ ags_piano_key_press(GtkWidget *widget,
      event->keyval == GDK_KEY_Control_R ){
     return(GTK_WIDGET_CLASS(ags_piano_parent_class)->key_press_event(widget, event));
   }
-  
+
   return(TRUE);
 }
 
@@ -944,8 +987,7 @@ ags_piano_key_release(GtkWidget *widget,
       gchar *note;
       guint key_code;
 
-      //TODO:JK: implement me
-      note = NULL;
+      note = ags_piano_key_code_to_note(piano->cursor_position);
       key_code = piano->cursor_position;
 
       ags_piano_key_pressed(piano,
@@ -966,8 +1008,58 @@ gboolean
 ags_piano_motion_notify(GtkWidget *widget,
 			GdkEventMotion *event)
 {
-  //TODO:JK: implement me
+  AgsPiano *piano;
+
+  guint width, height;
+  guint x_start, y_start;
+
+  gint new_current_key;
   
+  piano = AGS_PIANO(widget);
+
+  width = widget->allocation.width;
+  height = widget->allocation.height;
+
+  x_start = 0;
+  y_start = 0;
+
+  if((AGS_PIANO_BUTTON_1_PRESSED & (piano->button_state)) != 0){
+    if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
+      new_current_key = floor(event->y / piano->key_height);
+    }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
+      new_current_key = floor(event->x / piano->key_height);
+    }
+
+    /* emit released */
+    if(new_current_key != piano->current_key){
+      gchar *note;
+
+      note = ags_piano_key_code_to_note(piano->current_key);
+      
+      ags_piano_key_released(piano,
+			     note, piano->current_key);
+      ags_piano_key_clicked(piano,
+			    note, piano->current_key);
+      
+      g_free(note);
+    }
+
+    /* emit pressed */
+    if(event->x >= x_start &&
+       event->x < width &&
+       event->y >= y_start &&
+       event->y < height){
+      gchar *note;
+
+      note = ags_piano_key_code_to_note(new_current_key);
+
+      ags_piano_key_pressed(piano,
+			    note, new_current_key);
+
+      g_free(note);      
+    }
+  }
+    
   return(FALSE);
 }
 
@@ -975,7 +1067,7 @@ void
 ags_piano_draw(AgsPiano *piano)
 {
   cairo_t *cr;
-
+  
   guint width, height;
   guint x_start, y_start;
 
@@ -1042,6 +1134,9 @@ ags_piano_draw(AgsPiano *piano)
   cairo_set_line_width(cr,
 		       1.0);
 
+  /* apply base note */
+  j = piano->base_key_code % 12;
+  
   for(i = 0; i < piano->key_count; i++){
     /* check active */
     current_is_active = FALSE;
@@ -1108,6 +1203,106 @@ ags_piano_draw(AgsPiano *piano)
   }
 
   g_free(active_key);
+}
+
+/**
+ * ags_piano_key_code_to_note:
+ * @key_code: the key code
+ * 
+ * Get note from key code.
+ * 
+ * Returns: the note as string
+ * 
+ * Since: 1.2.0 
+ */
+gchar*
+ags_piano_key_code_to_note(gint key_code)
+{
+  gchar *note;
+  gchar *prefix;
+  gchar *suffix;
+
+  guint tic_count;
+  guint i;
+  
+  static gchar **note_map = {
+    AGS_PIANO_KEYS_OCTAVE_2_C,
+    AGS_PIANO_KEYS_OCTAVE_2_CIS,
+    AGS_PIANO_KEYS_OCTAVE_2_D,
+    AGS_PIANO_KEYS_OCTAVE_2_DIS,
+    AGS_PIANO_KEYS_OCTAVE_2_E,
+    AGS_PIANO_KEYS_OCTAVE_2_F,
+    AGS_PIANO_KEYS_OCTAVE_2_FIS,
+    AGS_PIANO_KEYS_OCTAVE_2_G,
+    AGS_PIANO_KEYS_OCTAVE_2_GIS,
+    AGS_PIANO_KEYS_OCTAVE_2_A,
+    AGS_PIANO_KEYS_OCTAVE_2_AIS,
+    AGS_PIANO_KEYS_OCTAVE_2_H,
+    AGS_PIANO_KEYS_OCTAVE_3_C,
+    AGS_PIANO_KEYS_OCTAVE_3_CIS,
+    AGS_PIANO_KEYS_OCTAVE_3_D,
+    AGS_PIANO_KEYS_OCTAVE_3_DIS,
+    AGS_PIANO_KEYS_OCTAVE_3_E,
+    AGS_PIANO_KEYS_OCTAVE_3_F,
+    AGS_PIANO_KEYS_OCTAVE_3_FIS,
+    AGS_PIANO_KEYS_OCTAVE_3_G,
+    AGS_PIANO_KEYS_OCTAVE_3_GIS,
+    AGS_PIANO_KEYS_OCTAVE_3_A,
+    AGS_PIANO_KEYS_OCTAVE_3_AIS,
+    AGS_PIANO_KEYS_OCTAVE_3_H,
+  };
+
+  note = NULL;
+  
+  if(key_code < 2 * 12){
+    /* prefix */
+    if(key_code >= 0){
+      prefix = note_map[key_code % 12];
+    }else{
+      prefix = note_map[(12 + (key_code % 12)) % 12];
+    }
+    
+    /* suffix */
+    tic_count = floor((24.0 - key_code) / 12.0);
+    suffix = (gchar *) malloc((tic_count + 1) * sizeof(gchar));
+    
+    for(i = 0; i < tic_count; i++){
+      suffix[i] = ',';
+    }
+    
+    suffix[i] = '\0';
+
+    /* note */
+    note = g_strdup_printf("%s%s",
+			   prefix,
+			   suffix);
+  }else if(key_code >= 2 * 12 &&
+	   key_code < 3 * 12){
+    note = g_strdup(note_map[key_code - 2 * 12]);
+  }else if(key_code >= 3 * 12 &&
+	   key_code < 4 * 12){
+    note = g_strdup(note_map[key_code - 3 * 12]);
+  }else{
+    /* prefix */
+    prefix = note_map[(key_code % 12) + 12];
+
+    /* suffix */
+    tic_count = floor((key_code - 48.0) / 12.0);
+    suffix = (gchar *) malloc((tic_count + 1) * sizeof(gchar));
+    
+    for(i = 0; i < tic_count; i++){
+      suffix[i] = '\'';
+    }
+
+    suffix[i] = '\0';
+
+    /* note */
+    note = g_strdup_printf("%s%s",
+			   prefix,
+			   suffix);
+  }
+
+  return(note);
 }
 
 void
