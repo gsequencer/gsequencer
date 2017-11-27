@@ -245,7 +245,7 @@ ags_pattern_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *ev
       cairo_destroy(cr);
     }
 
-    ags_meter_paint(editor->current_meter);
+    gtk_widget_queue_draw(editor->current_meter);
   }
 
   return(TRUE);
@@ -1685,7 +1685,7 @@ ags_pattern_edit_vscrollbar_value_changed(GtkRange *range, AgsPatternEdit *patte
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pattern_edit),
 						 AGS_TYPE_EDITOR);
 
-  ags_meter_paint(editor->current_meter);
+  gtk_widget_queue_draw(editor->current_meter);
   
   pattern_edit->flags |= AGS_PATTERN_EDIT_RESETING_VERTICALLY;
   ags_pattern_edit_reset_vertically(pattern_edit, 0);

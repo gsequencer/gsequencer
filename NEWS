@@ -3,6 +3,8 @@ Overview of Changes in AGS 1.2.0
 
 * Audio input support for all common backends like ALSA, OSS4, JACK and
   Pulseaudio. 
+* New widget AgsPiano available. It is an accessible widget which draws
+  a piano. It has events like ::key-pressed, ::key-released and ::key-clicked
 
 Overview of Changes in AGS 1.0.0
 ================================

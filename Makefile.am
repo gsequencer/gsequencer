@@ -1242,12 +1242,15 @@ libags_gui_h_sources = \
 	ags/widget/ags_indicator.h \
 	ags/widget/ags_led.h \
 	ags/widget/ags_led_array.h \
+	ags/widget/ags_piano_keys.h \
+	ags/widget/ags_piano.h \
 	ags/widget/ags_ruler.h \
 	ags/widget/ags_table.h \
 	ags/widget/ags_timebar.h \
 	ags/widget/ags_vindicator.h \
 	ags/widget/ags_vled_array.h \
 	ags/widget/ags_waveform.h \
+	ags/widget/ags_widget_marshal.h \
 	ags/widget/ags_container.h
 
 deprecated_libags_gui_c_sources =
@@ -1264,12 +1267,14 @@ libags_gui_c_sources = \
 	ags/widget/ags_indicator.c \
 	ags/widget/ags_led.c \
 	ags/widget/ags_led_array.c \
+	ags/widget/ags_piano.c \
 	ags/widget/ags_ruler.c \
 	ags/widget/ags_table.c \
 	ags/widget/ags_timebar.c \
 	ags/widget/ags_vindicator.c \
 	ags/widget/ags_vled_array.c \
 	ags/widget/ags_waveform.c \
+	ags/widget/ags_widget_marshal.c \
 	ags/widget/ags_container.c
 
 # libgsequencer all files

@@ -203,6 +203,6 @@ ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachine
       notation = notation->next;
     }
 
-    ags_meter_paint(editor->current_meter);
+    gtk_widget_queue_draw(editor->current_meter);
   }
 }

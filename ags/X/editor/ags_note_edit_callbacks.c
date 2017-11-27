@@ -259,7 +259,7 @@ ags_note_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event
       cairo_destroy(cr);
     }
 
-    ags_meter_paint(editor->current_meter);
+    gtk_widget_queue_draw(editor->current_meter);
   }
 
   return(TRUE);
@@ -1868,7 +1868,7 @@ ags_note_edit_vscrollbar_value_changed(GtkRange *range, AgsNoteEdit *note_edit)
   editor = (AgsEditor *) gtk_widget_get_ancestor(GTK_WIDGET(note_edit),
 						 AGS_TYPE_EDITOR);
 
-  ags_meter_paint(editor->current_meter);
+  gtk_widget_queue_draw(editor->current_meter);
   
   note_edit->flags |= AGS_NOTE_EDIT_RESETING_VERTICALLY;
   ags_note_edit_reset_vertically(note_edit, 0);

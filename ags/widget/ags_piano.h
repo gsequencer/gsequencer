@@ -78,7 +78,7 @@ typedef enum{
   AGS_PIANO_NOTE_A,
   AGS_PIANO_NOTE_AIS,
   AGS_PIANO_NOTE_H,
-}AgsPianoNote;
+}AgsPianoOctave;
 
 struct _AgsPiano
 {

@@ -237,8 +237,11 @@ ags_function_init(AgsFunction *function)
   function->symbol = NULL;
   function->symbol_count = 0;
 
-  function->n_cols = 0;
-  function->n_rows = 0;
+  function->solver_matrix = NULL;
+
+  function->pivot_table_count = 0;
+  function->column_count = NULL;
+  function->row_count = NULL;
   function->pivot_table = NULL;
 
   function->solver_level = 0;
@@ -339,7 +342,7 @@ void
 ags_function_finalize(GObject *gobject)
 {
   AgsFunction *function;
-  guint i, j;
+  guint i, j, k;
   
   function = AGS_FUNCTION(gobject);
 
@@ -368,9 +371,13 @@ ags_function_finalize(GObject *gobject)
   }
 
   if(function->pivot_table != NULL){
-    for(i = 0; i < function->n_rows; i++){
-      for(j = 0; j < function->n_cols; j++){
-	ags_complex_free(function->pivot_table[i][j]);
+    for(i = 0; i < function->pivot_table_count; i++){
+      for(j = 0; j < function->row_count[i]; j++){
+	for(k = 0; k < function->column_count[i]; k++){
+	  ags_complex_free(function->pivot_table[i][j][k]);
+	}
+
+	free(function->pivot_table[i][j]);
       }
 
       free(function->pivot_table[i]);
@@ -657,20 +664,6 @@ ags_function_literal_solve(AgsFunction *function)
 
   if(max_exponent < available_exponent){
     max_exponent = available_exponent;
-  }
-  
-  /* allocate pivot table and function vector table */
-  function->n_rows = function->symbol_count;
-  function->n_cols = (function->symbol_count * max_exponent) + 1;
-
-  function->pivot_table = (AgsComplex ***) malloc(function->n_rows * sizeof(AgsComplex **));
-
-  for(i = 0; i < function->n_rows; i++){
-    function->pivot_table[i]  = (AgsComplex **) malloc(function->n_cols * sizeof(AgsComplex *));
-    
-    for(j = 0; j < function->n_cols; j++){
-      function->pivot_table[i][j] = ags_complex_alloc();
-    }
   }
 
   //TODO:JK: implement me

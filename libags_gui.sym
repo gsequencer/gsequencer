@@ -1,3 +1,10 @@
+ags_piano_get_type
+ags_piano_key_code_to_note
+ags_piano_key_pressed
+ags_piano_key_released
+ags_piano_key_clicked
+ags_piano_get_active_key
+ags_piano_new
 ags_vled_array_get_type
 ags_vled_array_new
 ags_led_get_type

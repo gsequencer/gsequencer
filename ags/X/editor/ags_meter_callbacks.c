@@ -37,7 +37,8 @@ ags_meter_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsMeter *meter
 
   cr = gdk_cairo_create(widget->window);
 
-  ags_meter_paint(meter);
+  ags_meter_paint(meter,
+		  cr);
 
   cairo_surface_mark_dirty(cairo_get_target(cr));
   cairo_destroy(cr);
@@ -59,7 +60,8 @@ ags_meter_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsMeter 
 
   cr = gdk_cairo_create(widget->window);
 
-  ags_meter_paint(meter);
+  ags_meter_paint(meter,
+		  cr);
 
   cairo_surface_mark_dirty(cairo_get_target(cr));
   cairo_destroy(cr);

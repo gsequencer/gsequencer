@@ -9,10 +9,9 @@ ags (2.0.0-beta)
 	* TODO:JK: implemented AgsWaveWindow, AgsWaveEditor, AgsWaveToolbar and AgsWaveEdit
 	* TODO:JK: implemented AgsSelectAudioData and AgsPositionWaveCursor
 	* TODO:JK: implemented AgsLevel
-	* TODO:JK: implemented AgsPiano
 	* TODO:JK: implemented AgsNotationEdit
-	* TODO:JK: refactored AgsEditor
-	* TODO:JK: replaced AgsNoteEdit and AgsPatternEdit by AgsNotationEdit
+	* TODO:JK: replaced AgsEditor by AgsNotationEditor
+	* TODO:JK: replaced AgsNoteEdit and AgsPatternEdit by AgsNotationArea
 	* TODO:JK: refactored AgsAutomationEditor to be more light-weight
 
 ags (1.2.0)
@@ -21,6 +20,7 @@ ags (1.2.0)
 	* TODO:JK: implemented ags-capture recall
 	* TODO:JK: implemented AgsAudiorec
 	* TODO:JK: implemented AgsCartesian properties
+	* implemented AgsPiano
 	* implemented AgsDevin
 	* implemented AgsJackDevin
 	* implemented AgsPulseDevin

@@ -48,12 +48,12 @@
 
 /* VOID:STRING,INT (ags_widget_marshallers.list:1) */
 void
-ags_widget_VOID__STRING_INT (GClosure     *closure,
-                             GValue       *return_value G_GNUC_UNUSED,
-                             guint         n_param_values,
-                             const GValue *param_values,
-                             gpointer      invocation_hint G_GNUC_UNUSED,
-                             gpointer      marshal_data)
+ags_widget_cclosure_marshal_VOID__STRING_INT (GClosure     *closure,
+                                              GValue       *return_value G_GNUC_UNUSED,
+                                              guint         n_param_values,
+                                              const GValue *param_values,
+                                              gpointer      invocation_hint G_GNUC_UNUSED,
+                                              gpointer      marshal_data)
 {
   typedef void (*GMarshalFunc_VOID__STRING_INT) (gpointer data1,
                                                  gpointer arg1,

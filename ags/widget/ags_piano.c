@@ -21,6 +21,10 @@
 
 #include <ags/widget/ags_widget_marshal.h>
 
+#include <atk/atk.h>
+
+#include <gdk/gdkkeysyms.h>
+
 static GType ags_accessible_piano_get_type(void);
 void ags_piano_class_init(AgsPianoClass *piano);
 void ags_piano_init(AgsPiano *piano);
@@ -37,7 +41,7 @@ void ags_piano_get_property(GObject *gobject,
 			    GParamSpec *param_spec);
 void ags_piano_finalize(GObject *gobject);
 AtkObject* ags_piano_get_accessible(GtkWidget *widget);
-void ags_piano_show();
+void ags_piano_show(GtkWidget *widget);
 
 void ags_accessible_piano_get_value_and_text(AtkValue *value,
 					     gdouble *current_value,
@@ -323,7 +327,7 @@ ags_piano_class_init(AgsPianoClass *piano)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsPianoClass, key_pressed),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__STRING_INT,
+		 ags_widget_cclosure_marshal_VOID__STRING_INT,
 		 G_TYPE_NONE, 0,
 		 G_TYPE_STRING,
 		 G_TYPE_INT);
@@ -344,7 +348,7 @@ ags_piano_class_init(AgsPianoClass *piano)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsPianoClass, key_released),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__STRING_INT,
+		 ags_widget_cclosure_marshal_VOID__STRING_INT,
 		 G_TYPE_NONE, 0,
 		 G_TYPE_STRING,
 		 G_TYPE_INT);
@@ -365,7 +369,7 @@ ags_piano_class_init(AgsPianoClass *piano)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsPianoClass, key_clicked),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__STRING_INT,
+		 ags_widget_cclosure_marshal_VOID__STRING_INT,
 		 G_TYPE_NONE, 0,
 		 G_TYPE_STRING,
 		 G_TYPE_INT);
@@ -640,11 +644,10 @@ ags_accessible_piano_do_action(AtkAction *action,
 		       (GdkEvent *) key_release);
     }
     break;
-  }
   case AGS_PIANO_HIT_KEY:
     {
       key_press->keyval =
-	key_release->keyval = GDK_KEY_Space;
+	key_release->keyval = GDK_KEY_space;
       
       /* send event */
       gtk_widget_event((GtkWidget *) piano,
@@ -653,9 +656,9 @@ ags_accessible_piano_do_action(AtkAction *action,
 		       (GdkEvent *) key_release);
     }
     break;
-}
+  }
 
-return(TRUE);
+  return(TRUE);
 }
 
 gint
@@ -778,7 +781,7 @@ ags_piano_realize(GtkWidget *widget)
 
   widget->window = gdk_window_new(gtk_widget_get_parent_window (widget),
 				  &attributes, attributes_mask);
-  gdk_window_set_user_data(widget->window, cartesian);
+  gdk_window_set_user_data(widget->window, piano);
 
   widget->style = gtk_style_attach(widget->style,
 				   widget->window);
@@ -787,6 +790,28 @@ ags_piano_realize(GtkWidget *widget)
 			   GTK_STATE_NORMAL);
 
   gtk_widget_queue_resize(widget);
+}
+
+AtkObject*
+ags_piano_get_accessible(GtkWidget *widget)
+{
+  AtkObject* accessible;
+
+  accessible = g_object_get_qdata(G_OBJECT(widget),
+				  quark_accessible_object);
+  
+  if(!accessible){
+    accessible = g_object_new(ags_accessible_piano_get_type(),
+			      NULL);
+    
+    g_object_set_qdata(G_OBJECT(widget),
+		       quark_accessible_object,
+		       accessible);
+    gtk_accessible_set_widget(GTK_ACCESSIBLE(accessible),
+			      widget);
+  }
+  
+  return(accessible);
 }
 
 void
@@ -981,8 +1006,7 @@ ags_piano_key_release(GtkWidget *widget,
       gtk_widget_queue_draw(widget);
     }
     break;
-  }
-  case GDK_KEY_Space:
+  case GDK_KEY_space:
     {
       gchar *note;
       guint key_code;
@@ -1097,8 +1121,8 @@ ags_piano_draw(AgsPiano *piano)
     return;
   }
 
-  width = widget->allocation.width;
-  height = widget->allocation.height;
+  width = GTK_WIDGET(piano)->allocation.width;
+  height = GTK_WIDGET(piano)->allocation.height;
 
   x_start = 0;
   y_start = 0;
@@ -1227,7 +1251,7 @@ ags_piano_key_code_to_note(gint key_code)
   guint tic_count;
   guint i;
   
-  static gchar **note_map = {
+  static const gchar **note_map = {
     AGS_PIANO_KEYS_OCTAVE_2_C,
     AGS_PIANO_KEYS_OCTAVE_2_CIS,
     AGS_PIANO_KEYS_OCTAVE_2_D,
@@ -1347,7 +1371,7 @@ ags_piano_key_pressed(AgsPiano *piano,
   
   g_object_ref((GObject *) piano);
   g_signal_emit(G_OBJECT(piano),
-		piano_signals[key_pressed], 0,
+		piano_signals[KEY_PRESSED], 0,
 		note, key_code);
   g_object_unref((GObject *) piano);
 }
@@ -1416,7 +1440,7 @@ ags_piano_key_released(AgsPiano *piano,
   
   g_object_ref((GObject *) piano);
   g_signal_emit(G_OBJECT(piano),
-		piano_signals[key_released], 0,
+		piano_signals[KEY_RELEASED], 0,
 		note, key_code);
   g_object_unref((GObject *) piano);
 }
@@ -1439,7 +1463,7 @@ ags_piano_key_clicked(AgsPiano *piano,
   
   g_object_ref((GObject *) piano);
   g_signal_emit(G_OBJECT(piano),
-		piano_signals[key_clicked], 0,
+		piano_signals[KEY_CLICKED], 0,
 		note, key_code);
   g_object_unref((GObject *) piano);
 }
@@ -1469,7 +1493,7 @@ ags_piano_get_active_key(AgsPiano *piano,
     return(NULL);
   }
   
-  if(count > 0){
+  if(piano->active_key_count > 0){
     active_key = (gint *) malloc(piano->active_key_count * sizeof(gint));
     memcpy(active_key, piano->active_key, piano->active_key_count * sizeof(gint));
   }else{

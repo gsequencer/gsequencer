@@ -142,7 +142,6 @@ ags_meter_paint(AgsMeter *meter,
 {
   AgsEditor *editor;
   GtkWidget *widget;
-  cairo_t *cr;
   gchar *base_note;
   guint bitmap;
   guint y[2];

@@ -33,7 +33,7 @@ void ags_cartesian_get_property(GObject *gobject,
 				GValue *value,
 				GParamSpec *param_spec);
 void ags_cartesian_finalize(GObject *gobject);
-void ags_cartesian_show();
+void ags_cartesian_show(GtkWidget *widget);
 
 void ags_cartesian_map(GtkWidget *widget);
 void ags_cartesian_realize(GtkWidget *widget);
