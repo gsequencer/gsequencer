@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,34 +18,38 @@
  */
 
 #include <ags/X/editor/ags_notebook.h>
-#include <ags/X/editor/ags_notebook_callbacks.h>
-
-#include <ags/object/ags_connectable.h>
-
-#include <ags/X/ags_editor.h>
 
 void ags_notebook_class_init(AgsNotebookClass *notebook);
 void ags_notebook_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_notebook_init(AgsNotebook *notebook);
+void ags_notebook_set_property(GObject *gobject,
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *param_spec);
+void ags_notebook_get_property(GObject *gobject,
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *param_spec);
+void ags_notebook_finalize(GObject *gobject);
+
 void ags_notebook_size_request(AgsNotebook *notebook,
 			       GtkRequisition *requisition);
 void ags_notebook_size_allocate(AgsNotebook *notebook,
 				GtkAllocation *allocation);
-void ags_notebook_connect(AgsConnectable *connectable);
-void ags_notebook_disconnect(AgsConnectable *connectable);
 
-void ags_notebook_paint(AgsNotebook *notebook);
-
-AgsNotebookTab* ags_notebook_tab_alloc();
+void ags_notebook_scroll_prev_callback(GtkWidget *button,
+				       AgsNotebook *notebook);
+void ags_notebook_scroll_next_callback(GtkWidget *button,
+				       AgsNotebook *notebook);
 
 /**
  * SECTION:ags_notebook
- * @short_description: select channel
+ * @short_description: selection widget
  * @title: AgsNotebook
  * @section_id:
- * @include: ags/X/editor/ags_notebook.h
+ * @include: ags/widget/ags_notebook.h
  *
- * The #AgsNotebook lets select/deselect channels to edit.
+ * The #AgsNotebook lets you select/deselect tabs and assign data to them.
  */
 
 static gpointer ags_notebook_parent_class = NULL;
@@ -98,10 +102,22 @@ ags_notebook_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_notebook_class_init(AgsNotebookClass *notebook)
 {
+  GObjectClass *gobject;
   GtkWidgetClass *widget;
+
+  GParamSpec *param_spec;
 
   ags_notebook_parent_class = g_type_class_peek_parent(notebook);
 
+  /* GObjectClass */
+  gobject = (GObjectClass *) notebook;
+
+  gobject->set_property = ags_notebook_set_property;
+  gobject->get_property = ags_notebook_get_property;
+
+  gobject->finalize = ags_notebook_finalize;
+
+  /* GtkWidgetClass */
   widget = (GtkWidgetClass *) notebook;
 
   widget->size_request = ags_notebook_size_request;
@@ -111,57 +127,130 @@ ags_notebook_class_init(AgsNotebookClass *notebook)
 void
 ags_notebook_init(AgsNotebook *notebook)
 {
-  GtkHBox *hbox;
   GtkArrow *arrow;
 
   notebook->flags = 0;
 
-  notebook->prefix = NULL;
+  notebook->tab_width = AGS_NOTEBOOK_DEFAULT_TAB_WIDTH;
+  notebook->tab_height = AGS_NOTEBOOK_DEFAULT_TAB_HEIGHT;
+  
+  notebook->prefix = g_strdup(AGS_NOTEBOOK_DEFAULT_TAB_PREFIX);
 
   /* navigation */
-  notebook->navigation =
-    hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  //  gtk_widget_set_app_paintable(hbox,
-  //			       TRUE);
+  notebook->navigation = (GtkHBox *) gtk_hbox_new(FALSE,
+						  0);
   gtk_box_pack_start(GTK_BOX(notebook),
-		     GTK_WIDGET(hbox),
+		     GTK_WIDGET(notebook->navigation),
 		     FALSE, FALSE,
 		     0);
 
+  /* arrow left */
   arrow = (GtkArrow *) gtk_arrow_new(GTK_ARROW_LEFT,
 				     GTK_SHADOW_NONE);
   notebook->scroll_prev = g_object_new(GTK_TYPE_BUTTON,
 				       "child", arrow,
 				       "relief", GTK_RELIEF_NONE,
 				       NULL);
-  gtk_box_pack_start(GTK_BOX(hbox),
+  gtk_box_pack_start(GTK_BOX(notebook->navigation),
 		     GTK_WIDGET(notebook->scroll_prev),
 		     FALSE, FALSE,
 		     0);
 
+  g_signal_connect(G_OBJECT(notebook->scroll_prev), "clicked",
+		   G_CALLBACK(ags_notebook_scroll_prev_callback), notebook);
+
+  /* arrow right */
   arrow = (GtkArrow *) gtk_arrow_new(GTK_ARROW_RIGHT,
 				     GTK_SHADOW_NONE);
   notebook->scroll_next = g_object_new(GTK_TYPE_BUTTON,
 				       "child", arrow,
 				       "relief", GTK_RELIEF_NONE,
 				       NULL);
-  gtk_box_pack_start(GTK_BOX(hbox),
+  gtk_box_pack_start(GTK_BOX(notebook->navigation),
 		     GTK_WIDGET(notebook->scroll_next),
 		     FALSE, FALSE,
 		     0);
 
+  g_signal_connect(G_OBJECT(notebook->scroll_next), "clicked",
+		   G_CALLBACK(ags_notebook_scroll_next_callback), notebook);
+
   /* viewport with selection */
   notebook->viewport = (GtkViewport *) gtk_viewport_new(NULL,
 							NULL);
-  gtk_container_add(GTK_CONTAINER(hbox),
+  gtk_container_add(GTK_CONTAINER(notebook->navigation),
 		    GTK_WIDGET(notebook->viewport));
   
-  notebook->hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+  notebook->hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+					    0);
   gtk_container_add((GtkContainer *) notebook->viewport,
 		    (GtkWidget *) notebook->hbox);
   
-  notebook->tabs = NULL;
+  notebook->tab = NULL;
   notebook->child = NULL;
+}
+
+void
+ags_notebook_set_property(GObject *gobject,
+			guint prop_id,
+			const GValue *value,
+			GParamSpec *param_spec)
+{
+  AgsNotebook *notebook;
+
+  notebook = AGS_NOTEBOOK(gobject);
+
+  switch(prop_id){
+  case PROP_PREFIX:
+    {
+      gchar *prefix;
+
+      prefix = g_value_get_string(value);
+
+      if(notebook->prefix == prefix){
+	return;
+      }
+
+      g_free(notebook->prefix);
+      
+      notebook->prefix = g_strdup(prefix);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_notebook_get_property(GObject *gobject,
+			guint prop_id,
+			GValue *value,
+			GParamSpec *param_spec)
+{
+  AgsNotebook *notebook;
+
+  notebook = AGS_NOTEBOOK(gobject);
+
+  switch(prop_id){
+  case PROP_PREFIX:
+    {
+      g_value_set_string(value, notebook->prefix);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_notebook_finalize(GObject *gobject)
+{
+  AgsNotebook *notebook;
+  
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_notebook_parent_class)->finalize(gobject);
 }
 
 void
@@ -340,10 +429,6 @@ ags_notebook_connect(AgsConnectable *connectable)
 
   notebook = AGS_NOTEBOOK(connectable);
 
-  notebook->scroll_prev_handler = g_signal_connect(G_OBJECT(notebook->scroll_prev), "clicked",
-						   G_CALLBACK(ags_notebook_scroll_prev_callback), notebook);
-  notebook->scroll_next_handler = g_signal_connect(G_OBJECT(notebook->scroll_next), "clicked",
-						   G_CALLBACK(ags_notebook_scroll_next_callback), notebook);
 }
 
 void
@@ -351,6 +436,46 @@ ags_notebook_disconnect(AgsConnectable *connectable)
 {
   //TODO:JK: implement me
 }
+
+
+void
+ags_notebook_scroll_prev_callback(GtkWidget *button,
+				  AgsNotebook *notebook)
+{
+  GtkAdjustment *adjustment;
+    
+  adjustment = gtk_viewport_get_hadjustment(notebook->viewport);
+
+  if(adjustment->value - adjustment->step_increment > 0){
+    gtk_adjustment_set_value(adjustment,
+			     adjustment->value - adjustment->step_increment);
+  }else{
+    gtk_adjustment_set_value(adjustment,
+			     0.0);
+  }
+
+  gtk_widget_show_all((GtkWidget *) notebook->hbox);
+}
+
+void
+ags_notebook_scroll_next_callback(GtkWidget *button,
+				  AgsNotebook *notebook)
+{
+  GtkAdjustment *adjustment;
+  
+  adjustment = gtk_viewport_get_hadjustment(notebook->viewport);
+  
+  if(adjustment->value + adjustment->step_increment < adjustment->upper - adjustment->page_size){
+    gtk_adjustment_set_value(adjustment,
+			     adjustment->value + adjustment->step_increment);
+  }else{
+    gtk_adjustment_set_value(adjustment,
+			     adjustment->upper - adjustment->page_size);
+  }
+
+  gtk_widget_show_all((GtkWidget *) notebook->hbox);
+}
+
 
 AgsNotebookTab*
 ags_notebook_tab_alloc()
@@ -380,9 +505,9 @@ ags_notebook_tab_index(AgsNotebook *notebook,
     return(-1);
   }
 
-  list = notebook->tabs;
+  list = notebook->tab;
 
-  for(i = g_list_length(notebook->tabs) - 1; list != NULL; i--){
+  for(i = g_list_length(notebook->tab) - 1; list != NULL; i--){
     if(AGS_NOTEBOOK_TAB(list->data)->notation == notation){
       return(i);
     }
@@ -412,9 +537,9 @@ ags_notebook_add_tab(AgsNotebook *notebook)
   /* new tab */
   tab = ags_notebook_tab_alloc();
 
-  notebook->tabs = g_list_prepend(notebook->tabs,
-				  tab);
-  tab_index = g_list_length(notebook->tabs);
+  notebook->tab = g_list_prepend(notebook->tab,
+				 tab);
+  tab_index = g_list_length(notebook->tab);
 
   tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("%s %d",
 										     notebook->prefix,
@@ -447,7 +572,7 @@ ags_notebook_next_active_tab(AgsNotebook *notebook,
     return(-1);
   }
   
-  list_start = g_list_copy(notebook->tabs);
+  list_start = g_list_copy(notebook->tab);
   list_start = 
     list = g_list_reverse(list_start);
 
@@ -484,12 +609,12 @@ ags_notebook_insert_tab(AgsNotebook *notebook,
   }
 
   /* insert tab */
-  length = g_list_length(notebook->tabs);
+  length = g_list_length(notebook->tab);
 
   tab = ags_notebook_tab_alloc();
-  notebook->tabs = g_list_insert(notebook->tabs,
-				 tab,
-				 length - position);
+  notebook->tab = g_list_insert(notebook->tab,
+				tab,
+				length - position);
 
   tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("%s %d",
 										     notebook->prefix,
@@ -512,52 +637,42 @@ ags_notebook_insert_tab(AgsNotebook *notebook,
 }
 
 void
+ags_notebook_insert_tab_with_label(AgsNotebook *notebook,
+				   gchar *label,
+				   gint position)
+{
+  //TODO:JK: implement me
+}
+
+void
 ags_notebook_remove_tab(AgsNotebook *notebook,
 			gint nth)
 {
   AgsNotebookTab *tab;
   gint length;
 
-  if(notebook->tabs == NULL){
+  if(notebook->tab == NULL){
     return;
   }
   
-  length = g_list_length(notebook->tabs);
+  length = g_list_length(notebook->tab);
 
-  tab = g_list_nth_data(notebook->tabs,
+  tab = g_list_nth_data(notebook->tab,
 			length - nth - 1);
 
   if(tab != NULL){
-    notebook->tabs = g_list_remove(notebook->tabs,
-				   tab);
+    notebook->tab = g_list_remove(notebook->tab,
+				  tab);
     gtk_widget_destroy(GTK_WIDGET(tab->toggle));
     free(tab);
   }
 }
 
 void
-ags_notebook_add_child(AgsNotebook *notebook,
-		       GtkWidget *child)
+ags_notebook_remove_tab_with_data(AgsNotebook *notebook,
+				  gpointer data)
 {
-  if(notebook == NULL){
-    return;
-  }
-
-  gtk_box_pack_start(GTK_BOX(notebook),
-		     child,
-		     FALSE, FALSE,
-		     0);
-}
-
-void
-ags_notebook_remove_child(AgsNotebook *notebook,
-			  GtkWidget *child)
-{
-  if(notebook == NULL){
-    return;
-  }
-
-  gtk_widget_destroy(child);
+  //TODO:JK: implement me
 }
 
 /**

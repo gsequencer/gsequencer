@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/X/ags_machine.h>
+
 #include <ags/X/editor/ags_automation_toolbar.h>
 #include <ags/X/editor/ags_notebook.h>
 #include <ags/X/editor/ags_machine_selector.h>

@@ -198,13 +198,16 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   automation_editor->version = AGS_AUTOMATION_EDITOR_DEFAULT_VERSION;
   automation_editor->build_id = AGS_AUTOMATION_EDITOR_DEFAULT_BUILD_ID;
 
+  /* soundcard */
   automation_editor->soundcard = NULL;
 
+  /* automation toolbar */
   automation_editor->automation_toolbar = ags_automation_toolbar_new();
   gtk_box_pack_start((GtkBox *) automation_editor,
 		     (GtkWidget *) automation_editor->automation_toolbar,
 		     FALSE, FALSE, 0);
 
+  /* machine selector */
   paned = (GtkHPaned *) gtk_hpaned_new();
   gtk_box_pack_start((GtkBox *) automation_editor,
 		     (GtkWidget *) paned,
@@ -212,7 +215,6 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
   gtk_paned_pack1((GtkPaned *) paned, (GtkWidget *) scrolled_window, FALSE, TRUE);
-  //  gtk_widget_set_size_request((GtkWidget *) scrolled_window, 180, -1);
 
   automation_editor->machine_selector = g_object_new(AGS_TYPE_MACHINE_SELECTOR,
 						     "homogeneous", FALSE,
@@ -227,10 +229,13 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 	       "menu", automation_editor->machine_selector->popup,
 	       NULL);
   
-  gtk_scrolled_window_add_with_viewport(scrolled_window, (GtkWidget *) automation_editor->machine_selector);
+  gtk_scrolled_window_add_with_viewport(scrolled_window,
+					(GtkWidget *) automation_editor->machine_selector);
 
+  /* selected machine */
   automation_editor->selected_machine = NULL;
 
+  /* */
   automation_editor->automation_editor_child = NULL;
 
   automation_editor->notebook = (GtkNotebook *) gtk_notebook_new();

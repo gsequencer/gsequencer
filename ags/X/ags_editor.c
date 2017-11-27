@@ -126,6 +126,7 @@ ags_editor_class_init(AgsEditorClass *editor)
 {
   GObjectClass *gobject;
   GtkWidgetClass *widget;
+
   GParamSpec *param_spec;
 
   ags_editor_parent_class = g_type_class_peek_parent(editor);

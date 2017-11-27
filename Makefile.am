@@ -1242,6 +1242,7 @@ libags_gui_h_sources = \
 	ags/widget/ags_indicator.h \
 	ags/widget/ags_led.h \
 	ags/widget/ags_led_array.h \
+	ags/widget/ags_notebook.h \
 	ags/widget/ags_piano_keys.h \
 	ags/widget/ags_piano.h \
 	ags/widget/ags_ruler.h \
@@ -1267,6 +1268,7 @@ libags_gui_c_sources = \
 	ags/widget/ags_indicator.c \
 	ags/widget/ags_led.c \
 	ags/widget/ags_led_array.c \
+	ags/widget/ags_notebook.c \
 	ags/widget/ags_piano.c \
 	ags/widget/ags_ruler.c \
 	ags/widget/ags_table.c \
@@ -1760,8 +1762,6 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_meter.h \
 	ags/X/editor/ags_move_note_dialog_callbacks.h \
 	ags/X/editor/ags_move_note_dialog.h \
-	ags/X/editor/ags_notebook_callbacks.h \
-	ags/X/editor/ags_notebook.h \
 	ags/X/editor/ags_note_edit_callbacks.h \
 	ags/X/editor/ags_note_edit.h \
 	ags/X/editor/ags_pattern_edit_callbacks.h \
@@ -1819,8 +1819,6 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_meter_callbacks.c \
 	ags/X/editor/ags_move_note_dialog_callbacks.c \
 	ags/X/editor/ags_move_note_dialog.c \
-	ags/X/editor/ags_notebook.c \
-	ags/X/editor/ags_notebook_callbacks.c \
 	ags/X/editor/ags_note_edit.c \
 	ags/X/editor/ags_note_edit_callbacks.c \
 	ags/X/editor/ags_pattern_edit.c \

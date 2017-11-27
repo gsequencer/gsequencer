@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,33 +34,28 @@
 
 #define AGS_NOTEBOOK_TAB(x) ((AgsNotebookTab *)(x))
 
-#define AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT (32)
-#define AGS_NOTEBOOK_TAB_DEFAULT_WIDTH (100)
+#define AGS_NOTEBOOK_DEFAULT_TAB_WIDTH (100)
+#define AGS_NOTEBOOK_DEFAULT_TAB_HEIGHT (32)
+
+#define AGS_NOTEBOOK_DEFAULT_TAB_PREFIX "tab"
 
 typedef struct _AgsNotebook AgsNotebook;
 typedef struct _AgsNotebookClass AgsNotebookClass;
 typedef struct _AgsNotebookTab AgsNotebookTab;
 
 typedef enum{
-  AGS_NOTEBOOK_SHOW_INPUT            = 1,
-  AGS_NOTEBOOK_SHOW_OUTPUT           = 1 <<  1,
-  AGS_NOTEBOOK_SHOW_AUDIO_CHANNEL    = 1 <<  2,
-  AGS_NOTEBOOK_SHOW_PAD              = 1 <<  3,
-  AGS_NOTEBOOK_SHOW_LINE             = 1 <<  4,
-  AGS_NOTEBOOK_SHOW_SCROLL_BUTTONS   = 1 <<  5,
-}AgsNotebookFlags;
-
-typedef enum{
-  AGS_NOTEBOOK_TAB_VISIBLE           = 1,
-  AGS_NOTEBOOK_TAB_MODE_NORMAL       = 1 << 1,
-  AGS_NOTEBOOK_TAB_MODE_OVERLAY      = 1 << 2,
-}AgsNotebookTabFlags;
+  AGS_NOTEBOOK_TAB_ENUMERATE    = 1,
+  AGS_NOTEBOOK_TAB_FREE_DATA    = 1 <<  1,
+};
 
 struct _AgsNotebook
 {
   GtkVBox vbox;
 
   guint flags;
+
+  guint tab_width;
+  guint tab_height;
 
   gchar *prefix;
 
@@ -70,13 +65,10 @@ struct _AgsNotebook
   
   GtkViewport *viewport;
 
-  gulong scroll_prev_handler;
-  gulong scroll_next_handler;
-  
   GtkHBox *hbox;
-
-  GList *tabs;
-  GtkWidget *child;
+  
+  GList *tab;
+  GDestroyNotify tab_free_func;
 };
 
 struct _AgsNotebookClass
@@ -88,29 +80,38 @@ struct _AgsNotebookTab
 {
   guint flags;
 
-  GObject *notation;
-  GList *automation;
+  GType data_type;
+  gpointer data;
   
   GtkToggleButton *toggle;
 };
 
 GType ags_notebook_get_type(void);
 
+AgsNotebookTab* ags_notebook_tab_alloc();
+void ags_notebook_tab_free(AgsNotebookTab *tab);
+void ags_notebook_tab_free_full(AgsNotebookTab *tab,
+				GDestroyNotify free_func);
+
 gint ags_notebook_tab_index(AgsNotebook *notebook,
-			    GObject *notation);
+			    gpointer data);
 gint ags_notebook_next_active_tab(AgsNotebook *notebook,
 				  gint position);
 
 gint ags_notebook_add_tab(AgsNotebook *notebook);
+gint ags_notebook_add_tab_with_label(AgsNotebook *notebook,
+				     gchar *label);
+
 void ags_notebook_insert_tab(AgsNotebook *notebook,
 			     gint position);
+void ags_notebook_insert_tab_with_label(AgsNotebook *notebook,
+					gchar *label,
+					gint position);
+
 void ags_notebook_remove_tab(AgsNotebook *notebook,
 			     gint nth);
-
-void ags_notebook_add_child(AgsNotebook *notebook,
-			    GtkWidget *child);
-void ags_notebook_remove_child(AgsNotebook *notebook,
-			       GtkWidget *child);
+void ags_notebook_remove_tab_with_data(AgsNotebook *notebook,
+				       gpointer data);
 
 AgsNotebook* ags_notebook_new();
 
