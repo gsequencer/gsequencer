@@ -243,8 +243,8 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   notation_edit->current_note = NULL;
 
   notation_edit->ruler = ags_ruler_new();
-  gtk_table_attach(GTK_TABLE(note_edit),
-		   (GtkWidget *) note_edit->ruler,
+  gtk_table_attach(GTK_TABLE(notation_edit),
+		   (GtkWidget *) notation_edit->ruler,
 		   0, 1,
 		   0, 1,
 		   GTK_FILL|GTK_EXPAND,
@@ -252,7 +252,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 		   0, 0);
 
   notation_edit->drawing_area = gtk_drawing_area_new();
-  gtk_widget_set_events(GTK_WIDGET(note_edit->drawing_area), GDK_EXPOSURE_MASK
+  gtk_widget_set_events(GTK_WIDGET(notation_edit->drawing_area), GDK_EXPOSURE_MASK
 			| GDK_LEAVE_NOTIFY_MASK
 			| GDK_BUTTON_PRESS_MASK
 			| GDK_BUTTON_RELEASE_MASK
@@ -261,11 +261,11 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 			| GDK_CONTROL_MASK
 			| GDK_KEY_PRESS_MASK
 			| GDK_KEY_RELEASE_MASK);
-  gtk_widget_set_can_focus((GtkWidget *) note_edit->drawing_area,
+  gtk_widget_set_can_focus((GtkWidget *) notation_edit->drawing_area,
 			   TRUE);
   
-  gtk_table_attach(GTK_TABLE(note_edit),
-		   (GtkWidget *) note_edit->drawing_area,
+  gtk_table_attach(GTK_TABLE(notation_edit),
+		   (GtkWidget *) notation_edit->drawing_area,
 		   0, 1,
 		   1, 2,
 		   GTK_FILL|GTK_EXPAND,
@@ -275,18 +275,18 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   /* vscrollbar */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 16.0, 1.0);
   notation_edit->vscrollbar = gtk_vscrollbar_new(adjustment);
-  gtk_table_attach(GTK_TABLE(note_edit),
-		   (GtkWidget *) note_edit->vscrollbar,
+  gtk_table_attach(GTK_TABLE(notation_edit),
+		   (GtkWidget *) notation_edit->vscrollbar,
 		   1, 2,
 		   1, 2,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
   /* hscrollbar */
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) note_edit->control_width, 1.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) notation_edit->control_width, 1.0);
   notation_edit->vscrollbar = gtk_hrollbar_new(adjustment);
-  gtk_table_attach(GTK_TABLE(note_edit),
-		   (GtkWidget *) note_edit->hscrollbar,
+  gtk_table_attach(GTK_TABLE(notation_edit),
+		   (GtkWidget *) notation_edit->hscrollbar,
 		   0, 1,
 		   2, 3,
 		   GTK_FILL, GTK_FILL,
@@ -491,41 +491,328 @@ gboolean
 ags_accessible_notation_edit_do_action(AtkAction *action,
 				       gint i);
 {
+  AgsNotationEdit *notation_edit;
+  
+  GdkEventKey *key_press, *key_release;
+  GdkEventKey *modifier_press, *modifier_release;
+  GdkEventKey *second_level_press, *second_level_release;
+  
+  if(!(i >= 0 && i < 13)){
+    return(FALSE);
+  }
+
+  notation_edit = gtk_accessible_get_widget(GTK_ACCESSIBLE(action));
+  
+  key_press = (GdkEventKey *) gdk_event_new(GDK_KEY_PRESS);
+  key_release = (GdkEventKey *) gdk_event_new(GDK_KEY_RELEASE);
+
+  /* create modifier */
+  modifier_press = (GdkEventKey *) gdk_event_new(GDK_KEY_PRESS);
+  modifier_release = (GdkEventKey *) gdk_event_new(GDK_KEY_RELEASE);
+  
+  modifier_press->keyval =
+    modifier_release->keyval = GDK_KEY_Control_R;
+
+  /* create second level */
+  second_level_press = (GdkEventKey *) gdk_event_new(GDK_KEY_PRESS);
+  second_level_release = (GdkEventKey *) gdk_event_new(GDK_KEY_RELEASE);
+  
+  second_level_press->keyval =
+    second_level_release->keyval = GDK_KEY_Shift_R;
+
+  switch(i){
+  case 0:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Left;
+      
+      /* send event */
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+    }
+    break;
+  case 1:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Right;
+      
+      /* send event */
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+    }
+    break;
+  case 2:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Up;
+    
+      /* send event */
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+    }
+    break;
+  case 3:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Down;
+      
+      /* send event */
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+    }
+    break;
+  case 4:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_space;
+      
+      /* send event */
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+    }
+    break;
+  case 5:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Left;
+      
+      /* send event */
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) second_level_press);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) second_level_release);
+    }
+    break;
+  case 6:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Right;
+      
+      /* send event */
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) second_level_press);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) second_level_release);
+    }
+    break;
+  case 7:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_Delete;
+      
+      /* send event */
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+    }
+    break;
+  case 8:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_c;
+
+      /* send event */
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) modifier_press);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) modifier_release);      
+    }    
+    break;
+  case 9:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_x;
+
+      /* send event */
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) modifier_press);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) modifier_release);      
+    }
+    break;
+  case 10:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_v;
+
+      /* send event */
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) modifier_press);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) modifier_release);      
+    }
+    break;
+  case 11:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_a;
+
+      /* send event */
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) modifier_press);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) modifier_release);      
+    }
+    break;
+  case 12:
+    {
+      key_press->keyval =
+	key_release->keyval = GDK_KEY_i;
+
+      /* send event */
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) modifier_press);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_press);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) key_release);
+      gtk_widget_event((GtkWidget *) notation_edit->drawing_area,
+		       (GdkEvent *) modifier_release);      
+    }
+    break;
+  }
+
+  return(TRUE);
 }
 
 gint
 ags_accessible_notation_edit_get_n_actions(AtkAction *action);
 {
+  return(13);
 }
 
 const gchar*
 ags_accessible_notation_edit_get_description(AtkAction *action,
 					     gint i);
 {
+  static const gchar **actions = {
+    "move cursor left",
+    "move cursor right",
+    "move cursor up",
+    "move cursor down",
+    "add audio note",
+    "shrink audio note",
+    "grow audio note",
+    "remove audio note",
+    "copy note to clipboard",
+    "cut note to clipbaord",
+    "paste note from clipboard",
+    "select all note",
+    "invert note",
+  };
+
+  if(i >= 0 && i < 13){
+    return(actions[i]);
+  }else{
+    return(NULL);
+  }
 }
 
 const gchar*
 ags_accessible_notation_edit_get_name(AtkAction *action,
 				      gint i);
 {
+  static const gchar **actions = {
+    "left",
+    "right",
+    "up",
+    "down",
+    "add",
+    "shrink",
+    "grow",
+    "remove",
+    "copy",
+    "cut",
+    "paste",
+    "select-all",
+    "invert",
+  };
+  
+  if(i >= 0 && i < 13){
+    return(actions[i]);
+  }else{
+    return(NULL);
+  }
 }
 
 const gchar*
 ags_accessible_notation_edit_get_keybinding(AtkAction *action,
 					    gint i);
 {
+  static const gchar **actions = {
+    "left",
+    "right",
+    "up",
+    "down",
+    "space",
+    "Shft+Left",
+    "Shft+Right",
+    "Del"
+    "Ctrl+c"
+    "Ctrl+x",
+    "Ctrl+v",
+    "Ctrl+a",
+    "Ctrl+i",
+  };
+  
+  if(i >= 0 && i < 13){
+    return(actions[i]);
+  }else{
+    return(NULL);
+  }
 }
 
 gboolean
 ags_accessible_notation_edit_set_description(AtkAction *action,
 					     gint i);
 {
+  //TODO:JK: implement me
+
+  return(FALSE);
 }
 
 gchar*
 ags_accessible_notation_edit_get_localized_name(AtkAction *action,
 						gint i);
 {
+  //TODO:JK: implement me
+
+  return(NULL);
 }
 
 gboolean
