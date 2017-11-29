@@ -311,7 +311,12 @@ ags_notation_init(AgsNotation *notation)
   notation->flags = 0;
 
   //TODO:JK: define timestamp
-  notation->timestamp = NULL;
+  notation->timestamp = ags_timestamp_new();
+
+  AGS_TIMESTAMP(notation->timestamp)->flags &= (~AGS_TIMESTAMP_UNIX);
+  AGS_TIMESTAMP(notation->timestamp)->flags |= AGS_TIMESTAMP_OFFSET;
+
+  AGS_TIMESTAMP(notation->timestamp)->timer.ags_offset.offset = 0;
   
   notation->audio_channel = 0;
   notation->audio = NULL;
@@ -824,7 +829,7 @@ ags_notation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue
  * ags_notation_find_near_timestamp:
  * @notation: a #GList containing #AgsNotation
  * @audio_channel: the matching audio channel
- * @timestamp: the matching timestamp
+ * @timestamp: (allow-none): the matching timestamp, or %NULL to match any timestamp
  *
  * Retrieve appropriate notation for timestamp.
  *
@@ -838,33 +843,85 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 {
   AgsTimestamp *timestamp, *current_timestamp;
 
-  if(gobject == NULL){
-    return(NULL);
+  if(gobject != NULL){
+    timestamp = AGS_TIMESTAMP(gobject);
   }
-  
-  timestamp = AGS_TIMESTAMP(gobject);
 
   while(notation != NULL){
     if(AGS_NOTATION(notation->data)->audio_channel != audio_channel){
       notation = notation->next;
+      
       continue;
     }
 
+    if(gobject == NULL){
+      return(notation);
+    }
+    
     current_timestamp = (AgsTimestamp *) AGS_NOTATION(notation->data)->timestamp;
 
-    if((AGS_TIMESTAMP_UNIX & (timestamp->flags)) != 0){
-      if((AGS_TIMESTAMP_UNIX & (current_timestamp->flags)) != 0){
+    if(current_timestamp != NULL){
+      if((AGS_TIMESTAMP_UNIX & (timestamp->flags)) != 0 &&
+	 (AGS_TIMESTAMP_UNIX & (current_timestamp->flags)) != 0){
 	if(current_timestamp->timer.unix_time.time_val >= timestamp->timer.unix_time.time_val &&
 	   current_timestamp->timer.unix_time.time_val < timestamp->timer.unix_time.time_val + AGS_NOTATION_DEFAULT_DURATION){
 	  return(notation);
 	}
+      }else if((AGS_TIMESTAMP_OFFSET & (timestamp->flags)) != 0 &&
+	       (AGS_TIMESTAMP_OFFSET & (current_timestamp->flags)) != 0){
+	if(current_timestamp->timer.ags_offset.offset >= timestamp->timer.ags_offset.offset &&
+	   current_timestamp->timer.ags_ofset.offset < timestamp->timer.ags_offset.offset + AGS_NOTATION_DEFAULT_OFFSET){
+	  return(notation);
+	}
       }
     }
-
+    
     notation = notation->next;
   }
 
   return(NULL);
+}
+
+/**
+ * ags_notation_add:
+ * @notation: the #GList-struct containing #AgsNotation
+ * @new_notation: the notation to add
+ * 
+ * Add @new_notation sorted to @notation
+ * 
+ * Returns: the new beginning of @notation
+ * 
+ * Since: 1.2.0
+ */
+GList*
+ags_notation_add(GList *notation,
+		 AgsNotation *new_notation)
+{
+  auto gint ags_notation_add_compare(gconstpointer a,
+				     gconstpointer b);
+
+  gint ags_notation_add_compare(gconstpointer a,
+				gconstpointer b)
+  {
+    if(AGS_TIMESTAMP(AGS_NOTATION(a)->timestamp)->timer.ags_offset.offset == AGS_TIMESTAMP(AGS_NOTATION(b)->timestamp)->timer.ags_offset.offset){
+      return(0);
+    }else if(AGS_TIMESTAMP(AGS_NOTATION(a)->timestamp)->timer.ags_offset.offset < AGS_TIMESTAMP(AGS_NOTATION(b)->timestamp)->timer.ags_offset.offset){
+      return(-1);
+    }else if(AGS_TIMESTAMP(AGS_NOTATION(a)->timestamp)->timer.ags_offset.offset > AGS_TIMESTAMP(AGS_NOTATION(b)->timestamp)->timer.ags_offset.offset){
+      return(1);
+    }
+  }
+  
+  if(!AGS_IS_NOTATION(new_notation) ||
+     !AGS_IS_TIMETSTAMP(new_notation->timestamp)){
+    return;
+  }
+
+  notation = g_list_insert_sorted(notation,
+				  new_notation,
+				  ags_notation_add_compare);
+
+  return(notation);
 }
 
 /**
@@ -1457,22 +1514,49 @@ xmlNodePtr
 ags_notation_copy_selection(AgsNotation *notation)
 {
   AgsNote *note;
-  xmlNodePtr notation_node, current_note;
+  xmlNode *notation_node, *current_note;
+  xmlNode *timestamp_node;
   GList *selection;
+
   guint x_boundary, y_boundary;
 
   selection = notation->selection;
 
   /* create root node */
-  notation_node = xmlNewNode(NULL, BAD_CAST "notation");
+  notation_node = xmlNewNode(NULL,
+			     BAD_CAST "notation");
 
-  xmlNewProp(notation_node, BAD_CAST "program", BAD_CAST "ags");
-  xmlNewProp(notation_node, BAD_CAST "type", BAD_CAST AGS_NOTATION_CLIPBOARD_TYPE);
-  xmlNewProp(notation_node, BAD_CAST "version", BAD_CAST AGS_NOTATION_CLIPBOARD_VERSION);
-  xmlNewProp(notation_node, BAD_CAST "format", BAD_CAST AGS_NOTATION_CLIPBOARD_FORMAT);
-  xmlNewProp(notation_node, BAD_CAST "base_frequency", BAD_CAST g_strdup_printf("%f", notation->base_frequency));
-  xmlNewProp(notation_node, BAD_CAST "audio-channel", BAD_CAST g_strdup_printf("%u", notation->audio_channel));
+  xmlNewProp(notation_node,
+	     BAD_CAST "program",
+	     BAD_CAST "ags");
+  xmlNewProp(notation_node,
+	     BAD_CAST "type",
+	     BAD_CAST (AGS_NOTATION_CLIPBOARD_TYPE));
+  xmlNewProp(notation_node,
+	     BAD_CAST "version",
+	     BAD_CAST (AGS_NOTATION_CLIPBOARD_VERSION));
+  xmlNewProp(notation_node,
+	     BAD_CAST "format",
+	     BAD_CAST (AGS_NOTATION_CLIPBOARD_FORMAT));
+  xmlNewProp(notation_node,
+	     BAD_CAST "base_frequency",
+	     BAD_CAST (g_strdup_printf("%f", notation->base_frequency)));
+  xmlNewProp(notation_node,
+	     BAD_CAST "audio-channel",
+	     BAD_CAST (g_strdup_printf("%u", notation->audio_channel)));
 
+  /* timestamp */
+  if(notation->timestamp != NULL){
+  timestamp_node = xmlNewNode(NULL,
+			      BAD_CAST "timestamp");
+  xmlAddChild(notation_node,
+	      timestamp_node);
+
+  xmlNewProp(timestamp_node,
+	     BAD_CAST "offset",
+	     BAD_CAST (g_strdup_printf("%u", AGS_TIMESTAMP(notation->timestamp)->timer.ags_offset.offset)));
+
+  /* selection */
   selection = notation->selection;
 
   if(selection != NULL){
@@ -1485,20 +1569,34 @@ ags_notation_copy_selection(AgsNotation *notation)
 
   while(selection != NULL){
     note = AGS_NOTE(selection->data);
-    current_note = xmlNewChild(notation_node, NULL, BAD_CAST "note", NULL);
+    current_note = xmlNewChild(notation_node,
+			       NULL,
+			       BAD_CAST "note",
+			       NULL);
 
-    xmlNewProp(current_note, BAD_CAST "x", BAD_CAST g_strdup_printf("%u", note->x[0]));
-    xmlNewProp(current_note, BAD_CAST "x1", BAD_CAST g_strdup_printf("%u", note->x[1]));
-    xmlNewProp(current_note, BAD_CAST "y", BAD_CAST g_strdup_printf("%u", note->y));
+    xmlNewProp(current_note,
+	       BAD_CAST "x",
+	       BAD_CAST (g_strdup_printf("%u", note->x[0])));
+    xmlNewProp(current_note,
+	       BAD_CAST "x1",
+	       BAD_CAST (g_strdup_printf("%u", note->x[1])));
+    xmlNewProp(current_note,
+	       BAD_CAST "y",
+	       BAD_CAST (g_strdup_printf("%u", note->y)));
 
-    if(y_boundary > note->y)
+    if(y_boundary > note->y){
       y_boundary = note->y;
+    }
 
     selection = selection->next;
   }
 
-  xmlNewProp(notation_node, BAD_CAST "x_boundary", BAD_CAST g_strdup_printf("%u", x_boundary));
-  xmlNewProp(notation_node, BAD_CAST "y_boundary", BAD_CAST g_strdup_printf("%u", y_boundary));
+  xmlNewProp(notation_node,
+	     BAD_CAST "x_boundary",
+	     BAD_CAST (g_strdup_printf("%u", x_boundary)));
+  xmlNewProp(notation_node,
+	     BAD_CAST "y_boundary",
+	     BAD_CAST (g_strdup_printf("%u", y_boundary)));
 
   return(notation_node);
 }
@@ -1517,6 +1615,7 @@ xmlNode*
 ags_notation_cut_selection(AgsNotation *notation)
 {
   xmlNode* notation_node;
+
   GList *selection, *selection_next, *notes;
   
   notation_node = ags_notation_copy_selection(notation);
@@ -1538,9 +1637,10 @@ ags_notation_cut_selection(AgsNotation *notation)
       next_note = notes->next;
       notes->prev->next = next_note;
 
-      if(next_note != NULL)
+      if(next_note != NULL){
 	next_note->prev = notes->prev;
-
+      }
+      
       g_list_free_1(notes);
 
       notes = next_note;
@@ -1582,14 +1682,22 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 						gboolean reset_x_offset, guint x_offset,
 						gboolean reset_y_offset, guint y_offset)
 {
-  void ags_notation_insert_native_piano_from_clipboard_version_0_3_12(){
+  auto void ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
+  
+  void ags_notation_insert_native_piano_from_clipboard_version_0_3_12()
+  {
     AgsNote *note;
-    xmlNodePtr node;
-    char *endptr;
-    guint x_boundary_val, y_boundary_val;
+
+    xmlNode *node;
+
     char *x0, *x1, *y;
+    gchar *offset;
+    char *endptr;
+
+    guint x_boundary_val, y_boundary_val;
     guint x0_val, x1_val, y_val;
     guint base_x_difference, base_y_difference;
+    guint64 offset_val;
     gboolean subtract_x, subtract_y;
 
     node = root_node->children;
@@ -1598,7 +1706,9 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
     if(reset_x_offset){
       if(x_boundary != NULL){
 	errno = 0;
-	x_boundary_val = strtoul(x_boundary, &endptr, 10);
+	x_boundary_val = strtoul(x_boundary,
+				 &endptr,
+				 10);
 
 	if(errno == ERANGE){
 	  goto dont_reset_x_offset;
@@ -1625,7 +1735,9 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
     if(reset_y_offset){
       if(y_boundary != NULL){
 	errno = 0;
-	y_boundary_val = strtoul(y_boundary, &endptr, 10);
+	y_boundary_val = strtoul(y_boundary,
+				 &endptr,
+				 10);
 
 	if(errno == ERANGE){
 	  goto dont_reset_y_offset;
@@ -1647,162 +1759,190 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 	reset_y_offset = FALSE;
       }
     }
-    
+
+    /* parse */
     for(; node != NULL; ){
-      if(node->type == XML_ELEMENT_NODE && !xmlStrncmp("note", node->name, 5)){
-	/* retrieve x0 offset */
-	x0 = xmlGetProp(node, "x");
+      if(node->type == XML_ELEMENT_NODE){
+	if(!xmlStrncmp("note",
+		       node->name,
+		       5)){
+	  /* retrieve x0 offset */
+	  x0 = xmlGetProp(node, "x");
 
-	if(x0 == NULL){
-	  node = node->next;
-	  
-	  continue;
-	}
-
-	errno = 0;
-	x0_val = strtoul(x0, &endptr, 10);
-
-	if(errno == ERANGE){
-	  node = node->next;
-	  
-	  continue;
-	} 
-
-	if(x0 == endptr){
-	  node = node->next;
-	  
-	  continue;
-	}
-
-	/* retrieve x1 offset */
-	x1 = xmlGetProp(node, "x1");
-
-	if(x1 == NULL){
-	  node = node->next;
-	  
-	  continue;
-	}
-
-	errno = 0;
-	x1_val = strtoul(x1, &endptr, 10);
-
-	if(errno == ERANGE){
-	  node = node->next;
-	  
-	  continue;
-	} 
-
-	if(x1 == endptr){
-	  node = node->next;
-	  
-	  continue;
-	}
-
-	/* retrieve y offset */
-	y = xmlGetProp(node, "y");
-
-	if(y == NULL){
-	  node = node->next;
-	  
-	  continue;
-	}
-
-	errno = 0;
-	y_val = strtoul(y, &endptr, 10);
-
-	if(errno == ERANGE){
-	  node = node->next;
-	  
-	  continue;
-	} 
-
-	if(y == endptr){
-	  node = node->next;
-	  
-	  continue;
-	}
-
-	/* switch x values if necessary */
-	if(x0_val > x1_val){
-	  guint tmp;
-
-	  tmp = x0_val;
-	  x0_val = x1_val;
-	  x1_val = tmp;
-	}
-
-	/* calculate new offset */
-	if(reset_x_offset){
-	  errno = 0;
-
-	  if(subtract_x){
-	    x0_val -= base_x_difference;
-
-	    if(errno != 0){
-	      node = node->next;
-	      
-	      continue;
-	    }
-
-	    x1_val -= base_x_difference;
-	  }else{
-	    x0_val += base_x_difference;
-	    x1_val += base_x_difference;
-
-	    if(errno != 0){
-	      node = node->next;
-	      
-	      continue;
-	    }
-	  }
-	}
-
-	if(reset_y_offset){
-	  errno = 0;
-
-	  if(subtract_y){
-	    y_val -= base_y_difference;
-	  }else{
-	    y_val += base_y_difference;
-	  }
-
-	  if(errno != 0){
+	  if(x0 == NULL){
 	    node = node->next;
-	    
+	  
 	    continue;
 	  }
-	}
 
-	/* check if max length wasn't exceeded */
-	if(x1_val - x0_val > notation->maximum_note_length){
-	  node = node->next;
+	  errno = 0;
+	  x0_val = strtoul(x0, &endptr, 10);
+
+	  if(errno == ERANGE){
+	    node = node->next;
 	  
-	  continue;
+	    continue;
+	  } 
+
+	  if(x0 == endptr){
+	    node = node->next;
+	  
+	    continue;
+	  }
+
+	  /* retrieve x1 offset */
+	  x1 = xmlGetProp(node, "x1");
+
+	  if(x1 == NULL){
+	    node = node->next;
+	  
+	    continue;
+	  }
+
+	  errno = 0;
+	  x1_val = strtoul(x1, &endptr, 10);
+
+	  if(errno == ERANGE){
+	    node = node->next;
+	  
+	    continue;
+	  } 
+
+	  if(x1 == endptr){
+	    node = node->next;
+	  
+	    continue;
+	  }
+
+	  /* retrieve y offset */
+	  y = xmlGetProp(node, "y");
+
+	  if(y == NULL){
+	    node = node->next;
+	  
+	    continue;
+	  }
+
+	  errno = 0;
+	  y_val = strtoul(y, &endptr, 10);
+
+	  if(errno == ERANGE){
+	    node = node->next;
+	  
+	    continue;
+	  } 
+
+	  if(y == endptr){
+	    node = node->next;
+	  
+	    continue;
+	  }
+
+	  /* switch x values if necessary */
+	  if(x0_val > x1_val){
+	    guint tmp;
+
+	    tmp = x0_val;
+	    x0_val = x1_val;
+	    x1_val = tmp;
+	  }
+
+	  /* calculate new offset */
+	  if(reset_x_offset){
+	    errno = 0;
+
+	    if(subtract_x){
+	      x0_val -= base_x_difference;
+
+	      if(errno != 0){
+		node = node->next;
+	      
+		continue;
+	      }
+
+	      x1_val -= base_x_difference;
+	    }else{
+	      x0_val += base_x_difference;
+	      x1_val += base_x_difference;
+
+	      if(errno != 0){
+		node = node->next;
+	      
+		continue;
+	      }
+	    }
+	  }
+
+	  if(reset_y_offset){
+	    errno = 0;
+
+	    if(subtract_y){
+	      y_val -= base_y_difference;
+	    }else{
+	      y_val += base_y_difference;
+	    }
+
+	    if(errno != 0){
+	      node = node->next;
+	    
+	      continue;
+	    }
+	  }
+
+	  /* check if max length wasn't exceeded */
+	  if(x1_val - x0_val > notation->maximum_note_length){
+	    node = node->next;
+	  
+	    continue;
+	  }
+
+	  /* add note */
+	  note = ags_note_new();
+
+	  note->x[0] = x0_val;
+	  note->x[1] = x1_val;
+
+	  note->y = y_val;
+
+	  g_message("adding note at: [%u,%u|%u]\n", x0_val, x1_val, y_val);
+
+	  ags_notation_add_note(notation,
+				note,
+				FALSE);
+	}
+      }else if(!xmlStrncmp("timestamp",
+			   node->name,
+			   10)){
+	/* retrieve timer offset */
+	offset = xmlGetProp(node, "offset");
+
+	if(notation->timestamp == NULL){
+	  notation->timestamp = ags_timestamp_new();
+
+	  AGS_TIMESTAMP(notation->timestamp)->flags &= (~AGS_TIMESTAMP_UNIX);
+	  AGS_TIMESTAMP(notation->timestamp)->flags |= AGS_TIMESTAMP_OFFSET;
 	}
 
-	/* add note */
-	note = ags_note_new();
-
-	note->x[0] = x0_val;
-	note->x[1] = x1_val;
-
-	note->y = y_val;
-
-	g_message("adding note at: [%u,%u|%u]\n", x0_val, x1_val, y_val);
-
-	ags_notation_add_note(notation,
-			      note,
-			      FALSE);
+	AGS_TIMESTAMP(notation->timestamp)->timer.ags_offset.offset = g_ascii_strtoull(offset,
+										       NULL,
+										       10);
       }
-
+    
       node = node->next;
     }
   }
 
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+  
   if(!xmlStrncmp("0.3.12", version, 7)){
     ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
   }else if(!xmlStrncmp("0.4.2", version, 7)){
     /* changes contain only for UI relevant new informations */
+    ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
+  }else if(!xmlStrncmp("1.2.0", version, 7)){
+    /* changes contain only optional informations */
     ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
   }
 }

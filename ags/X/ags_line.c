@@ -394,8 +394,8 @@ ags_line_init(AgsLine *line)
 {
   if(ags_line_indicator_queue_draw == NULL){
     ags_line_indicator_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-						     NULL,
-						     NULL);
+							  NULL,
+							  NULL);
   }
   
   g_signal_connect_after((GObject *) line, "parent_set",

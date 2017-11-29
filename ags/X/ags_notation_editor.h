@@ -46,8 +46,6 @@
 
 #define AGS_NOTATION_EDITOR_MAX_CONTROLS (16 * 16 * 1200)
 
-#define AGS_NOTATION_DEFAULT_CHUNK_DURATION (16 * 64)
-
 typedef struct _AgsNotationEditor AgsNotationEditor;
 typedef struct _AgsNotationEditorClass AgsNotationEditorClass;
 
@@ -82,6 +80,7 @@ struct _AgsNotationEditor
   AgsNotebook *notebook;
 
   GtkViewport *piano_viewport;
+  GtkAlignment *piano_alignment;
   AgsPiano *piano;
   
   AgsNotationEdit *notation_edit;

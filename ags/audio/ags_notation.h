@@ -44,10 +44,11 @@
 #define AGS_NOTATION_DEFAULT_LENGTH (65535.0 / AGS_NOTATION_TICS_PER_BEAT - AGS_NOTATION_MAXIMUM_NOTE_LENGTH)
 #define AGS_NOTATION_DEFAULT_JIFFIE (60.0 / AGS_NOTATION_DEFAULT_BPM / AGS_NOTATION_TICS_PER_BEAT)
 #define AGS_NOTATION_DEFAULT_DURATION (AGS_NOTATION_DEFAULT_LENGTH * AGS_NOTATION_DEFAULT_JIFFIE * AGS_MICROSECONDS_PER_SECOND)
+#define AGS_NOTATION_DEFAULT_OFFSET (64 * (1 / AGS_NOTATION_MINIMUM_NOTE_LENGTH))
 
-#define AGS_NOTATION_CLIPBOARD_VERSION "0.4.2\0"
-#define AGS_NOTATION_CLIPBOARD_TYPE "AgsNotationClipboardXml\0"
-#define AGS_NOTATION_CLIPBOARD_FORMAT "AgsNotationNativePiano\0"
+#define AGS_NOTATION_CLIPBOARD_VERSION "1.2.0"
+#define AGS_NOTATION_CLIPBOARD_TYPE "AgsNotationClipboardXml"
+#define AGS_NOTATION_CLIPBOARD_FORMAT "AgsNotationNativePiano"
 
 typedef struct _AgsNotation AgsNotation;
 typedef struct _AgsNotationClass AgsNotationClass;
@@ -110,6 +111,8 @@ GType ags_notation_get_type();
 
 GList* ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 					GObject *timestamp);
+GList* ags_notation_add(GList *notation,
+			AgsNotation *new_notation);
 
 void ags_notation_add_note(AgsNotation *notation,
 			   AgsNote *note,
