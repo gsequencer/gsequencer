@@ -73,11 +73,11 @@ struct _AgsNotationEditor
   GObject *soundcard;
   
   GtkHPaned *paned;
+
+  AgsNotationToolbar *notation_toolbar;
   
   AgsMachineSelector *machine_selector;
   AgsMachine *selected_machine;
-
-  AgsNotationToolbar *notation_toolbar;
   
   AgsNotebook *notebook;
 
@@ -96,7 +96,8 @@ struct _AgsNotationEditorClass
 
 GType ags_notation_editor_get_type(void);
 
-void ags_notation_editor_machine_changed(AgsNotationEditor *notation_editor, AgsMachine *machine);
+void ags_notation_editor_machine_changed(AgsNotationEditor *notation_editor,
+					 AgsMachine *machine);
 
 void ags_notation_editor_select_all(AgsNotationEditor *notation_editor);
 

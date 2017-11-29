@@ -44,8 +44,8 @@ typedef struct _AgsNotebookClass AgsNotebookClass;
 typedef struct _AgsNotebookTab AgsNotebookTab;
 
 typedef enum{
-  AGS_NOTEBOOK_TAB_ENUMERATE    = 1,
-  AGS_NOTEBOOK_TAB_FREE_DATA    = 1 <<  1,
+  AGS_NOTEBOOK_TAB_PREFIXED_LABEL   = 1,
+  AGS_NOTEBOOK_TAB_ENUMERATE        = 1 <<  1,
 };
 
 struct _AgsNotebook
@@ -78,9 +78,6 @@ struct _AgsNotebookClass
 
 struct _AgsNotebookTab
 {
-  guint flags;
-
-  GType data_type;
   gpointer data;
   
   GtkToggleButton *toggle;
@@ -89,12 +86,16 @@ struct _AgsNotebookTab
 GType ags_notebook_get_type(void);
 
 AgsNotebookTab* ags_notebook_tab_alloc();
+
 void ags_notebook_tab_free(AgsNotebookTab *tab);
-void ags_notebook_tab_free_full(AgsNotebookTab *tab,
-				GDestroyNotify free_func);
+
+void ags_notebook_tab_set_data(AgsNotebook *notebook,
+			       gint position,
+			       gpointer data);
 
 gint ags_notebook_tab_index(AgsNotebook *notebook,
 			    gpointer data);
+
 gint ags_notebook_next_active_tab(AgsNotebook *notebook,
 				  gint position);
 
@@ -109,7 +110,8 @@ void ags_notebook_insert_tab_with_label(AgsNotebook *notebook,
 					gint position);
 
 void ags_notebook_remove_tab(AgsNotebook *notebook,
-			     gint nth);
+			     gint position);
+
 void ags_notebook_remove_tab_with_data(AgsNotebook *notebook,
 				       gpointer data);
 

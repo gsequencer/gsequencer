@@ -1,0 +1,4 @@
+
+
+#define AGS_NOTATION_EDIT_MINIMUM_NOTE_LENGTH (1.0 / 16.0)
+

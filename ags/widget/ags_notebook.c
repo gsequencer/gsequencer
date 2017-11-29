@@ -20,7 +20,6 @@
 #include <ags/X/editor/ags_notebook.h>
 
 void ags_notebook_class_init(AgsNotebookClass *notebook);
-void ags_notebook_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_notebook_init(AgsNotebook *notebook);
 void ags_notebook_set_property(GObject *gobject,
 			       guint prop_id,
@@ -52,6 +51,11 @@ void ags_notebook_scroll_next_callback(GtkWidget *button,
  * The #AgsNotebook lets you select/deselect tabs and assign data to them.
  */
 
+enum{
+  PROP_0,
+  PROP_PREFIX,
+};
+
 static gpointer ags_notebook_parent_class = NULL;
 
 GType
@@ -72,31 +76,12 @@ ags_notebook_get_type(void)
       (GInstanceInitFunc) ags_notebook_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_notebook_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_notebook = g_type_register_static(GTK_TYPE_VBOX,
 					       "AgsNotebook", &ags_notebook_info,
 					       0);
-    
-    g_type_add_interface_static(ags_type_notebook,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
-
+  
   return(ags_type_notebook);
-}
-
-void
-ags_notebook_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
-  connectable->connect = ags_notebook_connect;
-  connectable->disconnect = ags_notebook_disconnect;
 }
 
 void
@@ -116,6 +101,22 @@ ags_notebook_class_init(AgsNotebookClass *notebook)
   gobject->get_property = ags_notebook_get_property;
 
   gobject->finalize = ags_notebook_finalize;
+
+  /**
+   * AgsNotebook:prefix:
+   *
+   * The prefix used to do enumerated labels.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_object("prefix",
+				   i18n_pspec("enumeration prefix"),
+				   i18n_pspec("The label's enumeration prefix"),
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PREFIX,
+				  param_spec);
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) notebook;
@@ -186,7 +187,7 @@ ags_notebook_init(AgsNotebook *notebook)
 		    (GtkWidget *) notebook->hbox);
   
   notebook->tab = NULL;
-  notebook->child = NULL;
+  notebook->tab_free_func = ags_notebook_tab_free;
 }
 
 void
@@ -248,6 +249,17 @@ ags_notebook_finalize(GObject *gobject)
 {
   AgsNotebook *notebook;
   
+  notebook = AGS_NOTEBOOK(gobject);
+
+  g_free(notebook->prefix);
+  
+  if(notebook->tab_free_func != NULL){
+    g_list_free_full(notebook->tab,
+		     notebook->tab_free_func);
+  }else{
+    g_list_free_full(notebook,
+		     g_free);
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_notebook_parent_class)->finalize(gobject);
@@ -423,22 +435,6 @@ ags_notebook_size_request(AgsNotebook *notebook,
 }
 
 void
-ags_notebook_connect(AgsConnectable *connectable)
-{
-  AgsNotebook *notebook;
-
-  notebook = AGS_NOTEBOOK(connectable);
-
-}
-
-void
-ags_notebook_disconnect(AgsConnectable *connectable)
-{
-  //TODO:JK: implement me
-}
-
-
-void
 ags_notebook_scroll_prev_callback(GtkWidget *button,
 				  AgsNotebook *notebook)
 {
@@ -476,7 +472,15 @@ ags_notebook_scroll_next_callback(GtkWidget *button,
   gtk_widget_show_all((GtkWidget *) notebook->hbox);
 }
 
-
+/**
+ * ags_notebook_tab_alloc:
+ * 
+ * Allocate #AgsNotebookTab-struct.
+ * 
+ * Returns: the newly allocated #AgsNotebookTab-struct
+ * 
+ * Since: 1.0.0
+ */
 AgsNotebookTab*
 ags_notebook_tab_alloc()
 {
@@ -484,31 +488,89 @@ ags_notebook_tab_alloc()
 
   notebook_tab = (AgsNotebookTab *) malloc(sizeof(AgsNotebookTab));
 
-  notebook_tab->flags = 0;
-
-  notebook_tab->notation = NULL;
-  notebook_tab->automation = NULL;
-  
+  notebook_tab->data = NULL;
   notebook_tab->toggle = NULL;
 
   return(notebook_tab);
 }
 
+/**
+ * ags_notebook_tab_free:
+ * @tab: the #AgsNotebookTab-struct
+ * 
+ * Free @tab's memory.
+ * 
+ * Since: 1.0.0
+ */
+void
+ags_notebook_tab_free(AgsNotebookTab *tab)
+{
+  if(tab == NULL){
+    return;
+  }
+
+  g_free(tab->data);
+
+  g_free(tab);
+}
+
+/**
+ * ags_notebook_tab_set_data:
+ * @notebook: the #AgsNotebook
+ * @position: the tab's position
+ * @data: the data to set
+ * 
+ * Set the data field of #AgsNotebookTab-struct at @position.
+ * 
+ * Since: 1.2.0
+ */
+void
+ags_notebook_tab_set_data(AgsNotebook *notebook,
+			  gint position,
+			  gpointer data)
+{
+  GList *tab;
+  
+  if(!AGS_IS_NOTEBOOK(notebook) ||
+     position < 0){
+    return;
+  }
+
+  tab = g_list_nth(notebook->tab,
+		   position);
+
+  if(tab != NULL &&
+     tab->data != NULL){
+    AGS_NOTEBOOK_TAB(tab->data)->data = data;
+  }
+}
+
+/**
+ * ags_notebook_tab_index:
+ * @notebook: the #AgsNotebook
+ * @data: the assigned data
+ * 
+ * Retrieve tab index assigned with @data.
+ * 
+ * Returns: the position as integer
+ * 
+ * Since: 1.0.0
+ */
 gint
 ags_notebook_tab_index(AgsNotebook *notebook,
-		       GObject *notation)
+		       gpointer data)
 {
   GList *list;
   gint i;
 
-  if(notebook == NULL){
+  if(!AGS_IS_NOTEBOOK(notebook)){
     return(-1);
   }
 
   list = notebook->tab;
 
   for(i = g_list_length(notebook->tab) - 1; list != NULL; i--){
-    if(AGS_NOTEBOOK_TAB(list->data)->notation == notation){
+    if(AGS_NOTEBOOK_TAB(list->data)->data == data){
       return(i);
     }
 
@@ -518,49 +580,17 @@ ags_notebook_tab_index(AgsNotebook *notebook,
   return(-1);
 }
 
-gint
-ags_notebook_add_tab(AgsNotebook *notebook)
-{
-  AgsNotebookTab *tab;
-  GtkViewport *viewport;
-
-  GtkAdjustment *adjustment;
-  
-  gint tab_index;
-  gint length;
-  guint width;
-
-  if(notebook == NULL){
-    return(-1);
-  }
-
-  /* new tab */
-  tab = ags_notebook_tab_alloc();
-
-  notebook->tab = g_list_prepend(notebook->tab,
-				 tab);
-  tab_index = g_list_length(notebook->tab);
-
-  tab->toggle = (GtkToggleButton *) gtk_toggle_button_new_with_label(g_strdup_printf("%s %d",
-										     notebook->prefix,
-										     tab_index));
-  g_object_set(tab->toggle,
-	       "xalign", 0.0,
-	       "yalign", 0.0,
-	       NULL);
-  gtk_toggle_button_set_active(tab->toggle, TRUE);
-  gtk_widget_set_size_request((GtkWidget *) tab->toggle,
-			      AGS_NOTEBOOK_TAB_DEFAULT_WIDTH, AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT);  
-  gtk_box_pack_start(GTK_BOX(notebook->hbox),
-		     GTK_WIDGET(tab->toggle),
-		     FALSE, FALSE,
-		     0);
-
-  gtk_widget_show_all((GtkWidget *) notebook->hbox);
-
-  return(tab_index);
-}
-
+/**
+ * ags_notebook_next_active_tab:
+ * @notebook: the #AgsNotebook
+ * @position: the position as integer
+ * 
+ * Get next active tab following @position.
+ * 
+ * Returns: the position of next active tab as integer
+ * 
+ * Since: 1.0.0
+ */
 gint
 ags_notebook_next_active_tab(AgsNotebook *notebook,
 			     gint position)
@@ -568,7 +598,7 @@ ags_notebook_next_active_tab(AgsNotebook *notebook,
   GList *list, *list_start;
   gint i;
 
-  if(notebook == NULL){
+  if(!AGS_IS_NOTEBOOK(notebook)){
     return(-1);
   }
   
@@ -593,6 +623,122 @@ ags_notebook_next_active_tab(AgsNotebook *notebook,
   return(-1);
 }
 
+/**
+ * ags_notebook_add_tab:
+ * @notebook: the #AgsNotebook
+ * 
+ * Add a new #AgsNotebookTab-struct to @notebook.
+ * 
+ * Returns: the position as integer
+ * 
+ * Since: 1.0.0
+ */
+gint
+ags_notebook_add_tab(AgsNotebook *notebook)
+{
+  AgsNotebookTab *tab;
+  GtkViewport *viewport;
+
+  GtkAdjustment *adjustment;
+
+  gchar *str;
+  
+  gint tab_index;
+  gint length;
+  guint width;
+
+  if(!AGS_IS_NOTEBOOK(notebook)){
+    return(-1);
+  }
+
+  /* new tab */
+  tab = ags_notebook_tab_alloc();
+
+  notebook->tab = g_list_prepend(notebook->tab,
+				 tab);
+  tab_index = g_list_length(notebook->tab);
+
+  str = NULL;
+
+  if((AGS_NOTEBOOK_TAB_PREFIXED_LABEL & (notebook->flags)) != 0 &&
+     (AGS_NOTEBOOK_TAB_ENUMERATE & (notebook->flags)) != 0){
+    str = g_strdup_printf("%s %d",
+			  notebook->prefix,
+			  tab_index);
+  }else if((AGS_NOTEBOOK_TAB_PREFIXED_LABEL & (notebook->flags)) != 0){
+    str = g_strdup_printf("%s",
+			  notebook->prefix);
+  }else if((AGS_NOTEBOOK_TAB_ENUMERATE & (notebook->flags)) != 0){
+    str = g_strdup_printf("%d",
+			  tab_index);
+  }
+  
+  tab->toggle = (GtkToggleButton *) g_object_new(tab->toggle,
+						 "label", str,
+						 "xalign", 0.0,
+						 "yalign", 0.0,
+						 "active", TRUE,
+						 NULL);
+  gtk_widget_set_size_request((GtkWidget *) tab->toggle,
+			      AGS_NOTEBOOK_TAB_DEFAULT_WIDTH, AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT);  
+  gtk_box_pack_start(GTK_BOX(notebook->hbox),
+		     GTK_WIDGET(tab->toggle),
+		     FALSE, FALSE,
+		     0);
+
+  gtk_widget_show_all((GtkWidget *) notebook->hbox);
+
+  g_free(str);
+  
+  return(tab_index);
+}
+
+/**
+ * ags_notebook_add_tab_with_label:
+ * @notebook: the #AgsNotebook
+ * @data: the assigned data
+ * 
+ * Add a new #AgsNotebookTab-struct to @notebook and set specified @label.
+ * 
+ * Returns: the position as integer
+ * 
+ * Since: 1.2.0
+ */
+gint
+ags_notebook_add_tab_with_label(AgsNotebook *notebook,
+				gchar *label)
+{
+  GList *tab;
+  
+  gint position;
+  
+  if(!AGS_IS_NOTEBOOK(notebook)){
+    return(-1);
+  }
+
+  position = ags_notebook_add_tab(notebook);
+
+  tab = g_list_nth(notebook->tab,
+		   position);
+
+  if(tab != NULL){
+    g_object_set(AGS_NOTEBOOK_TAB(tab->data)->toggle,
+		 "label", label,
+		 NULL);
+  }
+  
+  return(tab_index);
+}
+
+/**
+ * ags_notebook_insert_tab:
+ * @notebook: the #AgsNotebook
+ * @position: the position as integer
+ * 
+ * Insert a new #AgsNotebookTab-struct to @notebook.
+ * 
+ * Since: 1.2.0
+ */
 void
 ags_notebook_insert_tab(AgsNotebook *notebook,
 			gint position)
@@ -604,7 +750,7 @@ ags_notebook_insert_tab(AgsNotebook *notebook,
   gint length;
   guint width;
 
-  if(notebook == NULL){
+  if(!AGS_IS_NOTEBOOK(notebook)){
     return;
   }
 
@@ -636,43 +782,102 @@ ags_notebook_insert_tab(AgsNotebook *notebook,
   gtk_widget_show_all((GtkWidget *) notebook->hbox);
 }
 
+/**
+ * ags_notebook_insert_tab_with_label:
+ * @notebook: the #AgsNotebook
+ * @label: the label as string
+ * @position: the position as integer
+ * 
+ * Insert a new #AgsNotebookTab-struct to @notebook at @position and set specified @label.
+ * 
+ * Since: 1.2.0
+ */
 void
 ags_notebook_insert_tab_with_label(AgsNotebook *notebook,
 				   gchar *label,
 				   gint position)
 {
-  //TODO:JK: implement me
+  GList *tab;
+
+  if(!AGS_IS_NOTEBOOK(notebook)){
+    return;
+  }
+
+  ags_notebook_insert_tab(notebook,
+			  position);
+  
+  tab = g_list_nth(notebook->tab,
+		   position);
+
+  if(tab != NULL){
+    g_object_set(AGS_NOTEBOOK_TAB(tab->data)->toggle,
+		 "label", label,
+		 NULL);
+  }
 }
 
+/**
+ * ags_notebook_remove_tab:
+ * @notebook: the #AgsNotebook
+ * @position: the position of the tab
+ * 
+ * Remove #AgsNotebookTab at @position.
+ * 
+ * Since: 1.0.0
+ */
 void
-ags_notebook_remove_tab(AgsNotebook *notebook,
-			gint nth)
+pags_notebook_remove_tab(AgsNotebook *notebook,
+			 gint position)
 {
   AgsNotebookTab *tab;
+
   gint length;
 
-  if(notebook->tab == NULL){
+  if(!AGS_IS_NOTEBOOK(notebook) ||
+     notebook->tab == NULL ||$
+     position < 0){
     return;
   }
   
   length = g_list_length(notebook->tab);
 
-  tab = g_list_nth_data(notebook->tab,
-			length - nth - 1);
+  tab = g_list_position_data(notebook->tab,
+			     length - position - 1);
 
   if(tab != NULL){
     notebook->tab = g_list_remove(notebook->tab,
 				  tab);
     gtk_widget_destroy(GTK_WIDGET(tab->toggle));
-    free(tab);
+
+    if(notebook->tab_free_func != NULL){
+      notebook->tab_free_func(tab);
+    }
   }
 }
 
+/**
+ * ags_notebook_remove_tab_with_data:
+ * @notebook: the #AgsNotebook
+ * @data: the data to lookup
+ * 
+ * Remove #AgsNotebookTab assigned with @data.
+ * 
+ * Since: 1.2.0
+ */
 void
 ags_notebook_remove_tab_with_data(AgsNotebook *notebook,
 				  gpointer data)
 {
-  //TODO:JK: implement me
+  gint position;
+  
+  if(!AGS_IS_NOTEBOOK(notebook)){
+    return;
+  }
+
+  position = ags_notebook_tab_index(notebook,
+				    data);
+  pags_notebook_remove_tab(notebook,
+			   position);
 }
 
 /**
