@@ -121,8 +121,7 @@ void ags_notation_edit_draw_position(AgsNotationEdit *notation_edit);
 void ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit);
 void ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit);
 
-void ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit,
-				     GList *notation, guint audio_channel);
+void ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit);
 
 AgsNotationEdit* ags_notation_edit_new();
 

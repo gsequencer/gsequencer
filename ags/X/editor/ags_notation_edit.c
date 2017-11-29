@@ -20,6 +20,10 @@
 #include <ags/X/editor/ags_notation_edit.h>
 #include <ags/X/editor/ags_notation_edit_callbacks.h>
 
+#include <ags/X/ags_notation_editor.h>
+
+#include <math.h>
+
 static GType ags_accessible_notation_edit_get_type(void);
 void ags_notation_edit_class_init(AgsNotationEditClass *notation_edit);
 void ags_accessible_notation_edit_class_init(AtkObject *object);
@@ -837,6 +841,287 @@ ags_notation_edit_auto_scroll_timeout(GtkWidget *widget)
   }else{
     return(FALSE);
   }
+}
+
+void
+ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit)
+{
+  AgsNotationEditor *notation_editor;
+  AgsNotationToolbar *notation_toolbar;
+  
+  GtkStyle *notation_edit_style;
+
+  cairo_t *cr;
+
+  guint channel_count;
+  guint width, height;
+  gboolean width_fits, height_fits;
+  double tact;
+  guint y0, x0;
+  guint nth_x;
+  guint i, j;
+  guint j_set;
+
+  static const gdouble white_gc = 65535.0;
+
+  if(!AGS_NOTATION_EDIT(notation_edit)){
+    return;
+  }
+
+  notation_editor = gtk_widget_get_ancestor(notation_edit,
+					    AGS_NOTATION_EDITOR);
+  notation_toolbar = notation_editor->notation_toolbar;
+  
+  notation_edit_style = gtk_widget_get_style(GTK_WIDGET(notation_edit->drawing_area));
+
+  cr = gdk_cairo_create(GTK_WIDGET(notation_edit->drawing_area)->window);
+
+  if(cr == NULL){
+    return;
+  }
+
+  /* get channel count */
+  if((AGS_AUDIO_NOTATION_DEFAULT & (notation_editor->machine->audio->flags)) != 0){
+    channel_count = notation_editor->machine->audio->input_pads;
+  }else{
+    channel_count = notation_editor->machine->audio->output_pads;
+  }
+
+  /* get width */
+  width = GTK_WIDGET(notation_edit->drawing_area)->allocation.width;
+  width_fits = FALSE;
+  
+  if(width < AGS_NOTATION_EDITOR_MAX_CONTROLS * notation_edit->control_width){
+    width = AGS_NOTATION_EDITOR_MAX_CONTROLS * notation_edit->control_width;
+    width_fits = TRUE;
+  }
+
+  /* get height */
+  height = GTK_WIDGET(notation_edit->drawing_area)->allocation.height;
+  height_fits = FALSE;
+
+  if(height < channel_count * notation_edit->control_height){
+    height = ;
+    height_fits = TRUE;
+  }
+
+  /* tact */
+  tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom) - 2.0);
+
+  /*  */
+  if(width_fits){
+    x0 = 0;
+  }else{
+    x0 = ((guint) GTK_RANGE(notation_edit->hscrollbar)->adjustment->value) % notation_edit->control_width;
+  }
+
+  if(height_fits){
+    y0 = 0;
+  }else{
+    y0 = ((guint) GTK_RANGE(notation_edit->vscrollbar)->adjustment->value) % notation_edit->control_height;
+  }
+  
+  nth_x = (guint) floor(GTK_RANGE(notation_edit->hscrollbar)->adjustment->value / notation_edit->control_width);
+
+  cairo_push_group(cr);
+
+  /* clear with background color */
+  cairo_set_source_rgb(cr,
+		       notation_edit_style->bg[0].red / white_gc,
+		       notation_edit_style->bg[0].green / white_gc,
+		       notation_edit_style->bg[0].blue / white_gc);
+
+  cairo_rectangle(cr,
+		  0.0, 0.0,
+		  (double) widget->allocation.width, (double) widget->allocation.height);
+  
+  cairo_fill(cr);
+  
+  /* horizontal lines */
+  cairo_set_line_width(cr,
+		       1.0);
+
+  cairo_set_source_rgb(cr,
+		       notation_edit_style->fg[0].red / white_gc,
+		       notation_edit_style->fg[0].green / white_gc,
+		       notation_edit_style->fg[0].blue / white_gc);
+
+  for(i = y0 ; i < ; ){
+    cairo_move_to(cr,
+		  0.0, (double) i);
+    cairo_line_to(cr,
+		  (double) width, (double) i);
+    cairo_stroke(cr);
+
+    i += notation_edit->control_height;
+  }
+
+  cairo_move_to(cr,
+		0.0, (double) i);
+  cairo_line_to(cr,
+		(double) width, (double) i);
+  cairo_stroke(cr);
+
+  /* vertical lines */
+  i = x0;
+  
+  if(i < width &&
+     tact > 1.0 ){
+    j_set = nth_x % ((guint) tact);
+
+    /* thin lines */
+    cairo_set_source_rgb(cr,
+			 notation_edit_style->mid[0].red / white_gc,
+			 notation_edit_style->mid[0].green / white_gc,
+			 notation_edit_style->mid[0].blue / white_gc);
+
+    if(j_set != 0){
+      j = j_set;
+      goto ags_notation_edit_draw_segment0;
+    }
+  }
+
+  for(; i < width; ){
+    /* strong lines */
+    cairo_set_source_rgb(cr,
+			 notation_edit_style->fg[0].red / white_gc,
+			 notation_edit_style->fg[0].green / white_gc,
+			 notation_edit_style->fg[0].blue / white_gc);
+    
+    cairo_move_to(cr,
+		  (double) i, 0.0);
+    cairo_line_to(cr,
+		  (double) i, (double) height);
+    cairo_stroke(cr);
+    
+    i += notation_edit->control_width;
+    
+    /* thin lines */
+    cairo_set_source_rgb(cr,
+			 notation_edit_style->mid[0].red / white_gc,
+			 notation_edit_style->mid[0].green / white_gc,
+			 notation_edit_style->mid[0].blue / white_gc);
+    
+    for(j = 1; i < width && j < tact; j++){
+    ags_notation_edit_draw_segment0:
+      cairo_move_to(cr, (double) i, 0.0);
+      cairo_line_to(cr, (double) i, (double) notation_edit->height);
+      cairo_stroke(cr);
+      
+      i += notation_edit->control_width;
+    }
+  }
+
+  /* complete */
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
+      
+  cairo_surface_mark_dirty(cairo_get_target(cr));
+  cairo_destroy(cr);
+}
+
+void
+ags_notation_edit_draw_position(AgsNotationEdit *notation_edit)
+{
+  cairo_t *cr;
+
+  if(!AGS_NOTATION_EDIT(notation_edit)){
+    return;
+  }
+  
+  cr = gdk_cairo_create(GTK_WIDGET(notation_edit->drawing_area)->window);
+
+  if(cr == NULL){
+    return;
+  }
+  
+  cairo_push_group(cr);
+
+  //TODO:JK: implement me
+
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
+      
+  cairo_surface_mark_dirty(cairo_get_target(cr));
+  cairo_destroy(cr);
+}
+
+void
+ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit)
+{
+  cairo_t *cr;
+
+  if(!AGS_NOTATION_EDIT(notation_edit)){
+    return;
+  }
+  
+  cr = gdk_cairo_create(GTK_WIDGET(notation_edit->drawing_area)->window);
+
+  if(cr == NULL){
+    return;
+  }
+  
+  cairo_push_group(cr);
+
+  //TODO:JK: implement me
+
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
+      
+  cairo_surface_mark_dirty(cairo_get_target(cr));
+  cairo_destroy(cr);
+}
+
+void
+ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit)
+{
+  cairo_t *cr;
+
+  if(!AGS_NOTATION_EDIT(notation_edit)){
+    return;
+  }
+  
+  cr = gdk_cairo_create(GTK_WIDGET(notation_edit->drawing_area)->window);
+
+  if(cr == NULL){
+    return;
+  }
+  
+  cairo_push_group(cr);
+
+  //TODO:JK: implement me
+
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
+      
+  cairo_surface_mark_dirty(cairo_get_target(cr));
+  cairo_destroy(cr);
+}
+
+void
+ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
+{
+  cairo_t *cr;
+
+  if(!AGS_NOTATION_EDIT(notation_edit)){
+    return;
+  }
+  
+  cr = gdk_cairo_create(GTK_WIDGET(notation_edit->drawing_area)->window);
+
+  if(cr == NULL){
+    return;
+  }
+  
+  cairo_push_group(cr);
+
+  //TODO:JK: implement me
+
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
+      
+  cairo_surface_mark_dirty(cairo_get_target(cr));
+  cairo_destroy(cr);
 }
 
 /**
