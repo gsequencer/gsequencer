@@ -51,6 +51,8 @@
 
 #define AGS_NOTATION_EDIT_DEFAULT_ZOOM_FACTOR (1.0 / AGS_NOTATION_EDIT_DEFAULT_TACT_LENGTH)
 
+#define AGS_NOTATION_EDIT_DEFAULT_FADER_WIDTH (3)
+
 typedef struct _AgsNotationEdit AgsNotationEdit;
 typedef struct _AgsNotationEditClass AgsNotationEditClass;
 
@@ -94,6 +96,11 @@ struct _AgsNotationEdit
   guint cursor_position_x;
   guint cursor_position_y;
 
+  guint selection_x0;
+  guint selection_x1;
+  guint selection_y0;
+  guint selection_x1;
+  
   guint tact_length;
   
   gdouble zoom_factor;

@@ -240,6 +240,11 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   notation_edit->cursor_position_x = AGS_NOTATION_EDIT_DEFAULT_CURSOR_POSITION_X;
   notation_edit->cursor_position_y = AGS_NOTATION_EDIT_DEFAULT_CURSOR_POSITION_Y;
 
+  notation_edit->selection_x0 = 0;
+  notation_edit->selection_y1 = 0;
+  notation_edit->selection_y0 = 0;
+  notation_edit->selection_y1 = 0;
+
   notation_edit->tact_length = AGS_NOTATION_EDIT_DEFAULT_TACT_LENGTH;
 
   notation_edit->zoom_factor = AGS_NOTATION_EDIT_DEFAULT_ZOOM_FACTOR;
@@ -870,6 +875,11 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit)
 
   notation_editor = gtk_widget_get_ancestor(notation_edit,
 					    AGS_NOTATION_EDITOR);
+
+  if(notation_editor->selected_machine == NULL){
+    return;
+  }
+
   notation_toolbar = notation_editor->notation_toolbar;
   
   notation_edit_style = gtk_widget_get_style(GTK_WIDGET(notation_edit->drawing_area));
@@ -881,10 +891,10 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit)
   }
 
   /* get channel count */
-  if((AGS_AUDIO_NOTATION_DEFAULT & (notation_editor->machine->audio->flags)) != 0){
-    channel_count = notation_editor->machine->audio->input_pads;
+  if((AGS_AUDIO_NOTATION_DEFAULT & (notation_editor->selected_machine->audio->flags)) != 0){
+    channel_count = notation_editor->selected_machine->audio->input_pads;
   }else{
-    channel_count = notation_editor->machine->audio->output_pads;
+    channel_count = notation_editor->selected_machine->audio->output_pads;
   }
 
   /* get width */
@@ -901,7 +911,7 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit)
   height_fits = FALSE;
 
   if(height < channel_count * notation_edit->control_height){
-    height = ;
+    height = channel_count * notation_edit->control_height;
     height_fits = TRUE;
   }
 
@@ -923,6 +933,7 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit)
   
   nth_x = (guint) floor(GTK_RANGE(notation_edit->hscrollbar)->adjustment->value / notation_edit->control_width);
 
+  /* push group */
   cairo_push_group(cr);
 
   /* clear with background color */
@@ -1023,22 +1034,74 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit)
 void
 ags_notation_edit_draw_position(AgsNotationEdit *notation_edit)
 {
+  AgsNotationEditor *notation_editor;
+
+  GtkStyle *notation_edit_style;
+
   cairo_t *cr;
+
+  guint channel_count;
+  double position;
+  double x, y;
+  double width, height;
+  gboolean height_fits;
+
+  static const gdouble white_gc = 65535.0;
 
   if(!AGS_NOTATION_EDIT(notation_edit)){
     return;
   }
+
+  notation_editor = gtk_widget_get_ancestor(notation_edit,
+					    AGS_NOTATION_EDITOR);
+
+  if(notation_editor->selected_machine == NULL){
+    return;
+  }
   
+  notation_edit_style = gtk_widget_get_style(GTK_WIDGET(notation_edit->drawing_area));
+
   cr = gdk_cairo_create(GTK_WIDGET(notation_edit->drawing_area)->window);
 
   if(cr == NULL){
     return;
   }
   
+  /* get channel count */
+  if((AGS_AUDIO_NOTATION_DEFAULT & (notation_editor->selected_machine->audio->flags)) != 0){
+    channel_count = notation_editor->selected_machine->audio->input_pads;
+  }else{
+    channel_count = notation_editor->selected_machine->audio->output_pads;
+  }
+
+  /* get offset and dimensions */
+  position = ((double) notation_edit->note_offset) * ((double) notation_edit->control_width);
+  
+  y = 0.0;
+  x = (position) - (GTK_RANGE(notation_edit->hscrollbar)->adjustment->value);
+
+  height = (double) GTK_WIDGET(notation_edit->drawing_area)->allocation.height;
+  width = (double) AGS_NOTATION_EDIT_DEFAULT_FADER_WIDTH;
+
+  if(height < channel_count * notation_edit->control_height){
+    height = channel_count * notation_edit->control_height;
+  }
+
+  /* push group */
   cairo_push_group(cr);
+  
+  /* draw fader */
+  cairo_set_source_rgba(cr,
+			notation_edit_style->dark[0].red / white_gc,
+			notation_edit_style->dark[0].green / white_gc,
+			notation_edit_style->dark[0].blue / white_gc,
+			0.5);
+  cairo_rectangle(cr,
+		  (double) x, (double) y,
+		  (double) width, (double) height);
+  cairo_fill(cr);
 
-  //TODO:JK: implement me
-
+  /* complete */
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
       
@@ -1049,22 +1112,52 @@ ags_notation_edit_draw_position(AgsNotationEdit *notation_edit)
 void
 ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit)
 {
+  AgsNotationEditor *notation_editor;
+  AgsNotationToolbar *notation_toolbar;
+
+  GtkStyle *notation_edit_style;
+
+  double x, y;
+  double width, height;
+
   cairo_t *cr;
+
+  static const gdouble white_gc = 65535.0;
 
   if(!AGS_NOTATION_EDIT(notation_edit)){
     return;
   }
   
+  notation_edit_style = gtk_widget_get_style(GTK_WIDGET(notation_edit->drawing_area));
+
   cr = gdk_cairo_create(GTK_WIDGET(notation_edit->drawing_area)->window);
 
   if(cr == NULL){
     return;
   }
-  
+
+  /* get offset */
+  x = ((double) notation_edit->cursor_position_x * (double) notation_edit->control_width) - GTK_RANGE(notation_edit->hscrollbar)->adjustment->value;
+  y = ((double) notation_edit->cursor_position_y * (double) notation_edit->control_height) - GTK_RANGE(notation_edit->vscrollbar)->adjustment->value;
+
+  width = (double) notation_edit->control_width;
+  height = (double) notation_edit->control_height;
+    
+  /* push group */
   cairo_push_group(cr);
 
-  //TODO:JK: implement me
+  /* draw cursor */
+  cairo_set_source_rgba(cr,
+			notation_edit_style->base[0].red / white_gc,
+			notation_edit_style->base[0].green / white_gc,
+			notation_edit_style->base[0].blue / white_gc,
+			0.5);
+  cairo_rectangle(cr,
+		  x, y,
+		  width, height);
+  cairo_fill(cr);
 
+  /* complete */
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
       
@@ -1075,22 +1168,54 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit)
 void
 ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit)
 {
+  GtkStyle *notation_edit_style;
+
   cairo_t *cr;
+
+  double x, y;
+  double width, height;
 
   if(!AGS_NOTATION_EDIT(notation_edit)){
     return;
   }
   
+  notation_edit_style = gtk_widget_get_style(GTK_WIDGET(notation_edit->drawing_area));
+
   cr = gdk_cairo_create(GTK_WIDGET(notation_edit->drawing_area)->window);
 
   if(cr == NULL){
     return;
   }
+
+  /* get offset and dimensions */
+  if(notation_edit->selection_x0 < notation_edit->selection_x1){
+    x = ((double) notation_edit->selection_x0) - GTK_RANGE(notation_edit->hscrollbar)->adjustment->value;
+    width = ((double) notation_edit->selection_x1 - (double) notation_edit->selection_x0);
+  }else{
+    x = ((double) notation_edit->selection_x1) - GTK_RANGE(notation_edit->hscrollbar)->adjustment->value;
+    width = ((double) notation_edit->selection_x0 - (double) notation_edit->selection_x1);
+  }
+
+  if(notation_edit->selection_y0 < notation_edit->selection_y1){
+    y = ((double) notation_edit->selection_y0) - GTK_RANGE(notation_edit->hscrollbar)->adjustment->value;
+    height = ((double) notation_edit->selection_y1 - (double) notation_edit->selection_y0);
+  }else{
+    y = ((double) notation_edit->selection_y1) - GTK_RANGE(notation_edit->hscrollbar)->adjustment->value;
+    height = ((double) notation_edit->selection_y0 - (double) notation_edit->selection_y1);
+  }
   
+  /* push group */
   cairo_push_group(cr);
 
-  //TODO:JK: implement me
+  /* draw selection */
+  cairo_set_source_rgba(cr,
+			1.0, 0.0, 0.0, 0.3);
+  cairo_rectangle(cr,
+		  x, y,
+		  width, height);
+  cairo_fill(cr);
 
+  /* complete */
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
       
@@ -1101,22 +1226,28 @@ ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit)
 void
 ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
 {
+  GtkStyle *notation_edit_style;
+
   cairo_t *cr;
 
   if(!AGS_NOTATION_EDIT(notation_edit)){
     return;
   }
   
+  notation_edit_style = gtk_widget_get_style(GTK_WIDGET(notation_edit->drawing_area));
+
   cr = gdk_cairo_create(GTK_WIDGET(notation_edit->drawing_area)->window);
 
   if(cr == NULL){
     return;
   }
   
+  /* push group */
   cairo_push_group(cr);
 
   //TODO:JK: implement me
 
+  /* complete */
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
       
