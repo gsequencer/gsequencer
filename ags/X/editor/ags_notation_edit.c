@@ -1305,6 +1305,47 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
   if(y + height > GTK_WIDGET(notation_edit->drawing_area)->allocation.height){
     height = ((double) GTK_WIDGET(notation_edit->drawing_area)->allocation.height) - y;
   }
+
+  /* check note selected */
+  if((AGS_NOTE_IS_SELECTED & (note->flags)) != 0){
+    double selected_x, selected_y;
+    double selected_width, selected_height;
+
+    selected_x = x - notation_edit->control_margin_x;
+    selected_y = y - notation_edit->control_margin_y;
+
+    selected_width = width + (2.0 * (double) notation_edit->control_margin_x);
+    selected_height = height + (2.0 * (double) notation_edit->control_margin_y);
+
+    /* clip */
+    if(selected_x < 0.0){
+      selected_x = 0.0;
+    }
+    
+    if(selected_x + selected_width > GTK_WIDGET(notation_edit->drawing_area)->allocation.width){
+      selected_width = ((double) GTK_WIDGET(notation_edit->drawing_area)->allocation.width) - selected_x;
+    }
+  
+    if(selected_y < 0.0){
+      selected_y = 0.0;
+    }
+
+    if(selected_y + selected_height > GTK_WIDGET(notation_edit->drawing_area)->allocation.height){
+      selected_height = ((double) GTK_WIDGET(notation_edit->drawing_area)->allocation.height) - selected_y;
+    }
+
+    /* draw selected note */
+    cairo_set_source_rgba(cr,
+			  note_edit_style->light[0].red / white_gc,
+			  note_edit_style->light[0].green / white_gc,
+			  note_edit_style->light[0].blue / white_gc,
+			  0.7);
+    
+    cairo_rectangle(cr,
+		    selected_x, selected_y,
+		    selected_width, selected_height);
+    cairo_stroke(cr);
+  }
   
   /* draw note */
   cairo_set_source_rgba(cr,
@@ -1323,7 +1364,6 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
   GtkStyle *notation_edit_style;
   
   AgsMutexManager *mutex_manager;
-  AgsTimestamp *timestamp;
   
   cairo_t *cr;
 
@@ -1333,10 +1373,12 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
   guint x0, x1;
   guint y0, y1;
   guint offset;
-  gint i;
-    
+  gint i;    
+  
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
+
+  static const gdouble white_gc = 65535.0;
   
   if(!AGS_NOTATION_EDIT(notation_edit)){
     return;
@@ -1375,13 +1417,6 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
 
   y0 = GTK_RANGE(notation_edit->vscrollbar)->adjustment->value / notation_edit->control_height;
   y1 = (GTK_RANGE(notation_edit->vscrollbar)->adjustment->value + GTK_WIDGET(notation_edit->drawing_area)->allocation.height) / notation_edit->control_height;
-
-  offset = ;
-
-  timestamp = ags_timestamp_new();
-
-  timestap->flags &= (~AGS_TIMESTAMP_UNIX);
-  timestap->flags |= AGS_TIMESTAMP_OFFSET;
   
   /* push group */
   cairo_push_group(cr);
@@ -1395,16 +1430,45 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
 					  i)) != -1){
     list_notation = notation_editor->selected_machine->audio->notation;
 
-    while(list_notation != NULL){
-      //TODO:JK: implement me
+    while((list_notation = ags_notation_find_near_timestamp(list_notation, i,
+							    NULL)) != NULL){
+      AgsNotation *notation;
+
+      GList *list_note;
+
+      notation = AGS_NOTATION(list_notation->data);
+      
+      if(notation->timestamp != NULL &&
+	 AGS_TIMESTAMP(notation->timestamp)->timer.ags_offset.offset > x1){
+	break;
+      }
+
+      if(notation->timestamp != NULL &&
+	 AGS_TIMESTAMP(notation->timestamp)->timer.ags_offset.offset + AGS_NOTATION_DEFAULT_OFFSET < x0){
+	list_notation = list_notation->next;
+
+	continue;
+      }
+
+      list_note = notation->notes;
+
+      while(list_note != NULL){
+	ags_notation_edit_draw_note(notation_edit,
+				    list_note->data,
+				    cr,
+				    notation_edit_style->fg[0].red / white_gc,
+				    notation_edit_style->fg[0].green / white_gc,
+				    notation_edit_style->fg[0].blue / white_gc,
+				    0.8);
+
+	list_note = list_note->next;
+      }
 
       list_notation = list_notation->next;
     }
     
     i++;
   }
-
-  g_object_unref(timestamp);
   
   /* complete */
   cairo_pop_group_to_source(cr);
