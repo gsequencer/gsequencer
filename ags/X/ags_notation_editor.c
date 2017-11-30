@@ -524,7 +524,7 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
   gint ags_notation_editor_paste_notation(xmlNode *audio_node){
     AgsTimestamp *timestamp;
     
-    GList *notation_list;
+    GList *list_notation;
 
     guint first_x;
 
@@ -583,16 +583,16 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
 							i)) != -1){
 		  timestamp->timer.ags_offset.offset = offset;
 		  
-		  notation_list = ags_notation_find_near_timestamp(machine->audio->notation, i,
+		  list_notation = ags_notation_find_near_timestamp(machine->audio->notation, i,
 								   timestamp);
 
-		  if(notation_list == NULL){
+		  if(list_notation == NULL){
 		    notation = ags_notation_new(machine->audio,
 						i);
 		    machine->audio->notation = ags_notation_add(machine->audio->notation,
 								notation);
 		  }else{
-		    notation = AGS_NOTATION(notation_list->data);
+		    notation = AGS_NOTATION(list_notation->data);
 		  }
 		  
 		  if(paste_from_position){
@@ -699,6 +699,8 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
 
       notation_list_node = notation_list_node->next;
     }    
+
+    g_object_unref(timestamp);
 
     return(first_x);
   }
@@ -1058,6 +1060,7 @@ ags_notation_editor_invert(AgsNotationEditor *notation_editor)
     mutex_manager = ags_mutex_manager_get_instance();
     application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
     
+    /* get audio mutex */
     pthread_mutex_lock(application_mutex);
 
     audio_mutex = ags_mutex_manager_lookup(mutex_manager,
@@ -1065,19 +1068,18 @@ ags_notation_editor_invert(AgsNotationEditor *notation_editor)
   
     pthread_mutex_unlock(application_mutex);
 
+    /* create notation nodes */
     pthread_mutex_lock(audio_mutex);
 
     machine = notation_editor->selected_machine;
 
-    /* create notation nodes */
-    list_notation = machine->audio->notation;
     i = 0;
     
     while((i = ags_notebook_next_active_tab(notation_editor->notebook,
 					    i)) != -1){
+      /* get boundary */
       list_notation = machine->audio->notation;
 
-      /* get boundary */
       lower = G_MAXUINT;
       upper = 0;
 
@@ -1091,6 +1093,8 @@ ags_notation_editor_invert(AgsNotationEditor *notation_editor)
       }
       
       /* invert */
+      list_notation = machine->audio->notation;
+      
       while((list_notation = ags_notation_find_near_timestamp(list_notation, i,
 							      NULL)) != NULL){
 	ags_notation_editor_invert_notation(AGS_NOTATION(list_notation->data),

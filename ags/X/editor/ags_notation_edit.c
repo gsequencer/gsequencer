@@ -22,6 +22,8 @@
 
 #include <ags/X/ags_notation_editor.h>
 
+#include <gdk/gdkkeysyms.h>
+
 #include <math.h>
 
 static GType ags_accessible_notation_edit_get_type(void);
@@ -71,7 +73,6 @@ gboolean ags_notation_edit_auto_scroll_timeout(GtkWidget *widget);
 
 enum{
   PROP_0,
-  PROP_ZOOM_FACTOR,
 };
 
 static gpointer ags_line_parent_class = NULL;
@@ -185,25 +186,6 @@ ags_accessible_notation_edit_class_init(AtkObject *object)
   gobject->get_property = ags_line_get_property;
 
   gobject->finalize = ags_line_finalize;
-
-  /* properties */
-  /**
-   * AgsNotationEdit:zoom-factor:
-   *
-   * The zoom-factor to use to draw notes.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_double("zoom-factor",
-				   i18n_pspec("zoom factor of notes"),
-				   i18n_pspec("The zoom factor to use for drawing notes"),
-				   AGS_NOTATION_EDIT_MAX_ZOOM_FACTOR,
-				   AGS_NOTATION_EDIT_MIN_ZOOM_FACTOR,
-				   AGS_NOTATION_EDIT_DEFAULT_ZOOM_FACTOR,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_ZOOM_FACTOR,
-				  param_spec);
 }
 
 void
@@ -241,13 +223,9 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   notation_edit->cursor_position_y = AGS_NOTATION_EDIT_DEFAULT_CURSOR_POSITION_Y;
 
   notation_edit->selection_x0 = 0;
-  notation_edit->selection_y1 = 0;
+  notation_edit->selection_x1 = 0;
   notation_edit->selection_y0 = 0;
   notation_edit->selection_y1 = 0;
-
-  notation_edit->tact_length = AGS_NOTATION_EDIT_DEFAULT_TACT_LENGTH;
-
-  notation_edit->zoom_factor = AGS_NOTATION_EDIT_DEFAULT_ZOOM_FACTOR;
 
   notation_edit->current_note = NULL;
 
@@ -324,13 +302,6 @@ ags_notation_edit_set_property(GObject *gobject,
   notation_edit = AGS_NOTATION_EDIT(gobject);
 
   switch(prop_id){
-  case PROP_ZOOM_FACTOR:
-    {
-      notation_edit->zoom_factor = g_value_get_double(value);
-
-      gtk_widget_queue_draw(notation_edit);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -348,11 +319,6 @@ ags_notation_edit_get_property(GObject *gobject,
   notation_edit = AGS_NOTATION_EDIT(gobject);
 
   switch(prop_id){
-  case PROP_ZOOM_FACTOR:
-    {
-      g_value_set_double(value, notation_edit->zoom_factor);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -861,7 +827,7 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit)
   guint channel_count;
   guint width, height;
   gboolean width_fits, height_fits;
-  double tact;
+  double zoom;
   guint y0, x0;
   guint nth_x;
   guint i, j;
@@ -884,6 +850,7 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit)
   
   notation_edit_style = gtk_widget_get_style(GTK_WIDGET(notation_edit->drawing_area));
 
+  /* create cairo context */
   cr = gdk_cairo_create(GTK_WIDGET(notation_edit->drawing_area)->window);
 
   if(cr == NULL){
@@ -915,8 +882,8 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit)
     height_fits = TRUE;
   }
 
-  /* tact */
-  tact = exp2((double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom) - 2.0);
+  /* zoom */
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom) - 2.0);
 
   /*  */
   if(width_fits){
@@ -977,8 +944,8 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit)
   i = x0;
   
   if(i < width &&
-     tact > 1.0 ){
-    j_set = nth_x % ((guint) tact);
+     zoom > 1.0 ){
+    j_set = nth_x % ((guint) zoom);
 
     /* thin lines */
     cairo_set_source_rgb(cr,
@@ -1013,7 +980,7 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit)
 			 notation_edit_style->mid[0].green / white_gc,
 			 notation_edit_style->mid[0].blue / white_gc);
     
-    for(j = 1; i < width && j < tact; j++){
+    for(j = 1; i < width && j < zoom; j++){
     ags_notation_edit_draw_segment0:
       cairo_move_to(cr, (double) i, 0.0);
       cairo_line_to(cr, (double) i, (double) notation_edit->height);
@@ -1061,6 +1028,7 @@ ags_notation_edit_draw_position(AgsNotationEdit *notation_edit)
   
   notation_edit_style = gtk_widget_get_style(GTK_WIDGET(notation_edit->drawing_area));
 
+  /* create cairo context */
   cr = gdk_cairo_create(GTK_WIDGET(notation_edit->drawing_area)->window);
 
   if(cr == NULL){
@@ -1130,6 +1098,7 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit)
   
   notation_edit_style = gtk_widget_get_style(GTK_WIDGET(notation_edit->drawing_area));
 
+  /* create cairo context */
   cr = gdk_cairo_create(GTK_WIDGET(notation_edit->drawing_area)->window);
 
   if(cr == NULL){
@@ -1142,7 +1111,28 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit)
 
   width = (double) notation_edit->control_width;
   height = (double) notation_edit->control_height;
-    
+
+  /* clip */
+  if(x < 0.0){
+    x = 0.0;
+  }else if(x > GTK_WIDGET(notation_edit->drawing_area)->allocation.width){
+    return;
+  }
+
+  if(x + width > GTK_WIDGET(notation_edit->drawing_area)->allocation.width){
+    width = ((double) GTK_WIDGET(notation_edit->drawing_area)->allocation.width) - x;
+  }
+  
+  if(y < 0.0){
+    y = 0.0;
+  }else if(y > GTK_WIDGET(notation_edit->drawing_area)->allocation.height){
+    return;
+  }
+
+  if(y + height > GTK_WIDGET(notation_edit->drawing_area)->allocation.height){
+    height = ((double) GTK_WIDGET(notation_edit->drawing_area)->allocation.height) - y;
+  }
+      
   /* push group */
   cairo_push_group(cr);
 
@@ -1181,6 +1171,7 @@ ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit)
   
   notation_edit_style = gtk_widget_get_style(GTK_WIDGET(notation_edit->drawing_area));
 
+  /* create cairo context */
   cr = gdk_cairo_create(GTK_WIDGET(notation_edit->drawing_area)->window);
 
   if(cr == NULL){
@@ -1203,7 +1194,28 @@ ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit)
     y = ((double) notation_edit->selection_y1) - GTK_RANGE(notation_edit->hscrollbar)->adjustment->value;
     height = ((double) notation_edit->selection_y0 - (double) notation_edit->selection_y1);
   }
+
+  /* clip */
+  if(x < 0.0){
+    x = 0.0;
+  }else if(x > GTK_WIDGET(notation_edit->drawing_area)->allocation.width){
+    return;
+  }
+
+  if(x + width > GTK_WIDGET(notation_edit->drawing_area)->allocation.width){
+    width = ((double) GTK_WIDGET(notation_edit->drawing_area)->allocation.width) - x;
+  }
   
+  if(y < 0.0){
+    y = 0.0;
+  }else if(y > GTK_WIDGET(notation_edit->drawing_area)->allocation.height){
+    return;
+  }
+
+  if(y + height > GTK_WIDGET(notation_edit->drawing_area)->allocation.height){
+    height = ((double) GTK_WIDGET(notation_edit->drawing_area)->allocation.height) - y;
+  }
+    
   /* push group */
   cairo_push_group(cr);
 
@@ -1224,29 +1236,176 @@ ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit)
 }
 
 void
-ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
+ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
+			    AgsNote *note,
+			    cairo_t *cr,
+			    double r, double g, double b, double a)
 {
+  AgsNotationEditor *notation_editor;
+  AgsNotationToolbar *notation_toolbar;
+
   GtkStyle *notation_edit_style;
 
+  double zoom;
+  double x, y;
+  double width, height;
+  
+  if(!AGS_NOTATION_EDIT(notation_edit) ||
+     cr == NULL){
+    return;
+  }
+
+  notation_editor = gtk_widget_get_ancestor(notation_edit,
+					    AGS_NOTATION_EDITOR);
+
+  if(notation_editor->selected_machine == NULL){
+    return;
+  }
+
+  notation_toolbar = notation_editor->notation_toolbar;
+  
+  notation_edit_style = gtk_widget_get_style(GTK_WIDGET(notation_edit->drawing_area));
+
+  /* zoom */
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom) - 2.0);
+
+  /* get offset and dimensions */
+  x = ((double) notation_edit->control_margin_x) + ((double) note->x[0]) * ((double) notation_edit->control_width) - GTK_RANGE(notation_edit->hscrollbar)->adjustment->value;
+  y = ((double) notation_edit->control_margin_y) + ((double) note->y) * ((double) notation_edit->control_height) - GTK_RANGE(notation_edit->vscrollbar)->adjustment->value;
+
+  width = ((double) (note->x[1] - note->x[0])) * ((double) notation_edit->control_width) - (2.0 * (double) notation_edit->control_margin_x);
+  height = ((double) notation_edit->control_height - (2.0 * (double) notation_edit->control_margin_y));
+
+  /* apply zoom */
+  x *= (AGS_NOTATION_EDIT_MAX_ZOOM / zoom / notation_edit->control_width);
+
+  width *= (AGS_NOTATION_EDIT_MAX_ZOOM / zoom / notation_edit->control_width);
+  
+  /* clip */
+  if(x < 0.0){
+    if(x + width < 0.0){
+      return;
+    }else{
+      x = 0.0;
+    }
+  }else if(x > GTK_WIDGET(notation_edit->drawing_area)->allocation.width){
+    return;
+  }
+
+  if(x + width > GTK_WIDGET(notation_edit->drawing_area)->allocation.width){
+    width = ((double) GTK_WIDGET(notation_edit->drawing_area)->allocation.width) - x;
+  }
+  
+  if(y < 0.0){
+    y = 0.0;
+  }else if(y > GTK_WIDGET(notation_edit->drawing_area)->allocation.height){
+    return;
+  }
+
+  if(y + height > GTK_WIDGET(notation_edit->drawing_area)->allocation.height){
+    height = ((double) GTK_WIDGET(notation_edit->drawing_area)->allocation.height) - y;
+  }
+  
+  /* draw note */
+  cairo_set_source_rgba(cr,
+			r, g, b, a);
+  cairo_rectangle(cr,
+		  x, y,
+		  width, height);
+  cairo_fill(cr);
+}
+
+void
+ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
+{
+  AgsNotationEditor *notation_editor;
+
+  GtkStyle *notation_edit_style;
+  
+  AgsMutexManager *mutex_manager;
+  AgsTimestamp *timestamp;
+  
   cairo_t *cr;
 
+  GList *list_notation;
+  GList *list_note;
+  
+  guint x0, x1;
+  guint y0, y1;
+  guint offset;
+  gint i;
+    
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  
   if(!AGS_NOTATION_EDIT(notation_edit)){
+    return;
+  }
+
+  notation_editor = gtk_widget_get_ancestor(notation_edit,
+					    AGS_NOTATION_EDITOR);
+
+  if(notation_editor->selected_machine == NULL){
     return;
   }
   
   notation_edit_style = gtk_widget_get_style(GTK_WIDGET(notation_edit->drawing_area));
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) notation_editor->selected_machine->audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* create cairo context */
   cr = gdk_cairo_create(GTK_WIDGET(notation_edit->drawing_area)->window);
 
   if(cr == NULL){
     return;
   }
+
+  /* get visisble region */
+  x0 = GTK_RANGE(notation_edit->hscrollbar)->adjustment->value / notation_edit->control_width;
+  x1 = (GTK_RANGE(notation_edit->hscrollbar)->adjustment->value + GTK_WIDGET(notation_edit->drawing_area)->allocation.width) / notation_edit->control_width;
+
+  y0 = GTK_RANGE(notation_edit->vscrollbar)->adjustment->value / notation_edit->control_height;
+  y1 = (GTK_RANGE(notation_edit->vscrollbar)->adjustment->value + GTK_WIDGET(notation_edit->drawing_area)->allocation.height) / notation_edit->control_height;
+
+  offset = ;
+
+  timestamp = ags_timestamp_new();
+
+  timestap->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestap->flags |= AGS_TIMESTAMP_OFFSET;
   
   /* push group */
   cairo_push_group(cr);
 
-  //TODO:JK: implement me
+  /* draw notation */
+  pthread_mutex_lock(audio_mutex);
 
+  i = 0;
+  
+  while((i = ags_notebook_next_active_tab(notation_editor->notebook,
+					  i)) != -1){
+    list_notation = notation_editor->selected_machine->audio->notation;
+
+    while(list_notation != NULL){
+      //TODO:JK: implement me
+
+      list_notation = list_notation->next;
+    }
+    
+    i++;
+  }
+
+  g_object_unref(timestamp);
+  
   /* complete */
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);

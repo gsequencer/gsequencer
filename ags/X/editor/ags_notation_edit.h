@@ -44,14 +44,9 @@
 #define AGS_NOTATION_EDIT_DEFAULT_CURSOR_POSITION_X (0)
 #define AGS_NOTATION_EDIT_DEFAULT_CURSOR_POSITION_Y (0)
 
-#define AGS_NOTATION_EDIT_DEFAULT_TACT_LENGTH (16)
-
-#define AGS_NOTATION_EDIT_MIN_ZOOM_FACTOR (4.0)
-#define AGS_NOTATION_EDIT_MAX_ZOOM_FACTOR (1.0 / AGS_NOTATION_EDIT_DEFAULT_TACT_LENGTH)
-
-#define AGS_NOTATION_EDIT_DEFAULT_ZOOM_FACTOR (1.0 / AGS_NOTATION_EDIT_DEFAULT_TACT_LENGTH)
-
 #define AGS_NOTATION_EDIT_DEFAULT_FADER_WIDTH (3)
+
+#define AGS_NOTATION_EDIT_MAX_ZOOM (4.0)
 
 typedef struct _AgsNotationEdit AgsNotationEdit;
 typedef struct _AgsNotationEditClass AgsNotationEditClass;
@@ -100,10 +95,6 @@ struct _AgsNotationEdit
   guint selection_x1;
   guint selection_y0;
   guint selection_x1;
-  
-  guint tact_length;
-  
-  gdouble zoom_factor;
 
   AgsNote *current_note;
   
@@ -128,6 +119,10 @@ void ags_notation_edit_draw_position(AgsNotationEdit *notation_edit);
 void ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit);
 void ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit);
 
+void ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
+				 AgsNote *note,
+				 cairo_t *cr,
+				 double r, double g, double b, double a);
 void ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit);
 
 AgsNotationEdit* ags_notation_edit_new();
