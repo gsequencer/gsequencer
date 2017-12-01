@@ -750,7 +750,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
     for(i = 0; i < output_lines; i++){
       ags_notebook_insert_tab(automation_editor_child->output_notebook,
 			      i);
-      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(automation_editor_child->output_notebook->tabs->data)->toggle,
+      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(automation_editor_child->output_notebook->tab->data)->toggle,
 				   TRUE);
     }
 
@@ -794,7 +794,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
     for(i = 0; machine != NULL && i < input_lines; i++){
       ags_notebook_insert_tab(automation_editor_child->input_notebook,
 			      i);
-      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(automation_editor_child->input_notebook->tabs->data)->toggle,
+      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(automation_editor_child->input_notebook->tab->data)->toggle,
 				   TRUE);
     }
 

@@ -46,7 +46,7 @@
 #include <ags/X/import/ags_midi_import_wizard.h>
 #include <ags/X/import/ags_track_collection.h>
 
-#include <ags/X/editor/ags_note_edit.h>
+#include <ags/X/editor/ags_notation_edit.h>
 
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_matrix.h>
@@ -291,7 +291,7 @@ ags_track_collection_mapper_init(AgsTrackCollectionMapper *track_collection_mapp
 		   0, 0);
 
   /* offset */
-  track_collection_mapper->offset = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 256.0 * (gdouble) AGS_NOTE_EDIT_MAX_CONTROLS, 1.0);
+  track_collection_mapper->offset = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, (gdouble) AGS_NOTATION_EDITOR_MAX_CONTROLS, 1.0);
   gtk_table_attach((GtkTable *) track_collection_mapper,
 		   (GtkWidget *) track_collection_mapper->offset,
 		   3, 4,

@@ -25,12 +25,11 @@
 #include <ags/object/ags_applicable.h>
 
 #include <ags/X/ags_window.h>
-#include <ags/X/ags_editor.h>
+#include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_machine.h>
 
-#include <ags/X/editor/ags_toolbar.h>
-#include <ags/X/editor/ags_note_edit.h>
-#include <ags/X/editor/ags_pattern_edit.h>
+#include <ags/X/editor/ags_notation_toolbar.h>
+#include <ags/X/editor/ags_notation_edit.h>
 
 #include <ags/i18n.h>
 
@@ -427,8 +426,8 @@ ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
   AgsPositionNotationCursorDialog *position_notation_cursor_dialog;
 
   AgsWindow *window;
-  AgsEditor *editor;
-  AgsToolbar *toolbar;
+  AgsNotationEditor *notation_editor;
+  AgsNotationToolbar *notation_toolbar;
   AgsMachine *machine;
   GtkWidget *widget;
   
@@ -442,70 +441,20 @@ ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
   position_notation_cursor_dialog = AGS_POSITION_NOTATION_CURSOR_DIALOG(applicable);
 
   window = position_notation_cursor_dialog->main_window;
-  editor = window->editor;
+  notation_editor = window->notation_editor;
 
-  machine = editor->selected_machine;
+  machine = notation_editor->selected_machine;
 
-  if(machine == NULL ||
-     editor->current_edit_widget == NULL){
+  if(machine == NULL){
     return;
   }
 
-  toolbar = editor->toolbar;
+  notation_toolbar = notation_editor->notation_toolbar;
 
-  history = gtk_combo_box_get_active(GTK_COMBO_BOX(toolbar->zoom));
+  history = gtk_combo_box_get_active(GTK_COMBO_BOX(notation_toolbar->zoom));
   zoom = exp2((double) history - 2.0);
 
-  if(AGS_IS_PATTERN_EDIT(editor->current_edit_widget)){
-    AgsPatternEdit *pattern_edit;
-
-    pattern_edit = editor->current_edit_widget;
-
-    x = gtk_spin_button_get_value_as_int(position_notation_cursor_dialog->position_x);
-    pattern_edit->selected_x = 16 * x;
-    y = 
-      pattern_edit->selected_y = gtk_spin_button_get_value_as_int(position_notation_cursor_dialog->position_y);
-
-    vadjustment = GTK_RANGE(pattern_edit->vscrollbar)->adjustment;
-    hadjustment = GTK_RANGE(pattern_edit->hscrollbar)->adjustment;
-
-    widget = pattern_edit->drawing_area;
-    
-    map_height = pattern_edit->map_height;
-    height = widget->allocation.height;
-  }else if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
-    AgsNoteEdit *note_edit;
-
-    note_edit = editor->current_edit_widget;
-    
-    x = gtk_spin_button_get_value_as_int(position_notation_cursor_dialog->position_x);
-    note_edit->selected_x = 16 * x;
-    y = 
-      note_edit->selected_y = gtk_spin_button_get_value_as_int(position_notation_cursor_dialog->position_y);
-
-    vadjustment = GTK_RANGE(note_edit->vscrollbar)->adjustment;
-    hadjustment = GTK_RANGE(note_edit->hscrollbar)->adjustment;
-
-    widget = note_edit->drawing_area;
-    
-    map_height = note_edit->map_height;
-    height = widget->allocation.height;
-  }
-
-  /* make visible */  
-  if(hadjustment != NULL){
-    gtk_adjustment_set_value(hadjustment,
-			     (x * 16 * 64 / zoom) * (hadjustment->upper / (AGS_EDITOR_MAX_CONTROLS * 16 * 16 * 64 / zoom)));
-  }
-
-  if(vadjustment != NULL){
-    gtk_adjustment_set_value(vadjustment,
-			     (y * 14) * (vadjustment->upper / map_height));
-  }
-
-  if(gtk_toggle_button_get_active(position_notation_cursor_dialog->set_focus)){
-    gtk_widget_grab_focus(widget);
-  }
+  //TODO:JK: implement me
 }
 
 void

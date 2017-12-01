@@ -40,7 +40,7 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_automation_editor.h>
-#include <ags/X/ags_editor.h>
+#include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_connection_editor.h>
 #include <ags/X/ags_midi_dialog.h>
@@ -138,30 +138,8 @@ ags_machine_remove_audio_launch_callback(AgsTask *task, AgsMachine *machine)
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
   
   /* destroy editor */
-  list = window->editor->editor_child;
-
-  while(list != NULL){
-    if(AGS_EDITOR_CHILD(list->data)->machine == machine){
-      //TODO:JK: remove work-around
-      g_signal_handlers_disconnect_by_data(machine->audio,
-					   AGS_EDITOR_CHILD(list->data)->notebook);
-      g_signal_handlers_disconnect_by_data(machine->audio,
-					   AGS_EDITOR_CHILD(list->data)->edit_widget);
-      
-      ags_connectable_disconnect(AGS_CONNECTABLE(AGS_EDITOR_CHILD(list->data)->notebook));
-      ags_connectable_disconnect(AGS_CONNECTABLE(AGS_EDITOR_CHILD(list->data)->edit_widget));
-      
-      gtk_widget_destroy((GtkWidget *) AGS_EDITOR_CHILD(list->data)->notebook);
-      gtk_widget_destroy((GtkWidget *) AGS_EDITOR_CHILD(list->data)->meter);
-      gtk_widget_destroy((GtkWidget *) AGS_EDITOR_CHILD(list->data)->edit_widget);
-      break;
-    }
-
-    list = list->next;
-  }
-
   list =
-    list_start = gtk_container_get_children((GtkContainer *) window->editor->machine_selector);
+    list_start = gtk_container_get_children((GtkContainer *) window->notation_editor->machine_selector);
 
   list = list->next;
 

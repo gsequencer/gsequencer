@@ -870,7 +870,7 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
       }else if((AGS_TIMESTAMP_OFFSET & (timestamp->flags)) != 0 &&
 	       (AGS_TIMESTAMP_OFFSET & (current_timestamp->flags)) != 0){
 	if(current_timestamp->timer.ags_offset.offset >= timestamp->timer.ags_offset.offset &&
-	   current_timestamp->timer.ags_ofset.offset < timestamp->timer.ags_offset.offset + AGS_NOTATION_DEFAULT_OFFSET){
+	   current_timestamp->timer.ags_offset.offset < timestamp->timer.ags_offset.offset + AGS_NOTATION_DEFAULT_OFFSET){
 	  return(notation);
 	}
       }
@@ -899,7 +899,7 @@ ags_notation_add(GList *notation,
 {
   auto gint ags_notation_add_compare(gconstpointer a,
 				     gconstpointer b);
-
+  
   gint ags_notation_add_compare(gconstpointer a,
 				gconstpointer b)
   {
@@ -910,17 +910,19 @@ ags_notation_add(GList *notation,
     }else if(AGS_TIMESTAMP(AGS_NOTATION(a)->timestamp)->timer.ags_offset.offset > AGS_TIMESTAMP(AGS_NOTATION(b)->timestamp)->timer.ags_offset.offset){
       return(1);
     }
+
+    return(0);
   }
   
   if(!AGS_IS_NOTATION(new_notation) ||
-     !AGS_IS_TIMETSTAMP(new_notation->timestamp)){
-    return;
+     !AGS_IS_TIMESTAMP(new_notation->timestamp)){
+    return(notation);
   }
-
+  
   notation = g_list_insert_sorted(notation,
 				  new_notation,
 				  ags_notation_add_compare);
-
+  
   return(notation);
 }
 
@@ -1510,7 +1512,7 @@ ags_notation_remove_region_from_selection(AgsNotation *notation,
  *
  * Since: 1.0.0
  */
-xmlNodePtr
+xmlNode*
 ags_notation_copy_selection(AgsNotation *notation)
 {
   AgsNote *note;
@@ -1547,15 +1549,16 @@ ags_notation_copy_selection(AgsNotation *notation)
 
   /* timestamp */
   if(notation->timestamp != NULL){
-  timestamp_node = xmlNewNode(NULL,
-			      BAD_CAST "timestamp");
-  xmlAddChild(notation_node,
-	      timestamp_node);
+    timestamp_node = xmlNewNode(NULL,
+				BAD_CAST "timestamp");
+    xmlAddChild(notation_node,
+		timestamp_node);
 
-  xmlNewProp(timestamp_node,
-	     BAD_CAST "offset",
-	     BAD_CAST (g_strdup_printf("%u", AGS_TIMESTAMP(notation->timestamp)->timer.ags_offset.offset)));
-
+    xmlNewProp(timestamp_node,
+	       BAD_CAST "offset",
+	       BAD_CAST (g_strdup_printf("%u", AGS_TIMESTAMP(notation->timestamp)->timer.ags_offset.offset)));
+  }
+  
   /* selection */
   selection = notation->selection;
 
@@ -2090,11 +2093,11 @@ ags_notation_new(GObject *audio,
 		 guint audio_channel)
 {
   AgsNotation *notation;
-
+  
   notation = (AgsNotation *) g_object_new(AGS_TYPE_NOTATION,
 					  "audio", audio,
 					  "audio-channel", audio_channel,
 					  NULL);
-
+  
   return(notation);
 }

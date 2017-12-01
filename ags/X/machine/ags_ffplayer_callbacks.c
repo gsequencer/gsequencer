@@ -41,7 +41,6 @@
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
 
 #include <ags/X/ags_window.h>
-#include <ags/X/ags_editor.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
 

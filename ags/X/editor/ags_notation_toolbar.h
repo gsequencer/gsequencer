@@ -17,29 +17,29 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_TOOLBAR_H__
-#define __AGS_TOOLBAR_H__
+#ifndef __AGS_NOTATION_TOOLBAR_H__
+#define __AGS_NOTATION_TOOLBAR_H__
 
 #include <glib.h>
 #include <glib-object.h>
 
 #include <gtk/gtk.h>
 
-#define AGS_TYPE_TOOLBAR                (ags_toolbar_get_type())
-#define AGS_TOOLBAR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TOOLBAR, AgsToolbar))
-#define AGS_TOOLBAR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_TOOLBAR, AgsToolbarClass))
-#define AGS_IS_TOOLBAR(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_TOOLBAR))
-#define AGS_IS_TOOLBAR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_TOOLBAR))
-#define AGS_TOOLBAR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_TOOLBAR, AgsToolbarClass))
+#define AGS_TYPE_NOTATION_TOOLBAR                (ags_notation_toolbar_get_type())
+#define AGS_NOTATION_TOOLBAR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NOTATION_TOOLBAR, AgsNotationToolbar))
+#define AGS_NOTATION_TOOLBAR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_NOTATION_TOOLBAR, AgsNotationToolbarClass))
+#define AGS_IS_NOTATION_TOOLBAR(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_NOTATION_TOOLBAR))
+#define AGS_IS_NOTATION_TOOLBAR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_NOTATION_TOOLBAR))
+#define AGS_NOTATION_TOOLBAR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_NOTATION_TOOLBAR, AgsNotationToolbarClass))
 
-typedef struct _AgsToolbar AgsToolbar;
-typedef struct _AgsToolbarClass AgsToolbarClass;
+typedef struct _AgsNotationToolbar AgsNotationToolbar;
+typedef struct _AgsNotationToolbarClass AgsNotationToolbarClass;
 
 typedef enum{
-  AGS_TOOLBAR_CONNECTED   = 1,
-}AgsToolbarFlags;
+  AGS_NOTATION_TOOLBAR_CONNECTED   = 1,
+}AgsNotationToolbarFlags;
 
-struct _AgsToolbar
+struct _AgsNotationToolbar
 {
   GtkToolbar toolbar;
 
@@ -70,15 +70,15 @@ struct _AgsToolbar
   GtkComboBoxText *mode;
 };
 
-struct _AgsToolbarClass
+struct _AgsNotationToolbarClass
 {
   GtkToolbarClass toolbar;
 };
 
-GType ags_toolbar_get_type(void);
+GType ags_notation_toolbar_get_type(void);
 
-GtkMenu* ags_toolbar_tool_popup_new(GtkToolbar *toolbar);
+GtkMenu* ags_notation_toolbar_tool_popup_new(GtkToolbar *notation_toolbar);
 
-AgsToolbar* ags_toolbar_new();
+AgsNotationToolbar* ags_notation_toolbar_new();
 
-#endif /*__AGS_TOOLBAR_H__*/
+#endif /*__AGS_NOTATION_TOOLBAR_H__*/

@@ -1297,8 +1297,6 @@ libgsequencer_h_sources = \
 	ags/X/ags_context_menu.h \
 	ags/X/ags_dssi_browser_callbacks.h \
 	ags/X/ags_dssi_browser.h \
-	ags/X/ags_editor_callbacks.h \
-	ags/X/ags_editor.h \
 	ags/X/ags_effect_bridge_callbacks.h \
 	ags/X/ags_effect_bridge.h \
 	ags/X/ags_effect_bulk_callbacks.h \
@@ -1346,6 +1344,8 @@ libgsequencer_h_sources = \
 	ags/X/ags_midi_preferences_callbacks.h \
 	ags/X/ags_navigation_callbacks.h \
 	ags/X/ags_navigation.h \
+	ags/X/ags_notation_editor_callbacks.h \
+	ags/X/ags_notation_editor.h \
 	ags/X/ags_output_collection_editor_callbacks.h \
 	ags/X/ags_output_collection_editor.h \
 	ags/X/ags_output_editor_callbacks.h \
@@ -1400,8 +1400,6 @@ libgsequencer_c_sources = \
 	ags/X/ags_context_menu.c \
 	ags/X/ags_dssi_browser_callbacks.c \
 	ags/X/ags_dssi_browser.c \
-	ags/X/ags_editor.c \
-	ags/X/ags_editor_callbacks.c \
 	ags/X/ags_effect_bridge.c \
 	ags/X/ags_effect_bridge_callbacks.c \
 	ags/X/ags_effect_bulk.c \
@@ -1449,6 +1447,8 @@ libgsequencer_c_sources = \
 	ags/X/ags_midi_preferences_callbacks.c \
 	ags/X/ags_navigation.c \
 	ags/X/ags_navigation_callbacks.c \
+	ags/X/ags_notation_editor.c \
+	ags/X/ags_notation_editor_callbacks.c \
 	ags/X/ags_output_collection_editor_callbacks.c \
 	ags/X/ags_output_collection_editor.c \
 	ags/X/ags_output_editor_callbacks.c \
@@ -1531,7 +1531,6 @@ libgsequencer_task_h_sources = \
 	ags/X/task/ags_display_tact.h \
 	ags/X/task/ags_remove_sequencer_editor_jack.h \
 	ags/X/task/ags_remove_soundcard_editor_sink.h \
-	ags/X/task/ags_scroll_on_play.h \
 	ags/X/task/ags_simple_file_read.h \
 	ags/X/task/ags_simple_file_write.h \
 	ags/X/task/ags_toggle_led.h \
@@ -1551,7 +1550,6 @@ libgsequencer_task_c_sources = \
 	ags/X/task/ags_display_tact.c \
 	ags/X/task/ags_remove_sequencer_editor_jack.c \
 	ags/X/task/ags_remove_soundcard_editor_sink.c \
-	ags/X/task/ags_scroll_on_play.c \
 	ags/X/task/ags_simple_file_read.c \
 	ags/X/task/ags_simple_file_write.c \
 	ags/X/task/ags_toggle_led.c \
@@ -1758,14 +1756,12 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_machine_selection.h \
 	ags/X/editor/ags_machine_selector_callbacks.h \
 	ags/X/editor/ags_machine_selector.h \
-	ags/X/editor/ags_meter_callbacks.h \
-	ags/X/editor/ags_meter.h \
 	ags/X/editor/ags_move_note_dialog_callbacks.h \
 	ags/X/editor/ags_move_note_dialog.h \
-	ags/X/editor/ags_note_edit_callbacks.h \
-	ags/X/editor/ags_note_edit.h \
-	ags/X/editor/ags_pattern_edit_callbacks.h \
-	ags/X/editor/ags_pattern_edit.h \
+	ags/X/editor/ags_notation_edit_callbacks.h \
+	ags/X/editor/ags_notation_edit.h \
+	ags/X/editor/ags_notation_toolbar_callbacks.h \
+	ags/X/editor/ags_notation_toolbar.h \
 	ags/X/editor/ags_pattern_envelope_callbacks.h \
 	ags/X/editor/ags_pattern_envelope.h \
 	ags/X/editor/ags_position_automation_cursor_dialog.h \
@@ -1783,10 +1779,7 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_select_acceleration_dialog.h \
 	ags/X/editor/ags_select_acceleration_dialog_callbacks.h \
 	ags/X/editor/ags_select_note_dialog.h \
-	ags/X/editor/ags_select_note_dialog_callbacks.h \
-	ags/X/editor/ags_toolbar_callbacks.h \
-	ags/X/editor/ags_toolbar.h \
-	ags/X/editor/ags_toolbar_mode_stock.h
+	ags/X/editor/ags_select_note_dialog_callbacks.h
 
 deprecated_libgsequencer_editor_c_sources =
 
@@ -1815,14 +1808,12 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_machine_selection.c \
 	ags/X/editor/ags_machine_selector.c \
 	ags/X/editor/ags_machine_selector_callbacks.c \
-	ags/X/editor/ags_meter.c \
-	ags/X/editor/ags_meter_callbacks.c \
 	ags/X/editor/ags_move_note_dialog_callbacks.c \
 	ags/X/editor/ags_move_note_dialog.c \
-	ags/X/editor/ags_note_edit.c \
-	ags/X/editor/ags_note_edit_callbacks.c \
-	ags/X/editor/ags_pattern_edit.c \
-	ags/X/editor/ags_pattern_edit_callbacks.c \
+	ags/X/editor/ags_notation_edit.c \
+	ags/X/editor/ags_notation_edit_callbacks.c \
+	ags/X/editor/ags_notation_toolbar.c \
+	ags/X/editor/ags_notation_toolbar_callbacks.c \
 	ags/X/editor/ags_pattern_envelope_callbacks.c \
 	ags/X/editor/ags_pattern_envelope.c \
 	ags/X/editor/ags_position_automation_cursor_dialog.c \
@@ -1840,9 +1831,7 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_select_note_dialog.c \
 	ags/X/editor/ags_select_note_dialog_callbacks.c \
 	ags/X/editor/ags_sf2_chooser.c \
-	ags/X/editor/ags_sf2_chooser_callbacks.c \
-	ags/X/editor/ags_toolbar.c \
-	ags/X/editor/ags_toolbar_callbacks.c
+	ags/X/editor/ags_sf2_chooser_callbacks.c
 
 # libgsequencer all files
 gsequencerheaders = \

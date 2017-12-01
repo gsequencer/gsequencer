@@ -34,7 +34,7 @@
 #include <ags/audio/task/ags_move_note.h>
 
 #include <ags/X/ags_window.h>
-#include <ags/X/ags_editor.h>
+#include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_machine.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
@@ -459,7 +459,7 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
   AgsMoveNoteDialog *move_note_dialog;
 
   AgsWindow *window;
-  AgsEditor *editor;
+  AgsNotationEditor *notation_editor;
   AgsMachine *machine;
 
   AgsMoveNote *move_note;
@@ -489,9 +489,9 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
   move_note_dialog = AGS_MOVE_NOTE_DIALOG(applicable);
 
   window = move_note_dialog->main_window;
-  editor = window->editor;
+  notation_editor = window->notation_editor;
 
-  machine = editor->selected_machine;
+  machine = notation_editor->selected_machine;
 
   if(machine == NULL){
     return;

@@ -22,13 +22,19 @@
 gboolean
 ags_notation_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsNotationEdit *notation_edit)
 {
-  //TODO:JK: implement me
+  ags_notation_edit_reset_vscrollbar(notation_edit);
+  ags_notation_edit_reset_hscrollbar(notation_edit);
+  
+  ags_notation_edit_draw(notation_edit);
 }
 
 gboolean
 ags_notation_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsNotationEdit *notation_edit)
 {
-  //TODO:JK: implement me
+  ags_notation_edit_reset_vscrollbar(notation_edit);
+  ags_notation_edit_reset_hscrollbar(notation_edit);
+
+  ags_notation_edit_draw(notation_edit);
 }
 
 gboolean
@@ -64,11 +70,13 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
 void
 ags_notation_edit_vscrollbar_value_changed(GtkRange *range, AgsNotationEdit *notation_edit)
 {
-  //TODO:JK: implement me
+  /* queue draw */
+  gtk_widget_queue_draw(notation_edit->drawing_area);
 }
 
 void
 ags_notation_edit_hscrollbar_value_changed(GtkRange *range, AgsNotationEdit *notation_edit)
 {
-  //TODO:JK: implement me
+  /* queue draw */
+  gtk_widget_queue_draw(notation_edit->drawing_area);
 }

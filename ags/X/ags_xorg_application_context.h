@@ -57,8 +57,8 @@
 #define AGS_IS_XORG_APPLICATION_CONTEXT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_XORG_APPLICATION_CONTEXT))
 #define AGS_XORG_APPLICATION_CONTEXT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_XORG_APPLICATION_CONTEXT, AgsXorgApplicationContextClass))
 
-#define AGS_XORG_VERSION "0.7.122.8\0"
-#define AGS_XORG_BUILD_ID "Tue Mar 21 20:03:29 CET 2017\0"
+#define AGS_XORG_VERSION "1.2.0"
+#define AGS_XORG_BUILD_ID "Thu Nov 30 22:50:27 UTC 2017"
 
 typedef struct _AgsXorgApplicationContext AgsXorgApplicationContext;
 typedef struct _AgsXorgApplicationContextClass AgsXorgApplicationContextClass;

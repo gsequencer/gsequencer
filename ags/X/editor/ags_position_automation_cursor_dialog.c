@@ -461,7 +461,7 @@ ags_position_automation_cursor_dialog_apply(AgsApplicable *applicable)
   /* make visible */  
   if(hadjustment != NULL){
     gtk_adjustment_set_value(hadjustment,
-			     ((x * 16 * 64 / zoom) * (hadjustment->upper / (AGS_EDITOR_MAX_CONTROLS * 16 * 16 * 64 / zoom))));
+			     ((x * 16 * 64 / zoom) * (hadjustment->upper / (AGS_NOTATION_EDITOR_MAX_CONTROLS * 64 / zoom))));
   }
   
   if(gtk_toggle_button_get_active(position_automation_cursor_dialog->set_focus)){

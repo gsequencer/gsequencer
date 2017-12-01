@@ -34,10 +34,10 @@
 
 #define AGS_NOTEBOOK_TAB(x) ((AgsNotebookTab *)(x))
 
-#define AGS_NOTEBOOK_DEFAULT_TAB_WIDTH (100)
-#define AGS_NOTEBOOK_DEFAULT_TAB_HEIGHT (32)
+#define AGS_NOTEBOOK_TAB_DEFAULT_WIDTH (100)
+#define AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT (32)
 
-#define AGS_NOTEBOOK_DEFAULT_TAB_PREFIX "tab"
+#define AGS_NOTEBOOK_TAB_DEFAULT_PREFIX "tab"
 
 typedef struct _AgsNotebook AgsNotebook;
 typedef struct _AgsNotebookClass AgsNotebookClass;

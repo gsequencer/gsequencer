@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include <ags/X/editor/ags_machine_selector_callbacks.h>
 
 #include <ags/X/editor/ags_machine_selection.h>
@@ -169,16 +170,16 @@ ags_machine_selector_radio_changed(GtkWidget *radio_button, AgsMachineSelector *
 void
 ags_machine_selector_popup_reverse_mapping_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector)
 {
-  AgsEditor *editor;
+  AgsNotationEditor *notation_editor;
 
-  editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
-						 AGS_TYPE_EDITOR);
+  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+								  AGS_TYPE_NOTATION_EDITOR);
   
-  if(editor->selected_machine != NULL){
+  if(notation_editor->selected_machine != NULL){
     if(gtk_check_menu_item_get_active((GtkCheckMenuItem *) menu_item)){
-      editor->selected_machine->audio->flags |= AGS_AUDIO_REVERSE_MAPPING;
+      notation_editor->selected_machine->audio->flags |= AGS_AUDIO_REVERSE_MAPPING;
     }else{
-      editor->selected_machine->audio->flags &= (~AGS_AUDIO_REVERSE_MAPPING);
+      notation_editor->selected_machine->audio->flags &= (~AGS_AUDIO_REVERSE_MAPPING);
     }
   }
 }
@@ -186,23 +187,84 @@ ags_machine_selector_popup_reverse_mapping_callback(GtkWidget *menu_item, AgsMac
 void
 ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachineSelector *machine_selector)
 {
-  AgsEditor *editor;
+  AgsNotationEditor *notation_editor;
 
-  editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
-						 AGS_TYPE_EDITOR);
+  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+								  AGS_TYPE_NOTATION_EDITOR);
 
-  if(editor->selected_machine != NULL){
+  if(notation_editor->selected_machine != NULL){
     GList *notation;
 
-    notation = editor->selected_machine->audio->notation;
+    gchar *base_note;
+    gchar *label;
 
+    gint base_key_code;
+    
+    notation = notation_editor->selected_machine->audio->notation;
+    label = gtk_menu_item_get_label((GtkMenuItem *) menu_item);
+    
     while(notation != NULL){
       g_free(AGS_NOTATION(notation->data)->base_note);
-      AGS_NOTATION(notation->data)->base_note = g_strdup(gtk_menu_item_get_label((GtkMenuItem *) menu_item));
+      AGS_NOTATION(notation->data)->base_note = g_strdup(label);
       
       notation = notation->next;
     }
 
-    gtk_widget_queue_draw(editor->current_meter);
+    if(!g_strcmp0(label,
+		  "A")){
+      base_note = AGS_PIANO_KEYS_OCTAVE_2_A;
+      base_key_code = 33;
+    }else if(!g_strcmp0(label,
+			"A#")){
+      base_note = AGS_PIANO_KEYS_OCTAVE_2_AIS;
+      base_key_code = 34;
+    }else if(!g_strcmp0(label,
+			"H")){
+      base_note = AGS_PIANO_KEYS_OCTAVE_2_H;
+      base_key_code = 35;
+    }else if(!g_strcmp0(label,
+			"C")){
+      base_note = AGS_PIANO_KEYS_OCTAVE_2_C;
+      base_key_code = 24;
+    }else if(!g_strcmp0(label,
+			"C#")){
+      base_note = AGS_PIANO_KEYS_OCTAVE_2_CIS;
+      base_key_code = 25;
+    }else if(!g_strcmp0(label,
+			"D")){
+      base_note = AGS_PIANO_KEYS_OCTAVE_2_D;
+      base_key_code = 26;
+    }else if(!g_strcmp0(label,
+			"D#")){
+      base_note = AGS_PIANO_KEYS_OCTAVE_2_DIS;
+      base_key_code = 27;
+    }else if(!g_strcmp0(label,
+			"E")){
+      base_note = AGS_PIANO_KEYS_OCTAVE_2_E;
+      base_key_code = 28;
+    }else if(!g_strcmp0(label,
+			"F")){
+      base_note = AGS_PIANO_KEYS_OCTAVE_2_F;
+      base_key_code = 29;
+    }else if(!g_strcmp0(label,
+			"F#")){
+      base_note = AGS_PIANO_KEYS_OCTAVE_2_FIS;
+      base_key_code = 30;
+    }else if(!g_strcmp0(label,
+			"G")){
+      base_note = AGS_PIANO_KEYS_OCTAVE_2_G;
+      base_key_code = 31;
+    }else if(!g_strcmp0(label,
+			"G#")){
+      base_note = AGS_PIANO_KEYS_OCTAVE_2_GIS;
+      base_key_code = 32;
+    }
+
+    g_object_set(notation_editor->piano,
+		 "base-note", base_note,
+		 "base-key-code", base_key_code,
+		 NULL);
+    
+    gtk_widget_queue_draw(notation_editor->piano);
   }
 }

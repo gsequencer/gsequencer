@@ -153,8 +153,8 @@ void ags_notation_remove_region_from_selection(AgsNotation *notation,
 					       guint x0, guint y0,
 					       guint x1, guint y1);
 
-xmlNodePtr ags_notation_copy_selection(AgsNotation *notation);
-xmlNodePtr ags_notation_cut_selection(AgsNotation *notation);
+xmlNode* ags_notation_copy_selection(AgsNotation *notation);
+xmlNode* ags_notation_cut_selection(AgsNotation *notation);
 
 void ags_notation_insert_from_clipboard(AgsNotation *notation,
 					xmlNodePtr notation_node,

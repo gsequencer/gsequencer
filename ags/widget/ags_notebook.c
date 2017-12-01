@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/X/editor/ags_notebook.h>
+#include <ags/widget/ags_notebook.h>
 
 void ags_notebook_class_init(AgsNotebookClass *notebook);
 void ags_notebook_init(AgsNotebook *notebook);
@@ -132,10 +132,10 @@ ags_notebook_init(AgsNotebook *notebook)
 
   notebook->flags = 0;
 
-  notebook->tab_width = AGS_NOTEBOOK_DEFAULT_TAB_WIDTH;
-  notebook->tab_height = AGS_NOTEBOOK_DEFAULT_TAB_HEIGHT;
+  notebook->tab_width = AGS_NOTEBOOK_TAB_DEFAULT_WIDTH;
+  notebook->tab_height = AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT;
   
-  notebook->prefix = g_strdup(AGS_NOTEBOOK_DEFAULT_TAB_PREFIX);
+  notebook->prefix = g_strdup(AGS_NOTEBOOK_TAB_DEFAULT_PREFIX);
 
   /* navigation */
   notebook->navigation = (GtkHBox *) gtk_hbox_new(FALSE,
@@ -727,7 +727,7 @@ ags_notebook_add_tab_with_label(AgsNotebook *notebook,
 		 NULL);
   }
   
-  return(tab_index);
+  return(position);
 }
 
 /**
@@ -834,7 +834,7 @@ pags_notebook_remove_tab(AgsNotebook *notebook,
   gint length;
 
   if(!AGS_IS_NOTEBOOK(notebook) ||
-     notebook->tab == NULL ||$
+     notebook->tab == NULL ||
      position < 0){
     return;
   }

@@ -31,7 +31,6 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_automation_editor.h>
 
-#include <ags/X/editor/ags_notebook.h>
 #include <ags/X/editor/ags_automation_toolbar.h>
 
 #include <ags/X/machine/ags_panel.h>

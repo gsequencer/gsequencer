@@ -30,7 +30,6 @@
 #include <ags/X/ags_machine.h>
 
 #include <ags/X/editor/ags_notation_toolbar.h>
-#include <ags/X/editor/ags_notebook.h>
 #include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_notation_edit.h>
 

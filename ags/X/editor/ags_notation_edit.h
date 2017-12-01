@@ -46,7 +46,9 @@
 
 #define AGS_NOTATION_EDIT_DEFAULT_FADER_WIDTH (3)
 
+#define AGS_NOTATION_EDIT_MIN_ZOOM (1.0 / 16.0)
 #define AGS_NOTATION_EDIT_MAX_ZOOM (4.0)
+#define AGS_NOTATION_EDIT_MAX_ZOOM_CONTROL_WIDTH (64.0 * AGS_NOTATION_EDIT_DEFAULT_CONTROL_WIDTH)
 
 typedef struct _AgsNotationEdit AgsNotationEdit;
 typedef struct _AgsNotationEditClass AgsNotationEditClass;
@@ -57,10 +59,10 @@ typedef enum{
 }AgsNotationEditFlags;
 
 typedef enum{
-  AGS_NOTE_EDIT_POSITION_CURSOR,
-  AGS_NOTE_EDIT_ADD_NOTE,
-  AGS_NOTE_EDIT_DELET_NOTE,
-  AGS_NOTE_EDIT_SELECT_NOTE,
+  AGS_NOTATION_EDIT_POSITION_CURSOR,
+  AGS_NOTATION_EDIT_ADD_NOTE,
+  AGS_NOTATION_EDIT_DELETE_NOTE,
+  AGS_NOTATION_EDIT_SELECT_NOTE,
 }AgsNotationEditMode;
 
 typedef enum{
@@ -94,7 +96,7 @@ struct _AgsNotationEdit
   guint selection_x0;
   guint selection_x1;
   guint selection_y0;
-  guint selection_x1;
+  guint selection_y1;
 
   AgsNote *current_note;
   
@@ -113,6 +115,9 @@ struct _AgsNotationEditClass
 
 GType ags_notation_edit_get_type(void);
 
+void ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit);
+void ags_notation_edit_reset_hscrollbar(AgsNotationEdit *notation_edit);
+
 void ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit);
 void ags_notation_edit_draw_position(AgsNotationEdit *notation_edit);
 
@@ -124,6 +129,8 @@ void ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
 				 cairo_t *cr,
 				 double r, double g, double b, double a);
 void ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit);
+
+void ags_notation_edit_draw(AgsNotationEdit *notation_edit);
 
 AgsNotationEdit* ags_notation_edit_new();
 

@@ -160,8 +160,6 @@
       <xi:include href="xml/ags_machine_selection.xml"/>
       <xi:include href="xml/ags_machine_selector.xml"/>
       <xi:include href="xml/ags_machine_selector_callbacks.xml"/>      
-      <xi:include href="xml/ags_meter.xml"/>
-      <xi:include href="xml/ags_meter_callbacks.xml"/>
       <xi:include href="xml/ags_move_note_dialog.xml"/>
       <xi:include href="xml/ags_move_note_dialog_callbacks.xml"/>
       <xi:include href="xml/ags_notation_edit.xml"/>

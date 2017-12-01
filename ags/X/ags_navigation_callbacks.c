@@ -31,15 +31,11 @@
 #include <ags/audio/task/recall/ags_apply_bpm.h>
 
 #include <ags/X/ags_window.h>
-#include <ags/X/ags_editor.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/X/task/ags_change_tact.h>
 #include <ags/X/task/ags_display_tact.h>
-
-#include <ags/X/editor/ags_note_edit.h>
-#include <ags/X/editor/ags_pattern_edit.h>
 
 void
 ags_navigation_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,
@@ -248,9 +244,6 @@ ags_navigation_stop_callback(GtkWidget *widget,
   g_free(timestr);
   ags_soundcard_set_note_offset(AGS_SOUNDCARD(window->soundcard),
 				0);
-
-  /* reset editor */
-  window->editor->current_tact = 0.0;
 }
 
 void
@@ -366,37 +359,7 @@ ags_navigation_loop_callback(GtkWidget *widget,
   g_list_free(machines_start);
 
   /* enable fader */
-  list = window->editor->editor_child;
-
-  if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget))){
-    while(list != NULL){
-      GtkWidget *edit_widget;
-
-      edit_widget = AGS_EDITOR_CHILD(list->data)->edit_widget;
-      
-      if(AGS_IS_PATTERN_EDIT(edit_widget)){
-	AGS_PATTERN_EDIT(edit_widget)->flags |= AGS_PATTERN_EDIT_DRAW_FADER;
-      }else if(AGS_IS_NOTE_EDIT(edit_widget)){
-	AGS_NOTE_EDIT(edit_widget)->flags |= AGS_NOTE_EDIT_DRAW_FADER;
-      }
-
-      list = list->next;
-    }
-  }else{
-    while(list != NULL){
-      GtkWidget *edit_widget;
-
-      edit_widget = AGS_EDITOR_CHILD(list->data)->edit_widget;
-      
-      if(AGS_IS_PATTERN_EDIT(edit_widget)){
-	AGS_PATTERN_EDIT(edit_widget)->flags &= (~AGS_PATTERN_EDIT_DRAW_FADER);
-      }else if(AGS_IS_NOTE_EDIT(edit_widget)){
-	AGS_NOTE_EDIT(edit_widget)->flags &= (~AGS_NOTE_EDIT_DRAW_FADER);
-      }
-
-      list = list->next;
-    }
-  }
+  //TODO:JK: implement me
 }
 
 void

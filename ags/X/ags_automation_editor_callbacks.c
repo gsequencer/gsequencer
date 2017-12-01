@@ -34,9 +34,6 @@
 
 #include <ags/X/task/ags_scroll_on_play.h>
 
-#include <ags/X/editor/ags_toolbar.h>
-#include <ags/X/editor/ags_notebook.h>
-
 #include <math.h>
 #include <string.h>
 #include <cairo.h>

@@ -70,7 +70,7 @@
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
-#include <ags/X/ags_editor.h>
+#include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_automation_window.h>
 #include <ags/X/ags_automation_editor.h>
 #include <ags/X/ags_machine.h>
@@ -174,9 +174,9 @@ void ags_simple_file_read_effect_line_launch(AgsFileLaunch *file_launch,
 void ags_simple_file_read_oscillator_list(AgsSimpleFile *simple_file, xmlNode *node, GList **oscillator);
 void ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOscillator **oscillator);
 
-void ags_simple_file_read_editor(AgsSimpleFile *simple_file, xmlNode *node, AgsEditor **editor);
-void ags_simple_file_read_editor_launch(AgsFileLaunch *file_launch,
-					AgsEditor *editor);
+void ags_simple_file_read_notation_editor(AgsSimpleFile *simple_file, xmlNode *node, AgsNotationEditor **notation_editor);
+void ags_simple_file_read_notation_editor_launch(AgsFileLaunch *file_launch,
+						 AgsNotationEditor *notation_editor);
 void ags_simple_file_read_automation_editor(AgsSimpleFile *simple_file, xmlNode *node, AgsAutomationEditor **automation_editor);
 void ags_simple_file_read_automation_editor_launch(AgsFileLaunch *file_launch,
 						   AgsAutomationEditor *automation_editor);
@@ -207,9 +207,9 @@ xmlNode* ags_simple_file_write_effect_line(AgsSimpleFile *simple_file, xmlNode *
 xmlNode* ags_simple_file_write_oscillator_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *oscillator);
 xmlNode* ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, AgsOscillator *oscillator);
 
-xmlNode* ags_simple_file_write_editor(AgsSimpleFile *simple_file, xmlNode *parent, AgsEditor *editor);
-void ags_simple_file_write_editor_resolve_machine(AgsFileLookup *file_lookup,
-						  AgsEditor *editor);
+xmlNode* ags_simple_file_write_notation_editor(AgsSimpleFile *simple_file, xmlNode *parent, AgsNotationEditor *notation_editor);
+void ags_simple_file_write_notation_editor_resolve_machine(AgsFileLookup *file_lookup,
+						  AgsNotationEditor *notation_editor);
 xmlNode* ags_simple_file_write_automation_editor(AgsSimpleFile *simple_file, xmlNode *parent, AgsAutomationEditor *automation_editor);
 void ags_simple_file_write_automation_editor_resolve_machine(AgsFileLookup *file_lookup,
 							     AgsAutomationEditor *automation_editor);
@@ -1507,11 +1507,11 @@ ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow
 					  &machine_start);
 	g_list_free(machine_start);
       }else if(!xmlStrncmp(child->name,
-			   (xmlChar *) "ags-sf-editor",
-			   14)){
-	ags_simple_file_read_editor(simple_file,
-				    child,
-				    &(gobject->editor));
+			   (xmlChar *) "ags-sf-notation-editor",
+			   23)){
+	ags_simple_file_read_notation_editor(simple_file,
+					     child,
+					     &(gobject->notation_editor));
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-sf-automation-editor",
 			   25)){
@@ -4316,14 +4316,14 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
 }
 
 void
-ags_simple_file_read_editor(AgsSimpleFile *simple_file, xmlNode *node, AgsEditor **editor)
+ags_simple_file_read_notation_editor(AgsSimpleFile *simple_file, xmlNode *node, AgsNotationEditor **notation_editor)
 {
-  AgsEditor *gobject;
+  AgsNotationEditor *gobject;
   
   AgsFileLaunch *file_launch;
 
-  if(*editor != NULL){
-    gobject = *editor;
+  if(*notation_editor != NULL){
+    gobject = *notation_editor;
   }else{
     return;
   }
@@ -4334,14 +4334,14 @@ ags_simple_file_read_editor(AgsSimpleFile *simple_file, xmlNode *node, AgsEditor
 					       "node", node,
 					       NULL);
   g_signal_connect(G_OBJECT(file_launch), "start",
-		   G_CALLBACK(ags_simple_file_read_editor_launch), gobject);
+		   G_CALLBACK(ags_simple_file_read_notation_editor_launch), gobject);
   ags_simple_file_add_launch(simple_file,
 			     (GObject *) file_launch);
 }
 
 void
-ags_simple_file_read_editor_launch(AgsFileLaunch *file_launch,
-				   AgsEditor *editor)
+ags_simple_file_read_notation_editor_launch(AgsFileLaunch *file_launch,
+					    AgsNotationEditor *notation_editor)
 {
   xmlNode *child;
   
@@ -4356,7 +4356,7 @@ ags_simple_file_read_editor_launch(AgsFileLaunch *file_launch,
 
     gchar *value;
 
-    model = gtk_combo_box_get_model(GTK_COMBO_BOX(editor->toolbar->zoom));
+    model = gtk_combo_box_get_model(GTK_COMBO_BOX(notation_editor->notation_toolbar->zoom));
     
     if(gtk_tree_model_get_iter_first(model, &iter)){
       do{
@@ -4366,7 +4366,7 @@ ags_simple_file_read_editor_launch(AgsFileLaunch *file_launch,
 
 	if(!g_strcmp0(str,
 		      value)){
-	  gtk_combo_box_set_active_iter((GtkComboBox *) editor->toolbar->zoom,
+	  gtk_combo_box_set_active_iter((GtkComboBox *) notation_editor->notation_toolbar->zoom,
 					&iter);
 	  break;
 	}
@@ -4408,19 +4408,19 @@ ags_simple_file_read_editor_launch(AgsFileLaunch *file_launch,
 										  str);
 	      machine = AGS_FILE_ID_REF(file_id_ref->data)->ref;
 	    
-	      ags_machine_selector_add_index(editor->machine_selector);
+	      ags_machine_selector_add_index(notation_editor->machine_selector);
 
-	      list_start = gtk_container_get_children((GtkContainer *) editor->machine_selector);
+	      list_start = gtk_container_get_children((GtkContainer *) notation_editor->machine_selector);
 	      list = g_list_last(list_start);
 
 	      gtk_button_clicked(list->data);
-	      ags_machine_selector_link_index(editor->machine_selector,
+	      ags_machine_selector_link_index(notation_editor->machine_selector,
 					      machine);
 	      
 	      g_list_free(list_start);
 	    }
 	  }else{
-	    g_object_set_property((GObject *) editor,
+	    g_object_set_property((GObject *) notation_editor,
 				  ((GParameter *) property->data)->name,
 				  &(((GParameter *) property->data)->value));
 	  }
@@ -4428,7 +4428,7 @@ ags_simple_file_read_editor_launch(AgsFileLaunch *file_launch,
 	  property = property->next;
 	}
 
-	list_start = gtk_container_get_children((GtkContainer *) editor->machine_selector);
+	list_start = gtk_container_get_children((GtkContainer *) notation_editor->machine_selector);
 	list = list_start->next;
 
 	if(list != NULL){
@@ -5362,9 +5362,9 @@ ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWin
 				     list);
   g_list_free(list);
 
-  ags_simple_file_write_editor(simple_file,
-			       node,
-			       window->editor);
+  ags_simple_file_write_notation_editor(simple_file,
+					node,
+					window->notation_editor);
 
   ags_simple_file_write_automation_editor(simple_file,
 					  node,
@@ -6995,27 +6995,27 @@ ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, Ag
 }
 
 xmlNode*
-ags_simple_file_write_editor(AgsSimpleFile *simple_file, xmlNode *parent, AgsEditor *editor)
+ags_simple_file_write_notation_editor(AgsSimpleFile *simple_file, xmlNode *parent, AgsNotationEditor *notation_editor)
 {
   AgsFileLookup *file_lookup;
 
   xmlNode *node;
 
   node = xmlNewNode(NULL,
-		    "ags-sf-editor");
+		    "ags-sf-notation-editor");
 
   xmlNewProp(node,
 	     "zoom",
-	     gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(editor->toolbar->zoom)));
+	     gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(notation_editor->notation_toolbar->zoom)));
   
   file_lookup = (AgsFileLookup *) g_object_new(AGS_TYPE_FILE_LOOKUP,
 					       "file", simple_file,
 					       "node", node,
-					       "reference", editor,
+					       "reference", notation_editor,
 					       NULL);
   ags_simple_file_add_lookup(simple_file, (GObject *) file_lookup);
   g_signal_connect(G_OBJECT(file_lookup), "resolve",
-		   G_CALLBACK(ags_simple_file_write_editor_resolve_machine), editor);
+		   G_CALLBACK(ags_simple_file_write_notation_editor_resolve_machine), notation_editor);
   
   /* add to parent */
   xmlAddChild(parent,
@@ -7025,8 +7025,8 @@ ags_simple_file_write_editor(AgsSimpleFile *simple_file, xmlNode *parent, AgsEdi
 }
 
 void
-ags_simple_file_write_editor_resolve_machine(AgsFileLookup *file_lookup,
-					     AgsEditor *editor)
+ags_simple_file_write_notation_editor_resolve_machine(AgsFileLookup *file_lookup,
+						      AgsNotationEditor *notation_editor)
 {
   xmlNode *node;
   xmlNode *property_list;
@@ -7040,7 +7040,7 @@ ags_simple_file_write_editor_resolve_machine(AgsFileLookup *file_lookup,
   node = file_lookup->node;
   property_list = NULL;
   
-  list_start = gtk_container_get_children((GtkContainer *) editor->machine_selector);
+  list_start = gtk_container_get_children((GtkContainer *) notation_editor->machine_selector);
   list = list_start->next;
 
   if(list != NULL){

@@ -39,7 +39,6 @@
 #include <ags/config.h>
 #include <ags/i18n.h>
 
-
 void ags_notation_editor_class_init(AgsNotationEditorClass *notation_editor);
 void ags_notation_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_notation_editor_init(AgsNotationEditor *notation_editor);
@@ -286,7 +285,7 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
 		   (GtkWidget *) notation_editor->notation_edit,
 		   1, 2,
 		   2, 3,
-		   GTK_FILL|GTK_EXPAND, GTK_FILL,|GTK_EXPAND
+		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
 		   0, 0);  
 }
 
@@ -564,7 +563,8 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
 		    if(!xmlStrncmp(timestamp_node->name,
 				   "timestamp",
 				   10)){
-		      offset = g_ascii_strtoull(xmlGetProp(timestamp_node),
+		      offset = g_ascii_strtoull(xmlGetProp(timestamp_node,
+							   "offset"),
 						NULL,
 						10);
 		      
@@ -735,12 +735,12 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
     }
 
     /* get position */
-    if(notation_editor->toolbar->selected_edit_mode == notation_editor->toolbar->position){
+    if(notation_editor->notation_toolbar->selected_edit_mode == notation_editor->notation_toolbar->position){
       last_x = 0;
       paste_from_position = TRUE;
 
-      position_x = notation_editor->notation_edit->selected_x;
-      position_y = notation_editor->notation_edit->selected_y;
+      position_x = notation_editor->notation_edit->cursor_position_x;
+      position_y = notation_editor->notation_edit->cursor_position_y;
       
 #ifdef DEBUG
       printf("pasting at position: [%u,%u]\n", position_x, position_y);
@@ -783,13 +783,14 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
     if(paste_from_position){
       gint big_step, small_step;
 
-      big_step = (guint) ceil((double) last_x * notation_edit->minimum_note_length) / notation_edit->minimum_note_length + (notation_edit->selected_x % (guint) (1 / AGS_NOTATION_MINIMUM_NOTE_LENGTH));
-      small_step = (guint) big_step - (1 / notation_edit->minimum_note_length);
+      //TODO:JK: implement me
+      big_step = (guint) ceil((double) last_x / 16.0) * 16.0 + (notation_edit->cursor_position_x % (guint) 16);
+      small_step = (guint) big_step - 16;
 	
       if(small_step < last_x){
-	notation_editor->notation_edit->selected_x = big_step;
+	notation_editor->notation_edit->cursor_position_x = big_step;
       }else{
-	notation_editor->notation_edit->selected_x = small_step;
+	notation_editor->notation_edit->cursor_position_x = small_step;
       }
     }
 
@@ -813,7 +814,7 @@ ags_notation_editor_copy(AgsNotationEditor *notation_editor)
   AgsNotation *notation;
 
   xmlDoc *clipboard;
-  xmlNode *audio_node, *notation_node;
+  xmlNode *audio_node, *notation_list_node, *notation_node;
 
   GList *list_notation;
 

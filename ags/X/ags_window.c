@@ -250,12 +250,12 @@ ags_window_init(AgsWindow *window)
   window->selected = NULL;
 
   /* editor */
-  window->editor = g_object_new(AGS_TYPE_EDITOR,
-				"homogeneous", FALSE,
-				"spacing", 0,
-				NULL);
+  window->notation_editor = g_object_new(AGS_TYPE_NOTATION_EDITOR,
+					 "homogeneous", FALSE,
+					 "spacing", 0,
+					 NULL);
   gtk_paned_pack2((GtkPaned *) window->paned,
-		  (GtkWidget *) window->editor,
+		  (GtkWidget *) window->notation_editor,
 		  TRUE, TRUE);
 
   /* navigation */
@@ -315,7 +315,7 @@ ags_window_set_property(GObject *gobject,
 		   "soundcard", soundcard,
 		   NULL);
 
-      g_object_set(G_OBJECT(window->editor),
+      g_object_set(G_OBJECT(window->notation_editor),
 		   "soundcard", soundcard,
 		   NULL);
 
@@ -386,6 +386,7 @@ void
 ags_window_connect(AgsConnectable *connectable)
 {
   AgsWindow *window;
+
   GList *list, *list_start;
 
   window = AGS_WINDOW(connectable);
@@ -413,7 +414,7 @@ ags_window_connect(AgsConnectable *connectable)
 
   g_list_free(list_start);
   
-  ags_connectable_connect(AGS_CONNECTABLE(window->editor));
+  ags_connectable_connect(AGS_CONNECTABLE(window->notation_editor));
   ags_connectable_connect(AGS_CONNECTABLE(window->navigation));
 
   ags_connectable_connect(AGS_CONNECTABLE(window->automation_window));
@@ -424,8 +425,44 @@ ags_window_connect(AgsConnectable *connectable)
 void
 ags_window_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK:
-  /* implement me */
+  AgsWindow *window;
+
+  GList *list, *list_start;
+
+  window = AGS_WINDOW(connectable);
+
+  if((AGS_WINDOW_CONNECTED & (window->flags)) == 0){
+    return;
+  }
+
+  window->flags &= (~AGS_WINDOW_CONNECTED);
+  
+  g_object_disconnect(window,
+		      "delete_event",
+		      G_CALLBACK(ags_window_delete_event_callback),
+		      NULL,
+		      NULL);
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(window->context_menu));
+  ags_connectable_disconnect(AGS_CONNECTABLE(window->menu_bar));
+
+  list_start = 
+    list = gtk_container_get_children((GtkContainer *) window->machines);
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+  
+  ags_connectable_disconnect(AGS_CONNECTABLE(window->notation_editor));
+  ags_connectable_disconnect(AGS_CONNECTABLE(window->navigation));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(window->automation_window));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(window->export_window));
 }
 
 void

@@ -28,7 +28,7 @@
 #include <ags/X/ags_context_menu.h>
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_machine.h>
-#include <ags/X/ags_editor.h>
+#include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_export_window.h>
 #include <ags/X/ags_automation_window.h>
@@ -78,7 +78,7 @@ struct _AgsWindow
   GList *machine_counter;
   AgsMachine *selected;
 
-  AgsEditor *editor;
+  AgsNotationEditor *notation_editor;
   AgsNavigation *navigation;
 
   GList *dialog;
