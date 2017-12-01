@@ -275,9 +275,6 @@ ags_wave_editor_set_property(GObject *gobject,
       
       if(soundcard != NULL){
 	g_object_ref(soundcard);
-
-	g_signal_connect(soundcard, "tic",
-			 G_CALLBACK(ags_wave_editor_tic_callback), wave_editor);
       }
       
       wave_editor->soundcard = soundcard;
@@ -325,12 +322,6 @@ ags_wave_editor_connect(AgsConnectable *connectable)
   wave_editor->flags |= AGS_WAVE_EDITOR_CONNECTED;
   
   /*  */
-  if(wave_editor->soundcard != NULL){
-    g_signal_connect(wave_editor->soundcard, "tic",
-		     G_CALLBACK(ags_wave_editor_tic_callback), wave_editor);
-  }
-  
-  
   g_signal_connect((GObject *) wave_editor->machine_selector, "changed",
 		   G_CALLBACK(ags_wave_editor_machine_changed_callback), (gpointer) wave_editor);
 

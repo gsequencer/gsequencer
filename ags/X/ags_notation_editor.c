@@ -20,15 +20,6 @@
 #include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_notation_editor_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
-
 #include <ags/X/ags_window.h>
 
 #include <libxml/tree.h>
@@ -244,12 +235,11 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
   gtk_paned_pack2((GtkPaned *) paned,
 		  (GtkWidget *) table,
 		  TRUE, FALSE);
-
+  
   /* notebook */
   notation_editor->notebook = g_object_new(AGS_TYPE_NOTEBOOK,
 					   "homogeneous", FALSE,
 					   "spacing", 0,
-					   "prefix", i18n("channel"),
 					   NULL);
   gtk_table_attach(table,
 		   (GtkWidget *) notation_editor->notebook,
@@ -411,6 +401,8 @@ void
 ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
 					 AgsMachine *machine)
 {
+  notation_editor->selected_machine = machine;
+  
   //TODO:JK: implement me
 }
 
@@ -763,7 +755,7 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
 	if(!xmlStrncmp("audio", audio_node->name, 6)){
 	  notation_node = audio_node->children;
 	
-	  first_x = ags_notation_editor_paste_read_notation(audio_node);
+	  first_x = ags_notation_editor_paste_notation(audio_node);
 	
 	  break;
 	}

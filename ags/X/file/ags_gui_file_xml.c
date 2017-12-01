@@ -5030,29 +5030,6 @@ ags_file_read_notation_toolbar(AgsFile *file, xmlNode *node, AgsNotationToolbar 
 
     gobject->zoom_history = gtk_combo_box_get_active((GtkComboBox *) gobject->zoom);
   }
-
-  /* mode */
-  str = xmlGetProp(node,
-		   "mode");
-  
-  model = gtk_combo_box_get_model((GtkComboBox *) gobject->mode);
-  
-  if(gtk_tree_model_get_iter_first(model, &iter)){
-    do{
-      gtk_tree_model_get(model, &iter,
-			 0, &value,
-			 -1);
-
-      if(!g_strcmp0(str,
-		    value)){
-	break;
-      }
-    }while(gtk_tree_model_iter_next(GTK_TREE_MODEL(model),
-				    &iter));
-
-    gtk_combo_box_set_active_iter((GtkComboBox *) gobject->mode,
-				  &iter);
-  }
 }
 
 xmlNode*

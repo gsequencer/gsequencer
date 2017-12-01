@@ -26,16 +26,12 @@
 #include <gtk/gtk.h>
 
 #include <ags/X/ags_wave_editor.h>
-#include <ags/X/ags_navigation.h>
 #include <ags/X/ags_machine.h>
 
 #include <ags/X/editor/ags_machine_selector.h>
 
 void ags_wave_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent,
 					 AgsWaveEditor *wave_editor);
-
-void ags_wave_editor_tic_callback(GObject *soundcard,
-				  AgsWaveEditor *wave_editor);
 
 void ags_wave_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,
 					      AgsWaveEditor *wave_editor);

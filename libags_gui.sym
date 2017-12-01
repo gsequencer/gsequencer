@@ -44,7 +44,7 @@ ags_dial_new
 ags_notebook_get_type
 ags_notebook_tab_alloc
 ags_notebook_tab_free
-ags_notebook_tab_free_full
+ags_notebook_tab_set_data
 ags_notebook_tab_index
 ags_notebook_next_active_tab
 ags_notebook_add_tab

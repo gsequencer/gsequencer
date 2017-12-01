@@ -305,9 +305,6 @@ ags_automation_editor_set_property(GObject *gobject,
       
       if(soundcard != NULL){
 	g_object_ref(soundcard);
-
-	g_signal_connect(soundcard, "tic",
-			 G_CALLBACK(ags_automation_editor_tic_callback), automation_editor);
       }
       
       automation_editor->soundcard = soundcard;
@@ -353,12 +350,6 @@ ags_automation_editor_connect(AgsConnectable *connectable)
   automation_editor->flags |= AGS_AUTOMATION_EDITOR_CONNECTED;
   
   /*  */
-  if(automation_editor->soundcard != NULL){
-    g_signal_connect(automation_editor->soundcard, "tic",
-		     G_CALLBACK(ags_automation_editor_tic_callback), automation_editor);
-  }
-  
-  
   g_signal_connect((GObject *) automation_editor->machine_selector, "changed",
 		   G_CALLBACK(ags_automation_editor_machine_changed_callback), (gpointer) automation_editor);
 

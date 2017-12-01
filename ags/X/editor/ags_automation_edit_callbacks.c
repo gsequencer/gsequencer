@@ -19,14 +19,9 @@
 
 #include <ags/X/editor/ags_automation_edit_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_thread-posix.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_automation_editor.h>

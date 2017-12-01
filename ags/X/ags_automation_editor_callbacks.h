@@ -26,16 +26,12 @@
 #include <gtk/gtk.h>
 
 #include <ags/X/ags_automation_editor.h>
-#include <ags/X/ags_navigation.h>
 #include <ags/X/ags_machine.h>
 
 #include <ags/X/editor/ags_machine_selector.h>
 
 void ags_automation_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent,
 					       AgsAutomationEditor *automation_editor);
-
-void ags_automation_editor_tic_callback(GObject *soundcard,
-					AgsAutomationEditor *automation_editor);
 
 void ags_automation_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,
 						    AgsAutomationEditor *automation_editor);

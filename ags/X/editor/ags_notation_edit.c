@@ -273,7 +273,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 
   /* hscrollbar */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) notation_edit->control_width, 1.0);
-  notation_edit->vscrollbar = gtk_hrollbar_new(adjustment);
+  notation_edit->hscrollbar = gtk_hscrollbar_new(adjustment);
   gtk_table_attach(GTK_TABLE(notation_edit),
 		   (GtkWidget *) notation_edit->hscrollbar,
 		   0, 1,
@@ -983,7 +983,7 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit)
   if(cr == NULL){
     return;
   }
-
+  
   /* get channel count */
   if((AGS_AUDIO_NOTATION_DEFAULT & (notation_editor->selected_machine->audio->flags)) != 0){
     channel_count = notation_editor->selected_machine->audio->input_pads;

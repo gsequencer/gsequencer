@@ -1847,7 +1847,9 @@ ags_xorg_application_context_register_types(AgsApplicationContext *application_c
   ags_vindicator_get_type();
   ags_hindicator_get_type();
   ags_dial_get_type();
-
+  ags_notebook_get_type();
+  ags_piano_get_type();
+  
   /* register machine */
   ags_effect_bridge_get_type();
   ags_effect_bulk_get_type();

@@ -19,6 +19,10 @@
 
 #include <ags/X/editor/ags_notation_edit_callbacks.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 gboolean
 ags_notation_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsNotationEdit *notation_edit)
 {
@@ -26,6 +30,8 @@ ags_notation_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *e
   ags_notation_edit_reset_hscrollbar(notation_edit);
   
   ags_notation_edit_draw(notation_edit);
+  
+  return(TRUE);
 }
 
 gboolean
@@ -35,6 +41,8 @@ ags_notation_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfig
   ags_notation_edit_reset_hscrollbar(notation_edit);
 
   ags_notation_edit_draw(notation_edit);
+
+  return(FALSE);
 }
 
 gboolean

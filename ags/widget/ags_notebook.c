@@ -110,8 +110,8 @@ ags_notebook_class_init(AgsNotebookClass *notebook)
    * Since: 1.0.0
    */
   param_spec = g_param_spec_object("prefix",
-				   i18n_pspec("enumeration prefix"),
-				   i18n_pspec("The label's enumeration prefix"),
+				   "enumeration prefix",
+				   "The label's enumeration prefix",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -192,9 +192,9 @@ ags_notebook_init(AgsNotebook *notebook)
 
 void
 ags_notebook_set_property(GObject *gobject,
-			guint prop_id,
-			const GValue *value,
-			GParamSpec *param_spec)
+			  guint prop_id,
+			  const GValue *value,
+			  GParamSpec *param_spec)
 {
   AgsNotebook *notebook;
 
@@ -224,9 +224,9 @@ ags_notebook_set_property(GObject *gobject,
 
 void
 ags_notebook_get_property(GObject *gobject,
-			guint prop_id,
-			GValue *value,
-			GParamSpec *param_spec)
+			  guint prop_id,
+			  GValue *value,
+			  GParamSpec *param_spec)
 {
   AgsNotebook *notebook;
 
@@ -826,8 +826,8 @@ ags_notebook_insert_tab_with_label(AgsNotebook *notebook,
  * Since: 1.0.0
  */
 void
-pags_notebook_remove_tab(AgsNotebook *notebook,
-			 gint position)
+ags_notebook_remove_tab(AgsNotebook *notebook,
+			gint position)
 {
   AgsNotebookTab *tab;
 
@@ -841,8 +841,8 @@ pags_notebook_remove_tab(AgsNotebook *notebook,
   
   length = g_list_length(notebook->tab);
 
-  tab = g_list_position_data(notebook->tab,
-			     length - position - 1);
+  tab = g_list_nth_data(notebook->tab,
+			length - position - 1);
 
   if(tab != NULL){
     notebook->tab = g_list_remove(notebook->tab,
@@ -876,8 +876,8 @@ ags_notebook_remove_tab_with_data(AgsNotebook *notebook,
 
   position = ags_notebook_tab_index(notebook,
 				    data);
-  pags_notebook_remove_tab(notebook,
-			   position);
+  ags_notebook_remove_tab(notebook,
+			  position);
 }
 
 /**

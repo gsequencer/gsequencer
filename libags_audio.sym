@@ -1439,6 +1439,7 @@ ags_midiin_switch_buffer_flag
 ags_midiin_new
 ags_notation_get_type
 ags_notation_find_near_timestamp
+ags_notation_add
 ags_notation_add_note
 ags_notation_remove_note
 ags_notation_remove_note_at_position

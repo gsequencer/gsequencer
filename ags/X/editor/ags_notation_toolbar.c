@@ -276,10 +276,6 @@ ags_notation_toolbar_connect(AgsConnectable *connectable)
   /* zoom */
   g_signal_connect_after((GObject *) notation_toolbar->zoom, "changed",
 			 G_CALLBACK(ags_notation_toolbar_zoom_callback), (gpointer) notation_toolbar);
-
-  /* mode */
-  g_signal_connect_after((GObject *) notation_toolbar->mode, "changed",
-			 G_CALLBACK(ags_notation_toolbar_mode_callback), (gpointer) notation_toolbar);
 }
 
 void
@@ -358,13 +354,6 @@ ags_notation_toolbar_disconnect(AgsConnectable *connectable)
   g_object_disconnect(G_OBJECT(notation_toolbar->zoom),
 		      "changed",
 		      G_CALLBACK(ags_notation_toolbar_zoom_callback),
-		      notation_toolbar,
-		      NULL);
-  
-  /* mode */
-  g_object_disconnect(G_OBJECT(notation_toolbar->mode),
-		      "changed",
-		      G_CALLBACK(ags_notation_toolbar_mode_callback),
 		      notation_toolbar,
 		      NULL);
 }
