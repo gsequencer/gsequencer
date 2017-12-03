@@ -240,6 +240,7 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
   notation_editor->notebook = g_object_new(AGS_TYPE_NOTEBOOK,
 					   "homogeneous", FALSE,
 					   "spacing", 0,
+					   "prefix", i18n("channel"),
 					   NULL);
   gtk_table_attach(table,
 		   (GtkWidget *) notation_editor->notebook,
@@ -401,8 +402,37 @@ void
 ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
 					 AgsMachine *machine)
 {
-  notation_editor->selected_machine = machine;
+  GList *tab;
+
+  guint length;
+  guint i;
+
+  length = g_list_length(notation_editor->notebook->tab);
   
+  for(i = 0; i < length; i++){
+    ags_notebook_remove_tab(notation_editor->notebook,
+			    0);
+  }
+
+  if(machine != NULL){
+    for(i = 0; i < machine->audio->audio_channels; i++){
+      ags_notebook_insert_tab(notation_editor->notebook,
+			      i);
+
+      tab = notation_editor->notebook->tab;
+      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tab->data)->toggle,
+				   TRUE);
+    }
+  }
+  
+  /*  */
+  notation_editor->selected_machine = machine;
+
+  ags_notation_edit_reset_vscrollbar(notation_editor->notation_edit);
+  ags_notation_edit_reset_hscrollbar(notation_editor->notation_edit);
+
+  ags_notation_edit_draw(notation_editor->notation_edit);
+
   //TODO:JK: implement me
 }
 

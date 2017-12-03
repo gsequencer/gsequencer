@@ -85,6 +85,13 @@ ags_notation_edit_vscrollbar_value_changed(GtkRange *range, AgsNotationEdit *not
 void
 ags_notation_edit_hscrollbar_value_changed(GtkRange *range, AgsNotationEdit *notation_edit)
 {
+  gdouble value;
+
+  value = GTK_RANGE(notation_edit->hscrollbar)->adjustment->value / 64.0;
+  gtk_adjustment_set_value(notation_edit->ruler->adjustment,
+			   value);
+  gtk_widget_queue_draw(notation_edit->ruler);
+  
   /* queue draw */
   gtk_widget_queue_draw(notation_edit->drawing_area);
 }

@@ -26,7 +26,17 @@
 void
 ags_notation_toolbar_position_callback(GtkToggleButton *toggle_button, AgsNotationToolbar *notation_toolbar)
 {
-  //TODO:JK: implement me
+  if(toggle_button == notation_toolbar->selected_edit_mode){
+    if(!gtk_toggle_button_get_active(toggle_button)){
+      gtk_toggle_button_set_active(toggle_button, TRUE);
+    }
+  }else if(gtk_toggle_button_get_active(toggle_button)){
+    GtkToggleButton *old_selected_edit_mode;
+    
+    old_selected_edit_mode = notation_toolbar->selected_edit_mode;
+    notation_toolbar->selected_edit_mode = toggle_button;
+    gtk_toggle_button_set_active(old_selected_edit_mode, FALSE);
+  }
 }
 
 void
@@ -139,5 +149,24 @@ ags_notation_toolbar_tool_popup_position_cursor_callback(GtkWidget *item, AgsNot
 void
 ags_notation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsNotationToolbar *notation_toolbar)
 {
-  //TODO:JK: implement me
+  AgsNotationEditor *notation_editor;
+  AgsNotationEdit *notation_edit;
+
+  double zoom_factor, zoom;
+
+  notation_editor = gtk_widget_get_ancestor(notation_toolbar,
+					    AGS_TYPE_NOTATION_EDITOR);
+
+  notation_edit = notation_editor->notation_edit;
+  
+  /* zoom */
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom) - 2.0);
+
+  /* reset ruler */
+  notation_edit->ruler->factor = zoom_factor;
+  notation_edit->ruler->precision = zoom;
+  notation_edit->ruler->scale_precision = 1.0 / zoom;
+  
+  gtk_widget_queue_draw((GtkWidget *) notation_edit->ruler);
 }

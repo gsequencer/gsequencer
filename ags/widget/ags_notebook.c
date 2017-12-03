@@ -109,10 +109,10 @@ ags_notebook_class_init(AgsNotebookClass *notebook)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_object("prefix",
+  param_spec = g_param_spec_string("prefix",
 				   "enumeration prefix",
 				   "The label's enumeration prefix",
-				   G_TYPE_OBJECT,
+				   AGS_NOTEBOOK_TAB_DEFAULT_PREFIX,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PREFIX,

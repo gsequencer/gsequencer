@@ -262,7 +262,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 		   0, 0);
 
   /* vscrollbar */
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 16.0, 1.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, notation_edit->control_height, 1.0);
   notation_edit->vscrollbar = gtk_vscrollbar_new(adjustment);
   gtk_table_attach(GTK_TABLE(notation_edit),
 		   (GtkWidget *) notation_edit->vscrollbar,
@@ -846,8 +846,10 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
   GtkAdjustment *adjustment;
   
   guint channel_count;
+  double varea_height;
   gdouble upper;
   gdouble page;
+  gdouble page_size;
   
   if(!AGS_NOTATION_EDIT(notation_edit)){
     return;
@@ -874,22 +876,15 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
   gtk_adjustment_set_lower(adjustment,
 			   0.0);
 
-  upper = (channel_count * notation_edit->control_height) - GTK_WIDGET(notation_edit->drawing_area)->allocation.height;
+  varea_height = (channel_count * notation_edit->control_height);
+  upper = varea_height - GTK_WIDGET(notation_edit->drawing_area)->allocation.height;
 
-  if(upper < 1.0){
-    upper = 1.0;
+  if(upper < 0.0){
+    upper = 0.0;
   }
 	   
   gtk_adjustment_set_upper(adjustment,
-			   upper);
-  
-  /* step / page increment */
-  gtk_adjustment_set_step_increment(adjustment,
-				    1.0);
-
-  page = notation_edit->control_height - GTK_WIDGET(notation_edit->drawing_area)->allocation.height;
-  gtk_adjustment_set_page_increment(adjustment,
-				    page);
+			   upper);  
 }
 
 void
@@ -899,10 +894,14 @@ ags_notation_edit_reset_hscrollbar(AgsNotationEdit *notation_edit)
   AgsNotationToolbar *notation_toolbar;
 
   GtkAdjustment *adjustment;
-  
-  double zoom;
+
+  gdouble zoom_correction;
+  gdouble control_width_correction;
+  guint map_width;
+  double zoom_factor, zoom;
+  gboolean zoom_out;
   gdouble upper;
-  gdouble page;
+  gdouble page_size;
   
   if(!AGS_NOTATION_EDIT(notation_edit)){
     return;
@@ -921,24 +920,30 @@ ags_notation_edit_reset_hscrollbar(AgsNotationEdit *notation_edit)
   adjustment = GTK_RANGE(notation_edit->hscrollbar)->adjustment;
 
   /* zoom */
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom) - 2.0);
 
   /* lower / upper */
-  gtk_adjustment_set_lower(adjustment,
-			   0.0);
+  zoom_correction = 0.25;
+  control_width_correction = 16.0;
 
-  upper = ((AGS_NOTATION_EDITOR_MAX_CONTROLS / ((1.0 / AGS_NOTATION_EDIT_MIN_ZOOM) * zoom)) * notation_edit->control_width) - GTK_WIDGET(notation_edit->drawing_area)->allocation.width;
-  
+  map_width = ((double) AGS_NOTATION_EDITOR_MAX_CONTROLS / control_width_correction * zoom) * (control_width_correction * zoom_correction * zoom_factor * zoom);
+  upper = map_width - GTK_WIDGET(notation_edit->drawing_area)->allocation.width;
+
+  if(upper < 0.0){    
+    upper = 0.0;
+  }
+
   gtk_adjustment_set_upper(adjustment,
 			   upper);
-  
-  /* step / page increment */
-  gtk_adjustment_set_step_increment(adjustment,
-				    1.0);
 
-  page = (((1.0 / AGS_NOTATION_EDIT_MIN_ZOOM) * zoom) * notation_edit->control_width) - GTK_WIDGET(notation_edit->drawing_area)->allocation.width;
-  gtk_adjustment_set_page_increment(adjustment,
-				    page);
+  /* ruler */
+  notation_edit->ruler->factor = zoom_factor;
+  notation_edit->ruler->precision = zoom;
+  notation_edit->ruler->scale_precision = 1.0 / zoom;
+
+  gtk_adjustment_set_upper(notation_edit->ruler->adjustment,
+			   upper / notation_edit->control_width);
 }
 
 void
@@ -995,7 +1000,7 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit)
   width = GTK_WIDGET(notation_edit->drawing_area)->allocation.width;
   width_fits = FALSE;
   
-  if(width < AGS_NOTATION_EDITOR_MAX_CONTROLS * notation_edit->control_width){
+  if(AGS_NOTATION_EDITOR_MAX_CONTROLS * notation_edit->control_width < width){
     width = AGS_NOTATION_EDITOR_MAX_CONTROLS * notation_edit->control_width;
     width_fits = TRUE;
   }
@@ -1004,7 +1009,7 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit)
   height = GTK_WIDGET(notation_edit->drawing_area)->allocation.height;
   height_fits = FALSE;
 
-  if(height < channel_count * notation_edit->control_height){
+  if(channel_count * notation_edit->control_height < height){
     height = channel_count * notation_edit->control_height;
     height_fits = TRUE;
   }
@@ -1016,17 +1021,18 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit)
   if(width_fits){
     x0 = 0;
   }else{
-    x0 = ((guint) GTK_RANGE(notation_edit->hscrollbar)->adjustment->value) % notation_edit->control_width;
+    x0 = notation_edit->control_width - ((guint) GTK_RANGE(notation_edit->hscrollbar)->adjustment->value) % notation_edit->control_width;
   }
 
   if(height_fits){
     y0 = 0;
   }else{
-    y0 = ((guint) GTK_RANGE(notation_edit->vscrollbar)->adjustment->value) % notation_edit->control_height;
+    y0 = notation_edit->control_height - ((guint) GTK_RANGE(notation_edit->vscrollbar)->adjustment->value) % notation_edit->control_height;
   }
   
   nth_x = (guint) floor(GTK_RANGE(notation_edit->hscrollbar)->adjustment->value / notation_edit->control_width);
-
+  nth_x += 1;
+  
   /* push group */
   cairo_push_group(cr);
 
@@ -1059,6 +1065,14 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit)
     cairo_stroke(cr);
 
     i += notation_edit->control_height;
+  }
+
+  if(height_fits){
+    cairo_move_to(cr,
+		  0.0, (double) i);
+    cairo_line_to(cr,
+		  (double) width, (double) i);
+    cairo_stroke(cr);
   }
 
   /* vertical lines */
@@ -1235,6 +1249,8 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit)
 
   /* clip */
   if(x < 0.0){
+    width += x;
+
     x = 0.0;
   }else if(x > GTK_WIDGET(notation_edit->drawing_area)->allocation.width){
     return;
@@ -1245,6 +1261,8 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit)
   }
   
   if(y < 0.0){
+    height += y;
+
     y = 0.0;
   }else if(y > GTK_WIDGET(notation_edit->drawing_area)->allocation.height){
     return;
