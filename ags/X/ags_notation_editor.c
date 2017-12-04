@@ -249,35 +249,26 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
 
-  /* piano */
-  notation_editor->piano_viewport = gtk_viewport_new(NULL,
-						     NULL);
+  /* scrolled piano */
+  notation_editor->scrolled_piano = ags_scrolled_piano_new();
+  g_object_set(notation_editor->scrolled_piano,
+	       "margin-top", (guint) ((AGS_RULER_FONT_SIZE + (2 * AGS_RULER_FREE_SPACE) + AGS_RULER_LARGE_STEP) - (AGS_PIANO_DEFAULT_KEY_HEIGHT / 2)),
+	       NULL);
   gtk_table_attach(table,
-		   (GtkWidget *) notation_editor->notebook,
-		   1, 2,
+		   (GtkWidget *) notation_editor->scrolled_piano,
+		   0, 1,
 		   1, 2,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-
-  notation_editor->piano_alignment = gtk_alignment_new(0.0,
-						       0.0,
-						       0.0,
-						       0.0);
-  gtk_container_add(notation_editor->piano_viewport,
-		    notation_editor->piano_alignment);
-  
-  notation_editor->piano = ags_piano_new();
-  gtk_container_add(notation_editor->piano_alignment,
-		    notation_editor->piano);
 
   /* notation edit */
   notation_editor->notation_edit = ags_notation_edit_new();
   gtk_table_attach(table,
 		   (GtkWidget *) notation_editor->notation_edit,
 		   1, 2,
-		   2, 3,
+		   1, 2,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		   0, 0);  
+		   0, 0);
 }
 
 void
@@ -407,6 +398,7 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
   guint length;
   guint i;
 
+  /* notebook */
   length = g_list_length(notation_editor->notebook->tab);
   
   for(i = 0; i < length; i++){
@@ -424,16 +416,38 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
 				   TRUE);
     }
   }
+
+  /* piano */
+  if(machine != NULL){
+    guint channel_count;
+
+    /* get channel count */
+    if((AGS_AUDIO_NOTATION_DEFAULT & (machine->audio->flags)) != 0){
+      channel_count = machine->audio->input_pads;
+    }else{
+      channel_count = machine->audio->output_pads;
+    }
+    
+    g_object_set(notation_editor->scrolled_piano->piano,
+		 "key-count", channel_count,
+		 NULL);
+  }else{
+    g_object_set(notation_editor->scrolled_piano->piano,
+		 "key-count", AGS_PIANO_DEFAULT_KEY_COUNT,
+		 NULL);
+  }
   
-  /*  */
+  gtk_widget_queue_draw(notation_editor->scrolled_piano->piano);
+  
+  /* selected machine */
   notation_editor->selected_machine = machine;
 
+  /* reset scrollbars */
   ags_notation_edit_reset_vscrollbar(notation_editor->notation_edit);
   ags_notation_edit_reset_hscrollbar(notation_editor->notation_edit);
 
-  ags_notation_edit_draw(notation_editor->notation_edit);
-
-  //TODO:JK: implement me
+  /* redraw */
+  gtk_widget_queue_draw(notation_editor->notation_edit);
 }
 
 /**

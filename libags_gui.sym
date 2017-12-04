@@ -60,6 +60,8 @@ ags_expander_child_find
 ags_expander_add
 ags_expander_remove
 ags_expander_new
+ags_scrolled_piano_get_type
+ags_scrolled_piano_new
 ags_htimebar_new
 ags_indicator_get_type
 ags_indicator_new

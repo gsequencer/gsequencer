@@ -260,11 +260,9 @@ ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachine
       base_key_code = 32;
     }
 
-    g_object_set(notation_editor->piano,
+    g_object_set(notation_editor->scrolled_piano->piano,
 		 "base-note", base_note,
 		 "base-key-code", base_key_code,
 		 NULL);
-    
-    gtk_widget_queue_draw(notation_editor->piano);
   }
 }

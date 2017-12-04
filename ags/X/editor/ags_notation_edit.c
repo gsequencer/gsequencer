@@ -847,9 +847,7 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
   
   guint channel_count;
   double varea_height;
-  gdouble upper;
-  gdouble page;
-  gdouble page_size;
+  gdouble upper, old_upper;
   
   if(!AGS_NOTATION_EDIT(notation_edit)){
     return;
@@ -872,9 +870,8 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
     channel_count = notation_editor->selected_machine->audio->output_pads;
   }
 
-  /* lower / upper */
-  gtk_adjustment_set_lower(adjustment,
-			   0.0);
+  /* upper */
+  old_upper = adjustment->upper; 
 
   varea_height = (channel_count * notation_edit->control_height);
   upper = varea_height - GTK_WIDGET(notation_edit->drawing_area)->allocation.height;
@@ -885,6 +882,12 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
 	   
   gtk_adjustment_set_upper(adjustment,
 			   upper);  
+
+  /* reset value */
+  if(old_upper != 0.0){
+    gtk_adjustment_set_value(adjustment,
+			     adjustment->value / old_upper * upper);
+  }
 }
 
 void
@@ -895,13 +898,10 @@ ags_notation_edit_reset_hscrollbar(AgsNotationEdit *notation_edit)
 
   GtkAdjustment *adjustment;
 
-  gdouble zoom_correction;
-  gdouble control_width_correction;
-  guint map_width;
   double zoom_factor, zoom;
-  gboolean zoom_out;
-  gdouble upper;
-  gdouble page_size;
+  double zoom_correction;
+  guint map_width;
+  gdouble upper, old_upper;
   
   if(!AGS_NOTATION_EDIT(notation_edit)){
     return;
@@ -923,11 +923,12 @@ ags_notation_edit_reset_hscrollbar(AgsNotationEdit *notation_edit)
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom) - 2.0);
 
-  /* lower / upper */
-  zoom_correction = 0.25;
-  control_width_correction = 16.0;
+  /* upper */
+  old_upper = adjustment->upper;
+  
+  zoom_correction = 1.0 / 16;
 
-  map_width = ((double) AGS_NOTATION_EDITOR_MAX_CONTROLS / control_width_correction * zoom) * (control_width_correction * zoom_correction * zoom_factor * zoom);
+  map_width = ((double) AGS_NOTATION_EDITOR_MAX_CONTROLS * notation_edit->control_width * zoom * zoom_correction);
   upper = map_width - GTK_WIDGET(notation_edit->drawing_area)->allocation.width;
 
   if(upper < 0.0){    
@@ -944,6 +945,12 @@ ags_notation_edit_reset_hscrollbar(AgsNotationEdit *notation_edit)
 
   gtk_adjustment_set_upper(notation_edit->ruler->adjustment,
 			   upper / notation_edit->control_width);
+
+  /* reset value */
+  if(old_upper != 0.0){
+    gtk_adjustment_set_value(adjustment,
+			     adjustment->value / old_upper * upper);
+  }
 }
 
 void

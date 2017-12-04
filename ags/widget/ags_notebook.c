@@ -31,10 +31,10 @@ void ags_notebook_get_property(GObject *gobject,
 			       GParamSpec *param_spec);
 void ags_notebook_finalize(GObject *gobject);
 
-void ags_notebook_size_request(AgsNotebook *notebook,
-			       GtkRequisition *requisition);
 void ags_notebook_size_allocate(AgsNotebook *notebook,
 				GtkAllocation *allocation);
+void ags_notebook_size_request(AgsNotebook *notebook,
+			       GtkRequisition *requisition);
 
 void ags_notebook_scroll_prev_callback(GtkWidget *button,
 				       AgsNotebook *notebook);
@@ -121,8 +121,8 @@ ags_notebook_class_init(AgsNotebookClass *notebook)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) notebook;
 
-  widget->size_request = ags_notebook_size_request;
   widget->size_allocate = ags_notebook_size_allocate;
+  widget->size_request = ags_notebook_size_request;
 }
 
 void

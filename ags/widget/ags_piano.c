@@ -824,8 +824,17 @@ void
 ags_piano_size_request(GtkWidget *widget,
 		       GtkRequisition *requisition)
 {
-  requisition->width = -1;
-  requisition->height = -1;
+  AgsPiano *piano;
+
+  piano = AGS_PIANO(widget);
+
+  if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
+    requisition->width = piano->key_width;
+    requisition->height = piano->key_count * piano->key_height;
+  }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
+    requisition->width = piano->key_count * piano->key_height;
+    requisition->height = piano->key_width;
+  }
 }
 
 void
@@ -839,11 +848,11 @@ ags_piano_size_allocate(GtkWidget *widget,
   widget->allocation = *allocation;
 
   if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
-    allocation->width = piano->key_width;
-    allocation->height = piano->key_count * piano->key_height;
+    widget->allocation.width = piano->key_width;
+    widget->allocation.height = piano->key_count * piano->key_height;
   }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
-    allocation->width = piano->key_count * piano->key_height;
-    allocation->height = piano->key_width;
+    widget->allocation.width = piano->key_count * piano->key_height;
+    widget->allocation.height = piano->key_width;
   }
 }
 
@@ -1121,9 +1130,24 @@ ags_piano_draw(AgsPiano *piano)
     return;
   }
 
-  width = GTK_WIDGET(piano)->allocation.width;
-  height = GTK_WIDGET(piano)->allocation.height;
+  if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
+    width = GTK_WIDGET(piano)->allocation.width;
 
+    if(piano->key_count * piano->key_height + (piano->key_height / 2) < GTK_WIDGET(piano)->allocation.height){
+      height = piano->key_count * piano->key_height + (piano->key_height / 2);
+    }else{
+      height = GTK_WIDGET(piano)->allocation.height;
+    }
+  }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
+    if(piano->key_count * piano->key_height + (piano->key_height / 2) < GTK_WIDGET(piano)->allocation.height){
+      width = piano->key_count * piano->key_height + (piano->key_height / 2);
+    }else{
+      width = GTK_WIDGET(piano)->allocation.width;
+    }
+
+    height = GTK_WIDGET(piano)->allocation.height;
+  }
+  
   x_start = 0;
   y_start = 0;
   
