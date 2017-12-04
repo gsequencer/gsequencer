@@ -190,6 +190,9 @@ ags_scrolled_piano_init(AgsScrolledPiano *scrolled_piano)
   /* viewport */
   scrolled_piano->viewport = gtk_viewport_new(NULL,
 					      NULL);
+  g_object_set(scrolled_piano->viewport,
+	       "shadow-type", GTK_SHADOW_NONE,
+	       NULL);
   gtk_container_add(scrolled_piano,
 		    scrolled_piano->viewport);
 

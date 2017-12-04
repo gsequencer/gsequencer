@@ -252,7 +252,7 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
   /* scrolled piano */
   notation_editor->scrolled_piano = ags_scrolled_piano_new();
   g_object_set(notation_editor->scrolled_piano,
-	       "margin-top", (guint) ((AGS_RULER_FONT_SIZE + (2 * AGS_RULER_FREE_SPACE) + AGS_RULER_LARGE_STEP) - (AGS_PIANO_DEFAULT_KEY_HEIGHT / 2)),
+	       "margin-top", (guint) ((AGS_RULER_FONT_SIZE + (2 * AGS_RULER_FREE_SPACE) + AGS_RULER_LARGE_STEP) - (ceil(AGS_PIANO_DEFAULT_KEY_HEIGHT / 4.0))),
 	       NULL);
   gtk_table_attach(table,
 		   (GtkWidget *) notation_editor->scrolled_piano,
@@ -393,12 +393,44 @@ void
 ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
 					 AgsMachine *machine)
 {
+  AgsMachine *old_machine;
+
+  AgsMutexManager *mutex_manager;
+
   GList *tab;
 
   guint length;
+  guint audio_channels;
   guint i;
 
-  /* notebook */
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* disconnect set pads - old */
+  old_machine = notation_editor->selected_machine;
+
+  if(old_machine != NULL){
+    g_object_disconnect(old_machine->audio,
+			"set-pads",
+			G_CALLBACK(ags_notation_editor_set_pads_callback),
+			(gpointer) notation_editor,
+			NULL);
+  }
+
+  /* get audio mutex */
+  if(machine != NULL){
+    pthread_mutex_lock(application_mutex);
+  
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) machine->audio);
+  
+    pthread_mutex_unlock(application_mutex);
+  }
+  
+  /* notebook - remove tabs */
   length = g_list_length(notation_editor->notebook->tab);
   
   for(i = 0; i < length; i++){
@@ -406,8 +438,15 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
 			    0);
   }
 
+  /* notebook - add tabs */
   if(machine != NULL){
-    for(i = 0; i < machine->audio->audio_channels; i++){
+    pthread_mutex_lock(audio_mutex);
+
+    audio_channels = machine->audio->audio_channels;
+    
+    pthread_mutex_unlock(audio_mutex);
+
+    for(i = 0; i < audio_channels; i++){
       ags_notebook_insert_tab(notation_editor->notebook,
 			      i);
 
@@ -422,16 +461,22 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
     guint channel_count;
 
     /* get channel count */
+    pthread_mutex_lock(audio_mutex);
+
     if((AGS_AUDIO_NOTATION_DEFAULT & (machine->audio->flags)) != 0){
       channel_count = machine->audio->input_pads;
     }else{
       channel_count = machine->audio->output_pads;
     }
-    
+
+    pthread_mutex_unlock(audio_mutex);
+
+    /* apply channel count */
     g_object_set(notation_editor->scrolled_piano->piano,
 		 "key-count", channel_count,
 		 NULL);
   }else{
+    /* apply default */
     g_object_set(notation_editor->scrolled_piano->piano,
 		 "key-count", AGS_PIANO_DEFAULT_KEY_COUNT,
 		 NULL);
@@ -448,6 +493,12 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
 
   /* redraw */
   gtk_widget_queue_draw(notation_editor->notation_edit);
+
+  /* connect set-pads - new */
+  if(machine != NULL){
+    g_signal_connect_after(machine->audio, "set-pads",
+			   G_CALLBACK(ags_notation_editor_set_pads_callback), notation_editor);
+  }  
 }
 
 /**

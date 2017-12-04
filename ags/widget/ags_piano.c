@@ -116,6 +116,7 @@ enum{
 enum{
   PROP_0,
   PROP_BASE_NOTE,
+  PROP_BASE_KEY_CODE,
   PROP_KEY_WIDTH,
   PROP_KEY_HEIGHT,
   PROP_KEY_COUNT,
@@ -232,6 +233,23 @@ ags_piano_class_init(AgsPianoClass *piano)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BASE_NOTE,
+				  param_spec);
+  /**
+   * AgsPiano:base-key-code:
+   *
+   * The base key code.
+   * 
+   * Since: 1.2.0
+   */
+  param_spec = g_param_spec_uint("base-key-code",
+				 "base key code",
+				 "The base key code",
+				 0,
+				 G_MAXUINT,
+				 AGS_PIANO_DEFAULT_BASE_KEY_CODE,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BASE_KEY_CODE,
 				  param_spec);
 
   /**
@@ -476,6 +494,11 @@ ags_piano_set_property(GObject *gobject,
       piano->base_note = g_strdup(base_note);
     }
     break;
+  case PROP_BASE_KEY_CODE:
+    {
+      piano->base_key_code = g_value_get_uint(value);
+    }
+    break;
   case PROP_KEY_WIDTH:
     {
       piano->key_width = g_value_get_uint(value);
@@ -511,6 +534,11 @@ ags_piano_get_property(GObject *gobject,
   case PROP_BASE_NOTE:
     {
       g_value_set_string(value, piano->base_note);
+    }
+    break;
+  case PROP_BASE_KEY_CODE:
+    {
+      g_value_set_uint(value, piano->base_key_code);
     }
     break;
   case PROP_KEY_WIDTH:
@@ -1133,14 +1161,14 @@ ags_piano_draw(AgsPiano *piano)
   if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
     width = GTK_WIDGET(piano)->allocation.width;
 
-    if(piano->key_count * piano->key_height + (piano->key_height / 2) < GTK_WIDGET(piano)->allocation.height){
-      height = piano->key_count * piano->key_height + (piano->key_height / 2);
+    if(piano->key_count * piano->key_height < GTK_WIDGET(piano)->allocation.height){
+      height = piano->key_count * piano->key_height;
     }else{
       height = GTK_WIDGET(piano)->allocation.height;
     }
   }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
-    if(piano->key_count * piano->key_height + (piano->key_height / 2) < GTK_WIDGET(piano)->allocation.height){
-      width = piano->key_count * piano->key_height + (piano->key_height / 2);
+    if(piano->key_count * piano->key_height < GTK_WIDGET(piano)->allocation.width){
+      width = piano->key_count * piano->key_height;
     }else{
       width = GTK_WIDGET(piano)->allocation.width;
     }

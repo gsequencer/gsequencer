@@ -21,7 +21,7 @@ ags (1.2.0)
 	* TODO:JK: implemented AgsAudiorec
 	* TODO:JK: implemented AgsCartesian properties
 	* implemented AgsMessageDelivery and AgsMessageQueue
-	* implemented AgsPiano
+	* implemented AgsPiano and AgsScrolledPiano
 	* implemented AgsDevin
 	* implemented AgsJackDevin
 	* implemented AgsPulseDevin

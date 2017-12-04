@@ -79,10 +79,10 @@ static void ags_machine_finalize(GObject *gobject);
 void ags_machine_show(GtkWidget *widget);
 
 void ags_machine_real_resize_audio_channels(AgsMachine *machine,
-						  guint new_size, guint old_size);
+					    guint new_size, guint old_size);
 void ags_machine_real_resize_pads(AgsMachine *machine,
-					GType channel_type,
-					guint new_size, guint old_size);
+				  GType channel_type,
+				  guint new_size, guint old_size);
 void ags_machine_real_map_recall(AgsMachine *machine);
 GList* ags_machine_real_find_port(AgsMachine *machine);
 
@@ -1236,7 +1236,7 @@ ags_machine_resize_audio_channels(AgsMachine *machine,
 }
 
 void
-ags_machine_real_resize_pads(AgsMachine *machine, GType type,
+ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 			     guint pads, guint pads_old)
 {
   AgsPad *pad;
@@ -1247,8 +1247,9 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
   
   AgsMutexManager *mutex_manager;
 
-  GList *list_pad;
-  
+  GList *list_pad_start, *list_pad;
+
+  guint audio_channels;
   guint i, j;
 
   pthread_mutex_t *application_mutex;
@@ -1273,14 +1274,16 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
 
     input = audio->input;
     output = audio->output;
+
+    audio_channels = audio->audio_channels;
     
     pthread_mutex_unlock(audio_mutex);
 
     /* grow input */
     if(machine->input != NULL){
-      if(type == AGS_TYPE_INPUT){
+      if(channel_type == AGS_TYPE_INPUT){
 	channel = ags_channel_nth(input,
-				  pads_old * audio->audio_channels);
+				  pads_old * audio_channels);
       
 	for(i = pads_old; i < pads; i++){
 	  /* lookup channel mutex */
@@ -1300,7 +1303,7 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
 
 	  /* resize lines */
 	  ags_pad_resize_lines((AgsPad *) pad, machine->input_line_type,
-			       audio->audio_channels, 0);
+			       audio_channels, 0);
 	  
 	  /* iterate */
 	  pthread_mutex_lock(channel_mutex);
@@ -1311,7 +1314,8 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
 	}
 
 	/* show all */
-	list_pad = gtk_container_get_children(GTK_CONTAINER(machine->input));
+	list_pad_start = 
+	  list_pad = gtk_container_get_children(GTK_CONTAINER(machine->input));
 	list_pad = g_list_nth(list_pad,
 			      pads_old);
 
@@ -1320,14 +1324,16 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
 
 	  list_pad = list_pad->next;
 	}
+
+	g_list_free(list_pad_start);
       }
     }
     
     /* grow output */
     if(machine->output != NULL){
-      if(type == AGS_TYPE_OUTPUT){
+      if(channel_type == AGS_TYPE_OUTPUT){
 	channel = ags_channel_nth(output,
-				  pads_old * audio->audio_channels);
+				  pads_old * audio_channels);
     
 	for(i = pads_old; i < pads; i++){
 	  /* lookup channel mutex */
@@ -1346,7 +1352,7 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
 
 	  /* resize lines */
 	  ags_pad_resize_lines((AgsPad *) pad, machine->output_line_type,
-			       audio->audio_channels, 0);
+			       audio_channels, 0);
 
 	  /* iterate */
 	  pthread_mutex_lock(channel_mutex);
@@ -1357,7 +1363,8 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
 	}
 
 	/* show all */
-	list_pad = gtk_container_get_children(GTK_CONTAINER(machine->output));
+	list_pad_start = 
+	  list_pad = gtk_container_get_children(GTK_CONTAINER(machine->output));
 	list_pad = g_list_nth(list_pad,
 			      pads_old);
 
@@ -1366,13 +1373,15 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
 
 	  list_pad = list_pad->next;
 	}
+
+	g_list_free(list_pad_start);
       }
     }
   }else if(pads_old > pads){
     GList *list, *list_start;
     
     /* input - destroy AgsPad's */
-    if(type == AGS_TYPE_INPUT &&
+    if(channel_type == AGS_TYPE_INPUT &&
        machine->input != NULL){
       for(i = 0; i < pads_old - pads; i++){
 	list_start = gtk_container_get_children(GTK_CONTAINER(machine->input));
@@ -1387,7 +1396,7 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType type,
     }
     
     /* output - destroy AgsPad's */
-    if(type == AGS_TYPE_OUTPUT &&
+    if(channel_type == AGS_TYPE_OUTPUT &&
        machine->output != NULL){
       for(i = 0; i < pads_old - pads; i++){
 	list_start = gtk_container_get_children(GTK_CONTAINER(machine->output));

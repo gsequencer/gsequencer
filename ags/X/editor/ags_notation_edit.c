@@ -844,6 +844,7 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
   AgsNotationEditor *notation_editor;
 
   GtkAdjustment *adjustment;
+  GtkAdjustment *piano_adjustment;
   
   guint channel_count;
   double varea_height;
@@ -863,6 +864,10 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
   /* adjustment */
   adjustment = GTK_RANGE(notation_edit->vscrollbar)->adjustment;
 
+  g_object_get(notation_editor->scrolled_piano->viewport,
+	       "vadjustment", &piano_adjustment,
+	       NULL);
+
   /* get channel count */
   if((AGS_AUDIO_NOTATION_DEFAULT & (notation_editor->selected_machine->audio->flags)) != 0){
     channel_count = notation_editor->selected_machine->audio->input_pads;
@@ -881,7 +886,11 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
   }
 	   
   gtk_adjustment_set_upper(adjustment,
-			   upper);  
+			   upper);
+
+  /* piano - only upper */
+  gtk_adjustment_set_upper(piano_adjustment,
+			   upper);
 
   /* reset value */
   if(old_upper != 0.0){
@@ -1635,7 +1644,9 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
     
     i++;
   }
-  
+
+  pthread_mutex_unlock(audio_mutex);
+
   /* complete */
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);

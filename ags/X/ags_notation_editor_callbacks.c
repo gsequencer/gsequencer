@@ -25,3 +25,55 @@ ags_notation_editor_machine_changed_callback(AgsMachineSelector *machine_selecto
 {
   ags_notation_editor_machine_changed(notation_editor, machine);
 }
+
+void
+ags_notation_editor_set_pads_callback(AgsAudio *audio, GType channel_type,
+				      guint pads, guint pads_old,
+				      AgsNotationEditor *notation_editor)
+{
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+  
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* verify pads */
+  pthread_mutex_lock(audio_mutex);
+  
+  if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
+    if(!g_type_is_a(channel_type,
+		    AGS_TYPE_INPUT)){
+      pthread_mutex_unlock(audio_mutex);
+      
+      return;
+    }    
+  }else{
+    if(!g_type_is_a(channel_type,
+		    AGS_TYPE_OUTPUT)){
+      pthread_mutex_unlock(audio_mutex);
+      
+      return;
+    }
+  }
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  /*  */
+  g_object_set(notation_editor->scrolled_piano->piano,
+	       "key-count", pads,
+	       NULL);
+  gtk_widget_queue_draw(notation_editor->scrolled_piano->piano);
+
+  /*  */
+  gtk_widget_queue_draw(notation_editor->notation_edit);
+}

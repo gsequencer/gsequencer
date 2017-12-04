@@ -5,6 +5,8 @@ Overview of Changes in AGS 1.2.0
   Pulseaudio. 
 * New widget AgsPiano available. It is an accessible widget which draws
   a piano. It has events like ::key-pressed, ::key-released and ::key-clicked.
+* New widget AgsScrolledPiano available. It contains an AgsPiano and addtional
+  scrolling capabilities.
 * New widget AgsNotebook available. It is has been moved from libgsequencer to
   libags-gui. It was refactored to be generic.
 
