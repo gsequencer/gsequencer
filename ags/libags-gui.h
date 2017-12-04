@@ -31,6 +31,7 @@
 #include <ags/widget/ags_notebook.h>
 #include <ags/widget/ags_piano_keys.h>
 #include <ags/widget/ags_piano.h>
+#include <ags/widget/ags_scrolled_piano.h>
 #include <ags/widget/ags_ruler.h>
 #include <ags/widget/ags_vindicator.h>
 #include <ags/widget/ags_widget_marshal.h>

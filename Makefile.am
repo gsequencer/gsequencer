@@ -1245,6 +1245,7 @@ libags_gui_h_sources = \
 	ags/widget/ags_notebook.h \
 	ags/widget/ags_piano_keys.h \
 	ags/widget/ags_piano.h \
+	ags/widget/ags_scrolled_piano.h \
 	ags/widget/ags_ruler.h \
 	ags/widget/ags_table.h \
 	ags/widget/ags_timebar.h \
@@ -1270,6 +1271,7 @@ libags_gui_c_sources = \
 	ags/widget/ags_led_array.c \
 	ags/widget/ags_notebook.c \
 	ags/widget/ags_piano.c \
+	ags/widget/ags_scrolled_piano.c \
 	ags/widget/ags_ruler.c \
 	ags/widget/ags_table.c \
 	ags/widget/ags_timebar.c \
