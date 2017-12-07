@@ -27,6 +27,8 @@
 
 #include <math.h>
 
+#include <gdk/gdkkeysyms.h>
+
 gboolean
 ags_notation_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsNotationEdit *notation_edit)
 {
@@ -386,13 +388,362 @@ ags_notation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMo
 gboolean
 ags_notation_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsNotationEdit *notation_edit)
 {
-  //TODO:JK: implement me
+  AgsNotationEditor *notation_editor;
+  AgsMachine *machine;
+
+  gboolean retval;
+  
+  if(event->keyval == GDK_KEY_Tab ||
+     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_Shift_L ||
+     event->keyval == GDK_KEY_Shift_R ||
+     event->keyval == GDK_KEY_Alt_L ||
+     event->keyval == GDK_KEY_Alt_R ||
+     event->keyval == GDK_KEY_Control_L ||
+     event->keyval == GDK_KEY_Control_R ){
+    retval = FALSE;
+  }else{
+    retval = TRUE;
+  }
+
+  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(notation_edit),
+								  AGS_TYPE_NOTATION_EDITOR);
+
+  machine = notation_editor->selected_machine;
+  
+  if(machine != NULL){
+    switch(event->keyval){
+    case GDK_KEY_Control_L:
+      {
+	notation_edit->key_mask |= AGS_NOTATION_EDIT_KEY_L_CONTROL;
+      }
+      break;
+    case GDK_KEY_Control_R:
+      {
+	notation_edit->key_mask |= AGS_NOTATION_EDIT_KEY_R_CONTROL;
+      }
+      break;
+    case GDK_KEY_Shift_L:
+      {
+	notation_edit->key_mask |= AGS_NOTATION_EDIT_KEY_L_SHIFT;
+      }
+      break;
+    case GDK_KEY_Shift_R:
+      {
+	notation_edit->key_mask |= AGS_NOTATION_EDIT_KEY_R_SHIFT;
+      }
+      break;
+    case GDK_KEY_a:
+      {
+	/* select all notes */
+	if((AGS_NOTATION_EDIT_KEY_L_CONTROL & (notation_edit->key_mask)) != 0 || (AGS_NOTATION_EDIT_KEY_R_CONTROL & (notation_edit->key_mask)) != 0){
+	  ags_notation_editor_select_all(notation_editor);
+	}
+      }
+      break;
+    case GDK_KEY_c:
+      {
+	/* copy notes */
+	if((AGS_NOTATION_EDIT_KEY_L_CONTROL & (notation_edit->key_mask)) != 0 || (AGS_NOTATION_EDIT_KEY_R_CONTROL & (notation_edit->key_mask)) != 0){
+	  ags_notation_editor_copy(notation_editor);
+	}
+      }
+      break;
+    case GDK_KEY_v:
+      {
+	/* paste notes */
+	if((AGS_NOTATION_EDIT_KEY_L_CONTROL & (notation_edit->key_mask)) != 0 || (AGS_NOTATION_EDIT_KEY_R_CONTROL & (notation_edit->key_mask)) != 0){
+	  ags_notation_editor_paste(notation_editor);
+	}
+      }
+      break;
+    case GDK_KEY_x:
+      {
+	/* cut notes */
+	if((AGS_NOTATION_EDIT_KEY_L_CONTROL & (notation_edit->key_mask)) != 0 || (AGS_NOTATION_EDIT_KEY_R_CONTROL & (notation_edit->key_mask)) != 0){
+	  ags_notation_editor_cut(notation_editor);
+	}
+      }
+      break;
+    case GDK_KEY_i:
+      {
+	/* invert notes */
+	if((AGS_NOTATION_EDIT_KEY_L_CONTROL & (notation_edit->key_mask)) != 0 || (AGS_NOTATION_EDIT_KEY_R_CONTROL & (notation_edit->key_mask)) != 0){
+	  ags_notation_editor_invert(notation_editor);
+	}
+      }
+      break;
+    }
+  }
+
+  return(retval);
 }
 
 gboolean
 ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsNotationEdit *notation_edit)
 {
-  //TODO:JK: implement me
+  AgsNotationEditor *notation_editor;
+  AgsNotationToolbar *notation_toolbar;
+  AgsMachine *machine;
+
+  AgsMutexManager *mutex_manager;
+
+  double zoom_factor;
+  gint i;
+  gboolean retval;
+  gboolean do_feedback;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(notation_edit),
+								  AGS_TYPE_NOTATION_EDITOR);
+
+  notation_toolbar = notation_editor->notation_toolbar;
+
+  machine = notation_editor->selected_machine;
+  
+  if(event->keyval == GDK_KEY_Tab ||
+     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_Shift_L ||
+     event->keyval == GDK_KEY_Shift_R ||
+     event->keyval == GDK_KEY_Alt_L ||
+     event->keyval == GDK_KEY_Alt_R ||
+     event->keyval == GDK_KEY_Control_L ||
+     event->keyval == GDK_KEY_Control_R ){
+    retval = FALSE;
+  }else{
+    retval = TRUE;
+  }
+
+  if(machine != NULL){
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    /* get audio mutex */
+    pthread_mutex_lock(application_mutex);  
+    
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) machine->audio);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* do feedback - initial set */
+    do_feedback = FALSE;
+
+    /* zoom */
+    zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));
+
+    /* check key value */
+    switch(event->keyval){
+    case GDK_KEY_Control_L:
+      {
+	notation_edit->key_mask &= (~AGS_NOTATION_EDIT_KEY_L_CONTROL);
+      }
+      break;
+    case GDK_KEY_Control_R:
+      {
+	notation_edit->key_mask &= (~AGS_NOTATION_EDIT_KEY_R_CONTROL);
+      }
+      break;
+    case GDK_KEY_Shift_L:
+      {
+	notation_edit->key_mask &= (~AGS_NOTATION_EDIT_KEY_L_SHIFT);
+      }
+      break;
+    case GDK_KEY_Shift_R:
+      {
+	notation_edit->key_mask &= (~AGS_NOTATION_EDIT_KEY_R_SHIFT);
+      }
+      break;
+    case GDK_KEY_Left:
+    case GDK_KEY_leftarrow:
+      {
+	if((AGS_NOTATION_EDIT_KEY_L_SHIFT & (notation_edit->key_mask)) != 0 ||
+	   (AGS_NOTATION_EDIT_KEY_R_SHIFT & (notation_edit->key_mask)) != 0){
+	  AgsTimestamp *timestamp;
+
+	  /* shrink note */
+	  timestamp = ags_timestamp_new();
+
+	  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+	  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
+	  timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(notation_edit->cursor_position_x / AGS_NOTATION_DEFAULT_OFFSET);
+	  
+	  i = 0;
+	  do_feedback = TRUE;
+	
+	  while((i = ags_notebook_next_active_tab(notation_editor->notebook,
+						  i)) != -1){
+	    GList *list_notation;
+	    
+	    pthread_mutex_lock(audio_mutex);
+	  
+	    list_notation = ags_notation_find_near_timestamp(machine->audio->notation, i,
+							     timestamp);
+	    
+	    if(list_notation != NULL){
+	      AgsNote *note;
+	      
+	      note = ags_notation_find_point(AGS_NOTATION(list_notation->data),
+					     notation_edit->cursor_position_x, notation_edit->cursor_position_y,
+					     FALSE);
+
+	      if(note != NULL &&
+		 note->x[1] - note->x[0] - zoom_factor >= zoom_factor){
+		note->x[1] -= zoom_factor;
+	      }
+	    }
+
+	    pthread_mutex_unlock(audio_mutex);
+	  
+	    i++;
+	  }
+	}else{
+	  gdouble x0_offset;
+
+	  /* position cursor */
+	  if(notation_edit->cursor_position_x > 0){
+	    if(notation_edit->cursor_position_x - (zoom_factor) > 0){
+	      notation_edit->cursor_position_x -= (zoom_factor);
+	    }else{
+	      notation_edit->cursor_position_x = 0;
+	    }
+	  
+	    do_feedback = TRUE;
+	  }
+
+	  x0_offset = notation_edit->cursor_position_x * notation_edit->control_width;
+      
+	  if(x0_offset < GTK_RANGE(notation_edit->hscrollbar)->adjustment->value){
+	    gtk_range_set_value(GTK_RANGE(notation_edit->hscrollbar),
+				x0_offset);
+	  }
+	}
+      }
+      break;
+    case GDK_KEY_Right:
+    case GDK_KEY_rightarrow:
+      {
+	if((AGS_NOTATION_EDIT_KEY_L_SHIFT & (notation_edit->key_mask)) != 0 ||
+	   (AGS_NOTATION_EDIT_KEY_R_SHIFT & (notation_edit->key_mask)) != 0){
+	  AgsTimestamp *timestamp;
+
+	  /* shrink note */
+	  timestamp = ags_timestamp_new();
+
+	  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+	  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
+	  timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(notation_edit->cursor_position_x / AGS_NOTATION_DEFAULT_OFFSET);
+	  
+	  i = 0;
+	  do_feedback = TRUE;
+	
+	  while((i = ags_notebook_next_active_tab(notation_editor->notebook,
+						  i)) != -1){
+	    GList *list_notation;
+	    
+	    pthread_mutex_lock(audio_mutex);
+	  
+	    list_notation = ags_notation_find_near_timestamp(machine->audio->notation, i,
+							     timestamp);
+	    
+	    if(list_notation != NULL){
+	      AgsNote *note;
+	      
+	      note = ags_notation_find_point(AGS_NOTATION(list_notation->data),
+					     notation_edit->cursor_position_x, notation_edit->cursor_position_y,
+					     FALSE);
+
+	      if(note != NULL){
+		note->x[1] += zoom_factor;
+	      }
+	    }
+
+	    pthread_mutex_unlock(audio_mutex);
+	  
+	    i++;
+	  }
+	}else{
+	  gdouble x0_offset;
+	  
+	  /* position cursor */      
+	  if(notation_edit->cursor_position_x < AGS_NOTATION_EDITOR_MAX_CONTROLS){
+	    notation_edit->cursor_position_x += (zoom_factor);
+	  
+	    do_feedback = TRUE;
+	  }
+
+	  x0_offset = notation_edit->cursor_position_x * notation_edit->control_width;
+      
+	  if(x0_offset + notation_edit->control_width > GTK_RANGE(notation_edit->hscrollbar)->adjustment->value + GTK_WIDGET(notation_edit->drawing_area)->allocation.width){
+	    gtk_range_set_value(GTK_RANGE(notation_edit->hscrollbar),
+				x0_offset);
+	  }
+	}
+      }
+      break;
+    case GDK_KEY_Up:
+    case GDK_KEY_uparrow:
+      {
+	gdouble y0_offset;
+      
+	if(notation_edit->cursor_position_y > 0){
+	  notation_edit->cursor_position_y -= 1;
+	
+	  do_feedback = TRUE;
+	}
+
+	y0_offset = notation_edit->cursor_position_y * notation_edit->control_height;
+      
+	if(y0_offset < GTK_RANGE(notation_edit->vscrollbar)->adjustment->value){
+	  gtk_range_set_value(GTK_RANGE(notation_edit->vscrollbar),
+			      y0_offset);
+	}
+      }
+      break;
+    case GDK_KEY_Down:
+    case GDK_KEY_downarrow:
+      {
+	gdouble y0_offset;
+      
+	if(notation_edit->cursor_position_y > 0){
+	  notation_edit->cursor_position_y -= 1;
+	
+	  do_feedback = TRUE;
+	}
+
+	y0_offset = notation_edit->cursor_position_y * notation_edit->control_height;
+      
+	if(y0_offset < GTK_RANGE(notation_edit->vscrollbar)->adjustment->value){
+	  gtk_range_set_value(GTK_RANGE(notation_edit->vscrollbar),
+			      y0_offset);
+	}
+      }
+      break;
+    case GDK_KEY_space:
+      {
+	//TODO:JK: implement me
+      }
+      break;
+    case GDK_KEY_Delete:
+      {
+	//TODO:JK: implement me
+      }
+      break;
+    }
+
+    gtk_widget_queue_draw(notation_edit);
+
+    /* do feedback */
+    if(do_feedback){
+      //TODO:JK: implement me
+    }
+  }
+  
+  return(retval);
 }
 
 void

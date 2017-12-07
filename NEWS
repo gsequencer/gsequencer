@@ -9,6 +9,8 @@ Overview of Changes in AGS 1.2.0
   scrolling capabilities.
 * New widget AgsNotebook available. It is has been moved from libgsequencer to
   libags-gui. It was refactored to be generic.
+* Refactored notation editor by replacing AgsEditor with AgsNotationEditor.
+  Notes have an alpha channel now. The editor supports segmented notation.
 
 Overview of Changes in AGS 1.0.0
 ================================
