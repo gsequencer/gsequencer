@@ -1236,6 +1236,7 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit)
 
   GtkStyle *notation_edit_style;
 
+  double zoom, zoom_factor;
   double x, y;
   double width, height;
 
@@ -1247,6 +1248,15 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit)
     return;
   }
   
+  notation_editor = gtk_widget_get_ancestor(notation_edit,
+					    AGS_TYPE_NOTATION_EDITOR);
+
+  if(notation_editor->selected_machine == NULL){
+    return;
+  }
+
+  notation_toolbar = notation_editor->notation_toolbar;
+
   notation_edit_style = gtk_widget_get_style(GTK_WIDGET(notation_edit->drawing_area));
 
   /* create cairo context */
@@ -1256,12 +1266,19 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit)
     return;
   }
 
+  /* zoom */
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom) - 2.0);
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));
+
   /* get offset */
   x = ((double) notation_edit->cursor_position_x * (double) notation_edit->control_width) - GTK_RANGE(notation_edit->hscrollbar)->adjustment->value;
   y = ((double) notation_edit->cursor_position_y * (double) notation_edit->control_height) - GTK_RANGE(notation_edit->vscrollbar)->adjustment->value;
 
   width = (double) notation_edit->control_width;
   height = (double) notation_edit->control_height;
+
+  /* apply zoom */
+  x /= zoom_factor;
 
   /* clip */
   if(x < 0.0){
@@ -1287,7 +1304,7 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit)
   if(y + height > GTK_WIDGET(notation_edit->drawing_area)->allocation.height){
     height = ((double) GTK_WIDGET(notation_edit->drawing_area)->allocation.height) - y;
   }
-      
+
   /* push group */
   cairo_push_group(cr);
 
@@ -1401,7 +1418,7 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
 
   GtkStyle *notation_edit_style;
 
-  double zoom;
+  double zoom, zoom_factor;
   guint channel_count;
   double viewport_x, viewport_y;
   double x, y;
@@ -1434,10 +1451,20 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
 
   /* zoom */
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom) - 2.0);
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));
 
   /* get offset and dimensions */
-  viewport_x = ((AGS_NOTATION_EDITOR_MAX_CONTROLS * notation_edit->control_width) / GTK_RANGE(notation_edit->hscrollbar)->adjustment->upper) * GTK_RANGE(notation_edit->hscrollbar)->adjustment->value;
-  viewport_y = ((channel_count * notation_edit->control_height) / GTK_RANGE(notation_edit->vscrollbar)->adjustment->upper) * GTK_RANGE(notation_edit->vscrollbar)->adjustment->value;
+  if((AGS_NOTATION_EDITOR_MAX_CONTROLS * notation_edit->control_width) > GTK_WIDGET(notation_edit->drawing_area)->allocation.width){
+    viewport_x = zoom_factor * GTK_RANGE(notation_edit->hscrollbar)->adjustment->value;
+  }else{
+    viewport_x = 0.0;
+  }
+  
+  if((channel_count * notation_edit->control_height) > GTK_WIDGET(notation_edit->drawing_area)->allocation.height){
+    viewport_y = GTK_RANGE(notation_edit->vscrollbar)->adjustment->value;
+  }else{
+    viewport_y = 0.0;
+  }
   
   x = ((double) note->x[0]) * ((double) notation_edit->control_width) - viewport_x;
   y = ((double) note->y) * ((double) notation_edit->control_height) - viewport_y;
@@ -1446,12 +1473,12 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
   height = ((double) notation_edit->control_height);
 
   /* apply zoom */
-  x /= ((1.0 / AGS_NOTATION_EDIT_MIN_ZOOM) * zoom);
+  x /= zoom_factor;
   x += ((double) notation_edit->control_margin_x);
 
   y += ((double) notation_edit->control_margin_y);
   
-  width /= ((1.0 / AGS_NOTATION_EDIT_MIN_ZOOM) * zoom);
+  width /= zoom_factor;
   width -= (2.0 * (double) notation_edit->control_margin_x);
   
   height -= (2.0 * (double) notation_edit->control_margin_y);
@@ -1669,6 +1696,31 @@ ags_notation_edit_draw(AgsNotationEdit *notation_edit)
   case AGS_NOTATION_EDIT_POSITION_CURSOR:
     {
       ags_notation_edit_draw_cursor(notation_edit);
+    }
+    break;
+  case AGS_NOTATION_EDIT_ADD_NOTE:
+    {
+      if(notation_edit->current_note != NULL){
+	GtkStyle *notation_edit_style;
+	
+	cairo_t *cr;
+
+	static const gdouble white_gc = 65535.0;
+	
+	notation_edit_style = gtk_widget_get_style(GTK_WIDGET(notation_edit->drawing_area));
+	
+	cr = gdk_cairo_create(GTK_WIDGET(notation_edit->drawing_area)->window);
+
+	if(cr != NULL){
+	  ags_notation_edit_draw_note(notation_edit,
+				      notation_edit->current_note,
+				      cr,
+				      notation_edit_style->fg[0].red / white_gc,
+				      notation_edit_style->fg[0].green / white_gc,
+				      notation_edit_style->fg[0].blue / white_gc,
+				      1.0);
+	}
+      }
     }
     break;
   case AGS_NOTATION_EDIT_SELECT_NOTE:

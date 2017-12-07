@@ -63,7 +63,7 @@ void ags_notation_safe_set_property(AgsPortlet *portlet, gchar *property_name, G
 void ags_notation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
 
 void ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
-						     xmlNodePtr root_node, char *version,
+						     xmlNode *root_node, char *version,
 						     char *base_frequency,
 						     char *x_boundary, char *y_boundary,
 						     gboolean from_x_offset, guint x_offset,
@@ -1679,7 +1679,7 @@ ags_notation_cut_selection(AgsNotation *notation)
  */
 void
 ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
-						xmlNodePtr root_node, char *version,
+						xmlNode *root_node, char *version,
 						char *base_frequency,
 						char *x_boundary, char *y_boundary,
 						gboolean reset_x_offset, guint x_offset,
@@ -1965,7 +1965,7 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
  */
 void
 ags_notation_insert_from_clipboard(AgsNotation *notation,
-				   xmlNodePtr notation_node,
+				   xmlNode *notation_node,
 				   gboolean reset_x_offset, guint x_offset,
 				   gboolean reset_y_offset, guint y_offset)
 {

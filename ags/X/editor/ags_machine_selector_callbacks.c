@@ -202,7 +202,7 @@ ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachine
     
     notation = notation_editor->selected_machine->audio->notation;
     label = gtk_menu_item_get_label((GtkMenuItem *) menu_item);
-    
+
     while(notation != NULL){
       g_free(AGS_NOTATION(notation->data)->base_note);
       AGS_NOTATION(notation->data)->base_note = g_strdup(label);
@@ -264,5 +264,6 @@ ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachine
 		 "base-note", base_note,
 		 "base-key-code", base_key_code,
 		 NULL);
+    gtk_widget_queue_draw(notation_editor->scrolled_piano->piano);
   }
 }

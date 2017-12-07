@@ -99,6 +99,16 @@ GType ags_notation_editor_get_type(void);
 void ags_notation_editor_machine_changed(AgsNotationEditor *notation_editor,
 					 AgsMachine *machine);
 
+void ags_notation_editor_add_note(AgsNotationEditor *notation_editor,
+				  AgsNote *note);
+
+void ags_notation_editor_delete_note(AgsNotationEditor *notation_editor,
+				     guint x, guint y);
+
+void ags_notation_editor_select_region(AgsNotationEditor *notation_editor,
+				       guint x0, guint y0,
+				       guint x1, guint y1);
+
 void ags_notation_editor_select_all(AgsNotationEditor *notation_editor);
 
 void ags_notation_editor_paste(AgsNotationEditor *notation_editor);

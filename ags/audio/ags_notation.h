@@ -157,7 +157,7 @@ xmlNode* ags_notation_copy_selection(AgsNotation *notation);
 xmlNode* ags_notation_cut_selection(AgsNotation *notation);
 
 void ags_notation_insert_from_clipboard(AgsNotation *notation,
-					xmlNodePtr notation_node,
+					xmlNode *notation_node,
 					gboolean reset_x_offset, guint x_offset,
 					gboolean reset_y_offset, guint y_offset);
 
