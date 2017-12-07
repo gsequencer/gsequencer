@@ -45,7 +45,7 @@ void ags_scale_show(GtkWidget *widget);
  * The #AgsScale draws you a scale.
  */
 
-GtkStyle *scale_style;
+GtkStyle *scale_style = NULL;
 
 GType
 ags_scale_get_type(void)
@@ -100,16 +100,19 @@ ags_scale_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_scale_init(AgsScale *scale)
 {
-  GtkWidget *widget;
-
-  widget = (GtkWidget *) scale;
-  gtk_widget_set_style(widget, scale_style);
-  gtk_widget_set_size_request(widget, 60, -1);
-  gtk_widget_set_events (GTK_WIDGET (scale), GDK_EXPOSURE_MASK
-                         | GDK_LEAVE_NOTIFY_MASK
-                         | GDK_BUTTON_PRESS_MASK
-			 | GDK_BUTTON_RELEASE_MASK
-			 );
+  if(scale_style == NULL){
+    scale_style = gtk_style_copy(gtk_widget_get_style(scale));
+  }
+  
+  gtk_widget_set_style((GtkWidget *) scale,
+		       scale_style);
+  gtk_widget_set_size_request((GtkWidget *) scale,
+			      60, -1);
+  gtk_widget_set_events(GTK_WIDGET(scale), GDK_EXPOSURE_MASK
+			| GDK_LEAVE_NOTIFY_MASK
+			| GDK_BUTTON_PRESS_MASK
+			| GDK_BUTTON_RELEASE_MASK
+			);
 
   scale->scale_area = NULL;
 

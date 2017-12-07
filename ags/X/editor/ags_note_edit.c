@@ -71,7 +71,7 @@ gchar* ags_accessible_note_edit_get_localized_name(AtkAction *action,
  * The #AgsNoteEdit lets you edit notes.
  */
 
-GtkStyle *note_edit_style;
+GtkStyle *note_edit_style = NULL;
 
 static GQuark quark_accessible_object = 0;
 
@@ -198,9 +198,13 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
 		   GTK_FILL,
 		   0, 0);
 
+  if(note_edit_style == NULL){
+    note_edit_style = gtk_style_copy(gtk_widget_get_style(note_edit));
+  }
+  
   note_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_style((GtkWidget *) note_edit->drawing_area,
-		       note_edit_style);
+  		       note_edit_style);
   gtk_widget_set_events(GTK_WIDGET(note_edit->drawing_area), GDK_EXPOSURE_MASK
 			| GDK_LEAVE_NOTIFY_MASK
 			| GDK_BUTTON_PRESS_MASK

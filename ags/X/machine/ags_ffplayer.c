@@ -114,7 +114,7 @@ void ags_ffplayer_paint(AgsFFPlayer *ffplayer);
 static gpointer ags_ffplayer_parent_class = NULL;
 static AgsConnectableInterface *ags_ffplayer_parent_connectable_interface;
 
-GtkStyle *ffplayer_style;
+GtkStyle *ffplayer_style = NULL;
 
 GType
 ags_ffplayer_get_type(void)
@@ -353,11 +353,16 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->control_width = 12;
   ffplayer->control_height = 40;
 
+  if(ffplayer_style == NULL){
+    ffplayer_style = gtk_style_copy(gtk_widget_get_style(ffplayer));
+  }
+  
   ffplayer->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_size_request((GtkWidget *) ffplayer->drawing_area,
 			      16 * ffplayer->control_width,
 			      ffplayer->control_width * 8 + ffplayer->control_height);
-  gtk_widget_set_style((GtkWidget *) ffplayer->drawing_area, ffplayer_style);
+  gtk_widget_set_style((GtkWidget *) ffplayer->drawing_area,
+		       ffplayer_style);
   gtk_widget_set_events ((GtkWidget *) ffplayer->drawing_area,
                          GDK_EXPOSURE_MASK
                          | GDK_LEAVE_NOTIFY_MASK
@@ -376,7 +381,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 							       (double) ffplayer->control_width,
 							       (double) (16 * ffplayer->control_width));
   hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(ffplayer->hadjustment);
-  gtk_widget_set_style((GtkWidget *) hscrollbar, ffplayer_style);
+  gtk_widget_set_style((GtkWidget *) hscrollbar,
+		       ffplayer_style);
   gtk_box_pack_start((GtkBox *) piano_vbox,
 		     (GtkWidget *) hscrollbar,
 		     FALSE, FALSE,

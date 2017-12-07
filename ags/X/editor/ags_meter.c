@@ -45,7 +45,7 @@ void ags_meter_disconnect(AgsConnectable *connectable);
  * The #AgsMeter draws you a piano.
  */
 
-GtkStyle *meter_style;
+GtkStyle *meter_style = NULL;
 
 GType
 ags_meter_get_type(void)
@@ -100,16 +100,19 @@ ags_meter_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_meter_init(AgsMeter *meter)
 {
-  GtkWidget *widget;
-
-  widget = (GtkWidget *) meter;
-  gtk_widget_set_style(widget, meter_style);
-  gtk_widget_set_size_request(widget, 60, -1);
-  gtk_widget_set_events (GTK_WIDGET (meter), GDK_EXPOSURE_MASK
-                         | GDK_LEAVE_NOTIFY_MASK
-                         | GDK_BUTTON_PRESS_MASK
-			 | GDK_BUTTON_RELEASE_MASK
-			 );
+  if(meter_style == NULL){
+    meter_style = gtk_style_copy(gtk_widget_get_style(meter));
+  }
+  
+  gtk_widget_set_style((GtkWidget *) meter,
+		       meter_style);
+  gtk_widget_set_size_request((GtkWidget *) meter,
+			      60, -1);
+  gtk_widget_set_events(GTK_WIDGET(meter), GDK_EXPOSURE_MASK
+			| GDK_LEAVE_NOTIFY_MASK
+			| GDK_BUTTON_PRESS_MASK
+			| GDK_BUTTON_RELEASE_MASK
+			);
 }
 
 void

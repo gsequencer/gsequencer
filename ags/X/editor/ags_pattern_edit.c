@@ -73,7 +73,7 @@ void ags_pattern_edit_paint(AgsPatternEdit *pattern_edit);
  * The #AgsPatternEdit lets you edit notes.
  */
 
-GtkStyle *pattern_edit_style;
+GtkStyle *pattern_edit_style = NULL;
 
 static GQuark quark_accessible_object = 0;
 
@@ -195,8 +195,13 @@ ags_pattern_edit_init(AgsPatternEdit *pattern_edit)
 		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
 
+  if(pattern_edit_style == NULL){
+    pattern_edit_style = gtk_style_copy(gtk_widget_get_style(pattern_edit));
+  }
+  
   pattern_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
-  gtk_widget_set_style((GtkWidget *) pattern_edit->drawing_area, pattern_edit_style);
+  gtk_widget_set_style((GtkWidget *) pattern_edit->drawing_area,
+		       pattern_edit_style);
   gtk_widget_set_events(GTK_WIDGET (pattern_edit->drawing_area), GDK_EXPOSURE_MASK
 			| GDK_LEAVE_NOTIFY_MASK
 			| GDK_BUTTON_PRESS_MASK
