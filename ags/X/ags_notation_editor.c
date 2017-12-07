@@ -743,8 +743,6 @@ ags_notation_editor_select_region(AgsNotationEditor *notation_editor,
     timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
     timestamp->flags |= AGS_TIMESTAMP_OFFSET;
     
-    timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(x0 / AGS_NOTATION_DEFAULT_OFFSET);
-
     pthread_mutex_lock(audio_mutex);
 
     i = 0;
@@ -752,6 +750,8 @@ ags_notation_editor_select_region(AgsNotationEditor *notation_editor,
     while((i = ags_notebook_next_active_tab(notation_editor->notebook,
 					    i)) != -1){      
       list_notation = machine->audio->notation;
+      
+      timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(x0 / AGS_NOTATION_DEFAULT_OFFSET);
       
       while((list_notation = ags_notation_find_near_timestamp(list_notation, i,
 							      timestamp)) != NULL &&
@@ -892,7 +892,7 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
 	if(!xmlStrncmp(notation_list_node->name,
 		       "notation-list",
 		       14)){
-	  timestamp_node = notation_list_node->children;
+	  notation_node = notation_list_node->children;
 	  
 	  while(notation_node != NULL){
 	    if(notation_node->type == XML_ELEMENT_NODE){
@@ -905,7 +905,7 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
 		guint current_x;
 		gint i;
 
-		timestamp_node = timestamp_node->children;
+		timestamp_node = notation_node->children;
 		offset = 0;
 	  
 		while(timestamp_node != NULL){
@@ -939,6 +939,7 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
 		  if(list_notation == NULL){
 		    notation = ags_notation_new(machine->audio,
 						i);
+		    AGS_TIMESTAMP(notation->timestamp)->timer.ags_offset.offset = offset;
 		    machine->audio->notation = ags_notation_add(machine->audio->notation,
 								notation);
 		  }else{
@@ -1041,9 +1042,9 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
 		}
 	      }
 	    }
-	  }	  
 
-	  notation_node = notation_node->next;
+	    notation_node = notation_node->next;
+	  }	  
 	}
       }
 
@@ -1078,14 +1079,10 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
   
     pthread_mutex_unlock(application_mutex);
 
-    pthread_mutex_lock(audio_mutex);
-
     /* get clipboard */
     buffer = gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
     
     if(buffer == NULL){
-      pthread_mutex_unlock(audio_mutex);
-
       return;
     }
 
@@ -1113,6 +1110,8 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
     first_x = -1;
     
     /* iterate xml tree */
+    pthread_mutex_lock(audio_mutex);
+
     while(audio_node != NULL){
       if(audio_node->type == XML_ELEMENT_NODE){
 	if(!xmlStrncmp("audio", audio_node->name, 6)){

@@ -208,7 +208,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   GtkAdjustment *adjustment;
 
   notation_edit->flags = 0;
-  notation_edit->mode = 0;
+  notation_edit->mode = AGS_NOTATION_EDIT_NO_EDIT_MODE;
 
   notation_edit->key_mask = 0;
 

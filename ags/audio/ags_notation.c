@@ -1281,22 +1281,10 @@ ags_notation_find_region(AgsNotation *notation,
 void
 ags_notation_free_selection(AgsNotation *notation)
 {
-  AgsNote *note;
-  GList *list;
-
-  list = notation->selection;
+  g_list_free_full(notation->selection,
+		   g_object_unref);
   
-  while(list != NULL){
-    note = AGS_NOTE(list->data);
-    note->flags &= (~AGS_NOTE_IS_SELECTED);
-    g_object_unref(G_OBJECT(note));
-    
-    list = list->next;
-  }
-
-  list = notation->selection;
   notation->selection = NULL;
-  g_list_free(list);
 }
 
 /**
@@ -1619,40 +1607,20 @@ ags_notation_cut_selection(AgsNotation *notation)
 {
   xmlNode* notation_node;
 
-  GList *selection, *selection_next, *notes;
+  GList *selection;
   
   notation_node = ags_notation_copy_selection(notation);
 
   selection = notation->selection;
-  notes = notation->notes;
 
   while(selection != NULL){
-    notes = g_list_find(notes, selection->data);
-    selection_next = selection->next;
+    notation->notes = g_list_remove(notation->notes,
+				    selection->data);
     
-    if(notes->prev == NULL){
-      notation->notes = g_list_remove_link(notation->notes,
-					   notes);
-      notes = notation->notes;
-    }else{
-      GList *next_note;
-
-      next_note = notes->next;
-      notes->prev->next = next_note;
-
-      if(next_note != NULL){
-	next_note->prev = notes->prev;
-      }
-      
-      g_list_free_1(notes);
-
-      notes = next_note;
-    }
-
     AGS_NOTE(selection->data)->flags &= (~AGS_NOTE_IS_SELECTED);
     g_object_unref(selection->data);
 
-    selection = selection_next;
+    selection = selection->next;
   }
 
   ags_notation_free_selection(notation);
@@ -1974,8 +1942,9 @@ ags_notation_insert_from_clipboard(AgsNotation *notation,
   char *x_boundary, *y_boundary;
 
   while(notation_node != NULL){
-    if(notation_node->type == XML_ELEMENT_NODE && !xmlStrncmp("notation", notation_node->name, 9))
+    if(notation_node->type == XML_ELEMENT_NODE && !xmlStrncmp("notation", notation_node->name, 9)){
       break;
+    }
 
     notation_node = notation_node->next;
   }

@@ -609,13 +609,16 @@ ags_notebook_next_active_tab(AgsNotebook *notebook,
   list = g_list_nth(list,
 		    position);
 
-  for(i = 0; list != NULL; i++){
+  for(i = 0; list != NULL;){
     if(gtk_toggle_button_get_active(AGS_NOTEBOOK_TAB(list->data)->toggle)){
       g_list_free(list_start);
       return(position + i);
     }
 
+    /* iterate */
     list = list->next;
+
+    i++;
   }
 
   g_list_free(list_start);

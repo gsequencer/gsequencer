@@ -272,10 +272,16 @@ ags_notation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventB
       ags_notation_edit_drawing_area_button_release_position_cursor();
     }else if(notation_edit->mode == AGS_NOTATION_EDIT_ADD_NOTE){
       ags_notation_edit_drawing_area_button_release_add_note();
+
+      notation_edit->mode = AGS_NOTATION_EDIT_NO_EDIT_MODE;
     }else if(notation_edit->mode == AGS_NOTATION_EDIT_DELETE_NOTE){
       ags_notation_edit_drawing_area_button_release_delete_note();
+
+      notation_edit->mode = AGS_NOTATION_EDIT_NO_EDIT_MODE;
     }else if(notation_edit->mode == AGS_NOTATION_EDIT_SELECT_NOTE){
       ags_notation_edit_drawing_area_button_release_select_note();
+
+      notation_edit->mode = AGS_NOTATION_EDIT_NO_EDIT_MODE;
     }
   }
 

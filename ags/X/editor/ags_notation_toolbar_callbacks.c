@@ -93,7 +93,8 @@ ags_notation_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsNotationToolbar 
   AgsNotationEditor *notation_editor;
 
   /* add notation to root node */
-  notation_editor = AGS_NOTATION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(notation_toolbar), AGS_TYPE_NOTATION_EDITOR));
+  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(notation_toolbar),
+								  AGS_TYPE_NOTATION_EDITOR);
 
   if(widget == (GtkWidget *) notation_toolbar->copy){
     ags_notation_editor_copy(notation_editor);

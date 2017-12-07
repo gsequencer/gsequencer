@@ -926,7 +926,7 @@ ags_pulse_server_register_soundcard(AgsDistributedManager *distributed_manager,
     pulse_server->n_soundcards += 1;
   }
   
-  return((GObject *) pulse_devin);
+  return((GObject *) soundcard);
 }
 
 void
