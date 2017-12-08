@@ -77,3 +77,103 @@ ags_notation_editor_set_pads_callback(AgsAudio *audio, GType channel_type,
   /*  */
   gtk_widget_queue_draw(notation_editor->notation_edit);
 }
+
+
+void
+ags_notation_editor_init_channel_launch_callback(AgsTask *task, AgsNote *note)
+{
+  GObject *soundcard;
+  AgsChannel *channel;
+  AgsRecycling *recycling;
+
+  AgsAddAudioSignal *add_audio_signal;
+
+  AgsThread *main_loop;
+
+  AgsApplicationContext *application_context;
+  AgsConfig *config;
+  
+  GList *recall, *tmp;
+  GList *delay_audio;
+  
+  gchar *str;
+  gdouble notation_delay;
+  guint samplerate;
+  
+  GValue value = {0,};
+  
+  channel = AGS_INIT_CHANNEL(task)->channel;
+
+  soundcard = channel->soundcard;
+  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
+  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			    NULL,
+			    &samplerate,
+			    NULL,
+			    NULL);
+  
+  main_loop = (AgsThread *) application_context->main_loop;
+
+#ifdef AGS_DEBUG
+  g_message("launch");
+#endif
+  
+  if(AGS_PLAYBACK(channel->playback) == NULL ||
+     AGS_PLAYBACK(channel->playback)->recall_id[0] == NULL){    
+    return;
+  }
+
+  /* connect done */
+  recall = ags_recall_find_provider_with_recycling_context(channel->play,
+							   G_OBJECT(channel),
+							   G_OBJECT(AGS_PLAYBACK(channel->playback)->recall_id[0]->recycling_context));
+  
+  tmp = recall;
+  recall = ags_recall_find_type(recall,
+				AGS_TYPE_PLAY_CHANNEL_RUN);
+  //FIXME:JK: below
+  //    g_list_free(tmp);
+
+  /* read notation delay */
+  delay_audio = channel->recall;
+  delay_audio = ags_recall_find_type(delay_audio,
+				     AGS_TYPE_DELAY_AUDIO);
+  
+  if(delay_audio != NULL){
+    g_value_init(&value,
+		 G_TYPE_DOUBLE);
+    ags_port_safe_read(AGS_DELAY_AUDIO(delay_audio->data)->notation_delay,
+		       &value);
+    notation_delay = g_value_get_double(&value);
+  }else{
+    notation_delay = 1.0;
+  }
+  
+  if(recall != NULL){
+    AgsAudioSignal *audio_signal;
+      
+    /* add audio signal */
+    recycling = channel->first_recycling;
+
+    while(recycling != channel->last_recycling->next){
+      audio_signal = ags_audio_signal_new((GObject *) soundcard,
+					  (GObject *) recycling,
+					  (GObject *) AGS_RECALL(recall->data)->recall_id);
+      /* add audio signal */
+      ags_recycling_create_audio_signal_with_frame_count(recycling,
+							 audio_signal,
+							 (note->x[1] - note->x[0]) * ((gdouble) samplerate / notation_delay),
+							 0.0, 0);
+      audio_signal->stream_current = audio_signal->stream_beginning;
+      ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
+  
+      /*
+       * emit add_audio_signal on AgsRecycling
+       */
+      ags_recycling_add_audio_signal(recycling,
+				     audio_signal);
+
+      recycling = recycling->next;
+    }    
+  }
+}

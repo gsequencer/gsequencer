@@ -725,12 +725,27 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
       break;
     case GDK_KEY_space:
       {
-	//TODO:JK: implement me
+	AgsNote *note;
+	
+	do_feedback = TRUE;
+
+	note = ags_note_new();
+
+	note->x[0] = notation_edit->cursor_position_x;
+	note->x[1] = notation_edit->cursor_position_x + zoom_factor;
+
+	note->y = notation_edit->cursor_position_y;
+
+	/* add note */
+	ags_notation_editor_add_note(notation_editor,
+				     note);
       }
       break;
     case GDK_KEY_Delete:
       {
-	//TODO:JK: implement me
+	/* delete note */
+	ags_notation_editor_delete_note(notation_editor,
+					notation_edit->cursor_position_x, notation_edit->cursor_position_y);
       }
       break;
     }
@@ -739,7 +754,7 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
 
     /* do feedback */
     if(do_feedback){
-      //TODO:JK: implement me
+      ags_notation_editor_do_feedback(notation_editor);
     }
   }
   

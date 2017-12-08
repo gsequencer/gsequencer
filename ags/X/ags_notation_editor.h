@@ -109,6 +109,8 @@ void ags_notation_editor_select_region(AgsNotationEditor *notation_editor,
 				       guint x0, guint y0,
 				       guint x1, guint y1);
 
+void ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor);
+
 void ags_notation_editor_select_all(AgsNotationEditor *notation_editor);
 
 void ags_notation_editor_paste(AgsNotationEditor *notation_editor);

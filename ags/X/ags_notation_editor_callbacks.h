@@ -35,4 +35,6 @@ void ags_notation_editor_set_pads_callback(AgsAudio *audio, GType channel_type,
 					   guint pads, guint pads_old,
 					   AgsNotationEditor *notation_editor);
 
+void ags_notation_editor_init_channel_launch_callback(AgsTask *task, AgsNote *note);
+
 #endif /*__AGS_NOTATION_EDITOR_CALLBACKS_H__*/
