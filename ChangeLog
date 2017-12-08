@@ -6,9 +6,6 @@ ags (2.0.0-beta)
 	* TODO:JK: implemented AgsXmlAuthentication, AgsXmlCertificate and AgsXmlPasswordStore
 	* TODO:JK: implemented AgsFrontController, AgsFactoryController, AgsLocalRegistryController, AgsLocalSerializationController and AgsLocalTaskController
 	* TODO:JK: implemented audio input properties
-	* TODO:JK: implemented AgsWaveWindow, AgsWaveEditor, AgsWaveToolbar and AgsWaveEdit
-	* TODO:JK: implemented AgsSelectAudioData and AgsPositionWaveCursor
-	* TODO:JK: implemented AgsLevel
 	* TODO:JK: refactored AgsAutomationEditor to be more light-weight
 
 ags (1.2.0)
@@ -17,6 +14,9 @@ ags (1.2.0)
 	* TODO:JK: implemented ags-capture recall
 	* TODO:JK: implemented AgsAudiorec
 	* TODO:JK: implemented AgsCartesian properties
+	* TODO:JK: implemented AgsWaveWindow, AgsWaveEditor, AgsWaveToolbar and AgsWaveEdit
+	* TODO:JK: implemented AgsSelectAudioData and AgsPositionWaveCursor
+	* TODO:JK: implemented AgsLevel
 	* implemented AgsNotationEditor and AgsNotationEdit
 	* replaced AgsEditor by AgsNotationEditor and supporting segmented notation
 	* replaced AgsNoteEdit and AgsPatternEdit by AgsNotationEdit
@@ -30,6 +30,11 @@ ags (1.2.0)
 	* extended AgsSwitchBufferFlag and AgsClearBuffer to support AgsDevin, AgsJackDevin and AgsPulseDevin
 	* refactored AgsNotebook to be generic and move to libags-gui
 	* use $(docdir) in Makefile.am
+
+ags (1.1.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing style initializer of some widgets
 
 ags (1.1.5)
 
