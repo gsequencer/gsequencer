@@ -86,7 +86,7 @@ gchar* ags_accessible_cell_pattern_get_localized_name(AtkAction *action,
 static gpointer ags_cell_pattern_parent_class = NULL;
 static GQuark quark_accessible_object = 0;
 
-GtkStyle *cell_pattern_style;
+GtkStyle *cell_pattern_style = NULL;
 GHashTable *ags_cell_pattern_led_queue_draw = NULL;
 
 GType
@@ -237,6 +237,10 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
 
   cell_pattern->cursor_x = 0;
   cell_pattern->cursor_y = 0;
+
+  if(cell_pattern_style == NULL){
+    cell_pattern_style = gtk_style_copy(gtk_widget_get_style(cell_pattern));
+  }
   
   cell_pattern->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();  
 

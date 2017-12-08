@@ -51,7 +51,7 @@ enum{
 
 static gpointer ags_led_array_parent_class = NULL;
 
-GtkStyle *led_array_style;
+GtkStyle *led_array_style = NULL;
 
 GType
 ags_led_array_get_type(void)
@@ -153,6 +153,10 @@ ags_led_array_class_init(AgsLedArrayClass *led_array)
 void
 ags_led_array_init(AgsLedArray *led_array)
 {
+  if(led_array_style == NULL){
+    led_array_style = gtk_style_copy(gtk_widget_get_style(led_array));
+  }
+
   gtk_widget_set_style((GtkWidget *) led_array,
 		       led_array_style);
 

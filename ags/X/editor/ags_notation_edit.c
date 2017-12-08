@@ -231,6 +231,10 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 
   notation_edit->current_note = NULL;
 
+  if(notation_edit_style == NULL){
+    notation_edit_style = gtk_style_copy(gtk_widget_get_style(notation_edit));
+  }
+
   notation_edit->ruler = ags_ruler_new();
   gtk_table_attach(GTK_TABLE(notation_edit),
 		   (GtkWidget *) notation_edit->ruler,
@@ -459,7 +463,7 @@ ags_notation_edit_finalize(GObject *gobject)
   
   notation_edit = AGS_NOTATION_EDIT(gobject);
   
-  /* remove indicator widget */
+  /* remove auto scroll */
   g_hash_table_remove(ags_notation_edit_auto_scroll,
 		      notation_edit);
 }

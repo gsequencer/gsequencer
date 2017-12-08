@@ -87,7 +87,7 @@ gchar* ags_accessible_pattern_box_get_localized_name(AtkAction *action,
 static gpointer ags_pattern_box_parent_class = NULL;
 static GQuark quark_accessible_object = 0;
 
-GtkStyle *pattern_box_style;
+GtkStyle *pattern_box_style = NULL;
 GHashTable *ags_pattern_box_led_queue_draw = NULL;
 
 GType
@@ -239,6 +239,10 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 
   pattern_box->n_controls = AGS_PATTERN_BOX_N_CONTROLS;
   pattern_box->n_indices = AGS_PATTERN_BOX_N_INDICES;
+
+  if(pattern_box_style == NULL){
+    pattern_box_style = gtk_style_copy(gtk_widget_get_style(pattern_box));
+  }
   
   /* led */
   pattern_box->active_led = 0;

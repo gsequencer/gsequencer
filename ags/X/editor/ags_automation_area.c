@@ -55,7 +55,7 @@ void ags_automation_area_disconnect(AgsConnectable *connectable);
  * @short_description: area automations
  * @title: AgsAutomationArea
  * @section_id:
- * @include: ags/X/areaor/ags_automation_area.h
+ * @include: ags/X/editor/ags_automation_area.h
  *
  * The #AgsAutomationArea lets you paint automations.
  */

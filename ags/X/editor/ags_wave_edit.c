@@ -70,7 +70,7 @@ gchar* ags_accessible_wave_edit_get_localized_name(AtkAction *action,
 
 static gpointer ags_wave_edit_parent_class = NULL;
 
-GtkStyle *wave_edit_style;
+GtkStyle *wave_edit_style = NULL;
 
 static GQuark quark_accessible_object = 0;
 
@@ -202,6 +202,10 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
   wave_edit->select_y0 = 0;
   wave_edit->select_y1 = 0;
 
+  if(wave_edit_style == NULL){
+    wave_edit_style = gtk_style_copy(gtk_widget_get_style(wave_edit));
+  }
+
   wave_edit->ruler = ags_ruler_new();
   gtk_table_attach(GTK_TABLE(wave_edit),
 		   (GtkWidget *) wave_edit->ruler,
@@ -212,7 +216,8 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
 		   0, 0);
 
   wave_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
-  gtk_widget_set_style((GtkWidget *) wave_edit->drawing_area, wave_edit_style);
+  gtk_widget_set_style((GtkWidget *) wave_edit->drawing_area,
+		       wave_edit_style);
   gtk_widget_set_events(GTK_WIDGET (wave_edit->drawing_area), GDK_EXPOSURE_MASK
 			| GDK_LEAVE_NOTIFY_MASK
 			| GDK_BUTTON_PRESS_MASK

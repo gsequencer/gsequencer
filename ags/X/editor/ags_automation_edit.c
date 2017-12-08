@@ -70,7 +70,7 @@ gchar* ags_accessible_automation_edit_get_localized_name(AtkAction *action,
 
 static gpointer ags_automation_edit_parent_class = NULL;
 
-GtkStyle *automation_edit_style;
+GtkStyle *automation_edit_style = NULL;
 
 static GQuark quark_accessible_object = 0;
 
@@ -204,6 +204,10 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   automation_edit->select_y0 = 0;
   automation_edit->select_y1 = 0;
 
+  if(automation_edit_style == NULL){
+    automation_edit_style = gtk_style_copy(gtk_widget_get_style(automation_edit));
+  }
+  
   automation_edit->ruler = ags_ruler_new();
   gtk_table_attach(GTK_TABLE(automation_edit),
 		   (GtkWidget *) automation_edit->ruler,
@@ -214,7 +218,8 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 		   0, 0);
 
   automation_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
-  gtk_widget_set_style((GtkWidget *) automation_edit->drawing_area, automation_edit_style);
+  gtk_widget_set_style((GtkWidget *) automation_edit->drawing_area,
+		       automation_edit_style);
   gtk_widget_set_events(GTK_WIDGET (automation_edit->drawing_area), GDK_EXPOSURE_MASK
 			| GDK_LEAVE_NOTIFY_MASK
 			| GDK_BUTTON_PRESS_MASK

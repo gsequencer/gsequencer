@@ -351,6 +351,10 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->control_width = 12;
   ffplayer->control_height = 40;
 
+  if(ffplayer_style == NULL){
+    ffplayer_style = gtk_style_copy(gtk_widget_get_style(ffplayer));
+  }
+  
   ffplayer->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_size_request((GtkWidget *) ffplayer->drawing_area,
 			      16 * ffplayer->control_width,

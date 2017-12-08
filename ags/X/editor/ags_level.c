@@ -40,7 +40,7 @@ void ags_level_disconnect(AgsConnectable *connectable);
  * The #AgsLevel draws you a volume level.
  */
 
-// GtkStyle *level_style = NULL;
+GtkStyle *level_style = NULL;
 
 GType
 ags_level_get_type(void)
@@ -95,16 +95,18 @@ ags_level_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_level_init(AgsLevel *level)
 {
-  GtkWidget *widget;
+  if(level_style == NULL){
+    level_style = gtk_style_copy(gtk_widget_get_style(level));
+  }
 
-  widget = (GtkWidget *) level;  
-  //  gtk_widget_set_style(widget, level_style);
-  gtk_widget_set_size_request(widget, 60, -1);
-  gtk_widget_set_events (GTK_WIDGET (level), GDK_EXPOSURE_MASK
-                         | GDK_LEAVE_NOTIFY_MASK
-                         | GDK_BUTTON_PRESS_MASK
-			 | GDK_BUTTON_RELEASE_MASK
-			 );
+  gtk_widget_set_style((GtkWidget *) level,
+		       level_style);
+  gtk_widget_set_size_request((GtkWidget *) level,
+			      60, -1);
+  gtk_widget_set_events(GTK_WIDGET(level), GDK_EXPOSURE_MASK
+			| GDK_LEAVE_NOTIFY_MASK
+			| GDK_BUTTON_PRESS_MASK
+			| GDK_BUTTON_RELEASE_MASK);
 }
 
 void

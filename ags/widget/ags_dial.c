@@ -336,9 +336,12 @@ ags_dial_init(AgsDial *dial)
 	       "can-focus", TRUE,
   	       NULL);
 
-  //FIXME:JK: not style set
-  //  gtk_widget_set_style((GtkWidget *) dial,
-  //		       dial_style);
+  if(dial_style == NULL){
+    dial_style = gtk_style_copy(gtk_widget_get_style(dial));
+  }
+
+  gtk_widget_set_style((GtkWidget *) dial,
+		       dial_style);
 
   dial->flags = (AGS_DIAL_WITH_BUTTONS |
 		 AGS_DIAL_SEEMLESS_MODE);
