@@ -365,7 +365,7 @@ ags_mute_audio_set_muted(AgsMutable *mutable, gboolean muted)
   GValue value = {0,};
 
   g_value_init(&value, G_TYPE_FLOAT);
-  g_value_set_float(&value, (float) muted);
+  g_value_set_float(&value, (muted ? 1.0: 0.0));
 
   ags_port_safe_write(AGS_MUTE_AUDIO(mutable)->muted, &value);
 }

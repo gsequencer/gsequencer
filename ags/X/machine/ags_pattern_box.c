@@ -57,6 +57,7 @@ void ags_pattern_box_finalize(GObject *gobject);
 void ags_pattern_box_connect(AgsConnectable *connectable);
 void ags_pattern_box_disconnect(AgsConnectable *connectable);
 AtkObject* ags_pattern_box_get_accessible(GtkWidget *widget);
+void ags_pattern_box_realize(GtkWidget *widget);
 void ags_pattern_box_show(GtkWidget *widget);
 void ags_pattern_box_show_all(GtkWidget *widget);
 
@@ -180,6 +181,7 @@ ags_pattern_box_class_init(AgsPatternBoxClass *pattern_box)
   /* GtkWidget */
   widget = (GtkWidgetClass *) pattern_box;
 
+  widget->realize = ags_pattern_box_realize;
   widget->show = ags_pattern_box_show;
   widget->show_all = ags_pattern_box_show_all;
 }
@@ -239,13 +241,6 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 
   pattern_box->n_controls = AGS_PATTERN_BOX_N_CONTROLS;
   pattern_box->n_indices = AGS_PATTERN_BOX_N_INDICES;
-
-  if(pattern_box_style == NULL){
-    pattern_box_style = gtk_style_copy(gtk_widget_get_style(pattern_box));
-  }
-  
-  gtk_widget_set_style((GtkWidget *) pattern_box,
-		       pattern_box_style);
   
   /* led */
   pattern_box->active_led = 0;
@@ -476,6 +471,24 @@ ags_pattern_box_get_accessible(GtkWidget *widget)
   }
   
   return(accessible);
+}
+
+void
+ags_pattern_box_realize(GtkWidget *widget)
+{
+  AgsPatternBox *pattern_box;
+
+  pattern_box = widget;
+  
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_pattern_box_parent_class)->realize(widget);
+
+  if(pattern_box_style == NULL){
+    pattern_box_style = gtk_style_copy(gtk_widget_get_style(pattern_box));
+  }
+  
+  gtk_widget_set_style((GtkWidget *) pattern_box,
+		       pattern_box_style);
 }
 
 void

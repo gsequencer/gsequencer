@@ -46,6 +46,7 @@ void ags_note_edit_init(AgsNoteEdit *note_edit);
 void ags_note_edit_connect(AgsConnectable *connectable);
 void ags_note_edit_disconnect(AgsConnectable *connectable);
 AtkObject* ags_note_edit_get_accessible(GtkWidget *widget);
+void ags_note_edit_realize(GtkWidget *widget);
 
 gboolean ags_accessible_note_edit_do_action(AtkAction *action,
 					    gint i);
@@ -70,6 +71,8 @@ gchar* ags_accessible_note_edit_get_localized_name(AtkAction *action,
  *
  * The #AgsNoteEdit lets you edit notes.
  */
+
+static gpointer ags_note_edit_parent_class = NULL;
 
 GtkStyle *note_edit_style = NULL;
 
@@ -159,7 +162,16 @@ ags_note_edit_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_note_edit_class_init(AgsNoteEditClass *note_edit)
 {
+  GtkWidgetClass *widget;
+
+  ags_note_edit_parent_class = g_type_class_peek_parent(note_edit);
+
   quark_accessible_object = g_quark_from_static_string("ags-accessible-object");
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) note_edit;
+
+  widget->realize = ags_note_edit_realize;
 }
 
 void
@@ -197,14 +209,8 @@ ags_note_edit_init(AgsNoteEdit *note_edit)
 		   GTK_FILL|GTK_EXPAND,
 		   GTK_FILL,
 		   0, 0);
-
-  if(note_edit_style == NULL){
-    note_edit_style = gtk_style_copy(gtk_widget_get_style(note_edit));
-  }
   
   note_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
-  gtk_widget_set_style((GtkWidget *) note_edit->drawing_area,
-  		       note_edit_style);
   gtk_widget_set_events(GTK_WIDGET(note_edit->drawing_area), GDK_EXPOSURE_MASK
 			| GDK_LEAVE_NOTIFY_MASK
 			| GDK_BUTTON_PRESS_MASK
@@ -366,6 +372,24 @@ ags_note_edit_get_accessible(GtkWidget *widget)
   }
   
   return(accessible);
+}
+
+void
+ags_note_edit_realize(GtkWidget *widget)
+{
+  AgsNoteEdit *note_edit;
+
+  note_edit = widget;
+  
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_note_edit_parent_class)->realize(widget);
+
+  if(note_edit_style == NULL){
+    note_edit_style = gtk_style_copy(gtk_widget_get_style(note_edit));
+  }
+
+  gtk_widget_set_style((GtkWidget *) note_edit->drawing_area,
+		       note_edit_style);
 }
 
 gboolean

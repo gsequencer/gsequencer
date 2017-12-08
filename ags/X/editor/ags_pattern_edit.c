@@ -46,6 +46,7 @@ void ags_pattern_edit_init(AgsPatternEdit *pattern_edit);
 void ags_pattern_edit_connect(AgsConnectable *connectable);
 void ags_pattern_edit_disconnect(AgsConnectable *connectable);
 AtkObject* ags_pattern_edit_get_accessible(GtkWidget *widget);
+void ags_pattern_edit_realize(GtkWidget *widget);
 
 gboolean ags_accessible_pattern_edit_do_action(AtkAction *action,
 					       gint i);
@@ -72,6 +73,8 @@ void ags_pattern_edit_paint(AgsPatternEdit *pattern_edit);
  *
  * The #AgsPatternEdit lets you edit notes.
  */
+
+static gpointer ags_pattern_edit_parent_class = NULL;
 
 GtkStyle *pattern_edit_style = NULL;
 
@@ -102,8 +105,8 @@ ags_pattern_edit_get_type(void)
     };
 
     ags_type_pattern_edit = g_type_register_static(GTK_TYPE_TABLE,
-						"AgsPatternEdit", &ags_pattern_edit_info,
-						0);
+						   "AgsPatternEdit", &ags_pattern_edit_info,
+						   0);
     
     g_type_add_interface_static(ags_type_pattern_edit,
 				AGS_TYPE_CONNECTABLE,
@@ -161,7 +164,16 @@ ags_pattern_edit_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_pattern_edit_class_init(AgsPatternEditClass *pattern_edit)
 {
+  GtkWidgetClass *widget;
+
+  ags_pattern_edit_parent_class = g_type_class_peek_parent(pattern_edit);
+
   quark_accessible_object = g_quark_from_static_string("ags-accessible-object");  
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) pattern_edit;
+
+  widget->realize = ags_pattern_edit_realize;
 }
 
 void
@@ -194,14 +206,8 @@ ags_pattern_edit_init(AgsPatternEdit *pattern_edit)
 		   0, 1, 0, 1,
 		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
-
-  if(pattern_edit_style == NULL){
-    pattern_edit_style = gtk_style_copy(gtk_widget_get_style(pattern_edit));
-  }
   
   pattern_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
-  gtk_widget_set_style((GtkWidget *) pattern_edit->drawing_area,
-		       pattern_edit_style);
   gtk_widget_set_events(GTK_WIDGET (pattern_edit->drawing_area), GDK_EXPOSURE_MASK
 			| GDK_LEAVE_NOTIFY_MASK
 			| GDK_BUTTON_PRESS_MASK
@@ -353,6 +359,24 @@ ags_pattern_edit_get_accessible(GtkWidget *widget)
   }
   
   return(accessible);
+}
+
+void
+ags_pattern_edit_realize(GtkWidget *widget)
+{
+  AgsPatternEdit *pattern_edit;
+
+  pattern_edit = widget;
+  
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_pattern_edit_parent_class)->realize(widget);
+
+  if(pattern_edit_style == NULL){
+    pattern_edit_style = gtk_style_copy(gtk_widget_get_style(pattern_edit));
+  }
+
+  gtk_widget_set_style((GtkWidget *) pattern_edit->drawing_area,
+		       pattern_edit_style);
 }
 
 gboolean

@@ -34,6 +34,7 @@ void ags_meter_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_meter_init(AgsMeter *meter);
 void ags_meter_connect(AgsConnectable *connectable);
 void ags_meter_disconnect(AgsConnectable *connectable);
+void ags_meter_realize(GtkWidget *widget);
 
 /**
  * SECTION:ags_meter
@@ -44,6 +45,8 @@ void ags_meter_disconnect(AgsConnectable *connectable);
  *
  * The #AgsMeter draws you a piano.
  */
+
+static gpointer ags_meter_parent_class = NULL;
 
 GtkStyle *meter_style = NULL;
 
@@ -86,6 +89,14 @@ ags_meter_get_type(void)
 void
 ags_meter_class_init(AgsMeterClass *meter)
 {
+  GtkWidgetClass *widget;
+
+  ags_meter_parent_class = g_type_class_peek_parent(meter);
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) meter;
+
+  widget->realize = ags_meter_realize;
 }
 
 void
@@ -100,12 +111,6 @@ ags_meter_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_meter_init(AgsMeter *meter)
 {
-  if(meter_style == NULL){
-    meter_style = gtk_style_copy(gtk_widget_get_style(meter));
-  }
-  
-  gtk_widget_set_style((GtkWidget *) meter,
-		       meter_style);
   gtk_widget_set_size_request((GtkWidget *) meter,
 			      60, -1);
   gtk_widget_set_events(GTK_WIDGET(meter), GDK_EXPOSURE_MASK
@@ -132,6 +137,25 @@ ags_meter_connect(AgsConnectable *connectable)
 void
 ags_meter_disconnect(AgsConnectable *connectable)
 {
+  //TODO:JK: implement me
+}
+
+void
+ags_meter_realize(GtkWidget *widget)
+{
+  AgsMeter *meter;
+
+  meter = widget;
+  
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_meter_parent_class)->realize(widget);
+
+  if(meter_style == NULL){
+    meter_style = gtk_style_copy(gtk_widget_get_style(meter));
+  }
+  
+  gtk_widget_set_style((GtkWidget *) meter,
+		       meter_style);
 }
 
 void

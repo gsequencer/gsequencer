@@ -1,3 +1,11 @@
+ags (1.1.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* moved GtkStyle allocation to GtkWidget::realize()
+	* fixed potential infinite loop during audio port related automation
+	* fixed ags.rc
+	* increased AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS
+
 ags (1.1.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

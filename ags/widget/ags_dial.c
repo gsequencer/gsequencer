@@ -115,8 +115,6 @@ static guint dial_signals[LAST_SIGNAL];
 
 static GQuark quark_accessible_object = 0;
 
-GtkStyle *dial_style = NULL;
-
 GType
 ags_dial_get_type(void)
 {
@@ -336,13 +334,6 @@ ags_dial_init(AgsDial *dial)
   	       "app-paintable\0", TRUE,
 	       "can-focus\0", TRUE,
   	       NULL);
-
-  if(dial_style == NULL){
-    dial_style = gtk_style_copy(gtk_widget_get_style(dial));
-  }
-  
-  gtk_widget_set_style((GtkWidget *) dial,
-  		       dial_style);
 
   dial->flags = (AGS_DIAL_WITH_BUTTONS |
 		 AGS_DIAL_SEEMLESS_MODE);
@@ -719,8 +710,8 @@ ags_dial_realize(GtkWidget *widget)
 				   &attributes, attributes_mask);
   gdk_window_set_user_data (widget->window, dial);
 
-  widget->style = gtk_style_attach (widget->style, widget->window);
-  gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL);
+  widget->style = gtk_style_attach(widget->style, widget->window);
+  gtk_style_set_background(widget->style, widget->window, GTK_STATE_NORMAL);
 
   gtk_widget_queue_resize (widget);
 }

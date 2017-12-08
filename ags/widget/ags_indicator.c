@@ -55,8 +55,6 @@ enum{
 
 static gpointer ags_indicator_parent_class = NULL;
 
-GtkStyle *indicator_style = NULL;
-
 GType
 ags_indicator_get_type(void)
 {
@@ -130,13 +128,6 @@ ags_indicator_init(AgsIndicator *indicator)
   g_object_set(G_OBJECT(indicator),
 	       "app-paintable\0", TRUE,
 	       NULL);
-
-  if(indicator_style == NULL){
-    indicator_style = gtk_style_copy(gtk_widget_get_style(indicator));
-  }
-  
-  gtk_widget_set_style((GtkWidget *) indicator,
-		       indicator_style);
 
   indicator->adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
   g_object_ref(indicator->adjustment);
@@ -259,8 +250,8 @@ ags_indicator_realize(GtkWidget *widget)
 				   &attributes, attributes_mask);
   gdk_window_set_user_data (widget->window, indicator);
 
-  widget->style = gtk_style_attach (widget->style, widget->window);
-  gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL);
+  widget->style = gtk_style_attach(widget->style, widget->window);
+  gtk_style_set_background(widget->style, widget->window, GTK_STATE_NORMAL);
 
   gtk_widget_queue_resize (widget);
 }

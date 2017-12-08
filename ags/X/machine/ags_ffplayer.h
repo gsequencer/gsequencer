@@ -62,6 +62,7 @@ struct _AgsFFPlayer
   guint control_height;
   
   GtkDrawingArea *drawing_area;
+  GtkHScrollbar *hscrollbar;
   GtkAdjustment *hadjustment;
 
   AgsIpatch *ipatch;

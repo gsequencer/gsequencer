@@ -56,6 +56,7 @@ void ags_cell_pattern_finalize(GObject *gobject);
 void ags_cell_pattern_connect(AgsConnectable *connectable);
 void ags_cell_pattern_disconnect(AgsConnectable *connectable);
 AtkObject* ags_cell_pattern_get_accessible(GtkWidget *widget);
+void ags_cell_pattern_realize(GtkWidget *widget);
 void ags_cell_pattern_show(GtkWidget *widget);
 void ags_cell_pattern_show_all(GtkWidget *widget);
 
@@ -179,6 +180,7 @@ ags_cell_pattern_class_init(AgsCellPatternClass *cell_pattern)
   /* GtkWidget */
   widget = (GtkWidgetClass *) cell_pattern;
 
+  widget->realize = ags_cell_pattern_realize;
   widget->show = ags_cell_pattern_show;
   widget->show_all = ags_cell_pattern_show_all;
 }
@@ -238,16 +240,10 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
   cell_pattern->cursor_x = 0;
   cell_pattern->cursor_y = 0;
 
-  if(cell_pattern_style == NULL){
-    cell_pattern_style = gtk_style_copy(gtk_widget_get_style(cell_pattern));
-  }
-  
   cell_pattern->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();  
 
   gtk_widget_set_size_request((GtkWidget *) cell_pattern->drawing_area,
 			      AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_HORIZONTALLY * cell_pattern->cell_width + 1, AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY * cell_pattern->cell_height + 1);
-  gtk_widget_set_style((GtkWidget *) cell_pattern->drawing_area,
-		       cell_pattern_style);
   gtk_table_attach((GtkTable *) cell_pattern,
 		   (GtkWidget *) cell_pattern->drawing_area,
 		   0, 1,
@@ -267,8 +263,6 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, (double) AGS_CELL_PATTERN_DEFAULT_CONTROLS_VERTICALLY - 1.0, 1.0, 1.0, (gdouble) AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY);
 
   cell_pattern->vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
-  gtk_widget_set_style((GtkWidget *) cell_pattern->vscrollbar,
-		       cell_pattern_style);
   gtk_table_attach((GtkTable *) cell_pattern,
 		   (GtkWidget *) cell_pattern->vscrollbar,
 		   1, 2,
@@ -416,6 +410,27 @@ ags_cell_pattern_get_accessible(GtkWidget *widget)
   }
   
   return(accessible);
+}
+
+void
+ags_cell_pattern_realize(GtkWidget *widget)
+{
+  AgsCellPattern *cell_pattern;
+
+  cell_pattern = widget;
+  
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_cell_pattern_parent_class)->realize(widget);
+
+  if(cell_pattern_style == NULL){
+    cell_pattern_style = gtk_style_copy(gtk_widget_get_style(cell_pattern));
+  }
+
+  gtk_widget_set_style((GtkWidget *) cell_pattern->drawing_area,
+		       cell_pattern_style);
+
+  gtk_widget_set_style((GtkWidget *) cell_pattern->vscrollbar,
+		       cell_pattern_style);
 }
 
 void

@@ -50,8 +50,6 @@ void ags_led_draw(AgsLed *led);
 
 static gpointer ags_led_parent_class = NULL;
 
-GtkStyle *led_style;
-
 GType
 ags_led_get_type(void)
 {
@@ -100,9 +98,6 @@ ags_led_init(AgsLed *led)
   g_object_set(G_OBJECT(led),
 	       "app-paintable\0", TRUE,
 	       NULL);
-
-  gtk_widget_set_style((GtkWidget *) led,
-		       led_style);
 
   led->flags = 0;
 }
@@ -160,7 +155,7 @@ ags_led_realize(GtkWidget *widget)
 
   gtk_style_set_background(widget->style, widget->window, GTK_STATE_ACTIVE);
 
-
+  /* call parent */
   GTK_WIDGET_CLASS(ags_led_parent_class)->realize(widget);
 }
 
