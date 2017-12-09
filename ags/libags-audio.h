@@ -121,6 +121,18 @@
 #include <ags/audio/midi/ags_midi_parser.h>
 #include <ags/audio/midi/ags_midi_util.h>
 
+/* audio core_audio */
+#include <ags/audio/core-audio/ags_core_audio_client.h>
+#include <ags/audio/core-audio/ags_core_audio_devout.h>
+#include <ags/audio/core-audio/ags_core_audio_port.h>
+#include <ags/audio/core-audio/ags_core_audio_server.h>
+
+/* audio pulse */
+#include <ags/audio/pulse/ags_pulse_client.h>
+#include <ags/audio/pulse/ags_pulse_devout.h>
+#include <ags/audio/pulse/ags_pulse_port.h>
+#include <ags/audio/pulse/ags_pulse_server.h>
+
 /* audio jack */
 #include <ags/audio/jack/ags_jack_client.h>
 #include <ags/audio/jack/ags_jack_midiin.h>

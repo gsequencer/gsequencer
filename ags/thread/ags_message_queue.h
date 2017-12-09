@@ -25,6 +25,8 @@
 
 #include <pthread.h>
 
+#include <libxml/tree.h>
+
 #define AGS_TYPE_MESSAGE_QUEUE                (ags_message_queue_get_type())
 #define AGS_MESSAGE_QUEUE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MESSAGE_QUEUE, AgsMessageQueue))
 #define AGS_MESSAGE_QUEUE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_MESSAGE_QUEUE, AgsMessageQueue))
@@ -45,7 +47,7 @@ struct _AgsMessageQueue
   gchar *namespace;
 
   pthread_mutexattr_t *mutexattr;
-  pthread_mutex *mutex;
+  pthread_mutex_t *mutex;
 
   GList *message;
 };
@@ -60,7 +62,7 @@ struct _AgsMessageEnvelope
   GObject *sender;
   GObject *recipient;
 
-  xmlDoc *message;
+  xmlDoc *doc;
 };
 
 GType ags_message_queue_get_type();

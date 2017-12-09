@@ -61,8 +61,6 @@
 #include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 
-#include <ags/X/ags_editor.h>
-
 #include <ags/X/file/ags_gui_file_xml.h>
 
 #include <ags/X/machine/ags_ffplayer_bridge.h>

@@ -85,7 +85,7 @@ ags_message_queue_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_message_queue = g_type_register_static(AGS_TYPE_THREAD,
+    ags_type_message_queue = g_type_register_static(G_TYPE_OBJECT,
 						    "AgsMessageQueue",
 						    &ags_message_queue_info,
 						    0);
@@ -103,6 +103,8 @@ ags_message_queue_class_init(AgsMessageQueueClass *message_queue)
 {
   GObjectClass *gobject;
 
+  GParamSpec *param_spec;
+  
   ags_message_queue_parent_class = g_type_class_peek_parent(message_queue);
 
   gobject->set_property = ags_message_queue_set_property;
@@ -195,7 +197,7 @@ ags_message_queue_get_property(GObject *gobject,
 			       GValue *value,
 			       GParamSpec *param_spec)
 {
-  AgsMessage_Queue *message_queue;
+  AgsMessageQueue *message_queue;
 
   message_queue = AGS_MESSAGE_QUEUE(gobject);
 

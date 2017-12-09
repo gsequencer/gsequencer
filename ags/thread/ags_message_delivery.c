@@ -18,6 +18,7 @@
  */
 
 #include <ags/thread/ags_message_delivery.h>
+#include <ags/thread/ags_message_queue.h>
 
 #include <ags/object/ags_connectable.h>
 
@@ -67,7 +68,7 @@ ags_message_delivery_get_type()
       NULL, /* interface_data */
     };
 
-    ags_type_message_delivery = g_type_register_static(AGS_TYPE_THREAD,
+    ags_type_message_delivery = g_type_register_static(G_TYPE_OBJECT,
 						       "AgsMessageDelivery",
 						       &ags_message_delivery_info,
 						       0);
@@ -94,8 +95,6 @@ ags_message_delivery_class_init(AgsMessageDeliveryClass *message_delivery)
 void
 ags_message_delivery_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  ags_message_delivery_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
   connectable->connect = ags_message_delivery_connect;
   connectable->disconnect = ags_message_delivery_disconnect;
 }
@@ -536,7 +535,7 @@ ags_message_delivery_query_message(AgsMessageDelivery *message_delivery,
       pthread_mutex_unlock(message_delivery->mutex);
 
       current_match = ags_message_queue_query_message(message_queue,
-						      recipient);
+						      xpath);
 
       if(current_match != NULL){
 	if(match == NULL){
@@ -559,7 +558,7 @@ ags_message_delivery_query_message(AgsMessageDelivery *message_delivery,
 							namespace);
 
     match = ags_message_queue_query_message(message_queue,
-					    recipient);
+					    xpath);
   }
 
   return(match);

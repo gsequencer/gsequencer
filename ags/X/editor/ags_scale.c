@@ -22,8 +22,6 @@
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/X/ags_editor.h>
-
 #include <cairo.h>
 #include <math.h>
 

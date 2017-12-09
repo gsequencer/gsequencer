@@ -461,6 +461,8 @@ libags_thread_h_sources = \
 	ags/thread/ags_destroy_worker.h \
 	ags/thread/ags_generic_main_loop.h \
 	ags/thread/ags_history.h \
+	ags/thread/ags_message_delivery.h \
+	ags/thread/ags_message_queue.h \
 	ags/thread/ags_mutex_manager.h \
 	ags/thread/ags_poll_fd.h \
 	ags/thread/ags_polling_thread.h \
@@ -487,6 +489,8 @@ libags_thread_c_sources = \
 	ags/thread/ags_destroy_worker.c \
 	ags/thread/ags_generic_main_loop.c \
 	ags/thread/ags_history.c \
+	ags/thread/ags_message_delivery.c \
+	ags/thread/ags_message_queue.c \
 	ags/thread/ags_mutex_manager.c \
 	ags/thread/ags_poll_fd.c \
 	ags/thread/ags_polling_thread.c \

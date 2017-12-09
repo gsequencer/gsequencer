@@ -19,120 +19,9 @@
 
 #include <ags/X/ags_xorg_application_context.h>
 
-#include <ags/util/ags_id_generator.h>
-#include <ags/util/ags_list_util.h>
-
-#include <ags/lib/ags_complex.h>
-#include <ags/lib/ags_log.h>
-
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_sequencer.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_launch.h>
-
-#include <ags/object/ags_distributed_manager.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_main_loop.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_concurrency_provider.h>
-#include <ags/thread/ags_thread-posix.h>
-#include <ags/thread/ags_thread_pool.h>
-#include <ags/thread/ags_task_thread.h>
-#include <ags/thread/ags_destroy_worker.h>
-
-#include <ags/plugin/ags_ladspa_manager.h>
-#include <ags/plugin/ags_dssi_manager.h>
-#include <ags/plugin/ags_lv2_manager.h>
-#include <ags/plugin/ags_lv2ui_manager.h>
-#include <ags/plugin/ags_lv2_worker_manager.h>
-#include <ags/plugin/ags_lv2_worker.h>
-#include <ags/plugin/ags_lv2_urid_manager.h>
-
-#include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_midiin.h>
-#include <ags/audio/ags_recall_channel_run_dummy.h>
-#include <ags/audio/ags_recall_ladspa.h>
-#include <ags/audio/ags_recall_ladspa_run.h>
-#include <ags/audio/ags_recall_lv2.h>
-#include <ags/audio/ags_recall_lv2_run.h>
-#include <ags/audio/ags_recall_dssi.h>
-#include <ags/audio/ags_recall_dssi_run.h>
-
-#include <ags/audio/jack/ags_jack_midiin.h>
-#include <ags/audio/jack/ags_jack_server.h>
-#include <ags/audio/jack/ags_jack_client.h>
-#include <ags/audio/jack/ags_jack_port.h>
-#include <ags/audio/jack/ags_jack_devout.h>
-
-#include <ags/audio/pulse/ags_pulse_server.h>
-#include <ags/audio/pulse/ags_pulse_client.h>
-#include <ags/audio/pulse/ags_pulse_port.h>
-#include <ags/audio/pulse/ags_pulse_devout.h>
-
-#include <ags/audio/core-audio/ags_core_audio_midiin.h>
-#include <ags/audio/core-audio/ags_core_audio_server.h>
-#include <ags/audio/core-audio/ags_core_audio_client.h>
-#include <ags/audio/core-audio/ags_core_audio_port.h>
-#include <ags/audio/core-audio/ags_core_audio_devout.h>
-
-#include <ags/audio/task/ags_cancel_audio.h>
-#include <ags/audio/task/ags_cancel_channel.h>
-
-#include <ags/audio/recall/ags_play_audio.h>
-#include <ags/audio/recall/ags_play_channel.h>
-#include <ags/audio/recall/ags_play_channel_run.h>
-#include <ags/audio/recall/ags_play_channel_run_master.h>
-#include <ags/audio/recall/ags_stream_channel.h>
-#include <ags/audio/recall/ags_stream_channel_run.h>
-#include <ags/audio/recall/ags_loop_channel.h>
-#include <ags/audio/recall/ags_loop_channel_run.h>
-#include <ags/audio/recall/ags_copy_channel.h>
-#include <ags/audio/recall/ags_copy_channel_run.h>
-#include <ags/audio/recall/ags_volume_channel.h>
-#include <ags/audio/recall/ags_volume_channel_run.h>
-#include <ags/audio/recall/ags_peak_channel.h>
-#include <ags/audio/recall/ags_peak_channel_run.h>
-#include <ags/audio/recall/ags_delay_audio.h>
-#include <ags/audio/recall/ags_delay_audio_run.h>
-#include <ags/audio/recall/ags_count_beats_audio.h>
-#include <ags/audio/recall/ags_count_beats_audio_run.h>
-#include <ags/audio/recall/ags_copy_pattern_audio.h>
-#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
-#include <ags/audio/recall/ags_copy_pattern_channel.h>
-#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
-#include <ags/audio/recall/ags_buffer_channel.h>
-#include <ags/audio/recall/ags_buffer_channel_run.h>
-#include <ags/audio/recall/ags_play_notation_audio.h>
-#include <ags/audio/recall/ags_play_notation_audio_run.h>
-#include <ags/audio/recall/ags_route_dssi_audio.h>
-#include <ags/audio/recall/ags_route_dssi_audio_run.h>
-#include <ags/audio/recall/ags_route_lv2_audio.h>
-#include <ags/audio/recall/ags_route_lv2_audio_run.h>
-
-#include <ags/audio/task/ags_notify_soundcard.h>
-
-#include <ags/audio/file/ags_audio_file_link.h>
-#include <ags/audio/file/ags_audio_file_xml.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-#include <ags/audio/thread/ags_record_thread.h>
-#include <ags/audio/thread/ags_recycling_thread.h>
-#include <ags/audio/thread/ags_soundcard_thread.h>
-#include <ags/audio/thread/ags_sequencer_thread.h>
-#include <ags/audio/thread/ags_export_thread.h>
-#include <ags/audio/thread/ags_iterator_thread.h>
-
-#include <ags/widget/ags_led.h>
-#include <ags/widget/ags_hindicator.h>
-#include <ags/widget/ags_vindicator.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_effect_pad.h>
@@ -1045,6 +934,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   AgsLv2uiManager *lv2ui_manager;
   AgsLv2WorkerManager *lv2_worker_manager;
 
+  AgsMessageDelivery *message_delivery;
+  AgsMessageQueue *audio_message_queue;
+  AgsMessageQueue *channel_message_queue; 
   AgsThread *soundcard_thread;
   AgsThread *export_thread;
   AgsThread *sequencer_thread;
@@ -1229,6 +1121,17 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   uid = getuid();
   pw = getpwuid(uid);
 
+  /* message delivery */
+  message_delivery = ags_message_delivery_get_instance();
+
+  audio_message_queue = ags_message_queue_new("ags-audio");
+  ags_message_delivery_add_queue(message_delivery,
+				 audio_message_queue);
+  
+  channel_message_queue = ags_message_queue_new("ags-channel");
+  ags_message_delivery_add_queue(message_delivery,
+				 channel_message_queue);
+  
   /* load ladspa manager */
   ladspa_manager = ags_ladspa_manager_get_instance();
 
