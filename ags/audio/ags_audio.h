@@ -159,7 +159,7 @@ struct _AgsAudioClass
   void (*set_audio_channels)(AgsAudio *audio,
 			     guint audio_channels, guint audio_channels_old);
   void (*set_pads)(AgsAudio *audio,
-		   GType type,
+		   GType channel_type,
 		   guint pads, guint pads_old);
 
   AgsRecallID* (*init_run)(AgsAudio *audio);
@@ -177,7 +177,7 @@ void ags_audio_unset_flags(AgsAudio *audio, guint flags);
 void ags_audio_check_connection(AgsAudio *audio);
 
 void ags_audio_set_audio_channels(AgsAudio *audio, guint audio_channels);
-void ags_audio_set_pads(AgsAudio *audio, GType type, guint pads);
+void ags_audio_set_pads(AgsAudio *audio, GType channel_type, guint pads);
 
 void ags_audio_set_samplerate(AgsAudio *audio, guint samplerate);
 void ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size);

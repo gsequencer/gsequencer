@@ -1124,14 +1124,10 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   /* message delivery */
   message_delivery = ags_message_delivery_get_instance();
 
-  audio_message_queue = ags_message_queue_new("ags-audio");
+  audio_message_queue = ags_message_queue_new("libags-audio");
   ags_message_delivery_add_queue(message_delivery,
 				 audio_message_queue);
-  
-  channel_message_queue = ags_message_queue_new("ags-channel");
-  ags_message_delivery_add_queue(message_delivery,
-				 channel_message_queue);
-  
+    
   /* load ladspa manager */
   ladspa_manager = ags_ladspa_manager_get_instance();
 

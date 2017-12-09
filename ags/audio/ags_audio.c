@@ -19,18 +19,7 @@
 
 #include <ags/audio/ags_audio.h>
 
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_dynamic_connectable.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_sequencer.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/server/ags_service_provider.h>
-#include <ags/server/ags_registry.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio_connection.h>
 #include <ags/audio/ags_preset.h>
@@ -743,7 +732,7 @@ ags_audio_class_init(AgsAudioClass *audio)
   /**
    * AgsAudio::set-pads:
    * @audio: the object to adjust pads.
-   * @type: either #AGS_TYPE_INPUT or #AGS_TYPE_OUTPUT
+   * @channel_type: either #AGS_TYPE_INPUT or #AGS_TYPE_OUTPUT
    * @pads_new: new pad count
    * @pads_old: old pad count
    *
@@ -2521,6 +2510,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 				  guint audio_channels, guint audio_channels_old)
 {
   AgsMutexManager *mutex_manager;
+  AgsMessageDelivery *message_delivery;
+  AgsMessageQueue *message_queue;
   
   gboolean alloc_recycling;
   gboolean link_recycling; // affects AgsInput
@@ -3012,6 +3003,46 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   /* apply new sizes */
   audio->audio_channels = audio_channels;
   // input_lines must be set earlier because set_sync_link needs it
+  
+  /* emit message */
+  message_delivery = ags_message_delivery_get_instance();
+
+  message_queue = ags_message_delivery_find_namespace(message_delivery,
+						      "libags-audio");
+
+  if(message_queue != NULL){
+    AgsMessageEnvelope *message;
+
+    xmlDoc *doc;
+    xmlNode *root_node;
+
+    /* specify message body */
+    doc = xmlNewDoc("1.0");
+
+    root_node = xmlNewNode(NULL,
+			   "ags-command");
+    xmlDocSetRootElement(doc, root_node);    
+
+    xmlNewProp(root_node,
+	       "method",
+	       "AgsAudio::set-audio-channels");
+
+    xmlNewProp(root_node,
+	       "audio_channels",
+	       g_strdup_printf("%d", audio_channels));
+
+    xmlNewProp(root_node,
+	       "audio_channels_old",
+	       g_strdup_printf("%d", audio_channels_old));
+
+    /* add message */
+    message = ags_message_envelope_alloc(audio,
+					 NULL,
+					 doc);
+    ags_message_delivery_add_message(message_delivery,
+				     "libags-audio",
+				     message);
+  }
 }
 
 /**
@@ -3067,12 +3098,14 @@ ags_audio_set_audio_channels(AgsAudio *audio, guint audio_channels)
  */
 void
 ags_audio_real_set_pads(AgsAudio *audio,
-			GType type,
+			GType channel_type,
 			guint pads, guint pads_old)
 {
   AgsChannel *channel;
   
   AgsMutexManager *mutex_manager;
+  AgsMessageDelivery *message_delivery;
+  AgsMessageQueue *message_queue;
   
   gboolean alloc_recycling, link_recycling, set_sync_link, set_async_link;
 
@@ -3096,7 +3129,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
     set_sync_link = FALSE;
     set_async_link = FALSE;
     
-    if(type == AGS_TYPE_OUTPUT){
+    if(channel_type == AGS_TYPE_OUTPUT){
       if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
 	alloc_recycling = TRUE;
       }else{
@@ -3129,7 +3162,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
     guint i, j;
     
-    if(type == AGS_TYPE_OUTPUT){
+    if(channel_type == AGS_TYPE_OUTPUT){
       start = audio->output;
     }else{
       start = audio->input;
@@ -3137,7 +3170,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
     for(j = pads_old; j < pads; j++){
       for(i = 0; i < audio->audio_channels; i++){
-	channel = (AgsChannel *) g_object_new(type,
+	channel = (AgsChannel *) g_object_new(channel_type,
 					      "audio", (GObject *) audio,
 					      "soundcard", audio->soundcard,
 					      "samplerate", audio->samplerate,
@@ -3147,7 +3180,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	
 	if(start == NULL){
 	  /* set first channel in AgsAudio */
-	  if(type == AGS_TYPE_OUTPUT){
+	  if(channel_type == AGS_TYPE_OUTPUT){
 	    start = 
 	      audio->output = channel;
 	  }else{
@@ -3425,7 +3458,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
     while(automation != NULL){
       automation_next = automation->next;
 
-      if(AGS_AUTOMATION(automation->data)->channel_type == type){
+      if(AGS_AUTOMATION(automation->data)->channel_type == channel_type){
 	if(AGS_AUTOMATION(automation->data)->line >= pads * audio->audio_channels){
 	  ags_audio_remove_automation(audio,
 				      automation->data);
@@ -3442,7 +3475,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  if(g_type_is_a(type, AGS_TYPE_OUTPUT)){
+  if(g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
     /* output */
     pads_old = audio->output_pads;
 
@@ -3567,7 +3600,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
       //      audio->input_pads = pads;
       //      audio->input_lines = pads * audio->audio_channels;
     }
-  }else if(g_type_is_a(type, AGS_TYPE_INPUT)){
+  }else if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
     /* input */
     if(pads_old == pads){
       return;
@@ -3620,20 +3653,64 @@ ags_audio_real_set_pads(AgsAudio *audio,
   }else{
     g_warning("unknown channel type");
   }
+
+  /* emit message */
+  message_delivery = ags_message_delivery_get_instance();
+
+  message_queue = ags_message_delivery_find_namespace(message_delivery,
+						      "libags-audio");
+
+  if(message_queue != NULL){
+    AgsMessageEnvelope *message;
+
+    xmlDoc *doc;
+    xmlNode *root_node;
+
+    /* specify message body */
+    doc = xmlNewDoc("1.0");
+
+    root_node = xmlNewNode(NULL,
+			   "ags-command");
+    xmlDocSetRootElement(doc, root_node);    
+
+    xmlNewProp(root_node,
+	       "method",
+	       "AgsAudio::set-pads");
+
+    xmlNewProp(root_node,
+	       "type",
+	       g_strdup(g_type_name(channel_type)));
+
+    xmlNewProp(root_node,
+	       "pads",
+	       g_strdup_printf("%d", pads));
+
+    xmlNewProp(root_node,
+	       "pads_old",
+	       g_strdup_printf("%d", pads_old));
+
+    /* add message */
+    message = ags_message_envelope_alloc(audio,
+					 NULL,
+					 doc);
+    ags_message_delivery_add_message(message_delivery,
+				     "libags-audio",
+				     message);
+  }
 }
 
 /**
  * ags_audio_set_pads:
  * @audio: the #AgsAudio
- * @type: AGS_TYPE_INPUT or AGS_TYPE_OUTPUT
+ * @channel_type: AGS_TYPE_INPUT or AGS_TYPE_OUTPUT
  * @pads: new pad count
  *
- * Sets pad count for the apropriate @type
+ * Sets pad count for the apropriate @channel_type
  *
  * Since: 1.0.0
  */
 void
-ags_audio_set_pads(AgsAudio *audio, GType type, guint pads)
+ags_audio_set_pads(AgsAudio *audio, GType channel_type, guint pads)
 {
   AgsMutexManager *mutex_manager;
 
@@ -3662,10 +3739,10 @@ ags_audio_set_pads(AgsAudio *audio, GType type, guint pads)
 
   /* emit */
   g_object_ref((GObject *) audio);
-  pads_old = ((g_type_is_a(type, AGS_TYPE_OUTPUT)) ? audio->output_pads: audio->input_pads);
+  pads_old = ((g_type_is_a(channel_type, AGS_TYPE_OUTPUT)) ? audio->output_pads: audio->input_pads);
   g_signal_emit(G_OBJECT(audio),
 		audio_signals[SET_PADS], 0,
-		type, pads, pads_old);
+		channel_type, pads, pads_old);
   g_object_unref((GObject *) audio);
   
   pthread_mutex_unlock(mutex);
