@@ -105,6 +105,7 @@ enum{
   RESIZE_PADS,
   MAP_RECALL,
   FIND_PORT,
+  DONE,
   LAST_SIGNAL,
 };
 
@@ -116,6 +117,8 @@ enum{
 
 static gpointer ags_machine_parent_class = NULL;
 static guint machine_signals[LAST_SIGNAL];
+
+GHashTable *ags_machine_message_monitor = NULL;
 
 GType
 ags_machine_get_type(void)
@@ -223,6 +226,7 @@ ags_machine_class_init(AgsMachineClass *machine)
   machine->resize_audio_channels = ags_machine_real_resize_audio_channels;
   machine->map_recall = ags_machine_real_map_recall;
   machine->find_port = ags_machine_real_find_port;
+  machine->done = NULL;
 
   /* signals */
   /**
@@ -234,6 +238,8 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The ::resize-audio-channels signal notifies about changed channel allocation within
    * audio.
+   * 
+   * Since: 1.0.0
    */
   machine_signals[RESIZE_AUDIO_CHANNELS] =
     g_signal_new("resize-audio-channels",
@@ -256,6 +262,8 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The ::resize-pads signal notifies about changed channel allocation within
    * audio.
+   * 
+   * Since: 1.0.0
    */
   machine_signals[RESIZE_PADS] =
     g_signal_new("resize-pads",
@@ -274,12 +282,14 @@ ags_machine_class_init(AgsMachineClass *machine)
    * @machine: the #AgsMachine
    *
    * The ::map-recall should be used to add the machine's default recall.
+   * 
+   * Since: 1.0.0
    */
   machine_signals[MAP_RECALL] =
     g_signal_new("map-recall",
-                 G_TYPE_FROM_CLASS (machine),
+                 G_TYPE_FROM_CLASS(machine),
                  G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsMachineClass, map_recall),
+		 G_STRUCT_OFFSET(AgsMachineClass, map_recall),
                  NULL, NULL,
                  g_cclosure_marshal_VOID__VOID,
                  G_TYPE_NONE, 0);
@@ -289,7 +299,9 @@ ags_machine_class_init(AgsMachineClass *machine)
    * @machine: the #AgsMachine to resize
    * Returns: a #GList with associated ports
    *
-   * The ::find-port as recall should be mapped
+   * The ::find-port signal emits as recall should be mapped.
+   * 
+   * Since: 1.0.0
    */
   machine_signals[FIND_PORT] =
     g_signal_new("find-port",
@@ -299,6 +311,25 @@ ags_machine_class_init(AgsMachineClass *machine)
 		 NULL, NULL,
 		 g_cclosure_user_marshal_POINTER__VOID,
 		 G_TYPE_POINTER, 0);
+
+  /**
+   * AgsMachine::done:
+   * @machine: the #AgsMachine
+   * @recall_id: the #AgsRecallID
+   *
+   * The ::done signal gets emited as audio stops playback.
+   * 
+   * Since: 1.2.0
+   */
+  machine_signals[DONE] =
+    g_signal_new("done",
+                 G_TYPE_FROM_CLASS(machine),
+                 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsMachineClass, done),
+                 NULL, NULL,
+                 g_cclosure_marshal_VOID__OBJECT,
+                 G_TYPE_NONE, 0,
+		 G_TYPE_OBJECT);
 }
 
 void
@@ -332,6 +363,15 @@ ags_machine_init(AgsMachine *machine)
   GtkVBox *vbox;
   GtkFrame *frame;
 
+  if(ags_machine_message_monitor == NULL){
+    ags_machine_message_monitor = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+							NULL,
+							NULL);
+  }
+
+  g_hash_table_insert(ags_machine_message_monitor,
+		      machine, ags_machine_message_monitor_timeout);
+
   machine->machine_name = NULL;
 
   machine->version = AGS_MACHINE_DEFAULT_VERSION;
@@ -361,12 +401,15 @@ ags_machine_init(AgsMachine *machine)
   machine->audio->flags |= AGS_AUDIO_CAN_NEXT_ACTIVE;
   machine->audio->machine = (GObject *) machine;
 
-  /* AgsAudio */
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels",
-			 G_CALLBACK(ags_machine_set_audio_channels_callback), machine);
+  /* AgsAudio related forwarded signals */
+  g_signal_connect_after(G_OBJECT(machine), "resize-audio-channels",
+			 G_CALLBACK(ags_machine_resize_audio_channels_callback), NULL);
 
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads",
-			 G_CALLBACK(ags_machine_set_pads_callback), machine);
+  g_signal_connect_after(G_OBJECT(machine), "resize-pads",
+			 G_CALLBACK(ags_machine_resize_pads_callback), NULL);
+
+  g_signal_connect_after(G_OBJECT(machine), "done",
+			 G_CALLBACK(ags_machine_done_callback), NULL);
   
   machine->play = NULL;
 
@@ -745,13 +788,6 @@ ags_machine_connect(AgsConnectable *connectable)
 
     g_list_free(list_start);
   }
-
-  /* audio */
-  g_signal_connect_after(machine->audio, "tact",
-			 G_CALLBACK(ags_machine_tact_callback), machine);
-
-  g_signal_connect_after(machine->audio, "done",
-			 G_CALLBACK(ags_machine_done_callback), machine);
 }
 
 void
@@ -879,6 +915,10 @@ ags_machine_finalize(GObject *gobject)
   if(soundcard_mutex != NULL){
     pthread_mutex_unlock(soundcard_mutex);
   }
+
+  /* remove message monitor */
+  g_hash_table_remove(ags_machine_message_monitor,
+		      machine);
   
   //TODO:JK: better clean-up of audio
   
@@ -1457,6 +1497,8 @@ ags_machine_real_map_recall(AgsMachine *machine)
  * @machine: the #AgsMachine to add its default recall.
  *
  * You may want the @machine to add its default recall.
+ * 
+ * Since: 1.0.0
  */
 void
 ags_machine_map_recall(AgsMachine *machine)
@@ -1560,6 +1602,27 @@ ags_machine_find_port(AgsMachine *machine)
   g_object_unref((GObject *) machine);
 
   return(list);
+}
+
+/**
+ * ags_machine_done:
+ * @machine: the #AgsMachine
+ * @recall_id: the #AgsRecallID
+ *
+ * Notify about to stop playback of @recall_id.
+ * 
+ * Since: 1.2.0
+ */
+void
+ags_machine_done(AgsMachine *machine, GObject *recall_id)
+{
+  g_return_if_fail(AGS_IS_MACHINE(machine));
+
+  g_object_ref((GObject *) machine);
+  g_signal_emit((GObject *) machine,
+		machine_signals[DONE], 0,
+		recall_id);
+  g_object_unref((GObject *) machine);
 }
 
 /**
@@ -2124,6 +2187,114 @@ ags_machine_copy_pattern(AgsMachine *machine)
   gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
   
   xmlFreeDoc(clipboard);
+}
+
+/**
+ * ags_machine_message_monitor_timeout:
+ * @machine: the #AgsMachine
+ *
+ * Monitor messages.
+ *
+ * Returns: %TRUE if proceed with redraw, otherwise %FALSE
+ *
+ * Since: 1.2.0
+ */
+gboolean
+ags_machine_message_monitor_timeout(AgsMachine *machine)
+{
+  if(g_hash_table_lookup(ags_machine_message_monitor,
+			 machine) != NULL){
+    AgsMessageDelivery *message_delivery;
+
+    GList *message;
+    
+    /* retrieve message */
+    message_delivery = ags_message_delivery_get_instance();
+
+    message = ags_message_delivery_find_sender(message_delivery,
+					       machine->audio);
+    
+    while(message != NULL){
+      xmlNode *root_node;
+
+      root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message->data)->doc);
+      
+      if(!xmlStrncmp(root_node->name,
+		     "ags-command",
+		     12)){
+	if(!xmlStrncmp(xmlGetProp(root_node,
+				  "method"),
+		       "AgsAudio::set-audio-channels",
+		       28)){
+	  GValue *value;
+	  
+	  guint audio_channels, audio_channels_old;
+
+	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
+				     "audio-channels");
+	  audio_channels = g_value_get_uint(value);
+
+	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
+				     "audio-channels-old");
+	  audio_channels_old = g_value_get_uint(value);
+
+	  /* resize audio channels */
+	  ags_machine_resize_audio_channels(machine,
+					    audio_channels, audio_channels_old);
+	}else if(!xmlStrncmp(xmlGetProp(root_node,
+				  "method"),
+		       "AgsAudio::set-pads",
+		       19)){
+	  GValue *value;
+
+	  GType channel_type;
+	  
+	  guint pads, pads_old;
+
+	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
+				     "channel-type");
+	  channel_type = g_value_get_ulong(value);
+	  
+	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
+				     "pads");
+	  pads = g_value_get_uint(value);
+
+	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
+				     "pads-old");
+	  pads_old = g_value_get_uint(value);
+
+	  /* resize pads */
+	  ags_machine_resize_pads(machine,
+				  channel_type,
+				  pads, pads_old);
+	}else if(!xmlStrncmp(xmlGetProp(root_node,
+				  "method"),
+		       "AgsAudio::done",
+		       15)){
+	  AgsRecallID *recall_id;
+	  
+	  GValue *value;
+
+	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
+				     "recall-id");
+	  recall_id = g_value_get_object(value);
+
+	  /* done */
+	  ags_machine_done(machine,
+			   recall_id);
+	}
+      }
+      
+      message = message->next;
+    }
+    
+    g_list_free_full(message,
+		     ags_message_envelope_free);
+
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 /**

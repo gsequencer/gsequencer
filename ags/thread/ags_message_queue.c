@@ -285,11 +285,23 @@ ags_message_envelope_alloc(GObject *sender,
 
   message = (AgsMessageEnvelope *) malloc(sizeof(AgsMessageEnvelope));
 
+  if(sender != NULL){
+    g_object_ref(sender);
+  }
+  
   message->sender = sender;
+
+  if(recipient != NULL){
+    g_object_ref(recipient);
+  }
+  
   message->recipient = recipient;
 
   message->doc = doc;
 
+  message->parameter = NULL;
+  message->n_params = 0;
+  
   return(message);
 }
 
@@ -308,6 +320,20 @@ ags_message_envelope_free(AgsMessageEnvelope *message)
     return;
   }
 
+  if(message->sender != NULL){
+    g_object_unref(message->sender);
+  }
+
+  if(message->recipient != NULL){
+    g_object_unref(message->recipient);
+  }
+  
+  if(message->doc != NULL){
+    xmlFreeDoc(message->doc);
+  }
+  
+  g_free(message->parameter);
+  
   g_free(message);
 }
 

@@ -1660,7 +1660,7 @@ ags_line_find_next_grouped(GList *line)
 
 /**
  * ags_line_indicator_queue_draw_timeout:
- * @widget: the indicator widgt
+ * @widget: the widget
  *
  * Queue draw widget
  *

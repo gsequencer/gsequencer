@@ -3839,6 +3839,9 @@ ags_channel_real_add_effect(AgsChannel *channel,
   AgsDssiPlugin *dssi_plugin;
   AgsLv2Plugin *lv2_plugin;
 
+  AgsMessageDelivery *message_delivery;
+  AgsMessageQueue *message_queue;
+
   GList *port;
   
   /* load plugin */
@@ -3873,6 +3876,57 @@ ags_channel_real_add_effect(AgsChannel *channel,
 					filename,
 					effect);
     }
+  }
+
+  /* emit message */
+  message_delivery = ags_message_delivery_get_instance();
+
+  message_queue = ags_message_delivery_find_namespace(message_delivery,
+						      "libags-audio");
+
+  if(message_queue != NULL){
+    AgsMessageEnvelope *message;
+
+    xmlDoc *doc;
+    xmlNode *root_node;
+
+    /* specify message body */
+    doc = xmlNewDoc("1.0");
+
+    root_node = xmlNewNode(NULL,
+			   "ags-command");
+    xmlDocSetRootElement(doc, root_node);    
+
+    xmlNewProp(root_node,
+	       "method",
+	       "AgsChannel::add-effect");
+
+    /* add message */
+    message = ags_message_envelope_alloc(channel,
+					 NULL,
+					 doc);
+
+    /* set parameter */
+    message->parameter = g_new0(GParameter,
+				2);
+    message->n_params = 2;
+    
+    message->parameter[0].name = "filename";
+    g_value_init(&(message->parameter[0].value),
+		 G_TYPE_STRING);
+    g_value_set_string(&(message->parameter[0].value),
+		       filename);
+
+    message->parameter[1].name = "effect";
+    g_value_init(&(message->parameter[1].value),
+		 G_TYPE_STRING);
+    g_value_set_string(&(message->parameter[1].value),
+		       effect);
+
+    /* add message */
+    ags_message_delivery_add_message(message_delivery,
+				     "libags-audio",
+				     message);
   }
   
   return(port);
@@ -4133,6 +4187,51 @@ ags_channel_real_remove_effect(AgsChannel *channel,
   
   ags_channel_remove_recall_container(channel,
 				      (GObject *) recall_container);
+
+  /* emit message */
+  message_delivery = ags_message_delivery_get_instance();
+
+  message_queue = ags_message_delivery_find_namespace(message_delivery,
+						      "libags-audio");
+
+  if(message_queue != NULL){
+    AgsMessageEnvelope *message;
+
+    xmlDoc *doc;
+    xmlNode *root_node;
+
+    /* specify message body */
+    doc = xmlNewDoc("1.0");
+
+    root_node = xmlNewNode(NULL,
+			   "ags-command");
+    xmlDocSetRootElement(doc, root_node);    
+
+    xmlNewProp(root_node,
+	       "method",
+	       "AgsChannel::remove-effect");
+
+    /* add message */
+    message = ags_message_envelope_alloc(channel,
+					 NULL,
+					 doc);
+
+    /* set parameter */
+    message->parameter = g_new0(GParameter,
+				1);
+    message->n_params = 1;
+    
+    message->parameter[0].name = "nth";
+    g_value_init(&(message->parameter[0].value),
+		 G_TYPE_UINT);
+    g_value_set_uint(&(message->parameter[0].value),
+		     nth);
+
+    /* add message */
+    ags_message_delivery_add_message(message_delivery,
+				     "libags-audio",
+				     message);
+  }
 }
 
 void
@@ -4718,6 +4817,8 @@ ags_channel_real_done(AgsChannel *channel,
   AgsRecall *recall;
   
   AgsMutexManager *mutex_manager;
+  AgsMessageDelivery *message_delivery;
+  AgsMessageQueue *message_queue;
 
   GList *list, *list_next;
 
@@ -4768,6 +4869,51 @@ ags_channel_real_done(AgsChannel *channel,
   }
   
   pthread_mutex_unlock(mutex);
+
+  /* emit message */
+  message_delivery = ags_message_delivery_get_instance();
+
+  message_queue = ags_message_delivery_find_namespace(message_delivery,
+						      "libags-audio");
+
+  if(message_queue != NULL){
+    AgsMessageEnvelope *message;
+
+    xmlDoc *doc;
+    xmlNode *root_node;
+
+    /* specify message body */
+    doc = xmlNewDoc("1.0");
+
+    root_node = xmlNewNode(NULL,
+			   "ags-command");
+    xmlDocSetRootElement(doc, root_node);    
+
+    xmlNewProp(root_node,
+	       "method",
+	       "AgsChannel::done");
+
+    /* add message */
+    message = ags_message_envelope_alloc(audio,
+					 NULL,
+					 doc);
+
+    /* set parameter */
+    message->parameter = g_new0(GParameter,
+				1);
+    message->n_params = 1;
+    
+    message->parameter[0].name = "recall-id";
+    g_value_init(&(message->parameter[0].value),
+		 G_TYPE_OBJECT);
+    g_value_set_object(&(message->parameter[0].value),
+		       recall_id);
+
+    /* add message */
+    ags_message_delivery_add_message(message_delivery,
+				     "libags-audio",
+				     message);
+  }
 }
 
 /**

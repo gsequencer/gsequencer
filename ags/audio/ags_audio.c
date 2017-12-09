@@ -3027,18 +3027,29 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	       "method",
 	       "AgsAudio::set-audio-channels");
 
-    xmlNewProp(root_node,
-	       "audio_channels",
-	       g_strdup_printf("%d", audio_channels));
-
-    xmlNewProp(root_node,
-	       "audio_channels_old",
-	       g_strdup_printf("%d", audio_channels_old));
-
     /* add message */
     message = ags_message_envelope_alloc(audio,
 					 NULL,
 					 doc);
+
+    /* set parameter */
+    message->parameter = g_new0(GParameter,
+				2);
+    message->n_params = 2;
+    
+    message->parameter[0].name = "audio-channels";
+    g_value_init(&(message->parameter[0].value),
+		 G_TYPE_UINT);
+    g_value_set_uint(&(message->parameter[0].value),
+		     audio_channels);
+
+    message->parameter[1].name = "audio-channels-old";
+    g_value_init(&(message->parameter[1].value),
+		 G_TYPE_UINT);
+    g_value_set_uint(&(message->parameter[1].value),
+		     audio_channels_old);
+
+    /* add message */
     ags_message_delivery_add_message(message_delivery,
 				     "libags-audio",
 				     message);
@@ -3677,22 +3688,34 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	       "method",
 	       "AgsAudio::set-pads");
 
-    xmlNewProp(root_node,
-	       "type",
-	       g_strdup(g_type_name(channel_type)));
-
-    xmlNewProp(root_node,
-	       "pads",
-	       g_strdup_printf("%d", pads));
-
-    xmlNewProp(root_node,
-	       "pads_old",
-	       g_strdup_printf("%d", pads_old));
-
     /* add message */
     message = ags_message_envelope_alloc(audio,
 					 NULL,
 					 doc);
+    /* set parameter */
+    message->parameter = g_new0(GParameter,
+				3);
+    message->n_params = 3;
+    
+    message->parameter[0].name = "channel-type";
+    g_value_init(&(message->parameter[0].value),
+		 G_TYPE_ULONG);
+    g_value_set_ulong(&(message->parameter[0].value),
+		      channel_type);
+
+    message->parameter[1].name = "pads";
+    g_value_init(&(message->parameter[1].value),
+		 G_TYPE_UINT);
+    g_value_set_uint(&(message->parameter[1].value),
+		     pads);
+
+    message->parameter[2].name = "pads-old";
+    g_value_init(&(message->parameter[2].value),
+		 G_TYPE_UINT);
+    g_value_set_uint(&(message->parameter[2].value),
+		     pads_old);
+
+    /* add message */
     ags_message_delivery_add_message(message_delivery,
 				     "libags-audio",
 				     message);
@@ -5165,6 +5188,8 @@ ags_audio_real_done(AgsAudio *audio,
   AgsRecall *recall;
 
   AgsMutexManager *mutex_manager;
+  AgsMessageDelivery *message_delivery;
+  AgsMessageQueue *message_queue;
 
   GList *list, *list_next;
 
@@ -5226,6 +5251,51 @@ ags_audio_real_done(AgsAudio *audio,
   }
   
   pthread_mutex_unlock(mutex);
+
+  /* emit message */
+  message_delivery = ags_message_delivery_get_instance();
+
+  message_queue = ags_message_delivery_find_namespace(message_delivery,
+						      "libags-audio");
+
+  if(message_queue != NULL){
+    AgsMessageEnvelope *message;
+
+    xmlDoc *doc;
+    xmlNode *root_node;
+
+    /* specify message body */
+    doc = xmlNewDoc("1.0");
+
+    root_node = xmlNewNode(NULL,
+			   "ags-command");
+    xmlDocSetRootElement(doc, root_node);    
+
+    xmlNewProp(root_node,
+	       "method",
+	       "AgsAudio::done");
+
+    /* add message */
+    message = ags_message_envelope_alloc(audio,
+					 NULL,
+					 doc);
+
+    /* set parameter */
+    message->parameter = g_new0(GParameter,
+				1);
+    message->n_params = 1;
+    
+    message->parameter[0].name = "recall-id";
+    g_value_init(&(message->parameter[0].value),
+		 G_TYPE_OBJECT);
+    g_value_set_object(&(message->parameter[0].value),
+		       recall_id);
+
+    /* add message */
+    ags_message_delivery_add_message(message_delivery,
+				     "libags-audio",
+				     message);
+  }
 }
 
 /**

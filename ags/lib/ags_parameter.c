@@ -107,3 +107,32 @@ ags_parameter_grow(GType object_type,
 
   return(params);
 }
+
+/**
+ * ags_parameter_find:
+ * @params: the #GParameter-struct
+ * @n_params: the count of @params
+ * @name: the string to match against name of @params
+ * 
+ * Find #GValue-struct matching @name.
+ * 
+ * Returns: the matching #GValue-struct or %NULL if not found
+ * 
+ * Since: 1.2.0
+ */
+GValue*
+ags_parameter_find(GParameter *params, guint n_params,
+		   gchar *name)
+{
+  guint i;
+
+  for(i = 0; i < n_params; i++){
+    if(!g_strcmp0(params[i].name,
+		  name)){
+      return(&(params[i].value));
+    }
+  }
+
+  return(NULL);
+}
+

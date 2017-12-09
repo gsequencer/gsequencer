@@ -467,6 +467,7 @@ ags_gui_thread_do_poll_loop(void *ptr)
 		  main_context);
 
   /* sync functions */
+#if 0
   sync_funcs.prepare = ags_gui_thread_sync_task_prepare;
   sync_funcs.check = ags_gui_thread_sync_task_check;
   sync_funcs.dispatch = ags_gui_thread_sync_task_dispatch;
@@ -475,6 +476,7 @@ ags_gui_thread_do_poll_loop(void *ptr)
 					 sizeof(GSource));
   g_source_attach(gui_thread->sync_source,
 		  main_context);
+#endif
   
   /* task functions */
   task_funcs.prepare = ags_gui_thread_task_prepare;
@@ -1947,13 +1949,15 @@ ags_gui_thread_schedule_task(AgsGuiThread *gui_thread,
   if(task_thread == NULL){
     return;
   }
-  
+
+#if 0  
   g_atomic_int_or(&(task_thread->flags),
 		  (AGS_TASK_THREAD_EXTERN_SYNC |
 		   AGS_TASK_THREAD_EXTERN_READY));
 
   gui_thread->queued_sync = 4;
-
+#endif
+  
   pthread_mutex_lock(gui_thread->task_schedule_mutex);
 
   gui_thread->collected_task = g_list_prepend(gui_thread->collected_task,
@@ -1985,13 +1989,15 @@ ags_gui_thread_schedule_task_list(AgsGuiThread *gui_thread,
   if(task_thread == NULL){
     return;
   }
-  
+
+#if 0  
   g_atomic_int_or(&(task_thread->flags),
 		  (AGS_TASK_THREAD_EXTERN_SYNC |
 		   AGS_TASK_THREAD_EXTERN_READY));
 
   gui_thread->queued_sync = 4;
-
+#endif
+  
   pthread_mutex_lock(gui_thread->task_schedule_mutex);
 
   gui_thread->collected_task = g_list_concat(g_list_reverse(task),

@@ -73,6 +73,7 @@ ags_turtle_manager_add
 ags_turtle_manager_get_instance
 ags_turtle_manager_new
 ags_parameter_grow
+ags_parameter_find
 ags_conversion_get_type
 ags_conversion_convert
 ags_conversion_new

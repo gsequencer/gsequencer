@@ -145,6 +145,9 @@ struct _AgsMachineClass
   
   void (*map_recall)(AgsMachine *machine);
   GList* (*find_port)(AgsMachine *machine);
+
+  void (*done)(AgsMachine *machine,
+	       GObject *recall_id);
 };
 
 GType ags_machine_get_type(void);
@@ -182,6 +185,8 @@ void ags_machine_copy_pattern(AgsMachine *machine);
 
 void ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options);
 void ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_options);
+
+gboolean ags_machine_message_monitor_timeout(AgsMachine *machine);
 
 AgsMachine* ags_machine_new(GObject *soundcard);
 

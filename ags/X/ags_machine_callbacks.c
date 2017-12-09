@@ -622,12 +622,12 @@ ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine)
 }
 
 void
-ags_machine_set_audio_channels_callback(AgsAudio *audio,
-					guint audio_channels, guint audio_channels_old,
-					AgsMachine *machine)
+ags_machine_resize_audio_channels_callback(AgsMachine *machine,
+					   guint audio_channels, guint audio_channels_old,
+					   gpointer data)
 {
   AgsWindow *window;
-
+  
   GList *pad_list;
   GList *line_list;
   
@@ -636,9 +636,6 @@ ags_machine_set_audio_channels_callback(AgsAudio *audio,
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
   /* resize */
-  ags_machine_resize_audio_channels(machine,
-				    audio_channels, audio_channels_old);
-
   if((AGS_MACHINE_CONNECTED & (machine->flags)) != 0){
     if(audio_channels > audio_channels_old){
       if(machine->input != NULL){
@@ -681,9 +678,9 @@ ags_machine_set_audio_channels_callback(AgsAudio *audio,
 }
 
 void
-ags_machine_set_pads_callback(AgsAudio *audio, GType channel_type,
-			      guint pads, guint pads_old,
-			      AgsMachine *machine)
+ags_machine_resize_pads_callback(AgsMachine *machine, GType channel_type,
+				 guint pads, guint pads_old,
+				 gpointer data)
 {
   AgsWindow *window;
 
@@ -692,10 +689,6 @@ ags_machine_set_pads_callback(AgsAudio *audio, GType channel_type,
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
   /* resize */
-  ags_machine_resize_pads(machine,
-			  channel_type,
-			  pads, pads_old);
-
   if((AGS_MACHINE_CONNECTED & (machine->flags)) != 0){
     if(pads > pads_old){
       if(g_type_is_a(channel_type,
@@ -728,27 +721,42 @@ ags_machine_set_pads_callback(AgsAudio *audio, GType channel_type,
 }
 
 void
-ags_machine_tact_callback(AgsAudio *audio,
+ags_machine_done_callback(AgsMachine *machine,
 			  AgsRecallID *recall_id,
-			  AgsMachine *machine)
+			  gpointer data)
 {
-  /* empty */
-}
+  AgsMutexManager *mutex_manager;
 
-void
-ags_machine_done_callback(AgsAudio *audio,
-			  AgsRecallID *recall_id,
-			  AgsMachine *machine)
-{
-  AgsChannel *channel;
+  gboolean reset_active;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  
   if((AGS_MACHINE_BLOCK_STOP & (machine->flags)) != 0){
     return;
   }
   
   machine->flags |= AGS_MACHINE_BLOCK_STOP;
 
-  if((AGS_RECALL_ID_SEQUENCER & (recall_id->flags)) != 0){
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+    
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) machine->audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* play button - check reset active */
+  pthread_mutex_lock(audio_mutex);
+  
+  reset_active = ((AGS_RECALL_ID_SEQUENCER & (recall_id->flags)) != 0) ? TRUE: FALSE;
+
+  pthread_mutex_unlock(audio_mutex);
+  
+  if(reset_active){
     gtk_toggle_button_set_active(machine->play, FALSE);
   }
   

@@ -63,6 +63,9 @@ struct _AgsMessageEnvelope
   GObject *recipient;
 
   xmlDoc *doc;
+  
+  GParameter *parameter;
+  guint n_params;
 };
 
 GType ags_message_queue_get_type();
