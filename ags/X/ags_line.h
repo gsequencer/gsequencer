@@ -65,8 +65,6 @@ struct _AgsLine
   gchar *name;
 
   AgsChannel *channel;
-  gulong add_effect_handler;
-  gulong remove_effect_handler;
   
   GtkWidget *pad;
 
@@ -98,6 +96,9 @@ struct _AgsLineClass
   void (*map_recall)(AgsLine *line,
 		     guint output_pad_start);
   GList* (*find_port)(AgsLine *line);
+
+  void (*done)(AgsLine *line,
+	       GObject *recall_id);
 };
 
 GType ags_line_get_type(void);
@@ -117,8 +118,12 @@ void ags_line_map_recall(AgsLine *line,
 			 guint output_pad_start);
 GList* ags_line_find_port(AgsLine *line);
 
+void ags_line_done(AgsLine *line,
+		   GObject *recall_id);
+
 GList* ags_line_find_next_grouped(GList *line);
 
+gboolean ags_line_message_monitor_timeout(AgsLine *line);
 gboolean ags_line_indicator_queue_draw_timeout(GtkWidget *widget);
 
 AgsLine* ags_line_new(GtkWidget *pad, AgsChannel *channel);

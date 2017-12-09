@@ -33,36 +33,12 @@ void ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line);
 
 void ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line);
 
-void ags_line_add_effect_callback(AgsChannel *channel,
-				  gchar *filename,
-				  gchar *effect,
-				  AgsLine *line);
-void ags_line_remove_effect_callback(AgsChannel *channel,
-				     guint nth,
-				     AgsLine *line);
-
 /* AgsLine */
 void ags_line_volume_callback(GtkRange *range,
 			      AgsLine *line);
 
-/* AgsRecall - recall */
-void ags_line_copy_pattern_done(AgsRecall *recall,
-				AgsLine *line);
-void ags_line_copy_pattern_cancel(AgsRecall *recall,
-				  AgsLine *line);
-void ags_line_recall_volume_done(AgsRecall *recall,
-				 AgsLine *line);
-void ags_line_recall_volume_cancel(AgsRecall *recall,
-				   AgsLine *line);
-
-/* AgsRecall - play */
-void ags_line_channel_done_callback(AgsChannel *channel, AgsRecallID *recall_id,
-				    AgsLine *line);
-void ags_line_play_channel_run_cancel(AgsRecall *recall,
-				      AgsLine *line);
-void ags_line_play_volume_done(AgsRecall *recall,
-			       AgsLine *line);
-void ags_line_play_volume_cancel(AgsRecall *recall,
-				 AgsLine *line);
+/* done */
+void ags_line_done_callback(AgsLine *line, AgsRecallID *recall_id,
+			    gpointer data);
 
 #endif /*__AGS_LINE_CALLBACKS_H__*/

@@ -2206,13 +2206,14 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 			 machine) != NULL){
     AgsMessageDelivery *message_delivery;
 
-    GList *message;
+    GList *message_start, *message;
     
     /* retrieve message */
     message_delivery = ags_message_delivery_get_instance();
 
-    message = ags_message_delivery_find_sender(message_delivery,
-					       machine->audio);
+    message_start = 
+      message = ags_message_delivery_find_sender(message_delivery,
+						 machine->audio);
     
     while(message != NULL){
       xmlNode *root_node;
@@ -2288,7 +2289,7 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
       message = message->next;
     }
     
-    g_list_free_full(message,
+    g_list_free_full(message_start,
 		     ags_message_envelope_free);
 
     return(TRUE);

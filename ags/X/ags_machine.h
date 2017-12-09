@@ -161,6 +161,9 @@ void ags_machine_resize_pads(AgsMachine *machine,
 void ags_machine_map_recall(AgsMachine *machine);
 GList* ags_machine_find_port(AgsMachine *machine);
 
+void ags_machine_done(AgsMachine *machine,
+		      GObject *recall_id);
+
 void ags_machine_add_default_recalls(AgsMachine *machine) G_DEPRECATED_FOR(ags_machine_map_recall);
 
 AgsMachine* ags_machine_find_by_name(GList *list, char *name);
