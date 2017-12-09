@@ -468,6 +468,10 @@ ags_line_init(AgsLine *line)
 		     0);
   
   line->indicator = NULL;
+
+  /* forwarded callbacks */
+  g_signal_connect_after(line, "done",
+			 G_CALLBACK(ags_line_done_callback), NULL);
 }
 
 void

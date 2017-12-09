@@ -57,7 +57,6 @@
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);
-void ags_machine_start_complete_response(GtkWidget *dialog, gint response, AgsMachine *machine);
 void ags_machine_remove_audio_launch_callback(AgsTask *task, AgsMachine *machine);
 
 int
@@ -761,60 +760,4 @@ ags_machine_done_callback(AgsMachine *machine,
   }
   
   machine->flags &= (~AGS_MACHINE_BLOCK_STOP);
-}
-
-void
-ags_machine_start_complete_callback(AgsTaskCompletion *task_completion,
-				    AgsMachine *machine)
-{
-  AgsWindow *window;
-  GtkMessageDialog *dialog;
-  
-  AgsSoundcardThread *soundcard_thread;
-
-  AgsMutexManager *mutex_manager;
-  AgsAudioLoop *audio_loop;
-
-  AgsApplicationContext *application_context;
-
-  pthread_mutex_t *application_mutex;
-
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
-						 AGS_TYPE_WINDOW);
-
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  audio_loop = (AgsAudioLoop *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get soundcard thread */
-  soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type((AgsThread *) audio_loop,
-								 AGS_TYPE_SOUNDCARD_THREAD);
-
-  if(soundcard_thread->error != NULL){
-    /* show error message */
-    dialog = (GtkMessageDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
-							 GTK_DIALOG_DESTROY_WITH_PARENT,
-							 GTK_MESSAGE_ERROR,
-							 GTK_BUTTONS_CLOSE,
-							 "Error: %s", soundcard_thread->error->message);
-    g_signal_connect(dialog, "response",
-		     G_CALLBACK(ags_machine_start_complete_response), machine);
-    gtk_widget_show_all((GtkWidget *) dialog);
-  }
-}
-
-void
-ags_machine_start_complete_response(GtkWidget *dialog,
-				    gint response,
-				    AgsMachine *machine)
-{
-  gtk_widget_destroy(dialog);
 }

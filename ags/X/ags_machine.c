@@ -1782,7 +1782,6 @@ ags_machine_set_run_extended(AgsMachine *machine,
     /* create start task */
     if(list != NULL){
       AgsGuiThread *gui_thread;
-      AgsTaskCompletion *task_completion;
 
       gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) audio_loop,
 							 AGS_TYPE_GUI_THREAD);
@@ -1791,21 +1790,6 @@ ags_machine_set_run_extended(AgsMachine *machine,
       start_soundcard = ags_start_soundcard_new(window->application_context);
       list = g_list_prepend(list,
 			    start_soundcard);
-
-      /* task completion */
-      task_completion = ags_task_completion_new((GObject *) start_soundcard,
-						NULL);
-      g_signal_connect_after(G_OBJECT(task_completion), "complete",
-			     G_CALLBACK(ags_machine_start_complete_callback), machine);
-      ags_connectable_connect(AGS_CONNECTABLE(task_completion));
-
-      pthread_mutex_lock(gui_thread->task_completion_mutex);
-      
-      g_atomic_pointer_set(&(gui_thread->task_completion),
-			   g_list_prepend(g_atomic_pointer_get(&(gui_thread->task_completion)),
-					  task_completion));
-
-      pthread_mutex_unlock(gui_thread->task_completion_mutex);
 
       /* start sequencer */
       start_sequencer = ags_start_sequencer_new(window->application_context);

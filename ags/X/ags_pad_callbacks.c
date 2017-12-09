@@ -49,10 +49,6 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
-void ags_pad_start_complete_response(GtkWidget *dialog,
-				     gint response,
-				     AgsPad *pad);
-
 void
 ags_pad_group_clicked_callback(GtkWidget *widget, AgsPad *pad)
 {
@@ -286,42 +282,8 @@ ags_pad_solo_clicked_callback(GtkWidget *widget, AgsPad *pad)
 }
 
 void
-ags_pad_start_complete_callback(AgsTaskCompletion *task_completion,
-				AgsPad *pad)
-{
-  AgsWindow *window;
-  GtkMessageDialog *dialog;
-  
-  AgsSoundcardThread *soundcard_thread;
-
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) pad,
-						 AGS_TYPE_WINDOW);
-  soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type((AgsThread *) AGS_APPLICATION_CONTEXT(window->application_context)->main_loop,
-								 AGS_TYPE_SOUNDCARD_THREAD);
-
-  if(soundcard_thread->error != NULL){
-    /* show error message */
-    dialog = (GtkMessageDialog *) gtk_message_dialog_new(GTK_WINDOW(window),
-							 GTK_DIALOG_DESTROY_WITH_PARENT,
-							 GTK_MESSAGE_ERROR,
-							 GTK_BUTTONS_CLOSE,
-							 "Error: %s", soundcard_thread->error->message);
-    g_signal_connect(dialog, "response",
-		     G_CALLBACK(ags_pad_start_complete_response), pad);
-    gtk_widget_show_all((GtkWidget *) dialog);
-  }
-}
-
-void
-ags_pad_start_complete_response(GtkWidget *dialog,
-				gint response,
-				AgsPad *pad)
-{
-  gtk_widget_destroy(dialog);
-}
-
-void
-ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
+ags_pad_init_channel_launch_callback(AgsTask *task,
+				     AgsPad *input_pad)
 { 
   AgsSoundcard *soundcard;
   AgsAudio *audio;
@@ -333,7 +295,6 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
   AgsMutexManager *mutex_manager;
   
   GList *recall;
-  GList *list, *list_start;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
@@ -373,11 +334,7 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
   soundcard = AGS_SOUNDCARD(audio->soundcard);
   
   pthread_mutex_unlock(audio_mutex);
-
-  /* get pad children */
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) input_pad->expander_set);
-
+  
   /* get next pad */
   pthread_mutex_lock(channel_mutex);
   
@@ -395,7 +352,6 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
     if(AGS_PLAYBACK(channel->playback) == NULL ||
        AGS_PLAYBACK(channel->playback)->recall_id[0] == NULL){
       channel = channel->next;
-      list = list->next;
 
       pthread_mutex_unlock(channel_mutex);
   
@@ -415,9 +371,6 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
     if(recall != NULL){
       AgsAudioSignal *audio_signal;
       AgsRecallID *current_recall_id;
-      
-      g_signal_connect_after(channel, "done",
-			     G_CALLBACK(ags_line_channel_done_callback), AGS_LINE(list->data));
       
       /* add audio signal */
       pthread_mutex_lock(channel_mutex);
@@ -471,12 +424,6 @@ ags_pad_init_channel_launch_callback(AgsTask *task, AgsPad *input_pad)
 
     channel = channel->next;
 
-    pthread_mutex_unlock(channel_mutex);
-
-    
-    list = list->next;
+    pthread_mutex_unlock(channel_mutex);    
   }
-
-  /* free containers list */
-  g_list_free(list_start);
 }
