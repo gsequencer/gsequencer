@@ -419,9 +419,9 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
   old_machine = notation_editor->selected_machine;
 
   if(old_machine != NULL){
-    g_object_disconnect(old_machine->audio,
-			"set-pads",
-			G_CALLBACK(ags_notation_editor_set_pads_callback),
+    g_object_disconnect(old_machine,
+			"resize-pads",
+			G_CALLBACK(ags_notation_editor_resize_pads_callback),
 			(gpointer) notation_editor,
 			NULL);
   }
@@ -502,8 +502,8 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
 
   /* connect set-pads - new */
   if(machine != NULL){
-    g_signal_connect_after(machine->audio, "set-pads",
-			   G_CALLBACK(ags_notation_editor_set_pads_callback), notation_editor);
+    g_signal_connect_after(machine->audio, "resize-pads",
+			   G_CALLBACK(ags_notation_editor_resize_pads_callback), notation_editor);
   }  
 }
 

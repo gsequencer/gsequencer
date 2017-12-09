@@ -27,15 +27,19 @@ ags_notation_editor_machine_changed_callback(AgsMachineSelector *machine_selecto
 }
 
 void
-ags_notation_editor_set_pads_callback(AgsAudio *audio, GType channel_type,
-				      guint pads, guint pads_old,
-				      AgsNotationEditor *notation_editor)
+ags_notation_editor_resize_pads_callback(AgsMachine *machine, GType channel_type,
+					 guint pads, guint pads_old,
+					 AgsNotationEditor *notation_editor)
 {
+  AgsAudio *audio;
+  
   AgsMutexManager *mutex_manager;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
 
+  audio = machine->audio;
+  
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 

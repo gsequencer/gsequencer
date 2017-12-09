@@ -725,12 +725,6 @@ ags_file_read_machine_resolve_audio(AgsFileLookup *file_lookup,
 
   AGS_AUDIO(id_ref->ref)->machine = (GObject *) machine;
 
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels",
-			 G_CALLBACK(ags_machine_set_audio_channels_callback), machine);
-
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads",
-			 G_CALLBACK(ags_machine_set_pads_callback), machine);
-
   str = xmlGetProp(file_lookup->node,
 		   AGS_FILE_NAME_PROP);
 
@@ -2695,12 +2689,6 @@ ags_file_read_effect_bridge_resolve_audio(AgsFileLookup *file_lookup,
 	       "audio", (AgsAudio *) id_ref->ref,
 	       NULL);
 
-  g_signal_connect_after(G_OBJECT(effect_bridge->audio), "set_audio_channels",
-			 G_CALLBACK(ags_effect_bridge_set_audio_channels_callback), effect_bridge);
-
-  g_signal_connect_after(G_OBJECT(effect_bridge->audio), "set_pads",
-			 G_CALLBACK(ags_effect_bridge_set_pads_callback), effect_bridge);
-
   str = xmlGetProp(file_lookup->node,
 		   AGS_FILE_NAME_PROP);
 
@@ -3123,12 +3111,6 @@ ags_file_read_effect_bulk_resolve_audio(AgsFileLookup *file_lookup,
   g_object_set(G_OBJECT(effect_bulk),
 	       "audio", (AgsAudio *) id_ref->ref,
 	       NULL);
-
-  g_signal_connect_after(G_OBJECT(effect_bulk->audio), "set_audio_channels",
-			 G_CALLBACK(ags_effect_bulk_set_audio_channels_callback), effect_bulk);
-
-  g_signal_connect_after(G_OBJECT(effect_bulk->audio), "set_pads",
-			 G_CALLBACK(ags_effect_bulk_set_pads_callback), effect_bulk);
 
   str = xmlGetProp(file_lookup->node,
 		   AGS_FILE_NAME_PROP);

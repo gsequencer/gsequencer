@@ -22,9 +22,12 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_channel.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #define AGS_TYPE_PAD_EDITOR                (ags_pad_editor_get_type())
 #define AGS_PAD_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PAD_EDITOR, AgsPadEditor))
@@ -33,16 +36,22 @@
 #define AGS_IS_PAD_EDITOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PAD_EDITOR))
 #define AGS_PAD_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_PAD_EDITOR, AgsPadEditorClass))
 
-#define AGS_PAD_EDITOR_DEFAULT_VERSION "0.4.2\0"
-#define AGS_PAD_EDITOR_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
+#define AGS_PAD_EDITOR_DEFAULT_VERSION "0.4.2"
+#define AGS_PAD_EDITOR_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36"
 
 typedef struct _AgsPadEditor AgsPadEditor;
 typedef struct _AgsPadEditorClass AgsPadEditorClass;
+
+typedef enum{
+  AGS_PAD_EDITOR_CONNECTED   = 1,
+}AgsPadEditorFlags;
 
 struct _AgsPadEditor
 {
   GtkVBox vbox;
 
+  guint flags;
+  
   gchar *version;
   gchar *build_id;
   
@@ -53,8 +62,6 @@ struct _AgsPadEditor
   
   GtkExpander *line_editor_expander;
   GtkVBox *line_editor;
-
-  gulong set_audio_channels_handler;
 };
 
 struct _AgsPadEditorClass

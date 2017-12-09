@@ -25,10 +25,9 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_automation.h>
-
-#include <ags/widget/ags_ruler.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/editor/ags_automation_area.h>
 

@@ -22,9 +22,12 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_audio.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #define AGS_TYPE_EFFECT_BRIDGE                (ags_effect_bridge_get_type())
 #define AGS_EFFECT_BRIDGE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EFFECT_BRIDGE, AgsEffectBridge))
@@ -33,8 +36,8 @@
 #define AGS_IS_EFFECT_BRIDGE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_EFFECT_BRIDGE))
 #define AGS_EFFECT_BRIDGE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_EFFECT_BRIDGE, AgsEffectBridgeClass))
 
-#define AGS_EFFECT_BRIDGE_DEFAULT_VERSION "0.7.8\0"
-#define AGS_EFFECT_BRIDGE_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23\0"
+#define AGS_EFFECT_BRIDGE_DEFAULT_VERSION "0.7.8"
+#define AGS_EFFECT_BRIDGE_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23"
 
 #define AGS_EFFECT_BRIDGE_MAX_COLUMNS (2)
 

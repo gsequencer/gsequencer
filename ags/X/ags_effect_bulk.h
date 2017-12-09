@@ -22,9 +22,12 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_audio.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #define AGS_TYPE_EFFECT_BULK                (ags_effect_bulk_get_type())
 #define AGS_EFFECT_BULK(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EFFECT_BULK, AgsEffectBulk))
@@ -35,8 +38,8 @@
 
 #define AGS_EFFECT_BULK_PLUGIN(ptr) ((AgsEffectBulkPlugin *)(ptr))
 
-#define AGS_EFFECT_BULK_DEFAULT_VERSION "0.7.8\0"
-#define AGS_EFFECT_BULK_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23\0"
+#define AGS_EFFECT_BULK_DEFAULT_VERSION "0.7.8"
+#define AGS_EFFECT_BULK_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23"
 
 #define AGS_EFFECT_BULK_COLUMNS_COUNT (4)
 

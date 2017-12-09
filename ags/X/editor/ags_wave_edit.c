@@ -20,7 +20,9 @@
 #include <ags/X/editor/ags_wave_edit.h>
 #include <ags/X/editor/ags_wave_edit_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_wave_editor.h>
 
@@ -279,28 +281,28 @@ ags_wave_edit_connect(AgsConnectable *connectable)
 							  AGS_TYPE_WAVE_EDITOR);
 
   if(wave_editor != NULL && wave_editor->selected_machine != NULL){
-    g_signal_connect_after(wave_editor->selected_machine->audio, "set-audio-channels",
-			   G_CALLBACK(ags_wave_edit_set_audio_channels_callback), wave_edit);
+    g_signal_connect_after(wave_editor->selected_machine, "resize-audio-channels",
+			   G_CALLBACK(ags_wave_edit_resize_audio_channels_callback), wave_edit);
 
-    g_signal_connect_after(wave_editor->selected_machine->audio, "set-pads",
-			   G_CALLBACK(ags_wave_edit_set_pads_callback), wave_edit);
+    g_signal_connect_after(wave_editor->selected_machine, "resize-pads",
+			   G_CALLBACK(ags_wave_edit_resize_pads_callback), wave_edit);
   }
  
   /*  */
   g_signal_connect_after((GObject *) wave_edit->drawing_area, "expose_event",
-			 G_CALLBACK (ags_wave_edit_drawing_area_expose_event), (gpointer) wave_edit);
+			 G_CALLBACK(ags_wave_edit_drawing_area_expose_event), (gpointer) wave_edit);
 
   g_signal_connect_after((GObject *) wave_edit->drawing_area, "configure_event",
-			 G_CALLBACK (ags_wave_edit_drawing_area_configure_event), (gpointer) wave_edit);
+			 G_CALLBACK(ags_wave_edit_drawing_area_configure_event), (gpointer) wave_edit);
 
   g_signal_connect((GObject *) wave_edit->drawing_area, "button_press_event",
-		   G_CALLBACK (ags_wave_edit_drawing_area_button_press_event), (gpointer) wave_edit);
+		   G_CALLBACK(ags_wave_edit_drawing_area_button_press_event), (gpointer) wave_edit);
 
   g_signal_connect((GObject *) wave_edit->drawing_area, "button_release_event",
-		   G_CALLBACK (ags_wave_edit_drawing_area_button_release_event), (gpointer) wave_edit);
+		   G_CALLBACK(ags_wave_edit_drawing_area_button_release_event), (gpointer) wave_edit);
   
   g_signal_connect((GObject *) wave_edit->drawing_area, "motion_notify_event",
-		   G_CALLBACK (ags_wave_edit_drawing_area_motion_notify_event), (gpointer) wave_edit);
+		   G_CALLBACK(ags_wave_edit_drawing_area_motion_notify_event), (gpointer) wave_edit);
 
   g_signal_connect((GObject *) wave_edit->drawing_area, "key_press_event",
 		   G_CALLBACK(ags_wave_edit_drawing_area_key_press_event), (gpointer) wave_edit);
@@ -310,16 +312,77 @@ ags_wave_edit_connect(AgsConnectable *connectable)
 
   /*  */
   g_signal_connect_after((GObject *) wave_edit->vscrollbar, "value-changed",
-			 G_CALLBACK (ags_wave_edit_vscrollbar_value_changed), (gpointer) wave_edit);
+			 G_CALLBACK(ags_wave_edit_vscrollbar_value_changed), (gpointer) wave_edit);
 
   g_signal_connect_after((GObject *) wave_edit->hscrollbar, "value-changed",
-			 G_CALLBACK (ags_wave_edit_hscrollbar_value_changed), (gpointer) wave_edit);
+			 G_CALLBACK(ags_wave_edit_hscrollbar_value_changed), (gpointer) wave_edit);
 }
 
 void
 ags_wave_edit_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsWaveEditor *wave_editor;
+  AgsWaveEdit *wave_edit;
+
+  wave_edit = AGS_WAVE_EDIT(connectable);
+
+  if((AGS_WAVE_EDIT_CONNECTED & (wave_edit->flags)) == 0){
+    return;
+  }
+  
+  wave_edit->flags &= (~AGS_WAVE_EDIT_CONNECTED);
+
+  wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor(GTK_WIDGET(wave_edit),
+							  AGS_TYPE_WAVE_EDITOR);
+
+  if(wave_editor != NULL && wave_editor->selected_machine != NULL){
+    g_object_disconnect(wave_editor->selected_machine,
+			"resize-audio-channels",
+			G_CALLBACK(ags_wave_edit_resize_audio_channels_callback),
+			wave_edit,
+			"resize-pads",
+			G_CALLBACK(ags_wave_edit_resize_pads_callback),
+			wave_edit,
+			NULL);
+  }
+   
+  /*  */
+  g_object_disconnect((GObject *) wave_edit->drawing_area,
+		      "expose_event",
+		      G_CALLBACK(ags_wave_edit_drawing_area_expose_event),
+		      wave_edit,
+		      "configure_event",
+		      G_CALLBACK(ags_wave_edit_drawing_area_configure_event),
+		      wave_edit,
+		      "button_press_event",
+		      G_CALLBACK(ags_wave_edit_drawing_area_button_press_event),
+		      wave_edit,
+		      "button_release_event",
+		      G_CALLBACK(ags_wave_edit_drawing_area_button_release_event),
+		      wave_edit,
+		      "motion_notify_event",
+		      G_CALLBACK(ags_wave_edit_drawing_area_motion_notify_event),
+		      wave_edit,
+		      "key_press_event",
+		      G_CALLBACK(ags_wave_edit_drawing_area_key_press_event),
+		      wave_edit,
+		      "key_release_event",
+		      G_CALLBACK(ags_wave_edit_drawing_area_key_release_event),
+		      wave_edit,
+		      NULL);
+
+  /*  */
+  g_object_disconnect((GObject *) wave_edit->vscrollbar,
+		      "value-changed",
+		      G_CALLBACK(ags_wave_edit_vscrollbar_value_changed),
+		      (gpointer) wave_edit,
+		      NULL);
+
+  g_object_disconnect((GObject *) wave_edit->hscrollbar,
+		      "value-changed",
+		      G_CALLBACK(ags_wave_edit_hscrollbar_value_changed),
+		      (gpointer) wave_edit,
+		      NULL);
 }
 
 AtkObject*

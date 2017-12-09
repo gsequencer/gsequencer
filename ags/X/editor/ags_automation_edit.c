@@ -20,7 +20,9 @@
 #include <ags/X/editor/ags_automation_edit.h>
 #include <ags/X/editor/ags_automation_edit_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_automation_editor.h>
 
@@ -284,29 +286,29 @@ ags_automation_edit_connect(AgsConnectable *connectable)
 								      AGS_TYPE_AUTOMATION_EDITOR);
 
   if(automation_editor != NULL && automation_editor->selected_machine != NULL){
-    g_signal_connect_after(automation_editor->selected_machine->audio, "set-audio-channels",
-			   G_CALLBACK(ags_automation_edit_set_audio_channels_callback), automation_edit);
+    g_signal_connect_after(automation_editor->selected_machine, "resize-audio-channels",
+			   G_CALLBACK(ags_automation_edit_resize_audio_channels_callback), automation_edit);
 
-    g_signal_connect_after(automation_editor->selected_machine->audio, "set-pads",
-			   G_CALLBACK(ags_automation_edit_set_pads_callback), automation_edit);
+    g_signal_connect_after(automation_editor->selected_machine, "resize-pads",
+			   G_CALLBACK(ags_automation_edit_resize_pads_callback), automation_edit);
   }
 
   
   /*  */
   g_signal_connect_after((GObject *) automation_edit->drawing_area, "expose_event",
-			 G_CALLBACK (ags_automation_edit_drawing_area_expose_event), (gpointer) automation_edit);
+			 G_CALLBACK(ags_automation_edit_drawing_area_expose_event), (gpointer) automation_edit);
 
   g_signal_connect_after((GObject *) automation_edit->drawing_area, "configure_event",
-			 G_CALLBACK (ags_automation_edit_drawing_area_configure_event), (gpointer) automation_edit);
+			 G_CALLBACK(ags_automation_edit_drawing_area_configure_event), (gpointer) automation_edit);
 
   g_signal_connect((GObject *) automation_edit->drawing_area, "button_press_event",
-		   G_CALLBACK (ags_automation_edit_drawing_area_button_press_event), (gpointer) automation_edit);
+		   G_CALLBACK(ags_automation_edit_drawing_area_button_press_event), (gpointer) automation_edit);
 
   g_signal_connect((GObject *) automation_edit->drawing_area, "button_release_event",
-		   G_CALLBACK (ags_automation_edit_drawing_area_button_release_event), (gpointer) automation_edit);
+		   G_CALLBACK(ags_automation_edit_drawing_area_button_release_event), (gpointer) automation_edit);
   
   g_signal_connect((GObject *) automation_edit->drawing_area, "motion_notify_event",
-		   G_CALLBACK (ags_automation_edit_drawing_area_motion_notify_event), (gpointer) automation_edit);
+		   G_CALLBACK(ags_automation_edit_drawing_area_motion_notify_event), (gpointer) automation_edit);
 
   g_signal_connect((GObject *) automation_edit->drawing_area, "key_press_event",
 		   G_CALLBACK(ags_automation_edit_drawing_area_key_press_event), (gpointer) automation_edit);
@@ -316,16 +318,77 @@ ags_automation_edit_connect(AgsConnectable *connectable)
 
   /*  */
   g_signal_connect_after((GObject *) automation_edit->vscrollbar, "value-changed",
-			 G_CALLBACK (ags_automation_edit_vscrollbar_value_changed), (gpointer) automation_edit);
+			 G_CALLBACK(ags_automation_edit_vscrollbar_value_changed), (gpointer) automation_edit);
 
   g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
-			 G_CALLBACK (ags_automation_edit_hscrollbar_value_changed), (gpointer) automation_edit);
+			 G_CALLBACK(ags_automation_edit_hscrollbar_value_changed), (gpointer) automation_edit);
 }
 
 void
 ags_automation_edit_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+  AgsAutomationEditor *automation_editor;
+  AgsAutomationEdit *automation_edit;
+
+  automation_edit = AGS_AUTOMATION_EDIT(connectable);
+
+  if((AGS_AUTOMATION_EDIT_CONNECTED & (automation_edit->flags)) == 0){
+    return;
+  }
+  
+  automation_edit->flags &= (~AGS_AUTOMATION_EDIT_CONNECTED);
+
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
+								      AGS_TYPE_AUTOMATION_EDITOR);
+
+  if(automation_editor != NULL && automation_editor->selected_machine != NULL){
+    g_object_disconnect(automation_editor->selected_machine,
+			"resize-audio-channels",
+			G_CALLBACK(ags_automation_edit_resize_audio_channels_callback),
+			automation_edit,
+			"resize-pads",
+			G_CALLBACK(ags_automation_edit_resize_pads_callback),
+			automation_edit,
+			NULL);
+  }
+  
+  /*  */
+  g_object_disconnect((GObject *) automation_edit->drawing_area,
+		      "expose_event",
+		      G_CALLBACK(ags_automation_edit_drawing_area_expose_event),
+		      automation_edit,
+		      "configure_event",
+		      G_CALLBACK(ags_automation_edit_drawing_area_configure_event),
+		      automation_edit,
+		      "button_press_event",
+		      G_CALLBACK(ags_automation_edit_drawing_area_button_press_event),
+		      automation_edit,
+		      "button_release_event",
+		      G_CALLBACK(ags_automation_edit_drawing_area_button_release_event),
+		      automation_edit,
+		      "motion_notify_event",
+		      G_CALLBACK(ags_automation_edit_drawing_area_motion_notify_event),
+		      automation_edit,
+		      "key_press_event",
+		      G_CALLBACK(ags_automation_edit_drawing_area_key_press_event),
+		      automation_edit,
+		      "key_release_event",
+		      G_CALLBACK(ags_automation_edit_drawing_area_key_release_event),
+		      automation_edit,
+		      NULL);
+
+  /*  */
+  g_object_disconnect((GObject *) automation_edit->vscrollbar,
+		      "value-changed",
+		      G_CALLBACK(ags_automation_edit_vscrollbar_value_changed),
+		      (gpointer) automation_edit,
+		      NULL);
+
+  g_object_disconnect((GObject *) automation_edit->hscrollbar,
+		      "value-changed",
+		      G_CALLBACK(ags_automation_edit_hscrollbar_value_changed),
+		      (gpointer) automation_edit,
+		      NULL);
 }
 
 AtkObject*

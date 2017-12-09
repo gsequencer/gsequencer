@@ -29,17 +29,13 @@
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_line_editor.h>
 
-int
-ags_pad_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPadEditor *pad_editor)
-{
-  return(0);
-}
-
 void
-ags_pad_editor_set_audio_channels_callback(AgsAudio *audio,
-					   guint audio_channels, guint audio_channels_old,
-					   AgsPadEditor *pad_editor)
+ags_pad_editor_resize_audio_channels_callback(AgsMachine *machine,
+					      guint audio_channels, guint audio_channels_old,
+					      AgsPadEditor *pad_editor)
 {
+  AgsAudio *audio;
+  
   if(audio_channels > audio_channels_old){
     AgsLineEditor *line_editor;
 

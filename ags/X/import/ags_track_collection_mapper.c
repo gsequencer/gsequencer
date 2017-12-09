@@ -20,23 +20,9 @@
 #include <ags/X/import/ags_track_collection_mapper.h>
 #include <ags/X/import/ags_track_collection_mapper_callbacks.h>
 
-#include <ags/lib/ags_complex.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-#include <ags/object/ags_soundcard.h>
-
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
-
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
-
-#include <ags/audio/task/ags_add_audio.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -510,6 +496,10 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
     g_warning("unknown machine type");
   }
 
+  /* connect everything */
+  ags_connectable_connect(AGS_CONNECTABLE(machine));
+
+  /* set size */
   ags_audio_set_audio_channels(machine->audio,
 			       gtk_spin_button_get_value_as_int(track_collection_mapper->audio_channels));
   ags_audio_set_pads(machine->audio,
@@ -542,9 +532,6 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(machine),
 		     FALSE, FALSE, 0);
-
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(machine));
 
   /* */
   gtk_widget_show_all(GTK_WIDGET(machine));

@@ -20,15 +20,9 @@
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bridge_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_plugin.h>
-
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_output.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_effect_pad.h>
@@ -334,24 +328,6 @@ ags_effect_bridge_set_property(GObject *gobject,
       if(effect_bridge->audio != NULL){
 	GList *effect_pad;
 
-	/* disconnect */
-	g_signal_handler_disconnect(effect_bridge->audio,
-				    g_signal_handler_find(effect_bridge->audio,
-							  G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA,
-							  0,
-							  0,
-							  NULL,
-							  ags_effect_bridge_set_audio_channels_callback,
-							  effect_bridge));
-	g_signal_handler_disconnect(effect_bridge->audio,
-				    g_signal_handler_find(effect_bridge->audio,
-							  G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA,
-							  0,
-							  0,
-							  NULL,
-							  ags_effect_bridge_set_pads_callback,
-							  effect_bridge));
-	    
 	g_object_unref(effect_bridge->audio);
 	
 	if(audio == NULL){
@@ -380,12 +356,6 @@ ags_effect_bridge_set_property(GObject *gobject,
 	guint i;
 	
 	g_object_ref(audio);
-
-	g_signal_connect_after(G_OBJECT(audio), "set-audio-channels",
-			       G_CALLBACK(ags_effect_bridge_set_audio_channels_callback), effect_bridge);
-	  
-	g_signal_connect_after(G_OBJECT(audio), "set-pads",
-			       G_CALLBACK(ags_effect_bridge_set_pads_callback), effect_bridge);
 
 	/* set channel and resize for AgsOutput */
 	if(effect_bridge->output_pad_type != G_TYPE_NONE){
@@ -535,6 +505,7 @@ ags_effect_bridge_get_property(GObject *gobject,
 void
 ags_effect_bridge_connect(AgsConnectable *connectable)
 {
+  AgsMachine *machine;
   AgsEffectBridge *effect_bridge;
 
   GList *effect_pad_list, *effect_pad_list_start;
@@ -546,6 +517,15 @@ ags_effect_bridge_connect(AgsConnectable *connectable)
   }
 
   effect_bridge->flags |= AGS_EFFECT_BRIDGE_CONNECTED;
+
+  machine = gtk_widget_get_ancestor(effect_bridge,
+				    AGS_TYPE_MACHINE);
+  
+  g_signal_connect_after(machine, "resize-audio-channels",
+			 G_CALLBACK(ags_effect_bridge_resize_audio_channels_callback), effect_bridge);
+
+  g_signal_connect_after(machine, "resize-pads",
+			 G_CALLBACK(ags_effect_bridge_resize_pads_callback), effect_bridge);
 
   /* AgsEffectBulk - input */
   if(effect_bridge->bulk_input != NULL){
@@ -589,6 +569,7 @@ ags_effect_bridge_connect(AgsConnectable *connectable)
 void
 ags_effect_bridge_disconnect(AgsConnectable *connectable)
 {
+  AgsMachine *machine;
   AgsEffectBridge *effect_bridge;
 
   GList *effect_pad_list, *effect_pad_list_start;
@@ -600,6 +581,18 @@ ags_effect_bridge_disconnect(AgsConnectable *connectable)
   }
 
   effect_bridge->flags &= (~AGS_EFFECT_BRIDGE_CONNECTED);
+
+  machine = gtk_widget_get_ancestor(effect_bridge,
+				    AGS_TYPE_MACHINE);
+
+  g_object_disconnect(G_OBJECT(machine),
+		      "resize-audio-channels",
+		      G_CALLBACK(ags_effect_bridge_resize_audio_channels_callback),
+		      effect_bridge,
+		      "resize-pads",
+		      G_CALLBACK(ags_effect_bridge_resize_pads_callback),
+		      effect_bridge,
+		      NULL);
 
   /* AgsEffectBulk - input */
   if(effect_bridge->bulk_input != NULL){
@@ -638,10 +631,6 @@ ags_effect_bridge_disconnect(AgsConnectable *connectable)
 
     g_list_free(effect_pad_list_start);
   }
-
-  //TODO:JK: implement me
-  g_signal_handlers_disconnect_by_data(effect_bridge->audio,
-				       effect_bridge);
 }
 
 gchar*

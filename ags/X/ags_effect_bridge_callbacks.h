@@ -22,17 +22,20 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #include <ags/X/ags_effect_bridge.h>
 
-void ags_effect_bridge_set_audio_channels_callback(AgsAudio *audio,
-						   guint audio_channels, guint audio_channels_old,
-						   AgsEffectBridge *effect_bridge);
+#include <ags/X/ags_machine.h>
 
-void ags_effect_bridge_set_pads_callback(AgsAudio *audio,
-					 GType channel_type,
-					 guint pads, guint pads_old,
-					 AgsEffectBridge *effect_bridge);
+void ags_effect_bridge_resize_audio_channels_callback(AgsMachine *machine,
+						      guint audio_channels, guint audio_channels_old,
+						      AgsEffectBridge *effect_bridge);
+
+void ags_effect_bridge_resiz_pads_callback(AgsMachine *machine,
+					   GType channel_type,
+					   guint pads, guint pads_old,
+					   AgsEffectBridge *effect_bridge);
 
 #endif /*__AGS_EFFECT_BRIDGE_CALLBACKS_H__*/

@@ -20,10 +20,9 @@
 #include <ags/X/ags_pad_editor.h>
 #include <ags/X/ags_pad_editor_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/thread/ags_mutex_manager.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_line_editor.h>
 
@@ -150,6 +149,8 @@ ags_pad_editor_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_pad_editor_init(AgsPadEditor *pad_editor)
 {
+  pad_editor->flags = 0;
+  
   pad_editor->version = AGS_PAD_EDITOR_DEFAULT_VERSION;
   pad_editor->build_id = AGS_PAD_EDITOR_DEFAULT_BUILD_ID;
 
@@ -212,17 +213,25 @@ ags_pad_editor_get_property(GObject *gobject,
 void
 ags_pad_editor_connect(AgsConnectable *connectable)
 {
+  AgsMachineEditor *machine_editor;
   AgsPadEditor *pad_editor;
-  AgsAudio *audio;
+  
   GList *line_editor, *line_editor_start;
 
   pad_editor = AGS_PAD_EDITOR(connectable);
 
-  /* AgsAudio */
-  audio = AGS_AUDIO(pad_editor->pad->audio);
+  if((AGS_PAD_EDITOR_CONNECTED & (pad_editor->flags)) != 0){
+    return;
+  }
 
-  pad_editor->set_audio_channels_handler = g_signal_connect_after(G_OBJECT(audio), "set_audio_channels",
-								  G_CALLBACK(ags_pad_editor_set_audio_channels_callback), pad_editor);
+  pad_editor->flags |= AGS_PAD_EDITOR_CONNECTED;
+  
+  machine_editor = gtk_widget_get_ancestor(pad_editor,
+					   AGS_TYPE_MACHINE_EDITOR);
+  
+  /*  */
+  g_signal_connect_after(G_OBJECT(machine_editor->machine), "resize-audio-channels",
+			 G_CALLBACK(ags_pad_editor_resize_audio_channels_callback), pad_editor);
 
   /* AgsLineEditor */
   line_editor_start = 
@@ -240,16 +249,26 @@ ags_pad_editor_connect(AgsConnectable *connectable)
 void
 ags_pad_editor_disconnect(AgsConnectable *connectable)
 {
+  AgsMachineEditor *machine_editor;
   AgsPadEditor *pad_editor;
-  AgsAudio *audio;
 
   pad_editor = AGS_PAD_EDITOR(connectable);
 
-  /* AgsAudio */
-  audio = AGS_AUDIO(pad_editor->pad->audio);
+  if((AGS_PAD_EDITOR_CONNECTED & (pad_editor->flags)) == 0){
+    return;
+  }
+
+  pad_editor->flags &= (~AGS_PAD_EDITOR_CONNECTED);
   
-  g_signal_handler_disconnect(audio,
-			      pad_editor->set_audio_channels_handler);
+  machine_editor = gtk_widget_get_ancestor(pad_editor,
+					   AGS_TYPE_MACHINE_EDITOR);
+
+  /*  */
+  g_object_disconnect(G_OBJECT(machine_editor->machine),
+		      "resize-audio-channels",
+		      G_CALLBACK(ags_pad_editor_resize_audio_channels_callback),
+		      pad_editor,
+		      NULL);
 }
 
 void

@@ -19,54 +19,9 @@
 
 #include <ags/X/file/ags_simple_file.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/lib/ags_complex.h>
-
-#include <ags/object/ags_distributed_manager.h>
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_marshal.h>
-
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_lookup.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_launch.h>
-#include <ags/file/ags_file_link.h>
-
-#include <ags/thread/ags_thread-posix.h>
-
-#include <ags/plugin/ags_base_plugin.h>
-#include <ags/plugin/ags_ladspa_plugin.h>
-#include <ags/plugin/ags_ladspa_manager.h>
-#include <ags/plugin/ags_dssi_plugin.h>
-#include <ags/plugin/ags_dssi_manager.h>
-#include <ags/plugin/ags_lv2_plugin.h>
-#include <ags/plugin/ags_lv2_manager.h>
-
-#include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_pattern.h>
-#include <ags/audio/ags_notation.h>
-#include <ags/audio/ags_note.h>
-#include <ags/audio/ags_automation.h>
-#include <ags/audio/ags_acceleration.h>
-#include <ags/audio/ags_preset.h>
-
-#include <ags/audio/jack/ags_jack_server.h>
-#include <ags/audio/jack/ags_jack_devout.h>
-
-#include <ags/audio/task/ags_change_soundcard.h>
-#include <ags/audio/task/ags_apply_presets.h>
-
-#include <ags/audio/file/ags_audio_file_link.h>
-#include <ags/audio/file/ags_audio_file.h>
-
-#include <ags/widget/ags_dial.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
@@ -1912,6 +1867,9 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     gobject->audio->flags |= AGS_AUDIO_REVERSE_MAPPING;
   }
   
+  /* connect AgsMachine */
+  ags_connectable_connect(AGS_CONNECTABLE(gobject));
+  
   /* retrieve channel allocation */
   str = xmlGetProp(node,
 		   "channels");
@@ -2233,9 +2191,6 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 							10),
 		 NULL);
   }
-  
-  /* connect AgsMachine */
-  ags_connectable_connect(AGS_CONNECTABLE(gobject));
 
   gtk_widget_show_all((GtkWidget *) gobject);
 

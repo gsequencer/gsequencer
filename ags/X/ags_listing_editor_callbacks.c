@@ -19,9 +19,10 @@
 
 #include <ags/X/ags_listing_editor_callbacks.h>
 
-#include <ags/thread/ags_mutex_manager.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
-#include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_editor.h>
 
 int
@@ -47,10 +48,14 @@ ags_listing_editor_parent_set_callback(GtkWidget *widget,
 }
 
 void
-ags_listing_editor_set_pads_callback(AgsAudio *audio, GType channel_type,
-				     guint pads, guint pads_old,
-				     AgsListingEditor *listing_editor)
+ags_listing_editor_resize_pads_callback(AgsMachine *machine, GType channel_type,
+					guint pads, guint pads_old,
+					AgsListingEditor *listing_editor)
 {
+  AgsAudio *audio;
+
+  audio = machine->audio;
+  
   if(channel_type != listing_editor->channel_type){
     return;
   }

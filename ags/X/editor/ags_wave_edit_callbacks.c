@@ -36,19 +36,24 @@
 #include <gdk/gdkkeysyms.h>
 
 void
-ags_wave_edit_set_audio_channels_callback(AgsAudio *audio,
-					  guint audio_channels, guint audio_channels_old,
-					  AgsWaveEdit *wave_edit)
+ags_wave_edit_resize_audio_channels_callback(AgsMachine *machine,
+					     guint audio_channels, guint audio_channels_old,
+					     AgsWaveEdit *wave_edit)
 {
   AgsWindow *window;
   AgsWaveEditor *wave_editor;
+
   AgsNotebook *notebook;
+
+  AgsAudio *audio;
 
   GList *list;
 
   guint pads;
   guint i, j;
 
+  audio = machine->audio;
+  
   window = (AgsWindow *) AGS_WAVE_WINDOW(gtk_widget_get_toplevel((GtkWidget *) wave_edit))->parent_window;
   
   wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor(GTK_WIDGET(wave_edit),
@@ -95,20 +100,25 @@ ags_wave_edit_set_audio_channels_callback(AgsAudio *audio,
 }
 
 void
-ags_wave_edit_set_pads_callback(AgsAudio *audio,
-				GType channel_type,
-				guint pads, guint pads_old,
-				AgsWaveEdit *wave_edit)
+ags_wave_edit_resize_pads_callback(AgsMachine *machine,
+				   GType channel_type,
+				   guint pads, guint pads_old,
+				   AgsWaveEdit *wave_edit)
 {
   AgsWindow *window;
   AgsWaveEditor *wave_editor;
   AgsWaveEditorChild *editor_child;
+  
   AgsNotebook *notebook;
 
+  AgsAudio *audio;
+  
   GList *list;
 
   guint audio_channels;
   guint i, j;
+
+  audio = machine->audio;
   
   window = (AgsWindow *) AGS_WAVE_WINDOW(gtk_widget_get_toplevel((GtkWidget *) wave_edit))->parent_window;
 

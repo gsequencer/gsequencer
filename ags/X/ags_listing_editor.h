@@ -45,8 +45,6 @@ struct _AgsListingEditor
   GType channel_type;
 
   GtkVBox *child;
-
-  gulong set_pads_handler;
 };
 
 struct _AgsListingEditorClass

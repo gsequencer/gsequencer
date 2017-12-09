@@ -388,12 +388,6 @@ ags_matrix_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   g_object_disconnect(G_OBJECT(AGS_MACHINE(matrix)->audio),
-		      "tact",
-		      G_CALLBACK(ags_matrix_tact_callback),
-		      matrix,
-		      NULL);
-
-  g_object_disconnect(G_OBJECT(AGS_MACHINE(matrix)->audio),
 		      "done",
 		      G_CALLBACK(ags_matrix_done_callback),
 		      matrix,
