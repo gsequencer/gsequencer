@@ -20,34 +20,9 @@
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_plugin.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_completion.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-
-#include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_pattern.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/audio/file/ags_audio_file.h>
-
-#include <ags/audio/task/ags_init_audio.h>
-#include <ags/audio/task/ags_append_audio.h>
-#include <ags/audio/task/ags_start_soundcard.h>
-#include <ags/audio/task/ags_start_sequencer.h>
-#include <ags/audio/task/ags_cancel_audio.h>
-#include <ags/audio/task/ags_open_file.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
@@ -2197,6 +2172,7 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 
     message_start = 
       message = ags_message_delivery_find_sender(message_delivery,
+						 "libags-audio",
 						 machine->audio);
     
     while(message != NULL){

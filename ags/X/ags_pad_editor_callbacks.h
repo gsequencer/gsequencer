@@ -22,16 +22,17 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include <gtk/gtk.h>
 
-#include <ags/audio/ags_audio.h>
+#include <gtk/gtk.h>
 
 #include <ags/X/ags_pad_editor.h>
 
+#include <ags/X/ags_machine.h>
+
 int ags_pad_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsPadEditor *pad_editor);
 
-void ags_pad_editor_set_audio_channels_callback(AgsAudio *audio,
-						guint audio_channels, guint audio_channels_old,
-						AgsPadEditor *pad_editor);
+void ags_pad_editor_resize_audio_channels_callback(AgsMachine *machine,
+						   guint audio_channels, guint audio_channels_old,
+						   AgsPadEditor *pad_editor);
 
 #endif /*__AGS_PAD_EDITOR_CALLBACKS_H__*/

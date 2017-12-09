@@ -25,6 +25,7 @@
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
+#include <ags/X/ags_machine.h>
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_bulk_member.h>
@@ -911,7 +912,7 @@ ags_live_lv2_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 }
 
 void
-ags_live_lv2_bridge_resize_audio_channels(AgsMAchine *machine,
+ags_live_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 					  guint audio_channels, guint audio_channels_old,
 					  gpointer data)
 {

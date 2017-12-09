@@ -19,47 +19,15 @@
 
 #include <ags/X/ags_line_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/plugin/ags_base_plugin.h>
-
-#include <ags/audio/ags_playback.h>
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_audio.h>
-#include <ags/audio/ags_recall_audio_run.h>
-#include <ags/audio/ags_recall_channel.h>
-#include <ags/audio/ags_recall_id.h>
-#include <ags/audio/ags_port.h>
-#include <ags/audio/ags_recycling_context.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/audio/recall/ags_peak_channel.h>
-#include <ags/audio/recall/ags_volume_channel.h>
-#include <ags/audio/recall/ags_copy_pattern_channel.h>
-#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
-
-#include <ags/widget/ags_led.h>
-#include <ags/widget/ags_indicator.h>
-#include <ags/widget/ags_vindicator.h>
-#include <ags/widget/ags_hindicator.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_listing_editor.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line_member.h>
-#include <ags/X/ags_machine_editor.h>
-#include <ags/X/ags_pad_editor.h>
-#include <ags/X/ags_line_editor.h>
-#include <ags/X/ags_line_member_editor.h>
-#include <ags/X/ags_plugin_browser.h>
-#include <ags/X/ags_ladspa_browser.h>
-#include <ags/X/ags_dssi_browser.h>
-#include <ags/X/ags_lv2_browser.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
 

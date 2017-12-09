@@ -23,8 +23,8 @@
 #include <ags/X/machine/ags_drum_output_line.h>
 #include <ags/X/machine/ags_drum.h>
 
-void ags_drum_output_line_set_pads_callback(AgsDrum *drum, GType channel_type,
-					    guint pads_new, guint pads_old,
-					    AgsDrumOutputLine *output_line);
+void ags_drum_output_line_resize_pads_callback(AgsDrum *drum, GType channel_type,
+					       guint pads_new, guint pads_old,
+					       AgsDrumOutputLine *output_line);
 
 #endif /*__AGS_DRUM_OUTPUT_LINE_CALLBACKS_H__*/

@@ -24,6 +24,7 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_line_editor.h>
 
 #include <ags/i18n.h>

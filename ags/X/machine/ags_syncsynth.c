@@ -851,6 +851,7 @@ ags_syncsynth_resize_pads(AgsMachine *machine, GType type,
   AgsWindow *window;
   AgsSyncsynth *syncsynth;
 
+  AgsAudio *audio;
   AgsChannel *channel, *source;
   AgsAudioSignal *audio_signal;
 

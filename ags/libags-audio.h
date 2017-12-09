@@ -187,6 +187,10 @@
 #include <ags/audio/recall/ags_play_channel_run_master.h>
 #include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
+#include <ags/audio/recall/ags_play_dssi_audio.h>
+#include <ags/audio/recall/ags_play_dssi_audio_run.h>
+#include <ags/audio/recall/ags_play_lv2_audio.h>
+#include <ags/audio/recall/ags_play_lv2_audio_run.h>
 #include <ags/audio/recall/ags_play_note.h>
 #include <ags/audio/recall/ags_play_recycling.h>
 #include <ags/audio/recall/ags_prepare_audio_signal.h>
@@ -228,6 +232,8 @@
 #include <ags/audio/task/ags_cancel_channel.h>
 #include <ags/audio/task/ags_cancel_recall.h>
 #include <ags/audio/task/ags_change_soundcard.h>
+#include <ags/audio/task/ags_clear_audio_signal.h>
+#include <ags/audio/task/ags_clear_buffer.h>
 #include <ags/audio/task/ags_export_output.h>
 #include <ags/audio/task/ags_free_selection.h>
 #include <ags/audio/task/ags_init_audio.h>

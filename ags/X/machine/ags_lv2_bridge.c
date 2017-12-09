@@ -1047,7 +1047,7 @@ ags_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
     grow = FALSE;
   }
   
-  if(g_type_is_a(type, AGS_TYPE_INPUT)){
+  if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
     if(grow){
       /* AgsInput */
       channel = ags_channel_pad_nth(audio->input,

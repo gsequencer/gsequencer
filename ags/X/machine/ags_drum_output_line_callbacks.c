@@ -37,7 +37,7 @@ ags_drum_output_line_resize_pads_callback(AgsDrum *drum, GType channel_type,
 
   gboolean performance_mode;
 
-  audio = drum->audio;
+  audio = AGS_MACHINE(drum)->audio;
   
   config = ags_config_get_instance();
   
@@ -57,7 +57,7 @@ ags_drum_output_line_resize_pads_callback(AgsDrum *drum, GType channel_type,
 				  NULL, NULL,
 				  "ags-copy",
 				  0, audio->audio_channels, 
-				  pads_old, pads,
+				  pads_old, pads_new,
 				  (AGS_RECALL_FACTORY_INPUT |
 				   AGS_RECALL_FACTORY_RECALL |
 				   AGS_RECALL_FACTORY_ADD),
@@ -71,7 +71,7 @@ ags_drum_output_line_resize_pads_callback(AgsDrum *drum, GType channel_type,
 				  NULL, NULL,
 				  "ags-buffer",
 				  0, audio->audio_channels, 
-				  pads_old, pads,
+				  pads_old, pads_new,
 				  (AGS_RECALL_FACTORY_INPUT |
 				   AGS_RECALL_FACTORY_RECALL |
 				   AGS_RECALL_FACTORY_ADD),

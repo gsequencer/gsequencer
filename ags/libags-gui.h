@@ -28,6 +28,8 @@
 #include <ags/widget/ags_indicator.h>
 #include <ags/widget/ags_led.h>
 #include <ags/widget/ags_led_array.h>
+#include <ags/widget/ags_hled_array.h>
+#include <ags/widget/ags_vled_array.h>
 #include <ags/widget/ags_notebook.h>
 #include <ags/widget/ags_piano_keys.h>
 #include <ags/widget/ags_piano.h>

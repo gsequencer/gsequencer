@@ -20,45 +20,23 @@
 #include <ags/X/ags_line.h>
 #include <ags/X/ags_line_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_plugin.h>
-
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
-
-#include <ags/plugin/ags_ladspa_manager.h>
-#include <ags/plugin/ags_ladspa_plugin.h>
-#include <ags/plugin/ags_lv2_manager.h>
-#include <ags/plugin/ags_lv2_plugin.h>
-#include <ags/plugin/ags_ladspa_conversion.h>
-#include <ags/plugin/ags_lv2_conversion.h>
-
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_recall_container.h>
-#include <ags/audio/ags_recall_ladspa.h>
-#include <ags/audio/ags_recall_lv2.h>
-
-#include <ags/audio/recall/ags_peak_channel_run.h>
-
-#include <ags/widget/ags_led.h>
-#include <ags/widget/ags_vindicator.h>
-#include <ags/widget/ags_hindicator.h>
-#include <ags/widget/ags_dial.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line_member.h>
 #include <ags/X/ags_effect_separator.h>
+#include <ags/X/ags_machine_editor.h>
+#include <ags/X/ags_pad_editor.h>
+#include <ags/X/ags_line_editor.h>
+#include <ags/X/ags_line_member_editor.h>
+#include <ags/X/ags_plugin_browser.h>
+#include <ags/X/ags_ladspa_browser.h>
+#include <ags/X/ags_dssi_browser.h>
+#include <ags/X/ags_lv2_browser.h>
 
 #include <ladspa.h>
 #include <dlfcn.h>
@@ -1724,6 +1702,8 @@ ags_line_message_monitor_timeout(AgsLine *line)
 {
   if(g_hash_table_lookup(ags_line_message_monitor,
 			 line) != NULL){
+    AgsChannel *channel;
+    
     AgsMessageDelivery *message_delivery;
 
     GList *message_start, *message;
@@ -1731,9 +1711,12 @@ ags_line_message_monitor_timeout(AgsLine *line)
     /* retrieve message */
     message_delivery = ags_message_delivery_get_instance();
 
+    channel = line->channel;
+	  
     message_start = 
       message = ags_message_delivery_find_sender(message_delivery,
-						 line->channel);
+						 "libags-audio",
+						 channel);
     
     while(message != NULL){
       xmlNode *root_node;
@@ -1751,7 +1734,7 @@ ags_line_message_monitor_timeout(AgsLine *line)
 	  AgsMachineEditor *machine_editor;
 	  AgsLineMemberEditor *line_member_editor;
 	  AgsPluginBrowser *plugin_browser;
-
+	  
 	  GList *pad_editor, *pad_editor_start;
 	  GList *line_editor, *line_editor_start;
 	  GList *control_type_name;
@@ -1761,7 +1744,7 @@ ags_line_message_monitor_timeout(AgsLine *line)
 	  gchar *filename, *effect;
   
 	  pthread_mutex_t *application_mutex;
-	  
+
 	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
 				     "filename");
 	  filename = g_value_get_string(value);

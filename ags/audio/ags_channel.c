@@ -19,20 +19,7 @@
 
 #include <ags/audio/ags_channel.h>
 
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_dynamic_connectable.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_concurrent_tree.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
-
-#include <ags/server/ags_service_provider.h>
-#include <ags/server/ags_registry.h>
-
-#include <ags/file/ags_file_link.h>
+#include <ags/libags.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
 #include <ags/plugin/ags_dssi_manager.h>
@@ -3963,6 +3950,8 @@ ags_channel_real_remove_effect(AgsChannel *channel,
   AgsRecallContainer *recall_container;
 
   AgsMutexManager *mutex_manager;
+  AgsMessageDelivery *message_delivery;
+  AgsMessageQueue *message_queue;
 
   GList *automation, *automation_next;
   GList *port;
@@ -4894,7 +4883,7 @@ ags_channel_real_done(AgsChannel *channel,
 	       "AgsChannel::done");
 
     /* add message */
-    message = ags_message_envelope_alloc(audio,
+    message = ags_message_envelope_alloc(channel,
 					 NULL,
 					 doc);
 

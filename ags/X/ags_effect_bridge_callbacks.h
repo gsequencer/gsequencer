@@ -33,9 +33,9 @@ void ags_effect_bridge_resize_audio_channels_callback(AgsMachine *machine,
 						      guint audio_channels, guint audio_channels_old,
 						      AgsEffectBridge *effect_bridge);
 
-void ags_effect_bridge_resiz_pads_callback(AgsMachine *machine,
-					   GType channel_type,
-					   guint pads, guint pads_old,
-					   AgsEffectBridge *effect_bridge);
+void ags_effect_bridge_resize_pads_callback(AgsMachine *machine,
+					    GType channel_type,
+					    guint pads, guint pads_old,
+					    AgsEffectBridge *effect_bridge);
 
 #endif /*__AGS_EFFECT_BRIDGE_CALLBACKS_H__*/

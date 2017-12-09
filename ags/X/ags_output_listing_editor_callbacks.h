@@ -25,9 +25,9 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_audio.h>
-
 #include <ags/X/ags_output_listing_editor.h>
+
+#include <ags/X/ags_machine.h>
 
 int ags_output_listing_editor_parent_set_callback(GtkWidget *widget,
 						  GtkObject *old_parent,
