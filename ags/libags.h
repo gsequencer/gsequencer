@@ -72,6 +72,8 @@
 #include <ags/thread/ags_destroy_worker.h>
 #include <ags/thread/ags_generic_main_loop.h>
 #include <ags/thread/ags_history.h>
+#include <ags/thread/ags_message_delivery.h>
+#include <ags/thread/ags_message_queue.h>
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_condition_manager.h>
 #include <ags/thread/ags_poll_fd.h>

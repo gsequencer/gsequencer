@@ -601,6 +601,8 @@ am__objects_22 = $(am__objects_1) \
 	ags/thread/libags_thread_la-ags_destroy_worker.lo \
 	ags/thread/libags_thread_la-ags_generic_main_loop.lo \
 	ags/thread/libags_thread_la-ags_history.lo \
+	ags/thread/libags_thread_la-ags_message_delivery.lo \
+	ags/thread/libags_thread_la-ags_message_queue.lo \
 	ags/thread/libags_thread_la-ags_mutex_manager.lo \
 	ags/thread/libags_thread_la-ags_poll_fd.lo \
 	ags/thread/libags_thread_la-ags_polling_thread.lo \
@@ -3267,6 +3269,8 @@ libags_thread_h_sources = \
 	ags/thread/ags_destroy_worker.h \
 	ags/thread/ags_generic_main_loop.h \
 	ags/thread/ags_history.h \
+	ags/thread/ags_message_delivery.h \
+	ags/thread/ags_message_queue.h \
 	ags/thread/ags_mutex_manager.h \
 	ags/thread/ags_poll_fd.h \
 	ags/thread/ags_polling_thread.h \
@@ -3292,6 +3296,8 @@ libags_thread_c_sources = \
 	ags/thread/ags_destroy_worker.c \
 	ags/thread/ags_generic_main_loop.c \
 	ags/thread/ags_history.c \
+	ags/thread/ags_message_delivery.c \
+	ags/thread/ags_message_queue.c \
 	ags/thread/ags_mutex_manager.c \
 	ags/thread/ags_poll_fd.c \
 	ags/thread/ags_polling_thread.c \
@@ -5816,6 +5822,12 @@ ags/thread/libags_thread_la-ags_generic_main_loop.lo:  \
 ags/thread/libags_thread_la-ags_history.lo:  \
 	ags/thread/$(am__dirstamp) \
 	ags/thread/$(DEPDIR)/$(am__dirstamp)
+ags/thread/libags_thread_la-ags_message_delivery.lo:  \
+	ags/thread/$(am__dirstamp) \
+	ags/thread/$(DEPDIR)/$(am__dirstamp)
+ags/thread/libags_thread_la-ags_message_queue.lo:  \
+	ags/thread/$(am__dirstamp) \
+	ags/thread/$(DEPDIR)/$(am__dirstamp)
 ags/thread/libags_thread_la-ags_mutex_manager.lo:  \
 	ags/thread/$(am__dirstamp) \
 	ags/thread/$(DEPDIR)/$(am__dirstamp)
@@ -7902,6 +7914,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_destroy_worker.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_generic_main_loop.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_history.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_message_delivery.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_message_queue.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_mutex_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_poll_fd.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_polling_thread.Plo@am__quote@
@@ -10319,6 +10333,20 @@ ags/thread/libags_thread_la-ags_history.lo: ags/thread/ags_history.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/thread/ags_history.c' object='ags/thread/libags_thread_la-ags_history.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -c -o ags/thread/libags_thread_la-ags_history.lo `test -f 'ags/thread/ags_history.c' || echo '$(srcdir)/'`ags/thread/ags_history.c
+
+ags/thread/libags_thread_la-ags_message_delivery.lo: ags/thread/ags_message_delivery.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT ags/thread/libags_thread_la-ags_message_delivery.lo -MD -MP -MF ags/thread/$(DEPDIR)/libags_thread_la-ags_message_delivery.Tpo -c -o ags/thread/libags_thread_la-ags_message_delivery.lo `test -f 'ags/thread/ags_message_delivery.c' || echo '$(srcdir)/'`ags/thread/ags_message_delivery.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/thread/$(DEPDIR)/libags_thread_la-ags_message_delivery.Tpo ags/thread/$(DEPDIR)/libags_thread_la-ags_message_delivery.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/thread/ags_message_delivery.c' object='ags/thread/libags_thread_la-ags_message_delivery.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -c -o ags/thread/libags_thread_la-ags_message_delivery.lo `test -f 'ags/thread/ags_message_delivery.c' || echo '$(srcdir)/'`ags/thread/ags_message_delivery.c
+
+ags/thread/libags_thread_la-ags_message_queue.lo: ags/thread/ags_message_queue.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT ags/thread/libags_thread_la-ags_message_queue.lo -MD -MP -MF ags/thread/$(DEPDIR)/libags_thread_la-ags_message_queue.Tpo -c -o ags/thread/libags_thread_la-ags_message_queue.lo `test -f 'ags/thread/ags_message_queue.c' || echo '$(srcdir)/'`ags/thread/ags_message_queue.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/thread/$(DEPDIR)/libags_thread_la-ags_message_queue.Tpo ags/thread/$(DEPDIR)/libags_thread_la-ags_message_queue.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/thread/ags_message_queue.c' object='ags/thread/libags_thread_la-ags_message_queue.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -c -o ags/thread/libags_thread_la-ags_message_queue.lo `test -f 'ags/thread/ags_message_queue.c' || echo '$(srcdir)/'`ags/thread/ags_message_queue.c
 
 ags/thread/libags_thread_la-ags_mutex_manager.lo: ags/thread/ags_mutex_manager.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT ags/thread/libags_thread_la-ags_mutex_manager.lo -MD -MP -MF ags/thread/$(DEPDIR)/libags_thread_la-ags_mutex_manager.Tpo -c -o ags/thread/libags_thread_la-ags_mutex_manager.lo `test -f 'ags/thread/ags_mutex_manager.c' || echo '$(srcdir)/'`ags/thread/ags_mutex_manager.c

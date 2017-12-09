@@ -870,7 +870,7 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
   width = GTK_WIDGET(automation_area->drawing_area)->allocation.width;
 
   x0 = x_offset;
-  x1 = x0 + width;
+  x1 = x0 + (gdouble) width;
 
   n_tab = 0;
   prev_tab_x = NULL;
@@ -934,7 +934,7 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
       while(list != NULL){
 	current = AGS_ACCELERATION(list->data);
 
-	if(tact * current->x < x0){
+	if(tact * (gdouble) current->x < x0){
 	  prev = current;
 	  list = list->next;
 
@@ -945,7 +945,7 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 	  gdouble x, y;
 	  gdouble prev_x, prev_y;
 
-	  x = current->x;
+	  x = (gdouble) current->x;
 
 	  val = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(automation->data)->port)->conversion,
 				       current->y,
@@ -993,13 +993,15 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 	  }
 	}
 
-	if(current->x >= x1){
+	if((gdouble) current->x >= x1){
 	  break;
 	}
     
 	prev = current;
 	list = list->next;
       }
+
+      automation = automation->next;
     }
   }else{
     line = 0;
@@ -1046,7 +1048,7 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 	while(list != NULL){
 	  current = AGS_ACCELERATION(list->data);
 
-	  if(tact * current->x < x0){
+	  if(tact * (gdouble) current->x < x0){
 	    prev = current;
 	    list = list->next;
 
@@ -1113,7 +1115,7 @@ ags_automation_area_draw_automation(AgsAutomationArea *automation_area,
 	    }
 	  }
 
-	  if(current->x >= x1){
+	  if((gdouble) current->x >= x1){
 	    break;
 	  }
     

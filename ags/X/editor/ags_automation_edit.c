@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,6 +43,8 @@ void ags_automation_edit_connect(AgsConnectable *connectable);
 void ags_automation_edit_disconnect(AgsConnectable *connectable);
 
 AtkObject* ags_automation_edit_get_accessible(GtkWidget *widget);
+
+void ags_automation_edit_realize(GtkWidget *widget);
 
 gboolean ags_accessible_automation_edit_do_action(AtkAction *action,
 						  gint i);
@@ -150,9 +152,16 @@ ags_accessible_automation_edit_get_type(void)
 void
 ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
 {
+  GtkWidgetClass *widget;
+  
   ags_automation_edit_parent_class = g_type_class_peek_parent(automation_edit);
 
   quark_accessible_object = g_quark_from_static_string("ags-accessible-object");
+
+  /* widget */
+  widget = (GtkWidgetClass *) automation_edit;
+  
+  widget->realize = ags_automation_edit_realize;
 }
 
 void
@@ -204,10 +213,6 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   automation_edit->select_y0 = 0;
   automation_edit->select_y1 = 0;
 
-  if(automation_edit_style == NULL){
-    automation_edit_style = gtk_style_copy(gtk_widget_get_style(automation_edit));
-  }
-  
   automation_edit->ruler = ags_ruler_new();
   gtk_table_attach(GTK_TABLE(automation_edit),
 		   (GtkWidget *) automation_edit->ruler,
@@ -218,8 +223,6 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 		   0, 0);
 
   automation_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
-  gtk_widget_set_style((GtkWidget *) automation_edit->drawing_area,
-		       automation_edit_style);
   gtk_widget_set_events(GTK_WIDGET (automation_edit->drawing_area), GDK_EXPOSURE_MASK
 			| GDK_LEAVE_NOTIFY_MASK
 			| GDK_BUTTON_PRESS_MASK
@@ -345,6 +348,24 @@ ags_automation_edit_get_accessible(GtkWidget *widget)
   }
   
   return(accessible);
+}
+
+void
+ags_automation_edit_realize(GtkWidget *widget)
+{
+  AgsAutomationEdit *automation_edit;
+
+  automation_edit = widget;
+  
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_automation_edit_parent_class)->realize(widget);
+
+  if(automation_edit_style == NULL){
+    automation_edit_style = gtk_style_copy(gtk_widget_get_style(automation_edit));
+  }
+  
+  gtk_widget_set_style((GtkWidget *) automation_edit->drawing_area,
+		       automation_edit_style);
 }
 
 gboolean

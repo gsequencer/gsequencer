@@ -22,8 +22,6 @@
 
 #include <ags/object/ags_connectable.h>
 
-#include <ags/X/ags_automation_editor.h>
-
 #include <cairo.h>
 #include <math.h>
 
@@ -34,6 +32,7 @@ void ags_scale_connect(AgsConnectable *connectable);
 void ags_scale_disconnect(AgsConnectable *connectable);
 void ags_scale_destroy(GtkObject *object);
 void ags_scale_show(GtkWidget *widget);
+void ags_scale_realize(GtkWidget *widget);
 
 /**
  * SECTION:ags_scale
@@ -44,6 +43,8 @@ void ags_scale_show(GtkWidget *widget);
  *
  * The #AgsScale draws you a scale.
  */
+
+static gpointer ags_scale_parent_class = NULL;
 
 GtkStyle *scale_style = NULL;
 
@@ -86,6 +87,14 @@ ags_scale_get_type(void)
 void
 ags_scale_class_init(AgsScaleClass *scale)
 {
+  GtkWidgetClass *widget;
+
+  ags_scale_parent_class = g_type_class_peek_parent(scale);
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) scale;
+
+  widget->realize = ags_scale_realize;
 }
 
 void
@@ -99,14 +108,7 @@ ags_scale_connectable_interface_init(AgsConnectableInterface *connectable)
 
 void
 ags_scale_init(AgsScale *scale)
-{  
-  if(scale_style == NULL){
-    scale_style = gtk_style_copy(gtk_widget_get_style(scale));
-  }
-
-  gtk_widget_set_style((GtkWidget *) scale,
-		       scale_style);
-  
+{
   gtk_widget_set_size_request((GtkWidget *) scale,
 			      60, -1);
   gtk_widget_set_events(GTK_WIDGET(scale), GDK_EXPOSURE_MASK
@@ -139,6 +141,24 @@ void
 ags_scale_disconnect(AgsConnectable *connectable)
 {
   //TODO:JK: implement me
+}
+
+void
+ags_scale_realize(GtkWidget *widget)
+{
+  AgsScale *scale;
+
+  scale = widget;
+
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_scale_parent_class)->realize(widget);
+  
+  if(scale_style == NULL){
+    scale_style = gtk_style_copy(gtk_widget_get_style(scale));
+  }
+  
+  gtk_widget_set_style((GtkWidget *) scale,
+		       scale_style);
 }
 
 void

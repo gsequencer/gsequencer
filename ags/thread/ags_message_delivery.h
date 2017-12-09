@@ -42,7 +42,7 @@ struct _AgsMessageDelivery
   GObject gobject;
 
   pthread_mutexattr_t *mutexattr;
-  pthread_mutex *mutex;
+  pthread_mutex_t *mutex;
 
   GList *message_queue;
 };
