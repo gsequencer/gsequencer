@@ -19,9 +19,9 @@
 
 #include <ags/X/machine/ags_panel_input_line_callbacks.h>
 
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/audio/ags_audio_connection.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 void
 ags_panel_input_line_notify_data_object_callback(GObject *audio_connection,
@@ -29,7 +29,9 @@ ags_panel_input_line_notify_data_object_callback(GObject *audio_connection,
 						 AgsPanelInputLine *panel_input_line)
 {
   gchar *str;
-  
+
+  //FIXME:JK: uncomment if thread-safe
+#if 0
   str = g_strdup_printf("%s:%s[%d]",
 			G_OBJECT_TYPE_NAME(AGS_CONNECTION(audio_connection)->data_object),
 			ags_soundcard_get_device(AGS_SOUNDCARD(AGS_CONNECTION(audio_connection)->data_object)),
@@ -38,6 +40,7 @@ ags_panel_input_line_notify_data_object_callback(GObject *audio_connection,
 		      str);
 
   g_free(str);
+#endif
 }
 
 void
@@ -47,6 +50,8 @@ ags_panel_input_line_notify_mapped_line_callback(GObject *audio_connection,
 {
   gchar *str;
   
+  //FIXME:JK: uncomment if thread-safe
+#if 0
   str = g_strdup_printf("%s:%s[%d]",
 			G_OBJECT_TYPE_NAME(AGS_CONNECTION(audio_connection)->data_object),
 			ags_soundcard_get_device(AGS_SOUNDCARD(AGS_CONNECTION(audio_connection)->data_object)),
@@ -55,4 +60,5 @@ ags_panel_input_line_notify_mapped_line_callback(GObject *audio_connection,
 		      str);
 
   g_free(str);
+#endif
 }

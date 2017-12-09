@@ -20,29 +20,9 @@
 #include <ags/X/machine/ags_drum_output_line.h>
 #include <ags/X/machine/ags_drum_output_line_callbacks.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_plugin.h>
-#include <ags/object/ags_config.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
-
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_recall_factory.h>
-
-#include <ags/audio/recall/ags_delay_audio.h>
-#include <ags/audio/recall/ags_delay_audio_run.h>
-#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
-#include <ags/audio/recall/ags_stream_channel.h>
-#include <ags/audio/recall/ags_stream_channel_run.h>
-#include <ags/audio/recall/ags_loop_channel.h>
-#include <ags/audio/recall/ags_loop_channel_run.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 
@@ -54,7 +34,6 @@ void ags_drum_output_line_class_init(AgsDrumOutputLineClass *drum_output_line);
 void ags_drum_output_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_output_line_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_drum_output_line_init(AgsDrumOutputLine *drum_output_line);
-void ags_drum_output_line_destroy(GtkObject *object);
 void ags_drum_output_line_connect(AgsConnectable *connectable);
 void ags_drum_output_line_disconnect(AgsConnectable *connectable);
 gchar* ags_drum_output_line_get_name(AgsPlugin *plugin);
@@ -164,20 +143,13 @@ ags_drum_output_line_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_drum_output_line_init(AgsDrumOutputLine *drum_output_line)
 {
-  g_signal_connect_after((GObject *) drum_output_line, "parent_set",
-			 G_CALLBACK(ags_drum_output_line_parent_set_callback), NULL);
-
   drum_output_line->xml_type = "ags-drum-output-line";
-}
-
-void
-ags_drum_output_line_destroy(GtkObject *object)
-{
 }
 
 void
 ags_drum_output_line_connect(AgsConnectable *connectable)
 {
+  AgsDrum *drum;
   AgsDrumOutputLine *drum_output_line;
 
   drum_output_line = AGS_DRUM_OUTPUT_LINE(connectable);
@@ -188,15 +160,17 @@ ags_drum_output_line_connect(AgsConnectable *connectable)
   
   ags_drum_output_line_parent_connectable_interface->connect(connectable);
 
-  g_signal_connect_after((GObject *) AGS_LINE(drum_output_line)->channel->audio, "set-pads",
-			 G_CALLBACK(ags_drum_output_line_set_pads_callback), drum_output_line);
-
-  /* empty */
+  drum = gtk_widget_get_ancestor(drum_output_line,
+				 AGS_TYPE_DRUM);
+  
+  g_signal_connect_after((GObject *) drum, "resize-pads",
+			 G_CALLBACK(ags_drum_output_line_resize_pads_callback), drum_output_line);
 }
 
 void
 ags_drum_output_line_disconnect(AgsConnectable *connectable)
 {
+  AgsDrum *drum;
   AgsDrumOutputLine *drum_output_line;
 
   drum_output_line = AGS_DRUM_OUTPUT_LINE(connectable);
@@ -207,10 +181,11 @@ ags_drum_output_line_disconnect(AgsConnectable *connectable)
 
   ags_drum_output_line_parent_connectable_interface->disconnect(connectable);
 
-  if(AGS_LINE(drum_output_line)->channel != NULL){
-    g_signal_handlers_disconnect_by_data(AGS_LINE(drum_output_line)->channel->audio,
-					 drum_output_line);
-  }
+  drum = gtk_widget_get_ancestor(drum_output_line,
+				 AGS_TYPE_DRUM);
+
+  g_signal_handlers_disconnect_by_data(drum,
+				       drum_output_line);
 }
 
 gchar*

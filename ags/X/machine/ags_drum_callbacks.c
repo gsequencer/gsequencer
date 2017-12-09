@@ -420,16 +420,39 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
 }
 
 void
-ags_drum_done_callback(AgsAudio *audio,
+ags_drum_done_callback(AgsDrum *drum,
 		       AgsRecallID *recall_id,
-		       AgsDrum *drum)
+		       gpointer data)
 {
+  AgsAudio *audio;
+  
+  AgsMutexManager *mutex_manager;
+
   GList *playback;
+
   gboolean all_done;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  audio = AGS_MACHINE(drum)->audio;
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+  
+  /* check unset */
+  pthread_mutex_lock(audio_mutex);
 
   playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
-  /* check unset */
   all_done = TRUE;
 
   while(playback != NULL){
@@ -440,7 +463,10 @@ ags_drum_done_callback(AgsAudio *audio,
 
     playback = playback->next;
   }
-  
+
+  pthread_mutex_unlock(audio_mutex);
+
+  /* all done */
   if(all_done){
     ags_led_array_unset_all(drum->pattern_box->hled_array);
   }

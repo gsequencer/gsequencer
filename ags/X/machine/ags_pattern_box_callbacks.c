@@ -19,14 +19,9 @@
 
 #include <ags/X/machine/ags_pattern_box_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/audio/task/ags_toggle_pattern_bit.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>

@@ -487,26 +487,31 @@ ags_cell_pattern_init_channel_launch_callback(AgsTask *task, gpointer data)
   
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
+
+  /* get main loop and audio mutex */
   pthread_mutex_lock(application_mutex);
+
+  main_loop = (AgsThread *) application_context->main_loop;
 
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) channel->audio);
   
   pthread_mutex_unlock(application_mutex);
 
-  pthread_mutex_lock(audio_mutex);
-  
-  main_loop = (AgsThread *) application_context->main_loop;
+  /* get gui trhead */
   gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
+						     AGS_TYPE_GUI_THREAD);
 
 #ifdef AGS_DEBUG
   g_message("launch");
 #endif
   
+  pthread_mutex_lock(audio_mutex);
+  
   if(AGS_PLAYBACK(channel->playback) == NULL ||
      AGS_PLAYBACK(channel->playback)->recall_id[0] == NULL){    
+    pthread_mutex_unlock(audio_mutex);
+  
     return;
   }
 

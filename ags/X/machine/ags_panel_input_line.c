@@ -20,26 +20,9 @@
 #include <ags/X/machine/ags_panel_input_line.h>
 #include <ags/X/machine/ags_panel_input_line_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/object/ags_plugin.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_audio_connection.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_recall_factory.h>
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_container.h>
-
-#include <ags/audio/recall/ags_play_channel.h>
-#include <ags/audio/recall/ags_play_channel_run_master.h>
-#include <ags/audio/recall/ags_mute_channel.h>
-#include <ags/audio/recall/ags_mute_channel_run.h>
-
-#include <ags/widget/ags_expander_set.h>
-#include <ags/widget/ags_expander.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_line_callbacks.h>

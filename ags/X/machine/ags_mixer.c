@@ -20,22 +20,9 @@
 #include <ags/X/machine/ags_mixer.h>
 #include <ags/X/machine/ags_mixer_callbacks.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_plugin.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_recall_factory.h>
-#include <ags/audio/ags_recall.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
@@ -59,15 +46,6 @@ gchar* ags_mixer_get_xml_type(AgsPlugin *plugin);
 void ags_mixer_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 void ags_mixer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_mixer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
-void ags_mixer_read_resolve_audio(AgsFileLookup *file_lookup,
-				  AgsMachine *machine);
-
-void ags_mixer_set_audio_channels(AgsAudio *audio,
-				  guint audio_channels, guint audio_channels_old,
-				  gpointer data);
-void ags_mixer_set_pads(AgsAudio *audio, GType type,
-			guint pads, guint pads_old,
-			gpointer data);
 
 /**
  * SECTION:ags_mixer
@@ -183,13 +161,6 @@ ags_mixer_init(AgsMixer *mixer)
   AGS_MACHINE(mixer)->output_pad_type = G_TYPE_NONE;
   AGS_MACHINE(mixer)->output_line_type = G_TYPE_NONE;
   
-  /* AgsAudio */
-  g_signal_connect_after(G_OBJECT(mixer->machine.audio), "set_audio_channels",
-			 G_CALLBACK(ags_mixer_set_audio_channels), NULL);
-
-  g_signal_connect_after(G_OBJECT(mixer->machine.audio), "set_pads",
-			 G_CALLBACK(ags_mixer_set_pads), NULL);
-
   /*  */
   mixer->name = NULL;
   mixer->xml_type = "ags-mixer";
@@ -275,44 +246,6 @@ ags_mixer_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference", gobject,
 				   NULL));
-
-  list = file->lookup;
-
-  while((list = ags_file_lookup_find_by_node(list,
-					     node->parent)) != NULL){
-    file_lookup = AGS_FILE_LOOKUP(list->data);
-    
-    if(g_signal_handler_find(list->data,
-			     G_SIGNAL_MATCH_FUNC,
-			     0,
-			     0,
-			     NULL,
-			     ags_file_read_machine_resolve_audio,
-			     NULL) != 0){
-      g_signal_connect_after(G_OBJECT(file_lookup), "resolve",
-			     G_CALLBACK(ags_mixer_read_resolve_audio), gobject);
-      
-      break;
-    }
-
-    list = list->next;
-  }
-}
-
-void
-ags_mixer_read_resolve_audio(AgsFileLookup *file_lookup,
-			     AgsMachine *machine)
-{
-  AgsMixer *mixer;
-  GList *pad, *pad_start, *line, *line_start;
-
-  mixer = AGS_MIXER(machine);
-
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels",
-			 G_CALLBACK(ags_mixer_set_audio_channels), mixer);
-
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads",
-			 G_CALLBACK(ags_mixer_set_pads), mixer);
 }
 
 xmlNode*
@@ -346,22 +279,6 @@ ags_mixer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 	      node);
 
   return(node);
-}
-
-void
-ags_mixer_set_audio_channels(AgsAudio *audio,
-			     guint audio_channels, guint audio_channels_old,
-			     gpointer data)
-{
-  /* empty */
-}
-
-void
-ags_mixer_set_pads(AgsAudio *audio, GType type,
-		   guint pads, guint pads_old,
-		   gpointer data)
-{
-  /* empty */
 }
 
 /**

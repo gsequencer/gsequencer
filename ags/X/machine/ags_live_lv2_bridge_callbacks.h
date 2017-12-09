@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #include <ags/X/machine/ags_live_lv2_bridge.h>

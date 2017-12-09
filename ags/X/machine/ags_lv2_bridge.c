@@ -20,53 +20,9 @@
 #include <ags/X/machine/ags_lv2_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge_callbacks.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/lib/ags_string_util.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_plugin.h>
-#include <ags/object/ags_seekable.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_launch.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_thread-posix.h>
-
-#include <ags/plugin/ags_lv2_manager.h>
-#include <ags/plugin/ags_lv2ui_manager.h>
-#include <ags/plugin/ags_base_plugin.h>
-#include <ags/plugin/ags_lv2_plugin.h>
-#include <ags/plugin/ags_lv2_preset.h>
-#include <ags/plugin/ags_lv2ui_plugin.h>
-
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_recall_factory.h>
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_lv2.h>
-#include <ags/audio/ags_recall_container.h>
-
-#include <ags/audio/recall/ags_delay_audio.h>
-#include <ags/audio/recall/ags_delay_audio_run.h>
-#include <ags/audio/recall/ags_count_beats_audio.h>
-#include <ags/audio/recall/ags_count_beats_audio_run.h>
-#include <ags/audio/recall/ags_envelope_channel.h>
-#include <ags/audio/recall/ags_envelope_channel_run.h>
-#include <ags/audio/recall/ags_play_notation_audio.h>
-#include <ags/audio/recall/ags_play_notation_audio_run.h>
-#include <ags/audio/recall/ags_record_midi_audio.h>
-#include <ags/audio/recall/ags_record_midi_audio_run.h>
-#include <ags/audio/recall/ags_route_lv2_audio.h>
-#include <ags/audio/recall/ags_route_lv2_audio_run.h>
-
-#include <ags/widget/ags_dial.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_bridge.h>
@@ -100,12 +56,12 @@ void ags_lv2_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 void ags_lv2_bridge_launch_task(AgsFileLaunch *file_launch, AgsLv2Bridge *lv2_bridge);
 xmlNode* ags_lv2_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
-void ags_lv2_bridge_set_audio_channels(AgsAudio *audio,
+void ags_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 				       guint audio_channels, guint audio_channels_old,
 				       gpointer data);
-void ags_lv2_bridge_set_pads(AgsAudio *audio, GType type,
-			     guint pads, guint pads_old,
-			     gpointer data);
+void ags_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
+				guint pads, guint pads_old,
+				gpointer data);
 
 void ags_lv2_bridge_map_recall(AgsMachine *machine);
 
@@ -395,11 +351,11 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   audio = AGS_MACHINE(lv2_bridge)->audio;
   audio->flags |= (AGS_AUDIO_SYNC);
 
-  g_signal_connect_after(G_OBJECT(audio), "set_audio_channels",
-			 G_CALLBACK(ags_lv2_bridge_set_audio_channels), NULL);
+  g_signal_connect_after(G_OBJECT(lv2_bridge), "resize-audio-channels",
+			 G_CALLBACK(ags_lv2_bridge_resize_audio_channels), NULL);
   
-  g_signal_connect_after(G_OBJECT(audio), "set_pads",
-			 G_CALLBACK(ags_lv2_bridge_set_pads), NULL);
+  g_signal_connect_after(G_OBJECT(lv2_bridge), "resize-pads",
+			 G_CALLBACK(ags_lv2_bridge_resize_pads), NULL);
   
   lv2_bridge->flags = 0;
 
@@ -984,19 +940,19 @@ ags_lv2_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 }
 
 void
-ags_lv2_bridge_set_audio_channels(AgsAudio *audio,
-				  guint audio_channels, guint audio_channels_old,
-				  gpointer data)
+ags_lv2_bridge_resize_audio_channels(AgsMachine *machine,
+				     guint audio_channels, guint audio_channels_old,
+				     gpointer data)
 {
-  AgsMachine *machine;
   AgsLv2Bridge *lv2_bridge;
 
+  AgsAudio *audio;
   AgsChannel *channel, *next_pad;
   AgsAudioSignal *audio_signal;  
 
-  /* get machine */
-  lv2_bridge = (AgsLv2Bridge *) audio->machine;
-  machine = AGS_MACHINE(lv2_bridge);
+  lv2_bridge = (AgsLv2Bridge *) machine;
+
+  audio = machine->audio;
   
   if(audio->input_pads == 0 &&
      audio->output_pads == 0){
@@ -1064,26 +1020,26 @@ ags_lv2_bridge_set_audio_channels(AgsAudio *audio,
 }
 
 void
-ags_lv2_bridge_set_pads(AgsAudio *audio, GType type,
-			guint pads, guint pads_old,
-			gpointer data)
+ags_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
+			   guint pads, guint pads_old,
+			   gpointer data)
 {
-  AgsMachine *machine;
   AgsLv2Bridge *lv2_bridge;
 
+  AgsAudio *audio;
   AgsChannel *channel;
   AgsAudioSignal *audio_signal;
   
   gboolean grow;
 
+  lv2_bridge = (AgsLv2Bridge *) machine;
+
+  audio = machine->audio;
+  
   if(pads == pads_old ||
      audio->audio_channels == 0){
     return;
   }
-
-  /* get machine */
-  lv2_bridge = (AgsLv2Bridge *) audio->machine;
-  machine = AGS_MACHINE(lv2_bridge);
 
   if(pads_old < pads){
     grow = TRUE;

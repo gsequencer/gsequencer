@@ -19,30 +19,9 @@
 
 #include <ags/X/machine/ags_matrix_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_recycling.h>
-#include <ags/audio/ags_playback_domain.h>
-#include <ags/audio/ags_playback.h>
-#include <ags/audio/ags_pattern.h>
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_container.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/audio/task/recall/ags_apply_bpm.h>
-#include <ags/audio/task/recall/ags_apply_sequencer_length.h>
-
-#include <ags/audio/recall/ags_delay_audio.h>
-#include <ags/audio/recall/ags_count_beats_audio.h>
-#include <ags/audio/recall/ags_count_beats_audio_run.h>
-#include <ags/audio/recall/ags_copy_pattern_audio.h>
-#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
-#include <ags/audio/recall/ags_copy_pattern_channel.h>
-#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
@@ -242,116 +221,39 @@ ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
 }
 
 void
-ags_matrix_tact_callback(AgsAudio *audio,
+ags_matrix_done_callback(AgsMatrix *matrix,
 			 AgsRecallID *recall_id,
-			 AgsMatrix *matrix)
+			 gpointer data)
 {
-  AgsWindow *window;
-
-  AgsCountBeatsAudio *play_count_beats_audio;
-  AgsCountBeatsAudioRun *play_count_beats_audio_run;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsGuiThread *gui_thread;
+  AgsAudio *audio;
   
-  AgsApplicationContext *application_context;
+  AgsMutexManager *mutex_manager;
 
-  GList *list;
+  GList *playback;
 
-  guint counter, active_led;
-  gdouble active_led_old, active_led_new;
-
-  GValue value = {0,};
+  gboolean all_done;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
 
-  if((AGS_RECALL_ID_SEQUENCER & (recall_id->flags)) == 0){
-    return;
-  }
-
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) matrix,
-						 AGS_TYPE_WINDOW);
-
-  application_context = (AgsApplicationContext *) window->application_context;
-
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-  
-  /* find gui_thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
+  audio = AGS_MACHINE(matrix)->audio;
 
   /* get audio mutex */
   pthread_mutex_lock(application_mutex);
-  
+
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) AGS_MACHINE(matrix)->audio);
+					 (GObject *) audio);
   
   pthread_mutex_unlock(application_mutex);
-
-  /* get some recalls */
+  
+  /* check unset */
   pthread_mutex_lock(audio_mutex);
-
-  list = ags_recall_find_type(audio->play,
-			      AGS_TYPE_COUNT_BEATS_AUDIO);
-  
-  if(list != NULL){
-    play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
-  }
-
-  list = ags_recall_find_type_with_recycling_context(audio->play,
-						     AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
-						     (GObject *) recall_id->recycling_context);
-  
-  if(list != NULL){
-    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
-  }
-
-  if(play_count_beats_audio == NULL ||
-     play_count_beats_audio_run == NULL){
-    pthread_mutex_unlock(audio_mutex);
-    
-    return;
-  }
-
-  /* set optical feedback */
-  active_led_new = play_count_beats_audio_run->sequencer_counter;
-  matrix->cell_pattern->active_led = (guint) active_led_new;
-
-  if(active_led_new == 0){
-    g_value_init(&value, G_TYPE_DOUBLE);
-    ags_port_safe_read(play_count_beats_audio->sequencer_loop_end,
-		       &value);
-
-    active_led_old = g_value_get_double(&value) - 1.0;
-    g_value_unset(&value);
-  }else{
-    active_led_old = (gdouble) matrix->cell_pattern->active_led - 1.0;
-  }
-
-  pthread_mutex_unlock(audio_mutex);
-}
-
-void
-ags_matrix_done_callback(AgsAudio *audio,
-			 AgsRecallID *recall_id,
-			 AgsMatrix *matrix)
-{
-  GList *playback;
-  gboolean all_done;
 
   playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
 
-  /* check unset */
   all_done = TRUE;
 
   while(playback != NULL){
@@ -363,6 +265,9 @@ ags_matrix_done_callback(AgsAudio *audio,
     playback = playback->next;
   }
 
+  pthread_mutex_unlock(audio_mutex);
+
+  /* all done */
   if(all_done){
     ags_led_array_unset_all(matrix->cell_pattern->hled_array);
   }

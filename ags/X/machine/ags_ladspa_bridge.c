@@ -20,22 +20,9 @@
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_ladspa_bridge_callbacks.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_connectable.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_launch.h>
-
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_plugin.h>
-
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_recall_ladspa.h>
-
-#include <ags/widget/ags_dial.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_bridge.h>
@@ -74,7 +61,7 @@ xmlNode* ags_ladspa_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plug
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
  * @title: AgsLadspaBridge
  * @section_id:
- * @include: ags/X/ags_ladspa_bridge.h
+ * @include: ags/X/machine/ags_ladspa_bridge.h
  *
  * #AgsLadspaBridge is a composite widget to visualize all #AgsChannel. It should be
  * packed by an #AgsMachine.

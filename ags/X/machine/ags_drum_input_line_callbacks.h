@@ -22,21 +22,9 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #include <ags/X/machine/ags_drum_input_line.h>
-
-#include <ags/audio/ags_audio.h>
-
-void ags_drum_input_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsDrumInputLine *drum_input_line);
-
-/* AgsChannel */
-void ags_drum_input_line_channel_done_callback(AgsChannel *channel,
-					       AgsDrumInputLine *drum_input_line);
-
-/* AgsAudio */
-void ags_drum_input_line_audio_set_pads_callback(AgsAudio *audio, GType type,
-						 guint pads, guint pads_old,
-						 AgsDrumInputLine *drum_input_line);
 
 #endif /*__AGS_DRUM_INPUT_LINE_CALLBACKS_H__*/

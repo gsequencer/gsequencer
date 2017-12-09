@@ -20,11 +20,9 @@
 #include <ags/X/machine/ags_drum_output_pad.h>
 #include <ags/X/machine/ags_drum_output_pad_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_line.h>
 

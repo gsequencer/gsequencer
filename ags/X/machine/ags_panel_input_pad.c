@@ -19,9 +19,9 @@
 
 #include <ags/X/machine/ags_panel_input_pad.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 
@@ -45,7 +45,7 @@ void ags_panel_input_pad_show(GtkWidget *pad);
 
 void ags_panel_input_pad_set_channel(AgsPad *pad, AgsChannel *channel);
 void ags_panel_input_pad_resize_lines(AgsPad *pad, GType line_type,
-				     guint audio_channels, guint audio_channels_old);
+				      guint audio_channels, guint audio_channels_old);
 
 /**
  * SECTION:ags_panel_input_pad

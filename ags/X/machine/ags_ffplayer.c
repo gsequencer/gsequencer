@@ -20,46 +20,9 @@
 #include <ags/X/machine/ags_ffplayer.h>
 #include <ags/X/machine/ags_ffplayer_callbacks.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_plugin.h>
-#include <ags/object/ags_seekable.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
-#include <ags/file/ags_file_launch.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_recall_factory.h>
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_container.h>
-#include <ags/audio/ags_playable.h>
-
-#include <ags/audio/file/ags_audio_file.h>
-#include <ags/audio/file/ags_ipatch_sf2_reader.h>
-
-#include <ags/audio/recall/ags_delay_audio.h>
-#include <ags/audio/recall/ags_delay_audio_run.h>
-#include <ags/audio/recall/ags_count_beats_audio.h>
-#include <ags/audio/recall/ags_count_beats_audio_run.h>
-#include <ags/audio/recall/ags_envelope_channel.h>
-#include <ags/audio/recall/ags_envelope_channel_run.h>
-#include <ags/audio/recall/ags_stream_channel.h>
-#include <ags/audio/recall/ags_stream_channel_run.h>
-#include <ags/audio/recall/ags_buffer_channel.h>
-#include <ags/audio/recall/ags_buffer_channel_run.h>
-#include <ags/audio/recall/ags_record_midi_audio.h>
-#include <ags/audio/recall/ags_record_midi_audio_run.h>
-#include <ags/audio/recall/ags_play_notation_audio.h>
-#include <ags/audio/recall/ags_play_notation_audio_run.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/file/ags_gui_file_xml.h>
 
@@ -89,12 +52,12 @@ void ags_ffplayer_read_resolve_audio(AgsFileLookup *file_lookup,
 void ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer);
 xmlNode* ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
-void ags_ffplayer_set_audio_channels(AgsAudio *audio,
+void ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 				     guint audio_channels, guint audio_channels_old,
 				     gpointer data);
-void ags_ffplayer_set_pads(AgsAudio *audio, GType type,
-			   guint pads, guint pads_old,
-			   gpointer data);
+void ags_ffplayer_resize_pads(AgsMachine *machine, GType type,
+			      guint pads, guint pads_old,
+			      gpointer data);
 
 void ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start);
 void ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start);
@@ -256,11 +219,11 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
 
   /* audio resize */
-  g_signal_connect_after(G_OBJECT(ffplayer->machine.audio), "set_audio_channels",
-			 G_CALLBACK(ags_ffplayer_set_audio_channels), ffplayer);
+  g_signal_connect_after(G_OBJECT(ffplayer), "resize-audio-channels",
+			 G_CALLBACK(ags_ffplayer_resize_audio_channels), NULL);
 
-  g_signal_connect_after(G_OBJECT(ffplayer->machine.audio), "set_pads",
-			 G_CALLBACK(ags_ffplayer_set_pads), ffplayer);
+  g_signal_connect_after(G_OBJECT(ffplayer), "resize-pads",
+			 G_CALLBACK(ags_ffplayer_resize_pads), NULL);
 
   /* flags */
   ffplayer->flags = 0;
@@ -773,11 +736,11 @@ ags_ffplayer_read_resolve_audio(AgsFileLookup *file_lookup,
 
   ffplayer = AGS_FFPLAYER(machine);
 
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels",
-			 G_CALLBACK(ags_ffplayer_set_audio_channels), ffplayer);
+  g_signal_connect_after(G_OBJECT(machine), "resize-audio-channels",
+			 G_CALLBACK(ags_ffplayer_resize_audio_channels), ffplayer);
 
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads",
-			 G_CALLBACK(ags_ffplayer_set_pads), ffplayer);
+  g_signal_connect_after(G_OBJECT(machine), "resize-pads",
+			 G_CALLBACK(ags_ffplayer_resize_pads), ffplayer);
 
   if((AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) == 0){
     /* ags-play-notation */
@@ -992,16 +955,20 @@ ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 }
 
 void
-ags_ffplayer_set_audio_channels(AgsAudio *audio,
-				guint audio_channels, guint audio_channels_old,
-				gpointer data)
+ags_ffplayer_resize_audio_channels(AgsMachine *machine,
+				   guint audio_channels, guint audio_channels_old,
+				   gpointer data)
 {
+  AgsAudio *audio;
+  
   AgsConfig *config;
 
   gchar *str;
 
   gboolean performance_mode;
 
+  audio = machine->audio;
+  
   config = ags_config_get_instance();
 
   if(audio_channels > audio_channels_old){
@@ -1093,15 +1060,20 @@ ags_ffplayer_set_audio_channels(AgsAudio *audio,
 }
 
 void
-ags_ffplayer_set_pads(AgsAudio *audio, GType type,
-		      guint pads, guint pads_old,
-		      gpointer data)
+ags_ffplayer_resize_pads(AgsMachine *machine, GType type,
+			 guint pads, guint pads_old,
+			 gpointer data)
 {
   AgsFFPlayer *ffplayer;
+
+  AgsAudio *audio;
+
   gboolean grow;
 
-  ffplayer = AGS_FFPLAYER(audio->machine);
+  ffplayer = machine;
 
+  audio = machine->audio;
+  
   if(pads_old == pads){
     return;
   }

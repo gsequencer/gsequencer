@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,12 +21,9 @@
 #define __AGS_DRUM_OUTPUT_LINE_CALLBACKS_H__
 
 #include <ags/X/machine/ags_drum_output_line.h>
+#include <ags/X/machine/ags_drum.h>
 
-#include <ags/audio/ags_audio.h>
-
-int ags_drum_output_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, gpointer data);
-
-void ags_drum_output_line_set_pads_callback(AgsAudio *audio, GType channel_type,
+void ags_drum_output_line_set_pads_callback(AgsDrum *drum, GType channel_type,
 					    guint pads_new, guint pads_old,
 					    AgsDrumOutputLine *output_line);
 

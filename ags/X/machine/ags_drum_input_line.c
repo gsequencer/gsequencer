@@ -20,48 +20,9 @@
 #include <ags/X/machine/ags_drum_input_line.h>
 #include <ags/X/machine/ags_drum_input_line_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_plugin.h>
-#include <ags/object/ags_portlet.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_pattern.h>
-#include <ags/audio/ags_recall_factory.h>
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_container.h>
-
-#include <ags/audio/recall/ags_delay_audio_run.h>
-#include <ags/audio/recall/ags_peak_channel.h>
-#include <ags/audio/recall/ags_peak_channel_run.h>
-#include <ags/audio/recall/ags_volume_channel.h>
-#include <ags/audio/recall/ags_volume_channel_run.h>
-#include <ags/audio/recall/ags_envelope_channel.h>
-#include <ags/audio/recall/ags_envelope_channel_run.h>
-#include <ags/audio/recall/ags_play_channel.h>
-#include <ags/audio/recall/ags_play_channel_run.h>
-#include <ags/audio/recall/ags_copy_channel.h>
-#include <ags/audio/recall/ags_copy_channel_run.h>
-#include <ags/audio/recall/ags_stream_channel.h>
-#include <ags/audio/recall/ags_stream_channel_run.h>
-#include <ags/audio/recall/ags_copy_pattern_audio.h>
-#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
-#include <ags/audio/recall/ags_copy_pattern_channel.h>
-#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
-
-#include <ags/widget/ags_expander_set.h>
-#include <ags/widget/ags_expander.h>
-#include <ags/widget/ags_vindicator.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_line_callbacks.h>
@@ -194,9 +155,6 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
   AgsLineMember *line_member;
   GtkWidget *widget;
   GtkAdjustment *adjustment;
-
-  g_signal_connect_after((GObject *) drum_input_line, "parent_set",
-			 G_CALLBACK(ags_drum_input_line_parent_set_callback), (gpointer) drum_input_line);
 
   /* volume indicator */
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,

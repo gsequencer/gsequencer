@@ -20,52 +20,9 @@
 #include <ags/X/machine/ags_syncsynth.h>
 #include <ags/X/machine/ags_syncsynth_callbacks.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_plugin.h>
-#include <ags/object/ags_seekable.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
-#include <ags/file/ags_file_launch.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_recall_factory.h>
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_container.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/audio/recall/ags_delay_audio.h>
-#include <ags/audio/recall/ags_delay_audio_run.h>
-#include <ags/audio/recall/ags_count_beats_audio.h>
-#include <ags/audio/recall/ags_count_beats_audio_run.h>
-#include <ags/audio/recall/ags_envelope_channel.h>
-#include <ags/audio/recall/ags_envelope_channel_run.h>
-#include <ags/audio/recall/ags_stream_channel.h>
-#include <ags/audio/recall/ags_stream_channel_run.h>
-#include <ags/audio/recall/ags_buffer_channel.h>
-#include <ags/audio/recall/ags_buffer_channel_run.h>
-#include <ags/audio/recall/ags_record_midi_audio.h>
-#include <ags/audio/recall/ags_record_midi_audio_run.h>
-#include <ags/audio/recall/ags_play_notation_audio.h>
-#include <ags/audio/recall/ags_play_notation_audio_run.h>
-
-#include <ags/audio/task/ags_clear_audio_signal.h>
-#include <ags/audio/task/ags_apply_synth.h>
-
-#include <ags/widget/ags_expander_set.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -98,12 +55,12 @@ void ags_syncsynth_read_resolve_audio(AgsFileLookup *file_lookup,
 				      AgsMachine *machine);
 xmlNode* ags_syncsynth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
-void ags_syncsynth_set_audio_channels(AgsAudio *audio,
-				      guint audio_channels, guint audio_channels_old,
-				      AgsSyncsynth *syncsynth);
-void ags_syncsynth_set_pads(AgsAudio *audio, GType type,
-			    guint pads, guint pads_old,
-			    AgsSyncsynth *syncsynth);
+void ags_syncsynth_resize_audio_channels(AgsMachine *machine,
+					 guint audio_channels, guint audio_channels_old,
+					 gpointer data);
+void ags_syncsynth_resize_pads(AgsMachine *machine, GType channel_type,
+			       guint pads, guint pads_old,
+			       gpointer data);
 
 void ags_syncsynth_input_map_recall(AgsSyncsynth *syncsynth, guint input_pad_start);
 void ags_syncsynth_output_map_recall(AgsSyncsynth *syncsynth, guint output_pad_start);
@@ -252,11 +209,11 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
   					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
 
   /* audio resize */
-  g_signal_connect_after(G_OBJECT(AGS_MACHINE(syncsynth)->audio), "set_audio_channels",
-			 G_CALLBACK(ags_syncsynth_set_audio_channels), syncsynth);
+  g_signal_connect_after(G_OBJECT(syncsynth), "resize-audio-channels",
+			 G_CALLBACK(ags_syncsynth_resize_audio_channels), NULL);
 
-  g_signal_connect_after(G_OBJECT(AGS_MACHINE(syncsynth)->audio), "set_pads",
-			 G_CALLBACK(ags_syncsynth_set_pads), syncsynth);
+  g_signal_connect_after(G_OBJECT(syncsynth), "resize-pads",
+			 G_CALLBACK(ags_syncsynth_resize_pads), NULL);
   
   /* create widgets */
   syncsynth->flags = 0;
@@ -719,11 +676,11 @@ ags_syncsynth_read_resolve_audio(AgsFileLookup *file_lookup,
 
   syncsynth = AGS_SYNCSYNTH(machine);
 
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels",
-			 G_CALLBACK(ags_syncsynth_set_audio_channels), syncsynth);
+  g_signal_connect_after(G_OBJECT(machine), "resize-audio-channels",
+			 G_CALLBACK(ags_syncsynth_resize_audio_channels), NULL);
 
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads",
-			 G_CALLBACK(ags_syncsynth_set_pads), syncsynth);
+  g_signal_connect_after(G_OBJECT(machine), "resize-pads",
+			 G_CALLBACK(ags_syncsynth_resize_pads), NULL);
 
   if((AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) == 0){
     /* ags-play-notation */
@@ -778,16 +735,24 @@ ags_syncsynth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 }
 
 void
-ags_syncsynth_set_audio_channels(AgsAudio *audio,
-				 guint audio_channels, guint audio_channels_old,
-				 AgsSyncsynth *syncsynth)
+ags_syncsynth_resize_audio_channels(AgsMachine *machine,
+				    guint audio_channels, guint audio_channels_old,
+				    gpointer data)
 {
+  AgsSyncsynth *syncsynth;
+
+  AgsAudio *audio;
+  
   AgsConfig *config;
 
   gchar *str;
 
   gboolean performance_mode;
 
+  syncsynth = (AgsSyncsynth *) machine;
+  
+  audio = machine->audio;
+  
   config = ags_config_get_instance();
 
   if(audio_channels > audio_channels_old){
@@ -879,12 +844,12 @@ ags_syncsynth_set_audio_channels(AgsAudio *audio,
 }
 
 void
-ags_syncsynth_set_pads(AgsAudio *audio, GType type,
-		       guint pads, guint pads_old,
-		       AgsSyncsynth *syncsynth)
+ags_syncsynth_resize_pads(AgsMachine *machine, GType type,
+			  guint pads, guint pads_old,
+			  gpointer data)
 {
   AgsWindow *window;
-  AgsMachine *machine;
+  AgsSyncsynth *syncsynth;
 
   AgsChannel *channel, *source;
   AgsAudioSignal *audio_signal;
@@ -900,6 +865,10 @@ ags_syncsynth_set_pads(AgsAudio *audio, GType type,
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *source_mutex;
 
+  syncsynth = (AgsSyncsynth *) machine;
+
+  audio = machine->audio;
+  
   if(pads == pads_old){
     return;
   }
@@ -915,7 +884,6 @@ ags_syncsynth_set_pads(AgsAudio *audio, GType type,
   
   pthread_mutex_unlock(application_mutex);
 
-  machine = AGS_MACHINE(syncsynth);
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
   application_context = window->application_context;

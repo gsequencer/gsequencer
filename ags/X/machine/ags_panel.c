@@ -20,28 +20,9 @@
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_panel_callbacks.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_connection_manager.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_plugin.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
-#include <ags/file/ags_file_launch.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_audio_connection.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_recall_factory.h>
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_container.h>
-
-#include <ags/audio/recall/ags_play_channel.h>
-#include <ags/audio/recall/ags_play_channel_run_master.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 
@@ -71,12 +52,12 @@ void ags_panel_read_resolve_audio(AgsFileLookup *file_lookup,
 void ags_file_read_panel(AgsFile *file, xmlNode *node, AgsMachine *panel);
 xmlNode* ags_file_write_panel(AgsFile *file, xmlNode *parent, AgsMachine *panel);
 
-void ags_panel_set_audio_channels(AgsAudio *audio,
-				  guint audio_channels, guint audio_channels_old,
-				  gpointer data);
-void ags_panel_set_pads(AgsAudio *audio, GType type,
-			guint pads, guint pads_old,
-			gpointer data);
+void ags_panel_resize_audio_channels(AgsMachine *machine,
+				     guint audio_channels, guint audio_channels_old,
+				     gpointer data);
+void ags_panel_resize_pads(AgsMachine *machine, GType channel_type,
+			   guint pads, guint pads_old,
+			   gpointer data);
 
 /**
  * SECTION:ags_panel
@@ -201,11 +182,11 @@ ags_panel_init(AgsPanel *panel)
   AGS_MACHINE(panel)->output_pad_type = G_TYPE_NONE;
   AGS_MACHINE(panel)->output_line_type = G_TYPE_NONE;
 
-  g_signal_connect(G_OBJECT(AGS_MACHINE(panel)->audio), "set-audio-channels",
-		   G_CALLBACK(ags_panel_set_audio_channels), NULL);
+  g_signal_connect(G_OBJECT(panel), "resize-audio-channels",
+		   G_CALLBACK(ags_panel_resize_audio_channels), NULL);
 
-  g_signal_connect(G_OBJECT(AGS_MACHINE(panel)->audio), "set-pads",
-		   G_CALLBACK(ags_panel_set_pads), NULL);
+  g_signal_connect(G_OBJECT(panel), "resize-pads",
+		   G_CALLBACK(ags_panel_resize_pads), NULL);
 
   /* */
   panel->name = NULL;
@@ -228,12 +209,12 @@ ags_panel_finalize(GObject *gobject)
 
   panel = (AgsPanel *) gobject;
   
-  g_object_disconnect(G_OBJECT(AGS_MACHINE(panel)->audio),
-		      "set-audio-channels",
-		      G_CALLBACK(ags_panel_set_audio_channels),
+  g_object_disconnect(G_OBJECT(panel),
+		      "resize-audio-channels",
+		      G_CALLBACK(ags_panel_resize_audio_channels),
 		      NULL,
-		      "set-pads",
-		      G_CALLBACK(ags_panel_set_pads),
+		      "resize-pads",
+		      G_CALLBACK(ags_panel_resize_pads),
 		      NULL,
 		      NULL);
 
@@ -354,11 +335,11 @@ ags_panel_read_resolve_audio(AgsFileLookup *file_lookup,
 
   panel = AGS_PANEL(machine);
 
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels",
-			 G_CALLBACK(ags_panel_set_audio_channels), panel);
+  g_signal_connect_after(G_OBJECT(machine), "resize-audio-channels",
+			 G_CALLBACK(ags_panel_resize_audio_channels), NULL);
 
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads",
-			 G_CALLBACK(ags_panel_set_pads), panel);
+  g_signal_connect_after(G_OBJECT(machine), "resize-pads",
+			 G_CALLBACK(ags_panel_resize_pads), NULL);
 }
 
 xmlNode*
@@ -397,10 +378,11 @@ ags_panel_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 }
 
 void
-ags_panel_set_audio_channels(AgsAudio *audio,
-			     guint audio_channels, guint audio_channels_old,
-			     gpointer data)
+ags_panel_resize_audio_channels(AgsMachine *machine,
+				guint audio_channels, guint audio_channels_old,
+				gpointer data)
 {
+  AgsAudio *audio;
   AgsAudioConnection *audio_connection;
 
   AgsConnectionManager *connection_manager;
@@ -409,6 +391,8 @@ ags_panel_set_audio_channels(AgsAudio *audio,
   
   guint i, j;
 
+  audio = machine->audio;
+  
   connection_manager = ags_connection_manager_get_instance();
 
   if(audio_channels > audio_channels_old){
@@ -499,10 +483,11 @@ ags_panel_set_audio_channels(AgsAudio *audio,
 }
 
 void
-ags_panel_set_pads(AgsAudio *audio, GType type,
-		   guint pads, guint pads_old,
-		   gpointer data)
+ags_panel_resize_pads(AgsMachine *machine, GType channel_type,
+		      guint pads, guint pads_old,
+		      gpointer data)
 {
+  AgsAudio *audio;
   AgsAudioConnection *audio_connection;
 
   AgsConnectionManager *connection_manager;
@@ -511,9 +496,11 @@ ags_panel_set_pads(AgsAudio *audio, GType type,
   
   guint i, j;
 
+  audio = machine->audio;
+  
   connection_manager = ags_connection_manager_get_instance();
   
-  if(type == AGS_TYPE_INPUT){
+  if(channel_type == AGS_TYPE_INPUT){
     if(pads > pads_old){
       for(i = pads_old; i < pads; i++){
 	for(j = 0; j < audio->audio_channels; j++){

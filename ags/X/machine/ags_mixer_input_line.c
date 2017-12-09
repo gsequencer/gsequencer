@@ -19,19 +19,9 @@
 
 #include <ags/X/machine/ags_mixer_input_line.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/plugin/ags_plugin_stock.h>
-
-#include <ags/audio/ags_recall_factory.h>
-#include <ags/audio/ags_recall_container.h>
-
-#include <ags/audio/recall/ags_peak_channel.h>
-#include <ags/audio/recall/ags_peak_channel_run.h>
-#include <ags/audio/recall/ags_volume_channel.h>
-#include <ags/audio/recall/ags_volume_channel_run.h>
-
-#include <ags/widget/ags_vindicator.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_line_callbacks.h>

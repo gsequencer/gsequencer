@@ -42,8 +42,8 @@ void ags_drum_index0_callback(GtkWidget *toggle_button, AgsDrum *drum);
 void ags_drum_index1_callback(GtkWidget *toggle_button, AgsDrum *drum);
 
 /* audio */
-void ags_drum_done_callback(AgsAudio *audio,
+void ags_drum_done_callback(AgsDrum *drum,
 			    AgsRecallID *recall_id,
-			    AgsDrum *drum);
+			    gpointer data);
 
 #endif /*__AGS_DRUM_CALLBACKS_H__*/

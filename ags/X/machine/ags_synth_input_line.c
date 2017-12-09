@@ -20,24 +20,9 @@
 #include <ags/X/machine/ags_synth_input_line.h>
 #include <ags/X/machine/ags_synth_input_line_callbacks.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/plugin/ags_plugin_stock.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_plugin.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
-
-#include <ags/audio/ags_recall_factory.h>
-#include <ags/audio/ags_recall_container.h>
-
-#include <ags/audio/recall/ags_volume_channel.h>
-#include <ags/audio/recall/ags_volume_channel_run.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_line.h>

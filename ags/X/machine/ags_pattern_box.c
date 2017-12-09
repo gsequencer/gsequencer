@@ -20,21 +20,9 @@
 #include <ags/X/machine/ags_pattern_box.h>
 #include <ags/X/machine/ags_pattern_box_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_recall_id.h>
-#include <ags/audio/ags_pattern.h>
-
-#include <ags/audio/recall/ags_delay_audio.h>
-#include <ags/audio/recall/ags_count_beats_audio.h>
-#include <ags/audio/recall/ags_count_beats_audio_run.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>

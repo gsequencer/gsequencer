@@ -19,16 +19,9 @@
 
 #include <ags/X/machine/ags_synth_input_pad.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_plugin.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 

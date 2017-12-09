@@ -104,12 +104,9 @@ xmlNode* ags_drum_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 void ags_drum_read_resolve_audio(AgsFileLookup *file_lookup,
 				 AgsMachine *machine);
 
-void ags_drum_set_audio_channels(AgsAudio *audio,
-				 guint audio_channels, guint audio_channels_old,
-				 AgsDrum *drum);
-void ags_drum_set_pads(AgsAudio *audio, GType gtype,
-		       guint pads, guint pads_old,
-		       AgsDrum *drum);
+void ags_drum_resize_pads(AgsDrum *drum, GType gtype,
+			  guint pads, guint pads_old,
+			  gpointer data);
 
 /**
  * SECTION:ags_drum
@@ -274,11 +271,8 @@ ags_drum_init(AgsDrum *drum)
   					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
 
   /* audio resize */
-  g_signal_connect_after(G_OBJECT(audio), "set-audio-channels",
-			 G_CALLBACK(ags_drum_set_audio_channels), drum);
-
-  g_signal_connect_after(G_OBJECT(audio), "set-pads",
-			 G_CALLBACK(ags_drum_set_pads), drum);
+  g_signal_connect_after(G_OBJECT(drum), "resize-pads",
+			 G_CALLBACK(ags_drum_resize_pads), NULL);
 
   /* flags, name and xml type */
   drum->flags = 0;
@@ -455,8 +449,8 @@ ags_drum_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(drum->pattern_box));
 
   /* AgsAudio */
-  g_signal_connect_after(G_OBJECT(AGS_MACHINE(drum)->audio), "done",
-			 G_CALLBACK(ags_drum_done_callback), drum);
+  g_signal_connect_after(G_OBJECT(drum), "done",
+			 G_CALLBACK(ags_drum_done_callback), NULL);
 }
 
 void
@@ -506,7 +500,7 @@ ags_drum_disconnect(AgsConnectable *connectable)
   ags_connectable_disconnect(AGS_CONNECTABLE(drum->pattern_box));
 
   /* AgsAudio */
-  g_object_disconnect(G_OBJECT(AGS_MACHINE(drum)->audio),
+  g_object_disconnect(G_OBJECT(drum),
 		      "done",
 		      G_CALLBACK(ags_drum_done_callback),
 		      drum,
@@ -773,37 +767,8 @@ void
 ags_drum_read_resolve_audio(AgsFileLookup *file_lookup,
 			    AgsMachine *machine)
 {
-  AgsDrum *drum;
-  GList *pad, *pad_start, *line, *line_start;
-
-  drum = AGS_DRUM(machine);
-
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels",
-			 G_CALLBACK(ags_drum_set_audio_channels), drum);
-
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads",
-			 G_CALLBACK(ags_drum_set_pads), drum);
-
-  pad_start = 
-    pad = gtk_container_get_children((GtkContainer *) machine->input);
-
-  while(pad != NULL){
-    line_start = 
-      line = gtk_container_get_children((GtkContainer *) AGS_PAD(pad->data)->expander_set);
-
-    while(line != NULL){
-      /* AgsAudio */
-      g_signal_connect_after(G_OBJECT(machine->audio), "set_pads",
-			     G_CALLBACK(ags_drum_input_line_audio_set_pads_callback), AGS_DRUM_INPUT_LINE(line->data));
-
-      line = line->next;
-    }
-
-    g_list_free(line_start);
-    pad = pad->next;
-  }
-
-  g_list_free(pad_start);
+  g_signal_connect_after(G_OBJECT(machine), "resize-pads",
+			 G_CALLBACK(ags_drum_resize_pads), NULL);
 }
 
 void
@@ -903,18 +868,10 @@ ags_drum_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 }
 
 void
-ags_drum_set_audio_channels(AgsAudio *audio,
-			    guint audio_channels, guint audio_channels_old,
-			    AgsDrum *drum)
+ags_drum_resize_pads(AgsDrum *drum, GType gtype,
+		     guint pads, guint pads_old,
+		     gpointer data)
 {
-  /* empty */
-}
-
-void
-ags_drum_set_pads(AgsAudio *audio, GType gtype,
-		  guint pads, guint pads_old,
-		  AgsDrum *drum)
-{  
   if(gtype == AGS_TYPE_INPUT){
     AgsDrumInputPad *drum_input_pad;
 

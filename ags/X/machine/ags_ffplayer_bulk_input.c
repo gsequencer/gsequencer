@@ -20,9 +20,9 @@
 #include <ags/X/machine/ags_ffplayer_bulk_input.h>
 #include <ags/X/machine/ags_ffplayer_bulk_input_callbacks.h>
 
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 void ags_ffplayer_bulk_input_class_init(AgsFFPlayerBulkInputClass *ffplayer_bulk_input);
 void ags_ffplayer_bulk_input_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -36,7 +36,7 @@ void ags_ffplayer_bulk_input_disconnect(AgsConnectable *connectable);
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
  * @title: AgsFFPlayerBulkInput
  * @section_id:
- * @include: ags/X/ags_ffplayer_bulk_input.h
+ * @include: ags/X/machine/gs_ffplayer_bulk_input.h
  *
  * #AgsFFPlayerBulkInput is a composite widget to visualize one #AgsChannel. It should be
  * packed by an #AgsFFPlayerBulkInput.

@@ -19,15 +19,9 @@
 
 #include <ags/X/machine/ags_dssi_bridge_callbacks.h>
 
-#include <ags/lib/ags_endian.h>
-
-#include <ags/plugin/ags_base_plugin.h>
-#include <ags/plugin/ags_dssi_plugin.h>
-#include <ags/plugin/ags_ladspa_conversion.h>
-
-#include <ags/audio/ags_recall_dssi.h>
-
-#include <ags/widget/ags_dial.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_bridge.h>

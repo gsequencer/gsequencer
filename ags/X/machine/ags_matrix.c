@@ -20,57 +20,9 @@
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_matrix_callbacks.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_portlet.h>
-#include <ags/object/ags_plugin.h>
-#include <ags/object/ags_seekable.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
-#include <ags/file/ags_file_launch.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_thread-posix.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_pattern.h>
-#include <ags/audio/ags_recall_factory.h>
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_container.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/audio/recall/ags_delay_audio.h>
-#include <ags/audio/recall/ags_delay_audio_run.h>
-#include <ags/audio/recall/ags_count_beats_audio.h>
-#include <ags/audio/recall/ags_count_beats_audio_run.h>
-#include <ags/audio/recall/ags_loop_channel.h>
-#include <ags/audio/recall/ags_loop_channel_run.h>
-#include <ags/audio/recall/ags_envelope_channel.h>
-#include <ags/audio/recall/ags_envelope_channel_run.h>
-#include <ags/audio/recall/ags_stream_channel.h>
-#include <ags/audio/recall/ags_stream_channel_run.h>
-#include <ags/audio/recall/ags_copy_pattern_audio.h>
-#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
-#include <ags/audio/recall/ags_copy_pattern_channel.h>
-#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
-#include <ags/audio/recall/ags_play_notation_audio.h>
-#include <ags/audio/recall/ags_play_notation_audio_run.h>
-#include <ags/audio/recall/ags_buffer_channel.h>
-#include <ags/audio/recall/ags_buffer_channel_run.h>
-#include <ags/audio/recall/ags_record_midi_audio.h>
-#include <ags/audio/recall/ags_record_midi_audio_run.h>
-#include <ags/audio/recall/ags_play_notation_audio.h>
-#include <ags/audio/recall/ags_play_notation_audio_run.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_menu_bar.h>
 
@@ -79,9 +31,6 @@
 #include <ags/X/thread/ags_gui_thread.h>
 
 #include <math.h>
-
-#define AGS_MATRIX_INPUT_LINE_MAPPED_KEY "AGS_MATRIX_INPUT_LINE_MAPPED_KEY"
-#define AGS_MATRIX_INPUT_LINE_MAPPED_DATA "AGS_MATRIX_INPUT_LINE_MAPPED_DATA"
 
 void ags_matrix_class_init(AgsMatrixClass *matrix);
 void ags_matrix_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -101,12 +50,15 @@ void ags_matrix_read_resolve_audio(AgsFileLookup *file_lookup,
 void ags_matrix_launch_task(AgsFileLaunch *file_launch, AgsMatrix *matrix);
 xmlNode* ags_matrix_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
-void ags_matrix_set_audio_channels(AgsAudio *audio,
-				   guint audio_channels, guint audio_channels_old,
-				   gpointer data);
-void ags_matrix_set_pads(AgsAudio *audio, GType type,
-			 guint pads, guint pads_old,
-			 gpointer data);
+void ags_matrix_resize_audio_channels(AgsMachine *machine,
+				      guint audio_channels, guint audio_channels_old,
+				      gpointer data);
+void ags_matrix_resize_pads(AgsMachine *machine, GType type,
+			    guint pads, guint pads_old,
+			    gpointer data);
+
+#define AGS_MATRIX_INPUT_LINE_MAPPED_KEY "AGS_MATRIX_INPUT_LINE_MAPPED_KEY"
+#define AGS_MATRIX_INPUT_LINE_MAPPED_DATA "AGS_MATRIX_INPUT_LINE_MAPPED_DATA"
 
 /**
  * SECTION:ags_matrix
@@ -254,11 +206,11 @@ ags_matrix_init(AgsMatrix *matrix)
   AGS_MACHINE(matrix)->output_pad_type = G_TYPE_NONE;
   AGS_MACHINE(matrix)->output_line_type = G_TYPE_NONE;
 
-  g_signal_connect_after(G_OBJECT(audio), "set_audio_channels",
-			 G_CALLBACK(ags_matrix_set_audio_channels), matrix);
+  g_signal_connect_after(G_OBJECT(matrix), "resize-audio-channels",
+			 G_CALLBACK(ags_matrix_resize_audio_channels), NULL);
 
-  g_signal_connect_after(G_OBJECT(audio), "set_pads",
-			 G_CALLBACK(ags_matrix_set_pads), matrix);
+  g_signal_connect_after(G_OBJECT(matrix), "resize-pads",
+			 G_CALLBACK(ags_matrix_resize_pads), NULL);
 
   /*  */
   AGS_MACHINE(matrix)->flags |= (AGS_MACHINE_IS_SEQUENCER |
@@ -395,11 +347,8 @@ ags_matrix_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) matrix->loop_button, "clicked",
 		   G_CALLBACK(ags_matrix_loop_button_callback), (gpointer) matrix);
 
-  g_signal_connect_after(G_OBJECT(AGS_MACHINE(matrix)->audio), "tact",
-			 G_CALLBACK(ags_matrix_tact_callback), matrix);
-
-  g_signal_connect_after(G_OBJECT(AGS_MACHINE(matrix)->audio), "done",
-			 G_CALLBACK(ags_matrix_done_callback), matrix);
+  g_signal_connect_after(G_OBJECT(matrix), "done",
+			 G_CALLBACK(ags_matrix_done_callback), NULL);
 }
 
 void
@@ -455,23 +404,22 @@ ags_matrix_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_matrix_set_audio_channels(AgsAudio *audio,
-			      guint audio_channels, guint audio_channels_old,
-			      gpointer data)
+ags_matrix_resize_audio_channels(AgsMachine *machine,
+				 guint audio_channels, guint audio_channels_old,
+				 gpointer data)
 {
   g_message("AgsMatrix only pads can be adjusted");
-  //  _ags_audio_set_audio_channels(audio, audio_channels);
 }
 
 void
-ags_matrix_set_pads(AgsAudio *audio, GType type,
-		    guint pads, guint pads_old,
-		    gpointer data)
+ags_matrix_resize_pads(AgsMachine *machine, GType type,
+		       guint pads, guint pads_old,
+		       gpointer data)
 {
   AgsWindow *window;
-  AgsMachine *machine;
   AgsMatrix *matrix;
 
+  AgsAudio *audio;
   AgsChannel *channel, *source;
   AgsAudioSignal *audio_signal;
 
@@ -486,6 +434,10 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *source_mutex;
 
+  matrix = (AgsMatrix *) machine;
+
+  audio = machine->audio;
+  
   if(pads == pads_old){
     return;
   }
@@ -502,13 +454,6 @@ ags_matrix_set_pads(AgsAudio *audio, GType type,
   pthread_mutex_unlock(application_mutex);
 
   /* get machine */
-  pthread_mutex_lock(audio_mutex);
-  
-  matrix = (AgsMatrix *) audio->machine;
-
-  pthread_mutex_unlock(audio_mutex);
-
-  machine = AGS_MACHINE(matrix);
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
   application_context = window->application_context;
@@ -1151,11 +1096,11 @@ ags_matrix_read_resolve_audio(AgsFileLookup *file_lookup,
 
   matrix = AGS_MATRIX(machine);
 
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels",
-			 G_CALLBACK(ags_matrix_set_audio_channels), matrix);
+  g_signal_connect_after(G_OBJECT(machine), "resize-audio-channels",
+			 G_CALLBACK(ags_matrix_resize_audio_channels), matrix);
 
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads",
-			 G_CALLBACK(ags_matrix_set_pads), matrix);
+  g_signal_connect_after(G_OBJECT(machine), "resize-pads",
+			 G_CALLBACK(ags_matrix_resize_pads), matrix);
 
   if((AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) == 0){
     ags_matrix_output_map_recall(matrix, 0);

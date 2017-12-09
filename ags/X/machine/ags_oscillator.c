@@ -20,15 +20,9 @@
 #include <ags/X/machine/ags_oscillator.h>
 #include <ags/X/machine/ags_oscillator_callbacks.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-
-#include <ags/object/ags_plugin.h>
-
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/i18n.h>
 

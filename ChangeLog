@@ -28,6 +28,8 @@ ags (1.2.0)
 	* implemented AgsJackDevin
 	* implemented AgsPulseDevin
 	* TODO:JK: refactored direct callbacks to UI by replacing with messages
+	* TODO:JK: refactored ::set-audio-channels and ::set-pads of AgsAudio callbacks to be thread-safe
+	* TODO:JK: implemented generic soundcard failure dialog
 	* disabled AgsGuiThread synchronization with AgsTaskThread
 	* extended AgsJackServer and AgsJackClient to support AgsJackDevin
 	* extended AgsPulseServer, AgsPulseClient and AgsPulsePort to support AgsPulseDevin
