@@ -208,7 +208,7 @@ ags_mute_channel_init(AgsMuteChannel *mute_channel)
 				     NULL);
   g_object_ref(mute_channel->muted);
 
-  mute_channel->muted->port_value.ags_port_float = (float) FALSE;
+  mute_channel->muted->port_value.ags_port_float = 0.0;
 
   /* port descriptor */
   mute_channel->muted->port_descriptor = ags_mute_channel_get_muted_port_descriptor();
@@ -364,7 +364,7 @@ ags_mute_channel_set_muted(AgsMutable *mutable, gboolean muted)
   GValue value = {0,};
 
   g_value_init(&value, G_TYPE_FLOAT);
-  g_value_set_float(&value, (float) muted);
+  g_value_set_float(&value, (muted ? 1.0: 0.0));
 
   ags_port_safe_write(AGS_MUTE_CHANNEL(mutable)->muted, &value);
 }

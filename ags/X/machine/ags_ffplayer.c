@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -61,6 +61,8 @@
 #include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
 
+#include <ags/X/ags_editor.h>
+
 #include <ags/X/file/ags_gui_file_xml.h>
 
 #include <ags/X/machine/ags_ffplayer_bridge.h>
@@ -76,6 +78,7 @@ void ags_ffplayer_init(AgsFFPlayer *ffplayer);
 void ags_ffplayer_connect(AgsConnectable *connectable);
 void ags_ffplayer_disconnect(AgsConnectable *connectable);
 void ags_ffplayer_finalize(GObject *gobject);
+void ags_ffplayer_realize(GtkWidget *widget);
 void ags_ffplayer_show(GtkWidget *widget);
 void ags_ffplayer_map_recall(AgsMachine *machine);
 gchar* ags_ffplayer_get_name(AgsPlugin *plugin);
@@ -177,6 +180,7 @@ ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) ffplayer;
 
+  widget->realize = ags_ffplayer_realize;
   widget->show = ags_ffplayer_show;
 
   /* AgsMachineClass */
@@ -212,7 +216,6 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   GtkVBox *vbox;
   GtkAlignment *alignment;
   GtkTable *table;
-  GtkHScrollbar *hscrollbar;
   GtkHBox *hbox;
   GtkVBox *piano_vbox;
   GtkLabel *label;
@@ -351,21 +354,16 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ffplayer->control_width = 12;
   ffplayer->control_height = 40;
 
-  if(ffplayer_style == NULL){
-    ffplayer_style = gtk_style_copy(gtk_widget_get_style(ffplayer));
-  }
-  
   ffplayer->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_size_request((GtkWidget *) ffplayer->drawing_area,
 			      16 * ffplayer->control_width,
 			      ffplayer->control_width * 8 + ffplayer->control_height);
-  gtk_widget_set_style((GtkWidget *) ffplayer->drawing_area, ffplayer_style);
-  gtk_widget_set_events ((GtkWidget *) ffplayer->drawing_area,
-                         GDK_EXPOSURE_MASK
-                         | GDK_LEAVE_NOTIFY_MASK
-                         | GDK_BUTTON_PRESS_MASK
-                         | GDK_POINTER_MOTION_MASK
-                         | GDK_POINTER_MOTION_HINT_MASK);
+  gtk_widget_set_events((GtkWidget *) ffplayer->drawing_area,
+			GDK_EXPOSURE_MASK
+			| GDK_LEAVE_NOTIFY_MASK
+			| GDK_BUTTON_PRESS_MASK
+			| GDK_POINTER_MOTION_MASK
+			| GDK_POINTER_MOTION_HINT_MASK);
   gtk_box_pack_start((GtkBox *) piano_vbox,
 		     (GtkWidget *) ffplayer->drawing_area,
 		     FALSE, FALSE,
@@ -377,10 +375,9 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 							       1.0,
 							       (double) ffplayer->control_width,
 							       (double) (16 * ffplayer->control_width));
-  hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(ffplayer->hadjustment);
-  gtk_widget_set_style((GtkWidget *) hscrollbar, ffplayer_style);
+  ffplayer->hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(ffplayer->hadjustment);
   gtk_box_pack_start((GtkBox *) piano_vbox,
-		     (GtkWidget *) hscrollbar,
+		     (GtkWidget *) ffplayer->hscrollbar,
 		     FALSE, FALSE,
 		     0);
 
@@ -665,6 +662,27 @@ ags_ffplayer_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_ffplayer_hscrollbar_value_changed),
 		      (gpointer) ffplayer,
 		      NULL);
+}
+
+void
+ags_ffplayer_realize(GtkWidget *widget)
+{
+  AgsFFPlayer *ffplayer;
+
+  ffplayer = widget;
+  
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_ffplayer_parent_class)->realize(widget);
+
+  if(ffplayer_style == NULL){
+    ffplayer_style = gtk_style_copy(gtk_widget_get_style(ffplayer));
+  }
+  
+  gtk_widget_set_style((GtkWidget *) ffplayer->drawing_area,
+		       ffplayer_style);
+
+  gtk_widget_set_style((GtkWidget *) ffplayer->hscrollbar,
+		       ffplayer_style);
 }
 
 void

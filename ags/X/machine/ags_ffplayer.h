@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2015 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,9 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
-
 #include <pango/pango.h>
-
 #include <gtk/gtk.h>
 
 #include <ags/X/ags_machine.h>
@@ -64,6 +62,7 @@ struct _AgsFFPlayer
   guint control_height;
   
   GtkDrawingArea *drawing_area;
+  GtkHScrollbar *hscrollbar;
   GtkAdjustment *hadjustment;
 
   AgsIpatch *ipatch;

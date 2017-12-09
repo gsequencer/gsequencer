@@ -31,6 +31,19 @@ ags (1.2.0)
 	* refactored AgsNotebook to be generic and move to libags-gui
 	* use $(docdir) in Makefile.am
 
+ags (1.1.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* moved GtkStyle allocation to GtkWidget::realize()
+	* fixed potential infinite loop during audio port related automation
+	* fixed ags.rc
+	* increased AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS
+
+ags (1.1.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing style initializer of some widgets
+
 ags (1.1.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
