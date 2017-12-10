@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,21 +20,7 @@
 #include <ags/audio/recall/ags_record_midi_audio_run.h>
 #include <ags/audio/recall/ags_record_midi_audio.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_dynamic_connectable.h>
-#include <ags/object/ags_sequencer.h>
-#include <ags/object/ags_plugin.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
-
-#include <ags/thread/ags_timestamp_thread.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
@@ -185,7 +171,7 @@ ags_record_midi_audio_run_class_init(AgsRecordMidiAudioRunClass *record_midi_aud
    * 
    * The delay audio run dependency.
    * 
-   * Since: 1.0.0.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("delay-audio-run",
 				   i18n_pspec("assigned AgsDelayAudioRun"),
@@ -201,7 +187,7 @@ ags_record_midi_audio_run_class_init(AgsRecordMidiAudioRunClass *record_midi_aud
    * 
    * The count beats audio run dependency.
    * 
-   * Since: 1.0.0.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("count-beats-audio-run",
 				   i18n_pspec("assigned AgsCountBeatsAudioRun"),
@@ -261,6 +247,13 @@ ags_record_midi_audio_run_init(AgsRecordMidiAudioRun *record_midi_audio_run)
   record_midi_audio_run->count_beats_audio_run = NULL;
 
   record_midi_audio_run->note = NULL;
+
+  record_midi_audio_run->timestamp = ags_timestamp_new();
+
+  record_midi_audio_run->timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  record_midi_audio_run->timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
+  record_midi_audio_run->timestamp->timer.ags_offset.offset = 0;
 
   record_midi_audio_run->midi_file = NULL;
 }
@@ -427,6 +420,11 @@ ags_record_midi_audio_run_finalize(GObject *gobject)
   /* count beats audio run */
   if(record_midi_audio_run->count_beats_audio_run != NULL){
     g_object_unref(G_OBJECT(record_midi_audio_run->count_beats_audio_run));
+  }
+
+  /* timestamp */
+  if(record_midi_audio_run->timestamp != NULL){
+    g_object_unref(G_OBJECT(record_midi_audio_run->timestamp));
   }
 
   /* call parent */
@@ -834,19 +832,19 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 
   /* get notation */
   pthread_mutex_lock(audio_mutex);
+  
+  notation_counter = count_beats_audio_run->notation_counter;
 
-  //TODO:JK: make it advanced
-  list = g_list_nth(audio->notation,
-		    audio_channel);
+  record_midi_audio_run->timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(notation_counter / AGS_NOTATION_DEFAULT_OFFSET);
+  
+  list = ags_notation_find_near_timestamp(audio->notation, audio_channel,
+					  record_midi_audio_run->timestamp);
 
   if(list != NULL){
     notation = list->data;
   }else{
     notation = NULL;
   }
-  
-  /*  */
-  notation_counter = count_beats_audio_run->notation_counter;
   
   pthread_mutex_unlock(audio_mutex);
 
@@ -973,7 +971,16 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 		  }
 
 		  pthread_mutex_lock(audio_mutex);
-	      
+
+		  if(notation == NULL){
+		    notation = ags_notation_new();
+		    
+		    notation->timestamp->timer.ags_offset.offset = record_midi_audio_run->timestamp->timer.ags_offset.offset;
+
+		    audio->notation = ags_notation_add(audio->notation,
+						       notation);
+		  }
+		  
 		  ags_notation_add_note(notation,
 					current_note,
 					FALSE);

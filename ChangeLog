@@ -28,14 +28,17 @@ ags (1.2.0)
 	* implemented AgsJackDevin
 	* implemented AgsPulseDevin
 	* refactored direct callbacks to UI by replacing with messages
-	* TODO:JK: refactored ::set-audio-channels and ::set-pads of AgsAudio callbacks to be thread-safe
-	* TODO:JK: implemented generic soundcard failure dialog
+	* refactored ::set-audio-channels and ::set-pads of AgsAudio callbacks to be thread-safe
 	* disabled AgsGuiThread synchronization with AgsTaskThread
 	* extended AgsJackServer and AgsJackClient to support AgsJackDevin
 	* extended AgsPulseServer, AgsPulseClient and AgsPulsePort to support AgsPulseDevin
 	* extended AgsSwitchBufferFlag and AgsClearBuffer to support AgsDevin, AgsJackDevin and AgsPulseDevin
 	* refactored AgsNotebook to be generic and move to libags-gui
-	* TODO:JK: fixed SIGSEGV on busy ALSA device while read config
+	* improved ags-play-notation to support segmented notation
+	* improved ags-record-midi to support segmented notation
+	* improved ags-route-dssi to support segmented notation
+	* improved ags-route-lv2 to support segmented notation
+	* TODO:JK: improved AgsSimpleFile to support segmented notation
 	* use $(docdir) in Makefile.am
 
 ags (1.1.7)

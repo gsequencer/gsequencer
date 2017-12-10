@@ -839,13 +839,9 @@ ags_notation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue
  */
 GList*
 ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
-				 GObject *gobject)
+				 AgsTimestamp *timestamp)
 {
-  AgsTimestamp *timestamp, *current_timestamp;
-
-  if(gobject != NULL){
-    timestamp = AGS_TIMESTAMP(gobject);
-  }
+  AgsTimestamp *current_timestamp;
 
   while(notation != NULL){
     if(AGS_NOTATION(notation->data)->audio_channel != audio_channel){
@@ -854,7 +850,7 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
       continue;
     }
 
-    if(gobject == NULL){
+    if(timestamp == NULL){
       return(notation);
     }
     

@@ -20,11 +20,12 @@
 #ifndef __AGS_NOTATION_H__
 #define __AGS_NOTATION_H__
 
+#include <glib.h>
 #include <glib-object.h>
+
 #include <libxml/tree.h>
 
-#include <ags/thread/ags_timestamp_thread.h>
-#include <ags/thread/ags_timestamp.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_note.h>
 
@@ -74,7 +75,7 @@ struct _AgsNotation
 
   guint flags;
 
-  GObject *timestamp;
+  AgsTimestamp *timestamp;
 
   guint audio_channel;
   GObject *audio;
@@ -110,7 +111,7 @@ struct _AgsNotationClass
 GType ags_notation_get_type();
 
 GList* ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
-					GObject *timestamp);
+					AgsTimestamp *timestamp);
 GList* ags_notation_add(GList *notation,
 			AgsNotation *new_notation);
 

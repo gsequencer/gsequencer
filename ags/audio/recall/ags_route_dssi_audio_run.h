@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,8 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
+#include <ags/libags.h>
 
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_notation.h>
@@ -50,6 +52,8 @@ struct _AgsRouteDssiAudioRun
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
   AgsNotation *notation;
+  AgsTimestamp *timestamp;
+
   GObject *sequencer;
 
   GList *feed_midi;
