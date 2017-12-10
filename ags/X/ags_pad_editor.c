@@ -231,9 +231,11 @@ ags_pad_editor_connect(AgsConnectable *connectable)
 					   AGS_TYPE_MACHINE_EDITOR);
   
   /*  */
-  g_signal_connect_after(G_OBJECT(machine_editor->machine), "resize-audio-channels",
-			 G_CALLBACK(ags_pad_editor_resize_audio_channels_callback), pad_editor);
-
+  if(machine_editor != NULL){
+    g_signal_connect_after(G_OBJECT(machine_editor->machine), "resize-audio-channels",
+			   G_CALLBACK(ags_pad_editor_resize_audio_channels_callback), pad_editor);
+  }
+  
   /* AgsLineEditor */
   line_editor_start = 
     line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));

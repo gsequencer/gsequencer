@@ -72,7 +72,7 @@ void ags_audio_test_open_files();
 void ags_audio_test_recursive_set_property();
 void ags_audio_test_recursive_play_init();
 void ags_audio_test_link_channel();
-void ags_audio_test_finalize_linked_channel()
+void ags_audio_test_finalize_linked_channel();
 void ags_audio_test_init_recall();
 void ags_audio_test_resolve_recall();
 
@@ -810,12 +810,6 @@ ags_audio_test_init_run()
 }
 
 void
-ags_audio_test_init_run()
-{
-  //TODO:JK: implement me
-}
-
-void
 ags_audio_test_duplicate_recall()
 {
   AgsAudio *audio;
@@ -901,18 +895,6 @@ ags_audio_test_duplicate_recall()
 
   CU_ASSERT(g_list_length(audio->play) == 4);
   CU_ASSERT(g_list_length(audio->recall) == 4);
-}
-
-void
-ags_audio_test_init_recall()
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_audio_test_resolve_recall()
-{
-  //TODO:JK: implement me
 }
 
 void

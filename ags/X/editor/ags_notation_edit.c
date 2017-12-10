@@ -1492,6 +1492,7 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
     if(x + width < 0.0){
       return;
     }else{
+      width += x;
       x = 0.0;
     }
   }else if(x > GTK_WIDGET(notation_edit->drawing_area)->allocation.width){
@@ -1503,7 +1504,12 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
   }
   
   if(y < 0.0){
-    y = 0.0;
+    if(y + height < 0.0){
+      return;
+    }else{
+      height += y;
+      y = 0.0;
+    }
   }else if(y > GTK_WIDGET(notation_edit->drawing_area)->allocation.height){
     return;
   }

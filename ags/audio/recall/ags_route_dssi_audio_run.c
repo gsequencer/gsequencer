@@ -445,7 +445,7 @@ ags_route_dssi_audio_run_finalize(GObject *gobject)
   }
 
   /* timestamp */
-  if(route_dssi_audio_run->timstamp != NULL){
+  if(route_dssi_audio_run->timestamp != NULL){
     g_object_unref(G_OBJECT(route_dssi_audio_run->timestamp));
   }
 

@@ -40,20 +40,20 @@
 
 #include "gsequencer_setup_util.h"
 
-void ags_functional_note_edit_test_add_test();
+void ags_functional_notation_edit_test_add_test();
 
-int ags_functional_note_edit_test_init_suite();
-int ags_functional_note_edit_test_clean_suite();
+int ags_functional_notation_edit_test_init_suite();
+int ags_functional_notation_edit_test_clean_suite();
 
-void ags_functional_note_edit_test_quit_stub(AgsApplicationContext *application_context);
+void ags_functional_notation_edit_test_quit_stub(AgsApplicationContext *application_context);
 
-void ags_functional_note_edit_test_file_setup();
+void ags_functional_notation_edit_test_file_setup();
 
-#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_FILENAME SRCDIR "/" "ags_functional_note_edit_test.xml\0"
-#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_COUNT (3)
-#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_DURATION (30)
+#define AGS_FUNCTIONAL_NOTATION_EDIT_TEST_FILE_SETUP_FILENAME SRCDIR "/" "ags_functional_notation_edit_test.xml\0"
+#define AGS_FUNCTIONAL_NOTATION_EDIT_TEST_FILE_SETUP_PLAYBACK_COUNT (3)
+#define AGS_FUNCTIONAL_NOTATION_EDIT_TEST_FILE_SETUP_PLAYBACK_DURATION (30)
 
-#define AGS_FUNCTIONAL_NOTE_EDIT_TEST_CONFIG "[generic]\n" \
+#define AGS_FUNCTIONAL_NOTATION_EDIT_TEST_CONFIG "[generic]\n" \
   "autosave-thread=false\n"			       \
   "simple-file=true\n"				       \
   "disable-feature=experimental\n"		       \
@@ -87,10 +87,10 @@ AgsGuiThread *gui_thread;
 AgsTaskThread *task_thread;
 
 void
-ags_functional_note_edit_test_add_test()
+ags_functional_notation_edit_test_add_test()
 {
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "functional test of GSequencer setup by file and editing notes\0", ags_functional_note_edit_test_file_setup) == NULL)){
+  if((CU_add_test(pSuite, "functional test of GSequencer setup by file and editing notes\0", ags_functional_notation_edit_test_file_setup) == NULL)){
     CU_cleanup_registry();
       
     exit(CU_get_error());
@@ -110,7 +110,7 @@ ags_functional_note_edit_test_add_test()
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_functional_note_edit_test_init_suite()
+ags_functional_notation_edit_test_init_suite()
 {    
   /* get gui thread */
   gui_thread = ags_thread_find_type(ags_application_context->main_loop,
@@ -127,19 +127,19 @@ ags_functional_note_edit_test_init_suite()
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_functional_note_edit_test_clean_suite()
+ags_functional_notation_edit_test_clean_suite()
 {  
   return(0);
 }
 
 void
-ags_functional_note_edit_test_quit_stub(AgsApplicationContext *application_context)
+ags_functional_notation_edit_test_quit_stub(AgsApplicationContext *application_context)
 {
   g_critical("quit stub\0");
 }
 
 void
-ags_functional_note_edit_test_file_setup()
+ags_functional_notation_edit_test_file_setup()
 {
   GtkButton *play_button;
   GtkButton *stop_button;
@@ -167,7 +167,7 @@ ags_functional_note_edit_test_file_setup()
   /* get initial time */
   success = TRUE;
     
-  for(i = 0; success && i < AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_COUNT; i++){
+  for(i = 0; success && i < AGS_FUNCTIONAL_NOTATION_EDIT_TEST_FILE_SETUP_PLAYBACK_COUNT; i++){
     clock_gettime(CLOCK_MONOTONIC, &start_time);
     
     expired = FALSE;
@@ -179,7 +179,7 @@ ags_functional_note_edit_test_file_setup()
       /* check expired */
       clock_gettime(CLOCK_MONOTONIC, &current_time);
       
-      if(start_time.tv_sec + AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_PLAYBACK_DURATION < current_time.tv_sec){
+      if(start_time.tv_sec + AGS_FUNCTIONAL_NOTATION_EDIT_TEST_FILE_SETUP_PLAYBACK_DURATION < current_time.tv_sec){
 	expired = TRUE;
       }
     }
@@ -209,7 +209,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsFuncitonalNoteEditTest\0", ags_functional_note_edit_test_init_suite, ags_functional_note_edit_test_clean_suite);
+  pSuite = CU_add_suite("AgsFuncitonalNoteEditTest\0", ags_functional_notation_edit_test_init_suite, ags_functional_notation_edit_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -223,14 +223,14 @@ main(int argc, char **argv)
   new_argv = (char **) malloc((argc + 3) * sizeof(char *));
   memcpy(new_argv, argv, argc * sizeof(char **));
   new_argv[argc] = "--filename";
-  new_argv[argc + 1] = AGS_FUNCTIONAL_NOTE_EDIT_TEST_FILE_SETUP_FILENAME;
+  new_argv[argc + 1] = AGS_FUNCTIONAL_NOTATION_EDIT_TEST_FILE_SETUP_FILENAME;
   new_argv[argc + 2] = NULL;
   argc += 2;
   
   ags_test_init(&argc, &new_argv,
-		AGS_FUNCTIONAL_NOTE_EDIT_TEST_CONFIG);
+		AGS_FUNCTIONAL_NOTATION_EDIT_TEST_CONFIG);
   ags_functional_test_util_do_run(argc, new_argv,
-				  ags_functional_note_edit_test_add_test, &is_available);
+				  ags_functional_notation_edit_test_add_test, &is_available);
 
   return(-1);
 }

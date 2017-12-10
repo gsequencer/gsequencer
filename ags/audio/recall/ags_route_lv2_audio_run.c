@@ -440,7 +440,7 @@ ags_route_lv2_audio_run_finalize(GObject *gobject)
   }
 
   /* timestamp */
-  if(route_lv2_audio_run->timstamp != NULL){
+  if(route_lv2_audio_run->timestamp != NULL){
     g_object_unref(G_OBJECT(route_lv2_audio_run->timestamp));
   }
 

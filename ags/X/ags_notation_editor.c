@@ -186,7 +186,6 @@ ags_notation_editor_class_init(AgsNotationEditorClass *notation_editor)
 void
 ags_notation_editor_init(AgsNotationEditor *notation_editor)
 {
-  GtkHPaned *paned;
   GtkScrolledWindow *scrolled_window;
   GtkTable *table;
   
@@ -209,13 +208,13 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
 		     FALSE, FALSE, 0);
 
   /* machine selector */
-  paned = (GtkHPaned *) gtk_hpaned_new();
+  notation_editor->paned = (GtkHPaned *) gtk_hpaned_new();
   gtk_box_pack_start((GtkBox *) notation_editor,
-		     (GtkWidget *) paned,
+		     (GtkWidget *) notation_editor->paned,
 		     TRUE, TRUE, 0);
 
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
-  gtk_paned_pack1((GtkPaned *) paned, (GtkWidget *) scrolled_window, FALSE, TRUE);
+  gtk_paned_pack1((GtkPaned *) notation_editor->paned, (GtkWidget *) scrolled_window, FALSE, TRUE);
 
   notation_editor->machine_selector = g_object_new(AGS_TYPE_MACHINE_SELECTOR,
 						   "homogeneous", FALSE,
@@ -241,7 +240,7 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
   /* table */
   table = (GtkTable *) gtk_table_new(3, 2,
 				     FALSE);
-  gtk_paned_pack2((GtkPaned *) paned,
+  gtk_paned_pack2((GtkPaned *) notation_editor->paned,
 		  (GtkWidget *) table,
 		  TRUE, FALSE);
   

@@ -47,7 +47,7 @@ EXTRA_DIST = config.rpath \
 	README \
 	ags_example.xml \
 	midi2xml.1 \
-	ags_functional_note_edit_test.xml \
+	ags_functional_notation_edit_test.xml \
 	mkinstalldirs \
 	m4/Makefile.am \
 	m4/Makefile.in \

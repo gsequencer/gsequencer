@@ -854,6 +854,8 @@ ags_machine_finalize(GObject *gobject)
 {
   AgsMachine *machine;
 
+  AgsAudio *audio;
+  
   GObject *soundcard;
   
   AgsMutexManager *mutex_manager;
@@ -910,12 +912,14 @@ ags_machine_finalize(GObject *gobject)
   if(machine->machine_name != NULL){
     g_free(machine->machine_name);
   }
-  
-  if(machine->audio != NULL){
-    g_object_unref(G_OBJECT(machine->audio));
-  }
 
+  audio = machine->audio;
+  
   G_OBJECT_CLASS(ags_machine_parent_class)->finalize(gobject);
+
+  if(audio != NULL){
+    g_object_unref(G_OBJECT(audio));
+  }
 }
 
 void

@@ -973,7 +973,8 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 		  pthread_mutex_lock(audio_mutex);
 
 		  if(notation == NULL){
-		    notation = ags_notation_new();
+		    notation = ags_notation_new(audio,
+						audio_channel);
 		    
 		    notation->timestamp->timer.ags_offset.offset = record_midi_audio_run->timestamp->timer.ags_offset.offset;
 

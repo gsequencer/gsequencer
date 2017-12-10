@@ -135,8 +135,11 @@ void ags_simple_file_read_notation_editor_launch(AgsFileLaunch *file_launch,
 void ags_simple_file_read_automation_editor(AgsSimpleFile *simple_file, xmlNode *node, AgsAutomationEditor **automation_editor);
 void ags_simple_file_read_automation_editor_launch(AgsFileLaunch *file_launch,
 						   AgsAutomationEditor *automation_editor);
+
 void ags_simple_file_read_notation_list(AgsSimpleFile *simple_file, xmlNode *node, GList **notation);
 void ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNotation **notation);
+void ags_simple_file_read_notation_list_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNode *node, GList **notation);
+
 void ags_simple_file_read_automation_list(AgsSimpleFile *simple_file, xmlNode *node, GList **automation);
 void ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAutomation **automation);
 void ags_simple_file_read_preset_list(AgsSimpleFile *simple_file, xmlNode *node, GList **preset);
@@ -2106,11 +2109,34 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 			   21)){
 	GList *notation;
 
-	notation = NULL;
-	ags_simple_file_read_notation_list(simple_file,
-					   child,
-					   &notation);
+	gchar *version;
 
+	guint major, minor;
+	
+	notation = NULL;
+
+	version = xmlGetProp(simple_file->root_node,
+			     "version");
+	major = 0;
+	minor = 0;
+
+	if(version != NULL){
+	  sscanf(version, "%d.%d",
+		 &major,
+		 &minor);
+	}
+	
+	if(major == 0 ||
+	   (major == 1 && minor < 2)){	  
+	  ags_simple_file_read_notation_list_fixup_1_0_to_1_2(simple_file,
+							      child,
+							      &notation);
+	}else{
+	  ags_simple_file_read_notation_list(simple_file,
+					     child,
+					     &notation);
+	}
+	
 	g_list_free_full(gobject->audio->notation,
 			 g_object_unref);
 
@@ -4639,6 +4665,220 @@ ags_simple_file_read_notation_list(AgsSimpleFile *simple_file, xmlNode *node, GL
 }
 
 void
+ags_simple_file_read_notation_list_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNode *node, GList **notation)
+{
+  AgsNotation *current;
+
+  xmlNode *child;
+
+  GList *list;
+
+  guint i;
+
+  auto void ags_simple_file_read_notation_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNode *node, GList **notation);
+
+  void ags_simple_file_read_notation_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNode *node, GList **notation){
+    AgsMachine *machine;
+    
+    AgsNotation *gobject;
+    AgsNote *note;
+
+    AgsTimestamp *timestamp;
+    AgsFileIdRef *file_id_ref;
+
+    xmlNode *child;
+
+    GList *notation_list;
+    
+    xmlChar *str;
+  
+    guint audio_channel;
+    gboolean found_timestamp;
+    
+    file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_node(simple_file,
+								       node->parent->parent);
+    machine = file_id_ref->ref;
+
+    if(!AGS_IS_MACHINE(machine)){
+      return;
+    }
+    
+    audio_channel = 0;
+    str = xmlGetProp(node,
+		     "channel");
+
+    if(str != NULL){
+      audio_channel = g_ascii_strtoull(str,
+				       NULL,
+				       10);
+    }
+    
+    /* children */
+    if(notation == NULL){
+      notation_list = NULL;
+    }else{
+      notation_list = *notation;
+    }
+    
+    timestamp = ags_timestamp_new();
+
+    timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+    timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
+    timestamp->timer.ags_offset.offset = 0;
+    
+    child = node->children;
+
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!xmlStrncmp(child->name,
+		       "ags-sf-note",
+		       12)){
+	  note = ags_note_new();
+
+	  /* position and offset */
+	  str = xmlGetProp(child,
+			   "x0");
+
+	  if(str != NULL){
+	    note->x[0] = g_ascii_strtoull(str,
+					  NULL,
+					  10);
+	  }
+	
+	  str = xmlGetProp(child,
+			   "x1");
+
+	  if(str != NULL){
+	    note->x[1] = g_ascii_strtoull(str,
+					  NULL,
+					  10);
+	  }
+
+	  str = xmlGetProp(child,
+			   "y");
+
+	  if(str != NULL){
+	    note->y = g_ascii_strtoull(str,
+				       NULL,
+				       10);
+	  }
+
+	  /* envelope */
+	  str = xmlGetProp(child,
+			   "envelope");
+
+	  if(str != NULL &&
+	     !g_ascii_strncasecmp(str,
+				  "true",
+				  5)){
+	    note->flags |= AGS_NOTE_ENVELOPE;
+	  }
+
+	  str = xmlGetProp(child,
+			   "attack");
+
+	  if(str != NULL){
+	    sscanf(str, "%f %f", &(note->attack[0]), &(note->attack[1]));
+	  }
+
+	  str = xmlGetProp(child,
+			   "decay");
+
+	  if(str != NULL){
+	    sscanf(str, "%f %f", &(note->decay[0]), &(note->decay[1]));
+	  }
+
+	  str = xmlGetProp(child,
+			   "sustain");
+
+	  if(str != NULL){
+	    sscanf(str, "%f %f", &(note->sustain[0]), &(note->sustain[1]));
+	  }
+
+	  str = xmlGetProp(child,
+			   "release");
+
+	  if(str != NULL){
+	    sscanf(str, "%f %f", &(note->release[0]), &(note->release[1]));
+	  }
+
+	  str = xmlGetProp(child,
+			   "ratio");
+
+	  if(str != NULL){
+	    sscanf(str, "%f %f", &(note->ratio[0]), &(note->ratio[1]));
+	  }
+
+	  timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(note->x[0] / AGS_NOTATION_DEFAULT_OFFSET);
+
+	  notation_list = ags_notation_find_near_timestamp(notation_list, audio_channel,
+							   timestamp);
+	  
+	  if(notation_list != NULL){
+	    gobject = notation_list->data;
+	  }else{
+	    gobject = g_object_new(AGS_TYPE_NOTATION,
+				   "audio", machine->audio,
+				   "audio-channel", audio_channel,
+				   NULL);
+
+	    gobject->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+	    
+	    notation_list = ags_notation_add(notation_list,
+					     gobject);
+	  }
+	  
+	  /* add */
+	  ags_notation_add_note(gobject,
+				note,
+				FALSE);
+	}
+      }
+
+      child = child->next;
+    }
+
+    g_object_unref(timestamp);
+    *notation = list;
+  }
+  
+  child = node->children;
+  list = NULL;
+
+  i = 0;
+  
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-notation",
+		     11)){
+	current = NULL;
+
+	if(*notation != NULL){
+	  GList *iter;
+
+	  iter = g_list_nth(*notation,
+			    i);
+
+	  if(iter != NULL){
+	    current = iter->data;
+	  }
+	}
+
+	ags_simple_file_read_notation_fixup_1_0_to_1_2(simple_file, child, &list);
+
+	i++;
+      }
+    }
+
+    child = child->next;
+  }
+
+  *notation = list;
+}
+
+void
 ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNotation **notation)
 {
   AgsNotation *gobject;
@@ -4649,7 +4889,8 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
   xmlChar *str;
   
   guint audio_channel;
-
+  gboolean found_timestamp;
+  
   if(*notation != NULL){
     gobject = *notation;
 
@@ -4686,6 +4927,32 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
   }
 
   /* children */
+  child = node->children;
+
+  found_timestamp = FALSE;
+  
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-sf-timestamp",
+		     17)){
+	found_timestamp = TRUE;
+	
+	/* offset */
+	str = xmlGetProp(child,
+			 "offset");
+
+	if(str != NULL){
+	  gobject->timestamp->timer.ags_offset.offset = g_ascii_strtoull(str,
+									 NULL,
+									 10);
+	}	
+      }
+    }
+
+    child = child->next;
+  }
+  
   child = node->children;
 
   while(child != NULL){
@@ -4769,7 +5036,6 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 	  sscanf(str, "%f %f", &(note->ratio[0]), &(note->ratio[1]));
 	}
 
-	
 	/* add */
 	ags_notation_add_note(gobject,
 			      note,
@@ -7200,7 +7466,21 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
   xmlNewProp(node,
 	     "channel",
 	     g_strdup_printf("%d", notation->audio_channel));
-  
+
+  /* timestamp */
+  child = xmlNewNode(NULL,
+		     "ags-sf-timestamp");
+
+  xmlNewProp(child,
+	     "offset",
+	     g_strdup_printf("%lu",
+			     notation->timestamp->timer.ags_offset.offset));
+    
+  /* add to parent */
+  xmlAddChild(node,
+	      child);
+
+  /* note */
   list = notation->notes;
 
   while(list != NULL){
