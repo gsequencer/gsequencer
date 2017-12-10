@@ -948,6 +948,7 @@ ags_live_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
   AgsAudio *audio;
   AgsChannel *output, *input;
   AgsChannel *channel;
+  AgsRecycling *first_recycling;
   AgsAudioSignal *audio_signal;
   
   AgsMutexManager *mutex_manager;

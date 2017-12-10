@@ -938,7 +938,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix,
   ags_recall_factory_create(audio,
 			    NULL, NULL,
 			    "ags-play",
-			    audio_channel_start, audio_channels, 
+			    0, audio_channels, 
 			    input_pad_start, input_pads,
 			    (AGS_RECALL_FACTORY_INPUT |
 			     AGS_RECALL_FACTORY_PLAY |
@@ -949,7 +949,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix,
   ags_recall_factory_create(audio,
 			    NULL, NULL,
 			    "ags-envelope",
-			    audio_channel_start, audio_channels, 
+			    0, audio_channels, 
 			    input_pad_start, input_pads,
 			    (AGS_RECALL_FACTORY_INPUT |
 			     AGS_RECALL_FACTORY_PLAY |
@@ -961,7 +961,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix,
   ags_recall_factory_create(audio,
 			    NULL, NULL,
 			    "ags-stream",
-			    audio_channel_start, audio_channels, 
+			    0, audio_channels, 
 			    input_pad_start, input_pads,
 			    (AGS_RECALL_FACTORY_INPUT |
 			     AGS_RECALL_FACTORY_PLAY |

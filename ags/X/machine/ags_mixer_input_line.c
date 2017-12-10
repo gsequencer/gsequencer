@@ -226,6 +226,8 @@ ags_mixer_input_line_map_recall(AgsLine *line,
 
   AgsPeakChannelRun *recall_peak_channel_run, *play_peak_channel_run;
 
+  AgsMutexManager *mutex_manager;
+
   GList *list;
 
   guint pad, audio_channel;

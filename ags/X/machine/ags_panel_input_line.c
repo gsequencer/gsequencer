@@ -327,6 +327,8 @@ ags_panel_input_line_map_recall(AgsLine *line,
 
   AgsPlayChannel *play_channel;
   AgsPlayChannelRunMaster *play_channel_run;
+  
+  AgsMutexManager *mutex_manager;
 
   GList *list;
 

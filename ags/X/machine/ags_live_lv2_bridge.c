@@ -1105,6 +1105,7 @@ ags_live_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
   AgsAudio *audio;
   AgsChannel *output, *input;
   AgsChannel *channel;
+  AgsRecycling *first_recycling;
   AgsAudioSignal *audio_signal;
     
   AgsMutexManager *mutex_manager;
