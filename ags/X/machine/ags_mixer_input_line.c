@@ -229,7 +229,6 @@ ags_mixer_input_line_map_recall(AgsLine *line,
   GList *list;
 
   guint pad, audio_channel;
-  guint i;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;

@@ -324,34 +324,60 @@ ags_panel_input_line_map_recall(AgsLine *line,
 {
   AgsAudio *audio;
   AgsChannel *source;
-  AgsChannel *current;
 
   AgsPlayChannel *play_channel;
   AgsPlayChannelRunMaster *play_channel_run;
 
   GList *list;
 
+  guint pad, audio_channel;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *source_mutex;
+
   if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0 ||
      (AGS_LINE_PREMAPPED_RECALL & (line->flags)) != 0){
     return;
   }
   
-  audio = AGS_AUDIO(line->channel->audio);
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   source = line->channel;
+
+  /* get source mutex */
+  pthread_mutex_lock(application_mutex);
+
+  source_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  (GObject *) source);
+  
+  pthread_mutex_unlock(application_mutex);  
+
+  /* get some fields */
+  pthread_mutex_lock(source_mutex);
+
+  audio = (AgsAudio *) source->audio;
+
+  pad = source->pad;
+  audio_channel = source->audio_channel;
+  
+  pthread_mutex_unlock(source_mutex);
 
   /* ags-play */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
 			    "ags-play-master",
-			    source->audio_channel, source->audio_channel + 1,
-			    source->pad, source->pad + 1,
+			    audio_channel, audio_channel + 1,
+			    pad, pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT,
 			     AGS_RECALL_FACTORY_PLAY |
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
 
   /* set audio channel */
+  pthread_mutex_lock(source_mutex);
+
   list = source->play;
 
   while((list = ags_recall_template_find_type(list,
@@ -362,13 +388,15 @@ ags_panel_input_line_map_recall(AgsLine *line,
 
     g_value_init(&audio_channel_value, G_TYPE_UINT64);
     g_value_set_uint64(&audio_channel_value,
-		       source->audio_channel);
+		       audio_channel);
     ags_port_safe_write(play_channel->audio_channel,
 			&audio_channel_value);
     g_value_unset(&audio_channel_value);
 
     list = list->next;
   }
+
+  pthread_mutex_unlock(source_mutex);
 
   /* call parent */
   AGS_LINE_CLASS(ags_panel_input_line_parent_class)->map_recall(line,

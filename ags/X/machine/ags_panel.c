@@ -385,20 +385,50 @@ ags_panel_resize_audio_channels(AgsMachine *machine,
   AgsAudio *audio;
   AgsAudioConnection *audio_connection;
 
+  AgsMutexManager *mutex_manager;
+
   AgsConnectionManager *connection_manager;
 
-  GList *list;
+  GObject *soundcard;
   
+  GList *list;
+
+  guint input_pads;
   guint i, j;
 
-  audio = machine->audio;
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   connection_manager = ags_connection_manager_get_instance();
+
+  audio = machine->audio;
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  soundcard = audio->soundcard;
+  
+  input_pads = audio->input_pads;
+  
+  pthread_mutex_unlock(audio_mutex);
 
   if(audio_channels > audio_channels_old){
     for(i = 0; i < audio->input_pads; i++){
       if(i != 0){
 	for(j = 0; j < audio_channels_old; j++){
+	  pthread_mutex_lock(audio_mutex);
+	  
 	  list = audio->audio_connection;
 	  
 	  while((list = ags_audio_connection_find(list,
@@ -420,16 +450,18 @@ ags_panel_resize_audio_channels(AgsMachine *machine,
 
 	  if(list != NULL){
 	    audio_connection = list->data;
-	    audio_connection->line = i * audio->audio_channels + j;
+	    audio_connection->line = i * audio_channels + j;
 
 	    audio_connection->mapped_line = audio_connection->line;
 	  }
+
+	  pthread_mutex_unlock(audio_mutex);
 	}
       }
 
       for(j = audio_channels_old; j < audio_channels; j++){
 	audio_connection = g_object_new(AGS_TYPE_AUDIO_CONNECTION,
-					"data-object", audio->soundcard,
+					"data-object", soundcard,
 					NULL);
 	audio_connection->flags |= (AGS_AUDIO_CONNECTION_IS_OUTPUT |
 				    AGS_AUDIO_CONNECTION_IS_SOUNDCARD_DATA |
@@ -440,19 +472,22 @@ ags_panel_resize_audio_channels(AgsMachine *machine,
 
 	audio_connection->pad = i;
 	audio_connection->audio_channel = j;
-	audio_connection->line = i * audio->audio_channels + j;
+	audio_connection->line = i * audio_channels + j;
 
 	audio_connection->mapped_line = audio_connection->line;
 	
 	ags_audio_add_audio_connection(audio,
 				       (GObject *) audio_connection);
+
 	ags_connection_manager_add_connection(connection_manager,
 					      (AgsConnection *) audio_connection);
       }
     }
   }else{
-    for(i = 0; i < audio->input_pads; i++){
+    for(i = 0; i < input_pads; i++){
       for(j = audio_channels; j < audio_channels_old; j++){
+	pthread_mutex_lock(audio_mutex);
+	
 	list = audio->audio_connection;
 	
 	while((list = ags_audio_connection_find(list,
@@ -470,13 +505,17 @@ ags_panel_resize_audio_channels(AgsMachine *machine,
 	  if(AGS_IS_SOUNDCARD(data_object)){
 	    ags_audio_remove_audio_connection(audio,
 					      (GObject *) audio_connection);
+	    
 	    ags_connection_manager_remove_connection(connection_manager,
 						     (AgsConnection *) audio_connection);
+	    
 	    break;
 	  }
 
 	  list = list->next;
 	}
+
+	pthread_mutex_unlock(audio_mutex);
       }
     }
   }
@@ -490,22 +529,50 @@ ags_panel_resize_pads(AgsMachine *machine, GType channel_type,
   AgsAudio *audio;
   AgsAudioConnection *audio_connection;
 
+  AgsMutexManager *mutex_manager;
+  
   AgsConnectionManager *connection_manager;
 
+  GObject *soundcard;
+  
   GList *list;
   
+  guint audio_channels;
   guint i, j;
 
-  audio = machine->audio;
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   connection_manager = ags_connection_manager_get_instance();
+
+  audio = machine->audio;
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);  
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  soundcard = audio->soundcard;
+  
+  audio_channels = audio->audio_channels;
+  
+  pthread_mutex_unlock(audio_mutex);
   
   if(channel_type == AGS_TYPE_INPUT){
     if(pads > pads_old){
       for(i = pads_old; i < pads; i++){
-	for(j = 0; j < audio->audio_channels; j++){
+	for(j = 0; j < audio_channels; j++){
 	  audio_connection = g_object_new(AGS_TYPE_AUDIO_CONNECTION,
-					  "data-object", audio->soundcard,
+					  "data-object", soundcard,
 					  NULL);
 	  audio_connection->flags |= (AGS_AUDIO_CONNECTION_IS_OUTPUT |
 				      AGS_AUDIO_CONNECTION_IS_SOUNDCARD_DATA |
@@ -516,19 +583,22 @@ ags_panel_resize_pads(AgsMachine *machine, GType channel_type,
 
 	  audio_connection->pad = i;
 	  audio_connection->audio_channel = j;
-	  audio_connection->line = i * audio->audio_channels + j;
+	  audio_connection->line = i * audio_channels + j;
 
 	  audio_connection->mapped_line = audio_connection->line;
 	  
 	  ags_audio_add_audio_connection(audio,
 					 (GObject *) audio_connection);
+
 	  ags_connection_manager_add_connection(connection_manager,
 						(AgsConnection *) audio_connection);
 	}
       }
     }else{
       for(i = pads; i < pads_old; i++){
-	for(j = 0; j < audio->audio_channels; j++){
+	for(j = 0; j < audio_channels; j++){
+	  pthread_mutex_lock(audio_mutex);
+	  
 	  list = audio->audio_connection;
 	
 	  while((list = ags_audio_connection_find(list,
@@ -546,13 +616,17 @@ ags_panel_resize_pads(AgsMachine *machine, GType channel_type,
 	    if(AGS_IS_SOUNDCARD(data_object)){
 	      ags_audio_remove_audio_connection(audio,
 						(GObject *) audio_connection);
+
 	      ags_connection_manager_remove_connection(connection_manager,
 						       (AgsConnection *) audio_connection);
+	      
 	      break;
 	    }
 
 	    list = list->next;
 	  }
+
+	  pthread_mutex_unlock(audio_mutex);
 	}
       }
     }

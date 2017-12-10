@@ -984,6 +984,7 @@ ags_matrix_output_map_recall(AgsMatrix *matrix,
 
   gchar *str;
 
+  guint input_pad_start;
   guint output_pads, input_pads;
   guint audio_channels;
   gboolean performance_mode;
@@ -1011,6 +1012,8 @@ ags_matrix_output_map_recall(AgsMatrix *matrix,
   pthread_mutex_unlock(application_mutex);  
 
   /* get some fields */
+  input_pad_start = 0;
+  
   pthread_mutex_lock(audio_mutex);
 
   output_pads = audio->output_pads;
