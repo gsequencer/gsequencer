@@ -17,14 +17,22 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_WAVE_EDIT_CALLBACKS_H__
-#define __AGS_WAVE_EDIT_CALLBACKS_H__
+#include <ags/X/editor/ags_wave_toolbar_callbacks.h>
 
-#include <glib.h>
-#include <glib-object.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
-#include <gtk/gtk.h>
+#include <math.h>
+#include <gdk/gdkkeysyms.h>
 
-#include <ags/X/editor/ags_wave_edit.h>
+void
+ags_wave_toolbar_tool_popup_select_audio_data_callback(GtkWidget *item, AgsWaveToolbar *wave_toolbar)
+{
+}
 
-#endif /*__AGS_WAVE_EDIT_CALLBACKS_H__*/
+void
+ags_wave_toolbar_tool_popup_position_cursor_callback(GtkWidget *item, AgsWaveToolbar *wave_toolbar)
+{
+}
+

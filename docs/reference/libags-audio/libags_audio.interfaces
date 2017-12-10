@@ -175,12 +175,14 @@ AgsCoreAudioDevout AgsConnectable AgsSoundcard
 AgsCoreAudioMidiin AgsConnectable AgsSequencer
 AgsCoreAudioPort AgsConnectable
 AgsCoreAudioServer AgsConnectable AgsDistributedManager
+AgsDevin AgsConnectable AgsSoundcard AgsConcurrentTree
 AgsDevout AgsConnectable AgsSoundcard AgsConcurrentTree
 AgsFifoout AgsConnectable AgsSoundcard AgsConcurrentTree
 AgsIpatchDLS2Reader AgsConnectable
 AgsIpatch AgsConnectable AgsPlayable
 AgsIpatchSF2Reader AgsConnectable
 AgsJackClient AgsConnectable
+AgsJackDevin AgsConnectable AgsSoundcard
 AgsJackDevout AgsConnectable AgsSoundcard
 AgsJackMidiin AgsConnectable AgsSequencer
 AgsJackPort AgsConnectable
@@ -202,6 +204,7 @@ AgsPlaybackDomain AgsConnectable
 AgsPlayback AgsConnectable
 AgsPort AgsConnectable
 AgsPulseClient AgsConnectable
+AgsPulseDevin AgsConnectable AgsSoundcard
 AgsPulseDevout AgsConnectable AgsSoundcard
 AgsPulsePort AgsConnectable
 AgsPulseServer AgsConnectable AgsDistributedManager

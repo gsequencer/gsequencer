@@ -86,7 +86,6 @@ struct _AgsWaveEdit
   
   AgsRuler *ruler;
 
-  AgsLevel *level;
   GtkDrawingArea *drawing_area;
   
   GtkVScrollbar *vscrollbar;
@@ -99,16 +98,6 @@ struct _AgsWaveEditClass
 };
 
 GType ags_wave_edit_get_type(void);
-
-void ags_wave_edit_reset_vertically(AgsWaveEdit *wave_edit, guint flags);
-void ags_wave_edit_reset_horizontally(AgsWaveEdit *wave_edit, guint flags);
-
-void ags_wave_edit_draw_position(AgsWaveEdit *wave_edit, cairo_t *cr);
-void ags_wave_edit_draw_scroll(AgsWaveEdit *wave_edit, cairo_t *cr,
-			       gdouble position);
-
-void ags_wave_edit_paint(AgsWaveEdit *wave_edit,
-			 cairo_t *cr);
 
 AgsWaveEdit* ags_wave_edit_new();
 

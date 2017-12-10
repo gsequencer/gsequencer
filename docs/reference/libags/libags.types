@@ -11,7 +11,6 @@ ags_complex_get_type
 ags_concurrency_provider_get_type
 ags_concurrent_tree_get_type
 ags_condition_manager_get_type
-ags_condition_manager_get_type
 ags_config_get_type
 ags_connectable_get_type
 ags_connection_get_type
@@ -37,6 +36,8 @@ ags_local_serialization_controller_get_type
 ags_local_task_controller_get_type
 ags_log_get_type
 ags_main_loop_get_type
+ags_message_delivery_get_type
+ags_message_queue_get_type
 ags_mutable_get_type
 ags_mutex_manager_get_type
 ags_packable_get_type

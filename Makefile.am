@@ -1385,6 +1385,10 @@ libgsequencer_h_sources = \
 	ags/X/ags_soundcard_editor_callbacks.h \
 	ags/X/ags_soundcard_editor.h \
 	ags/X/ags_ui_provider.h \
+	ags/X/ags_wave_window_callbacks.h \
+	ags/X/ags_wave_window.h \
+	ags/X/ags_wave_editor_callbacks.h \
+	ags/X/ags_wave_editor.h \
 	ags/X/ags_window.h \
 	ags/X/ags_window_callbacks.h \
 	ags/X/ags_xorg_application_context.h
@@ -1486,6 +1490,10 @@ libgsequencer_c_sources = \
 	ags/X/ags_server_preferences.c \
 	ags/X/ags_server_preferences_callbacks.c \
 	ags/X/ags_ui_provider.c \
+	ags/X/ags_wave_window_callbacks.c \
+	ags/X/ags_wave_window.c \
+	ags/X/ags_wave_editor.c \
+	ags/X/ags_wave_editor_callbacks.c \
 	ags/X/ags_window.c \
 	ags/X/ags_soundcard_editor_callbacks.c \
 	ags/X/ags_soundcard_editor.c \
@@ -1612,6 +1620,8 @@ deprecated_libgsequencer_machine_h_sources =
 
 libgsequencer_machine_h_sources = \
 	$(deprecated_libgsequencer_machine_h_sources) \
+	ags/X/machine/ags_audiorec.h \
+	ags/X/machine/ags_audiorec_callbacks.h \
 	ags/X/machine/ags_cell_pattern_callbacks.h \
 	ags/X/machine/ags_cell_pattern.h \
 	ags/X/machine/ags_drum_callbacks.h \
@@ -1675,6 +1685,8 @@ deprecated_libgsequencer_machine_c_sources =
 
 libgsequencer_machine_c_sources = \
 	$(deprecated_libgsequencer_machine_c_sources) \
+	ags/X/machine/ags_audiorec.c \
+	ags/X/machine/ags_audiorec_callbacks.c \
 	ags/X/machine/ags_cell_pattern.c \
 	ags/X/machine/ags_cell_pattern_callbacks.c \
 	ags/X/machine/ags_drum.c \
@@ -1757,6 +1769,8 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_file_selection.h \
 	ags/X/editor/ags_inline_player_callbacks.h \
 	ags/X/editor/ags_inline_player.h \
+	ags/X/editor/ags_level_callbacks.h \
+	ags/X/editor/ags_level.h \
 	ags/X/editor/ags_machine_radio_button.h \
 	ags/X/editor/ags_machine_radio_button_callbacks.h \
 	ags/X/editor/ags_machine_selection.h \
@@ -1785,7 +1799,11 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_select_acceleration_dialog.h \
 	ags/X/editor/ags_select_acceleration_dialog_callbacks.h \
 	ags/X/editor/ags_select_note_dialog.h \
-	ags/X/editor/ags_select_note_dialog_callbacks.h
+	ags/X/editor/ags_select_note_dialog_callbacks.h \
+	ags/X/editor/ags_wave_edit_callbacks.h \
+	ags/X/editor/ags_wave_edit.h \
+	ags/X/editor/ags_wave_toolbar_callbacks.h \
+	ags/X/editor/ags_wave_toolbar.h
 
 deprecated_libgsequencer_editor_c_sources =
 
@@ -1809,6 +1827,8 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_file_selection.c \
 	ags/X/editor/ags_inline_player.c \
 	ags/X/editor/ags_inline_player_callbacks.c \
+	ags/X/editor/ags_level.c \
+	ags/X/editor/ags_level_callbacks.c \
 	ags/X/editor/ags_machine_radio_button.c \
 	ags/X/editor/ags_machine_radio_button_callbacks.c \
 	ags/X/editor/ags_machine_selection.c \
@@ -1837,7 +1857,11 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_select_note_dialog.c \
 	ags/X/editor/ags_select_note_dialog_callbacks.c \
 	ags/X/editor/ags_sf2_chooser.c \
-	ags/X/editor/ags_sf2_chooser_callbacks.c
+	ags/X/editor/ags_sf2_chooser_callbacks.c \
+	ags/X/editor/ags_wave_edit.c \
+	ags/X/editor/ags_wave_edit_callbacks.c \
+	ags/X/editor/ags_wave_toolbar.c \
+	ags/X/editor/ags_wave_toolbar_callbacks.c
 
 # libgsequencer all files
 gsequencerheaders = \

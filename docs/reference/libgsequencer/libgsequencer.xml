@@ -164,6 +164,8 @@
       <xi:include href="xml/ags_move_note_dialog_callbacks.xml"/>
       <xi:include href="xml/ags_notation_edit.xml"/>
       <xi:include href="xml/ags_notation_edit_callbacks.xml"/>
+      <xi:include href="xml/ags_notation_toolbar.xml"/>
+      <xi:include href="xml/ags_notation_toolbar_callbacks.xml"/>
       <xi:include href="xml/ags_pattern_envelope.xml"/>
       <xi:include href="xml/ags_pattern_envelope_callbacks.xml"/>
       <xi:include href="xml/ags_playback_window.xml"/>
@@ -176,9 +178,6 @@
       <xi:include href="xml/ags_select_acceleration_dialog_callbacks.xml"/>
       <xi:include href="xml/ags_select_note_dialog.xml"/>
       <xi:include href="xml/ags_select_note_dialog_callbacks.xml"/>
-      <xi:include href="xml/ags_toolbar.xml"/>
-      <xi:include href="xml/ags_toolbar_callbacks.xml"/>
-      <xi:include href="xml/ags_toolbar_mode_stock.xml"/>
     </chapter>
 
     <chapter id="machine">
@@ -189,7 +188,6 @@
       <xi:include href="xml/ags_drum.xml"/>
       <xi:include href="xml/ags_drum_callbacks.xml"/>
       <xi:include href="xml/ags_drum_input_line.xml"/>
-      <xi:include href="xml/ags_drum_input_line_callbacks.xml"/>
       <xi:include href="xml/ags_drum_input_pad.xml"/>
       <xi:include href="xml/ags_drum_input_pad_callbacks.xml"/>
       <xi:include href="xml/ags_drum_output_line.xml"/>
@@ -265,7 +263,6 @@
       <xi:include href="xml/ags_remove_sequencer_editor_jack.xml"/>
       <xi:include href="xml/ags_remove_soundcard_editor_sink.xml"/>
       <xi:include href="xml/ags_resize_editor.xml"/>
-      <xi:include href="xml/ags_scroll_on_play.xml"/>
       <xi:include href="xml/ags_simple_file_read.xml"/>
       <xi:include href="xml/ags_simple_file_write.xml"/>
       <xi:include href="xml/ags_toggle_led.xml"/>

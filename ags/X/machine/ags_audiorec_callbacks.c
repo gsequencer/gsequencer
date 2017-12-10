@@ -17,14 +17,4 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_WAVE_EDIT_CALLBACKS_H__
-#define __AGS_WAVE_EDIT_CALLBACKS_H__
-
-#include <glib.h>
-#include <glib-object.h>
-
-#include <gtk/gtk.h>
-
-#include <ags/X/editor/ags_wave_edit.h>
-
-#endif /*__AGS_WAVE_EDIT_CALLBACKS_H__*/
+#include <ags/X/machine/ags_audiorec_callbacks.h>

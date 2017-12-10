@@ -19,6 +19,12 @@
 
 #include <ags/X/machine/ags_audiorec.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+#include <ags/X/ags_window.h>
+
 void ags_audiorec_class_init(AgsAudiorecClass *audiorec);
 void ags_audiorec_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_audiorec_plugin_interface_init(AgsPluginInterface *plugin);
@@ -114,8 +120,6 @@ ags_audiorec_class_init(AgsAudiorecClass *audiorec)
 
   /* AgsMachineClass */
   machine = (AgsMachineClass *) audiorec;
-
-  machine->map_recall = ags_audiorec_map_recall;
 }
 
 void
@@ -172,50 +176,6 @@ ags_audiorec_connect(AgsConnectable *connectable)
   ags_audiorec_parent_connectable_interface->connect(connectable);
 
   audiorec = AGS_AUDIOREC(connectable);
-
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) audiorec);
-  
-  g_signal_connect((GObject *) audiorec, "destroy",
-		   G_CALLBACK(ags_audiorec_destroy_callback), (gpointer) audiorec);
-  
-  /* AgsAudiorec */
-  g_signal_connect((GObject *) audiorec->open, "clicked",
-		   G_CALLBACK(ags_audiorec_open_clicked_callback), (gpointer) audiorec);
-
-  g_signal_connect_after((GObject *) audiorec->preset, "changed",
-			 G_CALLBACK(ags_audiorec_preset_changed_callback), (gpointer) audiorec);
-
-  g_signal_connect_after((GObject *) audiorec->instrument, "changed",
-			 G_CALLBACK(ags_audiorec_instrument_changed_callback), (gpointer) audiorec);
-
-
-  g_signal_connect((GObject *) audiorec->drawing_area, "expose_event",
-                   G_CALLBACK(ags_audiorec_drawing_area_expose_callback), (gpointer) audiorec);
-
-  g_signal_connect((GObject *) audiorec->drawing_area, "button_press_event",
-                   G_CALLBACK(ags_audiorec_drawing_area_button_press_callback), (gpointer) audiorec);
-
-  g_signal_connect((GObject *) audiorec->hadjustment, "value_changed",
-		   G_CALLBACK(ags_audiorec_hscrollbar_value_changed), (gpointer) audiorec);
-
-  /* AgsAudio */  
-  //TODO:JK: magnify it
-  if(!gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop)){
-    GList *list;
-
-    list = ags_recall_find_type(audiorec->machine.audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
-  
-    if(list != NULL){
-      AgsCountBeatsAudioRun *play_count_beats_audio_run;
-      GValue value = {0,};
-
-      play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
-      g_value_init(&value, G_TYPE_BOOLEAN);
-      g_value_set_boolean(&value, FALSE);
-      ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
-			  &value);
-    }
-  }
 }
 
 void
@@ -232,49 +192,6 @@ ags_audiorec_disconnect(AgsConnectable *connectable)
   ags_audiorec_parent_connectable_interface->disconnect(connectable);
 
   audiorec = AGS_AUDIOREC(connectable);
-
-  g_object_disconnect((GObject *) audiorec,
-		      "destroy",
-		      G_CALLBACK(ags_audiorec_destroy_callback),
-		      (gpointer) audiorec,
-		      NULL);
-  
-  /* AgsAudiorec */
-  g_object_disconnect((GObject *) audiorec->open,
-		      "clicked",
-		      G_CALLBACK(ags_audiorec_open_clicked_callback),
-		      (gpointer) audiorec,
-		      NULL);
-
-  g_object_disconnect((GObject *) audiorec->preset,
-		      "changed",
-		      G_CALLBACK(ags_audiorec_preset_changed_callback),
-		      (gpointer) audiorec,
-		      NULL);
-
-  g_object_disconnect((GObject *) audiorec->instrument,
-		      "changed",
-		      G_CALLBACK(ags_audiorec_instrument_changed_callback),
-		      (gpointer) audiorec,
-		      NULL);
-
-  g_object_disconnect((GObject *) audiorec->drawing_area,
-		      "expose_event",
-		      G_CALLBACK(ags_audiorec_drawing_area_expose_callback),
-		      (gpointer) audiorec,
-		      NULL);
-
-  g_object_disconnect((GObject *) audiorec->drawing_area,
-		      "button_press_event",
-		      G_CALLBACK(ags_audiorec_drawing_area_button_press_callback),
-		      (gpointer) audiorec,
-		      NULL);
-
-  g_object_disconnect((GObject *) audiorec->hadjustment,
-		      "value_changed",
-		      G_CALLBACK(ags_audiorec_hscrollbar_value_changed),
-		      (gpointer) audiorec,
-		      NULL);
 }
 
 void

@@ -317,7 +317,6 @@ ags_audio_add_recall_container
 ags_audio_remove_recall_container
 ags_audio_add_recall
 ags_audio_remove_recall
-ags_audio_recall_change_state
 ags_audio_init_run
 ags_audio_duplicate_recall
 ags_audio_init_recall
@@ -1224,6 +1223,8 @@ AGS_CORE_AUDIO_DEVOUT_ERROR
 AgsCoreAudioDevoutError
 ags_core_audio_devout_error_quark
 ags_core_audio_devout_switch_buffer_flag
+ags_core_audio_devout_adjust_delay_and_attack
+ags_core_audio_devout_realloc_buffer
 ags_core_audio_devout_new
 <SUBSECTION Public>
 AGS_CORE_AUDIO_DEVOUT
@@ -1392,6 +1393,31 @@ AGS_TYPE_DELAY_AUDIO_RUN
 AgsDelayAudioRun
 AgsDelayAudioRunClass
 ags_delay_audio_run_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_devin</FILE>
+<TITLE>AgsDevin</TITLE>
+AGS_DEVIN_DEFAULT_ALSA_DEVICE
+AGS_DEVIN_DEFAULT_OSS_DEVICE
+AGS_DEVIN_DEFAULT_RING_BUFFER_SIZE
+AgsDevinFlags
+AGS_DEVIN_ERROR
+AgsDevinError
+ags_devin_error_quark
+ags_devin_switch_buffer_flag
+ags_devin_adjust_delay_and_attack
+ags_devin_realloc_buffer
+ags_devin_new
+<SUBSECTION Public>
+AGS_DEVIN
+AGS_DEVIN_CLASS
+AGS_DEVIN_GET_CLASS
+AGS_IS_DEVIN
+AGS_TYPE_DEVIN
+AgsDevin
+AgsDevinClass
+ags_devin_get_type
 </SECTION>
 
 <SECTION>
@@ -1804,6 +1830,29 @@ ags_jack_client_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_jack_devin</FILE>
+<TITLE>AgsJackDevin</TITLE>
+AgsJackDevinFlags
+AgsJackDevinSyncFlags
+AGS_JACK_DEVIN_ERROR
+AgsJackDevinError
+ags_jack_devin_error_quark
+ags_jack_devin_switch_buffer_flag
+ags_jack_devin_adjust_delay_and_attack
+ags_jack_devin_realloc_buffer
+ags_jack_devin_new
+<SUBSECTION Public>
+AGS_IS_JACK_DEVIN
+AGS_JACK_DEVIN
+AGS_JACK_DEVIN_CLASS
+AGS_JACK_DEVIN_GET_CLASS
+AGS_TYPE_JACK_DEVIN
+AgsJackDevin
+AgsJackDevinClass
+ags_jack_devin_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_jack_devout</FILE>
 <TITLE>AgsJackDevout</TITLE>
 AgsJackDevoutFlags
@@ -1895,7 +1944,7 @@ ags_jack_server_get_type
 <SECTION>
 <FILE>ags_ladspa_conversion</FILE>
 <TITLE>AgsLadspaConversion</TITLE>
-AgsLadspaConversionFlaags
+AgsLadspaConversionFlags
 ags_ladspa_conversion_new
 <SUBSECTION Public>
 AGS_IS_LADSPA_CONVERSION
@@ -2265,7 +2314,7 @@ ags_lv2ui_manager_get_type
 <SECTION>
 <FILE>ags_lv2ui_plugin</FILE>
 <TITLE>AgsLv2uiPlugin</TITLE>
-AgsLv2uiFlags
+AgsLv2uiPluginFlags
 ags_lv2ui_plugin_find_gui_uri
 ags_lv2ui_plugin_new
 <SUBSECTION Public>
@@ -2684,11 +2733,13 @@ AGS_NOTATION_MAXIMUM_NOTE_LENGTH
 AGS_NOTATION_DEFAULT_LENGTH
 AGS_NOTATION_DEFAULT_JIFFIE
 AGS_NOTATION_DEFAULT_DURATION
+AGS_NOTATION_DEFAULT_OFFSET
 AGS_NOTATION_CLIPBOARD_VERSION
 AGS_NOTATION_CLIPBOARD_TYPE
 AGS_NOTATION_CLIPBOARD_FORMAT
 AgsNotationFlags
 ags_notation_find_near_timestamp
+ags_notation_add
 ags_notation_add_note
 ags_notation_remove_note
 ags_notation_remove_note_at_position
@@ -3395,6 +3446,29 @@ ags_pulse_client_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_pulse_devin</FILE>
+<TITLE>AgsPulseDevin</TITLE>
+AgsPulseDevinFlags
+AgsPulseDevinSyncFlags
+AGS_PULSE_DEVIN_ERROR
+AgsPulseDevinError
+ags_pulse_devin_error_quark
+ags_pulse_devin_switch_buffer_flag
+ags_pulse_devin_adjust_delay_and_attack
+ags_pulse_devin_realloc_buffer
+ags_pulse_devin_new
+<SUBSECTION Public>
+AGS_IS_PULSE_DEVIN
+AGS_PULSE_DEVIN
+AGS_PULSE_DEVIN_CLASS
+AGS_PULSE_DEVIN_GET_CLASS
+AGS_TYPE_PULSE_DEVIN
+AgsPulseDevin
+AgsPulseDevinClass
+ags_pulse_devin_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_pulse_devout</FILE>
 <TITLE>AgsPulseDevout</TITLE>
 AgsPulseDevoutFlags
@@ -3403,6 +3477,8 @@ AGS_PULSE_DEVOUT_ERROR
 AgsPulseDevoutError
 ags_pulse_devout_error_quark
 ags_pulse_devout_switch_buffer_flag
+ags_pulse_devout_adjust_delay_and_attack
+ags_pulse_devout_realloc_buffer
 ags_pulse_devout_new
 <SUBSECTION Public>
 AGS_IS_PULSE_DEVOUT
@@ -4579,6 +4655,7 @@ AgsSynthGeneratorOscillator
 AgsSynthGeneratorComputeFlags
 ags_synth_generator_compute
 ags_synth_generator_compute_with_audio_signal
+ags_synth_generator_compute_extended
 ags_synth_generator_new
 <SUBSECTION Public>
 AGS_IS_SYNTH_GENERATOR

@@ -25,8 +25,11 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/editor/ags_wave_toolbar.h>
-#include <ags/X/editor/ags_notebook.h>
 #include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_level.h>
 #include <ags/X/editor/ags_wave_edit.h>
@@ -45,7 +48,6 @@
 
 typedef struct _AgsWaveEditor AgsWaveEditor;
 typedef struct _AgsWaveEditorClass AgsWaveEditorClass;
-typedef struct _AgsWaveEditorChild AgsWaveEditorChild;
   
 typedef enum{
   AGS_WAVE_EDITOR_CONNECTED    = 1,
@@ -67,12 +69,11 @@ struct _AgsWaveEditor
 
   AgsWaveToolbar *wave_toolbar;
 
-  GList *wave_editor_child;
   GtkTable *table;
 
-  AgsNotebook *current_notebook;
-  AgsLevel *current_level;
-  GtkWidget *current_wave_edit;
+  AgsNotebook *notebook;
+  AgsLevel *level;
+  GtkWidget *wave_edit;
 
   guint tact_counter;
   gdouble current_tact;
@@ -86,19 +87,7 @@ struct _AgsWaveEditorClass
 			  AgsMachine *machine);
 };
 
-struct _AgsWaveEditorChild
-{
-  AgsMachine *machine;
-  
-  AgsLevel *level;
-  AgsNotebook *notebook;
-  AgsWaveEdit *wave_edit;
-};
-  
 GType ags_wave_editor_get_type(void);
-
-AgsWaveEditorChild* ags_wave_editor_child_alloc(AgsMachine *machine,
-						AgsNotebook *notebook, AgsLevel *level, AgsWaveEdit *wave_edit);
 
 void ags_wave_editor_machine_changed(AgsWaveEditor *wave_editor,
 					   AgsMachine *machine);

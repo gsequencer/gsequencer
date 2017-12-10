@@ -20,16 +20,9 @@
 #include <ags/X/ags_wave_editor.h>
 #include <ags/X/ags_wave_editor_callbacks.h>
 
-#include <ags/lib/ags_string_util.h>
-
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 
@@ -218,7 +211,6 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 					       "homogeneous", FALSE,
 					       "spacing", 0,
 					       NULL);
-  wave_editor->machine_selector->flags |= (AGS_MACHINE_SELECTOR_WAVE);
   gtk_label_set_label(wave_editor->machine_selector->label,
 		      i18n("wave"));
   
@@ -231,17 +223,15 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 
   wave_editor->selected_machine = NULL;
 
-  wave_editor->wave_editor_child = NULL;
-
   wave_editor->table = (GtkTable *) gtk_table_new(4, 3, FALSE);
   gtk_paned_pack2((GtkPaned *) paned,
 		  (GtkWidget *) wave_editor->table,
 		  TRUE, FALSE);
 
   /* currenty selected widgets */
-  wave_editor->current_notebook = NULL;  
-  wave_editor->current_level = NULL;
-  wave_editor->current_wave_edit = NULL;
+  wave_editor->notebook = NULL;  
+  wave_editor->level = NULL;
+  wave_editor->wave_edit = NULL;
 
   /* offset */
   wave_editor->tact_counter = 0;
@@ -351,23 +341,6 @@ ags_wave_editor_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_wave_editor_parent_class)->finalize(gobject);
 }
 
-AgsWaveEditorChild*
-ags_wave_editor_child_alloc(AgsMachine *machine,
-			    AgsNotebook *notebook, AgsLevel *level, AgsWaveEdit *wave_edit)
-{
-  AgsWaveEditorChild *wave_editor_child;
-
-  wave_editor_child = (AgsWaveEditorChild *) malloc(sizeof(AgsWaveEditorChild));
-
-  wave_editor_child->machine = machine;
-
-  wave_editor_child->notebook = notebook;
-  wave_editor_child->level = level;
-  wave_editor_child->wave_edit = wave_edit;
-  
-  return(wave_editor_child);
-}
-
 void
 ags_wave_editor_real_machine_changed(AgsWaveEditor *wave_editor, AgsMachine *machine)
 {
@@ -392,28 +365,6 @@ ags_wave_editor_real_machine_changed(AgsWaveEditor *wave_editor, AgsMachine *mac
   machine_old = wave_editor->selected_machine;
   wave_editor->selected_machine = machine;
   
-  child = wave_editor->wave_editor_child;
-
-  while(child != NULL){
-    if(AGS_WAVE_EDITOR_CHILD(child->data)->machine == machine){
-      break;
-    }
-    
-    child = child->next;
-  }
-
-  /* hide */
-  if(wave_editor->current_wave_edit != NULL){
-    gtk_widget_hide((GtkWidget *) wave_editor->current_notebook);
-    gtk_widget_hide((GtkWidget *) wave_editor->current_level);
-    gtk_widget_hide((GtkWidget *) wave_editor->current_wave_edit);
-  }
-  
-  /* reset */
-  wave_editor->current_notebook = NULL;
-  wave_editor->current_level = NULL;
-  wave_editor->current_wave_edit = NULL;
-
   if(machine == NULL){
     return;
   }
@@ -437,77 +388,8 @@ ags_wave_editor_real_machine_changed(AgsWaveEditor *wave_editor, AgsMachine *mac
   input_lines = machine->audio->input_lines;
   
   pthread_mutex_unlock(audio_mutex);
-  
-  /* instantiate wave edit */
-  if(child == NULL){
-    AgsWaveEditorChild *wave_editor_child;
-    guint y;
 
-    y = 2 * g_list_length(wave_editor->wave_editor_child);
-    
-    wave_editor_child = ags_wave_editor_child_alloc(machine,
-						    NULL, NULL, NULL);
-    wave_editor->wave_editor_child = g_list_prepend(wave_editor->wave_editor_child,
-						    wave_editor_child);
-
-    /* wave edit */
-    wave_editor_child->notebook = 
-      wave_editor->current_notebook = g_object_new(AGS_TYPE_NOTEBOOK,
-							  "homogeneous", FALSE,
-							  "spacing", 0,
-							  NULL);
-    wave_editor_child->notebook->prefix = g_strdup(i18n("line"));
-    g_object_ref(wave_editor_child->notebook);
-    gtk_table_attach(wave_editor->table, (GtkWidget *) wave_editor_child->notebook,
-		     0, 3, y, y + 1,
-		     GTK_FILL|GTK_EXPAND, GTK_FILL,
-		     0, 0);
-
-    for(i = 0; i < lines; i++){
-      ags_notebook_insert_tab(wave_editor_child->notebook,
-			      i);
-      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(wave_editor_child->notebook->tabs->data)->toggle,
-				   TRUE);
-    }
-
-    ags_connectable_connect(AGS_CONNECTABLE(wave_editor_child->notebook));
-    gtk_widget_show_all((GtkWidget *) wave_editor_child->notebook);
-
-    wave_editor_child->level = 
-      wave_editor->current_level = ags_level_new();
-    g_object_ref(wave_editor_child->level);
-    gtk_table_attach(wave_editor->table, (GtkWidget *) wave_editor_child->level,
-		     0, 1, y + 1, y + 2,
-		     GTK_FILL, GTK_FILL,
-		     0, 0);
-    ags_connectable_connect(AGS_CONNECTABLE(wave_editor_child->level));
-    gtk_widget_show_all((GtkWidget *) wave_editor_child->level);
-
-    wave_editor_child->wave_edit = 
-      wave_editor->current_wave_edit = ags_wave_edit_new();
-    g_object_ref(wave_editor_child->wave_edit);
-    gtk_table_attach(wave_editor->table, (GtkWidget *) wave_editor_child->wave_edit,
-		     1, 2, y + 1, y + 2,
-		     GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		     0, 0);
-
-    ags_connectable_connect(AGS_CONNECTABLE(wave_editor_child->wave_edit));
-    gtk_widget_show_all((GtkWidget *) wave_editor_child->wave_edit);
-  }else{
-    AgsWaveEditorChild *wave_editor_child;
-
-    wave_editor_child = child->data;
-
-    /* reset */
-    wave_editor->current_notebook = wave_editor_child->notebook;
-    wave_editor->current_level = wave_editor_child->level;
-    wave_editor->current_wave_edit = wave_editor_child->wave_edit;
-
-    /* show */
-    gtk_widget_show_all((GtkWidget *) wave_editor_child->notebook);
-    gtk_widget_show_all((GtkWidget *) wave_editor_child->level);
-    gtk_widget_show_all((GtkWidget *) wave_editor_child->wave_edit);
-  }
+  //TODO:JK: implement me
 }
  
 /**

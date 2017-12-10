@@ -32,6 +32,7 @@
     <xi:include href="xml/ags_vled_array.xml"/>
     <xi:include href="xml/ags_notebook.xml"/>
     <xi:include href="xml/ags_piano.xml"/>
+    <xi:include href="xml/ags_scrolled_piano.xml"/>
     <xi:include href="xml/ags_ruler.xml"/>
   </chapter>
   

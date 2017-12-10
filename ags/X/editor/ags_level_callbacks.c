@@ -19,8 +19,6 @@
 
 #include <ags/X/editor/ags_level_callbacks.h>
 
-#include <ags/X/ags_editor.h>
-
 #include <math.h>
 
 gboolean
