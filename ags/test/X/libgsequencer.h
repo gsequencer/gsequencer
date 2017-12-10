@@ -180,7 +180,6 @@
 #include <ags/X/task/ags_add_soundcard_editor_sink.h>
 #include <ags/X/task/ags_remove_soundcard_editor_sink.h>
 #include <ags/X/task/ags_display_tact.h>
-#include <ags/X/task/ags_scroll_on_play.h>
 #include <ags/X/task/ags_change_tact.h>
 #include <ags/X/task/ags_remove_sequencer_editor_jack.h>
 #include <ags/X/task/ags_add_line_member.h>

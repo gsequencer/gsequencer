@@ -20,20 +20,8 @@
 #include <ags/X/machine/ags_cell_pattern.h>
 #include <ags/X/machine/ags_cell_pattern_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_recall_id.h>
-#include <ags/audio/ags_pattern.h>
-
-#include <ags/audio/recall/ags_delay_audio.h>
-#include <ags/audio/recall/ags_count_beats_audio.h>
-#include <ags/audio/recall/ags_count_beats_audio_run.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -360,31 +348,31 @@ ags_cell_pattern_disconnect(AgsConnectable *connectable)
   cell_pattern->flags &= (~AGS_CELL_PATTERN_CONNECTED);
 
   g_object_disconnect(G_OBJECT(cell_pattern),
-		      "focus_in_event",
+		      "any_signal::focus_in_event",
 		      G_CALLBACK(ags_cell_pattern_focus_in_callback),
 		      (gpointer) cell_pattern,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(cell_pattern->drawing_area),
-		      "key_press_event",
+		      "any_signal::key_press_event",
 		      G_CALLBACK(ags_cell_pattern_drawing_area_key_press_event),
 		      (gpointer) cell_pattern,
-		      "key_release_event",
+		      "any_signal::key_release_event",
 		      G_CALLBACK(ags_cell_pattern_drawing_area_key_release_event),
 		      (gpointer) cell_pattern,
-		      "configure_event",
+		      "any_signal::configure_event",
 		      G_CALLBACK(ags_cell_pattern_drawing_area_configure_callback),
 		      (gpointer) cell_pattern,
-		      "expose_event",
+		      "any_signal::expose_event",
 		      G_CALLBACK(ags_cell_pattern_drawing_area_expose_callback),
 		      (gpointer) cell_pattern,
-		      "button_press_event",
+		      "any_signal::button_press_event",
 		      G_CALLBACK(ags_cell_pattern_drawing_area_button_press_callback),
 		      (gpointer) cell_pattern,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(GTK_RANGE(cell_pattern->vscrollbar)->adjustment),
-		      "value_changed",
+		      "any_signal::value_changed",
 		      G_CALLBACK(ags_cell_pattern_adjustment_value_changed_callback),
 		      (gpointer) cell_pattern,
 		      NULL);

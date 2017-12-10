@@ -20,7 +20,8 @@
 #include <ags/X/editor/ags_notation_toolbar.h>
 #include <ags/X/editor/ags_notation_toolbar_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_menu_bar.h>
@@ -293,50 +294,50 @@ ags_notation_toolbar_disconnect(AgsConnectable *connectable)
 
   /* tool */
   g_object_disconnect(G_OBJECT(notation_toolbar->position),
-		      "toggled",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_notation_toolbar_position_callback),
 		      notation_toolbar,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(notation_toolbar->edit),
-		      "toggled",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_notation_toolbar_edit_callback),
 		      notation_toolbar,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(notation_toolbar->clear),
-		      "toggled",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_notation_toolbar_clear_callback),
 		      notation_toolbar,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(notation_toolbar->select),
-		      "toggled",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_notation_toolbar_select_callback),
 		      notation_toolbar,
 		      NULL);
 
   /* edit */
   g_object_disconnect(G_OBJECT(notation_toolbar->copy),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_notation_toolbar_copy_or_cut_callback),
 		      notation_toolbar,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(notation_toolbar->cut),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_notation_toolbar_copy_or_cut_callback),
 		      notation_toolbar,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(notation_toolbar->paste),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_notation_toolbar_paste_callback),
 		      notation_toolbar,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(notation_toolbar->invert),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_notation_toolbar_invert_callback),
 		      notation_toolbar,
 		      NULL);
@@ -352,7 +353,7 @@ ags_notation_toolbar_disconnect(AgsConnectable *connectable)
 
   /* zoom */
   g_object_disconnect(G_OBJECT(notation_toolbar->zoom),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_notation_toolbar_zoom_callback),
 		      notation_toolbar,
 		      NULL);

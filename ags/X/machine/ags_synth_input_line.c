@@ -202,6 +202,12 @@ ags_synth_input_line_disconnect(AgsConnectable *connectable)
   ags_synth_input_line_parent_connectable_interface->disconnect(connectable);
 
   ags_connectable_disconnect(AGS_CONNECTABLE(synth_input_line->oscillator));
+
+  g_object_disconnect((GObject *) synth_input_line->oscillator,
+		      "any_signal::control-changed",
+		      G_CALLBACK(ags_synth_input_line_oscillator_control_changed_callback),
+		      (gpointer) synth_input_line,
+		      NULL);
 }
 
 void

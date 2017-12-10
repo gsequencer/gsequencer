@@ -20,16 +20,8 @@
 #include <ags/X/editor/ags_select_note_dialog.h>
 #include <ags/X/editor/ags_select_note_dialog_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/thread/ags_concurrency_provider.h>
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_notation.h>
-#include <ags/audio/ags_note.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_notation_editor.h>
@@ -448,7 +440,7 @@ ags_select_note_dialog_disconnect(AgsConnectable *connectable)
   select_note_dialog->flags &= (~AGS_SELECT_NOTE_DIALOG_CONNECTED);
 
   g_object_disconnect(G_OBJECT(select_note_dialog),
-		      "response",
+		      "any_signal::response",
 		      G_CALLBACK(ags_select_note_dialog_response_callback),
 		      select_note_dialog,
 		      NULL);

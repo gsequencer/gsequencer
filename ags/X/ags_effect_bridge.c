@@ -586,10 +586,10 @@ ags_effect_bridge_disconnect(AgsConnectable *connectable)
 				    AGS_TYPE_MACHINE);
 
   g_object_disconnect(G_OBJECT(machine),
-		      "resize-audio-channels",
+		      "any_signal::resize-audio-channels",
 		      G_CALLBACK(ags_effect_bridge_resize_audio_channels_callback),
 		      effect_bridge,
-		      "resize-pads",
+		      "any_signal::resize-pads",
 		      G_CALLBACK(ags_effect_bridge_resize_pads_callback),
 		      effect_bridge,
 		      NULL);

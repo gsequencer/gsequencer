@@ -628,7 +628,7 @@ ags_line_disconnect(AgsConnectable *connectable)
   if(line->group != NULL &&
      GTK_IS_BUTTON(line->group)){
     g_object_disconnect(line->group,
-			"clicked",
+			"any_signal::clicked",
 			G_CALLBACK(ags_line_group_clicked_callback),
 			(gpointer) line,
 			NULL);
@@ -649,9 +649,6 @@ ags_line_disconnect(AgsConnectable *connectable)
   if(list_start != NULL){
     g_list_free(list_start);
   }
-
-  g_signal_handlers_disconnect_by_data(line->channel,
-				       line);
 }
 
 gchar*

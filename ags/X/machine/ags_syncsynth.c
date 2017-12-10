@@ -418,7 +418,7 @@ ags_syncsynth_disconnect(AgsConnectable *connectable)
     ags_connectable_disconnect(AGS_CONNECTABLE(child_start->next->data));
     
     g_object_disconnect((GObject *) child_start->next->data,
-			"control-changed",
+			"any_signal::control-changed",
 			G_CALLBACK(ags_syncsynth_oscillator_control_changed_callback),
 			(gpointer) syncsynth,
 			NULL);
@@ -431,25 +431,25 @@ ags_syncsynth_disconnect(AgsConnectable *connectable)
   g_list_free(list_start);
 
   g_object_disconnect((GObject *) syncsynth->add,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_syncsynth_add_callback),
 		      (gpointer) syncsynth,
 		      NULL);
   
   g_object_disconnect((GObject *) syncsynth->remove,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_syncsynth_remove_callback),
 		      (gpointer) syncsynth,
 		      NULL);
 
   g_object_disconnect((GObject *) syncsynth->auto_update,
-		      "toggled",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_syncsynth_auto_update_callback),
 		      syncsynth,
 		      NULL);
   
   g_object_disconnect((GObject *) syncsynth->update,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_syncsynth_update_callback),
 		      (gpointer) syncsynth,
 		      NULL);

@@ -255,6 +255,8 @@ ags_pad_editor_disconnect(AgsConnectable *connectable)
   AgsMachineEditor *machine_editor;
   AgsPadEditor *pad_editor;
 
+  GList *line_editor, *line_editor_start;
+
   pad_editor = AGS_PAD_EDITOR(connectable);
 
   if((AGS_PAD_EDITOR_CONNECTED & (pad_editor->flags)) == 0){
@@ -268,10 +270,22 @@ ags_pad_editor_disconnect(AgsConnectable *connectable)
 
   /*  */
   g_object_disconnect(G_OBJECT(machine_editor->machine),
-		      "resize-audio-channels",
+		      "any_signal::resize-audio-channels",
 		      G_CALLBACK(ags_pad_editor_resize_audio_channels_callback),
 		      pad_editor,
 		      NULL);
+
+  /* AgsLineEditor */
+  line_editor_start = 
+    line_editor = gtk_container_get_children(GTK_CONTAINER(pad_editor->line_editor));
+
+  while(line_editor != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(line_editor->data));
+
+    line_editor = line_editor->next;
+  }
+
+  g_list_free(line_editor_start);
 }
 
 void

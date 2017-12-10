@@ -308,7 +308,7 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
 	}else{
 	  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(play_notation_audio_run)->flags)) != 0){
 	    g_object_disconnect(G_OBJECT(play_notation_audio_run->delay_audio_run),
-				"notation-alloc-input",
+				"any_signal::notation-alloc-input",
 				G_CALLBACK(ags_play_notation_audio_run_alloc_input_callback),
 				play_notation_audio_run,
 				NULL);
@@ -553,7 +553,7 @@ ags_play_notation_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_co
 
   if(play_notation_audio_run->delay_audio_run != NULL){
     g_object_disconnect(G_OBJECT(play_notation_audio_run->delay_audio_run),
-			"notation-alloc-input",
+			"any_signal::notation-alloc-input",
 			G_CALLBACK(ags_play_notation_audio_run_alloc_input_callback),
 			play_notation_audio_run,
 			NULL);

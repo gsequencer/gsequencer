@@ -582,44 +582,44 @@ ags_ffplayer_disconnect(AgsConnectable *connectable)
   ffplayer = AGS_FFPLAYER(connectable);
 
   g_object_disconnect((GObject *) ffplayer,
-		      "destroy",
+		      "any_signal::destroy",
 		      G_CALLBACK(ags_ffplayer_destroy_callback),
 		      (gpointer) ffplayer,
 		      NULL);
   
   /* AgsFFPlayer */
   g_object_disconnect((GObject *) ffplayer->open,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_ffplayer_open_clicked_callback),
 		      (gpointer) ffplayer,
 		      NULL);
 
   g_object_disconnect((GObject *) ffplayer->preset,
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_ffplayer_preset_changed_callback),
 		      (gpointer) ffplayer,
 		      NULL);
 
   g_object_disconnect((GObject *) ffplayer->instrument,
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_ffplayer_instrument_changed_callback),
 		      (gpointer) ffplayer,
 		      NULL);
 
   g_object_disconnect((GObject *) ffplayer->drawing_area,
-		      "expose_event",
+		      "any_signal::expose_event",
 		      G_CALLBACK(ags_ffplayer_drawing_area_expose_callback),
 		      (gpointer) ffplayer,
 		      NULL);
 
   g_object_disconnect((GObject *) ffplayer->drawing_area,
-		      "button_press_event",
+		      "any_signal::button_press_event",
 		      G_CALLBACK(ags_ffplayer_drawing_area_button_press_callback),
 		      (gpointer) ffplayer,
 		      NULL);
 
   g_object_disconnect((GObject *) ffplayer->hadjustment,
-		      "value_changed",
+		      "any_signal::value_changed",
 		      G_CALLBACK(ags_ffplayer_hscrollbar_value_changed),
 		      (gpointer) ffplayer,
 		      NULL);

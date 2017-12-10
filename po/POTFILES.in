@@ -152,6 +152,7 @@
 ./ags/X/editor/ags_wave_edit.c
 ./ags/X/editor/ags_wave_edit_callbacks.c
 ./ags/X/editor/ags_wave_toolbar.c
+./ags/X/editor/ags_wave_toolbar_callbacks.c
 ./ags/X/export/ags_machine_collection.c
 ./ags/X/export/ags_machine_collection_callbacks.c
 ./ags/X/export/ags_machine_collection_entry.c
@@ -167,6 +168,7 @@
 ./ags/X/import/ags_track_collection_mapper.c
 ./ags/X/import/ags_track_collection_mapper_callbacks.c
 ./ags/X/machine/ags_audiorec.c
+./ags/X/machine/ags_audiorec_callbacks.c
 ./ags/X/machine/ags_cell_pattern.c
 ./ags/X/machine/ags_cell_pattern_callbacks.c
 ./ags/X/machine/ags_drum.c
@@ -235,7 +237,6 @@
 ./ags/X/task/ags_display_tact.c
 ./ags/X/task/ags_remove_sequencer_editor_jack.c
 ./ags/X/task/ags_remove_soundcard_editor_sink.c
-./ags/X/task/ags_scroll_on_play.c
 ./ags/X/task/ags_simple_file_read.c
 ./ags/X/task/ags_simple_file_write.c
 ./ags/X/task/ags_toggle_led.c

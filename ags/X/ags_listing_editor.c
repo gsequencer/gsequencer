@@ -187,7 +187,7 @@ ags_listing_editor_disconnect(AgsConnectable *connectable)
     return;
   }
 
-  ags_listing_editor_parent_connectable_interface->connect(connectable);
+  ags_listing_editor_parent_connectable_interface->disconnect(connectable);
 
   machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(GTK_WIDGET(listing_editor),
 								AGS_TYPE_MACHINE_EDITOR);
@@ -195,7 +195,7 @@ ags_listing_editor_disconnect(AgsConnectable *connectable)
   if(machine_editor != NULL &&
      machine_editor->machine != NULL){
     g_object_disconnect(G_OBJECT(machine_editor->machine),
-			"resize-pads",
+			"any_signal::resize-pads",
 			G_CALLBACK(ags_listing_editor_resize_pads_callback),
 			listing_editor,
 			NULL);

@@ -424,33 +424,44 @@ ags_drum_disconnect(AgsConnectable *connectable)
   drum = AGS_DRUM(connectable);
 
   /* GtkObject */
-  g_object_disconnect((GObject *) drum, "destroy",
+  g_object_disconnect((GObject *) drum,
+		      "any_signal::destroy",
 		      G_CALLBACK(ags_drum_destroy_callback),
 		      (gpointer) drum,
 		      NULL);
   
   /* AgsDrum */
-  g_object_disconnect((GObject *) drum->open, "clicked",
-		      G_CALLBACK(ags_drum_open_callback), (gpointer) drum,
+  g_object_disconnect((GObject *) drum->open,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_drum_open_callback),
+		      (gpointer) drum,
 		      NULL);
 
-  g_object_disconnect((GObject *) drum->loop_button, "clicked",
-		      G_CALLBACK(ags_drum_loop_button_callback), (gpointer) drum,
+  g_object_disconnect((GObject *) drum->loop_button,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_drum_loop_button_callback),
+		      (gpointer) drum,
 		      NULL);
 
-  g_object_disconnect((GObject *) drum->length_spin, "value-changed",
-		      G_CALLBACK(ags_drum_length_spin_callback), (gpointer) drum,
+  g_object_disconnect((GObject *) drum->length_spin,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_drum_length_spin_callback),
+		      (gpointer) drum,
 		      NULL);
 
   for(i = 0; i < 12; i++){
-    g_object_disconnect(G_OBJECT(drum->index1[i]), "clicked",
-			G_CALLBACK(ags_drum_index1_callback), (gpointer) drum,
+    g_object_disconnect(G_OBJECT(drum->index1[i]),
+			"any_signal::clicked",
+			G_CALLBACK(ags_drum_index1_callback),
+			(gpointer) drum,
 			NULL);
   }
 
   for(i = 0; i < 4; i++){
-    g_object_disconnect(G_OBJECT(drum->index0[i]), "clicked",
-			G_CALLBACK(ags_drum_index0_callback), (gpointer) drum,
+    g_object_disconnect(G_OBJECT(drum->index0[i]),
+			"any_signal::clicked",
+			G_CALLBACK(ags_drum_index0_callback),
+			(gpointer) drum,
 			NULL);
   }
 
@@ -458,7 +469,7 @@ ags_drum_disconnect(AgsConnectable *connectable)
 
   /* AgsAudio */
   g_object_disconnect(G_OBJECT(drum),
-		      "done",
+		      "any_signal::done",
 		      G_CALLBACK(ags_drum_done_callback),
 		      drum,
 		      NULL);

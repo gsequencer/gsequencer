@@ -20,18 +20,9 @@
 #include <ags/X/ags_link_collection_editor.h>
 #include <ags/X/ags_link_collection_editor_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_input.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/audio/task/ags_link_channel.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -403,19 +394,19 @@ ags_link_collection_editor_disconnect(AgsConnectable *connectable)
   
   /* AgsLinkCollectionEditor */
   g_object_disconnect(G_OBJECT(link_collection_editor->link),
-		      "changed",
-			 G_CALLBACK(ags_link_collection_editor_link_callback),
+		      "any_signal::changed",
+		      G_CALLBACK(ags_link_collection_editor_link_callback),
 		      link_collection_editor,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(link_collection_editor->first_line),
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_link_collection_editor_first_line_callback),
 		      link_collection_editor,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(link_collection_editor->first_link),
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_link_collection_editor_first_link_callback),
 		      link_collection_editor,
 		      NULL);

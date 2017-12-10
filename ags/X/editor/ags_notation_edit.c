@@ -20,7 +20,8 @@
 #include <ags/X/editor/ags_notation_edit.h>
 #include <ags/X/editor/ags_notation_edit_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_notation_editor.h>
 
@@ -386,49 +387,49 @@ ags_notation_edit_disconnect(AgsConnectable *connectable)
   notation_edit->flags &= (~AGS_NOTATION_EDIT_CONNECTED);
 
   g_object_disconnect(notation_edit->drawing_area,
-		      "expose_event",
+		      "any_signal::expose_event",
 		      G_CALLBACK(ags_notation_edit_drawing_area_expose_event),
 		      (gpointer) notation_edit,
 		      NULL);
 
   g_object_disconnect(notation_edit->drawing_area,
-		      "configure_event",
+		      "any_signal::configure_event",
 		      G_CALLBACK(ags_notation_edit_drawing_area_configure_event),
 		      (gpointer) notation_edit,
 		      NULL);
 
   g_object_disconnect(notation_edit->drawing_area,
-		      "button_press_event",
+		      "any_signal::button_press_event",
 		      G_CALLBACK(ags_notation_edit_drawing_area_button_press_event),
 		      (gpointer) notation_edit,
 		      NULL);
 
   g_object_disconnect(notation_edit->drawing_area,
-		      "button_release_event",
+		      "any_signal::button_release_event",
 		      G_CALLBACK(ags_notation_edit_drawing_area_button_release_event),
 		      (gpointer) notation_edit,
 		      NULL);
 
   g_object_disconnect(notation_edit->drawing_area,
-		      "key_press_event",
+		      "any_signal::key_press_event",
 		      G_CALLBACK(ags_notation_edit_drawing_area_key_press_event),
 		      (gpointer) notation_edit,
 		      NULL);
 
   g_object_disconnect(notation_edit->drawing_area,
-		      "key_release_event",
+		      "any_signal::key_release_event",
 		      G_CALLBACK(ags_notation_edit_drawing_area_key_release_event),
 		      (gpointer) notation_edit,
 		      NULL);
 
   g_object_disconnect(notation_edit->vscrollbar,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_notation_edit_vscrollbar_value_changed),
 		      (gpointer) notation_edit,
 		      NULL);
   
   g_object_disconnect(notation_edit->hscrollbar,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_notation_edit_hscrollbar_value_changed),
 		      (gpointer) notation_edit,
 		      NULL);

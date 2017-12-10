@@ -20,18 +20,8 @@
 #include <ags/X/editor/ags_move_note_dialog.h>
 #include <ags/X/editor/ags_move_note_dialog_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/thread/ags_concurrency_provider.h>
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_notation.h>
-#include <ags/audio/ags_note.h>
-
-#include <ags/audio/task/ags_move_note.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_notation_editor.h>
@@ -415,19 +405,19 @@ ags_move_note_dialog_disconnect(AgsConnectable *connectable)
   move_note_dialog->flags &= (~AGS_MOVE_NOTE_DIALOG_CONNECTED);
 
   g_object_disconnect(G_OBJECT(move_note_dialog),
-		      "response",
+		      "any_signal::response",
 		      G_CALLBACK(ags_move_note_dialog_response_callback),
 		      move_note_dialog,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(move_note_dialog->relative),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_move_note_dialog_relative_callback),
 		      move_note_dialog,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(move_note_dialog->absolute),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_move_note_dialog_absolute_callback),
 		      move_note_dialog,
 		      NULL);

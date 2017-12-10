@@ -20,25 +20,9 @@
 #include <ags/X/ags_link_editor.h>
 #include <ags/X/ags_link_editor_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/file/ags_file_link.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
-
-#include <ags/audio/file/ags_audio_file_link.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/audio/task/ags_link_channel.h>
-#include <ags/audio/task/ags_open_single_file.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -209,7 +193,7 @@ ags_link_editor_disconnect(AgsConnectable *connectable)
 
   /* GtkComboBox */
   g_object_disconnect(G_OBJECT(link_editor->combo),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_link_editor_combo_callback),
 		      link_editor,
 		      NULL);

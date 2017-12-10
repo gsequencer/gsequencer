@@ -20,13 +20,8 @@
 #include <ags/X/ags_output_listing_editor.h>
 #include <ags/X/ags_output_listing_editor_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_output.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_connection_editor.h>
 #include <ags/X/ags_pad_editor.h>
@@ -200,7 +195,7 @@ ags_output_listing_editor_disconnect(AgsConnectable *connectable)
   if(connection_editor != NULL &&
      connection_editor->machine != NULL){
     g_object_disconnect(G_OBJECT(connection_editor->machine),
-			"resize-pads",
+			"any_signal::resize-pads",
 			G_CALLBACK(ags_output_listing_editor_resize_pads_callback),
 			output_listing_editor,
 			NULL);

@@ -20,8 +20,9 @@
 #include <ags/X/ags_property_collection_editor.h>
 #include <ags/X/ags_property_collection_editor_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <string.h>
 
@@ -173,13 +174,13 @@ ags_property_collection_editor_disconnect(AgsConnectable *connectable)
   property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(connectable);
 
   g_object_disconnect(G_OBJECT(property_collection_editor->add_collection),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_property_collection_editor_add_collection_callback),
 		      property_collection_editor,
 		      NULL);
 
   /* call parent */
-  ags_property_collection_editor_parent_connectable_interface->connect(connectable);
+  ags_property_collection_editor_parent_connectable_interface->disconnect(connectable);
 }
 
 void

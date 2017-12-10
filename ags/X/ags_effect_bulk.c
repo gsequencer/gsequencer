@@ -628,22 +628,22 @@ ags_effect_bulk_disconnect(AgsConnectable *connectable)
 				    AGS_TYPE_MACHINE);
 
   g_object_disconnect(G_OBJECT(machine),
-		      "resize-audio-channels",
+		      "any_signal::resize-audio-channels",
 		      G_CALLBACK(ags_effect_bulk_resize_audio_channels_callback),
 		      effect_bulk,
-		      "resize-pads",
+		      "any_signal::resize-pads",
 		      G_CALLBACK(ags_effect_bulk_resize_pads_callback),
 		      effect_bulk,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(effect_bulk->add),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_effect_bulk_add_callback),
 		      effect_bulk,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(effect_bulk->remove),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_effect_bulk_remove_callback),
 		      effect_bulk,
 		      NULL);
@@ -651,7 +651,7 @@ ags_effect_bulk_disconnect(AgsConnectable *connectable)
   ags_connectable_disconnect(AGS_CONNECTABLE(effect_bulk->plugin_browser));
 
   g_object_disconnect(G_OBJECT(effect_bulk->plugin_browser),
-		      "response",
+		      "any_signal::response",
 		      G_CALLBACK(ags_effect_bulk_plugin_browser_response_callback),
 		      effect_bulk,
 		      NULL);

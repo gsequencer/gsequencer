@@ -343,10 +343,10 @@ ags_automation_edit_disconnect(AgsConnectable *connectable)
 
   if(automation_editor != NULL && automation_editor->selected_machine != NULL){
     g_object_disconnect(automation_editor->selected_machine,
-			"resize-audio-channels",
+			"any_signal::resize-audio-channels",
 			G_CALLBACK(ags_automation_edit_resize_audio_channels_callback),
 			automation_edit,
-			"resize-pads",
+			"any_signal::resize-pads",
 			G_CALLBACK(ags_automation_edit_resize_pads_callback),
 			automation_edit,
 			NULL);
@@ -354,38 +354,38 @@ ags_automation_edit_disconnect(AgsConnectable *connectable)
   
   /*  */
   g_object_disconnect((GObject *) automation_edit->drawing_area,
-		      "expose_event",
+		      "any_signal::expose_event",
 		      G_CALLBACK(ags_automation_edit_drawing_area_expose_event),
 		      automation_edit,
-		      "configure_event",
+		      "any_signal::configure_event",
 		      G_CALLBACK(ags_automation_edit_drawing_area_configure_event),
 		      automation_edit,
-		      "button_press_event",
+		      "any_signal::button_press_event",
 		      G_CALLBACK(ags_automation_edit_drawing_area_button_press_event),
 		      automation_edit,
-		      "button_release_event",
+		      "any_signal::button_release_event",
 		      G_CALLBACK(ags_automation_edit_drawing_area_button_release_event),
 		      automation_edit,
-		      "motion_notify_event",
+		      "any_signal::motion_notify_event",
 		      G_CALLBACK(ags_automation_edit_drawing_area_motion_notify_event),
 		      automation_edit,
-		      "key_press_event",
+		      "any_signal::key_press_event",
 		      G_CALLBACK(ags_automation_edit_drawing_area_key_press_event),
 		      automation_edit,
-		      "key_release_event",
+		      "any_signal::key_release_event",
 		      G_CALLBACK(ags_automation_edit_drawing_area_key_release_event),
 		      automation_edit,
 		      NULL);
 
   /*  */
   g_object_disconnect((GObject *) automation_edit->vscrollbar,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_automation_edit_vscrollbar_value_changed),
 		      (gpointer) automation_edit,
 		      NULL);
 
   g_object_disconnect((GObject *) automation_edit->hscrollbar,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_automation_edit_hscrollbar_value_changed),
 		      (gpointer) automation_edit,
 		      NULL);

@@ -20,6 +20,9 @@
 #include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_notation_editor_callbacks.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
 #include <ags/X/ags_window.h>
 
 #include <ags/X/machine/ags_drum.h>
@@ -422,7 +425,7 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
 
   if(old_machine != NULL){
     g_object_disconnect(old_machine,
-			"resize-pads",
+			"any_signal::resize-pads",
 			G_CALLBACK(ags_notation_editor_resize_pads_callback),
 			(gpointer) notation_editor,
 			NULL);

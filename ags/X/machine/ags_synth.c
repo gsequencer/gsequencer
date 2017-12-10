@@ -331,19 +331,19 @@ ags_synth_disconnect(AgsConnectable *connectable)
   synth = AGS_SYNTH(connectable);
 
   g_object_disconnect((GObject *) synth->lower,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_synth_lower_callback),
 		      synth,
 		      NULL);
 
   g_object_disconnect((GObject *) synth->auto_update,
-		      "toggled",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_synth_auto_update_callback),
 		      synth,
 		      NULL);
   
   g_object_disconnect((GObject *) synth->update,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_synth_update_callback),
 		      (gpointer) synth,
 		      NULL);

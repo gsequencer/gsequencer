@@ -48,7 +48,7 @@ void ags_functional_drum_test_open_drum_kit();
 void ags_functional_drum_test_resize_pads();
 void ags_functional_drum_test_resize_audio_channels();
 
-#define AGS_FUNCTIONAL_DRUM_TEST_OPEN_DRUM_KIT_PATH "/usr/share/hydrogen/data/drumkits/Synthie-1/"
+#define AGS_FUNCTIONAL_DRUM_TEST_OPEN_DRUM_KIT_PATH "/usr/share/hydrogen/data/drumkits/HardElectro1/"
 
 #define AGS_FUNCTIONAL_DRUM_TEST_RESIZE_OUTPUT_PADS (5)
 #define AGS_FUNCTIONAL_DRUM_TEST_RESIZE_INPUT_PADS (15)

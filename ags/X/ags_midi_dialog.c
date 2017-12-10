@@ -20,19 +20,8 @@
 #include <ags/X/ags_midi_dialog.h>
 #include <ags/X/ags_midi_dialog_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-#include <ags/object/ags_sequencer.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_midiin.h>
-
-#include <ags/audio/jack/ags_jack_midiin.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 
@@ -505,19 +494,19 @@ ags_midi_dialog_disconnect(AgsConnectable *connectable)
 
   /* applicable */
   g_object_disconnect((GObject *) midi_dialog->apply,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_midi_dialog_apply_callback),
 		      (gpointer) midi_dialog,
 		      NULL);
 
   g_object_disconnect((GObject *) midi_dialog->ok,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_midi_dialog_ok_callback),
 		      (gpointer) midi_dialog,
 		      NULL);
 
   g_object_disconnect((GObject *) midi_dialog->cancel,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_midi_dialog_cancel_callback),
 		      (gpointer) midi_dialog,
 		      NULL);

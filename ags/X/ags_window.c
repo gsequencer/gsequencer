@@ -20,7 +20,7 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_window_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
 
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_mixer.h>
@@ -438,7 +438,7 @@ ags_window_disconnect(AgsConnectable *connectable)
   window->flags &= (~AGS_WINDOW_CONNECTED);
   
   g_object_disconnect(window,
-		      "delete_event",
+		      "any_signal::delete_event",
 		      G_CALLBACK(ags_window_delete_event_callback),
 		      NULL,
 		      NULL);

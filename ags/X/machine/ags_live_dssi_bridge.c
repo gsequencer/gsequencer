@@ -498,7 +498,7 @@ ags_live_dssi_bridge_disconnect(AgsConnectable *connectable)
   live_dssi_bridge = AGS_LIVE_DSSI_BRIDGE(connectable);
 
   g_object_disconnect(G_OBJECT(live_dssi_bridge->program),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_live_dssi_bridge_program_changed_callback),
 		      live_dssi_bridge,
 		      NULL);
@@ -739,10 +739,10 @@ ags_live_dssi_bridge_finalize(GObject *gobject)
   live_dssi_bridge = (AgsLiveDssiBridge *) gobject;
   
   g_object_disconnect(G_OBJECT(live_dssi_bridge),
-		      "resize-audio-channels",
+		      "any_signal::resize-audio-channels",
 		      G_CALLBACK(ags_live_dssi_bridge_resize_audio_channels),
 		      NULL,
-		      "resize-pads",
+		      "any_signal::resize-pads",
 		      G_CALLBACK(ags_live_dssi_bridge_resize_pads),
 		      NULL,
 		      NULL);

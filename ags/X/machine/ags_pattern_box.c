@@ -392,16 +392,16 @@ ags_pattern_box_disconnect(AgsConnectable *connectable)
   pattern_box->flags &= (~AGS_PATTERN_BOX_CONNECTED);
 
   g_object_disconnect(G_OBJECT(pattern_box),
-		      "focus_in_event",
+		      "any_signal::focus_in_event",
 		      G_CALLBACK(ags_pattern_box_focus_in_callback),
 		      (gpointer) pattern_box,
-		      "focus_out_event",
+		      "any_signal::focus_out_event",
 		      G_CALLBACK(ags_pattern_box_focus_out_callback),
 		      (gpointer) pattern_box,
-		      "key_press_event",
+		      "any_signal::key_press_event",
 		      G_CALLBACK(ags_pattern_box_key_press_event),
 		      (gpointer) pattern_box,
-		      "key_release_event",
+		      "any_signal::key_release_event",
 		      G_CALLBACK(ags_pattern_box_key_release_event),
 		      (gpointer) pattern_box,
 		      NULL);
@@ -412,7 +412,7 @@ ags_pattern_box_disconnect(AgsConnectable *connectable)
 
   while(list != NULL){
     g_object_disconnect(G_OBJECT(list->data),
-			"clicked",
+			"any_signal::clicked",
 			G_CALLBACK(ags_pattern_box_pad_callback),
 			(gpointer) pattern_box,
 			NULL);
@@ -428,7 +428,7 @@ ags_pattern_box_disconnect(AgsConnectable *connectable)
 
   while(list != NULL){
     g_object_disconnect(G_OBJECT(list->data),
-			"clicked",
+			"any_signal::clicked",
 			G_CALLBACK(ags_pattern_box_offset_callback),
 			(gpointer) pattern_box,
 			NULL);

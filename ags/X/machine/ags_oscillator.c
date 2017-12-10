@@ -322,31 +322,45 @@ ags_oscillator_disconnect(AgsConnectable *connectable)
   
   oscillator = AGS_OSCILLATOR(connectable);
 
-  g_object_disconnect((GObject *) oscillator->wave, "changed",
-		      G_CALLBACK(ags_oscillator_wave_callback), (gpointer) oscillator,
+  g_object_disconnect((GObject *) oscillator->wave,
+		      "any_signal::changed",
+		      G_CALLBACK(ags_oscillator_wave_callback),
+		      (gpointer) oscillator,
 		      NULL);
   
-  g_object_disconnect((GObject *) oscillator->frame_count, "value-changed",
-		      G_CALLBACK(ags_oscillator_frame_count_callback), (gpointer) oscillator,
+  g_object_disconnect((GObject *) oscillator->frame_count,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_oscillator_frame_count_callback),
+		      (gpointer) oscillator,
 		      NULL);
-  g_object_disconnect((GObject *) oscillator->attack, "value-changed",
-		      G_CALLBACK(ags_oscillator_attack_callback), (gpointer) oscillator,
-		      NULL);
-
-  g_object_disconnect((GObject *) oscillator->frequency, "value-changed",
-		      G_CALLBACK(ags_oscillator_frequency_callback), (gpointer) oscillator,
-		      NULL);
-  g_object_disconnect((GObject *) oscillator->phase, "value-changed",
-		      G_CALLBACK(ags_oscillator_phase_callback), (gpointer) oscillator,
+  g_object_disconnect((GObject *) oscillator->attack,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_oscillator_attack_callback),
+		      (gpointer) oscillator,
 		      NULL);
 
-  g_object_disconnect((GObject *) oscillator->volume, "value-changed",
-		      G_CALLBACK(ags_oscillator_volume_callback), (gpointer) oscillator,
+  g_object_disconnect((GObject *) oscillator->frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_oscillator_frequency_callback),
+		      (gpointer) oscillator,
+		      NULL);
+  g_object_disconnect((GObject *) oscillator->phase,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_oscillator_phase_callback),
+		      (gpointer) oscillator,
+		      NULL);
+
+  g_object_disconnect((GObject *) oscillator->volume,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_oscillator_volume_callback),
+		      (gpointer) oscillator,
 		      NULL);
 
   for(i = 0; i < 2 * oscillator->sync_point_count; i++){
-    g_object_disconnect((GObject *) oscillator->sync_point[i], "value-changed",
-			G_CALLBACK(ags_oscillator_sync_point_callback), (gpointer) oscillator,
+    g_object_disconnect((GObject *) oscillator->sync_point[i],
+			"any_signal::value-changed",
+			G_CALLBACK(ags_oscillator_sync_point_callback),
+			(gpointer) oscillator,
 			NULL);
   }
 }

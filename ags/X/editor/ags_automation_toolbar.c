@@ -20,16 +20,8 @@
 #include <ags/X/editor/ags_automation_toolbar.h>
 #include <ags/X/editor/ags_automation_toolbar_callbacks.h>
 
-#include <ags/lib/ags_string_util.h>
-
-#include <ags/object/ags_connectable.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_port.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_automation_window.h>
@@ -345,44 +337,44 @@ ags_automation_toolbar_disconnect(AgsConnectable *connectable)
 
   /* tool */
   g_object_disconnect(G_OBJECT(automation_toolbar->position),
-		      "toggled",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_automation_toolbar_position_callback),
 		      automation_toolbar,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(automation_toolbar->edit),
-		      "toggled",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_automation_toolbar_edit_callback),
 		      automation_toolbar,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(automation_toolbar->clear),
-		      "toggled",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_automation_toolbar_clear_callback),
 		      automation_toolbar,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(automation_toolbar->select),
-		      "toggled",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_automation_toolbar_select_callback),
 		      automation_toolbar,
 		      NULL);
 
   /* edit */
   g_object_disconnect(G_OBJECT(automation_toolbar->copy),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_automation_toolbar_copy_or_cut_callback),
 		      automation_toolbar,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(automation_toolbar->cut),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_automation_toolbar_copy_or_cut_callback),
 		      automation_toolbar,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(automation_toolbar->paste),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_automation_toolbar_paste_callback),
 		      automation_toolbar,
 		      NULL);
@@ -396,14 +388,14 @@ ags_automation_toolbar_disconnect(AgsConnectable *connectable)
 
   /* zoom */
   g_object_disconnect(G_OBJECT(automation_toolbar->zoom),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_automation_toolbar_zoom_callback),
 		      automation_toolbar,
 		      NULL);
 
   /* port */
   g_object_disconnect(G_OBJECT(automation_toolbar->port),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_automation_toolbar_port_callback),
 		      automation_toolbar,
 		      NULL);

@@ -367,7 +367,7 @@ ags_matrix_disconnect(AgsConnectable *connectable)
 
   for(i  = 0; i < 9; i++){
     g_object_disconnect(G_OBJECT (matrix->index[i]),
-			"clicked",
+			"any_signal::clicked",
 			G_CALLBACK (ags_matrix_index_callback),
 			(gpointer) matrix,
 			NULL);
@@ -376,19 +376,19 @@ ags_matrix_disconnect(AgsConnectable *connectable)
   ags_connectable_disconnect(AGS_CONNECTABLE(matrix->cell_pattern));
   
   g_object_disconnect((GObject *) matrix->length_spin,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_matrix_length_spin_callback),
 		      (gpointer) matrix,
 		      NULL);
 
   g_object_disconnect((GObject *) matrix->loop_button,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_matrix_loop_button_callback),
 		      (gpointer) matrix,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(AGS_MACHINE(matrix)->audio),
-		      "done",
+		      "any_signal::done",
 		      G_CALLBACK(ags_matrix_done_callback),
 		      matrix,
 		      NULL);

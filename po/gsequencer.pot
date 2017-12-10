@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 1.2.0\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-12-10 19:23+0100\n"
+"POT-Creation-Date: 2017-12-10 20:07+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,7 +55,6 @@ msgid "input"
 msgstr ""
 
 #: ags/X/ags_automation_editor.c:734 ags/X/ags_automation_editor.c:778
-#: ags/X/ags_wave_editor.c:459
 msgid "line"
 msgstr ""
 
@@ -486,7 +485,6 @@ msgid "address"
 msgstr ""
 
 #: ags/X/ags_server_preferences.c:186 ags/X/editor/ags_automation_toolbar.c:227
-#: ags/X/editor/ags_wave_toolbar.c:201
 msgid "port"
 msgstr ""
 
@@ -510,7 +508,7 @@ msgstr ""
 msgid "format"
 msgstr ""
 
-#: ags/X/ags_wave_editor.c:223 ags/X/machine/ags_oscillator.c:153
+#: ags/X/ags_wave_editor.c:215 ags/X/machine/ags_oscillator.c:153
 msgid "wave"
 msgstr ""
 
@@ -533,17 +531,17 @@ msgid "unknown sequencer backend - NULL"
 msgstr ""
 
 #: ags/X/editor/ags_automation_toolbar.c:196
-#: ags/X/editor/ags_notation_toolbar.c:186 ags/X/editor/ags_wave_toolbar.c:171
+#: ags/X/editor/ags_notation_toolbar.c:186 ags/X/editor/ags_wave_toolbar.c:161
 msgid "tool"
 msgstr ""
 
 #: ags/X/editor/ags_automation_toolbar.c:199
-#: ags/X/editor/ags_notation_toolbar.c:189 ags/X/editor/ags_wave_toolbar.c:174
+#: ags/X/editor/ags_notation_toolbar.c:189 ags/X/editor/ags_wave_toolbar.c:164
 msgid "additional tools"
 msgstr ""
 
 #: ags/X/editor/ags_automation_toolbar.c:214
-#: ags/X/editor/ags_notation_toolbar.c:203 ags/X/editor/ags_wave_toolbar.c:188
+#: ags/X/editor/ags_notation_toolbar.c:203 ags/X/editor/ags_wave_toolbar.c:178
 msgid "zoom"
 msgstr ""
 
@@ -559,7 +557,7 @@ msgstr ""
 
 #: ags/X/editor/ags_automation_toolbar.c:845
 #: ags/X/editor/ags_notation_toolbar.c:118
-#: ags/X/editor/ags_notation_toolbar.c:389 ags/X/editor/ags_wave_toolbar.c:372
+#: ags/X/editor/ags_notation_toolbar.c:389 ags/X/editor/ags_wave_toolbar.c:241
 msgid "position cursor"
 msgstr ""
 
@@ -823,7 +821,7 @@ msgstr ""
 msgid "select y1"
 msgstr ""
 
-#: ags/X/editor/ags_wave_toolbar.c:369
+#: ags/X/editor/ags_wave_toolbar.c:238
 msgid "select audio data"
 msgstr ""
 

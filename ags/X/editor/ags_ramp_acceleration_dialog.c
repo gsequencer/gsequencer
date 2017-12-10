@@ -20,18 +20,8 @@
 #include <ags/X/editor/ags_ramp_acceleration_dialog.h>
 #include <ags/X/editor/ags_ramp_acceleration_dialog_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/thread/ags_concurrency_provider.h>
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_notation.h>
-#include <ags/audio/ags_acceleration.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_automation_window.h>
@@ -492,19 +482,19 @@ ags_ramp_acceleration_dialog_disconnect(AgsConnectable *connectable)
   automation_editor = AGS_WINDOW(ramp_acceleration_dialog->main_window)->automation_window->automation_editor;
 
   g_object_disconnect(G_OBJECT(ramp_acceleration_dialog),
-		      "response",
+		      "any_signal::response",
 		      G_CALLBACK(ags_ramp_acceleration_dialog_response_callback),
 		      ramp_acceleration_dialog,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(ramp_acceleration_dialog->port),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_ramp_acceleration_dialog_port_callback),
 		      ramp_acceleration_dialog,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(automation_editor),
-		      "machine-changed",
+		      "any_signal::machine-changed",
 		      G_CALLBACK(ags_ramp_acceleration_dialog_machine_changed_callback),
 		      ramp_acceleration_dialog,
 		      NULL);

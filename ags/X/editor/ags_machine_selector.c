@@ -20,9 +20,8 @@
 #include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_machine_selector_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/audio/ags_notation.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_automation_editor.h>
@@ -216,7 +215,7 @@ ags_machine_selector_disconnect(AgsConnectable *connectable)
   
   while(list != NULL){
     g_object_disconnect(G_OBJECT(list->data),
-			"clicked",
+			"any_signal::clicked",
 			G_CALLBACK(ags_machine_selector_radio_changed),
 			machine_selector,
 			NULL);

@@ -20,17 +20,8 @@
 #include <ags/X/ags_midi_preferences.h>
 #include <ags/X/ags_midi_preferences_callbacks.h>
 
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-#include <ags/object/ags_sequencer.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
-
-#include <ags/audio/ags_sound_provider.h>
-
-#include <ags/audio/thread/ags_sequencer_thread.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
@@ -203,7 +194,7 @@ ags_midi_preferences_disconnect(AgsConnectable *connectable)
 
   if(midi_preferences->add != NULL){
     g_object_disconnect(G_OBJECT(midi_preferences->add),
-			"clicked",
+			"any_signal::clicked",
 			G_CALLBACK(ags_midi_preferences_add_callback),
 			midi_preferences,
 			NULL);

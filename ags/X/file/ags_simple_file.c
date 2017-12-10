@@ -3142,10 +3142,10 @@ ags_simple_file_read_line_list(AgsSimpleFile *simple_file, xmlNode *node, GList 
 		     12)){
 	current = NULL;
 
-	if(*line != NULL){
+	if(line[0] != NULL){
 	  GList *iter;
 
-	  iter = g_list_nth(*line,
+	  iter = g_list_nth(line[0],
 			    i);
 	  
 	  if(iter != NULL){
@@ -3242,8 +3242,8 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
     }
   }
   
-  if(*line != NULL){
-    gobject = (GObject *) *line;
+  if(line[0] != NULL){
+    gobject = AGS_LINE(line[0]);
 
     nth_line = AGS_LINE(gobject)->channel->line;
   }else{
@@ -3256,7 +3256,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
     if(!AGS_IS_PAD(pad)){
       pad = NULL;
     }
-        
+    
     /* get nth-line */
     nth_line = 0;
     str = xmlGetProp(node,
@@ -3289,13 +3289,14 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 
       if(list_start != NULL){
 	g_list_free(list_start);
-
       }
     }else{
       AgsMachine *machine;
 
       gboolean is_output;
-      
+
+      //      "./ancestor::*[self::ags-sf-machine][1]"
+	
       file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_node(simple_file,
 									 node->parent->parent->parent->parent);
       machine = file_id_ref->ref;
@@ -3490,7 +3491,9 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-oscillator",
 			   15)){
-	ags_simple_file_read_oscillator(simple_file, child, &(AGS_SYNTH_INPUT_LINE(gobject)->oscillator));
+	if(AGS_IS_SYNTH_INPUT_LINE(gobject)){
+	  ags_simple_file_read_oscillator(simple_file, child, &(AGS_SYNTH_INPUT_LINE(gobject)->oscillator));
+	}
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-sf-property-list",
 			   14)){
@@ -4196,7 +4199,7 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
   guint nth;
   
   if(*oscillator != NULL){
-    gobject = *oscillator;
+    gobject = AGS_OSCILLATOR(oscillator[0]);
   }else{
     gobject = ags_oscillator_new();
 
