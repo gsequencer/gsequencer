@@ -70,8 +70,10 @@ struct _AgsMatrixClass
 
 GType ags_matrix_get_type(void);
 
-void ags_matrix_input_map_recall(AgsMatrix *matrix, guint input_pad_start);
-void ags_matrix_output_map_recall(AgsMatrix *matrix, guint output_pad_start);
+void ags_matrix_input_map_recall(AgsMatrix *matrix,
+				 guint input_pad_start);
+void ags_matrix_output_map_recall(AgsMatrix *matrix,
+				  guint output_pad_start);
 
 AgsMatrix* ags_matrix_new(GObject *soundcard);
 
