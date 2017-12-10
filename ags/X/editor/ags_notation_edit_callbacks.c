@@ -94,7 +94,11 @@ ags_notation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventBut
     note->x[0] = (guint) zoom_factor * ((event->x + GTK_RANGE(notation_edit->hscrollbar)->adjustment->value) / notation_edit->control_width);
     note->x[0] = zoom_factor * floor(note->x[0] / zoom_factor);
 
-    note->x[1] = note->x[0] + zoom_factor;
+    if((AGS_NOTATION_EDITOR_PATTERN_MODE & (notation_editor->flags)) == 0){
+      note->x[1] = note->x[0] + zoom_factor;
+    }else{
+      note->x[1] = note->x[0] + 1;
+    }
     
     note->y = (guint) ((event->y + GTK_RANGE(notation_edit->vscrollbar)->adjustment->value) / notation_edit->control_height);
 
@@ -200,16 +204,20 @@ ags_notation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventB
     zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));
 
     /* new x[1] */
-    new_x = (guint) zoom_factor * ((event->x + GTK_RANGE(notation_edit->hscrollbar)->adjustment->value) / notation_edit->control_width);
-    new_x = zoom_factor * floor((new_x + zoom_factor) / zoom_factor);
+    if((AGS_NOTATION_EDITOR_PATTERN_MODE & (notation_editor->flags)) == 0){
+      new_x = (guint) zoom_factor * ((event->x + GTK_RANGE(notation_edit->hscrollbar)->adjustment->value) / notation_edit->control_width);
+      new_x = zoom_factor * floor((new_x + zoom_factor) / zoom_factor);
     
-    if(new_x >= note->x[0] + zoom_factor){
-      note->x[1] = new_x;
+      if(new_x >= note->x[0] + zoom_factor){
+	note->x[1] = new_x;
+      }
+    }else{
+      note->x[1] = note->x[0] + 1;
     }
     
-    //#ifdef AGS_DEBUG
+#ifdef AGS_DEBUG
     g_message("%lu-%lu %lu", note->x[0], note->x[1], note->y);
-    //#endif
+#endif
 
     /* add note */
     ags_notation_editor_add_note(notation_editor,
@@ -339,13 +347,17 @@ ags_notation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMo
     zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));
 
     /* new x[1] */
-    new_x = (guint) zoom_factor * ((event->x + GTK_RANGE(notation_edit->hscrollbar)->adjustment->value) / notation_edit->control_width);
-    new_x = zoom_factor * floor((new_x + zoom_factor) / zoom_factor);
+    if((AGS_NOTATION_EDITOR_PATTERN_MODE & (notation_editor->flags)) == 0){    
+      new_x = (guint) zoom_factor * ((event->x + GTK_RANGE(notation_edit->hscrollbar)->adjustment->value) / notation_edit->control_width);
+      new_x = zoom_factor * floor((new_x + zoom_factor) / zoom_factor);
     
-    if(new_x >= note->x[0] + zoom_factor){
-      note->x[1] = new_x;
+      if(new_x >= note->x[0] + zoom_factor){
+	note->x[1] = new_x;
+      }
+    }else{
+      note->x[1] = note->x[0] + 1;
     }
-
+    
 #ifdef AGS_DEBUG
     g_message("%lu-%lu %lu", note->x[0], note->x[1], note->y);
 #endif
@@ -563,6 +575,10 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
 	   (AGS_NOTATION_EDIT_KEY_R_SHIFT & (notation_edit->key_mask)) != 0){
 	  AgsTimestamp *timestamp;
 
+	  if((AGS_NOTATION_EDITOR_PATTERN_MODE & (notation_editor->flags)) != 0){
+	    return(retval);
+	  }
+	  
 	  /* shrink note */
 	  timestamp = ags_timestamp_new();
 
@@ -600,6 +616,8 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
 	  
 	    i++;
 	  }
+
+	  g_object_unref(timestamp);
 	}else{
 	  gdouble x0_offset;
 
@@ -629,6 +647,10 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
 	if((AGS_NOTATION_EDIT_KEY_L_SHIFT & (notation_edit->key_mask)) != 0 ||
 	   (AGS_NOTATION_EDIT_KEY_R_SHIFT & (notation_edit->key_mask)) != 0){
 	  AgsTimestamp *timestamp;
+
+	  if((AGS_NOTATION_EDITOR_PATTERN_MODE & (notation_editor->flags)) != 0){
+	    return(retval);
+	  }
 
 	  /* shrink note */
 	  timestamp = ags_timestamp_new();
@@ -666,6 +688,8 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
 	  
 	    i++;
 	  }
+
+	  g_object_unref(timestamp);
 	}else{
 	  gdouble x0_offset;
 	  
@@ -732,8 +756,13 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
 	note = ags_note_new();
 
 	note->x[0] = notation_edit->cursor_position_x;
-	note->x[1] = notation_edit->cursor_position_x + zoom_factor;
 
+	if((AGS_NOTATION_EDITOR_PATTERN_MODE & (notation_editor->flags)) == 0){
+	  note->x[1] = notation_edit->cursor_position_x + zoom_factor;
+	}else{
+	  note->x[1] = note->x[0] + 1;
+	}
+	
 	note->y = notation_edit->cursor_position_y;
 
 	/* add note */

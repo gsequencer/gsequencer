@@ -20,26 +20,14 @@
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_drum_callbacks.h>
 
-#include <ags/util/ags_id_generator.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_portlet.h>
-#include <ags/object/ags_plugin.h>
-#include <ags/object/ags_seekable.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
-#include <ags/file/ags_file_launch.h>
-
-#include <ags/thread/ags_thread-posix.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/widget/ags_led.h>
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_menu_bar.h>
+#include <ags/X/ags_pad.h>
+#include <ags/X/ags_line.h>
 
 #include <ags/X/file/ags_gui_file_xml.h>
 
@@ -48,37 +36,6 @@
 #include <ags/X/machine/ags_drum_output_pad.h>
 #include <ags/X/machine/ags_drum_output_line.h>
 #include <ags/X/machine/ags_drum_input_line_callbacks.h>
-
-#include <ags/X/ags_window.h>
-#include <ags/X/ags_menu_bar.h>
-#include <ags/X/ags_pad.h>
-#include <ags/X/ags_line.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_recycling.h>
-#include <ags/audio/ags_pattern.h>
-#include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_recall_factory.h>
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_container.h>
-
-#include <ags/audio/recall/ags_delay_audio.h>
-#include <ags/audio/recall/ags_delay_audio_run.h>
-#include <ags/audio/recall/ags_count_beats_audio.h>
-#include <ags/audio/recall/ags_count_beats_audio_run.h>
-#include <ags/audio/recall/ags_copy_pattern_audio.h>
-#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
-#include <ags/audio/recall/ags_copy_pattern_channel.h>
-#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
-#include <ags/audio/recall/ags_record_midi_audio.h>
-#include <ags/audio/recall/ags_record_midi_audio_run.h>
-#include <ags/audio/recall/ags_play_notation_audio.h>
-#include <ags/audio/recall/ags_play_notation_audio_run.h>
-
-#include <ags/audio/task/recall/ags_apply_sequencer_length.h>
 
 #include <math.h>
 
@@ -544,17 +501,33 @@ ags_drum_map_recall(AgsMachine *machine)
   AgsPlayNotationAudio *recall_notation_audio;
   AgsPlayNotationAudioRun *recall_notation_audio_run;
 
+  AgsMutexManager *mutex_manager;
+
   GList *list;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
   
   if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
     return;
   }
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
 						 AGS_TYPE_WINDOW);
   
   audio = machine->audio;
+  
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
 
   /* ags-delay */
   ags_recall_factory_create(audio,
@@ -567,6 +540,8 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_PLAY),
 			    0);
 
+  pthread_mutex_lock(audio_mutex);
+
   list = ags_recall_find_type(audio->play,
 			      AGS_TYPE_DELAY_AUDIO_RUN);
 
@@ -576,6 +551,8 @@ ags_drum_map_recall(AgsMachine *machine)
   }else{
     play_delay_audio_run = NULL;
   }
+
+  pthread_mutex_unlock(audio_mutex);
   
   /* ags-count-beats */
   ags_recall_factory_create(audio,
@@ -588,6 +565,8 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_PLAY),
 			    0);
   
+  pthread_mutex_lock(audio_mutex);
+
   list = ags_recall_find_type(audio->play,
 			      AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
 
@@ -605,6 +584,8 @@ ags_drum_map_recall(AgsMachine *machine)
     play_count_beats_audio_run = NULL;
   }
 
+  pthread_mutex_unlock(audio_mutex);
+
   /* ags-copy-pattern */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -615,6 +596,8 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_REMAP |
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
+
+  pthread_mutex_lock(audio_mutex);
 
   list = ags_recall_find_type(audio->recall,
 			      AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
@@ -629,6 +612,8 @@ ags_drum_map_recall(AgsMachine *machine)
 		 NULL);
   }
 
+  pthread_mutex_unlock(audio_mutex);
+
   /* ags-record-midi */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -640,7 +625,10 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
 
-  list = ags_recall_find_type(audio->recall, AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
+  pthread_mutex_lock(audio_mutex);
+
+  list = ags_recall_find_type(audio->recall,
+			      AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
 
   if(list != NULL){
     recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(list->data);
@@ -655,7 +643,9 @@ ags_drum_map_recall(AgsMachine *machine)
 		 "count-beats-audio-run", play_count_beats_audio_run,
 		 NULL);
   }  
-  
+
+  pthread_mutex_unlock(audio_mutex);
+
   /* ags-play-notation */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -666,6 +656,8 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_ADD |
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
+
+  pthread_mutex_lock(audio_mutex);
 
   list = ags_recall_find_type(audio->recall,
 			      AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
@@ -684,6 +676,9 @@ ags_drum_map_recall(AgsMachine *machine)
 		 NULL);
   }
 
+  pthread_mutex_unlock(audio_mutex);
+
+  /* call parent */
   AGS_MACHINE_CLASS(ags_drum_parent_class)->map_recall(machine);
 }
 

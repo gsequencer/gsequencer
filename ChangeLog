@@ -17,7 +17,7 @@ ags (2.0.0-beta)
 ags (1.2.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented AgsNotationEditor and AgsNotationEdit
+	* implemented AgsNotationEditor and AgsNotationEdit
 	* replaced AgsEditor by AgsNotationEditor and supporting segmented notation
 	* replaced AgsNoteEdit and AgsPatternEdit by AgsNotationEdit
 	* implemented AgsMessageDelivery and AgsMessageQueue

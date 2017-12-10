@@ -22,6 +22,9 @@
 
 #include <ags/X/ags_window.h>
 
+#include <ags/X/machine/ags_drum.h>
+#include <ags/X/machine/ags_matrix.h>
+
 #include <ags/X/thread/ags_gui_thread.h>
 
 #include <libxml/tree.h>
@@ -444,6 +447,14 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
 			    0);
   }
 
+  /* check pattern mode */
+  if(AGS_IS_DRUM(machine) ||
+     AGS_IS_MATRIX(machine)){
+    notation_editor->flags |= AGS_NOTATION_EDITOR_PATTERN_MODE;
+  }else{
+    notation_editor->flags &= (~AGS_NOTATION_EDITOR_PATTERN_MODE);
+  }
+  
   /* notebook - add tabs */
   if(machine != NULL){
     pthread_mutex_lock(audio_mutex);
