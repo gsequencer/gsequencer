@@ -33,6 +33,8 @@
 #include <ags/X/machine/ags_dssi_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
 
+#include <ags/X/file/ags_simple_file.h>
+
 #ifdef AGS_WITH_QUARTZ
 #include <gtkmacintegration-gtk2/gtkosxapplication.h>
 #endif
@@ -76,6 +78,7 @@ enum{
 };
 
 static gpointer ags_window_parent_class = NULL;
+GHashTable *ags_window_load_file = NULL;
 
 GType
 ags_window_get_type()
@@ -206,10 +209,15 @@ ags_window_init(AgsWindow *window)
   window->soundcard = NULL;
 
   /* window name and title */
+  window->filename = NULL;
+
   window->name = g_strdup("unnamed");
 
-  str = g_strconcat("GSequencer - ", window->name, NULL);
-  gtk_window_set_title((GtkWindow *) window, str);
+  str = g_strconcat("GSequencer - ",
+		    window->name,
+		    NULL);
+  gtk_window_set_title((GtkWindow *) window,
+		       str);
 
   g_free(str);
 
@@ -282,6 +290,18 @@ ags_window_init(AgsWindow *window)
   
   window->preferences = NULL;
   window->history_browser = NULL;
+
+  /* load file */
+  if(ags_window_load_file == NULL){
+    ags_window_load_file = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+						 NULL,
+						 NULL);
+  }
+
+  g_hash_table_insert(ags_window_load_file,
+		      window, ags_window_load_file_timeout);
+
+  g_timeout_add(1000, (GSourceFunc) ags_window_load_file_timeout, (gpointer) window);
 }
 
 void
@@ -472,13 +492,17 @@ ags_window_finalize(GObject *gobject)
 
   window = (AgsWindow *) gobject;
 
+  /* remove message monitor */
+  g_hash_table_remove(ags_window_load_file,
+		      window);
+
   g_object_unref(G_OBJECT(window->soundcard));
   g_object_unref(G_OBJECT(window->export_window));
 
   if(window->name != NULL){
     free(window->name);
   }
-
+  
   /* call parent */
   G_OBJECT_CLASS(ags_window_parent_class)->finalize(gobject);
 }
@@ -701,6 +725,56 @@ ags_window_show_error(AgsWindow *window,
 						GTK_BUTTONS_OK,
 						"%s", message);
   gtk_widget_show_all((GtkWidget *) dialog);
+}
+
+/**
+ * ags_window_load_file_timeout:
+ * @window: the #AgsWindow
+ * 
+ * 
+ * Since: 1.2.0
+ */
+gboolean
+ags_window_load_file_timeout(AgsWindow *window)
+{
+  if(g_hash_table_lookup(ags_window_load_file,
+			 window) != NULL){
+    if(window->filename != NULL){
+      AgsSimpleFile *simple_file;
+      
+      gchar *str;
+
+      GError *error;
+
+      simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
+						   "application-context", window->application_context,
+						   "filename", window->filename,
+						   NULL);
+      
+      error = NULL;
+      ags_simple_file_open(simple_file,
+			   &error);
+
+      ags_simple_file_read(simple_file);
+      ags_simple_file_close(simple_file);
+      
+      /* set name */
+      window->name = g_strdup(window->filename);
+
+      str = g_strconcat("GSequencer - ",
+			window->name,
+			NULL);
+      
+      gtk_window_set_title((GtkWindow *) window,
+			   str);
+      
+      window->filename = NULL;
+    }
+
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 /**

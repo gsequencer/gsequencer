@@ -25,6 +25,7 @@
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine_editor.h>
+#include <ags/X/ags_connection_editor.h>
 #include <ags/X/ags_line_editor.h>
 
 #include <ags/i18n.h>
@@ -214,7 +215,9 @@ ags_pad_editor_get_property(GObject *gobject,
 void
 ags_pad_editor_connect(AgsConnectable *connectable)
 {
+  AgsMachine *machine;
   AgsMachineEditor *machine_editor;
+  AgsConnectionEditor *connection_editor;
   AgsPadEditor *pad_editor;
   
   GList *line_editor, *line_editor_start;
@@ -226,13 +229,24 @@ ags_pad_editor_connect(AgsConnectable *connectable)
   }
 
   pad_editor->flags |= AGS_PAD_EDITOR_CONNECTED;
+
+  machine = NULL;
   
   machine_editor = gtk_widget_get_ancestor(pad_editor,
 					   AGS_TYPE_MACHINE_EDITOR);
+
+  connection_editor = gtk_widget_get_ancestor(pad_editor,
+					      AGS_TYPE_CONNECTION_EDITOR);
+  
+  if(machine_editor != NULL){
+    machine = machine_editor->machine;
+  }else if(connection_editor != NULL){
+    machine = connection_editor->machine;
+  }
   
   /*  */
-  if(machine_editor != NULL){
-    g_signal_connect_after(G_OBJECT(machine_editor->machine), "resize-audio-channels",
+  if(machine != NULL){
+    g_signal_connect_after(G_OBJECT(machine), "resize-audio-channels",
 			   G_CALLBACK(ags_pad_editor_resize_audio_channels_callback), pad_editor);
   }
   
@@ -252,7 +266,9 @@ ags_pad_editor_connect(AgsConnectable *connectable)
 void
 ags_pad_editor_disconnect(AgsConnectable *connectable)
 {
+  AgsMachine *machine;
   AgsMachineEditor *machine_editor;
+  AgsConnectionEditor *connection_editor;
   AgsPadEditor *pad_editor;
 
   GList *line_editor, *line_editor_start;
@@ -265,15 +281,28 @@ ags_pad_editor_disconnect(AgsConnectable *connectable)
 
   pad_editor->flags &= (~AGS_PAD_EDITOR_CONNECTED);
   
+  machine = NULL;
+
   machine_editor = gtk_widget_get_ancestor(pad_editor,
 					   AGS_TYPE_MACHINE_EDITOR);
 
+  connection_editor = gtk_widget_get_ancestor(pad_editor,
+					      AGS_TYPE_CONNECTION_EDITOR);
+  
+  if(machine_editor != NULL){
+    machine = machine_editor->machine;
+  }else if(connection_editor != NULL){
+    machine = connection_editor->machine;
+  }
+  
   /*  */
-  g_object_disconnect(G_OBJECT(machine_editor->machine),
-		      "any_signal::resize-audio-channels",
-		      G_CALLBACK(ags_pad_editor_resize_audio_channels_callback),
-		      pad_editor,
-		      NULL);
+  if(machine != NULL){
+    g_object_disconnect(G_OBJECT(machine),
+			"any_signal::resize-audio-channels",
+			G_CALLBACK(ags_pad_editor_resize_audio_channels_callback),
+			pad_editor,
+			NULL);
+  }
 
   /* AgsLineEditor */
   line_editor_start = 

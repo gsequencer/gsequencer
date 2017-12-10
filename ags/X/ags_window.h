@@ -62,6 +62,8 @@ struct _AgsWindow
 
   guint flags;
 
+  gchar *filename;
+  
   char *name;
 
   GObject *application_context;
@@ -128,6 +130,8 @@ AgsMachineCounter* ags_machine_counter_alloc(gchar *version, gchar *build_id,
 
 void ags_window_show_error(AgsWindow *window,
 			   gchar *message);
+
+gboolean ags_window_load_file_timeout(AgsWindow *window);
 
 AgsWindow* ags_window_new(GObject *application_context);
 

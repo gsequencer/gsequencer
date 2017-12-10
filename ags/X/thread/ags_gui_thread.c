@@ -20,41 +20,8 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
-#include <ags/lib/ags_log.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_main_loop.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_concurrency_provider.h>
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif
-#include <ags/thread/ags_single_thread.h>
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_polling_thread.h>
-#include <ags/thread/ags_poll_fd.h>
-#include <ags/thread/ags_autosave_thread.h>
-#include <ags/thread/ags_task_thread.h>
-#include <ags/thread/ags_task_completion.h>
-#include <ags/thread/ags_thread_pool.h>
-
-#include <ags/server/ags_server.h>
-
-#include <ags/plugin/ags_ladspa_manager.h>
-#include <ags/plugin/ags_dssi_manager.h>
-#include <ags/plugin/ags_lv2_manager.h>
-#include <ags/plugin/ags_lv2_worker_manager.h>
-#include <ags/plugin/ags_lv2ui_manager.h>
-
-#include <ags/audio/ags_sound_provider.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-#include <ags/audio/thread/ags_soundcard_thread.h>
-#include <ags/audio/thread/ags_export_thread.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>

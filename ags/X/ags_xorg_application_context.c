@@ -1194,28 +1194,15 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   
   single_thread_enabled = FALSE;
 
-  if(filename != NULL){
 #ifdef AGS_USE_TIMER
-    ags_gui_thread_timer_launch_filename(gui_thread,
-					 timer_id,
-					 filename,
-					 single_thread_enabled);
+  ags_gui_thread_timer_launch(gui_thread,
+			      timer_id,
+			      single_thread_enabled);
 #else
-    ags_gui_thread_launch_filename(gui_thread,
-				   filename,
-				   single_thread_enabled);
+  ags_gui_thread_launch(gui_thread,
+			single_thread_enabled);
 #endif
-  }else{
-#ifdef AGS_USE_TIMER
-    ags_gui_thread_timer_launch(gui_thread,
-				timer_id,
-				single_thread_enabled);
-#else
-    ags_gui_thread_launch(gui_thread,
-			  single_thread_enabled);
-#endif
-  }
-  
+
   /* distributed manager */
   xorg_application_context->distributed_manager = NULL;
 
@@ -1647,6 +1634,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     ags_jack_server_connect_client(jack_server);
   }
   
+  if(filename != NULL){
+    window->filename = filename;
+  }
   //  pthread_mutex_unlock(ags_gui_thread_get_dispatch_mutex());
 }
 

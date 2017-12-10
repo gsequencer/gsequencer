@@ -86,9 +86,6 @@ struct _AgsGuiThread
 
   GList *collected_task;
   GSource *task_source;
-  
-  AgsSimpleFile *simple_file;
-  gchar *filename;
 };
 
 struct _AgsGuiThreadClass
