@@ -303,7 +303,7 @@ ags_machine_class_init(AgsMachineClass *machine)
 		 G_STRUCT_OFFSET(AgsMachineClass, done),
                  NULL, NULL,
                  g_cclosure_marshal_VOID__OBJECT,
-                 G_TYPE_NONE, 0,
+                 G_TYPE_NONE, 1,
 		 G_TYPE_OBJECT);
 }
 
@@ -346,6 +346,8 @@ ags_machine_init(AgsMachine *machine)
 
   g_hash_table_insert(ags_machine_message_monitor,
 		      machine, ags_machine_message_monitor_timeout);
+
+  g_timeout_add(1000 / 30, (GSourceFunc) ags_machine_message_monitor_timeout, (gpointer) machine);
 
   machine->machine_name = NULL;
 
@@ -2246,6 +2248,10 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 	}
       }
       
+      ags_message_delivery_remove_message(message_delivery,
+					  "libags-audio",
+					  message->data);
+
       message = message->next;
     }
     

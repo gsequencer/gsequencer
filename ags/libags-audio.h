@@ -121,7 +121,7 @@
 #include <ags/audio/midi/ags_midi_parser.h>
 #include <ags/audio/midi/ags_midi_util.h>
 
-/* audio core_audio */
+/* audio core-audio */
 #include <ags/audio/core-audio/ags_core_audio_client.h>
 #include <ags/audio/core-audio/ags_core_audio_devout.h>
 #include <ags/audio/core-audio/ags_core_audio_port.h>

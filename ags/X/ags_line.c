@@ -359,7 +359,7 @@ ags_line_class_init(AgsLineClass *line)
 		 G_STRUCT_OFFSET(AgsLineClass, done),
                  NULL, NULL,
                  g_cclosure_marshal_VOID__OBJECT,
-                 G_TYPE_NONE, 0,
+                 G_TYPE_NONE, 1,
 		 G_TYPE_OBJECT);
 }
 
@@ -400,6 +400,8 @@ ags_line_init(AgsLine *line)
 
   g_hash_table_insert(ags_line_message_monitor,
 		      line, ags_line_message_monitor_timeout);
+  
+  g_timeout_add(1000 / 30, (GSourceFunc) ags_line_message_monitor_timeout, (gpointer) line);
 
   if(ags_line_indicator_queue_draw == NULL){
     ags_line_indicator_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
@@ -1888,7 +1890,7 @@ ags_line_message_monitor_timeout(AgsLine *line)
 	  g_list_free(line_editor_start);
 	  
 	  /* add effect */
-	  ags_line_add_effect(machine,
+	  ags_line_add_effect(line,
 			      control_type_name,
 			      filename,
 			      effect);
@@ -1909,6 +1911,10 @@ ags_line_message_monitor_timeout(AgsLine *line)
 			recall_id);
 	}
       }
+      
+      ags_message_delivery_remove_message(message_delivery,
+					  "libags-audio",
+					  message->data);
       
       message = message->next;
     }

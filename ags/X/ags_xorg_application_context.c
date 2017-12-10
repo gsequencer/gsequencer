@@ -1681,7 +1681,14 @@ ags_xorg_application_context_register_types(AgsApplicationContext *application_c
   /* register tasks */
   ags_cancel_audio_get_type();
   ags_cancel_channel_get_type();
+
+  /* register backend */
+  ags_core_audio_server_get_type();
   
+  ags_pulse_server_get_type();
+
+  ags_jack_server_get_type();
+
   //TODO:JK: extend me
   
   /* register recalls */
@@ -1799,6 +1806,8 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
 
   AgsJackServer *jack_server;
 
+  AgsMutexManager *mutex_manager;
+
   AgsConfig *config;
 
   GList *core_audio_client;
@@ -1810,6 +1819,15 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
 
   gboolean autosave_thread_enabled;
 
+  pthread_mutex_t *application_mutex;
+
+  gtk_widget_destroy(ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);  
+
+  pthread_mutex_lock(application_mutex);
+  
   config = application_context->config;
   
   /* autosave thread */
@@ -1946,8 +1964,10 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
     
     list = list->next;
   }
+
+  pthread_mutex_unlock(application_mutex);
   
-  exit(0);
+  gtk_main_quit();
 }
 
 void

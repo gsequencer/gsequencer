@@ -107,6 +107,9 @@ ags_message_queue_class_init(AgsMessageQueueClass *message_queue)
   
   ags_message_queue_parent_class = g_type_class_peek_parent(message_queue);
 
+  /* GObjectClass */
+  gobject = (GObjectClass *) message_queue;
+  
   gobject->set_property = ags_message_queue_set_property;
   gobject->get_property = ags_message_queue_get_property;
 

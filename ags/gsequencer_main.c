@@ -27,14 +27,6 @@
 #include <libinstpatch/libinstpatch.h>
 #endif
 
-#include <ags/lib/ags_log.h>
-
-#include <ags/object/ags_application_context.h>
-
-#include <ags/X/ags_xorg_application_context.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
-
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
 #include <libxml/xpath.h>
@@ -42,6 +34,14 @@
 #include <libxml/xmlIO.h>
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+#include <ags/X/ags_xorg_application_context.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include "gsequencer_main.h"
 
@@ -395,10 +395,7 @@ main(int argc, char **argv)
   g_free(config_file);
   
   ags_setup(argc, argv);
-  
-  ags_application_context_quit(ags_application_context);
-  g_free(rc_filename);
-  
+    
   //  muntrace();
 
   return(0);
