@@ -227,23 +227,48 @@ ags_mixer_input_line_map_recall(AgsLine *line,
   AgsPeakChannelRun *recall_peak_channel_run, *play_peak_channel_run;
 
   GList *list;
+
+  guint pad, audio_channel;
   guint i;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *source_mutex;
 
   if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0 ||
      (AGS_LINE_PREMAPPED_RECALL & (line->flags)) != 0){
     return;
   }
 
-  audio = AGS_AUDIO(line->channel->audio);
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   source = line->channel;
+
+  /* get source mutex */
+  pthread_mutex_lock(application_mutex);
+
+  source_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  (GObject *) source);
+  
+  pthread_mutex_unlock(application_mutex);  
+
+  /* get some fields */
+  pthread_mutex_lock(source_mutex);
+
+  audio = (AgsAudio *) source->audio;
+
+  pad = source->pad;
+  audio_channel = source->audio_channel;
+  
+  pthread_mutex_unlock(source_mutex);
 
   /* ags-peak */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
 			    "ags-peak",
-			    source->audio_channel, source->audio_channel + 1, 
-			    source->pad, source->pad + 1,
+			    audio_channel, audio_channel + 1, 
+			    pad, pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT |
 			     AGS_RECALL_FACTORY_PLAY |
 			     AGS_RECALL_FACTORY_RECALL |
@@ -254,8 +279,8 @@ ags_mixer_input_line_map_recall(AgsLine *line,
   ags_recall_factory_create(audio,
 			    NULL, NULL,
 			    "ags-mute",
-			    source->audio_channel, source->audio_channel + 1,
-			    source->pad, source->pad + 1,
+			    audio_channel, audio_channel + 1,
+			    pad, pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT |
 			     AGS_RECALL_FACTORY_PLAY |
 			     AGS_RECALL_FACTORY_RECALL |
@@ -266,8 +291,8 @@ ags_mixer_input_line_map_recall(AgsLine *line,
   ags_recall_factory_create(audio,
 			    NULL, NULL,
 			    "ags-volume",
-			    source->audio_channel, source->audio_channel + 1,
-			    source->pad, source->pad + 1,
+			    audio_channel, audio_channel + 1,
+			    pad, pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT |
 			     AGS_RECALL_FACTORY_PLAY |
 			     AGS_RECALL_FACTORY_RECALL |
