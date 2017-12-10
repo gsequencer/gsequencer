@@ -776,6 +776,9 @@ ags_dssi_bridge_resize_audio_channels(AgsMachine *machine,
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   dssi_bridge = (AgsDssiBridge *) machine;  
 
   audio = machine->audio;
@@ -967,6 +970,9 @@ ags_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   dssi_bridge = (AgsDssiBridge *) machine;
 
   audio = machine->audio;
@@ -1144,6 +1150,7 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
 						 AGS_TYPE_WINDOW);
 
   dssi_bridge = (AgsDssiBridge *) machine;
+
   audio = machine->audio;
 
   /* get audio mutex */

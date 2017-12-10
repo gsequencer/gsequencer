@@ -88,8 +88,12 @@ struct _AgsLiveDssiBridgeClass
 
 GType ags_live_dssi_bridge_get_type(void);
 
-void ags_live_dssi_bridge_input_map_recall(AgsLiveDssiBridge *live_dssi_bridge, guint audio_channel_start, guint input_pad_start);
-void ags_live_dssi_bridge_output_map_recall(AgsLiveDssiBridge *live_dssi_bridge, guint audio_channel_start, guint output_pad_start);
+void ags_live_dssi_bridge_input_map_recall(AgsLiveDssiBridge *live_dssi_bridge,
+					   guint audio_channel_start,
+					   guint input_pad_start);
+void ags_live_dssi_bridge_output_map_recall(AgsLiveDssiBridge *live_dssi_bridge,
+					    guint audio_channel_start,
+					    guint output_pad_start);
 
 void ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge);
 
