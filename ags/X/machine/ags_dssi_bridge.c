@@ -762,6 +762,7 @@ ags_dssi_bridge_resize_audio_channels(AgsMachine *machine,
   AgsDssiBridge *dssi_bridge;
 
   AgsAudio *audio;
+  AgsChannel *output, *input;
   AgsChannel *channel, *next_pad;
   AgsRecycling *first_recycling;
   AgsAudioSignal *audio_signal;  
@@ -794,6 +795,9 @@ ags_dssi_bridge_resize_audio_channels(AgsMachine *machine,
   /* get some fields */
   pthread_mutex_lock(audio_mutex);
 
+  output = audio->output;
+  input = audio->input;
+  
   output_pads = audio->output_pads;
   input_pads = audio->input_pads;
 
@@ -807,11 +811,7 @@ ags_dssi_bridge_resize_audio_channels(AgsMachine *machine,
 
   if(audio_channels > audio_channels_old){
     /* AgsInput */
-    pthread_mutex_lock(audio_mutex);
-    
-    channel = audio->input;
-
-    pthread_mutex_unlock(audio_mutex);
+    channel = input;
 
     /* resize audio signal */
     while(channel != NULL){
@@ -870,11 +870,7 @@ ags_dssi_bridge_resize_audio_channels(AgsMachine *machine,
     }
 
     /* AgsOutput */
-    pthread_mutex_lock(audio_mutex);
-
-    channel = audio->output;
-
-    pthread_mutex_unlock(audio_mutex);
+    channel = output;
 
     /* resize audio signal */
     while(channel != NULL){
@@ -1515,7 +1511,7 @@ ags_dssi_bridge_input_map_recall(AgsDssiBridge *dssi_bridge,
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
   
-  dssi_bridge->mapped_input_pad = audio->input_pads;
+  dssi_bridge->mapped_input_pad = input_pads;
 }
 
 void
@@ -1623,7 +1619,7 @@ ags_dssi_bridge_output_map_recall(AgsDssiBridge *dssi_bridge,
 			      0);
   }
   
-  dssi_bridge->mapped_output_pad = audio->output_pads;
+  dssi_bridge->mapped_output_pad = output_pads;
 }
 
 void
