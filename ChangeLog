@@ -35,6 +35,7 @@ ags (1.2.0)
 	* extended AgsPulseServer, AgsPulseClient and AgsPulsePort to support AgsPulseDevin
 	* extended AgsSwitchBufferFlag and AgsClearBuffer to support AgsDevin, AgsJackDevin and AgsPulseDevin
 	* refactored AgsNotebook to be generic and move to libags-gui
+	* TODO:JK: fixed SIGSEGV on busy ALSA device while read config
 	* use $(docdir) in Makefile.am
 
 ags (1.1.7)

@@ -961,16 +961,41 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 {
   AgsAudio *audio;
   
+  AgsMutexManager *mutex_manager;
+
   AgsConfig *config;
 
   gchar *str;
 
+  guint input_pads;
   gboolean performance_mode;
 
-  audio = machine->audio;
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   config = ags_config_get_instance();
 
+  audio = machine->audio;
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  input_pads = audio->input_pads;
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  /*  */
   if(audio_channels > audio_channels_old){
     /* map dependending on output */
     str = ags_config_get_value(config,
@@ -987,7 +1012,7 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 				NULL, NULL,
 				"ags-copy",
 				audio_channels_old, audio_channels,
-				0, audio->input_pads,
+				0, input_pads,
 				(AGS_RECALL_FACTORY_INPUT |
 				 AGS_RECALL_FACTORY_RECALL |
 				 AGS_RECALL_FACTORY_ADD),
@@ -1001,7 +1026,7 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 				NULL, NULL,
 				"ags-buffer",
 				audio_channels_old, audio_channels,
-				0, audio->input_pads,
+				0, input_pads,
 				(AGS_RECALL_FACTORY_INPUT |
 				 AGS_RECALL_FACTORY_RECALL |
 				 AGS_RECALL_FACTORY_ADD),
@@ -1013,7 +1038,7 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 			      NULL, NULL,
 			      "ags-play",
 			      audio_channels_old, audio_channels, 
-			      0, audio->input_pads,
+			      0, input_pads,
 			      (AGS_RECALL_FACTORY_INPUT |
 			       AGS_RECALL_FACTORY_PLAY |
 			       AGS_RECALL_FACTORY_ADD),
@@ -1024,7 +1049,7 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 			      NULL, NULL,
 			      "ags-envelope",
 			      audio_channels_old, audio_channels, 
-			      0, audio->input_pads,
+			      0, input_pads,
 			      (AGS_RECALL_FACTORY_INPUT |
 			       AGS_RECALL_FACTORY_PLAY |
 			       AGS_RECALL_FACTORY_RECALL | 
@@ -1036,7 +1061,7 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 			      NULL, NULL,
 			      "ags-stream",
 			      audio_channels_old, audio_channels, 
-			      0, audio->input_pads,
+			      0, input_pads,
 			      (AGS_RECALL_FACTORY_INPUT |
 			       AGS_RECALL_FACTORY_PLAY |
 			       AGS_RECALL_FACTORY_RECALL | 
@@ -1068,20 +1093,42 @@ ags_ffplayer_resize_pads(AgsMachine *machine, GType type,
 
   AgsAudio *audio;
 
+  AgsMutexManager *mutex_manager;
+
+  guint output_pads, input_pads;
   gboolean grow;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  
+  if(pads_old == pads){
+    return;
+  }
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
   ffplayer = machine;
 
   audio = machine->audio;
-  
-  if(pads_old == pads){
-    return;
-  }
 
-  if(pads_old == pads){
-    return;
-  }
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
   
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  output_pads = audio->output_pads;
+  input_pads = audio->input_pads;
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  /* check grow */
   if(pads_old < pads){
     grow = TRUE;
   }else{
@@ -1093,14 +1140,14 @@ ags_ffplayer_resize_pads(AgsMachine *machine, GType type,
       /* depending on destination */
       ags_ffplayer_input_map_recall(ffplayer, pads_old);
     }else{
-      ffplayer->mapped_input_pad = audio->input_pads;
+      ffplayer->mapped_input_pad = input_pads;
     }
   }else{
     if(grow){
       /* depending on destination */
       ags_ffplayer_output_map_recall(ffplayer, pads_old);
     }else{
-      ffplayer->mapped_output_pad = audio->output_pads;
+      ffplayer->mapped_output_pad = output_pads;
     }
   }
 }
@@ -1111,24 +1158,48 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
   AgsAudio *audio;
   AgsChannel *source, *current;
 
+  AgsMutexManager *mutex_manager;
+
   AgsConfig *config;
 
   GList *list;
 
   gchar *str;
 
+  guint input_pads;
+  guint audio_channels;
   gboolean performance_mode;
 
-  audio = AGS_MACHINE(ffplayer)->audio;
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
 
   if(ffplayer->mapped_input_pad > input_pad_start){
     return;
   }
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   config = ags_config_get_instance();
 
-  source = ags_channel_nth(audio->input,
-			   input_pad_start * audio->audio_channels);
+  audio = AGS_MACHINE(ffplayer)->audio;
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  input_pads = audio->input_pads;
+
+  audio_channels = audio->audio_channels;
+  
+  pthread_mutex_unlock(audio_mutex);
 
   /* map dependending on output */
   str = ags_config_get_value(config,
@@ -1141,145 +1212,127 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
      !g_ascii_strncasecmp(str,
 			  "performance",
 			  12)){
-    current = source;
-
-    while(current != NULL){
-      /* ags-copy */
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-copy",
-				0, audio->audio_channels, 
-				current->pad, current->pad + 1,
-				(AGS_RECALL_FACTORY_INPUT |
-				 AGS_RECALL_FACTORY_RECALL |
-				 AGS_RECALL_FACTORY_ADD),
-				0);
-
-      current = current->next_pad;
-    }
+    /* ags-copy */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-copy",
+			      0, audio_channels,
+			      input_pad_start, input_pads,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
     
     /* set performance mode */
     performance_mode = TRUE;
-  }else{    
-    current = source;
-
-    while(current != NULL){
-      /* ags-buffer */
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-buffer",
-				0, audio->audio_channels, 
-				current->pad, current->pad + 1,
-				(AGS_RECALL_FACTORY_INPUT |
-				 AGS_RECALL_FACTORY_RECALL |
-				 AGS_RECALL_FACTORY_ADD),
-				0);
-
-      current = current->next_pad;
-    }
+  }else{
+    /* ags-buffer */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-buffer",
+			      0, audio_channels,
+			      input_pad_start, input_pads,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
   }
   
-  /*  */
-  current = source;
+  /* ags-play */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-play",
+			    0, audio_channels,
+			    input_pad_start, input_pads,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
 
-  while(current != NULL){
-    /* ags-play */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-play",
-			      0, audio->audio_channels, 
-			      current->pad, current->pad + 1,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
+  /* ags-feed */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-feed",
+			    0, audio_channels,
+			    input_pad_start, input_pads,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_RECALL | 
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
 
-    current = current->next_pad;
-  }
-
-  /*  */
-  current = source;
-
-  while(current != NULL){
-    /* ags-feed */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-feed",
-			      0, audio->audio_channels, 
-			      current->pad, current->pad + 1,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL | 
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
-
-    current = current->next_pad;
-  }
-
-  /*  */
-  current = source;
-
-  while(current != NULL){
-    /* ags-envelope */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-envelope",
-			      0, audio->audio_channels, 
-			      current->pad, current->pad + 1,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL | 
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
-
-    current = current->next_pad;
-  }
+  /* ags-envelope */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-envelope",
+			    0, audio_channels,
+			    input_pad_start, input_pads,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_RECALL | 
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
+  /* ags-stream */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-stream",
+			    0, audio_channels,
+			    input_pad_start, input_pads,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_RECALL | 
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
   
-  /*  */
-  current = source;
-
-  while(current != NULL){
-    /* ags-stream */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-stream",
-			      0, audio->audio_channels, 
-			      current->pad, current->pad + 1,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL | 
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
-
-    current = current->next_pad;
-  }
-  
-  ffplayer->mapped_input_pad = audio->input_pads;
+  ffplayer->mapped_input_pad = input_pads;
 }
 
 void
 ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start)
 {
   AgsAudio *audio;
-  AgsChannel *source, *input, *current;
+
+  AgsMutexManager *mutex_manager;
 
   AgsConfig *config;
 
   gchar *str;
 
+  guint output_pads, input_pads;
+  guint audio_channels;
   gboolean performance_mode;
 
-  audio = AGS_MACHINE(ffplayer)->audio;
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
 
   if(ffplayer->mapped_output_pad > output_pad_start){
     return;
   }
 
-  config = ags_config_get_instance();
-  
-  source = ags_channel_nth(audio->output,
-			   output_pad_start * audio->audio_channels);
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
+  config = ags_config_get_instance();
+
+  audio = AGS_MACHINE(ffplayer)->audio;
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  output_pads = audio->output_pads;
+  input_pads = audio->input_pads;
+
+  audio_channels = audio->audio_channels;
+  
+  pthread_mutex_unlock(audio_mutex);
   
   /* map dependending on output */
   str = ags_config_get_value(config,
@@ -1292,64 +1345,46 @@ ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start)
      !g_ascii_strncasecmp(str,
 			  "performance",
 			  12)){
-    input = audio->input;
-
-    while(input != NULL){
-      /* ags-copy */
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-copy",
-				0, audio->audio_channels, 
-				input->pad, input->pad + 1,
-				(AGS_RECALL_FACTORY_INPUT |
-				 AGS_RECALL_FACTORY_RECALL |
-				 AGS_RECALL_FACTORY_ADD),
-				0);
-
-      input = input->next_pad;
-    }
+    /* ags-copy */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-copy",
+			      0, audio_channels, 
+			      0, input_pads,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
     
     /* set performance mode */
     performance_mode = TRUE;
-  }else{    
-    input = audio->input;
-
-    while(input != NULL){
-      /* ags-buffer */
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-buffer",
-				0, audio->audio_channels, 
-				input->pad, input->pad + 1,
-				(AGS_RECALL_FACTORY_INPUT |
-				 AGS_RECALL_FACTORY_RECALL |
-				 AGS_RECALL_FACTORY_ADD),
-				0);
-
-      input = input->next_pad;
-    }
+  }else{
+    /* ags-buffer */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-buffer",
+			      0, audio_channels, 
+			      0, input_pads,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
   }
 
   if(!performance_mode){
-    current = source;
-
-    while(current != NULL){
-      /* ags-stream */
-      ags_recall_factory_create(audio,
-				NULL, NULL,
-				"ags-stream",
-				0, audio->audio_channels,
-				current->pad, current->pad + 1,
-				(AGS_RECALL_FACTORY_OUTPUT |
-				 AGS_RECALL_FACTORY_PLAY |
-				 AGS_RECALL_FACTORY_ADD),
-				0);
-
-      current = current->next_pad;
-    }
+    /* ags-stream */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-stream",
+			      0, audio_channels,
+			      output_pad_start, output_pads,
+			      (AGS_RECALL_FACTORY_OUTPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
   }
   
-  ffplayer->mapped_output_pad = audio->output_pads;
+  ffplayer->mapped_output_pad = output_pads;
 }
 
 void
