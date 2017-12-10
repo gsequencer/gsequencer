@@ -106,8 +106,12 @@ struct _AgsLiveLv2BridgeClass
 
 GType ags_live_lv2_bridge_get_type(void);
 
-void ags_live_lv2_bridge_input_map_recall(AgsLiveLv2Bridge *live_lv2_bridge, guint audio_channel_start, guint input_pad_start);
-void ags_live_lv2_bridge_output_map_recall(AgsLiveLv2Bridge *live_lv2_bridge, guint audio_channel_start, guint output_pad_start);
+void ags_live_lv2_bridge_input_map_recall(AgsLiveLv2Bridge *live_lv2_bridge,
+					  guint audio_channel_start,
+					  guint input_pad_start);
+void ags_live_lv2_bridge_output_map_recall(AgsLiveLv2Bridge *live_lv2_bridge,
+					   guint audio_channel_start,
+					   guint output_pad_start);
 
 void ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge);
 void ags_live_lv2_bridge_load_preset(AgsLiveLv2Bridge *live_lv2_bridge);

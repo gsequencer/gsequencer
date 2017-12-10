@@ -830,7 +830,7 @@ ags_live_dssi_bridge_resize_audio_channels(AgsMachine *machine,
       
       channel = ags_channel_nth(channel,
 				audio_channels_old);
-      
+
       while(channel != next_pad){
 	/* get channel mutex */
 	pthread_mutex_lock(application_mutex);
@@ -1289,10 +1289,14 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
   pthread_mutex_unlock(audio_mutex);
 
   /* depending on destination */
-  ags_live_dssi_bridge_input_map_recall(live_dssi_bridge, 0, 0);
+  ags_live_dssi_bridge_input_map_recall(live_dssi_bridge,
+					0,
+					0);
 
   /* depending on destination */
-  ags_live_dssi_bridge_output_map_recall(live_dssi_bridge, 0, 0);
+  ags_live_dssi_bridge_output_map_recall(live_dssi_bridge,
+					 0,
+					 0);
 
   /* call parent */
   AGS_MACHINE_CLASS(ags_live_dssi_bridge_parent_class)->map_recall(machine);
