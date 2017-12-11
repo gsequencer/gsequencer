@@ -49,7 +49,7 @@ void ags_functional_notation_edit_test_quit_stub(AgsApplicationContext *applicat
 
 void ags_functional_notation_edit_test_file_setup();
 
-#define AGS_FUNCTIONAL_NOTATION_EDIT_TEST_FILE_SETUP_FILENAME SRCDIR "/" "ags_functional_notation_edit_test.xml\0"
+#define AGS_FUNCTIONAL_NOTATION_EDIT_TEST_FILE_SETUP_FILENAME SRCDIR "/" "ags_functional_notation_edit_test.xml"
 #define AGS_FUNCTIONAL_NOTATION_EDIT_TEST_FILE_SETUP_PLAYBACK_COUNT (3)
 #define AGS_FUNCTIONAL_NOTATION_EDIT_TEST_FILE_SETUP_PLAYBACK_DURATION (30)
 
@@ -90,7 +90,7 @@ void
 ags_functional_notation_edit_test_add_test()
 {
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "functional test of GSequencer setup by file and editing notes\0", ags_functional_notation_edit_test_file_setup) == NULL)){
+  if((CU_add_test(pSuite, "functional test of GSequencer setup by file and editing notes", ags_functional_notation_edit_test_file_setup) == NULL)){
     CU_cleanup_registry();
       
     exit(CU_get_error());
@@ -135,7 +135,7 @@ ags_functional_notation_edit_test_clean_suite()
 void
 ags_functional_notation_edit_test_quit_stub(AgsApplicationContext *application_context)
 {
-  g_critical("quit stub\0");
+  g_critical("quit stub");
 }
 
 void
@@ -209,7 +209,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsFuncitonalNoteEditTest\0", ags_functional_notation_edit_test_init_suite, ags_functional_notation_edit_test_clean_suite);
+  pSuite = CU_add_suite("AgsFuncitonalNoteEditTest", ags_functional_notation_edit_test_init_suite, ags_functional_notation_edit_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();

@@ -79,6 +79,10 @@ gboolean ags_functional_test_util_idle_test_widget_hidden(GtkWidget **widget);
 gboolean ags_functional_test_util_idle_test_container_children_count(AgsFunctionalTestUtilContainerTest *container_test);
 gboolean ags_functional_test_util_idle_test_null(GtkWidget **widget);
 
+/* leave */
+void ags_functional_test_util_leave(GtkWidget *window);
+
+/* common */
 GtkMenu* ags_functional_test_util_submenu_find(GtkMenu *menu,
 					       gchar *item_label);
 gboolean ags_functional_test_util_menu_bar_click(gchar *item_label);

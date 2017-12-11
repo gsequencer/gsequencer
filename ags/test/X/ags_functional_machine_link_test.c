@@ -127,7 +127,7 @@ ags_functional_machine_link_test_add_test()
      (CU_add_test(pSuite, "functional test of GSequencer machine reset link all\0", ags_functional_machine_link_test_reset_link_all) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer machine link destroy all\0", ags_functional_machine_link_test_destroy_all) == NULL)){
     CU_cleanup_registry();
-      
+    
     exit(CU_get_error());
   }
   

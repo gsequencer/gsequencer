@@ -23,6 +23,7 @@ ags (1.2.0)
 	* improved ags-route-dssi to support segmented notation
 	* improved ags-route-lv2 to support segmented notation
 	* improved AgsSimpleFile to support segmented notation
+	* fixed missing any_signal:: prefix of strings passing as pspec to g_object_disconnect()
 	* use $(docdir) in Makefile.am
 
 ags (1.1.7)

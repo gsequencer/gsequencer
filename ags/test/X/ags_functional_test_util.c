@@ -438,6 +438,22 @@ ags_functional_test_util_idle_test_container_children_count(AgsFunctionalTestUti
   return(do_idle);
 }
 
+void
+ags_functional_test_util_leave(GtkWidget *window)
+{
+  if(!GTK_IS_WINDOW(window)){
+    return;
+  }
+
+  ags_test_enter();
+
+  gdk_window_destroy(gtk_widget_get_window(window));
+
+  ags_test_leave();
+
+  ags_functional_test_util_reaction_time_long();
+}
+
 GtkMenu*
 ags_functional_test_util_submenu_find(GtkMenu *menu,
 				      gchar *item_label)

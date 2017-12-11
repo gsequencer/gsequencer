@@ -3699,6 +3699,7 @@ libags_audio_jack_h_sources = \
 	ags/audio/jack/ags_jack_client.h \
 	ags/audio/jack/ags_jack_midiin.h \
 	ags/audio/jack/ags_jack_devout.h \
+	ags/audio/jack/ags_jack_devin.h \
 	ags/audio/jack/ags_jack_port.h \
 	ags/audio/jack/ags_jack_server.h
 
