@@ -63,6 +63,8 @@ struct _AgsGuiThread
   GCond cond;
   
   GMainContext *main_context;
+
+  GThread *gtk_thread;
   
   gint cached_poll_array_size;
   GPollFD *cached_poll_array;

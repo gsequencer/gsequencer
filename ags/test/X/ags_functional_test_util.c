@@ -46,6 +46,8 @@ gboolean ags_functional_test_util_driver_dispatch(GSource *source,
 void* ags_functional_test_util_add_test_thread(void *ptr);
 void* ags_functional_test_util_do_run_thread(void *ptr);
 
+pthread_t *ags_functional_test_util_thread = NULL;
+
 extern AgsApplicationContext *ags_application_context;
 
 extern AgsMutexManager *ags_mutex_manager;
@@ -106,11 +108,19 @@ ags_functional_test_util_driver_dispatch(GSource *source,
   return(G_SOURCE_CONTINUE);
 }
 
+pthread_t*
+ags_functional_test_util_self()
+{
+  return(ags_functional_test_util_thread);
+}
+
 void*
 ags_functional_test_util_add_test_thread(void *ptr)
 {
   struct _AddTest *test;
 
+  ags_functional_test_util_thread = pthread_self();
+  
   test = ptr;
   
   while(!g_atomic_int_get(test->is_available)){

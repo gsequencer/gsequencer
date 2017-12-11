@@ -360,6 +360,30 @@ ags_test_init(int *argc, char ***argv,
 }
 
 void
+ags_test_quit()
+{
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  
+  AgsGuiThread *gui_thread;
+
+  xorg_application_context = ags_application_context_get_instance();
+
+  ags_test_enter();
+  
+  window = xorg_application_context->window;
+  
+  gui_thread = xorg_application_context->gui_thread;
+
+  window->flags |= AGS_WINDOW_TERMINATING;
+
+  ags_test_leave();
+
+  pthread_join(gui_thread->gtk_thread,
+	       NULL);
+}
+
+void
 ags_test_show_file_error(gchar *filename,
 			 GError *error)
 {

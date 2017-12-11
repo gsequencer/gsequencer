@@ -1923,8 +1923,8 @@ install-data-local:
 	install -c -p -m 644 $(top_srcdir)/ags/file/ags_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	install -c -p -m 644 $(top_srcdir)/ags.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
 	install -c -p -m 644 $(top_srcdir)/ags-simple.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
-	mkdir -p $(DESTDIR)/$(datadir)/$(docdir)/
-	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(datadir)/$(docdir)/changelog.gz
+	mkdir -p $(DESTDIR)/$(docdir)/
+	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(docdir)/changelog.gz
 
 fix-local-html: html
 	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/\/usr\/share\/doc\/libglib2.0-doc\/gobject/g' {} \;
@@ -1955,11 +1955,11 @@ fix-online-html: html
 	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-gui-html/\.\.\/libags-gui/g' {} \;
 
 install-html: fix-local-html 
-	mkdir -p $(DESTDIR)/$(datadir)/$(docdir)/{images,html}/
+	mkdir -p $(DESTDIR)/$(docdir)/{images,html}/
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/{images,html}/
-	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(datadir)/$(docdir)/images/
+	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(docdir)/images/
 	install -c -p -m 644 $(devdocimages) $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images/
-	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(datadir)/$(docdir)/html/
+	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(docdir)/html/
 	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
 	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-doc/api
@@ -1977,7 +1977,7 @@ install-html: fix-local-html
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
-	rm -rf $(DESTDIR)/$(datadir)/$(docdir)
+	rm -rf $(DESTDIR)/$(docdir)
 	rm -rf $(DESTDIR)/$(datadir)/xml/gsequencer
 	rm -rf $(DESTDIR)/$(datadir)/doc/libags-doc
 	rm -rf $(DESTDIR)/$(datadir)/doc/libags-audio-doc

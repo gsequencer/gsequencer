@@ -95,6 +95,7 @@ ags_functional_machine_add_and_destroy_test_add_test()
      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsFFPlayer\0", ags_functional_machine_add_and_destroy_test_ffplayer) == NULL)
 #endif
      ){
+    
     CU_cleanup_registry();
       
     exit(CU_get_error());
@@ -103,6 +104,8 @@ ags_functional_machine_add_and_destroy_test_add_test()
   /* Run all tests using the CUnit Basic interface */
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
+  
+  //  ags_test_quit();
   
   CU_cleanup_registry();
   
@@ -262,7 +265,8 @@ main(int argc, char **argv)
   ags_functional_test_util_do_run(argc, argv,
 				  ags_functional_machine_add_and_destroy_test_add_test, &is_available);
 
+  pthread_join(ags_functional_test_util_self(),
+	       NULL);
   
   return(-1);
 }
-

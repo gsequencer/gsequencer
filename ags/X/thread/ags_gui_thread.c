@@ -253,6 +253,7 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   g_mutex_init(&(gui_thread->mutex));
 
   gui_thread->main_context = g_main_context_default();
+  gui_thread->gtk_thread = NULL;
 
   gui_thread->cached_poll_array_size = 0;
   gui_thread->cached_poll_array = NULL;
@@ -1200,7 +1201,7 @@ ags_gui_thread_animation_prepare(GSource *source,
   
   gui_thread = ags_thread_find_type(main_loop,
 				    AGS_TYPE_GUI_THREAD);
-
+  
   log = ags_log_get_instance();
   
   pthread_mutex_lock(log->mutex);

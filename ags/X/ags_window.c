@@ -22,6 +22,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/X/ags_xorg_application_context.h>
+
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_mixer.h>
 #include <ags/X/machine/ags_drum.h>
@@ -34,6 +36,8 @@
 #include <ags/X/machine/ags_lv2_bridge.h>
 
 #include <ags/X/file/ags_simple_file.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #ifdef AGS_WITH_QUARTZ
 #include <gtkmacintegration-gtk2/gtkosxapplication.h>
@@ -731,12 +735,34 @@ ags_window_show_error(AgsWindow *window,
  * ags_window_load_file_timeout:
  * @window: the #AgsWindow
  * 
+ * Load file.
+ *
+ * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  * 
  * Since: 1.2.0
  */
 gboolean
 ags_window_load_file_timeout(AgsWindow *window)
 {
+  AgsGuiThread *gui_thread;
+
+  gui_thread = NULL;
+  
+  if(window->application_context != NULL){
+    gui_thread = AGS_XORG_APPLICATION_CONTEXT(window->application_context)->gui_thread;
+  }
+  
+  if(gui_thread != NULL &&
+     gui_thread->gtk_thread == NULL){
+      gui_thread->gtk_thread = g_thread_self();
+  }
+
+  if((AGS_WINDOW_TERMINATING & (window->flags)) != 0){
+    ags_application_context_quit(window->application_context);
+
+    return(FALSE);
+  }
+
   if(g_hash_table_lookup(ags_window_load_file,
 			 window) != NULL){
     if(window->filename != NULL){
