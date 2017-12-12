@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,9 @@
  */
 
 #include <ags/object/ags_connection.h>
+
+#include <ags/thread/ags_message_delivery.h>
+#include <ags/thread/ags_message_queue.h>
 
 void ags_connection_class_init(AgsConnectionClass *connection);
 void ags_connection_init (AgsConnection *connection);
@@ -134,6 +137,9 @@ ags_connection_set_property(GObject *gobject,
     {
       GObject *data_object;
 
+      AgsMessageDelivery *message_delivery;
+      AgsMessageQueue *message_queue;
+      
       data_object = (GObject *) g_value_get_object(value);
 
       if(connection->data_object == data_object){
@@ -149,6 +155,51 @@ ags_connection_set_property(GObject *gobject,
       }
 
       connection->data_object = data_object;
+
+      /* emit message */
+      message_delivery = ags_message_delivery_get_instance();
+
+      message_queue = ags_message_delivery_find_namespace(message_delivery,
+							  "libags");
+
+      if(message_queue != NULL){
+	AgsMessageEnvelope *message;
+
+	xmlDoc *doc;
+	xmlNode *root_node;
+
+	/* specify message body */
+	doc = xmlNewDoc("1.0");
+
+	root_node = xmlNewNode(NULL,
+			       "ags-command");
+	xmlDocSetRootElement(doc, root_node);    
+
+	xmlNewProp(root_node,
+		   "method",
+		   "GObject::notify::data-object");
+
+	/* add message */
+	message = ags_message_envelope_alloc(connection,
+					     NULL,
+					     doc);
+
+	/* set parameter */
+	message->parameter = g_new0(GParameter,
+				    1);
+	message->n_params = 1;
+    
+	message->parameter[0].name = "data-object";
+	g_value_init(&(message->parameter[0].value),
+		     G_TYPE_OBJECT);
+	g_value_set_object(&(message->parameter[0].value),
+			   data_object);
+
+	/* add message */
+	ags_message_delivery_add_message(message_delivery,
+					 "libags",
+					 message);
+      }
     }
     break;
   default:

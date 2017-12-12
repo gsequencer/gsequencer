@@ -295,7 +295,7 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 
   GObject *soundcard;
 
-  guint line;
+  guint nth_line;
   
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
@@ -330,11 +330,11 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 
     first_recycling = channel->first_recycling;
 
-    line = channel->line;
+    nth_line = channel->line;
     
 #ifdef AGS_DEBUG
     g_message("ags_drum_input_line_set_channel - channel: %u",
-	      channel->line);
+	      nth_line);
 #endif
 
     pthread_mutex_unlock(channel_mutex);
@@ -380,7 +380,7 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
     
     /* reset edit button */
     if(old_channel == NULL &&
-       line == 0){
+       nth_line == 0){
       AgsDrum *drum;
       GtkToggleButton *selected_edit_button;
 

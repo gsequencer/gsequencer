@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -59,6 +59,8 @@ void ags_panel_input_line_map_recall(AgsLine *line,
  *
  * The #AgsPanelInputLine is a composite widget to act as panel input line.
  */
+
+GHashTable *ags_panel_input_line_message_monitor = NULL;
 
 static gpointer ags_panel_input_line_parent_class = NULL;
 static AgsConnectableInterface *ags_panel_input_line_parent_connectable_interface;
@@ -159,6 +161,18 @@ ags_panel_input_line_init(AgsPanelInputLine *panel_input_line)
 {
   AgsLineMember *line_member;
 
+  if(ags_panel_input_line_message_monitor == NULL){
+    ags_panel_input_line_message_monitor = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+								 NULL,
+								 NULL);
+  }
+
+  g_hash_table_insert(ags_panel_input_line_message_monitor,
+		      panel_input_line, ags_panel_input_line_message_monitor_timeout);
+  
+  g_timeout_add(1000 / 30, (GSourceFunc) ags_line_message_monitor_timeout, (gpointer) panel_input_line);
+
+  /* mute line member */
   panel_input_line->soundcard_connection = (GtkLabel *) gtk_label_new("(null)");
   ags_expander_add(AGS_LINE(panel_input_line)->expander,
 		   GTK_WIDGET(panel_input_line->soundcard_connection),
@@ -322,6 +336,7 @@ ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
   /* find audio connection - soundcard */
   pthread_mutex_lock(audio_mutex);
 
+  audio_connection = NULL;
   list = audio->audio_connection;
 	  
   while((list = ags_audio_connection_find(list,
@@ -335,6 +350,8 @@ ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 		 NULL);
 	    
     if(AGS_IS_SOUNDCARD(data_object)){
+      audio_connection = list->data;
+      
       break;
     }
 
@@ -344,13 +361,7 @@ ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
   pthread_mutex_unlock(audio_mutex);
 
   /* update label */
-  if(list != NULL){
-    pthread_mutex_lock(audio_mutex);
-    
-    audio_connection = list->data;
-
-    pthread_mutex_unlock(audio_mutex);
-
+  if(audio_connection != NULL){
     /* get soundcard mutex */
     pthread_mutex_lock(application_mutex);
 
@@ -375,15 +386,6 @@ ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 			str);
     
     g_free(str);
-
-  //FIXME:JK: uncomment if thread-safe
-#if 0
-    g_signal_connect(audio_connection, "notify::data-object",
-		     G_CALLBACK(ags_panel_input_line_notify_data_object_callback), panel_input_line);
-
-    g_signal_connect(audio_connection, "notify::mapped-line",
-		     G_CALLBACK(ags_panel_input_line_notify_mapped_line_callback), panel_input_line);
-#endif
   }
   
 #ifdef AGS_DEBUG
@@ -477,6 +479,261 @@ ags_panel_input_line_map_recall(AgsLine *line,
   /* call parent */
   AGS_LINE_CLASS(ags_panel_input_line_parent_class)->map_recall(line,
 								output_pad_start);
+}
+
+/**
+ * ags_panel_input_line_message_monitor_timeout:
+ * @panel_input_line: the #AgsPanelInputLine
+ *
+ * Monitor messages.
+ *
+ * Returns: %TRUE if proceed with redraw, otherwise %FALSE
+ *
+ * Since: 1.2.2
+ */
+gboolean
+ags_panel_input_line_message_monitor_timeout(AgsPanelInputLine *panel_input_line)
+{
+  if(g_hash_table_lookup(ags_panel_input_line_message_monitor,
+			 panel_input_line) != NULL){
+    AgsAudio *audio;
+    AgsChannel *channel;
+    AgsConnection *connection;
+
+    AgsMutexManager *mutex_manager;
+    AgsMessageDelivery *message_delivery;
+
+    GList *message_start, *message;
+    GList *list;
+
+    guint pad, audio_channel;
+    
+    pthread_mutex_t *application_mutex;
+    pthread_mutex_t *soundcard_mutex;
+    pthread_mutex_t *audio_mutex;
+    pthread_mutex_t *channel_mutex;
+    
+    /* get mutex manager and application mutex */
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    /* message delivery */
+    message_delivery = ags_message_delivery_get_instance();
+
+    channel = AGS_LINE(panel_input_line)->channel;
+
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* get some fields */
+    pthread_mutex_lock(channel_mutex);
+    
+    audio = channel->audio;
+
+    pad = channel->pad;
+    audio_channel = channel->audio_channel;
+    
+    pthread_mutex_unlock(channel_mutex);
+
+    /* get audio mutex */
+    pthread_mutex_lock(application_mutex);
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) audio);
+
+    pthread_mutex_unlock(application_mutex);
+    
+    /* libags - retrieve message */
+    pthread_mutex_lock(audio_mutex);
+
+    list = audio->audio_connection;
+    connection = NULL;
+    
+    while((list = ags_audio_connection_find(list,
+					    AGS_TYPE_INPUT,
+					    pad,
+					    audio_channel)) != NULL){
+      GObject *data_object;
+
+      g_object_get(G_OBJECT(list->data),
+		   "data-object", &data_object,
+		   NULL);
+	    
+      if(AGS_IS_SOUNDCARD(data_object)){
+	connection = list->data;
+	
+	break;
+      }
+
+      list = list->next;
+    }
+
+    pthread_mutex_unlock(audio_mutex);
+
+    /* check messages */
+    message_start = 
+	message = ags_message_delivery_find_sender(message_delivery,
+						   "libags",
+						   connection);
+
+    while(message != NULL){
+      xmlNode *root_node;
+
+      root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message->data)->doc);
+      
+      if(!xmlStrncmp(root_node->name,
+		     "ags-command",
+		     12)){
+	if(!xmlStrncmp(xmlGetProp(root_node,
+				  "method"),
+		       "GObject::notify::data-object",
+		       28)){
+	  GObject *soundcard;
+
+	  gchar *device;
+	  gchar *str;
+
+	  guint mapped_line;
+	  
+	  GValue *value;
+
+	  /* get some fields */
+	  pthread_mutex_lock(audio_mutex);
+
+	  mapped_line = AGS_AUDIO_CONNECTION(connection)->mapped_line;
+	  
+	  pthread_mutex_unlock(audio_mutex);
+
+	  /* get data object */
+	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
+				     "data-object");
+	  soundcard = g_value_get_object(value);
+
+	  /* get soundcard mutex */
+	  pthread_mutex_lock(application_mutex);
+
+	  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+						     (GObject *) soundcard);
+
+	  pthread_mutex_unlock(application_mutex);
+
+	  /* get some fields */
+	  pthread_mutex_lock(soundcard_mutex);
+	  
+	  device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard));
+
+	  pthread_mutex_unlock(soundcard_mutex);
+	  
+	  /* update label */
+	  str = g_strdup_printf("%s:%s[%d]",
+				G_OBJECT_TYPE_NAME(soundcard),
+				device,
+				mapped_line + 1);
+	  gtk_label_set_label(panel_input_line->soundcard_connection,
+			      str);
+
+	  g_free(str);
+	}
+      }
+      
+      ags_message_delivery_remove_message(message_delivery,
+					  "libags",
+					  message->data);
+      
+      message = message->next;
+    }
+  
+    g_list_free_full(message_start,
+		     ags_message_envelope_free);
+
+    /* libags-audio - retrieve message */
+    //NOTE:JK: very same connection object
+    
+    /* check messages */
+    message_start = 
+	message = ags_message_delivery_find_sender(message_delivery,
+						   "libags-audio",
+						   connection);
+
+    while(message != NULL){
+      xmlNode *root_node;
+
+      root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message->data)->doc);
+      
+      if(!xmlStrncmp(root_node->name,
+		     "ags-command",
+		     12)){
+	if(!xmlStrncmp(xmlGetProp(root_node,
+				  "method"),
+		       "GObject::notify::mapped-line",
+		       28)){
+	  GObject *soundcard;
+
+	  gchar *device;
+	  gchar *str;
+
+	  guint mapped_line;
+	  
+	  GValue *value;
+
+	  /* get some fields */
+	  pthread_mutex_lock(audio_mutex);
+
+	  soundcard = connection->data_object;
+	  
+	  pthread_mutex_unlock(audio_mutex);
+
+	  /* get mapped line */
+	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
+				     "mapped-line");
+	  mapped_line = g_value_get_uint(value);
+
+	  /* get soundcard mutex */
+	  pthread_mutex_lock(application_mutex);
+
+	  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+						     (GObject *) soundcard);
+
+	  pthread_mutex_unlock(application_mutex);
+
+	  /* get some fields */
+	  pthread_mutex_lock(soundcard_mutex);
+	  
+	  device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard));
+
+	  pthread_mutex_unlock(soundcard_mutex);
+	  
+	  /* update label */
+	  str = g_strdup_printf("%s:%s[%d]",
+				G_OBJECT_TYPE_NAME(soundcard),
+				device,
+				mapped_line + 1);
+	  gtk_label_set_label(panel_input_line->soundcard_connection,
+			      str);
+
+	  g_free(str);
+	}
+      }
+      
+      ags_message_delivery_remove_message(message_delivery,
+					  "libags-audio",
+					  message->data);
+      
+      message = message->next;
+    }
+  
+    g_list_free_full(message_start,
+		     ags_message_envelope_free);
+
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 /**

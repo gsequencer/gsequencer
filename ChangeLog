@@ -1,3 +1,10 @@
+ags (1.2.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented async message AgsConnection:data-object and AgsAudioConnection:mapped-line
+	* improved thread-safety to AgsLine:channel and AgsEffectLine:channel properties
+	* TODO:JK: improved thread-safety all audio tasks
+
 ags (1.2.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

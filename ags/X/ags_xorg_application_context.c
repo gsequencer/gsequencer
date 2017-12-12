@@ -935,8 +935,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   AgsLv2WorkerManager *lv2_worker_manager;
 
   AgsMessageDelivery *message_delivery;
+  AgsMessageQueue *message_queue;
   AgsMessageQueue *audio_message_queue;
-  AgsMessageQueue *channel_message_queue; 
   AgsThread *soundcard_thread;
   AgsThread *export_thread;
   AgsThread *sequencer_thread;
@@ -1123,6 +1123,10 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
   /* message delivery */
   message_delivery = ags_message_delivery_get_instance();
+
+  message_queue = ags_message_queue_new("libags");
+  ags_message_delivery_add_queue(message_delivery,
+				 message_queue);
 
   audio_message_queue = ags_message_queue_new("libags-audio");
   ags_message_delivery_add_queue(message_delivery,
