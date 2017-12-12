@@ -2040,6 +2040,11 @@ ags_audio_connect(AgsConnectable *connectable)
   GList *list;
 
   audio = AGS_AUDIO(connectable);
+
+  if((AGS_AUDIO_CONNECTED & (audio->flags)) != 0){
+    return;
+  }
+  
   audio->flags |= AGS_AUDIO_CONNECTED;
   
 #ifdef AGS_DEBUG
@@ -2128,7 +2133,100 @@ ags_audio_connect(AgsConnectable *connectable)
 void
 ags_audio_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsAudio *audio;
+  AgsChannel *channel;
+
+  GList *list;
+
+  audio = AGS_AUDIO(connectable);
+
+  if((AGS_AUDIO_CONNECTED & (audio->flags)) == 0){
+    return;
+  }
+  
+  audio->flags &= (~AGS_AUDIO_CONNECTED);
+  
+#ifdef AGS_DEBUG
+  g_message("disconnecting audio");
+#endif
+
+  /* connect channels */
+  channel = audio->output;
+
+  while(channel != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(channel));
+
+    channel = channel->next;
+  }
+
+  channel = audio->input;
+
+  while(channel != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(channel));
+
+    channel = channel->next;
+  }
+
+  /* connect recall ids */
+  list = audio->recall_id;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* connect recall containers */
+  list = audio->container;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* connect recalls */
+  list = audio->recall;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  list = audio->play;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* connect remove recalls */
+  list = audio->recall_remove;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  list = audio->play_remove;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* connect notation */
+  list = audio->notation;
+  
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+    
+    list = list->next;
+  }
 }
 
 /**

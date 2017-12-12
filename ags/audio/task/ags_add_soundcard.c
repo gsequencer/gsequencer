@@ -19,9 +19,6 @@
 
 #include <ags/audio/task/ags_add_soundcard.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
 #include <ags/audio/ags_sound_provider.h>
 
 #include <ags/i18n.h>
@@ -321,12 +318,25 @@ void
 ags_add_soundcard_launch(AgsTask *task)
 {
   AgsAddSoundcard *add_soundcard;
+
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   add_soundcard = AGS_ADD_SOUNDCARD(task);
+
+  /* add soundcard */
+  pthread_mutex_lock(application_mutex);
 
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(add_soundcard->application_context),
 				   g_list_append(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(add_soundcard->application_context)),
 						 add_soundcard->soundcard));
+
+  pthread_mutex_unlock(application_mutex);
 }
 
 /**

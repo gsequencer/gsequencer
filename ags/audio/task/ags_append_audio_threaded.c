@@ -19,8 +19,6 @@
 
 #include <ags/audio/task/ags_append_audio_threaded.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_playback_domain.h>

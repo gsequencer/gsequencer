@@ -19,9 +19,6 @@
 
 #include <ags/audio/task/ags_add_audio.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
 #include <ags/i18n.h>
 
 void ags_add_audio_class_init(AgsAddAudioClass *add_audio);
@@ -320,7 +317,16 @@ ags_add_audio_launch(AgsTask *task)
 {
   AgsAddAudio *add_audio;
   
+  AgsMutexManager *mutex_manager;
+  
   GList *list;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   add_audio = AGS_ADD_AUDIO(task);
 
@@ -328,13 +334,27 @@ ags_add_audio_launch(AgsTask *task)
   
   /* add audio */
   if(add_audio->soundcard != NULL){
+    /* get soundcard mutex */
+    pthread_mutex_lock(application_mutex);
+
+    soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) add_audio->soundcard);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* ref audio */
     g_object_ref(G_OBJECT(add_audio->audio));
-  
+
+    /* add to soundcard */
+    pthread_mutex_lock(soundcard_mutex);
+
     list = ags_soundcard_get_audio(AGS_SOUNDCARD(add_audio->soundcard));
     list = g_list_prepend(list,
 			  add_audio->audio);
     ags_soundcard_set_audio(AGS_SOUNDCARD(add_audio->soundcard),
 			    list);
+
+    pthread_mutex_unlock(soundcard_mutex);
   }
   
   /* AgsAudio */

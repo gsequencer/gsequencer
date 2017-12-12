@@ -19,8 +19,7 @@
 
 #include <ags/audio/ags_playback.h>
 
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_channel.h>
 

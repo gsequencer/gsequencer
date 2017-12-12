@@ -319,7 +319,6 @@ ags_menu_action_add_callback(GtkWidget *menu_item, gpointer data)
 {
 }
 
-
 void
 ags_menu_action_add_panel_callback(GtkWidget *menu_item, gpointer data)
 {
