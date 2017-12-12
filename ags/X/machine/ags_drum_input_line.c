@@ -288,11 +288,29 @@ void
 ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
   AgsChannel *old_channel;
+  AgsRecycling *first_recycling;
+  AgsAudioSignal *template;
+  
+  AgsMutexManager *mutex_manager;
 
-#ifdef AGS_DEBUG
-  g_message("ags_drum_input_line_set_channel - channel: %u",
-	    channel->line);
-#endif
+  GObject *soundcard;
+
+  guint line;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *recycling_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) channel);
+  
+  pthread_mutex_unlock(application_mutex);
 
   if(line->channel != NULL){
     old_channel = line->channel;
@@ -300,21 +318,57 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
     old_channel = NULL;
   }
 
-  AGS_LINE_CLASS(ags_drum_input_line_parent_class)->set_channel(line, channel);
+  /* call parent */
+  AGS_LINE_CLASS(ags_drum_input_line_parent_class)->set_channel(line,
+								channel);
 
   if(channel != NULL){
-    if(channel->audio != NULL &&
-       AGS_AUDIO(channel->audio)->soundcard != NULL &&
-       ags_audio_signal_get_template(channel->first_recycling->audio_signal) == NULL){
+    /* get some fields */
+    pthread_mutex_lock(channel_mutex);
+
+    soundcard = channel->soundcard;
+
+    first_recycling = channel->first_recycling;
+
+    line = channel->line;
+    
+#ifdef AGS_DEBUG
+    g_message("ags_drum_input_line_set_channel - channel: %u",
+	      channel->line);
+#endif
+
+    pthread_mutex_unlock(channel_mutex);
+
+    /* get recycling mutex */
+    pthread_mutex_lock(application_mutex);
+    
+    recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) first_recycling);
+    
+    pthread_mutex_unlock(application_mutex);
+
+    /* get some fields */
+    pthread_mutex_lock(recycling_mutex);
+
+    template = ags_audio_signal_get_template(first_recycling->audio_signal);
+    
+    pthread_mutex_unlock(recycling_mutex);
+
+    /* create audio signal */
+    if(soundcard != NULL &&
+       template == NULL){
       AgsAudioSignal *audio_signal;
 
-      audio_signal = ags_audio_signal_new(AGS_AUDIO(channel->audio)->soundcard,
-					  (GObject *) channel->first_recycling,
+      audio_signal = ags_audio_signal_new(soundcard,
+					  (GObject *) first_recycling,
 					  NULL);
       audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-      ags_recycling_add_audio_signal(channel->first_recycling,
+      ags_recycling_add_audio_signal(first_recycling,
 				     audio_signal);
     }
+
+    /* create pattern */
+    pthread_mutex_lock(channel_mutex);
 
     if(channel->pattern == NULL){
       channel->pattern = g_list_alloc();
@@ -322,11 +376,14 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
       ags_pattern_set_dim((AgsPattern *) channel->pattern->data, 4, 12, 64);
     }
 
+    pthread_mutex_unlock(channel_mutex);
+    
     /* reset edit button */
     if(old_channel == NULL &&
-       line->channel->line == 0){
+       line == 0){
       AgsDrum *drum;
       GtkToggleButton *selected_edit_button;
+
       GList *list;
 
       drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(line),
@@ -337,7 +394,8 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 
 	drum->selected_pad = AGS_DRUM_INPUT_PAD(list->data);
 	drum->selected_edit_button = drum->selected_pad->edit;
-	gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button, TRUE);
+	gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button,
+				     TRUE);
 	
 	g_list_free(list);
       }

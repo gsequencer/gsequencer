@@ -263,23 +263,71 @@ ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
   AgsPanelInputLine *panel_input_line;
 
+  AgsAudio *audio;
   AgsAudioConnection *audio_connection;
   
+  AgsMutexManager *mutex_manager;
+
+  GObject *soundcard;
+  
   GList *list;
-  
+
+  gchar *device;
   gchar *str;
+
+  guint pad, audio_channel;
   
-  AGS_LINE_CLASS(ags_panel_input_line_parent_class)->set_channel(line, channel);
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   panel_input_line = AGS_PANEL_INPUT_LINE(line);
 
-  /*  */
-  list = AGS_AUDIO(channel->audio)->audio_connection;
+  /* get channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) channel);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* call parent */
+  AGS_LINE_CLASS(ags_panel_input_line_parent_class)->set_channel(line,
+								 channel);
+
+  /* get some fields */
+  pthread_mutex_lock(channel_mutex);
+
+  soundcard = channel->soundcard;
+  
+  audio = channel->audio;
+
+  pad = channel->pad;
+  audio_channel = channel->audio_channel;
+  
+  pthread_mutex_unlock(channel_mutex);
+  
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* find audio connection - soundcard */
+  pthread_mutex_lock(audio_mutex);
+
+  list = audio->audio_connection;
 	  
   while((list = ags_audio_connection_find(list,
 					  AGS_TYPE_INPUT,
-					  channel->pad,
-					  channel->audio_channel)) != NULL){
+					  pad,
+					  audio_channel)) != NULL){
     GObject *data_object;
 
     g_object_get(G_OBJECT(list->data),
@@ -293,23 +341,49 @@ ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
     list = list->next;
   }
 
+  pthread_mutex_unlock(audio_mutex);
+
+  /* update label */
   if(list != NULL){
-    audio_connection = list->data;
+    pthread_mutex_lock(audio_mutex);
     
+    audio_connection = list->data;
+
+    pthread_mutex_unlock(audio_mutex);
+
+    /* get soundcard mutex */
+    pthread_mutex_lock(application_mutex);
+
+    soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) soundcard);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* get some fields */
+    pthread_mutex_lock(soundcard_mutex);
+    
+    device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard));
+
+    pthread_mutex_unlock(soundcard_mutex);
+
+    /* label */
     str = g_strdup_printf("%s:%s[%d]",
-			  G_OBJECT_TYPE_NAME(channel->soundcard),
-			  ags_soundcard_get_device(AGS_SOUNDCARD(channel->soundcard)),
+			  G_OBJECT_TYPE_NAME(soundcard),
+			  device,
 			  audio_connection->mapped_line);
     gtk_label_set_label(panel_input_line->soundcard_connection,
 			str);
+    
+    g_free(str);
 
+  //FIXME:JK: uncomment if thread-safe
+#if 0
     g_signal_connect(audio_connection, "notify::data-object",
 		     G_CALLBACK(ags_panel_input_line_notify_data_object_callback), panel_input_line);
 
     g_signal_connect(audio_connection, "notify::mapped-line",
 		     G_CALLBACK(ags_panel_input_line_notify_mapped_line_callback), panel_input_line);
-    
-    g_free(str);
+#endif
   }
   
 #ifdef AGS_DEBUG

@@ -26,17 +26,39 @@ ags_ffplayer_input_line_notify_channel_callback(GObject *gobject,
 {
   AgsFFPlayerInputLine *ffplayer_input_line;
 
+  AgsChannel *channel;
+
+  AgsMutexManager *mutex_manager;
+
   gchar *str;
   
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+
   ffplayer_input_line = AGS_FFPLAYER_INPUT_LINE(gobject);
 
   if(AGS_EFFECT_LINE(ffplayer_input_line)->channel == NULL){
     return;
   }
 
+  channel = AGS_EFFECT_LINE(ffplayer_input_line)->channel;
+  
+  /* get channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) channel);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(channel_mutex);
+
   str = g_strdup_printf("in: %d, %d",
-			AGS_EFFECT_LINE(ffplayer_input_line)->channel->pad + 1,
-			AGS_EFFECT_LINE(ffplayer_input_line)->channel->audio_channel + 1);
+			channel->pad + 1,
+			channel->audio_channel + 1);
+
+  pthread_mutex_unlock(channel_mutex);
+
   gtk_label_set_text(AGS_EFFECT_LINE(ffplayer_input_line)->label,
 		     str);
 

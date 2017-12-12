@@ -215,42 +215,23 @@ ags_drum_output_line_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
 void
 ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
-  AgsAudio *audio;
-
   AgsMutexManager *mutex_manager;
   
+  AgsRecycling *first_recycling;
+  AgsAudioSignal *audio_signal;
+
   GObject *soundcard;
 
   pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
+  /* call parent */
   AGS_LINE_CLASS(ags_drum_output_line_parent_class)->set_channel(line, channel);
-
-  audio = (AgsAudio *) channel->audio;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* lookup audio mutex */
-  pthread_mutex_lock(application_mutex);
-  
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* get soundcard */
-  pthread_mutex_lock(audio_mutex);
-	
-  soundcard = audio->soundcard;
-  
-  pthread_mutex_unlock(audio_mutex);
 
   if(channel != NULL){
-    AgsRecycling *recycling;
-    AgsAudioSignal *audio_signal;
-
     /* lookup channel mutex */
     pthread_mutex_lock(application_mutex);
 
@@ -261,17 +242,19 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
 
     /* get recycling */
     pthread_mutex_lock(channel_mutex);
+	
+    soundcard = channel->soundcard;
 
-    recycling = channel->first_recycling;
+    first_recycling = channel->first_recycling;
 
     pthread_mutex_unlock(channel_mutex);
 
     /* instantiate template audio signal */
     audio_signal = ags_audio_signal_new((GObject *) soundcard,
-					(GObject *) recycling,
+					(GObject *) first_recycling,
 					NULL);
     audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-    ags_recycling_add_audio_signal(channel->first_recycling,
+    ags_recycling_add_audio_signal(first_recycling,
 				   audio_signal);
   }
 }
