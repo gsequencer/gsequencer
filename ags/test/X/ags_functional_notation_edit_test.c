@@ -39,6 +39,7 @@
 #include <ags/X/thread/ags_gui_thread.h>
 
 #include "gsequencer_setup_util.h"
+#include "ags_functional_test_util.h"
 
 void ags_functional_notation_edit_test_add_test();
 
@@ -100,7 +101,7 @@ ags_functional_notation_edit_test_add_test()
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
   
-  //  ags_test_quit();
+  ags_test_quit();
 
   CU_cleanup_registry();
   

@@ -989,12 +989,20 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
     
     pthread_mutex_unlock(audio_mutex);
 
-    list_input_pad_start = 
-      list_input_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->input));
+    if(machine->input != NULL){
+      list_input_pad_start = 
+	list_input_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->input));
+    }else{
+      list_input_pad_start = NULL;
+    }
 
-    list_output_pad_start = 
+    if(machine->output != NULL){
+      list_output_pad_start = 
 	list_output_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->output));
-
+    }else{
+      list_output_pad_start = NULL;
+    }
+    
     /* AgsInput */
     if(machine->input != NULL){
       /* get input */
@@ -1096,11 +1104,19 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 
     /* show all */
     if(audio_channels_old == 0){
-      list_input_pad_start = 
-	list_input_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->input));
-      
-      list_output_pad_start = 
-	list_output_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->output));
+      if(machine->input != NULL){
+	list_input_pad_start = 
+	  list_input_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->input));
+      }else{
+	list_input_pad_start = NULL;
+      }
+
+      if(machine->output != NULL){
+	list_output_pad_start = 
+	  list_output_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->output));
+      }else{
+	list_output_pad_start = NULL;
+      }
     }
     
     if(gtk_widget_get_visible((GtkWidget *) machine)){
@@ -1153,7 +1169,6 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	/* AgsOutput */
 	if(machine->output != NULL){
 	  GList *list_output_line, *list_output_line_start;
-
 	  
 	  list_output_pad = list_output_pad_start;
 	  
@@ -1179,55 +1194,66 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
     g_list_free(list_output_pad_start);
   }else if(audio_channels < audio_channels_old){
     /* shrink lines */
-    list_output_pad_start = 
-      list_output_pad = gtk_container_get_children((GtkContainer *) machine->output);
+    if(machine->output != NULL){
+      list_output_pad_start = 
+	list_output_pad = gtk_container_get_children((GtkContainer *) machine->output);
+    }else{
+      list_output_pad_start = NULL;
+    }
 
-    list_input_pad_start = 
-      list_input_pad = gtk_container_get_children((GtkContainer *) machine->input);
-
+    if(machine->input != NULL){
+      list_input_pad_start = 
+	list_input_pad = gtk_container_get_children((GtkContainer *) machine->input);
+    }else{
+      list_input_pad_start = NULL;
+    }
+	
     if(audio_channels == 0){
       /* AgsInput */
-      while(list_input_pad != NULL){
-	list_input_pad_next = list_input_pad->next;
+      if(machine->input != NULL){
+	while(list_input_pad != NULL){
+	  list_input_pad_next = list_input_pad->next;
 
-	gtk_widget_destroy(GTK_WIDGET(list_input_pad->data));
+	  gtk_widget_destroy(GTK_WIDGET(list_input_pad->data));
 
-	list_input_pad = list_input_pad_next;
+	  list_input_pad = list_input_pad_next;
+	}
       }
-
+      
       /* AgsOutput */
-      while(list_output_pad != NULL){
-	list_output_pad_next = list_output_pad->next;
-
-	gtk_widget_destroy(GTK_WIDGET(list_output_pad->data));
-
-	list_output_pad = list_output_pad_next;
+      if(machine->output != NULL){
+	while(list_output_pad != NULL){
+	  list_output_pad_next = list_output_pad->next;
+	  
+	  gtk_widget_destroy(GTK_WIDGET(list_output_pad->data));
+	  
+	  list_output_pad = list_output_pad_next;
+	}
       }
     }else{
       /* AgsInput */
-      for(i = 0; list_input_pad != NULL; i++){
-	ags_pad_resize_lines(AGS_PAD(list_input_pad->data), machine->input_pad_type,
-			     audio_channels, audio_channels_old);
-
-	list_input_pad = list_input_pad->next;
+      if(machine->input != NULL){
+	for(i = 0; list_input_pad != NULL; i++){
+	  ags_pad_resize_lines(AGS_PAD(list_input_pad->data), machine->input_pad_type,
+			       audio_channels, audio_channels_old);
+	  
+	  list_input_pad = list_input_pad->next;
+	}
       }
-
+      
       /* AgsOutput */
-      for(i = 0; list_output_pad != NULL; i++){
-	ags_pad_resize_lines(AGS_PAD(list_output_pad->data), machine->output_pad_type,
-			     audio_channels, audio_channels_old);
-
-	list_output_pad = list_output_pad->next;
+      if(machine->output != NULL){
+	for(i = 0; list_output_pad != NULL; i++){
+	  ags_pad_resize_lines(AGS_PAD(list_output_pad->data), machine->output_pad_type,
+			       audio_channels, audio_channels_old);
+	  
+	  list_output_pad = list_output_pad->next;
+	}
       }
     }
 
-    if(list_output_pad_start){
-      g_list_free(list_output_pad_start);
-    }
-    
-    if(list_input_pad_start){
-      g_list_free(list_input_pad_start);
-    }
+    g_list_free(list_output_pad_start);    
+    g_list_free(list_input_pad_start);
   }
 }
 

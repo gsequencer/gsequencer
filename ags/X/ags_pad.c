@@ -20,34 +20,8 @@
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_pad_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_plugin.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_completion.h>
-
-#include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_playback.h>
-#include <ags/audio/ags_pattern.h>
-#include <ags/audio/ags_recall.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-#include <ags/audio/thread/ags_soundcard_thread.h>
-
-#include <ags/audio/task/ags_start_soundcard.h>
-#include <ags/audio/task/ags_init_channel.h>
-#include <ags/audio/task/ags_append_channel.h>
-#include <ags/audio/task/ags_append_recall.h>
-#include <ags/audio/task/ags_add_audio_signal.h>
-#include <ags/audio/task/ags_open_single_file.h>
-#include <ags/audio/task/ags_cancel_channel.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>

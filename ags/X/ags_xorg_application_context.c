@@ -1811,8 +1811,6 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
 
   pthread_mutex_t *application_mutex;
 
-  gtk_widget_destroy(ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
-
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);  
 

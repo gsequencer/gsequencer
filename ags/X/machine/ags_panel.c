@@ -209,15 +209,6 @@ ags_panel_finalize(GObject *gobject)
 
   panel = (AgsPanel *) gobject;
   
-  g_object_disconnect(G_OBJECT(panel),
-		      "any_signal::resize-audio-channels",
-		      G_CALLBACK(ags_panel_resize_audio_channels),
-		      NULL,
-		      "any_signal::resize-pads",
-		      G_CALLBACK(ags_panel_resize_pads),
-		      NULL,
-		      NULL);
-
   /* call parent */
   G_OBJECT_CLASS(ags_panel_parent_class)->finalize(gobject);
 }

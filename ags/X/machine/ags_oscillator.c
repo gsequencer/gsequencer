@@ -145,6 +145,8 @@ ags_oscillator_init(AgsOscillator *oscillator)
   GtkTreeIter iter;
 
   guint i;
+
+  oscillator->flags = 0;
   
   table = (GtkTable *) gtk_table_new(8, 2, FALSE);
   gtk_container_add((GtkContainer *) oscillator, (GtkWidget *) table);
@@ -289,6 +291,12 @@ ags_oscillator_connect(AgsConnectable *connectable)
   
   oscillator = AGS_OSCILLATOR(connectable);
 
+  if((AGS_OSCILLATOR_CONNECTED & (oscillator->flags)) != 0){
+    return;
+  }
+
+  oscillator->flags |= AGS_OSCILLATOR_CONNECTED;
+
   g_signal_connect(G_OBJECT(oscillator->wave), "changed",
 		   G_CALLBACK(ags_oscillator_wave_callback), oscillator);
   
@@ -322,6 +330,12 @@ ags_oscillator_disconnect(AgsConnectable *connectable)
   
   oscillator = AGS_OSCILLATOR(connectable);
 
+  if((AGS_OSCILLATOR_CONNECTED & (oscillator->flags)) == 0){
+    return;
+  }
+
+  oscillator->flags &= (~AGS_OSCILLATOR_CONNECTED);
+  
   g_object_disconnect((GObject *) oscillator->wave,
 		      "any_signal::changed",
 		      G_CALLBACK(ags_oscillator_wave_callback),

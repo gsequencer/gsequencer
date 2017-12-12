@@ -374,8 +374,14 @@ main(int argc, char **argv)
 #ifdef AGS_WITH_LIBINSTPATCH
   ipatch_init();
 #endif
-  //  g_log_set_fatal_mask("GLib", // "Gtk" , // 
-  //		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
+
+#if 0
+  g_log_set_fatal_mask("GLib-GObject", // "Gtk" , // 
+  		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
+
+  g_log_set_fatal_mask("Gtk", // "Gtk" , // 
+  		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
+#endif
   
   /* setup */
   wdir = g_strdup_printf("%s/%s",

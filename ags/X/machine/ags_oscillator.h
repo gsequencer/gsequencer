@@ -44,10 +44,16 @@
 typedef struct _AgsOscillator AgsOscillator;
 typedef struct _AgsOscillatorClass AgsOscillatorClass;
 
+typedef enum{
+  AGS_OSCILLATOR_CONNECTED   = 1,
+}AgsOscillatorFlags;
+
 struct _AgsOscillator
 {
   GtkFrame frame;
 
+  guint flags;
+  
   GtkComboBox *wave;
   gulong wave_handler;
 

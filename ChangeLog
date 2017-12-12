@@ -1,3 +1,9 @@
+ags (1.2.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed remaining launch callback of AgsTask while destroy AgsMachine
+	* minor-fixes
+
 ags (1.2.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

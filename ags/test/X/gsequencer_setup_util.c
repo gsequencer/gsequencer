@@ -379,8 +379,7 @@ ags_test_quit()
 
   ags_test_leave();
 
-  pthread_join(gui_thread->gtk_thread,
-	       NULL);
+  sleep(2);
 }
 
 void

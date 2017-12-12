@@ -57,7 +57,6 @@
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);
-void ags_machine_remove_audio_launch_callback(AgsTask *task, AgsMachine *machine);
 
 int
 ags_machine_button_press_callback(GtkWidget *handle_box, GdkEventButton *event, AgsMachine *machine)
@@ -128,13 +127,33 @@ ags_machine_popup_show_activate_callback(GtkWidget *widget, AgsMachine *machine)
 }
 
 void
-ags_machine_remove_audio_launch_callback(AgsTask *task, AgsMachine *machine)
+ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machine)
 {
   AgsWindow *window;
 
+  AgsAudio *audio;
+  
+  AgsRemoveAudio *remove_audio;
+
+  AgsMutexManager *mutex_manager;
+  AgsAudioLoop *audio_loop;
+  AgsGuiThread *gui_thread;
+  AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
+
+  GObject *soundcard;
+  
   GList *list, *list_start;
 
+  pthread_mutex_t *application_mutex;
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
+
+  application_context = (AgsApplicationContext *) window->application_context;
   
   /* destroy editor */
   list =
@@ -201,31 +220,13 @@ ags_machine_remove_audio_launch_callback(AgsTask *task, AgsMachine *machine)
   g_list_free(list_start);
 
   /* destroy machine */
+  soundcard = window->soundcard;
+  
+  audio = machine->audio;
+  g_object_ref(audio);
+
   ags_connectable_disconnect(AGS_CONNECTABLE(machine));
   gtk_widget_destroy((GtkWidget *) machine);
-}
-
-void
-ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machine)
-{
-  AgsWindow *window;
-  AgsRemoveAudio *remove_audio;
-
-  AgsMutexManager *mutex_manager;
-  AgsAudioLoop *audio_loop;
-  AgsGuiThread *gui_thread;
-  AgsTaskThread *task_thread;
-
-  AgsApplicationContext *application_context;
-
-  pthread_mutex_t *application_mutex;
-  
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
-
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
@@ -241,15 +242,12 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) audio_loop,
 						     AGS_TYPE_GUI_THREAD);
 
-  g_object_ref(machine->audio);
-  remove_audio = ags_remove_audio_new(window->soundcard,
-				      machine->audio);
+  remove_audio = ags_remove_audio_new(soundcard,
+				      audio);
   g_object_set(remove_audio,
 	       "task-thread", task_thread,
 	       NULL);
   
-  g_signal_connect(remove_audio, "launch",
-		   G_CALLBACK(ags_machine_remove_audio_launch_callback), machine);
   ags_gui_thread_schedule_task(gui_thread,
 			       remove_audio);
 }
@@ -692,27 +690,31 @@ ags_machine_resize_pads_callback(AgsMachine *machine, GType channel_type,
     if(pads > pads_old){
       if(g_type_is_a(channel_type,
 		     AGS_TYPE_INPUT)){
-	pad_list = gtk_container_get_children(GTK_CONTAINER(machine->input));
-	pad_list = g_list_nth(pad_list,
-			      pads_old);
+	if(machine->input != NULL){
+	  pad_list = gtk_container_get_children(GTK_CONTAINER(machine->input));
+	  pad_list = g_list_nth(pad_list,
+				pads_old);
       
-	while(pad_list != NULL){
-	  ags_connectable_connect(AGS_CONNECTABLE(pad_list->data));
+	  while(pad_list != NULL){
+	    ags_connectable_connect(AGS_CONNECTABLE(pad_list->data));
 	
-	  pad_list = pad_list->next;
+	    pad_list = pad_list->next;
+	  }
 	}
       }
 
       if(g_type_is_a(channel_type,
 		     AGS_TYPE_OUTPUT)){
-	pad_list = gtk_container_get_children(GTK_CONTAINER(machine->output));
-	pad_list = g_list_nth(pad_list,
-			      pads_old);
+	if(machine->output != NULL){
+	  pad_list = gtk_container_get_children(GTK_CONTAINER(machine->output));
+	  pad_list = g_list_nth(pad_list,
+				pads_old);
       
-	while(pad_list != NULL){
-	  ags_connectable_connect(AGS_CONNECTABLE(pad_list->data));
+	  while(pad_list != NULL){
+	    ags_connectable_connect(AGS_CONNECTABLE(pad_list->data));
 	
-	  pad_list = pad_list->next;
+	    pad_list = pad_list->next;
+	  }
 	}
       }
     }

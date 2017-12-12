@@ -387,10 +387,10 @@ ags_matrix_disconnect(AgsConnectable *connectable)
 		      (gpointer) matrix,
 		      NULL);
 
-  g_object_disconnect(G_OBJECT(AGS_MACHINE(matrix)->audio),
+  g_object_disconnect(G_OBJECT(matrix),
 		      "any_signal::done",
 		      G_CALLBACK(ags_matrix_done_callback),
-		      matrix,
+		      NULL,
 		      NULL);
 
   /* call parent */

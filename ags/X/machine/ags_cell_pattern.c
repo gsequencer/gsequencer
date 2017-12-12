@@ -314,10 +314,10 @@ ags_cell_pattern_connect(AgsConnectable *connectable)
   g_signal_connect_after(G_OBJECT(cell_pattern), "focus_in_event",
 			 G_CALLBACK(ags_cell_pattern_focus_in_callback), (gpointer) cell_pattern);
   
-  g_signal_connect(G_OBJECT(cell_pattern), "key_press_event",
+  g_signal_connect(G_OBJECT(cell_pattern->drawing_area), "key_press_event",
 		   G_CALLBACK(ags_cell_pattern_drawing_area_key_press_event), (gpointer) cell_pattern);
 
-  g_signal_connect(G_OBJECT(cell_pattern), "key_release_event",
+  g_signal_connect(G_OBJECT(cell_pattern->drawing_area), "key_release_event",
 		   G_CALLBACK(ags_cell_pattern_drawing_area_key_release_event), (gpointer) cell_pattern);
 
   g_signal_connect_after(G_OBJECT(cell_pattern->drawing_area), "configure_event",
