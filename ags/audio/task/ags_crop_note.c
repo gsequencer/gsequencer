@@ -512,11 +512,11 @@ ags_crop_note_finalize(GObject *gobject)
 void
 ags_crop_note_launch(AgsTask *task)
 {
-  AgsCropNote *crop_note;
-
   AgsAudio *audio;
   AgsNotation *notation;
   AgsNote *note;
+
+  AgsCropNote *crop_note;
 
   AgsMutexManager *mutex_manager;
   

@@ -19,8 +19,6 @@
 
 #include <ags/audio/task/ags_move_note.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/i18n.h>
 
 void ags_move_note_class_init(AgsMoveNoteClass *move_note);
@@ -56,6 +54,7 @@ static AgsConnectableInterface *ags_move_note_parent_connectable_interface;
 
 enum{
   PROP_0,
+  PROP_AUDIO,
   PROP_NOTATION,
   PROP_SELECTION,
   PROP_FIRST_X,
@@ -122,6 +121,22 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
   gobject->finalize = ags_move_note_finalize;
 
   /* properties */
+  /**
+   * AgsMoveNote:audio:
+   *
+   * The assigned #AgsAudio
+   * 
+   * Since: 1.2.2
+   */
+  param_spec = g_param_spec_object("audio",
+				   i18n_pspec("audio of move note"),
+				   i18n_pspec("The audio of move note task"),
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
+
   /**
    * AgsMoveNote:notation:
    *
@@ -275,6 +290,7 @@ ags_move_note_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_move_note_init(AgsMoveNote *move_note)
 {
+  move_note->audio = NULL;
   move_note->notation = NULL;
 
   move_note->selection = NULL;
@@ -299,6 +315,27 @@ ags_move_note_set_property(GObject *gobject,
   move_note = AGS_MOVE_NOTE(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      AgsAudio *audio;
+
+      audio = (AgsAudio *) g_value_get_object(value);
+
+      if(move_note->audio == (GObject *) audio){
+	return;
+      }
+
+      if(move_note->audio != NULL){
+	g_object_unref(move_note->audio);
+      }
+
+      if(audio != NULL){
+	g_object_ref(audio);
+      }
+
+      move_note->audio = (GObject *) audio;
+    }
+    break;
   case PROP_NOTATION:
     {
       AgsNotation *notation;
@@ -384,6 +421,11 @@ ags_move_note_get_property(GObject *gobject,
   move_note = AGS_MOVE_NOTE(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      g_value_set_object(value, move_note->audio);
+    }
+    break;
   case PROP_NOTATION:
     {
       g_value_set_object(value, move_note->notation);
@@ -454,6 +496,12 @@ ags_move_note_dispose(GObject *gobject)
 
   move_note = AGS_MOVE_NOTE(gobject);
 
+  if(move_note->audio != NULL){
+    g_object_unref(move_note->audio);
+
+    move_note->audio = NULL;
+  }
+
   if(move_note->notation != NULL){
     g_object_unref(move_note->notation);
 
@@ -477,6 +525,10 @@ ags_move_note_finalize(GObject *gobject)
 
   move_note = AGS_MOVE_NOTE(gobject);
 
+  if(move_note->audio != NULL){
+    g_object_unref(move_note->audio);
+  }
+
   if(move_note->notation != NULL){
     g_object_unref(move_note->notation);
   }
@@ -492,10 +544,13 @@ ags_move_note_finalize(GObject *gobject)
 void
 ags_move_note_launch(AgsTask *task)
 {
-  AgsMoveNote *move_note;
-
+  AgsAudio *audio;
   AgsNotation *notation;
   AgsNote *note;
+  
+  AgsMoveNote *move_note;
+
+  AgsMutexManager *mutex_manager;
   
   GList *selection;
 
@@ -507,9 +562,17 @@ ags_move_note_launch(AgsTask *task)
   gboolean relative;
   gboolean absolute;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   move_note = AGS_MOVE_NOTE(task);
 
   /* get some properties */
+  audio = move_note->audio;
+
   notation = move_note->notation;
 
   selection = move_note->selection;
@@ -523,7 +586,17 @@ ags_move_note_launch(AgsTask *task)
   relative = move_note->relative;
   absolute = move_note->absolute;
 
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
   /* move */
+  pthread_mutex_lock(audio_mutex);
+
   while(selection != NULL){
     note = ags_note_duplicate(AGS_NOTE(selection->data));
 
@@ -554,6 +627,8 @@ ags_move_note_launch(AgsTask *task)
 
     selection = selection->next;
   }
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
@@ -567,6 +642,7 @@ ags_move_note_launch(AgsTask *task)
  * @relative: if %TRUE move relative position
  * @absolute: if %TRUE move absolute position
  *
+ * WARNING you need to provide #AgsAudio as a property.
  * Creates an #AgsMoveNote task. Note either @relative or @absolute shall
  * be %TRUE else it won't have any effect.
  *

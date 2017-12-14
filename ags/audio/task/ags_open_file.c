@@ -19,9 +19,6 @@
 
 #include <ags/audio/task/ags_open_file.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
@@ -376,17 +373,37 @@ ags_open_file_finalize(GObject *gobject)
 void
 ags_open_file_launch(AgsTask *task)
 {
-  AgsOpenFile *open_file;
   AgsAudio *audio;
-  AgsChannel *channel, *iter;
+  AgsChannel *channel, *iter, *next_pad;
+  AgsChannel *link;
+  AgsRecycling *first_recycling;
   AgsAudioFile *audio_file;
+
+  AgsOpenFile *open_file;
+
+  AgsMutexManager *mutex_manager;
+  
   AgsFileLink *file_link;
+
+  GObject *soundcard;
+  
   GSList *current;
   GList *audio_signal;
+  
   gchar *current_filename;
+  
+  guint input_pads, pads_old;
   guint i, i_stop;
   guint j;
+  
   GError *error;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *iter_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   open_file = AGS_OPEN_FILE(task);
 
@@ -396,32 +413,63 @@ ags_open_file_launch(AgsTask *task)
 
   i_stop = 0;
   
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  input_pads = audio->input_pads;
+  pads_old = audio->input_pads;
+  
   if(open_file->overwrite_channels){
-    channel = audio->input;    
+    channel = audio->input;
 
     i_stop = audio->input_pads;
   }
 
+  pthread_mutex_unlock(audio_mutex);
+
   /*  */
   if(open_file->create_channels){
     GList *list;
-    guint pads_old;
 
     i_stop = g_slist_length(open_file->filenames);
-    pads_old = audio->input_pads;
     
     if(open_file->overwrite_channels){
-      if(i_stop > audio->input_pads){
+      if(i_stop > input_pads){
 	ags_audio_set_pads(audio, AGS_TYPE_INPUT,
 			   i_stop);
       }
 
+      /* get some fields */
+      pthread_mutex_lock(audio_mutex);
+  
       channel = audio->input;
+
+      input_pads = audio->input_pads;
+
+      pthread_mutex_unlock(audio_mutex);
     }else{
       ags_audio_set_pads(audio, AGS_TYPE_INPUT,
 			 audio->input_pads + i_stop);
 
-      channel = ags_channel_pad_nth(audio->input,
+      /* get some fields */
+      pthread_mutex_lock(audio_mutex);
+  
+      channel = audio->input;
+
+      input_pads = audio->input_pads;
+
+      pthread_mutex_unlock(audio_mutex);
+
+      /* reset channel */
+      channel = ags_channel_pad_nth(channel,
 				    pads_old);
     }
 
@@ -429,17 +477,48 @@ ags_open_file_launch(AgsTask *task)
 			       pads_old);
 
     while(iter != NULL){
+      /* get channel mutex */
+      pthread_mutex_lock(application_mutex);
+
+      iter_mutex = ags_mutex_manager_lookup(mutex_manager,
+					    (GObject *) iter);
+  
+      pthread_mutex_unlock(application_mutex);
+
+      /* connect */
+      pthread_mutex_lock(iter_mutex);
+      
       ags_connectable_connect(AGS_CONNECTABLE(iter));
 
       iter = iter->next;
+
+      pthread_mutex_unlock(iter_mutex);
     }
   }
 
   for(i = 0; i < i_stop && current != NULL; i++){
-    current_filename = (gchar *) current->data;
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
 
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) cannel);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* get some fields */
+    pthread_mutex_lock(channel_mutex);
+
+    soundcard = channel->soundcard;
+
+    next_pad = channel->next_pad;
+    
+    pthread_mutex_unlock(channel_mutex);
+
+    /* audio file */
+    current_filename = (gchar *) current->data;
+    
     audio_file = ags_audio_file_new((gchar *) current_filename,
-				    audio->soundcard,
+				    soundcard,
 				    0, open_file->audio->audio_channels);
 
     if(!ags_audio_file_open(audio_file)){
@@ -455,19 +534,38 @@ ags_open_file_launch(AgsTask *task)
     iter = channel;
     audio_signal = audio_file->audio_signal;
     j = 0;
-    
-    while(iter != channel->next_pad && audio_signal != NULL){
+
+    /* connect */    
+    while(iter != next_pad && audio_signal != NULL){
+      /* get channel mutex */
+      pthread_mutex_lock(application_mutex);
+
+      iter_mutex = ags_mutex_manager_lookup(mutex_manager,
+					    (GObject *) iter);
+  
+      pthread_mutex_unlock(application_mutex);
+
+      /* file link */
       file_link = g_object_new(AGS_TYPE_AUDIO_FILE_LINK,
 			       "filename", current_filename,
 			       "audio-channel", j,
 			       NULL);
+
+      pthread_mutex_lock(iter_mutex);
+
+      link = iter->link;
+      
+      first_recycling = iter->first_recycling;
+      
       g_object_set(G_OBJECT(iter),
 		   "file-link", file_link,
 		   NULL);
 
+      pthread_mutex_unlock(iter_mutex);
+
       AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 
-      if(iter->link != NULL){
+      if(link != NULL){
 	error = NULL;
 
 	ags_channel_set_link(iter, NULL,
@@ -478,16 +576,28 @@ ags_open_file_launch(AgsTask *task)
 	}
       }
 
-      //TODO:JK: add mutex
-      ags_recycling_add_audio_signal(iter->first_recycling,
+      ags_recycling_add_audio_signal(first_recycling,
 				     AGS_AUDIO_SIGNAL(audio_signal->data));
 
-      audio_signal = audio_signal->next;
+      /* iterate - audio channel and audio signal*/
+      pthread_mutex_lock(iter_mutex);
+
       iter = iter->next;
+
+      pthread_mutex_unlock(iter_mutex);
+
+      audio_signal = audio_signal->next;
+      
       j++;
     }
 
+    /* iterate - pad and filename */
+    pthread_mutex_lock(channel_mutex);
+    
     channel = channel->next_pad;
+
+    pthread_mutex_unlock(channel_mutex);
+
     current = current->next;
   }
 }
