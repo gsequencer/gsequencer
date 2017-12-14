@@ -379,7 +379,8 @@ ags_test_quit()
 
   ags_test_leave();
 
-  sleep(2);
+  //FIXME:JK: avoids exit to crash :(
+  sleep(5);
 }
 
 void

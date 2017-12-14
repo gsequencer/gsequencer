@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,10 +18,6 @@
  */
 
 #include <ags/audio/task/ags_change_soundcard.h>
-
-#include <ags/object/ags_connection_manager.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_audio_connection.h>
@@ -381,6 +377,7 @@ ags_change_soundcard_launch(AgsTask *task)
 
   AgsAudioConnection *audio_connection;
   
+  AgsMutexManager *mutex_manager;
   AgsConnectionManager *connection_manager;
   
   GObject *new_soundcard, *old_soundcard;
@@ -389,6 +386,13 @@ ags_change_soundcard_launch(AgsTask *task)
 
   GParameter *parameter;
   GList *list, *old_audio, *new_audio;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *new_soundcard_mutex;
+  pthread_mutex_t *old_soundcard_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   change_soundcard = AGS_CHANGE_SOUNDCARD(task);
 
@@ -396,15 +400,48 @@ ags_change_soundcard_launch(AgsTask *task)
 
   new_soundcard = change_soundcard->new_soundcard;
   old_soundcard = change_soundcard->old_soundcard;
+
+  /* get new/old soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+
+  new_soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+						 (GObject *) new_soundcard);
+
+  old_soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+						 (GObject *) old_soundcard);
+  
+  pthread_mutex_unlock(application_mutex);
+
   
   list = ags_connection_manager_get_connection(connection_manager);
   soundcard_type = G_OBJECT_TYPE(old_soundcard);
 
-  /* move audio */
-  new_audio = ags_soundcard_get_audio(AGS_SOUNDCARD(new_soundcard));
-  old_audio = ags_soundcard_get_audio(AGS_SOUNDCARD(old_soundcard));
+  /* get new audio */
+  pthread_mutex_lock(new_soundcard_mutex);
   
+  new_audio = ags_soundcard_get_audio(AGS_SOUNDCARD(new_soundcard));
+
+  pthread_mutex_unlock(new_soundcard_mutex);
+
+  /* get old audio */
+  pthread_mutex_lock(old_soundcard_mutex);
+
+  old_audio = ags_soundcard_get_audio(AGS_SOUNDCARD(old_soundcard));
+
+  pthread_mutex_unlock(old_soundcard_mutex);
+
+  /* set old NULL */
+  pthread_mutex_lock(old_soundcard_mutex);
+
+  ags_soundcard_set_audio(AGS_SOUNDCARD(old_soundcard),
+			  NULL);
+
+  pthread_mutex_unlock(old_soundcard_mutex);
+
+  /* concat new */
   if(old_audio != NULL){
+    pthread_mutex_lock(new_soundcard_mutex);
+    
     if(new_audio != NULL){
       ags_soundcard_set_audio(AGS_SOUNDCARD(new_soundcard),
 			      g_list_concat(old_audio,
@@ -413,11 +450,10 @@ ags_change_soundcard_launch(AgsTask *task)
       ags_soundcard_set_audio(AGS_SOUNDCARD(new_soundcard),
 			      old_audio);
     }
+
+    pthread_mutex_lock(new_soundcard_mutex);
   }
-  
-  ags_soundcard_set_audio(AGS_SOUNDCARD(old_soundcard),
-			  NULL);
-  
+    
   /* reset soundcard */
   parameter = (GParameter *) g_new0(GParameter,
 				    1);

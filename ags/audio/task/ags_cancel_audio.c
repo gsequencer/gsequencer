@@ -19,9 +19,6 @@
 
 #include <ags/audio/task/ags_cancel_audio.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_playback_domain.h>
@@ -370,45 +367,106 @@ void
 ags_cancel_audio_launch(AgsTask *task)
 {
   AgsPlaybackDomain *playback_domain;
+  AgsPlayback *playback;
   AgsAudio *audio;
   AgsChannel *channel;
+  AgsRecallID *recall_id;
 
   AgsCancelAudio *cancel_audio;
+
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   cancel_audio = AGS_CANCEL_AUDIO(task);
 
   audio = cancel_audio->audio;
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+  
   playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
+
+  pthread_mutex_unlock(audio_mutex);
   
   /* cancel playback */
   if(cancel_audio->do_playback){
     g_atomic_int_and(&(playback_domain->flags),
 		     (~AGS_PLAYBACK_DOMAIN_PLAYBACK));
-
+    /* get some fields */
+    pthread_mutex_lock(audio_mutex);
+    
     channel = audio->output;
 
+    pthread_mutex_unlock(audio_mutex);
+    
     while(channel != NULL){
-      if(AGS_PLAYBACK(channel->playback)->recall_id[0] == NULL){
+      /* get channel mutex */
+      pthread_mutex_lock(application_mutex);
+
+      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) channel);
+  
+      pthread_mutex_unlock(application_mutex);
+
+      /* get some fields */
+      pthread_mutex_lock(channel_mutex);
+
+      playback = AGS_PLAYBACK(channel->playback);
+      recall_id = playback->recall_id[AGS_PLAYBACK_SCOPE_PLAYBACK];
+      
+      pthread_mutex_unlock(channel_mutex);
+
+      if(recall_id == NULL){
+	pthread_mutex_lock(channel_mutex);
+
 	channel = channel->next;
-	
+
+	pthread_mutex_unlock(channel_mutex);
+
 	continue;
       }
 
-      g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[0]);
+      /* cancel */
+      g_object_ref(recall_id);
       ags_channel_tillrecycling_cancel(channel,
-				       AGS_PLAYBACK(channel->playback)->recall_id[0]);
-      AGS_PLAYBACK(channel->playback)->recall_id[0] = NULL;
+				       recall_id);
+
+      /* set recall id to NULL and iterate */
+      pthread_mutex_lock(channel_mutex);
+
+      playback->recall_id[AGS_PLAYBACK_SCOPE_PLAYBACK] = NULL;
 
       channel = channel->next;
+
+      pthread_mutex_unlock(channel_mutex);
     }
 
     if((AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(playback_domain->flags)))) != 0){
       AgsAudioThread *audio_thread;
 
-      audio_thread = (AgsAudioThread *) playback_domain->audio_thread[0];
+      /* get some fields */
+      pthread_mutex_lock(audio_mutex);
+      
+      audio_thread = (AgsAudioThread *) playback_domain->audio_thread[AGS_PLAYBACK_DOMAIN_SCOPE_PLAYBACK];
+
+      pthread_mutex_unlock(audio_mutex);
       
       if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(audio_thread)->flags)))) != 0){
-	ags_thread_stop(playback_domain->audio_thread[0]);
+	ags_thread_stop(audio_thread);
 
 	/* ensure synced */
 	pthread_mutex_lock(audio_thread->wakeup_mutex);
@@ -429,31 +487,61 @@ ags_cancel_audio_launch(AgsTask *task)
   if(cancel_audio->do_sequencer){
     g_atomic_int_and(&(playback_domain->flags),
 		     (~AGS_PLAYBACK_DOMAIN_SEQUENCER));
-
+    /* get some fields */
+    pthread_mutex_lock(audio_mutex);
+    
     channel = audio->output;
 
+    pthread_mutex_unlock(audio_mutex);
+
     while(channel != NULL){
-      if(AGS_PLAYBACK(channel->playback)->recall_id[1] == NULL){
+      /* get channel mutex */
+      pthread_mutex_lock(application_mutex);
+
+      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) channel);
+  
+      pthread_mutex_unlock(application_mutex);
+
+      /* get some fields */
+      pthread_mutex_lock(channel_mutex);
+
+      playback = AGS_PLAYBACK(channel->playback);
+      recall_id = playback->recall_id[AGS_PLAYBACK_SCOPE_SEQUENCER];
+      
+      pthread_mutex_unlock(channel_mutex);
+
+      if(recall_id == NULL){
+	pthread_mutex_lock(channel_mutex);
+
 	channel = channel->next;
+
+	pthread_mutex_unlock(channel_mutex);
 	
 	continue;
       }
 
-      g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[1]);
+      g_object_ref(recall_id);
       ags_channel_tillrecycling_cancel(channel,
-				       AGS_PLAYBACK(channel->playback)->recall_id[1]);
-      AGS_PLAYBACK(channel->playback)->recall_id[1] = NULL;
-      
+				       recall_id);
+
+      /* set recall id to NULL and iterate */
+      pthread_mutex_lock(channel_mutex);
+
+      playback->recall_id[AGS_PLAYBACK_SCOPE_SEQUENCER] = NULL;
+
       channel = channel->next;
+
+      pthread_mutex_unlock(channel_mutex);
     }
 
     if((AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(playback_domain->flags)))) != 0){
       AgsAudioThread *audio_thread;
 
-      audio_thread = (AgsAudioThread *) playback_domain->audio_thread[1];
+      audio_thread = (AgsAudioThread *) playback_domain->audio_thread[AGS_PLAYBACK_DOMAIN_SCOPE_SEQUENCER];
       
       if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(audio_thread)->flags)))) != 0){
-	ags_thread_stop(playback_domain->audio_thread[1]);
+	ags_thread_stop(audio_thread);
 
 	/* ensure synced */
 	pthread_mutex_lock(audio_thread->wakeup_mutex);
@@ -474,31 +562,57 @@ ags_cancel_audio_launch(AgsTask *task)
   if(cancel_audio->do_notation){
     g_atomic_int_and(&(playback_domain->flags),
 		     (~AGS_PLAYBACK_DOMAIN_NOTATION));
-
+    /* get some fields */
+    pthread_mutex_lock(audio_mutex);
+    
     channel = audio->output;
 
+    pthread_mutex_unlock(audio_mutex);
+
     while(channel != NULL){
-      if(AGS_PLAYBACK(channel->playback)->recall_id[2] == NULL){
+      /* get channel mutex */
+      pthread_mutex_lock(application_mutex);
+
+      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) channel);
+  
+      pthread_mutex_unlock(application_mutex);
+
+      /* get some fields */
+      pthread_mutex_lock(channel_mutex);
+
+      playback = AGS_PLAYBACK(channel->playback);
+      recall_id = playback->recall_id[AGS_PLAYBACK_SCOPE_NOTATION];
+      
+      pthread_mutex_unlock(channel_mutex);
+
+      if(recall_id == NULL){
 	channel = channel->next;
 	
 	continue;
       }
 
-      g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[2]);
+      g_object_ref(recall_id);
       ags_channel_tillrecycling_cancel(channel,
-				       AGS_PLAYBACK(channel->playback)->recall_id[2]);
-      AGS_PLAYBACK(channel->playback)->recall_id[2] = NULL;
+				       recall_id);
+
+      /* set recall id to NULL and iterate */
+      pthread_mutex_lock(channel_mutex);
+      
+      playback->recall_id[AGS_PLAYBACK_SCOPE_NOTATION] = NULL;
       
       channel = channel->next;
+
+      pthread_mutex_unlock(channel_mutex);
     }
 
     if((AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(playback_domain->flags)))) != 0){
       AgsAudioThread *audio_thread;
 
-      audio_thread = (AgsAudioThread *) playback_domain->audio_thread[2];
+      audio_thread = (AgsAudioThread *) playback_domain->audio_thread[AGS_PLAYBACK_DOMAIN_SCOPE_NOTATION];
 
       if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(audio_thread)->flags)))) != 0){
-	ags_thread_stop(playback_domain->audio_thread[2]);
+	ags_thread_stop(audio_thread);
 
 	/* ensure synced */
 	pthread_mutex_lock(audio_thread->wakeup_mutex);
