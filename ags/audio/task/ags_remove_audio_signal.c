@@ -19,8 +19,6 @@
 
 #include <ags/audio/task/ags_remove_audio_signal.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <math.h>
 
 #include <ags/i18n.h>

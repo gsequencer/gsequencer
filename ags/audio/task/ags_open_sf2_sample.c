@@ -19,9 +19,6 @@
 
 #include <ags/audio/task/ags_open_sf2_sample.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
@@ -464,44 +461,80 @@ ags_open_sf2_sample_finalize(GObject *gobject)
 void
 ags_open_sf2_sample_launch(AgsTask *task)
 {
-  AgsOpenSf2Sample *open_sf2_sample;
-
   AgsChannel *channel;
-  AgsAudioSignal *audio_signal;
-  
+  AgsChannel *link;
+  AgsRecycling *first_recycling;
+  AgsAudioSignal *audio_signal;  
+  AgsPlayable *playable;
+
 #ifdef AGS_WITH_LIBINSTPATCH
   AgsIpatch *ipatch;
 #endif
-  
-  AgsPlayable *playable;
 
+  AgsOpenSf2Sample *open_sf2_sample;
+
+  AgsFileLink *file_link;
+  
+  AgsMutexManager *mutex_manager;
+
+  GObject *soundcard;
+  
   GList *list;
+
+  guint audio_channel;
   
   GError *error;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   open_sf2_sample = AGS_OPEN_SF2_SAMPLE(task);
 
 #ifdef AGS_WITH_LIBINSTPATCH
+#ifdef AGS_DEBUG
   g_message("Open Soundfont2 [%s] - %s %s %s",
 	    open_sf2_sample->filename,
 	    open_sf2_sample->preset,
 	    open_sf2_sample->instrument,
 	    open_sf2_sample->sample);
-
+#endif
+  
   channel = open_sf2_sample->channel;
 
+  /* get channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) channel);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* file link */
   if(AGS_IS_INPUT(channel)){
-    if(AGS_INPUT(channel)->file_link == NULL){
-      AGS_INPUT(channel)->file_link = (GObject *) ags_audio_file_link_new();
+    pthread_mutex_lock(channel_mutex);
+
+    file_link = AGS_INPUT(channel)->file_link;
+    
+    if(file_link == NULL){
+      file_link = (GObject *) ags_audio_file_link_new();
+
+      g_object_set(channel,
+		   "file-link", file_link,
+		   NULL);
     }
 
-    g_object_set(AGS_INPUT(channel)->file_link,
+    g_object_set(file_link,
 		 "filename", open_sf2_sample->filename,
 		 "preset", open_sf2_sample->preset,
 		 "instrument", open_sf2_sample->instrument,
 		 "sample", open_sf2_sample->sample,
 		 "channel", channel->audio_channel,
 		 NULL);
+
+    pthread_mutex_unlock(channel_mutex);
   }
   
   ipatch = g_object_new(AGS_TYPE_IPATCH,
@@ -554,7 +587,17 @@ ags_open_sf2_sample_launch(AgsTask *task)
   }
 
   /* set link */
-  if(channel->link != NULL){
+  pthread_mutex_lock(channel_mutex);
+
+  soundcard = channel->soundcard;
+  
+  link = channel->link;
+
+  audio_channel = channel->audio_channel;
+  
+  pthread_mutex_unlock(channel_mutex);
+
+  if(link != NULL){
     error = NULL;
     
     ags_channel_set_link(channel, NULL,
@@ -567,13 +610,19 @@ ags_open_sf2_sample_launch(AgsTask *task)
 
   /* read audio signal */
   list = ags_playable_read_audio_signal(playable,
-					channel->soundcard,
-					channel->audio_channel, 1);
+					soundcard,
+					audio_channel, 1);
   audio_signal = list->data;
   
   /* replace template audio signal */
+  pthread_mutex_lock(channel_mutex);
+
+  first_recycling = channel->first_recycling;
+
+  pthread_mutex_unlock(channel_mutex);
+  
   audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-  ags_recycling_add_audio_signal(channel->first_recycling,
+  ags_recycling_add_audio_signal(first_recycling,
 				 audio_signal); 
 
   g_static_rec_mutex_unlock_full(((IpatchItem *) (ipatch->base))->mutex);
