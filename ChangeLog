@@ -5,6 +5,8 @@ ags (1.2.2)
 	* implemented ags_audio_disconnect()
 	* improved thread-safety to AgsLine:channel and AgsEffectLine:channel properties
 	* TODO:JK: improved thread-safety all audio tasks
+	* TODO:JK: improved tasks which need to lock audio
+	* fixed change soundcard task since data-object was resetted for all connections
 
 ags (1.2.1)
 

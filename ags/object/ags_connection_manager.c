@@ -131,7 +131,7 @@ ags_connection_manager_get_connection(AgsConnectionManager *connection_manager)
     connection_manager = ags_connection_manager_get_instance();
   }
   
-  return(connection_manager->connection);
+  return(g_list_copy(connection_manager->connection));
 }
 
 /**

@@ -385,7 +385,8 @@ ags_change_soundcard_launch(AgsTask *task)
   GType soundcard_type;
 
   GParameter *parameter;
-  GList *list, *old_audio, *new_audio;
+  GList *old_audio, *new_audio;
+  GList *list_start, *list;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *new_soundcard_mutex;
@@ -412,8 +413,10 @@ ags_change_soundcard_launch(AgsTask *task)
   
   pthread_mutex_unlock(application_mutex);
 
+  /* get connection */
+  list_start = 
+    list = ags_connection_manager_get_connection(connection_manager);
   
-  list = ags_connection_manager_get_connection(connection_manager);
   soundcard_type = G_OBJECT_TYPE(old_soundcard);
 
   /* get new audio */
@@ -479,19 +482,26 @@ ags_change_soundcard_launch(AgsTask *task)
     GObject *data_object;
 
     audio_connection = AGS_AUDIO_CONNECTION(list->data);
+
+    pthread_mutex_lock(AGS_CONNECTION(audio_connection)->mutex);
     
-    g_object_get(G_OBJECT(list->data),
+    g_object_get(G_OBJECT(audio_connection),
 		 "data-object", &data_object,
 		 NULL);
 	    
-    if(AGS_IS_SOUNDCARD(data_object)){
+    if(AGS_IS_SOUNDCARD(data_object) &&
+       data_object == old_soundcard){
       g_object_set(audio_connection,
 		   "data-object", new_soundcard,
 		   NULL);
     }
 
+    pthread_mutex_unlock(AGS_CONNECTION(audio_connection)->mutex);
+
     list = list->next;
   }
+
+  g_list_free(list_start);
 }
 
 /**

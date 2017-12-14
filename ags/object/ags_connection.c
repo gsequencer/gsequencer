@@ -119,6 +119,15 @@ ags_connection_class_init(AgsConnectionClass *connection)
 void
 ags_connection_init(AgsConnection *connection)
 {
+  connection->mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(connection->attr);
+  pthread_mutexattr_settype(connection->attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+  connection->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(connection->mutex,
+		     connection->attr);
+
   connection->data_object = NULL;
 }
 
@@ -257,6 +266,12 @@ ags_connection_finalize(GObject *gobject)
     g_object_unref(connection->data_object);
   }
 
+  pthread_mutex_destroy(connection->mutex);
+  free(connection->mutex);
+
+  pthread_mutexattr_destroy(connection->mutexattr);
+  free(connection->mutexattr);
+
   /* call parent */
   G_OBJECT_CLASS(ags_connection_parent_class)->finalize(gobject);
 }
@@ -282,11 +297,14 @@ ags_connection_find_type(GList *connection,
   }
 
   while(connection != NULL){
+    /* check type */
     if(AGS_IS_CONNECTION(connection->data) &&
        g_type_is_a(G_OBJECT_TYPE(G_OBJECT(connection->data)),
 				 connection_type)){
       return(connection);
     }
+
+    connection = connection->next;
   }
 
   return(NULL);
@@ -311,6 +329,8 @@ ags_connection_find_type_and_data_object_type(GList *connection,
 					      GType connection_type,
 					      GType data_object_type)
 {
+  GObject *data_object;
+  
   if(connection == NULL ||
      connection_type == G_TYPE_NONE ||
      data_object_type == G_TYPE_NONE){
@@ -318,13 +338,28 @@ ags_connection_find_type_and_data_object_type(GList *connection,
   }
 
   while(connection != NULL){
-    if(AGS_IS_CONNECTION(connection->data) &&
-       g_type_is_a(G_OBJECT_TYPE(connection->data),
-				 connection_type) &&
-       g_type_is_a(G_OBJECT_TYPE(connection->data),
-				 data_object_type)){      
+    if(!AGS_IS_CONNECTION(connection->data)){
+      connection = connection->next;
+
+      continue;
+    }
+
+    /* get data object */
+    pthread_mutex_lock(AGS_CONNECTION(connection->data)->mutex);
+    
+    data_object = AGS_CONNECTION(connection->data)->data_object;
+    
+    pthread_mutex_unlock(AGS_CONNECTION(connection->data)->mutex);
+
+    /* check type */
+    if(g_type_is_a(G_OBJECT_TYPE(connection->data),
+		   connection_type) &&
+       g_type_is_a(G_OBJECT_TYPE(data_object),
+		   data_object_type)){      
       return(connection);
     }
+
+    connection = connection->next;
   }
   
   return(NULL);

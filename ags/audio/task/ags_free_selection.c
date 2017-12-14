@@ -19,8 +19,6 @@
 
 #include <ags/audio/task/ags_free_selection.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/i18n.h>
 
 void ags_free_selection_class_init(AgsFreeSelectionClass *free_selection);
@@ -56,6 +54,7 @@ static AgsConnectableInterface *ags_free_selection_parent_connectable_interface;
 
 enum{
   PROP_0,
+  PROP_AUDIO,
   PROP_NOTATION,
 };
 
@@ -101,6 +100,7 @@ ags_free_selection_class_init(AgsFreeSelectionClass *free_selection)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+
   GParamSpec *param_spec;
 
   ags_free_selection_parent_class = g_type_class_peek_parent(free_selection);
@@ -115,6 +115,22 @@ ags_free_selection_class_init(AgsFreeSelectionClass *free_selection)
   gobject->finalize = ags_free_selection_finalize;
 
   /* properties */
+  /**
+   * AgsFreeSelection:audio:
+   *
+   * The assigned #AgsAudio
+   * 
+   * Since: 1.2.2
+   */
+  param_spec = g_param_spec_object("audio",
+				   i18n_pspec("audio of free selection"),
+				   i18n_pspec("The audio of free selection task"),
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
+
   /**
    * AgsFreeSelection:notation:
    *
@@ -149,6 +165,7 @@ ags_free_selection_connectable_interface_init(AgsConnectableInterface *connectab
 void
 ags_free_selection_init(AgsFreeSelection *free_selection)
 {
+  free_selection->audio = NULL;
   free_selection->notation = NULL;
 }
 
@@ -163,6 +180,27 @@ ags_free_selection_set_property(GObject *gobject,
   free_selection = AGS_FREE_SELECTION(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      AgsAudio *audio;
+
+      audio = (AgsAudio *) g_value_get_object(value);
+
+      if(free_selection->audio == (GObject *) audio){
+	return;
+      }
+
+      if(free_selection->audio != NULL){
+	g_object_unref(free_selection->audio);
+      }
+
+      if(audio != NULL){
+	g_object_ref(audio);
+      }
+
+      free_selection->audio = (GObject *) audio;
+    }
+    break;
   case PROP_NOTATION:
     {
       AgsNotation *notation;
@@ -201,6 +239,11 @@ ags_free_selection_get_property(GObject *gobject,
   free_selection = AGS_FREE_SELECTION(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      g_value_set_object(value, free_selection->audio);
+    }
+    break;
   case PROP_NOTATION:
     {
       g_value_set_object(value, free_selection->notation);
@@ -235,6 +278,12 @@ ags_free_selection_dispose(GObject *gobject)
 
   free_selection = AGS_FREE_SELECTION(gobject);
 
+  if(free_selection->audio != NULL){
+    g_object_unref(free_selection->audio);
+
+    free_selection->audio = NULL;
+  }
+
   if(free_selection->notation != NULL){
     g_object_unref(free_selection->notation);
 
@@ -252,6 +301,10 @@ ags_free_selection_finalize(GObject *gobject)
 
   free_selection = AGS_FREE_SELECTION(gobject);
 
+  if(free_selection->audio != NULL){
+    g_object_unref(free_selection->audio);
+  }
+
   if(free_selection->notation != NULL){
     g_object_unref(free_selection->notation);
   }
@@ -263,18 +316,46 @@ ags_free_selection_finalize(GObject *gobject)
 void
 ags_free_selection_launch(AgsTask *task)
 {
+  AgsAudio *audio;
+  AgsNotation *notation;
+  
   AgsFreeSelection *free_selection;
+
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   free_selection = AGS_FREE_SELECTION(task);
 
+  audio = free_selection->audio;
+
+  notation = free_selection->notation;
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
   /* free selection */
-  ags_notation_free_selection(free_selection->notation);
+  pthread_mutex_lock(audio_mutex);
+
+  ags_notation_free_selection(notation);
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
  * ags_free_selection_new:
  * @notation: the #AgsNotation
  *
+ * WARNING you need to provide #AgsAudio as a property.
  * Creates an #AgsFreeSelection.
  *
  * Returns: an new #AgsFreeSelection.

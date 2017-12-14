@@ -36,6 +36,9 @@ typedef struct _AgsConnectionClass AgsConnectionClass;
 struct _AgsConnection
 {
   GObject object;
+
+  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *mutex;
   
   GObject *data_object;
 };

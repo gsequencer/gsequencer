@@ -19,8 +19,6 @@
 
 #include <ags/audio/task/ags_crop_note.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/i18n.h>
 
 void ags_crop_note_class_init(AgsCropNoteClass *crop_note);
@@ -56,6 +54,7 @@ static AgsConnectableInterface *ags_crop_note_parent_connectable_interface;
 
 enum{
   PROP_0,
+  PROP_AUDIO,
   PROP_NOTATION,
   PROP_SELECTION,
   PROP_X_PADDING,
@@ -121,6 +120,22 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
   gobject->finalize = ags_crop_note_finalize;
 
   /* properties */
+  /**
+   * AgsCropNote:audio:
+   *
+   * The assigned #AgsAudio
+   * 
+   * Since: 1.2.2
+   */
+  param_spec = g_param_spec_object("audio",
+				   i18n_pspec("audio of crop note"),
+				   i18n_pspec("The audio of crop note task"),
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
+
   /**
    * AgsCropNote:notation:
    *
@@ -254,6 +269,7 @@ ags_crop_note_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_crop_note_init(AgsCropNote *crop_note)
 {
+  crop_note->audio = NULL;
   crop_note->notation = NULL;
 
   crop_note->selection = NULL;
@@ -277,6 +293,27 @@ ags_crop_note_set_property(GObject *gobject,
   crop_note = AGS_CROP_NOTE(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      AgsAudio *audio;
+
+      audio = (AgsAudio *) g_value_get_object(value);
+
+      if(crop_note->audio == (GObject *) audio){
+	return;
+      }
+
+      if(crop_note->audio != NULL){
+	g_object_unref(crop_note->audio);
+      }
+
+      if(audio != NULL){
+	g_object_ref(audio);
+      }
+
+      crop_note->audio = (GObject *) audio;
+    }
+    break;
   case PROP_NOTATION:
     {
       AgsNotation *notation;
@@ -357,6 +394,11 @@ ags_crop_note_get_property(GObject *gobject,
   crop_note = AGS_CROP_NOTE(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      g_value_set_object(value, crop_note->audio);
+    }
+    break;
   case PROP_NOTATION:
     {
       g_value_set_object(value, crop_note->notation);
@@ -422,6 +464,12 @@ ags_crop_note_dispose(GObject *gobject)
 
   crop_note = AGS_CROP_NOTE(gobject);
 
+  if(crop_note->audio != NULL){
+    g_object_unref(crop_note->audio);
+
+    crop_note->audio = NULL;
+  }
+
   if(crop_note->notation != NULL){
     g_object_unref(crop_note->notation);
 
@@ -445,6 +493,10 @@ ags_crop_note_finalize(GObject *gobject)
 
   crop_note = AGS_CROP_NOTE(gobject);
 
+  if(crop_note->audio != NULL){
+    g_object_unref(crop_note->audio);
+  }
+
   if(crop_note->notation != NULL){
     g_object_unref(crop_note->notation);
   }
@@ -462,8 +514,11 @@ ags_crop_note_launch(AgsTask *task)
 {
   AgsCropNote *crop_note;
 
+  AgsAudio *audio;
   AgsNotation *notation;
   AgsNote *note;
+
+  AgsMutexManager *mutex_manager;
   
   GList *selection;
 
@@ -475,10 +530,17 @@ ags_crop_note_launch(AgsTask *task)
   gboolean in_place;
   gboolean do_resize;
   gboolean initial_run;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   crop_note = AGS_CROP_NOTE(task);
 
   /* get some properties */
+  audio = crop_note->audio;
   notation = crop_note->notation;
 
   selection = crop_note->selection;
@@ -491,12 +553,22 @@ ags_crop_note_launch(AgsTask *task)
   in_place = crop_note->in_place;
   do_resize = crop_note->do_resize;
   
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
   /* crop */
   x_offset = 0;
   x_prev = 0;
 
   initial_run = TRUE;
   
+  pthread_mutex_lock(audio_mutex);
+
   while(selection != NULL){
     note = ags_note_duplicate(AGS_NOTE(selection->data));
     
@@ -555,6 +627,8 @@ ags_crop_note_launch(AgsTask *task)
     
     selection = selection->next;
   }
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
@@ -567,6 +641,7 @@ ags_crop_note_launch(AgsTask *task)
  * @in_place: if %TRUE crop in place, otherwise grow relative offset
  * @do_resize: if %TRUE resize notation, otherwise not
  *
+ * WARNING you need to provide #AgsAudio as a property.
  * Creates an #AgsCropNote task. Note either @in_place or @do_resize shall
  * be %TRUE else it won't have any effect.
  *
