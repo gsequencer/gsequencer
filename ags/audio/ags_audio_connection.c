@@ -410,11 +410,17 @@ ags_audio_connection_find(GList *list,
 			  guint audio_channel)
 {
   while(list != NULL){
+    pthread_mutex_lock(AGS_CONNECTION(list->data)->mutex);
+
     if(AGS_AUDIO_CONNECTION(list->data)->channel_type == channel_type &&
        AGS_AUDIO_CONNECTION(list->data)->pad == pad &&
        AGS_AUDIO_CONNECTION(list->data)->audio_channel == audio_channel){
+      pthread_mutex_unlock(AGS_CONNECTION(list->data)->mutex);
+      
       return(list);
     }
+
+    pthread_mutex_unlock(AGS_CONNECTION(list->data)->mutex);
 
     list = list->next;
   }

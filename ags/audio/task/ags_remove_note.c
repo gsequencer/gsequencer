@@ -392,7 +392,7 @@ ags_remove_note_launch(AgsTask *task)
   pthread_mutex_lock(application_mutex);
 
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) add_note->audio);
+					 (GObject *) remove_note->audio);
 
   pthread_mutex_unlock(application_mutex);
 

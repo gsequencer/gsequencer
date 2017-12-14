@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/task/ags_resize_audio.h>
-
-#include <ags/object/ags_connectable.h>
 
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
@@ -358,23 +356,54 @@ ags_resize_audio_finalize(GObject *gobject)
 void
 ags_resize_audio_launch(AgsTask *task)
 {
-  AgsResizeAudio *resize_audio;
+  AgsAudio *audio;
   AgsChannel *iter;
-  guint pads_old;
-  
+
+  AgsResizeAudio *resize_audio;
+
+  AgsMutexManager *mutex_manager;
+
+  guint audio_channels;
+  guint input_pads_old, ouput_pads_old;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+    
   resize_audio = AGS_RESIZE_AUDIO(task);
 
+  audio = resize_audio->audio;
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  audio_channels = audio->audio_channels;
+
+  output_pads_old = audio->output_pads;
+  input_pads_old = audio->input_pads;
+      
+  pthread_mutex_unlock(audio_mutex);
+  
   /* resize audio */
-  if(resize_audio->audio->output_pads != resize_audio->output_pads){
-    pads_old = resize_audio->audio->output_pads;
-    
-    ags_audio_set_pads(resize_audio->audio,
+  if(audio->output_pads != resize_audio->output_pads){    
+    ags_audio_set_pads(audio,
 		       AGS_TYPE_OUTPUT,
 		       resize_audio->output_pads);
 
-    if(pads_old < resize_audio->audio->output_pads){
-      iter = ags_channel_pad_nth(resize_audio->audio->input,
-				 pads_old);
+    if(output_pads_old < audio->output_pads){
+      iter = ags_channel_pad_nth(audio->input,
+				 output_pads_old);
       
       while(iter != NULL){
 	ags_connectable_connect(AGS_CONNECTABLE(iter));
@@ -384,16 +413,14 @@ ags_resize_audio_launch(AgsTask *task)
     }
   }
 
-  if(resize_audio->audio->input_pads != resize_audio->input_pads){
-    pads_old = resize_audio->audio->input_pads;
-
-    ags_audio_set_pads(resize_audio->audio,
+  if(audio->input_pads != resize_audio->input_pads){
+    ags_audio_set_pads(audio,
 		       AGS_TYPE_INPUT,
 		       resize_audio->input_pads);
 
-    if(pads_old < resize_audio->audio->output_pads){
-      iter = ags_channel_pad_nth(resize_audio->audio->input,
-				 pads_old);
+    if(input_pads_old < audio->output_pads){
+      iter = ags_channel_pad_nth(audio->input,
+				 input_pads_old);
       
       while(iter != NULL){
 	ags_connectable_connect(AGS_CONNECTABLE(iter));
@@ -403,8 +430,8 @@ ags_resize_audio_launch(AgsTask *task)
     }
   }
 
-  if(resize_audio->audio->audio_channels != resize_audio->audio_channels){
-    ags_audio_set_audio_channels(resize_audio->audio,
+  if(audio_channels != resize_audio->audio_channels){
+    ags_audio_set_audio_channels(audio,
 				 resize_audio->audio_channels);
   }
 }

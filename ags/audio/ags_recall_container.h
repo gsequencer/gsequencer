@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_recall.h>
 
 #define AGS_TYPE_RECALL_CONTAINER                (ags_recall_container_get_type())

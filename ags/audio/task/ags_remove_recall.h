@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/thread/ags_task.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_recall.h>
 
@@ -44,6 +44,7 @@ struct _AgsRemoveRecall
   GObject *context;
 
   AgsRecall *recall;
+
   gboolean is_play;
   gboolean remove_all;
 };

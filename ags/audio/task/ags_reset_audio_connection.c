@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,10 +18,6 @@
  */
 
 #include <ags/audio/task/ags_reset_audio_connection.h>
-
-#include <ags/object/ags_connection_manager.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/ags_audio_connection.h>
 #include <ags/audio/ags_channel.h>
@@ -449,21 +445,38 @@ ags_reset_audio_connection_launch(AgsTask *task)
 {
   AgsAudio *audio;
   AgsAudioConnection *audio_connection;
+  AgsChannel *input, *output;
   AgsChannel *channel;
   
   AgsResetAudioConnection *reset_audio_connection;
 
+  AgsMutexManager *mutex_manager;
+
   AgsConnectionManager *connection_manager;
 
   GParameter *parameter;
-  GList *list;
+  GList *list_start, list;
+
+  guint audio_channels;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   reset_audio_connection = AGS_RESET_AUDIO_CONNECTION(task);
+
   audio = reset_audio_connection->audio;
 
   connection_manager = ags_connection_manager_get_instance();
+
+  /* find audio connection */
+  audio_connection = NULL;
   
-  list = audio->audio_connection;
+  list_start =
+    list = g_list_copy(audio->audio_connection);
 	  
   while((list = ags_audio_connection_find(list,
 					  AGS_TYPE_INPUT,
@@ -471,20 +484,27 @@ ags_reset_audio_connection_launch(AgsTask *task)
 					  reset_audio_connection->audio_channel)) != NULL){
     GObject *data_object;
 
+    pthread_mutex_lock(AGS_CONNECTION(list->data)->mutex);
+    
     g_object_get(G_OBJECT(list->data),
 		 "data-object", &data_object,
 		 NULL);
-	    
+
+    pthread_mutex_unlock(AGS_CONNECTION(list->data)->mutex);
+    	    
     if(AGS_IS_SOUNDCARD(data_object)){
+      audio_connection = list->data;
+      
       break;
     }
 
     list = list->next;
   }
 
-  if(list != NULL){
-    audio_connection = list->data;
-  }else{
+  g_list_free(list_start);
+
+  /* create audio connection if needed */
+  if(audio_connection == NULL){
     audio_connection = g_object_new(AGS_TYPE_AUDIO_CONNECTION,
 				    NULL);
     ags_audio_add_audio_connection(audio,
@@ -493,6 +513,9 @@ ags_reset_audio_connection_launch(AgsTask *task)
 					  (AgsConnection *) audio_connection);
   }
 
+  /* reset audio connection */
+  pthread_mutex_lock(AGS_CONNECTION(list->data)->mutex);
+  
   g_object_set(audio_connection,
 	       "data-object", reset_audio_connection->soundcard,
 	       "audio", audio,
@@ -502,13 +525,34 @@ ags_reset_audio_connection_launch(AgsTask *task)
 	       "mapped-line", reset_audio_connection->mapped_line,
 	       NULL);
 
+  pthread_mutex_unlock(AGS_CONNECTION(list->data)->mutex);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  output = audio->output;
+  input = audio->input;
+
+  audio_channels = audio->audio_channels;
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  /* get channel */
   if(g_type_is_a(reset_audio_connection->channel_type,
 		 AGS_TYPE_INPUT)){
-    channel = ags_channel_nth(audio->input,
-			      reset_audio_connection->pad *audio->audio_channels + reset_audio_connection->audio_channel);
+    channel = ags_channel_nth(input,
+			      reset_audio_connection->pad * audio_channels + reset_audio_connection->audio_channel);
   }else{
-    channel = ags_channel_nth(audio->output,
-			      reset_audio_connection->pad *audio->audio_channels + reset_audio_connection->audio_channel);
+    channel = ags_channel_nth(output,
+			      reset_audio_connection->pad * audio_channels + reset_audio_connection->audio_channel);
   }
 
   parameter = g_new0(GParameter,

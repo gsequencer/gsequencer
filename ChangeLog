@@ -9,6 +9,7 @@ ags (1.2.2)
 	* TODO:JK: improved thread-safety during ags_channel_recursive_play_init() and ags_channel_recursive_cancel()
 	* TODO:JK: improved tasks which need to lock audio
 	* fixed change soundcard task since data-object was resetted for all connections
+	* minor-fixes
 
 ags (1.2.1)
 
