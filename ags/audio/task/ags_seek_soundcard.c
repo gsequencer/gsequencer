@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,10 +18,6 @@
  */
 
 #include <ags/audio/task/ags_seek_soundcard.h>
-
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_seekable.h>
 
 #include <ags/audio/ags_audio.h>
 
@@ -327,16 +323,55 @@ ags_seek_soundcard_launch(AgsTask *task)
 {
   AgsSeekSoundcard *seek_soundcard;
 
-  GList *audio, *recall;
+  AgsMutexManager *mutex_manager;
+
+  GObject *soundcard;
+  
+  GList *audio_start, *audio;
+  GList *recall;
 
   guint note_offset;
   guint note_offset_absolute;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   seek_soundcard = AGS_SEEK_SOUNDCARD(task);
 
-  audio = ags_soundcard_get_audio(AGS_SOUNDCARD(seek_soundcard->soundcard));
+  soundcard = seek_soundcard->soundcard;
+  
+  /* get soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) soundcard);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* seek audio */
+  pthread_mutex_lock(soundcard);
+  
+  audio = g_list_copy(ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard)));
+
+  pthread_mutex_unlock(soundcard);
 
   while(audio != NULL){
+    /* get audio mutex */
+    pthread_mutex_lock(application_mutex);
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) audio->data);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* seek recall */
+    pthread_mutex_lock(audio_mutex);
+    
     recall = AGS_AUDIO(audio->data)->play;
 
     while(recall != NULL){
@@ -349,9 +384,16 @@ ags_seek_soundcard_launch(AgsTask *task)
       recall = recall->next;
     }
 
+    pthread_mutex_unlock(audio_mutex);
+
     audio = audio->next;
   }
-  
+
+  g_list_free(audio_start);
+
+  /* seek soundcard */
+  pthread_mutex_lock(soundcard);
+
   note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(seek_soundcard->soundcard));
   note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(seek_soundcard->soundcard));
   
@@ -376,6 +418,8 @@ ags_seek_soundcard_launch(AgsTask *task)
 					     0.0);
     }
   }
+
+  pthread_mutex_unlock(soundcard);
 }
 
 /**

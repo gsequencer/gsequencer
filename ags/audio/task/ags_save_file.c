@@ -19,8 +19,6 @@
 
 #include <ags/audio/task/ags_save_file.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/i18n.h>
 
 void ags_save_file_class_init(AgsSaveFileClass *save_file);

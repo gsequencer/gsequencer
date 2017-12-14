@@ -19,9 +19,6 @@
 
 #include <ags/audio/task/ags_set_format.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>

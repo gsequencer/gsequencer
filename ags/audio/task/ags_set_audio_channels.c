@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/task/ags_set_audio_channels.h>
-
-#include <ags/object/ags_connectable.h>
 
 #include <ags/i18n.h>
 
@@ -295,12 +293,32 @@ ags_set_audio_channels_launch(AgsTask *task)
 {
   AgsSetAudioChannels *set_audio_channels;
 
+  AgsMutexManager *mutex_manager;
+
   guint channels;
   guint samplerate;
   guint buffer_size;
   guint format;
-  
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   set_audio_channels = AGS_SET_AUDIO_CHANNELS(task);
+
+  /* get soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) set_audio_channels->soundcard);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* set audio channels */
+  pthread_mutex_lock(soundcard_mutex);
 
   ags_soundcard_get_presets(AGS_SOUNDCARD(set_audio_channels->soundcard),
 			    &channels,
@@ -313,6 +331,8 @@ ags_set_audio_channels_launch(AgsTask *task)
 			    samplerate,
 			    buffer_size,
 			    format);
+
+  pthread_mutex_unlock(soundcard_mutex);
 }
 
 /**
