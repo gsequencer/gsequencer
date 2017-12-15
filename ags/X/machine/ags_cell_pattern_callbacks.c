@@ -536,84 +536,50 @@ ags_cell_pattern_adjustment_value_changed_callback(GtkWidget *widget, AgsCellPat
   ags_cell_pattern_paint(cell_pattern);
 }
 
-//TODO:JK: remove
-#if 0
-void
-ags_cell_pattern_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
-				      AgsCellPattern *cell_pattern)
-{
-  AgsMachine *machine;
-  
-  AgsChannel *channel;
-
-  guint line;
-  
-  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
-						   AGS_TYPE_MACHINE);
-    
-  channel = ags_channel_nth(machine->audio->input,
-			    toggle_pattern_bit->line);
-  line = machine->audio->input_pads - toggle_pattern_bit->line - (guint) GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value - 1;
-
-  ags_cell_pattern_redraw_gutter_point(cell_pattern,
-				       channel,
-				       toggle_pattern_bit->bit,
-				       line);
-  gtk_widget_queue_draw(cell_pattern);
-}
-#endif
-
 void
 ags_cell_pattern_init_channel_launch_callback(AgsTask *task, gpointer data)
 {
-  GObject *soundcard;
   AgsChannel *channel;
+  AgsRecycling *first_recycling, *last_recycling;
+  AgsRecycling *end_recycling;
   AgsRecycling *recycling;
 
   AgsAddAudioSignal *add_audio_signal;
 
   AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsGuiThread *gui_thread;
 
-  AgsApplicationContext *application_context;
-  
+  GObject *soundcard;
+
   GList *recall, *tmp;
 
   pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *recycling_mutex;
 
   channel = AGS_INIT_CHANNEL(task)->channel;
   soundcard = channel->soundcard;
 
-  application_context = (AgsApplicationContext *) ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
-  
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  /* get main loop and audio mutex */
+  /* get channel mutex */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) channel->audio);
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) channel);
   
   pthread_mutex_unlock(application_mutex);
-
-  /* get gui trhead */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
 
 #ifdef AGS_DEBUG
   g_message("launch");
 #endif
   
-  pthread_mutex_lock(audio_mutex);
+  /* get some fields */
+  pthread_mutex_lock(channel_mutex);
   
   if(AGS_PLAYBACK(channel->playback) == NULL ||
      AGS_PLAYBACK(channel->playback)->recall_id[0] == NULL){    
-    pthread_mutex_unlock(audio_mutex);
+    pthread_mutex_unlock(channel_mutex);
   
     return;
   }
@@ -628,14 +594,42 @@ ags_cell_pattern_init_channel_launch_callback(AgsTask *task, gpointer data)
 				AGS_TYPE_PLAY_CHANNEL_RUN);
   //TODO:JK: fix me
   //    g_list_free(tmp);
+  first_recycling = channel->first_recycling;
+  last_recycling = channel->last_recycling;
+
+  pthread_mutex_unlock(channel_mutex);
 
   if(recall != NULL){
     AgsAudioSignal *audio_signal;
       
-    /* add audio signal */
-    recycling = channel->first_recycling;
+    /* get recycling mutex */
+    pthread_mutex_lock(application_mutex);
 
-    while(recycling != channel->last_recycling->next){
+    recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) last_recycling);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* get some fields */
+    pthread_mutex_lock(recycling_mutex);
+    
+    end_recycling = last_recycling->next;
+
+    pthread_mutex_unlock(recycling_mutex);
+
+    /* add audio signal */
+    recycling = first_recycling;
+
+    while(recycling != end_recycling){
+      /* get recycling mutex */
+      pthread_mutex_lock(application_mutex);
+
+      recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+						 (GObject *) recycling);
+  
+      pthread_mutex_unlock(application_mutex);
+
+      /* audio signal */
       audio_signal = ags_audio_signal_new((GObject *) soundcard,
 					  (GObject *) recycling,
 					  (GObject *) AGS_RECALL(recall->data)->recall_id);
@@ -652,9 +646,12 @@ ags_cell_pattern_init_channel_launch_callback(AgsTask *task, gpointer data)
       ags_recycling_add_audio_signal(recycling,
 				     audio_signal);
 
+      /* iterate */
+      pthread_mutex_lock(recycling_mutex);
+      
       recycling = recycling->next;
+
+      pthread_mutex_unlock(recycling_mutex);
     }    
   }
-
-  pthread_mutex_unlock(audio_mutex);
 }

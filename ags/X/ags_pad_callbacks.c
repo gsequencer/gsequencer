@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,29 +19,8 @@
 
 #include <ags/X/ags_pad_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_playback.h>
-#include <ags/audio/ags_pattern.h>
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_id.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-#include <ags/audio/thread/ags_soundcard_thread.h>
-
-#include <ags/audio/recall/ags_play_channel_run.h>
-
-#include <ags/audio/task/ags_add_audio_signal.h>
-
-#include <ags/audio/task/recall/ags_set_muted.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>

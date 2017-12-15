@@ -534,6 +534,9 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
 				  x_padding, x_crop,
 				  absolute,
 				  in_place, do_resize);
+    g_object_set(crop_note,
+		 "audio", audio,
+		 NULL);
     task = g_list_prepend(task,
 			  crop_note);
 
