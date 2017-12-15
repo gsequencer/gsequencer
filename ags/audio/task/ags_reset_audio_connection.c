@@ -455,7 +455,7 @@ ags_reset_audio_connection_launch(AgsTask *task)
   AgsConnectionManager *connection_manager;
 
   GParameter *parameter;
-  GList *list_start, list;
+  GList *list_start, *list;
 
   guint audio_channels;
   

@@ -344,16 +344,16 @@ ags_remove_point_from_selection_dispose(GObject *gobject)
   if(remove_point_from_selection->audio != NULL){
     g_object_unref(remove_point_from_selection->audio);
 
-    remove_point_from_selection->audio = NULL
+    remove_point_from_selection->audio = NULL;
   }
     
   if(remove_point_from_selection->notation != NULL){
     g_object_unref(remove_point_from_selection->notation);
 
-    remove_point_from_selection->notation = NULL
+    remove_point_from_selection->notation = NULL;
   }
   
-  /* call parent */
+  /* Call parent */
   G_OBJECT_CLASS(ags_remove_point_from_selection_parent_class)->dispose(gobject);
 }
 

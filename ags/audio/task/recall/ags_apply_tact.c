@@ -505,7 +505,7 @@ ags_apply_tact_soundcard(AgsApplyTact *apply_tact, GObject *soundcard)
   pthread_mutex_lock(application_mutex);
   
   soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) apply_bpm->soundcard);
+					     (GObject *) soundcard);
 
   pthread_mutex_unlock(application_mutex);
 

@@ -25,6 +25,7 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_pattern.h>
 
 #define AGS_TYPE_TOGGLE_PATTERN_BIT                (ags_toggle_pattern_bit_get_type())

@@ -364,7 +364,7 @@ ags_resize_audio_launch(AgsTask *task)
   AgsMutexManager *mutex_manager;
 
   guint audio_channels;
-  guint input_pads_old, ouput_pads_old;
+  guint input_pads_old, output_pads_old;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;

@@ -25,6 +25,7 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
 
 #define AGS_TYPE_MOVE_NOTE                (ags_move_note_get_type())
@@ -44,6 +45,7 @@ struct _AgsMoveNote
 {
   AgsTask task;
 
+  AgsAudio *audio;
   AgsNotation *notation;
 
   GList *selection;

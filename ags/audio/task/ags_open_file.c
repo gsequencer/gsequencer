@@ -502,7 +502,7 @@ ags_open_file_launch(AgsTask *task)
     pthread_mutex_lock(application_mutex);
 
     channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) cannel);
+					     (GObject *) channel);
   
     pthread_mutex_unlock(application_mutex);
 

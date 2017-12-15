@@ -456,6 +456,8 @@ ags_set_format_audio(AgsSetFormat *set_format, AgsAudio *audio)
 void
 ags_set_format_soundcard(AgsSetFormat *set_format, GObject *soundcard)
 {
+  AgsMutexManager *mutex_manager;
+
   GList *list_start, *list;
 
   guint channels;
@@ -474,7 +476,7 @@ ags_set_format_soundcard(AgsSetFormat *set_format, GObject *soundcard)
   pthread_mutex_lock(application_mutex);
 
   soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) set_audio_channels->soundcard);
+					 (GObject *) soundcard);
 
   pthread_mutex_unlock(application_mutex);
   

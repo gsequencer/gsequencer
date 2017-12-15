@@ -504,7 +504,7 @@ ags_apply_bpm_soundcard(AgsApplyBpm *apply_bpm, GObject *soundcard)
   pthread_mutex_lock(application_mutex);
   
   soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) apply_bpm->soundcard);
+					     (GObject *) soundcard);
 
   pthread_mutex_unlock(application_mutex);
 

@@ -19,11 +19,11 @@
 
 #include <ags/audio/task/ags_open_single_file.h>
 
-#include <ags/audio/file/ags_audio_file_link.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_input.h>
 
+#include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file.h>
 
 #include <ags/i18n.h>
@@ -435,6 +435,7 @@ ags_open_single_file_launch(AgsTask *task)
 
   AgsChannel *channel;
   AgsChannel *link;
+  AgsRecycling *first_recycling;
   
   AgsAudioFile *audio_file;
 
@@ -447,6 +448,9 @@ ags_open_single_file_launch(AgsTask *task)
   guint i;
 
   GError *error;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);

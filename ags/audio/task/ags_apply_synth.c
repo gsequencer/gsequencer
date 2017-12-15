@@ -814,6 +814,8 @@ ags_apply_synth_launch(AgsTask *task)
   AgsRecycling *first_recycling;
   AgsAudioSignal *audio_signal;
   AgsSynthGenerator *synth_generator;
+
+  AgsMutexManager *mutex_manager;
   
   GList *stream;
 
@@ -822,6 +824,9 @@ ags_apply_synth_launch(AgsTask *task)
   gint wave;
   guint oscillator;
 
+  guint samplerate;
+  guint format;
+  guint buffer_size;
   gdouble note;
   double phase, frequency, volume;
   gdouble delay;
@@ -942,7 +947,7 @@ ags_apply_synth_launch(AgsTask *task)
 	pthread_mutex_lock(application_mutex);
 
 	recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) firtst_recycling);
+						 (GObject *) first_recycling);
 
 	pthread_mutex_unlock(application_mutex);
 
@@ -1048,7 +1053,7 @@ ags_apply_synth_launch(AgsTask *task)
 	pthread_mutex_lock(application_mutex);
 
 	recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) firtst_recycling);
+						 (GObject *) first_recycling);
 
 	pthread_mutex_unlock(application_mutex);
 
@@ -1159,7 +1164,7 @@ ags_apply_synth_launch(AgsTask *task)
 	pthread_mutex_lock(application_mutex);
 
 	recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) firtst_recycling);
+						 (GObject *) first_recycling);
 
 	pthread_mutex_unlock(application_mutex);
 

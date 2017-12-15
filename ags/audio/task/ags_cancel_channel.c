@@ -22,6 +22,8 @@
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 
+#include <ags/audio/thread/ags_channel_thread.h>
+
 #include <ags/i18n.h>
 
 void ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel);

@@ -120,13 +120,13 @@ void
 ags_connection_init(AgsConnection *connection)
 {
   connection->mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(connection->attr);
-  pthread_mutexattr_settype(connection->attr,
+  pthread_mutexattr_init(connection->mutexattr);
+  pthread_mutexattr_settype(connection->mutexattr,
 			    PTHREAD_MUTEX_RECURSIVE);
 
   connection->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(connection->mutex,
-		     connection->attr);
+		     connection->mutexattr);
 
   connection->data_object = NULL;
 }

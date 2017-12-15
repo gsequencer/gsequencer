@@ -334,12 +334,12 @@ ags_start_soundcard_launch(AgsTask *task)
 				   soundcard_thread);
 
       if(start_queue != NULL){
-	if(g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue)) != NULL){
-	  g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
+	if(g_atomic_pointer_get(&(AGS_THREAD(main_loop)->start_queue)) != NULL){
+	  g_atomic_pointer_set(&(AGS_THREAD(main_loop)->start_queue),
 			       g_list_concat(start_queue,
-					     g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue))));
+					     g_atomic_pointer_get(&(AGS_THREAD(main_loop)->start_queue))));
 	}else{
-	  g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
+	  g_atomic_pointer_set(&(AGS_THREAD(main_loop)->start_queue),
 			       start_queue);
 	}
       }

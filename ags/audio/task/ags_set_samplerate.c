@@ -530,7 +530,7 @@ ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcar
   main_loop = application_context->main_loop;
   
   soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) set_audio_channels->soundcard);
+					 (GObject *) soundcard);
 
   pthread_mutex_unlock(application_mutex);
 

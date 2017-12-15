@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/thread/ags_task.h>
+#include <ags/libags.h>
 
 #define AGS_TYPE_TIC_DEVICE                (ags_tic_device_get_type())
 #define AGS_TIC_DEVICE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_TIC_DEVICE, AgsTicDevice))

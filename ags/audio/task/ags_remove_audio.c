@@ -23,6 +23,8 @@
 #include <ags/audio/ags_playback.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/audio/thread/ags_audio_thread.h>
+#include <ags/audio/thread/ags_channel_thread.h>
 
 #include <ags/i18n.h>
 
@@ -328,8 +330,8 @@ ags_remove_audio_launch(AgsTask *task)
   AgsRemoveAudio *remove_audio;
 
   AgsAudioLoop *audio_loop;
-  AgsAudioThread audio_thread[3][];
-  AgsChannelThread channel_thread[3][];
+  AgsAudioThread* audio_thread[3];
+  AgsChannelThread* channel_thread[3];
   
   AgsMutexManager *mutex_manager;
 

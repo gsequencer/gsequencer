@@ -25,6 +25,7 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
 
 #define AGS_TYPE_REMOVE_NOTE                (ags_remove_note_get_type())
@@ -41,6 +42,7 @@ struct _AgsRemoveNote
 {
   AgsTask task;
 
+  AgsAudio *audio;
   AgsNotation *notation;
 
   guint x;

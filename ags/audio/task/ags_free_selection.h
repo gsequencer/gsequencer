@@ -25,6 +25,7 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
 
 #define AGS_TYPE_FREE_SELECTION                (ags_free_selection_get_type())
@@ -41,6 +42,7 @@ struct _AgsFreeSelection
 {
   AgsTask task;
 
+  AgsAudio *audio;
   AgsNotation *notation;
 };
 

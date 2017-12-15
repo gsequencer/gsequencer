@@ -374,7 +374,7 @@ ags_init_audio_launch(AgsTask *task)
 
   AgsMutexManager *mutex_manager;
 
-  GList *playback_start, playback;
+  GList *playback_start, *playback;
   GList *list, *list_start;
 
   pthread_mutex_t *application_mutex;
