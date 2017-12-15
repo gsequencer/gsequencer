@@ -4,6 +4,7 @@ ags (1.2.2)
 	* implemented async message AgsConnection:data-object and AgsAudioConnection:mapped-line
 	* implemented ags_audio_disconnect()
 	* improved thread-safety to AgsLine:channel and AgsEffectLine:channel properties
+	* TODO:JK: improved thread-safety AgsPatternBox and AgsCellPattern
 	* TODO:JK: improved thread-safety all audio tasks
 	* TODO:JK: improved thread-safety during ags_channel_set_link()
 	* TODO:JK: improved thread-safety during ags_channel_recursive_play_init() and ags_channel_recursive_cancel()

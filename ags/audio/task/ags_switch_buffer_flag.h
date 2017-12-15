@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/thread/ags_task.h>
+#include <ags/libags.h>
 
 #define AGS_TYPE_SWITCH_BUFFER_FLAG                (ags_switch_buffer_flag_get_type())
 #define AGS_SWITCH_BUFFER_FLAG(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SWITCH_BUFFER_FLAG, AgsSwitchBufferFlag))

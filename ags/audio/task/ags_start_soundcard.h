@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,9 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/thread/ags_task.h>
-
-#include <ags/object/ags_application_context.h>
+#include <ags/libags.h>
 
 #define AGS_TYPE_START_SOUNDCARD                (ags_start_soundcard_get_type())
 #define AGS_START_SOUNDCARD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_START_SOUNDCARD, AgsStartSoundcard))

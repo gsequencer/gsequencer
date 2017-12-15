@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/thread/ags_task.h>
+#include <ags/libags.h>
 
 #define AGS_TYPE_SET_FORMAT                (ags_set_format_get_type())
 #define AGS_SET_FORMAT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SET_FORMAT, AgsSetFormat))
@@ -40,6 +40,7 @@ struct _AgsSetFormat
   AgsTask task;
 
   GObject *scope;
+  
   guint format;
 };
 

@@ -19,11 +19,6 @@
 
 #include <ags/audio/task/ags_tic_device.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_sequencer.h>
-
 #include <ags/i18n.h>
 
 void ags_tic_device_class_init(AgsTicDeviceClass *tic_device);

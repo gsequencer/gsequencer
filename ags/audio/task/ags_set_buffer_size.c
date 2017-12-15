@@ -333,8 +333,28 @@ ags_set_buffer_size_audio_signal(AgsSetBufferSize *set_buffer_size, AgsAudioSign
 void
 ags_set_buffer_size_recycling(AgsSetBufferSize *set_buffer_size, AgsRecycling *recycling)
 {
+  AgsMutexManager *mutex_manager;
+
   GList *list;
   
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *recycling_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get recycling mutex */
+  pthread_mutex_lock(application_mutex);
+
+  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) recycling);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* set buffer size audio signal */
+  pthread_mutex_lock(recycling_mutex);
+
   list = recycling->audio_signal;
 
   while(list != NULL){
@@ -342,6 +362,8 @@ ags_set_buffer_size_recycling(AgsSetBufferSize *set_buffer_size, AgsRecycling *r
 
     list = list->next;
   }
+
+  pthread_mutex_unlock(recycling_mutex);
 }
 
 void
@@ -356,6 +378,10 @@ ags_set_buffer_size_channel(AgsSetBufferSize *set_buffer_size, AgsChannel *chann
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *soundcard_mutex;
   pthread_mutex_t *channel_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* get channel mutex */
   pthread_mutex_lock(application_mutex);
@@ -398,6 +424,8 @@ ags_set_buffer_size_channel(AgsSetBufferSize *set_buffer_size, AgsChannel *chann
 	       "samplerate", samplerate,
 	       "buffer-size", buffer_size,
 	       NULL);
+
+  pthread_mutex_unlock(channel_mutex);
 }
 
 void
@@ -510,7 +538,7 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
   main_loop = application_context->main_loop;
   
   soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) set_audio_channels->soundcard);
+					     (GObject *) set_audio_channels->soundcard);
 
   pthread_mutex_unlock(application_mutex);
   
@@ -528,7 +556,8 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
   /* reset soundcards */
   pthread_mutex_lock(application_mutex);
 
-  list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+  list =
+    list_start = g_list_copy(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)));
 
   pthread_mutex_unlock(application_mutex);
 
@@ -587,6 +616,8 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
   }else{
     g_warning("buffer size can only adjusted of your very first soundcard");
   }
+  
+  g_list_free(list_start);
   
   /* AgsAudio */
   pthread_mutex_lock(application_mutex);

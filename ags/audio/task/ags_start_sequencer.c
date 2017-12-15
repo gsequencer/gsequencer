@@ -19,8 +19,6 @@
 
 #include <ags/audio/task/ags_start_sequencer.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_sequencer_thread.h>
 
@@ -289,17 +287,30 @@ ags_start_sequencer_launch(AgsTask *task)
 {
   AgsStartSequencer *start_sequencer;
 
-  AgsAudioLoop *audio_loop;
+  AgsMutexManager *mutex_manager;
   AgsThread *sequencer_thread;
+  AgsThread *main_loop;
 
   AgsApplicationContext *application_context;
 
   GList *start_queue;
   
+  pthread_mutex_t *application_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   start_sequencer = AGS_START_SEQUENCER(task);
 
   application_context = start_sequencer->application_context;
-  audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
+
+  /* get main loop and soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = application_context->main_loop;
+  
+  pthread_mutex_unlock(application_mutex);
 
   /*
   if(ags_sequencer_is_starting(sequencer) ||
@@ -307,7 +318,7 @@ ags_start_sequencer_launch(AgsTask *task)
     return;
   }
   */
-  sequencer_thread = audio_loop;
+  sequencer_thread = main_loop;
   
   while((sequencer_thread = ags_thread_find_type(sequencer_thread,
 						 AGS_TYPE_SEQUENCER_THREAD)) != NULL){

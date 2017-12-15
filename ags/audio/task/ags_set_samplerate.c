@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,11 +18,6 @@
  */
 
 #include <ags/audio/task/ags_set_samplerate.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_main_loop.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio.h>
@@ -338,8 +333,28 @@ ags_set_samplerate_audio_signal(AgsSetSamplerate *set_samplerate, AgsAudioSignal
 void
 ags_set_samplerate_recycling(AgsSetSamplerate *set_samplerate, AgsRecycling *recycling)
 {
+  AgsMutexManager *mutex_manager;
+
   GList *list;
   
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *recycling_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get recycling mutex */
+  pthread_mutex_lock(application_mutex);
+
+  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) recycling);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* set buffer size audio signal */
+  pthread_mutex_lock(recycling_mutex);
+
   list = recycling->audio_signal;
 
   while(list != NULL){
@@ -347,6 +362,8 @@ ags_set_samplerate_recycling(AgsSetSamplerate *set_samplerate, AgsRecycling *rec
 
     list = list->next;
   }
+
+  pthread_mutex_unlock(recycling_mutex);
 }
 
 void
@@ -354,51 +371,143 @@ ags_set_samplerate_channel(AgsSetSamplerate *set_samplerate, AgsChannel *channel
 {
   GObject *soundcard;
 
+  AgsMutexManager *mutex_manager;
+
   guint samplerate, buffer_size;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) channel);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(channel_mutex);
+
   soundcard = channel->soundcard;
+
+  pthread_mutex_unlock(channel_mutex);
+
+  /* get soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    NULL,
 			    &samplerate,
 			    &buffer_size,
 			    NULL);
+
+  pthread_mutex_unlock(soundcard_mutex);
+  
+  /* set buffer size and samplerate */
+  pthread_mutex_lock(channel_mutex);
   
   g_object_set(channel,
 	       "samplerate", samplerate,
 	       "buffer-size", buffer_size,
 	       NULL);
+
+  pthread_mutex_unlock(channel_mutex);
 }
 
 void
 ags_set_samplerate_audio(AgsSetSamplerate *set_samplerate, AgsAudio *audio)
 {
+  AgsChannel *input, *output;
   AgsChannel *channel;
 
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  output = audio->output;
+  input = audio->input;
+
+  pthread_mutex_unlock(audio_mutex);
+
   /* AgsOutput */
-  channel = audio->output;
+  channel = output;
 
   while(channel != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* set samplerate */
     ags_set_samplerate_channel(set_samplerate, channel);
 
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+    
     channel = channel->next;
+    
+    pthread_mutex_unlock(channel_mutex);    
   }
 
   /* AgsInput */
-  channel = audio->input;
+  channel = input;
 
   while(channel != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* set samplerate */
     ags_set_samplerate_channel(set_samplerate, channel);
 
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+    
     channel = channel->next;
+    
+    pthread_mutex_unlock(channel_mutex);    
   }
 }
 
 void
 ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcard)
 {  
+  AgsThread *main_loop;
+  AgsMutexManager *mutex_manager;
+
   AgsApplicationContext *application_context;
   
-  GList *list;
+  GList *list_start, *list;
 
   gdouble thread_frequency;
   guint channels;
@@ -406,7 +515,27 @@ ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcar
   guint buffer_size;
   guint format;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
+
+  /* get main loop and soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = application_context->main_loop;
+  
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) set_audio_channels->soundcard);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* set samplerate */
+  pthread_mutex_lock(soundcard);
 
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    &channels,
@@ -414,16 +543,27 @@ ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcar
 			    &buffer_size,
 			    &format);
 
+  pthread_mutex_unlock(soundcard);
+
   /* reset soundcards */
-  list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+  pthread_mutex_lock(application_mutex);
+
+  list =
+    list_start = g_list_copy(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)));
+
+  pthread_mutex_unlock(application_mutex);
 
   if(soundcard == list->data){
     /* reset soundcards if applied to first soundcard */
+    pthread_mutex_lock(soundcard_mutex);
+
     ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
 			      channels,
 			      set_samplerate->samplerate,
 			      buffer_size,
 			      format);
+
+    pthread_mutex_unlock(soundcard_mutex);
 
     /* reset depending soundcards */
     while(list != NULL){
@@ -432,6 +572,16 @@ ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcar
 	guint target_samplerate;
 	guint target_buffer_size;
 	guint target_format;
+
+	/* get soundcard mutex */
+	pthread_mutex_lock(application_mutex);
+
+	soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+						   (GObject *) list->data);
+
+	pthread_mutex_unlock(application_mutex);
+	
+	pthread_mutex_lock(soundcard_mutex);
 
 	ags_soundcard_get_presets(AGS_SOUNDCARD(list->data),
 				  &target_channels,
@@ -445,6 +595,8 @@ ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcar
 				  target_samplerate,
 				  buffer_size * (target_samplerate / set_samplerate->samplerate),
 				  target_format);
+
+	pthread_mutex_unlock(soundcard_mutex);
       }
 
       list = list->next;
@@ -453,7 +605,7 @@ ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcar
     /* reset thread frequency */
     thread_frequency = set_samplerate->samplerate / buffer_size + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
 
-    ags_main_loop_change_frequency(AGS_MAIN_LOOP(application_context->main_loop),
+    ags_main_loop_change_frequency(main_loop,
 				   thread_frequency);
   }else{
     /* it is not first soundcard */
@@ -463,15 +615,20 @@ ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcar
 			      buffer_size * (samplerate / set_samplerate->samplerate),
 			      format);
   }
+
+  g_list_free(list_start);
   
   /* AgsAudio */
-  list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
+  list =
+    list_start = g_list_copy(ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard)));
 
   while(list != NULL){
     ags_set_samplerate_audio(set_samplerate, AGS_AUDIO(list->data));
 
     list = list->next;
   }
+
+  g_list_free(list_start);
 }
 
 /**

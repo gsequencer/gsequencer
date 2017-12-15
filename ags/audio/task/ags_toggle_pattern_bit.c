@@ -19,8 +19,6 @@
 
 #include <ags/audio/task/ags_toggle_pattern_bit.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/i18n.h>
 
 void ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit);
@@ -53,6 +51,7 @@ void ags_toggle_pattern_bit_launch(AgsTask *task);
 
 enum{
   PROP_0,
+  PROP_CHANNEL,
   PROP_PATTERN,
   PROP_LINE,
   PROP_INDEX_I,
@@ -125,6 +124,22 @@ ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit)
   gobject->finalize = ags_toggle_pattern_bit_finalize;
 
   /* properties */
+  /**
+   * AgsTogglePatternBit:channel:
+   *
+   * The assigned #AgsChannel
+   * 
+   * Since: 1.2.2
+   */
+  param_spec = g_param_spec_object("channel",
+				   i18n_pspec("channel of toggle pattern bit"),
+				   i18n_pspec("The channel of toggle pattern bit task"),
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL,
+				  param_spec);
+
   /**
    * AgsTogglePatternBit:pattern:
    *
@@ -244,7 +259,9 @@ ags_toggle_pattern_bit_connectable_interface_init(AgsConnectableInterface *conne
 void
 ags_toggle_pattern_bit_init(AgsTogglePatternBit *toggle_pattern_bit)
 {
+  toggle_pattern_bit->channel = NULL;
   toggle_pattern_bit->pattern = NULL;
+
   toggle_pattern_bit->line = 0;
 
   toggle_pattern_bit->index_i = 0;
@@ -263,6 +280,27 @@ ags_toggle_pattern_bit_set_property(GObject *gobject,
   toggle_pattern_bit = AGS_TOGGLE_PATTERN_BIT(gobject);
 
   switch(prop_id){
+  case PROP_CHANNEL:
+    {
+      AgsChannel *channel;
+
+      channel = (AgsChannel *) g_value_get_object(value);
+
+      if(toggle_pattern_bit->channel == (GObject *) channel){
+	return;
+      }
+
+      if(toggle_pattern_bit->channel != NULL){
+	g_object_unref(toggle_pattern_bit->channel);
+      }
+
+      if(channel != NULL){
+	g_object_ref(channel);
+      }
+
+      toggle_pattern_bit->channel = (GObject *) channel;
+    }
+    break;
   case PROP_PATTERN:
     {
       AgsPattern *pattern;
@@ -321,6 +359,11 @@ ags_toggle_pattern_bit_get_property(GObject *gobject,
   toggle_pattern_bit = AGS_TOGGLE_PATTERN_BIT(gobject);
 
   switch(prop_id){
+  case PROP_CHANNEL:
+    {
+      g_value_set_object(value, toggle_pattern_bit->channel);
+    }
+    break;
   case PROP_PATTERN:
     {
       g_value_set_object(value, toggle_pattern_bit->pattern);
@@ -375,6 +418,12 @@ ags_toggle_pattern_bit_dispose(GObject *gobject)
 
   toggle_pattern_bit = AGS_TOGGLE_PATTERN_BIT(gobject);
 
+  if(toggle_pattern_bit->channel != NULL){
+    g_object_unref(toggle_pattern_bit->channel);
+
+    toggle_pattern_bit->channel = NULL;
+  }
+
   if(toggle_pattern_bit->pattern != NULL){
     g_object_unref(toggle_pattern_bit->pattern);
 
@@ -392,6 +441,10 @@ ags_toggle_pattern_bit_finalize(GObject *gobject)
 
   toggle_pattern_bit = AGS_TOGGLE_PATTERN_BIT(gobject);
 
+  if(toggle_pattern_bit->channel != NULL){
+    g_object_unref(toggle_pattern_bit->channel);
+  }
+
   if(toggle_pattern_bit->pattern != NULL){
     g_object_unref(toggle_pattern_bit->pattern);
   }
@@ -405,7 +458,27 @@ ags_toggle_pattern_bit_launch(AgsTask *task)
 {
   AgsTogglePatternBit *toggle_pattern_bit;
 
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   toggle_pattern_bit = AGS_TOGGLE_PATTERN_BIT(task);
+
+    /* get channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) toggle_pattern_bit->channel);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* toggle */
+  pthread_mutex_lock(channel_mutex);
 
 #ifdef AGS_DEBUG
   g_message("toggle pattern");
@@ -415,7 +488,10 @@ ags_toggle_pattern_bit_launch(AgsTask *task)
 			 toggle_pattern_bit->index_i, toggle_pattern_bit->index_j,
 			 toggle_pattern_bit->bit);
 
-  ags_toggle_pattern_bit_refresh_gui(toggle_pattern_bit);
+  pthread_mutex_unlock(channel_mutex);
+
+  //TODO:JK: remove below
+  //  ags_toggle_pattern_bit_refresh_gui(toggle_pattern_bit);
 }
 
 void
@@ -437,6 +513,7 @@ ags_toggle_pattern_bit_refresh_gui(AgsTogglePatternBit *toggle_pattern_bit)
  * @index_j: bank 1
  * @bit: the index within pattern
  *
+ * WARNING you should provide the #AgsTogglePatternBit:channel property.
  * Creates an #AgsTogglePatternBit.
  *
  * Returns: an new #AgsTogglePatternBit.
