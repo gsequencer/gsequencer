@@ -19,6 +19,8 @@
 
 #include <ags/audio/task/ags_link_channel.h>
 
+#include <ags/audio/ags_input.h>
+
 #include <ags/i18n.h>
 
 void ags_link_channel_class_init(AgsLinkChannelClass *link_channel);
@@ -364,41 +366,49 @@ ags_link_channel_launch(AgsTask *task)
 
   channel = link_channel->channel;
   link = link_channel->link;
+
+  if(channel != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
   
-  /* get channel mutex */
-  pthread_mutex_lock(application_mutex);
+    pthread_mutex_unlock(application_mutex);
 
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) channel);
+    /* unset file-link */
+    if(AGS_IS_INPUT(channel)){
+      pthread_mutex_lock(channel_mutex);
+
+      g_object_set(channel,
+		   "file-link", NULL,
+		   NULL);
+    
+      pthread_mutex_unlock(channel_mutex);
+    }
+  }
+
+  if(link != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    link_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  (GObject *) link);
   
-  pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(application_mutex);
 
-  /* unset file-link */
-  pthread_mutex_lock(channel_mutex);
+    /* unset file-link */
+    if(AGS_IS_INPUT(link)){
+      pthread_mutex_lock(link_mutex);
+      
+      g_object_set(link,
+		   "file-link", NULL,
+		   NULL);
 
-  g_object_set(channel,
-	       "file-link", NULL,
-	       NULL);
-
-  pthread_mutex_unlock(channel_mutex);
-
-  /* get channel mutex */
-  pthread_mutex_lock(application_mutex);
-
-  link_mutex = ags_mutex_manager_lookup(mutex_manager,
-					(GObject *) link);
+      pthread_mutex_unlock(link_mutex);
+    }
+  }
   
-  pthread_mutex_unlock(application_mutex);
-
-  /* unset file-link */
-  pthread_mutex_lock(link_mutex);
-
-  g_object_set(link,
-	       "file-link", NULL,
-	       NULL);
-
-  pthread_mutex_unlock(link_mutex);
-
   /* link channel */
   ags_channel_set_link(channel, link,
   		       &(link_channel->error));
