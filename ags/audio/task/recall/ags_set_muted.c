@@ -19,10 +19,6 @@
 
 #include <ags/audio/task/recall/ags_set_muted.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_mutable.h>
-
-#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall.h>
@@ -341,7 +337,27 @@ ags_set_muted_recall(AgsSetMuted *set_muted, AgsRecall *recall)
 void
 ags_set_muted_channel(AgsSetMuted *set_muted, AgsChannel *channel)
 {
+  AgsMutexManager *mutex_manager;
+
   GList *list;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get channel mutex */
+  pthread_mutex_lock(application_mutex);
+  
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) channel);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* apply sequencer length */
+  pthread_mutex_lock(channel_mutex);
 
   list = channel->play;
 
@@ -358,13 +374,41 @@ ags_set_muted_channel(AgsSetMuted *set_muted, AgsChannel *channel)
 
     list = list->next;
   }
+
+  pthread_mutex_unlock(channel_mutex);
 }
 
 void
 ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio)
 {
+  AgsChannel *input, *output;
   AgsChannel *channel;
+
+  AgsMutexManager *mutex_manager;
+
   GList *list;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  output = audio->output;
+  input = audio->input;
 
   /* AgsRecall */
   list = audio->play;
@@ -383,21 +427,51 @@ ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio)
     list = list->next;
   }
 
+  pthread_mutex_unlock(audio_mutex);
+
   /* AgsChannel */
-  channel = audio->output;
+  channel = output;
 
   while(channel != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* muted */
     ags_set_muted_channel(set_muted, channel);
 
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+
     channel = channel->next;
+    
+    pthread_mutex_unlock(channel_mutex);    
   }
 
-  channel = audio->input;
+  channel = input;
 
   while(channel != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* muted */
     ags_set_muted_channel(set_muted, channel);
 
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+
     channel = channel->next;
+    
+    pthread_mutex_unlock(channel_mutex);    
   }
 }
 

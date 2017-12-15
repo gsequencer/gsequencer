@@ -19,13 +19,6 @@
 
 #include <ags/audio/task/recall/ags_reset_peak.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_mutable.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
-
 #include <math.h>
 
 #include <ags/i18n.h>

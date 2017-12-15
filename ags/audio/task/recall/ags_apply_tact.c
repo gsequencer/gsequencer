@@ -19,10 +19,6 @@
 
 #include <ags/audio/task/recall/ags_apply_tact.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_tactable.h>
-
-#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall.h>
@@ -352,7 +348,27 @@ ags_apply_tact_recall(AgsApplyTact *apply_tact, AgsRecall *recall)
 void
 ags_apply_tact_channel(AgsApplyTact *apply_tact, AgsChannel *channel)
 {
+  AgsMutexManager *mutex_manager;
+
   GList *list;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get channel mutex */
+  pthread_mutex_lock(application_mutex);
+  
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) channel);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* apply tact */
+  pthread_mutex_lock(channel_mutex);
 
   list = channel->play;
 
@@ -369,13 +385,41 @@ ags_apply_tact_channel(AgsApplyTact *apply_tact, AgsChannel *channel)
 
     list = list->next;
   }
+
+  pthread_mutex_unlock(channel_mutex);
 }
 
 void
 ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio)
 {
+  AgsChannel *input, *output;
   AgsChannel *channel;
+
+  AgsMutexManager *mutex_manager;
+
   GList *list;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  output = audio->output;
+  input = audio->input;
 
   /* AgsRecall */
   list = audio->play;
@@ -394,21 +438,51 @@ ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio)
     list = list->next;
   }
 
+  pthread_mutex_unlock(audio_mutex);
+
   /* AgsChannel */
-  channel = audio->output;
+  channel = output;
 
   while(channel != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* apply tact */
     ags_apply_tact_channel(apply_tact, channel);
 
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+
     channel = channel->next;
+    
+    pthread_mutex_unlock(channel_mutex);    
   }
 
-  channel = audio->input;
+  channel = input;
 
   while(channel != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* apply tact */
     ags_apply_tact_channel(apply_tact, channel);
 
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+
     channel = channel->next;
+    
+    pthread_mutex_unlock(channel_mutex);    
   }
 }
 
@@ -416,9 +490,34 @@ ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio)
 void
 ags_apply_tact_soundcard(AgsApplyTact *apply_tact, GObject *soundcard)
 {
-  GList *list;
+  AgsMutexManager *mutex_manager;
+  
+  GList *list_start, *list;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+  
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) apply_bpm->soundcard);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* set delay factor and get audio */
+  pthread_mutex_lock(soundcard);
 
   ags_soundcard_set_delay_factor(AGS_SOUNDCARD(soundcard), apply_tact->tact);
+
+  list =
+    list_start = g_list_copy(ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard)));
+
+  pthread_mutex_unlock(soundcard);
 
   /* AgsAudio */
   list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
@@ -429,6 +528,8 @@ ags_apply_tact_soundcard(AgsApplyTact *apply_tact, GObject *soundcard)
 
     list = list->next;
   }
+
+  g_list_free(list_start);
 }
 
 /**

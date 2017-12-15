@@ -19,10 +19,6 @@
 
 #include <ags/audio/task/recall/ags_apply_sequencer_length.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_tactable.h>
-
-#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall.h>
@@ -343,7 +339,27 @@ ags_apply_sequencer_length_recall(AgsApplySequencerLength *apply_sequencer_lengt
 void
 ags_apply_sequencer_length_channel(AgsApplySequencerLength *apply_sequencer_length, AgsChannel *channel)
 {
+  AgsMutexManager *mutex_manager;
+
   GList *list;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get channel mutex */
+  pthread_mutex_lock(application_mutex);
+  
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) channel);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* apply sequencer length */
+  pthread_mutex_lock(channel_mutex);
 
   list = channel->play;
 
@@ -360,13 +376,41 @@ ags_apply_sequencer_length_channel(AgsApplySequencerLength *apply_sequencer_leng
 
     list = list->next;
   }
+
+  pthread_mutex_unlock(channel_mutex);
 }
 
 void
 ags_apply_sequencer_length_audio(AgsApplySequencerLength *apply_sequencer_length, AgsAudio *audio)
 {
+  AgsChannel *input, *output;
   AgsChannel *channel;
+
+  AgsMutexManager *mutex_manager;
+
   GList *list;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  output = audio->output;
+  input = audio->input;
 
   /* AgsRecall */
   list = audio->play;
@@ -385,21 +429,51 @@ ags_apply_sequencer_length_audio(AgsApplySequencerLength *apply_sequencer_length
     list = list->next;
   }
 
+  pthread_mutex_unlock(audio_mutex);
+
   /* AgsChannel */
-  channel = audio->output;
+  channel = output;
 
   while(channel != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* apply sequencer length */
     ags_apply_sequencer_length_channel(apply_sequencer_length, channel);
 
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+
     channel = channel->next;
+    
+    pthread_mutex_unlock(channel_mutex);    
   }
 
-  channel = audio->input;
+  channel = input;
 
   while(channel != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* apply sequencer length */
     ags_apply_sequencer_length_channel(apply_sequencer_length, channel);
 
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+
     channel = channel->next;
+    
+    pthread_mutex_unlock(channel_mutex);    
   }
 }
 
