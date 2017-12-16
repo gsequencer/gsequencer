@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,15 +28,22 @@
 typedef struct _AgsChannelIter AgsChannelIter;
 
 typedef enum{
-  AGS_CHANNEL_ITER_LEVEL_STRICT,
-  AGS_CHANNEL_ITER_DIRECTION_AXIS_TO_LEAFES,
-  AGS_CHANNEL_ITER_DIRECTION_AXIS_TO_ROOT,
-  AGS_CHANNEL_ITER_DIRECTION_LEAFES_TO_ROOT,
-  AGS_CHANNEL_ITER_DIRECTION_ROOT_TO_LEAFES,
+  AGS_CHANNEL_ITER_LEVEL_STRICT               = 1,
+  AGS_CHANNEL_ITER_DIRECTION_AXIS_TO_LEAFES   = 1 <<  1,
+  AGS_CHANNEL_ITER_DIRECTION_AXIS_TO_ROOT     = 1 <<  2,
+  AGS_CHANNEL_ITER_DIRECTION_LEAFES_TO_ROOT   = 1 <<  3,
+  AGS_CHANNEL_ITER_DIRECTION_ROOT_TO_LEAFES   = 1 <<  4,
 }AgsChannelIterFlags;
+
+typedef enum{
+  AGS_CHANNEL_ITER_UNTIL_NEXT_LEVEL,
+}AgsChannelIterMode;
 
 struct _AgsChannelIter
 {
+  guint flags;
+  guint flags_mask;
+  
   AgsChannel *current_start;
 
   AgsChannelIter *parent;
@@ -53,5 +60,6 @@ void ags_channel_iter_free(AgsChannelIter *iter);
 AgsChannel* ags_channel_iter_prev(AgsChannelIter *iter, guint mode);
 AgsChannel* ags_channel_iter_next(AgsChannelIter *iter, guint mode);
 
-#endif /*__AGS_CHANNEL_ITER_H__*/
+void ags_channel_iter_init(AgsChannelIter *iter, guint flags);
 
+#endif /*__AGS_CHANNEL_ITER_H__*/

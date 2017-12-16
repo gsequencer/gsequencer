@@ -29,13 +29,16 @@ ags_channel_iter_alloc(AgsChannel *start)
 
   iter = (AgsChannelIter *) malloc(sizeof(AgsChannelIter));
 
+  iter->flags = 0;
+  iter->flags_mask = 0;
+  
   iter->current_start = start;
 
   iter->parent = NULL;
   iter->children = NULL;
   iter->current_iter = iter;
 
-  iter->current = start;
+  iter->current = NULL;
 
   return(iter);
 }
@@ -58,169 +61,155 @@ AgsChannel*
 ags_channel_iter_next(AgsChannelIter *iter, guint mode)
 {
   AgsAudio *audio;
-  AgsChannelIter *current_iter, *next_iter;
+  AgsChannel *channel;
+  AgsChannel *input, *output;
+  AgsChannel *next_pad;
+  AgsChannel *link;
+  
+  AgsChannelIter *current_iter, *next_iter, *new_iter;
 
-  auto AgsChannel* ags_channel_iter_axis_to_leafes(AgsChannelIter *iter);
-  auto AgsChannelIter* ags_channel_iter_axis_to_leafes_go_up(AgsChannelIter *iter);
+  guint audio_flags;
+  guint audio_channel;
+  guint output_line;
+  gboolean success;
+  
+  if(iter->current_start == NULL ||
+     iter->flags_mask == 0x1f){
+    return(NULL);
+  }
 
-  /*
-   * Axis to leafes iteration strategy.
-   */
-  AgsChannel* ags_channel_iter_axis_to_leafes(AgsChannelIter *iter){
-    if(AGS_IS_OUTPUT(current_iter->current)){
-      if(audio->input == NULL){
-	iter->current_iter = ags_channel_iter_axis_to_leafes_go_up(iter);
-	
-	return(iter->current_iter->current);
-      }
+  audio = NULL;
+  
+  input = NULL;
+  output = NULL;
+
+  current_iter = NULL;
+  next_iter = NULL;
+
+  success = FALSE;
+  
+  if((AGS_CHANNEL_ITER_DIRECTION_AXIS_TO_LEAFES & (iter->flags_mask)) == 0){
+    if(iter->current_iter == NULL){
+      current_iter = iter;
     }else{
-      if(current_iter->current->link == NULL){
-	if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
-	  if(current_iter->current->next_pad == NULL){
-	    iter->current_iter = ags_channel_iter_axis_to_leafes_go_up(iter);
-	    
-	    return(iter->current_iter->current);
+      current_iter = iter->current_iter;
+    }
+
+    next_iter = current_iter;
+
+    channel = next_iter->current;
+    
+    if((AGS_CHANNEL_ITER_DIRECTION_STRICT_LEVEL & (iter->flags)) != 0){
+      if(AGS_IS_OUTPUT(channel)){
+	if((AGS_CHANNEL_ITER_DIRECTION_AXIS_TO_LEAFES & (next_iter->flags_mask)) == 0){
+	  output = channel;
+	  
+	  /* go down */
+	  audio = output->audio;
+	  
+	  audio_channel = output->audio_channel;
+	  output_line = output->line;
+
+	  input = audio->input;
+	  
+	  audio_flags = audio->flags;
+	  
+	  if((AGS_AUDIO_ASYNC & (audio_flags)) != 0){
+	    channel = ags_channel_nth(input,
+				      audio_channel);
+	  }else{
+	    channel = ags_channel_nth(input,
+				      output_line);
+	  }
+
+	  if(channel != NULL){
+	    /* allocate new iter */
+	    new_iter = ags_channel_iter_alloc(channel);
+	    new_iter->current = channel;
+
+	    next_iter->children = g_list_append(next_iter->children,
+						new_iter);
+	    new_iter->parent = next_iter;
+
+	    /* mark and replace next */
+	    next_iter->flags_mask |= AGS_CHANNEL_ITER_DIRECTION_AXIS_TO_LEAFES;
+	    next_iter = new_iter;
+	  }else{
+	    /* go up and select next */
 	  }
 	}else{
-	  iter->current_iter = ags_channel_iter_axis_to_leafes_go_up(iter);
-	  
-	  return(iter->current_iter->current);
-	}
-      }
-    }
-    
-    if(AGS_IS_OUTPUT(current_iter->current)){
-      next_iter = ags_channel_iter_alloc(ags_channel_nth(audio->input,
-							 (((AGS_AUDIO_ASYNC & (audio->flags)) != 0) ? current_iter->current->audio_channel: current_iter->current->line)));
-      current_iter->children = g_list_prepend(current_iter->children,
-					      next_iter);
-      next_iter->parent = current_iter;
-
-      iter->current_iter = next_iter;
-
-      return(next_iter->current);
-    }else{
-      if(current_iter->current->link == NULL){
-	if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
-	  current_iter->current = current_iter->current->next_pad;
-
-	  return(current_iter->current);
+	  /* go up and select next */
 	}
       }else{
-	next_iter = ags_channel_iter_alloc(current_iter->current->link);
-	current_iter->children = g_list_prepend(current_iter->children,
-						next_iter);
-	next_iter->parent = current_iter;
+	if((AGS_CHANNEL_ITER_DIRECTION_AXIS_TO_LEAFES & (next_iter->flags_mask)) == 0){
+	  input = channel;
+	
+	  if((AGS_AUDIO_ASYNC & (audio_flags)) != 0){
+	    next_pad = input->next_pad;
 
-	iter->current_iter = next_iter;
+	    if(next_pad != NULL){
+	      channel = next_pad;
 
-	return(next_iter->current);
-      }
-    }
+	      /* allocate new iter */
+	      new_iter = ags_channel_iter_alloc(channel);
+	      new_iter->current = channel;
 
-    return(NULL);
-  }
+	      next_iter->children = g_list_append(next_iter->children,
+						  new_iter);
+	      new_iter->parent = next_iter;
+	    }else{
+	      /* go down/up and select next */
+	    }
+	  }else{
+	    link = input->link;
 
-  /*
-   * Returns: next AgsChannelIter
-   *
-   * goes up in the iteration list and frees unneeded AgsChannelIter.
-   */
-  AgsChannelIter* ags_channel_iter_axis_to_leafes_go_up(AgsChannelIter *iter){
-    AgsChannelIter *current_iter, *old_iter, *new_iter;
+	    if(link != NULL){
+	      channel = link;
 
-    current_iter = iter->current_iter;
+	      /* allocate new iter */
+	      new_iter = ags_channel_iter_alloc(channel);
+	      new_iter->current = channel;
 
-    while(current_iter->parent != NULL){
-      if(AGS_OUTPUT(current_iter->current)){
-	old_iter = current_iter;
-	current_iter = current_iter->parent;
+	      next_iter->children = g_list_append(next_iter->children,
+						  new_iter);
+	      new_iter->parent = next_iter;
 
-	current_iter->children = g_list_remove(current_iter->children,
-					       old_iter);
-	free(old_iter);
-      }else{
-	if(current_iter->current->next_pad == NULL){
-	  old_iter = current_iter;
-	  current_iter = current_iter->parent;
-
-	  current_iter->children = g_list_remove(current_iter->children,
-						 old_iter);
-	  free(old_iter);
+	      /* mark and replace next */
+	      next_iter->flags_mask |= AGS_CHANNEL_ITER_DIRECTION_AXIS_TO_LEAFES;
+	      next_iter = new_iter;
+	    }else{
+	      /* go up and select next */
+	    }
+	  }
 	}else{
-	  current_iter->current = current_iter->current->next_pad;
-
-	  return(current_iter);
+	  /* go up and select next */
+	}
+      }
+    }else{
+      while(channel != NULL &&
+	    !success){
+	while(channel != NULL &&
+	      !success){
+	  if(mode == AGS_CHANNEL_ITER_UNTIL_NEXT_LEVEL){
+	  }
 	}
       }
     }
 
-    if(AGS_OUTPUT(current_iter->current)){
-      if(current_iter->current->link != NULL){
-	next_iter = ags_channel_iter_alloc(current_iter->current->link);
-	next_iter->children = g_list_prepend(next_iter->children,
-					     current_iter);
-	current_iter->parent = next_iter;
-
-	return(next_iter);
-      }
-    }else{
-      AgsAudio *audio;
-      AgsChannel *channel;
-
-      audio = AGS_AUDIO(current_iter->current->audio);
-
-      if(audio->output != NULL){
-	if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
-	  channel = ags_channel_nth(audio->output, current_iter->current->audio_channel);
-	}else{
-	  channel = ags_channel_nth(audio->output, current_iter->current->line);
-	}
-
-	next_iter = ags_channel_iter_alloc(channel);
-	next_iter->children = g_list_prepend(next_iter->children,
-					     current_iter);
-	current_iter->parent = next_iter;
-
-	return(next_iter);
-      }
-    }
-
-    return(NULL);
+    /* set return value */
+    iter->current_iter = next_iter;
+    iter->current = next_iter->current;
+  }else if((AGS_CHANNEL_ITER_DIRECTION_AXIS_TO_ROOT & (iter->flags_mask)) == 0){
+  }else if((AGS_CHANNEL_ITER_DIRECTION_LEAFES_TO_ROOT & (iter->flags_mask)) == 0){
+  }else if((AGS_CHANNEL_ITER_DIRECTION_ROOT_TO_LEAFES & (iter->flags_mask)) == 0){
   }
-
-  if(iter->current_start == NULL){
-    return(NULL);
-  }
-
-  current_iter = iter->current_iter;
-  audio = AGS_AUDIO(current_iter->current->audio);
-
-  if((AGS_CHANNEL_ITER_DIRECTION_AXIS_TO_LEAFES & (mode)) != 0){
-    if((AGS_CHANNEL_ITER_LEVEL_STRICT & (mode)) != 0){
-      //TODO:JK: implement me
-    }else{
-      return(ags_channel_iter_axis_to_leafes(iter));
-    }
-  }else if((AGS_CHANNEL_ITER_DIRECTION_AXIS_TO_ROOT & (mode)) != 0){
-    if((AGS_CHANNEL_ITER_LEVEL_STRICT & (mode)) != 0){
-      //TODO:JK: implement me
-    }else{
-      //TODO:JK: implement me
-    }
-  }else if((AGS_CHANNEL_ITER_DIRECTION_LEAFES_TO_ROOT & (mode)) != 0){
-    if((AGS_CHANNEL_ITER_LEVEL_STRICT & (mode)) != 0){
-      //TODO:JK: implement me
-    }else{
-      //TODO:JK: implement me
-    }
-  }else if((AGS_CHANNEL_ITER_DIRECTION_ROOT_TO_LEAFES & (mode)) != 0){
-    if((AGS_CHANNEL_ITER_LEVEL_STRICT & (mode)) != 0){
-      //TODO:JK: implement me
-    }else{
-      //TODO:JK: implement me
-    }
-  }
-
+  
   return(NULL);
+}
+
+void
+ags_channel_iter_init(AgsChannelIter *iter, guint flags)
+{
+  iter->flags = flags;
+  iter->flags_mask = (0x1f) & (~flags);
 }
