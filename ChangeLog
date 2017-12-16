@@ -6,10 +6,12 @@ ags (1.2.2)
 	* improved thread-safety to AgsLine:channel and AgsEffectLine:channel properties
 	* improved thread-safety AgsPatternBox and AgsCellPattern
 	* improved thread-safety all audio tasks
-	* TODO:JK: improved thread-safety during ags_channel_set_link() and ags_channel_set_recycling()
-	* TODO:JK: improved thread-safety during ags_channel_recursive_play_init() and ags_channel_recursive_cancel()
+	* TODO:JK: improved thread-safety during ags_channel_set_link() and relate
+	* TODO:JK: improved thread-safety during ags_channel_recursive_play_init() and related
+	* TODO:JK: improved thread-safety during ags_channel_recursive_cancel()
 	* improved tasks which need to lock audio especially using AgsCropNote and AgsMoveNote
 	* fixed change soundcard task since data-object was resetted for all connections
+	* TODO:JK: fixed AgsMoveNote and AgsCropNote to support segmented notation
 	* minor-fixes
 
 ags (1.2.1)

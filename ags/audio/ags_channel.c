@@ -7858,11 +7858,18 @@ void
 ags_channel_recursive_set_property(AgsChannel *channel,
 				   GParameter *parameter, gint n_params)
 {
+  AgsChannel *link;
+
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+  
   auto void ags_channel_set_property(AgsChannel *channel,
 				     GParameter *parameter, gint n_params);
-  auto void ags_channel_recurisve_set_property_down(AgsChannel *channel,
+  auto void ags_channel_recursive_set_property_down(AgsChannel *channel,
 						    GParameter *parameter, gint n_params);
-  auto void ags_channel_recurisve_set_property_down_input(AgsChannel *channel,
+  auto void ags_channel_recursive_set_property_down_input(AgsChannel *channel,
 							  GParameter *parameter, gint n_params);
 
   void ags_channel_set_property(AgsChannel *channel,
@@ -7875,7 +7882,7 @@ ags_channel_recursive_set_property(AgsChannel *channel,
     }
   }
   
-  void ags_channel_recurisve_set_property_down(AgsChannel *channel,
+  void ags_channel_recursive_set_property_down(AgsChannel *channel,
 					       GParameter *parameter, gint n_params){
     if(channel == NULL){
       return;
@@ -7884,51 +7891,128 @@ ags_channel_recursive_set_property(AgsChannel *channel,
     ags_channel_set_property(channel,
 			     parameter, n_params);
     
-    ags_channel_recurisve_set_property_down_input(channel,
+    ags_channel_recursive_set_property_down_input(channel,
 						  parameter, n_params);
   }
     
-  void ags_channel_recurisve_set_property_down_input(AgsChannel *channel,
+  void ags_channel_recursive_set_property_down_input(AgsChannel *channel,
 						     GParameter *parameter, gint n_params){
     AgsAudio *audio;
     AgsChannel *input;
+    AgsChannel *link;
+    
+    guint audio_channel;
+    
+    pthread_mutex_t *audio_mutex;
+    pthread_mutex_t *channel_mutex;
+    pthread_mutex_t *input_mutex;
     
     if(channel == NULL){
       return;
     }
 
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+
+    pthread_mutex_unlock(application_mutex);
+    
+    /* get some fields */
+    pthread_mutex_lock(channel_mutex);
+
     audio = (AgsAudio *) channel->audio;
+
+    audio_channel = channel->audio_channel;
+    
+    pthread_mutex_unlock(channel_mutex);
 
     if(audio == NULL){
       return;
     }
+
+    /* get audio mutex */
+    pthread_mutex_lock(application_mutex);
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) audio);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* get some fields */
+    pthread_mutex_lock(channel_mutex);
+
+    input = audio->input;
+
+    pthread_mutex_unlock(channel_mutex);
     
-    input = ags_channel_nth(audio->input,
-			    channel->audio_channel);
+    /*  */
+    input = ags_channel_nth(input,
+			    audio_channel);
 
     while(input != NULL){
+      /* get input mutex */
+      pthread_mutex_lock(application_mutex);
+
+      input_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) input);
+
+      pthread_mutex_unlock(application_mutex);
+
+      /* get some fields */
+      pthread_mutex_lock(input_mutex);
+
+      link = input->link;
+
+      pthread_mutex_unlock(input_mutex);
+      
+      /* set property */
       ags_channel_set_property(input,
 			       parameter, n_params);
       
-      ags_channel_recurisve_set_property_down(input->link,
+      ags_channel_recursive_set_property_down(link,
 					      parameter, n_params);
 
-      input = input->next;
+      /* iterate */
+      pthread_mutex_lock(input_mutex);
+
+      input = input->next_pad;
+
+      pthread_mutex_unlock(input_mutex);
     }
   }
   
   if(channel == NULL){
     return;
   }
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) channel);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(channel_mutex);
+
+  link = channel->link;
   
+  pthread_mutex_unlock(channel_mutex);
+    
   if(AGS_IS_INPUT(channel)){
     ags_channel_set_property(channel,
 			     parameter, n_params);
     
-    ags_channel_recurisve_set_property_down(channel->link,
+    ags_channel_recursive_set_property_down(link,
 					    parameter, n_params);
   }else{
-    ags_channel_recurisve_set_property_down(channel,
+    ags_channel_recursive_set_property_down(channel,
 					    parameter, n_params);
   }
 }
