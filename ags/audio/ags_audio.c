@@ -5499,8 +5499,6 @@ ags_audio_cancel(AgsAudio *audio,
   
   g_object_ref(recall_id);
   
-  pthread_mutex_unlock(mutex);
-
   list = list_start;
   
   while(list != NULL){
@@ -5524,6 +5522,8 @@ ags_audio_cancel(AgsAudio *audio,
   }  
 
   g_list_free(list_start);
+
+  pthread_mutex_unlock(mutex);
 }
 
 /**
