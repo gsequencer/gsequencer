@@ -12968,6 +12968,8 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 							    GList *recall_id_list);
 
   /* collectors of AgsPlayback and recall_id */
+  auto gint ags_collected_channel_compare_recall_id(gconstpointer a,
+						    gconstpointer b);
   auto struct AgsCollectedChannel* ags_collected_channel_alloc(AgsChannel *channel,
 							       AgsPlayback *playback, AgsRecallID *recall_id,
 							       pthread_mutex_t *channel_mutex);
@@ -13528,6 +13530,15 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
     } 
   }
 
+  gint ags_collected_channel_compare_recall_id(gconstpointer a,
+					       gconstpointer b)
+  {
+    if(((struct AgsCollectedChannel *) a)->recall_id == ((struct AgsCollectedChannel *) b)->recall_id){
+      return(0);
+    }
+    
+    return(-1);
+  }
   struct AgsCollectedChannel* ags_collected_channel_alloc(AgsChannel *channel,
 							  AgsPlayback *playback, AgsRecallID *recall_id,
 							  pthread_mutex_t *channel_mutex)
@@ -13601,7 +13612,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
       return(list);
     }
     
-    /* get channel mutex */
+    /* get output mutex */
     pthread_mutex_lock(application_mutex);
   
     output_mutex = ags_mutex_manager_lookup(mutex_manager,
@@ -13785,62 +13796,94 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 							 GList *list)
   {
     AgsAudio *audio;
-    
+
+    AgsPlayback *playback;
+
+    guint audio_flags;
+
+    pthread_mutex_t *audio_mutex;
+    pthread_mutex_t *current_mutex;
+
     if(current == NULL){
       return(list);
     }
 
+    /* get current mutex */
+    pthread_mutex_lock(application_mutex);
+  
+    current_mutex = ags_mutex_manager_lookup(mutex_manager,
+					    (GObject *) current);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* get some fields */
+    pthread_mutex_lock(current_mutex);
+
     audio = AGS_AUDIO(current->audio);
 
+    playback = current->playback;
+    
+    pthread_mutex_unlock(current_mutex);
+
+    /* get audio mutex */
+    pthread_mutex_lock(application_mutex);
+    
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) audio);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* get some fields */
+    pthread_mutex_lock(audio_mutex);
+
+    audio_flags = audio->flags;
+    
+    pthread_mutex_unlock(audio_mutex);
+
     /* collect devout play */
-    if(current->playback != NULL){
-      if((AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(AGS_PLAYBACK(current->playback)->flags)))) != 0 &&
-	 AGS_PLAYBACK(current->playback)->recall_id[0] != NULL){
+    if(playback != NULL){
+      pthread_mutex_lock(current_mutex);
+      
+      if((AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(playback->flags)))) != 0 &&
+	 playback->recall_id[AGS_PLAYBACK_SCOPE_PLAYBACK] != NULL){
 #ifdef AGS_DEBUG
 	g_message("recall id collect: play");
 #endif
 
-	if(collect_recall_id){
-	  list = g_list_prepend(list,
-				AGS_PLAYBACK(current->playback)->recall_id[0]);
-	}else{
-	  list = g_list_prepend(list,
-				current->playback);
-	}
+	list = g_list_prepend(list,
+			      ags_collected_channel_alloc(current,
+							  playback, playback->recall_id[AGS_PLAYBACK_SCOPE_PLAYBACK],
+							  current_mutex));
       }
 
-      if((AGS_PLAYBACK_SEQUENCER & (g_atomic_int_get(&(AGS_PLAYBACK(current->playback)->flags)))) != 0 &&
-	 AGS_PLAYBACK(current->playback)->recall_id[1] != NULL){
+      if((AGS_PLAYBACK_SEQUENCER & (g_atomic_int_get(&(playback->flags)))) != 0 &&
+	 playback->recall_id[AGS_PLAYBACK_SCOPE_SEQUENCER] != NULL){
 #ifdef AGS_DEBUG
 	g_message("recall id collect: sequencer");
 #endif
 
-	if(collect_recall_id){
-	  list = g_list_prepend(list,
-				AGS_PLAYBACK(current->playback)->recall_id[1]);
-	}else{
-	  list = g_list_prepend(list,
-				current->playback);
-	}
+	list = g_list_prepend(list,
+			      ags_collected_channel_alloc(current,
+							  playback, playback->recall_id[AGS_PLAYBACK_SCOPE_PLAYBACK],
+							  current_mutex));
       }
 
-      if((AGS_PLAYBACK_NOTATION & (g_atomic_int_get(&(AGS_PLAYBACK(current->playback)->flags)))) != 0 &&
-	 AGS_PLAYBACK(current->playback)->recall_id[2] != NULL){
+      if((AGS_PLAYBACK_NOTATION & (g_atomic_int_get(&(playback->flags)))) != 0 &&
+	 playback->recall_id[AGS_PLAYBACK_SCOPE_NOTATION] != NULL){
 #ifdef AGS_DEBUG
 	g_message("recall id collect: notation");
 #endif
 
-	if(collect_recall_id){
-	  list = g_list_prepend(list,
-				AGS_PLAYBACK(current->playback)->recall_id[2]);
-	}else{
-	  list = g_list_prepend(list,
-				current->playback);
-	}
+	list = g_list_prepend(list,
+			      ags_collected_channel_alloc(current,
+							  playback, playback->recall_id[AGS_PLAYBACK_SCOPE_PLAYBACK],
+							  current_mutex));
       }
+
+      pthread_mutex_unlock(current_mutex);
     }
     
-    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio_flags)) != 0){
       return(list);
     }
 
@@ -13851,13 +13894,22 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
     return(list);
   }
 
-  GList* ags_channel_recursive_collect_devout_play_up(AgsChannel *channel,
-						      gboolean collect_recall_id){
+  GList* ags_channel_recursive_collect_playback_up(AgsChannel *channel)
+  {
     AgsAudio *audio;
+    AgsChannel *output;
     AgsChannel *current;
+    AgsPlayback *playback;
+    
     GList *list;
 
-    struct AgsCollectedChannel *collected_channel;
+    guint audio_flags;
+    guint audio_channel;
+    guint output_line;
+
+    pthread_mutex_t *audio_mutex;
+    pthread_mutex_t *channel_mutex;
+    pthread_mutex_t *current_mutex;
     
     if(channel == NULL){
       return(NULL);
@@ -13866,195 +13918,311 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
     current = channel;
     list = NULL;
 
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    current_mutex = 
+      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) channel);
+    
+    pthread_mutex_unlock(application_mutex);
+
+    /* check output */
     if(AGS_IS_OUTPUT(channel)){
+      /* get some fields */
+      pthread_mutex_lock(current_mutex);
+
       audio = AGS_AUDIO(current->audio);
+
+      playback = current->playback;
+      
+      pthread_mutex_unlock(current_mutex);
 
       goto ags_channel_recursive_collect_devout_play_up_OUTPUT;
     }
 
     while(current != NULL){
+      /* get current mutex */
+      pthread_mutex_lock(application_mutex);
+
+      current_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) current);
+    
+      pthread_mutex_unlock(application_mutex);
+      
+      /* get some fields */
+      pthread_mutex_lock(current_mutex);
+
       audio = AGS_AUDIO(current->audio);
 
+      playback = current->playback;
+
+      audio_channel = current->audio_channel;
+      output_line = current->line;
+      
+      pthread_mutex_unlock(current_mutex);
+
+      /* get audio mutex */
+      pthread_mutex_lock(application_mutex);
+    
+      audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) audio);
+  
+      pthread_mutex_unlock(application_mutex);
+
+      /* get some fields */
+      pthread_mutex_lock(audio_mutex);
+
+      audio_flags = audio->flags;
+
+      output = audio->output;
+      
+      pthread_mutex_unlock(audio_mutex);
+
       /* input */
-      if(current->playback != NULL){
-	if((AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(AGS_PLAYBACK(current->playback)->flags)))) != 0 &&
-	   AGS_PLAYBACK(current->playback)->recall_id[0] != NULL){
+      if(playback != NULL){
+	pthread_mutex_lock(current_mutex);
+	
+	if((AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(playback->flags)))) != 0 &&
+	   playback->recall_id[AGS_PLAYBACK_SCOPE_PLAYBACK] != NULL){
 #ifdef AGS_DEBUG
 	  g_message("recall id collect: play");
 #endif
 
-	  if(collect_recall_id){
-	    list = g_list_prepend(list,
-				  AGS_PLAYBACK(current->playback)->recall_id[0]);
-	  }else{
-	    list = g_list_prepend(list,
-				  current->playback);
-	  }
+	  list = g_list_prepend(list,
+				ags_collected_channel_alloc(current,
+							    playback, playback->recall_id[AGS_PLAYBACK_SCOPE_PLAYBACK],
+							    current_mutex));
 	}
 
-	if((AGS_PLAYBACK_SEQUENCER & (g_atomic_int_get(&(AGS_PLAYBACK(current->playback)->flags)))) != 0 &&
-	   AGS_PLAYBACK(current->playback)->recall_id[1] != NULL){
+	if((AGS_PLAYBACK_SEQUENCER & (g_atomic_int_get(&(playback->flags)))) != 0 &&
+	   playback->recall_id[AGS_PLAYBACK_SCOPE_SEQUENCER] != NULL){
 #ifdef AGS_DEBUG
 	  g_message("recall id collect: sequencer");
 #endif
 
-	  if(collect_recall_id){
-	    list = g_list_prepend(list,
-				  AGS_PLAYBACK(current->playback)->recall_id[1]);
-	  }else{
-	    list = g_list_prepend(list,
-				  current->playback);
-	  }
+	  list = g_list_prepend(list,
+				ags_collected_channel_alloc(current,
+							    playback, playback->recall_id[AGS_PLAYBACK_SCOPE_SEQUENCER],
+							    current_mutex));
 	}
 
-	if((AGS_PLAYBACK_NOTATION & (g_atomic_int_get(&(AGS_PLAYBACK(current->playback)->flags)))) != 0 &&
-	   AGS_PLAYBACK(current->playback)->recall_id[2] != NULL){
+	if((AGS_PLAYBACK_NOTATION & (g_atomic_int_get(&(playback->flags)))) != 0 &&
+	   playback->recall_id[AGS_PLAYBACK_SCOPE_NOTATION] != NULL){
 #ifdef AGS_DEBUG
 	  g_message("recall id collect: notation");
 #endif
 
-	  if(collect_recall_id){
-	    list = g_list_prepend(list,
-				  AGS_PLAYBACK(current->playback)->recall_id[2]);
-	  }else{
-	    list = g_list_prepend(list,
-				  current->playback);
-	  }
+	  list = g_list_prepend(list,
+				ags_collected_channel_alloc(current,
+							    playback, playback->recall_id[AGS_PLAYBACK_SCOPE_NOTATION],
+							    current_mutex));
 	}
+
+	pthread_mutex_unlock(current_mutex);
       }
 
-      if(audio->output == NULL ||
+      if(output == NULL ||
 	 (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
 	break;
       }
-      
+    
       /* output */
-      if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
-	current = ags_channel_nth(audio->output,
-				  current->audio_channel);
+      if((AGS_AUDIO_ASYNC & (audio_flags)) != 0){
+	current = ags_channel_nth(output,
+				  audio_channel);
       }else{
-	current = ags_channel_nth(audio->output,
-				  current->line);
+	current = ags_channel_nth(output,
+				  output_line);
       }
 
     ags_channel_recursive_collect_devout_play_up_OUTPUT:
-      if(current->playback != NULL){
-	if((AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(AGS_PLAYBACK(current->playback)->flags)))) != 0 &&
-	   AGS_PLAYBACK(current->playback)->recall_id[0] != NULL){
+      /* get some fields */
+      pthread_mutex_lock(current_mutex);
+
+      playback = current->playback;
+      
+      if(playback != NULL){
+	if((AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(playback->flags)))) != 0 &&
+	   playback->recall_id[AGS_PLAYBACK_SCOPE_PLAYBACK] != NULL){
 #ifdef AGS_DEBUG
 	  g_message("recall id collect: play");
 #endif
 
-	  if(collect_recall_id){
-	    list = g_list_prepend(list,
-				  AGS_PLAYBACK(current->playback)->recall_id[0]);
-	  }else{
-	    list = g_list_prepend(list,
-				  current->playback);
-	  }
+	  list = g_list_prepend(list,
+				ags_collected_channel_alloc(current,
+							    playback, playback->recall_id[AGS_PLAYBACK_SCOPE_PLAYBACK],
+							    current_mutex));
 	}
 
-	if((AGS_PLAYBACK_SEQUENCER & (g_atomic_int_get(&(AGS_PLAYBACK(current->playback)->flags)))) != 0 &&
-	   AGS_PLAYBACK(current->playback)->recall_id[1] != NULL){
+	if((AGS_PLAYBACK_SEQUENCER & (g_atomic_int_get(&(playback->flags)))) != 0 &&
+	   playback->recall_id[AGS_PLAYBACK_SCOPE_SEQUENCER] != NULL){
 #ifdef AGS_DEBUG
 	  g_message("recall id collect: sequencer");
 #endif
 
-	  if(collect_recall_id){
-	    list = g_list_prepend(list,
-				  AGS_PLAYBACK(current->playback)->recall_id[1]);
-	  }else{
-	    list = g_list_prepend(list,
-				  current->playback);
-	  }
+	  list = g_list_prepend(list,
+				ags_collected_channel_alloc(current,
+							    playback, playback->recall_id[AGS_PLAYBACK_SCOPE_SEQUENCER],
+							    current_mutex));
 	}
 
-	if((AGS_PLAYBACK_NOTATION & (g_atomic_int_get(&(AGS_PLAYBACK(current->playback)->flags)))) != 0 &&
-	   AGS_PLAYBACK(current->playback)->recall_id[2] != NULL){
+	if((AGS_PLAYBACK_NOTATION & (g_atomic_int_get(&(playback->flags)))) != 0 &&
+	   playback->recall_id[AGS_PLAYBACK_SCOPE_NOTATION] != NULL){
 #ifdef AGS_DEBUG
 	  g_message("recall id collect: notation");
 #endif
 
-	  if(collect_recall_id){
 	  list = g_list_prepend(list,
-				AGS_PLAYBACK(current->playback)->recall_id[2]);
-	  }else{
-	    list = g_list_prepend(list,
-				  current->playback);
-	  }
+				ags_collected_channel_alloc(current,
+							    playback, playback->recall_id[AGS_PLAYBACK_SCOPE_NOTATION],
+							    current_mutex));
 	}
       }
 
       current = current->link;
+
+      pthread_mutex_unlock(current_mutex);
     }
 
     return(list);
   }
 
-  GList* ags_channel_recursive_collect_recycled(AgsChannel *channel,
-						GList *collected_recall_id)
+  GList* ags_channel_recursive_collect_recycled(AgsChannel *channel)
   {
     AgsAudio *audio;
+    AgsChannel *output;
     AgsChannel *current;
+
     GList *recall_id;
     GList *list;
 
-    struct AgsCollectedChannel *collected_channel;
+    guint audio_flags;
+    guint audio_channel;
+    guint output_line;
+    
+    pthread_mutex_t *audio_mutex;
+    pthread_mutex_t *current_mutex;
     
     if(channel == NULL){
       return(NULL);
     }
 
     current = channel;
+
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    current_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) current);
+    
+    pthread_mutex_unlock(application_mutex);
+
+    /* check output */
     list = NULL;
 
     if(AGS_IS_OUTPUT(channel)){
+      pthread_mutex_lock(current_mutex);
+
       audio = AGS_AUDIO(current->audio);
+
+      pthread_mutex_unlock(current_mutex);
 
       goto ags_channel_recursive_collect_devout_play_up_OUTPUT;
     }
 
     while(current != NULL){
+      /* get current mutex */
+      pthread_mutex_lock(application_mutex);
+
+      current_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) current);
+    
+      pthread_mutex_unlock(application_mutex);
+      
+      /* get some fields */
+      pthread_mutex_lock(current_mutex);
+
       audio = AGS_AUDIO(current->audio);
+
+      audio_channel = current->audio_channel;
+      output_line = current->line;
+
+      pthread_mutex_unlock(current_mutex);
+
+      /* get audio mutex */
+      pthread_mutex_lock(application_mutex);
+    
+      audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) audio);
+  
+      pthread_mutex_unlock(application_mutex);
+
+      /* get some fields */
+      pthread_mutex_lock(audio_mutex);
+
+      audio_flags = audio->flags;
+
+      output = audio->output;
+      
+      pthread_mutex_unlock(audio_mutex);
 
       /* input */
       /* nothing to do here */
       
-      if(audio->output == NULL ||
-	 (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      if(output == NULL ||
+	 (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio_flags)) != 0){
 	break;
       }
       
       /* output */
-      if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
-	current = ags_channel_nth(audio->output,
-				  current->audio_channel);
+      if((AGS_AUDIO_ASYNC & (audio_flags)) != 0){
+	current = ags_channel_nth(output,
+				  audio_channel);
       }else{
-	current = ags_channel_nth(audio->output,
-				  current->line);
+	current = ags_channel_nth(output,
+				  output_line);
       }
 
     ags_channel_recursive_collect_devout_play_up_OUTPUT:
       /* nothing to do here */
       
+      /* get current mutex */
+      pthread_mutex_lock(application_mutex);
+
+      current_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) current);
+    
+      pthread_mutex_unlock(application_mutex);
+
+      /* iterate */
+      pthread_mutex_lock(current_mutex);
+      
       current = current->link;
+      
+      pthread_mutex_unlock(current_mutex);
     }
 
     /* input */
     if(current != NULL &&
        AGS_IS_INPUT(current)){
+      pthread_mutex_lock(current_mutex);
+
       recall_id = current->recall_id;
     
       while(recall_id != NULL){
 	if(recall_id->data != NULL &&
-	   g_list_find(collected_recall_id,
-		       recall_id->data) == NULL){
+	   g_list_find_custom(collected_recall_id,
+			      recall_id->data,
+			      ags_collected_channel_compare_recall_id) == NULL){
 	  list = g_list_prepend(list,
 				recall_id->data);
 	}
       
 	recall_id = recall_id->next;
       }
+
+      pthread_mutex_unlock(current_mutex);
     }
 
     return(list);    
