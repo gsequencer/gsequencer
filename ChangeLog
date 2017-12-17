@@ -1,6 +1,7 @@
 ags (1.2.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: enable auto-scroll
 	* implemented async message AgsConnection:data-object and AgsAudioConnection:mapped-line
 	* implemented ags_audio_disconnect()
 	* improved thread-safety to AgsLine:channel and AgsEffectLine:channel properties
