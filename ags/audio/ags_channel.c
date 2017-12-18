@@ -14480,15 +14480,15 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
   }
   
   void ags_channel_recursive_reset_recall_id_down_input(AgsChannel *output,
-							GList *recall_id_list, GList *devout_play_list,
-							GList *invalid_recall_id_list)
+							GList *playback_list,
+							GList *invalid_playback_list)
   {
     AgsAudio *audio;
     AgsChannel *current;
     AgsRecallID *recall_id, *default_recall_id;
     
-    GList *next_recall_id_list;
-    GList *next_invalid_recall_id_list;
+    GList *next_playback_list;
+    GList *next_invalid_playback_list;
     
     audio = AGS_AUDIO(output->audio);
     
