@@ -99,7 +99,7 @@ ags_channel_iter_next(AgsChannelIter *iter, guint mode)
 
     channel = next_iter->current;
     
-    if((AGS_CHANNEL_ITER_DIRECTION_STRICT_LEVEL & (iter->flags)) != 0){
+    if((AGS_CHANNEL_ITER_LEVEL_STRICT & (iter->flags)) != 0){
       if(AGS_IS_OUTPUT(channel)){
 	if((AGS_CHANNEL_ITER_DIRECTION_AXIS_TO_LEAFES & (next_iter->flags_mask)) == 0){
 	  output = channel;
