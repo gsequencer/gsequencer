@@ -223,7 +223,6 @@
       <xi:include href="xml/ags_panel.xml"/>
       <xi:include href="xml/ags_panel_callbacks.xml"/>
       <xi:include href="xml/ags_panel_input_line.xml"/>
-      <xi:include href="xml/ags_panel_input_line_callbacks.xml"/>
       <xi:include href="xml/ags_panel_input_pad.xml"/>
       <xi:include href="xml/ags_pattern_box.xml"/>
       <xi:include href="xml/ags_pattern_box_callbacks.xml"/>
