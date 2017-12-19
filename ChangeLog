@@ -12,6 +12,7 @@ ags (1.2.2)
 	* improved tasks which need to lock audio especially using AgsCropNote and AgsMoveNote
 	* fixed change soundcard task since data-object was resetted for all connections
 	* fixed AgsMoveNote and AgsCropNote to support segmented notation
+	* fixed various NULL pointer dereference of mutices
 	* minor-fixes
 
 ags (1.2.1)

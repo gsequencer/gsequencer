@@ -818,6 +818,7 @@ ags_channel_iter_alloc
 ags_channel_iter_free
 ags_channel_iter_prev
 ags_channel_iter_next
+ags_channel_iter_init
 ags_fifoout_get_type
 ags_fifoout_error_quark
 ags_fifoout_adjust_delay_and_attack

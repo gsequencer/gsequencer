@@ -6914,7 +6914,7 @@ ags_channel_set_recycling(AgsChannel *channel,
 	pthread_mutex_lock(application_mutex);
   
 	nth_channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						     (GObject *) prev_channel);
+						     (GObject *) next_channel);
   
 	pthread_mutex_unlock(application_mutex);
 
@@ -13910,7 +13910,8 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
     if((AGS_AUDIO_ASYNC & (audio_flags)) != 0){
       input = ags_channel_nth(input_start,
 			      audio_channel);
-      last_input = ags_channel_pad_last(input);
+      input = ags_channel_first_with_recycling(input);
+      last_input = ags_channel_last_with_recycling(input);
     }else{
       input = ags_channel_nth(input_start,
 			      input_line);
@@ -13944,66 +13945,81 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 	    
       pthread_mutex_unlock(current_mutex);
 
-      /* get recycling mutex */
-      pthread_mutex_lock(application_mutex);
+      if(first_recycling != NULL){
+	/* get recycling mutex */
+	pthread_mutex_lock(application_mutex);
 
-      recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) last_recycling);
+	recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+						   (GObject *) last_recycling);
 
-      pthread_mutex_unlock(application_mutex);
+	pthread_mutex_unlock(application_mutex);
 
-      /* end recycling */
-      pthread_mutex_lock(recycling_mutex);
+	/* end recycling */
+	pthread_mutex_lock(recycling_mutex);
 
-      end_recycling = last_recycling->next;
+	end_recycling = last_recycling->next;
 
-      pthread_mutex_unlock(recycling_mutex);
-
-      /* get input mutex */
-      pthread_mutex_lock(application_mutex);
-
-      input_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) input);
-
-      pthread_mutex_unlock(application_mutex);
-
-      /* get some fields */
-      pthread_mutex_lock(input_mutex);
-
-      input_first_recycling = input->first_recycling;
+	pthread_mutex_unlock(recycling_mutex);
+      }else{
+	end_recycling = NULL;
+      }
       
-      pthread_mutex_unlock(input_mutex);
+      if(input != NULL){
+	/* get input mutex */
+	pthread_mutex_lock(application_mutex);
 
-      /* get last input mutex */
-      pthread_mutex_lock(application_mutex);
+	input_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) input);
 
-      last_input_mutex = ags_mutex_manager_lookup(mutex_manager,
-						  (GObject *) last_input);
+	pthread_mutex_unlock(application_mutex);
 
-      pthread_mutex_unlock(application_mutex);
+	/* get some fields */
+	pthread_mutex_lock(input_mutex);
 
-      /* get some fields */
-      pthread_mutex_lock(last_input_mutex);
-
-      input_last_recycling = last_input->last_recycling;
+	input_first_recycling = input->first_recycling;
       
-      pthread_mutex_unlock(last_input_mutex);
+	pthread_mutex_unlock(input_mutex);
 
-      /* get recycling mutex */
-      pthread_mutex_lock(application_mutex);
+	/* get last input mutex */
+	pthread_mutex_lock(application_mutex);
 
-      recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) input_last_recycling);
+	last_input_mutex = ags_mutex_manager_lookup(mutex_manager,
+						    (GObject *) last_input);
 
-      pthread_mutex_unlock(application_mutex);
+	pthread_mutex_unlock(application_mutex);
 
-      /* end recycling */
-      pthread_mutex_lock(recycling_mutex);
+	/* get some fields */
+	pthread_mutex_lock(last_input_mutex);
 
-      input_end_recycling = input_last_recycling->next;
+	input_last_recycling = last_input->last_recycling;
+      
+	pthread_mutex_unlock(last_input_mutex);
 
-      pthread_mutex_unlock(recycling_mutex);
+	if(input_first_recycling != NULL){
+	  /* get recycling mutex */
+	  pthread_mutex_lock(application_mutex);
 
+	  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+						     (GObject *) input_last_recycling);
+
+	  pthread_mutex_unlock(application_mutex);
+
+	  /* end recycling */
+	  pthread_mutex_lock(recycling_mutex);
+
+	  input_end_recycling = input_last_recycling->next;
+
+	  pthread_mutex_unlock(recycling_mutex);
+	}else{
+	  input_end_recycling = NULL;
+	}
+      }else{
+	input_first_recycling = NULL;
+	input_last_recycling = NULL;
+	
+	input_end_recycling = NULL;
+      }
+      
       while(playback_list != NULL){
 	collected_channel = playback_list->data;
 

@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 1.2.1\n"
+"Project-Id-Version: gsequencer 1.2.2\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-12-12 10:11+0100\n"
+"POT-Creation-Date: 2017-12-19 23:16+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -512,21 +512,21 @@ msgstr ""
 msgid "wave"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1299
+#: ags/X/ags_xorg_application_context.c:1303
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1309
+#: ags/X/ags_xorg_application_context.c:1313
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1458
+#: ags/X/ags_xorg_application_context.c:1462
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1468
+#: ags/X/ags_xorg_application_context.c:1472
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
@@ -605,7 +605,7 @@ msgstr ""
 
 #: ags/X/editor/ags_envelope_editor.c:176
 #: ags/X/editor/ags_pattern_envelope.c:240 ags/X/machine/ags_ffplayer.c:269
-#: ags/X/machine/ags_live_lv2_bridge.c:1623 ags/X/machine/ags_lv2_bridge.c:1940
+#: ags/X/machine/ags_live_lv2_bridge.c:1623 ags/X/machine/ags_lv2_bridge.c:1948
 msgid "preset"
 msgstr ""
 
@@ -868,7 +868,7 @@ msgid "channel: "
 msgstr ""
 
 #: ags/X/machine/ags_dssi_bridge.c:318 ags/X/machine/ags_live_dssi_bridge.c:318
-#: ags/X/machine/ags_live_lv2_bridge.c:1562 ags/X/machine/ags_lv2_bridge.c:1879
+#: ags/X/machine/ags_live_lv2_bridge.c:1562 ags/X/machine/ags_lv2_bridge.c:1887
 msgid "program"
 msgstr ""
 

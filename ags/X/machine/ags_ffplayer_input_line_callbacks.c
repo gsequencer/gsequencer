@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,9 @@
  */
 
 #include <ags/X/machine/ags_ffplayer_input_line_callbacks.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 void
 ags_ffplayer_input_line_notify_channel_callback(GObject *gobject,
@@ -40,6 +43,9 @@ ags_ffplayer_input_line_notify_channel_callback(GObject *gobject,
   if(AGS_EFFECT_LINE(ffplayer_input_line)->channel == NULL){
     return;
   }
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   channel = AGS_EFFECT_LINE(ffplayer_input_line)->channel;
   

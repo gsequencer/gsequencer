@@ -1554,6 +1554,14 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge,
 
   audio = AGS_MACHINE(lv2_bridge)->audio;
 
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
   /* get some fields */
   pthread_mutex_lock(audio_mutex);
 

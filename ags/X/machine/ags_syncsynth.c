@@ -1186,6 +1186,14 @@ ags_syncsynth_output_map_recall(AgsSyncsynth *syncsynth,
 
   audio = AGS_MACHINE(syncsynth)->audio;
 
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
   /* get some fields */
   input_pad_start = 0;
   
