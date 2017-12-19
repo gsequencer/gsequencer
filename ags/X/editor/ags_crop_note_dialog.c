@@ -529,17 +529,19 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   while(notation != NULL){
     selection = AGS_NOTATION(notation->data)->selection;
 
-    crop_note = ags_crop_note_new(notation->data,
-				  selection,
-				  x_padding, x_crop,
-				  absolute,
-				  in_place, do_resize);
-    g_object_set(crop_note,
-		 "audio", audio,
-		 NULL);
-    task = g_list_prepend(task,
-			  crop_note);
-
+    if(selection != NULL){
+      crop_note = ags_crop_note_new(notation->data,
+				    selection,
+				    x_padding, x_crop,
+				    absolute,
+				    in_place, do_resize);
+      g_object_set(crop_note,
+		   "audio", audio,
+		   NULL);
+      task = g_list_prepend(task,
+			    crop_note);
+    }
+    
     notation = notation->next;
   }
   

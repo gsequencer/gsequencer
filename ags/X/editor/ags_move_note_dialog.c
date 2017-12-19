@@ -556,17 +556,19 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
   
   while(notation != NULL){
     selection = AGS_NOTATION(notation->data)->selection;
-    
-    move_note = ags_move_note_new(notation->data,
-				  selection,
-				  first_x, first_y,
-				  move_x, move_y,
-				  relative, absolute);
-    g_object_set(move_note,
-		 "audio", audio,
-		 NULL);
-    task = g_list_prepend(task,
-			  move_note);
+
+    if(selection != NULL){
+      move_note = ags_move_note_new(notation->data,
+				    selection,
+				    first_x, first_y,
+				    move_x, move_y,
+				    relative, absolute);
+      g_object_set(move_note,
+		   "audio", audio,
+		   NULL);
+      task = g_list_prepend(task,
+			    move_note);
+    }
     
     notation = notation->next;
   }

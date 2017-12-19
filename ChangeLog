@@ -1,7 +1,6 @@
 ags (1.2.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: enable auto-scroll
 	* implemented async message AgsConnection:data-object and AgsAudioConnection:mapped-line
 	* implemented ags_audio_disconnect()
 	* improved thread-safety to AgsLine:channel and AgsEffectLine:channel properties
@@ -9,11 +8,10 @@ ags (1.2.2)
 	* improved thread-safety all audio tasks
 	* improved thread-safety during ags_channel_set_link() and related
 	* improved thread-safety during ags_channel_recursive_play_init() and related
-	* TODO:JK: improved thread-safety during ags_channel_recursive_cancel()
+	* improved thread-safety during ags_channel_recursive_cancel()
 	* improved tasks which need to lock audio especially using AgsCropNote and AgsMoveNote
 	* fixed change soundcard task since data-object was resetted for all connections
-	* TODO:JK: fixed AgsMoveNote and AgsCropNote to support segmented notation
-	* TODO:JK: fixed ags_channel_recursive_play_init() recursion issue
+	* fixed AgsMoveNote and AgsCropNote to support segmented notation
 	* minor-fixes
 
 ags (1.2.1)

@@ -545,7 +545,7 @@ void
 ags_move_note_launch(AgsTask *task)
 {
   AgsAudio *audio;
-  AgsNotation *notation;
+  AgsNotation *notation, *current_notation;
   AgsNote *note;
   
   AgsMoveNote *move_note;
@@ -573,7 +573,8 @@ ags_move_note_launch(AgsTask *task)
   /* get some properties */
   audio = move_note->audio;
 
-  notation = move_note->notation;
+  notation =
+    current_notation = move_note->notation;
 
   selection = move_note->selection;
 
@@ -612,6 +613,28 @@ ags_move_note_launch(AgsTask *task)
       note->y = move_y + (note->y + first_y);
     }
 
+    if(note->x[0] >= current_notation->timestamp->timer.ags_offset.offset + AGS_NOTATION_DEFAULT_OFFSET){
+      AgsTimestamp *timestamp;
+
+      timestamp = ags_timestamp_new();
+      timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+      timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+      
+      timestamp->timer.ags_offset.offset = (guint64) (AGS_NOTATION_DEFAULT_OFFSET * floor(note->x[0] / AGS_NOTATION_DEFAULT_OFFSET));
+
+      if((current_notation = ags_notation_find_near_timestamp(move_note->audio->notation, notation->audio_channel,
+							      timestamp)) == NULL){
+	current_notation = ags_notation_new(notation->audio,
+					    notation->audio_channel);
+	
+	current_notation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+	move_note->audio->notation = ags_notation_add(move_note->audio->notation,
+						      current_notation);
+      }
+
+      g_object_unref(timestamp);
+    }
+
     /* remove old note */
     ags_notation_remove_note(notation,
 			     selection->data,
@@ -621,7 +644,7 @@ ags_move_note_launch(AgsTask *task)
 			     FALSE);
 
     /* add new note */
-    ags_notation_add_note(notation,
+    ags_notation_add_note(current_notation,
 			  note,
 			  FALSE);
 
