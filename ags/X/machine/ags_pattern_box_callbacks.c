@@ -78,21 +78,15 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
 
   AgsPattern *pattern;
   
-  AgsTogglePatternBit *toggle_pattern_bit;
-
   AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsGuiThread *gui_thread;
   
-  AgsApplicationContext *application_context;
-
   GList *list, *list_start;
   GList *line, *line_start;
   GList *tasks;
   guint i, index0, index1, offset;
 
-  pthread_mutex_t *audio_mutex;
   pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
   
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pattern_box,
 						   AGS_TYPE_MACHINE);
@@ -113,33 +107,10 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
 						 AGS_TYPE_WINDOW);
 
-  application_context = (AgsApplicationContext *) window->application_context;
-
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-  
-  /* find task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-  
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) machine->audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* calculate offset */
-  pthread_mutex_lock(audio_mutex);
-
   list_start = 
     list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
 
@@ -174,24 +145,27 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   while((line = ags_line_find_next_grouped(line)) != NULL){
     selected_line = AGS_LINE(line->data);
 
-    toggle_pattern_bit = ags_toggle_pattern_bit_new(selected_line->channel->pattern->data,
-						    selected_line->channel->line,
-						    index0, index1,
-						    offset);
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+  
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) selected_line->channel);
+  
+    pthread_mutex_unlock(application_mutex);
 
-    tasks = g_list_prepend(tasks,
-			   toggle_pattern_bit);
+    /* toggle */
+    pthread_mutex_lock(channel_mutex);
 
+    ags_pattern_toggle_bit(selected_line->channel->pattern->data,
+			   index0, index1,
+			   offset);
+
+    pthread_mutex_unlock(channel_mutex);
+    
     line = line->next;
   }
 
   g_list_free(line_start);
-
-  /* append AgsTogglePatternBit */
-  ags_gui_thread_schedule_task_list(gui_thread,
-				    tasks);
-
-  pthread_mutex_unlock(audio_mutex);
 }
 
 void
