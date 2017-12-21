@@ -1,3 +1,9 @@
+ags (1.2.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed SIGSEGV in ags_channel_set_recycling() and make ags_functional_machine_link_test pass
+	* rollback ags_channel_recursive_play_init(), ags_channel_recursive_play() and ags_channel_tillrecycling_cancel()
+
 ags (1.2.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

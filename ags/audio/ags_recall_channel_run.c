@@ -693,8 +693,9 @@ ags_recall_channel_run_pack(AgsPackable *packable, GObject *container)
   GList *list;
   AgsRecallID *recall_id;
 
-  if(ags_recall_channel_run_parent_packable_interface->pack(packable, container))
+  if(ags_recall_channel_run_parent_packable_interface->pack(packable, container)){
     return(TRUE);
+  }
 
   recall_container = AGS_RECALL_CONTAINER(container);
 

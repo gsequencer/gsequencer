@@ -653,10 +653,9 @@ ags_machine_set_property(GObject *gobject,
       machine->machine_name = g_strdup(machine_name);
 
       /* update UI */
-      str = g_strconcat(G_OBJECT_TYPE_NAME(machine),
-			": ",
-			machine_name,
-			NULL);
+      str = g_strdup_printf("%s: %s",
+			    G_OBJECT_TYPE_NAME(machine),
+			    machine_name);
       
       g_object_set(machine->menu_tool_button,
 		   "label", str,
