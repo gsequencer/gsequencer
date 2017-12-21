@@ -37,14 +37,16 @@
 
 #define AGS_SCALE_DEFAULT_LOWER (0.0)
 #define AGS_SCALE_DEFAULT_UPPER (1.0)
-#define AGS_SCALE_DEFAULT_VALUE (1.0)
+#define AGS_SCALE_DEFAULT_VALUE (0.0)
+
+#define AGS_SCALE_DEFAULT_STEP_COUNT (16.0)
+#define AGS_SCALE_DEFAULT_PAGE_SIZE (8.0)
 
 typedef struct _AgsScale AgsScale;
 typedef struct _AgsScaleClass AgsScaleClass;
 
 typedef enum{
-  AGS_SCALE_DRAW_LINEAR            = 1,
-  AGS_SCALE_DRAW_LOGARITHMIC       = 1 <<  1,
+  AGS_SCALE_LOGARITHMIC       = 1,
 }AgsScaleFlags;
 
 typedef enum{
@@ -89,10 +91,11 @@ struct _AgsScale
   
   gdouble lower;
   gdouble upper;
-  
-  guint step_count;
 
   gdouble default_value;
+  
+  guint step_count;
+  gdouble page_size;
   
   gint scale_step_count;
   gchar **scale_point;
@@ -104,7 +107,7 @@ struct _AgsScaleClass
   GtkWidgetClass widget;
 
   void (*value_changed)(AgsScale *scale,
-			gdouble value);
+			gdouble default_value);
 };
 
 GType ags_scale_get_type(void);

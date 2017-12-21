@@ -23,6 +23,8 @@
 
 #include <gdk/gdkkeysyms.h>
 
+#include <math.h>
+
 static GType ags_accessible_scale_get_type(void);
 void ags_scale_class_init(AgsScaleClass *scale);
 void ags_scale_init(AgsScale *scale);
@@ -97,6 +99,11 @@ void ags_scale_draw(AgsScale *scale);
  */
 
 enum{
+  VALUE_CHANGED,
+  LAST_SIGNAL,
+};
+
+enum{
   PROP_0,
   PROP_CONTROL_NAME,
   PROP_LOWER,
@@ -105,7 +112,7 @@ enum{
 };
 
 static gpointer ags_scale_parent_class = NULL;
-
+static guint scale_signals[LAST_SIGNAL];
 
 static GQuark quark_accessible_object = 0;
 
@@ -287,11 +294,28 @@ ags_scale_class_init(AgsScaleClass *scale)
   widget->motion_notify_event = ags_scale_motion_notify;
   widget->show = ags_scale_show;
 
-  /* AgsScaleClass */
-  scale->key_pressed = ags_scale_real_key_pressed;
-  scale->key_released = ags_scale_real_key_released;
-  
-  scale->key_clicked = NULL;
+  /* AgsScaleClass */  
+  scale->value_changed = NULL;
+
+  /* signals */
+  /**
+   * AgsScale::value-changed:
+   * @scale: the #AgsScale
+   * @default_value: the changed default value
+   *
+   * The ::value-changed signal notifies about modified default value.
+   *
+   * Since: 1.3.0
+   */
+  scale_signals[VALUE_CHANGED] =
+    g_signal_new("value-changed",
+		 G_TYPE_FROM_CLASS(scale),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsScaleClass, value_changed),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__DOUBLE,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_DOUBLE);
 }
 
 void
@@ -349,10 +373,28 @@ ags_scale_init(AgsScale *scale)
 
   scale->flags = 0;
 
+  scale->key_mask = 0;
   scale->button_state = 0;
   scale->layout = AGS_SCALE_LAYOUT_VERTICAL;
 
   scale->font_size = 12;
+
+  scale->scale_width = AGS_SCALE_DEFAULT_WIDTH;
+  scale->scale_height = AGS_SCALE_DEFAULT_HEIGHT;
+
+  scale->control_name = NULL;
+
+  scale->lower = AGS_SCALE_DEFAULT_LOWER;
+  scale->upper = AGS_SCALE_DEFAULT_UPPER;
+
+  scale->default_value = AGS_SCALE_DEFAULT_VALUE;
+  
+  scale->step_count = AGS_SCALE_DEFAULT_STEP_COUNT;
+  scale->page_size = AGS_SCALE_DEFAULT_PAGE_SIZE;
+
+  scale->scale_step_count = -1;
+  scale->scale_point = NULL;
+  scale->scale_value = NULL;
 }
 
 void
@@ -366,6 +408,38 @@ ags_scale_set_property(GObject *gobject,
   scale = AGS_SCALE(gobject);
 
   switch(prop_id){
+  case PROP_CONTROL_NAME:
+    {
+      gchar *control_name;
+
+      control_name = g_value_get_string(value);
+
+      g_free(scale->control_name);
+
+      scale->control_name = g_strdup(control_name);
+    }
+    break;
+  case PROP_LOWER:
+    {
+      scale->lower = g_value_get_double(value);
+
+      gtk_widget_queue_draw(scale);
+    }
+    break;
+  case PROP_UPPER:
+    {
+      scale->upper = g_value_get_double(value);
+
+      gtk_widget_queue_draw(scale);
+    }
+    break;
+  case PROP_DEFAULT_VALUE:
+    {
+      scale->default_value = g_value_get_double(value);
+
+      gtk_widget_queue_draw(scale);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -383,6 +457,30 @@ ags_scale_get_property(GObject *gobject,
   scale = AGS_SCALE(gobject);
 
   switch(prop_id){
+  case PROP_CONTROL_NAME:
+    {
+      g_value_set_string(value,
+			 scale->control_name);
+    }
+    break;
+  case PROP_LOWER:
+    {
+      g_value_set_double(value,
+			 scale->lower);
+    }
+    break;
+  case PROP_UPPER:
+    {
+      g_value_set_double(value,
+			 scale->upper);
+    }
+    break;
+  case PROP_DEFAULT_VALUE:
+    {
+      g_value_set_double(value,
+			 scale->default_value);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -395,6 +493,8 @@ ags_scale_finalize(GObject *gobject)
   AgsScale *scale;
 
   scale = AGS_SCALE(gobject);
+
+  g_free(scale->control_name);
   
   /* call parent */
   G_OBJECT_CLASS(ags_scale_parent_class)->finalize(gobject);
@@ -410,12 +510,12 @@ ags_accessible_scale_get_value_and_text(AtkValue *value,
   scale = (AgsScale *) gtk_accessible_get_widget(GTK_ACCESSIBLE(value));
 
   if(current_value != NULL){
-    *current_value = (gdouble) scale->cursor_position;
+    *current_value = scale->default_value;
   }
 
   if(text != NULL){
-    *text = g_strdup_printf("%d",
-			    scale->cursor_position);
+    *text = g_strdup_printf("%f",
+			    scale->default_value);
   }
 }
 
@@ -755,19 +855,28 @@ ags_scale_button_press(GtkWidget *widget,
      event->y >= y_start &&
      event->y < height){
     if(event->button == 1){
-      gchar *note;
+      gdouble c_range;
+      gdouble default_value;
       
       scale->button_state |= AGS_SCALE_BUTTON_1_PRESSED;
+
+      if((AGS_SCALE_LOGARITHMIC & (scale->flags)) != 0){
+	c_range = exp(scale->upper) - exp(scale->lower);
+      }else{
+	c_range = scale->upper - scale->lower;
+      }
       
       if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
-	//TODO:JK: implement me
+	default_value = event->y / c_range;
       }else if(scale->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
-	//TODO:JK: implement me
+	default_value = event->x / c_range;
       }
 
-      //TODO:JK: implement me
+      scale->default_value = default_value;
+      gtk_widget_queue_draw(scale);
 
-      g_free(note);
+      ags_scale_value_changed(scale,
+			      default_value);
     }
   }
   
@@ -786,7 +895,28 @@ ags_scale_button_release(GtkWidget *widget,
   
   if(event->button == 1){
     if((AGS_SCALE_BUTTON_1_PRESSED & (scale->button_state)) != 0){
-      //TODO:JK: implement me
+      gdouble c_range;
+      gdouble default_value;
+      
+      scale->button_state |= AGS_SCALE_BUTTON_1_PRESSED;
+
+      if((AGS_SCALE_LOGARITHMIC & (scale->flags)) != 0){
+	c_range = exp(scale->upper) - exp(scale->lower);
+      }else{
+	c_range = scale->upper - scale->lower;
+      }
+      
+      if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
+	default_value = event->y / c_range;
+      }else if(scale->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
+	default_value = event->x / c_range;
+      }
+
+      scale->default_value = default_value;
+      gtk_widget_queue_draw(scale);
+
+      ags_scale_value_changed(scale,
+			      default_value);
     }
     
     scale->button_state &= (~AGS_SCALE_BUTTON_1_PRESSED);
@@ -838,33 +968,105 @@ ags_scale_key_release(GtkWidget *widget,
   case GDK_KEY_Up:
   case GDK_KEY_uparrow:
     {
-      //TODO:JK: implement me
+      gdouble c_range;
+      gdouble step;
+
+      if((AGS_SCALE_LOGARITHMIC & (scale->flags)) != 0){
+	c_range = exp(scale->upper) - exp(scale->lower);
+      }else{
+	c_range = scale->upper - scale->lower;
+      }
+      
+      step = c_range / scale->step_count;
+
+      if(scale->default_value + log(step) > scale->upper){
+	scale->default_value = scale->upper;
+      }else{
+	scale->default_value += log(step);
+      }
 
       gtk_widget_queue_draw(widget);
+
+      ags_scale_value_changed(scale,
+			      scale->default_value);
     }
     break;
   case GDK_KEY_Down:
   case GDK_KEY_downarrow:
     {
-      //TODO:JK: implement me
+      gdouble c_range;
+      gdouble step;
+
+      if((AGS_SCALE_LOGARITHMIC & (scale->flags)) != 0){
+	c_range = exp(scale->upper) - exp(scale->lower);
+      }else{
+	c_range = scale->upper - scale->lower;
+      }
+      
+      step = c_range / scale->step_count;
+
+      if(scale->default_value - log(step) < scale->lower){
+	scale->default_value = scale->lower;
+      }else{
+	scale->default_value -= log(step);
+      }
 
       gtk_widget_queue_draw(widget);
+
+      ags_scale_value_changed(scale,
+			      scale->default_value);
     }
     break;
   case GDK_KEY_Page_Up:
-  case GDK_KEY_KP_Page_Down:
+  case GDK_KEY_KP_Page_Up:
     {
-      //TODO:JK: implement me
+      gdouble c_range;
+      gdouble page;
+
+      if((AGS_SCALE_LOGARITHMIC & (scale->flags)) != 0){
+	c_range = exp(scale->upper) - exp(scale->lower);
+      }else{
+	c_range = scale->upper - scale->lower;
+      }
+      
+      page = scale->page_size * (c_range / scale->page_count);
+
+      if(scale->default_value + log(page) > scale->upper){
+	scale->default_value = scale->upper;
+      }else{
+	scale->default_value += log(page);
+      }
 
       gtk_widget_queue_draw(widget);
+
+      ags_scale_value_changed(scale,
+			      scale->default_value);
     }
     break;
   case GDK_KEY_Page_Down:
   case GDK_KEY_KP_Page_Down:
     {
-      //TODO:JK: implement me
+      gdouble c_range;
+      gdouble page;
+
+      if((AGS_SCALE_LOGARITHMIC & (scale->flags)) != 0){
+	c_range = exp(scale->upper) - exp(scale->lower);
+      }else{
+	c_range = scale->upper - scale->lower;
+      }
+      
+      page = scale->page_size * (c_range / scale->page_count);
+
+      if(scale->default_value - log(page) < scale->lower){
+	scale->default_value = scale->lower;
+      }else{
+	scale->default_value -= log(page);
+      }
 
       gtk_widget_queue_draw(widget);
+
+      ags_scale_value_changed(scale,
+			      scale->default_value);
     }
     break;
   }
@@ -880,8 +1082,6 @@ ags_scale_motion_notify(GtkWidget *widget,
 
   guint width, height;
   guint x_start, y_start;
-
-  gint new_current_key;
   
   scale = AGS_SCALE(widget);
 
@@ -892,13 +1092,30 @@ ags_scale_motion_notify(GtkWidget *widget,
   y_start = 0;
 
   if((AGS_SCALE_BUTTON_1_PRESSED & (scale->button_state)) != 0){
+    gdouble c_range;
+    gdouble new_default_value;
+      
+    scale->button_state |= AGS_SCALE_BUTTON_1_PRESSED;
+
+    if((AGS_SCALE_LOGARITHMIC & (scale->flags)) != 0){
+      c_range = exp(scale->upper) - exp(scale->lower);
+    }else{
+      c_range = scale->upper - scale->lower;
+    }
+      
     if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
-      //TODO:JK: implement me
+      new_default_value = event->y / c_range;
     }else if(scale->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
-      //TODO:JK: implement me
+      new_default_value = event->x / c_range;
     }
 
-    //TODO:JK: implement me
+    if(new_default_value != scale->default_value){
+      scale->default_value = new_default_value;
+      gtk_widget_queue_draw(scale);
+      
+      ags_scale_value_changed(scale,
+			      new_default_value);
+    }
   }
     
   return(FALSE);

@@ -347,7 +347,7 @@ ags_piano_class_init(AgsPianoClass *piano)
 		 G_STRUCT_OFFSET(AgsPianoClass, key_pressed),
 		 NULL, NULL,
 		 ags_widget_cclosure_marshal_VOID__STRING_INT,
-		 G_TYPE_NONE, 0,
+		 G_TYPE_NONE, 2,
 		 G_TYPE_STRING,
 		 G_TYPE_INT);
 
@@ -368,7 +368,7 @@ ags_piano_class_init(AgsPianoClass *piano)
 		 G_STRUCT_OFFSET(AgsPianoClass, key_released),
 		 NULL, NULL,
 		 ags_widget_cclosure_marshal_VOID__STRING_INT,
-		 G_TYPE_NONE, 0,
+		 G_TYPE_NONE, 2,
 		 G_TYPE_STRING,
 		 G_TYPE_INT);
 
@@ -389,7 +389,7 @@ ags_piano_class_init(AgsPianoClass *piano)
 		 G_STRUCT_OFFSET(AgsPianoClass, key_clicked),
 		 NULL, NULL,
 		 ags_widget_cclosure_marshal_VOID__STRING_INT,
-		 G_TYPE_NONE, 0,
+		 G_TYPE_NONE, 2,
 		 G_TYPE_STRING,
 		 G_TYPE_INT);
 }
