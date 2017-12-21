@@ -234,6 +234,7 @@ ags_piano_class_init(AgsPianoClass *piano)
   g_object_class_install_property(gobject,
 				  PROP_BASE_NOTE,
 				  param_spec);
+
   /**
    * AgsPiano:base-key-code:
    *
