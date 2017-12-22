@@ -349,14 +349,15 @@ ags_seek_soundcard_launch(AgsTask *task)
   pthread_mutex_lock(application_mutex);
 
   soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) soundcard);
+					     (GObject *) soundcard);
 
   pthread_mutex_unlock(application_mutex);
 
   /* seek audio */
   pthread_mutex_lock(soundcard);
-  
-  audio = g_list_copy(ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard)));
+
+  audio =
+    audio_start = g_list_copy(ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard)));
 
   pthread_mutex_unlock(soundcard);
 

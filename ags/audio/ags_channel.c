@@ -11476,7 +11476,7 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 	play = (recycling_context->parent == NULL) ? TRUE: FALSE;
       
 	playback = collected_channel->playback;
-	playback_flags = playback->flags;
+	playback_flags = &(playback->flags);
       
 	pthread_mutex_unlock(collected_channel->channel_mutex);
 
