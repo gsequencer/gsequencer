@@ -288,7 +288,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
   param_spec = g_param_spec_double("start-frequency",
 				   i18n_pspec("start frequency"),
 				   i18n_pspec("The start frequency"),
-				   0.0,
+				   -G_MAXDOUBLE,
 				   G_MAXDOUBLE,
 				   0.0,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
