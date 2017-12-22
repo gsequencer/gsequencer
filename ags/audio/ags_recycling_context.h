@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -16,10 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #ifndef __AGS_RECYCLING_CONTEXT_H__
 #define __AGS_RECYCLING_CONTEXT_H__
 
+#include <glib.h>
 #include <glib-object.h>
+
+#include <ags/libags.h>
 
 #include <ags/audio/ags_recycling.h>
 
@@ -37,6 +41,9 @@ struct _AgsRecyclingContext
 {
   GObject object;
 
+  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *mutex;
+  
   AgsRecyclingContext *parent;
 
   GObject *recall_id;

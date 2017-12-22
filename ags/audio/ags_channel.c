@@ -11426,16 +11426,20 @@ ags_channel_recursive_reset_recall_id(AgsChannel *channel,
 	    first_recycling = input->first_recycling;
 
 	    pthread_mutex_unlock(input_mutex);
-	    
-	    //FIXME:JK: thread-safety
+
+	    /* find next recycling context */
 	    next_recycling_context = NULL;
 
+	    pthread_mutex_lock(recycling_context->mutex);
+	    
 	    child =
 	      child_start = g_list_copy(recycling_context->children);
 
+	    pthread_mutex_unlock(recycling_context->mutex);
+
 	    while(child != NULL){
 	      if(ags_recycling_context_find(child->data,
-					    input->first_recycling) != -1){
+					    first_recycling) != -1){
 		next_recycling_context = child->data;
 
 		break;
