@@ -855,6 +855,8 @@ ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
   guint i;
   gboolean new_context;
 
+  //FIXME:JK: thread-safety
+  
   if(old_first_recycling != NULL){
     if(ags_recycling_position(old_first_recycling, old_last_recycling->next,
 			      new_first_recycling) == -1){
