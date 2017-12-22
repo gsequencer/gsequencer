@@ -408,9 +408,10 @@ ags_function_collapse_parantheses(AgsFunction *function,
   gchar **functions;
 
   functions = NULL;
-
   
   //TODO:JK: implement me
+
+  return(functions);
 }
 
 /**

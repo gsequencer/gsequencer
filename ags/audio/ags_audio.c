@@ -853,8 +853,6 @@ ags_audio_init(AgsAudio *audio)
 
   pthread_mutex_lock(application_mutex);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-
   ags_mutex_manager_insert(mutex_manager,
 			   (GObject *) audio,
 			   mutex);

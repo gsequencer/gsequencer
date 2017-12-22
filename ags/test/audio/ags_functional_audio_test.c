@@ -23,51 +23,8 @@
 #include <CUnit/CUnit.h>
 #include <CUnit/Basic.h>
 
-#include <ags/lib/ags_time.h>
-
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_plugin.h>
-#include <ags/object/ags_seekable.h>
-
-#include <ags/thread/ags_task_thread.h>
-
-#include <ags/audio/ags_audio_application_context.h>
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_recall_factory.h>
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_container.h>
-#include <ags/audio/ags_port.h>
-#include <ags/audio/ags_playable.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-#include <ags/audio/thread/ags_soundcard_thread.h>
-
-#include <ags/audio/recall/ags_delay_audio.h>
-#include <ags/audio/recall/ags_delay_audio_run.h>
-#include <ags/audio/recall/ags_count_beats_audio.h>
-#include <ags/audio/recall/ags_count_beats_audio_run.h>
-#include <ags/audio/recall/ags_play_notation_audio.h>
-#include <ags/audio/recall/ags_play_notation_audio_run.h>
-#include <ags/audio/recall/ags_play_channel.h>
-#include <ags/audio/recall/ags_play_channel_run_master.h>
-#include <ags/audio/recall/ags_play_channel_run.h>
-#include <ags/audio/recall/ags_stream_channel.h>
-#include <ags/audio/recall/ags_stream_channel_run.h>
-#include <ags/audio/recall/ags_buffer_channel.h>
-#include <ags/audio/recall/ags_buffer_channel_run.h>
-#include <ags/audio/recall/ags_volume_channel.h>
-#include <ags/audio/recall/ags_volume_channel_run.h>
-#include <ags/audio/recall/ags_mute_channel.h>
-#include <ags/audio/recall/ags_mute_channel_run.h>
-
-#include <ags/audio/task/ags_start_soundcard.h>
-#include <ags/audio/task/ags_init_audio.h>
-#include <ags/audio/task/ags_append_audio.h>
-#include <ags/audio/task/ags_cancel_audio.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -598,6 +555,7 @@ ags_functional_audio_test_playback()
 
   /* the output panel */
   panel = ags_audio_new(soundcard);
+  g_object_ref(panel);
   panel->flags |= (AGS_AUDIO_SYNC);
 
   panel->audio_channels = AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_AUDIO_CHANNELS;
@@ -639,6 +597,7 @@ ags_functional_audio_test_playback()
 
   /* the mixer */
   mixer = ags_audio_new(soundcard);
+  g_object_ref(mixer);
   mixer->flags |= (AGS_AUDIO_ASYNC);
 
   mixer->audio_channels = AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_AUDIO_CHANNELS;
@@ -685,12 +644,13 @@ ags_functional_audio_test_playback()
   }
 
   /* create sources */
-  audio = (AgsAudio **) malloc(AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_AUDIO * sizeof(AgsAudio));
+  audio = (AgsAudio **) malloc(AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_AUDIO * sizeof(AgsAudio *));
 
   for(i = 0; i < AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_AUDIO; i++){
     AgsNotation *notation;
     
     audio[i] = ags_audio_new(soundcard);
+    g_object_ref(audio[i]);
     audio[i]->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 			AGS_AUDIO_INPUT_HAS_RECYCLING |
 			AGS_AUDIO_SYNC |

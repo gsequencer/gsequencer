@@ -51,7 +51,7 @@ auto-sense=true
           <ags-sf-notation channel="1"/>
         </ags-sf-notation-list>
       </ags-sf-machine>
-      <ags-sf-machine id="47f094ae-140a-11e7-8e46-24be05e12b31" type="AgsMixer" name="Default 0" soundcard-device="hw:0,0" bank_0="0" bank_1="0" channels="2" output-pads="1" input-pads="8">
+      <ags-sf-machine id="47f094ae-140a-11e7-8e46-24be05e12b31" type="AgsMixer" name="Default 1" soundcard-device="hw:0,0" bank_0="0" bank_1="0" channels="2" output-pads="1" input-pads="8">
         <ags-sf-pad-list is-output="false">
           <ags-sf-pad id="47f095b2-140a-11e7-8e46-24be05e12b31" nth-pad="0" group="true" mute="false" solo="false">
             <ags-sf-line-list>
@@ -597,7 +597,7 @@ auto-sense=true
           </ags-sf-automation>
         </ags-sf-automation-list>
       </ags-sf-machine>
-      <ags-sf-machine id="47f0d734-140a-11e7-8e46-24be05e12b31" type="AgsDrum" name="Default 0" soundcard-device="hw:0,0" bank_0="0" bank_1="0" reverse-mapping="true" channels="2" output-pads="1" input-pads="16" length="16">
+      <ags-sf-machine id="47f0d734-140a-11e7-8e46-24be05e12b31" type="AgsDrum" name="Default 2" soundcard-device="hw:0,0" bank_0="0" bank_1="0" reverse-mapping="true" channels="2" output-pads="1" input-pads="16" length="16">
         <ags-sf-pad-list is-output="false">
           <ags-sf-pad id="47f0d874-140a-11e7-8e46-24be05e12b31" nth-pad="0" group="true" mute="false" solo="false">
             <ags-sf-line-list>
@@ -1177,7 +1177,7 @@ auto-sense=true
           </ags-sf-automation>
         </ags-sf-automation-list>
       </ags-sf-machine>
-      <ags-sf-machine id="47f12aa4-140a-11e7-8e46-24be05e12b31" type="AgsMatrix" name="Default 0" soundcard-device="hw:0,0" bank_0="0" bank_1="0" channels="1" output-pads="2" input-pads="16" length="16">
+      <ags-sf-machine id="47f12aa4-140a-11e7-8e46-24be05e12b31" type="AgsMatrix" name="Default 3" soundcard-device="hw:0,0" bank_0="0" bank_1="0" channels="1" output-pads="2" input-pads="16" length="16">
         <ags-sf-pad-list is-output="false">
           <ags-sf-pad nth-pad="0">
             <ags-sf-line-list>
@@ -1293,7 +1293,7 @@ auto-sense=true
           </ags-sf-notation>
         </ags-sf-notation-list>
       </ags-sf-machine>
-      <ags-sf-machine id="47f149a8-140a-11e7-8e46-24be05e12b31" type="AgsSynth" name="Default 0" soundcard-device="hw:0,0" bank_0="0" bank_1="0" channels="1" output-pads="16" input-pads="2">
+      <ags-sf-machine id="47f149a8-140a-11e7-8e46-24be05e12b31" type="AgsSynth" name="Default 4" soundcard-device="hw:0,0" bank_0="0" bank_1="0" channels="1" output-pads="16" input-pads="2">
         <ags-sf-pad-list is-output="false">
           <ags-sf-pad id="47f14ad4-140a-11e7-8e46-24be05e12b31" nth-pad="0" group="true" mute="false" solo="false">
             <ags-sf-line-list>
@@ -1396,7 +1396,7 @@ auto-sense=true
           <ags-sf-notation channel="0"/>
         </ags-sf-notation-list>
       </ags-sf-machine>
-      <ags-sf-machine id="47f16294-140a-11e7-8e46-24be05e12b31" type="AgsFFPlayer" name="Default 0" soundcard-device="hw:0,0" bank_0="0" bank_1="0" reverse-mapping="true" channels="2" output-pads="1" input-pads="3" audio-start-mapping="0" audio-end-mapping="128" midi-start-mapping="0" midi-end-mapping="128" filename="/usr/share/sounds/sf2/FluidR3_GM.sf2" preset="Synth Brass 4" instrument="Synth Brass2/GS">
+      <ags-sf-machine id="47f16294-140a-11e7-8e46-24be05e12b31" type="AgsFFPlayer" name="Default 5" soundcard-device="hw:0,0" bank_0="0" bank_1="0" reverse-mapping="true" channels="2" output-pads="1" input-pads="3" audio-start-mapping="0" audio-end-mapping="128" midi-start-mapping="0" midi-end-mapping="128" filename="/usr/share/sounds/sf2/FluidR3_GM.sf2" preset="Synth Brass 4" instrument="Synth Brass2/GS">
         <ags-sf-pad-list is-output="true">
           <ags-sf-pad nth-pad="0">
             <ags-sf-line-list>

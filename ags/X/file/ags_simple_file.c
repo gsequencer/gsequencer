@@ -1693,16 +1693,6 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 					  "node", node,
 					  "reference", gobject,
 					  NULL));
-
-  /* set name if available */
-  str = xmlGetProp(node,
-		   AGS_FILE_NAME_PROP);
-
-  if(str != NULL){
-    g_object_set(gobject,
-		 "machine-name", str,
-		 NULL);
-  }
   
   /* retrieve window */  
   window = AGS_XORG_APPLICATION_CONTEXT(simple_file->application_context)->window;
@@ -1860,7 +1850,18 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(gobject),
-		     FALSE, FALSE, 0);
+		     FALSE, FALSE,
+		     0);
+
+  /* set name if available */
+  str = xmlGetProp(node,
+		   "name");
+
+  if(str != NULL){
+    g_object_set(gobject,
+		 "machine-name", str,
+		 NULL);
+  }
 
   /* reverse mapping */
   str = xmlGetProp(node,

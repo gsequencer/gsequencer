@@ -88,6 +88,9 @@ ags_message_delivery_class_init(AgsMessageDeliveryClass *message_delivery)
 
   ags_message_delivery_parent_class = g_type_class_peek_parent(message_delivery);
 
+  /* GObjectClass */
+  gobject = (GObjectClass *) message_delivery;
+  
   gobject->dispose = ags_message_delivery_dispose;
   gobject->finalize = ags_message_delivery_finalize;
 }
@@ -369,7 +372,7 @@ ags_message_delivery_find_sender(AgsMessageDelivery *message_delivery,
   GList *current_match, *match;
   
   if(!AGS_IS_MESSAGE_DELIVERY(message_delivery)){
-    return;
+    return(NULL);
   }
 
   match = NULL;
@@ -442,7 +445,7 @@ ags_message_delivery_find_recipient(AgsMessageDelivery *message_delivery,
   GList *current_match, *match;
   
   if(!AGS_IS_MESSAGE_DELIVERY(message_delivery)){
-    return;
+    return(NULL);
   }
 
   match = NULL;
@@ -515,7 +518,7 @@ ags_message_delivery_query_message(AgsMessageDelivery *message_delivery,
   GList *current_match, *match;
   
   if(!AGS_IS_MESSAGE_DELIVERY(message_delivery)){
-    return;
+    return(NULL);
   }
 
   match = NULL;

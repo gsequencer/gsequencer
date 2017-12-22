@@ -401,6 +401,14 @@ ags_set_samplerate_channel(AgsSetSamplerate *set_samplerate, AgsChannel *channel
   /* get soundcard mutex */
   pthread_mutex_lock(application_mutex);
 
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) soundcard);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get presets */
+  pthread_mutex_lock(soundcard_mutex);
+
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    NULL,
 			    &samplerate,

@@ -531,7 +531,7 @@ ags_open_sf2_sample_launch(AgsTask *task)
 		 "preset", open_sf2_sample->preset,
 		 "instrument", open_sf2_sample->instrument,
 		 "sample", open_sf2_sample->sample,
-		 "channel", channel->audio_channel,
+		 "audio-channel", channel->audio_channel,
 		 NULL);
 
     pthread_mutex_unlock(channel_mutex);

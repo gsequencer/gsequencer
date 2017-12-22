@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 1.2.2\n"
+"Project-Id-Version: gsequencer 1.2.5\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-12-19 23:16+0100\n"
+"POT-Creation-Date: 2017-12-22 15:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -284,72 +284,72 @@ msgstr ""
 msgid "M-Box"
 msgstr ""
 
-#: ags/X/ags_machine.c:1959
+#: ags/X/ags_machine.c:1958
 msgid "open in new channel"
 msgstr ""
 
-#: ags/X/ags_machine.c:1964
+#: ags/X/ags_machine.c:1963
 msgid "overwrite existing links"
 msgstr ""
 
-#: ags/X/ags_machine.c:2344 ags/X/editor/ags_pattern_envelope.c:657
+#: ags/X/ags_machine.c:2343 ags/X/editor/ags_pattern_envelope.c:657
 msgid "move up"
 msgstr ""
 
-#: ags/X/ags_machine.c:2347 ags/X/editor/ags_pattern_envelope.c:664
+#: ags/X/ags_machine.c:2346 ags/X/editor/ags_pattern_envelope.c:664
 msgid "move down"
 msgstr ""
 
-#: ags/X/ags_machine.c:2350
+#: ags/X/ags_machine.c:2349
 msgid "hide"
 msgstr ""
 
-#: ags/X/ags_machine.c:2353
+#: ags/X/ags_machine.c:2352
 msgid "show"
 msgstr ""
 
-#: ags/X/ags_machine.c:2356
+#: ags/X/ags_machine.c:2355
 msgid "destroy"
 msgstr ""
 
-#: ags/X/ags_machine.c:2359 ags/X/ags_machine_callbacks.c:266
+#: ags/X/ags_machine.c:2358 ags/X/ags_machine_callbacks.c:266
 msgid "rename"
 msgstr ""
 
-#: ags/X/ags_machine.c:2362 ags/X/ags_machine_editor.c:196
+#: ags/X/ags_machine.c:2361 ags/X/ags_machine_editor.c:196
 msgid "properties"
 msgstr ""
 
-#: ags/X/ags_machine.c:2365
+#: ags/X/ags_machine.c:2364
 msgid "sticky controls"
 msgstr ""
 
-#: ags/X/ags_machine.c:2423 ags/X/editor/ags_pattern_envelope.c:226
+#: ags/X/ags_machine.c:2422 ags/X/editor/ags_pattern_envelope.c:226
 #: ags/X/machine/ags_drum_input_pad.c:187
 msgid "edit"
 msgstr ""
 
-#: ags/X/ags_machine.c:2434
+#: ags/X/ags_machine.c:2433
 msgid "copy pattern"
 msgstr ""
 
-#: ags/X/ags_machine.c:2444
+#: ags/X/ags_machine.c:2443
 msgid "paste pattern"
 msgstr ""
 
-#: ags/X/ags_machine.c:2454
+#: ags/X/ags_machine.c:2453
 msgid "envelope"
 msgstr ""
 
-#: ags/X/ags_machine.c:2483
+#: ags/X/ags_machine.c:2482
 msgid "connection"
 msgstr ""
 
-#: ags/X/ags_machine.c:2494
+#: ags/X/ags_machine.c:2493
 msgid "audio connection"
 msgstr ""
 
-#: ags/X/ags_machine.c:2504
+#: ags/X/ags_machine.c:2503
 msgid "MIDI dialog"
 msgstr ""
 

@@ -19,6 +19,8 @@
 
 #include <ags/widget/ags_notebook.h>
 
+#include <stdlib.h>
+
 void ags_notebook_class_init(AgsNotebookClass *notebook);
 void ags_notebook_init(AgsNotebook *notebook);
 void ags_notebook_set_property(GObject *gobject,

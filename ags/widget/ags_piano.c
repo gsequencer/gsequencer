@@ -25,6 +25,9 @@
 
 #include <gdk/gdkkeysyms.h>
 
+#include <stdlib.h>
+#include <string.h>
+
 static GType ags_accessible_piano_get_type(void);
 void ags_piano_class_init(AgsPianoClass *piano);
 void ags_piano_init(AgsPiano *piano);
