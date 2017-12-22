@@ -1,3 +1,8 @@
+ags (1.2.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV due to NULL pointer dereference in ags_append_audio.c task
+
 ags (1.2.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

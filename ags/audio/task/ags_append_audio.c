@@ -19,6 +19,8 @@
 
 #include <ags/audio/task/ags_append_audio.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_playback_domain.h>
@@ -457,7 +459,7 @@ ags_append_audio_launch(AgsTask *task)
 
   append_audio = AGS_APPEND_AUDIO(task);
   
-  audio = (AgsAudio *) append_audio->audio;
+  audio = AGS_AUDIO(append_audio->audio);
   
   audio_loop = AGS_AUDIO_LOOP(append_audio->audio_loop);  
 
@@ -527,15 +529,15 @@ ags_append_audio_launch(AgsTask *task)
 	start_queue = NULL;
 	
 	while(output != NULL){
-	  if(append_audio->do_sequencer){
-	    /* get channel mutex */
-	    pthread_mutex_lock(application_mutex);
+	  /* get channel mutex */
+	  pthread_mutex_lock(application_mutex);
 
-	    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+	  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 						   (GObject *) output);
   
-	    pthread_mutex_unlock(application_mutex);
+	  pthread_mutex_unlock(application_mutex);
 
+	  if(append_audio->do_sequencer){
 	    /* get some fields */
 	    pthread_mutex_lock(channel_mutex);
 
@@ -610,15 +612,15 @@ ags_append_audio_launch(AgsTask *task)
 	start_queue = NULL;
 	
 	while(output != NULL){
-	  if(append_audio->do_notation){
-	    /* get channel mutex */
-	    pthread_mutex_lock(application_mutex);
+	  /* get channel mutex */
+	  pthread_mutex_lock(application_mutex);
 
-	    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+	  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 						   (GObject *) output);
   
-	    pthread_mutex_unlock(application_mutex);
+	  pthread_mutex_unlock(application_mutex);
 
+	  if(append_audio->do_notation){
 	    /* get some fields */
 	    pthread_mutex_lock(channel_mutex);
 
