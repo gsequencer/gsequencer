@@ -1,3 +1,8 @@
+ags (1.2.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_channel_recursive_reset_recall_ids()
+
 ags (1.2.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

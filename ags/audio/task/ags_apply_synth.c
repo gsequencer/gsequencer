@@ -19,6 +19,8 @@
 
 #include <ags/audio/task/ags_apply_synth.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_audio_signal.h>
@@ -1164,7 +1166,7 @@ ags_apply_synth_launch(AgsTask *task)
 	pthread_mutex_lock(application_mutex);
 
 	recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) first_recycling);
+						   (GObject *) first_recycling);
 
 	pthread_mutex_unlock(application_mutex);
 
@@ -1193,13 +1195,17 @@ ags_apply_synth_launch(AgsTask *task)
 	  /* set synth generator */
 	  pthread_mutex_lock(input_mutex);
 	
-	  AGS_INPUT(input)->synth_generator = synth_generator;
+	  g_object_set(input,
+		       "synth-generator", synth_generator,
+		       NULL);
 	  
 	  pthread_mutex_unlock(input_mutex);
 	}
 
+	g_message("set synth");
+	
 	/* set properties */
-	g_object_set(AGS_INPUT(input)->synth_generator,
+	g_object_set(synth_generator,
 		     "frame-count", frame_count,
 		     "delay", delay, 
 		     "attack", attack,
@@ -1213,6 +1219,8 @@ ags_apply_synth_launch(AgsTask *task)
 	channel = apply_synth->start_channel;
 	
 	for(i = 0; channel != NULL && i < apply_synth->count; i++){
+	  g_message("apply synth %d", i);
+	  
 	  /* get channel mutex */
 	  pthread_mutex_lock(application_mutex);
 
@@ -1228,6 +1236,14 @@ ags_apply_synth_launch(AgsTask *task)
 	
 	  pthread_mutex_unlock(channel_mutex);
 
+	  /* get recycling mutex */
+	  pthread_mutex_lock(application_mutex);
+
+	  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+						     (GObject *) first_recycling);
+
+	  pthread_mutex_unlock(application_mutex);
+	  
 	  /* get template */
 	  pthread_mutex_lock(recycling_mutex);
 	

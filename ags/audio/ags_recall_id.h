@@ -75,8 +75,9 @@ void ags_recall_id_unset_run_stage(AgsRecallID *recall_id, gint stage);
 
 AgsRecallID* ags_recall_id_find_recycling_context(GList *recall_id_list,
 						  AgsRecyclingContext *recycling_context);
-AgsRecallID* ags_recall_id_find_parent_recycling_context(GList *recall_id_list,
-							 AgsRecyclingContext *parent_recycling_context);
+
+G_DEPRECATED AgsRecallID* ags_recall_id_find_parent_recycling_context(GList *recall_id_list,
+								      AgsRecyclingContext *parent_recycling_context);
 
 AgsRecallID* ags_recall_id_new(AgsRecycling *recycling);
 
