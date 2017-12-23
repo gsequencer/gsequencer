@@ -187,7 +187,6 @@ ags_recycling_context_set_property(GObject *gobject,
 				   GParamSpec *param_spec)
 {
   AgsRecyclingContext *recycling_context;
-  guint i;
 
   recycling_context = AGS_RECYCLING_CONTEXT(gobject);
 
@@ -218,6 +217,7 @@ ags_recycling_context_set_property(GObject *gobject,
   case PROP_LENGTH:
     {
       guint64 length;
+      guint64 i;
 
       length = g_value_get_uint64(value);
 
@@ -1160,7 +1160,6 @@ AgsRecyclingContext*
 ags_recycling_context_new(guint64 length)
 {
   AgsRecyclingContext *recycling_context;
-  gint i;
 
   recycling_context = g_object_new(AGS_TYPE_RECYCLING_CONTEXT,
 				   "length", length,

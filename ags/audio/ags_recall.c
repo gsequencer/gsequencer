@@ -866,26 +866,23 @@ ags_recall_set_property(GObject *gobject,
       AgsRecallContainer *container;
 
       container = (AgsRecallContainer *) g_value_get_object(value);
-
-      if((AgsRecallContainer *) recall->container == container ||
-	 !(AGS_IS_RECALL_AUDIO(recall) ||
-	   AGS_IS_RECALL_AUDIO_RUN(recall) ||
-	   AGS_IS_RECALL_CHANNEL(recall) ||
-	   AGS_IS_RECALL_CHANNEL_RUN(recall))){
+      
+      if((AgsRecallContainer *) recall->container == container){
 	return;
       }
-
+      
       if(recall->container != NULL){
 	ags_packable_unpack(AGS_PACKABLE(recall));
 
 	g_object_unref(G_OBJECT(recall->container));
+
+	recall->container = NULL;
       }
 
       if(container != NULL){
-	g_object_ref(G_OBJECT(container));
-
-	ags_packable_pack(AGS_PACKABLE(recall), G_OBJECT(container));
-
+	recall->container = (GObject *) container;
+	g_object_ref(container);
+	
 	if(AGS_IS_RECALL_AUDIO(recall)){
 	  g_object_set(G_OBJECT(container),
 		       "recall_audio", recall,
@@ -903,9 +900,9 @@ ags_recall_set_property(GObject *gobject,
 		       "recall_channel_run", recall,
 		       NULL);
 	}
-      }
 
-      recall->container = (GObject *) container;
+	ags_packable_pack(AGS_PACKABLE(recall), G_OBJECT(container));
+      }
     }
     break;
   case PROP_DEPENDENCY:
@@ -1153,11 +1150,16 @@ ags_recall_pack(AgsPackable *packable, GObject *container)
   recall = AGS_RECALL(packable);
 
   if(recall == NULL ||
-     recall->container == container ||
-     (container != NULL && !AGS_IS_RECALL_CONTAINER(container))){
+     recall->container == container){
     return(TRUE);
   }
 
+  if(container != NULL){
+    g_object_ref(container);
+  }
+
+  recall->container = container;
+  
 #ifdef AGS_DEBUG
   g_message("===== packing: %s", G_OBJECT_TYPE_NAME(recall));
 #endif

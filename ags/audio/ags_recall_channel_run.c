@@ -38,6 +38,8 @@
 
 #include <ags/i18n.h>
 
+#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
+
 void ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run);
 void ags_recall_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_channel_run_packable_interface_init(AgsPackableInterface *packable);
@@ -632,7 +634,7 @@ ags_recall_channel_run_connect(AgsConnectable *connectable)
     gobject = G_OBJECT(recall_channel_run->destination);
     
     /* recycling changed */
-    g_signal_connect(gobject, "recycling_changed",
+    g_signal_connect(gobject, "recycling-changed",
 		     G_CALLBACK(ags_recall_channel_run_destination_recycling_changed_callback), recall_channel_run);
   }
 
@@ -696,6 +698,8 @@ ags_recall_channel_run_pack(AgsPackable *packable, GObject *container)
   if(ags_recall_channel_run_parent_packable_interface->pack(packable, container)){
     return(TRUE);
   }
+
+  //  g_message("pack b %d", (AGS_IS_COPY_PATTERN_CHANNEL_RUN(packable) ? TRUE: FALSE));
 
   recall_container = AGS_RECALL_CONTAINER(container);
 

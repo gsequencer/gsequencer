@@ -2907,7 +2907,7 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
       copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
 								"soundcard", soundcard,
 								"audio", audio,
-								"recall_container", play_container,
+								"recall-container", play_container,
 								NULL);
       AGS_RECALL(copy_pattern_audio)->flags |= (AGS_RECALL_TEMPLATE |
 						(((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
@@ -2920,7 +2920,7 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
       copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
 								       "soundcard", soundcard,
 								       // "recall_audio", copy_pattern_audio,
-								       "recall_container", play_container,
+								       "recall-container", play_container,
 								       //TODO:JK: add missing dependency "count_beats_audio_run"
 								       NULL);
       AGS_RECALL(copy_pattern_audio_run)->flags |= (AGS_RECALL_TEMPLATE |
@@ -3038,7 +3038,7 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
       copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
 								"soundcard", soundcard,
 								"audio", audio,
-								"recall_container", recall_container,
+								"recall-container", recall_container,
 								NULL);
       AGS_RECALL(copy_pattern_audio)->flags |= (AGS_RECALL_TEMPLATE |
 						(((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |
@@ -3051,7 +3051,7 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
       copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
 								       "soundcard", soundcard,
 								       // "recall_audio", copy_pattern_audio,
-								       "recall_container", recall_container,
+								       "recall-container", recall_container,
 								       //TODO:JK: add missing dependency "count_beats_audio_run"
 								       NULL);
       AGS_RECALL(copy_pattern_audio_run)->flags |= (AGS_RECALL_TEMPLATE |
@@ -3128,7 +3128,7 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
 								      "soundcard", soundcard,
 								      "source", channel,
 								      // "destination", destination,
-								      "recall_container", recall_container,
+								      "recall-container", recall_container,
 								      //"pattern", channel->pattern->data,
 								      NULL);
 	ags_recall_set_flags(AGS_RECALL(copy_pattern_channel), (AGS_RECALL_TEMPLATE |
@@ -3146,7 +3146,7 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
 									     // "destination", destination,
 									     // "recall_channel", copy_pattern_channel,
 									     // "recall_audio_run", copy_pattern_audio_run,
-									     "recall_container", recall_container,
+									     "recall-container", recall_container,
 									     NULL);
 	ags_recall_set_flags(AGS_RECALL(copy_pattern_channel_run), (AGS_RECALL_TEMPLATE |
 								    (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_RECALL_OUTPUT_ORIENTATED: AGS_RECALL_INPUT_ORIENTATED) |

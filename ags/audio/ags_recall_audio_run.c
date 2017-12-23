@@ -19,10 +19,7 @@
 
 #include <ags/audio/ags_recall_audio_run.h>
 
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_packable.h>
-#include <ags/object/ags_dynamic_connectable.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -33,6 +30,8 @@
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 
 #include <ags/i18n.h>
+
+#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 
 void ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run);
 void ags_recall_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -441,9 +440,12 @@ ags_recall_audio_run_pack(AgsPackable *packable, GObject *container)
   GList *list;
   AgsRecallID *recall_id;
 
-  if(ags_recall_audio_run_parent_packable_interface->pack(packable, container))
+  if(ags_recall_audio_run_parent_packable_interface->pack(packable, container)){
     return(TRUE);
+  }
 
+  //  g_message("pack a %d", (AGS_IS_COPY_PATTERN_AUDIO_RUN(packable) ? TRUE: FALSE));
+  
   recall_audio_run = AGS_RECALL_AUDIO_RUN(packable);
   recall_container = AGS_RECALL_CONTAINER(container);
 
