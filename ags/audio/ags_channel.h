@@ -251,6 +251,11 @@ void ags_channel_recursive_init(AgsChannel *channel,
 				AgsRecallID *recall_id,
 				gint stage,
 				gboolean init_up, gboolean init_down);
+void ags_channel_recursive_run(AgsChannel *channel,
+			       AgsRecallID *recall_id,
+			       gint run_stage,
+			       gboolean run_up, gboolean run_down,
+			       gboolean current_level_only);
 void ags_channel_recursive_cancel(AgsChannel *channel,
 				  AgsRecallID *recall_id,
 				  gboolean cancel_up, gboolean cancel_down);
