@@ -6,11 +6,11 @@ ags (1.2.7)
 	* implemented ags_channel_recursive_init()
 	* implemented ags_channel_recursive_run()
 	* implemented ags_channel_recursive_cancel()
-	* TODO:JK: refactored ags_channel_recursive_play_init()
+	* refactored ags_channel_recursive_play_init()
 	* TODO:JK: refactored ags_channel_recursive_play()
-	* TODO:JK: refactored ags_channel_recursive_play_threaded
+	* TODO:JK: refactored ags_channel_recursive_play_threaded()
 	* TODO:JK: refactored ags_channel_recursive_reset_recall_ids()
-	* TODO:JK: verified ags_channel_recursive_reset_recycling()
+	* TODO:JK: fixed ags_channel_recursive_reset_recycling_context() to reset recycling field of AgsRecallID
 
 ags (1.2.6)
 

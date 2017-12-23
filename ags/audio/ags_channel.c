@@ -5432,7 +5432,7 @@ ags_channel_find_port(AgsChannel *channel)
  *
  * Change the linking of #AgsChannel objects. Sets link, calls ags_channel_set_recycling()
  * and ags_channel_recursive_reset_recall_ids(). Further it does loop detection and makes
- * your machine running. Thus it adds #AgsRecallID. Asynchronously only.
+ * your machine running. Thus it adds #AgsRecallID. Invoke only by a task.
  *
  * Since: 1.0.0
  */
@@ -6041,7 +6041,7 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
  * @destroy_old: destroy old AgsRecyclings
  *
  * Called by ags_channel_set_link() to handle outdated #AgsRecycling references.
- * Asynchronously only.
+ * Invoke only by a task.
  *
  * Since: 1.0.0
  */
@@ -7383,7 +7383,7 @@ ags_channel_set_recycling(AgsChannel *channel,
  * @old_recycling_context: the old recycling container context
  * @recycling_context: the new recycling container context
  *
- * Resets the recycling container context. Asynchronously only.
+ * Resets the recycling container context. Invoke only by a task.
  *
  * Since: 1.0.0
  */
@@ -7775,7 +7775,7 @@ ags_channel_recursive_reset_recycling_context(AgsChannel *channel,
   }
 
   /* entry point */
-  if(channel == NULL){
+  if(!AGS_IS_CHANNEL(channel)){
     return;
   }
 
@@ -8058,6 +8058,8 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 				gboolean resolve_dependencies,
 				AgsRecallID *recall_id)
 {
+  AgsRecyclingContext *recycling_context;
+  
   AgsMutexManager *mutex_manager;
 
   pthread_mutex_t *application_mutex;
@@ -8069,6 +8071,54 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
+  if(recall_id == NULL){
+    recall_id = ags_recall_id_new(channel->first_recycling);
+
+    if(do_playback){
+      recall_id->flags |= AGS_RECALL_ID_PLAYBACK;
+    }else if(do_sequencer){
+      recall_id->flags |= AGS_RECALL_ID_SEQUENCER;
+    }else if(do_notation){
+      recall_id->flags |= AGS_RECALL_ID_NOTATION;
+    }
+  }
+
+  if(arrange_recall_id){
+    ags_channel_recursive_reset_recall_id(channel,
+					  recall_id, TRUE, TRUE,
+					  NULL, FALSE, FALSE);
+  }
+
+  if(duplicate_templates &&
+     resolve_dependencies &&
+     (stage == -1 || (stage >= 0 && stage < 3))){
+    ags_channel_recursive_init(channel,
+			       recall_id,
+			       -1, stage,
+			       TRUE, TRUE);
+  }else{
+    if(duplicate_templates){
+      ags_channel_recursive_init(channel,
+				 recall_id,
+				 1, 3,
+				 TRUE, TRUE);
+    }
+
+    if(resolve_dependencies){
+      ags_channel_recursive_init(channel,
+				 recall_id,
+				 2, 3,
+				 TRUE, TRUE);
+    }
+
+    if(stage == -1 || (stage >= 0 && stage < 3)){
+      ags_channel_recursive_init(channel,
+				 recall_id,
+				 3, stage,
+				 TRUE, TRUE);
+    }
+  }
+  
   return(recall_id);
 }
 
@@ -8154,6 +8204,43 @@ ags_channel_tillrecycling_cancel(AgsChannel *channel,
 
   if(!AGS_IS_CHANNEL(channel) ||
      !AGS_IS_RECALL_ID(recall_id)){
+    return;
+  }
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_channel_recursive_reset_recall_ids:
+ * @channel: an #AgsChannel that was linked with @link
+ * @link: an #AgsChannel that was linked with @channel
+ * @old_channel_link: the old link of @channel
+ * @old_link_link: the old link of @link
+ *
+ * Called by ags_channel_set_link() to handle running #AgsAudio objects correctly.
+ * This function destroys #AgsRecall objects which were uneeded because they became
+ * invalid due to unlinking. By the way it destroys the uneeded #AgsRecallID objects, too.
+ * Additionally it creates #AgsRecall and #AgsRecallID objects to prepare becoming a
+ * running object (#AgsAudio or #AgsChannel).
+ * By the clean up the invalid #AgsRecall objects will be removed.
+ * Once the clean up has done ags_channel_recursive_play_init() will be called for every
+ * playing instance that was found.
+ *
+ * Since: 1.0.0
+ */
+void
+ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
+				       AgsChannel *old_channel_link, AgsChannel *old_link_link)
+{
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+
+  if(!AGS_IS_CHANNEL(channel) &&
+     !AGS_IS_CHANNEL(link)){
     return;
   }
 
@@ -9456,43 +9543,6 @@ ags_channel_recursive_reset_recall_id(AgsChannel *channel,
 }
 
 /**
- * ags_channel_recursive_reset_recall_ids:
- * @channel: an #AgsChannel that was linked with @link
- * @link: an #AgsChannel that was linked with @channel
- * @old_channel_link: the old link of @channel
- * @old_link_link: the old link of @link
- *
- * Called by ags_channel_set_link() to handle running #AgsAudio objects correctly.
- * This function destroys #AgsRecall objects which were uneeded because they became
- * invalid due to unlinking. By the way it destroys the uneeded #AgsRecallID objects, too.
- * Additionally it creates #AgsRecall and #AgsRecallID objects to prepare becoming a
- * running object (#AgsAudio or #AgsChannel).
- * By the clean up the invalid #AgsRecall objects will be removed.
- * Once the clean up has done ags_channel_recursive_play_init() will be called for every
- * playing instance that was found.
- *
- * Since: 1.0.0
- */
-void
-ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
-				       AgsChannel *old_channel_link, AgsChannel *old_link_link)
-{
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-
-  if(!AGS_IS_CHANNEL(channel) &&
-     !AGS_IS_CHANNEL(link)){
-    return;
-  }
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  //TODO:JK: implement me
-}
-
-/**
  * ags_channel_recursive_init:
  * @channel: the #AgsChannel
  * @recall_id: the #AgsRecallID
@@ -9507,13 +9557,11 @@ ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 void
 ags_channel_recursive_init(AgsChannel *channel,
 			   AgsRecallID *recall_id,
-			   gint stage,
+			   gint stage, gint init_stage,
 			   gboolean init_up, gboolean init_down)
 {
   AgsMutexManager *mutex_manager;
 
-  gint init_stage;
-  
   pthread_mutex_t *application_mutex;
 
   auto void ags_channel_recursive_init_down(AgsChannel *channel, AgsRecallID *recall_id);
@@ -10257,7 +10305,20 @@ ags_channel_recursive_init(AgsChannel *channel,
 					recall_id);
 	}
       }else if(stage == 2){
-	for(init_stage = 0; init_stage < 3; init_stage++){
+	if(init_stage == -1){
+	  for(init_stage = 0; init_stage < 3; init_stage++){
+	    /* init */
+	    if(init_down){
+	      ags_channel_recursive_init_down(channel,
+					      recall_id);
+	    }
+
+	    if(init_up){
+	      ags_channel_recursive_init_up(channel,
+					    recall_id);
+	    }
+	  }
+	}else if(init_stage >= 0 && init_stage < 3){
 	  /* init */
 	  if(init_down){
 	    ags_channel_recursive_init_down(channel,
@@ -10284,7 +10345,20 @@ ags_channel_recursive_init(AgsChannel *channel,
 				      recall_id);
       }
     }else if(stage == 2){
-      for(init_stage = 0; init_stage < 3; init_stage++){
+      if(init_stage == -1){
+	for(init_stage = 0; init_stage < 3; init_stage++){
+	  /* init */
+	  if(init_down){
+	    ags_channel_recursive_init_down(channel,
+					    recall_id);
+	  }
+
+	  if(init_up){
+	    ags_channel_recursive_init_up(channel,
+					  recall_id);
+	  }
+	}
+      }else if(init_stage >= 0 && init_stage < 3){
 	/* init */
 	if(init_down){
 	  ags_channel_recursive_init_down(channel,
