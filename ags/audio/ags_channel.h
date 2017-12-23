@@ -247,6 +247,14 @@ void ags_channel_recursive_reset_recall_id(AgsChannel *channel,
 void ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
 					    AgsChannel *old_channel_link, AgsChannel *old_link_link);
 
+void ags_channel_recursive_init(AgsChannel *channel,
+				AgsRecallID *recall_id,
+				gint stage,
+				gboolean init_up, gboolean init_down);
+void ags_channel_recursive_cancel(AgsChannel *channel,
+				  AgsRecallID *recall_id,
+				  gboolean cancel_up, gboolean cancel_down);
+
 AgsChannel* ags_channel_new(GObject *audio);
 
 #endif /*__AGS_CHANNEL_H__*/
