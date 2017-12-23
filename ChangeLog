@@ -1,7 +1,10 @@
 ags (1.2.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* improved ags_channel_recursive_reset_recall_ids()
+	* TODO:JK: implemented ags_channel_recursive_reset_recall_id()
+	* TODO:JK: refactored ags_channel_recursive_play_init()
+	* TODO:JK: refactored ags_channel_recursive_reset_recall_id()
+	* TODO:JK: use ags_recycling_context_reset_recycling()
 
 ags (1.2.6)
 
