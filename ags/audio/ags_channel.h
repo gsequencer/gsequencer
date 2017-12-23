@@ -240,6 +240,7 @@ void ags_channel_recursive_play(AgsChannel *channel,
 
 void ags_channel_tillrecycling_cancel(AgsChannel *channel, AgsRecallID *recall_id);
 
+AgsChannel* ags_channel_get_level(AgsChannel *channel);
 void ags_channel_recursive_reset_recall_id(AgsChannel *channel,
 					   AgsRecallID *valid_recall_id, gboolean valid_set_up, gboolean valid_set_down,
 					   AgsRecallID *invalid_recall_id, gboolean invalid_set_up, gboolean invalid_set_down);
