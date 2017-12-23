@@ -11902,39 +11902,14 @@ ags_channel_recursive_reset_recall_id(AgsChannel *channel,
 	  pthread_mutex_unlock(application_mutex);
 	  
 	  if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & audio_flags) != 0){
-	    AgsRecycling *first_recycling;
-	    
-	    GList *child, *child_start;
-
-	    /* get first recycling */
+	    /* find parent recycling context */
 	    pthread_mutex_lock(input_mutex);
+
+	    input_recall_id = ags_recall_id_find_parent_recycling_context(input->recall_id,
+									  recycling_context);
+	    next_recycling_context = input_recall_id->recycling_context;
 	    
-	    first_recycling = input->first_recycling;
-
-	    pthread_mutex_unlock(input_mutex);
-
-	    /* find next recycling context */
-	    next_recycling_context = NULL;
-
-	    pthread_mutex_lock(recycling_context->mutex);
-	    
-	    child =
-	      child_start = g_list_copy(recycling_context->children);
-
-	    pthread_mutex_unlock(recycling_context->mutex);
-
-	    while(child != NULL){
-	      if(ags_recycling_context_find(child->data,
-					    first_recycling) != -1){
-		next_recycling_context = child->data;
-
-		break;
-	      }
-
-	      child = child->next;
-	    }
-
-	    g_list_free(child_start);
+	    pthread_mutex_unlock(input_mutex);	    
 	  }else{
 	    next_recycling_context = recycling_context;
 	  }
@@ -12008,39 +11983,14 @@ ags_channel_recursive_reset_recall_id(AgsChannel *channel,
 	  pthread_mutex_unlock(application_mutex);
 	  
 	  if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & audio_flags) != 0){
-	    AgsRecycling *first_recycling;
-	    
-	    GList *child, *child_start;
-
-	    /* get first recycling */
+	    /* find parent recycling context */
 	    pthread_mutex_lock(input_mutex);
+
+	    input_recall_id = ags_recall_id_find_parent_recycling_context(input->recall_id,
+									  recycling_context);
+	    next_recycling_context = input_recall_id->recycling_context;
 	    
-	    first_recycling = input->first_recycling;
-
-	    pthread_mutex_unlock(input_mutex);
-
-	    /* find next recycling context */
-	    next_recycling_context = NULL;
-
-	    pthread_mutex_lock(recycling_context->mutex);
-	    
-	    child =
-	      child_start = g_list_copy(recycling_context->children);
-
-	    pthread_mutex_unlock(recycling_context->mutex);
-
-	    while(child != NULL){
-	      if(ags_recycling_context_find(child->data,
-					    first_recycling) != -1){
-		next_recycling_context = child->data;
-
-		break;
-	      }
-
-	      child = child->next;
-	    }
-
-	    g_list_free(child_start);
+	    pthread_mutex_unlock(input_mutex);	    
 	  }else{
 	    next_recycling_context = recycling_context;
 	  }
