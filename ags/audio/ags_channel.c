@@ -8100,21 +8100,21 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
     if(duplicate_templates){
       ags_channel_recursive_init(channel,
 				 recall_id,
-				 1, 3,
+				 0, 3,
 				 TRUE, TRUE);
     }
 
     if(resolve_dependencies){
       ags_channel_recursive_init(channel,
 				 recall_id,
-				 2, 3,
+				 1, 3,
 				 TRUE, TRUE);
     }
 
     if(stage == -1 || (stage >= 0 && stage < 3)){
       ags_channel_recursive_init(channel,
 				 recall_id,
-				 3, stage,
+				 2, stage,
 				 TRUE, TRUE);
     }
   }
