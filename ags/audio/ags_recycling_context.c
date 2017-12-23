@@ -158,18 +158,18 @@ ags_recycling_context_init(AgsRecyclingContext *recycling_context)
 {
   recycling_context->mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
 
-  pthread_mutexattr_init(recycling_context->attr);
-  pthread_mutexattr_settype(recycling_context->attr,
+  pthread_mutexattr_init(recycling_context->mutexattr);
+  pthread_mutexattr_settype(recycling_context->mutexattr,
 			    PTHREAD_MUTEX_RECURSIVE);
 
 #ifdef __linux__
-  pthread_mutexattr_setprotocol(recycling_context->attr,
+  pthread_mutexattr_setprotocol(recycling_context->mutexattr,
 				PTHREAD_PRIO_INHERIT);
 #endif
 
   recycling_context->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(recycling_context->mutex,
-		     recycling_context->attr);
+		     recycling_context->mutexattr);
   
   recycling_context->recall_id = NULL;
 
@@ -851,16 +851,22 @@ ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
   AgsRecycling *recycling;
   AgsRecycling *next, *prev;
 
-  pthread_mutex_t *recycling_mutex;
+  AgsMutexManager *mutex_manager;
 
   gint new_length;
   gint first_index, last_index;
   guint i;
   gboolean new_context;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *recycling_mutex;
+
   if(!AGS_IS_RECYCLING_CONTEXT(recycling_context)){
     return(NULL);
   }
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   if(old_first_recycling != NULL){
     /* get recycling mutex */
@@ -931,7 +937,11 @@ ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
 					new_last_recycling);
     new_length++;
   }else{
-    return(NULL);
+    new_recycling_context = g_object_new(AGS_TYPE_RECYCLING_CONTEXT,
+					 "length", 0,
+					 NULL);
+    
+    return(new_recycling_context);
   }
   
   /* retrieve indices to replace */
