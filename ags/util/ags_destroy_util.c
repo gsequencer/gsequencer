@@ -40,7 +40,8 @@
 void
 ags_destroy_util_dispose_and_unref(GObject *gobject)
 {
-  if(gobject == NULL){
+  if(gobject == NULL ||
+     !G_IS_OBJECT(gobject)){
     return;
   }
 

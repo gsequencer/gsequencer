@@ -150,6 +150,7 @@ ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
+
   GParamSpec *param_spec;
 
   ags_copy_pattern_audio_run_parent_class = g_type_class_peek_parent(copy_pattern_audio_run);
@@ -594,7 +595,7 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
   GList *list;
   
   guint i, i_stop;
-  
+
   recall_container = AGS_RECALL_CONTAINER(recall->container);
   
   list = ags_recall_find_template(recall_container->recall_audio_run);

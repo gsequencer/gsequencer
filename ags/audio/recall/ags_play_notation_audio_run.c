@@ -823,29 +823,16 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
 	/* get child recall id */
 	child_recall_id = NULL;
+	
+	list = selected_channel->recall_id;
 
-	if(selected_channel->link == NULL){
-	  list = selected_channel->recall_id;
-
-	  while(list != NULL){
-	    if(AGS_RECALL_ID(list->data)->recycling_context->parent == AGS_RECALL(delay_audio_run)->recall_id->recycling_context){
-	      child_recall_id = (AgsRecallID *) list->data;
-	      break;
-	    }
-	  
-	    list = list->next;
+	while(list != NULL){
+	  if(AGS_RECALL_ID(list->data)->recycling_context->parent == AGS_RECALL(delay_audio_run)->recall_id->recycling_context){
+	    child_recall_id = (AgsRecallID *) list->data;
+	    break;
 	  }
-	}else{
-	  list = selected_channel->link->recall_id;
-
-	  while(list != NULL){
-	    if(AGS_RECALL_ID(list->data)->recycling_context->parent->parent == AGS_RECALL(delay_audio_run)->recall_id->recycling_context){
-	      child_recall_id = (AgsRecallID *) list->data;
-	      break;
-	    }
 	  
-	    list = list->next;
-	  }
+	  list = list->next;
 	}
 
 	/* lookup channel mutex */

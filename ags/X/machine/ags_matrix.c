@@ -854,6 +854,11 @@ ags_matrix_input_map_recall(AgsMatrix *matrix,
 			    guint input_pad_start)
 {
   AgsAudio *audio;
+  AgsChannel *input;
+  AgsChannel *channel;
+  AgsPattern *pattern;
+  
+  AgsCopyPatternChannel *copy_pattern_channel;
 
   AgsMutexManager *mutex_manager;
   
@@ -865,10 +870,12 @@ ags_matrix_input_map_recall(AgsMatrix *matrix,
 
   guint input_pads;
   guint audio_channels;
+  guint i, j;
   gboolean performance_mode;
-
+  
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
 
   if(matrix->mapped_input_pad > input_pad_start){
     return;
@@ -892,11 +899,66 @@ ags_matrix_input_map_recall(AgsMatrix *matrix,
   /* get some fields */
   pthread_mutex_lock(audio_mutex);
 
+  input = audio->input;
+  
   input_pads = audio->input_pads;
   audio_channels = audio->audio_channels;
   
   pthread_mutex_unlock(audio_mutex);
 
+  if(audio_channels == 0){
+    return;
+  }
+
+  /* ags-copy-pattern */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-copy-pattern",
+			    0, audio_channels, 
+			    input_pad_start, input_pads,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_REMAP |
+			     AGS_RECALL_FACTORY_RECALL),
+			    0);
+
+  /* set pattern object on port */
+  channel = ags_channel_pad_nth(input,
+				input_pad_start);
+      
+  for(i = 0; i < input_pads; i++){
+    for(j = 0; j < audio_channels; j++){
+      /* get channel mutex */
+      pthread_mutex_lock(application_mutex);
+
+      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) channel);
+  
+      pthread_mutex_unlock(application_mutex);
+
+      /* ags-copy-pattern-channel */
+      pthread_mutex_lock(channel_mutex);
+      
+      list = ags_recall_template_find_type(channel->recall,
+					   AGS_TYPE_COPY_PATTERN_CHANNEL);
+
+      if(list != NULL){
+	copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(list->data);
+
+	list = channel->pattern;
+	pattern = AGS_PATTERN(list->data);
+
+	copy_pattern_channel->pattern->port_value.ags_port_object = (GObject *) pattern;
+	  
+	ags_portlet_set_port(AGS_PORTLET(pattern),
+			     (GObject *) copy_pattern_channel->pattern);
+      }
+      
+      channel = channel->next;
+
+      pthread_mutex_unlock(channel_mutex);
+    }
+  }
+  
   /* map dependending on output */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_GENERIC,
@@ -1023,6 +1085,10 @@ ags_matrix_output_map_recall(AgsMatrix *matrix,
 
   pthread_mutex_unlock(audio_mutex);
 
+  if(audio_channels == 0){
+    return;
+  }
+  
   /* map dependending on output */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_GENERIC,
