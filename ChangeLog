@@ -10,8 +10,8 @@ ags (1.2.7)
 	* refactored ags_channel_recursive_play()
 	* refactored ags_channel_recursive_play_threaded()
 	* refactored ags_channel_recursive_reset_recall_ids()
-	* TODO:JK: refactored ags_channel_set_recycling()
-	* TODO:JK: refactored ags_channel_recursive_reset_recycling_context()
+	* improved ags_channel_set_recycling()
+	* improved ags_channel_recursive_reset_recycling_context()
 
 ags (1.2.6)
 

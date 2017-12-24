@@ -232,8 +232,6 @@ ags_copy_pattern_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_conn
     return;
   }
 
-  g_message("1");
-  
   /* call parent */
   ags_copy_pattern_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
 

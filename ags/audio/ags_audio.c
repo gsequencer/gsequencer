@@ -4744,9 +4744,9 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   /* initial checks */
   pthread_mutex_lock(mutex);
   
-  //#ifdef AGS_DEBUG
+#ifdef AGS_DEBUG
   g_message("ags_audio_duplicate_recall: %s - audio.lines[%u,%u]\n", G_OBJECT_TYPE_NAME(audio->machine), audio->output_lines, audio->input_lines);  
-  //#endif
+#endif
 
   playback = FALSE;
   sequencer = FALSE;
@@ -4796,7 +4796,10 @@ ags_audio_duplicate_recall(AgsAudio *audio,
     
     if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
        AGS_IS_RECALL_AUDIO(recall) ||
-       recall->recall_id != NULL){
+       recall->recall_id != NULL ||
+       !((playback && (AGS_RECALL_PLAYBACK & (recall->flags)) != 0) ||
+	 (sequencer && (AGS_RECALL_SEQUENCER & (recall->flags)) != 0) ||
+	 (notation && (AGS_RECALL_NOTATION & (recall->flags)) != 0))){
       list_recall = list_recall->next;
       continue;
     }  
@@ -4816,9 +4819,9 @@ ags_audio_duplicate_recall(AgsAudio *audio,
       /* notify run */
       ags_recall_notify_dependency(copy, AGS_RECALL_NOTIFY_RUN, 1);
 
-      //#ifdef AGS_DEBUG
+#ifdef AGS_DEBUG
       g_message("recall duplicated: %s\n", G_OBJECT_TYPE_NAME(copy));
-      //#endif
+#endif
 
       /* set appropriate flag */
       if(playback){
@@ -5458,13 +5461,14 @@ ags_audio_cancel(AgsAudio *audio,
 		 AgsRecallID *recall_id)
 {
   AgsRecall *recall;
-  GList *list_start, *list, *list_next;
+  GList *list_start, *list;
   AgsMutexManager *mutex_manager;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
     
-  if(audio == NULL || recall_id == NULL){
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_RECALL_ID(recall_id)){
     return;
   }
 
@@ -5498,23 +5502,21 @@ ags_audio_cancel(AgsAudio *audio,
   list = list_start;
   
   while(list != NULL){
-    list_next = list->next;
-
-    recall = AGS_RECALL(list->data);
+    recall = list->data;
 
     if(recall == NULL ||
        !AGS_IS_RECALL(recall) ||
        (AGS_RECALL_TEMPLATE & (recall->flags)) ||
        recall->recall_id == NULL ||
        recall->recall_id->recycling_context != recall_id->recycling_context){
-      list = list_next;
+      list = list->next;
 
       continue;
     }
 
     ags_recall_cancel(recall);
     
-    list = list_next;
+    list = list->next;
   }  
 
   g_list_free(list_start);

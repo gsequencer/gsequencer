@@ -596,8 +596,6 @@ ags_copy_pattern_audio_run_resolve_dependencies(AgsRecall *recall)
   
   guint i, i_stop;
 
-  g_message("0");
-  
   recall_container = AGS_RECALL_CONTAINER(recall->container);
   
   list = ags_recall_find_template(recall_container->recall_audio_run);
