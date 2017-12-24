@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE book [
+<!ENTITY libagsthreadso "libags_thread.so.1">
+<!ENTITY libagsaudioso "libags_audio.so.1">
+]>
 
 <!-- Permission is granted to copy, distribute and/or modify this document -->
 <!-- under the terms of the GNU Free Documentation License, Version 1.3 -->
@@ -60,6 +64,60 @@
   </sect1>
 
   <sect1>
+    <title>The main loop property</title>
+    <para>
+      AgsApplicationContext:main-loop does usually point to an AgsThread implementing
+      AgsMainLoop interface. &libagsthreadso; provides you the AgsGenericMainLoop object or
+      if you intend to use &libagsaudioso;, this property shall point to AgsAudioLoop.
+    </para>
+
+    <sect2>
+      <title>AgsMainLoop interface</title>
+      <para>
+	As it shall be implemented by AGS_TYPE_THREAD subtypes, this parent object provides
+	a mutex to properly lock the object. You should obtain the pthread_mutex_t pointer
+	by calling <code language="C">pthread_mutex_t* ags_mutex_manager_lookup(AgsMutexManager*, GObject*)</code>.
+      </para>
+
+      <para>
+	The main loop specifies some signals like ::interrupt, ::monitor and ::change-frequency.
+	They are all related to realtime behavior of an application. Assumed you have a thread
+	you want to run within the thread tree, but it is not mandatory to run it. With these
+	functions you can determine if you shall pause your thread during ::interrupt signal.
+	How many time you are allowed to consume or running at all, can be concluded by using
+	::monitor. In order to get notified about modified refreshing rate of your thread, listen
+	to ::change-frequency signal.
+      </para>
+
+      <para>
+	The interface provides some other function pointers. If you want to provide AgsTaskThread
+	to your application, use <code language="C">void ags_main_loop_set_async_queue(AgsMainLoop*, GObject*)</code>
+	and <code language="C">GObject* ags_main_loop_get_async_queue(AgsMainLoop*)</code>.
+      </para>
+
+      <para>
+	To control the AgsThread::clock signal AgsMainLoop's methods are going to be invoked.
+	The involved functions are:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <code language="C">void ags_main_loop_set_tic(AgsMainLoop*, guint)</code>
+	</listitem>
+	<listitem>
+	  <code language="C">guint ags_main_loop_get_tic(AgsMainLoop*)</code>
+	</listitem>
+	<listitem>
+	  <code language="C">void ags_main_loop_set_last_sync(AgsMainLoop*, guint)</code>
+	</listitem>
+	<listitem>
+	  <code language="C">guint ags_main_loop_get_last_sync(AgsMainLoop*)</code>
+	</listitem>
+      </itemizedlist>
+    </sect2>
+  </sect1>
+
+  <sect1>
     <title>The config property</title>
     <para>
       The AgsApplicationContext base class provides you an AgsConfig instance. It might
@@ -111,6 +169,20 @@
 <xi:include href="../listings/application_mutex.c" parse="text" />
       </programlisting>
     </example>
+  </sect1>
+
+  <sect1>
+    <title>Applications program start and termination</title>
+    <para>
+      The application context provides signals to make your application ready to run. You
+      basically implement AgsApplicationContext::prepare, AgsApplicationContext::setup and
+      AgsApplicationContext::register-types. It is upto you how the application shall behave.
+    </para>
+
+    <para>
+      AgsApplicationContext::quit signal terminates your application. Feel free to provide your
+      own implementation.
+    </para>
   </sect1>
 
 </chapter>

@@ -41,8 +41,8 @@
     <para>This book is dedicated to my friend.</para>
   </dedication>
 
-  <xi:include href="developersBook/preface.xml"/>
-  <xi:include href="developersBook/chap1.xml"/> <!-- application context -->
+  <xi:include href="developersBook/preface.xml"/>  
+  <xi:include href="developersBook/chap1.xml"/> <!-- application context and core library -->
   <xi:include href="developersBook/chap2.xml"/> <!-- XML file -->
   <xi:include href="developersBook/chap3.xml"/> <!-- threads -->
   <xi:include href="developersBook/chap4.xml"/> <!-- soundcard and sequencer -->
