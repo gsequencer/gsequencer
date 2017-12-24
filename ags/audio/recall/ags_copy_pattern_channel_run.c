@@ -443,7 +443,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   pthread_mutex_unlock(pattern_mutex);
 
   g_value_unset(&pattern_value);
-
+  
   /*  */
   if(current_bit){
     AgsChannel *link;
@@ -533,33 +533,10 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
     /* create audio signals */
     if(recycling != NULL){
       AgsRecallID *child_recall_id;
-
+      
       while(recycling != end_recycling){
-	if(link == NULL){
-	  child_recall_id = AGS_RECALL(copy_pattern_channel_run)->recall_id;
-	}else{
-	  GList *list;
-
-	  pthread_mutex_lock(link_mutex);
-	  
-	  list = link->recall_id;
-
-	  while(list != NULL){
-	    if(AGS_RECALL_ID(list->data)->recycling_context->parent == AGS_RECALL(copy_pattern_channel_run)->recall_id->recycling_context){
-	      child_recall_id = (AgsRecallID *) list->data;
-	      break;
-	    }
-	  
-	    list = list->next;
-	  }
-
-	  if(list == NULL){
-	    child_recall_id = NULL;
-	  }
-
-	  pthread_mutex_unlock(link_mutex);
-	}
-
+	child_recall_id = AGS_RECALL(copy_pattern_channel_run)->recall_id;
+	
 	/* create audio signal */
 	audio_signal = ags_audio_signal_new(AGS_RECALL(copy_pattern_audio)->soundcard,
 					    (GObject *) recycling,

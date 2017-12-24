@@ -375,10 +375,9 @@ main(int argc, char **argv)
   ipatch_init();
 #endif
 
+#if 0
   g_log_set_fatal_mask("GLib-GObject", // "Gtk" , // 
   		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
-
-#if 0
 
   g_log_set_fatal_mask("Gtk", // "Gtk" , // 
   		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING

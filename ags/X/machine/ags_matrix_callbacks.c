@@ -102,6 +102,8 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
       ags_port_safe_write(recall_copy_pattern_audio->bank_index_1, &recall_value);
 
       g_value_unset(&recall_value);
+
+      gtk_widget_queue_draw(matrix->cell_pattern->drawing_area);
     }else{
       toggle = matrix->selected;
       matrix->selected = NULL;
