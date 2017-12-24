@@ -11278,6 +11278,19 @@ ags_channel_recursive_cancel(AgsChannel *channel,
 	input = ags_channel_nth(input,
 				audio_channel);
 
+	if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & audio_flags) != 0){
+	  /* find parent recycling context */
+	  pthread_mutex_lock(input_mutex);
+
+	  input_recall_id = ags_recall_id_find_parent_recycling_context(input->recall_id,
+									recycling_context);
+	  next_recycling_context = input_recall_id->recycling_context;
+	    
+	  pthread_mutex_unlock(input_mutex);	    
+	}else{
+	  next_recycling_context = recycling_context;
+	}
+
 	while(input != NULL){
 	  /* get input mutex */
 	  pthread_mutex_lock(application_mutex);
@@ -11287,19 +11300,6 @@ ags_channel_recursive_cancel(AgsChannel *channel,
   
 	  pthread_mutex_unlock(application_mutex);
 	  
-	  if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & audio_flags) != 0){
-	    /* find parent recycling context */
-	    pthread_mutex_lock(input_mutex);
-
-	    input_recall_id = ags_recall_id_find_parent_recycling_context(input->recall_id,
-									  recycling_context);
-	    next_recycling_context = input_recall_id->recycling_context;
-	    
-	    pthread_mutex_unlock(input_mutex);	    
-	  }else{
-	    next_recycling_context = recycling_context;
-	  }
-
 	  /* get input recall id and link */
 	  pthread_mutex_lock(input_mutex);
 
@@ -11335,18 +11335,6 @@ ags_channel_recursive_cancel(AgsChannel *channel,
 	  /* cancel recall - input */
 	  ags_channel_cancel(input,
 			     input_recall_id);
-
-	  /* get audio recall id */
-	  pthread_mutex_lock(audio_mutex);
-	
-	  audio_recall_id = ags_recall_id_find_recycling_context(audio->recall_id,
-								 next_recycling_context);
-      
-	  pthread_mutex_unlock(audio_mutex);
-      
-	  /* cancel recall - audio */
-	  ags_audio_cancel(audio,
-			   audio_recall_id);
 	  
 	  /* iterate */
 	  pthread_mutex_lock(input_mutex);
@@ -11359,6 +11347,19 @@ ags_channel_recursive_cancel(AgsChannel *channel,
 	input = ags_channel_nth(input,
 				output_line);
 
+	if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & audio_flags) != 0){
+	  /* find parent recycling context */
+	  pthread_mutex_lock(input_mutex);
+
+	  input_recall_id = ags_recall_id_find_parent_recycling_context(input->recall_id,
+									recycling_context);
+	  next_recycling_context = input_recall_id->recycling_context;
+	    
+	  pthread_mutex_unlock(input_mutex);	    
+	}else{
+	  next_recycling_context = recycling_context;
+	}
+
 	if(input != NULL){
 	  /* get input mutex */
 	  pthread_mutex_lock(application_mutex);
@@ -11368,19 +11369,6 @@ ags_channel_recursive_cancel(AgsChannel *channel,
   
 	  pthread_mutex_unlock(application_mutex);
 	  
-	  if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & audio_flags) != 0){
-	    /* find parent recycling context */
-	    pthread_mutex_lock(input_mutex);
-
-	    input_recall_id = ags_recall_id_find_parent_recycling_context(input->recall_id,
-									  recycling_context);
-	    next_recycling_context = input_recall_id->recycling_context;
-	    
-	    pthread_mutex_unlock(input_mutex);	    
-	  }else{
-	    next_recycling_context = recycling_context;
-	  }
-
 	  /* get input recall id and link */
 	  pthread_mutex_lock(input_mutex);
 
@@ -11416,21 +11404,23 @@ ags_channel_recursive_cancel(AgsChannel *channel,
 	  /* cancel recall - input */
 	  ags_channel_cancel(input,
 			     input_recall_id);
-
-	  /* get audio recall id */
-	  pthread_mutex_lock(audio_mutex);
-	
-	  audio_recall_id = ags_recall_id_find_recycling_context(audio->recall_id,
-								 next_recycling_context);
-      
-	  pthread_mutex_unlock(audio_mutex);
-      
-	  /* cancel recall - audio */
-	  ags_audio_cancel(audio,
-			   audio_recall_id);
 	}
       }
 
+      if(next_recycling_context != recycling_context){
+	/* get audio recall id */
+	pthread_mutex_lock(audio_mutex);
+	
+	audio_recall_id = ags_recall_id_find_recycling_context(audio->recall_id,
+							       next_recycling_context);
+      
+	pthread_mutex_unlock(audio_mutex);
+      
+	/* cancel recall - audio */
+	ags_audio_cancel(audio,
+			 audio_recall_id);
+      }
+      
       /* get audio recall id */
       pthread_mutex_lock(audio_mutex);
 	
