@@ -104,6 +104,7 @@ typedef enum{
   AGS_RECALL_HAS_OUTPUT_PORT       = 1 << 23,
   AGS_RECALL_RUN_FIRST             = 1 << 24,
   AGS_RECALL_RUN_LAST              = 1 << 25,
+  AGS_RECALL_PACKED                = 1 << 26,
 }AgsRecallFlags;
 
 /**
