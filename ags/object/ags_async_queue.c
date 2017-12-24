@@ -30,7 +30,8 @@ void ags_async_queue_base_init(AgsAsyncQueueInterface *interface);
  * @section_id: AgsAsyncQueue
  * @include: ags/object/ags_async_queue.h
  *
- * The #AgsAsyncQueue interface determines if it is safe to run.
+ * The #AgsAsyncQueue interface determines a thread-safe/collision-free slot. The implementation shall
+ * run tasks in a safe context.
  */
 
 GType
@@ -226,3 +227,42 @@ ags_async_queue_is_run(AgsAsyncQueue *async_queue)
   return(async_queue_interface->is_run(async_queue));
 }
 
+/**
+ * ags_async_queue_schedule_task:
+ * @async_queue: the #AgsAsyncQueue
+ * @task: the task object
+ * 
+ * Schedule @task to be launched in a safe context.
+ *
+ * Since: 1.3.0
+ */
+void
+ags_async_queue_schedule_task(AgsAsyncQueue *async_queue, GObject *task)
+{
+  AgsAsyncQueueInterface *async_queue_interface;
+
+  g_return_if_fail(AGS_IS_ASYNC_QUEUE(async_queue));
+  async_queue_interface = AGS_ASYNC_QUEUE_GET_INTERFACE(async_queue);
+  g_return_if_fail(async_queue_interface->schedule_task);
+  async_queue_interface->schedule_task(async_queue, task);
+}
+
+/**
+ * ags_async_queue_schedule_task_list:
+ * @async_queue: the #AgsAsyncQueue
+ * @task_list: a list of task objects
+ * 
+ * Schedule @task_list to be launched in a safe context.
+ *
+ * Since: 1.3.0
+ */
+void
+ags_async_queue_schedule_task_list(AgsAsyncQueue *async_queue, GList *task_list)
+{
+  AgsAsyncQueueInterface *async_queue_interface;
+
+  g_return_if_fail(AGS_IS_ASYNC_QUEUE(async_queue));
+  async_queue_interface = AGS_ASYNC_QUEUE_GET_INTERFACE(async_queue);
+  g_return_if_fail(async_queue_interface->schedule_task_list);
+  async_queue_interface->schedule_task_list(async_queue, task_list);
+}

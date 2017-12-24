@@ -45,6 +45,8 @@ void ags_task_thread_set_run(AgsAsyncQueue *async_queue, gboolean is_run);
 gboolean ags_task_thread_is_run(AgsAsyncQueue *async_queue);
 void ags_task_thread_increment_wait_ref(AgsAsyncQueue *async_queue);
 guint ags_task_thread_get_wait_ref(AgsAsyncQueue *async_queue);
+void ags_task_thread_schedule_task(AgsAsyncQueue *async_queue, GObject *task);
+void ags_task_thread_schedule_task_list(AgsAsyncQueue *async_queue, GList *task_list);
 
 void ags_task_thread_start(AgsThread *thread);
 void ags_task_thread_run(AgsThread *thread);
@@ -184,6 +186,9 @@ ags_task_thread_async_queue_interface_init(AgsAsyncQueueInterface *async_queue)
 
   async_queue->increment_wait_ref = ags_task_thread_increment_wait_ref;
   async_queue->get_wait_ref = ags_task_thread_get_wait_ref;
+
+  async_queue->schedule_task = ags_task_thread_schedule_task;
+  async_queue->schedule_task_list = ags_task_thread_schedule_task_list;
 }
 
 void
@@ -436,6 +441,20 @@ guint
 ags_task_thread_get_wait_ref(AgsAsyncQueue *async_queue)
 {
   return(g_atomic_int_get(&(AGS_TASK_THREAD(async_queue)->wait_ref)));
+}
+
+void
+ags_task_thread_schedule_task(AgsAsyncQueue *async_queue, GObject *task)
+{
+  ags_task_thread_append_task(AGS_TASK_THREAD(async_queue),
+			      task);
+}
+
+void
+ags_task_thread_schedule_task_list(AgsAsyncQueue *async_queue, GList *task_list)
+{
+  ags_task_thread_append_tasks(AGS_TASK_THREAD(async_queue),
+			       task_list);
 }
 
 void

@@ -50,6 +50,9 @@ struct _AgsAsyncQueueInterface
 
   void (*set_run)(AgsAsyncQueue *async_queue, gboolean is_run);
   gboolean (*is_run)(AgsAsyncQueue *async_queue);
+
+  void (*schedule_task)(AgsAsyncQueue *async_queue, GObject *task);
+  void (*schedule_task_list)(AgsAsyncQueue *async_queue, GObject *task);
 };
 
 GType ags_async_queue_get_type();
@@ -65,5 +68,8 @@ pthread_cond_t* ags_async_queue_get_run_cond(AgsAsyncQueue *async_queue);
 
 void ags_async_queue_set_run(AgsAsyncQueue *async_queue, gboolean is_run);
 gboolean ags_async_queue_is_run(AgsAsyncQueue *async_queue);
+
+void ags_async_queue_schedule_task(AgsAsyncQueue *async_queue, GObject *task);
+void ags_async_queue_schedule_task_list(AgsAsyncQueue *async_queue, GList *list);
 
 #endif /*__AGS_ASYNC_QUEUE_H__*/

@@ -2,6 +2,8 @@
 <!DOCTYPE book [
 <!ENTITY libagsthreadso "libags_thread.so.1">
 <!ENTITY libagsaudioso "libags_audio.so.1">
+<!ENTITY libagsso "libags.so.1">
+<!ENTITY chap3 "chapter 3">
 ]>
 
 <!-- Permission is granted to copy, distribute and/or modify this document -->
@@ -172,7 +174,7 @@
   </sect1>
 
   <sect1>
-    <title>Applications program start and termination</title>
+    <title>Program start and termination</title>
     <para>
       The application context provides signals to make your application ready to run. You
       basically implement AgsApplicationContext::prepare, AgsApplicationContext::setup and
@@ -185,4 +187,35 @@
     </para>
   </sect1>
 
+  <sect1>
+    <title>Abstract data connection</title>
+    <para>
+      AgsDataConnectionManager is a singleton you can retrieve its instance by calling
+      <code language="C">AgsConnectionManager* ags_connection_manager_get_instance()</code>.
+      It usually provides AGS_TYPE_CONNECTION subtypes, like AgsAudioConnection which does
+      provide about assigned soundcard and its channel mapping.
+    </para>
+
+    <para>
+      AgsConnection contains one single property :data-object. As you provide a message queue
+      consuming &libagsso;, you can retrieve modifications asynchronously. How the message
+      queue is polled is explained in &chap3;.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>Common interfaces</title>
+    <para>
+      Use AgsConnectable or AgsDynamicConnectable if you intend to listen to a particular
+      event. If you want to connect an event of an object known during instantiation time
+      use ::connect and ::disconnect. Assumed the object needs to be resolved, you can
+      ::connect-dynamic ::disconnect-dynamic, later.
+    </para>
+
+    <para>
+      AgsPlugin interface provides persistence to a well known abstract base type. Since it
+      has various implementations, this interface provides <code language="C">void ags_plugin_read(AgsFile*, xmlNode*, AgsPlugin*)</code>
+      and <code language="C">xmlNod* ags_plugin_write(AgsFile*, xmlNode*, AgsPlugin*)</code>
+    </para>
+  </sect1>
 </chapter>
