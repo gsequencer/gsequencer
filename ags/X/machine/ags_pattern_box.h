@@ -22,9 +22,12 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
-#include <ags/widget/ags_hled_array.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #define AGS_TYPE_PATTERN_BOX                (ags_pattern_box_get_type())
 #define AGS_PATTERN_BOX(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PATTERN_BOX, AgsPatternBox))

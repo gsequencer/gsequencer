@@ -47,7 +47,7 @@ EXTRA_DIST = config.rpath \
 	README \
 	ags_example.xml \
 	midi2xml.1 \
-	ags_functional_note_edit_test.xml \
+	ags_functional_notation_edit_test.xml \
 	mkinstalldirs \
 	m4/Makefile.am \
 	m4/Makefile.in \
@@ -134,7 +134,7 @@ nobase_include_HEADERS = $(libags_la_HEADERS_0) $(libags_thread_la_HEADERS_0) $(
 # nobase_include_HEADERS += $(libgsequencer_la_HEADERS_0)
 
 # doc
-docdir = $(datadir)/doc/gsequencer
+# docdir = $(datadir)/doc/gsequencer
 doc_DATA = README ags_example.xml
 
 # documentation
@@ -461,6 +461,8 @@ libags_thread_h_sources = \
 	ags/thread/ags_destroy_worker.h \
 	ags/thread/ags_generic_main_loop.h \
 	ags/thread/ags_history.h \
+	ags/thread/ags_message_delivery.h \
+	ags/thread/ags_message_queue.h \
 	ags/thread/ags_mutex_manager.h \
 	ags/thread/ags_poll_fd.h \
 	ags/thread/ags_polling_thread.h \
@@ -487,6 +489,8 @@ libags_thread_c_sources = \
 	ags/thread/ags_destroy_worker.c \
 	ags/thread/ags_generic_main_loop.c \
 	ags/thread/ags_history.c \
+	ags/thread/ags_message_delivery.c \
+	ags/thread/ags_message_queue.c \
 	ags/thread/ags_mutex_manager.c \
 	ags/thread/ags_poll_fd.c \
 	ags/thread/ags_polling_thread.c \
@@ -636,6 +640,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_channel.h \
 	ags/audio/ags_channel_iter.h \
 	ags/audio/ags_devout.h \
+	ags/audio/ags_devin.h \
 	ags/audio/ags_effect.h \
 	ags/audio/ags_fifoout.h \
 	ags/audio/ags_input.h \
@@ -690,6 +695,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_channel.c \
 	ags/audio/ags_channel_iter.c \
 	ags/audio/ags_devout.c \
+	ags/audio/ags_devin.c \
 	ags/audio/ags_input.c \
 	ags/audio/ags_fifoout.c \
 	ags/audio/ags_message.c \
@@ -885,6 +891,7 @@ libags_audio_jack_h_sources = \
 	ags/audio/jack/ags_jack_client.h \
 	ags/audio/jack/ags_jack_midiin.h \
 	ags/audio/jack/ags_jack_devout.h \
+	ags/audio/jack/ags_jack_devin.h \
 	ags/audio/jack/ags_jack_port.h \
 	ags/audio/jack/ags_jack_server.h
 
@@ -895,6 +902,7 @@ libags_audio_jack_c_sources = \
 	ags/audio/jack/ags_jack_client.c \
 	ags/audio/jack/ags_jack_midiin.c \
 	ags/audio/jack/ags_jack_devout.c \
+	ags/audio/jack/ags_jack_devin.c \
 	ags/audio/jack/ags_jack_port.c \
 	ags/audio/jack/ags_jack_server.c
 
@@ -905,6 +913,7 @@ libags_audio_pulse_h_sources = \
 	$(deprecated_libags_audio_pulse_h_sources) \
 	ags/audio/pulse/ags_pulse_client.h \
 	ags/audio/pulse/ags_pulse_devout.h \
+	ags/audio/pulse/ags_pulse_devin.h \
 	ags/audio/pulse/ags_pulse_port.h \
 	ags/audio/pulse/ags_pulse_server.h
 
@@ -914,6 +923,7 @@ libags_audio_pulse_c_sources = \
 	$(deprecated_libags_audio_pulse_c_sources) \
 	ags/audio/pulse/ags_pulse_client.c \
 	ags/audio/pulse/ags_pulse_devout.c \
+	ags/audio/pulse/ags_pulse_devin.c \
 	ags/audio/pulse/ags_pulse_port.c \
 	ags/audio/pulse/ags_pulse_server.c
 
@@ -1237,12 +1247,17 @@ libags_gui_h_sources = \
 	ags/widget/ags_indicator.h \
 	ags/widget/ags_led.h \
 	ags/widget/ags_led_array.h \
+	ags/widget/ags_notebook.h \
+	ags/widget/ags_piano_keys.h \
+	ags/widget/ags_piano.h \
+	ags/widget/ags_scrolled_piano.h \
 	ags/widget/ags_ruler.h \
 	ags/widget/ags_table.h \
 	ags/widget/ags_timebar.h \
 	ags/widget/ags_vindicator.h \
 	ags/widget/ags_vled_array.h \
 	ags/widget/ags_waveform.h \
+	ags/widget/ags_widget_marshal.h \
 	ags/widget/ags_container.h
 
 deprecated_libags_gui_c_sources =
@@ -1259,12 +1274,16 @@ libags_gui_c_sources = \
 	ags/widget/ags_indicator.c \
 	ags/widget/ags_led.c \
 	ags/widget/ags_led_array.c \
+	ags/widget/ags_notebook.c \
+	ags/widget/ags_piano.c \
+	ags/widget/ags_scrolled_piano.c \
 	ags/widget/ags_ruler.c \
 	ags/widget/ags_table.c \
 	ags/widget/ags_timebar.c \
 	ags/widget/ags_vindicator.c \
 	ags/widget/ags_vled_array.c \
 	ags/widget/ags_waveform.c \
+	ags/widget/ags_widget_marshal.c \
 	ags/widget/ags_container.c
 
 # libgsequencer all files
@@ -1285,8 +1304,6 @@ libgsequencer_h_sources = \
 	ags/X/ags_context_menu.h \
 	ags/X/ags_dssi_browser_callbacks.h \
 	ags/X/ags_dssi_browser.h \
-	ags/X/ags_editor_callbacks.h \
-	ags/X/ags_editor.h \
 	ags/X/ags_effect_bridge_callbacks.h \
 	ags/X/ags_effect_bridge.h \
 	ags/X/ags_effect_bulk_callbacks.h \
@@ -1334,6 +1351,8 @@ libgsequencer_h_sources = \
 	ags/X/ags_midi_preferences_callbacks.h \
 	ags/X/ags_navigation_callbacks.h \
 	ags/X/ags_navigation.h \
+	ags/X/ags_notation_editor_callbacks.h \
+	ags/X/ags_notation_editor.h \
 	ags/X/ags_output_collection_editor_callbacks.h \
 	ags/X/ags_output_collection_editor.h \
 	ags/X/ags_output_editor_callbacks.h \
@@ -1367,6 +1386,10 @@ libgsequencer_h_sources = \
 	ags/X/ags_soundcard_editor_callbacks.h \
 	ags/X/ags_soundcard_editor.h \
 	ags/X/ags_ui_provider.h \
+	ags/X/ags_wave_window_callbacks.h \
+	ags/X/ags_wave_window.h \
+	ags/X/ags_wave_editor_callbacks.h \
+	ags/X/ags_wave_editor.h \
 	ags/X/ags_window.h \
 	ags/X/ags_window_callbacks.h \
 	ags/X/ags_xorg_application_context.h
@@ -1388,8 +1411,6 @@ libgsequencer_c_sources = \
 	ags/X/ags_context_menu.c \
 	ags/X/ags_dssi_browser_callbacks.c \
 	ags/X/ags_dssi_browser.c \
-	ags/X/ags_editor.c \
-	ags/X/ags_editor_callbacks.c \
 	ags/X/ags_effect_bridge.c \
 	ags/X/ags_effect_bridge_callbacks.c \
 	ags/X/ags_effect_bulk.c \
@@ -1437,6 +1458,8 @@ libgsequencer_c_sources = \
 	ags/X/ags_midi_preferences_callbacks.c \
 	ags/X/ags_navigation.c \
 	ags/X/ags_navigation_callbacks.c \
+	ags/X/ags_notation_editor.c \
+	ags/X/ags_notation_editor_callbacks.c \
 	ags/X/ags_output_collection_editor_callbacks.c \
 	ags/X/ags_output_collection_editor.c \
 	ags/X/ags_output_editor_callbacks.c \
@@ -1468,6 +1491,10 @@ libgsequencer_c_sources = \
 	ags/X/ags_server_preferences.c \
 	ags/X/ags_server_preferences_callbacks.c \
 	ags/X/ags_ui_provider.c \
+	ags/X/ags_wave_window_callbacks.c \
+	ags/X/ags_wave_window.c \
+	ags/X/ags_wave_editor.c \
+	ags/X/ags_wave_editor_callbacks.c \
 	ags/X/ags_window.c \
 	ags/X/ags_soundcard_editor_callbacks.c \
 	ags/X/ags_soundcard_editor.c \
@@ -1519,7 +1546,6 @@ libgsequencer_task_h_sources = \
 	ags/X/task/ags_display_tact.h \
 	ags/X/task/ags_remove_sequencer_editor_jack.h \
 	ags/X/task/ags_remove_soundcard_editor_sink.h \
-	ags/X/task/ags_scroll_on_play.h \
 	ags/X/task/ags_simple_file_read.h \
 	ags/X/task/ags_simple_file_write.h \
 	ags/X/task/ags_toggle_led.h \
@@ -1539,7 +1565,6 @@ libgsequencer_task_c_sources = \
 	ags/X/task/ags_display_tact.c \
 	ags/X/task/ags_remove_sequencer_editor_jack.c \
 	ags/X/task/ags_remove_soundcard_editor_sink.c \
-	ags/X/task/ags_scroll_on_play.c \
 	ags/X/task/ags_simple_file_read.c \
 	ags/X/task/ags_simple_file_write.c \
 	ags/X/task/ags_toggle_led.c \
@@ -1596,6 +1621,8 @@ deprecated_libgsequencer_machine_h_sources =
 
 libgsequencer_machine_h_sources = \
 	$(deprecated_libgsequencer_machine_h_sources) \
+	ags/X/machine/ags_audiorec.h \
+	ags/X/machine/ags_audiorec_callbacks.h \
 	ags/X/machine/ags_cell_pattern_callbacks.h \
 	ags/X/machine/ags_cell_pattern.h \
 	ags/X/machine/ags_drum_callbacks.h \
@@ -1659,6 +1686,8 @@ deprecated_libgsequencer_machine_c_sources =
 
 libgsequencer_machine_c_sources = \
 	$(deprecated_libgsequencer_machine_c_sources) \
+	ags/X/machine/ags_audiorec.c \
+	ags/X/machine/ags_audiorec_callbacks.c \
 	ags/X/machine/ags_cell_pattern.c \
 	ags/X/machine/ags_cell_pattern_callbacks.c \
 	ags/X/machine/ags_drum.c \
@@ -1741,21 +1770,19 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_file_selection.h \
 	ags/X/editor/ags_inline_player_callbacks.h \
 	ags/X/editor/ags_inline_player.h \
+	ags/X/editor/ags_level_callbacks.h \
+	ags/X/editor/ags_level.h \
 	ags/X/editor/ags_machine_radio_button.h \
 	ags/X/editor/ags_machine_radio_button_callbacks.h \
 	ags/X/editor/ags_machine_selection.h \
 	ags/X/editor/ags_machine_selector_callbacks.h \
 	ags/X/editor/ags_machine_selector.h \
-	ags/X/editor/ags_meter_callbacks.h \
-	ags/X/editor/ags_meter.h \
 	ags/X/editor/ags_move_note_dialog_callbacks.h \
 	ags/X/editor/ags_move_note_dialog.h \
-	ags/X/editor/ags_notebook_callbacks.h \
-	ags/X/editor/ags_notebook.h \
-	ags/X/editor/ags_note_edit_callbacks.h \
-	ags/X/editor/ags_note_edit.h \
-	ags/X/editor/ags_pattern_edit_callbacks.h \
-	ags/X/editor/ags_pattern_edit.h \
+	ags/X/editor/ags_notation_edit_callbacks.h \
+	ags/X/editor/ags_notation_edit.h \
+	ags/X/editor/ags_notation_toolbar_callbacks.h \
+	ags/X/editor/ags_notation_toolbar.h \
 	ags/X/editor/ags_pattern_envelope_callbacks.h \
 	ags/X/editor/ags_pattern_envelope.h \
 	ags/X/editor/ags_position_automation_cursor_dialog.h \
@@ -1774,9 +1801,10 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_select_acceleration_dialog_callbacks.h \
 	ags/X/editor/ags_select_note_dialog.h \
 	ags/X/editor/ags_select_note_dialog_callbacks.h \
-	ags/X/editor/ags_toolbar_callbacks.h \
-	ags/X/editor/ags_toolbar.h \
-	ags/X/editor/ags_toolbar_mode_stock.h
+	ags/X/editor/ags_wave_edit_callbacks.h \
+	ags/X/editor/ags_wave_edit.h \
+	ags/X/editor/ags_wave_toolbar_callbacks.h \
+	ags/X/editor/ags_wave_toolbar.h
 
 deprecated_libgsequencer_editor_c_sources =
 
@@ -1800,21 +1828,19 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_file_selection.c \
 	ags/X/editor/ags_inline_player.c \
 	ags/X/editor/ags_inline_player_callbacks.c \
+	ags/X/editor/ags_level.c \
+	ags/X/editor/ags_level_callbacks.c \
 	ags/X/editor/ags_machine_radio_button.c \
 	ags/X/editor/ags_machine_radio_button_callbacks.c \
 	ags/X/editor/ags_machine_selection.c \
 	ags/X/editor/ags_machine_selector.c \
 	ags/X/editor/ags_machine_selector_callbacks.c \
-	ags/X/editor/ags_meter.c \
-	ags/X/editor/ags_meter_callbacks.c \
 	ags/X/editor/ags_move_note_dialog_callbacks.c \
 	ags/X/editor/ags_move_note_dialog.c \
-	ags/X/editor/ags_notebook.c \
-	ags/X/editor/ags_notebook_callbacks.c \
-	ags/X/editor/ags_note_edit.c \
-	ags/X/editor/ags_note_edit_callbacks.c \
-	ags/X/editor/ags_pattern_edit.c \
-	ags/X/editor/ags_pattern_edit_callbacks.c \
+	ags/X/editor/ags_notation_edit.c \
+	ags/X/editor/ags_notation_edit_callbacks.c \
+	ags/X/editor/ags_notation_toolbar.c \
+	ags/X/editor/ags_notation_toolbar_callbacks.c \
 	ags/X/editor/ags_pattern_envelope_callbacks.c \
 	ags/X/editor/ags_pattern_envelope.c \
 	ags/X/editor/ags_position_automation_cursor_dialog.c \
@@ -1833,8 +1859,10 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_select_note_dialog_callbacks.c \
 	ags/X/editor/ags_sf2_chooser.c \
 	ags/X/editor/ags_sf2_chooser_callbacks.c \
-	ags/X/editor/ags_toolbar.c \
-	ags/X/editor/ags_toolbar_callbacks.c
+	ags/X/editor/ags_wave_edit.c \
+	ags/X/editor/ags_wave_edit_callbacks.c \
+	ags/X/editor/ags_wave_toolbar.c \
+	ags/X/editor/ags_wave_toolbar_callbacks.c
 
 # libgsequencer all files
 gsequencerheaders = \
@@ -1895,8 +1923,8 @@ install-data-local:
 	install -c -p -m 644 $(top_srcdir)/ags/file/ags_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	install -c -p -m 644 $(top_srcdir)/ags.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
 	install -c -p -m 644 $(top_srcdir)/ags-simple.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
-	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/
-	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(datadir)/doc/gsequencer/changelog.gz
+	mkdir -p $(DESTDIR)/$(docdir)/
+	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(docdir)/changelog.gz
 
 fix-local-html: html
 	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/\/usr\/share\/doc\/libglib2.0-doc\/gobject/g' {} \;
@@ -1927,11 +1955,11 @@ fix-online-html: html
 	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-gui-html/\.\.\/libags-gui/g' {} \;
 
 install-html: fix-local-html 
-	mkdir -p $(DESTDIR)/$(datadir)/doc/gsequencer/{images,html}/
+	mkdir -p $(DESTDIR)/$(docdir)/{images,html}/
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/{images,html}/
-	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(datadir)/doc/gsequencer/images/
+	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(docdir)/images/
 	install -c -p -m 644 $(devdocimages) $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images/
-	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(datadir)/doc/gsequencer/html/
+	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(docdir)/html/
 	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
 	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-doc/api
@@ -1949,7 +1977,7 @@ install-html: fix-local-html
 
 uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
-	rm -rf $(DESTDIR)/$(datadir)/doc/gsequencer
+	rm -rf $(DESTDIR)/$(docdir)
 	rm -rf $(DESTDIR)/$(datadir)/xml/gsequencer
 	rm -rf $(DESTDIR)/$(datadir)/doc/libags-doc
 	rm -rf $(DESTDIR)/$(datadir)/doc/libags-audio-doc

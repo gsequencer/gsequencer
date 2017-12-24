@@ -155,9 +155,6 @@ void ags_core_audio_devout_set_audio(AgsSoundcard *soundcard,
 				     GList *audio);
 GList* ags_core_audio_devout_get_audio(AgsSoundcard *soundcard);
 
-void ags_core_audio_devout_adjust_delay_and_attack(AgsCoreAudioDevout *core_audio_devout);
-void ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout);
-
 /**
  * SECTION:ags_core_audio_devout
  * @short_description: Output to soundcard

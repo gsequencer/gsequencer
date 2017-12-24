@@ -237,8 +237,11 @@ ags_function_init(AgsFunction *function)
   function->symbol = NULL;
   function->symbol_count = 0;
 
-  function->n_cols = 0;
-  function->n_rows = 0;
+  function->solver_matrix = NULL;
+
+  function->pivot_table_count = 0;
+  function->column_count = NULL;
+  function->row_count = NULL;
   function->pivot_table = NULL;
 
   function->solver_level = 0;
@@ -339,7 +342,7 @@ void
 ags_function_finalize(GObject *gobject)
 {
   AgsFunction *function;
-  guint i, j;
+  guint i, j, k;
   
   function = AGS_FUNCTION(gobject);
 
@@ -368,9 +371,13 @@ ags_function_finalize(GObject *gobject)
   }
 
   if(function->pivot_table != NULL){
-    for(i = 0; i < function->n_rows; i++){
-      for(j = 0; j < function->n_cols; j++){
-	ags_complex_free(function->pivot_table[i][j]);
+    for(i = 0; i < function->pivot_table_count; i++){
+      for(j = 0; j < function->row_count[i]; j++){
+	for(k = 0; k < function->column_count[i]; k++){
+	  ags_complex_free(function->pivot_table[i][j][k]);
+	}
+
+	free(function->pivot_table[i][j]);
       }
 
       free(function->pivot_table[i]);
@@ -384,9 +391,33 @@ ags_function_finalize(GObject *gobject)
 }
 
 /**
+ * ags_function_collapse_parantheses:
+ * @function: the @AgsFunction
+ * @function_count: return location of count of possible functions
+ * 
+ * Collapse parantheses by respecting many possibilities.
+ * 
+ * Returns: the one-dimensional array of possible functions as strings
+ * 
+ * Since: 1.2.0
+ */
+gchar**
+ags_function_collapse_parantheses(AgsFunction *function,
+				  guint *function_count)
+{
+  gchar **functions;
+
+  functions = NULL;
+  
+  //TODO:JK: implement me
+
+  return(functions);
+}
+
+/**
  * ags_function_find_literals:
  * @function: The #AgsFunction
- * @n_symbols: return location of symbols count
+ * @symbol_count: return location of symbols count
  *
  * Find literal symbols i.e. variable names.
  *
@@ -396,7 +427,7 @@ ags_function_finalize(GObject *gobject)
  */
 gchar**
 ags_function_find_literals(AgsFunction *function,
-			   guint *n_symbols)
+			   guint *symbol_count)
 { 
   regmatch_t match_arr[1];
 
@@ -432,12 +463,30 @@ ags_function_find_literals(AgsFunction *function,
   
   while(str != NULL && *str != '\0'){
     if(regexec(&literal_regex, str, max_matches, match_arr, 0) == 0){
-      literals = (gchar **) malloc((n_literals + 1) * sizeof(gchar *));
+      if(literals == NULL){
+	literals = (gchar **) malloc((n_literals + 1) * sizeof(gchar *));
 
-      literals[n_literals] = g_strndup(str,
-				       match_arr[0].rm_eo - match_arr[0].rm_so);
-      n_literals++;
+	literals[n_literals] = g_strndup(str,
+					 match_arr[0].rm_eo - match_arr[0].rm_so);
+	n_literals++;
+      }else{
+	gchar *current_literal;
 
+	current_literal = g_strndup(str,
+				    match_arr[0].rm_eo - match_arr[0].rm_so);
+	
+	if(!g_strv_contains(literals,
+			    current_literal)){
+	  literals = (gchar **) realloc(literals,
+					(n_literals + 1) * sizeof(gchar *));
+
+	  literals[n_literals] = current_literal;
+	  n_literals++;
+	}else{
+	  g_free(current_literal);
+	}
+      }
+      
       if(str[match_arr[0].rm_eo - match_arr[0].rm_so] != '\0'){
 	str += (match_arr[0].rm_eo - match_arr[0].rm_so);
       }else{
@@ -449,8 +498,8 @@ ags_function_find_literals(AgsFunction *function,
   }
 
   /* return symbols and its count*/
-  if(n_symbols != NULL){
-    *n_symbols = n_literals;
+  if(symbol_count != NULL){
+    *symbol_count = n_literals;
   }
 
   return(literals);
@@ -616,20 +665,6 @@ ags_function_literal_solve(AgsFunction *function)
 
   if(max_exponent < available_exponent){
     max_exponent = available_exponent;
-  }
-  
-  /* allocate pivot table and function vector table */
-  function->n_rows = function->symbol_count;
-  function->n_cols = (function->symbol_count * max_exponent) + 1;
-
-  function->pivot_table = (AgsComplex ***) malloc(function->n_rows * sizeof(AgsComplex **));
-
-  for(i = 0; i < function->n_rows; i++){
-    function->pivot_table[i]  = (AgsComplex **) malloc(function->n_cols * sizeof(AgsComplex *));
-    
-    for(j = 0; j < function->n_cols; j++){
-      function->pivot_table[i][j] = ags_complex_alloc();
-    }
   }
 
   //TODO:JK: implement me
@@ -807,8 +842,8 @@ ags_function_pop_equation(AgsFunction *function,
 /**
  * ags_function_get_expanded:
  * @function: the #AgsFunction
- * @symbols: the symbols to compute
- * @n_symbols: the count of symbols
+ * @symbol: the symbols to compute
+ * @symbol_count: the count of symbols
  * 
  * Expands @symbols to normalized form.
  *
@@ -818,8 +853,8 @@ ags_function_pop_equation(AgsFunction *function,
  */
 gchar*
 ags_function_get_expanded(AgsFunction *function,
-			  gchar **symbols,
-			  guint count)
+			  gchar **symbol,
+			  guint symbol_count)
 {
   //TODO:JK: implement me
   

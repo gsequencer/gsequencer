@@ -20,11 +20,8 @@
 #include <ags/X/editor/ags_envelope_dialog.h>
 #include <ags/X/editor/ags_envelope_dialog_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/thread/ags_mutex_manager.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 
@@ -354,19 +351,19 @@ ags_envelope_dialog_disconnect(AgsConnectable *connectable)
   
   /* applicable */
   g_object_disconnect((GObject *) envelope_dialog->apply,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_envelope_dialog_apply_callback),
 		      (gpointer) envelope_dialog,
 		      NULL);
 
   g_object_disconnect((GObject *) envelope_dialog->ok,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_envelope_dialog_ok_callback),
 		      (gpointer) envelope_dialog,
 		      NULL);
 
   g_object_disconnect((GObject *) envelope_dialog->cancel,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_envelope_dialog_cancel_callback),
 		      (gpointer) envelope_dialog,
 		      NULL);

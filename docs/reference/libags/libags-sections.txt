@@ -246,26 +246,6 @@ ags_concurrent_tree_get_type
 </SECTION>
 
 <SECTION>
-<FILE>ags_cond_manager</FILE>
-<TITLE>AgsConditionManager</TITLE>
-ags_condition_manager_get_application_condition
-ags_condition_manager_insert
-ags_condition_manager_remove
-ags_condition_manager_lookup
-ags_condition_manager_get_instance
-ags_condition_manager_new
-<SUBSECTION Public>
-AGS_CONDITION_MANAGER
-AGS_CONDITION_MANAGER_CLASS
-AGS_CONDITION_MANAGER_GET_CLASS
-AGS_IS_CONDITION_MANAGER
-AGS_TYPE_CONDITION_MANAGER
-AgsConditionManager
-AgsConditionManagerClass
-ags_condition_manager_get_type
-</SECTION>
-
-<SECTION>
 <FILE>ags_condition_manager</FILE>
 <TITLE>AgsConditionManager</TITLE>
 ags_condition_manager_insert
@@ -699,6 +679,9 @@ AGS_SYMBOLIC_PI
 AGS_SYMBOLIC_INFINIT
 AGS_SYMBOLIC_COMPLEX_UNIT
 AgsFunctionFlags
+AgsSolverMatrix
+AgsSolverVector
+ags_function_collapse_parantheses
 ags_function_find_literals
 ags_function_literal_solve
 ags_function_push_equation
@@ -953,6 +936,54 @@ g_cclosure_user_marshal_OBJECT__OBJECT_OBJECT
 </SECTION>
 
 <SECTION>
+<FILE>ags_message_delivery</FILE>
+<TITLE>AgsMessageDelivery</TITLE>
+ags_message_delivery_add_queue
+ags_message_delivery_remove_queue
+ags_message_delivery_find_namespace
+ags_message_delivery_add_message
+ags_message_delivery_remove_message
+ags_message_delivery_find_sender
+ags_message_delivery_find_recipient
+ags_message_delivery_query_message
+ags_message_delivery_get_instance
+ags_message_delivery_new
+<SUBSECTION Public>
+AGS_IS_MESSAGE_DELIVERY
+AGS_MESSAGE_DELIVERY
+AGS_MESSAGE_DELIVERY_CLASS
+AGS_MESSAGE_DELIVERY_GET_CLASS
+AGS_TYPE_MESSAGE_DELIVERY
+AgsMessageDelivery
+AgsMessageDeliveryClass
+ags_message_delivery_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_message_queue</FILE>
+<TITLE>AgsMessageQueue</TITLE>
+AGS_MESSAGE_ENVELOPE
+AgsMessageEnvelope
+ags_message_envelope_alloc
+ags_message_envelope_free
+ags_message_queue_add_message
+ags_message_queue_remove_message
+ags_message_queue_find_sender
+ags_message_queue_find_recipient
+ags_message_queue_query_message
+ags_message_queue_new
+<SUBSECTION Public>
+AGS_IS_MESSAGE_QUEUE
+AGS_MESSAGE_QUEUE
+AGS_MESSAGE_QUEUE_CLASS
+AGS_MESSAGE_QUEUE_GET_CLASS
+AGS_TYPE_MESSAGE_QUEUE
+AgsMessageQueue
+AgsMessageQueueClass
+ags_message_queue_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_mutable</FILE>
 <TITLE>AgsMutable</TITLE>
 ags_mutable_set_muted
@@ -1008,12 +1039,12 @@ ags_packable_get_type
 <SECTION>
 <FILE>ags_parameter</FILE>
 ags_parameter_grow
+ags_parameter_find
 </SECTION>
 
 <SECTION>
 <FILE>ags_password_store</FILE>
 <TITLE>AgsPasswordStore</TITLE>
-AgsSecurityContextMode
 ags_password_store_set_login_name
 ags_password_store_get_login_name
 ags_password_store_set_password
@@ -1223,6 +1254,7 @@ ags_returnable_thread_get_type
 <SECTION>
 <FILE>ags_security_context</FILE>
 <TITLE>AgsSecurityContext</TITLE>
+AgsSecurityContextMode
 ags_security_context_add_server_context
 ags_security_context_remove_server_context
 ags_security_context_new

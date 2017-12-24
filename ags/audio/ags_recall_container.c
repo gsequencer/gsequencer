@@ -19,9 +19,6 @@
 
 #include <ags/audio/ags_recall_container.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_packable.h>
-
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_channel.h>

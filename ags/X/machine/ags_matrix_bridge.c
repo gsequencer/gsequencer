@@ -20,11 +20,9 @@
 #include <ags/X/machine/ags_matrix_bridge.h>
 #include <ags/X/machine/ags_matrix_bridge_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/object/ags_plugin.h>
-
-#include <ags/audio/ags_input.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/machine/ags_matrix_bulk_input.h>
 
@@ -41,7 +39,7 @@ void ags_matrix_bridge_finalize(GObject *gobject);
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
  * @title: AgsMatrixBridge
  * @section_id:
- * @include: ags/X/ags_matrix_bridge.h
+ * @include: ags/X/machine/ags_matrix_bridge.h
  *
  * #AgsMatrixBridge is a composite widget to visualize all #AgsChannel. It should be
  * packed by an #AgsMachine.

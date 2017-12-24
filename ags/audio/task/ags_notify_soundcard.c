@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,11 +18,6 @@
  */
 
 #include <ags/audio/task/ags_notify_soundcard.h>
-
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_task_thread.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
@@ -294,26 +289,32 @@ void
 ags_notify_soundcard_launch(AgsTask *task)
 {
   AgsNotifySoundcard *notify_soundcard;
+
+  AgsTaskThread *task_thread;
+  AgsThread *soundcard_thread;
   
   notify_soundcard = AGS_NOTIFY_SOUNDCARD(task);
 
-  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(notify_soundcard->soundcard_thread)->flags)))) == 0 ||
-     (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(notify_soundcard->soundcard_thread)->flags)))) != 0 ||
-     AGS_THREAD(notify_soundcard->soundcard_thread)->tic_delay != 0){
+  soundcard_thread = AGS_THREAD(notify_soundcard->soundcard_thread);
+  task_thread = AGS_TASK_THREAD(task->task_thread);
+  
+  if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(soundcard_thread->flags)))) == 0 ||
+     (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(soundcard_thread->flags)))) != 0 ||
+     soundcard_thread->tic_delay != 0){
     return;
   }
 
   /* release soundcard thread of async queue */
-  pthread_mutex_lock(AGS_TASK_THREAD(task->task_thread)->run_mutex);
+  pthread_mutex_lock(task_thread->run_mutex);
 
-  g_atomic_int_or(&(AGS_THREAD(notify_soundcard->soundcard_thread)->sync_flags),
+  g_atomic_int_or(&(soundcard_thread->sync_flags),
 		  AGS_THREAD_DONE_ASYNC_QUEUE);
 
-  if((AGS_THREAD_WAIT_ASYNC_QUEUE & (g_atomic_int_get(&(AGS_THREAD(notify_soundcard->soundcard_thread)->sync_flags)))) != 0){
-    pthread_cond_broadcast(AGS_TASK_THREAD(task->task_thread)->run_cond);
+  if((AGS_THREAD_WAIT_ASYNC_QUEUE & (g_atomic_int_get(&(soundcard_thread->sync_flags)))) != 0){
+    pthread_cond_broadcast(task_thread->run_cond);
   }
   
-  pthread_mutex_unlock(AGS_TASK_THREAD(task->task_thread)->run_mutex);
+  pthread_mutex_unlock(task_thread->run_mutex);
 
   /* wait to complete */
   pthread_mutex_lock(notify_soundcard->return_mutex);

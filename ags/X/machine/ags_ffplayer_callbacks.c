@@ -20,28 +20,11 @@
 #include <ags/X/machine/ags_ffplayer_callbacks.h>
 #include <ags/X/ags_machine_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_main_loop.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_playable.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/audio/task/ags_resize_audio.h>
-#include <ags/audio/task/ags_open_sf2_sample.h>
-#include <ags/audio/task/ags_add_audio_signal.h>
-
-#include <ags/audio/file/ags_audio_file.h>
-#include <ags/audio/file/ags_ipatch_sf2_reader.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
-#include <ags/X/ags_editor.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
 

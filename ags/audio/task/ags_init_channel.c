@@ -19,9 +19,6 @@
 
 #include <ags/audio/task/ags_init_channel.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_audio.h>
@@ -399,11 +396,15 @@ ags_init_channel_finalize(GObject *gobject)
 void
 ags_init_channel_launch(AgsTask *task)
 {
+  AgsAudio *audio;
+  AgsChannel *channel, *current;
   AgsPlaybackDomain *playback_domain;
-  AgsChannel *channel;
+  AgsPlayback *playback;
   AgsRecallID *recall_id;
   
   AgsInitChannel *init_channel;
+
+  AgsMutexManager *mutex_manager;
 
   GList *list, *list_start;
   GList *start_queue;
@@ -413,8 +414,47 @@ ags_init_channel_launch(AgsTask *task)
   gboolean arrange_recall_id, duplicate_templates, resolve_dependencies;
   gboolean init_playback, init_sequencer, init_notation;
   
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *current_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   init_channel = AGS_INIT_CHANNEL(task);
-  playback_domain = (AgsPlaybackDomain *) AGS_AUDIO(AGS_CHANNEL(init_channel->channel)->audio)->playback_domain;
+
+  channel = init_channel->channel;
+
+  /* get channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) channel);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(channel_mutex);
+
+  audio = channel->audio;
+
+  pthread_mutex_unlock(channel_mutex);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+  
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  playback_domain = (AgsPlaybackDomain *) audio->playback_domain;
+
+  pthread_mutex_unlock(audio_mutex);
   
   list = NULL;
   list_start = NULL;
@@ -429,11 +469,15 @@ ags_init_channel_launch(AgsTask *task)
   if(init_channel->play_pad){
     AgsChannel *next_pad;
 
-    next_pad = init_channel->channel->next_pad;
+    /* get some fields */
+    pthread_mutex_lock(channel_mutex);
+    
+    next_pad = channel->next_pad;
+
+    pthread_mutex_unlock(channel_mutex);
 
     for(stage = 0; stage < 3; stage++){
-
-      channel = init_channel->channel;
+      current = channel;
       list = list_start;
       
       if(stage == 0){
@@ -450,77 +494,114 @@ ags_init_channel_launch(AgsTask *task)
 	}
       }
       
-      while(channel != next_pad){
+      while(current != next_pad){	
+	/* get current mutex */
+	pthread_mutex_lock(application_mutex);
+
+	current_mutex = ags_mutex_manager_lookup(mutex_manager,
+						 (GObject *) current);
+  
+	pthread_mutex_unlock(application_mutex);
+
+	/* get some fields */
+	pthread_mutex_lock(current_mutex);
+
+	playback = current->playback;
+
+	pthread_mutex_unlock(current_mutex);
+
 	if(stage == 0){
-	  recall_id = NULL;
-	  
 	  if(init_channel->do_playback &&
-	     (AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(AGS_PLAYBACK(channel->playback)->flags)))) == 0){
+	     (AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(playback->flags)))) == 0){
+	    /* recursive play init */
 	    nth_domain = 0;
 	    init_playback = TRUE;
 	    
-	    g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
+	    g_atomic_int_or(&(playback->flags),
 			    AGS_PLAYBACK_PLAYBACK);
 
-	    recall_id = ags_channel_recursive_play_init(channel, stage,
+	    recall_id = ags_channel_recursive_play_init(current, stage,
 							arrange_recall_id, duplicate_templates,
 							TRUE, FALSE, FALSE,
 							resolve_dependencies,
 							NULL);
-	    AGS_PLAYBACK(channel->playback)->recall_id[0] = recall_id;
+
+	    list_start = g_list_append(list_start,
+				       recall_id);
+
+	    /* start queue */
+	    pthread_mutex_lock(current_mutex);
+	    
+	    playback->recall_id[AGS_PLAYBACK_SCOPE_PLAYBACK] = recall_id;
 
 	    start_queue = g_list_prepend(start_queue,
-					 AGS_PLAYBACK(channel->playback)->channel_thread[0]);
+					 playback->channel_thread[AGS_PLAYBACK_SCOPE_PLAYBACK]);
+
+	    pthread_mutex_unlock(current_mutex);
 	  }
 	  
 	  if(init_channel->do_sequencer &&
-	     (AGS_PLAYBACK_SEQUENCER & (g_atomic_int_get(&(AGS_PLAYBACK(channel->playback)->flags)))) == 0){
+	     (AGS_PLAYBACK_SEQUENCER & (g_atomic_int_get(&(playback->flags)))) == 0){
+	    /* recursive play init */
 	    nth_domain = 1;
 	    init_sequencer = TRUE;
 
-	    g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
+	    g_atomic_int_or(&(playback->flags),
 			      AGS_PLAYBACK_SEQUENCER);
 
-	    recall_id = ags_channel_recursive_play_init(channel, stage,
+	    recall_id = ags_channel_recursive_play_init(current, stage,
 							arrange_recall_id, duplicate_templates,
 							FALSE, TRUE, FALSE,
 							resolve_dependencies,
 							NULL);
-	    AGS_PLAYBACK(channel->playback)->recall_id[1] = recall_id;
+	    
+	    list_start = g_list_append(list_start,
+				       recall_id);
+	    
+	    /* start queue */
+	    pthread_mutex_lock(current_mutex);
+
+	    playback->recall_id[AGS_PLAYBACK_SCOPE_SEQUENCER] = recall_id;
 
 	    start_queue = g_list_prepend(start_queue,
-					 AGS_PLAYBACK(channel->playback)->channel_thread[1]);
+					 playback->channel_thread[AGS_PLAYBACK_SCOPE_SEQUENCER]);
+
+	    pthread_mutex_unlock(current_mutex);
 	  }
 	  
 	  if(init_channel->do_notation &&
-	     (AGS_PLAYBACK_NOTATION & (g_atomic_int_get(&(AGS_PLAYBACK(channel->playback)->flags)))) == 0){
+	     (AGS_PLAYBACK_NOTATION & (g_atomic_int_get(&(playback->flags)))) == 0){
 	    nth_domain = 2;
 	    init_notation = TRUE;
 
-	    g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
+	    g_atomic_int_or(&(playback->flags),
 			    AGS_PLAYBACK_NOTATION);
 
-	    recall_id = ags_channel_recursive_play_init(channel, stage,
+	    recall_id = ags_channel_recursive_play_init(current, stage,
 							arrange_recall_id, duplicate_templates,
 							FALSE, FALSE, TRUE,
 							resolve_dependencies,
 							NULL);
-	    AGS_PLAYBACK(channel->playback)->recall_id[2] = recall_id;
-
-	    start_queue = g_list_prepend(start_queue,
-					 AGS_PLAYBACK(channel->playback)->channel_thread[2]);
-	  }
-
-	  if(recall_id != NULL){
+	    
 	    list_start = g_list_append(list_start,
 				       recall_id);
+	    
+	    /* start queue */
+	    pthread_mutex_lock(current_mutex);
+
+	    AGS_PLAYBACK(current->playback)->recall_id[AGS_PLAYBACK_SCOPE_NOTATION] = recall_id;
+
+	    start_queue = g_list_prepend(start_queue,
+					 playback->channel_thread[AGS_PLAYBACK_SCOPE_NOTATION]);
+
+	    pthread_mutex_unlock(current_mutex);
 	  }
 	}else{
 	  if(init_channel->do_playback &&
 	     init_playback){
 	    nth_domain = 0;
 
-	    ags_channel_recursive_play_init(channel, stage,
+	    ags_channel_recursive_play_init(current, stage,
 					    arrange_recall_id, duplicate_templates,
 					    TRUE, FALSE, FALSE,
 					    resolve_dependencies,
@@ -531,7 +612,7 @@ ags_init_channel_launch(AgsTask *task)
 	     init_sequencer){
 	    nth_domain = 1;
 	    
-	    ags_channel_recursive_play_init(channel, stage,
+	    ags_channel_recursive_play_init(current, stage,
 					    arrange_recall_id, duplicate_templates,
 					    FALSE, TRUE, FALSE,
 					    resolve_dependencies,
@@ -542,25 +623,43 @@ ags_init_channel_launch(AgsTask *task)
 	     init_notation){
 	    nth_domain = 2;
 	    
-	    ags_channel_recursive_play_init(channel, stage,
+	    ags_channel_recursive_play_init(current, stage,
 					    arrange_recall_id, duplicate_templates,
 					    FALSE, FALSE, TRUE,
 					    resolve_dependencies,
-					    AGS_RECALL_ID(list->data));
-	
+					    AGS_RECALL_ID(list->data));	
 	  }
 
 	  list = list->next;
 	}
 
-	channel = channel->next;
+	current = current->next;
       }
     }
+    
+    g_list_free(list_start);
   }else{
     AgsRecallID *recall_id;
 
     for(stage = 0; stage < 3; stage++){
-      channel = init_channel->channel;
+      current = channel;
+
+      /* get current mutex */
+      pthread_mutex_lock(application_mutex);
+
+      current_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) current);
+  
+      pthread_mutex_unlock(application_mutex);
+
+      /* get some fields */
+      pthread_mutex_lock(current_mutex);
+
+      playback = current->playback;
+
+      pthread_mutex_unlock(current_mutex);
+
+      /* set flags */
       list = list_start;
       
       if(stage == 0){
@@ -578,84 +677,91 @@ ags_init_channel_launch(AgsTask *task)
       }
       
       if(stage == 0){
+	recall_id = NULL;
+	
 	if(init_channel->do_playback &&
-	   (AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(AGS_PLAYBACK(channel->playback)->flags)))) == 0 &&
-	   AGS_PLAYBACK(channel->playback)->recall_id[0] == NULL){
+	   (AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(playback->flags)))) == 0 &&
+	   playback->recall_id[0] == NULL){
+	  /* recursive play init */
 	  nth_domain = 0;
 	  init_playback = TRUE;
 	  
-	  g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
+	  g_atomic_int_or(&(playback->flags),
 			  AGS_PLAYBACK_PLAYBACK);
 	  
-	  recall_id = ags_channel_recursive_play_init(channel, stage,
+	  recall_id = ags_channel_recursive_play_init(current, stage,
 						      arrange_recall_id, duplicate_templates,
 						      TRUE, FALSE, FALSE,
 						      resolve_dependencies,
 						      NULL);
-	  AGS_PLAYBACK(channel->playback)->recall_id[0] = recall_id;
+	  list_start = g_list_append(list_start,
+				     recall_id);
 
-	  if(recall_id != NULL){
-	    list_start = g_list_append(list_start,
-				       recall_id);
-	  }
+	  /* start queue */
+	  pthread_mutex_lock(current_mutex);
+	  
+	  playback->recall_id[AGS_PLAYBACK_SCOPE_PLAYBACK] = recall_id;
 
 	  start_queue = g_list_prepend(start_queue,
-				       AGS_PLAYBACK(channel->playback)->channel_thread[0]);
+				       playback->channel_thread[AGS_PLAYBACK_SCOPE_PLAYBACK]);
+
+	  pthread_mutex_unlock(current_mutex);
 	}
 	  
 	if(init_channel->do_sequencer &&
-	   (AGS_PLAYBACK_SEQUENCER & (g_atomic_int_get(&(AGS_PLAYBACK(channel->playback)->flags)))) == 0 &&
-	   AGS_PLAYBACK(channel->playback)->recall_id[1] == NULL){
+	   (AGS_PLAYBACK_SEQUENCER & (g_atomic_int_get(&(playback->flags)))) == 0 &&
+	   playback->recall_id[1] == NULL){
 	  nth_domain = 1;
 	  init_sequencer = TRUE;
 	    
-	  g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
+	  g_atomic_int_or(&(playback->flags),
 			  AGS_PLAYBACK_SEQUENCER);
 
-	  recall_id = ags_channel_recursive_play_init(channel, stage,
+	  recall_id = ags_channel_recursive_play_init(current, stage,
 						      arrange_recall_id, duplicate_templates,
 						      FALSE, TRUE, FALSE,
 						      resolve_dependencies,
 						      NULL);
-	  AGS_PLAYBACK(channel->playback)->recall_id[1] = recall_id;
+	  list_start = g_list_append(list_start,
+				     recall_id);
 
-	  if(recall_id != NULL){
-	    list_start = g_list_append(list_start,
-				       recall_id);
-	  }
+	  playback->recall_id[AGS_PLAYBACK_SCOPE_SEQUENCER] = recall_id;
 
 	  start_queue = g_list_prepend(start_queue,
-				       AGS_PLAYBACK(channel->playback)->channel_thread[1]);
+				       playback->channel_thread[AGS_PLAYBACK_SCOPE_SEQUENCER]);
 	}
 	  
 	if(init_channel->do_notation &&
-	   (AGS_PLAYBACK_NOTATION & (g_atomic_int_get(&(AGS_PLAYBACK(channel->playback)->flags)))) == 0 &&
-	   AGS_PLAYBACK(channel->playback)->recall_id[0] == NULL){
+	   (AGS_PLAYBACK_NOTATION & (g_atomic_int_get(&(playback->flags)))) == 0 &&
+	   AGS_PLAYBACK(current->playback)->recall_id[0] == NULL){
 	  nth_domain = 2;
 	  init_notation = TRUE;
 	  
-	  g_atomic_int_or(&(AGS_PLAYBACK(channel->playback)->flags),
+	  g_atomic_int_or(&(playback->flags),
 			  AGS_PLAYBACK_NOTATION);
 
-	  recall_id = ags_channel_recursive_play_init(channel, stage,
+	  recall_id = ags_channel_recursive_play_init(current, stage,
 						      arrange_recall_id, duplicate_templates,
 						      FALSE, FALSE, TRUE,
 						      resolve_dependencies,
 						      NULL);
-	  AGS_PLAYBACK(channel->playback)->recall_id[2] = recall_id;
+	  list_start = g_list_append(list_start,
+				     recall_id);
 
-	  if(recall_id != NULL){
-	    list_start = g_list_append(list_start,
-				       recall_id);
-	  }
+	  /* start queue */
+	  pthread_mutex_lock(current_mutex);
+	  
+	  playback->recall_id[AGS_PLAYBACK_SCOPE_NOTATION] = recall_id;
 
 	  start_queue = g_list_prepend(start_queue,
-				       AGS_PLAYBACK(channel->playback)->channel_thread[2]);
+				       playback->channel_thread[AGS_PLAYBACK_SCOPE_NOTATION]);
+
+	  pthread_mutex_unlock(current_mutex);
 	}
       }else{
 	if(init_channel->do_playback &&
 	   init_playback){
-	  ags_channel_recursive_play_init(channel, stage,
+	  ags_channel_recursive_play_init(current, stage,
 					  arrange_recall_id, duplicate_templates,
 					  TRUE, FALSE, FALSE,
 					  resolve_dependencies,
@@ -666,7 +772,7 @@ ags_init_channel_launch(AgsTask *task)
 
 	if(init_channel->do_sequencer &&
 	   init_sequencer){
-	  ags_channel_recursive_play_init(channel, stage,
+	  ags_channel_recursive_play_init(current, stage,
 					  arrange_recall_id, duplicate_templates,
 					  FALSE, TRUE, FALSE,
 					  resolve_dependencies,
@@ -677,7 +783,7 @@ ags_init_channel_launch(AgsTask *task)
 
 	if(init_channel->do_notation &&
 	   init_notation){
-	  ags_channel_recursive_play_init(channel, stage,
+	  ags_channel_recursive_play_init(current, stage,
 					  arrange_recall_id, duplicate_templates,
 					  FALSE, FALSE, TRUE,
 					  resolve_dependencies,
@@ -687,6 +793,8 @@ ags_init_channel_launch(AgsTask *task)
 	}
       }
     }
+
+    g_list_free(list_start);
   }
 
   /*  */

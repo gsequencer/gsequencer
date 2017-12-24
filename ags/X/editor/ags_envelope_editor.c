@@ -20,14 +20,8 @@
 #include <ags/X/editor/ags_envelope_editor.h>
 #include <ags/X/editor/ags_envelope_editor_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_preset.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -557,78 +551,78 @@ ags_envelope_editor_disconnect(AgsConnectable *connectable)
 
   /* preset */
   g_object_disconnect((GObject *) envelope_editor->preset,
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_envelope_editor_preset_callback),
 		      (gpointer) envelope_editor,
 		      NULL);
 
   g_object_disconnect((GObject *) envelope_editor->add,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_envelope_editor_preset_add_callback),
 		      (gpointer) envelope_editor,
 		      NULL);
 
   g_object_disconnect((GObject *) envelope_editor->remove,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_envelope_editor_preset_remove_callback),
 		      (gpointer) envelope_editor,
 		      NULL);
 
   /* attack x,y */
   g_object_disconnect((GObject *) envelope_editor->attack_x,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_envelope_editor_attack_x_callback),
 		      (gpointer) envelope_editor,
 		      NULL);
 
   g_object_disconnect((GObject *) envelope_editor->attack_y,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_envelope_editor_attack_y_callback),
 		      (gpointer) envelope_editor,
 		      NULL);
 
   /* decay x,y */
   g_object_disconnect((GObject *) envelope_editor->decay_x,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_envelope_editor_decay_x_callback),
 		      (gpointer) envelope_editor,
 		      NULL);
 
   g_object_disconnect((GObject *) envelope_editor->decay_y,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_envelope_editor_decay_y_callback),
 		      (gpointer) envelope_editor,
 		      NULL);
 
   /* sustain x,y */
   g_object_disconnect((GObject *) envelope_editor->sustain_x,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_envelope_editor_sustain_x_callback),
 		      (gpointer) envelope_editor,
 		      NULL);
 
   g_object_disconnect((GObject *) envelope_editor->sustain_y,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_envelope_editor_sustain_y_callback),
 		      (gpointer) envelope_editor,
 		      NULL);
 
   /* release x,y */
   g_object_disconnect((GObject *) envelope_editor->release_x,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_envelope_editor_release_x_callback),
 		      (gpointer) envelope_editor,
 		      NULL);
 
   g_object_disconnect((GObject *) envelope_editor->release_y,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_envelope_editor_release_y_callback),
 		      (gpointer) envelope_editor,
 		      NULL);
 
   /* ratio */
   g_object_disconnect((GObject *) envelope_editor->ratio,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_envelope_editor_ratio_callback),
 		      (gpointer) envelope_editor,
 		      NULL);

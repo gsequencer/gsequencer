@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
-  * Copyright (C) 2005-2015 Joël Krähemann
+  * Copyright (C) 2005-2017 Joël Krähemann
   *
   * This file is part of GSequencer.
   *
@@ -18,8 +18,6 @@
   */
 
 #include <ags/audio/task/ags_remove_note.h>
-
-#include <ags/object/ags_connectable.h>
 
 #include <ags/i18n.h>
 
@@ -56,6 +54,7 @@ static AgsConnectableInterface *ags_remove_note_parent_connectable_interface;
 
 enum{
   PROP_0,
+  PROP_AUDIO,
   PROP_NOTATION,
   PROP_X,
   PROP_Y,
@@ -117,6 +116,22 @@ ags_remove_note_class_init(AgsRemoveNoteClass *remove_note)
   gobject->finalize = ags_remove_note_finalize;
 
   /* properties */
+  /**
+   * AgsRemoveNote:audio:
+   *
+   * The assigned #AgsAudio
+   * 
+   * Since: 1.2.2
+   */
+  param_spec = g_param_spec_object("audio",
+				   i18n_pspec("audio of add note"),
+				   i18n_pspec("The audio of add note task"),
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
+  
   /**
    * AgsRemoveNote:notation:
    *
@@ -187,6 +202,7 @@ ags_remove_note_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_remove_note_init(AgsRemoveNote *remove_note)
 {
+  remove_note->audio = NULL;
   remove_note->notation = NULL;
   remove_note->x = 0;
   remove_note->y = 0;
@@ -203,6 +219,27 @@ ags_remove_note_set_property(GObject *gobject,
   remove_note = AGS_REMOVE_NOTE(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      AgsAudio *audio;
+
+      audio = (AgsAudio *) g_value_get_object(value);
+
+      if(remove_note->audio == (GObject *) audio){
+	return;
+      }
+
+      if(remove_note->audio != NULL){
+	g_object_unref(remove_note->audio);
+      }
+
+      if(audio != NULL){
+	g_object_ref(audio);
+      }
+
+      remove_note->audio = (GObject *) audio;
+    }
+    break;
   case PROP_NOTATION:
     {
       AgsNotation *notation;
@@ -251,6 +288,11 @@ ags_remove_note_get_property(GObject *gobject,
   remove_note = AGS_REMOVE_NOTE(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      g_value_set_object(value, remove_note->audio);
+    }
+    break;
   case PROP_NOTATION:
     {
       g_value_set_object(value, remove_note->notation);
@@ -295,6 +337,12 @@ ags_remove_note_dispose(GObject *gobject)
 
   remove_note = AGS_REMOVE_NOTE(gobject);
 
+  if(remove_note->audio != NULL){
+    g_object_unref(remove_note->audio);
+
+    remove_note->audio = NULL;
+  }
+
   if(remove_note->notation != NULL){
     g_object_unref(remove_note->notation);
 
@@ -312,6 +360,10 @@ ags_remove_note_finalize(GObject *gobject)
 
   remove_note = AGS_REMOVE_NOTE(gobject);
 
+  if(remove_note->audio != NULL){
+    g_object_unref(remove_note->audio);
+  }
+
   if(remove_note->notation != NULL){
     g_object_unref(remove_note->notation);
   }
@@ -325,11 +377,32 @@ ags_remove_note_launch(AgsTask *task)
 {
   AgsRemoveNote *remove_note;
 
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   remove_note = AGS_REMOVE_NOTE(task);
 
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) remove_note->audio);
+
+  pthread_mutex_unlock(application_mutex);
+
   /* remove note */
+  pthread_mutex_lock(audio_mutex);
+  
   ags_notation_remove_note_at_position(remove_note->notation,
 				       remove_note->x, remove_note->y);
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
@@ -338,6 +411,7 @@ ags_remove_note_launch(AgsTask *task)
  * @x: the x coordinate of #AgsNote
  * @y: the y coordinate of #AgsNote
  *
+ * WARNING you should provide the #AgsRemoveNote:audio property.
  * Creates an #AgsRemoveNote.
  *
  * Returns: an new #AgsRemoveNote.

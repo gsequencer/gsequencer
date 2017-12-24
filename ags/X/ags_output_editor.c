@@ -20,18 +20,8 @@
 #include <ags/X/ags_output_editor.h>
 #include <ags/X/ags_output_editor_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_audio_connection.h>
-#include <ags/audio/ags_input.h>
-
-#include <ags/audio/task/ags_reset_audio_connection.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -188,7 +178,7 @@ ags_output_editor_disconnect(AgsConnectable *connectable)
   output_editor->flags &= (~AGS_OUTPUT_EDITOR_CONNECTED);
 
   g_object_disconnect(G_OBJECT(output_editor->soundcard),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_output_editor_soundcard_callback),
 		      output_editor,
 		      NULL);

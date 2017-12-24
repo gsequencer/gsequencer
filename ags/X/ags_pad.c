@@ -20,34 +20,8 @@
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_pad_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_plugin.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_completion.h>
-
-#include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_playback.h>
-#include <ags/audio/ags_pattern.h>
-#include <ags/audio/ags_recall.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-#include <ags/audio/thread/ags_soundcard_thread.h>
-
-#include <ags/audio/task/ags_start_soundcard.h>
-#include <ags/audio/task/ags_init_channel.h>
-#include <ags/audio/task/ags_append_channel.h>
-#include <ags/audio/task/ags_append_recall.h>
-#include <ags/audio/task/ags_add_audio_signal.h>
-#include <ags/audio/task/ags_open_single_file.h>
-#include <ags/audio/task/ags_cancel_channel.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -910,27 +884,12 @@ ags_pad_play(AgsPad *pad)
     /* create start task */
     if(tasks != NULL){
       AgsGuiThread *gui_thread;
-      AgsTaskCompletion *task_completion;
       
       gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
 							 AGS_TYPE_GUI_THREAD);
 
       start_soundcard = ags_start_soundcard_new(application_context);
       tasks = g_list_prepend(tasks, start_soundcard);
-
-      task_completion = ags_task_completion_new((GObject *) start_soundcard,
-						NULL);
-      g_signal_connect_after(G_OBJECT(task_completion), "complete",
-			     G_CALLBACK(ags_pad_start_complete_callback), pad);
-      ags_connectable_connect(AGS_CONNECTABLE(task_completion));
-      
-      pthread_mutex_lock(gui_thread->task_completion_mutex);
-
-      g_atomic_pointer_set(&(gui_thread->task_completion),
-			   g_list_prepend(g_atomic_pointer_get(&(gui_thread->task_completion)),
-					  task_completion));
-
-      pthread_mutex_unlock(gui_thread->task_completion_mutex);
 
       /* append AgsStartSoundcard */
       tasks = g_list_reverse(tasks);

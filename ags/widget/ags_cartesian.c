@@ -33,7 +33,7 @@ void ags_cartesian_get_property(GObject *gobject,
 				GValue *value,
 				GParamSpec *param_spec);
 void ags_cartesian_finalize(GObject *gobject);
-void ags_cartesian_show();
+void ags_cartesian_show(GtkWidget *widget);
 
 void ags_cartesian_map(GtkWidget *widget);
 void ags_cartesian_realize(GtkWidget *widget);
@@ -122,7 +122,7 @@ ags_cartesian_get_type(void)
     };
 
     ags_type_cartesian = g_type_register_static(GTK_TYPE_WIDGET,
-						"AgsCartesian\0", &ags_cartesian_info,
+						"AgsCartesian", &ags_cartesian_info,
 						0);
   }
 
@@ -154,9 +154,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("x-margin\0",
-				   "x margin\0",
-				   "The horizontal x margin\0",
+  param_spec = g_param_spec_double("x-margin",
+				   "x margin",
+				   "The horizontal x margin",
 				   0.0,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_X_MARGIN,
@@ -172,9 +172,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("y-margin\0",
-				   "y margin\0",
-				   "The vertical y margin\0",
+  param_spec = g_param_spec_double("y-margin",
+				   "y margin",
+				   "The vertical y margin",
 				   0.0,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_Y_MARGIN,
@@ -190,9 +190,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("center\0",
-				   "center of lines\0",
-				   "The center of lines\0",
+  param_spec = g_param_spec_double("center",
+				   "center of lines",
+				   "The center of lines",
 				   0.0,
 				   G_MAXDOUBLE,
 				   0.5,
@@ -208,9 +208,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("line-width\0",
-				   "line width\0",
-				   "The line width\0",
+  param_spec = g_param_spec_double("line-width",
+				   "line width",
+				   "The line width",
 				   0.0,
 				   G_MAXDOUBLE,
 				   1.0,
@@ -226,9 +226,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("point-radius\0",
-				   "point radius\0",
-				   "The points radius\0",
+  param_spec = g_param_spec_double("point-radius",
+				   "point radius",
+				   "The points radius",
 				   0.0,
 				   G_MAXDOUBLE,
 				   0.0,
@@ -244,9 +244,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("font-size\0",
-				   "font size\0",
-				   "The font's size\0",
+  param_spec = g_param_spec_double("font-size",
+				   "font size",
+				   "The font's size",
 				   0.0,
 				   G_MAXDOUBLE,
 				   12.0,
@@ -262,9 +262,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("x-step-width\0",
-				   "x step width\0",
-				   "The x step width\0",
+  param_spec = g_param_spec_double("x-step-width",
+				   "x step width",
+				   "The x step width",
 				   0.0,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_X_STEP_WIDTH,
@@ -280,9 +280,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("y-step-height\0",
-				   "y step height\0",
-				   "The y step height\0",
+  param_spec = g_param_spec_double("y-step-height",
+				   "y step height",
+				   "The y step height",
 				   0.0,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_Y_STEP_HEIGHT,
@@ -298,9 +298,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("x-scale-step-width\0",
-				   "x scale step width\0",
-				   "The x step width\0",
+  param_spec = g_param_spec_double("x-scale-step-width",
+				   "x scale step width",
+				   "The x step width",
 				   0.0,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_X_SCALE_STEP_WIDTH,
@@ -316,9 +316,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("y-scale-step-height\0",
-				   "y scale step height\0",
-				   "The y scale step height\0",
+  param_spec = g_param_spec_double("y-scale-step-height",
+				   "y scale step height",
+				   "The y scale step height",
 				   0.0,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_Y_SCALE_STEP_HEIGHT,
@@ -334,9 +334,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("x-step\0",
-				   "x step\0",
-				   "The x step\0",
+  param_spec = g_param_spec_double("x-step",
+				   "x step",
+				   "The x step",
 				   0.0,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_X_STEP,
@@ -352,9 +352,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("y-step\0",
-				   "y step\0",
-				   "The y step\0",
+  param_spec = g_param_spec_double("y-step",
+				   "y step",
+				   "The y step",
 				   0.0,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_Y_STEP,
@@ -370,9 +370,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("x-start\0",
-				   "x start\0",
-				   "The x start\0",
+  param_spec = g_param_spec_double("x-start",
+				   "x start",
+				   "The x start",
 				   -1.0 * G_MAXDOUBLE,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_X_START,
@@ -388,9 +388,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("x-end\0",
-				   "x end\0",
-				   "The x end\0",
+  param_spec = g_param_spec_double("x-end",
+				   "x end",
+				   "The x end",
 				   -1.0 * G_MAXDOUBLE,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_X_END,
@@ -406,9 +406,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("y-start\0",
-				   "y start\0",
-				   "The y start\0",
+  param_spec = g_param_spec_double("y-start",
+				   "y start",
+				   "The y start",
 				   -1.0 * G_MAXDOUBLE,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_Y_START,
@@ -424,9 +424,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("y-end\0",
-				   "y end\0",
-				   "The y end\0",
+  param_spec = g_param_spec_double("y-end",
+				   "y end",
+				   "The y end",
 				   -1.0 * G_MAXDOUBLE,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_Y_END,
@@ -442,9 +442,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("x-unit-x0\0",
-				   "x unit x0\0",
-				   "The x unit's x0 position\0",
+  param_spec = g_param_spec_double("x-unit-x0",
+				   "x unit x0",
+				   "The x unit's x0 position",
 				   0.0,
 				   G_MAXDOUBLE,
 				   0.0,
@@ -460,9 +460,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("x-unit-y0\0",
-				   "x unit y0\0",
-				   "The x unit's y0 position\0",
+  param_spec = g_param_spec_double("x-unit-y0",
+				   "x unit y0",
+				   "The x unit's y0 position",
 				   0.0,
 				   G_MAXDOUBLE,
 				   0.0,
@@ -478,9 +478,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_string("x-unit\0",
-				   "x unit\0",
-				   "The x unit label\0",
+  param_spec = g_param_spec_string("x-unit",
+				   "x unit",
+				   "The x unit label",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -494,9 +494,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("y-unit-x0\0",
-				   "y unit x0\0",
-				   "The y unit's x0 position\0",
+  param_spec = g_param_spec_double("y-unit-x0",
+				   "y unit x0",
+				   "The y unit's x0 position",
 				   0.0,
 				   G_MAXDOUBLE,
 				   0.0,
@@ -512,9 +512,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("y-unit-y0\0",
-				   "y unit y0\0",
-				   "The y unit's y0 position\0",
+  param_spec = g_param_spec_double("y-unit-y0",
+				   "y unit y0",
+				   "The y unit's y0 position",
 				   0.0,
 				   G_MAXDOUBLE,
 				   0.0,
@@ -530,9 +530,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_string("y-unit\0",
-				   "y unit\0",
-				   "The y unit label\0",
+  param_spec = g_param_spec_string("y-unit",
+				   "y unit",
+				   "The y unit label",
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -546,9 +546,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("x-label-start\0",
-				   "x label start\0",
-				   "The x label start position\0",
+  param_spec = g_param_spec_double("x-label-start",
+				   "x label start",
+				   "The x label start position",
 				   0.0,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_X_LABEL_START,
@@ -564,9 +564,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("x-label-step-width\0",
-				   "x label step width\0",
-				   "The x label step width\0",
+  param_spec = g_param_spec_double("x-label-step-width",
+				   "x label step width",
+				   "The x label step width",
 				   0.0,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_X_LABEL_STEP_WIDTH,
@@ -582,9 +582,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_pointer("x-label\0",
-				    "x label\0",
-				    "The x labels as string array\0",
+  param_spec = g_param_spec_pointer("x-label",
+				    "x label",
+				    "The x labels as string array",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_X_LABEL,
@@ -597,9 +597,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("y-label-start\0",
-				   "y label start\0",
-				   "The y label start position\0",
+  param_spec = g_param_spec_double("y-label-start",
+				   "y label start",
+				   "The y label start position",
 				   0.0,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_Y_LABEL_START,
@@ -615,9 +615,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_double("y-label-step-height\0",
-				   "y label step height\0",
-				   "The y label step height\0",
+  param_spec = g_param_spec_double("y-label-step-height",
+				   "y label step height",
+				   "The y label step height",
 				   0.0,
 				   G_MAXDOUBLE,
 				   AGS_CARTESIAN_DEFAULT_Y_LABEL_STEP_HEIGHT,
@@ -633,9 +633,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_pointer("y-label\0",
-				    "y label\0",
-				    "The y labels as string array\0",
+  param_spec = g_param_spec_pointer("y-label",
+				    "y label",
+				    "The y labels as string array",
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_Y_LABEL,
@@ -658,7 +658,7 @@ ags_cartesian_init(AgsCartesian *cartesian)
   guint i, i_stop;
   
   g_object_set(G_OBJECT(cartesian),
-	       "app-paintable\0", TRUE,
+	       "app-paintable", TRUE,
 	       NULL);
 
   /* flags */
@@ -721,8 +721,8 @@ ags_cartesian_init(AgsCartesian *cartesian)
   cartesian->y_end = AGS_CARTESIAN_DEFAULT_Y_END;
 
   /* unit */
-  cartesian->x_unit = "x\0";
-  cartesian->y_unit = "y\0";
+  cartesian->x_unit = "x";
+  cartesian->y_unit = "y";
 
   /* label */
   cartesian->x_label = NULL;
@@ -833,10 +833,10 @@ void
 ags_cartesian_realize(GtkWidget *widget)
 {
   AgsCartesian *cartesian;
+
   GdkWindowAttr attributes;
+
   gint attributes_mask;
-  gint buttons_width;
-  gint border_left, border_top;
 
   g_return_if_fail(widget != NULL);
   g_return_if_fail(AGS_IS_CARTESIAN(widget));
@@ -1370,7 +1370,7 @@ ags_cartesian_draw(AgsCartesian *cartesian)
 	}
 	
 #ifdef AGS_DEBUG
-	g_message("%f %f\0", plot->point[i][0], plot->point[i][1]);
+	g_message("%f %f", plot->point[i][0], plot->point[i][1]);
 #endif
 	
 	cairo_arc(cr,
@@ -1536,7 +1536,7 @@ ags_cartesian_draw(AgsCartesian *cartesian)
   }
 
   /* x and y label */
-  cairo_select_font_face(cr, "Georgia\0",
+  cairo_select_font_face(cr, "Georgia",
 			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
   
   cairo_set_font_size(cr, (gdouble) cartesian->font_size);
@@ -1799,13 +1799,13 @@ ags_cartesian_linear_x_label_func(gdouble value,
   
   if(data == NULL ||
      !AGS_IS_CARTESIAN(data)){
-    str = g_strdup_printf("%f\0",
+    str = g_strdup_printf("%f",
 			  value);
     
     return(str);
   }
 
-  format = g_strdup_printf("%%.%df\0",
+  format = g_strdup_printf("%%.%df",
 			   (guint) ceil(AGS_CARTESIAN(data)->x_label_precision));
 
   str = g_strdup_printf(format,
@@ -1824,13 +1824,13 @@ ags_cartesian_linear_y_label_func(gdouble value,
   
   if(data == NULL ||
      !AGS_IS_CARTESIAN(data)){
-    str = g_strdup_printf("%f\0",
+    str = g_strdup_printf("%f",
 			  value);
     
     return(str);
   }
 
-  format = g_strdup_printf("%%.%df\0",
+  format = g_strdup_printf("%%.%df",
 			   (guint) ceil(AGS_CARTESIAN(data)->y_label_precision));
 
   str = g_strdup_printf(format,

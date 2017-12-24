@@ -20,21 +20,11 @@
 #include <ags/X/editor/ags_move_note_dialog.h>
 #include <ags/X/editor/ags_move_note_dialog_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/thread/ags_concurrency_provider.h>
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_notation.h>
-#include <ags/audio/ags_note.h>
-
-#include <ags/audio/task/ags_move_note.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
-#include <ags/X/ags_editor.h>
+#include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_machine.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
@@ -415,19 +405,19 @@ ags_move_note_dialog_disconnect(AgsConnectable *connectable)
   move_note_dialog->flags &= (~AGS_MOVE_NOTE_DIALOG_CONNECTED);
 
   g_object_disconnect(G_OBJECT(move_note_dialog),
-		      "response",
+		      "any_signal::response",
 		      G_CALLBACK(ags_move_note_dialog_response_callback),
 		      move_note_dialog,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(move_note_dialog->relative),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_move_note_dialog_relative_callback),
 		      move_note_dialog,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(move_note_dialog->absolute),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_move_note_dialog_absolute_callback),
 		      move_note_dialog,
 		      NULL);
@@ -459,7 +449,7 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
   AgsMoveNoteDialog *move_note_dialog;
 
   AgsWindow *window;
-  AgsEditor *editor;
+  AgsNotationEditor *notation_editor;
   AgsMachine *machine;
 
   AgsMoveNote *move_note;
@@ -489,9 +479,9 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
   move_note_dialog = AGS_MOVE_NOTE_DIALOG(applicable);
 
   window = move_note_dialog->main_window;
-  editor = window->editor;
+  notation_editor = window->notation_editor;
 
-  machine = editor->selected_machine;
+  machine = notation_editor->selected_machine;
 
   if(machine == NULL){
     return;
@@ -566,14 +556,19 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
   
   while(notation != NULL){
     selection = AGS_NOTATION(notation->data)->selection;
-    
-    move_note = ags_move_note_new(notation->data,
-				  selection,
-				  first_x, first_y,
-				  move_x, move_y,
-				  relative, absolute);
-    task = g_list_prepend(task,
-			  move_note);
+
+    if(selection != NULL){
+      move_note = ags_move_note_new(notation->data,
+				    selection,
+				    first_x, first_y,
+				    move_x, move_y,
+				    relative, absolute);
+      g_object_set(move_note,
+		   "audio", audio,
+		   NULL);
+      task = g_list_prepend(task,
+			    move_note);
+    }
     
     notation = notation->next;
   }

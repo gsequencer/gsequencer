@@ -39,6 +39,7 @@
 #include <ags/audio/pulse/ags_pulse_server.h>
 #include <ags/audio/pulse/ags_pulse_port.h>
 #include <ags/audio/pulse/ags_pulse_devout.h>
+#include <ags/audio/pulse/ags_pulse_devin.h>
 
 #include <ags/i18n.h>
 
@@ -765,7 +766,7 @@ ags_pulse_client_deactivate(AgsPulseClient *pulse_client)
 /**
  * ags_pulse_client_add_device:
  * @pulse_client: the #AgsPulseClient
- * @pulse_device: an #AgsPulseDevout or #AgsPulseMidiin
+ * @pulse_device: an #AgsPulseDevout or #AgsPulseDevin
  *
  * Add @pulse_device to @pulse_client.
  *
@@ -776,8 +777,8 @@ ags_pulse_client_add_device(AgsPulseClient *pulse_client,
 			    GObject *pulse_device)
 {
   if(!AGS_IS_PULSE_CLIENT(pulse_client) ||
-     (!AGS_IS_PULSE_DEVOUT(pulse_device) /* &&
-       !AGS_IS_PULSE_MIDIIN(pulse_device) */)){
+     (!AGS_IS_PULSE_DEVOUT(pulse_device) &&
+      !AGS_IS_PULSE_DEVIN(pulse_device))){
     return;
   }
 
@@ -789,7 +790,7 @@ ags_pulse_client_add_device(AgsPulseClient *pulse_client,
 /**
  * ags_pulse_client_remove_device:
  * @pulse_client: the #AgsPulseClient
- * @pulse_device: an #AgsPulseDevout or #AgsPulseMidiin
+ * @pulse_device: an #AgsPulseDevout or #AgsPulseDevin
  *
  * Remove @pulse_device from @pulse_client.
  *

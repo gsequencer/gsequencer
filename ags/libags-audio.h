@@ -121,6 +121,18 @@
 #include <ags/audio/midi/ags_midi_parser.h>
 #include <ags/audio/midi/ags_midi_util.h>
 
+/* audio core-audio */
+#include <ags/audio/core-audio/ags_core_audio_client.h>
+#include <ags/audio/core-audio/ags_core_audio_devout.h>
+#include <ags/audio/core-audio/ags_core_audio_port.h>
+#include <ags/audio/core-audio/ags_core_audio_server.h>
+
+/* audio pulse */
+#include <ags/audio/pulse/ags_pulse_client.h>
+#include <ags/audio/pulse/ags_pulse_devout.h>
+#include <ags/audio/pulse/ags_pulse_port.h>
+#include <ags/audio/pulse/ags_pulse_server.h>
+
 /* audio jack */
 #include <ags/audio/jack/ags_jack_client.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
@@ -175,6 +187,10 @@
 #include <ags/audio/recall/ags_play_channel_run_master.h>
 #include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
+#include <ags/audio/recall/ags_play_dssi_audio.h>
+#include <ags/audio/recall/ags_play_dssi_audio_run.h>
+#include <ags/audio/recall/ags_play_lv2_audio.h>
+#include <ags/audio/recall/ags_play_lv2_audio_run.h>
 #include <ags/audio/recall/ags_play_note.h>
 #include <ags/audio/recall/ags_play_recycling.h>
 #include <ags/audio/recall/ags_prepare_audio_signal.h>
@@ -216,11 +232,15 @@
 #include <ags/audio/task/ags_cancel_channel.h>
 #include <ags/audio/task/ags_cancel_recall.h>
 #include <ags/audio/task/ags_change_soundcard.h>
+#include <ags/audio/task/ags_clear_audio_signal.h>
+#include <ags/audio/task/ags_clear_buffer.h>
+#include <ags/audio/task/ags_crop_note.h>
 #include <ags/audio/task/ags_export_output.h>
 #include <ags/audio/task/ags_free_selection.h>
 #include <ags/audio/task/ags_init_audio.h>
 #include <ags/audio/task/ags_init_channel.h>
 #include <ags/audio/task/ags_link_channel.h>
+#include <ags/audio/task/ags_move_note.h>
 #include <ags/audio/task/ags_notify_soundcard.h>
 #include <ags/audio/task/ags_open_file.h>
 #include <ags/audio/task/ags_open_sf2_sample.h>

@@ -23,8 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/thread/ags_task.h>
+#include <ags/libags.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
 
 #define AGS_TYPE_ADD_REGION_TO_SELECTION                (ags_add_region_to_selection_get_type())
@@ -41,6 +42,7 @@ struct _AgsAddRegionToSelection
 {
   AgsTask task;
 
+  AgsAudio *audio;
   AgsNotation *notation;
 
   guint x0;

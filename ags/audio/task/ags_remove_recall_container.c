@@ -19,8 +19,6 @@
 
 #include <ags/audio/task/ags_remove_recall_container.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 

@@ -19,8 +19,6 @@
 
 #include <ags/audio/task/ags_append_recall.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_playback.h>
 
@@ -323,12 +321,15 @@ void
 ags_append_recall_launch(AgsTask *task)
 {
   AgsAppendRecall *append_recall;
+
   AgsAudioLoop *audio_loop;
 
   append_recall = AGS_APPEND_RECALL(task);
 
   audio_loop = AGS_AUDIO_LOOP(append_recall->audio_loop);
-  ags_audio_loop_add_recall(audio_loop, append_recall->playback);
+  
+  ags_audio_loop_add_recall(audio_loop,
+			    append_recall->playback);
 }
 
 /**

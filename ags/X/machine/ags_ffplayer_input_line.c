@@ -20,9 +20,9 @@
 #include <ags/X/machine/ags_ffplayer_input_line.h>
 #include <ags/X/machine/ags_ffplayer_input_line_callbacks.h>
 
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_line.h>

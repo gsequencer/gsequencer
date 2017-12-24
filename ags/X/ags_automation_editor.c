@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -170,6 +170,8 @@ ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor)
    * @machine: the #AgsMachine to set
    *
    * The ::machine-changed signal notifies about changed machine.
+   * 
+   * Since: 1.0.0
    */
   automation_editor_signals[MACHINE_CHANGED] =
     g_signal_new("machine-changed",
@@ -196,13 +198,16 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   automation_editor->version = AGS_AUTOMATION_EDITOR_DEFAULT_VERSION;
   automation_editor->build_id = AGS_AUTOMATION_EDITOR_DEFAULT_BUILD_ID;
 
+  /* soundcard */
   automation_editor->soundcard = NULL;
 
+  /* automation toolbar */
   automation_editor->automation_toolbar = ags_automation_toolbar_new();
   gtk_box_pack_start((GtkBox *) automation_editor,
 		     (GtkWidget *) automation_editor->automation_toolbar,
 		     FALSE, FALSE, 0);
 
+  /* machine selector */
   paned = (GtkHPaned *) gtk_hpaned_new();
   gtk_box_pack_start((GtkBox *) automation_editor,
 		     (GtkWidget *) paned,
@@ -210,7 +215,6 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
   gtk_paned_pack1((GtkPaned *) paned, (GtkWidget *) scrolled_window, FALSE, TRUE);
-  //  gtk_widget_set_size_request((GtkWidget *) scrolled_window, 180, -1);
 
   automation_editor->machine_selector = g_object_new(AGS_TYPE_MACHINE_SELECTOR,
 						     "homogeneous", FALSE,
@@ -225,10 +229,13 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 	       "menu", automation_editor->machine_selector->popup,
 	       NULL);
   
-  gtk_scrolled_window_add_with_viewport(scrolled_window, (GtkWidget *) automation_editor->machine_selector);
+  gtk_scrolled_window_add_with_viewport(scrolled_window,
+					(GtkWidget *) automation_editor->machine_selector);
 
+  /* selected machine */
   automation_editor->selected_machine = NULL;
 
+  /* */
   automation_editor->automation_editor_child = NULL;
 
   automation_editor->notebook = (GtkNotebook *) gtk_notebook_new();
@@ -298,9 +305,6 @@ ags_automation_editor_set_property(GObject *gobject,
       
       if(soundcard != NULL){
 	g_object_ref(soundcard);
-
-	g_signal_connect(soundcard, "tic",
-			 G_CALLBACK(ags_automation_editor_tic_callback), automation_editor);
       }
       
       automation_editor->soundcard = soundcard;
@@ -346,12 +350,6 @@ ags_automation_editor_connect(AgsConnectable *connectable)
   automation_editor->flags |= AGS_AUTOMATION_EDITOR_CONNECTED;
   
   /*  */
-  if(automation_editor->soundcard != NULL){
-    g_signal_connect(automation_editor->soundcard, "tic",
-		     G_CALLBACK(ags_automation_editor_tic_callback), automation_editor);
-  }
-  
-  
   g_signal_connect((GObject *) automation_editor->machine_selector, "changed",
 		   G_CALLBACK(ags_automation_editor_machine_changed_callback), (gpointer) automation_editor);
 
@@ -743,7 +741,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
     for(i = 0; i < output_lines; i++){
       ags_notebook_insert_tab(automation_editor_child->output_notebook,
 			      i);
-      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(automation_editor_child->output_notebook->tabs->data)->toggle,
+      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(automation_editor_child->output_notebook->tab->data)->toggle,
 				   TRUE);
     }
 
@@ -787,7 +785,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
     for(i = 0; machine != NULL && i < input_lines; i++){
       ags_notebook_insert_tab(automation_editor_child->input_notebook,
 			      i);
-      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(automation_editor_child->input_notebook->tabs->data)->toggle,
+      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(automation_editor_child->input_notebook->tab->data)->toggle,
 				   TRUE);
     }
 

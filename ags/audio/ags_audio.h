@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -159,7 +159,7 @@ struct _AgsAudioClass
   void (*set_audio_channels)(AgsAudio *audio,
 			     guint audio_channels, guint audio_channels_old);
   void (*set_pads)(AgsAudio *audio,
-		   GType type,
+		   GType channel_type,
 		   guint pads, guint pads_old);
 
   AgsRecallID* (*init_run)(AgsAudio *audio);
@@ -177,7 +177,7 @@ void ags_audio_unset_flags(AgsAudio *audio, guint flags);
 void ags_audio_check_connection(AgsAudio *audio);
 
 void ags_audio_set_audio_channels(AgsAudio *audio, guint audio_channels);
-void ags_audio_set_pads(AgsAudio *audio, GType type, guint pads);
+void ags_audio_set_pads(AgsAudio *audio, GType channel_type, guint pads);
 
 void ags_audio_set_samplerate(AgsAudio *audio, guint samplerate);
 void ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size);
@@ -215,8 +215,6 @@ void ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_containe
 
 void ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play);
 void ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play);
-
-void ags_audio_recall_change_state(AgsAudio *audio, gboolean enable);
 
 AgsRecallID* ags_audio_init_run(AgsAudio *audio);
 void ags_audio_duplicate_recall(AgsAudio *audio,

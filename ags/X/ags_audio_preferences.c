@@ -20,20 +20,8 @@
 #include <ags/X/ags_audio_preferences.h>
 #include <ags/X/ags_audio_preferences_callbacks.h>
 
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
-
-#include <ags/audio/ags_sound_provider.h>
-
-#include <ags/audio/task/ags_change_soundcard.h>
-#include <ags/audio/task/ags_apply_presets.h>
-
-#include <ags/audio/thread/ags_soundcard_thread.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
@@ -306,7 +294,7 @@ ags_audio_preferences_disconnect(AgsConnectable *connectable)
 
   if(audio_preferences->add != NULL){
     g_object_disconnect(G_OBJECT(audio_preferences->add),
-			"clicked",
+			"any_signal::clicked",
 			G_CALLBACK(ags_audio_preferences_add_callback),
 			audio_preferences,
 			NULL);
@@ -314,7 +302,7 @@ ags_audio_preferences_disconnect(AgsConnectable *connectable)
   
   if(audio_preferences->connect_sink != NULL){
     g_object_disconnect(G_OBJECT(audio_preferences->connect_sink),
-			"clicked",
+			"any_signal::clicked",
 			G_CALLBACK(ags_audio_preferences_connect_sink_callback),
 			audio_preferences,
 			NULL);
@@ -323,7 +311,7 @@ ags_audio_preferences_disconnect(AgsConnectable *connectable)
   /* experimental */
   if(audio_preferences->start_jack != NULL){
     g_object_disconnect(G_OBJECT(audio_preferences->start_jack),
-			"clicked",
+			"any_signal::clicked",
 			G_CALLBACK(ags_audio_preferences_start_jack_callback),
 			audio_preferences,
 			NULL);
@@ -331,7 +319,7 @@ ags_audio_preferences_disconnect(AgsConnectable *connectable)
   
   if(audio_preferences->stop_jack != NULL){
     g_object_disconnect(G_OBJECT(audio_preferences->stop_jack),
-			"clicked",
+			"any_signal::clicked",
 			G_CALLBACK(ags_audio_preferences_stop_jack_callback),
 			audio_preferences,
 			NULL);

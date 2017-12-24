@@ -1,3 +1,15 @@
+* TODO:JK: implemented AgsFunction
+* TODO:JK: implemented AgsServer, AgsRegistry and AgsServerStatus
+* TODO:JK: implemented AgsXmlAuthentication, AgsXmlCertificate and AgsXmlPasswordStore
+* TODO:JK: implemented AgsFrontController, AgsFactoryController, AgsLocalRegistryController, AgsLocalSerializationController and AgsLocalTaskController
+* TODO:JK: implemented audio input properties
+* TODO:JK: refactored AgsAutomationEditor to be more light-weight
+* TODO:JK: implemented ags-capture recall
+* TODO:JK: implemented AgsAudiorec
+* TODO:JK: implemented AgsCartesian properties
+* TODO:JK: implemented AgsWaveWindow, AgsWaveEditor, AgsWaveToolbar and AgsWaveEdit
+* TODO:JK: implemented AgsSelectAudioData and AgsPositionWaveCursor
+* TODO:JK: implemented AgsLevel
 * TODO:JK: implemented AgsConnectable:disconnect() to all implementing objects
 * TODO:JK: implemented AgsPlaybackDomain properties
 * TODO:JK: implemented AgsPlayback properties

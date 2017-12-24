@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,20 +20,7 @@
 #include <ags/audio/recall/ags_route_lv2_audio_run.h>
 #include <ags/audio/recall/ags_route_lv2_audio.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_dynamic_connectable.h>
-#include <ags/object/ags_plugin.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
-
-#include <ags/thread/ags_timestamp_thread.h>
+#include <ags/libags.h>
 
 #include <ags/plugin/ags_lv2_plugin.h>
 
@@ -263,6 +250,14 @@ ags_route_lv2_audio_run_init(AgsRouteLv2AudioRun *route_lv2_audio_run)
   route_lv2_audio_run->count_beats_audio_run = NULL;
 
   route_lv2_audio_run->notation = NULL;
+
+  route_lv2_audio_run->timestamp = ags_timestamp_new();
+
+  route_lv2_audio_run->timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  route_lv2_audio_run->timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
+  route_lv2_audio_run->timestamp->timer.ags_offset.offset = 0;
+
   route_lv2_audio_run->sequencer = NULL;
 
   route_lv2_audio_run->feed_midi = NULL;
@@ -434,14 +429,22 @@ ags_route_lv2_audio_run_finalize(GObject *gobject)
 
   route_lv2_audio_run = AGS_ROUTE_LV2_AUDIO_RUN(gobject);
 
+  /* delay audio run */
   if(route_lv2_audio_run->delay_audio_run != NULL){
     g_object_unref(G_OBJECT(route_lv2_audio_run->delay_audio_run));
   }
 
+  /* count beats audio run */
   if(route_lv2_audio_run->count_beats_audio_run != NULL){
     g_object_unref(G_OBJECT(route_lv2_audio_run->count_beats_audio_run));
   }
 
+  /* timestamp */
+  if(route_lv2_audio_run->timestamp != NULL){
+    g_object_unref(G_OBJECT(route_lv2_audio_run->timestamp));
+  }
+
+  /* call parent */
   G_OBJECT_CLASS(ags_route_lv2_audio_run_parent_class)->finalize(gobject);
 }
 
@@ -967,6 +970,7 @@ ags_route_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   GList *current_position;
   GList *list;
 
+  guint notation_counter;
   guint audio_channel;
   guint audio_start_mapping, audio_end_mapping;
   guint note_y;
@@ -978,6 +982,51 @@ ags_route_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
+  auto void ags_route_lv2_audio_run_alloc_input_callback_feed_note(AgsNotation *notation);
+
+  void ags_route_lv2_audio_run_alloc_input_callback_feed_note(AgsNotation *notation){
+    if(!AGS_IS_NOTATION(notation)){
+      return;
+    }
+
+    pthread_mutex_lock(audio_mutex);
+
+    current_position = notation->notes; // start_loop
+
+    pthread_mutex_unlock(audio_mutex);
+
+    while(current_position != NULL){
+      pthread_mutex_lock(audio_mutex);
+
+      audio_start_mapping = audio->audio_start_mapping;
+      audio_end_mapping = audio->audio_end_mapping;
+    
+      note = AGS_NOTE(current_position->data);
+
+      note_y = note->y;
+      note_x0 = note->x[0];
+    
+      pthread_mutex_unlock(audio_mutex);
+
+      //    g_message("--- %f %f ; %d %d",
+      //	      note->stream_delay, delay,
+      //	      note->x[0], route_lv2_audio_run->count_beats_audio_run->notation_counter);
+
+      //FIXME:JK: should consider delay
+      if(note_y >= audio_start_mapping &&
+	 note_y < audio_end_mapping &&
+	 note_x0 == notation_counter){ // && floor(note->stream_delay) == floor(delay)
+	//      g_object_ref(note);
+	ags_route_lv2_audio_run_feed_midi((AgsRecall *) route_lv2_audio_run,
+					  note);      
+      }else if(note_x0 > notation_counter){
+	break;
+      }
+    
+      current_position = current_position->next;
+    }
+  }
+  
   if((guint) floor(delay) != 0){
     //    g_message("d %f", delay);
     return;
@@ -1013,48 +1062,45 @@ ags_route_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   pthread_mutex_unlock(channel_mutex);
 
-  /*  */  
+  /* feed note - first attempt */
+  notation = NULL;
+
   pthread_mutex_lock(audio_mutex);
 
-  //TODO:JK: make it advanced
-  list = audio->notation;
-  notation = AGS_NOTATION(g_list_nth(list, audio_channel)->data);//AGS_NOTATION(ags_notation_find_near_timestamp(list, audio_channel,
-  //						   timestamp_thread->timestamp)->data);
+  notation_counter = route_lv2_audio_run->count_beats_audio_run->notation_counter;
 
-  current_position = notation->notes; // start_loop
+  route_lv2_audio_run->timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(notation_counter / AGS_NOTATION_DEFAULT_OFFSET);
 
-  pthread_mutex_unlock(audio_mutex);
+  list = ags_notation_find_near_timestamp(audio->notation, audio_channel,
+					  route_lv2_audio_run->timestamp);
+
+  if(list != NULL){
+    notation = list->data;
+  }
   
-  while(current_position != NULL){
+  pthread_mutex_unlock(audio_mutex);
+
+  ags_route_lv2_audio_run_alloc_input_callback_feed_note(notation);
+  
+  /* feed note - second attempt */
+  if(route_lv2_audio_run->timestamp->timer.ags_offset.offset != 0){
+    notation = NULL;
+
+    route_lv2_audio_run->timestamp->timer.ags_offset.offset -= AGS_NOTATION_DEFAULT_OFFSET;
+
     pthread_mutex_lock(audio_mutex);
 
-    audio_start_mapping = audio->audio_start_mapping;
-    audio_end_mapping = audio->audio_end_mapping;
-    
-    note = AGS_NOTE(current_position->data);
+    list = ags_notation_find_near_timestamp(audio->notation, audio_channel,
+					    route_lv2_audio_run->timestamp);
 
-    note_y = note->y;
-    note_x0 = note->x[0];
-    
+    if(list != NULL){
+      notation = list->data;
+    }
+
     pthread_mutex_unlock(audio_mutex);
 
-    //    g_message("--- %f %f ; %d %d",
-    //	      note->stream_delay, delay,
-    //	      note->x[0], route_lv2_audio_run->count_beats_audio_run->notation_counter);
-
-    //FIXME:JK: should consider delay
-    if(note_y >= audio_start_mapping &&
-       note_y < audio_end_mapping &&
-       note_x0 == route_lv2_audio_run->count_beats_audio_run->notation_counter){ // && floor(note->stream_delay) == floor(delay)
-      //      g_object_ref(note);
-      ags_route_lv2_audio_run_feed_midi((AgsRecall *) route_lv2_audio_run,
-					note);      
-    }else if(note_x0 > route_lv2_audio_run->count_beats_audio_run->notation_counter){
-      break;
-    }
-    
-    current_position = current_position->next;
-  }
+    ags_route_lv2_audio_run_alloc_input_callback_feed_note(notation);
+  }  
 }
 
 void

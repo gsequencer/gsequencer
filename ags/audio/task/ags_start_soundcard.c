@@ -19,9 +19,6 @@
 
 #include <ags/audio/task/ags_start_soundcard.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 
@@ -285,22 +282,36 @@ ags_start_soundcard_launch(AgsTask *task)
 {
   AgsStartSoundcard *start_soundcard;
 
-  AgsAudioLoop *audio_loop;
+  AgsMutexManager *mutex_manager;
   AgsThread *soundcard_thread;
+  AgsThread *main_loop;
 
   AgsApplicationContext *application_context;
   AgsSoundcard *soundcard;
 
   GList *start_queue;
+
+  pthread_mutex_t *application_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   start_soundcard = AGS_START_SOUNDCARD(task);
 
   application_context = start_soundcard->application_context;
-  audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
 
-  audio_loop->flags |= (AGS_AUDIO_LOOP_PLAY_AUDIO |
-			AGS_AUDIO_LOOP_PLAY_CHANNEL |
-			AGS_AUDIO_LOOP_PLAY_RECALL);
+  /* get main loop and soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = application_context->main_loop;
+  
+  pthread_mutex_unlock(application_mutex);
+
+  
+  AGS_AUDIO_LOOP(main_loop)->flags |= (AGS_AUDIO_LOOP_PLAY_AUDIO |
+				       AGS_AUDIO_LOOP_PLAY_CHANNEL |
+				       AGS_AUDIO_LOOP_PLAY_RECALL);
 
   /*
   if(ags_soundcard_is_starting(soundcard) ||
@@ -308,7 +319,7 @@ ags_start_soundcard_launch(AgsTask *task)
     return;
   }
   */
-  soundcard_thread = audio_loop;
+  soundcard_thread = main_loop;
   
   while((soundcard_thread = ags_thread_find_type(soundcard_thread,
 						 AGS_TYPE_SOUNDCARD_THREAD)) != NULL){
@@ -323,12 +334,12 @@ ags_start_soundcard_launch(AgsTask *task)
 				   soundcard_thread);
 
       if(start_queue != NULL){
-	if(g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue)) != NULL){
-	  g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
+	if(g_atomic_pointer_get(&(AGS_THREAD(main_loop)->start_queue)) != NULL){
+	  g_atomic_pointer_set(&(AGS_THREAD(main_loop)->start_queue),
 			       g_list_concat(start_queue,
-					     g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue))));
+					     g_atomic_pointer_get(&(AGS_THREAD(main_loop)->start_queue))));
 	}else{
-	  g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
+	  g_atomic_pointer_set(&(AGS_THREAD(main_loop)->start_queue),
 			       start_queue);
 	}
       }

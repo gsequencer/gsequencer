@@ -19,9 +19,6 @@
 
 #include <ags/audio/task/ags_set_format.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recycling.h>
@@ -336,8 +333,28 @@ ags_set_format_audio_signal(AgsSetFormat *set_format, AgsAudioSignal *audio_sign
 void
 ags_set_format_recycling(AgsSetFormat *set_format, AgsRecycling *recycling)
 {
+  AgsMutexManager *mutex_manager;
+
   GList *list;
   
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *recycling_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get recycling mutex */
+  pthread_mutex_lock(application_mutex);
+
+  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) recycling);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* set format audio signal */
+  pthread_mutex_lock(recycling_mutex);
+
   list = recycling->audio_signal;
 
   while(list != NULL){
@@ -345,6 +362,8 @@ ags_set_format_recycling(AgsSetFormat *set_format, AgsRecycling *recycling)
 
     list = list->next;
   }
+
+  pthread_mutex_unlock(recycling_mutex);
 }
 
 void
@@ -358,38 +377,112 @@ ags_set_format_channel(AgsSetFormat *set_format, AgsChannel *channel)
 void
 ags_set_format_audio(AgsSetFormat *set_format, AgsAudio *audio)
 {
+  AgsChannel *input, *output;
   AgsChannel *channel;
 
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  output = audio->output;
+  input = audio->input;
+
+  pthread_mutex_unlock(audio_mutex);
+
   /* AgsOutput */
-  channel = audio->output;
+  channel = output;
 
   while(channel != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* set format */
     ags_set_format_channel(set_format, channel);
 
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+    
     channel = channel->next;
+    
+    pthread_mutex_unlock(channel_mutex);    
   }
 
   /* AgsInput */
-  channel = audio->input;
+  channel = input;
 
   while(channel != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* set format */
     ags_set_format_channel(set_format, channel);
 
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+    
     channel = channel->next;
+    
+    pthread_mutex_unlock(channel_mutex);    
   }
 }
 
 void
 ags_set_format_soundcard(AgsSetFormat *set_format, GObject *soundcard)
 {
-  GList *list;
+  AgsMutexManager *mutex_manager;
+
+  GList *list_start, *list;
 
   guint channels;
   guint samplerate;
   guint buffer_size;
   guint format;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) soundcard);
+
+  pthread_mutex_unlock(application_mutex);
   
   /*  */
+  pthread_mutex_lock(soundcard_mutex);
+
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    &channels,
 			    &samplerate,
@@ -402,14 +495,19 @@ ags_set_format_soundcard(AgsSetFormat *set_format, GObject *soundcard)
 			    buffer_size,
 			    set_format->format);
 
+  pthread_mutex_unlock(soundcard_mutex);
+
   /* AgsAudio */
-  list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
+  list =
+    list_start = g_list_copy(ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard)));
 
   while(list != NULL){
     ags_set_format_audio(set_format, AGS_AUDIO(list->data));
 
     list = list->next;
   }
+
+  g_list_free(list_start);
 }
 
 /**

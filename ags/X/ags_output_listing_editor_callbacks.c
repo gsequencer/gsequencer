@@ -49,10 +49,14 @@ ags_output_listing_editor_parent_set_callback(GtkWidget *widget,
 }
 
 void
-ags_output_listing_editor_set_pads_callback(AgsAudio *audio, GType channel_type,
-					    guint pads, guint pads_old,
-					    AgsOutputListingEditor *output_listing_editor)
+ags_output_listing_editor_resize_pads_callback(AgsMachine *machine, GType channel_type,
+					       guint pads, guint pads_old,
+					       AgsOutputListingEditor *output_listing_editor)
 {
+  AgsAudio *audio;
+
+  audio = machine->audio;
+  
   if(channel_type != output_listing_editor->channel_type){
     return;
   }

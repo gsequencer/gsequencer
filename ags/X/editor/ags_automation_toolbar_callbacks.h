@@ -20,7 +20,9 @@
 #ifndef __AGS_AUTOMATION_TOOLBAR_CALLBACKS_H__
 #define __AGS_AUTOMATION_TOOLBAR_CALLBACKS_H__
 
+#include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #include <ags/X/ags_machine.h>

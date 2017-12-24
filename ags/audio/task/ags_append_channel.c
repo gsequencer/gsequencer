@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,15 +19,7 @@
 
 #include <ags/audio/task/ags_append_channel.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/server/ags_server.h>
-#include <ags/server/ags_service_provider.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -63,7 +55,7 @@ void ags_append_channel_launch(AgsTask *task);
  * @short_description: append channel object to audio loop
  * @title: AgsAppendChannel
  * @section_id:
- * @include: ags/channel/task/ags_append_channel.h
+ * @include: ags/audio/task/ags_append_channel.h
  *
  * The #AgsAppendChannel task appends #AgsChannel to #AgsAudioLoop.
  */
@@ -335,34 +327,60 @@ void
 ags_append_channel_launch(AgsTask *task)
 {
   AgsChannel *channel;
+  AgsPlayback *playback;
   
   AgsAppendChannel *append_channel;
 
   AgsAudioLoop *audio_loop;
+  AgsAudioLoop *channel_thread;
 
   AgsServer *server;
 
+  AgsMutexManager *mutex_manager;
+  
   AgsConfig *config;
 
   GList *start_queue;
   
   gchar *str0, *str1;
   
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *audio_loop_mutex;
+  pthread_mutex_t *channel_thread_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  config = ags_config_get_instance();
+
   append_channel = AGS_APPEND_CHANNEL(task);
+
+  channel = (AgsChannel *) append_channel->channel;
 
   audio_loop = AGS_AUDIO_LOOP(append_channel->audio_loop);
 
-  channel = (AgsChannel *) append_channel->channel;
+  /* get channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) channel);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get audio loop mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
+					      (GObject *) audio_loop);
+  
+  pthread_mutex_unlock(application_mutex);
 
   /* append to AgsDevout */
   ags_audio_loop_add_channel(audio_loop,
 			     (GObject *) channel);
 
-  start_queue = NULL;
-  
-  /**/
-  config = ags_config_get_instance();
-  
+  /* read config */  
   str0 = ags_config_get_value(config,
 			      AGS_CONFIG_THREAD,
 			      "model");
@@ -370,7 +388,8 @@ ags_append_channel_launch(AgsTask *task)
   str1 = ags_config_get_value(config,
 			      AGS_CONFIG_THREAD,
 			      "super-threaded-scope");
-  
+
+  /* check config */
   if(!g_ascii_strncasecmp(str0,
 			  "super-threaded",
 			  15)){
@@ -378,42 +397,58 @@ ags_append_channel_launch(AgsTask *task)
     if(!g_ascii_strncasecmp(str1,
 			    "channel",
 			    8)){
-      if((AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(AGS_PLAYBACK(channel->playback)->flags)))) != 0 &&
-	 (AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(AGS_PLAYBACK(channel->playback)->channel_thread[0])->flags)))) == 0){
-	g_atomic_int_or(&(AGS_CHANNEL_THREAD(AGS_PLAYBACK(channel->playback)->channel_thread[0])->flags),
+      start_queue = NULL;  
+
+      /* get some fields */
+      pthread_mutex_lock(channel_mutex);
+
+      playback = AGS_PLAYBACK(channel->playback);
+      channel_thread = AGS_CHANNEL_THREAD(playback->channel_thread[AGS_PLAYBACK_SCOPE_PLAYBACK]);
+
+      pthread_mutex_unlock(channel_mutex);
+      
+      if((AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(playback->flags)))) != 0 &&
+	 (AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(channel_thread)->flags)))) == 0){
+	/* start queue */
+	g_atomic_int_or(&(channel_thread->flags),
 			(AGS_CHANNEL_THREAD_WAIT |
 			 AGS_CHANNEL_THREAD_DONE |
 			 AGS_CHANNEL_THREAD_WAIT_SYNC |
 			 AGS_CHANNEL_THREAD_DONE_SYNC));
 	start_queue = g_list_prepend(start_queue,
-				     AGS_PLAYBACK(channel->playback)->channel_thread[0]);
+				     channel_thread);
 	
-	if(g_atomic_pointer_get(&(AGS_PLAYBACK(channel->playback)->channel_thread[0]->parent)) == NULL){
+	/* add if needed */
+	if(g_atomic_pointer_get(&(AGS_THREAD(channel_thread)->parent)) == NULL){
 	  ags_thread_add_child_extended((AgsThread *) audio_loop,
-					AGS_PLAYBACK(channel->playback)->channel_thread[0],
+					channel_thread,
 					TRUE, TRUE);
-	  ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK(channel->playback)->channel_thread[0]));
+	  ags_connectable_connect(AGS_CONNECTABLE(channel_thread));
 	}
       }
+
+      /* start queue */
+      pthread_mutex_lock(audio_loop_mutex);
+  
+      if(start_queue != NULL){
+	start_queue = g_list_reverse(start_queue);
+
+	if(g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue)) != NULL){
+	  g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
+			       g_list_concat(start_queue,
+					     g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue))));
+	}else{
+	  g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
+			       start_queue);
+	}
+      }
+
+      pthread_mutex_unlock(audio_loop_mutex);
     }
   }
 
   g_free(str0);
   g_free(str1);
-
-  /* start queue */
-  if(start_queue != NULL){
-    start_queue = g_list_reverse(start_queue);
-
-    if(g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue)) != NULL){
-      g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
-			   g_list_concat(start_queue,
-					 g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue))));
-    }else{
-      g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
-			   start_queue);
-    }
-  }
 
   /* add to server registry */
   //  server = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(audio_loop->application_context));

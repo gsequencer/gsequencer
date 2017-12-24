@@ -45,7 +45,7 @@
 #include <ags/X/ags_bulk_member.h>
 #include <ags/X/ags_effect_pad.h>
 #include <ags/X/ags_effect_line.h>
-#include <ags/X/ags_editor.h>
+#include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_pad_editor.h>
@@ -55,12 +55,10 @@
 #include <ags/X/ags_link_collection_editor.h>
 #include <ags/X/ags_resize_editor.h>
 
-#include <ags/X/editor/ags_toolbar.h>
+#include <ags/X/editor/ags_notation_toolbar.h>
 #include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_machine_radio_button.h>
-#include <ags/X/editor/ags_notebook.h>
-#include <ags/X/editor/ags_note_edit.h>
-#include <ags/X/editor/ags_pattern_edit.h>
+#include <ags/X/editor/ags_notation_edit.h>
 
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_mixer.h>
@@ -198,27 +196,17 @@ xmlNode* ags_file_write_link_collection_editor(AgsFile *file, xmlNode *parent, A
 void ags_file_read_resize_editor(AgsFile *file, xmlNode *node, AgsResizeEditor **resize_editor);
 xmlNode* ags_file_write_resize_editor(AgsFile *file, xmlNode *parent, AgsResizeEditor *resize_editor);
 
-/* AgsEditor */
-void ags_file_read_editor(AgsFile *file, xmlNode *node, AgsEditor **editor);
-xmlNode* ags_file_write_editor(AgsFile *file, xmlNode *parent, AgsEditor *editor);
+/* AgsNotationEditor */
+void ags_file_read_notation_editor(AgsFile *file, xmlNode *node, AgsNotationEditor **notation_editor);
+xmlNode* ags_file_write_notation_editor(AgsFile *file, xmlNode *parent, AgsNotationEditor *notation_editor);
 
-/* AgsToolbar */
-void ags_file_read_toolbar(AgsFile *file, xmlNode *node, AgsToolbar **toolbar);
-xmlNode* ags_file_write_toolbar(AgsFile *file, xmlNode *parent, AgsToolbar *toolbar);
+/* AgsNotationToolbar */
+void ags_file_read_notation_toolbar(AgsFile *file, xmlNode *node, AgsNotationToolbar **notation_toolbar);
+xmlNode* ags_file_write_notation_toolbar(AgsFile *file, xmlNode *parent, AgsNotationToolbar *notation_toolbar);
 
 /* AgsMachineSelector */
 void ags_file_read_machine_selector(AgsFile *file, xmlNode *parent, AgsMachineSelector **machine_selector);
 xmlNode* ags_file_write_machine_selector(AgsFile *file, xmlNode *node, AgsMachineSelector *machine_selector);
-
-/* AgsNotebook */
-void ags_file_read_notebook(AgsFile *file, xmlNode *node, AgsNotebook **notebook);
-xmlNode* ags_file_write_notebook(AgsFile *file, xmlNode *parent, AgsNotebook *notebook);
-
-void ags_file_read_notebook_tab_list(AgsFile *file, xmlNode *node, GList **notebook_tab_list);
-xmlNode* ags_file_write_notebook_tab_list(AgsFile *file, xmlNode *parent, GList *notebook_tab_list);
-
-void ags_file_read_notebook_tab(AgsFile *file, xmlNode *node, AgsNotebookTab **notebook_tab);
-xmlNode* ags_file_write_notebook_tab(AgsFile *file, xmlNode *parent, AgsNotebookTab *notebook_tab);
 
 /* AgsNavigation */
 void ags_file_read_navigation(AgsFile *file, xmlNode *node, AgsNavigation **navigation);

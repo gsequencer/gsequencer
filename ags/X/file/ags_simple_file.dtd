@@ -165,9 +165,14 @@
 <!-- notation -->
 <!ELEMENT ags-sf-notation-list (ags-sf-notation*)>
 
-<!ELEMENT ags-sf-notation (ags-sf-note*)>
+<!ELEMENT ags-sf-notation (ags-sf-timestamp, ags-sf-note*)>
 <!ATTLIST ags-sf-notation
 	  channel         NMTOKEN  #REQUIRED
+	  >
+
+<!ELEMENT ags-sf-timestamp EMPTY>
+<!ATTLIST ags-sf-timestamp
+	  offset          NMTOKEN  #REQUIRED
 	  >
 
 <!ELEMENT ags-sf-note EMPTY>

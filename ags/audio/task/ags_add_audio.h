@@ -20,9 +20,11 @@
 #ifndef __AGS_ADD_AUDIO_H__
 #define __AGS_ADD_AUDIO_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
-#include <ags/thread/ags_task.h>
+#include <ags/libags.h>
+
 #include <ags/audio/ags_audio.h>
 
 #define AGS_TYPE_ADD_AUDIO                (ags_add_audio_get_type())

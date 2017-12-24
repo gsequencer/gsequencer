@@ -46,8 +46,6 @@
     <xi:include href="xml/ags_context_menu.xml"/>
     <xi:include href="xml/ags_dssi_browser.xml"/>
     <xi:include href="xml/ags_dssi_browser_callbacks.xml"/>
-    <xi:include href="xml/ags_editor.xml"/>
-    <xi:include href="xml/ags_editor_callbacks.xml"/>
     <xi:include href="xml/ags_effect_bridge.xml"/>
     <xi:include href="xml/ags_effect_bridge_callbacks.xml"/>
     <xi:include href="xml/ags_effect_bulk.xml"/>
@@ -99,6 +97,8 @@
     <xi:include href="xml/ags_midi_preferences_callbacks.xml"/>
     <xi:include href="xml/ags_navigation.xml"/>
     <xi:include href="xml/ags_navigation_callbacks.xml"/>
+    <xi:include href="xml/ags_notation_editor.xml"/>
+    <xi:include href="xml/ags_notation_editor_callbacks.xml"/>
     <xi:include href="xml/ags_output_collection_editor.xml"/>
     <xi:include href="xml/ags_output_collection_editor_callbacks.xml"/>
     <xi:include href="xml/ags_output_editor.xml"/>
@@ -160,16 +160,12 @@
       <xi:include href="xml/ags_machine_selection.xml"/>
       <xi:include href="xml/ags_machine_selector.xml"/>
       <xi:include href="xml/ags_machine_selector_callbacks.xml"/>      
-      <xi:include href="xml/ags_meter.xml"/>
-      <xi:include href="xml/ags_meter_callbacks.xml"/>
       <xi:include href="xml/ags_move_note_dialog.xml"/>
       <xi:include href="xml/ags_move_note_dialog_callbacks.xml"/>
-      <xi:include href="xml/ags_note_edit.xml"/>
-      <xi:include href="xml/ags_note_edit_callbacks.xml"/>
-      <xi:include href="xml/ags_notebook.xml"/>
-      <xi:include href="xml/ags_notebook_callbacks.xml"/>      
-      <xi:include href="xml/ags_pattern_edit.xml"/>
-      <xi:include href="xml/ags_pattern_edit_callbacks.xml"/>
+      <xi:include href="xml/ags_notation_edit.xml"/>
+      <xi:include href="xml/ags_notation_edit_callbacks.xml"/>
+      <xi:include href="xml/ags_notation_toolbar.xml"/>
+      <xi:include href="xml/ags_notation_toolbar_callbacks.xml"/>
       <xi:include href="xml/ags_pattern_envelope.xml"/>
       <xi:include href="xml/ags_pattern_envelope_callbacks.xml"/>
       <xi:include href="xml/ags_playback_window.xml"/>
@@ -182,9 +178,6 @@
       <xi:include href="xml/ags_select_acceleration_dialog_callbacks.xml"/>
       <xi:include href="xml/ags_select_note_dialog.xml"/>
       <xi:include href="xml/ags_select_note_dialog_callbacks.xml"/>
-      <xi:include href="xml/ags_toolbar.xml"/>
-      <xi:include href="xml/ags_toolbar_callbacks.xml"/>
-      <xi:include href="xml/ags_toolbar_mode_stock.xml"/>
     </chapter>
 
     <chapter id="machine">
@@ -195,7 +188,6 @@
       <xi:include href="xml/ags_drum.xml"/>
       <xi:include href="xml/ags_drum_callbacks.xml"/>
       <xi:include href="xml/ags_drum_input_line.xml"/>
-      <xi:include href="xml/ags_drum_input_line_callbacks.xml"/>
       <xi:include href="xml/ags_drum_input_pad.xml"/>
       <xi:include href="xml/ags_drum_input_pad_callbacks.xml"/>
       <xi:include href="xml/ags_drum_output_line.xml"/>
@@ -231,7 +223,6 @@
       <xi:include href="xml/ags_panel.xml"/>
       <xi:include href="xml/ags_panel_callbacks.xml"/>
       <xi:include href="xml/ags_panel_input_line.xml"/>
-      <xi:include href="xml/ags_panel_input_line_callbacks.xml"/>
       <xi:include href="xml/ags_panel_input_pad.xml"/>
       <xi:include href="xml/ags_pattern_box.xml"/>
       <xi:include href="xml/ags_pattern_box_callbacks.xml"/>
@@ -271,7 +262,6 @@
       <xi:include href="xml/ags_remove_sequencer_editor_jack.xml"/>
       <xi:include href="xml/ags_remove_soundcard_editor_sink.xml"/>
       <xi:include href="xml/ags_resize_editor.xml"/>
-      <xi:include href="xml/ags_scroll_on_play.xml"/>
       <xi:include href="xml/ags_simple_file_read.xml"/>
       <xi:include href="xml/ags_simple_file_write.xml"/>
       <xi:include href="xml/ags_toggle_led.xml"/>

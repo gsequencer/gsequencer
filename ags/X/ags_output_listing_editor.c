@@ -20,13 +20,8 @@
 #include <ags/X/ags_output_listing_editor.h>
 #include <ags/X/ags_output_listing_editor_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_output.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_connection_editor.h>
 #include <ags/X/ags_pad_editor.h>
@@ -148,22 +143,21 @@ ags_output_listing_editor_connect(AgsConnectable *connectable)
 
   GList *pad_editor, *pad_editor_start;
 
-  ags_output_listing_editor_parent_connectable_interface->connect(connectable);
-
   output_listing_editor = AGS_OUTPUT_LISTING_EDITOR(connectable);
+
+  if((AGS_PROPERTY_EDITOR_CONNECTED & (AGS_PROPERTY_EDITOR(output_listing_editor)->flags)) != 0){
+    return;
+  }
+
+  ags_output_listing_editor_parent_connectable_interface->connect(connectable);
 
   connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(GTK_WIDGET(output_listing_editor),
 								      AGS_TYPE_CONNECTION_EDITOR);
 
   if(connection_editor != NULL &&
      connection_editor->machine != NULL){
-    AgsAudio *audio;
-
-    /* AgsAudio */
-    audio = connection_editor->machine->audio;
-
-    output_listing_editor->set_pads_handler = g_signal_connect_after(G_OBJECT(audio), "set_pads",
-								     G_CALLBACK(ags_output_listing_editor_set_pads_callback), output_listing_editor);
+    g_signal_connect_after(G_OBJECT(connection_editor->machine), "resize-pads",
+			   G_CALLBACK(ags_output_listing_editor_resize_pads_callback), output_listing_editor);
   }
 
   /* AgsPadEditor */
@@ -187,22 +181,24 @@ ags_output_listing_editor_disconnect(AgsConnectable *connectable)
 
   GList *pad_editor, *pad_editor_start;
 
-  ags_output_listing_editor_parent_connectable_interface->connect(connectable);
-
   output_listing_editor = AGS_OUTPUT_LISTING_EDITOR(connectable);
+
+  if((AGS_PROPERTY_EDITOR_CONNECTED & (AGS_PROPERTY_EDITOR(output_listing_editor)->flags)) == 0){
+    return;
+  }
+
+  ags_output_listing_editor_parent_connectable_interface->connect(connectable);
 
   connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(GTK_WIDGET(output_listing_editor),
 								      AGS_TYPE_CONNECTION_EDITOR);
 
   if(connection_editor != NULL &&
      connection_editor->machine != NULL){
-    AgsAudio *audio;
-
-    /* AgsAudio */
-    audio = connection_editor->machine->audio;
-
-    g_signal_handler_disconnect(audio,
-				output_listing_editor->set_pads_handler);
+    g_object_disconnect(G_OBJECT(connection_editor->machine),
+			"any_signal::resize-pads",
+			G_CALLBACK(ags_output_listing_editor_resize_pads_callback),
+			output_listing_editor,
+			NULL);
   }
 
   /* AgsPadEditor */

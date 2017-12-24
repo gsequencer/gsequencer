@@ -22,9 +22,12 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
-#include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/machine/ags_matrix.h>
 
@@ -41,12 +44,9 @@ void ags_matrix_bpm_callback(GtkWidget *spin_button, AgsMatrix *matrix);
 void ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix);
 void ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix);
 
-/* audio */
-void ags_matrix_tact_callback(AgsAudio *audio,
+/* forwarded callbacks */
+void ags_matrix_done_callback(AgsMatrix *matrix,
 			      AgsRecallID *recall_id,
-			      AgsMatrix *matrix);
-void ags_matrix_done_callback(AgsAudio *audio,
-			      AgsRecallID *recall_id,
-			      AgsMatrix *matrix);
+			      gpointer data);
 
 #endif /*__AGS_MATRIX_CALLBACKS_H__*/

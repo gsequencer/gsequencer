@@ -33,6 +33,7 @@
 #include <ags/audio/jack/ags_jack_server.h>
 #include <ags/audio/jack/ags_jack_client.h>
 #include <ags/audio/jack/ags_jack_devout.h>
+#include <ags/audio/jack/ags_jack_devin.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
 
 #include <ags/i18n.h>

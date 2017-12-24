@@ -20,8 +20,9 @@
 #include <ags/X/machine/ags_ffplayer_bridge.h>
 #include <ags/X/machine/ags_ffplayer_bridge_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_effect_bulk.h>
 
@@ -41,7 +42,7 @@ void ags_ffplayer_bridge_disconnect(AgsConnectable *connectable);
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
  * @title: AgsFFPlayerBridge
  * @section_id:
- * @include: ags/X/ags_ffplayer_bridge.h
+ * @include: ags/X/machine/ags_ffplayer_bridge.h
  *
  * #AgsFFPlayerBridge is a composite widget to visualize all #AgsChannel. It should be
  * packed by an #AgsMachine.

@@ -20,29 +20,8 @@
 #include <ags/X/ags_soundcard_editor.h>
 #include <ags/X/ags_soundcard_editor_callbacks.h>
 
-#include <ags/util/ags_list_util.h>
-
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-#include <ags/object/ags_distributed_manager.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_devout.h>
-
-#include <ags/audio/jack/ags_jack_server.h>
-#include <ags/audio/jack/ags_jack_devout.h>
-
-#include <ags/audio/pulse/ags_pulse_server.h>
-#include <ags/audio/pulse/ags_pulse_devout.h>
-
-#include <ags/audio/core-audio/ags_core_audio_server.h>
-#include <ags/audio/core-audio/ags_core_audio_devout.h>
-
-#include <ags/audio/task/ags_notify_soundcard.h>
-
-#include <ags/audio/thread/ags_sequencer_thread.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
@@ -429,51 +408,51 @@ ags_soundcard_editor_disconnect(AgsConnectable *connectable)
 
   /* backend and card */
   g_object_disconnect(G_OBJECT(soundcard_editor->backend),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_soundcard_editor_backend_changed_callback),
 		      soundcard_editor,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(soundcard_editor->card),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_soundcard_editor_card_changed_callback),
 		      soundcard_editor,
 		      NULL);
 
   /* add / remove sink */
   g_object_disconnect(G_OBJECT(soundcard_editor->add_sink),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_soundcard_editor_add_sink_callback),
 		      soundcard_editor,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(soundcard_editor->remove_sink),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_soundcard_editor_remove_sink_callback),
 		      soundcard_editor,
 		      NULL);
 
   /* presets */
   g_object_disconnect(G_OBJECT(soundcard_editor->audio_channels),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_soundcard_editor_audio_channels_changed_callback),
 		      soundcard_editor,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(soundcard_editor->samplerate),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_soundcard_editor_samplerate_changed_callback),
 		      soundcard_editor,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(soundcard_editor->buffer_size),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_soundcard_editor_buffer_size_changed_callback),
 		      soundcard_editor,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(soundcard_editor->format),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_soundcard_editor_format_changed_callback),
 		      soundcard_editor,
 		      NULL);

@@ -20,42 +20,9 @@
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_synth_callbacks.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_plugin.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
-#include <ags/file/ags_file_launch.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_recall_factory.h>
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_container.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/audio/recall/ags_delay_audio.h>
-#include <ags/audio/recall/ags_delay_audio_run.h>
-#include <ags/audio/recall/ags_count_beats_audio.h>
-#include <ags/audio/recall/ags_count_beats_audio_run.h>
-#include <ags/audio/recall/ags_play_notation_audio_run.h>
-
-#include <ags/audio/task/ags_clear_audio_signal.h>
-#include <ags/audio/task/ags_apply_synth.h>
-
-#include <ags/widget/ags_expander_set.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
@@ -94,13 +61,6 @@ void ags_synth_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 void ags_synth_read_resolve_audio(AgsFileLookup *file_lookup,
 				  AgsMachine *machine);
 xmlNode* ags_synth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
-
-void ags_synth_set_audio_channels(AgsAudio *audio,
-				  guint audio_channels, guint audio_channels_old,
-				  AgsSynth *synth);
-void ags_synth_set_pads(AgsAudio *audio, GType type,
-			guint pads, guint pads_old,
-			AgsSynth *synth);
 
 /**
  * SECTION:ags_synth
@@ -225,12 +185,6 @@ ags_synth_init(AgsSynth *synth)
   AGS_MACHINE(synth)->input_line_type = AGS_TYPE_SYNTH_INPUT_LINE;
   AGS_MACHINE(synth)->output_pad_type = G_TYPE_NONE;
   AGS_MACHINE(synth)->output_line_type = G_TYPE_NONE;
-
-  g_signal_connect_after(G_OBJECT(AGS_MACHINE(synth)->audio), "set_audio_channels",
-			 G_CALLBACK(ags_synth_set_audio_channels), synth);
-
-  g_signal_connect_after(G_OBJECT(AGS_MACHINE(synth)->audio), "set_pads",
-			 G_CALLBACK(ags_synth_set_pads), synth);
 
   //  AGS_MACHINE(synth)->flags |= AGS_MACHINE_IS_SYNTHESIZER;
   AGS_MACHINE(synth)->mapping_flags |= AGS_MACHINE_MONO;
@@ -377,19 +331,19 @@ ags_synth_disconnect(AgsConnectable *connectable)
   synth = AGS_SYNTH(connectable);
 
   g_object_disconnect((GObject *) synth->lower,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_synth_lower_callback),
 		      synth,
 		      NULL);
 
   g_object_disconnect((GObject *) synth->auto_update,
-		      "toggled",
+		      "any_signal::toggled",
 		      G_CALLBACK(ags_synth_auto_update_callback),
 		      synth,
 		      NULL);
   
   g_object_disconnect((GObject *) synth->update,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_synth_update_callback),
 		      (gpointer) synth,
 		      NULL);
@@ -502,12 +456,6 @@ ags_synth_read_resolve_audio(AgsFileLookup *file_lookup,
 
   synth = AGS_SYNTH(machine);
 
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_audio_channels",
-			 G_CALLBACK(ags_synth_set_audio_channels), synth);
-
-  g_signal_connect_after(G_OBJECT(machine->audio), "set_pads",
-			 G_CALLBACK(ags_synth_set_pads), synth);
-
   if((AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) == 0){
     synth->mapped_output_pad = machine->audio->output_pads;
     synth->mapped_input_pad = machine->audio->input_pads;
@@ -559,22 +507,6 @@ ags_synth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 	      node);
 
   return(node);
-}
-
-void
-ags_synth_set_audio_channels(AgsAudio *audio,
-			     guint audio_channels, guint audio_channels_old,
-			     AgsSynth *synth)
-{
-  /* empty */
-}
-
-void
-ags_synth_set_pads(AgsAudio *audio, GType type,
-		   guint pads, guint pads_old,
-		   AgsSynth *synth)
-{
-  /* empty */
 }
 
 void

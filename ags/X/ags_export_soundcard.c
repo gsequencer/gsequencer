@@ -20,18 +20,8 @@
 #include <ags/X/ags_export_soundcard.h>
 #include <ags/X/ags_export_soundcard_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_devout.h>
-
-#include <ags/audio/pulse/ags_pulse_devout.h>
-
-#include <ags/audio/jack/ags_jack_devout.h>
-
-#include <ags/audio/core-audio/ags_core_audio_devout.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_export_window.h>
 
@@ -396,19 +386,19 @@ ags_export_soundcard_disconnect(AgsConnectable *connectable)
   export_soundcard->flags &= (~AGS_EXPORT_SOUNDCARD_CONNECTED);
 
   g_object_disconnect(G_OBJECT(export_soundcard->backend),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_export_soundcard_backend_callback),
 		      export_soundcard,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(export_soundcard->card),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_export_soundcard_card_callback),
 		      export_soundcard,
 		      NULL);
   
   g_object_disconnect(G_OBJECT(export_soundcard->file_chooser_button),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_export_soundcard_file_chooser_button_callback),
 		      export_soundcard,
 		      NULL);

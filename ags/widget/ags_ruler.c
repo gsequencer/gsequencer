@@ -41,10 +41,10 @@ void ags_ruler_show(GtkWidget *widget);
 
 void ags_ruler_map(GtkWidget *widget);
 void ags_ruler_realize(GtkWidget *widget);
-void ags_ruler_size_request(GtkWidget *widget,
-			    GtkRequisition   *requisition);
 void ags_ruler_size_allocate(GtkWidget *widget,
 			     GtkAllocation *allocation);
+void ags_ruler_size_request(GtkWidget *widget,
+			    GtkRequisition   *requisition);
 gboolean ags_ruler_expose(GtkWidget *widget,
 			  GdkEventExpose *event);
 
@@ -114,8 +114,8 @@ ags_ruler_class_init(AgsRulerClass *ruler)
   //  widget->map = ags_ruler_map;
   widget->realize = ags_ruler_realize;
   widget->expose_event = ags_ruler_expose;
-  widget->size_request = ags_ruler_size_request;
   widget->size_allocate = ags_ruler_size_allocate;
+  widget->size_request = ags_ruler_size_request;
   widget->show = ags_ruler_show;
 
   /* properties */
@@ -138,7 +138,7 @@ ags_ruler_init(AgsRuler *ruler)
 
   ruler->flags = 0;
 
-  ruler->font_size = 14;
+  ruler->font_size = AGS_RULER_FONT_SIZE;
 
   ruler->adjustment = NULL;
 
@@ -280,23 +280,28 @@ ags_ruler_show(GtkWidget *widget)
 }
 
 void
-ags_ruler_size_request(GtkWidget *widget,
-		       GtkRequisition *requisition)
-{
-  GTK_WIDGET_CLASS(ags_ruler_parent_class)->size_request(widget, requisition);
-
-  /* implement me */
-  //TODO:JK:
-}
-
-void
 ags_ruler_size_allocate(GtkWidget *widget,
 			GtkAllocation *allocation)
 {
-  GTK_WIDGET_CLASS(ags_ruler_parent_class)->size_allocate(widget, allocation);
+  AgsRuler *ruler;
 
-  /* implement me */
-  //TODO:JK:
+  ruler = AGS_RULER(widget);
+
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_ruler_parent_class)->size_allocate(widget,
+							  allocation);
+}
+
+void
+ags_ruler_size_request(GtkWidget *widget,
+		       GtkRequisition *requisition)
+{
+  AgsRuler *ruler;
+
+  ruler = AGS_RULER(widget);
+  
+  requisition->width = -1;
+  requisition->height = (gint) (ruler->font_size + AGS_RULER_LARGE_STEP + (2 * AGS_RULER_FREE_SPACE));
 }
 
 gboolean
@@ -340,7 +345,9 @@ ags_ruler_draw(AgsRuler *ruler)
 
     layout = pango_cairo_create_layout(cr);
     pango_layout_set_text(layout, str, -1);
-    desc = pango_font_description_copy_static(NULL); //pango_font_description_from_string("Georgia Bold 11");
+    desc = pango_font_description_from_string("Sans Slant"); //pango_font_description_copy_static("Georgia Bold 11");
+    pango_font_description_set_size(desc,
+				    ruler->font_size * PANGO_SCALE);
     pango_layout_set_font_description(layout, desc);
     pango_font_description_free(desc);
 
@@ -405,7 +412,7 @@ ags_ruler_draw(AgsRuler *ruler)
       /* draw scale step */
       cairo_move_to(cr,
 		    (double) (i * step - x0),
-		    (double) (widget->allocation.height - AGS_RULER_LARGE_STEP - 14));
+		    (double) (widget->allocation.height - AGS_RULER_LARGE_STEP - (ruler->font_size + AGS_RULER_FREE_SPACE)));
       
       str = g_strdup_printf("%u\0",
 			    (guint) ((gdouble) z / tact));
@@ -425,7 +432,7 @@ ags_ruler_draw(AgsRuler *ruler)
 	/* draw scale step */
 	cairo_move_to(cr,
 		      (double) (i * step - x0),
-		      (double) (widget->allocation.height - AGS_RULER_LARGE_STEP - 14));
+		      (double) (widget->allocation.height - AGS_RULER_LARGE_STEP - (ruler->font_size + AGS_RULER_FREE_SPACE)));
 
 	str = g_strdup_printf("%u\0",
 			      (guint) ((gdouble) z / tact));

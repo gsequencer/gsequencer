@@ -20,53 +20,9 @@
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_effect_bulk_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_plugin.h>
-#include <ags/object/ags_soundcard.h>
-
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/plugin/ags_base_plugin.h>
-#include <ags/plugin/ags_ladspa_manager.h>
-#include <ags/plugin/ags_ladspa_plugin.h>
-#include <ags/plugin/ags_dssi_manager.h>
-#include <ags/plugin/ags_dssi_plugin.h>
-#include <ags/plugin/ags_lv2_manager.h>
-#include <ags/plugin/ags_lv2_plugin.h>
-#include <ags/plugin/ags_ladspa_conversion.h>
-#include <ags/plugin/ags_lv2_conversion.h>
-
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_audio.h>
-#include <ags/audio/ags_recall_audio_run.h>
-#include <ags/audio/ags_recall_channel.h>
-#include <ags/audio/ags_recall_channel_run.h>
-#include <ags/audio/ags_recall_container.h>
-#include <ags/audio/ags_recall_channel_run_dummy.h>
-#include <ags/audio/ags_recall_recycling_dummy.h>
-#include <ags/audio/ags_recall_ladspa.h>
-#include <ags/audio/ags_recall_ladspa_run.h>
-#include <ags/audio/ags_recall_dssi.h>
-#include <ags/audio/ags_recall_dssi_run.h>
-#include <ags/audio/ags_recall_lv2.h>
-#include <ags/audio/ags_recall_lv2_run.h>
-
-#include <ags/audio/task/ags_add_recall_container.h>
-#include <ags/audio/task/ags_add_recall.h>
-
-#include <ags/widget/ags_led.h>
-#include <ags/widget/ags_hindicator.h>
-#include <ags/widget/ags_dial.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_plugin_browser.h>
@@ -542,13 +498,8 @@ ags_effect_bulk_set_property(GObject *gobject,
 
       effect_bulk->audio = audio;
 
-      if(audio != NULL){
-      	if((AGS_EFFECT_BULK_CONNECTED & (effect_bulk->flags)) != 0){
-	  g_signal_connect_after(effect_bulk->audio, "set-audio-channels",
-				 G_CALLBACK(ags_effect_bulk_set_audio_channels_callback), effect_bulk);
-
-	  g_signal_connect_after(effect_bulk->audio, "set-pads",
-				 G_CALLBACK(ags_effect_bulk_set_pads_callback), effect_bulk);
+      if((AGS_EFFECT_BULK_CONNECTED & (effect_bulk->flags)) != 0){
+	if(audio != NULL){
 	  if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
 	    ags_effect_bulk_resize_pads(effect_bulk,
 					audio->output_pads,
@@ -609,6 +560,7 @@ ags_effect_bulk_get_property(GObject *gobject,
 void
 ags_effect_bulk_connect(AgsConnectable *connectable)
 {
+  AgsMachine *machine;
   AgsEffectBulk *effect_bulk;
 
   GList *list, *list_start;
@@ -620,7 +572,16 @@ ags_effect_bulk_connect(AgsConnectable *connectable)
   }
 
   effect_bulk->flags |= AGS_EFFECT_BULK_CONNECTED;
+
+  machine = gtk_widget_get_ancestor(effect_bulk,
+				    AGS_TYPE_MACHINE);
   
+  g_signal_connect_after(machine, "resize-audio-channels",
+			 G_CALLBACK(ags_effect_bulk_resize_audio_channels_callback), effect_bulk);
+
+  g_signal_connect_after(machine, "resize-pads",
+			 G_CALLBACK(ags_effect_bulk_resize_pads_callback), effect_bulk);
+
   /*  */
   g_signal_connect(G_OBJECT(effect_bulk->add), "clicked",
 		   G_CALLBACK(ags_effect_bulk_add_callback), effect_bulk);
@@ -632,14 +593,6 @@ ags_effect_bulk_connect(AgsConnectable *connectable)
 
   g_signal_connect(G_OBJECT(effect_bulk->plugin_browser), "response",
 		   G_CALLBACK(ags_effect_bulk_plugin_browser_response_callback), effect_bulk);
-
-  if(effect_bulk->audio != NULL){
-    g_signal_connect_after(effect_bulk->audio, "set-audio-channels",
-			   G_CALLBACK(ags_effect_bulk_set_audio_channels_callback), effect_bulk);
-
-    g_signal_connect_after(effect_bulk->audio, "set-pads",
-			   G_CALLBACK(ags_effect_bulk_set_pads_callback), effect_bulk);
-  }
 
   list =
     list_start = gtk_container_get_children((GtkContainer *) effect_bulk->table);
@@ -658,6 +611,7 @@ ags_effect_bulk_connect(AgsConnectable *connectable)
 void
 ags_effect_bulk_disconnect(AgsConnectable *connectable)
 {
+  AgsMachine *machine;
   AgsEffectBulk *effect_bulk;
 
   GList *list, *list_start;
@@ -670,7 +624,37 @@ ags_effect_bulk_disconnect(AgsConnectable *connectable)
 
   effect_bulk->flags &= (~AGS_EFFECT_BULK_CONNECTED);
 
+  machine = gtk_widget_get_ancestor(effect_bulk,
+				    AGS_TYPE_MACHINE);
+
+  g_object_disconnect(G_OBJECT(machine),
+		      "any_signal::resize-audio-channels",
+		      G_CALLBACK(ags_effect_bulk_resize_audio_channels_callback),
+		      effect_bulk,
+		      "any_signal::resize-pads",
+		      G_CALLBACK(ags_effect_bulk_resize_pads_callback),
+		      effect_bulk,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(effect_bulk->add),
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_effect_bulk_add_callback),
+		      effect_bulk,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(effect_bulk->remove),
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_effect_bulk_remove_callback),
+		      effect_bulk,
+		      NULL);
+
   ags_connectable_disconnect(AGS_CONNECTABLE(effect_bulk->plugin_browser));
+
+  g_object_disconnect(G_OBJECT(effect_bulk->plugin_browser),
+		      "any_signal::response",
+		      G_CALLBACK(ags_effect_bulk_plugin_browser_response_callback),
+		      effect_bulk,
+		      NULL);
 
   list =
     list_start = gtk_container_get_children((GtkContainer *) effect_bulk->table);
@@ -684,13 +668,6 @@ ags_effect_bulk_disconnect(AgsConnectable *connectable)
   }
 
   g_list_free(list_start);
-
-  //TODO:JK: implement me
-
-  if(effect_bulk->audio != NULL){
-    g_signal_handlers_disconnect_by_data(effect_bulk->audio,
-					 effect_bulk);
-  }  
 }
 
 gchar*

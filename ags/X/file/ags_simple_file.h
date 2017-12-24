@@ -32,13 +32,13 @@
 #define AGS_IS_SIMPLE_FILE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SIMPLE_FILE))
 #define AGS_SIMPLE_FILE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_SIMPLE_FILE, AgsSimpleFileClass))
 
-#define AGS_SIMPLE_FILE_DEFAULT_ENCODING "UTF-8\0"
-#define AGS_SIMPLE_FILE_DEFAULT_DTD "ags_simple_file.dtd\0"
+#define AGS_SIMPLE_FILE_DEFAULT_ENCODING "UTF-8"
+#define AGS_SIMPLE_FILE_DEFAULT_DTD "ags_simple_file.dtd"
 
 #define AGS_SIMPLE_FILE_CHECKSUM_LENGTH (g_checksum_type_get_length(G_CHECKSUM_MD5))
 
-#define AGS_SIMPLE_FILE_DEFAULT_AUDIO_FORMAT "raw\0"
-#define AGS_SIMPLE_FILE_DEFAULT_AUDIO_ENCODING "base64\0"
+#define AGS_SIMPLE_FILE_DEFAULT_AUDIO_FORMAT "raw"
+#define AGS_SIMPLE_FILE_DEFAULT_AUDIO_ENCODING "base64"
 
 typedef struct _AgsSimpleFile AgsSimpleFile;
 typedef struct _AgsSimpleFileClass AgsSimpleFileClass;

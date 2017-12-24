@@ -127,13 +127,15 @@ ags_functional_machine_link_test_add_test()
      (CU_add_test(pSuite, "functional test of GSequencer machine reset link all\0", ags_functional_machine_link_test_reset_link_all) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer machine link destroy all\0", ags_functional_machine_link_test_destroy_all) == NULL)){
     CU_cleanup_registry();
-      
+    
     exit(CU_get_error());
   }
   
   /* Run all tests using the CUnit Basic interface */
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
+
+  ags_test_quit();
   
   CU_cleanup_registry();
   
@@ -1512,6 +1514,9 @@ main(int argc, char **argv)
 		AGS_FUNCTIONAL_MACHINE_LINK_TEST_CONFIG);
   ags_functional_test_util_do_run(argc, argv,
 				  ags_functional_machine_link_test_add_test, &is_available);
+
+  pthread_join(ags_functional_test_util_self(),
+	       NULL);
 
   return(-1);
 }

@@ -1,6 +1,4 @@
-
-#include	<glib-object.h>
-
+#include <glib-object.h>
 
 #ifdef G_ENABLE_DEBUG
 #define g_marshal_value_peek_boolean(v)  g_value_get_boolean (v)
@@ -48,7 +46,6 @@
 #define g_marshal_value_peek_variant(v)  (v)->data[0].v_pointer
 #endif /* !G_ENABLE_DEBUG */
 
-
 /* VOID:BOOLEAN,POINTER (ags_marshallers.list:1) */
 void
 g_cclosure_user_marshal_VOID__BOOLEAN_POINTER (GClosure     *closure,
@@ -58,13 +55,13 @@ g_cclosure_user_marshal_VOID__BOOLEAN_POINTER (GClosure     *closure,
                                                gpointer      invocation_hint G_GNUC_UNUSED,
                                                gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__BOOLEAN_POINTER) (gpointer     data1,
-                                                      gboolean     arg_1,
-                                                      gpointer     arg_2,
-                                                      gpointer     data2);
-  GMarshalFunc_VOID__BOOLEAN_POINTER callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__BOOLEAN_POINTER) (gpointer data1,
+                                                      gboolean arg1,
+                                                      gpointer arg2,
+                                                      gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__BOOLEAN_POINTER callback;
 
   g_return_if_fail (n_param_values == 3);
 
@@ -95,14 +92,14 @@ g_cclosure_user_marshal_VOID__INT_UINT_POINTER (GClosure     *closure,
                                                 gpointer      invocation_hint G_GNUC_UNUSED,
                                                 gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__INT_UINT_POINTER) (gpointer     data1,
-                                                       gint         arg_1,
-                                                       guint        arg_2,
-                                                       gpointer     arg_3,
-                                                       gpointer     data2);
-  GMarshalFunc_VOID__INT_UINT_POINTER callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__INT_UINT_POINTER) (gpointer data1,
+                                                       gint arg1,
+                                                       guint arg2,
+                                                       gpointer arg3,
+                                                       gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__INT_UINT_POINTER callback;
 
   g_return_if_fail (n_param_values == 4);
 
@@ -134,13 +131,13 @@ g_cclosure_user_marshal_VOID__UINT_BOOLEAN (GClosure     *closure,
                                             gpointer      invocation_hint G_GNUC_UNUSED,
                                             gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__UINT_BOOLEAN) (gpointer     data1,
-                                                   guint        arg_1,
-                                                   gboolean     arg_2,
-                                                   gpointer     data2);
-  GMarshalFunc_VOID__UINT_BOOLEAN callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__UINT_BOOLEAN) (gpointer data1,
+                                                   guint arg1,
+                                                   gboolean arg2,
+                                                   gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__UINT_BOOLEAN callback;
 
   g_return_if_fail (n_param_values == 3);
 
@@ -171,13 +168,13 @@ g_cclosure_user_marshal_VOID__UINT_UINT (GClosure     *closure,
                                          gpointer      invocation_hint G_GNUC_UNUSED,
                                          gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__UINT_UINT) (gpointer     data1,
-                                                guint        arg_1,
-                                                guint        arg_2,
-                                                gpointer     data2);
-  GMarshalFunc_VOID__UINT_UINT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__UINT_UINT) (gpointer data1,
+                                                guint arg1,
+                                                guint arg2,
+                                                gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__UINT_UINT callback;
 
   g_return_if_fail (n_param_values == 3);
 
@@ -208,14 +205,14 @@ g_cclosure_user_marshal_VOID__UINT_UINT_BOOLEAN (GClosure     *closure,
                                                  gpointer      invocation_hint G_GNUC_UNUSED,
                                                  gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__UINT_UINT_BOOLEAN) (gpointer     data1,
-                                                        guint        arg_1,
-                                                        guint        arg_2,
-                                                        gboolean     arg_3,
-                                                        gpointer     data2);
-  GMarshalFunc_VOID__UINT_UINT_BOOLEAN callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__UINT_UINT_BOOLEAN) (gpointer data1,
+                                                        guint arg1,
+                                                        guint arg2,
+                                                        gboolean arg3,
+                                                        gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__UINT_UINT_BOOLEAN callback;
 
   g_return_if_fail (n_param_values == 4);
 
@@ -247,14 +244,14 @@ g_cclosure_user_marshal_VOID__UINT_UINT_UINT (GClosure     *closure,
                                               gpointer      invocation_hint G_GNUC_UNUSED,
                                               gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__UINT_UINT_UINT) (gpointer     data1,
-                                                     guint        arg_1,
-                                                     guint        arg_2,
-                                                     guint        arg_3,
-                                                     gpointer     data2);
-  GMarshalFunc_VOID__UINT_UINT_UINT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__UINT_UINT_UINT) (gpointer data1,
+                                                     guint arg1,
+                                                     guint arg2,
+                                                     guint arg3,
+                                                     gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__UINT_UINT_UINT callback;
 
   g_return_if_fail (n_param_values == 4);
 
@@ -286,15 +283,15 @@ g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT (GClosure     *closure,
                                                    gpointer      invocation_hint G_GNUC_UNUSED,
                                                    gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__UINT_UINT_UINT_UINT) (gpointer     data1,
-                                                          guint        arg_1,
-                                                          guint        arg_2,
-                                                          guint        arg_3,
-                                                          guint        arg_4,
-                                                          gpointer     data2);
-  GMarshalFunc_VOID__UINT_UINT_UINT_UINT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__UINT_UINT_UINT_UINT) (gpointer data1,
+                                                          guint arg1,
+                                                          guint arg2,
+                                                          guint arg3,
+                                                          guint arg4,
+                                                          gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__UINT_UINT_UINT_UINT callback;
 
   g_return_if_fail (n_param_values == 5);
 
@@ -327,16 +324,16 @@ g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT_UINT (GClosure     *closure,
                                                         gpointer      invocation_hint G_GNUC_UNUSED,
                                                         gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__UINT_UINT_UINT_UINT_UINT) (gpointer     data1,
-                                                               guint        arg_1,
-                                                               guint        arg_2,
-                                                               guint        arg_3,
-                                                               guint        arg_4,
-                                                               guint        arg_5,
-                                                               gpointer     data2);
-  GMarshalFunc_VOID__UINT_UINT_UINT_UINT_UINT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__UINT_UINT_UINT_UINT_UINT) (gpointer data1,
+                                                               guint arg1,
+                                                               guint arg2,
+                                                               guint arg3,
+                                                               guint arg4,
+                                                               guint arg5,
+                                                               gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__UINT_UINT_UINT_UINT_UINT callback;
 
   g_return_if_fail (n_param_values == 6);
 
@@ -370,17 +367,17 @@ g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT_UINT_UINT (GClosure     *closu
                                                              gpointer      invocation_hint G_GNUC_UNUSED,
                                                              gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__UINT_UINT_UINT_UINT_UINT_UINT) (gpointer     data1,
-                                                                    guint        arg_1,
-                                                                    guint        arg_2,
-                                                                    guint        arg_3,
-                                                                    guint        arg_4,
-                                                                    guint        arg_5,
-                                                                    guint        arg_6,
-                                                                    gpointer     data2);
-  GMarshalFunc_VOID__UINT_UINT_UINT_UINT_UINT_UINT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__UINT_UINT_UINT_UINT_UINT_UINT) (gpointer data1,
+                                                                    guint arg1,
+                                                                    guint arg2,
+                                                                    guint arg3,
+                                                                    guint arg4,
+                                                                    guint arg5,
+                                                                    guint arg6,
+                                                                    gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__UINT_UINT_UINT_UINT_UINT_UINT callback;
 
   g_return_if_fail (n_param_values == 7);
 
@@ -415,18 +412,18 @@ g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT_UINT_UINT_UINT (GClosure     *
                                                                   gpointer      invocation_hint G_GNUC_UNUSED,
                                                                   gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__UINT_UINT_UINT_UINT_UINT_UINT_UINT) (gpointer     data1,
-                                                                         guint        arg_1,
-                                                                         guint        arg_2,
-                                                                         guint        arg_3,
-                                                                         guint        arg_4,
-                                                                         guint        arg_5,
-                                                                         guint        arg_6,
-                                                                         guint        arg_7,
-                                                                         gpointer     data2);
-  GMarshalFunc_VOID__UINT_UINT_UINT_UINT_UINT_UINT_UINT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__UINT_UINT_UINT_UINT_UINT_UINT_UINT) (gpointer data1,
+                                                                         guint arg1,
+                                                                         guint arg2,
+                                                                         guint arg3,
+                                                                         guint arg4,
+                                                                         guint arg5,
+                                                                         guint arg6,
+                                                                         guint arg7,
+                                                                         gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__UINT_UINT_UINT_UINT_UINT_UINT_UINT callback;
 
   g_return_if_fail (n_param_values == 8);
 
@@ -462,14 +459,14 @@ g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT (GClosure     *closure,
                                                 gpointer      invocation_hint G_GNUC_UNUSED,
                                                 gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__UINT_DOUBLE_UINT) (gpointer     data1,
-                                                       guint        arg_1,
-                                                       gdouble      arg_2,
-                                                       guint        arg_3,
-                                                       gpointer     data2);
-  GMarshalFunc_VOID__UINT_DOUBLE_UINT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__UINT_DOUBLE_UINT) (gpointer data1,
+                                                       guint arg1,
+                                                       gdouble arg2,
+                                                       guint arg3,
+                                                       gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__UINT_DOUBLE_UINT callback;
 
   g_return_if_fail (n_param_values == 4);
 
@@ -501,13 +498,13 @@ g_cclosure_user_marshal_VOID__UINT_INT (GClosure     *closure,
                                         gpointer      invocation_hint G_GNUC_UNUSED,
                                         gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__UINT_INT) (gpointer     data1,
-                                               guint        arg_1,
-                                               gint         arg_2,
-                                               gpointer     data2);
-  GMarshalFunc_VOID__UINT_INT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__UINT_INT) (gpointer data1,
+                                               guint arg1,
+                                               gint arg2,
+                                               gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__UINT_INT callback;
 
   g_return_if_fail (n_param_values == 3);
 
@@ -538,13 +535,13 @@ g_cclosure_user_marshal_VOID__UINT_DOUBLE (GClosure     *closure,
                                            gpointer      invocation_hint G_GNUC_UNUSED,
                                            gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__UINT_DOUBLE) (gpointer     data1,
-                                                  guint        arg_1,
-                                                  gdouble      arg_2,
-                                                  gpointer     data2);
-  GMarshalFunc_VOID__UINT_DOUBLE callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__UINT_DOUBLE) (gpointer data1,
+                                                  guint arg1,
+                                                  gdouble arg2,
+                                                  gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__UINT_DOUBLE callback;
 
   g_return_if_fail (n_param_values == 3);
 
@@ -575,14 +572,14 @@ g_cclosure_user_marshal_VOID__UINT_STRING_UINT (GClosure     *closure,
                                                 gpointer      invocation_hint G_GNUC_UNUSED,
                                                 gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__UINT_STRING_UINT) (gpointer     data1,
-                                                       guint        arg_1,
-                                                       gpointer     arg_2,
-                                                       guint        arg_3,
-                                                       gpointer     data2);
-  GMarshalFunc_VOID__UINT_STRING_UINT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__UINT_STRING_UINT) (gpointer data1,
+                                                       guint arg1,
+                                                       gpointer arg2,
+                                                       guint arg3,
+                                                       gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__UINT_STRING_UINT callback;
 
   g_return_if_fail (n_param_values == 4);
 
@@ -614,14 +611,14 @@ g_cclosure_user_marshal_VOID__UINT_POINTER_UINT (GClosure     *closure,
                                                  gpointer      invocation_hint G_GNUC_UNUSED,
                                                  gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__UINT_POINTER_UINT) (gpointer     data1,
-                                                        guint        arg_1,
-                                                        gpointer     arg_2,
-                                                        guint        arg_3,
-                                                        gpointer     data2);
-  GMarshalFunc_VOID__UINT_POINTER_UINT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__UINT_POINTER_UINT) (gpointer data1,
+                                                        guint arg1,
+                                                        gpointer arg2,
+                                                        guint arg3,
+                                                        gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__UINT_POINTER_UINT callback;
 
   g_return_if_fail (n_param_values == 4);
 
@@ -653,13 +650,13 @@ g_cclosure_user_marshal_VOID__ULONG_UINT (GClosure     *closure,
                                           gpointer      invocation_hint G_GNUC_UNUSED,
                                           gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__ULONG_UINT) (gpointer     data1,
-                                                 gulong       arg_1,
-                                                 guint        arg_2,
-                                                 gpointer     data2);
-  GMarshalFunc_VOID__ULONG_UINT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__ULONG_UINT) (gpointer data1,
+                                                 gulong arg1,
+                                                 guint arg2,
+                                                 gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__ULONG_UINT callback;
 
   g_return_if_fail (n_param_values == 3);
 
@@ -690,14 +687,14 @@ g_cclosure_user_marshal_VOID__ULONG_UINT_BOOLEAN (GClosure     *closure,
                                                   gpointer      invocation_hint G_GNUC_UNUSED,
                                                   gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__ULONG_UINT_BOOLEAN) (gpointer     data1,
-                                                         gulong       arg_1,
-                                                         guint        arg_2,
-                                                         gboolean     arg_3,
-                                                         gpointer     data2);
-  GMarshalFunc_VOID__ULONG_UINT_BOOLEAN callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__ULONG_UINT_BOOLEAN) (gpointer data1,
+                                                         gulong arg1,
+                                                         guint arg2,
+                                                         gboolean arg3,
+                                                         gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__ULONG_UINT_BOOLEAN callback;
 
   g_return_if_fail (n_param_values == 4);
 
@@ -729,13 +726,13 @@ g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE (GClosure     *closure,
                                              gpointer      invocation_hint G_GNUC_UNUSED,
                                              gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__DOUBLE_DOUBLE) (gpointer     data1,
-                                                    gdouble      arg_1,
-                                                    gdouble      arg_2,
-                                                    gpointer     data2);
-  GMarshalFunc_VOID__DOUBLE_DOUBLE callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__DOUBLE_DOUBLE) (gpointer data1,
+                                                    gdouble arg1,
+                                                    gdouble arg2,
+                                                    gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__DOUBLE_DOUBLE callback;
 
   g_return_if_fail (n_param_values == 3);
 
@@ -766,14 +763,14 @@ g_cclosure_user_marshal_VOID__ULONG_UINT_UINT (GClosure     *closure,
                                                gpointer      invocation_hint G_GNUC_UNUSED,
                                                gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__ULONG_UINT_UINT) (gpointer     data1,
-                                                      gulong       arg_1,
-                                                      guint        arg_2,
-                                                      guint        arg_3,
-                                                      gpointer     data2);
-  GMarshalFunc_VOID__ULONG_UINT_UINT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__ULONG_UINT_UINT) (gpointer data1,
+                                                      gulong arg1,
+                                                      guint arg2,
+                                                      guint arg3,
+                                                      gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__ULONG_UINT_UINT callback;
 
   g_return_if_fail (n_param_values == 4);
 
@@ -805,13 +802,13 @@ g_cclosure_user_marshal_VOID__STRING_UINT (GClosure     *closure,
                                            gpointer      invocation_hint G_GNUC_UNUSED,
                                            gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__STRING_UINT) (gpointer     data1,
-                                                  gpointer     arg_1,
-                                                  guint        arg_2,
-                                                  gpointer     data2);
-  GMarshalFunc_VOID__STRING_UINT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__STRING_UINT) (gpointer data1,
+                                                  gpointer arg1,
+                                                  guint arg2,
+                                                  gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__STRING_UINT callback;
 
   g_return_if_fail (n_param_values == 3);
 
@@ -842,14 +839,14 @@ g_cclosure_user_marshal_VOID__STRING_UINT_DOUBLE (GClosure     *closure,
                                                   gpointer      invocation_hint G_GNUC_UNUSED,
                                                   gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__STRING_UINT_DOUBLE) (gpointer     data1,
-                                                         gpointer     arg_1,
-                                                         guint        arg_2,
-                                                         gdouble      arg_3,
-                                                         gpointer     data2);
-  GMarshalFunc_VOID__STRING_UINT_DOUBLE callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__STRING_UINT_DOUBLE) (gpointer data1,
+                                                         gpointer arg1,
+                                                         guint arg2,
+                                                         gdouble arg3,
+                                                         gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__STRING_UINT_DOUBLE callback;
 
   g_return_if_fail (n_param_values == 4);
 
@@ -881,14 +878,14 @@ g_cclosure_user_marshal_VOID__STRING_UINT_POINTER (GClosure     *closure,
                                                    gpointer      invocation_hint G_GNUC_UNUSED,
                                                    gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__STRING_UINT_POINTER) (gpointer     data1,
-                                                          gpointer     arg_1,
-                                                          guint        arg_2,
-                                                          gpointer     arg_3,
-                                                          gpointer     data2);
-  GMarshalFunc_VOID__STRING_UINT_POINTER callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__STRING_UINT_POINTER) (gpointer data1,
+                                                          gpointer arg1,
+                                                          guint arg2,
+                                                          gpointer arg3,
+                                                          gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__STRING_UINT_POINTER callback;
 
   g_return_if_fail (n_param_values == 4);
 
@@ -920,15 +917,15 @@ g_cclosure_user_marshal_VOID__STRING_UINT_STRING_DOUBLE (GClosure     *closure,
                                                          gpointer      invocation_hint G_GNUC_UNUSED,
                                                          gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__STRING_UINT_STRING_DOUBLE) (gpointer     data1,
-                                                                gpointer     arg_1,
-                                                                guint        arg_2,
-                                                                gpointer     arg_3,
-                                                                gdouble      arg_4,
-                                                                gpointer     data2);
-  GMarshalFunc_VOID__STRING_UINT_STRING_DOUBLE callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__STRING_UINT_STRING_DOUBLE) (gpointer data1,
+                                                                gpointer arg1,
+                                                                guint arg2,
+                                                                gpointer arg3,
+                                                                gdouble arg4,
+                                                                gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__STRING_UINT_STRING_DOUBLE callback;
 
   g_return_if_fail (n_param_values == 5);
 
@@ -961,13 +958,13 @@ g_cclosure_user_marshal_VOID__STRING_POINTER (GClosure     *closure,
                                               gpointer      invocation_hint G_GNUC_UNUSED,
                                               gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__STRING_POINTER) (gpointer     data1,
-                                                     gpointer     arg_1,
-                                                     gpointer     arg_2,
-                                                     gpointer     data2);
-  GMarshalFunc_VOID__STRING_POINTER callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__STRING_POINTER) (gpointer data1,
+                                                     gpointer arg1,
+                                                     gpointer arg2,
+                                                     gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__STRING_POINTER callback;
 
   g_return_if_fail (n_param_values == 3);
 
@@ -998,14 +995,14 @@ g_cclosure_user_marshal_VOID__STRING_STRING_STRING (GClosure     *closure,
                                                     gpointer      invocation_hint G_GNUC_UNUSED,
                                                     gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__STRING_STRING_STRING) (gpointer     data1,
-                                                           gpointer     arg_1,
-                                                           gpointer     arg_2,
-                                                           gpointer     arg_3,
-                                                           gpointer     data2);
-  GMarshalFunc_VOID__STRING_STRING_STRING callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__STRING_STRING_STRING) (gpointer data1,
+                                                           gpointer arg1,
+                                                           gpointer arg2,
+                                                           gpointer arg3,
+                                                           gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__STRING_STRING_STRING callback;
 
   g_return_if_fail (n_param_values == 4);
 
@@ -1037,13 +1034,13 @@ g_cclosure_user_marshal_VOID__POINTER_UINT (GClosure     *closure,
                                             gpointer      invocation_hint G_GNUC_UNUSED,
                                             gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__POINTER_UINT) (gpointer     data1,
-                                                   gpointer     arg_1,
-                                                   guint        arg_2,
-                                                   gpointer     data2);
-  GMarshalFunc_VOID__POINTER_UINT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__POINTER_UINT) (gpointer data1,
+                                                   gpointer arg1,
+                                                   guint arg2,
+                                                   gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__POINTER_UINT callback;
 
   g_return_if_fail (n_param_values == 3);
 
@@ -1074,14 +1071,14 @@ g_cclosure_user_marshal_VOID__POINTER_UINT_UINT (GClosure     *closure,
                                                  gpointer      invocation_hint G_GNUC_UNUSED,
                                                  gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__POINTER_UINT_UINT) (gpointer     data1,
-                                                        gpointer     arg_1,
-                                                        guint        arg_2,
-                                                        guint        arg_3,
-                                                        gpointer     data2);
-  GMarshalFunc_VOID__POINTER_UINT_UINT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__POINTER_UINT_UINT) (gpointer data1,
+                                                        gpointer arg1,
+                                                        guint arg2,
+                                                        guint arg3,
+                                                        gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__POINTER_UINT_UINT callback;
 
   g_return_if_fail (n_param_values == 4);
 
@@ -1113,14 +1110,14 @@ g_cclosure_user_marshal_VOID__POINTER_UINT_POINTER (GClosure     *closure,
                                                     gpointer      invocation_hint G_GNUC_UNUSED,
                                                     gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__POINTER_UINT_POINTER) (gpointer     data1,
-                                                           gpointer     arg_1,
-                                                           guint        arg_2,
-                                                           gpointer     arg_3,
-                                                           gpointer     data2);
-  GMarshalFunc_VOID__POINTER_UINT_POINTER callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__POINTER_UINT_POINTER) (gpointer data1,
+                                                           gpointer arg1,
+                                                           guint arg2,
+                                                           gpointer arg3,
+                                                           gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__POINTER_UINT_POINTER callback;
 
   g_return_if_fail (n_param_values == 4);
 
@@ -1152,14 +1149,14 @@ g_cclosure_user_marshal_VOID__POINTER_POINTER_UINT (GClosure     *closure,
                                                     gpointer      invocation_hint G_GNUC_UNUSED,
                                                     gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__POINTER_POINTER_UINT) (gpointer     data1,
-                                                           gpointer     arg_1,
-                                                           gpointer     arg_2,
-                                                           guint        arg_3,
-                                                           gpointer     data2);
-  GMarshalFunc_VOID__POINTER_POINTER_UINT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__POINTER_POINTER_UINT) (gpointer data1,
+                                                           gpointer arg1,
+                                                           gpointer arg2,
+                                                           guint arg3,
+                                                           gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__POINTER_POINTER_UINT callback;
 
   g_return_if_fail (n_param_values == 4);
 
@@ -1191,14 +1188,14 @@ g_cclosure_user_marshal_VOID__POINTER_POINTER_POINTER (GClosure     *closure,
                                                        gpointer      invocation_hint G_GNUC_UNUSED,
                                                        gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__POINTER_POINTER_POINTER) (gpointer     data1,
-                                                              gpointer     arg_1,
-                                                              gpointer     arg_2,
-                                                              gpointer     arg_3,
-                                                              gpointer     data2);
-  GMarshalFunc_VOID__POINTER_POINTER_POINTER callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__POINTER_POINTER_POINTER) (gpointer data1,
+                                                              gpointer arg1,
+                                                              gpointer arg2,
+                                                              gpointer arg3,
+                                                              gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__POINTER_POINTER_POINTER callback;
 
   g_return_if_fail (n_param_values == 4);
 
@@ -1230,13 +1227,13 @@ g_cclosure_user_marshal_VOID__OBJECT_UINT (GClosure     *closure,
                                            gpointer      invocation_hint G_GNUC_UNUSED,
                                            gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__OBJECT_UINT) (gpointer     data1,
-                                                  gpointer     arg_1,
-                                                  guint        arg_2,
-                                                  gpointer     data2);
-  GMarshalFunc_VOID__OBJECT_UINT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__OBJECT_UINT) (gpointer data1,
+                                                  gpointer arg1,
+                                                  guint arg2,
+                                                  gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__OBJECT_UINT callback;
 
   g_return_if_fail (n_param_values == 3);
 
@@ -1267,13 +1264,13 @@ g_cclosure_user_marshal_VOID__OBJECT_OBJECT (GClosure     *closure,
                                              gpointer      invocation_hint G_GNUC_UNUSED,
                                              gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__OBJECT_OBJECT) (gpointer     data1,
-                                                    gpointer     arg_1,
-                                                    gpointer     arg_2,
-                                                    gpointer     data2);
-  GMarshalFunc_VOID__OBJECT_OBJECT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__OBJECT_OBJECT) (gpointer data1,
+                                                    gpointer arg1,
+                                                    gpointer arg2,
+                                                    gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__OBJECT_OBJECT callback;
 
   g_return_if_fail (n_param_values == 3);
 
@@ -1304,16 +1301,16 @@ g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN (GClosure     *cl
                                                                 gpointer      invocation_hint G_GNUC_UNUSED,
                                                                 gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN) (gpointer     data1,
-                                                                       gpointer     arg_1,
-                                                                       gpointer     arg_2,
-                                                                       gpointer     arg_3,
-                                                                       gint         arg_4,
-                                                                       gboolean     arg_5,
-                                                                       gpointer     data2);
-  GMarshalFunc_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN) (gpointer data1,
+                                                                       gpointer arg1,
+                                                                       gpointer arg2,
+                                                                       gpointer arg3,
+                                                                       gint arg4,
+                                                                       gboolean arg5,
+                                                                       gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN callback;
 
   g_return_if_fail (n_param_values == 6);
 
@@ -1347,20 +1344,20 @@ g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_UINT_INT
                                                                                           gpointer      invocation_hint G_GNUC_UNUSED,
                                                                                           gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_UINT_INT_BOOLEAN) (gpointer     data1,
-                                                                                                 gpointer     arg_1,
-                                                                                                 gpointer     arg_2,
-                                                                                                 gpointer     arg_3,
-                                                                                                 gpointer     arg_4,
-                                                                                                 gpointer     arg_5,
-                                                                                                 gpointer     arg_6,
-                                                                                                 guint        arg_7,
-                                                                                                 gint         arg_8,
-                                                                                                 gboolean     arg_9,
-                                                                                                 gpointer     data2);
-  GMarshalFunc_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_UINT_INT_BOOLEAN callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_UINT_INT_BOOLEAN) (gpointer data1,
+                                                                                                 gpointer arg1,
+                                                                                                 gpointer arg2,
+                                                                                                 gpointer arg3,
+                                                                                                 gpointer arg4,
+                                                                                                 gpointer arg5,
+                                                                                                 gpointer arg6,
+                                                                                                 guint arg7,
+                                                                                                 gint arg8,
+                                                                                                 gboolean arg9,
+                                                                                                 gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_UINT_INT_BOOLEAN callback;
 
   g_return_if_fail (n_param_values == 10);
 
@@ -1398,19 +1395,19 @@ g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_O
                                                                                        gpointer      invocation_hint G_GNUC_UNUSED,
                                                                                        gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT) (gpointer     data1,
-                                                                                              gpointer     arg_1,
-                                                                                              gpointer     arg_2,
-                                                                                              gpointer     arg_3,
-                                                                                              gpointer     arg_4,
-                                                                                              gpointer     arg_5,
-                                                                                              gpointer     arg_6,
-                                                                                              gpointer     arg_7,
-                                                                                              gpointer     arg_8,
-                                                                                              gpointer     data2);
-  GMarshalFunc_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef void (*GMarshalFunc_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT) (gpointer data1,
+                                                                                              gpointer arg1,
+                                                                                              gpointer arg2,
+                                                                                              gpointer arg3,
+                                                                                              gpointer arg4,
+                                                                                              gpointer arg5,
+                                                                                              gpointer arg6,
+                                                                                              gpointer arg7,
+                                                                                              gpointer arg8,
+                                                                                              gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT callback;
 
   g_return_if_fail (n_param_values == 9);
 
@@ -1441,17 +1438,17 @@ g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_O
 /* ULONG:VOID (ags_marshallers.list:36) */
 void
 g_cclosure_user_marshal_ULONG__VOID (GClosure     *closure,
-                                     GValue       *return_value G_GNUC_UNUSED,
+                                     GValue       *return_value,
                                      guint         n_param_values,
                                      const GValue *param_values,
                                      gpointer      invocation_hint G_GNUC_UNUSED,
                                      gpointer      marshal_data)
 {
-  typedef gulong (*GMarshalFunc_ULONG__VOID) (gpointer     data1,
-                                              gpointer     data2);
-  GMarshalFunc_ULONG__VOID callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef gulong (*GMarshalFunc_ULONG__VOID) (gpointer data1,
+                                              gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_ULONG__VOID callback;
   gulong v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -1478,17 +1475,17 @@ g_cclosure_user_marshal_ULONG__VOID (GClosure     *closure,
 /* INT:VOID (ags_marshallers.list:37) */
 void
 g_cclosure_user_marshal_INT__VOID (GClosure     *closure,
-                                   GValue       *return_value G_GNUC_UNUSED,
+                                   GValue       *return_value,
                                    guint         n_param_values,
                                    const GValue *param_values,
                                    gpointer      invocation_hint G_GNUC_UNUSED,
                                    gpointer      marshal_data)
 {
-  typedef gint (*GMarshalFunc_INT__VOID) (gpointer     data1,
-                                          gpointer     data2);
-  GMarshalFunc_INT__VOID callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef gint (*GMarshalFunc_INT__VOID) (gpointer data1,
+                                          gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_INT__VOID callback;
   gint v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -1515,17 +1512,17 @@ g_cclosure_user_marshal_INT__VOID (GClosure     *closure,
 /* UINT:VOID (ags_marshallers.list:38) */
 void
 g_cclosure_user_marshal_UINT__VOID (GClosure     *closure,
-                                    GValue       *return_value G_GNUC_UNUSED,
+                                    GValue       *return_value,
                                     guint         n_param_values,
                                     const GValue *param_values,
                                     gpointer      invocation_hint G_GNUC_UNUSED,
                                     gpointer      marshal_data)
 {
-  typedef guint (*GMarshalFunc_UINT__VOID) (gpointer     data1,
-                                            gpointer     data2);
-  GMarshalFunc_UINT__VOID callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef guint (*GMarshalFunc_UINT__VOID) (gpointer data1,
+                                            gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_UINT__VOID callback;
   guint v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -1552,19 +1549,19 @@ g_cclosure_user_marshal_UINT__VOID (GClosure     *closure,
 /* BOOLEAN:UINT,POINTER (ags_marshallers.list:39) */
 void
 g_cclosure_user_marshal_BOOLEAN__UINT_POINTER (GClosure     *closure,
-                                               GValue       *return_value G_GNUC_UNUSED,
+                                               GValue       *return_value,
                                                guint         n_param_values,
                                                const GValue *param_values,
                                                gpointer      invocation_hint G_GNUC_UNUSED,
                                                gpointer      marshal_data)
 {
-  typedef gboolean (*GMarshalFunc_BOOLEAN__UINT_POINTER) (gpointer     data1,
-                                                          guint        arg_1,
-                                                          gpointer     arg_2,
-                                                          gpointer     data2);
-  GMarshalFunc_BOOLEAN__UINT_POINTER callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef gboolean (*GMarshalFunc_BOOLEAN__UINT_POINTER) (gpointer data1,
+                                                          guint arg1,
+                                                          gpointer arg2,
+                                                          gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_BOOLEAN__UINT_POINTER callback;
   gboolean v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -1593,19 +1590,19 @@ g_cclosure_user_marshal_BOOLEAN__UINT_POINTER (GClosure     *closure,
 /* BOOLEAN:OBJECT,OBJECT (ags_marshallers.list:40) */
 void
 g_cclosure_user_marshal_BOOLEAN__OBJECT_OBJECT (GClosure     *closure,
-                                                GValue       *return_value G_GNUC_UNUSED,
+                                                GValue       *return_value,
                                                 guint         n_param_values,
                                                 const GValue *param_values,
                                                 gpointer      invocation_hint G_GNUC_UNUSED,
                                                 gpointer      marshal_data)
 {
-  typedef gboolean (*GMarshalFunc_BOOLEAN__OBJECT_OBJECT) (gpointer     data1,
-                                                           gpointer     arg_1,
-                                                           gpointer     arg_2,
-                                                           gpointer     data2);
-  GMarshalFunc_BOOLEAN__OBJECT_OBJECT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef gboolean (*GMarshalFunc_BOOLEAN__OBJECT_OBJECT) (gpointer data1,
+                                                           gpointer arg1,
+                                                           gpointer arg2,
+                                                           gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_BOOLEAN__OBJECT_OBJECT callback;
   gboolean v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -1634,20 +1631,20 @@ g_cclosure_user_marshal_BOOLEAN__OBJECT_OBJECT (GClosure     *closure,
 /* UINT:INT,UINT,POINTER (ags_marshallers.list:41) */
 void
 g_cclosure_user_marshal_UINT__INT_UINT_POINTER (GClosure     *closure,
-                                                GValue       *return_value G_GNUC_UNUSED,
+                                                GValue       *return_value,
                                                 guint         n_param_values,
                                                 const GValue *param_values,
                                                 gpointer      invocation_hint G_GNUC_UNUSED,
                                                 gpointer      marshal_data)
 {
-  typedef guint (*GMarshalFunc_UINT__INT_UINT_POINTER) (gpointer     data1,
-                                                        gint         arg_1,
-                                                        guint        arg_2,
-                                                        gpointer     arg_3,
-                                                        gpointer     data2);
-  GMarshalFunc_UINT__INT_UINT_POINTER callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef guint (*GMarshalFunc_UINT__INT_UINT_POINTER) (gpointer data1,
+                                                        gint arg1,
+                                                        guint arg2,
+                                                        gpointer arg3,
+                                                        gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_UINT__INT_UINT_POINTER callback;
   guint v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -1677,19 +1674,19 @@ g_cclosure_user_marshal_UINT__INT_UINT_POINTER (GClosure     *closure,
 /* DOUBLE:DOUBLE,BOOLEAN (ags_marshallers.list:42) */
 void
 g_cclosure_user_marshal_DOUBLE__DOUBLE_BOOLEAN (GClosure     *closure,
-                                                GValue       *return_value G_GNUC_UNUSED,
+                                                GValue       *return_value,
                                                 guint         n_param_values,
                                                 const GValue *param_values,
                                                 gpointer      invocation_hint G_GNUC_UNUSED,
                                                 gpointer      marshal_data)
 {
-  typedef gdouble (*GMarshalFunc_DOUBLE__DOUBLE_BOOLEAN) (gpointer     data1,
-                                                          gdouble      arg_1,
-                                                          gboolean     arg_2,
-                                                          gpointer     data2);
-  GMarshalFunc_DOUBLE__DOUBLE_BOOLEAN callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef gdouble (*GMarshalFunc_DOUBLE__DOUBLE_BOOLEAN) (gpointer data1,
+                                                          gdouble arg1,
+                                                          gboolean arg2,
+                                                          gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_DOUBLE__DOUBLE_BOOLEAN callback;
   gdouble v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -1718,19 +1715,19 @@ g_cclosure_user_marshal_DOUBLE__DOUBLE_BOOLEAN (GClosure     *closure,
 /* STRING:STRING,STRING (ags_marshallers.list:43) */
 void
 g_cclosure_user_marshal_STRING__STRING_STRING (GClosure     *closure,
-                                               GValue       *return_value G_GNUC_UNUSED,
+                                               GValue       *return_value,
                                                guint         n_param_values,
                                                const GValue *param_values,
                                                gpointer      invocation_hint G_GNUC_UNUSED,
                                                gpointer      marshal_data)
 {
-  typedef gchar* (*GMarshalFunc_STRING__STRING_STRING) (gpointer     data1,
-                                                        gpointer     arg_1,
-                                                        gpointer     arg_2,
-                                                        gpointer     data2);
-  GMarshalFunc_STRING__STRING_STRING callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef gchar* (*GMarshalFunc_STRING__STRING_STRING) (gpointer data1,
+                                                        gpointer arg1,
+                                                        gpointer arg2,
+                                                        gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_STRING__STRING_STRING callback;
   gchar* v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -1759,24 +1756,24 @@ g_cclosure_user_marshal_STRING__STRING_STRING (GClosure     *closure,
 /* STRING:ULONG,STRING,STRING,STRING,STRING,UINT,POINTER (ags_marshallers.list:44) */
 void
 g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER (GClosure     *closure,
-                                                                                GValue       *return_value G_GNUC_UNUSED,
+                                                                                GValue       *return_value,
                                                                                 guint         n_param_values,
                                                                                 const GValue *param_values,
                                                                                 gpointer      invocation_hint G_GNUC_UNUSED,
                                                                                 gpointer      marshal_data)
 {
-  typedef gchar* (*GMarshalFunc_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER) (gpointer     data1,
-                                                                                         gulong       arg_1,
-                                                                                         gpointer     arg_2,
-                                                                                         gpointer     arg_3,
-                                                                                         gpointer     arg_4,
-                                                                                         gpointer     arg_5,
-                                                                                         guint        arg_6,
-                                                                                         gpointer     arg_7,
-                                                                                         gpointer     data2);
-  GMarshalFunc_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef gchar* (*GMarshalFunc_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER) (gpointer data1,
+                                                                                         gulong arg1,
+                                                                                         gpointer arg2,
+                                                                                         gpointer arg3,
+                                                                                         gpointer arg4,
+                                                                                         gpointer arg5,
+                                                                                         guint arg6,
+                                                                                         gpointer arg7,
+                                                                                         gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER callback;
   gchar* v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -1810,17 +1807,17 @@ g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER (
 /* POINTER:VOID (ags_marshallers.list:45) */
 void
 g_cclosure_user_marshal_POINTER__VOID (GClosure     *closure,
-                                       GValue       *return_value G_GNUC_UNUSED,
+                                       GValue       *return_value,
                                        guint         n_param_values,
                                        const GValue *param_values,
                                        gpointer      invocation_hint G_GNUC_UNUSED,
                                        gpointer      marshal_data)
 {
-  typedef gpointer (*GMarshalFunc_POINTER__VOID) (gpointer     data1,
-                                                  gpointer     data2);
-  GMarshalFunc_POINTER__VOID callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef gpointer (*GMarshalFunc_POINTER__VOID) (gpointer data1,
+                                                  gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_POINTER__VOID callback;
   gpointer v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -1847,18 +1844,18 @@ g_cclosure_user_marshal_POINTER__VOID (GClosure     *closure,
 /* POINTER:UINT (ags_marshallers.list:46) */
 void
 g_cclosure_user_marshal_POINTER__UINT (GClosure     *closure,
-                                       GValue       *return_value G_GNUC_UNUSED,
+                                       GValue       *return_value,
                                        guint         n_param_values,
                                        const GValue *param_values,
                                        gpointer      invocation_hint G_GNUC_UNUSED,
                                        gpointer      marshal_data)
 {
-  typedef gpointer (*GMarshalFunc_POINTER__UINT) (gpointer     data1,
-                                                  guint        arg_1,
-                                                  gpointer     data2);
-  GMarshalFunc_POINTER__UINT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef gpointer (*GMarshalFunc_POINTER__UINT) (gpointer data1,
+                                                  guint arg1,
+                                                  gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_POINTER__UINT callback;
   gpointer v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -1886,19 +1883,19 @@ g_cclosure_user_marshal_POINTER__UINT (GClosure     *closure,
 /* POINTER:POINTER,UINT (ags_marshallers.list:47) */
 void
 g_cclosure_user_marshal_POINTER__POINTER_UINT (GClosure     *closure,
-                                               GValue       *return_value G_GNUC_UNUSED,
+                                               GValue       *return_value,
                                                guint         n_param_values,
                                                const GValue *param_values,
                                                gpointer      invocation_hint G_GNUC_UNUSED,
                                                gpointer      marshal_data)
 {
-  typedef gpointer (*GMarshalFunc_POINTER__POINTER_UINT) (gpointer     data1,
-                                                          gpointer     arg_1,
-                                                          guint        arg_2,
-                                                          gpointer     data2);
-  GMarshalFunc_POINTER__POINTER_UINT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef gpointer (*GMarshalFunc_POINTER__POINTER_UINT) (gpointer data1,
+                                                          gpointer arg1,
+                                                          guint arg2,
+                                                          gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_POINTER__POINTER_UINT callback;
   gpointer v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -1927,19 +1924,19 @@ g_cclosure_user_marshal_POINTER__POINTER_UINT (GClosure     *closure,
 /* POINTER:STRING,STRING (ags_marshallers.list:48) */
 void
 g_cclosure_user_marshal_POINTER__STRING_STRING (GClosure     *closure,
-                                                GValue       *return_value G_GNUC_UNUSED,
+                                                GValue       *return_value,
                                                 guint         n_param_values,
                                                 const GValue *param_values,
                                                 gpointer      invocation_hint G_GNUC_UNUSED,
                                                 gpointer      marshal_data)
 {
-  typedef gpointer (*GMarshalFunc_POINTER__STRING_STRING) (gpointer     data1,
-                                                           gpointer     arg_1,
-                                                           gpointer     arg_2,
-                                                           gpointer     data2);
-  GMarshalFunc_POINTER__STRING_STRING callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef gpointer (*GMarshalFunc_POINTER__STRING_STRING) (gpointer data1,
+                                                           gpointer arg1,
+                                                           gpointer arg2,
+                                                           gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_POINTER__STRING_STRING callback;
   gpointer v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -1968,20 +1965,20 @@ g_cclosure_user_marshal_POINTER__STRING_STRING (GClosure     *closure,
 /* POINTER:STRING,STRING,STRING (ags_marshallers.list:49) */
 void
 g_cclosure_user_marshal_POINTER__STRING_STRING_STRING (GClosure     *closure,
-                                                       GValue       *return_value G_GNUC_UNUSED,
+                                                       GValue       *return_value,
                                                        guint         n_param_values,
                                                        const GValue *param_values,
                                                        gpointer      invocation_hint G_GNUC_UNUSED,
                                                        gpointer      marshal_data)
 {
-  typedef gpointer (*GMarshalFunc_POINTER__STRING_STRING_STRING) (gpointer     data1,
-                                                                  gpointer     arg_1,
-                                                                  gpointer     arg_2,
-                                                                  gpointer     arg_3,
-                                                                  gpointer     data2);
-  GMarshalFunc_POINTER__STRING_STRING_STRING callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef gpointer (*GMarshalFunc_POINTER__STRING_STRING_STRING) (gpointer data1,
+                                                                  gpointer arg1,
+                                                                  gpointer arg2,
+                                                                  gpointer arg3,
+                                                                  gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_POINTER__STRING_STRING_STRING callback;
   gpointer v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -2011,21 +2008,21 @@ g_cclosure_user_marshal_POINTER__STRING_STRING_STRING (GClosure     *closure,
 /* POINTER:STRING,STRING,STRING,STRING (ags_marshallers.list:50) */
 void
 g_cclosure_user_marshal_POINTER__STRING_STRING_STRING_STRING (GClosure     *closure,
-                                                              GValue       *return_value G_GNUC_UNUSED,
+                                                              GValue       *return_value,
                                                               guint         n_param_values,
                                                               const GValue *param_values,
                                                               gpointer      invocation_hint G_GNUC_UNUSED,
                                                               gpointer      marshal_data)
 {
-  typedef gpointer (*GMarshalFunc_POINTER__STRING_STRING_STRING_STRING) (gpointer     data1,
-                                                                         gpointer     arg_1,
-                                                                         gpointer     arg_2,
-                                                                         gpointer     arg_3,
-                                                                         gpointer     arg_4,
-                                                                         gpointer     data2);
-  GMarshalFunc_POINTER__STRING_STRING_STRING_STRING callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef gpointer (*GMarshalFunc_POINTER__STRING_STRING_STRING_STRING) (gpointer data1,
+                                                                         gpointer arg1,
+                                                                         gpointer arg2,
+                                                                         gpointer arg3,
+                                                                         gpointer arg4,
+                                                                         gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_POINTER__STRING_STRING_STRING_STRING callback;
   gpointer v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -2056,20 +2053,20 @@ g_cclosure_user_marshal_POINTER__STRING_STRING_STRING_STRING (GClosure     *clos
 /* POINTER:ULONG,POINTER,UINT (ags_marshallers.list:51) */
 void
 g_cclosure_user_marshal_POINTER__ULONG_POINTER_UINT (GClosure     *closure,
-                                                     GValue       *return_value G_GNUC_UNUSED,
+                                                     GValue       *return_value,
                                                      guint         n_param_values,
                                                      const GValue *param_values,
                                                      gpointer      invocation_hint G_GNUC_UNUSED,
                                                      gpointer      marshal_data)
 {
-  typedef gpointer (*GMarshalFunc_POINTER__ULONG_POINTER_UINT) (gpointer     data1,
-                                                                gulong       arg_1,
-                                                                gpointer     arg_2,
-                                                                guint        arg_3,
-                                                                gpointer     data2);
-  GMarshalFunc_POINTER__ULONG_POINTER_UINT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef gpointer (*GMarshalFunc_POINTER__ULONG_POINTER_UINT) (gpointer data1,
+                                                                gulong arg1,
+                                                                gpointer arg2,
+                                                                guint arg3,
+                                                                gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_POINTER__ULONG_POINTER_UINT callback;
   gpointer v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -2099,18 +2096,18 @@ g_cclosure_user_marshal_POINTER__ULONG_POINTER_UINT (GClosure     *closure,
 /* POINTER:OBJECT (ags_marshallers.list:52) */
 void
 g_cclosure_user_marshal_POINTER__OBJECT (GClosure     *closure,
-                                         GValue       *return_value G_GNUC_UNUSED,
+                                         GValue       *return_value,
                                          guint         n_param_values,
                                          const GValue *param_values,
                                          gpointer      invocation_hint G_GNUC_UNUSED,
                                          gpointer      marshal_data)
 {
-  typedef gpointer (*GMarshalFunc_POINTER__OBJECT) (gpointer     data1,
-                                                    gpointer     arg_1,
-                                                    gpointer     data2);
-  GMarshalFunc_POINTER__OBJECT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef gpointer (*GMarshalFunc_POINTER__OBJECT) (gpointer data1,
+                                                    gpointer arg1,
+                                                    gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_POINTER__OBJECT callback;
   gpointer v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -2138,19 +2135,19 @@ g_cclosure_user_marshal_POINTER__OBJECT (GClosure     *closure,
 /* POINTER:OBJECT,OBJECT (ags_marshallers.list:53) */
 void
 g_cclosure_user_marshal_POINTER__OBJECT_OBJECT (GClosure     *closure,
-                                                GValue       *return_value G_GNUC_UNUSED,
+                                                GValue       *return_value,
                                                 guint         n_param_values,
                                                 const GValue *param_values,
                                                 gpointer      invocation_hint G_GNUC_UNUSED,
                                                 gpointer      marshal_data)
 {
-  typedef gpointer (*GMarshalFunc_POINTER__OBJECT_OBJECT) (gpointer     data1,
-                                                           gpointer     arg_1,
-                                                           gpointer     arg_2,
-                                                           gpointer     data2);
-  GMarshalFunc_POINTER__OBJECT_OBJECT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef gpointer (*GMarshalFunc_POINTER__OBJECT_OBJECT) (gpointer data1,
+                                                           gpointer arg1,
+                                                           gpointer arg2,
+                                                           gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_POINTER__OBJECT_OBJECT callback;
   gpointer v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -2179,22 +2176,22 @@ g_cclosure_user_marshal_POINTER__OBJECT_OBJECT (GClosure     *closure,
 /* POINTER:OBJECT,STRING,STRING,STRING,POINTER (ags_marshallers.list:54) */
 void
 g_cclosure_user_marshal_POINTER__OBJECT_STRING_STRING_STRING_POINTER (GClosure     *closure,
-                                                                      GValue       *return_value G_GNUC_UNUSED,
+                                                                      GValue       *return_value,
                                                                       guint         n_param_values,
                                                                       const GValue *param_values,
                                                                       gpointer      invocation_hint G_GNUC_UNUSED,
                                                                       gpointer      marshal_data)
 {
-  typedef gpointer (*GMarshalFunc_POINTER__OBJECT_STRING_STRING_STRING_POINTER) (gpointer     data1,
-                                                                                 gpointer     arg_1,
-                                                                                 gpointer     arg_2,
-                                                                                 gpointer     arg_3,
-                                                                                 gpointer     arg_4,
-                                                                                 gpointer     arg_5,
-                                                                                 gpointer     data2);
-  GMarshalFunc_POINTER__OBJECT_STRING_STRING_STRING_POINTER callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef gpointer (*GMarshalFunc_POINTER__OBJECT_STRING_STRING_STRING_POINTER) (gpointer data1,
+                                                                                 gpointer arg1,
+                                                                                 gpointer arg2,
+                                                                                 gpointer arg3,
+                                                                                 gpointer arg4,
+                                                                                 gpointer arg5,
+                                                                                 gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_POINTER__OBJECT_STRING_STRING_STRING_POINTER callback;
   gpointer v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -2226,23 +2223,23 @@ g_cclosure_user_marshal_POINTER__OBJECT_STRING_STRING_STRING_POINTER (GClosure  
 /* POINTER:OBJECT,STRING,STRING,STRING,STRING,POINTER (ags_marshallers.list:55) */
 void
 g_cclosure_user_marshal_POINTER__OBJECT_STRING_STRING_STRING_STRING_POINTER (GClosure     *closure,
-                                                                             GValue       *return_value G_GNUC_UNUSED,
+                                                                             GValue       *return_value,
                                                                              guint         n_param_values,
                                                                              const GValue *param_values,
                                                                              gpointer      invocation_hint G_GNUC_UNUSED,
                                                                              gpointer      marshal_data)
 {
-  typedef gpointer (*GMarshalFunc_POINTER__OBJECT_STRING_STRING_STRING_STRING_POINTER) (gpointer     data1,
-                                                                                        gpointer     arg_1,
-                                                                                        gpointer     arg_2,
-                                                                                        gpointer     arg_3,
-                                                                                        gpointer     arg_4,
-                                                                                        gpointer     arg_5,
-                                                                                        gpointer     arg_6,
-                                                                                        gpointer     data2);
-  GMarshalFunc_POINTER__OBJECT_STRING_STRING_STRING_STRING_POINTER callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef gpointer (*GMarshalFunc_POINTER__OBJECT_STRING_STRING_STRING_STRING_POINTER) (gpointer data1,
+                                                                                        gpointer arg1,
+                                                                                        gpointer arg2,
+                                                                                        gpointer arg3,
+                                                                                        gpointer arg4,
+                                                                                        gpointer arg5,
+                                                                                        gpointer arg6,
+                                                                                        gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_POINTER__OBJECT_STRING_STRING_STRING_STRING_POINTER callback;
   gpointer v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -2275,20 +2272,20 @@ g_cclosure_user_marshal_POINTER__OBJECT_STRING_STRING_STRING_STRING_POINTER (GCl
 /* POINTER:POINTER,STRING,STRING (ags_marshallers.list:56) */
 void
 g_cclosure_user_marshal_POINTER__POINTER_STRING_STRING (GClosure     *closure,
-                                                        GValue       *return_value G_GNUC_UNUSED,
+                                                        GValue       *return_value,
                                                         guint         n_param_values,
                                                         const GValue *param_values,
                                                         gpointer      invocation_hint G_GNUC_UNUSED,
                                                         gpointer      marshal_data)
 {
-  typedef gpointer (*GMarshalFunc_POINTER__POINTER_STRING_STRING) (gpointer     data1,
-                                                                   gpointer     arg_1,
-                                                                   gpointer     arg_2,
-                                                                   gpointer     arg_3,
-                                                                   gpointer     data2);
-  GMarshalFunc_POINTER__POINTER_STRING_STRING callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef gpointer (*GMarshalFunc_POINTER__POINTER_STRING_STRING) (gpointer data1,
+                                                                   gpointer arg1,
+                                                                   gpointer arg2,
+                                                                   gpointer arg3,
+                                                                   gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_POINTER__POINTER_STRING_STRING callback;
   gpointer v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -2318,17 +2315,17 @@ g_cclosure_user_marshal_POINTER__POINTER_STRING_STRING (GClosure     *closure,
 /* OBJECT:VOID (ags_marshallers.list:57) */
 void
 g_cclosure_user_marshal_OBJECT__VOID (GClosure     *closure,
-                                      GValue       *return_value G_GNUC_UNUSED,
+                                      GValue       *return_value,
                                       guint         n_param_values,
                                       const GValue *param_values,
                                       gpointer      invocation_hint G_GNUC_UNUSED,
                                       gpointer      marshal_data)
 {
-  typedef GObject* (*GMarshalFunc_OBJECT__VOID) (gpointer     data1,
-                                                 gpointer     data2);
-  GMarshalFunc_OBJECT__VOID callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef GObject* (*GMarshalFunc_OBJECT__VOID) (gpointer data1,
+                                                 gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_OBJECT__VOID callback;
   GObject* v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -2355,18 +2352,18 @@ g_cclosure_user_marshal_OBJECT__VOID (GClosure     *closure,
 /* OBJECT:OBJECT (ags_marshallers.list:58) */
 void
 g_cclosure_user_marshal_OBJECT__OBJECT (GClosure     *closure,
-                                        GValue       *return_value G_GNUC_UNUSED,
+                                        GValue       *return_value,
                                         guint         n_param_values,
                                         const GValue *param_values,
                                         gpointer      invocation_hint G_GNUC_UNUSED,
                                         gpointer      marshal_data)
 {
-  typedef GObject* (*GMarshalFunc_OBJECT__OBJECT) (gpointer     data1,
-                                                   gpointer     arg_1,
-                                                   gpointer     data2);
-  GMarshalFunc_OBJECT__OBJECT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef GObject* (*GMarshalFunc_OBJECT__OBJECT) (gpointer data1,
+                                                   gpointer arg1,
+                                                   gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_OBJECT__OBJECT callback;
   GObject* v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -2394,20 +2391,20 @@ g_cclosure_user_marshal_OBJECT__OBJECT (GClosure     *closure,
 /* OBJECT:STRING,STRING,STRING (ags_marshallers.list:59) */
 void
 g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING (GClosure     *closure,
-                                                      GValue       *return_value G_GNUC_UNUSED,
+                                                      GValue       *return_value,
                                                       guint         n_param_values,
                                                       const GValue *param_values,
                                                       gpointer      invocation_hint G_GNUC_UNUSED,
                                                       gpointer      marshal_data)
 {
-  typedef GObject* (*GMarshalFunc_OBJECT__STRING_STRING_STRING) (gpointer     data1,
-                                                                 gpointer     arg_1,
-                                                                 gpointer     arg_2,
-                                                                 gpointer     arg_3,
-                                                                 gpointer     data2);
-  GMarshalFunc_OBJECT__STRING_STRING_STRING callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef GObject* (*GMarshalFunc_OBJECT__STRING_STRING_STRING) (gpointer data1,
+                                                                 gpointer arg1,
+                                                                 gpointer arg2,
+                                                                 gpointer arg3,
+                                                                 gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_OBJECT__STRING_STRING_STRING callback;
   GObject* v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -2437,20 +2434,20 @@ g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING (GClosure     *closure,
 /* OBJECT:OBJECT,POINTER,POINTER (ags_marshallers.list:60) */
 void
 g_cclosure_user_marshal_OBJECT__OBJECT_POINTER_POINTER (GClosure     *closure,
-                                                        GValue       *return_value G_GNUC_UNUSED,
+                                                        GValue       *return_value,
                                                         guint         n_param_values,
                                                         const GValue *param_values,
                                                         gpointer      invocation_hint G_GNUC_UNUSED,
                                                         gpointer      marshal_data)
 {
-  typedef GObject* (*GMarshalFunc_OBJECT__OBJECT_POINTER_POINTER) (gpointer     data1,
-                                                                   gpointer     arg_1,
-                                                                   gpointer     arg_2,
-                                                                   gpointer     arg_3,
-                                                                   gpointer     data2);
-  GMarshalFunc_OBJECT__OBJECT_POINTER_POINTER callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef GObject* (*GMarshalFunc_OBJECT__OBJECT_POINTER_POINTER) (gpointer data1,
+                                                                   gpointer arg1,
+                                                                   gpointer arg2,
+                                                                   gpointer arg3,
+                                                                   gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_OBJECT__OBJECT_POINTER_POINTER callback;
   GObject* v_return;
 
   g_return_if_fail (return_value != NULL);
@@ -2480,19 +2477,19 @@ g_cclosure_user_marshal_OBJECT__OBJECT_POINTER_POINTER (GClosure     *closure,
 /* OBJECT:OBJECT,OBJECT (ags_marshallers.list:61) */
 void
 g_cclosure_user_marshal_OBJECT__OBJECT_OBJECT (GClosure     *closure,
-                                               GValue       *return_value G_GNUC_UNUSED,
+                                               GValue       *return_value,
                                                guint         n_param_values,
                                                const GValue *param_values,
                                                gpointer      invocation_hint G_GNUC_UNUSED,
                                                gpointer      marshal_data)
 {
-  typedef GObject* (*GMarshalFunc_OBJECT__OBJECT_OBJECT) (gpointer     data1,
-                                                          gpointer     arg_1,
-                                                          gpointer     arg_2,
-                                                          gpointer     data2);
-  GMarshalFunc_OBJECT__OBJECT_OBJECT callback;
-  GCClosure *cc = (GCClosure*) closure;
+  typedef GObject* (*GMarshalFunc_OBJECT__OBJECT_OBJECT) (gpointer data1,
+                                                          gpointer arg1,
+                                                          gpointer arg2,
+                                                          gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
   gpointer data1, data2;
+  GMarshalFunc_OBJECT__OBJECT_OBJECT callback;
   GObject* v_return;
 
   g_return_if_fail (return_value != NULL);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,7 +19,7 @@
 
 #include <ags/audio/task/ags_link_channel.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/audio/ags_input.h>
 
 #include <ags/i18n.h>
 
@@ -349,15 +349,68 @@ ags_link_channel_finalize(GObject *gobject)
 void
 ags_link_channel_launch(AgsTask *task)
 {
+  AgsChannel *channel, *link;
+  
   AgsLinkChannel *link_channel;
+
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *link_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   link_channel = AGS_LINK_CHANNEL(task);
 
+  channel = link_channel->channel;
+  link = link_channel->link;
+
+  if(channel != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* unset file-link */
+    if(AGS_IS_INPUT(channel)){
+      pthread_mutex_lock(channel_mutex);
+
+      g_object_set(channel,
+		   "file-link", NULL,
+		   NULL);
+    
+      pthread_mutex_unlock(channel_mutex);
+    }
+  }
+
+  if(link != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    link_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  (GObject *) link);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* unset file-link */
+    if(AGS_IS_INPUT(link)){
+      pthread_mutex_lock(link_mutex);
+      
+      g_object_set(link,
+		   "file-link", NULL,
+		   NULL);
+
+      pthread_mutex_unlock(link_mutex);
+    }
+  }
+  
   /* link channel */
-  g_object_set(link_channel->channel,
-	       "file-link", NULL,
-	       NULL);
-  ags_channel_set_link(link_channel->channel, link_channel->link,
+  ags_channel_set_link(channel, link,
   		       &(link_channel->error));
 
   if(link_channel->error != NULL){

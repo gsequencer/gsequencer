@@ -56,6 +56,7 @@ static AgsConnectableInterface *ags_remove_region_from_selection_parent_connecta
 
 enum{
   PROP_0,
+  PROP_AUDIO,
   PROP_NOTATION,
   PROP_X0,
   PROP_X1,
@@ -119,6 +120,22 @@ ags_remove_region_from_selection_class_init(AgsRemoveRegionFromSelectionClass *r
   gobject->finalize = ags_remove_region_from_selection_finalize;
 
   /* properties */
+  /**
+   * AgsRemoveRegionFromSelection:audio:
+   *
+   * The assigned #AgsAudio
+   * 
+   * Since: 1.2.2
+   */
+  param_spec = g_param_spec_object("audio",
+				   i18n_pspec("audio of remove note"),
+				   i18n_pspec("The audio of remove note task"),
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
+
   /**
    * AgsRemoveRegionFromSelection:notation:
    *
@@ -225,7 +242,9 @@ ags_remove_region_from_selection_connectable_interface_init(AgsConnectableInterf
 void
 ags_remove_region_from_selection_init(AgsRemoveRegionFromSelection *remove_region_from_selection)
 {
+  remove_region_from_selection->audio = NULL;
   remove_region_from_selection->notation = NULL;
+
   remove_region_from_selection->x0 = 0;
   remove_region_from_selection->y0 = 0;
   remove_region_from_selection->x1 = 0;
@@ -243,6 +262,27 @@ ags_remove_region_from_selection_set_property(GObject *gobject,
   remove_region_from_selection = AGS_REMOVE_REGION_FROM_SELECTION(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      AgsAudio *audio;
+
+      audio = (AgsAudio *) g_value_get_object(value);
+
+      if(remove_region_from_selection->audio == (GObject *) audio){
+	return;
+      }
+
+      if(remove_region_from_selection->audio != NULL){
+	g_object_unref(remove_region_from_selection->audio);
+      }
+
+      if(audio != NULL){
+	g_object_ref(audio);
+      }
+
+      remove_region_from_selection->audio = (GObject *) audio;
+    }
+    break;
   case PROP_NOTATION:
     {
       AgsNotation *notation;
@@ -301,6 +341,11 @@ ags_remove_region_from_selection_get_property(GObject *gobject,
   remove_region_from_selection = AGS_REMOVE_REGION_FROM_SELECTION(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      g_value_set_object(value, remove_region_from_selection->audio);
+    }
+    break;
   case PROP_NOTATION:
     {
       g_value_set_object(value, remove_region_from_selection->notation);
@@ -355,6 +400,12 @@ ags_remove_region_from_selection_dispose(GObject *gobject)
 
   remove_region_from_selection = AGS_REMOVE_REGION_FROM_SELECTION(gobject);
 
+  if(remove_region_from_selection->audio != NULL){
+    g_object_unref(remove_region_from_selection->audio);
+
+    remove_region_from_selection->audio = NULL;
+  }
+
   if(remove_region_from_selection->notation != NULL){
     g_object_unref(remove_region_from_selection->notation);
 
@@ -372,6 +423,10 @@ ags_remove_region_from_selection_finalize(GObject *gobject)
 
   remove_region_from_selection = AGS_REMOVE_REGION_FROM_SELECTION(gobject);
 
+  if(remove_region_from_selection->audio != NULL){
+    g_object_unref(remove_region_from_selection->audio);
+  }
+
   if(remove_region_from_selection->notation != NULL){
     g_object_unref(remove_region_from_selection->notation);
   }
@@ -385,12 +440,33 @@ ags_remove_region_from_selection_launch(AgsTask *task)
 {
   AgsRemoveRegionFromSelection *remove_region_from_selection;
 
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   remove_region_from_selection = AGS_REMOVE_REGION_FROM_SELECTION(task);
 
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) remove_region_from_selection->audio);
+
+  pthread_mutex_unlock(application_mutex);
+
   /* remove region */
+  pthread_mutex_lock(audio_mutex);
+
   ags_notation_remove_region_from_selection(remove_region_from_selection->notation,
 					    remove_region_from_selection->x0, remove_region_from_selection->y0,
 					    remove_region_from_selection->x1, remove_region_from_selection->y1);
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**

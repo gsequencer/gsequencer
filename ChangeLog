@@ -1,3 +1,70 @@
+ags (1.2.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV due to NULL pointer dereference in ags_append_audio.c task
+
+ags (1.2.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor-fixes
+
+ags (1.2.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed SIGSEGV in ags_channel_set_recycling() and make ags_functional_machine_link_test pass
+	* rollback ags_channel_recursive_play_init(), ags_channel_recursive_play() and ags_channel_tillrecycling_cancel()
+
+ags (1.2.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented async message AgsConnection:data-object and AgsAudioConnection:mapped-line
+	* implemented ags_audio_disconnect()
+	* improved thread-safety to AgsLine:channel and AgsEffectLine:channel properties
+	* improved thread-safety AgsPatternBox and AgsCellPattern
+	* improved thread-safety all audio tasks
+	* improved thread-safety during ags_channel_set_link() and related
+	* improved thread-safety during ags_channel_recursive_play_init() and related
+	* improved thread-safety during ags_channel_recursive_cancel()
+	* improved tasks which need to lock audio especially using AgsCropNote and AgsMoveNote
+	* fixed change soundcard task since data-object was resetted for all connections
+	* fixed AgsMoveNote and AgsCropNote to support segmented notation
+	* fixed various NULL pointer dereference of mutices
+	* minor-fixes
+
+ags (1.2.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed remaining launch callback of AgsTask while destroy AgsMachine
+	* minor-fixes
+
+ags (1.2.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsNotationEditor and AgsNotationEdit
+	* replaced AgsEditor by AgsNotationEditor and supporting segmented notation
+	* replaced AgsNoteEdit and AgsPatternEdit by AgsNotationEdit
+	* implemented AgsMessageDelivery and AgsMessageQueue
+	* implemented messages of AgsAudio ::set-audio-channels, ::set-pads and ::done
+	* implemented messages of AgsChannel ::add-effect, ::remove-effect and ::done
+	* implemented AgsPiano and AgsScrolledPiano
+	* implemented AgsDevin
+	* implemented AgsJackDevin
+	* implemented AgsPulseDevin
+	* refactored direct callbacks to UI by replacing with messages
+	* refactored ::set-audio-channels and ::set-pads of AgsAudio callbacks to be thread-safe
+	* disabled AgsGuiThread synchronization with AgsTaskThread
+	* extended AgsJackServer and AgsJackClient to support AgsJackDevin
+	* extended AgsPulseServer, AgsPulseClient and AgsPulsePort to support AgsPulseDevin
+	* extended AgsSwitchBufferFlag and AgsClearBuffer to support AgsDevin, AgsJackDevin and AgsPulseDevin
+	* refactored AgsNotebook to be generic and move to libags-gui
+	* improved ags-play-notation to support segmented notation
+	* improved ags-record-midi to support segmented notation
+	* improved ags-route-dssi to support segmented notation
+	* improved ags-route-lv2 to support segmented notation
+	* improved AgsSimpleFile to support segmented notation
+	* fixed missing any_signal:: prefix of strings passing as pspec to g_object_disconnect()
+	* use $(docdir) in Makefile.am
+
 ags (1.1.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

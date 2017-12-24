@@ -20,11 +20,9 @@
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_machine_editor_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_link_collection_editor.h>
 
@@ -319,6 +317,12 @@ ags_machine_editor_connect(AgsConnectable *connectable)
 
   machine_editor = AGS_MACHINE_EDITOR(connectable);
 
+  if((AGS_MACHINE_EDITOR_CONNECTED & (machine_editor->flags)) != 0){
+    return;
+  }
+
+  machine_editor->flags |= AGS_MACHINE_EDITOR_CONNECTED;
+  
   /* GtkNotebook */
   g_signal_connect((GtkNotebook *) machine_editor->notebook, "switch-page",
 		   G_CALLBACK(ags_machine_editor_switch_page_callback), (gpointer) machine_editor);
@@ -350,6 +354,12 @@ ags_machine_editor_disconnect(AgsConnectable *connectable)
 
   machine_editor = AGS_MACHINE_EDITOR(connectable);
 
+  if((AGS_MACHINE_EDITOR_CONNECTED & (machine_editor->flags)) == 0){
+    return;
+  }
+  
+  machine_editor->flags &= (~AGS_MACHINE_EDITOR_CONNECTED);
+  
   /* AgsMachineEditor tabs */
   ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor->output_editor));
   ags_connectable_disconnect(AGS_CONNECTABLE(machine_editor->input_editor));

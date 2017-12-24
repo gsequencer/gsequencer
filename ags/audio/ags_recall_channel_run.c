@@ -19,15 +19,7 @@
 
 #include <ags/audio/ags_recall_channel_run.h>
 
-#include <ags/lib/ags_parameter.h>
-
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_packable.h>
-#include <ags/object/ags_dynamic_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_task_thread.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -672,7 +664,7 @@ ags_recall_channel_run_disconnect(AgsConnectable *connectable)
     gobject = G_OBJECT(recall_channel_run->destination);
 
     g_object_disconnect(gobject,
-			"recycling-changed",
+			"any_signal::recycling-changed",
 			G_CALLBACK(ags_recall_channel_run_destination_recycling_changed_callback),
 			recall_channel_run,
 			NULL);
@@ -683,7 +675,7 @@ ags_recall_channel_run_disconnect(AgsConnectable *connectable)
     gobject = G_OBJECT(recall_channel_run->source);
 
     g_object_disconnect(gobject,
-			"recycling-changed",
+			"any_signal::recycling-changed",
 			G_CALLBACK(ags_recall_channel_run_source_recycling_changed_callback),
 			recall_channel_run,
 			NULL);
@@ -701,8 +693,9 @@ ags_recall_channel_run_pack(AgsPackable *packable, GObject *container)
   GList *list;
   AgsRecallID *recall_id;
 
-  if(ags_recall_channel_run_parent_packable_interface->pack(packable, container))
+  if(ags_recall_channel_run_parent_packable_interface->pack(packable, container)){
     return(TRUE);
+  }
 
   recall_container = AGS_RECALL_CONTAINER(container);
 
@@ -986,7 +979,7 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 	
 	if(AGS_RECALL_RECYCLING(list->data)->source == source_recycling){
 	  recall = AGS_RECALL(list->data);
-	  g_message("disconnect");
+	  //	  g_message("disconnect");
 	  ags_dynamic_connectable_disconnect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
   
 	  ags_recall_remove(recall);

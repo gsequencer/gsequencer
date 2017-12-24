@@ -19,21 +19,9 @@
 
 #include <ags/X/machine/ags_lv2_bridge_callbacks.h>
 
-#include <ags/plugin/ags_lv2_manager.h>
-#include <ags/plugin/ags_lv2ui_manager.h>
-#include <ags/plugin/ags_base_plugin.h>
-#include <ags/plugin/ags_lv2_conversion.h>
-#include <ags/plugin/ags_lv2_plugin.h>
-#include <ags/plugin/ags_lv2_preset.h>
-#include <ags/plugin/ags_lv2ui_plugin.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_lv2.h>
-#include <ags/audio/ags_port.h>
-
-#include <ags/widget/ags_dial.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>

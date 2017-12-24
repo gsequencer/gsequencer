@@ -48,7 +48,7 @@ void ags_functional_drum_test_open_drum_kit();
 void ags_functional_drum_test_resize_pads();
 void ags_functional_drum_test_resize_audio_channels();
 
-#define AGS_FUNCTIONAL_DRUM_TEST_OPEN_DRUM_KIT_PATH "/usr/share/hydrogen/data/drumkits/Synthie-1/"
+#define AGS_FUNCTIONAL_DRUM_TEST_OPEN_DRUM_KIT_PATH "/usr/share/hydrogen/data/drumkits/HardElectro1/"
 
 #define AGS_FUNCTIONAL_DRUM_TEST_RESIZE_OUTPUT_PADS (5)
 #define AGS_FUNCTIONAL_DRUM_TEST_RESIZE_INPUT_PADS (15)
@@ -103,6 +103,8 @@ ags_functional_drum_test_add_test()
   /* Run all tests using the CUnit Basic interface */
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
+
+  ags_test_quit();
   
   CU_cleanup_registry();
   
@@ -385,6 +387,9 @@ main(int argc, char **argv)
 		AGS_FUNCTIONAL_DRUM_TEST_CONFIG);
   ags_functional_test_util_do_run(argc, argv,
 				  ags_functional_drum_test_add_test, &is_available);
+
+  pthread_join(ags_functional_test_util_self(),
+	       NULL);
 
   return(-1);
 }

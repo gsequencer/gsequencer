@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,19 +19,13 @@
 
 #include <ags/X/editor/ags_automation_edit_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_thread-posix.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_automation_editor.h>
 
-#include <ags/X/editor/ags_notebook.h>
 #include <ags/X/editor/ags_automation_toolbar.h>
 
 #include <ags/X/machine/ags_panel.h>
@@ -47,21 +41,26 @@
 #include <gdk/gdkkeysyms.h>
 
 void
-ags_automation_edit_set_audio_channels_callback(AgsAudio *audio,
-						guint audio_channels, guint audio_channels_old,
-						AgsAutomationEdit *automation_edit)
+ags_automation_edit_resize_audio_channels_callback(AgsMachine *machine,
+						   guint audio_channels, guint audio_channels_old,
+						   AgsAutomationEdit *automation_edit)
 {
   AgsWindow *window;
   AgsAutomationEditor *automation_editor;
   AgsAutomationEditorChild *editor_child;
+
   AgsNotebook *notebook;
 
+  AgsAudio *audio;
+  
   GList *list;
 
   guint pads;
   guint i, j;
   gboolean is_output;
 
+  audio = machine->audio;
+  
   window = (AgsWindow *) AGS_AUTOMATION_WINDOW(gtk_widget_get_toplevel((GtkWidget *) automation_edit))->parent_window;
   
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
@@ -120,26 +119,28 @@ ags_automation_edit_set_audio_channels_callback(AgsAudio *audio,
 }
 
 void
-ags_automation_edit_set_pads_callback(AgsAudio *audio,
-				      GType channel_type,
-				      guint pads, guint pads_old,
-				      AgsAutomationEdit *automation_edit)
+ags_automation_edit_resize_pads_callback(AgsMachine *machine,
+					 GType channel_type,
+					 guint pads, guint pads_old,
+					 AgsAutomationEdit *automation_edit)
 {
   AgsWindow *window;
   AgsAutomationEditor *automation_editor;
   AgsAutomationEditorChild *editor_child;
+
   AgsNotebook *notebook;
+
+  AgsAudio *audio;
 
   GList *list;
 
   guint audio_channels;
   guint i, j;
   gboolean is_output;
+
+  audio = machine->audio;
   
   window = (AgsWindow *) AGS_AUTOMATION_WINDOW(gtk_widget_get_toplevel((GtkWidget *) automation_edit))->parent_window;
-
-  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
-								      AGS_TYPE_AUTOMATION_EDITOR);
 
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
 								      AGS_TYPE_AUTOMATION_EDITOR);

@@ -17,6 +17,8 @@ AgsConfig AgsConnectable
 AgsFileLink AgsPlugin
 AgsFrontController AgsConnectable
 AgsHistory AgsConnectable
+AgsMessageDelivery AgsConnectable
+AgsMessageQueue AgsConnectable
 AgsMutexManager AgsConnectable
 AgsPollFd AgsConnectable
 AgsRegistry AgsConnectable

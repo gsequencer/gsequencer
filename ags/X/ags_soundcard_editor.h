@@ -85,6 +85,7 @@ void ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
 void ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
 					   GObject *soundcard);
 
+void ags_soundcard_editor_load_core_audio_card(AgsSoundcardEditor *soundcard_editor);
 void ags_soundcard_editor_load_pulse_card(AgsSoundcardEditor *soundcard_editor);
 void ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor);
 void ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor);

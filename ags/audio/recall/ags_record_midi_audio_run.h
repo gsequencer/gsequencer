@@ -20,7 +20,10 @@
 #ifndef __AGS_RECORD_MIDI_AUDIO_RUN_H__
 #define __AGS_RECORD_MIDI_AUDIO_RUN_H__
 
+#include <glib.h>
 #include <glib-object.h>
+
+#include <ags/libags.h>
 
 #include <ags/audio/ags_recall.h>
 
@@ -62,6 +65,7 @@ struct _AgsRecordMidiAudioRun
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
   GList *note;
+  AgsTimestamp *timestamp;
   
   GObject *midi_file;
 };

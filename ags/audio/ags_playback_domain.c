@@ -19,9 +19,7 @@
 
 #include <ags/audio/ags_playback_domain.h>
 
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_playback.h>
@@ -126,7 +124,7 @@ ags_playback_domain_class_init(AgsPlaybackDomainClass *playback_domain)
    *
    * The assigned domain.
    * 
-   * Since: 1.0.0.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("domain",
 				   i18n_pspec("assigned domain"),
@@ -142,13 +140,12 @@ ags_playback_domain_class_init(AgsPlaybackDomainClass *playback_domain)
    *
    * The assigned playback.
    * 
-   * Since: 1.0.0.7
+   * Since: 1.0.0
    */
-  param_spec = g_param_spec_object("playback",
-				   i18n_pspec("assigned playback"),
-				   i18n_pspec("The playback it is assigned with"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("playback",
+				    i18n_pspec("assigned playback"),
+				    i18n_pspec("The playback it is assigned with"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PLAYBACK,
 				  param_spec);
@@ -358,7 +355,7 @@ ags_playback_domain_set_property(GObject *gobject,
     {
       AgsPlayback *playback;
 
-      playback = (AgsPlayback *) g_value_get_object(value);
+      playback = (AgsPlayback *) g_value_get_pointer(value);
 
       if(playback == NULL ||
 	 g_list_find(playback_domain->playback, playback) != NULL){
@@ -513,7 +510,7 @@ ags_playback_domain_disconnect(AgsConnectable *connectable)
  * 
  * Set audio thread to specified scope.
  * 
- * Since: 1.0.0.7
+ * Since: 1.0.0
  */
 void
 ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
@@ -545,7 +542,7 @@ ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
  * 
  * Returns: the matching #AgsThread or %NULL
  * 
- * Since: 1.0.0.7
+ * Since: 1.0.0
  */
 AgsThread*
 ags_playback_domain_get_audio_thread(AgsPlaybackDomain *playback_domain,
@@ -568,7 +565,7 @@ ags_playback_domain_get_audio_thread(AgsPlaybackDomain *playback_domain,
  * 
  * Add @playback to @playback_domain.
  * 
- * Since: 1.0.0.7
+ * Since: 1.0.0
  */
 void
 ags_playback_domain_add_playback(AgsPlaybackDomain *playback_domain,
@@ -592,7 +589,7 @@ ags_playback_domain_add_playback(AgsPlaybackDomain *playback_domain,
  * 
  * Remove @playback of @playback_domain.
  * 
- * Since: 1.0.0.7
+ * Since: 1.0.0
  */
 void
 ags_playback_domain_remove_playback(AgsPlaybackDomain *playback_domain,

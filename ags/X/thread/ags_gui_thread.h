@@ -23,11 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+#include <ags/X/file/ags_simple_file.h>
 
 #include <unistd.h>
 
@@ -64,6 +63,8 @@ struct _AgsGuiThread
   GCond cond;
   
   GMainContext *main_context;
+
+  GThread *gtk_thread;
   
   gint cached_poll_array_size;
   GPollFD *cached_poll_array;

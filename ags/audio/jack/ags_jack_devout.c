@@ -481,7 +481,7 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    *
    * The assigned #AgsJackPort
    * 
-   * Since: 1.0.0.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_pointer("jack-port",
 				    i18n_pspec("jack port object"),

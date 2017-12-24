@@ -98,6 +98,8 @@
     <xi:include href="xml/ags_destroy_worker.xml"/>
     <xi:include href="xml/ags_generic_main_loop.xml"/>
     <xi:include href="xml/ags_history.xml"/>
+    <xi:include href="xml/ags_message_delivery.xml"/>
+    <xi:include href="xml/ags_message_queue.xml"/>
     <xi:include href="xml/ags_mutex_manager.xml"/>
     <xi:include href="xml/ags_polling_thread.xml"/>
     <xi:include href="xml/ags_poll_fd.xml"/>

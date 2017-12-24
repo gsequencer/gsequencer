@@ -19,36 +19,29 @@
 
 #include <ags/X/ags_effect_bridge_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-
-#include <ags/thread/ags_mutex_manager.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
 
 void
-ags_effect_bridge_set_audio_channels_callback(AgsAudio *audio,
-					      guint audio_channels, guint audio_channels_old,
-					      AgsEffectBridge *effect_bridge)
+ags_effect_bridge_resize_audio_channels_callback(AgsMachine *machine,
+						 guint audio_channels, guint audio_channels_old,
+						 AgsEffectBridge *effect_bridge)
 {
-  AgsWindow *window;
-  
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) effect_bridge);
-
   ags_effect_bridge_resize_audio_channels(effect_bridge,
 					  audio_channels, audio_channels_old);
 }
 
 void
-ags_effect_bridge_set_pads_callback(AgsAudio *audio,
-				    GType channel_type,
-				    guint pads, guint pads_old,
-				    AgsEffectBridge *effect_bridge)
+ags_effect_bridge_resize_pads_callback(AgsMachine *machine,
+				       GType channel_type,
+				       guint pads, guint pads_old,
+				       AgsEffectBridge *effect_bridge)
 {  
-  AgsWindow *window;
-
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) effect_bridge);
   ags_effect_bridge_resize_pads(effect_bridge,
 				channel_type,
 				pads, pads_old);

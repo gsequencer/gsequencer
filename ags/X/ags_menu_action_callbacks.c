@@ -319,7 +319,6 @@ ags_menu_action_add_callback(GtkWidget *menu_item, gpointer data)
 {
 }
 
-
 void
 ags_menu_action_add_panel_callback(GtkWidget *menu_item, gpointer data)
 {
@@ -364,13 +363,13 @@ ags_menu_action_add_panel_callback(GtkWidget *menu_item, gpointer data)
 		     FALSE, FALSE, 0);
 
   AGS_MACHINE(panel)->audio->audio_channels = 2;
+
+  ags_connectable_connect(AGS_CONNECTABLE(panel));
   
   ags_audio_set_pads(AGS_MACHINE(panel)->audio,
 		     AGS_TYPE_INPUT, 1);
   ags_audio_set_pads(AGS_MACHINE(panel)->audio,
 		     AGS_TYPE_OUTPUT, 1);
-
-  ags_connectable_connect(AGS_CONNECTABLE(panel));
 
   gtk_widget_show_all(GTK_WIDGET(panel));
 }
@@ -418,13 +417,13 @@ ags_menu_action_add_mixer_callback(GtkWidget *menu_item, gpointer data)
 		     GTK_WIDGET(mixer),
 		     FALSE, FALSE, 0);
 
+  ags_connectable_connect(AGS_CONNECTABLE(mixer));
+
   mixer->machine.audio->audio_channels = 2;
   ags_audio_set_pads(mixer->machine.audio,
 		     AGS_TYPE_INPUT, 8);
   ags_audio_set_pads(mixer->machine.audio,
 		     AGS_TYPE_OUTPUT, 1);
-
-  ags_connectable_connect(AGS_CONNECTABLE(mixer));
 
   gtk_widget_show_all(GTK_WIDGET(mixer));
 }
@@ -472,15 +471,15 @@ ags_menu_action_add_drum_callback(GtkWidget *menu_item, gpointer data)
 		     GTK_WIDGET(drum),
 		     FALSE, FALSE, 0);
 
+  /* connect everything */
+  ags_connectable_connect(AGS_CONNECTABLE(drum));
+
   /* */
   drum->machine.audio->audio_channels = 2;
 
   /* AgsDrumInputPad */
   ags_audio_set_pads(drum->machine.audio, AGS_TYPE_INPUT, 8);
   ags_audio_set_pads(drum->machine.audio, AGS_TYPE_OUTPUT, 1);
-
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(drum));
 
   /* */
   gtk_widget_show_all(GTK_WIDGET(drum));
@@ -529,15 +528,15 @@ ags_menu_action_add_matrix_callback(GtkWidget *menu_item, gpointer data)
 		     GTK_WIDGET(matrix),
 		     FALSE, FALSE, 0);
   
+  /* connect everything */
+  ags_connectable_connect(AGS_CONNECTABLE(matrix));
+
   /* */
   matrix->machine.audio->audio_channels = 1;
 
   /* AgsMatrixInputPad */
   ags_audio_set_pads(matrix->machine.audio, AGS_TYPE_INPUT, 78);
   ags_audio_set_pads(matrix->machine.audio, AGS_TYPE_OUTPUT, 1);
-
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(matrix));
 
   /* */
   gtk_widget_show_all(GTK_WIDGET(matrix));
@@ -586,11 +585,11 @@ ags_menu_action_add_synth_callback(GtkWidget *menu_item, gpointer data)
 		     (GtkWidget *) synth,
 		     FALSE, FALSE, 0);
 
+  ags_connectable_connect(AGS_CONNECTABLE(synth));
+
   synth->machine.audio->audio_channels = 1;
   ags_audio_set_pads((AgsAudio*) synth->machine.audio, AGS_TYPE_INPUT, 2);
   ags_audio_set_pads((AgsAudio*) synth->machine.audio, AGS_TYPE_OUTPUT, 78);
-
-  ags_connectable_connect(AGS_CONNECTABLE(synth));
 
   gtk_widget_show_all((GtkWidget *) synth);
 }
@@ -638,11 +637,11 @@ ags_menu_action_add_syncsynth_callback(GtkWidget *menu_item, gpointer data)
 		     (GtkWidget *) syncsynth,
 		     FALSE, FALSE, 0);
 
+  ags_connectable_connect(AGS_CONNECTABLE(syncsynth));
+
   syncsynth->machine.audio->audio_channels = 1;
   ags_audio_set_pads((AgsAudio*) syncsynth->machine.audio, AGS_TYPE_INPUT, 78);
   ags_audio_set_pads((AgsAudio*) syncsynth->machine.audio, AGS_TYPE_OUTPUT, 1);
-
-  ags_connectable_connect(AGS_CONNECTABLE(syncsynth));
 
   gtk_widget_show_all((GtkWidget *) syncsynth);
 }
@@ -690,12 +689,12 @@ ags_menu_action_add_ffplayer_callback(GtkWidget *menu_item, gpointer data)
 		     (GtkWidget *) ffplayer,
 		     FALSE, FALSE, 0);
 
+  ags_connectable_connect(AGS_CONNECTABLE(ffplayer));
+
   //  ffplayer->machine.audio->frequence = ;
   ffplayer->machine.audio->audio_channels = 2;
   ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_INPUT, 78);
-  ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_OUTPUT, 1);
-  
-  ags_connectable_connect(AGS_CONNECTABLE(ffplayer));
+  ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_OUTPUT, 1);  
 
   gtk_widget_show_all((GtkWidget *) ffplayer);
 }
@@ -751,15 +750,15 @@ ags_menu_action_add_ladspa_bridge_callback(GtkWidget *menu_item, gpointer data)
 		     GTK_WIDGET(ladspa_bridge),
 		     FALSE, FALSE, 0);
 
+  /* connect everything */
+  ags_connectable_connect(AGS_CONNECTABLE(ladspa_bridge));
+
   /* */
   ladspa_bridge->machine.audio->audio_channels = 2;
 
   /*  */
   ags_audio_set_pads(ladspa_bridge->machine.audio, AGS_TYPE_INPUT, 1);
   ags_audio_set_pads(ladspa_bridge->machine.audio, AGS_TYPE_OUTPUT, 1);
-
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(ladspa_bridge));
 
   /*  */
   ags_ladspa_bridge_load(ladspa_bridge);
@@ -818,6 +817,9 @@ ags_menu_action_add_dssi_bridge_callback(GtkWidget *menu_item, gpointer data)
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(dssi_bridge),
 		     FALSE, FALSE, 0);
+
+  /* connect everything */
+  ags_connectable_connect(AGS_CONNECTABLE(dssi_bridge));
   
   /* */
   dssi_bridge->machine.audio->audio_channels = 2;
@@ -825,9 +827,6 @@ ags_menu_action_add_dssi_bridge_callback(GtkWidget *menu_item, gpointer data)
   /*  */
   ags_audio_set_pads(dssi_bridge->machine.audio, AGS_TYPE_INPUT, 128);
   ags_audio_set_pads(dssi_bridge->machine.audio, AGS_TYPE_OUTPUT, 1);
-
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(dssi_bridge));
 
   /*  */
   ags_dssi_bridge_load(dssi_bridge);
@@ -917,6 +916,9 @@ ags_menu_action_add_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(lv2_bridge),
 		     FALSE, FALSE, 0);
+
+  /* connect everything */
+  ags_connectable_connect(AGS_CONNECTABLE(lv2_bridge));
   
   /*  */
   lv2_bridge->machine.audio->audio_channels = 2;
@@ -931,9 +933,6 @@ ags_menu_action_add_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
   }
   
   ags_audio_set_pads(lv2_bridge->machine.audio, AGS_TYPE_OUTPUT, 1);
-
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(lv2_bridge));
 
   /*  */
   ags_lv2_bridge_load(lv2_bridge);
@@ -993,15 +992,15 @@ ags_menu_action_add_live_dssi_bridge_callback(GtkWidget *menu_item, gpointer dat
 		     GTK_WIDGET(live_dssi_bridge),
 		     FALSE, FALSE, 0);
   
+  /* connect everything */
+  ags_connectable_connect(AGS_CONNECTABLE(live_dssi_bridge));
+
   /* */
   live_dssi_bridge->machine.audio->audio_channels = 2;
 
   /*  */
   ags_audio_set_pads(live_dssi_bridge->machine.audio, AGS_TYPE_INPUT, 128);
   ags_audio_set_pads(live_dssi_bridge->machine.audio, AGS_TYPE_OUTPUT, 1);
-
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(live_dssi_bridge));
 
   /*  */
   ags_live_dssi_bridge_load(live_dssi_bridge);
@@ -1065,6 +1064,9 @@ ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(live_lv2_bridge),
 		     FALSE, FALSE, 0);
+
+  /* connect everything */
+  ags_connectable_connect(AGS_CONNECTABLE(live_lv2_bridge));
   
   /*  */
   live_lv2_bridge->machine.audio->audio_channels = 2;
@@ -1079,9 +1081,6 @@ ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data
   }
   
   ags_audio_set_pads(live_lv2_bridge->machine.audio, AGS_TYPE_OUTPUT, 1);
-
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(live_lv2_bridge));
 
   /*  */
   ags_live_lv2_bridge_load(live_lv2_bridge);

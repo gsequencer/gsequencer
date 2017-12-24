@@ -20,7 +20,9 @@
 #include <ags/X/machine/ags_syncsynth_callbacks.h>
 #include <ags/X/machine/ags_oscillator.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 

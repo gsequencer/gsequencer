@@ -22,11 +22,14 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #include <libxml/tree.h>
 
-#include <ags/file/ags_file.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #define AGS_TYPE_OSCILLATOR                (ags_oscillator_get_type())
 #define AGS_OSCILLATOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_OSCILLATOR, AgsOscillator))
@@ -41,10 +44,16 @@
 typedef struct _AgsOscillator AgsOscillator;
 typedef struct _AgsOscillatorClass AgsOscillatorClass;
 
+typedef enum{
+  AGS_OSCILLATOR_CONNECTED   = 1,
+}AgsOscillatorFlags;
+
 struct _AgsOscillator
 {
   GtkFrame frame;
 
+  guint flags;
+  
   GtkComboBox *wave;
   gulong wave_handler;
 

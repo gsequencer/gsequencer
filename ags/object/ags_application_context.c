@@ -810,7 +810,6 @@ ags_application_context_quit(AgsApplicationContext *application_context)
   g_signal_emit(G_OBJECT(application_context),
 		application_context_signals[QUIT], 0);
   g_object_unref(G_OBJECT(application_context));
-  g_object_unref(application_context);
 }
 
 /**

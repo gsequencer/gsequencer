@@ -23,8 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/thread/ags_task.h>
+#include <ags/libags.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
 
 #define AGS_TYPE_CROP_NOTE                (ags_crop_note_get_type())
@@ -43,6 +44,7 @@ struct _AgsCropNote
 {
   AgsTask task;
 
+  AgsAudio *audio;
   AgsNotation *notation;
 
   GList *selection;

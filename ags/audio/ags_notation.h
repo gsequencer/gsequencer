@@ -20,11 +20,12 @@
 #ifndef __AGS_NOTATION_H__
 #define __AGS_NOTATION_H__
 
+#include <glib.h>
 #include <glib-object.h>
+
 #include <libxml/tree.h>
 
-#include <ags/thread/ags_timestamp_thread.h>
-#include <ags/thread/ags_timestamp.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_note.h>
 
@@ -44,10 +45,11 @@
 #define AGS_NOTATION_DEFAULT_LENGTH (65535.0 / AGS_NOTATION_TICS_PER_BEAT - AGS_NOTATION_MAXIMUM_NOTE_LENGTH)
 #define AGS_NOTATION_DEFAULT_JIFFIE (60.0 / AGS_NOTATION_DEFAULT_BPM / AGS_NOTATION_TICS_PER_BEAT)
 #define AGS_NOTATION_DEFAULT_DURATION (AGS_NOTATION_DEFAULT_LENGTH * AGS_NOTATION_DEFAULT_JIFFIE * AGS_MICROSECONDS_PER_SECOND)
+#define AGS_NOTATION_DEFAULT_OFFSET (64 * (1 / AGS_NOTATION_MINIMUM_NOTE_LENGTH))
 
-#define AGS_NOTATION_CLIPBOARD_VERSION "0.4.2\0"
-#define AGS_NOTATION_CLIPBOARD_TYPE "AgsNotationClipboardXml\0"
-#define AGS_NOTATION_CLIPBOARD_FORMAT "AgsNotationNativePiano\0"
+#define AGS_NOTATION_CLIPBOARD_VERSION "1.2.0"
+#define AGS_NOTATION_CLIPBOARD_TYPE "AgsNotationClipboardXml"
+#define AGS_NOTATION_CLIPBOARD_FORMAT "AgsNotationNativePiano"
 
 typedef struct _AgsNotation AgsNotation;
 typedef struct _AgsNotationClass AgsNotationClass;
@@ -73,7 +75,7 @@ struct _AgsNotation
 
   guint flags;
 
-  GObject *timestamp;
+  AgsTimestamp *timestamp;
 
   guint audio_channel;
   GObject *audio;
@@ -109,7 +111,9 @@ struct _AgsNotationClass
 GType ags_notation_get_type();
 
 GList* ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
-					GObject *timestamp);
+					AgsTimestamp *timestamp);
+GList* ags_notation_add(GList *notation,
+			AgsNotation *new_notation);
 
 void ags_notation_add_note(AgsNotation *notation,
 			   AgsNote *note,
@@ -150,11 +154,11 @@ void ags_notation_remove_region_from_selection(AgsNotation *notation,
 					       guint x0, guint y0,
 					       guint x1, guint y1);
 
-xmlNodePtr ags_notation_copy_selection(AgsNotation *notation);
-xmlNodePtr ags_notation_cut_selection(AgsNotation *notation);
+xmlNode* ags_notation_copy_selection(AgsNotation *notation);
+xmlNode* ags_notation_cut_selection(AgsNotation *notation);
 
 void ags_notation_insert_from_clipboard(AgsNotation *notation,
-					xmlNodePtr notation_node,
+					xmlNode *notation_node,
 					gboolean reset_x_offset, guint x_offset,
 					gboolean reset_y_offset, guint y_offset);
 

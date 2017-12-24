@@ -19,10 +19,6 @@
 
 #include <ags/audio/task/ags_add_recall.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/object/ags_dynamic_connectable.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_audio.h>
@@ -351,26 +347,50 @@ ags_add_recall_finalize(GObject *gobject)
 void
 ags_add_recall_launch(AgsTask *task)
 {
-  AgsAddRecall *add_recall;
+  AgsAddRecall *add_recall;  
+
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
   
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   add_recall = AGS_ADD_RECALL(task);
 
   if(AGS_IS_AUDIO(add_recall->context)){
     AgsRecall *current;
+
     GList *recall_id;
 
+    /* get audio mutex */
+    pthread_mutex_lock(application_mutex);
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) add_recall->context);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* check container */
     if(g_list_find(AGS_AUDIO(add_recall->context)->container,
 		   add_recall->recall->container) == NULL){
       ags_audio_add_recall_container(AGS_AUDIO(add_recall->context),
 				     add_recall->recall->container);
     }
 
+    /* add */
     ags_audio_add_recall(AGS_AUDIO(add_recall->context),
 			 (GObject *) add_recall->recall,
 			 add_recall->is_play);
 
     /* set up playback, sequencer or notation */
+    pthread_mutex_lock(audio_mutex);
+    
     recall_id = AGS_AUDIO(add_recall->context)->recall_id;
+
     if(!AGS_IS_RECALL_AUDIO(add_recall->recall)){
       while(recall_id != NULL){
 	if((!add_recall->is_play && AGS_RECALL_ID(recall_id->data)->recycling_context->parent == NULL) ||
@@ -420,21 +440,36 @@ ags_add_recall_launch(AgsTask *task)
 	recall_id = recall_id->next;
       }
     }
+    
+    pthread_mutex_unlock(audio_mutex);
   }else if(AGS_IS_CHANNEL(add_recall->context)){
     AgsRecall *current;
+
     GList *recall_id;
 
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) add_recall->context);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* check container */
     if(g_list_find(AGS_CHANNEL(add_recall->context)->container,
 		   add_recall->recall->container) == NULL){
       ags_channel_add_recall_container(AGS_CHANNEL(add_recall->context),
 				       add_recall->recall->container);
     }
 
+    /* add */
     ags_channel_add_recall(AGS_CHANNEL(add_recall->context),
 			   (GObject *) add_recall->recall,
 			   add_recall->is_play);
 
     /* set up playback, sequencer or notation */
+    pthread_mutex_lock(channel_mutex);
+    
     recall_id = AGS_CHANNEL(add_recall->context)->recall_id;
 
     if(!AGS_IS_RECALL_CHANNEL(add_recall->recall)){
@@ -485,6 +520,8 @@ ags_add_recall_launch(AgsTask *task)
 	/* iterate */
 	recall_id = recall_id->next;
       }
+
+      pthread_mutex_unlock(channel_mutex);
     }
   }else if(AGS_IS_RECALL(add_recall->context)){
     ags_recall_add_child(AGS_RECALL(add_recall->context),

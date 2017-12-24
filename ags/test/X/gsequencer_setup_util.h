@@ -33,6 +33,8 @@ pthread_mutex_t* ags_test_get_driver_mutex();
 void ags_test_init(int *argc, char ***argv,
 		   gchar *conf_str);
 
+void ags_test_quit();
+
 void ags_test_show_file_error(gchar *filename,
 			      GError *error);
 

@@ -20,23 +20,8 @@
 #include <ags/X/ags_sequencer_editor.h>
 #include <ags/X/ags_sequencer_editor_callbacks.h>
 
-#include <ags/util/ags_list_util.h>
-
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-#include <ags/object/ags_distributed_manager.h>
-#include <ags/object/ags_sequencer.h>
-
-#include <ags/thread/ags_task_thread.h>
-
-#include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_midiin.h>
-
-#include <ags/audio/jack/ags_jack_server.h>
-#include <ags/audio/jack/ags_jack_midiin.h>
-
-#include <ags/audio/thread/ags_sequencer_thread.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
@@ -299,26 +284,26 @@ ags_sequencer_editor_disconnect(AgsConnectable *connectable)
 
   /* backend and card */
   g_object_disconnect(G_OBJECT(sequencer_editor->backend),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_sequencer_editor_backend_changed_callback),
 		      sequencer_editor,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(sequencer_editor->card),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_sequencer_editor_card_changed_callback),
 		      sequencer_editor,
 		      NULL);
 
   /* add / remove jack */
   g_object_disconnect(G_OBJECT(sequencer_editor->add_jack),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_sequencer_editor_add_jack_callback),
 		      sequencer_editor,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(sequencer_editor->remove_jack),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_sequencer_editor_remove_jack_callback),
 		      sequencer_editor,
 		      NULL);

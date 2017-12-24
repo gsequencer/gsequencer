@@ -20,7 +20,9 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_window_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
+
+#include <ags/X/ags_xorg_application_context.h>
 
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_mixer.h>
@@ -32,6 +34,10 @@
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
+
+#include <ags/X/file/ags_simple_file.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #ifdef AGS_WITH_QUARTZ
 #include <gtkmacintegration-gtk2/gtkosxapplication.h>
@@ -76,6 +82,7 @@ enum{
 };
 
 static gpointer ags_window_parent_class = NULL;
+GHashTable *ags_window_load_file = NULL;
 
 GType
 ags_window_get_type()
@@ -206,10 +213,15 @@ ags_window_init(AgsWindow *window)
   window->soundcard = NULL;
 
   /* window name and title */
+  window->filename = NULL;
+
   window->name = g_strdup("unnamed");
 
-  str = g_strconcat("GSequencer - ", window->name, NULL);
-  gtk_window_set_title((GtkWindow *) window, str);
+  str = g_strconcat("GSequencer - ",
+		    window->name,
+		    NULL);
+  gtk_window_set_title((GtkWindow *) window,
+		       str);
 
   g_free(str);
 
@@ -250,12 +262,12 @@ ags_window_init(AgsWindow *window)
   window->selected = NULL;
 
   /* editor */
-  window->editor = g_object_new(AGS_TYPE_EDITOR,
-				"homogeneous", FALSE,
-				"spacing", 0,
-				NULL);
+  window->notation_editor = g_object_new(AGS_TYPE_NOTATION_EDITOR,
+					 "homogeneous", FALSE,
+					 "spacing", 0,
+					 NULL);
   gtk_paned_pack2((GtkPaned *) window->paned,
-		  (GtkWidget *) window->editor,
+		  (GtkWidget *) window->notation_editor,
 		  TRUE, TRUE);
 
   /* navigation */
@@ -282,6 +294,18 @@ ags_window_init(AgsWindow *window)
   
   window->preferences = NULL;
   window->history_browser = NULL;
+
+  /* load file */
+  if(ags_window_load_file == NULL){
+    ags_window_load_file = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+						 NULL,
+						 NULL);
+  }
+
+  g_hash_table_insert(ags_window_load_file,
+		      window, ags_window_load_file_timeout);
+
+  g_timeout_add(1000, (GSourceFunc) ags_window_load_file_timeout, (gpointer) window);
 }
 
 void
@@ -315,7 +339,7 @@ ags_window_set_property(GObject *gobject,
 		   "soundcard", soundcard,
 		   NULL);
 
-      g_object_set(G_OBJECT(window->editor),
+      g_object_set(G_OBJECT(window->notation_editor),
 		   "soundcard", soundcard,
 		   NULL);
 
@@ -386,6 +410,7 @@ void
 ags_window_connect(AgsConnectable *connectable)
 {
   AgsWindow *window;
+
   GList *list, *list_start;
 
   window = AGS_WINDOW(connectable);
@@ -413,7 +438,7 @@ ags_window_connect(AgsConnectable *connectable)
 
   g_list_free(list_start);
   
-  ags_connectable_connect(AGS_CONNECTABLE(window->editor));
+  ags_connectable_connect(AGS_CONNECTABLE(window->notation_editor));
   ags_connectable_connect(AGS_CONNECTABLE(window->navigation));
 
   ags_connectable_connect(AGS_CONNECTABLE(window->automation_window));
@@ -424,8 +449,44 @@ ags_window_connect(AgsConnectable *connectable)
 void
 ags_window_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK:
-  /* implement me */
+  AgsWindow *window;
+
+  GList *list, *list_start;
+
+  window = AGS_WINDOW(connectable);
+
+  if((AGS_WINDOW_CONNECTED & (window->flags)) == 0){
+    return;
+  }
+
+  window->flags &= (~AGS_WINDOW_CONNECTED);
+  
+  g_object_disconnect(window,
+		      "any_signal::delete_event",
+		      G_CALLBACK(ags_window_delete_event_callback),
+		      NULL,
+		      NULL);
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(window->context_menu));
+  ags_connectable_disconnect(AGS_CONNECTABLE(window->menu_bar));
+
+  list_start = 
+    list = gtk_container_get_children((GtkContainer *) window->machines);
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+  
+  ags_connectable_disconnect(AGS_CONNECTABLE(window->notation_editor));
+  ags_connectable_disconnect(AGS_CONNECTABLE(window->navigation));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(window->automation_window));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(window->export_window));
 }
 
 void
@@ -435,13 +496,17 @@ ags_window_finalize(GObject *gobject)
 
   window = (AgsWindow *) gobject;
 
+  /* remove message monitor */
+  g_hash_table_remove(ags_window_load_file,
+		      window);
+
   g_object_unref(G_OBJECT(window->soundcard));
   g_object_unref(G_OBJECT(window->export_window));
 
   if(window->name != NULL){
     free(window->name);
   }
-
+  
   /* call parent */
   G_OBJECT_CLASS(ags_window_parent_class)->finalize(gobject);
 }
@@ -664,6 +729,78 @@ ags_window_show_error(AgsWindow *window,
 						GTK_BUTTONS_OK,
 						"%s", message);
   gtk_widget_show_all((GtkWidget *) dialog);
+}
+
+/**
+ * ags_window_load_file_timeout:
+ * @window: the #AgsWindow
+ * 
+ * Load file.
+ *
+ * Returns: %TRUE if proceed with redraw, otherwise %FALSE
+ * 
+ * Since: 1.2.0
+ */
+gboolean
+ags_window_load_file_timeout(AgsWindow *window)
+{
+  AgsGuiThread *gui_thread;
+
+  gui_thread = NULL;
+  
+  if(window->application_context != NULL){
+    gui_thread = AGS_XORG_APPLICATION_CONTEXT(window->application_context)->gui_thread;
+  }
+  
+  if(gui_thread != NULL &&
+     gui_thread->gtk_thread == NULL){
+      gui_thread->gtk_thread = g_thread_self();
+  }
+
+  if((AGS_WINDOW_TERMINATING & (window->flags)) != 0){
+    ags_application_context_quit(window->application_context);
+
+    return(FALSE);
+  }
+
+  if(g_hash_table_lookup(ags_window_load_file,
+			 window) != NULL){
+    if(window->filename != NULL){
+      AgsSimpleFile *simple_file;
+      
+      gchar *str;
+
+      GError *error;
+
+      simple_file = (AgsSimpleFile *) g_object_new(AGS_TYPE_SIMPLE_FILE,
+						   "application-context", window->application_context,
+						   "filename", window->filename,
+						   NULL);
+      
+      error = NULL;
+      ags_simple_file_open(simple_file,
+			   &error);
+
+      ags_simple_file_read(simple_file);
+      ags_simple_file_close(simple_file);
+      
+      /* set name */
+      window->name = g_strdup(window->filename);
+
+      str = g_strconcat("GSequencer - ",
+			window->name,
+			NULL);
+      
+      gtk_window_set_title((GtkWindow *) window,
+			   str);
+      
+      window->filename = NULL;
+    }
+
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 /**

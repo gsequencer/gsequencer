@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/task/ags_add_audio_signal.h>
-
-#include <ags/object/ags_connectable.h>
 
 #include <ags/i18n.h>
 
@@ -458,18 +456,40 @@ ags_add_audio_signal_launch(AgsTask *task)
   AgsAudioSignal *audio_signal, *old_template;
   AgsRecallID *recall_id;
 
-  AgsSoundcard *soundcard;
+  AgsMutexManager *mutex_manager;
+
+  GObject *soundcard;
 
   gdouble delay;
   guint attack;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *recycling_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   add_audio_signal = AGS_ADD_AUDIO_SIGNAL(task);
 
-  soundcard = AGS_SOUNDCARD(add_audio_signal->soundcard);
+  soundcard = add_audio_signal->soundcard;
 
+  /* get recycling mutex */
+  pthread_mutex_lock(application_mutex);
+
+  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) add_audio_signal->recycling);
+
+  pthread_mutex_unlock(application_mutex);
+
+  
   /* check for template to remove */
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (add_audio_signal->audio_signal_flags)) != 0){
+    pthread_mutex_lock(recycling_mutex);
+    
     old_template = ags_audio_signal_get_template(add_audio_signal->recycling->audio_signal);
+
+    pthread_mutex_unlock(recycling_mutex);
   }else{
     old_template = NULL;
   }

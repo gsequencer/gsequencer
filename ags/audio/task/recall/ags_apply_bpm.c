@@ -19,10 +19,6 @@
 
 #include <ags/audio/task/recall/ags_apply_bpm.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_tactable.h>
-#include <ags/object/ags_soundcard.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall.h>
@@ -352,8 +348,28 @@ ags_apply_bpm_recall(AgsApplyBpm *apply_bpm, AgsRecall *recall)
 void
 ags_apply_bpm_channel(AgsApplyBpm *apply_bpm, AgsChannel *channel)
 {
+  AgsMutexManager *mutex_manager;
+
   GList *list;
-    
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get channel mutex */
+  pthread_mutex_lock(application_mutex);
+  
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) channel);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* apply bpm */
+  pthread_mutex_lock(channel_mutex);
+
   list = channel->play;
   
   while(list != NULL){
@@ -369,13 +385,41 @@ ags_apply_bpm_channel(AgsApplyBpm *apply_bpm, AgsChannel *channel)
     
     list = list->next;
   }
+
+  pthread_mutex_unlock(channel_mutex);
 }
 
 void
 ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio)
 {
+  AgsChannel *input, *output;
   AgsChannel *channel;
+
+  AgsMutexManager *mutex_manager;
+
   GList *list;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  output = audio->output;
+  input = audio->input;
 
   /* AgsRecall */
   list = audio->play;
@@ -393,41 +437,96 @@ ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio)
     
     list = list->next;
   }
+
+  pthread_mutex_unlock(audio_mutex);
   
   /* AgsChannel */
-  channel = audio->output;
+  channel = output;
 
   while(channel != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* apply bpm */
     ags_apply_bpm_channel(apply_bpm, channel);
 
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+
     channel = channel->next;
+    
+    pthread_mutex_unlock(channel_mutex);    
   }
 
-  channel = audio->input;
+  channel = input;
 
   while(channel != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* apply bpm */
     ags_apply_bpm_channel(apply_bpm, channel);
 
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+
     channel = channel->next;
+    
+    pthread_mutex_unlock(channel_mutex);    
   }
 }
 
 void
 ags_apply_bpm_soundcard(AgsApplyBpm *apply_bpm, GObject *soundcard)
 {
-  GList *list;
+  AgsMutexManager *mutex_manager;
+  
+  GList *list_start, *list;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+  
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) soundcard);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* set bpm and get audio */
+  pthread_mutex_lock(soundcard);
 
   ags_soundcard_set_bpm(AGS_SOUNDCARD(soundcard), apply_bpm->bpm);
 
-  /* AgsAudio */
-  list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
+  list =
+    list_start = g_list_copy(ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard)));
 
+  pthread_mutex_unlock(soundcard);
+
+  /* AgsAudio */
   while(list != NULL){
     ags_apply_bpm_audio(apply_bpm,
 			AGS_AUDIO(list->data));
 
     list = list->next;
   }
+
+  g_list_free(list_start);
 }
 
 /**

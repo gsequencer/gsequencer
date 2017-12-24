@@ -19,10 +19,10 @@
 
 #include <ags/audio/task/ags_cancel_channel.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
+
+#include <ags/audio/thread/ags_channel_thread.h>
 
 #include <ags/i18n.h>
 
@@ -377,59 +377,120 @@ ags_cancel_channel_launch(AgsTask *task)
 {
   AgsPlayback *playback;
   AgsChannel *channel;
-
+  AgsRecallID *recall_id;
+  
   AgsCancelChannel *cancel_channel;
+
+  AgsChannelThread *channel_thread;
+  
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   cancel_channel = AGS_CANCEL_CHANNEL(task);
 
   channel = cancel_channel->channel;
+
+  /* get channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) channel);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(channel_mutex);
+
   playback = AGS_PLAYBACK(channel->playback);
+
+  recall_id = playback->recall_id[AGS_PLAYBACK_SCOPE_PLAYBACK];
+
+  channel_thread = playback->channel_thread[AGS_PLAYBACK_SCOPE_PLAYBACK];
+    
+  pthread_mutex_unlock(channel_mutex);
   
   /* cancel playback */
   if(cancel_channel->recall_id != NULL &&
-     cancel_channel->recall_id == AGS_PLAYBACK(channel->playback)->recall_id[0]){
+     cancel_channel->recall_id == recall_id){
     g_atomic_int_and(&(playback->flags),
 		     (~AGS_PLAYBACK_PLAYBACK));
 
-    g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[0]);
+    g_object_ref(recall_id);
     ags_channel_tillrecycling_cancel(channel,
-				     AGS_PLAYBACK(channel->playback)->recall_id[0]);
-    AGS_PLAYBACK(channel->playback)->recall_id[0] = NULL;
+				     recall_id);
+    
+    pthread_mutex_lock(channel_mutex);
+    
+    playback->recall_id[AGS_PLAYBACK_SCOPE_PLAYBACK] = NULL;
+
+    pthread_mutex_unlock(channel_mutex);
 
     if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
-      ags_thread_stop(playback->channel_thread[0]);
+      ags_thread_stop(channel_thread);
     }
   }
 
   /* cancel sequencer */
+  pthread_mutex_lock(channel_mutex);
+
+  recall_id = playback->recall_id[AGS_PLAYBACK_SCOPE_SEQUENCER];
+
+  channel_thread = playback->channel_thread[AGS_PLAYBACK_SCOPE_SEQUENCER];
+    
+  pthread_mutex_unlock(channel_mutex);
+
   if(cancel_channel->recall_id != NULL &&
-     cancel_channel->recall_id == AGS_PLAYBACK(channel->playback)->recall_id[1]){
+     cancel_channel->recall_id == recall_id){
     g_atomic_int_and(&(playback->flags),
 		     (~AGS_PLAYBACK_SEQUENCER));
 
-    g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[1]);
+    g_object_ref(recall_id);
     ags_channel_tillrecycling_cancel(channel,
-				     AGS_PLAYBACK(channel->playback)->recall_id[1]);
-    AGS_PLAYBACK(channel->playback)->recall_id[1] = NULL;
+				     recall_id);
+
+    pthread_mutex_lock(channel_mutex);
+    
+    playback->recall_id[AGS_PLAYBACK_SCOPE_SEQUENCER] = NULL;
+
+    pthread_mutex_unlock(channel_mutex);
 
     if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
-      ags_thread_stop(playback->channel_thread[1]);
+      ags_thread_stop(channel_thread);
     }
   }
 
   /* cancel notation */
+  pthread_mutex_lock(channel_mutex);
+
+  recall_id = playback->recall_id[AGS_PLAYBACK_SCOPE_NOTATION];
+
+  channel_thread = playback->channel_thread[AGS_PLAYBACK_SCOPE_NOTATION];
+    
+  pthread_mutex_unlock(channel_mutex);
+
   if(cancel_channel->recall_id != NULL &&
-     cancel_channel->recall_id == AGS_PLAYBACK(channel->playback)->recall_id[2]){
+     cancel_channel->recall_id == recall_id){
     g_atomic_int_and(&(playback->flags),
 		     (~AGS_PLAYBACK_NOTATION));
 
-    g_object_ref(AGS_PLAYBACK(channel->playback)->recall_id[2]);
+    g_object_ref(recall_id);
     ags_channel_tillrecycling_cancel(channel,
-				     AGS_PLAYBACK(channel->playback)->recall_id[2]);
-    AGS_PLAYBACK(channel->playback)->recall_id[2] = NULL;
+				     recall_id);
+
+    pthread_mutex_lock(channel_mutex);
+    
+    playback->recall_id[AGS_PLAYBACK_SCOPE_NOTATION] = NULL;
+
+    pthread_mutex_unlock(channel_mutex);
 
     if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
-      ags_thread_stop(playback->channel_thread[2]);
+      ags_thread_stop(channel_thread);
     }
   }
 

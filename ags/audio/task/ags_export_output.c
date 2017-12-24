@@ -19,10 +19,6 @@
 
 #include <ags/audio/task/ags_export_output.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/object/ags_soundcard.h>
-
 #include <ags/audio/file/ags_audio_file.h>
 
 #include <sndfile.h>
@@ -462,11 +458,18 @@ ags_export_output_finalize(GObject *gobject)
 void
 ags_export_output_launch(AgsTask *task)
 {
-  AgsExportOutput *export_output;
-  AgsExportThread *export_thread;
-  GObject *soundcard;
   AgsAudioFile *audio_file;
+
+  AgsExportOutput *export_output;
+
+  AgsExportThread *export_thread;
+
+  AgsMutexManager *mutex_manager;
+
+  GObject *soundcard;
+
   gchar *filename;
+
   guint pcm_channels;
   guint samplerate;
   guint format;
@@ -474,18 +477,42 @@ ags_export_output_launch(AgsTask *task)
   guint val;
   guint major_format;
   
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+  pthread_mutex_t *thread_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   export_output = AGS_EXPORT_OUTPUT(task);
+  
   soundcard = export_output->soundcard;
+  
   export_thread = export_output->export_thread;
+  
   filename = export_output->filename;
+  
   tic = export_output->tic;
 
+  /* get soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) soundcard);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get presets */
+  pthread_mutex_lock(soundcard_mutex);
+  
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    &pcm_channels,
 			    &samplerate,
 			    NULL,
 			    &format);
   
+  pthread_mutex_unlock(soundcard_mutex);
+
   /* open read/write audio file */
   audio_file = ags_audio_file_new(filename,
 				  soundcard,
@@ -523,13 +550,26 @@ ags_export_output_launch(AgsTask *task)
 #ifdef AGS_DEBUG
   g_message("export output");
 #endif
+
+  /* get thread mutex */
+  pthread_mutex_lock(application_mutex);
+
+  thread_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  (GObject *) export_thread);
   
+  pthread_mutex_unlock(application_mutex);
+
   /* start export thread */
+  pthread_mutex_lock(thread_mutex);
+
   export_thread->tic = tic;
+
   g_object_set(G_OBJECT(export_thread),
 	       "soundcard", soundcard,
 	       "audio-file", audio_file,
 	       NULL);
+
+  pthread_mutex_unlock(thread_mutex);
 
   if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(AGS_THREAD(export_thread)->flags)))) == 0){
     AgsThread *parent;

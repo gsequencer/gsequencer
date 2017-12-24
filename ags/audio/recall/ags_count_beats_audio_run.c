@@ -20,22 +20,7 @@
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_dynamic_connectable.h>
-#include <ags/object/ags_countable.h>
-#include <ags/object/ags_tactable.h>
-#include <ags/object/ags_seekable.h>
-#include <ags/object/ags_plugin.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
-
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
@@ -551,16 +536,16 @@ ags_count_beats_audio_run_set_property(GObject *gobject,
 	}else{
 	  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(count_beats_audio_run)->flags)) != 0){
 	    g_object_disconnect(G_OBJECT(count_beats_audio_run->delay_audio_run),
-				"sequencer-alloc-output",
+				"any_signal::sequencer-alloc-output",
 				G_CALLBACK(ags_count_beats_audio_run_sequencer_alloc_output_callback),
 				count_beats_audio_run,
-				"sequencer-count",
+				"any_signal::sequencer-count",
 				G_CALLBACK(ags_count_beats_audio_run_sequencer_count_callback),
 				count_beats_audio_run,
-				"notation-alloc-output",
+				"any_signal::notation-alloc-output",
 				G_CALLBACK(ags_count_beats_audio_run_notation_alloc_output_callback),
 				count_beats_audio_run,
-				"notation-count",
+				"any_signal::notation-count",
 				G_CALLBACK(ags_count_beats_audio_run_notation_count_callback),
 				count_beats_audio_run,
 				NULL);
@@ -746,16 +731,16 @@ ags_count_beats_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_conn
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(dynamic_connectable);
 
   g_object_disconnect(G_OBJECT(count_beats_audio_run->delay_audio_run),
-		      "sequencer-alloc-output",
+		      "any_signal::sequencer-alloc-output",
 		      G_CALLBACK(ags_count_beats_audio_run_sequencer_alloc_output_callback),
 		      count_beats_audio_run,
-		      "sequencer-count",
+		      "any_signal::sequencer-count",
 		      G_CALLBACK(ags_count_beats_audio_run_sequencer_count_callback),
 		      count_beats_audio_run,
-		      "notation-alloc-output",
+		      "any_signal::notation-alloc-output",
 		      G_CALLBACK(ags_count_beats_audio_run_notation_alloc_output_callback),
 		      count_beats_audio_run,
-		      "notation-count",
+		      "any_signal::notation-count",
 		      G_CALLBACK(ags_count_beats_audio_run_notation_count_callback),
 		      count_beats_audio_run,
 		      NULL);

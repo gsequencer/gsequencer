@@ -20,41 +20,8 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
-#include <ags/lib/ags_log.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_main_loop.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_concurrency_provider.h>
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif
-#include <ags/thread/ags_single_thread.h>
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_polling_thread.h>
-#include <ags/thread/ags_poll_fd.h>
-#include <ags/thread/ags_autosave_thread.h>
-#include <ags/thread/ags_task_thread.h>
-#include <ags/thread/ags_task_completion.h>
-#include <ags/thread/ags_thread_pool.h>
-
-#include <ags/server/ags_server.h>
-
-#include <ags/plugin/ags_ladspa_manager.h>
-#include <ags/plugin/ags_dssi_manager.h>
-#include <ags/plugin/ags_lv2_manager.h>
-#include <ags/plugin/ags_lv2_worker_manager.h>
-#include <ags/plugin/ags_lv2ui_manager.h>
-
-#include <ags/audio/ags_sound_provider.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-#include <ags/audio/thread/ags_soundcard_thread.h>
-#include <ags/audio/thread/ags_export_thread.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
@@ -286,6 +253,7 @@ ags_gui_thread_init(AgsGuiThread *gui_thread)
   g_mutex_init(&(gui_thread->mutex));
 
   gui_thread->main_context = g_main_context_default();
+  gui_thread->gtk_thread = NULL;
 
   gui_thread->cached_poll_array_size = 0;
   gui_thread->cached_poll_array = NULL;
@@ -467,6 +435,7 @@ ags_gui_thread_do_poll_loop(void *ptr)
 		  main_context);
 
   /* sync functions */
+#if 0
   sync_funcs.prepare = ags_gui_thread_sync_task_prepare;
   sync_funcs.check = ags_gui_thread_sync_task_check;
   sync_funcs.dispatch = ags_gui_thread_sync_task_dispatch;
@@ -475,6 +444,7 @@ ags_gui_thread_do_poll_loop(void *ptr)
 					 sizeof(GSource));
   g_source_attach(gui_thread->sync_source,
 		  main_context);
+#endif
   
   /* task functions */
   task_funcs.prepare = ags_gui_thread_task_prepare;
@@ -1231,7 +1201,7 @@ ags_gui_thread_animation_prepare(GSource *source,
   
   gui_thread = ags_thread_find_type(main_loop,
 				    AGS_TYPE_GUI_THREAD);
-
+  
   log = ags_log_get_instance();
   
   pthread_mutex_lock(log->mutex);
@@ -1947,13 +1917,15 @@ ags_gui_thread_schedule_task(AgsGuiThread *gui_thread,
   if(task_thread == NULL){
     return;
   }
-  
+
+#if 0  
   g_atomic_int_or(&(task_thread->flags),
 		  (AGS_TASK_THREAD_EXTERN_SYNC |
 		   AGS_TASK_THREAD_EXTERN_READY));
 
   gui_thread->queued_sync = 4;
-
+#endif
+  
   pthread_mutex_lock(gui_thread->task_schedule_mutex);
 
   gui_thread->collected_task = g_list_prepend(gui_thread->collected_task,
@@ -1985,13 +1957,15 @@ ags_gui_thread_schedule_task_list(AgsGuiThread *gui_thread,
   if(task_thread == NULL){
     return;
   }
-  
+
+#if 0  
   g_atomic_int_or(&(task_thread->flags),
 		  (AGS_TASK_THREAD_EXTERN_SYNC |
 		   AGS_TASK_THREAD_EXTERN_READY));
 
   gui_thread->queued_sync = 4;
-
+#endif
+  
   pthread_mutex_lock(gui_thread->task_schedule_mutex);
 
   gui_thread->collected_task = g_list_concat(g_list_reverse(task),

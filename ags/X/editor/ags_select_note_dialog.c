@@ -20,19 +20,11 @@
 #include <ags/X/editor/ags_select_note_dialog.h>
 #include <ags/X/editor/ags_select_note_dialog_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/thread/ags_concurrency_provider.h>
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_notation.h>
-#include <ags/audio/ags_note.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
-#include <ags/X/ags_editor.h>
+#include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_machine.h>
 
 #include <ags/i18n.h>
@@ -448,7 +440,7 @@ ags_select_note_dialog_disconnect(AgsConnectable *connectable)
   select_note_dialog->flags &= (~AGS_SELECT_NOTE_DIALOG_CONNECTED);
 
   g_object_disconnect(G_OBJECT(select_note_dialog),
-		      "response",
+		      "any_signal::response",
 		      G_CALLBACK(ags_select_note_dialog_response_callback),
 		      select_note_dialog,
 		      NULL);
@@ -480,7 +472,7 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
   AgsSelectNoteDialog *select_note_dialog;
 
   AgsWindow *window;
-  AgsEditor *editor;
+  AgsNotationEditor *notation_editor;
   AgsMachine *machine;
 
   AgsAudio *audio;
@@ -509,9 +501,9 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
   select_note_dialog = AGS_SELECT_NOTE_DIALOG(applicable);
 
   window = select_note_dialog->main_window;
-  editor = window->editor;
+  notation_editor = window->notation_editor;
 
-  machine = editor->selected_machine;
+  machine = notation_editor->selected_machine;
 
   if(machine == NULL){
     return;
@@ -558,7 +550,7 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
 
   i = 0;
   
-  while((i = ags_notebook_next_active_tab(editor->current_notebook,
+  while((i = ags_notebook_next_active_tab(notation_editor->notebook,
 					  i)) != -1){
     list_notation = g_list_nth(audio->notation,
 			       i);

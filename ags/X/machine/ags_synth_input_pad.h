@@ -25,6 +25,10 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 #include <ags/X/ags_pad.h>
 
 #define AGS_TYPE_SYNTH_INPUT_PAD                (ags_synth_input_pad_get_type())

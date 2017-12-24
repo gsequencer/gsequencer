@@ -20,9 +20,8 @@
 #include <ags/X/editor/ags_position_automation_cursor_dialog.h>
 #include <ags/X/editor/ags_position_automation_cursor_dialog_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_automation_window.h>
@@ -31,6 +30,8 @@
 
 #include <ags/X/editor/ags_automation_toolbar.h>
 #include <ags/X/editor/ags_automation_edit.h>
+
+#include <math.h>
 
 #include <ags/i18n.h>
 
@@ -370,7 +371,7 @@ ags_position_automation_cursor_dialog_disconnect(AgsConnectable *connectable)
   position_automation_cursor_dialog->flags &= (~AGS_POSITION_AUTOMATION_CURSOR_DIALOG_CONNECTED);
 
   g_object_disconnect(G_OBJECT(position_automation_cursor_dialog),
-		      "response",
+		      "any_signal::response",
 		      G_CALLBACK(ags_position_automation_cursor_dialog_response_callback),
 		      position_automation_cursor_dialog,
 		      NULL);
@@ -459,7 +460,7 @@ ags_position_automation_cursor_dialog_apply(AgsApplicable *applicable)
   /* make visible */  
   if(hadjustment != NULL){
     gtk_adjustment_set_value(hadjustment,
-			     ((x * 16 * 64 / zoom) * (hadjustment->upper / (AGS_EDITOR_MAX_CONTROLS * 16 * 16 * 64 / zoom))));
+			     ((x * 16 * 64 / zoom) * (hadjustment->upper / (AGS_NOTATION_EDITOR_MAX_CONTROLS * 64 / zoom))));
   }
   
   if(gtk_toggle_button_get_active(position_automation_cursor_dialog->set_focus)){

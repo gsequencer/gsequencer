@@ -20,37 +20,9 @@
 #include <ags/X/ags_effect_line.h>
 #include <ags/X/ags_effect_line_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_plugin.h>
-
-#include <ags/plugin/ags_ladspa_manager.h>
-#include <ags/plugin/ags_ladspa_plugin.h>
-#include <ags/plugin/ags_lv2_manager.h>
-#include <ags/plugin/ags_lv2_plugin.h>
-#include <ags/plugin/ags_ladspa_conversion.h>
-#include <ags/plugin/ags_lv2_conversion.h>
-
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
-
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_recall_container.h>
-#include <ags/audio/ags_recall_ladspa.h>
-#include <ags/audio/ags_recall_lv2.h>
-
-#include <ags/widget/ags_led.h>
-#include <ags/widget/ags_vindicator.h>
-#include <ags/widget/ags_hindicator.h>
-#include <ags/widget/ags_dial.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>

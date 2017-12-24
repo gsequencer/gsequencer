@@ -22,9 +22,12 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_channel.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
 
@@ -35,8 +38,8 @@
 #define AGS_IS_LADSPA_BRIDGE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_LADSPA_BRIDGE))
 #define AGS_LADSPA_BRIDGE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_LADSPA_BRIDGE, AgsLadspaBridgeClass))
 
-#define AGS_LADSPA_BRIDGE_DEFAULT_VERSION "0.4.3\0"
-#define AGS_LADSPA_BRIDGE_DEFAULT_BUILD_ID "CEST 15-03-2015 13:40\0"
+#define AGS_LADSPA_BRIDGE_DEFAULT_VERSION "0.4.3"
+#define AGS_LADSPA_BRIDGE_DEFAULT_BUILD_ID "CEST 15-03-2015 13:40"
 
 typedef struct _AgsLadspaBridge AgsLadspaBridge;
 typedef struct _AgsLadspaBridgeClass AgsLadspaBridgeClass;

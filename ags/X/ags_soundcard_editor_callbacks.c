@@ -19,30 +19,9 @@
 
 #include <ags/X/ags_soundcard_editor_callbacks.h>
 
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task.h>
-
-#include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_devout.h>
-
-#include <ags/audio/jack/ags_jack_server.h>
-#include <ags/audio/jack/ags_jack_devout.h>
-
-#include <ags/audio/pulse/ags_pulse_server.h>
-#include <ags/audio/pulse/ags_pulse_devout.h>
-
-#include <ags/audio/core-audio/ags_core_audio_server.h>
-#include <ags/audio/core-audio/ags_core_audio_devout.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/audio/task/ags_set_output_device.h>
-#include <ags/audio/task/ags_set_audio_channels.h>
-#include <ags/audio/task/ags_set_buffer_size.h>
-#include <ags/audio/task/ags_set_samplerate.h>
-#include <ags/audio/task/ags_set_format.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>

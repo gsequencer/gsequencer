@@ -21,13 +21,21 @@
 #define __LIBAGS_GUI_H__
 
 #include <ags/widget/ags_cartesian.h>
+#include <ags/widget/ags_container.h>
 #include <ags/widget/ags_dial.h>
 #include <ags/widget/ags_expander_set.h>
 #include <ags/widget/ags_hindicator.h>
 #include <ags/widget/ags_indicator.h>
 #include <ags/widget/ags_led.h>
+#include <ags/widget/ags_led_array.h>
+#include <ags/widget/ags_hled_array.h>
+#include <ags/widget/ags_vled_array.h>
+#include <ags/widget/ags_notebook.h>
+#include <ags/widget/ags_piano_keys.h>
+#include <ags/widget/ags_piano.h>
+#include <ags/widget/ags_scrolled_piano.h>
 #include <ags/widget/ags_ruler.h>
 #include <ags/widget/ags_vindicator.h>
-#include <ags/widget/ags_container.h>
+#include <ags/widget/ags_widget_marshal.h>
 
 #endif /*__LIBAGS_GUI_H__*/

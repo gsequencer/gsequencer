@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -276,7 +276,55 @@ ags_audio_connection_set_property(GObject *gobject,
     break;
   case PROP_MAPPED_LINE:
     {
+      AgsMessageDelivery *message_delivery;
+      AgsMessageQueue *message_queue;
+
       audio_connection->mapped_line = g_value_get_uint(value);
+
+      /* emit message */
+      message_delivery = ags_message_delivery_get_instance();
+
+      message_queue = ags_message_delivery_find_namespace(message_delivery,
+							  "libags-audio");
+
+      if(message_queue != NULL){
+	AgsMessageEnvelope *message;
+
+	xmlDoc *doc;
+	xmlNode *root_node;
+
+	/* specify message body */
+	doc = xmlNewDoc("1.0");
+
+	root_node = xmlNewNode(NULL,
+			       "ags-command");
+	xmlDocSetRootElement(doc, root_node);    
+
+	xmlNewProp(root_node,
+		   "method",
+		   "GObject::notify::mapped-line");
+
+	/* add message */
+	message = ags_message_envelope_alloc(audio_connection,
+					     NULL,
+					     doc);
+
+	/* set parameter */
+	message->parameter = g_new0(GParameter,
+				    1);
+	message->n_params = 1;
+    
+	message->parameter[0].name = "mapped-line";
+	g_value_init(&(message->parameter[0].value),
+		     G_TYPE_UINT);
+	g_value_set_uint(&(message->parameter[0].value),
+			   audio_connection->mapped_line);
+
+	/* add message */
+	ags_message_delivery_add_message(message_delivery,
+					 "libags-audio",
+					 message);
+      }
     }
     break;
   default:
@@ -362,11 +410,17 @@ ags_audio_connection_find(GList *list,
 			  guint audio_channel)
 {
   while(list != NULL){
+    pthread_mutex_lock(AGS_CONNECTION(list->data)->mutex);
+
     if(AGS_AUDIO_CONNECTION(list->data)->channel_type == channel_type &&
        AGS_AUDIO_CONNECTION(list->data)->pad == pad &&
        AGS_AUDIO_CONNECTION(list->data)->audio_channel == audio_channel){
+      pthread_mutex_unlock(AGS_CONNECTION(list->data)->mutex);
+      
       return(list);
     }
+
+    pthread_mutex_unlock(AGS_CONNECTION(list->data)->mutex);
 
     list = list->next;
   }

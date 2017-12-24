@@ -19,47 +19,15 @@
 
 #include <ags/X/ags_line_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/plugin/ags_base_plugin.h>
-
-#include <ags/audio/ags_playback.h>
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_audio.h>
-#include <ags/audio/ags_recall_audio_run.h>
-#include <ags/audio/ags_recall_channel.h>
-#include <ags/audio/ags_recall_id.h>
-#include <ags/audio/ags_port.h>
-#include <ags/audio/ags_recycling_context.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/audio/recall/ags_peak_channel.h>
-#include <ags/audio/recall/ags_volume_channel.h>
-#include <ags/audio/recall/ags_copy_pattern_channel.h>
-#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
-
-#include <ags/widget/ags_led.h>
-#include <ags/widget/ags_indicator.h>
-#include <ags/widget/ags_vindicator.h>
-#include <ags/widget/ags_hindicator.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_listing_editor.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line_member.h>
-#include <ags/X/ags_machine_editor.h>
-#include <ags/X/ags_pad_editor.h>
-#include <ags/X/ags_line_editor.h>
-#include <ags/X/ags_line_member_editor.h>
-#include <ags/X/ags_plugin_browser.h>
-#include <ags/X/ags_ladspa_browser.h>
-#include <ags/X/ags_dssi_browser.h>
-#include <ags/X/ags_lv2_browser.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
 
@@ -154,232 +122,6 @@ ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 }
 
 void
-ags_line_add_effect_callback(AgsChannel *channel,
-			     gchar *filename,
-			     gchar *effect,
-			     AgsLine *line)
-{
-  AgsWindow *window;
-  AgsMachine *machine;
-  AgsMachineEditor *machine_editor;
-  AgsLineMemberEditor *line_member_editor;
-  AgsPluginBrowser *plugin_browser;
-
-  AgsGuiThread *gui_thread;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-
-  AgsApplicationContext *application_context;
-  
-  GList *pad_editor, *pad_editor_start;
-  GList *line_editor, *line_editor_start;
-  GList *control_type_name;
-  
-  pthread_mutex_t *application_mutex;
-
-  /* lock gdk threads */
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) line);
-
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsAudioLoop *) application_context->main_loop;
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
-						      AGS_TYPE_GUI_THREAD);
-
-  /*  */
-
-  /* get machine and machine editor */
-  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
-						   AGS_TYPE_MACHINE);
-  machine_editor = (AgsMachineEditor *) machine->properties;
-
-  /* get control type */
-  control_type_name = NULL;  
-
-  pad_editor_start = NULL;
-  line_editor_start = NULL;
-  
-  if(machine_editor != NULL){
-    pad_editor_start = 
-      pad_editor = gtk_container_get_children((GtkContainer *) machine_editor->input_editor->child);
-    pad_editor = g_list_nth(pad_editor,
-			    channel->pad);
-    
-    if(pad_editor != NULL){
-      line_editor_start =
-	line_editor = gtk_container_get_children((GtkContainer *) AGS_PAD_EDITOR(pad_editor->data)->line_editor);
-      line_editor = g_list_nth(line_editor,
-			       channel->audio_channel);
-    }else{
-      line_editor = NULL;
-    }
-
-    if(line_editor != NULL){
-      line_member_editor = AGS_LINE_EDITOR(line_editor->data)->member_editor;
-
-      plugin_browser = line_member_editor->plugin_browser;
-
-      if(plugin_browser != NULL &&
-	 plugin_browser->active_browser != NULL){
-	GList *description, *description_start;
-	GList *port_control, *port_control_start;
-
-	gchar *controls;
-
-	/* get plugin browser */
-	description_start = NULL;
-	port_control_start = NULL;
-	
-	if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
-	  description_start = 
-	    description = gtk_container_get_children((GtkContainer *) AGS_LADSPA_BROWSER(plugin_browser->active_browser)->description);
-	}else if(AGS_IS_DSSI_BROWSER(plugin_browser->active_browser)){
-	  description_start = 
-	    description = gtk_container_get_children((GtkContainer *) AGS_DSSI_BROWSER(plugin_browser->active_browser)->description);
-	}else if(AGS_IS_LV2_BROWSER(plugin_browser->active_browser)){
-	  description_start = 
-	    description = gtk_container_get_children((GtkContainer *) AGS_LV2_BROWSER(plugin_browser->active_browser)->description);
-	}else{
-	  g_message("ags_line_callbacks.c unsupported plugin browser");
-	}
-
-	/* get port description */
-	if(description != NULL){
-	  description = g_list_last(description);
-	  
-	  port_control_start =
-	    port_control = gtk_container_get_children(GTK_CONTAINER(description->data));
-	  
-	  if(port_control != NULL){
-	    while(port_control != NULL){
-	      controls = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(port_control->data));
-
-	      if(!g_ascii_strncasecmp(controls,
-				      "led",
-				      4)){
-		control_type_name = g_list_prepend(control_type_name,
-						   "AgsLed");
-	      }else if(!g_ascii_strncasecmp(controls,
-					    "vertical indicator",
-					    19)){
-		control_type_name = g_list_prepend(control_type_name,
-						   "AgsVIndicator");
-	      }else if(!g_ascii_strncasecmp(controls,
-					    "horizontal indicator",
-					    19)){
-		control_type_name = g_list_prepend(control_type_name,
-						   "AgsHIndicator");
-	      }else if(!g_ascii_strncasecmp(controls,
-					    "spin button",
-					    12)){
-		control_type_name = g_list_prepend(control_type_name,
-						   "GtkSpinButton");
-	      }else if(!g_ascii_strncasecmp(controls,
-					    "dial",
-					    5)){
-		control_type_name = g_list_prepend(control_type_name,
-						   "AgsDial");
-	      }else if(!g_ascii_strncasecmp(controls,
-					    "vertical scale",
-					    15)){
-		control_type_name = g_list_prepend(control_type_name,
-						   "GtkVScale");
-	      }else if(!g_ascii_strncasecmp(controls,
-					    "horizontal scale",
-					    17)){
-		control_type_name = g_list_prepend(control_type_name,
-						   "GtkHScale");
-	      }else if(!g_ascii_strncasecmp(controls,
-					    "check-button",
-					    13)){
-		control_type_name = g_list_prepend(control_type_name,
-						   "GtkCheckButton");
-	      }else if(!g_ascii_strncasecmp(controls,
-					    "toggle button",
-					    14)){
-		control_type_name = g_list_prepend(control_type_name,
-						   "GtkToggleButton");
-	      }
-	      
-	      port_control = port_control->next;
-	      port_control = port_control->next;
-	    }
-	  }
-
-	  /* free lists */
-	  g_list_free(description_start);
-	  g_list_free(port_control_start);
-	}
-      }
-      
-      //      line_member_editor->plugin_browser;
-    }
-  }else{
-    control_type_name = NULL;
-  }
-
-  /* add effect */
-  ags_line_add_effect(line,
-		      control_type_name,
-		      filename,
-		      effect);
-
-  /* free lists */
-  g_list_free(pad_editor_start);
-  g_list_free(line_editor_start);
-}
-
-void
-ags_line_remove_effect_callback(AgsChannel *channel,
-				guint nth,
-				AgsLine *line)
-{
-  AgsWindow *window;
-
-  AgsGuiThread *gui_thread;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-
-  AgsApplicationContext *application_context;
-
-  pthread_mutex_t *application_mutex;
-
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) line);
-
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsAudioLoop *) application_context->main_loop;
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
-						      AGS_TYPE_GUI_THREAD);
-
-  /*  */
-  ags_line_remove_effect(line,
-			 nth);
-}
-
-void
 ags_line_volume_callback(GtkRange *range,
 			 AgsLine *line)
 {
@@ -412,9 +154,10 @@ ags_line_volume_callback(GtkRange *range,
 }
 
 void
-ags_line_channel_done_callback(AgsChannel *source, AgsRecallID *recall_id,
-			       AgsLine *line)
+ags_line_done_callback(AgsLine *line, AgsRecallID *recall_id,
+		       gpointer data)
 {
+  AgsChannel *source;
   AgsChannel *channel;
   AgsPlayback *playback;
   AgsChannel *next_pad;
@@ -429,6 +172,8 @@ ags_line_channel_done_callback(AgsChannel *source, AgsRecallID *recall_id,
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  source = line->channel;
   
   /* retrieve channel */
   channel = AGS_PAD(AGS_LINE(line)->pad)->channel;

@@ -104,6 +104,8 @@ void ags_functional_editor_workflow_test_add_test()
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
   
+  ags_test_quit();
+  
   CU_cleanup_registry();
   
   exit(CU_get_error());
@@ -147,7 +149,7 @@ ags_functional_editor_workflow_test_drum()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsEditor *editor;
+  AgsNotationEditor *notation_editor;
   AgsMachine *machine;
   AgsMachineSelector *machine_selector;
   AgsMachineSelection *machine_selection;
@@ -196,7 +198,7 @@ ags_functional_editor_workflow_test_drum()
   ags_test_enter();
 
   window = xorg_application_context->window;
-  editor = window->editor;
+  notation_editor = window->notation_editor;
   
   ags_test_leave();
 
@@ -216,7 +218,7 @@ ags_functional_editor_workflow_test_drum()
   /* select machine */
   ags_test_enter();
 
-  machine_selector = editor->machine_selector;
+  machine_selector = notation_editor->machine_selector;
   machine_selection = machine_selector->machine_selection;
 
   machine_str = g_strdup_printf("%s: %s\0",
@@ -239,7 +241,7 @@ ags_functional_editor_workflow_test_matrix()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsEditor *editor;
+  AgsNotationEditor *notation_editor;
   AgsMachine *machine;
   AgsMachineSelector *machine_selector;
   AgsMachineSelection *machine_selection;
@@ -288,7 +290,7 @@ ags_functional_editor_workflow_test_matrix()
   ags_test_enter();
 
   window = xorg_application_context->window;
-  editor = window->editor;
+  notation_editor = window->notation_editor;
   
   ags_test_leave();
 
@@ -308,7 +310,7 @@ ags_functional_editor_workflow_test_matrix()
   /* select machine */
   ags_test_enter();
 
-  machine_selector = editor->machine_selector;
+  machine_selector = notation_editor->machine_selector;
   machine_selection = machine_selector->machine_selection;
 
   machine_str = g_strdup_printf("%s: %s\0",
@@ -332,7 +334,7 @@ ags_functional_editor_workflow_test_ffplayer()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsEditor *editor;
+  AgsNotationEditor *notation_editor;
   AgsMachine *machine;
   AgsMachineSelector *machine_selector;
   AgsMachineSelection *machine_selection;
@@ -381,7 +383,7 @@ ags_functional_editor_workflow_test_ffplayer()
   ags_test_enter();
 
   window = xorg_application_context->window;
-  editor = window->editor;
+  notation_editor = window->notation_editor;
   
   ags_test_leave();
 
@@ -401,7 +403,7 @@ ags_functional_editor_workflow_test_ffplayer()
   /* select machine */
   ags_test_enter();
 
-  machine_selector = editor->machine_selector;
+  machine_selector = notation_editor->machine_selector;
   machine_selection = machine_selector->machine_selection;
 
   machine_str = g_strdup_printf("%s: %s\0",
@@ -434,12 +436,12 @@ ags_functional_editor_workflow_test_edit_all()
   nth_machine = 0;
   
   /* set zoom */
-  success = ags_functional_test_util_toolbar_zoom(AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_4);
+  success = ags_functional_test_util_notation_toolbar_zoom(AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_4);
 
   CU_ASSERT(success == TRUE);
 
   /* edit tool */
-  success = ags_functional_test_util_toolbar_edit_click();
+  success = ags_functional_test_util_notation_toolbar_edit_click();
 
   CU_ASSERT(success == TRUE);
 
@@ -452,13 +454,15 @@ ags_functional_editor_workflow_test_edit_all()
   success = TRUE;
   
   for(i = 0; i < 64 && success;){
-    success = ags_functional_test_util_pattern_edit_add_point(i, 0);
+    success = ags_functional_test_util_notation_edit_add_point(i, i,
+							       0);
 
     i += 8;
   }
 
   for(i = 4; i < 64 && success;){
-    success = ags_functional_test_util_pattern_edit_add_point(i, 1);
+    success = ags_functional_test_util_notation_edit_add_point(i, i,
+							       1);
 
     i += 8;
   }
@@ -477,7 +481,7 @@ ags_functional_editor_workflow_test_edit_all()
   CU_ASSERT(success == TRUE);
 
   /* set zoom */
-  success = ags_functional_test_util_toolbar_zoom(AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_8);
+  success = ags_functional_test_util_notation_toolbar_zoom(AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_8);
 
   CU_ASSERT(success == TRUE);
 
@@ -486,7 +490,8 @@ ags_functional_editor_workflow_test_edit_all()
   
   for(i = 0; i < 32 && success;){
     for(j = 0; j < 56 && success;){
-      success = ags_functional_test_util_pattern_edit_add_point(i * 8 + j, 15);
+      success = ags_functional_test_util_notation_edit_add_point(i * 8 + j, i * 8 + j,
+								 15);
 
       j += 8;
     }
@@ -495,7 +500,8 @@ ags_functional_editor_workflow_test_edit_all()
       break;
     }
     
-    success = ags_functional_test_util_pattern_edit_add_point(i * 8 + 56, 14);
+    success = ags_functional_test_util_notation_edit_add_point(i * 8 + 56, i * 8 + 56,
+							       14);
     
     i += 8;
   }
@@ -515,7 +521,7 @@ ags_functional_editor_workflow_test_edit_all()
   CU_ASSERT(success == TRUE);
 
   /* set zoom */
-  success = ags_functional_test_util_toolbar_zoom(AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_4);
+  success = ags_functional_test_util_notation_toolbar_zoom(AGS_FUNCTIONAL_TEST_UTIL_TOOLBAR_ZOOM_1_TO_4);
 
   CU_ASSERT(success == TRUE);
 
@@ -523,8 +529,8 @@ ags_functional_editor_workflow_test_edit_all()
   success = TRUE;
   
   for(i = 0; i < 64 && success;){
-    success = ags_functional_test_util_note_edit_add_point(i, i + 1,
-							   rand() % 10);
+    success = ags_functional_test_util_notation_edit_add_point(i, i + 1,
+							       rand() % 10);
     
     i += 8;
   }
@@ -564,6 +570,9 @@ main(int argc, char **argv)
 		AGS_FUNCTIONAL_EDITOR_WORKFLOW_TEST_CONFIG);
   ags_functional_test_util_do_run(argc, argv,
 				  ags_functional_editor_workflow_test_add_test, &is_available);
+
+  pthread_join(ags_functional_test_util_self(),
+	       NULL);
 
   return(-1);
 }

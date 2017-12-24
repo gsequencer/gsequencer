@@ -20,11 +20,7 @@
 #include <ags/X/ags_performance_preferences.h>
 #include <ags/X/ags_performance_preferences_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-
-#include <ags/object/ags_connectable.h>
-
-#include <ags/object/ags_applicable.h>
+#include <ags/libags.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
@@ -219,7 +215,7 @@ ags_performance_preferences_disconnect(AgsConnectable *connectable)
   performance_preferences->flags &= (~AGS_PERFORMANCE_PREFERENCES_CONNECTED);
   
   g_object_disconnect(G_OBJECT(performance_preferences->max_precision),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_performance_preferences_max_precision_callback),
 		      performance_preferences,
 		      NULL);

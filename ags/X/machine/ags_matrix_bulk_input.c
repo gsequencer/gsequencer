@@ -20,9 +20,9 @@
 #include <ags/X/machine/ags_matrix_bulk_input.h>
 #include <ags/X/machine/ags_matrix_bulk_input_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 void ags_matrix_bulk_input_class_init(AgsMatrixBulkInputClass *matrix_bulk_input);
 void ags_matrix_bulk_input_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -37,7 +37,7 @@ void ags_matrix_bulk_input_finalize(GObject *gobject);
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
  * @title: AgsMatrixBulkInput
  * @section_id:
- * @include: ags/X/ags_matrix_bulk_input.h
+ * @include: ags/X/machine/ags_matrix_bulk_input.h
  *
  * #AgsMatrixBulkInput is a composite widget to visualize one #AgsChannel. It should be
  * packed by an #AgsMatrixBulkInput.

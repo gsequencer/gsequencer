@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -57,7 +57,7 @@ typedef struct _AgsDevoutClass AgsDevoutClass;
  * @AGS_DEVOUT_BUFFER2: ring-buffer 2
  * @AGS_DEVOUT_BUFFER3: ring-buffer 3
  * @AGS_DEVOUT_ATTACK_FIRST: use first attack, instead of second one
- * @AGS_DEVOUT_PLAY: use first attack, instead of second one
+ * @AGS_DEVOUT_PLAY: devout is running
  * @AGS_DEVOUT_OSS: use OSS4 backend
  * @AGS_DEVOUT_ALSA: use ALSA backend
  * @AGS_DEVOUT_SHUTDOWN: stop playback
@@ -146,12 +146,12 @@ struct _AgsDevout
   guint loop_offset;
   
   union{
-    struct _AgsOss{
+    struct _AgsOssOut{
       int device_fd;
       char *device;
     }oss;
 #ifdef AGS_WITH_ALSA
-    struct _AgsAlsa{
+    struct _AgsAlsaOut{
       char *device;
       int rc;
       snd_pcm_t *handle;
@@ -159,7 +159,7 @@ struct _AgsDevout
       snd_pcm_hw_params_t *params;
     }alsa;
 #else
-    struct _AgsAlsaDummy{
+    struct _AgsAlsaDummyOut{
       char *device;
       int rc;
       void *handle;

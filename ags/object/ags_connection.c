@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,9 @@
  */
 
 #include <ags/object/ags_connection.h>
+
+#include <ags/thread/ags_message_delivery.h>
+#include <ags/thread/ags_message_queue.h>
 
 void ags_connection_class_init(AgsConnectionClass *connection);
 void ags_connection_init (AgsConnection *connection);
@@ -116,6 +119,15 @@ ags_connection_class_init(AgsConnectionClass *connection)
 void
 ags_connection_init(AgsConnection *connection)
 {
+  connection->mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(connection->mutexattr);
+  pthread_mutexattr_settype(connection->mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+  connection->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(connection->mutex,
+		     connection->mutexattr);
+
   connection->data_object = NULL;
 }
 
@@ -134,6 +146,9 @@ ags_connection_set_property(GObject *gobject,
     {
       GObject *data_object;
 
+      AgsMessageDelivery *message_delivery;
+      AgsMessageQueue *message_queue;
+      
       data_object = (GObject *) g_value_get_object(value);
 
       if(connection->data_object == data_object){
@@ -149,6 +164,51 @@ ags_connection_set_property(GObject *gobject,
       }
 
       connection->data_object = data_object;
+
+      /* emit message */
+      message_delivery = ags_message_delivery_get_instance();
+
+      message_queue = ags_message_delivery_find_namespace(message_delivery,
+							  "libags");
+
+      if(message_queue != NULL){
+	AgsMessageEnvelope *message;
+
+	xmlDoc *doc;
+	xmlNode *root_node;
+
+	/* specify message body */
+	doc = xmlNewDoc("1.0");
+
+	root_node = xmlNewNode(NULL,
+			       "ags-command");
+	xmlDocSetRootElement(doc, root_node);    
+
+	xmlNewProp(root_node,
+		   "method",
+		   "GObject::notify::data-object");
+
+	/* add message */
+	message = ags_message_envelope_alloc(connection,
+					     NULL,
+					     doc);
+
+	/* set parameter */
+	message->parameter = g_new0(GParameter,
+				    1);
+	message->n_params = 1;
+    
+	message->parameter[0].name = "data-object";
+	g_value_init(&(message->parameter[0].value),
+		     G_TYPE_OBJECT);
+	g_value_set_object(&(message->parameter[0].value),
+			   data_object);
+
+	/* add message */
+	ags_message_delivery_add_message(message_delivery,
+					 "libags",
+					 message);
+      }
     }
     break;
   default:
@@ -206,6 +266,12 @@ ags_connection_finalize(GObject *gobject)
     g_object_unref(connection->data_object);
   }
 
+  pthread_mutex_destroy(connection->mutex);
+  free(connection->mutex);
+
+  pthread_mutexattr_destroy(connection->mutexattr);
+  free(connection->mutexattr);
+
   /* call parent */
   G_OBJECT_CLASS(ags_connection_parent_class)->finalize(gobject);
 }
@@ -231,11 +297,14 @@ ags_connection_find_type(GList *connection,
   }
 
   while(connection != NULL){
+    /* check type */
     if(AGS_IS_CONNECTION(connection->data) &&
        g_type_is_a(G_OBJECT_TYPE(G_OBJECT(connection->data)),
 				 connection_type)){
       return(connection);
     }
+
+    connection = connection->next;
   }
 
   return(NULL);
@@ -260,6 +329,8 @@ ags_connection_find_type_and_data_object_type(GList *connection,
 					      GType connection_type,
 					      GType data_object_type)
 {
+  GObject *data_object;
+  
   if(connection == NULL ||
      connection_type == G_TYPE_NONE ||
      data_object_type == G_TYPE_NONE){
@@ -267,13 +338,28 @@ ags_connection_find_type_and_data_object_type(GList *connection,
   }
 
   while(connection != NULL){
-    if(AGS_IS_CONNECTION(connection->data) &&
-       g_type_is_a(G_OBJECT_TYPE(connection->data),
-				 connection_type) &&
-       g_type_is_a(G_OBJECT_TYPE(connection->data),
-				 data_object_type)){      
+    if(!AGS_IS_CONNECTION(connection->data)){
+      connection = connection->next;
+
+      continue;
+    }
+
+    /* get data object */
+    pthread_mutex_lock(AGS_CONNECTION(connection->data)->mutex);
+    
+    data_object = AGS_CONNECTION(connection->data)->data_object;
+    
+    pthread_mutex_unlock(AGS_CONNECTION(connection->data)->mutex);
+
+    /* check type */
+    if(g_type_is_a(G_OBJECT_TYPE(connection->data),
+		   connection_type) &&
+       g_type_is_a(G_OBJECT_TYPE(data_object),
+		   data_object_type)){      
       return(connection);
     }
+
+    connection = connection->next;
   }
   
   return(NULL);

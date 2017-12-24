@@ -19,9 +19,6 @@
 
 #include <ags/audio/task/ags_set_input_device.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_sequencer.h>
-
 #include <ags/audio/ags_midiin.h>
 
 #include <ags/i18n.h>
@@ -316,14 +313,36 @@ ags_set_input_device_finalize(GObject *gobject)
 void
 ags_set_input_device_launch(AgsTask *task)
 {
-  GObject *sequencer;
   AgsSetInputDevice *set_input_device;
+
+  AgsMutexManager *mutex_manager;
+
+  GObject *sequencer;
+
   char *device;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *sequencer_mutex;
+  
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   set_input_device = AGS_SET_INPUT_DEVICE(task);
 
   sequencer = set_input_device->sequencer;
   device = set_input_device->device;
+
+  /* get sequencer mutex */
+  pthread_mutex_lock(application_mutex);
+
+  sequencer_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) sequencer);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* set device */
+  pthread_mutex_lock(sequencer_mutex);
 
   if(AGS_IS_MIDIIN(sequencer) &&
      (AGS_MIDIIN_ALSA & (AGS_MIDIIN(sequencer)->flags)) != 0){
@@ -341,6 +360,8 @@ ags_set_input_device_launch(AgsTask *task)
   /* perform task */
   ags_sequencer_set_device(AGS_SEQUENCER(sequencer),
 			   device);
+
+  pthread_mutex_unlock(sequencer_mutex);
 }
 
 /**

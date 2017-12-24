@@ -28,7 +28,7 @@
 #include <ags/X/ags_context_menu.h>
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_machine.h>
-#include <ags/X/ags_editor.h>
+#include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_export_window.h>
 #include <ags/X/ags_automation_window.h>
@@ -62,6 +62,8 @@ struct _AgsWindow
 
   guint flags;
 
+  gchar *filename;
+  
   char *name;
 
   GObject *application_context;
@@ -78,7 +80,7 @@ struct _AgsWindow
   GList *machine_counter;
   AgsMachine *selected;
 
-  AgsEditor *editor;
+  AgsNotationEditor *notation_editor;
   AgsNavigation *navigation;
 
   GList *dialog;
@@ -128,6 +130,8 @@ AgsMachineCounter* ags_machine_counter_alloc(gchar *version, gchar *build_id,
 
 void ags_window_show_error(AgsWindow *window,
 			   gchar *message);
+
+gboolean ags_window_load_file_timeout(AgsWindow *window);
 
 AgsWindow* ags_window_new(GObject *application_context);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,9 +18,6 @@
  */
 
 #include <ags/audio/task/ags_apply_presets.h>
-
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -441,30 +438,60 @@ void
 ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
 			    GObject *soundcard)
 {
+  AgsAudio *audio;
+  
   AgsThread *main_loop;
   AgsThread *export_thread;
   AgsThread *soundcard_thread;
   AgsThread *audio_thread;
   AgsThread *channel_thread;
   
+  AgsMutexManager *mutex_manager;
+
   AgsApplicationContext *application_context;
   
-  GList *audio;
+  GList *list;
 
   gdouble freq;
   guint channels;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
   
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get some fields */
+  pthread_mutex_lock(application_mutex);
+
   application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
+
   main_loop = (AgsThread *) application_context->main_loop;
-  
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* calculate thread frequency */
   freq = ceil((gdouble) apply_presets->samplerate / (gdouble) apply_presets->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
 
+  /* get soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) apply_presets->scope);
+
+  pthread_mutex_unlock(application_mutex);
+
   /* reset soundcard */
+  pthread_mutex_lock(soundcard_mutex);
+
   ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
 			    apply_presets->pcm_channels,
 			    apply_presets->samplerate,
 			    apply_presets->buffer_size,
 			    apply_presets->format);
+
+  pthread_mutex_unlock(soundcard_mutex);
 
   /* reset audio loop frequency */
   g_object_set(G_OBJECT(main_loop),
@@ -505,13 +532,30 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
   }
   
   /* descend children */
-  audio = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
+  pthread_mutex_lock(soundcard_mutex);
+
+  list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
+
+  pthread_mutex_unlock(soundcard_mutex);
 
   while(audio != NULL){
-    ags_apply_presets_audio(apply_presets,
-			    AGS_AUDIO(audio->data));
+    /* get some fields */
+    pthread_mutex_lock(soundcard_mutex);
+
+    audio = AGS_AUDIO(list->data);
     
-    audio = audio->next;
+    pthread_mutex_unlock(soundcard_mutex);
+
+    /* apply presets to audio */
+    ags_apply_presets_audio(apply_presets,
+			    audio);
+
+    /* iterate */
+    pthread_mutex_lock(soundcard_mutex);
+
+    list = list->next;
+
+    pthread_mutex_unlock(soundcard_mutex);
   }
 }
 

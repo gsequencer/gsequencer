@@ -25,26 +25,9 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_concurrency_provider.h>
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif
-#include <ags/thread/ags_single_thread.h>
-#include <ags/thread/ags_autosave_thread.h>
-#include <ags/thread/ags_polling_thread.h>
-#include <ags/thread/ags_task_thread.h>
-#include <ags/thread/ags_thread_pool.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-#include <ags/audio/thread/ags_soundcard_thread.h>
-#include <ags/audio/thread/ags_export_thread.h>
-
-#include <ags/server/ags_server.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 
@@ -57,8 +40,8 @@
 #define AGS_IS_XORG_APPLICATION_CONTEXT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_XORG_APPLICATION_CONTEXT))
 #define AGS_XORG_APPLICATION_CONTEXT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_XORG_APPLICATION_CONTEXT, AgsXorgApplicationContextClass))
 
-#define AGS_XORG_VERSION "0.7.122.8\0"
-#define AGS_XORG_BUILD_ID "Tue Mar 21 20:03:29 CET 2017\0"
+#define AGS_XORG_VERSION "1.2.0"
+#define AGS_XORG_BUILD_ID "Thu Nov 30 22:50:27 UTC 2017"
 
 typedef struct _AgsXorgApplicationContext AgsXorgApplicationContext;
 typedef struct _AgsXorgApplicationContextClass AgsXorgApplicationContextClass;

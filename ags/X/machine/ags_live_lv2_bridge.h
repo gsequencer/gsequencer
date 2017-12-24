@@ -22,9 +22,12 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_channel.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
 
@@ -38,8 +41,8 @@
 #define AGS_IS_LIVE_LV2_BRIDGE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_LIVE_LV2_BRIDGE))
 #define AGS_LIVE_LV2_BRIDGE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_LIVE_LV2_BRIDGE, AgsLiveLv2BridgeClass))
 
-#define AGS_LIVE_LV2_BRIDGE_DEFAULT_VERSION "0.4.3\0"
-#define AGS_LIVE_LV2_BRIDGE_DEFAULT_BUILD_ID "CEST 13-05-2015 13:40\0"
+#define AGS_LIVE_LV2_BRIDGE_DEFAULT_VERSION "0.4.3"
+#define AGS_LIVE_LV2_BRIDGE_DEFAULT_BUILD_ID "CEST 13-05-2015 13:40"
 
 typedef struct _AgsLiveLv2Bridge AgsLiveLv2Bridge;
 typedef struct _AgsLiveLv2BridgeClass AgsLiveLv2BridgeClass;
@@ -103,8 +106,12 @@ struct _AgsLiveLv2BridgeClass
 
 GType ags_live_lv2_bridge_get_type(void);
 
-void ags_live_lv2_bridge_input_map_recall(AgsLiveLv2Bridge *live_lv2_bridge, guint audio_channel_start, guint input_pad_start);
-void ags_live_lv2_bridge_output_map_recall(AgsLiveLv2Bridge *live_lv2_bridge, guint audio_channel_start, guint output_pad_start);
+void ags_live_lv2_bridge_input_map_recall(AgsLiveLv2Bridge *live_lv2_bridge,
+					  guint audio_channel_start,
+					  guint input_pad_start);
+void ags_live_lv2_bridge_output_map_recall(AgsLiveLv2Bridge *live_lv2_bridge,
+					   guint audio_channel_start,
+					   guint output_pad_start);
 
 void ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge);
 void ags_live_lv2_bridge_load_preset(AgsLiveLv2Bridge *live_lv2_bridge);

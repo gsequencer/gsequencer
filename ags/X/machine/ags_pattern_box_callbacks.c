@@ -19,14 +19,9 @@
 
 #include <ags/X/machine/ags_pattern_box_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/audio/task/ags_toggle_pattern_bit.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -36,9 +31,6 @@
 #include <ags/X/thread/ags_gui_thread.h>
 
 #include <gdk/gdkkeysyms.h>
-
-void ags_pattern_box_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
-					  AgsPatternBox *pattern_box);
 
 gboolean
 ags_pattern_box_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsPatternBox *pattern_box)
@@ -86,21 +78,15 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
 
   AgsPattern *pattern;
   
-  AgsTogglePatternBit *toggle_pattern_bit;
-
   AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsGuiThread *gui_thread;
   
-  AgsApplicationContext *application_context;
-
   GList *list, *list_start;
   GList *line, *line_start;
   GList *tasks;
   guint i, index0, index1, offset;
 
-  pthread_mutex_t *audio_mutex;
   pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
   
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pattern_box,
 						   AGS_TYPE_MACHINE);
@@ -121,33 +107,10 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
 						 AGS_TYPE_WINDOW);
 
-  application_context = (AgsApplicationContext *) window->application_context;
-
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-  
-  /* find task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-  
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) machine->audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* calculate offset */
-  pthread_mutex_lock(audio_mutex);
-
   list_start = 
     list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
 
@@ -182,24 +145,27 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   while((line = ags_line_find_next_grouped(line)) != NULL){
     selected_line = AGS_LINE(line->data);
 
-    toggle_pattern_bit = ags_toggle_pattern_bit_new(selected_line->channel->pattern->data,
-						    selected_line->channel->line,
-						    index0, index1,
-						    offset);
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+  
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) selected_line->channel);
+  
+    pthread_mutex_unlock(application_mutex);
 
-    tasks = g_list_prepend(tasks,
-			   toggle_pattern_bit);
+    /* toggle */
+    pthread_mutex_lock(channel_mutex);
 
+    ags_pattern_toggle_bit(selected_line->channel->pattern->data,
+			   index0, index1,
+			   offset);
+
+    pthread_mutex_unlock(channel_mutex);
+    
     line = line->next;
   }
 
   g_list_free(line_start);
-
-  /* append AgsTogglePatternBit */
-  ags_gui_thread_schedule_task_list(gui_thread,
-				    tasks);
-
-  pthread_mutex_unlock(audio_mutex);
 }
 
 void
@@ -251,8 +217,6 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
   AgsMachine *machine;
 
   AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsGuiThread *gui_thread;
   
   AgsApplicationContext *application_context;
 
@@ -272,18 +236,6 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-  
-  /* find task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
-
   
   switch(event->keyval){
   case GDK_KEY_Control_L:
@@ -419,14 +371,20 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
     {
       AgsLine *selected_line;
 
-      AgsTogglePatternBit *toggle_pattern_bit;
-
+      AgsChannel *channel;
+      
       GList *line, *line_start;
       GList *tasks;
       
       guint i, j;
       guint offset;
       guint index0, index1;
+      
+      pthread_mutex_t *application_mutex;
+      pthread_mutex_t *channel_mutex;
+
+      mutex_manager = ags_mutex_manager_get_instance();
+      application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
       
       i = pattern_box->cursor_y;
       j = pattern_box->cursor_x;
@@ -442,27 +400,29 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
 
       while((line = ags_line_find_next_grouped(line)) != NULL){
 	selected_line = AGS_LINE(line->data);
-
-	/* create toggle pattern bit task */
-	toggle_pattern_bit = ags_toggle_pattern_bit_new(selected_line->channel->pattern->data,
-							selected_line->channel->line,
-							index0, index1,
-							offset);
+	channel = selected_line->channel;
 	
-	g_signal_connect(G_OBJECT(toggle_pattern_bit), "refresh-gui",
-			 G_CALLBACK(ags_pattern_box_refresh_gui_callback), pattern_box);
+	/* get channel mutex */
+	pthread_mutex_lock(application_mutex);
 
-	tasks = g_list_prepend(tasks,
-			       toggle_pattern_bit);
+	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+						 (GObject *) channel);
+  
+	pthread_mutex_unlock(application_mutex);
+	
+	/* toggle pattern */
+	pthread_mutex_lock(channel_mutex);
+    
+	ags_pattern_toggle_bit(channel->pattern->data,
+			       index0, index1,
+			       offset);
+
+	pthread_mutex_unlock(channel_mutex);
 
 	line = line->next;
       }
 
       g_list_free(line_start);
-
-      /* append tasks to task thread */
-      ags_gui_thread_schedule_task_list(gui_thread,
-					tasks);
 
       /* give audible feedback */
       ags_pad_play((AgsPad *) machine->selected_input_pad);
@@ -471,50 +431,4 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
   }
 
   return(TRUE);
-}
-
-void
-ags_pattern_box_refresh_gui_callback(AgsTogglePatternBit *toggle_pattern_bit,
-				     AgsPatternBox *pattern_box)
-{
-  AgsMachine *machine;
-  
-  AgsChannel *channel;
-
-  GList *radio;
-  
-  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pattern_box,
-						   AGS_TYPE_MACHINE);
-    
-  channel = ags_channel_nth(machine->audio->input,
-			    toggle_pattern_bit->line);
-
-  if(!gtk_toggle_button_get_active((GtkToggleButton *) AGS_LINE(channel->line_widget)->group)){
-    return;
-  }
-  
-  radio = gtk_container_get_children((GtkContainer *) pattern_box->offset);
-  
-  if(gtk_toggle_button_get_active((GtkToggleButton *) g_list_nth_data(radio,
-								      toggle_pattern_bit->bit / pattern_box->n_controls))){
-    GList *list;
-
-    /* apply pattern to GUI */
-    list = gtk_container_get_children((GtkContainer *) pattern_box->pattern);
-
-    pattern_box->flags |= AGS_PATTERN_BOX_BLOCK_PATTERN;
-    
-    gtk_toggle_button_set_active((GtkToggleButton *) g_list_nth_data(list,
-								     toggle_pattern_bit->bit % pattern_box->n_controls),
-				 TRUE);
-    
-    pattern_box->flags &= (~AGS_PATTERN_BOX_BLOCK_PATTERN);
-
-    g_list_free(list);
-    
-    /* give audible feedback */
-    ags_pad_play((AgsPad *) machine->selected_input_pad);
-  }
-
-  g_list_free(radio);
 }

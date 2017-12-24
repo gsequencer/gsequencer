@@ -19,8 +19,6 @@
 
 #include <ags/audio/task/ags_add_effect.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/i18n.h>
 
 void ags_add_effect_class_init(AgsAddEffectClass *add_effect);

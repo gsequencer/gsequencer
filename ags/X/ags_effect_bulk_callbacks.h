@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015,2017 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,8 +25,7 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_recall.h>
-
+#include <ags/X/ags_machine.h>
 #include <ags/X/ags_effect_bulk.h>
 
 void ags_effect_bulk_add_callback(GtkWidget *button,
@@ -38,17 +37,14 @@ void ags_effect_bulk_plugin_browser_response_callback(GtkDialog *dialog,
 						      gint response,
 						      AgsEffectBulk *effect_bulk);
 
-void ags_effect_bulk_set_audio_channels_callback(AgsAudio *audio,
-						 guint audio_channels,
-						 guint audio_channels_old,
-						 AgsEffectBulk *effect_bulk);
-void ags_effect_bulk_set_pads_callback(AgsAudio *audio,
-				       GType channel_type,
-				       guint pads,
-				       guint pads_old,
-				       AgsEffectBulk *effect_bulk);
-
-void ags_effect_bulk_output_port_run_post_callback(AgsRecall *recall,
-						   AgsEffectBulk *effect_bulk);
+void ags_effect_bulk_resize_audio_channels_callback(AgsMachine *machine,
+						    guint audio_channels,
+						    guint audio_channels_old,
+						    AgsEffectBulk *effect_bulk);
+void ags_effect_bulk_resize_pads_callback(AgsMachine *machine,
+					  GType channel_type,
+					  guint pads,
+					  guint pads_old,
+					  AgsEffectBulk *effect_bulk);
 
 #endif /*__AGS_EFFECT_BULK_CALLBACKS_H__*/

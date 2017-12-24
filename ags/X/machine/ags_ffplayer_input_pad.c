@@ -20,9 +20,9 @@
 #include <ags/X/machine/ags_ffplayer_input_pad.h>
 #include <ags/X/machine/ags_ffplayer_input_pad_callbacks.h>
 
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_line.h>
@@ -40,7 +40,7 @@ void ags_ffplayer_input_pad_finalize(GObject *gobject);
  * @short_description: A composite widget to visualize a bunch of #AgsChannel
  * @title: AgsFFPlayerInputPad
  * @section_id:
- * @include: ags/X/ags_ffplayer_input_pad.h
+ * @include: ags/X/machine/ags_ffplayer_input_pad.h
  *
  * #AgsFFPlayerInputPad is a composite widget to visualize one #AgsChannel. It should be
  * packed by an #AgsFFPlayerInputPad.

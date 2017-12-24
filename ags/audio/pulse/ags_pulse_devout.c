@@ -155,9 +155,6 @@ void ags_pulse_devout_set_audio(AgsSoundcard *soundcard,
 				GList *audio);
 GList* ags_pulse_devout_get_audio(AgsSoundcard *soundcard);
 
-void ags_pulse_devout_adjust_delay_and_attack(AgsPulseDevout *pulse_devout);
-void ags_pulse_devout_realloc_buffer(AgsPulseDevout *pulse_devout);
-
 /**
  * SECTION:ags_pulse_devout
  * @short_description: Output to soundcard

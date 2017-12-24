@@ -30,7 +30,7 @@ installcheck_programs = \
 	ags_check_system_functional_matrix_test \
 	ags_check_system_functional_synth_test \
 	ags_check_system_functional_ffplayer_test \
-	ags_check_system_functional_note_edit_test
+	ags_check_system_functional_notation_edit_test
 
 noinst_PROGRAMS = $(installcheck_programs)
 
@@ -117,11 +117,11 @@ ags_check_system_functional_ffplayer_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_functional_ffplayer_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
 
 # functional note edit test
-ags_check_system_functional_note_edit_test_SOURCES = ags/test/X/ags_functional_note_edit_test.c
-ags_check_system_functional_note_edit_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
-ags_check_system_functional_note_edit_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" $(AGS_RESOURCES)
-ags_check_system_functional_note_edit_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_functional_note_edit_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+ags_check_system_functional_notation_edit_test_SOURCES = ags/test/X/ags_functional_notation_edit_test.c
+ags_check_system_functional_notation_edit_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_check_system_functional_notation_edit_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" $(AGS_RESOURCES)
+ags_check_system_functional_notation_edit_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_notation_edit_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
 
 ags-check-system: $(installcheck_programs)
 	./ags_check_system_functional_audio_test
@@ -135,5 +135,5 @@ ags-check-system: $(installcheck_programs)
 	./ags_check_system_functional_matrix_test
 	./ags_check_system_functional_synth_test
 	./ags_check_system_functional_ffplayer_test
-	./ags_check_system_functional_note_edit_test
+	./ags_check_system_functional_notation_edit_test
 

@@ -170,6 +170,9 @@ GQuark ags_core_audio_devout_error_quark();
 
 void ags_core_audio_devout_switch_buffer_flag(AgsCoreAudioDevout *core_audio_devout);
 
+void ags_core_audio_devout_adjust_delay_and_attack(AgsCoreAudioDevout *core_audio_devout);
+void ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout);
+
 AgsCoreAudioDevout* ags_core_audio_devout_new(GObject *application_context);
 
 #endif /*__AGS_CORE_AUDIO_DEVOUT_H__*/

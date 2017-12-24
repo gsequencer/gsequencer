@@ -19,8 +19,6 @@
 
 #include <ags/audio/task/ags_remove_recall.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_container.h>
@@ -381,15 +379,42 @@ ags_remove_recall_launch(AgsTask *task)
 {
   AgsRemoveRecall *remove_recall;
 
+  AgsRecallContainer *recall_container;
+  
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   remove_recall = AGS_REMOVE_RECALL(task);
 
   if(AGS_IS_AUDIO(remove_recall->context)){
     if(remove_recall->remove_all){
-      GList *list;
-
+      GList *list_start, *list;
+      
       if(AGS_IS_RECALL_AUDIO_RUN(remove_recall->recall)){
-	list = AGS_RECALL_CONTAINER(remove_recall->recall->container)->recall_audio_run;
+	/* get audio mutex */
+	pthread_mutex_lock(application_mutex);
 
+	mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) remove_recall->context);
+
+	pthread_mutex_unlock(application_mutex);
+
+	/* remove recall */
+	pthread_mutex_lock(mutex);
+
+	recall_container = remove_recall->recall->container;
+	
+	list_start =
+	  list = g_list_copy(recall_container->recall_audio_run);
+
+	pthread_mutex_unlock(mutex);
+	
 	while(list != NULL){
 	  if(list->data != remove_recall->recall){
 	    ags_audio_remove_recall(AGS_AUDIO(remove_recall->context),
@@ -399,6 +424,8 @@ ags_remove_recall_launch(AgsTask *task)
 	  
 	  list = list->next;	  
 	}
+
+	g_list_free(list_start);
       }
     }
 
@@ -408,10 +435,26 @@ ags_remove_recall_launch(AgsTask *task)
 
   }else if(AGS_IS_CHANNEL(remove_recall->context)){
     if(remove_recall->remove_all){
-      GList *list;
+      GList *list_start, *list;
 
       if(AGS_IS_RECALL_CHANNEL_RUN(remove_recall->recall)){
-	list = AGS_RECALL_CONTAINER(remove_recall->recall->container)->recall_channel_run;
+	/* get channel mutex */
+	pthread_mutex_lock(application_mutex);
+
+	mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) remove_recall->context);
+
+	pthread_mutex_unlock(application_mutex);
+
+	/* remove recall */
+	pthread_mutex_lock(mutex);
+
+	recall_container = remove_recall->recall->container;
+	
+	list_start =
+	  list = g_list_copy(recall_container->recall_channel_run);
+
+	pthread_mutex_unlock(mutex);
 
 	while(list != NULL){
 	  if(list->data != remove_recall->recall){
@@ -422,6 +465,8 @@ ags_remove_recall_launch(AgsTask *task)
 	  
 	  list = list->next;
 	}
+
+	g_list_free(list_start);
       }
     }
 

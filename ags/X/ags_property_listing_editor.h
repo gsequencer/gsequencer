@@ -38,7 +38,7 @@ typedef struct _AgsPropertyListingEditorClass AgsPropertyListingEditorClass;
 struct _AgsPropertyListingEditor
 {
   AgsPropertyEditor property_editor;
-
+  
   GtkVBox *child;
 };
 

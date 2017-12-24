@@ -20,15 +20,9 @@
 #include <ags/X/machine/ags_oscillator.h>
 #include <ags/X/machine/ags_oscillator_callbacks.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-
-#include <ags/object/ags_plugin.h>
-
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/i18n.h>
 
@@ -151,6 +145,8 @@ ags_oscillator_init(AgsOscillator *oscillator)
   GtkTreeIter iter;
 
   guint i;
+
+  oscillator->flags = 0;
   
   table = (GtkTable *) gtk_table_new(8, 2, FALSE);
   gtk_container_add((GtkContainer *) oscillator, (GtkWidget *) table);
@@ -295,6 +291,12 @@ ags_oscillator_connect(AgsConnectable *connectable)
   
   oscillator = AGS_OSCILLATOR(connectable);
 
+  if((AGS_OSCILLATOR_CONNECTED & (oscillator->flags)) != 0){
+    return;
+  }
+
+  oscillator->flags |= AGS_OSCILLATOR_CONNECTED;
+
   g_signal_connect(G_OBJECT(oscillator->wave), "changed",
 		   G_CALLBACK(ags_oscillator_wave_callback), oscillator);
   
@@ -328,31 +330,51 @@ ags_oscillator_disconnect(AgsConnectable *connectable)
   
   oscillator = AGS_OSCILLATOR(connectable);
 
-  g_object_disconnect((GObject *) oscillator->wave, "changed",
-		      G_CALLBACK(ags_oscillator_wave_callback), (gpointer) oscillator,
+  if((AGS_OSCILLATOR_CONNECTED & (oscillator->flags)) == 0){
+    return;
+  }
+
+  oscillator->flags &= (~AGS_OSCILLATOR_CONNECTED);
+  
+  g_object_disconnect((GObject *) oscillator->wave,
+		      "any_signal::changed",
+		      G_CALLBACK(ags_oscillator_wave_callback),
+		      (gpointer) oscillator,
 		      NULL);
   
-  g_object_disconnect((GObject *) oscillator->frame_count, "value-changed",
-		      G_CALLBACK(ags_oscillator_frame_count_callback), (gpointer) oscillator,
+  g_object_disconnect((GObject *) oscillator->frame_count,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_oscillator_frame_count_callback),
+		      (gpointer) oscillator,
 		      NULL);
-  g_object_disconnect((GObject *) oscillator->attack, "value-changed",
-		      G_CALLBACK(ags_oscillator_attack_callback), (gpointer) oscillator,
-		      NULL);
-
-  g_object_disconnect((GObject *) oscillator->frequency, "value-changed",
-		      G_CALLBACK(ags_oscillator_frequency_callback), (gpointer) oscillator,
-		      NULL);
-  g_object_disconnect((GObject *) oscillator->phase, "value-changed",
-		      G_CALLBACK(ags_oscillator_phase_callback), (gpointer) oscillator,
+  g_object_disconnect((GObject *) oscillator->attack,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_oscillator_attack_callback),
+		      (gpointer) oscillator,
 		      NULL);
 
-  g_object_disconnect((GObject *) oscillator->volume, "value-changed",
-		      G_CALLBACK(ags_oscillator_volume_callback), (gpointer) oscillator,
+  g_object_disconnect((GObject *) oscillator->frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_oscillator_frequency_callback),
+		      (gpointer) oscillator,
+		      NULL);
+  g_object_disconnect((GObject *) oscillator->phase,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_oscillator_phase_callback),
+		      (gpointer) oscillator,
+		      NULL);
+
+  g_object_disconnect((GObject *) oscillator->volume,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_oscillator_volume_callback),
+		      (gpointer) oscillator,
 		      NULL);
 
   for(i = 0; i < 2 * oscillator->sync_point_count; i++){
-    g_object_disconnect((GObject *) oscillator->sync_point[i], "value-changed",
-			G_CALLBACK(ags_oscillator_sync_point_callback), (gpointer) oscillator,
+    g_object_disconnect((GObject *) oscillator->sync_point[i],
+			"any_signal::value-changed",
+			G_CALLBACK(ags_oscillator_sync_point_callback),
+			(gpointer) oscillator,
 			NULL);
   }
 }

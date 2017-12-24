@@ -246,9 +246,9 @@ ags_indicator_realize(GtkWidget *widget)
                             GDK_ENTER_NOTIFY_MASK |
                             GDK_LEAVE_NOTIFY_MASK);
 
-  widget->window = gdk_window_new (gtk_widget_get_parent_window (widget),
-				   &attributes, attributes_mask);
-  gdk_window_set_user_data (widget->window, indicator);
+  widget->window = gdk_window_new(gtk_widget_get_parent_window (widget),
+				  &attributes, attributes_mask);
+  gdk_window_set_user_data(widget->window, indicator);
 
   widget->style = gtk_style_attach(widget->style, widget->window);
   gtk_style_set_background(widget->style, widget->window, GTK_STATE_NORMAL);

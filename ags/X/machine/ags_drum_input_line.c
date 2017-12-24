@@ -20,48 +20,9 @@
 #include <ags/X/machine/ags_drum_input_line.h>
 #include <ags/X/machine/ags_drum_input_line_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_plugin.h>
-#include <ags/object/ags_portlet.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_pattern.h>
-#include <ags/audio/ags_recall_factory.h>
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_container.h>
-
-#include <ags/audio/recall/ags_delay_audio_run.h>
-#include <ags/audio/recall/ags_peak_channel.h>
-#include <ags/audio/recall/ags_peak_channel_run.h>
-#include <ags/audio/recall/ags_volume_channel.h>
-#include <ags/audio/recall/ags_volume_channel_run.h>
-#include <ags/audio/recall/ags_envelope_channel.h>
-#include <ags/audio/recall/ags_envelope_channel_run.h>
-#include <ags/audio/recall/ags_play_channel.h>
-#include <ags/audio/recall/ags_play_channel_run.h>
-#include <ags/audio/recall/ags_copy_channel.h>
-#include <ags/audio/recall/ags_copy_channel_run.h>
-#include <ags/audio/recall/ags_stream_channel.h>
-#include <ags/audio/recall/ags_stream_channel_run.h>
-#include <ags/audio/recall/ags_copy_pattern_audio.h>
-#include <ags/audio/recall/ags_copy_pattern_audio_run.h>
-#include <ags/audio/recall/ags_copy_pattern_channel.h>
-#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
-
-#include <ags/widget/ags_expander_set.h>
-#include <ags/widget/ags_expander.h>
-#include <ags/widget/ags_vindicator.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_line_callbacks.h>
@@ -195,9 +156,6 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
   GtkWidget *widget;
   GtkAdjustment *adjustment;
 
-  g_signal_connect_after((GObject *) drum_input_line, "parent_set",
-			 G_CALLBACK(ags_drum_input_line_parent_set_callback), (gpointer) drum_input_line);
-
   /* volume indicator */
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 					       "widget-type", AGS_TYPE_VINDICATOR,
@@ -330,11 +288,29 @@ void
 ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 {
   AgsChannel *old_channel;
+  AgsRecycling *first_recycling;
+  AgsAudioSignal *template;
+  
+  AgsMutexManager *mutex_manager;
 
-#ifdef AGS_DEBUG
-  g_message("ags_drum_input_line_set_channel - channel: %u",
-	    channel->line);
-#endif
+  GObject *soundcard;
+
+  guint nth_line;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *recycling_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) channel);
+  
+  pthread_mutex_unlock(application_mutex);
 
   if(line->channel != NULL){
     old_channel = line->channel;
@@ -342,21 +318,57 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
     old_channel = NULL;
   }
 
-  AGS_LINE_CLASS(ags_drum_input_line_parent_class)->set_channel(line, channel);
+  /* call parent */
+  AGS_LINE_CLASS(ags_drum_input_line_parent_class)->set_channel(line,
+								channel);
 
   if(channel != NULL){
-    if(channel->audio != NULL &&
-       AGS_AUDIO(channel->audio)->soundcard != NULL &&
-       ags_audio_signal_get_template(channel->first_recycling->audio_signal) == NULL){
+    /* get some fields */
+    pthread_mutex_lock(channel_mutex);
+
+    soundcard = channel->soundcard;
+
+    first_recycling = channel->first_recycling;
+
+    nth_line = channel->line;
+    
+#ifdef AGS_DEBUG
+    g_message("ags_drum_input_line_set_channel - channel: %u",
+	      nth_line);
+#endif
+
+    pthread_mutex_unlock(channel_mutex);
+
+    /* get recycling mutex */
+    pthread_mutex_lock(application_mutex);
+    
+    recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) first_recycling);
+    
+    pthread_mutex_unlock(application_mutex);
+
+    /* get some fields */
+    pthread_mutex_lock(recycling_mutex);
+
+    template = ags_audio_signal_get_template(first_recycling->audio_signal);
+    
+    pthread_mutex_unlock(recycling_mutex);
+
+    /* create audio signal */
+    if(soundcard != NULL &&
+       template == NULL){
       AgsAudioSignal *audio_signal;
 
-      audio_signal = ags_audio_signal_new(AGS_AUDIO(channel->audio)->soundcard,
-					  (GObject *) channel->first_recycling,
+      audio_signal = ags_audio_signal_new(soundcard,
+					  (GObject *) first_recycling,
 					  NULL);
       audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-      ags_recycling_add_audio_signal(channel->first_recycling,
+      ags_recycling_add_audio_signal(first_recycling,
 				     audio_signal);
     }
+
+    /* create pattern */
+    pthread_mutex_lock(channel_mutex);
 
     if(channel->pattern == NULL){
       channel->pattern = g_list_alloc();
@@ -364,11 +376,14 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
       ags_pattern_set_dim((AgsPattern *) channel->pattern->data, 4, 12, 64);
     }
 
+    pthread_mutex_unlock(channel_mutex);
+    
     /* reset edit button */
     if(old_channel == NULL &&
-       line->channel->line == 0){
+       nth_line == 0){
       AgsDrum *drum;
       GtkToggleButton *selected_edit_button;
+
       GList *list;
 
       drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(line),
@@ -379,7 +394,8 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 
 	drum->selected_pad = AGS_DRUM_INPUT_PAD(list->data);
 	drum->selected_edit_button = drum->selected_pad->edit;
-	gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button, TRUE);
+	gtk_toggle_button_set_active((GtkToggleButton *) drum->selected_edit_button,
+				     TRUE);
 	
 	g_list_free(list);
       }
@@ -414,24 +430,50 @@ ags_drum_input_line_map_recall(AgsLine *line,
   AgsPeakChannelRun *recall_peak_channel_run, *play_peak_channel_run;
   AgsStreamChannelRun *stream_channel_run;
 
+  AgsMutexManager *mutex_manager;
+
   GList *list;
+
+  guint pad, audio_channel;
   guint i;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *source_mutex;
 
   if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0 ||
      (AGS_LINE_PREMAPPED_RECALL & (line->flags)) != 0){
     return;
   }
 
-  audio = AGS_AUDIO(line->channel->audio);
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   source = line->channel;
+  
+  /* lookup source mutex */
+  pthread_mutex_lock(application_mutex);
+
+  source_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) source);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(source_mutex);
+
+  audio = (AgsAudio *) source->audio;
+
+  pad = source->pad;
+  audio_channel = source->audio_channel;
+
+  pthread_mutex_unlock(source_mutex);
 
   /* ags-peak */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
 			    "ags-peak",
-			    source->audio_channel, source->audio_channel + 1, 
-			    source->pad, source->pad + 1,
+			    audio_channel, audio_channel + 1, 
+			    pad, pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT |
 			     AGS_RECALL_FACTORY_PLAY |
 			     AGS_RECALL_FACTORY_RECALL |
@@ -442,15 +484,18 @@ ags_drum_input_line_map_recall(AgsLine *line,
   ags_recall_factory_create(audio,
 			    NULL, NULL,
 			    "ags-copy-pattern",
-			    source->audio_channel, source->audio_channel + 1, 
-			    source->pad, source->pad + 1,
+			    audio_channel, audio_channel + 1, 
+			    pad, pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT |
 			     AGS_RECALL_FACTORY_REMAP |
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
 
   /* set pattern object on port */
-  list = ags_recall_template_find_type(source->recall, AGS_TYPE_COPY_PATTERN_CHANNEL);
+  pthread_mutex_lock(source_mutex);
+
+  list = ags_recall_template_find_type(source->recall,
+				       AGS_TYPE_COPY_PATTERN_CHANNEL);
 
   if(list != NULL){
     copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(list->data);
@@ -463,16 +508,20 @@ ags_drum_input_line_map_recall(AgsLine *line,
 			 (GObject *) copy_pattern_channel->pattern);
   }
 
+  pthread_mutex_unlock(source_mutex);
+
   /* ags-play */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
   			    "ags-play",
-  			    source->audio_channel, source->audio_channel + 1, 
-  			    source->pad, source->pad + 1,
+  			    audio_channel, audio_channel + 1, 
+  			    pad, pad + 1,
   			    (AGS_RECALL_FACTORY_INPUT |
 			     AGS_RECALL_FACTORY_PLAY |
   			     AGS_RECALL_FACTORY_ADD),
   			    0);
+
+  pthread_mutex_lock(source_mutex);
 
   list = source->play;
 
@@ -483,19 +532,21 @@ ags_drum_input_line_map_recall(AgsLine *line,
 
     g_value_init(&audio_channel_value, G_TYPE_UINT64);
     g_value_set_uint64(&audio_channel_value,
-		       source->audio_channel);
+		       audio_channel);
     ags_port_safe_write(play_channel->audio_channel,
 			&audio_channel_value);
     
     list = list->next;
   }
 
+  pthread_mutex_unlock(source_mutex);
+
   /* ags-volume */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
 			    "ags-volume",
-			    source->audio_channel, source->audio_channel + 1, 
-			    source->pad, source->pad + 1,
+			    audio_channel, audio_channel + 1, 
+			    pad, pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT |
 			     AGS_RECALL_FACTORY_PLAY |
 			     AGS_RECALL_FACTORY_RECALL |
@@ -506,8 +557,8 @@ ags_drum_input_line_map_recall(AgsLine *line,
   ags_recall_factory_create(audio,
 			    NULL, NULL,
 			    "ags-envelope",
-			    source->audio_channel, source->audio_channel + 1, 
-			    source->pad, source->pad + 1,
+			    audio_channel, audio_channel + 1, 
+			    pad, pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT |
 			     AGS_RECALL_FACTORY_PLAY |
 			     AGS_RECALL_FACTORY_RECALL |
@@ -518,8 +569,8 @@ ags_drum_input_line_map_recall(AgsLine *line,
   ags_recall_factory_create(audio,
 			    NULL, NULL,
 			    "ags-stream",
-			    source->audio_channel, source->audio_channel + 1, 
-			    source->pad, source->pad + 1,
+			    audio_channel, audio_channel + 1, 
+			    pad, pad + 1,
 			    (AGS_RECALL_FACTORY_INPUT |
 			     AGS_RECALL_FACTORY_PLAY |
 			     AGS_RECALL_FACTORY_RECALL | 
@@ -527,16 +578,23 @@ ags_drum_input_line_map_recall(AgsLine *line,
 			    0);
 
   /* set up dependencies */
-  list = ags_recall_find_type(source->play, AGS_TYPE_PLAY_CHANNEL_RUN);
+  pthread_mutex_lock(source_mutex);
+
+  list = ags_recall_find_type(source->play,
+			      AGS_TYPE_PLAY_CHANNEL_RUN);
   play_channel_run = AGS_PLAY_CHANNEL_RUN(list->data);
 
-  list = ags_recall_find_type(source->play, AGS_TYPE_STREAM_CHANNEL_RUN);
+  list = ags_recall_find_type(source->play,
+			      AGS_TYPE_STREAM_CHANNEL_RUN);
   stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
 
   g_object_set(G_OBJECT(play_channel_run),
 	       "stream-channel-run", stream_channel_run,
 	       NULL);
 
+  pthread_mutex_unlock(source_mutex);
+
+  /* call parent */
   AGS_LINE_CLASS(ags_drum_input_line_parent_class)->map_recall(line,
 							       output_pad_start);
 }

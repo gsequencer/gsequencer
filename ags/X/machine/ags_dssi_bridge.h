@@ -85,8 +85,12 @@ struct _AgsDssiBridgeClass
 
 GType ags_dssi_bridge_get_type(void);
 
-void ags_dssi_bridge_input_map_recall(AgsDssiBridge *dssi_bridge, guint audio_channel_start, guint input_pad_start);
-void ags_dssi_bridge_output_map_recall(AgsDssiBridge *dssi_bridge, guint audio_channel_start, guint output_pad_start);
+void ags_dssi_bridge_input_map_recall(AgsDssiBridge *dssi_bridge,
+				      guint audio_channel_start,
+				      guint input_pad_start);
+void ags_dssi_bridge_output_map_recall(AgsDssiBridge *dssi_bridge,
+				       guint audio_channel_start,
+				       guint output_pad_start);
 
 void ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge);
 

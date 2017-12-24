@@ -20,21 +20,11 @@
 #include <ags/X/editor/ags_crop_note_dialog.h>
 #include <ags/X/editor/ags_crop_note_dialog_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/thread/ags_concurrency_provider.h>
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_notation.h>
-#include <ags/audio/ags_note.h>
-
-#include <ags/audio/task/ags_crop_note.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
-#include <ags/X/ags_editor.h>
+#include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_machine.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
@@ -420,14 +410,14 @@ ags_crop_note_dialog_disconnect(AgsConnectable *connectable)
   crop_note_dialog->flags &= (~AGS_CROP_NOTE_DIALOG_CONNECTED);
 
   g_object_disconnect(G_OBJECT(crop_note_dialog),
-		      "response",
+		      "any_signal::response",
 		      G_CALLBACK(ags_crop_note_dialog_response_callback),
 		      crop_note_dialog,
 		      NULL);
 
   /* absolute */
   g_object_disconnect(G_OBJECT(crop_note_dialog->absolute),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_crop_note_dialog_absolute_callback),
 		      crop_note_dialog,
 		      NULL);
@@ -459,7 +449,7 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   AgsCropNoteDialog *crop_note_dialog;
 
   AgsWindow *window;
-  AgsEditor *editor;
+  AgsNotationEditor *notation_editor;
   AgsMachine *machine;
 
   AgsCropNote *crop_note;  
@@ -488,9 +478,9 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   crop_note_dialog = AGS_CROP_NOTE_DIALOG(applicable);
 
   window = crop_note_dialog->main_window;
-  editor = window->editor;
+  notation_editor = window->notation_editor;
 
-  machine = editor->selected_machine;
+  machine = notation_editor->selected_machine;
 
   if(machine == NULL){
     return;
@@ -539,14 +529,19 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   while(notation != NULL){
     selection = AGS_NOTATION(notation->data)->selection;
 
-    crop_note = ags_crop_note_new(notation->data,
-				  selection,
-				  x_padding, x_crop,
-				  absolute,
-				  in_place, do_resize);
-    task = g_list_prepend(task,
-			  crop_note);
-
+    if(selection != NULL){
+      crop_note = ags_crop_note_new(notation->data,
+				    selection,
+				    x_padding, x_crop,
+				    absolute,
+				    in_place, do_resize);
+      g_object_set(crop_note,
+		   "audio", audio,
+		   NULL);
+      task = g_list_prepend(task,
+			    crop_note);
+    }
+    
     notation = notation->next;
   }
   

@@ -31,6 +31,7 @@
 #include <ags/thread/ags_mutex_manager.h>
 
 #include <ags/audio/jack/ags_jack_devout.h>
+#include <ags/audio/jack/ags_jack_devin.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
 
 #include <string.h>
@@ -717,7 +718,8 @@ ags_jack_server_get_soundcard(AgsDistributedManager *distributed_manager,
   list = NULL;
 
   while(device != NULL){
-    if(AGS_IS_JACK_DEVOUT(device->data)){
+    if(AGS_IS_JACK_DEVOUT(device->data) ||
+       AGS_IS_JACK_DEVIN(device->data)){
       list = g_list_prepend(list,
 			    device->data);
     }
@@ -791,15 +793,16 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
   AgsJackClient *default_client;
   AgsJackPort *jack_port;
   AgsJackDevout *jack_devout;
-
+  AgsJackDevin *jack_devin;
+  GObject *soundcard;
+  
   gchar *str;  
 
   gboolean initial_set;
   int rc;
   guint i;
   
-  if(!is_output){
-    g_warning("GSequencer - audio input not implemented");
+  if(!AGS_IS_JACK_SERVER(distributed_manager)){
     return(NULL);
   }
 
@@ -826,8 +829,11 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
   default_client = (AgsJackClient *) jack_server->default_client;
 
   /* the soundcard */
+  soundcard = NULL;
+  
   if(is_output){
-    jack_devout = ags_jack_devout_new(jack_server->application_context);
+    soundcard = 
+      jack_devout = ags_jack_devout_new(jack_server->application_context);
     str = g_strdup_printf("ags-jack-devout-%d",
 			  jack_server->n_soundcards);
     g_object_set(AGS_JACK_DEVOUT(jack_devout),
@@ -892,9 +898,76 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
 
     ags_jack_devout_realloc_buffer(jack_devout);
     jack_server->n_soundcards += 1;
+  }else{
+    soundcard = 
+      jack_devin = ags_jack_devin_new(jack_server->application_context);
+    str = g_strdup_printf("ags-jack-devin-%d",
+			  jack_server->n_soundcards);
+    g_object_set(AGS_JACK_DEVIN(jack_devin),
+		 "jack-client", default_client,
+		 "device", str,
+		 NULL);
+    g_free(str);
+    g_object_set(default_client,
+		 "device", jack_devin,
+		 NULL);
+    
+#ifdef AGS_WITH_JACK
+    if(initial_set &&
+       default_client->client != NULL){
+      rc = jack_set_buffer_size(default_client->client,
+				jack_devin->buffer_size);
+
+      if(rc != 0){
+	g_message("%s", strerror(rc));
+      }
+    }
+#endif
+    
+    /* register ports */
+    for(i = 0; i < jack_devin->pcm_channels; i++){
+      str = g_strdup_printf("ags-soundcard%d-%04d",
+			    jack_server->n_soundcards,
+			    i);
+      
+#ifdef AGS_DEBUG
+      g_message("%s", str);
+#endif
+      
+      jack_port = ags_jack_port_new((GObject *) default_client);
+      ags_jack_client_add_port(default_client,
+			       (GObject *) jack_port);
+
+      g_object_set(jack_devin,
+		   "jack-port", jack_port,
+		   NULL);
+      
+      if(jack_devin->port_name == NULL){
+	jack_devin->port_name = (gchar **) malloc(2 * sizeof(gchar *));
+	jack_devin->port_name[0] = g_strdup(str);
+      }else{
+	jack_devin->port_name = (gchar **) realloc(jack_devin->port_name,
+						   (i + 2) * sizeof(gchar *));
+	jack_devin->port_name[i] = g_strdup(str);
+      }
+    
+      ags_jack_port_register(jack_port,
+			     str,
+			     TRUE, FALSE,
+			     TRUE);
+
+      g_free(str);
+    }
+
+    if(jack_devin->port_name != NULL){
+      jack_devin->port_name[jack_devin->pcm_channels] = NULL;
+    }
+
+    ags_jack_devin_realloc_buffer(jack_devin);
+    jack_server->n_soundcards += 1;
   }
   
-  return((GObject *) jack_devout);
+  return(soundcard);
 }
 
 void
@@ -916,17 +989,29 @@ ags_jack_server_unregister_soundcard(AgsDistributedManager *distributed_manager,
     
     return;
   }
-  
-  list = AGS_JACK_DEVOUT(soundcard)->jack_port;
 
-  while(list != NULL){
-    ags_jack_port_unregister(list->data);
-    ags_jack_client_remove_port(default_client,
-				list->data);
+  if(AGS_IS_JACK_DEVOUT(soundcard)){
+    list = AGS_JACK_DEVOUT(soundcard)->jack_port;
+
+    while(list != NULL){
+      ags_jack_port_unregister(list->data);
+      ags_jack_client_remove_port(default_client,
+				  list->data);
     
-    list = list->next;
-  }
+      list = list->next;
+    }
+  }else if(AGS_IS_JACK_DEVIN(soundcard)){
+    list = AGS_JACK_DEVIN(soundcard)->jack_port;
 
+    while(list != NULL){
+      ags_jack_port_unregister(list->data);
+      ags_jack_client_remove_port(default_client,
+				  list->data);
+    
+      list = list->next;
+    }
+  }
+  
   ags_jack_client_remove_device(default_client,
 				soundcard);
   

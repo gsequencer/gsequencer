@@ -32,12 +32,9 @@
 #include <ags/audio/task/ags_seek_soundcard.h>
 
 #include <ags/X/ags_window.h>
-#include <ags/X/ags_editor.h>
+#include <ags/X/ags_notation_editor.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
-
-#include <ags/X/editor/ags_note_edit.h>
-#include <ags/X/editor/ags_pattern_edit.h>
 
 #include <ags/i18n.h>
 
@@ -260,7 +257,7 @@ ags_navigation_init(AgsNavigation *navigation)
   navigation->position_time = (GtkLabel *) gtk_label_new("00:00.000");
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->position_time, FALSE, FALSE, 2);
 
-  navigation->position_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTE_EDIT_MAX_CONTROLS * 64.0, 1.0);
+  navigation->position_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTATION_EDITOR_MAX_CONTROLS, 1.0);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->position_tact, FALSE, FALSE, 2);
 
 
@@ -275,7 +272,7 @@ ags_navigation_init(AgsNavigation *navigation)
   g_timeout_add(1000 / 30, (GSourceFunc) ags_navigation_duration_time_queue_draw, (gpointer) navigation);
 
   navigation->duration_tact = NULL;
-  //  navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTE_EDIT_MAX_CONTROLS * 64.0, 1.0);
+  //  navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTATION_EDITOR_MAX_CONTROLS, 1.0);
   //  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_tact, FALSE, FALSE, 2);
 
 
@@ -448,7 +445,6 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 				    gdouble tact_counter)
 {
   AgsWindow *window;
-  AgsEditor *editor;
 
   AgsSeekSoundcard *seek_soundcard;
 
@@ -471,7 +467,6 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   pthread_mutex_t *soundcard_mutex;
   
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
-  editor = window->editor;
 
   application_context = (AgsApplicationContext *) window->application_context;
 
@@ -518,17 +513,9 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   ags_gui_thread_schedule_task(gui_thread,
 			       seek_soundcard);
 
-  /* update GUI */
-  tact_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) editor->toolbar->zoom));
-
-  if(AGS_IS_NOTE_EDIT(editor->current_edit_widget)){
-    gtk_adjustment_set_value(GTK_RANGE(AGS_NOTE_EDIT(editor->current_edit_widget)->hscrollbar)->adjustment,
-			     tact_counter * AGS_NOTE_EDIT(editor->current_edit_widget)->control_current.control_width * (16.0 / tact_factor));
-  }else if(AGS_IS_PATTERN_EDIT(editor->current_edit_widget)){
-    gtk_adjustment_set_value(GTK_RANGE(AGS_PATTERN_EDIT(editor->current_edit_widget)->hscrollbar)->adjustment,
-			     tact_counter * AGS_PATTERN_EDIT(editor->current_edit_widget)->control_current.control_width * (16.0 / tact_factor));
-  }
+  //TODO:JK: implement me
   
+  /* update */
   timestr = ags_time_get_uptime_from_offset(16.0 * tact_counter,
 					    navigation->bpm->adjustment->value,
 					    delay,

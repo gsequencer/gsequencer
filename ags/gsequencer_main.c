@@ -23,13 +23,9 @@
 #include <gdk/gdk.h>
 #include <pango/pangocairo.h>
 
-#include <ags/lib/ags_log.h>
-
-#include <ags/object/ags_application_context.h>
-
-#include <ags/X/ags_xorg_application_context.h>
-
-#include <ags/X/thread/ags_gui_thread.h>
+#ifdef AGS_WITH_LIBINSTPATCH
+#include <libinstpatch/libinstpatch.h>
+#endif
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
@@ -38,6 +34,14 @@
 #include <libxml/xmlIO.h>
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
+#include <ags/X/ags_xorg_application_context.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 #include "gsequencer_main.h"
 
@@ -185,7 +189,7 @@ ags_setup_thread(void *ptr)
 
   //  pthread_mutex_lock(ags_gui_thread_get_dispatch_mutex());
   
-  ags_xorg_application_context_setup(xorg_application_context);
+  ags_application_context_setup(xorg_application_context);
 
   //  pthread_mutex_unlock(ags_gui_thread_get_dispatch_mutex());
   
@@ -370,8 +374,14 @@ main(int argc, char **argv)
 #ifdef AGS_WITH_LIBINSTPATCH
   ipatch_init();
 #endif
-  //  g_log_set_fatal_mask("GLib", // "Gtk" , // 
-  //		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
+
+  g_log_set_fatal_mask("GLib-GObject", // "Gtk" , // 
+  		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
+
+#if 0
+  g_log_set_fatal_mask("Gtk", // "Gtk" , // 
+  		       G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING
+#endif
   
   /* setup */
   wdir = g_strdup_printf("%s/%s",
@@ -391,10 +401,7 @@ main(int argc, char **argv)
   g_free(config_file);
   
   ags_setup(argc, argv);
-  
-  ags_application_context_quit(ags_application_context);
-  g_free(rc_filename);
-  
+    
   //  muntrace();
 
   return(0);

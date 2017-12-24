@@ -19,9 +19,6 @@
 
 #include <ags/audio/task/ags_remove_soundcard.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
 #include <ags/audio/ags_sound_provider.h>
 
 #include <ags/i18n.h>
@@ -49,7 +46,7 @@ void ags_remove_soundcard_launch(AgsTask *task);
  * @short_description: remove soundcard object to context
  * @title: AgsRemoveSoundcard
  * @section_id:
- * @include: ags/soundcard/task/ags_remove_soundcard.h
+ * @include: ags/audio/task/ags_remove_soundcard.h
  *
  * The #AgsRemoveSoundcard task removes #AgsSoundcard to context.
  */
@@ -322,12 +319,25 @@ void
 ags_remove_soundcard_launch(AgsTask *task)
 {
   AgsRemoveSoundcard *remove_soundcard;
+
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   remove_soundcard = AGS_REMOVE_SOUNDCARD(task);
+
+  /* remove soundcard */
+  pthread_mutex_lock(application_mutex);
 
   ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(remove_soundcard->application_context),
 				   g_list_remove(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(remove_soundcard->application_context)),
 						 remove_soundcard->soundcard));
+
+  pthread_mutex_unlock(application_mutex);
 }
 
 /**

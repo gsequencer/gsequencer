@@ -25,9 +25,9 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_channel.h>
-
-#include <ags/widget/ags_expander_set.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_line.h>
 
@@ -38,8 +38,8 @@
 #define AGS_IS_PAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_PAD))
 #define AGS_PAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_PAD, AgsPadClass))
 
-#define AGS_PAD_DEFAULT_VERSION "0.4.2\0"
-#define AGS_PAD_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36\0"
+#define AGS_PAD_DEFAULT_VERSION "0.4.2"
+#define AGS_PAD_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36"
 
 typedef struct _AgsPad AgsPad;
 typedef struct _AgsPadClass AgsPadClass;

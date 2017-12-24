@@ -23,7 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/thread/ags_task.h>
+#include <ags/libags.h>
+
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
 
 #define AGS_TYPE_REMOVE_POINT_FROM_SELECTION                (ags_remove_point_from_selection_get_type())
@@ -40,6 +42,7 @@ struct _AgsRemovePointFromSelection
 {
   AgsTask task;
 
+  AgsAudio *audio;
   AgsNotation *notation;
 
   guint x;

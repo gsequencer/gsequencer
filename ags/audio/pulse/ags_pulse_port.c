@@ -43,6 +43,7 @@
 #include <ags/audio/pulse/ags_pulse_server.h>
 #include <ags/audio/pulse/ags_pulse_client.h>
 #include <ags/audio/pulse/ags_pulse_devout.h>
+#include <ags/audio/pulse/ags_pulse_devin.h>
 
 #include <ags/config.h>
 #include <ags/i18n.h>
@@ -86,6 +87,7 @@ enum{
   PROP_0,
   PROP_PULSE_CLIENT,
   PROP_PULSE_DEVOUT,
+  PROP_PULSE_DEVIN,
   PROP_PORT_NAME,
 };
 
@@ -182,6 +184,22 @@ ags_pulse_port_class_init(AgsPulsePortClass *pulse_port)
 				  param_spec);
 
   /**
+   * AgsPulsePort:pulse-devin:
+   *
+   * The assigned #AgsPulseDevout.
+   * 
+   * Since: 1.2.0
+   */
+  param_spec = g_param_spec_object("pulse-devin",
+				   i18n_pspec("assigned pulseaudio devin"),
+				   i18n_pspec("The assigned pulseaudio devin"),
+				   AGS_TYPE_PULSE_DEVIN,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PULSE_DEVIN,
+				  param_spec);
+
+  /**
    * AgsPulsePort:port-name:
    *
    * The pulse soundcard indentifier
@@ -254,6 +272,7 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
   /*  */
   pulse_port->pulse_client = NULL;
   pulse_port->pulse_devout = NULL;
+  pulse_port->pulse_devin = NULL;
   
   pulse_port->uuid = ags_id_generator_create_uuid();
   pulse_port->name = NULL;
@@ -393,7 +412,7 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
     }
     break;
   default:
-    g_warning("pulse devout - unsupported format");
+    g_warning("pulse devout/devin - unsupported format");
   }
   
   fixed_size = pcm_channels * buffer_size * word_size;
@@ -478,6 +497,27 @@ ags_pulse_port_set_property(GObject *gobject,
       pulse_port->pulse_devout = (GObject *) pulse_devout;
     }
     break;
+  case PROP_PULSE_DEVIN:
+    {
+      AgsPulseDevin *pulse_devin;
+
+      pulse_devin = (AgsPulseDevin *) g_value_get_object(value);
+
+      if(pulse_port->pulse_devin == (GObject *) pulse_devin){
+	return;
+      }
+
+      if(pulse_port->pulse_devin != NULL){
+	g_object_unref(pulse_port->pulse_devin);
+      }
+
+      if(pulse_devin != NULL){
+	g_object_ref(pulse_devin);
+      }
+      
+      pulse_port->pulse_devin = (GObject *) pulse_devin;
+    }
+    break;
   case PROP_PORT_NAME:
     {
       gchar *port_name;
@@ -522,6 +562,11 @@ ags_pulse_port_get_property(GObject *gobject,
   case PROP_PULSE_DEVOUT:
     {
       g_value_set_object(value, pulse_port->pulse_devout);
+    }
+    break;
+  case PROP_PULSE_DEVIN:
+    {
+      g_value_set_object(value, pulse_port->pulse_devin);
     }
     break;
   case PROP_PORT_NAME:
@@ -584,6 +629,13 @@ ags_pulse_port_dispose(GObject *gobject)
     pulse_port->pulse_devout = NULL;
   }
 
+  /* pulse devin */
+  if(pulse_port->pulse_devin != NULL){
+    g_object_unref(pulse_port->pulse_devin);
+
+    pulse_port->pulse_devin = NULL;
+  }
+
   /* name */
   g_free(pulse_port->name);
 
@@ -613,6 +665,11 @@ ags_pulse_port_finalize(GObject *gobject)
   /* pulse devout */
   if(pulse_port->pulse_devout != NULL){
     g_object_unref(pulse_port->pulse_devout);
+  }
+
+  /* pulse devin */
+  if(pulse_port->pulse_devin != NULL){
+    g_object_unref(pulse_port->pulse_devin);
   }
 
   /* name */
@@ -792,6 +849,7 @@ void
 ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPulsePort *pulse_port)
 {
   AgsPulseDevout *pulse_devout;
+  AgsPulseDevin *pulse_devin;
   
   AgsAudioLoop *audio_loop;
 
@@ -800,6 +858,8 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   
   AgsApplicationContext *application_context;
 
+  GObject *soundcard;
+  
   guint word_size;
   size_t count;
   guint nth_buffer;
@@ -887,7 +947,16 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   pthread_mutex_lock(mutex);
 
   pulse_devout = pulse_port->pulse_devout;
+  pulse_devin = pulse_port->pulse_devin;
 
+  soundcard = NULL;
+  
+  if(pulse_devout != NULL){
+    soundcard = pulse_devout;
+  }else if(pulse_devin != NULL){
+    soundcard = pulse_devin;
+  }
+  
   stream = pulse_port->stream;
 
   nth_empty_buffer = pulse_port->nth_empty_buffer;
@@ -904,7 +973,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   pthread_mutex_lock(application_mutex);
   
   device_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  (GObject *) pulse_devout);
+					  (GObject *) soundcard);
   
   pthread_mutex_unlock(application_mutex);
 
@@ -913,7 +982,10 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 
   empty_run = FALSE;
 
-  if(!ags_soundcard_is_playing(AGS_SOUNDCARD(pulse_devout))){
+  if((pulse_devout == NULL ||
+      !ags_soundcard_is_playing(AGS_SOUNDCARD(pulse_devout))) &&
+     (pulse_devin == NULL ||
+      !ags_soundcard_is_recording(AGS_SOUNDCARD(pulse_devin)))){
     empty_run = TRUE;
   }
   
@@ -991,142 +1063,195 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 
   /* wait callback */
   no_event = TRUE;
-  
-  if((AGS_PULSE_DEVOUT_PASS_THROUGH & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0){
-    callback_mutex = pulse_devout->callback_mutex;
 
-    pthread_mutex_unlock(device_mutex);
+  if(pulse_devout != NULL){
+    if((AGS_PULSE_DEVOUT_PASS_THROUGH & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0){
+      callback_mutex = pulse_devout->callback_mutex;
+
+      pthread_mutex_unlock(device_mutex);
 	
-    /* give back computing time until ready */
-    pthread_mutex_lock(callback_mutex);
+      /* give back computing time until ready */
+      pthread_mutex_lock(callback_mutex);
     
-    if((AGS_PULSE_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0){
-      struct timespec timeout = {
-	0,
-	0,
-      };
+      if((AGS_PULSE_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0){
+	struct timespec timeout = {
+	  0,
+	  0,
+	};
 
-      guint latency;
+	guint latency;
       
-      g_atomic_int_or(&(pulse_devout->sync_flags),
-		      AGS_PULSE_DEVOUT_CALLBACK_WAIT);
-
-      pthread_mutex_lock(mutex);
-      
-      latency = ags_pulse_port_get_latency(pulse_port);
-
-      pthread_mutex_unlock(mutex);
-      
-      latency /= 8;
-      
-      if(timeout.tv_nsec + latency < NSEC_PER_SEC){
-	timeout.tv_nsec += latency;
-      }else{
-	timeout.tv_sec += 1;
-	timeout.tv_nsec = timeout.tv_nsec + latency - NSEC_PER_SEC;
-      }
-      
-      while((AGS_PULSE_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0 &&
-	    (AGS_PULSE_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(pulse_devout->sync_flags)))) != 0){
-	void *empty_buffer;
-	void *next_empty_buffer;
-	
-	pthread_cond_timedwait(pulse_devout->callback_cond,
-			       callback_mutex,
-			       &timeout);
-
-	pthread_mutex_unlock(callback_mutex);
-
-	if(g_atomic_int_get(&(pulse_port->underflow)) > 0){
-	  n_bytes = 0;
-	  empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[nth_empty_buffer * count]);
-	  pa_stream_begin_write(stream, &empty_buffer, &n_bytes);	
-
-	  remaining = length;
-	}
-	
-	/* feed */
-	for(i = 0; g_atomic_int_get(&(pulse_port->underflow)) > 0 || remaining > 0; i++){
-	  pthread_mutex_lock(mutex);
-
-	  empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[nth_empty_buffer * count]);
-	  next_empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[next_nth_empty_buffer * count]);
-
-	  nth_empty_buffer = next_nth_empty_buffer;
-	  
-	  if(nth_empty_buffer >= 7){
-	    next_nth_empty_buffer = 0;
-	  }else{
-	    next_nth_empty_buffer = nth_empty_buffer + 1;
-	  }
-
-	  pulse_port->nth_empty_buffer = nth_empty_buffer;
-
-	  pa_stream_write(stream, empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
-	  
-	  pthread_mutex_unlock(mutex);
-
-	  memset(next_empty_buffer, 0, count * sizeof(unsigned char));
-
-	  if(g_atomic_int_get(&(pulse_port->underflow)) > 0){
-	    g_atomic_int_dec_and_test(&(pulse_port->underflow));
-	  }
-	  
-	  remaining -= count;
-	}
+	g_atomic_int_or(&(pulse_devout->sync_flags),
+			AGS_PULSE_DEVOUT_CALLBACK_WAIT);
 
 	pthread_mutex_lock(mutex);
-	  
+      
 	latency = ags_pulse_port_get_latency(pulse_port);
 
 	pthread_mutex_unlock(mutex);
-
+      
 	latency /= 8;
-
-	clock_gettime(CLOCK_MONOTONIC, &timeout);
-	  
+      
 	if(timeout.tv_nsec + latency < NSEC_PER_SEC){
 	  timeout.tv_nsec += latency;
 	}else{
 	  timeout.tv_sec += 1;
 	  timeout.tv_nsec = timeout.tv_nsec + latency - NSEC_PER_SEC;
 	}
+      
+	while((AGS_PULSE_DEVOUT_CALLBACK_DONE & (g_atomic_int_get(&(pulse_devout->sync_flags)))) == 0 &&
+	      (AGS_PULSE_DEVOUT_CALLBACK_WAIT & (g_atomic_int_get(&(pulse_devout->sync_flags)))) != 0){
+	  void *empty_buffer;
+	  void *next_empty_buffer;
+	
+	  pthread_cond_timedwait(pulse_devout->callback_cond,
+				 callback_mutex,
+				 &timeout);
 
-	pthread_mutex_lock(callback_mutex);
+	  pthread_mutex_unlock(callback_mutex);
+
+	  if(g_atomic_int_get(&(pulse_port->underflow)) > 0){
+	    n_bytes = 0;
+	    empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[nth_empty_buffer * count]);
+	    pa_stream_begin_write(stream, &empty_buffer, &n_bytes);	
+
+	    remaining = length;
+	  }
+	
+	  /* feed */
+	  for(i = 0; g_atomic_int_get(&(pulse_port->underflow)) > 0 || remaining > 0; i++){
+	    pthread_mutex_lock(mutex);
+
+	    empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[nth_empty_buffer * count]);
+	    next_empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[next_nth_empty_buffer * count]);
+
+	    nth_empty_buffer = next_nth_empty_buffer;
+	  
+	    if(nth_empty_buffer >= 7){
+	      next_nth_empty_buffer = 0;
+	    }else{
+	      next_nth_empty_buffer = nth_empty_buffer + 1;
+	    }
+
+	    pulse_port->nth_empty_buffer = nth_empty_buffer;
+
+	    pa_stream_write(stream, empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
+	  
+	    pthread_mutex_unlock(mutex);
+
+	    memset(next_empty_buffer, 0, count * sizeof(unsigned char));
+
+	    if(g_atomic_int_get(&(pulse_port->underflow)) > 0){
+	      g_atomic_int_dec_and_test(&(pulse_port->underflow));
+	    }
+	  
+	    remaining -= count;
+	  }
+
+	  pthread_mutex_lock(mutex);
+	  
+	  latency = ags_pulse_port_get_latency(pulse_port);
+
+	  pthread_mutex_unlock(mutex);
+
+	  latency /= 8;
+
+	  clock_gettime(CLOCK_MONOTONIC, &timeout);
+	  
+	  if(timeout.tv_nsec + latency < NSEC_PER_SEC){
+	    timeout.tv_nsec += latency;
+	  }else{
+	    timeout.tv_sec += 1;
+	    timeout.tv_nsec = timeout.tv_nsec + latency - NSEC_PER_SEC;
+	  }
+
+	  pthread_mutex_lock(callback_mutex);
+	}
+      }
+    
+      g_atomic_int_and(&(pulse_devout->sync_flags),
+		       (~(AGS_PULSE_DEVOUT_CALLBACK_WAIT |
+			  AGS_PULSE_DEVOUT_CALLBACK_DONE)));
+    
+      pthread_mutex_unlock(callback_mutex);
+
+      no_event = FALSE;
+
+      pthread_mutex_lock(device_mutex);
+    }
+
+    /* get buffer */  
+    if((AGS_PULSE_DEVOUT_BUFFER0 & (pulse_devout->flags)) != 0){
+      nth_buffer = 7;
+    }else if((AGS_PULSE_DEVOUT_BUFFER1 & (pulse_devout->flags)) != 0){
+      nth_buffer = 0;
+    }else if((AGS_PULSE_DEVOUT_BUFFER2 & (pulse_devout->flags)) != 0){
+      nth_buffer = 1;
+    }else if((AGS_PULSE_DEVOUT_BUFFER3 & (pulse_devout->flags)) != 0){
+      nth_buffer = 2;
+    }else if((AGS_PULSE_DEVOUT_BUFFER4 & (pulse_devout->flags)) != 0){
+      nth_buffer = 3;
+    }else if((AGS_PULSE_DEVOUT_BUFFER5 & (pulse_devout->flags)) != 0){
+      nth_buffer = 4;
+    }else if((AGS_PULSE_DEVOUT_BUFFER6 & (pulse_devout->flags)) != 0){
+      nth_buffer = 5;
+    }else if((AGS_PULSE_DEVOUT_BUFFER7 & (pulse_devout->flags)) != 0){
+      nth_buffer = 6;
+    }else{
+      empty_run = TRUE;
+    }
+  }else if(pulse_devin != NULL){
+    if((AGS_PULSE_DEVIN_PASS_THROUGH & (g_atomic_int_get(&(pulse_devin->sync_flags)))) == 0){
+      callback_mutex = pulse_devin->callback_mutex;
+
+      pthread_mutex_unlock(device_mutex);
+	
+      /* give back computing time until ready */
+      pthread_mutex_lock(callback_mutex);
+    
+      if((AGS_PULSE_DEVIN_CALLBACK_DONE & (g_atomic_int_get(&(pulse_devin->sync_flags)))) == 0){
+	g_atomic_int_or(&(pulse_devin->sync_flags),
+			AGS_PULSE_DEVIN_CALLBACK_WAIT);
+      
+	while((AGS_PULSE_DEVIN_CALLBACK_DONE & (g_atomic_int_get(&(pulse_devin->sync_flags)))) == 0 &&
+	      (AGS_PULSE_DEVIN_CALLBACK_WAIT & (g_atomic_int_get(&(pulse_devin->sync_flags)))) != 0){
+	  pthread_cond_wait(pulse_devin->callback_cond,
+			    callback_mutex);
+	}
+	
+	g_atomic_int_and(&(pulse_devin->sync_flags),
+			 (~(AGS_PULSE_DEVIN_CALLBACK_WAIT |
+			    AGS_PULSE_DEVIN_CALLBACK_DONE)));
+	
+	pthread_mutex_unlock(callback_mutex);
+	
+	no_event = FALSE;
+	
+	pthread_mutex_lock(device_mutex);
       }
     }
     
-    g_atomic_int_and(&(pulse_devout->sync_flags),
-		     (~(AGS_PULSE_DEVOUT_CALLBACK_WAIT |
-			AGS_PULSE_DEVOUT_CALLBACK_DONE)));
-    
-    pthread_mutex_unlock(callback_mutex);
-
-    no_event = FALSE;
-
-    pthread_mutex_lock(device_mutex);
-  }
-
-  /* get buffer */  
-  if((AGS_PULSE_DEVOUT_BUFFER0 & (pulse_devout->flags)) != 0){
-    nth_buffer = 7;
-  }else if((AGS_PULSE_DEVOUT_BUFFER1 & (pulse_devout->flags)) != 0){
-    nth_buffer = 0;
-  }else if((AGS_PULSE_DEVOUT_BUFFER2 & (pulse_devout->flags)) != 0){
-    nth_buffer = 1;
-  }else if((AGS_PULSE_DEVOUT_BUFFER3 & (pulse_devout->flags)) != 0){
-    nth_buffer = 2;
-  }else if((AGS_PULSE_DEVOUT_BUFFER4 & (pulse_devout->flags)) != 0){
-    nth_buffer = 3;
-  }else if((AGS_PULSE_DEVOUT_BUFFER5 & (pulse_devout->flags)) != 0){
-    nth_buffer = 4;
-  }else if((AGS_PULSE_DEVOUT_BUFFER6 & (pulse_devout->flags)) != 0){
-    nth_buffer = 5;
-  }else if((AGS_PULSE_DEVOUT_BUFFER7 & (pulse_devout->flags)) != 0){
-    nth_buffer = 6;
-  }else{
-    empty_run = TRUE;
-  }
+    /* get buffer */  
+    if((AGS_PULSE_DEVIN_BUFFER0 & (pulse_devin->flags)) != 0){
+      nth_buffer = 7;
+    }else if((AGS_PULSE_DEVIN_BUFFER1 & (pulse_devin->flags)) != 0){
+      nth_buffer = 0;
+    }else if((AGS_PULSE_DEVIN_BUFFER2 & (pulse_devin->flags)) != 0){
+      nth_buffer = 1;
+    }else if((AGS_PULSE_DEVIN_BUFFER3 & (pulse_devin->flags)) != 0){
+      nth_buffer = 2;
+    }else if((AGS_PULSE_DEVIN_BUFFER4 & (pulse_devin->flags)) != 0){
+      nth_buffer = 3;
+    }else if((AGS_PULSE_DEVIN_BUFFER5 & (pulse_devin->flags)) != 0){
+      nth_buffer = 4;
+    }else if((AGS_PULSE_DEVIN_BUFFER6 & (pulse_devin->flags)) != 0){
+      nth_buffer = 5;
+    }else if((AGS_PULSE_DEVIN_BUFFER7 & (pulse_devin->flags)) != 0){
+      nth_buffer = 6;
+    }else{
+      empty_run = TRUE;
+    }
+  }  
 
   switch(pulse_port->format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
@@ -1150,80 +1275,145 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   
   /* write */
   count = pulse_devout->pcm_channels * pulse_devout->buffer_size * word_size;
-  
-  if(!empty_run){
-    n_bytes = 0;
-    pa_stream_begin_write(stream, &(pulse_devout->buffer[nth_buffer]), &n_bytes);
+
+  if(pulse_devout != NULL){
+    if(!empty_run){
+      n_bytes = 0;
+      pa_stream_begin_write(stream, &(pulse_devout->buffer[nth_buffer]), &n_bytes);
     
-    //    g_message("%d", ags_synth_util_get_xcross_count_s16(pulse_devout->buffer[nth_buffer],
-    //							pulse_devout->pcm_channels * pulse_devout->buffer_size));
+      //    g_message("%d", ags_synth_util_get_xcross_count_s16(pulse_devout->buffer[nth_buffer],
+      //							pulse_devout->pcm_channels * pulse_devout->buffer_size));
 
-    pa_stream_write(stream,
-		    pulse_devout->buffer[nth_buffer],
-		    count,
-		    NULL,
-		    0,
-		    PA_SEEK_RELATIVE);
+      pa_stream_write(stream,
+		      pulse_devout->buffer[nth_buffer],
+		      count,
+		      NULL,
+		      0,
+		      PA_SEEK_RELATIVE);
 
-    g_atomic_int_set(&(pulse_port->is_empty),
-		     FALSE);
-  }
-  
-  /* signal finish */
-  if(!no_event){        
-    callback_finish_mutex = pulse_devout->callback_finish_mutex;
-	
-    pthread_mutex_lock(callback_finish_mutex);
-
-    g_atomic_int_or(&(pulse_devout->sync_flags),
-		    AGS_PULSE_DEVOUT_CALLBACK_FINISH_DONE);
-    
-    if((AGS_PULSE_DEVOUT_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(pulse_devout->sync_flags)))) != 0){
-      pthread_cond_signal(pulse_devout->callback_finish_cond);
+      g_atomic_int_set(&(pulse_port->is_empty),
+		       FALSE);
     }
 
-    pthread_mutex_unlock(callback_finish_mutex);
-  }
+    /* signal finish */
+    if(!no_event){        
+      callback_finish_mutex = pulse_devout->callback_finish_mutex;
+	
+      pthread_mutex_lock(callback_finish_mutex);
 
-  pthread_mutex_unlock(device_mutex);
-
-  if(empty_run){
-    void *empty_buffer;
-    void *next_empty_buffer;
-
-    empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[nth_empty_buffer * count]);
+      g_atomic_int_or(&(pulse_devout->sync_flags),
+		      AGS_PULSE_DEVOUT_CALLBACK_FINISH_DONE);
     
-    n_bytes = 0;
-    pa_stream_begin_write(stream, &empty_buffer, &n_bytes);
-    
-    remaining = length;
-    
-    for(i = 0; remaining > 0; i++){
-      /* feed */
-      pthread_mutex_lock(mutex);
-
-      empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[nth_empty_buffer * count]);
-      next_empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[next_nth_empty_buffer * count]);
-
-      nth_empty_buffer = next_nth_empty_buffer;
-      
-      if(nth_empty_buffer >= 7){
-	next_nth_empty_buffer = 0;
-      }else{
-	next_nth_empty_buffer = nth_empty_buffer + 1;
+      if((AGS_PULSE_DEVOUT_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(pulse_devout->sync_flags)))) != 0){
+	pthread_cond_signal(pulse_devout->callback_finish_cond);
       }
 
-      pulse_port->nth_empty_buffer = nth_empty_buffer;
-
-      pa_stream_write(stream, empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
-	  
-      pthread_mutex_unlock(mutex);
-
-      memset(next_empty_buffer, 0, count * sizeof(unsigned char));
-
-      remaining -= count;
+      pthread_mutex_unlock(callback_finish_mutex);
     }
-  }
+
+    pthread_mutex_unlock(device_mutex);
+
+    if(empty_run){
+      void *empty_buffer;
+      void *next_empty_buffer;
+
+      empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[nth_empty_buffer * count]);
+    
+      n_bytes = 0;
+      pa_stream_begin_write(stream, &empty_buffer, &n_bytes);
+    
+      remaining = length;
+    
+      for(i = 0; remaining > 0; i++){
+	/* feed */
+	pthread_mutex_lock(mutex);
+
+	empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[nth_empty_buffer * count]);
+	next_empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[next_nth_empty_buffer * count]);
+
+	nth_empty_buffer = next_nth_empty_buffer;
+      
+	if(nth_empty_buffer >= 7){
+	  next_nth_empty_buffer = 0;
+	}else{
+	  next_nth_empty_buffer = nth_empty_buffer + 1;
+	}
+
+	pulse_port->nth_empty_buffer = nth_empty_buffer;
+
+	pa_stream_write(stream, empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
+	  
+	pthread_mutex_unlock(mutex);
+
+	memset(next_empty_buffer, 0, count * sizeof(unsigned char));
+
+	remaining -= count;
+      }
+    }
+  }else if(pulse_devin != NULL){
+    if(!empty_run){
+      pa_stream_read(stream,
+		     pulse_devout->buffer[nth_buffer],
+		     count,
+		     NULL,
+		     0,
+		     PA_SEEK_RELATIVE);
+      
+      g_atomic_int_set(&(pulse_port->is_empty),
+		       FALSE);
+    }
+
+    /* signal finish */
+    if(!no_event){        
+      callback_finish_mutex = pulse_devin->callback_finish_mutex;
+	
+      pthread_mutex_lock(callback_finish_mutex);
+
+      g_atomic_int_or(&(pulse_devin->sync_flags),
+		      AGS_PULSE_DEVIN_CALLBACK_FINISH_DONE);
+    
+      if((AGS_PULSE_DEVIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(pulse_devin->sync_flags)))) != 0){
+	pthread_cond_signal(pulse_devin->callback_finish_cond);
+      }
+
+      pthread_mutex_unlock(callback_finish_mutex);
+    }
+
+    pthread_mutex_unlock(device_mutex);
+
+    if(empty_run){
+      void *empty_buffer;
+      void *next_empty_buffer;
+      
+      remaining = pa_stream_readable_size(stream);
+    
+      for(i = 0; remaining > 0; i++){
+	/* feed */
+	pthread_mutex_lock(mutex);
+
+	empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[nth_empty_buffer * count]);
+	next_empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[next_nth_empty_buffer * count]);
+
+	nth_empty_buffer = next_nth_empty_buffer;
+      
+	if(nth_empty_buffer >= 7){
+	  next_nth_empty_buffer = 0;
+	}else{
+	  next_nth_empty_buffer = nth_empty_buffer + 1;
+	}
+
+	pulse_port->nth_empty_buffer = nth_empty_buffer;
+
+	pa_stream_read(stream, empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
+	
+	pthread_mutex_unlock(mutex);
+	
+	memset(next_empty_buffer, 0, count * sizeof(unsigned char));
+	
+	remaining -= count;
+      }
+    }
+  }  
   
   g_atomic_int_dec_and_test(&(pulse_port->queued));
 }

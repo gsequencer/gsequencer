@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -145,6 +145,9 @@ struct _AgsMachineClass
   
   void (*map_recall)(AgsMachine *machine);
   GList* (*find_port)(AgsMachine *machine);
+
+  void (*done)(AgsMachine *machine,
+	       GObject *recall_id);
 };
 
 GType ags_machine_get_type(void);
@@ -157,6 +160,9 @@ void ags_machine_resize_pads(AgsMachine *machine,
 
 void ags_machine_map_recall(AgsMachine *machine);
 GList* ags_machine_find_port(AgsMachine *machine);
+
+void ags_machine_done(AgsMachine *machine,
+		      GObject *recall_id);
 
 void ags_machine_add_default_recalls(AgsMachine *machine) G_DEPRECATED_FOR(ags_machine_map_recall);
 
@@ -182,6 +188,8 @@ void ags_machine_copy_pattern(AgsMachine *machine);
 
 void ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options);
 void ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_options);
+
+gboolean ags_machine_message_monitor_timeout(AgsMachine *machine);
 
 AgsMachine* ags_machine_new(GObject *soundcard);
 

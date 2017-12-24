@@ -19,14 +19,11 @@
 
 #include <ags/audio/task/ags_open_single_file.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/audio/file/ags_audio_file_link.h>
-
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_input.h>
 
+#include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file.h>
 
 #include <ags/i18n.h>
@@ -437,9 +434,14 @@ ags_open_single_file_launch(AgsTask *task)
   AgsOpenSingleFile *open_single_file;
 
   AgsChannel *channel;
+  AgsChannel *link;
+  AgsRecycling *first_recycling;
+  
   AgsAudioFile *audio_file;
 
   AgsFileLink *file_link;
+
+  AgsMutexManager *mutex_manager;
 
   GList *audio_signal;
 
@@ -447,7 +449,23 @@ ags_open_single_file_launch(AgsTask *task)
 
   GError *error;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   open_single_file = AGS_OPEN_SINGLE_FILE(task);
+
+  channel = open_single_file->channel;
+
+  /* get channel mutex */
+  pthread_mutex_lock(application_mutex);
+
+  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) channel);
+  
+  pthread_mutex_unlock(application_mutex);
 
   /* open audio file and read audio signal */
   audio_file = ags_audio_file_new(open_single_file->filename,
@@ -463,12 +481,25 @@ ags_open_single_file_launch(AgsTask *task)
   ags_audio_file_read_audio_signal(audio_file);
 
   /* iterate channels */
-  channel = open_single_file->channel;
   audio_signal = audio_file->audio_signal;
 
   for(i = 0; i < open_single_file->audio_channels && audio_signal != NULL; i++){
-    /* unset link */
-    if(channel->link != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(application_mutex);
+
+    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) channel);
+  
+    pthread_mutex_unlock(application_mutex);
+    
+    /* set link */
+    pthread_mutex_lock(channel_mutex);
+
+    link = channel->link;
+
+    pthread_mutex_unlock(channel_mutex);
+
+    if(link != NULL){
       error = NULL;
       ags_channel_set_link(channel, NULL,
 			   &error);
@@ -478,23 +509,50 @@ ags_open_single_file_launch(AgsTask *task)
       }
     }
 
-    file_link = g_object_new(AGS_TYPE_AUDIO_FILE_LINK,
-			     "filename", open_single_file->filename,
-			     "audio-channel", i,
-			     NULL);
-    g_object_set(channel,
-		 "file-link", file_link,
-		 NULL);
+    /* file link */
+    if(AGS_IS_INPUT(channel)){
+      pthread_mutex_lock(channel_mutex);
+
+      file_link = AGS_INPUT(channel)->file_link;
     
-    /* mark as template */
-    AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+      if(file_link == NULL){
+	file_link = g_object_new(AGS_TYPE_AUDIO_FILE_LINK,
+				 NULL);
+      
+	g_object_set(channel,
+		     "file-link", file_link,
+		     NULL);
+      }
+
+      g_object_set(file_link,
+		   "filename", open_single_file->filename,
+		   "preset", NULL,
+		   "instrument", NULL,
+		   "sample", NULL,
+		   "audio-channel", open_single_file->start_channel + i,
+		   NULL);
+      
+      pthread_mutex_unlock(channel_mutex);
+    }
 
     /* add as template */
-    ags_recycling_add_audio_signal(channel->first_recycling,
+    pthread_mutex_lock(channel_mutex);
+
+    first_recycling = channel->first_recycling;
+
+    pthread_mutex_unlock(channel_mutex);
+
+    AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+    ags_recycling_add_audio_signal(first_recycling,
 				   AGS_AUDIO_SIGNAL(audio_signal->data));
 
     /* iterate */
+    pthread_mutex_lock(channel_mutex);
+
     channel = channel->next;
+
+    pthread_mutex_unlock(channel_mutex);
+
     audio_signal = audio_signal->next;
   }
 

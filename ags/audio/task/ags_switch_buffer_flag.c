@@ -19,15 +19,16 @@
 
 #include <ags/audio/task/ags_switch_buffer_flag.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_devin.h>
 #include <ags/audio/ags_midiin.h>
 
 #include <ags/audio/jack/ags_jack_devout.h>
+#include <ags/audio/jack/ags_jack_devin.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
 
 #include <ags/audio/pulse/ags_pulse_devout.h>
+#include <ags/audio/pulse/ags_pulse_devin.h>
 
 #include <ags/audio/core-audio/ags_core_audio_devout.h>
 #include <ags/audio/core-audio/ags_core_audio_midiin.h>
@@ -276,14 +277,40 @@ ags_switch_buffer_flag_launch(AgsTask *task)
 {
   AgsSwitchBufferFlag *switch_buffer_flag;
 
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *device_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   switch_buffer_flag = AGS_SWITCH_BUFFER_FLAG(task);
 
+  /* get main loop and soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+  
+  device_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  (GObject *) switch_buffer_flag->device);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* switch buffer flag */
+  pthread_mutex_lock(device_mutex);
+  
   if(AGS_IS_DEVOUT(switch_buffer_flag->device)){
     ags_devout_switch_buffer_flag(switch_buffer_flag->device);
+  }else if(AGS_IS_DEVIN(switch_buffer_flag->device)){
+    ags_devin_switch_buffer_flag(switch_buffer_flag->device);
   }else if(AGS_IS_JACK_DEVOUT(switch_buffer_flag->device)){
     ags_jack_devout_switch_buffer_flag(switch_buffer_flag->device);
+  }else if(AGS_IS_JACK_DEVIN(switch_buffer_flag->device)){
+    ags_jack_devin_switch_buffer_flag(switch_buffer_flag->device);
   }else if(AGS_IS_PULSE_DEVOUT(switch_buffer_flag->device)){
     ags_pulse_devout_switch_buffer_flag(switch_buffer_flag->device);
+  }else if(AGS_IS_PULSE_DEVIN(switch_buffer_flag->device)){
+    ags_pulse_devin_switch_buffer_flag(switch_buffer_flag->device);
   }else if(AGS_IS_CORE_AUDIO_DEVOUT(switch_buffer_flag->device)){
     ags_core_audio_devout_switch_buffer_flag(switch_buffer_flag->device);
   }else if(AGS_IS_MIDIIN(switch_buffer_flag->device)){
@@ -293,6 +320,8 @@ ags_switch_buffer_flag_launch(AgsTask *task)
   }else if(AGS_IS_CORE_AUDIO_MIDIIN(switch_buffer_flag->device)){
     ags_core_audio_midiin_switch_buffer_flag(switch_buffer_flag->device);
   }
+
+  pthread_mutex_unlock(device_mutex);
 }
 
 /**

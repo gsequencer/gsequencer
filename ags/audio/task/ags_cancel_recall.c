@@ -19,8 +19,6 @@
 
 #include <ags/audio/task/ags_cancel_recall.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/i18n.h>
 
 void ags_cancel_recall_class_init(AgsCancelRecallClass *cancel_recall);

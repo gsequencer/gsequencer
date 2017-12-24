@@ -20,9 +20,11 @@
 #ifndef __AGS_OPEN_SINGLE_FILE_H__
 #define __AGS_OPEN_SINGLE_FILE_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
-#include <ags/thread/ags_task.h>
+#include <ags/libags.h>
+
 #include <ags/audio/ags_channel.h>
 #include <ags/object/ags_soundcard.h>
 

@@ -20,11 +20,9 @@
 #include <ags/X/ags_line_member_editor.h>
 #include <ags/X/ags_line_member_editor_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/audio/ags_recall_lv2.h>
-#include <ags/audio/ags_recall_ladspa.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_machine_editor.h>
@@ -195,13 +193,13 @@ ags_line_member_editor_disconnect(AgsConnectable *connectable)
   line_member_editor->flags &= (~AGS_LINE_MEMBER_EDITOR_CONNECTED);
 
   g_object_disconnect(G_OBJECT(line_member_editor->add),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_line_member_editor_add_callback),
 		      line_member_editor,
 		      NULL);
   
   g_object_disconnect(G_OBJECT(line_member_editor->remove),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_line_member_editor_remove_callback),
 		      line_member_editor,
 		      NULL);
@@ -209,7 +207,7 @@ ags_line_member_editor_disconnect(AgsConnectable *connectable)
   ags_connectable_disconnect(AGS_CONNECTABLE(line_member_editor->plugin_browser));
 
   g_object_disconnect(G_OBJECT(line_member_editor->plugin_browser),
-		      "response",
+		      "any_signal::response",
 		      G_CALLBACK(ags_line_member_editor_plugin_browser_response_callback),
 		      line_member_editor,
 		      NULL);

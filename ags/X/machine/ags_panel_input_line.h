@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,7 +22,12 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_line.h>
 
@@ -52,6 +57,8 @@ struct _AgsPanelInputLineClass
 };
 
 GType ags_panel_input_line_get_type();
+
+gboolean ags_panel_input_line_message_monitor_timeout(AgsPanelInputLine *panel_input_line);
 
 AgsPanelInputLine* ags_panel_input_line_new(AgsChannel *channel);
 

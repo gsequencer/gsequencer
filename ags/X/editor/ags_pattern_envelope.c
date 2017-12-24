@@ -20,16 +20,8 @@
 #include <ags/X/editor/ags_pattern_envelope.h>
 #include <ags/X/editor/ags_pattern_envelope_callbacks.h>
 
-#include <ags/lib/ags_complex.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_preset.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -785,122 +777,122 @@ ags_pattern_envelope_disconnect(AgsConnectable *connectable)
 
   /* audio channel start/end */
   g_object_disconnect((GObject *) pattern_envelope->audio_channel_start,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_pattern_envelope_audio_channel_start_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   g_object_disconnect((GObject *) pattern_envelope->audio_channel_end,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_pattern_envelope_audio_channel_end_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   /* pad start/end */
   g_object_disconnect((GObject *) pattern_envelope->pad_start,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_pattern_envelope_pad_start_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   g_object_disconnect((GObject *) pattern_envelope->pad_end,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_pattern_envelope_pad_end_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   /* x start/end */
   g_object_disconnect((GObject *) pattern_envelope->x_start,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_pattern_envelope_x_start_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   g_object_disconnect((GObject *) pattern_envelope->x_end,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_pattern_envelope_x_end_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   /* attack x,y */
   g_object_disconnect((GObject *) pattern_envelope->attack_x,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_pattern_envelope_attack_x_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   g_object_disconnect((GObject *) pattern_envelope->attack_y,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_pattern_envelope_attack_y_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   /* decay x,y */
   g_object_disconnect((GObject *) pattern_envelope->decay_x,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_pattern_envelope_decay_x_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   g_object_disconnect((GObject *) pattern_envelope->decay_y,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_pattern_envelope_decay_y_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   /* sustain x,y */
   g_object_disconnect((GObject *) pattern_envelope->sustain_x,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_pattern_envelope_sustain_x_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   g_object_disconnect((GObject *) pattern_envelope->sustain_y,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_pattern_envelope_sustain_y_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   /* release x,y */
   g_object_disconnect((GObject *) pattern_envelope->release_x,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_pattern_envelope_release_x_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   g_object_disconnect((GObject *) pattern_envelope->release_y,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_pattern_envelope_release_y_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   /* ratio */
   g_object_disconnect((GObject *) pattern_envelope->ratio,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_pattern_envelope_ratio_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   /* move up/down preset */
   g_object_disconnect((GObject *) pattern_envelope->move_up,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_pattern_envelope_preset_move_up_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
   g_object_disconnect((GObject *) pattern_envelope->move_down,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_pattern_envelope_preset_move_down_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
 
   /* add/remove preset */
   g_object_disconnect((GObject *) pattern_envelope->add,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_pattern_envelope_preset_add_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);
   g_object_disconnect((GObject *) pattern_envelope->remove,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_pattern_envelope_preset_remove_callback),
 		      (gpointer) pattern_envelope,
 		      NULL);

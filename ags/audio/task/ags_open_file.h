@@ -22,7 +22,7 @@
 
 #include <glib-object.h>
 
-#include <ags/thread/ags_task.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
 

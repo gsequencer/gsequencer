@@ -19,9 +19,6 @@
 
 #include <ags/audio/task/ags_init_audio.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_audio.h>
@@ -369,29 +366,56 @@ ags_init_audio_finalize(GObject *gobject)
 void
 ags_init_audio_launch(AgsTask *task)
 {
-  AgsInitAudio *init_audio;
-
   AgsAudio *audio;
+  AgsPlaybackDomain *playback_domain;
   AgsRecallID *recall_id;
 
-  GList *playback;
+  AgsInitAudio *init_audio;
+
+  AgsMutexManager *mutex_manager;
+
+  GList *playback_start, *playback;
   GList *list, *list_start;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
   init_audio = AGS_INIT_AUDIO(task);
 
   audio = init_audio->audio;
 
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
+
+  pthread_mutex_unlock(audio_mutex);
+
   /* init audio */
-  if(init_audio->do_playback){
-    
-    g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
+  if(init_audio->do_playback){    
+    g_atomic_int_or(&(playback_domain->flags),
 		    AGS_PLAYBACK_DOMAIN_PLAYBACK);
 
-    playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
-
+    g_object_get(playback_domain,
+		 "playback", &playback_start,
+		 NULL);
+    
     list_start = 
       list = ags_audio_recursive_play_init(audio,
 					   TRUE, FALSE, FALSE);
+
+    playback = playback_start;
     
     while(playback != NULL){
       //      AGS_PLAYBACK(playback->data)->recall_id[0] = list->data;
@@ -401,19 +425,24 @@ ags_init_audio_launch(AgsTask *task)
       playback = playback->next;
     }
 
+    g_list_free(playback_start);
     g_list_free(list_start);
   }
 
   if(init_audio->do_sequencer &&
-     (AGS_PLAYBACK_DOMAIN_SEQUENCER & (g_atomic_int_get(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags)))) == 0){
-    g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
+     (AGS_PLAYBACK_DOMAIN_SEQUENCER & (g_atomic_int_get(&(playback_domain->flags)))) == 0){
+    g_atomic_int_or(&(playback_domain->flags),
 		    AGS_PLAYBACK_DOMAIN_SEQUENCER);
 
-    playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
+    g_object_get(playback_domain,
+		 "playback", &playback_start,
+		 NULL);
 
     list_start = 
       list = ags_audio_recursive_play_init(audio,
 					   FALSE, TRUE, FALSE);
+
+    playback = playback_start;
 
     while(playback != NULL){
       //      AGS_PLAYBACK(playback->data)->recall_id[1] = list->data;
@@ -423,19 +452,24 @@ ags_init_audio_launch(AgsTask *task)
       playback = playback->next;
     }
 
+    g_list_free(playback_start);
     g_list_free(list_start);
   }
   
   if(init_audio->do_notation &&
-     (AGS_PLAYBACK_DOMAIN_NOTATION & (g_atomic_int_get(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags)))) == 0){
-    g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
+     (AGS_PLAYBACK_DOMAIN_NOTATION & (g_atomic_int_get(&(playback_domain->flags)))) == 0){
+    g_atomic_int_or(&(playback_domain->flags),
 		    AGS_PLAYBACK_DOMAIN_NOTATION);
 
-    playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
+    g_object_get(playback_domain,
+		 "playback", &playback_start,
+		 NULL);
 
     list_start = 
       list = ags_audio_recursive_play_init(audio,
 					   FALSE, FALSE, TRUE);
+
+    playback = playback_start;
 
     while(playback != NULL){
       //      AGS_PLAYBACK(playback->data)->recall_id[2] = list->data;
@@ -445,6 +479,7 @@ ags_init_audio_launch(AgsTask *task)
       playback = playback->next;
     }
 
+    g_list_free(playback_start);
     g_list_free(list_start);
   }
 }

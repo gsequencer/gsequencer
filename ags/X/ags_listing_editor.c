@@ -20,13 +20,9 @@
 #include <ags/X/ags_listing_editor.h>
 #include <ags/X/ags_listing_editor_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_output.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_pad_editor.h>
@@ -144,24 +140,24 @@ ags_listing_editor_connect(AgsConnectable *connectable)
 {
   AgsMachineEditor *machine_editor;
   AgsListingEditor *listing_editor;
+  
   GList *pad_editor, *pad_editor_start;
 
-  ags_listing_editor_parent_connectable_interface->connect(connectable);
-
   listing_editor = AGS_LISTING_EDITOR(connectable);
+
+  if((AGS_PROPERTY_EDITOR_CONNECTED & (AGS_PROPERTY_EDITOR(listing_editor)->flags)) != 0){
+    return;
+  }
+
+  ags_listing_editor_parent_connectable_interface->connect(connectable);
 
   machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(GTK_WIDGET(listing_editor),
 								AGS_TYPE_MACHINE_EDITOR);
 
   if(machine_editor != NULL &&
      machine_editor->machine != NULL){
-    AgsAudio *audio;
-
-    /* AgsAudio */
-    audio = machine_editor->machine->audio;
-
-    listing_editor->set_pads_handler = g_signal_connect_after(G_OBJECT(audio), "set_pads",
-							      G_CALLBACK(ags_listing_editor_set_pads_callback), listing_editor);
+    g_signal_connect_after(G_OBJECT(machine_editor->machine), "resize-pads",
+			   G_CALLBACK(ags_listing_editor_resize_pads_callback), listing_editor);
   }
 
   /* AgsPadEditor */
@@ -185,24 +181,26 @@ ags_listing_editor_disconnect(AgsConnectable *connectable)
 
   GList *pad_editor, *pad_editor_start;
 
-  ags_listing_editor_parent_connectable_interface->connect(connectable);
-
   listing_editor = AGS_LISTING_EDITOR(connectable);
+
+  if((AGS_PROPERTY_EDITOR_CONNECTED & (AGS_PROPERTY_EDITOR(listing_editor)->flags)) == 0){
+    return;
+  }
+
+  ags_listing_editor_parent_connectable_interface->disconnect(connectable);
 
   machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(GTK_WIDGET(listing_editor),
 								AGS_TYPE_MACHINE_EDITOR);
 
   if(machine_editor != NULL &&
      machine_editor->machine != NULL){
-    AgsAudio *audio;
-
-    /* AgsAudio */
-    audio = machine_editor->machine->audio;
-
-    g_signal_handler_disconnect(audio,
-				listing_editor->set_pads_handler);
+    g_object_disconnect(G_OBJECT(machine_editor->machine),
+			"any_signal::resize-pads",
+			G_CALLBACK(ags_listing_editor_resize_pads_callback),
+			listing_editor,
+			NULL);
   }
-
+  
   /* AgsPadEditor */
   pad_editor_start = 
     pad_editor = gtk_container_get_children(GTK_CONTAINER(listing_editor->child));

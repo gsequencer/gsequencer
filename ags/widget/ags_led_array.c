@@ -73,7 +73,7 @@ ags_led_array_get_type(void)
     };
 
     ags_type_led_array = g_type_register_static(GTK_TYPE_ALIGNMENT,
-						"AgsLedArray\0",
+						"AgsLedArray",
 						&ags_led_array_info,
 						0);
   }
@@ -106,9 +106,9 @@ ags_led_array_class_init(AgsLedArrayClass *led_array)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_uint("led-width\0",
-				 "width of led\0",
-				 "The width of one led\0",
+  param_spec = g_param_spec_uint("led-width",
+				 "width of led",
+				 "The width of one led",
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -124,9 +124,9 @@ ags_led_array_class_init(AgsLedArrayClass *led_array)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_uint("led-height\0",
-				 "height of led\0",
-				 "The height of one led\0",
+  param_spec = g_param_spec_uint("led-height",
+				 "height of led",
+				 "The height of one led",
 				 0,
 				 G_MAXUINT,
 				 0,
@@ -142,9 +142,9 @@ ags_led_array_class_init(AgsLedArrayClass *led_array)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_uint("led-count\0",
-				 "count of leds\0",
-				 "The count of leds available\0",
+  param_spec = g_param_spec_uint("led-count",
+				 "count of leds",
+				 "The count of leds available",
 				 0,
 				 G_MAXUINT,
 				 0,

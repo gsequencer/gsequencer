@@ -20,9 +20,7 @@
 #include <ags/X/ags_plugin_browser.h>
 #include <ags/X/ags_plugin_browser_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/object/ags_applicable.h>
+#include <ags/libags.h>
 
 #include <ags/X/ags_lv2_browser.h>
 #include <ags/X/ags_dssi_browser.h>
@@ -254,7 +252,7 @@ ags_plugin_browser_disconnect(AgsConnectable *connectable)
   plugin_browser->flags &= (~AGS_PLUGIN_BROWSER_CONNECTED);
   
   g_object_disconnect(plugin_browser->plugin_type,
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_plugin_browser_plugin_type_changed_callback),
 		      plugin_browser,
 		      NULL);
@@ -264,13 +262,13 @@ ags_plugin_browser_disconnect(AgsConnectable *connectable)
 
   /* AgsPluginBrowser buttons */
   g_object_disconnect((GObject *) plugin_browser->ok,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_plugin_browser_ok_callback),
 		      (gpointer) plugin_browser,
 		      NULL);
 
   g_object_disconnect((GObject *) plugin_browser->cancel,
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_plugin_browser_cancel_callback),
 		      (gpointer) plugin_browser,
 		      NULL);

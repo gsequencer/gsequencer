@@ -27,12 +27,4 @@
 
 #include <ags/X/machine/ags_panel_input_line.h>
 
-void ags_panel_input_line_notify_data_object_callback(GObject *audio_connection,
-						      GParamSpec *pspec,
-						      AgsPanelInputLine *panel_input_line);
-
-void ags_panel_input_line_notify_mapped_line_callback(GObject *audio_connection,
-						      GParamSpec *pspec,
-						      AgsPanelInputLine *panel_input_line);
-
 #endif /*__AGS_PANEL_INPUT_LINE_CALLBACKS_H__*/

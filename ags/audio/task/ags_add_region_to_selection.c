@@ -19,8 +19,6 @@
 
 #include <ags/audio/task/ags_add_region_to_selection.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/i18n.h>
 
 void ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_to_selection);
@@ -43,6 +41,7 @@ void ags_add_region_to_selection_launch(AgsTask *task);
 
 enum{
   PROP_0,
+  PROP_AUDIO,
   PROP_NOTATION,
   PROP_X0,
   PROP_X1,
@@ -120,6 +119,22 @@ ags_add_region_to_selection_class_init(AgsAddRegionToSelectionClass *add_region_
   gobject->finalize = ags_add_region_to_selection_finalize;
 
   /* properties */
+  /**
+   * AgsAddRegionToSelection:audio:
+   *
+   * The assigned #AgsAudio
+   * 
+   * Since: 1.2.2
+   */
+  param_spec = g_param_spec_object("audio",
+				   i18n_pspec("audio of notation"),
+				   i18n_pspec("The audio of notation"),
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
+
   /**
    * AgsAddRegionToSelection:notation:
    *
@@ -241,7 +256,9 @@ ags_add_region_to_selection_connectable_interface_init(AgsConnectableInterface *
 void
 ags_add_region_to_selection_init(AgsAddRegionToSelection *add_region_to_selection)
 {
+  add_region_to_selection->audio = NULL;
   add_region_to_selection->notation = NULL;
+
   add_region_to_selection->x0 = 0;
   add_region_to_selection->y0 = 0;
   add_region_to_selection->x1 = 0;
@@ -260,6 +277,27 @@ ags_add_region_to_selection_set_property(GObject *gobject,
   add_region_to_selection = AGS_ADD_REGION_TO_SELECTION(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      AgsAudio *audio;
+
+      audio = (AgsAudio *) g_value_get_object(value);
+
+      if(add_region_to_selection->audio == (GObject *) audio){
+	return;
+      }
+
+      if(add_region_to_selection->audio != NULL){
+	g_object_unref(add_region_to_selection->audio);
+      }
+
+      if(audio != NULL){
+	g_object_ref(audio);
+      }
+
+      add_region_to_selection->audio = (GObject *) audio;
+    }
+    break;
   case PROP_NOTATION:
     {
       AgsNotation *notation;
@@ -323,6 +361,11 @@ ags_add_region_to_selection_get_property(GObject *gobject,
   add_region_to_selection = AGS_ADD_REGION_TO_SELECTION(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      g_value_set_object(value, add_region_to_selection->audio);
+    }
+    break;
   case PROP_NOTATION:
     {
       g_value_set_object(value, add_region_to_selection->notation);
@@ -382,12 +425,18 @@ ags_add_region_to_selection_dispose(GObject *gobject)
 
   add_region_to_selection = AGS_ADD_REGION_TO_SELECTION(gobject);
 
+  if(add_region_to_selection->audio != NULL){
+    g_object_unref(add_region_to_selection->audio);
+
+    add_region_to_selection->audio = NULL;
+  }
+  
   if(add_region_to_selection->notation != NULL){
     g_object_unref(add_region_to_selection->notation);
 
     add_region_to_selection->notation = NULL;
   }
-  
+
   /* call parent */
   G_OBJECT_CLASS(ags_add_region_to_selection_parent_class)->dispose(gobject);
 }
@@ -398,6 +447,10 @@ ags_add_region_to_selection_finalize(GObject *gobject)
   AgsAddRegionToSelection *add_region_to_selection;
 
   add_region_to_selection = AGS_ADD_REGION_TO_SELECTION(gobject);
+
+  if(add_region_to_selection->audio != NULL){
+    g_object_unref(add_region_to_selection->audio);
+  }
 
   if(add_region_to_selection->notation != NULL){
     g_object_unref(add_region_to_selection->notation);
@@ -411,14 +464,34 @@ void
 ags_add_region_to_selection_launch(AgsTask *task)
 {
   AgsAddRegionToSelection *add_region_to_selection;
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   add_region_to_selection = AGS_ADD_REGION_TO_SELECTION(task);
 
-  /* add note */
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) add_region_to_selection->audio);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* add region to selection */
+  pthread_mutex_lock(audio_mutex);
+
   ags_notation_add_region_to_selection(add_region_to_selection->notation,
 				       add_region_to_selection->x0, add_region_to_selection->y0,
 				       add_region_to_selection->x1, add_region_to_selection->y1,
 				       add_region_to_selection->replace_current_selection);
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**

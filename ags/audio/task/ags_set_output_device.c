@@ -19,9 +19,6 @@
 
 #include <ags/audio/task/ags_set_output_device.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
 #include <ags/audio/ags_devout.h>
 
 #include <ags/i18n.h>
@@ -308,14 +305,36 @@ ags_set_output_device_finalize(GObject *gobject)
 void
 ags_set_output_device_launch(AgsTask *task)
 {
-  GObject *soundcard;
   AgsSetOutputDevice *set_output_device;
+
+  AgsMutexManager *mutex_manager;
+
+  GObject *soundcard;
+
   char *device;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+  
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   set_output_device = AGS_SET_OUTPUT_DEVICE(task);
 
   soundcard = set_output_device->soundcard;
   device = set_output_device->device;
+
+  /* get soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) soundcard);
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* set device */
+  pthread_mutex_lock(soundcard_mutex);
 
   if(AGS_IS_DEVOUT(soundcard) &&
      (AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard)->flags)) != 0){
@@ -338,6 +357,8 @@ ags_set_output_device_launch(AgsTask *task)
   /* perform task */
   ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
 			   g_strdup(device));
+
+  pthread_mutex_unlock(soundcard_mutex);
 }
 
 /**

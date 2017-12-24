@@ -23,8 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/thread/ags_task.h>
+#include <ags/libags.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
 #include <ags/audio/ags_note.h>
 
@@ -42,6 +43,7 @@ struct _AgsAddNote
 {
   AgsTask task;
 
+  AgsAudio *audio;
   AgsNotation *notation;
 
   AgsNote *note;

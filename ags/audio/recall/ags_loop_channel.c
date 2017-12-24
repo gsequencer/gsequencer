@@ -19,14 +19,7 @@
 
 #include <ags/audio/recall/ags_loop_channel.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_plugin.h>
-
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
+#include <ags/libags.h>
 
 #include <math.h>
 
@@ -202,7 +195,7 @@ ags_loop_channel_set_property(GObject *gobject,
 
       if(loop_channel->delay_audio != NULL){
 	g_object_disconnect(G_OBJECT(loop_channel->delay_audio),
-			    "sequencer-duration-changed",
+			    "any_signal::sequencer-duration-changed",
 			    G_CALLBACK(ags_loop_channel_sequencer_duration_changed_callback), 
 			    loop_channel,
 			    NULL);
@@ -318,7 +311,7 @@ ags_loop_channel_disconnect(AgsConnectable *connectable)
 
   if(loop_channel->delay_audio != NULL){
     g_object_disconnect(G_OBJECT(loop_channel->delay_audio),
-			"sequencer-duration-changed",
+			"any_signal::sequencer-duration-changed",
 			G_CALLBACK(ags_loop_channel_sequencer_duration_changed_callback), 
 			loop_channel,
 			NULL);

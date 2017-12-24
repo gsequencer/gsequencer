@@ -20,6 +20,10 @@
 #ifndef __LIBAGS_H__
 #define __LIBAGS_H__
 
+#include <ags/util/ags_destroy_util.h>
+#include <ags/util/ags_list_util.h>
+#include <ags/util/ags_id_generator.h>
+
 /* library */
 #include <ags/lib/ags_complex.h>
 #include <ags/lib/ags_conversion.h>
@@ -72,6 +76,8 @@
 #include <ags/thread/ags_destroy_worker.h>
 #include <ags/thread/ags_generic_main_loop.h>
 #include <ags/thread/ags_history.h>
+#include <ags/thread/ags_message_delivery.h>
+#include <ags/thread/ags_message_queue.h>
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_condition_manager.h>
 #include <ags/thread/ags_poll_fd.h>
@@ -91,5 +97,34 @@
 
 /* thread file */
 #include <ags/thread/file/ags_thread_file_xml.h>
+
+/* server */
+#include <ags/server/ags_registry.h>
+#include <ags/server/ags_server.h>
+#include <ags/server/ags_server_status.h>
+#include <ags/server/ags_server_application_context.h>
+#include <ags/server/ags_service_provider.h>
+
+#include <ags/server/security/ags_password_store_manager.h>
+#include <ags/server/security/ags_business_group.h>
+#include <ags/server/security/ags_password_store.h>
+#include <ags/server/security/ags_certificate_manager.h>
+#include <ags/server/security/ags_certificate.h>
+#include <ags/server/security/ags_xml_certificate.h>
+#include <ags/server/security/ags_security_context.h>
+#include <ags/server/security/ags_authentication_manager.h>
+#include <ags/server/security/ags_xml_authentication.h>
+#include <ags/server/security/ags_authentication.h>
+#include <ags/server/security/ags_xml_password_store.h>
+
+#include <ags/server/thread/ags_remote_task.h>
+#include <ags/server/thread/ags_remote_task_thread.h>
+
+#include <ags/server/controller/ags_local_factory_controller.h>
+#include <ags/server/controller/ags_front_controller.h>
+#include <ags/server/controller/ags_controller.h>
+#include <ags/server/controller/ags_local_task_controller.h>
+#include <ags/server/controller/ags_local_serialization_controller.h>
+#include <ags/server/controller/ags_local_registry_controller.h>
 
 #endif /*__LIBAGS_H__*/

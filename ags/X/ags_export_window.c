@@ -20,21 +20,8 @@
 #include <ags/X/ags_export_window.h>
 #include <ags/X/ags_export_window_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_notation.h>
-
-#include <ags/audio/core-audio/ags_core_audio_devout.h>
-
-#include <ags/audio/pulse/ags_pulse_devout.h>
-
-#include <ags/audio/jack/ags_jack_devout.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>
@@ -505,19 +492,19 @@ ags_export_window_disconnect(AgsConnectable *connectable)
   export_window->flags &= (~AGS_EXPORT_WINDOW_CONNECTED);
 
   g_object_disconnect(G_OBJECT(export_window->add),
-		      "add",
+		      "any_signal::add",
 		      G_CALLBACK(ags_export_window_add_export_soundcard_callback),
 		      export_window,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(export_window->tact),
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_export_window_tact_callback),
 		      export_window,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(export_window->export),
-		      "clicked",
+		      "any_signal::clicked",
 		      G_CALLBACK(ags_export_window_export_callback),
 		      export_window,
 		      NULL);

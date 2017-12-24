@@ -153,6 +153,8 @@ ags_line_editor_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_line_editor_init(AgsLineEditor *line_editor)
 {
+  line_editor->flags = 0;
+  
   line_editor->version = AGS_LINE_EDITOR_DEFAULT_VERSION;
   line_editor->build_id = AGS_LINE_EDITOR_DEFAULT_BUILD_ID;
 
@@ -251,7 +253,7 @@ ags_line_editor_disconnect(AgsConnectable *connectable)
   line_editor->flags &= (~AGS_LINE_EDITOR_CONNECTED);
 
   g_object_disconnect(G_OBJECT(line_editor),
-		      "show",
+		      "any_signal::show",
 		      G_CALLBACK(ags_line_editor_show_callback),
 		      (gpointer) line_editor,
 		      NULL);

@@ -60,6 +60,7 @@ ags_count_beats_audio_run_get_type
 ags_crop_note_get_type
 ags_delay_audio_get_type
 ags_delay_audio_run_get_type
+ags_devin_get_type
 ags_devout_get_type
 ags_dssi_manager_get_type
 ags_dssi_plugin_get_type
@@ -83,6 +84,7 @@ ags_ipatch_get_type
 ags_ipatch_sf2_reader_get_type
 ags_iterator_thread_get_type
 ags_jack_client_get_type
+ags_jack_devin_get_type
 ags_jack_devout_get_type
 ags_jack_midiin_get_type
 ags_jack_port_get_type
@@ -154,6 +156,7 @@ ags_prepare_channel_run_get_type
 ags_prepare_recycling_get_type
 ags_preset_get_type
 ags_pulse_client_get_type
+ags_pulse_devin_get_type
 ags_pulse_devout_get_type
 ags_pulse_port_get_type
 ags_pulse_server_get_type

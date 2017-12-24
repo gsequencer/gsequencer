@@ -56,6 +56,7 @@ static AgsConnectableInterface *ags_remove_point_from_selection_parent_connectab
 
 enum{
   PROP_0,
+  PROP_AUDIO,
   PROP_NOTATION,
   PROP_X,
   PROP_Y,
@@ -103,6 +104,7 @@ ags_remove_point_from_selection_class_init(AgsRemovePointFromSelectionClass *rem
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+
   GParamSpec *param_spec;
 
   ags_remove_point_from_selection_parent_class = g_type_class_peek_parent(remove_point_from_selection);
@@ -117,6 +119,22 @@ ags_remove_point_from_selection_class_init(AgsRemovePointFromSelectionClass *rem
   gobject->finalize = ags_remove_point_from_selection_finalize;
 
   /* properties */
+  /**
+   * AgsRemovePointFromSelection:audio:
+   *
+   * The assigned #AgsAudio
+   * 
+   * Since: 1.2.2
+   */
+  param_spec = g_param_spec_object("audio",
+				   i18n_pspec("audio of remove point from selection"),
+				   i18n_pspec("The audio of remove point from selection task"),
+				   AGS_TYPE_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO,
+				  param_spec);
+
   /**
    * AgsRemovePointFromSelection:notation:
    *
@@ -187,7 +205,9 @@ ags_remove_point_from_selection_connectable_interface_init(AgsConnectableInterfa
 void
 ags_remove_point_from_selection_init(AgsRemovePointFromSelection *remove_point_from_selection)
 {
+  remove_point_from_selection->audio = NULL;
   remove_point_from_selection->notation = NULL;
+
   remove_point_from_selection->x = 0;
   remove_point_from_selection->y = 0;
 }
@@ -203,6 +223,27 @@ ags_remove_point_from_selection_set_property(GObject *gobject,
   remove_point_from_selection = AGS_REMOVE_POINT_FROM_SELECTION(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      AgsAudio *audio;
+
+      audio = (AgsAudio *) g_value_get_object(value);
+
+      if(remove_point_from_selection->audio == (GObject *) audio){
+	return;
+      }
+
+      if(remove_point_from_selection->audio != NULL){
+	g_object_unref(remove_point_from_selection->audio);
+      }
+
+      if(audio != NULL){
+	g_object_ref(audio);
+      }
+
+      remove_point_from_selection->audio = (GObject *) audio;
+    }
+    break;
   case PROP_NOTATION:
     {
       AgsNotation *notation;
@@ -251,6 +292,11 @@ ags_remove_point_from_selection_get_property(GObject *gobject,
   remove_point_from_selection = AGS_REMOVE_POINT_FROM_SELECTION(gobject);
 
   switch(prop_id){
+  case PROP_AUDIO:
+    {
+      g_value_set_object(value, remove_point_from_selection->audio);
+    }
+    break;
   case PROP_NOTATION:
     {
       g_value_set_object(value, remove_point_from_selection->notation);
@@ -294,12 +340,20 @@ ags_remove_point_from_selection_dispose(GObject *gobject)
   AgsRemovePointFromSelection *remove_point_from_selection;
 
   remove_point_from_selection = AGS_REMOVE_POINT_FROM_SELECTION(gobject);
-  
+
+  if(remove_point_from_selection->audio != NULL){
+    g_object_unref(remove_point_from_selection->audio);
+
+    remove_point_from_selection->audio = NULL;
+  }
+    
   if(remove_point_from_selection->notation != NULL){
     g_object_unref(remove_point_from_selection->notation);
+
+    remove_point_from_selection->notation = NULL;
   }
   
-  /* call parent */
+  /* Call parent */
   G_OBJECT_CLASS(ags_remove_point_from_selection_parent_class)->dispose(gobject);
 }
 
@@ -310,10 +364,12 @@ ags_remove_point_from_selection_finalize(GObject *gobject)
 
   remove_point_from_selection = AGS_REMOVE_POINT_FROM_SELECTION(gobject);
 
+  if(remove_point_from_selection->audio != NULL){
+    g_object_unref(remove_point_from_selection->audio);
+  }
+
   if(remove_point_from_selection->notation != NULL){
     g_object_unref(remove_point_from_selection->notation);
-
-    remove_point_from_selection->notation = NULL;
   }
   
   /* call parent */
@@ -325,11 +381,32 @@ ags_remove_point_from_selection_launch(AgsTask *task)
 {
   AgsRemovePointFromSelection *remove_point_from_selection;
 
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   remove_point_from_selection = AGS_REMOVE_POINT_FROM_SELECTION(task);
 
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) remove_point_from_selection->audio);
+
+  pthread_mutex_unlock(application_mutex);
+
   /* remove note */
+  pthread_mutex_lock(audio_mutex);
+  
   ags_notation_remove_point_from_selection(remove_point_from_selection->notation,
 					   remove_point_from_selection->x, remove_point_from_selection->y);
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
@@ -338,6 +415,7 @@ ags_remove_point_from_selection_launch(AgsTask *task)
  * @x: x coordinate
  * @y: y coordinate
  *
+ * WARNING you should provide the #AgsRemovePointFromSelection:audio property.
  * Creates an #AgsRemovePointFromSelection.
  *
  * Returns: an new #AgsRemovePointFromSelection.

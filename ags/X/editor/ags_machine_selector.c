@@ -20,11 +20,10 @@
 #include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_machine_selector_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
-#include <ags/audio/ags_notation.h>
-
-#include <ags/X/ags_editor.h>
+#include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_automation_editor.h>
 
 #include <ags/X/editor/ags_machine_radio_button.h>
@@ -216,7 +215,7 @@ ags_machine_selector_disconnect(AgsConnectable *connectable)
   
   while(list != NULL){
     g_object_disconnect(G_OBJECT(list->data),
-			"clicked",
+			"any_signal::clicked",
 			G_CALLBACK(ags_machine_selector_radio_changed),
 			machine_selector,
 			NULL);
@@ -261,7 +260,8 @@ void
 ags_machine_selector_remove_index(AgsMachineSelector *machine_selector,
 				  guint nth)
 {
-  AgsEditor *editor;
+  AgsNotationEditor *notation_editor;
+  AgsAutomationEditor *automation_editor;
   AgsMachineRadioButton *machine_radio_button;
   
   GList *list, *list_start;
@@ -287,45 +287,10 @@ ags_machine_selector_remove_index(AgsMachineSelector *machine_selector,
   }
   
   /*  */
-  editor = (AgsEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
-						 AGS_TYPE_EDITOR);
+  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
+								  AGS_TYPE_NOTATION_EDITOR);
 
-  if(editor != NULL){  
-    /* destroy edit widgets */
-    if(machine_radio_button->machine != NULL){
-      AgsEditorChild *editor_child;
-
-      editor_child = NULL;
-      
-      list = editor->editor_child;
-
-      while(list != NULL){
-	if(AGS_EDITOR_CHILD(list->data)->machine == machine_radio_button->machine){
-	  editor_child = AGS_EDITOR_CHILD(list->data);
-	  
-	  gtk_widget_destroy((GtkWidget *) editor_child->notebook);
-	  gtk_widget_destroy((GtkWidget *) editor_child->meter);
-	  gtk_widget_destroy((GtkWidget *) editor_child->edit_widget);
-
-	  editor->current_notebook = NULL;
-	  editor->current_meter = NULL;
-	  editor->current_edit_widget = NULL;
-	  
-	  break;
-	}
-    
-	list = list->next;
-      }
-
-      if(editor_child != NULL){
-	editor->editor_child = g_list_remove(editor->editor_child,
-					     editor_child);
-	free(editor_child);
-      }
-    }
-  }else{
-    AgsAutomationEditor *automation_editor;
-    
+  if(notation_editor == NULL){
     automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
 									AGS_TYPE_AUTOMATION_EDITOR);
 
