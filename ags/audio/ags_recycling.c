@@ -1342,20 +1342,23 @@ ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
     pthread_mutex_unlock(application_mutex);
 
     /* check if new match */
-    pthread_mutex_lock(current_mutex);
 
     if(current == recycling){
-      pthread_mutex_unlock(current_mutex);
-
       return(position);
     }
 
+    pthread_mutex_lock(current_mutex);
+
     current = current->next;
+
     pthread_mutex_unlock(current_mutex);
   }
 
-  /* no match within region */
-  return(-1);
+  if(end_region == NULL){
+    return(position);
+  }else{
+    return(-1);
+  }
 }
 
 /**

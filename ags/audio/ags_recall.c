@@ -866,26 +866,28 @@ ags_recall_set_property(GObject *gobject,
       AgsRecallContainer *container;
 
       container = (AgsRecallContainer *) g_value_get_object(value);
-
-      if((AgsRecallContainer *) recall->container == container ||
-	 !(AGS_IS_RECALL_AUDIO(recall) ||
-	   AGS_IS_RECALL_AUDIO_RUN(recall) ||
-	   AGS_IS_RECALL_CHANNEL(recall) ||
-	   AGS_IS_RECALL_CHANNEL_RUN(recall))){
+      
+      if((AgsRecallContainer *) recall->container == container){
 	return;
       }
-
+      
       if(recall->container != NULL){
 	ags_packable_unpack(AGS_PACKABLE(recall));
 
 	g_object_unref(G_OBJECT(recall->container));
+
+	recall->container = NULL;
       }
 
       if(container != NULL){
-	g_object_ref(G_OBJECT(container));
+	g_object_ref(container);	
+      }
 
+      recall->container = (GObject *) container;
+
+      if(container != NULL){
 	ags_packable_pack(AGS_PACKABLE(recall), G_OBJECT(container));
-
+	
 	if(AGS_IS_RECALL_AUDIO(recall)){
 	  g_object_set(G_OBJECT(container),
 		       "recall_audio", recall,
@@ -903,9 +905,7 @@ ags_recall_set_property(GObject *gobject,
 		       "recall_channel_run", recall,
 		       NULL);
 	}
-      }
-
-      recall->container = (GObject *) container;
+      }      
     }
     break;
   case PROP_DEPENDENCY:
@@ -1152,12 +1152,13 @@ ags_recall_pack(AgsPackable *packable, GObject *container)
 
   recall = AGS_RECALL(packable);
 
-  if(recall == NULL ||
-     recall->container == container ||
-     (container != NULL && !AGS_IS_RECALL_CONTAINER(container))){
+  if(!AGS_IS_RECALL(recall) ||
+     (AGS_RECALL_PACKED & (recall->flags)) != 0){
     return(TRUE);
   }
 
+  recall->flags |= AGS_RECALL_PACKED;
+  
 #ifdef AGS_DEBUG
   g_message("===== packing: %s", G_OBJECT_TYPE_NAME(recall));
 #endif
@@ -1172,14 +1173,13 @@ ags_recall_unpack(AgsPackable *packable)
 
   recall = AGS_RECALL(packable);
 
-  if(recall == NULL ||
-     recall->container == NULL){
+  if(!AGS_IS_RECALL(recall) ||
+     (AGS_RECALL_PACKED & (recall->flags)) == 0){
     return(TRUE);
   }
 
-  /* unset link */
-  recall->container = NULL;
-
+  recall->flags &= (~AGS_RECALL_PACKED);
+  
   return(FALSE);
 }
 
@@ -2210,9 +2210,9 @@ ags_recall_real_duplicate(AgsRecall *recall,
 
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
-				 "soundcard\0", recall->soundcard,
-				 "recall-id\0", recall_id,
-				 "recall-container\0", recall->container,
+				 "soundcard", recall->soundcard,
+				 "recall-id", recall_id,
+				 "recall-container", recall->container,
 				 NULL);
 
   copy = g_object_newv(G_OBJECT_TYPE(recall), *n_params, parameter);

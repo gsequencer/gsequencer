@@ -19,7 +19,7 @@
 
 #include <ags/audio/ags_recall_dependency.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_audio.h>

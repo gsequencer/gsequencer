@@ -711,8 +711,8 @@ ags_dial_realize(GtkWidget *widget)
 				   &attributes, attributes_mask);
   gdk_window_set_user_data (widget->window, dial);
 
-  widget->style = gtk_style_attach (widget->style, widget->window);
-  gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL);
+  widget->style = gtk_style_attach(widget->style, widget->window);
+  gtk_style_set_background(widget->style, widget->window, GTK_STATE_NORMAL);
 
   gtk_widget_queue_resize (widget);
 }

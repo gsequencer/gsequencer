@@ -1425,7 +1425,7 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
   if((guint) floor(delay) != 0){
     return;
   }
-
+  
   if((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL(count_beats_audio_run)->recall_id->flags)) == 0){
     return;
   }

@@ -20,17 +20,7 @@
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_delay_audio.h>
 
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_dynamic_connectable.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_plugin.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_id.h>

@@ -155,7 +155,7 @@ ags_led_realize(GtkWidget *widget)
 
   gtk_style_set_background(widget->style, widget->window, GTK_STATE_ACTIVE);
 
-
+  /* call parent */
   GTK_WIDGET_CLASS(ags_led_parent_class)->realize(widget);
 }
 

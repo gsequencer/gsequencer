@@ -149,7 +149,7 @@ ags_input_class_init(AgsInputClass *input)
    *
    * An optional synth generator that might be used.
    * 
-   * Since: 1.0.0.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("synth-generator",
 				   i18n_pspec("the synth generator"),
