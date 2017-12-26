@@ -8,6 +8,8 @@ ags (1.3.0)
 	* TODO:JK: implemented AgsLevel
 	* TODO:JK: implemented ags-capture recall
 	* TODO:JK: implemented AgsAudiorec
+	* extended chap1.xml added sections about AgsMainLoop and common interfaces
+
 ags (1.2.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

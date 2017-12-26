@@ -165,8 +165,8 @@
   <sect1>
     <title>Open audio files</title>
     <para>
-      There is a handy function called ags_audio_open_files() taking as parameter filenames
-      as GSList, overwrite_channels and create_channels as boolean. Filenames is a single
+      There is a handy function called <code language="C">void ags_audio_open_files(AgsAudio*, GSList*, gboolean, gboolean)</code>
+      taking as parameter filenames as GSList, overwrite_channels and create_channels as boolean. Filenames is a single
       linked list of strings, overwrite_channels means use pre-allocated channels and
       create_channels to allow instantiate new channels. The boolean parameters can be combined
       as you want.
