@@ -31,24 +31,11 @@ void ags_scale_box_get_property(GObject *gobject,
 				GParamSpec *param_spec);
 void ags_scale_box_finalize(GObject *gobject);
 
-void ags_scale_box_add(GtkContainer *container,
-		       GtkWidget *widget);
-void ags_scale_box_remove(GtkContainer *container,
-			  GtkWidget *widget);
-void ags_scale_box_forall(GtkContainer *container,
-			  gboolean include_internals,
-			  GtkCallback callback,
-			  gpointer callback_data);
-void ags_scale_box_set_child_property(GtkContainer *container,
-				      GtkWidget *child,
-				      guint property_id,
-				      const GValue *value,
-				      GParamSpec *pspec);
-void ags_scale_box_get_child_property(GtkContainer *container,
-				      GtkWidget *child,
-				      guint property_id,
-				      GValue *value,
-				      GParamSpec *pspec);
+void ags_scale_box_size_allocate(AgsScaleBox *scale_box,
+				GtkAllocation *allocation);
+void ags_scale_box_size_request(AgsScaleBox *scale_box,
+				GtkRequisition *requisition);
+
 GType ags_scale_box_child_type(GtkContainer *container);
 
 /**
@@ -65,12 +52,6 @@ enum{
   PROP_0,
   PROP_FIXED_SCALE_WIDTH,
   PROP_FIXED_SCALE_HEIGHT,
-};
-
-enum {
-  CHILD_PROP_0,
-  CHILD_PROP_PADDING,
-  CHILD_PROP_POSITION,
 };
 
 static gpointer ags_scale_box_parent_class = NULL;
@@ -93,9 +74,9 @@ ags_scale_box_get_type(void)
       (GInstanceInitFunc) ags_scale_box_init,
     };
 
-    ags_type_scale_box = g_type_register_static(GTK_TYPE_CONTAINER,
-					       "AgsScaleBox", &ags_scale_box_info,
-					       0);
+    ags_type_scale_box = g_type_register_static(GTK_TYPE_BOX,
+						"AgsScaleBox", &ags_scale_box_info,
+						0);
   }
   
   return(ags_type_scale_box);
@@ -156,15 +137,13 @@ ags_scale_box_class_init(AgsScaleBoxClass *scale_box)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) scale_box;
 
+  widget->size_allocate = ags_scale_box_size_allocate;
+  widget->size_request = ags_scale_box_size_request;
+
   /* GtkContainerClass */
   container = (GtkWidgetClass *) scale_box;
 
-  container->add = gtk_scale_box_add;
-  container->remove = gtk_scale_box_remove;
-  container->forall = gtk_scale_box_forall;
   container->child_type = gtk_scale_box_child_type;
-  container->set_child_property = gtk_scale_box_set_child_property;
-  container->get_child_property = gtk_scale_box_get_child_property;
 
   gtk_container_class_install_child_property(container,
 					     CHILD_PROP_PADDING,
@@ -186,6 +165,11 @@ ags_scale_box_class_init(AgsScaleBoxClass *scale_box)
 void
 ags_scale_box_init(AgsScaleBox *scale_box)
 {
+  g_object_set(scale_box,
+	       "homogeneous", FALSE,
+	       "spacing", 0,
+	       NULL);
+  
   scale_box->flags = 0;
 
   scale_box->fixed_scale_width = AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_WIDTH;
@@ -256,45 +240,119 @@ ags_scale_box_finalize(GObject *gobject)
 }
 
 void
-ags_scale_box_add(GtkContainer *container,
-		  GtkWidget *widget)
+ags_scale_box_size_allocate(AgsScaleBox *scale_box,
+			    GtkAllocation *allocation)
 {
+  GtkAllocation child_allocation;
+  GtkRequisition child_requisition;
+
+  GList *list, *list_start;
+
+  GtkOrientation orientation;
+  guint scale_count;
+  guint width, height;
+  guint x, y;
+  
+  GTK_WIDGET(notebook->navigation)->allocation = *allocation;
+
+  list_start = 
+    list = gtk_container_get_children((GtkContainer *) notebook->hbox);
+
+  orientation = gtk_orientable_get_orientation(GTK_ORIENTABLE(scale_box));
+  
+  /* guess size */
+  width = 0; 
+  height = 0;
+  
+  while(list != NULL){
+    AgsScale *scale;
+
+    guint padding;
+    
+    scale = AGS_SCALE(list->data);
+
+    gtk_container_child_get(scale_box,
+			    scale,
+			    "padding", &padding,
+			    NULL);
+    
+    switch(orientation){
+    case GTK_ORIENTATION_HORIZONTAL:
+      {
+	if(GTK_WIDGET(scale)->allocation.height > height){
+	  height = GTK_WIDGET(scale)->allocation.height;
+	}
+      
+	if(GTK_WIDGET(scale)->allocation.width >= 0){
+	  width += GTK_WIDGET(scale)->allocation.width;
+	}else{
+	  if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
+	    width += scale->scale_width;
+	  }else if(scale->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
+	    width += scale->scale_height;
+	  }else{
+	    g_warning("AgsScale layout not set");
+	  }
+	}
+
+	if(list->prev != NULL &&
+	   list->next != NULL){
+	  width += (2 * padding);
+	}else{
+	  width += padding;
+	}
+      }
+      break;
+    case GTK_ORIENTATION_VERTICAL:
+      {
+	if(GTK_WIDGET(scale)->allocation.height >= 0){
+	  height += GTK_WIDGET(scale)->allocation.height;
+	}else{
+	  if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
+	    height += scale->scale_height;
+	  }else if(scale->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
+	    height += scale->scale_width;
+	  }else{
+	    g_warning("AgsScale layout not set");
+	  }
+	}
+	
+	if(GTK_WIDGET(scale)->allocation.width > width){
+	  width = GTK_WIDGET(scale)->allocation.width;
+	}	
+
+	if(list->prev != NULL &&
+	   list->next != NULL){
+	  height += (2 * padding);
+	}else{
+	  height += padding;
+	}
+      }
+      break;
+    }
+    
+    list = list->next;
+  }
+
+  /* apply size */
+  scale_count = g_list_length(list_start);
+
+  allocation->height = height;
+  allocation->width = width;
+
+  //TODO:JK: implement me
 }
 
 void
-ags_scale_box_remove(GtkContainer *container,
-		     GtkWidget *widget)
+ags_scale_box_size_request(AgsScaleBox *scale_box,
+			   GtkRequisition *requisition)
 {
-}
-
-void
-ags_scale_box_forall(GtkContainer *container,
-		     gboolean include_internals,
-		     GtkCallback callback,
-		     gpointer callback_data)
-{
-}
-
-void
-ags_scale_box_set_child_property(GtkContainer *container,
-				 GtkWidget *child,
-				 guint property_id,
-				 const GValue *value,
-				 GParamSpec *pspec)
-{
-}
-
-void
-ags_scale_box_get_child_property(GtkContainer *container,
-				 GtkWidget *child,
-				 guint property_id,
-				 GValue *value,
-				 GParamSpec *pspec)
-{
+  //TODO:JK: implement me
 }
 
 GType ags_scale_box_child_type(GtkContainer *container)
 {
+  return(AGS_TYPE_SCALE);
 }
 
 /**

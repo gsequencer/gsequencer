@@ -277,7 +277,7 @@ ags_notebook_size_allocate(AgsNotebook *notebook,
   GList *list, *list_start;
 
   guint x;
-  
+
   GTK_WIDGET(notebook->navigation)->allocation = *allocation;
 
   if(allocation->width < (2 * AGS_NOTEBOOK_TAB_DEFAULT_HEIGHT) + (5 * AGS_NOTEBOOK_TAB_DEFAULT_WIDTH)){

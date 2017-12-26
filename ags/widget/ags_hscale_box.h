@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/widget/ags_scale_box.h>
+
 #define AGS_TYPE_HSCALE_BOX                (ags_hscale_box_get_type())
 #define AGS_HSCALE_BOX(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_HSCALE_BOX, AgsHScaleBox))
 #define AGS_HSCALE_BOX_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_HSCALE_BOX, AgsHScaleBoxClass))

@@ -44,7 +44,7 @@ typedef enum{
 
 struct _AgsScaleBox
 {
-  GtkContainer container;
+  GtkBox box;
 
   guint flags;
 
@@ -56,7 +56,7 @@ struct _AgsScaleBox
 
 struct _AgsScaleBoxClass
 {
-  GtkContainerClass container;
+  GtkBoxClass box;
 };
 
 GType ags_scale_box_get_type(void);
