@@ -18,13 +18,13 @@
 
   <itemizedlist mark="bullet">
     <listitem>
-      ags_audio_signal_stream_resize()
+      <code language="C">void ags_audio_signal_stream_resize(AgsAudioSignal*, guint)</code>
     </listitem>
     <listitem>
-      ags_audio_signal_stream_safe_resize()
+      <code language="C">void ags_audio_signal_stream_safe_resize(AgsAudioSignal*, guint)</code>
     </listitem>
     <listitem>
-      ags_audio_signal_add_stream()
+      <code language="C">void ags_audio_signal_add_stream(AgsAudioSignal*)</code>
     </listitem>
   </itemizedlist>
 
@@ -35,8 +35,9 @@
   </para>
 
   <para>
-    ags_audio_signal_duplicate_stream() can be used to blue-print one audio signals
-    buffer to an other audio signal. Or you might call ags_audio_signal_get_template()
+    <code language="C">void ags_audio_signal_duplicate_stream(AgsAudioSignal*, AgsAudioSignal*)</code>
+    can be used to blue-print one audio signals buffer to an other audio signal. Or you might call
+    <code language="C">AgsAudioSignal* ags_audio_signal_get_template(GList*)</code>
     from your AgsRecycling internal GList of audio signals to get the template.
   </para>
 </chapter>

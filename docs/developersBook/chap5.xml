@@ -42,8 +42,8 @@
   </para>
 
   <para>
-    You may resize the count of pads or audio channels with ags_audio_set_pads() and
-    ags_audio_set_audio_channels(). Like in the following example the channels are
+    You may resize the count of pads or audio channels with <code language="C">void ags_audio_set_pads(AgsAudio*, GType, guint, guint)</code>
+    and <code language="C">void ags_audio_set_audio_channels(AgsAudio*, guint, guint)</code>. Like in the following example the channels are
     adjusted and notation is added.
   </para>
 
@@ -63,10 +63,10 @@
 
     <itemizedlist mark="bullet">
       <listitem>
-	ags_notation_add_note()
+	<code language="C">void ags_notation_add_note(AgsNotation*, AgsNote*, gboolean)</code>
       </listitem>
       <listitem>
-	ags_notation_remove_note_at_position()
+	<code language="C">gboolean ags_notation_remove_note_at_position(AgsNotation, guint, guint)</code>
       </listitem>
     </itemizedlist>
     
@@ -78,10 +78,10 @@
 
     <itemizedlist mark="bullet">
       <listitem>
-	ags_notation_find_point()
+	<code language="C">AgsNote* ags_notation_find_point(AgsNotation*, guint, guint, gboolean)</code>
       </listitem>
       <listitem>
-	ags_notation_find_region()
+	<code language="C">GList* ags_notation_find_region(AgsNotation*, guint, guint, guint, guint, gboolean)</code>
       </listitem>
     </itemizedlist>
   </sect1>
@@ -95,10 +95,10 @@
     
     <itemizedlist mark="bullet">
       <listitem>
-	ags_automation_add_acceleration()
+	<code language="C">void ags_automation_add_acceleration(AgsAutomation*, AgsAcceleration*, gboolean)</code>
       </listitem>
       <listitem>
-	ags_automation_remove_acceleration_at_position()
+	<code language="C">gboolean ags_automation_remove_acceleration_at_position(AgsAutomation*, guint, gdouble)</code>
       </listitem>
     </itemizedlist>
 
@@ -108,10 +108,10 @@
 
     <itemizedlist mark="bullet">
       <listitem>
-	ags_automation_find_point()
+	<code language="C">AgsAcceleration* ags_automation_find_point(AgsAutomation*, guint, gdouble, gboolean)</code>
       </listitem>
       <listitem>
-	ags_automation_find_region()
+	<code language="C">GList* ags_automation_find_region(AgsAutomation*, guint, gdouble, guint, gdouble, gboolean)</code>
       </listitem>
     </itemizedlist>
   </sect1>
@@ -125,16 +125,16 @@
     
     <itemizedlist mark="bullet">
       <listitem>
-	ags_audio_add_recall_id()
+	<code language="C">void ags_audio_add_recall_id(AgsAudio*, GObject*)</code>
       </listitem>
       <listitem>
-	ags_audio_remove_recall_id()
+	<code language="C">void ags_audio_remove_recall_id(AgsAudio*, GObject*)</code>
       </listitem>
       <listitem>
-	ags_audio_add_recycling_context()
+	<code language="C">void ags_audio_add_recycling_context(AgsAudio*, GObject*)</code>
       </listitem>
       <listitem>
-	ags_audio_remove_recycling_context()
+	<code language="C">void ags_audio_remove_recycling_context(AgsAudio*, GObject*)</code>
       </listitem>
     </itemizedlist>
   </sect1>
@@ -144,12 +144,15 @@
     <para>
       Since AgsAudio is your entry point to do sound processing there are some useful
       functions to set it up, but later on them. Instances of AgsRecallAudio base object
-      may be added or removed with ags_audio_add_recall() and ags_audio_remove_recall().
+      may be added or removed with <code language="C">void ags_audio_add_recall(AgsAudio*, GObject*, gboolean)</code>
+      and <code language="C">void ags_audio_remove_recall(AgsAudio*, GObject*, gboolean)</code>.
     </para>
     
     <para>
-      You can initialize the sound processing tree with ags_audio_recursive_play_init().
-      This invokes successive ags_audio_init_recall(), ags_channel_init_recall() and related
+      You can initialize the sound processing tree with
+      <code language="C">AgsRecallID* ags_audio_recursive_play_init(AgsAudio, gint, gboolean, gboolean, gboolean, gboolean, AgsRecallID*)</code>.
+      This invokes successive <code language="C">void ags_audio_init_recall(AgsAudio*, gint, AgsRecallID*)</code>,
+      <code language="C">void ags_channel_init_recall(AgsAudio*, gint, AgsRecallID*)</code> and related
       within your tree.
     </para>
 

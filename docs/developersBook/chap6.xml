@@ -17,22 +17,22 @@
 
   <itemizedlist mark="bullet">
     <listitem>
-      ags_channel_first()
+      <code language="C">AgsChannel* ags_channel_first(AgsChannel*)</code>
     </listitem>
     <listitem>
-      ags_channel_last()
+      <code language="C">AgsChannel* ags_channel_last(AgsChannel*)</code>
     </listitem>
     <listitem>
-      ags_channel_nth()
+      <code language="C">AgsChannel* ags_channel_nth(AgsChannel*, guint)</code>
     </listitem>
     <listitem>
-      ags_channel_pad_first()
+      <code language="C">AgsChannel* ags_channel_pad_first(AgsChannel*)</code>
     </listitem>
     <listitem>
-      ags_channel_pad_last()
+      <code language="C">AgsChannel* ags_channel_pad_last(AgsChannel*)</code>
     </listitem>
     <listitem>
-      ags_channel_pad_nth()
+      <code language="C">AgsChannel* ags_channel_pad_nth(AgsChannel*, guint)</code>
     </listitem>
   </itemizedlist>
 
@@ -45,24 +45,24 @@
 
   <itemizedlist mark="bullet">
     <listitem>
-      ags_channel_first_with_recycling()
+      <code language="C">AgsChannel* ags_channel_first_with_recycling(AgsChannel*)</code>
     </listitem>
     <listitem>
-      ags_channel_last_with_recycling()
+      <code language="C">AgsChannel* ags_channel_last_with_recycling(AgsChannel*)</code>
     </listitem>
     <listitem>
-      ags_channel_prev_with_recycling()
+      <code language="C">AgsChannel* ags_channel_prev_with_recycling(AgsChannel*)</code>
     </listitem>
     <listitem>
-      ags_channel_next_with_recycling()
+      <code language="C">AgsChannel* ags_channel_next_with_recycling(AgsChannel*)</code>
     </listitem>
   </itemizedlist>  
   
   <sect1>
     <title>The pattern</title>
     <para>
-      There can AgsPattern being added to a channel by ags_channel_add_pattern(). Later if
-      not used anymore likewise call ags_channel_remove_pattern().
+      There can AgsPattern being added to a channel by <code language="C">void ags_channel_add_pattern(AgsChannel*, GObject*)</code>.
+      Later if not used anymore likewise call <code language="C">void ags_channel_remove_pattern(AgsChannel*, GObject*)</code>.
     </para>
 
     <example>
@@ -79,8 +79,8 @@
       In this section you get some knowledge about AgsChannel internals. Here you get an
       overview of the audio layer. All code related to it is located in subdirectory 
       &lt;ags/audio&gt;. Linking AgsChannel is a quiet complex thing but If you wish
-      to do so you can just call ags_channel_set_link() and this will the especially covered
-      here.
+      to do so you can just call <code language="C">void ags_channel_set_link(AgsChannel*, AgsChannel*, GError**)</code>
+      and this will the especially covered here.
     </para>
 
     <para>

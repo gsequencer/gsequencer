@@ -30,8 +30,8 @@
     <title>Gathering PCM information of soundcard</title>
     <para>
       In this short example we just get some information out of AgsSoundcard by using
-      ags_soundcard_pcm_info(). It tells us the card identifier, minimum and maximum
-      supported audio channels, samplerate and buffer size.
+      <code language="C">void ags_soundcard_pcm_info(AgsSoundcard*, gchar*, guint*, guint*, guint*, guint*, guint*, guint*, GError*)</code>.
+      It tells us the card identifier, minimum and maximum supported audio channels, samplerate and buffer size.
     </para>
 
     <example>

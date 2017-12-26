@@ -37,10 +37,10 @@
     <title>Implementations and their interfaces</title>
     <para>
       Creating a AgsThreadApplicationContext and then get the task thread by calling
-      ags_concurrency_provider_get_task_thread(). Since the AgsConcurrency interface
-      is implemented by the context, we retrieve the the task thread. The AgsTaskThread
-      gives you a thread safe signal. It is used to launch AgsTask objects to do thread
-      safe operations but later on this.
+      <code language="C">AgsThread* ags_concurrency_provider_get_task_thread(AgsConcurrencyProvider*)</code>.
+      Since the AgsConcurrency interface is implemented by the context, we retrieve
+      the task thread. The AgsTaskThread gives you a thread safe signal. It is used
+      to launch AgsTask objects to do thread safe operations but later on this.
     </para>
     
     <example>
@@ -124,7 +124,8 @@
     <para>
       The AgsApplicationContext base class provides you an AgsConfig instance. It might
       load a default configuration or from current users home directory. The config should
-      be obtained as property using g_object_get() or similar.
+      be obtained as property using <code language="C">void g_object_get(gpointer, gchar*, ...)</code>
+      or similar.
     </para>
     
     <para>
@@ -215,7 +216,12 @@
     <para>
       AgsPlugin interface provides persistence to a well known abstract base type. Since it
       has various implementations, this interface provides <code language="C">void ags_plugin_read(AgsFile*, xmlNode*, AgsPlugin*)</code>
-      and <code language="C">xmlNod* ags_plugin_write(AgsFile*, xmlNode*, AgsPlugin*)</code>
+      and <code language="C">xmlNode* ags_plugin_write(AgsFile*, xmlNode*, AgsPlugin*)</code>
+    </para>
+
+    <para>
+      Likewise there are the interfaces intended to use with sound related objects AgsSoundcard,
+      AgsSequencer, AgsMutable and AgsSeekable.
     </para>
   </sect1>
 </chapter>

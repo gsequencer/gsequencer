@@ -13,7 +13,8 @@
   <para>
     There a well know set of recalls described here. Additionally you might
     want to take advantage of recalls interfacing plugin APIs like LADSPA, DSSI
-    or LV2. You can instantiate them simply with ags_recall_factory_create()
+    or LV2. You can instantiate them simply with
+    <code language="C">GList* ags_recall_factory_create(AgsAudio*, AgsRecallContainer*, AgsRecallContainer, gchar*, guint, guint, guint, guint, guint, guint)</code>
   </para>
 
   <variablelist>    

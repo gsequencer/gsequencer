@@ -18,10 +18,11 @@
   </para>
 
   <para>
-    Inter-connected gets its meaning as ags_channel_set_recycling() invoked by
-    ags_channel_set_link() connects AgsRecycling:next and AgsRecycling:prev together
-    from different channels. Providing you the AgsRecyclingContext. A recycling context
-    has generally one parent and many children from different channels.
+    Inter-connected gets its meaning as <code language="C">void ags_channel_set_recycling(AgsChannel*, AgsRecycling*, AgsRecycling*, gboolean, gboolean)</code>
+    invoked by <code language="C">void ags_channel_set_link(AgsChannel*, AgsChannel*, GError**)</code>
+    connects AgsRecycling:next and AgsRecycling:prev together from different channels. Providing
+    you the AgsRecyclingContext. A recycling context has generally one parent and many
+    children from different channels.
   </para>
 
   <para>
@@ -32,7 +33,8 @@
 
   <para>
     Note, recyclings have they own recall base object AgsRecallRecycling. Usually, you
-    do ags_recall_add_child() to instances inherit of AgsRecallChannelRun.
+    do <code language="C">void ags_recall_add_child(AgsRecall*, AgsRecall*)</code> to
+    instances inherit of AgsRecallChannelRun.
   </para>
   
   <sect1>

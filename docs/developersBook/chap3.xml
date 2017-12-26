@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE book [
+<!ENTITY libagsso "libags.so.1">
+<!ENTITY libagsthreadso "libags_thread.so.1">
+<!ENTITY libagsserverso "libags_server.so.1">
+<!ENTITY libagsaudioso "libags_audio.so.1">
+]>
 
 <!-- Permission is granted to copy, distribute and/or modify this document -->
 <!-- under the terms of the GNU Free Documentation License, Version 1.3 -->
@@ -53,8 +59,8 @@
     <para>
       Within thread tree context you have to take care not to hang it up with a dead-lock.
       Usually you have to use the :start_queue to start threads. Protect it with :start_mutex.
-      Alternatively you may want to use ags_thread_start(). The :start_cond notifies about
-      thread being started.
+      Alternatively you may want to use <code language="C">void ags_thread_start(AgsThread*)</code>.
+      The :start_cond notifies about thread being started.
     </para>
 
     <para>
@@ -111,7 +117,8 @@
     <para>
       Worker threads are used to perform heavy load tasks that run completely asynchronous. This
       means they don't do any sync with the tree. You start worker threads like any other thread
-      by calling ags_thread_start() or ags_thread_stop() to stop it.
+      by calling <code language="C">void ags_thread_start(AgsThread*)</code> or
+      <code language="C">void ags_thread_stop(AgsThread*)</code> to stop it.
     </para>
 
     <para>
@@ -150,14 +157,15 @@
 
     <para>
       Call ags_polling_thread_add_poll_fd() and pass an AgsPollFd to it, in order to poll a resource.
-      Note the resource won't be polled unless the thread was started by calling ags_thread_start().
-      The ::dispatch signal notifies about a ressource to be ready for Input/Output.
+      Note the resource won't be polled unless the thread was started by calling
+      <code language="C">void ags_thread_start(AgsThread*)</code>. The ::dispatch signal notifies about
+      a ressource to be ready for Input/Output.
     </para>
     
     <para>
       To stop poll a resource either remove the poll file descriptor by calling
-      ags_polling_thread_remove_poll_fd(). Or just stop the polling thread by ags_thread_stop() so
-      any resource won't be polled.
+      <code language="C">void ags_polling_thread_remove_poll_fd(AgsPollingThread*, GObject*)</code>. Or
+      just stop the polling thread by ags_thread_stop() so any resource won't be polled.
     </para>
   </sect1>
     
@@ -198,6 +206,33 @@
       The benefit of providing these managers is, it can be used by interface implementations. For
       instance AgsSoundcard derived objects can be reused by a generic procedure. Guaranteeing that
       no concurrent access is performed by locking the mutex.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>Async message delivery</title>
+    <para>
+      AgsMessageDelivery is a singleton. In order to get the instance of it call
+      <code language="C">AgsMessageDelivery* ags_message_delivery_get_instance()</code>.
+      The library routines only provide messages until you have added an AgsMessageQueue with the
+      appropriate namespace.
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	libags - namespace used by &libagsso;, &libagsthreadso; and &libagsserverso;
+      </listitem>
+      <listitem>
+	libags-audio - namespace used by &libagsaudioso;
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      As you usually have one object or widget mapped to a specific object, you can poll the queue
+      by <code language="C">guint g_timeout_add(guint, GSourceFunc, gpointer)</code>. Then forward
+      the event as you like. GSequencer does look for matching messages by sender using following
+      <code language="C">GList* ags_message_queue_find_sender(AgsMessageQueue*, GObject*)</code>.
+      This not at least because the recipient is most of the time not defined.
     </para>
   </sect1>
 </chapter>
