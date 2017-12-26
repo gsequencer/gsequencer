@@ -19,6 +19,12 @@
 
 #include <ags/widget/ags_scale.h>
 
+#include <pango/pango.h>
+
+#ifndef __APPLE__
+#include <pango/pangofc-fontmap.h>
+#endif
+
 #include <atk/atk.h>
 
 #include <gdk/gdkkeysyms.h>
@@ -1125,6 +1131,30 @@ void
 ags_scale_draw(AgsScale *scale)
 {
   cairo_t *cr;
+
+  guint width, height;
+  guint x_start, y_start;
+
+  void ags_scale_draw_string(cairo_t *cr, gchar *str){
+    PangoLayout *layout;
+    PangoFontDescription *desc;
+
+    layout = pango_cairo_create_layout(cr);
+    pango_layout_set_text(layout, str, -1);
+    desc = pango_font_description_from_string("Sans Slant"); //pango_font_description_copy_static("Georgia Bold 11");
+    pango_font_description_set_size(desc,
+				    scale->font_size * PANGO_SCALE);
+    pango_layout_set_font_description(layout, desc);
+    pango_font_description_free(desc);
+
+    pango_cairo_update_layout(cr, layout);
+    pango_cairo_show_layout(cr, layout);
+
+#ifndef __APPLE__
+    pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
+#endif
+    g_object_unref(layout);
+  }
   
   static const gdouble white_gc = 65535.0;
 
@@ -1137,8 +1167,59 @@ ags_scale_draw(AgsScale *scale)
   if(cr == NULL){
     return;
   }
+  
+  width = GTK_WIDGET(scale)->allocation.width;
+  height = GTK_WIDGET(scale)->allocation.height;
+  
+  x_start = 0;
+  y_start = 0;
 
+  cairo_surface_flush(cairo_get_target(cr));
+  cairo_push_group(cr);
+
+  /* background */
+  cairo_set_source_rgb(cr,
+		       0.0, 0.0, 0.0);
+  cairo_rectangle(cr,
+		  (gdouble) x_start, (gdouble) y_start,
+		  (gdouble) width, (gdouble) height);
+  cairo_fill(cr);
+
+  /* box */
+  cairo_set_source_rgb(cr,
+		       0.5, 0.4, 0.0);
+  cairo_set_line_width(cr,
+		       1.0);
+  cairo_rectangle(cr,
+		  (gdouble) x_start, (gdouble) y_start,
+		  (gdouble) width, (gdouble) height);
+  cairo_stroke(cr);
+
+  /* draw scale */
   //TODO:JK: implement me
+
+  /* show control name */
+  cairo_set_source_rgb(cr,
+		       1.0, 1.0, 1.0);
+
+  if(scale->layout == AGS_SCALE_VERTICAL){
+    cairo_move_to(cr,
+		  x_start + scale_area->font_size, y_start + height - 1.0);
+    cairo_rotate(cr,
+		 2 * M_PI * 0.75);
+  }else{
+    cairo_move_to(cr,
+		  x_start + scale_area->font_size, y_start + 1.0);
+  }
+  
+  ags_scale_draw_string(cr,
+			scale_area->control_name);
+
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
+
+  cairo_surface_mark_dirty(cairo_get_target(cr));
+  cairo_destroy(cr);
 }
 
 /**

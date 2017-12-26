@@ -2,13 +2,14 @@ ags (1.3.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: refactored AgsAutomationEditor
-	* TODO:JK: implemented AgsScale, AgsScaleArray and AgsScrolledScaleArray in libags-gui
+	* TODO:JK: implemented AgsScale, AgsScaleBox and AgsScrolledScaleBox in libags-gui
 	* TODO:JK: implemented AgsWaveWindow, AgsWaveEditor, AgsWaveToolbar and AgsWaveEdit
 	* TODO:JK: implemented AgsSelectAudioData and AgsPositionWaveCursor
 	* TODO:JK: implemented AgsLevel
 	* TODO:JK: implemented ags-capture recall
 	* TODO:JK: implemented AgsAudiorec
 	* extended chap1.xml added sections about AgsMainLoop and common interfaces
+	* extended all chapters to provide code tag to functions and added parameter types
 
 ags (1.2.7)
 

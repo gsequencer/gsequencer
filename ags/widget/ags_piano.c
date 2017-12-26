@@ -1182,6 +1182,9 @@ ags_piano_draw(AgsPiano *piano)
   
   x_start = 0;
   y_start = 0;
+
+  cairo_surface_flush(cairo_get_target(cr));
+  cairo_push_group(cr);
   
   /* fill bg */
   cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
@@ -1285,6 +1288,12 @@ ags_piano_draw(AgsPiano *piano)
   }
 
   g_free(active_key);
+
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
+
+  cairo_surface_mark_dirty(cairo_get_target(cr));
+  cairo_destroy(cr);
 }
 
 /**

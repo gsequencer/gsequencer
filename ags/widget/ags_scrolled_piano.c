@@ -55,6 +55,7 @@ enum{
 };
 
 static gpointer ags_scrolled_piano_parent_class = NULL;
+
 GType
 ags_scrolled_piano_get_type(void)
 {
