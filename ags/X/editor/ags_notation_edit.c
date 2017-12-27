@@ -63,6 +63,9 @@ gboolean ags_accessible_notation_edit_set_description(AtkAction *action,
 gchar* ags_accessible_notation_edit_get_localized_name(AtkAction *action,
 						       gint i);
 
+void ags_notation_edit_show(GtkWidget *widget);
+void ags_notation_edit_show_all(GtkWidget *widget);
+
 gboolean ags_notation_edit_auto_scroll_timeout(GtkWidget *widget);
 
 /**
@@ -175,6 +178,12 @@ ags_notation_edit_class_init(AgsNotationEditClass *notation_edit)
   gobject->get_property = ags_notation_edit_get_property;
 
   gobject->finalize = ags_notation_edit_finalize;
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) notation_edit;
+
+  widget->show = ags_notation_edit_show;
+  widget->show_all = ags_notation_edit_show_all;
 }
 
 void
@@ -209,7 +218,9 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 {
   GtkAdjustment *adjustment;
 
-  notation_edit->flags = 0;
+  notation_edit->flags = (AGS_NOTATION_EDIT_SHOW_RULER |
+			  AGS_NOTATION_EDIT_SHOW_VSCROLLBAR |
+			  AGS_NOTATION_EDIT_SHOW_HSCROLLBAR);
   notation_edit->mode = AGS_NOTATION_EDIT_NO_EDIT_MODE;
 
   notation_edit->key_mask = 0;
@@ -238,6 +249,9 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   }
 
   notation_edit->ruler = ags_ruler_new();
+  g_object_set(automation_edit->ruler,
+	       "no-show-all", TRUE,
+	       NULL);
   gtk_table_attach(GTK_TABLE(notation_edit),
 		   (GtkWidget *) notation_edit->ruler,
 		   0, 1,
@@ -268,6 +282,9 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   /* vscrollbar */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, notation_edit->control_height, 1.0);
   notation_edit->vscrollbar = gtk_vscrollbar_new(adjustment);
+  g_object_set(automation_edit->vscrollbar,
+	       "no-show-all", TRUE,
+	       NULL);
   gtk_table_attach(GTK_TABLE(notation_edit),
 		   (GtkWidget *) notation_edit->vscrollbar,
 		   1, 2,
@@ -278,6 +295,9 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   /* hscrollbar */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) notation_edit->control_width, 1.0);
   notation_edit->hscrollbar = gtk_hscrollbar_new(adjustment);
+  g_object_set(automation_edit->hscrollbar,
+	       "no-show-all", TRUE,
+	       NULL);
   gtk_table_attach(GTK_TABLE(notation_edit),
 		   (GtkWidget *) notation_edit->hscrollbar,
 		   0, 1,
@@ -789,6 +809,52 @@ ags_accessible_notation_edit_get_localized_name(AtkAction *action,
   //TODO:JK: implement me
 
   return(NULL);
+}
+
+void
+ags_notation_edit_show(GtkWidget *widget)
+{
+  AgsNotationEdit *notation_edit;
+
+  notation_edit = AGS_NOTATION_EDIT(widget);
+
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_notation_edit_parent_class)->show(widget);
+
+  if((AGS_NOTATION_EDIT_SHOW_RULER & (notation_edit->flags)) != 0){
+    gtk_widget_show(notation_edit->ruler);
+  }
+
+  if((AGS_NOTATION_EDIT_SHOW_VSCROLLBAR & (notation_edit->flags)) != 0){
+    gtk_widget_show(notation_edit->vscrollbar);
+  }
+
+  if((AGS_NOTATION_EDIT_SHOW_HSCROLLBAR & (notation_edit->flags)) != 0){
+    gtk_widget_show(notation_edit->hscrollbar);
+  }
+}
+
+void
+ags_notation_edit_show_all(GtkWidget *widget)
+{
+  AgsNotationEdit *notation_edit;
+
+  notation_edit = AGS_NOTATION_EDIT(widget);
+
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_notation_edit_parent_class)->show_all(widget);
+
+  if((AGS_NOTATION_EDIT_SHOW_RULER & (notation_edit->flags)) != 0){
+    gtk_widget_show(notation_edit->ruler);
+  }
+
+  if((AGS_NOTATION_EDIT_SHOW_VSCROLLBAR & (notation_edit->flags)) != 0){
+    gtk_widget_show(notation_edit->vscrollbar);
+  }
+
+  if((AGS_NOTATION_EDIT_SHOW_HSCROLLBAR & (notation_edit->flags)) != 0){
+    gtk_widget_show(notation_edit->hscrollbar);
+  }
 }
 
 gboolean

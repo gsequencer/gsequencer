@@ -65,6 +65,9 @@ gboolean ags_accessible_automation_edit_set_description(AtkAction *action,
 gchar* ags_accessible_automation_edit_get_localized_name(AtkAction *action,
 							 gint i);
 
+void ags_automation_edit_show(GtkWidget *widget);
+void ags_automation_edit_show_all(GtkWidget *widget);
+
 gboolean ags_automation_edit_auto_scroll_timeout(GtkWidget *widget);
 
 /**
@@ -321,6 +324,12 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
   g_object_class_install_property(gobject,
 				  PROP_DEFAULT_VALUE,
 				  param_spec);
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) automation_edit;
+
+  widget->show = ags_automation_edit_show;
+  widget->show_all = ags_automation_edit_show_all;
 }
 
 void
@@ -388,6 +397,9 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   }
 
   automation_edit->ruler = ags_ruler_new();
+  g_object_set(automation_edit->ruler,
+	       "no-show-all", TRUE,
+	       NULL);
   gtk_table_attach(GTK_TABLE(automation_edit),
 		   (GtkWidget *) automation_edit->ruler,
 		   0, 1,
@@ -431,6 +443,9 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   /* vscrollbar */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, automation_edit->control_height, 1.0);
   automation_edit->vscrollbar = gtk_vscrollbar_new(adjustment);
+  g_object_set(automation_edit->vscrollbar,
+	       "no-show-all", TRUE,
+	       NULL);
   gtk_table_attach(GTK_TABLE(automation_edit),
 		   (GtkWidget *) automation_edit->vscrollbar,
 		   1, 2,
@@ -441,6 +456,9 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   /* hscrollbar */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) automation_edit->control_width, 1.0);
   automation_edit->hscrollbar = gtk_hscrollbar_new(adjustment);
+  g_object_set(automation_edit->hscrollbar,
+	       "no-show-all", TRUE,
+	       NULL);
   gtk_table_attach(GTK_TABLE(automation_edit),
 		   (GtkWidget *) automation_edit->hscrollbar,
 		   0, 1,
@@ -1074,6 +1092,52 @@ ags_accessible_automation_edit_get_localized_name(AtkAction *action,
   //TODO:JK: implement me
 
   return(NULL);
+}
+
+void
+ags_automation_edit_show(GtkWidget *widget)
+{
+  AgsAutomationEdit *automation_edit;
+
+  automation_edit = AGS_AUTOMATION_EDIT(widget);
+
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_automation_edit_parent_class)->show(widget);
+
+  if((AGS_AUTOMATION_EDIT_SHOW_RULER & (automation_edit->flags)) != 0){
+    gtk_widget_show(automation_edit->ruler);
+  }
+
+  if((AGS_AUTOMATION_EDIT_SHOW_VSCROLLBAR & (automation_edit->flags)) != 0){
+    gtk_widget_show(automation_edit->vscrollbar);
+  }
+
+  if((AGS_AUTOMATION_EDIT_SHOW_HSCROLLBAR & (automation_edit->flags)) != 0){
+    gtk_widget_show(automation_edit->hscrollbar);
+  }
+}
+
+void
+ags_automation_edit_show_all(GtkWidget *widget)
+{
+  AgsAutomationEdit *automation_edit;
+
+  automation_edit = AGS_AUTOMATION_EDIT(widget);
+
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_automation_edit_parent_class)->show_all(widget);
+
+  if((AGS_AUTOMATION_EDIT_SHOW_RULER & (automation_edit->flags)) != 0){
+    gtk_widget_show(automation_edit->ruler);
+  }
+
+  if((AGS_AUTOMATION_EDIT_SHOW_VSCROLLBAR & (automation_edit->flags)) != 0){
+    gtk_widget_show(automation_edit->vscrollbar);
+  }
+
+  if((AGS_AUTOMATION_EDIT_SHOW_HSCROLLBAR & (automation_edit->flags)) != 0){
+    gtk_widget_show(automation_edit->hscrollbar);
+  }
 }
 
 gboolean
@@ -1929,7 +1993,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
 					      automation_edit_style->fg[0].red / white_gc,
 					      automation_edit_style->fg[0].green / white_gc,
 					      automation_edit_style->fg[0].blue / white_gc,
-					      0.8);
+					      0.4);
 
 	list_acceleration = list_acceleration->next;
       }
