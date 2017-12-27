@@ -849,7 +849,7 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
   double varea_height;
   gdouble upper, old_upper;
   
-  if(!AGS_NOTATION_EDIT(notation_edit)){
+  if(!AGS_IS_NOTATION_EDIT(notation_edit)){
     return;
   }
 
@@ -911,7 +911,7 @@ ags_notation_edit_reset_hscrollbar(AgsNotationEdit *notation_edit)
   guint map_width;
   gdouble upper, old_upper;
   
-  if(!AGS_NOTATION_EDIT(notation_edit)){
+  if(!AGS_IS_NOTATION_EDIT(notation_edit)){
     return;
   }
 
@@ -982,7 +982,7 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit)
 
   static const gdouble white_gc = 65535.0;
 
-  if(!AGS_NOTATION_EDIT(notation_edit)){
+  if(!AGS_IS_NOTATION_EDIT(notation_edit)){
     return;
   }
 
@@ -1165,7 +1165,7 @@ ags_notation_edit_draw_position(AgsNotationEdit *notation_edit)
 
   static const gdouble white_gc = 65535.0;
 
-  if(!AGS_NOTATION_EDIT(notation_edit)){
+  if(!AGS_IS_NOTATION_EDIT(notation_edit)){
     return;
   }
 
@@ -1243,7 +1243,7 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit)
 
   static const gdouble white_gc = 65535.0;
 
-  if(!AGS_NOTATION_EDIT(notation_edit)){
+  if(!AGS_IS_NOTATION_EDIT(notation_edit)){
     return;
   }
   
@@ -1336,7 +1336,7 @@ ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit)
   double x, y;
   double width, height;
 
-  if(!AGS_NOTATION_EDIT(notation_edit)){
+  if(!AGS_IS_NOTATION_EDIT(notation_edit)){
     return;
   }
   
@@ -1425,7 +1425,8 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
   
   static const gdouble white_gc = 65535.0;
 
-  if(!AGS_NOTATION_EDIT(notation_edit) ||
+  if(!AGS_IS_NOTATION_EDIT(notation_edit) ||
+     !AGS_IS_NOTE(note) ||
      cr == NULL){
     return;
   }
@@ -1587,7 +1588,7 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
 
   static const gdouble white_gc = 65535.0;
   
-  if(!AGS_NOTATION_EDIT(notation_edit)){
+  if(!AGS_IS_NOTATION_EDIT(notation_edit)){
     return;
   }
 

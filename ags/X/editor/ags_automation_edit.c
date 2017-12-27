@@ -1133,7 +1133,7 @@ ags_automation_edit_reset_vscrollbar(AgsAutomationEdit *automation_edit)
   double varea_height;
   gdouble upper, old_upper;
   
-  if(!AGS_AUTOMATION_EDIT(automation_edit)){
+  if(!AGS_IS_AUTOMATION_EDIT(automation_edit)){
     return;
   }
 
@@ -1188,7 +1188,7 @@ ags_automation_edit_reset_hscrollbar(AgsAutomationEdit *automation_edit)
   guint map_width;
   gdouble upper, old_upper;
   
-  if(!AGS_AUTOMATION_EDIT(automation_edit)){
+  if(!AGS_IS_AUTOMATION_EDIT(automation_edit)){
     return;
   }
 
@@ -1258,7 +1258,7 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit)
 
   static const gdouble white_gc = 65535.0;
 
-  if(!AGS_AUTOMATION_EDIT(automation_edit)){
+  if(!AGS_IS_AUTOMATION_EDIT(automation_edit)){
     return;
   }
 
@@ -1413,7 +1413,7 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit)
 
   static const gdouble white_gc = 65535.0;
 
-  if(!AGS_AUTOMATION_EDIT(automation_edit)){
+  if(!AGS_IS_AUTOMATION_EDIT(automation_edit)){
     return;
   }
 
@@ -1481,7 +1481,7 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit)
 
   static const gdouble white_gc = 65535.0;
 
-  if(!AGS_AUTOMATION_EDIT(automation_edit)){
+  if(!AGS_IS_AUTOMATION_EDIT(automation_edit)){
     return;
   }
   
@@ -1593,7 +1593,7 @@ ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit)
   double x, y;
   double width, height;
 
-  if(!AGS_AUTOMATION_EDIT(automation_edit)){
+  if(!AGS_IS_AUTOMATION_EDIT(automation_edit)){
     return;
   }
   
@@ -1669,7 +1669,145 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 				      cairo_t *cr,
 				      double r, double g, double b, double a)
 {
-  //TODO:JK: implement me
+  AgsAutomationEditor *automation_editor;
+  AgsAutomationToolbar *automation_toolbar;
+
+  GtkStyle *automation_edit_style;
+
+  gdouble c_range;
+  gdouble y_upper;
+  double zoom, zoom_factor;
+  double viewport_x, viewport_y;
+  double x, y;
+  double width, height;
+  
+  static const gdouble white_gc = 65535.0;
+
+  if(!AGS_IS_AUTOMATION_EDIT(automation_edit) ||
+     !AGS_IS_ACCELERATION(acceleration_a) ||
+     cr == NULL){
+    return;
+  }
+
+  automation_editor = gtk_widget_get_ancestor(automation_edit,
+					      AGS_TYPE_AUTOMATION_EDITOR);
+
+  if(automation_editor->selected_machine == NULL){
+    return;
+  }
+
+  automation_toolbar = automation_editor->automation_toolbar;
+  
+  automation_edit_style = gtk_widget_get_style(GTK_WIDGET(automation_edit->drawing_area));
+
+  if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
+    c_range = exp(automation_edit->upper) - exp(automation_edit->lower);
+  }else{
+    c_range = automation_edit->upper - automation_edit->lower;
+  }
+
+  /* zoom */
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom) - 2.0);
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom));
+
+  /* get offset and dimensions */
+  if(AGS_AUTOMATION_EDITOR_MAX_CONTROLS > GTK_WIDGET(automation_edit->drawing_area)->allocation.width){
+    viewport_x = zoom_factor * GTK_RANGE(automation_edit->hscrollbar)->adjustment->value;
+  }else{
+    viewport_x = 0.0;
+  }
+  
+  viewport_y = GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
+  
+  x = ((double) acceleration_a->x) - viewport_x;
+
+  if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
+    y = ((double) exp(acceleration_a->y) / c_range) * GTK_WIDGET(automation_edit->drawing_area)->allocation.height - viewport_y;
+  }else{
+    y = ((double) acceleration_a->y / c_range) * GTK_WIDGET(automation_edit->drawing_area)->allocation.height - viewport_y;
+  }
+  
+  if(acceleration_b != NULL){
+    width = ((double) acceleration_b->x - acceleration_a->x);
+  }else{
+    width = ((double) GTK_WIDGET(automation_edit->drawing_area)->allocation.width - acceleration_a->x);
+  }
+  
+  height = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - y;
+
+  /* apply zoom */
+  x /= zoom_factor;
+  x += ((double) automation_edit->control_margin_x);
+
+  y += ((double) automation_edit->control_margin_y);
+  
+  width /= zoom_factor;
+  
+  /* clip */
+  if(x < 0.0){
+    if(x + width < 0.0){
+      return;
+    }else{
+      width += x;
+      x = 0.0;
+    }
+  }else if(x > GTK_WIDGET(automation_edit->drawing_area)->allocation.width){
+    return;
+  }
+
+  if(x + width > GTK_WIDGET(automation_edit->drawing_area)->allocation.width){
+    width = ((double) GTK_WIDGET(automation_edit->drawing_area)->allocation.width) - x;
+  }
+  
+  if(y < 0.0){
+    if(y + height < 0.0){
+      return;
+    }else{
+      height += y;
+      y = 0.0;
+    }
+  }else if(y > GTK_WIDGET(automation_edit->drawing_area)->allocation.height){
+    return;
+  }
+
+  if(y + height > GTK_WIDGET(automation_edit->drawing_area)->allocation.height){
+    height = ((double) GTK_WIDGET(automation_edit->drawing_area)->allocation.height) - y;
+  }
+
+  /* draw point */
+  if((AGS_ACCELERATION_IS_SELECTED & (acceleration->flags)) != 0){
+    /* draw selected acceleration */
+    cairo_set_source_rgba(cr,
+			  r, g, b, 1.0);
+    
+    cairo_arc(cr,
+	      x, y,
+	      automotion_edit->point_radius,
+	      0.0,
+	      2.0 * M_PI);
+
+    cairo_stroke(cr);
+  }else{
+    /* draw acceleration */
+    cairo_set_source_rgba(cr,
+			  r, g, b, a);
+    
+    cairo_arc(cr,
+	      x, y,
+	      automotion_edit->point_radius,
+	      0.0,
+	      2.0 * M_PI);
+    
+    cairo_stroke(cr);
+  }
+  
+  /* draw acceleration */
+  cairo_set_source_rgba(cr,
+			r, g, b, a);
+  cairo_rectangle(cr,
+		  x, y,
+		  width, height);
+  cairo_fill(cr);
 }
 
 void
@@ -1698,7 +1836,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
 
   static const gdouble white_gc = 65535.0;
   
-  if(!AGS_AUTOMATION_EDIT(automation_edit)){
+  if(!AGS_IS_AUTOMATION_EDIT(automation_edit)){
     return;
   }
 
