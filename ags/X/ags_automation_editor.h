@@ -80,15 +80,15 @@ struct _AgsAutomationEditor
   GtkNotebook *notebook;
   
   AgsScrolledScaleBox *audio_scrolled_scale_box;
-  AgsAutomationEditBox *audio_automation_edit_box;
+  AgsScrolledAutomationEditBox *audio_scrolled_automation_edit_box;
 
   AgsNotebook *output_notebook;
   AgsScrolledScaleBox *output_scrolled_scale_box;
-  AgsAutomationEditBox *output_automation_edit_box;
+  AgsScrolledAutomationEditBox *output_scrolled_automation_edit_box;
 
   AgsNotebook *input_notebook;
   AgsScrolledScaleBox *input_scrolled_scale_box;
-  AgsAutomationEditBox *input_automation_edit_box;
+  AgsScrolledAutomationEditBox *input_scrolled_automation_edit_box;
 };
 
 struct _AgsAutomationEditorClass

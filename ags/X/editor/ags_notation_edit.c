@@ -22,6 +22,7 @@
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_notation_editor.h>
 
@@ -159,15 +160,6 @@ ags_accessible_notation_edit_get_type(void)
 }
 
 void
-ags_notation_edit_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
-  connectable->connect = ags_notation_edit_connect;
-  connectable->disconnect = ags_notation_edit_disconnect;
-}
-
-void
 ags_notation_edit_class_init(AgsNotationEditClass *notation_edit)
 {
   GObjectClass *gobject;
@@ -201,6 +193,15 @@ ags_accessible_notation_edit_action_interface_init(AtkActionIface *action)
   action->get_keybinding = ags_accessible_notation_edit_get_keybinding;
   action->set_description = ags_accessible_notation_edit_set_description;
   action->get_localized_name = ags_accessible_notation_edit_get_localized_name;
+}
+
+void
+ags_notation_edit_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->is_ready = NULL;
+  connectable->is_connected = NULL;
+  connectable->connect = ags_notation_edit_connect;
+  connectable->disconnect = ags_notation_edit_disconnect;
 }
 
 void
@@ -241,8 +242,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 		   (GtkWidget *) notation_edit->ruler,
 		   0, 1,
 		   0, 1,
-		   GTK_FILL|GTK_EXPAND,
-		   GTK_FILL,
+		   GTK_FILL | GTK_EXPAND, GTK_FILL,
 		   0, 0);
 
   notation_edit->drawing_area = gtk_drawing_area_new();
@@ -262,8 +262,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 		   (GtkWidget *) notation_edit->drawing_area,
 		   0, 1,
 		   1, 2,
-		   GTK_FILL|GTK_EXPAND,
-		   GTK_FILL|GTK_EXPAND,
+		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
 		   0, 0);
 
   /* vscrollbar */
@@ -345,6 +344,7 @@ ags_notation_edit_connect(AgsConnectable *connectable)
 
   notation_edit->flags |= AGS_NOTATION_EDIT_CONNECTED;
   
+  /* drawing area */
   g_signal_connect_after((GObject *) notation_edit->drawing_area, "expose_event",
 			 G_CALLBACK(ags_notation_edit_drawing_area_expose_event), (gpointer) notation_edit);
 
@@ -366,6 +366,7 @@ ags_notation_edit_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) notation_edit->drawing_area, "key_release_event",
 		   G_CALLBACK(ags_notation_edit_drawing_area_key_release_event), (gpointer) notation_edit);
 
+  /* scrollbars */
   g_signal_connect_after((GObject *) notation_edit->vscrollbar, "value-changed",
 			 G_CALLBACK(ags_notation_edit_vscrollbar_value_changed), (gpointer) notation_edit);
 
@@ -386,42 +387,32 @@ ags_notation_edit_disconnect(AgsConnectable *connectable)
 
   notation_edit->flags &= (~AGS_NOTATION_EDIT_CONNECTED);
 
+  /* drawing area */
   g_object_disconnect(notation_edit->drawing_area,
 		      "any_signal::expose_event",
 		      G_CALLBACK(ags_notation_edit_drawing_area_expose_event),
 		      (gpointer) notation_edit,
-		      NULL);
-
-  g_object_disconnect(notation_edit->drawing_area,
 		      "any_signal::configure_event",
 		      G_CALLBACK(ags_notation_edit_drawing_area_configure_event),
 		      (gpointer) notation_edit,
-		      NULL);
-
-  g_object_disconnect(notation_edit->drawing_area,
 		      "any_signal::button_press_event",
 		      G_CALLBACK(ags_notation_edit_drawing_area_button_press_event),
 		      (gpointer) notation_edit,
-		      NULL);
-
-  g_object_disconnect(notation_edit->drawing_area,
 		      "any_signal::button_release_event",
 		      G_CALLBACK(ags_notation_edit_drawing_area_button_release_event),
 		      (gpointer) notation_edit,
-		      NULL);
-
-  g_object_disconnect(notation_edit->drawing_area,
+		      "any_signal::motion_notify_event",
+		      G_CALLBACK(ags_notation_edit_drawing_area_motion_notify_event),
+		      notation_edit,
 		      "any_signal::key_press_event",
 		      G_CALLBACK(ags_notation_edit_drawing_area_key_press_event),
 		      (gpointer) notation_edit,
-		      NULL);
-
-  g_object_disconnect(notation_edit->drawing_area,
 		      "any_signal::key_release_event",
 		      G_CALLBACK(ags_notation_edit_drawing_area_key_release_event),
 		      (gpointer) notation_edit,
 		      NULL);
 
+  /* scrollbars */
   g_object_disconnect(notation_edit->vscrollbar,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_notation_edit_vscrollbar_value_changed),
@@ -467,6 +458,9 @@ ags_notation_edit_finalize(GObject *gobject)
   /* remove auto scroll */
   g_hash_table_remove(ags_notation_edit_auto_scroll,
 		      notation_edit);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_notation_edit_parent_class)->finalize(gobject);
 }
 
 gboolean

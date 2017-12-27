@@ -25,6 +25,7 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
@@ -54,8 +55,12 @@ typedef struct _AgsNotationEdit AgsNotationEdit;
 typedef struct _AgsNotationEditClass AgsNotationEditClass;
 
 typedef enum{
-  AGS_NOTATION_EDIT_CONNECTED        = 1,
-  AGS_NOTATION_EDIT_AUTO_SCROLL      = 1 <<  1,
+  AGS_NOTATION_EDIT_CONNECTED             = 1,
+  AGS_NOTATION_EDIT_AUTO_SCROLL           = 1 <<  1,
+  AGS_NOTATION_EDIT_SHOW_RULER            = 1 <<  2,
+  AGS_NOTATION_EDIT_SHOW_RULER            = 1 <<  3,
+  AGS_NOTATION_EDIT_SHOW_VSCROLLBAR       = 1 <<  4,
+  AGS_NOTATION_EDIT_SHOW_HSCROLLBAR       = 1 <<  5,
 }AgsNotationEditFlags;
 
 typedef enum{
