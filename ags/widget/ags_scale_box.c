@@ -383,27 +383,12 @@ ags_scale_box_size_request(AgsScaleBox *scale_box,
   guint scale_count;
   GtkOrientation orientation;
 
+  requisition->height = -1;
+  requisition->width = -1;
+
   list_start =
     list = gtk_container_get_children((GtkContainer *) scale_box);
-  
-  scale_count = g_list_length(list_start);
-  orientation = gtk_orientable_get_orientation(GTK_ORIENTABLE(scale_box));
-  
-  switch(orientation){
-  case GTK_ORIENTATION_HORIZONTAL:
-    {
-      requisition->height = scale_box->fixed_scale_width;
-      requisition->width = scale_count * scale_box->fixed_scale_height;
-    }
-    break;
-  case GTK_ORIENTATION_VERTICAL:
-    {    
-      requisition->height = scale_count * scale_box->fixed_scale_height;
-      requisition->width = scale_box->fixed_scale_width;
-    }
-    break;
-  }
-    
+      
   while(list != NULL){
     gtk_widget_size_request((GtkWidget *) list->data,
 			    &child_requisition);
