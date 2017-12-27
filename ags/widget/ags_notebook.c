@@ -430,7 +430,8 @@ ags_notebook_size_request(AgsNotebook *notebook,
   }
 
   g_list_free(list_start);
-  
+
+  //FIXME:JK: ugh
   if(GTK_WIDGET(notebook)->parent == NULL){
     return;
   }
