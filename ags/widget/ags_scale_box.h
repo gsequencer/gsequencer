@@ -50,8 +50,6 @@ struct _AgsScaleBox
 
   guint fixed_scale_width;
   guint fixed_scale_height;
-  
-  GList *scale;
 };
 
 struct _AgsScaleBoxClass

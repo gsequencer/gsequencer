@@ -144,22 +144,6 @@ ags_scale_box_class_init(AgsScaleBoxClass *scale_box)
   container = (GtkWidgetClass *) scale_box;
 
   container->child_type = gtk_scale_box_child_type;
-
-  gtk_container_class_install_child_property(container,
-					     CHILD_PROP_PADDING,
-					     g_param_spec_uint("padding", 
-							       "padding",
-							       "Extra space to put between the child and its neighbors, in pixels",
-							       0, G_MAXINT, 0,
-							       GTK_PARAM_READWRITE));
-  
-  gtk_container_class_install_child_property(container,
-					     CHILD_PROP_POSITION,
-					     g_param_spec_int("position", 
-							      "position", 
-							      "The index of the child in the parent",
-							      -1, G_MAXINT, 0,
-							      GTK_PARAM_READWRITE));
 }
 
 void
@@ -174,8 +158,6 @@ ags_scale_box_init(AgsScaleBox *scale_box)
 
   scale_box->fixed_scale_width = AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_WIDTH;
   scale_box->fixed_scale_height = AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_HEIGHT;
-
-  scale_box->scale = NULL;
 }
 
 void
