@@ -542,6 +542,11 @@ am__objects_17 = $(am__objects_1) \
 	ags/widget/libags_gui_la-ags_notebook.lo \
 	ags/widget/libags_gui_la-ags_piano.lo \
 	ags/widget/libags_gui_la-ags_scrolled_piano.lo \
+	ags/widget/libags_gui_la-ags_scale.lo \
+	ags/widget/libags_gui_la-ags_scale_box.lo \
+	ags/widget/libags_gui_la-ags_vscale_box.lo \
+	ags/widget/libags_gui_la-ags_hscale_box.lo \
+	ags/widget/libags_gui_la-ags_scrolled_scale_box.lo \
 	ags/widget/libags_gui_la-ags_ruler.lo \
 	ags/widget/libags_gui_la-ags_table.lo \
 	ags/widget/libags_gui_la-ags_timebar.lo \
@@ -878,10 +883,6 @@ am__objects_33 = $(am__objects_1) \
 	ags/X/editor/libgsequencer_la-ags_position_notation_cursor_dialog_callbacks.lo \
 	ags/X/editor/libgsequencer_la-ags_ramp_acceleration_dialog.lo \
 	ags/X/editor/libgsequencer_la-ags_ramp_acceleration_dialog_callbacks.lo \
-	ags/X/editor/libgsequencer_la-ags_scale_area.lo \
-	ags/X/editor/libgsequencer_la-ags_scale_area_callbacks.lo \
-	ags/X/editor/libgsequencer_la-ags_scale.lo \
-	ags/X/editor/libgsequencer_la-ags_scale_callbacks.lo \
 	ags/X/editor/libgsequencer_la-ags_select_acceleration_dialog.lo \
 	ags/X/editor/libgsequencer_la-ags_select_acceleration_dialog_callbacks.lo \
 	ags/X/editor/libgsequencer_la-ags_select_note_dialog.lo \
@@ -4054,6 +4055,11 @@ libags_gui_h_sources = \
 	ags/widget/ags_piano_keys.h \
 	ags/widget/ags_piano.h \
 	ags/widget/ags_scrolled_piano.h \
+	ags/widget/ags_scale.h \
+	ags/widget/ags_scale_box.h \
+	ags/widget/ags_vscale_box.h \
+	ags/widget/ags_hscale_box.h \
+	ags/widget/ags_scrolled_scale_box.h \
 	ags/widget/ags_ruler.h \
 	ags/widget/ags_table.h \
 	ags/widget/ags_timebar.h \
@@ -4079,6 +4085,11 @@ libags_gui_c_sources = \
 	ags/widget/ags_notebook.c \
 	ags/widget/ags_piano.c \
 	ags/widget/ags_scrolled_piano.c \
+	ags/widget/ags_scale.c \
+	ags/widget/ags_scale_box.c \
+	ags/widget/ags_vscale_box.c \
+	ags/widget/ags_hscale_box.c \
+	ags/widget/ags_scrolled_scale_box.c \
 	ags/widget/ags_ruler.c \
 	ags/widget/ags_table.c \
 	ags/widget/ags_timebar.c \
@@ -4586,10 +4597,6 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_position_notation_cursor_dialog_callbacks.h \
 	ags/X/editor/ags_ramp_acceleration_dialog.h \
 	ags/X/editor/ags_ramp_acceleration_dialog_callbacks.h \
-	ags/X/editor/ags_scale_area_callbacks.h \
-	ags/X/editor/ags_scale_area.h \
-	ags/X/editor/ags_scale_callbacks.h \
-	ags/X/editor/ags_scale.h \
 	ags/X/editor/ags_sf2_chooser_callbacks.h \
 	ags/X/editor/ags_sf2_chooser.h \
 	ags/X/editor/ags_select_acceleration_dialog.h \
@@ -4643,10 +4650,6 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_position_notation_cursor_dialog_callbacks.c \
 	ags/X/editor/ags_ramp_acceleration_dialog.c \
 	ags/X/editor/ags_ramp_acceleration_dialog_callbacks.c \
-	ags/X/editor/ags_scale_area.c \
-	ags/X/editor/ags_scale_area_callbacks.c \
-	ags/X/editor/ags_scale.c \
-	ags/X/editor/ags_scale_callbacks.c \
 	ags/X/editor/ags_select_acceleration_dialog.c \
 	ags/X/editor/ags_select_acceleration_dialog_callbacks.c \
 	ags/X/editor/ags_select_note_dialog.c \
@@ -5716,6 +5719,19 @@ ags/widget/libags_gui_la-ags_piano.lo: ags/widget/$(am__dirstamp) \
 ags/widget/libags_gui_la-ags_scrolled_piano.lo:  \
 	ags/widget/$(am__dirstamp) \
 	ags/widget/$(DEPDIR)/$(am__dirstamp)
+ags/widget/libags_gui_la-ags_scale.lo: ags/widget/$(am__dirstamp) \
+	ags/widget/$(DEPDIR)/$(am__dirstamp)
+ags/widget/libags_gui_la-ags_scale_box.lo: ags/widget/$(am__dirstamp) \
+	ags/widget/$(DEPDIR)/$(am__dirstamp)
+ags/widget/libags_gui_la-ags_vscale_box.lo:  \
+	ags/widget/$(am__dirstamp) \
+	ags/widget/$(DEPDIR)/$(am__dirstamp)
+ags/widget/libags_gui_la-ags_hscale_box.lo:  \
+	ags/widget/$(am__dirstamp) \
+	ags/widget/$(DEPDIR)/$(am__dirstamp)
+ags/widget/libags_gui_la-ags_scrolled_scale_box.lo:  \
+	ags/widget/$(am__dirstamp) \
+	ags/widget/$(DEPDIR)/$(am__dirstamp)
 ags/widget/libags_gui_la-ags_ruler.lo: ags/widget/$(am__dirstamp) \
 	ags/widget/$(DEPDIR)/$(am__dirstamp)
 ags/widget/libags_gui_la-ags_table.lo: ags/widget/$(am__dirstamp) \
@@ -6562,18 +6578,6 @@ ags/X/editor/libgsequencer_la-ags_ramp_acceleration_dialog.lo:  \
 	ags/X/editor/$(am__dirstamp) \
 	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
 ags/X/editor/libgsequencer_la-ags_ramp_acceleration_dialog_callbacks.lo:  \
-	ags/X/editor/$(am__dirstamp) \
-	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
-ags/X/editor/libgsequencer_la-ags_scale_area.lo:  \
-	ags/X/editor/$(am__dirstamp) \
-	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
-ags/X/editor/libgsequencer_la-ags_scale_area_callbacks.lo:  \
-	ags/X/editor/$(am__dirstamp) \
-	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
-ags/X/editor/libgsequencer_la-ags_scale.lo:  \
-	ags/X/editor/$(am__dirstamp) \
-	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
-ags/X/editor/libgsequencer_la-ags_scale_callbacks.lo:  \
 	ags/X/editor/$(am__dirstamp) \
 	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
 ags/X/editor/libgsequencer_la-ags_select_acceleration_dialog.lo:  \
@@ -7503,10 +7507,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_position_notation_cursor_dialog_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_ramp_acceleration_dialog.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_ramp_acceleration_dialog_callbacks.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale_area.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale_area_callbacks.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_select_acceleration_dialog.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_select_acceleration_dialog_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_select_note_dialog.Plo@am__quote@
@@ -8025,6 +8025,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_expander_set.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_hindicator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_hled_array.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_hscale_box.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_htimebar.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_indicator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_led.Plo@am__quote@
@@ -8032,11 +8033,15 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_notebook.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_piano.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_ruler.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_scale.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_scale_box.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_scrolled_piano.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_scrolled_scale_box.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_table.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_timebar.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_vindicator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_vled_array.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_vscale_box.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_waveform.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_widget_marshal.Plo@am__quote@
 
@@ -10150,6 +10155,41 @@ ags/widget/libags_gui_la-ags_scrolled_piano.lo: ags/widget/ags_scrolled_piano.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -c -o ags/widget/libags_gui_la-ags_scrolled_piano.lo `test -f 'ags/widget/ags_scrolled_piano.c' || echo '$(srcdir)/'`ags/widget/ags_scrolled_piano.c
 
+ags/widget/libags_gui_la-ags_scale.lo: ags/widget/ags_scale.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -MT ags/widget/libags_gui_la-ags_scale.lo -MD -MP -MF ags/widget/$(DEPDIR)/libags_gui_la-ags_scale.Tpo -c -o ags/widget/libags_gui_la-ags_scale.lo `test -f 'ags/widget/ags_scale.c' || echo '$(srcdir)/'`ags/widget/ags_scale.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/widget/$(DEPDIR)/libags_gui_la-ags_scale.Tpo ags/widget/$(DEPDIR)/libags_gui_la-ags_scale.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/widget/ags_scale.c' object='ags/widget/libags_gui_la-ags_scale.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -c -o ags/widget/libags_gui_la-ags_scale.lo `test -f 'ags/widget/ags_scale.c' || echo '$(srcdir)/'`ags/widget/ags_scale.c
+
+ags/widget/libags_gui_la-ags_scale_box.lo: ags/widget/ags_scale_box.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -MT ags/widget/libags_gui_la-ags_scale_box.lo -MD -MP -MF ags/widget/$(DEPDIR)/libags_gui_la-ags_scale_box.Tpo -c -o ags/widget/libags_gui_la-ags_scale_box.lo `test -f 'ags/widget/ags_scale_box.c' || echo '$(srcdir)/'`ags/widget/ags_scale_box.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/widget/$(DEPDIR)/libags_gui_la-ags_scale_box.Tpo ags/widget/$(DEPDIR)/libags_gui_la-ags_scale_box.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/widget/ags_scale_box.c' object='ags/widget/libags_gui_la-ags_scale_box.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -c -o ags/widget/libags_gui_la-ags_scale_box.lo `test -f 'ags/widget/ags_scale_box.c' || echo '$(srcdir)/'`ags/widget/ags_scale_box.c
+
+ags/widget/libags_gui_la-ags_vscale_box.lo: ags/widget/ags_vscale_box.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -MT ags/widget/libags_gui_la-ags_vscale_box.lo -MD -MP -MF ags/widget/$(DEPDIR)/libags_gui_la-ags_vscale_box.Tpo -c -o ags/widget/libags_gui_la-ags_vscale_box.lo `test -f 'ags/widget/ags_vscale_box.c' || echo '$(srcdir)/'`ags/widget/ags_vscale_box.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/widget/$(DEPDIR)/libags_gui_la-ags_vscale_box.Tpo ags/widget/$(DEPDIR)/libags_gui_la-ags_vscale_box.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/widget/ags_vscale_box.c' object='ags/widget/libags_gui_la-ags_vscale_box.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -c -o ags/widget/libags_gui_la-ags_vscale_box.lo `test -f 'ags/widget/ags_vscale_box.c' || echo '$(srcdir)/'`ags/widget/ags_vscale_box.c
+
+ags/widget/libags_gui_la-ags_hscale_box.lo: ags/widget/ags_hscale_box.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -MT ags/widget/libags_gui_la-ags_hscale_box.lo -MD -MP -MF ags/widget/$(DEPDIR)/libags_gui_la-ags_hscale_box.Tpo -c -o ags/widget/libags_gui_la-ags_hscale_box.lo `test -f 'ags/widget/ags_hscale_box.c' || echo '$(srcdir)/'`ags/widget/ags_hscale_box.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/widget/$(DEPDIR)/libags_gui_la-ags_hscale_box.Tpo ags/widget/$(DEPDIR)/libags_gui_la-ags_hscale_box.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/widget/ags_hscale_box.c' object='ags/widget/libags_gui_la-ags_hscale_box.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -c -o ags/widget/libags_gui_la-ags_hscale_box.lo `test -f 'ags/widget/ags_hscale_box.c' || echo '$(srcdir)/'`ags/widget/ags_hscale_box.c
+
+ags/widget/libags_gui_la-ags_scrolled_scale_box.lo: ags/widget/ags_scrolled_scale_box.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -MT ags/widget/libags_gui_la-ags_scrolled_scale_box.lo -MD -MP -MF ags/widget/$(DEPDIR)/libags_gui_la-ags_scrolled_scale_box.Tpo -c -o ags/widget/libags_gui_la-ags_scrolled_scale_box.lo `test -f 'ags/widget/ags_scrolled_scale_box.c' || echo '$(srcdir)/'`ags/widget/ags_scrolled_scale_box.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/widget/$(DEPDIR)/libags_gui_la-ags_scrolled_scale_box.Tpo ags/widget/$(DEPDIR)/libags_gui_la-ags_scrolled_scale_box.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/widget/ags_scrolled_scale_box.c' object='ags/widget/libags_gui_la-ags_scrolled_scale_box.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -c -o ags/widget/libags_gui_la-ags_scrolled_scale_box.lo `test -f 'ags/widget/ags_scrolled_scale_box.c' || echo '$(srcdir)/'`ags/widget/ags_scrolled_scale_box.c
+
 ags/widget/libags_gui_la-ags_ruler.lo: ags/widget/ags_ruler.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_gui_la_CFLAGS) $(CFLAGS) -MT ags/widget/libags_gui_la-ags_ruler.lo -MD -MP -MF ags/widget/$(DEPDIR)/libags_gui_la-ags_ruler.Tpo -c -o ags/widget/libags_gui_la-ags_ruler.lo `test -f 'ags/widget/ags_ruler.c' || echo '$(srcdir)/'`ags/widget/ags_ruler.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/widget/$(DEPDIR)/libags_gui_la-ags_ruler.Tpo ags/widget/$(DEPDIR)/libags_gui_la-ags_ruler.Plo
@@ -12165,34 +12205,6 @@ ags/X/editor/libgsequencer_la-ags_ramp_acceleration_dialog_callbacks.lo: ags/X/e
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_ramp_acceleration_dialog_callbacks.c' object='ags/X/editor/libgsequencer_la-ags_ramp_acceleration_dialog_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_ramp_acceleration_dialog_callbacks.lo `test -f 'ags/X/editor/ags_ramp_acceleration_dialog_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_ramp_acceleration_dialog_callbacks.c
-
-ags/X/editor/libgsequencer_la-ags_scale_area.lo: ags/X/editor/ags_scale_area.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_scale_area.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale_area.Tpo -c -o ags/X/editor/libgsequencer_la-ags_scale_area.lo `test -f 'ags/X/editor/ags_scale_area.c' || echo '$(srcdir)/'`ags/X/editor/ags_scale_area.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale_area.Tpo ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale_area.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_scale_area.c' object='ags/X/editor/libgsequencer_la-ags_scale_area.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_scale_area.lo `test -f 'ags/X/editor/ags_scale_area.c' || echo '$(srcdir)/'`ags/X/editor/ags_scale_area.c
-
-ags/X/editor/libgsequencer_la-ags_scale_area_callbacks.lo: ags/X/editor/ags_scale_area_callbacks.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_scale_area_callbacks.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale_area_callbacks.Tpo -c -o ags/X/editor/libgsequencer_la-ags_scale_area_callbacks.lo `test -f 'ags/X/editor/ags_scale_area_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_scale_area_callbacks.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale_area_callbacks.Tpo ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale_area_callbacks.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_scale_area_callbacks.c' object='ags/X/editor/libgsequencer_la-ags_scale_area_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_scale_area_callbacks.lo `test -f 'ags/X/editor/ags_scale_area_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_scale_area_callbacks.c
-
-ags/X/editor/libgsequencer_la-ags_scale.lo: ags/X/editor/ags_scale.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_scale.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale.Tpo -c -o ags/X/editor/libgsequencer_la-ags_scale.lo `test -f 'ags/X/editor/ags_scale.c' || echo '$(srcdir)/'`ags/X/editor/ags_scale.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale.Tpo ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_scale.c' object='ags/X/editor/libgsequencer_la-ags_scale.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_scale.lo `test -f 'ags/X/editor/ags_scale.c' || echo '$(srcdir)/'`ags/X/editor/ags_scale.c
-
-ags/X/editor/libgsequencer_la-ags_scale_callbacks.lo: ags/X/editor/ags_scale_callbacks.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_scale_callbacks.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale_callbacks.Tpo -c -o ags/X/editor/libgsequencer_la-ags_scale_callbacks.lo `test -f 'ags/X/editor/ags_scale_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_scale_callbacks.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale_callbacks.Tpo ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_scale_callbacks.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_scale_callbacks.c' object='ags/X/editor/libgsequencer_la-ags_scale_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_scale_callbacks.lo `test -f 'ags/X/editor/ags_scale_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_scale_callbacks.c
 
 ags/X/editor/libgsequencer_la-ags_select_acceleration_dialog.lo: ags/X/editor/ags_select_acceleration_dialog.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_select_acceleration_dialog.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_select_acceleration_dialog.Tpo -c -o ags/X/editor/libgsequencer_la-ags_select_acceleration_dialog.lo `test -f 'ags/X/editor/ags_select_acceleration_dialog.c' || echo '$(srcdir)/'`ags/X/editor/ags_select_acceleration_dialog.c

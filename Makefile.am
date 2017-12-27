@@ -1251,6 +1251,11 @@ libags_gui_h_sources = \
 	ags/widget/ags_piano_keys.h \
 	ags/widget/ags_piano.h \
 	ags/widget/ags_scrolled_piano.h \
+	ags/widget/ags_scale.h \
+	ags/widget/ags_scale_box.h \
+	ags/widget/ags_vscale_box.h \
+	ags/widget/ags_hscale_box.h \
+	ags/widget/ags_scrolled_scale_box.h \
 	ags/widget/ags_ruler.h \
 	ags/widget/ags_table.h \
 	ags/widget/ags_timebar.h \
@@ -1277,6 +1282,11 @@ libags_gui_c_sources = \
 	ags/widget/ags_notebook.c \
 	ags/widget/ags_piano.c \
 	ags/widget/ags_scrolled_piano.c \
+	ags/widget/ags_scale.c \
+	ags/widget/ags_scale_box.c \
+	ags/widget/ags_vscale_box.c \
+	ags/widget/ags_hscale_box.c \
+	ags/widget/ags_scrolled_scale_box.c \
 	ags/widget/ags_ruler.c \
 	ags/widget/ags_table.c \
 	ags/widget/ags_timebar.c \
@@ -1791,10 +1801,6 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_position_notation_cursor_dialog_callbacks.h \
 	ags/X/editor/ags_ramp_acceleration_dialog.h \
 	ags/X/editor/ags_ramp_acceleration_dialog_callbacks.h \
-	ags/X/editor/ags_scale_area_callbacks.h \
-	ags/X/editor/ags_scale_area.h \
-	ags/X/editor/ags_scale_callbacks.h \
-	ags/X/editor/ags_scale.h \
 	ags/X/editor/ags_sf2_chooser_callbacks.h \
 	ags/X/editor/ags_sf2_chooser.h \
 	ags/X/editor/ags_select_acceleration_dialog.h \
@@ -1849,10 +1855,6 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_position_notation_cursor_dialog_callbacks.c \
 	ags/X/editor/ags_ramp_acceleration_dialog.c \
 	ags/X/editor/ags_ramp_acceleration_dialog_callbacks.c \
-	ags/X/editor/ags_scale_area.c \
-	ags/X/editor/ags_scale_area_callbacks.c \
-	ags/X/editor/ags_scale.c \
-	ags/X/editor/ags_scale_callbacks.c \
 	ags/X/editor/ags_select_acceleration_dialog.c \
 	ags/X/editor/ags_select_acceleration_dialog_callbacks.c \
 	ags/X/editor/ags_select_note_dialog.c \

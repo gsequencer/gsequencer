@@ -11,6 +11,8 @@ ags_led_get_type
 ags_led_set_active
 ags_led_unset_active
 ags_led_new
+ags_scale_get_type
+ags_scale_new
 ags_table_get_type
 ags_table_new
 ags_container_add_all
@@ -18,6 +20,10 @@ ags_hindicator_get_type
 ags_hindicator_new
 ags_hled_array_get_type
 ags_hled_array_new
+ags_scale_box_get_type
+ags_scale_box_new
+ags_hscale_box_get_type
+ags_hscale_box_new
 ags_cartesian_get_type
 ags_plot_alloc
 ags_plot_free
@@ -73,6 +79,8 @@ ags_expander_set_set_flags
 ags_expander_set_add
 ags_expander_set_remove
 ags_expander_set_new
+ags_vscale_box_get_type
+ags_vscale_box_new
 ags_ruler_get_type
 ags_ruler_new
 ags_waveform_get_type
@@ -82,3 +90,5 @@ ags_led_array_set_led_count
 ags_led_array_unset_all
 ags_led_array_set_nth
 ags_led_array_new
+ags_scrolled_scale_box_get_type
+ags_scrolled_scale_box_new

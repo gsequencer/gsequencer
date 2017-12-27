@@ -33,6 +33,11 @@
     <xi:include href="xml/ags_notebook.xml"/>
     <xi:include href="xml/ags_piano.xml"/>
     <xi:include href="xml/ags_scrolled_piano.xml"/>
+    <xi:include href="xml/ags_scale.xml"/>
+    <xi:include href="xml/ags_scale_box.xml"/>
+    <xi:include href="xml/ags_vscale_box.xml"/>
+    <xi:include href="xml/ags_hscale_box.xml"/>
+    <xi:include href="xml/ags_scrolled_scale_box.xml"/>
     <xi:include href="xml/ags_ruler.xml"/>
   </chapter>
   

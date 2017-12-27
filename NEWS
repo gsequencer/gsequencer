@@ -1,3 +1,23 @@
+Overview of Changes in AGS 1.3.0
+================================
+
+* New widget AgsScale available. It visualizes a control's possible value.
+  It is accessible, implements AtkValue and AtkAction interface to control
+  the ::value-changed signal or retrieving the range.
+* New widgets AgsScaleBox, AgsVScaleBox and AgsHScaleBox available. It is
+  responsible to layout your AgsScale. It inherits of GtkBox and overrides
+  GtkWidget::size-allocate and GtkWidget::size-request.
+* New widget AgsScrolledScaleBox available. It shall contain a AgsScaleBox
+  and make it scrollable.
+
+Overview of Changes in AGS 1.2.7
+================================
+
+* Completed migrating to asynchronous communication from libags*.so.1 to
+  libgsequencer.so.
+* Refactored large parts of ags_channel.c to remove redundant code and
+  make all functions thread-safe. Fixed some regression related to linking.
+
 Overview of Changes in AGS 1.2.0
 ================================
 
