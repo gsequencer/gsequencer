@@ -320,6 +320,8 @@ ags_scale_box_size_allocate(AgsScaleBox *scale_box,
   allocation->width = width;
 
   /* child allocation */
+  list = list_start;
+  
   x = 0;
   y = 0;
   
@@ -380,15 +382,60 @@ ags_scale_box_size_request(AgsScaleBox *scale_box,
   
   GList *list, *list_start;
 
-  guint scale_count;
   GtkOrientation orientation;
-
-  requisition->height = -1;
-  requisition->width = -1;
-
+  
   list_start =
     list = gtk_container_get_children((GtkContainer *) scale_box);
+
+  orientation = gtk_orientable_get_orientation(GTK_ORIENTABLE(scale_box));
+
+  switch(orientation){
+  case GTK_ORIENTATION_HORIZONTAL:
+    {
+      guint width;
+
+      width = 0;
+
+      while(list != NULL){
+	if(AGS_SCALE(list->start)->layout == AGS_SCALE_LAYOUT_VERTICAL){
+	  width += AGS_SCALE(list->start)->scale_width;
+	}else if(AGS_SCALE(list->start)->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
+	  width += AGS_SCALE(list->start)->scale_height;
+	}
+	
+	list = list->next;
+      }
       
+      requisition->width = width;
+      
+      requisition->height = -1;
+    }
+    break;
+  case GTK_ORIENTATION_VERTICAL:
+    {
+      guint height;
+      
+      requisition->width = -1;
+
+      height = 0;
+
+      while(list != NULL){
+	if(AGS_SCALE(list->start)->layout == AGS_SCALE_LAYOUT_VERTICAL){
+	  height += AGS_SCALE(list->start)->scale_height;
+	}else if(AGS_SCALE(list->start)->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
+	  height += AGS_SCALE(list->start)->scale_width;
+	}
+	
+	list = list->next;
+      }
+
+      requisition->height = height;
+    }
+    break;
+  }
+
+  list = list_start;
+  
   while(list != NULL){
     gtk_widget_size_request((GtkWidget *) list->data,
 			    &child_requisition);
