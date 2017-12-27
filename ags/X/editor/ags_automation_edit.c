@@ -1675,7 +1675,141 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 void
 ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
 {
-  //TODO:JK: implement me
+  AgsAutomationEditor *automation_editor;
+
+  GtkStyle *automation_edit_style;
+  
+  AgsMutexManager *mutex_manager;
+  
+  cairo_t *cr;
+
+  GList *list_automation;
+  GList *list_acceleration;
+
+  gdouble c_range;
+  gdouble y_upper, y_value;
+  guint x0, x1;
+  guint y0, y1;
+  guint offset;
+  gint i;    
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  static const gdouble white_gc = 65535.0;
+  
+  if(!AGS_AUTOMATION_EDIT(automation_edit)){
+    return;
+  }
+
+  automation_editor = gtk_widget_get_ancestor(automation_edit,
+					      AGS_TYPE_AUTOMATION_EDITOR);
+
+  if(automation_editor->selected_machine == NULL){
+    return;
+  }
+  
+  automation_edit_style = gtk_widget_get_style(GTK_WIDGET(automation_edit->drawing_area));
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) automation_editor->selected_machine->audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* create cairo context */
+  cr = gdk_cairo_create(GTK_WIDGET(automation_edit->drawing_area)->window);
+
+  if(cr == NULL){
+    return;
+  }
+
+  if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
+    c_range = exp(automation_edit->upper) - exp(automation_edit->lower);
+  }else{
+    c_range = automation_edit->upper - automation_edit->lower;
+  }
+
+  /* get visisble region */
+  x0 = GTK_RANGE(automation_edit->hscrollbar)->adjustment->value;
+  x1 = (GTK_RANGE(automation_edit->hscrollbar)->adjustment->value + GTK_WIDGET(automation_edit->drawing_area)->allocation.width);
+
+  y_value = GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
+  y_upper = GTK_RANGE(automation_edit->vscrollbar)->adjustment->upper;
+  
+  if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
+    y0 = log((y_value / y_upper) * c_range);
+    y1 = log(((y_value + GTK_WIDGET(automation_edit->drawing_area)->allocation.height) / y_upper) * c_range);
+  }else{
+    y0 = (y_value / y_upper) * c_range;
+    y1 = ((y_value + GTK_WIDGET(automation_edit->drawing_area)->allocation.height) / y_upper) * c_range;
+  }
+  
+  /* push group */
+  cairo_push_group(cr);
+
+  /* draw automation */
+  pthread_mutex_lock(audio_mutex);
+
+  i = 0;
+  
+  while((i = ags_notebook_next_active_tab(automation_editor->notebook,
+					  i)) != -1){
+    list_automation = automation_editor->selected_machine->audio->automation;
+
+    while((list_automation = ags_automation_find_near_timestamp(list_automation, i,
+								NULL)) != NULL){
+      AgsAutomation *automation;
+
+      GList *list_acceleration;
+
+      automation = AGS_AUTOMATION(list_automation->data);
+      
+      if(automation->timestamp != NULL &&
+	 AGS_TIMESTAMP(automation->timestamp)->timer.ags_offset.offset > x1){
+	break;
+      }
+
+      if(automation->timestamp != NULL &&
+	 AGS_TIMESTAMP(automation->timestamp)->timer.ags_offset.offset + AGS_AUTOMATION_DEFAULT_OFFSET < x0){
+	list_automation = list_automation->next;
+
+	continue;
+      }
+
+      list_acceleration = automation->accelerations;
+
+      while(list_acceleration != NULL){
+	ags_automation_edit_draw_acceleration(automation_edit,
+					      list_acceleration->data, ((list_acceleration->next != NULL) ? list_acceleration->next->data: NULL),
+					      cr,
+					      automation_edit_style->fg[0].red / white_gc,
+					      automation_edit_style->fg[0].green / white_gc,
+					      automation_edit_style->fg[0].blue / white_gc,
+					      0.8);
+
+	list_acceleration = list_acceleration->next;
+      }
+
+      list_automation = list_automation->next;
+    }
+    
+    i++;
+  }
+
+  pthread_mutex_unlock(audio_mutex);
+
+  /* complete */
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
+      
+  cairo_surface_mark_dirty(cairo_get_target(cr));
+  cairo_destroy(cr);
 }
 
 void
