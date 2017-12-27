@@ -80,8 +80,6 @@ struct _AgsNotationEditor
   
   AgsNotebook *notebook;
 
-  GtkViewport *piano_viewport;
-  GtkAlignment *piano_alignment;
   AgsScrolledPiano *scrolled_piano;
   
   AgsNotationEdit *notation_edit;

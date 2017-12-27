@@ -22,6 +22,7 @@
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 
@@ -208,16 +209,20 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
   notation_editor->notation_toolbar = ags_notation_toolbar_new();
   gtk_box_pack_start((GtkBox *) notation_editor,
 		     (GtkWidget *) notation_editor->notation_toolbar,
-		     FALSE, FALSE, 0);
+		     FALSE, FALSE,
+		     0);
 
-  /* machine selector */
+  /* paned */
   notation_editor->paned = (GtkHPaned *) gtk_hpaned_new();
   gtk_box_pack_start((GtkBox *) notation_editor,
 		     (GtkWidget *) notation_editor->paned,
 		     TRUE, TRUE, 0);
 
+  /* machine selector */
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
-  gtk_paned_pack1((GtkPaned *) notation_editor->paned, (GtkWidget *) scrolled_window, FALSE, TRUE);
+  gtk_paned_pack1((GtkPaned *) notation_editor->paned,
+		  (GtkWidget *) scrolled_window,
+		  FALSE, TRUE);
 
   notation_editor->machine_selector = g_object_new(AGS_TYPE_MACHINE_SELECTOR,
 						   "homogeneous", FALSE,

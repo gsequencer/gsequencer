@@ -31,7 +31,6 @@
 
 #include <ags/X/editor/ags_automation_toolbar.h>
 #include <ags/X/editor/ags_machine_selector.h>
-#include <ags/X/editor/ags_scale.h>
 #include <ags/X/editor/ags_automation_edit.h>
 
 #define AGS_TYPE_AUTOMATION_EDITOR                (ags_automation_editor_get_type())
@@ -43,12 +42,13 @@
 
 #define AGS_AUTOMATION_EDITOR_CHILD(ptr) ((AgsAutomationEditorChild *)(ptr))
 
-#define AGS_AUTOMATION_EDITOR_DEFAULT_VERSION "0.7.29"
-#define AGS_AUTOMATION_EDITOR_DEFAULT_BUILD_ID "Mon Jun 13 11:50:58 UTC 2016"
+#define AGS_NOTATION_EDITOR_MAX_VALUE_COUNT (64 * 16 * 16 * 1200)
+
+#define AGS_AUTOMATION_EDITOR_DEFAULT_VERSION "1.3.0"
+#define AGS_AUTOMATION_EDITOR_DEFAULT_BUILD_ID "Wed Dec 27 03:43:55 UTC 2017"
 
 typedef struct _AgsAutomationEditor AgsAutomationEditor;
 typedef struct _AgsAutomationEditorClass AgsAutomationEditorClass;
-typedef struct _AgsAutomationEditorChild AgsAutomationEditorChild;
   
 typedef enum{
   AGS_AUTOMATION_EDITOR_CONNECTED    = 1,
@@ -63,7 +63,14 @@ struct _AgsAutomationEditor
   gchar *version;
   gchar *build_id;
 
+  guint tact_counter;
+  gdouble current_tact;
+
+  guint chunk_duration;
+
   GObject *soundcard;
+
+  GtkHPaned *paned;
   
   AgsMachineSelector *machine_selector;
   AgsMachine *selected_machine;
@@ -71,25 +78,17 @@ struct _AgsAutomationEditor
   AgsAutomationToolbar *automation_toolbar;
 
   GtkNotebook *notebook;
-
-  GList *automation_editor_child;
-  GtkTable *audio_table;
-  GtkTable *output_table;
-  GtkTable *input_table;
   
-  AgsScale *current_audio_scale;
-  GtkWidget *current_audio_automation_edit;
+  AgsScrolledScaleBox *audio_scrolled_scale_box;
+  AgsAutomationEditBox *audio_automation_edit_box;
 
-  AgsNotebook *current_output_notebook;
-  AgsScale *current_output_scale;
-  GtkWidget *current_output_automation_edit;
+  AgsNotebook *output_notebook;
+  AgsScrolledScaleBox *output_scrolled_scale_box;
+  AgsAutomationEditBox *output_automation_edit_box;
 
-  AgsNotebook *current_input_notebook;
-  AgsScale *current_input_scale;
-  GtkWidget *current_input_automation_edit;
-
-  guint tact_counter;
-  gdouble current_tact;
+  AgsNotebook *input_notebook;
+  AgsScrolledScaleBox *input_scrolled_scale_box;
+  AgsAutomationEditBox *input_automation_edit_box;
 };
 
 struct _AgsAutomationEditorClass
@@ -100,36 +99,20 @@ struct _AgsAutomationEditorClass
 			  AgsMachine *machine);
 };
 
-struct _AgsAutomationEditorChild
-{
-  AgsMachine *machine;
-  
-  AgsScale *audio_scale;
-  AgsAutomationEdit *audio_automation_edit;
-
-  AgsScale *output_scale;
-  AgsNotebook *output_notebook;
-  AgsAutomationEdit *output_automation_edit;
-
-  AgsScale *input_scale;
-  AgsNotebook *input_notebook;
-  AgsAutomationEdit *input_automation_edit;
-};
-  
 GType ags_automation_editor_get_type(void);
-
-AgsAutomationEditorChild* ags_automation_editor_child_alloc(AgsMachine *machine,
-							    AgsScale *audio_scale, AgsAutomationEdit *audio_automation_edit,
-							    AgsNotebook *output_notebook, AgsScale *output_scale, AgsAutomationEdit *output_automation_edit,
-							    AgsNotebook *input_notebook, AgsScale *input_scale, AgsAutomationEdit *input_automation_edit);
-
-void ags_automation_editor_reset_port(AgsAutomationEditor *automation_editor,
-				      AgsMachine *machine,
-				      GType channel_type,
-				      gchar **remove_specifier);
 
 void ags_automation_editor_machine_changed(AgsAutomationEditor *automation_editor,
 					   AgsMachine *machine);
+
+void ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
+					    AgsAcceleration *acceleration);
+
+void ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor,
+					       guint x, gdouble y);
+
+void ags_automation_editor_select_region(AgsAutomationEditor *automation_editor,
+					 guint x0, gdouble y0,
+					 guint x1, gdouble y1);
 
 void ags_automation_editor_select_all(AgsAutomationEditor *automation_editor);
 
