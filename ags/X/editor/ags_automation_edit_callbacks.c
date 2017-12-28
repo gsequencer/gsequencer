@@ -327,7 +327,8 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
 								      AGS_TYPE_AUTOMATION_EDITOR);
-
+  automation_editor->focused_automation_edit = automation_edit;
+  
   automation_toolbar = automation_editor->automation_toolbar;
 
   if((machine = automation_editor->selected_machine) != NULL &&

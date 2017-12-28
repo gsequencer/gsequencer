@@ -53,10 +53,6 @@ ags_automation_toolbar_position_callback(GtkToggleButton *toggle_button, AgsAuto
     automation_toolbar->selected_edit_mode = toggle_button;
     gtk_toggle_button_set_active(old_selected_edit_mode, FALSE);
   }
-
-  gtk_widget_queue_draw((GtkWidget *) automation_editor->current_audio_automation_edit);
-  gtk_widget_queue_draw((GtkWidget *) automation_editor->current_output_automation_edit);
-  gtk_widget_queue_draw((GtkWidget *) automation_editor->current_input_automation_edit);
 }
 
 void
@@ -158,40 +154,56 @@ ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolba
   GtkWidget *widget;
   
   GtkAdjustment *adjustment;
-  
-  guint history;
 
+  GList *list_start;
+  
+  double zoom_factor, zoom;
+
+  auto void ags_automation_toolbar_zoom_callback_apply(GList *list);
+  
+  void ags_automation_toolbar_zoom_callback_apply(GList *list){
+    AgsAutomationEdit *automation_edit;
+    
+    while(list != NULL){
+      automation_edit = list->data;
+      
+      gtk_widget_queue_draw(automation_edit);
+      
+      /* reset ruler */
+      automation_edit->ruler->factor = zoom_factor;
+      automation_edit->ruler->precision = zoom;
+      automation_edit->ruler->scale_precision = 1.0 / zoom;
+  
+      gtk_widget_queue_draw((GtkWidget *) automation_edit->ruler);
+
+      list = list->next;
+    }
+  }
+  
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
 								      AGS_TYPE_AUTOMATION_EDITOR);
-
-  history = gtk_combo_box_get_active(combo_box);
-
-  automation_toolbar->zoom_history = history;
-
-  /* refresh automation edit */
-  if(automation_editor->current_audio_automation_edit != NULL){
-    AGS_AUTOMATION_EDIT(automation_editor->current_audio_automation_edit)->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
-    ags_automation_edit_reset_horizontally((AgsAutomationEdit *) automation_editor->current_audio_automation_edit,
-					   AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR |
-					   AGS_AUTOMATION_EDIT_RESET_WIDTH);
-    AGS_AUTOMATION_EDIT(automation_editor->current_audio_automation_edit)->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);
-  }
   
-  if(automation_editor->current_output_automation_edit != NULL){
-    AGS_AUTOMATION_EDIT(automation_editor->current_output_automation_edit)->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
-    ags_automation_edit_reset_horizontally((AgsAutomationEdit *) automation_editor->current_output_automation_edit,
-					   AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR |
-					   AGS_AUTOMATION_EDIT_RESET_WIDTH);
-    AGS_AUTOMATION_EDIT(automation_editor->current_output_automation_edit)->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);
-  }
+  /* zoom */
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom) - 2.0);
 
-  if(automation_editor->current_input_automation_edit != NULL){
-    AGS_AUTOMATION_EDIT(automation_editor->current_input_automation_edit)->flags |= AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY;
-    ags_automation_edit_reset_horizontally((AgsAutomationEdit *) automation_editor->current_input_automation_edit,
-					   AGS_AUTOMATION_EDIT_RESET_HSCROLLBAR |
-					   AGS_AUTOMATION_EDIT_RESET_WIDTH);
-    AGS_AUTOMATION_EDIT(automation_editor->current_input_automation_edit)->flags &= (~AGS_AUTOMATION_EDIT_RESETING_HORIZONTALLY);
-  }
+  /* audio */
+  list_start = gtk_container_get_children(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box);
+  ags_automation_toolbar_zoom_callback_apply(list);
+
+  g_list_free(list_start);
+
+  /* output */
+  list_start = gtk_container_get_children(automation_editor->output_scrolled_automation_edit_box->automation_edit_box);
+  ags_automation_toolbar_zoom_callback_apply(list);
+
+  g_list_free(list_start);
+
+  /* input */
+  list_start = gtk_container_get_children(automation_editor->input_scrolled_automation_edit_box->automation_edit_box);
+  ags_automation_toolbar_zoom_callback_apply(list);
+
+  g_list_free(list_start);
 }
 
 void

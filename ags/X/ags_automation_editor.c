@@ -187,6 +187,8 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   GtkScrolledWindow *scrolled_window;
   GtkTable *table;
 
+  GtkAdjustment *adjustment;
+  
   automation_editor->flags = 0;
 
   automation_editor->version = AGS_AUTOMATION_EDITOR_DEFAULT_VERSION;
@@ -251,6 +253,35 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 			   (GtkWidget *) table,
 			   gtk_label_new(i18n("audio")));
 
+  /* audio - scrollbars */
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_HEIGHT, 1.0);
+  automation_editor->audio_vscrollbar = gtk_vscrollbar_new(adjustment);
+  gtk_table_attach(table,
+		   (GtkWidget *) automation_editor->audio_vscrollbar,
+		   2, 3,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH, 1.0);
+  automation_editor->audio_hscrollbar = gtk_hscrollbar_new(adjustment);
+  gtk_table_attach(table,
+		   (GtkWidget *) automation_editor->audio_hscrollbar,
+		   1, 2,
+		   3, 4,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  /* audio - ruler */
+  automation_editor->audio_ruler = ags_ruler_new();
+  gtk_table_attach(table,
+		   (GtkWidget *) automation_editor->audio_ruler,
+		   1, 2,
+		   1, 2,
+		   GTK_FILL | GTK_EXPAND, GTK_FILL,
+		   0, 0);
+
+  /* audio - scale */
   automation_editor->audio_scrolled_scale_box = ags_scrolled_scale_box_new();
 
   automation_editor->audio_scrolled_scale_box->scale_box = ags_vscale_box_new();
@@ -260,10 +291,11 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->audio_scrolled_scale_box,
 		   0, 1,
-		   1, 2,
+		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
+  /* audio - automation edit */
   automation_editor->audio_scrolled_automation_edit_box = ags_scrolled_automation_edit_box_new();
 
   automation_editor->audio_scrolled_automation_edit_box->automation_edit_box = ags_vautomation_edit_box_new();
@@ -273,7 +305,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->audio_scrolled_automation_edit_box,
 		   1, 2,
-		   1, 2,
+		   2, 3,
 		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
 		   0, 0);
   
@@ -284,6 +316,35 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 			   (GtkWidget *) table,
 			   gtk_label_new(i18n("output")));
 
+  /* output - scrollbars */
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_HEIGHT, 1.0);
+  automation_editor->output_vscrollbar = gtk_vscrollbar_new(adjustment);
+  gtk_table_attach(table,
+		   (GtkWidget *) automation_editor->output_vscrollbar,
+		   2, 3,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH, 1.0);
+  automation_editor->output_hscrollbar = gtk_hscrollbar_new(adjustment);
+  gtk_table_attach(table,
+		   (GtkWidget *) automation_editor->output_hscrollbar,
+		   1, 2,
+		   3, 4,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  /* output - ruler */
+  automation_editor->output_ruler = ags_ruler_new();
+  gtk_table_attach(table,
+		   (GtkWidget *) automation_editor->output_ruler,
+		   1, 2,
+		   1, 2,
+		   GTK_FILL | GTK_EXPAND, GTK_FILL,
+		   0, 0);
+
+  /* output - notebook */
   automation_editor->output_notebook = g_object_new(AGS_TYPE_NOTEBOOK,
 						    "homogeneous", FALSE,
 						    "spacing", 0,
@@ -296,6 +357,16 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		   GTK_FILL | GTK_EXPAND, GTK_FILL,
 		   0, 0);
 
+  /* output - ruler */
+  automation_editor->output_ruler = ags_ruler_new();
+  gtk_table_attach(table,
+		   (GtkWidget *) automation_editor->output_ruler,
+		   1, 2,
+		   1, 2,
+		   GTK_FILL | GTK_EXPAND, GTK_FILL,
+		   0, 0);
+
+  /* output - scale */
   automation_editor->output_scrolled_scale_box = ags_scrolled_scale_box_new();
 
   automation_editor->output_scrolled_scale_box->scale_box = ags_vscale_box_new();
@@ -305,10 +376,11 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->output_scrolled_scale_box,
 		   0, 1,
-		   1, 2,
+		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
+  /* output - automation edit */
   automation_editor->output_scrolled_automation_edit_box = ags_scrolled_automation_edit_box_new();
 
   automation_editor->output_scrolled_automation_edit_box->automation_edit_box = ags_vautomation_edit_box_new();
@@ -318,7 +390,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->output_scrolled_automation_edit_box,
 		   1, 2,
-		   1, 2,
+		   2, 3,
 		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
 		   0, 0);
   
@@ -329,6 +401,35 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 			   (GtkWidget *) table,
 			   gtk_label_new(i18n("input")));
 
+  /* input - scrollbars */
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_HEIGHT, 1.0);
+  automation_editor->input_vscrollbar = gtk_vscrollbar_new(adjustment);
+  gtk_table_attach(table,
+		   (GtkWidget *) automation_editor->input_vscrollbar,
+		   2, 3,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH, 1.0);
+  automation_editor->input_hscrollbar = gtk_hscrollbar_new(adjustment);
+  gtk_table_attach(table,
+		   (GtkWidget *) automation_editor->input_hscrollbar,
+		   1, 2,
+		   3, 4,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  /* input - ruler */
+  automation_editor->input_ruler = ags_ruler_new();
+  gtk_table_attach(table,
+		   (GtkWidget *) automation_editor->input_ruler,
+		   1, 2,
+		   1, 2,
+		   GTK_FILL | GTK_EXPAND, GTK_FILL,
+		   0, 0);
+
+  /* input - notebook */
   automation_editor->input_notebook = g_object_new(AGS_TYPE_NOTEBOOK,
 						   "homogeneous", FALSE,
 						   "spacing", 0,
@@ -341,6 +442,16 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		   GTK_FILL | GTK_EXPAND, GTK_FILL,
 		   0, 0);
 
+  /* input - ruler */
+  automation_editor->input_ruler = ags_ruler_new();
+  gtk_table_attach(table,
+		   (GtkWidget *) automation_editor->input_ruler,
+		   1, 2,
+		   1, 2,
+		   GTK_FILL | GTK_EXPAND, GTK_FILL,
+		   0, 0);
+
+  /* input - scale */
   automation_editor->input_scrolled_scale_box = ags_scrolled_scale_box_new();
 
   automation_editor->input_scrolled_scale_box->scale_box = ags_vscale_box_new();
@@ -350,10 +461,11 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->input_scrolled_scale_box,
 		   0, 1,
-		   1, 2,
+		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
+  /* input automation edit */
   automation_editor->input_scrolled_automation_edit_box = ags_scrolled_automation_edit_box_new();
 
   automation_editor->input_scrolled_automation_edit_box->automation_edit_box = ags_vautomation_edit_box_new();
@@ -363,9 +475,12 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->input_scrolled_automation_edit_box,
 		   1, 2,
-		   1, 2,
+		   2, 3,
 		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
 		   0, 0);
+
+  /* focused automation edit */
+  automation_editor->focused_automation_edit = NULL;
 }
 
 void
@@ -749,14 +864,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
   
   /* selected machine */
   automation_editor->selected_machine = machine;
-
-  /* reset scrollbars */
-  ags_automation_edit_reset_vscrollbar(automation_editor->automation_edit);
-  ags_automation_edit_reset_hscrollbar(automation_editor->automation_edit);
-
-  /* redraw */
-  gtk_widget_queue_draw(automation_editor->automation_edit);
-
+  
   /* connect set-pads - new */
   if(machine != NULL){
     g_signal_connect_after(machine, "resize-audio-channels",
@@ -790,8 +898,7 @@ ags_automation_editor_machine_changed(AgsAutomationEditor *automation_editor, Ag
 
 void
 ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
-				       AgsAcceleration *acceleration,
-				       GType channel_type, gchar *control_name)
+				       AgsAcceleration *acceleration)
 {
   AgsMachine *machine;
   AgsNotebook *notebook;
@@ -806,7 +913,7 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
   
   if(!AGS_IS_AUTOMATION_EDITOR(automation_editor) ||
      !AGS_IS_ACCELERATION(acceleration) ||
-     control_name == NULL){
+     automation_editor->focused_automation_edit == NULL){
     return;
   }
 
@@ -820,9 +927,9 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
 
     notebook = NULL;
 
-    if(channel_type == AGS_TYPE_OUTPUT){
+    if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
       notebook = automation_editor->output_notebook;
-    }else if(channel_type == AGS_TYPE_INPUT){
+    }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
       notebook = automation_editor->input_notebook;
     }
     
@@ -856,7 +963,7 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
       
       list_automation = machine->audio->automation;
       list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
-								    channel_type, control_name,
+								    automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
 								    timestamp);
 
       if(list_automation != NULL){
@@ -882,19 +989,12 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
     
     pthread_mutex_unlock(audio_mutex);
 
-    if(channel_type == AGS_TYPE_OUTPUT){
-      gtk_widget_queue_draw(automation_editor->output_scrolled_automation_edit_box);
-    }else if(channel_type == AGS_TYPE_INPUT){
-      gtk_widget_queue_draw(automation_editor->input_scrolled_automation_edit_box);
-    }else{
-      gtk_widget_queue_draw(automation_editor->audio_scrolled_automation_edit_box);
-    }
+    gtk_widget_queue_draw(automation_editor->focused_automation_edit);
   }
 }
 
 void
 ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor,
-					  GType channel_type, gchar *control_name,
 					  guint x, gdouble y)
 {
   AgsMachine *machine;
@@ -909,7 +1009,7 @@ ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor
   gint i;
 
   if(!AGS_IS_AUTOMATION_EDITOR(automation_editor) ||
-     control_name == NULL){
+     automation_editor->focused_automation_edit == NULL){
     return;
   }
 
@@ -923,9 +1023,9 @@ ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor
 
     notebook = NULL;
 
-    if(channel_type == AGS_TYPE_OUTPUT){
+    if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
       notebook = automation_editor->output_notebook;
-    }else if(channel_type == AGS_TYPE_INPUT){
+    }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
       notebook = automation_editor->input_notebook;
     }
   
@@ -959,7 +1059,7 @@ ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor
       
       list_automation = machine->audio->automation;
       list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
-								    channel_type, control_name,
+								    automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
 								    timestamp);
 
       if(list_automation != NULL){
@@ -982,19 +1082,12 @@ ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor
     
     pthread_mutex_unlock(audio_mutex);
 
-    if(channel_type == AGS_TYPE_OUTPUT){
-      gtk_widget_queue_draw(automation_editor->output_scrolled_automation_edit_box);
-    }else if(channel_type == AGS_TYPE_INPUT){
-      gtk_widget_queue_draw(automation_editor->input_scrolled_automation_edit_box);
-    }else{
-      gtk_widget_queue_draw(automation_editor->audio_scrolled_automation_edit_box);
-    }
+    gtk_widget_queue_draw(automation_editor->focused_automation_edit);
   }
 }
 
 void
 ags_automation_editor_select_region(AgsAutomationEditor *automation_editor,
-				    GType channel_type, gchar *control_name,
 				    guint x0, gdouble y0,
 				    guint x1, gdouble y1)
 {
@@ -1010,7 +1103,7 @@ ags_automation_editor_select_region(AgsAutomationEditor *automation_editor,
   gint i;
 
   if(!AGS_IS_AUTOMATION_EDITOR(automation_editor) ||
-     control_name == NULL){
+     automation_editor->focused_automation_edit == NULL){
     return;
   }
   
@@ -1024,9 +1117,9 @@ ags_automation_editor_select_region(AgsAutomationEditor *automation_editor,
   
     notebook = NULL;
 
-    if(channel_type == AGS_TYPE_OUTPUT){
+    if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
       notebook = automation_editor->output_notebook;
-    }else if(channel_type == AGS_TYPE_INPUT){
+    }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
       notebook = automation_editor->input_notebook;
     }
 
@@ -1078,7 +1171,7 @@ ags_automation_editor_select_region(AgsAutomationEditor *automation_editor,
       timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(x0 / AGS_AUTOMATION_DEFAULT_OFFSET);
       
       while((list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
-									   channel_type, control_name,
+									   automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
 									   timestamp)) != NULL &&
 	    timestamp->timer.ags_offset.offset < (AGS_AUTOMATION_DEFAULT_OFFSET * floor(x1 / AGS_AUTOMATION_DEFAULT_OFFSET)) + AGS_AUTOMATION_DEFAULT_OFFSET){
 	ags_automation_add_region_to_selection(list_automation->data,
@@ -1101,19 +1194,12 @@ ags_automation_editor_select_region(AgsAutomationEditor *automation_editor,
     
     pthread_mutex_unlock(audio_mutex);
 
-    if(channel_type == AGS_TYPE_OUTPUT){
-      gtk_widget_queue_draw(automation_editor->output_scrolled_automation_edit_box);
-    }else if(channel_type == AGS_TYPE_INPUT){
-      gtk_widget_queue_draw(automation_editor->input_scrolled_automation_edit_box);
-    }else{
-      gtk_widget_queue_draw(automation_editor->audio_scrolled_automation_edit_box);
-    }
+    gtk_widget_queue_draw(automation_editor->focused_automation_edit);
   }
 }
 
 void
-ags_automation_editor_select_all(AgsAutomationEditor *automation_editor,
-				 GType channel_type, gchar *control_name)
+ags_automation_editor_select_all(AgsAutomationEditor *automation_editor)
 {
   AgsMachine *machine;
   AgsNotebook *notebook;
@@ -1136,9 +1222,9 @@ ags_automation_editor_select_all(AgsAutomationEditor *automation_editor,
   
     notebook = NULL;
 
-    if(channel_type == AGS_TYPE_OUTPUT){
+    if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
       notebook = automation_editor->output_notebook;
-    }else if(channel_type == AGS_TYPE_INPUT){
+    }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
       notebook = automation_editor->input_notebook;
     }
 
@@ -1164,7 +1250,7 @@ ags_automation_editor_select_all(AgsAutomationEditor *automation_editor,
       list_automation = machine->audio->automation;
       
       while((list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
-									   channel_type, control_name,
+									   automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
 									   NULL)) != NULL){
 	ags_automation_add_all_to_selection(AGS_AUTOMATION(list_automation->data));
 	
@@ -1180,19 +1266,12 @@ ags_automation_editor_select_all(AgsAutomationEditor *automation_editor,
     
     pthread_mutex_unlock(audio_mutex);
 
-    if(channel_type == AGS_TYPE_OUTPUT){
-      gtk_widget_queue_draw(automation_editor->output_scrolled_automation_edit_box);
-    }else if(channel_type == AGS_TYPE_INPUT){
-      gtk_widget_queue_draw(automation_editor->input_scrolled_automation_edit_box);
-    }else{
-      gtk_widget_queue_draw(automation_editor->audio_scrolled_automation_edit_box);
-    }
+    gtk_widget_queue_draw(automation_editor->focused_automation_edit);
   }
 }
 
 void
-ags_automation_editor_paste(AgsAutomationEditor *automation_editor,
-			    GType channel_type, gchar *control_name)
+ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 {
   AgsMachine *machine;
   AgsAutomationEdit *automation_edit;
@@ -1278,7 +1357,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor,
 		  timestamp->timer.ags_offset.offset = offset;
 		  
 		  list_automation = ags_automation_find_near_timestamp_extended(machine->audio->automation, i,
-										channel_type, control_name,
+										automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
 										timestamp);
 
 		  if(list_automation == NULL){
@@ -1406,7 +1485,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor,
   }
 
   if(!AGS_IS_AUTOMATION_EDITOR(automation_editor) ||
-     control_name == NULL){
+     automation_editor->focused_automation_edit == NULL){
     return;
   }
   
@@ -1422,7 +1501,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor,
     automation_edit = NULL;
     notebook = NULL;
 
-    if(channel_type == AGS_TYPE_OUTPUT){
+    if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
       GList *list_start, *list;
       
       notebook = automation_editor->output_notebook;
@@ -1431,7 +1510,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor,
 	list_start = gtk_container_get_children(automation_editor->scrolled_output_automation_edit_box->automation_edit_box);
 
       while(list != NULL){
-	if(!g_strcmp0(control_name,
+	if(!g_strcmp0(automation_editor->focused_automation_edit->control_name,
 		      AGS_AUTOMATION_EDIT(list->data)->control_name)){
 	  automation_edit = list->data;
 	  
@@ -1442,7 +1521,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor,
       }
 
       g_list_free(list_start);
-    }else if(channel_type == AGS_TYPE_INPUT){
+    }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
       GList *list_start, *list;
 
       notebook = automation_editor->input_notebook;
@@ -1451,7 +1530,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor,
 	list_start = gtk_container_get_children(automation_editor->scrolled_input_automation_edit_box->automation_edit_box);
 
       while(list != NULL){
-	if(!g_strcmp0(control_name,
+	if(!g_strcmp0(automation_editor->focused_automation_edit->control_name,
 		      AGS_AUTOMATION_EDIT(list->data)->control_name)){
 	  automation_edit = list->data;
 	  
@@ -1469,7 +1548,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor,
 	list_start = gtk_container_get_children(automation_editor->scrolled_audio_automation_edit_box->automation_edit_box);
 
       while(list != NULL){
-	if(!g_strcmp0(control_name,
+	if(!g_strcmp0(automation_editor->focused_automation_edit->control_name,
 		      AGS_AUTOMATION_EDIT(list->data)->control_name)){
 	  automation_edit = list->data;
 	  
@@ -1567,8 +1646,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor,
 }
 
 void
-ags_automation_editor_copy(AgsAutomationEditor *automation_editor,
-			   GType channel_type, gchar *control_name)
+ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
 {
   AgsMachine *machine;
   AgsNotebook *notebook;
@@ -1585,7 +1663,8 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor,
   int size;
   gint i;
 
-  if(!AGS_IS_AUTOMATION_EDITOR(automation_editor)){
+  if(!AGS_IS_AUTOMATION_EDITOR(automation_editor) ||
+     automation_editor->focused_automation_edit == NULL){
     return;
   }
   
@@ -1599,9 +1678,9 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor,
 
     notebook = NULL;
 
-    if(channel_type == AGS_TYPE_OUTPUT){
+    if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
       notebook = automation_editor->output_notebook;
-    }else if(channel_type == AGS_TYPE_INPUT){
+    }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
       notebook = automation_editor->input_notebook;
     }
   
@@ -1642,7 +1721,7 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor,
 
       /* copy */
       while((list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
-									   channel_type, control_name,
+									   automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
 									   NULL)) != NULL){
 	automation_node = ags_automation_copy_selection(AGS_AUTOMATION(list_automation->data));
 	xmlAddChild(automation_list_node,
@@ -1671,8 +1750,7 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor,
 }
 
 void
-ags_automation_editor_cut(AgsAutomationEditor *automation_editor,
-			  GType channel_type, gchar *control_name)
+ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
 {
   AgsMachine *machine;
   AgsNotebook *notebook;
@@ -1689,7 +1767,8 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor,
   int size;
   gint i;
 
-  if(!AGS_IS_AUTOMATION_EDITOR(automation_editor)){
+  if(!AGS_IS_AUTOMATION_EDITOR(automation_editor) ||
+     automation_editor->focused_automation_edit == NULL){
     return;
   }
   
@@ -1703,9 +1782,9 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor,
 
     notebook = NULL;
 
-    if(channel_type == AGS_TYPE_OUTPUT){
+    if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
       notebook = automation_editor->output_notebook;
-    }else if(channel_type == AGS_TYPE_INPUT){
+    }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
       notebook = automation_editor->input_notebook;
     }
 
@@ -1751,7 +1830,7 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor,
 
       /* cut */
       while((list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
-									   channel_type, control_name,
+									   automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
 									   NULL)) != NULL){
 	automation_node = ags_automation_cut_selection(AGS_AUTOMATION(list_automation->data));
 	xmlAddChild(automation_list_node,
