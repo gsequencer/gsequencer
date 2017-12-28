@@ -1495,7 +1495,7 @@ ags_notation_editor_copy(AgsNotationEditor *notation_editor)
     i = 0;
 
     while((i = ags_notebook_next_active_tab(notation_editor->notebook,
-							   i)) != -1){
+					    i)) != -1){
       pthread_mutex_lock(audio_mutex);
 
       list_notation = machine->audio->notation;
