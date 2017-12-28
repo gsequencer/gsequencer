@@ -790,28 +790,201 @@ ags_automation_editor_machine_changed(AgsAutomationEditor *automation_editor, Ag
 
 void
 ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
-				       AgsAcceleration *acceleration)
+				       AgsAcceleration *acceleration,
+				       GType channel_type, gchar *control_name)
 {
-  //TODO:JK: implement me
+  AgsMachine *machine;
+  AgsNotebook *notebook;
+  
+  AgsAutomation *automation;
+
+  AgsTimestamp *timestamp;
+
+  GList *list_automation;
+
+  gint i;
+  
+  if(!AGS_IS_AUTOMATION_EDITOR(automation_editor) ||
+     !AGS_IS_ACCELERATION(acceleration) ||
+     control_name == NULL){
+    return;
+  }
+
+  if(automation_editor->selected_machine != NULL){
+    AgsMutexManager *mutex_manager;
+
+    pthread_mutex_t *application_mutex;
+    pthread_mutex_t *audio_mutex;
+
+    machine = automation_editor->selected_machine;
+
+    notebook = NULL;
+
+    if(channel_type == AGS_TYPE_OUTPUT){
+      notebook = automation_editor->output_notebook;
+    }else if(channel_type == AGS_TYPE_INPUT){
+      notebook = automation_editor->input_notebook;
+    }
+    
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    /* get audio mutex */
+    pthread_mutex_lock(application_mutex);
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) machine->audio);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* check all active tabs */
+    timestamp = ags_timestamp_new();
+
+    timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+    timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+    
+    timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(acceleration->x / AGS_AUTOMATION_DEFAULT_OFFSET);
+
+    pthread_mutex_lock(audio_mutex);
+
+    i = 0;
+
+    while(notebook == NULL ||
+	  (i = ags_notebook_next_active_tab(notebook,
+					    i)) != -1){
+      AgsAcceleration *new_acceleration;
+      
+      list_automation = machine->audio->automation;
+      list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
+								    channel_type, control_name,
+								    timestamp);
+
+      if(list_automation != NULL){
+	automation = list_automation->data;
+      }else{
+	automation = ags_automation_new(machine->audio,
+					i);
+	machine->audio->automation = ags_automation_add(machine->audio->automation,
+							automation);
+      }
+
+      new_acceleration = ags_acceleration_duplicate(acceleration);
+      ags_automation_add_acceleration(automation,
+				      new_acceleration,
+				      FALSE);
+
+      if(notebook == NULL){
+	break;
+      }
+      
+      i++;
+    }
+    
+    pthread_mutex_unlock(audio_mutex);
+
+    gtk_widget_queue_draw(automation_editor->automation_edit);
+  }
 }
 
 void
 ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor,
+					  GType channel_type, gchar *control_name,
 					  guint x, gdouble y)
 {
-  //TODO:JK: implement me
+  if(!AGS_IS_AUTOMATION_EDITOR(automation_editor) ||
+     control_name == NULL){
+    return;
+  }
+
+  if(automation_editor->selected_machine != NULL){
+    AgsMutexManager *mutex_manager;
+
+    pthread_mutex_t *application_mutex;
+    pthread_mutex_t *audio_mutex;
+
+    machine = automation_editor->selected_machine;
+
+    notebook = NULL;
+
+    if(channel_type == AGS_TYPE_OUTPUT){
+      notebook = automation_editor->output_notebook;
+    }else if(channel_type == AGS_TYPE_INPUT){
+      notebook = automation_editor->input_notebook;
+    }
+  
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+    /* get audio mutex */
+    pthread_mutex_lock(application_mutex);
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) machine->audio);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* check all active tabs */
+    timestamp = ags_timestamp_new();
+
+    timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+    timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+    
+    timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(x / AGS_AUTOMATION_DEFAULT_OFFSET);
+
+    pthread_mutex_lock(audio_mutex);
+
+    i = 0;
+
+    while(notebook == NULL ||
+	  (i = ags_notebook_next_active_tab(automation_editor->notebook,
+					    i)) != -1){
+      AgsAcceleration *new_acceleration;
+      
+      list_automation = machine->audio->automation;
+      list_automation = ags_automation_find_near_timestamp(list_automation, i,
+						       timestamp);
+
+      if(list_automation != NULL){
+	automation = list_automation->data;
+      }else{
+	i++;
+	
+	continue;
+      }
+
+      ags_automation_remove_acceleration_at_position(automation,
+					   x, y);
+
+      if(notebook == NULL){
+	break;
+      }
+
+      i++;
+    }
+    
+    pthread_mutex_unlock(audio_mutex);
+
+    gtk_widget_queue_draw(automation_editor->automation_edit);
+  }
 }
 
 void
 ags_automation_editor_select_region(AgsAutomationEditor *automation_editor,
+				    GType channel_type, gchar *control_name,
 				    guint x0, gdouble y0,
 				    guint x1, gdouble y1)
 {
+  if(!AGS_IS_AUTOMATION_EDITOR(automation_editor) ||
+     control_name == NULL){
+    return;
+  }
+
   //TODO:JK: implement me
 }
 
 void
-ags_automation_editor_select_all(AgsAutomationEditor *automation_editor)
+ags_automation_editor_select_all(AgsAutomationEditor *automation_editor,
+				 GType channel_type, gchar *control_name)
 {
   AgsNotebook *notebook;  
   AgsAutomationEdit *current_edit_widget;
@@ -829,6 +1002,11 @@ ags_automation_editor_select_all(AgsAutomationEditor *automation_editor)
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
+
+  if(!AGS_IS_AUTOMATION_EDITOR(automation_editor) ||
+     control_name == NULL){
+    return;
+  }
 
   current_page = gtk_notebook_get_current_page(automation_editor->notebook);
 
@@ -936,7 +1114,8 @@ ags_automation_editor_select_all(AgsAutomationEditor *automation_editor)
 }
 
 void
-ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
+ags_automation_editor_paste(AgsAutomationEditor *automation_editor,
+			    GType channel_type, gchar *control_name)
 {
   AgsNotebook *notebook;  
   AgsAutomationEdit *current_edit_widget;
@@ -1221,6 +1400,11 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
     return(first_x);
   }
   
+  if(!AGS_IS_AUTOMATION_EDITOR(automation_editor) ||
+     control_name == NULL){
+    return;
+  }
+
   current_page = gtk_notebook_get_current_page(automation_editor->notebook);
 
   switch(current_page){
@@ -1340,7 +1524,8 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 }
 
 void
-ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
+ags_automation_editor_copy(AgsAutomationEditor *automation_editor,
+			   GType channel_type, gchar *control_name)
 {
   AgsNotebook *notebook;  
   AgsAutomationEdit *current_edit_widget;
@@ -1364,6 +1549,11 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
+
+  if(!AGS_IS_AUTOMATION_EDITOR(automation_editor) ||
+     control_name == NULL){
+    return;
+  }
 
   current_page = gtk_notebook_get_current_page(automation_editor->notebook);
 
@@ -1489,7 +1679,8 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
 }
 
 void
-ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
+ags_automation_editor_cut(AgsAutomationEditor *automation_editor,
+			  GType channel_type, gchar *control_name)
 {
   AgsNotebook *notebook;  
   AgsAutomationEdit *current_edit_widget;
@@ -1513,6 +1704,11 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
+
+  if(!AGS_IS_AUTOMATION_EDITOR(automation_editor) ||
+     control_name == NULL){
+    return;
+  }
 
   current_page = gtk_notebook_get_current_page(automation_editor->notebook);
 

@@ -105,21 +105,29 @@ void ags_automation_editor_machine_changed(AgsAutomationEditor *automation_edito
 					   AgsMachine *machine);
 
 void ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
-					    AgsAcceleration *acceleration);
+					    AgsAcceleration *acceleration,
+					    GType channel_type, gchar *control_name);
 
 void ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor,
+					       GType channel_type, gchar *control_name,
 					       guint x, gdouble y);
 
 void ags_automation_editor_select_region(AgsAutomationEditor *automation_editor,
+					 GType channel_type, gchar *control_name,
 					 guint x0, gdouble y0,
 					 guint x1, gdouble y1);
 
-void ags_automation_editor_select_all(AgsAutomationEditor *automation_editor);
+void ags_automation_editor_select_all(AgsAutomationEditor *automation_editor,
+				      GType channel_type, gchar *control_name);
 
-void ags_automation_editor_paste(AgsAutomationEditor *automation_editor);
-void ags_automation_editor_copy(AgsAutomationEditor *automation_editor);
-void ags_automation_editor_cut(AgsAutomationEditor *automation_editor);
-void ags_automation_editor_invert(AgsAutomationEditor *automation_editor);
+void ags_automation_editor_paste(AgsAutomationEditor *automation_editor,
+				 GType channel_type, gchar *control_name);
+void ags_automation_editor_copy(AgsAutomationEditor *automation_editor,
+				GType channel_type, gchar *control_name);
+void ags_automation_editor_cut(AgsAutomationEditor *automation_editor,
+			       GType channel_type, gchar *control_name);
+void ags_automation_editor_invert(AgsAutomationEditor *automation_editor,
+				  GType channel_type, gchar *control_name);
 
 AgsAutomationEditor* ags_automation_editor_new();
 

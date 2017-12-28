@@ -576,7 +576,8 @@ ags_notation_editor_add_note(AgsNotationEditor *notation_editor,
 
   gint i;
   
-  if(!AGS_IS_NOTATION_EDITOR(notation_editor)){
+  if(!AGS_IS_NOTATION_EDITOR(notation_editor) ||
+     !AGS_IS_NOTE(note)){
     return;
   }
 
