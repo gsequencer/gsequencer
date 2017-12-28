@@ -18,6 +18,7 @@
  */
 
 #include <ags/widget/ags_scale_box.h>
+#include <ags/widget/ags_scale.h>
 
 void ags_scale_box_class_init(AgsScaleBoxClass *scale_box);
 void ags_scale_box_init(AgsScaleBox *scale_box);
@@ -328,7 +329,14 @@ ags_scale_box_size_allocate(AgsScaleBox *scale_box,
   while(list != NULL){
     AgsScale *scale;
 
+    guint padding;
+
     scale = AGS_SCALE(list->data);
+
+    gtk_container_child_get(scale_box,
+			    scale,
+			    "padding", &padding,
+			    NULL);
     
     gtk_widget_get_child_requisition((GtkWidget *) list->data,
 				     &child_requisition);
@@ -355,6 +363,13 @@ ags_scale_box_size_allocate(AgsScaleBox *scale_box,
 	}else if(scale->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
 	  x += scale->scale_height;
 	}
+
+	if(list->prev != NULL &&
+	   list->next != NULL){
+	  x += (2 * padding);
+	}else{
+	  x += padding;
+	}
       }
       break;
     case GTK_ORIENTATION_VERTICAL:
@@ -363,6 +378,13 @@ ags_scale_box_size_allocate(AgsScaleBox *scale_box,
 	  y += scale->scale_height;
 	}else if(scale->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
 	  y += scale->scale_width;
+	}
+
+	if(list->prev != NULL &&
+	   list->next != NULL){
+	  y += (2 * padding);
+	}else{
+	  y += padding;
 	}
       }
       break;

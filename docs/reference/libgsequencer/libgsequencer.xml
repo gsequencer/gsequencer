@@ -30,7 +30,9 @@
     <xi:include href="xml/ags_audio_preferences.xml"/>
     <xi:include href="xml/ags_audio_preferences_callbacks.xml"/>
 
-    <xi:include href="xml/ags_automation_area.xml"/>
+    <xi:include href="xml/ags_scrolled_automation_edit_box.xml"/>
+    <xi:include href="xml/ags_automation_edit_box.xml"/>
+    <xi:include href="xml/ags_vautomation_edit_box.xml"/>
     <xi:include href="xml/ags_automation_edit.xml"/>
     <xi:include href="xml/ags_automation_edit_callbacks.xml"/>
     <xi:include href="xml/ags_automation_editor.xml"/>

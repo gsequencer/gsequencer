@@ -460,210 +460,115 @@ ags_automation_editor_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_automation_editor_parent_class)->finalize(gobject);
 }
 
-/**
- * ags_automation_editor_reset_port:
- * @automation_editor: an #AgsAutomationEditor
- * @machine: the #AgsMachine
- * @channel_type: G_TYPE_NONE, AGS_TYPE_OUTPUT or AGS_TYPE_INPUT
- * @remove_specifier: the specifiers to remove
- *
- * Reset port if removed automation.
- *
- * Since: 1.0.0
- */
-void
-ags_automation_editor_reset_port(AgsAutomationEditor *automation_editor,
-				 AgsMachine *machine,
-				 GType channel_type,
-				 gchar **remove_specifier)
-{
-  AgsAutomationEdit *automation_edit;
-  
-  AgsMachine *selected_machine;
-
-  AgsMutexManager *mutex_manager;
-
-  GList *editor_child;
-  
-  gchar **specifier, **new_automation_port, **unique_specifier;
-
-  guint i;
-  gboolean contains_specifier;
-	  
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) machine->audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /*  */
-  selected_machine = automation_editor->selected_machine;
-
-  editor_child = automation_editor->automation_editor_child;
-
-  while(editor_child != NULL){
-    if(AGS_AUTOMATION_EDITOR_CHILD(editor_child->data)->machine == machine){
-      break;
-    }
-    
-    editor_child = editor_child->next;
-  }
-
-  specifier = machine->automation_port;
-
-  pthread_mutex_lock(audio_mutex);
-  
-  unique_specifier = ags_automation_get_specifier_unique(machine->audio->automation);
-  
-  pthread_mutex_unlock(audio_mutex);
-
-  new_automation_port = NULL;
-  i = 0;
-  
-  if(machine->automation_port != NULL){
-    for(; *specifier != NULL; specifier++){      
-      /* create specifier array */
-#ifdef HAVE_GLIB_2_44
-      contains_specifier = g_strv_contains(remove_specifier,
-					   *specifier);
-#else
-      contains_specifier = ags_strv_contains(remove_specifier,
-					     *specifier);
-#endif
-      
-      if(contains_specifier){
-	if(editor_child != NULL){
-	  AgsScale *scale;
-
-	  GList *scale_area;
-	  GList *automation_area;
-
-	  /* remove audio port */
-	  if(channel_type == G_TYPE_NONE){
-	    automation_edit = AGS_AUTOMATION_EDITOR_CHILD(editor_child->data)->audio_automation_edit;
-	    scale = AGS_AUTOMATION_EDITOR_CHILD(editor_child->data)->audio_scale;
-
-	    scale_area = ags_scale_area_find_specifier(scale->scale_area,
-						       *specifier);
-    
-	    if(scale_area != NULL){
-	      automation_area = ags_automation_area_find_specifier(automation_edit->automation_area,
-								   *specifier);
-	    
-	      ags_scale_remove_area(scale,
-				    scale_area->data);
-	      gtk_widget_queue_draw((GtkWidget *) scale);
-
-	      ags_automation_edit_remove_area(automation_edit,
-					      automation_area->data);
-	    
-	      if(machine == selected_machine){
-		gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
-	      }
-	    }
-	  }
-	  
-	  /* remove output port */
-	  if(channel_type == AGS_TYPE_OUTPUT){
-	    automation_edit = AGS_AUTOMATION_EDITOR_CHILD(editor_child->data)->output_automation_edit;
-	    scale = AGS_AUTOMATION_EDITOR_CHILD(editor_child->data)->output_scale;
-
-	    scale_area = ags_scale_area_find_specifier(scale->scale_area,
-						       *specifier);
-    
-	    if(scale_area != NULL){
-	      automation_area = ags_automation_area_find_specifier(automation_edit->automation_area,
-								   *specifier);
-	    
-	      ags_scale_remove_area(scale,
-				    scale_area->data);
-	      gtk_widget_queue_draw((GtkWidget *) scale);
-
-	      ags_automation_edit_remove_area(automation_edit,
-					      automation_area->data);
-	    
-	      if(machine == selected_machine){
-		gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
-	      }
-	    }
-	  }
-	  
-	  /* remove input port */
-	  if(channel_type == AGS_TYPE_INPUT){
-	    automation_edit = AGS_AUTOMATION_EDITOR_CHILD(editor_child->data)->input_automation_edit;
-	    scale = AGS_AUTOMATION_EDITOR_CHILD(editor_child->data)->input_scale;
-
-	    scale_area = ags_scale_area_find_specifier(scale->scale_area,
-						       *specifier);
-    
-	    if(scale_area != NULL){
-	      automation_area = ags_automation_area_find_specifier(automation_edit->automation_area,
-								   *specifier);
-	    
-	      ags_scale_remove_area(scale,
-				    scale_area->data);
-	      gtk_widget_queue_draw((GtkWidget *) scale);
-
-	      ags_automation_edit_remove_area(automation_edit,
-					      automation_area->data);
-	    
-	      if(machine == selected_machine){
-		gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
-	      }
-	    }
-	  }
-	}
-      }else{
-#ifdef HAVE_GLIB_2_44
-	contains_specifier = g_strv_contains(unique_specifier,
-					     *specifier);
-#else
-	contains_specifier = ags_strv_contains(unique_specifier,
-					       *specifier);
-#endif
-	if(contains_specifier){
-	  if(new_automation_port == NULL){
-	    new_automation_port = (gchar **) malloc(2 * sizeof(gchar *));
-	  }else{
-	    new_automation_port = (gchar **) realloc(new_automation_port,
-						     (i + 2) * sizeof(gchar *));
-	  }
-
-	  new_automation_port[i] = *specifier;
-	  i++;
-	}
-      }
-    }
-    
-    if(new_automation_port != NULL){
-      new_automation_port[i] = NULL;
-    }
-    
-    machine->automation_port = new_automation_port;
-  }
-
-  if(machine == selected_machine){
-    ags_automation_toolbar_load_port(automation_editor->automation_toolbar);
-  }
-}
-
 void
 ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_editor, AgsMachine *machine)
 {  
-  if(automation_editor->selected_machine == machine){
-    return;
+  AgsMachine *old_machine;
+
+  AgsMutexManager *mutex_manager;
+
+  GList *tab;
+
+  guint length;
+  guint output_pads, input_pads;
+  guint audio_channels;
+  guint i;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* disconnect set pads - old */
+  old_machine = automation_editor->selected_machine;
+
+  if(old_machine != NULL){
+    g_object_disconnect(old_machine,
+			"any_signal::resize-audio-channels",
+			G_CALLBACK(ags_automation_editor_resize_audio_channels_callback),
+			(gpointer) automation_editor,
+			"any_signal::resize-pads",
+			G_CALLBACK(ags_automation_editor_resize_pads_callback),
+			(gpointer) automation_editor,
+			NULL);
+  }
+
+  /* get audio mutex */
+  if(machine != NULL){
+    pthread_mutex_lock(application_mutex);
+  
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) machine->audio);
+  
+    pthread_mutex_unlock(application_mutex);
+  }
+  
+  /* notebook - remove tabs */
+  length = g_list_length(automation_editor->output_notebook->tab);
+  
+  for(i = 0; i < length; i++){
+    ags_notebook_remove_tab(automation_editor->output_notebook,
+			    0);
+  }
+
+  length = g_list_length(automation_editor->input_notebook->tab);
+  
+  for(i = 0; i < length; i++){
+    ags_notebook_remove_tab(automation_editor->input_notebook,
+			    0);
+  }
+
+  /* notebook - add tabs */
+  if(machine != NULL){
+    pthread_mutex_lock(audio_mutex);
+
+    output_pads = machine->audio->output_pads;
+    input_pads = machine->audio->input_pads;
+    
+    audio_channels = machine->audio->audio_channels;
+    
+    pthread_mutex_unlock(audio_mutex);
+
+    for(i = 0; i < output_pads * audio_channels; i++){
+      ags_notebook_insert_tab(automation_editor->output_notebook,
+			      i);
+
+      tab = automation_editor->output_notebook->tab;
+      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tab->data)->toggle,
+				   TRUE);
+    }
+
+    for(i = 0; i < input_pads * audio_channels; i++){
+      ags_notebook_insert_tab(automation_editor->input_notebook,
+			      i);
+
+      tab = automation_editor->input_notebook->tab;
+      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tab->data)->toggle,
+				   TRUE);
+    }
   }
 
   //TODO:JK: implement me
+
+  /* selected machine */
+  automation_editor->selected_machine = machine;
+
+  /* reset scrollbars */
+  ags_automation_edit_reset_vscrollbar(automation_editor->automation_edit);
+  ags_automation_edit_reset_hscrollbar(automation_editor->automation_edit);
+
+  /* redraw */
+  gtk_widget_queue_draw(automation_editor->automation_edit);
+
+  /* connect set-pads - new */
+  if(machine != NULL){
+    g_signal_connect_after(machine, "resize-audio-channels",
+			   G_CALLBACK(ags_automation_editor_resize_audio_channels_callback), automation_editor);
+
+    g_signal_connect_after(machine, "resize-pads",
+			   G_CALLBACK(ags_automation_editor_resize_pads_callback), automation_editor);
+  }  
 }
  
 /**

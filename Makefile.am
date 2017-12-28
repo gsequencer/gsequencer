@@ -1763,11 +1763,10 @@ deprecated_libgsequencer_editor_h_sources =
 libgsequencer_editor_h_sources = \
 	$(deprecated_libgsequencer_editor_h_sources) \
 	ags/X/editor/ags_automation_edit_callbacks.h \
+	ags/X/editor/ags_automation_edit_box.h \
 	ags/X/editor/ags_automation_edit.h \
 	ags/X/editor/ags_automation_toolbar_callbacks.h \
 	ags/X/editor/ags_automation_toolbar.h \
-	ags/X/editor/ags_automation_area_callbacks.h \
-	ags/X/editor/ags_automation_area.h \
 	ags/X/editor/ags_crop_note_dialog_callbacks.h \
 	ags/X/editor/ags_crop_note_dialog.h \
 	ags/X/editor/ags_envelope_dialog_callbacks.h \
@@ -1801,12 +1800,14 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_position_notation_cursor_dialog_callbacks.h \
 	ags/X/editor/ags_ramp_acceleration_dialog.h \
 	ags/X/editor/ags_ramp_acceleration_dialog_callbacks.h \
+	ags/X/editor/ags_scrolled_edit_box.h \
 	ags/X/editor/ags_sf2_chooser_callbacks.h \
 	ags/X/editor/ags_sf2_chooser.h \
 	ags/X/editor/ags_select_acceleration_dialog.h \
 	ags/X/editor/ags_select_acceleration_dialog_callbacks.h \
 	ags/X/editor/ags_select_note_dialog.h \
 	ags/X/editor/ags_select_note_dialog_callbacks.h \
+	ags/X/editor/ags_vautomation_edit_box.h \
 	ags/X/editor/ags_wave_edit_callbacks.h \
 	ags/X/editor/ags_wave_edit.h \
 	ags/X/editor/ags_wave_toolbar_callbacks.h \
@@ -1817,11 +1818,10 @@ deprecated_libgsequencer_editor_c_sources =
 libgsequencer_editor_c_sources = \
 	$(deprecated_libgsequencer_editor_c_sources) \
 	ags/X/editor/ags_automation_edit.c \
+	ags/X/editor/ags_automation_edit_box.c \
 	ags/X/editor/ags_automation_edit_callbacks.c \
 	ags/X/editor/ags_automation_toolbar.c \
 	ags/X/editor/ags_automation_toolbar_callbacks.c \
-	ags/X/editor/ags_automation_area.c \
-	ags/X/editor/ags_automation_area_callbacks.c \
 	ags/X/editor/ags_crop_note_dialog_callbacks.c \
 	ags/X/editor/ags_crop_note_dialog.c \
 	ags/X/editor/ags_envelope_dialog_callbacks.c \
@@ -1855,12 +1855,14 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_position_notation_cursor_dialog_callbacks.c \
 	ags/X/editor/ags_ramp_acceleration_dialog.c \
 	ags/X/editor/ags_ramp_acceleration_dialog_callbacks.c \
+	ags/X/editor/ags_scrolled_edit_box.c \
 	ags/X/editor/ags_select_acceleration_dialog.c \
 	ags/X/editor/ags_select_acceleration_dialog_callbacks.c \
 	ags/X/editor/ags_select_note_dialog.c \
 	ags/X/editor/ags_select_note_dialog_callbacks.c \
 	ags/X/editor/ags_sf2_chooser.c \
 	ags/X/editor/ags_sf2_chooser_callbacks.c \
+	ags/X/editor/ags_vautomation_edit_box.c \
 	ags/X/editor/ags_wave_edit.c \
 	ags/X/editor/ags_wave_edit_callbacks.c \
 	ags/X/editor/ags_wave_toolbar.c \
