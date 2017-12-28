@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/X/editor/ags_automation_edit_box.h>
+
 #define AGS_TYPE_VAUTOMATION_EDIT_BOX                (ags_vautomation_edit_box_get_type())
 #define AGS_VAUTOMATION_EDIT_BOX(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_VAUTOMATION_EDIT_BOX, AgsVAutomationEditBox))
 #define AGS_VAUTOMATION_EDIT_BOX_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_VAUTOMATION_EDIT_BOX, AgsVAutomationEditBoxClass))
