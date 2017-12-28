@@ -115,6 +115,9 @@ GList* ags_automation_find_near_timestamp_extended(GList *automation, guint line
 						   GType channel_type, gchar *control_name,
 						   AgsTimestamp *timestamp);
 
+GList* ags_automation_add(GList *automation,
+			  AgsAutomation *new_automation);
+
 void ags_automation_add_acceleration(AgsAutomation *automation,
 				     AgsAcceleration *acceleration,
 				     gboolean use_selection_list);

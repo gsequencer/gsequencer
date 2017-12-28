@@ -1060,6 +1060,50 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 }
 
 /**
+ * ags_automation_add:
+ * @automation: the #GList-struct containing #AgsAutomation
+ * @new_automation: the automation to add
+ * 
+ * Add @new_automation sorted to @automation
+ * 
+ * Returns: the new beginning of @automation
+ * 
+ * Since: 1.3.0
+ */
+GList*
+ags_automation_add(GList *automation,
+		   AgsAutomation *new_automation)
+{
+  auto gint ags_automation_add_compare(gconstpointer a,
+				       gconstpointer b);
+  
+  gint ags_automation_add_compare(gconstpointer a,
+				  gconstpointer b)
+  {
+    if(AGS_TIMESTAMP(AGS_AUTOMATION(a)->timestamp)->timer.ags_offset.offset == AGS_TIMESTAMP(AGS_AUTOMATION(b)->timestamp)->timer.ags_offset.offset){
+      return(0);
+    }else if(AGS_TIMESTAMP(AGS_AUTOMATION(a)->timestamp)->timer.ags_offset.offset < AGS_TIMESTAMP(AGS_AUTOMATION(b)->timestamp)->timer.ags_offset.offset){
+      return(-1);
+    }else if(AGS_TIMESTAMP(AGS_AUTOMATION(a)->timestamp)->timer.ags_offset.offset > AGS_TIMESTAMP(AGS_AUTOMATION(b)->timestamp)->timer.ags_offset.offset){
+      return(1);
+    }
+
+    return(0);
+  }
+  
+  if(!AGS_IS_AUTOMATION(new_automation) ||
+     !AGS_IS_TIMESTAMP(new_automation->timestamp)){
+    return(automation);
+  }
+  
+  automation = g_list_insert_sorted(automation,
+				    new_automation,
+				    ags_automation_add_compare);
+  
+  return(automation);
+}
+
+/**
  * ags_automation_add_acceleration:
  * @automation: an #AgsAutomation
  * @acceleration: the #AgsAcceleration to add

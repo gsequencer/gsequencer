@@ -32,6 +32,8 @@
 #include <cairo.h>
 #include <math.h>
 
+#include <ags/i18n.h>
+
 static GType ags_accessible_automation_edit_get_type(void);
 void ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit);
 void ags_accessible_automation_edit_class_init(AtkObject *object);
@@ -1327,7 +1329,7 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit)
     return;
   }
 
-  automation_editor = gtk_widget_get_anceareaor(automation_edit,
+  automation_editor = gtk_widget_get_ancestor(automation_edit,
 					      AGS_TYPE_AUTOMATION_EDITOR);
 
   if(automation_editor->selected_machine == NULL){

@@ -1517,10 +1517,7 @@ ags_line_real_remove_effect(AgsLine *line,
 			    nth_effect);
 
   /* reset automation editor */
-  ags_automation_editor_reset_port(window->automation_window->automation_editor,
-				   machine,
-				   (AGS_IS_OUTPUT(line->channel) ? AGS_TYPE_OUTPUT: AGS_TYPE_INPUT),
-				   remove_specifier);
+  ags_automation_toolbar_load_port(window->automation_window->automation_editor->automation_toolbar);
 }
 
 /**

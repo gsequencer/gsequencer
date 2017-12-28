@@ -1223,6 +1223,28 @@ ags_scale_draw(AgsScale *scale)
 }
 
 /**
+ * ags_scale_value_changed:
+ * @scale: the #AgsScale
+ * @default_value: the default value
+ * 
+ * Emits ::value-changed event.
+ * 
+ * Since: 1.3.0
+ */
+void
+ags_scale_value_changed(AgsScale *scale,
+			 gdouble default_value)
+{
+  g_return_if_fail(AGS_IS_SCALE(scale));
+  
+  g_object_ref((GObject *) scale);
+  g_signal_emit(G_OBJECT(scale),
+		scale_signals[VALUE_CHANGED], 0,
+		default_value);
+  g_object_unref((GObject *) scale);
+}
+
+/**
  * ags_scale_new:
  * 
  * Create a new instance of #AgsScale.
