@@ -306,7 +306,6 @@ ags_notation_init(AgsNotation *notation)
 {
   notation->flags = 0;
 
-  //TODO:JK: define timestamp
   notation->timestamp = ags_timestamp_new();
 
   AGS_TIMESTAMP(notation->timestamp)->flags &= (~AGS_TIMESTAMP_UNIX);

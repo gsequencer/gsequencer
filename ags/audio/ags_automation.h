@@ -24,7 +24,7 @@
 #include <glib-object.h>
 #include <libxml/tree.h>
 
-#include <ags/lib/ags_function.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_acceleration.h>
 
@@ -39,10 +39,12 @@
 
 #define AGS_AUTOMATION_TICS_PER_BEAT (1.0)
 #define AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH (1.0 / 16.0 / 64.0)
+#define AGS_AUTOMATION_MAXIMUM_ACCELERATION_LENGTH (16.0)
 
 #define AGS_AUTOMATION_DEFAULT_LENGTH (64 * 16 * 1200 / AGS_AUTOMATION_TICS_PER_BEAT)
 #define AGS_AUTOMATION_DEFAULT_JIFFIE (60.0 / AGS_AUTOMATION_DEFAULT_BPM / AGS_AUTOMATION_TICS_PER_BEAT)
 #define AGS_AUTOMATION_DEFAULT_DURATION (AGS_AUTOMATION_DEFAULT_LENGTH * AGS_AUTOMATION_DEFAULT_JIFFIE * AGS_MICROSECONDS_PER_SECOND)
+#define AGS_AUTOMATION_DEFAULT_OFFSET (64 * (1 / AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH))
 
 #define AGS_AUTOMATION_DEFAULT_PRECISION (8)
 #define AGS_AUTOMATION_MAXIMUM_STEPS (128)
@@ -69,7 +71,7 @@ struct _AgsAutomation
 
   guint flags;
 
-  GObject *timestamp;
+  AgsTimestamp *timestamp;
 
   GObject *audio;
   guint line;
@@ -108,7 +110,10 @@ GList* ags_automation_find_port(GList *automation,
 				GObject *port);
 
 GList* ags_automation_find_near_timestamp(GList *automation, guint line,
-					  GObject *timestamp);
+					  AgsTimestamp *timestamp);
+GList* ags_automation_find_near_timestamp_extended(GList *automation, guint line,
+						   GType channel_type, gchar *control_name,
+						   AgsTimestamp *timestamp);
 
 void ags_automation_add_acceleration(AgsAutomation *automation,
 				     AgsAcceleration *acceleration,

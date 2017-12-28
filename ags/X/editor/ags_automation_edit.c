@@ -1536,8 +1536,8 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit)
 
   GtkStyle *automation_edit_style;
 
-  double zoom, zoom_factor;
   gdouble c_range;
+  double zoom, zoom_factor;
   double x, y;
   double width, height;
 
@@ -1878,7 +1878,8 @@ void
 ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
 {
   AgsAutomationEditor *automation_editor;
-
+  AgsNotebook *notebook;
+  
   GtkStyle *automation_edit_style;
   
   AgsMutexManager *mutex_manager;
@@ -1909,6 +1910,14 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
 
   if(automation_editor->selected_machine == NULL){
     return;
+  }
+
+  if(automation_edit->channel_type == G_TYPE_NONE){
+    notebook = NULL;
+  }else if(channel_type == AGS_TYPE_OUTPUT){
+    notebook = automation_editor->output_notebook;
+  }else if(channel_type == AGS_TYPE_INPUT){
+    notebook = automation_editor->input_notebook;
   }
   
   automation_edit_style = gtk_widget_get_style(GTK_WIDGET(automation_edit->drawing_area));
@@ -1960,12 +1969,14 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
 
   i = 0;
   
-  while((i = ags_notebook_next_active_tab(automation_editor->notebook,
+  while(notebook == NULL ||
+	(i = ags_notebook_next_active_tab(notebook,
 					  i)) != -1){
     list_automation = automation_editor->selected_machine->audio->automation;
 
-    while((list_automation = ags_automation_find_near_timestamp(list_automation, i,
-								NULL)) != NULL){
+    while((list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
+									 automation_edit->channel_type, automation_edit->control_name,
+									 NULL)) != NULL){
       AgsAutomation *automation;
 
       GList *list_acceleration;
@@ -1999,6 +2010,10 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
       }
 
       list_automation = list_automation->next;
+    }
+
+    if(notebook == NULL){
+      break;
     }
     
     i++;

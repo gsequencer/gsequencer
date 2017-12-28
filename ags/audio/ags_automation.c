@@ -19,14 +19,7 @@
 
 #include <ags/audio/ags_automation.h>
 
-#include <ags/lib/ags_string_util.h>
-
-#include <ags/object/ags_connectable.h>
-
-#include <ags/object/ags_tactable.h>
-#include <ags/object/ags_portlet.h>
-
-#include <ags/thread/ags_timestamp.h>
+#include <ags/libags.h>
 
 #include <ags/plugin/ags_base_plugin.h>
 
@@ -410,7 +403,12 @@ ags_automation_init(AgsAutomation *automation)
   
   automation->flags = AGS_AUTOMATION_BYPASS;
 
-  automation->timestamp = NULL;
+  automation->timestamp = ags_timestamp_new();
+
+  AGS_TIMESTAMP(automation->timestamp)->flags &= (~AGS_TIMESTAMP_UNIX);
+  AGS_TIMESTAMP(automation->timestamp)->flags |= AGS_TIMESTAMP_OFFSET;
+
+  AGS_TIMESTAMP(automation->timestamp)->timer.ags_offset.offset = 0;
 
   automation->audio = NULL;
   automation->line = 0;
@@ -423,20 +421,6 @@ ags_automation_init(AgsAutomation *automation)
   automation->default_value = 0.0;
   
   automation->acceleration = NULL;
-
-  acceleration = ags_acceleration_new();
-  acceleration->x = 0;
-  acceleration->y = 0.0;
-  ags_automation_add_acceleration(automation,
-				  acceleration,
-				  FALSE);
-
-  acceleration = ags_acceleration_new();
-  acceleration->x = AGS_AUTOMATION_DEFAULT_LENGTH;
-  acceleration->y = 0.0;
-  ags_automation_add_acceleration(automation,
-				  acceleration,
-				  FALSE);
 
   automation->loop_start = 0.0;
   automation->loop_end = 0.0;
@@ -977,33 +961,98 @@ ags_automation_find_port(GList *automation,
  */
 GList*
 ags_automation_find_near_timestamp(GList *automation, guint line,
-				   GObject *gobject)
+				   AgsTimestamp *gobject)
 {
-  AgsTimestamp *timestamp, *current_timestamp;
-
-  if(gobject == NULL){
-    return(NULL);
-  }
-  
-  timestamp = AGS_TIMESTAMP(gobject);
+  AgsTimestamp *current_timestamp;
 
   while(automation != NULL){
     if(AGS_AUTOMATION(automation->data)->line != line){
       automation = automation->next;
+      
       continue;
     }
 
-    current_timestamp = AGS_TIMESTAMP(AGS_AUTOMATION(automation->data)->timestamp);
+    if(timestamp == NULL){
+      return(automation);
+    }
+    
+    current_timestamp = (AgsTimestamp *) AGS_AUTOMATION(automation->data)->timestamp;
 
-    if((AGS_TIMESTAMP_UNIX & (timestamp->flags)) != 0){
-      if((AGS_TIMESTAMP_UNIX & (current_timestamp->flags)) != 0){
+    if(current_timestamp != NULL){
+      if((AGS_TIMESTAMP_UNIX & (timestamp->flags)) != 0 &&
+	 (AGS_TIMESTAMP_UNIX & (current_timestamp->flags)) != 0){
 	if(current_timestamp->timer.unix_time.time_val >= timestamp->timer.unix_time.time_val &&
 	   current_timestamp->timer.unix_time.time_val < timestamp->timer.unix_time.time_val + AGS_AUTOMATION_DEFAULT_DURATION){
 	  return(automation);
 	}
+      }else if((AGS_TIMESTAMP_OFFSET & (timestamp->flags)) != 0 &&
+	       (AGS_TIMESTAMP_OFFSET & (current_timestamp->flags)) != 0){
+	if(current_timestamp->timer.ags_offset.offset >= timestamp->timer.ags_offset.offset &&
+	   current_timestamp->timer.ags_offset.offset < timestamp->timer.ags_offset.offset + AGS_AUTOMATION_DEFAULT_OFFSET){
+	  return(automation);
+	}
       }
     }
+    
+    automation = automation->next;
+  }
 
+  return(NULL);
+}
+
+/**
+ * ags_automation_find_near_timestamp_extended:
+ * @automation: a #GList containing #AgsAutomation
+ * @line: the matching audio channel
+ * @channel_type: the matching channel type
+ * @control_name: the matching control name
+ * @timestamp: the matching timestamp
+ *
+ * Retrieve appropriate automation for timestamp.
+ *
+ * Returns: Next match.
+ *
+ * Since: 1.3.0
+ */
+GList*
+ags_automation_find_near_timestamp_extended(GList *automation, guint line,
+					    GType channel_type, gchar *control_name,
+					    AgsTimestamp *timestamp)
+{
+  AgsTimestamp *current_timestamp;
+
+  while(automation != NULL){
+    if(AGS_AUTOMATION(automation->data)->line != line ||
+       AGS_AUTOMATION(automation->data)->channel_type != channel_type ||
+       !g_strcmp0(AGS_AUTOMATION(automation->data)->control_name,
+		  control_name)){
+      automation = automation->next;
+      
+      continue;
+    }
+
+    if(timestamp == NULL){
+      return(automation);
+    }
+    
+    current_timestamp = (AgsTimestamp *) AGS_AUTOMATION(automation->data)->timestamp;
+
+    if(current_timestamp != NULL){
+      if((AGS_TIMESTAMP_UNIX & (timestamp->flags)) != 0 &&
+	 (AGS_TIMESTAMP_UNIX & (current_timestamp->flags)) != 0){
+	if(current_timestamp->timer.unix_time.time_val >= timestamp->timer.unix_time.time_val &&
+	   current_timestamp->timer.unix_time.time_val < timestamp->timer.unix_time.time_val + AGS_AUTOMATION_DEFAULT_DURATION){
+	  return(automation);
+	}
+      }else if((AGS_TIMESTAMP_OFFSET & (timestamp->flags)) != 0 &&
+	       (AGS_TIMESTAMP_OFFSET & (current_timestamp->flags)) != 0){
+	if(current_timestamp->timer.ags_offset.offset >= timestamp->timer.ags_offset.offset &&
+	   current_timestamp->timer.ags_offset.offset < timestamp->timer.ags_offset.offset + AGS_AUTOMATION_DEFAULT_OFFSET){
+	  return(automation);
+	}
+      }
+    }
+    
     automation = automation->next;
   }
 

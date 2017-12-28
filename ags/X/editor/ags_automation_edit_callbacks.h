@@ -25,36 +25,16 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/X/editor/ags_automation_edit.h>
 
-#include <ags/X/ags_machine.h>
+gboolean ags_automation_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsAutomationEdit *automation_edit);
+gboolean ags_automation_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsAutomationEdit *automation_edit);
 
-void ags_automation_edit_resize_audio_channels_callback(AgsMachine *machine,
-							guint audio_channels, guint audio_channels_old,
-							AgsAutomationEdit *automation_edit);
-void ags_automation_edit_resize_pads_callback(AgsMachine *machine,
-					      GType channel_type,
-					      guint pads, guint pads_old,
-					      AgsAutomationEdit *automation_edit);
-
-gboolean ags_automation_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event,
-						       AgsAutomationEdit *automation_edit);
-gboolean ags_automation_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event,
-							  AgsAutomationEdit *automation_edit);
-gboolean ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton *event,
-							     AgsAutomationEdit *automation_edit);
-gboolean ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *event,
-							       AgsAutomationEdit *automation_edit);
-gboolean ags_automation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion *event,
-							      AgsAutomationEdit *automation_edit);
-gboolean ags_automation_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event,
-							  AgsAutomationEdit *automation_edit);
-gboolean ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event,
-							    AgsAutomationEdit *automation_edit);
+gboolean ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsAutomationEdit *automation_edit);
+gboolean ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *event, AgsAutomationEdit *automation_edit);
+gboolean ags_automation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion *event, AgsAutomationEdit *automation_edit);
+gboolean ags_automation_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsAutomationEdit *automation_edit);
+gboolean ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsAutomationEdit *automation_edit);
 
 void ags_automation_edit_vscrollbar_value_changed(GtkRange *range, AgsAutomationEdit *automation_edit);
 void ags_automation_edit_hscrollbar_value_changed(GtkRange *range, AgsAutomationEdit *automation_edit);
