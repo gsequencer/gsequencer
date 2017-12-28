@@ -19,11 +19,42 @@
 
 #include <ags/X/ags_notation_editor_callbacks.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 void
 ags_notation_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,
 					     AgsNotationEditor *notation_editor)
 {
   ags_notation_editor_machine_changed(notation_editor, machine);
+}
+
+void
+ags_notation_editor_resize_audio_channels_callback(AgsMachine *machine, 
+						   guint audio_channels, guint audio_channels_old,
+						   AgsNotationEditor *notation_editor)
+{
+  guint i;
+  
+  if(audio_channels > audio_channels_old){
+    GList *tab;
+    
+    for(i = audio_channels_old; i < audio_channels; i++){
+      ags_notebook_insert_tab(notation_editor->notebook,
+			      i);
+
+      tab = notation_editor->notebook->tab;
+      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tab->data)->toggle,
+				   TRUE);
+    }
+  }else{
+    /* shrink notebook */
+    for(i = audio_channels; i < audio_channels_old; i++){
+      ags_notebook_remove_tab(notation_editor->notebook,
+			      audio_channels);
+    }
+  }
 }
 
 void

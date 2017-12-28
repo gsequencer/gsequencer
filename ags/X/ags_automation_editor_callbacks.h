@@ -30,10 +30,14 @@
 
 #include <ags/X/editor/ags_machine_selector.h>
 
-void ags_automation_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent,
-					       AgsAutomationEditor *automation_editor);
-
 void ags_automation_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,
 						    AgsAutomationEditor *automation_editor);
+
+void ags_automation_editor_resize_audio_channels_callback(AgsMachine *machine,
+							  guint audio_channels, guint audio_channels_old,
+							  AgsAutomationEditor *automation_editor);
+void ags_automation_editor_resize_pads_callback(AgsMachine *machine, GType channel_type,
+						guint pads, guint pads_old,
+						AgsAutomationEditor *automation_editor);
 
 #endif /*__AGS_AUTOMATION_EDITOR_CALLBACKS_H__*/

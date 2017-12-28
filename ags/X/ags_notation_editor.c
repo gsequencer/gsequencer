@@ -430,6 +430,9 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
 
   if(old_machine != NULL){
     g_object_disconnect(old_machine,
+			"any_signal::resize-audio-channels",
+			G_CALLBACK(ags_notation_editor_resize_audio_channels_callback),
+			(gpointer) notation_editor,
 			"any_signal::resize-pads",
 			G_CALLBACK(ags_notation_editor_resize_pads_callback),
 			(gpointer) notation_editor,
@@ -520,7 +523,10 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
 
   /* connect set-pads - new */
   if(machine != NULL){
-    g_signal_connect_after(machine->audio, "resize-pads",
+    g_signal_connect_after(machine, "resize-audio-channels",
+			   G_CALLBACK(ags_notation_editor_resize_audio_channels_callback), notation_editor);
+
+    g_signal_connect_after(machine, "resize-pads",
 			   G_CALLBACK(ags_notation_editor_resize_pads_callback), notation_editor);
   }  
 }

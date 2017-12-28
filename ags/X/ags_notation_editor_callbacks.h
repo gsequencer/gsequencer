@@ -31,6 +31,9 @@
 void ags_notation_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,
 						  AgsNotationEditor *notation_editor);
 
+void ags_notation_editor_resize_audio_channels_callback(AgsMachine *machine, 
+							guint audio_channels, guint audio_channels_old,
+							AgsNotationEditor *notation_editor);
 void ags_notation_editor_resize_pads_callback(AgsMachine *machine, GType channel_type,
 					      guint pads, guint pads_old,
 					      AgsNotationEditor *notation_editor);
