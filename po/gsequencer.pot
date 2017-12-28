@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 1.3.0\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2017-12-28 09:46+0100\n"
+"POT-Creation-Date: 2017-12-28 18:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,24 +37,24 @@ msgstr ""
 msgid "connect sink"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:224
+#: ags/X/ags_automation_editor.c:230
 msgid "automation"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:248 ags/X/ags_preferences.c:179
+#: ags/X/ags_automation_editor.c:254 ags/X/ags_preferences.c:179
 msgid "audio"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:276 ags/X/ags_connection_editor.c:217
+#: ags/X/ags_automation_editor.c:317 ags/X/ags_connection_editor.c:217
 #: ags/X/ags_machine_editor.c:217
 msgid "output"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:281 ags/X/ags_automation_editor.c:321
+#: ags/X/ags_automation_editor.c:351 ags/X/ags_automation_editor.c:436
 msgid "line"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:316 ags/X/ags_machine_editor.c:224
+#: ags/X/ags_automation_editor.c:402 ags/X/ags_machine_editor.c:224
 msgid "input"
 msgstr ""
 
@@ -545,17 +545,17 @@ msgstr ""
 msgid "zoom"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:831
+#: ags/X/editor/ags_automation_toolbar.c:881
 #: ags/X/editor/ags_select_acceleration_dialog.c:201
 msgid "select accelerations"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:834
+#: ags/X/editor/ags_automation_toolbar.c:884
 #: ags/X/editor/ags_ramp_acceleration_dialog.c:201
 msgid "ramp accelerations"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:837
+#: ags/X/editor/ags_automation_toolbar.c:887
 #: ags/X/editor/ags_notation_toolbar.c:119
 #: ags/X/editor/ags_notation_toolbar.c:390 ags/X/editor/ags_wave_toolbar.c:241
 msgid "position cursor"

@@ -240,11 +240,4 @@ xmlNode* ags_file_write_automation_edit(AgsFile *file, xmlNode *parent, AgsAutom
 void ags_file_read_automation_edit_list(AgsFile *file, xmlNode *node, GList **automation_edit_list);
 xmlNode* ags_file_write_automation_edit_list(AgsFile *file, xmlNode *parent, GList *automation_edit_list);
 
-/* AgsAutomationArea */
-void ags_file_read_automation_area(AgsFile *file, xmlNode *node, AgsAutomationArea **automation_area);
-xmlNode* ags_file_write_automation_area(AgsFile *file, xmlNode *parent, AgsAutomationArea *automation_area);
-
-void ags_file_read_automation_area_list(AgsFile *file, xmlNode *node, GList **automation_area_list);
-xmlNode* ags_file_write_automation_area_list(AgsFile *file, xmlNode *parent, GList *automation_area_list);
-
 #endif /*__AGS_FILE_GUI_H__*/

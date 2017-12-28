@@ -144,7 +144,7 @@ ags_scale_box_class_init(AgsScaleBoxClass *scale_box)
   /* GtkContainerClass */
   container = (GtkWidgetClass *) scale_box;
 
-  container->child_type = gtk_scale_box_child_type;
+  container->child_type = ags_scale_box_child_type;
 }
 
 void
@@ -201,12 +201,14 @@ ags_scale_box_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_FIXED_SCALE_WIDTH:
     {
-      g_value_set_uint(scale_box->fixed_scale_width);
+      g_value_set_uint(value,
+		       scale_box->fixed_scale_width);
     }
     break;
   case PROP_FIXED_SCALE_HEIGHT:
     {
-      g_value_set_uint(scale_box->fixed_scale_height);
+      g_value_set_uint(value,
+		       scale_box->fixed_scale_height);
     }
     break;
   default:
@@ -235,10 +237,10 @@ ags_scale_box_size_allocate(AgsScaleBox *scale_box,
   guint width, height;
   guint x, y;
   
-  GTK_WIDGET(notebook->navigation)->allocation = *allocation;
+  GTK_WIDGET(scale_box)->allocation = *allocation;
 
   list_start = 
-    list = gtk_container_get_children((GtkContainer *) notebook->hbox);
+    list = gtk_container_get_children((GtkContainer *) scale_box);
 
   orientation = gtk_orientable_get_orientation(GTK_ORIENTABLE(scale_box));
   
@@ -419,10 +421,10 @@ ags_scale_box_size_request(AgsScaleBox *scale_box,
       width = 0;
 
       while(list != NULL){
-	if(AGS_SCALE(list->start)->layout == AGS_SCALE_LAYOUT_VERTICAL){
-	  width += AGS_SCALE(list->start)->scale_width;
-	}else if(AGS_SCALE(list->start)->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
-	  width += AGS_SCALE(list->start)->scale_height;
+	if(AGS_SCALE(list->data)->layout == AGS_SCALE_LAYOUT_VERTICAL){
+	  width += AGS_SCALE(list->data)->scale_width;
+	}else if(AGS_SCALE(list->data)->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
+	  width += AGS_SCALE(list->data)->scale_height;
 	}
 	
 	list = list->next;
@@ -442,10 +444,10 @@ ags_scale_box_size_request(AgsScaleBox *scale_box,
       height = 0;
 
       while(list != NULL){
-	if(AGS_SCALE(list->start)->layout == AGS_SCALE_LAYOUT_VERTICAL){
-	  height += AGS_SCALE(list->start)->scale_height;
-	}else if(AGS_SCALE(list->start)->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
-	  height += AGS_SCALE(list->start)->scale_width;
+	if(AGS_SCALE(list->data)->layout == AGS_SCALE_LAYOUT_VERTICAL){
+	  height += AGS_SCALE(list->data)->scale_height;
+	}else if(AGS_SCALE(list->data)->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
+	  height += AGS_SCALE(list->data)->scale_width;
 	}
 	
 	list = list->next;
@@ -468,7 +470,8 @@ ags_scale_box_size_request(AgsScaleBox *scale_box,
   g_list_free(list_start);
 }
 
-GType ags_scale_box_child_type(GtkContainer *container)
+GType
+ags_scale_box_child_type(GtkContainer *container)
 {
   return(AGS_TYPE_SCALE);
 }
@@ -482,7 +485,7 @@ GType ags_scale_box_child_type(GtkContainer *container)
  * 
  * Since: 1.3.0
  */
-AgsScale_Box*
+AgsScaleBox*
 ags_scale_box_new()
 {
   AgsScaleBox *scale_box;

@@ -25,7 +25,7 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/widget/ags_automation_edit_box.h>
+#include <ags/X/editor/ags_automation_edit_box.h>
 
 #define AGS_TYPE_SCROLLED_AUTOMATION_EDIT_BOX                (ags_scrolled_automation_edit_box_get_type())
 #define AGS_SCROLLED_AUTOMATION_EDIT_BOX(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SCROLLED_AUTOMATION_EDIT_BOX, AgsScrolledAutomationEditBox))

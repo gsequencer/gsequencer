@@ -19,6 +19,10 @@
 
 #include <ags/X/ags_automation_editor_callbacks.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
+
 void
 ags_automation_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,
 					       AgsAutomationEditor *automation_editor)
@@ -87,13 +91,13 @@ ags_automation_editor_resize_audio_channels_callback(AgsMachine *machine,
   }else{
     /* output line */
     for(i = audio_channels * output_pads; i < audio_channels_old * output_pads; i++){
-      ags_notebook_remove_tab(notation_editor->output_notebook,
+      ags_notebook_remove_tab(automation_editor->output_notebook,
 			      audio_channels * output_pads);
     }
     
     /* input line */
     for(i = audio_channels * input_pads; i < audio_channels_old * input_pads; i++){
-      ags_notebook_remove_tab(notation_editor->input_notebook,
+      ags_notebook_remove_tab(automation_editor->input_notebook,
 			      audio_channels * input_pads);
     }
   }
@@ -137,7 +141,7 @@ ags_automation_editor_resize_pads_callback(AgsMachine *machine, GType channel_ty
   if(pads > pads_old){
     GList *tab;
 
-    if(channel_type == AGS_TYPE_OUPUT){
+    if(channel_type == AGS_TYPE_OUTPUT){
       for(i = audio_channels * pads_old; i < audio_channels * pads; i++){
 	ags_notebook_insert_tab(automation_editor->output_notebook,
 				i);
@@ -157,14 +161,14 @@ ags_automation_editor_resize_pads_callback(AgsMachine *machine, GType channel_ty
       }
     }
   }else{
-    if(channel_type == AGS_TYPE_OUPUT){
+    if(channel_type == AGS_TYPE_OUTPUT){
       for(i = audio_channels * pads; i < audio_channels * pads_old; i++){
-	ags_notebook_remove_tab(notation_editor->output_notebook,
+	ags_notebook_remove_tab(automation_editor->output_notebook,
 				audio_channels * pads);
       }
     }else if(channel_type == AGS_TYPE_INPUT){
       for(i = audio_channels * pads; i < audio_channels * pads_old; i++){
-	ags_notebook_remove_tab(notation_editor->input_notebook,
+	ags_notebook_remove_tab(automation_editor->input_notebook,
 				audio_channels * pads);
       }
     }

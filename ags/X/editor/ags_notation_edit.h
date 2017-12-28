@@ -58,9 +58,8 @@ typedef enum{
   AGS_NOTATION_EDIT_CONNECTED             = 1,
   AGS_NOTATION_EDIT_AUTO_SCROLL           = 1 <<  1,
   AGS_NOTATION_EDIT_SHOW_RULER            = 1 <<  2,
-  AGS_NOTATION_EDIT_SHOW_RULER            = 1 <<  3,
-  AGS_NOTATION_EDIT_SHOW_VSCROLLBAR       = 1 <<  4,
-  AGS_NOTATION_EDIT_SHOW_HSCROLLBAR       = 1 <<  5,
+  AGS_NOTATION_EDIT_SHOW_VSCROLLBAR       = 1 <<  3,
+  AGS_NOTATION_EDIT_SHOW_HSCROLLBAR       = 1 <<  4,
 }AgsNotationEditFlags;
 
 typedef enum{

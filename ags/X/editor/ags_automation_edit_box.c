@@ -19,6 +19,8 @@
 
 #include <ags/X/editor/ags_automation_edit_box.h>
 
+#include <ags/X/editor/ags_automation_edit.h>
+
 void ags_automation_edit_box_class_init(AgsAutomationEditBoxClass *automation_edit_box);
 void ags_automation_edit_box_init(AgsAutomationEditBox *automation_edit_box);
 void ags_automation_edit_box_set_property(GObject *gobject,
@@ -127,7 +129,7 @@ ags_automation_edit_box_class_init(AgsAutomationEditBoxClass *automation_edit_bo
   /* GtkContainerClass */
   container = (GtkWidgetClass *) automation_edit_box;
 
-  container->child_type = gtk_automation_edit_box_child_type;
+  container->child_type = ags_automation_edit_box_child_type;
 }
 
 void
@@ -178,7 +180,8 @@ ags_automation_edit_box_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_FIXED_EDIT_HEIGHT:
     {
-      g_value_set_uint(automation_edit_box->fixed_edit_height);
+      g_value_set_uint(value,
+		       automation_edit_box->fixed_edit_height);
     }
     break;
   default:
@@ -207,10 +210,10 @@ ags_automation_edit_box_size_allocate(AgsAutomationEditBox *automation_edit_box,
   guint width, height;
   guint x, y;
   
-  GTK_WIDGET(notebook->navigation)->allocation = *allocation;
+  GTK_WIDGET(automation_edit_box)->allocation = *allocation;
 
   list_start = 
-    list = gtk_container_get_children((GtkContainer *) notebook->hbox);
+    list = gtk_container_get_children((GtkContainer *) automation_edit_box);
 
   orientation = gtk_orientable_get_orientation(GTK_ORIENTABLE(automation_edit_box));
   
@@ -374,11 +377,7 @@ ags_automation_edit_box_size_request(AgsAutomationEditBox *automation_edit_box,
       width = 0;
 
       while(list != NULL){
-	if(AGS_AUTOMATION_EDIT(list->start)->layout == AGS_AUTOMATION_EDIT_LAYOUT_VERTICAL){
-	  width += AGS_AUTOMATION_EDIT(list->start)->automation_edit_width;
-	}else if(AGS_AUTOMATION_EDIT(list->start)->layout == AGS_AUTOMATION_EDIT_LAYOUT_HORIZONTAL){
-	  width += AGS_AUTOMATION_EDIT(list->start)->automation_edit_height;
-	}
+	width += GTK_WIDGET(list->data)->allocation.width;
 	
 	list = list->next;
       }
@@ -397,11 +396,7 @@ ags_automation_edit_box_size_request(AgsAutomationEditBox *automation_edit_box,
       height = 0;
 
       while(list != NULL){
-	if(AGS_AUTOMATION_EDIT(list->start)->layout == AGS_AUTOMATION_EDIT_LAYOUT_VERTICAL){
-	  height += AGS_AUTOMATION_EDIT(list->start)->automation_edit_height;
-	}else if(AGS_AUTOMATION_EDIT(list->start)->layout == AGS_AUTOMATION_EDIT_LAYOUT_HORIZONTAL){
-	  height += AGS_AUTOMATION_EDIT(list->start)->automation_edit_width;
-	}
+	height += GTK_WIDGET(list->data)->allocation.height;
 	
 	list = list->next;
       }

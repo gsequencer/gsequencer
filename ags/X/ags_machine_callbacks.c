@@ -158,37 +158,7 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
 
   g_list_free(list_start);
 
-  /* destroy automation editor */
-  list = window->automation_window->automation_editor->automation_editor_child;
-
-  while(list != NULL){
-    if(AGS_AUTOMATION_EDITOR_CHILD(list->data)->machine == machine){
-      //TODO:JK: remove work-around
-      g_signal_handlers_disconnect_by_data(machine->audio,
-					   AGS_AUTOMATION_EDITOR_CHILD(list->data)->output_notebook);
-      g_signal_handlers_disconnect_by_data(machine->audio,
-					   AGS_AUTOMATION_EDITOR_CHILD(list->data)->input_notebook);
-      
-      ags_connectable_disconnect(AGS_CONNECTABLE(AGS_AUTOMATION_EDITOR_CHILD(list->data)->output_notebook));
-      ags_connectable_disconnect(AGS_CONNECTABLE(AGS_AUTOMATION_EDITOR_CHILD(list->data)->input_notebook));
-      
-      gtk_widget_destroy((GtkWidget *) AGS_AUTOMATION_EDITOR_CHILD(list->data)->audio_scale);
-      gtk_widget_destroy((GtkWidget *) AGS_AUTOMATION_EDITOR_CHILD(list->data)->audio_automation_edit);
-
-      gtk_widget_destroy((GtkWidget *) AGS_AUTOMATION_EDITOR_CHILD(list->data)->output_scale);
-      gtk_widget_destroy((GtkWidget *) AGS_AUTOMATION_EDITOR_CHILD(list->data)->output_notebook);
-      gtk_widget_destroy((GtkWidget *) AGS_AUTOMATION_EDITOR_CHILD(list->data)->output_automation_edit);
-
-      gtk_widget_destroy((GtkWidget *) AGS_AUTOMATION_EDITOR_CHILD(list->data)->input_scale);
-      gtk_widget_destroy((GtkWidget *) AGS_AUTOMATION_EDITOR_CHILD(list->data)->input_notebook);
-      gtk_widget_destroy((GtkWidget *) AGS_AUTOMATION_EDITOR_CHILD(list->data)->input_automation_edit);
-
-      break;
-    }
-
-    list = list->next;
-  }
-  
+  /* destroy automation editor */  
   list =
     list_start = gtk_container_get_children((GtkContainer *) window->automation_window->automation_editor->machine_selector);
 

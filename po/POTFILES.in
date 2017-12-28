@@ -100,8 +100,6 @@
 ./ags/X/ags_window.c
 ./ags/X/ags_window_callbacks.c
 ./ags/X/ags_xorg_application_context.c
-./ags/X/editor/ags_automation_area.c
-./ags/X/editor/ags_automation_area_callbacks.c
 ./ags/X/editor/ags_automation_edit.c
 ./ags/X/editor/ags_automation_edit_box.c
 ./ags/X/editor/ags_automation_edit_callbacks.c

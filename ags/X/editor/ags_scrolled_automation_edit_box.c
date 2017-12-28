@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/widget/ags_scrolled_automation_edit_box.h>
+#include <ags/X/editor/ags_scrolled_automation_edit_box.h>
 
 void ags_scrolled_automation_edit_box_class_init(AgsScrolledAutomationEditBoxClass *scrolled_automation_edit_box);
 void ags_scrolled_automation_edit_box_init(AgsScrolledAutomationEditBox *scrolled_automation_edit_box);
@@ -316,12 +316,12 @@ ags_scrolled_automation_edit_box_size_allocate(GtkWidget *widget,
     switch(orientation){
     case GTK_ORIENTATION_HORIZONTAL:
       {
-	widget->allocation.height = scrolled_automation_edit_box->automation_edit_box->fixed_automation_edit_width + (scrolled_automation_edit_box->margin_top + scrolled_automation_edit_box->margin_bottom);
+	allocation->height = -1;
       }
       break;
     case GTK_ORIENTATION_VERTICAL:
       {
-	widget->allocation.width = scrolled_automation_edit_box->automation_edit_box->fixed_automation_edit_width + (scrolled_automation_edit_box->margin_left + scrolled_automation_edit_box->margin_right);
+	allocation->width = -1;
       }
       break;
     }
@@ -346,12 +346,12 @@ ags_scrolled_automation_edit_box_size_allocate(GtkWidget *widget,
 	  child_allocation.width = 0;
 	}
     
-	child_allocation.height = scrolled_automation_edit_box->automation_edit_box->fixed_automation_edit_width;
+	child_allocation.height = -1;
       }
       break;
     case GTK_ORIENTATION_VERTICAL:
       {
-	child_allocation.width = scrolled_automation_edit_box->automation_edit_box->fixed_automation_edit_width;
+	child_allocation.width = -1;
 
 	if(widget->allocation.height > (scrolled_automation_edit_box->margin_top + scrolled_automation_edit_box->margin_bottom)){
 	  child_allocation.height = widget->allocation.height - (scrolled_automation_edit_box->margin_top + scrolled_automation_edit_box->margin_bottom);
@@ -388,12 +388,12 @@ ags_scrolled_automation_edit_box_size_request(GtkWidget *widget,
     switch(orientation){
     case GTK_ORIENTATION_HORIZONTAL:
       {
-	requisition->height = scrolled_automation_edit_box->automation_edit_box->fixed_automation_edit_width + (scrolled_automation_edit_box->margin_left + scrolled_automation_edit_box->margin_right);
+	requisition->height = -1;
       }
       break;
     case GTK_ORIENTATION_VERTICAL:
       {
-	requisition->width = scrolled_automation_edit_box->automation_edit_box->fixed_automation_edit_width + (scrolled_automation_edit_box->margin_left + scrolled_automation_edit_box->margin_right);
+	requisition->width = -1;
       }
       break;
     }

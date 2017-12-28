@@ -176,9 +176,11 @@ ags_accessible_automation_edit_get_type(void)
 void
 ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
 {
+  GtkWidgetClass *widget;
+
   GObjectClass *gobject;
 
-  GtkWidgetClass *widget;
+  GParamSpec *param_spec;
   
   ags_automation_edit_parent_class = g_type_class_peek_parent(automation_edit);
 
@@ -1208,13 +1210,6 @@ ags_automation_edit_reset_vscrollbar(AgsAutomationEdit *automation_edit)
     return;
   }
 
-  /* adjustment */
-  adjustment = GTK_RANGE(automation_edit->vscrollbar)->adjustment;
-
-  g_object_get(automation_editor->scrolled_piano->viewport,
-	       "vadjustment", &piano_adjustment,
-	       NULL);
-
   /* upper */
   old_upper = adjustment->upper; 
 
@@ -1312,21 +1307,27 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit)
 
   cairo_t *cr;
 
+  gdouble x_offset, y_offset;
   gdouble translated_ground;
   double tact;
   gdouble y;
-  gdouble height;
+  gdouble map_height;
+  gdouble width, height;
   guint control_width;
   guint i, j;
   guint j_set;
 
   static const gdouble white_gc = 65535.0;
 
+  const static double dashes = {
+    0.25,
+  };
+  
   if(!AGS_IS_AUTOMATION_EDIT(automation_edit)){
     return;
   }
 
-  automation_editor = gtk_widget_get_ancestor(automation_edit,
+  automation_editor = gtk_widget_get_anceareaor(automation_edit,
 					      AGS_TYPE_AUTOMATION_EDITOR);
 
   if(automation_editor->selected_machine == NULL){
@@ -1336,6 +1337,9 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit)
   automation_toolbar = automation_editor->automation_toolbar;
   
   automation_edit_style = gtk_widget_get_style(GTK_WIDGET(automation_edit->drawing_area));
+
+  x_offset = GTK_RANGE(automation_edit->hscrollbar)->adjustment->value;
+  y_offset = GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
 
   /* create cairo context */
   cr = gdk_cairo_create(GTK_WIDGET(automation_edit->drawing_area)->window);
@@ -1368,33 +1372,33 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit)
 
   tact = exp2((double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom) - 2.0);
 
-  y = (gdouble) automation_area->y - y_offset;
+  y = (gdouble) 0.0;
   
-  height = (gdouble) automation_area->height;
+  map_height = (gdouble) height + GTK_RANGE(automation_edit->vscrollbar)->adjustment->upper;
 
-  control_width = 64;
+  control_width = AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH;
   i = control_width - (guint) x_offset % control_width;
   
-  if(i < widget->allocation.width &&
+  if(i < width &&
      tact > 1.0 ){
     j_set = ((guint) x_offset / control_width + 1) % ((guint) tact);
 
     cairo_set_source_rgb(cr,
-			 automation_area_style->mid[0].red / white_gc,
-			 automation_area_style->mid[0].green / white_gc,
-			 automation_area_style->mid[0].blue / white_gc);
+			 automation_edit_style->mid[0].red / white_gc,
+			 automation_edit_style->mid[0].green / white_gc,
+			 automation_edit_style->mid[0].blue / white_gc);
 
     if(j_set != 0){
       j = j_set;
-      goto ags_automation_area_draw_segment0;
+      goto ags_automation_edit_draw_segment0;
     }
   }
 
-  for(; i < widget->allocation.width; ){
+  for(; i < width; ){
     cairo_set_source_rgb(cr,
-			 automation_area_style->fg[0].red / white_gc,
-			 automation_area_style->fg[0].blue / white_gc,
-			 automation_area_style->fg[0].green / white_gc);
+			 automation_edit_style->fg[0].red / white_gc,
+			 automation_edit_style->fg[0].blue / white_gc,
+			 automation_edit_style->fg[0].green / white_gc);
     
     cairo_move_to(cr, (double) i, y);
     cairo_line_to(cr, (double) i, y + height);
@@ -1403,12 +1407,12 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit)
     i += control_width;
     
     cairo_set_source_rgb(cr,
-			 automation_area_style->mid[0].red / white_gc,
-			 automation_area_style->mid[0].green / white_gc,
-			 automation_area_style->mid[0].blue / white_gc);
+			 automation_edit_style->mid[0].red / white_gc,
+			 automation_edit_style->mid[0].green / white_gc,
+			 automation_edit_style->mid[0].blue / white_gc);
     
-    for(j = 1; i < widget->allocation.width && j < tact; j++){
-    ags_automation_area_draw_segment0:
+    for(j = 1; i < width && j < tact; j++){
+    ags_automation_edit_draw_segment0:
       cairo_move_to(cr, (double) i, y);
       cairo_line_to(cr, (double) i, y + height);
       cairo_stroke(cr);
@@ -1418,40 +1422,46 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit)
   }
 
   cairo_set_source_rgb(cr,
-		       automation_area_style->bg[0].red / white_gc,
-		       automation_area_style->bg[0].green / white_gc,
-		       automation_area_style->bg[0].blue / white_gc);
+		       automation_edit_style->bg[0].red / white_gc,
+		       automation_edit_style->bg[0].green / white_gc,
+		       automation_edit_style->bg[0].blue / white_gc);
 
   /* middle */
-  cairo_move_to(cr,
-		0.0, y + height * 0.5);
-  cairo_line_to(cr,
-		width, y + height * 0.5);
-  cairo_stroke(cr);
-
+  if(map_height * 0.5 < height){
+    cairo_move_to(cr,
+		  0.0, y + map_height * 0.5);
+    cairo_line_to(cr,
+		  width, y + map_height * 0.5);
+    cairo_stroke(cr);
+  }
+  
   /* set dash */
   cairo_set_source_rgb(cr,
-		       automation_area_style->bg[0].red / white_gc,
-		       automation_area_style->bg[0].green / white_gc,
-		       automation_area_style->bg[0].blue / white_gc);
+		       automation_edit_style->bg[0].red / white_gc,
+		       automation_edit_style->bg[0].green / white_gc,
+		       automation_edit_style->bg[0].blue / white_gc);
   cairo_set_dash(cr,
 		 &dashes,
 		 1,
 		 0.0);
 
   /* lower quarter */
-  cairo_move_to(cr,
-		0.0, y + height * 0.25);
-  cairo_line_to(cr,
-		width, y + height * 0.25);
-  cairo_stroke(cr);
-
+  if(map_height * 0.25 < height){
+    cairo_move_to(cr,
+		  0.0, y + map_height * 0.25);
+    cairo_line_to(cr,
+		  width, y + map_height * 0.25);
+    cairo_stroke(cr);
+  }
+  
   /* upper quarter */
-  cairo_move_to(cr,
-		0.0, y + height * 0.75);
-  cairo_line_to(cr,
-		width, y + height * 0.75);
-  cairo_stroke(cr);
+  if(map_height * 0.75 < height){
+    cairo_move_to(cr,
+		  0.0, y + map_height * 0.75);
+    cairo_line_to(cr,
+		  width, y + map_height * 0.75);
+    cairo_stroke(cr);
+  }
   
   /* complete */
   cairo_pop_group_to_source(cr);
@@ -1801,9 +1811,6 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 
   /* apply zoom */
   x /= zoom_factor;
-  x += ((double) automation_edit->control_margin_x);
-
-  y += ((double) automation_edit->control_margin_y);
   
   width /= zoom_factor;
   
@@ -1839,14 +1846,14 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   }
 
   /* draw point */
-  if((AGS_ACCELERATION_IS_SELECTED & (acceleration->flags)) != 0){
+  if((AGS_ACCELERATION_IS_SELECTED & (acceleration_a->flags)) != 0){
     /* draw selected acceleration */
     cairo_set_source_rgba(cr,
 			  r, g, b, 1.0);
     
     cairo_arc(cr,
 	      x, y,
-	      automotion_edit->point_radius,
+	      automation_edit->point_radius,
 	      0.0,
 	      2.0 * M_PI);
 
@@ -1858,7 +1865,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
     
     cairo_arc(cr,
 	      x, y,
-	      automotion_edit->point_radius,
+	      automation_edit->point_radius,
 	      0.0,
 	      2.0 * M_PI);
     
@@ -1914,9 +1921,9 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
 
   if(automation_edit->channel_type == G_TYPE_NONE){
     notebook = NULL;
-  }else if(channel_type == AGS_TYPE_OUTPUT){
+  }else if(automation_edit->channel_type == AGS_TYPE_OUTPUT){
     notebook = automation_editor->output_notebook;
-  }else if(channel_type == AGS_TYPE_INPUT){
+  }else if(automation_edit->channel_type == AGS_TYPE_INPUT){
     notebook = automation_editor->input_notebook;
   }
   
@@ -1995,7 +2002,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
 	continue;
       }
 
-      list_acceleration = automation->accelerations;
+      list_acceleration = automation->acceleration;
 
       while(list_acceleration != NULL){
 	ags_automation_edit_draw_acceleration(automation_edit,

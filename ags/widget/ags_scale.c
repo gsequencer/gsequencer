@@ -1035,7 +1035,7 @@ ags_scale_key_release(GtkWidget *widget,
 	c_range = scale->upper - scale->lower;
       }
       
-      page = scale->page_size * (c_range / scale->page_count);
+      page = scale->page_size * (c_range / scale->step_count);
 
       if(scale->default_value + log(page) > scale->upper){
 	scale->default_value = scale->upper;
@@ -1061,7 +1061,7 @@ ags_scale_key_release(GtkWidget *widget,
 	c_range = scale->upper - scale->lower;
       }
       
-      page = scale->page_size * (c_range / scale->page_count);
+      page = scale->page_size * (c_range / scale->step_count);
 
       if(scale->default_value - log(page) < scale->lower){
 	scale->default_value = scale->lower;
@@ -1202,18 +1202,18 @@ ags_scale_draw(AgsScale *scale)
   cairo_set_source_rgb(cr,
 		       1.0, 1.0, 1.0);
 
-  if(scale->layout == AGS_SCALE_VERTICAL){
+  if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
     cairo_move_to(cr,
-		  x_start + scale_area->font_size, y_start + height - 1.0);
+		  x_start + scale->font_size, y_start + height - 1.0);
     cairo_rotate(cr,
 		 2 * M_PI * 0.75);
   }else{
     cairo_move_to(cr,
-		  x_start + scale_area->font_size, y_start + 1.0);
+		  x_start + scale->font_size, y_start + 1.0);
   }
   
   ags_scale_draw_string(cr,
-			scale_area->control_name);
+			scale->control_name);
 
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);

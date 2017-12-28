@@ -1800,7 +1800,7 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_position_notation_cursor_dialog_callbacks.h \
 	ags/X/editor/ags_ramp_acceleration_dialog.h \
 	ags/X/editor/ags_ramp_acceleration_dialog_callbacks.h \
-	ags/X/editor/ags_scrolled_edit_box.h \
+	ags/X/editor/ags_scrolled_automation_edit_box.h \
 	ags/X/editor/ags_sf2_chooser_callbacks.h \
 	ags/X/editor/ags_sf2_chooser.h \
 	ags/X/editor/ags_select_acceleration_dialog.h \
@@ -1855,7 +1855,7 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_position_notation_cursor_dialog_callbacks.c \
 	ags/X/editor/ags_ramp_acceleration_dialog.c \
 	ags/X/editor/ags_ramp_acceleration_dialog_callbacks.c \
-	ags/X/editor/ags_scrolled_edit_box.c \
+	ags/X/editor/ags_scrolled_automation_edit_box.c \
 	ags/X/editor/ags_select_acceleration_dialog.c \
 	ags/X/editor/ags_select_acceleration_dialog_callbacks.c \
 	ags/X/editor/ags_select_note_dialog.c \

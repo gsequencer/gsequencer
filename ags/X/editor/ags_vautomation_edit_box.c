@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/widget/ags_vautomation_edit_box.h>
+#include <ags/X/editor/ags_vautomation_edit_box.h>
 
 void ags_vautomation_edit_box_class_init(AgsVAutomationEditBoxClass *vautomation_edit_box);
 void ags_vautomation_edit_box_init(AgsVAutomationEditBox *vautomation_edit_box);

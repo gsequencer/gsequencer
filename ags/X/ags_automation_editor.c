@@ -195,8 +195,8 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   automation_editor->build_id = AGS_AUTOMATION_EDITOR_DEFAULT_BUILD_ID;
 
   /* offset */
-  notation_editor->tact_counter = 0;
-  notation_editor->current_tact = 0.0;
+  automation_editor->tact_counter = 0;
+  automation_editor->current_tact = 0.0;
 
   /* soundcard */
   automation_editor->soundcard = NULL;
@@ -242,7 +242,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   /* notebook audio, output, input */
   automation_editor->notebook = (GtkNotebook *) gtk_notebook_new();
-  gtk_paned_pack2((GtkPaned *) paned,
+  gtk_paned_pack2((GtkPaned *) automation_editor->paned,
 		  (GtkWidget *) automation_editor->notebook,
 		  TRUE, FALSE);
   
@@ -970,7 +970,9 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
 	automation = list_automation->data;
       }else{
 	automation = ags_automation_new(machine->audio,
-					i);
+					i,
+					automation_editor->focused_automation_edit->channel_type,
+					automation_editor->focused_automation_edit->control_name);
 	machine->audio->automation = ags_automation_add(machine->audio->automation,
 							automation);
       }
@@ -1362,10 +1364,12 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 
 		  if(list_automation == NULL){
 		    automation = ags_automation_new(machine->audio,
-						i);
+						    i,
+						    automation_editor->focused_automation_edit->channel_type,
+						    automation_editor->focused_automation_edit->control_name);
 		    AGS_TIMESTAMP(automation->timestamp)->timer.ags_offset.offset = offset;
 		    machine->audio->automation = ags_automation_add(machine->audio->automation,
-								automation);
+								    automation);
 		  }else{
 		    automation = AGS_AUTOMATION(list_automation->data);
 		  }
@@ -1376,9 +1380,9 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 		    guint x_boundary;
 	  
 		    ags_automation_insert_from_clipboard(automation,
-						       automation_node,
-						       TRUE, position_x,
-						       TRUE, position_y);
+							 automation_node,
+							 TRUE, position_x,
+							 TRUE, position_y);
 
 		    /* get boundaries */
 		    child = automation_node->children;
@@ -1507,7 +1511,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
       notebook = automation_editor->output_notebook;
 
       list =
-	list_start = gtk_container_get_children(automation_editor->scrolled_output_automation_edit_box->automation_edit_box);
+	list_start = gtk_container_get_children(automation_editor->output_scrolled_automation_edit_box->automation_edit_box);
 
       while(list != NULL){
 	if(!g_strcmp0(automation_editor->focused_automation_edit->control_name,
@@ -1527,7 +1531,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
       notebook = automation_editor->input_notebook;
 
       list =
-	list_start = gtk_container_get_children(automation_editor->scrolled_input_automation_edit_box->automation_edit_box);
+	list_start = gtk_container_get_children(automation_editor->input_scrolled_automation_edit_box->automation_edit_box);
 
       while(list != NULL){
 	if(!g_strcmp0(automation_editor->focused_automation_edit->control_name,
@@ -1545,7 +1549,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
       GList *list_start, *list;
 
       list =
-	list_start = gtk_container_get_children(automation_editor->scrolled_audio_automation_edit_box->automation_edit_box);
+	list_start = gtk_container_get_children(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box);
 
       while(list != NULL){
 	if(!g_strcmp0(automation_editor->focused_automation_edit->control_name,
@@ -1584,8 +1588,8 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
       last_x = 0;
       paste_from_position = TRUE;
 
-      position_x = automation_editor->automation_edit->cursor_position_x;
-      position_y = automation_editor->automation_edit->cursor_position_y;
+      position_x = automation_editor->focused_automation_edit->cursor_position_x;
+      position_y = automation_editor->focused_automation_edit->cursor_position_y;
       
 #ifdef DEBUG
       printf("pasting at position: [%u,%u]\n", position_x, position_y);
@@ -1635,9 +1639,9 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
       small_step = (guint) big_step - 16;
 	
       if(small_step < last_x){
-	automation_editor->automation_edit->cursor_position_x = big_step;
+	automation_editor->focused_automation_edit->cursor_position_x = big_step;
       }else{
-	automation_editor->automation_edit->cursor_position_x = small_step;
+	automation_editor->focused_automation_edit->cursor_position_x = small_step;
       }
     }
 
@@ -1848,7 +1852,7 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
       i++;
     }
 
-    gtk_widget_queue_draw(automation_editor->automation_edit);
+    gtk_widget_queue_draw(automation_editor->focused_automation_edit);
 
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);

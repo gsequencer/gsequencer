@@ -437,21 +437,15 @@ ags_position_automation_cursor_dialog_apply(AgsApplicable *applicable)
 
   current_page = gtk_notebook_get_current_page(automation_editor->notebook);
   
-  if(current_page == 0){
-    automation_edit = automation_editor->current_audio_automation_edit;
-  }else if(current_page == 1){
-    automation_edit = automation_editor->current_output_automation_edit;
-  }else{
-    automation_edit = automation_editor->current_input_automation_edit;
-  }
+  automation_edit = automation_editor->focused_automation_edit;
 
   if(automation_edit == NULL){
     return;
   }
   
   x = gtk_spin_button_get_value_as_int(position_automation_cursor_dialog->position_x);
-  automation_edit->edit_x = 16 * x;
-  automation_edit->edit_y = 0;
+  automation_edit->cursor_position_x = 16 * x;
+  automation_edit->cursor_position_y = 0.0;
 
   hadjustment = GTK_RANGE(automation_edit->hscrollbar)->adjustment;
 
@@ -460,7 +454,7 @@ ags_position_automation_cursor_dialog_apply(AgsApplicable *applicable)
   /* make visible */  
   if(hadjustment != NULL){
     gtk_adjustment_set_value(hadjustment,
-			     ((x * 16 * 64 / zoom) * (hadjustment->upper / (AGS_NOTATION_EDITOR_MAX_CONTROLS * 64 / zoom))));
+			     ((x * 16 * 64 / zoom) * (hadjustment->upper / (AGS_AUTOMATION_EDITOR_MAX_CONTROLS / zoom))));
   }
   
   if(gtk_toggle_button_get_active(position_automation_cursor_dialog->set_focus)){

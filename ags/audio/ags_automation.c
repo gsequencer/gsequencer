@@ -961,7 +961,7 @@ ags_automation_find_port(GList *automation,
  */
 GList*
 ags_automation_find_near_timestamp(GList *automation, guint line,
-				   AgsTimestamp *gobject)
+				   AgsTimestamp *timestamp)
 {
   AgsTimestamp *current_timestamp;
 

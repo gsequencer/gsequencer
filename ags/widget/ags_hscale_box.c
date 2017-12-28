@@ -81,7 +81,7 @@ ags_hscale_box_init(AgsHScaleBox *hscale_box)
  * 
  * Since: 1.3.0
  */
-AgsHScale_Box*
+AgsHScaleBox*
 ags_hscale_box_new()
 {
   AgsHScaleBox *hscale_box;

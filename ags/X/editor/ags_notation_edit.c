@@ -165,6 +165,8 @@ ags_accessible_notation_edit_get_type(void)
 void
 ags_notation_edit_class_init(AgsNotationEditClass *notation_edit)
 {
+  GtkWidgetClass *widget;
+  
   GObjectClass *gobject;
   
   GParamSpec *param_spec;
@@ -249,7 +251,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   }
 
   notation_edit->ruler = ags_ruler_new();
-  g_object_set(automation_edit->ruler,
+  g_object_set(notation_edit->ruler,
 	       "no-show-all", TRUE,
 	       NULL);
   gtk_table_attach(GTK_TABLE(notation_edit),
@@ -282,7 +284,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   /* vscrollbar */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, notation_edit->control_height, 1.0);
   notation_edit->vscrollbar = gtk_vscrollbar_new(adjustment);
-  g_object_set(automation_edit->vscrollbar,
+  g_object_set(notation_edit->vscrollbar,
 	       "no-show-all", TRUE,
 	       NULL);
   gtk_table_attach(GTK_TABLE(notation_edit),
@@ -295,7 +297,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   /* hscrollbar */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) notation_edit->control_width, 1.0);
   notation_edit->hscrollbar = gtk_hscrollbar_new(adjustment);
-  g_object_set(automation_edit->hscrollbar,
+  g_object_set(notation_edit->hscrollbar,
 	       "no-show-all", TRUE,
 	       NULL);
   gtk_table_attach(GTK_TABLE(notation_edit),

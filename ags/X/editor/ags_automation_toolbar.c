@@ -508,6 +508,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 
   AgsMutexManager *mutex_manager;
 
+  GList *automation;
+  
   gchar **specifier, *current;
   guint length;
   gboolean contains_specifier;
@@ -743,7 +745,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     success = FALSE;
     
     list =
-      list_start = gtk_container_get_children(automation_editor->scrolled_audio_automation_edit_box->automation_edit_box);
+      list_start = gtk_container_get_children(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box);
 
     while(list != NULL){
       nth++;
@@ -763,7 +765,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     g_list_free(list_start);
 
     if(success){
-      list_start = gtk_container_get_children(automation_editor->scrolled_audio_scale_box->scale_box);
+      list_start = gtk_container_get_children(automation_editor->audio_scrolled_scale_box->scale_box);
 
       list = g_list_nth(list_start,
 			nth);
@@ -778,7 +780,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     success = FALSE;
     
     list =
-      list_start = gtk_container_get_children(automation_editor->scrolled_output_automation_edit_box->automation_edit_box);
+      list_start = gtk_container_get_children(automation_editor->output_scrolled_automation_edit_box->automation_edit_box);
 
     while(list != NULL){
       nth++;
@@ -798,7 +800,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     g_list_free(list_start);
 
     if(success){
-      list_start = gtk_container_get_children(automation_editor->scrolled_output_scale_box->scale_box);
+      list_start = gtk_container_get_children(automation_editor->output_scrolled_scale_box->scale_box);
 
       list = g_list_nth(list_start,
 			nth);
@@ -813,7 +815,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     success = FALSE;
     
     list =
-      list_start = gtk_container_get_children(automation_editor->scrolled_input_automation_edit_box->automation_edit_box);
+      list_start = gtk_container_get_children(automation_editor->input_scrolled_automation_edit_box->automation_edit_box);
 
     while(list != NULL){
       nth++;
@@ -833,7 +835,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     g_list_free(list_start);
 
     if(success){
-      list_start = gtk_container_get_children(automation_editor->scrolled_input_scale_box->scale_box);
+      list_start = gtk_container_get_children(automation_editor->input_scrolled_scale_box->scale_box);
 
       list = g_list_nth(list_start,
 			nth);

@@ -184,24 +184,24 @@ ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolba
 								      AGS_TYPE_AUTOMATION_EDITOR);
   
   /* zoom */
-  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));
-  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom) - 2.0);
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom));
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom) - 2.0);
 
   /* audio */
   list_start = gtk_container_get_children(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box);
-  ags_automation_toolbar_zoom_callback_apply(list);
+  ags_automation_toolbar_zoom_callback_apply(list_start);
 
   g_list_free(list_start);
 
   /* output */
   list_start = gtk_container_get_children(automation_editor->output_scrolled_automation_edit_box->automation_edit_box);
-  ags_automation_toolbar_zoom_callback_apply(list);
+  ags_automation_toolbar_zoom_callback_apply(list_start);
 
   g_list_free(list_start);
 
   /* input */
   list_start = gtk_container_get_children(automation_editor->input_scrolled_automation_edit_box->automation_edit_box);
-  ags_automation_toolbar_zoom_callback_apply(list);
+  ags_automation_toolbar_zoom_callback_apply(list_start);
 
   g_list_free(list_start);
 }

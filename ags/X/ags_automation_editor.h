@@ -25,12 +25,15 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine.h>
 
 #include <ags/X/editor/ags_automation_toolbar.h>
 #include <ags/X/editor/ags_machine_selector.h>
+#include <ags/X/editor/ags_scrolled_automation_edit_box.h>
 #include <ags/X/editor/ags_automation_edit.h>
 
 #define AGS_TYPE_AUTOMATION_EDITOR                (ags_automation_editor_get_type())
@@ -42,7 +45,8 @@
 
 #define AGS_AUTOMATION_EDITOR_CHILD(ptr) ((AgsAutomationEditorChild *)(ptr))
 
-#define AGS_NOTATION_EDITOR_MAX_VALUE_COUNT (64 * 16 * 16 * 1200)
+#define AGS_AUTOMATION_EDITOR_MAX_VALUE_COUNT (64 * 16 * 16 * 1200)
+#define AGS_AUTOMATION_EDITOR_MAX_CONTROLS (64 * 16 * 16 * 1200)
 
 #define AGS_AUTOMATION_EDITOR_DEFAULT_VERSION "1.3.0"
 #define AGS_AUTOMATION_EDITOR_DEFAULT_BUILD_ID "Wed Dec 27 03:43:55 UTC 2017"

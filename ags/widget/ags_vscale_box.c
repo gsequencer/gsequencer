@@ -79,7 +79,7 @@ ags_vscale_box_init(AgsVScaleBox *vscale_box)
  * 
  * Since: 1.3.0
  */
-AgsVScale_Box*
+AgsVScaleBox*
 ags_vscale_box_new()
 {
   AgsVScaleBox *vscale_box;

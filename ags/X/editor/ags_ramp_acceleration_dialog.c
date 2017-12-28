@@ -570,22 +570,23 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 
   machine = automation_editor->selected_machine;
 
-  if(machine == NULL){
+  if(machine == NULL ||
+     automation_editor->focused_automation_edit == NULL){
     return;
   }
 
-  if(gtk_notebook_get_current_page(automation_editor->notebook) == 0){
+  if(automation_editor->focused_automation_edit->channel_type == G_TYPE_NONE){
     notebook = NULL;
     channel_type = G_TYPE_NONE;
 
     is_audio = TRUE;
-  }else if(gtk_notebook_get_current_page(automation_editor->notebook) == 1){
-    notebook = automation_editor->current_output_notebook;
+  }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
+    notebook = automation_editor->output_notebook;
     channel_type = AGS_TYPE_OUTPUT;
       
     is_output = TRUE;
-  }else if(gtk_notebook_get_current_page(automation_editor->notebook) == 2){
-    notebook = automation_editor->current_input_notebook;
+  }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
+    notebook = automation_editor->input_notebook;
     channel_type = AGS_TYPE_INPUT;
       
     is_input = TRUE;
