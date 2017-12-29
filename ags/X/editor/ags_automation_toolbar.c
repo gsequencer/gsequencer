@@ -619,6 +619,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   /* apply */
   if(contains_specifier){
     AgsAutomationEdit *automation_edit;
+    AgsScale *scale;
 
     GList *automation;
     
@@ -629,14 +630,35 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     /* audio */
     pthread_mutex_lock(audio_mutex);
 
-    create_audio_automation_edit = (automation = ags_automation_find_specifier_with_type_and_line(machine->audio->automation,
-												  control_name,
-												  G_TYPE_NONE,
-												  0) != NULL) ? TRUE: FALSE;
+    create_audio_automation_edit = ((automation = ags_automation_find_specifier_with_type_and_line(machine->audio->automation,
+												   control_name,
+												   G_TYPE_NONE,
+												   0)) != NULL) ? TRUE: FALSE;
 
     pthread_mutex_unlock(audio_mutex);
 
     if(create_audio_automation_edit){
+      /* scale */
+      scale = ags_scale_new();
+
+      pthread_mutex_lock(audio_mutex);
+
+      g_object_set(scale,
+		   "control-name", AGS_AUTOMATION(automation->data)->control_name,
+		   "upper", AGS_AUTOMATION(automation->data)->upper,
+		   "lower", AGS_AUTOMATION(automation->data)->lower,
+		   "default-value", AGS_AUTOMATION(automation->data)->default_value,
+		   NULL);
+
+      pthread_mutex_unlock(audio_mutex);
+
+      gtk_box_pack_start(automation_editor->audio_scrolled_scale_box->scale_box,
+			 scale,
+			 FALSE, FALSE,
+			 0);
+      gtk_widget_show(scale);
+	  
+      /* automation edit */
       automation_edit = ags_automation_edit_new();
 
       pthread_mutex_lock(audio_mutex);
@@ -656,25 +678,48 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 			 automation_edit,
 			 FALSE, FALSE,
 			 0);
+      ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
+      gtk_widget_show(automation_edit);
     }
 
     /* output */
     pthread_mutex_lock(audio_mutex);
 
-    create_output_automation_edit = (automation = ags_automation_find_specifier_with_type_and_line(machine->audio->automation,
-												   control_name,
-												   AGS_TYPE_OUTPUT,
-												   0) != NULL) ? TRUE: FALSE;
+    create_output_automation_edit = ((automation = ags_automation_find_specifier_with_type_and_line(machine->audio->automation,
+												    control_name,
+												    AGS_TYPE_OUTPUT,
+												    0)) != NULL) ? TRUE: FALSE;
 
     pthread_mutex_unlock(audio_mutex);
 
     if(create_output_automation_edit){
+      /* scale */
+      scale = ags_scale_new();
+
+      pthread_mutex_lock(audio_mutex);
+
+      g_object_set(scale,
+		   "control-name", AGS_AUTOMATION(automation->data)->control_name,
+		   "upper", AGS_AUTOMATION(automation->data)->upper,
+		   "lower", AGS_AUTOMATION(automation->data)->lower,
+		   "default-value", AGS_AUTOMATION(automation->data)->default_value,
+		   NULL);
+
+      pthread_mutex_unlock(audio_mutex);
+
+      gtk_box_pack_start(automation_editor->output_scrolled_scale_box->scale_box,
+			 scale,
+			 FALSE, FALSE,
+			 0);
+      gtk_widget_show(scale);
+	  
+      /* automation edit */
       automation_edit = ags_automation_edit_new();
 
       pthread_mutex_lock(audio_mutex);
 
       g_object_set(automation_edit,
-		   "channel-type", G_TYPE_NONE,
+		   "channel-type", AGS_TYPE_OUTPUT,
 		   "control-specifier", specifier[0],
 		   "control-name", AGS_AUTOMATION(automation->data)->control_name,
 		   "upper", AGS_AUTOMATION(automation->data)->upper,
@@ -688,24 +733,47 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 			 automation_edit,
 			 FALSE, FALSE,
 			 0);
+      ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
+      gtk_widget_show(automation_edit);
     }
 
     /* input */
     pthread_mutex_lock(audio_mutex);
 
-    create_input_automation_edit = (automation = ags_automation_find_specifier_with_type_and_line(machine->audio->automation,
-												  control_name,
-												  AGS_TYPE_INPUT,
-												  0) != NULL) ? TRUE: FALSE;
+    create_input_automation_edit = ((automation = ags_automation_find_specifier_with_type_and_line(machine->audio->automation,
+												   control_name,
+												   AGS_TYPE_INPUT,
+												   0)) != NULL) ? TRUE: FALSE;
     pthread_mutex_unlock(audio_mutex);
 
     if(create_input_automation_edit){
+      /* scale */
+      scale = ags_scale_new();
+
+      pthread_mutex_lock(audio_mutex);
+
+      g_object_set(scale,
+		   "control-name", AGS_AUTOMATION(automation->data)->control_name,
+		   "upper", AGS_AUTOMATION(automation->data)->upper,
+		   "lower", AGS_AUTOMATION(automation->data)->lower,
+		   "default-value", AGS_AUTOMATION(automation->data)->default_value,
+		   NULL);
+
+      pthread_mutex_unlock(audio_mutex);
+
+      gtk_box_pack_start(automation_editor->input_scrolled_scale_box->scale_box,
+			 scale,
+			 FALSE, FALSE,
+			 0);
+      gtk_widget_show(scale);
+      
+      /* automation edit */
       automation_edit = ags_automation_edit_new();
 
       pthread_mutex_lock(audio_mutex);
 
       g_object_set(automation_edit,
-		   "channel-type", G_TYPE_NONE,
+		   "channel-type", AGS_TYPE_INPUT,
 		   "control-specifier", specifier[0],
 		   "control-name", AGS_AUTOMATION(automation->data)->control_name,
 		   "upper", AGS_AUTOMATION(automation->data)->upper,
@@ -717,8 +785,10 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 
       gtk_box_pack_start(automation_editor->input_scrolled_automation_edit_box->automation_edit_box,
 			 automation_edit,
-			 FALSE, FALSE,
+			 TRUE, TRUE,
 			 0);
+      ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
+      gtk_widget_show(automation_edit);
     }
 
     /* unset bypass */

@@ -67,6 +67,11 @@ gboolean ags_accessible_automation_edit_set_description(AtkAction *action,
 gchar* ags_accessible_automation_edit_get_localized_name(AtkAction *action,
 							 gint i);
 
+void ags_automation_edit_realize(GtkWidget *widget);
+void ags_automation_edit_size_request(GtkWidget *widget,
+				      GtkRequisition   *requisition);
+void ags_automation_edit_size_allocate(GtkWidget *widget,
+				       GtkAllocation *allocation);
 void ags_automation_edit_show(GtkWidget *widget);
 void ags_automation_edit_show_all(GtkWidget *widget);
 
@@ -332,6 +337,9 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) automation_edit;
 
+  //  widget->realize = ags_automation_edit_realize;
+  widget->size_request = ags_automation_edit_size_request;
+  widget->size_allocate = ags_automation_edit_size_allocate;
   widget->show = ags_automation_edit_show;
   widget->show_all = ags_automation_edit_show_all;
 }
@@ -367,6 +375,13 @@ void
 ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 {
   GtkAdjustment *adjustment;
+
+  g_object_set(automation_edit,
+	       "can-focus", FALSE,
+	       "n-columns", 3,
+	       "n-rows", 4,
+	       "homogeneous", FALSE,
+	       NULL);
 
   automation_edit->flags = 0;
   automation_edit->mode = AGS_AUTOMATION_EDIT_NO_EDIT_MODE;
@@ -436,12 +451,14 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 			| GDK_KEY_RELEASE_MASK);
   gtk_widget_set_can_focus((GtkWidget *) automation_edit->drawing_area,
 			   TRUE);
-    
+
+  gtk_widget_set_size_request(automation_edit->drawing_area,
+			      -1, AGS_SCALE_DEFAULT_HEIGHT);
   gtk_table_attach(GTK_TABLE(automation_edit),
 		   (GtkWidget *) automation_edit->drawing_area,
 		   0, 1,
 		   1, 2,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
+		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
   /* vscrollbar */
@@ -450,6 +467,8 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   g_object_set(automation_edit->vscrollbar,
 	       "no-show-all", TRUE,
 	       NULL);
+  gtk_widget_set_size_request(automation_edit->vscrollbar,
+			      -1, AGS_SCALE_DEFAULT_HEIGHT);
   gtk_table_attach(GTK_TABLE(automation_edit),
 		   (GtkWidget *) automation_edit->vscrollbar,
 		   1, 2,
@@ -463,6 +482,8 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   g_object_set(automation_edit->hscrollbar,
 	       "no-show-all", TRUE,
 	       NULL);
+  gtk_widget_set_size_request(automation_edit->hscrollbar,
+			      -1, -1);
   gtk_table_attach(GTK_TABLE(automation_edit),
 		   (GtkWidget *) automation_edit->hscrollbar,
 		   0, 1,
@@ -650,7 +671,7 @@ ags_automation_edit_connect(AgsConnectable *connectable)
   }
   
   automation_edit->flags |= AGS_AUTOMATION_EDIT_CONNECTED;
-  
+
   /* drawing area */
   g_signal_connect_after((GObject *) automation_edit->drawing_area, "expose_event",
 			 G_CALLBACK(ags_automation_edit_drawing_area_expose_event), (gpointer) automation_edit);
@@ -1099,6 +1120,73 @@ ags_accessible_automation_edit_get_localized_name(AtkAction *action,
 }
 
 void
+ags_automation_edit_realize(GtkWidget *widget)
+{
+  AgsAutomationEdit *automation_edit;
+  GdkWindowAttr attributes;
+  gint attributes_mask;
+  
+  automation_edit = AGS_AUTOMATION_EDIT (widget);
+  gtk_widget_set_realized (widget, TRUE);
+
+  attributes.window_type = GDK_WINDOW_CHILD;
+  attributes.x = widget->allocation.x;
+  attributes.y = widget->allocation.y;
+
+  attributes.width = widget->allocation.width;
+
+  if(widget->parent != NULL){
+    attributes.width = widget->parent->allocation.width;
+  }
+
+  attributes.height = AGS_SCALE_DEFAULT_HEIGHT;
+  attributes.wclass = GDK_INPUT_ONLY;
+  attributes.event_mask = gtk_widget_get_events (widget);
+  
+  widget->window = gtk_widget_get_parent_window (widget);
+  g_object_ref (widget->window);
+
+  gdk_window_new (gtk_widget_get_parent_window (widget),
+		  &attributes, attributes_mask);
+  
+  widget->style = gtk_style_attach (widget->style, widget->window);
+}
+
+void
+ags_automation_edit_size_request(GtkWidget *widget,
+				 GtkRequisition *requisition)
+{
+  AgsAutomationEdit *automation_edit;
+
+  automation_edit = AGS_AUTOMATION_EDIT(widget);
+
+  GTK_WIDGET_CLASS(ags_automation_edit_parent_class)->size_request(widget,
+								   requisition);
+
+  requisition->width = -1;
+  requisition->height = AGS_SCALE_DEFAULT_HEIGHT;  
+}
+
+void
+ags_automation_edit_size_allocate(GtkWidget *widget,
+				  GtkAllocation *allocation)
+{
+  AgsAutomationEdit *automation_edit;
+
+  automation_edit = AGS_AUTOMATION_EDIT(widget);
+
+  widget->allocation = *allocation;
+  
+  widget->allocation.height = AGS_SCALE_DEFAULT_HEIGHT;
+  
+  GTK_WIDGET_CLASS(ags_automation_edit_parent_class)->size_allocate(widget,
+								    allocation);
+
+  gtk_widget_size_allocate(automation_edit->drawing_area,
+			   allocation);
+}
+
+void
 ags_automation_edit_show(GtkWidget *widget)
 {
   AgsAutomationEdit *automation_edit;
@@ -1108,6 +1196,8 @@ ags_automation_edit_show(GtkWidget *widget)
   /* call parent */
   GTK_WIDGET_CLASS(ags_automation_edit_parent_class)->show(widget);
 
+  gtk_widget_show(automation_edit->drawing_area);
+  
   if((AGS_AUTOMATION_EDIT_SHOW_RULER & (automation_edit->flags)) != 0){
     gtk_widget_show(automation_edit->ruler);
   }
@@ -1130,6 +1220,8 @@ ags_automation_edit_show_all(GtkWidget *widget)
 
   /* call parent */
   GTK_WIDGET_CLASS(ags_automation_edit_parent_class)->show_all(widget);
+
+  gtk_widget_show_all(automation_edit->drawing_area);
 
   if((AGS_AUTOMATION_EDIT_SHOW_RULER & (automation_edit->flags)) != 0){
     gtk_widget_show(automation_edit->ruler);
@@ -1196,7 +1288,6 @@ ags_automation_edit_reset_vscrollbar(AgsAutomationEdit *automation_edit)
   AgsAutomationEditor *automation_editor;
 
   GtkAdjustment *adjustment;
-  GtkAdjustment *piano_adjustment;
   
   double varea_height;
   gdouble upper, old_upper;
@@ -1206,11 +1297,13 @@ ags_automation_edit_reset_vscrollbar(AgsAutomationEdit *automation_edit)
   }
 
   automation_editor = gtk_widget_get_ancestor(automation_edit,
-					    AGS_TYPE_AUTOMATION_EDITOR);
+					      AGS_TYPE_AUTOMATION_EDITOR);
 
   if(automation_editor->selected_machine == NULL){
     return;
   }
+
+  adjustment = GTK_RANGE(automation_edit->vscrollbar)->adjustment;
 
   /* upper */
   old_upper = adjustment->upper; 
@@ -1223,10 +1316,6 @@ ags_automation_edit_reset_vscrollbar(AgsAutomationEdit *automation_edit)
   }
 	   
   gtk_adjustment_set_upper(adjustment,
-			   upper);
-
-  /* piano - only upper */
-  gtk_adjustment_set_upper(piano_adjustment,
 			   upper);
 
   /* reset value */

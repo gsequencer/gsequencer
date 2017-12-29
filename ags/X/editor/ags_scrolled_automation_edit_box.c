@@ -19,6 +19,8 @@
 
 #include <ags/X/editor/ags_scrolled_automation_edit_box.h>
 
+#include <ags/widget/ags_scale.h>
+
 void ags_scrolled_automation_edit_box_class_init(AgsScrolledAutomationEditBoxClass *scrolled_automation_edit_box);
 void ags_scrolled_automation_edit_box_init(AgsScrolledAutomationEditBox *scrolled_automation_edit_box);
 void ags_scrolled_automation_edit_box_set_property(GObject *gobject,
@@ -302,104 +304,88 @@ ags_scrolled_automation_edit_box_size_allocate(GtkWidget *widget,
 {
   AgsScrolledAutomationEditBox *scrolled_automation_edit_box;
 
+  GList *list, *list_start;
+
   GtkAllocation child_allocation;
+  GtkRequisition child_requisition;
 
   GtkOrientation orientation;
 
+  guint x, y;
+  
   scrolled_automation_edit_box = AGS_SCROLLED_AUTOMATION_EDIT_BOX(widget);
 
   widget->allocation = *allocation;
 
-  if(scrolled_automation_edit_box->automation_edit_box != NULL){
-    orientation = gtk_orientable_get_orientation(GTK_ORIENTABLE(scrolled_automation_edit_box->automation_edit_box));
+  widget->allocation.height = AGS_SCALE_DEFAULT_HEIGHT;
   
-    switch(orientation){
-    case GTK_ORIENTATION_HORIZONTAL:
-      {
-	allocation->height = -1;
-      }
-      break;
-    case GTK_ORIENTATION_VERTICAL:
-      {
-	allocation->width = -1;
-      }
-      break;
-    }
-  }
-
   /* viewport allocation */
+  gtk_widget_get_child_requisition((GtkWidget *) scrolled_automation_edit_box->viewport,
+				   &child_requisition);
+
   child_allocation.x = allocation->x;
   child_allocation.y = allocation->y;
 
-  if(scrolled_automation_edit_box->automation_edit_box != NULL){
-    child_allocation.x += scrolled_automation_edit_box->margin_left;
-    child_allocation.y += scrolled_automation_edit_box->margin_top;
-
-    orientation = gtk_orientable_get_orientation(GTK_ORIENTABLE(scrolled_automation_edit_box->automation_edit_box));
-
-    switch(orientation){
-    case GTK_ORIENTATION_HORIZONTAL:
-      {
-	if(widget->allocation.width > (scrolled_automation_edit_box->margin_left + scrolled_automation_edit_box->margin_right)){
-	  child_allocation.width = widget->allocation.width - (scrolled_automation_edit_box->margin_left + scrolled_automation_edit_box->margin_right);
-	}else{
-	  child_allocation.width = 0;
-	}
-    
-	child_allocation.height = -1;
-      }
-      break;
-    case GTK_ORIENTATION_VERTICAL:
-      {
-	child_allocation.width = -1;
-
-	if(widget->allocation.height > (scrolled_automation_edit_box->margin_top + scrolled_automation_edit_box->margin_bottom)){
-	  child_allocation.height = widget->allocation.height - (scrolled_automation_edit_box->margin_top + scrolled_automation_edit_box->margin_bottom);
-	}else{
-	  child_allocation.height = 0;
-	}
-      }
-      break;
-    }
-  }
+  child_allocation.width = allocation->width;
+  child_allocation.height = AGS_SCALE_DEFAULT_HEIGHT;
 
   gtk_widget_size_allocate((GtkWidget *) scrolled_automation_edit_box->viewport,
 			   &child_allocation);
+
+  /* box */
+  list_start = 
+    list = gtk_container_get_children((GtkContainer *) scrolled_automation_edit_box->automation_edit_box);
+
+  /*  */
+  gtk_widget_get_child_requisition((GtkWidget *) scrolled_automation_edit_box->automation_edit_box,
+				   &child_requisition);
+
+  child_allocation.x = 0;
+  child_allocation.y = 0;
+
+  child_allocation.width = allocation->width;
+  child_allocation.height = AGS_SCALE_DEFAULT_HEIGHT;
+  
+  gtk_widget_size_allocate((GtkWidget *) scrolled_automation_edit_box->automation_edit_box,
+			   &child_allocation);
+
+  x = 0;
+  y = 0;
+  
+  while(list != NULL){
+    gtk_widget_get_child_requisition((GtkWidget *) list->data,
+				     &child_requisition);
+
+    child_allocation.x = x;
+    child_allocation.y = y;
+
+    child_allocation.width = allocation->width;
+    child_allocation.height = AGS_SCALE_DEFAULT_HEIGHT;
+
+    gtk_widget_size_allocate(list->data,
+			     &child_allocation);
+    gtk_widget_queue_resize(list->data);
+
+    y += AGS_SCALE_DEFAULT_HEIGHT;
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 void
 ags_scrolled_automation_edit_box_size_request(GtkWidget *widget,
 					      GtkRequisition *requisition)
 {
-  AgsScrolledAutomationEditBox *scrolled_automation_edit_box;
-  
   GtkRequisition child_requisition;
 
   GtkOrientation orientation;
 
-  scrolled_automation_edit_box = AGS_SCROLLED_AUTOMATION_EDIT_BOX(widget);
-
-  requisition->width = -1;
-  requisition->height = -1;
+  requisition->width = AGS_SCALE_DEFAULT_HEIGHT;
+  requisition->height = AGS_SCALE_DEFAULT_HEIGHT;
   
-  if(scrolled_automation_edit_box->automation_edit_box != NULL){
-    orientation = gtk_orientable_get_orientation(GTK_ORIENTABLE(scrolled_automation_edit_box->automation_edit_box));
-
-    switch(orientation){
-    case GTK_ORIENTATION_HORIZONTAL:
-      {
-	requisition->height = -1;
-      }
-      break;
-    case GTK_ORIENTATION_VERTICAL:
-      {
-	requisition->width = -1;
-      }
-      break;
-    }
-  }
-
-  gtk_widget_size_request((GtkWidget *) gtk_bin_get_child(scrolled_automation_edit_box),
+  gtk_widget_size_request(gtk_bin_get_child((GtkContainer *) widget),
 			  &child_requisition);
 }
 

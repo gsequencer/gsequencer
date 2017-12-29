@@ -32,11 +32,6 @@ void ags_scale_box_get_property(GObject *gobject,
 				GParamSpec *param_spec);
 void ags_scale_box_finalize(GObject *gobject);
 
-void ags_scale_box_size_allocate(AgsScaleBox *scale_box,
-				GtkAllocation *allocation);
-void ags_scale_box_size_request(AgsScaleBox *scale_box,
-				GtkRequisition *requisition);
-
 GType ags_scale_box_child_type(GtkContainer *container);
 
 /**
@@ -110,11 +105,13 @@ ags_scale_box_class_init(AgsScaleBoxClass *scale_box)
    * 
    * Since: 1.3.0
    */
-  param_spec = g_param_spec_string("fixed-scale-width",
-				   "fixed scale width",
-				   "The fixed width of a scale",
-				   AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_WIDTH,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("fixed-scale-width",
+				 "fixed scale width",
+				 "The fixed width of a scale",
+				 0,
+				 G_MAXUINT,
+				 AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_WIDTH,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FIXED_SCALE_WIDTH,
 				  param_spec);
@@ -126,20 +123,19 @@ ags_scale_box_class_init(AgsScaleBoxClass *scale_box)
    * 
    * Since: 1.3.0
    */
-  param_spec = g_param_spec_string("fixed-scale-height",
-				   "fixed scale height",
-				   "The fixed height of a scale",
-				   AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_HEIGHT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("fixed-scale-height",
+				 "fixed scale height",
+				 "The fixed height of a scale",
+				 0,
+				 G_MAXUINT,
+				 AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_HEIGHT,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FIXED_SCALE_HEIGHT,
 				  param_spec);
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) scale_box;
-
-  widget->size_allocate = ags_scale_box_size_allocate;
-  widget->size_request = ags_scale_box_size_request;
 
   /* GtkContainerClass */
   container = (GtkWidgetClass *) scale_box;
@@ -222,252 +218,6 @@ ags_scale_box_finalize(GObject *gobject)
 {
   /* call parent */
   G_OBJECT_CLASS(ags_scale_box_parent_class)->finalize(gobject);
-}
-
-void
-ags_scale_box_size_allocate(AgsScaleBox *scale_box,
-			    GtkAllocation *allocation)
-{
-  GtkAllocation child_allocation;
-  GtkRequisition child_requisition;
-
-  GList *list, *list_start;
-
-  GtkOrientation orientation;
-  guint width, height;
-  guint x, y;
-  
-  GTK_WIDGET(scale_box)->allocation = *allocation;
-
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) scale_box);
-
-  orientation = gtk_orientable_get_orientation(GTK_ORIENTABLE(scale_box));
-  
-  /* guess size */
-  width = 0; 
-  height = 0;
-  
-  while(list != NULL){
-    AgsScale *scale;
-
-    guint padding;
-    
-    scale = AGS_SCALE(list->data);
-
-    gtk_container_child_get(scale_box,
-			    scale,
-			    "padding", &padding,
-			    NULL);
-    
-    switch(orientation){
-    case GTK_ORIENTATION_HORIZONTAL:
-      {
-	if(GTK_WIDGET(scale)->allocation.height > height){
-	  height = GTK_WIDGET(scale)->allocation.height;
-	}
-      
-	if(GTK_WIDGET(scale)->allocation.width >= 0){
-	  width += GTK_WIDGET(scale)->allocation.width;
-	}else{
-	  if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
-	    width += scale->scale_width;
-	  }else if(scale->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
-	    width += scale->scale_height;
-	  }else{
-	    g_warning("AgsScale layout not set");
-	  }
-	}
-
-	if(list->prev != NULL &&
-	   list->next != NULL){
-	  width += (2 * padding);
-	}else{
-	  width += padding;
-	}
-      }
-      break;
-    case GTK_ORIENTATION_VERTICAL:
-      {
-	if(GTK_WIDGET(scale)->allocation.height >= 0){
-	  height += GTK_WIDGET(scale)->allocation.height;
-	}else{
-	  if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
-	    height += scale->scale_height;
-	  }else if(scale->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
-	    height += scale->scale_width;
-	  }else{
-	    g_warning("AgsScale layout not set");
-	  }
-	}
-	
-	if(GTK_WIDGET(scale)->allocation.width > width){
-	  width = GTK_WIDGET(scale)->allocation.width;
-	}	
-
-	if(list->prev != NULL &&
-	   list->next != NULL){
-	  height += (2 * padding);
-	}else{
-	  height += padding;
-	}
-      }
-      break;
-    }
-    
-    list = list->next;
-  }
-
-  /* apply size */
-  allocation->height = height;
-  allocation->width = width;
-
-  /* child allocation */
-  list = list_start;
-  
-  x = 0;
-  y = 0;
-  
-  while(list != NULL){
-    AgsScale *scale;
-
-    guint padding;
-
-    scale = AGS_SCALE(list->data);
-
-    gtk_container_child_get(scale_box,
-			    scale,
-			    "padding", &padding,
-			    NULL);
-    
-    gtk_widget_get_child_requisition((GtkWidget *) list->data,
-				     &child_requisition);
-
-    child_allocation.x = x;
-    child_allocation.y = y;
-
-    if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
-      child_allocation.width = scale->scale_width;
-      child_allocation.height = scale->scale_height;
-    }else if(scale->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
-      child_allocation.width = scale->scale_height;
-      child_allocation.height = scale->scale_width;
-    }
-    
-    gtk_widget_size_allocate(list->data,
-			     &child_allocation);
-
-    switch(orientation){
-    case GTK_ORIENTATION_HORIZONTAL:
-      {
-	if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
-	  x += scale->scale_width;
-	}else if(scale->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
-	  x += scale->scale_height;
-	}
-
-	if(list->prev != NULL &&
-	   list->next != NULL){
-	  x += (2 * padding);
-	}else{
-	  x += padding;
-	}
-      }
-      break;
-    case GTK_ORIENTATION_VERTICAL:
-      {    
-	if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
-	  y += scale->scale_height;
-	}else if(scale->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
-	  y += scale->scale_width;
-	}
-
-	if(list->prev != NULL &&
-	   list->next != NULL){
-	  y += (2 * padding);
-	}else{
-	  y += padding;
-	}
-      }
-      break;
-    }
-    
-    list = list->next;
-  }
-  
-  g_list_free(list_start);
-}
-
-void
-ags_scale_box_size_request(AgsScaleBox *scale_box,
-			   GtkRequisition *requisition)
-{
-  GtkRequisition child_requisition;
-  
-  GList *list, *list_start;
-
-  GtkOrientation orientation;
-  
-  list_start =
-    list = gtk_container_get_children((GtkContainer *) scale_box);
-
-  orientation = gtk_orientable_get_orientation(GTK_ORIENTABLE(scale_box));
-
-  switch(orientation){
-  case GTK_ORIENTATION_HORIZONTAL:
-    {
-      guint width;
-
-      width = 0;
-
-      while(list != NULL){
-	if(AGS_SCALE(list->data)->layout == AGS_SCALE_LAYOUT_VERTICAL){
-	  width += AGS_SCALE(list->data)->scale_width;
-	}else if(AGS_SCALE(list->data)->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
-	  width += AGS_SCALE(list->data)->scale_height;
-	}
-	
-	list = list->next;
-      }
-      
-      requisition->width = width;
-      
-      requisition->height = -1;
-    }
-    break;
-  case GTK_ORIENTATION_VERTICAL:
-    {
-      guint height;
-      
-      requisition->width = -1;
-
-      height = 0;
-
-      while(list != NULL){
-	if(AGS_SCALE(list->data)->layout == AGS_SCALE_LAYOUT_VERTICAL){
-	  height += AGS_SCALE(list->data)->scale_height;
-	}else if(AGS_SCALE(list->data)->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
-	  height += AGS_SCALE(list->data)->scale_width;
-	}
-	
-	list = list->next;
-      }
-
-      requisition->height = height;
-    }
-    break;
-  }
-
-  list = list_start;
-  
-  while(list != NULL){
-    gtk_widget_size_request((GtkWidget *) list->data,
-			    &child_requisition);
-
-    list = list->next;
-  }
-
-  g_list_free(list_start);
 }
 
 GType

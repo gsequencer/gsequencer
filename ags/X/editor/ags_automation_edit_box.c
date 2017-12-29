@@ -33,11 +33,6 @@ void ags_automation_edit_box_get_property(GObject *gobject,
 					  GParamSpec *param_spec);
 void ags_automation_edit_box_finalize(GObject *gobject);
 
-void ags_automation_edit_box_size_allocate(AgsAutomationEditBox *automation_edit_box,
-					   GtkAllocation *allocation);
-void ags_automation_edit_box_size_request(AgsAutomationEditBox *automation_edit_box,
-					  GtkRequisition *requisition);
-
 GType ags_automation_edit_box_child_type(GtkContainer *container);
 
 /**
@@ -111,20 +106,19 @@ ags_automation_edit_box_class_init(AgsAutomationEditBoxClass *automation_edit_bo
    * 
    * Since: 1.3.0
    */
-  param_spec = g_param_spec_string("fixed-edit-height",
-				   "fixed edit height",
-				   "The fixed height of a edit",
-				   AGS_AUTOMATION_EDIT_BOX_DEFAULT_FIXED_EDIT_HEIGHT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("fixed-edit-height",
+				 "fixed edit height",
+				 "The fixed height of a edit",
+				 0,
+				 G_MAXUINT,
+				 AGS_AUTOMATION_EDIT_BOX_DEFAULT_FIXED_EDIT_HEIGHT,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FIXED_EDIT_HEIGHT,
 				  param_spec);
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) automation_edit_box;
-
-  widget->size_allocate = ags_automation_edit_box_size_allocate;
-  widget->size_request = ags_automation_edit_box_size_request;
 
   /* GtkContainerClass */
   container = (GtkWidgetClass *) automation_edit_box;
@@ -195,227 +189,6 @@ ags_automation_edit_box_finalize(GObject *gobject)
 {
   /* call parent */
   G_OBJECT_CLASS(ags_automation_edit_box_parent_class)->finalize(gobject);
-}
-
-void
-ags_automation_edit_box_size_allocate(AgsAutomationEditBox *automation_edit_box,
-				      GtkAllocation *allocation)
-{
-  GtkAllocation child_allocation;
-  GtkRequisition child_requisition;
-
-  GList *list, *list_start;
-
-  GtkOrientation orientation;
-  guint width, height;
-  guint x, y;
-  
-  GTK_WIDGET(automation_edit_box)->allocation = *allocation;
-
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) automation_edit_box);
-
-  orientation = gtk_orientable_get_orientation(GTK_ORIENTABLE(automation_edit_box));
-  
-  /* guess size */
-  width = 0; 
-  height = 0;
-  
-  while(list != NULL){
-    AgsAutomationEdit *automation_edit;
-
-    guint padding;
-    
-    automation_edit = AGS_AUTOMATION_EDIT(list->data);
-
-    gtk_container_child_get(automation_edit_box,
-			    automation_edit,
-			    "padding", &padding,
-			    NULL);
-    
-    switch(orientation){
-    case GTK_ORIENTATION_HORIZONTAL:
-      {
-	if(GTK_WIDGET(automation_edit)->allocation.height > height){
-	  height = GTK_WIDGET(automation_edit)->allocation.height;
-	}
-      
-	if(GTK_WIDGET(automation_edit)->allocation.width >= 0){
-	  width += GTK_WIDGET(automation_edit)->allocation.width;
-	}
-
-	if(list->prev != NULL &&
-	   list->next != NULL){
-	  width += (2 * padding);
-	}else{
-	  width += padding;
-	}
-      }
-      break;
-    case GTK_ORIENTATION_VERTICAL:
-      {
-	if(GTK_WIDGET(automation_edit)->allocation.height >= 0){
-	  height += GTK_WIDGET(automation_edit)->allocation.height;
-	}
-	
-	if(GTK_WIDGET(automation_edit)->allocation.width > width){
-	  width = GTK_WIDGET(automation_edit)->allocation.width;
-	}	
-
-	if(list->prev != NULL &&
-	   list->next != NULL){
-	  height += (2 * padding);
-	}else{
-	  height += padding;
-	}
-      }
-      break;
-    }
-    
-    list = list->next;
-  }
-
-  /* apply size */
-  allocation->height = height;
-  allocation->width = width;
-
-  /* child allocation */
-  list = list_start;
-  
-  x = 0;
-  y = 0;
-  
-  while(list != NULL){
-    AgsAutomationEdit *automation_edit;
-
-    guint padding;
-
-    automation_edit = AGS_AUTOMATION_EDIT(list->data);
-    
-    gtk_container_child_get(automation_edit_box,
-			    automation_edit,
-			    "padding", &padding,
-			    NULL);
-
-    gtk_widget_get_child_requisition((GtkWidget *) list->data,
-				     &child_requisition);
-
-    child_allocation.x = x;
-    child_allocation.y = y;
-
-    switch(orientation){
-    case GTK_ORIENTATION_HORIZONTAL:
-      {    
-	child_allocation.width = AGS_AUTOMATION_EDIT_DEFAULT_WIDTH;
-	child_allocation.height = -1;
-      }
-      break;
-    case GTK_ORIENTATION_VERTICAL:
-      {	
-	child_allocation.width = -1;
-	child_allocation.height = AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT;
-      }
-      break;
-    }
-    
-    gtk_widget_size_allocate(list->data,
-			     &child_allocation);
-
-    switch(orientation){
-    case GTK_ORIENTATION_HORIZONTAL:
-      {
-	x += AGS_AUTOMATION_EDIT_DEFAULT_WIDTH;
-
-	if(list->prev != NULL &&
-	   list->next != NULL){
-	  x += (2 * padding);
-	}else{
-	  x += padding;
-	}
-      }
-      break;
-    case GTK_ORIENTATION_VERTICAL:
-      {    
-	y += AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT;
-
-	if(list->prev != NULL &&
-	   list->next != NULL){
-	  y += (2 * padding);
-	}else{
-	  y += padding;
-	}
-      }
-      break;
-    }
-    
-    list = list->next;
-  }
-  
-  g_list_free(list_start);
-}
-
-void
-ags_automation_edit_box_size_request(AgsAutomationEditBox *automation_edit_box,
-				     GtkRequisition *requisition)
-{
-  GtkRequisition child_requisition;
-  
-  GList *list, *list_start;
-
-  GtkOrientation orientation;
-  
-  list_start =
-    list = gtk_container_get_children((GtkContainer *) automation_edit_box);
-
-  orientation = gtk_orientable_get_orientation(GTK_ORIENTABLE(automation_edit_box));
-
-  switch(orientation){
-  case GTK_ORIENTATION_HORIZONTAL:
-    {
-      guint width;
-
-      width = 0;
-
-      while(list != NULL){
-	width += GTK_WIDGET(list->data)->allocation.width;
-	
-	list = list->next;
-      }
-      
-      requisition->width = width;
-      
-      requisition->height = -1;
-    }
-    break;
-  case GTK_ORIENTATION_VERTICAL:
-    {
-      guint height;
-      
-      requisition->width = -1;
-
-      height = 0;
-
-      while(list != NULL){
-	height += GTK_WIDGET(list->data)->allocation.height;
-	
-	list = list->next;
-      }
-
-      requisition->height = height;
-    }
-    break;
-  }
-
-  list = list_start;
-  
-  while(list != NULL){
-    gtk_widget_size_request((GtkWidget *) list->data,
-			    &child_requisition);
-
-    list = list->next;
-  }
-
-  g_list_free(list_start);
 }
 
 GType ags_automation_edit_box_child_type(GtkContainer *container)

@@ -19,6 +19,9 @@
 
 #include <ags/widget/ags_scrolled_scale_box.h>
 
+#include <ags/widget/ags_scale.h>
+#include <ags/widget/ags_vscale_box.h>
+
 void ags_scrolled_scale_box_class_init(AgsScrolledScaleBoxClass *scrolled_scale_box);
 void ags_scrolled_scale_box_init(AgsScrolledScaleBox *scrolled_scale_box);
 void ags_scrolled_scale_box_set_property(GObject *gobject,
@@ -302,104 +305,83 @@ ags_scrolled_scale_box_size_allocate(GtkWidget *widget,
 {
   AgsScrolledScaleBox *scrolled_scale_box;
 
+  GList *list, *list_start;
+
   GtkAllocation child_allocation;
+  GtkRequisition child_requisition;
 
   GtkOrientation orientation;
 
+  guint x, y;
+  
   scrolled_scale_box = AGS_SCROLLED_SCALE_BOX(widget);
 
-  widget->allocation = *allocation;
-
-  if(scrolled_scale_box->scale_box != NULL){
-    orientation = gtk_orientable_get_orientation(GTK_ORIENTABLE(scrolled_scale_box->scale_box));
-  
-    switch(orientation){
-    case GTK_ORIENTATION_HORIZONTAL:
-      {
-	widget->allocation.height = scrolled_scale_box->scale_box->fixed_scale_width + (scrolled_scale_box->margin_top + scrolled_scale_box->margin_bottom);
-      }
-      break;
-    case GTK_ORIENTATION_VERTICAL:
-      {
-	widget->allocation.width = scrolled_scale_box->scale_box->fixed_scale_width + (scrolled_scale_box->margin_left + scrolled_scale_box->margin_right);
-      }
-      break;
-    }
-  }
-
   /* viewport allocation */
+  gtk_widget_get_child_requisition((GtkWidget *) scrolled_scale_box->viewport,
+				   &child_requisition);
+
   child_allocation.x = allocation->x;
   child_allocation.y = allocation->y;
 
-  if(scrolled_scale_box->scale_box != NULL){
-    child_allocation.x += scrolled_scale_box->margin_left;
-    child_allocation.y += scrolled_scale_box->margin_top;
-
-    orientation = gtk_orientable_get_orientation(GTK_ORIENTABLE(scrolled_scale_box->scale_box));
-
-    switch(orientation){
-    case GTK_ORIENTATION_HORIZONTAL:
-      {
-	if(widget->allocation.width > (scrolled_scale_box->margin_left + scrolled_scale_box->margin_right)){
-	  child_allocation.width = widget->allocation.width - (scrolled_scale_box->margin_left + scrolled_scale_box->margin_right);
-	}else{
-	  child_allocation.width = 0;
-	}
-    
-	child_allocation.height = scrolled_scale_box->scale_box->fixed_scale_width;
-      }
-      break;
-    case GTK_ORIENTATION_VERTICAL:
-      {
-	child_allocation.width = scrolled_scale_box->scale_box->fixed_scale_width;
-
-	if(widget->allocation.height > (scrolled_scale_box->margin_top + scrolled_scale_box->margin_bottom)){
-	  child_allocation.height = widget->allocation.height - (scrolled_scale_box->margin_top + scrolled_scale_box->margin_bottom);
-	}else{
-	  child_allocation.height = 0;
-	}
-      }
-      break;
-    }
-  }
+  child_allocation.width = allocation->width;
+  child_allocation.height = allocation->height;
 
   gtk_widget_size_allocate((GtkWidget *) scrolled_scale_box->viewport,
 			   &child_allocation);
+
+  /* box */
+  list_start = 
+    list = gtk_container_get_children((GtkContainer *) scrolled_scale_box->scale_box);
+
+  /*  */
+  gtk_widget_get_child_requisition((GtkWidget *) scrolled_scale_box->scale_box,
+				   &child_requisition);
+
+  child_allocation.x = 0;
+  child_allocation.y = 0;
+
+  child_allocation.width = allocation->width;
+  child_allocation.height = allocation->height;
+  
+  gtk_widget_size_allocate((GtkWidget *) scrolled_scale_box->scale_box,
+			   &child_allocation);
+
+  x = 0;
+  y = 0;
+
+  while(list != NULL){
+    gtk_widget_get_child_requisition((GtkWidget *) list->data,
+				     &child_requisition);
+
+    child_allocation.x = x;
+    child_allocation.y = y;
+
+    child_allocation.width = AGS_SCALE_DEFAULT_WIDTH;
+    child_allocation.height = AGS_SCALE_DEFAULT_HEIGHT;
+
+    gtk_widget_size_allocate(list->data,
+			     &child_allocation);
+
+    y += AGS_SCALE_DEFAULT_HEIGHT;
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 void
 ags_scrolled_scale_box_size_request(GtkWidget *widget,
 				    GtkRequisition *requisition)
 {
-  AgsScrolledScaleBox *scrolled_scale_box;
-  
   GtkRequisition child_requisition;
 
   GtkOrientation orientation;
 
-  scrolled_scale_box = AGS_SCROLLED_SCALE_BOX(widget);
-
-  requisition->width = -1;
+  requisition->width = AGS_SCALE_DEFAULT_WIDTH;
   requisition->height = -1;
   
-  if(scrolled_scale_box->scale_box != NULL){
-    orientation = gtk_orientable_get_orientation(GTK_ORIENTABLE(scrolled_scale_box->scale_box));
-
-    switch(orientation){
-    case GTK_ORIENTATION_HORIZONTAL:
-      {
-	requisition->height = scrolled_scale_box->scale_box->fixed_scale_width + (scrolled_scale_box->margin_left + scrolled_scale_box->margin_right);
-      }
-      break;
-    case GTK_ORIENTATION_VERTICAL:
-      {
-	requisition->width = scrolled_scale_box->scale_box->fixed_scale_width + (scrolled_scale_box->margin_left + scrolled_scale_box->margin_right);
-      }
-      break;
-    }
-  }
-
-  gtk_widget_size_request((GtkWidget *) gtk_bin_get_child(scrolled_scale_box),
+  gtk_widget_size_request(gtk_bin_get_child((GtkContainer *) widget),
 			  &child_requisition);
 }
 

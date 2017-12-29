@@ -464,7 +464,9 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-
+  gtk_widget_show_all(automation_editor->input_scrolled_scale_box);
+  gtk_widget_show_all(automation_editor->input_scrolled_scale_box->viewport);
+  
   /* input automation edit */
   automation_editor->input_scrolled_automation_edit_box = ags_scrolled_automation_edit_box_new();
 
@@ -735,7 +737,8 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
     if(specifier != NULL){
       for(; specifier[0] != NULL; specifier++){
 	AgsAutomationEdit *automation_edit;
-
+	AgsScale *scale;
+	
 	GList *automation;
 	
 	gboolean contains_specifier;
@@ -750,6 +753,27 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 	pthread_mutex_unlock(audio_mutex);
 
 	if(contains_specifier){
+	  /* scale */
+	  scale = ags_scale_new();
+
+	  pthread_mutex_lock(audio_mutex);
+
+	  g_object_set(scale,
+		       "control-name", AGS_AUTOMATION(automation->data)->control_name,
+		       "upper", AGS_AUTOMATION(automation->data)->upper,
+		       "lower", AGS_AUTOMATION(automation->data)->lower,
+		       "default-value", AGS_AUTOMATION(automation->data)->default_value,
+		       NULL);
+
+	  pthread_mutex_unlock(audio_mutex);
+
+	  gtk_box_pack_start(automation_editor->audio_scrolled_scale_box->scale_box,
+			     scale,
+			     FALSE, FALSE,
+			     0);
+	  gtk_widget_show(scale);
+	  
+	  /* automation edit */
 	  automation_edit = ags_automation_edit_new();
 
 	  pthread_mutex_lock(audio_mutex);
@@ -769,6 +793,8 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 			     automation_edit,
 			     FALSE, FALSE,
 			     0);
+	  ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
+	  gtk_widget_show(automation_edit);
 	}
       }
     }
@@ -779,6 +805,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
     if(specifier != NULL){
       for(; specifier[0] != NULL; specifier++){
 	AgsAutomationEdit *automation_edit;
+	AgsScale *scale;
 
 	GList *automation;
 	
@@ -794,12 +821,33 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 	pthread_mutex_unlock(audio_mutex);
 
 	if(contains_specifier){
+	  /* scale */
+	  scale = ags_scale_new();
+
+	  pthread_mutex_lock(audio_mutex);
+
+	  g_object_set(scale,
+		       "control-name", AGS_AUTOMATION(automation->data)->control_name,
+		       "upper", AGS_AUTOMATION(automation->data)->upper,
+		       "lower", AGS_AUTOMATION(automation->data)->lower,
+		       "default-value", AGS_AUTOMATION(automation->data)->default_value,
+		       NULL);
+
+	  pthread_mutex_unlock(audio_mutex);
+
+	  gtk_box_pack_start(automation_editor->audio_scrolled_scale_box->scale_box,
+			     scale,
+			     FALSE, FALSE,
+			     0);
+	  gtk_widget_show(scale);
+	  
+	  /* automation edit */
 	  automation_edit = ags_automation_edit_new();
 
 	  pthread_mutex_lock(audio_mutex);
 
 	  g_object_set(automation_edit,
-		       "channel-type", G_TYPE_NONE,
+		       "channel-type", AGS_TYPE_OUTPUT,
 		       "control-specifier", specifier[0],
 		       "control-name", AGS_AUTOMATION(automation->data)->control_name,
 		       "upper", AGS_AUTOMATION(automation->data)->upper,
@@ -813,6 +861,8 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 			     automation_edit,
 			     FALSE, FALSE,
 			     0);
+	  ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
+	  gtk_widget_show(automation_edit);
 	}
       }
     }
@@ -823,6 +873,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
     if(specifier != NULL){
       for(; specifier[0] != NULL; specifier++){
 	AgsAutomationEdit *automation_edit;
+	AgsScale *scale;
 
 	GList *automation;
 	
@@ -838,12 +889,33 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 	pthread_mutex_unlock(audio_mutex);
 
 	if(contains_specifier){
+	  /* scale */
+	  scale = ags_scale_new();
+
+	  pthread_mutex_lock(audio_mutex);
+
+	  g_object_set(scale,
+		       "control-name", AGS_AUTOMATION(automation->data)->control_name,
+		       "upper", AGS_AUTOMATION(automation->data)->upper,
+		       "lower", AGS_AUTOMATION(automation->data)->lower,
+		       "default-value", AGS_AUTOMATION(automation->data)->default_value,
+		       NULL);
+
+	  pthread_mutex_unlock(audio_mutex);
+
+	  gtk_box_pack_start(automation_editor->audio_scrolled_scale_box->scale_box,
+			     scale,
+			     FALSE, FALSE,
+			     0);
+	  gtk_widget_show(scale);
+	  
+	  /* automation edit */
 	  automation_edit = ags_automation_edit_new();
 
 	  pthread_mutex_lock(audio_mutex);
 
 	  g_object_set(automation_edit,
-		       "channel-type", G_TYPE_NONE,
+		       "channel-type", AGS_TYPE_INPUT,
 		       "control-specifier", specifier[0],
 		       "control-name", AGS_AUTOMATION(automation->data)->control_name,
 		       "upper", AGS_AUTOMATION(automation->data)->upper,
@@ -857,6 +929,8 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 			     automation_edit,
 			     FALSE, FALSE,
 			     0);
+	  ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
+	  gtk_widget_show(automation_edit);
 	}
       }
     }

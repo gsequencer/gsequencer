@@ -2083,6 +2083,7 @@ ags_automation_find_specifier_with_type_and_line(GList *automation,
 			   specifier) &&
        AGS_AUTOMATION(automation->data)->channel_type == channel_type &&
        AGS_AUTOMATION(automation->data)->line == AGS_AUTOMATION(automation->data)->line){
+
       break;
     }
 

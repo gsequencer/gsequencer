@@ -397,7 +397,7 @@ ags_scale_init(AgsScale *scale)
   
   scale->step_count = AGS_SCALE_DEFAULT_STEP_COUNT;
   scale->page_size = AGS_SCALE_DEFAULT_PAGE_SIZE;
-
+  
   scale->scale_step_count = -1;
   scale->scale_point = NULL;
   scale->scale_value = NULL;
@@ -558,6 +558,7 @@ ags_accessible_scale_set_value(AtkValue *value,
 
   scale = (AgsScale *) gtk_accessible_get_widget(GTK_ACCESSIBLE(value));
   scale->default_value = new_value;
+
   gtk_widget_queue_draw((GtkWidget *) scale);
 }
 
@@ -742,8 +743,8 @@ ags_scale_realize(GtkWidget *widget)
   
   attributes.x = widget->allocation.x;
   attributes.y = widget->allocation.y;
-  attributes.width = widget->allocation.width;
-  attributes.height = widget->allocation.height;
+  attributes.width = AGS_SCALE_DEFAULT_WIDTH;
+  attributes.height = AGS_SCALE_DEFAULT_HEIGHT;
 
   attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
 
@@ -820,7 +821,7 @@ ags_scale_size_allocate(GtkWidget *widget,
   scale = AGS_SCALE(widget);
   
   widget->allocation = *allocation;
-
+  
   if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
     widget->allocation.width = scale->scale_width;
     widget->allocation.height = scale->scale_height;
@@ -1162,11 +1163,15 @@ ags_scale_draw(AgsScale *scale)
     return;
   }
 
+  g_message("di");
+  
   cr = gdk_cairo_create(GTK_WIDGET(scale)->window);
   
   if(cr == NULL){
     return;
   }
+
+  g_message("do");
   
   width = GTK_WIDGET(scale)->allocation.width;
   height = GTK_WIDGET(scale)->allocation.height;
