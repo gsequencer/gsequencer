@@ -818,16 +818,26 @@ ags_scale_size_allocate(GtkWidget *widget,
 {
   AgsScale *scale;
 
+  GdkWindow *window;
+    
   scale = AGS_SCALE(widget);
   
   widget->allocation = *allocation;
   
+  window = gtk_widget_get_window(widget);
+  gdk_window_move(window,
+		  allocation->x, allocation->y);
+
   if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
     widget->allocation.width = scale->scale_width;
     widget->allocation.height = scale->scale_height;
+
+    allocation->height = scale->scale_height;
   }else if(scale->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
     widget->allocation.width = scale->scale_height;
     widget->allocation.height = scale->scale_width;
+
+    allocation->width = scale->scale_height;
   }
 }
 
@@ -1163,15 +1173,11 @@ ags_scale_draw(AgsScale *scale)
     return;
   }
 
-  g_message("di");
-  
   cr = gdk_cairo_create(GTK_WIDGET(scale)->window);
   
   if(cr == NULL){
     return;
   }
-
-  g_message("do");
   
   width = GTK_WIDGET(scale)->allocation.width;
   height = GTK_WIDGET(scale)->allocation.height;

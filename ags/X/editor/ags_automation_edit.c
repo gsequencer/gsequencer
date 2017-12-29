@@ -67,7 +67,6 @@ gboolean ags_accessible_automation_edit_set_description(AtkAction *action,
 gchar* ags_accessible_automation_edit_get_localized_name(AtkAction *action,
 							 gint i);
 
-void ags_automation_edit_realize(GtkWidget *widget);
 void ags_automation_edit_size_request(GtkWidget *widget,
 				      GtkRequisition   *requisition);
 void ags_automation_edit_size_allocate(GtkWidget *widget,
@@ -337,7 +336,6 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) automation_edit;
 
-  //  widget->realize = ags_automation_edit_realize;
   widget->size_request = ags_automation_edit_size_request;
   widget->size_allocate = ags_automation_edit_size_allocate;
   widget->show = ags_automation_edit_show;
@@ -1120,39 +1118,6 @@ ags_accessible_automation_edit_get_localized_name(AtkAction *action,
 }
 
 void
-ags_automation_edit_realize(GtkWidget *widget)
-{
-  AgsAutomationEdit *automation_edit;
-  GdkWindowAttr attributes;
-  gint attributes_mask;
-  
-  automation_edit = AGS_AUTOMATION_EDIT (widget);
-  gtk_widget_set_realized (widget, TRUE);
-
-  attributes.window_type = GDK_WINDOW_CHILD;
-  attributes.x = widget->allocation.x;
-  attributes.y = widget->allocation.y;
-
-  attributes.width = widget->allocation.width;
-
-  if(widget->parent != NULL){
-    attributes.width = widget->parent->allocation.width;
-  }
-
-  attributes.height = AGS_SCALE_DEFAULT_HEIGHT;
-  attributes.wclass = GDK_INPUT_ONLY;
-  attributes.event_mask = gtk_widget_get_events (widget);
-  
-  widget->window = gtk_widget_get_parent_window (widget);
-  g_object_ref (widget->window);
-
-  gdk_window_new (gtk_widget_get_parent_window (widget),
-		  &attributes, attributes_mask);
-  
-  widget->style = gtk_style_attach (widget->style, widget->window);
-}
-
-void
 ags_automation_edit_size_request(GtkWidget *widget,
 				 GtkRequisition *requisition)
 {
@@ -1173,17 +1138,33 @@ ags_automation_edit_size_allocate(GtkWidget *widget,
 {
   AgsAutomationEdit *automation_edit;
 
+  GtkAllocation child_allocation;
+
+  GdkWindow *window;
+
   automation_edit = AGS_AUTOMATION_EDIT(widget);
 
   widget->allocation = *allocation;
   
   widget->allocation.height = AGS_SCALE_DEFAULT_HEIGHT;
+
+  //  GTK_WIDGET_CLASS(ags_automation_edit_parent_class)->size_allocate(widget,
+  //								    allocation);
+
+  child_allocation.x = 0;
+  child_allocation.y = 0;
   
-  GTK_WIDGET_CLASS(ags_automation_edit_parent_class)->size_allocate(widget,
-								    allocation);
+  child_allocation.width = allocation->width;
+  child_allocation.height = AGS_SCALE_DEFAULT_HEIGHT;
 
   gtk_widget_size_allocate(automation_edit->drawing_area,
-			   allocation);
+  			   &child_allocation);
+
+  window = gtk_widget_get_window(automation_edit->drawing_area);
+  gdk_window_move(window,
+  		  allocation->x, allocation->y);
+
+  gtk_widget_queue_draw(automation_edit);
 }
 
 void

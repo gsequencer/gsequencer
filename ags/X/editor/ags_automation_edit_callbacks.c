@@ -153,6 +153,7 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
   automation_toolbar = automation_editor->automation_toolbar;
 
   gtk_widget_grab_focus((GtkWidget *) automation_edit->drawing_area);
+  automation_editor->focused_automation_edit = automation_edit;
 
   if((machine = automation_editor->selected_machine) != NULL &&
      event->button == 1){    
@@ -327,7 +328,6 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
 
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
 								      AGS_TYPE_AUTOMATION_EDITOR);
-  automation_editor->focused_automation_edit = automation_edit;
   
   automation_toolbar = automation_editor->automation_toolbar;
 

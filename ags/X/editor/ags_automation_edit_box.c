@@ -119,7 +119,7 @@ ags_automation_edit_box_class_init(AgsAutomationEditBoxClass *automation_edit_bo
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) automation_edit_box;
-
+  
   /* GtkContainerClass */
   container = (GtkWidgetClass *) automation_edit_box;
 

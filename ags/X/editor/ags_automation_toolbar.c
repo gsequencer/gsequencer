@@ -785,7 +785,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 
       gtk_box_pack_start(automation_editor->input_scrolled_automation_edit_box->automation_edit_box,
 			 automation_edit,
-			 TRUE, TRUE,
+			 FALSE, FALSE,
 			 0);
       ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
       gtk_widget_show(automation_edit);

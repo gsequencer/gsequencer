@@ -327,7 +327,7 @@ ags_scrolled_automation_edit_box_size_allocate(GtkWidget *widget,
   child_allocation.y = allocation->y;
 
   child_allocation.width = allocation->width;
-  child_allocation.height = AGS_SCALE_DEFAULT_HEIGHT;
+  child_allocation.height = allocation->height;
 
   gtk_widget_size_allocate((GtkWidget *) scrolled_automation_edit_box->viewport,
 			   &child_allocation);
@@ -344,7 +344,7 @@ ags_scrolled_automation_edit_box_size_allocate(GtkWidget *widget,
   child_allocation.y = 0;
 
   child_allocation.width = allocation->width;
-  child_allocation.height = AGS_SCALE_DEFAULT_HEIGHT;
+  child_allocation.height = g_list_length(list) * AGS_SCALE_DEFAULT_HEIGHT;
   
   gtk_widget_size_allocate((GtkWidget *) scrolled_automation_edit_box->automation_edit_box,
 			   &child_allocation);
@@ -364,7 +364,6 @@ ags_scrolled_automation_edit_box_size_allocate(GtkWidget *widget,
 
     gtk_widget_size_allocate(list->data,
 			     &child_allocation);
-    gtk_widget_queue_resize(list->data);
 
     y += AGS_SCALE_DEFAULT_HEIGHT;
     

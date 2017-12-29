@@ -341,7 +341,7 @@ ags_scrolled_scale_box_size_allocate(GtkWidget *widget,
   child_allocation.y = 0;
 
   child_allocation.width = allocation->width;
-  child_allocation.height = allocation->height;
+  child_allocation.height = g_list_length(list) * AGS_SCALE_DEFAULT_HEIGHT;
   
   gtk_widget_size_allocate((GtkWidget *) scrolled_scale_box->scale_box,
 			   &child_allocation);
@@ -355,18 +355,18 @@ ags_scrolled_scale_box_size_allocate(GtkWidget *widget,
 
     child_allocation.x = x;
     child_allocation.y = y;
-
+    
     child_allocation.width = AGS_SCALE_DEFAULT_WIDTH;
     child_allocation.height = AGS_SCALE_DEFAULT_HEIGHT;
 
     gtk_widget_size_allocate(list->data,
 			     &child_allocation);
-
+    
     y += AGS_SCALE_DEFAULT_HEIGHT;
     
     list = list->next;
   }
-
+  
   g_list_free(list_start);
 }
 
