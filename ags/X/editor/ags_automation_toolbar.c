@@ -820,7 +820,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     while(list != NULL){
       nth++;
       
-      if(!g_strcmp0(automation_editor->focused_automation_edit->control_name,
+      if(!g_strcmp0(control_name,
 		    AGS_AUTOMATION_EDIT(list->data)->control_name)){	
 	gtk_widget_destroy(list->data);
 
@@ -855,7 +855,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     while(list != NULL){
       nth++;
       
-      if(!g_strcmp0(automation_editor->focused_automation_edit->control_name,
+      if(!g_strcmp0(control_name,
 		    AGS_AUTOMATION_EDIT(list->data)->control_name)){	
 	gtk_widget_destroy(list->data);
 
@@ -890,7 +890,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     while(list != NULL){
       nth++;
       
-      if(!g_strcmp0(automation_editor->focused_automation_edit->control_name,
+      if(!g_strcmp0(control_name,
 		    AGS_AUTOMATION_EDIT(list->data)->control_name)){	
 	gtk_widget_destroy(list->data);
 

@@ -383,7 +383,7 @@ ags_scale_init(AgsScale *scale)
   scale->button_state = 0;
   scale->layout = AGS_SCALE_LAYOUT_VERTICAL;
 
-  scale->font_size = 12;
+  scale->font_size = 11;
 
   scale->scale_width = AGS_SCALE_DEFAULT_WIDTH;
   scale->scale_height = AGS_SCALE_DEFAULT_HEIGHT;
