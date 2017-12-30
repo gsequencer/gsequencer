@@ -21,10 +21,12 @@
 
 #include <ags/server/security/ags_password_store.h>
 
+#include <unistd.h>
+#ifndef __APPLE__
 #define __USE_GNU
 #define _GNU_SOURCE
 #include <crypt.h>
-#include <unistd.h>
+#endif
 
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
@@ -213,15 +215,21 @@ ags_xml_password_store_encrypt_password(AgsPasswordStore *password_store,
 					gchar *salt,
 					GError **error)
 {
+#ifndef __APPLE__
   struct crypt_data *data;
+#endif
 
   gchar *password_hash;
   
+#ifndef __APPLE__
   data = (struct crypt_data *) malloc(sizeof(struct crypt_data));
   data->initialized = 0;
 
   password_hash = crypt_r(password, salt,
 			  data);
+#else
+  password_hash = crypt(password, salt);
+#endif
 
   return(password_hash);
 }
