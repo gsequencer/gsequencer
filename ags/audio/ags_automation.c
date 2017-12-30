@@ -405,11 +405,13 @@ ags_automation_init(AgsAutomation *automation)
 
   automation->timestamp = ags_timestamp_new();
 
-  AGS_TIMESTAMP(automation->timestamp)->flags &= (~AGS_TIMESTAMP_UNIX);
-  AGS_TIMESTAMP(automation->timestamp)->flags |= AGS_TIMESTAMP_OFFSET;
+  automation->timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  automation->timestamp->flags |= AGS_TIMESTAMP_OFFSET;
 
-  AGS_TIMESTAMP(automation->timestamp)->timer.ags_offset.offset = 0;
+  automation->timestamp->timer.ags_offset.offset = 0;
 
+  g_object_ref(automation->timestamp);
+  
   automation->audio = NULL;
   automation->line = 0;
   automation->channel_type = G_TYPE_NONE;
@@ -1024,8 +1026,8 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
   while(automation != NULL){
     if(AGS_AUTOMATION(automation->data)->line != line ||
        AGS_AUTOMATION(automation->data)->channel_type != channel_type ||
-       !g_strcmp0(AGS_AUTOMATION(automation->data)->control_name,
-		  control_name)){
+       g_strcmp0(AGS_AUTOMATION(automation->data)->control_name,
+		 control_name)){
       automation = automation->next;
       
       continue;
@@ -2003,6 +2005,62 @@ ags_automation_get_specifier_unique(GList *automation)
   
   while(automation != NULL){
     current = specifier;
+    
+#ifdef HAVE_GLIB_2_44
+    contains_control_name = g_strv_contains(specifier,
+					    AGS_AUTOMATION(automation->data)->control_name);
+#else
+    contains_control_name = ags_strv_contains(specifier,
+					      AGS_AUTOMATION(automation->data)->control_name);
+#endif
+    
+    if(!contains_control_name){
+      specifier = (gchar **) realloc(specifier,
+				     (length + 1) * sizeof(gchar *));
+      specifier[length - 1] = AGS_AUTOMATION(automation->data)->control_name;
+      specifier[length] = NULL;
+
+      length++;
+    }
+      
+    automation = automation->next;
+  }
+    
+  return(specifier);
+}
+
+/**
+ * ags_automation_get_specifier_unique_with_channel_type:
+ * @automation: a #GList containing #AgsAutomation
+ * @channel_type: the channel's #GType
+ *
+ * Retrieve automation port specifier.
+ *
+ * Returns: a %NULL terminated string array
+ *
+ * Since: 1.3.0
+ */
+gchar**
+ags_automation_get_specifier_unique_with_channel_type(GList *automation,
+						      GType channel_type)
+{
+  gchar **specifier, **current;
+
+  guint length, i;
+  gboolean contains_control_name;
+    
+  specifier = (gchar **) malloc(sizeof(gchar*));
+  specifier[0] = NULL;
+  length = 1;
+  
+  while(automation != NULL){
+    current = specifier;
+
+    if(AGS_AUTOMATION(automation->data)->channel_type != channel_type){
+      automation = automation->next;
+
+      continue;
+    }
     
 #ifdef HAVE_GLIB_2_44
     contains_control_name = g_strv_contains(specifier,

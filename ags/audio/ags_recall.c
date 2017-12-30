@@ -19,31 +19,7 @@
 
 #include <ags/audio/ags_recall.h>
 
-#include <ags/util/ags_destroy_util.h>
-#include <ags/util/ags_id_generator.h>
-#include <ags/util/ags_list_util.h>
-
-#include <ags/lib/ags_parameter.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_packable.h>
-#include <ags/object/ags_dynamic_connectable.h>
-#include <ags/object/ags_plugin.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_concurrency_provider.h>
-#include <ags/thread/ags_destroy_worker.h>
-
-#include <ags/server/ags_server.h>
-#include <ags/server/ags_service_provider.h>
-#include <ags/server/ags_registry.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
+#include <ags/libags.h>
 
 #include <ags/plugin/ags_ladspa_manager.h>
 #include <ags/plugin/ags_dssi_manager.h>
@@ -110,10 +86,6 @@ void ags_recall_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_recall_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 void ags_recall_dispose(GObject *gobject);
 void ags_recall_finalize(GObject *gobject);
-
-void ags_recall_real_load_automation(AgsRecall *recall,
-				     GList *automation_port);
-void ags_recall_real_unload_automation(AgsRecall *recall);
 
 void ags_recall_real_run_init_pre(AgsRecall *recall);
 void ags_recall_real_run_init_inter(AgsRecall *recall);

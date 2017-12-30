@@ -304,14 +304,8 @@ ags_scrolled_automation_edit_box_size_allocate(GtkWidget *widget,
 {
   AgsScrolledAutomationEditBox *scrolled_automation_edit_box;
 
-  GList *list, *list_start;
-
   GtkAllocation child_allocation;
   GtkRequisition child_requisition;
-
-  GtkOrientation orientation;
-
-  guint x, y;
   
   scrolled_automation_edit_box = AGS_SCROLLED_AUTOMATION_EDIT_BOX(widget);
 
@@ -333,10 +327,6 @@ ags_scrolled_automation_edit_box_size_allocate(GtkWidget *widget,
 			   &child_allocation);
 
   /* box */
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) scrolled_automation_edit_box->automation_edit_box);
-
-  /*  */
   gtk_widget_get_child_requisition((GtkWidget *) scrolled_automation_edit_box->automation_edit_box,
 				   &child_requisition);
 
@@ -344,33 +334,10 @@ ags_scrolled_automation_edit_box_size_allocate(GtkWidget *widget,
   child_allocation.y = 0;
 
   child_allocation.width = allocation->width;
-  child_allocation.height = g_list_length(list) * AGS_SCALE_DEFAULT_HEIGHT;
+  child_allocation.height = allocation->height;
   
   gtk_widget_size_allocate((GtkWidget *) scrolled_automation_edit_box->automation_edit_box,
 			   &child_allocation);
-
-  x = 0;
-  y = 0;
-  
-  while(list != NULL){
-    gtk_widget_get_child_requisition((GtkWidget *) list->data,
-				     &child_requisition);
-
-    child_allocation.x = x;
-    child_allocation.y = y;
-
-    child_allocation.width = allocation->width;
-    child_allocation.height = AGS_SCALE_DEFAULT_HEIGHT;
-
-    gtk_widget_size_allocate(list->data,
-			     &child_allocation);
-
-    y += AGS_SCALE_DEFAULT_HEIGHT;
-    
-    list = list->next;
-  }
-
-  g_list_free(list_start);
 }
 
 void

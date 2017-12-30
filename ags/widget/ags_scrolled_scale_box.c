@@ -305,14 +305,8 @@ ags_scrolled_scale_box_size_allocate(GtkWidget *widget,
 {
   AgsScrolledScaleBox *scrolled_scale_box;
 
-  GList *list, *list_start;
-
   GtkAllocation child_allocation;
   GtkRequisition child_requisition;
-
-  GtkOrientation orientation;
-
-  guint x, y;
   
   scrolled_scale_box = AGS_SCROLLED_SCALE_BOX(widget);
 
@@ -330,10 +324,6 @@ ags_scrolled_scale_box_size_allocate(GtkWidget *widget,
 			   &child_allocation);
 
   /* box */
-  list_start = 
-    list = gtk_container_get_children((GtkContainer *) scrolled_scale_box->scale_box);
-
-  /*  */
   gtk_widget_get_child_requisition((GtkWidget *) scrolled_scale_box->scale_box,
 				   &child_requisition);
 
@@ -341,33 +331,10 @@ ags_scrolled_scale_box_size_allocate(GtkWidget *widget,
   child_allocation.y = 0;
 
   child_allocation.width = allocation->width;
-  child_allocation.height = g_list_length(list) * AGS_SCALE_DEFAULT_HEIGHT;
+  child_allocation.height = allocation->height;
   
   gtk_widget_size_allocate((GtkWidget *) scrolled_scale_box->scale_box,
 			   &child_allocation);
-
-  x = 0;
-  y = 0;
-
-  while(list != NULL){
-    gtk_widget_get_child_requisition((GtkWidget *) list->data,
-				     &child_requisition);
-
-    child_allocation.x = x;
-    child_allocation.y = y;
-    
-    child_allocation.width = AGS_SCALE_DEFAULT_WIDTH;
-    child_allocation.height = AGS_SCALE_DEFAULT_HEIGHT;
-
-    gtk_widget_size_allocate(list->data,
-			     &child_allocation);
-    
-    y += AGS_SCALE_DEFAULT_HEIGHT;
-    
-    list = list->next;
-  }
-  
-  g_list_free(list_start);
 }
 
 void
@@ -375,8 +342,6 @@ ags_scrolled_scale_box_size_request(GtkWidget *widget,
 				    GtkRequisition *requisition)
 {
   GtkRequisition child_requisition;
-
-  GtkOrientation orientation;
 
   requisition->width = AGS_SCALE_DEFAULT_WIDTH;
   requisition->height = -1;

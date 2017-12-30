@@ -64,6 +64,8 @@
 #define AGS_AUTOMATION_EDIT_DEFAULT_UPPER (1.0)
 #define AGS_AUTOMATION_EDIT_DEFAULT_VALUE (0.0)
 
+#define AGS_AUTOMATION_EDIT_DEFAULT_PADDING (8)
+  
 typedef struct _AgsAutomationEdit AgsAutomationEdit;
 typedef struct _AgsAutomationEditClass AgsAutomationEditClass;
 

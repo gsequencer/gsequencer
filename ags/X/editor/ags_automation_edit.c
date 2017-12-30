@@ -1876,7 +1876,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   if(acceleration_b != NULL){
     width = ((double) acceleration_b->x - acceleration_a->x);
   }else{
-    width = ((double) GTK_WIDGET(automation_edit->drawing_area)->allocation.width - acceleration_a->x);
+    width = 1.0;
   }
   
   height = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - y;
@@ -1900,6 +1900,10 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 
   if(x + width > GTK_WIDGET(automation_edit->drawing_area)->allocation.width){
     width = ((double) GTK_WIDGET(automation_edit->drawing_area)->allocation.width) - x;
+  }
+
+  if(acceleration_b == NULL){
+    width = ((double) GTK_WIDGET(automation_edit->drawing_area)->allocation.width - x);
   }
   
   if(y < 0.0){
@@ -2145,6 +2149,9 @@ ags_automation_edit_draw(AgsAutomationEdit *automation_edit)
 						automation_edit_style->fg[0].green / white_gc,
 						automation_edit_style->fg[0].blue / white_gc,
 						1.0);
+
+	  cairo_surface_mark_dirty(cairo_get_target(cr));
+	  cairo_destroy(cr);
 	}
       }
     }

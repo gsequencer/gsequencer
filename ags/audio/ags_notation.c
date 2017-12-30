@@ -308,10 +308,12 @@ ags_notation_init(AgsNotation *notation)
 
   notation->timestamp = ags_timestamp_new();
 
-  AGS_TIMESTAMP(notation->timestamp)->flags &= (~AGS_TIMESTAMP_UNIX);
-  AGS_TIMESTAMP(notation->timestamp)->flags |= AGS_TIMESTAMP_OFFSET;
+  notation->timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  notation->timestamp->flags |= AGS_TIMESTAMP_OFFSET;
 
-  AGS_TIMESTAMP(notation->timestamp)->timer.ags_offset.offset = 0;
+  notation->timestamp->timer.ags_offset.offset = 0;
+
+  g_object_ref(notation->timestamp);
   
   notation->audio_channel = 0;
   notation->audio = NULL;

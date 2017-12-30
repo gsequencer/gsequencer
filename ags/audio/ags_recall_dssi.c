@@ -19,21 +19,10 @@
 
 #include <ags/audio/ags_recall_dssi.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/lib/ags_endian.h>
-
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
 
 #include <ags/plugin/ags_dssi_manager.h>
 #include <ags/plugin/ags_ladspa_conversion.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
 
 #include <ags/audio/ags_port.h>
 

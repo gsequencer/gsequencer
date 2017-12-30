@@ -19,8 +19,7 @@
 
 #include <ags/audio/recall/ags_volume_channel.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
 
 #include <ags/plugin/ags_base_plugin.h>
 
@@ -158,7 +157,7 @@ ags_volume_channel_class_init(AgsVolumeChannelClass *volume_channel)
    * 
    * The volume port.
    * 
-   * Since: 1.0.0.7 
+   * Since: 1.0.0 
    */
   param_spec = g_param_spec_object("volume",
 				   i18n_pspec("volume to apply"),
@@ -278,7 +277,7 @@ ags_volume_channel_connect(AgsConnectable *connectable)
   if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
     return;
   }
-
+  
   /* load automation */
   ags_recall_load_automation(recall,
 			     g_list_copy(recall->port));

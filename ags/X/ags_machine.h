@@ -36,11 +36,14 @@
 #define AGS_IS_MACHINE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_MACHINE))
 #define AGS_MACHINE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_MACHINE, AgsMachineClass))
 
-#define AGS_MACHINE_DEFAULT_VERSION "0.7.8"
-#define AGS_MACHINE_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23"
+#define AGS_MACHINE_AUTOMATION_PORT(ptr) ((AgsMachineAutomationPort *)(ptr))
+
+#define AGS_MACHINE_DEFAULT_VERSION "1.3.0"
+#define AGS_MACHINE_DEFAULT_BUILD_ID "Sat Dec 30 11:41:50 UTC 2017"
 
 typedef struct _AgsMachine AgsMachine;
 typedef struct _AgsMachineClass AgsMachineClass;
+typedef struct _AgsMachineAutomationPort AgsMachineAutomationPort;
 
 typedef enum{
   AGS_MACHINE_SOLO                    = 1,
@@ -120,7 +123,7 @@ struct _AgsMachine
   GtkContainer *bridge;
 
   GList *port;
-  gchar **automation_port;
+  GList *enabled_automation_port;
 
   GtkMenuToolButton *menu_tool_button;
   GtkMenu *popup;
@@ -152,7 +155,24 @@ struct _AgsMachineClass
 	       GObject *recall_id);
 };
 
+struct _AgsMachineAutomationPort
+{
+  GType channel_type;
+  gchar *control_name;
+  
+  AgsPort *port;
+};
+
 GType ags_machine_get_type(void);
+
+AgsMachineAutomationPort* ags_machine_automation_port_alloc(GType channel_type, gchar *control_name,
+							    AgsPort *port);
+void ags_machine_automation_port_free(AgsMachineAutomationPort *automation_port);
+
+GList* ags_machine_automation_port_find(GList *list,
+					AgsPort *port);
+GList* ags_machine_automation_port_find_channel_type_with_control_name(GList *list,
+								       GType channel_type, gchar *control_name);
 
 void ags_machine_resize_audio_channels(AgsMachine *machine,
 				       guint new_size, guint old_size);

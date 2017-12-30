@@ -693,6 +693,17 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
    */
   /* audio */
   list =
+    list_start = gtk_container_get_children(automation_editor->audio_scrolled_scale_box->scale_box);
+
+  while(list != NULL){
+    gtk_widget_destroy(list->data);
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  list =
     list_start = gtk_container_get_children(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box);
 
   while(list != NULL){
@@ -705,6 +716,17 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
   
   /* output */
   list =
+    list_start = gtk_container_get_children(automation_editor->output_scrolled_scale_box->scale_box);
+
+  while(list != NULL){
+    gtk_widget_destroy(list->data);
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  list =
     list_start = gtk_container_get_children(automation_editor->output_scrolled_automation_edit_box->automation_edit_box);
 
   while(list != NULL){
@@ -716,6 +738,17 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
   g_list_free(list_start);
   
   /* input */
+  list =
+    list_start = gtk_container_get_children(automation_editor->input_scrolled_scale_box->scale_box);
+
+  while(list != NULL){
+    gtk_widget_destroy(list->data);
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
   list =
     list_start = gtk_container_get_children(automation_editor->input_scrolled_automation_edit_box->automation_edit_box);
 
@@ -770,7 +803,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 	  gtk_box_pack_start(automation_editor->audio_scrolled_scale_box->scale_box,
 			     scale,
 			     FALSE, FALSE,
-			     0);
+			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
 	  gtk_widget_show(scale);
 	  
 	  /* automation edit */
@@ -792,7 +825,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 	  gtk_box_pack_start(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box,
 			     automation_edit,
 			     FALSE, FALSE,
-			     0);
+			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
 	  ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
 	  gtk_widget_show(automation_edit);
 	}
@@ -835,10 +868,10 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 
 	  pthread_mutex_unlock(audio_mutex);
 
-	  gtk_box_pack_start(automation_editor->audio_scrolled_scale_box->scale_box,
+	  gtk_box_pack_start(automation_editor->output_scrolled_scale_box->scale_box,
 			     scale,
 			     FALSE, FALSE,
-			     0);
+			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
 	  gtk_widget_show(scale);
 	  
 	  /* automation edit */
@@ -860,7 +893,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 	  gtk_box_pack_start(automation_editor->output_scrolled_automation_edit_box->automation_edit_box,
 			     automation_edit,
 			     FALSE, FALSE,
-			     0);
+			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
 	  ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
 	  gtk_widget_show(automation_edit);
 	}
@@ -903,10 +936,10 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 
 	  pthread_mutex_unlock(audio_mutex);
 
-	  gtk_box_pack_start(automation_editor->audio_scrolled_scale_box->scale_box,
+	  gtk_box_pack_start(automation_editor->input_scrolled_scale_box->scale_box,
 			     scale,
 			     FALSE, FALSE,
-			     0);
+			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
 	  gtk_widget_show(scale);
 	  
 	  /* automation edit */
@@ -928,7 +961,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 	  gtk_box_pack_start(automation_editor->input_scrolled_automation_edit_box->automation_edit_box,
 			     automation_edit,
 			     FALSE, FALSE,
-			     0);
+			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
 	  ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
 	  gtk_widget_show(automation_edit);
 	}
@@ -1026,8 +1059,6 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
     
     timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(acceleration->x / AGS_AUTOMATION_DEFAULT_OFFSET);
 
-    pthread_mutex_lock(audio_mutex);
-
     i = 0;
 
     while(notebook == NULL ||
@@ -1035,26 +1066,42 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
 					    i)) != -1){
       AgsAcceleration *new_acceleration;
       
+      pthread_mutex_lock(audio_mutex);
+      
       list_automation = machine->audio->automation;
       list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
 								    automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
 								    timestamp);
 
+      pthread_mutex_unlock(audio_mutex);
+
       if(list_automation != NULL){
+	pthread_mutex_lock(audio_mutex);
+	
 	automation = list_automation->data;
-      }else{
+
+	pthread_mutex_unlock(audio_mutex);
+      }else{	
 	automation = ags_automation_new(machine->audio,
 					i,
 					automation_editor->focused_automation_edit->channel_type,
 					automation_editor->focused_automation_edit->control_name);
+	//	g_object_set(automation,
+	//	     "port", automation_port->data,
+	//	     NULL);
 	machine->audio->automation = ags_automation_add(machine->audio->automation,
 							automation);
+	g_object_ref(automation);
       }
 
+      pthread_mutex_lock(audio_mutex);
+      
       new_acceleration = ags_acceleration_duplicate(acceleration);
       ags_automation_add_acceleration(automation,
 				      new_acceleration,
 				      FALSE);
+
+      pthread_mutex_unlock(audio_mutex);
 
       if(notebook == NULL){
 	break;
@@ -1063,8 +1110,8 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
       i++;
     }
     
-    pthread_mutex_unlock(audio_mutex);
-
+    g_object_unref(timestamp);
+    
     gtk_widget_queue_draw(automation_editor->focused_automation_edit);
   }
 }

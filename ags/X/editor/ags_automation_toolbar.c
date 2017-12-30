@@ -454,28 +454,84 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
   gtk_combo_box_set_model(automation_toolbar->port,
 			  GTK_TREE_MODEL(list_store));
 
+  /* audio */
   pthread_mutex_lock(audio_mutex);
   
-  specifier = ags_automation_get_specifier_unique(machine->audio->automation);
+  specifier = ags_automation_get_specifier_unique_with_channel_type(machine->audio->automation,
+								    G_TYPE_NONE);
 
   pthread_mutex_unlock(audio_mutex);
 
   for(; *specifier != NULL; specifier++){
+    gchar *text;
+
+    gboolean is_enabled;
+    
     gtk_list_store_append(list_store, &iter);
 
-#ifdef HAVE_GLIB_2_44
+    text = g_strdup_printf("audio - %s",
+			   *specifier);
+    is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(G_TYPE_NONE,
+										  *specifier)) ? TRUE: FALSE;
+    
     gtk_list_store_set(list_store, &iter,
-		       0, ((machine->automation_port != NULL &&
-			    g_strv_contains(machine->automation_port, *specifier)) ? TRUE: FALSE),
-		       1, g_strdup(*specifier),
+		       0, is_enabled,
+		       1, text,
 		       -1);
-#else
+  }
+
+  /* output */
+  pthread_mutex_lock(audio_mutex);
+  
+  specifier = ags_automation_get_specifier_unique_with_channel_type(machine->audio->automation,
+								    AGS_TYPE_OUTPUT);
+
+  pthread_mutex_unlock(audio_mutex);
+
+  for(; *specifier != NULL; specifier++){
+    gchar *text;
+
+    gboolean is_enabled;
+    
+    gtk_list_store_append(list_store, &iter);
+
+    text = g_strdup_printf("output - %s",
+			   *specifier);
+
+    is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(AGS_TYPE_OUTPUT,
+										  *specifier)) ? TRUE: FALSE;
+    
     gtk_list_store_set(list_store, &iter,
-		       0, ((machine->automation_port != NULL &&
-			    ags_strv_contains(machine->automation_port, *specifier)) ? TRUE: FALSE),
-		       1, g_strdup(*specifier),
+		       0, is_enabled,
+		       1, text,
 		       -1);
-#endif
+  }
+
+  /* input */
+  pthread_mutex_lock(audio_mutex);
+  
+  specifier = ags_automation_get_specifier_unique_with_channel_type(machine->audio->automation,
+								    AGS_TYPE_INPUT);
+
+  pthread_mutex_unlock(audio_mutex);
+
+  for(; *specifier != NULL; specifier++){
+    gchar *text;
+
+    gboolean is_enabled;
+    
+    gtk_list_store_append(list_store, &iter);
+
+    text = g_strdup_printf("input - %s",
+			   *specifier);
+
+    is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(AGS_TYPE_INPUT,
+										  *specifier)) ? TRUE: FALSE;
+    
+    gtk_list_store_set(list_store, &iter,
+		       0, is_enabled,
+		       1, text,
+		       -1);
   }
 
   gtk_list_store_append(list_store, &iter);
@@ -655,7 +711,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
       gtk_box_pack_start(automation_editor->audio_scrolled_scale_box->scale_box,
 			 scale,
 			 FALSE, FALSE,
-			 0);
+			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
       gtk_widget_show(scale);
 	  
       /* automation edit */
@@ -677,7 +733,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
       gtk_box_pack_start(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box,
 			 automation_edit,
 			 FALSE, FALSE,
-			 0);
+			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
       ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
       gtk_widget_show(automation_edit);
     }
@@ -710,7 +766,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
       gtk_box_pack_start(automation_editor->output_scrolled_scale_box->scale_box,
 			 scale,
 			 FALSE, FALSE,
-			 0);
+			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
       gtk_widget_show(scale);
 	  
       /* automation edit */
@@ -732,7 +788,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
       gtk_box_pack_start(automation_editor->output_scrolled_automation_edit_box->automation_edit_box,
 			 automation_edit,
 			 FALSE, FALSE,
-			 0);
+			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
       ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
       gtk_widget_show(automation_edit);
     }
@@ -764,7 +820,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
       gtk_box_pack_start(automation_editor->input_scrolled_scale_box->scale_box,
 			 scale,
 			 FALSE, FALSE,
-			 0);
+			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
       gtk_widget_show(scale);
       
       /* automation edit */
@@ -786,7 +842,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
       gtk_box_pack_start(automation_editor->input_scrolled_automation_edit_box->automation_edit_box,
 			 automation_edit,
 			 FALSE, FALSE,
-			 0);
+			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
       ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
       gtk_widget_show(automation_edit);
     }

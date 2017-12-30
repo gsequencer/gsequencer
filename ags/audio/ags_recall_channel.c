@@ -19,11 +19,7 @@
 
 #include <ags/audio/ags_recall_channel.h>
 
-#include <ags/lib/ags_parameter.h>
-
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_packable.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_output.h>
