@@ -119,6 +119,10 @@ struct _AgsAutomationEditorClass
 
 GType ags_automation_editor_get_type(void);
 
+void ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_editor);
+void ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_editor);
+void ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_editor);
+
 void ags_automation_editor_machine_changed(AgsAutomationEditor *automation_editor,
 					   AgsMachine *machine);
 

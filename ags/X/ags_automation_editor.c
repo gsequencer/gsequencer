@@ -308,6 +308,14 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		   2, 3,
 		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
 		   0, 0);
+
+  gtk_widget_set_events(GTK_WIDGET(automation_editor->audio_scrolled_automation_edit_box->viewport), GDK_EXPOSURE_MASK
+			| GDK_LEAVE_NOTIFY_MASK
+			| GDK_BUTTON_PRESS_MASK
+			| GDK_BUTTON_RELEASE_MASK
+			| GDK_POINTER_MOTION_MASK
+			| GDK_POINTER_MOTION_HINT_MASK
+			| GDK_CONTROL_MASK);
   
   /* output */
   table = (GtkTable *) gtk_table_new(4, 3,
@@ -335,15 +343,6 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
   
-  /* output - ruler */
-  automation_editor->output_ruler = ags_ruler_new();
-  gtk_table_attach(table,
-		   (GtkWidget *) automation_editor->output_ruler,
-		   1, 2,
-		   1, 2,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL,
-		   0, 0);
-
   /* output - notebook */
   automation_editor->output_notebook = g_object_new(AGS_TYPE_NOTEBOOK,
 						    "homogeneous", FALSE,
@@ -393,6 +392,14 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		   2, 3,
 		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
 		   0, 0);
+
+  gtk_widget_set_events(GTK_WIDGET(automation_editor->output_scrolled_automation_edit_box->viewport), GDK_EXPOSURE_MASK
+			| GDK_LEAVE_NOTIFY_MASK
+			| GDK_BUTTON_PRESS_MASK
+			| GDK_BUTTON_RELEASE_MASK
+			| GDK_POINTER_MOTION_MASK
+			| GDK_POINTER_MOTION_HINT_MASK
+			| GDK_CONTROL_MASK);
   
   /* input */
   table = (GtkTable *) gtk_table_new(4, 3,
@@ -420,15 +427,6 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
   
-  /* input - ruler */
-  automation_editor->input_ruler = ags_ruler_new();
-  gtk_table_attach(table,
-		   (GtkWidget *) automation_editor->input_ruler,
-		   1, 2,
-		   1, 2,
-		   GTK_FILL | GTK_EXPAND, GTK_FILL,
-		   0, 0);
-
   /* input - notebook */
   automation_editor->input_notebook = g_object_new(AGS_TYPE_NOTEBOOK,
 						   "homogeneous", FALSE,
@@ -480,6 +478,14 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		   2, 3,
 		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
 		   0, 0);
+
+  gtk_widget_set_events(GTK_WIDGET(automation_editor->input_scrolled_automation_edit_box->viewport), GDK_EXPOSURE_MASK
+			| GDK_LEAVE_NOTIFY_MASK
+			| GDK_BUTTON_PRESS_MASK
+			| GDK_BUTTON_RELEASE_MASK
+			| GDK_POINTER_MOTION_MASK
+			| GDK_POINTER_MOTION_HINT_MASK
+			| GDK_CONTROL_MASK);
 
   /* focused automation edit */
   automation_editor->focused_automation_edit = NULL;
@@ -557,12 +563,42 @@ ags_automation_editor_connect(AgsConnectable *connectable)
   }
 
   automation_editor->flags |= AGS_AUTOMATION_EDITOR_CONNECTED;
-  
-  /*  */
+
+  /* audio */
+  g_signal_connect_after((GObject *) automation_editor->audio_scrolled_automation_edit_box->viewport, "expose_event",
+			 G_CALLBACK(ags_automation_editor_audio_edit_expose_event), (gpointer) automation_editor);
+
+  g_signal_connect_after((GObject *) automation_editor->audio_scrolled_automation_edit_box->viewport, "configure_event",
+			 G_CALLBACK(ags_automation_editor_audio_edit_configure_event), (gpointer) automation_editor);
+
+  g_signal_connect_after((GObject *) automation_editor->audio_vscrollbar, "value-changed",
+			 G_CALLBACK(ags_automation_editor_audio_vscrollbar_value_changed), (gpointer) automation_editor);
+
+  /* output */
+  g_signal_connect_after((GObject *) automation_editor->output_scrolled_automation_edit_box->viewport, "expose_event",
+			 G_CALLBACK(ags_automation_editor_output_edit_expose_event), (gpointer) automation_editor);
+
+  g_signal_connect_after((GObject *) automation_editor->output_scrolled_automation_edit_box->viewport, "configure_event",
+			 G_CALLBACK(ags_automation_editor_output_edit_configure_event), (gpointer) automation_editor);
+
+  g_signal_connect_after((GObject *) automation_editor->output_vscrollbar, "value-changed",
+			 G_CALLBACK(ags_automation_editor_output_vscrollbar_value_changed), (gpointer) automation_editor);
+
+  /* input */
+  g_signal_connect_after((GObject *) automation_editor->input_scrolled_automation_edit_box->viewport, "expose_event",
+			 G_CALLBACK(ags_automation_editor_input_edit_expose_event), (gpointer) automation_editor);
+
+  g_signal_connect_after((GObject *) automation_editor->input_scrolled_automation_edit_box->viewport, "configure_event",
+			 G_CALLBACK(ags_automation_editor_input_edit_configure_event), (gpointer) automation_editor);
+
+  g_signal_connect_after((GObject *) automation_editor->input_vscrollbar, "value-changed",
+			 G_CALLBACK(ags_automation_editor_input_vscrollbar_value_changed), (gpointer) automation_editor);
+
+  /* machine selector */
   g_signal_connect((GObject *) automation_editor->machine_selector, "changed",
 		   G_CALLBACK(ags_automation_editor_machine_changed_callback), (gpointer) automation_editor);
 
-  /*  */
+  /* toolbar and selector */
   ags_connectable_connect(AGS_CONNECTABLE(automation_editor->automation_toolbar));
   ags_connectable_connect(AGS_CONNECTABLE(automation_editor->machine_selector));
 }
@@ -580,7 +616,37 @@ ags_automation_editor_disconnect(AgsConnectable *connectable)
 
   automation_editor->flags &= (~AGS_AUTOMATION_EDITOR_CONNECTED);
 
-  /*  */
+  /* audio */
+  g_object_disconnect((GObject *) automation_editor->audio_scrolled_automation_edit_box->viewport,
+		      "any_signal::expose_event",
+		      G_CALLBACK(ags_automation_editor_audio_edit_expose_event),
+		      automation_editor,
+		      "any_signal::configure_event",
+		      G_CALLBACK(ags_automation_editor_audio_edit_configure_event),
+		      automation_editor,
+		      NULL);
+
+  /* output */
+  g_object_disconnect((GObject *) automation_editor->output_scrolled_automation_edit_box->viewport,
+		      "any_signal::expose_event",
+		      G_CALLBACK(ags_automation_editor_output_edit_expose_event),
+		      automation_editor,
+		      "any_signal::configure_event",
+		      G_CALLBACK(ags_automation_editor_output_edit_configure_event),
+		      automation_editor,
+		      NULL);
+
+  /* input */
+  g_object_disconnect((GObject *) automation_editor->input_scrolled_automation_edit_box->viewport,
+		      "any_signal::expose_event",
+		      G_CALLBACK(ags_automation_editor_input_edit_expose_event),
+		      automation_editor,
+		      "any_signal::configure_event",
+		      G_CALLBACK(ags_automation_editor_input_edit_configure_event),
+		      automation_editor,
+		      NULL);
+  
+  /* toolbar and selector */
   ags_connectable_disconnect(AGS_CONNECTABLE(automation_editor->automation_toolbar)); 
   ags_connectable_disconnect(AGS_CONNECTABLE(automation_editor->machine_selector));
 }
@@ -594,6 +660,132 @@ ags_automation_editor_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_automation_editor_parent_class)->finalize(gobject);
+}
+
+void
+ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_editor)
+{
+  AgsAutomationToolbar *automation_toolbar;
+
+  gdouble v_upper, h_upper;
+  double zoom_factor, zoom;
+  double zoom_correction;
+  guint map_width;
+
+  automation_toolbar = automation_editor->automation_toolbar;
+
+  /* reset vertical scrollbar */
+  v_upper = GTK_WIDGET(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box)->allocation.height - GTK_WIDGET(automation_editor->audio_scrolled_automation_edit_box->viewport)->allocation.height;
+
+  if(v_upper < 0.0){
+    v_upper = 0.0;
+  }
+  
+  gtk_adjustment_set_upper(GTK_RANGE(automation_editor->audio_vscrollbar)->adjustment,
+			   v_upper);
+
+  gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(automation_editor->audio_scrolled_automation_edit_box->viewport),
+			   v_upper);
+  gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(automation_editor->audio_scrolled_scale_box->viewport),
+			   v_upper);
+  
+  /* reset horizontal scrollbar */
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom) - 2.0);
+  zoom_correction = 1.0 / 16;
+
+  map_width = ((double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
+  h_upper = map_width - GTK_WIDGET(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box)->allocation.width;
+
+  if(h_upper < 0.0){
+    h_upper = 0.0;
+  }
+  
+  gtk_adjustment_set_upper(GTK_RANGE(automation_editor->audio_hscrollbar)->adjustment,
+			   h_upper);
+}
+
+void
+ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_editor)
+{
+  AgsAutomationToolbar *automation_toolbar;
+
+  gdouble v_upper, h_upper;
+  double zoom_factor, zoom;
+  double zoom_correction;
+  guint map_width;
+
+  automation_toolbar = automation_editor->automation_toolbar;
+
+  /* reset vertical scrollbar */
+  v_upper = GTK_WIDGET(automation_editor->output_scrolled_automation_edit_box->automation_edit_box)->allocation.height - GTK_WIDGET(automation_editor->output_scrolled_automation_edit_box->viewport)->allocation.height;
+
+  if(v_upper < 0.0){
+    v_upper = 0.0;
+  }
+  
+  gtk_adjustment_set_upper(GTK_RANGE(automation_editor->output_vscrollbar)->adjustment,
+			   v_upper);
+
+  gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(automation_editor->output_scrolled_automation_edit_box->viewport),
+			   v_upper);
+  gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(automation_editor->output_scrolled_scale_box->viewport),
+			   v_upper);
+
+  /* reset horizontal scrollbar */
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom) - 2.0);
+  zoom_correction = 1.0 / 16;
+
+  map_width = ((double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
+  h_upper = map_width - GTK_WIDGET(automation_editor->output_scrolled_automation_edit_box->automation_edit_box)->allocation.width;
+
+  if(h_upper < 0.0){
+    h_upper = 0.0;
+  }
+  
+  gtk_adjustment_set_upper(GTK_RANGE(automation_editor->output_hscrollbar)->adjustment,
+			   h_upper);
+}
+
+void
+ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_editor)
+{
+  AgsAutomationToolbar *automation_toolbar;
+
+  gdouble v_upper, h_upper;
+  double zoom_factor, zoom;
+  double zoom_correction;
+  guint map_width;
+  
+  automation_toolbar = automation_editor->automation_toolbar;
+
+  /* reset vertical scrollbar */
+  v_upper = GTK_WIDGET(automation_editor->input_scrolled_automation_edit_box->automation_edit_box)->allocation.height - GTK_WIDGET(automation_editor->input_scrolled_automation_edit_box->viewport)->allocation.height;
+
+  if(v_upper < 0.0){
+    v_upper = 0.0;
+  }
+  
+  gtk_adjustment_set_upper(GTK_RANGE(automation_editor->input_vscrollbar)->adjustment,
+			   v_upper);
+
+  gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(automation_editor->input_scrolled_automation_edit_box->viewport),
+			   v_upper);
+  gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(automation_editor->input_scrolled_scale_box->viewport),
+			   v_upper);
+
+  /* reset horizontal scrollbar */
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom) - 2.0);
+  zoom_correction = 1.0 / 16;
+
+  map_width = ((double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
+  h_upper = map_width - GTK_WIDGET(automation_editor->input_scrolled_automation_edit_box->automation_edit_box)->allocation.width;
+
+  if(h_upper < 0.0){
+    h_upper = 0.0;
+  }
+  
+  gtk_adjustment_set_upper(GTK_RANGE(automation_editor->input_hscrollbar)->adjustment,
+			   h_upper);
 }
 
 void
@@ -899,7 +1091,7 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
 {
   AgsMachine *machine;
   AgsNotebook *notebook;
-  
+
   AgsAutomation *automation;
 
   AgsTimestamp *timestamp;
@@ -971,17 +1163,9 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
 	automation = list_automation->data;
 
 	pthread_mutex_unlock(audio_mutex);
-      }else{	
-	automation = ags_automation_new(machine->audio,
-					i,
-					automation_editor->focused_automation_edit->channel_type,
-					automation_editor->focused_automation_edit->control_name);
-	//	g_object_set(automation,
-	//	     "port", automation_port->data,
-	//	     NULL);
-	machine->audio->automation = ags_automation_add(machine->audio->automation,
-							automation);
-	g_object_ref(automation);
+      }else{
+	//NOTE:JK: doesn't support segmentation, yet
+	automation = NULL;
       }
 
       pthread_mutex_lock(audio_mutex);

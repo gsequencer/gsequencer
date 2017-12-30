@@ -23,6 +23,96 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+gboolean
+ags_automation_editor_audio_edit_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsAutomationEditor *automation_editor)
+{
+  ags_automation_editor_reset_audio_scrollbar(automation_editor);
+  
+  return(TRUE);
+}
+
+gboolean
+ags_automation_editor_audio_edit_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsAutomationEditor *automation_editor)
+{
+  ags_automation_editor_reset_audio_scrollbar(automation_editor);
+  
+  return(FALSE);
+}
+
+gboolean
+ags_automation_editor_output_edit_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsAutomationEditor *automation_editor)
+{
+  ags_automation_editor_reset_output_scrollbar(automation_editor);
+
+  return(TRUE);
+}
+
+gboolean
+ags_automation_editor_output_edit_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsAutomationEditor *automation_editor)
+{  
+  ags_automation_editor_reset_output_scrollbar(automation_editor);
+
+  return(FALSE);
+}
+
+gboolean
+ags_automation_editor_input_edit_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsAutomationEditor *automation_editor)
+{
+  ags_automation_editor_reset_input_scrollbar(automation_editor);
+
+  return(FALSE);
+}
+
+gboolean
+ags_automation_editor_input_edit_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsAutomationEditor *automation_editor)
+{
+  ags_automation_editor_reset_input_scrollbar(automation_editor);
+
+  return(FALSE);
+}
+
+void
+ags_automation_editor_audio_vscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor)
+{
+  GtkAdjustment *vadjustment;
+
+  vadjustment = gtk_viewport_get_vadjustment(automation_editor->audio_scrolled_automation_edit_box->viewport);
+  gtk_adjustment_set_value(vadjustment,
+			   range->adjustment->value);
+
+  vadjustment = gtk_viewport_get_vadjustment(automation_editor->audio_scrolled_scale_box->viewport);
+  gtk_adjustment_set_value(vadjustment,
+			   range->adjustment->value);
+}
+
+void
+ags_automation_editor_output_vscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor)
+{
+  GtkAdjustment *vadjustment;
+
+  vadjustment = gtk_viewport_get_vadjustment(automation_editor->output_scrolled_automation_edit_box->viewport);
+  gtk_adjustment_set_value(vadjustment,
+			   range->adjustment->value);
+
+  vadjustment = gtk_viewport_get_vadjustment(automation_editor->output_scrolled_scale_box->viewport);
+  gtk_adjustment_set_value(vadjustment,
+			   range->adjustment->value);
+}
+
+void
+ags_automation_editor_input_vscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor)
+{
+  GtkAdjustment *vadjustment;
+
+  vadjustment = gtk_viewport_get_vadjustment(automation_editor->input_scrolled_automation_edit_box->viewport);
+  gtk_adjustment_set_value(vadjustment,
+			   range->adjustment->value);
+
+  vadjustment = gtk_viewport_get_vadjustment(automation_editor->input_scrolled_scale_box->viewport);
+  gtk_adjustment_set_value(vadjustment,
+			   range->adjustment->value);
+}
+
 void
 ags_automation_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,
 					       AgsAutomationEditor *automation_editor)

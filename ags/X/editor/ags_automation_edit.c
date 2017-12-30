@@ -1344,7 +1344,7 @@ ags_automation_edit_reset_hscrollbar(AgsAutomationEdit *automation_edit)
   
   zoom_correction = 1.0 / 16;
 
-  map_width = ((double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * automation_edit->control_width * zoom * zoom_correction);
+  map_width = ((double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
   upper = map_width - GTK_WIDGET(automation_edit->drawing_area)->allocation.width;
 
   if(upper < 0.0){    

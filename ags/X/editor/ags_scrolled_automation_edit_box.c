@@ -334,7 +334,7 @@ ags_scrolled_automation_edit_box_size_allocate(GtkWidget *widget,
   child_allocation.y = 0;
 
   child_allocation.width = allocation->width;
-  child_allocation.height = allocation->height;
+  child_allocation.height = child_requisition.height;
   
   gtk_widget_size_allocate((GtkWidget *) scrolled_automation_edit_box->automation_edit_box,
 			   &child_allocation);
