@@ -468,7 +468,8 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
     
     gtk_list_store_append(list_store, &iter);
 
-    is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(G_TYPE_NONE,
+    is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(machine->enabled_automation_port,
+										  G_TYPE_NONE,
 										  *specifier)) ? TRUE: FALSE;
     
     gtk_list_store_set(list_store, &iter,
@@ -491,7 +492,8 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
     
     gtk_list_store_append(list_store, &iter);
 
-    is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(AGS_TYPE_OUTPUT,
+    is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(machine->enabled_automation_port,
+										  AGS_TYPE_OUTPUT,
 										  *specifier)) ? TRUE: FALSE;
     
     gtk_list_store_set(list_store, &iter,
@@ -514,7 +516,8 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
     
     gtk_list_store_append(list_store, &iter);
 
-    is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(AGS_TYPE_INPUT,
+    is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(machine->enabled_automation_port,
+										  AGS_TYPE_INPUT,
 										  *specifier)) ? TRUE: FALSE;
     
     gtk_list_store_set(list_store, &iter,
@@ -547,8 +550,7 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
  */
 void
 ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
-				  GType channel_type, gchar *control_name,
-				  AgsPort *port)
+				  GType channel_type, gchar *control_name)
 {
   AgsAutomationEditor *automation_editor;
   AgsMachine *machine;
@@ -643,12 +645,11 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   /* add/remove enabled automation port */
   if(contains_specifier){
     machine->enabled_automation_port = g_list_prepend(machine->enabled_automation_port,
-						      ags_machine_automation_port_alloc(channel_type, control_name,
-											port));
+						      ags_machine_automation_port_alloc(channel_type, control_name));
   }else{
     machine->enabled_automation_port = g_list_delete_link(machine->enabled_automation_port,
-							  ags_machine_automation_port_find(machine->enabled_automation_port,
-											   port));
+							  ags_machine_automation_port_find_channel_type_with_control_name(machine->enabled_automation_port,
+															  channel_type, control_name));
   }
 
   /* apply */
@@ -837,8 +838,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 
     automation = machine->audio->automation;
     
-    while((automation = ags_automation_find_port(automation,
-						 port)) != NULL){
+    while((automation = ags_automation_find_channel_type_with_control_name(automation,
+									   channel_type, control_name)) != NULL){
       AGS_AUTOMATION(automation->data)->flags &= (~AGS_AUTOMATION_BYPASS);
 
       automation = automation->next;
@@ -852,111 +853,57 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     gboolean success;
 
     /* audio */
-    if(channel_type == G_TYPE_NONE){
-      nth = -1;
-      success = FALSE;
+    nth = -1;
+    success = FALSE;
+
+    list =
+      list_start = NULL;
     
+    if(channel_type == G_TYPE_NONE){
       list =
 	list_start = gtk_container_get_children(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box);
-
-      while(list != NULL){
-	nth++;
-      
-	if(AGS_AUTOMATION_EDIT(list->data)->port == port){
-	  gtk_widget_destroy(list->data);
-
-	  success = TRUE;
-
-	  break;
-	}
-	
-	list = list->next;
-      }
-
-      g_list_free(list_start);
-
-      if(success){
-	list_start = gtk_container_get_children(automation_editor->audio_scrolled_scale_box->scale_box);
-
-	list = g_list_nth(list_start,
-			  nth);
-
-	gtk_widget_destroy(list->data);
-      
-	g_list_free(list_start);
-      }
-    }
-    
-    /* output */
-    if(channel_type == AGS_TYPE_OUTPUT){
-      nth = -1;
-      success = FALSE;
-    
+    }else if(channel_type == AGS_TYPE_OUTPUT){
       list =
 	list_start = gtk_container_get_children(automation_editor->output_scrolled_automation_edit_box->automation_edit_box);
-
-      while(list != NULL){
-	nth++;
-      
-	if(AGS_AUTOMATION_EDIT(list->data)->port == port){
-	  gtk_widget_destroy(list->data);
-
-	  success = TRUE;
-
-	  break;
-	}
-	
-	list = list->next;
-      }
-
-      g_list_free(list_start);
-
-      if(success){
-	list_start = gtk_container_get_children(automation_editor->output_scrolled_scale_box->scale_box);
-
-	list = g_list_nth(list_start,
-			  nth);
-
-	gtk_widget_destroy(list->data);
-      
-	g_list_free(list_start);
-      }
-    }
-    
-    /* input */
-    if(channel_type == AGS_TYPE_INPUT){
-      nth = -1;
-      success = FALSE;
-    
+    }else if(channel_type == AGS_TYPE_INPUT){
       list =
 	list_start = gtk_container_get_children(automation_editor->input_scrolled_automation_edit_box->automation_edit_box);
+    }
+    
 
-      while(list != NULL){
-	nth++;
+    while(list != NULL){
+      nth++;
       
-	if(AGS_AUTOMATION_EDIT(list->data)->port == port){
-	  gtk_widget_destroy(list->data);
-
-	  success = TRUE;
-
-	  break;
-	}
-	
-	list = list->next;
-      }
-
-      g_list_free(list_start);
-
-      if(success){
-	list_start = gtk_container_get_children(automation_editor->input_scrolled_scale_box->scale_box);
-
-	list = g_list_nth(list_start,
-			  nth);
-
+      if(AGS_AUTOMATION_EDIT(list->data)->channel_type == channel_type &&
+	 !g_strcmp0(AGS_AUTOMATION_EDIT(list->data)->control_name,
+		    control_name)){
 	gtk_widget_destroy(list->data);
-      
-	g_list_free(list_start);
+
+	success = TRUE;
+
+	break;
       }
+	
+      list = list->next;
+    }
+
+    g_list_free(list_start);
+
+    if(success){
+      if(channel_type == G_TYPE_NONE){
+	list_start = gtk_container_get_children(automation_editor->audio_scrolled_scale_box->scale_box);
+      }else if(channel_type == AGS_TYPE_OUTPUT){
+	list_start = gtk_container_get_children(automation_editor->output_scrolled_scale_box->scale_box);
+      }else if(channel_type == AGS_TYPE_INPUT){
+	list_start = gtk_container_get_children(automation_editor->input_scrolled_scale_box->scale_box);
+      }
+
+      list = g_list_nth(list_start,
+			nth);
+
+      gtk_widget_destroy(list->data);
+      
+      g_list_free(list_start);
     }
     
     /* set bypass */
@@ -964,8 +911,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 
     automation = machine->audio->automation;
     
-    while((automation = ags_automation_find_port(automation,
-						 port)) != NULL){
+    while((automation = ags_automation_find_channel_type_with_control_name(automation,
+									   channel_type, control_name)) != NULL){
       AGS_AUTOMATION(automation->data)->flags |= AGS_AUTOMATION_BYPASS;
 
       automation = automation->next;

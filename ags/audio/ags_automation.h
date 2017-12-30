@@ -168,8 +168,12 @@ void ags_automation_insert_from_clipboard(AgsAutomation *automation,
 GList* ags_automation_get_current(AgsAutomation *automation);
 
 gchar** ags_automation_get_specifier_unique(GList *automation);
+gchar** ags_automation_get_specifier_unique_with_channel_type(GList *automation,
+							      GType channel_type);
 GList* ags_automation_find_specifier(GList *automation,
 				     gchar *specifier);
+GList* ags_automation_find_channel_type_with_control_name(GList *automation,
+							  GType channel_type, gchar *specifier);
 GList* ags_automation_find_specifier_with_type_and_line(GList *automation,
 							gchar *specifier,
 							GType channel_type,

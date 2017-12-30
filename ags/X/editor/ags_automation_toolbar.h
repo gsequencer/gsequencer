@@ -81,7 +81,7 @@ GType ags_automation_toolbar_get_type(void);
 
 void ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar);
 void ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
-				       gchar *control_name);
+				       GType channel_type, gchar *control_name);
 
 GtkMenu* ags_automation_toolbar_tool_popup_new(GtkToolbar *automation_toolbar);
 

@@ -605,8 +605,6 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 
   GList *list_start, *list;
   GList *tab;
-
-  gchar **specifier;
   
   guint length;
   guint output_pads, input_pads;
@@ -764,208 +762,100 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
    * add new
    */
   if(machine != NULL){
+    GList *automation_port;
+    
     /* audio */
-    specifier = machine->automation_port;
+    automation_port = machine->enabled_automation_port;
 
-    if(specifier != NULL){
-      for(; specifier[0] != NULL; specifier++){
-	AgsAutomationEdit *automation_edit;
-	AgsScale *scale;
-	
-	GList *automation;
-	
-	gboolean contains_specifier;
+    while(automation_port != NULL){
+      AgsAutomationEdit *automation_edit;
+      AgsScale *scale;
       
+      GList *automation;
+	
+      gboolean contains_specifier;
+
+      pthread_mutex_lock(audio_mutex);
+      
+      contains_specifier = ((automation = ags_automation_find_specifier_with_type_and_line(machine->audio->automation,
+											   AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->control_name,
+											   AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type,
+											   0)) != NULL) ? TRUE: FALSE;
+      
+      pthread_mutex_unlock(audio_mutex);
+
+      if(contains_specifier){
+	/* scale */
+	scale = ags_scale_new();
+
 	pthread_mutex_lock(audio_mutex);
 
-	contains_specifier = ((automation = ags_automation_find_specifier_with_type_and_line(machine->audio->automation,
-											     specifier[0],
-											     G_TYPE_NONE,
-											     0)) != NULL) ? TRUE: FALSE;
-      
+	g_object_set(scale,
+		     "control-name", AGS_AUTOMATION(automation->data)->control_name,
+		     "upper", AGS_AUTOMATION(automation->data)->upper,
+		     "lower", AGS_AUTOMATION(automation->data)->lower,
+		     "default-value", AGS_AUTOMATION(automation->data)->default_value,
+		     NULL);
+
 	pthread_mutex_unlock(audio_mutex);
 
-	if(contains_specifier){
-	  /* scale */
-	  scale = ags_scale_new();
-
-	  pthread_mutex_lock(audio_mutex);
-
-	  g_object_set(scale,
-		       "control-name", AGS_AUTOMATION(automation->data)->control_name,
-		       "upper", AGS_AUTOMATION(automation->data)->upper,
-		       "lower", AGS_AUTOMATION(automation->data)->lower,
-		       "default-value", AGS_AUTOMATION(automation->data)->default_value,
-		       NULL);
-
-	  pthread_mutex_unlock(audio_mutex);
-
+	if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == G_TYPE_NONE){
 	  gtk_box_pack_start(automation_editor->audio_scrolled_scale_box->scale_box,
 			     scale,
 			     FALSE, FALSE,
 			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
-	  gtk_widget_show(scale);
-	  
-	  /* automation edit */
-	  automation_edit = ags_automation_edit_new();
-
-	  pthread_mutex_lock(audio_mutex);
-
-	  g_object_set(automation_edit,
-		       "channel-type", G_TYPE_NONE,
-		       "control-specifier", specifier[0],
-		       "control-name", AGS_AUTOMATION(automation->data)->control_name,
-		       "upper", AGS_AUTOMATION(automation->data)->upper,
-		       "lower", AGS_AUTOMATION(automation->data)->lower,
-		       "default-value", AGS_AUTOMATION(automation->data)->default_value,
-		       NULL);
-
-	  pthread_mutex_unlock(audio_mutex);
-
-	  gtk_box_pack_start(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box,
-			     automation_edit,
-			     FALSE, FALSE,
-			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
-	  ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
-	  gtk_widget_show(automation_edit);
-	}
-      }
-    }
-  
-    /* output */
-    specifier = machine->automation_port;
-
-    if(specifier != NULL){
-      for(; specifier[0] != NULL; specifier++){
-	AgsAutomationEdit *automation_edit;
-	AgsScale *scale;
-
-	GList *automation;
-	
-	gboolean contains_specifier;
-      
-	pthread_mutex_lock(audio_mutex);
-
-	contains_specifier = ((automation = ags_automation_find_specifier_with_type_and_line(machine->audio->automation,
-											     specifier[0],
-											     AGS_TYPE_OUTPUT,
-											     0)) != NULL) ? TRUE: FALSE;
-      
-	pthread_mutex_unlock(audio_mutex);
-
-	if(contains_specifier){
-	  /* scale */
-	  scale = ags_scale_new();
-
-	  pthread_mutex_lock(audio_mutex);
-
-	  g_object_set(scale,
-		       "control-name", AGS_AUTOMATION(automation->data)->control_name,
-		       "upper", AGS_AUTOMATION(automation->data)->upper,
-		       "lower", AGS_AUTOMATION(automation->data)->lower,
-		       "default-value", AGS_AUTOMATION(automation->data)->default_value,
-		       NULL);
-
-	  pthread_mutex_unlock(audio_mutex);
-
+	}else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_OUTPUT){
 	  gtk_box_pack_start(automation_editor->output_scrolled_scale_box->scale_box,
 			     scale,
 			     FALSE, FALSE,
 			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
-	  gtk_widget_show(scale);
-	  
-	  /* automation edit */
-	  automation_edit = ags_automation_edit_new();
-
-	  pthread_mutex_lock(audio_mutex);
-
-	  g_object_set(automation_edit,
-		       "channel-type", AGS_TYPE_OUTPUT,
-		       "control-specifier", specifier[0],
-		       "control-name", AGS_AUTOMATION(automation->data)->control_name,
-		       "upper", AGS_AUTOMATION(automation->data)->upper,
-		       "lower", AGS_AUTOMATION(automation->data)->lower,
-		       "default-value", AGS_AUTOMATION(automation->data)->default_value,
-		       NULL);
-
-	  pthread_mutex_unlock(audio_mutex);
-
-	  gtk_box_pack_start(automation_editor->output_scrolled_automation_edit_box->automation_edit_box,
-			     automation_edit,
-			     FALSE, FALSE,
-			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
-	  ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
-	  gtk_widget_show(automation_edit);
-	}
-      }
-    }
-
-    /* input */
-    specifier = machine->automation_port;
-
-    if(specifier != NULL){
-      for(; specifier[0] != NULL; specifier++){
-	AgsAutomationEdit *automation_edit;
-	AgsScale *scale;
-
-	GList *automation;
-	
-	gboolean contains_specifier;
-      
-	pthread_mutex_lock(audio_mutex);
-
-	contains_specifier = ((automation = ags_automation_find_specifier_with_type_and_line(machine->audio->automation,
-											     specifier[0],
-											     AGS_TYPE_INPUT,
-											     0)) != NULL) ? TRUE: FALSE;
-      
-	pthread_mutex_unlock(audio_mutex);
-
-	if(contains_specifier){
-	  /* scale */
-	  scale = ags_scale_new();
-
-	  pthread_mutex_lock(audio_mutex);
-
-	  g_object_set(scale,
-		       "control-name", AGS_AUTOMATION(automation->data)->control_name,
-		       "upper", AGS_AUTOMATION(automation->data)->upper,
-		       "lower", AGS_AUTOMATION(automation->data)->lower,
-		       "default-value", AGS_AUTOMATION(automation->data)->default_value,
-		       NULL);
-
-	  pthread_mutex_unlock(audio_mutex);
-
+	}else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_INPUT){
 	  gtk_box_pack_start(automation_editor->input_scrolled_scale_box->scale_box,
 			     scale,
 			     FALSE, FALSE,
 			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
-	  gtk_widget_show(scale);
+	}
+	
+	gtk_widget_show(scale);
 	  
-	  /* automation edit */
-	  automation_edit = ags_automation_edit_new();
+	/* automation edit */
+	automation_edit = ags_automation_edit_new();
 
-	  pthread_mutex_lock(audio_mutex);
+	pthread_mutex_lock(audio_mutex);
 
-	  g_object_set(automation_edit,
-		       "channel-type", AGS_TYPE_INPUT,
-		       "control-specifier", specifier[0],
-		       "control-name", AGS_AUTOMATION(automation->data)->control_name,
-		       "upper", AGS_AUTOMATION(automation->data)->upper,
-		       "lower", AGS_AUTOMATION(automation->data)->lower,
-		       "default-value", AGS_AUTOMATION(automation->data)->default_value,
-		       NULL);
+	g_object_set(automation_edit,
+		     "channel-type", G_TYPE_NONE,
+		     "control-specifier", AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->control_name,
+		     "control-name", AGS_AUTOMATION(automation->data)->control_name,
+		     "upper", AGS_AUTOMATION(automation->data)->upper,
+		     "lower", AGS_AUTOMATION(automation->data)->lower,
+		     "default-value", AGS_AUTOMATION(automation->data)->default_value,
+		     NULL);
 
-	  pthread_mutex_unlock(audio_mutex);
+	pthread_mutex_unlock(audio_mutex);
 
+	if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == G_TYPE_NONE){
+	  gtk_box_pack_start(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box,
+			     automation_edit,
+			     FALSE, FALSE,
+			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
+	}else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_OUTPUT){
+	  gtk_box_pack_start(automation_editor->output_scrolled_automation_edit_box->automation_edit_box,
+			     automation_edit,
+			     FALSE, FALSE,
+			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
+	}else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_INPUT){
 	  gtk_box_pack_start(automation_editor->input_scrolled_automation_edit_box->automation_edit_box,
 			     automation_edit,
 			     FALSE, FALSE,
 			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
-	  ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
-	  gtk_widget_show(automation_edit);
 	}
+
+	ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
+	gtk_widget_show(automation_edit);
       }
+
+      automation_port = automation_port->next;
     }
   }
   

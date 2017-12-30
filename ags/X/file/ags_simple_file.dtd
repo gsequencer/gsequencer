@@ -72,10 +72,10 @@
 	  audio-loop-end          NMTOKEN   #IMPLIED
 	  >
 
-<!ELEMENT ags-sf-automated-port-list (ags-sf-automated-port*)>
+<!ELEMENT ags-sf-automation-port-list (ags-sf-automation-port*)>
 
-<!ELEMENT ags-sf-automated-port EMPTY>
-<!ATTLIST ags-sf-automated-port
+<!ELEMENT ags-sf-automation-port EMPTY>
+<!ATTLIST ags-sf-automation-port
 	  specifier       CDATA     #REQUIRED
 	  >
 
@@ -226,7 +226,8 @@
 	  >
 
 <!-- automation editor -->
-<!ELEMENT ags-sf-automation-editor (ags-sf-property*)>
+<!ELEMENT ags-sf-automation-editor (ags-sf-property-list*)>
 <!ATTLIST ags-sf-automation-editor
 	  zoom            NMTOKEN   "1/1"
 	  >
+

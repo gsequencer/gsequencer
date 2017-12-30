@@ -159,18 +159,13 @@ struct _AgsMachineAutomationPort
 {
   GType channel_type;
   gchar *control_name;
-  
-  AgsPort *port;
 };
 
 GType ags_machine_get_type(void);
 
-AgsMachineAutomationPort* ags_machine_automation_port_alloc(GType channel_type, gchar *control_name,
-							    AgsPort *port);
+AgsMachineAutomationPort* ags_machine_automation_port_alloc(GType channel_type, gchar *control_name);
 void ags_machine_automation_port_free(AgsMachineAutomationPort *automation_port);
 
-GList* ags_machine_automation_port_find(GList *list,
-					AgsPort *port);
 GList* ags_machine_automation_port_find_channel_type_with_control_name(GList *list,
 								       GType channel_type, gchar *control_name);
 

@@ -213,8 +213,11 @@ ags_automation_toolbar_port_callback(GtkComboBox *combo_box,
   GtkTreeModel *model;
   GtkTreeIter iter;
 
+  gchar *scope;
   gchar *control_name;
 
+  GType channel_type;
+  
   GValue value = {0,};
 
   if((AGS_AUTOMATION_TOOLBAR_RESET_PORT & (automation_toolbar->flags)) != 0){
@@ -228,15 +231,27 @@ ags_automation_toolbar_port_callback(GtkComboBox *combo_box,
 
   gtk_tree_model_get(model,
 		     &iter,
-		     1, &control_name,
+		     1, &scope,
+		     2, &control_name,
 		     -1);
+
+  if(!g_strcmp0("audio",
+		scope)){
+    channel_type = G_TYPE_NONE;
+  }else if(!g_strcmp0("output",
+		      scope)){
+    channel_type = AGS_TYPE_OUTPUT;
+  }else if(!g_strcmp0("input",
+		      scope)){
+    channel_type = AGS_TYPE_INPUT;
+  }
 
   if(control_name != NULL &&
      g_ascii_strncasecmp(control_name,
 			 "",
 			 1)){
     ags_automation_toolbar_apply_port(automation_toolbar,
-				      control_name);
+				      channel_type, control_name);
   }
   
   automation_toolbar->flags &= (~AGS_AUTOMATION_TOOLBAR_RESET_PORT);

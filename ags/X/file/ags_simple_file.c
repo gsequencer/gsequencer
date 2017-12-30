@@ -4544,27 +4544,35 @@ ags_simple_file_read_automation_editor_launch(AgsFileLaunch *file_launch,
 			if(!xmlStrncmp(automation_port->name,
 				       "ags-sf-automation-port",
 				       22)){
+			  gchar *scope;
 			  gchar *specifier;
 
 			  specifier = xmlGetProp(automation_port,
 						 "specifier");
 
+			  specifier = xmlGetProp(automation_port,
+						 "scope");
+
 			  if(specifier != NULL){
 			    GtkTreeModel *model;
 			    GtkTreeIter iter;
 
-			    gchar *value;
+			    gchar *value0, *value1;
 			  
 			    model = gtk_combo_box_get_model(GTK_COMBO_BOX(automation_editor->automation_toolbar->port));
 			  
 			    if(gtk_tree_model_get_iter_first(model, &iter)){
 			      do{
 				gtk_tree_model_get(model, &iter,
-						   1, &value,
+						   1, &value0,
+						   2, &value1,
 						   -1);
 
-				if(!g_ascii_strcasecmp(specifier,
-						       value)){
+				if((scope == NULL ||
+				    !g_ascii_strcasecmp(scope,
+							value0)) &&
+				   !g_ascii_strcasecmp(specifier,
+						       value1)){
 				  gtk_combo_box_set_active_iter(automation_editor->automation_toolbar->port,
 								&iter);
 				}
@@ -5603,7 +5611,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   auto gboolean ags_simple_file_write_machine_inline_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsChannel *channel);
   auto xmlNode* ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsBulkMember *bulk_member);
   auto xmlNode* ags_simple_file_write_effect_list(AgsSimpleFile *simple_file, xmlNode *parent, AgsEffectBulk *effect_bulk);
-  auto xmlNode* ags_simple_file_write_automation_port(AgsSimpleFile *simple_file, xmlNode *parent, gchar **automation_port);
+  auto xmlNode* ags_simple_file_write_automation_port(AgsSimpleFile *simple_file, xmlNode *parent, GList *automation_port);
   
   gboolean ags_simple_file_write_machine_inline_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsChannel *channel){
     AgsChannel *next_pad;
@@ -5841,24 +5849,43 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     return(effect_list_node);
   }
 
-  xmlNode* ags_simple_file_write_automation_port(AgsSimpleFile *simple_file, xmlNode *parent, gchar **automation_port){
+  xmlNode* ags_simple_file_write_automation_port(AgsSimpleFile *simple_file, xmlNode *parent, GList *automation_port){
     xmlNode *node, *child;    
 
     node = NULL;
     
-    if(automation_port != NULL && *automation_port != NULL){
+    if(automation_port != NULL){
       node = xmlNewNode(NULL,
 			"ags-sf-automation-port-list");
       
-      for(; *automation_port != NULL; automation_port++){
+      while(automation_port != NULL){
+	gchar *scope;
+	
 	child = xmlNewNode(NULL,
 			   "ags-sf-automation-port");
+
+	scope = NULL;
+
+	if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == G_TYPE_NONE){
+	  scope = "audio";
+	}else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_OUTPUT){
+	  scope = "output";
+	}else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_INPUT){
+	  scope = "input";
+	}
+	
+	xmlNewProp(child,
+		   "scope",
+		   scope);
+
 	xmlNewProp(child,
 		   "specifier",
-		   *automation_port);
+		   AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->control_name);
 	
 	xmlAddChild(node,
 		    child);
+
+	automation_port = automation_port->next;
       }
     }
     
@@ -6362,10 +6389,10 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   }
 
   /* notation and automation list */
-  if(machine->automation_port != NULL){
+  if(machine->enabled_automation_port != NULL){
     ags_simple_file_write_automation_port(simple_file,
-					 node,
-					 machine->automation_port);
+					  node,
+					  machine->enabled_automation_port);
   }
   
   if(machine->audio->notation != NULL){

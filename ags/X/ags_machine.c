@@ -1,4 +1,4 @@
-y/* GSequencer - Advanced GTK Sequencer
+/* GSequencer - Advanced GTK Sequencer
  * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
@@ -948,7 +948,6 @@ ags_machine_show(GtkWidget *widget)
  * ags_machine_automation_port_alloc:
  * @channel_type: the #GType of channel
  * @control_name: the control name as string
- * @port: the #AgsPort
  * 
  * Allocate #AgsMachineAutomationPort
  * 
@@ -957,8 +956,7 @@ ags_machine_show(GtkWidget *widget)
  * Since: 1.3.0
  */
 AgsMachineAutomationPort*
-ags_machine_automation_port_alloc(GType channel_type, gchar *control_name,
-				  AgsPort *port)
+ags_machine_automation_port_alloc(GType channel_type, gchar *control_name)
 {
   AgsMachineAutomationPort *automation_port;
 
@@ -966,12 +964,6 @@ ags_machine_automation_port_alloc(GType channel_type, gchar *control_name,
 
   automation_port->channel_type = channel_type;
   automation_port->control_name = g_strdup(control_name);
-
-  automation_port->port = port;
-
-  if(port != NULL){
-    g_object_ref(port);
-  }
 
   return(automation_port);
 }
@@ -988,40 +980,10 @@ void
 ags_machine_automation_port_free(AgsMachineAutomationPort *automation_port)
 {
   g_free(automation_port->control_name);
-  
-  if(automation_port->port != NULL){
-    g_object_unref(automation_port->port);
-  }
 }
 
 /**
- * ags_machine_automation_port_find:
- * @list: a #GList-struct containing #AgsAutomationPort
- * @port: the #AgsPort to match
- * 
- * Find #AgsAutomationPort by specifying port.
- * 
- * Returns: the matching #AgsAutomationPort or %NULL
- * 
- * Since: 1.3.0
- */
-GList*
-ags_machine_automation_port_find(GList *list,
-				 AgsPort *port)
-{
-  while(list != NULL){
-    if(AGS_MACHINE_AUTOMATION_PORT(list->data)->port == port){
-      return(list);
-    }
-    
-    list = list->next;
-  }
-
-  return(NULL);
-}
-
-/**
- * ags_machine_automation_port_find_channel_type_with_control_name
+ * ags_machine_automation_port_find_channel_type_with_control_name:
  * @list: a #GList-struct containing #AgsAutomationPort
  * @channel_type: the #GType to match
  * @control_name: the control name as string to match

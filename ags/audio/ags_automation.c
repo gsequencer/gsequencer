@@ -929,12 +929,23 @@ ags_automation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GVal
 			property_name, value);
 }
 
+/**
+ * ags_automation_find_port:
+ * @automation: the #GList-struct containing #AgsAutomation
+ * @port: the #AgsPort to match
+ * 
+ * Find automation by port.
+ * 
+ * Returns: next matching automation as #GList-struct or %NULL if not found
+ * 
+ * Since: 1.3.0
+ */
 GList*
 ags_automation_find_port(GList *automation,
 			 GObject *port)
 {
   if(automation == NULL ||
-     port == NULL){
+     !AGS_IS_PORT(port)){
     return(NULL);
   }
 
@@ -2106,6 +2117,38 @@ ags_automation_find_specifier(GList *automation,
       break;
     }
 
+    automation = automation->next;
+  }
+
+  return(automation);
+}
+
+/**
+ * ags_automation_find_channel_type_with_control_name:
+ * @automation: the #GList-struct containing #AgsAutomation
+ * @channel_type: the #AgsPort to match
+ * 
+ * Find automation by port.
+ * 
+ * Returns: next matching automation as #GList-struct or %NULL if not found
+ * 
+ * Since: 1.3.0
+ */
+GList*
+ags_automation_find_channel_type_with_control_name(GList *automation,
+						   GType channel_type, gchar *specifier)
+{
+  if(automation == NULL){
+    return(NULL);
+  }
+
+  while(automation != NULL){
+    if(AGS_AUTOMATION(automation->data)->channel_type == channel_type &&
+       !g_strcmp0(AGS_AUTOMATION(automation->data)->control_name,
+		  specifier)){
+      break;
+    }
+    
     automation = automation->next;
   }
 
