@@ -36,7 +36,7 @@
 #define AGS_IS_RETURNABLE_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_RETURNABLE_THREAD))
 #define AGS_RETURNABLE_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_RETURNABLE_THREAD, AgsReturnableThreadClass))
 
-#define AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE (AGS_THREAD_MAX_PRECISION)
+#define AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE (AGS_THREAD_DEFAULT_MAX_PRECISION)
 
 typedef struct _AgsReturnableThread AgsReturnableThread;
 typedef struct _AgsReturnableThreadClass AgsReturnableThreadClass;

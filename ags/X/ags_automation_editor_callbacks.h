@@ -40,8 +40,17 @@ gboolean ags_automation_editor_input_edit_expose_event(GtkWidget *widget, GdkEve
 gboolean ags_automation_editor_input_edit_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsAutomationEditor *automation_editor);
 
 void ags_automation_editor_audio_vscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor);
+void ags_automation_editor_audio_hscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor);
+
 void ags_automation_editor_output_vscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor);
+void ags_automation_editor_output_hscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor);
+
 void ags_automation_editor_input_vscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor);
+void ags_automation_editor_input_hscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor);
+
+void ags_automation_editor_audio_automation_edit_hscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor);
+void ags_automation_editor_output_automation_edit_hscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor);
+void ags_automation_editor_input_automation_edit_hscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor);
 
 void ags_automation_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,
 						    AgsAutomationEditor *automation_editor);

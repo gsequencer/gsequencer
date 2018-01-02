@@ -27,6 +27,7 @@
 #include <ags/X/ags_automation_window.h>
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_automation_editor.h>
+#include <ags/X/ags_automation_editor_callbacks.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
 #include <ags/X/ags_line_member.h>
@@ -742,6 +743,17 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
       
       ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
       gtk_widget_show(automation_edit);    
+
+      if(channel_type == G_TYPE_NONE){
+	g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
+			       G_CALLBACK(ags_automation_editor_audio_automation_edit_hscrollbar_value_changed), (gpointer) automation_editor);
+      }else if(channel_type == AGS_TYPE_OUTPUT){
+	g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
+			       G_CALLBACK(ags_automation_editor_output_automation_edit_hscrollbar_value_changed), (gpointer) automation_editor);
+      }else if(channel_type == AGS_TYPE_INPUT){
+	g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
+			       G_CALLBACK(ags_automation_editor_input_automation_edit_hscrollbar_value_changed), (gpointer) automation_editor);
+      }
     }
     
     /* unset bypass */

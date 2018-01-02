@@ -86,6 +86,25 @@ ags_automation_editor_audio_vscrollbar_value_changed(GtkRange *range, AgsAutomat
 }
 
 void
+ags_automation_editor_audio_hscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor)
+{
+  GList *list_start, *list;
+
+  /* automation edit */
+  list_start =
+    list = gtk_container_get_children(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box);
+
+  while(list != NULL){
+    gtk_adjustment_set_value(GTK_RANGE(AGS_AUTOMATION_EDIT(list->data)->hscrollbar)->adjustment,
+			     range->adjustment->value);
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+}
+
+void
 ags_automation_editor_output_vscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor)
 {
   GtkAdjustment *vadjustment;
@@ -97,6 +116,26 @@ ags_automation_editor_output_vscrollbar_value_changed(GtkRange *range, AgsAutoma
   vadjustment = gtk_viewport_get_vadjustment(automation_editor->output_scrolled_scale_box->viewport);
   gtk_adjustment_set_value(vadjustment,
 			   range->adjustment->value);
+}
+
+
+void
+ags_automation_editor_output_hscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor)
+{
+  GList *list_start, *list;
+
+  /* automation edit */
+  list_start =
+    list = gtk_container_get_children(automation_editor->output_scrolled_automation_edit_box->automation_edit_box);
+
+  while(list != NULL){
+    gtk_adjustment_set_value(GTK_RANGE(AGS_AUTOMATION_EDIT(list->data)->hscrollbar)->adjustment,
+			     range->adjustment->value);
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 void
@@ -111,6 +150,103 @@ ags_automation_editor_input_vscrollbar_value_changed(GtkRange *range, AgsAutomat
   vadjustment = gtk_viewport_get_vadjustment(automation_editor->input_scrolled_scale_box->viewport);
   gtk_adjustment_set_value(vadjustment,
 			   range->adjustment->value);
+}
+
+void
+ags_automation_editor_input_hscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor)
+{
+  GList *list_start, *list;
+
+  /* automation edit */
+  list_start =
+    list = gtk_container_get_children(automation_editor->input_scrolled_automation_edit_box->automation_edit_box);
+
+  while(list != NULL){
+    gtk_adjustment_set_value(GTK_RANGE(AGS_AUTOMATION_EDIT(list->data)->hscrollbar)->adjustment,
+			     range->adjustment->value);
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+}
+
+void
+ags_automation_editor_audio_automation_edit_hscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor)
+{
+  AgsAutomationEdit *automation_edit;
+  
+  GList *list_start, *list;
+
+  automation_edit = gtk_widget_get_ancestor(range,
+					    AGS_TYPE_AUTOMATION_EDIT);
+  
+  /* automation edit */
+  list_start =
+    list = gtk_container_get_children(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box);
+
+  while(list != NULL){
+    if(automation_edit != list->data){
+      gtk_adjustment_set_value(GTK_RANGE(AGS_AUTOMATION_EDIT(list->data)->hscrollbar)->adjustment,
+			       range->adjustment->value);
+    }
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+}
+
+void
+ags_automation_editor_output_automation_edit_hscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor)
+{
+  AgsAutomationEdit *automation_edit;
+  
+  GList *list_start, *list;
+
+  automation_edit = gtk_widget_get_ancestor(range,
+					    AGS_TYPE_AUTOMATION_EDIT);
+  
+  /* automation edit */
+  list_start =
+    list = gtk_container_get_children(automation_editor->output_scrolled_automation_edit_box->automation_edit_box);
+
+  while(list != NULL){
+    if(automation_edit != list->data){
+      gtk_adjustment_set_value(GTK_RANGE(AGS_AUTOMATION_EDIT(list->data)->hscrollbar)->adjustment,
+			       range->adjustment->value);
+    }
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+}
+
+void
+ags_automation_editor_input_automation_edit_hscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor)
+{
+  AgsAutomationEdit *automation_edit;
+  
+  GList *list_start, *list;
+
+  automation_edit = gtk_widget_get_ancestor(range,
+					    AGS_TYPE_AUTOMATION_EDIT);
+  
+  /* automation edit */
+  list_start =
+    list = gtk_container_get_children(automation_editor->input_scrolled_automation_edit_box->automation_edit_box);
+
+  while(list != NULL){
+    if(automation_edit != list->data){
+      gtk_adjustment_set_value(GTK_RANGE(AGS_AUTOMATION_EDIT(list->data)->hscrollbar)->adjustment,
+			       range->adjustment->value);
+    }
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 void

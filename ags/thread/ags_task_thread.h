@@ -43,7 +43,7 @@
 #define AGS_TASK_THREAD_RT_PRIORITY (95)
 #endif
 
-#define AGS_TASK_THREAD_DEFAULT_JIFFIE (AGS_THREAD_MAX_PRECISION)
+#define AGS_TASK_THREAD_DEFAULT_JIFFIE (AGS_THREAD_DEFAULT_MAX_PRECISION)
 
 typedef struct _AgsTaskThread AgsTaskThread;
 typedef struct _AgsTaskThreadClass AgsTaskThreadClass;

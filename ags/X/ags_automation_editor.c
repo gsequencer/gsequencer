@@ -574,6 +574,9 @@ ags_automation_editor_connect(AgsConnectable *connectable)
   g_signal_connect_after((GObject *) automation_editor->audio_vscrollbar, "value-changed",
 			 G_CALLBACK(ags_automation_editor_audio_vscrollbar_value_changed), (gpointer) automation_editor);
 
+  g_signal_connect_after((GObject *) automation_editor->audio_hscrollbar, "value-changed",
+			 G_CALLBACK(ags_automation_editor_audio_hscrollbar_value_changed), (gpointer) automation_editor);
+
   /* output */
   g_signal_connect_after((GObject *) automation_editor->output_scrolled_automation_edit_box->viewport, "expose_event",
 			 G_CALLBACK(ags_automation_editor_output_edit_expose_event), (gpointer) automation_editor);
@@ -584,6 +587,9 @@ ags_automation_editor_connect(AgsConnectable *connectable)
   g_signal_connect_after((GObject *) automation_editor->output_vscrollbar, "value-changed",
 			 G_CALLBACK(ags_automation_editor_output_vscrollbar_value_changed), (gpointer) automation_editor);
 
+  g_signal_connect_after((GObject *) automation_editor->output_hscrollbar, "value-changed",
+			 G_CALLBACK(ags_automation_editor_output_hscrollbar_value_changed), (gpointer) automation_editor);
+
   /* input */
   g_signal_connect_after((GObject *) automation_editor->input_scrolled_automation_edit_box->viewport, "expose_event",
 			 G_CALLBACK(ags_automation_editor_input_edit_expose_event), (gpointer) automation_editor);
@@ -593,6 +599,9 @@ ags_automation_editor_connect(AgsConnectable *connectable)
 
   g_signal_connect_after((GObject *) automation_editor->input_vscrollbar, "value-changed",
 			 G_CALLBACK(ags_automation_editor_input_vscrollbar_value_changed), (gpointer) automation_editor);
+
+  g_signal_connect_after((GObject *) automation_editor->input_hscrollbar, "value-changed",
+			 G_CALLBACK(ags_automation_editor_input_hscrollbar_value_changed), (gpointer) automation_editor);
 
   /* machine selector */
   g_signal_connect((GObject *) automation_editor->machine_selector, "changed",
@@ -667,6 +676,8 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
 {
   AgsAutomationToolbar *automation_toolbar;
 
+  GList *list_start, *list;
+  
   gdouble v_upper, h_upper;
   double zoom_factor, zoom;
   double zoom_correction;
@@ -702,6 +713,20 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
   
   gtk_adjustment_set_upper(GTK_RANGE(automation_editor->audio_hscrollbar)->adjustment,
 			   h_upper);
+
+  /* automation edit */
+  list_start =
+    list = gtk_container_get_children(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box);
+
+  while(list != NULL){
+    gtk_adjustment_set_upper(GTK_RANGE(AGS_AUTOMATION_EDIT(list->data)->hscrollbar)->adjustment,
+			     h_upper);
+    
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 void
@@ -709,6 +734,8 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
 {
   AgsAutomationToolbar *automation_toolbar;
 
+  GList *list_start, *list;
+  
   gdouble v_upper, h_upper;
   double zoom_factor, zoom;
   double zoom_correction;
@@ -744,6 +771,20 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
   
   gtk_adjustment_set_upper(GTK_RANGE(automation_editor->output_hscrollbar)->adjustment,
 			   h_upper);
+
+  /* automation edit */
+  list_start =
+    list = gtk_container_get_children(automation_editor->output_scrolled_automation_edit_box->automation_edit_box);
+
+  while(list != NULL){
+    gtk_adjustment_set_upper(GTK_RANGE(AGS_AUTOMATION_EDIT(list->data)->hscrollbar)->adjustment,
+			     h_upper);
+    
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 void
@@ -751,6 +792,8 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
 {
   AgsAutomationToolbar *automation_toolbar;
 
+  GList *list_start, *list;
+  
   gdouble v_upper, h_upper;
   double zoom_factor, zoom;
   double zoom_correction;
@@ -786,6 +829,20 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
   
   gtk_adjustment_set_upper(GTK_RANGE(automation_editor->input_hscrollbar)->adjustment,
 			   h_upper);
+
+  /* automation edit */
+  list_start =
+    list = gtk_container_get_children(automation_editor->input_scrolled_automation_edit_box->automation_edit_box);
+
+  while(list != NULL){
+    gtk_adjustment_set_upper(GTK_RANGE(AGS_AUTOMATION_EDIT(list->data)->hscrollbar)->adjustment,
+			     h_upper);
+    
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 void
@@ -897,6 +954,12 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
     list_start = gtk_container_get_children(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box);
 
   while(list != NULL){
+    g_object_disconnect(AGS_AUTOMATION_EDIT(list->data)->hscrollbar,
+			"any_signal::value-changed",
+			G_CALLBACK(ags_automation_editor_audio_automation_edit_hscrollbar_value_changed),
+			(gpointer) automation_editor,
+			NULL);
+    
     gtk_widget_destroy(list->data);
     
     list = list->next;
@@ -920,6 +983,12 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
     list_start = gtk_container_get_children(automation_editor->output_scrolled_automation_edit_box->automation_edit_box);
 
   while(list != NULL){
+    g_object_disconnect(AGS_AUTOMATION_EDIT(list->data)->hscrollbar,
+			"any_signal::value-changed",
+			G_CALLBACK(ags_automation_editor_output_automation_edit_hscrollbar_value_changed),
+			(gpointer) automation_editor,
+			NULL);
+
     gtk_widget_destroy(list->data);
     
     list = list->next;
@@ -943,6 +1012,12 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
     list_start = gtk_container_get_children(automation_editor->input_scrolled_automation_edit_box->automation_edit_box);
 
   while(list != NULL){
+    g_object_disconnect(AGS_AUTOMATION_EDIT(list->data)->hscrollbar,
+			"any_signal::value-changed",
+			G_CALLBACK(ags_automation_editor_input_automation_edit_hscrollbar_value_changed),
+			(gpointer) automation_editor,
+			NULL);
+
     gtk_widget_destroy(list->data);
     
     list = list->next;
@@ -1045,8 +1120,19 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 
 	ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
 	gtk_widget_show(automation_edit);
-      }
 
+	if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == G_TYPE_NONE){
+	  g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
+				 G_CALLBACK(ags_automation_editor_audio_automation_edit_hscrollbar_value_changed), (gpointer) automation_editor);
+	}else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_OUTPUT){
+	  g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
+				 G_CALLBACK(ags_automation_editor_output_automation_edit_hscrollbar_value_changed), (gpointer) automation_editor);
+	}else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_INPUT){
+	  g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
+				 G_CALLBACK(ags_automation_editor_input_automation_edit_hscrollbar_value_changed), (gpointer) automation_editor);
+	}
+      }
+      
       automation_port = automation_port->next;
     }
   }
