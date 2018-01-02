@@ -167,7 +167,7 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
       ags_automation_edit_drawing_area_button_press_add_acceleration();
     }else if(automation_toolbar->selected_edit_mode == automation_toolbar->clear){
       automation_edit->mode = AGS_AUTOMATION_EDIT_DELETE_ACCELERATION;
-
+      
       //ACCELERATION:JK: only takes action on release
     }else if(automation_toolbar->selected_edit_mode == automation_toolbar->select){
       automation_edit->mode = AGS_AUTOMATION_EDIT_SELECT_ACCELERATION;

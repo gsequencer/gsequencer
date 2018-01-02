@@ -1298,7 +1298,12 @@ ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor
 
   GList *list_automation;
 
-  gint i;
+  gdouble c_range;
+  guint g_range;
+  guint scan_x;
+  gdouble scan_y;
+  gboolean success;
+  gint i, j, j_step, j_stop;
 
   if(!AGS_IS_AUTOMATION_EDITOR(automation_editor) ||
      automation_editor->focused_automation_edit == NULL){
@@ -1321,6 +1326,14 @@ ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor
       notebook = automation_editor->input_notebook;
     }
   
+    if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_editor->focused_automation_edit->flags)) != 0){
+      c_range = exp(automation_editor->focused_automation_edit->upper) - exp(automation_editor->focused_automation_edit->lower);
+    }else{
+      c_range = automation_editor->focused_automation_edit->upper - automation_editor->focused_automation_edit->lower;
+    }
+
+    g_range = GTK_RANGE(automation_editor->focused_automation_edit->vscrollbar)->adjustment->upper + GTK_WIDGET(automation_editor->focused_automation_edit->drawing_area)->allocation.height;
+
     mutex_manager = ags_mutex_manager_get_instance();
     application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
@@ -1343,9 +1356,9 @@ ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor
     pthread_mutex_lock(audio_mutex);
 
     i = 0;
-
+    
     while(notebook == NULL ||
-	  (i = ags_notebook_next_active_tab(automation_editor->notebook,
+	  (i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){
       AgsAcceleration *new_acceleration;
       
@@ -1353,18 +1366,41 @@ ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor
       list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
 								    automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
 								    timestamp);
-
+      
       if(list_automation != NULL){
 	automation = list_automation->data;
       }else{
+	if(notebook == NULL){
+	  break;
+	}
+	
 	i++;
 	
 	continue;
       }
 
-      ags_automation_remove_acceleration_at_position(automation,
-					   x, y);
+      success = FALSE;
+      
+      j = 0;
+      j_step = 1;
+      j_stop = 4;
 
+      while(!success &&
+	    j_step <= AGS_AUTOMATION_EDIT_DEFAULT_SCAN_WIDTH){
+	scan_x = (-1 * j_step + floor(j / (2 * j_step)));
+	scan_y = ((-1 * j_step + floor(j % (2 * j_step))) / g_range) * c_range;	
+
+	success = ags_automation_remove_acceleration_at_position(automation,
+								 x + scan_x, y + scan_y);
+	
+	j++;
+	
+	if(j >= j_stop){
+	  j_step++;
+	  j_stop = exp2(j_step + 1);
+	}
+      }
+      
       if(notebook == NULL){
 	break;
       }
@@ -1644,7 +1680,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 		i = 0;
 		
 		while(notebook == NULL ||
-		      (i = ags_notebook_next_active_tab(automation_editor->notebook,
+		      (i = ags_notebook_next_active_tab(notebook,
 							i)) != -1){
 		  timestamp->timer.ags_offset.offset = offset;
 		  
