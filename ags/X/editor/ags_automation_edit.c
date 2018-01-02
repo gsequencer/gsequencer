@@ -1125,9 +1125,6 @@ ags_automation_edit_size_request(GtkWidget *widget,
 
   automation_edit = AGS_AUTOMATION_EDIT(widget);
 
-  GTK_WIDGET_CLASS(ags_automation_edit_parent_class)->size_request(widget,
-								   requisition);
-
   requisition->width = -1;
   requisition->height = AGS_SCALE_DEFAULT_HEIGHT;  
 }
@@ -1147,12 +1144,10 @@ ags_automation_edit_size_allocate(GtkWidget *widget,
   widget->allocation = *allocation;
   
   widget->allocation.height = AGS_SCALE_DEFAULT_HEIGHT;
-
-  //  GTK_WIDGET_CLASS(ags_automation_edit_parent_class)->size_allocate(widget,
-  //								    allocation);
-
-  child_allocation.x = 0;
-  child_allocation.y = 0;
+  allocation->height = AGS_SCALE_DEFAULT_HEIGHT;
+  
+  child_allocation.x = allocation->x;
+  child_allocation.y = allocation->y;
   
   child_allocation.width = allocation->width;
   child_allocation.height = AGS_SCALE_DEFAULT_HEIGHT;
@@ -1163,8 +1158,6 @@ ags_automation_edit_size_allocate(GtkWidget *widget,
   window = gtk_widget_get_window(automation_edit->drawing_area);
   gdk_window_move(window,
   		  allocation->x, allocation->y);
-
-  gtk_widget_queue_draw(automation_edit);
 }
 
 void
@@ -1446,7 +1439,7 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit)
 
   y = (gdouble) 0.0;
   
-  map_height = (gdouble) height + GTK_RANGE(automation_edit->vscrollbar)->adjustment->upper;
+  map_height = (gdouble) height;
 
   control_width = AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH;
   i = control_width - (guint) x_offset % control_width;

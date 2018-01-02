@@ -711,6 +711,9 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
     h_upper = 0.0;
   }
   
+  gtk_adjustment_set_upper(automation_editor->audio_ruler->adjustment,
+			   h_upper);
+
   gtk_adjustment_set_upper(GTK_RANGE(automation_editor->audio_hscrollbar)->adjustment,
 			   h_upper);
 
@@ -769,6 +772,9 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
     h_upper = 0.0;
   }
   
+  gtk_adjustment_set_upper(automation_editor->output_ruler->adjustment,
+			   h_upper);
+
   gtk_adjustment_set_upper(GTK_RANGE(automation_editor->output_hscrollbar)->adjustment,
 			   h_upper);
 
@@ -827,6 +833,9 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
     h_upper = 0.0;
   }
   
+  gtk_adjustment_set_upper(automation_editor->input_ruler->adjustment,
+			   h_upper);
+
   gtk_adjustment_set_upper(GTK_RANGE(automation_editor->input_hscrollbar)->adjustment,
 			   h_upper);
 
