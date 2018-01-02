@@ -442,10 +442,18 @@ ags_automation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEvent
 
   void ags_automation_edit_drawing_area_motion_notify_select_acceleration()
   {
-    automation_edit->selection_x1 = (guint) event->x + GTK_RANGE(automation_edit->hscrollbar)->adjustment->value;
+    if(event->x + GTK_RANGE(automation_edit->hscrollbar)->adjustment->value >= 0.0){
+      automation_edit->selection_x1 = (guint) event->x + GTK_RANGE(automation_edit->hscrollbar)->adjustment->value;
+    }else{
+      automation_edit->selection_x1 = 0.0;
+    }
     
-    automation_edit->selection_y1 = (guint) event->y + GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
-
+    if(event->y + GTK_RANGE(automation_edit->vscrollbar)->adjustment->value >= 0.0){
+      automation_edit->selection_y1 = (guint) event->y + GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
+    }else{
+      automation_edit->selection_y1 = 0.0;
+    }
+    
     gtk_widget_queue_draw(automation_edit);
   }
 

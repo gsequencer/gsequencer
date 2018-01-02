@@ -1755,15 +1755,17 @@ ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit)
   }
 
   if(automation_edit->selection_y0 < automation_edit->selection_y1){
-    y = ((double) automation_edit->selection_y0) - GTK_RANGE(automation_edit->hscrollbar)->adjustment->value;
+    y = ((double) automation_edit->selection_y0) - GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
     height = ((double) automation_edit->selection_y1 - (double) automation_edit->selection_y0);
   }else{
-    y = ((double) automation_edit->selection_y1) - GTK_RANGE(automation_edit->hscrollbar)->adjustment->value;
+    y = ((double) automation_edit->selection_y1) - GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
     height = ((double) automation_edit->selection_y0 - (double) automation_edit->selection_y1);
   }
 
   /* clip */
   if(x < 0.0){
+    width += x;
+
     x = 0.0;
   }else if(x > GTK_WIDGET(automation_edit->drawing_area)->allocation.width){
     return;
@@ -1774,6 +1776,8 @@ ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit)
   }
   
   if(y < 0.0){
+    height += y;
+
     y = 0.0;
   }else if(y > GTK_WIDGET(automation_edit->drawing_area)->allocation.height){
     return;
