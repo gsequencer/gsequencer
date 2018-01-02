@@ -1876,6 +1876,7 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
   		  main_context);
 
   /* sync functions */
+#if 0
   sync_funcs.prepare = ags_gui_thread_sync_task_prepare;
   sync_funcs.check = ags_gui_thread_sync_task_check;
   sync_funcs.dispatch = ags_gui_thread_sync_task_dispatch;
@@ -1885,6 +1886,7 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
 					 sizeof(GSource));
   g_source_attach(gui_thread->sync_source,
   		  main_context);
+#endif
   
   /* show animation */
   g_atomic_int_set(&(xorg_application_context->gui_ready),

@@ -394,7 +394,7 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   g_cond_init(&(audio_loop->cond));
   g_mutex_init(&(audio_loop->mutex));
 
-  audio_loop->main_context = g_main_context_new();
+  audio_loop->main_context = NULL;
 
   audio_loop->cached_poll_array_size = 0;
   audio_loop->cached_poll_array = NULL;
@@ -839,8 +839,6 @@ ags_audio_loop_run(AgsThread *thread)
 
   AgsPollingThread *polling_thread;
   
-  GMainContext *main_context;
-
   GPollFD *fds = NULL;  
 
   gint max_priority;
@@ -856,8 +854,6 @@ ags_audio_loop_run(AgsThread *thread)
   polling_thread = (AgsPollingThread *) ags_thread_find_type(thread,
 							     AGS_TYPE_POLLING_THREAD);
   
-  main_context = audio_loop->main_context;
-
   /* real-time setup */
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
 #ifdef AGS_WITH_RT
@@ -873,8 +869,6 @@ ags_audio_loop_run(AgsThread *thread)
 
     g_atomic_int_or(&(thread->flags),
 		    AGS_THREAD_RT_SETUP);
-
-    g_main_context_push_thread_default(main_context);
   }
 
   /* reset polling thread */
