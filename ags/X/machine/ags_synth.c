@@ -613,11 +613,13 @@ ags_synth_update(AgsSynth *synth)
 
     apply_synth = ags_apply_synth_new(channel, 1,
 				      wave,
-				      attack, frame_count,
+				      attack % channel->buffer_size, frame_count,
 				      frequency, phase, start_frequency,
 				      volume,
 				      loop_start, loop_end);
-
+    g_object_set(apply_synth,
+		 "delay", attack / channel->buffer_size,
+		 NULL);
     task = g_list_prepend(task,
 			  apply_synth);
 
@@ -727,10 +729,13 @@ ags_synth_update(AgsSynth *synth)
 
     apply_synth = ags_apply_synth_new(channel, output_lines,
 				      wave,
-				      attack, frame_count,
+				      attack % channel->buffer_size, frame_count,
 				      frequency, phase, start_frequency,
 				      volume,
 				      loop_start, loop_end);
+    g_object_set(apply_synth,
+		 "delay", attack / channel->buffer_size,
+		 NULL);
     task = g_list_prepend(task,
 			  apply_synth);
 

@@ -1528,10 +1528,13 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
 
     apply_synth = ags_apply_synth_new(channel, input_lines,
 				      wave,
-				      attack, frame_count,
+				      attack % channel->buffer_size, frame_count,
 				      frequency, phase, start_frequency,
 				      volume,
 				      loop_start, loop_end);
+    g_object_set(apply_synth,
+		 "delay", attack / channel->buffer_size,
+		 NULL);
 
     do_sync = gtk_toggle_button_get_active(oscillator->do_sync);
 
