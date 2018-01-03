@@ -1096,11 +1096,11 @@ ags_automation_add(GList *automation,
   gint ags_automation_add_compare(gconstpointer a,
 				  gconstpointer b)
   {
-    if(AGS_TIMESTAMP(AGS_AUTOMATION(a)->timestamp)->timer.ags_offset.offset == AGS_TIMESTAMP(AGS_AUTOMATION(b)->timestamp)->timer.ags_offset.offset){
+    if(AGS_AUTOMATION(a)->timestamp->timer.ags_offset.offset == AGS_AUTOMATION(b)->timestamp->timer.ags_offset.offset){
       return(0);
-    }else if(AGS_TIMESTAMP(AGS_AUTOMATION(a)->timestamp)->timer.ags_offset.offset < AGS_TIMESTAMP(AGS_AUTOMATION(b)->timestamp)->timer.ags_offset.offset){
+    }else if(AGS_AUTOMATION(a)->timestamp->timer.ags_offset.offset < AGS_AUTOMATION(b)->timestamp->timer.ags_offset.offset){
       return(-1);
-    }else if(AGS_TIMESTAMP(AGS_AUTOMATION(a)->timestamp)->timer.ags_offset.offset > AGS_TIMESTAMP(AGS_AUTOMATION(b)->timestamp)->timer.ags_offset.offset){
+    }else if(AGS_AUTOMATION(a)->timestamp->timer.ags_offset.offset > AGS_AUTOMATION(b)->timestamp->timer.ags_offset.offset){
       return(1);
     }
 

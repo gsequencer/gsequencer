@@ -455,8 +455,6 @@ ags_recall_channel_load_automation(AgsRecall *recall,
   AgsChannel *channel;
   AgsAudio *audio;
   
-  AgsAutomation *current;
-
   GList *automation;
   
   GType channel_type;
@@ -479,6 +477,8 @@ ags_recall_channel_load_automation(AgsRecall *recall,
     
     if((automation = ags_automation_find_port(audio->automation,
 					      automation_port->data)) == NULL){
+      AgsAutomation *current;
+      
       current = ags_automation_new(channel->audio,
 				   channel->line,
 				   channel_type,
@@ -496,7 +496,7 @@ ags_recall_channel_load_automation(AgsRecall *recall,
       //TODO:JK: property
       if(g_list_find(AGS_PORT(automation_port->data)->automation, automation->data) == NULL){
 	AGS_PORT(automation_port->data)->automation = ags_automation_add(AGS_PORT(automation_port->data)->automation,
-									 current);
+									 automation->data);
       }
     }
     

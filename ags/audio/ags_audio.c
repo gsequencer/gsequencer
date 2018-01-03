@@ -4318,7 +4318,8 @@ ags_audio_add_automation(AgsAudio *audio, GObject *automation)
   pthread_mutex_lock(mutex);
 
   g_object_ref(automation);
-  audio->automation = g_list_prepend(audio->automation, automation);
+  audio->automation = ags_automation_add(audio->automation,
+					 automation);
   
   pthread_mutex_unlock(mutex);
 }

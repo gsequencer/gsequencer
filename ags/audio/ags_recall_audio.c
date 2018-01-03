@@ -411,8 +411,6 @@ ags_recall_audio_load_automation(AgsRecall *recall,
 {
   AgsAudio *audio;
 
-  AgsAutomation *current;
-
   GList *automation;
   
   audio = AGS_RECALL_AUDIO(recall)->audio;
@@ -426,6 +424,8 @@ ags_recall_audio_load_automation(AgsRecall *recall,
 
     if(ags_automation_find_port(audio->automation,
 				automation_port->data) == NULL){
+      AgsAutomation *current;
+
       current = ags_automation_new((GObject *) audio,
 				   0,
 				   G_TYPE_NONE,
@@ -443,7 +443,7 @@ ags_recall_audio_load_automation(AgsRecall *recall,
       //TODO:JK: property
       if(g_list_find(AGS_PORT(automation_port->data)->automation, automation->data) == NULL){
 	AGS_PORT(automation_port->data)->automation = ags_automation_add(AGS_PORT(automation_port->data)->automation,
-									 current);
+									 automation->data);
       }
     }
     

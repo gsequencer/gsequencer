@@ -897,11 +897,11 @@ ags_notation_add(GList *notation,
   gint ags_notation_add_compare(gconstpointer a,
 				gconstpointer b)
   {
-    if(AGS_TIMESTAMP(AGS_NOTATION(a)->timestamp)->timer.ags_offset.offset == AGS_TIMESTAMP(AGS_NOTATION(b)->timestamp)->timer.ags_offset.offset){
+    if(AGS_NOTATION(a)->timestamp->timer.ags_offset.offset == AGS_NOTATION(b)->timestamp->timer.ags_offset.offset){
       return(0);
-    }else if(AGS_TIMESTAMP(AGS_NOTATION(a)->timestamp)->timer.ags_offset.offset < AGS_TIMESTAMP(AGS_NOTATION(b)->timestamp)->timer.ags_offset.offset){
+    }else if(AGS_NOTATION(a)->timestamp->timer.ags_offset.offset < AGS_NOTATION(b)->timestamp->timer.ags_offset.offset){
       return(-1);
-    }else if(AGS_TIMESTAMP(AGS_NOTATION(a)->timestamp)->timer.ags_offset.offset > AGS_TIMESTAMP(AGS_NOTATION(b)->timestamp)->timer.ags_offset.offset){
+    }else if(AGS_NOTATION(a)->timestamp->timer.ags_offset.offset > AGS_NOTATION(b)->timestamp->timer.ags_offset.offset){
       return(1);
     }
 
