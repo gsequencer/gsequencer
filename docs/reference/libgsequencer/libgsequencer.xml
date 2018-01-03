@@ -140,7 +140,6 @@
     <chapter id="editor">
       <title>GUI Editor</title>
 
-      <xi:include href="xml/ags_automation_area.xml"/>
       <xi:include href="xml/ags_automation_edit.xml"/>
       <xi:include href="xml/ags_automation_edit_callbacks.xml"/>
       <xi:include href="xml/ags_automation_editor.xml"/>

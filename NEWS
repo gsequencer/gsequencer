@@ -12,6 +12,8 @@ Overview of Changes in AGS 1.3.0
   GtkWidget::size-allocate and GtkWidget::size-request.
 * New widget AgsScrolledScaleBox available. It shall contain a AgsScaleBox
   and make it scrollable.
+* Refactored automation editor by removing AgsAutomationArea and using
+  AgsAutomationEdit instead. The editor supports segmented automation.
 
 Overview of Changes in AGS 1.2.7
 ================================

@@ -24,13 +24,10 @@
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
 
-#include <ags/object/ags_soundcard.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
-#include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_automation.h>
-#include <ags/audio/ags_port.h>
+#include <stdlib.h>
 
 int ags_automation_test_init_suite();
 int ags_automation_test_clean_suite();
@@ -57,7 +54,7 @@ void ags_automation_test_find_specifier();
 void ags_automation_test_find_specifier_with_type_and_line();
 void ags_automation_test_get_value();
 
-#define AGS_AUTOMATION_TEST_CONTROL_NAME "./ags-test-control\0"
+#define AGS_AUTOMATION_TEST_CONTROL_NAME "./ags-test-control"
 
 #define AGS_AUTOMATION_TEST_FIND_PORT_N_AUTOMATION (8)
 
@@ -205,7 +202,7 @@ ags_automation_test_find_port()
 
     port[i] = ags_port_new();
     g_object_set(automation[i],
-		 "port\0", port[i],
+		 "port", port[i],
 		 NULL);
 
     list = g_list_prepend(list,
@@ -243,7 +240,7 @@ ags_automation_test_find_near_timestamp()
 				       AGS_AUTOMATION_TEST_CONTROL_NAME);
     timestamp = ags_timestamp_new();
     g_object_set(automation[i],
-		 "timestamp\0", timestamp,
+		 "timestamp", timestamp,
 		 NULL);
 
     timestamp->timer.unix_time.time_val = AGS_TIMESTAMP(automation[0]->timestamp)->timer.unix_time.time_val + ((i + 1) * AGS_AUTOMATION_DEFAULT_DURATION);
@@ -466,6 +463,7 @@ ags_automation_test_find_point()
   GList *list, *current;
 
   gdouble range;
+  guint count;
   guint nth;
   guint x, y;
   guint i;
@@ -482,24 +480,33 @@ ags_automation_test_find_point()
   
   range = (AGS_AUTOMATION_TEST_FIND_POINT_UPPER - AGS_AUTOMATION_TEST_FIND_POINT_LOWER);
 
+  count = 0;
+
   for(i = 0; i < AGS_AUTOMATION_TEST_FIND_POINT_COUNT; i++){
     x = rand() % AGS_AUTOMATION_TEST_FIND_POINT_WIDTH;
     y = rand() % AGS_AUTOMATION_TEST_FIND_POINT_HEIGHT;
 
-    acceleration = ags_acceleration_new();
-    acceleration->x = x;
-    acceleration->y = AGS_AUTOMATION_TEST_FIND_POINT_LOWER + ((y / AGS_AUTOMATION_TEST_FIND_POINT_HEIGHT) * range);
+    if(ags_automation_find_point(automation,
+				 x,
+				 y,
+				 FALSE) == NULL){
+      acceleration = ags_acceleration_new();
+      acceleration->x = x;
+      acceleration->y = AGS_AUTOMATION_TEST_FIND_POINT_LOWER + ((y / AGS_AUTOMATION_TEST_FIND_POINT_HEIGHT) * range);
 
-    ags_automation_add_acceleration(automation,
-				    acceleration,
-				    FALSE);
+      ags_automation_add_acceleration(automation,
+				      acceleration,
+				      FALSE);
+
+      count++;
+    }
   }
 
   /* assert find point */
   success = TRUE;
 
   for(i = 0; i < AGS_AUTOMATION_TEST_FIND_POINT_N_ATTEMPTS; i++){
-    nth = rand() % AGS_AUTOMATION_TEST_FIND_POINT_COUNT;
+    nth = rand() % count;
     current = g_list_nth(automation->acceleration,
 			 nth);
     
@@ -528,6 +535,7 @@ ags_automation_test_find_region()
   GList *list, *current, *region;
 
   gdouble range;
+  guint count;
   guint nth;
   guint x, y;
   guint i;
@@ -544,17 +552,26 @@ ags_automation_test_find_region()
   
   range = (AGS_AUTOMATION_TEST_FIND_REGION_UPPER - AGS_AUTOMATION_TEST_FIND_REGION_LOWER);
 
+  count = 0;
+  
   for(i = 0; i < AGS_AUTOMATION_TEST_FIND_REGION_COUNT; i++){
     x = rand() % AGS_AUTOMATION_TEST_FIND_REGION_WIDTH;
     y = rand() % AGS_AUTOMATION_TEST_FIND_REGION_HEIGHT;
 
-    acceleration = ags_acceleration_new();
-    acceleration->x = x;
-    acceleration->y = AGS_AUTOMATION_TEST_FIND_REGION_LOWER + ((y / AGS_AUTOMATION_TEST_FIND_REGION_HEIGHT) * range);
+    if(ags_automation_find_point(automation,
+				 x,
+				 y,
+				 FALSE) == NULL){
+      acceleration = ags_acceleration_new();
+      acceleration->x = x;
+      acceleration->y = AGS_AUTOMATION_TEST_FIND_REGION_LOWER + ((y / AGS_AUTOMATION_TEST_FIND_REGION_HEIGHT) * range);
 
-    ags_automation_add_acceleration(automation,
-				    acceleration,
-				    FALSE);
+      ags_automation_add_acceleration(automation,
+				      acceleration,
+				      FALSE);
+
+      count++;
+    }
   }
 
   /* assert find region */
@@ -564,7 +581,7 @@ ags_automation_test_find_region()
       i < AGS_AUTOMATION_TEST_FIND_REGION_N_ATTEMPTS &&
 	success;
       i++){
-    nth = rand() % AGS_AUTOMATION_TEST_FIND_REGION_COUNT;
+    nth = rand() % count;
     current = g_list_nth(automation->acceleration,
 			 nth);
     
@@ -600,6 +617,7 @@ ags_automation_test_free_selection()
   GList *list, *current;
   
   gdouble range;
+  guint count;
   guint x, y;
   guint nth;
   guint i;
@@ -616,22 +634,32 @@ ags_automation_test_free_selection()
   
   range = (AGS_AUTOMATION_TEST_FREE_SELECTION_UPPER - AGS_AUTOMATION_TEST_FREE_SELECTION_LOWER);
 
+  count = 0;
+
   for(i = 0; i < AGS_AUTOMATION_TEST_FREE_SELECTION_COUNT; i++){
     x = rand() % AGS_AUTOMATION_TEST_FREE_SELECTION_WIDTH;
     y = rand() % AGS_AUTOMATION_TEST_FREE_SELECTION_HEIGHT;
 
-    acceleration = ags_acceleration_new();
-    acceleration->x = x;
-    acceleration->y = AGS_AUTOMATION_TEST_FREE_SELECTION_LOWER + ((y / AGS_AUTOMATION_TEST_FREE_SELECTION_HEIGHT) * range);
+    if(ags_automation_find_point(automation,
+				 x,
+				 y,
+				 FALSE) == NULL){
+      acceleration = ags_acceleration_new();
+      acceleration->x = x;
+      acceleration->y = AGS_AUTOMATION_TEST_FREE_SELECTION_LOWER + ((y / AGS_AUTOMATION_TEST_FREE_SELECTION_HEIGHT) * range);
 
-    ags_automation_add_acceleration(automation,
-				    acceleration,
-				    FALSE);
+      ags_automation_add_acceleration(automation,
+				      acceleration,
+				      FALSE);
+      
+      count++; 
+    }
   }
-
+  
   /* select acceleration */
-  for(i = 0; i < AGS_AUTOMATION_TEST_FREE_SELECTION_SELECTION_COUNT; i++){
-    nth = rand() % (AGS_AUTOMATION_TEST_FREE_SELECTION_SELECTION_COUNT - i);
+  for(i = 0; i < AGS_AUTOMATION_TEST_FREE_SELECTION_SELECTION_COUNT &&
+	i < count; i++){
+    nth = rand() % (count - i);
     current = g_list_nth(automation->acceleration,
 			 nth);
 
@@ -657,6 +685,7 @@ ags_automation_test_add_all_to_selection()
   GList *list, *current, *current_selection;
   
   gdouble range;
+  guint count;
   guint x, y;
   guint nth;
   guint i;
@@ -674,17 +703,26 @@ ags_automation_test_add_all_to_selection()
   
   range = (AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_UPPER - AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_LOWER);
 
+  count = 0;
+  
   for(i = 0; i < AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_COUNT; i++){
     x = rand() % AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_WIDTH;
     y = rand() % AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_HEIGHT;
 
-    acceleration = ags_acceleration_new();
-    acceleration->x = x;
-    acceleration->y = AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_LOWER + ((y / AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_HEIGHT) * range);
+    if(ags_automation_find_point(automation,
+				 x,
+				 y,
+				 FALSE) == NULL){
+      acceleration = ags_acceleration_new();
+      acceleration->x = x;
+      acceleration->y = AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_LOWER + ((y / AGS_AUTOMATION_TEST_ADD_ALL_TO_SELECTION_HEIGHT) * range);
 
-    ags_automation_add_acceleration(automation,
-				    acceleration,
-				    FALSE);
+      ags_automation_add_acceleration(automation,
+				      acceleration,
+				      FALSE);
+
+      count++;
+    }
   }
 
   /* assert all present */
@@ -717,6 +755,7 @@ ags_automation_test_add_point_to_selection()
   GList *list, *current;
   
   gdouble range;
+  guint count;
   guint x, y;
   guint nth;
   guint i;
@@ -734,24 +773,33 @@ ags_automation_test_add_point_to_selection()
   
   range = (AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_UPPER - AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_LOWER);
 
+  count = 0;
+
   for(i = 0; i < AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_COUNT; i++){
     x = rand() % AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_WIDTH;
     y = rand() % AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_HEIGHT;
 
-    acceleration = ags_acceleration_new();
-    acceleration->x = x;
-    acceleration->y = AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_LOWER + ((y / AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_HEIGHT) * range);
+    if(ags_automation_find_point(automation,
+				 x,
+				 y,
+				 FALSE) == NULL){
+      acceleration = ags_acceleration_new();
+      acceleration->x = x;
+      acceleration->y = AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_LOWER + ((y / AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_HEIGHT) * range);
 
-    ags_automation_add_acceleration(automation,
-				    acceleration,
-				    FALSE);
+      ags_automation_add_acceleration(automation,
+				      acceleration,
+				      FALSE);
+
+      count++;
+    }
   }
-
+  
   /* assert add point to selection */
   success = TRUE;
   
   for(i = 0; i < AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_N_ATTEMPTS; i++){
-    nth = rand() % AGS_AUTOMATION_TEST_ADD_POINT_TO_SELECTION_COUNT;
+    nth = rand() % count;
     current = g_list_nth(automation->acceleration,
 			 nth);
 
@@ -783,6 +831,7 @@ ags_automation_test_remove_point_from_selection()
   GList *list, *current, *iter, *next;
   
   gdouble range;
+  guint count;
   guint x, y;
   guint nth;
   guint n_matches;
@@ -806,18 +855,25 @@ ags_automation_test_remove_point_from_selection()
     x = rand() % AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_WIDTH;
     y = rand() % AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_HEIGHT;
 
-    acceleration = ags_acceleration_new();
-    acceleration->x = x;
-    acceleration->y = AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_LOWER + ((y / AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_HEIGHT) * range);
+    if(ags_automation_find_point(automation,
+				 x,
+				 y,
+				 FALSE) == NULL){
+      acceleration = ags_acceleration_new();
+      acceleration->x = x;
+      acceleration->y = AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_LOWER + ((y / AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_HEIGHT) * range);
 
-    ags_automation_add_acceleration(automation,
-				    acceleration,
-				    FALSE);
+      ags_automation_add_acceleration(automation,
+				      acceleration,
+				      FALSE);
+
+      count++;
+    }
   }
-
+  
   /* add point to selection */
   for(i = 0; i < AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_SELECTION_COUNT; i++){
-    nth = rand() % AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_COUNT;
+    nth = rand() % count;
     current = g_list_nth(automation->acceleration,
 			 nth);
 
@@ -938,11 +994,11 @@ ags_automation_test_get_specifier_unique()
   gboolean success;
   
   static const gchar *specifier[] = {
-    "delay\0",
-    "feedback\0",
-    "resonance\0",
-    "osc1\0",
-    "osc2\0",
+    "delay",
+    "feedback",
+    "resonance",
+    "osc1",
+    "osc2",
     NULL,
   };
 
@@ -1026,13 +1082,13 @@ ags_automation_test_find_specifier()
   guint n_match;
   gboolean success;
 
-  static const gchar *unavailable_specifier = "unavailable\0";
+  static const gchar *unavailable_specifier = "unavailable";
   static const gchar *specifier[] = {
-    "delay\0",
-    "feedback\0",
-    "resonance\0",
-    "osc1\0",
-    "osc2\0",
+    "delay",
+    "feedback",
+    "resonance",
+    "osc1",
+    "osc2",
     NULL,
   };
 
@@ -1121,8 +1177,8 @@ main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
 
-  putenv("LC_ALL=C\0");
-  putenv("LANG=C\0");
+  putenv("LC_ALL=C");
+  putenv("LANG=C");
   
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
@@ -1130,7 +1186,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsAutomationTest\0", ags_automation_test_init_suite, ags_automation_test_clean_suite);
+  pSuite = CU_add_suite("AgsAutomationTest", ags_automation_test_init_suite, ags_automation_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -1139,19 +1195,19 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsAutomation find port\0", ags_automation_test_find_port) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAutomation find near timestamp\0", ags_automation_test_find_near_timestamp) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAutomation add acceleration\0", ags_automation_test_add_acceleration) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAutomation remove acceleration at position\0", ags_automation_test_remove_acceleration_at_position) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAutomation is acceleration selected\0", ags_automation_test_is_acceleration_selected) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAutomation find point\0", ags_automation_test_find_point) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAutomation find region\0", ags_automation_test_find_region) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAutomation free selection\0", ags_automation_test_free_selection) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAutomation add all to selection\0", ags_automation_test_add_all_to_selection) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAutomation add point to selection\0", ags_automation_test_add_point_to_selection) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAutomation remove point from selection\0", ags_automation_test_remove_point_from_selection) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAutomation get specifier unique\0", ags_automation_test_get_specifier_unique) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAutomation find specifier\0", ags_automation_test_find_specifier) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsAutomation find port", ags_automation_test_find_port) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation find near timestamp", ags_automation_test_find_near_timestamp) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation add acceleration", ags_automation_test_add_acceleration) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation remove acceleration at position", ags_automation_test_remove_acceleration_at_position) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation is acceleration selected", ags_automation_test_is_acceleration_selected) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation find point", ags_automation_test_find_point) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation find region", ags_automation_test_find_region) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation free selection", ags_automation_test_free_selection) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation add all to selection", ags_automation_test_add_all_to_selection) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation add point to selection", ags_automation_test_add_point_to_selection) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation remove point from selection", ags_automation_test_remove_point_from_selection) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation get specifier unique", ags_automation_test_get_specifier_unique) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAutomation find specifier", ags_automation_test_find_specifier) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

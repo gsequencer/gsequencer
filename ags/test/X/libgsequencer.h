@@ -50,8 +50,6 @@
 #include <ags/X/editor/ags_sf2_chooser.h>
 #include <ags/X/editor/ags_machine_selector_callbacks.h>
 #include <ags/X/editor/ags_automation_edit_callbacks.h>
-#include <ags/X/editor/ags_automation_area.h>
-#include <ags/X/editor/ags_scale_area_callbacks.h>
 #include <ags/X/editor/ags_machine_radio_button.h>
 #include <ags/X/editor/ags_automation_edit.h>
 #include <ags/X/editor/ags_notation_toolbar_callbacks.h>
@@ -59,16 +57,12 @@
 #include <ags/X/editor/ags_sf2_chooser_callbacks.h>
 #include <ags/X/editor/ags_notation_edit.h>
 #include <ags/X/editor/ags_file_selection.h>
-#include <ags/X/editor/ags_scale_area.h>
-#include <ags/X/editor/ags_automation_area_callbacks.h>
 #include <ags/X/editor/ags_file_selection_callbacks.h>
 #include <ags/X/editor/ags_automation_toolbar_callbacks.h>
 #include <ags/X/editor/ags_notation_toolbar.h>
 #include <ags/X/editor/ags_inline_player_callbacks.h>
-#include <ags/X/editor/ags_scale_callbacks.h>
 #include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_machine_selection.h>
-#include <ags/X/editor/ags_scale.h>
 #include <ags/X/editor/ags_automation_toolbar.h>
 #include <ags/X/ags_link_editor.h>
 #include <ags/X/import/ags_track_collection.h>

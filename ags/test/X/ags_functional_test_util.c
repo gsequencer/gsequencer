@@ -2095,7 +2095,7 @@ ags_functional_test_util_notation_toolbar_paste_click()
   notation_editor = window->notation_editor;
   notation_toolbar = notation_editor->notation_toolbar;
 
-  paste = notation_toolbar->paste;
+  paste = notation_toolbar->paste_tool;
   
   ags_test_leave();
 

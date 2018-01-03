@@ -11,10 +11,14 @@ AgsHLedArray AtkImplementorIface GtkBuildable
 AgsVLedArray AtkImplementorIface GtkBuildable
 AgsLed AtkImplementorIface GtkBuildable
 AgsScrolledPiano AtkImplementorIface GtkBuildable
+AgsScrolledScaleBox AtkImplementorIface GtkBuildable
 GtkTable AtkImplementorIface GtkBuildable
 AgsExpanderSet AtkImplementorIface GtkBuildable
 AgsTable AtkImplementorIface GtkBuildable
 GtkBox AtkImplementorIface GtkBuildable GtkOrientable
+AgsScaleBox AtkImplementorIface GtkBuildable GtkOrientable
+AgsHScaleBox AtkImplementorIface GtkBuildable GtkOrientable
+AgsVScaleBox AtkImplementorIface GtkBuildable GtkOrientable
 GtkVBox AtkImplementorIface GtkBuildable GtkOrientable
 AgsNotebook AtkImplementorIface GtkBuildable GtkOrientable
 AgsIndicator AtkImplementorIface GtkBuildable
@@ -22,4 +26,5 @@ AgsHIndicator AtkImplementorIface GtkBuildable
 AgsVIndicator AtkImplementorIface GtkBuildable
 AgsPiano AtkImplementorIface GtkBuildable
 AgsRuler AtkImplementorIface GtkBuildable
+AgsScale AtkImplementorIface GtkBuildable
 AgsWaveform AtkImplementorIface GtkBuildable

@@ -142,6 +142,7 @@ void ags_simple_file_read_notation_list_fixup_1_0_to_1_2(AgsSimpleFile *simple_f
 
 void ags_simple_file_read_automation_list(AgsSimpleFile *simple_file, xmlNode *node, GList **automation);
 void ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAutomation **automation);
+void ags_simple_file_read_automation_list_fixup_1_0_to_1_3(AgsSimpleFile *simple_file, xmlNode *node, GList **automation);
 void ags_simple_file_read_preset_list(AgsSimpleFile *simple_file, xmlNode *node, GList **preset);
 void ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset **preset);
 
@@ -2231,10 +2232,31 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 			   23)){
 	GList *automation;
 
-	automation = gobject->audio->automation;
-	ags_simple_file_read_automation_list(simple_file,
-					     child,
-					     &automation);
+	gchar *version;
+
+	guint major, minor;
+	
+	version = xmlGetProp(simple_file->root_node,
+			     "version");
+	major = 0;
+	minor = 0;
+
+	if(version != NULL){
+	  sscanf(version, "%d.%d",
+		 &major,
+		 &minor);
+	}
+	
+	if(major == 0 ||
+	   (major == 1 && minor < 3)){
+	  ags_simple_file_read_automation_list_fixup_1_0_to_1_3(simple_file,
+								child,
+								&(gobject->audio->automation));
+	}else{
+	  ags_simple_file_read_automation_list(simple_file,
+					       child,
+					       &(gobject->audio->automation));
+	}
       }
     }
 
@@ -5027,13 +5049,13 @@ void
 ags_simple_file_read_automation_list(AgsSimpleFile *simple_file, xmlNode *node, GList **automation)
 {
   AgsAutomation *current;
-  
+
   xmlNode *child;
 
   GList *list;
-  
+
   guint i;
-  
+
   child = node->children;
   list = NULL;
 
@@ -5056,10 +5078,10 @@ ags_simple_file_read_automation_list(AgsSimpleFile *simple_file, xmlNode *node, 
 	    current = iter->data;
 	  }
 	}
-
+	
 	ags_simple_file_read_automation(simple_file, child, &current);
 	list = g_list_prepend(list, current);
-	
+
 	i++;
       }
     }
@@ -5072,40 +5094,189 @@ ags_simple_file_read_automation_list(AgsSimpleFile *simple_file, xmlNode *node, 
 }
 
 void
+ags_simple_file_read_automation_list_fixup_1_0_to_1_3(AgsSimpleFile *simple_file, xmlNode *node, GList **automation)
+{
+  AgsAutomation *current;
+
+  xmlNode *child;
+
+  GList *list;
+
+  guint i;
+
+  auto void ags_simple_file_read_automation_fixup_1_0_to_1_3(AgsSimpleFile *simple_file, xmlNode *node, GList **automation);
+
+  void ags_simple_file_read_automation_fixup_1_0_to_1_3(AgsSimpleFile *simple_file, xmlNode *node, GList **automation){
+    AgsMachine *machine;
+    
+    AgsAutomation *gobject;
+    AgsAcceleration *acceleration;
+
+    AgsTimestamp *timestamp;
+    AgsFileIdRef *file_id_ref;
+
+    xmlNode *child;
+
+    GList *automation_list;
+    
+    xmlChar *str;
+    gchar *control_name;
+  
+    GType channel_type;
+  
+    guint line;
+    gboolean found_timestamp;
+    
+    line = 0;
+    str = xmlGetProp(node,
+		     "line");
+
+    str = xmlGetProp(node,
+		     "channel-type");
+    channel_type = g_type_from_name(str);
+     
+    control_name = xmlGetProp(node,
+			      "control-name");
+
+    if(str != NULL){
+      line = g_ascii_strtoull(str,
+			      NULL,
+			      10);
+    }
+    
+    /* children */    
+    timestamp = ags_timestamp_new();
+
+    timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+    timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
+    timestamp->timer.ags_offset.offset = 0;
+    
+    child = node->children;
+
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!xmlStrncmp(child->name,
+		       "ags-sf-acceleration",
+		       12)){
+	  acceleration = ags_acceleration_new();
+
+	  /* position and offset */
+	  str = xmlGetProp(child,
+			   "x");
+
+	  if(str != NULL){
+	    acceleration->x = g_ascii_strtoull(str,
+					       NULL,
+					       10);
+	  }	
+
+	  str = xmlGetProp(child,
+			   "y");
+
+	  if(str != NULL){
+	    acceleration->y = g_ascii_strtoull(str,
+					       NULL,
+					       10);
+	  }
+
+	  timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(acceleration->x / AGS_AUTOMATION_DEFAULT_OFFSET);
+
+	  automation_list = ags_automation_find_near_timestamp_extended(automation[0], line,
+									channel_type, control_name,
+									timestamp);
+	  
+	  if(automation_list != NULL){
+	    gobject = automation_list->data;
+
+	    channel_type = gobject->channel_type;
+	    control_name = gobject->control_name;
+	  }else{	    
+	    gobject = g_object_new(AGS_TYPE_AUTOMATION,
+				   "audio", machine->audio,
+				   "line", line,
+				   "channel-type", channel_type,
+				   "control-name", control_name,
+				   NULL);
+
+	    gobject->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+	    
+	    automation[0] = ags_automation_add(automation[0],
+					       gobject);
+	  }
+	  
+	  /* add */
+	  ags_automation_add_acceleration(gobject,
+					  acceleration,
+					  FALSE);
+	}
+      }
+
+      child = child->next;
+    }
+
+    g_object_unref(timestamp);
+  }
+
+  if(automation == NULL){
+    return;
+  }
+  
+  child = node->children;
+
+  i = 0;
+  
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-automation",
+		     11)){
+	ags_simple_file_read_automation_fixup_1_0_to_1_3(simple_file, child, automation);
+
+	i++;
+      }
+    }
+
+    child = child->next;
+  }
+}
+
+void
 ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAutomation **automation)
 {
-  AgsMachine *machine;
-
   AgsAutomation *gobject;
   AgsAcceleration *acceleration;
 
-  AgsFileIdRef *file_id_ref;
+  xmlNode *child;
+  
+  xmlChar *str;
+  gchar *control_name;
   
   GType channel_type;
 
-  xmlNode *child;
-  
-  xmlChar *control_name;
-  xmlChar *str;
-  
   guint line;
-  gboolean found_last;
-  
-  file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_node(simple_file,
-								     node->parent->parent);
-  machine = file_id_ref->ref;
+  gboolean found_timestamp;
   
   if(*automation != NULL){
     gobject = *automation;
 
     line = gobject->line;
+
     channel_type = gobject->channel_type;
     control_name = gobject->control_name;
-
-    g_list_free_full(gobject->acceleration,
-		     g_object_unref);
-    gobject->acceleration = NULL;
   }else{
+    AgsMachine *machine;
+    
+    AgsFileIdRef *file_id_ref;
+    
+    file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_node(simple_file,
+								       node->parent->parent);
+    machine = file_id_ref->ref;
+
+    if(!AGS_IS_MACHINE(machine)){
+      return;
+    }
+    
     line = 0;
     str = xmlGetProp(node,
 		     "line");
@@ -5119,22 +5290,49 @@ ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAu
     str = xmlGetProp(node,
 		     "channel-type");
     channel_type = g_type_from_name(str);
-    
+     
     control_name = xmlGetProp(node,
 			      "control-name");
-
-    gobject = ags_automation_new((GObject *) machine->audio,
-				 line,
-				 channel_type,
-				 control_name);
     
+    gobject = g_object_new(AGS_TYPE_AUTOMATION,
+			   "audio", machine->audio,
+			   "line", line,
+			   "channel-type", channel_type,
+			   "control-name", control_name,
+			   NULL);
+
     *automation = gobject;
   }
 
   /* children */
   child = node->children;
-  found_last = FALSE;
+
+  found_timestamp = FALSE;
   
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     "ags-sf-timestamp",
+		     17)){
+	found_timestamp = TRUE;
+	
+	/* offset */
+	str = xmlGetProp(child,
+			 "offset");
+
+	if(str != NULL){
+	  gobject->timestamp->timer.ags_offset.offset = g_ascii_strtoull(str,
+									 NULL,
+									 10);
+	}	
+      }
+    }
+
+    child = child->next;
+  }
+  
+  child = node->children;
+
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
@@ -5150,20 +5348,17 @@ ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAu
 	  acceleration->x = g_ascii_strtoull(str,
 					     NULL,
 					     10);
-	}
+	}	
 
-	if(acceleration->x >= AGS_AUTOMATION_DEFAULT_LENGTH){
-	  found_last = TRUE;
-	}
-	
 	str = xmlGetProp(child,
 			 "y");
 
 	if(str != NULL){
-	  acceleration->y = g_ascii_strtod(str,
-					   NULL);
+	  acceleration->y = g_ascii_strtoull(str,
+					     NULL,
+					     10);
 	}
-	
+
 	/* add */
 	ags_automation_add_acceleration(gobject,
 					acceleration,
@@ -5172,15 +5367,6 @@ ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAu
     }
 
     child = child->next;
-  }
-
-  if(!found_last){
-    acceleration = ags_acceleration_new();
-    acceleration->x = AGS_AUTOMATION_DEFAULT_LENGTH;
-    acceleration->y = 0.0;
-    ags_automation_add_acceleration(gobject,
-				    acceleration,
-				    FALSE);
   }
 }
 
@@ -7551,35 +7737,23 @@ xmlNode*
 ags_simple_file_write_automation_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *automation)
 {
   xmlNode *node;
-
-  gboolean found_node;
   
   node = xmlNewNode(NULL,
 		    "ags-sf-automation-list");
 
-  found_node = FALSE;
-  
   while(automation != NULL){
-    if(ags_simple_file_write_automation(simple_file,
-					node,
-					automation->data) != NULL){
-      found_node = TRUE;
-    }
+    ags_simple_file_write_automation(simple_file,
+				     node,
+				     automation->data);
 
     automation = automation->next;
   }
 
-  if(found_node){
-    /* add to parent */
-    xmlAddChild(parent,
-		node);
+  /* add to parent */
+  xmlAddChild(parent,
+	      node);
 
-    return(node);
-  }else{
-    xmlFreeNode(node);
-
-    return(NULL);
-  }
+  return(node);
 }
 
 xmlNode*
@@ -7587,11 +7761,9 @@ ags_simple_file_write_automation(AgsSimpleFile *simple_file, xmlNode *parent, Ag
 {
   xmlNode *node;
   xmlNode *child;
-  
+
   GList *list;
 
-  gboolean found_automation;
-  
   node = xmlNewNode(NULL,
 		    "ags-sf-automation");
 
@@ -7599,22 +7771,26 @@ ags_simple_file_write_automation(AgsSimpleFile *simple_file, xmlNode *parent, Ag
 	     "line",
 	     g_strdup_printf("%d", automation->line));
 
-  xmlNewProp(node,
-	     "channel-type",
-	     g_strdup(g_type_name(automation->channel_type)));
+  /* timestamp */
+  child = xmlNewNode(NULL,
+		     "ags-sf-timestamp");
 
-  xmlNewProp(node,
-	     "control-name",
-	     g_strdup(automation->control_name));
+  xmlNewProp(child,
+	     "offset",
+	     g_strdup_printf("%lu",
+			     automation->timestamp->timer.ags_offset.offset));
+    
+  /* add to parent */
+  xmlAddChild(node,
+	      child);
 
+  /* acceleration */
   list = automation->acceleration;
-  found_automation = FALSE;
-  
+
   while(list != NULL){
-    found_automation = TRUE;
     child = xmlNewNode(NULL,
 		       "ags-sf-acceleration");
-
+    
     xmlNewProp(child,
 	       "x",
 	       g_strdup_printf("%d",
@@ -7622,9 +7798,9 @@ ags_simple_file_write_automation(AgsSimpleFile *simple_file, xmlNode *parent, Ag
 
     xmlNewProp(child,
 	       "y",
-	       g_strdup_printf("%f",
+	       g_strdup_printf("%d",
 			       AGS_ACCELERATION(list->data)->y));
-    
+
     /* add to parent */
     xmlAddChild(node,
 		child);
@@ -7632,17 +7808,11 @@ ags_simple_file_write_automation(AgsSimpleFile *simple_file, xmlNode *parent, Ag
     list = list->next;
   }
 
-  if(found_automation){
-    /* add to parent */
-    xmlAddChild(parent,
-		node);
+  /* add to parent */
+  xmlAddChild(parent,
+	      node);
 
-    return(node);
-  }else{
-    xmlFreeNode(node);
-    
-    return(NULL);
-  }
+  return(node);
 }
 
 xmlNode*

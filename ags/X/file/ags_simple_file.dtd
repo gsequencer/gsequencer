@@ -206,7 +206,7 @@
 <!-- automation -->
 <!ELEMENT ags-sf-automation-list (ags-sf-automation*)>
 
-<!ELEMENT ags-sf-automation (ags-sf-acceleration*)>
+<!ELEMENT ags-sf-automation (ags-sf-timestamp, ags-sf-acceleration*)>
 <!ATTLIST ags-sf-automation
 	  line            NMTOKEN  #REQUIRED
 	  channel-type    CDATA    #REQUIRED

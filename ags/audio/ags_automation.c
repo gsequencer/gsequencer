@@ -1288,7 +1288,6 @@ ags_automation_find_point(AgsAutomation *automation,
   }
 
   if(acceleration == NULL ||
-     (!use_selection_list) ||
      AGS_ACCELERATION(acceleration->data)->x != x){
     return(NULL);
   }else{

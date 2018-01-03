@@ -106,51 +106,39 @@ ags_audiorec_get_type
 </SECTION>
 
 <SECTION>
-<FILE>ags_automation_area</FILE>
-<TITLE>AgsAutomationArea</TITLE>
-AGS_AUTOMATION_AREA_DEFAULT_HEIGHT
-AGS_AUTOMATION_AREA_DEFAULT_PRECISION
-ags_automation_area_find_specifier
-ags_automation_area_find_position
-ags_automation_area_draw_strip
-ags_automation_area_draw_segment
-ags_automation_area_draw_scale
-ags_automation_area_draw_automation
-ags_automation_area_draw_surface
-ags_automation_area_paint
-ags_automation_area_new
-<SUBSECTION Public>
-AGS_AUTOMATION_AREA
-AGS_AUTOMATION_AREA_CLASS
-AGS_AUTOMATION_AREA_GET_CLASS
-AGS_IS_AUTOMATION_AREA
-AGS_TYPE_AUTOMATION_AREA
-AgsAutomationArea
-AgsAutomationAreaClass
-ags_automation_area_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_automation_area_callbacks</FILE>
-
-</SECTION>
-
-<SECTION>
 <FILE>ags_automation_edit</FILE>
 <TITLE>AgsAutomationEdit</TITLE>
-AGS_AUTOMATION_EDIT_MAX_CONTROLS
-AGS_AUTOMATION_EDIT_DEFAULT_MARGIN
+AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT
 AGS_AUTOMATION_EDIT_DEFAULT_WIDTH
+AGS_AUTOMATION_EDIT_DEFAULT_POINT_RADIUS
+AGS_AUTOMATION_EDIT_DEFAULT_SCAN_HEIGHT
+AGS_AUTOMATION_EDIT_DEFAULT_SCAN_WIDTH
+AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH
+AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_HEIGHT
+AGS_AUTOMATION_EDIT_DEFAULT_STEP_COUNT
+AGS_AUTOMATION_EDIT_DEFAULT_CURSOR_POSITION_X
+AGS_AUTOMATION_EDIT_DEFAULT_CURSOR_POSITION_Y
+AGS_AUTOMATION_EDIT_DEFAULT_FADER_WIDTH
+AGS_AUTOMATION_EDIT_CURSOR_WIDTH
+AGS_AUTOMATION_EDIT_CURSOR_HEIGHT
+AGS_AUTOMATION_EDIT_MIN_ZOOM
+AGS_AUTOMATION_EDIT_MAX_ZOOM
+AGS_AUTOMATION_EDIT_DEFAULT_LOWER
+AGS_AUTOMATION_EDIT_DEFAULT_UPPER
+AGS_AUTOMATION_EDIT_DEFAULT_VALUE
+AGS_AUTOMATION_EDIT_DEFAULT_PADDING
 AgsAutomationEditFlags
-AgsAutomationEditResetFlags
+AgsAutomationEditMode
 AgsAutomationEditKeyMask
-ags_automation_edit_reset_vertically
-ags_automation_edit_reset_horizontally
+ags_automation_edit_reset_vscrollbar
+ags_automation_edit_reset_hscrollbar
+ags_automation_edit_draw_segment
 ags_automation_edit_draw_position
-ags_automation_edit_draw_scroll
-ags_automation_edit_paint
-ags_automation_edit_add_area
-ags_automation_edit_remove_area
+ags_automation_edit_draw_cursor
+ags_automation_edit_draw_selection
+ags_automation_edit_draw_acceleration
+ags_automation_edit_draw_automation
+ags_automation_edit_draw
 ags_automation_edit_new
 <SUBSECTION Public>
 AGS_AUTOMATION_EDIT
@@ -164,9 +152,24 @@ ags_automation_edit_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_automation_edit_box</FILE>
+<TITLE>AgsAutomationEditBox</TITLE>
+AGS_AUTOMATION_EDIT_BOX_DEFAULT_FIXED_EDIT_HEIGHT
+AgsAutomationEditBoxFlags
+ags_automation_edit_box_new
+<SUBSECTION Public>
+AGS_AUTOMATION_EDIT_BOX
+AGS_AUTOMATION_EDIT_BOX_CLASS
+AGS_AUTOMATION_EDIT_BOX_GET_CLASS
+AGS_IS_AUTOMATION_EDIT_BOX
+AGS_TYPE_AUTOMATION_EDIT_BOX
+AgsAutomationEditBox
+AgsAutomationEditBoxClass
+ags_automation_edit_box_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_automation_edit_callbacks</FILE>
-ags_automation_edit_resize_audio_channels_callback
-ags_automation_edit_resize_pads_callback
 ags_automation_edit_drawing_area_expose_event
 ags_automation_edit_drawing_area_configure_event
 ags_automation_edit_drawing_area_button_press_event
@@ -182,13 +185,18 @@ ags_automation_edit_hscrollbar_value_changed
 <FILE>ags_automation_editor</FILE>
 <TITLE>AgsAutomationEditor</TITLE>
 AGS_AUTOMATION_EDITOR_CHILD
+AGS_AUTOMATION_EDITOR_MAX_VALUE_COUNT
+AGS_AUTOMATION_EDITOR_MAX_CONTROLS
 AGS_AUTOMATION_EDITOR_DEFAULT_VERSION
 AGS_AUTOMATION_EDITOR_DEFAULT_BUILD_ID
 AgsAutomationEditorFlags
-AgsAutomationEditorChild
-ags_automation_editor_child_alloc
-ags_automation_editor_reset_port
+ags_automation_editor_reset_audio_scrollbar
+ags_automation_editor_reset_output_scrollbar
+ags_automation_editor_reset_input_scrollbar
 ags_automation_editor_machine_changed
+ags_automation_editor_add_acceleration
+ags_automation_editor_delete_acceleration
+ags_automation_editor_select_region
 ags_automation_editor_select_all
 ags_automation_editor_paste
 ags_automation_editor_copy
@@ -208,8 +216,24 @@ ags_automation_editor_get_type
 
 <SECTION>
 <FILE>ags_automation_editor_callbacks</FILE>
-ags_automation_editor_parent_set_callback
+ags_automation_editor_audio_edit_expose_event
+ags_automation_editor_audio_edit_configure_event
+ags_automation_editor_output_edit_expose_event
+ags_automation_editor_output_edit_configure_event
+ags_automation_editor_input_edit_expose_event
+ags_automation_editor_input_edit_configure_event
+ags_automation_editor_audio_vscrollbar_value_changed
+ags_automation_editor_audio_hscrollbar_value_changed
+ags_automation_editor_output_vscrollbar_value_changed
+ags_automation_editor_output_hscrollbar_value_changed
+ags_automation_editor_input_vscrollbar_value_changed
+ags_automation_editor_input_hscrollbar_value_changed
+ags_automation_editor_audio_automation_edit_hscrollbar_value_changed
+ags_automation_editor_output_automation_edit_hscrollbar_value_changed
+ags_automation_editor_input_automation_edit_hscrollbar_value_changed
 ags_automation_editor_machine_changed_callback
+ags_automation_editor_resize_audio_channels_callback
+ags_automation_editor_resize_pads_callback
 </SECTION>
 
 <SECTION>
@@ -242,6 +266,8 @@ ags_automation_toolbar_clear_callback
 ags_automation_toolbar_select_callback
 ags_automation_toolbar_copy_or_cut_callback
 ags_automation_toolbar_paste_callback
+ags_automation_toolbar_match_line_callback
+ags_automation_toolbar_no_duplicates_callback
 ags_automation_toolbar_tool_popup_select_acceleration_callback
 ags_automation_toolbar_tool_popup_ramp_acceleration_callback
 ags_automation_toolbar_tool_popup_position_cursor_callback
@@ -1208,10 +1234,6 @@ ags_file_read_automation_edit
 ags_file_write_automation_edit
 ags_file_read_automation_edit_list
 ags_file_write_automation_edit_list
-ags_file_read_automation_area
-ags_file_write_automation_area
-ags_file_read_automation_area_list
-ags_file_write_automation_area_list
 </SECTION>
 
 <SECTION>
@@ -1701,6 +1723,7 @@ ags_lv2_browser_plugin_uri_callback
 <SECTION>
 <FILE>ags_machine</FILE>
 <TITLE>AgsMachine</TITLE>
+AGS_MACHINE_AUTOMATION_PORT
 AGS_MACHINE_DEFAULT_VERSION
 AGS_MACHINE_DEFAULT_BUILD_ID
 AgsMachineFlags
@@ -1708,6 +1731,10 @@ AgsMachineFileInputFlags
 AgsMachineMappingFlags
 AgsMachineEditOptions
 AgsMachineConnectionOptions
+AgsMachineAutomationPort
+ags_machine_automation_port_alloc
+ags_machine_automation_port_free
+ags_machine_automation_port_find_channel_type_with_control_name
 ags_machine_resize_audio_channels
 ags_machine_resize_pads
 ags_machine_map_recall
@@ -2330,6 +2357,7 @@ ags_notation_editor_get_type
 <SECTION>
 <FILE>ags_notation_editor_callbacks</FILE>
 ags_notation_editor_machine_changed_callback
+ags_notation_editor_resize_audio_channels_callback
 ags_notation_editor_resize_pads_callback
 ags_notation_editor_init_channel_launch_callback
 </SECTION>
@@ -2360,6 +2388,8 @@ ags_notation_toolbar_select_callback
 ags_notation_toolbar_copy_or_cut_callback
 ags_notation_toolbar_paste_callback
 ags_notation_toolbar_invert_callback
+ags_notation_toolbar_match_audio_channel_callback
+ags_notation_toolbar_no_duplicates_callback
 ags_notation_toolbar_tool_popup_move_note_callback
 ags_notation_toolbar_tool_popup_crop_note_callback
 ags_notation_toolbar_tool_popup_select_note_callback
@@ -2373,6 +2403,7 @@ ags_notation_toolbar_mode_callback
 <TITLE>AgsOscillator</TITLE>
 AGS_OSCILLATOR_DEFAULT_FRAME_COUNT
 AGS_OSCILLATOR_DEFAULT_SYNC_POINT_COUNT
+AgsOscillatorFlags
 ags_file_read_oscillator
 ags_file_write_oscillator
 ags_oscillator_control_changed
@@ -2547,6 +2578,7 @@ ags_panel_parent_set_callback
 <SECTION>
 <FILE>ags_panel_input_line</FILE>
 <TITLE>AgsPanelInputLine</TITLE>
+ags_panel_input_line_message_monitor_timeout
 ags_panel_input_line_new
 <SUBSECTION Public>
 AGS_IS_PANEL_INPUT_LINE
@@ -2561,8 +2593,7 @@ ags_panel_input_line_get_type
 
 <SECTION>
 <FILE>ags_panel_input_line_callbacks</FILE>
-ags_panel_input_line_notify_data_object_callback
-ags_panel_input_line_notify_mapped_line_callback
+
 </SECTION>
 
 <SECTION>
@@ -2956,53 +2987,18 @@ AgsResizeEditorClass
 </SECTION>
 
 <SECTION>
-<FILE>ags_scale</FILE>
-<TITLE>AgsScale</TITLE>
-AGS_SCALE_MARGIN_TOP
-AGS_SCALE_DEFAULT_HEIGHT
-AGS_SCALE_DEFAULT_MARGIN
-ags_scale_paint
-ags_scale_add_area
-ags_scale_remove_area
-ags_scale_new
+<FILE>ags_scrolled_automation_edit_box</FILE>
+<TITLE>AgsScrolledAutomationEditBox</TITLE>
+ags_scrolled_automation_edit_box_new
 <SUBSECTION Public>
-AGS_IS_SCALE
-AGS_SCALE
-AGS_SCALE_CLASS
-AGS_SCALE_GET_CLASS
-AGS_TYPE_SCALE
-AgsScale
-AgsScaleClass
-ags_scale_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_scale_area</FILE>
-<TITLE>AgsScaleArea</TITLE>
-AGS_SCALE_AREA_DEFAULT_HEIGHT
-ags_scale_area_find_specifier
-ags_scale_area_paint
-ags_scale_area_new
-<SUBSECTION Public>
-AGS_IS_SCALE_AREA
-AGS_SCALE_AREA
-AGS_SCALE_AREA_CLASS
-AGS_SCALE_AREA_GET_CLASS
-AGS_TYPE_SCALE_AREA
-AgsScaleArea
-AgsScaleAreaClass
-ags_scale_area_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_scale_area_callbacks</FILE>
-
-</SECTION>
-
-<SECTION>
-<FILE>ags_scale_callbacks</FILE>
-ags_scale_expose_event
-ags_scale_configure_event
+AGS_IS_SCROLLED_AUTOMATION_EDIT_BOX
+AGS_SCROLLED_AUTOMATION_EDIT_BOX
+AGS_SCROLLED_AUTOMATION_EDIT_BOX_CLASS
+AGS_SCROLLED_AUTOMATION_EDIT_BOX_GET_CLASS
+AGS_TYPE_SCROLLED_AUTOMATION_EDIT_BOX
+AgsScrolledAutomationEditBox
+AgsScrolledAutomationEditBoxClass
+ags_scrolled_automation_edit_box_get_type
 </SECTION>
 
 <SECTION>
@@ -3445,6 +3441,21 @@ ags_update_bulk_member_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_vautomation_edit_box</FILE>
+<TITLE>AgsVAutomationEditBox</TITLE>
+ags_vautomation_edit_box_new
+<SUBSECTION Public>
+AGS_IS_VAUTOMATION_EDIT_BOX
+AGS_TYPE_VAUTOMATION_EDIT_BOX
+AGS_VAUTOMATION_EDIT_BOX
+AGS_VAUTOMATION_EDIT_BOX_CLASS
+AGS_VAUTOMATION_EDIT_BOX_GET_CLASS
+AgsVAutomationEditBox
+AgsVAutomationEditBoxClass
+ags_vautomation_edit_box_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_wave_edit</FILE>
 <TITLE>AgsWaveEdit</TITLE>
 AGS_WAVE_EDIT_MAX_CONTROLS
@@ -3551,12 +3562,13 @@ ags_wave_window_get_type
 AGS_MACHINE_COUNTER
 AgsWindowFlags
 AgsMachineCounter
-ags_window_public_machine_counter_alloc
+ags_window_standard_machine_counter_alloc
 ags_window_find_machine_counter
 ags_window_increment_machine_counter
 ags_window_decrement_machine_counter
 ags_machine_counter_alloc
 ags_window_show_error
+ags_window_load_file_timeout
 ags_window_new
 <SUBSECTION Public>
 AGS_IS_WINDOW

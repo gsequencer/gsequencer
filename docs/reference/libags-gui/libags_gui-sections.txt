@@ -163,6 +163,21 @@ ags_hled_array_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_hscale_box</FILE>
+<TITLE>AgsHScaleBox</TITLE>
+ags_hscale_box_new
+<SUBSECTION Public>
+AGS_HSCALE_BOX
+AGS_HSCALE_BOX_CLASS
+AGS_HSCALE_BOX_GET_CLASS
+AGS_IS_HSCALE_BOX
+AGS_TYPE_HSCALE_BOX
+AgsHScaleBox
+AgsHScaleBoxClass
+ags_hscale_box_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_htimebar</FILE>
 <TITLE>AgsHTimebar</TITLE>
 ags_htimebar_new
@@ -448,6 +463,51 @@ ags_ruler_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_scale</FILE>
+<TITLE>AgsScale</TITLE>
+AGS_SCALE_DEFAULT_WIDTH
+AGS_SCALE_DEFAULT_HEIGHT
+AGS_SCALE_DEFAULT_LOWER
+AGS_SCALE_DEFAULT_UPPER
+AGS_SCALE_DEFAULT_VALUE
+AGS_SCALE_DEFAULT_STEP_COUNT
+AGS_SCALE_DEFAULT_PAGE_SIZE
+AgsScaleFlags
+AgsScaleButtonState
+AgsScaleKeyMask
+AgsScaleLayout
+AgsScaleAction
+ags_scale_new
+<SUBSECTION Public>
+AGS_IS_SCALE
+AGS_SCALE
+AGS_SCALE_CLASS
+AGS_SCALE_GET_CLASS
+AGS_TYPE_SCALE
+AgsScale
+AgsScaleClass
+ags_scale_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_scale_box</FILE>
+<TITLE>AgsScaleBox</TITLE>
+AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_WIDTH
+AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_HEIGHT
+AgsScaleBoxFlags
+ags_scale_box_new
+<SUBSECTION Public>
+AGS_IS_SCALE_BOX
+AGS_SCALE_BOX
+AGS_SCALE_BOX_CLASS
+AGS_SCALE_BOX_GET_CLASS
+AGS_TYPE_SCALE_BOX
+AgsScaleBox
+AgsScaleBoxClass
+ags_scale_box_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_scrolled_piano</FILE>
 <TITLE>AgsScrolledPiano</TITLE>
 ags_scrolled_piano_new
@@ -460,6 +520,21 @@ AGS_TYPE_SCROLLED_PIANO
 AgsScrolledPiano
 AgsScrolledPianoClass
 ags_scrolled_piano_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_scrolled_scale_box</FILE>
+<TITLE>AgsScrolledScaleBox</TITLE>
+ags_scrolled_scale_box_new
+<SUBSECTION Public>
+AGS_IS_SCROLLED_SCALE_BOX
+AGS_SCROLLED_SCALE_BOX
+AGS_SCROLLED_SCALE_BOX_CLASS
+AGS_SCROLLED_SCALE_BOX_GET_CLASS
+AGS_TYPE_SCROLLED_SCALE_BOX
+AgsScrolledScaleBox
+AgsScrolledScaleBoxClass
+ags_scrolled_scale_box_get_type
 </SECTION>
 
 <SECTION>
@@ -519,6 +594,21 @@ AGS_VLED_ARRAY_GET_CLASS
 AgsVLedArray
 AgsVLedArrayClass
 ags_vled_array_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_vscale_box</FILE>
+<TITLE>AgsVScaleBox</TITLE>
+ags_vscale_box_new
+<SUBSECTION Public>
+AGS_IS_VSCALE_BOX
+AGS_TYPE_VSCALE_BOX
+AGS_VSCALE_BOX
+AGS_VSCALE_BOX_CLASS
+AGS_VSCALE_BOX_GET_CLASS
+AgsVScaleBox
+AgsVScaleBoxClass
+ags_vscale_box_get_type
 </SECTION>
 
 <SECTION>

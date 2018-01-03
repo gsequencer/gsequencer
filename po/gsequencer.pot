@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 1.3.0\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2018-01-03 04:39+0100\n"
+"POT-Creation-Date: 2018-01-03 19:57+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -564,7 +564,7 @@ msgid "select accelerations"
 msgstr ""
 
 #: ags/X/editor/ags_automation_toolbar.c:910
-#: ags/X/editor/ags_ramp_acceleration_dialog.c:201
+#: ags/X/editor/ags_ramp_acceleration_dialog.c:203
 msgid "ramp accelerations"
 msgstr ""
 
@@ -803,23 +803,23 @@ msgstr ""
 msgid "position y"
 msgstr ""
 
-#: ags/X/editor/ags_ramp_acceleration_dialog.c:226
+#: ags/X/editor/ags_ramp_acceleration_dialog.c:228
 msgid "ramp x0"
 msgstr ""
 
-#: ags/X/editor/ags_ramp_acceleration_dialog.c:253
+#: ags/X/editor/ags_ramp_acceleration_dialog.c:255
 msgid "ramp y0"
 msgstr ""
 
-#: ags/X/editor/ags_ramp_acceleration_dialog.c:278
+#: ags/X/editor/ags_ramp_acceleration_dialog.c:280
 msgid "ramp x1"
 msgstr ""
 
-#: ags/X/editor/ags_ramp_acceleration_dialog.c:305
+#: ags/X/editor/ags_ramp_acceleration_dialog.c:307
 msgid "ramp y1"
 msgstr ""
 
-#: ags/X/editor/ags_ramp_acceleration_dialog.c:330
+#: ags/X/editor/ags_ramp_acceleration_dialog.c:332
 msgid "ramp step count"
 msgstr ""
 
