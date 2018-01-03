@@ -60,6 +60,13 @@ GList* ags_automation_list_safe_properties(AgsPortlet *portlet);
 void ags_automation_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
 void ags_automation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
 
+void ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
+						       xmlNode *root_node, char *version,
+						       char *x_boundary, char *y_boundary,
+						       gboolean from_x_offset, guint x_offset,
+						       gboolean from_y_offset, guint y_offset,
+						       gboolean match_line, gboolean no_duplicates);
+
 /**
  * SECTION:ags_automation
  * @short_description: Automation class supporting selection and clipboard.
@@ -69,10 +76,6 @@ void ags_automation_safe_get_property(AgsPortlet *portlet, gchar *property_name,
  *
  * #AgsAutomation acts as a container of #AgsAcceleration.
  */
-
-#define AGS_AUTOMATION_CLIPBOARD_VERSION "0.4.3"
-#define AGS_AUTOMATION_CLIPBOARD_TYPE "AgsAutomationClipboardXml"
-#define AGS_AUTOMATION_CLIPBOARD_FORMAT "AgsAutomationNativePiano"
 
 enum{
   PROP_0,
@@ -1284,9 +1287,7 @@ ags_automation_find_point(AgsAutomation *automation,
   }
 
   if(acceleration == NULL ||
-     (!use_selection_list && 
-      (acceleration->prev == NULL ||
-       acceleration->next == NULL)) ||
+     (!use_selection_list) ||
      AGS_ACCELERATION(acceleration->data)->x != x){
     return(NULL);
   }else{
@@ -1682,6 +1683,199 @@ ags_automation_cut_selection(AgsAutomation *automation)
 }
 
 void
+ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
+						  xmlNode *root_node, char *version,
+						  char *x_boundary, char *y_boundary,
+						  gboolean from_x_offset, guint x_offset,
+						  gboolean from_y_offset, guint y_offset,
+						  gboolean match_line, gboolean no_duplicates)
+{
+  auto void ags_automation_insert_from_clipboard_version_0_4_3();
+  
+  void ags_automation_insert_from_clipboard_version_0_4_3()
+  {
+    AgsAcceleration *acceleration;
+    xmlNode *node;
+    char *endptr;
+    guint x_boundary_val, y_boundary_val;
+    char *x, *y;
+    guint x_val;
+    gdouble y_val;
+    guint base_x_difference, base_y_difference;
+    gboolean subtract_x, subtract_y;
+
+    node = root_node->children;
+
+    /* retrieve x values for resetting */
+    if(from_x_offset){
+      if(x_boundary != NULL){
+	errno = 0;
+	x_boundary_val = strtoul(x_boundary, &endptr, 10);
+
+	if(errno == ERANGE){
+	  goto dont_reset_x_offset;
+	} 
+
+	if(x_boundary == endptr){
+	  goto dont_reset_x_offset;
+	}
+
+	if(x_boundary_val < x_offset){
+	  base_x_difference = x_offset - x_boundary_val;
+	  subtract_x = FALSE;
+	}else{
+	  base_x_difference = x_boundary_val - x_offset;
+	  subtract_x = TRUE;
+	}
+      }else{
+      dont_reset_x_offset:
+	from_x_offset = FALSE;
+      }
+    }
+
+    /* retrieve y values for resetting */
+    if(from_y_offset){
+      if(y_boundary != NULL){
+	errno = 0;
+	y_boundary_val = strtoul(y_boundary, &endptr, 10);
+
+	if(errno == ERANGE){
+	  goto dont_reset_y_offset;
+	} 
+
+	if(y_boundary == endptr){
+	  goto dont_reset_y_offset;
+	}
+
+	if(y_boundary_val < y_offset){
+	  base_y_difference = y_offset - y_boundary_val;
+	  subtract_y = FALSE;
+	}else{
+	  base_y_difference = y_boundary_val - y_offset;
+	  subtract_y = TRUE;
+	}
+      }else{
+      dont_reset_y_offset:
+	from_y_offset = FALSE;
+      }
+    }
+    
+    for(; node != NULL; node = node->next){
+      if(node->type == XML_ELEMENT_NODE && !xmlStrncmp("acceleration", node->name, 5)){
+	/* retrieve x0 offset */
+	x = xmlGetProp(node, "x");
+
+	if(x == NULL){
+	  continue;
+	}
+
+	errno = 0;
+	x_val = strtoul(x, &endptr, 10);
+
+	if(errno == ERANGE){
+	  continue;
+	} 
+
+	if(x == endptr){
+	  continue;
+	}
+	
+	/* retrieve y offset */
+	y = xmlGetProp(node, "y");
+
+	if(y == NULL){
+	  continue;
+	}
+
+	errno = 0;
+	y_val = strtod(y,
+		       &endptr);
+
+	if(errno == ERANGE){
+	  continue;
+	} 
+
+	if(y == endptr){
+	  continue;
+	}
+
+	/* calculate new offset */
+	if(from_x_offset){
+	  errno = 0;
+
+	  if(subtract_x){
+	    x_val -= base_x_difference;
+
+	    if(errno != 0){
+	      continue;
+	    }
+	  }else{
+	    x_val += base_x_difference;
+
+	    if(errno != 0){
+	      continue;
+	    }
+	  }
+	}
+
+	if(from_y_offset){
+	  errno = 0;
+
+	  if(subtract_y){
+	    y_val -= base_y_difference;
+	  }else{
+	    y_val += base_y_difference;
+	  }
+
+	  if(errno != 0){
+	    continue;
+	  }
+	}
+
+	/* check duplicate */
+	if(ags_automation_find_point(automation,
+				     x_val, y_val,
+				     FALSE) != NULL){
+	  continue;
+	}
+	
+	/* add acceleration */
+	acceleration = ags_acceleration_new();
+
+	acceleration->x = x_val;
+	acceleration->y = y_val;
+
+#ifdef AGS_DEBUG
+	g_message("adding acceleration at: [%u|%f]\n", x_val, y_val);
+#endif
+	
+	ags_automation_add_acceleration(automation,
+					acceleration,
+					FALSE);
+      }
+    }
+  }
+  
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }  
+
+  if(!xmlStrncmp("0.4.3", version, 6)){
+    ags_automation_insert_from_clipboard_version_0_4_3();
+  }else if(!xmlStrncmp("1.3.0", version, 6)){
+    if(match_line &&
+       automation->line != g_ascii_strtoull(xmlGetProp(root_node,
+						       "line"),
+					    NULL,
+					    10)){
+      return;
+    }
+
+    ags_automation_insert_from_clipboard_version_0_4_3();
+  }
+}
+
+void
 ags_automation_merge_clipboard(xmlNode *audio_node,
 			       xmlNode *automation_node)
 {
@@ -1787,176 +1981,28 @@ ags_automation_insert_from_clipboard(AgsAutomation *automation,
 				     gboolean reset_x_offset, guint x_offset,
 				     gboolean reset_y_offset, gdouble y_offset)
 {
+  ags_automation_insert_from_clipboard_extended(automation,
+						automation_node,
+						reset_x_offset, x_offset,
+						reset_y_offset, y_offset,
+						FALSE, FALSE);
+}
+
+void
+ags_automation_insert_from_clipboard_extended(AgsAutomation *automation,
+					      xmlNode *automation_node,
+					      gboolean reset_x_offset, guint x_offset,
+					      gboolean reset_y_offset, gdouble y_offset,
+					      gboolean match_line, gboolean no_duplicates)
+{
   char *program, *version, *type, *format;
   char *base_frequency;
   char *x_boundary, *y_boundary;
 
-  auto void ags_automation_insert_from_clipboard_version_0_4_3(AgsAutomation *automation,
-							       xmlNode *root_node, char *version,
-							       char *x_boundary, char *y_boundary,
-							       gboolean reset_x_offset, guint x_offset,
-							       gboolean reset_y_offset, gdouble y_offset);
-  
-  void ags_automation_insert_from_clipboard_version_0_4_3(AgsAutomation *automation,
-							  xmlNode *root_node, char *version,
-							  char *x_boundary, char *y_boundary,
-							  gboolean reset_x_offset, guint x_offset,
-							  gboolean reset_y_offset, gdouble y_offset){
-    AgsAcceleration *acceleration;
-    xmlNode *node;
-    char *endptr;
-    guint x_boundary_val, y_boundary_val;
-    char *x, *y;
-    guint x_val;
-    gdouble y_val;
-    guint base_x_difference, base_y_difference;
-    gboolean subtract_x, subtract_y;
-
-    node = root_node->children;
-
-    /* retrieve x values for resetting */
-    if(reset_x_offset){
-      if(x_boundary != NULL){
-	errno = 0;
-	x_boundary_val = strtoul(x_boundary, &endptr, 10);
-
-	if(errno == ERANGE){
-	  goto dont_reset_x_offset;
-	} 
-
-	if(x_boundary == endptr){
-	  goto dont_reset_x_offset;
-	}
-
-	if(x_boundary_val < x_offset){
-	  base_x_difference = x_offset - x_boundary_val;
-	  subtract_x = FALSE;
-	}else{
-	  base_x_difference = x_boundary_val - x_offset;
-	  subtract_x = TRUE;
-	}
-      }else{
-      dont_reset_x_offset:
-	reset_x_offset = FALSE;
-      }
-    }
-
-    /* retrieve y values for resetting */
-    if(reset_y_offset){
-      if(y_boundary != NULL){
-	errno = 0;
-	y_boundary_val = strtoul(y_boundary, &endptr, 10);
-
-	if(errno == ERANGE){
-	  goto dont_reset_y_offset;
-	} 
-
-	if(y_boundary == endptr){
-	  goto dont_reset_y_offset;
-	}
-
-	if(y_boundary_val < y_offset){
-	  base_y_difference = y_offset - y_boundary_val;
-	  subtract_y = FALSE;
-	}else{
-	  base_y_difference = y_boundary_val - y_offset;
-	  subtract_y = TRUE;
-	}
-      }else{
-      dont_reset_y_offset:
-	reset_y_offset = FALSE;
-      }
-    }
-    
-    for(; node != NULL; node = node->next){
-      if(node->type == XML_ELEMENT_NODE && !xmlStrncmp("acceleration", node->name, 5)){
-	/* retrieve x0 offset */
-	x = xmlGetProp(node, "x");
-
-	if(x == NULL)
-	  continue;
-
-	errno = 0;
-	x_val = strtoul(x, &endptr, 10);
-
-	if(errno == ERANGE){
-	  continue;
-	} 
-
-	if(x == endptr){
-	  continue;
-	}
-	
-	/* retrieve y offset */
-	y = xmlGetProp(node, "y");
-
-	if(y == NULL)
-	  continue;
-
-	errno = 0;
-	y_val = strtod(y,
-		       &endptr);
-
-	if(errno == ERANGE){
-	  continue;
-	} 
-
-	if(y == endptr){
-	  continue;
-	}
-
-	/* calculate new offset */
-	if(reset_x_offset){
-	  errno = 0;
-
-	  if(subtract_x){
-	    x_val -= base_x_difference;
-
-	    if(errno != 0)
-	      continue;
-	  }else{
-	    x_val += base_x_difference;
-
-	    if(errno != 0)
-	      continue;
-	  }
-	}
-
-	if(reset_y_offset){
-	  errno = 0;
-
-	  if(subtract_y){
-	    y_val -= base_y_difference;
-	  }else{
-	    y_val += base_y_difference;
-	  }
-
-	  if(errno != 0)
-	    continue;
-	}
-
-	/* add acceleration */
-	acceleration = ags_acceleration_new();
-
-	acceleration->x = x_val;
-	acceleration->y = y_val;
-
-#ifdef AGS_DEBUG
-	g_message("adding acceleration at: [%u|%f]\n", x_val, y_val);
-#endif
-	
-	ags_automation_add_acceleration(automation,
-					acceleration,
-					FALSE);
-      }
-    }
-
-
-  }
-  
   while(automation_node != NULL){
-    if(automation_node->type == XML_ELEMENT_NODE && !xmlStrncmp("automation", automation_node->name, 9))
+    if(automation_node->type == XML_ELEMENT_NODE && !xmlStrncmp("automation", automation_node->name, 11)){
       break;
+    }
 
     automation_node = automation_node->next;
   }
@@ -1969,19 +2015,19 @@ ags_automation_insert_from_clipboard(AgsAutomation *automation,
       type = xmlGetProp(automation_node, "type");
       format = xmlGetProp(automation_node, "format");
 
-      if(!xmlStrncmp("AgsAutomationNativePiano", format, 22)){
-	AgsAcceleration *acceleration;
-	
-	base_frequency = xmlGetProp(automation_node, "base-frequency");
+      if(!xmlStrcmp(AGS_AUTOMATION_CLIPBOARD_FORMAT,
+		    format) ||
+	 !xmlStrcmp(AGS_AUTOMATION_CLIPBOARD_LEGACY_FORMAT,
+		    format)){
+	x_boundary = xmlGetProp(automation_node, "x_boundary");
+	y_boundary = xmlGetProp(automation_node, "y_boundary");
 
-	x_boundary = xmlGetProp(automation_node, "x-boundary");
-	y_boundary = xmlGetProp(automation_node, "y-boundary");
-
-	ags_automation_insert_from_clipboard_version_0_4_3(automation,
-							   automation_node, version,
-							   x_boundary, y_boundary,
-							   reset_x_offset, x_offset,
-							   reset_y_offset, y_offset);
+	ags_automation_insert_native_scale_from_clipboard(automation,
+							  automation_node, version,
+							  x_boundary, y_boundary,
+							  reset_x_offset, x_offset,
+							  reset_y_offset, y_offset,
+							  match_line, no_duplicates);
       }
     }
   }

@@ -162,6 +162,12 @@ void ags_notation_insert_from_clipboard(AgsNotation *notation,
 					gboolean reset_x_offset, guint x_offset,
 					gboolean reset_y_offset, guint y_offset);
 
+void ags_notation_insert_from_clipboard_extended(AgsNotation *notation,
+						 xmlNode *notation_node,
+						 gboolean reset_x_offset, guint x_offset,
+						 gboolean reset_y_offset, guint y_offset,
+						 gboolean match_channel, gboolean no_duplicates);
+
 GList* ags_notation_get_current(AgsNotation *notation);
 
 unsigned char* ags_notation_to_raw_midi(AgsNotation *notation,

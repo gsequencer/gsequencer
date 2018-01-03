@@ -63,7 +63,8 @@ void ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 						     char *base_frequency,
 						     char *x_boundary, char *y_boundary,
 						     gboolean from_x_offset, guint x_offset,
-						     gboolean from_y_offset, guint y_offset);
+						     gboolean from_y_offset, guint y_offset,
+						     gboolean match_channel, gboolean no_duplicates);
 
 /**
  * SECTION:ags_notation
@@ -1633,6 +1634,8 @@ ags_notation_cut_selection(AgsNotation *notation)
  * @x_offset: region start cursor offset
  * @reset_y_offset: if %TRUE @y_offset used as cursor
  * @y_offset: region start cursor tone
+ * @match_channel: 
+ * @no_duplicates: 
  *
  * Paste previously copied notes. 
  *
@@ -1644,7 +1647,8 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 						char *base_frequency,
 						char *x_boundary, char *y_boundary,
 						gboolean reset_x_offset, guint x_offset,
-						gboolean reset_y_offset, guint y_offset)
+						gboolean reset_y_offset, guint y_offset,
+						gboolean match_channel, gboolean no_duplicates)
 {
   auto void ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
   
@@ -1860,6 +1864,15 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 	    continue;
 	  }
 
+	  /* check duplicate */
+	  if(ags_notation_find_point(notation,
+				     x0_val, y_val,
+				     FALSE) != NULL){
+	    node = node->next;
+	  
+	    continue;
+	  }
+	  
 	  /* add note */
 	  note = ags_note_new();
 
@@ -1868,8 +1881,10 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 
 	  note->y = y_val;
 
+#ifdef AGS_DEBUG
 	  g_message("adding note at: [%u,%u|%u]\n", x0_val, x1_val, y_val);
-
+#endif
+	  
 	  ags_notation_add_note(notation,
 				note,
 				FALSE);
@@ -1907,6 +1922,14 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
     ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
   }else if(!xmlStrncmp("1.2.0", version, 7)){
     /* changes contain only optional informations */
+    if(match_channel &&
+       notation->audio_channel != g_ascii_strtoull(xmlGetProp(root_node,
+							      "audio-channel"),
+						   NULL,
+						   10)){
+      return;
+    }
+    
     ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
   }
 }
@@ -1930,6 +1953,20 @@ ags_notation_insert_from_clipboard(AgsNotation *notation,
 				   gboolean reset_x_offset, guint x_offset,
 				   gboolean reset_y_offset, guint y_offset)
 {
+  ags_notation_insert_from_clipboard_extended(notation,
+					      notation_node,
+					      reset_x_offset, x_offset,
+					      reset_y_offset, y_offset,
+					      FALSE, FALSE);
+}
+
+void
+ags_notation_insert_from_clipboard_extended(AgsNotation *notation,
+					    xmlNode *notation_node,
+					    gboolean reset_x_offset, guint x_offset,
+					    gboolean reset_y_offset, guint y_offset,
+					    gboolean match_channel, gboolean no_duplicates)
+{
   char *program, *version, *type, *format;
   char *base_frequency;
   char *x_boundary, *y_boundary;
@@ -1950,7 +1987,8 @@ ags_notation_insert_from_clipboard(AgsNotation *notation,
       type = xmlGetProp(notation_node, "type");
       format = xmlGetProp(notation_node, "format");
 
-      if(!xmlStrncmp("AgsNotationNativePiano", format, 22)){
+      if(!xmlStrcmp(AGS_NOTATION_CLIPBOARD_FORMAT,
+		    format)){
 	base_frequency = xmlGetProp(notation_node, "base_frequency");
 
 	x_boundary = xmlGetProp(notation_node, "x_boundary");
@@ -1961,7 +1999,8 @@ ags_notation_insert_from_clipboard(AgsNotation *notation,
 							base_frequency,
 							x_boundary, y_boundary,
 							reset_x_offset, x_offset,
-							reset_y_offset, y_offset);
+							reset_y_offset, y_offset,
+							match_channel, no_duplicates);
       }
     }
   }

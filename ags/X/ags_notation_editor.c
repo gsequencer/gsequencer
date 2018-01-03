@@ -193,7 +193,8 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
   GtkScrolledWindow *scrolled_window;
   GtkTable *table;
   
-  notation_editor->flags = 0;
+  notation_editor->flags = (AGS_NOTATION_EDITOR_PASTE_MATCH_CHANNEL |
+			    AGS_NOTATION_EDITOR_PASTE_NO_DUPLICATES);
 
   notation_editor->version = AGS_NOTATION_EDITOR_DEFAULT_VERSION;
   notation_editor->build_id = AGS_NOTATION_EDITOR_DEFAULT_BUILD_ID;
@@ -1153,6 +1154,10 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
     GList *list_notation;
 
     guint first_x;
+    gboolean match_channel, no_duplicates;
+
+    match_channel = ((AGS_NOTATION_EDITOR_PASTE_MATCH_CHANNEL & (notation_editor->flags)) != 0) ? TRUE: FALSE;
+    no_duplicates = ((AGS_NOTATION_EDITOR_PASTE_NO_DUPLICATES & (notation_editor->flags)) != 0) ? TRUE: FALSE;
 
     timestamp = ags_timestamp_new();
 
@@ -1228,11 +1233,12 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
 
 		    guint x_boundary;
 	  
-		    ags_notation_insert_from_clipboard(notation,
-						       notation_node,
-						       TRUE, position_x,
-						       TRUE, position_y);
-
+		    ags_notation_insert_from_clipboard_extended(notation,
+								notation_node,
+								TRUE, position_x,
+								TRUE, position_y,
+								match_channel, no_duplicates);
+		    
 		    /* get boundaries */
 		    child = notation_node->children;
 		    current_x = 0;

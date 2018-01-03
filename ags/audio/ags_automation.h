@@ -49,6 +49,11 @@
 #define AGS_AUTOMATION_DEFAULT_PRECISION (8)
 #define AGS_AUTOMATION_MAXIMUM_STEPS (128)
 
+#define AGS_AUTOMATION_CLIPBOARD_VERSION "1.3.0"
+#define AGS_AUTOMATION_CLIPBOARD_TYPE "AgsAutomationClipboardXml"
+#define AGS_AUTOMATION_CLIPBOARD_FORMAT "AgsAutomationNativeScale"
+#define AGS_AUTOMATION_CLIPBOARD_LEGACY_FORMAT "AgsAutomationNativePiano"
+
 typedef struct _AgsAutomation AgsAutomation;
 typedef struct _AgsAutomationClass AgsAutomationClass;
 
@@ -161,9 +166,15 @@ void ags_automation_merge_clipboard(xmlNode *audio_node,
 				    xmlNode *automation_node);
 
 void ags_automation_insert_from_clipboard(AgsAutomation *automation,
-					  xmlNodePtr content,
+					  xmlNode *automation_node,
 					  gboolean reset_x_offset, guint x_offset,
 					  gboolean reset_y_offset, gdouble y_offset);
+
+void ags_automation_insert_from_clipboard_extended(AgsAutomation *automation,
+						   xmlNode *automation_node,
+						   gboolean reset_x_offset, guint x_offset,
+						   gboolean reset_y_offset, gdouble y_offset,
+						   gboolean match_line, gboolean no_duplicates);
 
 GList* ags_automation_get_current(AgsAutomation *automation);
 

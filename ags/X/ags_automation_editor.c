@@ -189,7 +189,8 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   GtkAdjustment *adjustment;
   
-  automation_editor->flags = 0;
+  automation_editor->flags = (AGS_AUTOMATION_EDITOR_PASTE_MATCH_LINE |
+			      AGS_AUTOMATION_EDITOR_PASTE_NO_DUPLICATES);
 
   automation_editor->version = AGS_AUTOMATION_EDITOR_DEFAULT_VERSION;
   automation_editor->build_id = AGS_AUTOMATION_EDITOR_DEFAULT_BUILD_ID;
@@ -1631,7 +1632,11 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
     GList *list_automation;
 
     guint first_x;
+    gboolean match_line, no_duplicates;
 
+    match_line = ((AGS_AUTOMATION_EDITOR_PASTE_MATCH_LINE & (automation_editor->flags)) != 0) ? TRUE: FALSE;
+    no_duplicates = ((AGS_AUTOMATION_EDITOR_PASTE_NO_DUPLICATES & (automation_editor->flags)) != 0) ? TRUE: FALSE;
+    
     timestamp = ags_timestamp_new();
 
     timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
@@ -1710,10 +1715,11 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 
 		    guint x_boundary;
 	  
-		    ags_automation_insert_from_clipboard(automation,
-							 automation_node,
-							 TRUE, position_x,
-							 TRUE, position_y);
+		    ags_automation_insert_from_clipboard_extended(automation,
+								  automation_node,
+								  TRUE, position_x,
+								  TRUE, position_y,
+								  match_line, no_duplicates);
 
 		    /* get boundaries */
 		    child = automation_node->children;

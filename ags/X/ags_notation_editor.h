@@ -51,8 +51,10 @@ typedef struct _AgsNotationEditor AgsNotationEditor;
 typedef struct _AgsNotationEditorClass AgsNotationEditorClass;
 
 typedef enum{
-  AGS_NOTATION_EDITOR_CONNECTED        = 1,
-  AGS_NOTATION_EDITOR_PATTERN_MODE     = 1 <<  1,
+  AGS_NOTATION_EDITOR_CONNECTED                 = 1,
+  AGS_NOTATION_EDITOR_PATTERN_MODE              = 1 <<  1,
+  AGS_NOTATION_EDITOR_PASTE_MATCH_CHANNEL       = 1 <<  2,
+  AGS_NOTATION_EDITOR_PASTE_NO_DUPLICATES       = 1 <<  3,
 }AgsNotationEditorFlags;
 
 struct _AgsNotationEditor
