@@ -212,6 +212,9 @@ void ags_channel_recall_id_set(AgsChannel *output, AgsRecallID *recall_id, gbool
 			       guint mode, ...);
 
 GList* ags_channel_find_port(AgsChannel *channel);
+GObject* ags_channel_find_port_by_specifier_and_scope(AgsChannel *channel,
+						      gchar *specifier,
+						      gboolean play);
 
 void ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 			  GError **error);

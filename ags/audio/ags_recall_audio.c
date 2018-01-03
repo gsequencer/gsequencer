@@ -19,9 +19,7 @@
 
 #include <ags/audio/ags_recall_audio.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_packable.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_automation.h>
 #include <ags/audio/ags_recall_container.h>
@@ -439,10 +437,24 @@ ags_recall_audio_load_automation(AgsRecall *recall,
 			       (GObject *) current);
 
       //TODO:JK: property
-      AGS_PORT(automation_port->data)->automation = (GObject *) current;
+      AGS_PORT(automation_port->data)->automation = ags_automation_add(AGS_PORT(automation_port->data)->automation,
+								       current);
+    }else{
+      //TODO:JK: property
+      if(g_list_find(AGS_PORT(automation_port->data)->automation, automation->data) == NULL){
+	AGS_PORT(automation_port->data)->automation = ags_automation_add(AGS_PORT(automation_port->data)->automation,
+									 current);
+      }
     }
     
     automation_port = automation_port->next;
+  }
+
+  if(recall->automation_port == NULL){
+    recall->automation_port = automation_port;
+  }else{
+    recall->automation_port = g_list_concat(recall->automation_port,
+					    automation_port);
   }
 }
 
@@ -461,11 +473,15 @@ ags_recall_audio_unload_automation(AgsRecall *recall)
   automation_port = recall->automation_port;
   
   while(automation_port != NULL){
-    if((automation = ags_automation_find_port(audio->automation,
-					      (GObject *) automation_port->data)) != NULL){
+    automation = audio->automation;
+    
+    while((automation = ags_automation_find_port(automation,
+						 (GObject *) automation_port->data)) != NULL){
       current = automation->data;
       ags_audio_remove_automation(audio,
 				  (GObject *) current);
+
+      automation = automation->next;
     }
     
     automation_port = automation_port->next;
@@ -480,8 +496,9 @@ ags_recall_audio_automate(AgsRecall *recall)
 {
   GObject *soundcard;
   AgsAudio *audio;
+  AgsAutomation *current;
 
-  AgsAutomation *automation;
+  GList *automation;
   GList *port;
 
   gdouble delay;
@@ -526,19 +543,34 @@ ags_recall_audio_automate(AgsRecall *recall)
   while(port != NULL){
     automation = (AgsAutomation *) AGS_PORT(port->data)->automation;
 
-    if(automation != NULL &&
-       (AGS_AUTOMATION_BYPASS & (automation->flags)) == 0){
-      GValue value = {0,};
+    while(automation != NULL){
+      current = automation->data;
 
-      ret_x = ags_automation_get_value(automation,
-				       floor(x), ceil(x + step),
-				       return_prev_on_failure,
-				       &value);
-
-      if(ret_x != G_MAXUINT){
-	ags_port_safe_write(port->data,
-			    &value);
+      if(current->timestamp->timer.ags_offset.offset + AGS_AUTOMATION_DEFAULT_OFFSET < x){
+	automation = automation->next;
+	
+	continue;
       }
+      
+      if((AGS_AUTOMATION_BYPASS & (current->flags)) == 0){
+	GValue value = {0,};
+	
+	ret_x = ags_automation_get_value(current,
+					 floor(x), ceil(x + step),
+					 return_prev_on_failure,
+					 &value);
+
+	if(ret_x != G_MAXUINT){
+	  ags_port_safe_write(port->data,
+			      &value);
+	}
+      }
+
+      if(current->timestamp->timer.ags_offset.offset > ceil(x + step)){
+	break;
+      }
+
+      automation = automation->next;
     }
 
     port = port->next;

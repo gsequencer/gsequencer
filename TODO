@@ -1,3 +1,8 @@
+* TODO:JK: implemented AgsWaveWindow, AgsWaveEditor, AgsWaveToolbar and AgsWaveEdit
+* TODO:JK: implemented AgsSelectAudioData and AgsPositionWaveCursor
+* TODO:JK: implemented AgsLevel
+* TODO:JK: implemented ags-capture recall
+* TODO:JK: implemented AgsAudiorec
 * TODO:JK: implemented AgsFunction
 * TODO:JK: implemented AgsServer, AgsRegistry and AgsServerStatus
 * TODO:JK: implemented AgsXmlAuthentication, AgsXmlCertificate and AgsXmlPasswordStore

@@ -1241,35 +1241,101 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
 
     while(notebook == NULL ||
 	  (i = ags_notebook_next_active_tab(notebook,
-					    i)) != -1){
+					    i)) != -1){      
+      AgsChannel *channel;
+      AgsPort *play_port, *recall_port;
       AgsAcceleration *new_acceleration;
-      
-      pthread_mutex_lock(audio_mutex);
-      
-      list_automation = machine->audio->automation;
-      list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
-								    automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
-								    timestamp);
 
-      pthread_mutex_unlock(audio_mutex);
-
-      if(list_automation != NULL){
-	pthread_mutex_lock(audio_mutex);
+      GList *list;
+      
+      play_port = NULL;
+      recall_port = NULL;
 	
-	automation = list_automation->data;
+      if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
+	channel = ags_channel_nth(machine->output,
+				  i);
 
-	pthread_mutex_unlock(audio_mutex);
+	play_port = ags_channel_find_port_by_specifier_and_scope(channel,
+								 automation_editor->focused_automation_edit->control_name, TRUE);
+
+	recall_port = ags_channel_find_port_by_specifier_and_scope(channel,
+								   automation_editor->focused_automation_edit->control_name, FALSE);
+      }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
+	channel = ags_channel_nth(machine->input,
+				  i);
+
+	play_port = ags_channel_find_port_by_specifier_and_scope(channel,
+								 automation_editor->focused_automation_edit->control_name, TRUE);
+
+	recall_port = ags_channel_find_port_by_specifier_and_scope(channel,
+								   automation_editor->focused_automation_edit->control_name, FALSE);
       }else{
-	//NOTE:JK: doesn't support segmentation, yet
-	automation = NULL;
+	play_port = ags_audio_find_port_by_specifier_and_scope(machine->audio,
+							       automation_editor->focused_automation_edit->control_name, TRUE);
+
+	recall_port = ags_audio_find_port_by_specifier_and_scope(machine->audio,
+								 automation_editor->focused_automation_edit->control_name, FALSE);
       }
 
       pthread_mutex_lock(audio_mutex);
-      
-      new_acceleration = ags_acceleration_duplicate(acceleration);
-      ags_automation_add_acceleration(automation,
-				      new_acceleration,
-				      FALSE);
+
+      /* play port */
+      if(play_port != NULL){
+	list = ags_automation_find_near_timestamp(play_port->automation, i,
+						  timestamp);
+	
+	if(list == NULL){
+	  automation = ags_automation_new(machine->audio,
+					  i,
+					  automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name);
+	  g_object_set(automation,
+		       "port", play_port,
+		       NULL);
+
+	  automation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+
+	  machine->audio->automation = ags_automation_add(machine->audio->automation,
+							  automation);
+	  play_port->automation = ags_automation_add(play_port->automation,
+						     automation);	  
+	}else{
+	  automation = list->data;
+	}
+	
+	new_acceleration = ags_acceleration_duplicate(acceleration);
+	ags_automation_add_acceleration(automation,
+					new_acceleration,
+					FALSE);
+      }
+
+      /* recall port */
+      if(recall_port != NULL){
+	list = ags_automation_find_near_timestamp(play_port->automation, i,
+						  timestamp);
+	
+	if(list == NULL){
+	  automation = ags_automation_new(machine->audio,
+					  i,
+					  automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name);
+	  g_object_set(automation,
+		       "port", recall_port,
+		       NULL);
+	  
+	  automation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+
+	  machine->audio->automation = ags_automation_add(machine->audio->automation,
+							  automation);
+	  play_port->automation = ags_automation_add(play_port->automation,
+						     automation);
+	}else{
+	  automation = list->data;
+	}
+	
+	new_acceleration = ags_acceleration_duplicate(acceleration);
+	ags_automation_add_acceleration(automation,
+					new_acceleration,
+					FALSE);
+      }      
 
       pthread_mutex_unlock(audio_mutex);
 

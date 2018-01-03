@@ -5363,7 +5363,7 @@ ags_channel_find_port(AgsChannel *channel)
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
-  if(channel == NULL){
+  if(!AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
   
@@ -5424,6 +5424,76 @@ ags_channel_find_port(AgsChannel *channel)
   list = g_list_reverse(list);
    
   return(list);
+}
+
+/**
+ * ags_channel_find_port_by_specifier_and_scope:
+ * @channel: an #AgsChannel
+ * @specifier: the port's name
+ * @scope: either %TRUE for play or %FALSE for recall
+ *
+ * Retrieve specified port of #AgsChannel
+ *
+ * Returns: an #AgsPort if found otherwise %NULL
+ *
+ * Since: 1.3.0
+ */
+GObject*
+ags_channel_find_port_by_specifier_and_scope(AgsChannel *channel,
+					     gchar *specifier,
+					     gboolean play)
+{
+  AgsMutexManager *mutex_manager;
+
+  GList *recall, *port;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+  
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+  
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) channel);
+  
+  pthread_mutex_unlock(application_mutex);
+ 
+  /* collect port of playing recall */
+  pthread_mutex_lock(mutex);
+
+  if(play){
+    recall = channel->play;
+  }else{
+    recall = channel->recall;
+  }
+
+  while(recall != NULL){
+    port = AGS_RECALL(recall->data)->port;
+
+    while(port != NULL){
+      if(!g_strcmp0(AGS_PORT(port->data)->specifier,
+		    specifier)){
+	pthread_mutex_unlock(mutex);
+
+	return(port->data);
+      }
+
+      port = port->next;
+    }
+    
+    recall = recall->next;
+  }
+
+  pthread_mutex_unlock(mutex);
+
+  return(NULL);
 }
 
 /**

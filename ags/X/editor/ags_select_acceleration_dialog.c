@@ -611,7 +611,16 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 										specifier[i],
 										channel_type,
 										line)) != NULL){
+	if(AGS_AUTOMATION(list_automation->data)->timestamp->timer.ags_offset.offset + AGS_AUTOMATION_DEFAULT_OFFSET < x0){
+	  list_automation = list_automation->next;
+	  
+	  continue;
+	}
 
+	if(AGS_AUTOMATION(list_automation->data)->timestamp->timer.ags_offset.offset > x1){
+	  break;
+	}
+	
 	upper = AGS_AUTOMATION(list_automation->data)->upper;
 	lower = AGS_AUTOMATION(list_automation->data)->lower;
 	

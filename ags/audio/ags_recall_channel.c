@@ -490,10 +490,14 @@ ags_recall_channel_load_automation(AgsRecall *recall,
 			       (GObject *) current);
 
       //TODO:JK: property
-      AGS_PORT(automation_port->data)->automation = (GObject *) current;
+      AGS_PORT(automation_port->data)->automation = ags_automation_add(AGS_PORT(automation_port->data)->automation,
+								       current);
     }else{
       //TODO:JK: property
-      AGS_PORT(automation_port->data)->automation = (GObject *) automation->data;
+      if(g_list_find(AGS_PORT(automation_port->data)->automation, automation->data) == NULL){
+	AGS_PORT(automation_port->data)->automation = ags_automation_add(AGS_PORT(automation_port->data)->automation,
+									 current);
+      }
     }
     
     automation_port = automation_port->next;
@@ -524,12 +528,13 @@ ags_recall_channel_unload_automation(AgsRecall *recall)
   automation_port = recall->automation_port;
     
   while(automation_port != NULL){
-    if((automation = ags_automation_find_port(audio->automation,
-					      automation_port->data)) != NULL){
+    while((automation = ags_automation_find_port(audio->automation,
+						 automation_port->data)) != NULL){
       current = automation->data;
-      
       ags_audio_remove_automation(audio,
 				  (GObject *) current);
+
+      automation = automation->next;
     }
     
     automation_port = automation_port->next;
@@ -544,8 +549,9 @@ ags_recall_channel_automate(AgsRecall *recall)
 {
   GObject *soundcard;
   AgsAudio *audio;
-
-  AgsAutomation *automation;
+  AgsAutomation *current;
+  
+  GList *automation;
   GList *port;
 
   gdouble delay;
@@ -590,27 +596,34 @@ ags_recall_channel_automate(AgsRecall *recall)
   while(port != NULL){
     automation = (AgsAutomation *) AGS_PORT(port->data)->automation;
     
-    if(automation != NULL &&
-       (AGS_AUTOMATION_BYPASS & (automation->flags)) == 0){
-      GValue value = {0,};
+    while(automation != NULL){
+      current = automation->data;
 
-#ifdef AGS_DEBUG
-      g_message("auto do");
-#endif
-      
-      ret_x = ags_automation_get_value(automation,
-				       floor(x), ceil(x + step),
-				       return_prev_on_failure,
-				       &value);
-
-      if(ret_x != G_MAXUINT){
-#ifdef AGS_DEBUG
-	g_message("automate x -> %d", ret_x);
-#endif
+      if(current->timestamp->timer.ags_offset.offset + AGS_AUTOMATION_DEFAULT_OFFSET < x){
+	automation = automation->next;
 	
-	ags_port_safe_write(port->data,
-			    &value);
+	continue;
       }
+      
+      if((AGS_AUTOMATION_BYPASS & (current->flags)) == 0){
+	GValue value = {0,};
+	
+	ret_x = ags_automation_get_value(current,
+					 floor(x), ceil(x + step),
+					 return_prev_on_failure,
+					 &value);
+
+	if(ret_x != G_MAXUINT){
+	  ags_port_safe_write(port->data,
+			      &value);
+	}
+      }
+
+      if(current->timestamp->timer.ags_offset.offset > ceil(x + step)){
+	break;
+      }
+
+      automation = automation->next;
     }
 
     port = port->next;

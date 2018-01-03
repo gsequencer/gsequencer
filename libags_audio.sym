@@ -424,6 +424,7 @@ ags_channel_cancel
 ags_channel_remove
 ags_channel_recall_id_set
 ags_channel_find_port
+ags_channel_find_port_by_specifier_and_scope
 ags_channel_set_link
 ags_channel_set_recycling
 ags_channel_recursive_reset_recycling_context
@@ -872,6 +873,7 @@ ags_audio_done
 ags_audio_cancel
 ags_audio_remove
 ags_audio_find_port
+ags_audio_find_port_by_specifier_and_scope
 ags_audio_open_files
 ags_audio_recursive_set_property
 ags_audio_recursive_play_init

@@ -236,6 +236,9 @@ void ags_audio_remove(AgsAudio *audio,
 		      AgsRecallID *recall_id);
 
 GList* ags_audio_find_port(AgsAudio *audio);
+GObject* ags_audio_find_port_by_specifier_and_scope(AgsAudio *audio,
+						    gchar *specifier,
+						    gboolean play);
 
 void ags_audio_open_files(AgsAudio *audio,
 			  GSList *filenames,

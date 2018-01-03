@@ -5678,6 +5678,76 @@ ags_audio_find_port(AgsAudio *audio)
 }
 
 /**
+ * ags_audio_find_port_by_specifier_and_scope:
+ * @audio: an #AgsAudio
+ * @specifier: the port's name
+ * @scope: either %TRUE for play or %FALSE for recall
+ *
+ * Retrieve specified port of #AgsAudio
+ *
+ * Returns: an #AgsPort if found otherwise %NULL
+ *
+ * Since: 1.3.0
+ */
+GObject*
+ags_audio_find_port_by_specifier_and_scope(AgsAudio *audio,
+					   gchar *specifier,
+					   gboolean play)
+{
+  AgsMutexManager *mutex_manager;
+
+  GList *recall, *port;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+  
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+  
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+ 
+  /* collect port of playing recall */
+  pthread_mutex_lock(mutex);
+
+  if(play){
+    recall = audio->play;
+  }else{
+    recall = audio->recall;
+  }
+
+  while(recall != NULL){
+    port = AGS_RECALL(recall->data)->port;
+
+    while(port != NULL){
+      if(!g_strcmp0(AGS_PORT(port->data)->specifier,
+		    specifier)){
+	pthread_mutex_unlock(mutex);
+
+	return(port->data);
+      }
+
+      port = port->next;
+    }
+    
+    recall = recall->next;
+  }
+
+  pthread_mutex_unlock(mutex);
+
+  return(NULL);
+}
+
+/**
  * ags_audio_open_files:
  * @audio: the #AgsAudio
  * @filenames: the files to open
