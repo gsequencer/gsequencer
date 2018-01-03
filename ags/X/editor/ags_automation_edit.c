@@ -1865,9 +1865,9 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   x = ((double) acceleration_a->x) - viewport_x;
 
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    y = ((double) exp(acceleration_a->y) / c_range) * GTK_WIDGET(automation_edit->drawing_area)->allocation.height - viewport_y;
+    y = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - ((double) exp(acceleration_a->y) / c_range) * GTK_WIDGET(automation_edit->drawing_area)->allocation.height - viewport_y;
   }else{
-    y = ((double) acceleration_a->y / c_range) * GTK_WIDGET(automation_edit->drawing_area)->allocation.height - viewport_y;
+    y = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - ((double) acceleration_a->y / c_range) * GTK_WIDGET(automation_edit->drawing_area)->allocation.height - viewport_y;
   }
   
   if(acceleration_b != NULL){

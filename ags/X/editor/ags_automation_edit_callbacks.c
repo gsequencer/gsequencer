@@ -83,9 +83,9 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
     automation_edit->cursor_position_x = (guint) zoom_factor * ((event->x + GTK_RANGE(automation_edit->hscrollbar)->adjustment->value) / automation_edit->control_width);
     
     if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-      automation_edit->cursor_position_y = log((event->y / g_range) * c_range);
+      automation_edit->cursor_position_y = log(((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
     }else{
-      automation_edit->cursor_position_y = ((event->y / g_range) * c_range);
+      automation_edit->cursor_position_y = (((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
     }
 
     /* queue draw */
@@ -117,9 +117,9 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
     acceleration->x = (guint) zoom_factor * ((event->x + GTK_RANGE(automation_edit->hscrollbar)->adjustment->value));
     
     if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-      acceleration->y = log((event->y / g_range) * c_range);
+      acceleration->y = log(((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
     }else{
-      acceleration->y = ((event->y / g_range) * c_range);
+      acceleration->y = (((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
     }
     
     /* current acceleration */
@@ -212,9 +212,9 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
     automation_edit->cursor_position_x = (guint) zoom_factor * ((event->x + GTK_RANGE(automation_edit->hscrollbar)->adjustment->value) / automation_edit->control_width);
     
     if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-      automation_edit->cursor_position_y = log((event->y / g_range) * c_range);
+      automation_edit->cursor_position_y = log(((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
     }else{
-      automation_edit->cursor_position_y = ((event->y / g_range) * c_range);
+      automation_edit->cursor_position_y = (((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
     }
     
     /* queue draw */
@@ -251,9 +251,9 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
     acceleration->x = (guint) zoom_factor * ((event->x + GTK_RANGE(automation_edit->hscrollbar)->adjustment->value));
     
     if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-      acceleration->y = log((event->y / g_range) * c_range);
+      acceleration->y = log(((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
     }else{
-      acceleration->y = ((event->y / g_range) * c_range);
+      acceleration->y = (((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
     }
     
 #ifdef AGS_DEBUG
@@ -291,9 +291,9 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
     x = (guint) zoom_factor * ((event->x + GTK_RANGE(automation_edit->hscrollbar)->adjustment->value));
     
     if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-      y = log((event->y / g_range) * c_range);
+      y = log(((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
     }else{
-      y = ((event->y / g_range) * c_range);
+      y = (((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
     }
     
     /* delete acceleration */
@@ -324,17 +324,17 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
     x0 = (guint) zoom_factor * automation_edit->selection_x0;
 
     if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-      y0 = log(automation_edit->selection_y0 / g_range) * c_range;
+      y0 = log((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - automation_edit->selection_y0) / g_range) * c_range;
     }else{
-      y0 = ((gdouble) automation_edit->selection_y0 / g_range) * c_range;
+      y0 = ((gdouble) (GTK_WIDGET(automation_edit->drawing_area)->allocation.height - automation_edit->selection_y0) / g_range) * c_range;
     }
   
     x1 = (guint) zoom_factor * (event->x + GTK_RANGE(automation_edit->hscrollbar)->adjustment->value);
     
     if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-      y1 = log((event->y + GTK_RANGE(automation_edit->vscrollbar)->adjustment->value) / g_range) * c_range;
+      y1 = log(((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) + GTK_RANGE(automation_edit->vscrollbar)->adjustment->value) / g_range) * c_range;
     }else{
-      y1 = ((event->y + GTK_RANGE(automation_edit->vscrollbar)->adjustment->value) / g_range) * c_range;
+      y1 = (((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) + GTK_RANGE(automation_edit->vscrollbar)->adjustment->value) / g_range) * c_range;
     }
     
     /* select region */
@@ -402,9 +402,9 @@ ags_automation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEvent
     automation_edit->cursor_position_x = (guint) zoom_factor * ((event->x + GTK_RANGE(automation_edit->hscrollbar)->adjustment->value));
 
     if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-      automation_edit->cursor_position_y = log((event->y / g_range) * c_range);
+      automation_edit->cursor_position_y = log(((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
     }else{
-      automation_edit->cursor_position_y = ((event->y / g_range) * c_range);
+      automation_edit->cursor_position_y = (((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
     }
 
 #ifdef AGS_DEBUG
@@ -444,9 +444,9 @@ ags_automation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEvent
     acceleration->x = (guint) zoom_factor * ((event->x + GTK_RANGE(automation_edit->hscrollbar)->adjustment->value));
     
     if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-      acceleration->y = log((event->y / g_range) * c_range);
+      acceleration->y = log(((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
     }else{
-      acceleration->y = ((event->y / g_range) * c_range);
+      acceleration->y = (((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
     }
     
 #ifdef AGS_DEBUG

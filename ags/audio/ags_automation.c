@@ -1192,7 +1192,8 @@ ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
   
   while(list != NULL){
     if(AGS_ACCELERATION(list->data)->x == x &&
-       AGS_ACCELERATION(list->data)->y == y){
+       (AGS_ACCELERATION(list->data)->y - ((automation->upper - automation->lower) / AGS_AUTOMATION_MAXIMUM_STEPS) <= y &&
+	AGS_ACCELERATION(list->data)->y + ((automation->upper - automation->lower) / AGS_AUTOMATION_MAXIMUM_STEPS) >= y)){
       current = list;
       retval = TRUE;
       break;

@@ -1252,7 +1252,7 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
       recall_port = NULL;
 	
       if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
-	channel = ags_channel_nth(machine->output,
+	channel = ags_channel_nth(machine->audio->output,
 				  i);
 
 	play_port = ags_channel_find_port_by_specifier_and_scope(channel,
@@ -1261,7 +1261,7 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
 	recall_port = ags_channel_find_port_by_specifier_and_scope(channel,
 								   automation_editor->focused_automation_edit->control_name, FALSE);
       }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
-	channel = ags_channel_nth(machine->input,
+	channel = ags_channel_nth(machine->audio->input,
 				  i);
 
 	play_port = ags_channel_find_port_by_specifier_and_scope(channel,
@@ -1310,7 +1310,7 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
 
       /* recall port */
       if(recall_port != NULL){
-	list = ags_automation_find_near_timestamp(play_port->automation, i,
+	list = ags_automation_find_near_timestamp(recall_port->automation, i,
 						  timestamp);
 	
 	if(list == NULL){
@@ -1325,8 +1325,8 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
 
 	  machine->audio->automation = ags_automation_add(machine->audio->automation,
 							  automation);
-	  play_port->automation = ags_automation_add(play_port->automation,
-						     automation);
+	  recall_port->automation = ags_automation_add(recall_port->automation,
+						       automation);
 	}else{
 	  automation = list->data;
 	}
@@ -1430,47 +1430,54 @@ ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor
       AgsAcceleration *new_acceleration;
       
       list_automation = machine->audio->automation;
-      list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
-								    automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
-								    timestamp);
       
-      if(list_automation != NULL){
-	automation = list_automation->data;
-      }else{
-	if(notebook == NULL){
-	  break;
-	}
-	
-	i++;
-	
-	continue;
-      }
-
-      success = FALSE;
+      while((list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
+									   automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
+									   timestamp)) != NULL){
       
-      j = 0;
-      j_step = 1;
-      j_stop = 4;
-
-      while(!success &&
-	    j_step <= AGS_AUTOMATION_EDIT_DEFAULT_SCAN_WIDTH){
-	scan_x = (-1 * j_step + floor(j / (2 * j_step)));
-
-	if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_editor->focused_automation_edit->flags)) != 0){
-	  scan_y = log((-1 * j_step + floor(j % (2 * j_step))) / g_range) * c_range;	
+	if(list_automation != NULL){
+	  automation = list_automation->data;
 	}else{
-	  scan_y = ((-1 * j_step + floor(j % (2 * j_step))) / g_range) * c_range;	
+	  if(notebook == NULL){
+	    break;
+	  }
+
+	  list_automation = list_automation->next;
+	  
+	  i++;
+	
+	  continue;
 	}
+
+	success = FALSE;
+      
+	j = 0;
+	j_step = 1;
+	j_stop = 4;
+
+	while(!success &&
+	      exp2(j_step) <= AGS_AUTOMATION_EDIT_DEFAULT_SCAN_WIDTH){
+	  scan_x = (-1 * j_step + floor(j / (2 * j_step)));
+
+	  if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_editor->focused_automation_edit->flags)) != 0){
+	    scan_y = log((-1 * j_step + floor(j % (2 * j_step))) / g_range) * c_range;	
+	  }else{
+	    scan_y = ((-1 * j_step + floor(j % (2 * j_step))) / g_range) * c_range;	
+	  }
+
+	  success = ags_automation_remove_acceleration_at_position(automation,
+								   x - scan_x, y - scan_y);
 	
-	success = ags_automation_remove_acceleration_at_position(automation,
-								 x + scan_x, y + scan_y);
+	  j++;
 	
-	j++;
-	
-	if(j >= j_stop){
-	  j_step++;
-	  j_stop = exp2(j_step + 1);
+	  if(j >= j_stop){
+	    j_step++;
+	    j_stop = exp2(j_step + 1);
+	  }
 	}
+
+	
+	list_automation = list_automation->next;
       }
       
       if(notebook == NULL){
@@ -1569,22 +1576,24 @@ ags_automation_editor_select_region(AgsAutomationEditor *automation_editor,
       list_automation = machine->audio->automation;
       
       timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(x0 / AGS_AUTOMATION_DEFAULT_OFFSET);
-      
-      while((list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
-									   automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
-									   timestamp)) != NULL &&
-	    timestamp->timer.ags_offset.offset < (AGS_AUTOMATION_DEFAULT_OFFSET * floor(x1 / AGS_AUTOMATION_DEFAULT_OFFSET)) + AGS_AUTOMATION_DEFAULT_OFFSET){
-	ags_automation_add_region_to_selection(list_automation->data,
-					       x0, y0,
-					       x1, y1,
-					       TRUE);
-	
-	/* iterate */
-	timestamp->timer.ags_offset.offset += AGS_AUTOMATION_DEFAULT_OFFSET;
-	
-	list_automation = list_automation->next;
-      }
 
+      while(timestamp->timer.ags_offset.offset < (AGS_AUTOMATION_DEFAULT_OFFSET * floor(x1 / AGS_AUTOMATION_DEFAULT_OFFSET)) + AGS_AUTOMATION_DEFAULT_OFFSET){
+	while((list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
+									     automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
+									     timestamp)) != NULL){
+	  ags_automation_add_region_to_selection(list_automation->data,
+						 x0, y0,
+						 x1, y1,
+						 TRUE);
+	      
+	  /* iterate */
+	      
+	  list_automation = list_automation->next;
+	}
+
+	timestamp->timer.ags_offset.offset += AGS_AUTOMATION_DEFAULT_OFFSET;
+      }
+      
       if(notebook == NULL){
 	break;
       }

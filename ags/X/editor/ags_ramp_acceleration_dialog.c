@@ -28,6 +28,8 @@
 #include <ags/X/ags_automation_editor.h>
 #include <ags/X/ags_machine.h>
 
+#include <ags/X/editor/ags_automation_edit.h>
+
 #include <ags/i18n.h>
 
 void ags_ramp_acceleration_dialog_class_init(AgsRampAccelerationDialogClass *ramp_acceleration_dialog);
@@ -604,10 +606,10 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
   audio = machine->audio;
 
   /* get some values */
-  x0 = gtk_spin_button_get_value_as_int(ramp_acceleration_dialog->ramp_x0);
+  x0 = AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH * gtk_spin_button_get_value_as_int(ramp_acceleration_dialog->ramp_x0);
   y0 = gtk_spin_button_get_value(ramp_acceleration_dialog->ramp_y0);
 
-  x1 = gtk_spin_button_get_value_as_int(ramp_acceleration_dialog->ramp_x1);
+  x1 = AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH * gtk_spin_button_get_value_as_int(ramp_acceleration_dialog->ramp_x1);
   y1 = gtk_spin_button_get_value(ramp_acceleration_dialog->ramp_y1);
   
   step_count = gtk_spin_button_get_value_as_int(ramp_acceleration_dialog->ramp_step_count);
@@ -786,7 +788,7 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	tmp -= (x0 % (guint) AGS_AUTOMATION_DEFAULT_OFFSET);
       }
 
-      match_count += (guint) ceil(tmp / (guint) AGS_AUTOMATION_DEFAULT_OFFSET);
+      match_count += (guint) ceil((gdouble) tmp / AGS_AUTOMATION_DEFAULT_OFFSET);
     
       success = FALSE;
 
@@ -830,38 +832,46 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	if(!success){
 	  i = 0;
 
-	  if(AGS_AUTOMATION_DEFAULT_OFFSET - tmp > x1){
+	  if(floor(x0 / (guint) AGS_AUTOMATION_DEFAULT_OFFSET) == floor(x1 / (guint) AGS_AUTOMATION_DEFAULT_OFFSET)){
 	    i_stop = step_count;
 
 	    tmp += (x1 - x0);
 	  }else{
 	    i_stop = tmp / (x1 - x0) * step_count;
 
-	    tmp += AGS_AUTOMATION_DEFAULT_OFFSET;
+	    if(tmp + AGS_AUTOMATION_DEFAULT_OFFSET < x1 - x0){
+	      tmp += AGS_AUTOMATION_DEFAULT_OFFSET;
+	    }else{
+	      tmp = x1 - x0;
+	    }
 	  }
 	
 	  success = TRUE;
 	}else{
 	  i_stop = (x1 - tmp) / (x1 - x0) * step_count;
 	
-	  tmp += AGS_AUTOMATION_DEFAULT_OFFSET;
+	  if(tmp + AGS_AUTOMATION_DEFAULT_OFFSET < x1 - x0){
+	    tmp += AGS_AUTOMATION_DEFAULT_OFFSET;
+	  }else{
+	    tmp = x1 - x0;
+	  }
 	}
 	
 	for(; i < step_count && i < i_stop; i++){
 	  acceleration = ags_acceleration_new();
 	  acceleration->x = ((gdouble) x0 + (gdouble) ((gdouble) (x1 - x0) * (gdouble) ((gdouble) (i) / ((gdouble) step_count))));
-	  acceleration->y = ((gdouble) y0 + ((gdouble) (y1 - y0) * (gdouble) ((gdouble) (i) / ((gdouble) step_count))));
+	  acceleration->y = ((gdouble) y0 + ((gdouble) (y1 - y0) * (gdouble) ((gdouble) (i + 1) / ((gdouble) step_count))));
 
-#ifdef AGS_DEBUG
+	  //#ifdef AGS_DEBUG
 	  g_message("line %d - %d %f", line, acceleration->x, acceleration->y);
-#endif
+	  //#endif
 	
 	  ags_automation_add_acceleration(current,
 					  acceleration,
 					  FALSE);
 	
 	}
-
+	
 	timestamp->timer.ags_offset.offset += AGS_AUTOMATION_DEFAULT_OFFSET;
       }
     }
@@ -876,8 +886,8 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 
 	tmp -= (x0 % (guint) AGS_AUTOMATION_DEFAULT_OFFSET);
       }
-
-      match_count += (guint) ceil(tmp / (guint) AGS_AUTOMATION_DEFAULT_OFFSET);
+      
+      match_count += (guint) ceil((gdouble) tmp / AGS_AUTOMATION_DEFAULT_OFFSET);
       
       success = FALSE;
 
@@ -921,31 +931,39 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	if(!success){
 	  i = 0;
 
-	  if(AGS_AUTOMATION_DEFAULT_OFFSET - tmp > x1){
+	  if(floor(x0 / (guint) AGS_AUTOMATION_DEFAULT_OFFSET) == floor(x1 / (guint) AGS_AUTOMATION_DEFAULT_OFFSET)){
 	    i_stop = step_count;
 
 	    tmp += (x1 - x0);
 	  }else{
 	    i_stop = tmp / (x1 - x0) * step_count;
 
-	    tmp += AGS_AUTOMATION_DEFAULT_OFFSET;
+	    if(tmp + AGS_AUTOMATION_DEFAULT_OFFSET < x1 - x0){
+	      tmp += AGS_AUTOMATION_DEFAULT_OFFSET;
+	    }else{
+	      tmp = x1 - x0;
+	    }
 	  }
 	
 	  success = TRUE;
 	}else{
 	  i_stop = (x1 - tmp) / (x1 - x0) * step_count;
 	
-	  tmp += AGS_AUTOMATION_DEFAULT_OFFSET;
+	  if(tmp + AGS_AUTOMATION_DEFAULT_OFFSET < x1 - x0){
+	    tmp += AGS_AUTOMATION_DEFAULT_OFFSET;
+	  }else{
+	    tmp = x1 - x0;
+	  }
 	}
 	
 	for(; i < step_count && i < i_stop; i++){
 	  acceleration = ags_acceleration_new();
 	  acceleration->x = ((gdouble) x0 + (gdouble) ((gdouble) (x1 - x0) * (gdouble) ((gdouble) (i) / ((gdouble) step_count))));
-	  acceleration->y = ((gdouble) y0 + ((gdouble) (y1 - y0) * (gdouble) ((gdouble) (i) / ((gdouble) step_count))));
+	  acceleration->y = ((gdouble) y0 + ((gdouble) (y1 - y0) * (gdouble) ((gdouble) (i + 1) / ((gdouble) step_count))));
 
-#ifdef AGS_DEBUG
+	  //#ifdef AGS_DEBUG
 	  g_message("line %d - %d %f", line, acceleration->x, acceleration->y);
-#endif
+	  //#endif
 	
 	  ags_automation_add_acceleration(current,
 					  acceleration,
