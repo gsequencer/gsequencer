@@ -1388,8 +1388,13 @@ ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor
       while(!success &&
 	    j_step <= AGS_AUTOMATION_EDIT_DEFAULT_SCAN_WIDTH){
 	scan_x = (-1 * j_step + floor(j / (2 * j_step)));
-	scan_y = ((-1 * j_step + floor(j % (2 * j_step))) / g_range) * c_range;	
 
+	if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_editor->focused_automation_edit->flags)) != 0){
+	  scan_y = log((-1 * j_step + floor(j % (2 * j_step))) / g_range) * c_range;	
+	}else{
+	  scan_y = ((-1 * j_step + floor(j % (2 * j_step))) / g_range) * c_range;	
+	}
+	
 	success = ags_automation_remove_acceleration_at_position(automation,
 								 x + scan_x, y + scan_y);
 	
@@ -1473,7 +1478,7 @@ ags_automation_editor_select_region(AgsAutomationEditor *automation_editor,
     }
 
     if(y0 > y1){
-      guint tmp;
+      gdouble tmp;
 
       tmp = y0;
       

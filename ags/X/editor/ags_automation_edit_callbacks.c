@@ -303,23 +303,40 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
   
   void ags_automation_edit_drawing_area_button_release_select_acceleration()
   {
+    gdouble c_range;
+    guint g_range;
     double zoom_factor;
-    guint x0, x1, y0, y1;
+    guint x0, x1;
+    gdouble y0, y1;
     
+    if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
+      c_range = exp(automation_edit->upper) - exp(automation_edit->lower);
+    }else{
+      c_range = automation_edit->upper - automation_edit->lower;
+    }
+
+    g_range = GTK_RANGE(automation_edit->vscrollbar)->adjustment->upper + GTK_WIDGET(automation_edit->drawing_area)->allocation.height;
+
     /* zoom */
     zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom));
 
     /* region */
-    x0 = (guint) zoom_factor * (automation_edit->selection_x0 / automation_edit->control_width);
-    x0 = zoom_factor * floor(x0 / zoom_factor);
+    x0 = (guint) zoom_factor * automation_edit->selection_x0;
 
-    y0 = (guint) (automation_edit->selection_y0 / automation_edit->control_height);
+    if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
+      y0 = log(automation_edit->selection_y0 / g_range) * c_range;
+    }else{
+      y0 = ((gdouble) automation_edit->selection_y0 / g_range) * c_range;
+    }
+  
+    x1 = (guint) zoom_factor * (event->x + GTK_RANGE(automation_edit->hscrollbar)->adjustment->value);
     
-    x1 = (guint) zoom_factor * ((event->x + GTK_RANGE(automation_edit->hscrollbar)->adjustment->value) / automation_edit->control_width);
-    x1 = zoom_factor * floor(x1 / zoom_factor);
+    if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
+      y1 = log((event->y + GTK_RANGE(automation_edit->vscrollbar)->adjustment->value) / g_range) * c_range;
+    }else{
+      y1 = ((event->y + GTK_RANGE(automation_edit->vscrollbar)->adjustment->value) / g_range) * c_range;
+    }
     
-    y1 = (guint) ((event->y + GTK_RANGE(automation_edit->vscrollbar)->adjustment->value) / automation_edit->control_height);
-
     /* select region */
     ags_automation_editor_select_region(automation_editor,
 					x0, y0,

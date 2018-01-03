@@ -1316,6 +1316,7 @@ ags_automation_find_region(AgsAutomation *automation,
 			   gboolean use_selection_list)
 {
   AgsAcceleration *current;
+
   GList *acceleration;
   GList *region;
 
@@ -1340,9 +1341,7 @@ ags_automation_find_region(AgsAutomation *automation,
   region = NULL;
 
   while(acceleration != NULL && (current = AGS_ACCELERATION(acceleration->data))->x < x1){
-    if(acceleration->prev != NULL &&
-       acceleration->next != NULL &&
-       current->y >= y0 && current->y < y1){
+    if(current->y >= y0 && current->y < y1){
       region = g_list_prepend(region, current);
     }
 
@@ -1579,8 +1578,11 @@ xmlNode*
 ags_automation_copy_selection(AgsAutomation *automation)
 {
   AgsAcceleration *acceleration;
+
   xmlNode *automation_node, *current_acceleration;
+
   GList *selection;
+
   guint x_boundary;
   gdouble y_boundary;
   
@@ -1659,9 +1661,10 @@ ags_automation_cut_selection(AgsAutomation *automation)
       next_acceleration = acceleration->next;
       acceleration->prev->next = next_acceleration;
 
-      if(next_acceleration != NULL)
+      if(next_acceleration != NULL){
 	next_acceleration->prev = acceleration->prev;
-
+      }
+      
       g_list_free1(acceleration);
 
       acceleration = next_acceleration;
