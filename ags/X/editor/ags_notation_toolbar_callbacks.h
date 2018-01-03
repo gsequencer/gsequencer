@@ -36,6 +36,9 @@ void ags_notation_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsNotationToo
 void ags_notation_toolbar_paste_callback(GtkWidget *widget, AgsNotationToolbar *notation_toolbar);
 void ags_notation_toolbar_invert_callback(GtkWidget *widget, AgsNotationToolbar *notation_toolbar);
 
+void ags_notation_toolbar_match_audio_channel_callback(GtkWidget *widget, AgsNotationToolbar *notation_toolbar);
+void ags_notation_toolbar_no_duplicates_callback(GtkWidget *widget, AgsNotationToolbar *notation_toolbar);
+
 void ags_notation_toolbar_tool_popup_move_note_callback(GtkWidget *item, AgsNotationToolbar *notation_toolbar);
 void ags_notation_toolbar_tool_popup_crop_note_callback(GtkWidget *item, AgsNotationToolbar *notation_toolbar);
 void ags_notation_toolbar_tool_popup_select_note_callback(GtkWidget *item, AgsNotationToolbar *notation_toolbar);

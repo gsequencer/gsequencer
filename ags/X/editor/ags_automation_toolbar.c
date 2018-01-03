@@ -111,23 +111,20 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 {
   GtkMenuToolButton *menu_tool_button;
   GtkMenu *menu;
+  GtkMenuItem *item;
   GtkLabel *label;
   GtkCellRenderer *cell_renderer;
   
-  automation_toolbar->position = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-					      "image", gtk_image_new_from_stock(GTK_STOCK_JUMP_TO,
-										GTK_ICON_SIZE_LARGE_TOOLBAR),
-					      "relief", GTK_RELIEF_NONE,
+  automation_toolbar->position = g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
+					      "stock-id", GTK_STOCK_JUMP_TO,
 					      NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->position,
 			    "position cursor",
 			    NULL);
 
-  automation_toolbar->edit = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-					  "image", gtk_image_new_from_stock(GTK_STOCK_EDIT,
-									    GTK_ICON_SIZE_LARGE_TOOLBAR),
-					  "relief", GTK_RELIEF_NONE,
+  automation_toolbar->edit = g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
+					  "stock-id", GTK_STOCK_EDIT,
 					  NULL);
   automation_toolbar->selected_edit_mode = automation_toolbar->edit;
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
@@ -135,53 +132,65 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 			    "edit automation",
 			    NULL);
 
-  automation_toolbar->clear = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-					   "image", gtk_image_new_from_stock(GTK_STOCK_CLEAR,
-									     GTK_ICON_SIZE_LARGE_TOOLBAR),
-					   "relief", GTK_RELIEF_NONE,
+  automation_toolbar->clear = g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
+					   "stock-id", GTK_STOCK_CLEAR,
 					   NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->clear,
 			    "select automation",
 			    NULL);
   
-  automation_toolbar->select = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-					    "image", gtk_image_new_from_stock(GTK_STOCK_SELECT_ALL,
-									      GTK_ICON_SIZE_LARGE_TOOLBAR),
-					    "relief", GTK_RELIEF_NONE,
+  automation_toolbar->select = g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
+					    "label", i18n("Select"),
+					    "stock-id", GTK_STOCK_SELECT_ALL,
 					    NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->select,
 			    "select automation",
 			    NULL);
 
-  automation_toolbar->copy = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-							"image", gtk_image_new_from_stock(GTK_STOCK_COPY,
-											  GTK_ICON_SIZE_LARGE_TOOLBAR),
-							"relief", GTK_RELIEF_NONE,
+  automation_toolbar->copy = (GtkButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
+							"stock-id", GTK_STOCK_COPY,
 							NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->copy,
-			    "copy automation",
+			    i18n("copy automation"),
 			    NULL);
 
-  automation_toolbar->cut = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-						       "image", gtk_image_new_from_stock(GTK_STOCK_CUT,
-											 GTK_ICON_SIZE_LARGE_TOOLBAR),
-						       "relief", GTK_RELIEF_NONE,
+  automation_toolbar->cut = (GtkButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
+						       "stock-id", GTK_STOCK_CUT,
 						       NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->cut,
-			    "cut automation",
+			    i18n("cut automation"),
 			    NULL);
 
-  automation_toolbar->paste = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-							 "image", gtk_image_new_from_stock(GTK_STOCK_PASTE,
-											   GTK_ICON_SIZE_LARGE_TOOLBAR),
-							 "relief", GTK_RELIEF_NONE,
-							 NULL);
+  automation_toolbar->paste_tool = (GtkButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
+							      "stock-id", GTK_STOCK_PASTE,
+							      NULL);
+
+  menu = gtk_menu_new();
+
+  item = g_object_new(GTK_TYPE_CHECK_MENU_ITEM,
+		      "label", "match line",
+		      "active", TRUE,
+		      NULL);
+  gtk_menu_shell_append(menu,
+			item);
+  
+  item = g_object_new(GTK_TYPE_CHECK_MENU_ITEM,
+		      "label", "no duplicates",
+		      "active", TRUE,
+		      NULL);
+  gtk_menu_shell_append(menu,
+			item);
+
+  gtk_menu_tool_button_set_menu(automation_toolbar->paste_tool,
+				menu);
+  gtk_widget_show_all(menu);
+
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
-			    (GtkWidget *) automation_toolbar->paste,
+			    (GtkWidget *) automation_toolbar->paste_tool,
 			    "paste automation",
 			    NULL);
   
@@ -257,6 +266,8 @@ ags_automation_toolbar_connect(AgsConnectable *connectable)
   AgsAutomationEditor *automation_editor;
   AgsAutomationToolbar *automation_toolbar;
 
+  GList *list;
+  
   automation_toolbar = AGS_AUTOMATION_TOOLBAR(connectable);
 
   if((AGS_AUTOMATION_TOOLBAR_CONNECTED & (automation_toolbar->flags)) != 0){
@@ -306,9 +317,19 @@ ags_automation_toolbar_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) automation_toolbar->cut, "clicked",
 		   G_CALLBACK(ags_automation_toolbar_copy_or_cut_callback), (gpointer) automation_toolbar);
 
-  g_signal_connect((GObject *) automation_toolbar->paste, "clicked",
+  g_signal_connect((GObject *) automation_toolbar->paste_tool, "clicked",
 		   G_CALLBACK(ags_automation_toolbar_paste_callback), (gpointer) automation_toolbar);
 
+  list = gtk_container_get_children(gtk_menu_tool_button_get_menu(automation_toolbar->paste_tool));
+
+  g_signal_connect_after(list->data, "activate",
+			 G_CALLBACK(ags_automation_toolbar_match_line_callback), automation_toolbar);
+
+  g_signal_connect_after(list->next->data, "activate",
+			 G_CALLBACK(ags_automation_toolbar_no_duplicates_callback), automation_toolbar);
+
+  g_list_free(list);
+  
   /* additional tools */
   ags_connectable_connect(AGS_CONNECTABLE(automation_toolbar->select_acceleration));
 
@@ -330,6 +351,8 @@ ags_automation_toolbar_disconnect(AgsConnectable *connectable)
 {
   AgsAutomationToolbar *automation_toolbar;
 
+  GList *list;
+  
   automation_toolbar = AGS_AUTOMATION_TOOLBAR(connectable);
 
   if((AGS_AUTOMATION_TOOLBAR_CONNECTED & (automation_toolbar->flags)) == 0){
@@ -376,12 +399,28 @@ ags_automation_toolbar_disconnect(AgsConnectable *connectable)
 		      automation_toolbar,
 		      NULL);
 
-  g_object_disconnect(G_OBJECT(automation_toolbar->paste),
+  g_object_disconnect(G_OBJECT(automation_toolbar->paste_tool),
 		      "any_signal::clicked",
 		      G_CALLBACK(ags_automation_toolbar_paste_callback),
 		      automation_toolbar,
 		      NULL);
   
+  list = gtk_container_get_children(gtk_menu_tool_button_get_menu(automation_toolbar->paste_tool));
+
+  g_object_disconnect(G_OBJECT(list->data),
+		      "any_signal::activate",
+		      G_CALLBACK(ags_automation_toolbar_match_line_callback),
+		      automation_toolbar,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(list->next->data),
+		      "any_signal::activate",
+		      G_CALLBACK(ags_automation_toolbar_no_duplicates_callback),
+		      automation_toolbar,
+		      NULL);
+
+  g_list_free(list);
+
   /* additional tools */
   ags_connectable_disconnect(AGS_CONNECTABLE(automation_toolbar->select_acceleration));
 

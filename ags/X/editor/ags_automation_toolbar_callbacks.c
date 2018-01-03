@@ -43,15 +43,15 @@ ags_automation_toolbar_position_callback(GtkToggleButton *toggle_button, AgsAuto
 								      AGS_TYPE_AUTOMATION_EDITOR);
   
   if(toggle_button == automation_toolbar->selected_edit_mode){
-    if(!gtk_toggle_button_get_active(toggle_button)){
-      gtk_toggle_button_set_active(toggle_button, TRUE);
+    if(!gtk_toggle_tool_button_get_active(toggle_button)){
+      gtk_toggle_tool_button_set_active(toggle_button, TRUE);
     }
-  }else if(gtk_toggle_button_get_active(toggle_button)){
+  }else if(gtk_toggle_tool_button_get_active(toggle_button)){
     GtkToggleButton *old_selected_edit_mode;
     
     old_selected_edit_mode = automation_toolbar->selected_edit_mode;
     automation_toolbar->selected_edit_mode = toggle_button;
-    gtk_toggle_button_set_active(old_selected_edit_mode, FALSE);
+    gtk_toggle_tool_button_set_active(old_selected_edit_mode, FALSE);
   }
 }
 
@@ -59,15 +59,15 @@ void
 ags_automation_toolbar_edit_callback(GtkToggleButton *toggle_button, AgsAutomationToolbar *automation_toolbar)
 {
   if(toggle_button == automation_toolbar->selected_edit_mode){
-    if(!gtk_toggle_button_get_active(toggle_button)){
-      gtk_toggle_button_set_active(toggle_button, TRUE);
+    if(!gtk_toggle_tool_button_get_active(toggle_button)){
+      gtk_toggle_tool_button_set_active(toggle_button, TRUE);
     }
-  }else if(gtk_toggle_button_get_active(toggle_button)){
+  }else if(gtk_toggle_tool_button_get_active(toggle_button)){
     GtkToggleButton *old_selected_edit_mode;
     
     old_selected_edit_mode = automation_toolbar->selected_edit_mode;
     automation_toolbar->selected_edit_mode = toggle_button;
-    gtk_toggle_button_set_active(old_selected_edit_mode, FALSE);
+    gtk_toggle_tool_button_set_active(old_selected_edit_mode, FALSE);
   }
 }
 
@@ -75,15 +75,15 @@ void
 ags_automation_toolbar_clear_callback(GtkToggleButton *toggle_button, AgsAutomationToolbar *automation_toolbar)
 {
   if(toggle_button == automation_toolbar->selected_edit_mode){
-    if(!gtk_toggle_button_get_active(toggle_button)){
-      gtk_toggle_button_set_active(toggle_button, TRUE);
+    if(!gtk_toggle_tool_button_get_active(toggle_button)){
+      gtk_toggle_tool_button_set_active(toggle_button, TRUE);
     }
-  }else if(gtk_toggle_button_get_active(toggle_button)){
+  }else if(gtk_toggle_tool_button_get_active(toggle_button)){
     GtkToggleButton *old_selected_edit_mode;
     
     old_selected_edit_mode = automation_toolbar->selected_edit_mode;
     automation_toolbar->selected_edit_mode = toggle_button;
-    gtk_toggle_button_set_active(old_selected_edit_mode, FALSE);
+    gtk_toggle_tool_button_set_active(old_selected_edit_mode, FALSE);
   }
 }
 
@@ -91,15 +91,15 @@ void
 ags_automation_toolbar_select_callback(GtkToggleButton *toggle_button, AgsAutomationToolbar *automation_toolbar)
 {
   if(toggle_button == automation_toolbar->selected_edit_mode){
-    if(!gtk_toggle_button_get_active(toggle_button)){
-      gtk_toggle_button_set_active(toggle_button, TRUE);
+    if(!gtk_toggle_tool_button_get_active(toggle_button)){
+      gtk_toggle_tool_button_set_active(toggle_button, TRUE);
     }
-  }else if(gtk_toggle_button_get_active(toggle_button)){
+  }else if(gtk_toggle_tool_button_get_active(toggle_button)){
     GtkToggleButton *old_selected_edit_mode;
     
     old_selected_edit_mode = automation_toolbar->selected_edit_mode;
     automation_toolbar->selected_edit_mode = toggle_button;
-    gtk_toggle_button_set_active(old_selected_edit_mode, FALSE);
+    gtk_toggle_tool_button_set_active(old_selected_edit_mode, FALSE);
   }
 }
 
@@ -127,6 +127,36 @@ ags_automation_toolbar_paste_callback(GtkWidget *widget, AgsAutomationToolbar *a
 								    AGS_TYPE_AUTOMATION_EDITOR));
 
   ags_automation_editor_paste(automation_editor);
+}
+
+void
+ags_automation_toolbar_match_line_callback(GtkWidget *widget, AgsAutomationToolbar *automation_toolbar)
+{
+  AgsAutomationEditor *automation_editor;
+
+  automation_editor = AGS_AUTOMATION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(automation_toolbar),
+								    AGS_TYPE_AUTOMATION_EDITOR));
+
+  if(gtk_check_menu_item_get_active(widget)){
+    automation_editor->flags |= AGS_AUTOMATION_EDITOR_PASTE_MATCH_LINE;
+  }else{
+    automation_editor->flags &= (~AGS_AUTOMATION_EDITOR_PASTE_MATCH_LINE);
+  }
+}
+
+void
+ags_automation_toolbar_no_duplicates_callback(GtkWidget *widget, AgsAutomationToolbar *automation_toolbar)
+{
+  AgsAutomationEditor *automation_editor;
+
+  automation_editor = AGS_AUTOMATION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(automation_toolbar),
+								    AGS_TYPE_AUTOMATION_EDITOR));
+
+  if(gtk_check_menu_item_get_active(widget)){
+    automation_editor->flags |= AGS_AUTOMATION_EDITOR_PASTE_NO_DUPLICATES;
+  }else{
+    automation_editor->flags &= (~AGS_AUTOMATION_EDITOR_PASTE_NO_DUPLICATES);
+  }
 }
 
 void

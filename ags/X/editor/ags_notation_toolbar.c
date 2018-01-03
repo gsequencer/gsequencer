@@ -111,36 +111,29 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
   notation_toolbar->flags = 0;
   
   /* position */
-  notation_toolbar->position = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-								"image", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_JUMP_TO,
-														GTK_ICON_SIZE_LARGE_TOOLBAR),
-								"relief", GTK_RELIEF_NONE,
+  notation_toolbar->position = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
+								"stock-id", GTK_STOCK_JUMP_TO,
 								NULL);
   gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->position, i18n("position cursor"), NULL);
 
   /* edit */
-  notation_toolbar->edit = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-							    "image", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_EDIT,
-													    GTK_ICON_SIZE_LARGE_TOOLBAR),
-							    "relief", GTK_RELIEF_NONE,
+  notation_toolbar->edit = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
+							    "stock-id", GTK_STOCK_EDIT,
 							    "active", TRUE,
 							    NULL);
   gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->edit, i18n("edit notes"), NULL);
   notation_toolbar->selected_edit_mode = notation_toolbar->edit;
 
   /* clear */
-  notation_toolbar->clear = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-							     "image", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_CLEAR,
-													     GTK_ICON_SIZE_LARGE_TOOLBAR),
-							     "relief", GTK_RELIEF_NONE,
+  notation_toolbar->clear = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
+							     "stock-id", GTK_STOCK_CLEAR,
 							     NULL);
   gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->clear, i18n("clear notes"), NULL);
 
   /* select */
-  notation_toolbar->select = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-							      "image", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_SELECT_ALL,
-													      GTK_ICON_SIZE_LARGE_TOOLBAR),
-							      "relief", GTK_RELIEF_NONE,
+  notation_toolbar->select = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
+							      "label", i18n("Select"),
+							      "stock-id", GTK_STOCK_SELECT_ALL,
 							      NULL);
   gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar,
 			    (GtkWidget *) notation_toolbar->select,
@@ -148,10 +141,8 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
 			    NULL);
 
   /* copy */
-  notation_toolbar->copy = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-						      "image", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_COPY,
-												      GTK_ICON_SIZE_LARGE_TOOLBAR),
-						      "relief", GTK_RELIEF_NONE,
+  notation_toolbar->copy = (GtkButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
+						      "stock-id", GTK_STOCK_COPY,
 						      NULL);
   gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar,
 			    (GtkWidget *) notation_toolbar->copy,
@@ -159,26 +150,43 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
 			    NULL);
 
   /* cut */
-  notation_toolbar->cut = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-						     "image", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_CUT,
-												     GTK_ICON_SIZE_LARGE_TOOLBAR),
-						     "relief", GTK_RELIEF_NONE,
+  notation_toolbar->cut = (GtkButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
+						     "stock-id", GTK_STOCK_CUT,
 						     NULL);
   gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->cut, i18n("cut notes"), NULL);
 
   /* paste */
-  notation_toolbar->paste = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-						       "image", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_PASTE,
-												       GTK_ICON_SIZE_LARGE_TOOLBAR),
-						       "relief", GTK_RELIEF_NONE,
-						       NULL);
-  gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->paste, i18n("paste notes"), NULL);
+  notation_toolbar->paste_tool = (GtkButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
+							    "stock-id", GTK_STOCK_PASTE,
+							    NULL);
+  
+  menu = gtk_menu_new();
+
+  item = g_object_new(GTK_TYPE_CHECK_MENU_ITEM,
+		      "label", i18n("match audio channel"),
+		      "active", TRUE,
+		      NULL);
+  gtk_menu_shell_append(menu,
+			item);
+  
+  item = g_object_new(GTK_TYPE_CHECK_MENU_ITEM,
+		      "label", i18n("no duplicates"),
+		      "active", TRUE,
+		      NULL);
+  gtk_menu_shell_append(menu,
+			item);
+
+  gtk_menu_tool_button_set_menu(notation_toolbar->paste_tool,
+				menu);
+  gtk_widget_show_all(menu);
+  
+  gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->paste_tool, i18n("paste notes"), NULL);
 
   /* invert */
-  notation_toolbar->invert = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-							"image", (GtkWidget *) gtk_image_new_from_icon_name("object-flip-vertical",
-													    GTK_ICON_SIZE_LARGE_TOOLBAR),
-							"relief", GTK_RELIEF_NONE,
+  notation_toolbar->invert = (GtkButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
+							"icon-widget", (GtkWidget *) gtk_image_new_from_icon_name("object-flip-vertical",
+														  GTK_ICON_SIZE_LARGE_TOOLBAR),
+							"label", i18n("invert"),
 							NULL);
   gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->invert, i18n("invert notes"), NULL);
 
@@ -216,6 +224,8 @@ ags_notation_toolbar_connect(AgsConnectable *connectable)
   AgsWindow *window;
   AgsNotationToolbar *notation_toolbar;
 
+  GList *list;
+  
   notation_toolbar = AGS_NOTATION_TOOLBAR(connectable);
 
   if((AGS_NOTATION_TOOLBAR_CONNECTED & (notation_toolbar->flags)) != 0){
@@ -259,11 +269,21 @@ ags_notation_toolbar_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) notation_toolbar->cut, "clicked",
 		   G_CALLBACK(ags_notation_toolbar_copy_or_cut_callback), (gpointer) notation_toolbar);
 
-  g_signal_connect((GObject *) notation_toolbar->paste, "clicked",
+  g_signal_connect((GObject *) notation_toolbar->paste_tool, "clicked",
 		   G_CALLBACK(ags_notation_toolbar_paste_callback), (gpointer) notation_toolbar);
 
   g_signal_connect((GObject *) notation_toolbar->invert, "clicked",
 		   G_CALLBACK(ags_notation_toolbar_invert_callback), (gpointer) notation_toolbar);
+
+  list = gtk_container_get_children(gtk_menu_tool_button_get_menu(notation_toolbar->paste_tool));
+
+  g_signal_connect_after(list->data, "activate",
+			 G_CALLBACK(ags_notation_toolbar_match_audio_channel_callback), notation_toolbar);
+
+  g_signal_connect_after(list->next->data, "activate",
+			 G_CALLBACK(ags_notation_toolbar_no_duplicates_callback), notation_toolbar);
+
+  g_list_free(list);
 
   /* additional tools */
   ags_connectable_connect(AGS_CONNECTABLE(notation_toolbar->position_notation_cursor));
@@ -284,6 +304,8 @@ ags_notation_toolbar_disconnect(AgsConnectable *connectable)
 {
   AgsNotationToolbar *notation_toolbar;
 
+  GList *list;
+  
   notation_toolbar = AGS_NOTATION_TOOLBAR(connectable);
 
   if((AGS_NOTATION_TOOLBAR_CONNECTED & (notation_toolbar->flags)) == 0){
@@ -330,7 +352,7 @@ ags_notation_toolbar_disconnect(AgsConnectable *connectable)
 		      notation_toolbar,
 		      NULL);
 
-  g_object_disconnect(G_OBJECT(notation_toolbar->paste),
+  g_object_disconnect(G_OBJECT(notation_toolbar->paste_tool),
 		      "any_signal::clicked",
 		      G_CALLBACK(ags_notation_toolbar_paste_callback),
 		      notation_toolbar,
@@ -341,6 +363,22 @@ ags_notation_toolbar_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_notation_toolbar_invert_callback),
 		      notation_toolbar,
 		      NULL);
+
+  list = gtk_container_get_children(gtk_menu_tool_button_get_menu(notation_toolbar->paste_tool));
+
+  g_object_disconnect(G_OBJECT(list->data),
+		      "any_signal::activate",
+		      G_CALLBACK(ags_notation_toolbar_match_audio_channel_callback),
+		      notation_toolbar,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(list->next->data),
+		      "any_signal::activate",
+		      G_CALLBACK(ags_notation_toolbar_no_duplicates_callback),
+		      notation_toolbar,
+		      NULL);
+
+  g_list_free(list);
 
   /* additional tools */
   ags_connectable_disconnect(AGS_CONNECTABLE(notation_toolbar->position_notation_cursor));

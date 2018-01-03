@@ -193,7 +193,7 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
   GtkScrolledWindow *scrolled_window;
   GtkTable *table;
   
-  notation_editor->flags = (AGS_NOTATION_EDITOR_PASTE_MATCH_CHANNEL |
+  notation_editor->flags = (AGS_NOTATION_EDITOR_PASTE_MATCH_AUDIO_CHANNEL |
 			    AGS_NOTATION_EDITOR_PASTE_NO_DUPLICATES);
 
   notation_editor->version = AGS_NOTATION_EDITOR_DEFAULT_VERSION;
@@ -1156,7 +1156,7 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
     guint first_x;
     gboolean match_channel, no_duplicates;
 
-    match_channel = ((AGS_NOTATION_EDITOR_PASTE_MATCH_CHANNEL & (notation_editor->flags)) != 0) ? TRUE: FALSE;
+    match_channel = ((AGS_NOTATION_EDITOR_PASTE_MATCH_AUDIO_CHANNEL & (notation_editor->flags)) != 0) ? TRUE: FALSE;
     no_duplicates = ((AGS_NOTATION_EDITOR_PASTE_NO_DUPLICATES & (notation_editor->flags)) != 0) ? TRUE: FALSE;
 
     timestamp = ags_timestamp_new();

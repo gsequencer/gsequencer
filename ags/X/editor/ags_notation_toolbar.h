@@ -45,15 +45,15 @@ struct _AgsNotationToolbar
 
   guint flags;
   
-  GtkToggleButton *selected_edit_mode;
-  GtkToggleButton *position;
-  GtkToggleButton *edit;
-  GtkToggleButton *clear;
-  GtkToggleButton *select;
+  GtkToggleToolButton *selected_edit_mode;
+  GtkToggleToolButton *position;
+  GtkToggleToolButton *edit;
+  GtkToggleToolButton *clear;
+  GtkToggleToolButton *select;
 
-  GtkButton *copy;
-  GtkButton *cut;
-  GtkButton *paste;
+  GtkToolButton *copy;
+  GtkToolButton *cut;
+  GtkMenuToolButton *paste_tool;
   GtkButton *invert;
 
   GtkMenuToolButton *menu_tool;

@@ -27,15 +27,15 @@ void
 ags_notation_toolbar_position_callback(GtkToggleButton *toggle_button, AgsNotationToolbar *notation_toolbar)
 {
   if(toggle_button == notation_toolbar->selected_edit_mode){
-    if(!gtk_toggle_button_get_active(toggle_button)){
-      gtk_toggle_button_set_active(toggle_button, TRUE);
+    if(!gtk_toggle_tool_button_get_active(toggle_button)){
+      gtk_toggle_tool_button_set_active(toggle_button, TRUE);
     }
-  }else if(gtk_toggle_button_get_active(toggle_button)){
+  }else if(gtk_toggle_tool_button_get_active(toggle_button)){
     GtkToggleButton *old_selected_edit_mode;
     
     old_selected_edit_mode = notation_toolbar->selected_edit_mode;
     notation_toolbar->selected_edit_mode = toggle_button;
-    gtk_toggle_button_set_active(old_selected_edit_mode, FALSE);
+    gtk_toggle_tool_button_set_active(old_selected_edit_mode, FALSE);
   }
 }
 
@@ -43,15 +43,15 @@ void
 ags_notation_toolbar_edit_callback(GtkToggleButton *toggle_button, AgsNotationToolbar *notation_toolbar)
 {
   if(toggle_button == notation_toolbar->selected_edit_mode){
-    if(!gtk_toggle_button_get_active(toggle_button)){
-      gtk_toggle_button_set_active(toggle_button, TRUE);
+    if(!gtk_toggle_tool_button_get_active(toggle_button)){
+      gtk_toggle_tool_button_set_active(toggle_button, TRUE);
     }
-  }else if(gtk_toggle_button_get_active(toggle_button)){
+  }else if(gtk_toggle_tool_button_get_active(toggle_button)){
     GtkToggleButton *old_selected_edit_mode;
     
     old_selected_edit_mode = notation_toolbar->selected_edit_mode;
     notation_toolbar->selected_edit_mode = toggle_button;
-    gtk_toggle_button_set_active(old_selected_edit_mode, FALSE);
+    gtk_toggle_tool_button_set_active(old_selected_edit_mode, FALSE);
   }
 }
 
@@ -59,15 +59,15 @@ void
 ags_notation_toolbar_clear_callback(GtkToggleButton *toggle_button, AgsNotationToolbar *notation_toolbar)
 {
   if(toggle_button == notation_toolbar->selected_edit_mode){
-    if(!gtk_toggle_button_get_active(toggle_button)){
-      gtk_toggle_button_set_active(toggle_button, TRUE);
+    if(!gtk_toggle_tool_button_get_active(toggle_button)){
+      gtk_toggle_tool_button_set_active(toggle_button, TRUE);
     }
-  }else if(gtk_toggle_button_get_active(toggle_button)){
+  }else if(gtk_toggle_tool_button_get_active(toggle_button)){
     GtkToggleButton *old_selected_edit_mode;
     
     old_selected_edit_mode = notation_toolbar->selected_edit_mode;
     notation_toolbar->selected_edit_mode = toggle_button;
-    gtk_toggle_button_set_active(old_selected_edit_mode, FALSE);
+    gtk_toggle_tool_button_set_active(old_selected_edit_mode, FALSE);
   }
 }
 
@@ -75,15 +75,15 @@ void
 ags_notation_toolbar_select_callback(GtkToggleButton *toggle_button, AgsNotationToolbar *notation_toolbar)
 {
   if(toggle_button == notation_toolbar->selected_edit_mode){
-    if(!gtk_toggle_button_get_active(toggle_button)){
-      gtk_toggle_button_set_active(toggle_button, TRUE);
+    if(!gtk_toggle_tool_button_get_active(toggle_button)){
+      gtk_toggle_tool_button_set_active(toggle_button, TRUE);
     }
-  }else if(gtk_toggle_button_get_active(toggle_button)){
+  }else if(gtk_toggle_tool_button_get_active(toggle_button)){
     GtkToggleButton *old_selected_edit_mode;
     
     old_selected_edit_mode = notation_toolbar->selected_edit_mode;
     notation_toolbar->selected_edit_mode = toggle_button;
-    gtk_toggle_button_set_active(old_selected_edit_mode, FALSE);
+    gtk_toggle_tool_button_set_active(old_selected_edit_mode, FALSE);
   }
 }
 
@@ -111,6 +111,36 @@ ags_notation_toolbar_paste_callback(GtkWidget *widget, AgsNotationToolbar *notat
   notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(notation_toolbar), AGS_TYPE_NOTATION_EDITOR);
 
   ags_notation_editor_paste(notation_editor);
+}
+
+void
+ags_notation_toolbar_match_audio_channel_callback(GtkWidget *widget, AgsNotationToolbar *notation_toolbar)
+{
+  AgsNotationEditor *notation_editor;
+
+  notation_editor = AGS_NOTATION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(notation_toolbar),
+								AGS_TYPE_NOTATION_EDITOR));
+
+  if(gtk_check_menu_item_get_active(widget)){
+    notation_editor->flags |= AGS_NOTATION_EDITOR_PASTE_MATCH_AUDIO_CHANNEL;
+  }else{
+    notation_editor->flags &= (~AGS_NOTATION_EDITOR_PASTE_MATCH_AUDIO_CHANNEL);
+  }
+}
+
+void
+ags_notation_toolbar_no_duplicates_callback(GtkWidget *widget, AgsNotationToolbar *notation_toolbar)
+{
+  AgsNotationEditor *notation_editor;
+
+  notation_editor = AGS_NOTATION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(notation_toolbar),
+								AGS_TYPE_NOTATION_EDITOR));
+
+  if(gtk_check_menu_item_get_active(widget)){
+    notation_editor->flags |= AGS_NOTATION_EDITOR_PASTE_NO_DUPLICATES;
+  }else{
+    notation_editor->flags &= (~AGS_NOTATION_EDITOR_PASTE_NO_DUPLICATES);
+  }
 }
 
 void
