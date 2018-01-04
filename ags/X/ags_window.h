@@ -32,6 +32,7 @@
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_export_window.h>
 #include <ags/X/ags_automation_window.h>
+#include <ags/X/ags_wave_window.h>
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_history_browser.h>
 
@@ -86,6 +87,7 @@ struct _AgsWindow
   GList *dialog;
   
   AgsAutomationWindow *automation_window;
+  AgsWaveWindow *wave_window;
 
   AgsExportWindow *export_window;
 

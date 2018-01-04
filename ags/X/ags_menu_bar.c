@@ -20,12 +20,8 @@
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_menu_action_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/plugin/ags_base_plugin.h>
-#include <ags/plugin/ags_ladspa_manager.h>
-#include <ags/plugin/ags_dssi_manager.h>
-#include <ags/plugin/ags_lv2_manager.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -229,6 +225,12 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   //			   FALSE);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
 
+  /* wave */
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Wave"));
+  //  gtk_widget_set_sensitive(item,
+  //			   FALSE);
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
+  
   /* preferences */
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit,
 			(GtkWidget*) gtk_separator_menu_item_new());
@@ -429,9 +431,13 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   g_list_free(list3_start);
   g_list_free(list2_start);
 
-  /* automation and preferences */
+  /* automation, wave and preferences */
   g_signal_connect (G_OBJECT (list1->data), "activate",
                     G_CALLBACK (ags_menu_action_automation_callback), (gpointer) menu_bar);
+  list1 = list1->next;
+
+  g_signal_connect (G_OBJECT (list1->data), "activate",
+                    G_CALLBACK (ags_menu_action_wave_callback), (gpointer) menu_bar);
   list1 = list1->next;
   list1 = list1->next;
 
