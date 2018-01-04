@@ -230,8 +230,8 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 
   /* currenty selected widgets */
   wave_editor->notebook = NULL;  
-  wave_editor->level = NULL;
-  wave_editor->wave_edit = NULL;
+  wave_editor->scrolled_level_box = NULL;
+  wave_editor->scrolled_wave_edit_box = NULL;
 
   /* offset */
   wave_editor->tact_counter = 0;

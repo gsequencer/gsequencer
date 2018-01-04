@@ -25,9 +25,9 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/widget/ags_ruler.h>
-
-#include <ags/X/editor/ags_level.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #define AGS_TYPE_WAVE_EDIT                (ags_wave_edit_get_type())
 #define AGS_WAVE_EDIT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_WAVE_EDIT, AgsWaveEdit))
@@ -36,27 +36,49 @@
 #define AGS_IS_WAVE_EDIT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_WAVE_EDIT))
 #define AGS_WAVE_EDIT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_WAVE_EDIT, AgsWaveEditClass))
 
-#define AGS_WAVE_EDIT_MAX_CONTROLS (16 * 64 * 1200)
-#define AGS_WAVE_EDIT_DEFAULT_MARGIN (8)
-#define AGS_WAVE_EDIT_DEFAULT_WIDTH (64)
+#define AGS_WAVE_EDIT_DEFAULT_HEIGHT (512)
+#define AGS_WAVE_EDIT_DEFAULT_WIDTH (512)
+
+#define AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH (64)
+#define AGS_WAVE_EDIT_DEFAULT_CONTROL_HEIGHT (8)
+
+#define AGS_WAVE_EDIT_DEFAULT_STEP_COUNT (16)
+
+#define AGS_WAVE_EDIT_DEFAULT_CURSOR_POSITION_X (0)
+#define AGS_WAVE_EDIT_DEFAULT_CURSOR_POSITION_Y (0.0)
+
+#define AGS_WAVE_EDIT_DEFAULT_FADER_WIDTH (3)
+
+#define AGS_WAVE_EDIT_CURSOR_WIDTH (5)
+#define AGS_WAVE_EDIT_CURSOR_HEIGHT (5)
+
+#define AGS_WAVE_EDIT_MIN_ZOOM (1.0 / 16.0)
+#define AGS_WAVE_EDIT_MAX_ZOOM (4.0)
+
+#define AGS_WAVE_EDIT_DEFAULT_LOWER (0.0)
+#define AGS_WAVE_EDIT_DEFAULT_UPPER (1.0)
+#define AGS_WAVE_EDIT_DEFAULT_VALUE (0.0)
+
+#define AGS_WAVE_EDIT_DEFAULT_PADDING (8)
 
 typedef struct _AgsWaveEdit AgsWaveEdit;
 typedef struct _AgsWaveEditClass AgsWaveEditClass;
 
 typedef enum{
   AGS_WAVE_EDIT_CONNECTED                   = 1,
-  AGS_WAVE_EDIT_RESETING_VERTICALLY         = 1 <<  1,
-  AGS_WAVE_EDIT_RESETING_HORIZONTALLY       = 1 <<  2,
-  AGS_WAVE_EDIT_POSITION_CURSOR             = 1 <<  3,
-  AGS_WAVE_EDIT_SELECTING_AUDIO_DATA        = 1 <<  4,
+  AGS_WAVE_EDIT_AUTO_SCROLL                 = 1 <<  1,
+  AGS_WAVE_EDIT_SHOW_RULER                  = 1 <<  2,
+  AGS_WAVE_EDIT_SHOW_VSCROLLBAR             = 1 <<  3,
+  AGS_WAVE_EDIT_SHOW_HSCROLLBAR             = 1 <<  4,
 }AgsWaveEditFlags;
 
 typedef enum{
-  AGS_WAVE_EDIT_RESET_VSCROLLBAR   = 1,
-  AGS_WAVE_EDIT_RESET_HSCROLLBAR   = 1 <<  1,
-  AGS_WAVE_EDIT_RESET_WIDTH        = 1 <<  2,
-  AGS_WAVE_EDIT_RESET_HEIGHT       = 1 <<  3, // reserved
-}AgsWaveEditResetFlags;
+  AGS_WAVE_EDIT_NO_EDIT_MODE,
+  AGS_WAVE_EDIT_POSITION_CURSOR,
+  AGS_WAVE_EDIT_ADD_ACCELERATION,
+  AGS_WAVE_EDIT_DELETE_ACCELERATION,
+  AGS_WAVE_EDIT_SELECT_ACCELERATION,
+}AgsWaveEditMode;
 
 typedef enum{
   AGS_WAVE_EDIT_KEY_L_CONTROL       = 1,
@@ -70,21 +92,31 @@ struct _AgsWaveEdit
   GtkTable table;
 
   guint flags;
+  guint mode;
 
   guint key_mask;
   
-  guint map_width;
-  guint map_height;
+  guint note_offset;
+  guint note_offset_absolute;
 
-  guint edit_x;
-  guint edit_y;
-  
-  guint select_x0;
-  guint select_y0;
-  guint select_x1;
-  guint select_y1;
+  guint control_width;
+  guint control_height;
+
+  guint step_count;
+
+  guint cursor_position_x;
+  gdouble cursor_position_y;
+
+  guint selection_x0;
+  guint selection_x1;
+  guint selection_y0;
+  guint selection_y1;
   
   AgsRuler *ruler;
+
+  gdouble lower;
+  gdouble upper;
+  gdouble default_value;
 
   GtkDrawingArea *drawing_area;
   

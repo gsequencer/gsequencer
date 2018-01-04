@@ -22,7 +22,7 @@
 
 #include <ags/libags.h>
 
-#include <ags/X/ags_xorg_application_context.h>
+#include <ags/X/ags_ui_provider.h>
 
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_mixer.h>
@@ -284,6 +284,8 @@ ags_window_init(AgsWindow *window)
 
   window->automation_window = ags_automation_window_new((GtkWidget *) window);
 
+  window->wave_window = ags_wave_window_new((GtkWidget *) window);
+  
   window->export_window = (AgsExportWindow *) g_object_new(AGS_TYPE_EXPORT_WINDOW,
 							   "main-window", window,
 							   NULL);
@@ -749,7 +751,7 @@ ags_window_load_file_timeout(AgsWindow *window)
   gui_thread = NULL;
   
   if(window->application_context != NULL){
-    gui_thread = AGS_XORG_APPLICATION_CONTEXT(window->application_context)->gui_thread;
+    gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(window->application_context));
   }
   
   if(gui_thread != NULL &&

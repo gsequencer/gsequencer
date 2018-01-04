@@ -99,6 +99,51 @@ ags_ui_provider_set_window(AgsUiProvider *ui_provider,
 }
 
 /**
+ * ags_ui_provider_get_gui_thread:
+ * @ui_provider: the #AgsUiProvider
+ * 
+ * Get gui thread.
+ * 
+ * Returns: the #AgsGuiThread
+ * 
+ * Since: 1.4.0
+ */
+AgsThread*
+ags_ui_provider_get_gui_thread(AgsUiProvider *ui_provider)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_UI_PROVIDER(ui_provider), NULL);
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_val_if_fail(ui_provider_interface->get_gui_thread, NULL);
+
+  return(ui_provider_interface->get_gui_thread(ui_provider));
+}
+
+/**
+ * ags_ui_provider_get_gui_thread:
+ * @ui_provider: the #AgsUiProvider
+ * @gui_thread: the #AgsGuiThread
+ * 
+ * Set gui thread.
+ * 
+ * Since: 1.4.0
+ */
+void
+ags_ui_provider_set_gui_thread(AgsUiProvider *ui_provider,
+			       AgsThread *gui_thread)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_if_fail(AGS_IS_UI_PROVIDER(ui_provider));
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_if_fail(ui_provider_interface->set_gui_thread);
+
+  ui_provider_interface->set_gui_thread(ui_provider,
+					gui_thread);
+}
+
+/**
  * ags_ui_provider_get_show_animation:
  * @ui_provider: the #AgsUiProvider
  * 

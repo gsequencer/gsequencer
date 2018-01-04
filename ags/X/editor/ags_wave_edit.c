@@ -59,6 +59,8 @@ gboolean ags_accessible_wave_edit_set_description(AtkAction *action,
 gchar* ags_accessible_wave_edit_get_localized_name(AtkAction *action,
 						   gint i);
 
+gboolean ags_wave_edit_auto_scroll_timeout(GtkWidget *widget);
+
 /**
  * SECTION:ags_wave_edit
  * @short_description: edit audio data
@@ -71,9 +73,11 @@ gchar* ags_accessible_wave_edit_get_localized_name(AtkAction *action,
 
 static gpointer ags_wave_edit_parent_class = NULL;
 
+static GQuark quark_accessible_object = 0;
+
 GtkStyle *wave_edit_style = NULL;
 
-static GQuark quark_accessible_object = 0;
+GHashTable *ags_wave_edit_auto_scroll = NULL;
 
 GType
 ags_wave_edit_get_type(void)
@@ -188,26 +192,40 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
 {
   GtkAdjustment *adjustment;
 
+  g_object_set(wave_edit,
+	       "can-focus", FALSE,
+	       "n-columns", 3,
+	       "n-rows", 4,
+	       "homogeneous", FALSE,
+	       NULL);
+
   wave_edit->flags = 0;
+  wave_edit->mode = AGS_WAVE_EDIT_NO_EDIT_MODE;
 
   wave_edit->key_mask = 0;
-
-  wave_edit->map_width = AGS_WAVE_EDIT_MAX_CONTROLS;
-  wave_edit->map_height = 0;
-
-  wave_edit->edit_x = 0;
-  wave_edit->edit_y = 0;
   
-  wave_edit->select_x0 = 0;
-  wave_edit->select_x1 = 0;
-  wave_edit->select_y0 = 0;
-  wave_edit->select_y1 = 0;
+  wave_edit->note_offset = 0;
+  wave_edit->note_offset_absolute = 0;
+
+  wave_edit->control_width = AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH;
+  wave_edit->control_height = AGS_WAVE_EDIT_DEFAULT_CONTROL_HEIGHT;
+  
+  wave_edit->cursor_position_x = AGS_WAVE_EDIT_DEFAULT_CURSOR_POSITION_X;
+  wave_edit->cursor_position_y = AGS_WAVE_EDIT_DEFAULT_CURSOR_POSITION_Y;
+
+  wave_edit->selection_x0 = 0;
+  wave_edit->selection_x1 = 0;
+  wave_edit->selection_y0 = 0;
+  wave_edit->selection_y1 = 0;
 
   if(wave_edit_style == NULL){
     wave_edit_style = gtk_style_copy(gtk_widget_get_style(wave_edit));
   }
 
   wave_edit->ruler = ags_ruler_new();
+  g_object_set(wave_edit->ruler,
+	       "no-show-all", TRUE,
+	       NULL);
   gtk_table_attach(GTK_TABLE(wave_edit),
 		   (GtkWidget *) wave_edit->ruler,
 		   0, 1,
@@ -216,9 +234,12 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
 		   GTK_FILL,
 		   0, 0);
 
+  wave_edit->lower = AGS_WAVE_EDIT_DEFAULT_LOWER;
+  wave_edit->upper = AGS_WAVE_EDIT_DEFAULT_UPPER;
+
+  wave_edit->default_value = AGS_WAVE_EDIT_DEFAULT_VALUE;
+
   wave_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
-  gtk_widget_set_style((GtkWidget *) wave_edit->drawing_area,
-		       wave_edit_style);
   gtk_widget_set_events(GTK_WIDGET (wave_edit->drawing_area), GDK_EXPOSURE_MASK
 			| GDK_LEAVE_NOTIFY_MASK
 			| GDK_BUTTON_PRESS_MASK
@@ -231,6 +252,8 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
   gtk_widget_set_can_focus((GtkWidget *) wave_edit->drawing_area,
 			   TRUE);
     
+  gtk_widget_set_size_request(wave_edit->drawing_area,
+			      -1, AGS_LEVEL_DEFAULT_HEIGHT);
   gtk_table_attach(GTK_TABLE(wave_edit),
 		   (GtkWidget *) wave_edit->drawing_area,
 		   0, 1,
@@ -239,9 +262,14 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
 		   GTK_FILL|GTK_EXPAND,
 		   0, 0);
     
-  /* GtkScrollbars */
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, 1.0, 1.0);
-  wave_edit->vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
+  /* vscrollbar */
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, wave_edit->control_height, 1.0);
+  wave_edit->vscrollbar = gtk_vscrollbar_new(adjustment);
+  g_object_set(wave_edit->vscrollbar,
+	       "no-show-all", TRUE,
+	       NULL);
+  gtk_widget_set_size_request(wave_edit->vscrollbar,
+			      -1, AGS_LEVEL_DEFAULT_HEIGHT);
   gtk_table_attach(GTK_TABLE(wave_edit),
 		   (GtkWidget *) wave_edit->vscrollbar,
 		   1, 2,
@@ -249,14 +277,31 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) AGS_WAVE_EDIT_DEFAULT_WIDTH, 1.0);
-  wave_edit->hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(adjustment);
+  /* hscrollbar */
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) wave_edit->control_width, 1.0);
+  wave_edit->hscrollbar = gtk_hscrollbar_new(adjustment);
+  g_object_set(wave_edit->hscrollbar,
+	       "no-show-all", TRUE,
+	       NULL);
+  gtk_widget_set_size_request(wave_edit->hscrollbar,
+			      -1, -1);
   gtk_table_attach(GTK_TABLE(wave_edit),
 		   (GtkWidget *) wave_edit->hscrollbar,
 		   0, 1,
 		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+
+  /* auto-scroll */
+  if(ags_wave_edit_auto_scroll == NULL){
+    ags_wave_edit_auto_scroll = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+						      NULL,
+						      NULL);
+  }
+
+  g_hash_table_insert(ags_wave_edit_auto_scroll,
+		      wave_edit, ags_wave_edit_auto_scroll_timeout);
+  g_timeout_add(1000 / 30, (GSourceFunc) ags_wave_edit_auto_scroll_timeout, (gpointer) wave_edit);
 }
 
 void
@@ -652,6 +697,52 @@ ags_accessible_wave_edit_get_localized_name(AtkAction *action,
   //TODO:JK: implement me
 
   return(NULL);
+}
+
+gboolean
+ags_wave_edit_auto_scroll_timeout(GtkWidget *widget)
+{
+  if(g_hash_table_lookup(ags_wave_edit_auto_scroll,
+			 widget) != NULL){
+    AgsWaveEditor *wave_editor;
+    AgsWaveEdit *wave_edit;
+    AgsWaveToolbar *wave_toolbar;
+
+    double zoom;
+    double x;
+    
+    wave_edit = AGS_WAVE_EDIT(widget);
+
+    if((AGS_WAVE_EDIT_AUTO_SCROLL & (wave_edit->flags)) == 0){
+      return(TRUE);
+    }
+    
+    wave_editor = gtk_widget_get_ancestor(wave_edit,
+					  AGS_TYPE_WAVE_EDITOR);
+    
+    if(wave_editor->selected_machine == NULL){
+      return(TRUE);
+    }
+
+    wave_toolbar = wave_editor->wave_toolbar;
+
+    /* zoom */
+    zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom) - 2.0);
+
+    /* reset offset */
+    wave_edit->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(wave_editor->selected_machine->audio->soundcard));
+    wave_edit->note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(wave_editor->selected_machine->audio->soundcard));
+
+    /* reset scrollbar */
+    x = ((wave_edit->note_offset * wave_edit->control_width) / (AGS_WAVE_EDITOR_MAX_CONTROLS * wave_edit->control_width)) * GTK_RANGE(wave_edit->hscrollbar)->adjustment->upper;
+    
+    gtk_range_set_value(GTK_RANGE(wave_edit->hscrollbar),
+			x);
+
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 /**

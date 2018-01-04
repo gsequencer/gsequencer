@@ -1247,6 +1247,10 @@ libags_gui_h_sources = \
 	ags/widget/ags_indicator.h \
 	ags/widget/ags_led.h \
 	ags/widget/ags_led_array.h \
+	ags/widget/ags_level.h \
+	ags/widget/ags_level_box.h \
+	ags/widget/ags_hlevel_box.h \
+	ags/widget/ags_vlevel_box.h \
 	ags/widget/ags_notebook.h \
 	ags/widget/ags_piano_keys.h \
 	ags/widget/ags_piano.h \
@@ -1255,6 +1259,7 @@ libags_gui_h_sources = \
 	ags/widget/ags_scale_box.h \
 	ags/widget/ags_vscale_box.h \
 	ags/widget/ags_hscale_box.h \
+	ags/widget/ags_scrolled_level_box.h \
 	ags/widget/ags_scrolled_scale_box.h \
 	ags/widget/ags_ruler.h \
 	ags/widget/ags_table.h \
@@ -1279,6 +1284,10 @@ libags_gui_c_sources = \
 	ags/widget/ags_indicator.c \
 	ags/widget/ags_led.c \
 	ags/widget/ags_led_array.c \
+	ags/widget/ags_level.c \
+	ags/widget/ags_level_box.c \
+	ags/widget/ags_hlevel_box.c \
+	ags/widget/ags_vlevel_box.c \
 	ags/widget/ags_notebook.c \
 	ags/widget/ags_piano.c \
 	ags/widget/ags_scrolled_piano.c \
@@ -1287,6 +1296,7 @@ libags_gui_c_sources = \
 	ags/widget/ags_vscale_box.c \
 	ags/widget/ags_hscale_box.c \
 	ags/widget/ags_scrolled_scale_box.c \
+	ags/widget/ags_scrolled_level_box.c \
 	ags/widget/ags_ruler.c \
 	ags/widget/ags_table.c \
 	ags/widget/ags_timebar.c \
@@ -1779,8 +1789,6 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_file_selection.h \
 	ags/X/editor/ags_inline_player_callbacks.h \
 	ags/X/editor/ags_inline_player.h \
-	ags/X/editor/ags_level_callbacks.h \
-	ags/X/editor/ags_level.h \
 	ags/X/editor/ags_machine_radio_button.h \
 	ags/X/editor/ags_machine_radio_button_callbacks.h \
 	ags/X/editor/ags_machine_selection.h \
@@ -1801,6 +1809,7 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_ramp_acceleration_dialog.h \
 	ags/X/editor/ags_ramp_acceleration_dialog_callbacks.h \
 	ags/X/editor/ags_scrolled_automation_edit_box.h \
+	ags/X/editor/ags_scrolled_wave_edit_box.h \
 	ags/X/editor/ags_sf2_chooser_callbacks.h \
 	ags/X/editor/ags_sf2_chooser.h \
 	ags/X/editor/ags_select_acceleration_dialog.h \
@@ -1808,8 +1817,10 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_select_note_dialog.h \
 	ags/X/editor/ags_select_note_dialog_callbacks.h \
 	ags/X/editor/ags_vautomation_edit_box.h \
+	ags/X/editor/ags_vwave_edit_box.h \
 	ags/X/editor/ags_wave_edit_callbacks.h \
 	ags/X/editor/ags_wave_edit.h \
+	ags/X/editor/ags_wave_edit_box.h \
 	ags/X/editor/ags_wave_toolbar_callbacks.h \
 	ags/X/editor/ags_wave_toolbar.h
 
@@ -1834,8 +1845,6 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_file_selection.c \
 	ags/X/editor/ags_inline_player.c \
 	ags/X/editor/ags_inline_player_callbacks.c \
-	ags/X/editor/ags_level.c \
-	ags/X/editor/ags_level_callbacks.c \
 	ags/X/editor/ags_machine_radio_button.c \
 	ags/X/editor/ags_machine_radio_button_callbacks.c \
 	ags/X/editor/ags_machine_selection.c \
@@ -1856,6 +1865,7 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_ramp_acceleration_dialog.c \
 	ags/X/editor/ags_ramp_acceleration_dialog_callbacks.c \
 	ags/X/editor/ags_scrolled_automation_edit_box.c \
+	ags/X/editor/ags_scrolled_wave_edit_box.c \
 	ags/X/editor/ags_select_acceleration_dialog.c \
 	ags/X/editor/ags_select_acceleration_dialog_callbacks.c \
 	ags/X/editor/ags_select_note_dialog.c \
@@ -1863,7 +1873,9 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_sf2_chooser.c \
 	ags/X/editor/ags_sf2_chooser_callbacks.c \
 	ags/X/editor/ags_vautomation_edit_box.c \
+	ags/X/editor/ags_vwave_edit_box.c \
 	ags/X/editor/ags_wave_edit.c \
+	ags/X/editor/ags_wave_edit_box.c \
 	ags/X/editor/ags_wave_edit_callbacks.c \
 	ags/X/editor/ags_wave_toolbar.c \
 	ags/X/editor/ags_wave_toolbar_callbacks.c

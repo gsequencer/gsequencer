@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 1.3.0\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2018-01-03 19:57+0100\n"
+"POT-Creation-Date: 2018-01-04 21:52+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -72,53 +72,53 @@ msgid "connect output"
 msgstr ""
 
 #: ags/X/ags_context_menu.c:151 ags/X/ags_export_window.c:342
-#: ags/X/ags_menu_bar.c:147
+#: ags/X/ags_menu_bar.c:143
 msgid "export"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:179 ags/X/ags_menu_bar.c:175
+#: ags/X/ags_context_menu.c:179 ags/X/ags_menu_bar.c:171
 msgid "Panel"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:182 ags/X/ags_menu_bar.c:178
+#: ags/X/ags_context_menu.c:182 ags/X/ags_menu_bar.c:174
 msgid "Mixer"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:185 ags/X/ags_menu_bar.c:181
+#: ags/X/ags_context_menu.c:185 ags/X/ags_menu_bar.c:177
 msgid "Drum"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:188 ags/X/ags_menu_bar.c:184
+#: ags/X/ags_context_menu.c:188 ags/X/ags_menu_bar.c:180
 msgid "Matrix"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:191 ags/X/ags_menu_bar.c:187
+#: ags/X/ags_context_menu.c:191 ags/X/ags_menu_bar.c:183
 msgid "Synth"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:194 ags/X/ags_menu_bar.c:190
+#: ags/X/ags_context_menu.c:194 ags/X/ags_menu_bar.c:186
 msgid "Syncsynth"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:198 ags/X/ags_menu_bar.c:194
+#: ags/X/ags_context_menu.c:198 ags/X/ags_menu_bar.c:190
 msgid "FPlayer"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:203 ags/X/ags_menu_bar.c:199
+#: ags/X/ags_context_menu.c:203 ags/X/ags_menu_bar.c:195
 msgid "LADSPA"
 msgstr ""
 
 #: ags/X/ags_context_menu.c:207 ags/X/ags_context_menu.c:222
-#: ags/X/ags_menu_bar.c:203 ags/X/ags_menu_bar.c:218
+#: ags/X/ags_menu_bar.c:199 ags/X/ags_menu_bar.c:214
 msgid "DSSI"
 msgstr ""
 
 #: ags/X/ags_context_menu.c:211 ags/X/ags_context_menu.c:226
-#: ags/X/ags_menu_bar.c:207 ags/X/ags_menu_bar.c:222
+#: ags/X/ags_menu_bar.c:203 ags/X/ags_menu_bar.c:218
 msgid "Lv2"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:231 ags/X/ags_menu_bar.c:227
+#: ags/X/ags_context_menu.c:231 ags/X/ags_menu_bar.c:223
 msgid "Automation"
 msgstr ""
 
@@ -365,6 +365,10 @@ msgstr ""
 msgid "resize channels"
 msgstr ""
 
+#: ags/X/ags_menu_bar.c:229
+msgid "Wave"
+msgstr ""
+
 #: ags/X/ags_midi_dialog.c:208
 msgid "midi channel"
 msgstr ""
@@ -512,21 +516,21 @@ msgstr ""
 msgid "wave"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1303
+#: ags/X/ags_xorg_application_context.c:1362
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1313
+#: ags/X/ags_xorg_application_context.c:1372
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1462
+#: ags/X/ags_xorg_application_context.c:1521
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1472
+#: ags/X/ags_xorg_application_context.c:1531
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 

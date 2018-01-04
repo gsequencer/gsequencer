@@ -29,9 +29,11 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_machine.h>
+
 #include <ags/X/editor/ags_wave_toolbar.h>
 #include <ags/X/editor/ags_machine_selector.h>
-#include <ags/X/editor/ags_level.h>
+#include <ags/X/editor/ags_scrolled_wave_edit_box.h>
 #include <ags/X/editor/ags_wave_edit.h>
 
 #define AGS_TYPE_WAVE_EDITOR                (ags_wave_editor_get_type())
@@ -41,16 +43,22 @@
 #define AGS_IS_WAVE_EDITOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_WAVE_EDITOR))
 #define AGS_WAVE_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_WAVE_EDITOR, AgsWaveEditorClass))
 
-#define AGS_WAVE_EDITOR_CHILD(ptr) ((AgsWaveEditorChild *)(ptr))
+#define AGS_WAVE_EDITOR_MAX_VALUE_COUNT (64 * 16 * 16 * 1200)
+#define AGS_WAVE_EDITOR_MAX_CONTROLS (64 * 16 * 16 * 1200)
 
-#define AGS_WAVE_EDITOR_DEFAULT_VERSION "1.2.0"
-#define AGS_WAVE_EDITOR_DEFAULT_BUILD_ID "Mon Nov 20 07:28:21 UTC 2017"
+#define AGS_WAVE_EDITOR_DEFAULT_VERSION "1.4.0"
+#define AGS_WAVE_EDITOR_DEFAULT_BUILD_ID "Thu Jan  4 19:47:23 UTC 2018"
 
 typedef struct _AgsWaveEditor AgsWaveEditor;
 typedef struct _AgsWaveEditorClass AgsWaveEditorClass;
   
 typedef enum{
-  AGS_WAVE_EDITOR_CONNECTED    = 1,
+  AGS_WAVE_EDITOR_CONNECTED                 = 1,
+  AGS_WAVE_EDITOR_RESET_AUDIO_HSCROLLBAR    = 1 <<  1,
+  AGS_WAVE_EDITOR_RESET_OUTPUT_HSCROLLBAR   = 1 <<  2,
+  AGS_WAVE_EDITOR_RESET_INPUT_HSCROLLBAR    = 1 <<  3,
+  AGS_WAVE_EDITOR_PASTE_MATCH_LINE          = 1 <<  4,
+  AGS_WAVE_EDITOR_PASTE_NO_DUPLICATES       = 1 <<  5,
 }AgsWaveEditorFlags;
 
 struct _AgsWaveEditor
@@ -62,8 +70,13 @@ struct _AgsWaveEditor
   gchar *version;
   gchar *build_id;
 
+  guint tact_counter;
+  gdouble current_tact;
+
   GObject *soundcard;
-  
+
+  GtkHPaned *paned;
+
   AgsMachineSelector *machine_selector;
   AgsMachine *selected_machine;
 
@@ -72,11 +85,9 @@ struct _AgsWaveEditor
   GtkTable *table;
 
   AgsNotebook *notebook;
-  AgsLevel *level;
-  GtkWidget *wave_edit;
-
-  guint tact_counter;
-  gdouble current_tact;
+  AgsRuler *ruler;
+  AgsScrolledLevelBox *scrolled_level_box;
+  AgsScrolledWaveEditBox *scrolled_wave_edit_box;
 };
 
 struct _AgsWaveEditorClass
@@ -89,8 +100,16 @@ struct _AgsWaveEditorClass
 
 GType ags_wave_editor_get_type(void);
 
+void ags_wave_editor_reset_audio_scrollbar(AgsWaveEditor *wave_editor);
+void ags_wave_editor_reset_output_scrollbar(AgsWaveEditor *wave_editor);
+void ags_wave_editor_reset_input_scrollbar(AgsWaveEditor *wave_editor);
+
 void ags_wave_editor_machine_changed(AgsWaveEditor *wave_editor,
-					   AgsMachine *machine);
+				     AgsMachine *machine);
+
+void ags_wave_editor_select_region(AgsWaveEditor *wave_editor,
+				   guint x0, gdouble y0,
+				   guint x1, gdouble y1);
 
 void ags_wave_editor_select_all(AgsWaveEditor *wave_editor);
 

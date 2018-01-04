@@ -29,7 +29,7 @@ void ags_vautomation_edit_box_init(AgsVAutomationEditBox *vautomation_edit_box);
  * @section_id:
  * @include: ags/widget/ags_vautomation_edit_box.h
  *
- * The #AgsVAutomationEditBox is an horizontal box widget containing #AgsScale.
+ * The #AgsVAutomationEditBox is an horizontal box widget containing #AgsAutomationEdit.
  */
 
 GType

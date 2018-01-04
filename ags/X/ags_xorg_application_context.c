@@ -112,6 +112,9 @@ GList* ags_xorg_application_context_get_distributed_manager(AgsSoundProvider *so
 GtkWidget* ags_xorg_application_context_get_window(AgsUiProvider *ui_provider);
 void ags_xorg_application_context_set_window(AgsUiProvider *ui_provider,
 					     GtkWidget *widget);
+AgsThread* ags_xorg_application_context_get_gui_thread(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_gui_thread(AgsUiProvider *ui_provider,
+						 AgsThread *gui_thread);
 gboolean ags_xorg_application_context_get_show_animation(AgsUiProvider *ui_provider);
 void ags_xorg_application_context_set_show_animation(AgsUiProvider *ui_provider,
 						     gboolean do_show_animation);
@@ -372,6 +375,9 @@ ags_xorg_application_context_ui_provider_interface_init(AgsUiProviderInterface *
   ui_provider->get_window = ags_xorg_application_context_get_window;
   ui_provider->set_window = ags_xorg_application_context_set_window;
 
+  ui_provider->get_gui_thread = ags_xorg_application_context_get_gui_thread;
+  ui_provider->set_gui_thread = ags_xorg_application_context_set_gui_thread;
+  
   ui_provider->get_show_animation = ags_xorg_application_context_get_show_animation;
   ui_provider->set_show_animation = ags_xorg_application_context_set_show_animation;
 
@@ -817,6 +823,19 @@ ags_xorg_application_context_set_window(AgsUiProvider *ui_provider,
 					GtkWidget *widget)
 {
   AGS_XORG_APPLICATION_CONTEXT(ui_provider)->window = widget;
+}
+
+AgsThread*
+ags_xorg_application_context_get_gui_thread(AgsUiProvider *ui_provider)
+{
+  return(AGS_XORG_APPLICATION_CONTEXT(ui_provider)->gui_thread);
+}
+
+void
+ags_xorg_application_context_set_gui_thread(AgsUiProvider *ui_provider,
+					    AgsThread *gui_thread)
+{
+  AGS_XORG_APPLICATION_CONTEXT(ui_provider)->gui_thread = gui_thread;
 }
 
 gboolean

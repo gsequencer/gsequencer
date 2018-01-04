@@ -25,6 +25,8 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_UI_PROVIDER                    (ags_ui_provider_get_type())
 #define AGS_UI_PROVIDER(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_UI_PROVIDER, AgsUiProvider))
 #define AGS_UI_PROVIDER_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_UI_PROVIDER, AgsUiProviderInterface))
@@ -43,6 +45,10 @@ struct _AgsUiProviderInterface
   void (*set_window)(AgsUiProvider *ui_provider,
 		     GtkWidget *window);
 
+  AgsThread* (*get_gui_thread)(AgsUiProvider *ui_provider);
+  void (*set_gui_thread)(AgsUiProvider *ui_provider,
+			 AgsThread *gui_thread);
+  
   gboolean (*get_show_animation)(AgsUiProvider *ui_provider);
   void (*set_show_animation)(AgsUiProvider *ui_provider,
 			     gboolean do_show_animation);
@@ -57,6 +63,10 @@ GType ags_ui_provider_get_type();
 GtkWidget* ags_ui_provider_get_window(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_window(AgsUiProvider *ui_provider,
 				GtkWidget *window);
+
+AgsThread* ags_ui_provider_get_gui_thread(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_gui_thread(AgsUiProvider *ui_provider,
+				    AgsThread *gui_thread);
 
 gboolean ags_ui_provider_get_show_animation(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_show_animation(AgsUiProvider *ui_provider,
