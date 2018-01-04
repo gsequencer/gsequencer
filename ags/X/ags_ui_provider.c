@@ -97,3 +97,93 @@ ags_ui_provider_set_window(AgsUiProvider *ui_provider,
   ui_provider_interface->set_window(ui_provider,
 				    window);
 }
+
+/**
+ * ags_ui_provider_get_show_animation:
+ * @ui_provider: the #AgsUiProvider
+ * 
+ * Get show animation.
+ * 
+ * Returns: %TRUE if animation does show, else %FALSE
+ * 
+ * Since: 1.4.0
+ */
+gboolean
+ags_ui_provider_get_show_animation(AgsUiProvider *ui_provider)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_UI_PROVIDER(ui_provider), NULL);
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_val_if_fail(ui_provider_interface->get_show_animation, NULL);
+
+  return(ui_provider_interface->get_show_animation(ui_provider));
+}
+
+/**
+ * ags_ui_provider_set_show_animation:
+ * @ui_provider: the #AgsUiProvider
+ * @do_show_animation: do show animation
+ * 
+ * Set show animation.
+ * 
+ * Since: 1.4.0
+ */
+void
+ags_ui_provider_set_show_animation(AgsUiProvider *ui_provider,
+				   gboolean do_show_animation)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_if_fail(AGS_IS_UI_PROVIDER(ui_provider));
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_if_fail(ui_provider_interface->set_show_animation);
+
+  ui_provider_interface->set_show_animation(ui_provider,
+					    do_show_animation);
+}
+
+/**
+ * ags_ui_provider_get_gui_ready:
+ * @ui_provider: the #AgsUiProvider
+ * 
+ * Get GUI ready.
+ * 
+ * Returns: %TRUE if gui is ready, else %FALSE
+ * 
+ * Since: 1.4.0
+ */
+gboolean
+ags_ui_provider_get_gui_ready(AgsUiProvider *ui_provider)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_UI_PROVIDER(ui_provider), NULL);
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_val_if_fail(ui_provider_interface->get_gui_ready, NULL);
+
+  return(ui_provider_interface->get_gui_ready(ui_provider));
+}
+
+/**
+ * ags_ui_provider_set_gui_ready:
+ * @ui_provider: the #AgsUiProvider
+ * @is_gui_ready: is GUI ready
+ * 
+ * Set GUI ready.
+ * 
+ * Since: 1.4.0
+ */
+void
+ags_ui_provider_set_gui_ready(AgsUiProvider *ui_provider,
+			      gboolean is_gui_ready)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_if_fail(AGS_IS_UI_PROVIDER(ui_provider));
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_if_fail(ui_provider_interface->set_gui_ready);
+
+  ui_provider_interface->set_gui_ready(ui_provider,
+				       is_gui_ready);
+}

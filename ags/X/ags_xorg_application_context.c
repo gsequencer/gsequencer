@@ -112,6 +112,12 @@ GList* ags_xorg_application_context_get_distributed_manager(AgsSoundProvider *so
 GtkWidget* ags_xorg_application_context_get_window(AgsUiProvider *ui_provider);
 void ags_xorg_application_context_set_window(AgsUiProvider *ui_provider,
 					     GtkWidget *widget);
+gboolean ags_xorg_application_context_get_show_animation(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_show_animation(AgsUiProvider *ui_provider,
+						     gboolean do_show_animation);
+gboolean ags_xorg_application_context_get_gui_ready(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_gui_ready(AgsUiProvider *ui_provider,
+						gboolean is_gui_ready);
 void ags_xorg_application_context_dispose(GObject *gobject);
 void ags_xorg_application_context_finalize(GObject *gobject);
 
@@ -365,6 +371,12 @@ ags_xorg_application_context_ui_provider_interface_init(AgsUiProviderInterface *
 {
   ui_provider->get_window = ags_xorg_application_context_get_window;
   ui_provider->set_window = ags_xorg_application_context_set_window;
+
+  ui_provider->get_show_animation = ags_xorg_application_context_get_show_animation;
+  ui_provider->set_show_animation = ags_xorg_application_context_set_show_animation;
+
+  ui_provider->get_gui_ready = ags_xorg_application_context_get_gui_ready;
+  ui_provider->set_gui_ready = ags_xorg_application_context_set_gui_ready;
 }
 
 void
@@ -807,6 +819,34 @@ ags_xorg_application_context_set_window(AgsUiProvider *ui_provider,
   AGS_XORG_APPLICATION_CONTEXT(ui_provider)->window = widget;
 }
 
+gboolean
+ags_xorg_application_context_get_show_animation(AgsUiProvider *ui_provider)
+{
+  return(g_atomic_int_get(&(AGS_XORG_APPLICATION_CONTEXT(ui_provider)->show_animation)));
+}
+
+void
+ags_xorg_application_context_set_show_animation(AgsUiProvider *ui_provider,
+						gboolean do_show_animation)
+{
+  g_atomic_int_set(&(AGS_XORG_APPLICATION_CONTEXT(ui_provider)->show_animation),
+		   do_show_animation);
+}
+
+gboolean
+ags_xorg_application_context_get_gui_ready(AgsUiProvider *ui_provider)
+{
+  return(g_atomic_int_get(&(AGS_XORG_APPLICATION_CONTEXT(ui_provider)->gui_ready)));
+}
+
+void
+ags_xorg_application_context_set_gui_ready(AgsUiProvider *ui_provider,
+					   gboolean is_gui_ready)
+{
+  g_atomic_int_set(&(AGS_XORG_APPLICATION_CONTEXT(ui_provider)->gui_ready),
+		   is_gui_ready);
+}
+  
 void
 ags_xorg_application_context_load_config(AgsApplicationContext *application_context)
 {

@@ -42,6 +42,14 @@ struct _AgsUiProviderInterface
   GtkWidget* (*get_window)(AgsUiProvider *ui_provider);
   void (*set_window)(AgsUiProvider *ui_provider,
 		     GtkWidget *window);
+
+  gboolean (*get_show_animation)(AgsUiProvider *ui_provider);
+  void (*set_show_animation)(AgsUiProvider *ui_provider,
+			     gboolean do_show_animation);
+
+  gboolean (*get_gui_ready)(AgsUiProvider *ui_provider);
+  void (*set_gui_ready)(AgsUiProvider *ui_provider,
+			gboolean is_gui_ready);  
 };
 
 GType ags_ui_provider_get_type();
@@ -49,5 +57,13 @@ GType ags_ui_provider_get_type();
 GtkWidget* ags_ui_provider_get_window(AgsUiProvider *ui_provider);
 void ags_ui_provider_set_window(AgsUiProvider *ui_provider,
 				GtkWidget *window);
+
+gboolean ags_ui_provider_get_show_animation(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_show_animation(AgsUiProvider *ui_provider,
+					gboolean do_show_animation);
+
+gboolean ags_ui_provider_get_gui_ready(AgsUiProvider *ui_provider);
+void ags_ui_provider_set_gui_ready(AgsUiProvider *ui_provider,
+				   gboolean is_gui_ready);
 
 #endif /*__AGS_UI_PROVIDER_H__*/

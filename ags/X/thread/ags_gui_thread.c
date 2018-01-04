@@ -23,7 +23,7 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
-#include <ags/X/ags_xorg_application_context.h>
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
 #include <ags/X/file/ags_simple_file.h>
@@ -372,7 +372,7 @@ ags_gui_thread_do_poll_loop(void *ptr)
   AgsPollingThread *polling_thread;
   AgsThread *thread;
   
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsApplicationContext *application_context;
 
   GMainContext *main_context;
   GSourceFuncs task_funcs;
@@ -389,7 +389,7 @@ ags_gui_thread_do_poll_loop(void *ptr)
   gui_thread = (AgsGuiThread *) ptr;
   thread = (AgsThread *) ptr;
   
-  xorg_application_context = ags_application_context_get_instance();
+  application_context = ags_application_context_get_instance();
 
   main_context = gui_thread->main_context;
 
@@ -457,14 +457,14 @@ ags_gui_thread_do_poll_loop(void *ptr)
 		  main_context);
 
   /* wait for audio loop */
-  while(g_atomic_int_get(&(xorg_application_context->gui_ready)) == 0){
+  while(!ags_ui_provider_get_gui_ready(AGS_UI_PROVIDER(application_context))){
     usleep(500000);
   }
 
-  task_thread = ags_thread_find_type(AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop,
+  task_thread = ags_thread_find_type(AGS_APPLICATION_CONTEXT(application_context)->main_loop,
 				     AGS_TYPE_TASK_THREAD);
 
-  polling_thread = (AgsPollingThread *) ags_thread_find_type(AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop,
+  polling_thread = (AgsPollingThread *) ags_thread_find_type(AGS_APPLICATION_CONTEXT(application_context)->main_loop,
 							     AGS_TYPE_POLLING_THREAD);
   
   /* poll */
@@ -1186,7 +1186,7 @@ gboolean
 ags_gui_thread_animation_prepare(GSource *source,
 				 gint *timeout_)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsApplicationContext *application_context;
 
   AgsGuiThread *gui_thread;
   
@@ -1196,8 +1196,8 @@ ags_gui_thread_animation_prepare(GSource *source,
 
   guint nth;
   
-  xorg_application_context = ags_application_context_get_instance();
-  main_loop = AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop;
+  application_context = ags_application_context_get_instance();
+  main_loop = AGS_APPLICATION_CONTEXT(application_context)->main_loop;
   
   gui_thread = ags_thread_find_type(main_loop,
 				    AGS_TYPE_GUI_THREAD);
@@ -1211,7 +1211,7 @@ ags_gui_thread_animation_prepare(GSource *source,
   pthread_mutex_unlock(log->mutex);
 
   if(nth > gui_thread->nth_message ||
-     !g_atomic_int_get(&(xorg_application_context->show_animation))){
+     !ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
     if(timeout_ != NULL){
       *timeout_ = 0;
     }
@@ -1229,7 +1229,7 @@ ags_gui_thread_animation_prepare(GSource *source,
 gboolean
 ags_gui_thread_animation_check(GSource *source)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsApplicationContext *application_context;
 
   AgsGuiThread *gui_thread;
   
@@ -1239,8 +1239,8 @@ ags_gui_thread_animation_check(GSource *source)
 
   guint nth;
 
-  xorg_application_context = ags_application_context_get_instance();
-  main_loop = AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop;
+  application_context = ags_application_context_get_instance();
+  main_loop = AGS_APPLICATION_CONTEXT(application_context)->main_loop;
   
   gui_thread = ags_thread_find_type(main_loop,
 				    AGS_TYPE_GUI_THREAD);
@@ -1254,7 +1254,7 @@ ags_gui_thread_animation_check(GSource *source)
   pthread_mutex_unlock(log->mutex);
 
   if(nth > gui_thread->nth_message ||
-     !g_atomic_int_get(&(xorg_application_context->show_animation))){
+     !ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
     return(TRUE);
   }else{
     return(FALSE);
@@ -1266,7 +1266,7 @@ ags_gui_thread_animation_dispatch(GSource *source,
 				  GSourceFunc callback,
 				  gpointer user_data)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsApplicationContext *application_context;
 
   static GtkWindow *window = NULL;
   static GtkWidget *widget;
@@ -1278,8 +1278,8 @@ ags_gui_thread_animation_dispatch(GSource *source,
   AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
-  xorg_application_context = ags_application_context_get_instance();
-  main_loop = AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop;
+  application_context = ags_application_context_get_instance();
+  main_loop = AGS_APPLICATION_CONTEXT(application_context)->main_loop;
   
   gui_thread = ags_thread_find_type(main_loop,
 				    AGS_TYPE_GUI_THREAD);
@@ -1312,13 +1312,13 @@ ags_gui_thread_animation_dispatch(GSource *source,
   g_main_context_iteration(main_context,
   			   FALSE);
   
-  if(g_atomic_int_get(&(xorg_application_context->show_animation))){
+  if(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
     return(G_SOURCE_CONTINUE);
   }else{
     gtk_widget_destroy(window);
     window = NULL;
 
-    gtk_widget_show_all(xorg_application_context->window);
+    gtk_widget_show_all(ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
 
     return(G_SOURCE_REMOVE);
   }
@@ -1417,7 +1417,7 @@ ags_gui_thread_sync_task_dispatch(GSource *source,
 
   main_context = gui_thread->main_context;
 
-  if(g_atomic_int_get(&(AGS_XORG_APPLICATION_CONTEXT(application_context)->show_animation)) == TRUE){
+  if(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
     return(G_SOURCE_CONTINUE);
   }
 
@@ -1738,14 +1738,14 @@ ags_gui_thread_do_animation_callback(GtkWidget *widget, GdkEventExpose *event,
 void
 ags_gui_thread_do_animation(AgsGuiThread *gui_thread)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsApplicationContext *application_context;
 
   GtkWindow *window;
   GtkWidget *widget;
   
   GMainContext *main_context;
 
-  xorg_application_context = ags_application_context_get_instance();
+  application_context = ags_application_context_get_instance();
 
   main_context = g_main_context_default();
 
@@ -1769,7 +1769,7 @@ ags_gui_thread_do_animation(AgsGuiThread *gui_thread)
 		   G_CALLBACK(ags_gui_thread_do_animation_callback), gui_thread);
   
   /* iterate log messages */
-  while(g_atomic_int_get(&(xorg_application_context->show_animation))){
+  while(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
     gtk_widget_queue_draw(widget);
 
     gdk_threads_enter();
@@ -1789,7 +1789,7 @@ ags_gui_thread_do_animation(AgsGuiThread *gui_thread)
 void
 ags_gui_thread_do_run(AgsGuiThread *gui_thread)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  AgsApplicationContext *application_context;
 
   AgsThread *thread;
   AgsTaskThread *task_thread;
@@ -1805,13 +1805,13 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
     4000000,
   };
 
-  xorg_application_context = ags_application_context_get_instance();
+  application_context = ags_application_context_get_instance();
 
   thread = (AgsThread *) gui_thread;
   g_atomic_int_or(&(gui_thread->flags),
 		  AGS_GUI_THREAD_RUNNING);
 
-  task_thread = (AgsThread *) AGS_APPLICATION_CONTEXT(xorg_application_context)->task_thread;
+  task_thread = (AgsThread *) AGS_APPLICATION_CONTEXT(application_context)->task_thread;
 
   main_context = gui_thread->main_context;
 
@@ -1889,8 +1889,8 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
 #endif
   
   /* show animation */
-  g_atomic_int_set(&(xorg_application_context->gui_ready),
-		   TRUE);
+  ags_ui_provider_set_gui_ready(AGS_UI_PROVIDER(application_context),
+				TRUE);
 
   /* gtk+-2.0 main */    
   gtk_main();
