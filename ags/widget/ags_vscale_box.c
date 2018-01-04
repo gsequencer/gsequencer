@@ -24,12 +24,12 @@ void ags_vscale_box_init(AgsVScaleBox *vscale_box);
 
 /**
  * SECTION:ags_vscale_box
- * @short_description: horizontal box widget
+ * @short_description: vertical box widget
  * @title: AgsVScaleBox
  * @section_id:
  * @include: ags/widget/ags_vscale_box.h
  *
- * The #AgsVScaleBox is an horizontal box widget containing #AgsScale.
+ * The #AgsVScaleBox is an vertical box widget containing #AgsScale.
  */
 
 GType
