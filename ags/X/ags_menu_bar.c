@@ -190,7 +190,10 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("FPlayer"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 #endif
-  
+
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Audiorec"));
+  gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
+
   /* bridge */
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("LADSPA"));
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_ladspa_bridge_menu_new());
@@ -355,6 +358,10 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   list2 = list2->next;
 #endif
   
+  g_signal_connect (G_OBJECT (list2->data), "activate",
+                    G_CALLBACK (ags_menu_action_add_audiorec_callback), (gpointer) menu_bar);
+  list2 = list2->next;
+
   /* ladspa */
   list3_start = 
     list3 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list2->data));

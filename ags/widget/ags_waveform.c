@@ -44,7 +44,7 @@ ags_waveform_get_type(void)
     };
 
     ags_type_waveform = g_type_register_static(GTK_TYPE_WIDGET,
-					       "AgsWaveform\0", &ags_waveform_info,
+					       "AgsWaveform", &ags_waveform_info,
 					       0);
   }
 
@@ -63,7 +63,7 @@ void
 ags_waveform_init(AgsWaveform *waveform)
 {
   g_object_set(G_OBJECT(waveform),
-	       "app-paintable\0", TRUE,
+	       "app-paintable", TRUE,
 	       NULL);
 }
 

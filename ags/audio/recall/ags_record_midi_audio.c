@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2017 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,7 +19,7 @@
 
 #include <ags/audio/recall/ags_record_midi_audio.h>
 
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
 
 #include <ags/i18n.h>
 
@@ -120,6 +120,7 @@ void
 ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_record_midi_audio_parent_class = g_type_class_peek_parent(record_midi_audio);
@@ -139,7 +140,7 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * 
    * The playback port.
    * 
-   * Since: 1.0.0.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("playback",
 				   i18n_pspec("if do playback"),
@@ -155,7 +156,7 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * 
    * The record port.
    * 
-   * Since: 1.0.0.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("record",
 				   i18n_pspec("if do record"),
@@ -171,7 +172,7 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * 
    * The filename port.
    * 
-   * Since: 1.0.0.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("filename",
 				   i18n_pspec("filename of record"),
@@ -187,7 +188,7 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * 
    * The division port.
    * 
-   * Since: 1.0.0.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("division",
 				   i18n_pspec("division of record"),
@@ -203,7 +204,7 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * 
    * The tempo port.
    * 
-   * Since: 1.0.0.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("tempo",
 				   i18n_pspec("tempo of record"),
@@ -219,7 +220,7 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * 
    * The bpm port.
    * 
-   * Since: 1.0.0.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("bpm",
 				   i18n_pspec("bpm of record"),

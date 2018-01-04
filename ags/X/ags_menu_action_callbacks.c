@@ -41,6 +41,7 @@
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_syncsynth.h>
 #include <ags/X/machine/ags_ffplayer.h>
+#include <ags/X/machine/ags_audiorec.h>
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
@@ -341,7 +342,8 @@ ags_menu_action_add_panel_callback(GtkWidget *menu_item, gpointer data)
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(panel),
-		     FALSE, FALSE, 0);
+		     FALSE, FALSE,
+		     0);
 
   AGS_MACHINE(panel)->audio->audio_channels = 2;
 
@@ -396,7 +398,8 @@ ags_menu_action_add_mixer_callback(GtkWidget *menu_item, gpointer data)
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(mixer),
-		     FALSE, FALSE, 0);
+		     FALSE, FALSE,
+		     0);
 
   ags_connectable_connect(AGS_CONNECTABLE(mixer));
 
@@ -450,7 +453,8 @@ ags_menu_action_add_drum_callback(GtkWidget *menu_item, gpointer data)
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(drum),
-		     FALSE, FALSE, 0);
+		     FALSE, FALSE,
+		     0);
 
   /* connect everything */
   ags_connectable_connect(AGS_CONNECTABLE(drum));
@@ -507,7 +511,8 @@ ags_menu_action_add_matrix_callback(GtkWidget *menu_item, gpointer data)
   
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(matrix),
-		     FALSE, FALSE, 0);
+		     FALSE, FALSE,
+		     0);
   
   /* connect everything */
   ags_connectable_connect(AGS_CONNECTABLE(matrix));
@@ -564,7 +569,8 @@ ags_menu_action_add_synth_callback(GtkWidget *menu_item, gpointer data)
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     (GtkWidget *) synth,
-		     FALSE, FALSE, 0);
+		     FALSE, FALSE,
+		     0);
 
   ags_connectable_connect(AGS_CONNECTABLE(synth));
 
@@ -616,7 +622,8 @@ ags_menu_action_add_syncsynth_callback(GtkWidget *menu_item, gpointer data)
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     (GtkWidget *) syncsynth,
-		     FALSE, FALSE, 0);
+		     FALSE, FALSE,
+		     0);
 
   ags_connectable_connect(AGS_CONNECTABLE(syncsynth));
 
@@ -668,7 +675,8 @@ ags_menu_action_add_ffplayer_callback(GtkWidget *menu_item, gpointer data)
 
   gtk_box_pack_start((GtkBox *) window->machines,
 		     (GtkWidget *) ffplayer,
-		     FALSE, FALSE, 0);
+		     FALSE, FALSE,
+		     0);
 
   ags_connectable_connect(AGS_CONNECTABLE(ffplayer));
 
@@ -678,6 +686,60 @@ ags_menu_action_add_ffplayer_callback(GtkWidget *menu_item, gpointer data)
   ags_audio_set_pads(AGS_MACHINE(ffplayer)->audio, AGS_TYPE_OUTPUT, 1);  
 
   gtk_widget_show_all((GtkWidget *) ffplayer);
+}
+
+void
+ags_menu_action_add_audiorec_callback(GtkWidget *menu_item, gpointer data)
+{
+  AgsApplicationContext *application_context;
+  AgsWindow *window;
+  AgsAudiorec *audiorec;
+
+  AgsAddAudio *add_audio;
+
+  AgsMutexManager *mutex_manager;
+  AgsThread *main_loop;
+  AgsGuiThread *gui_thread;
+
+  pthread_mutex_t *application_mutex;
+  
+  application_context = ags_application_context_get_instance();
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  audiorec = ags_audiorec_new(G_OBJECT(window->soundcard));
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);    
+
+  /* get audio loop */
+  pthread_mutex_lock(application_mutex);
+
+  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(application_context)->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* get task thread */
+  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
+						     AGS_TYPE_GUI_THREAD);
+
+  add_audio = ags_add_audio_new(window->soundcard,
+				AGS_MACHINE(audiorec)->audio);
+  ags_gui_thread_schedule_task(gui_thread,
+			       add_audio);
+
+  gtk_box_pack_start((GtkBox *) window->machines,
+		     (GtkWidget *) audiorec,
+		     FALSE, FALSE,
+		     0);
+
+  ags_connectable_connect(AGS_CONNECTABLE(audiorec));
+
+  //  audiorec->machine.audio->frequence = ;
+  audiorec->machine.audio->audio_channels = 2;
+  ags_audio_set_pads(AGS_MACHINE(audiorec)->audio, AGS_TYPE_INPUT, 1);
+  ags_audio_set_pads(AGS_MACHINE(audiorec)->audio, AGS_TYPE_OUTPUT, 1);  
+
+  gtk_widget_show_all((GtkWidget *) audiorec);
 }
 
 void
