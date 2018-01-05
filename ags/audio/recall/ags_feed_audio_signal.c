@@ -223,7 +223,8 @@ ags_feed_audio_signal_run_pre(AgsRecall *recall)
 
     /* feed audio signal */
     frame_count = (guint) (((gdouble) audio_signal->samplerate / notation_delay) * (gdouble) (note->x[1] - note->x[0]));
-    
+
+    //FIXME:JK: not thread-safe
     ags_audio_signal_feed(audio_signal,
 			  template,
 			  frame_count);

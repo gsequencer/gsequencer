@@ -957,6 +957,8 @@ libags_audio_recall_h_sources = \
 	ags/audio/recall/ags_buffer_channel.h \
 	ags/audio/recall/ags_buffer_channel_run.h \
 	ags/audio/recall/ags_buffer_recycling.h \
+	ags/audio/recall/ags_capture_sound_audio.h \
+	ags/audio/recall/ags_capture_sound_audio_run.h \
 	ags/audio/recall/ags_copy_audio_signal.h \
 	ags/audio/recall/ags_copy_channel.h \
 	ags/audio/recall/ags_copy_channel_run.h \
@@ -1032,6 +1034,8 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_buffer_channel.c \
 	ags/audio/recall/ags_buffer_channel_run.c \
 	ags/audio/recall/ags_buffer_recycling.c \
+	ags/audio/recall/ags_capture_sound_audio.c \
+	ags/audio/recall/ags_capture_sound_audio_run.c \
 	ags/audio/recall/ags_copy_audio_signal.c \
 	ags/audio/recall/ags_copy_channel.c \
 	ags/audio/recall/ags_copy_channel_run.c \

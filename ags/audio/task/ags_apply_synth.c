@@ -1014,6 +1014,7 @@ ags_apply_synth_launch(AgsTask *task)
 	  
 	pthread_mutex_lock(channel_mutex);
 
+	//FIXME:JK: not thread-safe
 	ags_synth_generator_compute_extended(synth_generator,
 					     audio_signal,
 					     note,
@@ -1120,6 +1121,7 @@ ags_apply_synth_launch(AgsTask *task)
 	  
 	pthread_mutex_lock(channel_mutex);
 
+	//FIXME:JK: not thread-safe
 	ags_synth_generator_compute_extended(AGS_INPUT(channel)->synth_generator,
 					     audio_signal,
 					     note,
@@ -1256,6 +1258,7 @@ ags_apply_synth_launch(AgsTask *task)
 	  
 	  pthread_mutex_lock(channel_mutex);
 	  
+	  //FIXME:JK: not thread-safe
 	  ags_synth_generator_compute_extended(synth_generator,
 					       audio_signal,
 					       note,

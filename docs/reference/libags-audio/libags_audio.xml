@@ -175,6 +175,8 @@
       <xi:include href="xml/ags_buffer_channel.xml"/>
       <xi:include href="xml/ags_buffer_channel_run.xml"/>
       <xi:include href="xml/ags_buffer_recycling.xml"/>
+      <xi:include href="xml/ags_capture_sound_audio.xml"/>
+      <xi:include href="xml/ags_capture_sound_audio_run.xml"/>
       <xi:include href="xml/ags_copy_audio_signal.xml"/>
       <xi:include href="xml/ags_copy_channel.xml"/>
       <xi:include href="xml/ags_copy_channel_run.xml"/>

@@ -2,10 +2,17 @@ ags (1.4.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented AgsWaveWindow, AgsWaveEditor, AgsWaveToolbar and AgsWaveEdit
-	* TODO:JK: implemented AgsSelectAudioData and AgsPositionWaveCursor
-	* TODO:JK: implemented AgsLevel
-	* TODO:JK: implemented ags-capture recall
+	* TODO:JK: implemented AgsSelectBuffer and AgsPositionAudioSignalCursor
+	* implemented AgsLevel, AgsLevelBox, AgsVLevelBox, AgsHScaleBox and AgsScrolledScaleBox in libags-gui
+	* TODO:JK: implemented AgsConcurrentAudioSignal
+	* TODO:JK: implemented ags-capture-sound recall
+	* TODO:JK: implemented ags-jit-buffer recall
+	* TODO:JK: implemented ags-jit-copy recall
 	* TODO:JK: implemented AgsAudiorec
+	* TODO:JK: implemented AgsInputCollectionEditor, AgsInputListingEditor and AgsInputEditor
+	* TODO:JK: improved ags-feed recall thread-safety
+	* TODO:JK: improved ags_audio_signal_feed() reduce over-head
+	* TODO:JK: improved AgsApplySynth thread-safety
 
 ags (1.3.0)
 
