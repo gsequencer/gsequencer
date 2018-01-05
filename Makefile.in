@@ -271,6 +271,7 @@ am__objects_6 = $(am__objects_1) \
 	ags/audio/libags_audio_la-ags_audio_connection.lo \
 	ags/audio/libags_audio_la-ags_audio_signal.lo \
 	ags/audio/libags_audio_la-ags_automation.lo \
+	ags/audio/libags_audio_la-ags_buffer.lo \
 	ags/audio/libags_audio_la-ags_channel.lo \
 	ags/audio/libags_audio_la-ags_channel_iter.lo \
 	ags/audio/libags_audio_la-ags_devout.lo \
@@ -312,7 +313,8 @@ am__objects_6 = $(am__objects_1) \
 	ags/audio/libags_audio_la-ags_recycling_context.lo \
 	ags/audio/libags_audio_la-ags_sound_provider.lo \
 	ags/audio/libags_audio_la-ags_synth_generator.lo \
-	ags/audio/libags_audio_la-ags_synth_util.lo
+	ags/audio/libags_audio_la-ags_synth_util.lo \
+	ags/audio/libags_audio_la-ags_wave.lo
 am__objects_7 = $(am__objects_1) \
 	ags/audio/client/libags_audio_la-ags_remote_channel.lo \
 	ags/audio/client/libags_audio_la-ags_remote_input.lo \
@@ -3461,6 +3463,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_audio_connection.h \
 	ags/audio/ags_audio_signal.h \
 	ags/audio/ags_automation.h \
+	ags/audio/ags_buffer.h \
 	ags/audio/ags_channel.h \
 	ags/audio/ags_channel_iter.h \
 	ags/audio/ags_devout.h \
@@ -3503,7 +3506,8 @@ libags_audio_h_sources = \
 	ags/audio/ags_recycling.h \
 	ags/audio/ags_sound_provider.h \
 	ags/audio/ags_synth_generator.h \
-	ags/audio/ags_synth_util.h
+	ags/audio/ags_synth_util.h \
+	ags/audio/ags_wave.h
 
 deprecated_libags_audio_c_sources = 
 libags_audio_c_sources = \
@@ -3515,6 +3519,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_audio_connection.c \
 	ags/audio/ags_audio_signal.c \
 	ags/audio/ags_automation.c \
+	ags/audio/ags_buffer.c \
 	ags/audio/ags_channel.c \
 	ags/audio/ags_channel_iter.c \
 	ags/audio/ags_devout.c \
@@ -3556,7 +3561,8 @@ libags_audio_c_sources = \
 	ags/audio/ags_recycling_context.c \
 	ags/audio/ags_sound_provider.c \
 	ags/audio/ags_synth_generator.c \
-	ags/audio/ags_synth_util.c
+	ags/audio/ags_synth_util.c \
+	ags/audio/ags_wave.c
 
 
 # libags-audio - client
@@ -4978,6 +4984,8 @@ ags/audio/libags_audio_la-ags_audio_signal.lo:  \
 	ags/audio/$(am__dirstamp) ags/audio/$(DEPDIR)/$(am__dirstamp)
 ags/audio/libags_audio_la-ags_automation.lo:  \
 	ags/audio/$(am__dirstamp) ags/audio/$(DEPDIR)/$(am__dirstamp)
+ags/audio/libags_audio_la-ags_buffer.lo: ags/audio/$(am__dirstamp) \
+	ags/audio/$(DEPDIR)/$(am__dirstamp)
 ags/audio/libags_audio_la-ags_channel.lo: ags/audio/$(am__dirstamp) \
 	ags/audio/$(DEPDIR)/$(am__dirstamp)
 ags/audio/libags_audio_la-ags_channel_iter.lo:  \
@@ -5062,6 +5070,8 @@ ags/audio/libags_audio_la-ags_synth_generator.lo:  \
 	ags/audio/$(am__dirstamp) ags/audio/$(DEPDIR)/$(am__dirstamp)
 ags/audio/libags_audio_la-ags_synth_util.lo:  \
 	ags/audio/$(am__dirstamp) ags/audio/$(DEPDIR)/$(am__dirstamp)
+ags/audio/libags_audio_la-ags_wave.lo: ags/audio/$(am__dirstamp) \
+	ags/audio/$(DEPDIR)/$(am__dirstamp)
 ags/audio/client/$(am__dirstamp):
 	@$(MKDIR_P) ags/audio/client
 	@: > ags/audio/client/$(am__dirstamp)
@@ -7668,6 +7678,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_audio_connection.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_audio_signal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_automation.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_buffer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_channel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_channel_iter.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_devin.Plo@am__quote@
@@ -7710,6 +7721,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_sound_provider.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_synth_generator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_synth_util.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_wave.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/client/$(DEPDIR)/libags_audio_la-ags_remote_channel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/client/$(DEPDIR)/libags_audio_la-ags_remote_input.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/client/$(DEPDIR)/libags_audio_la-ags_remote_output.Plo@am__quote@
@@ -8480,6 +8492,13 @@ ags/audio/libags_audio_la-ags_automation.lo: ags/audio/ags_automation.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/libags_audio_la-ags_automation.lo `test -f 'ags/audio/ags_automation.c' || echo '$(srcdir)/'`ags/audio/ags_automation.c
 
+ags/audio/libags_audio_la-ags_buffer.lo: ags/audio/ags_buffer.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/libags_audio_la-ags_buffer.lo -MD -MP -MF ags/audio/$(DEPDIR)/libags_audio_la-ags_buffer.Tpo -c -o ags/audio/libags_audio_la-ags_buffer.lo `test -f 'ags/audio/ags_buffer.c' || echo '$(srcdir)/'`ags/audio/ags_buffer.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/$(DEPDIR)/libags_audio_la-ags_buffer.Tpo ags/audio/$(DEPDIR)/libags_audio_la-ags_buffer.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/ags_buffer.c' object='ags/audio/libags_audio_la-ags_buffer.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/libags_audio_la-ags_buffer.lo `test -f 'ags/audio/ags_buffer.c' || echo '$(srcdir)/'`ags/audio/ags_buffer.c
+
 ags/audio/libags_audio_la-ags_channel.lo: ags/audio/ags_channel.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/libags_audio_la-ags_channel.lo -MD -MP -MF ags/audio/$(DEPDIR)/libags_audio_la-ags_channel.Tpo -c -o ags/audio/libags_audio_la-ags_channel.lo `test -f 'ags/audio/ags_channel.c' || echo '$(srcdir)/'`ags/audio/ags_channel.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/$(DEPDIR)/libags_audio_la-ags_channel.Tpo ags/audio/$(DEPDIR)/libags_audio_la-ags_channel.Plo
@@ -8773,6 +8792,13 @@ ags/audio/libags_audio_la-ags_synth_util.lo: ags/audio/ags_synth_util.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/ags_synth_util.c' object='ags/audio/libags_audio_la-ags_synth_util.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/libags_audio_la-ags_synth_util.lo `test -f 'ags/audio/ags_synth_util.c' || echo '$(srcdir)/'`ags/audio/ags_synth_util.c
+
+ags/audio/libags_audio_la-ags_wave.lo: ags/audio/ags_wave.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/libags_audio_la-ags_wave.lo -MD -MP -MF ags/audio/$(DEPDIR)/libags_audio_la-ags_wave.Tpo -c -o ags/audio/libags_audio_la-ags_wave.lo `test -f 'ags/audio/ags_wave.c' || echo '$(srcdir)/'`ags/audio/ags_wave.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/$(DEPDIR)/libags_audio_la-ags_wave.Tpo ags/audio/$(DEPDIR)/libags_audio_la-ags_wave.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/ags_wave.c' object='ags/audio/libags_audio_la-ags_wave.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/libags_audio_la-ags_wave.lo `test -f 'ags/audio/ags_wave.c' || echo '$(srcdir)/'`ags/audio/ags_wave.c
 
 ags/audio/client/libags_audio_la-ags_remote_channel.lo: ags/audio/client/ags_remote_channel.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/client/libags_audio_la-ags_remote_channel.lo -MD -MP -MF ags/audio/client/$(DEPDIR)/libags_audio_la-ags_remote_channel.Tpo -c -o ags/audio/client/libags_audio_la-ags_remote_channel.lo `test -f 'ags/audio/client/ags_remote_channel.c' || echo '$(srcdir)/'`ags/audio/client/ags_remote_channel.c

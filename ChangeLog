@@ -4,10 +4,8 @@ ags (1.4.0)
 	* TODO:JK: implemented AgsWaveWindow, AgsWaveEditor, AgsWaveToolbar and AgsWaveEdit
 	* TODO:JK: implemented AgsSelectBuffer and AgsPositionAudioSignalCursor
 	* implemented AgsLevel, AgsLevelBox, AgsVLevelBox, AgsHScaleBox and AgsScrolledScaleBox in libags-gui
-	* TODO:JK: implemented AgsConcurrentAudioSignal
-	* TODO:JK: implemented ags-capture-sound recall
-	* TODO:JK: implemented ags-jit-buffer recall
-	* TODO:JK: implemented ags-jit-copy recall
+	* TODO:JK: implemented AgsWave and AgsBuffer
+	* TODO:JK: implemented ags-route-wave recall
 	* TODO:JK: implemented AgsAudiorec
 	* TODO:JK: implemented AgsInputCollectionEditor, AgsInputListingEditor and AgsInputEditor
 	* TODO:JK: improved ags-feed recall thread-safety

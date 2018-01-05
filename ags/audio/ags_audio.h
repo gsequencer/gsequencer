@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -58,6 +58,8 @@ typedef struct _AgsAudioClass AgsAudioClass;
  * @AGS_AUDIO_NO_INPUT: no input provided
  * @AGS_AUDIO_SKIP_OUTPUT: skip output as processing audio data
  * @AGS_AUDIO_SKIP_INPUT: skip input as processing audio data
+ * @AGS_AUDIO_HAS_WAVE: has wave
+ * @AGS_AUDIO_WAVE_DEFAULT: wave default mapped on input channels
  *
  * Enum values to control the behavior or indicate internal state of #AgsAudio by
  * enable/disable as flags.
@@ -81,6 +83,8 @@ typedef enum{
   AGS_AUDIO_NO_INPUT                    = 1 << 15,
   AGS_AUDIO_SKIP_OUTPUT                 = 1 << 16,
   AGS_AUDIO_SKIP_INPUT                  = 1 << 17,
+  AGS_AUDIO_HAS_WAVE                    = 1 << 18,
+  AGS_AUDIO_WAVE_DEFAULT                = 1 << 19,
 }AgsAudioFlags;
 
 struct _AgsAudio
@@ -130,6 +134,7 @@ struct _AgsAudio
   
   GList *notation;
   GList *automation;
+  GList *wave;
   
   GList *recall_id;
   GList *recycling_context;
@@ -195,7 +200,7 @@ void ags_audio_remove_preset(AgsAudio *audio,
 			     GObject *preset);
 
 void ags_audio_add_notation(AgsAudio *audio,
-			      GObject *notation);
+			    GObject *notation);
 void ags_audio_remove_notation(AgsAudio *audio,
 			       GObject *notation);
 
@@ -203,6 +208,11 @@ void ags_audio_add_automation(AgsAudio *audio,
 			      GObject *automation);
 void ags_audio_remove_automation(AgsAudio *audio,
 				 GObject *automation);
+
+void ags_audio_add_wave(AgsAudio *audio,
+			GObject *wave);
+void ags_audio_remove_wave(AgsAudio *audio,
+			   GObject *wave);
 
 void ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id);
 void ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id);

@@ -249,6 +249,7 @@
 ./ags/audio/ags_audio_connection.c
 ./ags/audio/ags_audio_signal.c
 ./ags/audio/ags_automation.c
+./ags/audio/ags_buffer.c
 ./ags/audio/ags_channel.c
 ./ags/audio/ags_channel_iter.c
 ./ags/audio/ags_devin.c
@@ -291,6 +292,7 @@
 ./ags/audio/ags_sound_provider.c
 ./ags/audio/ags_synth_generator.c
 ./ags/audio/ags_synth_util.c
+./ags/audio/ags_wave.c
 ./ags/audio/client/ags_remote_channel.c
 ./ags/audio/client/ags_remote_input.c
 ./ags/audio/client/ags_remote_output.c
@@ -327,6 +329,8 @@
 ./ags/audio/recall/ags_buffer_channel.c
 ./ags/audio/recall/ags_buffer_channel_run.c
 ./ags/audio/recall/ags_buffer_recycling.c
+./ags/audio/recall/ags_capture_sound_audio.c
+./ags/audio/recall/ags_capture_sound_audio_run.c
 ./ags/audio/recall/ags_copy_audio_signal.c
 ./ags/audio/recall/ags_copy_channel.c
 ./ags/audio/recall/ags_copy_channel_run.c

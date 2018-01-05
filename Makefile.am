@@ -637,6 +637,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_audio_connection.h \
 	ags/audio/ags_audio_signal.h \
 	ags/audio/ags_automation.h \
+	ags/audio/ags_buffer.h \
 	ags/audio/ags_channel.h \
 	ags/audio/ags_channel_iter.h \
 	ags/audio/ags_devout.h \
@@ -679,7 +680,8 @@ libags_audio_h_sources = \
 	ags/audio/ags_recycling.h \
 	ags/audio/ags_sound_provider.h \
 	ags/audio/ags_synth_generator.h \
-	ags/audio/ags_synth_util.h
+	ags/audio/ags_synth_util.h \
+	ags/audio/ags_wave.h
 
 deprecated_libags_audio_c_sources =
 
@@ -692,6 +694,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_audio_connection.c \
 	ags/audio/ags_audio_signal.c \
 	ags/audio/ags_automation.c \
+	ags/audio/ags_buffer.c \
 	ags/audio/ags_channel.c \
 	ags/audio/ags_channel_iter.c \
 	ags/audio/ags_devout.c \
@@ -733,7 +736,8 @@ libags_audio_c_sources = \
 	ags/audio/ags_recycling_context.c \
 	ags/audio/ags_sound_provider.c \
 	ags/audio/ags_synth_generator.c \
-	ags/audio/ags_synth_util.c
+	ags/audio/ags_synth_util.c \
+	ags/audio/ags_wave.c
 
 # libags-audio - client
 deprecated_libags_audio_client_h_sources =

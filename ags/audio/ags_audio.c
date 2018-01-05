@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,7 @@
 #include <ags/audio/ags_preset.h>
 #include <ags/audio/ags_notation.h>
 #include <ags/audio/ags_automation.h>
+#include <ags/audio/ags_wave.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_playback_domain.h>
@@ -131,6 +132,7 @@ enum{
   PROP_PLAYBACK_DOMAIN,
   PROP_NOTATION,
   PROP_AUTOMATION,
+  PROP_WAVE,
   PROP_RECALL_ID,
   PROP_RECYCLING_CONTEXT,
   PROP_RECALL_CONTAINER,
@@ -607,6 +609,21 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
+   * AgsAudio:wave:
+   *
+   * The #AgsWave it contains.
+   * 
+   * Since: 1.4.0
+   */
+  param_spec = g_param_spec_pointer("wave",
+				    i18n_pspec("containing wave"),
+				    i18n_pspec("The wave it contains"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_WAVE,
+				  param_spec);
+
+  /**
    * AgsAudio:recall-id:
    *
    * The assigned #AgsRecallID.
@@ -966,9 +983,10 @@ ags_audio_init(AgsAudio *audio)
 	       "domain", audio,
 	       NULL);
 
-  /* notation and automation */
+  /* notation, automation and wave */
   audio->notation = NULL;
   audio->automation = NULL;
+  audio->wave = NULL;
 
   /* recycling context */
   audio->recall_id = NULL;
@@ -1086,7 +1104,7 @@ ags_audio_set_property(GObject *gobject,
       buffer_size = g_value_get_uint(value);
 
       ags_audio_set_buffer_size(audio,
-				  buffer_size);
+				buffer_size);
     }
     break;
   case PROP_FORMAT:
@@ -1263,6 +1281,21 @@ ags_audio_set_property(GObject *gobject,
 
       ags_audio_add_automation(audio,
 			       (GObject *) automation);
+    }
+    break;
+  case PROP_WAVE:
+    {
+      AgsWave *wave;
+
+      wave = (AgsWave *) g_value_get_pointer(value);
+
+      if(wave == NULL ||
+	 g_list_find(audio->wave, wave) != NULL){
+	return;
+      }
+
+      ags_audio_add_wave(audio,
+			 (GObject *) wave);
     }
     break;
   case PROP_RECALL_ID:
@@ -1484,6 +1517,11 @@ ags_audio_get_property(GObject *gobject,
       g_value_set_pointer(value, g_list_copy(audio->automation));
     }
     break;
+  case PROP_WAVE:
+    {
+      g_value_set_pointer(value, g_list_copy(audio->wave));
+    }
+    break;
   case PROP_RECALL_ID:
     {
       g_value_set_pointer(value, g_list_copy(audio->recall_id));
@@ -1622,6 +1660,24 @@ ags_audio_dispose(GObject *gobject)
 		     g_object_unref);
 
     audio->automation = NULL;
+  }
+
+  /* wave */
+  if(audio->wave != NULL){
+    list = audio->wave;
+
+    while(list != NULL){
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
+
+      list = list_next;
+    }
+  
+    g_list_free_full(audio->wave,
+		     g_object_unref);
+
+    audio->wave = NULL;
   }
 
   /* recall id */
@@ -1864,6 +1920,22 @@ ags_audio_finalize(GObject *gobject)
     }
 
     g_list_free_full(audio->automation,
+		     g_object_unref);
+  }
+
+  /* wave */
+  if(audio->wave != NULL){
+    list = audio->wave;
+
+    while(list != NULL){
+      g_object_set(list->data,
+		   "audio", NULL,
+		   NULL);
+
+      list = list->next;
+    }
+
+    g_list_free_full(audio->wave,
 		     g_object_unref);
   }
   
@@ -2623,6 +2695,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   auto void ags_audio_set_audio_channels_grow_notation();
   auto void ags_audio_set_audio_channels_shrink_notation();
   auto void ags_audio_set_audio_channels_shrink_automation();
+  auto void ags_audio_set_audio_channels_grow_wave();
+  auto void ags_audio_set_audio_channels_shrink_wave();
   
   void ags_audio_set_audio_channels_init_parameters(GType type){
     if(type == AGS_TYPE_OUTPUT){
@@ -3010,6 +3084,56 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       automation = automation_next;
     }
   }
+
+  void ags_audio_set_audio_channels_grow_wave(){
+    GList *list;
+    guint i;
+
+    i = audio->audio_channels;
+
+#ifdef AGS_DEBUG
+    g_message("ags_audio_set_audio_channels_grow_wave\n");
+#endif
+
+    if(audio->audio_channels == 0){
+      audio->wave =
+	list = g_list_alloc();
+      goto ags_audio_set_audio_channels_grow_wave0;
+    }else{
+      list = g_list_nth(audio->wave, audio->audio_channels - 1);
+    }
+
+    for(; i < audio_channels; i++){
+      list->next = g_list_alloc();
+      list->next->prev = list;
+      list = list->next;
+
+    ags_audio_set_audio_channels_grow_wave0:
+      list->data = (gpointer) ags_wave_new((GObject *) audio,
+					   i);
+    } 
+  }
+  
+  void ags_audio_set_audio_channels_shrink_wave(){
+    GList *list, *list_next;
+
+    list = g_list_nth(audio->wave, audio_channels);
+
+    if(audio_channels == 0){
+      audio->wave = NULL;
+    }else{
+      list->prev->next = NULL;
+    }
+
+    while(list != NULL){
+      list_next = list->next;
+
+      g_object_unref((GObject *) list->data);
+      g_list_free1(list);
+
+      list = list_next;
+    }
+  }
   
   /* entry point */
   mutex_manager = ags_mutex_manager_get_instance();
@@ -3025,6 +3149,10 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     /* grow audio channels */
     if((AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0){
       ags_audio_set_audio_channels_grow_notation();
+    }
+
+    if((AGS_AUDIO_HAS_WAVE & (audio->flags)) != 0){
+      ags_audio_set_audio_channels_grow_wave();
     }
 
     if(audio->input_pads > 0 &&
@@ -3068,8 +3196,13 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     /* shrink audio channels */
     ags_audio_set_audio_channels_shrink_automation();
     
-    if((AGS_AUDIO_HAS_NOTATION & audio->flags) != 0)
+    if((AGS_AUDIO_HAS_NOTATION & audio->flags) != 0){
       ags_audio_set_audio_channels_shrink_notation();
+    }
+
+    if((AGS_AUDIO_HAS_WAVE & audio->flags) != 0){
+      ags_audio_set_audio_channels_shrink_wave();
+    }
 
     if(audio_channels == 0){
       ags_audio_set_audio_channels_shrink_zero();
@@ -3229,6 +3362,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
   auto void ags_audio_set_pads_add_notes();
   auto void ags_audio_set_pads_remove_notes();
   auto void ags_audio_set_pads_shrink_automation();
+  auto void ags_audio_set_pads_alloc_wave();
+  auto void ags_audio_set_pads_free_wave();
   
   void ags_audio_set_pads_init_parameters(){
     alloc_recycling = FALSE;
@@ -3575,6 +3710,55 @@ ags_audio_real_set_pads(AgsAudio *audio,
       automation = automation_next;
     }
   }
+
+  void ags_audio_set_pads_alloc_wave(){
+    GList *list;
+    
+    guint i;
+
+#ifdef AGS_DEBUG
+    g_message("ags_audio_set_pads_alloc_wave\n");
+#endif
+
+    if(audio->audio_channels > 0){
+      audio->wave =
+	list = g_list_alloc();
+      i = 0;
+      goto ags_audio_set_pads_alloc_wave0;
+    }else{
+      return;
+    }
+
+    for(; i < audio->audio_channels; i++){
+      list->next = g_list_alloc();
+      list->next->prev = list;
+      list = list->next;
+    ags_audio_set_pads_alloc_wave0:
+
+      list->data = (gpointer) ags_wave_new((GObject *) audio,
+					   i);
+    }
+  }
+
+  void ags_audio_set_pads_free_wave(){
+    GList *list, *list_next;
+
+    if(audio->audio_channels > 0){
+      list = audio->wave;
+      audio->wave = NULL;
+    }else{
+      return;
+    }
+
+    while(list != NULL){
+      list_next = list->next;
+
+      g_object_unref(G_OBJECT(list->data));
+      g_list_free1(list);
+
+      list = list_next;
+    }
+  }
   
   /* entry point */
   ags_audio_set_pads_init_parameters();
@@ -3607,6 +3791,10 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) == 0){
 	  ags_audio_set_pads_alloc_notation();
 	}
+
+	if((AGS_AUDIO_WAVE_DEFAULT & (audio->flags)) == 0){
+	  ags_audio_set_pads_alloc_wave();
+	}
       }
 
       if((AGS_AUDIO_NO_OUTPUT & (audio->flags)) == 0){
@@ -3638,6 +3826,11 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	if((AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0 &&
 	   audio->notation != NULL){
 	  ags_audio_set_pads_free_notation();
+	}
+
+	if((AGS_AUDIO_HAS_WAVE & (audio->flags)) != 0 &&
+	   audio->wave != NULL){
+	  ags_audio_set_pads_free_wave();
 	}
 
 	channel = audio->output;
@@ -3724,6 +3917,10 @@ ags_audio_real_set_pads(AgsAudio *audio,
       if(pads_old == 0){
 	if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
 	  ags_audio_set_pads_alloc_notation();
+	}
+
+	if((AGS_AUDIO_WAVE_DEFAULT & (audio->flags)) != 0){
+	  ags_audio_set_pads_alloc_wave();
 	}
       }
 
@@ -4357,6 +4554,80 @@ ags_audio_remove_automation(AgsAudio *audio, GObject *automation)
 
   audio->automation = g_list_remove(audio->automation, automation);
   g_object_unref(automation);
+  
+  pthread_mutex_unlock(mutex);
+}
+
+/**
+ * ags_audio_add_wave:
+ * @audio: the #AgsAudio
+ * @wave: the #AgsRecallID
+ *
+ * Adds a recall id.
+ *
+ * Since: 1.4.0
+ */
+void
+ags_audio_add_wave(AgsAudio *audio, GObject *wave)
+{
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* add recall id */
+  pthread_mutex_lock(mutex);
+
+  g_object_ref(wave);
+  audio->wave = g_list_prepend(audio->wave, wave);
+  
+  pthread_mutex_unlock(mutex);
+}
+
+/**
+ * ags_audio_remove_wave:
+ * @audio: the #AgsAudio
+ * @wave: the #AgsRecallID
+ *
+ * Removes a recall id.
+ *
+ * Since: 1.4.0
+ */
+void
+ags_audio_remove_wave(AgsAudio *audio, GObject *wave)
+{
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+
+  /* lookup mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* remove recall id */
+  pthread_mutex_lock(mutex);
+
+  audio->wave = g_list_remove(audio->wave, wave);
+  g_object_unref(wave);
   
   pthread_mutex_unlock(mutex);
 }

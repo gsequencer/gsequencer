@@ -1215,7 +1215,12 @@ ags_note_new()
 }
 
 /**
- * ags_note_new:
+ * ags_note_new_with_offset:
+ * @x0: x0
+ * @x1: x1
+ * @y: y
+ * @stream_delay: delay
+ * @stream_attack: attack
  *
  * Creates an #AgsNote
  *

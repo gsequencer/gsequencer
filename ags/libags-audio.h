@@ -51,6 +51,7 @@
 #include <ags/audio/ags_audio_connection.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_automation.h>
+#include <ags/audio/ags_buffer.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_channel_iter.h>
 #include <ags/audio/ags_devout.h>
@@ -92,6 +93,7 @@
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_synth_generator.h>
 #include <ags/audio/ags_synth_util.h>
+#include <ags/audio/ags_wave.h>
 
 /* audio thread */
 #include <ags/audio/thread/ags_audio_loop.h>
