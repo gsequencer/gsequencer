@@ -112,6 +112,7 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
   
   /* position */
   notation_toolbar->position = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
+								"label", i18n("Position"),
 								"stock-id", GTK_STOCK_JUMP_TO,
 								NULL);
   gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->position, i18n("position cursor"), NULL);

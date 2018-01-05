@@ -679,14 +679,14 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 
 	/* position cursor */
 	if(automation_edit->cursor_position_x > 0){
-	  if(automation_edit->cursor_position_x - (zoom_factor) > 0){
-	    automation_edit->cursor_position_x -= (zoom_factor);
+	  if(automation_edit->cursor_position_x - (zoom_factor * automation_edit->control_width) > 0){
+	    automation_edit->cursor_position_x -= (zoom_factor * automation_edit->control_width);
 	  }else{
 	    automation_edit->cursor_position_x = 0;
 	  }
 	}
 
-	x0_offset = automation_edit->cursor_position_x * automation_edit->control_width;
+	x0_offset = automation_edit->cursor_position_x / zoom_factor;
       
 	if(x0_offset < GTK_RANGE(automation_edit->hscrollbar)->adjustment->value){
 	  gtk_range_set_value(GTK_RANGE(automation_edit->hscrollbar),
@@ -701,10 +701,10 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 	  
 	/* position cursor */      
 	if(automation_edit->cursor_position_x < AGS_AUTOMATION_EDITOR_MAX_CONTROLS){
-	  automation_edit->cursor_position_x += (zoom_factor);
+	  automation_edit->cursor_position_x += (zoom_factor * automation_edit->control_width);
 	}
 
-	x0_offset = automation_edit->cursor_position_x * automation_edit->control_width;
+	x0_offset = automation_edit->cursor_position_x / zoom_factor;
       
 	if(x0_offset + automation_edit->control_width > GTK_RANGE(automation_edit->hscrollbar)->adjustment->value + GTK_WIDGET(automation_edit->drawing_area)->allocation.width){
 	  gtk_range_set_value(GTK_RANGE(automation_edit->hscrollbar),
@@ -716,13 +716,36 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
     case GDK_KEY_uparrow:
       {
 	gdouble y0_offset;
-      
-	if(automation_edit->cursor_position_y > 0){
-	  automation_edit->cursor_position_y -= 1;
+
+	gdouble c_range;
+	guint g_range;
+
+	if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
+	  c_range = exp(automation_edit->upper) - exp(automation_edit->lower);
+	}else{
+	  c_range = automation_edit->upper - automation_edit->lower;
+	}
+	
+	g_range = GTK_RANGE(automation_edit->vscrollbar)->adjustment->upper + GTK_WIDGET(automation_edit->drawing_area)->allocation.height;
+	
+	if(automation_edit->cursor_position_y < automation_edit->upper){
+	  if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
+	    automation_edit->cursor_position_y += log((1.0 / g_range) * c_range);
+	  }else{
+	    automation_edit->cursor_position_y += ((1.0 / g_range) * c_range);
+	  }
+
+	  if(automation_edit->cursor_position_y > automation_edit->upper){
+	    automation_edit->cursor_position_y = automation_edit->upper;
+	  }
 	}
 
-	y0_offset = automation_edit->cursor_position_y * automation_edit->control_height;
-      
+	if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
+	  y0_offset = exp(automation_edit->cursor_position_y) / c_range * g_range;
+	}else{
+	  y0_offset = automation_edit->cursor_position_y / c_range * g_range;
+	}
+	
 	if(y0_offset < GTK_RANGE(automation_edit->vscrollbar)->adjustment->value){
 	  gtk_range_set_value(GTK_RANGE(automation_edit->vscrollbar),
 			      y0_offset);
@@ -733,13 +756,36 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
     case GDK_KEY_downarrow:
       {
 	gdouble y0_offset;
-      
-	if(automation_edit->cursor_position_y > 0){
-	  automation_edit->cursor_position_y -= 1;
+
+	gdouble c_range;
+	guint g_range;
+
+	if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
+	  c_range = exp(automation_edit->upper) - exp(automation_edit->lower);
+	}else{
+	  c_range = automation_edit->upper - automation_edit->lower;
 	}
 
-	y0_offset = automation_edit->cursor_position_y * automation_edit->control_height;
-      
+	g_range = GTK_RANGE(automation_edit->vscrollbar)->adjustment->upper + GTK_WIDGET(automation_edit->drawing_area)->allocation.height;
+	      
+	if(automation_edit->cursor_position_y < automation_edit->lower){
+	  if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
+	    automation_edit->cursor_position_y -= log((1.0 / g_range) * c_range);
+	  }else{
+	    automation_edit->cursor_position_y -= ((1.0 / g_range) * c_range);
+	  }
+
+	  if(automation_edit->cursor_position_y < automation_edit->lower){
+	    automation_edit->cursor_position_y = automation_edit->lower;
+	  }
+	}
+
+	if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
+	  y0_offset = exp(automation_edit->cursor_position_y) / c_range * g_range;
+	}else{
+	  y0_offset = automation_edit->cursor_position_y / c_range * g_range;
+	}
+	
 	if(y0_offset < GTK_RANGE(automation_edit->vscrollbar)->adjustment->value){
 	  gtk_range_set_value(GTK_RANGE(automation_edit->vscrollbar),
 			      y0_offset);
