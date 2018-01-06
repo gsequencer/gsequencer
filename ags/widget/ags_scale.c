@@ -643,7 +643,7 @@ const gchar*
 ags_accessible_scale_get_description(AtkAction *action,
 				     gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "step up scale default value",
     "step down scale default value",
     "page up scale default value",
@@ -661,7 +661,7 @@ const gchar*
 ags_accessible_scale_get_name(AtkAction *action,
 			      gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "step-up",
     "step-down",
     "page-up",
@@ -679,7 +679,7 @@ const gchar*
 ags_accessible_scale_get_keybinding(AtkAction *action,
 				    gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "up",
     "down",
     "page-up",

@@ -703,7 +703,7 @@ const gchar*
 ags_accessible_piano_get_description(AtkAction *action,
 				     gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "move up one piano key",
     "move down one piano key",
     "hit current piano key",
@@ -720,7 +720,7 @@ const gchar*
 ags_accessible_piano_get_name(AtkAction *action,
 			      gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "move-up",
     "move-down",
     "hit-key",
@@ -737,7 +737,7 @@ const gchar*
 ags_accessible_piano_get_keybinding(AtkAction *action,
 				    gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "up",
     "down",
     "space"
