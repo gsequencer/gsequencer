@@ -612,7 +612,7 @@ const gchar*
 ags_accessible_pattern_box_get_description(AtkAction *action,
 					   gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "move cursor left",
     "move cursor right",
     "decrement pattern index",
@@ -632,7 +632,7 @@ const gchar*
 ags_accessible_pattern_box_get_name(AtkAction *action,
 				    gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "left",
     "right",
     "up",
@@ -652,7 +652,7 @@ const gchar*
 ags_accessible_pattern_box_get_keybinding(AtkAction *action,
 					  gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "left",
     "right",
     "up",

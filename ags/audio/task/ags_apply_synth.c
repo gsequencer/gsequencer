@@ -966,6 +966,15 @@ ags_apply_synth_launch(AgsTask *task)
 	  
 	  audio_signal = ags_audio_signal_get_template(first_recycling->audio_signal);
 
+	  if(audio_signal == NULL){
+	    audio_signal = ags_audio_signal_new(first_recycling->soundcard,
+						first_recycling,
+						NULL);
+	    audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	    ags_recycling_add_audio_signal(first_recycling,
+					   audio_signal);
+	  }
+	  
 	  samplerate = audio_signal->samplerate;
 	  buffer_size = audio_signal->buffer_size;
 	  format = audio_signal->format;
@@ -1007,6 +1016,15 @@ ags_apply_synth_launch(AgsTask *task)
 	
 	audio_signal = ags_audio_signal_get_template(first_recycling->audio_signal);
 
+	if(audio_signal == NULL){
+	  audio_signal = ags_audio_signal_new(first_recycling->soundcard,
+					      first_recycling,
+					      NULL);
+	  audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	  ags_recycling_add_audio_signal(first_recycling,
+					 audio_signal);
+	}
+	
 	pthread_mutex_unlock(recycling_mutex);
 	  
 	/* compute audio signal */
@@ -1073,6 +1091,15 @@ ags_apply_synth_launch(AgsTask *task)
 
 	  audio_signal = ags_audio_signal_get_template(first_recycling->audio_signal);
 
+	  if(audio_signal == NULL){
+	    audio_signal = ags_audio_signal_new(first_recycling->soundcard,
+						first_recycling,
+						NULL);
+	    audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	    ags_recycling_add_audio_signal(first_recycling,
+					   audio_signal);
+	  }
+	  
 	  samplerate = audio_signal->samplerate;
 	  buffer_size = audio_signal->buffer_size;
 	  format = audio_signal->format;
@@ -1114,6 +1141,15 @@ ags_apply_synth_launch(AgsTask *task)
 	
 	audio_signal = ags_audio_signal_get_template(first_recycling->audio_signal);
 
+	if(audio_signal == NULL){
+	  audio_signal = ags_audio_signal_new(first_recycling->soundcard,
+					      first_recycling,
+					      NULL);
+	  audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	  ags_recycling_add_audio_signal(first_recycling,
+					 audio_signal);
+	}
+	
 	pthread_mutex_unlock(recycling_mutex);
 
 	/* compute audio signal */
@@ -1180,6 +1216,15 @@ ags_apply_synth_launch(AgsTask *task)
 	  pthread_mutex_lock(recycling_mutex);
 	  
 	  audio_signal = ags_audio_signal_get_template(first_recycling->audio_signal);
+
+	  if(audio_signal == NULL){
+	    audio_signal = ags_audio_signal_new(first_recycling->soundcard,
+						first_recycling,
+						NULL);
+	    audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	    ags_recycling_add_audio_signal(first_recycling,
+					   audio_signal);
+	  }
 
 	  samplerate = audio_signal->samplerate;
 	  buffer_size = audio_signal->buffer_size;
@@ -1251,6 +1296,15 @@ ags_apply_synth_launch(AgsTask *task)
 	
 	  audio_signal = ags_audio_signal_get_template(first_recycling->audio_signal);
 
+	  if(audio_signal == NULL){
+	    audio_signal = ags_audio_signal_new(first_recycling->soundcard,
+						first_recycling,
+						NULL);
+	    audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	    ags_recycling_add_audio_signal(first_recycling,
+					   audio_signal);
+	  }
+	  
 	  pthread_mutex_unlock(recycling_mutex);
 
 	  /* compute audio signal */

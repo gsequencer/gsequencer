@@ -1022,7 +1022,7 @@ const gchar*
 ags_accessible_automation_edit_get_description(AtkAction *action,
 					       gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "move cursor left",
     "move cursor right",
     "move cursor up",
@@ -1049,7 +1049,7 @@ const gchar*
 ags_accessible_automation_edit_get_name(AtkAction *action,
 					gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "left",
     "right",
     "up",
@@ -1076,7 +1076,7 @@ const gchar*
 ags_accessible_automation_edit_get_keybinding(AtkAction *action,
 					      gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "left",
     "right",
     "up",
@@ -1768,6 +1768,8 @@ ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit)
 
     x = 0.0;
   }else if(x > GTK_WIDGET(automation_edit->drawing_area)->allocation.width){
+    cairo_destroy(cr);
+    
     return;
   }
 
@@ -1780,6 +1782,8 @@ ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit)
 
     y = 0.0;
   }else if(y > GTK_WIDGET(automation_edit->drawing_area)->allocation.height){
+    cairo_destroy(cr);
+
     return;
   }
 

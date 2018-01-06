@@ -552,7 +552,7 @@ const gchar*
 ags_accessible_dial_get_description(AtkAction *action,
 				    gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "increment dial value",
     "decrement dial value",
   };
@@ -568,7 +568,7 @@ const gchar*
 ags_accessible_dial_get_name(AtkAction *action,
 			     gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "increment",
     "decrement",
   };
@@ -584,7 +584,7 @@ const gchar*
 ags_accessible_dial_get_keybinding(AtkAction *action,
 				   gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "up",
     "down",
   };
@@ -1525,29 +1525,28 @@ ags_dial_draw(AgsDial *dial)
   /* draw value */
   range = (dial->adjustment->upper - dial->adjustment->lower);
 
-  if(range == 0.0){
+  if(range != 0.0){
+    /* this is odd */
+    translated_value = (dial->adjustment->value - dial->adjustment->lower);
+    translated_value = (gdouble) scale_precision * (translated_value / range);
+
+    //  g_message("value: %f\nupper: %f\ntranslated_value: %f\n", GTK_RANGE(dial)->adjustment->value, GTK_RANGE(dial)->adjustment->upper, translated_value);
+    cairo_set_line_width(cr, 4.0);
+    cairo_set_source_rgb(cr,
+			 dial_style->fg[0].red / white_gc,
+			 dial_style->fg[0].green / white_gc,
+			 dial_style->fg[0].blue / white_gc);
+
+    cairo_arc(cr,
+	      1.0 + button_width + margin_left + radius,
+	      radius + outline_strength,
+	      radius - (outline_strength + 4.0) / M_PI,
+	      starter_angle + (translated_value * scale_inverted_width) + (translated_value * scale_width),
+	      starter_angle + (translated_value * scale_inverted_width) + (translated_value * scale_width) + scale_width);
+    cairo_stroke(cr);
+  }else{
     g_warning("ags_dial.c - range = 0.0");
-    return;
   }
-
-  /* this is odd */
-  translated_value = (dial->adjustment->value - dial->adjustment->lower);
-  translated_value = (gdouble) scale_precision * (translated_value / range);
-
-  //  g_message("value: %f\nupper: %f\ntranslated_value: %f\n", GTK_RANGE(dial)->adjustment->value, GTK_RANGE(dial)->adjustment->upper, translated_value);
-  cairo_set_line_width(cr, 4.0);
-  cairo_set_source_rgb(cr,
-		       dial_style->fg[0].red / white_gc,
-		       dial_style->fg[0].green / white_gc,
-		       dial_style->fg[0].blue / white_gc);
-
-  cairo_arc(cr,
-	    1.0 + button_width + margin_left + radius,
-	    radius + outline_strength,
-	    radius - (outline_strength + 4.0) / M_PI,
-	    starter_angle + (translated_value * scale_inverted_width) + (translated_value * scale_width),
-	    starter_angle + (translated_value * scale_inverted_width) + (translated_value * scale_width) + scale_width);
-  cairo_stroke(cr);
 
   cairo_destroy(cr);
 }

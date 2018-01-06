@@ -622,7 +622,7 @@ const gchar*
 ags_accessible_wave_edit_get_description(AtkAction *action,
 					 gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "move cursor left",
     "move cursor right",
     "move cursor small left",
@@ -643,7 +643,7 @@ const gchar*
 ags_accessible_wave_edit_get_name(AtkAction *action,
 				  gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "left",
     "right",
     "small-left",
@@ -664,7 +664,7 @@ const gchar*
 ags_accessible_wave_edit_get_keybinding(AtkAction *action,
 					gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "left",
     "right",
     "Shft+Left",
