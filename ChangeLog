@@ -12,6 +12,15 @@ ags (1.4.0)
 	* TODO:JK: improved ags_audio_signal_feed() reduce over-head
 	* TODO:JK: improved AgsApplySynth thread-safety
 
+ags (1.3.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed accessing uninitialized pointer in ags_simple_file.c
+	* fixed cursor positioning in AgsAutomationEditor
+	* improved position labels of AgsNotationToolbar and AgsAutomationToolbar
+	* updated ags_notation_test_find_near_timestamp() and ags_automation_test_find_near_timestamp()
+	* minor-fixes in ags.rc
+
 ags (1.3.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

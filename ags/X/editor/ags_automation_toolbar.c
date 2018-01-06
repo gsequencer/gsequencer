@@ -116,6 +116,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
   GtkCellRenderer *cell_renderer;
   
   automation_toolbar->position = g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
+					      "label", i18n("Position"),
 					      "stock-id", GTK_STOCK_JUMP_TO,
 					      NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,

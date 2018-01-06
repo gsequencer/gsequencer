@@ -238,27 +238,29 @@ ags_automation_test_find_near_timestamp()
 				       0,
 				       AGS_TYPE_INPUT,
 				       AGS_AUTOMATION_TEST_CONTROL_NAME);
-    timestamp = ags_timestamp_new();
-    g_object_set(automation[i],
-		 "timestamp", timestamp,
-		 NULL);
+    timestamp = automation[i]->timestamp;
 
-    timestamp->timer.unix_time.time_val = AGS_TIMESTAMP(automation[0]->timestamp)->timer.unix_time.time_val + ((i + 1) * AGS_AUTOMATION_DEFAULT_DURATION);
+    timestamp->timer.ags_offset.offset = i * AGS_AUTOMATION_DEFAULT_OFFSET;
 
     list = g_list_prepend(list,
 			  automation[i]);
   }
 
+  list = g_list_reverse(list);
+
   /* instantiate timestamp to check against */
   timestamp = ags_timestamp_new();
+
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
   
   /* assert find */
-  for(i = 0; i + 1 < AGS_AUTOMATION_TEST_FIND_NEAR_TIMESTAMP_N_AUTOMATION; i++){
-    timestamp->timer.unix_time.time_val = AGS_TIMESTAMP(automation[0]->timestamp)->timer.unix_time.time_val + ((i + 1) * AGS_AUTOMATION_DEFAULT_DURATION + 1);
+  for(i = 0; i < AGS_AUTOMATION_TEST_FIND_NEAR_TIMESTAMP_N_AUTOMATION; i++){
+    timestamp->timer.ags_offset.offset = i * AGS_AUTOMATION_DEFAULT_OFFSET;
     current = ags_automation_find_near_timestamp(list, 0,
 						 timestamp);
 
-    CU_ASSERT(current != NULL && current->data == automation[i + 1]);
+    CU_ASSERT(current != NULL && current->data == automation[i]);
   }  
 }
 
@@ -851,6 +853,8 @@ ags_automation_test_remove_point_from_selection()
   
   range = (AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_UPPER - AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_LOWER);
 
+  count = 0;
+  
   for(i = 0; i < AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_COUNT; i++){
     x = rand() % AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_WIDTH;
     y = rand() % AGS_AUTOMATION_TEST_REMOVE_POINT_FROM_SELECTION_HEIGHT;

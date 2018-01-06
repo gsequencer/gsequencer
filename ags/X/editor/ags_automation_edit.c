@@ -1656,9 +1656,9 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit)
   x = ((double) automation_edit->cursor_position_x) - GTK_RANGE(automation_edit->hscrollbar)->adjustment->value;
   
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    y = (((double) exp(automation_edit->cursor_position_y) / c_range) * GTK_WIDGET(automation_edit->drawing_area)->allocation.height) - GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
+    y = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - ((((double) exp(automation_edit->cursor_position_y) / c_range) * GTK_WIDGET(automation_edit->drawing_area)->allocation.height) - GTK_RANGE(automation_edit->vscrollbar)->adjustment->value);
   }else{
-    y = (((double) automation_edit->cursor_position_y / c_range) * GTK_WIDGET(automation_edit->drawing_area)->allocation.height) - GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
+    y = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - ((((double) automation_edit->cursor_position_y / c_range) * GTK_WIDGET(automation_edit->drawing_area)->allocation.height) - GTK_RANGE(automation_edit->vscrollbar)->adjustment->value);
   }
   
   width = (double) AGS_AUTOMATION_EDIT_CURSOR_WIDTH;

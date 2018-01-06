@@ -4720,6 +4720,10 @@ ags_simple_file_read_notation_list_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, 
     guint audio_channel;
     gboolean found_timestamp;
     
+    file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_node(simple_file,
+								       node->parent->parent);
+    machine = file_id_ref->ref;
+    
     audio_channel = 0;
     str = xmlGetProp(node,
 		     "channel");
@@ -5126,6 +5130,10 @@ ags_simple_file_read_automation_list_fixup_1_0_to_1_3(AgsSimpleFile *simple_file
   
     guint line;
     gboolean found_timestamp;
+
+    file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_node(simple_file,
+								       node->parent->parent);
+    machine = file_id_ref->ref;
     
     line = 0;
     str = xmlGetProp(node,
