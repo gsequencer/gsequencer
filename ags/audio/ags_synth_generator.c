@@ -933,15 +933,13 @@ ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
   frame_count = synth_generator->frame_count;
   
   buffer_size = AGS_AUDIO_SIGNAL(audio_signal)->buffer_size;
-  
+
   current_frame_count = AGS_AUDIO_SIGNAL(audio_signal)->length * buffer_size;
-  requested_frame_count = floor(delay) * buffer_size + attack + frame_count;
+  requested_frame_count = (guint) ceil(((floor(delay) * buffer_size + attack) + frame_count) / buffer_size) * buffer_size;
   
   if(current_frame_count < requested_frame_count){
-    if(ceil(current_frame_count / buffer_size) < ceil(requested_frame_count / buffer_size)){
-      ags_audio_signal_stream_resize(audio_signal,
-				     ceil(requested_frame_count / buffer_size));
-    }
+    ags_audio_signal_stream_resize(audio_signal,
+				   ceil(requested_frame_count / buffer_size));
   }
   
   /*  */
@@ -1036,8 +1034,10 @@ ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
 
     if(buffer_size > (current_attack + current_count)){
       current_count = buffer_size - (current_attack + current_count);
+      current_attack = buffer_size - current_count;
     }else{
       current_count = buffer_size;
+      current_attack = 0;
     }
     
     if(sync_point != NULL){
