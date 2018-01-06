@@ -12,6 +12,12 @@ ags (1.4.0)
 	* TODO:JK: improved ags_audio_signal_feed() reduce over-head
 	* TODO:JK: improved AgsApplySynth thread-safety
 
+ags (1.3.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed buffer-overflow in ags_synth_generator.c
+	* improved ags.rc
+
 ags (1.3.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

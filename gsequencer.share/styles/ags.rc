@@ -131,6 +131,11 @@ widget_class "*Ags*Indicator*" style "inverse_widget"
 widget_class "*GtkComboBox*" style "inverse_widget"
 widget_class "*<GtkFrame>.<GtkMenuToolButton>*" style "default_widget"
 
+widget_class "*AgsNotebook*GtkButton*" style "default_widget"
+widget_class "*AgsNotebook*GtkToggleButton*" style "inverse_widget"
+
+widget_class "*AgsMachineSelector*GtkMenuToolButton*" style "default_widget"
+
 widget_class "*AgsCartesian" style "cartesian_widget"
 
 widget "*.ags-navigation-expander*" style "default_widget"

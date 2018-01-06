@@ -1249,8 +1249,6 @@ ags_apply_synth_launch(AgsTask *task)
 	  pthread_mutex_unlock(input_mutex);
 	}
 
-	g_message("set synth");
-	
 	/* set properties */
 	g_object_set(synth_generator,
 		     "frame-count", frame_count,
@@ -1266,7 +1264,9 @@ ags_apply_synth_launch(AgsTask *task)
 	channel = apply_synth->start_channel;
 	
 	for(i = 0; channel != NULL && i < apply_synth->count; i++){
+#ifdef AGS_DEBUG
 	  g_message("apply synth %d", i);
+#endif
 	  
 	  /* get channel mutex */
 	  pthread_mutex_lock(application_mutex);
