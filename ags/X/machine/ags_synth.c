@@ -618,7 +618,7 @@ ags_synth_update(AgsSynth *synth)
 				      volume,
 				      loop_start, loop_end);
     g_object_set(apply_synth,
-		 "delay", attack / channel->buffer_size,
+		 "delay", (gdouble) attack / channel->buffer_size,
 		 NULL);
     task = g_list_prepend(task,
 			  apply_synth);
@@ -734,7 +734,7 @@ ags_synth_update(AgsSynth *synth)
 				      volume,
 				      loop_start, loop_end);
     g_object_set(apply_synth,
-		 "delay", attack / channel->buffer_size,
+		 "delay", (gdouble) attack / channel->buffer_size,
 		 NULL);
     task = g_list_prepend(task,
 			  apply_synth);
