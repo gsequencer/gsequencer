@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_plugin.h>
 
+#include <ags/i18n.h>
+
 void ags_capture_sound_audio_class_init(AgsCaptureSoundAudioClass *capture_sound_audio);
 void ags_capture_sound_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_capture_sound_audio_init(AgsCaptureSoundAudio *capture_sound_audio);
@@ -132,7 +134,6 @@ ags_capture_sound_audio_class_init(AgsCaptureSoundAudioClass *capture_sound_audi
   gobject->set_property = ags_capture_sound_audio_set_property;
   gobject->get_property = ags_capture_sound_audio_get_property;
 
-  gobject->dispose = ags_capture_sound_audio_dispose;
   gobject->finalize = ags_capture_sound_audio_finalize;
 
   /* properties */
@@ -245,7 +246,7 @@ ags_capture_sound_audio_class_init(AgsCaptureSoundAudioClass *capture_sound_audi
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_BUFFER-SIZE,
+				  PROP_BUFFER_SIZE,
 				  param_spec);
 }
 
@@ -307,11 +308,11 @@ ags_capture_sound_audio_init(AgsCaptureSoundAudio *capture_sound_audio)
 					       "specifier", ags_capture_sound_audio_specifier[2],
 					       "control-port", ags_capture_sound_audio_control_port[2],
 					       "port-value-is-pointer", FALSE,
-					       "port-value-type", G_TYPE_STRING,
+					       "port-value-type", G_TYPE_POINTER,
 					       NULL);
   g_object_ref(capture_sound_audio->filename);
 
-  capture_sound_audio->filename->port_value.ags_port_string = NULL;
+  capture_sound_audio->filename->port_value.ags_port_pointer = NULL;
 
   /* add to port */
   port = g_list_prepend(port, capture_sound_audio->filename);

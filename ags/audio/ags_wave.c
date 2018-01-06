@@ -460,19 +460,6 @@ ags_wave_get_property(GObject *gobject,
       g_value_set_uint(value, wave->audio_channel);
     }
     break;
-  case PROP_BUFFER:
-    {
-      AgsPort *port;
-
-      port = AGS_PORT(wave->port);
-
-      pthread_mutex_lock(port->mutex);
-
-      g_value_set_pointer(value, g_list_copy(wave->buffer));
-
-      pthread_mutex_unlock(port->mutex);
-    }
-    break;
   case PROP_TIMESTAMP:
     {
       g_value_set_object(value, wave->timestamp);
@@ -522,18 +509,6 @@ ags_wave_dispose(GObject *gobject)
     wave->audio = NULL;
   }
 
-  /* key and base buffer */
-  if(wave->key != NULL){
-    free(wave->key);
-
-    wave->key = NULL;
-  }
-
-  if(wave->base_buffer != NULL){
-    free(wave->base_buffer);
-
-    wave->base_buffer = NULL;
-  }
     
   /* buffer and selection */
   list = wave->buffer;
@@ -551,14 +526,7 @@ ags_wave_dispose(GObject *gobject)
 
   wave->buffer = NULL;
   wave->selection = NULL;
-  
-  /* port */
-  if(wave->port != NULL){
-    g_object_unref(wave->port);
-
-    wave->port = NULL;
-  }
-  
+    
   /* call parent */
   G_OBJECT_CLASS(ags_wave_parent_class)->dispose(gobject);
 }
@@ -579,29 +547,117 @@ ags_wave_finalize(GObject *gobject)
   if(wave->audio != NULL){
     g_object_unref(wave->audio);
   }
-
-  /* key and base buffer */
-  if(wave->key != NULL){
-    free(wave->key);
-  }
-
-  if(wave->base_buffer != NULL){
-    free(wave->base_buffer);
-  }
     
   /* buffer and selection */
   g_list_free_full(wave->buffer,
 		   g_object_unref);
 
   g_list_free(wave->selection);
-
-  /* port */
-  if(wave->port != NULL){
-    g_object_unref(wave->port);
-  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_wave_parent_class)->finalize(gobject);
+}
+
+GList*
+ags_wave_find_near_timestamp(GList *wave, guint audio_channel,
+			     AgsTimestamp *timestamp)
+{
+  //TODO:JK: implement me
+  
+  return(NULL);
+}
+
+GList*
+ags_wave_add(GList *wave,
+	     AgsWave *new_wave)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
+void
+ags_wave_add_buffer(AgsWave *wave,
+		    AgsBuffer *buffer,
+		    gboolean use_selection_list)
+{
+  //TODO:JK: implement me
+}
+
+GList*
+ags_wave_get_selection(AgsWave *wave)
+{
+  //TODO:JK: implement me
+  
+  return(NULL);
+}
+
+gboolean
+ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer)
+{
+  //TODO:JK: implement me
+
+  return(FALSE);
+}
+
+void
+ags_wave_free_selection(AgsWave *wave)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_wave_add_region_to_selection(AgsWave *wave,
+				 guint64 x0, guint64 x1,
+				 gboolean replace_current_selection)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_wave_remove_region_from_selection(AgsWave *wave,
+				      guint64 x0, guint64 x1)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_wave_add_all_to_selection(AgsWave *wave)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_wave_copy_selection(AgsWave *wave)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
+xmlNode*
+ags_wave_cut_selection(AgsWave *wave)
+{
+  //TODO:JK: implement me
+  
+  return(NULL);
+}
+
+void
+ags_wave_insert_from_clipboard(AgsWave *wave,
+			       xmlNode *wave_node,
+			       gboolean reset_x_offset, guint x_offset)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_wave_insert_from_clipboard_extended(AgsWave *wave,
+					xmlNode *wave_node,
+					gboolean reset_x_offset, guint x_offset,
+					gboolean match_audio_channel, gboolean no_duplicates)
+{
+  //TODO:JK: implement me
 }
 
 /**

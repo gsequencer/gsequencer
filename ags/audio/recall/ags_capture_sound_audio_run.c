@@ -139,7 +139,6 @@ ags_capture_sound_audio_run_class_init(AgsCaptureSoundAudioRunClass *capture_sou
   /* AgsRecallClass */
   recall = (AgsRecallClass *) capture_sound_audio_run;
 
-  recall->resolve_dependencies = ags_capture_sound_audio_run_resolve_dependencies;
   recall->duplicate = ags_capture_sound_audio_run_duplicate;
   recall->run_init_pre = ags_capture_sound_audio_run_run_init_pre;
   recall->run_pre = ags_capture_sound_audio_run_run_pre;
@@ -264,7 +263,8 @@ ags_capture_sound_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin
 xmlNode*
 ags_capture_sound_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 {
-
+  xmlNode *node;
+  
   /* write parent */
   node = ags_capture_sound_audio_run_parent_plugin_interface->write(file, parent, plugin);
 

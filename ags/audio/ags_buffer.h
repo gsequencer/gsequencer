@@ -25,9 +25,6 @@
 
 #include <alsa/asoundlib.h>
 
-#include <ags/lib/ags_time.h>
-#include <ags/lib/ags_complex.h>
-
 #define AGS_TYPE_BUFFER                (ags_buffer_get_type())
 #define AGS_BUFFER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_BUFFER, AgsBuffer))
 #define AGS_BUFFER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_BUFFER, AgsBufferClass))

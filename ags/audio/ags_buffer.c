@@ -19,7 +19,13 @@
 
 #include <ags/audio/ags_buffer.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
+
+#include <ags/audio/ags_audio_signal.h>
+
+#include <ags/i18n.h>
+
+#include <stdlib.h>
 
 void ags_buffer_class_init(AgsBufferClass *buffer);
 void ags_buffer_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -49,6 +55,13 @@ void ags_buffer_finalize(GObject *gobject);
 static gpointer ags_buffer_parent_class = NULL;
 
 enum{
+  PROP_0,
+  PROP_X,
+  PROP_SELECTION_X0,
+  PROP_SELECTION_X1,
+  PROP_FORMAT,
+  PROP_BUFFER_LENGTH,
+  PROP_DATA,
 };
 
 GType
@@ -92,6 +105,7 @@ void
 ags_buffer_class_init(AgsBufferClass *buffer)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_buffer_parent_class = g_type_class_peek_parent(buffer);
@@ -102,6 +116,112 @@ ags_buffer_class_init(AgsBufferClass *buffer)
   gobject->get_property = ags_buffer_get_property;
 
   gobject->finalize = ags_buffer_finalize;
+
+  /* properties */
+  /**
+   * AgsBuffer:x:
+   *
+   * Buffer's x offset.
+   * 
+   * Since: 1.4.0
+   */
+  param_spec = g_param_spec_uint64("x",
+				   i18n_pspec("offset x"),
+				   i18n_pspec("The x offset"),
+				   0,
+				   G_MAXUINT64,
+				   0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X,
+				  param_spec);
+
+  /**
+   * AgsBuffer:selection-x0:
+   *
+   * Buffer's selection x0 offset.
+   * 
+   * Since: 1.4.0
+   */
+  param_spec = g_param_spec_uint64("selection-x0",
+				   i18n_pspec("selection offset x0"),
+				   i18n_pspec("The selection's x0 offset"),
+				   0,
+				   G_MAXUINT64,
+				   0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SELECTION_X0,
+				  param_spec);
+
+  /**
+   * AgsBuffer:selection-x1:
+   *
+   * Buffer's selection x1 offset.
+   * 
+   * Since: 1.4.0
+   */
+  param_spec = g_param_spec_uint64("selection-x1",
+				   i18n_pspec("selection offset x1"),
+				   i18n_pspec("The selection's x1 offset"),
+				   0,
+				   G_MAXUINT64,
+				   0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SELECTION_X1,
+				  param_spec);
+
+  /**
+   * AgsBuffer:format:
+   *
+   * Buffer's audio data format.
+   * 
+   * Since: 1.4.0
+   */
+  param_spec = g_param_spec_uint("format",
+				 i18n_pspec("audio data format"),
+				 i18n_pspec("The format of audio data"),
+				 0,
+				 G_MAXUINT,
+				 AGS_SOUNDCARD_DEFAULT_FORMAT,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FORMAT,
+				  param_spec);
+
+  /**
+   * AgsBuffer:buffer-length:
+   *
+   * Buffer's audio data buffer length.
+   * 
+   * Since: 1.4.0
+   */
+  param_spec = g_param_spec_uint("buffer-length",
+				 i18n_pspec("audio data's buffer length"),
+				 i18n_pspec("The buffer length of audio data"),
+				 0,
+				 G_MAXUINT,
+				 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BUFFER_LENGTH,
+				  param_spec);
+
+  /**
+   * AgsBuffer:data:
+   *
+   * Buffer's audio data.
+   * 
+   * Since: 1.4.0
+   */
+  param_spec = g_param_spec_pointer("data",
+				    i18n_pspec("audio data"),
+				    i18n_pspec("The audio data"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DATA,
+				  param_spec);
 }
 
 void
@@ -115,6 +235,17 @@ void
 ags_buffer_init(AgsBuffer *buffer)
 {  
   buffer->flags = 0;
+
+  buffer->x = 0;
+
+  buffer->selection_x0 = 0;
+  buffer->selection_x1 = 0;
+
+  buffer->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  buffer->buffer_length = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+
+  buffer->data = ags_stream_alloc(buffer->buffer_length,
+				  buffer->format);
 }
 
 void
@@ -156,6 +287,36 @@ ags_buffer_set_property(GObject *gobject,
   buffer = AGS_BUFFER(gobject);
 
   switch(prop_id){
+  case PROP_X:
+    {
+      buffer->x = g_value_get_uint64(value);
+    }
+    break;
+  case PROP_SELECTION_X0:
+    {
+      buffer->selection_x0 = g_value_get_uint64(value);
+    }
+    break;
+  case PROP_SELECTION_X1:
+    {
+      buffer->selection_x1 = g_value_get_uint64(value);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      buffer->format = g_value_get_uint(value);
+    }
+    break;
+  case PROP_BUFFER_LENGTH:
+    {
+      buffer->buffer_length = g_value_get_uint(value);
+    }
+    break;
+  case PROP_DATA:
+    {
+      buffer->data = g_value_get_pointer(value);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -173,6 +334,42 @@ ags_buffer_get_property(GObject *gobject,
   buffer = AGS_BUFFER(gobject);
 
   switch(prop_id){
+  case PROP_X:
+    {
+      g_value_set_uint64(value,
+			 buffer->x);
+    }
+    break;
+  case PROP_SELECTION_X0:
+    {
+      g_value_set_uint64(value,
+			 buffer->selection_x0);
+    }
+    break;
+  case PROP_SELECTION_X1:
+    {
+      g_value_set_uint64(value,
+			 buffer->selection_x1);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      g_value_set_uint(value,
+		       buffer->format);
+    }
+    break;
+  case PROP_BUFFER_LENGTH:
+    {
+      g_value_set_uint(value,
+		       buffer->buffer_length);
+    }
+    break;
+  case PROP_DATA:
+    {
+      g_value_set_pointer(value,
+			  buffer->data);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -186,6 +383,10 @@ ags_buffer_finalize(GObject *gobject)
 
   buffer = AGS_BUFFER(gobject);
 
+  if(buffer->data != NULL){
+    free(buffer->data);
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_buffer_parent_class)->finalize(gobject);
 }
