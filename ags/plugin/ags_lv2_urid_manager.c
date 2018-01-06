@@ -261,7 +261,7 @@ ags_lv2_urid_manager_load_default(AgsLv2UridManager *lv2_urid_manager)
   GValue *value;
   gchar **str;
   
-  static const gchar **default_uri = {
+  static const gchar *default_uri[] = {
     NULL,
   };
 

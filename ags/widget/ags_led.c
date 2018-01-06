@@ -192,6 +192,10 @@ ags_led_draw(AgsLed *led)
   
   cr = gdk_cairo_create(widget->window);
 
+  if(cr == NULL){
+    return;
+  }
+
   /*  */
   if((AGS_LED_ACTIVE & (led->flags)) != 0){
     /* active */

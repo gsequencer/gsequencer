@@ -554,7 +554,7 @@ const gchar*
 ags_accessible_cell_pattern_get_description(AtkAction *action,
 					    gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "move cursor left",
     "move cursor right",
     "move cursor up",
@@ -574,7 +574,7 @@ const gchar*
 ags_accessible_cell_pattern_get_name(AtkAction *action,
 				     gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "left",
     "right",
     "up",
@@ -594,7 +594,7 @@ const gchar*
 ags_accessible_cell_pattern_get_keybinding(AtkAction *action,
 					   gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "left",
     "right",
     "up",

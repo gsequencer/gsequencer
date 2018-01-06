@@ -258,7 +258,7 @@ ags_lv2_uri_map_manager_load_default(AgsLv2UriMapManager *lv2_uri_map_manager)
   GValue *value;
   gchar **str;
   
-  static const gchar **default_uri = {
+  static const gchar *default_uri[] = {
     NULL,
   };
 

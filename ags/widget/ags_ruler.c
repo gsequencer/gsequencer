@@ -363,6 +363,10 @@ ags_ruler_draw(AgsRuler *ruler)
   widget = GTK_WIDGET(ruler);
 
   cr = gdk_cairo_create(widget->window);
+
+  if(cr == NULL){
+    return;
+  }
   
   cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);

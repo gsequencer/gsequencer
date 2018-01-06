@@ -718,7 +718,7 @@ const gchar*
 ags_accessible_notation_edit_get_description(AtkAction *action,
 					     gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "move cursor left",
     "move cursor right",
     "move cursor up",
@@ -745,7 +745,7 @@ const gchar*
 ags_accessible_notation_edit_get_name(AtkAction *action,
 				      gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "left",
     "right",
     "up",
@@ -772,7 +772,7 @@ const gchar*
 ags_accessible_notation_edit_get_keybinding(AtkAction *action,
 					    gint i)
 {
-  static const gchar **actions = {
+  static const gchar *actions[] = {
     "left",
     "right",
     "up",
@@ -1438,6 +1438,8 @@ ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit)
   if(x < 0.0){
     x = 0.0;
   }else if(x > GTK_WIDGET(notation_edit->drawing_area)->allocation.width){
+    cairo_destroy(cr);
+
     return;
   }
 
@@ -1448,6 +1450,8 @@ ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit)
   if(y < 0.0){
     y = 0.0;
   }else if(y > GTK_WIDGET(notation_edit->drawing_area)->allocation.height){
+    cairo_destroy(cr);
+
     return;
   }
 
@@ -1793,6 +1797,9 @@ ags_notation_edit_draw(AgsNotationEdit *notation_edit)
 				      notation_edit_style->fg[0].green / white_gc,
 				      notation_edit_style->fg[0].blue / white_gc,
 				      1.0);
+
+	  cairo_surface_mark_dirty(cairo_get_target(cr));
+	  cairo_destroy(cr);
 	}
       }
     }
