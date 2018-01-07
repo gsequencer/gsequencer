@@ -34,15 +34,15 @@ unsigned char* ags_buffer_util_s32_to_char_buffer(signed long *buffer,
 unsigned char* ags_buffer_util_s64_to_char_buffer(signed long long *buffer,
 						  guint buffer_length);
 
-signed char* ags_buffer_util_char_buffer_to_s8(unsigned char *buffer,
+signed char* ags_buffer_util_char_buffer_to_s8(unsigned char *cbuffer,
 					       guint buffer_size);
-signed short* ags_buffer_util_char_buffer_to_s16(unsigned char *buffer,
+signed short* ags_buffer_util_char_buffer_to_s16(unsigned char *cbuffer,
 						 guint buffer_size);
-signed long* ags_buffer_util_char_buffer_to_s24(unsigned char *buffer,
+signed long* ags_buffer_util_char_buffer_to_s24(unsigned char *cbuffer,
 						guint buffer_size);
-signed long* ags_buffer_util_char_buffer_to_s32(unsigned char *buffer,
+signed long* ags_buffer_util_char_buffer_to_s32(unsigned char *cbuffer,
 						guint buffer_size);
-signed long long* ags_buffer_util_char_buffer_to_s64(unsigned char *buffer,
+signed long long* ags_buffer_util_char_buffer_to_s64(unsigned char *cbuffer,
 						     guint buffer_size);
 
 #endif /*__AGS_BUFFER_UTIL_H__*/
