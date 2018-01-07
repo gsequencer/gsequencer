@@ -130,12 +130,14 @@ xmlNode* ags_wave_cut_selection(AgsWave *wave);
 
 void ags_wave_insert_from_clipboard(AgsWave *wave,
 				    xmlNode *wave_node,
-				    gboolean reset_x_offset, guint64 x_offset);
+				    gboolean reset_x_offset, guint64 x_offset,
+				    gdouble delay, guint attack);
 
 void ags_wave_insert_from_clipboard_extended(AgsWave *wave,
 					     xmlNode *wave_node,
 					     gboolean reset_x_offset, guint64 x_offset,
-					     gboolean match_audio_channel, gboolean no_duplicates);
+					     gdouble delay, guint attack,
+					     gboolean match_audio_channel, gboolean do_replace);
 
 AgsWave* ags_wave_new(GObject *audio,
 		      guint audio_channel);

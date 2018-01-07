@@ -143,13 +143,13 @@ ags_buffer_class_init(AgsBufferClass *buffer)
    * 
    * Since: 1.4.0
    */
-  param_spec = g_param_spec_uint64("selection-x0",
-				   i18n_pspec("selection offset x0"),
-				   i18n_pspec("The selection's x0 offset"),
-				   0,
-				   G_MAXUINT64,
-				   0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("selection-x0",
+				 i18n_pspec("selection offset x0"),
+				 i18n_pspec("The selection's x0 offset"),
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SELECTION_X0,
 				  param_spec);
@@ -161,13 +161,13 @@ ags_buffer_class_init(AgsBufferClass *buffer)
    * 
    * Since: 1.4.0
    */
-  param_spec = g_param_spec_uint64("selection-x1",
-				   i18n_pspec("selection offset x1"),
-				   i18n_pspec("The selection's x1 offset"),
-				   0,
-				   G_MAXUINT64,
-				   0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("selection-x1",
+				 i18n_pspec("selection offset x1"),
+				 i18n_pspec("The selection's x1 offset"),
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SELECTION_X1,
 				  param_spec);
@@ -294,12 +294,12 @@ ags_buffer_set_property(GObject *gobject,
     break;
   case PROP_SELECTION_X0:
     {
-      buffer->selection_x0 = g_value_get_uint64(value);
+      buffer->selection_x0 = g_value_get_uint(value);
     }
     break;
   case PROP_SELECTION_X1:
     {
-      buffer->selection_x1 = g_value_get_uint64(value);
+      buffer->selection_x1 = g_value_get_uint(value);
     }
     break;
   case PROP_FORMAT:
@@ -342,14 +342,14 @@ ags_buffer_get_property(GObject *gobject,
     break;
   case PROP_SELECTION_X0:
     {
-      g_value_set_uint64(value,
-			 buffer->selection_x0);
+      g_value_set_uint(value,
+		       buffer->selection_x0);
     }
     break;
   case PROP_SELECTION_X1:
     {
-      g_value_set_uint64(value,
-			 buffer->selection_x1);
+      g_value_set_uint(value,
+		       buffer->selection_x1);
     }
     break;
   case PROP_FORMAT:
@@ -448,4 +448,3 @@ ags_buffer_new()
 
   return(buffer);
 }
-

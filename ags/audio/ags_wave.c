@@ -40,6 +40,12 @@ void ags_wave_connect(AgsConnectable *connectable);
 void ags_wave_disconnect(AgsConnectable *connectable);
 void ags_wave_dispose(GObject *gobject);
 void ags_wave_finalize(GObject *gobject);
+void ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
+						 xmlNode *root_node, char *version,
+						 char *x_boundary,
+						 gboolean reset_x_offset, guint64 x_offset,
+						 gdouble delay, guint attack,
+						 gboolean match_channel, gboolean do_replace);
 
 /**
  * SECTION:ags_wave
@@ -997,10 +1003,10 @@ ags_wave_copy_selection(AgsWave *wave)
 	     BAD_CAST "format",
 	     BAD_CAST (AGS_WAVE_CLIPBOARD_FORMAT));
   xmlNewProp(wave_node,
-	     BAD_CAST "base_frequency",
+	     BAD_CAST "base-frequency",
 	     BAD_CAST (g_strdup_printf("%f", wave->base_frequency)));
   xmlNewProp(wave_node,
-	     BAD_CAST "audio-channel",
+	     BAD_CAST "channel",
 	     BAD_CAST (g_strdup_printf("%u", wave->audio_channel)));
 
   /* timestamp */
@@ -1040,37 +1046,50 @@ ags_wave_copy_selection(AgsWave *wave)
 	       BAD_CAST "x",
 	       BAD_CAST (g_strdup_printf("%u", buffer->x)));
 
+    xmlNewProp(current_buffer,
+	       BAD_CAST "selection-x0",
+	       BAD_CAST (g_strdup_printf("%u", buffer->selection_x0)));
+
+    xmlNewProp(current_buffer,
+	       BAD_CAST "selection-x1",
+	       BAD_CAST (g_strdup_printf("%u", buffer->selection_x1)));
+    
     cbuffer = NULL;
     buffer_size = 0;
     
     switch(buffer->format){
     case AGS_SOUNDCARD_SIGNED_8_BIT:
       {
-	cbuffer = ags_buffer_util_s8_to_char_buffer((signed char *) buffer->data);
+	cbuffer = ags_buffer_util_s8_to_char_buffer((signed char *) buffer->data,
+						    buffer->buffer_length);
 	buffer_size = buffer->buffer_length;
       }
       break;
     case AGS_SOUNDCARD_SIGNED_16_BIT:
       {
-	cbuffer = ags_buffer_util_s8_to_char_buffer((signed short *) buffer->data);
+	cbuffer = ags_buffer_util_s16_to_char_buffer((signed short *) buffer->data,
+						     buffer->buffer_length);
 	buffer_size = 2 * buffer->buffer_length;
       }
       break;
     case AGS_SOUNDCARD_SIGNED_24_BIT:
       {
-	cbuffer = ags_buffer_util_s8_to_char_buffer((signed long *) buffer->data);
+	cbuffer = ags_buffer_util_s24_to_char_buffer((signed long *) buffer->data,
+						     buffer->buffer_length);
 	buffer_size = 3 * buffer->buffer_length;
       }
       break;
     case AGS_SOUNDCARD_SIGNED_32_BIT:
       {
-	cbuffer = ags_buffer_util_s8_to_char_buffer((signed long *) buffer->data);
+	cbuffer = ags_buffer_util_s32_to_char_buffer((signed long *) buffer->data,
+						     buffer->buffer_length);
 	buffer_size = 4 * buffer->buffer_length;
       }
       break;
     case AGS_SOUNDCARD_SIGNED_64_BIT:
       {
-	cbuffer = ags_buffer_util_s8_to_char_buffer((signed long long *) buffer->data);
+	cbuffer = ags_buffer_util_s64_to_char_buffer((signed long long *) buffer->data,
+						     buffer->buffer_length);
 	buffer_size = 8 * buffer->buffer_length;
       }
       break;
@@ -1079,13 +1098,14 @@ ags_wave_copy_selection(AgsWave *wave)
     xmlNodeSetContent(current_buffer,
 		      g_base64_encode(cbuffer,
 				      buffer_size));
+    
     g_free(cbuffer);
     
     selection = selection->next;
   }
 
   xmlNewProp(wave_node,
-	     BAD_CAST "x_boundary",
+	     BAD_CAST "x-boundary",
 	     BAD_CAST (g_strdup_printf("%u", x_boundary)));
 
   return(wave_node);
@@ -1093,29 +1113,234 @@ ags_wave_copy_selection(AgsWave *wave)
   return(NULL);
 }
 
+/**
+ * ags_wave_cut_selection:
+ * @wave: an #AgsWave
+ *
+ * Cut selection to clipboard.
+ *
+ * Returns: the selection as XML.
+ *
+ * Since: 1.4.0
+ */
 xmlNode*
 ags_wave_cut_selection(AgsWave *wave)
 {
-  //TODO:JK: implement me
+  xmlNode* wave_node;
+
+  GList *selection;
   
-  return(NULL);
+  wave_node = ags_wave_copy_selection(wave);
+
+  selection = wave->selection;
+
+  while(selection != NULL){
+    wave->buffer = g_list_remove(wave->buffer,
+				 selection->data);
+    
+    AGS_BUFFER(selection->data)->flags &= (~AGS_BUFFER_IS_SELECTED);
+    g_object_unref(selection->data);
+
+    selection = selection->next;
+  }
+
+  ags_wave_free_selection(wave);
+
+  return(wave_node);
 }
 
+/**
+ * ags_wave_insert_native_level_from_clipboard:
+ * @wave: an #AgsWave
+ * @wave_node: the clipboard XML data
+ * @version: clipboard version
+ * @x_boundary: region start offset
+ * @reset_x_offset: if %TRUE @x_offset used as cursor
+ * @x_offset: region start cursor offset
+ * @delay: the delay to be used
+ * @attack: the attack to be used
+ * @match_channel: only paste if channel matches
+ * @do_replace: if %TRUE current data is replaced, otherwise additive mixing is performed 
+ *
+ * Paste previously copied buffers. 
+ *
+ * Since: 1.4.0
+ */
+void
+ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
+					    xmlNode *root_node, char *version,
+					    char *x_boundary,
+					    gboolean reset_x_offset, guint64 x_offset,
+					    gdouble delay, guint attack,
+					    gboolean match_channel, gboolean do_replace)
+{
+  auto void ags_wave_insert_native_level_from_clipboard_version_1_4_0();
+  
+  void ags_wave_insert_native_level_from_clipboard_version_1_4_0()
+  {
+    AgsBuffer *buffer;
+
+    xmlNode *node;
+
+    char *x;
+    gchar *offset;
+    char *endptr;
+
+    guint x_boundary_val;
+    guint x_val;
+    guint base_x_difference;
+    guint64 offset_val;
+    gboolean subtract_x;
+
+    node = root_node->children;
+
+    /* retrieve x values for resetting */
+    if(reset_x_offset){
+      if(x_boundary != NULL){
+	errno = 0;
+	x_boundary_val = strtoul(x_boundary,
+				 &endptr,
+				 10);
+
+	if(errno == ERANGE){
+	  goto dont_reset_x_offset;
+	} 
+	
+	if(x_boundary == endptr){
+	  goto dont_reset_x_offset;
+	}
+
+	if(x_boundary_val < x_offset){
+	  base_x_difference = x_offset - x_boundary_val;
+	  subtract_x = FALSE;
+	}else{
+	  base_x_difference = x_boundary_val - x_offset;
+	  subtract_x = TRUE;
+	}
+      }else{
+      dont_reset_x_offset:
+	reset_x_offset = FALSE;
+      }
+    }
+
+    /* parse */
+    while(node != NULL){
+      if(node->type == XML_ELEMENT_NODE){
+	if(!xmlStrncmp("buffer",
+		       node->name,
+		       7)){
+	  //TODO:JK: implement me
+	}else if(!xmlStrncmp("timestamp",
+			     node->name,
+			     10)){
+	  //TODO:JK: implement me
+	}
+      }
+      
+      node = node->next;
+    }
+  }
+
+  if(!AGS_IS_WAVE(wave)){
+    return;
+  }
+  
+  if(!xmlStrncmp("1.4.0", version, 7)){
+    /* changes contain only optional informations */
+    if(match_channel &&
+       wave->audio_channel != g_ascii_strtoull(xmlGetProp(root_node,
+							      "audio-channel"),
+						   NULL,
+						   10)){
+      return;
+    }
+    
+    ags_wave_insert_native_level_from_clipboard_version_1_4_0();
+  }  
+}
+
+/**
+ * ags_wave_insert_from_clipboard:
+ * @wave: an #AgsWave
+ * @wave_node: the clipboard XML data
+ * @reset_x_offset: if %TRUE @x_offset used as cursor
+ * @x_offset: region start cursor offset
+ * @delay: the delay to be used
+ * @attack: the attack to be used
+ *
+ * Paste previously copied buffers. 
+ *
+ * Since: 1.4.0
+ */
 void
 ags_wave_insert_from_clipboard(AgsWave *wave,
 			       xmlNode *wave_node,
-			       gboolean reset_x_offset, guint64 x_offset)
+			       gboolean reset_x_offset, guint64 x_offset,
+			       gdouble delay, guint attack)
 {
-  //TODO:JK: implement me
+  ags_wave_insert_from_clipboard_extended(wave,
+					  wave_node,
+					  reset_x_offset, x_offset,
+					  FALSE, FALSE);
 }
 
+/**
+ * ags_wave_insert_from_clipboard_extended:
+ * @wave: an #AgsWave
+ * @wave_node: the clipboard XML data
+ * @reset_x_offset: if %TRUE @x_offset used as cursor
+ * @x_offset: region start cursor offset
+ * @delay: the delay to be used
+ * @attack: the attack to be used
+ * @match_channel: only paste if channel matches
+ * @do_replace: if %TRUE current data is replaced, otherwise additive mixing is performed 
+ * 
+ * Paste previously copied buffers. 
+ * 
+ * Since: 1.4.0
+ */
 void
 ags_wave_insert_from_clipboard_extended(AgsWave *wave,
 					xmlNode *wave_node,
 					gboolean reset_x_offset, guint64 x_offset,
-					gboolean match_audio_channel, gboolean no_duplicates)
+					gdouble delay, guint attack,
+					gboolean match_audio_channel, gboolean do_replace)
 {
-  //TODO:JK: implement me
+  char *program, *version, *type, *format;
+  char *base_frequency;
+  char *x_boundary;
+
+  while(wave_node != NULL){
+    if(wave_node->type == XML_ELEMENT_NODE && !xmlStrncmp("wave", wave_node->name, 9)){
+      break;
+    }
+
+    wave_node = wave_node->next;
+  }
+
+  if(wave_node != NULL){
+    program = xmlGetProp(wave_node, "program");
+
+    if(!xmlStrncmp("ags", program, 4)){
+      version = xmlGetProp(wave_node, "version");
+      type = xmlGetProp(wave_node, "type");
+      format = xmlGetProp(wave_node, "format");
+
+      if(!xmlStrcmp(AGS_WAVE_CLIPBOARD_FORMAT,
+		    format)){
+	base_frequency = xmlGetProp(wave_node, "base_frequency");
+
+	x_boundary = xmlGetProp(wave_node, "x_boundary");
+
+	ags_wave_insert_native_level_from_clipboard(wave,
+						    wave_node, version,
+						    base_frequency,
+						    x_boundary, y_boundary,
+						    reset_x_offset, x_offset,
+						    match_channel, do_replace);
+      }
+    }
+  }
 }
 
 /**

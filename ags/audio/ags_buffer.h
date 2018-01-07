@@ -58,8 +58,8 @@ struct _AgsBuffer
 
   guint64 x;
   
-  guint64 selection_x0;
-  guint64 selection_x1;
+  guint selection_x0;
+  guint selection_x1;
 
   guint format;
   guint buffer_length;

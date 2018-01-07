@@ -1638,8 +1638,8 @@ ags_notation_cut_selection(AgsNotation *notation)
  * @x_offset: region start cursor offset
  * @reset_y_offset: if %TRUE @y_offset used as cursor
  * @y_offset: region start cursor tone
- * @match_channel: 
- * @no_duplicates: 
+ * @match_channel: only paste if channel matches
+ * @no_duplicates: only paste if current note doesn't exist
  *
  * Paste previously copied notes. 
  *
@@ -1964,6 +1964,21 @@ ags_notation_insert_from_clipboard(AgsNotation *notation,
 					      FALSE, FALSE);
 }
 
+/**
+ * ags_notation_insert_from_clipboard_extended:
+ * @notation: an #AgsNotation
+ * @notation_node: the clipboard XML data
+ * @reset_x_offset: if %TRUE @x_offset used as cursor
+ * @x_offset: region start cursor offset
+ * @reset_y_offset: if %TRUE @y_offset used as cursor
+ * @y_offset: region start cursor tone
+ * @match_channel: only paste if channel matches
+ * @no_duplicates: only paste if current note doesn't exist
+ * 
+ * Paste previously copied notes. 
+ * 
+ * Since: 1.3.0
+ */
 void
 ags_notation_insert_from_clipboard_extended(AgsNotation *notation,
 					    xmlNode *notation_node,
