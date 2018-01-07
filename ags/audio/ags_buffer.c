@@ -392,6 +392,44 @@ ags_buffer_finalize(GObject *gobject)
 }
 
 /**
+ * ags_buffer_sort_func:
+ * @a: an #AgsBuffer
+ * @b: an #AgsBuffer
+ * 
+ * Sort buffers.
+ * 
+ * Returns: 0 if equal, -1 if smaller and 1 if bigger offset
+ *
+ * Since: 1.4.0
+ */
+gint
+ags_buffer_sort_func(gconstpointer a,
+		     gconstpointer b)
+{
+  if(a == NULL || b == NULL){
+    return(0);
+  }
+    
+  if(AGS_BUFFER(a)->x == AGS_BUFFER(b)->x){
+    return(0);
+  }
+
+  if(AGS_BUFFER(a)->x < AGS_BUFFER(b)->x){
+    return(-1);
+  }else{
+    return(1);
+  }  
+}
+
+AgsBuffer*
+ags_buffer_duplicate(AgsBuffer *buffer)
+{
+  //TODO:JK: implement me
+
+  return(NULL);
+}
+
+/**
  * ags_buffer_new:
  *
  * Creates an #AgsBuffer

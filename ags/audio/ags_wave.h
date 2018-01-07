@@ -102,10 +102,18 @@ GList* ags_wave_add(GList *wave,
 void ags_wave_add_buffer(AgsWave *wave,
 			 AgsBuffer *buffer,
 			 gboolean use_selection_list);
+void ags_wave_remove_buffer(AgsWave *wave,
+			    AgsBuffer *buffer,
+			    gboolean use_selection_list);
 
 GList* ags_wave_get_selection(AgsWave *wave);
 
 gboolean ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer);
+
+GList* ags_wave_find_region(AgsWave *wave,
+			    guint x0,
+			    guint x1,
+			    gboolean use_selection_list);
 
 void ags_wave_free_selection(AgsWave *wave);
 
@@ -122,11 +130,11 @@ xmlNode* ags_wave_cut_selection(AgsWave *wave);
 
 void ags_wave_insert_from_clipboard(AgsWave *wave,
 				    xmlNode *wave_node,
-				    gboolean reset_x_offset, guint x_offset);
+				    gboolean reset_x_offset, guint64 x_offset);
 
 void ags_wave_insert_from_clipboard_extended(AgsWave *wave,
 					     xmlNode *wave_node,
-					     gboolean reset_x_offset, guint x_offset,
+					     gboolean reset_x_offset, guint64 x_offset,
 					     gboolean match_audio_channel, gboolean no_duplicates);
 
 AgsWave* ags_wave_new(GObject *audio,

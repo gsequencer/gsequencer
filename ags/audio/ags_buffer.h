@@ -74,6 +74,9 @@ struct _AgsBufferClass
 
 GType ags_buffer_get_type();
 
+gint ags_buffer_sort_func(gconstpointer a,
+			  gconstpointer b);
+
 AgsBuffer* ags_buffer_duplicate(AgsBuffer *buffer);
 
 AgsBuffer* ags_buffer_new();

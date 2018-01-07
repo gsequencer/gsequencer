@@ -558,60 +558,337 @@ ags_wave_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_wave_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_wave_find_near_timestamp:
+ * @wave: a #GList containing #AgsWave
+ * @audio_channel: the matching audio channel
+ * @timestamp: (allow-none): the matching timestamp, or %NULL to match any timestamp
+ *
+ * Retrieve appropriate wave for timestamp.
+ *
+ * Returns: Next match.
+ *
+ * Since: 1.4.0
+ */
 GList*
 ags_wave_find_near_timestamp(GList *wave, guint audio_channel,
 			     AgsTimestamp *timestamp)
 {
-  //TODO:JK: implement me
+  AgsTimestamp *current_timestamp;
+
+  while(wave != NULL){
+    if(AGS_WAVE(wave->data)->audio_channel != audio_channel){
+      wave = wave->next;
+      
+      continue;
+    }
+
+    if(timestamp == NULL){
+      return(wave);
+    }
+    
+    current_timestamp = (AgsTimestamp *) AGS_WAVE(wave->data)->timestamp;
+
+    if(current_timestamp != NULL){
+      if((AGS_TIMESTAMP_UNIX & (timestamp->flags)) != 0 &&
+	 (AGS_TIMESTAMP_UNIX & (current_timestamp->flags)) != 0){
+	if(current_timestamp->timer.unix_time.time_val >= timestamp->timer.unix_time.time_val &&
+	   current_timestamp->timer.unix_time.time_val < timestamp->timer.unix_time.time_val + AGS_WAVE_DEFAULT_DURATION){
+	  return(wave);
+	}
+      }else if((AGS_TIMESTAMP_OFFSET & (timestamp->flags)) != 0 &&
+	       (AGS_TIMESTAMP_OFFSET & (current_timestamp->flags)) != 0){
+	if(current_timestamp->timer.ags_offset.offset >= timestamp->timer.ags_offset.offset &&
+	   current_timestamp->timer.ags_offset.offset < timestamp->timer.ags_offset.offset + AGS_WAVE_DEFAULT_OFFSET){
+	  return(wave);
+	}
+      }
+    }
+    
+    wave = wave->next;
+  }
   
   return(NULL);
 }
 
+/**
+ * ags_wave_add:
+ * @wave: the #GList-struct containing #AgsWave
+ * @new_wave: the wave to add
+ * 
+ * Add @new_wave sorted to @wave
+ * 
+ * Returns: the new beginning of @wave
+ * 
+ * Since: 1.4.0
+ */
 GList*
 ags_wave_add(GList *wave,
 	     AgsWave *new_wave)
 {
-  //TODO:JK: implement me
+  auto gint ags_wave_add_compare(gconstpointer a,
+				 gconstpointer b);
+  
+  gint ags_wave_add_compare(gconstpointer a,
+			    gconstpointer b)
+  {
+    if(AGS_WAVE(a)->timestamp->timer.ags_offset.offset == AGS_WAVE(b)->timestamp->timer.ags_offset.offset){
+      return(0);
+    }else if(AGS_WAVE(a)->timestamp->timer.ags_offset.offset < AGS_WAVE(b)->timestamp->timer.ags_offset.offset){
+      return(-1);
+    }else if(AGS_WAVE(a)->timestamp->timer.ags_offset.offset > AGS_WAVE(b)->timestamp->timer.ags_offset.offset){
+      return(1);
+    }
 
-  return(NULL);
+    return(0);
+  }
+  
+  if(!AGS_IS_WAVE(new_wave) ||
+     !AGS_IS_TIMESTAMP(new_wave->timestamp)){
+    return(wave);
+  }
+  
+  wave = g_list_insert_sorted(wave,
+			      new_wave,
+			      ags_wave_add_compare);
+  
+  return(wave);
 }
 
+/**
+ * ags_wave_add_buffer:
+ * @wave: an #AgsWave
+ * @buffer: the #AgsBuffer to add
+ * @use_selection_list: if %TRUE add to selection, else to default wave
+ *
+ * Adds a buffer to wave.
+ *
+ * Since: 1.4.0
+ */
 void
 ags_wave_add_buffer(AgsWave *wave,
 		    AgsBuffer *buffer,
 		    gboolean use_selection_list)
 {
-  //TODO:JK: implement me
+  if(!AGS_IS_WAVE(wave) ||
+     !AGS_IS_BUFFER(buffer)){
+    return;
+  }
+
+  g_object_ref(buffer);
+  
+  if(use_selection_list){
+    wave->selection = g_list_insert_sorted(wave->selection,
+					   buffer,
+					   (GCompareFunc) ags_buffer_sort_func);
+  }else{
+    wave->buffers = g_list_insert_sorted(wave->buffer,
+					 buffer,
+					 (GCompareFunc) ags_buffer_sort_func);
+  }
 }
 
+/**
+ * ags_wave_remove_buffer:
+ * @wave: an #AgsWave
+ * @buffer: the #AgsBuffer to remove
+ * @use_selection_list: if %TRUE remove from selection, else from default wave
+ *
+ * Removes a buffer from wave.
+ *
+ * Since: 1.4.0
+ */
+void
+ags_wave_remove_buffer(AgsWave *wave,
+		       AgsBuffer *buffer,
+		       gboolean use_selection_list)
+{
+  if(!AGS_IS_WAVE(wave) ||
+     !AGS_IS_BUFFER(buffer)){
+    return;
+  }
+  
+  if(!use_selection_list){
+    wave->buffers = g_list_remove(wave->buffer,
+				  buffer);
+  }else{
+    wave->selection = g_list_remove(wave->selection,
+				    buffer);
+  }
+}
+
+/**
+ * ags_wave_get_selection:
+ * @wave: the #AgsWave
+ *
+ * Retrieve selection.
+ *
+ * Returns: the selection.
+ *
+ * Since: 1.4.0
+ */
 GList*
 ags_wave_get_selection(AgsWave *wave)
 {
-  //TODO:JK: implement me
-  
-  return(NULL);
+  return(wave->selection);
 }
 
+/**
+ * ags_wave_is_buffer_selected:
+ * @wave: the #AgsWave
+ * @buffer: the #AgsBuffer to check for
+ *
+ * Check selection for buffer.
+ *
+ * Returns: %TRUE if selected
+ *
+ * Since: 1.4.0
+ */
 gboolean
 ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer)
 {
-  //TODO:JK: implement me
+  GList *selection;
+
+  selection = wave->selection;
+
+  while(selection != NULL && AGS_BUFFER(selection->data)->x[0] <= buffer->x[0]){
+    if(selection->data == buffer){
+      return(TRUE);
+    }
+
+    selection = selection->next;
+  }
 
   return(FALSE);
 }
 
+/**
+ * ags_wave_find_region:
+ * @wave: an #AgsWave
+ * @x0: start offset
+ * @x1: end offset
+ * @use_selection_list: if %TRUE selection is searched
+ *
+ * Find buffers by offset and tone region.
+ *
+ * Returns: the matching buffers as #GList.
+ *
+ * Since: 1.4.0
+ */
+GList*
+ags_wave_find_region(AgsWave *wave,
+		     guint x0,
+		     guint x1,
+		     gboolean use_selection_list)
+{
+  AgsBuffer *buffer;
+  
+  GList *buffer_list;
+  GList *region;
+
+  if(x0 > x1){
+    guint tmp;
+
+    tmp = x1;
+    x1 = x0;
+    x0 = x1;
+  }
+    
+  if(use_selection_list){
+    buffer_list = wave->selection;
+  }else{
+    buffer_list = wave->buffer;
+  }
+
+  while(buffer_list != NULL && AGS_BUFFER(buffer_list->data)->x < x0){
+    buffer_list = buffer_list->next;
+  }
+
+  region = NULL;
+
+  while(buffer_list != NULL && (buffer = AGS_BUFFER(buffer_list->data))->x < x1){
+    region = g_list_prepend(region, buffer);
+
+    buffer_list = buffer_list->next;
+  }
+
+  region = g_list_reverse(region);
+
+  return(region);
+}
+
+/**
+ * ags_wave_free_selection:
+ * @wave: an #AgsWave
+ *
+ * Clear selection.
+ *
+ * Since: 1.4.0
+ */
 void
 ags_wave_free_selection(AgsWave *wave)
 {
-  //TODO:JK: implement me
+  g_list_free_full(wave->selection,
+		   g_object_unref);
+  
+  wave->selection = NULL;
 }
 
+/**
+ * ags_wave_add_region_to_selection:
+ * @wave: an #AgsWave
+ * @x0: start offset
+ * @x1: end offset
+ * @replace_current_selection: if %TRUE selection is replaced
+ *
+ * Select buffers within region.
+ *
+ * Since: 1.4.0
+ */
 void
 ags_wave_add_region_to_selection(AgsWave *wave,
 				 guint64 x0, guint64 x1,
 				 gboolean replace_current_selection)
 {
-  //TODO:JK: implement me
+  AgsBuffer *buffer;
+
+  GList *region, *list;
+
+  region = ags_wave_find_region(wave,
+				x0,
+				x1,
+				FALSE);
+
+  if(replace_current_selection){
+    ags_wave_free_selection(wave);
+
+    list = region;
+
+    while(list != NULL){
+      AGS_BUFFER(list->data)->flags |= AGS_BUFFER_IS_SELECTED;
+      g_object_ref(G_OBJECT(list->data));
+
+      list = list->next;
+    }
+
+    wave->selection = region;
+  }else{
+    while(region != NULL){
+      buffer = AGS_BUFFER(region->data);
+
+      if(!ags_wave_is_buffer_selected(wave, buffer)){
+	buffer->flags |= AGS_BUFFER_IS_SELECTED;
+	g_object_ref(G_OBJECT(buffer));
+	ags_wave_add_buffer(wave,
+			    buffer,
+			    TRUE);
+      }
+      
+      region = region->next;
+    }
+    
+    g_list_free(region);
+  }
 }
 
 void
@@ -646,7 +923,7 @@ ags_wave_cut_selection(AgsWave *wave)
 void
 ags_wave_insert_from_clipboard(AgsWave *wave,
 			       xmlNode *wave_node,
-			       gboolean reset_x_offset, guint x_offset)
+			       gboolean reset_x_offset, guint64 x_offset)
 {
   //TODO:JK: implement me
 }
@@ -654,7 +931,7 @@ ags_wave_insert_from_clipboard(AgsWave *wave,
 void
 ags_wave_insert_from_clipboard_extended(AgsWave *wave,
 					xmlNode *wave_node,
-					gboolean reset_x_offset, guint x_offset,
+					gboolean reset_x_offset, guint64 x_offset,
 					gboolean match_audio_channel, gboolean no_duplicates)
 {
   //TODO:JK: implement me

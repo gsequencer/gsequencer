@@ -1133,8 +1133,9 @@ ags_notation_is_note_selected(AgsNotation *notation, AgsNote *note)
   selection = notation->selection;
 
   while(selection != NULL && AGS_NOTE(selection->data)->x[0] <= note->x[0]){
-    if(selection->data == note)
+    if(selection->data == note){
       return(TRUE);
+    }
 
     selection = selection->next;
   }
@@ -1406,6 +1407,7 @@ ags_notation_add_region_to_selection(AgsNotation *notation,
 				     gboolean replace_current_selection)
 {
   AgsNote *note;
+
   GList *region, *list;
 
   region = ags_notation_find_region(notation,
@@ -1444,7 +1446,6 @@ ags_notation_add_region_to_selection(AgsNotation *notation,
     g_list_free(region);
   }
 }
-
 
 /**
  * ags_notation_remove_region_from_selection:
