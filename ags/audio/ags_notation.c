@@ -1465,6 +1465,7 @@ ags_notation_remove_region_from_selection(AgsNotation *notation,
 					  guint x1, guint y1)
 {
   AgsNote *note;
+  
   GList *region;
 
   region = ags_notation_find_region(notation,
@@ -1499,8 +1500,10 @@ xmlNode*
 ags_notation_copy_selection(AgsNotation *notation)
 {
   AgsNote *note;
+
   xmlNode *notation_node, *current_note;
   xmlNode *timestamp_node;
+
   GList *selection;
 
   guint x_boundary, y_boundary;

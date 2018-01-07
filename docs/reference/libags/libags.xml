@@ -27,6 +27,7 @@
   <part id="lib">
     <title>Library - Completion routines</title>
 
+    <xi:include href="xml/ags_buffer_util.xml"/>
     <xi:include href="xml/ags_complex.xml"/>
     <xi:include href="xml/ags_conversion.xml"/>
     <xi:include href="xml/ags_endian.xml"/>

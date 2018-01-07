@@ -323,6 +323,7 @@ deprecated_libags_h_sources =
 
 libags_h_sources = \
 	$(deprecated_libags_h_sources) \
+	ags/lib/ags_buffer_util.h \
 	ags/lib/ags_complex.h \
 	ags/lib/ags_conversion.h \
 	ags/lib/ags_endian.h \
@@ -339,6 +340,7 @@ deprecated_libags_c_sources =
 
 libags_c_sources = \
 	$(deprecated_libags_c_sources) \
+	ags/lib/ags_buffer_util.c \
 	ags/lib/ags_complex.c \
 	ags/lib/ags_conversion.c \
 	ags/lib/ags_endian.c \

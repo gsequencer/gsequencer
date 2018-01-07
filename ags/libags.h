@@ -25,6 +25,7 @@
 #include <ags/util/ags_id_generator.h>
 
 /* library */
+#include <ags/lib/ags_buffer_util.h>
 #include <ags/lib/ags_complex.h>
 #include <ags/lib/ags_conversion.h>
 #include <ags/lib/ags_endian.h>

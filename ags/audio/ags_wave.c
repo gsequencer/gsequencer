@@ -835,6 +835,33 @@ ags_wave_free_selection(AgsWave *wave)
 }
 
 /**
+ * ags_wave_add_all_to_selection:
+ * @wave: an #AgsWave
+ *
+ * Select all.
+ *
+ * Since: 1.4.0
+ */
+void
+ags_wave_add_all_to_selection(AgsWave *wave)
+{
+  AgsBuffer *buffer;
+  GList *region, *list;
+
+  ags_wave_free_selection(wave);
+  list = wave->buffer;
+  
+  while(list != NULL){
+    AGS_BUFFER(list->data)->flags |= AGS_BUFFER_IS_SELECTED;
+    g_object_ref(G_OBJECT(list->data));
+    
+    list = list->next;
+  }
+
+  wave->selection = g_list_copy(wave->buffer);
+}
+
+/**
  * ags_wave_add_region_to_selection:
  * @wave: an #AgsWave
  * @x0: start offset
@@ -891,23 +918,177 @@ ags_wave_add_region_to_selection(AgsWave *wave,
   }
 }
 
+/**
+ * ags_wave_remove_region_from_selection:
+ * @wave: an #AgsWave
+ * @x0: start offset
+ * @y0: start tone
+ * @x1: end offset
+ * @y1: end tone
+ *
+ * Remove buffers within region of selection.
+ *
+ * Since: 1.4.0
+ */ 
 void
 ags_wave_remove_region_from_selection(AgsWave *wave,
 				      guint64 x0, guint64 x1)
 {
-  //TODO:JK: implement me
+  AgsBuffer *buffer;
+  
+  GList *region;
+
+  region = ags_wave_find_region(wave,
+				x0,
+				x1,
+				TRUE);
+
+  while(region != NULL){
+    buffer = AGS_BUFFER(region->data);
+    buffer->flags &= (~AGS_BUFFER_IS_SELECTED);
+
+    wave->selection = g_list_remove(wave->selection, buffer);
+    g_object_unref(G_OBJECT(buffer));
+
+    region = region->next;
+  }
+
+  g_list_free(region);
 }
 
-void
-ags_wave_add_all_to_selection(AgsWave *wave)
-{
-  //TODO:JK: implement me
-}
-
+/**
+ * ags_wave_copy_selection:
+ * @wave: an #AgsWave
+ *
+ * Copy selection to clipboard.
+ *
+ * Returns: the selection as XML.
+ *
+ * Since: 1.4.0
+ */
 xmlNode*
 ags_wave_copy_selection(AgsWave *wave)
 {
-  //TODO:JK: implement me
+  AgsBuffer *buffer;
+
+  xmlNode *wave_node, *current_buffer;
+  xmlNode *timestamp_node;
+
+  GList *selection;
+
+  guint x_boundary, y_boundary;
+
+  selection = wave->selection;
+
+  /* create root node */
+  wave_node = xmlNewNode(NULL,
+			     BAD_CAST "wave");
+
+  xmlNewProp(wave_node,
+	     BAD_CAST "program",
+	     BAD_CAST "ags");
+  xmlNewProp(wave_node,
+	     BAD_CAST "type",
+	     BAD_CAST (AGS_WAVE_CLIPBOARD_TYPE));
+  xmlNewProp(wave_node,
+	     BAD_CAST "version",
+	     BAD_CAST (AGS_WAVE_CLIPBOARD_VERSION));
+  xmlNewProp(wave_node,
+	     BAD_CAST "format",
+	     BAD_CAST (AGS_WAVE_CLIPBOARD_FORMAT));
+  xmlNewProp(wave_node,
+	     BAD_CAST "base_frequency",
+	     BAD_CAST (g_strdup_printf("%f", wave->base_frequency)));
+  xmlNewProp(wave_node,
+	     BAD_CAST "audio-channel",
+	     BAD_CAST (g_strdup_printf("%u", wave->audio_channel)));
+
+  /* timestamp */
+  if(wave->timestamp != NULL){
+    timestamp_node = xmlNewNode(NULL,
+				BAD_CAST "timestamp");
+    xmlAddChild(wave_node,
+		timestamp_node);
+
+    xmlNewProp(timestamp_node,
+	       BAD_CAST "offset",
+	       BAD_CAST (g_strdup_printf("%u", AGS_TIMESTAMP(wave->timestamp)->timer.ags_offset.offset)));
+  }
+  
+  /* selection */
+  selection = wave->selection;
+
+  if(selection != NULL){
+    x_boundary = AGS_BUFFER(selection->data)->x;
+  }else{
+    x_boundary = 0;
+  }
+
+  while(selection != NULL){
+    xmlChar *content;
+    unsigned char *cbuffer;
+
+    guint buffer_size;
+    
+    buffer = AGS_BUFFER(selection->data);
+    current_buffer = xmlNewChild(wave_node,
+			       NULL,
+			       BAD_CAST "buffer",
+			       NULL);
+
+    xmlNewProp(current_buffer,
+	       BAD_CAST "x",
+	       BAD_CAST (g_strdup_printf("%u", buffer->x)));
+
+    cbuffer = NULL;
+    buffer_size = 0;
+    
+    switch(buffer->format){
+    case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	cbuffer = ags_buffer_util_s8_to_char_buffer((signed char *) buffer->data);
+	buffer_size = buffer->buffer_length;
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	cbuffer = ags_buffer_util_s8_to_char_buffer((signed short *) buffer->data);
+	buffer_size = 2 * buffer->buffer_length;
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {
+	cbuffer = ags_buffer_util_s8_to_char_buffer((signed long *) buffer->data);
+	buffer_size = 3 * buffer->buffer_length;
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	cbuffer = ags_buffer_util_s8_to_char_buffer((signed long *) buffer->data);
+	buffer_size = 4 * buffer->buffer_length;
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_64_BIT:
+      {
+	cbuffer = ags_buffer_util_s8_to_char_buffer((signed long long *) buffer->data);
+	buffer_size = 8 * buffer->buffer_length;
+      }
+      break;
+    }
+    
+    xmlNodeSetContent(current_buffer,
+		      g_base64_encode(cbuffer,
+				      buffer_size));
+    g_free(cbuffer);
+    
+    selection = selection->next;
+  }
+
+  xmlNewProp(wave_node,
+	     BAD_CAST "x_boundary",
+	     BAD_CAST (g_strdup_printf("%u", x_boundary)));
+
+  return(wave_node);
 
   return(NULL);
 }
