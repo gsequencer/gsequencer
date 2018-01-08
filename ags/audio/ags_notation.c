@@ -1654,6 +1654,8 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 						gboolean reset_y_offset, guint y_offset,
 						gboolean match_channel, gboolean no_duplicates)
 {
+  gboolean match_timestamp;
+  
   auto void ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
   
   void ags_notation_insert_native_piano_from_clipboard_version_0_3_12()
@@ -1869,7 +1871,8 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 	  }
 
 	  /* check duplicate */
-	  if(ags_notation_find_point(notation,
+	  if(no_duplicates &&
+	     ags_notation_find_point(notation,
 				     x0_val, y_val,
 				     FALSE) != NULL){
 	    node = node->next;
@@ -1878,37 +1881,24 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 	  }
 	  
 	  /* add note */
-	  note = ags_note_new();
+	  if(!match_timestamp ||
+	     x0_val < notation->timestamp->timer.ags_offset.offset + AGS_NOTATION_DEFAULT_OFFSET){
+	    note = ags_note_new();
 
-	  note->x[0] = x0_val;
-	  note->x[1] = x1_val;
+	    note->x[0] = x0_val;
+	    note->x[1] = x1_val;
 
-	  note->y = y_val;
+	    note->y = y_val;
 
 #ifdef AGS_DEBUG
-	  g_message("adding note at: [%u,%u|%u]\n", x0_val, x1_val, y_val);
+	    g_message("adding note at: [%u,%u|%u]\n", x0_val, x1_val, y_val);
 #endif
-	  
-	  ags_notation_add_note(notation,
-				note,
-				FALSE);
+	    
+	    ags_notation_add_note(notation,
+				  note,
+				  FALSE);
+	  }
 	}
-      }else if(!xmlStrncmp("timestamp",
-			   node->name,
-			   10)){
-	/* retrieve timer offset */
-	offset = xmlGetProp(node, "offset");
-
-	if(notation->timestamp == NULL){
-	  notation->timestamp = ags_timestamp_new();
-
-	  AGS_TIMESTAMP(notation->timestamp)->flags &= (~AGS_TIMESTAMP_UNIX);
-	  AGS_TIMESTAMP(notation->timestamp)->flags |= AGS_TIMESTAMP_OFFSET;
-	}
-
-	AGS_TIMESTAMP(notation->timestamp)->timer.ags_offset.offset = g_ascii_strtoull(offset,
-										       NULL,
-										       10);
       }
     
       node = node->next;
@@ -1918,6 +1908,8 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
   if(!AGS_IS_NOTATION(notation)){
     return;
   }
+
+  match_timestamp = FALSE;
   
   if(!xmlStrncmp("0.3.12", version, 7)){
     ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
@@ -1926,6 +1918,8 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
     ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
   }else if(!xmlStrncmp("1.2.0", version, 7)){
     /* changes contain only optional informations */
+    match_timestamp = TRUE;
+    
     if(match_channel &&
        notation->audio_channel != g_ascii_strtoull(xmlGetProp(root_node,
 							      "audio-channel"),

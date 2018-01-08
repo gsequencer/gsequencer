@@ -1338,7 +1338,7 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit)
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));
 
   /* get offset */
-  x = ((double) notation_edit->cursor_position_x * (double) notation_edit->control_width) - GTK_RANGE(notation_edit->hscrollbar)->adjustment->value;
+  x = ((double) notation_edit->cursor_position_x * (double) notation_edit->control_width) - (GTK_RANGE(notation_edit->hscrollbar)->adjustment->value * zoom_factor);
   y = ((double) notation_edit->cursor_position_y * (double) notation_edit->control_height) - GTK_RANGE(notation_edit->vscrollbar)->adjustment->value;
 
   width = (double) notation_edit->control_width;
@@ -1427,15 +1427,17 @@ ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit)
   }
 
   if(notation_edit->selection_y0 < notation_edit->selection_y1){
-    y = ((double) notation_edit->selection_y0) - GTK_RANGE(notation_edit->hscrollbar)->adjustment->value;
+    y = ((double) notation_edit->selection_y0) - GTK_RANGE(notation_edit->vscrollbar)->adjustment->value;
     height = ((double) notation_edit->selection_y1 - (double) notation_edit->selection_y0);
   }else{
-    y = ((double) notation_edit->selection_y1) - GTK_RANGE(notation_edit->hscrollbar)->adjustment->value;
+    y = ((double) notation_edit->selection_y1) - GTK_RANGE(notation_edit->vscrollbar)->adjustment->value;
     height = ((double) notation_edit->selection_y0 - (double) notation_edit->selection_y1);
   }
 
   /* clip */
   if(x < 0.0){
+    width += x;
+
     x = 0.0;
   }else if(x > GTK_WIDGET(notation_edit->drawing_area)->allocation.width){
     cairo_destroy(cr);
@@ -1448,6 +1450,8 @@ ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit)
   }
   
   if(y < 0.0){
+    height += y;
+
     y = 0.0;
   }else if(y > GTK_WIDGET(notation_edit->drawing_area)->allocation.height){
     cairo_destroy(cr);
@@ -1640,6 +1644,7 @@ void
 ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
 {
   AgsNotationEditor *notation_editor;
+  AgsNotationToolbar *notation_toolbar;
 
   GtkStyle *notation_edit_style;
   
@@ -1649,7 +1654,8 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
 
   GList *list_notation;
   GList *list_note;
-  
+
+  gdouble zoom;
   guint x0, x1;
   guint y0, y1;
   guint offset;
@@ -1666,6 +1672,7 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
 
   notation_editor = gtk_widget_get_ancestor(notation_edit,
 					    AGS_TYPE_NOTATION_EDITOR);
+  notation_toolbar = notation_editor->notation_toolbar;
 
   if(notation_editor->selected_machine == NULL){
     return;
@@ -1691,9 +1698,12 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
     return;
   }
 
+  /* zoom */
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom) - 2.0);
+
   /* get visisble region */
   x0 = GTK_RANGE(notation_edit->hscrollbar)->adjustment->value / notation_edit->control_width;
-  x1 = (GTK_RANGE(notation_edit->hscrollbar)->adjustment->value + GTK_WIDGET(notation_edit->drawing_area)->allocation.width) / notation_edit->control_width;
+  x1 = (GTK_RANGE(notation_edit->hscrollbar)->adjustment->value / notation_edit->control_width) + (GTK_WIDGET(notation_edit->drawing_area)->allocation.width * zoom);
 
   y0 = GTK_RANGE(notation_edit->vscrollbar)->adjustment->value / notation_edit->control_height;
   y1 = (GTK_RANGE(notation_edit->vscrollbar)->adjustment->value + GTK_WIDGET(notation_edit->drawing_area)->allocation.height) / notation_edit->control_height;
@@ -1719,7 +1729,7 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
       notation = AGS_NOTATION(list_notation->data);
       
       if(notation->timestamp != NULL &&
-	 AGS_TIMESTAMP(notation->timestamp)->timer.ags_offset.offset > x1){
+	 AGS_TIMESTAMP(notation->timestamp)->timer.ags_offset.offset > x1){	
 	break;
       }
 
