@@ -1866,7 +1866,7 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
     return;
   }  
 
-  match_timestamp = FALSE;
+  match_timestamp = TRUE;
   
   if(!xmlStrncmp("0.4.3", version, 6)){
     ags_automation_insert_from_clipboard_version_0_4_3();
