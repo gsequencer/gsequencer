@@ -80,7 +80,7 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
     zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom));
 
     /* cursor position */
-    automation_edit->cursor_position_x = (guint) zoom_factor * ((event->x + GTK_RANGE(automation_edit->hscrollbar)->adjustment->value) / automation_edit->control_width);
+    automation_edit->cursor_position_x = (guint) (zoom_factor * (event->x + GTK_RANGE(automation_edit->hscrollbar)->adjustment->value)) / automation_edit->control_width;
     
     if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
       automation_edit->cursor_position_y = log(((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
@@ -114,7 +114,7 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
     zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom));
 
     /* acceleration */
-    acceleration->x = (guint) zoom_factor * ((event->x + GTK_RANGE(automation_edit->hscrollbar)->adjustment->value));
+    acceleration->x = (guint) (zoom_factor * (event->x + GTK_RANGE(automation_edit->hscrollbar)->adjustment->value));
     
     if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
       acceleration->y = log(((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
@@ -209,7 +209,7 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
     zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom));
 
     /* cursor position */
-    automation_edit->cursor_position_x = (guint) zoom_factor * ((event->x + GTK_RANGE(automation_edit->hscrollbar)->adjustment->value) / automation_edit->control_width);
+    automation_edit->cursor_position_x = (guint) (zoom_factor * (event->x + GTK_RANGE(automation_edit->hscrollbar)->adjustment->value)) / automation_edit->control_width;
     
     if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
       automation_edit->cursor_position_y = log(((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
@@ -248,7 +248,7 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
     zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom));
 
     /* acceleration */
-    acceleration->x = (guint) zoom_factor * ((event->x + GTK_RANGE(automation_edit->hscrollbar)->adjustment->value));
+    acceleration->x = (guint) (zoom_factor * (event->x + GTK_RANGE(automation_edit->hscrollbar)->adjustment->value));
     
     if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
       acceleration->y = log(((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
@@ -352,6 +352,8 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
      event->button == 1){    
     if(automation_edit->mode == AGS_AUTOMATION_EDIT_POSITION_CURSOR){
       ags_automation_edit_drawing_area_button_release_position_cursor();
+
+      automation_edit->mode = AGS_AUTOMATION_EDIT_NO_EDIT_MODE;
     }else if(automation_edit->mode == AGS_AUTOMATION_EDIT_ADD_ACCELERATION){
       ags_automation_edit_drawing_area_button_release_add_acceleration();
 

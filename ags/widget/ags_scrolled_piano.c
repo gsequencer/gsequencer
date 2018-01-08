@@ -333,7 +333,7 @@ ags_scrolled_piano_size_allocate(GtkWidget *widget,
   }
 
   gtk_widget_size_allocate((GtkWidget *) scrolled_piano->viewport,
-			   allocation);
+			   &child_allocation);
 }
 
 void

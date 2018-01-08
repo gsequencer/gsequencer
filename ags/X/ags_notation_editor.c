@@ -607,7 +607,7 @@ ags_notation_editor_add_note(AgsNotationEditor *notation_editor,
     timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
     timestamp->flags |= AGS_TIMESTAMP_OFFSET;
     
-    timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(note->x[0] / AGS_NOTATION_DEFAULT_OFFSET);
+    timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) note->x[0] / (double) AGS_NOTATION_DEFAULT_OFFSET);
 
     pthread_mutex_lock(audio_mutex);
 
@@ -1146,19 +1146,154 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
   gint first_x, last_x;
   gboolean paste_from_position;
 
+  auto gint ags_notation_editor_paste_notation_all(xmlNode *notation_node,
+						   AgsTimestamp *timestamp,
+						   gboolean match_channel, gboolean no_duplicates);
   auto gint ags_notation_editor_paste_notation(xmlNode *audio_node);
+
+  gint ags_notation_editor_paste_notation_all(xmlNode *notation_node,
+					      AgsTimestamp *timestamp,
+					      gboolean match_channel, gboolean no_duplicates)
+  {    
+    AgsNotation *notation;
+		
+    GList *list_notation;
+    
+    gint first_x;
+    guint current_x;
+    gint i;
+
+    first_x = -1;
+    
+    /*  */
+    i = 0;
+		
+    while((i = ags_notebook_next_active_tab(notation_editor->notebook,
+					    i)) != -1){		  
+      list_notation = ags_notation_find_near_timestamp(machine->audio->notation, i,
+						       timestamp);
+
+      if(list_notation == NULL){
+	notation = ags_notation_new(machine->audio,
+				    i);
+	notation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+	machine->audio->notation = ags_notation_add(machine->audio->notation,
+						    notation);
+      }else{
+	notation = AGS_NOTATION(list_notation->data);
+      }
+		  
+      if(paste_from_position){
+	xmlNode *child;
+
+	guint x_boundary;
+	  
+	ags_notation_insert_from_clipboard_extended(notation,
+						    notation_node,
+						    TRUE, position_x,
+						    TRUE, position_y,
+						    match_channel, no_duplicates);
+		    
+	/* get boundaries */
+	child = notation_node->children;
+	current_x = 0;
+	  
+	while(child != NULL){
+	  if(child->type == XML_ELEMENT_NODE){
+	    if(!xmlStrncmp(child->name,
+			   "note",
+			   5)){
+	      guint tmp;
+
+	      tmp = g_ascii_strtoull(xmlGetProp(child,
+						"x1"),
+				     NULL,
+				     10);
+
+	      if(tmp > current_x){
+		current_x = tmp;
+	      }
+	    }
+	  }
+
+	  child = child->next;
+	}
+
+	x_boundary = g_ascii_strtoull(xmlGetProp(notation_node,
+						 "x_boundary"),
+				      NULL,
+				      10);
+
+
+	if(first_x == -1 || x_boundary < first_x){
+	  first_x = x_boundary;
+	}
+	  
+	if(position_x > x_boundary){
+	  current_x += (position_x - x_boundary);
+	}else{
+	  current_x -= (x_boundary - position_x);
+	}
+	  
+	if(current_x > last_x){
+	  last_x = current_x;
+	}	
+      }else{
+	xmlNode *child;
+
+	ags_notation_insert_from_clipboard(notation,
+					   notation_node,
+					   FALSE, 0,
+					   FALSE, 0);
+
+	/* get boundaries */
+	child = notation_node->children;
+	current_x = 0;
+	  
+	while(child != NULL){
+	  if(child->type == XML_ELEMENT_NODE){
+	    if(!xmlStrncmp(child->name,
+			   "note",
+			   5)){
+	      guint tmp;
+
+	      tmp = g_ascii_strtoull(xmlGetProp(child,
+						"x1"),
+				     NULL,
+				     10);
+
+	      if(tmp > current_x){
+		current_x = tmp;
+	      }
+	    }
+	  }
+
+	  child = child->next;
+	}
+
+	if(current_x > last_x){
+	  last_x = current_x;
+	}
+      }
+		  
+      i++;
+    }
+
+    return(first_x);
+  }
   
   gint ags_notation_editor_paste_notation(xmlNode *audio_node){
     AgsTimestamp *timestamp;
-    
-    GList *list_notation;
 
-    guint first_x;
+    gint first_x;
     gboolean match_channel, no_duplicates;
+
+    first_x = -1;
 
     match_channel = ((AGS_NOTATION_EDITOR_PASTE_MATCH_AUDIO_CHANNEL & (notation_editor->flags)) != 0) ? TRUE: FALSE;
     no_duplicates = ((AGS_NOTATION_EDITOR_PASTE_NO_DUPLICATES & (notation_editor->flags)) != 0) ? TRUE: FALSE;
 
+    /* timestamp */
     timestamp = ags_timestamp_new();
 
     timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
@@ -1181,12 +1316,8 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
 	      if(!xmlStrncmp(notation_node->name,
 			     "notation",
 			     9)){
-		AgsNotation *notation;
+		guint64 offset;
 		
-		guint offset;
-		guint current_x;
-		gint i;
-
 		timestamp_node = notation_node->children;
 		offset = 0;
 	  
@@ -1206,123 +1337,20 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
 
 		  timestamp_node = timestamp_node->next;
 		}     
+
+		/* 1st attempt */
+		timestamp->timer.ags_offset.offset = offset;
 		
-		
-		/*  */
-		i = 0;
-		
-		while((i = ags_notebook_next_active_tab(notation_editor->notebook,
-							i)) != -1){
-		  timestamp->timer.ags_offset.offset = offset;
-		  
-		  list_notation = ags_notation_find_near_timestamp(machine->audio->notation, i,
-								   timestamp);
+		first_x = ags_notation_editor_paste_notation_all(notation_node,
+								 timestamp,
+								 match_channel, no_duplicates);
 
-		  if(list_notation == NULL){
-		    notation = ags_notation_new(machine->audio,
-						i);
-		    AGS_TIMESTAMP(notation->timestamp)->timer.ags_offset.offset = offset;
-		    machine->audio->notation = ags_notation_add(machine->audio->notation,
-								notation);
-		  }else{
-		    notation = AGS_NOTATION(list_notation->data);
-		  }
-		  
-		  if(paste_from_position){
-		    xmlNode *child;
+		/* 2nd attempt */
+		timestamp->timer.ags_offset.offset = offset + AGS_NOTATION_DEFAULT_OFFSET;
 
-		    guint x_boundary;
-	  
-		    ags_notation_insert_from_clipboard_extended(notation,
-								notation_node,
-								TRUE, position_x,
-								TRUE, position_y,
-								match_channel, no_duplicates);
-		    
-		    /* get boundaries */
-		    child = notation_node->children;
-		    current_x = 0;
-	  
-		    while(child != NULL){
-		      if(child->type == XML_ELEMENT_NODE){
-			if(!xmlStrncmp(child->name,
-				       "note",
-				       5)){
-			  guint tmp;
-
-			  tmp = g_ascii_strtoull(xmlGetProp(child,
-							    "x1"),
-						 NULL,
-						 10);
-
-			  if(tmp > current_x){
-			    current_x = tmp;
-			  }
-			}
-		      }
-
-		      child = child->next;
-		    }
-
-		    x_boundary = g_ascii_strtoull(xmlGetProp(notation_node,
-							     "x_boundary"),
-						  NULL,
-						  10);
-
-
-		    if(first_x == -1 || x_boundary < first_x){
-		      first_x = x_boundary;
-		    }
-	  
-		    if(position_x > x_boundary){
-		      current_x += (position_x - x_boundary);
-		    }else{
-		      current_x -= (x_boundary - position_x);
-		    }
-	  
-		    if(current_x > last_x){
-		      last_x = current_x;
-		    }	
-		  }else{
-		    xmlNode *child;
-
-		    ags_notation_insert_from_clipboard(notation,
-						       notation_node,
-						       FALSE, 0,
-						       FALSE, 0);
-
-		    /* get boundaries */
-		    child = notation_node->children;
-		    current_x = 0;
-	  
-		    while(child != NULL){
-		      if(child->type == XML_ELEMENT_NODE){
-			if(!xmlStrncmp(child->name,
-				       "note",
-				       5)){
-			  guint tmp;
-
-			  tmp = g_ascii_strtoull(xmlGetProp(child,
-							    "x1"),
-						 NULL,
-						 10);
-
-			  if(tmp > current_x){
-			    current_x = tmp;
-			  }
-			}
-		      }
-
-		      child = child->next;
-		    }
-
-		    if(current_x > last_x){
-		      last_x = current_x;
-		    }
-		  }
-		  
-		  i++;
-		}
+		ags_notation_editor_paste_notation_all(notation_node,
+						       timestamp,
+						       match_channel, no_duplicates);
 	      }
 	    }
 

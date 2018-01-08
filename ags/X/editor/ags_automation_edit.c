@@ -1653,7 +1653,7 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit)
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom));
 
   /* get offset */
-  x = ((double) automation_edit->cursor_position_x) - GTK_RANGE(automation_edit->hscrollbar)->adjustment->value;
+  x = ((double) automation_edit->cursor_position_x) - (GTK_RANGE(automation_edit->hscrollbar)->adjustment->value * zoom_factor);
   
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
     y = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - ((((double) exp(automation_edit->cursor_position_y) / c_range) * GTK_WIDGET(automation_edit->drawing_area)->allocation.height) - GTK_RANGE(automation_edit->vscrollbar)->adjustment->value);

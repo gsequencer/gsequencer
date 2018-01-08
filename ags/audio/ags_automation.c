@@ -1690,6 +1690,8 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
 						  gboolean from_y_offset, guint y_offset,
 						  gboolean match_line, gboolean no_duplicates)
 {
+  gboolean match_timestamp;
+  
   auto void ags_automation_insert_from_clipboard_version_0_4_3();
   
   void ags_automation_insert_from_clipboard_version_0_4_3()
@@ -1833,25 +1835,29 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
 	}
 
 	/* check duplicate */
-	if(ags_automation_find_point(automation,
+	if(no_duplicates &&
+	   ags_automation_find_point(automation,
 				     x_val, y_val,
 				     FALSE) != NULL){
 	  continue;
 	}
 	
 	/* add acceleration */
-	acceleration = ags_acceleration_new();
-
-	acceleration->x = x_val;
-	acceleration->y = y_val;
+	if(!match_timestamp ||
+	   x_val < automation->timestamp->timer.ags_offset.offset + AGS_AUTOMATION_DEFAULT_OFFSET){
+	  acceleration = ags_acceleration_new();
+	  
+	  acceleration->x = x_val;
+	  acceleration->y = y_val;
 
 #ifdef AGS_DEBUG
-	g_message("adding acceleration at: [%u|%f]\n", x_val, y_val);
+	  g_message("adding acceleration at: [%u|%f]\n", x_val, y_val);
 #endif
-	
-	ags_automation_add_acceleration(automation,
-					acceleration,
-					FALSE);
+	  
+	  ags_automation_add_acceleration(automation,
+					  acceleration,
+					  FALSE);
+	}
       }
     }
   }
@@ -1860,9 +1866,13 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
     return;
   }  
 
+  match_timestamp = FALSE;
+  
   if(!xmlStrncmp("0.4.3", version, 6)){
     ags_automation_insert_from_clipboard_version_0_4_3();
   }else if(!xmlStrncmp("1.3.0", version, 6)){
+    match_timestamp = TRUE;
+    
     if(match_line &&
        automation->line != g_ascii_strtoull(xmlGetProp(root_node,
 						       "line"),
