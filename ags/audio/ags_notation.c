@@ -1909,7 +1909,7 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
     return;
   }
 
-  match_timestamp = FALSE;
+  match_timestamp = TRUE;
   
   if(!xmlStrncmp("0.3.12", version, 7)){
     ags_notation_insert_native_piano_from_clipboard_version_0_3_12();

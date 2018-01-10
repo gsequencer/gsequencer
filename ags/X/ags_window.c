@@ -191,6 +191,7 @@ void
 ags_window_init(AgsWindow *window)
 {
   GtkVBox *vbox;
+  GtkViewport *viewport;
   GtkWidget *scrolled_window;
 
   gchar *str;
@@ -246,12 +247,23 @@ ags_window_init(AgsWindow *window)
 
   /* vpaned and scrolled window */
   window->paned = (GtkVPaned *) gtk_vpaned_new();
-  gtk_box_pack_start((GtkBox*) vbox, (GtkWidget*) window->paned, TRUE, TRUE, 0);
+  gtk_box_pack_start((GtkBox*) vbox,
+		     (GtkWidget*) window->paned,
+		     TRUE, TRUE,
+		     0);
 
-  scrolled_window = (GtkWidget *) gtk_scrolled_window_new(NULL, NULL);
+  viewport = gtk_viewport_new(NULL,
+			      NULL);
+  g_object_set(viewport,
+	       "shadow-type", GTK_SHADOW_NONE,
+	       NULL);
   gtk_paned_pack1((GtkPaned *) window->paned,
-		  scrolled_window,
+		  viewport,
 		  TRUE, TRUE);
+  
+  scrolled_window = (GtkWidget *) gtk_scrolled_window_new(NULL, NULL);
+  gtk_container_add(viewport,
+		    scrolled_window);
 
   /* machines rack */
   window->machines = (GtkVBox *) gtk_vbox_new(FALSE, 0);
@@ -262,13 +274,21 @@ ags_window_init(AgsWindow *window)
   window->selected = NULL;
 
   /* editor */
+  viewport = gtk_viewport_new(NULL,
+			      NULL);
+  g_object_set(viewport,
+	       "shadow-type", GTK_SHADOW_NONE,
+	       NULL);
+  gtk_paned_pack2((GtkPaned *) window->paned,
+		  (GtkWidget *) viewport,
+		  TRUE, TRUE);
+
   window->notation_editor = g_object_new(AGS_TYPE_NOTATION_EDITOR,
 					 "homogeneous", FALSE,
 					 "spacing", 0,
 					 NULL);
-  gtk_paned_pack2((GtkPaned *) window->paned,
-		  (GtkWidget *) window->notation_editor,
-		  TRUE, TRUE);
+  gtk_container_add(viewport,
+		    window->notation_editor);
 
   /* navigation */
   window->navigation = g_object_new(AGS_TYPE_NAVIGATION,

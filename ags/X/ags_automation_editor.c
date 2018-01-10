@@ -184,6 +184,7 @@ ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor)
 void
 ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 {
+  GtkViewport *viewport;
   GtkScrolledWindow *scrolled_window;
   GtkTable *table;
 
@@ -217,11 +218,18 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		     0);
 
   /* machine selector */
-  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  viewport = gtk_viewport_new(NULL,
+			      NULL);
+  g_object_set(viewport,
+	       "shadow-type", GTK_SHADOW_NONE,
+	       NULL);
   gtk_paned_pack1((GtkPaned *) automation_editor->paned,
-		  (GtkWidget *) scrolled_window,
+		  (GtkWidget *) viewport,
 		  FALSE, TRUE);
 
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  gtk_container_add(viewport,
+		    scrolled_window);
   automation_editor->machine_selector = g_object_new(AGS_TYPE_MACHINE_SELECTOR,
 						     "homogeneous", FALSE,
 						     "spacing", 0,
@@ -242,10 +250,18 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   automation_editor->selected_machine = NULL;
 
   /* notebook audio, output, input */
-  automation_editor->notebook = (GtkNotebook *) gtk_notebook_new();
+  viewport = gtk_viewport_new(NULL,
+			      NULL);
+  g_object_set(viewport,
+	       "shadow-type", GTK_SHADOW_NONE,
+	       NULL);
   gtk_paned_pack2((GtkPaned *) automation_editor->paned,
-		  (GtkWidget *) automation_editor->notebook,
-		  TRUE, FALSE);
+		  (GtkWidget *) viewport,
+		  TRUE, TRUE);
+
+  automation_editor->notebook = (GtkNotebook *) gtk_notebook_new();
+  gtk_container_add(viewport,
+		    automation_editor->notebook);
   
   /* audio */
   table = (GtkTable *) gtk_table_new(4, 3,

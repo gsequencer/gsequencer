@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 1.4.0\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2018-01-08 13:25+0100\n"
+"POT-Creation-Date: 2018-01-10 08:11+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,24 +37,24 @@ msgstr ""
 msgid "connect sink"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:231
+#: ags/X/ags_automation_editor.c:239
 msgid "automation"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:255 ags/X/ags_preferences.c:179
+#: ags/X/ags_automation_editor.c:271 ags/X/ags_preferences.c:179
 msgid "audio"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:326 ags/X/ags_connection_editor.c:217
+#: ags/X/ags_automation_editor.c:342 ags/X/ags_connection_editor.c:217
 #: ags/X/ags_machine_editor.c:217
 msgid "output"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:351 ags/X/ags_automation_editor.c:435
+#: ags/X/ags_automation_editor.c:367 ags/X/ags_automation_editor.c:451
 msgid "line"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:410 ags/X/ags_machine_editor.c:224
+#: ags/X/ags_automation_editor.c:426 ags/X/ags_machine_editor.c:224
 msgid "input"
 msgstr ""
 
@@ -239,7 +239,7 @@ msgstr ""
 msgid "engine mode"
 msgstr ""
 
-#: ags/X/ags_line.c:721 ags/X/ags_line.c:729 ags/X/ags_notation_editor.c:260
+#: ags/X/ags_line.c:721 ags/X/ags_line.c:729 ags/X/ags_notation_editor.c:277
 msgid "channel"
 msgstr ""
 
@@ -413,7 +413,7 @@ msgstr ""
 msgid "loop R"
 msgstr ""
 
-#: ags/X/ags_notation_editor.c:236
+#: ags/X/ags_notation_editor.c:245
 msgid "notation"
 msgstr ""
 
