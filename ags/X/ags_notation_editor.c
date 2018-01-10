@@ -190,6 +190,7 @@ ags_notation_editor_class_init(AgsNotationEditorClass *notation_editor)
 void
 ags_notation_editor_init(AgsNotationEditor *notation_editor)
 {
+  GtkViewport *viewport;
   GtkScrolledWindow *scrolled_window;
   GtkTable *table;
   
@@ -220,10 +221,18 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
 		     TRUE, TRUE, 0);
 
   /* machine selector */
-  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  viewport = gtk_viewport_new(NULL,
+			      NULL);
+  g_object_set(viewport,
+	       "shadow-type", GTK_SHADOW_NONE,
+	       NULL);
   gtk_paned_pack1((GtkPaned *) notation_editor->paned,
-		  (GtkWidget *) scrolled_window,
+		  (GtkWidget *) viewport,
 		  FALSE, TRUE);
+
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
+  gtk_container_add(viewport,
+		    scrolled_window);
 
   notation_editor->machine_selector = g_object_new(AGS_TYPE_MACHINE_SELECTOR,
 						   "homogeneous", FALSE,
@@ -247,11 +256,19 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
   notation_editor->selected_machine = NULL;
 
   /* table */
+  viewport = gtk_viewport_new(NULL,
+			      NULL);
+  g_object_set(viewport,
+	       "shadow-type", GTK_SHADOW_NONE,
+	       NULL);
+  gtk_paned_pack2((GtkPaned *) notation_editor->paned,
+		  (GtkWidget *) viewport,
+		  TRUE, TRUE);
+
   table = (GtkTable *) gtk_table_new(3, 2,
 				     FALSE);
-  gtk_paned_pack2((GtkPaned *) notation_editor->paned,
-		  (GtkWidget *) table,
-		  TRUE, FALSE);
+  gtk_container_add(viewport,
+		    table);
   
   /* notebook */
   notation_editor->notebook = g_object_new(AGS_TYPE_NOTEBOOK,
