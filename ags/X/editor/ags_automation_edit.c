@@ -384,6 +384,7 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   automation_edit->flags = 0;
   automation_edit->mode = AGS_AUTOMATION_EDIT_NO_EDIT_MODE;
 
+  automation_edit->button_mask = 0;
   automation_edit->key_mask = 0;
   
   automation_edit->note_offset = 0;

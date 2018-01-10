@@ -136,9 +136,11 @@ ags_notation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventBut
 
   if((machine = notation_editor->selected_machine) != NULL &&
      event->button == 1){    
+    notation_edit->button_mask |= AGS_NOTATION_EDIT_BUTTON_1;
+    
     if(notation_toolbar->selected_edit_mode == notation_toolbar->position){
       notation_edit->mode = AGS_NOTATION_EDIT_POSITION_CURSOR;
-
+      
       ags_notation_edit_drawing_area_button_press_position_cursor();
     }else if(notation_toolbar->selected_edit_mode == notation_toolbar->edit){
       notation_edit->mode = AGS_NOTATION_EDIT_ADD_NOTE;
@@ -276,10 +278,12 @@ ags_notation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventB
 
   if((machine = notation_editor->selected_machine) != NULL &&
      event->button == 1){    
+    notation_edit->button_mask &= (~AGS_NOTATION_EDIT_BUTTON_1);
+    
     if(notation_edit->mode == AGS_NOTATION_EDIT_POSITION_CURSOR){
       ags_notation_edit_drawing_area_button_release_position_cursor();
-
-      notation_edit->mode = AGS_NOTATION_EDIT_NO_EDIT_MODE;
+      
+      //      notation_edit->mode = AGS_NOTATION_EDIT_NO_EDIT_MODE;
     }else if(notation_edit->mode == AGS_NOTATION_EDIT_ADD_NOTE){
       ags_notation_edit_drawing_area_button_release_add_note();
 
@@ -390,7 +394,8 @@ ags_notation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMo
 
   gtk_widget_grab_focus((GtkWidget *) notation_edit->drawing_area);
 
-  if((machine = notation_editor->selected_machine) != NULL){
+  if((machine = notation_editor->selected_machine) != NULL &&
+     (AGS_NOTATION_EDIT_BUTTON_1 & (notation_edit->button_mask)) != 0){
     if(notation_edit->mode == AGS_NOTATION_EDIT_POSITION_CURSOR){
       ags_notation_edit_drawing_area_motion_notify_position_cursor();
     }else if(notation_edit->mode == AGS_NOTATION_EDIT_ADD_NOTE){

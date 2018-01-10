@@ -157,6 +157,8 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
 
   if((machine = automation_editor->selected_machine) != NULL &&
      event->button == 1){    
+    automation_edit->button_mask = AGS_AUTOMATION_EDIT_BUTTON_1;
+    
     if(automation_toolbar->selected_edit_mode == automation_toolbar->position){
       automation_edit->mode = AGS_AUTOMATION_EDIT_POSITION_CURSOR;
 
@@ -349,7 +351,9 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
   automation_toolbar = automation_editor->automation_toolbar;
 
   if((machine = automation_editor->selected_machine) != NULL &&
-     event->button == 1){    
+     event->button == 1){
+    automation_edit->button_mask &= (~AGS_AUTOMATION_EDIT_BUTTON_1);
+    
     if(automation_edit->mode == AGS_AUTOMATION_EDIT_POSITION_CURSOR){
       ags_automation_edit_drawing_area_button_release_position_cursor();
 
@@ -483,7 +487,8 @@ ags_automation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEvent
 
   gtk_widget_grab_focus((GtkWidget *) automation_edit->drawing_area);
 
-  if((machine = automation_editor->selected_machine) != NULL){
+  if((machine = automation_editor->selected_machine) != NULL &&
+     (AGS_AUTOMATION_EDIT_BUTTON_1 & (automation_edit->button_mask)) != 0){
     if(automation_edit->mode == AGS_AUTOMATION_EDIT_POSITION_CURSOR){
       ags_automation_edit_drawing_area_motion_notify_position_cursor();
     }else if(automation_edit->mode == AGS_AUTOMATION_EDIT_ADD_ACCELERATION){

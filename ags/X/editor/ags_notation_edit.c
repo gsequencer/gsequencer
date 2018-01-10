@@ -225,6 +225,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 			  AGS_NOTATION_EDIT_SHOW_HSCROLLBAR);
   notation_edit->mode = AGS_NOTATION_EDIT_NO_EDIT_MODE;
 
+  notation_edit->button_mask = 0;
   notation_edit->key_mask = 0;
 
   notation_edit->note_offset = 0;

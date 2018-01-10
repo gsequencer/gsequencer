@@ -71,6 +71,10 @@ typedef enum{
 }AgsNotationEditMode;
 
 typedef enum{
+  AGS_NOTATION_EDIT_BUTTON_1            = 1,
+}AgsNotationEditButtonMask;
+
+typedef enum{
   AGS_NOTATION_EDIT_KEY_L_CONTROL       = 1,
   AGS_NOTATION_EDIT_KEY_R_CONTROL       = 1 <<  1,
   AGS_NOTATION_EDIT_KEY_L_SHIFT         = 1 <<  2,
@@ -83,7 +87,8 @@ struct _AgsNotationEdit
 
   guint flags;
   guint mode;
-  
+
+  guint button_mask;
   guint key_mask;
 
   guint note_offset;

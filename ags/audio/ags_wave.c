@@ -688,9 +688,9 @@ ags_wave_add_buffer(AgsWave *wave,
 					   buffer,
 					   (GCompareFunc) ags_buffer_sort_func);
   }else{
-    wave->buffers = g_list_insert_sorted(wave->buffer,
-					 buffer,
-					 (GCompareFunc) ags_buffer_sort_func);
+    wave->buffer = g_list_insert_sorted(wave->buffer,
+					buffer,
+					(GCompareFunc) ags_buffer_sort_func);
   }
 }
 
@@ -715,8 +715,8 @@ ags_wave_remove_buffer(AgsWave *wave,
   }
   
   if(!use_selection_list){
-    wave->buffers = g_list_remove(wave->buffer,
-				  buffer);
+    wave->buffer = g_list_remove(wave->buffer,
+				 buffer);
   }else{
     wave->selection = g_list_remove(wave->selection,
 				    buffer);
@@ -757,7 +757,7 @@ ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer)
 
   selection = wave->selection;
 
-  while(selection != NULL && AGS_BUFFER(selection->data)->x[0] <= buffer->x[0]){
+  while(selection != NULL && AGS_BUFFER(selection->data)->x <= buffer->x){
     if(selection->data == buffer){
       return(TRUE);
     }
@@ -1003,10 +1003,7 @@ ags_wave_copy_selection(AgsWave *wave)
 	     BAD_CAST "format",
 	     BAD_CAST (AGS_WAVE_CLIPBOARD_FORMAT));
   xmlNewProp(wave_node,
-	     BAD_CAST "base-frequency",
-	     BAD_CAST (g_strdup_printf("%f", wave->base_frequency)));
-  xmlNewProp(wave_node,
-	     BAD_CAST "channel",
+	     BAD_CAST "audio-channel",
 	     BAD_CAST (g_strdup_printf("%u", wave->audio_channel)));
 
   /* timestamp */
@@ -1281,6 +1278,7 @@ ags_wave_insert_from_clipboard(AgsWave *wave,
   ags_wave_insert_from_clipboard_extended(wave,
 					  wave_node,
 					  reset_x_offset, x_offset,
+					  delay, attack,
 					  FALSE, FALSE);
 }
 
@@ -1334,10 +1332,10 @@ ags_wave_insert_from_clipboard_extended(AgsWave *wave,
 
 	ags_wave_insert_native_level_from_clipboard(wave,
 						    wave_node, version,
-						    base_frequency,
-						    x_boundary, y_boundary,
+						    x_boundary,
 						    reset_x_offset, x_offset,
-						    match_channel, do_replace);
+						    delay, attack,
+						    match_audio_channel, do_replace);
       }
     }
   }

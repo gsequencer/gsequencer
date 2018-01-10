@@ -20,6 +20,7 @@
 #include <ags/lib/ags_buffer_util.h>
 
 #include <stdlib.h>
+#include <string.h>
 
 /**
  * ags_buffer_util_s8_to_char_buffer:
@@ -119,7 +120,7 @@ ags_buffer_util_s16_to_char_buffer(signed short *buffer,
       cbuffer[10] = (unsigned char) (0xff & buffer[5]);
       cbuffer[11] = (unsigned char) ((0xff00 & buffer[5]) >> 8);
 
-      cbuffer[12 = (unsigned char) (0xff & buffer[6]);
+      cbuffer[12] = (unsigned char) (0xff & buffer[6]);
       cbuffer[13] = (unsigned char) ((0xff00 & buffer[6]) >> 8);
 
       cbuffer[14] = (unsigned char) (0xff & buffer[7]);
@@ -451,7 +452,7 @@ ags_buffer_util_char_buffer_to_s8(unsigned char *cbuffer,
   
   i = 0;
   
-  if(buffer_length > 8){
+  if(buffer_size > 8){
     limit = buffer_size - 8;
 
     for(; i < limit; i += 8){
@@ -469,7 +470,7 @@ ags_buffer_util_char_buffer_to_s8(unsigned char *cbuffer,
     }
   }
 
-  for(; i < buffer_length; i++){
+  for(; i < buffer_size; i++){
     buffer[0] |= (0xff & cbuffer[0]);
       
     buffer++;
@@ -499,12 +500,12 @@ ags_buffer_util_char_buffer_to_s16(unsigned char *cbuffer,
   guint limit;
   guint i;
 
-  buffer = (signed short *) malloc(buffer_size * sizeof(signed short));
+  buffer = (signed short *) malloc((buffer_size / 2) * sizeof(signed short));
   memset(buffer, 0, (buffer_size / 2) * sizeof(signed short));
   
   i = 0;
   
-  if(buffer_length > 8){
+  if(buffer_size / 2 > 8){
     limit = (buffer_size / 2) - 8;
 
     for(; i < limit; i += 8){
@@ -568,12 +569,12 @@ ags_buffer_util_char_buffer_to_s24(unsigned char *cbuffer,
   guint limit;
   guint i;
 
-  buffer = (signed long *) malloc(buffer_size * sizeof(signed long));
+  buffer = (signed long *) malloc((buffer_size / 3) * sizeof(signed long));
   memset(buffer, 0, (buffer_size / 3) * sizeof(signed long));
   
   i = 0;
   
-  if(buffer_length > 8){
+  if(buffer_size / 3 > 8){
     limit = (buffer_size / 3) - 8;
 
     for(; i < limit; i += 8){
@@ -646,12 +647,12 @@ ags_buffer_util_char_buffer_to_s32(unsigned char *cbuffer,
   guint limit;
   guint i;
 
-  buffer = (signed long *) malloc(buffer_size * sizeof(signed long));
+  buffer = (signed long *) malloc((buffer_size / 4) * sizeof(signed long));
   memset(buffer, 0, (buffer_size / 4) * sizeof(signed long));
   
   i = 0;
   
-  if(buffer_length > 8){
+  if((buffer_size / 4) > 8){
     limit = (buffer_size / 4) - 8;
 
     for(; i < limit; i += 8){
@@ -733,12 +734,12 @@ ags_buffer_util_char_buffer_to_s64(unsigned char *cbuffer,
   guint limit;
   guint i;
 
-  buffer = (signed long long *) malloc(buffer_size * sizeof(signed long long));
+  buffer = (signed long long *) malloc((buffer_size / 8) * sizeof(signed long long));
   memset(buffer, 0, (buffer_size / 8) * sizeof(signed long long));
   
   i = 0;
   
-  if(buffer_length > 8){
+  if(buffer_size / 8 > 8){
     limit = (buffer_size / 8) - 8;
 
     for(; i < limit; i += 8){
@@ -756,7 +757,7 @@ ags_buffer_util_char_buffer_to_s64(unsigned char *cbuffer,
       buffer[1] |= ((0xff & cbuffer[10]) << 16);
       buffer[1] |= ((0xff & cbuffer[11]) << 24);
       buffer[1] |= ((0xff & cbuffer[12]) << 32);
-      buffer[1] |= ((0xff & cbuffer[13) << 40);
+      buffer[1] |= ((0xff & cbuffer[13]) << 40);
       buffer[1] |= ((0xff & cbuffer[14]) << 48);
       buffer[1] |= ((0xff & cbuffer[15]) << 56);
       
