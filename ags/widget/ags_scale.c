@@ -1244,7 +1244,7 @@ ags_scale_draw(AgsScale *scale)
  */
 void
 ags_scale_value_changed(AgsScale *scale,
-			 gdouble default_value)
+			gdouble default_value)
 {
   g_return_if_fail(AGS_IS_SCALE(scale));
   

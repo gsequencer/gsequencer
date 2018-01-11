@@ -21,6 +21,8 @@
 
 #include <ags/i18n.h>
 
+#include <math.h>
+
 void ags_move_note_class_init(AgsMoveNoteClass *move_note);
 void ags_move_note_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_move_note_init(AgsMoveNote *move_note);

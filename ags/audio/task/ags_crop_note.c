@@ -21,6 +21,8 @@
 
 #include <ags/i18n.h>
 
+#include <math.h>
+
 void ags_crop_note_class_init(AgsCropNoteClass *crop_note);
 void ags_crop_note_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_crop_note_init(AgsCropNote *crop_note);

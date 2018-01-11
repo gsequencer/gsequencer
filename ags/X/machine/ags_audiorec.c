@@ -40,6 +40,13 @@ void ags_audiorec_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 void ags_audiorec_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_audiorec_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
+void ags_audiorec_resize_audio_channels(AgsMachine *machine,
+					guint audio_channels, guint audio_channels_old,
+					gpointer data);
+void ags_audiorec_resize_pads(AgsMachine *machine, GType type,
+			      guint pads, guint pads_old,
+			      gpointer data);
+
 /**
  * SECTION:ags_audiorec
  * @short_description: record audio data
@@ -146,6 +153,26 @@ ags_audiorec_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_audiorec_init(AgsAudiorec *audiorec)
 {
+  GtkHBox *hbox;
+  GtkHBox *vbox;
+  GtkHBox *filename_hbox;
+  GtkFrame *frame;
+  GtkLabel *label;
+
+  AgsAudio *audio;
+
+  audio = AGS_MACHINE(audiorec)->audio;
+  audio->flags |= (AGS_AUDIO_SYNC |
+		   AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+		   AGS_AUDIO_INPUT_HAS_RECYCLING);
+
+  /* audio resize */
+  g_signal_connect_after(G_OBJECT(audiorec), "resize-audio-channels",
+			 G_CALLBACK(ags_audiorec_resize_audio_channels), NULL);
+
+  g_signal_connect_after(G_OBJECT(audiorec), "resize-pads",
+			 G_CALLBACK(ags_audiorec_resize_pads), NULL);
+  
   /* mapped IO */
   audiorec->mapped_input_pad = 0;
   audiorec->mapped_output_pad = 0;
@@ -153,6 +180,67 @@ ags_audiorec_init(AgsAudiorec *audiorec)
   /* name and xml type */
   audiorec->name = NULL;
   audiorec->xml_type = "ags-audiorec";
+
+  /* context menu */
+  ags_machine_popup_add_connection_options((AgsMachine *) audiorec,
+					   (AGS_MACHINE_POPUP_CONNECTION_EDITOR));
+
+  AGS_MACHINE(audiorec)->connection_flags |= AGS_MACHINE_SHOW_AUDIO_INPUT_CONNECTION;
+  
+  /* hbox */
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				  0);
+  gtk_container_add((GtkContainer *) (gtk_bin_get_child((GtkBin *) audiorec)),
+		    (GtkWidget *) hbox);
+
+  /* frame - filename and open */
+  frame = (GtkFrame *) gtk_frame_new("file");
+  gtk_box_pack_start(hbox,
+		     frame,
+		     FALSE, FALSE,
+		     0);
+
+  vbox = (GtkHBox *) gtk_vbox_new(FALSE,
+				  0);
+  gtk_container_add((GtkContainer *) frame,
+		    (GtkWidget *) vbox);
+
+  filename_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+					   0);
+  gtk_box_pack_start(vbox,
+		     filename_hbox,
+		     FALSE, FALSE,
+		     0);
+  
+  label = gtk_label_new("filename: ");
+  gtk_box_pack_start(filename_hbox,
+		     label,
+		     FALSE, FALSE,
+		     0);
+
+  audiorec->filename = (GtkEntry *) gtk_entry_new();
+  gtk_box_pack_start(filename_hbox,
+		     audiorec->filename,
+		     FALSE, FALSE,
+		     0);
+
+  audiorec->open = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OPEN);
+  gtk_box_pack_start(filename_hbox,
+		     audiorec->open,
+		     FALSE, FALSE,
+		     0);
+  
+  /* frame - hindicator */
+  frame = (GtkFrame *) gtk_frame_new("input");
+  gtk_box_pack_start(hbox,
+		     frame,
+		     FALSE, FALSE,
+		     0);
+
+  audiorec->hindicator_vbox = (GtkHBox *) gtk_vbox_new(FALSE,
+						       0);
+  gtk_container_add((GtkContainer *) frame,
+		    (GtkWidget *) audiorec->hindicator_vbox);
 }
 
 void
@@ -222,6 +310,98 @@ void
 ags_audiorec_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
 {
   AGS_AUDIOREC(plugin)->xml_type = xml_type;
+}
+
+void
+ags_audiorec_resize_audio_channels(AgsMachine *machine,
+				   guint audio_channels, guint audio_channels_old,
+				   gpointer data)
+{
+  AgsAudiorec *audiorec;
+
+  guint pads;
+  
+  audiorec = AGS_AUDIOREC(machine);
+
+  pads = machine->audio->input_pads;
+
+  if(audio_channels > audio_channels_old &&
+     pads > 0){
+    AgsHIndicator *hindicator;
+	
+    guint i;
+
+    for(i = audio_channels_old; i < audio_channels; i++){
+      hindicator = ags_hindicator_new();
+      gtk_box_pack_start(audiorec->hindicator_vbox,
+			 hindicator,
+			 FALSE, FALSE,
+			 8);
+    }
+
+    gtk_widget_show_all(audiorec->hindicator_vbox);
+  }else{
+    GList *list, *list_start;
+
+    list_start =
+      list = gtk_container_get_children(audiorec->hindicator_vbox);
+
+    list = g_list_nth(list_start,
+		      audio_channels);
+    
+    while(list != NULL){
+      gtk_widget_destroy(list->data);
+      
+      list = list->next;
+    }
+
+    g_list_free(list_start);
+  }
+}
+
+void
+ags_audiorec_resize_pads(AgsMachine *machine, GType type,
+			 guint pads, guint pads_old,
+			 gpointer data)
+{
+  AgsAudiorec *audiorec;
+
+  audiorec = AGS_AUDIOREC(machine);
+
+  if(type == AGS_TYPE_INPUT){
+    if(pads == 1 &&
+       pads_old == 0){
+      AgsHIndicator *hindicator;
+
+      guint audio_channels;
+      guint i;
+
+      audio_channels = machine->audio->audio_channels;
+
+      for(i = 0; i < audio_channels; i++){
+	hindicator = ags_hindicator_new();
+	gtk_box_pack_start(audiorec->hindicator_vbox,
+			   hindicator,
+			   FALSE, FALSE,
+			   8);
+      }
+
+      gtk_widget_show_all(audiorec->hindicator_vbox);
+    }else if(pads == 0){
+      GList *list, *list_start;
+
+      list_start = 
+	list = gtk_container_get_children(audiorec->hindicator_vbox);
+
+      while(list != NULL){
+	gtk_widget_destroy(list->data);
+      
+	list = list->next;
+      }
+
+      g_list_free(list_start);
+    }
+  }
 }
 
 void

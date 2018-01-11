@@ -46,6 +46,11 @@ struct _AgsAudiorec
 
   gchar *name;
   gchar *xml_type;
+
+  GtkEntry *filename;
+  GtkButton *open;
+
+  GtkVBox *hindicator_vbox;
 };
 
 struct _AgsAudiorecClass

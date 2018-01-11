@@ -174,6 +174,8 @@ ags_panel_init(AgsPanel *panel)
   ags_machine_popup_add_connection_options((AgsMachine *) panel,
 					   (AGS_MACHINE_POPUP_CONNECTION_EDITOR));
 
+  AGS_MACHINE(panel)->connection_flags |= AGS_MACHINE_SHOW_AUDIO_OUTPUT_CONNECTION;
+
   AGS_MACHINE(panel)->audio->flags |= (AGS_AUDIO_SYNC);
   AGS_MACHINE(panel)->input_pad_type = AGS_TYPE_PANEL_INPUT_PAD;
 

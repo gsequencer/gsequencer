@@ -112,6 +112,9 @@ struct _AgsScaleClass
 
 GType ags_scale_get_type(void);
 
+void ags_scale_value_changed(AgsScale *scale,
+			     gdouble default_value);
+
 AgsScale* ags_scale_new();
 
 #endif /*__AGS_SCALE_H__*/

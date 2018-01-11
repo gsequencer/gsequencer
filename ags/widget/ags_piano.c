@@ -27,6 +27,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 static GType ags_accessible_piano_get_type(void);
 void ags_piano_class_init(AgsPianoClass *piano);
