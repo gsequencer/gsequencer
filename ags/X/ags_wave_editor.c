@@ -26,6 +26,10 @@
 
 #include <ags/X/ags_window.h>
 
+#include <ags/X/editor/ags_scrolled_wave_edit_box.h>
+#include <ags/X/editor/ags_vwave_edit_box.h>
+#include <ags/X/editor/ags_wave_edit.h>
+
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 
@@ -180,9 +184,12 @@ ags_wave_editor_class_init(AgsWaveEditorClass *wave_editor)
 void
 ags_wave_editor_init(AgsWaveEditor *wave_editor)
 {
-  GtkHPaned *paned;
-  GtkScrolledWindow *scrolled_window;
+  GtkViewport *viewport;
+  GtkScrolledWindow *scrolled_window;  
+  GtkTable *table;
   
+  GtkAdjustment *adjustment;
+
   g_signal_connect_after((GObject *) wave_editor, "parent-set",
 			 G_CALLBACK(ags_wave_editor_parent_set_callback), wave_editor);
 
@@ -191,6 +198,11 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   wave_editor->version = AGS_WAVE_EDITOR_DEFAULT_VERSION;
   wave_editor->build_id = AGS_WAVE_EDITOR_DEFAULT_BUILD_ID;
 
+  /* offset */
+  wave_editor->tact_counter = 0;
+  wave_editor->current_tact = 0.0;
+
+  /* soundcard */
   wave_editor->soundcard = NULL;
 
   wave_editor->wave_toolbar = ags_wave_toolbar_new();
@@ -198,14 +210,24 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 		     (GtkWidget *) wave_editor->wave_toolbar,
 		     FALSE, FALSE, 0);
 
-  paned = (GtkHPaned *) gtk_hpaned_new();
+  wave_editor->paned = (GtkHPaned *) gtk_hpaned_new();
   gtk_box_pack_start((GtkBox *) wave_editor,
-		     (GtkWidget *) paned,
+		     (GtkWidget *) wave_editor->paned,
 		     TRUE, TRUE, 0);
 
+  /* machine selector */
+  viewport = gtk_viewport_new(NULL,
+			      NULL);
+  g_object_set(viewport,
+	       "shadow-type", GTK_SHADOW_NONE,
+	       NULL);
+  gtk_paned_pack1((GtkPaned *) wave_editor->paned,
+		  (GtkWidget *) viewport,
+		  FALSE, TRUE);
+
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
-  gtk_paned_pack1((GtkPaned *) paned, (GtkWidget *) scrolled_window, FALSE, TRUE);
-  //  gtk_widget_set_size_request((GtkWidget *) scrolled_window, 180, -1);
+  gtk_container_add(viewport,
+		    scrolled_window);
 
   wave_editor->machine_selector = g_object_new(AGS_TYPE_MACHINE_SELECTOR,
 					       "homogeneous", FALSE,
@@ -221,21 +243,100 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   
   gtk_scrolled_window_add_with_viewport(scrolled_window, (GtkWidget *) wave_editor->machine_selector);
 
+  /* selected machine */
   wave_editor->selected_machine = NULL;
 
-  wave_editor->table = (GtkTable *) gtk_table_new(4, 3, FALSE);
-  gtk_paned_pack2((GtkPaned *) paned,
-		  (GtkWidget *) wave_editor->table,
-		  TRUE, FALSE);
+  /* table */
+  viewport = gtk_viewport_new(NULL,
+			      NULL);
+  g_object_set(viewport,
+	       "shadow-type", GTK_SHADOW_NONE,
+	       NULL);
+  gtk_paned_pack2((GtkPaned *) wave_editor->paned,
+		  (GtkWidget *) viewport,
+		  TRUE, TRUE);
 
-  /* currenty selected widgets */
-  wave_editor->notebook = NULL;  
-  wave_editor->scrolled_level_box = NULL;
-  wave_editor->scrolled_wave_edit_box = NULL;
+  table = (GtkTable *) gtk_table_new(4, 3, FALSE);
+  gtk_container_add(viewport,
+		    table);
 
-  /* offset */
-  wave_editor->tact_counter = 0;
-  wave_editor->current_tact = 0.0;
+  /* scrollbars */
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_WAVE_EDIT_DEFAULT_CONTROL_HEIGHT, 1.0);
+  wave_editor->vscrollbar = gtk_vscrollbar_new(adjustment);
+  gtk_table_attach(table,
+		   (GtkWidget *) wave_editor->vscrollbar,
+		   2, 3,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH, 1.0);
+  wave_editor->hscrollbar = gtk_hscrollbar_new(adjustment);
+  gtk_table_attach(table,
+		   (GtkWidget *) wave_editor->hscrollbar,
+		   1, 2,
+		   3, 4,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  /* notebook */
+  wave_editor->notebook = g_object_new(AGS_TYPE_NOTEBOOK,
+				       "homogeneous", FALSE,
+				       "spacing", 0,
+				       "prefix", i18n("line"),
+				       NULL);
+  gtk_table_attach(table,
+		   (GtkWidget *) wave_editor->notebook,
+		   0, 3,
+		   0, 1,
+		   GTK_FILL | GTK_EXPAND, GTK_FILL,
+		   0, 0);
+
+  /* ruler */
+  wave_editor->ruler = ags_ruler_new();
+  gtk_table_attach(table,
+		   (GtkWidget *) wave_editor->ruler,
+		   1, 2,
+		   1, 2,
+		   GTK_FILL | GTK_EXPAND, GTK_FILL,
+		   0, 0);
+
+
+  /* level */
+  wave_editor->scrolled_level_box = ags_scrolled_level_box_new();
+
+  wave_editor->scrolled_level_box->level_box = ags_vlevel_box_new();
+  gtk_container_add(wave_editor->scrolled_level_box->viewport,
+		    wave_editor->scrolled_level_box->level_box);
+
+  gtk_table_attach(table,
+		   (GtkWidget *) wave_editor->scrolled_level_box,
+		   0, 1,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  /* wave edit */
+  wave_editor->scrolled_wave_edit_box = ags_scrolled_wave_edit_box_new();
+
+  wave_editor->scrolled_wave_edit_box->wave_edit_box = ags_vwave_edit_box_new();
+  gtk_container_add(wave_editor->scrolled_wave_edit_box->viewport,
+		    wave_editor->scrolled_wave_edit_box->wave_edit_box);
+
+  gtk_table_attach(table,
+		   (GtkWidget *) wave_editor->scrolled_wave_edit_box,
+		   1, 2,
+		   2, 3,
+		   GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND,
+		   0, 0);
+
+  gtk_widget_set_events(GTK_WIDGET(wave_editor->scrolled_wave_edit_box->viewport), GDK_EXPOSURE_MASK
+			| GDK_LEAVE_NOTIFY_MASK
+			| GDK_BUTTON_PRESS_MASK
+			| GDK_BUTTON_RELEASE_MASK
+			| GDK_POINTER_MOTION_MASK
+			| GDK_POINTER_MOTION_HINT_MASK
+			| GDK_CONTROL_MASK);
 }
 
 void

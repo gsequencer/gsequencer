@@ -64,7 +64,7 @@ typedef enum{
 struct _AgsWaveEditor
 {
   GtkVBox vbox;
-
+  
   guint flags;
   
   gchar *version;
@@ -82,12 +82,12 @@ struct _AgsWaveEditor
 
   AgsWaveToolbar *wave_toolbar;
 
-  GtkTable *table;
-
   AgsNotebook *notebook;
   AgsRuler *ruler;
   AgsScrolledLevelBox *scrolled_level_box;
   AgsScrolledWaveEditBox *scrolled_wave_edit_box;
+  GtkVScrollbar *vscrollbar;
+  GtkHScrollbar *hscrollbar;
 };
 
 struct _AgsWaveEditorClass

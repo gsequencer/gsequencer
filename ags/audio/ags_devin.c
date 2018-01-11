@@ -19,13 +19,7 @@
 
 #include <ags/audio/ags_devin.h>
 
-#include <ags/lib/ags_time.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_concurrent_tree.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio_buffer_util.h>

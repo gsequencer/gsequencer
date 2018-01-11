@@ -1745,6 +1745,7 @@ ags_devout_pcm_info(AgsSoundcard *soundcard,
 	device_fixup = g_strndup(card_id,
 				 index(card_id,
 				       ',') - card_id);
+	handle = NULL;
 	
 	rc = snd_pcm_open(&handle, device_fixup, SND_PCM_STREAM_PLAYBACK, 0);
       
@@ -1761,6 +1762,16 @@ ags_devout_pcm_info(AgsSoundcard *soundcard,
 	  
 	  return;
 	}
+      }else{
+	if(error != NULL){
+	  g_set_error(error,
+		      AGS_DEVOUT_ERROR,
+		      AGS_DEVOUT_ERROR_LOCKED_SOUNDCARD,
+		      "unable to open pcm device: %s\n",
+		      str);
+	}
+	
+	return;
       }
     }
 
@@ -2869,7 +2880,9 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   /*  */
   period_event = 0;
   
-  /* Open PCM device for playback. */
+  /* Open PCM device for playback. */  
+  handle = NULL;
+
   if((err = snd_pcm_open(&handle, devout->out.alsa.device, SND_PCM_STREAM_PLAYBACK, 0)) < 0){
     gchar *device_fixup;
     
@@ -2878,6 +2891,8 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     
     device_fixup = g_strdup_printf("%s,0",
 				   devout->out.alsa.device);
+
+    handle = NULL;
     
     if((err = snd_pcm_open(&handle, device_fixup, SND_PCM_STREAM_PLAYBACK, 0)) < 0){
       pthread_mutex_unlock(mutex);
@@ -3088,6 +3103,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
   
   /* write the parameters to device */
   err = snd_pcm_hw_params(handle, hwparams);
+
   if (err < 0) {
     pthread_mutex_unlock(mutex);
 

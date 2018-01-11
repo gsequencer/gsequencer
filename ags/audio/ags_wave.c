@@ -43,7 +43,7 @@ void ags_wave_finalize(GObject *gobject);
 void ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 						 xmlNode *root_node, char *version,
 						 char *x_boundary,
-						 gboolean reset_x_offset, guint64 x_offset,
+						 gboolean reset_x_offset, guint x_offset,
 						 gdouble delay, guint attack,
 						 gboolean match_channel, gboolean do_replace);
 
@@ -63,9 +63,9 @@ enum{
   PROP_AUDIO_CHANNEL,
   PROP_BUFFER,
   PROP_TIMESTAMP,
-  PROP_FORMAT,
   PROP_SAMPLERATE,
   PROP_BUFFER_SIZE,
+  PROP_FORMAT,
 };
 
 static gpointer ags_wave_parent_class = NULL;
@@ -191,24 +191,6 @@ ags_wave_class_init(AgsWaveClass *wave)
 				  param_spec);
 
   /**
-   * AgsWave:format:
-   *
-   * The audio buffer's format.
-   * 
-   * Since: 1.4.0
-   */
-  param_spec =  g_param_spec_uint("format",
-				  i18n_pspec("format of audio buffer"),
-				  i18n_pspec("The format of audio buffer"),
-				  0,
-				  G_MAXUINT,
-				  AGS_SOUNDCARD_DEFAULT_FORMAT,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_FORMAT,
-				  param_spec);
-
-  /**
    * AgsWave:samplerate:
    *
    * The audio buffer's samplerate.
@@ -243,6 +225,24 @@ ags_wave_class_init(AgsWaveClass *wave)
   g_object_class_install_property(gobject,
 				  PROP_BUFFER_SIZE,
 				  param_spec);
+
+  /**
+   * AgsWave:format:
+   *
+   * The audio buffer's format.
+   * 
+   * Since: 1.4.0
+   */
+  param_spec =  g_param_spec_uint("format",
+				  i18n_pspec("format of audio buffer"),
+				  i18n_pspec("The format of audio buffer"),
+				  0,
+				  G_MAXUINT,
+				  AGS_SOUNDCARD_DEFAULT_FORMAT,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FORMAT,
+				  param_spec);
 }
 
 void
@@ -271,9 +271,9 @@ ags_wave_init(AgsWave *wave)
   wave->audio_channel = 0;
   wave->audio = NULL;
 
-  wave->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   wave->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   wave->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  wave->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   
   wave->buffer = NULL;
 
@@ -412,22 +412,14 @@ ags_wave_set_property(GObject *gobject,
       wave->timestamp = (GObject *) timestamp;
     }
     break;
-  case PROP_FORMAT:
-    {
-      guint format;
-
-      format = g_value_get_uint(value);
-
-      wave->format = format;
-    }
-    break;
   case PROP_SAMPLERATE:
     {
       guint samplerate;
 
       samplerate = g_value_get_uint(value);
 
-      wave->samplerate = samplerate;
+      ags_wave_set_samplerate(wave,
+			      samplerate);
     }
     break;
   case PROP_BUFFER_SIZE:
@@ -436,7 +428,18 @@ ags_wave_set_property(GObject *gobject,
 
       buffer_size = g_value_get_uint(value);
 
-      wave->buffer_size = buffer_size;
+      ags_wave_set_buffer_size(wave,
+			       buffer_size);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      guint format;
+
+      format = g_value_get_uint(value);
+
+      ags_wave_set_format(wave,
+			  format);
     }
     break;
   default:
@@ -471,11 +474,6 @@ ags_wave_get_property(GObject *gobject,
       g_value_set_object(value, wave->timestamp);
     }
     break;
-  case PROP_FORMAT:
-    {
-      g_value_set_uint(value, wave->format);
-    }
-    break;
   case PROP_SAMPLERATE:
     {
       g_value_set_uint(value, wave->samplerate);
@@ -484,6 +482,11 @@ ags_wave_get_property(GObject *gobject,
   case PROP_BUFFER_SIZE:
     {
       g_value_set_uint(value, wave->buffer_size);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      g_value_set_uint(value, wave->format);
     }
     break;
   default:
@@ -562,6 +565,86 @@ ags_wave_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_wave_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_wave_set_samplerate:
+ * @wave: the #AgsWave
+ * @samplerate: the samplerate
+ * 
+ * Set samplerate. 
+ * 
+ * Since: 1.4.0
+ */
+void
+ags_wave_set_samplerate(AgsWave *wave,
+			guint samplerate)
+{
+  GList *list;
+
+  wave->samplerate = samplerate;
+
+  list = wave->buffer;
+  
+  while(list != NULL){
+    ags_buffer_set_samplerate(list->data,
+			      samplerate);
+
+    list = list->next;
+  }
+}
+
+/**
+ * ags_wave_set_buffer_size:
+ * @wave: the #AgsWave
+ * 
+ * Set buffer size.
+ * 
+ * Since: 1.4.0
+ */
+void
+ags_wave_set_buffer_size(AgsWave *wave,
+			 guint buffer_size)
+{
+  GList *list;
+
+  wave->buffer_size = buffer_size;
+
+  list = wave->buffer;
+  
+  while(list != NULL){
+    ags_buffer_set_buffer_size(list->data,
+			       buffer_size);
+
+    list = list->next;
+  }
+}
+
+/**
+ * ags_wave_set_format:
+ * @wave: the #AgsWave
+ * @format: the format
+ * 
+ * Set format. 
+ * 
+ * Since: 1.4.0
+ */
+void
+ags_wave_set_format(AgsWave *wave,
+		    guint format)
+{
+  GList *list;
+
+  wave->format = format;
+
+  list = wave->buffer;
+  
+  while(list != NULL){
+    ags_buffer_set_format(list->data,
+			  format);
+
+    list = list->next;
+  }
 }
 
 /**
@@ -880,7 +963,7 @@ ags_wave_add_all_to_selection(AgsWave *wave)
  */
 void
 ags_wave_add_region_to_selection(AgsWave *wave,
-				 guint64 x0, guint64 x1,
+				 guint x0, guint x1,
 				 gboolean replace_current_selection)
 {
   AgsBuffer *buffer;
@@ -938,7 +1021,7 @@ ags_wave_add_region_to_selection(AgsWave *wave,
  */ 
 void
 ags_wave_remove_region_from_selection(AgsWave *wave,
-				      guint64 x0, guint64 x1)
+				      guint x0, guint x1)
 {
   AgsBuffer *buffer;
   
@@ -982,13 +1065,15 @@ ags_wave_copy_selection(AgsWave *wave)
 
   GList *selection;
 
+  xmlChar *str;
+  
   guint x_boundary, y_boundary;
 
   selection = wave->selection;
 
   /* create root node */
   wave_node = xmlNewNode(NULL,
-			     BAD_CAST "wave");
+			 BAD_CAST "wave");
 
   xmlNewProp(wave_node,
 	     BAD_CAST "program",
@@ -1006,6 +1091,41 @@ ags_wave_copy_selection(AgsWave *wave)
 	     BAD_CAST "audio-channel",
 	     BAD_CAST (g_strdup_printf("%u", wave->audio_channel)));
 
+  /* buffer format */
+  str = NULL;
+  
+  switch(wave->format){    
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      str = "s8";
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      str = "s16";
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      str = "s24";
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      str = "s32";
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      str = "s64";
+    }
+    break;
+  }
+
+  xmlNewProp(wave_node,
+	     BAD_CAST "buffer-format",
+	     BAD_CAST (str));
+  
   /* timestamp */
   if(wave->timestamp != NULL){
     timestamp_node = xmlNewNode(NULL,
@@ -1058,36 +1178,36 @@ ags_wave_copy_selection(AgsWave *wave)
     case AGS_SOUNDCARD_SIGNED_8_BIT:
       {
 	cbuffer = ags_buffer_util_s8_to_char_buffer((signed char *) buffer->data,
-						    buffer->buffer_length);
-	buffer_size = buffer->buffer_length;
+						    buffer->buffer_size);
+	buffer_size = buffer->buffer_size;
       }
       break;
     case AGS_SOUNDCARD_SIGNED_16_BIT:
       {
 	cbuffer = ags_buffer_util_s16_to_char_buffer((signed short *) buffer->data,
-						     buffer->buffer_length);
-	buffer_size = 2 * buffer->buffer_length;
+						     buffer->buffer_size);
+	buffer_size = 2 * buffer->buffer_size;
       }
       break;
     case AGS_SOUNDCARD_SIGNED_24_BIT:
       {
 	cbuffer = ags_buffer_util_s24_to_char_buffer((signed long *) buffer->data,
-						     buffer->buffer_length);
-	buffer_size = 3 * buffer->buffer_length;
+						     buffer->buffer_size);
+	buffer_size = 3 * buffer->buffer_size;
       }
       break;
     case AGS_SOUNDCARD_SIGNED_32_BIT:
       {
 	cbuffer = ags_buffer_util_s32_to_char_buffer((signed long *) buffer->data,
-						     buffer->buffer_length);
-	buffer_size = 4 * buffer->buffer_length;
+						     buffer->buffer_size);
+	buffer_size = 4 * buffer->buffer_size;
       }
       break;
     case AGS_SOUNDCARD_SIGNED_64_BIT:
       {
 	cbuffer = ags_buffer_util_s64_to_char_buffer((signed long long *) buffer->data,
-						     buffer->buffer_length);
-	buffer_size = 8 * buffer->buffer_length;
+						     buffer->buffer_size);
+	buffer_size = 8 * buffer->buffer_size;
       }
       break;
     }
@@ -1167,7 +1287,7 @@ void
 ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 					    xmlNode *root_node, char *version,
 					    char *x_boundary,
-					    gboolean reset_x_offset, guint64 x_offset,
+					    gboolean reset_x_offset, guint x_offset,
 					    gdouble delay, guint attack,
 					    gboolean match_channel, gboolean do_replace)
 {
@@ -1186,7 +1306,7 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
     guint x_boundary_val;
     guint x_val;
     guint base_x_difference;
-    guint64 offset_val;
+    guint offset_val;
     gboolean subtract_x;
 
     node = root_node->children;
@@ -1272,7 +1392,7 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 void
 ags_wave_insert_from_clipboard(AgsWave *wave,
 			       xmlNode *wave_node,
-			       gboolean reset_x_offset, guint64 x_offset,
+			       gboolean reset_x_offset, guint x_offset,
 			       gdouble delay, guint attack)
 {
   ags_wave_insert_from_clipboard_extended(wave,
@@ -1300,12 +1420,11 @@ ags_wave_insert_from_clipboard(AgsWave *wave,
 void
 ags_wave_insert_from_clipboard_extended(AgsWave *wave,
 					xmlNode *wave_node,
-					gboolean reset_x_offset, guint64 x_offset,
+					gboolean reset_x_offset, guint x_offset,
 					gdouble delay, guint attack,
 					gboolean match_audio_channel, gboolean do_replace)
 {
   char *program, *version, *type, *format;
-  char *base_frequency;
   char *x_boundary;
 
   while(wave_node != NULL){
@@ -1326,8 +1445,6 @@ ags_wave_insert_from_clipboard_extended(AgsWave *wave,
 
       if(!xmlStrcmp(AGS_WAVE_CLIPBOARD_FORMAT,
 		    format)){
-	base_frequency = xmlGetProp(wave_node, "base_frequency");
-
 	x_boundary = xmlGetProp(wave_node, "x_boundary");
 
 	ags_wave_insert_native_level_from_clipboard(wave,

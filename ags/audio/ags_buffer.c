@@ -22,6 +22,7 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/i18n.h>
 
@@ -59,8 +60,9 @@ enum{
   PROP_X,
   PROP_SELECTION_X0,
   PROP_SELECTION_X1,
+  PROP_SAMPLERATE,
+  PROP_BUFFER_SIZE,
   PROP_FORMAT,
-  PROP_BUFFER_LENGTH,
   PROP_DATA,
 };
 
@@ -125,13 +127,13 @@ ags_buffer_class_init(AgsBufferClass *buffer)
    * 
    * Since: 1.4.0
    */
-  param_spec = g_param_spec_uint64("x",
-				   i18n_pspec("offset x"),
-				   i18n_pspec("The x offset"),
-				   0,
-				   G_MAXUINT64,
-				   0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("x",
+				 i18n_pspec("offset x"),
+				 i18n_pspec("The x offset"),
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_X,
 				  param_spec);
@@ -173,6 +175,42 @@ ags_buffer_class_init(AgsBufferClass *buffer)
 				  param_spec);
 
   /**
+   * AgsBuffer:samplerate:
+   *
+   * Buffer's audio data samplerate.
+   * 
+   * Since: 1.4.0
+   */
+  param_spec = g_param_spec_uint("samplerate",
+				 i18n_pspec("audio data samplerate"),
+				 i18n_pspec("The samplerate of audio data"),
+				 0,
+				 G_MAXUINT,
+				 AGS_SOUNDCARD_DEFAULT_SAMPLERATE,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SAMPLERATE,
+				  param_spec);
+
+  /**
+   * AgsBuffer:buffer-size:
+   *
+   * Buffer's audio data buffer size.
+   * 
+   * Since: 1.4.0
+   */
+  param_spec = g_param_spec_uint("buffer-size",
+				 i18n_pspec("audio data's buffer size"),
+				 i18n_pspec("The buffer size of audio data"),
+				 0,
+				 G_MAXUINT,
+				 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BUFFER_SIZE,
+				  param_spec);
+
+  /**
    * AgsBuffer:format:
    *
    * Buffer's audio data format.
@@ -188,24 +226,6 @@ ags_buffer_class_init(AgsBufferClass *buffer)
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FORMAT,
-				  param_spec);
-
-  /**
-   * AgsBuffer:buffer-length:
-   *
-   * Buffer's audio data buffer length.
-   * 
-   * Since: 1.4.0
-   */
-  param_spec = g_param_spec_uint("buffer-length",
-				 i18n_pspec("audio data's buffer length"),
-				 i18n_pspec("The buffer length of audio data"),
-				 0,
-				 G_MAXUINT,
-				 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_BUFFER_LENGTH,
 				  param_spec);
 
   /**
@@ -242,9 +262,9 @@ ags_buffer_init(AgsBuffer *buffer)
   buffer->selection_x1 = 0;
 
   buffer->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  buffer->buffer_length = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  buffer->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
 
-  buffer->data = ags_stream_alloc(buffer->buffer_length,
+  buffer->data = ags_stream_alloc(buffer->buffer_size,
 				  buffer->format);
 }
 
@@ -289,7 +309,7 @@ ags_buffer_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_X:
     {
-      buffer->x = g_value_get_uint64(value);
+      buffer->x = g_value_get_uint(value);
     }
     break;
   case PROP_SELECTION_X0:
@@ -302,14 +322,34 @@ ags_buffer_set_property(GObject *gobject,
       buffer->selection_x1 = g_value_get_uint(value);
     }
     break;
-  case PROP_FORMAT:
+  case PROP_SAMPLERATE:
     {
-      buffer->format = g_value_get_uint(value);
+      guint samplerate;
+      
+      samplerate = g_value_get_uint(value);
+
+      ags_buffer_set_samplerate(buffer,
+				samplerate);
     }
     break;
-  case PROP_BUFFER_LENGTH:
+  case PROP_BUFFER_SIZE:
     {
-      buffer->buffer_length = g_value_get_uint(value);
+      guint buffer_size;
+      
+      buffer_size = g_value_get_uint(value);
+
+      ags_buffer_set_buffer_size(buffer,
+				 buffer_size);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      guint format;
+      
+      format = g_value_get_uint(value);
+
+      ags_buffer_set_format(buffer,
+			    format);
     }
     break;
   case PROP_DATA:
@@ -336,8 +376,8 @@ ags_buffer_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_X:
     {
-      g_value_set_uint64(value,
-			 buffer->x);
+      g_value_set_uint(value,
+		       buffer->x);
     }
     break;
   case PROP_SELECTION_X0:
@@ -352,16 +392,22 @@ ags_buffer_get_property(GObject *gobject,
 		       buffer->selection_x1);
     }
     break;
+  case PROP_SAMPLERATE:
+    {
+      g_value_set_uint(value,
+		       buffer->samplerate);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      g_value_set_uint(value,
+		       buffer->buffer_size);
+    }
+    break;
   case PROP_FORMAT:
     {
       g_value_set_uint(value,
 		       buffer->format);
-    }
-    break;
-  case PROP_BUFFER_LENGTH:
-    {
-      g_value_set_uint(value,
-		       buffer->buffer_length);
     }
     break;
   case PROP_DATA:
@@ -389,6 +435,96 @@ ags_buffer_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_buffer_parent_class)->finalize(gobject);
+}
+
+void
+ags_buffer_set_samplerate(AgsBuffer *buffer,
+			  guint samplerate)
+{
+  buffer->samplerate = samplerate;
+}
+
+void
+ags_buffer_set_buffer_size(AgsBuffer *buffer,
+			   guint buffer_size)
+{
+  guint old_buffer_size;
+  guint word_size;
+  
+  old_buffer_size = buffer->buffer_size;
+  
+  buffer->buffer_size = buffer_size;
+
+  switch(buffer->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      buffer->data = (signed char *) realloc(buffer->data,
+					     buffer_size * sizeof(signed char));
+      word_size = sizeof(signed char);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      buffer->data = (signed short *) realloc(buffer->data,
+					      buffer_size * sizeof(signed short));
+      word_size = sizeof(signed short);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      buffer->data = (signed long *) realloc(buffer->data,
+					     buffer_size * sizeof(signed long));
+      //NOTE:JK: The 24-bit linear samples use 32-bit physical space
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      buffer->data = (signed long *) realloc(buffer->data,
+					     buffer_size * sizeof(signed long));
+      word_size = sizeof(signed long);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      buffer->data = (signed long long *) realloc(buffer->data,
+						  buffer_size * sizeof(signed long long));
+      word_size = sizeof(signed long long);
+    }
+    break;
+  default:
+    g_warning("ags_buffer_set_buffer_size(): unsupported word size");
+    return(NULL);
+  }
+
+  if(old_buffer_size < buffer_size){
+    memset(buffer->data + old_buffer_size, 0, (buffer_size - old_buffer_size) * word_size);
+  }
+}
+
+void
+ags_buffer_set_format(AgsBuffer *buffer,
+		      guint format)
+{
+  void *data;
+
+  guint copy_mode;
+
+  data = ags_stream_alloc(buffer->buffer_size,
+			  format);
+
+  copy_mode = ags_audio_buffer_util_get_copy_mode(format,
+						  buffer->format);
+  
+  ags_audio_buffer_util_copy_buffer_to_buffer(data, 1, 0,
+					      buffer->data, 1, 0,
+					      buffer->buffer_size, copy_mode);
+
+  free(buffer->data);
+
+  buffer->data = data;
+
+  buffer->format = format;
 }
 
 /**

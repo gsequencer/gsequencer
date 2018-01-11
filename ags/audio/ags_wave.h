@@ -75,9 +75,9 @@ struct _AgsWave
   GObject *audio;
   guint audio_channel;
 
-  guint format;
   guint samplerate;
   guint buffer_size;
+  guint format;
   
   GList *buffer;
 
@@ -94,6 +94,13 @@ struct _AgsWaveClass
 };
 
 GType ags_wave_get_type(void);
+
+void ags_wave_set_samplerate(AgsWave *wave,
+			     guint samplerate);
+void ags_wave_set_buffer_size(AgsWave *wave,
+			      guint buffer_size);
+void ags_wave_set_format(AgsWave *wave,
+			 guint format);
 
 GList* ags_wave_find_near_timestamp(GList *wave, guint audio_channel,
 				    AgsTimestamp *timestamp);
@@ -120,10 +127,10 @@ GList* ags_wave_find_region(AgsWave *wave,
 void ags_wave_free_selection(AgsWave *wave);
 
 void ags_wave_add_region_to_selection(AgsWave *wave,
-				      guint64 x0, guint64 x1,
+				      guint x0, guint x1,
 				      gboolean replace_current_selection);
 void ags_wave_remove_region_from_selection(AgsWave *wave,
-					   guint64 x0, guint64 x1);
+					   guint x0, guint x1);
 
 void ags_wave_add_all_to_selection(AgsWave *wave);
 
@@ -132,12 +139,12 @@ xmlNode* ags_wave_cut_selection(AgsWave *wave);
 
 void ags_wave_insert_from_clipboard(AgsWave *wave,
 				    xmlNode *wave_node,
-				    gboolean reset_x_offset, guint64 x_offset,
+				    gboolean reset_x_offset, guint x_offset,
 				    gdouble delay, guint attack);
 
 void ags_wave_insert_from_clipboard_extended(AgsWave *wave,
 					     xmlNode *wave_node,
-					     gboolean reset_x_offset, guint64 x_offset,
+					     gboolean reset_x_offset, guint x_offset,
 					     gdouble delay, guint attack,
 					     gboolean match_audio_channel, gboolean do_replace);
 

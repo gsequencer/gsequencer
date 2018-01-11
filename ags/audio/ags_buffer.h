@@ -61,8 +61,9 @@ struct _AgsBuffer
   guint selection_x0;
   guint selection_x1;
 
+  guint samplerate;
+  guint buffer_size;
   guint format;
-  guint buffer_length;
   
   void *data;
 };
@@ -73,6 +74,13 @@ struct _AgsBufferClass
 };
 
 GType ags_buffer_get_type();
+
+void ags_buffer_set_samplerate(AgsBuffer *buffer,
+			       guint samplerate);
+void ags_buffer_set_buffer_size(AgsBuffer *buffer,
+				guint buffer_size);
+void ags_buffer_set_format(AgsBuffer *buffer,
+			   guint format);
 
 gint ags_buffer_sort_func(gconstpointer a,
 			  gconstpointer b);

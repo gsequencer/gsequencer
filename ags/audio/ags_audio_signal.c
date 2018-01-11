@@ -1146,6 +1146,17 @@ ags_stream_alloc(guint buffer_size,
   return(buffer);
 }
 
+/**
+ * ags_stream_free:
+ * @buffer_size: the buffer size
+ * @format: the format
+ *
+ * Frees an audio buffer.
+ *
+ * Returns: the audio data array
+ *
+ * Since: 1.0.0
+ */
 void
 ags_stream_free(signed short *buffer)
 {
@@ -1181,6 +1192,13 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
 {
   GList *stream;
 
+  guint old_buffer_size;
+  guint word_size;
+  
+  old_buffer_size = audio_signal->buffer_size;
+
+  audio_signal->buffer_size = buffer_size;
+
   stream = audio_signal->stream_beginning;
 
   while(stream != NULL){
@@ -1189,40 +1207,47 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
       {
 	stream->data = (signed char *) realloc(stream->data,
 					       buffer_size * sizeof(signed char));
+	word_size = sizeof(signed char);
       }
       break;
     case AGS_SOUNDCARD_SIGNED_16_BIT:
       {
-	stream->data = (signed char *) realloc(stream->data,
-					       buffer_size * sizeof(signed short));
+	stream->data = (signed short *) realloc(stream->data,
+						buffer_size * sizeof(signed short));
+	word_size = sizeof(signed short);
       }
       break;
     case AGS_SOUNDCARD_SIGNED_24_BIT:
       {
-	stream->data = (signed char *) realloc(stream->data,
+	stream->data = (signed long *) realloc(stream->data,
 					       buffer_size * sizeof(signed long));
+	word_size = sizeof(signed long);
       }
       break;
     case AGS_SOUNDCARD_SIGNED_32_BIT:
       {
-	stream->data = (signed char *) realloc(stream->data,
+	stream->data = (signed long *) realloc(stream->data,
 					       buffer_size * sizeof(signed long));
+	word_size = sizeof(signed long);
       }
       break;
     case AGS_SOUNDCARD_SIGNED_64_BIT:
       {
-	stream->data = (signed char *) realloc(stream->data,
-					       buffer_size * sizeof(signed long long));
+	stream->data = (signed long long *) realloc(stream->data,
+						    buffer_size * sizeof(signed long long));
+	word_size = sizeof(signed long long);
       }
       break;
     default:
       g_warning("ags_audio_signal_set_buffer_size() - unsupported format");
     }
+
+    if(old_buffer_size < buffer_size){
+      memset(stream->data + old_buffer_size, 0, (buffer_size - old_buffer_size) * word_size);
+    }
     
     stream = stream->next;
   }
-
-  audio_signal->buffer_size = buffer_size;
 }
 
 /**
@@ -1239,43 +1264,26 @@ ags_audio_signal_set_format(AgsAudioSignal *audio_signal, guint format)
 {
   GList *stream;
 
+  void *data;
+
+  guint copy_mode;
+
   stream = audio_signal->stream_beginning;
 
   while(stream != NULL){
-    switch(format){
-    case AGS_SOUNDCARD_SIGNED_8_BIT:
-      {
-	stream->data = (signed char *) realloc(stream->data,
-					       audio_signal->buffer_size * sizeof(signed char));
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_16_BIT:
-      {
-	stream->data = (signed char *) realloc(stream->data,
-					       audio_signal->buffer_size * sizeof(signed short));
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_24_BIT:
-      {
-	stream->data = (signed char *) realloc(stream->data,
-					       audio_signal->buffer_size * sizeof(signed long));
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_32_BIT:
-      {
-	stream->data = (signed char *) realloc(stream->data,
-					       audio_signal->buffer_size * sizeof(signed long));
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_64_BIT:
-      {
-	stream->data = (signed char *) realloc(stream->data,
-					       audio_signal->buffer_size * sizeof(signed long long));
-      }
-      break;
-    default:
-      g_warning("ags_audio_signal_set_format() - unsupported format");
-    }
+    data = ags_stream_alloc(audio_signal->buffer_size,
+			    format);
+    
+    copy_mode = ags_audio_buffer_util_get_copy_mode(format,
+						    audio_signal->format);
+    
+    ags_audio_buffer_util_copy_buffer_to_buffer(data, 1, 0,
+						stream->data, 1, 0,
+						audio_signal->buffer_size, copy_mode);
+
+    free(stream->data);
+
+    stream->data = data;
     
     stream = stream->next;
   }
