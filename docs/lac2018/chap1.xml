@@ -22,7 +22,7 @@
   <example>
     <title>Thread application context</title>
     <programlisting language="C">
-<xi:include href="../calculate-tic.c" parse="text" />
+<xi:include href="calculate-tic.c" parse="text" />
     </programlisting>
   </example>
 

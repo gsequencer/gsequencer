@@ -13,7 +13,7 @@
 <book xmlns="http://docbook.org/ns/docbook"
       xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
   <title>Advanced Gtk+ Sequencer</title>
-  <subtitle>Developer's Book</subtitle>
+  <subtitle>Linux Audio Conference 2018</subtitle>
   
   <info>
     <legalnotice>
@@ -41,7 +41,6 @@
   <xi:include href="lac2018/chap1.xml"/> <!-- thread model of libags-audio.so.1 and interfacing with JACK -->
   <xi:include href="lac2018/chap2.xml"/> <!-- the audio tree, its recycled nesting and audio data representation -->
   <xi:include href="lac2018/chap3.xml"/> <!-- recalls working with plugins (LADSPA, DSSI and LV2) -->
-  <xi:include href="lac2018/chap4.xml"/> <!-- Using the UI to connect to a MIDI device -->
-  <xi:include href="lac2018/chap5.xml"/> <!-- Using the UI to edit envelope -->
+  <xi:include href="lac2018/chap4.xml"/> <!-- soundcards and sequencers (ALSA, OSSv4, JACK) -->
 
 </book>
