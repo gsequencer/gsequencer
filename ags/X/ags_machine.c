@@ -2018,7 +2018,7 @@ ags_machine_file_chooser_dialog_new(AgsMachine *machine)
   GtkFileChooserDialog *file_chooser;
   GtkCheckButton *check_button;
 
-  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(g_strdup("open audio files"),
+  file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("Open audio files"),
 								      (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) machine),
 								      GTK_FILE_CHOOSER_ACTION_OPEN,
 								      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,

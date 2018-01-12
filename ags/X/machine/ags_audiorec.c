@@ -18,6 +18,7 @@
  */
 
 #include <ags/X/machine/ags_audiorec.h>
+#include <ags/X/machine/ags_audiorec_callbacks.h>
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
@@ -272,6 +273,9 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 						       0);
   gtk_container_add((GtkContainer *) frame,
 		    (GtkWidget *) audiorec->hindicator_vbox);
+
+  /* dialog */
+  audiorec->open_dialog = NULL;
 }
 
 void
@@ -295,6 +299,20 @@ ags_audiorec_connect(AgsConnectable *connectable)
   ags_audiorec_parent_connectable_interface->connect(connectable);
 
   audiorec = AGS_AUDIOREC(connectable);
+
+  /* filename */
+  g_signal_connect(audiorec->open, "clicked",
+		   G_CALLBACK(ags_audiorec_open_callback), audiorec);
+
+  /* mode */
+  g_signal_connect(audiorec->keep_data, "clicked",
+		   G_CALLBACK(ags_audiorec_keep_data_callback), audiorec);
+
+  g_signal_connect(audiorec->mix_data, "clicked",
+		   G_CALLBACK(ags_audiorec_mix_data_callback), audiorec);
+
+  g_signal_connect(audiorec->replace_data, "clicked",
+		   G_CALLBACK(ags_audiorec_replace_data_callback), audiorec);
 }
 
 void
@@ -311,6 +329,32 @@ ags_audiorec_disconnect(AgsConnectable *connectable)
   ags_audiorec_parent_connectable_interface->disconnect(connectable);
 
   audiorec = AGS_AUDIOREC(connectable);
+
+  /* filename */
+  g_object_disconnect(audiorec->open,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_audiorec_open_callback),
+		      audiorec,
+		      NULL);
+
+  /* mode */
+  g_object_disconnect(audiorec->keep_data,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_audiorec_keep_data_callback),
+		      audiorec,
+		      NULL);
+
+  g_object_disconnect(audiorec->replace_data,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_audiorec_replace_data_callback),
+		      audiorec,
+		      NULL);
+
+  g_object_disconnect(audiorec->mix_data,
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_audiorec_mix_data_callback),
+		      audiorec,
+		      NULL);
 }
 
 void
@@ -488,6 +532,13 @@ ags_audiorec_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 	      node);
 
   return(node);
+}
+
+void
+ags_audiorec_open_filename(AgsAudiorec *audiorec,
+			   gchar *filename)
+{
+  //TODO:JK: implement me
 }
 
 /**

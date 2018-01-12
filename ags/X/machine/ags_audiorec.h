@@ -55,6 +55,8 @@ struct _AgsAudiorec
   GtkRadioButton *replace_data;
 
   GtkVBox *hindicator_vbox;
+
+  GtkFileChooserDialog *open_dialog;
 };
 
 struct _AgsAudiorecClass
@@ -63,6 +65,9 @@ struct _AgsAudiorecClass
 };
 
 GType ags_audiorec_get_type(void);
+
+void ags_audiorec_open_filename(AgsAudiorec *audiorec,
+				gchar *filename);
 
 AgsAudiorec* ags_audiorec_new(GObject *soundcard);
 
