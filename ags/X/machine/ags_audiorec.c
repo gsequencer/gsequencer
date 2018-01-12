@@ -156,6 +156,7 @@ ags_audiorec_init(AgsAudiorec *audiorec)
   GtkHBox *hbox;
   GtkHBox *vbox;
   GtkHBox *filename_hbox;
+  GtkHBox *radio_hbox;
   GtkFrame *frame;
   GtkLabel *label;
 
@@ -205,6 +206,7 @@ ags_audiorec_init(AgsAudiorec *audiorec)
   gtk_container_add((GtkContainer *) frame,
 		    (GtkWidget *) vbox);
 
+  /* filename */
   filename_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
 					   0);
   gtk_box_pack_start(vbox,
@@ -227,6 +229,35 @@ ags_audiorec_init(AgsAudiorec *audiorec)
   audiorec->open = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OPEN);
   gtk_box_pack_start(filename_hbox,
 		     audiorec->open,
+		     FALSE, FALSE,
+		     0);
+  
+  /* radio */
+  radio_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+					0);
+  gtk_box_pack_start(vbox,
+		     radio_hbox,
+		     FALSE, FALSE,
+		     0);
+
+  audiorec->keep_data = gtk_radio_button_new_with_label_from_widget(NULL,
+								    "keep");
+  gtk_box_pack_start(radio_hbox,
+		     audiorec->keep_data,
+		     FALSE, FALSE,
+		     0);
+
+  audiorec->replace_data = gtk_radio_button_new_with_label_from_widget(audiorec->keep_data,
+								       "replace");
+  gtk_box_pack_start(radio_hbox,
+		     audiorec->replace_data,
+		     FALSE, FALSE,
+		     0);
+  
+  audiorec->mix_data = gtk_radio_button_new_with_label_from_widget(audiorec->keep_data,
+								   "mix");
+  gtk_box_pack_start(radio_hbox,
+		     audiorec->mix_data,
 		     FALSE, FALSE,
 		     0);
   

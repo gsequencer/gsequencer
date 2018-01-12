@@ -50,6 +50,10 @@ struct _AgsAudiorec
   GtkEntry *filename;
   GtkButton *open;
 
+  GtkRadioButton *keep_data;
+  GtkRadioButton *mix_data;
+  GtkRadioButton *replace_data;
+
   GtkVBox *hindicator_vbox;
 };
 
