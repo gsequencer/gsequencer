@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Permission is granted to copy, distribute and/or modify this document -->
+<!-- under the terms of the GNU Free Documentation License, Version 1.3 -->
+<!-- or any later version published by the Free Software Foundation; -->
+<!-- with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. -->
+<!-- A copy of the license is included in the section entitled "GNU -->
+<!-- Free Documentation License". -->
+
+<chapter xmlns="http://docbook.org/ns/docbook"
+	 xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
+  <title>Hierarchical computation of sound</title>
+  <para>
+    Processing audio data is done by sub-types of AgsRecall. There are for each
+    tree context a predefined recall you should inherit from.
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      AgsRecallAudio and AgsRecallAudioRun
+    </listitem>
+    <listitem>
+      AgsRecallChannel and AgsRecallChannelRun
+    </listitem>
+    <listitem>
+      AgsRecallRecycling
+    </listitem>
+    <listitem>
+      AgsRecallAudioSignal
+    </listitem>
+  </itemizedlist>
+
+  <para>
+    AgsRecallAudio may provide ports being modified or automated by the UI. AgsRecallAudioRun
+    is provided as a templated and has to be instantiated per thread.
+  </para>
+  
+  <para>
+    AgsRecallChannel and AgsRecallChannelRun is analogous to above but instead applying to AgsAudio
+    it is related to AgsChannel.
+  </para>
+
+  <para>
+    AgsRecallRecycling is a child of AgsRecallChannelRun. It basically tells what AgsRecallAudioSignal
+    instance needs to be created.
+  </para>
+
+  <para>
+    AgsRecallAudioSignal does lock free computation of your effect. This could be envelope, compressor,
+    echo delay ...
+  </para>
+
+  <para>
+    Note there are recalls just providing parts of this construct. Like &quot;ags-play-notation&quot; recall
+    instantiated by <code language="C">ags_recall_factory_create()</code> it only provides AgsPlayNotationAudio
+    and AgsPlayNotationAudioRun.
+  </para>
+
+  <sect1>
+    <title>AgsAudio</title>
+
+    <para>
+      The audio object contains many meta informations as well the segmented data AgsNotation, AgsAutomation
+      and AgsWave. It contains lists of AgsRecallID and AgsRecyclingContext, note they both are related. Every
+      audio and channel object has got its very own recall id but the recycling context assigned to it actually
+      clarifies the parallelism context. Further it may contain recalls and recall containers.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>AgsChannel</title>
+
+    <para>
+      The channel object does provide references to previous and next channel/pad. The link field tells us in what
+      hierarchical position it is. All processing starts with an AgsChannel, that's why <code language="C">ags_channel_recursive_play_init()</code>,
+      <code language="C">ags_channel_recursive_play()</code> and related exist.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>AgsRecycling</title>
+
+    <para>
+      As its name tells us, the audio data is reused across AgsChannel upto the the next AgsRecycling. The recycling
+      brings in a new cycle of AgsAudioSignal. It is usually reproduced by &quot;ags-buffer&quot; or &quot;ags-copy&quot;
+      recalls. The wormhole is believed to bring major advantages, like reusable audio data and no additional amount
+      of toplevel threads.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>AgsAudioSignal</title>
+
+    <para>
+      The audio data represented by AgsAudioSignal shall not take too much time to be duplicated from its template.
+      As you might want to use larger audio files you can yield to AgsWave. 
+    </para>
+  </sect1>
+</chapter>
