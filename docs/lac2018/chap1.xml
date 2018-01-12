@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Permission is granted to copy, distribute and/or modify this document -->
+<!-- under the terms of the GNU Free Documentation License, Version 1.3 -->
+<!-- or any later version published by the Free Software Foundation; -->
+<!-- with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. -->
+<!-- A copy of the license is included in the section entitled "GNU -->
+<!-- Free Documentation License". -->
+
+<chapter xmlns="http://docbook.org/ns/docbook"
+	 xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
+  <title>The AgsThread object</title>
+  <para>
+    libags-thread.so.1 contains the AgsThread object. Its class provides the ::run()
+    method and shall synchronize all tics within the thread tree by the ::clock() event.
+    E.g. you synchronize 1000 times per second all your threads ::clock() is invoked for
+    each tic. Whereas ::run() is only called as many times as ::clock() tells you to run.
+    This might be 0 or 1 times. Further the count of tics per second an audio thread is
+    actually run, is calculated as following:
+  </para>
+
+  <example>
+    <title>Thread application context</title>
+    <programlisting language="C">
+<xi:include href="../calculate-tic.c" parse="text" />
+    </programlisting>
+  </example>
+
+  <para>
+    You might think of a unneeded over-head but remaining tics can do actually something
+    useful. Like reading from a MIDI source, done by an intermediate pre-sync or write
+    to an audio sink, done by intermediate post-sync. This setup uses 2 additional tics.
+    The AgsThread:max-precision property can be specified in the ~/.gsequencer/ags.conf
+    file.
+  </para>
+
+  <sect1>
+    <title>AgsAudioLoop implementing AgsMainLoop</title>
+    <para>
+      Within the audio layer AgsAudioLoop is the topmost thread and implements the AgsMainLoop interface.
+      It is responsible to wait until all AgsAudioThread objects did their job and program flow
+      is allowed to continue.
+    </para>
+
+    <para>
+      AgsTaskThread is usually provided along the audio loop. libags-audio1 provides various tasks
+      to run in a thread-safe state of the engine. Tasks are running between the tics, so there is thread-safe
+      access guaranteed. However the UI may access audio related objects and shall be protected by mutexes
+      anyway.
+    </para>
+
+    <para>
+      Since Gtk+-2.0 doesn't allow access to the UI from different threads, there was a message delivery
+      system developed. See AgsMessageDelivery and AgsMessageQueue.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>AgsPlaybackDomain and AgsPlayback</title>
+    <para>
+      There are 3 multi-threaded scopes and threads per instrument channel. The scopes
+      defined by the enumerations AgsPlaybackDomainScope and AgsPlaybackScope match each.
+      In fact <code language="C">playback_domain->audio_thread[AGS_PLAYBACK_DOMAIN_SCOPE_SEQUENCER]</code>
+      synchronizes with <code language="C">playback->channel_thread[AGS_PLAYBACK_SCOPE_SEQUENCER]</code>
+      by doing conditional-locks.
+    </para>
+
+    <para>
+      AgsPlaybackDomain is provided as a property of AgsAudio. The audio object is a container of
+      AgsOutput and AgsInput, which inherit of AgsChannel. Further it specifies how the output and
+      input is aligned. Either AGS_AUDIO_SYNC this means mapped 1:1 or AGS_AUDIO_ASYNC this means mapped
+      1:n.
+    </para>
+
+    <para>
+      AgsPlayback is provided as a property of AgsChannel. The channel object contains a references to
+      AgsRecycling objects. By specifying its boundaries AgsChannel:first-recycling and AgsChannel:last-recycling,
+      all containing AgsAudioSignal within this range shall be processed.
+    </para>
+
+    <para>
+      The AgsAudioSignal contains your finite audio stream, it can be sampled from templates either as
+      fixed length (pattern mode) or by :loop-start and :loop-end property as length with frame count (notation mode).
+      It is usually assigned to a AgsRecallID. This makes it possible that every thread can have its
+      own set of audio data and process audio lock free. 
+    </para>
+  </sect1>
+</chapter>
