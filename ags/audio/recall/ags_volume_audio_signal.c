@@ -20,10 +20,7 @@
 #include <ags/audio/recall/ags_volume_audio_signal.h>
 #include <ags/audio/recall/ags_volume_channel.h>
 
-#include <ags/lib/ags_parameter.h>
-
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_dynamic_connectable.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_port.h>

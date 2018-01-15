@@ -329,6 +329,8 @@ ags_note_init(AgsNote *note)
   note->x[1] = 0;
   note->y = 0;
 
+  note->rt_offset = 0;
+  
   note->stream_delay = 0.0;
   note->stream_attack = 0;
 

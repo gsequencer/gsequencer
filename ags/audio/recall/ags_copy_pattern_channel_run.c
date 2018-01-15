@@ -367,7 +367,13 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
     note->x[1] = i + 1;
 
     note->y = pad;
+
+    copy_pattern_channel_run->note = g_list_prepend(copy_pattern_channel_run->note,
+						    note);
+    g_object_ref(note);
   }
+
+  copy_pattern_channel_run->note = g_list_reverse(copy_pattern_channel_run->note);
 }
 
 void
@@ -385,6 +391,11 @@ ags_copy_pattern_channel_run_done(AgsRecall *recall)
   ags_recall_notify_dependency(AGS_RECALL(copy_pattern_audio_run->count_beats_audio_run),
  			       AGS_RECALL_NOTIFY_CHANNEL_RUN, -1);
 
+  g_list_free_full(copy_pattern_channel_run->note,
+		   g_object_unref);
+
+  copy_pattern_channel_run->note = NULL;
+  
   /* call parent */
   AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->done(recall);
 }

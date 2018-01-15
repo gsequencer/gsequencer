@@ -75,6 +75,8 @@ struct _AgsNote
   guint x[2];
   guint y;
 
+  guint64 rt_offset;
+
   gdouble stream_delay;
   gdouble stream_attack;
   
