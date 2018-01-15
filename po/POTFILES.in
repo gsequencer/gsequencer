@@ -389,6 +389,10 @@
 ./ags/audio/recall/ags_route_dssi_audio_run.c
 ./ags/audio/recall/ags_route_lv2_audio.c
 ./ags/audio/recall/ags_route_lv2_audio_run.c
+./ags/audio/recall/ags_rt_stream_audio_signal.c
+./ags/audio/recall/ags_rt_stream_channel.c
+./ags/audio/recall/ags_rt_stream_channel_run.c
+./ags/audio/recall/ags_rt_stream_recycling.c
 ./ags/audio/recall/ags_stream_audio_signal.c
 ./ags/audio/recall/ags_stream_channel.c
 ./ags/audio/recall/ags_stream_channel_run.c

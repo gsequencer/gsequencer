@@ -432,8 +432,12 @@ ags_drum_input_line_map_recall(AgsLine *line,
 
   AgsMutexManager *mutex_manager;
 
+  AgsConfig *config;
+  
   GList *list;
 
+  gchar *str;
+  
   guint pad, audio_channel;
   guint i;
   gboolean rt_safe;

@@ -918,8 +918,7 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
 		AGS_RECALL_AUDIO_SIGNAL(recall_lv2_run)->audio_channel = audio_channel;
 		recall_lv2_run->note = g_list_prepend(recall_lv2_run->note,
 						      (GObject *) note);
-		g_object_ref(recall_lv2_run->note,
-			     note);
+		g_object_ref(note);
 		
 		/* write to port */
 		if((AGS_RECALL_LV2_HAS_ATOM_PORT & (recall_lv2->flags)) != 0){

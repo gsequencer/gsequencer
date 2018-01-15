@@ -24,6 +24,7 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_note.h>
 
 #include <stdint.h>
 //TODO:JK: do vector optimization
@@ -51,6 +52,10 @@ void ags_audio_signal_dispose(GObject *gobject);
 void ags_audio_signal_finalize(GObject *gobject);
 
 void ags_audio_signal_real_realloc_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size);
+void ags_audio_signal_real_add_note(AgsAudioSignal *audio_signal,
+				    GObject *note);
+void ags_audio_signal_real_remove_note(AgsAudioSignal *audio_signal,
+				       GObject *note);
 
 /**
  * SECTION:ags_audio_signal

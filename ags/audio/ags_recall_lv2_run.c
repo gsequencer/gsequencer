@@ -495,16 +495,7 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
     }
   }
   
-  //NOTE:JK: it is safe
   audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
-
-  /* lookup recycling mutex */
-  pthread_mutex_lock(application_mutex);
-
-  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) audio_signal->recycling);
-	
-  pthread_mutex_unlock(application_mutex);
 
   /* get copy mode and clear buffer */
   buffer_size = audio_signal->buffer_size;
@@ -533,7 +524,7 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
   }
   
   /* process data */
-  note = recall_dssi_run->note;
+  note = recall_lv2_run->note;
 
   while(note != NULL){
     recall_lv2->plugin_descriptor->run(recall_lv2_run->lv2_handle[0],

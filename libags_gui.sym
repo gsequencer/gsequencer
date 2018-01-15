@@ -14,6 +14,7 @@ ags_led_new
 ags_level_get_type
 ags_level_new
 ags_scale_get_type
+ags_scale_value_changed
 ags_scale_new
 ags_table_get_type
 ags_table_new

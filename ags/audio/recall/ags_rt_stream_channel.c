@@ -108,9 +108,6 @@ ags_rt_stream_channel_class_init(AgsRtStreamChannelClass *rt_stream_channel)
   /* GObjectClass */
   gobject = (GObjectClass *) rt_stream_channel;
 
-  gobject->set_property = ags_rt_stream_channel_set_property;
-  gobject->get_property = ags_rt_stream_channel_get_property;
-
   gobject->dispose = ags_rt_stream_channel_dispose;
   gobject->finalize = ags_rt_stream_channel_finalize;
 }

@@ -297,8 +297,10 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
   AgsPattern *pattern;
   AgsNote *note;
   
-  AgsCopyPatternAudioRun *copy_pattern_audio_run;
+  AgsCopyPatternChannel *copy_pattern_channel;
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
+
+  AgsMutexManager *mutex_manager;
 
   guint pad;
   guint i, i_stop;
@@ -306,7 +308,8 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
   GValue pattern_value = { 0, };  
 
   pthread_mutex_t *application_mutex;
-  pthread_mutex_t *source_mutex;
+  pthread_mutex_t *source_mutex;  
+  pthread_mutex_t *pattern_mutex;
   
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -329,13 +332,6 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
     
   pthread_mutex_unlock(application_mutex);
 
-  /* get AgsCopyPatternAudioRun */
-  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->recall_audio_run);
-
-  /* notify dependency */
-  ags_recall_notify_dependency(AGS_RECALL(copy_pattern_audio_run->count_beats_audio_run),
- 			       AGS_RECALL_NOTIFY_CHANNEL_RUN, 1);
-
   /* get AgsPattern */
   g_value_init(&pattern_value, G_TYPE_POINTER);
   ags_port_safe_read(copy_pattern_channel->pattern,
@@ -355,9 +351,14 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
   
   pad = source->pad;
 
+  pthread_mutex_unlock(source_mutex);
+
+  /* i stop */
+  pthread_mutex_lock(pattern_mutex);
+
   i_stop = pattern->dim[2];
 
-  pthread_mutex_unlock(source_mutex);
+  pthread_mutex_unlock(pattern_mutex);
   
   for(i = 0; i < i_stop; i++){
     note = ags_note_new();

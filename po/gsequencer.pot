@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 1.4.0\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2018-01-10 08:11+0100\n"
+"POT-Creation-Date: 2018-01-15 02:55+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -51,6 +51,7 @@ msgid "output"
 msgstr ""
 
 #: ags/X/ags_automation_editor.c:367 ags/X/ags_automation_editor.c:451
+#: ags/X/ags_wave_editor.c:286
 msgid "line"
 msgstr ""
 
@@ -282,6 +283,10 @@ msgstr ""
 #: ags/X/ags_lv2_browser.c:232 ags/X/ags_lv2_browser_callbacks.c:129
 #: ags/X/ags_lv2_browser_callbacks.c:237
 msgid "M-Box"
+msgstr ""
+
+#: ags/X/ags_machine.c:2021 ags/X/machine/ags_audiorec_callbacks.c:37
+msgid "Open audio files"
 msgstr ""
 
 #: ags/X/ags_machine.c:2029
@@ -516,7 +521,7 @@ msgstr ""
 msgid "format"
 msgstr ""
 
-#: ags/X/ags_wave_editor.c:215 ags/X/machine/ags_oscillator.c:155
+#: ags/X/ags_wave_editor.c:237 ags/X/machine/ags_oscillator.c:155
 msgid "wave"
 msgstr ""
 
@@ -631,7 +636,7 @@ msgstr ""
 
 #: ags/X/editor/ags_envelope_editor.c:176
 #: ags/X/editor/ags_pattern_envelope.c:240 ags/X/machine/ags_ffplayer.c:269
-#: ags/X/machine/ags_live_lv2_bridge.c:1623 ags/X/machine/ags_lv2_bridge.c:1948
+#: ags/X/machine/ags_live_lv2_bridge.c:1623 ags/X/machine/ags_lv2_bridge.c:2003
 msgid "preset"
 msgstr ""
 
@@ -906,7 +911,7 @@ msgid "channel: "
 msgstr ""
 
 #: ags/X/machine/ags_dssi_bridge.c:318 ags/X/machine/ags_live_dssi_bridge.c:318
-#: ags/X/machine/ags_live_lv2_bridge.c:1562 ags/X/machine/ags_lv2_bridge.c:1887
+#: ags/X/machine/ags_live_lv2_bridge.c:1562 ags/X/machine/ags_lv2_bridge.c:1942
 msgid "program"
 msgstr ""
 
