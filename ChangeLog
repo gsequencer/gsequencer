@@ -1,3 +1,8 @@
+ags (1.4.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* more-fixes to return from unneeded processing
+
 ags (1.4.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

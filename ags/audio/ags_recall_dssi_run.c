@@ -362,6 +362,7 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
   AGS_RECALL_CLASS(ags_recall_dssi_run_parent_class)->run_pre(recall);
 
   if(recall->rt_safe &&
+     recall->recall_id->recycling_context->parent != NULL &&
      AGS_RECALL_AUDIO_SIGNAL(recall)->source->note == NULL){
     return;
   }

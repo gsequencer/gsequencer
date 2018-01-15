@@ -440,6 +440,7 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
   AGS_RECALL_CLASS(ags_recall_lv2_run_parent_class)->run_pre(recall);
 
   if(recall->rt_safe &&
+     recall->recall_id->recycling_context->parent != NULL &&
      AGS_RECALL_AUDIO_SIGNAL(recall)->source->note == NULL){
     return;
   }
@@ -565,7 +566,7 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
   AGS_RECALL_CLASS(ags_recall_lv2_run_parent_class)->run_inter(recall);
 
   if(recall->rt_safe &&
-     AGS_IS_INPUT(AGS_RECALL_AUDIO_SIGNAL(recall)->source) &&
+     recall->recall_id->recycling_context->parent != NULL &&
      AGS_RECALL_AUDIO_SIGNAL(recall)->source->note == NULL){
     return;
   }
