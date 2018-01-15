@@ -362,8 +362,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       ratio = &(current->ratio);
 
       /* get offsets */
-      start_position = g_list_position(source->stream_beginning,
-				       source->stream_current);
+      start_position = floor((delay * current->rt_offset) / frame_count);
 
       if(start_position == 0){
 	start_frame = 0;

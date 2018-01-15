@@ -24,6 +24,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_audio_buffer_util.h>
+
 #include <ags/audio/task/ags_unref_audio_signal.h>
 
 void ags_rt_stream_audio_signal_class_init(AgsRtStreamAudioSignalClass *rt_stream_audio_signal);
@@ -249,7 +251,248 @@ ags_rt_stream_audio_signal_run_init_pre(AgsRecall *recall)
 void
 ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 {
-  //TODO:JK: implement me
+  AgsRtStreamAudioSignal *rt_stream_audio_signal;
+
+  AgsRecycling *recycling;
+  AgsAudioSignal *source;
+  AgsAudioSignal *template;
+
+  GList *note;
+
+  void *buffer;
+
+  gdouble delay;
+  guint buffer_size;
+  guint copy_mode;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *recycling_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  AGS_RECALL_CLASS(ags_rt_stream_audio_signal_parent_class)->run_inter(recall);
+
+  rt_stream_audio_signal = AGS_RT_STREAM_AUDIO_SIGNAL(recall);
+
+  source = AGS_RECALL_AUDIO_SIGNAL(rt_stream_audio_signal)->source;
+
+  buffer = source->stream_beginning->data;
+  buffer_size = source->buffer_size;
+
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(source->soundcard));
+
+  recycling = source->recycling;
+
+  /* lookup recycling mutex */
+  pthread_mutex_lock(application_mutex);
+
+  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) recycling);
+	
+  pthread_mutex_unlock(application_mutex);
+
+  /* get template */
+  pthread_mutex_lock(recycling_mutex);
+  
+  template = ags_audio_signal_get_template(recycling->audio_signal);
+  
+  pthread_mutex_unlock(recycling_mutex);
+
+  note = source->note;
+  
+  ags_audio_buffer_util_clear_buffer(buffer, 1,
+				     buffer_size, ags_audio_buffer_util_format_from_soundcard(source->format));
+
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(source->format),
+						  ags_audio_buffer_util_format_from_soundcard(template->format));
+
+  while(note != NULL){
+    AgsNote *current;
+
+    GList *stream;
+
+    guint64 offset;
+    
+    current = note->data;
+    offset = current->rt_offset;
+
+    stream = g_list_nth(template->stream_beginning,
+			offset);
+
+    if(stream == NULL){
+      return;
+    }
+    
+    if(offset < delay * current->x[1] ||
+       offset < template->length){
+      if(template->loop_start != template->loop_end){
+	guint loop_end_frame;
+	guint i, j;
+	
+	loop_end_frame = delay * (current->x[1] - current->x[0]) - (((delay * offset) - template->loop_start) % (template->loop_end - template->loop_start));
+	
+	if(delay * (offset + 1) * buffer_size > template->loop_end &&
+	   delay * offset * buffer_size < loop_end_frame){
+	  if(offset == 0){
+	    j = 0;
+	    
+	    for(i = 0; i < buffer_size - source->attack; i++, j++){
+	      if(delay * offset * buffer_size + i >= template->loop_end){
+		stream = g_list_nth(template->stream_beginning,
+				    template->loop_start / buffer_size);
+		
+		j = template->loop_start % buffer_size;
+	      }
+
+	      if(j >= buffer_size){
+		stream = stream->next;
+		
+		j = 0;
+	      }
+		
+	      if(stream == NULL){
+		break;
+	      }
+	      
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, source->attack + i,
+							  stream->data, 1, j,
+							  1, copy_mode);
+	    }
+	  }else{
+	    if(delay * offset * buffer_size  < template->loop_end){
+	      j = buffer_size - source->attack;
+	    }else{
+	      j = ((delay * (offset + 1) * buffer_size - template->loop_start) % (template->loop_end - template->loop_start)) + (buffer_size - source->attack);
+	    }
+	    
+	    if(source->attack != 0 && stream->prev != NULL){
+	      for(i = source->attack; i < source->attack; i++, j++){
+		if(delay * offset * buffer_size + i >= template->loop_end){
+		  stream = g_list_nth(template->stream_beginning,
+				      template->loop_start / buffer_size);
+		
+		  j = template->loop_start % buffer_size;
+		}
+
+		if(j >= buffer_size){
+		  stream = stream->next;
+		  
+		  j = 0;
+		}
+		
+		if(stream == NULL){
+		  break;
+		}
+		
+		ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, i,
+							    stream->prev->data, 1, j,
+							    1, copy_mode);
+	      }
+	    }
+
+	    for(i = 0; i < source->attack; i++, j++){
+	      if(delay * offset * buffer_size + i >= template->loop_end){
+		stream = g_list_nth(template->stream_beginning,
+				    template->loop_start / buffer_size);
+		
+		j = template->loop_start % buffer_size;
+	      }
+
+	      if(j >= buffer_size){
+		stream = stream->next;
+
+		j = 0;
+	      }
+
+	      if(stream == NULL){
+		break;
+	      }
+	      
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, source->attack + i,
+							  stream->data, 1, j,
+							  1, copy_mode);
+	    }	    
+	  }
+	}else{
+	  j = ((delay * offset * buffer_size - template->loop_start) % (template->loop_end - template->loop_start)) + (buffer_size - source->attack);
+
+	  if(source->attack != 0 && stream->prev != NULL){
+	    for(i = source->attack; i < source->attack; i++, j++){
+	      if(delay * offset * buffer_size + i >= template->loop_end){
+		stream = g_list_nth(template->stream_beginning,
+				    template->loop_start / buffer_size);
+		
+		j = template->loop_start % buffer_size;
+	      }
+
+	      if(j >= buffer_size){
+		stream = stream->next;
+		
+		j = 0;
+	      }
+
+	      if(stream == NULL){
+		break;
+	      }
+	      
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, i,
+							  stream->prev->data, 1, j,
+							  1, copy_mode);
+	    }
+	  }
+
+	  for(i = 0; i < source->attack; i++, j++){
+	    if(delay * offset * buffer_size + i >= template->loop_end){
+	      stream = g_list_nth(template->stream_beginning,
+				  template->loop_start / buffer_size);
+		
+	      j = template->loop_start % buffer_size;
+	    }
+
+	    if(j >= buffer_size){
+	      stream = stream->next;
+	      
+	      j = 0;
+	    }
+
+	    if(stream == NULL){
+	      break;
+	    }
+	      
+	    ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, source->attack + i,
+							stream->data, 1, j,
+							1, copy_mode);
+	  }	    
+	}
+      }else{
+	if(offset == 0){
+	  ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, source->attack,
+						      stream->data, 1, 0,
+						      buffer_size - source->attack, copy_mode);
+	}else{
+	  if(source->attack != 0 && stream->prev != NULL){
+	    ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, 0,
+							stream->prev->data, 1, buffer_size - source->attack,
+							source->attack, copy_mode);
+	  }
+
+	  ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, source->attack,
+						      stream->data, 1, 0,
+						      buffer_size - source->attack, copy_mode);	  
+	}
+      }
+    }else{
+      ags_audio_signal_remove_note(source,
+				   current);
+    }
+
+    current->rt_offset += 1;
+    
+    note = note->next;
+  }
 }
 
 AgsRecall*

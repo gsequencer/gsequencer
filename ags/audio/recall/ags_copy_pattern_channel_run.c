@@ -611,16 +611,6 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
       
       while(recycling != end_recycling){
 	child_recall_id = AGS_RECALL(copy_pattern_channel_run)->recall_id;
-	
-	/* create audio signal */
-	audio_signal = ags_audio_signal_new(AGS_RECALL(copy_pattern_audio)->soundcard,
-					    (GObject *) recycling,
-					    (GObject *) child_recall_id);
-	ags_recycling_create_audio_signal_with_defaults(recycling,
-							audio_signal,
-							0.0, attack);
-	audio_signal->flags &= (~AGS_AUDIO_SIGNAL_TEMPLATE);
-	audio_signal->stream_current = audio_signal->stream_beginning;
 
 	/* apply preset */
 	note = g_list_nth(copy_pattern_channel_run->note,
@@ -715,18 +705,45 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	  }
 	}
 	
-	ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
-	
+	if(!recall->rt_safe){
+	  /* create audio signal */
+	  audio_signal = ags_audio_signal_new(AGS_RECALL(copy_pattern_audio)->soundcard,
+					      (GObject *) recycling,
+					      (GObject *) child_recall_id);
+	  ags_recycling_create_audio_signal_with_defaults(recycling,
+							  audio_signal,
+							  0.0, attack);
+	  audio_signal->flags &= (~AGS_AUDIO_SIGNAL_TEMPLATE);
+	  audio_signal->stream_current = audio_signal->stream_beginning;
+
+	  ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
+
+	  audio_signal->recall_id = (GObject *) child_recall_id;
+	  ags_recycling_add_audio_signal(recycling,
+					 audio_signal);
+	}else{
+	  GList *list;
+
+	  audio_signal = NULL;
+	  list = ags_audio_signal_get_by_recall_id(recycling->audio_signal,
+						   child_recall_id);
+	    
+	  if(list != NULL){
+	    audio_signal = list->data;
+	  }
+	    
+	  note->rt_offset = 0;
+	  g_object_set(audio_signal,
+		       "note", note,
+		       NULL);
+	}
+		
 	/*
 	 * emit add_audio_signal on AgsRecycling
 	 */
 #ifdef AGS_DEBUG
 	g_message("play %x", AGS_RECALL(copy_pattern_channel_run)->recall_id);
 #endif
-
-	audio_signal->recall_id = (GObject *) child_recall_id;
-	ags_recycling_add_audio_signal(recycling,
-				       audio_signal);
 
 	/*
 	 * unref AgsAudioSignal because AgsCopyPatternChannelRun has no need for it

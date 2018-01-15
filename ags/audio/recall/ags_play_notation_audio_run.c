@@ -863,50 +863,67 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	
 	  pthread_mutex_unlock(application_mutex);
 
-	  /* create audio signal */
-	  audio_signal = ags_audio_signal_new((GObject *) soundcard,
-					      (GObject *) recycling,
-					      (GObject *) child_recall_id);
-	  g_object_set(audio_signal,
-		       "note", note,
-		       NULL);
+	  if(!recall->rt_safe){
+	    /* create audio signal */
+	    audio_signal = ags_audio_signal_new((GObject *) soundcard,
+						(GObject *) recycling,
+						(GObject *) child_recall_id);
+	    g_object_set(audio_signal,
+			 "note", note,
+			 NULL);
 	  
-	  if((AGS_AUDIO_PATTERN_MODE & (audio->flags)) != 0){
-	    ags_recycling_create_audio_signal_with_defaults(recycling,
-							    audio_signal,
-							    0.0, 0);
+	    if((AGS_AUDIO_PATTERN_MODE & (audio->flags)) != 0){
+	      ags_recycling_create_audio_signal_with_defaults(recycling,
+							      audio_signal,
+							      0.0, 0);
+	    }else{
+	      gdouble notation_delay;
+
+	      GValue value = {0,};
+
+	      /* get notation delay */
+	      g_value_init(&value,
+			   G_TYPE_DOUBLE);
+	      ags_port_safe_read(delay_audio->notation_delay,
+				 &value);
+
+	      notation_delay = g_value_get_double(&value);
+	      g_value_unset(&value);
+
+	      /* create audio signal with frame count */
+	      ags_recycling_create_audio_signal_with_frame_count(recycling,
+								 audio_signal,
+								 (guint) (((gdouble) samplerate / notation_delay) * (gdouble) (note->x[1] - note->x[0])),
+								 0.0, 0);
+	    }
+	  
+	    ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
+
+	    audio_signal->stream_current = audio_signal->stream_beginning;
+
+	    /* lock and add */
+	    pthread_mutex_lock(recycling_mutex);
+
+	    ags_recycling_add_audio_signal(recycling,
+					   audio_signal);
+	    //	g_object_unref(audio_signal);
 	  }else{
-	    gdouble notation_delay;
+	    GList *list;
 
-	    GValue value = {0,};
+	    audio_signal = NULL;
+	    list = ags_audio_signal_get_by_recall_id(recycling->audio_signal,
+						     child_recall_id);
+	    
+	    if(list != NULL){
+	      audio_signal = list->data;
+	    }
 
-	    /* get notation delay */
-	    g_value_init(&value,
-			 G_TYPE_DOUBLE);
-	    ags_port_safe_read(delay_audio->notation_delay,
-			       &value);
-
-	    notation_delay = g_value_get_double(&value);
-	    g_value_unset(&value);
-
-	    /* create audio signal with frame count */
-	    ags_recycling_create_audio_signal_with_frame_count(recycling,
-							       audio_signal,
-							       (guint) (((gdouble) samplerate / notation_delay) * (gdouble) (note->x[1] - note->x[0])),
-							       0.0, 0);
+	    note->rt_offset = 0;
+	    g_object_set(audio_signal,
+			 "note", note,
+			 NULL);
 	  }
 	  
-	  ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
-
-	  audio_signal->stream_current = audio_signal->stream_beginning;
-
-	  /* lock and add */
-	  pthread_mutex_lock(recycling_mutex);
-
-	  ags_recycling_add_audio_signal(recycling,
-					 audio_signal);
-	  //	g_object_unref(audio_signal);
-
 	  /* iterate */
 	  recycling = recycling->next;
 
@@ -915,7 +932,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
       }else if(note_x0 > notation_counter){
 	break;
       }
-    
+      
       pthread_mutex_lock(audio_mutex);
     
       current_position = current_position->next;
