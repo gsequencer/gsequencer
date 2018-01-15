@@ -207,6 +207,7 @@ ags_recall_child_added
 ags_recall_run_init_pre
 ags_recall_run_init_inter
 ags_recall_run_init_post
+ags_recall_check_rt_stream
 ags_recall_automate
 ags_recall_run_pre
 ags_recall_run_inter

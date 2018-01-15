@@ -39,6 +39,7 @@ void ags_rt_stream_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_co
 void ags_rt_stream_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_rt_stream_channel_run_finalize(GObject *gobject);
 
+void ags_rt_stream_channel_run_check_rt_stream(AgsRecall *recall);
 AgsRecall* ags_rt_stream_channel_run_duplicate(AgsRecall *recall,
 					       AgsRecallID *recall_id,
 					       guint *n_params, GParameter *parameter);
@@ -131,6 +132,7 @@ ags_rt_stream_channel_run_class_init(AgsRtStreamChannelRunClass *rt_stream_chann
   /* AgsRecallClass */
   recall = (AgsRecallClass *) rt_stream_channel_run;
 
+  recall->check_rt_stream = ags_rt_stream_channel_run_check_rt_stream;
   recall->duplicate = ags_rt_stream_channel_run_duplicate;
 }
 
@@ -216,6 +218,65 @@ ags_rt_stream_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_conn
   ags_rt_stream_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
 
   /* empty */
+}
+
+void
+ags_rt_stream_channel_run_check_rt_stream(AgsRecall *recall)
+{
+  AgsChannel *source;
+  AgsRecycling *first_recycling, *last_recycling;
+  AgsRecycling *recycling, *end_recycling;
+
+  AgsRtStreamChannelRun *rt_stream_channel_run;
+
+  pthread_mutex_t *recycling_mutex;
+  
+  rt_stream_channel_run = recall;
+
+  source = AGS_RECALL_CHANNEL_RUN(rt_stream_channel_run)->source;
+
+  /* get first and last recycling */
+  pthread_mutex_lock(source->obj_mutex);
+  
+  first_recycling = source->first_recycling;
+  last_recycling = source->last_recycling;
+
+  pthread_mutex_unlock(source->obj_mutex);
+
+  /* get end */
+  pthread_mutex_lock(last_recycling->obj_mutex);
+  
+  end_recycling = last_recycling->next;
+
+  pthread_mutex_unlock(last_recycling->obj_mutex);
+
+  /* */
+  recycling = first_recycling;
+  
+  while(recycling != end_recycling){
+    AgsAudioSignal *audio_signal;
+    
+    recycling_mutex = recycling->obj_mutex;
+
+    pthread_mutex_lock(recycling_mutex);
+
+    audio_signal = ags_audio_signal_new(recycling->soundcard,
+					recycling,
+					recall->recall_id);
+    ags_audio_signal_stream_resize(audio_signal,
+				   1);
+    
+    pthread_mutex_unlock(recycling_mutex);
+
+    ags_recycling_add_audio_signal(recycling,
+				   audio_signal);
+
+    pthread_mutex_lock(recycling_mutex);
+    
+    recycling = recycling->next;
+    
+    pthread_mutex_unlock(recycling_mutex);
+  }
 }
 
 AgsRecall*

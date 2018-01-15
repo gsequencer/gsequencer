@@ -126,6 +126,7 @@ enum{
   RUN_INIT_PRE,
   RUN_INIT_INTER,
   RUN_INIT_POST,
+  CHECK_RT_STREAM,
   AUTOMATE,
   RUN_PRE,
   RUN_INTER,
@@ -360,6 +361,7 @@ ags_recall_class_init(AgsRecallClass *recall)
   recall->run_init_pre = ags_recall_real_run_init_pre;
   recall->run_init_inter = ags_recall_real_run_init_inter;
   recall->run_init_post = ags_recall_real_run_init_post;
+  recall->check_rt_stream = NULL;
 
   recall->automate = NULL;
   recall->run_pre = ags_recall_real_run_pre;
@@ -482,6 +484,24 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_FROM_CLASS (recall),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, run_init_post),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsRecall::check-rt-stream:
+   * @recall: the #AgsRecall to initialize
+   *
+   * The ::check-rt-stream signal notifies about initializing
+   * stage 0.
+   *
+   * Since: 1.4.0
+   */
+  recall_signals[CHECK_RT_STREAM] =
+    g_signal_new("check-rt-stream",
+		 G_TYPE_FROM_CLASS(recall),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsRecallClass, check_rt_stream),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
@@ -1756,6 +1776,25 @@ ags_recall_run_init_post(AgsRecall *recall)
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
 		recall_signals[RUN_INIT_POST], 0);
+  g_object_unref(G_OBJECT(recall));
+}
+
+/**
+ * ags_recall_check_rt_stream:
+ * @recall: an #AgsRecall
+ *
+ * Prepare for run, this is the pre stage within the preparation.
+ * 
+ * Since: 1.4.0
+ */
+void
+ags_recall_check_rt_stream(AgsRecall *recall)
+{
+  g_return_if_fail(AGS_IS_RECALL(recall));
+
+  g_object_ref(G_OBJECT(recall));
+  g_signal_emit(G_OBJECT(recall),
+		recall_signals[CHECK_RT_STREAM], 0);
   g_object_unref(G_OBJECT(recall));
 }
 

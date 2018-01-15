@@ -476,7 +476,7 @@ ags_init_channel_launch(AgsTask *task)
 
     pthread_mutex_unlock(channel_mutex);
 
-    for(stage = 0; stage < 3; stage++){
+    for(stage = 0; stage < 4; stage++){
       current = channel;
       list = list_start;
       
@@ -641,7 +641,7 @@ ags_init_channel_launch(AgsTask *task)
   }else{
     AgsRecallID *recall_id;
 
-    for(stage = 0; stage < 3; stage++){
+    for(stage = 0; stage < 4; stage++){
       current = channel;
 
       /* get current mutex */

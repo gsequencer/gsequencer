@@ -614,10 +614,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
 	/* apply preset */
 	note = g_list_nth(copy_pattern_channel_run->note,
-			  sequencer_counter);
-	g_object_set(audio_signal,
-		     "note", note,
-		     NULL);
+			  sequencer_counter)->data;
 	
 	if(preset != NULL){
 	  AgsComplex *val;
@@ -705,7 +702,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	  }
 	}
 	
-	if(!recall->rt_safe){
+	if(!AGS_RECALL(copy_pattern_audio)->rt_safe){
 	  /* create audio signal */
 	  audio_signal = ags_audio_signal_new(AGS_RECALL(copy_pattern_audio)->soundcard,
 					      (GObject *) recycling,
@@ -721,6 +718,10 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	  audio_signal->recall_id = (GObject *) child_recall_id;
 	  ags_recycling_add_audio_signal(recycling,
 					 audio_signal);
+
+	  g_object_set(audio_signal,
+		       "note", note,
+		       NULL);
 	}else{
 	  GList *list;
 
@@ -730,12 +731,13 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	    
 	  if(list != NULL){
 	    audio_signal = list->data;
+
+	    g_object_set(audio_signal,
+			 "note", note,
+			 NULL);
 	  }
 	    
 	  note->rt_offset = 0;
-	  g_object_set(audio_signal,
-		       "note", note,
-		       NULL);
 	}
 		
 	/*

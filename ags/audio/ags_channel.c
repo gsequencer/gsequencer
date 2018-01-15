@@ -3219,6 +3219,8 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
       
 	ags_recall_run_init_inter(current);
 	ags_recall_run_init_post(current);
+
+	ags_recall_check_rt_stream(current);
       }
       
       /* iterate */
@@ -3314,6 +3316,8 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
       
 	ags_recall_run_init_inter(current);
 	ags_recall_run_init_post(current);
+
+	ags_recall_check_rt_stream(current);
       }
       
       /* iterate */
@@ -3461,6 +3465,8 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
       
 	ags_recall_run_init_inter(current);
 	ags_recall_run_init_post(current);
+
+	ags_recall_check_rt_stream(current);
       }
       
       /* iterate */
@@ -3556,6 +3562,8 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
       
 	ags_recall_run_init_inter(current);
 	ags_recall_run_init_post(current);
+
+	ags_recall_check_rt_stream(current);
       }
       
       /* iterate */
@@ -3709,6 +3717,8 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
       
 	ags_recall_run_init_inter(current);
 	ags_recall_run_init_post(current);
+
+	ags_recall_check_rt_stream(current);
       }
       
       /* iterate */
@@ -3809,6 +3819,8 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
       
 	ags_recall_run_init_inter(current);
 	ags_recall_run_init_post(current);
+
+	ags_recall_check_rt_stream(current);
       }
       
       /* iterate */
@@ -4666,8 +4678,10 @@ ags_channel_init_recall(AgsChannel *channel, gint stage,
 	recall->flags &= (~AGS_RECALL_REMOVE);
       }else if(stage == 1){
 	ags_recall_run_init_inter(recall);
-      }else{
+      }else if(stage == 2){
 	ags_recall_run_init_post(recall);
+      }else{
+	ags_recall_check_rt_stream(recall);
       }
     }
     
@@ -8081,28 +8095,28 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 				 recall_id,
 				 -1, -1,
 				 TRUE, TRUE);
-    }else if(stage >= 0 && stage < 3){
+    }else if(stage >= 0 && stage < 4){
       ags_channel_recursive_init(channel,
 				 recall_id,
-				 ((stage == 0) ? -1: 3), stage,
+				 ((stage == 0) ? -1: 4), stage,
 				 TRUE, TRUE);
     }
   }else{
     if(duplicate_templates){
       ags_channel_recursive_init(channel,
 				 recall_id,
-				 0, 3,
+				 0, 4,
 				 TRUE, TRUE);
     }
 
     if(resolve_dependencies){
       ags_channel_recursive_init(channel,
 				 recall_id,
-				 1, 3,
+				 1, 4,
 				 TRUE, TRUE);
     }
 
-    if(stage == -1 || (stage >= 0 && stage < 3)){
+    if(stage == -1 || (stage >= 0 && stage < 4)){
       ags_channel_recursive_init(channel,
 				 recall_id,
 				 2, stage,
@@ -10604,7 +10618,7 @@ ags_channel_recursive_init(AgsChannel *channel,
 	}
       }else if(stage == 2){
 	if(init_stage == -1){
-	  for(init_stage = 0; init_stage < 3; init_stage++){
+	  for(init_stage = 0; init_stage < 4; init_stage++){
 	    /* init */
 	    if(init_down){
 	      ags_channel_recursive_init_down(channel,
@@ -10616,7 +10630,7 @@ ags_channel_recursive_init(AgsChannel *channel,
 					    recall_id);
 	    }
 	  }
-	}else if(init_stage >= 0 && init_stage < 3){
+	}else if(init_stage >= 0 && init_stage < 4){
 	  /* init */
 	  if(init_down){
 	    ags_channel_recursive_init_down(channel,
@@ -10644,7 +10658,7 @@ ags_channel_recursive_init(AgsChannel *channel,
       }
     }else if(stage == 2){
       if(init_stage == -1){
-	for(init_stage = 0; init_stage < 3; init_stage++){
+	for(init_stage = 0; init_stage < 4; init_stage++){
 	  /* init */
 	  if(init_down){
 	    ags_channel_recursive_init_down(channel,
@@ -10656,7 +10670,7 @@ ags_channel_recursive_init(AgsChannel *channel,
 					  recall_id);
 	  }
 	}
-      }else if(init_stage >= 0 && init_stage < 3){
+      }else if(init_stage >= 0 && init_stage < 4){
 	/* init */
 	if(init_down){
 	  ags_channel_recursive_init_down(channel,

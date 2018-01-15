@@ -1,8 +1,8 @@
 ags (1.4.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented rt-safe mode
-	* TODO:JK: implemented ags-rt-stream recall
+	* implemented rt-safe mode
+	* implemented ags-rt-stream recall
 	* implemented AgsLevel, AgsLevelBox, AgsVLevelBox, AgsHScaleBox and AgsScrolledScaleBox in libags-gui
 	* fixed potential SIGSEGV in ags_devout_pcm_info()
 

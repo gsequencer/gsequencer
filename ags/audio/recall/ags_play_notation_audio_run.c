@@ -863,7 +863,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	
 	  pthread_mutex_unlock(application_mutex);
 
-	  if(!recall->rt_safe){
+	  if(!AGS_RECALL(play_notation_audio_run)->rt_safe){
 	    /* create audio signal */
 	    audio_signal = ags_audio_signal_new((GObject *) soundcard,
 						(GObject *) recycling,

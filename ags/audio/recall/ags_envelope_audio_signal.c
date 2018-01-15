@@ -233,6 +233,7 @@ ags_envelope_audio_signal_duplicate(AgsRecall *recall,
 void
 ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 {
+  AgsEnvelopeChannel *envelope_channel;
   AgsEnvelopeAudioSignal *envelope_audio_signal;
 
   AgsAudioSignal *source;
@@ -247,13 +248,11 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 
   GList *stream_source;
 
-  gdouble delay;
-  gdouble fixed_length;
-  guint buffer_size;
-  gdouble current_volume, current_ratio;
-
   guint frame_count;
   guint buffer_size;
+  gdouble delay;
+  gdouble fixed_length;
+  gdouble current_volume, current_ratio;
 
   guint i, j;
 
@@ -290,6 +289,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 
   AGS_RECALL_CLASS(ags_envelope_audio_signal_parent_class)->run_inter(recall);
 
+  envelope_channel = AGS_ENVELOPE_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
   envelope_audio_signal = AGS_ENVELOPE_AUDIO_SIGNAL(recall);
 
   source = AGS_RECALL_AUDIO_SIGNAL(envelope_audio_signal)->source;

@@ -450,6 +450,8 @@ ags_drum_input_line_map_recall(AgsLine *line,
     return;
   }
 
+  config = ags_config_get_instance();
+  
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
@@ -595,6 +597,23 @@ ags_drum_input_line_map_recall(AgsLine *line,
 			       AGS_RECALL_FACTORY_RECALL | 
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
+
+    /* set up dependencies */
+    pthread_mutex_lock(source_mutex);
+
+    list = ags_recall_find_type(source->play,
+				AGS_TYPE_PLAY_CHANNEL_RUN);
+    play_channel_run = AGS_PLAY_CHANNEL_RUN(list->data);
+
+    list = ags_recall_find_type(source->play,
+				AGS_TYPE_STREAM_CHANNEL_RUN);
+    stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
+
+    g_object_set(G_OBJECT(play_channel_run),
+		 "stream-channel-run", stream_channel_run,
+		 NULL);
+
+    pthread_mutex_unlock(source_mutex);
   }else{
     ags_recall_factory_create(audio,
 			      NULL, NULL,
@@ -608,23 +627,6 @@ ags_drum_input_line_map_recall(AgsLine *line,
 			      0);
   }
   
-  /* set up dependencies */
-  pthread_mutex_lock(source_mutex);
-
-  list = ags_recall_find_type(source->play,
-			      AGS_TYPE_PLAY_CHANNEL_RUN);
-  play_channel_run = AGS_PLAY_CHANNEL_RUN(list->data);
-
-  list = ags_recall_find_type(source->play,
-			      AGS_TYPE_STREAM_CHANNEL_RUN);
-  stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
-
-  g_object_set(G_OBJECT(play_channel_run),
-	       "stream-channel-run", stream_channel_run,
-	       NULL);
-
-  pthread_mutex_unlock(source_mutex);
-
   /* call parent */
   AGS_LINE_CLASS(ags_drum_input_line_parent_class)->map_recall(line,
 							       output_pad_start);

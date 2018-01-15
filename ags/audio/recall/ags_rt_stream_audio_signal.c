@@ -257,6 +257,8 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
   AgsAudioSignal *source;
   AgsAudioSignal *template;
 
+  AgsMutexManager *mutex_manager;
+
   GList *note;
 
   void *buffer;
@@ -323,7 +325,9 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 			offset);
 
     if(stream == NULL){
-      return;
+      note = note->next;
+
+      continue;
     }
     
     if(offset < delay * current->x[1] ||
@@ -332,7 +336,7 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	guint loop_end_frame;
 	guint i, j;
 	
-	loop_end_frame = delay * (current->x[1] - current->x[0]) - (((delay * offset) - template->loop_start) % (template->loop_end - template->loop_start));
+	loop_end_frame = delay * (current->x[1] - current->x[0]) - (((guint) (delay * offset) - template->loop_start) % (template->loop_end - template->loop_start));
 	
 	if(delay * (offset + 1) * buffer_size > template->loop_end &&
 	   delay * offset * buffer_size < loop_end_frame){
@@ -365,7 +369,7 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	    if(delay * offset * buffer_size  < template->loop_end){
 	      j = buffer_size - source->attack;
 	    }else{
-	      j = ((delay * (offset + 1) * buffer_size - template->loop_start) % (template->loop_end - template->loop_start)) + (buffer_size - source->attack);
+	      j = ((guint) ((delay * (offset + 1) * buffer_size) - template->loop_start) % (template->loop_end - template->loop_start)) + (buffer_size - source->attack);
 	    }
 	    
 	    if(source->attack != 0 && stream->prev != NULL){
@@ -417,7 +421,7 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	    }	    
 	  }
 	}else{
-	  j = ((delay * offset * buffer_size - template->loop_start) % (template->loop_end - template->loop_start)) + (buffer_size - source->attack);
+	  j = (((guint) (delay * offset * buffer_size) - template->loop_start) % (template->loop_end - template->loop_start)) + (buffer_size - source->attack);
 
 	  if(source->attack != 0 && stream->prev != NULL){
 	    for(i = source->attack; i < source->attack; i++, j++){
