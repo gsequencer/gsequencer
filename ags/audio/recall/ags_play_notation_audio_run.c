@@ -900,14 +900,14 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	    audio_signal->stream_current = audio_signal->stream_beginning;
 
 	    /* lock and add */
-	    pthread_mutex_lock(recycling_mutex);
-
 	    ags_recycling_add_audio_signal(recycling,
 					   audio_signal);
 	    //	g_object_unref(audio_signal);
 	  }else{
 	    GList *list;
 
+	    pthread_mutex_lock(recycling_mutex);
+	    
 	    audio_signal = NULL;
 	    list = ags_audio_signal_get_by_recall_id(recycling->audio_signal,
 						     child_recall_id);
@@ -921,9 +921,13 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	    }
 
 	    note->rt_offset = 0;
+
+	    pthread_mutex_unlock(recycling_mutex);
 	  }
 	  
 	  /* iterate */
+	  pthread_mutex_lock(recycling_mutex);
+	  
 	  recycling = recycling->next;
 
 	  pthread_mutex_unlock(recycling_mutex);

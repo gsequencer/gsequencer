@@ -326,7 +326,7 @@ ags_note_init(AgsNote *note)
   note->flags = 0;
 
   note->x[0] = 0;
-  note->x[1] = 0;
+  note->x[1] = 1;
   note->y = 0;
 
   note->rt_offset = 0;

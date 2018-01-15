@@ -87,6 +87,8 @@ struct _AgsPlayback
   GObject *source;
   guint audio_channel;
 
+  GObject *play_note;
+  
   AgsThread **channel_thread;
   AgsThread **iterator_thread;
 

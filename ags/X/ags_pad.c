@@ -811,7 +811,7 @@ ags_pad_play(AgsPad *pad)
 
   /* get task */
   gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
+						     AGS_TYPE_GUI_THREAD);
 
   /*  */
   tasks = NULL;

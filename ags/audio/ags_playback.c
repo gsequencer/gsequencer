@@ -22,6 +22,7 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_note.h>
 
 #include <ags/audio/thread/ags_channel_thread.h>
 #include <ags/audio/thread/ags_iterator_thread.h>
@@ -126,7 +127,7 @@ ags_playback_class_init(AgsPlaybackClass *playback)
    *
    * The parent playback domain.
    * 
-   * Since: 1.0.0.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("playback-domain",
 				   i18n_pspec("parent playback domain"),
@@ -142,7 +143,7 @@ ags_playback_class_init(AgsPlaybackClass *playback)
    *
    * The assigned source.
    * 
-   * Since: 1.0.0.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("source",
 				   i18n_pspec("assigned source"),
@@ -158,7 +159,7 @@ ags_playback_class_init(AgsPlaybackClass *playback)
    *
    * The assigned audio channel.
    * 
-   * Since: 1.0.0.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("audio-channel",
 				 i18n_pspec("assigned audio channel"),
@@ -249,6 +250,9 @@ ags_playback_init(AgsPlayback *playback)
   playback->source = NULL;
   playback->audio_channel = 0;
 
+  playback->play_note = ags_note_new();
+  g_object_ref(playback->play_note);
+  
   /* samplerate and buffer size */
   samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
@@ -415,6 +419,8 @@ ags_playback_set_property(GObject *gobject,
       if(source != NULL){
 	g_object_ref(G_OBJECT(source));
 
+	AGS_NOTE(playback->play_note)->y = AGS_CHANNEL(source)->pad;
+      
 	if(AGS_IS_CHANNEL(source) &&
 	   ((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0 ||
 	    (AGS_PLAYBACK_SUPER_THREADED_RECYCLING & (g_atomic_int_get(&(playback->flags)))) != 0)){
@@ -698,7 +704,7 @@ ags_playback_disconnect(AgsConnectable *connectable)
  * 
  * Set channel thread of appropriate scope.
  * 
- * Since: 1.0.0.7
+ * Since: 1.0.0
  */
 void
 ags_playback_set_channel_thread(AgsPlayback *playback,
@@ -730,7 +736,7 @@ ags_playback_set_channel_thread(AgsPlayback *playback,
  * 
  * Returns: the matching #AgsThread or %NULL
  * 
- * Since: 1.0.0.7
+ * Since: 1.0.0
  */
 AgsThread*
 ags_playback_get_channel_thread(AgsPlayback *playback,
@@ -753,7 +759,7 @@ ags_playback_get_channel_thread(AgsPlayback *playback,
  * 
  * Set iterator thread of appropriate scope.
  * 
- * Since: 1.0.0.7
+ * Since: 1.0.0
  */
 void
 ags_playback_set_iterator_thread(AgsPlayback *playback,
@@ -785,7 +791,7 @@ ags_playback_set_iterator_thread(AgsPlayback *playback,
  * 
  * Returns: the matching #AgsThread or %NULL
  * 
- * Since: 1.0.0.7
+ * Since: 1.0.0
  */
 AgsThread*
 ags_playback_get_iterator_thread(AgsPlayback *playback,
@@ -808,7 +814,7 @@ ags_playback_get_iterator_thread(AgsPlayback *playback,
  * 
  * Set recycling thread of appropriate scope.
  * 
- * Since: 1.0.0.7
+ * Since: 1.0.0
  */
 void
 ags_playback_set_recycling_thread(AgsPlayback *playback,
@@ -840,7 +846,7 @@ ags_playback_set_recycling_thread(AgsPlayback *playback,
  * 
  * Returns: the matching #AgsThread or %NULL
  * 
- * Since: 1.0.0.7
+ * Since: 1.0.0
  */
 AgsThread*
 ags_playback_get_recycling_thread(AgsPlayback *playback,
@@ -863,7 +869,7 @@ ags_playback_get_recycling_thread(AgsPlayback *playback,
  * 
  * Set recall id of appropriate scope.
  * 
- * Since: 1.0.0.7
+ * Since: 1.0.0
  */
 void
 ags_playback_set_recall_id(AgsPlayback *playback,
@@ -895,7 +901,7 @@ ags_playback_set_recall_id(AgsPlayback *playback,
  * 
  * Returns: the matching #AgsRecallID or %NULL
  * 
- * Since: 1.0.0.7
+ * Since: 1.0.0
  */
 AgsRecallID*
 ags_playback_get_recall_id(AgsPlayback *playback,

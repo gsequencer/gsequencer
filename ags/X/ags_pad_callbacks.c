@@ -267,6 +267,7 @@ ags_pad_init_channel_launch_callback(AgsTask *task,
   AgsSoundcard *soundcard;
   AgsAudio *audio;
   AgsChannel *channel, *next_pad;
+  AgsRecycling *last_recycling;
   AgsRecycling *recycling, *end_recycling;
 
   AgsAddAudioSignal *add_audio_signal;
@@ -350,17 +351,34 @@ ags_pad_init_channel_launch_callback(AgsTask *task,
     if(recall != NULL){
       AgsAudioSignal *audio_signal;
       AgsRecallID *current_recall_id;
+      AgsNote *note;
       
       /* add audio signal */
       pthread_mutex_lock(channel_mutex);
       
       recycling = channel->first_recycling;
-      end_recycling = channel->last_recycling->next;
+      last_recycling = channel->last_recycling;
 
+      note = AGS_PLAYBACK(channel->playback)->play_note;
+      
       current_recall_id = AGS_RECALL(recall->data)->recall_id;
       
       pthread_mutex_unlock(channel_mutex);
 
+      /* get recycling mutex */
+      pthread_mutex_lock(application_mutex);
+  
+      recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+						 (GObject *) last_recycling);
+	
+      pthread_mutex_unlock(application_mutex);
+
+      pthread_mutex_lock(recycling_mutex);
+      
+      end_recycling = last_recycling->next;
+
+      pthread_mutex_unlock(recycling_mutex);
+      
       while(recycling != end_recycling){
 	/* get recycling mutex */
 	pthread_mutex_lock(application_mutex);
@@ -370,24 +388,48 @@ ags_pad_init_channel_launch_callback(AgsTask *task,
 	
 	pthread_mutex_unlock(application_mutex);
 
-	/* instantiate audio signal */
-	audio_signal = ags_audio_signal_new((GObject *) soundcard,
-					    (GObject *) recycling,
-					    (GObject *) current_recall_id);
-	
-	/* add audio signal */
-	ags_recycling_create_audio_signal_with_defaults(recycling,
-							audio_signal,
-							0.0, 0);
-	audio_signal->stream_current = audio_signal->stream_beginning;
-	ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
+	if(!AGS_RECALL(recall->data)->rt_safe){
+	  /* instantiate audio signal */
+	  audio_signal = ags_audio_signal_new((GObject *) soundcard,
+					      (GObject *) recycling,
+					      (GObject *) current_recall_id);
+	  g_object_set(audio_signal,
+		       "note", note,
+		       NULL);
+	  
+	  /* add audio signal */
+	  ags_recycling_create_audio_signal_with_defaults(recycling,
+							  audio_signal,
+							  0.0, 0);
+	  audio_signal->stream_current = audio_signal->stream_beginning;
+	  ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
   
-	/*
-	 * emit add_audio_signal on AgsRecycling
-	 */
-	ags_recycling_add_audio_signal(recycling,
-				       audio_signal);
+	  /*
+	   * emit add_audio_signal on AgsRecycling
+	   */
+	  ags_recycling_add_audio_signal(recycling,
+					 audio_signal);
+	}else{
+	  GList *list;
 
+	  pthread_mutex_lock(recycling_mutex);
+	    
+	  audio_signal = NULL;
+	  list = ags_audio_signal_get_by_recall_id(recycling->audio_signal,
+						   current_recall_id);
+	    
+	  if(list != NULL){
+	    audio_signal = list->data;
+
+	    g_object_set(audio_signal,
+			 "note", note,
+			 NULL);
+	  }
+
+	  note->rt_offset = 0;
+
+	  pthread_mutex_unlock(recycling_mutex);
+	}
 
 	/* iterate recycling */
 	pthread_mutex_lock(recycling_mutex);

@@ -2137,13 +2137,14 @@ ags_recall_real_remove(AgsRecall *recall)
   g_object_ref(recall);
 
   if(recall->parent == NULL){
+#if 0
     if(destroy_worker != NULL){
       ags_destroy_worker_add(destroy_worker,
-			     recall, ags_destroy_util_dispose_and_unref);
+			     recall, g_object_run_dispose);
     }else{
       g_object_run_dispose(recall);
-      g_object_unref(recall);
     }
+#endif
     
     return;
   }else{
