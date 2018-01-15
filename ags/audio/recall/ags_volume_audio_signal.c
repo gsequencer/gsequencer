@@ -22,8 +22,9 @@
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_recall_channel_run.h>
+#include <ags/audio/ags_input.h>
 #include <ags/audio/ags_port.h>
+#include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
 void ags_volume_audio_signal_class_init(AgsVolumeAudioSignalClass *volume_audio_signal);
@@ -200,6 +201,11 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
 {
   AGS_RECALL_CLASS(ags_volume_audio_signal_parent_class)->run_inter(recall);
 
+  if(recall->rt_safe &&
+     AGS_RECALL_AUDIO_SIGNAL(recall)->source->note == NULL){
+    return;
+  }
+  
   if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current != NULL){
     AgsVolumeChannel *volume_channel;
 

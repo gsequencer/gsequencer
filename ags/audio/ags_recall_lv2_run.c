@@ -26,6 +26,7 @@
 #include <ags/plugin/ags_lv2_plugin.h>
 #include <ags/plugin/ags_lv2_worker.h>
 
+#include <ags/audio/ags_input.h>
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
@@ -438,6 +439,11 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
   /* call parent */
   AGS_RECALL_CLASS(ags_recall_lv2_run_parent_class)->run_pre(recall);
 
+  if(recall->rt_safe &&
+     AGS_RECALL_AUDIO_SIGNAL(recall)->source->note == NULL){
+    return;
+  }
+
   recall_lv2 = AGS_RECALL_LV2(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
   recall_lv2_run = AGS_RECALL_LV2_RUN(recall);
   
@@ -557,6 +563,12 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
 
   /* call parent */
   AGS_RECALL_CLASS(ags_recall_lv2_run_parent_class)->run_inter(recall);
+
+  if(recall->rt_safe &&
+     AGS_IS_INPUT(AGS_RECALL_AUDIO_SIGNAL(recall)->source) &&
+     AGS_RECALL_AUDIO_SIGNAL(recall)->source->note == NULL){
+    return;
+  }
 
   recall_lv2 = AGS_RECALL_LV2(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
   recall_lv2_run = AGS_RECALL_LV2_RUN(recall);

@@ -23,9 +23,10 @@
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
@@ -329,6 +330,12 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
   GValue value = {0,};
 
   AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_inter(recall);
+
+  if(recall->rt_safe &&
+     AGS_IS_INPUT(AGS_RECALL_AUDIO_SIGNAL(recall)->source) &&
+     AGS_RECALL_AUDIO_SIGNAL(recall)->source->note == NULL){
+    return;
+  }
 
   copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(recall);
 

@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 1.4.0\n"
+"Project-Id-Version: gsequencer 1.4.1\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2018-01-15 02:55+0100\n"
+"POT-Creation-Date: 2018-01-15 17:06+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -105,21 +105,21 @@ msgstr ""
 msgid "FPlayer"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:203 ags/X/ags_menu_bar.c:198
+#: ags/X/ags_context_menu.c:203 ags/X/ags_menu_bar.c:200
 msgid "LADSPA"
 msgstr ""
 
 #: ags/X/ags_context_menu.c:207 ags/X/ags_context_menu.c:222
-#: ags/X/ags_menu_bar.c:202 ags/X/ags_menu_bar.c:217
+#: ags/X/ags_menu_bar.c:204 ags/X/ags_menu_bar.c:219
 msgid "DSSI"
 msgstr ""
 
 #: ags/X/ags_context_menu.c:211 ags/X/ags_context_menu.c:226
-#: ags/X/ags_menu_bar.c:206 ags/X/ags_menu_bar.c:221
+#: ags/X/ags_menu_bar.c:208 ags/X/ags_menu_bar.c:223
 msgid "Lv2"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:231 ags/X/ags_menu_bar.c:226
+#: ags/X/ags_context_menu.c:231 ags/X/ags_menu_bar.c:228
 msgid "Automation"
 msgstr ""
 
@@ -370,11 +370,11 @@ msgstr ""
 msgid "resize channels"
 msgstr ""
 
-#: ags/X/ags_menu_bar.c:194
+#: ags/X/ags_menu_bar.c:195
 msgid "Audiorec"
 msgstr ""
 
-#: ags/X/ags_menu_bar.c:232
+#: ags/X/ags_menu_bar.c:235
 msgid "Wave"
 msgstr ""
 

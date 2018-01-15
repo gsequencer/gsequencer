@@ -24,6 +24,7 @@
 
 #include <ags/plugin/ags_dssi_manager.h>
 
+#include <ags/audio/ags_input.h>
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_note.h>
 #include <ags/audio/ags_audio_buffer_util.h>
@@ -359,6 +360,11 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
   
   /* call parent */
   AGS_RECALL_CLASS(ags_recall_dssi_run_parent_class)->run_pre(recall);
+
+  if(recall->rt_safe &&
+     AGS_RECALL_AUDIO_SIGNAL(recall)->source->note == NULL){
+    return;
+  }
   
   recall_dssi = AGS_RECALL_DSSI(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
   recall_dssi_run = AGS_RECALL_DSSI_RUN(recall);

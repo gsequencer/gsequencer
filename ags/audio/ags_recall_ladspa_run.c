@@ -25,6 +25,7 @@
 
 #include <ags/plugin/ags_ladspa_manager.h>
 
+#include <ags/audio/ags_input.h>
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
@@ -285,6 +286,12 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
 
   /* call parent */
   AGS_RECALL_CLASS(ags_recall_ladspa_run_parent_class)->run_inter(recall);
+
+  if(recall->rt_safe &&
+     AGS_IS_INPUT(AGS_RECALL_AUDIO_SIGNAL(recall)->source) &&
+     AGS_RECALL_AUDIO_SIGNAL(recall)->source->note == NULL){
+    return;
+  }
 
   recall_ladspa = AGS_RECALL_LADSPA(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
   recall_ladspa_run = AGS_RECALL_LADSPA_RUN(recall);

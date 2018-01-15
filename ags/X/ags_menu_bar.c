@@ -191,9 +191,11 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 #endif
 
+#if 0  
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Audiorec"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
-
+#endif
+  
   /* bridge */
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("LADSPA"));
   gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_ladspa_bridge_menu_new());
@@ -229,10 +231,12 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
 
   /* wave */
+#if 0  
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Wave"));
   //  gtk_widget_set_sensitive(item,
   //			   FALSE);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit, (GtkWidget*) item);
+#endif
   
   /* preferences */
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->edit,
@@ -358,10 +362,12 @@ ags_menu_bar_connect(AgsConnectable *connectable)
   list2 = list2->next;
 #endif
   
+#if 0  
   g_signal_connect (G_OBJECT (list2->data), "activate",
                     G_CALLBACK (ags_menu_action_add_audiorec_callback), (gpointer) menu_bar);
   list2 = list2->next;
-
+#endif
+  
   /* ladspa */
   list3_start = 
     list3 = gtk_container_get_children((GtkContainer *) gtk_menu_item_get_submenu((GtkMenuItem *) list2->data));
@@ -443,9 +449,12 @@ ags_menu_bar_connect(AgsConnectable *connectable)
                     G_CALLBACK (ags_menu_action_automation_callback), (gpointer) menu_bar);
   list1 = list1->next;
 
+#if 0  
   g_signal_connect (G_OBJECT (list1->data), "activate",
                     G_CALLBACK (ags_menu_action_wave_callback), (gpointer) menu_bar);
   list1 = list1->next;
+#endif
+  
   list1 = list1->next;
 
   g_signal_connect (G_OBJECT (list1->data), "activate",
