@@ -1532,6 +1532,17 @@ ags_dssi_bridge_input_map_recall(AgsDssiBridge *dssi_bridge,
 			       AGS_RECALL_FACTORY_RECALL | 
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
+  }else{
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-rt-stream",
+			      audio_channel_start, audio_channels, 
+			      input_pad_start, input_pads,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
   }
   
   dssi_bridge->mapped_input_pad = input_pads;

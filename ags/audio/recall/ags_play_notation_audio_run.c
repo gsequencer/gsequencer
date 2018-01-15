@@ -173,7 +173,7 @@ ags_play_notation_audio_run_class_init(AgsPlayNotationAudioRunClass *play_notati
    *
    * The delay audio run dependency.
    * 
-   * Since: 1.0.0.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("delay-audio-run",
 				   i18n_pspec("assigned AgsDelayAudioRun"),
@@ -189,7 +189,7 @@ ags_play_notation_audio_run_class_init(AgsPlayNotationAudioRunClass *play_notati
    *
    * The count beats audio run dependency.
    * 
-   * Since: 1.0.0.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("count-beats-audio-run",
 				   i18n_pspec("assigned AgsCountBeatsAudioRun"),
@@ -205,7 +205,7 @@ ags_play_notation_audio_run_class_init(AgsPlayNotationAudioRunClass *play_notati
    *
    * The notation containing the notes.
    * 
-   * Since: 1.0.0.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("notation",
 				   i18n_pspec("assigned AgsNotation"),

@@ -1092,6 +1092,17 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 				 AGS_RECALL_FACTORY_RECALL | 
 				 AGS_RECALL_FACTORY_ADD),
 				0);
+    }else{
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-rt-stream",
+				audio_channels_old, audio_channels, 
+				0, input_pads,
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_PLAY |
+				 AGS_RECALL_FACTORY_RECALL | 
+				 AGS_RECALL_FACTORY_ADD),
+				0);
     }
     
     /* AgsOutput */

@@ -1052,6 +1052,17 @@ ags_matrix_input_map_recall(AgsMatrix *matrix,
 			       AGS_RECALL_FACTORY_RECALL | 
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
+  }else{
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-rt-stream",
+			      0, audio_channels, 
+			      input_pad_start, input_pads,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
   }
   
   matrix->mapped_input_pad = input_pads;

@@ -195,6 +195,8 @@ ags_copy_pattern_channel_run_init(AgsCopyPatternChannelRun *copy_pattern_channel
   AGS_RECALL(copy_pattern_channel_run)->port = NULL;
 
   AGS_RECALL(copy_pattern_channel_run)->child_type = G_TYPE_NONE;
+
+  copy_pattern_channel_run->note = NULL;
 }
 
 void
@@ -291,12 +293,41 @@ ags_copy_pattern_channel_run_resolve_dependencies(AgsRecall *recall)
 void
 ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
 {
+  AgsChannel *source;
+  AgsPattern *pattern;
+  AgsNote *note;
+  
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
 
+  guint pad;
+  guint i, i_stop;
+  
+  GValue pattern_value = { 0, };  
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *source_mutex;
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->run_init_pre(recall);
 
+  /*  */
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
+
+  /* get AgsCopyPatternChannel */
+  copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(copy_pattern_channel_run->recall_channel_run.recall_channel);
+
+  /* get source */
+  source = AGS_RECALL_CHANNEL(copy_pattern_channel)->source;
+
+  pthread_mutex_lock(application_mutex);
+  
+  source_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  (GObject *) source);
+    
+  pthread_mutex_unlock(application_mutex);
 
   /* get AgsCopyPatternAudioRun */
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->recall_audio_run);
@@ -304,6 +335,38 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
   /* notify dependency */
   ags_recall_notify_dependency(AGS_RECALL(copy_pattern_audio_run->count_beats_audio_run),
  			       AGS_RECALL_NOTIFY_CHANNEL_RUN, 1);
+
+  /* get AgsPattern */
+  g_value_init(&pattern_value, G_TYPE_POINTER);
+  ags_port_safe_read(copy_pattern_channel->pattern,
+		     &pattern_value);
+
+  pattern = g_value_get_pointer(&pattern_value);
+
+  pthread_mutex_lock(application_mutex);
+  
+  pattern_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) pattern);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* add note */
+  pthread_mutex_lock(source_mutex);
+  
+  pad = source->pad;
+
+  i_stop = pattern->dim[2];
+
+  pthread_mutex_unlock(source_mutex);
+  
+  for(i = 0; i < i_stop; i++){
+    note = ags_note_new();
+
+    note->x[0] = i;
+    note->x[1] = i + 1;
+
+    note->y = pad;
+  }
 }
 
 void
@@ -548,6 +611,12 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	audio_signal->stream_current = audio_signal->stream_beginning;
 
 	/* apply preset */
+	note = g_list_nth(copy_pattern_channel_run->note,
+			  sequencer_counter);
+	g_object_set(audio_signal,
+		     "note", note,
+		     NULL);
+	
 	if(preset != NULL){
 	  AgsComplex *val;
 	  
@@ -555,16 +624,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
 	  GError *error;
 	  
-	  note = ags_note_new();
-
 	  note->flags |= AGS_NOTE_ENVELOPE;
-
-	  note->x[0] = sequencer_counter;
-	  note->x[1] = sequencer_counter + 1;
-
-	  note->y = pad;
-
-	  audio_signal->note = note;
 	  
 	  /* get attack */
 	  g_value_init(&value,

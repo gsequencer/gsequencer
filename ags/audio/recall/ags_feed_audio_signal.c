@@ -20,10 +20,7 @@
 #include <ags/audio/recall/ags_feed_audio_signal.h>
 #include <ags/audio/recall/ags_feed_channel.h>
 
-#include <ags/lib/ags_parameter.h>
-
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_dynamic_connectable.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_recall_channel_run.h>
 
@@ -204,8 +201,12 @@ ags_feed_audio_signal_run_pre(AgsRecall *recall)
 
   AGS_RECALL_CLASS(ags_feed_audio_signal_parent_class)->run_pre(recall);
 
+  if(recall->rt_safe){
+    return;
+  }
+  
   audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
-  note = audio_signal->note;
+  note = audio_signal->note->data;
 
   template = NULL;
   

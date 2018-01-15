@@ -591,6 +591,17 @@ ags_drum_input_line_map_recall(AgsLine *line,
 			       AGS_RECALL_FACTORY_RECALL | 
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
+  }else{
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-rt-stream",
+			      audio_channel, audio_channel + 1, 
+			      pad, pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
   }
   
   /* set up dependencies */
