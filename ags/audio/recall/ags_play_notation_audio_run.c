@@ -851,7 +851,9 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 #ifdef AGS_DEBUG	
 	g_message("playing[%u|%u]: %u | %u\n", audio_channel, selected_channel->pad, note->x[0], note->y);
 #endif
-
+	
+	note->rt_attack = attack;
+	
 	while(recycling != selected_channel->last_recycling->next){
 	  /* lookup recycling mutex */
 	  pthread_mutex_lock(application_mutex);

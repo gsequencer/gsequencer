@@ -614,7 +614,8 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
 	/* apply preset */
 	note = g_list_nth(copy_pattern_channel_run->note,
-			  sequencer_counter)->data;
+			  sequencer_counter)->data;	
+	note->rt_attack = attack;
 	
 	if(preset != NULL){
 	  AgsComplex *val;
