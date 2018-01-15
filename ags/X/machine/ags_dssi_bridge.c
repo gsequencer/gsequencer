@@ -1165,8 +1165,7 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
 			    0, 0,
 			    (AGS_RECALL_FACTORY_OUTPUT |
 			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL),
+			     AGS_RECALL_FACTORY_PLAY),
 			    0);
 
   pthread_mutex_lock(audio_mutex);
@@ -1191,8 +1190,7 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
 			    0, 0,
 			    (AGS_RECALL_FACTORY_OUTPUT |
 			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL),
+			     AGS_RECALL_FACTORY_PLAY),
 			    0);
   
   pthread_mutex_lock(audio_mutex);

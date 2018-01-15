@@ -341,8 +341,7 @@ ags_route_dssi_audio_run_set_property(GObject *gobject,
 	return;
       }
 
-      if(count_beats_audio_run != NULL &&
-	 (AGS_RECALL_TEMPLATE & (AGS_RECALL(count_beats_audio_run)->flags)) != 0){
+      if((AGS_RECALL_TEMPLATE & (AGS_RECALL(route_dssi_audio_run)->flags)) != 0){
 	is_template = TRUE;
       }else{
 	is_template = FALSE;
@@ -897,30 +896,22 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 		//						 note);
 	      
 		recall_dssi_run->route_dssi_audio_run = (GObject *) route_dssi_audio_run;
-	      
+
 		/* key on */
-		seq_event = (snd_seq_event_t *) malloc(sizeof(snd_seq_event_t));
-		memset(seq_event, 0, sizeof(snd_seq_event_t));
-		//memset(seq_event, 0, sizeof(snd_seq_event_t));
-	      
+		seq_event = recall_dssi_run->event_buffer[0];
+		
 		seq_event->type = SND_SEQ_EVENT_NOTEON;
 
 		seq_event->data.note.channel = 0;
 		seq_event->data.note.note = 0x7f & (selected_channel->pad - audio_start_mapping + midi_start_mapping);
 		seq_event->data.note.velocity = 127;
 
+		recall_dssi_run->event_count[0] = 1;
+		  
 		AGS_RECALL_AUDIO_SIGNAL(recall_dssi_run)->audio_channel = audio_channel;
 		recall_dssi_run->note = g_list_prepend(recall_dssi_run->note,
 						       (GObject *) note);
 		g_object_ref(note);
-		  
-		recall_dssi_run->event_buffer = (snd_seq_event_t **) malloc(2 * sizeof(snd_seq_event_t *));
-		recall_dssi_run->event_buffer[0] = seq_event;
-		recall_dssi_run->event_buffer[1] = NULL;
-		  
-		recall_dssi_run->event_count = (unsigned long *) malloc(2 * sizeof(unsigned long));
-		recall_dssi_run->event_count[0] = 1;
-		recall_dssi_run->event_count[1] = 0;
 	      }
 
 	      //fixme:jk: remove notes

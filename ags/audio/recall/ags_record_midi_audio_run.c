@@ -319,8 +319,7 @@ ags_record_midi_audio_run_set_property(GObject *gobject,
 	return;
       }
 
-      if(count_beats_audio_run != NULL &&
-	 (AGS_RECALL_TEMPLATE & (AGS_RECALL(count_beats_audio_run)->flags)) != 0){
+      if((AGS_RECALL_TEMPLATE & (AGS_RECALL(record_midi_audio_run)->flags)) != 0){
 	is_template = TRUE;
       }else{
 	is_template = FALSE;

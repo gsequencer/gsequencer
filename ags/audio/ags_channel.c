@@ -4747,9 +4747,10 @@ ags_channel_play(AgsChannel *channel,
 
   pthread_mutex_unlock(mutex);
 
-  list = list_start;
   
-  /* run */
+  /* run - automate */
+  list = list_start;
+
   while(list != NULL){
     guint recall_flags;
     
@@ -4759,16 +4760,7 @@ ags_channel_play(AgsChannel *channel,
     
     if(recall == NULL ||
        !AGS_IS_RECALL(recall)){
-      //      if(recall_id->recycling_context->parent != NULL){
-      //	channel->recall = g_list_remove(channel->recall,
-      //					recall);
-      //      }else{
-      //	channel->play = g_list_remove(channel->play,
-      //				      recall);
-      //      }
-
       list = list_next;
-      g_warning("recall == NULL");
       
       continue;
     }
@@ -4778,7 +4770,87 @@ ags_channel_play(AgsChannel *channel,
       if(stage == 0){
 	ags_recall_automate(recall);
       }
+    }
+    
+    list = list_next;
+  }
 
+  /* run - first */
+  list = list_start;
+
+  while(list != NULL){
+    guint recall_flags;
+    
+    list_next = list->next;
+
+    recall = AGS_RECALL(list->data);
+    
+    if(recall == NULL ||
+       !AGS_IS_RECALL(recall)){
+      list = list_next;
+      
+      continue;
+    }
+
+    if(AGS_IS_RECALL_CHANNEL(recall)){
+      list = list_next;
+
+      continue;
+    }
+
+    if(recall->recall_id == NULL ||
+       recall->recall_id->recycling_context != recall_id->recycling_context){
+      list = list_next;
+
+      continue;
+    }
+
+    g_object_ref(recall);
+
+    recall_flags = recall->flags;
+        
+    if((AGS_RECALL_TEMPLATE & (recall_flags)) == 0 &&
+       (AGS_RECALL_RUN_FIRST & (recall_flags)) != 0){
+#ifdef AGS_DEBUG
+      g_message("%s play channel %x:%d @%x -> %x", G_OBJECT_TYPE_NAME(recall), channel, channel->line, recall, recall->recall_id);
+#endif
+
+      if((AGS_RECALL_HIDE & (recall_flags)) == 0){
+	g_object_ref(recall);
+	
+	if(stage == 0){
+	  AGS_RECALL_GET_CLASS(recall)->run_pre(recall);
+	}else if(stage == 1){
+	  AGS_RECALL_GET_CLASS(recall)->run_inter(recall);
+	}else{
+	  AGS_RECALL_GET_CLASS(recall)->run_post(recall);
+	}
+
+	g_object_unref(recall);
+      }
+    }
+
+    list = list_next;
+  }
+  
+  /* run */
+  list = list_start;
+
+  while(list != NULL){
+    guint recall_flags;
+    
+    list_next = list->next;
+
+    recall = AGS_RECALL(list->data);
+    
+    if(recall == NULL ||
+       !AGS_IS_RECALL(recall)){
+      list = list_next;
+      
+      continue;
+    }
+
+    if(AGS_IS_RECALL_CHANNEL(recall)){
       list = list_next;
 
       continue;
@@ -4793,7 +4865,9 @@ ags_channel_play(AgsChannel *channel,
 
     recall_flags = recall->flags;
         
-    if((AGS_RECALL_TEMPLATE & (recall_flags)) == 0){
+    if((AGS_RECALL_TEMPLATE & (recall_flags)) == 0 &&
+       (AGS_RECALL_RUN_FIRST & (recall_flags)) == 0 &&
+       (AGS_RECALL_RUN_LAST & (recall_flags)) == 0){
 #ifdef AGS_DEBUG
       g_message("%s play channel %x:%d @%x -> %x", G_OBJECT_TYPE_NAME(recall), channel, channel->line, recall, recall->recall_id);
 #endif
@@ -4816,6 +4890,64 @@ ags_channel_play(AgsChannel *channel,
     list = list_next;
   }
 
+  /* run - last */
+  list = list_start;
+
+  while(list != NULL){
+    guint recall_flags;
+    
+    list_next = list->next;
+
+    recall = AGS_RECALL(list->data);
+    
+    if(recall == NULL ||
+       !AGS_IS_RECALL(recall)){
+      list = list_next;
+      
+      continue;
+    }
+
+    if(AGS_IS_RECALL_CHANNEL(recall)){
+      list = list_next;
+
+      continue;
+    }
+
+    if(recall->recall_id == NULL ||
+       recall->recall_id->recycling_context != recall_id->recycling_context){
+      list = list_next;
+
+      continue;
+    }
+
+    recall_flags = recall->flags;
+        
+    if((AGS_RECALL_TEMPLATE & (recall_flags)) == 0 &&
+       (AGS_RECALL_RUN_LAST & (recall_flags)) != 0){
+#ifdef AGS_DEBUG
+      g_message("%s play channel %x:%d @%x -> %x", G_OBJECT_TYPE_NAME(recall), channel, channel->line, recall, recall->recall_id);
+#endif
+
+      if((AGS_RECALL_HIDE & (recall_flags)) == 0){
+	g_object_ref(recall);
+	
+	if(stage == 0){
+	  AGS_RECALL_GET_CLASS(recall)->run_pre(recall);
+	}else if(stage == 1){
+	  AGS_RECALL_GET_CLASS(recall)->run_inter(recall);
+	}else{
+	  AGS_RECALL_GET_CLASS(recall)->run_post(recall);
+	}
+
+	g_object_unref(recall);
+      }
+    }
+
+    g_object_unref(recall);
+
+    list = list_next;
+  }
+  
   g_list_free(list_start);
 }
 

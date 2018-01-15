@@ -169,7 +169,8 @@ ags_rt_stream_channel_run_init(AgsRtStreamChannelRun *rt_stream_channel_run)
   AGS_RECALL(rt_stream_channel_run)->xml_type = "ags-rt_stream-channel-run";
   AGS_RECALL(rt_stream_channel_run)->port = NULL;
 
-  AGS_RECALL(rt_stream_channel_run)->flags |= AGS_RECALL_INPUT_ORIENTATED;
+  AGS_RECALL(rt_stream_channel_run)->flags |= (AGS_RECALL_OUTPUT_ORIENTATED |
+					       AGS_RECALL_RUN_FIRST);
   AGS_RECALL(rt_stream_channel_run)->child_type = AGS_TYPE_RT_STREAM_RECYCLING;
 }
 
@@ -265,6 +266,7 @@ ags_rt_stream_channel_run_check_rt_stream(AgsRecall *recall)
 					recall->recall_id);
     ags_audio_signal_stream_resize(audio_signal,
 				   1);
+    audio_signal->stream_current = audio_signal->stream_beginning;
     
     pthread_mutex_unlock(recycling_mutex);
 

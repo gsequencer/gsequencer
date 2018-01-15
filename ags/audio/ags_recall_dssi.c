@@ -418,7 +418,7 @@ ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
 	    recall_dssi->input_port[0] = i;
 	  }else{
 	    recall_dssi->input_port = (unsigned long *) realloc(recall_dssi->input_port,
-								  (recall_dssi->input_lines + 1) * sizeof(unsigned long));
+								(recall_dssi->input_lines + 1) * sizeof(unsigned long));
 	    recall_dssi->input_port[recall_dssi->input_lines] = i;
 	  }
 
@@ -429,7 +429,7 @@ ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
 	    recall_dssi->output_port[0] = i;
 	  }else{
 	    recall_dssi->output_port = (unsigned long *) realloc(recall_dssi->output_port,
-								   (recall_dssi->output_lines + 1) * sizeof(unsigned long));
+								 (recall_dssi->output_lines + 1) * sizeof(unsigned long));
 	    recall_dssi->output_port[recall_dssi->output_lines] = i;
 	  }
 

@@ -294,8 +294,7 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
 	return;
       }
 
-      if(delay_audio_run != NULL &&
-	 (AGS_RECALL_TEMPLATE & (AGS_RECALL(delay_audio_run)->flags)) != 0){
+      if((AGS_RECALL_TEMPLATE & (AGS_RECALL(play_notation_audio_run)->flags)) != 0){
 	is_template = TRUE;
       }else{
 	is_template = FALSE;
@@ -346,8 +345,7 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
 	return;
       }
 
-      if(count_beats_audio_run != NULL &&
-	 (AGS_RECALL_TEMPLATE & (AGS_RECALL(count_beats_audio_run)->flags)) != 0){
+      if((AGS_RECALL_TEMPLATE & (AGS_RECALL(play_notation_audio_run)->flags)) != 0){
 	is_template = TRUE;
       }else{
 	is_template = FALSE;
@@ -916,12 +914,13 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	    
 	    if(list != NULL){
 	      audio_signal = list->data;
+
+	      g_object_set(audio_signal,
+			   "note", note,
+			   NULL);
 	    }
 
 	    note->rt_offset = 0;
-	    g_object_set(audio_signal,
-			 "note", note,
-			 NULL);
 	  }
 	  
 	  /* iterate */
