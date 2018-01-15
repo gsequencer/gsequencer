@@ -20,9 +20,7 @@
 #include <ags/audio/recall/ags_stream_recycling.h>
 #include <ags/audio/recall/ags_stream_audio_signal.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_dynamic_connectable.h>
-#include <ags/object/ags_soundcard.h>
+#include <ags/libags.h>
 
 #include <ags/audio/task/ags_remove_audio_signal.h>
 

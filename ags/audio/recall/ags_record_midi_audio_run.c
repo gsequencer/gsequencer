@@ -401,6 +401,10 @@ ags_record_midi_audio_run_dispose(GObject *gobject)
     record_midi_audio_run->count_beats_audio_run = NULL;
   }
 
+  g_list_free_full(record_midi_audio_run->note,
+		   g_object_unref);
+  record_midi_audio_run->note = NULL;
+  
   /* call parent */
   G_OBJECT_CLASS(ags_record_midi_audio_run_parent_class)->dispose(gobject);
 }
@@ -426,6 +430,9 @@ ags_record_midi_audio_run_finalize(GObject *gobject)
   if(record_midi_audio_run->timestamp != NULL){
     g_object_unref(G_OBJECT(record_midi_audio_run->timestamp));
   }
+
+  g_list_free_full(record_midi_audio_run->note,
+		   g_object_unref);
 
   /* call parent */
   G_OBJECT_CLASS(ags_record_midi_audio_run_parent_class)->finalize(gobject);
@@ -963,6 +970,8 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 		  if(!pattern_mode){
 		    record_midi_audio_run->note = g_list_prepend(record_midi_audio_run->note,
 								 current_note);
+		    g_object_ref(current_note);
+		    
 		    pthread_mutex_lock(audio_mutex);
 
 		    current_note->flags |= AGS_NOTE_FEED;
@@ -999,6 +1008,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 
 		  record_midi_audio_run->note = g_list_remove(record_midi_audio_run->note,
 							      current_note);
+		  g_object_unref(current_note);
 		}else{
 		  pthread_mutex_lock(audio_mutex);
 
@@ -1052,6 +1062,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	      
 	      record_midi_audio_run->note = g_list_remove(record_midi_audio_run->note,
 							  current_note);
+	      g_object_unref(current_note);
 
 #ifdef AGS_DEBUG
 	      g_message("remove %d", current_note->y);

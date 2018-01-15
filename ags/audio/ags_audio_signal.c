@@ -19,10 +19,7 @@
 
 #include <ags/audio/ags_audio_signal.h>
 
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
@@ -91,6 +88,8 @@ enum{
 
 enum{
   REALLOC_BUFFER_SIZE,
+  ADD_NOTE,
+  REMOVE_NOTE,
   LAST_SIGNAL,
 };
 
@@ -470,11 +469,10 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_object("note",
-				   i18n_pspec("assigned note"),
-				   i18n_pspec("The note it is assigned with"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("note",
+				    i18n_pspec("assigned note"),
+				    i18n_pspec("The note it is assigned with"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NOTE,
 				  param_spec);
@@ -482,6 +480,9 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
   /* AgsAudioSignalClass */
   audio_signal->realloc_buffer_size = ags_audio_signal_real_realloc_buffer_size;
 
+  audio_signal->add_note = ags_audio_signal_real_add_note;
+  audio_signal->remove_note = ags_audio_signal_real_remove_note;
+  
   /* signals */
   /**
    * AgsAudioSignal::realloc-buffer-size:
@@ -489,6 +490,8 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * @buffer_size: new buffer size
    *
    * The ::reallloc-buffer-size signal is invoked to notify modified buffer size.
+   * 
+   * Since: 1.0.0
    */
   audio_signal_signals[REALLOC_BUFFER_SIZE] =
     g_signal_new("realloc-buffer-size",
@@ -499,6 +502,44 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 		 g_cclosure_marshal_VOID__UINT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT);
+
+  /**
+   * AgsAudioSignal::add-note:
+   * @audio_signal: the #AgsAudioSignal
+   * @note: the #AgsNote
+   *
+   * The ::add-note signal notifies about adding @note.
+   * 
+   * Since: 1.4.0
+   */
+  audio_signal_signals[ADD_NOTE] =
+    g_signal_new("add-note",
+		 G_TYPE_FROM_CLASS(audio_signal),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsAudioSignalClass, add_note),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__OBJECT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
+
+  /**
+   * AgsAudioSignal::remove-note:
+   * @audio_signal: the #AgsAudioSignal
+   * @note: the #AgsNote
+   *
+   * The ::remove-note signal notifies about removing @note.
+   * 
+   * Since: 1.4.0
+   */
+  audio_signal_signals[REMOVE_NOTE] =
+    g_signal_new("remove-note",
+		 G_TYPE_FROM_CLASS(audio_signal),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsAudioSignalClass, remove_note),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__OBJECT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
 }
 
 void
@@ -827,18 +868,14 @@ ags_audio_signal_set_property(GObject *gobject,
     {
       GObject *note;
 
-      note = g_value_get_object(value);
+      note = g_value_get_pointer(value);
 
-      if(audio_signal->note == note)
+      if(g_list_find(audio_signal->note, note) != NULL){
 	return;
+      }
 
-      if(audio_signal->note != NULL)
-	g_object_unref(audio_signal->note);
-
-      if(note != NULL)
-	g_object_ref(note);
-
-      audio_signal->note = note;
+      ags_audio_signal_add_note(audio_signal,
+				note);
     }
     break;
   default:
@@ -949,7 +986,8 @@ ags_audio_signal_get_property(GObject *gobject,
     break;
   case PROP_NOTE:
     {
-      g_value_set_object(value, audio_signal->note);
+      g_value_set_pointer(value,
+			  g_list_copy(audio_signal->note));
     }
     break;
   default:
@@ -1644,6 +1682,76 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
       template_stream = template_stream->next;
     }
   }
+}
+
+void
+ags_audio_signal_real_add_note(AgsAudioSignal *audio_signal,
+			       GObject *note)
+{
+  if(!(AGS_IS_NOTE(note))){
+    return;
+  }
+  
+  g_object_ref(note);  
+  audio_signal->note = g_list_prepend(audio_signal->note,
+				      note);
+}
+
+/**
+ * ags_audio_signal_add_note:
+ * @audio_signal: the #AgsAudioSignal
+ * @note: the #AgsNote
+ * 
+ * Add note to @audio_signal.
+ * 
+ * Since: 1.4.0
+ */
+void
+ags_audio_signal_add_note(AgsAudioSignal *audio_signal,
+			  GObject *note)
+{
+  g_return_if_fail(AGS_IS_AUDIO_SIGNAL(audio_signal));
+  g_object_ref(G_OBJECT(audio_signal));
+  g_signal_emit(G_OBJECT(audio_signal),
+		audio_signal_signals[ADD_NOTE], 0,
+		note);
+  g_object_unref(G_OBJECT(audio_signal));
+}
+
+void
+ags_audio_signal_real_remove_note(AgsAudioSignal *audio_signal,
+				  GObject *note)
+{
+  if(!(AGS_IS_NOTE(note))){
+    return;
+  }
+  
+  if(g_list_find(audio_signal->note, note) != NULL){
+    audio_signal->note = g_list_remove(audio_signal->note,
+				       note);
+    g_object_unref(note);  
+  }
+}
+
+/**
+ * ags_audio_signal_remove_note:
+ * @audio_signal: the #AgsAudioSignal
+ * @note: the #AgsNote
+ * 
+ * Remove note from @audio_signal.
+ * 
+ * Since: 1.4.0
+ */
+void
+ags_audio_signal_remove_note(AgsAudioSignal *audio_signal,
+			     GObject *note)
+{
+  g_return_if_fail(AGS_IS_AUDIO_SIGNAL(audio_signal));
+  g_object_ref(G_OBJECT(audio_signal));
+  g_signal_emit(G_OBJECT(audio_signal),
+		audio_signal_signals[REMOVE_NOTE], 0,
+		note);
+  g_object_unref(G_OBJECT(audio_signal));
 }
 
 /**

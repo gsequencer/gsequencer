@@ -492,6 +492,10 @@ am__objects_15 = $(am__objects_1) \
 	ags/audio/recall/libags_audio_la-ags_route_dssi_audio_run.lo \
 	ags/audio/recall/libags_audio_la-ags_route_lv2_audio.lo \
 	ags/audio/recall/libags_audio_la-ags_route_lv2_audio_run.lo \
+	ags/audio/recall/libags_audio_la-ags_rt_stream_audio_signal.lo \
+	ags/audio/recall/libags_audio_la-ags_rt_stream_channel.lo \
+	ags/audio/recall/libags_audio_la-ags_rt_stream_channel_run.lo \
+	ags/audio/recall/libags_audio_la-ags_rt_stream_recycling.lo \
 	ags/audio/recall/libags_audio_la-ags_stream_audio_signal.lo \
 	ags/audio/recall/libags_audio_la-ags_stream_channel.lo \
 	ags/audio/recall/libags_audio_la-ags_stream_channel_run.lo \
@@ -3841,6 +3845,10 @@ libags_audio_recall_h_sources = \
 	ags/audio/recall/ags_route_dssi_audio_run.h \
 	ags/audio/recall/ags_route_lv2_audio.h \
 	ags/audio/recall/ags_route_lv2_audio_run.h \
+	ags/audio/recall/ags_rt_stream_audio_signal.h \
+	ags/audio/recall/ags_rt_stream_channel.h \
+	ags/audio/recall/ags_rt_stream_channel_run.h \
+	ags/audio/recall/ags_rt_stream_recycling.h \
 	ags/audio/recall/ags_stream_audio_signal.h \
 	ags/audio/recall/ags_stream_channel.h \
 	ags/audio/recall/ags_stream_channel_run.h \
@@ -3917,6 +3925,10 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_route_dssi_audio_run.c \
 	ags/audio/recall/ags_route_lv2_audio.c \
 	ags/audio/recall/ags_route_lv2_audio_run.c \
+	ags/audio/recall/ags_rt_stream_audio_signal.c \
+	ags/audio/recall/ags_rt_stream_channel.c \
+	ags/audio/recall/ags_rt_stream_channel_run.c \
+	ags/audio/recall/ags_rt_stream_recycling.c \
 	ags/audio/recall/ags_stream_audio_signal.c \
 	ags/audio/recall/ags_stream_channel.c \
 	ags/audio/recall/ags_stream_channel_run.c \
@@ -5636,6 +5648,18 @@ ags/audio/recall/libags_audio_la-ags_route_lv2_audio.lo:  \
 	ags/audio/recall/$(am__dirstamp) \
 	ags/audio/recall/$(DEPDIR)/$(am__dirstamp)
 ags/audio/recall/libags_audio_la-ags_route_lv2_audio_run.lo:  \
+	ags/audio/recall/$(am__dirstamp) \
+	ags/audio/recall/$(DEPDIR)/$(am__dirstamp)
+ags/audio/recall/libags_audio_la-ags_rt_stream_audio_signal.lo:  \
+	ags/audio/recall/$(am__dirstamp) \
+	ags/audio/recall/$(DEPDIR)/$(am__dirstamp)
+ags/audio/recall/libags_audio_la-ags_rt_stream_channel.lo:  \
+	ags/audio/recall/$(am__dirstamp) \
+	ags/audio/recall/$(DEPDIR)/$(am__dirstamp)
+ags/audio/recall/libags_audio_la-ags_rt_stream_channel_run.lo:  \
+	ags/audio/recall/$(am__dirstamp) \
+	ags/audio/recall/$(DEPDIR)/$(am__dirstamp)
+ags/audio/recall/libags_audio_la-ags_rt_stream_recycling.lo:  \
 	ags/audio/recall/$(am__dirstamp) \
 	ags/audio/recall/$(DEPDIR)/$(am__dirstamp)
 ags/audio/recall/libags_audio_la-ags_stream_audio_signal.lo:  \
@@ -7823,6 +7847,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_route_dssi_audio_run.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_route_lv2_audio.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_route_lv2_audio_run.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_rt_stream_audio_signal.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_rt_stream_channel.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_rt_stream_channel_run.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_rt_stream_recycling.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream_audio_signal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream_channel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream_channel_run.Plo@am__quote@
@@ -9981,6 +10009,34 @@ ags/audio/recall/libags_audio_la-ags_route_lv2_audio_run.lo: ags/audio/recall/ag
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/recall/ags_route_lv2_audio_run.c' object='ags/audio/recall/libags_audio_la-ags_route_lv2_audio_run.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/recall/libags_audio_la-ags_route_lv2_audio_run.lo `test -f 'ags/audio/recall/ags_route_lv2_audio_run.c' || echo '$(srcdir)/'`ags/audio/recall/ags_route_lv2_audio_run.c
+
+ags/audio/recall/libags_audio_la-ags_rt_stream_audio_signal.lo: ags/audio/recall/ags_rt_stream_audio_signal.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/recall/libags_audio_la-ags_rt_stream_audio_signal.lo -MD -MP -MF ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_rt_stream_audio_signal.Tpo -c -o ags/audio/recall/libags_audio_la-ags_rt_stream_audio_signal.lo `test -f 'ags/audio/recall/ags_rt_stream_audio_signal.c' || echo '$(srcdir)/'`ags/audio/recall/ags_rt_stream_audio_signal.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_rt_stream_audio_signal.Tpo ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_rt_stream_audio_signal.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/recall/ags_rt_stream_audio_signal.c' object='ags/audio/recall/libags_audio_la-ags_rt_stream_audio_signal.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/recall/libags_audio_la-ags_rt_stream_audio_signal.lo `test -f 'ags/audio/recall/ags_rt_stream_audio_signal.c' || echo '$(srcdir)/'`ags/audio/recall/ags_rt_stream_audio_signal.c
+
+ags/audio/recall/libags_audio_la-ags_rt_stream_channel.lo: ags/audio/recall/ags_rt_stream_channel.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/recall/libags_audio_la-ags_rt_stream_channel.lo -MD -MP -MF ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_rt_stream_channel.Tpo -c -o ags/audio/recall/libags_audio_la-ags_rt_stream_channel.lo `test -f 'ags/audio/recall/ags_rt_stream_channel.c' || echo '$(srcdir)/'`ags/audio/recall/ags_rt_stream_channel.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_rt_stream_channel.Tpo ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_rt_stream_channel.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/recall/ags_rt_stream_channel.c' object='ags/audio/recall/libags_audio_la-ags_rt_stream_channel.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/recall/libags_audio_la-ags_rt_stream_channel.lo `test -f 'ags/audio/recall/ags_rt_stream_channel.c' || echo '$(srcdir)/'`ags/audio/recall/ags_rt_stream_channel.c
+
+ags/audio/recall/libags_audio_la-ags_rt_stream_channel_run.lo: ags/audio/recall/ags_rt_stream_channel_run.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/recall/libags_audio_la-ags_rt_stream_channel_run.lo -MD -MP -MF ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_rt_stream_channel_run.Tpo -c -o ags/audio/recall/libags_audio_la-ags_rt_stream_channel_run.lo `test -f 'ags/audio/recall/ags_rt_stream_channel_run.c' || echo '$(srcdir)/'`ags/audio/recall/ags_rt_stream_channel_run.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_rt_stream_channel_run.Tpo ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_rt_stream_channel_run.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/recall/ags_rt_stream_channel_run.c' object='ags/audio/recall/libags_audio_la-ags_rt_stream_channel_run.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/recall/libags_audio_la-ags_rt_stream_channel_run.lo `test -f 'ags/audio/recall/ags_rt_stream_channel_run.c' || echo '$(srcdir)/'`ags/audio/recall/ags_rt_stream_channel_run.c
+
+ags/audio/recall/libags_audio_la-ags_rt_stream_recycling.lo: ags/audio/recall/ags_rt_stream_recycling.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/recall/libags_audio_la-ags_rt_stream_recycling.lo -MD -MP -MF ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_rt_stream_recycling.Tpo -c -o ags/audio/recall/libags_audio_la-ags_rt_stream_recycling.lo `test -f 'ags/audio/recall/ags_rt_stream_recycling.c' || echo '$(srcdir)/'`ags/audio/recall/ags_rt_stream_recycling.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_rt_stream_recycling.Tpo ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_rt_stream_recycling.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/recall/ags_rt_stream_recycling.c' object='ags/audio/recall/libags_audio_la-ags_rt_stream_recycling.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/recall/libags_audio_la-ags_rt_stream_recycling.lo `test -f 'ags/audio/recall/ags_rt_stream_recycling.c' || echo '$(srcdir)/'`ags/audio/recall/ags_rt_stream_recycling.c
 
 ags/audio/recall/libags_audio_la-ags_stream_audio_signal.lo: ags/audio/recall/ags_stream_audio_signal.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/recall/libags_audio_la-ags_stream_audio_signal.lo -MD -MP -MF ags/audio/recall/$(DEPDIR)/libags_audio_la-ags_stream_audio_signal.Tpo -c -o ags/audio/recall/libags_audio_la-ags_stream_audio_signal.lo `test -f 'ags/audio/recall/ags_stream_audio_signal.c' || echo '$(srcdir)/'`ags/audio/recall/ags_stream_audio_signal.c

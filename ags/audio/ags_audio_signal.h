@@ -90,6 +90,11 @@ struct _AgsAudioSignalClass
 
   void (*reset_format)(AgsAudioSignal *audio_signal, guint format);
   void (*realloc_buffer_size)(AgsAudioSignal *audio_signal, guint buffer_size);
+
+  void (*add_note)(AgsAudioSignal *audio_signal,
+		   GObject *note);
+  void (*remove_note)(AgsAudioSignal *audio_signal,
+		      GObject *note);
 };
 
 GType ags_audio_signal_get_type();
@@ -112,6 +117,11 @@ void ags_audio_signal_realloc_buffer_size(AgsAudioSignal *audio_signal, guint bu
 
 void ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 				       AgsAudioSignal *template);
+
+void ags_audio_signal_add_note(AgsAudioSignal *audio_signal,
+			       GObject *note);
+void ags_audio_signal_remove_note(AgsAudioSignal *audio_signal,
+				  GObject *note);
 
 //TODO:JK: rename these functions name it rather find than get
 AgsAudioSignal* ags_audio_signal_get_template(GList *audio_signal);

@@ -131,7 +131,8 @@ struct _AgsRecall
   GObject object;
 
   guint flags;
-
+  gboolean rt_safe;
+  
   gchar *version;
   gchar *build_id;
 

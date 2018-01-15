@@ -436,6 +436,7 @@ ags_drum_input_line_map_recall(AgsLine *line,
 
   guint pad, audio_channel;
   guint i;
+  gboolean rt_safe;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *source_mutex;
@@ -566,17 +567,32 @@ ags_drum_input_line_map_recall(AgsLine *line,
 			    0);
 
   /* ags-stream */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-stream",
-			    audio_channel, audio_channel + 1, 
-			    pad, pad + 1,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL | 
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  rt_safe = TRUE;
 
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "rt-safe");
+
+  if(str != NULL &&
+     !g_ascii_strncasecmp(str,
+			  "FALSE",
+			  6)){
+    rt_safe = FALSE;
+  }
+
+  if(!rt_safe){
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-stream",
+			      audio_channel, audio_channel + 1, 
+			      pad, pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+  }
+  
   /* set up dependencies */
   pthread_mutex_lock(source_mutex);
 

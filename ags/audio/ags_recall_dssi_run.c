@@ -20,8 +20,7 @@
 #include <ags/audio/ags_recall_dssi.h>
 #include <ags/audio/ags_recall_dssi_run.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
 
 #include <ags/plugin/ags_dssi_manager.h>
 
@@ -183,6 +182,7 @@ ags_recall_dssi_run_finalize(GObject *gobject)
 {
   AgsRecallDssi *recall_dssi;
   AgsRecallDssiRun *recall_dssi_run;
+  
   unsigned long i;
 
   recall_dssi_run = AGS_RECALL_DSSI_RUN(gobject);
@@ -197,9 +197,22 @@ ags_recall_dssi_run_finalize(GObject *gobject)
   free(recall_dssi_run->ladspa_handle);
 
   if(recall_dssi_run->route_dssi_audio_run != NULL){
-    AGS_ROUTE_DSSI_AUDIO_RUN(recall_dssi_run->route_dssi_audio_run)->feed_midi = g_list_remove(AGS_ROUTE_DSSI_AUDIO_RUN(recall_dssi_run->route_dssi_audio_run)->feed_midi,
-											       recall_dssi_run->note);
+    GList *note;
+
+    note = recall_dssi_run->note;
+
+    while(note != NULL){
+      //FIXME:JK: ref counting
+      AGS_ROUTE_DSSI_AUDIO_RUN(recall_dssi_run->route_dssi_audio_run)->feed_midi = g_list_remove(AGS_ROUTE_DSSI_AUDIO_RUN(recall_dssi_run->route_dssi_audio_run)->feed_midi,
+												 note->data);
+      g_object_unref(note->data);
+
+      note = note->next;
+    }
   }
+
+  g_list_free_full(recall_dssi_run->note,
+		   g_object_unref);
   
   /* call parent */
   G_OBJECT_CLASS(ags_recall_dssi_run_parent_class)->finalize(gobject);
@@ -361,6 +374,8 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
   AgsCountBeatsAudioRun *count_beats_audio_run;
   AgsRouteDssiAudioRun *route_dssi_audio_run;
 
+  GList *note, *note_next;
+
   snd_seq_event_t **event_buffer;
   unsigned long *event_count;
   
@@ -386,26 +401,44 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
     i_stop = recall_dssi->input_lines;
   }
 
-  if(audio_signal->stream_current == NULL ||
-     (AGS_NOTE(recall_dssi_run->note)->x[1] <= count_beats_audio_run->notation_counter &&
-      (AGS_NOTE_FEED & (AGS_NOTE(recall_dssi_run->note)->flags)) == 0) ||
-     AGS_NOTE(recall_dssi_run->note)->x[0] > count_beats_audio_run->notation_counter){
-    //    g_message("done");
-    
-    for(i = 0; i < i_stop; i++){
-      /* deactivate */
-      //TODO:JK: fix-me
-      if(recall_dssi->plugin_descriptor->LADSPA_Plugin->deactivate != NULL){
-	recall_dssi->plugin_descriptor->LADSPA_Plugin->deactivate(recall_dssi_run->ladspa_handle[i]);
-      }
+  if(AGS_RECALL(recall_dssi_run)->rt_safe){
+    note = recall_dssi_run->note;
+
+    while(note != NULL){
+      note_next = note->next;
       
-      recall_dssi->plugin_descriptor->LADSPA_Plugin->cleanup(recall_dssi_run->ladspa_handle[i]);
+      if((AGS_NOTE(recall_dssi_run->note->data)->x[1] <= count_beats_audio_run->notation_counter &&
+	  (AGS_NOTE_FEED & (AGS_NOTE(recall_dssi_run->note->data)->flags)) == 0) ||
+	 AGS_NOTE(recall_dssi_run->note->data)->x[0] > count_beats_audio_run->notation_counter){
+	recall_dssi_run->note = g_list_remove(recall_dssi_run->note,
+					      note->data);
+      }
+    
+      note = note_next;
     }
+  }else{
+    if(audio_signal->stream_current == NULL ||
+       (AGS_NOTE(recall_dssi_run->note->data)->x[1] <= count_beats_audio_run->notation_counter &&
+	(AGS_NOTE_FEED & (AGS_NOTE(recall_dssi_run->note->data)->flags)) == 0) ||
+       AGS_NOTE(recall_dssi_run->note->data)->x[0] > count_beats_audio_run->notation_counter){
+      //    g_message("done");
+    
+      for(i = 0; i < i_stop; i++){
+	/* deactivate */
+	//TODO:JK: fix-me
+	if(recall_dssi->plugin_descriptor->LADSPA_Plugin->deactivate != NULL){
+	  recall_dssi->plugin_descriptor->LADSPA_Plugin->deactivate(recall_dssi_run->ladspa_handle[i]);
+	}
+      
+	recall_dssi->plugin_descriptor->LADSPA_Plugin->cleanup(recall_dssi_run->ladspa_handle[i]);
+      }
 
-    ags_recall_done(recall);
-    return;
+      ags_recall_done(recall);
+      
+      return;
+    }
   }
-
+  
   /* get copy mode and clear buffer */
   copy_mode_in = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
 						     ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
@@ -431,26 +464,32 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
   }
   
   /* process data */
-  if(recall_dssi->plugin_descriptor->run_synth != NULL){
-    if(recall_dssi_run->event_buffer != NULL){
-      event_buffer = recall_dssi_run->event_buffer;
-      event_count = recall_dssi_run->event_count;
-      
-      while(*event_buffer != NULL){
-	recall_dssi->plugin_descriptor->run_synth(recall_dssi_run->ladspa_handle[0],
-						  recall_dssi->output_lines * buffer_size,
-						  event_buffer[0],
-						  event_count[0]);
-	  
-	event_buffer++;
-	event_count++;
-      }
-    }
-  }else if(recall_dssi->plugin_descriptor->LADSPA_Plugin->run != NULL){
-    recall_dssi->plugin_descriptor->LADSPA_Plugin->run(recall_dssi_run->ladspa_handle[0],
-						       buffer_size);
-  }
+  note = recall_dssi_run->note;
 
+  while(note != NULL){
+    if(recall_dssi->plugin_descriptor->run_synth != NULL){
+      if(recall_dssi_run->event_buffer != NULL){
+	event_buffer = recall_dssi_run->event_buffer;
+	event_count = recall_dssi_run->event_count;
+      
+	while(*event_buffer != NULL){
+	  recall_dssi->plugin_descriptor->run_synth(recall_dssi_run->ladspa_handle[0],
+						    recall_dssi->output_lines * buffer_size,
+						    event_buffer[0],
+						    event_count[0]);
+	  
+	  event_buffer++;
+	  event_count++;
+	}
+      }
+    }else if(recall_dssi->plugin_descriptor->LADSPA_Plugin->run != NULL){
+      recall_dssi->plugin_descriptor->LADSPA_Plugin->run(recall_dssi_run->ladspa_handle[0],
+							 buffer_size);
+    }
+
+    note = note->next;
+  }
+  
   /* copy data */
   if(recall_dssi_run->output != NULL){
     ags_audio_buffer_util_clear_buffer(audio_signal->stream_current->data, 1,

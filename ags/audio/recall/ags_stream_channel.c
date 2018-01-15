@@ -19,9 +19,7 @@
 
 #include <ags/audio/recall/ags_stream_channel.h>
 
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
 
 #include <ags/i18n.h>
 

@@ -1023,6 +1023,10 @@ libags_audio_recall_h_sources = \
 	ags/audio/recall/ags_route_dssi_audio_run.h \
 	ags/audio/recall/ags_route_lv2_audio.h \
 	ags/audio/recall/ags_route_lv2_audio_run.h \
+	ags/audio/recall/ags_rt_stream_audio_signal.h \
+	ags/audio/recall/ags_rt_stream_channel.h \
+	ags/audio/recall/ags_rt_stream_channel_run.h \
+	ags/audio/recall/ags_rt_stream_recycling.h \
 	ags/audio/recall/ags_stream_audio_signal.h \
 	ags/audio/recall/ags_stream_channel.h \
 	ags/audio/recall/ags_stream_channel_run.h \
@@ -1100,6 +1104,10 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_route_dssi_audio_run.c \
 	ags/audio/recall/ags_route_lv2_audio.c \
 	ags/audio/recall/ags_route_lv2_audio_run.c \
+	ags/audio/recall/ags_rt_stream_audio_signal.c \
+	ags/audio/recall/ags_rt_stream_channel.c \
+	ags/audio/recall/ags_rt_stream_channel_run.c \
+	ags/audio/recall/ags_rt_stream_recycling.c \
 	ags/audio/recall/ags_stream_audio_signal.c \
 	ags/audio/recall/ags_stream_channel.c \
 	ags/audio/recall/ags_stream_channel_run.c \

@@ -54,7 +54,7 @@ struct _AgsRecallDssiRun
   snd_seq_event_t **event_buffer;
   unsigned long *event_count;
 
-  GObject *note;
+  GList *note;
   GObject *route_dssi_audio_run;
 };
 

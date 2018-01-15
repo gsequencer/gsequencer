@@ -890,7 +890,8 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 	    while(dssi != NULL){
 	      recall_dssi_run = AGS_RECALL_DSSI_RUN(dssi->data);
 	    
-	      if(recall_dssi_run->event_buffer == NULL){
+	      if(AGS_RECALL(recall_dssi_run)->rt_safe ||
+		 recall_dssi_run->event_buffer == NULL){
 		/* prepend note */
 		//		route_dssi_audio_run->feed_midi = g_list_prepend(route_dssi_audio_run->feed_midi,
 		//						 note);
@@ -909,7 +910,9 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 		seq_event->data.note.velocity = 127;
 
 		AGS_RECALL_AUDIO_SIGNAL(recall_dssi_run)->audio_channel = audio_channel;
-		recall_dssi_run->note = (GObject *) note;
+		recall_dssi_run->note = g_list_prepend(recall_dssi_run->note,
+						       (GObject *) note);
+		g_object_ref(note);
 		  
 		recall_dssi_run->event_buffer = (snd_seq_event_t **) malloc(2 * sizeof(snd_seq_event_t *));
 		recall_dssi_run->event_buffer[0] = seq_event;

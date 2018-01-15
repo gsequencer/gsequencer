@@ -871,6 +871,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix,
   guint input_pads;
   guint audio_channels;
   guint i, j;
+  gboolean rt_safe;
   gboolean performance_mode;
   
   pthread_mutex_t *application_mutex;
@@ -960,16 +961,36 @@ ags_matrix_input_map_recall(AgsMatrix *matrix,
   }
   
   /* map dependending on output */
+  rt_safe = TRUE;
+  performance_mode = TRUE;
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "rt-safe");
+
+  if(str != NULL &&
+     !g_ascii_strncasecmp(str,
+			  "FALSE",
+			  6)){
+    rt_safe = FALSE;
+  }
+
   str = ags_config_get_value(config,
 			     AGS_CONFIG_GENERIC,
 			     "engine-mode");
-  performance_mode = FALSE;
 
-  /* remap for input */
   if(str != NULL &&
      !g_ascii_strncasecmp(str,
 			  "performance",
 			  12)){
+    performance_mode = TRUE;
+  }else{
+    performance_mode = FALSE;
+  }
+
+  /* remap for input */
+  if(rt_safe ||
+     performance_mode){
     /* ags-copy */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
@@ -1020,16 +1041,18 @@ ags_matrix_input_map_recall(AgsMatrix *matrix,
 			    0);
 
   /* ags-stream */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-stream",
-			    0, audio_channels, 
-			    input_pad_start, input_pads,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL | 
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  if(!rt_safe){
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-stream",
+			      0, audio_channels, 
+			      input_pad_start, input_pads,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+  }
   
   matrix->mapped_input_pad = input_pads;
 }
@@ -1049,6 +1072,7 @@ ags_matrix_output_map_recall(AgsMatrix *matrix,
   guint input_pad_start;
   guint output_pads, input_pads;
   guint audio_channels;
+  gboolean rt_safe;
   gboolean performance_mode;
 
   pthread_mutex_t *application_mutex;
@@ -1090,16 +1114,36 @@ ags_matrix_output_map_recall(AgsMatrix *matrix,
   }
   
   /* map dependending on output */
+  rt_safe = TRUE;
+  performance_mode = TRUE;
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "rt-safe");
+
+  if(str != NULL &&
+     !g_ascii_strncasecmp(str,
+			  "FALSE",
+			  6)){
+    rt_safe = FALSE;
+  }
+
   str = ags_config_get_value(config,
 			     AGS_CONFIG_GENERIC,
 			     "engine-mode");
-  performance_mode = FALSE;
 
-  /* remap for input */
   if(str != NULL &&
      !g_ascii_strncasecmp(str,
 			  "performance",
 			  12)){
+    performance_mode = TRUE;
+  }else{
+    performance_mode = FALSE;
+  }
+
+  /* remap for input */
+  if(rt_safe ||
+     performance_mode){
     /* ags-copy */
     ags_recall_factory_create(audio,
 			      NULL, NULL,

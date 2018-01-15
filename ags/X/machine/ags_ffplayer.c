@@ -968,6 +968,7 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
   gchar *str;
 
   guint input_pads;
+  gboolean rt_safe;
   gboolean performance_mode;
 
   pthread_mutex_t *application_mutex;
@@ -1001,12 +1002,35 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
     str = ags_config_get_value(config,
 			       AGS_CONFIG_GENERIC,
 			       "engine-mode");
-    performance_mode = FALSE;
-  
+    rt_safe = TRUE;
+    performance_mode = TRUE;
+
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_GENERIC,
+			       "rt-safe");
+
+    if(str != NULL &&
+       !g_ascii_strncasecmp(str,
+			    "FALSE",
+			    6)){
+      rt_safe = FALSE;
+    }
+
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_GENERIC,
+			       "engine-mode");
+
     if(str != NULL &&
        !g_ascii_strncasecmp(str,
 			    "performance",
 			    12)){
+      performance_mode = TRUE;
+    }else{
+      performance_mode = FALSE;
+    }
+  
+    if(rt_safe ||
+       performance_mode){
       /* ags-copy */
       ags_recall_factory_create(audio,
 				NULL, NULL,
@@ -1057,17 +1081,19 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 			      0);
 
     /* ags-stream */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-stream",
-			      audio_channels_old, audio_channels, 
-			      0, input_pads,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL | 
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
-
+    if(!rt_safe){
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-stream",
+				audio_channels_old, audio_channels, 
+				0, input_pads,
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_PLAY |
+				 AGS_RECALL_FACTORY_RECALL | 
+				 AGS_RECALL_FACTORY_ADD),
+				0);
+    }
+    
     /* AgsOutput */
     /* ags-stream */
     if(!performance_mode){
@@ -1168,6 +1194,7 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
 
   guint input_pads;
   guint audio_channels;
+  gboolean rt_safe;
   gboolean performance_mode;
 
   pthread_mutex_t *application_mutex;
@@ -1202,16 +1229,36 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
   pthread_mutex_unlock(audio_mutex);
 
   /* map dependending on output */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "engine-mode");
-  performance_mode = FALSE;
+    rt_safe = TRUE;
+    performance_mode = TRUE;
+
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_GENERIC,
+			       "rt-safe");
+
+    if(str != NULL &&
+       !g_ascii_strncasecmp(str,
+			    "FALSE",
+			    6)){
+      rt_safe = FALSE;
+    }
+
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_GENERIC,
+			       "engine-mode");
+
+    if(str != NULL &&
+       !g_ascii_strncasecmp(str,
+			    "performance",
+			    12)){
+      performance_mode = TRUE;
+    }else{
+      performance_mode = FALSE;
+    }
   
   /* remap for input */
-  if(str != NULL &&
-     !g_ascii_strncasecmp(str,
-			  "performance",
-			  12)){
+  if(rt_safe ||
+     performance_mode){
     /* ags-copy */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
@@ -1273,16 +1320,18 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
   /* ags-stream */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-stream",
-			    0, audio_channels,
-			    input_pad_start, input_pads,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL | 
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
+  if(!rt_safe){
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-stream",
+			      0, audio_channels,
+			      input_pad_start, input_pads,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+  }
   
   ffplayer->mapped_input_pad = input_pads;
 }
@@ -1300,6 +1349,7 @@ ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start)
 
   guint output_pads, input_pads;
   guint audio_channels;
+  gboolean rt_safe;
   gboolean performance_mode;
 
   pthread_mutex_t *application_mutex;
@@ -1335,16 +1385,36 @@ ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start)
   pthread_mutex_unlock(audio_mutex);
   
   /* map dependending on output */
+  rt_safe = TRUE;
+  performance_mode = TRUE;
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "rt-safe");
+
+  if(str != NULL &&
+     !g_ascii_strncasecmp(str,
+			  "FALSE",
+			  6)){
+    rt_safe = FALSE;
+  }
+
   str = ags_config_get_value(config,
 			     AGS_CONFIG_GENERIC,
 			     "engine-mode");
-  performance_mode = FALSE;
 
-  /* remap for input */
   if(str != NULL &&
      !g_ascii_strncasecmp(str,
 			  "performance",
 			  12)){
+    performance_mode = TRUE;
+  }else{
+    performance_mode = FALSE;
+  }
+
+  /* remap for input */
+  if(rt_safe ||
+     performance_mode){
     /* ags-copy */
     ags_recall_factory_create(audio,
 			      NULL, NULL,

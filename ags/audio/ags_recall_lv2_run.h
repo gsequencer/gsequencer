@@ -58,7 +58,7 @@ struct _AgsRecallLv2Run
   unsigned long *event_count;
   
   GObject *route_lv2_audio_run;
-  GObject *note;
+  GList *note;
 
   GObject *worker_handle;
 };

@@ -737,10 +737,34 @@ ags_recall_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_recall_init(AgsRecall *recall)
 {
+  AgsConfig *config;
+
+  gchar *str;
+
+  gboolean rt_safe;
+  
   pthread_mutexattr_t *attr;
 
+  config = ags_config_get_instance();
+
+  rt_safe = TRUE;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "rt-safe");
+
+  /* rt-safe */
+  if(str != NULL &&
+     !g_ascii_strncasecmp(str,
+			  "false",
+			  6)){
+    rt_safe = FALSE;
+  }
+  
   recall->flags = 0;
 
+  recall->rt_safe = rt_safe;
+  
   /* soundcard */
   recall->soundcard = NULL;
 

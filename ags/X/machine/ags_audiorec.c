@@ -34,6 +34,7 @@ void ags_audiorec_connect(AgsConnectable *connectable);
 void ags_audiorec_disconnect(AgsConnectable *connectable);
 void ags_audiorec_finalize(GObject *gobject);
 void ags_audiorec_show(GtkWidget *widget);
+void ags_audiorec_map_recall(AgsMachine *machine);
 gchar* ags_audiorec_get_name(AgsPlugin *plugin);
 void ags_audiorec_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_audiorec_get_xml_type(AgsPlugin *plugin);
@@ -47,6 +48,9 @@ void ags_audiorec_resize_audio_channels(AgsMachine *machine,
 void ags_audiorec_resize_pads(AgsMachine *machine, GType type,
 			      guint pads, guint pads_old,
 			      gpointer data);
+
+void ags_audiorec_output_map_recall(AgsAudiorec *audiorec, guint output_pad_start);
+void ags_audiorec_input_map_recall(AgsAudiorec *audiorec, guint input_pad_start);
 
 /**
  * SECTION:ags_audiorec
@@ -128,6 +132,8 @@ ags_audiorec_class_init(AgsAudiorecClass *audiorec)
 
   /* AgsMachineClass */
   machine = (AgsMachineClass *) audiorec;
+
+  machine->map_recall = ags_audiorec_map_recall;
 }
 
 void
@@ -363,6 +369,55 @@ ags_audiorec_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_audiorec_parent_class)->show(widget);
 }
 
+void
+ags_audiorec_map_recall(AgsMachine *machine)
+{
+  AgsAudiorec *audiorec;
+
+  AgsAudio *audio;
+
+  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
+     (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
+    return;
+  }
+
+  audiorec = AGS_AUDIOREC(machine);
+
+  audio = machine->audio;
+
+  /* ags-play-wave */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-play-wave",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_RECALL),
+			    0);
+
+  /* depending on destination */
+  ags_audiorec_input_map_recall(audiorec, 0);
+
+  /* depending on destination */
+  ags_audiorec_output_map_recall(audiorec, 0);
+
+  /* call parent */
+  AGS_MACHINE_CLASS(ags_audiorec_parent_class)->map_recall(machine);  
+}
+
+void
+ags_audiorec_output_map_recall(AgsAudiorec *audiorec, guint output_pad_start)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audiorec_input_map_recall(AgsAudiorec *audiorec, guint input_pad_start)
+{
+  //TODO:JK: implement me
+}
+
 gchar*
 ags_audiorec_get_name(AgsPlugin *plugin)
 {
@@ -475,6 +530,20 @@ ags_audiorec_resize_pads(AgsMachine *machine, GType type,
       }
 
       g_list_free(list_start);
+
+      /* depending on destination */
+      ags_audiorec_input_map_recall(audiorec,
+				    pads_old);
+    }else{
+      audiorec->mapped_input_pad = pads;
+    }
+  }else{
+    if(pads > pads_old){
+      /* depending on destination */
+      ags_audiorec_output_map_recall(audiorec,
+				     pads_old);
+    }else{
+      audiorec->mapped_output_pad = pads;
     }
   }
 }

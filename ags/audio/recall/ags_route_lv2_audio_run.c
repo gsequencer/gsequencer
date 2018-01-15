@@ -897,7 +897,8 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
 	    while(lv2 != NULL){
 	      recall_lv2_run = AGS_RECALL_LV2_RUN(lv2->data);
 	    
-	      if(recall_lv2_run->note == NULL){
+	      if(AGS_RECALL(recall_lv2_run)->rt_safe ||
+		 recall_lv2_run->note == NULL){
 		/* prepend note */
 		//		route_lv2_audio_run->feed_midi = g_list_prepend(route_lv2_audio_run->feed_midi,
 		//						note);
@@ -915,8 +916,11 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
 		seq_event->data.note.velocity = 127;
 
 		AGS_RECALL_AUDIO_SIGNAL(recall_lv2_run)->audio_channel = audio_channel;
-		recall_lv2_run->note = (GObject *) note;
-
+		recall_lv2_run->note = g_list_prepend(recall_lv2_run->note,
+						      (GObject *) note);
+		g_object_ref(recall_lv2_run->note,
+			     note);
+		
 		/* write to port */
 		if((AGS_RECALL_LV2_HAS_ATOM_PORT & (recall_lv2->flags)) != 0){
 		  ags_lv2_plugin_atom_sequence_append_midi(recall_lv2_run->atom_port,
