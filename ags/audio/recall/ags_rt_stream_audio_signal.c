@@ -314,177 +314,165 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
   while(note != NULL){
     AgsNote *current;
 
-    GList *stream;
+    GList *stream, *template_stream;
 
     guint64 offset;
     
     current = note->data;
     offset = current->rt_offset;
-
-    stream = g_list_nth(template->stream_beginning,
-			offset);
-
-    if(stream == NULL){
-      note = note->next;
-
-      continue;
-    }
     
     if(offset < delay * current->x[1] ||
        offset < template->length){
-      if(template->loop_start != template->loop_end){
-	guint loop_end_frame;
-	guint i, j;
-	
-	loop_end_frame = delay * (current->x[1] - current->x[0]) - (((guint) (delay * offset) - template->loop_start) % (template->loop_end - template->loop_start));
-	
-	if(delay * (offset + 1) * buffer_size > template->loop_end &&
-	   delay * offset * buffer_size < loop_end_frame){
-	  if(offset == 0){
-	    j = 0;
-	    
-	    for(i = 0; i < buffer_size - AGS_NOTE(note->data)->rt_attack; i++, j++){
-	      if(delay * offset * buffer_size + i >= template->loop_end){
-		stream = g_list_nth(template->stream_beginning,
-				    template->loop_start / buffer_size);
-		
-		j = template->loop_start % buffer_size;
-	      }
+      if(template->loop_start < template->loop_end){
+	guint frame_count;
+	guint loop_length;
+	guint loop_frame_count;
+	guint n_frames;
+	guint copy_n_frames;
+	guint nth_loop;
+	guint j_start;
+	guint i, j, k;
 
-	      if(j >= buffer_size){
-		stream = stream->next;
-		
-		j = 0;
+	frame_count = delay * (AGS_NOTE(note->data)->x[1] - AGS_NOTE(note->data)->x[0]) * buffer_size;
+	
+	loop_length = template->loop_end - template->loop_start;
+	loop_frame_count = ((frame_count - template->loop_start) / loop_length) * template->buffer_size;
+
+	if(offset * buffer_size > template->loop_end){
+	  if(((guint) offset * buffer_size) + buffer_size > frame_count - (template->frame_count - template->loop_end)){
+	    if(offset * buffer_size > frame_count - (template->frame_count - template->loop_end)){
+	      j_start = (frame_count - (offset * buffer_size)) % buffer_size;
+
+	      template_stream = g_list_nth(template->stream_beginning,
+					   (frame_count - (offset * buffer_size)) / buffer_size);
+
+	      if(template_stream == NULL){
+		note = note->next;
+
+		continue;
+	      }	      
+	    }else{
+	      j_start = ((guint) (offset * buffer_size) - template->loop_end) % (template->loop_end - template->loop_start) % buffer_size;
+
+	      template_stream = g_list_nth(template->stream_beginning,
+					   (template->loop_start + ((((guint) (offset * buffer_size) - template->loop_end) % (template->loop_end - template->loop_start)) / buffer_size)));
+
+	      if(template_stream == NULL){
+		note = note->next;
+
+		continue;
 	      }
-		
-	      if(stream == NULL){
-		break;
-	      }
-	      
-	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, AGS_NOTE(note->data)->rt_attack + i,
-							  stream->data, 1, j,
-							  1, copy_mode);
 	    }
 	  }else{
-	    if(delay * offset * buffer_size  < template->loop_end){
-	      j = buffer_size - AGS_NOTE(note->data)->rt_attack;
-	    }else{
-	      j = ((guint) ((delay * (offset + 1) * buffer_size) - template->loop_start) % (template->loop_end - template->loop_start)) + (buffer_size - AGS_NOTE(note->data)->rt_attack);
-	    }
+	    j_start = ((guint) (offset * buffer_size) - template->loop_end) % (template->loop_end - template->loop_start) % buffer_size;
 	    
-	    if(AGS_NOTE(note->data)->rt_attack != 0 && stream->prev != NULL){
-	      for(i = AGS_NOTE(note->data)->rt_attack; i < AGS_NOTE(note->data)->rt_attack; i++, j++){
-		if(delay * offset * buffer_size + i >= template->loop_end){
-		  stream = g_list_nth(template->stream_beginning,
-				      template->loop_start / buffer_size);
-		
-		  j = template->loop_start % buffer_size;
-		}
+	    template_stream = g_list_nth(template->stream_beginning,
+					 (template->loop_start + ((((guint) (offset * buffer_size) - template->loop_end) % (template->loop_end - template->loop_start)) / buffer_size)));
 
-		if(j >= buffer_size){
-		  stream = stream->next;
-		  
-		  j = 0;
-		}
-		
-		if(stream == NULL){
-		  break;
-		}
-		
-		ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, i,
-							    stream->prev->data, 1, j,
-							    1, copy_mode);
-	      }
+	    if(template_stream == NULL){
+	      note = note->next;
+
+	      continue;
 	    }
-
-	    for(i = 0; i < AGS_NOTE(note->data)->rt_attack; i++, j++){
-	      if(delay * offset * buffer_size + i >= template->loop_end){
-		stream = g_list_nth(template->stream_beginning,
-				    template->loop_start / buffer_size);
-		
-		j = template->loop_start % buffer_size;
-	      }
-
-	      if(j >= buffer_size){
-		stream = stream->next;
-
-		j = 0;
-	      }
-
-	      if(stream == NULL){
-		break;
-	      }
-	      
-	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, AGS_NOTE(note->data)->rt_attack + i,
-							  stream->data, 1, j,
-							  1, copy_mode);
-	    }	    
 	  }
 	}else{
-	  j = (((guint) (delay * offset * buffer_size) - template->loop_start) % (template->loop_end - template->loop_start)) + (buffer_size - AGS_NOTE(note->data)->rt_attack);
+	  j_start = ((guint) (offset * buffer_size)) % buffer_size;
 
-	  if(AGS_NOTE(note->data)->rt_attack != 0 && stream->prev != NULL){
-	    for(i = AGS_NOTE(note->data)->rt_attack; i < AGS_NOTE(note->data)->rt_attack; i++, j++){
-	      if(delay * offset * buffer_size + i >= template->loop_end){
-		stream = g_list_nth(template->stream_beginning,
-				    template->loop_start / buffer_size);
-		
-		j = template->loop_start % buffer_size;
-	      }
+	  template_stream = g_list_nth(template->stream_beginning,
+				       offset);
 
-	      if(j >= buffer_size){
-		stream = stream->next;
-		
-		j = 0;
-	      }
+	  if(template_stream == NULL){
+	    note = note->next;
 
-	      if(stream == NULL){
-		break;
-	      }
-	      
-	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, i,
-							  stream->prev->data, 1, j,
-							  1, copy_mode);
-	    }
+	    continue;
+	  }
+	}
+	  
+	for(i = 0, j = j_start, k = AGS_NOTE(note->data)->rt_attack, nth_loop = offset; i < buffer_size;){
+	  /* compute count of frames to copy */
+	  copy_n_frames = buffer_size;
+
+	  /* limit nth loop */
+	  if(i > template->loop_start &&
+	     i + copy_n_frames > template->loop_start + loop_length &&
+	     i + copy_n_frames < template->loop_start + loop_frame_count &&
+	     i + copy_n_frames >= template->loop_start + (nth_loop + 1) * loop_length){
+	    copy_n_frames = (template->loop_start + (nth_loop + 1) * loop_length) - i;
 	  }
 
-	  for(i = 0; i < AGS_NOTE(note->data)->rt_attack; i++, j++){
-	    if(delay * offset * buffer_size + i >= template->loop_end){
-	      stream = g_list_nth(template->stream_beginning,
-				  template->loop_start / buffer_size);
-		
-	      j = template->loop_start % buffer_size;
-	    }
+	  /* check boundaries */
+	  if((k % buffer_size) + copy_n_frames > buffer_size){
+	    copy_n_frames = buffer_size - (k % buffer_size);
+	  }
 
-	    if(j >= buffer_size){
-	      stream = stream->next;
-	      
-	      j = 0;
-	    }
+	  if(j + copy_n_frames > buffer_size){
+	    copy_n_frames = buffer_size - j;
+	  }
 
-	    if(stream == NULL){
-	      break;
-	    }
-	      
-	    ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, AGS_NOTE(note->data)->rt_attack + i,
-							stream->data, 1, j,
-							1, copy_mode);
-	  }	    
+	  if(stream == NULL ||
+	     template_stream == NULL){
+	    break;
+	  }
+    
+	  /* copy */
+	  ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, k % buffer_size,
+						      template_stream->data, 1, j,
+						      copy_n_frames, copy_mode);
+
+	  /* increment and iterate */
+	  if((i + copy_n_frames) % buffer_size == 0){
+	    stream = stream->next;
+	  }
+
+	  if(j + copy_n_frames == template->buffer_size){
+	    template_stream = template_stream->next;
+	  }
+    
+	  if(template_stream == NULL ||
+	     (i > template->loop_start &&
+	      i + copy_n_frames > template->loop_start + loop_length &&
+	      i + copy_n_frames < template->loop_start + loop_frame_count &&
+	      i + copy_n_frames >= template->loop_start + (nth_loop + 1) * loop_length)){
+	    j = template->loop_start % template->buffer_size;
+	    template_stream = g_list_nth(template->stream_beginning,
+					 floor(template->loop_start / template->buffer_size));
+
+	    nth_loop++;
+	  }else{
+	    j += copy_n_frames;
+	  }
+    
+	  i += copy_n_frames;
+	  k += copy_n_frames;
+
+	  if(j == template->buffer_size){
+	    j = 0;
+	  }
 	}
+	
       }else{
+	template_stream = g_list_nth(template->stream_beginning,
+			    offset);
+
+	if(template_stream == NULL){
+	  note = note->next;
+
+	  continue;
+	}
+	
 	if(offset == 0){
 	  ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, AGS_NOTE(note->data)->rt_attack,
-						      stream->data, 1, 0,
+						      template_stream->data, 1, 0,
 						      buffer_size - AGS_NOTE(note->data)->rt_attack, copy_mode);
 	}else{
-	  if(AGS_NOTE(note->data)->rt_attack != 0 && stream->prev != NULL){
+	  if(AGS_NOTE(note->data)->rt_attack != 0 && template_stream->prev != NULL){
 	    ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, 0,
-							stream->prev->data, 1, buffer_size - AGS_NOTE(note->data)->rt_attack,
+							template_stream->prev->data, 1, buffer_size - AGS_NOTE(note->data)->rt_attack,
 							AGS_NOTE(note->data)->rt_attack, copy_mode);
 	  }
 
 	  ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, AGS_NOTE(note->data)->rt_attack,
-						      stream->data, 1, 0,
+						      template_stream->data, 1, 0,
 						      buffer_size - AGS_NOTE(note->data)->rt_attack, copy_mode);	  
 	}
       }
