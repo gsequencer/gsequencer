@@ -387,8 +387,14 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	    continue;
 	  }
 	}
-	  
-	for(i = 0, j = j_start, k = AGS_NOTE(note->data)->rt_attack, nth_loop = offset; i < buffer_size;){
+
+	if(offset == 0){
+	  k = AGS_NOTE(note->data)->rt_attack;
+	}else{
+	  k = 0;
+	}
+	
+	for(i = 0, j = j_start, nth_loop = offset; i < buffer_size;){
 	  /* compute count of frames to copy */
 	  copy_n_frames = buffer_size;
 
@@ -409,7 +415,7 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	    copy_n_frames = buffer_size - j;
 	  }
 
-	  if(stream == NULL ||
+	  if(buffer == NULL ||
 	     template_stream == NULL){
 	    break;
 	  }
@@ -421,7 +427,7 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 
 	  /* increment and iterate */
 	  if((i + copy_n_frames) % buffer_size == 0){
-	    stream = stream->next;
+	    break;
 	  }
 
 	  if(j + copy_n_frames == template->buffer_size){
