@@ -11412,6 +11412,10 @@ ags_channel_recursive_cancel(AgsChannel *channel,
     pthread_mutex_t *audio_mutex;
     pthread_mutex_t *channel_mutex;
 
+    if(recall_id == NULL){
+      return;
+    }
+    
     /* get channel mutex */
     pthread_mutex_lock(application_mutex);
 
@@ -11704,6 +11708,10 @@ ags_channel_recursive_cancel(AgsChannel *channel,
     pthread_mutex_t *audio_mutex;
     pthread_mutex_t *channel_mutex;
     pthread_mutex_t *current_mutex;
+
+    if(recall_id == NULL){
+      return;
+    }
 
     /* get channel mutex */
     pthread_mutex_lock(application_mutex);

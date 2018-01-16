@@ -19,13 +19,7 @@
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_main_loop.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_polling_thread.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>

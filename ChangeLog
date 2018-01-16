@@ -1,3 +1,10 @@
+ags (1.4.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* conservative default configuration
+	* fixed SIGSEGV as configuring super-threaded scope audio
+	* fixed SIGSEGV during ags_channel_recursive_cancel()
+
 ags (1.4.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

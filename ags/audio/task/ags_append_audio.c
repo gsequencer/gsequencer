@@ -502,29 +502,29 @@ ags_append_audio_launch(AgsTask *task)
        !g_ascii_strncasecmp(str1,
 			    "channel",
 			    8)){
+      /* get some fields */
+      pthread_mutex_lock(audio_mutex);
+	
+      output = audio->output;
+	
+      playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
+
+      audio_thread = playback_domain->audio_thread[AGS_PLAYBACK_DOMAIN_SCOPE_SEQUENCER];
+	
+      pthread_mutex_unlock(audio_mutex);
+
+      /* parent mutex */
+      pthread_mutex_lock(application_mutex);
+
+      audio_thread_mutex = ags_mutex_manager_lookup(mutex_manager,
+						    (GObject *) audio_thread);
+  
+      pthread_mutex_unlock(application_mutex);
+      
       /* super threaded setup - channel */
       if(!g_ascii_strncasecmp(str1,
 			      "channel",
 			      8)){
-	/* get some fields */
-	pthread_mutex_lock(audio_mutex);
-	
-	output = audio->output;
-	
-	playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
-
-	audio_thread = playback_domain->audio_thread[AGS_PLAYBACK_DOMAIN_SCOPE_SEQUENCER];
-	
-	pthread_mutex_unlock(audio_mutex);
-
-	/* parent mutex */
-	pthread_mutex_lock(application_mutex);
-
-	audio_thread_mutex = ags_mutex_manager_lookup(mutex_manager,
-						      (GObject *) audio_thread);
-  
-	pthread_mutex_unlock(application_mutex);
-
 	/* sequencer */
 	start_queue = NULL;
 	
