@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 1.4.3\n"
+"Project-Id-Version: gsequencer 1.4.4\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2018-01-16 06:55+0100\n"
+"POT-Creation-Date: 2018-01-16 09:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -212,7 +212,7 @@ msgstr ""
 msgid "live export"
 msgstr ""
 
-#: ags/X/ags_export_window.c:220 ags/X/ags_navigation.c:306
+#: ags/X/ags_export_window.c:220 ags/X/ags_navigation.c:298
 msgid "exclude sequencers"
 msgstr ""
 
@@ -402,19 +402,19 @@ msgstr ""
 msgid "midi device"
 msgstr ""
 
-#: ags/X/ags_navigation.c:211
+#: ags/X/ags_navigation.c:203
 msgid "bpm"
 msgstr ""
 
-#: ags/X/ags_navigation.c:251 ags/X/machine/ags_drum.c:287
+#: ags/X/ags_navigation.c:243 ags/X/machine/ags_drum.c:287
 msgid "loop"
 msgstr ""
 
-#: ags/X/ags_navigation.c:284
+#: ags/X/ags_navigation.c:276
 msgid "loop L"
 msgstr ""
 
-#: ags/X/ags_navigation.c:290
+#: ags/X/ags_navigation.c:282
 msgid "loop R"
 msgstr ""
 
@@ -525,21 +525,21 @@ msgstr ""
 msgid "wave"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1362
+#: ags/X/ags_xorg_application_context.c:1363
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1372
+#: ags/X/ags_xorg_application_context.c:1373
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1521
+#: ags/X/ags_xorg_application_context.c:1522
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1531
+#: ags/X/ags_xorg_application_context.c:1532
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 

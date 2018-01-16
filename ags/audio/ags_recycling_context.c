@@ -933,9 +933,13 @@ ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
 
     pthread_mutex_unlock(recycling_mutex);
 
-    new_length = ags_recycling_position(new_first_recycling, next,
-					new_last_recycling);
-    new_length++;
+    if(new_first_recycling != NULL){
+      new_length = ags_recycling_position(new_first_recycling, next,
+					  new_last_recycling);
+      new_length++;
+    }else{
+      new_length = 0;
+    }
   }else{
     new_recycling_context = g_object_new(AGS_TYPE_RECYCLING_CONTEXT,
 					 "length", 0,
@@ -1041,11 +1045,11 @@ ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
     length = recycling_context->length;
     
     pthread_mutex_unlock(recycling_context->mutex);
-    
+
     new_recycling_context = g_object_new(AGS_TYPE_RECYCLING_CONTEXT,
 					 "length", (length -
-						      (last_index - first_index) +
-						      new_length),
+						    (last_index - first_index + 1) +
+						    new_length),
 					 NULL);
   }
 

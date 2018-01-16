@@ -57,6 +57,8 @@ ags_async_queue_set_run_cond
 ags_async_queue_get_run_cond
 ags_async_queue_set_run
 ags_async_queue_is_run
+ags_async_queue_schedule_task
+ags_async_queue_schedule_task_list
 <SUBSECTION Public>
 AGS_ASYNC_QUEUE
 AGS_ASYNC_QUEUE_GET_INTERFACE
@@ -127,6 +129,20 @@ AGS_TYPE_AUTOSAVE_THREAD
 AgsAutosaveThread
 AgsAutosaveThreadClass
 ags_autosave_thread_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_buffer_util</FILE>
+ags_buffer_util_s8_to_char_buffer
+ags_buffer_util_s16_to_char_buffer
+ags_buffer_util_s24_to_char_buffer
+ags_buffer_util_s32_to_char_buffer
+ags_buffer_util_s64_to_char_buffer
+ags_buffer_util_char_buffer_to_s8
+ags_buffer_util_char_buffer_to_s16
+ags_buffer_util_char_buffer_to_s24
+ags_buffer_util_char_buffer_to_s32
+ags_buffer_util_char_buffer_to_s64
 </SECTION>
 
 <SECTION>

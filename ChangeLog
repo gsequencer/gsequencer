@@ -1,3 +1,10 @@
+ags (1.4.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed mutex access in ags_apply_bpm.c
+	* fixed crash during ags_recycling_context_reset() and ags_channel_recursive_play_down()
+	* updated gtk-doc related files
+
 ags (1.4.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

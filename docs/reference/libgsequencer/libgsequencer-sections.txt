@@ -88,6 +88,7 @@ ags_audio_preferences_stop_jack_callback
 <SECTION>
 <FILE>ags_audiorec</FILE>
 <TITLE>AgsAudiorec</TITLE>
+ags_audiorec_open_filename
 ags_audiorec_new
 <SUBSECTION Public>
 AGS_AUDIOREC
@@ -102,7 +103,10 @@ ags_audiorec_get_type
 
 <SECTION>
 <FILE>ags_audiorec_callbacks</FILE>
-
+ags_audiorec_open_callback
+ags_audiorec_keep_data_callback
+ags_audiorec_replace_data_callback
+ags_audiorec_mix_data_callback
 </SECTION>
 
 <SECTION>
@@ -129,6 +133,7 @@ AGS_AUTOMATION_EDIT_DEFAULT_VALUE
 AGS_AUTOMATION_EDIT_DEFAULT_PADDING
 AgsAutomationEditFlags
 AgsAutomationEditMode
+AgsAutomationEditButtonMask
 AgsAutomationEditKeyMask
 ags_automation_edit_reset_vscrollbar
 ags_automation_edit_reset_hscrollbar
@@ -1367,22 +1372,6 @@ ags_ladspa_browser_plugin_effect_callback
 </SECTION>
 
 <SECTION>
-<FILE>ags_level</FILE>
-<TITLE>AgsLevel</TITLE>
-ags_level_paint
-ags_level_new
-<SUBSECTION Public>
-AGS_IS_LEVEL
-AGS_LEVEL
-AGS_LEVEL_CLASS
-AGS_LEVEL_GET_CLASS
-AGS_TYPE_LEVEL
-AgsLevel
-AgsLevelClass
-ags_level_get_type
-</SECTION>
-
-<SECTION>
 <FILE>ags_level_callbacks</FILE>
 ags_level_expose_event
 ags_level_configure_event
@@ -2018,12 +2007,14 @@ ags_menu_action_add_matrix_callback
 ags_menu_action_add_synth_callback
 ags_menu_action_add_syncsynth_callback
 ags_menu_action_add_ffplayer_callback
+ags_menu_action_add_audiorec_callback
 ags_menu_action_add_ladspa_bridge_callback
 ags_menu_action_add_dssi_bridge_callback
 ags_menu_action_add_lv2_bridge_callback
 ags_menu_action_add_live_dssi_bridge_callback
 ags_menu_action_add_live_lv2_bridge_callback
 ags_menu_action_automation_callback
+ags_menu_action_wave_callback
 ags_menu_action_preferences_callback
 ags_menu_action_midi_import_callback
 ags_menu_action_midi_export_track_callback
@@ -2290,6 +2281,7 @@ AGS_NOTATION_EDIT_MAX_ZOOM
 AGS_NOTATION_EDIT_MAX_ZOOM_CONTROL_WIDTH
 AgsNotationEditFlags
 AgsNotationEditMode
+AgsNotationEditButtonMask
 AgsNotationEditKeyMask
 ags_notation_edit_reset_vscrollbar
 ags_notation_edit_reset_hscrollbar
@@ -3002,6 +2994,21 @@ ags_scrolled_automation_edit_box_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_scrolled_wave_edit_box</FILE>
+<TITLE>AgsScrolledWaveEditBox</TITLE>
+ags_scrolled_wave_edit_box_new
+<SUBSECTION Public>
+AGS_IS_SCROLLED_WAVE_EDIT_BOX
+AGS_SCROLLED_WAVE_EDIT_BOX
+AGS_SCROLLED_WAVE_EDIT_BOX_CLASS
+AGS_SCROLLED_WAVE_EDIT_BOX_GET_CLASS
+AGS_TYPE_SCROLLED_WAVE_EDIT_BOX
+AgsScrolledWaveEditBox
+AgsScrolledWaveEditBoxClass
+ags_scrolled_wave_edit_box_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_select_acceleration_dialog</FILE>
 <TITLE>AgsSelectAccelerationDialog</TITLE>
 AGS_SELECT_ACCELERATION
@@ -3413,6 +3420,12 @@ ags_track_collection_mapper_get_type
 <TITLE>AgsUiProvider</TITLE>
 ags_ui_provider_get_window
 ags_ui_provider_set_window
+ags_ui_provider_get_gui_thread
+ags_ui_provider_set_gui_thread
+ags_ui_provider_get_show_animation
+ags_ui_provider_set_show_animation
+ags_ui_provider_get_gui_ready
+ags_ui_provider_set_gui_ready
 <SUBSECTION Public>
 AGS_IS_UI_PROVIDER
 AGS_IS_UI_PROVIDER_INTERFACE
@@ -3456,13 +3469,41 @@ ags_vautomation_edit_box_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_vwave_edit_box</FILE>
+<TITLE>AgsVWaveEditBox</TITLE>
+ags_vwave_edit_box_new
+<SUBSECTION Public>
+AGS_IS_VWAVE_EDIT_BOX
+AGS_TYPE_VWAVE_EDIT_BOX
+AGS_VWAVE_EDIT_BOX
+AGS_VWAVE_EDIT_BOX_CLASS
+AGS_VWAVE_EDIT_BOX_GET_CLASS
+AgsVWaveEditBox
+AgsVWaveEditBoxClass
+ags_vwave_edit_box_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_wave_edit</FILE>
 <TITLE>AgsWaveEdit</TITLE>
-AGS_WAVE_EDIT_MAX_CONTROLS
-AGS_WAVE_EDIT_DEFAULT_MARGIN
+AGS_WAVE_EDIT_DEFAULT_HEIGHT
 AGS_WAVE_EDIT_DEFAULT_WIDTH
+AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH
+AGS_WAVE_EDIT_DEFAULT_CONTROL_HEIGHT
+AGS_WAVE_EDIT_DEFAULT_STEP_COUNT
+AGS_WAVE_EDIT_DEFAULT_CURSOR_POSITION_X
+AGS_WAVE_EDIT_DEFAULT_CURSOR_POSITION_Y
+AGS_WAVE_EDIT_DEFAULT_FADER_WIDTH
+AGS_WAVE_EDIT_CURSOR_WIDTH
+AGS_WAVE_EDIT_CURSOR_HEIGHT
+AGS_WAVE_EDIT_MIN_ZOOM
+AGS_WAVE_EDIT_MAX_ZOOM
+AGS_WAVE_EDIT_DEFAULT_LOWER
+AGS_WAVE_EDIT_DEFAULT_UPPER
+AGS_WAVE_EDIT_DEFAULT_VALUE
+AGS_WAVE_EDIT_DEFAULT_PADDING
 AgsWaveEditFlags
-AgsWaveEditResetFlags
+AgsWaveEditMode
 AgsWaveEditKeyMask
 ags_wave_edit_new
 <SUBSECTION Public>
@@ -3477,6 +3518,23 @@ ags_wave_edit_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_wave_edit_box</FILE>
+<TITLE>AgsWaveEditBox</TITLE>
+AGS_WAVE_EDIT_BOX_DEFAULT_FIXED_EDIT_HEIGHT
+AgsWaveEditBoxFlags
+ags_wave_edit_box_new
+<SUBSECTION Public>
+AGS_IS_WAVE_EDIT_BOX
+AGS_TYPE_WAVE_EDIT_BOX
+AGS_WAVE_EDIT_BOX
+AGS_WAVE_EDIT_BOX_CLASS
+AGS_WAVE_EDIT_BOX_GET_CLASS
+AgsWaveEditBox
+AgsWaveEditBoxClass
+ags_wave_edit_box_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_wave_edit_callbacks</FILE>
 
 </SECTION>
@@ -3484,11 +3542,16 @@ ags_wave_edit_get_type
 <SECTION>
 <FILE>ags_wave_editor</FILE>
 <TITLE>AgsWaveEditor</TITLE>
-AGS_WAVE_EDITOR_CHILD
+AGS_WAVE_EDITOR_MAX_VALUE_COUNT
+AGS_WAVE_EDITOR_MAX_CONTROLS
 AGS_WAVE_EDITOR_DEFAULT_VERSION
 AGS_WAVE_EDITOR_DEFAULT_BUILD_ID
 AgsWaveEditorFlags
+ags_wave_editor_reset_audio_scrollbar
+ags_wave_editor_reset_output_scrollbar
+ags_wave_editor_reset_input_scrollbar
 ags_wave_editor_machine_changed
+ags_wave_editor_select_region
 ags_wave_editor_select_all
 ags_wave_editor_paste
 ags_wave_editor_copy

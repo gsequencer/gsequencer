@@ -163,6 +163,21 @@ ags_hled_array_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_hlevel_box</FILE>
+<TITLE>AgsHLevelBox</TITLE>
+ags_hlevel_box_new
+<SUBSECTION Public>
+AGS_HLEVEL_BOX
+AGS_HLEVEL_BOX_CLASS
+AGS_HLEVEL_BOX_GET_CLASS
+AGS_IS_HLEVEL_BOX
+AGS_TYPE_HLEVEL_BOX
+AgsHLevelBox
+AgsHLevelBoxClass
+ags_hlevel_box_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_hscale_box</FILE>
 <TITLE>AgsHScaleBox</TITLE>
 ags_hscale_box_new
@@ -243,6 +258,52 @@ AGS_TYPE_LED_ARRAY
 AgsLedArray
 AgsLedArrayClass
 ags_led_array_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_level</FILE>
+<TITLE>AgsLevel</TITLE>
+AGS_LEVEL_DEFAULT_WIDTH
+AGS_LEVEL_DEFAULT_HEIGHT
+AGS_LEVEL_DEFAULT_LOWER
+AGS_LEVEL_DEFAULT_UPPER
+AGS_LEVEL_DEFAULT_NORMALIZED_VOLUME
+AGS_LEVEL_DEFAULT_STEP_COUNT
+AGS_LEVEL_DEFAULT_PAGE_SIZE
+AGS_LEVEL_DEFAULT_SAMPLERATE
+AgsLevelFlags
+AgsLevelButtonState
+AgsLevelKeyMask
+AgsLevelLayout
+AgsLevelAction
+ags_level_new
+<SUBSECTION Public>
+AGS_IS_LEVEL
+AGS_LEVEL
+AGS_LEVEL_CLASS
+AGS_LEVEL_GET_CLASS
+AGS_TYPE_LEVEL
+AgsLevel
+AgsLevelClass
+ags_level_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_level_box</FILE>
+<TITLE>AgsLevelBox</TITLE>
+AGS_LEVEL_BOX_DEFAULT_FIXED_LEVEL_WIDTH
+AGS_LEVEL_BOX_DEFAULT_FIXED_LEVEL_HEIGHT
+AgsLevelBoxFlags
+ags_level_box_new
+<SUBSECTION Public>
+AGS_IS_LEVEL_BOX
+AGS_LEVEL_BOX
+AGS_LEVEL_BOX_CLASS
+AGS_LEVEL_BOX_GET_CLASS
+AGS_TYPE_LEVEL_BOX
+AgsLevelBox
+AgsLevelBoxClass
+ags_level_box_get_type
 </SECTION>
 
 <SECTION>
@@ -477,6 +538,7 @@ AgsScaleButtonState
 AgsScaleKeyMask
 AgsScaleLayout
 AgsScaleAction
+ags_scale_value_changed
 ags_scale_new
 <SUBSECTION Public>
 AGS_IS_SCALE
@@ -505,6 +567,21 @@ AGS_TYPE_SCALE_BOX
 AgsScaleBox
 AgsScaleBoxClass
 ags_scale_box_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_scrolled_level_box</FILE>
+<TITLE>AgsScrolledLevelBox</TITLE>
+ags_scrolled_level_box_new
+<SUBSECTION Public>
+AGS_IS_SCROLLED_LEVEL_BOX
+AGS_SCROLLED_LEVEL_BOX
+AGS_SCROLLED_LEVEL_BOX_CLASS
+AGS_SCROLLED_LEVEL_BOX_GET_CLASS
+AGS_TYPE_SCROLLED_LEVEL_BOX
+AgsScrolledLevelBox
+AgsScrolledLevelBoxClass
+ags_scrolled_level_box_get_type
 </SECTION>
 
 <SECTION>
@@ -594,6 +671,21 @@ AGS_VLED_ARRAY_GET_CLASS
 AgsVLedArray
 AgsVLedArrayClass
 ags_vled_array_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_vlevel_box</FILE>
+<TITLE>AgsVLevelBox</TITLE>
+ags_vlevel_box_new
+<SUBSECTION Public>
+AGS_IS_VLEVEL_BOX
+AGS_TYPE_VLEVEL_BOX
+AGS_VLEVEL_BOX
+AGS_VLEVEL_BOX_CLASS
+AGS_VLEVEL_BOX_GET_CLASS
+AgsVLevelBox
+AgsVLevelBoxClass
+ags_vlevel_box_get_type
 </SECTION>
 
 <SECTION>
