@@ -19,17 +19,10 @@
 
 #include <ags/X/ags_navigation_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_soundcard.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/recall/ags_count_beats_audio.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/audio/task/recall/ags_apply_bpm.h>
-
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
@@ -104,17 +97,14 @@ ags_navigation_bpm_callback(GtkWidget *widget,
   /* get audio loop */
   pthread_mutex_lock(application_mutex);
 
-  main_loop = (AgsThread *) application_context->main_loop;
+  gui_thread = (AgsThread *) ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
-
-  apply_bpm = ags_apply_bpm_new(G_OBJECT(window->soundcard),
+  apply_bpm = ags_apply_bpm_new(window->soundcard,
 				navigation->bpm->adjustment->value);
-
+  
   ags_gui_thread_schedule_task(gui_thread,
 			       apply_bpm);
 }

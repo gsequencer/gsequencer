@@ -19,6 +19,8 @@
 
 #include <ags/audio/task/recall/ags_apply_bpm.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall.h>
@@ -509,14 +511,14 @@ ags_apply_bpm_soundcard(AgsApplyBpm *apply_bpm, GObject *soundcard)
   pthread_mutex_unlock(application_mutex);
 
   /* set bpm and get audio */
-  pthread_mutex_lock(soundcard);
+  pthread_mutex_lock(soundcard_mutex);
 
   ags_soundcard_set_bpm(AGS_SOUNDCARD(soundcard), apply_bpm->bpm);
 
   list =
     list_start = g_list_copy(ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard)));
 
-  pthread_mutex_unlock(soundcard);
+  pthread_mutex_unlock(soundcard_mutex);
 
   /* AgsAudio */
   while(list != NULL){

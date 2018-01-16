@@ -19,13 +19,7 @@
 
 #include <ags/audio/ags_devout.h>
 
-#include <ags/lib/ags_time.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_concurrent_tree.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio_buffer_util.h>
@@ -1963,6 +1957,8 @@ ags_devout_is_available(AgsSoundcard *soundcard)
     signed short revents;
 
     if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
+      revents = 0;
+      
 #ifdef AGS_WITH_ALSA
       snd_pcm_poll_descriptors_revents(devout->out.alsa.handle, AGS_POLL_FD(list->data)->poll_fd, 1, &revents);
 #endif
@@ -3951,7 +3947,7 @@ ags_devout_adjust_delay_and_attack(AgsDevout *devout)
   gint next_attack;
   guint i;
 
-  if(devout == NULL){
+  if(!AGS_IS_DEVOUT(devout)){
     return;
   }
   

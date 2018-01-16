@@ -20,16 +20,8 @@
 #include <ags/X/ags_navigation.h>
 #include <ags/X/ags_navigation_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/audio/task/ags_seek_soundcard.h>
+#include <ags/libags.h> 
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_notation_editor.h>
@@ -745,15 +737,36 @@ ags_navigation_duration_time_queue_draw(GtkWidget *widget)
 {
   AgsNavigation *navigation;
 
+  AgsMutexManager *mutex_manager;
+
   gchar *str;
-  
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+
   navigation = AGS_NAVIGATION(widget);
 
-  if(navigation->soundcard == NULL){
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  if(!AGS_IS_SOUNDCARD(navigation->soundcard)){
     return(TRUE);
   }
 
+  /* lookup soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) navigation->soundcard);
+	
+  pthread_mutex_unlock(application_mutex);
+
+  pthread_mutex_lock(soundcard_mutex);
+  
   str = ags_soundcard_get_uptime(AGS_SOUNDCARD(navigation->soundcard));
+
+  pthread_mutex_unlock(soundcard_mutex);
+
   g_object_set(navigation->duration_time,
 	       "label", str,
 	       NULL);

@@ -927,6 +927,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   /* AgsGuiThread */
   gui_thread = 
     xorg_application_context->gui_thread = (AgsThread *) ags_gui_thread_new();
+  g_object_ref(gui_thread);
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
   				(AgsThread *) gui_thread,
   				TRUE, TRUE);
@@ -1625,6 +1626,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     /* default soundcard thread */
     if(xorg_application_context->soundcard_thread == NULL){
       xorg_application_context->soundcard_thread = soundcard_thread;
+      g_object_ref(soundcard_thread);
     }
 
     /* default export thread */

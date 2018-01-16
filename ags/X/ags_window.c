@@ -21,6 +21,7 @@
 #include <ags/X/ags_window_callbacks.h>
 
 #include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_ui_provider.h>
 

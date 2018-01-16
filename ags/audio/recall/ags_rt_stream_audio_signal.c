@@ -268,8 +268,7 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
   guint copy_mode;
 
   pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *soundcard_mutex;
   pthread_mutex_t *recycling_mutex;
 
   mutex_manager = ags_mutex_manager_get_instance();
@@ -284,11 +283,23 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
   buffer = source->stream_beginning->data;
   buffer_size = source->buffer_size;
 
+  /* lookup soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) source->soundcard);
+	
+  pthread_mutex_unlock(application_mutex);
+  
+  pthread_mutex_lock(soundcard_mutex);
+
   delay = ags_soundcard_get_delay(AGS_SOUNDCARD(source->soundcard));
 
-  recycling = source->recycling;
+  pthread_mutex_unlock(soundcard_mutex);
 
   /* lookup recycling mutex */
+  recycling = source->recycling;
+
   pthread_mutex_lock(application_mutex);
 
   recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
@@ -301,8 +312,6 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
   
   template = ags_audio_signal_get_template(recycling->audio_signal);
   
-  pthread_mutex_unlock(recycling_mutex);
-
   note = source->note;
   
   ags_audio_buffer_util_clear_buffer(buffer, 1,
@@ -491,6 +500,8 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
     
     note = note->next;
   }
+
+  pthread_mutex_unlock(recycling_mutex);
 }
 
 AgsRecall*
