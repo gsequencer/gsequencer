@@ -46,7 +46,9 @@ struct _AgsPerformancePreferences
   guint flags;
   
   GtkCheckButton *stream_auto_sense;
-  GtkCheckButton *super_threaded;
+  
+  GtkCheckButton *super_threaded_audio;
+  GtkCheckButton *super_threaded_channel;
 
   GtkComboBoxText *max_precision;
 };

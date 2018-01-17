@@ -24,7 +24,7 @@
 
 #include <ags/X/ags_performance_preferences.h>
 
-void ags_performance_preferences_max_precision_callback(GtkWidget *combo_box,
-							AgsPerformancePreferences *performance_preferences);
+void ags_performance_preferences_super_threaded_channel_callback(GtkWidget *button,
+								 AgsPerformancePreferences *performance_preferences);
 
 #endif /*__AGS_PERFORMANCE_PREFERENCES_CALLBACKS_H__*/

@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 1.4.5\n"
+"Project-Id-Version: gsequencer 1.4.6\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2018-01-16 14:12+0100\n"
+"POT-Creation-Date: 2018-01-17 05:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,7 +41,7 @@ msgstr ""
 msgid "automation"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:271 ags/X/ags_preferences.c:179
+#: ags/X/ags_automation_editor.c:271 ags/X/ags_preferences.c:176
 msgid "audio"
 msgstr ""
 
@@ -228,15 +228,15 @@ msgstr ""
 msgid "time"
 msgstr ""
 
-#: ags/X/ags_generic_preferences.c:139
+#: ags/X/ags_generic_preferences.c:137
 msgid "autosave thread"
 msgstr ""
 
-#: ags/X/ags_generic_preferences.c:153
+#: ags/X/ags_generic_preferences.c:151
 msgid "segmentation"
 msgstr ""
 
-#: ags/X/ags_generic_preferences.c:177
+#: ags/X/ags_generic_preferences.c:175
 msgid "engine mode"
 msgstr ""
 
@@ -436,10 +436,14 @@ msgid "Auto-sense on stream"
 msgstr ""
 
 #: ags/X/ags_performance_preferences.c:152
-msgid "Super threaded"
+msgid "Super threaded - audio"
 msgstr ""
 
-#: ags/X/ags_performance_preferences.c:168
+#: ags/X/ags_performance_preferences.c:159
+msgid "Super threaded - channel"
+msgstr ""
+
+#: ags/X/ags_performance_preferences.c:173
 msgid "max precision of threads [Hz]"
 msgstr ""
 
@@ -447,23 +451,23 @@ msgstr ""
 msgid "Plugin type:"
 msgstr ""
 
-#: ags/X/ags_preferences.c:160
+#: ags/X/ags_preferences.c:157
 msgid "preferences"
 msgstr ""
 
-#: ags/X/ags_preferences.c:174
+#: ags/X/ags_preferences.c:171
 msgid "generic"
 msgstr ""
 
-#: ags/X/ags_preferences.c:184
+#: ags/X/ags_preferences.c:181
 msgid "midi"
 msgstr ""
 
-#: ags/X/ags_preferences.c:189
+#: ags/X/ags_preferences.c:186
 msgid "performance"
 msgstr ""
 
-#: ags/X/ags_preferences.c:204
+#: ags/X/ags_preferences.c:201
 msgid "server"
 msgstr ""
 

@@ -20,9 +20,7 @@
 #include <ags/X/ags_generic_preferences.h>
 #include <ags/X/ags_generic_preferences_callbacks.h>
 
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
+#include <ags/libags.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>

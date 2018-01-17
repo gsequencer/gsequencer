@@ -22,22 +22,17 @@
 #include <ags/X/ags_preferences.h>
 
 void
-ags_performance_preferences_max_precision_callback(GtkWidget *combo_box,
-						   AgsPerformancePreferences *performance_preferences)
+ags_performance_preferences_super_threaded_channel_callback(GtkWidget *button,
+							    AgsPerformancePreferences *performance_preferences)
 {
-  AgsPreferences *preferences;
-  GtkDialog *dialog;
-
-  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(performance_preferences),
-							   AGS_TYPE_PREFERENCES);
-
-  /* notify user about restarting GSequencer */
-  dialog = gtk_message_dialog_new(preferences,
-				  GTK_DIALOG_MODAL,
-				  GTK_MESSAGE_INFO,
-				  GTK_BUTTONS_OK,
-				  "After finished your modifications you should safe your file and restart GSequencer");
-  g_signal_connect(dialog, "response",
-		   G_CALLBACK(gtk_widget_destroy), NULL);
-  gtk_widget_show_all(dialog);
+  if(gtk_toggle_button_get_active(button)){
+    gtk_toggle_button_set_active(performance_preferences->super_threaded_audio,
+				 TRUE);
+    gtk_widget_set_sensitive(performance_preferences->super_threaded_audio,
+			     FALSE);
+  }else{
+    gtk_widget_set_sensitive(performance_preferences->super_threaded_audio,
+			     TRUE);
+  }
 }
+

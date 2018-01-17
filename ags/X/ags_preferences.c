@@ -20,10 +20,7 @@
 #include <ags/X/ags_preferences.h>
 #include <ags/X/ags_preferences_callbacks.h>
 
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
+#include <ags/libags.h>
 
 #include <ags/X/ags_window.h>
 
@@ -267,6 +264,7 @@ void
 ags_preferences_apply(AgsApplicable *applicable)
 {
   AgsPreferences *preferences;
+  GtkDialog *dialog;
 
   AgsConfig *config;
 
@@ -294,6 +292,16 @@ ags_preferences_apply(AgsApplicable *applicable)
   }
   
   ags_config_save(config);
+
+  /* notify user about restarting GSequencer */
+  dialog = gtk_message_dialog_new(preferences,
+				  GTK_DIALOG_MODAL,
+				  GTK_MESSAGE_INFO,
+				  GTK_BUTTONS_OK,
+				  "You should safe your file and restart GSequencer");
+  g_signal_connect(dialog, "response",
+		   G_CALLBACK(gtk_widget_destroy), NULL);
+  gtk_widget_show_all(dialog);
 }
 
 void

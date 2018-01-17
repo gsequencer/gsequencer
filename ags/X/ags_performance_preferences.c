@@ -148,15 +148,20 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
 		     FALSE, FALSE,
 		     0);
 
-  /* super threaded */
-  performance_preferences->super_threaded = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("Super threaded"));
+  /* super threaded - audio */
+  performance_preferences->super_threaded_audio = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("Super threaded - audio"));
   gtk_box_pack_start(GTK_BOX(performance_preferences),
-		     GTK_WIDGET(performance_preferences->super_threaded),
+		     GTK_WIDGET(performance_preferences->super_threaded_audio),
 		     FALSE, FALSE,
 		     0);
-  gtk_widget_set_sensitive((GtkWidget *) performance_preferences->super_threaded,
-			   FALSE);
 
+  /* super threaded - channel */
+  performance_preferences->super_threaded_channel = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("Super threaded - channel"));
+  gtk_box_pack_start(GTK_BOX(performance_preferences),
+		     GTK_WIDGET(performance_preferences->super_threaded_channel),
+		     FALSE, FALSE,
+		     0);
+  
   /* max precision */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE,
 				  0);
@@ -197,8 +202,8 @@ ags_performance_preferences_connect(AgsConnectable *connectable)
 
   performance_preferences->flags |= AGS_PERFORMANCE_PREFERENCES_CONNECTED;
   
-  g_signal_connect(G_OBJECT(performance_preferences->max_precision), "changed",
-		   G_CALLBACK(ags_performance_preferences_max_precision_callback), performance_preferences);
+  g_signal_connect_after(G_OBJECT(performance_preferences->super_threaded_channel), "clicked",
+			 G_CALLBACK(ags_performance_preferences_super_threaded_channel_callback), performance_preferences);
 }
 
 void
@@ -214,9 +219,9 @@ ags_performance_preferences_disconnect(AgsConnectable *connectable)
 
   performance_preferences->flags &= (~AGS_PERFORMANCE_PREFERENCES_CONNECTED);
   
-  g_object_disconnect(G_OBJECT(performance_preferences->max_precision),
-		      "any_signal::changed",
-		      G_CALLBACK(ags_performance_preferences_max_precision_callback),
+  g_object_disconnect(G_OBJECT(performance_preferences->super_threaded_channel),
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_performance_preferences_super_threaded_channel_callback),
 		      performance_preferences,
 		      NULL);
 }
@@ -243,16 +248,31 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
   config = ags_config_get_instance();
 
   /* restore thread config */
-  ags_config_set_value(config,
-		       AGS_CONFIG_THREAD,
-		       "model",
-		       "super-threaded");
-  
-  ags_config_set_value(config,
-		       AGS_CONFIG_THREAD,
-		       "super-threaded-scope",
-		       "channel");
+  if(gtk_toggle_button_get_active(performance_preferences->super_threaded_audio) ||
+     gtk_toggle_button_get_active(performance_preferences->super_threaded_channel)){
+    ags_config_set_value(config,
+			 AGS_CONFIG_THREAD,
+			 "model",
+			 "super-threaded");
 
+    if(gtk_toggle_button_get_active(performance_preferences->super_threaded_channel)){
+      ags_config_set_value(config,
+			   AGS_CONFIG_THREAD,
+			   "super-threaded-scope",
+			   "channel");
+    }else if(gtk_toggle_button_get_active(performance_preferences->super_threaded_audio)){
+      ags_config_set_value(config,
+			   AGS_CONFIG_THREAD,
+			   "super-threaded-scope",
+			   "audio");
+    }
+  }else{
+    ags_config_set_value(config,
+			 AGS_CONFIG_THREAD,
+			 "model",
+			 "multi-threaded");
+  }
+  
   ags_config_set_value(config,
 		       AGS_CONFIG_THREAD,
 		       "lock-global",

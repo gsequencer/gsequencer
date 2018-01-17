@@ -1,3 +1,8 @@
+ags (1.4.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsPreferences to apply conservative default configuration
+
 ags (1.4.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
