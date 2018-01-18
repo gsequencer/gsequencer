@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 1.4.7\n"
+"Project-Id-Version: gsequencer 1.4.8\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2018-01-18 07:37+0100\n"
+"POT-Creation-Date: 2018-01-18 08:01+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -238,6 +238,10 @@ msgstr ""
 
 #: ags/X/ags_generic_preferences.c:175
 msgid "engine mode"
+msgstr ""
+
+#: ags/X/ags_generic_preferences.c:193
+msgid "rt-safe"
 msgstr ""
 
 #: ags/X/ags_line.c:721 ags/X/ags_line.c:729 ags/X/ags_notation_editor.c:277

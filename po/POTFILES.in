@@ -117,6 +117,7 @@
 ./ags/X/editor/ags_file_selection_callbacks.c
 ./ags/X/editor/ags_inline_player.c
 ./ags/X/editor/ags_inline_player_callbacks.c
+./ags/X/editor/ags_level_callbacks.c
 ./ags/X/editor/ags_machine_radio_button.c
 ./ags/X/editor/ags_machine_radio_button_callbacks.c
 ./ags/X/editor/ags_machine_selection.c
