@@ -27,4 +27,7 @@
 void ags_generic_preferences_autosave_thread_clicked_callback(GtkWidget *check_button,
 							      AgsGenericPreferences *generic_preferences);
 
+void ags_generic_preferences_rt_safe_callback(GtkWidget *check_button,
+					      AgsGenericPreferences *generic_preferences);
+
 #endif /*__AGS_GENERIC_PREFERENCES_CALLBACKS_H__*/

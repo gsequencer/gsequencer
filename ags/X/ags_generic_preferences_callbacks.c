@@ -46,3 +46,20 @@ ags_generic_preferences_autosave_thread_clicked_callback(GtkWidget *check_button
     ags_thread_stop((AgsThread *) autosave_thread);
   }
 }
+
+void
+ags_generic_preferences_rt_safe_callback(GtkWidget *check_button,
+					 AgsGenericPreferences *generic_preferences)
+{
+  if(gtk_toggle_button_get_active(check_button)){
+    gtk_toggle_button_set_active(generic_preferences->engine_mode,
+				 1);
+
+    gtk_widget_set_sensitive(generic_preferences->engine_mode,
+			     FALSE);
+  }else{
+    gtk_widget_set_sensitive(generic_preferences->engine_mode,
+			     TRUE);
+  }
+}
+

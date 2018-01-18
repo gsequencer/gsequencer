@@ -183,25 +183,61 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
 				 "deterministic");
   gtk_combo_box_text_append_text(generic_preferences->engine_mode,
 				 "performance");
-  gtk_combo_box_set_active(GTK_COMBO_BOX(generic_preferences->engine_mode),
-			   1);
   
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(generic_preferences->engine_mode),
 		     FALSE, FALSE,
 		     0);
+
+  /* rt-safe */
+  generic_preferences->rt_safe = (GtkComboBoxText *) gtk_check_button_new_with_label(i18n("rt-safe"));
+  gtk_box_pack_start(GTK_BOX(generic_preferences),
+		     GTK_WIDGET(generic_preferences->rt_safe),
+		     FALSE, FALSE,
+		     0);
+}
+
+static void
+ags_generic_preferences_finalize(GObject *gobject)
+{
+  G_OBJECT_CLASS(ags_generic_preferences_parent_class)->finalize(gobject);
 }
 
 void
 ags_generic_preferences_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsGenericPreferences *generic_preferences;
+  
+  generic_preferences = AGS_GENERIC_PREFERENCES(connectable);
+
+  if((AGS_GENERIC_PREFERENCES_CONNECTED & (generic_preferences->flags)) != 0){
+    return;
+  }
+
+  generic_preferences->flags |= AGS_GENERIC_PREFERENCES_CONNECTED;
+  
+  g_signal_connect_after(G_OBJECT(generic_preferences->rt_safe), "clicked",
+			 G_CALLBACK(ags_generic_preferences_rt_safe_callback), generic_preferences);
 }
 
 void
 ags_generic_preferences_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsGenericPreferences *generic_preferences;
+  
+  generic_preferences = AGS_GENERIC_PREFERENCES(connectable);
+
+  if((AGS_GENERIC_PREFERENCES_CONNECTED & (generic_preferences->flags)) == 0){
+    return;
+  }
+
+  generic_preferences->flags &= (~AGS_GENERIC_PREFERENCES_CONNECTED);
+  
+  g_object_disconnect(G_OBJECT(generic_preferences->rt_safe),
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_generic_preferences_rt_safe_callback),
+		      generic_preferences,
+		      NULL);
 }
 
 void
@@ -246,6 +282,11 @@ ags_generic_preferences_apply(AgsApplicable *applicable)
 		       AGS_CONFIG_GENERIC,
 		       "engine-mode",
 		       gtk_combo_box_text_get_active_text(generic_preferences->engine_mode));
+
+  ags_config_set_value(config,
+		       AGS_CONFIG_GENERIC,
+		       "rt-safe",
+		       (gtk_toggle_button_get_active(generic_preferences->rt_safe) ? "true": "false"));
 }
 
 void
@@ -261,6 +302,7 @@ ags_generic_preferences_reset(AgsApplicable *applicable)
 
   config = ags_config_get_instance();
 
+  /* auto-save thread */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_GENERIC,
 			     "autosave-thread");
@@ -275,13 +317,38 @@ ags_generic_preferences_reset(AgsApplicable *applicable)
 				 FALSE);
   }
   
-  free(str);
-}
+  g_free(str);
 
-static void
-ags_generic_preferences_finalize(GObject *gobject)
-{
-  //TODO:JK: implement me
+  /* engine mode */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "engine-mode");
+
+  if(str != NULL){
+    if(g_ascii_strncasecmp(str,
+			   "performance",
+			   12)){
+      gtk_combo_box_set_active(generic_preferences->engine_mode,
+			       1);
+    }
+  }
+  
+  g_free(str);
+  
+  /* rt-safe */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "rt-safe");
+
+  if(str != NULL &&
+     !g_ascii_strncasecmp(str,
+			  "true",
+			  5)){
+    gtk_toggle_button_set_active(generic_preferences->rt_safe,
+				 TRUE);
+  }
+
+  g_free(str);
 }
 
 GtkListStore*

@@ -1,3 +1,8 @@
+ags (1.4.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added missing rt-safe configuration option
+
 ags (1.4.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

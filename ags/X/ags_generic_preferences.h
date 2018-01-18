@@ -49,6 +49,7 @@ struct _AgsGenericPreferences
   GtkComboBoxText *segmentation;
 
   GtkComboBoxText *engine_mode;
+  GtkCheckButton *rt_safe;
 };
 
 struct _AgsGenericPreferencesClass
