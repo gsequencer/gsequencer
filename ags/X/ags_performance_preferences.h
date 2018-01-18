@@ -50,6 +50,8 @@ struct _AgsPerformancePreferences
   GtkCheckButton *super_threaded_audio;
   GtkCheckButton *super_threaded_channel;
 
+  GtkSpinButton *thread_pool_max_unused_threads;
+  
   GtkComboBoxText *max_precision;
 };
 

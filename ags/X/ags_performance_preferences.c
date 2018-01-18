@@ -161,6 +161,28 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
 		     GTK_WIDGET(performance_preferences->super_threaded_channel),
 		     FALSE, FALSE,
 		     0);
+
+  /* thread-pool - max unused threads */
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				  0);
+  gtk_box_pack_start(GTK_BOX(performance_preferences),
+		     GTK_WIDGET(hbox),
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) gtk_label_new(i18n("thread pool - max unused threads"));
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+
+  performance_preferences->thread_pool_max_unused_threads = gtk_spin_button_new_with_range(1.0,
+											   (gdouble) AGS_THREAD_POOL_DEFAULT_MAX_THREADS,
+											   1.0);
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(performance_preferences->thread_pool_max_unused_threads),
+		     FALSE, FALSE,
+		     0);
   
   /* max precision */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE,
@@ -247,6 +269,14 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
 
   config = ags_config_get_instance();
 
+  /* auto-sense */
+  str = g_strdup(((gtk_toggle_button_get_active((GtkToggleButton *) performance_preferences->stream_auto_sense)) ? "true": "false"));
+  ags_config_set_value(config,
+		       AGS_CONFIG_RECALL,
+		       "auto-sense",
+		       str);
+  g_free(str);
+
   /* restore thread config */
   if(gtk_toggle_button_get_active(performance_preferences->super_threaded_audio) ||
      gtk_toggle_button_get_active(performance_preferences->super_threaded_channel)){
@@ -283,14 +313,16 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
 		       "lock-parent",
 		       "ags-recycling-thread");
 
-  /* auto-sense */
-  str = g_strdup(((gtk_toggle_button_get_active((GtkToggleButton *) performance_preferences->stream_auto_sense)) ? "true": "false"));
+  /* thread pool - max unused threads */
+  str = g_strdup_printf("%d",
+			gtk_spin_button_get_value_as_int(performance_preferences->thread_pool_max_unused_threads));
   ags_config_set_value(config,
-		       AGS_CONFIG_RECALL,
-		       "auto-sense",
+		       AGS_CONFIG_THREAD,
+		       "thread-pool-max-unused-threads",
 		       str);
-  g_free(str);
 
+  g_free(str);
+  
   /* max-precision */
   str = gtk_combo_box_get_active_text(performance_preferences->max_precision);
   max_precision = 0;
@@ -339,9 +371,9 @@ ags_performance_preferences_reset(AgsApplicable *applicable)
   
   performance_preferences = AGS_PERFORMANCE_PREFERENCES(applicable);
 
-  /* auto-sense */
   config = ags_config_get_instance();
 
+  /* auto-sense */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_RECALL,
 			     "auto-sense");
@@ -349,6 +381,39 @@ ags_performance_preferences_reset(AgsApplicable *applicable)
 			       !g_strcmp0("true",
 					  str));
 
+  /*  */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_THREAD,
+			     "super-threaded-scope");
+
+  if(str != NULL){
+    if(!g_ascii_strncasecmp(str,
+			    "audio",
+			    6)){
+      gtk_toggle_button_set_active((GtkToggleButton *) performance_preferences->super_threaded_audio,
+				   TRUE);
+    }else if(!g_ascii_strncasecmp(str,
+				  "channel",
+				  8)){
+      gtk_toggle_button_set_active((GtkToggleButton *) performance_preferences->super_threaded_channel,
+				   TRUE);
+    }
+  }
+  
+  /*  */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_THREAD,
+			     "thread-pool-max-unused-threads");
+
+  if(str != NULL){
+    gtk_spin_button_set_value(performance_preferences->thread_pool_max_unused_threads,
+			      g_ascii_strtod(str,
+					     NULL));
+  }else{
+    gtk_spin_button_set_value(performance_preferences->thread_pool_max_unused_threads,
+			      AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS);
+  }
+  
   /* max-precision */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_THREAD,

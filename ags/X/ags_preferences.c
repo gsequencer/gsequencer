@@ -294,7 +294,7 @@ ags_preferences_apply(AgsApplicable *applicable)
   ags_config_save(config);
 
   /* notify user about restarting GSequencer */
-  dialog = gtk_message_dialog_new(preferences,
+  dialog = gtk_message_dialog_new(preferences->window,
 				  GTK_DIALOG_MODAL,
 				  GTK_MESSAGE_INFO,
 				  GTK_BUTTONS_OK,

@@ -20,6 +20,7 @@
 #include <ags/thread/ags_thread_pool.h>
 
 #include <ags/object/ags_connectable.h>
+#include <ags/object/ags_config.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_returnable_thread.h>
@@ -57,9 +58,6 @@ void ags_thread_pool_real_start(AgsThreadPool *thread_pool);
  * The #AgsThreadPool acts as preinstantiated threads store.
  * This can achieve enormeous performance.
  */
-
-#define AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS 48
-#define AGS_THREAD_POOL_DEFAULT_MAX_THREADS 1024
 
 enum{
   PROP_0,
@@ -140,7 +138,7 @@ ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool)
 				 i18n_pspec("maximum unused threads"),
 				 i18n_pspec("The maximum of unused threads"),
 				 1, 65535,
-				 24,
+				 AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MAX_UNUSED_THREADS,
@@ -157,7 +155,7 @@ ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool)
 				 i18n_pspec("maximum threads to use"),
 				 i18n_pspec("The maximum of threads to be created"),
 				 1, 65535,
-				 1024,
+				 AGS_THREAD_POOL_DEFAULT_MAX_THREADS,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MAX_THREADS,
@@ -197,17 +195,49 @@ ags_thread_pool_init(AgsThreadPool *thread_pool)
 {
   AgsThread *thread;
 
+  AgsConfig *config;
+
   GList *list;
+
+  gchar *str;
+  
   guint i;
+
+  config = ags_config_get_instance();
 
   g_atomic_int_set(&(thread_pool->flags),
 		   0);
 
-  g_atomic_int_set(&(thread_pool->max_unused_threads),
-		   AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS);
-  g_atomic_int_set(&(thread_pool->max_threads),
-		   AGS_THREAD_POOL_DEFAULT_MAX_THREADS);
+  /* max unused threads */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_THREAD,
+			     "thread-pool-max-unused-threads");
+  
+  if(str != NULL){
+    g_atomic_int_set(&(thread_pool->max_unused_threads),
+		     g_ascii_strtoull(str,
+				      NULL,
+				      10));
+  }else{
+    g_atomic_int_set(&(thread_pool->max_unused_threads),
+		     AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS);
+  }
 
+  /* max threads */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_THREAD,
+			     "thread-pool-max-threads");
+  
+  if(str != NULL){
+    g_atomic_int_set(&(thread_pool->max_threads),
+		     g_ascii_strtoull(str,
+				      NULL,
+				      10));
+  }else{  
+    g_atomic_int_set(&(thread_pool->max_threads),
+		     AGS_THREAD_POOL_DEFAULT_MAX_THREADS);
+  }
+  
   thread_pool->thread = (pthread_t *) malloc(sizeof(pthread_t));
 
   /* creation mutex and condition */

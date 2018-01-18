@@ -1,3 +1,9 @@
+ags (1.4.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented configuration of AgsThreadPool:max-unused-threads and AgsThreadPool:max-threads
+	* improved ags_performance_preferences_reset() to reset super-threaded scope
+
 ags (1.4.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
