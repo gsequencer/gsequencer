@@ -5521,8 +5521,6 @@ ags_audio_open_files(AgsAudio *audio,
 	for(j = 0; j < audio_channels && audio_signal_list != NULL; j++){
 	  AgsRecycling *recycling;
 	  
-	  pthread_mutex_t *channel_mutex;
-	  
 	  /* create task */
 	  error = NULL;
 
@@ -5556,11 +5554,9 @@ ags_audio_open_files(AgsAudio *audio,
 
 	  pthread_mutex_lock(channel->obj_mutex);
 
-	  channel_mutex = channel->obj_mutex;
-	  
 	  channel = channel->next;
 
-	  pthread_mutex_unlock(channel_mutex);
+	  pthread_mutex_unlock(channel->obj_mutex);
 	}
 
 	if(audio_file->channels < audio_channels){
@@ -5598,8 +5594,6 @@ ags_audio_open_files(AgsAudio *audio,
       
       for(j = 0; j < audio_channels && audio_signal_list != NULL; j++){
 	AgsRecycling *recycling;
-
-	pthread_mutex_t *channel_mutex;
 	
 	/* get recycling */
 	pthread_mutex_lock(channel->obj_mutex);
@@ -5624,11 +5618,9 @@ ags_audio_open_files(AgsAudio *audio,
 
 	pthread_mutex_lock(channel->obj_mutex);
 
-	channel_mutex = channel->obj_mutex;
-	
 	channel = channel->next;
 
-	pthread_mutex_unlock(channel_mutex);
+	pthread_mutex_unlock(channel->obj_mutex);
       }
       
       if(audio_channels > audio_file->channels){
@@ -5770,8 +5762,6 @@ ags_audio_recursive_play_init(AgsAudio *audio,
   list = list_start;
 
   while(channel != NULL){
-    pthread_mutex_t *channel_mutex;
-    
     recall_id = ags_channel_recursive_play_init(channel, -1,
 						TRUE, TRUE,
 						playback, sequencer, notation,
@@ -5784,11 +5774,9 @@ ags_audio_recursive_play_init(AgsAudio *audio,
     /* iterate */
     pthread_mutex_lock(channel->obj_mutex);
 
-    channel_mutex = channel->obj_mutex;
-    
     channel = channel->next;
 
-    pthread_mutex_unlock(channel_mutex);
+    pthread_mutex_unlock(channel->obj_mutex);
   }
   
   pthread_mutex_unlock(audio->obj_mutex);
