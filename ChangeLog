@@ -1,9 +1,3 @@
-ags (1.4.9)
-
-	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: reduced global locks
-	* TODO:JK: implemented rt-template audio signal
-
 ags (1.4.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
