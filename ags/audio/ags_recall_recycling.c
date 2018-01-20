@@ -21,13 +21,7 @@
 
 #include <ags/lib/ags_parameter.h>
 
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_dynamic_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -729,6 +723,7 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
   pthread_mutex_lock(mutex);
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0 ||
+     (AGS_AUDIO_SIGNAL_RT_TEMPLATE & (audio_signal->flags)) != 0 ||
      audio_signal->recall_id == NULL ||
      recall->recall_id == NULL){
     pthread_mutex_unlock(mutex);
@@ -882,6 +877,7 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
   pthread_mutex_lock(mutex);
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0 ||
+     (AGS_AUDIO_SIGNAL_RT_TEMPLATE & (audio_signal->flags)) != 0 ||
      audio_signal->recall_id == NULL ||
      recall->recall_id == NULL){
     pthread_mutex_unlock(mutex);
@@ -1014,6 +1010,7 @@ ags_recall_recycling_destination_add_audio_signal_callback(AgsRecycling *destina
   pthread_mutex_lock(mutex);
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0 ||
+     (AGS_AUDIO_SIGNAL_RT_TEMPLATE & (audio_signal->flags)) != 0 ||
      audio_signal->recall_id == NULL ||
      recall->recall_id == NULL){
     pthread_mutex_unlock(mutex);
@@ -1111,6 +1108,7 @@ ags_recall_recycling_destination_remove_audio_signal_callback(AgsRecycling *dest
   pthread_mutex_lock(mutex);
 
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0 ||
+     (AGS_AUDIO_SIGNAL_RT_TEMPLATE & (audio_signal->flags)) != 0 ||
      audio_signal->recall_id == NULL ||
      recall->recall_id == NULL){
     pthread_mutex_unlock(mutex);

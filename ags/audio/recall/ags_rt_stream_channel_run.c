@@ -40,6 +40,7 @@ void ags_rt_stream_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic
 void ags_rt_stream_channel_run_finalize(GObject *gobject);
 
 void ags_rt_stream_channel_run_check_rt_stream(AgsRecall *recall);
+void ags_rt_stream_channel_run_remove(AgsRecall *recall);
 AgsRecall* ags_rt_stream_channel_run_duplicate(AgsRecall *recall,
 					       AgsRecallID *recall_id,
 					       guint *n_params, GParameter *parameter);
@@ -134,6 +135,7 @@ ags_rt_stream_channel_run_class_init(AgsRtStreamChannelRunClass *rt_stream_chann
 
   recall->check_rt_stream = ags_rt_stream_channel_run_check_rt_stream;
   recall->duplicate = ags_rt_stream_channel_run_duplicate;
+  recall->remove = ags_rt_stream_channel_run_remove;
 }
 
 void
@@ -256,20 +258,37 @@ ags_rt_stream_channel_run_check_rt_stream(AgsRecall *recall)
   
   while(recycling != end_recycling){
     AgsAudioSignal *audio_signal;
+    AgsAudioSignal *rt_template, *template;
     
     recycling_mutex = recycling->obj_mutex;
 
+    /* create rt template */
+    rt_template = ags_audio_signal_new(recycling->soundcard,
+				       recycling,
+				       recall->recall_id);
+    rt_template->flags |= AGS_AUDIO_SIGNAL_RT_TEMPLATE;
+    ags_recycling_create_audio_signal_with_defaults(recycling,
+						    audio_signal,
+						    0.0, 0);
+    ags_recycling_add_audio_signal(recycling,
+				   rt_template);
+    
+    /* create buffer */
     pthread_mutex_lock(recycling_mutex);
 
     audio_signal = ags_audio_signal_new(recycling->soundcard,
 					recycling,
 					recall->recall_id);
+    g_object_set(audio_signal,
+		 "rt-template", rt_template
+		 NULL);
     ags_audio_signal_stream_resize(audio_signal,
 				   1);
     audio_signal->stream_current = audio_signal->stream_beginning;
     
     pthread_mutex_unlock(recycling_mutex);
 
+    /* add buffer */
     ags_recycling_add_audio_signal(recycling,
 				   audio_signal);
 
@@ -293,6 +312,71 @@ ags_rt_stream_channel_run_duplicate(AgsRecall *recall,
 												       n_params, parameter);
 
   return((AgsRecall *) copy);
+}
+
+void
+ags_rt_stream_channel_run_remove(AgsRecall *recall)
+{
+  AgsChannel *source;
+  AgsRecycling *first_recycling, *last_recycling;
+  AgsRecycling *recycling, *end_recycling;
+
+  AgsRtStreamChannelRun *rt_stream_channel_run;
+
+  pthread_mutex_t *recycling_mutex;
+  
+  rt_stream_channel_run = recall;
+
+  source = AGS_RECALL_CHANNEL_RUN(rt_stream_channel_run)->source;
+
+  /* get first and last recycling */
+  pthread_mutex_lock(source->obj_mutex);
+  
+  first_recycling = source->first_recycling;
+  last_recycling = source->last_recycling;
+
+  pthread_mutex_unlock(source->obj_mutex);
+
+  /* get end */
+  pthread_mutex_lock(last_recycling->obj_mutex);
+  
+  end_recycling = last_recycling->next;
+
+  pthread_mutex_unlock(last_recycling->obj_mutex);
+
+  /* */
+  recycling = first_recycling;
+  
+  while(recycling != end_recycling){
+    GList *audio_signal, *audio_signal_start;
+    
+    recycling_mutex = recycling->obj_mutex;
+
+    pthread_mutex_lock(recycling_mutex);
+
+    audio_signal_start = 
+      audio_signal = g_list_copy(recycling->audio_signal);
+
+    pthread_mutex_unlock(recycling_mutex);
+    
+    while((audio_signal = ags_audio_signal_get_by_recall_id(audio_signal)) != NULL){
+      ags_recycling_remove_audio_signal(recycling,
+					audio_signal->data);
+      
+      audio_signal = audio_signal->next;
+    }
+
+    g_list_free(audio_signal_start);
+    
+    pthread_mutex_lock(recycling_mutex);
+    
+    recycling = recycling->next;
+    
+    pthread_mutex_unlock(recycling_mutex);
+  }
+  
+  /* call parent */
+  AGS_RECALL_CLASS(ags_rt_stream_channel_run_parent_class)->remove(recall);
 }
 
 /**

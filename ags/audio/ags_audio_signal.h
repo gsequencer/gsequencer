@@ -48,6 +48,7 @@ typedef enum{
   AGS_AUDIO_SIGNAL_TEMPLATE             = 1 <<  1,
   AGS_AUDIO_SIGNAL_PLAY_DONE            = 1 <<  2,
   AGS_AUDIO_SIGNAL_STANDALONE           = 1 <<  3,
+  AGS_AUDIO_SIGNAL_RT_TEMPLATE          = 1 <<  4,
 }AgsAudioSignalFlags;
 
 struct _AgsAudioSignal
@@ -82,6 +83,7 @@ struct _AgsAudioSignal
   GList *stream_end;
 
   GList *note;
+  GObject *rt_template;
 };
 
 struct _AgsAudioSignalClass
