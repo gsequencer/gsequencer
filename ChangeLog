@@ -1,3 +1,8 @@
+ags (1.4.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved rt-safe option
+
 ags (1.4.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

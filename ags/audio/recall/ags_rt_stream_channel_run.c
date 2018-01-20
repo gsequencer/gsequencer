@@ -268,7 +268,7 @@ ags_rt_stream_channel_run_check_rt_stream(AgsRecall *recall)
 				       recall->recall_id);
     rt_template->flags |= AGS_AUDIO_SIGNAL_RT_TEMPLATE;
     ags_recycling_create_audio_signal_with_defaults(recycling,
-						    audio_signal,
+						    rt_template,
 						    0.0, 0);
     ags_recycling_add_audio_signal(recycling,
 				   rt_template);
@@ -280,7 +280,7 @@ ags_rt_stream_channel_run_check_rt_stream(AgsRecall *recall)
 					recycling,
 					recall->recall_id);
     g_object_set(audio_signal,
-		 "rt-template", rt_template
+		 "rt-template", rt_template,
 		 NULL);
     ags_audio_signal_stream_resize(audio_signal,
 				   1);
@@ -359,7 +359,8 @@ ags_rt_stream_channel_run_remove(AgsRecall *recall)
 
     pthread_mutex_unlock(recycling_mutex);
     
-    while((audio_signal = ags_audio_signal_get_by_recall_id(audio_signal)) != NULL){
+    while((audio_signal = ags_audio_signal_get_by_recall_id(audio_signal,
+							    recall->recall_id)) != NULL){
       ags_recycling_remove_audio_signal(recycling,
 					audio_signal->data);
       

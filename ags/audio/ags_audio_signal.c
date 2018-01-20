@@ -487,7 +487,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    *
    * The assigned #AgsAudioSignal realtime template.
    * 
-   * Since: 1.4.10
+   * Since: 1.4.9
    */
   param_spec = g_param_spec_object("rt-template",
 				   i18n_pspec("assigned realtime template"),
