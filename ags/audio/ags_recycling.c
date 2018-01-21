@@ -879,8 +879,10 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
       
       while(list != NULL){
 	if(AGS_AUDIO_SIGNAL(list->data)->rt_template != NULL){
-	  AGS_AUDIO_SIGNAL(list->data)->rt_template = g_hash_table_lookup(hash_table,
-									  AGS_AUDIO_SIGNAL(list->data)->rt_template);
+	  g_object_set(list->data,
+		       "rt-template", g_hash_table_lookup(hash_table,
+							  AGS_AUDIO_SIGNAL(list->data)->rt_template),
+		       NULL);
 	}
 	
 	list = list->next;
