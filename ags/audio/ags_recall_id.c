@@ -186,7 +186,7 @@ ags_recall_id_set_property(GObject *gobject,
       }
 
       if(recall_id->recycling != NULL){
-	g_object_unref(recycling);
+	g_object_unref(recall_id->recycling);
       }
 
       if(recycling != NULL){

@@ -1,4 +1,10 @@
-ags (1.4.10)
+ags (1.4.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsRecallID:recycling property
+	* improved mutex lookup of rt-safe functions
+
+gs (1.4.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* minor-fixes to updating AGS_AUDIO_SIGNAL_RT_TEMPLATE

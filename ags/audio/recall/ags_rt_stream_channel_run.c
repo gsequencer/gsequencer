@@ -232,26 +232,49 @@ ags_rt_stream_channel_run_check_rt_stream(AgsRecall *recall)
 
   AgsRtStreamChannelRun *rt_stream_channel_run;
 
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *source_mutex;
   pthread_mutex_t *recycling_mutex;
-  
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   rt_stream_channel_run = recall;
 
   source = AGS_RECALL_CHANNEL_RUN(rt_stream_channel_run)->source;
 
+  /* lookup mutex */
+  pthread_mutex_lock(application_mutex);
+
+  source_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  (GObject *) source);
+  
+  pthread_mutex_unlock(application_mutex);
+
   /* get first and last recycling */
-  pthread_mutex_lock(source->obj_mutex);
+  pthread_mutex_lock(source_mutex);
   
   first_recycling = source->first_recycling;
   last_recycling = source->last_recycling;
 
-  pthread_mutex_unlock(source->obj_mutex);
+  pthread_mutex_unlock(source_mutex);
 
+  /* lookup mutex */
+  pthread_mutex_lock(application_mutex);
+
+  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) last_recycling);
+  
+  pthread_mutex_unlock(application_mutex);
+  
   /* get end */
-  pthread_mutex_lock(last_recycling->obj_mutex);
+  pthread_mutex_lock(recycling_mutex);
   
   end_recycling = last_recycling->next;
 
-  pthread_mutex_unlock(last_recycling->obj_mutex);
+  pthread_mutex_unlock(recycling_mutex);
 
   /* */
   recycling = first_recycling;
@@ -260,10 +283,16 @@ ags_rt_stream_channel_run_check_rt_stream(AgsRecall *recall)
     AgsAudioSignal *audio_signal;
     AgsAudioSignal *rt_template, *template;
     
-    recycling_mutex = recycling->obj_mutex;
+    /* lookup mutex */
+    pthread_mutex_lock(application_mutex);
+
+    recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) recycling);
+  
+    pthread_mutex_unlock(application_mutex);
 
     /* create rt template */
-    rt_template = ags_audio_signal_new(recycling->soundcard,
+    rt_template = ags_audio_signal_new(recall->soundcard,
 				       recycling,
 				       recall->recall_id);
     rt_template->flags |= AGS_AUDIO_SIGNAL_RT_TEMPLATE;
@@ -274,11 +303,12 @@ ags_rt_stream_channel_run_check_rt_stream(AgsRecall *recall)
 				   rt_template);
     
     /* create buffer */
-    pthread_mutex_lock(recycling_mutex);
-
-    audio_signal = ags_audio_signal_new(recycling->soundcard,
+    audio_signal = ags_audio_signal_new(recall->soundcard,
 					recycling,
 					recall->recall_id);
+
+    pthread_mutex_lock(recycling_mutex);
+
     g_object_set(audio_signal,
 		 "rt-template", rt_template,
 		 NULL);
@@ -323,26 +353,49 @@ ags_rt_stream_channel_run_remove(AgsRecall *recall)
 
   AgsRtStreamChannelRun *rt_stream_channel_run;
 
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *source_mutex;
   pthread_mutex_t *recycling_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   rt_stream_channel_run = recall;
 
   source = AGS_RECALL_CHANNEL_RUN(rt_stream_channel_run)->source;
 
+  /* lookup mutex */
+  pthread_mutex_lock(application_mutex);
+
+  source_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  (GObject *) source);
+  
+  pthread_mutex_unlock(application_mutex);
+
   /* get first and last recycling */
-  pthread_mutex_lock(source->obj_mutex);
+  pthread_mutex_lock(source_mutex);
   
   first_recycling = source->first_recycling;
   last_recycling = source->last_recycling;
 
-  pthread_mutex_unlock(source->obj_mutex);
+  pthread_mutex_unlock(source_mutex);
+
+  /* lookup mutex */
+  pthread_mutex_lock(application_mutex);
+
+  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) last_recycling);
+  
+  pthread_mutex_unlock(application_mutex);
 
   /* get end */
-  pthread_mutex_lock(last_recycling->obj_mutex);
+  pthread_mutex_lock(recycling_mutex);
   
   end_recycling = last_recycling->next;
 
-  pthread_mutex_unlock(last_recycling->obj_mutex);
+  pthread_mutex_unlock(recycling_mutex);
 
   /* */
   recycling = first_recycling;
@@ -350,7 +403,13 @@ ags_rt_stream_channel_run_remove(AgsRecall *recall)
   while(recycling != end_recycling){
     GList *audio_signal, *audio_signal_start;
     
-    recycling_mutex = recycling->obj_mutex;
+    /* lookup mutex */
+    pthread_mutex_lock(application_mutex);
+
+    recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) recycling);
+  
+    pthread_mutex_unlock(application_mutex);
 
     pthread_mutex_lock(recycling_mutex);
 
