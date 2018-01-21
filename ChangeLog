@@ -1,3 +1,8 @@
+ags (1.4.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor-fixes to updating AGS_AUDIO_SIGNAL_RT_TEMPLATE
+
 ags (1.4.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

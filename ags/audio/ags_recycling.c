@@ -865,6 +865,8 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
 	  
 	  ags_recycling_remove_audio_signal(recycling,
 					    list->data);
+
+	  rt_template->flags |= AGS_AUDIO_SIGNAL_RT_TEMPLATE;
 	  ags_recycling_add_audio_signal(recycling,
 					 rt_template);
 	}
