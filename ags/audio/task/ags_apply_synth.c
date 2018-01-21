@@ -1290,6 +1290,8 @@ ags_apply_synth_launch(AgsTask *task)
 	  pthread_mutex_unlock(channel_mutex);
 	}
     
+	initial_run = FALSE;
+	
 	/* iterate */
 	pthread_mutex_lock(input_mutex);
 	
@@ -1297,8 +1299,6 @@ ags_apply_synth_launch(AgsTask *task)
 
 	pthread_mutex_unlock(input_mutex);
       }
-
-      initial_run = FALSE;
     }      
   }  
 }
