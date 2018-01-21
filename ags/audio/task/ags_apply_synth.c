@@ -1143,12 +1143,16 @@ ags_apply_synth_launch(AgsTask *task)
     }
   }else{
     if((AGS_AUDIO_HAS_NOTATION & (audio_flags)) == 0){
+      gboolean initial_run;
+      
       pthread_mutex_lock(audio_mutex);
 
       input = audio->input;
 
       pthread_mutex_unlock(audio_mutex);
-	
+
+      initial_run = TRUE;
+      
       while(input != NULL){
 	/* get channel mutex */
 	pthread_mutex_lock(application_mutex);
@@ -1249,11 +1253,15 @@ ags_apply_synth_launch(AgsTask *task)
 	  
 	  /* create template */
 	  pthread_mutex_lock(recycling_mutex);
-	
-	  audio_signal = ags_audio_signal_new(first_recycling->soundcard,
-					      first_recycling,
-					      NULL);
-	  audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+
+	  if(initial_run){
+	    audio_signal = ags_audio_signal_new(first_recycling->soundcard,
+						first_recycling,
+						NULL);
+	    audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	  }else{
+	    audio_signal = ags_audio_signal_get_template(first_recycling->audio_signal);
+	  }
 	  
 	  pthread_mutex_unlock(recycling_mutex);
 
@@ -1289,6 +1297,8 @@ ags_apply_synth_launch(AgsTask *task)
 
 	pthread_mutex_unlock(input_mutex);
       }
+
+      initial_run = FALSE;
     }      
   }  
 }
