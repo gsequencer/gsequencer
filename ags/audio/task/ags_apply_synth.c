@@ -818,7 +818,8 @@ ags_apply_synth_launch(AgsTask *task)
   AgsSynthGenerator *synth_generator;
 
   AgsMutexManager *mutex_manager;
-  
+
+  GList *rt_template;
   GList *stream;
 
   gchar *str;
@@ -953,16 +954,6 @@ ags_apply_synth_launch(AgsTask *task)
 
 	pthread_mutex_unlock(application_mutex);
 
-	/* create template */
-	pthread_mutex_lock(recycling_mutex);
-	
-	audio_signal = ags_audio_signal_new(first_recycling->soundcard,
-					    first_recycling,
-					    NULL);
-	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-
-	pthread_mutex_unlock(recycling_mutex);
-	
 	/* creat synth generator if needed */
 	if(synth_generator == NULL){
 	  guint samplerate;
@@ -971,8 +962,19 @@ ags_apply_synth_launch(AgsTask *task)
 	  
 	  synth_generator = (GObject *) ags_synth_generator_new();
 
-	  /* create template */
+	  /* get template */
 	  pthread_mutex_lock(recycling_mutex);
+	  
+	  audio_signal = ags_audio_signal_get_template(first_recycling->audio_signal);
+
+	  if(audio_signal == NULL){
+	    audio_signal = ags_audio_signal_new(first_recycling->soundcard,
+						first_recycling,
+						NULL);
+	    audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	    ags_recycling_add_audio_signal(first_recycling,
+					   audio_signal);
+	  }
 	  
 	  samplerate = audio_signal->samplerate;
 	  buffer_size = audio_signal->buffer_size;
@@ -1009,25 +1011,46 @@ ags_apply_synth_launch(AgsTask *task)
 		     NULL);
 
 	pthread_mutex_unlock(channel_mutex);
+	
+	/* get template */
+	pthread_mutex_lock(recycling_mutex);
+	
+	audio_signal = ags_audio_signal_get_template(first_recycling->audio_signal);
+
+	if(audio_signal == NULL){
+	  audio_signal = ags_audio_signal_new(first_recycling->soundcard,
+					      first_recycling,
+					      NULL);
+	  audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	  ags_recycling_add_audio_signal(first_recycling,
+					 audio_signal);
+	}
 		  
 	/* compute audio signal */
 	note = (apply_synth->base_note) + (gdouble) i;
 	  
-	pthread_mutex_lock(channel_mutex);
-
-	//FIXME:JK: not thread-safe
 	ags_synth_generator_compute_extended(synth_generator,
 					     audio_signal,
 					     note,
 					     sync_point,
 					     sync_point_count);
 
-	pthread_mutex_unlock(channel_mutex);
+	rt_template = first_recycling->audio_signal;
 
-	/* add template */
-	ags_recycling_add_audio_signal(first_recycling,
-				       audio_signal);
+	while(rt_template != NULL){
+	  if((AGS_AUDIO_SIGNAL_RT_TEMPLATE & (AGS_AUDIO_SIGNAL(rt_template->data)->flags)) != 0){
+	    ags_synth_generator_compute_extended(synth_generator,
+						 rt_template->data,
+						 note,
+						 sync_point,
+						 sync_point_count);
+	  }
+	  
+	  rt_template = rt_template->next;
+	}
 	
+	pthread_mutex_unlock(recycling_mutex);
+
 	/* iterate */
 	pthread_mutex_lock(channel_mutex);
 	
@@ -1065,11 +1088,6 @@ ags_apply_synth_launch(AgsTask *task)
 
 	pthread_mutex_unlock(application_mutex);
 
-	/* create template */
-	audio_signal = ags_audio_signal_new(first_recycling->soundcard,
-					    first_recycling,
-					    NULL);
-	
 	/* creat synth generator if needed */
 	if(synth_generator == NULL){
 	  guint samplerate;
@@ -1078,7 +1096,19 @@ ags_apply_synth_launch(AgsTask *task)
 
 	  synth_generator = (GObject *) ags_synth_generator_new();
 
+	  /* get template */
 	  pthread_mutex_lock(recycling_mutex);
+
+	  audio_signal = ags_audio_signal_get_template(first_recycling->audio_signal);
+
+	  if(audio_signal == NULL){
+	    audio_signal = ags_audio_signal_new(first_recycling->soundcard,
+						first_recycling,
+						NULL);
+	    audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	    ags_recycling_add_audio_signal(first_recycling,
+					   audio_signal);
+	  }
 	  
 	  samplerate = audio_signal->samplerate;
 	  buffer_size = audio_signal->buffer_size;
@@ -1114,25 +1144,47 @@ ags_apply_synth_launch(AgsTask *task)
 		     "volume", volume,
 		     NULL);
 
-	pthread_mutex_unlock(channel_mutex);	
+	pthread_mutex_unlock(channel_mutex);
+	
+	/* get template */
+	pthread_mutex_lock(recycling_mutex);
+	
+	audio_signal = ags_audio_signal_get_template(first_recycling->audio_signal);
+
+	if(audio_signal == NULL){
+	  audio_signal = ags_audio_signal_new(first_recycling->soundcard,
+					      first_recycling,
+					      NULL);
+	  audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	  ags_recycling_add_audio_signal(first_recycling,
+					 audio_signal);
+	}
 	
 	/* compute audio signal */
 	note = (apply_synth->base_note);
-	  
-	pthread_mutex_lock(channel_mutex);
-
-	//FIXME:JK: not thread-safe
+	
 	ags_synth_generator_compute_extended(AGS_INPUT(channel)->synth_generator,
 					     audio_signal,
 					     note,
 					     sync_point,
 					     sync_point_count);
 
-	pthread_mutex_unlock(channel_mutex);
+	rt_template = first_recycling->audio_signal;
 
-	ags_recycling_add_audio_signal(first_recycling,
-				       audio_signal);
-	
+	while(rt_template != NULL){
+	  if((AGS_AUDIO_SIGNAL_RT_TEMPLATE & (AGS_AUDIO_SIGNAL(rt_template->data)->flags)) != 0){
+	    ags_synth_generator_compute_extended(synth_generator,
+						 rt_template->data,
+						 note,
+						 sync_point,
+						 sync_point_count);
+	  }
+	  
+	  rt_template = rt_template->next;
+	}
+
+	pthread_mutex_unlock(recycling_mutex);
+
 	/* iterate */
 	pthread_mutex_lock(channel_mutex);
 	
@@ -1143,16 +1195,12 @@ ags_apply_synth_launch(AgsTask *task)
     }
   }else{
     if((AGS_AUDIO_HAS_NOTATION & (audio_flags)) == 0){
-      gboolean initial_run;
-      
       pthread_mutex_lock(audio_mutex);
 
       input = audio->input;
 
       pthread_mutex_unlock(audio_mutex);
-
-      initial_run = TRUE;
-      
+	
       while(input != NULL){
 	/* get channel mutex */
 	pthread_mutex_lock(application_mutex);
@@ -1183,14 +1231,25 @@ ags_apply_synth_launch(AgsTask *task)
 	if(synth_generator == NULL){
 	  synth_generator = (GObject *) ags_synth_generator_new();
 
-	  /* get presets */
-	  pthread_mutex_lock(input_mutex);	  
-
-	  samplerate = input->samplerate;
-	  buffer_size = input->buffer_size;
-	  format = input->format;
+	  /* get template */
+	  pthread_mutex_lock(recycling_mutex);
 	  
-	  pthread_mutex_unlock(input_mutex);
+	  audio_signal = ags_audio_signal_get_template(first_recycling->audio_signal);
+
+	  if(audio_signal == NULL){
+	    audio_signal = ags_audio_signal_new(first_recycling->soundcard,
+						first_recycling,
+						NULL);
+	    audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	    ags_recycling_add_audio_signal(first_recycling,
+					   audio_signal);
+	  }
+
+	  samplerate = audio_signal->samplerate;
+	  buffer_size = audio_signal->buffer_size;
+	  format = audio_signal->format;
+	  
+	  pthread_mutex_unlock(recycling_mutex);
 
 	  /* set properties */
 	  g_object_set(synth_generator,
@@ -1251,37 +1310,46 @@ ags_apply_synth_launch(AgsTask *task)
 
 	  pthread_mutex_unlock(application_mutex);
 	  
-	  /* create template */
+	  /* get template */
 	  pthread_mutex_lock(recycling_mutex);
+	
+	  audio_signal = ags_audio_signal_get_template(first_recycling->audio_signal);
 
-	  if(initial_run){
+	  if(audio_signal == NULL){
 	    audio_signal = ags_audio_signal_new(first_recycling->soundcard,
 						first_recycling,
 						NULL);
 	    audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	  }else{
-	    audio_signal = ags_audio_signal_get_template(first_recycling->audio_signal);
+	    ags_recycling_add_audio_signal(first_recycling,
+					   audio_signal);
 	  }
 	  
-	  pthread_mutex_unlock(recycling_mutex);
 
 	  /* compute audio signal */
  	  note = (apply_synth->base_note) + (gdouble) i;
 	  
-	  pthread_mutex_lock(channel_mutex);
-	  
-	  //FIXME:JK: not thread-safe
 	  ags_synth_generator_compute_extended(synth_generator,
 					       audio_signal,
 					       note,
 					       sync_point,
 					       sync_point_count);
 	  
-	  pthread_mutex_unlock(channel_mutex);
+	  rt_template = first_recycling->audio_signal;
 
-	  ags_recycling_add_audio_signal(first_recycling,
-					 audio_signal);
+	  while(rt_template != NULL){
+	    if((AGS_AUDIO_SIGNAL_RT_TEMPLATE & (AGS_AUDIO_SIGNAL(rt_template->data)->flags)) != 0){
+	      ags_synth_generator_compute_extended(synth_generator,
+						   rt_template->data,
+						   note,
+						   sync_point,
+						   sync_point_count);
+	    }
 	  
+	    rt_template = rt_template->next;
+	  }
+
+	  pthread_mutex_unlock(recycling_mutex);
+
 	  /* iterate */
 	  pthread_mutex_lock(channel_mutex);
 	
@@ -1290,8 +1358,6 @@ ags_apply_synth_launch(AgsTask *task)
 	  pthread_mutex_unlock(channel_mutex);
 	}
     
-	initial_run = FALSE;
-	
 	/* iterate */
 	pthread_mutex_lock(input_mutex);
 	

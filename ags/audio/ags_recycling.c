@@ -840,6 +840,11 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
       ags_recycling_remove_audio_signal(recycling,
 					old_template);
 
+      /* add new template */
+      recycling->audio_signal = g_list_prepend(recycling->audio_signal,
+					       (gpointer) audio_signal);
+      g_object_ref(audio_signal);
+
       /* realtime template */
       list_start = 
 	list = g_list_copy(recycling->audio_signal);
@@ -890,10 +895,10 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
 
       g_hash_table_unref(hash_table);
       g_list_free(list_start);
+    }else{
+      recycling->audio_signal = g_list_prepend(recycling->audio_signal, (gpointer) audio_signal);
+      g_object_ref(audio_signal);
     }
-
-    recycling->audio_signal = g_list_prepend(recycling->audio_signal, (gpointer) audio_signal);
-    g_object_ref(audio_signal);
   }
   
   if(audio_signal->recycling != recycling){

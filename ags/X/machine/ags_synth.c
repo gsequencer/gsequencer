@@ -517,7 +517,8 @@ ags_synth_update(AgsSynth *synth)
   
   AgsAudio *audio;
   AgsChannel *channel;
-
+  AgsRecycling *first_recycling;
+  
   AgsClearAudioSignal *clear_audio_signal;
   AgsApplySynth *apply_synth;
 
@@ -529,6 +530,7 @@ ags_synth_update(AgsSynth *synth)
   
   GList *input_pad, *input_pad_start;
   GList *input_line, *input_line_start;
+  GList *rt_template;
   GList *task;
   
   guint output_lines;
@@ -541,9 +543,10 @@ ags_synth_update(AgsSynth *synth)
   AgsComplex **sync_point;
   guint sync_point_count;
   
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
-  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *recycling_mutex;
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) synth);
   application_context = (AgsApplicationContext *) window->application_context;
@@ -660,9 +663,24 @@ ags_synth_update(AgsSynth *synth)
     /* clear task */
     pthread_mutex_lock(channel_mutex);
 
-    template = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
-
+    first_recycling = channel->first_recycling;
+    
     pthread_mutex_unlock(channel_mutex);
+
+    /* lookup recycling mutex */
+    pthread_mutex_lock(application_mutex);
+
+    recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) first_recycling);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /*  */
+    pthread_mutex_lock(recycling_mutex);
+
+    template = ags_audio_signal_get_template(first_recycling->audio_signal);
+
+    pthread_mutex_unlock(recycling_mutex);
 
     clear_audio_signal = ags_clear_audio_signal_new(template);
     task = g_list_prepend(task,
