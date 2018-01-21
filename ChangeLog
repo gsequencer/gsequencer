@@ -1,6 +1,8 @@
 ags (1.4.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AGS_AUDIO_SIGNAL_RT_TEMPLATE
+	* implemented AgsAudioSignal::rt-template property
 	* improved rt-safe option
 
 ags (1.4.8)
