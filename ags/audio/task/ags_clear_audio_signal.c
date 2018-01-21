@@ -270,9 +270,18 @@ ags_clear_audio_signal_launch(AgsTask *task)
   
   AgsAudioSignal *audio_signal;
 
+  AgsMutexManager *mutex_manager;
+
   GList *stream;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *recycling_mutex;
+
   clear_audio_signal = AGS_CLEAR_AUDIO_SIGNAL(task);
+  
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* clear */
   audio_signal = clear_audio_signal->audio_signal;
