@@ -309,7 +309,7 @@ ags_clear_audio_signal_launch(AgsTask *task)
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0){
     GList *rt_template;
 
-    rt_template = audio_signal->recycling->audio_signal;
+    rt_template = AGS_RECYCLING(audio_signal->recycling)->audio_signal;
 
     while(rt_template != NULL){
       if((AGS_AUDIO_SIGNAL_RT_TEMPLATE & (AGS_AUDIO_SIGNAL(rt_template->data)->flags)) != 0){
