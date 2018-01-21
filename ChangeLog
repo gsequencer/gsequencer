@@ -1,7 +1,8 @@
 ags (1.4.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* improved ags_apply_synth.h to create a new template because else rt-template won't be updated
+	* improved ags_apply_synth.c to update rt-template
+	* improved ags_clear_audio_signal.c to update rt-template
 
 ags (1.4.11)
 
