@@ -1,3 +1,8 @@
+ags (1.4.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsLiveDssiBridge and AgsLiveLv2Bridge notation editor channel mapping
+
 ags (1.4.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

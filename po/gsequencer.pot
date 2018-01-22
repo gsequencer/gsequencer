@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 1.4.13\n"
+"Project-Id-Version: gsequencer 1.4.14\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2018-01-22 09:58+0100\n"
+"POT-Creation-Date: 2018-01-22 13:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -60,7 +60,7 @@ msgid "input"
 msgstr ""
 
 #: ags/X/ags_bulk_member.c:532 ags/X/machine/ags_dssi_bridge.c:390
-#: ags/X/machine/ags_live_dssi_bridge.c:390
+#: ags/X/machine/ags_live_dssi_bridge.c:393
 msgid "Plugin file not present"
 msgstr ""
 
@@ -648,7 +648,7 @@ msgstr ""
 
 #: ags/X/editor/ags_envelope_editor.c:176
 #: ags/X/editor/ags_pattern_envelope.c:240 ags/X/machine/ags_ffplayer.c:269
-#: ags/X/machine/ags_live_lv2_bridge.c:1623 ags/X/machine/ags_lv2_bridge.c:2003
+#: ags/X/machine/ags_live_lv2_bridge.c:1626 ags/X/machine/ags_lv2_bridge.c:2003
 msgid "preset"
 msgstr ""
 
@@ -922,12 +922,12 @@ msgstr ""
 msgid "channel: "
 msgstr ""
 
-#: ags/X/machine/ags_dssi_bridge.c:318 ags/X/machine/ags_live_dssi_bridge.c:318
-#: ags/X/machine/ags_live_lv2_bridge.c:1562 ags/X/machine/ags_lv2_bridge.c:1942
+#: ags/X/machine/ags_dssi_bridge.c:318 ags/X/machine/ags_live_dssi_bridge.c:321
+#: ags/X/machine/ags_live_lv2_bridge.c:1565 ags/X/machine/ags_lv2_bridge.c:1942
 msgid "program"
 msgstr ""
 
-#: ags/X/machine/ags_live_lv2_bridge.c:452 ags/X/machine/ags_lv2_bridge.c:433
+#: ags/X/machine/ags_live_lv2_bridge.c:455 ags/X/machine/ags_lv2_bridge.c:433
 msgid "show GUI"
 msgstr ""
 
