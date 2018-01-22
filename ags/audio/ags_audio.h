@@ -85,6 +85,7 @@ typedef enum{
   AGS_AUDIO_SKIP_INPUT                  = 1 << 17,
   AGS_AUDIO_HAS_WAVE                    = 1 << 18,
   AGS_AUDIO_WAVE_DEFAULT                = 1 << 19,
+  AGS_AUDIO_HAS_PATTERN                 = 1 << 20,
 }AgsAudioFlags;
 
 struct _AgsAudio
@@ -107,6 +108,8 @@ struct _AgsAudio
   guint format;
   guint sequence_length;
 
+  guint bank_dim[3];
+  
   guint audio_channels;
 
   guint output_pads;

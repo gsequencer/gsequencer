@@ -1,3 +1,10 @@
+ags (1.4.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed restore of AgsPattern
+	* fixed ags_open_file.c to use correct file link
+	* fixed async-safe ags_simple_file_read_machine()
+
 ags (1.4.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

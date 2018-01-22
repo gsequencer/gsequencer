@@ -26,6 +26,7 @@
 #include <ags/audio/ags_notation.h>
 #include <ags/audio/ags_automation.h>
 #include <ags/audio/ags_wave.h>
+#include <ags/audio/ags_pattern.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_playback_domain.h>
@@ -957,6 +958,11 @@ ags_audio_init(AgsAudio *audio)
   audio->input_pads = 0;
   audio->input_lines = 0;
 
+  /* bank */
+  audio->bank_dim[0] = 0;
+  audio->bank_dim[1] = 0;
+  audio->bank_dim[2] = 0;
+  
   /* midi mapping */
   audio->audio_start_mapping = 0;
   audio->audio_end_mapping = 0;
@@ -2684,7 +2690,10 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   gboolean alloc_recycling;
   gboolean link_recycling; // affects AgsInput
   gboolean set_sync_link, set_async_link; // affects AgsOutput
+  gboolean alloc_pattern;
 
+  guint bank_dim[3];
+  
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *prev_mutex, *prev_pad_mutex, *current_mutex;
   
@@ -2699,6 +2708,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   auto void ags_audio_set_audio_channels_shrink_wave();
   
   void ags_audio_set_audio_channels_init_parameters(GType type){
+    alloc_pattern = FALSE;
+    
     if(type == AGS_TYPE_OUTPUT){
       link_recycling = FALSE;
 
@@ -2727,16 +2738,24 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       set_sync_link = FALSE;
       set_async_link = FALSE;
       
-      if((AGS_AUDIO_INPUT_HAS_RECYCLING & audio->flags) != 0){
+      if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
 	alloc_recycling = TRUE;
       }else{
 	alloc_recycling = FALSE;
       }
       
-      if((AGS_AUDIO_ASYNC & audio->flags) != 0 && alloc_recycling){
+      if((AGS_AUDIO_ASYNC & (audio->flags)) != 0 && alloc_recycling){
 	link_recycling = TRUE;
       }else{
 	link_recycling = FALSE;
+      }
+
+      if((AGS_AUDIO_HAS_PATTERN & (audio->flags)) != 0){
+	alloc_pattern = TRUE;
+	
+	bank_dim[0] = audio->bank_dim[0];
+	bank_dim[1] = audio->bank_dim[1];
+	bank_dim[2] = audio->bank_dim[2];
       }
     }    
   }
@@ -2777,6 +2796,15 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 					      NULL);
 	g_object_ref(channel);
 	
+	if(alloc_pattern){
+	  channel->pattern = g_list_alloc();
+	  channel->pattern->data = (gpointer) ags_pattern_new();
+	  g_object_ref(channel->pattern->data);
+	  
+	  ags_pattern_set_dim((AgsPattern *) channel->pattern->data,
+			      bank_dim[0], bank_dim[1], bank_dim[2]);
+	}
+
 	if(start == NULL){
 	  start = channel;
 
@@ -3348,7 +3376,9 @@ ags_audio_real_set_pads(AgsAudio *audio,
   AgsMessageQueue *message_queue;
   
   gboolean alloc_recycling, link_recycling, set_sync_link, set_async_link;
-
+  gboolean alloc_pattern;
+  guint bank_dim[3];
+  
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *prev_mutex, *prev_pad_mutex;
 
@@ -3370,6 +3400,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
     link_recycling = FALSE;
     set_sync_link = FALSE;
     set_async_link = FALSE;
+
+    alloc_pattern = FALSE;
     
     if(channel_type == AGS_TYPE_OUTPUT){
       if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
@@ -3388,13 +3420,21 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	}
       }
     }else{      
-      if((AGS_AUDIO_INPUT_HAS_RECYCLING & audio->flags) != 0){
+      if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
 	alloc_recycling = TRUE;
       }
       
-      if((AGS_AUDIO_ASYNC & audio->flags) != 0 && alloc_recycling){
+      if((AGS_AUDIO_ASYNC & (audio->flags)) != 0 && alloc_recycling){
 	link_recycling = TRUE;
       }
+
+      if((AGS_AUDIO_HAS_PATTERN & (audio->flags)) != 0){
+	alloc_pattern = TRUE;
+
+	bank_dim[0] = audio->bank_dim[0];
+	bank_dim[1] = audio->bank_dim[1];
+	bank_dim[2] = audio->bank_dim[2];
+      }      
     }    
   }
 
@@ -3419,6 +3459,15 @@ ags_audio_real_set_pads(AgsAudio *audio,
 					      "buffer-size", audio->buffer_size,
 					      NULL);
 	g_object_ref(channel);
+
+	if(alloc_pattern){
+	  channel->pattern = g_list_alloc();
+	  channel->pattern->data = (gpointer) ags_pattern_new();
+	  g_object_ref(channel->pattern->data);
+	  
+	  ags_pattern_set_dim((AgsPattern *) channel->pattern->data,
+			      bank_dim[0], bank_dim[1], bank_dim[2]);
+	}
 	
 	if(start == NULL){
 	  /* set first channel in AgsAudio */
@@ -3912,7 +3961,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
     }
 
     /* grow or shrink */
-    if(pads > pads_old){	 
+    if(pads > pads_old){
       /* instantiate notation */
       if(pads_old == 0){
 	if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){

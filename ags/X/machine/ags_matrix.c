@@ -188,6 +188,7 @@ ags_matrix_init(AgsMatrix *matrix)
 		   AGS_AUDIO_ASYNC |
 		   AGS_AUDIO_NOTATION_DEFAULT |
 		   AGS_AUDIO_HAS_NOTATION |
+		   AGS_AUDIO_HAS_PATTERN |
 		   AGS_AUDIO_PATTERN_MODE);
   g_object_set(audio,
 	       "audio-start-mapping", 0,
@@ -195,6 +196,10 @@ ags_matrix_init(AgsMatrix *matrix)
 	       "midi-start-mapping", 0,
 	       "midi-end-mapping", 128,
 	       NULL);
+
+  audio->bank_dim[0] = 1;
+  audio->bank_dim[1] = 9;
+  audio->bank_dim[2] = 32;
 
   AGS_MACHINE(matrix)->flags |= (AGS_MACHINE_REVERSE_NOTATION);
 
@@ -497,12 +502,6 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
 
 	/* instantiate pattern */
 	pthread_mutex_lock(source_mutex);
-
-	if(source->pattern == NULL){
-	  source->pattern = g_list_alloc();
-	  source->pattern->data = (gpointer) ags_pattern_new();
-	  ags_pattern_set_dim((AgsPattern *) source->pattern->data, 1, 9, 32);
-	}
 	
 	source = source->next;
 
