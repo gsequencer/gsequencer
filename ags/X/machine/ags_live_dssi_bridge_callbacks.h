@@ -27,6 +27,8 @@
 
 #include <ags/X/machine/ags_live_dssi_bridge.h>
 
+void ags_live_dssi_bridge_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLiveDssiBridge *live_dssi_bridge);
+
 void ags_live_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveDssiBridge *live_dssi_bridge);
 
 #endif /*__AGS_LIVE_DSSI_BRIDGE_CALLBACKS_H__*/

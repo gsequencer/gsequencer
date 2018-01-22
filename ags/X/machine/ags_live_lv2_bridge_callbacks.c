@@ -40,6 +40,32 @@ extern GHashTable *ags_live_lv2_bridge_lv2ui_handle;
 extern GHashTable *ags_live_lv2_bridge_lv2ui_idle;
 
 void
+ags_live_lv2_bridge_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLiveLv2Bridge *live_lv2_bridge)
+{
+  AgsWindow *window;
+
+  gchar *str;
+
+  if(old_parent != NULL){
+    return;
+  }
+
+  window = AGS_WINDOW(gtk_widget_get_toplevel(widget));
+
+  str = g_strdup_printf("Default %d",
+			ags_window_find_machine_counter(window, AGS_TYPE_LIVE_LV2_BRIDGE)->counter);
+
+  g_object_set(AGS_MACHINE(live_lv2_bridge),
+	       "machine-name", str,
+	       NULL);
+
+  ags_window_increment_machine_counter(window,
+				       AGS_TYPE_LIVE_LV2_BRIDGE);
+
+  g_free(str);
+}
+
+void
 ags_live_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveLv2Bridge *live_lv2_bridge)
 {
   AgsWindow *window;

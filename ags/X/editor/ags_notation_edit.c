@@ -937,12 +937,16 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
 	       NULL);
 
   /* get channel count */
+#if 0
   if((AGS_AUDIO_NOTATION_DEFAULT & (notation_editor->selected_machine->audio->flags)) != 0){
     channel_count = notation_editor->selected_machine->audio->input_pads;
   }else{
     channel_count = notation_editor->selected_machine->audio->output_pads;
   }
-
+#else
+  channel_count = notation_editor->selected_machine->audio->input_pads;
+#endif
+  
   /* upper */
   old_upper = adjustment->upper; 
 
@@ -1074,12 +1078,16 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit)
   }
   
   /* get channel count */
+#if 0
   if((AGS_AUDIO_NOTATION_DEFAULT & (notation_editor->selected_machine->audio->flags)) != 0){
     channel_count = notation_editor->selected_machine->audio->input_pads;
   }else{
     channel_count = notation_editor->selected_machine->audio->output_pads;
   }
-
+#else
+  channel_count = notation_editor->selected_machine->audio->input_pads;
+#endif
+  
   /* get width */
   width = GTK_WIDGET(notation_edit->drawing_area)->allocation.width;
   width_fits = FALSE;
@@ -1255,12 +1263,16 @@ ags_notation_edit_draw_position(AgsNotationEdit *notation_edit)
   }
   
   /* get channel count */
+#if 0
   if((AGS_AUDIO_NOTATION_DEFAULT & (notation_editor->selected_machine->audio->flags)) != 0){
     channel_count = notation_editor->selected_machine->audio->input_pads;
   }else{
     channel_count = notation_editor->selected_machine->audio->output_pads;
   }
-
+#else
+  channel_count = notation_editor->selected_machine->audio->input_pads;
+#endif
+  
   /* get offset and dimensions */
   position = ((double) notation_edit->note_offset) * ((double) notation_edit->control_width);
   
@@ -1520,12 +1532,16 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
   notation_edit_style = gtk_widget_get_style(GTK_WIDGET(notation_edit->drawing_area));
 
   /* get channel count */
+#if 0
   if((AGS_AUDIO_NOTATION_DEFAULT & (notation_editor->selected_machine->audio->flags)) != 0){
     channel_count = notation_editor->selected_machine->audio->input_pads;
   }else{
     channel_count = notation_editor->selected_machine->audio->output_pads;
   }
-
+#else
+  channel_count = notation_editor->selected_machine->audio->input_pads;
+#endif
+  
   /* zoom */
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom) - 2.0);
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));

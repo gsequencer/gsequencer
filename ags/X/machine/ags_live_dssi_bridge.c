@@ -257,6 +257,9 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
 
   AgsAudio *audio;
 
+  g_signal_connect_after((GObject *) live_dssi_bridge, "parent-set",
+			 G_CALLBACK(ags_live_dssi_bridge_parent_set_callback), (gpointer) live_dssi_bridge);
+
   audio = AGS_MACHINE(live_dssi_bridge)->audio;
   audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 		   AGS_AUDIO_INPUT_HAS_RECYCLING |
