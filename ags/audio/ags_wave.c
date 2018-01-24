@@ -25,6 +25,8 @@
 
 #include <ags/i18n.h>
 
+#include <errno.h>
+
 void ags_wave_class_init(AgsWaveClass *wave);
 void ags_wave_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_wave_init(AgsWave *wave);
@@ -852,13 +854,57 @@ ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer)
 }
 
 /**
+ * ags_wave_find_point:
+ * @wave: an #AgsWave
+ * @x: offset
+ * @use_selection_list: if %TRUE selection is searched
+ *
+ * Find buffers by offset.
+ *
+ * Returns: the matching buffer as #AgsBuffer.
+ *
+ * Since: 1.5.0
+ */
+AgsBuffer*
+ags_wave_find_point(AgsWave *wave,
+		    guint x,
+		    gboolean use_selection_list)
+{
+  AgsBuffer *buffer;
+
+  GList *list;
+
+  if(use_selection_list){
+    list = notation->selection;
+  }else{
+    list = notation->buffer;
+  }
+
+  while(list != NULL && AGS_BUFFER(list->data)->x < x){
+    list = list->next;
+  }
+
+  if(list == NULL){
+    return(NULL);
+  }
+
+  buffer = list->data;
+  
+  if(buffer->x == x){
+    return(buffer);
+  }else{
+    return(NULL);
+  }
+}
+
+/**
  * ags_wave_find_region:
  * @wave: an #AgsWave
  * @x0: start offset
  * @x1: end offset
  * @use_selection_list: if %TRUE selection is searched
  *
- * Find buffers by offset and tone region.
+ * Find buffers by offset and region.
  *
  * Returns: the matching buffers as #GList.
  *
@@ -1291,6 +1337,8 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 					    gdouble delay, guint attack,
 					    gboolean match_channel, gboolean do_replace)
 {
+  gboolean match_timestamp;
+  
   auto void ags_wave_insert_native_level_from_clipboard_version_1_4_0();
   
   void ags_wave_insert_native_level_from_clipboard_version_1_4_0()
@@ -1299,14 +1347,16 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 
     xmlNode *node;
 
-    char *x;
+    xmlChar *x;
+    xmlChar *selection_x0, *selection_x1;
     gchar *offset;
     char *endptr;
 
     guint x_boundary_val;
     guint x_val;
     guint base_x_difference;
-    guint offset_val;
+    guint selection_x0_val, selection_x1_val;
+    guint count;
     gboolean subtract_x;
 
     node = root_node->children;
@@ -1315,6 +1365,7 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
     if(reset_x_offset){
       if(x_boundary != NULL){
 	errno = 0;
+	
 	x_boundary_val = strtoul(x_boundary,
 				 &endptr,
 				 10);
@@ -1346,11 +1397,60 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 	if(!xmlStrncmp("buffer",
 		       node->name,
 		       7)){
-	  //TODO:JK: implement me
-	}else if(!xmlStrncmp("timestamp",
-			     node->name,
-			     10)){
-	  //TODO:JK: implement me
+	  /* retrieve x offset */
+	  x = xmlGetProp(node, "x");
+
+	  if(x0 == NULL){
+	    node = node->next;
+	  
+	    continue;
+	  }
+	  
+	  errno = 0;
+	  x_val = g_ascii_strtoull(x,
+				   &endptr,
+				   10);
+
+	  if(errno == ERANGE){
+	    node = node->next;
+	  
+	    continue;
+	  } 
+
+	  if(x == endptr){
+	    node = node->next;
+	  
+	    continue;
+	  }
+
+	  selection_x0 = xmlGetProp(node,
+				    "selection-x0");
+	  
+	  selection_x1 = xmlGetProp(node,
+				    "selection-x1");
+
+	  if(!match_timestamp ||
+	     x_val < wave->timestamp->timer.ags_offset.offset + AGS_WAVE_DEFAULT_OFFSET){
+	    buffer = ags_wave_find_point(wave,
+					 x_val,
+					 FALSE);
+
+	    if(buffer != NULL &&
+	       do_replace){
+	      ags_audio_buffer_util_clear_buffer(buffer->data, 1,
+						 count, ags_audio_buffer_util_format_from_soundcard(buffer->format));
+	    }
+	    
+	    if(buffer == NULL){
+	      buffer = ags_buffer_new();
+	    }
+	    
+	    if(do_replace){
+	      //TODO:JK: implement me
+	    }else{
+	      //TODO:JK: implement me
+	    }
+	  }
 	}
       }
       
@@ -1361,12 +1461,14 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
   if(!AGS_IS_WAVE(wave)){
     return;
   }
+
+  match_timestamp = TRUE;
   
   if(!xmlStrncmp("1.4.0", version, 7)){
     /* changes contain only optional informations */
     if(match_channel &&
        wave->audio_channel != g_ascii_strtoull(xmlGetProp(root_node,
-							      "audio-channel"),
+							  "audio-channel"),
 						   NULL,
 						   10)){
       return;

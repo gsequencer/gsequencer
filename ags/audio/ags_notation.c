@@ -1162,6 +1162,7 @@ ags_notation_find_point(AgsNotation *notation,
 			gboolean use_selection_list)
 {
   AgsNote *note, *prev_note;
+
   GList *notes;
 
   if(use_selection_list){
@@ -1174,8 +1175,9 @@ ags_notation_find_point(AgsNotation *notation,
     notes = notes->next;
   }
 
-  if(notes == NULL)
+  if(notes == NULL){
     return(NULL);
+  }
 
   prev_note = NULL;
 
@@ -1671,7 +1673,6 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
     guint x_boundary_val, y_boundary_val;
     guint x0_val, x1_val, y_val;
     guint base_x_difference, base_y_difference;
-    guint64 offset_val;
     gboolean subtract_x, subtract_y;
 
     node = root_node->children;

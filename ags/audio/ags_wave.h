@@ -119,6 +119,9 @@ GList* ags_wave_get_selection(AgsWave *wave);
 
 gboolean ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer);
 
+AgsBuffer* ags_wave_find_point(AgsWave *wave,
+			       guint x,
+			       gboolean use_selection_list);
 GList* ags_wave_find_region(AgsWave *wave,
 			    guint x0,
 			    guint x1,
