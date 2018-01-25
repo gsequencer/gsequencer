@@ -88,6 +88,7 @@ enum{
   PROP_STREAM_END,
   PROP_STREAM_CURRENT,
   PROP_NOTE,
+  PROP_RT_TEMPLATE,
 };
 
 enum{
@@ -481,6 +482,22 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				  PROP_NOTE,
 				  param_spec);
 
+  /**
+   * AgsAudioSignal:rt-template:
+   *
+   * The assigned #AgsAudioSignal realtime template.
+   * 
+   * Since: 1.4.9
+   */
+  param_spec = g_param_spec_object("rt-template",
+				   i18n_pspec("assigned realtime template"),
+				   i18n_pspec("The assigend realtime template"),
+				   AGS_TYPE_AUDIO_SIGNAL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RT_TEMPLATE,
+				  param_spec);
+
   /* AgsAudioSignalClass */
   audio_signal->realloc_buffer_size = ags_audio_signal_real_realloc_buffer_size;
 
@@ -647,6 +664,7 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->stream_end = NULL;
 
   audio_signal->note = NULL;
+  audio_signal->rt_template = NULL;
 }
 
 void
@@ -882,6 +900,27 @@ ags_audio_signal_set_property(GObject *gobject,
 				note);
     }
     break;
+  case PROP_RT_TEMPLATE:
+    {
+      GObject *rt_template;
+
+      rt_template = g_value_get_object(value);
+
+      if(audio_signal->rt_template == rt_template){
+	return;
+      }
+
+      if(audio_signal->rt_template != NULL){
+	g_object_unref(audio_signal->rt_template);
+      }
+      
+      if(rt_template != NULL){
+	g_object_ref(rt_template);
+      }
+      
+      audio_signal->rt_template = rt_template;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -994,6 +1033,11 @@ ags_audio_signal_get_property(GObject *gobject,
 			  g_list_copy(audio_signal->note));
     }
     break;
+  case PROP_RT_TEMPLATE:
+    {
+      g_value_set_object(value, audio_signal->rt_template);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -1062,6 +1106,16 @@ ags_audio_signal_dispose(GObject *gobject)
 
     audio_signal->note = NULL;
   }
+
+  /* rt-template */
+  if(audio_signal->rt_template != NULL){
+    g_object_unref(audio_signal->rt_template);
+    
+    audio_signal->rt_template = NULL;  
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_audio_signal_parent_class)->dispose(gobject);
 }
 
 void
@@ -1124,6 +1178,11 @@ ags_audio_signal_finalize(GObject *gobject)
     g_object_unref(audio_signal->note);
   }
   
+  /* rt-template */
+  if(audio_signal->rt_template != NULL){
+    g_object_unref(audio_signal->rt_template);
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_audio_signal_parent_class)->finalize(gobject);
 }
@@ -1850,8 +1909,9 @@ ags_audio_signal_get_by_recall_id(GList *list_audio_signal,
       continue;
     }
 
-    if(audio_signal->recall_id == recall_id)
+    if(audio_signal->recall_id == recall_id){
       return(list);
+    }
 
     list = list->next;
   }

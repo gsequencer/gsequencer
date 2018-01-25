@@ -508,12 +508,16 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
     /* get channel count */
     pthread_mutex_lock(audio_mutex);
 
+#if 0
     if((AGS_AUDIO_NOTATION_DEFAULT & (machine->audio->flags)) != 0){
       channel_count = machine->audio->input_pads;
     }else{
       channel_count = machine->audio->output_pads;
     }
-
+#else
+    channel_count = machine->audio->input_pads;
+#endif
+    
     pthread_mutex_unlock(audio_mutex);
 
     /* apply channel count */
@@ -1045,6 +1049,7 @@ ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
       pthread_mutex_unlock(audio_mutex);
 
       if(current_note != NULL){
+#if 0
 	if((AGS_AUDIO_NOTATION_DEFAULT & audio_flags) == 0){
 	  channel = ags_channel_nth(output,
 				    i);
@@ -1052,6 +1057,10 @@ ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
 	  channel = ags_channel_nth(input,
 				    i);
 	}
+#else
+	channel = ags_channel_nth(input,
+				  i);
+#endif
 	
 	if((AGS_AUDIO_REVERSE_MAPPING & audio_flags) != 0){
 	  channel = ags_channel_pad_nth(channel,

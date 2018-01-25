@@ -19,7 +19,7 @@
 
 #include <ags/audio/task/ags_clear_audio_signal.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio_buffer_util.h>
 
@@ -270,14 +270,33 @@ ags_clear_audio_signal_launch(AgsTask *task)
   
   AgsAudioSignal *audio_signal;
 
+  AgsMutexManager *mutex_manager;
+
   GList *stream;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *recycling_mutex;
+
   clear_audio_signal = AGS_CLEAR_AUDIO_SIGNAL(task);
+  
+  /* get mutex manager and application mutex */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* clear */
   audio_signal = clear_audio_signal->audio_signal;
 
+  /* get recycling mutex */
+  pthread_mutex_lock(application_mutex);
+
+  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) audio_signal->recycling);
+
+  pthread_mutex_unlock(application_mutex);
+  
   /* clear the stream */
+  pthread_mutex_lock(recycling_mutex);
+  
   stream = audio_signal->stream_beginning;
   
   while(stream != NULL){
@@ -286,6 +305,30 @@ ags_clear_audio_signal_launch(AgsTask *task)
     
     stream = stream->next;
   }
+
+  if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0){
+    GList *rt_template;
+
+    rt_template = AGS_RECYCLING(audio_signal->recycling)->audio_signal;
+
+    while(rt_template != NULL){
+      if((AGS_AUDIO_SIGNAL_RT_TEMPLATE & (AGS_AUDIO_SIGNAL(rt_template->data)->flags)) != 0){
+	/* clear the stream */
+	stream = AGS_AUDIO_SIGNAL(rt_template->data)->stream_beginning;
+  
+	while(stream != NULL){
+	  ags_audio_buffer_util_clear_buffer(stream->data, 1,
+					     audio_signal->buffer_size, ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
+    
+	  stream = stream->next;
+	}
+      }
+
+      rt_template = rt_template->next;
+    }
+  }
+
+  pthread_mutex_unlock(recycling_mutex);
 }
 
 /**

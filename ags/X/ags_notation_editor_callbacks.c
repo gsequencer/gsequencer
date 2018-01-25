@@ -84,7 +84,8 @@ ags_notation_editor_resize_pads_callback(AgsMachine *machine, GType channel_type
 
   /* verify pads */
   pthread_mutex_lock(audio_mutex);
-  
+
+#if 0
   if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
     if(!g_type_is_a(channel_type,
 		    AGS_TYPE_INPUT)){
@@ -100,6 +101,14 @@ ags_notation_editor_resize_pads_callback(AgsMachine *machine, GType channel_type
       return;
     }
   }
+#else
+  if(!g_type_is_a(channel_type,
+		  AGS_TYPE_INPUT)){
+    pthread_mutex_unlock(audio_mutex);
+      
+    return;
+  }    
+#endif
   
   pthread_mutex_unlock(audio_mutex);
 

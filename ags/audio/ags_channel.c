@@ -8204,7 +8204,7 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 
   if(recall_id == NULL){
     recall_id = ags_recall_id_new(channel->first_recycling);
-
+    
     if(do_playback){
       recall_id->flags |= AGS_RECALL_ID_PLAYBACK;
     }else if(do_sequencer){

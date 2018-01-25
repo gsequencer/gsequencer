@@ -19,12 +19,7 @@
 
 #include <ags/audio/ags_recycling.h>
 
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_concurrent_tree.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_audio_buffer_util.h>
@@ -835,16 +830,75 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
     if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0){
       AgsAudioSignal *old_template;
 
+      GHashTable *hash_table;
+      GList *list, *list_start;
+      
       /* old template */
       old_template = ags_audio_signal_get_template(recycling->audio_signal);
     
       /* remove old template */
       ags_recycling_remove_audio_signal(recycling,
 					old_template);
-    }
 
-    recycling->audio_signal = g_list_prepend(recycling->audio_signal, (gpointer) audio_signal);
-    g_object_ref(audio_signal);
+      /* add new template */
+      recycling->audio_signal = g_list_prepend(recycling->audio_signal,
+					       (gpointer) audio_signal);
+      g_object_ref(audio_signal);
+
+      /* realtime template */
+      list_start = 
+	list = g_list_copy(recycling->audio_signal);
+
+      /* add/remove */
+      hash_table = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+					 NULL,
+					 NULL);
+      
+      while(list != NULL){
+	if((AGS_AUDIO_SIGNAL_RT_TEMPLATE & (AGS_AUDIO_SIGNAL(list->data)->flags)) != 0){
+	  AgsAudioSignal *rt_template, *old_rt_template;
+	  AgsRecallID *recall_id;
+
+	  recall_id = AGS_AUDIO_SIGNAL(list->data)->recall_id;
+	  rt_template = ags_audio_signal_new(recycling->soundcard,
+					     recycling,
+					     recall_id);	  
+	  
+
+	  g_hash_table_insert(hash_table,
+			      list->data, rt_template);
+	  
+	  ags_recycling_remove_audio_signal(recycling,
+					    list->data);
+
+	  rt_template->flags |= AGS_AUDIO_SIGNAL_RT_TEMPLATE;
+	  ags_recycling_add_audio_signal(recycling,
+					 rt_template);
+	}
+	
+	list = list->next;
+      }
+
+      /* update */
+      list = list_start;
+      
+      while(list != NULL){
+	if(AGS_AUDIO_SIGNAL(list->data)->rt_template != NULL){
+	  g_object_set(list->data,
+		       "rt-template", g_hash_table_lookup(hash_table,
+							  AGS_AUDIO_SIGNAL(list->data)->rt_template),
+		       NULL);
+	}
+	
+	list = list->next;
+      }
+
+      g_hash_table_unref(hash_table);
+      g_list_free(list_start);
+    }else{
+      recycling->audio_signal = g_list_prepend(recycling->audio_signal, (gpointer) audio_signal);
+      g_object_ref(audio_signal);
+    }
   }
   
   if(audio_signal->recycling != recycling){

@@ -367,17 +367,6 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 				     audio_signal);
     }
 
-    /* create pattern */
-    pthread_mutex_lock(channel_mutex);
-
-    if(channel->pattern == NULL){
-      channel->pattern = g_list_alloc();
-      channel->pattern->data = (gpointer) ags_pattern_new();
-      ags_pattern_set_dim((AgsPattern *) channel->pattern->data, 4, 12, 64);
-    }
-
-    pthread_mutex_unlock(channel_mutex);
-    
     /* reset edit button */
     if(old_channel == NULL &&
        nth_line == 0){

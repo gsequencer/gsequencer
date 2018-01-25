@@ -283,19 +283,7 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
   buffer = source->stream_beginning->data;
   buffer_size = source->buffer_size;
 
-  /* lookup soundcard mutex */
-  pthread_mutex_lock(application_mutex);
-
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) source->soundcard);
-	
-  pthread_mutex_unlock(application_mutex);
-  
-  pthread_mutex_lock(soundcard_mutex);
-
-  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(source->soundcard));
-
-  pthread_mutex_unlock(soundcard_mutex);
+  delay = source->delay;
 
   /* lookup recycling mutex */
   recycling = source->recycling;
@@ -308,10 +296,8 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
   pthread_mutex_unlock(application_mutex);
 
   /* get template */
-  pthread_mutex_lock(recycling_mutex);
-  
-  template = ags_audio_signal_get_template(recycling->audio_signal);
-  
+  template = source->rt_template;
+    
   note = source->note;
   
   ags_audio_buffer_util_clear_buffer(buffer, 1,
@@ -325,12 +311,23 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 
     GList *stream, *template_stream;
 
+    guint x0, x1;
+    guint rt_attack;
     guint64 offset;
     
     current = note->data;
     offset = current->rt_offset;
+
+    pthread_mutex_lock(recycling_mutex);
+
+    x0 = current->x[0];
+    x1 = current->x[1];
+
+    rt_attack = current->rt_attack;
     
-    if(offset < delay * current->x[1] ||
+    pthread_mutex_unlock(recycling_mutex);
+    
+    if(offset < delay * x1 ||
        offset < template->length){
       if(template->loop_start < template->loop_end){
 	guint frame_count;
@@ -342,7 +339,7 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	guint j_start;
 	guint i, j, k;
 
-	frame_count = delay * (AGS_NOTE(note->data)->x[1] - AGS_NOTE(note->data)->x[0]) * buffer_size;
+	frame_count = delay * (x1 - x0) * buffer_size;
 	
 	loop_length = template->loop_end - template->loop_start;
 	loop_frame_count = ((frame_count - template->loop_start) / loop_length) * template->buffer_size;
@@ -398,7 +395,7 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	}
 
 	if(offset == 0){
-	  k = AGS_NOTE(note->data)->rt_attack;
+	  k = rt_attack;
 	}else{
 	  k = 0;
 	}
@@ -476,19 +473,19 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	}
 	
 	if(offset == 0){
-	  ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, AGS_NOTE(note->data)->rt_attack,
+	  ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, rt_attack,
 						      template_stream->data, 1, 0,
-						      buffer_size - AGS_NOTE(note->data)->rt_attack, copy_mode);
+						      buffer_size - rt_attack, copy_mode);
 	}else{
-	  if(AGS_NOTE(note->data)->rt_attack != 0 && template_stream->prev != NULL){
+	  if(rt_attack != 0 && template_stream->prev != NULL){
 	    ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, 0,
-							template_stream->prev->data, 1, buffer_size - AGS_NOTE(note->data)->rt_attack,
-							AGS_NOTE(note->data)->rt_attack, copy_mode);
+							template_stream->prev->data, 1, buffer_size - rt_attack,
+							rt_attack, copy_mode);
 	  }
 
-	  ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, AGS_NOTE(note->data)->rt_attack,
+	  ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, rt_attack,
 						      template_stream->data, 1, 0,
-						      buffer_size - AGS_NOTE(note->data)->rt_attack, copy_mode);	  
+						      buffer_size - rt_attack, copy_mode);	  
 	}
       }
     }else{
@@ -496,12 +493,14 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 				   current);
     }
 
+    pthread_mutex_lock(recycling_mutex);
+
     current->rt_offset += 1;
+
+    pthread_mutex_unlock(recycling_mutex);
     
     note = note->next;
   }
-
-  pthread_mutex_unlock(recycling_mutex);
 }
 
 AgsRecall*

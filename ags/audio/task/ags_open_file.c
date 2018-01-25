@@ -568,7 +568,7 @@ ags_open_file_launch(AgsTask *task)
       if(AGS_IS_INPUT(iter)){
 	pthread_mutex_lock(iter_mutex);
 
-	file_link = AGS_INPUT(channel)->file_link;
+	file_link = AGS_INPUT(iter)->file_link;
 	
 	if(file_link == NULL){
 	  file_link = g_object_new(AGS_TYPE_AUDIO_FILE_LINK,

@@ -200,7 +200,8 @@ ags_drum_init(AgsDrum *drum)
 		   AGS_AUDIO_INPUT_TAKES_FILE |
 		   AGS_AUDIO_SYNC |
 		   AGS_AUDIO_ASYNC |
-		   AGS_AUDIO_HAS_NOTATION | 
+		   AGS_AUDIO_HAS_NOTATION |
+		   AGS_AUDIO_HAS_PATTERN |
 		   AGS_AUDIO_NOTATION_DEFAULT |
 		   AGS_AUDIO_PATTERN_MODE |
 		   AGS_AUDIO_REVERSE_MAPPING);
@@ -210,6 +211,10 @@ ags_drum_init(AgsDrum *drum)
 	       "midi-start-mapping", 0,
 	       "midi-end-mapping", 128,
 	       NULL);
+
+  audio->bank_dim[0] = 4;
+  audio->bank_dim[1] = 12;
+  audio->bank_dim[2] = 64;
 
   AGS_MACHINE(drum)->flags |= (AGS_MACHINE_IS_SEQUENCER |
 			       AGS_MACHINE_TAKES_FILE_INPUT);

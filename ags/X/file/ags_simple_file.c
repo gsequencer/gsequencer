@@ -23,6 +23,7 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_notation_editor.h>
@@ -106,6 +107,10 @@ void ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
 					AgsWindow *window);
 void ags_simple_file_read_machine_list(AgsSimpleFile *simple_file, xmlNode *node, GList **machine);
 void ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachine **machine);
+void ags_simple_file_read_machine_resize_pads(AgsMachine *machine,
+					      GType channel_type,
+					      guint new_size, guint old_size,
+					      gpointer data);
 void ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 					 AgsMachine *machine);
 void ags_simple_file_read_pad_list(AgsSimpleFile *simple_file, xmlNode *node, GList **pad);
@@ -1646,10 +1651,29 @@ ags_simple_file_read_machine_list(AgsSimpleFile *simple_file, xmlNode *node, GLi
 }
 
 void
+ags_simple_file_read_machine_resize_pads(AgsMachine *machine,
+					 GType channel_type,
+					 guint new_size, guint old_size,
+					 gpointer data)
+{
+  gboolean *resized;
+
+  resized = data;
+
+  if(channel_type == AGS_TYPE_OUTPUT){
+    resized[0] = TRUE;
+  }else{
+    resized[1] = TRUE;    
+  }
+}
+
+void
 ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachine **machine)
 {
   AgsWindow *window;
   AgsMachine *gobject;
+
+  AgsResizeAudio *resize_audio;
 
   AgsConfig *config;
   GObject *soundcard;
@@ -1668,6 +1692,8 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   
   guint audio_channels;
   guint output_pads, input_pads;
+  gboolean wait_data[2];
+  gboolean wait_output, wait_input;
   guint i;
   
   type_name = xmlGetProp(node,
@@ -1876,6 +1902,20 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   ags_connectable_connect(AGS_CONNECTABLE(gobject));
   
   /* retrieve channel allocation */
+  output_pads = gobject->audio->output_pads;
+  input_pads = gobject->audio->input_pads;
+
+  audio_channels = gobject->audio->audio_channels;
+  
+  wait_output = FALSE;
+  wait_input = FALSE;
+  
+  wait_data[0] = FALSE;
+  wait_data[1] = FALSE;
+
+  g_signal_connect_after(gobject, "resize-pads", 
+			 G_CALLBACK(ags_simple_file_read_machine_resize_pads), wait_data);
+  
   str = xmlGetProp(node,
 		   "channels");
 
@@ -1896,6 +1936,8 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     ags_audio_set_pads(gobject->audio,
 		       AGS_TYPE_INPUT,
 		       input_pads);
+
+    wait_input = TRUE;
   }
 
   str = xmlGetProp(node,
@@ -1908,8 +1950,33 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     ags_audio_set_pads(gobject->audio,
 		       AGS_TYPE_OUTPUT,
 		       output_pads);
+
+    wait_output = TRUE;
   }
-  
+
+  /* create task */
+  resize_audio = ags_resize_audio_new(gobject->audio,
+				      (guint) output_pads,
+				      (guint) input_pads,
+				      (guint) audio_channels);
+
+  /* append AgsResizeAudio */
+  ags_gui_thread_schedule_task(ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(simple_file->application_context)),
+			       resize_audio);
+
+  while((wait_output && !wait_data[0]) ||
+	(wait_input && !wait_data[1])){
+    usleep(1000000 / 30);
+    g_main_context_iteration(NULL,
+			     FALSE);
+  }
+
+  g_object_disconnect(gobject,
+		      "any_signal::resize-pads", 
+		      G_CALLBACK(ags_simple_file_read_machine_resize_pads),
+		      wait_data,
+		      NULL);
+
   /* children */
   child = node->children;
 
@@ -2973,8 +3040,8 @@ ags_simple_file_read_pad(AgsSimpleFile *simple_file, xmlNode *node, AgsPad **pad
   guint nth_pad;
   
   if(pad != NULL &&
-     *pad != NULL){
-    gobject = *pad;
+     pad[0] != NULL){
+    gobject = pad[0];
 
     nth_pad = gobject->channel->pad;
   }else{
@@ -2990,7 +3057,7 @@ ags_simple_file_read_pad(AgsSimpleFile *simple_file, xmlNode *node, AgsPad **pad
     nth_pad = 0;
     str = xmlGetProp(node,
 		     "nth-pad");
-
+    
     if(str != NULL){
       nth_pad = g_ascii_strtoull(str,
 				 NULL,
@@ -3022,9 +3089,7 @@ ags_simple_file_read_pad(AgsSimpleFile *simple_file, xmlNode *node, AgsPad **pad
       gobject = AGS_PAD(list->data);
     }
 
-    if(list_start != NULL){
-      g_list_free(list_start);
-    }
+    g_list_free(list_start);
   }
   
   ags_simple_file_add_id_ref(simple_file,
@@ -3256,7 +3321,8 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
     }
   }
   
-  if(line[0] != NULL){
+  if(line != NULL &&
+     line[0] != NULL){
     gobject = AGS_LINE(line[0]);
 
     nth_line = AGS_LINE(gobject)->channel->line;
@@ -3265,10 +3331,11 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
     
     file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_node(simple_file,
 								       node->parent->parent);
-    pad = file_id_ref->ref;
     
-    if(!AGS_IS_PAD(pad)){
+    if(!AGS_IS_PAD(file_id_ref->ref)){
       pad = NULL;
+    }else{
+      pad = file_id_ref->ref;
     }
     
     /* get nth-line */
@@ -3504,7 +3571,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 	}
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-oscillator",
-			   15)){
+			   15)){	
 	if(AGS_IS_SYNTH_INPUT_LINE(gobject)){
 	  ags_simple_file_read_oscillator(simple_file, child, &(AGS_SYNTH_INPUT_LINE(gobject)->oscillator));
 	}

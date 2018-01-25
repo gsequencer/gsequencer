@@ -394,8 +394,8 @@ ags_line_init(AgsLine *line)
 {
   if(ags_line_message_monitor == NULL){
     ags_line_message_monitor = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-							NULL,
-							NULL);
+						     NULL,
+						     NULL);
   }
 
   g_hash_table_insert(ags_line_message_monitor,

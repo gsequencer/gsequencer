@@ -788,6 +788,20 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   void ags_play_notation_audio_run_alloc_input_callback_play_notation(AgsNotation *notation)
   {
+    gdouble notation_delay;
+
+    GValue value = {0,};
+
+    /* get notation delay */
+    g_value_init(&value,
+		 G_TYPE_DOUBLE);
+    ags_port_safe_read(delay_audio->notation_delay,
+		       &value);
+
+    notation_delay = g_value_get_double(&value);
+    g_value_unset(&value);
+
+    /*  */
     pthread_mutex_lock(audio_mutex);
 
     current_position = notation->notes;
@@ -877,19 +891,6 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 							      audio_signal,
 							      0.0, 0);
 	    }else{
-	      gdouble notation_delay;
-
-	      GValue value = {0,};
-
-	      /* get notation delay */
-	      g_value_init(&value,
-			   G_TYPE_DOUBLE);
-	      ags_port_safe_read(delay_audio->notation_delay,
-				 &value);
-
-	      notation_delay = g_value_get_double(&value);
-	      g_value_unset(&value);
-
 	      /* create audio signal with frame count */
 	      ags_recycling_create_audio_signal_with_frame_count(recycling,
 								 audio_signal,
@@ -918,6 +919,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	      audio_signal = list->data;
 
 	      g_object_set(audio_signal,
+			   "delay", notation_delay,
 			   "note", note,
 			   NULL);
 	    }

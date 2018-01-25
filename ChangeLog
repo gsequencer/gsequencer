@@ -8,6 +8,42 @@ ags (1.5.0)
 	* TODO:JK: implemented ags-capture-sound recall
 	* TODO:JK: implemented AgsAudiorec
 
+ags (1.4.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsLiveDssiBridge and AgsLiveLv2Bridge notation editor channel mapping
+
+ags (1.4.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed restore of AgsPattern
+	* fixed ags_open_file.c to use correct file link
+	* fixed async-safe ags_simple_file_read_machine()
+
+ags (1.4.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_apply_synth.c to update rt-template
+	* improved ags_clear_audio_signal.c to update rt-template
+
+ags (1.4.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsRecallID:recycling property
+	* improved mutex lookup of rt-safe functions
+
+gs (1.4.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor-fixes to updating AGS_AUDIO_SIGNAL_RT_TEMPLATE
+
+ags (1.4.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AGS_AUDIO_SIGNAL_RT_TEMPLATE
+	* implemented AgsAudioSignal::rt-template property
+	* improved rt-safe option
+
 ags (1.4.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -818,7 +818,8 @@ ags_apply_synth_launch(AgsTask *task)
   AgsSynthGenerator *synth_generator;
 
   AgsMutexManager *mutex_manager;
-  
+
+  GList *rt_template;
   GList *stream;
 
   gchar *str;
@@ -1024,22 +1025,31 @@ ags_apply_synth_launch(AgsTask *task)
 	  ags_recycling_add_audio_signal(first_recycling,
 					 audio_signal);
 	}
-	
-	pthread_mutex_unlock(recycling_mutex);
-	  
+		  
 	/* compute audio signal */
 	note = (apply_synth->base_note) + (gdouble) i;
 	  
-	pthread_mutex_lock(channel_mutex);
-
-	//FIXME:JK: not thread-safe
 	ags_synth_generator_compute_extended(synth_generator,
 					     audio_signal,
 					     note,
 					     sync_point,
 					     sync_point_count);
 
-	pthread_mutex_unlock(channel_mutex);
+	rt_template = first_recycling->audio_signal;
+
+	while(rt_template != NULL){
+	  if((AGS_AUDIO_SIGNAL_RT_TEMPLATE & (AGS_AUDIO_SIGNAL(rt_template->data)->flags)) != 0){
+	    ags_synth_generator_compute_extended(synth_generator,
+						 rt_template->data,
+						 note,
+						 sync_point,
+						 sync_point_count);
+	  }
+	  
+	  rt_template = rt_template->next;
+	}
+	
+	pthread_mutex_unlock(recycling_mutex);
 
 	/* iterate */
 	pthread_mutex_lock(channel_mutex);
@@ -1150,21 +1160,30 @@ ags_apply_synth_launch(AgsTask *task)
 					 audio_signal);
 	}
 	
-	pthread_mutex_unlock(recycling_mutex);
-
 	/* compute audio signal */
 	note = (apply_synth->base_note);
-	  
-	pthread_mutex_lock(channel_mutex);
-
-	//FIXME:JK: not thread-safe
+	
 	ags_synth_generator_compute_extended(AGS_INPUT(channel)->synth_generator,
 					     audio_signal,
 					     note,
 					     sync_point,
 					     sync_point_count);
 
-	pthread_mutex_unlock(channel_mutex);
+	rt_template = first_recycling->audio_signal;
+
+	while(rt_template != NULL){
+	  if((AGS_AUDIO_SIGNAL_RT_TEMPLATE & (AGS_AUDIO_SIGNAL(rt_template->data)->flags)) != 0){
+	    ags_synth_generator_compute_extended(synth_generator,
+						 rt_template->data,
+						 note,
+						 sync_point,
+						 sync_point_count);
+	  }
+	  
+	  rt_template = rt_template->next;
+	}
+
+	pthread_mutex_unlock(recycling_mutex);
 
 	/* iterate */
 	pthread_mutex_lock(channel_mutex);
@@ -1305,21 +1324,31 @@ ags_apply_synth_launch(AgsTask *task)
 					   audio_signal);
 	  }
 	  
-	  pthread_mutex_unlock(recycling_mutex);
 
 	  /* compute audio signal */
  	  note = (apply_synth->base_note) + (gdouble) i;
 	  
-	  pthread_mutex_lock(channel_mutex);
-	  
-	  //FIXME:JK: not thread-safe
 	  ags_synth_generator_compute_extended(synth_generator,
 					       audio_signal,
 					       note,
 					       sync_point,
 					       sync_point_count);
 	  
-	  pthread_mutex_unlock(channel_mutex);
+	  rt_template = first_recycling->audio_signal;
+
+	  while(rt_template != NULL){
+	    if((AGS_AUDIO_SIGNAL_RT_TEMPLATE & (AGS_AUDIO_SIGNAL(rt_template->data)->flags)) != 0){
+	      ags_synth_generator_compute_extended(synth_generator,
+						   rt_template->data,
+						   note,
+						   sync_point,
+						   sync_point_count);
+	    }
+	  
+	    rt_template = rt_template->next;
+	  }
+
+	  pthread_mutex_unlock(recycling_mutex);
 
 	  /* iterate */
 	  pthread_mutex_lock(channel_mutex);
