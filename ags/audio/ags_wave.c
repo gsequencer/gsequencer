@@ -1494,7 +1494,30 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 	    continue;
 	  }
 
+	  /* calculate new offset */
+	  if(reset_x_offset){
+	    errno = 0;
 
+	    if(subtract_x){
+	      x_val -= base_x_difference;
+
+	      if(errno != 0){
+		node = node->next;
+	      
+		continue;
+	      }
+	    }else{
+	      x_val += base_x_difference;
+
+	      if(errno != 0){
+		node = node->next;
+	      
+		continue;
+	      }
+	    }
+	  }
+	  
+	  /* selection x0 and x1 */
 	  selection_x0_val = 0;
 	  selection_x1_val = wave->buffer_size;
 	  
