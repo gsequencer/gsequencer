@@ -875,9 +875,9 @@ ags_wave_find_point(AgsWave *wave,
   GList *list;
 
   if(use_selection_list){
-    list = notation->selection;
+    list = wave->selection;
   }else{
-    list = notation->buffer;
+    list = wave->buffer;
   }
 
   while(list != NULL && AGS_BUFFER(list->data)->x < x){
@@ -1201,10 +1201,42 @@ ags_wave_copy_selection(AgsWave *wave)
     
     buffer = AGS_BUFFER(selection->data);
     current_buffer = xmlNewChild(wave_node,
-			       NULL,
-			       BAD_CAST "buffer",
-			       NULL);
+				 NULL,
+				 BAD_CAST "buffer",
+				 NULL);
 
+    switch(buffer->format){    
+    case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	str = "s8";
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	str = "s16";
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {
+	str = "s24";
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	str = "s32";
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_64_BIT:
+      {
+	str = "s64";
+      }
+      break;
+    }
+
+    xmlNewProp(current_buffer,
+	       BAD_CAST "format",
+	       BAD_CAST (str));
+    
     xmlNewProp(current_buffer,
 	       BAD_CAST "x",
 	       BAD_CAST (g_strdup_printf("%u", buffer->x)));
@@ -1347,16 +1379,24 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 
     xmlNode *node;
 
+    void *clipboard_data;
+    unsigned char *clipboard_cdata;
+
+    xmlChar *format;
     xmlChar *x;
     xmlChar *selection_x0, *selection_x1;
+    xmlChar *content;
     gchar *offset;
     char *endptr;
 
+    guint format_val;
     guint x_boundary_val;
     guint x_val;
     guint base_x_difference;
     guint selection_x0_val, selection_x1_val;
     guint count;
+    guint word_size;
+    guint clipboard_length;
     gboolean subtract_x;
 
     node = root_node->children;
@@ -1397,10 +1437,41 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 	if(!xmlStrncmp("buffer",
 		       node->name,
 		       7)){
-	  /* retrieve x offset */
-	  x = xmlGetProp(node, "x");
+	  /* retrieve format */
+	  format = xmlGetProp(node,
+			      "format");
 
-	  if(x0 == NULL){
+	  if(!g_ascii_strncasecmp("s8",
+				  format,
+				  3)){
+	    format_val = AGS_SOUNDCARD_SIGNED_8_BIT;
+	  }else if(!g_ascii_strncasecmp("s16",
+					format,
+					4)){
+	    format_val = AGS_SOUNDCARD_SIGNED_16_BIT;
+	  }else if(!g_ascii_strncasecmp("s24",
+					format,
+					4)){
+	    format_val = AGS_SOUNDCARD_SIGNED_24_BIT;
+	  }else if(!g_ascii_strncasecmp("s32",
+					format,
+					4)){
+	    format_val = AGS_SOUNDCARD_SIGNED_32_BIT;
+	  }else if(!g_ascii_strncasecmp("s64",
+					format,
+					4)){
+	    format_val = AGS_SOUNDCARD_SIGNED_64_BIT;
+	  }else{
+	    node = node->next;
+	  
+	    continue;
+	  }
+	  
+	  /* retrieve x offset */
+	  x = xmlGetProp(node,
+			 "x");
+
+	  if(x == NULL){
 	    node = node->next;
 	  
 	    continue;
@@ -1423,32 +1494,227 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 	    continue;
 	  }
 
+
+	  selection_x0_val = 0;
+	  selection_x1_val = wave->buffer_size;
+	  
 	  selection_x0 = xmlGetProp(node,
 				    "selection-x0");
+
+	  if(selection_x0 != NULL){
+	    guint tmp;
+
+	    endptr = NULL;
+	    errno = 0;
+	    tmp = g_ascii_strtoull(selection_x0,
+				   &endptr,
+				   10);
+	    
+	    if(errno != ERANGE &&
+	       endptr != selection_x0 &&
+	       tmp < wave->buffer_size){
+	      selection_x0_val = tmp;
+	    }
+	  }
 	  
 	  selection_x1 = xmlGetProp(node,
 				    "selection-x1");
 
+	  if(selection_x1 != NULL){
+	    guint tmp;
+
+	    endptr = NULL;
+	    errno = 0;
+	    tmp = g_ascii_strtoull(selection_x1,
+				   &endptr,
+				   10);
+	    
+	    if(errno != ERANGE &&
+	       endptr != selection_x1 &&
+	       selection_x0_val <= tmp &&
+	       tmp < wave->buffer_size){
+	      selection_x0_val = tmp;
+	    }
+	  }
+
+	  count = selection_x1_val - selection_x0_val;
+	  
+	  if(count == 0){
+	    node = node->next;
+	  
+	    continue;
+	  }
+
+	  content = xmlNodeGetContent(node);
+
+	  if(content == NULL){
+	    node = node->next;
+	  
+	    continue;
+	  }
+	  
+	  clipboard_cdata = g_base64_decode(content,
+					    &clipboard_length);
+	  
+	  switch(format_val){
+	  case AGS_SOUNDCARD_SIGNED_8_BIT:
+	    {
+	      word_size = 1;
+
+	      clipboard_data = ags_buffer_util_char_buffer_to_s8(clipboard_cdata,
+								 clipboard_length);
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_16_BIT:
+	    {
+	      word_size = 2;
+
+	      clipboard_data = ags_buffer_util_char_buffer_to_s16(clipboard_cdata,
+								  clipboard_length);
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_24_BIT:
+	    {
+	      word_size = 3;
+
+	      clipboard_data = ags_buffer_util_char_buffer_to_s16(clipboard_cdata,
+								  clipboard_length);
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_32_BIT:
+	    {
+	      word_size = 4;
+
+	      clipboard_data = ags_buffer_util_char_buffer_to_s32(clipboard_cdata,
+								  clipboard_length);
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_64_BIT:
+	    {
+	      word_size = 8;
+
+	      clipboard_data = ags_buffer_util_char_buffer_to_s64(clipboard_cdata,
+								  clipboard_length);
+	    }
+	    break;
+	  default:
+	    node = node->next;
+		  
+	    continue;
+	  }
+
+	  if(clipboard_length % word_size != 0 ||
+	     clipboard_length / word_size != count){
+	    node = node->next;
+
+	    continue;
+	  }
+	  
 	  if(!match_timestamp ||
 	     x_val < wave->timestamp->timer.ags_offset.offset + AGS_WAVE_DEFAULT_OFFSET){
+	    /* find first */
 	    buffer = ags_wave_find_point(wave,
 					 x_val,
 					 FALSE);
 
 	    if(buffer != NULL &&
 	       do_replace){
-	      ags_audio_buffer_util_clear_buffer(buffer->data, 1,
-						 count, ags_audio_buffer_util_format_from_soundcard(buffer->format));
+	      void *data;
+
+	      data = buffer->data;
+
+	      if(attack != 0){
+		switch(buffer->format){
+		case AGS_SOUNDCARD_SIGNED_8_BIT:
+		  {
+		    data = ((signed char *) data) + attack;
+		  }
+		  break;
+		case AGS_SOUNDCARD_SIGNED_16_BIT:
+		  {
+		    data = ((signed short *) data) + attack;
+		  }
+		  break;
+		case AGS_SOUNDCARD_SIGNED_24_BIT:
+		  {
+		    data = ((signed long *) data) + attack;
+		  }
+		  break;
+		case AGS_SOUNDCARD_SIGNED_32_BIT:
+		  {
+		    data = ((signed long *) data) + attack;
+		  }
+		  break;
+		case AGS_SOUNDCARD_SIGNED_64_BIT:
+		  {
+		    data = ((signed long long *) data) + attack;
+		  }
+		  break;
+		default:
+		  g_warning("unknown soundcard format");
+		  
+		  node = node->next;
+		  
+		  continue;
+		}
+	      }
+		
+	      if(attack + count <= wave->buffer_size){
+		ags_audio_buffer_util_clear_buffer(data, 1,
+						   count, ags_audio_buffer_util_format_from_soundcard(buffer->format));
+	      }else{
+		ags_audio_buffer_util_clear_buffer(data, 1,
+						   wave->buffer_size - attack, ags_audio_buffer_util_format_from_soundcard(buffer->format));
+	      }
 	    }
 	    
 	    if(buffer == NULL){
 	      buffer = ags_buffer_new();
+	      buffer->x = x_val;
+	      
+	      ags_wave_add_buffer(wave,
+				  buffer,
+				  FALSE);
 	    }
-	    
-	    if(do_replace){
-	      //TODO:JK: implement me
+
+	    if(attack + count <= wave->buffer_size){
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+							  clipboard_data, 1, 0,
+							  count);
 	    }else{
-	      //TODO:JK: implement me
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+							  clipboard_data, 1, 0,
+							  wave->buffer_size - attack);
+	    }
+
+	    /* find next */
+	    if(attack + count > wave->buffer_size){
+	      buffer = ags_wave_find_point(wave,
+					   x_val + 1,
+					   FALSE);
+
+	      if(buffer != NULL &&
+		 do_replace){
+		void *data;
+
+		data = buffer->data;
+		
+		ags_audio_buffer_util_clear_buffer(data, 1,
+						   attack, ags_audio_buffer_util_format_from_soundcard(buffer->format));
+	      }
+	    
+	      if(buffer == NULL){
+		buffer = ags_buffer_new();
+		buffer->x = x_val + 1;
+	      
+		ags_wave_add_buffer(wave,
+				    buffer,
+				    FALSE);
+	      }
+
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
+							  clipboard_data, 1, wave->buffer_size - attack,
+							  attack);
 	    }
 	  }
 	}
@@ -1464,7 +1730,9 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 
   match_timestamp = TRUE;
   
-  if(!xmlStrncmp("1.4.0", version, 7)){
+  if(!xmlStrncmp("1.4.0",
+		 version,
+		 6)){
     /* changes contain only optional informations */
     if(match_channel &&
        wave->audio_channel != g_ascii_strtoull(xmlGetProp(root_node,
