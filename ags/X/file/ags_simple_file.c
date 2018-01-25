@@ -1923,7 +1923,6 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     audio_channels = g_ascii_strtoull(str,
 				      NULL,
 				      10);
-    gobject->audio->audio_channels = audio_channels;
   }
 
   str = xmlGetProp(node,
@@ -1933,10 +1932,6 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     input_pads = g_ascii_strtoull(str,
 				  NULL,
 				  10);
-    ags_audio_set_pads(gobject->audio,
-		       AGS_TYPE_INPUT,
-		       input_pads);
-
     wait_input = TRUE;
   }
 
@@ -1947,10 +1942,6 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     output_pads = g_ascii_strtoull(str,
 				   NULL,
 				   10);
-    ags_audio_set_pads(gobject->audio,
-		       AGS_TYPE_OUTPUT,
-		       output_pads);
-
     wait_output = TRUE;
   }
 
