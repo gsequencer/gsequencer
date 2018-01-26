@@ -179,7 +179,7 @@ AS_IF([test "x$enable_jack" != xno],
 AS_IF([test "x$enable_pulse" != xno],
       [AC_DEFINE([AGS_WITH_PULSE], [1], [PULSE enabled])
 
-      PKG_CHECK_MODULES([PULSE], [libpulse])
+      PKG_CHECK_MODULES([PULSE], [libpulse-mainloop-glib])
       AC_SUBST(PULSE_CFLAGS)
       AC_SUBST(PULSE_LIBS)
 

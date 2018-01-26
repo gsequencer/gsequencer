@@ -19,16 +19,7 @@
 
 #include <ags/audio/pulse/ags_pulse_devout.h>
 
-#include <ags/lib/ags_time.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_main_loop.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_channel.h>
