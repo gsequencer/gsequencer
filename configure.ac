@@ -6,7 +6,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[1.4.14],[jkraehemann-guest@users.alioth.debian.org])
+AC_INIT([gsequencer],[1.4.15],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -179,7 +179,7 @@ AS_IF([test "x$enable_jack" != xno],
 AS_IF([test "x$enable_pulse" != xno],
       [AC_DEFINE([AGS_WITH_PULSE], [1], [PULSE enabled])
 
-      PKG_CHECK_MODULES([PULSE], [libpulse])
+      PKG_CHECK_MODULES([PULSE], [libpulse-mainloop-glib])
       AC_SUBST(PULSE_CFLAGS)
       AC_SUBST(PULSE_LIBS)
 

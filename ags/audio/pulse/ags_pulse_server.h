@@ -29,6 +29,7 @@
 #include <pulse/pulseaudio.h>
 #include <pulse/stream.h>
 #include <pulse/error.h>
+#include <pulse/glib-mainloop.h>
 #endif
 
 #include <pthread.h>
@@ -62,7 +63,7 @@ struct _AgsPulseServer
   GObject *application_context;
 
 #ifdef AGS_WITH_PULSE
-  pa_mainloop *main_loop;
+  pa_glib_mainloop *main_loop;
   pa_mainloop_api *main_loop_api;
 #else
   gpointer main_loop;

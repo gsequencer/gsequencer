@@ -930,7 +930,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   }
 
   g_atomic_int_and(&(AGS_THREAD(audio_loop)->flags),
-		   (~(AGS_THREAD_TIMING)));
+ 		   (~(AGS_THREAD_TIMING)));
 
   /*  */
   pthread_mutex_lock(mutex);
