@@ -1,3 +1,9 @@
+ags (1.4.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* replaced pa_mainloop_new() by pa_glib_main_loop_new()
+	* minor changes
+
 ags (1.4.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
