@@ -441,6 +441,8 @@ void
 ags_buffer_set_samplerate(AgsBuffer *buffer,
 			  guint samplerate)
 {
+  //TODO:JK: resample data?
+  
   buffer->samplerate = samplerate;
 }
 
