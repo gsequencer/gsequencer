@@ -1014,6 +1014,8 @@ libags_audio_recall_h_sources = \
 	ags/audio/recall/ags_play_notation_audio_run.h \
 	ags/audio/recall/ags_play_note.h \
 	ags/audio/recall/ags_play_recycling.h \
+	ags/audio/recall/ags_play_wave_audio.h \
+	ags/audio/recall/ags_play_wave_audio_run.h \
 	ags/audio/recall/ags_prepare_audio_signal.h \
 	ags/audio/recall/ags_prepare_channel.h \
 	ags/audio/recall/ags_prepare_channel_run.h \
@@ -1095,6 +1097,8 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_play_notation_audio_run.c \
 	ags/audio/recall/ags_play_note.c \
 	ags/audio/recall/ags_play_recycling.c \
+	ags/audio/recall/ags_play_wave_audio.c \
+	ags/audio/recall/ags_play_wave_audio_run.c \
 	ags/audio/recall/ags_prepare_audio_signal.c \
 	ags/audio/recall/ags_prepare_channel.c \
 	ags/audio/recall/ags_prepare_channel_run.c \
