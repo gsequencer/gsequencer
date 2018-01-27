@@ -25,8 +25,8 @@
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_notation.h>
+#include <ags/audio/ags_recall_audio_run.h>
 
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio.h>

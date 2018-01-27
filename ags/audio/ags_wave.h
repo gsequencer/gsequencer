@@ -120,20 +120,20 @@ GList* ags_wave_get_selection(AgsWave *wave);
 gboolean ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer);
 
 AgsBuffer* ags_wave_find_point(AgsWave *wave,
-			       guint x,
+			       guint64 x,
 			       gboolean use_selection_list);
 GList* ags_wave_find_region(AgsWave *wave,
-			    guint x0,
-			    guint x1,
+			    guint64 x0,
+			    guint64 x1,
 			    gboolean use_selection_list);
 
 void ags_wave_free_selection(AgsWave *wave);
 
 void ags_wave_add_region_to_selection(AgsWave *wave,
-				      guint x0, guint x1,
+				      guint64 x0, guint64 x1,
 				      gboolean replace_current_selection);
 void ags_wave_remove_region_from_selection(AgsWave *wave,
-					   guint x0, guint x1);
+					   guint64 x0, guint64 x1);
 
 void ags_wave_add_all_to_selection(AgsWave *wave);
 
@@ -142,12 +142,12 @@ xmlNode* ags_wave_cut_selection(AgsWave *wave);
 
 void ags_wave_insert_from_clipboard(AgsWave *wave,
 				    xmlNode *wave_node,
-				    gboolean reset_x_offset, guint x_offset,
+				    gboolean reset_x_offset, guint64 x_offset,
 				    gdouble delay, guint attack);
 
 void ags_wave_insert_from_clipboard_extended(AgsWave *wave,
 					     xmlNode *wave_node,
-					     gboolean reset_x_offset, guint x_offset,
+					     gboolean reset_x_offset, guint64 x_offset,
 					     gdouble delay, guint attack,
 					     gboolean match_audio_channel, gboolean do_replace);
 

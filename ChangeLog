@@ -3,9 +3,9 @@ ags (1.5.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented AgsWaveWindow, AgsWaveEditor, AgsWaveToolbar and AgsWaveEdit
 	* TODO:JK: implemented AgsSelectBuffer and AgsPositionWaveCursor
-	* TODO:JK: implemented AgsWave and AgsBuffer
+	* implemented AgsWave and AgsBuffer
 	* TODO:JK: implemented ags-play-wave recall
-	* TODO:JK: implemented ags-capture-sound recall
+	* implemented ags-capture-sound recall
 	* TODO:JK: implemented AgsAudiorec
 
 ags (1.4.15)

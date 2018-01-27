@@ -45,7 +45,7 @@ void ags_wave_finalize(GObject *gobject);
 void ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 						 xmlNode *root_node, char *version,
 						 char *x_boundary,
-						 gboolean reset_x_offset, guint x_offset,
+						 gboolean reset_x_offset, guint64 x_offset,
 						 gdouble delay, guint attack,
 						 gboolean match_channel, gboolean do_replace);
 
@@ -867,7 +867,7 @@ ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer)
  */
 AgsBuffer*
 ags_wave_find_point(AgsWave *wave,
-		    guint x,
+		    guint64 x,
 		    gboolean use_selection_list)
 {
   AgsBuffer *buffer;
@@ -912,8 +912,8 @@ ags_wave_find_point(AgsWave *wave,
  */
 GList*
 ags_wave_find_region(AgsWave *wave,
-		     guint x0,
-		     guint x1,
+		     guint64 x0,
+		     guint64 x1,
 		     gboolean use_selection_list)
 {
   AgsBuffer *buffer;
@@ -922,7 +922,7 @@ ags_wave_find_region(AgsWave *wave,
   GList *region;
 
   if(x0 > x1){
-    guint tmp;
+    guint64 tmp;
 
     tmp = x1;
     x1 = x0;
@@ -1009,7 +1009,7 @@ ags_wave_add_all_to_selection(AgsWave *wave)
  */
 void
 ags_wave_add_region_to_selection(AgsWave *wave,
-				 guint x0, guint x1,
+				 guint64 x0, guint64 x1,
 				 gboolean replace_current_selection)
 {
   AgsBuffer *buffer;
@@ -1067,7 +1067,7 @@ ags_wave_add_region_to_selection(AgsWave *wave,
  */ 
 void
 ags_wave_remove_region_from_selection(AgsWave *wave,
-				      guint x0, guint x1)
+				      guint64 x0, guint64 x1)
 {
   AgsBuffer *buffer;
   
@@ -1113,7 +1113,7 @@ ags_wave_copy_selection(AgsWave *wave)
 
   xmlChar *str;
   
-  guint x_boundary, y_boundary;
+  guint64 x_boundary, y_boundary;
 
   selection = wave->selection;
 
@@ -1365,7 +1365,7 @@ void
 ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 					    xmlNode *root_node, char *version,
 					    char *x_boundary,
-					    gboolean reset_x_offset, guint x_offset,
+					    gboolean reset_x_offset, guint64 x_offset,
 					    gdouble delay, guint attack,
 					    gboolean match_channel, gboolean do_replace)
 {
@@ -1390,10 +1390,10 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
     char *endptr;
 
     guint format_val;
-    guint x_boundary_val;
-    guint x_val;
-    guint base_x_difference;
-    guint selection_x0_val, selection_x1_val;
+    guint64 x_boundary_val;
+    guint64 x_val;
+    guint64 base_x_difference;
+    guint64 selection_x0_val, selection_x1_val;
     guint count;
     guint word_size;
     guint clipboard_length;
@@ -1525,7 +1525,7 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 				    "selection-x0");
 
 	  if(selection_x0 != NULL){
-	    guint tmp;
+	    guint64 tmp;
 
 	    endptr = NULL;
 	    errno = 0;
@@ -1544,7 +1544,7 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 				    "selection-x1");
 
 	  if(selection_x1 != NULL){
-	    guint tmp;
+	    guint64 tmp;
 
 	    endptr = NULL;
 	    errno = 0;
@@ -1785,7 +1785,7 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 void
 ags_wave_insert_from_clipboard(AgsWave *wave,
 			       xmlNode *wave_node,
-			       gboolean reset_x_offset, guint x_offset,
+			       gboolean reset_x_offset, guint64 x_offset,
 			       gdouble delay, guint attack)
 {
   ags_wave_insert_from_clipboard_extended(wave,
@@ -1813,7 +1813,7 @@ ags_wave_insert_from_clipboard(AgsWave *wave,
 void
 ags_wave_insert_from_clipboard_extended(AgsWave *wave,
 					xmlNode *wave_node,
-					gboolean reset_x_offset, guint x_offset,
+					gboolean reset_x_offset, guint64 x_offset,
 					gdouble delay, guint attack,
 					gboolean match_audio_channel, gboolean do_replace)
 {

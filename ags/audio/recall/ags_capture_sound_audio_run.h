@@ -25,13 +25,9 @@
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_audio_run.h>
 
 #include <ags/audio/ags_audio.h>
-
-#include <ags/audio/recall/ags_delay_audio_run.h>
-#include <ags/audio/recall/ags_count_beats_audio.h>
-#include <ags/audio/recall/ags_count_beats_audio_run.h>
 
 #define AGS_TYPE_CAPTURE_SOUND_AUDIO_RUN                (ags_capture_sound_audio_run_get_type())
 #define AGS_CAPTURE_SOUND_AUDIO_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CAPTURE_SOUND_AUDIO_RUN, AgsCaptureSoundAudioRun))
@@ -46,7 +42,9 @@ typedef struct _AgsCaptureSoundAudioRunClass AgsCaptureSoundAudioRunClass;
 struct _AgsCaptureSoundAudioRun
 {
   AgsRecallAudioRun recall_audio_run;
-  
+
+  void *file_buffer;
+
   GObject *audio_file;
 };
 
