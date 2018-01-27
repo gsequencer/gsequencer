@@ -142,4 +142,10 @@ GList* ags_playable_read_audio_signal(AgsPlayable *playable,
 				      GObject *soundcard,
 				      guint start_channel, guint channels_to_read);
 
+GList* ags_playable_read_wave(AgsPlayable *playable,
+			      GObject *soundcard,
+			      guint start_channel, guint channels_to_read,
+			      guint64 x_offset,
+			      gdouble delay, guint attack);
+
 #endif /*__AGS_PLAYABLE_H__*/

@@ -19,9 +19,7 @@
 
 #include <ags/audio/file/ags_audio_file.h>
 
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_playable.h>
@@ -658,6 +656,30 @@ ags_audio_file_read_audio_signal(AgsAudioFile *audio_file)
 					audio_file->start_channel, audio_file->audio_channels);
 
   audio_file->audio_signal = list;
+}
+
+/**
+ * ags_audio_file_read_wave:
+ * @audio_file: the #AgsAudioFile
+ *
+ * Convert the #AgsAudioFile to a #GList of buffers.
+ *
+ * Since: 1.0.0
+ */
+void
+ags_audio_file_read_wave(AgsAudioFile *audio_file,
+			 guint64 x_offset,
+			 gdouble delay, guint attack)
+{
+  GList *list;
+
+  list = ags_playable_read_wave(AGS_PLAYABLE(audio_file->playable),
+				audio_file->soundcard,
+				audio_file->start_channel, audio_file->audio_channels,
+				x_offset,
+				delay, attack);
+
+  audio_file->wave = list;
 }
 
 /**

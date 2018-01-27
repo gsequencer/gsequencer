@@ -51,6 +51,7 @@ struct _AgsAudioFile
   GObject *playable;
 
   GList *audio_signal;
+  GList *wave;
 };
 
 struct _AgsAudioFileClass
@@ -69,6 +70,9 @@ gboolean ags_audio_file_rw_open(AgsAudioFile *audio_file,
 void ags_audio_file_close(AgsAudioFile *audio_file);
 
 void ags_audio_file_read_audio_signal(AgsAudioFile *audio_file);
+void ags_audio_file_read_wave(AgsAudioFile *audio_file,
+			      guint64 x_offset,
+			      gdouble delay, guint attack);
 void ags_audio_file_seek(AgsAudioFile *audio_file, guint frames, gint whence);
 void ags_audio_file_write(AgsAudioFile *audio_file,
 			  void *buffer, guint buffer_size, guint format);
