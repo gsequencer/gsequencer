@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,12 +37,14 @@ struct _AgsTactableInterface
 {
   GTypeInterface ginterface;
 
+  gdouble (*get_wave_duration)(AgsTactable *tactable);
   gdouble (*get_sequencer_duration)(AgsTactable *tactable);
   gdouble (*get_notation_duration)(AgsTactable *tactable);
 
   gdouble (*get_tact)(AgsTactable *tactable);
   gdouble (*get_bpm)(AgsTactable *tactable);
     
+  void (*change_wave_duration)(AgsTactable *tactable, gdouble duration);
   void (*change_sequencer_duration)(AgsTactable *tactable, gdouble duration);
   void (*change_notation_duration)(AgsTactable *tactable, gdouble duration);
 

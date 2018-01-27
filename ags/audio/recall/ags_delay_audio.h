@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,9 +44,11 @@ struct _AgsDelayAudio
 
   AgsPort *notation_delay;
   AgsPort *sequencer_delay;
+  AgsPort *wave_delay;
 
-  AgsPort *sequencer_duration;
   AgsPort *notation_duration;
+  AgsPort *sequencer_duration;
+  AgsPort *wave_duration;
 };
 
 struct _AgsDelayAudioClass
@@ -55,12 +57,14 @@ struct _AgsDelayAudioClass
 
   void (*notation_duration_changed)(AgsDelayAudio *delay_audio);
   void (*sequencer_duration_changed)(AgsDelayAudio *delay_audio);
+  void (*wave_duration_changed)(AgsDelayAudio *delay_audio);
 };
 
 GType ags_delay_audio_get_type();
 
 void ags_delay_audio_notation_duration_changed(AgsDelayAudio *delay_audio);
 void ags_delay_audio_sequencer_duration_changed(AgsDelayAudio *delay_audio);
+void ags_delay_audio_wave_duration_changed(AgsDelayAudio *delay_audio);
 
 AgsDelayAudio* ags_delay_audio_new();
 

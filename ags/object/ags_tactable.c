@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,6 +34,7 @@ void ags_tactable_class_init(AgsTactableInterface *interface);
  */
 
 enum {
+  CHANGE_WAVE_DURATION,
   CHANGE_SEQUENCER_DURATION,
   CHANGE_NOTATION_DURATION,
   CHANGE_TACT,
@@ -62,6 +63,26 @@ ags_tactable_get_type()
 void
 ags_tactable_class_init(AgsTactableInterface *interface)
 {
+  /**
+   * AgsTactable::change-wave-duration:
+   * @tactable: the #AgsTactable
+   * @duration: new duration
+   *
+   * The ::change-wave-duration signal notifies about changed duration
+   * of wave.
+   *
+   * Since: 1.5.0
+   */
+  tactable_signals[CHANGE_WAVE_DURATION] = 
+    g_signal_new("change-wave-duration",
+		 G_TYPE_FROM_INTERFACE(interface),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsTactableInterface, change_wave_duration),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__DOUBLE,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_DOUBLE);
+
   /**
    * AgsTactable::change-sequencer-duration:
    * @tactable: the #AgsTactable
@@ -139,6 +160,28 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 		 g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE,
 		 G_TYPE_NONE, 2,
 		 G_TYPE_DOUBLE, G_TYPE_DOUBLE);
+}
+
+/**
+ * ags_tactable_get_wave_duration:
+ * @tactable: an #AgsTactable
+ *
+ * Get wave duration.
+ *
+ * Returns: the wave duration
+ *
+ * Since: 1.5.0
+ */
+gdouble
+ags_tactable_get_wave_duration(AgsTactable *tactable)
+{
+  AgsTactableInterface *tactable_interface;
+
+  g_return_val_if_fail(AGS_IS_TACTABLE(tactable), -1.0);
+  tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
+  g_return_val_if_fail(tactable_interface->get_wave_duration, -1.0);
+  
+  return(tactable_interface->get_wave_duration(tactable));
 }
 
 /**
@@ -227,6 +270,24 @@ ags_tactable_get_bpm(AgsTactable *tactable)
   g_return_val_if_fail(tactable_interface->get_bpm, -1.0);
   
   return(tactable_interface->get_bpm(tactable));
+}
+
+/**
+ * ags_tactable_change_wave_duration:
+ * @tactable: an #AgsTactable
+ * @duration: the duration
+ *
+ * Wave duration changed.
+ * 
+ * Since: 1.5.0
+ */
+void
+ags_tactable_change_wave_duration(AgsTactable *tactable, double duration)
+{
+  g_signal_emit(tactable,
+		tactable_signals[CHANGE_WAVE_DURATION],
+		0,
+		duration);
 }
 
 /**

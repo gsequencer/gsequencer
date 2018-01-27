@@ -19,7 +19,7 @@
 
 #include <ags/audio/recall/ags_play_notation_audio.h>
 
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
 
 void ags_play_notation_audio_class_init(AgsPlayNotationAudioClass *play_notation_audio);
 void ags_play_notation_audio_plugin_interface_init(AgsPluginInterface *plugin);
