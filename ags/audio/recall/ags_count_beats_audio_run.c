@@ -346,7 +346,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
 				 i18n_pspec("notation counter indicates offset"),
 				 i18n_pspec("The notation counter indicates the offset in the notation"),
 				 0,
-				 65535, //FIXME:JK: figure out how many beats this can really have
+				 G_MAXUINT,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -364,13 +364,31 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
 				 i18n_pspec("sequencer counter indicates offset"),
 				 i18n_pspec("The sequenecer counter indicates the offset in the sequencer"),
 				 0,
-				 65535, //FIXME:JK: figure out how many beats this can really have
+				 G_MAXUINT,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SEQUENCER_COUNTER,
 				  param_spec);
 
+  /**
+   * AgsCountBeatsAudioRun:wave-counter:
+   *
+   * The wave counter.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint64("wave-counter",
+				   i18n_pspec("wave counter indicates offset"),
+				   i18n_pspec("The sequenecer counter indicates the offset in the wave"),
+				   0,
+				   G_MAXUINT64,
+				   0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_WAVE_COUNTER,
+				  param_spec);
+  
   /* AgsRecallClass */
   recall = (AgsRecallClass *) count_beats_audio_run;
 
@@ -702,7 +720,7 @@ ags_count_beats_audio_run_set_property(GObject *gobject,
     {
       guint counter;
 
-      counter = g_value_get_uint(value);
+      counter = g_value_get_uint64(value);
 
       count_beats_audio_run->wave_counter = counter;
     }
@@ -741,7 +759,7 @@ ags_count_beats_audio_run_get_property(GObject *gobject,
     break;
   case PROP_WAVE_COUNTER:
     {
-      g_value_set_uint(value, count_beats_audio_run->wave_counter);
+      g_value_set_uint64(value, count_beats_audio_run->wave_counter);
     }
     break;
   default:
@@ -1856,10 +1874,6 @@ ags_count_beats_audio_run_wave_count_callback(AgsDelayAudioRun *delay_audio_run,
 
   GValue loop_value = {0,};
   GValue loop_end_value = {0,};  
-
-  if((guint) floor(delay) != 0){
-    return;
-  }
 
   if((AGS_RECALL_ID_WAVE & (AGS_RECALL(count_beats_audio_run)->recall_id->flags)) == 0){
     return;

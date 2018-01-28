@@ -48,7 +48,7 @@ struct _AgsCountBeatsAudioRun
   
   guint notation_counter;
   guint sequencer_counter;
-  guint wave_counter;
+  guint64 wave_counter;
 
   guint recall_ref;
 
