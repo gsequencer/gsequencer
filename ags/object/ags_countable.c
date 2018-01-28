@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -101,4 +101,25 @@ ags_countable_get_sequencer_counter(AgsCountable *countable)
   countable_interface = AGS_COUNTABLE_GET_INTERFACE(countable);
   g_return_val_if_fail(countable_interface->get_sequencer_counter, -1);
   return(countable_interface->get_sequencer_counter(countable));
+}
+
+/**
+ * ags_countable_get_wave_counter:
+ * @countable: an #AgsCountable
+ *
+ * Retrieve current position of wave.
+ *
+ * Returns: the current position
+ *
+ * Since: 1.5.0
+ */
+guint64
+ags_countable_get_wave_counter(AgsCountable *countable)
+{
+  AgsCountableInterface *countable_interface;
+
+  g_return_val_if_fail(AGS_IS_COUNTABLE(countable), -1);
+  countable_interface = AGS_COUNTABLE_GET_INTERFACE(countable);
+  g_return_val_if_fail(countable_interface->get_wave_counter, -1);
+  return(countable_interface->get_wave_counter(countable));
 }

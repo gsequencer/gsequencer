@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -46,6 +46,10 @@ struct _AgsCountBeatsAudio
   AgsPort *sequencer_loop;
   AgsPort *sequencer_loop_start;
   AgsPort *sequencer_loop_end;
+
+  AgsPort *wave_loop;
+  AgsPort *wave_loop_start;
+  AgsPort *wave_loop_end;
 };
 
 struct _AgsCountBeatsAudioClass

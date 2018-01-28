@@ -28,9 +28,6 @@
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
 
-#include <ags/audio/thread/ags_audio_loop.h>
-#include <ags/audio/thread/ags_soundcard_thread.h>
-
 #include <ags/i18n.h>
 
 void ags_play_wave_audio_run_class_init(AgsPlayWaveAudioRunClass *play_wave_audio_run);

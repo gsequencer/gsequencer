@@ -70,10 +70,20 @@ typedef enum{
   AGS_PLAYBACK_SUPER_THREADED_RECYCLING     = 1 << 11,
 }AgsPlaybackFlags;
 
+/**
+ * AgsPlaybackScope:
+ * @AGS_PLAYBACK_SCOPE_PLAYBACK: scope playback
+ * @AGS_PLAYBACK_SCOPE_SEQUENCER: scope sequencer
+ * @AGS_PLAYBACK_SCOPE_NOTATION: scope notation
+ * @AGS_PLAYBACK_SCOPE_NOTATION: scope wave
+ * 
+ * Enum values to specify playback scope.
+ */
 typedef enum{
   AGS_PLAYBACK_SCOPE_PLAYBACK,
   AGS_PLAYBACK_SCOPE_SEQUENCER,
-  AGS_PLAYBACK_SCOPE_NOTATION,  
+  AGS_PLAYBACK_SCOPE_NOTATION,
+  AGS_PLAYBACK_SCOPE_WAVE,
 }AgsPlaybackScope;
 
 struct _AgsPlayback

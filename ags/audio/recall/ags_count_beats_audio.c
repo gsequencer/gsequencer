@@ -43,6 +43,7 @@ void ags_count_beats_audio_finalize(GObject *gobject);
 void ags_count_beats_audio_connect(AgsConnectable *connectable);
 void ags_count_beats_audio_disconnect(AgsConnectable *connectable);
 
+void ags_count_beats_audio_change_wave_duration(AgsTactable *tactable, gdouble duration);
 void ags_count_beats_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duration);
 void ags_count_beats_audio_change_notation_duration(AgsTactable *tactable, gdouble duration);
 
@@ -64,6 +65,9 @@ enum{
   PROP_SEQUENCER_LOOP,
   PROP_SEQUENCER_LOOP_START,
   PROP_SEQUENCER_LOOP_END,
+  PROP_WAVE_LOOP,
+  PROP_WAVE_LOOP_START,
+  PROP_WAVE_LOOP_END,
 };
 
 static gpointer ags_count_beats_audio_parent_class = NULL;
@@ -72,17 +76,21 @@ static AgsConnectableInterface* ags_count_beats_audio_parent_connectable_interfa
 static const gchar *ags_count_beats_audio_plugin_name = "ags-count-beats";
 static const gchar *ags_count_beats_audio_specifier[] = {
   "./loop[0]",
-  "./sequencer_loop_start[0]",
-  "./notation_loop_start[0]",
-  "./sequencer_loop_end[0]",
   "./notation_loop_end[0]"
+  "./notation_loop_start[0]",
+  "./sequencer_loop_start[0]",
+  "./sequencer_loop_end[0]",
+  "./wave_loop_start[0]",
+  "./wave_loop_end[0]",
 };
 static const gchar *ags_count_beats_audio_control_port[] = {
-  "1/5",
-  "2/5",
-  "3/5",
-  "4/5",
-  "5/5",
+  "1/7",
+  "2/7",
+  "3/7",
+  "4/7",
+  "5/7",
+  "6/7",
+  "7/7",
 };
 
 GType
@@ -156,9 +164,11 @@ ags_count_beats_audio_tactable_interface_init(AgsTactableInterface *tactable)
 {
   tactable->get_bpm = NULL;
   tactable->get_tact = NULL;
+  tactable->get_wave_duration = NULL;
   tactable->get_sequencer_duration = NULL;
   tactable->get_notation_duration = NULL;
 
+  tactable->change_wave_duration = ags_count_beats_audio_change_wave_duration;
   tactable->change_sequencer_duration = ags_count_beats_audio_change_sequencer_duration;
   tactable->change_notation_duration = ags_count_beats_audio_change_notation_duration;
   tactable->change_bpm = NULL;
@@ -283,6 +293,54 @@ ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio)
   g_object_class_install_property(gobject,
 				  PROP_SEQUENCER_LOOP_END,
 				  param_spec);
+
+  /**
+   * AgsCountBeatsAudio:wave-loop:
+   *
+   * Count until loop-end and start at loop-start.
+   * 
+   * Since: 1.5.0
+   */
+  param_spec = g_param_spec_object("wave-loop",
+				   i18n_pspec("wave loop playing"),
+				   i18n_pspec("Play wave in a endless loop"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_WAVE_LOOP,
+				  param_spec);
+
+  /**
+   * AgsCountBeatsAudio:wave-loop-start:
+   *
+   * The wave's loop-start.
+   * 
+   * Since: 1.5.0
+   */
+  param_spec = g_param_spec_object("wave_loop_start",
+				   i18n_pspec("start beat of loop"),
+				   i18n_pspec("The start beat of the wave loop"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_WAVE_LOOP_START,
+				  param_spec);
+
+  /**
+   * AgsCountBeatsAudio:wave-loop-end:
+   *
+   * The wave's loop-end.
+   * 
+   * Since: 1.5.0
+   */
+  param_spec = g_param_spec_object("wave-loop-end",
+				   i18n_pspec("end beat of wave loop"),
+				   i18n_pspec("The end beat of the wave loop"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_WAVE_LOOP_END,
+				  param_spec);
 }
 
 void
@@ -297,34 +355,16 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
 
   port = NULL;
 
-  /* sequencer loop */
-  count_beats_audio->sequencer_loop = g_object_new(AGS_TYPE_PORT,
-						   "plugin-name", ags_count_beats_audio_plugin_name,
-						   "specifier", ags_count_beats_audio_specifier[0],
-						   "control-port", ags_count_beats_audio_control_port[0],
-						   "port-value-is-pointer", FALSE,
-						   "port-value-type", G_TYPE_BOOLEAN,
-						   "port-value-size", sizeof(gboolean),
-						   "port-value-length", 1,
-						   NULL);
-  g_object_ref(count_beats_audio->sequencer_loop);
-  
-  count_beats_audio->sequencer_loop->port_value.ags_port_boolean = FALSE;
-
-  /* add to port */
-  port = g_list_prepend(port, count_beats_audio->sequencer_loop);
-  g_object_ref(count_beats_audio->sequencer_loop);
-
   /* notation loop */
   count_beats_audio->notation_loop = g_object_new(AGS_TYPE_PORT,
-						   "plugin-name", ags_count_beats_audio_plugin_name,
-						   "specifier", ags_count_beats_audio_specifier[0],
-						   "control-port", ags_count_beats_audio_control_port[0],
-						   "port-value-is-pointer", FALSE,
-						   "port-value-type", G_TYPE_BOOLEAN,
-						   "port-value-size", sizeof(gboolean),
-						   "port-value-length", 1,
-						   NULL);
+						  "plugin-name", ags_count_beats_audio_plugin_name,
+						  "specifier", ags_count_beats_audio_specifier[0],
+						  "control-port", ags_count_beats_audio_control_port[0],
+						  "port-value-is-pointer", FALSE,
+						  "port-value-type", G_TYPE_BOOLEAN,
+						  "port-value-size", sizeof(gboolean),
+						  "port-value-length", 1,
+						  NULL);
   g_object_ref(count_beats_audio->notation_loop);
   
   count_beats_audio->notation_loop->port_value.ags_port_boolean = FALSE;
@@ -332,24 +372,6 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
   /* add to port */
   port = g_list_prepend(port, count_beats_audio->notation_loop);
   g_object_ref(count_beats_audio->notation_loop);
-  
-  /* sequencer-loop-start  */
-  count_beats_audio->sequencer_loop_start = g_object_new(AGS_TYPE_PORT,
-							 "plugin-name", ags_count_beats_audio_plugin_name,
-							 "specifier", ags_count_beats_audio_specifier[1],
-							 "control-port", ags_count_beats_audio_control_port[1],
-							 "port-value-is-pointer", FALSE,
-							 "port-value-type", G_TYPE_DOUBLE,
-							 "port-value-size", sizeof(gdouble),
-							 "port-value-length", 1,
-							 NULL);
-  g_object_ref(count_beats_audio->sequencer_loop_start);
-  
-  count_beats_audio->sequencer_loop_start->port_value.ags_port_double = 0.0;
-
-  /* add to port */
-  port = g_list_prepend(port, count_beats_audio->sequencer_loop_start);
-  g_object_ref(count_beats_audio->sequencer_loop_start);
 
   /* notation-loop-start */
   count_beats_audio->notation_loop_start = g_object_new(AGS_TYPE_PORT,
@@ -369,6 +391,60 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
   port = g_list_prepend(port, count_beats_audio->notation_loop_start);
   g_object_ref(count_beats_audio->notation_loop_start);
   
+  /* notation-loop-end */
+  count_beats_audio->notation_loop_end = g_object_new(AGS_TYPE_PORT,
+						      "plugin-name", ags_count_beats_audio_plugin_name,
+						      "specifier", ags_count_beats_audio_specifier[4],
+						      "control-port", ags_count_beats_audio_control_port[4],
+						      "port-value-is-pointer", FALSE,
+						      "port-value-type", G_TYPE_DOUBLE,
+						      "port-value-size", sizeof(gdouble),
+						      "port-value-length", 1,
+						      NULL);
+  g_object_ref(count_beats_audio->notation_loop_end);
+  
+  count_beats_audio->notation_loop_end->port_value.ags_port_double = 64.0;
+  
+  /* add to port */
+  port = g_list_prepend(port, count_beats_audio->notation_loop_end);
+  g_object_ref(count_beats_audio->notation_loop_end);
+
+  /* sequencer loop */
+  count_beats_audio->sequencer_loop = g_object_new(AGS_TYPE_PORT,
+						   "plugin-name", ags_count_beats_audio_plugin_name,
+						   "specifier", ags_count_beats_audio_specifier[0],
+						   "control-port", ags_count_beats_audio_control_port[0],
+						   "port-value-is-pointer", FALSE,
+						   "port-value-type", G_TYPE_BOOLEAN,
+						   "port-value-size", sizeof(gboolean),
+						   "port-value-length", 1,
+						   NULL);
+  g_object_ref(count_beats_audio->sequencer_loop);
+  
+  count_beats_audio->sequencer_loop->port_value.ags_port_boolean = FALSE;
+
+  /* add to port */
+  port = g_list_prepend(port, count_beats_audio->sequencer_loop);
+  g_object_ref(count_beats_audio->sequencer_loop);
+  
+  /* sequencer-loop-start  */
+  count_beats_audio->sequencer_loop_start = g_object_new(AGS_TYPE_PORT,
+							 "plugin-name", ags_count_beats_audio_plugin_name,
+							 "specifier", ags_count_beats_audio_specifier[1],
+							 "control-port", ags_count_beats_audio_control_port[1],
+							 "port-value-is-pointer", FALSE,
+							 "port-value-type", G_TYPE_DOUBLE,
+							 "port-value-size", sizeof(gdouble),
+							 "port-value-length", 1,
+							 NULL);
+  g_object_ref(count_beats_audio->sequencer_loop_start);
+  
+  count_beats_audio->sequencer_loop_start->port_value.ags_port_double = 0.0;
+
+  /* add to port */
+  port = g_list_prepend(port, count_beats_audio->sequencer_loop_start);
+  g_object_ref(count_beats_audio->sequencer_loop_start);
+  
   /* sequencer-loop-end */
   count_beats_audio->sequencer_loop_end = g_object_new(AGS_TYPE_PORT,
 						       "plugin-name", ags_count_beats_audio_plugin_name,
@@ -386,24 +462,60 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
   /* add to port */
   port = g_list_prepend(port, count_beats_audio->sequencer_loop_end);
   g_object_ref(count_beats_audio->sequencer_loop_end);
+
+  /* wave loop */
+  count_beats_audio->wave_loop = g_object_new(AGS_TYPE_PORT,
+					      "plugin-name", ags_count_beats_audio_plugin_name,
+					      "specifier", ags_count_beats_audio_specifier[0],
+					      "control-port", ags_count_beats_audio_control_port[0],
+					      "port-value-is-pointer", FALSE,
+					      "port-value-type", G_TYPE_BOOLEAN,
+					      "port-value-size", sizeof(gboolean),
+					      "port-value-length", 1,
+					      NULL);
+  g_object_ref(count_beats_audio->wave_loop);
   
-  /* notation-loop-end */
-  count_beats_audio->notation_loop_end = g_object_new(AGS_TYPE_PORT,
-						      "plugin-name", ags_count_beats_audio_plugin_name,
-						      "specifier", ags_count_beats_audio_specifier[4],
-						      "control-port", ags_count_beats_audio_control_port[4],
-						      "port-value-is-pointer", FALSE,
-						      "port-value-type", G_TYPE_DOUBLE,
-						      "port-value-size", sizeof(gdouble),
-						      "port-value-length", 1,
-						      NULL);
-  g_object_ref(count_beats_audio->notation_loop_end);
-  
-  count_beats_audio->notation_loop_end->port_value.ags_port_double = 64.0;
+  count_beats_audio->wave_loop->port_value.ags_port_boolean = FALSE;
 
   /* add to port */
-  port = g_list_prepend(port, count_beats_audio->notation_loop_end);
-  g_object_ref(count_beats_audio->notation_loop_end);
+  port = g_list_prepend(port, count_beats_audio->wave_loop);
+  g_object_ref(count_beats_audio->wave_loop);
+  
+  /* wave-loop-start  */
+  count_beats_audio->wave_loop_start = g_object_new(AGS_TYPE_PORT,
+						    "plugin-name", ags_count_beats_audio_plugin_name,
+						    "specifier", ags_count_beats_audio_specifier[1],
+						    "control-port", ags_count_beats_audio_control_port[1],
+						    "port-value-is-pointer", FALSE,
+						    "port-value-type", G_TYPE_DOUBLE,
+						    "port-value-size", sizeof(gdouble),
+						    "port-value-length", 1,
+						    NULL);
+  g_object_ref(count_beats_audio->wave_loop_start);
+  
+  count_beats_audio->wave_loop_start->port_value.ags_port_double = 0.0;
+
+  /* add to port */
+  port = g_list_prepend(port, count_beats_audio->wave_loop_start);
+  g_object_ref(count_beats_audio->wave_loop_start);
+  
+  /* wave-loop-end */
+  count_beats_audio->wave_loop_end = g_object_new(AGS_TYPE_PORT,
+						  "plugin-name", ags_count_beats_audio_plugin_name,
+						  "specifier", ags_count_beats_audio_specifier[3],
+						  "control-port", ags_count_beats_audio_control_port[3],
+						  "port-value-is-pointer", FALSE,
+						  "port-value-type", G_TYPE_DOUBLE,
+						  "port-value-size", sizeof(gdouble),
+						  "port-value-length", 1,
+						  NULL);
+  g_object_ref(count_beats_audio->wave_loop_end);
+  
+  count_beats_audio->wave_loop_end->port_value.ags_port_double = 16.0;
+
+  /* add to port */
+  port = g_list_prepend(port, count_beats_audio->wave_loop_end);
+  g_object_ref(count_beats_audio->wave_loop_end);
 
   /* port */
   AGS_RECALL(count_beats_audio)->port = port;
@@ -546,6 +658,69 @@ ags_count_beats_audio_set_property(GObject *gobject,
       count_beats_audio->sequencer_loop_end = port;
     }
     break;
+  case PROP_WAVE_LOOP:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      if(port == count_beats_audio->wave_loop){
+	return;
+      }
+
+      if(count_beats_audio->wave_loop != NULL){
+	g_object_unref(G_OBJECT(count_beats_audio->wave_loop));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      count_beats_audio->wave_loop = port;
+    }
+    break;
+  case PROP_WAVE_LOOP_START:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      if(port == count_beats_audio->wave_loop_start){
+	return;
+      }
+
+      if(count_beats_audio->wave_loop_start != NULL){
+	g_object_unref(G_OBJECT(count_beats_audio->wave_loop_start));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      count_beats_audio->wave_loop_start = port;
+    }
+    break;
+  case PROP_WAVE_LOOP_END:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      if(port == count_beats_audio->wave_loop_end){
+	return;
+      }
+
+      if(count_beats_audio->wave_loop_end != NULL){
+	g_object_unref(G_OBJECT(count_beats_audio->wave_loop_end));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      count_beats_audio->wave_loop_end = port;
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -593,6 +768,21 @@ ags_count_beats_audio_get_property(GObject *gobject,
       g_value_set_object(value, count_beats->sequencer_loop_end);
     }
     break;
+  case PROP_WAVE_LOOP:
+    {
+      g_value_set_object(value, count_beats->wave_loop);
+    }
+    break;
+  case PROP_WAVE_LOOP_START:
+    {
+      g_value_set_object(value, count_beats->wave_loop_start);
+    }
+    break;
+  case PROP_WAVE_LOOP_END:
+    {
+      g_value_set_object(value, count_beats->wave_loop_end);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -638,6 +828,24 @@ ags_count_beats_audio_set_ports(AgsPlugin *plugin, GList *port)
 		      22)){
       g_object_set(G_OBJECT(plugin),
 		   "sequencer-loop-end", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "./wave-loop[0]",
+		      19)){
+      g_object_set(G_OBJECT(plugin),
+		   "wave-loop", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "./wave-loop-start[0]",
+		      24)){
+      g_object_set(G_OBJECT(plugin),
+		   "wave-loop-start", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "./wave-loop-end[0]",
+		      22)){
+      g_object_set(G_OBJECT(plugin),
+		   "wave-loop-end", AGS_PORT(port->data),
 		   NULL);
     }
     
@@ -688,6 +896,24 @@ ags_count_beats_audio_dispose(GObject *gobject)
     count_beats_audio->sequencer_loop_end = NULL;
   }
 
+  if(count_beats_audio->wave_loop != NULL){
+    g_object_unref(G_OBJECT(count_beats_audio->wave_loop));
+
+    count_beats_audio->wave_loop = NULL;
+  }
+
+  if(count_beats_audio->wave_loop_start != NULL){
+    g_object_unref(G_OBJECT(count_beats_audio->wave_loop_start));
+
+    count_beats_audio->wave_loop_start = NULL;
+  }
+
+  if(count_beats_audio->wave_loop_end != NULL){
+    g_object_unref(G_OBJECT(count_beats_audio->wave_loop_end));
+
+    count_beats_audio->wave_loop_end = NULL;
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_count_beats_audio_parent_class)->dispose(gobject);
 }
@@ -698,10 +924,6 @@ ags_count_beats_audio_finalize(GObject *gobject)
   AgsCountBeatsAudio *count_beats_audio;
 
   count_beats_audio = AGS_COUNT_BEATS_AUDIO(gobject);
-
-  if(count_beats_audio->sequencer_loop != NULL){
-    g_object_unref(G_OBJECT(count_beats_audio->sequencer_loop));
-  }
 
   if(count_beats_audio->notation_loop_start != NULL){
     g_object_unref(G_OBJECT(count_beats_audio->notation_loop_start));
@@ -715,12 +937,28 @@ ags_count_beats_audio_finalize(GObject *gobject)
     g_object_unref(G_OBJECT(count_beats_audio->notation_loop));
   }
 
+  if(count_beats_audio->sequencer_loop != NULL){
+    g_object_unref(G_OBJECT(count_beats_audio->sequencer_loop));
+  }
+
   if(count_beats_audio->sequencer_loop_start != NULL){
     g_object_unref(G_OBJECT(count_beats_audio->sequencer_loop_start));
   }
 
   if(count_beats_audio->sequencer_loop_end != NULL){
     g_object_unref(G_OBJECT(count_beats_audio->sequencer_loop_end));
+  }
+
+  if(count_beats_audio->wave_loop != NULL){
+    g_object_unref(G_OBJECT(count_beats_audio->wave_loop));
+  }
+
+  if(count_beats_audio->wave_loop_start != NULL){
+    g_object_unref(G_OBJECT(count_beats_audio->wave_loop_start));
+  }
+
+  if(count_beats_audio->wave_loop_end != NULL){
+    g_object_unref(G_OBJECT(count_beats_audio->wave_loop_end));
   }
 
   /* call parent */
@@ -778,6 +1016,21 @@ ags_count_beats_audio_disconnect(AgsConnectable *connectable)
 {
   /* call parent */
   ags_count_beats_audio_parent_connectable_interface->disconnect(connectable);
+}
+
+void
+ags_count_beats_audio_change_wave_duration(AgsTactable *tactable, gdouble duration)
+{
+  AgsCountBeatsAudio *count_beats_audio;
+
+  GValue value = {0,};
+  
+  count_beats_audio = AGS_COUNT_BEATS_AUDIO(tactable);
+
+  g_value_init(&value, G_TYPE_DOUBLE);
+  g_value_set_double(&value, duration);
+  ags_port_safe_write(count_beats_audio->wave_loop_end,
+		      &value);
 }
 
 void

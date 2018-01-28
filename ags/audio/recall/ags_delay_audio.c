@@ -22,6 +22,9 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_notation.h>
+#include <ags/audio/ags_wave.h>
+
 #include <math.h>
 
 #include <ags/i18n.h>
