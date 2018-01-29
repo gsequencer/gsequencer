@@ -90,9 +90,6 @@ struct _AgsAudioSignalClass
 {
   GObjectClass object;
 
-  void (*reset_format)(AgsAudioSignal *audio_signal, guint format);
-  void (*realloc_buffer_size)(AgsAudioSignal *audio_signal, guint buffer_size);
-
   void (*add_note)(AgsAudioSignal *audio_signal,
 		   GObject *note);
   void (*remove_note)(AgsAudioSignal *audio_signal,
@@ -103,7 +100,7 @@ GType ags_audio_signal_get_type();
 
 void* ags_stream_alloc(guint buffer_size,
 		       guint format);
-void ags_stream_free(signed short *buffer);
+void ags_stream_free(void *buffer);
 
 void ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate);
 void ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size);
@@ -115,39 +112,24 @@ void ags_audio_signal_add_stream(AgsAudioSignal *audio_signal);
 void ags_audio_signal_stream_resize(AgsAudioSignal *audio_signal, guint length);
 void ags_audio_signal_stream_safe_resize(AgsAudioSignal *audio_signal, guint length);
 
-void ags_audio_signal_realloc_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size);
-
 void ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 				       AgsAudioSignal *template);
+
+void ags_audio_signal_feed(AgsAudioSignal *audio_signal,
+			   AgsAudioSignal *template,
+			   guint frame_count);
 
 void ags_audio_signal_add_note(AgsAudioSignal *audio_signal,
 			       GObject *note);
 void ags_audio_signal_remove_note(AgsAudioSignal *audio_signal,
 				  GObject *note);
 
-//TODO:JK: rename these functions name it rather find than get
 AgsAudioSignal* ags_audio_signal_get_template(GList *audio_signal);
-GList* ags_audio_signal_get_stream_current(GList *audio_signal,
+
+GList* ags_audio_signal_find_stream_current(GList *audio_signal,
 					   GObject *recall_id);
-GList* ags_audio_signal_get_by_recall_id(GList *audio_signal,
-					 GObject *recall_id);
-
-void ags_audio_signal_tile(AgsAudioSignal *audio_signal,
-			   AgsAudioSignal *template,
-			   guint frame_count);
-void ags_audio_signal_scale(AgsAudioSignal *audio_signal,
-			    AgsAudioSignal *template,
-			    guint length);
-void ags_audio_signal_feed(AgsAudioSignal *audio_signal,
-			   AgsAudioSignal *template,
-			   guint frame_count);
-
-void ags_audio_signal_envelope(AgsAudioSignal *audio_signal,
-			       gdouble attack,
-			       gdouble decay,
-			       gdouble sustain,
-			       gdouble release,
-			       gdouble ratio);
+GList* ags_audio_signal_find_by_recall_id(GList *audio_signal,
+					  GObject *recall_id);
 
 gboolean ags_audio_signal_is_active(GList *audio_signal,
 				    GObject *recall_id);
