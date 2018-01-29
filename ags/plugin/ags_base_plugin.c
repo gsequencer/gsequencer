@@ -263,7 +263,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsBasePluginClass, instantiate),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__UINT,
+		 ags_cclosure_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
 
@@ -281,7 +281,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsBasePluginClass, connect_port),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__POINTER_UINT_POINTER,
+		 ags_cclosure_marshal_VOID__POINTER_UINT_POINTER,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_POINTER,
 		 G_TYPE_UINT,
@@ -337,7 +337,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsBasePluginClass, run),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__POINTER_POINTER_UINT,
+		 ags_cclosure_marshal_VOID__POINTER_POINTER_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_POINTER,
 		 G_TYPE_POINTER,

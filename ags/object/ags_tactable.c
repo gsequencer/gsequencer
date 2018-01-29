@@ -138,7 +138,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsTactableInterface, change_tact),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE,
+		 ags_cclosure_marshal_VOID__DOUBLE_DOUBLE,
 		 G_TYPE_NONE, 2,
 		 G_TYPE_DOUBLE, G_TYPE_DOUBLE);
 
@@ -157,7 +157,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsTactableInterface, change_bpm),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE,
+		 ags_cclosure_marshal_VOID__DOUBLE_DOUBLE,
 		 G_TYPE_NONE, 2,
 		 G_TYPE_DOUBLE, G_TYPE_DOUBLE);
 }

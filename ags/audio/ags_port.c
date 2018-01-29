@@ -315,7 +315,7 @@ ags_port_class_init(AgsPortClass *port)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsPortClass, safe_get_property),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__STRING_POINTER,
+		 ags_cclosure_marshal_VOID__STRING_POINTER,
 		 G_TYPE_NONE, 2,
 		 G_TYPE_STRING, G_TYPE_POINTER);
 
@@ -331,7 +331,7 @@ ags_port_class_init(AgsPortClass *port)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsPortClass, safe_set_property),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__STRING_POINTER,
+		 ags_cclosure_marshal_VOID__STRING_POINTER,
 		 G_TYPE_NONE, 2,
 		 G_TYPE_STRING, G_TYPE_POINTER);
 }

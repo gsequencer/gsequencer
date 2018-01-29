@@ -664,7 +664,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, duplicate),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_OBJECT__OBJECT_POINTER_POINTER,
+		 ags_cclosure_marshal_OBJECT__OBJECT_POINTER_POINTER,
 		 G_TYPE_OBJECT, 3,
 		 G_TYPE_OBJECT,
 		 G_TYPE_POINTER, G_TYPE_POINTER);
@@ -686,7 +686,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, notify_dependency),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_INT,
+		 ags_cclosure_marshal_VOID__UINT_INT,
 		 G_TYPE_NONE, 2,
 		 G_TYPE_UINT, G_TYPE_INT);
 

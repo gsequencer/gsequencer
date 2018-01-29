@@ -371,7 +371,7 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsBulkMemberClass, find_port),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__VOID,
+		 ags_cclosure_marshal_POINTER__VOID,
 		 G_TYPE_POINTER, 0);
 }
 

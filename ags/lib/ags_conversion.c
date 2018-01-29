@@ -163,7 +163,7 @@ ags_conversion_class_init(AgsConversionClass *conversion)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsConversionClass, convert),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_DOUBLE__DOUBLE_BOOLEAN,
+		 ags_cclosure_marshal_DOUBLE__DOUBLE_BOOLEAN,
 		 G_TYPE_DOUBLE, 2,
 		 G_TYPE_DOUBLE,
 		 G_TYPE_BOOLEAN);

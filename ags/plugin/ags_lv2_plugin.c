@@ -270,7 +270,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsLv2PluginClass, change_program),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__POINTER_UINT_UINT,
+		 ags_cclosure_marshal_VOID__POINTER_UINT_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_POINTER,
 		 G_TYPE_UINT,

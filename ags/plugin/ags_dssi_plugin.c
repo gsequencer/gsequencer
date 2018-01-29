@@ -203,7 +203,7 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsDssiPluginClass, change_program),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__POINTER_UINT_UINT,
+		 ags_cclosure_marshal_VOID__POINTER_UINT_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_POINTER,
 		 G_TYPE_UINT,

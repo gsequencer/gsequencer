@@ -222,7 +222,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, midi_getc),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_INT__VOID,
+		 ags_cclosure_marshal_INT__VOID,
 		 G_TYPE_INT, 0);
 
   /**
@@ -260,7 +260,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, parse_full),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__VOID,
+		 ags_cclosure_marshal_POINTER__VOID,
 		 G_TYPE_POINTER, 0);
 
   /**
@@ -281,7 +281,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, parse_bytes),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__POINTER_UINT,
+		 ags_cclosure_marshal_POINTER__POINTER_UINT,
 		 G_TYPE_POINTER, 2,
 		 G_TYPE_POINTER,
 		 G_TYPE_UINT);
@@ -302,7 +302,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, parse_header),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__VOID,
+		 ags_cclosure_marshal_POINTER__VOID,
 		 G_TYPE_POINTER, 0);
 
   /**
@@ -321,7 +321,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, parse_track),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__VOID,
+		 ags_cclosure_marshal_POINTER__VOID,
 		 G_TYPE_POINTER, 0);
 
   /**
@@ -340,7 +340,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, key_on),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__UINT,
+		 ags_cclosure_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
 
@@ -360,7 +360,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, key_off),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__UINT,
+		 ags_cclosure_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
 
@@ -380,7 +380,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, key_pressure),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__UINT,
+		 ags_cclosure_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
 
@@ -400,7 +400,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, change_parameter),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__UINT,
+		 ags_cclosure_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
 
@@ -420,7 +420,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, change_pitch_bend),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__UINT,
+		 ags_cclosure_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
 
@@ -440,7 +440,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, change_program),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__UINT,
+		 ags_cclosure_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
 
@@ -460,7 +460,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, change_channel_pressure),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__UINT,
+		 ags_cclosure_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
 
@@ -480,7 +480,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, not_defined),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__UINT,
+		 ags_cclosure_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
 
@@ -500,7 +500,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, sysex),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__UINT,
+		 ags_cclosure_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
 
@@ -520,7 +520,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, system_common),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__UINT,
+		 ags_cclosure_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
 
@@ -540,7 +540,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, meta_event),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__UINT,
+		 ags_cclosure_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
 
@@ -560,7 +560,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, sequence_number),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__UINT,
+		 ags_cclosure_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
 
@@ -580,7 +580,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, end_of_track),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__UINT,
+		 ags_cclosure_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
 
@@ -600,7 +600,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, smtpe),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__UINT,
+		 ags_cclosure_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
 
@@ -620,7 +620,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, tempo),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__UINT,
+		 ags_cclosure_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
 
@@ -640,7 +640,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, time_signature),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__UINT,
+		 ags_cclosure_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
 
@@ -660,7 +660,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, key_signature),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__UINT,
+		 ags_cclosure_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
 
@@ -680,7 +680,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, sequencer_meta_event),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__UINT,
+		 ags_cclosure_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
 
@@ -700,7 +700,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMidiParserClass, text_event),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__UINT,
+		 ags_cclosure_marshal_POINTER__UINT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_UINT);
 }

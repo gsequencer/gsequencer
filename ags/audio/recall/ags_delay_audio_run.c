@@ -195,7 +195,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, notation_alloc_output),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT,
+		 ags_cclosure_marshal_VOID__UINT_DOUBLE_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_UINT,
 		 G_TYPE_DOUBLE, G_TYPE_UINT);
@@ -218,7 +218,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, notation_alloc_input),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT,
+		 ags_cclosure_marshal_VOID__UINT_DOUBLE_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_UINT,
 		 G_TYPE_DOUBLE, G_TYPE_UINT);
@@ -241,7 +241,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, notation_count),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT,
+		 ags_cclosure_marshal_VOID__UINT_DOUBLE_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_UINT,
 		 G_TYPE_DOUBLE, G_TYPE_UINT);
@@ -264,7 +264,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, sequencer_alloc_output),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT,
+		 ags_cclosure_marshal_VOID__UINT_DOUBLE_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_UINT,
 		 G_TYPE_DOUBLE, G_TYPE_UINT);
@@ -287,7 +287,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, sequencer_alloc_input),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT,
+		 ags_cclosure_marshal_VOID__UINT_DOUBLE_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_UINT,
 		 G_TYPE_DOUBLE, G_TYPE_UINT);
@@ -310,7 +310,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, sequencer_count),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT,
+		 ags_cclosure_marshal_VOID__UINT_DOUBLE_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_UINT,
 		 G_TYPE_DOUBLE, G_TYPE_UINT);
@@ -333,7 +333,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, wave_alloc_output),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT,
+		 ags_cclosure_marshal_VOID__UINT_DOUBLE_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_UINT,
 		 G_TYPE_DOUBLE, G_TYPE_UINT);
@@ -356,7 +356,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, wave_alloc_input),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT,
+		 ags_cclosure_marshal_VOID__UINT_DOUBLE_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_UINT,
 		 G_TYPE_DOUBLE, G_TYPE_UINT);
@@ -379,7 +379,7 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsDelayAudioRunClass, wave_count),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT,
+		 ags_cclosure_marshal_VOID__UINT_DOUBLE_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_UINT,
 		 G_TYPE_DOUBLE, G_TYPE_UINT);

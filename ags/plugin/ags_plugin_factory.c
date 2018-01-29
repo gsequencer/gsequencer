@@ -93,7 +93,7 @@ ags_plugin_factory_class_init(AgsPluginFactoryClass *plugin_factory)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsPluginFactoryClass, add),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER,
+		 ags_cclosure_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER,
 		 G_TYPE_OBJECT, 7,
 		 G_TYPE_ULONG,
 		 G_TYPE_STRING,
@@ -106,7 +106,7 @@ ags_plugin_factory_class_init(AgsPluginFactoryClass *plugin_factory)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsPluginFactoryClass, create),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING,
+		 ags_cclosure_marshal_OBJECT__STRING_STRING_STRING,
 		 G_TYPE_OBJECT, 3,
 		 G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 }

@@ -230,7 +230,7 @@ ags_thread_class_init(AgsThreadClass *thread)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsThreadClass, clock),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_UINT__VOID,
+		 ags_cclosure_marshal_UINT__VOID,
 		 G_TYPE_UINT, 0);
 
 
@@ -356,7 +356,7 @@ ags_thread_class_init(AgsThreadClass *thread)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsThreadClass, interrupted),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_UINT__INT_UINT_POINTER,
+		 ags_cclosure_marshal_UINT__INT_UINT_POINTER,
 		 G_TYPE_UINT, 3,
 		 G_TYPE_INT, G_TYPE_UINT, G_TYPE_POINTER);
 }
