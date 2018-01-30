@@ -729,7 +729,6 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     /* some options */
     options = (LV2_Options_Option *) malloc(6 * sizeof(LV2_Options_Option));
 
-
     /* samplerate */
     options[0].context = LV2_OPTIONS_INSTANCE;
     options[0].subject = 0;
@@ -772,14 +771,28 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 						  LV2_ATOM__Int);
     options[2].value = ptr_buffer_size;
 
-    /* terminate */
+    /* bounded-block-length */
     options[3].context = LV2_OPTIONS_INSTANCE;
     options[3].subject = 0;
-    options[3].key = 0;
+    options[3].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						 LV2_BUF_SIZE__boundedBlockLength);
 
-    options[3].size = 0;
-    options[3].type = 0;
-    options[3].value = NULL;
+    ptr_buffer_size = (float *) malloc(sizeof(float));
+    ptr_buffer_size[0] = conf_buffer_size;
+
+    options[3].size = sizeof(float);
+    options[3].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						  LV2_ATOM__Int);
+    options[3].value = ptr_buffer_size;
+    
+    /* terminate */
+    options[4].context = LV2_OPTIONS_INSTANCE;
+    options[4].subject = 0;
+    options[4].key = 0;
+
+    options[4].size = 0;
+    options[4].type = 0;
+    options[4].value = NULL;
 
     /* set options */
     ags_lv2_option_manager_lv2_options_set(*lv2_handle,
