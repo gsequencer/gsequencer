@@ -69,7 +69,7 @@ ags_seekable_class_init(AgsSeekableInterface *interface)
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsSeekableInterface, seek),
 	       NULL, NULL,
-	       g_cclosure_user_marshal_VOID__UINT_BOOLEAN,
+	       ags_cclosure_marshal_VOID__UINT_BOOLEAN,
 	       G_TYPE_NONE, 2,
 	       G_TYPE_UINT,
 	       G_TYPE_BOOLEAN);

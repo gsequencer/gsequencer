@@ -7,6 +7,12 @@ ags (2.0.0)
 	* TODO:JK: implemented ags-play-wave recall
 	* implemented ags-capture-sound recall
 	* TODO:JK: implemented AgsAudiorec
+	* renamed g_cclosure_user_marshal_* to ags_cclosure_marshal_*
+	* renamed ags_audio_signal_find_by_recall_id()
+	* renamed ags_audio_signal_find_stream_current()
+	* removed ags_audio_signal_realloc_buffer_size()
+	* removed ags_audio_signal_tile()
+	* removed ags_audio_signal_scale()
 
 ags (1.4.15)
 
@@ -38,7 +44,7 @@ ags (1.4.11)
 	* fixed AgsRecallID:recycling property
 	* improved mutex lookup of rt-safe functions
 
-gs (1.4.10)
+ags (1.4.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* minor-fixes to updating AGS_AUDIO_SIGNAL_RT_TEMPLATE

@@ -96,7 +96,7 @@ ags_timestamp_factory_class_init(AgsTimestampFactoryClass *timestamp_factory)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsTimestampFactoryClass, create),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_OBJECT__OBJECT_OBJECT,
+		 ags_cclosure_marshal_OBJECT__OBJECT_OBJECT,
 		 G_TYPE_OBJECT, 2,
 		 G_TYPE_OBJECT, G_TYPE_OBJECT);
 

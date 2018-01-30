@@ -222,7 +222,7 @@ ags_machine_class_init(AgsMachineClass *machine)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMachineClass, resize_audio_channels),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_UINT,
+		 ags_cclosure_marshal_VOID__UINT_UINT,
 		 G_TYPE_NONE, 2,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT);
@@ -246,7 +246,7 @@ ags_machine_class_init(AgsMachineClass *machine)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMachineClass, resize_pads),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__ULONG_UINT_UINT,
+		 ags_cclosure_marshal_VOID__ULONG_UINT_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_ULONG,
 		 G_TYPE_UINT,
@@ -284,7 +284,7 @@ ags_machine_class_init(AgsMachineClass *machine)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMachineClass, find_port),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__VOID,
+		 ags_cclosure_marshal_POINTER__VOID,
 		 G_TYPE_POINTER, 0);
 
   /**

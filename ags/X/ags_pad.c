@@ -200,7 +200,7 @@ ags_pad_class_init(AgsPadClass *pad)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsPadClass, resize_lines),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__ULONG_UINT_UINT,
+		 ags_cclosure_marshal_VOID__ULONG_UINT_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_ULONG, G_TYPE_UINT, G_TYPE_UINT);
 
@@ -235,7 +235,7 @@ ags_pad_class_init(AgsPadClass *pad)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsPadClass, find_port),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__VOID,
+		 ags_cclosure_marshal_POINTER__VOID,
 		 G_TYPE_POINTER, 0);
 }
 

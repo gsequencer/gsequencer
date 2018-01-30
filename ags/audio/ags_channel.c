@@ -525,7 +525,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsChannelClass, add_effect),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__STRING_STRING,
+		 ags_cclosure_marshal_POINTER__STRING_STRING,
 		 G_TYPE_POINTER, 2,
 		 G_TYPE_STRING,
 		 G_TYPE_STRING);
@@ -567,7 +567,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsChannelClass, recycling_changed),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT,
+		 ags_cclosure_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT,
 		 G_TYPE_NONE, 8,
 		 G_TYPE_OBJECT, G_TYPE_OBJECT,
 		 G_TYPE_OBJECT, G_TYPE_OBJECT,

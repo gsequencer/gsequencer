@@ -119,7 +119,7 @@ ags_local_serialization_controller_class_init(AgsLocalSerializationControllerCla
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLocalSerializationControllerClass, send_object),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__OBJECT,
+		 ags_cclosure_marshal_POINTER__OBJECT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_OBJECT);
 
@@ -141,7 +141,7 @@ ags_local_serialization_controller_class_init(AgsLocalSerializationControllerCla
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLocalSerializationControllerClass, send_object_property),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__OBJECT,
+		 ags_cclosure_marshal_POINTER__OBJECT,
 		 G_TYPE_POINTER, 2,
 		 G_TYPE_OBJECT,
 		 G_TYPE_POINTER);
@@ -163,7 +163,7 @@ ags_local_serialization_controller_class_init(AgsLocalSerializationControllerCla
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLocalSerializationControllerClass, receive_object),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__OBJECT,
+		 ags_cclosure_marshal_POINTER__OBJECT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_OBJECT);
 
@@ -185,7 +185,7 @@ ags_local_serialization_controller_class_init(AgsLocalSerializationControllerCla
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLocalSerializationControllerClass, receive_object_property),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__OBJECT,
+		 ags_cclosure_marshal_POINTER__OBJECT,
 		 G_TYPE_POINTER, 2,
 		 G_TYPE_OBJECT,
 		 G_TYPE_POINTER);

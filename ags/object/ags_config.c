@@ -203,7 +203,7 @@ ags_config_class_init(AgsConfigClass *config)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsConfigClass, set_value),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__STRING_STRING_STRING,
+		 ags_cclosure_marshal_VOID__STRING_STRING_STRING,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 
@@ -225,7 +225,7 @@ ags_config_class_init(AgsConfigClass *config)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsConfigClass, get_value),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_STRING__STRING_STRING,
+		 ags_cclosure_marshal_STRING__STRING_STRING,
 		 G_TYPE_STRING, 2,
 		 G_TYPE_STRING, G_TYPE_STRING);
 }

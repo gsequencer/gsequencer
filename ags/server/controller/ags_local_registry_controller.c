@@ -107,7 +107,7 @@ ags_local_registry_controller_class_init(AgsLocalRegistryControllerClass *local_
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLocalRegistryControllerClass, entry_bulk),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__VOID,
+		 ags_cclosure_marshal_POINTER__VOID,
 		 G_TYPE_POINTER, 0);
 }
 

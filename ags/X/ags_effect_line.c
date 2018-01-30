@@ -217,7 +217,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectLineClass, add_effect),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__POINTER_STRING_STRING,
+		 ags_cclosure_marshal_POINTER__POINTER_STRING_STRING,
 		 G_TYPE_POINTER, 3,
 		 G_TYPE_POINTER,
 		 G_TYPE_STRING,
@@ -279,7 +279,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectLineClass, find_port),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__VOID,
+		 ags_cclosure_marshal_POINTER__VOID,
 		 G_TYPE_POINTER, 0);
 }
 

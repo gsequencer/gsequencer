@@ -743,7 +743,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsAudioClass, set_audio_channels),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_UINT,
+		 ags_cclosure_marshal_VOID__UINT_UINT,
 		 G_TYPE_NONE, 2,
 		 G_TYPE_UINT, G_TYPE_UINT);
 
@@ -763,7 +763,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsAudioClass, set_pads),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__ULONG_UINT_UINT,
+		 ags_cclosure_marshal_VOID__ULONG_UINT_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_ULONG,
 		 G_TYPE_UINT, G_TYPE_UINT);
@@ -783,7 +783,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsAudioClass, init_run),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_OBJECT__VOID,
+		 ags_cclosure_marshal_OBJECT__VOID,
 		 G_TYPE_OBJECT, 0);
 
   /**

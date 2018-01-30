@@ -407,7 +407,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSimpleFileClass, open_from_data),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__STRING_UINT_POINTER,
+		 ags_cclosure_marshal_VOID__STRING_UINT_POINTER,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_STRING,
 		 G_TYPE_UINT,
@@ -429,7 +429,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSimpleFileClass, rw_open),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__BOOLEAN_POINTER,
+		 ags_cclosure_marshal_VOID__BOOLEAN_POINTER,
 		 G_TYPE_NONE, 2,
 		 G_TYPE_BOOLEAN,
 		 G_TYPE_POINTER);
