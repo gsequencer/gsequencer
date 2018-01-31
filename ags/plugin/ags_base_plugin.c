@@ -19,7 +19,7 @@
 
 #include <ags/plugin/ags_base_plugin.h>
 
-#include <ags/object/ags_marshal.h>
+#include <ags/libags.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -250,12 +250,13 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * AgsBasePlugin::instantiate:
    * @base_plugin: the plugin to instantiate
    * @samplerate: the samplerate
+   * @buffer_size: the fixed buffer size
    *
    * The ::instantiate signal creates a new instance of plugin.
    * 
    * Returns: the new plugin instance
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   base_plugin_signals[INSTANTIATE] =
     g_signal_new("instantiate",
@@ -263,8 +264,9 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsBasePluginClass, instantiate),
 		 NULL, NULL,
-		 ags_cclosure_marshal_POINTER__UINT,
-		 G_TYPE_POINTER, 1,
+		 ags_cclosure_marshal_POINTER__UINT_UINT,
+		 G_TYPE_POINTER, 2,
+		 G_TYPE_UINT,
 		 G_TYPE_UINT);
 
   /**
@@ -826,16 +828,17 @@ ags_base_plugin_apply_port_group_by_prefix(AgsBasePlugin *base_plugin)
  * ags_base_plugin_instantiate:
  * @base_plugin: the #AgsBasePlugin
  * @samplerate: the samplerate
+ * @buffer_size: the fixed buffer size
  *
  * Instantiate the plugin
  *
  * Returns: the new plugin instance handle
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_base_plugin_instantiate(AgsBasePlugin *base_plugin,
-			    guint samplerate)
+			    guint samplerate, guint buffer_size)
 {
   gpointer retval;
   
@@ -844,7 +847,7 @@ ags_base_plugin_instantiate(AgsBasePlugin *base_plugin,
   g_object_ref(G_OBJECT(base_plugin));
   g_signal_emit(G_OBJECT(base_plugin),
 		base_plugin_signals[INSTANTIATE], 0,
-		samplerate,
+		samplerate, buffer_size,
 		&retval);
   g_object_unref(G_OBJECT(base_plugin));
 

@@ -167,7 +167,7 @@ ags_navigation_play_callback(GtkWidget *widget,
     if(((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0) ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
 #ifdef AGS_DEBUG
-      printf("found machine to play!\n");
+      g_message("found machine to play!\n");
 #endif
       
       if(!initialized_time){
@@ -204,8 +204,10 @@ ags_navigation_stop_callback(GtkWidget *widget,
 
     if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
-      printf("found machine to stop!\n");
-
+#ifdef AGS_DEBUG
+      g_message("found machine to stop!");
+#endif
+      
       ags_machine_set_run_extended(machine,
 				   FALSE,
 				   !gtk_toggle_button_get_active((GtkToggleButton *) navigation->exclude_sequencer), TRUE);
@@ -310,8 +312,10 @@ ags_navigation_loop_callback(GtkWidget *widget,
 
     if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) !=0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+#ifdef AGS_DEBUG
       g_message("found machine to loop!\n");
-
+#endif
+      
       audio = machine->audio;
 
       /* get mutex manager and application mutex */
@@ -409,8 +413,10 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 
     if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+#ifdef AGS_DEBUG
       g_message("found machine to loop!\n");
-
+#endif
+      
       audio = machine->audio;
       
       /* get mutex manager and application mutex */
@@ -490,8 +496,10 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 
     if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
+#ifdef AGS_DEBUG
       g_message("found machine to loop!\n");
-
+#endif
+      
       audio = machine->audio;
       
       /* get mutex manager and application mutex */

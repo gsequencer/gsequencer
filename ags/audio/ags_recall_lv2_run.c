@@ -203,21 +203,6 @@ ags_recall_lv2_run_finalize(GObject *gobject)
     free(recall_lv2_run->input);
   }
 
-  if(recall_lv2_run->route_lv2_audio_run != NULL){
-    GList *note;
-
-    note = recall_lv2_run->note;
-    
-    while(note != NULL){
-      //FIXME:JK: ref counting
-      AGS_ROUTE_LV2_AUDIO_RUN(recall_lv2_run->route_lv2_audio_run)->feed_midi = g_list_remove(AGS_ROUTE_LV2_AUDIO_RUN(recall_lv2_run->route_lv2_audio_run)->feed_midi,
-											      note->data);
-      g_object_unref(note->data);
-      
-      note = note->next;
-    }
-  }
-
   g_list_free_full(recall_lv2_run->note,
 		   g_object_unref);
     

@@ -1800,6 +1800,24 @@ ags_audio_dispose(GObject *gobject)
 
   /* playback domain */
   if(audio->playback_domain != NULL){
+    AgsPlaybackDomain *playback_domain;
+
+    playback_domain = audio->playback_domain;
+
+    if(playback_domain->audio_thread != NULL){
+      if(playback_domain->audio_thread[0] != NULL){
+	ags_thread_stop(playback_domain->audio_thread[0]);
+      }
+      
+      if(playback_domain->audio_thread[1] != NULL){
+	ags_thread_stop(playback_domain->audio_thread[1]);
+      }
+      
+      if(playback_domain->audio_thread[2] != NULL){
+	ags_thread_stop(playback_domain->audio_thread[2]);
+      }
+    }
+
     g_object_run_dispose(audio->playback_domain);
 
     audio->playback_domain = NULL;

@@ -220,21 +220,6 @@ ags_recall_dssi_run_finalize(GObject *gobject)
 
   free(recall_dssi_run->ladspa_handle);
 
-  if(recall_dssi_run->route_dssi_audio_run != NULL){
-    GList *note;
-
-    note = recall_dssi_run->note;
-
-    while(note != NULL){
-      //FIXME:JK: ref counting
-      AGS_ROUTE_DSSI_AUDIO_RUN(recall_dssi_run->route_dssi_audio_run)->feed_midi = g_list_remove(AGS_ROUTE_DSSI_AUDIO_RUN(recall_dssi_run->route_dssi_audio_run)->feed_midi,
-												 note->data);
-      g_object_unref(note->data);
-
-      note = note->next;
-    }
-  }
-
   g_list_free_full(recall_dssi_run->note,
 		   g_object_unref);
   

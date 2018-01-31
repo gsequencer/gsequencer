@@ -49,7 +49,7 @@ void ags_ladspa_plugin_get_property(GObject *gobject,
 void ags_ladspa_plugin_finalize(GObject *gobject);
 
 gpointer ags_ladspa_plugin_instantiate(AgsBasePlugin *base_plugin,
-				       guint samplerate);
+				       guint samplerate, guint buffer_size);
 void ags_ladspa_plugin_connect_port(AgsBasePlugin *base_plugin,
 				    gpointer plugin_handle,
 				    guint port_index,
@@ -216,7 +216,7 @@ ags_ladspa_plugin_finalize(GObject *gobject)
 
 gpointer
 ags_ladspa_plugin_instantiate(AgsBasePlugin *base_plugin,
-			      guint samplerate)
+			      guint samplerate, guint buffer_size)
 {
   gpointer ladspa_handle;
   

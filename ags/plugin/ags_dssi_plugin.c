@@ -19,9 +19,7 @@
 
 #include <ags/plugin/ags_dssi_plugin.h>
 
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_soundcard.h>
+#include <ags/libags.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -45,7 +43,7 @@ void ags_dssi_plugin_get_property(GObject *gobject,
 void ags_dssi_plugin_finalize(GObject *gobject);
 
 gpointer ags_dssi_plugin_instantiate(AgsBasePlugin *base_plugin,
-				     guint samplerate);
+				     guint samplerate, guint buffer_size);
 void ags_dssi_plugin_connect_port(AgsBasePlugin *base_plugin,
 				  gpointer plugin_handle,
 				  guint port_index,
@@ -294,7 +292,7 @@ ags_dssi_plugin_finalize(GObject *gobject)
 
 gpointer
 ags_dssi_plugin_instantiate(AgsBasePlugin *base_plugin,
-			    guint samplerate)
+			    guint samplerate, guint buffer_size)
 {
   gpointer ptr;
   

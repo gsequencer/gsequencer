@@ -105,7 +105,6 @@ struct _AgsAudio
 
   GObject *output_sequencer;
   GObject *input_sequencer;
-  GObject *midi_file;
   
   guint samplerate;
   guint buffer_size;
@@ -145,7 +144,14 @@ struct _AgsAudio
   
   GList *notation;
   GList *automation;
+
+  GObject *output_audio_file;
+  GObject *input_audio_file;  
   GList *wave;
+
+  GObject *output_midi_file;
+  GObject *input_midi_file;
+  GList *midi;
   
   GList *recall_id;
   GList *recycling_context;
@@ -156,7 +162,7 @@ struct _AgsAudio
   pthread_mutexattr_t *play_mutexattr;
   pthread_mutex_t *play_mutex;
 
-  GList *container;
+  GList *recall_container;
   GList *recall;
   GList *play;
   

@@ -121,7 +121,7 @@ struct _AgsBasePluginClass
   GObjectClass object;
 
   gpointer (*instantiate)(AgsBasePlugin *base_plugin,
-			  guint samplerate);
+			  guint samplerate, guint buffer_size);
 
   void (*connect_port)(AgsBasePlugin *base_plugin, gpointer plugin_handle, guint port_index, gpointer data_location);
   
@@ -175,7 +175,7 @@ GList* ags_base_plugin_sort(GList *base_plugin);
 void ags_base_plugin_apply_port_group_by_prefix(AgsBasePlugin *base_plugin);
 
 gpointer ags_base_plugin_instantiate(AgsBasePlugin *base_plugin,
-				     guint samplerate);
+				     guint samplerate, guint buffer_size);
 
 void ags_base_plugin_connect_port(AgsBasePlugin *base_plugin, gpointer plugin_handle, guint port_index, gpointer data_location);
 
