@@ -101,7 +101,6 @@ enum{
   CHECK_CONNECTION,
   SET_AUDIO_CHANNELS,
   SET_PADS,
-  INIT_RUN,
   TACT,
   DONE,
   LAST_SIGNAL,
@@ -706,7 +705,6 @@ ags_audio_class_init(AgsAudioClass *audio)
   audio->set_audio_channels = ags_audio_real_set_audio_channels;
   audio->set_pads = ags_audio_real_set_pads;
 
-  audio->init_run = NULL;
   audio->tact = NULL;
   audio->done = ags_audio_real_done;
 
@@ -736,6 +734,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The ::set-audio-channels signal notifies about changes in channel
    * alignment.
+   *
+   * Since: 1.0.0
    */
   audio_signals[SET_AUDIO_CHANNELS] = 
     g_signal_new("set-audio-channels",
@@ -756,6 +756,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The ::set-pads signal notifies about changes in channel
    * alignment.
+   *
+   * Since: 1.0.0
    */
   audio_signals[SET_PADS] = 
     g_signal_new("set-pads",
@@ -769,30 +771,14 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 G_TYPE_UINT, G_TYPE_UINT);
 
   /**
-   * AgsAudio::init-run:
-   * @audio: the object to init run.
-   *
-   * The ::init-run signal is invoked during dynamic initialization of recalls
-   * of @audio.
-   *
-   * Returns: the current #AgsRecallID
-   */
-  audio_signals[INIT_RUN] = 
-    g_signal_new("init-run",
-		 G_TYPE_FROM_CLASS(audio),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsAudioClass, init_run),
-		 NULL, NULL,
-		 ags_cclosure_marshal_OBJECT__VOID,
-		 G_TYPE_OBJECT, 0);
-
-  /**
    * AgsAudio::tact:
    * @audio: the object playing.
    * @recall_id: the appropriate #AgsRecallID
    *
    * The ::tact signal is invoked during playback of recalls
    * of @audio.
+   *
+   * Since: 1.0.0
    */
   audio_signals[TACT] = 
     g_signal_new("tact",
@@ -811,6 +797,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The ::done signal is invoked while terminating playback
    * of @audio.
+   *
+   * Since: 1.0.0
    */
   audio_signals[DONE] = 
     g_signal_new("done",
@@ -5921,7 +5909,7 @@ ags_audio_remove(AgsAudio *audio,
 }
 
 /**
- * ags_audio_find_port:
+ * ags_audio_collect_all_audio_ports:
  * @audio: the #AgsAudio
  *
  * Retrieve all ports of #AgsAudio.
@@ -5931,11 +5919,12 @@ ags_audio_remove(AgsAudio *audio,
  * Since: 1.0.0
  */
 GList*
-ags_audio_find_port(AgsAudio *audio)
+ags_audio_collect_all_audio_ports(AgsAudio *audio)
 {
+  AgsMutexManager *mutex_manager;
+
   GList *recall;
   GList *list;
-  AgsMutexManager *mutex_manager;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
@@ -5999,10 +5988,10 @@ ags_audio_find_port(AgsAudio *audio)
 }
 
 /**
- * ags_audio_find_port_by_specifier_and_scope:
+ * ags_audio_collect_all_audio_ports_by_specifier_and_scope:
  * @audio: an #AgsAudio
  * @specifier: the port's name
- * @scope: either %TRUE for play or %FALSE for recall
+ * @play_context: either %TRUE for play or %FALSE for recall
  *
  * Retrieve specified port of #AgsAudio
  *
@@ -6011,9 +6000,9 @@ ags_audio_find_port(AgsAudio *audio)
  * Since: 1.3.0
  */
 GObject*
-ags_audio_find_port_by_specifier_and_scope(AgsAudio *audio,
-					   gchar *specifier,
-					   gboolean play)
+ags_audio_collect_all_audio_ports_by_specifier_and_context(AgsAudio *audio,
+							   gchar *specifier,
+							   gboolean play_context)
 {
   AgsMutexManager *mutex_manager;
 
@@ -6040,7 +6029,7 @@ ags_audio_find_port_by_specifier_and_scope(AgsAudio *audio,
   /* collect port of playing recall */
   pthread_mutex_lock(mutex);
 
-  if(play){
+  if(play_context){
     recall = audio->play;
   }else{
     recall = audio->recall;

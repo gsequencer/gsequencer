@@ -54,9 +54,8 @@ typedef struct _AgsChannelClass AgsChannelClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_CHANNEL_ADDED_TO_REGISTRY  = 1,
-  AGS_CHANNEL_CONNECTED          = 1 <<  1,
-  AGS_CHANNEL_RUNNING            = 1 <<  2,
+  AGS_CHANNEL_CONNECTED          = 1,
+  AGS_CHANNEL_RUNNING            = 1 <<  1,
 }AgsChannelFlags;
 
 typedef enum{

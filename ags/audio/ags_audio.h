@@ -25,6 +25,7 @@
 
 #include <pthread.h>
 
+#include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_id.h>
 
@@ -40,52 +41,53 @@ typedef struct _AgsAudioClass AgsAudioClass;
 
 /**
  * AgsAudioFlags:
+ * @AGS_AUDIO_CONNECTED: the audio was connected by #AgsConnectable::connect()
+ * @AGS_AUDIO_NO_OUTPUT: no output provided
+ * @AGS_AUDIO_NO_INPUT: no input provided
  * @AGS_AUDIO_SYNC: input/output is mapped synchronously
  * @AGS_AUDIO_ASYNC: input/output is mapped asynchronously
  * @AGS_AUDIO_OUTPUT_HAS_RECYCLING: output has recycling
  * @AGS_AUDIO_INPUT_HAS_RECYCLING: input has recycling
- * @AGS_AUDIO_INPUT_TAKES_FILE: input takes file
- * @AGS_AUDIO_INPUT_TAKES_SYNTH: input takes synth
- * @AGS_AUDIO_REVERSE_MAPPING: interpret notation reverse
+ * @AGS_AUDIO_INPUT_HAS_FILE_LINK: input takes file
+ * @AGS_AUDIO_INPUT_HAS_SYNTH_GENERATOR: input takes synth
  * @AGS_AUDIO_HAS_NOTATION: has notation
- * @AGS_AUDIO_NOTATION_DEFAULT: notation default mapped on input channels
  * @AGS_AUDIO_PATTERN_MODE: notation only contains fixed size notes
- * @AGS_AUDIO_RUNNING: it is running
- * @AGS_AUDIO_PLAYING: it is playing
- * @AGS_AUDIO_CONNECTED: the audio was connected by #AgsConnectable::connect()
- * @AGS_AUDIO_CAN_NEXT_ACTIVE: can determine next active input
- * @AGS_AUDIO_NO_OUTPUT: no output provided
- * @AGS_AUDIO_NO_INPUT: no input provided
- * @AGS_AUDIO_SKIP_OUTPUT: skip output as processing audio data
- * @AGS_AUDIO_SKIP_INPUT: skip input as processing audio data
+ * @AGS_AUDIO_NOTATION_DEFAULT: notation default mapped on input channels
+ * @AGS_AUDIO_REVERSE_MAPPING: interpret notation reverse
+ * @AGS_AUDIO_HAS_PATTERN: has pattern
  * @AGS_AUDIO_HAS_WAVE: has wave
  * @AGS_AUDIO_WAVE_DEFAULT: wave default mapped on input channels
+ * @AGS_AUDIO_RUNNING: it is running
+ * @AGS_AUDIO_PLAYING: it is playing
+ * @AGS_AUDIO_CAN_NEXT_ACTIVE: can determine next active input
+ * @AGS_AUDIO_SKIP_OUTPUT: skip output as processing audio data
+ * @AGS_AUDIO_SKIP_INPUT: skip input as processing audio data
  *
  * Enum values to control the behavior or indicate internal state of #AgsAudio by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_AUDIO_SYNC                        = 1, // can be combined with below
-  AGS_AUDIO_ASYNC                       = 1 <<  1,
-  AGS_AUDIO_OUTPUT_HAS_RECYCLING        = 1 <<  2,
-  AGS_AUDIO_INPUT_HAS_RECYCLING         = 1 <<  3,
-  AGS_AUDIO_INPUT_TAKES_FILE            = 1 <<  4,
-  AGS_AUDIO_INPUT_TAKES_SYNTH           = 1 <<  5,
-  AGS_AUDIO_REVERSE_MAPPING             = 1 <<  6,
-  AGS_AUDIO_HAS_NOTATION                = 1 <<  7,
-  AGS_AUDIO_NOTATION_DEFAULT            = 1 <<  8,
-  AGS_AUDIO_PATTERN_MODE                = 1 <<  9,
-  AGS_AUDIO_RUNNING                     = 1 << 10,
-  AGS_AUDIO_PLAYING                     = 1 << 11,
-  AGS_AUDIO_CONNECTED                   = 1 << 12,
-  AGS_AUDIO_CAN_NEXT_ACTIVE             = 1 << 13,
-  AGS_AUDIO_NO_OUTPUT                   = 1 << 14,
-  AGS_AUDIO_NO_INPUT                    = 1 << 15,
-  AGS_AUDIO_SKIP_OUTPUT                 = 1 << 16,
-  AGS_AUDIO_SKIP_INPUT                  = 1 << 17,
-  AGS_AUDIO_HAS_WAVE                    = 1 << 18,
-  AGS_AUDIO_WAVE_DEFAULT                = 1 << 19,
-  AGS_AUDIO_HAS_PATTERN                 = 1 << 20,
+  AGS_AUDIO_CONNECTED                   = 1,
+  AGS_AUDIO_NO_OUTPUT                   = 1 <<  1,
+  AGS_AUDIO_NO_INPUT                    = 1 <<  2,
+  AGS_AUDIO_SYNC                        = 1 <<  3, // can be combined with below
+  AGS_AUDIO_ASYNC                       = 1 <<  4,
+  AGS_AUDIO_OUTPUT_HAS_RECYCLING        = 1 <<  5,
+  AGS_AUDIO_INPUT_HAS_RECYCLING         = 1 <<  6,
+  AGS_AUDIO_INPUT_HAS_FILE              = 1 <<  7,
+  AGS_AUDIO_INPUT_HAS_SYNTH             = 1 <<  8,
+  AGS_AUDIO_HAS_NOTATION                = 1 <<  9,
+  AGS_AUDIO_PATTERN_MODE                = 1 << 10,
+  AGS_AUDIO_NOTATION_DEFAULT            = 1 << 11,
+  AGS_AUDIO_REVERSE_MAPPING             = 1 << 12,
+  AGS_AUDIO_HAS_PATTERN                 = 1 << 13,
+  AGS_AUDIO_HAS_WAVE                    = 1 << 14,
+  AGS_AUDIO_WAVE_DEFAULT                = 1 << 15,
+  AGS_AUDIO_RUNNING                     = 1 << 16,
+  AGS_AUDIO_PLAYING                     = 1 << 17,
+  AGS_AUDIO_CAN_NEXT_ACTIVE             = 1 << 18,
+  AGS_AUDIO_SKIP_OUTPUT                 = 1 << 19,
+  AGS_AUDIO_SKIP_INPUT                  = 1 << 20,
 }AgsAudioFlags;
 
 struct _AgsAudio
@@ -97,10 +99,12 @@ struct _AgsAudio
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
 
-  GObject *soundcard;
+  GObject *output_soundcard;
+  GObject *input_soundcard;
   guint level;
 
-  GObject *sequencer;
+  GObject *output_sequencer;
+  GObject *input_sequencer;
   GObject *midi_file;
   
   guint samplerate;
@@ -109,7 +113,11 @@ struct _AgsAudio
   guint sequence_length;
 
   guint bank_dim[3];
-  
+
+  guint max_audio_channels;
+  guint max_output_pads;
+  guint max_input_pads;
+
   guint audio_channels;
 
   guint output_pads;
@@ -152,9 +160,6 @@ struct _AgsAudio
   GList *recall;
   GList *play;
   
-  GList *recall_remove; //TODO:JK: verify deprecation
-  GList *play_remove; //TODO:JK: verify deprecation
-
   GObject *machine;
 };
 
@@ -169,29 +174,31 @@ struct _AgsAudioClass
   void (*set_pads)(AgsAudio *audio,
 		   GType channel_type,
 		   guint pads, guint pads_old);
-
-  AgsRecallID* (*init_run)(AgsAudio *audio);
+  
   void (*tact)(AgsAudio *audio, AgsRecallID *recall_id);
   void (*done)(AgsAudio *audio, AgsRecallID *recall_id);
 };
 
 GType ags_audio_get_type();
 
-void ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard);
-
 void ags_audio_set_flags(AgsAudio *audio, guint flags);
 void ags_audio_unset_flags(AgsAudio *audio, guint flags);
 
 void ags_audio_check_connection(AgsAudio *audio);
 
+/* channel alignment */
 void ags_audio_set_audio_channels(AgsAudio *audio, guint audio_channels);
 void ags_audio_set_pads(AgsAudio *audio, GType channel_type, guint pads);
+
+/* presets */
+void ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard);
 
 void ags_audio_set_samplerate(AgsAudio *audio, guint samplerate);
 void ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size);
 void ags_audio_set_format(AgsAudio *audio, guint format);
 void ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length);
 
+/* children */
 void ags_audio_add_audio_connection(AgsAudio *audio,
 				    GObject *audio_connection);
 void ags_audio_remove_audio_connection(AgsAudio *audio,
@@ -217,6 +224,7 @@ void ags_audio_add_wave(AgsAudio *audio,
 void ags_audio_remove_wave(AgsAudio *audio,
 			   GObject *wave);
 
+/* recall related */
 void ags_audio_add_recall_id(AgsAudio *audio, GObject *recall_id);
 void ags_audio_remove_recall_id(AgsAudio *audio, GObject *recall_id);
 
@@ -229,14 +237,14 @@ void ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_containe
 void ags_audio_add_recall(AgsAudio *audio, GObject *recall, gboolean play);
 void ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play);
 
-AgsRecallID* ags_audio_init_run(AgsAudio *audio);
+/* stages */
 void ags_audio_duplicate_recall(AgsAudio *audio,
 				AgsRecallID *recall_id);
 void ags_audio_init_recall(AgsAudio *audio, gint stage,
 			   AgsRecallID *recall_id);
 void ags_audio_resolve_recall(AgsAudio *audio,
 			      AgsRecallID *recall_id);
-gboolean ags_audio_is_playing(AgsAudio *audio);
+
 void ags_audio_play(AgsAudio *audio,
 		    AgsRecallID *recall_id,
 		    gint stage);
@@ -248,10 +256,14 @@ void ags_audio_cancel(AgsAudio *audio,
 void ags_audio_remove(AgsAudio *audio,
 		      AgsRecallID *recall_id);
 
-GList* ags_audio_find_port(AgsAudio *audio);
-GObject* ags_audio_find_port_by_specifier_and_scope(AgsAudio *audio,
-						    gchar *specifier,
-						    gboolean play);
+/* query */
+gboolean ags_audio_is_playing(AgsAudio *audio);
+
+GList* ags_audio_collect_all_audio_ports(AgsAudio *audio);
+
+GObject* ags_audio_collect_all_audio_ports_by_specifier_and_context(AgsAudio *audio,
+								    gchar *specifier,
+								    gboolean play_context);
 
 void ags_audio_open_files(AgsAudio *audio,
 			  GSList *filenames,
@@ -262,7 +274,7 @@ void ags_audio_recursive_set_property(AgsAudio *audio,
 				      GParameter *parameter, gint n_params);
 
 GList* ags_audio_recursive_play_init(AgsAudio *audio,
-				     gboolean playback, gboolean sequencer, gboolean notation);
+				     guint sound_scope);
 
 AgsAudio* ags_audio_new(GObject *soundcard);
 
