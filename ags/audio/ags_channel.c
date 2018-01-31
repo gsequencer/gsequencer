@@ -1434,10 +1434,20 @@ ags_channel_dispose(GObject *gobject)
     AgsPlayback *playback;
 
     playback = channel->playback;
-    
-    ags_thread_stop(playback->channel_thread[0]);
-    ags_thread_stop(playback->channel_thread[1]);
-    ags_thread_stop(playback->channel_thread[2]);
+
+    if(playback->channel_thread != NULL){
+      if(playback->channel_thread[0] != NULL){
+	ags_thread_stop(playback->channel_thread[0]);
+      }
+      
+      if(playback->channel_thread[1] != NULL){
+	ags_thread_stop(playback->channel_thread[1]);
+      }
+      
+      if(playback->channel_thread[2] != NULL){
+	ags_thread_stop(playback->channel_thread[2]);
+      }
+    }
     
     g_object_set(playback,
 		 "source", NULL,

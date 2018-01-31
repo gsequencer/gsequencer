@@ -418,6 +418,12 @@ ags_route_lv2_audio_run_dispose(GObject *gobject)
     route_lv2_audio_run->count_beats_audio_run = NULL;
   }
 
+  /* feed midi */
+  g_list_free_full(route_lv2_audio_run->feed_midi,
+		   g_object_unref);
+
+  route_lv2_audio_run->feed_midi = NULL;
+  
   /* call parent */
   G_OBJECT_CLASS(ags_route_lv2_audio_run_parent_class)->dispose(gobject);
 }
@@ -426,6 +432,8 @@ void
 ags_route_lv2_audio_run_finalize(GObject *gobject)
 {
   AgsRouteLv2AudioRun *route_lv2_audio_run;
+
+  GList *note;
 
   route_lv2_audio_run = AGS_ROUTE_LV2_AUDIO_RUN(gobject);
 
@@ -444,6 +452,9 @@ ags_route_lv2_audio_run_finalize(GObject *gobject)
     g_object_unref(G_OBJECT(route_lv2_audio_run->timestamp));
   }
 
+  g_list_free_full(route_lv2_audio_run->feed_midi,
+		   g_object_unref);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_route_lv2_audio_run_parent_class)->finalize(gobject);
 }

@@ -19,11 +19,7 @@
 
 #include <ags/plugin/ags_lv2_plugin.h>
 
-#include <ags/lib/ags_string_util.h>
-
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_marshal.h>
+#include <ags/libags.h>
 
 #include <ags/plugin/ags_lv2_plugin.h>
 #include <ags/plugin/ags_lv2_manager.h>
@@ -772,14 +768,42 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 						  LV2_ATOM__Int);
     options[2].value = ptr_buffer_size;
 
-    /* terminate */
+    /* bounded-block-length */
     options[3].context = LV2_OPTIONS_INSTANCE;
     options[3].subject = 0;
-    options[3].key = 0;
+    options[3].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						 LV2_BUF_SIZE__boundedBlockLength);
 
-    options[3].size = 0;
-    options[3].type = 0;
-    options[3].value = NULL;
+    ptr_buffer_size = (float *) malloc(sizeof(float));
+    ptr_buffer_size[0] = conf_buffer_size;
+
+    options[3].size = sizeof(float);
+    options[3].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						  LV2_ATOM__Int);
+    options[3].value = ptr_buffer_size;
+
+    /* fixed-block-length */
+    options[4].context = LV2_OPTIONS_INSTANCE;
+    options[4].subject = 0;
+    options[4].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						 LV2_BUF_SIZE__fixedBlockLength);
+
+    ptr_buffer_size = (float *) malloc(sizeof(float));
+    ptr_buffer_size[0] = conf_buffer_size;
+
+    options[4].size = sizeof(float);
+    options[4].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						  LV2_ATOM__Int);
+    options[4].value = ptr_buffer_size;
+    
+    /* terminate */
+    options[5].context = LV2_OPTIONS_INSTANCE;
+    options[5].subject = 0;
+    options[5].key = 0;
+    
+    options[5].size = 0;
+    options[5].type = 0;
+    options[5].value = NULL;
 
     /* set options */
     ags_lv2_option_manager_lv2_options_set(*lv2_handle,

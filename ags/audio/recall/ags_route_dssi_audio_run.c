@@ -422,6 +422,12 @@ ags_route_dssi_audio_run_dispose(GObject *gobject)
     route_dssi_audio_run->count_beats_audio_run = NULL;
   }
 
+  /* feed midi */
+  g_list_free_full(route_dssi_audio_run->feed_midi,
+		   g_object_unref);
+
+  route_dssi_audio_run->feed_midi = NULL;
+
   /* call parent */
   G_OBJECT_CLASS(ags_route_dssi_audio_run_parent_class)->dispose(gobject);
 }
@@ -447,6 +453,9 @@ ags_route_dssi_audio_run_finalize(GObject *gobject)
   if(route_dssi_audio_run->timestamp != NULL){
     g_object_unref(G_OBJECT(route_dssi_audio_run->timestamp));
   }
+
+  g_list_free_full(route_dssi_audio_run->feed_midi,
+		   g_object_unref);  
 
   /* call parent */
   G_OBJECT_CLASS(ags_route_dssi_audio_run_parent_class)->finalize(gobject);

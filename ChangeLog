@@ -1,3 +1,10 @@
+ags (1.4.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV during ags_recall_dssi_run_finalize()
+	* fixed potential SIGSEGV during ags_recall_lv2_run_finalize()
+	* removed redundant code in ags_simple_file.c
+
 ags (1.4.15)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
