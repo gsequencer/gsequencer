@@ -7,6 +7,8 @@ ags (2.0.0)
 	* TODO:JK: implemented ags-play-wave recall
 	* implemented ags-capture-sound recall
 	* TODO:JK: implemented AgsAudiorec
+	* TODO:JK: implemented damping/vibration of AgsSynthGenerator
+	* TODO:JK: implemented exponential curve option for ags-envelope recall
 	* incompatible AgsBasePlugin::instantiate() function prototype
 	* renamed g_cclosure_user_marshal_* to ags_cclosure_marshal_*
 	* renamed ags_audio_signal_find_by_recall_id()
