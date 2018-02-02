@@ -258,7 +258,7 @@ ags_rt_stream_channel_run_check_rt_stream(AgsRecall *recall)
   
   first_recycling = source->first_recycling;
   last_recycling = source->last_recycling;
-
+  
   pthread_mutex_unlock(source_mutex);
 
   /* lookup mutex */
@@ -313,7 +313,7 @@ ags_rt_stream_channel_run_check_rt_stream(AgsRecall *recall)
 		 "rt-template", rt_template,
 		 NULL);
     ags_audio_signal_stream_resize(audio_signal,
-				   1);
+				   3);
     audio_signal->stream_current = audio_signal->stream_beginning;
     
     pthread_mutex_unlock(recycling_mutex);

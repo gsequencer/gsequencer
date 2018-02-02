@@ -1184,8 +1184,6 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 	remove_play = TRUE;
 	    
 	for(stage = 0; stage < 3; stage++){
-
-
 	  if((AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(playback->flags)))) != 0 &&
 	     playback->recall_id[0] != NULL){
 	    remove_play = FALSE;

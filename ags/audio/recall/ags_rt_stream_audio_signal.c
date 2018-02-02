@@ -297,7 +297,11 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 
   /* get template */
   template = source->rt_template;
-    
+
+  if(template == NULL){
+    return;
+  }
+  
   note = source->note;
   
   ags_audio_buffer_util_clear_buffer(buffer, 1,
@@ -326,9 +330,9 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
     rt_attack = current->rt_attack;
     
     pthread_mutex_unlock(recycling_mutex);
-    
-    if(offset < delay * x1 ||
-       offset < template->length){
+
+    if(offset < template->length ||
+       offset < delay * x1){
       if(template->loop_start < template->loop_end){
 	guint frame_count;
 	guint loop_length;
@@ -464,7 +468,7 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	
       }else{
 	template_stream = g_list_nth(template->stream_beginning,
-			    offset);
+				     offset);
 
 	if(template_stream == NULL){
 	  note = note->next;
@@ -491,6 +495,11 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
     }else{
       ags_audio_signal_remove_note(source,
 				   current);
+
+      if(source->note == NULL &&
+	 recall->recall_id->recycling_context->parent == NULL){
+	ags_recall_done(recall);
+      }
     }
 
     pthread_mutex_lock(recycling_mutex);

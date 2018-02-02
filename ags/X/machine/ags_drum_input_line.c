@@ -446,6 +446,19 @@ ags_drum_input_line_map_recall(AgsLine *line,
 
   source = line->channel;
   
+  rt_safe = TRUE;
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "rt-safe");
+
+  if(str != NULL &&
+     !g_ascii_strncasecmp(str,
+			  "FALSE",
+			  6)){
+    rt_safe = FALSE;
+  }
+
   /* lookup source mutex */
   pthread_mutex_lock(application_mutex);
 
@@ -506,16 +519,29 @@ ags_drum_input_line_map_recall(AgsLine *line,
 
   pthread_mutex_unlock(source_mutex);
 
+  if(rt_safe){
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-rt-stream",
+			      audio_channel, audio_channel + 1, 
+			      pad, pad + 1,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+  }
+
   /* ags-play */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
-  			    "ags-play",
-  			    audio_channel, audio_channel + 1, 
-  			    pad, pad + 1,
-  			    (AGS_RECALL_FACTORY_INPUT |
+			    "ags-play",
+			    audio_channel, audio_channel + 1, 
+			    pad, pad + 1,
+			    (AGS_RECALL_FACTORY_INPUT |
 			     AGS_RECALL_FACTORY_PLAY |
-  			     AGS_RECALL_FACTORY_ADD),
-  			    0);
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
 
   pthread_mutex_lock(source_mutex);
 
@@ -536,7 +562,7 @@ ags_drum_input_line_map_recall(AgsLine *line,
   }
 
   pthread_mutex_unlock(source_mutex);
-
+  
   /* ags-volume */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -562,19 +588,6 @@ ags_drum_input_line_map_recall(AgsLine *line,
 			    0);
 
   /* ags-stream */
-  rt_safe = TRUE;
-
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "rt-safe");
-
-  if(str != NULL &&
-     !g_ascii_strncasecmp(str,
-			  "FALSE",
-			  6)){
-    rt_safe = FALSE;
-  }
-
   if(!rt_safe){
     ags_recall_factory_create(audio,
 			      NULL, NULL,
@@ -603,17 +616,6 @@ ags_drum_input_line_map_recall(AgsLine *line,
 		 NULL);
 
     pthread_mutex_unlock(source_mutex);
-  }else{
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-rt-stream",
-			      audio_channel, audio_channel + 1, 
-			      pad, pad + 1,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL | 
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
   }
   
   /* call parent */

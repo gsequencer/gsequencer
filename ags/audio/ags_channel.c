@@ -4822,7 +4822,7 @@ ags_channel_play(AgsChannel *channel,
     if((AGS_RECALL_TEMPLATE & (recall_flags)) == 0 &&
        (AGS_RECALL_RUN_FIRST & (recall_flags)) != 0){
 #ifdef AGS_DEBUG
-      g_message("%s play channel %x:%d @%x -> %x", G_OBJECT_TYPE_NAME(recall), channel, channel->line, recall, recall->recall_id);
+      g_message("%s play first channel %x:%d @%x -> %x", G_OBJECT_TYPE_NAME(recall), channel, channel->line, recall, recall->recall_id);
 #endif
 
       if((AGS_RECALL_HIDE & (recall_flags)) == 0){
@@ -4935,7 +4935,7 @@ ags_channel_play(AgsChannel *channel,
     if((AGS_RECALL_TEMPLATE & (recall_flags)) == 0 &&
        (AGS_RECALL_RUN_LAST & (recall_flags)) != 0){
 #ifdef AGS_DEBUG
-      g_message("%s play channel %x:%d @%x -> %x", G_OBJECT_TYPE_NAME(recall), channel, channel->line, recall, recall->recall_id);
+      g_message("%s play last channel %x:%d @%x -> %x", G_OBJECT_TYPE_NAME(recall), channel, channel->line, recall, recall->recall_id);
 #endif
 
       if((AGS_RECALL_HIDE & (recall_flags)) == 0){
@@ -8230,40 +8230,25 @@ ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
 					  NULL, FALSE, FALSE);
   }
 
-  if(duplicate_templates &&
-     resolve_dependencies){
-    if(stage == -1){
-      ags_channel_recursive_init(channel,
-				 recall_id,
-				 -1, -1,
-				 TRUE, TRUE);
-    }else if(stage >= 0 && stage < 4){
-      ags_channel_recursive_init(channel,
-				 recall_id,
-				 ((stage == 0) ? -1: 4), stage,
-				 TRUE, TRUE);
-    }
-  }else{
-    if(duplicate_templates){
-      ags_channel_recursive_init(channel,
-				 recall_id,
-				 0, 4,
-				 TRUE, TRUE);
-    }
+  if(duplicate_templates){
+    ags_channel_recursive_init(channel,
+			       recall_id,
+			       0, 4,
+			       TRUE, TRUE);
+  }
 
-    if(resolve_dependencies){
-      ags_channel_recursive_init(channel,
-				 recall_id,
-				 1, 4,
-				 TRUE, TRUE);
-    }
+  if(resolve_dependencies){
+    ags_channel_recursive_init(channel,
+			       recall_id,
+			       1, 4,
+			       TRUE, TRUE);
+  }
 
-    if(stage == -1 || (stage >= 0 && stage < 4)){
-      ags_channel_recursive_init(channel,
-				 recall_id,
-				 2, stage,
-				 TRUE, TRUE);
-    }
+  if(stage == -1 || (stage >= 0 && stage < 4)){
+    ags_channel_recursive_init(channel,
+			       recall_id,
+			       2, stage,
+			       TRUE, TRUE);
   }
 
   if(stage == -1 ||
@@ -10570,27 +10555,30 @@ ags_channel_recursive_init(AgsChannel *channel,
 
       pthread_mutex_unlock(current_mutex);
 
-      switch(stage){
-      case 0:
-	{
-	  ags_channel_duplicate_recall(current,
+      if(current != channel ||
+	 !init_down){
+	switch(stage){
+	case 0:
+	  {
+	    ags_channel_duplicate_recall(current,
+					 recall_id);
+	  }
+	  break;
+	case 1:
+	  {
+	    ags_channel_resolve_recall(current,
 				       recall_id);
+	  }
+	  break;
+	case 2:
+	  {
+	    ags_channel_init_recall(current, init_stage,
+				    recall_id);
+	  }
+	  break;
 	}
-	break;
-      case 1:
-	{
-	  ags_channel_resolve_recall(current,
-				     recall_id);
-	}
-	break;
-      case 2:
-	{
-	  ags_channel_init_recall(current, init_stage,
-				  recall_id);
-	}
-	break;
       }
-	  
+      
       /* get audio mutex */
       pthread_mutex_lock(application_mutex);
 
@@ -10607,27 +10595,30 @@ ags_channel_recursive_init(AgsChannel *channel,
 
       pthread_mutex_unlock(audio_mutex);
 
-      switch(stage){
-      case 0:
-	{
-	  ags_audio_duplicate_recall(audio,
+      if(current != channel ||
+	 !init_down){
+	switch(stage){
+	case 0:
+	  {
+	    ags_audio_duplicate_recall(audio,
+				       recall_id);
+	  }
+	  break;
+	case 1:
+	  {
+	    ags_audio_resolve_recall(audio,
 				     recall_id);
+	  }
+	  break;
+	case 2:
+	  {
+	    ags_audio_init_recall(audio, init_stage,
+				  recall_id);
+	  }
+	  break;
 	}
-	break;
-      case 1:
-	{
-	  ags_audio_resolve_recall(audio,
-				   recall_id);
-	}
-	break;
-      case 2:
-	{
-	  ags_audio_init_recall(audio, init_stage,
-				recall_id);
-	}
-	break;
       }
-	  
+      
       /* get some fields */
       pthread_mutex_lock(audio_mutex);
 	  
@@ -11255,10 +11246,13 @@ ags_channel_recursive_run(AgsChannel *channel,
 
       pthread_mutex_unlock(current_mutex);
 
-      ags_channel_play(current,
-		       recall_id,
-		       run_stage);
-
+      if(current != channel ||
+	 !run_down){
+	ags_channel_play(current,
+			 recall_id,
+			 run_stage);
+      }
+      
       /* get audio mutex */
       pthread_mutex_lock(application_mutex);
 
@@ -11275,10 +11269,13 @@ ags_channel_recursive_run(AgsChannel *channel,
 
       pthread_mutex_unlock(audio_mutex);
 
-      ags_audio_play(audio,
-		     recall_id,
-		     run_stage);
-	  
+      if(current != channel ||
+	 !run_down){
+	ags_audio_play(audio,
+		       recall_id,
+		       run_stage);
+      }
+      
       /* get some fields */
       pthread_mutex_lock(audio_mutex);
 	  

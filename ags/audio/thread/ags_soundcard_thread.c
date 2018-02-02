@@ -19,15 +19,7 @@
 
 #include <ags/audio/thread/ags_soundcard_thread.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_main_loop.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_polling_thread.h>
-#include <ags/thread/ags_poll_fd.h>
-#include <ags/thread/ags_timestamp_thread.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_devout.h>
 
@@ -393,7 +385,7 @@ ags_soundcard_thread_start(AgsThread *thread)
   AgsThread *main_loop;
   AgsPollingThread *polling_thread;
   
-  AgsSoundcard *soundcard;
+  GObject *soundcard;
 
   GList *poll_fd;
   
@@ -402,35 +394,18 @@ ags_soundcard_thread_start(AgsThread *thread)
   soundcard_thread = AGS_SOUNDCARD_THREAD(thread);
   main_loop = ags_thread_get_toplevel(thread);
   
-  soundcard = AGS_SOUNDCARD(soundcard_thread->soundcard);
-
-  /* abort if already playing */
-  if(ags_soundcard_is_playing(soundcard)){
-    return;
-  }
+  soundcard = soundcard_thread->soundcard;
 
   /* disable timing */
   g_atomic_int_and(&(thread->flags),
 		   (~AGS_THREAD_TIMING));
   
-  /* check if already initialized */
-  soundcard_thread->error = NULL;
-
-  if(ags_soundcard_get_buffer(soundcard) == NULL){
-    ags_soundcard_play_init(soundcard,
-			    &(soundcard_thread->error));
-
-#ifdef AGS_DEBUG
-    g_message("ags_devout_alsa_play");
-#endif
-  }
-
   /* find polling thread */
   polling_thread = (AgsPollingThread *) ags_thread_find_type(main_loop,
 							     AGS_TYPE_POLLING_THREAD);
     
   /* add poll fd and connect dispatch */
-  poll_fd = ags_soundcard_get_poll_fd(soundcard);
+  poll_fd = ags_soundcard_get_poll_fd(AGS_SOUNDCARD(soundcard));
     
   while(poll_fd != NULL){
     if(polling_thread != NULL){
@@ -463,7 +438,8 @@ ags_soundcard_thread_run(AgsThread *thread)
   AgsSoundcardThread *soundcard_thread;
 
   AgsMutexManager *mutex_manager;
-  AgsSoundcard *soundcard;
+
+  GObject *soundcard;
 
   GList *poll_fd;
   
@@ -476,7 +452,7 @@ ags_soundcard_thread_run(AgsThread *thread)
 
   soundcard_thread = AGS_SOUNDCARD_THREAD(thread);
 
-  soundcard = AGS_SOUNDCARD(soundcard_thread->soundcard);
+  soundcard = soundcard_thread->soundcard;
 
   /*  */
   mutex_manager = ags_mutex_manager_get_instance();
@@ -509,13 +485,13 @@ ags_soundcard_thread_run(AgsThread *thread)
   /* playback */
   pthread_mutex_lock(mutex);
   
-  is_playing = ags_soundcard_is_playing(soundcard);
+  is_playing = ags_soundcard_is_playing(AGS_SOUNDCARD(soundcard));
 
   pthread_mutex_unlock(mutex);
   
   if(is_playing){
     error = NULL;
-    ags_soundcard_play(soundcard,
+    ags_soundcard_play(AGS_SOUNDCARD(soundcard),
 		       &error);
 
     if(error != NULL){
@@ -535,20 +511,20 @@ ags_soundcard_thread_stop(AgsThread *thread)
   AgsThread *main_loop;
   AgsPollingThread *polling_thread;
   
-  AgsSoundcard *soundcard;
+  GObject *soundcard;
 
   GList *poll_fd;
     
   soundcard_thread = AGS_SOUNDCARD_THREAD(thread);
   main_loop = ags_thread_get_toplevel(thread);
 
-  soundcard = AGS_SOUNDCARD(soundcard_thread->soundcard);
+  soundcard = soundcard_thread->soundcard;
 
   /* stop thread and soundcard */
   AGS_THREAD_CLASS(ags_soundcard_thread_parent_class)->stop(thread);
 
   //FIXME:JK: is this safe?
-  ags_soundcard_stop(soundcard);
+  ags_soundcard_stop(AGS_SOUNDCARD(soundcard));
 
   g_atomic_int_or(&(thread->flags),
 		  AGS_THREAD_TIMING);
@@ -558,7 +534,7 @@ ags_soundcard_thread_stop(AgsThread *thread)
 							     AGS_TYPE_POLLING_THREAD);
     
   /* remove poll fd */
-  poll_fd = ags_soundcard_get_poll_fd(soundcard);
+  poll_fd = ags_soundcard_get_poll_fd(AGS_SOUNDCARD(soundcard));
     
   while(poll_fd != NULL){
     if(polling_thread != NULL){
