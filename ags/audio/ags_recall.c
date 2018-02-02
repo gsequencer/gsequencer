@@ -2017,9 +2017,9 @@ ags_recall_real_done(AgsRecall *recall)
   if((AGS_RECALL_DONE & (recall->flags)) != 0){
     return;
   }
-  
-  recall->flags |= AGS_RECALL_DONE;
 
+  recall->flags |= AGS_RECALL_DONE;
+  
   ags_recall_remove(recall);
 }
 

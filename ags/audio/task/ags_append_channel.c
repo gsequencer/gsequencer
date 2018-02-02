@@ -332,7 +332,7 @@ ags_append_channel_launch(AgsTask *task)
   AgsAppendChannel *append_channel;
 
   AgsAudioLoop *audio_loop;
-  AgsAudioLoop *channel_thread;
+  AgsChannelThread *channel_thread;
 
   AgsServer *server;
 

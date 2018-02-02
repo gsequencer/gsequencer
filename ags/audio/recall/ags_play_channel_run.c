@@ -19,14 +19,7 @@
 
 #include <ags/audio/recall/ags_play_channel_run.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_dynamic_connectable.h>
-#include <ags/object/ags_plugin.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
@@ -40,8 +33,13 @@
 #include <ags/audio/recall/ags_play_recycling.h>
 #include <ags/audio/recall/ags_play_audio_signal.h>
 #include <ags/audio/recall/ags_stream_channel.h>
+#include <ags/audio/recall/ags_stream_channel_run.h>
 #include <ags/audio/recall/ags_stream_recycling.h>
 #include <ags/audio/recall/ags_stream_audio_signal.h>
+#include <ags/audio/recall/ags_rt_stream_channel.h>
+#include <ags/audio/recall/ags_rt_stream_channel_run.h>
+#include <ags/audio/recall/ags_rt_stream_recycling.h>
+#include <ags/audio/recall/ags_rt_stream_audio_signal.h>
 
 #include <ags/audio/task/ags_cancel_channel.h>
 
@@ -422,48 +420,88 @@ void
 ags_play_channel_run_run_post(AgsRecall *recall)
 {
   AgsStreamChannelRun *stream_channel_run;
+  AgsRtStreamChannelRun *rt_stream_channel_run;
+
   AgsChannel *source;
+  
   GList *list;
   GList *recall_recycling_list, *recall_audio_signal_list;
+
   gboolean found;
   
   AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->run_post(recall);
 
-  /* connect done */
   source = AGS_RECALL_CHANNEL_RUN(recall)->source;
   found = FALSE;
 
-  list = source->play;
+  if(recall->rt_safe){
+    /* connect done */
+    list = source->play;
 
-  while((list = ags_recall_find_type_with_recycling_context(list,
-							    AGS_TYPE_STREAM_CHANNEL_RUN,
-							    (GObject *) recall->recall_id->recycling_context)) != NULL){
-    stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
+    while((list = ags_recall_find_type_with_recycling_context(list,
+							      AGS_TYPE_RT_STREAM_CHANNEL_RUN,
+							      (GObject *) recall->recall_id->recycling_context)) != NULL){
+      rt_stream_channel_run = AGS_RT_STREAM_CHANNEL_RUN(list->data);
 
-    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(stream_channel_run)->flags)) != 0){
-      list = list->next;
+      if((AGS_RECALL_TEMPLATE & (AGS_RECALL(rt_stream_channel_run)->flags)) != 0){
+	list = list->next;
 
-      continue;
-    }
+	continue;
+      }
     
-    recall_recycling_list = AGS_RECALL(stream_channel_run)->children;
+      recall_recycling_list = AGS_RECALL(rt_stream_channel_run)->children;
 
-    while(recall_recycling_list != NULL){
-      recall_audio_signal_list = AGS_RECALL(recall_recycling_list->data)->children;
+      while(recall_recycling_list != NULL){
+	recall_audio_signal_list = AGS_RECALL(recall_recycling_list->data)->children;
       
-      while(recall_audio_signal_list != NULL &&
-	    (AGS_RECALL_DONE & (AGS_RECALL(recall_audio_signal_list->data)->flags)) == 0 &&
-	    (AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_audio_signal_list->data)->flags)) == 0){
-	found = TRUE;
-	break;
+	while(recall_audio_signal_list != NULL &&
+	      (AGS_RECALL_DONE & (AGS_RECALL(recall_audio_signal_list->data)->flags)) == 0 &&
+	      (AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_audio_signal_list->data)->flags)) == 0){
+	  found = TRUE;
+	  break;
 	
-	recall_audio_signal_list = recall_audio_signal_list->next;
+	  recall_audio_signal_list = recall_audio_signal_list->next;
+	}
+
+	recall_recycling_list = recall_recycling_list->next;
       }
 
-      recall_recycling_list = recall_recycling_list->next;
+      list = list->next;
     }
+  }else{
+    /* connect done */
+    list = source->play;
 
-    list = list->next;
+    while((list = ags_recall_find_type_with_recycling_context(list,
+							      AGS_TYPE_STREAM_CHANNEL_RUN,
+							      (GObject *) recall->recall_id->recycling_context)) != NULL){
+      stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
+
+      if((AGS_RECALL_TEMPLATE & (AGS_RECALL(stream_channel_run)->flags)) != 0){
+	list = list->next;
+
+	continue;
+      }
+    
+      recall_recycling_list = AGS_RECALL(stream_channel_run)->children;
+
+      while(recall_recycling_list != NULL){
+	recall_audio_signal_list = AGS_RECALL(recall_recycling_list->data)->children;
+      
+	while(recall_audio_signal_list != NULL &&
+	      (AGS_RECALL_DONE & (AGS_RECALL(recall_audio_signal_list->data)->flags)) == 0 &&
+	      (AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_audio_signal_list->data)->flags)) == 0){
+	  found = TRUE;
+	  break;
+	
+	  recall_audio_signal_list = recall_audio_signal_list->next;
+	}
+
+	recall_recycling_list = recall_recycling_list->next;
+      }
+
+      list = list->next;
+    }
   }
   
   if(!found){
@@ -567,7 +605,7 @@ ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
   if(channel == NULL){
     return;
   }
-  
+
   soundcard = AGS_AUDIO(channel->audio)->soundcard;
 
   mutex_manager = ags_mutex_manager_get_instance();

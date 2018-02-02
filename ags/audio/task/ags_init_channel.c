@@ -516,7 +516,7 @@ ags_init_channel_launch(AgsTask *task)
 	    /* recursive play init */
 	    nth_domain = 0;
 	    init_playback = TRUE;
-	    
+
 	    g_atomic_int_or(&(playback->flags),
 			    AGS_PLAYBACK_PLAYBACK);
 

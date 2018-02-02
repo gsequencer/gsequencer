@@ -17,6 +17,13 @@ ags (2.0.0)
 	* removed ags_audio_signal_tile()
 	* removed ags_audio_signal_scale()
 
+ags (1.4.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed playback scope
+	* fixed wrong count of runs and init code in ags_channel.c
+	* minor-fixes
+
 ags (1.4.16)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

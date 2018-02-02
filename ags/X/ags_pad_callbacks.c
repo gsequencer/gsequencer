@@ -426,6 +426,7 @@ ags_pad_init_channel_launch_callback(AgsTask *task,
 			 NULL);
 	  }
 
+	  note->rt_attack = 0;
 	  note->rt_offset = 0;
 
 	  pthread_mutex_unlock(recycling_mutex);
