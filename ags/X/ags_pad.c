@@ -904,8 +904,6 @@ ags_pad_play(AgsPad *pad)
     AgsCancelChannel *cancel_channel;
 
     guint flags;
-
-    g_message("cancel");
     
     channel = pad->channel;
 

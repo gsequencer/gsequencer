@@ -2115,7 +2115,7 @@ ags_machine_copy_pattern(AgsMachine *machine)
   AgsMutexManager *mutex_manager;
 
   xmlDoc *clipboard;
-  xmlNode *audio_node, *notation_node;
+  xmlNode *audio_node, *notation_list_node, *notation_node;
 
   xmlChar *buffer;
   int size;
@@ -2198,9 +2198,15 @@ ags_machine_copy_pattern(AgsMachine *machine)
   clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
 
   /* create root node */
-  audio_node = xmlNewNode(NULL, BAD_CAST "audio");
+  audio_node = xmlNewNode(NULL,
+			  BAD_CAST "audio");
   xmlDocSetRootElement(clipboard, audio_node);
 
+  notation_list_node = xmlNewNode(NULL,
+				  BAD_CAST "notation-list");
+  xmlAddChild(audio_node,
+	      notation_list_node);
+  
   audio = machine->audio;
 
   mutex_manager = ags_mutex_manager_get_instance();  
@@ -2234,7 +2240,8 @@ ags_machine_copy_pattern(AgsMachine *machine)
     pthread_mutex_lock(current_mutex);
     
     notation_node = ags_machine_copy_pattern_to_notation(channel);
-    xmlAddChild(audio_node, notation_node);
+    xmlAddChild(notation_list_node,
+		notation_node);
 
     channel = channel->next;
 
