@@ -17,6 +17,11 @@ ags (2.0.0)
 	* removed ags_audio_signal_tile()
 	* removed ags_audio_signal_scale()
 
+ags (1.4.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed copy to clipboard in AgsMatrix and AgsDrum
+
 ags (1.4.17)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

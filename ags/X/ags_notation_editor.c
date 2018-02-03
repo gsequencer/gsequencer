@@ -1453,7 +1453,7 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
       if(audio_node->type == XML_ELEMENT_NODE){
 	if(!xmlStrncmp("audio", audio_node->name, 6)){
 	  notation_node = audio_node->children;
-	
+	  
 	  first_x = ags_notation_editor_paste_notation(audio_node);
 	
 	  break;

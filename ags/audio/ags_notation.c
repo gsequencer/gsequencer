@@ -1914,13 +1914,13 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
   
   if(!xmlStrncmp("0.3.12", version, 7)){
     ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
-  }else if(!xmlStrncmp("0.4.2", version, 7)){
+  }else if(!xmlStrncmp("0.4.2", version, 6)){
     /* changes contain only for UI relevant new informations */
     ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
-  }else if(!xmlStrncmp("1.2.0", version, 7)){
+  }else if(!xmlStrncmp("1.2.0", version, 6)){
     /* changes contain only optional informations */
     match_timestamp = TRUE;
-    
+
     if(match_channel &&
        notation->audio_channel != g_ascii_strtoull(xmlGetProp(root_node,
 							      "audio-channel"),
@@ -1928,7 +1928,7 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 						   10)){
       return;
     }
-    
+        
     ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
   }
 }

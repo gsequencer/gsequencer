@@ -32,4 +32,19 @@ typedef enum{
   AGS_SOUND_SCOPE_MIDI_OUTPUT,
 }AgsSoundScope;
 
+typedef enum{
+  AGS_SOUND_STAGING_CHECK_RT_DATA       = 1,
+  AGS_SOUND_STAGING_RUN_INIT_PRE        = 1 <<  1,
+  AGS_SOUND_STAGING_RUN_INIT_INTER      = 1 <<  2,
+  AGS_SOUND_STAGING_RUN_INIT_POST       = 1 <<  3,
+  AGS_SOUND_STAGING_FEED_INPUT_QUEUE    = 1 <<  4,
+  AGS_SOUND_STAGING_RUN_PRE             = 1 <<  5,
+  AGS_SOUND_STAGING_RUN                 = 1 <<  6,
+  AGS_SOUND_STAGING_RUN_POST            = 1 <<  7,
+  AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE   = 1 <<  8,
+  AGS_SOUND_STAGING_CANCEL              = 1 <<  9,
+  AGS_SOUND_STAGING_DONE                = 1 << 10,
+  AGS_SOUND_STAGING_REMOVE              = 1 << 11,
+}AgsSoundStagingFlags;
+
 #endif /*__AGS_SOUND_ENUMS_H__*/
