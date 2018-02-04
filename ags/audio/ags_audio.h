@@ -309,10 +309,12 @@ void ags_audio_open_audio_file_as_wave(AgsAudio *audio,
 				       gboolean create_channels);
 
 void ags_audio_open_midi_file_as_midi(AgsAudio *audio,
+				      const gchar *filename,
 				      const gchar *instrument,
 				      const gchar *track_name,
 				      guint midi_channel);
 void ags_audio_open_midi_file_as_notation(AgsAudio *audio,
+					  const gchar *filename,
 					  const gchar *instrument,
 					  const gchar *track_name,
 					  guint midi_channel);

@@ -1932,31 +1932,55 @@ ags_audio_dispose(GObject *gobject)
 {
   AgsAudio *audio;
 
+  AgsMutexManager *mutex_manager;
+
   GList *list, *list_next;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *play_mutex, *recall_mutex;
+
   audio = AGS_AUDIO(gobject);
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   /* soundcard */
-  if(audio->soundcard != NULL){    
-    g_object_unref(audio->soundcard);
+  if(audio->output_soundcard != NULL){    
+    g_object_unref(audio->output_soundcard);
 
-    audio->soundcard = NULL;
+    audio->output_soundcard = NULL;
+  }
+
+  if(audio->input_soundcard != NULL){    
+    g_object_unref(audio->input_soundcard);
+
+    audio->input_soundcard = NULL;
   }
 
   /* sequencer */
-  if(audio->sequencer != NULL){
-    g_object_unref(audio->sequencer);
+  if(audio->output_sequencer != NULL){
+    g_object_unref(audio->output_sequencer);
 
-    audio->sequencer = NULL;
+    audio->output_sequencer = NULL;
   }
 
-  /* midi file */
-  if(audio->midi_file != NULL){
-    g_object_unref(audio->midi_file);
+  if(audio->input_sequencer != NULL){
+    g_object_unref(audio->input_sequencer);
 
-    audio->midi_file = NULL;
+    audio->input_sequencer = NULL;
   }
 
+  /* channels */
+  ags_audio_set_audio_channels(audio,
+			       0);
+
+  ags_audio_set_pads(audio,
+		     AGS_TYPE_INPUT,
+		     0);
+  ags_audio_set_pads(audio,
+		     AGS_TYPE_OUTPUT,
+		     0);
+  
   /* audio connection */
   if(audio->audio_connection != NULL){
     list = audio->audio_connection;
@@ -1993,6 +2017,32 @@ ags_audio_dispose(GObject *gobject)
     audio->preset = NULL;
   }
 
+
+  /* playback domain */
+  if(audio->playback_domain != NULL){
+    AgsPlaybackDomain *playback_domain;
+
+    playback_domain = audio->playback_domain;
+
+    if(playback_domain->audio_thread != NULL){
+      if(playback_domain->audio_thread[0] != NULL){
+	ags_thread_stop(playback_domain->audio_thread[0]);
+      }
+      
+      if(playback_domain->audio_thread[1] != NULL){
+	ags_thread_stop(playback_domain->audio_thread[1]);
+      }
+      
+      if(playback_domain->audio_thread[2] != NULL){
+	ags_thread_stop(playback_domain->audio_thread[2]);
+      }
+    }
+
+    g_object_run_dispose(audio->playback_domain);
+
+    audio->playback_domain = NULL;
+  }
+  
   /* notation */
   if(audio->notation != NULL){
     list = audio->notation;
@@ -2047,6 +2097,52 @@ ags_audio_dispose(GObject *gobject)
     audio->wave = NULL;
   }
 
+  /* output audio file */
+  if(audio->output_audio_file != NULL){
+    g_object_unref(audio->output_audio_file);
+
+    audio->output_audio_file = NULL;
+  }
+  
+  /* input audio file */
+  if(audio->input_audio_file != NULL){
+    g_object_unref(audio->input_audio_file);
+
+    audio->input_audio_file = NULL;
+  }
+
+  /* midi */
+  if(audio->midi != NULL){
+    list = audio->midi;
+
+    while(list != NULL){
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
+
+      list = list_next;
+    }
+  
+    g_list_free_full(audio->midi,
+		     g_object_unref);
+
+    audio->midi = NULL;
+  }
+
+  /* output midi file */
+  if(audio->output_midi_file != NULL){
+    g_object_unref(audio->output_midi_file);
+
+    audio->output_midi_file = NULL;
+  }
+  
+  /* input midi file */
+  if(audio->input_midi_file != NULL){
+    g_object_unref(audio->input_midi_file);
+
+    audio->input_midi_file = NULL;
+  }
+
   /* recall id */
   if(audio->recall_id != NULL){
     list = audio->recall_id;
@@ -2085,8 +2181,8 @@ ags_audio_dispose(GObject *gobject)
   }
   
   /* recall container */
-  if(audio->container != NULL){
-    list = audio->container;
+  if(audio->recall_container != NULL){
+    list = audio->recall_container;
 
     while(list != NULL){
       list_next = list->next;
@@ -2096,37 +2192,22 @@ ags_audio_dispose(GObject *gobject)
       list = list_next;
     }
 
-    g_list_free_full(audio->container,
+    g_list_free_full(audio->recall_container,
 		     g_object_unref);
 
-    audio->container = NULL;
-  }
-
-  /* recall */
-  if(audio->recall != NULL){
-    pthread_mutex_lock(audio->recall_mutex);
-    
-    list = audio->recall;
-  
-    while(list != NULL){
-      list_next = list->next;
-      
-      g_object_run_dispose(list->data);
-    
-      list = list_next;
-    }
-
-    g_list_free_full(audio->recall,
-		     g_object_unref);
-
-    audio->recall = NULL;
-
-    pthread_mutex_unlock(audio->recall_mutex);
+    audio->recall_container = NULL;
   }
 
   /* play */
   if(audio->play != NULL){
-    pthread_mutex_lock(audio->play_mutex);
+    pthread_mutex_lock(application_mutex);
+
+    play_mutex = audio->play_mutex;
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* run dispose and unref */
+    pthread_mutex_lock(play_mutex);
 
     list = audio->play;
 
@@ -2143,57 +2224,36 @@ ags_audio_dispose(GObject *gobject)
 
     audio->play = NULL;
 
-    pthread_mutex_unlock(audio->play_mutex);
-  }
-  
-  /* remove */
-  if(audio->recall_remove != NULL){
-    g_list_free_full(audio->recall_remove,
-		     g_object_unref);
+    pthread_mutex_unlock(play_mutex);
   }
 
-  if(audio->play_remove != NULL){
-    g_list_free_full(audio->play_remove,
-		     g_object_unref);
-  }
+  /* recall */
+  if(audio->recall != NULL){
+    pthread_mutex_lock(application_mutex);
+
+    recall_mutex = audio->recall_mutex;
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* run dispose and unref */
+    pthread_mutex_lock(recall_mutex);
+    
+    list = audio->recall;
   
-  audio->recall_remove = NULL;
-  audio->play_remove = NULL;
-  
-  /* channels */
-  ags_audio_set_audio_channels(audio,
-			       0);
-
-  ags_audio_set_pads(audio,
-		     AGS_TYPE_INPUT,
-		     0);
-  ags_audio_set_pads(audio,
-		     AGS_TYPE_OUTPUT,
-		     0);
-
-  /* playback domain */
-  if(audio->playback_domain != NULL){
-    AgsPlaybackDomain *playback_domain;
-
-    playback_domain = audio->playback_domain;
-
-    if(playback_domain->audio_thread != NULL){
-      if(playback_domain->audio_thread[0] != NULL){
-	ags_thread_stop(playback_domain->audio_thread[0]);
-      }
+    while(list != NULL){
+      list_next = list->next;
       
-      if(playback_domain->audio_thread[1] != NULL){
-	ags_thread_stop(playback_domain->audio_thread[1]);
-      }
-      
-      if(playback_domain->audio_thread[2] != NULL){
-	ags_thread_stop(playback_domain->audio_thread[2]);
-      }
+      g_object_run_dispose(list->data);
+    
+      list = list_next;
     }
 
-    g_object_run_dispose(audio->playback_domain);
+    g_list_free_full(audio->recall,
+		     g_object_unref);
 
-    audio->playback_domain = NULL;
+    audio->recall = NULL;
+
+    pthread_mutex_unlock(recall_mutex);
   }
 
   /* call parent */
@@ -2206,38 +2266,44 @@ ags_audio_finalize(GObject *gobject)
   AgsAudio *audio;
   AgsChannel *channel;
 
-  AgsMutexManager *mutex_manager;
-
   GList *list;
 
-  pthread_mutex_t *application_mutex;
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  pthread_mutex_lock(application_mutex);
-
-  ags_mutex_manager_remove(mutex_manager,
-			   gobject);
-  
-  pthread_mutex_unlock(application_mutex);
-
   audio = AGS_AUDIO(gobject);
+
+  pthread_mutex_destroy(audio->obj_mutex);
+  free(audio->obj_mutex);
 
   pthread_mutexattr_destroy(audio->obj_mutexattr);
   free(audio->obj_mutexattr);
 
-  if(audio->soundcard != NULL){
-    g_object_unref(audio->soundcard);
+  /* soundcard */
+  if(audio->output_soundcard != NULL){
+    g_object_unref(audio->output_soundcard);
   }
 
-  if(audio->sequencer != NULL){
-    g_object_unref(audio->sequencer);
+  if(audio->input_soundcard != NULL){
+    g_object_unref(audio->input_soundcard);
   }
 
-  if(audio->midi_file != NULL){
-    g_object_unref(audio->midi_file);
+  /* sequencer */
+  if(audio->output_sequencer != NULL){
+    g_object_unref(audio->output_sequencer);
   }
+
+  if(audio->input_sequencer != NULL){
+    g_object_unref(audio->input_sequencer);
+  }
+
+  /* channels */
+  ags_audio_set_audio_channels(audio,
+			       0);
+
+  ags_audio_set_pads(audio,
+		     AGS_TYPE_INPUT,
+		     0);
+  ags_audio_set_pads(audio,
+		     AGS_TYPE_OUTPUT,
+		     0);
   
   /* audio connection */
   if(audio->audio_connection != NULL){
@@ -2255,7 +2321,7 @@ ags_audio_finalize(GObject *gobject)
 		     g_object_unref);
   }
 
-  /* audio connection */
+  /* preset */
   if(audio->preset != NULL){
     list = audio->preset;
 
@@ -2323,7 +2389,43 @@ ags_audio_finalize(GObject *gobject)
     g_list_free_full(audio->wave,
 		     g_object_unref);
   }
+
+  /* output audio file */
+  if(audio->output_audio_file != NULL){
+    g_object_unref(audio->output_audio_file);
+  }
+
+  /* input audio file */
+  if(audio->input_audio_file != NULL){
+    g_object_unref(audio->input_audio_file);
+  }
   
+  /* midi */
+  if(audio->midi != NULL){
+    list = audio->midi;
+
+    while(list != NULL){
+      g_object_set(list->data,
+		   "audio", NULL,
+		   NULL);
+
+      list = list->next;
+    }
+
+    g_list_free_full(audio->midi,
+		     g_object_unref);
+  }
+
+  /* output midi file */
+  if(audio->output_midi_file != NULL){
+    g_object_unref(audio->output_midi_file);
+  }
+
+  /* input midi file */
+  if(audio->input_midi_file != NULL){
+    g_object_unref(audio->input_midi_file);
+  }
+
   /* recall id */
   if(audio->recall_id != NULL){
     g_list_free_full(audio->recall_id,
@@ -2336,30 +2438,13 @@ ags_audio_finalize(GObject *gobject)
 		     g_object_unref);
   }
   
-  /* recall */
-  if(audio->container != NULL){
-    g_list_free_full(audio->container,
+  /* recall container */
+  if(audio->recall_container != NULL){
+    g_list_free_full(audio->recall_container,
 		     g_object_unref);
   }
 
-  if(audio->recall != NULL){
-    list = audio->recall;
-
-    while(list != NULL){
-      if(AGS_IS_RECALL_AUDIO(list->data) ||
-	 AGS_IS_RECALL_AUDIO_RUN(list->data)){
-	g_object_set(list->data,
-		     "audio", NULL,
-		     NULL);
-      }
-    
-      list = list->next;
-    }
-
-    g_list_free_full(audio->recall,
-		     g_object_unref);
-  }
-
+  /* play context */
   if(audio->play != NULL){
     list = audio->play;
 
@@ -2378,40 +2463,37 @@ ags_audio_finalize(GObject *gobject)
 		     g_object_unref);
   }
 
-  pthread_mutex_destroy(audio->recall_mutex);
-  free(audio->recall_mutex);
-
-  pthread_mutexattr_destroy(audio->recall_mutexattr);
-  free(audio->recall_mutexattr);
-
   pthread_mutex_destroy(audio->play_mutex);
   free(audio->play_mutex);
 
   pthread_mutexattr_destroy(audio->play_mutexattr);
   free(audio->play_mutexattr);
-  
-  /* remove */
-  if(audio->recall_remove != NULL){
-    g_list_free_full(audio->recall_remove,
+
+  /* recall context */
+  if(audio->recall != NULL){
+    list = audio->recall;
+
+    while(list != NULL){
+      if(AGS_IS_RECALL_AUDIO(list->data) ||
+	 AGS_IS_RECALL_AUDIO_RUN(list->data)){
+	g_object_set(list->data,
+		     "audio", NULL,
+		     NULL);
+      }
+    
+      list = list->next;
+    }
+
+    g_list_free_full(audio->recall,
 		     g_object_unref);
   }
 
-  if(audio->play_remove != NULL){
-    g_list_free_full(audio->play_remove,
-		     g_object_unref);
-  }
+  pthread_mutex_destroy(audio->recall_mutex);
+  free(audio->recall_mutex);
+
+  pthread_mutexattr_destroy(audio->recall_mutexattr);
+  free(audio->recall_mutexattr);
   
-  /* channels */
-  ags_audio_set_audio_channels(audio,
-			       0);
-
-  ags_audio_set_pads(audio,
-		     AGS_TYPE_INPUT,
-		     0);
-  ags_audio_set_pads(audio,
-		     AGS_TYPE_OUTPUT,
-		     0);
-
   /* call parent */
   G_OBJECT_CLASS(ags_audio_parent_class)->finalize(gobject);
 }
@@ -3054,7 +3136,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   auto void ags_audio_set_audio_channels_shrink();
   auto void ags_audio_set_audio_channels_grow_notation();
   auto void ags_audio_set_audio_channels_shrink_notation();
-  auto void ags_audio_set_audio_channels_shrink_automation();
+  auto void ags_audio_set_audio_channels_shrink_au[5~tomation();
   auto void ags_audio_set_audio_channels_grow_wave();
   auto void ags_audio_set_audio_channels_shrink_wave();
   
