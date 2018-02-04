@@ -58,10 +58,11 @@ typedef struct _AgsAudioClass AgsAudioClass;
  * @AGS_AUDIO_HAS_WAVE: has wave
  * @AGS_AUDIO_WAVE_DEFAULT: wave default mapped on input channels
  * @AGS_AUDIO_RUNNING: it is running
- * @AGS_AUDIO_PLAYING: it is playing
+ * @AGS_AUDIO_ACTIVE: it is active
  * @AGS_AUDIO_CAN_NEXT_ACTIVE: can determine next active input
  * @AGS_AUDIO_SKIP_OUTPUT: skip output as processing audio data
  * @AGS_AUDIO_SKIP_INPUT: skip input as processing audio data
+ * @AGS_AUDIO_BYPASS: don't apply any data
  *
  * Enum values to control the behavior or indicate internal state of #AgsAudio by
  * enable/disable as flags.

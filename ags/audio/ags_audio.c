@@ -2605,6 +2605,42 @@ ags_audio_connect(AgsConnectable *connectable)
     channel = channel->next;
   }
 
+  /* connect notation */
+  list = audio->notation;
+  
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+    
+    list = list->next;
+  }
+  
+  /* connect automation */
+  list = audio->automation;
+  
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+    
+    list = list->next;
+  }
+
+  /* connect wave */
+  list = audio->wave;
+  
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+    
+    list = list->next;
+  }
+  
+  /* connect midi */
+  list = audio->midi;
+  
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+    
+    list = list->next;
+  }
+
   /* connect recall ids */
   list = audio->recall_id;
 
@@ -2624,14 +2660,6 @@ ags_audio_connect(AgsConnectable *connectable)
   }
 
   /* connect recalls */
-  list = audio->recall;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
   list = audio->play;
 
   while(list != NULL){
@@ -2640,29 +2668,11 @@ ags_audio_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  /* connect remove recalls */
-  list = audio->recall_remove;
+  list = audio->recall;
 
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));
 
-    list = list->next;
-  }
-
-  list = audio->play_remove;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  /* connect notation */
-  list = audio->notation;
-  
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-    
     list = list->next;
   }
 }
@@ -2910,198 +2920,337 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
 
 /**
  * ags_audio_set_flags:
- * @audio: an AgsAudio
+ * @audio: the #AgsAudio
  * @flags: see enum AgsAudioFlags
  *
  * Enable a feature of AgsAudio.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_audio_set_flags(AgsAudio *audio, guint flags)
 {
-  auto GParameter* ags_audio_set_flags_set_recycling_parameter(GType type);
-  auto void ags_audio_set_flags_add_recycling_task(GParameter *parameter);
+  AgsMutexManager *mutex_manager;
 
-  GParameter* ags_audio_set_flags_set_recycling_parameter(GType type){
-    AgsChannel *channel, *start_channel, *end_channel;
-    AgsRecycling *recycling, *recycling_next, *start_recycling, *end_recycling;
-    GParameter *parameter;
-    int i;
+  guint audio_flags;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
 
-    parameter = g_new(GParameter, 4 * audio->audio_channels);
-
-    for(i = 0; i < audio->audio_channels; i++){
-      start_channel =
-	channel = ags_channel_nth(((g_type_is_a(type, AGS_TYPE_INPUT)) ? audio->input: audio->output), i);
-      end_channel = NULL;
-
-      start_recycling =
-	recycling = NULL;
-      end_recycling = NULL;
-	  
-      if(channel != NULL){
-	start_recycling = 
-	  recycling = ags_recycling_new(audio->soundcard);
-	goto ags_audio_set_flags_OUTPUT_RECYCLING;
-      }
-
-      while(channel != NULL){
-	recycling->next = ags_recycling_new(audio->soundcard);
-      ags_audio_set_flags_OUTPUT_RECYCLING:
-	recycling->next->prev = recycling;
-	recycling = recycling->next;
-	    	    
-	channel = channel->next_pad;
-      }
-
-      end_channel = ags_channel_pad_last(start_channel);
-      end_recycling = recycling;
-
-      /* setting up parameters */
-      parameter[i].name = "start_channel";
-      g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
-      g_value_set_object(&(parameter[i].value), start_channel);
-
-      parameter[i].name = "end_channel";
-      g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
-      g_value_set_object(&(parameter[i].value), end_channel);
-
-      parameter[i].name = "start_recycling";
-      g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
-      g_value_set_object(&(parameter[i].value), start_recycling);
-
-      parameter[i].name = "end_recycling";
-      g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
-      g_value_set_object(&(parameter[i].value), end_recycling);
-    }
-
-    return(parameter);
-  }
-
-  void ags_audio_set_flags_add_recycling_task(GParameter *parameter){
-    //TODO:JK: implement me
-  }
-
-  if(audio == NULL || !AGS_IS_AUDIO(audio)){
+  if(!AGS_IS_AUDIO(audio)){
     return;
   }
 
-  if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags))){
-    GParameter *parameter;
-        
-    /* check if output has already recyclings */
-    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) == 0){
-      if(audio->output_pads > 0){
-	parameter = ags_audio_set_flags_set_recycling_parameter(AGS_TYPE_OUTPUT);
-	ags_audio_set_flags_add_recycling_task(parameter);
-      }
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+  
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* check flags */
+  pthread_mutex_lock(audio_mutex);
+  
+  audio_flags = audio->flags;
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  if((AGS_AUDIO_NO_OUTPUT & flags) != 0 &&
+     (AGS_AUDIO_NO_OUTPUT & audio_flags) == 0){
+    ags_audio_set_pads(audio,
+		       AGS_TYPE_OUTPUT,
+		       0, 0);
+  }
+
+  if((AGS_AUDIO_NO_INPUT & flags) != 0 &&
+     (AGS_AUDIO_NO_INPUT & audio_flags) == 0){
+    ags_audio_set_pads(audio,
+		       AGS_TYPE_INPUT,
+		       0, 0);
+  }
+  
+  if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (flags)) != 0 &&
+     (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio_flags)) == 0){
+    AgsChannel *channel;
+    AgsRecycling *first_recycling, *last_recycling;
+
+    GObject *soundcard;
+    
+    pthread_mutex_t *channel_mutex;
+
+    pthread_mutex_lock(audio_mutex);
+
+    channel = audio->output;
+
+    pthread_mutex_unlock(audio_mutex);
+
+    while(channel != NULL){
+      /* get channel mutex */
+      pthread_mutex_lock(application_mutex);
+  
+      channel_mutex = channel->obj_mutex;
+  
+      pthread_mutex_unlock(application_mutex);
+
+      /* get some fields */
+      pthread_mutex_lock(channel_mutex);
+
+      soundcard = channel->soundcard;
       
-      audio->flags |= AGS_AUDIO_OUTPUT_HAS_RECYCLING;
-    }
+      pthread_mutex_unlock(channel_mutex);
+      
+      /* add recycling */
+      first_recycling =
+	last_recycling = ags_recycling_new(soundcard);
+      g_object_ref(first_recycling);
+      g_object_set(first_recycling,
+		   "channel", channel,
+		   NULL);
+	  
+      ags_channel_set_recycling(channel,
+				first_recycling, last_recycling,
+				TRUE, TRUE);
+      
+      /* iterate */
+      pthread_mutex_lock(channel_mutex);
 
-    /* check if input has already recyclings */
-    if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
-      if(audio->input_pads > 0){
-	parameter = ags_audio_set_flags_set_recycling_parameter(AGS_TYPE_INPUT);
-	ags_audio_set_flags_add_recycling_task(parameter);
-      }
-
-      audio->flags |= AGS_AUDIO_INPUT_HAS_RECYCLING;
+      channel = channel->next;
+      
+      pthread_mutex_unlock(channel_mutex);
     }
   }
 
-  //TODO:JK: automatization of setting recycling_context root
+  if((AGS_AUDIO_INPUT_HAS_RECYCLING & (flags)) != 0 &&
+     (AGS_AUDIO_INPUT_HAS_RECYCLING & (audio_flags)) == 0){
+    AgsChannel *channel;
+    AgsRecycling *recycling;
+    AgsRecycling *first_recycling, *last_recycling;
+
+    GObject *soundcard;
+    
+    pthread_mutex_t *channel_mutex;
+
+    pthread_mutex_lock(audio_mutex);
+
+    channel = audio->output;
+
+    pthread_mutex_unlock(audio_mutex);
+
+    while(channel != NULL){
+      /* get channel mutex */
+      pthread_mutex_lock(application_mutex);
+  
+      channel_mutex = channel->obj_mutex;
+  
+      pthread_mutex_unlock(application_mutex);
+
+      /* get some fields */
+      pthread_mutex_lock(channel_mutex);
+
+      soundcard = channel->soundcard;
+      recycling = channel->first_recycling;
+      
+      pthread_mutex_unlock(channel_mutex);
+      
+      /* add recycling */
+      if(recycling == NULL){
+	first_recycling =
+	  last_recycling = ags_recycling_new(soundcard);
+	g_object_ref(first_recycling);
+	g_object_set(first_recycling,
+		     "channel", channel,
+		     NULL);
+	  
+	ags_channel_set_recycling(channel,
+				  first_recycling, last_recycling,
+				  TRUE, TRUE);
+      }
+      
+      /* iterate */
+      pthread_mutex_lock(channel_mutex);
+
+      channel = channel->next;
+      
+      pthread_mutex_unlock(channel_mutex);
+    }
+  }
+
+  //TODO:JK: add more?
+  
+  pthread_mutex_lock(audio_mutex);
+
+  audio->flags |= flags;
+  
+  pthread_mutex_unlock(audio_mutex);
 }
     
 
 /**
  * ags_audio_unset_flags:
- * @audio: an AgsAudio
+ * @audio: the #AgsAudio
  * @flags: see enum AgsAudioFlags
  *
  * Disable a feature of AgsAudio.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_audio_unset_flags(AgsAudio *audio, guint flags)
 {
-  auto GParameter* ags_audio_unset_flags_set_recycling_parameter(GType type);
-  auto void ags_audio_unset_flags_add_recycling_task(GParameter *parameter);
+  AgsMutexManager *mutex_manager;
 
-  GParameter* ags_audio_unset_flags_set_recycling_parameter(GType type){
-    AgsChannel *channel, *start_channel, *end_channel;
-    AgsRecycling *recycling, *recycling_next, *start_recycling, *end_recycling;
-    GParameter *parameter;
-    int i;
+  guint audio_flags;
+  
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
 
-    parameter = g_new(GParameter, 4 * audio->audio_channels);
-
-    for(i = 0; i < audio->audio_channels; i++){
-      start_channel = ags_channel_nth(((g_type_is_a(type, AGS_TYPE_INPUT)) ? audio->input: audio->output), i);
-      end_channel = ags_channel_pad_last(start_channel);
-
-      start_recycling = NULL;
-      end_recycling = NULL;
-
-      /* setting up parameters */
-      parameter[i].name = "start_channel";
-      g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
-      g_value_set_object(&(parameter[i].value), start_channel);
-
-      parameter[i].name = "end_channel";
-      g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
-      g_value_set_object(&(parameter[i].value), end_channel);
-
-      parameter[i].name = "start_recycling";
-      g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
-      g_value_set_object(&(parameter[i].value), start_recycling);
-
-      parameter[i].name = "end_recycling";
-      g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
-      g_value_set_object(&(parameter[i].value), end_recycling);
-    }
-
-    return(parameter);
-  }
-
-  void ags_audio_unset_flags_add_recycling_task(GParameter *parameter){
-    //TODO:JK: implement me
-  }
-
-  if(audio == NULL || !AGS_IS_AUDIO(audio)){
+  if(!AGS_IS_AUDIO(audio)){
     return;
   }
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
   
-  if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags))){
-    GParameter *parameter;
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* check flags */
+  pthread_mutex_lock(audio_mutex);
+  
+  audio_flags = audio->flags;
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio_flags)) != 0 &&
+     (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (flags)) == 0){
+    AgsChannel *channel;
+    AgsRecycling *first_recycling;
     
-    /* check if input has already no recyclings */
-    if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){      
-      if(audio->input_pads > 0){
-	parameter = ags_audio_unset_flags_set_recycling_parameter(AGS_TYPE_INPUT);
-	ags_audio_unset_flags_add_recycling_task(parameter);
-	
-	audio->flags &= (~AGS_AUDIO_INPUT_HAS_RECYCLING);
-      }
+    pthread_mutex_t *channel_mutex;
+
+    pthread_mutex_lock(audio_mutex);
+
+    channel = audio->output;
+
+    pthread_mutex_unlock(audio_mutex);
+
+    while(channel != NULL){
+      /* get channel mutex */
+      pthread_mutex_lock(application_mutex);
+  
+      channel_mutex = channel->obj_mutex;
+  
+      pthread_mutex_unlock(application_mutex);
+
+      /* unset recycling */
+      pthread_mutex_lock(channel_mutex);
+
+      first_recycling = channel->first_recycling;
+
+      channel->first_recycling =
+	channel->last_recycling = NULL;
       
-      /* check if output has already recyclings */
-      if(audio->output_pads > 0){
-	parameter = ags_audio_unset_flags_set_recycling_parameter(AGS_TYPE_OUTPUT);
-	ags_audio_unset_flags_add_recycling_task(parameter);
-	
-	audio->flags &= (~AGS_AUDIO_OUTPUT_HAS_RECYCLING);
-      }
+      pthread_mutex_unlock(channel_mutex);
+      
+      /* remove recycling */
+      g_object_run_dispose(first_recycling);
+      g_object_unref(first_recycling);
+	  
+      ags_channel_set_recycling(channel,
+				NULL, NULL,
+				TRUE, TRUE);
+      
+      /* iterate */
+      pthread_mutex_lock(channel_mutex);
+
+      channel = channel->next;
+      
+      pthread_mutex_unlock(channel_mutex);
     }
   }
+  
+  if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio_flags)) != 0 &&
+     (AGS_AUDIO_INPUT_HAS_RECYCLING & (flags)) == 0){
+    AgsChannel *channel, *link;
+    AgsRecycling *first_recycling;
+    
+    pthread_mutex_t *channel_mutex;
+
+    pthread_mutex_lock(audio_mutex);
+
+    channel = audio->output;
+
+    pthread_mutex_unlock(audio_mutex);
+
+    while(channel != NULL){
+      /* get channel mutex */
+      pthread_mutex_lock(application_mutex);
+  
+      channel_mutex = channel->obj_mutex;
+  
+      pthread_mutex_unlock(application_mutex);
+
+      /* get some fields */
+      pthread_mutex_lock(channel_mutex);
+
+      link = channel->link;
+      
+      pthread_mutex_unlock(channel_mutex);
+      
+      /* unset recycling */
+      if(link == NULL){
+	pthread_mutex_lock(channel_mutex);
+
+	first_recycling = channel->first_recycling;
+
+	channel->first_recycling =
+	  channel->last_recycling = NULL;
+      
+	pthread_mutex_unlock(channel_mutex);
+      
+	/* remove recycling */
+	g_object_run_dispose(first_recycling);
+	g_object_unref(first_recycling);
+	  
+	ags_channel_set_recycling(channel,
+				  NULL, NULL,
+				  TRUE, TRUE);
+      }
+      
+      /* iterate */
+      pthread_mutex_lock(channel_mutex);
+
+      channel = channel->next;
+      
+      pthread_mutex_unlock(channel_mutex);
+    }
+  }
+
+  //TODO:JK: add more?
+  
+  pthread_mutex_lock(audio_mutex);
+
+  audio->flags &= (~flags);
+  
+  pthread_mutex_unlock(audio_mutex);
 }
 
 void
 ags_audio_set_max_audio_channels(AgsAudio *audio,
 				 guint max_audio_channels)
 {
-  //TODO:JK: implement me
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+  
+  audio->max_audio_channels = max_audio_channels;
 }
 
 void
@@ -3109,7 +3258,17 @@ ags_audio_set_max_pads(AgsAudio *audio,
 		       GType channel_type,
 		       guint max_pads)
 {
-  //TODO:JK: implement me
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+  
+  if(g_type_is_a(channel_type,
+		 AGS_TYPE_OUTPUT)){
+    audio->max_output_pads = max_pads;
+  }else if(g_type_is_a(channel_type,
+		       AGS_TYPE_INPUT)){
+    audio->max_input_pads = max_pads;
+  }
 }
 
 void
@@ -3136,7 +3295,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   auto void ags_audio_set_audio_channels_shrink();
   auto void ags_audio_set_audio_channels_grow_notation();
   auto void ags_audio_set_audio_channels_shrink_notation();
-  auto void ags_audio_set_audio_channels_shrink_au[5~tomation();
+  auto void ags_audio_set_audio_channels_shrink_automation();
   auto void ags_audio_set_audio_channels_grow_wave();
   auto void ags_audio_set_audio_channels_shrink_wave();
   
