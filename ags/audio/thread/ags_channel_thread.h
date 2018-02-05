@@ -60,7 +60,7 @@ struct _AgsChannelThread
 
   volatile guint flags;
 
-  GObject *output_soundcard;
+  GObject *soundcard;
     
   pthread_mutexattr_t wakeup_attr;
   pthread_mutex_t *wakeup_mutex;

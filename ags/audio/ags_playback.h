@@ -65,9 +65,9 @@ struct _AgsPlayback
 
   GObject *play_note;
   
-  AgsThread *channel_thread[AGS_SOUND_SCOPE_LAST];
+  AgsThread **channel_thread;
   
-  AgsRecallID *recall_id[AGS_SOUND_SCOPE_LAST];
+  AgsRecallID **recall_id;
 };
 
 struct _AgsPlaybackClass

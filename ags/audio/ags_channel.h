@@ -56,13 +56,8 @@ typedef struct _AgsChannelClass AgsChannelClass;
  */
 typedef enum{
   AGS_CHANNEL_CONNECTED          = 1,
-  AGS_CHANNEL_RUNNING            = 1 <<  1,
+  AGS_CHANNEL_BYPASS             = 1 <<  1,
 }AgsChannelFlags;
-
-typedef enum{
-  AGS_CHANNEL_RECALL_ID_RUN_STAGE,
-  AGS_CHANNEL_RECALL_ID_CANCEL,
-}AgsChannelRecallIDMode;
 
 #define AGS_CHANNEL_ERROR (ags_channel_error_quark())
 
@@ -152,6 +147,12 @@ GType ags_channel_get_type();
 GQuark ags_channel_error_quark();
 
 pthread_mutex_t* ags_channel_get_class_mutex();
+
+void ags_channel_set_flags(AgsChannel *channel, guint flags);
+void ags_channel_unset_flags(AgsChannel *channel, guint flags);
+
+void ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags);
+void ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags);
 
 AgsRecall* ags_channel_find_recall(AgsChannel *channel, char *effect, char *name);
 
