@@ -24,12 +24,19 @@
 #include <glib-object.h>
 
 typedef enum{
+  AGS_SOUND_ABILITY_PLAYBACK            = 1,
+  AGS_SOUND_ABILITY_NOTATION            = 1 <<  1,
+  AGS_SOUND_ABILITY_SEQUENCER           = 1 <<  2,
+  AGS_SOUND_ABILITY_WAVE                = 1 <<  3,
+  AGS_SOUND_ABILITY_MIDI                = 1 <<  4,
+}AgsSoundAbilityFlags;
+
+typedef enum{
   AGS_SOUND_SCOPE_PLAYBACK,
   AGS_SOUND_SCOPE_NOTATION,
   AGS_SOUND_SCOPE_SEQUENCER,
   AGS_SOUND_SCOPE_WAVE,
-  AGS_SOUND_SCOPE_MIDI_INPUT,
-  AGS_SOUND_SCOPE_MIDI_OUTPUT,
+  AGS_SOUND_SCOPE_MIDI,
   AGS_SOUND_SCOPE_LAST,
 }AgsSoundScope;
 
