@@ -37,18 +37,22 @@ struct _AgsSoundProviderInterface
 {
   GTypeInterface ginterface;
 
-  void (*set_soundcard)(AgsSoundProvider *sound_provider,
-			GList *soundcard);
-  GList* (*get_soundcard)(AgsSoundProvider *sound_provider);
-
   void (*set_default_soundcard_thread)(AgsSoundProvider *sound_provider,
 				       GObject *soundcard_thread);
   GObject* (*get_default_soundcard_thread)(AgsSoundProvider *sound_provider);
   
+  void (*set_soundcard)(AgsSoundProvider *sound_provider,
+			GList *soundcard);
+  GList* (*get_soundcard)(AgsSoundProvider *sound_provider);
+
   void (*set_sequencer)(AgsSoundProvider *sound_provider,
 			GList *sequencer);
   GList* (*get_sequencer)(AgsSoundProvider *sound_provider);
 
+  void (*set_audio)(AgsSoundProvider *sound_provider,
+		    GList *audio);
+  GList* (*get_audio)(AgsSoundProvider *sound_provider);
+  
   void (*set_distributed_manager)(AgsSoundProvider *sound_provider,
 				 GList *distributed_manager);
   GList* (*get_distributed_manager)(AgsSoundProvider *sound_provider);
@@ -56,17 +60,21 @@ struct _AgsSoundProviderInterface
 
 GType ags_sound_provider_get_type();
 
-void ags_sound_provider_set_soundcard(AgsSoundProvider *sound_provider,
-				      GList *soundcard);
-GList* ags_sound_provider_get_soundcard(AgsSoundProvider *sound_provider);
-
 void ags_sound_provider_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
 						     GObject *soundcard_thread);
 GObject* ags_sound_provider_get_default_soundcard_thread(AgsSoundProvider *sound_provider);
 
+void ags_sound_provider_set_soundcard(AgsSoundProvider *sound_provider,
+				      GList *soundcard);
+GList* ags_sound_provider_get_soundcard(AgsSoundProvider *sound_provider);
+
 void ags_sound_provider_set_sequencer(AgsSoundProvider *sound_provider,
 				      GList *sequencer);
 GList* ags_sound_provider_get_sequencer(AgsSoundProvider *sound_provider);
+
+void ags_sound_provider_set_audio(AgsSoundProvider *sound_provider,
+				  GList *audio);
+GList* ags_sound_provider_get_audio(AgsSoundProvider *sound_provider);
 
 void ags_sound_provider_set_distributed_manager(AgsSoundProvider *sound_provider,
 					       GList *distributed_manager);

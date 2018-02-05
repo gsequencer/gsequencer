@@ -162,7 +162,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_object("soundcard",
+  param_spec = g_param_spec_object("output-soundcard",
 				   i18n_pspec("assigned soundcard"),
 				   i18n_pspec("The soundcard it is assigned with"),
 				   G_TYPE_OBJECT,
@@ -1992,7 +1992,7 @@ ags_audio_signal_new(GObject *soundcard,
   AgsAudioSignal *audio_signal;
 
   audio_signal = (AgsAudioSignal *) g_object_new(AGS_TYPE_AUDIO_SIGNAL,
-						 "soundcard", soundcard,
+						 "output-soundcard", soundcard,
 						 "recycling", recycling,
 						 "recall-id", recall_id,
 						 NULL);
@@ -2024,7 +2024,7 @@ ags_audio_signal_new_with_length(GObject *soundcard,
   AgsAudioSignal *audio_signal, *template;
 
   audio_signal = (AgsAudioSignal *) g_object_new(AGS_TYPE_AUDIO_SIGNAL,
-						 "soundcard", soundcard,
+						 "output-soundcard", soundcard,
 						 "recycling", recycling,
 						 "recall-id", recall_id,
 						 NULL);

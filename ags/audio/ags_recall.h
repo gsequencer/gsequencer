@@ -141,8 +141,8 @@ struct _AgsRecall
 
   gchar *xml_type;
 
-  GObject *soundcard;
-  GObject *container; // see AgsRecallContainer
+  GObject *output_soundcard;
+  GObject *recall_container; // see AgsRecallContainer
 
   GList *dependencies;
 

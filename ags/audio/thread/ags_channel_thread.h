@@ -23,13 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/object/ags_soundcard.h>
-
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
+#include <ags/libags.h>
 
 #define AGS_TYPE_CHANNEL_THREAD                (ags_channel_thread_get_type())
 #define AGS_CHANNEL_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CHANNEL_THREAD, AgsChannelThread))
@@ -66,7 +60,7 @@ struct _AgsChannelThread
 
   volatile guint flags;
 
-  GObject *soundcard;
+  GObject *output_soundcard;
     
   pthread_mutexattr_t wakeup_attr;
   pthread_mutex_t *wakeup_mutex;

@@ -57,7 +57,7 @@ struct _AgsAudioSignal
 
   guint flags;
 
-  GObject *soundcard;
+  GObject *output_soundcard;
 
   GObject *recycling;
   GObject *recall_id; // AGS_TYPE_RECALL_ID to identify the AgsAudioSignal

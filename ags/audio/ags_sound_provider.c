@@ -54,51 +54,6 @@ ags_sound_provider_class_init(AgsSoundProviderInterface *interface)
 }
 
 /**
- * ags_sound_provider_set_soundcard:
- * @sound_provider: the #AgsSoundProvider
- * @soundcard: a #GList-struct containing #AgsSoundcard
- * 
- * Set soundcards.
- *
- * Since: 1.0.0
- */
-void
-ags_sound_provider_set_soundcard(AgsSoundProvider *sound_provider,
-				 GList *soundcard)
-{
-  AgsSoundProviderInterface *sound_provider_interface;
-
-  g_return_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider));
-  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
-  g_return_if_fail(sound_provider_interface->set_soundcard);
-
-  sound_provider_interface->set_soundcard(sound_provider,
-					  soundcard);
-}
-
-/**
- * ags_sound_provider_get_soundcard:
- * @sound_provider: the #AgsSoundProvider
- * 
- * Get soundcards.
- *
- * Returns: a #GList-struct containing #AgsSoundcard
- * 
- * Since: 1.0.0
- */
-GList*
-ags_sound_provider_get_soundcard(AgsSoundProvider *sound_provider)
-{
-  AgsSoundProviderInterface *sound_provider_interface;
-
-  g_return_val_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider), NULL);
-  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
-  g_return_val_if_fail(sound_provider_interface->get_soundcard, NULL);
-
-  return(sound_provider_interface->get_soundcard(sound_provider));
-}
-
-/**
  * ags_sound_provider_set_default_soundcard_thread:
  * @sound_provider: the #AgsSoundProvider
  * @soundcard_thread: the default #AgsThread
@@ -146,6 +101,51 @@ ags_sound_provider_get_default_soundcard_thread(AgsSoundProvider *sound_provider
 }
 
 /**
+ * ags_sound_provider_set_soundcard:
+ * @sound_provider: the #AgsSoundProvider
+ * @soundcard: a #GList-struct containing #AgsSoundcard
+ * 
+ * Set soundcards.
+ *
+ * Since: 1.0.0
+ */
+void
+ags_sound_provider_set_soundcard(AgsSoundProvider *sound_provider,
+				 GList *soundcard)
+{
+  AgsSoundProviderInterface *sound_provider_interface;
+
+  g_return_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider));
+  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
+  g_return_if_fail(sound_provider_interface->set_soundcard);
+
+  sound_provider_interface->set_soundcard(sound_provider,
+					  soundcard);
+}
+
+/**
+ * ags_sound_provider_get_soundcard:
+ * @sound_provider: the #AgsSoundProvider
+ * 
+ * Get soundcards.
+ *
+ * Returns: a #GList-struct containing #AgsSoundcard
+ * 
+ * Since: 1.0.0
+ */
+GList*
+ags_sound_provider_get_soundcard(AgsSoundProvider *sound_provider)
+{
+  AgsSoundProviderInterface *sound_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider), NULL);
+  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
+  g_return_val_if_fail(sound_provider_interface->get_soundcard, NULL);
+
+  return(sound_provider_interface->get_soundcard(sound_provider));
+}
+
+/**
  * ags_sound_provider_set_sequencer:
  * @sound_provider: the #AgsSoundProvider
  * @sequencer: a #GList-struct containing #AgsSequencer
@@ -188,6 +188,51 @@ ags_sound_provider_get_sequencer(AgsSoundProvider *sound_provider)
   g_return_val_if_fail(sound_provider_interface->get_sequencer, NULL);
 
   return(sound_provider_interface->get_sequencer(sound_provider));
+}
+
+/**
+ * ags_sound_provider_set_audio:
+ * @sound_provider: the #AgsSoundProvider
+ * @audio: a #GList-struct containing #AgsAudio
+ * 
+ * Set audio objects.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_sound_provider_set_audio(AgsSoundProvider *sound_provider,
+				 GList *audio)
+{
+  AgsSoundProviderInterface *sound_provider_interface;
+
+  g_return_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider));
+  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
+  g_return_if_fail(sound_provider_interface->set_audio);
+
+  sound_provider_interface->set_audio(sound_provider,
+					  audio);
+}
+
+/**
+ * ags_sound_provider_get_audio:
+ * @sound_provider: the #AgsSoundProvider
+ * 
+ * Get audio objects.
+ *
+ * Returns: a #GList-struct containing #AgsAudio
+ * 
+ * Since: 2.0.0
+ */
+GList*
+ags_sound_provider_get_audio(AgsSoundProvider *sound_provider)
+{
+  AgsSoundProviderInterface *sound_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider), NULL);
+  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
+  g_return_val_if_fail(sound_provider_interface->get_audio, NULL);
+
+  return(sound_provider_interface->get_audio(sound_provider));
 }
 
 /**

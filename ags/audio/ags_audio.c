@@ -2918,7 +2918,7 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
     /* reset */
     if(current_soundcard == old_soundcard){
       g_object_set(G_OBJECT(channel),
-		   "soundcard", soundcard,
+		   "output-soundcard", soundcard,
 		   NULL);
     }
 
@@ -2957,7 +2957,7 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
     /* reset */
     if(current_soundcard == old_soundcard){
       g_object_set(G_OBJECT(channel),
-		   "soundcard", soundcard,
+		   "output-soundcard", soundcard,
 		   NULL);
     }
 
@@ -2975,7 +2975,7 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
   for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
     if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[i] != NULL){
       g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[i],
-		   "soundcard", soundcard,
+		   "output-soundcard", soundcard,
 		   NULL);
     }
   }
@@ -2997,7 +2997,7 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
   while(list != NULL){
     if(AGS_RECALL(list->data)->soundcard == old_soundcard){
       g_object_set(G_OBJECT(list->data),
-		   "soundcard", soundcard,
+		   "output-soundcard", soundcard,
 		   NULL);
     }
     
@@ -3021,7 +3021,7 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
   while(list != NULL){
     if(AGS_RECALL(list->data)->soundcard == old_soundcard){
       g_object_set(G_OBJECT(list->data),
-		   "soundcard", soundcard,
+		   "output-soundcard", soundcard,
 		   NULL);
     }
     
@@ -3556,7 +3556,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       for(i = audio_channels_old; i < audio_channels; i++){
 	channel = (AgsChannel *) g_object_new(type,
 					      "audio", (GObject *) audio,
-					      "soundcard", audio->soundcard,
+					      "output-soundcard", audio->soundcard,
 					      "samplerate", audio->samplerate,
 					      "buffer-size", audio->buffer_size,
 					      NULL);
@@ -4223,7 +4223,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
       for(i = 0; i < audio->audio_channels; i++){
 	channel = (AgsChannel *) g_object_new(channel_type,
 					      "audio", (GObject *) audio,
-					      "soundcard", audio->soundcard,
+					      "output-soundcard", audio->soundcard,
 					      "samplerate", audio->samplerate,
 					      "buffer-size", audio->buffer_size,
 					      NULL);
@@ -7222,7 +7222,7 @@ ags_audio_recursive_reset_stage(AgsAudio *audio,
 
 /**
  * ags_audio_new:
- * @soundcard: an #AgsSoundcard
+ * @soundcard: the #AgsSoundcard to use for output
  *
  * Creates an #AgsAudio, with defaults of @soundcard.
  *
@@ -7236,7 +7236,7 @@ ags_audio_new(GObject *soundcard)
   AgsAudio *audio;
 
   audio = (AgsAudio *) g_object_new(AGS_TYPE_AUDIO,
-				    "soundcard", soundcard,
+				    "output-soundcard", soundcard,
 				    NULL);
 
   return(audio);

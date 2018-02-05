@@ -59,7 +59,7 @@ struct _AgsRecycling
   gboolean parent_locked;
   
   GObject *channel;
-  GObject *soundcard;
+  GObject *output_soundcard;
 
   AgsRecycling *parent;
 

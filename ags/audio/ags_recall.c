@@ -247,7 +247,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_object("soundcard",
+  param_spec = g_param_spec_object("output-soundcard",
 				   i18n_pspec("soundcard of recall"),
 				   i18n_pspec("The soundcard which this recall is packed into"),
 				   G_TYPE_OBJECT,
@@ -870,7 +870,7 @@ ags_recall_set_property(GObject *gobject,
 
       while(current != NULL){
 	g_object_set(G_OBJECT(current->data),
-		     "soundcard", soundcard,
+		     "output-soundcard", soundcard,
 		     NULL);
 
 	current = current->next;
@@ -2246,7 +2246,7 @@ ags_recall_real_duplicate(AgsRecall *recall,
 
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
-				 "soundcard", recall->soundcard,
+				 "output-soundcard", recall->soundcard,
 				 "recall-id", recall_id,
 				 "recall-container", recall->container,
 				 NULL);
@@ -2543,7 +2543,7 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
     pthread_mutex_unlock(parent->children_mutex);
 
     g_object_set(G_OBJECT(child),
-		 "soundcard", parent->soundcard,
+		 "output-soundcard", parent->soundcard,
 		 "recall_id", parent->recall_id,
 		 NULL);
     g_signal_connect(G_OBJECT(child), "done",

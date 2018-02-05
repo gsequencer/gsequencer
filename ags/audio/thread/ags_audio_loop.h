@@ -23,13 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/object/ags_soundcard.h>
-
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif
+#include <ags/libags.h>
 
 #include <math.h>
 
@@ -102,7 +96,7 @@ struct _AgsAudioLoop
   volatile guint time_spent;
   
   GObject *application_context;
-  GObject *soundcard;
+  GObject *default_output_soundcard;
   
   GObject *async_queue;
     

@@ -233,7 +233,7 @@ ags_channel_class_init(AgsChannelClass *channel)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_object("soundcard",
+  param_spec = g_param_spec_object("output-soundcard",
 				   i18n_pspec("assigned soundcard"),
 				   i18n_pspec("The soundcard it is assigned with"),
 				   G_TYPE_OBJECT,
@@ -2305,19 +2305,19 @@ ags_channel_set_soundcard(AgsChannel *channel, GObject *soundcard)
   /* playback */
   if(AGS_PLAYBACK(channel->playback)->channel_thread[0] != NULL){
     g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[0],
-		 "soundcard", soundcard,
+		 "output-soundcard", soundcard,
 		 NULL);
   }
     
   if(AGS_PLAYBACK(channel->playback)->channel_thread[1] != NULL){
     g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[1],
-		 "soundcard", soundcard,
+		 "output-soundcard", soundcard,
 		 NULL);
   }
   
   if(AGS_PLAYBACK(channel->playback)->channel_thread[2] != NULL){
     g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[2],
-		 "soundcard", soundcard,
+		 "output-soundcard", soundcard,
 		 NULL);
   }
   
@@ -2326,7 +2326,7 @@ ags_channel_set_soundcard(AgsChannel *channel, GObject *soundcard)
 
   while(list != NULL){
     g_object_set(G_OBJECT(list->data),
-		 "soundcard", soundcard,
+		 "output-soundcard", soundcard,
 		 NULL);
 
     list = list->next;
@@ -2336,7 +2336,7 @@ ags_channel_set_soundcard(AgsChannel *channel, GObject *soundcard)
 
   while(list != NULL){
     g_object_set(G_OBJECT(list->data),
-		 "soundcard", soundcard,
+		 "output-soundcard", soundcard,
 		 NULL);
 
     list = list->next;
@@ -2354,7 +2354,7 @@ ags_channel_set_soundcard(AgsChannel *channel, GObject *soundcard)
     if(recycling != NULL){
       while(recycling != channel->last_recycling->next){
 	g_object_set(G_OBJECT(recycling),
-		     "soundcard", soundcard,
+		     "output-soundcard", soundcard,
 		     NULL); 
 
 	recycling = recycling->next;
@@ -3163,7 +3163,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 					effect,
 					effect_index);
   g_object_set(G_OBJECT(recall_ladspa),
-	       "soundcard", soundcard,
+	       "output-soundcard", soundcard,
 	       "recall-container", recall_container,
 	       NULL);
   AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
@@ -3181,7 +3181,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 							      AGS_TYPE_RECALL_LADSPA_RUN);
   AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_channel_run_dummy),
-	       "soundcard", soundcard,
+	       "output-soundcard", soundcard,
 	       "recall-container", recall_container,
 	       "recall-channel", recall_ladspa,
 	       NULL);
@@ -3258,7 +3258,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 					effect,
 					effect_index);
   g_object_set(G_OBJECT(recall_ladspa),
-	       "soundcard", soundcard,
+	       "output-soundcard", soundcard,
 	       "recall-container", recall_container,
 	       NULL);
   ags_channel_add_recall(channel,
@@ -3279,7 +3279,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 							      AGS_TYPE_RECALL_LADSPA_RUN);
   AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_channel_run_dummy),
-	       "soundcard", soundcard,
+	       "output-soundcard", soundcard,
 	       "recall-container", recall_container,
 	       "recall-channel", recall_ladspa,
 	       NULL);
@@ -3408,7 +3408,7 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
 				    effect,
 				    effect_index);
   g_object_set(G_OBJECT(recall_dssi),
-	       "soundcard", soundcard,
+	       "output-soundcard", soundcard,
 	       "recall-container", recall_container,
 	       NULL);
   AGS_RECALL(recall_dssi)->flags |= AGS_RECALL_TEMPLATE;
@@ -3427,7 +3427,7 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
 							      AGS_TYPE_RECALL_DSSI_RUN);
   AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_channel_run_dummy),
-	       "soundcard", soundcard,
+	       "output-soundcard", soundcard,
 	       "recall-container", recall_container,
 	       "recall-channel", recall_dssi,
 	       NULL);
@@ -3504,7 +3504,7 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
 				    effect,
 				    effect_index);
   g_object_set(G_OBJECT(recall_dssi),
-	       "soundcard", soundcard,
+	       "output-soundcard", soundcard,
 	       "recall-container", recall_container,
 	       NULL);
   ags_channel_add_recall(channel,
@@ -3525,7 +3525,7 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
 							      AGS_TYPE_RECALL_DSSI_RUN);
   AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_channel_run_dummy),
-	       "soundcard", soundcard,
+	       "output-soundcard", soundcard,
 	       "recall-container", recall_container,
 	       "recall-channel", recall_dssi,
 	       NULL);
@@ -3661,7 +3661,7 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
 				  uri,
 				  effect_index);
   g_object_set(G_OBJECT(recall_lv2),
-	       "soundcard", AGS_AUDIO(channel->audio)->soundcard,
+	       "output-soundcard", AGS_AUDIO(channel->audio)->soundcard,
 	       "recall-container", recall_container,
 	       NULL);
   AGS_RECALL(recall_lv2)->flags |= AGS_RECALL_TEMPLATE;
@@ -3679,7 +3679,7 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
 							      AGS_TYPE_RECALL_LV2_RUN);
   AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_channel_run_dummy),
-	       "soundcard", soundcard,
+	       "output-soundcard", soundcard,
 	       "recall-container", recall_container,
 	       "recall-channel", recall_lv2,
 	       NULL);
@@ -3758,7 +3758,7 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
 				  uri,
 				  effect_index);
   g_object_set(G_OBJECT(recall_lv2),
-	       "soundcard", soundcard,
+	       "output-soundcard", soundcard,
 	       "recall-container", recall_container,
 	       NULL);
   AGS_RECALL(recall_lv2)->flags |= AGS_RECALL_TEMPLATE;
@@ -3781,7 +3781,7 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
 							      AGS_TYPE_RECALL_LV2_RUN);
   AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_channel_run_dummy),
-	       "soundcard", soundcard,
+	       "output-soundcard", soundcard,
 	       "recall-container", recall_container,
 	       "recall-channel", recall_lv2,
 	       NULL);
@@ -6108,7 +6108,7 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 	  
       	  first_recycling = g_object_new(AGS_TYPE_RECYCLING,
 					 "channel", old_channel_link,
-					 "soundcard", old_soundcard,
+					 "output-soundcard", old_soundcard,
 					 NULL);
 	  g_object_ref(first_recycling);
 	  last_recycling = first_recycling;
@@ -6150,7 +6150,7 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 	if((AGS_AUDIO_INPUT_HAS_RECYCLING & (AGS_AUDIO(channel->audio)->flags)) != 0){
 	  first_recycling = g_object_new(AGS_TYPE_RECYCLING,
 					 "channel", channel,
-					 "soundcard", channel->soundcard,
+					 "output-soundcard", channel->soundcard,
 					 NULL);
 	  g_object_ref(first_recycling);
 	  last_recycling = first_recycling;
@@ -6219,7 +6219,7 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
       if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio_flags)) != 0){
 	first_recycling = g_object_new(AGS_TYPE_RECYCLING,
 				       "channel", link,
-				       "soundcard", soundcard,
+				       "output-soundcard", soundcard,
 				       NULL);
 	g_object_ref(first_recycling);
 	last_recycling = first_recycling;
@@ -6252,7 +6252,7 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
     parameter = g_new0(GParameter,
 		       1);
     
-    parameter[0].name = "soundcard";
+    parameter[0].name = "output-soundcard";
 
     g_value_init(&(parameter[0].value),
 		 G_TYPE_OBJECT);

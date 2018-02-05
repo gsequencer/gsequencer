@@ -79,7 +79,7 @@ struct _AgsChannel
   pthread_mutexattr_t *obj_mutexattr;
 
   GObject *audio;
-  GObject *soundcard;
+  GObject *output_soundcard;
 
   guint samplerate;
   guint buffer_size;

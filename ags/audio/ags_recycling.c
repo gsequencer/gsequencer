@@ -170,7 +170,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_object("soundcard",
+  param_spec = g_param_spec_object("output-soundcard",
 				   "assigned soundcard",
 				   "The soundcard it is assigned with",
 				   G_TYPE_OBJECT,
@@ -1479,7 +1479,7 @@ ags_recycling_is_active(AgsRecycling *start_region, AgsRecycling *end_region,
 
 /**
  * ags_recycling_new:
- * @soundcard: the #GObject
+ * @soundcard: the #AgsSoundcard to use for output
  *
  * Creates a #AgsRecycling, with defaults of @soundcard.
  *
@@ -1494,7 +1494,7 @@ ags_recycling_new(GObject *soundcard)
   AgsAudioSignal *audio_signal;
 
   recycling = (AgsRecycling *) g_object_new(AGS_TYPE_RECYCLING,
-					    "soundcard", soundcard,
+					    "output-soundcard", soundcard,
 					    NULL);
 
   audio_signal = ags_audio_signal_new(soundcard,
