@@ -149,6 +149,9 @@ struct _AgsAudio
   GObject *output_audio_file;
   GObject *input_audio_file;  
 
+  gchar *instrument_name;
+  gchar *track_name;
+  
   GList *midi;
   GObject *output_midi_file;
   GObject *input_midi_file;
@@ -194,6 +197,8 @@ struct _AgsAudioClass
 };
 
 GType ags_audio_get_type();
+
+pthread_mutex_t* ags_audio_get_class_mutex();
 
 void ags_audio_set_flags(AgsAudio *audio, guint flags);
 void ags_audio_unset_flags(AgsAudio *audio, guint flags);

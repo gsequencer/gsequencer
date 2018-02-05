@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_sound_enums.h>
+
 #define AGS_TYPE_PLAYBACK_DOMAIN                (ags_playback_domain_get_type())
 #define AGS_PLAYBACK_DOMAIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAYBACK_DOMAIN, AgsPlaybackDomain))
 #define AGS_PLAYBACK_DOMAIN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_PLAYBACK_DOMAIN, AgsPlaybackDomain))
@@ -38,9 +40,6 @@ typedef struct _AgsPlaybackDomainClass AgsPlaybackDomainClass;
 /**
  * AgsPlaybackDomainFlags:
  * @AGS_PLAYBACK_DOMAIN_CONNECTED: indicates the playback domain was connected by calling #AgsConnectable::connect()
- * @AGS_PLAYBACK_DOMAIN_PLAYBACK: do playback
- * @AGS_PLAYBACK_DOMAIN_SEQUENCER: do sequencer
- * @AGS_PLAYBACK_DOMAIN_NOTATION: do notation
  * @AGS_PLAYBACK_DOMAIN_SINGLE_THREADED: single threaded
  * @AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO: super threaded audio
  * 
@@ -49,28 +48,9 @@ typedef struct _AgsPlaybackDomainClass AgsPlaybackDomainClass;
  */
 typedef enum{
   AGS_PLAYBACK_DOMAIN_CONNECTED                  = 1,
-  AGS_PLAYBACK_DOMAIN_PLAYBACK                   = 1 <<  1,
-  AGS_PLAYBACK_DOMAIN_SEQUENCER                  = 1 <<  2,
-  AGS_PLAYBACK_DOMAIN_NOTATION                   = 1 <<  3,
-  AGS_PLAYBACK_DOMAIN_SINGLE_THREADED            = 1 <<  4,
-  AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO       = 1 <<  5,
+  AGS_PLAYBACK_DOMAIN_SINGLE_THREADED            = 1 <<  1,
+  AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO       = 1 <<  2,
 }AgsPlaybackDomainFlags;
-
-/**
- * AgsPlaybackDomainScope:
- * @AGS_PLAYBACK_DOMAIN_SCOPE_PLAYBACK: scope playback
- * @AGS_PLAYBACK_DOMAIN_SCOPE_SEQUENCER: scope sequencer
- * @AGS_PLAYBACK_DOMAIN_SCOPE_NOTATION: scope notation
- * @AGS_PLAYBACK_DOMAIN_SCOPE_NOTATION: scope wave
- * 
- * Enum values to specify playback domain scope.
- */
-typedef enum{
-  AGS_PLAYBACK_DOMAIN_SCOPE_PLAYBACK,
-  AGS_PLAYBACK_DOMAIN_SCOPE_SEQUENCER,
-  AGS_PLAYBACK_DOMAIN_SCOPE_NOTATION,
-  AGS_PLAYBACK_DOMAIN_SCOPE_WAVE,
-}AgsPlaybackDomainScope;
 
 struct _AgsPlaybackDomain
 {
@@ -80,7 +60,7 @@ struct _AgsPlaybackDomain
   
   GObject *domain;
 
-  AgsThread **audio_thread;
+  AgsThread *audio_thread[AGS_SOUND_SCOPE_LAST];
 
   GList *playback;
 };

@@ -40,51 +40,17 @@ typedef struct _AgsPlaybackClass AgsPlaybackClass;
 /**
  * AgsPlaybackFlags:
  * @AGS_PLAYBACK_CONNECTED: indicates the playback was connected by calling #AgsConnectable::connect()
- * @AGS_PLAYBACK_DONE: done doing playback
- * @AGS_PLAYBACK_REMOVE: does remove playback
- * @AGS_PLAYBACK_CHANNEL: play channel
- * @AGS_PLAYBACK_PAD: play pad
- * @AGS_PLAYBACK_AUDIO: play audio
- * @AGS_PLAYBACK_PLAYBACK: do playback
- * @AGS_PLAYBACK_SEQUENCER: do sequencer
- * @AGS_PLAYBACK_NOTATION: do notation
  * @AGS_PLAYBACK_SINGLE_THREADED: single threaded
  * @AGS_PLAYBACK_SUPER_THREADED_CHANNEL: super threaded channel
- * @AGS_PLAYBACK_SUPER_THREADED_RECYCLING: super threaded recycling
  *
  * Enum values to control the behavior or indicate internal state of #AgsPlayback by
  * enable/disable as flags.
  */
 typedef enum{
   AGS_PLAYBACK_CONNECTED                    = 1,
-  AGS_PLAYBACK_DONE                         = 1 <<  1,
-  AGS_PLAYBACK_REMOVE                       = 1 <<  2,
-  AGS_PLAYBACK_CHANNEL                      = 1 <<  3,
-  AGS_PLAYBACK_PAD                          = 1 <<  4,
-  AGS_PLAYBACK_AUDIO                        = 1 <<  5,
-  AGS_PLAYBACK_PLAYBACK                     = 1 <<  6,
-  AGS_PLAYBACK_SEQUENCER                    = 1 <<  7,
-  AGS_PLAYBACK_NOTATION                     = 1 <<  8,
-  AGS_PLAYBACK_SINGLE_THREADED              = 1 <<  9,
-  AGS_PLAYBACK_SUPER_THREADED_CHANNEL       = 1 << 10,
-  AGS_PLAYBACK_SUPER_THREADED_RECYCLING     = 1 << 11,
+  AGS_PLAYBACK_SINGLE_THREADED              = 1 <<  1,
+  AGS_PLAYBACK_SUPER_THREADED_CHANNEL       = 1 <<  2,
 }AgsPlaybackFlags;
-
-/**
- * AgsPlaybackScope:
- * @AGS_PLAYBACK_SCOPE_PLAYBACK: scope playback
- * @AGS_PLAYBACK_SCOPE_SEQUENCER: scope sequencer
- * @AGS_PLAYBACK_SCOPE_NOTATION: scope notation
- * @AGS_PLAYBACK_SCOPE_NOTATION: scope wave
- * 
- * Enum values to specify playback scope.
- */
-typedef enum{
-  AGS_PLAYBACK_SCOPE_PLAYBACK,
-  AGS_PLAYBACK_SCOPE_SEQUENCER,
-  AGS_PLAYBACK_SCOPE_NOTATION,
-  AGS_PLAYBACK_SCOPE_WAVE,
-}AgsPlaybackScope;
 
 struct _AgsPlayback
 {
@@ -99,12 +65,9 @@ struct _AgsPlayback
 
   GObject *play_note;
   
-  AgsThread **channel_thread;
-  AgsThread **iterator_thread;
-
-  AgsThread **recycling_thread;
+  AgsThread *channel_thread[AGS_SOUND_SCOPE_LAST];
   
-  AgsRecallID **recall_id;
+  AgsRecallID *recall_id[AGS_SOUND_SCOPE_LAST];
 };
 
 struct _AgsPlaybackClass
@@ -120,18 +83,6 @@ void ags_playback_set_channel_thread(AgsPlayback *playback,
 				     guint scope);
 AgsThread* ags_playback_get_channel_thread(AgsPlayback *playback,
 					   guint scope);
-
-void ags_playback_set_iterator_thread(AgsPlayback *playback,
-				      AgsThread *thread,
-				      guint scope);
-AgsThread* ags_playback_get_iterator_thread(AgsPlayback *playback,
-					    guint scope);
-
-void ags_playback_set_recycling_thread(AgsPlayback *playback,
-				       AgsThread *thread,
-				       guint scope);
-AgsThread* ags_playback_get_recycling_thread(AgsPlayback *playback,
-					     guint scope);
 
 void ags_playback_set_recall_id(AgsPlayback *playback,
 				AgsRecallID *recall_id,

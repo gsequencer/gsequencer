@@ -154,6 +154,8 @@ enum{
 static gpointer ags_channel_parent_class = NULL;
 static guint channel_signals[LAST_SIGNAL];
 
+static pthread_mutex_t ags_channel_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_channel_get_type (void)
 {
@@ -1660,6 +1662,12 @@ ags_channel_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_channel_parent_class)->finalize(gobject);
 }
 
+pthread_mutex_t*
+ags_channel_get_class_mutex()
+{
+  return(&ags_channel_class_mutex);
+}
+
 AgsRecall*
 ags_channel_find_recall(AgsChannel *channel, char *effect, char *name)
 {
@@ -1840,7 +1848,7 @@ ags_channel_nth(AgsChannel *channel, guint nth)
  *
  * Iterates until the first pad has been reached.
  *
- * Returns: the first #AgsChannel with the same audio_channel as @channel
+ * Returns: the first #AgsChannel with the same audio channel as @channel
  *
  * Since: 1.0.0
  */
@@ -1898,7 +1906,7 @@ ags_channel_pad_first(AgsChannel *channel)
  *
  * Iterates until the last pad has been reached.
  *
- * Returns: the last #AgsChannel with the same audio_channel as @channel
+ * Returns: the last #AgsChannel with the same audio channel as @channel
  *
  * Since: 1.0.0
  */

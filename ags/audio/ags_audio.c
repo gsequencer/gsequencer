@@ -162,6 +162,8 @@ enum{
 static gpointer ags_audio_parent_class = NULL;
 static guint audio_signals[LAST_SIGNAL];
 
+static pthread_mutex_t ags_audio_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_audio_get_type (void)
 {
@@ -1306,8 +1308,8 @@ ags_audio_set_property(GObject *gobject,
 
       max_audio_channels = g_value_get_uint(value);
 
-      ags_audio_set_audio_channels(audio,
-				   max_audio_channels, 0);
+      ags_audio_set_max_audio_channels(audio,
+				       max_audio_channels);
     }
     break;
   case PROP_MAX_OUTPUT_PADS:
@@ -1316,8 +1318,9 @@ ags_audio_set_property(GObject *gobject,
 
       max_output_pads = g_value_get_uint(value);
 
-      ags_audio_set_pads(audio, AGS_TYPE_OUTPUT,
-			 max_output_pads, 0);
+      ags_audio_set_max_pads(audio,
+			     AGS_TYPE_OUTPUT,
+			     max_output_pads);
     }
     break;
   case PROP_MAX_INPUT_PADS:
@@ -1326,8 +1329,9 @@ ags_audio_set_property(GObject *gobject,
 
       max_input_pads = g_value_get_uint(value);
 
-      ags_audio_set_pads(audio, AGS_TYPE_INPUT,
-			 max_input_pads, 0);
+      ags_audio_set_max_pads(audio,
+			     AGS_TYPE_INPUT,
+			     max_input_pads);
     }
     break;
   case PROP_AUDIO_CHANNELS:
@@ -1346,7 +1350,8 @@ ags_audio_set_property(GObject *gobject,
 
       output_pads = g_value_get_uint(value);
 
-      ags_audio_set_pads(audio, AGS_TYPE_OUTPUT,
+      ags_audio_set_pads(audio,
+			 AGS_TYPE_OUTPUT,
 			 output_pads, 0);
     }
     break;
@@ -1356,7 +1361,8 @@ ags_audio_set_property(GObject *gobject,
 
       input_pads = g_value_get_uint(value);
 
-      ags_audio_set_pads(audio, AGS_TYPE_INPUT,
+      ags_audio_set_pads(audio,
+			 AGS_TYPE_INPUT,
 			 input_pads, 0);
     }
     break;
@@ -1932,17 +1938,11 @@ ags_audio_dispose(GObject *gobject)
 {
   AgsAudio *audio;
 
-  AgsMutexManager *mutex_manager;
-
   GList *list, *list_next;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *play_mutex, *recall_mutex;
 
   audio = AGS_AUDIO(gobject);
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   /* soundcard */
   if(audio->output_soundcard != NULL){    
@@ -2200,11 +2200,11 @@ ags_audio_dispose(GObject *gobject)
 
   /* play */
   if(audio->play != NULL){
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(&ags_audio_class_mutex);
 
     play_mutex = audio->play_mutex;
 
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(&ags_audio_class_mutex);
 
     /* run dispose and unref */
     pthread_mutex_lock(play_mutex);
@@ -2229,11 +2229,11 @@ ags_audio_dispose(GObject *gobject)
 
   /* recall */
   if(audio->recall != NULL){
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(&ags_audio_class_mutex);
 
     recall_mutex = audio->recall_mutex;
 
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(&ags_audio_class_mutex);
 
     /* run dispose and unref */
     pthread_mutex_lock(recall_mutex);
@@ -2777,16 +2777,32 @@ ags_audio_disconnect(AgsConnectable *connectable)
 }
 
 /**
- * ags_audio_set_soundcard:
+ * ags_audio_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_audio_get_class_mutex()
+{
+  return(&ags_audio_class_mutex);
+}
+
+/**
+ * ags_audio_set_output_soundcard:
  * @audio: the #AgsAudio
  * @soundcard: an #AgsSoundcard
  *
- * Sets a soundcard object on audio.
+ * Sets the output soundcard object on audio.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
-ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
+ags_audio_set_output_soundcard(AgsAudio *audio,
+			       GObject *soundcard)
 {
   AgsChannel *channel;
 
@@ -2799,68 +2815,183 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
   guint samplerate;
   guint buffer_size;
   guint format;
+  guint i;
   
   pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  pthread_mutex_t *soundcard_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *play_mutex, *recall_mutex;
 
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
   
-  pthread_mutex_lock(application_mutex);
+  /* get audio mutex */  
+  pthread_mutex_lock(&ags_audio_class_mutex);
 
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
+  audio_mutex = audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(&ags_audio_class_mutex);
+  
+  /* old soundcard */
+  pthread_mutex_lock(audio_mutex);
 
-  pthread_mutex_lock(mutex);
-  
-  /* audio */
   old_soundcard = audio->soundcard;
+
+  pthread_mutex_unlock(audio_mutex);
   
   if(old_soundcard == soundcard){
-    pthread_mutex_unlock(mutex);
     return;
   }
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* ref and set new soundcard */
   if(soundcard != NULL){
     g_object_ref(soundcard);
   }
   
+  pthread_mutex_lock(audio_mutex);
+  
   audio->soundcard = (GObject *) soundcard;
 
+  pthread_mutex_unlock(audio_mutex);
+
   if(soundcard != NULL){
+    /* lookup soundcard mutex */
+    pthread_mutex_lock(application_mutex);
+    
+    soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       soundcard);
+
+    pthread_mutex_unlock(application_mutex);
+
+    /* get presets */
+    pthread_mutex_lock(soundcard_mutex);
+    
     ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			      NULL,
 			      &samplerate,
 			      &buffer_size,
 			      &format);
+
+    pthread_mutex_unlock(soundcard_mutex);
+
+    /* apply presets */
+    pthread_mutex_lock(audio_mutex);
+
     g_object_set(audio,
 		 "samplerate", samplerate,
 		 "buffer-size", buffer_size,
 		 "format", format,
 		 NULL);
+
+    pthread_mutex_unlock(audio_mutex);
+  }
+
+  /* output */
+  pthread_mutex_lock(audio_mutex);
+  
+  channel = audio->output;
+
+  pthread_mutex_unlock(audio_mutex);
+
+  while(channel != NULL){
+    GObject *current_soundcard;
+
+    /* get channel mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+    channel_mutex = channel->obj_mutex;
+
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
+  
+    /* get some fields */
+    pthread_mutex_lock(channel_mutex);
+    
+    current_soundcard = channel->output_soundcard;
+
+    pthread_mutex_unlock(channel_mutex);
+
+    /* reset */
+    if(current_soundcard == old_soundcard){
+      g_object_set(G_OBJECT(channel),
+		   "soundcard", soundcard,
+		   NULL);
+    }
+
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+
+    channel = channel->next;
+
+    pthread_mutex_unlock(channel_mutex);
   }
   
-  /* playback domain */
-  if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1] != NULL){
-    if(AGS_AUDIO_THREAD(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1])->soundcard == old_soundcard){
-      g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1],
+  /* input */
+  pthread_mutex_lock(audio_mutex);
+  
+  channel = audio->input;
+
+  pthread_mutex_unlock(audio_mutex);
+
+  while(channel != NULL){
+    GObject *current_soundcard;
+
+    /* get channel mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+    channel_mutex = channel->obj_mutex;
+
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
+  
+    /* get some fields */
+    pthread_mutex_lock(channel_mutex);
+    
+    current_soundcard = channel->soundcard;
+
+    pthread_mutex_unlock(channel_mutex);
+
+    /* reset */
+    if(current_soundcard == old_soundcard){
+      g_object_set(G_OBJECT(channel),
+		   "soundcard", soundcard,
+		   NULL);
+    }
+
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+
+    channel = channel->next;
+
+    pthread_mutex_unlock(channel_mutex);
+  }
+  
+  /* playback domain - audio thread */
+  pthread_mutex_lock(audio_mutex);
+  
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[i] != NULL){
+      g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[i],
 		   "soundcard", soundcard,
 		   NULL);
     }
   }
 
-  if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2] != NULL){
-    if(AGS_AUDIO_THREAD(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2])->soundcard == old_soundcard){
-      g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2],
-		   "soundcard", soundcard,
-		   NULL);
-    }
-  }
+  pthread_mutex_unlock(audio_mutex);
   
-  /* recall */
+  /* get play mutex */  
+  pthread_mutex_lock(&ags_audio_class_mutex);
+
+  play_mutex = audio->play_mutex;
+  
+  pthread_mutex_unlock(&ags_audio_class_mutex);
+
+  /* play contex */
+  pthread_mutex_lock(play_mutex);
+  
   list = audio->play;
   
   while(list != NULL){
@@ -2873,6 +3004,18 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
     list = list->next;
   }
   
+  pthread_mutex_unlock(play_mutex);
+
+  /* get recall mutex */  
+  pthread_mutex_lock(&ags_audio_class_mutex);
+
+  recall_mutex = audio->recall_mutex;
+  
+  pthread_mutex_unlock(&ags_audio_class_mutex);
+
+  /* recall contex */
+  pthread_mutex_lock(recall_mutex);
+
   list = audio->recall;
   
   while(list != NULL){
@@ -2883,39 +3026,70 @@ ags_audio_set_soundcard(AgsAudio *audio, GObject *soundcard)
     }
     
     list = list->next;
-  }
-  
-  /* input */
-  channel = audio->input;
+  } 
 
-  while(channel != NULL){
-    if(channel->soundcard == old_soundcard){
-      g_object_set(G_OBJECT(channel),
-		   "soundcard", soundcard,
-		   NULL);
-    }
-    
-    channel = channel->next;
-  }
+  pthread_mutex_unlock(recall_mutex);
 
-  /* output */
-  channel = audio->output;
-
-  while(channel != NULL){
-    if(channel->soundcard == old_soundcard){
-      g_object_set(G_OBJECT(channel),
-		   "soundcard", soundcard,
-		   NULL);
-    }
-    
-    channel = channel->next;
-  }
-
+  /* unref old soundcard */
   if(old_soundcard != NULL){
     g_object_unref(old_soundcard);
   }
-    
-  pthread_mutex_unlock(mutex);
+}
+
+/**
+ * ags_audio_set_input_soundcard:
+ * @audio: the #AgsAudio
+ * @soundcard: an #AgsSoundcard
+ *
+ * Sets the input soundcard object on audio.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_audio_set_input_soundcard(AgsAudio *audio,
+			      GObject *soundcard)
+{
+  GObject *old_soundcard;
+
+  pthread_mutex_t *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */  
+  pthread_mutex_lock(&ags_audio_class_mutex);
+
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(&ags_audio_class_mutex);
+  
+  /* old soundcard */
+  pthread_mutex_lock(audio_mutex);
+
+  old_soundcard = audio->soundcard;
+
+  pthread_mutex_unlock(audio_mutex);
+  
+  if(old_soundcard == soundcard){
+    return;
+  }
+
+  /* ref and set new soundcard */
+  if(soundcard != NULL){
+    g_object_ref(soundcard);
+  }
+  
+  pthread_mutex_lock(audio_mutex);
+  
+  audio->soundcard = (GObject *) soundcard;
+
+  pthread_mutex_unlock(audio_mutex);  
+
+  /* unref old soundcard */
+  if(old_soundcard != NULL){
+    g_object_unref(old_soundcard);
+  }
 }
 
 /**
@@ -3914,7 +4088,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
  *
  * Resize audio channels AgsInput will be allocated first.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_audio_set_audio_channels(AgsAudio *audio,
@@ -4078,14 +4252,15 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	if(j * audio->audio_channels + i != 0){
 	  /* set prev */
 	  channel->prev = ags_channel_nth(start, j * audio->audio_channels + i - 1);
-	  
+
+	  /* get prev mutex */
 	  pthread_mutex_lock(application_mutex);
 	  
-	  prev_mutex = ags_mutex_manager_lookup(mutex_manager,
-						(GObject *) channel->prev);
+	  prev_mutex = channel->prev->obj_mutex;
 	  
 	  pthread_mutex_unlock(application_mutex);
-	  
+
+	  /* set prev->next */
 	  pthread_mutex_lock(prev_mutex);
 	  
 	  channel->prev->next = channel;
@@ -4099,13 +4274,14 @@ ags_audio_real_set_pads(AgsAudio *audio,
 								  i),
 						  j - 1);
 
+	  /* get prev pad mutex */
 	  pthread_mutex_lock(application_mutex);
 	  
-	  prev_pad_mutex = ags_mutex_manager_lookup(mutex_manager,
-						    (GObject *) channel->prev_pad);
+	  prev_pad_mutex = channel->prev_pad->obj_mutex;
 	  
 	  pthread_mutex_unlock(application_mutex);
 
+	  /* set prev_pad->next_pad */
 	  pthread_mutex_lock(prev_pad_mutex);
 	  
 	  channel->prev_pad->next_pad = channel;
@@ -4667,7 +4843,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
  *
  * Sets pad count for the apropriate @channel_type
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_audio_set_pads(AgsAudio *audio,
@@ -4679,27 +4855,25 @@ ags_audio_set_pads(AgsAudio *audio,
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  pthread_mutex_lock(mutex);
-
   if(!AGS_IS_AUDIO(audio)){
-    pthread_mutex_unlock(mutex);
     return;
   }
 
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* get audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(application_mutex);
+  
+  /* emit */
+  pthread_mutex_lock(mutex);
+
   pads_old = ((g_type_is_a(channel_type, AGS_TYPE_OUTPUT)) ? audio->output_pads: audio->input_pads);
 
-  /* emit */
   g_object_ref((GObject *) audio);
   g_signal_emit(G_OBJECT(audio),
 		audio_signals[SET_PADS], 0,

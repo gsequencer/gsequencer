@@ -148,6 +148,8 @@ GType ags_channel_get_type();
 
 GQuark ags_channel_error_quark();
 
+pthread_mutex_t* ags_channel_get_class_mutex();
+
 AgsRecall* ags_channel_find_recall(AgsChannel *channel, char *effect, char *name);
 
 AgsChannel* ags_channel_first(AgsChannel *channel);
