@@ -339,6 +339,8 @@ void ags_thread_add_start_queue(AgsThread *thread,
 void ags_thread_add_start_queue_all(AgsThread *thread,
 				    GList *child);
 
+gboolean ags_thread_is_running(AgsThread *thread);
+
 void ags_thread_start(AgsThread *thread);
 void ags_thread_run(AgsThread *thread);
 void ags_thread_suspend(AgsThread *thread);

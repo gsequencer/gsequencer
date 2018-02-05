@@ -27,6 +27,7 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recycling.h>
@@ -74,6 +75,8 @@ struct _AgsChannel
   GObject object;
 
   guint flags;
+  guint ability_flags;
+  guint staging_flags[AGS_SOUND_SCOPE_LAST];
 
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;

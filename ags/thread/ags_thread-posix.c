@@ -2939,6 +2939,24 @@ ags_thread_add_start_queue_all(AgsThread *thread,
 }
 
 /**
+ * ags_thread_is_running:
+ * @thread: the #AgsThread instance
+ *
+ * Query running flag.
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_thread_is_running(AgsThread *thread)
+{
+  if(!AGS_IS_THREAD(thread)){
+    return(FALSE);
+  }
+  
+  return(((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) ? TRUE: FALSE));
+}
+
+/**
  * ags_thread_start:
  * @thread: the #AgsThread instance
  *

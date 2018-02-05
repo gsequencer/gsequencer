@@ -60,7 +60,7 @@ struct _AgsPlaybackDomain
   
   GObject *domain;
 
-  AgsThread *audio_thread[AGS_SOUND_SCOPE_LAST];
+  AgsThread **audio_thread;
 
   GList *playback;
 };

@@ -77,18 +77,10 @@ typedef enum{
   AGS_AUDIO_INPUT_HAS_RECYCLING         = 1 <<  6,
   AGS_AUDIO_INPUT_HAS_FILE              = 1 <<  7,
   AGS_AUDIO_INPUT_HAS_SYNTH             = 1 <<  8,
-  AGS_AUDIO_HAS_NOTATION                = 1 <<  9,
-  AGS_AUDIO_PATTERN_MODE                = 1 << 10,
-  AGS_AUDIO_NOTATION_DEFAULT            = 1 << 11,
-  AGS_AUDIO_REVERSE_MAPPING             = 1 << 12,
-  AGS_AUDIO_HAS_PATTERN                 = 1 << 13,
-  AGS_AUDIO_HAS_WAVE                    = 1 << 14,
-  AGS_AUDIO_WAVE_DEFAULT                = 1 << 15,
-  AGS_AUDIO_RUNNING                     = 1 << 16,
-  AGS_AUDIO_PLAYING                     = 1 << 17,
-  AGS_AUDIO_CAN_NEXT_ACTIVE             = 1 << 18,
-  AGS_AUDIO_SKIP_OUTPUT                 = 1 << 19,
-  AGS_AUDIO_SKIP_INPUT                  = 1 << 20,
+  AGS_AUDIO_CAN_NEXT_ACTIVE             = 1 <<  9,
+  AGS_AUDIO_SKIP_OUTPUT                 = 1 << 10,
+  AGS_AUDIO_SKIP_INPUT                  = 1 << 11,
+  AGS_AUDIO_BYPASS                      = 1 << 12,
 }AgsAudioFlags;
 
 struct _AgsAudio
@@ -96,6 +88,8 @@ struct _AgsAudio
   GObject object;
 
   guint flags;
+  guint ability_flags;
+  guint behaviour_flags;
   guint staging_flags[AGS_SOUND_SCOPE_LAST];
   
   pthread_mutex_t *obj_mutex;
@@ -202,6 +196,9 @@ pthread_mutex_t* ags_audio_get_class_mutex();
 
 void ags_audio_set_flags(AgsAudio *audio, guint flags);
 void ags_audio_unset_flags(AgsAudio *audio, guint flags);
+
+void ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags);
+void ags_audio_unset_ability_flags(AgsAudio *audio, guint ability_flags);
 
 /* channel alignment */
 void ags_audio_set_max_audio_channels(AgsAudio *audio,

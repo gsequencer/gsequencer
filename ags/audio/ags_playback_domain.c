@@ -26,6 +26,8 @@
 
 #include <ags/audio/thread/ags_audio_thread.h>
 
+#include <stdlib.h>
+#include <string.h>
 #include <math.h>
 
 #include <ags/i18n.h>
@@ -163,49 +165,56 @@ ags_playback_domain_connectable_interface_init(AgsConnectableInterface *connecta
 void
 ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
 {
+  AgsMutexManager *mutex_manager;
+
   AgsConfig *config;
 
-  gchar *str, *str0, *str1;
+  gchar *thread_model, *super_threaded_scope;
 
   gboolean super_threaded_audio;
-  
+  guint i;
+
+  pthread_mutex_t *application_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   /* config */
   config = ags_config_get_instance();
 
   /* thread model */
-  str0 = ags_config_get_value(config,
-			      AGS_CONFIG_THREAD,
-			      "model");
-  str1 = ags_config_get_value(config,
-			      AGS_CONFIG_THREAD,
-			      "super-threaded-scope");
+  super_threaded_audio = FALSE;
+  
+  pthread_mutex_lock(application_mutex);
 
-  if(str0 != NULL && str1 != NULL){
-    if(!g_ascii_strncasecmp(str0,
-			    "super-threaded",
-			    15)){
-      if(!g_ascii_strncasecmp(str1,
-			      "audio",
-			      6) ||
-	 !g_ascii_strncasecmp(str1,
-			      "channel",
-			      8) ||
-	 !g_ascii_strncasecmp(str1,
-			      "recycling",
-			      10)){
-	super_threaded_audio = TRUE;
-      }
+  thread_model = ags_config_get_value(config,
+				      AGS_CONFIG_THREAD,
+				      "model");
+
+  if(thread_model != NULL &&
+     !g_ascii_strncasecmp(thread_model,
+			  "super-threaded",
+			  15)){
+    super_threaded_scope = ags_config_get_value(config,
+						AGS_CONFIG_THREAD,
+						"super-threaded-scope");
+    if(super_threaded_scope != NULL &&
+       (!g_ascii_strncasecmp(super_threaded_scope,
+			     "audio",
+			     6) ||
+	!g_ascii_strncasecmp(super_threaded_scope,
+			     "channel",
+			     8))){
+      super_threaded_audio = TRUE;
     }
-  }
-  
-  if(str0 != NULL){
-    free(str0);
+    
+    g_free(super_threaded_scope);
   }
 
-  if(str1 != NULL){
-    free(str1);
-  }
-  
+  g_free(thread_model);
+
+  pthread_mutex_unlock(application_mutex);
+    
   /* default flags */
   if(super_threaded_audio){
     g_atomic_int_set(&(playback_domain->flags),
@@ -219,77 +228,10 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
   playback_domain->domain = NULL;
 
   /* super threaded audio */
-  playback_domain->audio_thread = (AgsThread **) malloc(3 * sizeof(AgsThread *));
+  playback_domain->audio_thread = (AgsThread **) malloc(AGS_SOUND_SCOPE_LAST * sizeof(AgsThread *));
 
-  playback_domain->audio_thread[0] = NULL;
-  playback_domain->audio_thread[1] = NULL;
-  playback_domain->audio_thread[2] = NULL;
-  
-  if(super_threaded_audio){
-    guint samplerate, buffer_size;
-    gdouble freq;
-    
-    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-
-    /* samplerate */
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD,
-			       "samplerate");
-
-    if(str == NULL){
-      str = ags_config_get_value(config,
-				 AGS_CONFIG_SOUNDCARD_0,
-				 "samplerate");
-    }
-  
-    if(str != NULL){
-      samplerate = g_ascii_strtoull(str,
-				    NULL,
-				    10);
-
-      free(str);
-    }
-
-    /* buffer size */
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD,
-			       "buffer-size");
-
-    if(str == NULL){
-      str = ags_config_get_value(config,
-				 AGS_CONFIG_SOUNDCARD_0,
-				 "buffer-size");
-    }
-  
-    if(str != NULL){
-      buffer_size = g_ascii_strtoull(str,
-				     NULL,
-				     10);
-
-      free(str);
-    }
-
-    /* thread frequency */
-    freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
-
-    /* playback audio thread */
-    playback_domain->audio_thread[0] = (AgsThread *) ags_audio_thread_new(NULL,
-									  NULL);
-    g_object_ref(playback_domain->audio_thread[0]);
-    playback_domain->audio_thread[0]->freq = freq;
-
-    /* sequencer audio thread */
-    playback_domain->audio_thread[1] = (AgsThread *) ags_audio_thread_new(NULL,
-									  NULL);
-    g_object_ref(playback_domain->audio_thread[1]);
-    playback_domain->audio_thread[1]->freq = freq;
-
-    /* notation audio thread */
-    playback_domain->audio_thread[2] = (AgsThread *) ags_audio_thread_new(NULL,
-									  NULL);
-    g_object_ref(playback_domain->audio_thread[2]);
-    playback_domain->audio_thread[2]->freq = freq;
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    playback_domain->audio_thread[i] = NULL;
   }
 
   /* playback */
@@ -506,55 +448,60 @@ ags_playback_domain_disconnect(AgsConnectable *connectable)
  * ags_playback_domain_set_audio_thread:
  * @playback_domain: the #AgsPlaybackDomain
  * @thread: the #AgsThread
- * @scope: the thread's scope
+ * @sound_scope: the thread's scope
  * 
  * Set audio thread to specified scope.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
 				     AgsThread *thread,
-				     guint scope)
+				     guint sound_scope)
 {
   if(!AGS_PLAYBACK_DOMAIN(playback_domain) ||
-     scope > 2){
+     sound_scope >= AGS_SOUND_SCOPE_LAST){
     return;
   }
 
-  if(playback_domain->audio_thread[scope] != NULL){
-    g_object_unref(playback_domain->audio_thread[scope]);
+  if(playback_domain->audio_thread[sound_scope] != NULL){
+    if(ags_thread_is_running(playback_domain->audio_thread[sound_scope])){
+      ags_thread_stop(playback_domain->audio_thread[sound_scope]);
+    }
+    
+    g_object_run_dispose(playback_domain->audio_thread[sound_scope]);
+    g_object_unref(playback_domain->audio_thread[sound_scope]);
   }
 
   if(thread != NULL){
     g_object_ref(thread);
   }
   
-  playback_domain->audio_thread[scope] = thread;
+  playback_domain->audio_thread[sound_scope] = thread;
 }
 
 /**
  * ags_playback_domain_get_audio_thread:
  * @playback_domain: the #AgsPlaybackDomain
- * @scope: the thread's scope
+ * @sound_scope: the thread's scope
  * 
  * Get audio thread of specified scope.
  * 
  * Returns: the matching #AgsThread or %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsThread*
 ags_playback_domain_get_audio_thread(AgsPlaybackDomain *playback_domain,
-				     guint scope)
+				     guint sound_scope)
 {
   if(playback_domain == NULL ||
      playback_domain->audio_thread == NULL ||
-     scope > 2){
+     sound_scope >= AGS_SOUND_SCOPE_LAST){
     return(NULL);
   }
 
-  return(playback_domain->audio_thread[scope]);
+  return(playback_domain->audio_thread[sound_scope]);
 }
 
 

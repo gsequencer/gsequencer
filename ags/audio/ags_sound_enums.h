@@ -32,6 +32,12 @@ typedef enum{
 }AgsSoundAbilityFlags;
 
 typedef enum{
+  AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT  = 1,
+  AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING     = 1 <<  1,
+  AGS_SOUND_BEHAVIOUR_PATTERN_MODE        = 1 <<  2,
+}AgsSoundBehaviorFlags;
+
+typedef enum{
   AGS_SOUND_SCOPE_PLAYBACK,
   AGS_SOUND_SCOPE_NOTATION,
   AGS_SOUND_SCOPE_SEQUENCER,
@@ -55,5 +61,12 @@ typedef enum{
   AGS_SOUND_STAGING_DONE                = 1 << 11,
   AGS_SOUND_STAGING_REMOVE              = 1 << 12,
 }AgsSoundStagingFlags;
+
+tyepdef enum{
+  AGS_SOUND_STATE_IS_WAITING                  = 1,
+  AGS_SOUND_STATE_IS_ACTIVE                   = 1 <<  1,
+  AGS_SOUND_STATE_IS_PROCESSING               = 1 <<  2,
+  AGS_SOUND_STATE_IS_TERMINATING              = 1 <<  3,
+}AgsSoundStateFlags;
 
 #endif /*__AGS_SOUND_ENUMS_H__*/
