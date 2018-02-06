@@ -71,6 +71,7 @@ struct _AgsChannel
 
   guint flags;
   guint ability_flags;
+  guint behaviour_flags;
   guint staging_flags[AGS_SOUND_SCOPE_LAST];
 
   pthread_mutex_t *obj_mutex;

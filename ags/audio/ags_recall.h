@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,8 +38,8 @@
 
 #define AGS_RECALL_HANDLER(handler)    ((AgsRecallHandler *)(handler))
 
-#define AGS_RECALL_DEFAULT_VERSION "0.4.2"
-#define AGS_RECALL_DEFAULT_BUILD_ID "CEST 02-10-2014 19:36"
+#define AGS_RECALL_DEFAULT_VERSION "2.0.0"
+#define AGS_RECALL_DEFAULT_BUILD_ID "Tue Feb  6 14:27:35 UTC 2018"
 
 typedef struct _AgsRecall AgsRecall;
 typedef struct _AgsRecallClass AgsRecallClass;
@@ -47,29 +47,13 @@ typedef struct _AgsRecallHandler AgsRecallHandler;
 
 /**
  * AgsRecallFlags:
- * @AGS_RECALL_ADDED_TO_REGISTRY: recall has been added to registry
  * @AGS_RECALL_CONNECTED: indicates the port was connected by calling #AgsConnectable::connect()
- * @AGS_RECALL_RUN_INITIALIZED: run initialized
- * @AGS_RECALL_TEMPLATE: is template
- * @AGS_RECALL_PLAYBACK: does playback
- * @AGS_RECALL_SEQUENCER: does sequencer
- * @AGS_RECALL_NOTATION: does notation
- * @AGS_RECALL_DEFAULT_TEMPLATE: 
  * @AGS_RECALL_DYNAMIC_CONNECTED: dynamic connected
- * @AGS_RECALL_INPUT_ORIENTATED: input orientated
- * @AGS_RECALL_OUTPUT_ORIENTATED: output orientated
- * @AGS_RECALL_PERSISTENT: persistent processing
- * @AGS_RECALL_INITIAL_RUN: initial call to #AgsRecall::run()
- * @AGS_RECALL_TERMINATING: is terminating
- * @AGS_RECALL_DONE: is done
- * @AGS_RECALL_REMOVE: is remove
+ * @AGS_RECALL_TEMPLATE: is template
+ * @AGS_RECALL_DEFAULT_TEMPLATE: 
+ * @AGS_RECALL_PACKED: is packed
  * @AGS_RECALL_HIDE: is hidden
- * @AGS_RECALL_PROPAGATE_DONE: propagate done 
- * @AGS_RECALL_PERSISTENT_PLAYBACK: persistent playback
- * @AGS_RECALL_PERSISTENT_SEQUENCER: persistent sequencer
- * @AGS_RECALL_PERSISTENT_NOTATION: persistent notation
  * @AGS_RECALL_SKIP_DEPENDENCIES: skip dependencies
- * @AGS_RECALL_BULK_MODE: the recall operates on bulk mode
  * @AGS_RECALL_HAS_OUTPUT_PORT: has output port
  * @AGS_RECALL_RUN_FIRST: scheduled for run-first
  * @AGS_RECALL_RUN_LAST: scheduled for run-last
@@ -78,33 +62,16 @@ typedef struct _AgsRecallHandler AgsRecallHandler;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_RECALL_ADDED_TO_REGISTRY     = 1,
-  AGS_RECALL_CONNECTED             = 1 <<  1,
-  AGS_RECALL_RUN_INITIALIZED       = 1 <<  2, //TODO:JK: rename to AGS_RECALL_RUN_CONNECTED
-  AGS_RECALL_TEMPLATE              = 1 <<  3,
-  AGS_RECALL_PLAYBACK              = 1 <<  4,
-  AGS_RECALL_SEQUENCER             = 1 <<  5,
-  AGS_RECALL_NOTATION              = 1 <<  6,
-  AGS_RECALL_DEFAULT_TEMPLATE      = 1 <<  7,
-  AGS_RECALL_DYNAMIC_CONNECTED     = 1 <<  8,
-  AGS_RECALL_INPUT_ORIENTATED      = 1 <<  9,
-  AGS_RECALL_OUTPUT_ORIENTATED     = 1 << 10,
-  AGS_RECALL_PERSISTENT            = 1 << 11,
-  AGS_RECALL_INITIAL_RUN           = 1 << 12,
-  AGS_RECALL_TERMINATING           = 1 << 13,
-  AGS_RECALL_DONE                  = 1 << 14,
-  AGS_RECALL_REMOVE                = 1 << 15,
-  AGS_RECALL_HIDE                  = 1 << 16,
-  AGS_RECALL_PROPAGATE_DONE        = 1 << 17, // see ags_recall_real_remove
-  AGS_RECALL_PERSISTENT_PLAYBACK   = 1 << 18,
-  AGS_RECALL_PERSISTENT_SEQUENCER  = 1 << 19,
-  AGS_RECALL_PERSISTENT_NOTATION   = 1 << 20,
-  AGS_RECALL_SKIP_DEPENDENCIES     = 1 << 21,
-  AGS_RECALL_BULK_MODE             = 1 << 22,
-  AGS_RECALL_HAS_OUTPUT_PORT       = 1 << 23,
-  AGS_RECALL_RUN_FIRST             = 1 << 24,
-  AGS_RECALL_RUN_LAST              = 1 << 25,
-  AGS_RECALL_PACKED                = 1 << 26,
+  AGS_RECALL_CONNECTED             = 1,
+  AGS_RECALL_DYNAMIC_CONNECTED     = 1 <<  1,
+  AGS_RECALL_TEMPLATE              = 1 <<  2,
+  AGS_RECALL_DEFAULT_TEMPLATE      = 1 <<  3,
+  AGS_RECALL_PACKED                = 1 <<  4,
+  AGS_RECALL_HIDE                  = 1 <<  5,
+  AGS_RECALL_SKIP_DEPENDENCIES     = 1 <<  6,
+  AGS_RECALL_HAS_OUTPUT_PORT       = 1 <<  7,
+  AGS_RECALL_RUN_FIRST             = 1 <<  8,
+  AGS_RECALL_RUN_LAST              = 1 <<  9,
 }AgsRecallFlags;
 
 /**
@@ -131,6 +98,10 @@ struct _AgsRecall
   GObject object;
 
   guint flags;
+  guint ability_flags;
+  guint behaviour_flags;
+  guint staging_flags;
+
   gboolean rt_safe;
   
   gchar *version;
@@ -173,16 +144,21 @@ struct _AgsRecallClass
   void (*unload_automation)(AgsRecall *recall);
   
   void (*resolve_dependencies)(AgsRecall *recall);
-
+  void (*check_rt_data)(AgsRecall *recall);
+  
   void (*run_init_pre)(AgsRecall *recall);
   void (*run_init_inter)(AgsRecall *recall);
   void (*run_init_post)(AgsRecall *recall);
-  void (*check_rt_stream)(AgsRecall *recall);
   
+  void (*feed_input_queue)(AgsRecall *recall);
   void (*automate)(AgsRecall *recall);
+  
   void (*run_pre)(AgsRecall *recall);
   void (*run_inter)(AgsRecall *recall);
   void (*run_post)(AgsRecall *recall);
+
+  void (*do_feedback)(AgsRecall *recall);
+  void (*feed_output_queue)(AgsRecall *recall);
   
   void (*stop_persistent)(AgsRecall *recall);
   void (*done)(AgsRecall *recall);
