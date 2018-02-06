@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1749,7 +1749,9 @@ ags_channel_unset_flags(AgsChannel *channel, guint flags)
  */
 void
 ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
-{  
+{
+  AgsAudio *audio;
+  AgsPlaybackDomain *playback_domain;
   AgsPlayback *playback;
   
   AgsMutexManager *mutex_manager;
@@ -1761,6 +1763,7 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
   gboolean super_threaded_channel;
   
   pthread_mutex_t *application_mutex;
+  pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
   if(!AGS_IS_CHANNEL(channel)){
@@ -1780,6 +1783,8 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
   /* check flags */
   pthread_mutex_lock(channel_mutex);
 
+  audio = channel->audio;
+  
   channel_ability_flags = channel->ability_flags;
 
   soundcard = channel->output_soundcard;
@@ -1788,13 +1793,25 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
   buffer_size = channel->buffer_size;
   
   playback = AGS_PLAYBACK(channel->playback);
+
+  playback_domain = playback->playback_domain;
   
-  super_threaded_channel = ((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback_domain->flags)))) != 0) ? TRUE: FALSE;
+  super_threaded_channel = ((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0) ? TRUE: FALSE;
+
+  pthread_mutex_unlock(channel_mutex);
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
   
-  /* notation ability */
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+  
   if(super_threaded_channel){
-    if((AGS_SOUND_ABILITY_NOTATION & (ability_flags)) != 0 &&
-       (AGS_SOUND_ABILITY_NOTATION & (channel_ability_flags)) == 0){
+    /* playback ability */
+    if((AGS_SOUND_ABILITY_PLAYBACK & (ability_flags)) != 0 &&
+       (AGS_SOUND_ABILITY_PLAYBACK & (channel_ability_flags)) == 0){
+      AgsAudiolLoop *audio_loop;
       AgsChannelThread *channel_thread;
 
       channel_thread = ags_channel_thread_new(soundcard,
@@ -1805,12 +1822,55 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
     
       ags_playback_set_channel_thread(playback,
 				      channel_thread,
+				      AGS_SOUND_SCOPE_PLAYBACK);
+
+      /* set thread child */
+      pthread_mutex_lock(application_mutex);
+      
+      audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+
+      pthread_mutex_unlock(application_mutex);
+
+      ags_thread_add_child(audio_thread,
+			   channel_thread);
+    }
+
+    /* notation ability */
+    if((AGS_SOUND_ABILITY_NOTATION & (ability_flags)) != 0 &&
+       (AGS_SOUND_ABILITY_NOTATION & (channel_ability_flags)) == 0){
+      AgsAudioThread *audio_thread;
+      AgsChannelThread *channel_thread;
+
+      pthread_mutex_lock(channel_mutex);
+      
+      channel_thread = ags_channel_thread_new(soundcard,
+					      channel);
+      g_object_set(channel_thread,
+		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
+		   NULL);
+    
+      ags_playback_set_channel_thread(playback,
+				      channel_thread,
 				      AGS_SOUND_SCOPE_NOTATION);    
+
+      pthread_mutex_unlock(channel_mutex);
+
+      /* set thread child */
+      pthread_mutex_lock(audio_mutex);
+
+      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							  AGS_SOUND_SCOPE_NOTATION);
+      
+      pthread_mutex_unlock(audio_mutex);
+
+      ags_thread_add_child(audio_thread,
+			   channel_thread);
     }
 
     /* sequencer ability */
     if((AGS_SOUND_ABILITY_SEQUENCER & (ability_flags)) != 0 &&
        (AGS_SOUND_ABILITY_SEQUENCER & (channel_ability_flags)) == 0){
+      AgsAudioThread *audio_thread;
       AgsChannelThread *channel_thread;
 
       channel_thread = ags_channel_thread_new(soundcard,
@@ -1822,11 +1882,23 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
       ags_playback_set_channel_thread(playback,
 				      channel_thread,
 				      AGS_SOUND_SCOPE_SEQUENCER);
+
+      /* set thread child */
+      pthread_mutex_lock(audio_mutex);
+
+      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							  AGS_SOUND_SCOPE_SEQUENCER);
+      
+      pthread_mutex_unlock(audio_mutex);
+
+      ags_thread_add_child(audio_thread,
+			   channel_thread);
     }
 
     /* wave ability */
     if((AGS_SOUND_ABILITY_WAVE & (ability_flags)) != 0 &&
        (AGS_SOUND_ABILITY_WAVE & (channel_ability_flags)) == 0){
+      AgsAudioThread *audio_thread;
       AgsChannelThread *channel_thread;
 
       channel_thread = ags_channel_thread_new(soundcard,
@@ -1838,11 +1910,23 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
       ags_playback_set_channel_thread(playback,
 				      channel_thread,
 				      AGS_SOUND_SCOPE_WAVE);
+      
+      /* set thread child */
+      pthread_mutex_lock(audio_mutex);
+
+      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							  AGS_SOUND_SCOPE_WAVE);
+      
+      pthread_mutex_unlock(audio_mutex);
+
+      ags_thread_add_child(audio_thread,
+			   channel_thread);
     }
 
     /* midi ability */
     if((AGS_SOUND_ABILITY_MIDI & (ability_flags)) != 0 &&
        (AGS_SOUND_ABILITY_MIDI & (channel_ability_flags)) == 0){
+      AgsAudioThread *audio_thread;
       AgsChannelThread *channel_thread;
 
       channel_thread = ags_channel_thread_new(soundcard,
@@ -1854,11 +1938,20 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
       ags_playback_set_channel_thread(playback,
 				      channel_thread,
 				      AGS_SOUND_SCOPE_MIDI);
+
+      /* set thread child */
+      pthread_mutex_lock(audio_mutex);
+
+      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							  AGS_SOUND_SCOPE_MIDI);
+      
+      pthread_mutex_unlock(audio_mutex);
+
+      ags_thread_add_child(audio_thread,
+			   channel_thread);
     }
   }
-  
-  pthread_mutex_unlock(channel_mutex);
-  
+    
   /* set flags */
   pthread_mutex_lock(channel_mutex);
 
