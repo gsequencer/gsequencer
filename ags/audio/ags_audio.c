@@ -3747,11 +3747,11 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   auto void ags_audio_set_audio_channels_grow(GType type);
   auto void ags_audio_set_audio_channels_shrink_zero();
   auto void ags_audio_set_audio_channels_shrink();
-  auto void ags_audio_set_audio_channels_grow_notation();
+
   auto void ags_audio_set_audio_channels_shrink_notation();
   auto void ags_audio_set_audio_channels_shrink_automation();
-  auto void ags_audio_set_audio_channels_grow_wave();
   auto void ags_audio_set_audio_channels_shrink_wave();
+  auto void ags_audio_set_audio_channels_shrink_midi();
   
   void ags_audio_set_audio_channels_init_parameters(GType type){
     alloc_pattern = FALSE;
@@ -4090,131 +4090,106 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       goto ags_audio_set_audio_channel_shrink0;
     }
   }
-  
-  void ags_audio_set_audio_channels_grow_notation(){
-    GList *list;
-    guint i;
-
-    i = audio->audio_channels;
-
-#ifdef AGS_DEBUG
-    g_message("ags_audio_set_audio_channels_grow_notation\n");
-#endif
-
-    if(audio->audio_channels == 0){
-      audio->notation =
-	list = g_list_alloc();
-      goto ags_audio_set_audio_channels_grow_notation0;
-    }else{
-      list = g_list_nth(audio->notation, audio->audio_channels - 1);
-    }
-
-    for(; i < audio_channels; i++){
-      list->next = g_list_alloc();
-      list->next->prev = list;
-      list = list->next;
-
-    ags_audio_set_audio_channels_grow_notation0:
-      list->data = (gpointer) ags_notation_new((GObject *) audio,
-					       i);
-    } 
-  }
-  
+    
   void ags_audio_set_audio_channels_shrink_notation(){
-    GList *list, *list_next;
+    GList *list_start, *list;
 
-    list = g_list_nth(audio->notation, audio_channels);
-
-    if(audio_channels == 0){
-      audio->notation = NULL;
-    }else{
-      list->prev->next = NULL;
-    }
+    list_start = g_list_copy(audio->notation);
 
     while(list != NULL){
-      list_next = list->next;
+      if(AGS_NOTATION(list->data)->audio_channel >= audio_channels){
+	audio->notation = g_list_remove(audio->notation,
+					list->data);
 
-      g_object_unref((GObject *) list->data);
-      g_list_free1(list);
+	g_object_run_dispose((GObject *) list->data);
+	g_object_unref((GObject *) list->data);
+      }
+      
+      list = list->next;
+    }
 
-      list = list_next;
+    g_list_free(list_start);
+    
+    if(audio_channels == 0){
+      audio->notation = NULL;
     }
   }
 
   void ags_audio_set_audio_channels_shrink_automation(){
-    GList *automation, *automation_next;
+    GList *list_start, *list;
 
-    automation = audio->automation;
+    list_start = g_list_copy(audio->automation);
 
-    while(automation != NULL){
-      automation_next = automation->next;
+    while(list != NULL){
+      if(AGS_AUTOMATION(list->data)->audio_channel >= audio_channels){
+	audio->automation = g_list_remove(audio->automation,
+					  list->data);
 
-      if(AGS_AUTOMATION(automation->data)->channel_type != G_TYPE_NONE){
-	if(audio_channels == 0 ||
-	   AGS_AUTOMATION(automation->data)->line % audio_channels_old >= audio_channels){
-	  ags_audio_remove_automation(audio,
-				      automation->data);
-	}
+	g_object_run_dispose((GObject *) list->data);
+	g_object_unref((GObject *) list->data);
       }
-
-      automation = automation_next;
-    }
-  }
-
-  void ags_audio_set_audio_channels_grow_wave(){
-    GList *list;
-    guint i;
-
-    i = audio->audio_channels;
-
-#ifdef AGS_DEBUG
-    g_message("ags_audio_set_audio_channels_grow_wave\n");
-#endif
-
-    if(audio->audio_channels == 0){
-      audio->wave =
-	list = g_list_alloc();
-      goto ags_audio_set_audio_channels_grow_wave0;
-    }else{
-      list = g_list_nth(audio->wave, audio->audio_channels - 1);
-    }
-
-    for(; i < audio_channels; i++){
-      list->next = g_list_alloc();
-      list->next->prev = list;
+      
       list = list->next;
+    }
 
-    ags_audio_set_audio_channels_grow_wave0:
-      list->data = (gpointer) ags_wave_new((GObject *) audio,
-					   i);
-    } 
+    g_list_free(list_start);
+
+    if(audio_channels == 0){
+      audio->automation = NULL;
+    }
   }
   
   void ags_audio_set_audio_channels_shrink_wave(){
-    GList *list, *list_next;
+    GList *list_start, *list;
 
-    list = g_list_nth(audio->wave, audio_channels);
+    list_start = g_list_copy(audio->wave);
+
+    while(list != NULL){
+      if(AGS_WAVE(list->data)->audio_channel >= audio_channels){
+	audio->wave = g_list_remove(audio->wave,
+				    list->data);
+
+	g_object_run_dispose((GObject *) list->data);
+	g_object_unref((GObject *) list->data);
+      }
+      
+      list = list->next;
+    }
+
+    g_list_free(list_start);
 
     if(audio_channels == 0){
       audio->wave = NULL;
-    }else{
-      list->prev->next = NULL;
     }
+  }
+
+  void ags_audio_set_audio_channels_shrink_midi(){
+    GList *list_start, *list;
+
+    list_start = g_list_copy(audio->midi);
 
     while(list != NULL){
-      list_next = list->next;
+      if(AGS_MIDI(list->data)->audio_channel >= audio_channels){
+	audio->midi = g_list_remove(audio->midi,
+				    list->data);
 
-      g_object_unref((GObject *) list->data);
-      g_list_free1(list);
+	g_object_run_dispose((GObject *) list->data);
+	g_object_unref((GObject *) list->data);
+      }
+      
+      list = list->next;
+    }
 
-      list = list_next;
+    g_list_free(list_start);
+
+    if(audio_channels == 0){
+      audio->midi = NULL;
     }
   }
   
-  /* entry point */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
+  /*
+   * entry point
+   */
   /* grow / shrink */
   if(audio_channels > audio_channels_old){
     AgsPlaybackDomain *playback_domain;
