@@ -1,3 +1,8 @@
+ags (1.4.19)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_audio_set_audio_channels() to remove unneeded notation, automation and wave objects
+
 ags (1.4.18)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
