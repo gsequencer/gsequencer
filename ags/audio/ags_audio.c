@@ -1059,7 +1059,6 @@ ags_audio_init(AgsAudio *audio)
   audio->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   audio->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   audio->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  audio->sequence_length = 0;
 
   /* read config */
   pthread_mutex_lock(application_mutex);
@@ -5091,72 +5090,81 @@ ags_audio_set_pads(AgsAudio *audio,
  *
  * Sets samplerate.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
 {
-  AgsConfig *config;
+  AgsChannel *output, *input;
+  AgsPlaybackDomain *playback_domain;
   
-  gchar *str0, *str1;
-
-  gdouble freq;
+  gdouble frequency;
+  guint i;
+  
+  pthread_mutex_t *audio_mutex;
   
   auto void ags_audio_set_samplerate_channel(AgsChannel *channel);
 
   void ags_audio_set_samplerate_channel(AgsChannel *channel){
+    pthread_mutex_t *channel_mutex;
+    
     while(channel != NULL){
+      /* get channel mutex */
+      pthread_mutex_lock(ags_channel_get_class_mutex());
+
+      channel_mutex = channel->obj_mutex;
+  
+      pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+      /* set samplerate */
       ags_channel_set_samplerate(channel, samplerate);
+
+      /* iterate */
+      pthread_mutex_lock(channel_mutex);
       
       channel = channel->next;
+
+      pthread_mutex_unlock(channel_mutex);
     }
   }
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+
+  audio_mutex = audio->obj_mutex;
   
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* set samplerate */
+  pthread_mutex_lock(audio_mutex);
+
   audio->samplerate = samplerate;
 
-  /*  */
-  config = ags_config_get_instance();  
+  frequency = ceil((gdouble) audio->samplerate / (gdouble) audio->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
 
-  freq = ceil((gdouble) audio->samplerate / (gdouble) audio->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
+  output = audio->output;
+  input = audio->input;
 
-  str0 = ags_config_get_value(config,
-			      AGS_CONFIG_THREAD,
-			      "model");
-  str1 = ags_config_get_value(config,
-			      AGS_CONFIG_THREAD,
-			      "super-threaded-scope");
-
-  if(str0 != NULL && str1 != NULL){
-    if(!g_ascii_strncasecmp(str0,
-			    "super-threaded",
-			    15)){
-      if(!g_ascii_strncasecmp(str1,
-			      "audio",
-			      6) ||
-	 !g_ascii_strncasecmp(str1,
-			      "channel",
-			      8) ||
-	 !g_ascii_strncasecmp(str1,
-			      "recycling",
-			      10)){
-	g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[0],
-		     "frequency", freq,
-		     NULL);
-	g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1],
-		     "frequency", freq,
-		     NULL);
-	g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2],
-		     "frequency", freq,
-		     NULL);
-      }
+  playback_domain = audio->playback_domain;
+  
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    /* apply new frequency */
+    if(playback_domain->audio_thread[i] != NULL){
+      g_object_set(playback_domain->audio_thread[i],
+		   "frequency", frequency,
+		   NULL);
     }
   }
-
-  g_free(str0);
-  g_free(str1);
   
-  ags_audio_set_samplerate_channel(audio->output);
-  ags_audio_set_samplerate_channel(audio->input);
+  pthread_mutex_unlock(audio_mutex);
+
+  /* set samplerate output/input */
+  ags_audio_set_samplerate_channel(output);
+  ags_audio_set_samplerate_channel(input);
 }
 
 /**
@@ -5166,72 +5174,81 @@ ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
  *
  * Sets buffer length.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
 {
-  AgsConfig *config;
+  AgsChannel *output, *input;
+  AgsPlaybackDomain *playback_domain;
   
-  gchar *str0, *str1;
-
-  gdouble freq;
+  gdouble frequency;
+  guint i;
+  
+  pthread_mutex_t *audio_mutex;
 
   auto void ags_audio_set_buffer_size_channel(AgsChannel *channel);
 
   void ags_audio_set_buffer_size_channel(AgsChannel *channel){
+    pthread_mutex_t *channel_mutex;
+
     while(channel != NULL){
+      /* get channel mutex */
+      pthread_mutex_lock(ags_channel_get_class_mutex());
+
+      channel_mutex = channel->obj_mutex;
+  
+      pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+      /* set buffer size */
       ags_channel_set_buffer_size(channel, buffer_size);
       
+      /* iterate */
+      pthread_mutex_lock(channel_mutex);
+      
       channel = channel->next;
+
+      pthread_mutex_unlock(channel_mutex);
     }
   }
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
   
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* set buffer size */
+  pthread_mutex_lock(audio_mutex);
+
   audio->buffer_size = buffer_size;
 
-  /*  */
-  config = ags_config_get_instance();
+  frequency = ceil((gdouble) audio->samplerate / (gdouble) audio->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
+
+  output = audio->output;
+  input = audio->input;
+
+  playback_domain = audio->playback_domain;
   
-  freq = ceil((gdouble) audio->samplerate / (gdouble) audio->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
-
-  str0 = ags_config_get_value(config,
-			      AGS_CONFIG_THREAD,
-			      "model");
-  str1 = ags_config_get_value(config,
-			      AGS_CONFIG_THREAD,
-			      "super-threaded-scope");
-
-  if(str0 != NULL && str1 != NULL){
-    if(!g_ascii_strncasecmp(str0,
-			    "super-threaded",
-			    15)){
-      if(!g_ascii_strncasecmp(str1,
-			      "audio",
-			      6) ||
-	 !g_ascii_strncasecmp(str1,
-			      "channel",
-			      8) ||
-	 !g_ascii_strncasecmp(str1,
-			      "recycling",
-			      10)){
-	g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[0],
-		     "frequency", freq,
-		     NULL);
-	g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1],
-		     "frequency", freq,
-		     NULL);
-	g_object_set(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[2],
-		     "frequency", freq,
-		     NULL);
-      }
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    /* apply new frequency */
+    if(playback_domain->audio_thread[i] != NULL){
+      g_object_set(playback_domain->audio_thread[i],
+		   "frequency", frequency,
+		   NULL);
     }
   }
+  
+  pthread_mutex_unlock(audio_mutex);
 
-  g_free(str0);
-  g_free(str1);
-
-  ags_audio_set_buffer_size_channel(audio->output);
-  ags_audio_set_buffer_size_channel(audio->input);
+  /* set buffer size output/input */
+  ags_audio_set_buffer_size_channel(output);
+  ags_audio_set_buffer_size_channel(input);
 }
 
 /**
@@ -5241,40 +5258,64 @@ ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
  *
  * Sets buffer length.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_audio_set_format(AgsAudio *audio, guint format)
 {
+  AgsChannel *output, *input;
+  
+  pthread_mutex_t *audio_mutex;
+
   auto void ags_audio_set_format_channel(AgsChannel *channel);
 
   void ags_audio_set_format_channel(AgsChannel *channel){
+    pthread_mutex_t *channel_mutex;
+
     while(channel != NULL){
+      /* get channel mutex */
+      pthread_mutex_lock(ags_channel_get_class_mutex());
+
+      channel_mutex = channel->obj_mutex;
+  
+      pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+      /* set format */
       ags_channel_set_format(channel, format);
       
+      /* iterate */
+      pthread_mutex_lock(channel_mutex);
+      
       channel = channel->next;
+
+      pthread_mutex_unlock(channel_mutex);
     }
+  }  
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
   }
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+
+  audio_mutex = audio->obj_mutex;
   
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* set format */
+  pthread_mutex_lock(audio_mutex);
+
   audio->format = format;
 
-  ags_audio_set_format_channel(audio->output);
-  ags_audio_set_format_channel(audio->input);
-}
+  output = audio->output;
+  input = audio->input;
 
-/**
- * ags_audio_set_sequence_length:
- * @audio: the #AgsAudio
- * @sequence_length: the sequence length
- *
- * Sets sequence length.
- *
- * Since: 1.0.0
- */
-void
-ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length)
-{
-  audio->sequence_length = sequence_length;
+  pthread_mutex_unlock(audio_mutex);
+
+  /* set format output/input */
+  ags_audio_set_format_channel(output);
+  ags_audio_set_format_channel(input);
 }
 
 /**
