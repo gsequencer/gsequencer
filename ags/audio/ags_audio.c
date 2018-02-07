@@ -5325,35 +5325,41 @@ ags_audio_set_format(AgsAudio *audio, guint format)
  *
  * Adds an audio connection.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_audio_add_audio_connection(AgsAudio *audio,
 			       GObject *audio_connection)
 {
-  AgsMutexManager *mutex_manager;
+  pthread_mutex_t *audio_mutex;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_AUDIO_CONNECTION(audio_connection)){
+    return;
+  }
 
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
+  audio_mutex = audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* add audio connection */
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(audio_mutex);
 
-  g_object_ref(audio_connection);
-  audio->audio_connection = g_list_prepend(audio->audio_connection, audio_connection);
+  if(g_list_find(audio->audio_connection,
+		 audio_connection) == NULL){
+    g_object_ref(audio_connection);
+    audio->audio_connection = g_list_prepend(audio->audio_connection,
+					     audio_connection);
+
+    g_object_set(audio_connection,
+		 "audio", audio,
+		 NULL);
+  }
   
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
@@ -5363,35 +5369,42 @@ ags_audio_add_audio_connection(AgsAudio *audio,
  *
  * Removes an audio connection.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_audio_remove_audio_connection(AgsAudio *audio,
 				  GObject *audio_connection)
 {
-  AgsMutexManager *mutex_manager;
+  pthread_mutex_t *audio_mutex;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_AUDIO_CONNECTION(audio_connection)){
+    return;
+  }
 
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
+  audio_mutex = audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* remove audio connection */
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(audio_mutex);
 
-  audio->audio_connection = g_list_remove(audio->audio_connection, audio_connection);
-  g_object_unref(audio_connection);
+  if(g_list_find(audio->audio_connection,
+		 audio_connection) != NULL){
+    audio->audio_connection = g_list_remove(audio->audio_connection,
+					    audio_connection);
+
+    g_object_set(audio_connection,
+		 "audio", NULL,
+		 NULL);
+
+    g_object_unref(audio_connection);
+  }
   
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
@@ -5401,35 +5414,41 @@ ags_audio_remove_audio_connection(AgsAudio *audio,
  *
  * Adds an preset.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_audio_add_preset(AgsAudio *audio,
 		     GObject *preset)
 {
-  AgsMutexManager *mutex_manager;
+  pthread_mutex_t *audio_mutex;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_PRESET(preset)){
+    return;
+  }
 
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
+  audio_mutex = audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* add preset */
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(audio_mutex);
 
-  g_object_ref(preset);
-  audio->preset = g_list_prepend(audio->preset, preset);
+  if(g_list_find(audio->preset,
+		 preset) == NULL){
+    g_object_ref(preset);
+    audio->preset = g_list_prepend(audio->preset,
+				   preset);
+
+    g_object_set(preset,
+		 "audio", audio,
+		 NULL);
+  }
   
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
@@ -5439,258 +5458,390 @@ ags_audio_add_preset(AgsAudio *audio,
  *
  * Removes an preset.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_audio_remove_preset(AgsAudio *audio,
 			GObject *preset)
 {
-  AgsMutexManager *mutex_manager;
+  pthread_mutex_t *audio_mutex;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_PRESET(preset)){
+    return;
+  }
 
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
+  audio_mutex = audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* remove preset */
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(audio_mutex);
 
-  audio->preset = g_list_remove(audio->preset, preset);
-  g_object_unref(preset);
+  if(g_list_find(audio->preset,
+		 preset) != NULL){
+    audio->preset = g_list_remove(audio->preset,
+				  preset);
+
+    g_object_set(preset,
+		 "audio", NULL,
+		 NULL);
+
+    g_object_unref(preset);
+  }
   
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
  * ags_audio_add_notation:
  * @audio: the #AgsAudio
- * @notation: the #AgsRecallID
+ * @notation: the #AgsNotation
  *
- * Adds a recall id.
+ * Adds a notation.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_audio_add_notation(AgsAudio *audio, GObject *notation)
 {
-  AgsMutexManager *mutex_manager;
+  pthread_mutex_t *audio_mutex;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_NOTATION(notation)){
+    return;
+  }
 
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
+  audio_mutex = audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
-  /* add recall id */
-  pthread_mutex_lock(mutex);
+  /* add notation */
+  pthread_mutex_lock(audio_mutex);
 
-  g_object_ref(notation);
-  audio->notation = g_list_prepend(audio->notation, notation);
+  if(g_list_find(audio->notation,
+		 notation) == NULL){
+    g_object_ref(notation);
+    audio->notation = ags_notation_add(audio->notation,
+				       notation);
+
+    g_object_set(notation,
+		 "audio", audio,
+		 NULL);
+  }
   
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
  * ags_audio_remove_notation:
  * @audio: the #AgsAudio
- * @notation: the #AgsRecallID
+ * @notation: the #AgsNotation
  *
- * Removes a recall id.
+ * Removes a notation.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_audio_remove_notation(AgsAudio *audio, GObject *notation)
 {
-  AgsMutexManager *mutex_manager;
+  pthread_mutex_t *audio_mutex;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_NOTATION(notation)){
+    return;
+  }
 
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
+  audio_mutex = audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
-  /* remove recall id */
-  pthread_mutex_lock(mutex);
+  /* remove notation */
+  pthread_mutex_lock(audio_mutex);
 
-  audio->notation = g_list_remove(audio->notation, notation);
-  g_object_unref(notation);
+  if(g_list_find(audio->notation,
+		 notation) != NULL){
+    audio->notation = g_list_remove(audio->notation,
+				    notation);
+
+    g_object_set(notation,
+		 "audio", NULL,
+		 NULL);
+
+    g_object_unref(notation);
+  }
   
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
  * ags_audio_add_automation:
  * @audio: the #AgsAudio
- * @automation: the #AgsRecallID
+ * @automation: the #AgsAutomation
  *
- * Adds a recall id.
+ * Adds an automation.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_audio_add_automation(AgsAudio *audio, GObject *automation)
 {
-  AgsMutexManager *mutex_manager;
+  pthread_mutex_t *audio_mutex;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_AUTOMATION(automation)){
+    return;
+  }
 
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
+  audio_mutex = audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* add recall id */
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(audio_mutex);
 
-  g_object_ref(automation);
-  audio->automation = ags_automation_add(audio->automation,
-					 automation);
+  if(g_list_find(audio->automation,
+		 automation) != NULL){
+    g_object_ref(automation);
+    audio->automation = ags_automation_add(audio->automation,
+					   automation);
+
+    g_object_set(automation,
+		 "audio", audio,
+		 NULL);
+  }
   
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
  * ags_audio_remove_automation:
  * @audio: the #AgsAudio
- * @automation: the #AgsRecallID
+ * @automation: the #AgsAutomation
  *
- * Removes a recall id.
+ * Removes an automation.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_audio_remove_automation(AgsAudio *audio, GObject *automation)
 {
-  AgsMutexManager *mutex_manager;
+  pthread_mutex_t *audio_mutex;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_AUTOMATION(automation)){
+    return;
+  }
 
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
+  audio_mutex = audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
-  /* remove recall id */
-  pthread_mutex_lock(mutex);
+  /* remove automation */
+  pthread_mutex_lock(audio_mutex);
 
-  audio->automation = g_list_remove(audio->automation, automation);
-  g_object_unref(automation);
+  if(g_list_find(audio->automation,
+		 automation) != NULL){
+    audio->automation = g_list_remove(audio->automation,
+				      automation);
+
+    g_object_set(automation,
+		 "audio", NULL,
+		 NULL);
+
+    g_object_unref(automation);
+  }
   
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
  * ags_audio_add_wave:
  * @audio: the #AgsAudio
- * @wave: the #AgsRecallID
+ * @wave: the #AgsWave
  *
- * Adds a recall id.
+ * Adds a wave.
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 void
 ags_audio_add_wave(AgsAudio *audio, GObject *wave)
 {
-  AgsMutexManager *mutex_manager;
+  pthread_mutex_t *audio_mutex;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_WAVE(wave)){
+    return;
+  }
 
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
+  audio_mutex = audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* add recall id */
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(audio_mutex);
 
-  g_object_ref(wave);
-  audio->wave = g_list_prepend(audio->wave, wave);
+  if(g_list_find(audio->wave,
+		 wave) != NULL){
+    g_object_ref(wave);
+    audio->wave = ags_wave_add(audio->wave,
+			       wave);
+
+    g_object_set(wave,
+		 "audio", audio,
+		 NULL);
+  }
   
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
  * ags_audio_remove_wave:
  * @audio: the #AgsAudio
- * @wave: the #AgsRecallID
+ * @wave: the #AgsWave
  *
- * Removes a recall id.
+ * Removes a wave.
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 void
 ags_audio_remove_wave(AgsAudio *audio, GObject *wave)
 {
-  AgsMutexManager *mutex_manager;
+  pthread_mutex_t *audio_mutex;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_WAVE(wave)){
+    return;
+  }
 
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
+  audio_mutex = audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
-  /* remove recall id */
-  pthread_mutex_lock(mutex);
+  /* remove wave */
+  pthread_mutex_lock(audio_mutex);
 
-  audio->wave = g_list_remove(audio->wave, wave);
-  g_object_unref(wave);
+  if(g_list_find(audio->wave,
+		 wave) != NULL){
+    audio->wave = g_list_remove(audio->wave,
+				wave);
+
+    g_object_set(wave,
+		 "audio", NULL,
+		 NULL);
+
+    g_object_unref(wave);
+  }
   
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(audio_mutex);
+}
+
+/**
+ * ags_audio_add_midi:
+ * @audio: the #AgsAudio
+ * @midi: the #AgsMidi
+ *
+ * Adds a midi.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_audio_add_midi(AgsAudio *audio, GObject *midi)
+{
+  pthread_mutex_t *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_MIDI(midi)){
+    return;
+  }
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* add recall id */
+  pthread_mutex_lock(audio_mutex);
+
+  if(g_list_find(audio->midi,
+		 midi) != NULL){
+    g_object_ref(midi);
+    audio->midi = ags_midi_add(audio->midi,
+			       midi);
+
+    g_object_set(midi,
+		 "audio", audio,
+		 NULL);
+  }
+  
+  pthread_mutex_unlock(audio_mutex);
+}
+
+/**
+ * ags_audio_remove_midi:
+ * @audio: the #AgsAudio
+ * @midi: the #AgsMidi
+ *
+ * Removes a midi.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_audio_remove_midi(AgsAudio *audio, GObject *midi)
+{
+  pthread_mutex_t *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_MIDI(midi)){
+    return;
+  }
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* remove midi */
+  pthread_mutex_lock(audio_mutex);
+
+  if(g_list_find(audio->midi,
+		 midi) != NULL){
+    audio->midi = g_list_remove(audio->midi,
+				midi);
+
+    g_object_set(midi,
+		 "audio", NULL,
+		 NULL);
+
+    g_object_unref(midi);
+  }
+  
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
