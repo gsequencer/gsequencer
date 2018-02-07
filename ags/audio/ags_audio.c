@@ -3866,11 +3866,11 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	  channel->prev = ags_channel_nth(start, j * audio_channels + i - 1);
 
 	  /* get prev mutex */
-	  pthread_mutex_lock(application_mutex);
+	  pthread_mutex_lock(ags_audio_get_class_mutex());
 	  
 	  prev_mutex = channel->prev->obj_mutex;
 	  
-	  pthread_mutex_unlock(application_mutex);
+	  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
 	  /* set next and prev->next */
 	  pthread_mutex_lock(prev_mutex);  
@@ -3892,11 +3892,11 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 						  j - 1);
 
 	  /* get prev pad mutex */
-	  pthread_mutex_lock(application_mutex);
+	  pthread_mutex_lock(ags_audio_get_class_mutex());
 	  
 	  prev_pad_mutex = channel->prev_pad->obj_mutex;
 	  
-	  pthread_mutex_unlock(application_mutex);
+	  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
 	  /* set prev pad next pad */
 	  pthread_mutex_lock(prev_pad_mutex);
@@ -4109,10 +4109,6 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     }
 
     g_list_free(list_start);
-    
-    if(audio_channels == 0){
-      audio->notation = NULL;
-    }
   }
 
   void ags_audio_set_audio_channels_shrink_automation(){
@@ -4157,10 +4153,6 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     }
 
     g_list_free(list_start);
-
-    if(audio_channels == 0){
-      audio->wave = NULL;
-    }
   }
 
   void ags_audio_set_audio_channels_shrink_midi(){
@@ -4181,10 +4173,6 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     }
 
     g_list_free(list_start);
-
-    if(audio_channels == 0){
-      audio->midi = NULL;
-    }
   }
   
   /*
@@ -4349,24 +4337,18 @@ void
 ags_audio_set_audio_channels(AgsAudio *audio,
 			     guint audio_channels, guint audio_channels_old)
 {
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return;
   }
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
   mutex = audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* lock */
   pthread_mutex_lock(mutex);
@@ -4411,13 +4393,11 @@ ags_audio_real_set_pads(AgsAudio *audio,
   auto void ags_audio_set_pads_unlink_all(AgsChannel *channel);
   auto void ags_audio_set_pads_shrink_zero(AgsChannel *channel);
   auto void ags_audio_set_pads_shrink(AgsChannel *channel);
-  auto void ags_audio_set_pads_alloc_notation();
   auto void ags_audio_set_pads_free_notation();
-  auto void ags_audio_set_pads_add_notes();
   auto void ags_audio_set_pads_remove_notes();
   auto void ags_audio_set_pads_shrink_automation();
-  auto void ags_audio_set_pads_alloc_wave();
   auto void ags_audio_set_pads_free_wave();
+  auto void ags_audio_set_pads_free_midi();
   
   void ags_audio_set_pads_init_parameters(){
     alloc_recycling = FALSE;
@@ -4509,11 +4489,11 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	  channel->prev = ags_channel_nth(start, j * audio->audio_channels + i - 1);
 
 	  /* get prev mutex */
-	  pthread_mutex_lock(application_mutex);
+	  pthread_mutex_lock(ags_audio_get_class_mutex());
 	  
 	  prev_mutex = channel->prev->obj_mutex;
 	  
-	  pthread_mutex_unlock(application_mutex);
+	  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
 	  /* set prev->next */
 	  pthread_mutex_lock(prev_mutex);
@@ -4530,11 +4510,11 @@ ags_audio_real_set_pads(AgsAudio *audio,
 						  j - 1);
 
 	  /* get prev pad mutex */
-	  pthread_mutex_lock(application_mutex);
+	  pthread_mutex_lock(ags_audio_get_class_mutex());
 	  
 	  prev_pad_mutex = channel->prev_pad->obj_mutex;
 	  
-	  pthread_mutex_unlock(application_mutex);
+	  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
 	  /* set prev_pad->next_pad */
 	  pthread_mutex_lock(prev_pad_mutex);
@@ -4719,20 +4699,6 @@ ags_audio_real_set_pads(AgsAudio *audio,
       list = list_next;
     }
   }
-
-  void ags_audio_set_pads_add_notes(){
-    /* -- useless --
-       GList *list;
-
-       list = audio->notation;
-
-       while(list != NULL){
-       AGS_NOTATION(list->data)->pads = pads;
-
-       list = list->next;
-       }
-    */
-  }
   
   void ags_audio_set_pads_remove_notes(){
     AgsNotation *notation;
@@ -4783,35 +4749,6 @@ ags_audio_real_set_pads(AgsAudio *audio,
       }
       
       automation = automation_next;
-    }
-  }
-
-  void ags_audio_set_pads_alloc_wave(){
-    GList *list;
-    
-    guint i;
-
-#ifdef AGS_DEBUG
-    g_message("ags_audio_set_pads_alloc_wave\n");
-#endif
-
-    if(audio->audio_channels > 0){
-      audio->wave =
-	list = g_list_alloc();
-      i = 0;
-      goto ags_audio_set_pads_alloc_wave0;
-    }else{
-      return;
-    }
-
-    for(; i < audio->audio_channels; i++){
-      list->next = g_list_alloc();
-      list->next->prev = list;
-      list = list->next;
-    ags_audio_set_pads_alloc_wave0:
-
-      list->data = (gpointer) ags_wave_new((GObject *) audio,
-					   i);
     }
   }
 
@@ -5105,24 +5042,18 @@ ags_audio_set_pads(AgsAudio *audio,
 		   GType channel_type,
 		   guint pads, guint pads_old)
 {
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   
   if(!AGS_IS_AUDIO(audio)){
     return;
   }
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
   mutex = audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
   
   /* emit */
   pthread_mutex_lock(mutex);
