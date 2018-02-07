@@ -50,16 +50,6 @@ typedef struct _AgsAudioClass AgsAudioClass;
  * @AGS_AUDIO_INPUT_HAS_RECYCLING: input has recycling
  * @AGS_AUDIO_INPUT_HAS_FILE_LINK: input takes file
  * @AGS_AUDIO_INPUT_HAS_SYNTH_GENERATOR: input takes synth
- * @AGS_AUDIO_HAS_NOTATION: has notation
- * @AGS_AUDIO_PATTERN_MODE: notation only contains fixed size notes
- * @AGS_AUDIO_NOTATION_DEFAULT: notation default mapped on input channels
- * @AGS_AUDIO_REVERSE_MAPPING: interpret notation reverse
- * @AGS_AUDIO_HAS_PATTERN: has pattern
- * @AGS_AUDIO_HAS_WAVE: has wave
- * @AGS_AUDIO_WAVE_DEFAULT: wave default mapped on input channels
- * @AGS_AUDIO_RUNNING: it is running
- * @AGS_AUDIO_ACTIVE: it is active
- * @AGS_AUDIO_CAN_NEXT_ACTIVE: can determine next active input
  * @AGS_AUDIO_SKIP_OUTPUT: skip output as processing audio data
  * @AGS_AUDIO_SKIP_INPUT: skip input as processing audio data
  * @AGS_AUDIO_BYPASS: don't apply any data
@@ -76,7 +66,7 @@ typedef enum{
   AGS_AUDIO_OUTPUT_HAS_RECYCLING        = 1 <<  5,
   AGS_AUDIO_INPUT_HAS_RECYCLING         = 1 <<  6,
   AGS_AUDIO_INPUT_HAS_FILE              = 1 <<  7,
-  AGS_AUDIO_INPUT_HAS_SYNTH             = 1 <<  8,
+  AGS_AUDIO_INPUT_HAS_SYNTH_GENERATOR   = 1 <<  8,
   AGS_AUDIO_CAN_NEXT_ACTIVE             = 1 <<  9,
   AGS_AUDIO_SKIP_OUTPUT                 = 1 << 10,
   AGS_AUDIO_SKIP_INPUT                  = 1 << 11,

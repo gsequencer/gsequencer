@@ -4235,12 +4235,16 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     /* shrink audio channels */
     ags_audio_set_audio_channels_shrink_automation();
     
-    if((AGS_AUDIO_HAS_NOTATION & audio->flags) != 0){
+    if((AGS_SOUND_ABILITY_NOTATION & (audio->ability_flags)) != 0){
       ags_audio_set_audio_channels_shrink_notation();
     }
 
-    if((AGS_AUDIO_HAS_WAVE & audio->flags) != 0){
+    if((AGS_SOUND_ABILITY_WAVE & (audio->ability_flags)) != 0){
       ags_audio_set_audio_channels_shrink_wave();
+    }
+
+    if((AGS_SOUND_ABILITY_MIDI & (audio->ability_flags)) != 0){
+      ags_audio_set_audio_channels_shrink_midi();
     }
 
     if(audio_channels == 0){
@@ -4681,95 +4685,118 @@ ags_audio_real_set_pads(AgsAudio *audio,
   }
 
   void ags_audio_set_pads_free_notation(){
-    GList *list, *list_next;
+    GList *list_start, *list;
 
-    if(audio->audio_channels > 0){
-      list = audio->notation;
-      audio->notation = NULL;
-    }else{
-      return;
-    }
-
+    list = 
+      list_start = g_list_copy(audio->notation);
+    
     while(list != NULL){
-      list_next = list->next;
-
-      g_object_unref(G_OBJECT(list->data));
-      g_list_free1(list);
-
-      list = list_next;
+      g_object_run_dispose((GObject *) list->data);
+      g_object_unref((GObject *) list->data);
+      
+      list = list->next;
     }
+
+    g_list_free(audio->notation);
+    g_list_free(list_start);
+    
+    audio->notation = NULL;
   }
   
   void ags_audio_set_pads_remove_notes(){
-    AgsNotation *notation;
-    GList *notation_i, *note, *note_next;
+    GList *notation;
+    GList *note_start, *note;
 
-    notation_i = audio->notation;
+    notation = audio->notation;
 
-    while(notation_i != NULL){
-      notation = AGS_NOTATION(notation_i->data);
-      note = notation->notes;
+    while(notation != NULL){
+      note =
+	note_start = g_list_copy(AGS_NOTATION(notation->data)->notes);
 
       while(note != NULL){
-	note_next = note->next;
-
 	if(AGS_NOTE(note->data)->y >= pads){
-	  if(note->prev != NULL)
-	    note->prev->next = note_next;
-	  else
-	    notation->notes = note_next;
-
-	  if(note_next != NULL)
-	    note_next->prev = note->prev;
-
-	  free(note->data);
-	  g_list_free1(note);
+	  AGS_NOTATION(notation->data)->notes = g_list_remove(AGS_NOTATION(notation->data)->notes,
+							      note->data);
+	  
+	  g_object_unref(note->data);
 	}
 
-	note = note_next;
+	note = note->next;
       }
 
-      notation_i = notation_i->next;
+      g_list_free(note_start);
+      
+      notation = notation->next;
     }
   }
 
   void ags_audio_set_pads_shrink_automation(){
-    GList *automation, *automation_next;
+    GList *list_start, *list;
 
-    automation = audio->automation;
-
-    while(automation != NULL){
-      automation_next = automation->next;
-
-      if(AGS_AUTOMATION(automation->data)->channel_type == channel_type){
-	if(AGS_AUTOMATION(automation->data)->line >= pads * audio->audio_channels){
-	  ags_audio_remove_automation(audio,
-				      automation->data);
-	}
+    list = 
+      list_start = g_list_copy(audio->automation);
+    
+    while(list != NULL){
+      if(AGS_AUTOMATION(list->data)->channel_type == channel_type &&
+	 AGS_AUTOMATION(list->data)->line >= pads * audio->audio_channels){
+	audio->automation = g_list_remove(audio->automation,
+					  list->data);
+	
+	g_object_run_dispose((GObject *) list->data);
+	g_object_unref((GObject *) list->data);
       }
       
-      automation = automation_next;
+      list = list->next;
     }
+
+    g_list_free(list_start);
   }
 
   void ags_audio_set_pads_free_wave(){
-    GList *list, *list_next;
+    GList *list_start, *list;
 
-    if(audio->audio_channels > 0){
-      list = audio->wave;
-      audio->wave = NULL;
-    }else{
-      return;
-    }
-
+    list = 
+      list_start = g_list_copy(audio->wave);
+    
     while(list != NULL){
-      list_next = list->next;
-
-      g_object_unref(G_OBJECT(list->data));
-      g_list_free1(list);
-
-      list = list_next;
+      g_object_run_dispose((GObject *) list->data);
+      g_object_unref((GObject *) list->data);
+      
+      list = list->next;
     }
+
+    g_list_free(audio->wave);
+    g_list_free(list_start);
+    
+    audio->wave = NULL;
+  }
+  
+  void ags_audio_set_pads_free_midi(){
+    GList *list_start, *list;
+
+    list = 
+      list_start = g_list_copy(audio->midi);
+    
+    while(list != NULL){
+      g_object_run_dispose((GObject *) list->data);
+      g_object_unref((GObject *) list->data);
+      
+      list = list->next;
+    }
+
+    g_list_free(audio->midi);
+    g_list_free(list_start);
+    
+    audio->midi = NULL;
+  }
+
+  if(!(g_type_is_a(channel_type,
+		   AGS_TYPE_OUTPUT) ||
+       g_type_is_a(channel_type,
+		   AGS_TYPE_INPUT))){
+    g_warning("unknown channel type");
+
+    return;
   }
   
   /* entry point */
@@ -4778,7 +4805,9 @@ ags_audio_real_set_pads(AgsAudio *audio,
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  if(g_type_is_a(channel_type, AGS_TYPE_OUTPUT)){
+  if(g_type_is_a(channel_type,
+		 AGS_TYPE_OUTPUT) &&
+     (AGS_AUDIO_NO_OUTPUT & (audio->flags)) == 0){
     /* output */
     pads_old = audio->output_pads;
 
@@ -4786,65 +4815,53 @@ ags_audio_real_set_pads(AgsAudio *audio,
       return;
     }
 
-    if(audio->audio_channels == 0){
-      audio->output_pads = pads;
-      return;
-    }
+    if(audio->audio_channels != 0){
+      /* grow or shrink */
+      if(pads > audio->output_pads){
+	AgsPlaybackDomain *playback_domain;
+	AgsChannel *current;
 
-    /* grow or shrink */
-    if(pads > audio->output_pads){
-      AgsPlaybackDomain *playback_domain;
-      AgsChannel *current;
+	guint i, j;
 
-      guint i, j;
-
-      /* instantiate notation */
-      if(pads_old == 0){
-	if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) == 0){
-	  ags_audio_set_pads_alloc_notation();
-	}
-
-	if((AGS_AUDIO_WAVE_DEFAULT & (audio->flags)) == 0){
-	  ags_audio_set_pads_alloc_wave();
-	}
-      }
-
-      if((AGS_AUDIO_NO_OUTPUT & (audio->flags)) == 0){
-	/* grow channels */
-	ags_audio_set_pads_grow();
+	if((AGS_AUDIO_NO_OUTPUT & (audio->flags)) == 0){
+	  /* grow channels */
+	  ags_audio_set_pads_grow();
       
-	/* alloc playback domain */
-	playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
-	current = audio->output;
+	  /* alloc playback domain */
+	  playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
+	  current = audio->output;
 
-	current = ags_channel_pad_nth(current,
-				      pads_old);
+	  current = ags_channel_pad_nth(current,
+					pads_old);
 
-	for(j = pads_old; j < pads; j++){
-	  for(i = 0; i < audio->audio_channels; i++){
-	    playback_domain->playback = g_list_append(playback_domain->playback,
-						      current->playback);
+	  for(j = pads_old; j < pads; j++){
+	    for(i = 0; i < audio->audio_channels; i++){
+	      playback_domain->playback = g_list_append(playback_domain->playback,
+							current->playback);
 	
-	    current = current->next;
+	      current = current->next;
+	    }
 	  }
 	}
-      }
-    }else if(pads == 0){
-      GList *list;
+      }else if(pads == 0){
+	GList *list;
       
-      if((AGS_AUDIO_NO_OUTPUT & (audio->flags)) == 0){
 	ags_audio_set_pads_shrink_automation();      
 
-	if((AGS_AUDIO_HAS_NOTATION & (audio->flags)) != 0 &&
-	   audio->notation != NULL){
-	  ags_audio_set_pads_free_notation();
-	}
+	if((AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT & (audio->behaviour_flags)) != 0){
+	  if((AGS_SOUND_ABILITY_NOTATION & (audio->ability_flags)) != 0){
+	    ags_audio_set_pads_free_notation();
+	  }
 
-	if((AGS_AUDIO_HAS_WAVE & (audio->flags)) != 0 &&
-	   audio->wave != NULL){
-	  ags_audio_set_pads_free_wave();
-	}
+	  if((AGS_SOUND_ABILITY_WAVE & (audio->ability_flags)) != 0){
+	    ags_audio_set_pads_free_wave();
+	  }
 
+	  if((AGS_SOUND_ABILITY_MIDI & (audio->ability_flags)) != 0){
+	    ags_audio_set_pads_free_midi();
+	  }
+	}
+	
 	channel = audio->output;
       
 	/* unlink and remove */
@@ -4866,110 +4883,108 @@ ags_audio_real_set_pads(AgsAudio *audio,
 			 g_object_unref);
 
 	AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback = NULL;
-      }
-    }else if(pads < audio->output_pads){
-      AgsPlaybackDomain *playback_domain;
+      }else if(pads < audio->output_pads){
+	AgsPlaybackDomain *playback_domain;
 
-      guint i;
+	guint i;
       
-      channel = audio->output;
+	channel = audio->output;
 
-      if((AGS_AUDIO_NO_OUTPUT & (audio->flags)) == 0){
-	ags_audio_set_pads_shrink_automation();      
-	ags_audio_set_pads_remove_notes();
+	if((AGS_AUDIO_NO_OUTPUT & (audio->flags)) == 0){
+	  ags_audio_set_pads_shrink_automation();      
+	  ags_audio_set_pads_remove_notes();
 
-	channel = ags_channel_pad_nth(channel,
-				      pads);
+	  channel = ags_channel_pad_nth(channel,
+					pads);
       
-	ags_audio_set_pads_unlink_all(channel);
-	ags_audio_set_pads_shrink(channel);
+	  ags_audio_set_pads_unlink_all(channel);
+	  ags_audio_set_pads_shrink(channel);
 
-	playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
+	  playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
 
-	for(i = 0; i < audio->output_pads - pads; i++){
-	  AgsPlayback *playback;
-	  GList *list;
+	  for(i = 0; i < audio->output_pads - pads; i++){
+	    AgsPlayback *playback;
+	    GList *list;
 
-	  list = g_list_last(playback_domain->playback);
+	    list = g_list_last(playback_domain->playback);
 
-	  if(list != NULL){
-	    playback = list->data;
-	    playback_domain->playback = g_list_remove(playback_domain->playback,
-						      playback);
-	    g_object_run_dispose(playback);
-	    g_object_unref(playback);
+	    if(list != NULL){
+	      playback = list->data;
+	      playback_domain->playback = g_list_remove(playback_domain->playback,
+							playback);
+	      g_object_run_dispose(playback);
+	      g_object_unref(playback);
+	    }
 	  }
 	}
       }
     }
-
+    
     /* apply new size */
     audio->output_pads = pads;
     audio->output_lines = pads * audio->audio_channels;
 
-    if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
+    //    if((AGS_AUDIO_SYNC & audio->flags) != 0 && (AGS_AUDIO_ASYNC & audio->flags) == 0){
       //TODO:JK: fix me
       //      audio->input_pads = pads;
       //      audio->input_lines = pads * audio->audio_channels;
-    }
-  }else if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
+    //    }
+  }else if(g_type_is_a(channel_type,
+		       AGS_TYPE_INPUT) &&
+	   (AGS_AUDIO_NO_INPUT & (audio->flags)) == 0){
     /* input */
     if(pads_old == pads){
       return;
     }
 
-    if(audio->audio_channels == 0){
-      audio->input_pads = pads;
-      return;
-    }
-
-    /* grow or shrink */
-    if(pads > pads_old){
-      /* instantiate notation */
-      if(pads_old == 0){
-	if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
-	  ags_audio_set_pads_alloc_notation();
-	}
-
-	if((AGS_AUDIO_WAVE_DEFAULT & (audio->flags)) != 0){
-	  ags_audio_set_pads_alloc_wave();
-	}
-      }
-
-      /* grow channels */
-      if((AGS_AUDIO_NO_INPUT & (audio->flags)) == 0){
+    if(audio->audio_channels != 0){
+      /* grow or shrink */
+      if(pads > pads_old){
+	/* grow channels */
 	ags_audio_set_pads_grow();
-      }
-    }else if(pads < pads_old){
-      channel = audio->input;
+      }else if(pads == 0){
+	channel = audio->input;
 	
-      if((AGS_AUDIO_NO_INPUT & (audio->flags)) == 0){
+	ags_audio_set_pads_shrink_automation();
+
+	if((AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT & (audio->behaviour_flags)) != 0){
+	  if((AGS_SOUND_ABILITY_NOTATION & (audio->ability_flags)) != 0){
+	    ags_audio_set_pads_free_notation();
+	  }
+
+	  if((AGS_SOUND_ABILITY_WAVE & (audio->ability_flags)) != 0){
+	    ags_audio_set_pads_free_wave();
+	  }
+
+	  if((AGS_SOUND_ABILITY_MIDI & (audio->ability_flags)) != 0){
+	    ags_audio_set_pads_free_midi();
+	  }
+	}
+
+	/* shrink channels */
+	ags_audio_set_pads_unlink_all(channel);
+	ags_audio_set_pads_shrink_zero(channel);
+	
+	audio->input = NULL;  
+      }else if(pads < pads_old){
+	channel = audio->input;
+	
 	ags_audio_set_pads_shrink_automation();
       
-	if(pads == 0){
-	  /* shrink channels */
-	  ags_audio_set_pads_unlink_all(channel);
-	  ags_audio_set_pads_shrink_zero(channel);
+	channel = ags_channel_pad_nth(channel,
+				      pads);
 	
-	  audio->input = NULL;  
-	}else{
-	  channel = ags_channel_pad_nth(channel,
-					pads);
-	
-	  /* shrink channels */
-	  ags_audio_set_pads_unlink_all(channel);
-	  ags_audio_set_pads_shrink(channel);
-	}
+	/* shrink channels */
+	ags_audio_set_pads_unlink_all(channel);
+	ags_audio_set_pads_shrink(channel);
       }
     }
 
     /* apply new allocation */
     audio->input_pads = pads;
     audio->input_lines = pads * audio->audio_channels;
-  }else{
-    g_warning("unknown channel type");
   }
-
+  
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
