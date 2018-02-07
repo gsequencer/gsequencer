@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -54,7 +54,6 @@ void ags_recall_id_finalize(GObject *gobject);
 
 enum{
   PROP_0,
-  PROP_RECYCLING,
   PROP_RECYCLING_CONTEXT,
 };
 
@@ -116,27 +115,11 @@ ags_recall_id_class_init(AgsRecallIDClass *recall_id)
 
   /* properties */
   /**
-   * AgsRecallID:recycling:
-   *
-   * The assigned #AgsRecycling.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_object("recycling",
-				   i18n_pspec("assigned recycling"),
-				   i18n_pspec("The recycling it is assigned with"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_RECYCLING,
-				  param_spec);
-
-  /**
    * AgsRecallID:recycling-context:
    *
    * The dynamic run context belonging to.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("recycling-context",
 				   i18n_pspec("assigned recycling context"),
@@ -159,8 +142,10 @@ void
 ags_recall_id_init(AgsRecallID *recall_id)
 {
   recall_id->flags = 0;
-
-  recall_id->recycling = NULL;
+  recall_id->sound_scope = -1;
+  recall_id->staging_flags = 0;
+  recall_id->state_flags = 0;
+  
   recall_id->recycling_context = NULL;
 }
 
@@ -175,27 +160,6 @@ ags_recall_id_set_property(GObject *gobject,
   recall_id = AGS_RECALL_ID(gobject);
 
   switch(prop_id){
-  case PROP_RECYCLING:
-    {
-      AgsRecycling *recycling;
-
-      recycling = g_value_get_object(value);
-
-      if(recall_id->recycling == (GObject *) recycling){
-	return;
-      }
-
-      if(recall_id->recycling != NULL){
-	g_object_unref(recall_id->recycling);
-      }
-
-      if(recycling != NULL){
-	g_object_ref(recycling);
-      }
-
-      recall_id->recycling = (GObject *) recycling;
-    }
-    break;
   case PROP_RECYCLING_CONTEXT:
     {
       AgsRecyclingContext *recycling_context;
@@ -234,11 +198,6 @@ ags_recall_id_get_property(GObject *gobject,
   recall_id = AGS_RECALL_ID(gobject);
 
   switch(prop_id){
-  case PROP_RECYCLING:
-    {
-      g_value_set_object(value, recall_id->recycling);
-    }
-    break;
   case PROP_RECYCLING_CONTEXT:
     {
       g_value_set_object(value, recall_id->recycling_context);
@@ -285,12 +244,6 @@ ags_recall_id_dispose(GObject *gobject)
   AgsRecallID *recall_id;
 
   recall_id = AGS_RECALL_ID(gobject);
-
-  if(recall_id->recycling != NULL){
-    g_object_unref(recall_id->recycling);
-
-    recall_id->recycling = NULL;
-  }
   
   if(recall_id->recycling_context != NULL){
     g_object_unref(recall_id->recycling_context);
@@ -308,10 +261,6 @@ ags_recall_id_finalize(GObject *gobject)
   AgsRecallID *recall_id;
 
   recall_id = AGS_RECALL_ID(gobject);
-
-  if(recall_id->recycling != NULL){
-    g_object_unref(recall_id->recycling);
-  }
   
   if(recall_id->recycling_context != NULL){
     g_object_unref(recall_id->recycling_context);
@@ -322,139 +271,292 @@ ags_recall_id_finalize(GObject *gobject)
 }
 
 /**
- * ags_recall_id_get_run_stage:
- * @id: the #AgsRecallID to check
- * @stage: the current run stage to check against
- *
- * Check if a run stage already has been passed for current run. This
- * function is intended to handle AGS_AUDIO_ASYNC correctly.
- *
- * Returns: %TRUE if the stage isn't run yet otherwise %FALSE
+ * ags_recall_id_set_scope:
+ * @recall_id: the #AgsRecallID
+ * @sound_scope: the sound scope
  * 
- * Since: 1.0.0
+ * Set @sound_scope for @recall_id.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_recall_id_set_sound_scope(AgsRecallID *recall_id, gint sound_scope)
+{
+  if(!AGS_IS_RECALL_ID(recall_id) &&
+     ags_recall_id_check_scope(recall_id,
+			       -1)){
+    return;
+  }
+
+  recall_id->scope = scope;
+}
+
+/**
+ * ags_recall_id_check_sound_scope:
+ * @recall_id: the #AgsRecallID
+ * @sound_scope: the sound scope to check or -1 to check all
+ * 
+ * Check if @sound_scope is set for @recall_id.
+ * 
+ * Since: 2.0.0
  */
 gboolean
-ags_recall_id_get_run_stage(AgsRecallID *id, gint stage)
+ags_recall_id_check_sound_scope(AgsRecallID *recall_id, gint sound_scope)
 {
-  switch(stage){
-  case 0:
-    {
-      if((AGS_RECALL_ID_PRE & (id->flags)) == 0){
-	return(TRUE);
-      }
-    }
-    break;
-  case 1:
-    {
-      if((AGS_RECALL_ID_INTER & (id->flags)) == 0){
-	return(TRUE);
-      }
-    }
-    break;
-  case 2:
-    {
-      if((AGS_RECALL_ID_POST & (id->flags)) == 0){
-	return(TRUE);
-      }
-    }
-    break;
+  if(!AGS_IS_RECALL_ID(recall_id)){
+    return(FALSE);
   }
-
-  return(FALSE);
+  
+  if(sound_scope < 0){
+    switch(recall_id->sound_scope){
+    case AGS_SOUND_SCOPE_PLAYBACK:
+    case AGS_SOUND_SCOPE_NOTATION:
+    case AGS_SOUND_SCOPE_SEQUENCER:
+    case AGS_SOUND_SCOPE_WAVE:
+    case AGS_SOUND_SCOPE_MIDI:
+      return(TRUE);      
+    default:
+      return(FALSE);
+    }
+  }else{
+    if(sound_scope < AGS_SOUND_SCOPE_LAST &&
+       sound_scope == recall_id->sound_scope){
+      return(TRUE);
+    }else{
+      return(FALSE);
+    }
+  }
 }
 
 /**
- * ags_recall_id_set_run_stage:
- * @recall_id: the #AgsRecallID which has been passed
- * @stage: the run stage the networked channels are in
- *
- * Marks the run stage to be passed for audio channel.
+ * ags_recall_id_set_staging_flags:
+ * @recall_id: the #AgsRecallID
+ * @staging_flags: staging flags to set
  * 
- * Since: 1.0.0
+ * Set staging flags.
+ * 
+ * Since: 2.0.0
  */
 void
-ags_recall_id_set_run_stage(AgsRecallID *recall_id, gint stage)
+ags_recall_id_set_staging_flags(AgsRecallID *recall_id, guint staging_flags)
 {
-  guint i;
-
-  if(stage == 0){
-    recall_id->flags |= AGS_RECALL_ID_PRE;
-  }else if(stage == 1){
-    recall_id->flags |= AGS_RECALL_ID_INTER;
-  }else{
-    recall_id->flags |= AGS_RECALL_ID_POST;
+  if(!AGS_IS_RECALL_ID(recall_id)){
+    return;
   }
+
+  recall->staging_flags |= staging_flags;
 }
 
 /**
- * ags_recall_id_unset_run_stage:
- * @recall_id: the #AgsRecallID which has been passed
- * @stage: the run stage the networked channels are in
- *
- * Unmarks the run stage to be passed for audio channel.
+ * ags_recall_id_unset_staging_flags:
+ * @recall_id: the #AgsRecallID
+ * @staging_flags: staging flags to unset
  * 
- * Since: 1.0.0
+ * Unset staging flags.
+ * 
+ * Since: 2.0.0
  */
 void
-ags_recall_id_unset_run_stage(AgsRecallID *recall_id, gint stage)
+ags_recall_id_unset_staging_flags(AgsRecallID *recall_id, guint staging_flags)
 {
-  if(stage == 0){
-    recall_id->flags &= (~AGS_RECALL_ID_PRE);
-  }else if(stage == 1){
-    recall_id->flags &= (~AGS_RECALL_ID_INTER);
-  }else{
-    recall_id->flags &= (~AGS_RECALL_ID_POST);
+  if(!AGS_IS_RECALL_ID(recall_id)){
+    return;
   }
+
+  recall->staging_flags &= (~staging_flags);
 }
 
 /**
- * ags_recall_id_add:
- * @recall_id_list: the #GList the new #AgsRecallID should be added
- * @recall_id: the #AgsRecallID to add
- *
- * Adds an #AgsRecallID with given properties to the passed #GList.
- *
- * Returns: the newly allocated #GList which is the new start of the #GList, too.
+ * ags_recall_id_check_staging_flags:
+ * @recall_id: the #AgsRecallID
+ * @staging_flags: staging flags to check
  * 
- * Since: 1.0.0
+ * Check the occurence of @staging_flags in @recall_id.
+ * 
+ * Returns: %TRUE if all flags matched, otherwise %FALSE
+ * 
+ * Since: 2.0.0
  */
-GList*
-ags_recall_id_add(GList *recall_id_list,
-		  AgsRecallID *recall_id)
+gboolean
+ags_recall_id_check_staging_flags(AgsRecallID *recall_id, guint staging_flags)
 {
-  GList *list;
+  if(!AGS_IS_RECALL_ID(recall_id)){
+    return(FALSE);
+  }
 
-  list = g_list_prepend(recall_id_list,
-			(gpointer) recall_id);
+  if((AGS_SOUND_STAGING_CHECK_RT & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_CHECK_RT & (recall_id->staging_flags)) == 0){
+    return(FALSE);
+  }
 
-  return(list);
+  if((AGS_SOUND_STAGING_RUN_INIT_PRE & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_RUN_INIT_PRE & (recall_id->staging_flags)) == 0){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_STAGING_RUN_INIT_INTER & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_RUN_INIT_INTER & (recall_id->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_RUN_INIT_POST & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_RUN_INIT_POST & (recall_id->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (recall_id->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_AUTOMATE & (recall_id->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_RUN_PRE & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_RUN_PRE & (recall_id->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_RUN_INTER & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_RUN_INTER & (recall_id->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_RUN_POST & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_RUN_POST & (recall_id->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_DO_FEEDBACK & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_DO_FEEDBACK & (recall_id->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (recall_id->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_CANCEL & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_CANCEL & (recall_id->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_DONE & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_DONE & (recall_id->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_REMOVE & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_REMOVE & (recall_id->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  return(TRUE);
+}
+
+/**
+ * ags_recall_id_set_state_flags:
+ * @recall_id: the #AgsRecallID
+ * @state_flags: state flags to set
+ * 
+ * Set state flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_recall_id_set_state_flags(AgsRecallID *recall_id, guint state_flags)
+{
+  if(!AGS_IS_RECALL_ID(recall_id)){
+    return;
+  }
+
+  recall->state_flags |= state_flags;
+}
+
+/**
+ * ags_recall_id_unset_state_flags:
+ * @recall_id: the #AgsRecallID
+ * @state_flags: state flags to unset
+ * 
+ * Unset state flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_recall_id_unset_state_flags(AgsRecallID *recall_id, guint state_flags)
+{
+  if(!AGS_IS_RECALL_ID(recall_id)){
+    return;
+  }
+
+  recall->state_flags &= (~state_flags);
+}
+
+/**
+ * ags_recall_id_check_state_flags:
+ * @recall_id: the #AgsRecallID
+ * @state_flags: state flags to check
+ * 
+ * Check the occurence of @state_flags in @recall_id.
+ * 
+ * Returns: %TRUE if all flags matched, otherwise %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_id_check_state_flags(AgsRecallID *recall_id, guint state_flags)
+{
+  if(!AGS_IS_RECALL_ID(recall_id)){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_STATE_IS_WAITING & (state_flags)) != 0 &&
+     (AGS_SOUND_STATE_IS_WAITING & (recall_id->state_flags)) == 0){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_STATE_IS_ACTIVE & (state_flags)) != 0 &&
+     (AGS_SOUND_STATE_IS_ACTIVE & (recall_id->state_flags)) == 0){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_STATE_IS_PROCESSING & (state_flags)) != 0 &&
+     (AGS_SOUND_STATE_IS_PROCESSING & (recall_id->state_flags)) == 0){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_STATE_IS_TERMINATING & (state_flags)) != 0 &&
+     (AGS_SOUND_STATE_IS_TERMINATING & (recall_id->state_flags)) == 0){
+    return(FALSE);
+  }
+  
+  return(TRUE);
 }
 
 /**
  * ags_recall_id_find_recycling_context:
- * @recall_id_list: a #GList containing #AgsRecallID
+ * @recall_id: a #GList containing #AgsRecallID
  * @recycling_context: the #AgsRecyclingContext to match
  *
  * Retrieve recall id by recycling context.
  *
  * Returns: Matching recall id.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecallID*
-ags_recall_id_find_recycling_context(GList *recall_id_list,
-				       AgsRecyclingContext *recycling_context)
+ags_recall_id_find_recycling_context(GList *recall_id,
+				     AgsRecyclingContext *recycling_context)
 {
-  AgsRecallID *recall_id;
-
-  while(recall_id_list != NULL){
-    recall_id = AGS_RECALL_ID(recall_id_list->data);
-
-    if(recall_id->recycling_context == recycling_context){
-      return(recall_id);
+  while(recall_id != NULL){
+    if(AGS_RECALL_ID(recall_id->data)->recycling_context == recycling_context){
+      return(recall_id->data);
     }
 
-    recall_id_list = recall_id_list->next;
+    recall_id = recall_id->next;
   }
 
   return(NULL);
@@ -462,30 +564,28 @@ ags_recall_id_find_recycling_context(GList *recall_id_list,
 
 /**
  * ags_recall_id_find_parent_recycling_context:
- * @recall_id_list: a #GList containing #AgsRecallID
+ * @recall_id: a #GList containing #AgsRecallID
  * @parent_recycling_context: the #AgsRecyclingContext to match
  *
  * Retrieve recall id by recycling context.
  *
  * Returns: Matching recall id.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecallID*
-ags_recall_id_find_parent_recycling_context(GList *recall_id_list,
-					      AgsRecyclingContext *parent_recycling_context)
+ags_recall_id_find_parent_recycling_context(GList *recall_id,
+					    AgsRecyclingContext *parent_recycling_context)
 {
   AgsRecallID *recall_id;
 
-  while(recall_id_list != NULL){
-    recall_id = AGS_RECALL_ID(recall_id_list->data);
-
-    if(recall_id->recycling_context != NULL &&
-       recall_id->recycling_context->parent == parent_recycling_context){
+  while(recall_id != NULL){
+    if(AGS_RECALL_ID(recall_id->data)->recycling_context != NULL &&
+       AGS_RECALL_ID(recall_id->data)->recycling_context->parent == parent_recycling_context){
       return(recall_id);
     }
 
-    recall_id_list = recall_id_list->next;
+    recall_id = recall_id->next;
   }
 
   return(NULL);
@@ -499,7 +599,7 @@ ags_recall_id_find_parent_recycling_context(GList *recall_id_list,
  *
  * Returns: a new #AgsRecallID
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecallID*
 ags_recall_id_new(AgsRecycling *recycling)

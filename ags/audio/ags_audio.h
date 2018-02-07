@@ -169,15 +169,15 @@ struct _AgsAudioClass
 		   guint pads, guint pads_old);  
   
   GList* (*start)(AgsAudio *audio,
-		  guint scope);
+		  gint sound_scope);
   void (*stop)(AgsAudio *audio,
-	       guint scope);
+	       gint sound_scope);
 
-  GList* (*check_scope)(AgsAudio *audio, guint scope,
+  GList* (*check_scope)(AgsAudio *audio, gint sound_scope,
 			guint *staging_flags);
   
   GList* (*recursive_reset_stage)(AgsAudio *audio,
-				  guint scope, guint staging_flags);
+				  gint sound_scope, guint staging_flags);
 };
 
 GType ags_audio_get_type();
@@ -276,13 +276,13 @@ void ags_audio_remove(AgsAudio *audio,
 
 /* some events */
 GList* ags_audio_start(AgsAudio *audio,
-		       guint scope);
+		       gint sound_scope);
 
 void ags_audio_stop(AgsAudio *audio,
-		    guint scope);
+		    gint sound_scope);
 
 /* query */
-GList* ags_audio_check_scope(AgsAudio *audio, guint scope,
+GList* ags_audio_check_scope(AgsAudio *audio, gint sound_scope,
 			     guint *staging_flags);
 
 GList* ags_audio_collect_all_audio_ports(AgsAudio *audio);
@@ -318,7 +318,7 @@ void ags_audio_recursive_set_property(AgsAudio *audio,
 				      const gchar *parameter_name[], const GValue value[]);
 
 GList* ags_audio_recursive_reset_stage(AgsAudio *audio,
-				       guint sound_scope, guint staging_flags);
+				       gint sound_scope, guint staging_flags);
 
 /* instantiate */
 AgsAudio* ags_audio_new(GObject *output_soundcard);

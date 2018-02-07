@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,15 +41,16 @@ struct _AgsRecyclingContext
 {
   GObject object;
 
-  pthread_mutexattr_t *mutexattr;
-  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+  pthread_mutex_t *obj_mutex;
   
   AgsRecyclingContext *parent;
 
   GObject *recall_id;
 
   AgsRecycling **recycling;
-  guint64 length;
+  guint64 allocated_length;
+  guint64 current_length;
 
   GList *children;
 };

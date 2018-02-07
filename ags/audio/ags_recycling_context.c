@@ -59,6 +59,8 @@ enum{
 
 static gpointer ags_recycling_context_parent_class = NULL;
 
+static pthread_mutex_t ags_recycling_context_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_recycling_context_get_type (void)
 {

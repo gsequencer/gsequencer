@@ -83,6 +83,8 @@ enum{
 static gpointer ags_recycling_parent_class = NULL;
 static guint recycling_signals[LAST_SIGNAL];
 
+static pthread_mutex_t ags_recycling_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_recycling_get_type(void)
 {
