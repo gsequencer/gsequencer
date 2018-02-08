@@ -65,13 +65,14 @@ typedef enum{
   AGS_SOUND_STAGING_FEED_INPUT_QUEUE    = 1 <<  4,
   AGS_SOUND_STAGING_AUTOMATE            = 1 <<  5,
   AGS_SOUND_STAGING_RUN_PRE             = 1 <<  6,
-  AGS_SOUND_STAGING_RUN                 = 1 <<  7,
+  AGS_SOUND_STAGING_RUN_INTER           = 1 <<  7,
   AGS_SOUND_STAGING_RUN_POST            = 1 <<  8,
   AGS_SOUND_STAGING_DO_FEEDBACK         = 1 <<  9,
   AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE   = 1 << 10,
-  AGS_SOUND_STAGING_CANCEL              = 1 << 11,
-  AGS_SOUND_STAGING_DONE                = 1 << 12,
-  AGS_SOUND_STAGING_REMOVE              = 1 << 13,
+  AGS_SOUND_STAGING_FINI                = 1 << 11,
+  AGS_SOUND_STAGING_CANCEL              = 1 << 12,
+  AGS_SOUND_STAGING_DONE                = 1 << 13,
+  AGS_SOUND_STAGING_REMOVE              = 1 << 14,
 }AgsSoundStagingFlags;
 
 tyepdef enum{

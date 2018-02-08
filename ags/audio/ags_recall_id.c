@@ -440,6 +440,11 @@ ags_recall_id_check_staging_flags(AgsRecallID *recall_id, guint staging_flags)
      (AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (recall_id->staging_flags)) == 0){
     return(FALSE);
   }
+
+  if((AGS_SOUND_STAGING_FINI & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_FINI & (recall_id->staging_flags)) == 0){
+    return(FALSE);
+  }
   
   if((AGS_SOUND_STAGING_CANCEL & (staging_flags)) != 0 &&
      (AGS_SOUND_STAGING_CANCEL & (recall_id->staging_flags)) == 0){

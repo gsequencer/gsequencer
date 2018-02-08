@@ -262,19 +262,17 @@ void ags_audio_duplicate_recall(AgsAudio *audio,
 void ags_audio_resolve_recall(AgsAudio *audio,
 			      AgsRecallID *recall_id);
 void ags_audio_init_recall(AgsAudio *audio,
-			   AgsRecallID *recall_id,
-			   gint stage);
+			   AgsRecallID *recall_id, guint staging_flags);
 
 void ags_audio_play(AgsAudio *audio,
-		    AgsRecallID *recall_id,
-		    gint stage);
+		    AgsRecallID *recall_id, guint staging_flags);
 
 void ags_audio_cancel(AgsAudio *audio,
 		      AgsRecallID *recall_id);
 void ags_audio_remove(AgsAudio *audio,
 		      AgsRecallID *recall_id);
 
-/* some events */
+/* control */
 GList* ags_audio_start(AgsAudio *audio,
 		       gint sound_scope);
 

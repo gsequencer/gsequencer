@@ -2027,6 +2027,11 @@ ags_recall_check_staging_flags(AgsRecall *recall, guint staging_flags)
      (AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (recall->staging_flags)) == 0){
     return(FALSE);
   }
+
+  if((AGS_SOUND_STAGING_FINI & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_FINI & (recall->staging_flags)) == 0){
+    return(FALSE);
+  }
   
   if((AGS_SOUND_STAGING_CANCEL & (staging_flags)) != 0 &&
      (AGS_SOUND_STAGING_CANCEL & (recall->staging_flags)) == 0){
