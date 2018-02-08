@@ -100,8 +100,10 @@ struct _AgsRecall
   guint flags;
   guint ability_flags;
   guint behaviour_flags;
+  gint sound_scope;
   guint staging_flags;
-
+  guint state_flags;
+  
   gboolean rt_safe;
   
   gchar *version;
@@ -196,6 +198,37 @@ GType ags_recall_get_type();
 
 void ags_recall_set_flags(AgsRecall *recall, guint flags);
 
+/* ability flags */
+void ags_recall_set_ability_flags(AgsRecall *recall, guint ability_flags);
+void ags_recall_unset_ability_flags(AgsRecall *recall, guint ability_flags);
+
+gboolean ags_recall_check_ability_flags(AgsRecall *recall, guint ability_flags);
+gboolean ags_recall_match_ability_flags_to_scope(AgsRecall *recall, gint sound_scope);
+
+/* behaviour flags */
+void ags_recall_set_behaviour_flags(AgsRecall *recall, guint behaviour_flags);
+void ags_recall_unset_behaviour_flags(AgsRecall *recall, guint behaviour_flags);
+
+gboolean ags_recall_check_behaviour_flags(AgsRecall *recall, guint behaviour_flags);
+
+/* scope */
+void ags_recall_set_sound_scope(AgsRecall *recall, gint sound_scope);
+
+gboolean ags_recall_check_sound_scope(AgsRecall *recall, gint sound_scope);
+
+/* staging flags */
+void ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags);
+void ags_recall_unset_staging_flags(AgsRecall *recall, guint staging_flags);
+
+gboolean ags_recall_check_staging_flags(AgsRecall *recall, guint staging_flags);
+
+/* state flags */
+void ags_recall_set_state_flags(AgsRecall *recall, guint state_flags);
+void ags_recall_unset_state_flags(AgsRecall *recall, guint state_flags);
+
+gboolean ags_recall_check_state_flags(AgsRecall *recall, guint state_flags);
+
+/*  */
 void ags_recall_load_automation(AgsRecall *recall,
 				GList *automation_port);
 void ags_recall_unload_automation(AgsRecall *recall);

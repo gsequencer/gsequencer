@@ -288,7 +288,7 @@ ags_recall_id_set_sound_scope(AgsRecallID *recall_id, gint sound_scope)
     return;
   }
 
-  recall_id->scope = scope;
+  recall_id->sound_scope = sound_scope;
 }
 
 /**
@@ -297,6 +297,8 @@ ags_recall_id_set_sound_scope(AgsRecallID *recall_id, gint sound_scope)
  * @sound_scope: the sound scope to check or -1 to check all
  * 
  * Check if @sound_scope is set for @recall_id.
+ * 
+ * Returns: %TRUE if sound scope matches, otherwise  %FALSE
  * 
  * Since: 2.0.0
  */
@@ -344,7 +346,7 @@ ags_recall_id_set_staging_flags(AgsRecallID *recall_id, guint staging_flags)
     return;
   }
 
-  recall->staging_flags |= staging_flags;
+  recall_id->staging_flags |= staging_flags;
 }
 
 /**
@@ -363,7 +365,7 @@ ags_recall_id_unset_staging_flags(AgsRecallID *recall_id, guint staging_flags)
     return;
   }
 
-  recall->staging_flags &= (~staging_flags);
+  recall_id->staging_flags &= (~staging_flags);
 }
 
 /**
@@ -473,7 +475,7 @@ ags_recall_id_set_state_flags(AgsRecallID *recall_id, guint state_flags)
     return;
   }
 
-  recall->state_flags |= state_flags;
+  recall_id->state_flags |= state_flags;
 }
 
 /**
@@ -492,7 +494,7 @@ ags_recall_id_unset_state_flags(AgsRecallID *recall_id, guint state_flags)
     return;
   }
 
-  recall->state_flags &= (~state_flags);
+  recall_id->state_flags &= (~state_flags);
 }
 
 /**

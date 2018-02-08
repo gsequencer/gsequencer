@@ -6240,7 +6240,7 @@ ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play)
  * 
  * Duplicate all #AgsRecall templates of @audio.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_audio_duplicate_recall(AgsAudio *audio,
@@ -6249,7 +6249,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
   AgsRecyclingContext *parent_recycling_context, *recycling_context;
   AgsRecall *recall, *copy;
 
-  GList *list_recall_start, *list_recall;
+  GList *list_start, *list;
 
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *recycling_context_mutex;
@@ -6306,13 +6306,13 @@ ags_audio_duplicate_recall(AgsAudio *audio,
     /* copy play context */
     pthread_mutex_lock(play_mutex);
 
-    list_recall_start = g_list_copy(audio->play);
+    list_start = g_list_copy(audio->play);
 
     pthread_mutex_unlock(play_mutex);
 
     /* reverse play context */
-    list_recall =
-      list_recall_start = g_list_reverse(list_recall_start);
+    list =
+      list_start = g_list_reverse(list_start);
   }else{
     pthread_mutex_t *recall_mutex;
 
@@ -6326,30 +6326,28 @@ ags_audio_duplicate_recall(AgsAudio *audio,
     /* copy recall context */
     pthread_mutex_lock(recall_mutex);
 
-    list_recall_start = g_list_copy(audio->recall);
+    list_start = g_list_copy(audio->recall);
     
     pthread_mutex_unlock(recall_mutex);
 
     /* reverse recall context */
-    list_recall =
-      list_recall_start = g_list_reverse(list_recall_start);
+    list =
+      list_start = g_list_reverse(list_start);
   }
 
   /* notify run */  
-  //  ags_recall_notify_dependency(AGS_RECALL(list_recall->data), AGS_RECALL_NOTIFY_RUN, 1);
+  //  ags_recall_notify_dependency(AGS_RECALL(list->data), AGS_RECALL_NOTIFY_RUN, 1);
 
   pthread_mutex_lock(audio_mutex);
 
   /* return if already played */
-  if((AGS_SOUND_STATE_IS_WAITING & (recall_id->state_flags)) != 0 ||
-     (AGS_SOUND_STATE_IS_ACTIVE & (recall_id->state_flags)) != 0 ||
-     (AGS_SOUND_STATE_IS_PROCESSING & (recall_id->state_flags)) != 0 ||
-     (AGS_SOUND_STATE_IS_TERMINATING & (recall_id->state_flags)) != 0){
+  if(!ags_recall_id_check_state_flags(recall_id, 0)){
     pthread_mutex_unlock(audio_mutex);
 
     return;
   }
 
+  //TODO:JK: check missing staging flags
   ags_recall_id_set_staging_flags(recall_id,
 				  (AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
 				   AGS_SOUND_STAGING_AUTOMATE |
@@ -6360,16 +6358,16 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 				   AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE));
   
   /* duplicate */
-  while(list_recall != NULL){
-    recall = AGS_RECALL(list_recall->data);
+  while(list != NULL){
+    recall = AGS_RECALL(list->data);
     
-    if((AGS_RECALL_RUN_INITIALIZED & (recall->flags)) != 0 ||
+    if(!ags_recall_check_state_flags(recall, 0) ||
        AGS_IS_RECALL_AUDIO(recall) ||
        recall->recall_id != NULL ||
-       !((playback && (AGS_RECALL_PLAYBACK & (recall->flags)) != 0) ||
-	 (sequencer && (AGS_RECALL_SEQUENCER & (recall->flags)) != 0) ||
-	 (notation && (AGS_RECALL_NOTATION & (recall->flags)) != 0))){
-      list_recall = list_recall->next;
+       !ags_recall_match_ability_flags_to_scope(recall,
+						recall_id->scope)){
+      list = list->next;
+      
       continue;
     }  
 
@@ -6380,7 +6378,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
       
       if(copy == NULL){
 	/* iterate */    
-	list_recall = list_recall->next;
+	list = list->next;
 
 	continue;
       }
@@ -6411,12 +6409,12 @@ ags_audio_duplicate_recall(AgsAudio *audio,
     }
 
     /* iterate */
-    list_recall = list_recall->next;
+    list = list->next;
   }
 
   pthread_mutex_unlock(audio_mutex);
 
-  g_list_free(list_recall_start);
+  g_list_free(list_start);
 }
 
 /**

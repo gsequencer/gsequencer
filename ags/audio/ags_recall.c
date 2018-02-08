@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -782,7 +782,12 @@ ags_recall_init(AgsRecall *recall)
   }
   
   recall->flags = 0;
-
+  recall->ability_flags = 0;
+  recall->behaviour_flags = 0;
+  recall->sound_scope = -1;
+  recall->staging_flags = 0;
+  recall->state_flags = 0;
+  
   recall->rt_safe = rt_safe;
   
   /* soundcard */
@@ -1535,44 +1540,589 @@ ags_recall_finalize(GObject *gobject)
 
 /**
  * ags_recall_set_flags:
- * @recall: an #AgsRecall
- * @flags: the flags mask
+ * @recall: the #AgsRecall
+ * @flags: flags
  *
- * Set flags recursivly.
+ * Set flags.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_recall_set_flags(AgsRecall *recall, guint flags)
 {
-  GList *child;
-  guint inheritated_flags_mask;
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
 
   /* set flags */
   recall->flags |= flags;
+}
 
-  /* set recursivly - prepare mask */
-  inheritated_flags_mask = (AGS_RECALL_PLAYBACK |
-			    AGS_RECALL_SEQUENCER |
-			    AGS_RECALL_NOTATION |
-			    AGS_RECALL_PROPAGATE_DONE |
-			    AGS_RECALL_INITIAL_RUN);
+/**
+ * ags_recall_set_ability_flags:
+ * @recall: the #AgsRecall
+ * @ability_flags: ability flags
+ *
+ * Set ability flags recursively.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_recall_set_ability_flags(AgsRecall *recall, guint ability_flags)
+{
+  GList *child;
 
-  if(!AGS_IS_RECALL_RECYCLING(recall)){
-    inheritated_flags_mask |= (AGS_RECALL_PERSISTENT |
-			       AGS_RECALL_PERSISTENT_PLAYBACK |
-			       AGS_RECALL_PERSISTENT_SEQUENCER |
-			       AGS_RECALL_PERSISTENT_NOTATION);
+  if(!AGS_IS_RECALL(recall)){
+    return;
   }
+
+  recall->ability_flags |= ability_flags;
 
   /* apply recursivly */
   child = recall->children;
 
   while(child != NULL){
-    ags_recall_set_flags(AGS_RECALL(child->data), (inheritated_flags_mask & (flags)));
+    ags_recall_set_ability_flags(AGS_RECALL(child->data), ability_flags);
 
     child = child->next;
   }
+}
+
+/**
+ * ags_recall_unset_ability_flags:
+ * @recall: the #AgsRecall
+ * @ability_flags: ability flags
+ *
+ * Unset ability flags recursively.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_recall_unset_ability_flags(AgsRecall *recall, guint ability_flags)
+{
+  GList *child;
+
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  recall->ability_flags &= (~ability_flags);
+
+  /* apply recursivly */
+  child = recall->children;
+
+  while(child != NULL){
+    ags_recall_set_ability_flags(AGS_RECALL(child->data), ability_flags);
+
+    child = child->next;
+  }
+}
+
+/**
+ * ags_recall_check_ability_flags:
+ * @recall: the #AgsRecall
+ * @ability_flags: the ability flags
+ * 
+ * Check if @ability_flags is set for @recall.
+ * 
+ * Returns: %TRUE flags are set, otherwise %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_check_ability_flags(AgsRecall *recall, guint ability_flags)
+{
+  if(!AGS_IS_RECALL(recall)){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_ABILITY_PLAYBACK & (ability_flags)) != 0 &&
+     (AGS_SOUND_ABILITY_PLAYBACK & (recall->ability_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_ABILITY_NOTATION & (ability_flags)) != 0 &&
+     (AGS_SOUND_ABILITY_NOTATION & (recall->ability_flags)) == 0){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_ABILITY_SEQUENCER & (ability_flags)) != 0 &&
+     (AGS_SOUND_ABILITY_SEQUENCER & (recall->ability_flags)) == 0){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_ABILITY_WAVE & (ability_flags)) != 0 &&
+     (AGS_SOUND_ABILITY_WAVE & (recall->ability_flags)) == 0){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_ABILITY_MIDI & (ability_flags)) != 0 &&
+     (AGS_SOUND_ABILITY_MIDI & (recall->ability_flags)) == 0){
+    return(FALSE);
+  }
+
+  return(TRUE);
+}
+
+/**
+ * ags_recall_match_ability_flags_to_scope:
+ * @recall: the #AgsRecall
+ * @sound_scope: the sound scope
+ * 
+ * Check if @sound_scope related ability flag is set.
+ * 
+ * Returns: %TRUE if sound scope is available, otherwise %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_match_ability_flags_to_scope(AgsRecall *recall, gint sound_scope)
+{
+  if(!AGS_IS_RECALL(recall)){
+    return(FALSE);
+  }
+
+  switch(sound_scope){
+  case AGS_SOUND_SCOPE_PLAYBACK:
+    {
+      if((AGS_SOUND_ABILITY_PLAYBACK & (recall->ability_flags)) != 0){
+	return(TRUE);
+      }else{
+	return(FALSE);
+      }
+    }
+  case AGS_SOUND_SCOPE_NOTATION:
+    {
+      if((AGS_SOUND_ABILITY_NOTATION & (recall->ability_flags)) != 0){
+	return(TRUE);
+      }else{
+	return(FALSE);
+      }
+    }
+  case AGS_SOUND_SCOPE_SEQUENCER:
+    {
+      if((AGS_SOUND_ABILITY_SEQUENCER & (recall->ability_flags)) != 0){
+	return(TRUE);
+      }else{
+	return(FALSE);
+      }
+    }
+  case AGS_SOUND_SCOPE_WAVE:
+    {
+      if((AGS_SOUND_ABILITY_WAVE & (recall->ability_flags)) != 0){
+	return(TRUE);
+      }else{
+	return(FALSE);
+      }
+    }
+  case AGS_SOUND_SCOPE_MIDI:
+    {
+      if((AGS_SOUND_ABILITY_MIDI & (recall->ability_flags)) != 0){
+	return(TRUE);
+      }else{
+	return(FALSE);
+      }
+    }
+  default:
+    return(FALSE);
+  }
+}
+
+/**
+ * ags_recall_set_behaviour_flags:
+ * @recall: the #AgsRecall
+ * @behaviour_flags: the behaviour flags
+ * 
+ * Set behaviour flags of @recall.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_recall_set_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
+{
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  recall->behaviour_flags |= behaviour_flags;
+}
+
+/**
+ * ags_recall_unset_behaviour_flags:
+ * @recall: the #AgsRecall
+ * @behaviour_flags: the behaviour flags
+ * 
+ * Unset behaviour flags of @recall.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_recall_unset_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
+{
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  recall->behaviour_flags &= (~behaviour_flags);
+}
+
+/**
+ * ags_recall_check_behaviour_flags:
+ * @recall: the #AgsRecall
+ * @behaviour_flags: the behaviour flags
+ * 
+ * Check if @behaviour_flags is set for @recall.
+ * 
+ * Returns: %TRUE flags are set, otherwise %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_check_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
+{
+  if(!AGS_IS_RECALL(recall)){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_BEHAVIOUR_PATTERN_MODE & (behaviour_flags)) != 0 &&
+     (AGS_SOUND_BEHAVIOUR_PATTERN_MODE & (recall->behaviour_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_BEHAVIOUR_BULK_MODE & (behaviour_flags)) != 0 &&
+     (AGS_SOUND_BEHAVIOUR_BULK_MODE & (recall->behaviour_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING & (behaviour_flags)) != 0 &&
+     (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING & (recall->behaviour_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT & (behaviour_flags)) != 0 &&
+     (AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT & (recall->behaviour_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT & (behaviour_flags)) != 0 &&
+     (AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT & (recall->behaviour_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT & (behaviour_flags)) != 0 &&
+     (AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUPUT & (recall->behaviour_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT & (behaviour_flags)) != 0 &&
+     (AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT & (recall->behaviour_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_BEHAVIOUR_PERSISTENT & (behaviour_flags)) != 0 &&
+     (AGS_SOUND_BEHAVIOUR_PERSISTENT & (recall->behaviour_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_BEHAVIOUR_PERSISTENT_PLAYBACK & (behaviour_flags)) != 0 &&
+     (AGS_SOUND_BEHAVIOUR_PERSISTENT_PLAYBACK & (recall->behaviour_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_BEHAVIOUR_PERSISTENT_NOTATION & (behaviour_flags)) != 0 &&
+     (AGS_SOUND_BEHAVIOUR_PERSISTENT_NOTATION & (recall->behaviour_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_BEHAVIOUR_PERSISTENT_SEQUENCER & (behaviour_flags)) != 0 &&
+     (AGS_SOUND_BEHAVIOUR_PERSISTENT_SEQUENCER & (recall->behaviour_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_BEHAVIOUR_PERSISTENT_WAVE & (behaviour_flags)) != 0 &&
+     (AGS_SOUND_BEHAVIOUR_PERSISTENT_WAVE & (recall->behaviour_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_BEHAVIOUR_PERSISTENT_MIDI & (behaviour_flags)) != 0 &&
+     (AGS_SOUND_BEHAVIOUR_PERSISTENT_MIDI & (recall->behaviour_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_BEHAVIOUR_PROPAGATE_DONE & (behaviour_flags)) != 0 &&
+     (AGS_SOUND_BEHAVIOUR_PROPAGATE_DONE & (recall->behaviour_flags)) == 0){
+    return(FALSE);
+  }
+
+  return(TRUE);
+}
+
+/**
+ * ags_recall_set_scope:
+ * @recall: the #AgsRecall
+ * @sound_scope: the sound scope
+ * 
+ * Set @sound_scope for @recall.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_recall_set_sound_scope(AgsRecall *recall, gint sound_scope)
+{
+  if(!AGS_IS_RECALL(recall) &&
+     ags_recall_check_scope(recall,
+			    -1)){
+    return;
+  }
+
+  recall->sound_scope = sound_scope;
+}
+
+/**
+ * ags_recall_check_sound_scope:
+ * @recall: the #AgsRecall
+ * @sound_scope: the sound scope to check or -1 to check all
+ * 
+ * Check if @sound_scope is set for @recall.
+ * 
+ * Returns: %TRUE if sound scope matches, otherwise  %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_check_sound_scope(AgsRecall *recall, gint sound_scope)
+{
+  if(!AGS_IS_RECALL(recall)){
+    return(FALSE);
+  }
+
+  if(sound_scope < 0){
+    switch(recall->sound_scope){
+    case AGS_SOUND_SCOPE_PLAYBACK:
+    case AGS_SOUND_SCOPE_NOTATION:
+    case AGS_SOUND_SCOPE_SEQUENCER:
+    case AGS_SOUND_SCOPE_WAVE:
+    case AGS_SOUND_SCOPE_MIDI:
+      return(TRUE);      
+    default:
+      return(FALSE);
+    }
+  }else{
+    if(sound_scope < AGS_SOUND_SCOPE_LAST &&
+       sound_scope == recall->sound_scope){
+      return(TRUE);
+    }else{
+      return(FALSE);
+    }
+  }
+}
+
+/**
+ * ags_recall_set_staging_flags:
+ * @recall: the #AgsRecall
+ * @staging_flags: staging flags to set
+ * 
+ * Set staging flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
+{
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  recall->staging_flags |= staging_flags;
+}
+
+/**
+ * ags_recall_unset_staging_flags:
+ * @recall: the #AgsRecall
+ * @staging_flags: staging flags to unset
+ * 
+ * Unset staging flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_recall_unset_staging_flags(AgsRecall *recall, guint staging_flags)
+{
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  recall->staging_flags &= (~staging_flags);
+}
+
+/**
+ * ags_recall_check_staging_flags:
+ * @recall: the #AgsRecall
+ * @staging_flags: staging flags to check
+ * 
+ * Check the occurence of @staging_flags in @recall.
+ * 
+ * Returns: %TRUE if all flags matched, otherwise %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_check_staging_flags(AgsRecall *recall, guint staging_flags)
+{
+  if(!AGS_IS_RECALL(recall)){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_STAGING_CHECK_RT & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_CHECK_RT & (recall->staging_flags)) == 0){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_STAGING_RUN_INIT_PRE & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_RUN_INIT_PRE & (recall->staging_flags)) == 0){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_STAGING_RUN_INIT_INTER & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_RUN_INIT_INTER & (recall->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_RUN_INIT_POST & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_RUN_INIT_POST & (recall->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (recall->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_AUTOMATE & (recall->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_RUN_PRE & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_RUN_PRE & (recall->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_RUN_INTER & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_RUN_INTER & (recall->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_RUN_POST & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_RUN_POST & (recall->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_DO_FEEDBACK & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_DO_FEEDBACK & (recall->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (recall->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_CANCEL & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_CANCEL & (recall->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_DONE & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_DONE & (recall->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_REMOVE & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_REMOVE & (recall->staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  return(TRUE);
+}
+
+/**
+ * ags_recall_set_state_flags:
+ * @recall: the #AgsRecall
+ * @state_flags: state flags to set
+ * 
+ * Set state flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_recall_set_state_flags(AgsRecall *recall, guint state_flags)
+{
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  recall->state_flags |= state_flags;
+}
+
+/**
+ * ags_recall_unset_state_flags:
+ * @recall: the #AgsRecall
+ * @state_flags: state flags to unset
+ * 
+ * Unset state flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_recall_unset_state_flags(AgsRecall *recall, guint state_flags)
+{
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  recall->state_flags &= (~state_flags);
+}
+
+/**
+ * ags_recall_check_state_flags:
+ * @recall: the #AgsRecall
+ * @state_flags: state flags to check
+ * 
+ * Check the occurence of @state_flags in @recall.
+ * 
+ * Returns: %TRUE if all flags matched, otherwise %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_check_state_flags(AgsRecall *recall, guint state_flags)
+{
+  if(!AGS_IS_RECALL(recall)){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_STATE_IS_WAITING & (state_flags)) != 0 &&
+     (AGS_SOUND_STATE_IS_WAITING & (recall->state_flags)) == 0){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_STATE_IS_ACTIVE & (state_flags)) != 0 &&
+     (AGS_SOUND_STATE_IS_ACTIVE & (recall->state_flags)) == 0){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_STATE_IS_PROCESSING & (state_flags)) != 0 &&
+     (AGS_SOUND_STATE_IS_PROCESSING & (recall->state_flags)) == 0){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_STATE_IS_TERMINATING & (state_flags)) != 0 &&
+     (AGS_SOUND_STATE_IS_TERMINATING & (recall->state_flags)) == 0){
+    return(FALSE);
+  }
+  
+  return(TRUE);
 }
 
 /**
