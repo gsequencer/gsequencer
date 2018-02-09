@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -59,12 +59,62 @@ ags_connectable_base_init(AgsConnectableInterface *interface)
 }
 
 /**
+ * ags_connectable_has_resource:
+ * @connectable: the #AgsConnectable
+ *
+ * Check the connectable to have resources.
+ *
+ * Returns: %TRUE if @connectable can be added to registry, otherwise %FALSE.
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_connectable_has_resource(AgsConnectable *connectable)
+{
+  AgsConnectableInterface *connectable_interface;
+
+  g_return_val_if_fail(AGS_IS_CONNECTABLE(connectable), FALSE);
+  connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
+
+  if(connectable_interface->has_resource == NULL){
+    return(FALSE);
+  }
+
+  return(connectable_interface->has_resource(connectable));
+}
+
+/**
+ * ags_connectable_is_ready:
+ * @connectable: the #AgsConnectable
+ *
+ * Connect the connectable.
+ *
+ * Returns: %TRUE if is added to registry, otherwise %FALSE.
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_connectable_is_ready(AgsConnectable *connectable)
+{
+  AgsConnectableInterface *connectable_interface;
+
+  g_return_val_if_fail(AGS_IS_CONNECTABLE(connectable), TRUE);
+  connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
+
+  if(connectable_interface->is_ready == NULL){
+    return(TRUE);
+  }
+
+  return(connectable_interface->is_ready(connectable));
+}
+
+/**
  * ags_connectable_add_to_registry:
  * @connectable: the #AgsConnectable
  *
  * Add connectable to registry.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_connectable_add_to_registry(AgsConnectable *connectable)
@@ -83,7 +133,7 @@ ags_connectable_add_to_registry(AgsConnectable *connectable)
  *
  * Remove connectable from registry.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_connectable_remove_from_registry(AgsConnectable *connectable)
@@ -104,7 +154,7 @@ ags_connectable_remove_from_registry(AgsConnectable *connectable)
  *
  * Returns: the #xmlNode-struct describing howto update
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 xmlNode*
 ags_connectable_update(AgsConnectable *connectable)
@@ -119,38 +169,14 @@ ags_connectable_update(AgsConnectable *connectable)
 }
 
 /**
- * ags_connectable_is_ready:
- * @connectable: the #AgsConnectable
- *
- * Connect the connectable.
- *
- * Returns: %TRUE if is added to registry, otherwise %FALSE.
- *
- * Since: 1.0.0
- */
-gboolean
-ags_connectable_is_ready(AgsConnectable *connectable)
-{
-  AgsConnectableInterface *connectable_interface;
-
-  g_return_val_if_fail(AGS_IS_CONNECTABLE(connectable), FALSE);
-  connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
-
-  if(connectable_interface->is_ready == NULL)
-    return(TRUE);
-
-  return(connectable_interface->is_ready(connectable));
-}
-
-/**
  * ags_connectable_is_connected:
  * @connectable: the #AgsConnectable
  *
- * Connect the connectable.
+ * Check if the @connectable was connected.
  *
  * Returns: %TRUE if is connected, otherwise %FALSE.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_connectable_is_connected(AgsConnectable *connectable)
@@ -170,7 +196,7 @@ ags_connectable_is_connected(AgsConnectable *connectable)
  *
  * Connect the connectable.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_connectable_connect(AgsConnectable *connectable)
@@ -181,10 +207,6 @@ ags_connectable_connect(AgsConnectable *connectable)
   connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
   g_return_if_fail(connectable_interface->connect);
 
-  //  if(!ags_connectable_is_ready(connectable)){
-  //    return;
-  //  }
-
   connectable_interface->connect(connectable);
 }
 
@@ -194,7 +216,7 @@ ags_connectable_connect(AgsConnectable *connectable)
  *
  * Disconnect the connectable.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_connectable_disconnect(AgsConnectable *connectable)
@@ -208,45 +230,45 @@ ags_connectable_disconnect(AgsConnectable *connectable)
 }
 
 /**
- * ags_connectable_connect_scope:
+ * ags_connectable_connect_connection:
  * @connectable: the #AgsConnectable
  * @connection: the connection
  *
  * Disconnect the connectable.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
-ags_connectable_connect_scope(AgsConnectable *connectable,
-			      GObject *connection)
+ags_connectable_connect_connection(AgsConnectable *connectable,
+				   GObject *connection)
 {
   AgsConnectableInterface *connectable_interface;
 
   g_return_if_fail(AGS_IS_CONNECTABLE(connectable));
   connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
-  g_return_if_fail(connectable_interface->connect_scope);
-  connectable_interface->connect_scope(connectable,
-				       connection);
+  g_return_if_fail(connectable_interface->connect_connection);
+  connectable_interface->connect_connection(connectable,
+					    connection);
 }
 
 /**
- * ags_connectable_disconnect_scope:
+ * ags_connectable_disconnect_connection:
  * @connectable: the #AgsConnectable
  * @connection: the connection
  *
  * Disconnect the connectable.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
-ags_connectable_disconnect_scope(AgsConnectable *connectable,
-				 GObject *connection)
+ags_connectable_disconnect_connection(AgsConnectable *connectable,
+				      GObject *connection)
 {
   AgsConnectableInterface *connectable_interface;
 
   g_return_if_fail(AGS_IS_CONNECTABLE(connectable));
   connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
-  g_return_if_fail(connectable_interface->disconnect_scope);
-  connectable_interface->disconnect_scope(connectable,
-					  connection);
+  g_return_if_fail(connectable_interface->disconnect_connection);
+  connectable_interface->disconnect_connection(connectable,
+					       connection);
 }

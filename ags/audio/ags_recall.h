@@ -163,10 +163,8 @@ struct _AgsRecallClass
   void (*feed_output_queue)(AgsRecall *recall);
   
   void (*stop_persistent)(AgsRecall *recall);
-  void (*done)(AgsRecall *recall);
-
   void (*cancel)(AgsRecall *recall);
-  void (*remove)(AgsRecall *recall);
+  void (*done)(AgsRecall *recall);
 
   AgsRecall* (*duplicate)(AgsRecall *recall,
 			  AgsRecallID *recall_id,
@@ -247,10 +245,8 @@ void ags_recall_run_inter(AgsRecall *recall);
 void ags_recall_run_post(AgsRecall *recall);
 
 void ags_recall_stop_persistent(AgsRecall *recall);
-void ags_recall_done(AgsRecall *recall);
-
 void ags_recall_cancel(AgsRecall *recall);
-void ags_recall_remove(AgsRecall *recall);
+void ags_recall_done(AgsRecall *recall);
 
 gboolean ags_recall_is_done(GList *recalls, GObject *recycling_context);
 

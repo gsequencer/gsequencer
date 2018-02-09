@@ -1,6 +1,7 @@
 ags (2.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implement AgsConnectable properly
 	* TODO:JK: implemented AgsWaveWindow, AgsWaveEditor, AgsWaveToolbar and AgsWaveEdit
 	* TODO:JK: implemented AgsSelectBuffer and AgsPositionWaveCursor
 	* implemented AgsWave and AgsBuffer
@@ -10,9 +11,16 @@ ags (2.0.0)
 	* TODO:JK: implemented damping/vibration of AgsSynthGenerator
 	* TODO:JK: implemented exponential curve option for ags-envelope recall
 	* incompatible AgsBasePlugin::instantiate() function prototype
+	* added ags_connectable_has_resource()
+	* added ags_audio_done_recall()
 	* renamed g_cclosure_user_marshal_* to ags_cclosure_marshal_*
+	* renamed ags_connectable_connect_scope() to ags_connectable_connect_connection()
+	* renamed ags_connectable_disconnect_scope() to ags_connectable_disconnect_connection()
+	* renamed ags_audio_play_recall()
+	* renamed ags_audio_cancel_recall()
 	* renamed ags_audio_signal_find_by_recall_id()
 	* renamed ags_audio_signal_find_stream_current()
+	* removed ags_audio_remove()
 	* removed ags_audio_signal_realloc_buffer_size()
 	* removed ags_audio_signal_tile()
 	* removed ags_audio_signal_scale()

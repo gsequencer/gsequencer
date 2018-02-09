@@ -41,6 +41,7 @@ typedef struct _AgsAudioClass AgsAudioClass;
 
 /**
  * AgsAudioFlags:
+ * @AGS_AUDIO_ADDED_TO_REGISTRY: the audio was added to registry, see #AgsConnectable::add_to_registry()
  * @AGS_AUDIO_CONNECTED: the audio was connected by #AgsConnectable::connect()
  * @AGS_AUDIO_NO_OUTPUT: no output provided
  * @AGS_AUDIO_NO_INPUT: no input provided
@@ -58,19 +59,20 @@ typedef struct _AgsAudioClass AgsAudioClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_AUDIO_CONNECTED                   = 1,
-  AGS_AUDIO_NO_OUTPUT                   = 1 <<  1,
-  AGS_AUDIO_NO_INPUT                    = 1 <<  2,
-  AGS_AUDIO_SYNC                        = 1 <<  3, // can be combined with below
-  AGS_AUDIO_ASYNC                       = 1 <<  4,
-  AGS_AUDIO_OUTPUT_HAS_RECYCLING        = 1 <<  5,
-  AGS_AUDIO_INPUT_HAS_RECYCLING         = 1 <<  6,
-  AGS_AUDIO_INPUT_HAS_FILE              = 1 <<  7,
-  AGS_AUDIO_INPUT_HAS_SYNTH_GENERATOR   = 1 <<  8,
-  AGS_AUDIO_CAN_NEXT_ACTIVE             = 1 <<  9,
-  AGS_AUDIO_SKIP_OUTPUT                 = 1 << 10,
-  AGS_AUDIO_SKIP_INPUT                  = 1 << 11,
-  AGS_AUDIO_BYPASS                      = 1 << 12,
+  AGS_AUDIO_ADDED_TO_REGISTRY           = 1,
+  AGS_AUDIO_CONNECTED                   = 1 <<  1,
+  AGS_AUDIO_NO_OUTPUT                   = 1 <<  2,
+  AGS_AUDIO_NO_INPUT                    = 1 <<  3,
+  AGS_AUDIO_SYNC                        = 1 <<  4, // can be combined with below
+  AGS_AUDIO_ASYNC                       = 1 <<  5,
+  AGS_AUDIO_OUTPUT_HAS_RECYCLING        = 1 <<  6,
+  AGS_AUDIO_INPUT_HAS_RECYCLING         = 1 <<  7,
+  AGS_AUDIO_INPUT_HAS_FILE              = 1 <<  8,
+  AGS_AUDIO_INPUT_HAS_SYNTH_GENERATOR   = 1 <<  9,
+  AGS_AUDIO_CAN_NEXT_ACTIVE             = 1 << 10,
+  AGS_AUDIO_SKIP_OUTPUT                 = 1 << 11,
+  AGS_AUDIO_SKIP_INPUT                  = 1 << 12,
+  AGS_AUDIO_BYPASS                      = 1 << 13,
 }AgsAudioFlags;
 
 struct _AgsAudio
@@ -167,6 +169,21 @@ struct _AgsAudioClass
   void (*set_pads)(AgsAudio *audio,
 		   GType channel_type,
 		   guint pads, guint pads_old);  
+
+  void (*duplicate_recall)(AgsAudio *audio,
+			   AgsRecallID *recall_id);
+  void (*resolve_recall)(AgsAudio *audio,
+			 AgsRecallID *recall_id);
+
+  void (*init_recall)(AgsAudio *audio,
+		      AgsRecallID *recall_id, guint staging_flags);
+  void (*play_recall)(AgsAudio *audio,
+		      AgsRecallID *recall_id, guint staging_flags);
+
+  void (*cancel_recall)(AgsAudio *audio,
+			AgsRecallID *recall_id);
+  void (*done_recall)(AgsAudio *audio,
+		      AgsRecallID *recall_id);
   
   GList* (*start)(AgsAudio *audio,
 		  gint sound_scope);
@@ -189,6 +206,14 @@ void ags_audio_unset_flags(AgsAudio *audio, guint flags);
 
 void ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags);
 void ags_audio_unset_ability_flags(AgsAudio *audio, guint ability_flags);
+
+void ags_audio_set_behaviour_flags(AgsAudio *audio, guint behaviour_flags);
+void ags_audio_unset_behaviour_flags(AgsAudio *audio, guint behaviour_flags);
+
+void ags_audio_set_staging_flags(AgsAudio *audio, gint sound_scope,
+				 guint staging_flags);
+void ags_audio_unset_staging_flags(AgsAudio *audio, gint sound_scope,
+				   guint staging_flags);
 
 /* channel alignment */
 void ags_audio_set_max_audio_channels(AgsAudio *audio,
@@ -220,7 +245,6 @@ void ags_audio_set_input_sequencer(AgsAudio *audio,
 void ags_audio_set_samplerate(AgsAudio *audio, guint samplerate);
 void ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size);
 void ags_audio_set_format(AgsAudio *audio, guint format);
-void ags_audio_set_sequence_length(AgsAudio *audio, guint sequence_length);
 
 /* children */
 void ags_audio_add_audio_connection(AgsAudio *audio, GObject *audio_connection);
@@ -261,16 +285,16 @@ void ags_audio_duplicate_recall(AgsAudio *audio,
 				AgsRecallID *recall_id);
 void ags_audio_resolve_recall(AgsAudio *audio,
 			      AgsRecallID *recall_id);
+
 void ags_audio_init_recall(AgsAudio *audio,
 			   AgsRecallID *recall_id, guint staging_flags);
+void ags_audio_play_recall(AgsAudio *audio,
+			   AgsRecallID *recall_id, guint staging_flags);
 
-void ags_audio_play(AgsAudio *audio,
-		    AgsRecallID *recall_id, guint staging_flags);
-
-void ags_audio_cancel(AgsAudio *audio,
-		      AgsRecallID *recall_id);
-void ags_audio_remove(AgsAudio *audio,
-		      AgsRecallID *recall_id);
+void ags_audio_cancel_recall(AgsAudio *audio,
+			     AgsRecallID *recall_id);
+void ags_audio_done_recall(AgsAudio *audio,
+			   AgsRecallID *recall_id);
 
 /* control */
 GList* ags_audio_start(AgsAudio *audio,
