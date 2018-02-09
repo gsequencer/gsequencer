@@ -83,6 +83,6 @@ AgsRecallID* ags_recall_id_find_parent_recycling_context(GList *recall_id,
 							 AgsRecyclingContext *parent_recycling_context);
 
 /* instantiate */
-AgsRecallID* ags_recall_id_new(AgsRecycling *recycling);
+AgsRecallID* ags_recall_id_new();
 
 #endif /*__AGS_RECALL_ID_H__*/

@@ -282,7 +282,7 @@ ags_recall_id_finalize(GObject *gobject)
 void
 ags_recall_id_set_sound_scope(AgsRecallID *recall_id, gint sound_scope)
 {
-  if(!AGS_IS_RECALL_ID(recall_id) &&
+  if(!AGS_IS_RECALL_ID(recall_id) ||
      ags_recall_id_check_scope(recall_id,
 			       -1)){
     return;
@@ -600,20 +600,20 @@ ags_recall_id_find_parent_recycling_context(GList *recall_id,
 
 /**
  * ags_recall_id_new:
- * @recycling: the assigned #AgsRecycling
  *
- * Creates a #AgsRecallID, assigned to @recycling
+ * Creates a #AgsRecallID
  *
  * Returns: a new #AgsRecallID
  * 
  * Since: 2.0.0
  */
 AgsRecallID*
-ags_recall_id_new(AgsRecycling *recycling)
+ags_recall_id_new()
 {
   AgsRecallID *recall_id;
 
-  recall_id = (AgsRecallID *) g_object_new(AGS_TYPE_RECALL_ID, NULL);
+  recall_id = (AgsRecallID *) g_object_new(AGS_TYPE_RECALL_ID,
+					   NULL);
 
   return(recall_id);
 }

@@ -1090,6 +1090,7 @@ ags_audio_class_init(AgsAudioClass *audio)
   /**
    * AgsAudio::stop:
    * @audio: the object stops playing
+   * @recall_id: a #GList-struct containing #AgsRecallID
    * @sound_scope: the affected scope
    *
    * The ::stop signal is invoked while stoping playback
@@ -1103,8 +1104,9 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsAudioClass, stop),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT,
-		 G_TYPE_NONE, 1,
+		 ags_cclosure_marshal_VOID__POINTER_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_POINTER,
 		 G_TYPE_UINT);
 
   /**
@@ -6548,7 +6550,7 @@ ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container)
  * ags_audio_add_recall:
  * @audio: the #AgsAudio
  * @recall: the #AgsRecall
- * @play: if %TRUE play context, else if %FALSE recall context
+ * @play_context: if %TRUE play context, else if %FALSE recall context
  *
  * Adds a recall to @audio.
  *
@@ -6556,14 +6558,14 @@ ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container)
  */
 void
 ags_audio_add_recall(AgsAudio *audio,
-		     GObject *recall, gboolean play)
+		     GObject *recall, gboolean play_context)
 {  
   if(!AGS_IS_AUDIO(audio) ||
      !AGS_IS_RECALL(recall)){
     return;
   }
   
-  if(play){
+  if(play_context){
     pthread_mutex_t *play_mutex;
 
     /* get play mutex */
@@ -6626,21 +6628,21 @@ ags_audio_add_recall(AgsAudio *audio,
  * ags_audio_remove_recall:
  * @audio: the #AgsAudio
  * @recall: the #AgsRecall
- * @play: if %TRUE play context, else if %FALSE recall context
+ * @play_context: if %TRUE play context, else if %FALSE recall context
  *
  * Removes a recall from @audio.
  *
  * Since: 2.0.0
  */
 void
-ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play)
+ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play_context)
 {
   if(!AGS_IS_AUDIO(audio) ||
      !AGS_IS_RECALL(recall)){
     return;
   }
   
-  if(play){
+  if(play_context){
     pthread_mutex_t *play_mutex;
 
     /* get play mutex */
@@ -6715,8 +6717,7 @@ ags_audio_real_duplicate_recall(AgsAudio *audio,
   pthread_mutex_t *mutex;
   pthread_mutex_t *recycling_context_mutex;
 
-  if(!AGS_IS_AUDIO(audio) ||
-     !AGS_IS_RECALL_ID(recall_id)){
+  if(!AGS_IS_RECALL_ID(recall_id)){
     return;
   }
 
@@ -6924,8 +6925,7 @@ ags_audio_real_resolve_recall(AgsAudio *audio,
   pthread_mutex_t *mutex;
   pthread_mutex_t *recycling_context_mutex;
 
-  if(!AGS_IS_AUDIO(audio) ||
-     !AGS_IS_RECALL_ID(recall_id)){
+  if(!AGS_IS_RECALL_ID(recall_id)){
     return;
   }
 
@@ -7056,8 +7056,7 @@ ags_audio_real_init_recall(AgsAudio *audio,
   pthread_mutex_t *mutex;
   pthread_mutex_t *recycling_context_mutex;
 
-  if(!AGS_IS_AUDIO(audio) ||
-     !AGS_IS_RECALL_ID(recall_id)){
+  if(!AGS_IS_RECALL_ID(recall_id)){
     return;
   }
   
@@ -7409,8 +7408,7 @@ ags_audio_real_play_recall(AgsAudio *audio,
     }
   }
   
-  if(!AGS_IS_AUDIO(audio) ||
-     !AGS_IS_RECALL_ID(recall_id)){
+  if(!AGS_IS_RECALL_ID(recall_id)){
     return;
   }
   
@@ -7558,8 +7556,7 @@ ags_audio_real_cancel_recall(AgsAudio *audio,
   pthread_mutex_t *mutex;
   pthread_mutex_t *recycling_context_mutex;
 
-  if(!AGS_IS_AUDIO(audio) ||
-     !AGS_IS_RECALL_ID(recall_id)){
+  if(!AGS_IS_RECALL_ID(recall_id)){
     return;
   }
   
@@ -7695,153 +7692,19 @@ void
 ags_audio_real_done_recall(AgsAudio *audio,
 			   AgsRecallID *recall_id)
 {
-  //TODO:JK: implement me  
-}
-
-/**
- * ags_audio_done_recall:
- * @audio: the #AgsAudio
- * @recall_id: the #AgsRecallID to apply to
- *
- * Done processing audio data.
- *
- * Since: 2.0.0
- */
-void
-ags_audio_done_recall(AgsAudio *audio,
-			AgsRecallID *recall_id)
-{
-  g_return_if_fail(AGS_IS_AUDIO(audio));
-
-  g_object_ref((GObject *) audio);
-  g_signal_emit(G_OBJECT(audio),
-		audio_signals[DONE_RECALL], 0,
-		recall_id);
-  g_object_unref((GObject *) audio);
-}
-
-GList*
-ags_audio_real_start(AgsAudio *audio,
-		     gint sound_scope)
-{
-  AgsMutexManager *mutex_manager;
-  AgsMessageDelivery *message_delivery;
-  AgsMessageQueue *message_queue;
-
-  //TODO:JK: implement me
-
-  /* emit message */
-  message_delivery = ags_message_delivery_get_instance();
-
-  message_queue = ags_message_delivery_find_namespace(message_delivery,
-						      "libags-audio");
-
-  if(message_queue != NULL){
-    AgsMessageEnvelope *message;
-
-    xmlDoc *doc;
-    xmlNode *root_node;
-
-    /* specify message body */
-    doc = xmlNewDoc("1.0");
-
-    root_node = xmlNewNode(NULL,
-			   "ags-command");
-    xmlDocSetRootElement(doc, root_node);    
-
-    xmlNewProp(root_node,
-	       "method",
-	       "AgsAudio::start");
-
-    /* add message */
-    message = ags_message_envelope_alloc(audio,
-					 NULL,
-					 doc);
-
-    /* set parameter */
-    message->n_params = 2;
-
-    message->parameter_name = (gchar **) malloc(3 * sizeof(gchar *));
-    message->value = g_new0(GValue,
-			    2);
-
-    /* recall id */
-    message->parameter_name[0] = "recall-id";
-    
-    g_value_init(&(message->value[0]),
-		 G_TYPE_OBJECT);
-    g_value_set_object(&(message->value[0]),
-		       recall_id);
-
-    /* sound scope */
-    message->parameter_name[1] = "sound-scope";
-    
-    g_value_init(&(message->value[1]),
-		 G_TYPE_UINT);
-    g_value_set_uint(&(message->value[1]),
-		     sound_scope);
-
-    /* terminate string vector */
-    message->parameter_name[2] = NULL;
-    
-    /* add message */
-    ags_message_delivery_add_message(message_delivery,
-				     "libags-audio",
-				     message);
-  }
-}
-
-/**
- * ags_audio_start:
- * @audio: the #AgsAudio
- * @sound_scope: the scope
- *
- * Is emitted as audio is started.
- *
- * Since: 2.0.0
- */
-GList*
-ags_audio_start(AgsAudio *audio,
-		gint sound_scope)
-{
-  GList *list;
-  
-  g_return_val_if_fail(AGS_IS_AUDIO(audio), NULL);
-  
-  /* emit */
-  list = NULL;
-  
-  g_object_ref((GObject *) audio);
-  g_signal_emit(G_OBJECT(audio),
-		audio_signals[START], 0,
-		sound_scope,
-		&list);
-  g_object_unref((GObject *) audio);
-
-  return(list);
-}
-
-void
-ags_audio_real_stop(AgsAudio *audio,
-		    AgsRecallID *recall_id, gint sound_scope)
-{
   AgsRecall *recall;
   AgsRecyclingContext *parent_recycling_context, *recycling_context;
-
-  AgsMutexManager *mutex_manager;
-  AgsMessageDelivery *message_delivery;
-  AgsMessageQueue *message_queue;
-
+  
   GList *list_start, *list;
 
+  guint sound_scope;
   gboolean play_context;
 
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *mutex;
   pthread_mutex_t *recycling_context_mutex;
 
-  if(!AGS_IS_AUDIO(audio) ||
-     !AGS_IS_RECALL_ID(recall_id)){
+  if(!AGS_IS_RECALL_ID(recall_id)){
     return;
   }
   
@@ -7926,33 +7789,301 @@ ags_audio_real_stop(AgsAudio *audio,
   while(list != NULL){
     recall = list->data;
 
-    if((AGS_RECALL_TEMPLATE & (recall->flags)) ||
+    pthread_mutex_lock(audio_mutex);
+
+    if(!AGS_IS_RECALL(recall) ||
+       (AGS_RECALL_TEMPLATE & (recall->flags)) ||
        recall->recall_id == NULL ||
        recall->recall_id->recycling_context != recall_id->recycling_context){
       list = list->next;
 
+      pthread_mutex_unlock(audio_mutex);
+
       continue;
     }
 
-    ags_audio_remove_recall(audio,
-			    (GObject *) recall,
-			    play_context);
-
-    g_object_run_dispose(recall);
-    g_object_unref(recall);
+    pthread_mutex_unlock(audio_mutex);
+    
+    ags_recall_done(recall);
     
     list = list->next;
-  }
+  }  
 
-  ags_audio_remove_recall_id(audio,
-			     recall_id);
-  
-  g_object_run_dispose(recall_id);
-  g_object_unref(recall_id);
-  
   pthread_mutex_unlock(mutex);
 
   g_list_free(list_start);
+}
+
+/**
+ * ags_audio_done_recall:
+ * @audio: the #AgsAudio
+ * @recall_id: the #AgsRecallID to apply to
+ *
+ * Done processing audio data.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_audio_done_recall(AgsAudio *audio,
+			AgsRecallID *recall_id)
+{
+  g_return_if_fail(AGS_IS_AUDIO(audio));
+
+  g_object_ref((GObject *) audio);
+  g_signal_emit(G_OBJECT(audio),
+		audio_signals[DONE_RECALL], 0,
+		recall_id);
+  g_object_unref((GObject *) audio);
+}
+
+GList*
+ags_audio_real_start(AgsAudio *audio,
+		     gint sound_scope)
+{
+  AgsChannel *channel;
+  AgsPlayback *playback;
+  AgsRecallID *current_recall_id;
+  
+  AgsMutexManager *mutex_manager;
+  AgsMessageDelivery *message_delivery;
+  AgsMessageQueue *message_queue;
+
+  GList *recall_id;
+
+  guint audio_channels;
+  guint output_pads;
+  guint i;
+  
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  if(sound_scope < 0 ||
+     sound_scope >= AGS_SOUND_SCOPE_LAST){
+    return;
+  }
+  
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  channel = audio->output;
+  
+  pthread_mutex_unlock(audio_mutex);
+  
+  /* initialize channel */
+  recall_id = NULL;
+
+  while(channel != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
+
+    channel_mutex = channel->obj_mutex;
+  
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+    /* create recall id */
+    current_recall_id = ags_recall_id_new();
+    ags_recall_id_set_sound_scope(current_recall_id,  sound_scope);
+    
+    recall_id = g_list_prepend(recall_id,
+			       current_recall_id);
+
+    /* set playback's recall id */
+    pthread_mutex_lock(channel_mutex);
+
+    playback = channel->playback;
+    playback->recall_id[sound_scope] = current_recall_id;
+    
+    pthread_mutex_unlock(channel_mutex);
+
+    /* reset recall id */
+    ags_channel_recursive_reset_recall_id(output,
+					  current_recall_id, TRUE, TRUE,
+					  NULL, FALSE, FALSE);
+
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+    
+    channel = channel->next;
+
+    pthread_mutex_unlock(channel_mutex);
+  }
+  
+  recall_id = g_list_reverse(recall_id);
+  
+  /* emit message */
+  message_delivery = ags_message_delivery_get_instance();
+
+  message_queue = ags_message_delivery_find_namespace(message_delivery,
+						      "libags-audio");
+
+  if(message_queue != NULL){
+    AgsMessageEnvelope *message;
+
+    xmlDoc *doc;
+    xmlNode *root_node;
+
+    /* specify message body */
+    doc = xmlNewDoc("1.0");
+
+    root_node = xmlNewNode(NULL,
+			   "ags-command");
+    xmlDocSetRootElement(doc, root_node);    
+
+    xmlNewProp(root_node,
+	       "method",
+	       "AgsAudio::start");
+
+    /* add message */
+    message = ags_message_envelope_alloc(audio,
+					 NULL,
+					 doc);
+
+    /* set parameter */
+    message->n_params = 2;
+
+    message->parameter_name = (gchar **) malloc(3 * sizeof(gchar *));
+    message->value = g_new0(GValue,
+			    2);
+
+    /* recall id */
+    message->parameter_name[0] = "recall-id";
+    
+    g_value_init(&(message->value[0]),
+		 G_TYPE_POINTER);
+    g_value_set_pointer(&(message->value[0]),
+			recall_id);
+
+    /* sound scope */
+    message->parameter_name[1] = "sound-scope";
+    
+    g_value_init(&(message->value[1]),
+		 G_TYPE_UINT);
+    g_value_set_uint(&(message->value[1]),
+		     sound_scope);
+
+    /* terminate string vector */
+    message->parameter_name[2] = NULL;
+    
+    /* add message */
+    ags_message_delivery_add_message(message_delivery,
+				     "libags-audio",
+				     message);
+  }
+
+  return(recall_id);
+}
+
+/**
+ * ags_audio_start:
+ * @audio: the #AgsAudio
+ * @sound_scope: the scope
+ *
+ * Is emitted as audio is started.
+ *
+ * Returns: the #GList-struct containing #AgsRecallID
+ * 
+ * Since: 2.0.0
+ */
+GList*
+ags_audio_start(AgsAudio *audio,
+		gint sound_scope)
+{
+  GList *list;
+  
+  g_return_val_if_fail(AGS_IS_AUDIO(audio), NULL);
+  
+  /* emit */
+  list = NULL;
+  
+  g_object_ref((GObject *) audio);
+  g_signal_emit(G_OBJECT(audio),
+		audio_signals[START], 0,
+		sound_scope,
+		&list);
+  g_object_unref((GObject *) audio);
+
+  return(list);
+}
+
+void
+ags_audio_real_stop(AgsAudio *audio,
+		    GList *recall_id, gint sound_scope)
+{
+  AgsChannel *channel;
+  AgsPlayback *playback;
+  AgsRecyclingContext *recycling_context;
+
+  AgsMutexManager *mutex_manager;
+  AgsMessageDelivery *message_delivery;
+  AgsMessageQueue *message_queue;
+  
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  if(!AGS_IS_RECALL_ID(recall_id) ||
+     sound_scope < 0 ||
+     sound_scope >= AGS_SOUND_SCOPE_LAST){
+    return;
+  }
+  
+  channel = audio->output;
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  channel = audio->output;
+
+  recycling_context = recall_id->recycling_context;
+  
+  pthread_mutex_unlock(audio_mutex);
+  
+  while(channel != NULL){
+    AgsRecallID *current_recall_id;
+    
+    /* get channel mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
+
+    channel_mutex = channel->obj_mutex;
+  
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+    /* get current recall id */
+    pthread_mutex_lock(channel_mutex);
+
+    current_recall_id = ags_recall_id_find_recycling_context(channel->recall_id,
+							     recycling_context);
+    
+    playback = channel->playback;
+    playback->recall_id[sound_scope] = NULL;
+
+    pthread_mutex_unlock(channel_mutex);
+    
+    /* recursive cancel */
+    ags_channel_recursive_cancel(channel,
+				 current_recall_id,
+				 TRUE, TRUE);
+
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);    
+    
+    channel = channel->next;
+
+    pthread_mutex_unlock(channel_mutex);
+  }
   
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
@@ -8029,44 +8160,14 @@ void
 ags_audio_stop(AgsAudio *audio,
 	       AgsRecallID *recall_id, gint sound_scope)
 {
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
-
-  if(audio == NULL ||
-     recall_id == NULL ||
-     recall_id->recycling_context == NULL){
-    return;
-  }
+  g_return_if_fail(AGS_IS_AUDIO(audio));
   
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  pthread_mutex_lock(mutex);
-
-  if(!(AGS_IS_AUDIO(audio) ||
-       AGS_IS_RECALL_ID(recall_id))){
-    pthread_mutex_unlock(mutex);
-    return;
-  }
-
   /* emit */
   g_object_ref((GObject *) audio);
   g_signal_emit(G_OBJECT(audio),
 		audio_signals[STOP], 0,
 		recall_id, sound_scope);
   g_object_unref((GObject *) audio);
-  
-  pthread_mutex_unlock(mutex);
 }
 
 AgsRecallID*

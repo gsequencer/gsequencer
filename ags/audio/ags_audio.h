@@ -188,7 +188,7 @@ struct _AgsAudioClass
   GList* (*start)(AgsAudio *audio,
 		  gint sound_scope);
   void (*stop)(AgsAudio *audio,
-	       gint sound_scope);
+	       GList *recall_id, gint sound_scope);
 
   GList* (*check_scope)(AgsAudio *audio, gint sound_scope,
 			guint *staging_flags);
@@ -301,7 +301,7 @@ GList* ags_audio_start(AgsAudio *audio,
 		       gint sound_scope);
 
 void ags_audio_stop(AgsAudio *audio,
-		    gint sound_scope);
+		    GList *recall_id, gint sound_scope);
 
 /* query */
 GList* ags_audio_check_scope(AgsAudio *audio, gint sound_scope,
