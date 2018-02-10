@@ -127,8 +127,7 @@ GList* ags_audio_real_start(AgsAudio *audio,
 void ags_audio_real_stop(AgsAudio *audio,
 			 gint sound_scope);
 
-GList* ags_audio_real_check_scope(AgsAudio *audio, gint sound_scope,
-				  guint *staging_flags);
+GList* ags_audio_real_check_scope(AgsAudio *audio, gint sound_scope);
 
 GList* ags_audio_recursive_real_recursive_reset_stage(AgsAudio *audio,
 						      gint sound_scope, guint stage);
@@ -1113,10 +1112,8 @@ ags_audio_class_init(AgsAudioClass *audio)
    * AgsAudio::check-scope:
    * @audio: the object to check the scopes
    * @sound_scope: the affected scope
-   * @staging_flags: the return location of staging flags
    *
-   * The ::check-scope method returns the appropriate recall id of @sound_scope
-   * and its staging flags.
+   * The ::check-scope method returns the appropriate recall id of @sound_scope.
    *
    * Returns: the #GList-struct containing #AgsRecallID
    * 
@@ -1128,10 +1125,9 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsAudioClass, check_scope),
 		 NULL, NULL,
-		 ags_cclosure_marshal_POINTER__UINT_POINTER,
-		 G_TYPE_POINTER, 2,
-		 G_TYPE_UINT,
-		 G_TYPE_POINTER);
+		 ags_cclosure_marshal_POINTER__UINT,
+		 G_TYPE_POINTER, 1,
+		 G_TYPE_UINT);
 
   /**
    * AgsAudio::recursive-reset-stage:
@@ -8033,8 +8029,6 @@ ags_audio_real_stop(AgsAudio *audio,
     return;
   }
   
-  channel = audio->output;
-
   /* get audio mutex */
   pthread_mutex_lock(ags_audio_get_class_mutex());
 
@@ -8170,18 +8164,76 @@ ags_audio_stop(AgsAudio *audio,
   g_object_unref((GObject *) audio);
 }
 
-AgsRecallID*
-ags_audio_real_check_scope(AgsAudio *audio, guint sound_scope,
-			   guint *stagin_flags)
+GList*
+ags_audio_real_check_scope(AgsAudio *audio, guint sound_scope)
 {
-  //TODO:JK: implement me
+  AgsChannel *channel;  
+  AgsPlayback *playback;
+
+  GList *recall_id;
+
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  if(sound_scope < 0 ||
+     sound_scope >= AGS_SOUND_SCOPE_LAST){
+    return;
+  }
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+  
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  channel = audio->output;
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  /* collect recall id */
+  recall_id = NULL;
+  
+  while(channel != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
+
+    channel_mutex = channel->obj_mutex;
+  
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+    /* get current recall id */
+    pthread_mutex_lock(channel_mutex);
+
+    playback = channel->playback;
+
+    if(playback->recall_id[sound_scope] != NULL){
+      recall_id = g_list_prepend(recall_id,
+				 playback->recall_id[sound_scope]);
+    }
+
+    pthread_mutex_unlock(channel_mutex);
+
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);    
+    
+    channel = channel->next;
+
+    pthread_mutex_unlock(channel_mutex);
+  }
+
+  recall_id = g_list_reverse(recall_id);
+  
+  return(recall_id);
 }
 
 /**
  * ags_audio_check_scope:
  * @audio: the #AgsAudio
  * @sound_scope: the scope
- * @staging_flags: the staging flags return value location
  *
  * Check scope's recall id.
  * 
@@ -8189,11 +8241,10 @@ ags_audio_real_check_scope(AgsAudio *audio, guint sound_scope,
  * 
  * Since: 2.0.0
  */
-AgsRecallID*
-ags_audio_check_scope(AgsAudio *audio, guint sound_scope,
-		      guint *staging_flags)
+GList*
+ags_audio_check_scope(AgsAudio *audio, guint sound_scope)
 {
-  AgsRecallID *recall_id;
+  GList *recall_id;
 
   g_return_val_if_fail(AGS_IS_AUDIO(audio),
 		       NULL);
@@ -8202,7 +8253,7 @@ ags_audio_check_scope(AgsAudio *audio, guint sound_scope,
   g_object_ref((GObject *) audio);
   g_signal_emit(G_OBJECT(audio),
 		audio_signals[CHECK_SCOPE], 0,
-		sound_scope, staging_flags,
+		sound_scope,
 		&recall_id);
   g_object_unref((GObject *) audio);
 
@@ -8218,34 +8269,32 @@ ags_audio_check_scope(AgsAudio *audio, guint sound_scope,
  *
  * Returns: a new #GList containing #AgsPort
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_audio_collect_all_audio_ports(AgsAudio *audio)
 {
-  AgsMutexManager *mutex_manager;
-
   GList *recall;
   GList *list;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  pthread_mutex_t *recall_mutex, *play_mutex;
 
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  pthread_mutex_lock(mutex);
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
 
   list = NULL;
  
+  /* get play mutex */  
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+
+  play_mutex = audio->play_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
   /* collect port of playing recall */
+  pthread_mutex_lock(play_mutex);
+
   recall = audio->play;
    
   while(recall != NULL){
@@ -8262,8 +8311,19 @@ ags_audio_collect_all_audio_ports(AgsAudio *audio)
      
     recall = recall->next;
   }
+
+  pthread_mutex_unlock(play_mutex);
  
+  /* get recall mutex */  
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+
+  recall_mutex = audio->recall_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
   /* the same for true recall */
+  pthread_mutex_lock(recall_mutex);
+
   recall = audio->recall;
    
   while(recall != NULL){
@@ -8281,10 +8341,10 @@ ags_audio_collect_all_audio_ports(AgsAudio *audio)
     recall = recall->next;
   }
    
+  pthread_mutex_unlock(recall_mutex);
+
   /*  */
   list = g_list_reverse(list);
-    
-  pthread_mutex_unlock(mutex);
   
   return(list);
 }
@@ -8297,38 +8357,43 @@ ags_audio_collect_all_audio_ports(AgsAudio *audio)
  *
  * Retrieve specified port of #AgsAudio
  *
- * Returns: an #AgsPort if found otherwise %NULL
+ * Returns: a #GList-struct of #AgsPort if found, otherwise %NULL
  *
  * Since: 1.3.0
  */
-GObject*
+GList*
 ags_audio_collect_all_audio_ports_by_specifier_and_context(AgsAudio *audio,
 							   gchar *specifier,
 							   gboolean play_context)
 {
-  AgsMutexManager *mutex_manager;
-
   GList *recall, *port;
-
-  pthread_mutex_t *application_mutex;
+  GList *list;
+  
   pthread_mutex_t *mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
   }
   
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  if(play_context){
+    /* get play mutex */
+    pthread_mutex_lock(ags_audio_get_class_mutex());
+    
+    mutex = audio->play_mutex;
+  
+    pthread_mutex_unlock(ags_audio_get_class_mutex());
+  }else{
+    /* get recall mutex */
+    pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
+    mutex = audio->recall_mutex;
   
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
+    pthread_mutex_unlock(ags_audio_get_class_mutex());
+  }
   
-  pthread_mutex_unlock(application_mutex);
- 
   /* collect port of playing recall */
+  list = NULL;
+  
   pthread_mutex_lock(mutex);
 
   if(play_context){
@@ -8343,9 +8408,8 @@ ags_audio_collect_all_audio_ports_by_specifier_and_context(AgsAudio *audio,
     while(port != NULL){
       if(!g_strcmp0(AGS_PORT(port->data)->specifier,
 		    specifier)){
-	pthread_mutex_unlock(mutex);
-
-	return(port->data);
+	list = g_list_prepend(list,
+			      port->data);
       }
 
       port = port->next;
@@ -8356,7 +8420,47 @@ ags_audio_collect_all_audio_ports_by_specifier_and_context(AgsAudio *audio,
 
   pthread_mutex_unlock(mutex);
 
-  return(NULL);
+  list = g_list_reverse(list);
+  
+  return(list);
+}
+
+void
+ags_audio_open_audio_file_as_channel(AgsAudio *audio,
+				     GSList *filename,
+				     gboolean overwrite_channels,
+				     gboolean create_channels)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_open_audio_file_as_wave(AgsAudio *audio,
+				  GSList *filename,
+				  gboolean overwrite_channels,
+				  gboolean create_channels)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_open_midi_file_as_midi(AgsAudio *audio,
+				 const gchar *filename,
+				 const gchar *instrument,
+				 const gchar *track_name,
+				 guint midi_channel)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_open_midi_file_as_notation(AgsAudio *audio,
+				     const gchar *filename,
+				     const gchar *instrument,
+				     const gchar *track_name,
+				     guint midi_channel)
+{
+  //TODO:JK: implement me
 }
 
 /**

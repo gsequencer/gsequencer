@@ -190,8 +190,7 @@ struct _AgsAudioClass
   void (*stop)(AgsAudio *audio,
 	       GList *recall_id, gint sound_scope);
 
-  GList* (*check_scope)(AgsAudio *audio, gint sound_scope,
-			guint *staging_flags);
+  GList* (*check_scope)(AgsAudio *audio, gint sound_scope);
   
   GList* (*recursive_reset_stage)(AgsAudio *audio,
 				  gint sound_scope, guint staging_flags);
@@ -304,14 +303,13 @@ void ags_audio_stop(AgsAudio *audio,
 		    GList *recall_id, gint sound_scope);
 
 /* query */
-GList* ags_audio_check_scope(AgsAudio *audio, gint sound_scope,
-			     guint *staging_flags);
+GList* ags_audio_check_scope(AgsAudio *audio, gint sound_scope);
 
 GList* ags_audio_collect_all_audio_ports(AgsAudio *audio);
 
-GObject* ags_audio_collect_all_audio_ports_by_specifier_and_context(AgsAudio *audio,
-								    gchar *specifier,
-								    gboolean play_context);
+GList* ags_audio_collect_all_audio_ports_by_specifier_and_context(AgsAudio *audio,
+								  gchar *specifier,
+								  gboolean play_context);
 
 /* file IO */
 void ags_audio_open_audio_file_as_channel(AgsAudio *audio,
