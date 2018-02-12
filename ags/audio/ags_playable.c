@@ -401,28 +401,35 @@ ags_playable_get_format(AgsPlayable *playable)
 /**
  * ags_playable_read:
  * @playable: an #AgsPlayable
- * @channel: nth channel
+ * @audio_channel: nth channel
+ * @format: the format
  * @error: returned error
  *
  * Read audio buffer of playable audio data.
  * 
- * Returns: audio buffer
+ * Returns: the audio buffer
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
-double*
+void*
 ags_playable_read(AgsPlayable *playable,
-		  guint channel,
+		  guint audio_channel,
+		  guint format,
 		  GError **error)
 {
   AgsPlayableInterface *playable_interface;
 
-  g_return_val_if_fail(AGS_IS_PLAYABLE(playable),
-		       NULL);
+  void *buffer;
+  
+  g_return_val_if_fail(AGS_IS_PLAYABLE(playable), NULL);
   playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
-  g_return_val_if_fail(playable_interface->read,
-		       NULL);
-  return(playable_interface->read(playable, channel, error));
+  g_return_val_if_fail(playable_interface->read, NULL);
+  buffer = playable_interface->read(playable,
+				    audio_channel,
+				    format,
+				    error);
+  
+  return(buffer);
 }
 
 /**
@@ -430,6 +437,7 @@ ags_playable_read(AgsPlayable *playable,
  * @playable: an #AgsPlayable
  * @buffer: audio data
  * @buffer_length: frame count
+ * @format: the format
  *
  * Write @buffer_length of @buffer audio data.
  *
@@ -437,14 +445,17 @@ ags_playable_read(AgsPlayable *playable,
  */
 void
 ags_playable_write(AgsPlayable *playable,
-		   double *buffer, guint buffer_length)
+		   void *buffer, guint buffer_length,
+		   guint format)
 {
   AgsPlayableInterface *playable_interface;
 
   g_return_if_fail(AGS_IS_PLAYABLE(playable));
   playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
   g_return_if_fail(playable_interface->write);
-  playable_interface->write(playable, buffer, buffer_length);
+  playable_interface->write(playable,
+			    buffer, buffer_length,
+			    format);
 }
 
 /**

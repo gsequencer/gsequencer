@@ -60,7 +60,7 @@ struct _AgsSndfile
   guchar *current;
   gsize length;
 
-  gpointer buffer;
+  void *buffer;
 };
 
 struct _AgsSndfileClass

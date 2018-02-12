@@ -8425,21 +8425,285 @@ ags_audio_collect_all_audio_ports_by_specifier_and_context(AgsAudio *audio,
   return(list);
 }
 
+/**
+ * ags_audio_open_audio_file_as_channel:
+ * @audio: the #AgsAudio
+ * @filename: the files to open
+ * @overwrite_channels: if existing channels should be assigned
+ * @create_channels: if new channels should be created as not fitting if combined with @overwrite_channels
+ *
+ * Open some files.
+ *
+ * Since: 2.0.0
+ */
 void
 ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 				     GSList *filename,
 				     gboolean overwrite_channels,
 				     gboolean create_channels)
 {
-  //TODO:JK: implement me
+  AgsChannel *channel;
+  AgsAudioFile *audio_file;
+
+  GObject *soundcard;
+  
+  GList *audio_signal;
+
+  guint input_pads;
+  guint audio_channels;
+  guint i, j;
+  guint list_length;
+
+  GError *error;
+
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *recycling_mutex;
+
+  if(!AGS_IS_AUDIO(audio) ||
+     filename == NULL ||
+     (!overwrite_channels &&
+      !create_channels)){
+    return;
+  }
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* get audio fields */
+  pthread_mutex_lock(audio_mutex);
+
+  channel = audio->input;
+  soundcard = audio->soundcard;
+  
+  input_pads = audio->input_pads;
+  audio_channels = audio->audio_channels;
+  
+  pthread_mutex_unlock(audio_mutex);
+  
+  /* overwriting existing channels */
+  if(overwrite_channels){
+    if(channel != NULL){
+      for(i = 0; i < input_pads && filename != NULL; i++){
+	audio_file = ags_audio_file_new((gchar *) filename->data,
+					soundcard,
+					0, audio_channels);
+	
+	if(!ags_audio_file_open(audio_file)){
+	  filename = filename->next;
+	  
+	  continue;
+	}
+
+	ags_audio_file_read_audio_signal(audio_file);
+	ags_audio_file_close(audio_file);
+	
+	audio_signal = audio_file->audio_signal;
+	
+	for(j = 0; j < audio_channels && audio_signal != NULL; j++){
+	  AgsRecycling *recycling;
+	  
+	  /* create task */
+	  error = NULL;
+
+	  ags_channel_set_link(channel, NULL,
+			       &error);
+
+	  if(error != NULL){
+	    g_warning("%s", error->message);
+	  }
+
+	  /* get channel mutex */
+	  pthread_mutex_lock(ags_channel_get_class_mutex());
+	  
+	  channel_mutex = channel->obj_mutex;
+	  
+	  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+	  /* get recycling */
+	  pthread_mutex_lock(channel_mutex);
+
+	  recycling = channel->first_recycling;
+	  	  
+	  pthread_mutex_unlock(channel_mutex);
+
+	  /* get recycling mutex */
+	  pthread_mutex_lock(ags_recycling_get_class_mutex());
+	  
+	  recycling_mutex = recycling->obj_mutex;
+	  
+	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+
+	  /* replace template audio signal */
+	  pthread_mutex_lock(recycling_mutex);
+	  
+	  AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	  AGS_AUDIO_SIGNAL(audio_signal->data)->recycling = (GObject *) recycling;
+
+	  ags_recycling_add_audio_signal(recycling,
+					 audio_signal->data);
+
+	  pthread_mutex_unlock(recycling_mutex);
+
+	  /* iterate */
+	  audio_signal = audio_signal->next;
+
+	  pthread_mutex_lock(channel_mutex);
+
+	  channel = channel->next;
+
+	  pthread_mutex_unlock(channel_mutex);
+	}
+
+	if(audio_file->channels < audio_channels){
+	  channel = ags_channel_nth(channel,
+				    audio_channels - audio_file->channels);
+	}
+	
+	filename = filename->next;
+      }
+    }
+  }
+
+  /* appending to channels */
+  if(create_channels && filename != NULL){
+    list_length = g_slist_length(filename);
+    
+    ags_audio_set_pads((AgsAudio *) audio, AGS_TYPE_INPUT,
+		       list_length + AGS_AUDIO(audio)->input_pads);
+    
+    channel = ags_channel_nth(AGS_AUDIO(audio)->input,
+			      (AGS_AUDIO(audio)->input_pads - list_length) * AGS_AUDIO(audio)->audio_channels);
+    
+    while(filename != NULL){
+      audio_file = ags_audio_file_new((gchar *) filename->data,
+				      soundcard,
+				      0, audio_channels);
+      
+      if(!ags_audio_file_open(audio_file)){
+	filename = filename->next;
+	continue;
+      }
+      
+      ags_audio_file_read_audio_signal(audio_file);
+      ags_audio_file_close(audio_file);
+	
+      audio_signal = audio_file->audio_signal;
+      
+      for(j = 0; j < audio_channels && audio_signal != NULL; j++){
+	AgsRecycling *recycling;
+	
+	/* get channel mutex */
+	pthread_mutex_lock(ags_channel_get_class_mutex());
+	  
+	channel_mutex = channel->obj_mutex;
+	  
+	pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+	/* get recycling */
+	pthread_mutex_lock(channel_mutex);
+
+	recycling = channel->first_recycling;
+	
+	pthread_mutex_unlock(channel_mutex);
+
+	/* get recycling mutex */
+	pthread_mutex_lock(ags_recycling_get_class_mutex());
+	
+	recycling_mutex = recycling->obj_mutex;
+	
+	pthread_mutex_unlock(ags_recycling_get_class_mutex());
+
+	/* replace template audio signal */
+	pthread_mutex_lock(recycling_mutex);
+	  
+	AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	AGS_AUDIO_SIGNAL(audio_signal->data)->recycling = (GObject *) recycling;
+	
+	ags_recycling_add_audio_signal(recycling,
+				       audio_signal->data);
+	
+	pthread_mutex_unlock(recycling_mutex);
+
+	/* iterate */
+	audio_signal = audio_signal->next;
+
+	pthread_mutex_lock(channel_mutex);
+
+	channel = channel->next;
+
+	pthread_mutex_unlock(channel_mutex);
+      }
+      
+      if(audio_channels > audio_file->channels){
+	channel = ags_channel_nth(channel,
+				  audio_channels - audio_file->channels);
+      }
+      
+      filename = filename->next;
+    }
+  }
 }
 
 void
 ags_audio_open_audio_file_as_wave(AgsAudio *audio,
-				  GSList *filename,
+				  const gchar *filename,
 				  gboolean overwrite_channels,
 				  gboolean create_channels)
 {
+  AgsChannel *channel;
+  AgsAudioFile *audio_file;
+
+  GObject *soundcard;
+  
+  GList *wave;
+
+  guint audio_channels;
+
+  GError *error;
+
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  if(!AGS_IS_AUDIO(audio) ||
+     filename == NULL ||
+     (!overwrite_channels &&
+      !create_channels)){
+    return;
+  }
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* get audio fields */
+  pthread_mutex_lock(audio_mutex);
+
+  audio_channels = audio->audio_channels;
+
+  soundcard = audio->output_soundcard;
+
+  pthread_mutex_unlock(audio_mutex);
+
+  /* open audio file */
+  audio_file = ags_audio_file_new(filename,
+				  soundcard,
+				  0, audio_channels);
+
+  if(!ags_audio_file_open(audio_file)){
+    return;
+  }
+
+  ags_audio_file_read_wave(audio_file);
+  ags_audio_file_close(audio_file);
+
   //TODO:JK: implement me
 }
 
@@ -8461,214 +8725,6 @@ ags_audio_open_midi_file_as_notation(AgsAudio *audio,
 				     guint midi_channel)
 {
   //TODO:JK: implement me
-}
-
-/**
- * ags_audio_open_files:
- * @audio: the #AgsAudio
- * @filenames: the files to open
- * @overwrite_channels: if existing channels should be assigned
- * @create_channels: if new channels should be created as not fitting if combined with @overwrite_channels
- *
- * Open some files.
- *
- * Since: 1.0.0
- */
-void
-ags_audio_open_files(AgsAudio *audio,
-		     GSList *filenames,
-		     gboolean overwrite_channels,
-		     gboolean create_channels)
-{
-  AgsChannel *channel;
-  AgsAudioFile *audio_file;
-
-  AgsMutexManager *mutex_manager;
-
-  GObject *soundcard;
-  
-  GList *audio_signal_list;
-
-  guint input_pads;
-  guint audio_channels;
-  guint i, j;
-  guint list_length;
-
-  GError *error;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex, *channel_mutex, *recycling_mutex;
-
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* get audio fields */
-  pthread_mutex_lock(mutex);
-
-  channel = audio->input;
-  soundcard = audio->soundcard;
-  
-  input_pads = audio->input_pads;
-  audio_channels = audio->audio_channels;
-  
-  pthread_mutex_unlock(mutex);
-  
-  /* overwriting existing channels */
-  if(overwrite_channels){
-    if(channel != NULL){
-      for(i = 0; i < input_pads && filenames != NULL; i++){
-	audio_file = ags_audio_file_new((gchar *) filenames->data,
-					soundcard,
-					0, audio_channels);
-	if(!ags_audio_file_open(audio_file)){
-	  filenames = filenames->next;
-	  continue;
-	}
-
-	ags_audio_file_read_audio_signal(audio_file);
-	ags_audio_file_close(audio_file);
-	
-	audio_signal_list = audio_file->audio_signal;
-	
-	for(j = 0; j < audio_channels && audio_signal_list != NULL; j++){
-	  AgsRecycling *recycling;
-	  
-	  /* create task */
-	  error = NULL;
-
-	  ags_channel_set_link(channel, NULL,
-			       &error);
-
-	  if(error != NULL){
-	    g_warning("%s", error->message);
-	  }
-
-	  /* lock channel and recycling */
-	  pthread_mutex_lock(application_mutex);
-  
-	  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						   (GObject *) channel);
-
-	  pthread_mutex_unlock(application_mutex);
-
-	  /* get recycling */
-	  pthread_mutex_lock(channel_mutex);
-
-	  recycling = channel->first_recycling;
-	  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						     (GObject *) recycling);
-	  	  
-	  pthread_mutex_unlock(channel_mutex);
-
-	  /* replace template audio signal */
-	  pthread_mutex_lock(recycling_mutex);
-	  
-	  AGS_AUDIO_SIGNAL(audio_signal_list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	  AGS_AUDIO_SIGNAL(audio_signal_list->data)->recycling = (GObject *) recycling;
-
-	  ags_recycling_add_audio_signal(recycling,
-					 audio_signal_list->data);
-
-	  pthread_mutex_unlock(recycling_mutex);
-
-	  /* iterate */
-	  audio_signal_list = audio_signal_list->next;
-
-	  pthread_mutex_lock(channel_mutex);
-
-	  channel = channel->next;
-
-	  pthread_mutex_unlock(channel_mutex);
-	}
-
-	if(audio_file->channels < audio_channels)
-	  channel = ags_channel_nth(channel,
-				    audio_channels - audio_file->channels);
-	
-	filenames = filenames->next;
-      }
-    }
-  }
-
-  /* appending to channels */
-  if(create_channels && filenames != NULL){
-    list_length = g_slist_length(filenames);
-    
-    ags_audio_set_pads((AgsAudio *) audio, AGS_TYPE_INPUT,
-		       list_length + AGS_AUDIO(audio)->input_pads);
-    channel = ags_channel_nth(AGS_AUDIO(audio)->input,
-			      (AGS_AUDIO(audio)->input_pads - list_length) * AGS_AUDIO(audio)->audio_channels);
-    
-    while(filenames != NULL){
-      audio_file = ags_audio_file_new((gchar *) filenames->data,
-				      soundcard,
-				      0, audio_channels);
-      if(!ags_audio_file_open(audio_file)){
-	filenames = filenames->next;
-	continue;
-      }
-      
-      ags_audio_file_read_audio_signal(audio_file);
-      ags_audio_file_close(audio_file);
-	
-      audio_signal_list = audio_file->audio_signal;
-      
-      for(j = 0; j < audio_channels && audio_signal_list != NULL; j++){
-	AgsRecycling *recycling;
-	
-	/* lock channel and recycling */
-	pthread_mutex_lock(application_mutex);
-  
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) channel);
-
-	pthread_mutex_unlock(application_mutex);
-
-	/* get recycling */
-	pthread_mutex_lock(channel_mutex);
-
-	recycling = channel->first_recycling;
-	recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						   (GObject *) recycling);
-	
-	pthread_mutex_unlock(channel_mutex);
-
-	/* replace template audio signal */
-	pthread_mutex_lock(recycling_mutex);
-	  
-	AGS_AUDIO_SIGNAL(audio_signal_list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	AGS_AUDIO_SIGNAL(audio_signal_list->data)->recycling = (GObject *) recycling;
-	
-	ags_recycling_add_audio_signal(recycling,
-				       audio_signal_list->data);
-	
-	pthread_mutex_unlock(recycling_mutex);
-
-	/* iterate */
-	audio_signal_list = audio_signal_list->next;
-
-	pthread_mutex_lock(channel_mutex);
-
-	channel = channel->next;
-
-	pthread_mutex_unlock(channel_mutex);
-      }
-      
-      if(audio_channels > audio_file->channels)
-	channel = ags_channel_nth(channel,
-				  audio_channels - audio_file->channels);
-      
-      filenames = filenames->next;
-    }
-  }
 }
 
 /**

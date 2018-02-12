@@ -317,7 +317,7 @@ void ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 					  gboolean overwrite_channels,
 					  gboolean create_channels);
 void ags_audio_open_audio_file_as_wave(AgsAudio *audio,
-				       GSList *filename,
+				       const gchar *filename,
 				       gboolean overwrite_channels,
 				       gboolean create_channels);
 

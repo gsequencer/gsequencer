@@ -639,10 +639,37 @@ ags_audio_file_close(AgsAudioFile *audio_file)
 }
 
 /**
+ * ags_audio_file_read:
+ * @audio_file: the #AgsAudioFile
+ * @audio_channel: nth channel
+ * @format: the format
+ * @error: returned error
+ *
+ * Read audio buffer.
+ *
+ * Since: 2.0.0
+ */
+void*
+ags_audio_file_read(AgsAudioFile *audio_file,
+		    guint audio_channel,
+		    guint format,
+		    GError **error)
+{
+  void *buffer;
+
+  buffer = ags_playable_read(AGS_PLAYABLE(audio_file->playable),
+			     audio_channel,
+			     format,
+			     error);
+
+  return(buffer);
+}
+
+/**
  * ags_audio_file_read_audio_signal:
  * @audio_file: the #AgsAudioFile
  *
- * Convert the #AgsAudioFile to a #GList of buffers.
+ * Convert the #AgsAudioFile to a #GList-struct of #AgsAudioSignal.
  *
  * Since: 1.0.0
  */
@@ -712,7 +739,8 @@ ags_audio_file_seek(AgsAudioFile *audio_file, guint frames, gint whence)
  */
 void
 ags_audio_file_write(AgsAudioFile *audio_file,
-		     void *buffer, guint buffer_size, guint format)
+		     void *buffer, guint buffer_size,
+		     guint format)
 {
   double *playable_buffer;
 

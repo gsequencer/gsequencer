@@ -14,6 +14,7 @@ ags (2.0.0)
 	* added ags_connectable_has_resource()
 	* added ags_audio_done_recall()
 	* modified prototype of ags_audio_collect_all_audio_ports_by_specifier_and_context()
+	* modified prototype of ags_midi_file_read_*()
 	* renamed g_cclosure_user_marshal_* to ags_cclosure_marshal_*
 	* renamed ags_connectable_connect_scope() to ags_connectable_connect_connection()
 	* renamed ags_connectable_disconnect_scope() to ags_connectable_disconnect_connection()

@@ -54,8 +54,13 @@ void ags_sndfile_info(AgsPlayable *playable,
 		      GError **error);
 guint ags_sndfile_get_samplerate(AgsPlayable *playable);
 guint ags_sndfile_get_format(AgsPlayable *playable);
-double* ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error);
-void ags_sndfile_write(AgsPlayable *playable, double *buffer, guint buffer_length);
+void* ags_sndfile_read(AgsPlayable *playable,
+		       guint audio_channel,
+		       guint format,
+		       GError **error);
+void ags_sndfile_write(AgsPlayable *playable,
+		       void *buffer, guint buffer_length,
+		       guint format);
 void ags_sndfile_flush(AgsPlayable *playable);
 void ags_sndfile_seek(AgsPlayable *playable, guint frames, gint whence);
 void ags_sndfile_close(AgsPlayable *playable);
@@ -401,7 +406,10 @@ ags_sndfile_get_format(AgsPlayable *playable)
 }
 
 double*
-ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error)
+ags_sndfile_read(AgsPlayable *playable,
+		 guint audio_channel,
+		 guint format,
+		 GError **error)
 {
   AgsSndfile *sndfile;
   double *buffer, *source;
