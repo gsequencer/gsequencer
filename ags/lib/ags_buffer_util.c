@@ -889,7 +889,7 @@ ags_buffer_util_char_buffer_read_s16(unsigned char *cbuffer,
 
   val = 0;
   
-  if(!swap_bytes){
+  if(swap_bytes){
     val |= (cbuffer[0]);
     val |= (cbuffer[1] << 8);
   }else{
@@ -917,7 +917,7 @@ ags_buffer_util_char_buffer_read_s24(unsigned char *cbuffer,
 
   val = 0;
   
-  if(!swap_bytes){
+  if(swap_bytes){
     val |= (cbuffer[0]);
     val |= (cbuffer[1] << 8);
     val |= (cbuffer[2] << 16);
@@ -947,7 +947,7 @@ ags_buffer_util_char_buffer_read_s32(unsigned char *cbuffer,
 
   val = 0;
   
-  if(!swap_bytes){
+  if(swap_bytes){
     val |= (cbuffer[0]);
     val |= (cbuffer[1] << 8);
     val |= (cbuffer[2] << 16);
@@ -979,7 +979,7 @@ ags_buffer_util_char_buffer_read_s64(unsigned char *cbuffer,
 
   val = 0;
   
-  if(!swap_bytes){
+  if(swap_bytes){
     val |= (cbuffer[0]);
     val |= (cbuffer[1] << 8);
     val |= (cbuffer[2] << 16);
@@ -997,6 +997,88 @@ ags_buffer_util_char_buffer_read_s64(unsigned char *cbuffer,
     val |= (cbuffer[5] << 16);
     val |= (cbuffer[6] << 8);
     val |= (cbuffer[7]);
+  }
+}
+
+void
+ags_buffer_util_char_buffer_write_s8(unsigned char *cbuffer,
+				     signed char value,
+				     gboolean swap_bytes)
+{
+  cbuffer[0] = value;
+}
+
+void
+ags_buffer_util_char_buffer_write_s16(unsigned char *cbuffer,
+				      signed short value,
+				      gboolean swap_bytes)
+{
+  if(swap_bytes){
+    cbuffer[0] = (0xff & value);
+    cbuffer[1] = (0xff00 & value) >> 8;
+  }else{
+    cbuffer[0] = (0xff00 & value) >> 8;
+    cbuffer[1] = (0xff & value);
+  }
+}
+
+void
+ags_buffer_util_char_buffer_write_s24(unsigned char *cbuffer,
+				      signed long value,
+				      gboolean swap_bytes)
+{
+  if(swap_bytes){
+    cbuffer[0] = (0xff & value);
+    cbuffer[1] = (0xff00 & value) >> 8;
+    cbuffer[2] = (0xff0000 & value) >> 16;
+  }else{
+    cbuffer[0] = (0xff0000 & value) >> 16;
+    cbuffer[1] = (0xff00 & value) >> 8;
+    cbuffer[2] = (0xff & value);
+  }
+}
+
+void
+ags_buffer_util_char_buffer_write_s32(unsigned char *cbuffer,
+				      signed long value,
+				      gboolean swap_bytes)
+{
+  if(swap_bytes){
+    cbuffer[0] = (0xff & value);
+    cbuffer[1] = (0xff00 & value) >> 8;
+    cbuffer[2] = (0xff0000 & value) >> 16;
+    cbuffer[3] = (0xff000000 & value) >> 24;
+  }else{
+    cbuffer[0] = (0xff000000 & value) >> 24;
+    cbuffer[1] = (0xff0000 & value) >> 16;
+    cbuffer[2] = (0xff00 & value) >> 8;
+    cbuffer[3] = (0xff & value);
+  }
+}
+
+void
+ags_buffer_util_char_buffer_write_s64(unsigned char *cbuffer,
+				      signed long long value,
+				      gboolean swap_bytes)
+{
+  if(swap_bytes){
+    cbuffer[0] = (0xff & value);
+    cbuffer[1] = (0xff00 & value) >> 8;
+    cbuffer[2] = (0xff0000 & value) >> 16;
+    cbuffer[3] = (0xff000000 & value) >> 24;
+    cbuffer[4] = (0xff00000000 & value) >> 32;
+    cbuffer[5] = (0xff0000000000 & value) >> 40;
+    cbuffer[6] = (0xff000000000000 & value) >> 48;
+    cbuffer[7] = (0xff00000000000000 & value) >> 56;
+  }else{
+    cbuffer[0] = (0xff00000000000000 & value) >> 56;
+    cbuffer[1] = (0xff000000000000 & value) >> 48;
+    cbuffer[2] = (0xff0000000000 & value) >> 40;
+    cbuffer[3] = (0xff00000000 & value) >> 32
+    cbuffer[4] = (0xff000000 & value) >> 24;
+    cbuffer[5] = (0xff0000 & value) >> 16;
+    cbuffer[6] = (0xff00 & value) >> 8;
+    cbuffer[7] = (0xff & value);
   }
 }
 

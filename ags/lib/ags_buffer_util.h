@@ -56,6 +56,22 @@ signed long ags_buffer_util_char_buffer_read_s32(unsigned char *cbuffer,
 signed long long ags_buffer_util_char_buffer_read_s64(unsigned char *cbuffer,
 						      gboolean swap_bytes);
 
+void ags_buffer_util_char_buffer_write_s8(unsigned char *cbuffer,
+					 signed char value,
+					 gboolean swap_bytes);
+void ags_buffer_util_char_buffer_write_s16(unsigned char *cbuffer,
+					   signed short value,
+					   gboolean swap_bytes);
+void ags_buffer_util_char_buffer_write_s24(unsigned char *cbuffer,
+					   signed long value,
+					   gboolean swap_bytes);
+void ags_buffer_util_char_buffer_write_s32(unsigned char *cbuffer,
+					   signed long value,
+					   gboolean swap_bytes);
+void ags_buffer_util_char_buffer_write_s64(unsigned char *cbuffer,
+					   signed long long value,
+					   gboolean swap_bytes);
+
 void ags_buffer_util_char_buffer_swap_bytes(unsigned char *cbuffer, guint word_size,
 					    guint buffer_size);
 

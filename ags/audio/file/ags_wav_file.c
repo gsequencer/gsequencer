@@ -36,6 +36,14 @@ void ags_wav_file_get_property(GObject *gobject,
 			       GParamSpec *param_spec);
 void ags_wav_file_finalize(GObject *object);
 
+void ags_wav_file_write_header(AgsWavFile *wav_file);
+void ags_wav_file_write_format_chunk(AgsWavFile *wav_file,
+				     AgsWavFileFormatChunk *format_chunk);
+void ags_wav_file_write_fact_chunk(AgsWavFile *wav_file,
+				   AgsWavFileFactChunk *fact_chunk);
+void ags_wav_file_write_data_chunk(AgsWavFile *wav_file,
+				   AgsWavFileDataChunk *data_chunk);
+
 enum{
   PROP_0,
   PROP_FILENAME,
@@ -232,6 +240,78 @@ ags_wav_file_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_wav_file_parent_class)->finalize(gobject);
 }
 
+void
+ags_wav_file_write_header(AgsWavFile *wav_file)
+{
+  unsigned char buffer[16];
+
+  gboolean file_is_le;
+
+  /* get file LE/BE */
+  file_is_le = TRUE;
+
+  if(!g_ascii_strncasecmp(wav_file->chunk_id,
+			  AGS_WAV_FILE_RIFX,
+			  4)){
+    file_is_le = FALSE;
+  }
+
+  /* chunk id */
+  memcpy(buffer, wav_file->chunk_id, 4 * sizeof(unsigned char));
+
+  if((file_is_le &&
+      ags_endian_host_is_le()) ||
+     (!file_is_le &&
+      ags_endian_host_is_be())){
+    ags_buffer_util_char_buffer_write_s32(buffer,
+					  wav_file->chunk_size,
+					  FALSE);
+  }else if((file_is_le &&
+	    ags_endian_host_is_be()) ||
+	   (!file_is_le &&
+	    ags_endian_host_is_le())){
+    ags_buffer_util_char_buffer_write_s32(buffer,
+					  wav_file->chunk_size,
+					  TRUE);
+  }
+
+  /* wave id */
+  memcpy(buffer + 8, wav_file->wave_id, 4 * sizeof(unsigned char));
+
+  /* write */
+  fwrite(buffer, sizeof(unsigned char), 12, wav_file->stream);
+}
+
+void
+ags_wav_file_write_format_chunk(AgsWavFile *wav_file,
+				AgsWavFileFormatChunk *format_chunk)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_wav_file_write_fact_chunk(AgsWavFile *wav_file,
+			      AgsWavFileFactChunk *fact_chunk)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_wav_file_write_data_chunk(AgsWavFile *wav_file,
+			      AgsWavFileDataChunk *data_chunk)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_wav_file_format_chunk_alloc:
+ * 
+ * Allocate WAV file format chunk. 
+ *
+ * Returns: the newly allocated #AgsWavFileFormatChunk-struct
+ * 
+ * Since: 2.0.0
+ */
 AgsWavFileFormatChunk*
 ags_wav_file_format_chunk_alloc()
 {
@@ -258,12 +338,28 @@ ags_wav_file_format_chunk_alloc()
   return(format_chunk);
 }
 
+/**
+ * ags_wav_file_format_chunk_free:
+ * 
+ * Free WAV file format chunk.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_wav_file_format_chunk_free(AgsWavFileFormatChunk *format_chunk)
 {
   g_free(format_chunk);
 }
 
+/**
+ * ags_wav_file_fact_chunk_alloc:
+ * 
+ * Allocate WAV file fact chunk. 
+ *
+ * Returns: the newly allocated #AgsWavFileFactChunk-struct
+ * 
+ * Since: 2.0.0
+ */
 AgsWavFileFactChunk*
 ags_wav_file_fact_chunk_alloc()
 {
@@ -279,12 +375,28 @@ ags_wav_file_fact_chunk_alloc()
   return(fact_chunk);
 }
 
+/**
+ * ags_wav_file_fact_chunk_free:
+ * 
+ * Free WAV file fact chunk.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_wav_file_fact_chunk_free(AgsWavFileFactChunk *fact_chunk)
 {
   g_free(fact_chunk);
 }
 
+/**
+ * ags_wav_file_data_chunk_alloc:
+ * 
+ * Allocate WAV file data chunk. 
+ *
+ * Returns: the newly allocated #AgsWavFileDataChunk-struct
+ * 
+ * Since: 2.0.0
+ */
 AgsWavFileDataChunk*
 ags_wav_file_data_chunk_alloc()
 {
@@ -300,6 +412,13 @@ ags_wav_file_data_chunk_alloc()
   return(data_chunk);
 }
 
+/**
+ * ags_wav_file_data_chunk_free:
+ * 
+ * Free WAV file data chunk.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_wav_file_data_chunk_free(AgsWavFileDataChunk *data_chunk)
 {
@@ -310,6 +429,15 @@ ags_wav_file_data_chunk_free(AgsWavFileDataChunk *data_chunk)
   g_free(data_chunk);
 }
 
+/**
+ * ags_wav_file_get_valid_suffix:
+ * 
+ * Get valid suffix.
+ * 
+ * Returns: a %NULL terminated string vector containing valid suffixes
+ * 
+ * Since: 2.0.0
+ */
 gchar**
 ags_wav_file_get_valid_suffix()
 {
@@ -322,6 +450,16 @@ ags_wav_file_get_valid_suffix()
   return(suffix);
 }
 
+/**
+ * ags_wav_file_check_open:
+ * @filename: the filename as string
+ * 
+ * Check if you can open @filename.
+ * 
+ * Returns: %TRUE if valid RIFF WAV file, otherwise %FALSE
+ * 
+ * Since: 2.0.0
+ */
 gboolean
 ags_wav_file_check_open(gchar *filename)
 {
@@ -364,6 +502,16 @@ ags_wav_file_check_open(gchar *filename)
   return(TRUE);
 }
 
+/**
+ * ags_wav_file_open:
+ * @wav_file: the #AgsWavFile
+ * 
+ * Open @wav_file.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 2.0.0
+ */
 gboolean
 ags_wav_file_open(AgsWavFile *wav_file)
 {
@@ -437,11 +585,58 @@ ags_wav_file_open(AgsWavFile *wav_file)
   /* WAVE id */
   memcpy(wav_file->wave_id, buffer + 8, 4 * sizeof(unsigned char));
 
+  /* set read-only */
+  wav_file->flags |= AGS_WAV_FILE_READ_ONLY;
+
   return(TRUE);
 }
 
-gboolean ags_wav_file_rw_open(AgsWavFile *wav_file,
-			      gboolean create);
+/**
+ * ags_wav_file_rw_open:
+ * @wav_file: the #AgsWavFile
+ * @do_create: if %TRUE create file if not exists
+ * 
+ * Open @wav_file, if file doesn't exists and @do_create is %TRUE, an empty WAV file
+ * with valid RIFF header is created.
+ * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_wav_file_rw_open(AgsWavFile *wav_file,
+		     gboolean do_create)
+{
+  if(!AGS_IS_WAVE_FILE(wav_file) ||
+     wav_file->filename == NULL){
+    return(FALSE);
+  }
+
+  if(!g_file_test(wav_file->filename,
+		  G_FILE_TEST_EXISTS)){
+    if(do_create){
+      wav_file->stream = fopen(wav_file->filename,
+			       "w");
+
+      ags_wav_file_write_header(wav_file);
+      
+      fflush(wav_file->stream);
+      fclose(wav_file->stream);
+
+      wav_file->stream = NULL;
+    }else{
+      return(FALSE);
+    }
+  }
+  
+  if(!ags_wav_file_open(wav_file)){
+    return(FALSE);
+  }
+
+  wav_file->flags &= (~AGS_WAV_FILE_READ_ONLY);
+  
+  return(TRUE);
+}
 
 void ags_wav_file_add_format_chunk(AgsWavFile *wav_file,
 				   AgsWavFileFormatChunk *format_chunk);

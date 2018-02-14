@@ -172,7 +172,7 @@ gboolean ags_wav_file_check_open(gchar *filename);
 
 gboolean ags_wav_file_open(AgsWavFile *wav_file);
 gboolean ags_wav_file_rw_open(AgsWavFile *wav_file,
-			  gboolean create);
+			  gboolean do_create);
 
 void ags_wav_file_add_format_chunk(AgsWavFile *wav_file,
 				   AgsWavFileFormatChunk *format_chunk);
