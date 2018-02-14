@@ -22,6 +22,9 @@
 
 #include <glib.h>
 
+gboolean ags_endian_host_is_le();
+gboolean ags_endian_host_is_be();
+
 gfloat ags_endian_swap_float(gfloat x);
 
 #endif /*__AGS_ENDIAN__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -158,8 +158,8 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    * Since: 1.0.0
    */
   param_spec = g_param_spec_string("filename",
-				   i18n_pspec("filename of lv2 manager"),
-				   i18n_pspec("The filename this lv2 manager is assigned to"),
+				   i18n_pspec("filename of audio file"),
+				   i18n_pspec("The filename of audio file"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -423,6 +423,7 @@ ags_audio_file_finalize(GObject *gobject)
   /* file */
   g_object_unref(audio_file->playable);
 
+  /* call parent */
   G_OBJECT_CLASS(ags_audio_file_parent_class)->finalize(gobject);
 }
 

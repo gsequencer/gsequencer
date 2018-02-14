@@ -19,6 +19,8 @@
 
 #include <ags/lib/ags_buffer_util.h>
 
+#include <ags/lib/ags_endian.h>
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -502,6 +504,8 @@ ags_buffer_util_char_buffer_to_s16(unsigned char *cbuffer,
 
   buffer = (signed short *) malloc((buffer_size / 2) * sizeof(signed short));
   memset(buffer, 0, (buffer_size / 2) * sizeof(signed short));
+
+  buffer_size = (guint) (2 * floor(buffer_size / 2.0));
   
   i = 0;
   
@@ -571,6 +575,8 @@ ags_buffer_util_char_buffer_to_s24(unsigned char *cbuffer,
 
   buffer = (signed long *) malloc((buffer_size / 3) * sizeof(signed long));
   memset(buffer, 0, (buffer_size / 3) * sizeof(signed long));
+
+  buffer_size = (guint) (3 * floor(buffer_size / 3.0));
   
   i = 0;
   
@@ -649,6 +655,8 @@ ags_buffer_util_char_buffer_to_s32(unsigned char *cbuffer,
 
   buffer = (signed long *) malloc((buffer_size / 4) * sizeof(signed long));
   memset(buffer, 0, (buffer_size / 4) * sizeof(signed long));
+
+  buffer_size = (guint) (4 * floor(buffer_size / 4.0));
   
   i = 0;
   
@@ -736,6 +744,8 @@ ags_buffer_util_char_buffer_to_s64(unsigned char *cbuffer,
 
   buffer = (signed long long *) malloc((buffer_size / 8) * sizeof(signed long long));
   memset(buffer, 0, (buffer_size / 8) * sizeof(signed long long));
+
+  buffer_size = (guint) (8 * floor(buffer_size / 8.0)); 
   
   i = 0;
   
@@ -835,4 +845,192 @@ ags_buffer_util_char_buffer_to_s64(unsigned char *cbuffer,
   }
 
   return(buffer);
+}
+
+/**
+ * ags_buffer_util_char_buffer_read_s8:
+ * @cbuffer: the character buffer
+ * @swap_bytes: reverse order, ignored here
+ * 
+ * Read a signed char quantity of @cbuffer.
+ * 
+ * Returns: the signed char value
+ * 
+ * Since: 2.0.0
+ */
+signed char
+ags_buffer_util_char_buffer_read_s8(unsigned char *cbuffer,
+				    gboolean swap_bytes)
+{
+  signed char val;
+
+  val = 0;
+  val |= cbuffer[0];
+
+  return(val);
+}
+
+/**
+ * ags_buffer_util_char_buffer_read_s16:
+ * @cbuffer: the character buffer
+ * @swap_bytes: reverse order
+ * 
+ * Read a signed short quantity of @cbuffer.
+ * 
+ * Returns: the signed short value
+ * 
+ * Since: 2.0.0
+ */
+signed short
+ags_buffer_util_char_buffer_read_s16(unsigned char *cbuffer,
+				     gboolean swap_bytes)
+{
+  signed short val;
+
+  val = 0;
+  
+  if(!swap_bytes){
+    val |= (cbuffer[0]);
+    val |= (cbuffer[1] << 8);
+  }else{
+    val |= (cbuffer[0] << 8);
+    val |= (cbuffer[1]);
+  }
+}
+
+/**
+ * ags_buffer_util_char_buffer_read_s24:
+ * @cbuffer: the character buffer
+ * @swap_bytes: reverse order
+ * 
+ * Read a signed long 24 bit quantity of @cbuffer.
+ * 
+ * Returns: the signed long value
+ * 
+ * Since: 2.0.0
+ */
+signed long
+ags_buffer_util_char_buffer_read_s24(unsigned char *cbuffer,
+				     gboolean swap_bytes)
+{
+  signed long val;
+
+  val = 0;
+  
+  if(!swap_bytes){
+    val |= (cbuffer[0]);
+    val |= (cbuffer[1] << 8);
+    val |= (cbuffer[2] << 16);
+  }else{
+    val |= (cbuffer[0] << 16);
+    val |= (cbuffer[1] << 8);
+    val |= (cbuffer[2]);
+  }
+}
+
+/**
+ * ags_buffer_util_char_buffer_read_s32:
+ * @cbuffer: the character buffer
+ * @swap_bytes: reverse order
+ * 
+ * Read a signed long 32 bit quantity of @cbuffer.
+ * 
+ * Returns: the signed long value
+ * 
+ * Since: 2.0.0
+ */
+signed long
+ags_buffer_util_char_buffer_read_s32(unsigned char *cbuffer,
+				     gboolean swap_bytes)
+{
+  signed long val;
+
+  val = 0;
+  
+  if(!swap_bytes){
+    val |= (cbuffer[0]);
+    val |= (cbuffer[1] << 8);
+    val |= (cbuffer[2] << 16);
+    val |= (cbuffer[3] << 24);
+  }else{
+    val |= (cbuffer[0] << 24);
+    val |= (cbuffer[1] << 16);
+    val |= (cbuffer[2] << 8);
+    val |= (cbuffer[3]);
+  }
+}
+
+/**
+ * ags_buffer_util_char_buffer_read_s64:
+ * @cbuffer: the character buffer
+ * @swap_bytes: reverse order
+ * 
+ * Read a signed long long 64 bit quantity of @cbuffer.
+ * 
+ * Returns: the signed long long value
+ * 
+ * Since: 2.0.0
+ */
+signed long long
+ags_buffer_util_char_buffer_read_s64(unsigned char *cbuffer,
+				     gboolean swap_bytes)
+{
+  signed long long val;
+
+  val = 0;
+  
+  if(!swap_bytes){
+    val |= (cbuffer[0]);
+    val |= (cbuffer[1] << 8);
+    val |= (cbuffer[2] << 16);
+    val |= (cbuffer[3] << 24);
+    val |= (cbuffer[4] << 32);
+    val |= (cbuffer[5] << 40);
+    val |= (cbuffer[6] << 48);
+    val |= (cbuffer[7] << 56);
+  }else{
+    val |= (cbuffer[0] << 56);
+    val |= (cbuffer[1] << 48);
+    val |= (cbuffer[2] << 40);
+    val |= (cbuffer[3] << 32);
+    val |= (cbuffer[4] << 24);
+    val |= (cbuffer[5] << 16);
+    val |= (cbuffer[6] << 8);
+    val |= (cbuffer[7]);
+  }
+}
+
+/**
+ * ags_buffer_util_char_buffer_swap_bytes:
+ * @cbuffer: the buffer to swap
+ * @word_size: the word size
+ * @buffer_size: the buffer size
+ * 
+ * Swap bytes in view of Little/Big Endian.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_buffer_util_char_buffer_swap_bytes(unsigned char *cbuffer, guint word_size,
+				       guint buffer_size)
+{
+  unsigned char tmp_buffer[8];
+    
+  guint i, j;
+
+  if(word_size <= 1){
+    return;
+  }
+
+  buffer_size = (guint) (word_size * floor(buffer_size / word_size));
+  
+  for(0; i < buffer_size; i += word_size){
+    for(j = 0; j < word_size; j++){
+      tmp_buffer[j] = cbuffer[i + (word_size - j - 1)];
+    }
+
+    for(j = 0; j < word_size; j++){
+      cbuffer[i + j] = tmp_buffer[j];
+    }    
+  }
 }

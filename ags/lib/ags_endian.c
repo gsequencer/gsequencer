@@ -30,6 +30,40 @@
  */
 
 /**
+ * ags_endian_host_is_le:
+ * 
+ * Check host is Little Endian.
+ * 
+ * Returns: %TRUE if LE, otherwise %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_endian_host_is_le()
+{
+  int i = 1;
+  
+  return(*((char *)&i));
+}
+
+/**
+ * ags_endian_host_is_be:
+ * 
+ * Check host is Big Endian.
+ * 
+ * Returns: %TRUE if BE, otherwise %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_endian_host_is_be()
+{
+  int i = 1;
+  
+  return(!(*((char *)&i)));
+}
+
+/**
  * ags_endian_swap_float:
  * @x: the float to swap
  * 
