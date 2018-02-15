@@ -485,6 +485,10 @@ ags_wav_file_load(AgsSoundResource *sound_resource)
       ags_wav_file_add_format_chunk(wav_file,
 				    format_chunk);
 
+      if(wav_file->current_format_chunk == NULL){
+	wav_file->current_format_chunk = format_chunk;
+      }
+      
       fread(fmt_chunk + 4, sizeof(gchar), 44, wav_file->stream);
       iter = fmt_chunk + 4;
 
@@ -554,6 +558,10 @@ ags_wav_file_load(AgsSoundResource *sound_resource)
       ags_wav_file_add_fact_chunk(wav_file,
 				  fact_chunk);
 
+      if(wav_file->current_fact_chunk == NULL){
+	wav_file->current_fact_chunk = fact_chunk;
+      }
+
       fread(fact_chunk + 4, sizeof(gchar), 8, wav_file->stream);
       iter = fact_chunk + 4;
 
@@ -576,6 +584,10 @@ ags_wav_file_load(AgsSoundResource *sound_resource)
       data_chunk = ags_wav_file_data_chunk_alloc();
       ags_wav_file_add_data_chunk(wav_file,
 				  data_chunk);
+
+      if(wav_file->current_data_chunk == NULL){
+	wav_file->current_data_chunk = data_chunk;
+      }
 
       fread(data_chunk + 4, sizeof(gchar), 4, wav_file->stream);
       iter = data_chunk + 4;
@@ -606,7 +618,24 @@ ags_wav_file_info(AgsSoundResource *sound_resource,
 
   wav_file = AGS_WAV_FILE(sound_resource);  
 
-  //TODO:JK: implement me
+  if(frame_count != NULL){
+    if(wav_file->current_format_chunk != NULL &&
+       wav_file->current_data_chunk != NULL){
+      frame_count[0] = ((AGS_WAV_FILE_CHUNK(wav_file->current_format_chunk)->chunk_size /
+			 wav_file->current_format_chunk->channels) /
+			(wav_file->current_format_chunk->bits_per_sample / 8.0));
+    }else{
+      frame_count[0] = 0;
+    }
+  }
+  
+  if(loop_start != NULL){
+    loop_start[0] = 0;
+  }
+
+  if(loop_end != NULL){
+    loop_end[0] = 0;
+  }
 }
 
 void
@@ -620,7 +649,83 @@ ags_wav_file_set_presets(AgsSoundResource *sound_resource,
 
   wav_file = AGS_WAV_FILE(sound_resource);  
 
-  //TODO:JK: implement me
+  if(wav_file->current_format_chunk != NULL){
+    wav_file->current_format_chunk->channels = channels;
+    wav_file->current_format_chunk->samplerate = samplerate;
+
+    switch(format){
+    case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	wav_file->current_format_chunk->format = AGS_WAV_FILE_FORMAT_PCM;
+	
+	wav_file->current_format_chunk->bits_per_sample = 8;
+	wav_file->current_format_chunk->valid_bits_per_sample = 8;
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	wav_file->current_format_chunk->format = AGS_WAV_FILE_FORMAT_PCM;
+	
+	wav_file->current_format_chunk->bits_per_sample = 16;
+	wav_file->current_format_chunk->valid_bits_per_sample = 16;
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {
+	wav_file->current_format_chunk->format = AGS_WAV_FILE_FORMAT_PCM;
+	
+	wav_file->current_format_chunk->bits_per_sample = 32;
+	wav_file->current_format_chunk->valid_bits_per_sample = 24;
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	wav_file->current_format_chunk->format = AGS_WAV_FILE_FORMAT_PCM;
+	
+	wav_file->current_format_chunk->bits_per_sample = 32;
+	wav_file->current_format_chunk->valid_bits_per_sample = 32;
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_64_BIT:
+      {
+	wav_file->current_format_chunk->format = AGS_WAV_FILE_FORMAT_PCM;
+	
+	wav_file->current_format_chunk->bits_per_sample = 64;
+	wav_file->current_format_chunk->valid_bits_per_sample = 64;
+      }
+      break;
+    }
+  }
+  
+  if(wav_file->current_data_chunk != NULL){
+    switch(format){
+    case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	AGS_WAV_FILE_CHUNK(wav_file->current_data_chunk)->chunk_size = channels * buffer_size * sizeof(signed char);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	AGS_WAV_FILE_CHUNK(wav_file->current_data_chunk)->chunk_size = channels * buffer_size * sizeof(signed short);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {
+	AGS_WAV_FILE_CHUNK(wav_file->current_data_chunk)->chunk_size = channels * buffer_size * sizeof(signed long);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	AGS_WAV_FILE_CHUNK(wav_file->current_data_chunk)->chunk_size = channels * buffer_size * sizeof(signed long);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_64_BIT:
+      {
+	AGS_WAV_FILE_CHUNK(wav_file->current_data_chunk)->chunk_size = channels * buffer_size * sizeof(signed long long);
+      }
+      break;
+    }
+  }
 }
 
 void
@@ -634,7 +739,54 @@ ags_wav_file_get_presets(AgsSoundResource *sound_resource,
 
   wav_file = AGS_WAV_FILE(sound_resource);  
 
-  //TODO:JK: implement me
+  if(wav_file->current_format_chunk != NULL){
+    if(channels != NULL){
+      channels[0] = wav_file->current_format_chunk->channels;
+    }
+
+    if(samplerate != NULL){
+      samplerate[0] = wav_file->current_format_chunk->samplerate;
+    }
+
+    if(format != NULL){
+      switch(wav_file->current_format_chunk->bits_per_sample){
+      case 8:
+	{
+	  format[0] = AGS_SOUNDCARD_SIGNED_8_BIT;
+	}
+	break;
+      case 16:
+	{
+	  format[0] = AGS_SOUNDCARD_SIGNED_16_BIT;
+	}
+	break;
+      case 24:
+	{
+	  format[0] = AGS_SOUNDCARD_SIGNED_24_BIT;
+	}
+	break;
+      case 32:
+	{
+	  format[0] = AGS_SOUNDCARD_SIGNED_32_BIT;
+	}
+	break;
+      case 64:
+	{
+	  format[0] = AGS_SOUNDCARD_SIGNED_64_BIT;
+	}
+	break;
+      }
+    }
+  }
+
+  if(wav_file->current_format_chunk != NULL &&
+     wav_file->current_data_chunk != NULL){
+    if(buffer_size != NULL){
+      buffer_size[0] = (AGS_WAV_FILE_CHUNK(wav_file->current_data_chunk)->chunk_size /
+			wav_file->current_format_chunk->channels /
+			(wav_file->current_format_chunk->bits_per_sample / 8.0));
+    }
+  }
 }
 
 guint
