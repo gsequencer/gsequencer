@@ -638,10 +638,35 @@ ags_wav_file_rw_open(AgsWavFile *wav_file,
   return(TRUE);
 }
 
-void ags_wav_file_add_format_chunk(AgsWavFile *wav_file,
-				   AgsWavFileFormatChunk *format_chunk);
-void ags_wav_file_remove_format_chunk(AgsWavFile *wav_file,
-				      AgsWavFileFormatChunk *format_chunk);
+void
+ags_wav_file_add_format_chunk(AgsWavFile *wav_file,
+			      AgsWavFileFormatChunk *format_chunk)
+{
+  if(!AGS_WAV_FILE(wav_file)){
+    return;
+  }
+
+  wav_file->format_chunk = g_list_prepend(wav_file->format_chunk,
+					  format_chunk);
+
+  wav_file->all_chunk = g_list_prepend(wav_file->all_chunk,
+				       format_chunk);
+}
+
+void
+ags_wav_file_remove_format_chunk(AgsWavFile *wav_file,
+				 AgsWavFileFormatChunk *format_chunk)
+{
+  if(!AGS_WAV_FILE(wav_file)){
+    return;
+  }
+
+  wav_file->format_chunk = g_list_remove(wav_file->format_chunk,
+					 format_chunk);
+  
+  wav_file->all_chunk = g_list_remove(wav_file->all_chunk,
+				      format_chunk);
+}
 
 void ags_wav_file_add_fact_chunk(AgsWavFile *wav_file,
 				 AgsWavFileFactChunk *fact_chunk);
