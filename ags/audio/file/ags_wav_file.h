@@ -166,14 +166,6 @@ void ags_wav_file_fact_chunk_free(AgsWavFileFactChunk *fact_chunk);
 AgsWavFileDataChunk* ags_wav_file_data_chunk_alloc();
 void ags_wav_file_data_chunk_free(AgsWavFileDataChunk *data_chunk);
 
-gchar** ags_wav_file_get_valid_suffix();
-
-gboolean ags_wav_file_check_open(gchar *filename);
-
-gboolean ags_wav_file_open(AgsWavFile *wav_file);
-gboolean ags_wav_file_rw_open(AgsWavFile *wav_file,
-			  gboolean do_create);
-
 void ags_wav_file_add_format_chunk(AgsWavFile *wav_file,
 				   AgsWavFileFormatChunk *format_chunk);
 void ags_wav_file_remove_format_chunk(AgsWavFile *wav_file,
@@ -189,20 +181,9 @@ void ags_wav_file_add_data_chunk(AgsWavFile *wav_file,
 void ags_wav_file_remove_data_chunk(AgsWavFile *wav_file,
 				    AgsWavFileDataChunk *data_chunk);
 
-void ags_wav_file_write_buffer(AgsWavFile *wav_file,			       
-			       void *source, guint schannels, guint soffset, guint sformat,
-			       guint count,
-			       GError **error);
-void ags_wav_file_read_buffer(AgsWavFile *wav_file,
-			      void *destination, guint dchannels, guint doffset, guint dformat,
-			      guint count,
-			      GError **error);
+gchar** ags_wav_file_get_valid_suffix();
 
-void ags_wav_file_seek(AgsWavFile *wav_file,
-		       guint64 offset);
-
-void ags_wav_file_flush(AgsWavFile *wav_file);
-void ags_wav_file_close(AgsWavFile *wav_file);
+gboolean ags_wav_file_check_open(gchar *filename);
 
 AgsWavFile* ags_wav_file_new(gchar *filename);
 

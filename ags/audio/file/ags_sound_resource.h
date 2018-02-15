@@ -37,6 +37,12 @@ struct _AgsSoundResourceInterface
 {
   GTypeInterface ginterface;
 
+  gboolean (*open)(AgsSoundResource *sound_resource,
+		   gchar *filename);
+  gboolean (*rw_open)(AgsSoundResource *sound_resource,
+		      gchar *filename,
+		      gboolean create);
+
   void (*info)(AgsSoundResource *sound_resource,
 	       guint *frame_count,
 	       guint *loop_start, guint *loop_end);
@@ -53,26 +59,33 @@ struct _AgsSoundResourceInterface
 		      guint *format);
 
   /* read sample data */
-  void* (*read)(AgsSoundResource *sound_resource,
+  guint (*read)(AgsSoundResource *sound_resource,
+		void *dbuffer,
 		guint audio_channel,
 		guint frame_count, guint format);
 
   /* write sample data */
   void (*write)(AgsSoundResource *sound_resource,
-		void *buffer,
+		void *sbuffer,
 		guint audio_channel,
 		guint frame_count, guint format);
-  void (*flush)(AgsSound_Resource *sound_resource);
+  void (*flush)(AgsSoundResource *sound_resource);
 
   /* position */
   void (*seek)(AgsSoundResource *sound_resource,
-	       guint frames, gint whence);
+	       guint frame_count, gint whence);
 
   /* close */
   void (*close)(AgsSoundResource *sound_resource);
 };
 
 GType ags_sound_resource_get_type();
+
+gboolean ags_sound_resource_open(AgsSoundResource *sound_resource,
+				 gchar *filename);
+gboolean ags_sound_resource_rw_open(AgsSoundResource *sound_resource,
+				    gchar *filename,
+				    gboolean create);
 
 void ags_sound_resource_info(AgsSoundResource *sound_resource,
 			     guint *frame_count,
@@ -90,20 +103,21 @@ void ags_sound_resource_get_presets(AgsSoundResource *sound_resource,
 				    guint *format);
 
 /* read sample data */
-void* ags_sound_resource_read(AgsSoundResource *sound_resource,
+guint ags_sound_resource_read(AgsSoundResource *sound_resource,
+			      void *dbuffer,
 			      guint audio_channel,
 			      guint frame_count, guint format);
 
 /* write sample data */
 void ags_sound_resource_write(AgsSoundResource *sound_resource,
-			      void *buffer,
+			      void *sbuffer,
 			      guint audio_channel,
 			      guint frame_count, guint format);
-void ags_sound_resource_flush(AgsSound_Resource *sound_resource);
+void ags_sound_resource_flush(AgsSoundResource *sound_resource);
 
 /* position */
 void ags_sound_resource_seek(AgsSoundResource *sound_resource,
-			     guint frames, gint whence);
+			     guint frame_count, gint whence);
 
 /* close */
 void ags_sound_resource_close(AgsSoundResource *sound_resource);
