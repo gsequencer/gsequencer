@@ -23,6 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
+/* signed integers to char buffer */
 unsigned char* ags_buffer_util_s8_to_char_buffer(signed char *buffer,
 						 guint buffer_length);
 unsigned char* ags_buffer_util_s16_to_char_buffer(signed short *buffer,
@@ -33,7 +34,12 @@ unsigned char* ags_buffer_util_s32_to_char_buffer(signed long *buffer,
 						  guint buffer_length);
 unsigned char* ags_buffer_util_s64_to_char_buffer(signed long long *buffer,
 						  guint buffer_length);
+unsigned char* ags_buffer_util_float_to_char_buffer(float *buffer,
+						    guint buffer_length);
+unsigned char* ags_buffer_util_double_to_char_buffer(double *buffer,
+						     guint buffer_length);
 
+/* char buffer to signed integers */
 signed char* ags_buffer_util_char_buffer_to_s8(unsigned char *cbuffer,
 					       guint buffer_size);
 signed short* ags_buffer_util_char_buffer_to_s16(unsigned char *cbuffer,
@@ -44,7 +50,12 @@ signed long* ags_buffer_util_char_buffer_to_s32(unsigned char *cbuffer,
 						guint buffer_size);
 signed long long* ags_buffer_util_char_buffer_to_s64(unsigned char *cbuffer,
 						     guint buffer_size);
+float* ags_buffer_util_char_buffer_to_float(unsigned char *cbuffer,
+					    guint buffer_size);
+double* ags_buffer_util_char_buffer_to_double(unsigned char *cbuffer,
+					      guint buffer_size);
 
+/* read integers */
 signed char ags_buffer_util_char_buffer_read_s8(unsigned char *cbuffer,
 						gboolean swap_bytes);
 signed short ags_buffer_util_char_buffer_read_s16(unsigned char *cbuffer,
@@ -55,7 +66,12 @@ signed long ags_buffer_util_char_buffer_read_s32(unsigned char *cbuffer,
 						 gboolean swap_bytes);
 signed long long ags_buffer_util_char_buffer_read_s64(unsigned char *cbuffer,
 						      gboolean swap_bytes);
+float ags_buffer_util_char_buffer_read_float(unsigned char *cbuffer,
+					     gboolean swap_bytes);
+double ags_buffer_util_char_buffer_read_double(unsigned char *cbuffer,
+					       gboolean swap_bytes);
 
+/* write integers */
 void ags_buffer_util_char_buffer_write_s8(unsigned char *cbuffer,
 					 signed char value,
 					 gboolean swap_bytes);
@@ -71,7 +87,14 @@ void ags_buffer_util_char_buffer_write_s32(unsigned char *cbuffer,
 void ags_buffer_util_char_buffer_write_s64(unsigned char *cbuffer,
 					   signed long long value,
 					   gboolean swap_bytes);
+void ags_buffer_util_char_buffer_write_float(unsigned char *cbuffer,
+					     float value,
+					     gboolean swap_bytes);
+void ags_buffer_util_char_buffer_write_double(unsigned char *cbuffer,
+					      double value,
+					      gboolean swap_bytes);
 
+/* swap bytes */
 void ags_buffer_util_char_buffer_swap_bytes(unsigned char *cbuffer, guint word_size,
 					    guint buffer_size);
 

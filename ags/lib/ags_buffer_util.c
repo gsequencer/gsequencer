@@ -439,6 +439,54 @@ ags_buffer_util_s64_to_char_buffer(signed long long *buffer,
 }
 
 /**
+ * ags_buffer_util_float_to_char_buffer:
+ * @buffer: the float buffer
+ * @buffer_length: the buffer length
+ * 
+ * Pack @buffer into an unsigned char buffer.
+ * 
+ * Returns: the unsigned char buffer
+ * 
+ * Since: 2.0.0
+ */
+unsigned char*
+ags_buffer_util_float_to_char_buffer(float *buffer,
+				     guint buffer_length)
+{
+  unsigned char *cbuffer;
+  
+  cbuffer = (unsigned char *) malloc((buffer_length * sizeof(float)) * sizeof(unsigned char));
+
+  memcpy(cbuffer, buffer, buffer_length * sizeof(float));
+
+  return(cbuffer);
+}
+
+/**
+ * ags_buffer_util_double_to_char_buffer:
+ * @buffer: the double buffer
+ * @buffer_length: the buffer length
+ * 
+ * Pack @buffer into an unsigned char buffer.
+ * 
+ * Returns: the unsigned char buffer
+ * 
+ * Since: 2.0.0
+ */
+unsigned char*
+ags_buffer_util_double_to_char_buffer(double *buffer,
+				      guint buffer_length)
+{
+  unsigned char *cbuffer;
+  
+  cbuffer = (unsigned char *) malloc((buffer_length * sizeof(double)) * sizeof(unsigned char));
+
+  memcpy(cbuffer, buffer, buffer_length * sizeof(double));
+
+  return(cbuffer);
+}
+
+/**
  * ags_buffer_util_char_buffer_to_s8:
  * @cbuffer: the unsigned char buffer
  * @buffer_size: the buffer size
@@ -857,6 +905,58 @@ ags_buffer_util_char_buffer_to_s64(unsigned char *cbuffer,
 }
 
 /**
+ * ags_buffer_util_char_buffer_to_float:
+ * @cbuffer: the unsigned char buffer
+ * @buffer_size: the buffer size
+ *
+ * Unpack @cbuffer to a float buffer
+ *
+ * Returns: the float buffer
+ * 
+ * Since: 2.0.0
+ */
+float*
+ags_buffer_util_char_buffer_to_float(unsigned char *cbuffer,
+				     guint buffer_size)
+{
+  float *buffer;
+  
+  buffer = (signed long long *) malloc((buffer_size / sizeof(float)) * sizeof(float));
+
+  buffer_size = (guint) (sizeof(float) * floor(buffer_size / sizeof(float))); 
+
+  memcpy(buffer, cbuffer, buffer_size * sizeof(unsigned char));
+
+  return(buffer);
+}
+
+/**
+ * ags_buffer_util_char_buffer_to_double:
+ * @cbuffer: the unsigned char buffer
+ * @buffer_size: the buffer size
+ *
+ * Unpack @cbuffer to a double buffer
+ *
+ * Returns: the double buffer
+ * 
+ * Since: 2.0.0
+ */
+double*
+ags_buffer_util_char_buffer_to_double(unsigned char *cbuffer,
+				      guint buffer_size)
+{
+  double *buffer;
+  
+  buffer = (signed long long *) malloc((buffer_size / sizeof(double)) * sizeof(double));
+
+  buffer_size = (guint) (sizeof(double) * floor(buffer_size / sizeof(double))); 
+
+  memcpy(buffer, cbuffer, buffer_size * sizeof(unsigned char));
+
+  return(buffer);
+}
+
+/**
  * ags_buffer_util_char_buffer_read_s8:
  * @cbuffer: the character buffer
  * @swap_bytes: reverse order, ignored here
@@ -905,6 +1005,8 @@ ags_buffer_util_char_buffer_read_s16(unsigned char *cbuffer,
     val |= (cbuffer[0] << 8);
     val |= (cbuffer[1]);
   }
+
+  return(val);
 }
 
 /**
@@ -935,6 +1037,8 @@ ags_buffer_util_char_buffer_read_s24(unsigned char *cbuffer,
     val |= (cbuffer[1] << 8);
     val |= (cbuffer[2]);
   }
+
+  return(val);
 }
 
 /**
@@ -967,6 +1071,8 @@ ags_buffer_util_char_buffer_read_s32(unsigned char *cbuffer,
     val |= (cbuffer[2] << 8);
     val |= (cbuffer[3]);
   }
+
+  return(val);
 }
 
 /**
@@ -1007,8 +1113,96 @@ ags_buffer_util_char_buffer_read_s64(unsigned char *cbuffer,
     val |= (cbuffer[6] << 8);
     val |= (cbuffer[7]);
   }
+
+  return(val);
 }
 
+/**
+ * ags_buffer_util_char_buffer_read_float:
+ * @cbuffer: the character buffer
+ * @swap_bytes: reverse order
+ * 
+ * Read a float quantity of @cbuffer.
+ * 
+ * Returns: the float value
+ * 
+ * Since: 2.0.0
+ */
+float
+ags_buffer_util_char_buffer_read_float(unsigned char *cbuffer,
+				       gboolean swap_bytes)
+{
+  float val;
+
+  val = 0.0;
+  
+  if(swap_bytes){
+    val |= (cbuffer[0]);
+    val |= (cbuffer[1] << 8);
+    val |= (cbuffer[2] << 16);
+    val |= (cbuffer[3] << 24);
+  }else{
+    val |= (cbuffer[0] << 24);
+    val |= (cbuffer[1] << 16);
+    val |= (cbuffer[2] << 8);
+    val |= (cbuffer[3]);
+  }
+
+  return(val);
+}
+
+/**
+ * ags_buffer_util_char_buffer_read_double:
+ * @cbuffer: the character buffer
+ * @swap_bytes: reverse order
+ * 
+ * Read a double quantity of @cbuffer.
+ * 
+ * Returns: the double value
+ * 
+ * Since: 2.0.0
+ */
+double
+ags_buffer_util_char_buffer_read_double(unsigned char *cbuffer,
+					gboolean swap_bytes)
+{
+  double val;
+
+  val = 0.0;
+  
+  if(swap_bytes){
+    val |= (cbuffer[0]);
+    val |= (cbuffer[1] << 8);
+    val |= (cbuffer[2] << 16);
+    val |= (cbuffer[3] << 24);
+    val |= (cbuffer[4] << 32);
+    val |= (cbuffer[5] << 40);
+    val |= (cbuffer[6] << 48);
+    val |= (cbuffer[7] << 56);
+  }else{
+    val |= (cbuffer[0] << 56);
+    val |= (cbuffer[1] << 48);
+    val |= (cbuffer[2] << 40);
+    val |= (cbuffer[3] << 32);
+    val |= (cbuffer[4] << 24);
+    val |= (cbuffer[5] << 16);
+    val |= (cbuffer[6] << 8);
+    val |= (cbuffer[7]);
+  }
+
+  return(val);
+}
+
+/**
+ * ags_buffer_util_char_buffer_write_s8:
+ * @cbuffer: the character buffer
+ * @value: the signed char value
+ * @swap_bytes: reverse order
+ * 
+ * Write a signed char quantity to @cbuffer.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_buffer_util_char_buffer_write_s8(unsigned char *cbuffer,
 				     signed char value,
@@ -1017,6 +1211,16 @@ ags_buffer_util_char_buffer_write_s8(unsigned char *cbuffer,
   cbuffer[0] = value;
 }
 
+/**
+ * ags_buffer_util_char_buffer_write_s16:
+ * @cbuffer: the character buffer
+ * @value: the signed short value
+ * @swap_bytes: reverse order
+ * 
+ * Write a signed short quantity to @cbuffer.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_buffer_util_char_buffer_write_s16(unsigned char *cbuffer,
 				      signed short value,
@@ -1031,6 +1235,16 @@ ags_buffer_util_char_buffer_write_s16(unsigned char *cbuffer,
   }
 }
 
+/**
+ * ags_buffer_util_char_buffer_write_s24:
+ * @cbuffer: the character buffer
+ * @value: the signed long value
+ * @swap_bytes: reverse order
+ * 
+ * Write a signed long quantity to @cbuffer.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_buffer_util_char_buffer_write_s24(unsigned char *cbuffer,
 				      signed long value,
@@ -1047,6 +1261,16 @@ ags_buffer_util_char_buffer_write_s24(unsigned char *cbuffer,
   }
 }
 
+/**
+ * ags_buffer_util_char_buffer_write_s32:
+ * @cbuffer: the character buffer
+ * @value: the signed long value
+ * @swap_bytes: reverse order
+ * 
+ * Write a signed long quantity to @cbuffer.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_buffer_util_char_buffer_write_s32(unsigned char *cbuffer,
 				      signed long value,
@@ -1065,10 +1289,84 @@ ags_buffer_util_char_buffer_write_s32(unsigned char *cbuffer,
   }
 }
 
+/**
+ * ags_buffer_util_char_buffer_write_s64:
+ * @cbuffer: the character buffer
+ * @value: the signed long long value
+ * @swap_bytes: reverse order
+ * 
+ * Write a signed long long quantity to @cbuffer.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_buffer_util_char_buffer_write_s64(unsigned char *cbuffer,
 				      signed long long value,
 				      gboolean swap_bytes)
+{
+  if(swap_bytes){
+    cbuffer[0] = (0xff & value);
+    cbuffer[1] = (0xff00 & value) >> 8;
+    cbuffer[2] = (0xff0000 & value) >> 16;
+    cbuffer[3] = (0xff000000 & value) >> 24;
+    cbuffer[4] = (0xff00000000 & value) >> 32;
+    cbuffer[5] = (0xff0000000000 & value) >> 40;
+    cbuffer[6] = (0xff000000000000 & value) >> 48;
+    cbuffer[7] = (0xff00000000000000 & value) >> 56;
+  }else{
+    cbuffer[0] = (0xff00000000000000 & value) >> 56;
+    cbuffer[1] = (0xff000000000000 & value) >> 48;
+    cbuffer[2] = (0xff0000000000 & value) >> 40;
+    cbuffer[3] = (0xff00000000 & value) >> 32
+    cbuffer[4] = (0xff000000 & value) >> 24;
+    cbuffer[5] = (0xff0000 & value) >> 16;
+    cbuffer[6] = (0xff00 & value) >> 8;
+    cbuffer[7] = (0xff & value);
+  }
+}
+
+/**
+ * ags_buffer_util_char_buffer_write_float:
+ * @cbuffer: the character buffer
+ * @value: the float value
+ * @swap_bytes: reverse order
+ * 
+ * Write a float quantity to @cbuffer.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_buffer_util_char_buffer_write_float(unsigned char *cbuffer,
+					float value,
+					gboolean swap_bytes)
+{
+  if(swap_bytes){
+    cbuffer[0] = (0xff & value);
+    cbuffer[1] = (0xff00 & value) >> 8;
+    cbuffer[2] = (0xff0000 & value) >> 16;
+    cbuffer[3] = (0xff000000 & value) >> 24;
+  }else{
+    cbuffer[0] = (0xff000000 & value) >> 24;
+    cbuffer[1] = (0xff0000 & value) >> 16;
+    cbuffer[2] = (0xff00 & value) >> 8;
+    cbuffer[3] = (0xff & value);
+  }
+}
+
+/**
+ * ags_buffer_util_char_buffer_write_double:
+ * @cbuffer: the character buffer
+ * @value: the double value
+ * @swap_bytes: reverse order
+ * 
+ * Write a double quantity to @cbuffer.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_buffer_util_char_buffer_write_double(unsigned char *cbuffer,
+					 double value,
+					 gboolean swap_bytes)
 {
   if(swap_bytes){
     cbuffer[0] = (0xff & value);
@@ -1097,7 +1395,7 @@ ags_buffer_util_char_buffer_write_s64(unsigned char *cbuffer,
  * @word_size: the word size
  * @buffer_size: the buffer size
  * 
- * Swap bytes in view of Little/Big Endian.
+ * Swap bytes in view of Little/Big-Endian.
  * 
  * Since: 2.0.0
  */

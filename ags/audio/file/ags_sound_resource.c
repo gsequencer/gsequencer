@@ -234,12 +234,12 @@ ags_sound_resource_get_presets(AgsSoundResource *sound_resource,
  * ags_sound_resource_read:
  * @sound_resource: the #AgsSoundResource
  * @dbuffer: the destination buffer
- * @audio_channel: the audio channel of resource
+ * @daudio_channels: the audio channel of destination
  * @frame_count: the frame count to read
  * @format: the format to read
  * 
- * Read @frame_count number of frames from @sound_resource's @audio_channel and copy the data
- * to @dbuffer using @format.
+ * Read @frame_count number of frames from @sound_resource and copy the data
+ * to @dbuffer using @format by skipping @daudio_channels.
  * 
  * Returns: the count of frames actually read
  * 
@@ -247,8 +247,7 @@ ags_sound_resource_get_presets(AgsSoundResource *sound_resource,
  */
 guint
 ags_sound_resource_read(AgsSoundResource *sound_resource,
-			void *dbuffer,
-			guint audio_channel,
+			void *dbuffer, guint daudio_channels,
 			guint frame_count, guint format)
 {
   AgsSound_ResourceInterface *sound_resource_interface;
@@ -261,7 +260,7 @@ ags_sound_resource_read(AgsSoundResource *sound_resource,
 
   retval = sound_resource_interface->read(sound_resource,
 					  dbuffer,
-					  audio_channel,
+					  daudio_channels,
 					  frame_count, format);
   
   return(retval);
@@ -271,19 +270,18 @@ ags_sound_resource_read(AgsSoundResource *sound_resource,
  * ags_sound_resource_write:
  * @sound_resource: the #AgsSoundResource
  * @sbuffer: the source buffer
- * @audio_channel: the audio channel of resource
+ * @saudio_channels: the audio channel source
  * @frame_count: the frame count to write
  * @format: the format to write
  * 
- * Write @sbuffer to @sound_resource's @audio_channel @frame_count number of 
- * frames having @format.
+ * Write @sbuffer to @sound_resource @frame_count number of 
+ * frames having @format by skipping @saudio_channels.
  * 
  * Since: 2.0.0
  */
 void
 ags_sound_resource_write(AgsSoundResource *sound_resource,
-			 void *sbuffer,
-			 guint audio_channel,
+			 void *sbuffer, guint saudio_channels,
 			 guint frame_count, guint format)
 {
   AgsSound_ResourceInterface *sound_resource_interface;
@@ -293,7 +291,7 @@ ags_sound_resource_write(AgsSoundResource *sound_resource,
   g_return_if_fail(sound_resource_interface->write);
   sound_resource_interface->write(sound_resource,
 				  sbuffer,
-				  audio_channel,
+				  saudio_channels,
 				  frame_count, format);
 }
 

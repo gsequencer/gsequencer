@@ -800,15 +800,89 @@ ags_wav_file_get_presets(AgsSoundResource *sound_resource,
 
 guint
 ags_wav_file_read(AgsSoundResource *sound_resource,
-		  void *dbuffer,
-		  guint audio_channel,
-		  guint frame_count, guint format)
+		  void *dbuffer, guint audio_channels,
+		  guint frame_count, guint dformat)
 {
   AgsWavFile *wav_file;
 
+  guint64 buffer_size;
+  guint sformat;
+  guint copy_mode;
+  
   wav_file = AGS_WAV_FILE(sound_resource);  
 
-  //TODO:JK: implement me
+  if(dbuffer == NULL){
+    return(0);
+  }
+
+  if(wav_file->current_format_chunk != NULL &&
+     wav_file->current_data_chunk != NULL){
+    buffer_size = (AGS_WAV_FILE_CHUNK(wav_file->current_data_chunk)->chunk_size /
+		   wav_file->current_format_chunk->channels /
+		   (wav_file->current_format_chunk->bits_per_sample / 8.0));
+  }
+
+  if(wav_file->current_format_chunk->format == AGS_WAV_FILE_FORMAT_PCM){
+    switch(wav_file->current_format_chunk->bits_per_sample){
+    case 8:
+      {
+	sformat = AGS_SOUNDCARD_SIGNED_8_BIT;
+      }
+      break;
+    case 16:
+      {
+	sformat = AGS_SOUNDCARD_SIGNED_16_BIT;
+      }
+      break;
+    case 24:
+      {
+	sformat = AGS_SOUNDCARD_SIGNED_24_BIT;
+      }
+      break;
+    case 32:
+      {
+	sformat = AGS_SOUNDCARD_SIGNED_32_BIT;
+      }
+      break;
+    case 64:
+      {
+	sformat = AGS_SOUNDCARD_SIGNED_64_BIT;
+      }
+      break;
+    }
+
+    copy_mode = ags_audio_buffer_util_get_copy_mode(dformat,
+						    sformat);
+
+    if(wav_file->current_data_chunk != NULL &&
+       wav_file->current_format_chunk != NULL){
+      if(offset + frame_count < buffer_size){
+	ags_audio_buffer_util_copy_char_buffer_to_buffer(dbuffer, audio_channels,
+							 wav_file->current_data_chunk->data + wav_file->offset, wav_file->current_format_chunk->channels,
+							 frame_count, copy_mode);
+
+	return(frame_count);
+      }else{
+	ags_audio_buffer_util_copy_char_buffer_to_buffer(dbuffer, audio_channels,
+							 wav_file->current_data_chunk->data + wav_file->offset, wav_file->current_format_chunk->channels,
+							 buffer_size - wav_file->offset, copy_mode);
+
+	return(buffer_size - wav_file->offset);
+      }
+    }
+  }else if(wav_file->current_format_chunk->format == AGS_WAV_FILE_FORMAT_IEEE_FLOAT){
+    if(offset + frame_count < buffer_size){
+      //TODO:JK: implement me
+      
+      return(frame_count);
+    }else{
+      //TODO:JK: implement me
+
+      return(buffer_size - wav_file->offset);
+    }
+  }
+  
+  return(0);
 }
 
 void
