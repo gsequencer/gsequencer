@@ -61,6 +61,16 @@ ags_sound_container_base_init(AgsSoundContainerInterface *interface)
   /* empty */
 }
 
+/**
+ * ags_sound_container_get_level_count:
+ * @sound_countainer: the #AgsSoundcontainer
+ * 
+ * Get level count.
+ * 
+ * Returns: the level count
+ * 
+ * Since: 2.0.0
+ */
 guint
 ags_sound_container_get_level_count(AgsSoundContainer *sound_container)
 {
@@ -77,6 +87,16 @@ ags_sound_container_get_level_count(AgsSoundContainer *sound_container)
   return(retval);
 }
 
+/**
+ * ags_sound_container_get_nesting_level:
+ * @sound_countainer: the #AgsSoundcontainer
+ * 
+ * Get nesting level.
+ * 
+ * Returns: the nesting level
+ * 
+ * Since: 2.0.0
+ */
 guint
 ags_sound_container_get_nesting_level(AgsSoundContainer *sound_container)
 {
@@ -93,6 +113,16 @@ ags_sound_container_get_nesting_level(AgsSoundContainer *sound_container)
   return(retval);
 }
 
+/**
+ * ags_sound_container_get_level_id:
+ * @sound_countainer: the #AgsSoundcontainer
+ * 
+ * Get level id.
+ * 
+ * Returns: the level id as string
+ * 
+ * Since: 2.0.0
+ */
 gchar*
 ags_sound_container_get_level_id(AgsSoundContainer *sound_container)
 {
@@ -109,6 +139,16 @@ ags_sound_container_get_level_id(AgsSoundContainer *sound_container)
   return(retval);
 }
 
+/**
+ * ags_sound_container_get_level_index:
+ * @sound_countainer: the #AgsSoundcontainer
+ * 
+ * Get level index.
+ * 
+ * Returns: the level index unsigned integer
+ * 
+ * Since: 2.0.0
+ */
 guint
 ags_sound_container_get_level_index(AgsSoundContainer *sound_container)
 {
@@ -125,6 +165,17 @@ ags_sound_container_get_level_index(AgsSoundContainer *sound_container)
   return(retval);
 }
 
+/**
+ * ags_sound_container_level_up:
+ * @sound_countainer: the #AgsSoundcontainer
+ * @level_count: the count of levels to go up
+ * 
+ * Level up.
+ * 
+ * Returns: the level count went up 
+ * 
+ * Since: 2.0.0
+ */
 guint
 ags_sound_container_level_up(AgsSoundContainer *sound_container,
 			     guint level_count)
@@ -143,6 +194,17 @@ ags_sound_container_level_up(AgsSoundContainer *sound_container,
   return(retval);
 }
 
+/**
+ * ags_sound_container_select_level_by_id:
+ * @sound_countainer: the #AgsSoundcontainer
+ * @level_id: the level id as string
+ * 
+ * Select level by id.
+ * 
+ * Returns: the index of level as unsigned integer 
+ * 
+ * Since: 2.0.0
+ */
 guint
 ags_sound_container_select_level_by_id(AgsSoundContainer *sound_container,
 				       gchar *level_id)
@@ -160,6 +222,17 @@ ags_sound_container_select_level_by_id(AgsSoundContainer *sound_container,
   return(retval);
 }
 
+/**
+ * ags_sound_container_select_level_by_index:
+ * @sound_countainer: the #AgsSoundcontainer
+ * @level_index: the level index unsigned integer
+ * 
+ * Select level by index.
+ * 
+ * Returns: the index of level as unsigned integer
+ * 
+ * Since: 2.0.0
+ */
 guint
 ags_sound_container_select_level_by_index(AgsSoundContainer *sound_container,
 					  guint level_index)
@@ -177,6 +250,16 @@ ags_sound_container_select_level_by_index(AgsSoundContainer *sound_container,
   return(retval);
 }
 
+/**
+ * ags_sound_container_get_resource_all:
+ * @sound_countainer: the #AgsSoundcontainer
+ * 
+ * Get all resources as a #GList-struct.
+ * 
+ * Returns: the #GList-struct containing #AgsResource
+ * 
+ * Since: 2.0.0
+ */
 GList*
 ags_sound_container_get_resource_all(AgsSoundContainer *sound_container)
 {
@@ -193,6 +276,16 @@ ags_sound_container_get_resource_all(AgsSoundContainer *sound_container)
   return(retval);
 }
 
+/**
+ * ags_sound_container_get_resource_by_name:
+ * @sound_countainer: the #AgsSoundcontainer
+ * 
+ * Get resources by name as a #GList-struct.
+ * 
+ * Returns: the #GList-struct containing #AgsResource
+ * 
+ * Since: 2.0.0
+ */
 GList*
 ags_sound_container_get_resource_by_name(AgsSoundContainer *sound_container,
 					 gchar *resource_name)
@@ -211,6 +304,16 @@ ags_sound_container_get_resource_by_name(AgsSoundContainer *sound_container,
   return(retval);
 }
 
+/**
+ * ags_sound_container_get_resource_by_index:
+ * @sound_countainer: the #AgsSoundcontainer
+ * 
+ * Get resources by index as a #GList-struct.
+ * 
+ * Returns: the #GList-struct containing #AgsResource
+ * 
+ * Since: 2.0.0
+ */
 GList*
 ags_sound_container_get_resource_by_index(AgsSoundContainer *sound_container,
 					  guint resource_index)
