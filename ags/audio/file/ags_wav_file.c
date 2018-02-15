@@ -574,6 +574,8 @@ ags_wav_file_load(AgsSoundResource *sound_resource)
       fread(fmt_chunk + 4, sizeof(gchar), 4, wav_file->stream);
       iter = fmt_chunk + 4;
 
+      data_chunk->data = (void *) malloc(sizeof());
+
       for(i = 0; i < AGS_WAV_FILE_CHUNK(data_chunk)->chunk_size; ){
 	if(i + AGS_WAV_FILE_IO_BUFFER_SIZE < AGS_WAV_FILE_CHUNK(data_chunk)->chunk_size){
 	  frame_count = fread(io_buffer, sizeof(gchar), AGS_WAV_FILE_CHUNK(data_chunk)->chunk_size - i, wav_file->stream);
