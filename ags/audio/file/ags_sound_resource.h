@@ -43,6 +43,8 @@ struct _AgsSoundResourceInterface
 		      gchar *filename,
 		      gboolean create);
 
+  void (*load)(AgsSoundResource *sound_resource);
+  
   void (*info)(AgsSoundResource *sound_resource,
 	       guint *frame_count,
 	       guint *loop_start, guint *loop_end);
@@ -86,6 +88,8 @@ gboolean ags_sound_resource_open(AgsSoundResource *sound_resource,
 gboolean ags_sound_resource_rw_open(AgsSoundResource *sound_resource,
 				    gchar *filename,
 				    gboolean create);
+
+void ags_sound_resource_load(AgsSoundResource *sound_resource);
 
 void ags_sound_resource_info(AgsSoundResource *sound_resource,
 			     guint *frame_count,

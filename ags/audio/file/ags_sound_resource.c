@@ -122,6 +122,25 @@ ags_sound_resource_rw_open(AgsSoundResource *sound_resource,
 }
 
 /**
+ * ags_sound_resource_load:
+ * @sound_resource: the #AgsSoundResource
+ * 
+ * Load audio data of @sound_resource.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_sound_resource_load(AgsSoundResource *sound_resource)
+{
+  AgsSoundResourceInterface *sound_resource_interface;
+
+  g_return_if_fail(AGS_IS_SOUND_RESOURCE(sound_resource));
+  sound_resource_interface = AGS_SOUND_RESOURCE_GET_INTERFACE(sound_resource);
+  g_return_if_fail(sound_resource_interface->load);
+  sound_resource_interface->load(sound_resource);
+}
+
+/**
  * ags_sound_resource_info:
  * @sound_resource: the #AgsSoundResource
  * @frame_count: return location of frame count
@@ -209,6 +228,21 @@ ags_sound_resource_get_presets(AgsSoundResource *sound_resource,
 					format);
 }
 
+/**
+ * ags_sound_resource_read:
+ * @sound_resource: the #AgsSoundResource
+ * @dbuffer: the destination buffer
+ * @audio_channel: the audio channel of resource
+ * @frame_count: the frame count to read
+ * @format: the format to read
+ * 
+ * Read @frame_count number of frames from @sound_resource's @audio_channel and copy the data
+ * to @dbuffer using @format.
+ * 
+ * Returns: the count of frames actually read
+ * 
+ * Since: 2.0.0
+ */
 guint
 ags_sound_resource_read(AgsSoundResource *sound_resource,
 			void *dbuffer,
@@ -231,6 +265,19 @@ ags_sound_resource_read(AgsSoundResource *sound_resource,
   return(retval);
 }
 
+/**
+ * ags_sound_resource_write:
+ * @sound_resource: the #AgsSoundResource
+ * @sbuffer: the source buffer
+ * @audio_channel: the audio channel of resource
+ * @frame_count: the frame count to write
+ * @format: the format to write
+ * 
+ * Write @sbuffer to @sound_resource's @audio_channel @frame_count number of 
+ * frames having @format.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_sound_resource_write(AgsSoundResource *sound_resource,
 			 void *sbuffer,
@@ -248,6 +295,14 @@ ags_sound_resource_write(AgsSoundResource *sound_resource,
 				  frame_count, format);
 }
 
+/**
+ * ags_sound_resource_flush:
+ * @sound_resource: the #AgsSoundResource
+ * 
+ * Flush @sound_resource.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_sound_resource_flush(AgsSoundResource *sound_resource)
 {
@@ -259,6 +314,16 @@ ags_sound_resource_flush(AgsSoundResource *sound_resource)
   sound_resource_interface->flush(sound_resource);
 }
 
+/**
+ * ags_sound_resource_seek:
+ * @sound_resource: the #AgsSoundResource
+ * @frame_count: the frame count
+ * @whence: SEEK_SET, SEEK_CUR or SEEK_END
+ * 
+ * Seek the @sound_resource @frame_count from @whence.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_sound_resource_seek(AgsSoundResource *sound_resource,
 			guint frame_count, gint whence)
@@ -272,6 +337,14 @@ ags_sound_resource_seek(AgsSoundResource *sound_resource,
 				 frame_count, whence);
 }
 
+/**
+ * ags_sound_resource_close:
+ * @sound_resource: the #AgsSoundResource
+ * 
+ * Close @sound_resource.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_sound_resource_close(AgsSoundResource *sound_resource)
 {

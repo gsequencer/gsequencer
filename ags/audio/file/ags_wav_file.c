@@ -44,6 +44,7 @@ gboolean ags_wav_file_open(AgsSoundResource *sound_resource,
 gboolean ags_wav_file_rw_open(AgsSoundResource *sound_resource,
 			      gchar *filename,
 			      gboolean create);
+void ags_wav_file_load(AgsSoundResource *sound_resource);
 void ags_wav_file_info(AgsSoundResource *sound_resource,
 		       guint *frame_count,
 		       guint *loop_start, guint *loop_end);  
@@ -170,6 +171,8 @@ ags_wav_file_sound_resource_interface_init(AgsSoundResourceInterface *sound_reso
 {
   sound_resource->open = ags_wav_file_open;
   sound_resource->rw_open = ags_wav_file_rw_open;
+
+  sound_resource->load = ags_wav_file_load;
 
   sound_resource->info = ags_wav_file_info;
 
@@ -421,6 +424,12 @@ ags_wav_file_rw_open(AgsSoundResource *sound_resource,
   wav_file->flags &= (~AGS_WAV_FILE_READ_ONLY);
   
   return(TRUE);
+}
+
+void
+ags_wav_file_load(AgsSoundResource *sound_resource)
+{
+  //TODO:JK: implement me
 }
 
 void
