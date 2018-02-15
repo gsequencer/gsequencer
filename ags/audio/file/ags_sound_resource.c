@@ -78,15 +78,16 @@ ags_sound_resource_open(AgsSoundResource *sound_resource,
 {
   AgsSoundResourceInterface *sound_resource_interface;
 
-  gboolean ret_val;
+  gboolean retval;
 
   g_return_val_if_fail(AGS_IS_SOUND_RESOURCE(sound_resource), FALSE);
   sound_resource_interface = AGS_SOUND_RESOURCE_GET_INTERFACE(sound_resource);
   g_return_val_if_fail(sound_resource_interface->open, FALSE);
-  ret_val = sound_resource_interface->open(sound_resource,
+
+  retval = sound_resource_interface->open(sound_resource,
 					   filename);
 
-  return(ret_val);
+  return(retval);
 }
 
 /**
@@ -109,16 +110,17 @@ ags_sound_resource_rw_open(AgsSoundResource *sound_resource,
 {
   AgsSoundResourceInterface *sound_resource_interface;
 
-  gboolean ret_val;
+  gboolean retval;
 
   g_return_val_if_fail(AGS_IS_SOUND_RESOURCE(sound_resource), FALSE);
   sound_resource_interface = AGS_SOUND_RESOURCE_GET_INTERFACE(sound_resource);
   g_return_val_if_fail(sound_resource_interface->open, FALSE);
-  ret_val = sound_resource_interface->rw_open(sound_resource,
+
+  retval = sound_resource_interface->rw_open(sound_resource,
 					      filename,
 					      create,);
 
-  return(ret_val);
+  return(retval);
 }
 
 /**
