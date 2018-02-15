@@ -34,8 +34,6 @@
 
 #define AGS_WAV_FILE_CHUNK(ptr) ((AgsWavFileChunk *)(ptr))
 
-#define AGS_WAV_FILE_IO_BUFFER_SIZE (8192)
-
 #define AGS_WAV_FILE_RIFF "RIFF"
 #define AGS_WAV_FILE_RIFX "RIFX"
 #define AGS_WAV_FILE_RF64 "RF64"

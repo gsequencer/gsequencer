@@ -435,7 +435,6 @@ ags_wav_file_load(AgsSoundResource *sound_resource)
   AgsWavFileFactChunk *fact_chunk;
   AgsWavFileDataChunk *data_chunk;
 
-  gchar io_buffer[AGS_WAV_FILE_IO_BUFFER_SIZE];
   gchar chunk_id[4];
   gchar fmt_chunk[48] = "fmt ";
   gchar fact_chunk[12] = "fact";
@@ -556,9 +555,16 @@ ags_wav_file_load(AgsSoundResource *sound_resource)
 				  fact_chunk);
 
       fread(fact_chunk + 4, sizeof(gchar), 8, wav_file->stream);
-      iter = fmt_chunk + 4;
+      iter = fact_chunk + 4;
 
-      //TODO:JK: implement me
+      /* read fields */
+      AGS_WAV_FILE_CHUNK(fact_chunk)->chunk_size = ags_buffer_util_char_buffer_read_s32(iter,
+											swap_bytes);
+      iter += 4;
+      
+      fact_chunk->samples_per_channel = ags_buffer_util_char_buffer_read_s32(iter,
+									     swap_bytes);
+      iter += 4;
       
       offset += 12;
     }else if(!g_ascii_strncasecmp(chunk_id,
@@ -571,22 +577,16 @@ ags_wav_file_load(AgsSoundResource *sound_resource)
       ags_wav_file_add_data_chunk(wav_file,
 				  data_chunk);
 
-      fread(fmt_chunk + 4, sizeof(gchar), 4, wav_file->stream);
-      iter = fmt_chunk + 4;
+      fread(data_chunk + 4, sizeof(gchar), 4, wav_file->stream);
+      iter = data_chunk + 4;
 
-      data_chunk->data = (void *) malloc(sizeof());
+      /* read fields */
+      AGS_WAV_FILE_CHUNK(data_chunk)->chunk_size = ags_buffer_util_char_buffer_read_s32(iter,
+											swap_bytes);
+      iter += 4;
 
-      for(i = 0; i < AGS_WAV_FILE_CHUNK(data_chunk)->chunk_size; ){
-	if(i + AGS_WAV_FILE_IO_BUFFER_SIZE < AGS_WAV_FILE_CHUNK(data_chunk)->chunk_size){
-	  frame_count = fread(io_buffer, sizeof(gchar), AGS_WAV_FILE_CHUNK(data_chunk)->chunk_size - i, wav_file->stream);
-	}else{
-	  frame_count = fread(io_buffer, sizeof(gchar), AGS_WAV_FILE_IO_BUFFER_SIZE, wav_file->stream);
-	}
-
-	i += frame_count;
-      }
-      
-      //TODO:JK: implement me
+      data_chunk->data = (void *) malloc(AGS_WAV_FILE_CHUNK(data_chunk)->chunk_size * sizeof(gchar));
+      frame_count = fread(data_chunk->data, sizeof(gchar), AGS_WAV_FILE_CHUNK(data_chunk)->chunk_size, wav_file->stream);
 
       offset += (8 + AGS_WAV_FILE_CHUNK(data_chunk)->chunk_size);
     }else{
