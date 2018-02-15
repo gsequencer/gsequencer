@@ -600,6 +600,15 @@ ags_wav_file_load(AgsSoundResource *sound_resource)
       data_chunk->data = (void *) malloc(AGS_WAV_FILE_CHUNK(data_chunk)->chunk_size * sizeof(gchar));
       frame_count = fread(data_chunk->data, sizeof(gchar), AGS_WAV_FILE_CHUNK(data_chunk)->chunk_size, wav_file->stream);
 
+      if(swap_bytes){
+	if(wav_file->current_format_chunk){
+	  ags_buffer_util_char_buffer_swap_bytes(data_chunk->data, wav_file->current_format_chunk->valid_bits_per_sample / 8,
+						 AGS_WAV_FILE_CHUNK(data_chunk)->chunk_size);
+	}else{
+	  g_warning("no format chunk - can't swap bytes");
+	}
+      }
+      
       offset += (8 + AGS_WAV_FILE_CHUNK(data_chunk)->chunk_size);
     }else{
       /* no chunk id */
