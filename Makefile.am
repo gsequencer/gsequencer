@@ -643,12 +643,14 @@ libags_audio_h_sources = \
 	ags/audio/ags_buffer.h \
 	ags/audio/ags_channel.h \
 	ags/audio/ags_channel_iter.h \
+	ags/audio/ags_char_buffer_util.h \
 	ags/audio/ags_devout.h \
 	ags/audio/ags_devin.h \
 	ags/audio/ags_effect.h \
 	ags/audio/ags_fifoout.h \
 	ags/audio/ags_input.h \
 	ags/audio/ags_message.h \
+	ags/audio/ags_midi.h \
 	ags/audio/ags_midiin.h \
 	ags/audio/ags_notation.h \
 	ags/audio/ags_note.h \
@@ -684,6 +686,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_sound_provider.h \
 	ags/audio/ags_synth_generator.h \
 	ags/audio/ags_synth_util.h \
+	ags/audio/ags_track.h \
 	ags/audio/ags_wave.h
 
 deprecated_libags_audio_c_sources =
@@ -700,11 +703,13 @@ libags_audio_c_sources = \
 	ags/audio/ags_buffer.c \
 	ags/audio/ags_channel.c \
 	ags/audio/ags_channel_iter.c \
+	ags/audio/ags_char_buffer_util.c \
 	ags/audio/ags_devout.c \
 	ags/audio/ags_devin.c \
 	ags/audio/ags_input.c \
 	ags/audio/ags_fifoout.c \
 	ags/audio/ags_message.c \
+	ags/audio/ags_midi.c \
 	ags/audio/ags_midiin.c \
 	ags/audio/ags_notation.c \
 	ags/audio/ags_note.c \
@@ -740,6 +745,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_sound_provider.c \
 	ags/audio/ags_synth_generator.c \
 	ags/audio/ags_synth_util.c \
+	ags/audio/ags_track.c \
 	ags/audio/ags_wave.c
 
 # libags-audio - client
@@ -854,7 +860,10 @@ libags_audio_file_h_sources = \
 	ags/audio/file/ags_ipatch.h \
 	ags/audio/file/ags_ipatch_dls2_reader.h \
 	ags/audio/file/ags_ipatch_sf2_reader.h \
-	ags/audio/file/ags_sndfile.h
+	ags/audio/file/ags_sound_container.h \
+	ags/audio/file/ags_sound_resource.h \
+	ags/audio/file/ags_sndfile.h \
+	ags/audio/file/ags_wav_file.h
 
 deprecated_libags_audio_file_c_sources =
 
@@ -867,7 +876,10 @@ libags_audio_file_c_sources = \
 	ags/audio/file/ags_ipatch.c \
 	ags/audio/file/ags_ipatch_dls2_reader.c \
 	ags/audio/file/ags_ipatch_sf2_reader.c \
-	ags/audio/file/ags_sndfile.c
+	ags/audio/file/ags_sound_container.c \
+	ags/audio/file/ags_sound_resource.c \
+	ags/audio/file/ags_sndfile.c \
+	ags/audio/file/ags_wav_file.c
 
 # libags-audio - midi
 deprecated_libags_audio_midi_h_sources =

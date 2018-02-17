@@ -1662,6 +1662,15 @@ ags_channel_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_channel_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_channel_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
 pthread_mutex_t*
 ags_channel_get_class_mutex()
 {

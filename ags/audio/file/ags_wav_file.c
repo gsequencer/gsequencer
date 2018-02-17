@@ -1118,11 +1118,21 @@ ags_wav_file_data_chunk_free(AgsWavFileDataChunk *data_chunk)
   g_free(data_chunk);
 }
 
+/**
+ * ags_wav_file_add_format_chunk:
+ * @wav_file: the #AgsWavFile
+ * @format_chunk: the #AgsWavFileFormatChunk-struct
+ * 
+ * Add format chunk.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_wav_file_add_format_chunk(AgsWavFile *wav_file,
 			      AgsWavFileFormatChunk *format_chunk)
 {
-  if(!AGS_WAV_FILE(wav_file)){
+  if(!AGS_WAV_FILE(wav_file) ||
+     format_chunk == NULL){
     return;
   }
 
@@ -1133,11 +1143,21 @@ ags_wav_file_add_format_chunk(AgsWavFile *wav_file,
 				       format_chunk);
 }
 
+/**
+ * ags_wav_file_remove_format_chunk:
+ * @wav_file: the #AgsWavFile
+ * @format_chunk: the #AgsWavFileFormatChunk-struct
+ * 
+ * Remove format chunk.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_wav_file_remove_format_chunk(AgsWavFile *wav_file,
 				 AgsWavFileFormatChunk *format_chunk)
 {
-  if(!AGS_WAV_FILE(wav_file)){
+  if(!AGS_WAV_FILE(wav_file) ||
+     format_chunk == NULL){
     return;
   }
 
@@ -1148,32 +1168,104 @@ ags_wav_file_remove_format_chunk(AgsWavFile *wav_file,
 				      format_chunk);
 }
 
+/**
+ * ags_wav_file_add_fact_chunk:
+ * @wav_file: the #AgsWavFile
+ * @fact_chunk: the #AgsWavFileFactChunk-struct
+ * 
+ * Add fact chunk.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_wav_file_add_fact_chunk(AgsWavFile *wav_file,
 			    AgsWavFileFactChunk *fact_chunk)
 {
-  //TODO:JK: implement me
+  if(!AGS_WAV_FILE(wav_file) ||
+     fact_chunk == NULL){
+    return;
+  }
+
+  wav_file->fact_chunk = g_list_prepend(wav_file->fact_chunk,
+					fact_chunk);
+
+  wav_file->all_chunk = g_list_prepend(wav_file->all_chunk,
+				       fact_chunk);
 }
 
+/**
+ * ags_wav_file_remove_fact_chunk:
+ * @wav_file: the #AgsWavFile
+ * @fact_chunk: the #AgsWavFileFactChunk-struct
+ * 
+ * Remove fact chunk.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_wav_file_remove_fact_chunk(AgsWavFile *wav_file,
 			       AgsWavFileFactChunk *fact_chunk)
 {
-  //TODO:JK: implement me
+  if(!AGS_WAV_FILE(wav_file) ||
+     fact_chunk == NULL){
+    return;
+  }
+
+  wav_file->fact_chunk = g_list_remove(wav_file->fact_chunk,
+				       fact_chunk);
+  
+  wav_file->all_chunk = g_list_remove(wav_file->all_chunk,
+				      fact_chunk);
 }
 
+/**
+ * ags_wav_file_add_data_chunk:
+ * @wav_file: the #AgsWavFile
+ * @data_chunk: the #AgsWavFileDataChunk-struct
+ * 
+ * Add data chunk.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_wav_file_add_data_chunk(AgsWavFile *wav_file,
 			    AgsWavFileDataChunk *data_chunk)
 {
-  //TODO:JK: implement me
+  if(!AGS_WAV_FILE(wav_file) ||
+     data_chunk == NULL){
+    return;
+  }
+
+  wav_file->data_chunk = g_list_prepend(wav_file->data_chunk,
+					data_chunk);
+
+  wav_file->all_chunk = g_list_prepend(wav_file->all_chunk,
+				       data_chunk);
 }
 
+/**
+ * ags_wav_file_remove_data_chunk:
+ * @wav_file: the #AgsWavFile
+ * @data_chunk: the #AgsWavFileDataChunk-struct
+ * 
+ * Remove data chunk.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_wav_file_remove_data_chunk(AgsWavFile *wav_file,
 			       AgsWavFileDataChunk *data_chunk)
 {
-  //TODO:JK: implement me
+  if(!AGS_WAV_FILE(wav_file) ||
+     data_chunk == NULL){
+    return;
+  }
+
+  wav_file->data_chunk = g_list_remove(wav_file->data_chunk,
+				       data_chunk);
+  
+  wav_file->all_chunk = g_list_remove(wav_file->all_chunk,
+				      data_chunk);
 }
 
 /**

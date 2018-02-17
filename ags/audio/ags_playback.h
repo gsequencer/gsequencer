@@ -23,8 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
 #include <ags/libags.h>
 
+#include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_recall_id.h>
 
 #define AGS_TYPE_PLAYBACK                (ags_playback_get_type())
@@ -58,6 +61,9 @@ struct _AgsPlayback
   
   volatile guint flags;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   GObject *playback_domain;
   
   GObject *source;
@@ -76,6 +82,8 @@ struct _AgsPlaybackClass
 };
 
 GType ags_playback_get_type();
+
+pthread_mutex_t* ags_playback_get_class_mutex();
 
 /* get and set */
 void ags_playback_set_channel_thread(AgsPlayback *playback,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,9 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
 #include <ags/audio/ags_playback.h>
 
 #include <ags/audio/thread/ags_audio_thread.h>
@@ -60,10 +63,13 @@ void ags_playback_domain_finalize(GObject *gobject);
 
 static gpointer ags_playback_domain_parent_class = NULL;
 
+static pthread_mutex_t ags_playback_domain_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 enum{
   PROP_0,
-  PROP_DOMAIN,
-  PROP_PLAYBACK,
+  PROP_AUDIO,
+  PROP_OUTPUT_PLAYBACK,
+  PROP_INPUT_PLAYBACK,
 };
 
 GType
@@ -73,13 +79,13 @@ ags_playback_domain_get_type (void)
 
   if(!ags_type_playback_domain){
     static const GTypeInfo ags_playback_domain_info = {
-      sizeof (AgsPlaybackDomainClass),
+      sizeof(AgsPlaybackDomainClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_playback_domain_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsPlaybackDomain),
+      sizeof(AgsPlaybackDomain),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_playback_domain_init,
     };
@@ -122,34 +128,49 @@ ags_playback_domain_class_init(AgsPlaybackDomainClass *playback_domain)
 
   /* properties */
   /**
-   * AgsPlaybackDomain:domain:
+   * AgsPlaybackDomain:audio:
    *
-   * The assigned domain.
+   * The assigned #AgsAudio.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("domain",
-				   i18n_pspec("assigned domain"),
-				   i18n_pspec("The domain it is assigned with"),
+  param_spec = g_param_spec_object("audio",
+				   i18n_pspec("assigned audio"),
+				   i18n_pspec("The audio it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DOMAIN,
+				  PROP_AUDIO,
 				  param_spec);
 
   /**
-   * AgsPlaybackDomain:playback:
+   * AgsPlaybackDomain:output-playback:
    *
-   * The assigned playback.
+   * The assigned output playback.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec = g_param_spec_pointer("playback",
-				    i18n_pspec("assigned playback"),
-				    i18n_pspec("The playback it is assigned with"),
+  param_spec = g_param_spec_pointer("output-playback",
+				    i18n_pspec("assigned output playback"),
+				    i18n_pspec("The output playback it is assigned with"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_PLAYBACK,
+				  PROP_OUTPUT_PLAYBACK,
+				  param_spec);
+
+  /**
+   * AgsPlaybackDomain:input-playback:
+   *
+   * The assigned input playback.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("input-playback",
+				    i18n_pspec("assigned input playback"),
+				    i18n_pspec("The input playback it is assigned with"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_INPUT_PLAYBACK,
 				  param_spec);
 }
 
@@ -176,10 +197,30 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
 
   pthread_mutex_t *application_mutex;
 
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
+
+  /* add playback domain mutex */
+  playback_domain->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(attr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  playback_domain->obj_mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);
+
+  /* config */
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  /* config */
   config = ags_config_get_instance();
 
   /* thread model */
@@ -225,7 +266,7 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
   }
 
   /* domain */
-  playback_domain->domain = NULL;
+  playback_domain->audio = NULL;
 
   /* super threaded audio */
   playback_domain->audio_thread = (AgsThread **) malloc(AGS_SOUND_SCOPE_LAST * sizeof(AgsThread *));
@@ -235,7 +276,8 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
   }
 
   /* playback */
-  playback_domain->playback = NULL;
+  playback_domain->output_playback = NULL;
+  playback_domain->input_playback = NULL;
 }
 
 void
@@ -249,40 +291,57 @@ ags_playback_domain_set_property(GObject *gobject,
   playback_domain = AGS_PLAYBACK_DOMAIN(gobject);
 
   switch(prop_id){
-  case PROP_DOMAIN:
+  case PROP_AUDIO:
     {
-      GObject *domain;
+      GObject *audio;
 
-      domain = (GObject *) g_value_get_object(value);
+      audio = (GObject *) g_value_get_object(value);
 
-      if((GObject *) playback_domain->domain == domain){
+      if((GObject *) playback_domain->audio == audio){
 	return;
       }
 
-      if(playback_domain->domain != NULL){
-	g_object_unref(G_OBJECT(playback_domain->domain));
+      if(playback_domain->audio != NULL){
+	g_object_unref(G_OBJECT(playback_domain->audio));
       }
 
-      if(domain != NULL){
-	g_object_ref(G_OBJECT(domain));
+      if(audio != NULL){
+	g_object_ref(G_OBJECT(audio));
       }
 
-      playback_domain->domain = (GObject *) domain;
+      playback_domain->audio = (GObject *) audio;
     }
     break;
-  case PROP_PLAYBACK:
+  case PROP_OUTPUT_PLAYBACK:
     {
-      AgsPlayback *playback;
+      AgsPlayback *output_playback;
 
-      playback = (AgsPlayback *) g_value_get_pointer(value);
+      output_playback = (AgsPlayback *) g_value_get_pointer(value);
 
-      if(playback == NULL ||
-	 g_list_find(playback_domain->playback, playback) != NULL){
+      if(output_playback == NULL ||
+	 g_list_find(playback_domain->output_playback,
+		     output_playback) != NULL){
 	return;
       }
 
       ags_playback_domain_add_playback(playback_domain,
-				       (GObject *) playback);
+				       (GObject *) output_playback, AGS_TYPE_OUTPUT);
+    }
+    break;
+  case PROP_INPUT_PLAYBACK:
+    {
+      AgsPlayback *input_playback;
+
+      input_playback = (AgsPlayback *) g_value_get_pointer(value);
+
+      if(input_playback == NULL ||
+	 g_list_find(playback_domain->input_playback,
+		     input_playback) != NULL){
+	return;
+      }
+
+      ags_playback_domain_add_playback(playback_domain,
+				       (GObject *) input_playback, AGS_TYPE_INPUT);
     }
     break;
   default:
@@ -302,16 +361,22 @@ ags_playback_domain_get_property(GObject *gobject,
   playback_domain = AGS_PLAYBACK_DOMAIN(gobject);
 
   switch(prop_id){
-  case PROP_DOMAIN:
+  case PROP_AUDIO:
     {
       g_value_set_object(value,
-			 playback_domain->domain);
+			 playback_domain->audio);
     }
     break;
-  case PROP_PLAYBACK:
+  case PROP_OUTPUT_PLAYBACK:
     {
       g_value_set_pointer(value,
-			  g_list_copy(playback_domain->playback));
+			  g_list_copy(playback_domain->output_playback));
+    }
+    break;
+  case PROP_INPUT_PLAYBACK:
+    {
+      g_value_set_pointer(value,
+			  g_list_copy(playback_domain->input_playback));
     }
     break;
   default:
@@ -341,18 +406,26 @@ ags_playback_domain_dispose(GObject *gobject)
   }
 
   /* domain */
-  if(playback_domain->domain != NULL){
-    g_object_unref(playback_domain->domain);
+  if(playback_domain->audio != NULL){
+    g_object_unref(playback_domain->audio);
 
-    playback_domain->domain = NULL;
+    playback_domain->audio = NULL;
   }
 
-  /* playback */
-  if(playback_domain->playback != NULL){
-    g_list_free_full(playback_domain->playback,
+  /* output playback */
+  if(playback_domain->output_playback != NULL){
+    g_list_free_full(playback_domain->output_playback,
 		     g_object_unref);
     
-    playback_domain->playback = NULL;
+    playback_domain->output_playback = NULL;
+  }
+
+  /* input playback */
+  if(playback_domain->input_playback != NULL){
+    g_list_free_full(playback_domain->input_playback,
+		     g_object_unref);
+    
+    playback_domain->input_playback = NULL;
   }
   
   /* call parent */
@@ -381,12 +454,16 @@ ags_playback_domain_finalize(GObject *gobject)
   }
 
   /* domain */
-  if(playback_domain->domain != NULL){
-    g_object_unref(playback_domain->domain);
+  if(playback_domain->audio != NULL){
+    g_object_unref(playback_domain->audio);
   }
   
-  /* playback */
-  g_list_free_full(playback_domain->playback,
+  /* output playback */
+  g_list_free_full(playback_domain->output_playback,
+		   g_object_unref);
+
+  /* input playback */
+  g_list_free_full(playback_domain->input_playback,
 		   g_object_unref);
 
   /* call parent */
@@ -423,6 +500,21 @@ ags_playback_domain_disconnect(AgsConnectable *connectable)
 }
 
 /**
+ * ags_playback_domain_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_playback_domain_get_class_mutex()
+{
+  return(&ags_playback_domain_class_mutex);
+}
+
+/**
  * ags_playback_domain_set_audio_thread:
  * @playback_domain: the #AgsPlaybackDomain
  * @thread: the #AgsThread
@@ -437,10 +529,22 @@ ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
 				     AgsThread *thread,
 				     guint sound_scope)
 {
+  pthread_mutex_t *playback_domain_mutex;
+
   if(!AGS_PLAYBACK_DOMAIN(playback_domain) ||
      sound_scope >= AGS_SOUND_SCOPE_LAST){
     return;
   }
+
+  /* get playback domain mutex */
+  pthread_mutex_lock(ags_playback_domain_get_class_mutex());
+	  
+  playback_domain_mutex = playback_domain->obj_mutex;
+	  
+  pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
+
+  /* set */
+  pthread_mutex_lock(playback_domain_mutex);
 
   if(playback_domain->audio_thread[sound_scope] != NULL){
     if(ags_thread_is_running(playback_domain->audio_thread[sound_scope])){
@@ -456,6 +560,8 @@ ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
   }
   
   playback_domain->audio_thread[sound_scope] = thread;
+
+  pthread_mutex_unlock(playback_domain_mutex);
 }
 
 /**
@@ -473,13 +579,31 @@ AgsThread*
 ags_playback_domain_get_audio_thread(AgsPlaybackDomain *playback_domain,
 				     guint sound_scope)
 {
-  if(playback_domain == NULL ||
+  AgsThread *thread;
+  
+  pthread_mutex_t *playback_domain_mutex;
+
+  if(!AGS_PLAYBACK_DOMAIN(playback_domain) ||
      playback_domain->audio_thread == NULL ||
      sound_scope >= AGS_SOUND_SCOPE_LAST){
     return(NULL);
   }
 
-  return(playback_domain->audio_thread[sound_scope]);
+  /* get playback domain mutex */
+  pthread_mutex_lock(ags_playback_domain_get_class_mutex());
+	  
+  playback_domain_mutex = playback_domain->obj_mutex;
+	  
+  pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
+
+  /* get */
+  pthread_mutex_lock(playback_domain_mutex);
+
+  thread = playback_domain->audio_thread[sound_scope];
+
+  pthread_mutex_unlock(playback_domain_mutex);
+  
+  return(thread);
 }
 
 
@@ -487,64 +611,112 @@ ags_playback_domain_get_audio_thread(AgsPlaybackDomain *playback_domain,
  * ags_playback_domain_add_playback:
  * @playback_domain: the #AgsPlaybackDomain
  * @playback: the #AgsPlayback
+ * @channel_type: either an AGS_TYPE_OUTPUT or AGS_TYPE_INPUT
  * 
- * Add @playback to @playback_domain.
+ * Add @playback for @channel_type to @playback_domain.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_playback_domain_add_playback(AgsPlaybackDomain *playback_domain,
-				 GObject *playback)
+				 GObject *playback, GType channel_type)
 {
-  if(playback_domain == NULL ||
-     playback == NULL){
+  pthread_mutex_t *playback_domain_mutex;
+  
+  if(!AGS_IS_PLAYBACK_DOMAIN(playback_domain) ||
+     !AGS_IS_PLAYBACK(playback)){
     return;
   }
 
+  /* get playback domain mutex */
+  pthread_mutex_lock(ags_playback_domain_get_class_mutex());
+	  
+  playback_domain_mutex = playback_domain->obj_mutex;
+	  
+  pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
+
+  /* append */
+  pthread_mutex_lock(playback_domain_mutex);
+  
   //TODO:JK: rather use prepend but needs refactoring
-  g_object_ref(playback);
-  playback_domain->playback = g_list_append(playback_domain->playback,
-					    playback);
+  if(g_type_is_a(channel_type,
+		 AGS_TYPE_OUTPUT)){
+    g_object_ref(playback);
+    playback_domain->output_playback = g_list_append(playback_domain->output_playback,
+						     playback);
+  }else if(g_type_is_a(channel_type,
+		       AGS_TYPE_INPUT)){
+    g_object_ref(playback);
+    playback_domain->input_playback = g_list_append(playback_domain->input_playback,
+						    playback);
+  }
+
+  pthread_mutex_unlock(playback_domain_mutex);
 }
 
 /**
  * ags_playback_domain_remove_playback:
  * @playback_domain: the #AgsPlaybackDomain
  * @playback: the #AgsPlayback
+ * @channel_type: either an AGS_TYPE_OUTPUT or AGS_TYPE_INPUT
  * 
- * Remove @playback of @playback_domain.
+ * Remove @playback for @channel_type of @playback_domain.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_playback_domain_remove_playback(AgsPlaybackDomain *playback_domain,
-				    GObject *playback)
+				    GObject *playback, GType channel_type)
 {
-  if(playback_domain == NULL ||
-     playback == NULL){
+  pthread_mutex_t *playback_domain_mutex;
+  
+  if(!AGS_IS_PLAYBACK_DOMAIN(playback_domain) ||
+     !AGS_IS_PLAYBACK(playback)){
     return;
   }
 
-  playback_domain->playback = g_list_remove(playback_domain->playback,
-					    playback);
-  g_object_unref(playback);
+  /* get playback domain mutex */
+  pthread_mutex_lock(ags_playback_domain_get_class_mutex());
+	  
+  playback_domain_mutex = playback_domain->obj_mutex;
+	  
+  pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
+
+  /* remove */
+  pthread_mutex_lock(playback_domain_mutex);
+  
+  if(g_type_is_a(channel_type,
+		 AGS_TYPE_OUTPUT)){
+    playback_domain->output_playback = g_list_remove(playback_domain->output_playback,
+						     playback);
+    g_object_unref(playback);
+  }else if(g_type_is_a(channel_type,
+		       AGS_TYPE_INPUT)){
+    playback_domain->input_playback = g_list_remove(playback_domain->input_playback,
+						    playback);
+    g_object_unref(playback);
+  }
+  
+  pthread_mutex_unlock(playback_domain_mutex);
 }
 
 /**
  * ags_playback_domain_new:
+ * @audio: the #AgsAudio
  *
  * Creates an #AgsPlaybackDomain, refering to @application_context.
  *
  * Returns: a new #AgsPlaybackDomain
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPlaybackDomain*
-ags_playback_domain_new()
+ags_playback_domain_new(GObject *audio)
 {
   AgsPlaybackDomain *playback_domain;
 
   playback_domain = (AgsPlaybackDomain *) g_object_new(AGS_TYPE_PLAYBACK_DOMAIN,
+						       "audio", audio,
 						       NULL);
   
   return(playback_domain);

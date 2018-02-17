@@ -60,6 +60,8 @@ void ags_playback_finalize(GObject *gobject);
 
 static gpointer ags_playback_parent_class = NULL;
 
+static pthread_mutex_t ags_playback_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 enum{
   PROP_0,
   PROP_PLAYBACK_DOMAIN,
@@ -196,10 +198,30 @@ ags_playback_init(AgsPlayback *playback)
   
   pthread_mutex_t *application_mutex;
 
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
+
+  /* add playback mutex */
+  playback->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(attr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  playback->obj_mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);
+
+  /* config */
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  /* config */
   config = ags_config_get_instance();
 
   /* thread model */
@@ -490,6 +512,21 @@ ags_playback_disconnect(AgsConnectable *connectable)
   }
 
   playback->flags &= (~AGS_PLAYBACK_CONNECTED);
+}
+
+/**
+ * ags_playback_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_playback_get_class_mutex()
+{
+  return(&ags_playback_class_mutex);
 }
 
 /**

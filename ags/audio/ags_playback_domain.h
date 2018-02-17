@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,8 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
+#include <pthread.h>
 
 #include <ags/libags.h>
 
@@ -58,11 +60,15 @@ struct _AgsPlaybackDomain
 
   volatile guint flags;
   
-  GObject *domain;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  GObject *audio;
 
   AgsThread **audio_thread;
 
-  GList *playback;
+  GList *output_playback;
+  GList *input_playback;
 };
 
 struct _AgsPlaybackDomainClass
@@ -71,6 +77,8 @@ struct _AgsPlaybackDomainClass
 };
 
 GType ags_playback_domain_get_type();
+
+pthread_mutex_t* ags_playback_domain_get_class_mutex();
 
 /* get and set */
 void ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
@@ -81,11 +89,11 @@ AgsThread* ags_playback_domain_get_audio_thread(AgsPlaybackDomain *playback_doma
 
 /* add and remove */
 void ags_playback_domain_add_playback(AgsPlaybackDomain *playback_domain,
-				      GObject *playback);
+				      GObject *playback, GType channel_type);
 void ags_playback_domain_remove_playback(AgsPlaybackDomain *playback_domain,
-					 GObject *playback);
+					 GObject *playback, GType channel_type);
 
 /* instance */
-AgsPlaybackDomain* ags_playback_domain_new();
+AgsPlaybackDomain* ags_playback_domain_new(GObject *audio);
 
 #endif /*__AGS_PLAYBACK_DOMAIN_H__*/
