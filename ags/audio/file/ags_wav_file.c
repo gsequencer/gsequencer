@@ -800,7 +800,7 @@ ags_wav_file_get_presets(AgsSoundResource *sound_resource,
 
 guint
 ags_wav_file_read(AgsSoundResource *sound_resource,
-		  void *dbuffer, guint audio_channels,
+		  void *dbuffer, guint daudio_channels,
 		  guint frame_count, guint dformat)
 {
   AgsWavFile *wav_file;
@@ -857,15 +857,15 @@ ags_wav_file_read(AgsSoundResource *sound_resource,
     if(wav_file->current_data_chunk != NULL &&
        wav_file->current_format_chunk != NULL){
       if(offset + frame_count < buffer_size){
-	ags_audio_buffer_util_copy_char_buffer_to_buffer(dbuffer, audio_channels,
-							 wav_file->current_data_chunk->data + wav_file->offset, wav_file->current_format_chunk->channels,
-							 frame_count, copy_mode);
+	ags_char_buffer_util_copy_buffer_to_buffer(dbuffer, audio_channels,
+						   wav_file->current_data_chunk->data + wav_file->offset, wav_file->current_format_chunk->channels,
+						   frame_count, copy_mode);
 
 	return(frame_count);
       }else{
-	ags_audio_buffer_util_copy_char_buffer_to_buffer(dbuffer, audio_channels,
-							 wav_file->current_data_chunk->data + wav_file->offset, wav_file->current_format_chunk->channels,
-							 buffer_size - wav_file->offset, copy_mode);
+	ags_char_buffer_util_copy_buffer_to_buffer(dbuffer, audio_channels,
+						   wav_file->current_data_chunk->data + wav_file->offset, wav_file->current_format_chunk->channels,
+						   buffer_size - wav_file->offset, copy_mode);
 
 	return(buffer_size - wav_file->offset);
       }

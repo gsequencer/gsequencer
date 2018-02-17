@@ -1,0 +1,100 @@
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2018 Joël Krähemann
+ *
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef __AGS_CHAR_BUFFER_UTIL_H__
+#define __AGS_CHAR_BUFFER_UTIL_H__
+
+#include <glib.h>
+#include <glib-object.h>
+
+typedef enum{
+  AGS_CHAR_BUFFER_UTIL_BYTE_ORDER_LITTLE_ENDIAN,
+  AGS_CHAR_BUFFER_UTIL_BYTE_ORDER_BIG_ENDIAN,
+}AgsCharBufferUtilByteOrder;
+
+typedef enum{
+  AGS_CHAR_BUFFER_UTIL_COPY_S8_TO_CBUFFER,
+  AGS_CHAR_BUFFER_UTIL_COPY_S16_TO_CBUFFER,
+  AGS_CHAR_BUFFER_UTIL_COPY_S24_TO_CBUFFER,
+  AGS_CHAR_BUFFER_UTIL_COPY_S32_TO_CBUFFER,
+  AGS_CHAR_BUFFER_UTIL_COPY_S64_TO_CBUFFER,
+  AGS_CHAR_BUFFER_UTIL_COPY_FLOAT_TO_CBUFFER,
+  AGS_CHAR_BUFFER_UTIL_COPY_DOUBLE_TO_CBUFFER,
+  AGS_CHAR_BUFFER_UTIL_COPY_CBUFFER_TO_S8,
+  AGS_CHAR_BUFFER_UTIL_COPY_CBUFFER_TO_S16,
+  AGS_CHAR_BUFFER_UTIL_COPY_CBUFFER_TO_S24,
+  AGS_CHAR_BUFFER_UTIL_COPY_CBUFFER_TO_S32,
+  AGS_CHAR_BUFFER_UTIL_COPY_CBUFFER_TO_S64,
+  AGS_CHAR_BUFFER_UTIL_COPY_CBUFFER_TO_FLOAT,
+  AGS_CHAR_BUFFER_UTIL_COPY_CBUFFER_TO_DOUBLE,
+}AgsCharBufferUtilCopyMode;
+
+/* copy to cbuffer */
+void ags_char_buffer_util_copy_s8_to_cbuffer(unsigned char *destination, guint word_size, guint dchannels,
+					     signed char *source, guint schannels,
+					     guint frame_count, guint byte_order);
+void ags_char_buffer_util_copy_s16_to_cbuffer(unsigned char *destination, guint word_size, guint dchannels,
+					      signed short *source, guint schannels,
+					      guint frame_count, guint byte_order);
+void ags_char_buffer_util_copy_s24_to_cbuffer(unsigned char *destination, guint word_size, guint dchannels,
+					      signed long *source, guint schannels,
+					      guint frame_count, guint byte_order);
+void ags_char_buffer_util_copy_s32_to_cbuffer(unsigned char *destination, guint word_size, guint dchannels,
+					      signed long *source, guint schannels,
+					      guint frame_count, guint byte_order);
+void ags_char_buffer_util_copy_s64_to_cbuffer(unsigned char *destination, guint word_size, guint dchannels,
+					      signed long long *source, guint schannels,
+					      guint frame_count, guint byte_order);
+void ags_char_buffer_util_copy_float_to_cbuffer(unsigned char *destination, guint word_size, guint dchannels,
+						float *source, guint schannels,
+						guint frame_count, guint byte_order);
+void ags_char_buffer_util_copy_double_to_cbuffer(unsigned char *destination, guint word_size, guint dchannels,
+						 double *source, guint schannels,
+						 guint frame_count, guint byte_order);
+
+/* copy from cbuffer */
+void ags_char_buffer_util_copy_cbuffer_to_s8(signed char *destination, guint dchannels,
+					     unsigned char *source, guint word_size, guint schannels,
+					     guint frame_count, guint byte_order);
+void ags_char_buffer_util_copy_cbuffer_to_s16(signed short *destination, guint dchannels,
+					      unsigned char *source, guint word_size, guint schannels,
+					      guint frame_count, guint byte_order);
+void ags_char_buffer_util_copy_cbuffer_to_s24(signed long *destination, guint dchannels,
+					      unsigned char *source, guint word_size, guint schannels,
+					      guint frame_count, guint byte_order);
+void ags_char_buffer_util_copy_cbuffer_to_s32(signed long *destination, guint dchannels,
+					      unsigned char *source, guint word_size, guint schannels,
+					      guint frame_count, guint byte_order);
+void ags_char_buffer_util_copy_cbuffer_to_s64(signed long long *destination, guint dchannels,
+					      unsigned char *source, guint word_size, guint schannels,
+					      guint frame_count, guint byte_order);
+void ags_char_buffer_util_copy_cbuffer_to_float(float *destination, guint dchannels,
+						signed char *source, guint word_size, guint schannels,
+						guint frame_count, guint byte_order);
+void ags_char_buffer_util_copy_cbuffer_to_double(double *destination, guint dchannels,
+						 unsigned char *source, guint word_size, guint schannels,
+						 guint frame_count, guint byte_order);
+
+/* copy */
+void ags_char_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, guint doffset,
+						void *source, guint schannels, guint soffset,
+						guint frame_count, guint byte_order,
+						guint word_size, guint mode);
+
+#endif /*__AGS_CHAR_BUFFER_UTIL_H__*/

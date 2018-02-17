@@ -73,8 +73,8 @@ double ags_buffer_util_char_buffer_read_double(unsigned char *cbuffer,
 
 /* write integers */
 void ags_buffer_util_char_buffer_write_s8(unsigned char *cbuffer,
-					 signed char value,
-					 gboolean swap_bytes);
+					  signed char value,
+					  gboolean swap_bytes);
 void ags_buffer_util_char_buffer_write_s16(unsigned char *cbuffer,
 					   signed short value,
 					   gboolean swap_bytes);
