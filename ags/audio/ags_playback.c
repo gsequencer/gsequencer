@@ -65,7 +65,7 @@ static pthread_mutex_t ags_playback_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 enum{
   PROP_0,
   PROP_PLAYBACK_DOMAIN,
-  PROP_SOURCE,
+  PROP_CHANNEL,
   PROP_AUDIO_CHANNEL,
 };
 
@@ -129,7 +129,7 @@ ags_playback_class_init(AgsPlaybackClass *playback)
    *
    * The parent playback domain.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("playback-domain",
 				   i18n_pspec("parent playback domain"),
@@ -141,19 +141,19 @@ ags_playback_class_init(AgsPlaybackClass *playback)
 				  param_spec);
 
   /**
-   * AgsPlayback:source:
+   * AgsPlayback:channel:
    *
-   * The assigned source.
+   * The assigned channel.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("source",
-				   i18n_pspec("assigned source"),
-				   i18n_pspec("The source it is assigned with"),
+  param_spec = g_param_spec_object("channel",
+				   i18n_pspec("assigned channel"),
+				   i18n_pspec("The channel it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SOURCE,
+				  PROP_CHANNEL,
 				  param_spec);
 
   /**
@@ -161,7 +161,7 @@ ags_playback_class_init(AgsPlaybackClass *playback)
    *
    * The assigned audio channel.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("audio-channel",
 				 i18n_pspec("assigned audio channel"),
@@ -263,8 +263,8 @@ ags_playback_init(AgsPlayback *playback)
 		     0);
   }
 
-  /* source */
-  playback->source = NULL;
+  /* channel */
+  playback->channel = NULL;
   playback->audio_channel = 0;
 
   playback->play_note = ags_note_new();
@@ -320,27 +320,27 @@ ags_playback_set_property(GObject *gobject,
       playback->playback_domain = (GObject *) playback_domain;
     }
     break;
-  case PROP_SOURCE:
+  case PROP_CHANNEL:
     {
-      GObject *source;
+      GObject *channel;
 
-      source = (GObject *) g_value_get_object(value);
+      channel = (GObject *) g_value_get_object(value);
 
-      if(source == playback->source){
+      if(channel == playback->channel){
 	return;
       }
 
-      if(playback->source != NULL){
-	g_object_unref(G_OBJECT(playback->source));
+      if(playback->channel != NULL){
+	g_object_unref(G_OBJECT(playback->channel));
       }
 
-      if(source != NULL){
-	g_object_ref(G_OBJECT(source));
+      if(channel != NULL){
+	g_object_ref(G_OBJECT(channel));
 
-	AGS_NOTE(playback->play_note)->y = AGS_CHANNEL(source)->pad;
+	AGS_NOTE(playback->play_note)->y = AGS_CHANNEL(channel)->pad;
       }
 
-      playback->source = (GObject *) source;
+      playback->channel = (GObject *) channel;
     }
     break;
   case PROP_AUDIO_CHANNEL:
@@ -371,10 +371,10 @@ ags_playback_get_property(GObject *gobject,
 			 playback->playback_domain);
     }
     break;
-  case PROP_SOURCE:
+  case PROP_CHANNEL:
     {
       g_value_set_object(value,
-			  playback->source);
+			  playback->channel);
     }
     break;
   case PROP_AUDIO_CHANNEL:
@@ -405,11 +405,11 @@ ags_playback_dispose(GObject *gobject)
     playback->playback_domain = NULL;
   }
 
-  /* source */
-  if(playback->source != NULL){
-    g_object_unref(playback->source);
+  /* channel */
+  if(playback->channel != NULL){
+    g_object_unref(playback->channel);
 
-    playback->source = NULL;
+    playback->channel = NULL;
   }
   
   /* channel thread */
@@ -453,9 +453,9 @@ ags_playback_finalize(GObject *gobject)
     g_object_unref(playback->playback_domain);
   }
 
-  /* source */
-  if(playback->source != NULL){
-    g_object_unref(playback->source);
+  /* channel */
+  if(playback->channel != NULL){
+    g_object_unref(playback->channel);
   }
   
   /* channel thread */
@@ -544,10 +544,22 @@ ags_playback_set_channel_thread(AgsPlayback *playback,
 				AgsThread *thread,
 				guint scope)
 {
+  pthread_mutex_t *playback_mutex;
+
   if(!AGS_IS_PLAYBACK(playback) ||
      scope >= AGS_SOUND_SCOPE_LAST){
     return;
   }
+
+  /* get playback mutex */
+  pthread_mutex_lock(ags_playback_get_class_mutex());
+	  
+  playback_mutex = playback->obj_mutex;
+	  
+  pthread_mutex_unlock(ags_playback_get_class_mutex());
+
+  /* unset old */
+  pthread_mutex_lock(playback_mutex);
 
   if(playback->channel_thread[scope] != NULL){
     if(ags_thread_is_running(playback->channel_thread[sound_scope])){
@@ -558,11 +570,14 @@ ags_playback_set_channel_thread(AgsPlayback *playback,
     g_object_unref(playback->channel_thread[scope]);
   }
 
+  /* set new */
   if(thread != NULL){
     g_object_ref(thread);
   }
   
   playback->channel_thread[scope] = thread;
+
+  pthread_mutex_unlock(playback_mutex);
 }
 
 /**
@@ -580,13 +595,34 @@ AgsThread*
 ags_playback_get_channel_thread(AgsPlayback *playback,
 				guint scope)
 {
+  AgsThread *channel_thread;
+  
+  pthread_mutex_t *playback_mutex;
+
   if(!AGS_IS_PLAYBACK(playback) ||
-     playback->channel_thread == NULL ||
      scope >= AGS_SOUND_SCOPE_LAST){
     return(NULL);
   }
 
-  return(playback->channel_thread[scope]);
+  /* get playback mutex */
+  pthread_mutex_lock(ags_playback_get_class_mutex());
+	  
+  playback_mutex = playback->obj_mutex;
+	  
+  pthread_mutex_unlock(ags_playback_get_class_mutex());
+
+  /* get channel thread */
+  pthread_mutex_lock(playback_mutex);
+
+  if(playback->channel_thread == NULL){
+    return(NULL);
+  }
+
+  channel_thread = playback->channel_thread[scope];
+
+  pthread_mutex_unlock(playback_mutex);
+  
+  return(channel_thread);
 }
 
 /**
@@ -604,20 +640,36 @@ ags_playback_set_recall_id(AgsPlayback *playback,
 			   AgsRecallID *recall_id,
 			   guint scope)
 {
-  if(playback == NULL ||
+  pthread_mutex_t *playback_mutex;
+  
+  if(!AGS_IS_PLAYBACK(playback) ||
      scope >= AGS_SOUND_SCOPE_LAST){
     return;
   }
+
+  /* get playback mutex */
+  pthread_mutex_lock(ags_playback_get_class_mutex());
+	  
+  playback_mutex = playback->obj_mutex;
+	  
+  pthread_mutex_unlock(ags_playback_get_class_mutex());
+
+  /* unref old */
+  pthread_mutex_lock(playback_mutex);
 
   if(playback->recall_id[scope] != NULL){
     g_object_unref(playback->recall_id[scope]);
   }
 
+  /* ref new */
   if(recall_id != NULL){
     g_object_ref(recall_id);
   }
-  
+
+  /* set recall id */
   playback->recall_id[scope] = recall_id;
+
+  pthread_mutex_unlock(playback_mutex);
 }
 
 /**
@@ -635,34 +687,75 @@ AgsRecallID*
 ags_playback_get_recall_id(AgsPlayback *playback,
 			   guint scope)
 {
-  if(playback == NULL ||
-     playback->recall_id == NULL ||
+  AgsRecallID *recall_id;
+
+  pthread_mutex_t *playback_mutex;
+  
+  if(!AGS_IS_PLAYBACK(playback) ||
      scope >= AGS_SOUND_SCOPE_LAST){
     return(NULL);
   }
 
-  return(playback->recall_id[scope]);
+  /* get playback mutex */
+  pthread_mutex_lock(ags_playback_get_class_mutex());
+	  
+  playback_mutex = playback->obj_mutex;
+	  
+  pthread_mutex_unlock(ags_playback_get_class_mutex());
+
+  /* get recall id */
+  pthread_mutex_lock(playback_mutex);
+
+  if(playback->recall_id == NULL){
+    pthread_mutex_unlock(playback_mutex);
+    
+    return(NULL);
+  }
+  
+  recall_id = playback->recall_id[scope];
+
+  pthread_mutex_unlock(playback_mutex);
+  
+  return(recall_id);
 }
 
 /**
- * ags_playback_play_find_source:
- * @playback_play: a #GList containing #AgsPlayback
+ * ags_playback_play_find_channel:
+ * @playback: the #GList-struct containing #AgsPlayback
+ * @channel: the #AgsChannel
  * 
- * Find source
+ * Find @channel in @playback.
  *
- * Returns: the matching playback play
+ * Returns: the matching playback
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPlayback*
-ags_playback_find_source(GList *playback,
-			 GObject *source)
+ags_playback_find_channel(GList *playback,
+			  GObject *channel)
 {
+  pthread_mutex_t *playback_mutex;
+
   while(playback != NULL){
-    if(AGS_PLAYBACK(playback->data)->source == source){
+    /* get playback mutex */
+    pthread_mutex_lock(ags_playback_get_class_mutex());
+	  
+    playback_mutex = AGS_PLAYBACK(playback->data)->obj_mutex;
+	  
+    pthread_mutex_unlock(ags_playback_get_class_mutex());
+
+    /* check channel */
+    pthread_mutex_lock(playback_mutex);
+    
+    if(AGS_PLAYBACK(playback->data)->channel == channel){
+      pthread_mutex_unlock(playback_mutex);
+      
       return(playback->data);
     }
 
+    pthread_mutex_unlock(playback_mutex);
+
+    /* iterate */
     playback = playback->next;
   }
 
@@ -671,19 +764,21 @@ ags_playback_find_source(GList *playback,
 
 /**
  * ags_playback_new:
+ * @channel: the #AgsChannel
  *
- * Creates an #AgsPlayback, refering to @application_context.
+ * Instantiate a playback object and assign @channel.
  *
- * Returns: a new #AgsPlayback
+ * Returns: the new #AgsPlayback
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPlayback*
-ags_playback_new()
+ags_playback_new(GObject *channel)
 {
   AgsPlayback *playback;
 
   playback = (AgsPlayback *) g_object_new(AGS_TYPE_PLAYBACK,
+					  "channel", channel,
 					  NULL);
   
   return(playback);

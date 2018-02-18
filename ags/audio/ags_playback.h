@@ -66,7 +66,7 @@ struct _AgsPlayback
 
   GObject *playback_domain;
   
-  GObject *source;
+  GObject *channel;
   guint audio_channel;
 
   GObject *play_note;
@@ -99,10 +99,10 @@ AgsRecallID* ags_playback_get_recall_id(AgsPlayback *playback,
 					guint scope);
 
 /* find */
-AgsPlayback* ags_playback_find_source(GList *playback,
-				      GObject *source);
+AgsPlayback* ags_playback_find_channel(GList *playback,
+				       GObject *channel);
 
 /* instance */
-AgsPlayback* ags_playback_new();
+AgsPlayback* ags_playback_new(GObject *channel);
 
 #endif /*__AGS_PLAYBACK_H__*/
