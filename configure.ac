@@ -6,14 +6,14 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[1.4.18],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[2.0.0],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.19.8])
+AM_GNU_GETTEXT_VERSION([0.19.7])
 
 # options
 AC_ARG_ENABLE(rt, [AS_HELP_STRING([--enable-rt],
@@ -229,7 +229,7 @@ PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.9.0])
 AC_SUBST(FONTCONFIG_CFLAGS)
 AC_SUBST(FONTCONFIG_LIBS)
 
-PKG_CHECK_MODULES([GDKPIXBUF], [gdk-pixbuf-2.0 >= 2.36.5])
+PKG_CHECK_MODULES([GDKPIXBUF], [gdk-pixbuf-2.0 >= 2.32.2])
 AC_SUBST(GDKPIXBUF_CFLAGS)
 AC_SUBST(GDKPIXBUF_LIBS)
 

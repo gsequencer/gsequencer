@@ -280,6 +280,8 @@ struct _AgsThreadClass
 
 GType ags_thread_get_type();
 
+pthread_mutex_t* ags_thread_get_class_mutex();
+
 void ags_thread_resume_handler(int sig);
 void ags_thread_suspend_handler(int sig);
 

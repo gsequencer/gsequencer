@@ -302,8 +302,10 @@ ags_message_envelope_alloc(GObject *sender,
 
   message->doc = doc;
 
-  message->parameter = NULL;
   message->n_params = 0;
+
+  message->parameter_name = NULL;
+  message->value = NULL;
   
   return(message);
 }
@@ -335,7 +337,8 @@ ags_message_envelope_free(AgsMessageEnvelope *message)
     xmlFreeDoc(message->doc);
   }
   
-  g_free(message->parameter);
+  g_free(message->parameter_name);
+  g_free(message->value);
   
   g_free(message);
 }

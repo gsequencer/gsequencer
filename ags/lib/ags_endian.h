@@ -22,6 +22,11 @@
 
 #include <glib.h>
 
+typedef enum{
+  AGS_BYTE_ORDER_LE,
+  AGS_BYTE_ORDER_BE,
+}AgsByteOrder;
+
 gboolean ags_endian_host_is_le();
 gboolean ags_endian_host_is_be();
 

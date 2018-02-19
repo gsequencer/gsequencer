@@ -23,79 +23,81 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/lib/ags_endian.h>
+
 /* signed integers to char buffer */
-unsigned char* ags_buffer_util_s8_to_char_buffer(signed char *buffer,
-						 guint buffer_length);
-unsigned char* ags_buffer_util_s16_to_char_buffer(signed short *buffer,
-						  guint buffer_length);
-unsigned char* ags_buffer_util_s24_to_char_buffer(signed long *buffer,
-						  guint buffer_length);
-unsigned char* ags_buffer_util_s32_to_char_buffer(signed long *buffer,
-						  guint buffer_length);
-unsigned char* ags_buffer_util_s64_to_char_buffer(signed long long *buffer,
-						  guint buffer_length);
-unsigned char* ags_buffer_util_float_to_char_buffer(float *buffer,
-						    guint buffer_length);
-unsigned char* ags_buffer_util_double_to_char_buffer(double *buffer,
-						     guint buffer_length);
+guchar* ags_buffer_util_s8_to_char_buffer(gint8 *buffer,
+					  guint buffer_length);
+guchar* ags_buffer_util_s16_to_char_buffer(gint16 *buffer,
+					   guint buffer_length);
+guchar* ags_buffer_util_s24_to_char_buffer(gint32 *buffer,
+					   guint buffer_length);
+guchar* ags_buffer_util_s32_to_char_buffer(gint32 *buffer,
+					   guint buffer_length);
+guchar* ags_buffer_util_s64_to_char_buffer(gint64 *buffer,
+					   guint buffer_length);
+guchar* ags_buffer_util_float_to_char_buffer(gfloat *buffer,
+					     guint buffer_length);
+guchar* ags_buffer_util_double_to_char_buffer(gdouble *buffer,
+					      guint buffer_length);
 
 /* char buffer to signed integers */
-signed char* ags_buffer_util_char_buffer_to_s8(unsigned char *cbuffer,
+gint8* ags_buffer_util_char_buffer_to_s8(guchar *cbuffer,
+					 guint buffer_size);
+gint16* ags_buffer_util_char_buffer_to_s16(guchar *cbuffer,
+					   guint buffer_size);
+gint32* ags_buffer_util_char_buffer_to_s24(guchar *cbuffer,
+					   guint buffer_size);
+gint32* ags_buffer_util_char_buffer_to_s32(guchar *cbuffer,
+					   guint buffer_size);
+gint64* ags_buffer_util_char_buffer_to_s64(guchar *cbuffer,
+					   guint buffer_size);
+gfloat* ags_buffer_util_char_buffer_to_float(guchar *cbuffer,
+					     guint buffer_size);
+gdouble* ags_buffer_util_char_buffer_to_double(guchar *cbuffer,
 					       guint buffer_size);
-signed short* ags_buffer_util_char_buffer_to_s16(unsigned char *cbuffer,
-						 guint buffer_size);
-signed long* ags_buffer_util_char_buffer_to_s24(unsigned char *cbuffer,
-						guint buffer_size);
-signed long* ags_buffer_util_char_buffer_to_s32(unsigned char *cbuffer,
-						guint buffer_size);
-signed long long* ags_buffer_util_char_buffer_to_s64(unsigned char *cbuffer,
-						     guint buffer_size);
-float* ags_buffer_util_char_buffer_to_float(unsigned char *cbuffer,
-					    guint buffer_size);
-double* ags_buffer_util_char_buffer_to_double(unsigned char *cbuffer,
-					      guint buffer_size);
 
 /* read integers */
-signed char ags_buffer_util_char_buffer_read_s8(unsigned char *cbuffer,
-						gboolean swap_bytes);
-signed short ags_buffer_util_char_buffer_read_s16(unsigned char *cbuffer,
-						  gboolean swap_bytes);
-signed long ags_buffer_util_char_buffer_read_s24(unsigned char *cbuffer,
-						 gboolean swap_bytes);
-signed long ags_buffer_util_char_buffer_read_s32(unsigned char *cbuffer,
-						 gboolean swap_bytes);
-signed long long ags_buffer_util_char_buffer_read_s64(unsigned char *cbuffer,
-						      gboolean swap_bytes);
-float ags_buffer_util_char_buffer_read_float(unsigned char *cbuffer,
-					     gboolean swap_bytes);
-double ags_buffer_util_char_buffer_read_double(unsigned char *cbuffer,
-					       gboolean swap_bytes);
+gint8 ags_buffer_util_char_buffer_read_s8(guchar *cbuffer,
+					  guint byte_order);
+gint16 ags_buffer_util_char_buffer_read_s16(guchar *cbuffer,
+					    guint byte_order);
+gint32 ags_buffer_util_char_buffer_read_s24(guchar *cbuffer,
+					    guint byte_order);
+gint32 ags_buffer_util_char_buffer_read_s32(guchar *cbuffer,
+					    guint byte_order);
+gint64 ags_buffer_util_char_buffer_read_s64(guchar *cbuffer,
+					    guint byte_order);
+gfloat ags_buffer_util_char_buffer_read_float(guchar *cbuffer,
+					      guint byte_order);
+gdouble ags_buffer_util_char_buffer_read_double(guchar *cbuffer,
+						guint byte_order);
 
 /* write integers */
-void ags_buffer_util_char_buffer_write_s8(unsigned char *cbuffer,
-					  signed char value,
-					  gboolean swap_bytes);
-void ags_buffer_util_char_buffer_write_s16(unsigned char *cbuffer,
-					   signed short value,
-					   gboolean swap_bytes);
-void ags_buffer_util_char_buffer_write_s24(unsigned char *cbuffer,
-					   signed long value,
-					   gboolean swap_bytes);
-void ags_buffer_util_char_buffer_write_s32(unsigned char *cbuffer,
-					   signed long value,
-					   gboolean swap_bytes);
-void ags_buffer_util_char_buffer_write_s64(unsigned char *cbuffer,
-					   signed long long value,
-					   gboolean swap_bytes);
-void ags_buffer_util_char_buffer_write_float(unsigned char *cbuffer,
-					     float value,
-					     gboolean swap_bytes);
-void ags_buffer_util_char_buffer_write_double(unsigned char *cbuffer,
-					      double value,
-					      gboolean swap_bytes);
+void ags_buffer_util_char_buffer_write_s8(guchar *cbuffer,
+					  gint8 value,
+					  guint byte_order);
+void ags_buffer_util_char_buffer_write_s16(guchar *cbuffer,
+					   gint16 value,
+					   guint byte_order);
+void ags_buffer_util_char_buffer_write_s24(guchar *cbuffer,
+					   gint32 value,
+					   guint byte_order);
+void ags_buffer_util_char_buffer_write_s32(guchar *cbuffer,
+					   gint32 value,
+					   guint byte_order);
+void ags_buffer_util_char_buffer_write_s64(guchar *cbuffer,
+					   gint64 value,
+					   guint byte_order);
+void ags_buffer_util_char_buffer_write_float(guchar *cbuffer,
+					     gfloat value,
+					     guint byte_order);
+void ags_buffer_util_char_buffer_write_double(guchar *cbuffer,
+					      gdouble value,
+					      guint byte_order);
 
 /* swap bytes */
-void ags_buffer_util_char_buffer_swap_bytes(unsigned char *cbuffer, guint word_size,
+void ags_buffer_util_char_buffer_swap_bytes(guchar *cbuffer, guint word_size,
 					    guint buffer_size);
 
 #endif /*__AGS_BUFFER_UTIL_H__*/

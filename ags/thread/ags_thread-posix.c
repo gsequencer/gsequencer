@@ -111,6 +111,8 @@ static pthread_key_t ags_thread_key;
 /* Once-only initialisation of the key */
 static pthread_once_t ags_thread_key_once = PTHREAD_ONCE_INIT;
 
+static pthread_mutex_t ags_thread_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_thread_get_type()
 {
@@ -389,7 +391,7 @@ ags_thread_init(AgsThread *thread)
 
   config = ags_config_get_instance();
 
-  /* insert audio loop mutex */
+  /* insert thread mutex */
   thread->obj_mutexattr =
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
 
@@ -843,6 +845,21 @@ ags_thread_finalize(GObject *gobject)
   if(do_exit){
     pthread_exit(NULL);
   }
+}
+
+/**
+ * ags_thread_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_thread_get_class_mutex()
+{
+  return(&ags_thread_class_mutex);
 }
 
 void
@@ -3144,7 +3161,7 @@ ags_thread_loop(void *ptr)
     g_list_free(start_start_queue);
     
     /* notify start */
-    /* signal AgsAudioLoop */
+    /* signal AgsMainLoop */
     pthread_mutex_lock(thread->start_mutex);
       
     g_atomic_int_set(&(thread->start_done),

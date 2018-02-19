@@ -75,7 +75,7 @@ typedef enum{
   AGS_SOUND_STAGING_REMOVE              = 1 << 14,
 }AgsSoundStagingFlags;
 
-tyepdef enum{
+typedef enum{
   AGS_SOUND_STATE_IS_WAITING                  = 1,
   AGS_SOUND_STATE_IS_ACTIVE                   = 1 <<  1,
   AGS_SOUND_STATE_IS_PROCESSING               = 1 <<  2,

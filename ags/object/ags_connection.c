@@ -22,6 +22,8 @@
 #include <ags/thread/ags_message_delivery.h>
 #include <ags/thread/ags_message_queue.h>
 
+#include <stdlib.h>
+
 void ags_connection_class_init(AgsConnectionClass *connection);
 void ags_connection_init (AgsConnection *connection);
 void ags_connection_set_property(GObject *gobject,
@@ -194,14 +196,16 @@ ags_connection_set_property(GObject *gobject,
 					     doc);
 
 	/* set parameter */
-	message->parameter = g_new0(GParameter,
-				    1);
 	message->n_params = 1;
+
+	message->parameter_name = (gchar **) malloc(2 * sizeof(gchar *));
+	message->value = g_new0(GValue,
+				1);
     
-	message->parameter[0].name = "data-object";
-	g_value_init(&(message->parameter[0].value),
+	message->parameter_name[0] = "data-object";
+	g_value_init(&(message->value[0]),
 		     G_TYPE_OBJECT);
-	g_value_set_object(&(message->parameter[0].value),
+	g_value_set_object(&(message->value[0]),
 			   data_object);
 
 	/* add message */
