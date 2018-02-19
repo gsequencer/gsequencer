@@ -5984,10 +5984,14 @@ ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
   AgsChannel *output, *input;
   AgsPlaybackDomain *playback_domain;
   
+  AgsThread *audio_thread;
+
   gdouble frequency;
   guint i;
   
   pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *playback_domain_mutex;
+  pthread_mutex_t *audio_thread_mutex;
   
   auto void ags_audio_set_samplerate_channel(AgsChannel *channel);
 
@@ -6037,16 +6041,41 @@ ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
 
   playback_domain = audio->playback_domain;
   
+  pthread_mutex_unlock(audio_mutex);
+
+  /* get playback domain mutex */
+  pthread_mutex_lock(ags_playback_domain_get_class_mutex());
+
+  playback_domain_mutex = playback_domain->obj_mutex;
+  
+  pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
+
+  /* audio thread - frequency */
   for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-    /* apply new frequency */
-    if(playback_domain->audio_thread[i] != NULL){
-      g_object_set(playback_domain->audio_thread[i],
+    pthread_mutex_lock(playback_domain_mutex);
+    
+    audio_thread = playback_domain->audio_thread[i];
+
+    pthread_mutex_unlock(playback_domain_mutex);
+    
+    if(audio_thread != NULL){
+      /* get audio thread mutex */
+      pthread_mutex_lock(ags_thread_get_class_mutex());
+
+      audio_thread_mutex = audio_thread->obj_mutex;
+  
+      pthread_mutex_unlock(ags_thread_get_class_mutex());
+
+      /* apply new frequency */
+      pthread_mutex_lock(audio_thread_mutex);
+
+      g_object_set(audio_thread,
 		   "frequency", frequency,
 		   NULL);
+
+      pthread_mutex_unlock(audio_thread_mutex);
     }
   }
-  
-  pthread_mutex_unlock(audio_mutex);
 
   /* set samplerate output/input */
   ags_audio_set_samplerate_channel(output);
@@ -6067,11 +6096,15 @@ ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
 {
   AgsChannel *output, *input;
   AgsPlaybackDomain *playback_domain;
+
+  AgsThread *audio_thread;
   
   gdouble frequency;
   guint i;
   
   pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *playback_domain_mutex;
+  pthread_mutex_t *audio_thread_mutex;
 
   auto void ags_audio_set_buffer_size_channel(AgsChannel *channel);
 
@@ -6121,16 +6154,41 @@ ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
 
   playback_domain = audio->playback_domain;
   
+  pthread_mutex_unlock(audio_mutex);
+
+  /* get playback domain mutex */
+  pthread_mutex_lock(ags_playback_domain_get_class_mutex());
+
+  playback_domain_mutex = playback_domain->obj_mutex;
+  
+  pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
+
+  /* audio thread - frequency */
   for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-    /* apply new frequency */
-    if(playback_domain->audio_thread[i] != NULL){
+    pthread_mutex_lock(playback_domain_mutex);
+    
+    audio_thread = playback_domain->audio_thread[i];
+
+    pthread_mutex_unlock(playback_domain_mutex);
+
+    if(audio_thread != NULL){
+      /* get audio thread mutex */
+      pthread_mutex_lock(ags_thread_get_class_mutex());
+
+      audio_thread_mutex = audio_thread->obj_mutex;
+  
+      pthread_mutex_unlock(ags_thread_get_class_mutex());
+
+      /* apply new frequency */
+      pthread_mutex_lock(audio_thread_mutex);
+
       g_object_set(playback_domain->audio_thread[i],
 		   "frequency", frequency,
 		   NULL);
+
+      pthread_mutex_unlock(audio_thread_mutex);
     }
-  }
-  
-  pthread_mutex_unlock(audio_mutex);
+  }  
 
   /* set buffer size output/input */
   ags_audio_set_buffer_size_channel(output);
@@ -8270,6 +8328,7 @@ ags_audio_real_start(AgsAudio *audio,
   
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *playback_mutex;
 
   if(sound_scope < 0 ||
      sound_scope >= AGS_SOUND_SCOPE_LAST){
@@ -8308,14 +8367,27 @@ ags_audio_real_start(AgsAudio *audio,
     recall_id = g_list_prepend(recall_id,
 			       current_recall_id);
 
-    /* set playback's recall id */
+    /* get playback */
     pthread_mutex_lock(channel_mutex);
 
     playback = channel->playback;
-    playback->recall_id[sound_scope] = current_recall_id;
     
     pthread_mutex_unlock(channel_mutex);
 
+    /* get playback mutex */
+    pthread_mutex_lock(ags_playback_get_class_mutex());
+
+    playback_mutex = playback->obj_mutex;
+  
+    pthread_mutex_unlock(ags_playback_get_class_mutex());
+    
+    /* set playback's recall id */
+    pthread_mutex_lock(playback_mutex);
+    
+    playback->recall_id[sound_scope] = current_recall_id;
+
+    pthread_mutex_unlock(playback_mutex);
+    
     /* reset recall id */
     ags_channel_recursive_reset_recall_id(channel,
 					  current_recall_id, TRUE, TRUE,
@@ -8603,6 +8675,7 @@ ags_audio_real_check_scope(AgsAudio *audio, gint sound_scope)
 
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *playback_mutex;
 
   if(sound_scope < 0 ||
      sound_scope >= AGS_SOUND_SCOPE_LAST){
@@ -8639,12 +8712,24 @@ ags_audio_real_check_scope(AgsAudio *audio, gint sound_scope)
 
     playback = channel->playback;
 
+    pthread_mutex_unlock(channel_mutex);
+
+    /* get playback mutex */
+    pthread_mutex_lock(ags_playback_get_class_mutex());
+
+    playback_mutex = playback->obj_mutex;
+  
+    pthread_mutex_unlock(ags_playback_get_class_mutex());
+
+    /* collect recall id */
+    pthread_mutex_lock(playback_mutex);
+
     if(playback->recall_id[sound_scope] != NULL){
       recall_id = g_list_prepend(recall_id,
 				 playback->recall_id[sound_scope]);
     }
 
-    pthread_mutex_unlock(channel_mutex);
+    pthread_mutex_unlock(playback_mutex);
 
     /* iterate */
     pthread_mutex_lock(channel_mutex);    
