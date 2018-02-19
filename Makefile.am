@@ -381,8 +381,6 @@ libags_object_h_sources =  \
 	ags/object/ags_async_queue.h \
 	ags/object/ags_config.h \
 	ags/object/ags_connectable.h \
-	ags/object/ags_connection.h \
-	ags/object/ags_connection_manager.h \
 	ags/object/ags_countable.h \
 	ags/object/ags_concurrent_tree.h \
 	ags/object/ags_distributed_manager.h \
@@ -409,8 +407,6 @@ libags_object_c_sources = \
 	ags/object/ags_async_queue.c \
 	ags/object/ags_config.c \
 	ags/object/ags_connectable.c \
-	ags/object/ags_connection.c \
-	ags/object/ags_connection_manager.c \
 	ags/object/ags_countable.c \
 	ags/object/ags_concurrent_tree.c \
 	ags/object/ags_distributed_manager.c \
@@ -637,7 +633,6 @@ libags_audio_h_sources = \
 	ags/audio/ags_audio.h \
 	ags/audio/ags_audio_application_context.h \
 	ags/audio/ags_audio_buffer_util.h \
-	ags/audio/ags_audio_connection.h \
 	ags/audio/ags_audio_signal.h \
 	ags/audio/ags_automation.h \
 	ags/audio/ags_buffer.h \
@@ -649,14 +644,12 @@ libags_audio_h_sources = \
 	ags/audio/ags_effect.h \
 	ags/audio/ags_fifoout.h \
 	ags/audio/ags_input.h \
-	ags/audio/ags_message.h \
 	ags/audio/ags_midi.h \
 	ags/audio/ags_midiin.h \
 	ags/audio/ags_notation.h \
 	ags/audio/ags_note.h \
 	ags/audio/ags_output.h \
 	ags/audio/ags_pattern.h \
-	ags/audio/ags_playable.h \
 	ags/audio/ags_playback.h \
 	ags/audio/ags_playback_domain.h \
 	ags/audio/ags_port.h \
@@ -697,7 +690,6 @@ libags_audio_c_sources = \
 	ags/audio/ags_audio.c \
 	ags/audio/ags_audio_application_context.c \
 	ags/audio/ags_audio_buffer_util.c \
-	ags/audio/ags_audio_connection.c \
 	ags/audio/ags_audio_signal.c \
 	ags/audio/ags_automation.c \
 	ags/audio/ags_buffer.c \
@@ -708,14 +700,12 @@ libags_audio_c_sources = \
 	ags/audio/ags_devin.c \
 	ags/audio/ags_input.c \
 	ags/audio/ags_fifoout.c \
-	ags/audio/ags_message.c \
 	ags/audio/ags_midi.c \
 	ags/audio/ags_midiin.c \
 	ags/audio/ags_notation.c \
 	ags/audio/ags_note.c \
 	ags/audio/ags_output.c \
 	ags/audio/ags_pattern.c \
-	ags/audio/ags_playable.c \
 	ags/audio/ags_playback.c \
 	ags/audio/ags_playback_domain.c \
 	ags/audio/ags_port.c \
