@@ -79,7 +79,12 @@ struct _AgsChannel
   pthread_mutexattr_t *obj_mutexattr;
 
   GObject *audio;
+
   GObject *output_soundcard;
+  guint output_soundcard_channel;
+  
+  GObject *input_soundcard;
+  guint input_soundcard_channel;
 
   guint samplerate;
   guint buffer_size;
@@ -90,37 +95,39 @@ struct _AgsChannel
   AgsChannel *next;
   AgsChannel *next_pad;
 
-  guint pad;
-  guint audio_channel;
-  guint line;
-
-  char *note;
-
-  GList *remote_channel;
-  
-  GObject *playback;
-
-  // GObject *recycling_context; // contains child recycling
-  GList *recall_id; // there may be several recall's running
-
-  pthread_mutexattr_t *recall_mutexattr;
-  pthread_mutex_t *recall_mutex;
-
-  pthread_mutexattr_t *play_mutexattr;
-  pthread_mutex_t *play_mutex;
-
-  GList *container;
-  GList *recall;
-  GList *play;
-
   AgsChannel *link;
 
   AgsRecycling *first_recycling;
   AgsRecycling *last_recycling;
 
+  guint pad;
+  guint audio_channel;
+  guint line;
+
+  char *note;
+  
+  GObject *playback;
+
   GList *pattern;
 
-  GObject *line_widget;
+  GList *remote_channel;
+
+  GList *recall_id;
+  GList *recycling_context;
+
+  GList *recall_container;
+
+  pthread_mutexattr_t *recall_mutexattr;
+  pthread_mutex_t *recall_mutex;
+
+  GList *recall;
+
+  pthread_mutexattr_t *play_mutexattr;
+  pthread_mutex_t *play_mutex;
+
+  GList *play;
+
+  gpointer line_widget;
   gpointer file_data;
 };
 

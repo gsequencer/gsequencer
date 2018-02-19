@@ -1,5 +1,8 @@
 /* ags/config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* striping rt-events enabled */
+#undef AGS_STRIP_RT_EVENTS
+
 /* ALSA enabled */
 #undef AGS_WITH_ALSA
 

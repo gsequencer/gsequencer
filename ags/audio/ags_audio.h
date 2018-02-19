@@ -88,7 +88,10 @@ struct _AgsAudio
   pthread_mutexattr_t *obj_mutexattr;
 
   GObject *output_soundcard;
+  guint *output_soundcard_channel_map;
+  
   GObject *input_soundcard;
+  guint *input_soundcard_channel_map;
 
   GObject *output_sequencer;
   GObject *input_sequencer;
@@ -157,7 +160,8 @@ struct _AgsAudio
 
   GList *recall;
   
-  gpointer machine;
+  gpointer machine_widget;
+  gpointer file_data;
 };
 
 struct _AgsAudioClass
