@@ -21,7 +21,6 @@
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_audio_connection.h>
 #include <ags/audio/ags_preset.h>
 #include <ags/audio/ags_notation.h>
 #include <ags/audio/ags_automation.h>
@@ -172,7 +171,6 @@ enum{
   PROP_MIDI_CHANNEL,
   PROP_OUTPUT,
   PROP_INPUT,
-  PROP_AUDIO_CONNECTION,
   PROP_PRESET,
   PROP_PLAYBACK_DOMAIN,
   PROP_NOTATION,
@@ -318,14 +316,14 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The samplerate.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("samplerate"),
 				 i18n_pspec("The samplerate"),
 				 0,
 				 G_MAXUINT32,
-				 0,
+				 AGS_SOUNDCARD_DEFAULT_SAMPLERATE,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SAMPLERATE,
@@ -336,14 +334,14 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The buffer length.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("buffer size"),
 				 i18n_pspec("The buffer size"),
 				 0,
 				 G_MAXUINT32,
-				 0,
+				 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BUFFER_SIZE,
@@ -354,14 +352,14 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The format.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("format"),
 				 i18n_pspec("The format"),
 				 0,
 				 G_MAXUINT32,
-				 0,
+				 AGS_SOUNDCARD_DEFAULT_FORMAT,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FORMAT,
@@ -378,7 +376,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				 i18n_pspec("maximum audio channels count"),
 				 i18n_pspec("The maximum count of audio channels of audio"),
 				 0,
-				 65535,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -396,7 +394,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				 i18n_pspec("maximum output pads count"),
 				 i18n_pspec("The maximum count of output pads of audio"),
 				 0,
-				 65535,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -414,7 +412,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				 i18n_pspec("maximum input pads count"),
 				 i18n_pspec("The maximum count of input pads of audio"),
 				 0,
-				 65535,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -426,13 +424,13 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The audio channels count.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("audio-channels",
 				 i18n_pspec("audio channels count"),
 				 i18n_pspec("The count of audio channels of audio"),
 				 0,
-				 65535,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -444,13 +442,13 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The output pads count.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("output-pads",
 				 i18n_pspec("output pads count"),
 				 i18n_pspec("The count of output pads of audio"),
 				 0,
-				 65535,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -462,13 +460,13 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The output lines count.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("output-lines",
 				 i18n_pspec("output lines count"),
 				 i18n_pspec("The count of output lines of audio"),
 				 0,
-				 65535,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE);
   g_object_class_install_property(gobject,
@@ -480,13 +478,13 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The input pads count.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("input-pads",
 				 i18n_pspec("input pads count"),
 				 i18n_pspec("The count of input pads of audio"),
 				 0,
-				 65535,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -498,13 +496,13 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The input lines count.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("input-lines",
 				 i18n_pspec("input lines count"),
 				 i18n_pspec("The count of input lines of audio"),
 				 0,
-				 65535,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE);
   g_object_class_install_property(gobject,
@@ -516,7 +514,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The audio start mapping.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("audio-start-mapping",
 				 i18n_pspec("audio start mapping"),
@@ -534,7 +532,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The audio end mapping.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("audio-end-mapping",
 				 i18n_pspec("audio end mapping"),
@@ -552,7 +550,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The midi start mapping.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_uint("midi-start-mapping",
 				  i18n_pspec("midi start mapping range"),
@@ -570,7 +568,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The midi end mapping.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("midi-end-mapping",
 				 i18n_pspec("midi end mapping range"),
@@ -588,7 +586,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The midi channel.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("midi-channel",
 				 i18n_pspec("midi channel"),
@@ -606,7 +604,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The #AgsOutput it contains.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("output",
 				   i18n_pspec("containing output"),
@@ -622,7 +620,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The #AgsInput it contains.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("input",
 				   i18n_pspec("containing input"),
@@ -634,27 +632,11 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
-   * AgsAudio:audio-connection:
-   *
-   * The assigned #GList-struct containing #AgsAudioConnection information.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_object("audio-connection",
-				   i18n_pspec("audio connection"),
-				   i18n_pspec("The audio connection information"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_AUDIO_CONNECTION,
-				  param_spec);
-
-  /**
    * AgsAudio:preset:
    *
    * The assigned #GList-struct containing #AgsPreset information.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("preset",
 				   i18n_pspec("preset"),
@@ -686,7 +668,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The #AgsNotation it contains.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("notation",
 				    i18n_pspec("containing notation"),
@@ -701,7 +683,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The #AgsAutomation it contains.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("automation",
 				    i18n_pspec("containing automation"),
@@ -716,7 +698,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The #AgsWave it contains.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("wave",
 				    i18n_pspec("containing wave"),
@@ -810,7 +792,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The assigned #AgsRecallID.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("recall-id",
 				    i18n_pspec("assigned recall id"),
@@ -825,7 +807,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The assigned #AgsRecyclingContext.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("recycling-context",
 				    i18n_pspec("assigned recycling context"),
@@ -840,7 +822,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The #AgsRecallContainer it contains in container-context.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("recall-container",
 				    i18n_pspec("containing recall container"),
@@ -855,7 +837,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The #AgsRecall it contains in play-context.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("play",
 				    i18n_pspec("containing play"),
@@ -870,7 +852,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    *
    * The #AgsRecall it contains in recall-context.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("recall",
 				    i18n_pspec("containing recall"),
@@ -911,7 +893,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    * The ::set-audio-channels signal notifies about changes in channel
    * alignment.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   audio_signals[SET_AUDIO_CHANNELS] = 
     g_signal_new("set-audio-channels",
@@ -933,7 +915,7 @@ ags_audio_class_init(AgsAudioClass *audio)
    * The ::set-pads signal notifies about changes in channel
    * alignment.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   audio_signals[SET_PADS] = 
     g_signal_new("set-pads",
@@ -1322,9 +1304,6 @@ ags_audio_init(AgsAudio *audio)
   audio->output = NULL;
   audio->input = NULL;
 
-  /* audio connection */
-  audio->audio_connection = NULL;
-  
   /* preset */
   audio->preset = NULL;
 
@@ -1572,22 +1551,6 @@ ags_audio_set_property(GObject *gobject,
       midi_channel = g_value_get_uint(value);
 
       audio->midi_channel = midi_channel;
-    }
-    break;
-  case PROP_AUDIO_CONNECTION:
-    {
-      AgsAudioConnection *audio_connection;
-
-      audio_connection = (AgsAudioConnection *) g_value_get_object(value);
-
-      if(audio_connection == NULL ||
-	 g_list_find(audio->audio_connection,
-		     audio_connection) != NULL){
-	return;
-      }
-
-      ags_audio_add_audio_connection(audio,
-				     (GObject *) audio_connection);
     }
     break;
   case PROP_PRESET:
@@ -2001,12 +1964,6 @@ ags_audio_get_property(GObject *gobject,
 			 audio->input);
     }
     break;
-  case PROP_AUDIO_CONNECTION:
-    {
-      g_value_set_pointer(value,
-			  g_list_copy(audio->audio_connection));
-    }
-    break;
   case PROP_PRESET:
     {
       g_value_set_pointer(value,
@@ -2144,24 +2101,6 @@ ags_audio_dispose(GObject *gobject)
 		     AGS_TYPE_OUTPUT,
 		     0, 0);
   
-  /* audio connection */
-  if(audio->audio_connection != NULL){
-    list = audio->audio_connection;
-
-    while(list != NULL){
-      list_next = list->next;
-      
-      g_object_run_dispose(list->data);
-
-      list = list_next;
-    }
-  
-    g_list_free_full(audio->audio_connection,
-		     g_object_unref);
-
-    audio->audio_connection = NULL;
-  }
-
   /* preset */
   if(audio->preset != NULL){
     list = audio->preset;
@@ -2449,22 +2388,6 @@ ags_audio_finalize(GObject *gobject)
 		     AGS_TYPE_OUTPUT,
 		     0, 0);
   
-  /* audio connection */
-  if(audio->audio_connection != NULL){
-    list = audio->audio_connection;
-
-    while(list != NULL){
-      g_object_set(list->data,
-		   "audio", NULL,
-		   NULL);
-
-      list = list->next;
-    }
-
-    g_list_free_full(audio->audio_connection,
-		     g_object_unref);
-  }
-
   /* preset */
   if(audio->preset != NULL){
     list = audio->preset;
@@ -3830,6 +3753,9 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   guint bank_dim[3];
 
   guint audio_flags;
+  guint samplerate;
+  guint buffer_size;
+  guint format;
   guint output_pads, input_pads;
   
   pthread_mutex_t *audio_mutex;
@@ -3905,6 +3831,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     guint pads;
     guint i, j;
 
+    pthread_mutex_lock(audio_mutex);
+    
     if(type == AGS_TYPE_OUTPUT){
       /* AGS_TYPE_OUTPUT */
       pads = audio->output_pads;
@@ -3917,6 +3845,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       start = audio->input;
     }
 
+    pthread_mutex_unlock(audio_mutex);
+
     /* grow */
     for(j = 0; j < pads; j++){
       if(audio_channels_old != 0){
@@ -3928,9 +3858,9 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       for(i = audio_channels_old; i < audio_channels; i++){
 	channel = (AgsChannel *) g_object_new(type,
 					      "audio", (GObject *) audio,
-					      "output-soundcard", audio->output_soundcard,
-					      "samplerate", audio->samplerate,
-					      "buffer-size", audio->buffer_size,
+					      "output-soundcard", output_soundcard,
+					      "samplerate", samplerate,
+					      "buffer-size", buffer_size,
 					      NULL);
 	g_object_ref(channel);
 	
@@ -3944,6 +3874,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	}
 
 	if(start == NULL){
+	  pthread_mutex_lock(audio_mutex);
+	  
 	  start = channel;
 
 	  if(type == AGS_TYPE_OUTPUT){
@@ -3951,6 +3883,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	  }else{
 	    audio->input = channel;
 	  }
+
+	  pthread_mutex_unlock(audio_mutex);
 	}
 
 	if(j * audio_channels + i != 0){
@@ -4001,12 +3935,12 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	/* set indices */
 	channel->pad = j;
 	channel->audio_channel = i;
-	channel->line = j * audio->audio_channels + i;
+	channel->line = j * audio_channels + i;
 
 	/* reset nested AgsRecycling tree */
 	if(alloc_recycling){
 	  first_recycling =
-	    last_recycling = ags_recycling_new(audio->output_soundcard);
+	    last_recycling = ags_recycling_new(output_soundcard);
 	  g_object_ref(first_recycling);
 	  g_object_set(first_recycling,
 		       "channel", channel,
@@ -4018,7 +3952,13 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	}else if(set_sync_link){
 	  AgsChannel *input;
 
-	  input = ags_channel_nth(audio->input,
+	  pthread_mutex_lock(audio_mutex);
+
+	  input = audio->input;
+	  
+	  pthread_mutex_unlock(audio_mutex);
+
+	  input = ags_channel_nth(input,
 				  channel->line);
 	  
 	  /* set sync link */
@@ -4033,7 +3973,13 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	}else if(set_async_link){
 	  AgsChannel *input, *input_pad_last;
 
-	  input = ags_channel_nth(audio->input,
+	  pthread_mutex_lock(audio_mutex);
+
+	  input = audio->input;
+	  
+	  pthread_mutex_unlock(audio_mutex);
+
+	  input = ags_channel_nth(input,
 				  i);
 
 	  /* set async link */
@@ -4059,6 +4005,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     
     GError *error;
 
+    pthread_mutex_lock(audio_mutex);
+	  
     start =
       channel = audio->output;
     first_run = TRUE;
@@ -4099,6 +4047,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
     audio->output = NULL;
     audio->input = NULL;
+
+    pthread_mutex_unlock(audio_mutex);
   }
   
   void ags_audio_set_audio_channels_shrink(){
@@ -4111,9 +4061,14 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     
     GError *error;
 
+    pthread_mutex_lock(audio_mutex);
+
     start =
       channel = audio->output;
     pads = audio->output_pads;
+
+    pthread_mutex_unlock(audio_mutex);
+
     first_run = TRUE;
 
   ags_audio_set_audio_channel_shrink0:
@@ -4121,7 +4076,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     for(i = 0; i < pads; i++){
       channel = ags_channel_nth(channel, audio_channels);
 
-      for(j = audio_channels; j < audio->audio_channels; j++){
+      for(j = audio_channels; j < audio_channels_old; j++){
 	error = NULL;
 	ags_channel_set_link(channel, NULL,
 			     &error);
@@ -4152,7 +4107,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
 	channel0 = channel->next;
 	
-	for(; j < audio->audio_channels; j++){
+	for(; j < audio_channels_old; j++){
 	  channel1 = channel0->next;
       
 	  g_object_run_dispose(channel0);
@@ -4186,6 +4141,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   void ags_audio_set_audio_channels_shrink_notation(){
     GList *list_start, *list;
 
+    pthread_mutex_lock(audio_mutex);
+
     list_start = g_list_copy(audio->notation);
 
     while(list != NULL){
@@ -4201,10 +4158,14 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     }
 
     g_list_free(list_start);
+
+    pthread_mutex_unlock(audio_mutex);
   }
 
   void ags_audio_set_audio_channels_shrink_automation(){
     GList *list_start, *list;
+
+    pthread_mutex_lock(audio_mutex);
 
     list_start = g_list_copy(audio->automation);
 
@@ -4225,10 +4186,14 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     if(audio_channels == 0){
       audio->automation = NULL;
     }
+
+    pthread_mutex_unlock(audio_mutex);
   }
   
   void ags_audio_set_audio_channels_shrink_wave(){
     GList *list_start, *list;
+
+    pthread_mutex_lock(audio_mutex);
 
     list_start = g_list_copy(audio->wave);
 
@@ -4245,10 +4210,14 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     }
 
     g_list_free(list_start);
+
+    pthread_mutex_unlock(audio_mutex);
   }
 
   void ags_audio_set_audio_channels_shrink_midi(){
     GList *list_start, *list;
+
+    pthread_mutex_lock(audio_mutex);
 
     list_start = g_list_copy(audio->midi);
 
@@ -4265,6 +4234,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     }
 
     g_list_free(list_start);
+
+    pthread_mutex_unlock(audio_mutex);
   }
   
   /*
@@ -4281,6 +4252,10 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   pthread_mutex_lock(audio_mutex);
 
   audio_flags = audio->flags;
+
+  samplerate = audio->samplerate;
+  buffer_size = audio->buffer_size;
+  format = audio->format;
 
   output_pads = audio->output_pads;
   input_pads = audio->input_pads;
@@ -4636,12 +4611,18 @@ ags_audio_real_set_pads(AgsAudio *audio,
   
   AgsMessageDelivery *message_delivery;
   AgsMessageQueue *message_queue;
+
+  GObject *output_soundcard;
+  GObject *input_soundcard;
   
   guint bank_dim[3];
 
   guint audio_flags;
   guint audio_channels;
   guint output_pads, input_pads;
+  guint samplerate;
+  guint buffer_size;
+  guint format;
   gboolean alloc_recycling, link_recycling, set_sync_link, set_async_link;
   gboolean alloc_pattern;
  
@@ -4694,6 +4675,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	link_recycling = TRUE;
       }
 
+      pthread_mutex_lock(audio_mutex);
+      
       if((AGS_SOUND_ABILITY_SEQUENCER & (audio->ability_flags)) != 0){
 	alloc_pattern = TRUE;
 
@@ -4701,6 +4684,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	bank_dim[1] = audio->bank_dim[1];
 	bank_dim[2] = audio->bank_dim[2];
       }      
+
+      pthread_mutex_unlock(audio_mutex);
     }    
   }
 
@@ -4709,20 +4694,26 @@ ags_audio_real_set_pads(AgsAudio *audio,
     AgsRecycling *first_recycling, *last_recycling;
 
     guint i, j;
-    
+
+    pthread_mutex_lock(audio_mutex);
+
     if(channel_type == AGS_TYPE_OUTPUT){
       start = audio->output;
     }else{
       start = audio->input;
     }
 
+    pthread_mutex_unlock(audio_mutex);
+
     for(j = pads_old; j < pads; j++){
       for(i = 0; i < audio_channels; i++){
 	channel = (AgsChannel *) g_object_new(channel_type,
 					      "audio", (GObject *) audio,
-					      "output-soundcard", audio->output_soundcard,
-					      "samplerate", audio->samplerate,
-					      "buffer-size", audio->buffer_size,
+					      "output-soundcard", output_soundcard,
+					      "input-soundcard", input_soundcard,
+					      "samplerate", samplerate,
+					      "buffer-size", buffer_size,
+					      "format", format,
 					      NULL);
 	g_object_ref(channel);
 
@@ -4737,6 +4728,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	
 	if(start == NULL){
 	  /* set first channel in AgsAudio */
+	  pthread_mutex_lock(audio_mutex);
+	  
 	  if(channel_type == AGS_TYPE_OUTPUT){
 	    start = 
 	      audio->output = channel;
@@ -4744,6 +4737,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	    start = 
 	      audio->input = channel;
 	  }
+
+	  pthread_mutex_unlock(audio_mutex);
 	}
 
 	if(j * audio_channels + i != 0){
@@ -4794,7 +4789,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	/* reset nested AgsRecycling tree */
 	if(alloc_recycling){
 	  first_recycling =
-	    last_recycling = ags_recycling_new(audio->output_soundcard);
+	    last_recycling = ags_recycling_new(output_soundcard);
 	  g_object_ref(first_recycling);
 	  g_object_set(first_recycling,
 		       "channel", channel,
@@ -4806,7 +4801,13 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	}else if(set_sync_link){
 	  AgsChannel *input;
 
-	  input = ags_channel_nth(audio->input,
+	  pthread_mutex_lock(audio_mutex);
+
+	  input = audio->input;
+	  
+	  pthread_mutex_unlock(audio_mutex);
+
+	  input = ags_channel_nth(input,
 				  channel->line);
 	  
 	  /* set sync link */
@@ -4821,7 +4822,13 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	}else if(set_async_link){
 	  AgsChannel *input, *input_pad_last;
 
-	  input = ags_channel_nth(audio->input,
+	  pthread_mutex_lock(audio_mutex);
+
+	  input = audio->input;
+	  
+	  pthread_mutex_unlock(audio_mutex);
+
+	  input = ags_channel_nth(input,
 				  i);
 
 	  /* set async link */
@@ -4916,6 +4923,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
   void ags_audio_set_pads_free_notation(){
     GList *list_start, *list;
 
+    pthread_mutex_lock(audio_mutex);
+    
     list = 
       list_start = g_list_copy(audio->notation);
     
@@ -4933,11 +4942,15 @@ ags_audio_real_set_pads(AgsAudio *audio,
     g_list_free(list_start);
     
     audio->notation = NULL;
+
+    pthread_mutex_unlock(audio_mutex);
   }
   
   void ags_audio_set_pads_remove_notes(){
     GList *notation;
     GList *note_start, *note;
+
+    pthread_mutex_lock(audio_mutex);
 
     notation = audio->notation;
 
@@ -4960,10 +4973,14 @@ ags_audio_real_set_pads(AgsAudio *audio,
       
       notation = notation->next;
     }
+
+    pthread_mutex_unlock(audio_mutex);
   }
 
   void ags_audio_set_pads_shrink_automation(){
     GList *list_start, *list;
+
+    pthread_mutex_lock(audio_mutex);
 
     list = 
       list_start = g_list_copy(audio->automation);
@@ -4982,10 +4999,14 @@ ags_audio_real_set_pads(AgsAudio *audio,
     }
 
     g_list_free(list_start);
+
+    pthread_mutex_unlock(audio_mutex);
   }
 
   void ags_audio_set_pads_free_wave(){
     GList *list_start, *list;
+
+    pthread_mutex_lock(audio_mutex);
 
     list = 
       list_start = g_list_copy(audio->wave);
@@ -5004,11 +5025,15 @@ ags_audio_real_set_pads(AgsAudio *audio,
     g_list_free(list_start);
     
     audio->wave = NULL;
+
+    pthread_mutex_unlock(audio_mutex);
   }
   
   void ags_audio_set_pads_free_midi(){
     GList *list_start, *list;
 
+    pthread_mutex_lock(audio_mutex);
+    
     list = 
       list_start = g_list_copy(audio->midi);
     
@@ -5026,6 +5051,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
     g_list_free(list_start);
     
     audio->midi = NULL;
+
+    pthread_mutex_unlock(audio_mutex);
   }
 
   if(!(g_type_is_a(channel_type,
@@ -5058,6 +5085,13 @@ ags_audio_real_set_pads(AgsAudio *audio,
   
   audio_channels = audio->audio_channels;
 
+  output_soundcard = audio->output_soundcard;
+  input_soundcard = audio->input_soundcard;
+  
+  samplerate = audio->samplerate;
+  buffer_size = audio->buffer_size;
+  format = audio->format;
+  
   output_pads = audio->output_pads;
   input_pads = audio->input_pads;
   
@@ -6343,95 +6377,6 @@ ags_audio_set_format(AgsAudio *audio, guint format)
   /* set format output/input */
   ags_audio_set_format_channel(output);
   ags_audio_set_format_channel(input);
-}
-
-/**
- * ags_audio_add_audio_connection:
- * @audio: the #AgsAudio
- * @audio_connection: an #AgsAudioConnection
- *
- * Adds an audio connection.
- *
- * Since: 2.0.0
- */
-void
-ags_audio_add_audio_connection(AgsAudio *audio,
-			       GObject *audio_connection)
-{
-  pthread_mutex_t *audio_mutex;
-
-  if(!AGS_IS_AUDIO(audio) ||
-     !AGS_IS_AUDIO_CONNECTION(audio_connection)){
-    return;
-  }
-
-  /* get audio mutex */
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-
-  audio_mutex = audio->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
-
-  /* add audio connection */
-  pthread_mutex_lock(audio_mutex);
-
-  if(g_list_find(audio->audio_connection,
-		 audio_connection) == NULL){
-    g_object_ref(audio_connection);
-    audio->audio_connection = g_list_prepend(audio->audio_connection,
-					     audio_connection);
-
-    g_object_set(audio_connection,
-		 "audio", audio,
-		 NULL);
-  }
-  
-  pthread_mutex_unlock(audio_mutex);
-}
-
-/**
- * ags_audio_remove_audio_connection:
- * @audio: the #AgsAudio
- * @audio_connection: an #AgsAudioConnection
- *
- * Removes an audio connection.
- *
- * Since: 2.0.0
- */
-void
-ags_audio_remove_audio_connection(AgsAudio *audio,
-				  GObject *audio_connection)
-{
-  pthread_mutex_t *audio_mutex;
-
-  if(!AGS_IS_AUDIO(audio) ||
-     !AGS_IS_AUDIO_CONNECTION(audio_connection)){
-    return;
-  }
-
-  /* get audio mutex */
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-
-  audio_mutex = audio->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
-
-  /* remove audio connection */
-  pthread_mutex_lock(audio_mutex);
-
-  if(g_list_find(audio->audio_connection,
-		 audio_connection) != NULL){
-    audio->audio_connection = g_list_remove(audio->audio_connection,
-					    audio_connection);
-
-    g_object_set(audio_connection,
-		 "audio", NULL,
-		 NULL);
-
-    g_object_unref(audio_connection);
-  }
-  
-  pthread_mutex_unlock(audio_mutex);
 }
 
 /**

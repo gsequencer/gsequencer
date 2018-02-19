@@ -125,8 +125,6 @@ struct _AgsAudio
   AgsChannel *output;
   AgsChannel *input;
 
-  GList *audio_connection;
-
   GList *preset;
 
   GObject *playback_domain;

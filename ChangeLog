@@ -16,8 +16,11 @@ ags (2.0.0)
 	* new ags_sound_container.[ch]
 	* new ags_sound_resource.[ch]
 	* new ags_wav_file.[ch]
-	* TODO:JK: removed ags_message.[ch]
-	* TODO:JK: removed ags_playable.[ch]
+	* removed ags_connection_manager.[ch]
+	* removed ags_connection.[ch]
+	* removed ags_audio_connection.[ch]
+	* removed ags_message.[ch]
+	* removed ags_playable.[ch]
 	* incompatible AgsBasePlugin::instantiate() function prototype
 	* added ags_connectable_has_resource()
 	* added ags_audio_done_recall()
