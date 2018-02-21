@@ -29,13 +29,13 @@
  * @frame_count: frame count
  * @byte_order: the byte-order
  * 
- * Copy signed char to char buffer.
+ * Copy gint8 to char buffer.
  * 
  * Since: 2.0.0
  */
 void
-ags_char_buffer_util_copy_s8_to_cbuffer(unsigned char *destination, guint word_size, guint dchannels,
-					signed char *source, guint schannels,
+ags_char_buffer_util_copy_s8_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
+					gint8 *source, guint schannels,
 					guint frame_count, guint byte_order)
 {
   //TODO:JK: implement me
@@ -51,13 +51,13 @@ ags_char_buffer_util_copy_s8_to_cbuffer(unsigned char *destination, guint word_s
  * @frame_count: frame count
  * @byte_order: the byte-order
  * 
- * Copy signed short to char buffer.
+ * Copy gint16 to char buffer.
  * 
  * Since: 2.0.0
  */
 void
-ags_char_buffer_util_copy_s16_to_cbuffer(unsigned char *destination, guint word_size, guint dchannels,
-					 signed short *source, guint schannels,
+ags_char_buffer_util_copy_s16_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
+					 gint16 *source, guint schannels,
 					 guint frame_count, guint byte_order)
 {
   //TODO:JK: implement me
@@ -73,13 +73,13 @@ ags_char_buffer_util_copy_s16_to_cbuffer(unsigned char *destination, guint word_
  * @frame_count: frame count
  * @byte_order: the byte-order
  * 
- * Copy signed long to char buffer.
+ * Copy gint32 to char buffer.
  * 
  * Since: 2.0.0
  */
 void
-ags_char_buffer_util_copy_s24_to_cbuffer(unsigned char *destination, guint word_size, guint dchannels,
-					 signed long *source, guint schannels,
+ags_char_buffer_util_copy_s24_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
+					 gint32 *source, guint schannels,
 					 guint frame_count, guint byte_order)
 {
   //TODO:JK: implement me
@@ -95,13 +95,13 @@ ags_char_buffer_util_copy_s24_to_cbuffer(unsigned char *destination, guint word_
  * @frame_count: frame count
  * @byte_order: the byte-order
  * 
- * Copy signed long to char buffer.
+ * Copy gint32 to char buffer.
  * 
  * Since: 2.0.0
  */
 void
-ags_char_buffer_util_copy_s32_to_cbuffer(unsigned char *destination, guint word_size, guint dchannels,
-					 signed long *source, guint schannels,
+ags_char_buffer_util_copy_s32_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
+					 gint32 *source, guint schannels,
 					 guint frame_count, guint byte_order)
 {
   //TODO:JK: implement me
@@ -117,13 +117,13 @@ ags_char_buffer_util_copy_s32_to_cbuffer(unsigned char *destination, guint word_
  * @frame_count: frame count
  * @byte_order: the byte-order
  * 
- * Copy signed long long to char buffer.
+ * Copy gint64 to char buffer.
  * 
  * Since: 2.0.0
  */
 void
-ags_char_buffer_util_copy_s64_to_cbuffer(unsigned char *destination, guint word_size, guint dchannels,
-					 signed long long *source, guint schannels,
+ags_char_buffer_util_copy_s64_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
+					 gint64 *source, guint schannels,
 					 guint frame_count, guint byte_order)
 {
   //TODO:JK: implement me
@@ -144,7 +144,7 @@ ags_char_buffer_util_copy_s64_to_cbuffer(unsigned char *destination, guint word_
  * Since: 2.0.0
  */
 void
-ags_char_buffer_util_copy_float_to_cbuffer(unsigned char *destination, guint word_size, guint dchannels,
+ags_char_buffer_util_copy_float_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
 					   float *source, guint schannels,
 					   guint frame_count, guint byte_order)
 {
@@ -166,7 +166,7 @@ ags_char_buffer_util_copy_float_to_cbuffer(unsigned char *destination, guint wor
  * Since: 2.0.0
  */
 void
-ags_char_buffer_util_copy_double_to_cbuffer(unsigned char *destination, guint word_size, guint dchannels,
+ags_char_buffer_util_copy_double_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
 					    double *source, guint schannels,
 					    guint frame_count, guint byte_order)
 {
@@ -183,13 +183,13 @@ ags_char_buffer_util_copy_double_to_cbuffer(unsigned char *destination, guint wo
  * @frame_count: frame count
  * @byte_order: the byte-order
  * 
- * Copy char to signed char buffer.
+ * Copy char to gint8 buffer.
  * 
  * Since: 2.0.0
  */
 void
-ags_char_buffer_util_copy_cbuffer_to_s8(signed char *destination, guint dchannels,
-					unsigned char *source, guint word_size, guint schannels,
+ags_char_buffer_util_copy_cbuffer_to_s8(gint8 *destination, guint dchannels,
+					guchar *source, guint word_size, guint schannels,
 					guint frame_count, guint byte_order)
 {
   //TODO:JK: implement me
@@ -205,13 +205,13 @@ ags_char_buffer_util_copy_cbuffer_to_s8(signed char *destination, guint dchannel
  * @frame_count: frame count
  * @byte_order: the byte-order
  * 
- * Copy char to signed short buffer.
+ * Copy char to gint16 buffer.
  * 
  * Since: 2.0.0
  */
 void
-ags_char_buffer_util_copy_cbuffer_to_s16(signed short *destination, guint dchannels,
-					 unsigned char *source, guint word_size, guint schannels,
+ags_char_buffer_util_copy_cbuffer_to_s16(gint16 *destination, guint dchannels,
+					 guchar *source, guint word_size, guint schannels,
 					 guint frame_count, guint byte_order)
 {
   //TODO:JK: implement me
@@ -227,13 +227,13 @@ ags_char_buffer_util_copy_cbuffer_to_s16(signed short *destination, guint dchann
  * @frame_count: frame count
  * @byte_order: the byte-order
  * 
- * Copy char to signed long buffer.
+ * Copy char to gint32 buffer.
  * 
  * Since: 2.0.0
  */
 void
-ags_char_buffer_util_copy_cbuffer_to_s24(signed long *destination, guint dchannels,
-					 unsigned char *source, guint word_size, guint schannels,
+ags_char_buffer_util_copy_cbuffer_to_s24(gint32 *destination, guint dchannels,
+					 guchar *source, guint word_size, guint schannels,
 					 guint frame_count, guint byte_order)
 {
   //TODO:JK: implement me
@@ -249,13 +249,13 @@ ags_char_buffer_util_copy_cbuffer_to_s24(signed long *destination, guint dchanne
  * @frame_count: frame count
  * @byte_order: the byte-order
  * 
- * Copy char to signed long buffer.
+ * Copy char to gint32 buffer.
  * 
  * Since: 2.0.0
  */
 void
-ags_char_buffer_util_copy_cbuffer_to_s32(signed long *destination, guint dchannels,
-					 unsigned char *source, guint word_size, guint schannels,
+ags_char_buffer_util_copy_cbuffer_to_s32(gint32 *destination, guint dchannels,
+					 guchar *source, guint word_size, guint schannels,
 					 guint frame_count, guint byte_order)
 {
   //TODO:JK: implement me
@@ -271,13 +271,13 @@ ags_char_buffer_util_copy_cbuffer_to_s32(signed long *destination, guint dchanne
  * @frame_count: frame count
  * @byte_order: the byte-order
  * 
- * Copy char to signed long long buffer.
+ * Copy char to gint64 buffer.
  * 
  * Since: 2.0.0
  */
 void
-ags_char_buffer_util_copy_cbuffer_to_s64(signed long long *destination, guint dchannels,
-					 unsigned char *source, guint word_size, guint schannels,
+ags_char_buffer_util_copy_cbuffer_to_s64(gint64 *destination, guint dchannels,
+					 guchar *source, guint word_size, guint schannels,
 					 guint frame_count, guint byte_order)
 {
   //TODO:JK: implement me
@@ -299,7 +299,7 @@ ags_char_buffer_util_copy_cbuffer_to_s64(signed long long *destination, guint dc
  */
 void
 ags_char_buffer_util_copy_cbuffer_to_float(float *destination, guint dchannels,
-					   signed char *source, guint word_size, guint schannels,
+					   gint8 *source, guint word_size, guint schannels,
 					   guint frame_count, guint byte_order)
 {
   //TODO:JK: implement me
@@ -321,7 +321,7 @@ ags_char_buffer_util_copy_cbuffer_to_float(float *destination, guint dchannels,
  */
 void
 ags_char_buffer_util_copy_cbuffer_to_double(double *destination, guint dchannels,
-					    unsigned char *source, guint word_size, guint schannels,
+					    guchar *source, guint word_size, guint schannels,
 					    guint frame_count, guint byte_order)
 {
   //TODO:JK: implement me
@@ -351,100 +351,100 @@ ags_char_buffer_util_copy_buffer_to_buffer(void *destination, guint dchannels, g
   switch(mode){
   case AGS_CHAR_BUFFER_UTIL_COPY_S8_TO_CBUFFER:
     {
-      ags_char_buffer_util_copy_s8_to_cbuffer(((unsigned char *) destination) + (doffset * word_size), word_size, dchannels,
-					      ((signed char *) source) + soffset, schannels,
+      ags_char_buffer_util_copy_s8_to_cbuffer(((guchar *) destination) + (doffset * word_size), word_size, dchannels,
+					      ((gint8 *) source) + soffset, schannels,
 					      frame_count, byte_order);
     }
     break;
   case AGS_CHAR_BUFFER_UTIL_COPY_S16_TO_CBUFFER:
     {
-      ags_char_buffer_util_copy_s8_to_cbuffer(((unsigned char *) destination) + (doffset * word_size), word_size, dchannels,
-					      ((signed short *) source) + soffset, schannels,
-					      frame_count, byte_order);
+      ags_char_buffer_util_copy_s16_to_cbuffer(((guchar *) destination) + (doffset * word_size), word_size, dchannels,
+					       ((gint16 *) source) + soffset, schannels,
+					       frame_count, byte_order);
     }
     break;
   case AGS_CHAR_BUFFER_UTIL_COPY_S24_TO_CBUFFER:
     {
-      ags_char_buffer_util_copy_s8_to_cbuffer(((unsigned char *) destination) + (doffset * word_size), word_size, dchannels,
-					      ((signed long *) source) + soffset, schannels,
-					      frame_count, byte_order);
+      ags_char_buffer_util_copy_s24_to_cbuffer(((guchar *) destination) + (doffset * word_size), word_size, dchannels,
+					       ((gint32 *) source) + soffset, schannels,
+					       frame_count, byte_order);
     }
     break;
   case AGS_CHAR_BUFFER_UTIL_COPY_S32_TO_CBUFFER:
     {
-      ags_char_buffer_util_copy_s8_to_cbuffer(((unsigned char *) destination) + (doffset * word_size), word_size, dchannels,
-					      ((signed long *) source) + soffset, schannels,
-					      frame_count, byte_order);
+      ags_char_buffer_util_copy_s32_to_cbuffer(((guchar *) destination) + (doffset * word_size), word_size, dchannels,
+					       ((gint32 *) source) + soffset, schannels,
+					       frame_count, byte_order);
     }
     break;
   case AGS_CHAR_BUFFER_UTIL_COPY_S64_TO_CBUFFER:
     {
-      ags_char_buffer_util_copy_s8_to_cbuffer(((unsigned char *) destination) + (doffset * word_size), word_size, dchannels,
-					      ((signed long long *) source) + soffset, schannels,
-					      frame_count, byte_order);
+      ags_char_buffer_util_copy_s64_to_cbuffer(((guchar *) destination) + (doffset * word_size), word_size, dchannels,
+					       ((gint64 *) source) + soffset, schannels,
+					       frame_count, byte_order);
     }
     break;
   case AGS_CHAR_BUFFER_UTIL_COPY_FLOAT_TO_CBUFFER:
     {
-      ags_char_buffer_util_copy_s8_to_cbuffer(((unsigned char *) destination) + (doffset * word_size), word_size, dchannels,
-					      ((float *) source) + soffset, schannels,
-					      frame_count, byte_order);
+      ags_char_buffer_util_copy_float_to_cbuffer(((guchar *) destination) + (doffset * word_size), word_size, dchannels,
+						 ((float *) source) + soffset, schannels,
+						 frame_count, byte_order);
     }
     break;
   case AGS_CHAR_BUFFER_UTIL_COPY_DOUBLE_TO_CBUFFER:
     {
-      ags_char_buffer_util_copy_s8_to_cbuffer(((unsigned char *) destination) + (doffset * word_size), word_size, dchannels,
-					      ((double *) source) + soffset, schannels,
-					      frame_count, byte_order);
+      ags_char_buffer_util_copy_double_to_cbuffer(((guchar *) destination) + (doffset * word_size), word_size, dchannels,
+						  ((double *) source) + soffset, schannels,
+						  frame_count, byte_order);
     }
     break;
   case AGS_CHAR_BUFFER_UTIL_COPY_CBUFFER_TO_S8:
     {
-      ags_char_buffer_util_copy_cbuffer_to_s8(((signed char *) destination) + doffset, dchannels,
-					      ((unsigned char *) source) + (soffset * word_size), word_size, schannels,
+      ags_char_buffer_util_copy_cbuffer_to_s8(((gint8 *) destination) + doffset, dchannels,
+					      ((guchar *) source) + (soffset * word_size), word_size, schannels,
 					      frame_count, byte_order);
     }
     break;
   case AGS_CHAR_BUFFER_UTIL_COPY_CBUFFER_TO_S16:
     {
-      ags_char_buffer_util_copy_cbuffer_to_s8(((signed short *) destination) + doffset, dchannels,
-					      ((unsigned char *) source) + (soffset * word_size), word_size, schannels,
-					      frame_count, byte_order);
+      ags_char_buffer_util_copy_cbuffer_to_s16(((gint16 *) destination) + doffset, dchannels,
+					       ((guchar *) source) + (soffset * word_size), word_size, schannels,
+					       frame_count, byte_order);
     }
     break;
   case AGS_CHAR_BUFFER_UTIL_COPY_CBUFFER_TO_S24:
     {
-      ags_char_buffer_util_copy_cbuffer_to_s8(((signed long *) destination) + doffset, dchannels,
-					      ((unsigned char *) source) + (soffset * word_size), word_size, schannels,
-					      frame_count, byte_order);
+      ags_char_buffer_util_copy_cbuffer_to_s24(((gint32 *) destination) + doffset, dchannels,
+					       ((guchar *) source) + (soffset * word_size), word_size, schannels,
+					       frame_count, byte_order);
     }
     break;
   case AGS_CHAR_BUFFER_UTIL_COPY_CBUFFER_TO_S32:
     {
-      ags_char_buffer_util_copy_cbuffer_to_s8(((signed long *) destination) + doffset, dchannels,
-					      ((unsigned char *) source) + (soffset * word_size), word_size, schannels,
-					      frame_count, byte_order);
+      ags_char_buffer_util_copy_cbuffer_to_s32(((gint32 *) destination) + doffset, dchannels,
+					       ((guchar *) source) + (soffset * word_size), word_size, schannels,
+					       frame_count, byte_order);
     }
     break;
   case AGS_CHAR_BUFFER_UTIL_COPY_CBUFFER_TO_S64:
     {
-      ags_char_buffer_util_copy_cbuffer_to_s8(((signed long long *) destination) + doffset, dchannels,
-					      ((unsigned char *) source) + (soffset * word_size), word_size, schannels,
-					      frame_count, byte_order);
+      ags_char_buffer_util_copy_cbuffer_to_s64(((gint64 *) destination) + doffset, dchannels,
+					       ((guchar *) source) + (soffset * word_size), word_size, schannels,
+					       frame_count, byte_order);
     }
     break;
   case AGS_CHAR_BUFFER_UTIL_COPY_CBUFFER_TO_FLOAT:
     {
-      ags_char_buffer_util_copy_cbuffer_to_s8(((float *) destination) + doffset, dchannels,
-					      ((unsigned char *) source) + (soffset * word_size), word_size, schannels,
-					      frame_count, byte_order);
+      ags_char_buffer_util_copy_cbuffer_to_float(((float *) destination) + doffset, dchannels,
+						 ((guchar *) source) + (soffset * word_size), word_size, schannels,
+						 frame_count, byte_order);
     }
     break;
   case AGS_CHAR_BUFFER_UTIL_COPY_CBUFFER_TO_DOUBLE:
     {
-      ags_char_buffer_util_copy_cbuffer_to_s8(((double *) destination) + doffset, dchannels,
-					      ((unsigned char *) source) + (soffset * word_size), word_size, schannels,
-					      frame_count, byte_order);
+      ags_char_buffer_util_copy_cbuffer_to_double(((double *) destination) + doffset, dchannels,
+						  ((guchar *) source) + (soffset * word_size), word_size, schannels,
+						  frame_count, byte_order);
     }
     break;
   default:

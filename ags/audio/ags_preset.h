@@ -70,8 +70,9 @@ struct _AgsPreset
   guint x_start;
   guint x_end;
   
-  GParameter *parameter;
   guint n_params;
+  gchar **parameter_name;
+  GValue *value;
 };
 
 struct _AgsPresetClass

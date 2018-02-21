@@ -23,10 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-typedef enum{
-  AGS_CHAR_BUFFER_UTIL_BYTE_ORDER_LITTLE_ENDIAN,
-  AGS_CHAR_BUFFER_UTIL_BYTE_ORDER_BIG_ENDIAN,
-}AgsCharBufferUtilByteOrder;
+#include <ags/lib/ags_endian.h>
 
 typedef enum{
   AGS_CHAR_BUFFER_UTIL_COPY_S8_TO_CBUFFER,
@@ -46,49 +43,49 @@ typedef enum{
 }AgsCharBufferUtilCopyMode;
 
 /* copy to cbuffer */
-void ags_char_buffer_util_copy_s8_to_cbuffer(unsigned char *destination, guint word_size, guint dchannels,
-					     signed char *source, guint schannels,
+void ags_char_buffer_util_copy_s8_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
+					     gint8 *source, guint schannels,
 					     guint frame_count, guint byte_order);
-void ags_char_buffer_util_copy_s16_to_cbuffer(unsigned char *destination, guint word_size, guint dchannels,
-					      signed short *source, guint schannels,
+void ags_char_buffer_util_copy_s16_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
+					      gint16 *source, guint schannels,
 					      guint frame_count, guint byte_order);
-void ags_char_buffer_util_copy_s24_to_cbuffer(unsigned char *destination, guint word_size, guint dchannels,
-					      signed long *source, guint schannels,
+void ags_char_buffer_util_copy_s24_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
+					      gint32 *source, guint schannels,
 					      guint frame_count, guint byte_order);
-void ags_char_buffer_util_copy_s32_to_cbuffer(unsigned char *destination, guint word_size, guint dchannels,
-					      signed long *source, guint schannels,
+void ags_char_buffer_util_copy_s32_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
+					      gint32 *source, guint schannels,
 					      guint frame_count, guint byte_order);
-void ags_char_buffer_util_copy_s64_to_cbuffer(unsigned char *destination, guint word_size, guint dchannels,
-					      signed long long *source, guint schannels,
+void ags_char_buffer_util_copy_s64_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
+					      gint64 *source, guint schannels,
 					      guint frame_count, guint byte_order);
-void ags_char_buffer_util_copy_float_to_cbuffer(unsigned char *destination, guint word_size, guint dchannels,
+void ags_char_buffer_util_copy_float_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
 						float *source, guint schannels,
 						guint frame_count, guint byte_order);
-void ags_char_buffer_util_copy_double_to_cbuffer(unsigned char *destination, guint word_size, guint dchannels,
+void ags_char_buffer_util_copy_double_to_cbuffer(guchar *destination, guint word_size, guint dchannels,
 						 double *source, guint schannels,
 						 guint frame_count, guint byte_order);
 
 /* copy from cbuffer */
-void ags_char_buffer_util_copy_cbuffer_to_s8(signed char *destination, guint dchannels,
-					     unsigned char *source, guint word_size, guint schannels,
+void ags_char_buffer_util_copy_cbuffer_to_s8(gint8 *destination, guint dchannels,
+					     guchar *source, guint word_size, guint schannels,
 					     guint frame_count, guint byte_order);
-void ags_char_buffer_util_copy_cbuffer_to_s16(signed short *destination, guint dchannels,
-					      unsigned char *source, guint word_size, guint schannels,
+void ags_char_buffer_util_copy_cbuffer_to_s16(gint16 *destination, guint dchannels,
+					      guchar *source, guint word_size, guint schannels,
 					      guint frame_count, guint byte_order);
-void ags_char_buffer_util_copy_cbuffer_to_s24(signed long *destination, guint dchannels,
-					      unsigned char *source, guint word_size, guint schannels,
+void ags_char_buffer_util_copy_cbuffer_to_s24(gint32 *destination, guint dchannels,
+					      guchar *source, guint word_size, guint schannels,
 					      guint frame_count, guint byte_order);
-void ags_char_buffer_util_copy_cbuffer_to_s32(signed long *destination, guint dchannels,
-					      unsigned char *source, guint word_size, guint schannels,
+void ags_char_buffer_util_copy_cbuffer_to_s32(gint32 *destination, guint dchannels,
+					      guchar *source, guint word_size, guint schannels,
 					      guint frame_count, guint byte_order);
-void ags_char_buffer_util_copy_cbuffer_to_s64(signed long long *destination, guint dchannels,
-					      unsigned char *source, guint word_size, guint schannels,
+void ags_char_buffer_util_copy_cbuffer_to_s64(gint64 *destination, guint dchannels,
+					      guchar *source, guint word_size, guint schannels,
 					      guint frame_count, guint byte_order);
 void ags_char_buffer_util_copy_cbuffer_to_float(float *destination, guint dchannels,
-						signed char *source, guint word_size, guint schannels,
+						gint8 *source, guint word_size, guint schannels,
 						guint frame_count, guint byte_order);
 void ags_char_buffer_util_copy_cbuffer_to_double(double *destination, guint dchannels,
-						 unsigned char *source, guint word_size, guint schannels,
+						 guchar *source, guint word_size, guint schannels,
 						 guint frame_count, guint byte_order);
 
 /* copy */
