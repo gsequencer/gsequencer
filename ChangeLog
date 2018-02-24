@@ -16,15 +16,11 @@ ags (2.0.0)
 	* new ags_sound_container.[ch]
 	* new ags_sound_resource.[ch]
 	* new ags_wav_file.[ch]
-	* removed ags_connection_manager.[ch]
-	* removed ags_connection.[ch]
-	* removed ags_audio_connection.[ch]
-	* removed ags_message.[ch]
-	* removed ags_playable.[ch]
 	* incompatible AgsBasePlugin::instantiate() function prototype
 	* added ags_connectable_has_resource()
 	* added ags_audio_done_recall()
 	* replaced use of GParameter by string vector and value array of AgsMessageEnvelope
+	* replaced use of GParameter by string vector and value array of AgsPreset
 	* modified prototype of ags_audio_collect_all_audio_ports_by_specifier_and_context()
 	* modified prototype of ags_midi_file_read_*()
 	* renamed g_cclosure_user_marshal_* to ags_cclosure_marshal_*
@@ -34,6 +30,11 @@ ags (2.0.0)
 	* renamed ags_audio_cancel_recall()
 	* renamed ags_audio_signal_find_by_recall_id()
 	* renamed ags_audio_signal_find_stream_current()
+	* removed ags_connection_manager.[ch]
+	* removed ags_connection.[ch]
+	* removed ags_audio_connection.[ch]
+	* removed ags_message.[ch]
+	* removed ags_playable.[ch]
 	* removed ags_audio_remove()
 	* removed ags_audio_signal_realloc_buffer_size()
 	* removed ags_audio_signal_tile()

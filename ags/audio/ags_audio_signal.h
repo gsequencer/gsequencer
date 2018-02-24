@@ -58,6 +58,7 @@ struct _AgsAudioSignal
   guint flags;
 
   GObject *output_soundcard;
+  GObject *input_soundcard;
 
   GObject *recycling;
   GObject *recall_id; // AGS_TYPE_RECALL_ID to identify the AgsAudioSignal
@@ -82,8 +83,8 @@ struct _AgsAudioSignal
   GList *stream_current;
   GList *stream_end;
 
-  GList *note;
   GObject *rt_template;
+  GList *note;
 };
 
 struct _AgsAudioSignalClass
@@ -134,11 +135,11 @@ GList* ags_audio_signal_find_by_recall_id(GList *audio_signal,
 gboolean ags_audio_signal_is_active(GList *audio_signal,
 				    GObject *recall_id);
 
-AgsAudioSignal* ags_audio_signal_new(GObject *soundcard,
+AgsAudioSignal* ags_audio_signal_new(GObject *output_soundcard,
 				     GObject *recycling,
 				     GObject *recall_id);
 
-AgsAudioSignal* ags_audio_signal_new_with_length(GObject *soundcard,
+AgsAudioSignal* ags_audio_signal_new_with_length(GObject *output_soundcard,
 						 GObject *recycling,
 						 GObject *recall_id,
 						 guint length);

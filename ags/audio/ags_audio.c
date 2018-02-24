@@ -3744,6 +3744,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 {
   AgsMessageDelivery *message_delivery;
   AgsMessageQueue *message_queue;
+
+  GObject *output_soundcard, *input_soundcard;
   
   gboolean alloc_recycling;
   gboolean link_recycling; // affects AgsInput
@@ -3859,6 +3861,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	channel = (AgsChannel *) g_object_new(type,
 					      "audio", (GObject *) audio,
 					      "output-soundcard", output_soundcard,
+					      "input-soundcard", input_soundcard,
 					      "samplerate", samplerate,
 					      "buffer-size", buffer_size,
 					      NULL);
@@ -4253,6 +4256,9 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
   audio_flags = audio->flags;
 
+  output_soundcard = audio->output_soundcard;
+  input_soundcard = audio->input_soundcard;
+  
   samplerate = audio->samplerate;
   buffer_size = audio->buffer_size;
   format = audio->format;
