@@ -23,6 +23,9 @@ ags (2.0.0)
 	* replaced use of GParameter by string vector and value array of AgsPreset
 	* modified prototype of ags_audio_collect_all_audio_ports_by_specifier_and_context()
 	* modified prototype of ags_midi_file_read_*()
+	* removed properties AgsAudio:soundcard, AgsChannel:soundcard, AgsRecycling:soundcard and AgsAudioSignal:soundcard
+	* added properties AgsAudio:output-soundcard, AgsChannel:output-soundcard, AgsRecycling:output-soundcard and AgsAudioSignal:output-soundcard
+	* added properties AgsAudio:input-soundcard, AgsChannel:input-soundcard, AgsRecycling:input-soundcard and AgsAudioSignal:input-soundcard
 	* renamed g_cclosure_user_marshal_* to ags_cclosure_marshal_*
 	* renamed ags_connectable_connect_scope() to ags_connectable_connect_connection()
 	* renamed ags_connectable_disconnect_scope() to ags_connectable_disconnect_connection()
@@ -36,6 +39,9 @@ ags (2.0.0)
 	* removed ags_message.[ch]
 	* removed ags_playable.[ch]
 	* removed ags_audio_remove()
+	* removed ags_channel_recursive_play_init()
+	* removed ags_channel_tillrecycling_cancel()
+	* removed ags_channel_recursive_reset_recall_ids()
 	* removed ags_audio_signal_realloc_buffer_size()
 	* removed ags_audio_signal_tile()
 	* removed ags_audio_signal_scale()

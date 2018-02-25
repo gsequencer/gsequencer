@@ -169,6 +169,14 @@ enum{
   PROP_MIDI_START_MAPPING,
   PROP_MIDI_END_MAPPING,
   PROP_MIDI_CHANNEL,
+  PROP_NUMERATOR,
+  PROP_DENOMINATOR,
+  PROP_TIME_SIGNATURE,
+  PROP_IS_MINOR,
+  PROP_SHARP_FLATS,
+  PROP_OCTAVE,
+  PROP_KEY,
+  PROP_ABSOLUTE_KEY,
   PROP_OUTPUT,
   PROP_INPUT,
   PROP_PRESET,
@@ -598,7 +606,147 @@ ags_audio_class_init(AgsAudioClass *audio)
   g_object_class_install_property(gobject,
 				  PROP_MIDI_CHANNEL,
 				  param_spec);
-    
+
+  /**
+   * AgsAudio:numerator:
+   *
+   * The numerator of time signature.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("numerator",
+				 i18n_pspec("numerator"),
+				 i18n_pspec("The numerator"),
+				 0,
+				 32,
+				 4,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NUMERATOR,
+				  param_spec);
+  
+  /**
+   * AgsAudio:denominator:
+   *
+   * The denominator of time signature.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("denominator",
+				 i18n_pspec("denominator"),
+				 i18n_pspec("The denominator"),
+				 0,
+				 32,
+				 4,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DENOMINATOR,
+				  param_spec);
+
+  /**
+   * AgsAudio:time-signature:
+   *
+   * The time signature.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_string("time-signature",
+				   i18n_pspec("time signature"),
+				   i18n_pspec("The time signature"),
+				   "4/4",
+				   G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TIME_SIGNATURE,
+				  param_spec);
+
+  /**
+   * AgsAudio:is-minor:
+   *
+   * Is minor.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_boolean("is-minor",
+				    i18n_pspec("is minor"),
+				    i18n_pspec("Is minor"),
+				    FALSE,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_IS_MINOR,
+				  param_spec);
+
+  /**
+   * AgsAudio:sharp-flats:
+   *
+   * The sharp/flats count.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("sharp-flats",
+				 i18n_pspec("sharp/flats"),
+				 i18n_pspec("The sharp/flats count"),
+				 0,
+				 12,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SHARP_FLATS,
+				  param_spec);
+  
+  /**
+   * AgsAudio:octave:
+   *
+   * The octave lower.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_int("octave",
+				i18n_pspec("octave"),
+				i18n_pspec("The octave lower"),
+				0,
+				10,
+				0,
+				G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_OCTAVE,
+				  param_spec);
+
+  /**
+   * AgsAudio:key:
+   *
+   * The key relative to octave.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("key",
+				 i18n_pspec("relative key"),
+				 i18n_pspec("The key relative to octave"),
+				 0,
+				 12,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_KEY,
+				  param_spec);
+
+  /**
+   * AgsAudio:absolute-key:
+   *
+   * The absolute key lower.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_int("absolute-key",
+				i18n_pspec("absolute key"),
+				i18n_pspec("The absolute key lower"),
+				0,
+				128,
+				0,
+				G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ABSOLUTE_KEY,
+				  param_spec);
+
   /**
    * AgsAudio:output:
    *
@@ -1300,6 +1448,23 @@ ags_audio_init(AgsAudio *audio)
 
   audio->midi_channel = 0;
 
+  /* time-signature */
+  audio->numerator = 4;
+  audio->denominator = 4;
+
+  audio->time_signature = g_strdup("4/4");
+
+  /* sharp/flats */
+  audio->is_minor = FALSE;
+
+  audio->sharp_flats = 0;
+
+  /* octave */
+  audio->octave = 0;
+  audio->key = 0;
+  
+  audio->absolute_key = 0;
+  
   /* channels */
   audio->output = NULL;
   audio->input = NULL;
@@ -1551,6 +1716,83 @@ ags_audio_set_property(GObject *gobject,
       midi_channel = g_value_get_uint(value);
 
       audio->midi_channel = midi_channel;
+    }
+    break;
+  case PROP_NUMERATOR:
+    {
+      guint numerator;
+
+      numerator = g_value_get_uint(value);
+
+      audio->numerator = numerator;
+
+      /* time signature */
+      g_free(audio->time_signature);
+
+      audio->time_signature = g_strdup_printf("%u/%u",
+					      audio->numerator,
+					      audio->denominator);
+    }
+    break;
+  case PROP_DENOMINATOR:
+    {
+      guint denominator;
+
+      denominator = g_value_get_uint(value);
+
+      audio->denominator = denominator;
+
+      /* time signature */
+      g_free(audio->time_signature);
+
+      audio->time_signature = g_strdup_printf("%u/%u",
+					      audio->numerator,
+					      audio->denominator);
+    }
+    break;
+  case PROP_IS_MINOR:
+    {
+      gboolean is_minor;
+
+      is_minor = g_value_get_boolean(value);
+
+      audio->is_minor = is_minor;
+    }
+    break;
+  case PROP_SHARP_FLATS:
+    {
+      guint sharp_flats;
+
+      sharp_flats = g_value_get_uint(value);
+
+      audio->sharp_flats = sharp_flats;
+    }
+    break;
+  case PROP_OCTAVE:
+    {
+      gint octave;
+
+      octave = g_value_get_int(value);
+
+      audio->octave = octave;
+    }
+    break;
+  case PROP_KEY:
+    {
+      guint key;
+
+      key = g_value_get_uint(value);
+
+      audio->key = key;
+    }
+    break;
+  case PROP_ABSOLTUE_KEY:
+    {
+      gint absoltue_key;
+
+      absoltue_key = g_value_get_int(value);
+
+      audio->absoltue_key = absoltue_key;
     }
     break;
   case PROP_PRESET:
@@ -1950,6 +2192,54 @@ ags_audio_get_property(GObject *gobject,
     {
       g_value_set_uint(value,
 		       audio->midi_channel);
+    }
+    break;
+  case PROP_NUMERATOR:
+    {
+      g_value_set_uint(value,
+		       audio->numerator);
+    }
+    break;
+  case PROP_DENOMINATOR:
+    {
+      g_value_set_uint(value,
+		       audio->denominator);
+    }
+    break;
+  case PROP_TIME_SIGNATURE:
+    {
+      g_value_set_string(value,
+			 audio->time_signature);
+    }
+    break;
+  case PROP_IS_MINOR:
+    {
+      g_value_set_boolean(value,
+			  audio->is_minor);
+    }
+    break;
+  case PROP_SHARP_FLATS:
+    {
+      g_value_set_uint(value,
+		       audio->sharp_flats);
+    }
+    break;
+  case PROP_OCTAVE:
+    {
+      g_value_set_int(value,
+		      audio->octave);
+    }
+    break;
+  case PROP_KEY:
+    {
+      g_value_set_uint(value,
+		       audio->key);
+    }
+    break;
+  case PROP_ABSOLUTE_KEY:
+    {
+      g_value_set_int(value,
+		      audio->absolute_key);
     }
     break;
   case PROP_OUTPUT:

@@ -121,7 +121,18 @@ struct _AgsAudio
   guint midi_end_mapping;
 
   guint midi_channel;
-    
+
+  guint numerator;
+  guint denominator;
+  gchar *time_signature;
+
+  gboolean is_minor;
+  guint sharp_flats;
+  
+  gint octave;
+  guint key;
+  gint absolute_key;
+  
   AgsChannel *output;
   AgsChannel *input;
 
