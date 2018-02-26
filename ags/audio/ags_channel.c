@@ -413,7 +413,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				 i18n_pspec("The nth octave"),
 				 AGS_CHANNEL_MINIMUM_OCTAVE,
 				 AGS_CHANNEL_MAXIMUM_OCTAVE,
-				 0,
+				 AGS_CHANNEL_DEFAULT_OCTAVE,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_OCTAVE,
@@ -429,9 +429,9 @@ ags_channel_class_init(AgsChannelClass *channel)
   param_spec =  g_param_spec_uint("key",
 				  i18n_pspec("nth key"),
 				  i18n_pspec("The nth key"),
-				  0,
-				  AGS_CHANNEL_OCTAVE_SEMITONE_STEPS,
-				  0,
+				  AGS_CHANNEL_MINIMUM_OCTAVE_SEMITONE,
+				  AGS_CHANNEL_MAXIMUM_OCTAVE_SEMITONE,
+				  AGS_CHANNEL_DEFAULT_OCTAVE_SEMITONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_KEY,
@@ -449,7 +449,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				 i18n_pspec("The nth absolute key"),
 				 AGS_CHANNEL_MINIMUM_SEMITONE,
 				 AGS_CHANNEL_MAXIMUM_SEMITONE,
-				 0,
+				 AGS_CHANNEL_DEFAULT_SEMITONE,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_ABSOLUTE_KEY,
@@ -467,7 +467,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				    i18n_pspec("The note frequency"),
 				    AGS_CHANNEL_MINIMUM_NOTE_FREQUENCY,
 				    AGS_CHANNEL_MAXIMUM_NOTE_FREQUENCY,
-				    0,
+				    AGS_CHANNEL_DEFAULT_NOTE_FREQUENCY,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NOTE_FREQUENCY,
@@ -499,9 +499,9 @@ ags_channel_class_init(AgsChannelClass *channel)
   param_spec =  g_param_spec_uint("midi-note",
 				  i18n_pspec("nth midi note"),
 				  i18n_pspec("The nth midi note"),
-				  0,
+				  AGS_CHANNEL_MINIMUM_MIDI_NOTE,
 				  AGS_CHANNEL_MAXIMUM_MIDI_NOTE,
-				  0,
+				  AGS_CHANNEL_DEFAULT_MIDI_NOTE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MIDI_NOTE,
@@ -677,12 +677,19 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /* AgsChannelClass */
+  channel->recycling_changed = NULL;
+
   channel->add_effect = ags_channel_real_add_effect;
   channel->remove_effect = ags_channel_real_remove_effect;
 
-  channel->recycling_changed = NULL;
+  channel->duplicate_recall = ags_channel_real_duplicate_recall;
+  channel->resolve_recall = ags_channel_real_resolve_recall;
+  
+  channel->init_recall = ags_channel_real_init_recall;
+  channel->play_recall = ags_channel_real_play_recall;
 
-  channel->done = ags_channel_real_done;
+  channel->cancel_recall = ags_channel_real_cancel_recall;
+  channel->done_recall = ags_channel_real_done_recall;
 
   /* signals */
   /**
@@ -754,23 +761,206 @@ ags_channel_class_init(AgsChannelClass *channel)
 		 G_TYPE_UINT);
 
   /**
-   * AgsChannel::done-recall:
-   * @channel: the object done playing.
+   * AgsChannel::duplicate-recall:
+   * @channel: the #AgsChannel
    * @recall_id: the appropriate #AgsRecallID
    *
-   * The ::done signal is invoked during termination of playback.
+   * The ::duplicate-recall signal is invoked during playback initialization.
    * 
    * Since: 2.0.0
    */
-  channel_signals[DONE] =
-    g_signal_new("done",
-		 G_TYPE_FROM_CLASS (channel),
+  channel_signals[DUPLICATE_RECALL] =
+    g_signal_new("duplicate-recall",
+		 G_TYPE_FROM_CLASS(channel),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsChannelClass, done),
+		 G_STRUCT_OFFSET(AgsChannelClass, duplicate_recall),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__OBJECT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_OBJECT);
+
+  /**
+   * AgsChannel::resolve-recall:
+   * @channel: the #AgsChannel
+   * @recall_id: the appropriate #AgsRecallID
+   *
+   * The ::resolve-recall signal is invoked during playback initialization.
+   * 
+   * Since: 2.0.0
+   */
+  channel_signals[RESOLVE_RECALL] =
+    g_signal_new("resolve-recall",
+		 G_TYPE_FROM_CLASS(channel),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsChannelClass, resolve_recall),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__OBJECT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
+
+  /**
+   * AgsChannel::init-recall:
+   * @channel: the #AgsChannel
+   * @recall_id: the appropriate #AgsRecallID
+   *
+   * The ::init-recall signal is invoked during playback initialization.
+   * 
+   * Since: 2.0.0
+   */
+  channel_signals[INIT_RECALL] =
+    g_signal_new("init-recall",
+		 G_TYPE_FROM_CLASS(channel),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsChannelClass, init_recall),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__OBJECT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
+
+  /**
+   * AgsChannel::play-recall:
+   * @channel: the #AgsChannel
+   * @recall_id: the appropriate #AgsRecallID
+   *
+   * The ::play-recall signal is invoked during playback run.
+   * 
+   * Since: 2.0.0
+   */
+  channel_signals[PLAY_RECALL] =
+    g_signal_new("play-recall",
+		 G_TYPE_FROM_CLASS(channel),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsChannelClass, play_recall),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__OBJECT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
+
+  /**
+   * AgsChannel::cancel-recall:
+   * @channel: the #AgsChannel
+   * @recall_id: the appropriate #AgsRecallID
+   *
+   * The ::cancel-recall signal is invoked during termination of playback.
+   * 
+   * Since: 2.0.0
+   */
+  channel_signals[CANCEL_RECALL] =
+    g_signal_new("cancel-recall",
+		 G_TYPE_FROM_CLASS(channel),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsChannelClass, cancel_recall),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__OBJECT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
+  
+  /**
+   * AgsChannel::done-recall:
+   * @channel: the #AgsChannel
+   * @recall_id: the appropriate #AgsRecallID
+   *
+   * The ::done-recall signal is invoked during termination of playback.
+   * 
+   * Since: 2.0.0
+   */
+  channel_signals[DONE_RECALL] =
+    g_signal_new("done-recall",
+		 G_TYPE_FROM_CLASS(channel),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsChannelClass, done_recall),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__OBJECT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
+
+  /**
+   * AgsChannel::start:
+   * @channel: the #AgsChannel
+   * @sound_scope: the sound scope
+   *
+   * The ::start signal is invoked as playback starts.
+   * 
+   * Returns: the #GList-struct containing #AgsRecallID
+   * 
+   * Since: 2.0.0
+   */
+  channel_signals[START] =
+    g_signal_new("start",
+		 G_TYPE_FROM_CLASS(channel),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsChannelClass, start),
+		 NULL, NULL,
+		 ags_cclosure_marshal_POINTER__INT,
+		 G_TYPE_POINTER, 1,
+		 G_TYPE_INT);
+
+  /**
+   * AgsChannel::stop:
+   * @channel: the #AgsChannel
+   * @recall_id: the #GList-struct containing #AgsRecallID
+   * @sound_scope: the sound scope
+   *
+   * The ::stop signal is invoked as playback stops.
+   * 
+   * Returns: the #GList-struct containing #AgsRecallID
+   * 
+   * Since: 2.0.0
+   */
+  channel_signals[STOP] =
+    g_signal_new("stop",
+		 G_TYPE_FROM_CLASS(channel),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsChannelClass, stop),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__POINTER_INT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_POINTER,
+		 G_TYPE_INT);
+
+  /**
+   * AgsChannel::check-scope:
+   * @channel: the #AgsChannel
+   * @sound_scope: the sound scope
+   *
+   * The ::check-scope signal gives you control of checking scope.
+   * 
+   * Returns: the #GList-struct containing #AgsRecallID
+   * 
+   * Since: 2.0.0
+   */
+  channel_signals[CHECK_SCOPE] =
+    g_signal_new("check-scope",
+		 G_TYPE_FROM_CLASS(channel),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsChannelClass, check_scope),
+		 NULL, NULL,
+		 ags_cclosure_marshal_POINTER__INT,
+		 G_TYPE_POINTER, 1,
+		 G_TYPE_INT);
+
+  /**
+   * AgsChannel::recursive-reset-stage:
+   * @channel: the #AgsChannel
+   * @sound_scope: the sound scope
+   * @staging_flags: the staging flags
+   *
+   * The ::recursive-reset-stage signal gives you control of checking scope.
+   * 
+   * Returns: the #GList-struct containing #AgsRecallID
+   * 
+   * Since: 2.0.0
+   */
+  channel_signals[RECURSIVE_RESET_STAGE] =
+    g_signal_new("recursive-reset-stage",
+		 G_TYPE_FROM_CLASS(channel),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsChannelClass, recursive_reset_stage),
+		 NULL, NULL,
+		 ags_cclosure_marshal_POINTER__INT_UINT,
+		 G_TYPE_POINTER, 2,
+		 G_TYPE_INT,
+		 G_TYPE_UINT);
 }
 
 void
@@ -794,8 +984,9 @@ ags_channel_error_quark()
 void
 ags_channel_init(AgsChannel *channel)
 {
-  AgsConfig *config;
   AgsMutexManager *mutex_manager;
+
+  AgsConfig *config;
 
   gchar *str;
   gchar *str0, *str1;
@@ -804,7 +995,12 @@ ags_channel_init(AgsChannel *channel)
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
-  /* create mutex */
+  channel->flags = 0;
+  channel->ability_flags = 0;
+  channel->behaviour_flags = 0;
+  memset(channel->staging_flags, 0, (AGS_SOUND_SCOPE_LAST + 1) * sizeof(guint));
+
+  /* add channel mutex */
   channel->obj_mutexattr = 
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
@@ -819,32 +1015,29 @@ ags_channel_init(AgsChannel *channel)
   channel->obj_mutex = 
     mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
-		     attr);
-
-  /* insert mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
-
-  ags_mutex_manager_insert(mutex_manager,
-			   (GObject *) channel,
-			   mutex);
-  
-  pthread_mutex_unlock(application_mutex);
+		     attr);  
 
   /* config */
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   config = ags_config_get_instance();
 
   /* base init */
-  channel->flags = 0;
-
   channel->audio = NULL;
-  channel->soundcard = NULL;
+
+  channel->output_soundcard = NULL;
+  channel->output_soundcard_channel = 0;
+
+  channel->input_soundcard = NULL;
+  channel->input_soundcard_channel = 0;
     
   channel->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   channel->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   channel->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+
+  /* read config */
+  pthread_mutex_lock(application_mutex);
 
   /* samplerate */
   str = ags_config_get_value(config,
@@ -863,8 +1056,6 @@ ags_channel_init(AgsChannel *channel)
 					   10);
 
     free(str);
-  }else{
-    channel->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   }
 
   /* buffer size */
@@ -884,10 +1075,8 @@ ags_channel_init(AgsChannel *channel)
 					    10);
 
     free(str);
-  }else{
-    channel->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   }
-
+  
   /* format */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
@@ -905,9 +1094,23 @@ ags_channel_init(AgsChannel *channel)
 				       10);
 
     free(str);
-  }else{
-    channel->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   }
+
+  pthread_mutex_unlock(application_mutex);
+
+  /* allocation info */
+  channel->pad = 0;
+  channel->audio_channel = 0;
+  channel->line = 0;
+
+  channel->octave = AGS_CHANNEL_DEFAULT_OCTAVE;
+  channel->key = AGS_CHANNEL_DEFAULT_OCTAVE_SEMITONE;
+  channel->absolute_key = AGS_CHANNEL_DEFAULT_SEMITONE;
+  
+  channel->note_frequency = AGS_CHANNEL_DEFAULT_NOTE_FREQUENCY;
+  channel->note_key = NULL;
+
+  channel->midi_note = AGS_CHANNEL_DEFAULT_MIDI_NOTE;
 
   /* inter-connected channels */
   channel->prev = NULL;
@@ -915,21 +1118,41 @@ ags_channel_init(AgsChannel *channel)
   channel->next = NULL;
   channel->next_pad = NULL;
 
-  /* allocation info */
-  channel->pad = 0;
-  channel->audio_channel = 0;
-  channel->line = 0;
-
-  channel->note = NULL;
+  /* link and recycling */
+  channel->link = NULL;
+  
+  channel->first_recycling = NULL;
+  channel->last_recycling = NULL;
 
   /* playback */
-  channel->playback = (GObject *) ags_playback_new();
+  channel->playback = (GObject *) ags_playback_new(channel);
   g_object_ref(channel->playback);
-  g_object_set(channel->playback,
-	       "source", channel,
-	       NULL);
 
+  /* pattern */
+  channel->pattern = NULL;
+
+  /* remote channel */
+  channel->remote_channel = NULL;
+
+  /* recall id and recycling context */
   channel->recall_id = NULL;
+  channel->recycling_context = NULL;
+
+  /* recall container */
+  channel->recall_container = NULL;
+
+  /* play */
+  channel->play_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+  channel->play_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(channel->play_mutex,
+		     attr);
+
+  channel->play = NULL;
 
   /* recall */
   channel->recall_mutexattr = 
@@ -942,28 +1165,7 @@ ags_channel_init(AgsChannel *channel)
   pthread_mutex_init(channel->recall_mutex,
 		     attr);
 
-  channel->play_mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-  channel->play_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(channel->play_mutex,
-		     attr);
-
-  channel->container = NULL;
   channel->recall = NULL;
-  channel->play = NULL;
-
-  /* link and recycling */
-  channel->link = NULL;
-  
-  channel->first_recycling = NULL;
-  channel->last_recycling = NULL;
-
-  /* pattern */
-  channel->pattern = NULL;
 
   /* data */
   channel->line_widget = NULL;

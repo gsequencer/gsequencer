@@ -1028,7 +1028,6 @@ ags_audio_class_init(AgsAudioClass *audio)
   audio->stop = ags_audio_real_stop;
 
   audio->check_scope = ags_audio_real_check_scope;
-
   audio->recursive_reset_stage = ags_audio_real_recursive_reset_stage;
   
   /* signals */
@@ -1196,7 +1195,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 
   /**
    * AgsAudio::start:
-   * @audio: the object starts playing
+   * @audio: the #AgsAudio starts playing
    * @sound_scope: the affected scope
    *
    * The ::start signal is invoked while starting playback
@@ -1218,7 +1217,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 
   /**
    * AgsAudio::stop:
-   * @audio: the object stops playing
+   * @audio: the #AgsAudio stops playing
    * @recall_id: a #GList-struct containing #AgsRecallID
    * @sound_scope: the affected scope
    *
@@ -1240,7 +1239,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 
   /**
    * AgsAudio::check-scope:
-   * @audio: the object to check the scopes
+   * @audio: the #AgsAudio to check the scopes
    * @sound_scope: the affected scope
    *
    * The ::check-scope method returns the appropriate recall id of @sound_scope.
@@ -1319,6 +1318,8 @@ ags_audio_init(AgsAudio *audio)
   pthread_mutexattr_t *attr;
 
   audio->flags = 0;
+  audio->ability_flags = 0;
+  audio->behaviour_flags = 0;
   memset(audio->staging_flags, 0, (AGS_SOUND_SCOPE_LAST + 1) * sizeof(guint));
 
   /* add audio mutex */
