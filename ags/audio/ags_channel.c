@@ -96,12 +96,21 @@ void ags_channel_get_property(GObject *gobject,
 			      guint prop_id,
 			      GValue *value,
 			      GParamSpec *param_spec);
-void ags_channel_add_to_registry(AgsConnectable *connectable);
-void ags_channel_remove_from_registry(AgsConnectable *connectable);
-void ags_channel_connect(AgsConnectable *connectable);
-void ags_channel_disconnect(AgsConnectable *connectable);
 void ags_channel_dispose(GObject *gobject);
 void ags_channel_finalize(GObject *gobject);
+
+gboolean ags_channel_has_resource(AgsConnectable *connectable);
+gboolean ags_channel_is_ready(AgsConnectable *connectable);
+void ags_channel_add_to_registry(AgsConnectable *connectable);
+void ags_channel_remove_from_registry(AgsConnectable *connectable);
+xmlNode* ags_channel_update(AgsConnectable *connectable);
+gboolean ags_channel_is_connected(AgsConnectable *connectable);
+void ags_channel_connect(AgsConnectable *connectable);
+void ags_channel_disconnect(AgsConnectable *connectable);
+void ags_channel_connect_connection(AgsConnectable *connectable,
+				    GObject *connection);
+void ags_channel_disconnect_connection(AgsConnectable *connectable,
+				       GObject *connection);
 
 GList* ags_channel_add_ladspa_effect(AgsChannel *channel,
 				     gchar *filename,
@@ -966,13 +975,21 @@ ags_channel_class_init(AgsChannelClass *channel)
 void
 ags_channel_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->has_resource = ags_channel_has_resource;
+  connectable->is_ready = ags_channel_is_ready;
+
   connectable->add_to_registry = ags_channel_add_to_registry;
   connectable->remove_from_registry = ags_channel_remove_from_registry;
 
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->update = ags_channel_update;
+
+  connectable->is_connected = ags_channel_is_connected;
+  
   connectable->connect = ags_channel_connect;
   connectable->disconnect = ags_channel_disconnect;
+
+  connectable->connect_connection = ags_channel_connect_connection;
+  connectable->disconnect_connection = ags_channel_disconnect_connection;
 }
 
 GQuark
@@ -1501,44 +1518,6 @@ ags_channel_get_property(GObject *gobject,
       g_value_set_string(value, channel->note);
     }
     break;
-  case PROP_REMOTE_CHANNEL:
-    {
-      g_value_set_pointer(value, g_list_copy(channel->remote_channel));
-    }
-    break;
-  case PROP_PLAYBACK:
-    {
-      g_value_set_object(value, channel->playback);
-    }
-    break;
-  case PROP_RECALL_ID:
-    {
-      g_value_set_pointer(value, g_list_copy(channel->recall_id));
-    }
-    break;
-  case PROP_RECALL_CONTAINER:
-    {
-      g_value_set_pointer(value, g_list_copy(channel->container));
-    }
-    break;
-  case PROP_RECALL:
-    {
-      pthread_mutex_lock(channel->recall_mutex);
-      
-      g_value_set_pointer(value, g_list_copy(channel->recall));
-
-      pthread_mutex_unlock(channel->recall_mutex);
-    }
-    break;
-  case PROP_PLAY:
-    {
-      pthread_mutex_lock(channel->play_mutex);
-      
-      g_value_set_pointer(value, g_list_copy(channel->play));
-      
-      pthread_mutex_unlock(channel->play_mutex);      
-    }
-    break;
   case PROP_LINK:
     {
       g_value_set_object(value, channel->link);
@@ -1554,221 +1533,49 @@ ags_channel_get_property(GObject *gobject,
       g_value_set_object(value, channel->last_recycling);
     }
     break;
+  case PROP_PLAYBACK:
+    {
+      g_value_set_object(value, channel->playback);
+    }
+    break;
   case PROP_PATTERN:
     {
       g_value_set_pointer(value, g_list_copy(channel->pattern));
     }
     break;
+  case PROP_REMOTE_CHANNEL:
+    {
+      g_value_set_pointer(value, g_list_copy(channel->remote_channel));
+    }
+    break;
+  case PROP_RECALL_ID:
+    {
+      g_value_set_pointer(value, g_list_copy(channel->recall_id));
+    }
+    break;
+  case PROP_RECYCLING_CONTEXT:
+    {
+      g_value_set_pointer(value, g_list_copy(channel->recycling_context));
+    }
+    break;
+  case PROP_RECALL_CONTAINER:
+    {
+      g_value_set_pointer(value, g_list_copy(channel->recall_container));
+    }
+    break;
+  case PROP_PLAY:
+    {
+      g_value_set_pointer(value, g_list_copy(channel->play));
+    }
+    break;
+  case PROP_RECALL:
+    {      
+      g_value_set_pointer(value, g_list_copy(channel->recall));
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
-  }
-}
-
-void
-ags_channel_add_to_registry(AgsConnectable *connectable)
-{
-  AgsChannel *channel;
-
-  AgsRegistry *registry;
-  AgsRegistryEntry *entry;
-
-  AgsApplicationContext *application_context;
-
-  GList *list;
-  
-  channel = AGS_CHANNEL(connectable);
-
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(channel->soundcard));
-
-  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
-
-  if(registry != NULL){
-    entry = ags_registry_entry_alloc(registry);
-    g_value_set_object(&(entry->entry),
-		       (gpointer) channel);
-    ags_registry_add_entry(registry,
-			   entry);
-  }
-  
-  /* add play */
-  list = channel->play;
-
-  while(list != NULL){
-    ags_connectable_add_to_registry(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-  
-  /* add recall */
-  list = channel->recall;
-
-  while(list != NULL){
-    ags_connectable_add_to_registry(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-}
-
-void
-ags_channel_remove_from_registry(AgsConnectable *connectable)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_channel_connect(AgsConnectable *connectable)
-{
-  AgsChannel *channel;
-  AgsRecycling *recycling;
-
-  GList *list;
-  
-  channel = AGS_CHANNEL(connectable);
-
-  if((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0){
-    return;
-  }
-
-  channel->flags |= AGS_CHANNEL_CONNECTED;
-  
-#ifdef AGS_DEBUG
-  g_message("connecting channel");
-#endif
-
-  //  ags_connectable_add_to_registry(connectable);
-
-  /* connect recall ids */
-  list = channel->recall_id;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  /* connect recall containers */
-  list = channel->container;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  /* connect recalls */
-  list = channel->recall;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  list = channel->play;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  /* connect recycling */
-  recycling = channel->first_recycling;
-
-  if(recycling != NULL){
-    while(recycling != channel->last_recycling->next){
-      ags_connectable_connect(AGS_CONNECTABLE(recycling));
-      
-      recycling = recycling->next;
-    }
-  }
-
-  /* connect pattern and notation */
-  list = channel->pattern;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-}
-
-void
-ags_channel_disconnect(AgsConnectable *connectable)
-{
-  AgsChannel *channel;
-  AgsRecycling *recycling;
-
-  GList *list;
-  
-  channel = AGS_CHANNEL(connectable);
-
-  if((AGS_CHANNEL_CONNECTED & (channel->flags)) == 0){
-    return;
-  }
-  
-  channel->flags &= (~AGS_CHANNEL_CONNECTED);
-  
-#ifdef AGS_DEBUG
-  g_message("disconnecting channel");
-#endif
-
-  //  ags_connectable_add_to_registry(connectable);
-
-  /* connect recall ids */
-  list = channel->recall_id;
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  /* connect recall containers */
-  list = channel->container;
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  /* connect recalls */
-  list = channel->recall;
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  list = channel->play;
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  /* connect recycling */
-  recycling = channel->first_recycling;
-
-  if(recycling != NULL){
-    while(recycling != channel->last_recycling->next){
-      ags_connectable_disconnect(AGS_CONNECTABLE(recycling));
-      
-      recycling = recycling->next;
-    }
-  }
-
-  /* connect pattern and notation */
-  list = channel->pattern;
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
   }
 }
 
@@ -2079,6 +1886,265 @@ ags_channel_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_channel_parent_class)->finalize(gobject);
 }
 
+gboolean
+ags_channel_has_resource(AgsConnectable *connectable)
+{
+  return(TRUE);
+}
+
+gboolean
+ags_channel_is_ready(AgsConnectable *connectable)
+{
+  gboolean is_ready;
+
+  is_ready = (((AGS_CHANNEL_ADDED_TO_REGISTRY & (AGS_CHANNEL(connectable)->flags)) != 0) ? TRUE: FALSE);
+  
+  return(is_ready);
+}
+
+void
+ags_channel_add_to_registry(AgsConnectable *connectable)
+{
+  AgsChannel *channel;
+
+  AgsRegistry *registry;
+  AgsRegistryEntry *entry;
+
+  AgsApplicationContext *application_context;
+
+  GList *list;
+  
+  channel = AGS_CHANNEL(connectable);
+
+  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(channel->soundcard));
+
+  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
+
+  if(registry != NULL){
+    entry = ags_registry_entry_alloc(registry);
+    g_value_set_object(&(entry->entry),
+		       (gpointer) channel);
+    ags_registry_add_entry(registry,
+			   entry);
+  }
+  
+  /* add play */
+  list = channel->play;
+
+  while(list != NULL){
+    ags_connectable_add_to_registry(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+  
+  /* add recall */
+  list = channel->recall;
+
+  while(list != NULL){
+    ags_connectable_add_to_registry(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+}
+
+void
+ags_channel_remove_from_registry(AgsConnectable *connectable)
+{
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_channel_update(AgsConnectable *connectable)
+{
+  xmlNode *channel_node;
+  
+  channel_node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(channel_node);
+}
+
+gboolean
+ags_channel_is_connected(AgsConnectable *connectable)
+{
+  gboolean is_connected;
+
+  is_connected = (((AGS_CHANNEL_CONNECTED & (AGS_CHANNEL(connectable)->flags)) != 0) ? TRUE: FALSE);
+  
+  return(is_connected);
+}
+
+void
+ags_channel_connect(AgsConnectable *connectable)
+{
+  AgsChannel *channel;
+  AgsRecycling *recycling;
+
+  GList *list;
+  
+  channel = AGS_CHANNEL(connectable);
+
+  if((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0){
+    return;
+  }
+
+  channel->flags |= AGS_CHANNEL_CONNECTED;
+  
+#ifdef AGS_DEBUG
+  g_message("connecting channel");
+#endif
+
+  //  ags_connectable_add_to_registry(connectable);
+
+  /* connect recall ids */
+  list = channel->recall_id;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* connect recall containers */
+  list = channel->container;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* connect recalls */
+  list = channel->recall;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  list = channel->play;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* connect recycling */
+  recycling = channel->first_recycling;
+
+  if(recycling != NULL){
+    while(recycling != channel->last_recycling->next){
+      ags_connectable_connect(AGS_CONNECTABLE(recycling));
+      
+      recycling = recycling->next;
+    }
+  }
+
+  /* connect pattern and notation */
+  list = channel->pattern;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+}
+
+void
+ags_channel_disconnect(AgsConnectable *connectable)
+{
+  AgsChannel *channel;
+  AgsRecycling *recycling;
+
+  GList *list;
+  
+  channel = AGS_CHANNEL(connectable);
+
+  if((AGS_CHANNEL_CONNECTED & (channel->flags)) == 0){
+    return;
+  }
+  
+  channel->flags &= (~AGS_CHANNEL_CONNECTED);
+  
+#ifdef AGS_DEBUG
+  g_message("disconnecting channel");
+#endif
+
+  //  ags_connectable_add_to_registry(connectable);
+
+  /* connect recall ids */
+  list = channel->recall_id;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* connect recall containers */
+  list = channel->container;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* connect recalls */
+  list = channel->recall;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  list = channel->play;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  /* connect recycling */
+  recycling = channel->first_recycling;
+
+  if(recycling != NULL){
+    while(recycling != channel->last_recycling->next){
+      ags_connectable_disconnect(AGS_CONNECTABLE(recycling));
+      
+      recycling = recycling->next;
+    }
+  }
+
+  /* connect pattern and notation */
+  list = channel->pattern;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+}
+
+void
+ags_channel_connect_connection(AgsConnectable *connectable,
+			       GObject *connection)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_channel_disconnect_connection(AgsConnectable *connectable,
+				  GObject *connection)
+{
+  //TODO:JK: implement me
+}
+
 /**
  * ags_channel_get_class_mutex:
  * 
@@ -2191,6 +2257,7 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *playback_mutex;
 
   if(!AGS_IS_CHANNEL(channel)){
     return;
@@ -2220,11 +2287,23 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
   
   playback = AGS_PLAYBACK(channel->playback);
 
+  pthread_mutex_unlock(channel_mutex);
+
+  /* get playback mutex */
+  pthread_mutex_lock(ags_playback_get_class_mutex());
+  
+  playback_mutex = playback->obj_mutex;
+  
+  pthread_mutex_unlock(ags_playback_get_class_mutex());
+
+  /* playback fields */
+  pthread_mutex_lock(playback_mutex);
+
   playback_domain = playback->playback_domain;
   
   super_threaded_channel = ((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0) ? TRUE: FALSE;
 
-  pthread_mutex_unlock(channel_mutex);
+  pthread_mutex_unlock(playback_mutex);
 
   /* get audio mutex */
   pthread_mutex_lock(ags_audio_get_class_mutex());
@@ -2237,7 +2316,7 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
     /* playback ability */
     if((AGS_SOUND_ABILITY_PLAYBACK & (ability_flags)) != 0 &&
        (AGS_SOUND_ABILITY_PLAYBACK & (channel_ability_flags)) == 0){
-      AgsAudiolLoop *audio_loop;
+      AgsAudioThread *audio_thread;
       AgsChannelThread *channel_thread;
 
       channel_thread = ags_channel_thread_new(soundcard,
@@ -2251,11 +2330,8 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
 				      AGS_SOUND_SCOPE_PLAYBACK);
 
       /* set thread child */
-      pthread_mutex_lock(application_mutex);
-      
-      audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-
-      pthread_mutex_unlock(application_mutex);
+      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							  AGS_SOUND_SCOPE_PLAYBACK);
 
       ags_thread_add_child(audio_thread,
 			   channel_thread);
@@ -2266,8 +2342,6 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
        (AGS_SOUND_ABILITY_NOTATION & (channel_ability_flags)) == 0){
       AgsAudioThread *audio_thread;
       AgsChannelThread *channel_thread;
-
-      pthread_mutex_lock(channel_mutex);
       
       channel_thread = ags_channel_thread_new(soundcard,
 					      channel);
@@ -2279,16 +2353,9 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
 				      channel_thread,
 				      AGS_SOUND_SCOPE_NOTATION);    
 
-      pthread_mutex_unlock(channel_mutex);
-
       /* set thread child */
-      pthread_mutex_lock(audio_mutex);
-
       audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							  AGS_SOUND_SCOPE_NOTATION);
-      
-      pthread_mutex_unlock(audio_mutex);
-
+							  AGS_SOUND_SCOPE_NOTATION);      
       ags_thread_add_child(audio_thread,
 			   channel_thread);
     }
@@ -2310,12 +2377,8 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
 				      AGS_SOUND_SCOPE_SEQUENCER);
 
       /* set thread child */
-      pthread_mutex_lock(audio_mutex);
-
       audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							  AGS_SOUND_SCOPE_SEQUENCER);
-      
-      pthread_mutex_unlock(audio_mutex);
 
       ags_thread_add_child(audio_thread,
 			   channel_thread);
@@ -2338,12 +2401,8 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
 				      AGS_SOUND_SCOPE_WAVE);
       
       /* set thread child */
-      pthread_mutex_lock(audio_mutex);
-
       audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							  AGS_SOUND_SCOPE_WAVE);
-      
-      pthread_mutex_unlock(audio_mutex);
 
       ags_thread_add_child(audio_thread,
 			   channel_thread);
@@ -2366,12 +2425,8 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
 				      AGS_SOUND_SCOPE_MIDI);
 
       /* set thread child */
-      pthread_mutex_lock(audio_mutex);
-
       audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							  AGS_SOUND_SCOPE_MIDI);
-      
-      pthread_mutex_unlock(audio_mutex);
 
       ags_thread_add_child(audio_thread,
 			   channel_thread);
@@ -2406,6 +2461,7 @@ ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags)
   
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *playback_mutex;
 
   if(!AGS_IS_CHANNEL(channel)){
     return;
@@ -2427,10 +2483,54 @@ ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags)
   channel_ability_flags = channel->ability_flags;
   
   playback = AGS_PLAYBACK(channel->playback);
+
+  pthread_mutex_unlock(channel_mutex);
+  
+  /* get playback mutex */
+  pthread_mutex_lock(ags_playback_get_class_mutex());
+  
+  playback_mutex = playback->obj_mutex;
+  
+  pthread_mutex_unlock(ags_playback_get_class_mutex());
+
+  /* playback fields */
+  pthread_mutex_lock(playback_mutex);
+
+  playback_domain = playback->playback_domain;
+
+  pthread_mutex_unlock(ags_playback_get_class_mutex());
+  
+  /* playback ability */
+  if((AGS_SOUND_ABILITY_PLAYBACK & (ability_flags)) == 0 &&
+     (AGS_SOUND_ABILITY_PLAYBACK & (channel_ability_flags)) != 0){
+    AgsAudioThread *audio_thread;
+    AgsChannelThread *channel_thread;
     
+    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							AGS_SOUND_SCOPE_PLAYBACK);
+    channel_thread = ags_playback_get_channel_thread(playback,
+						     AGS_SOUND_SCOPE_PLAYBACK);
+    ags_thread_remove_child(audio_thread,
+			    channel_thread);    
+
+    ags_playback_set_channel_thread(playback,
+				    AGS_SOUND_SCOPE_PLAYBACK,
+				    NULL);
+  }
+
   /* notation ability */
   if((AGS_SOUND_ABILITY_NOTATION & (ability_flags)) == 0 &&
      (AGS_SOUND_ABILITY_NOTATION & (channel_ability_flags)) != 0){
+    AgsAudioThread *audio_thread;
+    AgsChannelThread *channel_thread;
+    
+    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							AGS_SOUND_SCOPE_NOTATION);
+    channel_thread = ags_playback_get_channel_thread(playback,
+						     AGS_SOUND_SCOPE_NOTATION);
+    ags_thread_remove_child(audio_thread,
+			    channel_thread);    
+
     ags_playback_set_channel_thread(playback,
 				    AGS_SOUND_SCOPE_NOTATION,
 				    NULL);
@@ -2439,6 +2539,16 @@ ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags)
   /* sequencer ability */
   if((AGS_SOUND_ABILITY_SEQUENCER & (ability_flags)) == 0 &&
      (AGS_SOUND_ABILITY_SEQUENCER & (channel_ability_flags)) != 0){
+    AgsAudioThread *audio_thread;
+    AgsChannelThread *channel_thread;
+    
+    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							AGS_SOUND_SCOPE_SEQUENCER);
+    channel_thread = ags_playback_get_channel_thread(playback,
+						     AGS_SOUND_SCOPE_SEQUENCER);
+    ags_thread_remove_child(audio_thread,
+			    channel_thread);    
+
     ags_playback_set_channel_thread(playback,
 				    AGS_SOUND_SCOPE_SEQUENCER,
 				    NULL);
@@ -2447,6 +2557,16 @@ ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags)
   /* wave ability */
   if((AGS_SOUND_ABILITY_WAVE & (ability_flags)) == 0 &&
      (AGS_SOUND_ABILITY_WAVE & (channel_ability_flags)) != 0){
+    AgsAudioThread *audio_thread;
+    AgsChannelThread *channel_thread;
+    
+    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							AGS_SOUND_SCOPE_WAVE);
+    channel_thread = ags_playback_get_channel_thread(playback,
+						     AGS_SOUND_SCOPE_WAVE);
+    ags_thread_remove_child(audio_thread,
+			    channel_thread);    
+
     ags_playback_set_channel_thread(playback,
 				    AGS_SOUND_SCOPE_WAVE,
 				    NULL);
@@ -2455,13 +2575,21 @@ ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags)
   /* midi ability */
   if((AGS_SOUND_ABILITY_MIDI & (ability_flags)) == 0 &&
      (AGS_SOUND_ABILITY_MIDI & (channel_ability_flags)) != 0){
+    AgsAudioThread *audio_thread;
+    AgsChannelThread *channel_thread;
+    
+    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							AGS_SOUND_SCOPE_MIDI);
+    channel_thread = ags_playback_get_channel_thread(playback,
+						     AGS_SOUND_SCOPE_MIDI);
+    ags_thread_remove_child(audio_thread,
+			    channel_thread);    
+
     ags_playback_set_channel_thread(playback,
 				    AGS_SOUND_SCOPE_MIDI,
 				    NULL);
   }
 
-  pthread_mutex_unlock(channel_mutex);
-  
   /* unset flags */
   pthread_mutex_lock(channel_mutex);
 
@@ -2470,16 +2598,156 @@ ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags)
   pthread_mutex_unlock(channel_mutex);
 }
 
-AgsRecall*
-ags_channel_find_recall(AgsChannel *channel, char *effect, char *name)
+/**
+ * ags_channel_set_behaviour_flags:
+ * @channel: the #AgsChannel
+ * @behaviour_flags: the behaviour flags
+ * 
+ * Set behaviour flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_channel_set_behaviour_flags(AgsChannel *channel, guint behaviour_flags)
 {
-  AgsRecall *recall;
-  GList *list;
+  pthread_mutex_t *channel_mutex;
 
-  //TODO:JK: implement me
-  /* */
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
 
-  return(NULL);
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(channel_mutex);
+
+  channel->behaviour_flags |= behaviour_flags;
+
+  pthread_mutex_unlock(channel_mutex);
+}
+
+/**
+ * ags_channel_unset_behaviour_flags:
+ * @channel: the #AgsChannel
+ * @behaviour_flags: the behaviour flags
+ * 
+ * Unset behaviour flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_channel_unset_behaviour_flags(AgsChannel *channel, guint behaviour_flags)
+{
+  pthread_mutex_t *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* unset flags */
+  pthread_mutex_lock(channel_mutex);
+
+  channel->behaviour_flags &= (~behaviour_flags);
+
+  pthread_mutex_unlock(channel_mutex);
+}
+
+/**
+ * ags_channel_set_staging_flags:
+ * @channel: the #AgsChannel
+ * @sound_scope: the #AgsSoundScope to apply, or -1 to apply to all
+ * @staging_flags: the staging flags
+ * 
+ * Set staging flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_channel_set_staging_flags(AgsChannel *channel, gint sound_scope,
+			      guint staging_flags)
+{
+  guint i;
+  
+  pthread_mutex_t *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(channel_mutex);
+
+  if(sound_scope < 0){
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      channel->staging_flags[i] |= staging_flags;
+    }
+  }else if(sound_scope < AGS_SOUND_SCOPE_LAST){
+    channel->staging_flags[sound_scope] |= staging_flags;
+  }
+
+  pthread_mutex_unlock(channel_mutex);
+}
+
+/**
+ * ags_channel_unset_staging_flags:
+ * @channel: the #AgsChannel
+ * @sound_scope: the #AgsSoundScope to apply, or -1 to apply to all
+ * @staging_flags: the staging flags
+ * 
+ * Unset staging flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_channel_unset_staging_flags(AgsChannel *channel, gint sound_scope,
+				guint staging_flags)
+{
+  guint i;
+  
+  pthread_mutex_t *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* unset flags */
+  pthread_mutex_lock(channel_mutex);
+
+  if(sound_scope < 0){
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      channel->staging_flags[i] &= (~staging_flags);
+    }
+  }else if(sound_scope < AGS_SOUND_SCOPE_LAST){
+    channel->staging_flags[sound_scope] &= (~staging_flags);
+  }
+
+  pthread_mutex_unlock(channel_mutex);
 }
 
 /**
