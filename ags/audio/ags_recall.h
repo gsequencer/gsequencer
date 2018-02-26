@@ -83,6 +83,7 @@ typedef enum{
  * @AGS_RECALL_NOTIFY_CHANNEL_RUN: notifiy dependency channel run
  * @AGS_RECALL_NOTIFY_RECALL: notifiy dependency recall
  * 
+ * Modes to notify of dependencies.
  */
 typedef enum{
   AGS_RECALL_NOTIFY_RUN,
@@ -115,7 +116,9 @@ struct _AgsRecall
   gchar *xml_type;
 
   GObject *output_soundcard;
-  GObject *recall_container; // see AgsRecallContainer
+  GObject *input_soundcard;
+  
+  GObject *recall_container;
 
   GList *dependencies;
 

@@ -3478,7 +3478,7 @@ ags_channel_set_output_soundcard(AgsChannel *channel,
   
   pthread_mutex_unlock(ags_channel_get_class_mutex());
 
-  /* play contex */
+  /* play context */
   pthread_mutex_lock(play_mutex);
   
   list = channel->play;
@@ -3502,7 +3502,7 @@ ags_channel_set_output_soundcard(AgsChannel *channel,
   
   pthread_mutex_unlock(ags_channel_get_class_mutex());
 
-  /* recall contex */
+  /* recall context */
   pthread_mutex_lock(recall_mutex);
 
   list = channel->recall;
@@ -3519,6 +3519,139 @@ ags_channel_set_output_soundcard(AgsChannel *channel,
 
   pthread_mutex_unlock(recall_mutex);
 
+  /* unref old soundcard */
+  if(old_soundcard != NULL){
+    g_object_unref(old_soundcard);
+  }
+}
+
+/**
+ * ags_channel_set_input_soundcard:
+ * @channel: the #AgsChannel
+ * @soundcard: an #AgsSoundcard
+ *
+ * Set the input soundcard object on channel.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_channel_set_input_soundcard(AgsChannel *channel,
+				GObject *soundcard)
+{
+  AgsChannel *channel;
+
+  GObject *old_soundcard;
+
+  gboolean reset_recycling;
+
+  pthread_mutex_t *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */  
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+  
+  /* old soundcard */
+  pthread_mutex_lock(channel_mutex);
+
+  old_soundcard = channel->input_soundcard;
+
+  pthread_mutex_unlock(channel_mutex);
+  
+  if(old_soundcard == soundcard){
+    return;
+  }
+
+  /* ref and set new soundcard */
+  if(soundcard != NULL){
+    g_object_ref(soundcard);
+  }
+  
+  pthread_mutex_lock(channel_mutex);
+  
+  channel->input_soundcard = (GObject *) soundcard;
+
+  pthread_mutex_unlock(channel_mutex);  
+
+  /* AgsRecycling */
+  reset_recycling = FALSE;
+
+  pthread_mutex_lock(channel_mutex);
+
+  if((AGS_IS_OUTPUT(channel) ||
+      channel->link == NULL) &&
+     channel->first_recycling != NULL){
+    reset_recycling = TRUE;
+  }
+
+  pthread_mutex_unlock(channel_mutex);
+  
+  if(reset_recycling){
+    pthread_mutex_lock(channel_mutex);
+
+    recycling = channel->first_recycling;
+
+    pthread_mutex_unlock(channel_mutex);
+
+    g_object_set(G_OBJECT(recycling),
+		 "output-soundcard", soundcard,
+		 NULL); 
+  }
+
+  /* get play mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+
+  play_mutex = channel->play_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* play context */
+  pthread_mutex_lock(play_mutex);
+  
+  list = channel->play;
+  
+  while(list != NULL){
+    if(AGS_RECALL(list->data)->input_soundcard == old_soundcard){
+      g_object_set(G_OBJECT(list->data),
+		   "input-soundcard", soundcard,
+		   NULL);
+    }
+    
+    list = list->next;
+  }
+  
+  pthread_mutex_unlock(play_mutex);
+
+  /* get recall mutex */  
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+
+  recall_mutex = channel->recall_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* recall context */
+  pthread_mutex_lock(recall_mutex);
+
+  list = channel->recall;
+  
+  while(list != NULL){
+    if(AGS_RECALL(list->data)->input_soundcard == old_soundcard){
+      g_object_set(G_OBJECT(list->data),
+		   "input-soundcard", soundcard,
+		   NULL);
+    }
+    
+    list = list->next;
+  } 
+
+  pthread_mutex_unlock(recall_mutex);
+  
   /* unref old soundcard */
   if(old_soundcard != NULL){
     g_object_unref(old_soundcard);
