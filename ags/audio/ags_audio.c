@@ -1476,10 +1476,13 @@ ags_audio_init(AgsAudio *audio)
   audio->playback_domain = (GObject *) ags_playback_domain_new(audio);
   g_object_ref(audio->playback_domain);
 
+  /* synth generator */
+  audio->synth_generator = NULL;
+  
   /* notation and automation */
   audio->notation = NULL;
   audio->automation = NULL;
-
+  
   /* wave */
   audio->wave = NULL;
 

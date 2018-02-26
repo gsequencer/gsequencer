@@ -8,7 +8,7 @@ ags (2.0.0)
 	* TODO:JK: implemented ags-play-wave recall
 	* implemented ags-capture-sound recall
 	* TODO:JK: implemented AgsAudiorec
-	* TODO:JK: implemented damping/vibration of AgsSynthGenerator
+	* TODO:JK: implemented damping/vibration of AgsAudioSignal
 	* TODO:JK: implemented exponential curve option for ags-envelope recall
 	* new ags_midi.[ch]
 	* new ags_track.[ch]
@@ -23,6 +23,7 @@ ags (2.0.0)
 	* replaced use of GParameter by string vector and value array of AgsPreset
 	* modified prototype of ags_audio_collect_all_audio_ports_by_specifier_and_context()
 	* modified prototype of ags_midi_file_read_*()
+	* modified prototype of ags_synth_generator_compute()
 	* removed properties AgsAudio:soundcard, AgsChannel:soundcard, AgsRecycling:soundcard and AgsAudioSignal:soundcard
 	* added properties AgsAudio:output-soundcard, AgsChannel:output-soundcard, AgsRecycling:output-soundcard and AgsAudioSignal:output-soundcard
 	* added properties AgsAudio:input-soundcard, AgsChannel:input-soundcard, AgsRecycling:input-soundcard and AgsAudioSignal:input-soundcard
@@ -45,6 +46,8 @@ ags (2.0.0)
 	* removed ags_audio_signal_realloc_buffer_size()
 	* removed ags_audio_signal_tile()
 	* removed ags_audio_signal_scale()
+	* removed ags_synth_generator_compute_extended()
+	* removed ags_synth_generator_compute_with_audio_signal()
 
 ags (1.4.18)
 

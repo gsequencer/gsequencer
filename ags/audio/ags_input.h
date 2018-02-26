@@ -43,7 +43,6 @@ struct _AgsInput
   AgsChannel channel;
 
   GObject *file_link;
-  GObject *synth_generator;
 };
 
 struct _AgsInputClass

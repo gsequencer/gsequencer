@@ -29,8 +29,10 @@
 #include <stdint.h>
 
 #include <stdlib.h>
-#include <math.h>
 #include <string.h>
+
+#include <math.h>
+#include <complex.h>
 
 #include <ags/i18n.h>
 
@@ -84,6 +86,10 @@ enum{
   PROP_LOOP_END,
   PROP_DELAY,
   PROP_ATTACK,
+  PROP_DAMPING,
+  PROP_VIBRATION,
+  PROP_TIMBRE_START,
+  PROP_TIMBRE_END,
   PROP_STREAM,
   PROP_STREAM_END,
   PROP_STREAM_CURRENT,
@@ -436,6 +442,73 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				  PROP_ATTACK,
 				  param_spec);
 
+  /**
+   * AgsAudioSignal:damping:
+   *
+   * Damping of timbre.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_boxed("damping",
+				  i18n_pspec("damping"),
+				  i18n_pspec("The timbre's damping"),
+				  AGS_TYPE_COMPLEX,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DAMPING,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:vibration:
+   *
+   * Vibration of timbre.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_boxed("vibration",
+				  i18n_pspec("vibration"),
+				  i18n_pspec("The timbre's vibration"),
+				  AGS_TYPE_COMPLEX,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_VIBRATION,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:timbre-start:
+   *
+   * The timbre's start frame.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("timbre-start",
+				 i18n_pspec("timbre's start"),
+				 i18n_pspec("The timbre's start frame"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TIMBRE_START,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:timbre-end:
+   *
+   * The timbre's end frame.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("timbre-end",
+				 i18n_pspec("timbre's end"),
+				 i18n_pspec("The timbre's end frame"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TIMBRE_END,
+				  param_spec);
 
   /**
    * AgsAudioSignal:stream:
@@ -572,6 +645,8 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   AgsConfig *config;
   
   gchar *str;
+
+  complex z;
  
   audio_signal->flags = 0;
 
@@ -681,7 +756,7 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
     }
   }
   
-  /*  */
+  /* duration */
   audio_signal->length = 0;
   audio_signal->first_frame = 0;
   audio_signal->last_frame = 0;
@@ -690,13 +765,29 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->loop_start = 0;
   audio_signal->loop_end = 0;
 
+  /* offset */
   audio_signal->delay = 0.0;
   audio_signal->attack = 0;
 
+
+  /* stream data */
   audio_signal->stream_beginning = NULL;
   audio_signal->stream_current = NULL;
   audio_signal->stream_end = NULL;
 
+  /* timbre */
+  z = 0.0 + I * 1.0;  
+  ags_complex_set(&(audio_signal->damping),
+		  z);
+  
+  z = 0.0 + I * 1.0;
+  ags_complex_set(&(audio_signal->vibration),
+		  z);
+
+  audio_signal->timbre_start = 0;
+  audio_signal->timbre_end = 0;
+  
+  /* realtime fields */
   audio_signal->rt_template = NULL;
   audio_signal->note = NULL;
 }
@@ -912,6 +1003,36 @@ ags_audio_signal_set_property(GObject *gobject,
       audio_signal->attack = attack;
     }
     break;
+  case PROP_DAMPING:
+    {
+      AgsComplex *damping;
+
+      damping = (AgsComplex *) g_value_get_boxed(value);
+
+      ags_complex_set(&(audio_signal->damping),
+		      ags_complex_get(damping));      
+    }
+    break;
+  case PROP_VIBRATION:
+    {
+      AgsComplex *vibration;
+
+      vibration = (AgsComplex *) g_value_get_boxed(value);
+
+      ags_complex_set(&(audio_signal->vibration),
+		      ags_complex_get(vibration));      
+    }
+    break;
+  case PROP_TIMBRE_START:
+    {
+      audio_signal->timbre_start = g_value_get_uint(value);      
+    }
+    break;
+  case PROP_TIMBRE_END:
+    {
+      audio_signal->timbre_end = g_value_get_uint(value);      
+    }
+    break;
   case PROP_STREAM:
     {
       gpointer data;
@@ -1066,6 +1187,26 @@ ags_audio_signal_get_property(GObject *gobject,
   case PROP_ATTACK:
     {
       g_value_set_uint(value, audio_signal->attack);
+    }
+    break;
+  case PROP_DAMPING:
+    {
+      g_value_set_boxed(value, audio_signal->damping);
+    }
+    break;
+  case PROP_VIBRATION:
+    {
+      g_value_set_boxed(value, audio_signal->vibration);
+    }
+    break;
+  case PROP_TIMBRE_START:
+    {
+      g_value_set_uint(value, audio_signal->timbre_start);
+    }
+    break;
+  case PROP_TIMBRE_END:
+    {
+      g_value_set_uint(value, audio_signal->timbre_end);
     }
     break;
   case PROP_STREAM:

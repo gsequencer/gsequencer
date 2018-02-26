@@ -42,6 +42,19 @@
 #define AGS_IS_CHANNEL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CHANNEL))
 #define AGS_CHANNEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_CHANNEL, AgsChannelClass))
 
+#define AGS_CHANNEL_MINIMUM_OCTAVE (0)
+#define AGS_CHANNEL_MAXIMUM_OCTAVE (10)
+
+#define AGS_CHANNEL_OCTAVE_SEMITONE_STEPS (12)
+
+#define AGS_CHANNEL_MINIMUM_SEMITONE (0)
+#define AGS_CHANNEL_MAXIMUM_SEMITONE (128)
+
+#define AGS_CHANNEL_MINIMUM_NOTE_FREQUENCY (27.5)
+#define AGS_CHANNEL_MAXIMUM_NOTE_FREQUENCY (21120.0)
+
+#define AGS_CHANNEL_MAXIMUM_MIDI_NOTE (127)
+
 typedef struct _AgsChannel AgsChannel;
 typedef struct _AgsChannelClass AgsChannelClass;
 
@@ -124,15 +137,15 @@ struct _AgsChannel
 
   GList *recall_container;
 
-  pthread_mutexattr_t *recall_mutexattr;
-  pthread_mutex_t *recall_mutex;
-
-  GList *recall;
-
   pthread_mutexattr_t *play_mutexattr;
   pthread_mutex_t *play_mutex;
 
   GList *play;
+
+  pthread_mutexattr_t *recall_mutexattr;
+  pthread_mutex_t *recall_mutex;
+
+  GList *recall;
 
   gpointer line_widget;
   gpointer file_data;
@@ -321,6 +334,9 @@ void ags_channel_recursive_play_threaded(AgsChannel *channel,
 					 AgsRecallID *recall_id, gint stage);
 void ags_channel_recursive_play(AgsChannel *channel,
 				AgsRecallID *recall_id, gint stage);
+
+GList* ags_channel_recursive_reset_stage(AgsChannel *channel,
+					 gint sound_scope, guint staging_flags);
 
 /* instantiate */
 AgsChannel* ags_channel_new(GObject *audio);

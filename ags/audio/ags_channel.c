@@ -117,38 +117,73 @@ GList* ags_channel_real_add_effect(AgsChannel *channel,
 				   gchar *effect);
 void ags_channel_real_remove_effect(AgsChannel *channel,
 				    guint nth);
-void ags_channel_real_done(AgsChannel *channel,
-			   AgsRecallID *recall_id);
+
+void ags_channel_real_duplicate_recall(AgsChannel *channel,
+				       AgsRecallID *recall_id);
+void ags_channel_real_resolve_recall(AgsChannel *channel,
+				     AgsRecallID *recall_id);
+void ags_channel_real_init_recall(AgsChannel *channel,
+				  AgsRecallID *recall_id, gint staging_flags);
+void ags_channel_real_play_recall(AgsChannel *channel,
+				  AgsRecallID *recall_id, gint staging_flags);
+void ags_channel_real_done_recall(AgsChannel *channel,
+				  AgsRecallID *recall_id);
+void ags_channel_real_cancel_recall(AgsChannel *channel,
+				    AgsRecallID *recall_id);
+
+GList* ags_channel_real_start(AgsChannel *channel,
+			      gint sound_scope);
+void ags_channel_real_stop(AgsChannel *channel,
+			   GList *recall_id, gint sound_scope);
+
+GList* ags_channel_real_recursive_reset_stage(AgsChannel *channel,
+					      gint sound_scope, guint staging_flags);
 
 enum{
   ADD_EFFECT,
   REMOVE_EFFECT,
   RECYCLING_CHANGED,
-  DONE,
+  DUPLICATE_RECALL,
+  RESOLVE_RECALL,
+  INIT_RECALL,
+  PLAY_RECALL,
+  CANCEL_RECALL,
+  DONE_RECALL,
+  START,
+  STOP,
+  CHECK_SCOPE,
+  RECURSIVE_RESET_STAGE,
   LAST_SIGNAL,
 };
 
 enum{
   PROP_0,
   PROP_AUDIO,
-  PROP_SOUNDCARD,
+  PROP_OUTPUT_SOUNDCARD,
+  PROP_INPUT_SOUNDCARD,
   PROP_SAMPLERATE,
   PROP_BUFFER_SIZE,
   PROP_FORMAT,
   PROP_PAD,
   PROP_AUDIO_CHANNEL,
   PROP_LINE,
-  PROP_NOTE,
-  PROP_REMOTE_CHANNEL,
-  PROP_PLAYBACK,
-  PROP_RECALL_ID,
-  PROP_RECALL_CONTAINER,
-  PROP_RECALL,
-  PROP_PLAY,
+  PROP_OCTAVE,
+  PROP_KEY,
+  PROP_ABSOLUTE_KEY,
+  PROP_NOTE_FREQUENCY,
+  PROP_NOTE_KEY,
+  PROP_MIDI_NOTE,
   PROP_LINK,
   PROP_FIRST_RECYCLING,
   PROP_LAST_RECYCLING,
+  PROP_PLAYBACK,
   PROP_PATTERN,
+  PROP_REMOTE_CHANNEL,
+  PROP_RECALL_ID,
+  PROP_RECYCLING_CONTEXT,
+  PROP_RECALL_CONTAINER,
+  PROP_PLAY,
+  PROP_RECALL,
 };
 
 static gpointer ags_channel_parent_class = NULL;
@@ -215,7 +250,7 @@ ags_channel_class_init(AgsChannelClass *channel)
    *
    * The assigned #AgsAudio aligning channels.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("assigned audio"),
@@ -227,15 +262,31 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsChannel:soundcard:
+   * AgsChannel:output-soundcard:
    *
-   * The assigned #AgsSoundcard acting as default sink.
+   * The assigned output #AgsSoundcard.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("output-soundcard",
-				   i18n_pspec("assigned soundcard"),
-				   i18n_pspec("The soundcard it is assigned with"),
+				   i18n_pspec("assigned output soundcard"),
+				   i18n_pspec("The output soundcard it is assigned with"),
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUNDCARD,
+				  param_spec);
+
+  /**
+   * AgsChannel:input-soundcard:
+   *
+   * The assigned input #AgsSoundcard.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("input-soundcard",
+				   i18n_pspec("assigned input soundcard"),
+				   i18n_pspec("The input soundcard it is assigned with"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -247,7 +298,7 @@ ags_channel_class_init(AgsChannelClass *channel)
    *
    * The samplerate.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_uint("samplerate",
 				  i18n_pspec("samplerate"),
@@ -265,7 +316,7 @@ ags_channel_class_init(AgsChannelClass *channel)
    *
    * The buffer size.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_uint("buffer-size",
 				  i18n_pspec("buffer size"),
@@ -283,7 +334,7 @@ ags_channel_class_init(AgsChannelClass *channel)
    *
    * The format.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_uint("format",
 				  i18n_pspec("format"),
@@ -297,17 +348,17 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
   
   /**
-   * AgsAudio:audio-channel:
+   * AgsAudio:pad:
    *
-   * The nth audio channel.
+   * The nth pad.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec =  g_param_spec_uint("audio-channel",
-				  i18n_pspec("nth audio channel"),
-				  i18n_pspec("The nth audio channel"),
+  param_spec =  g_param_spec_uint("pad",
+				  i18n_pspec("nth pad"),
+				  i18n_pspec("The nth pad"),
 				  0,
-				  65535,
+				  G_MAXUINT32,
 				  0,
 				  G_PARAM_READABLE);
   g_object_class_install_property(gobject,
@@ -315,17 +366,17 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsAudio:pad:
+   * AgsAudio:audio-channel:
    *
-   * The nth pad.
+   * The nth audio channel.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec =  g_param_spec_uint("pad",
-				  i18n_pspec("nth pad"),
-				  i18n_pspec("The nth pad"),
+  param_spec =  g_param_spec_uint("audio-channel",
+				  i18n_pspec("nth audio channel"),
+				  i18n_pspec("The nth audio channel"),
 				  0,
-				  65535,
+				  G_MAXUINT32,
 				  0,
 				  G_PARAM_READABLE);
   g_object_class_install_property(gobject,
@@ -337,109 +388,123 @@ ags_channel_class_init(AgsChannelClass *channel)
    *
    * The nth line.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_uint("line",
 				  i18n_pspec("nth line"),
 				  i18n_pspec("The nth line"),
 				  0,
-				  65535,
+				  G_MAXUINT32,
 				  0,
 				  G_PARAM_READABLE);
   g_object_class_install_property(gobject,
-				  PROP_AUDIO_CHANNEL,
+				  PROP_LINE,
 				  param_spec);
 
   /**
-   * AgsChannel:note:
+   * AgsAudio:octave:
    *
-   * The assigned #AgsNote representing this channel.
+   * The nth octave.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec = g_param_spec_string("note",
-				   i18n_pspec("assigned note"),
-				   i18n_pspec("The note it is assigned with"),
+  param_spec =  g_param_spec_int("octave",
+				 i18n_pspec("nth octave"),
+				 i18n_pspec("The nth octave"),
+				 AGS_CHANNEL_MINIMUM_OCTAVE,
+				 AGS_CHANNEL_MAXIMUM_OCTAVE,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_OCTAVE,
+				  param_spec);
+
+  /**
+   * AgsAudio:key:
+   *
+   * The nth key.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_uint("key",
+				  i18n_pspec("nth key"),
+				  i18n_pspec("The nth key"),
+				  0,
+				  AGS_CHANNEL_OCTAVE_SEMITONE_STEPS,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_KEY,
+				  param_spec);
+
+  /**
+   * AgsAudio:absolute-key:
+   *
+   * The nth absolute key.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_int("absolute-key",
+				 i18n_pspec("nth absolute key"),
+				 i18n_pspec("The nth absolute key"),
+				 AGS_CHANNEL_MINIMUM_SEMITONE,
+				 AGS_CHANNEL_MAXIMUM_SEMITONE,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ABSOLUTE_KEY,
+				  param_spec);
+
+  /**
+   * AgsAudio:note-frequency:
+   *
+   * The note frequency.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_double("note-frequency",
+				    i18n_pspec("note frequency"),
+				    i18n_pspec("The note frequency"),
+				    AGS_CHANNEL_MINIMUM_NOTE_FREQUENCY,
+				    AGS_CHANNEL_MAXIMUM_NOTE_FREQUENCY,
+				    0,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NOTE_FREQUENCY,
+				  param_spec);
+  
+  /**
+   * AgsChannel:note-key:
+   *
+   * The assigned note key representing this channel.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_string("note-key",
+				   i18n_pspec("assigned note key"),
+				   i18n_pspec("The note key it is assigned with"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_NOTE,
+				  PROP_NOTE_KEY,
 				  param_spec);
 
   /**
-   * AgsChannel:playback:
+   * AgsAudio:midi-note:
    *
-   * The assigned #AgsPlayback.
+   * The nth midi note.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("playback",
-				   i18n_pspec("assigned playback"),
-				   i18n_pspec("The playback it is assigned with"),
-				   AGS_TYPE_PLAYBACK,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec =  g_param_spec_uint("midi-note",
+				  i18n_pspec("nth midi note"),
+				  i18n_pspec("The nth midi note"),
+				  0,
+				  AGS_CHANNEL_MAXIMUM_MIDI_NOTE,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_PLAYBACK,
-				  param_spec);
-
-  /**
-   * AgsChannel:recall-id:
-   *
-   * The assigned #AgsRecallID.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_pointer("recall-id",
-				    i18n_pspec("assigned recall id"),
-				    i18n_pspec("The recall id it is assigned with"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_RECALL_ID,
-				  param_spec);
-
-  /**
-   * AgsChannel:recall-container:
-   *
-   * The containing #AgsRecallContainer.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_pointer("recall-container",
-				    i18n_pspec("containing recall-container"),
-				    i18n_pspec("The recall container it contains"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_RECALL_CONTAINER,
-				  param_spec);
-
-  /**
-   * AgsChannel:recall:
-   *
-   * The containing #AgsRecall in recall-context.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_pointer("recall",
-				    i18n_pspec("containing recall"),
-				    i18n_pspec("The recall it contains"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_RECALL,
-				  param_spec);
-
-  /**
-   * AgsChannel:play:
-   *
-   * The containing #AgsRecall in play-context.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_pointer("play",
-				    i18n_pspec("containing play"),
-				    i18n_pspec("The play it contains"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_PLAY,
+				  PROP_MIDI_NOTE,
 				  param_spec);
 
   /**
@@ -447,7 +512,7 @@ ags_channel_class_init(AgsChannelClass *channel)
    *
    * The assigned link as #AgsChannel.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("link",
 				   i18n_pspec("assigned link"),
@@ -463,7 +528,7 @@ ags_channel_class_init(AgsChannelClass *channel)
    *
    * The containing #AgsRecycling it takes it #AgsAudioSignal from.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("first-recycling",
 				   i18n_pspec("containing first recycling"),
@@ -479,7 +544,7 @@ ags_channel_class_init(AgsChannelClass *channel)
    *
    * The containing #AgsRecycling it takes it #AgsAudioSignal from.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("last-recycling",
 				   i18n_pspec("containing last recycling"),
@@ -489,13 +554,29 @@ ags_channel_class_init(AgsChannelClass *channel)
   g_object_class_install_property(gobject,
 				  PROP_LAST_RECYCLING,
 				  param_spec);
+  
+  /**
+   * AgsChannel:playback:
+   *
+   * The assigned #AgsPlayback.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("playback",
+				   i18n_pspec("assigned playback"),
+				   i18n_pspec("The playback it is assigned with"),
+				   AGS_TYPE_PLAYBACK,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLAYBACK,
+				  param_spec);
 
   /**
    * AgsChannel:pattern:
    *
    * The containing #AgsPattern.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("pattern",
 				    i18n_pspec("containing pattern"),
@@ -504,7 +585,97 @@ ags_channel_class_init(AgsChannelClass *channel)
   g_object_class_install_property(gobject,
 				  PROP_PATTERN,
 				  param_spec);
-  
+
+  /**
+   * AgsChannel:remote-channel:
+   *
+   * The containing #AgsRemoteChannel.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("remote-channel",
+				    i18n_pspec("remote channel"),
+				    i18n_pspec("The remote channel it contains"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_REMOTE_CHANNEL,
+				  param_spec);
+
+  /**
+   * AgsChannel:recall-id:
+   *
+   * The assigned #AgsRecallID.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("recall-id",
+				    i18n_pspec("assigned recall id"),
+				    i18n_pspec("The recall id it is assigned with"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_ID,
+				  param_spec);
+
+  /**
+   * AgsChannel:recycling-context:
+   *
+   * The containing #AgsRecyclingContext.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("recycling-context",
+				    i18n_pspec("containing recycling-context"),
+				    i18n_pspec("The recycling context it contains"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECYCLING_CONTEXT,
+				  param_spec);
+
+  /**
+   * AgsChannel:recall-container:
+   *
+   * The containing #AgsRecallContainer.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("recall-container",
+				    i18n_pspec("containing recall-container"),
+				    i18n_pspec("The recall container it contains"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_CONTAINER,
+				  param_spec);
+
+  /**
+   * AgsChannel:recall:
+   *
+   * The containing #AgsRecall in recall-context.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("recall",
+				    i18n_pspec("containing recall"),
+				    i18n_pspec("The recall it contains"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL,
+				  param_spec);
+
+  /**
+   * AgsChannel:play:
+   *
+   * The containing #AgsRecall in play-context.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("play",
+				    i18n_pspec("containing play"),
+				    i18n_pspec("The play it contains"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLAY,
+				  param_spec);
+
   /* AgsChannelClass */
   channel->add_effect = ags_channel_real_add_effect;
   channel->remove_effect = ags_channel_real_remove_effect;
@@ -514,12 +685,43 @@ ags_channel_class_init(AgsChannelClass *channel)
   channel->done = ags_channel_real_done;
 
   /* signals */
-    /**
+  /**
+   * AgsChannel::recycling-changed:
+   * @channel the object recycling changed
+   * @old_start_region: first recycling
+   * @old_end_region: last recycling
+   * @new_start_region: new first recycling
+   * @new_end_region: new last recycling
+   * @old_start_changed_region: modified link recycling start
+   * @old_end_changed_region: modified link recyclig end
+   * @new_start_changed_region: replacing link recycling start
+   * @new_end_changed_region: replacing link recycling end
+   *
+   * The ::recycling-changed signal is invoked to notify modified recycling tree.
+   * 
+   * Since: 2.0.0
+   */
+  channel_signals[RECYCLING_CHANGED] =
+    g_signal_new("recycling-changed",
+		 G_TYPE_FROM_CLASS (channel),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsChannelClass, recycling_changed),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT,
+		 G_TYPE_NONE, 8,
+		 G_TYPE_OBJECT, G_TYPE_OBJECT,
+		 G_TYPE_OBJECT, G_TYPE_OBJECT,
+		 G_TYPE_OBJECT, G_TYPE_OBJECT,
+		 G_TYPE_OBJECT, G_TYPE_OBJECT);
+
+  /**
    * AgsChannel::add-effect:
    * @channel: the #AgsChannel to modify
    * @effect: the effect's name
    *
    * The ::add-effect signal notifies about added effect.
+   * 
+   * Since: 2.0.0
    */
   channel_signals[ADD_EFFECT] =
     g_signal_new("add-effect",
@@ -538,6 +740,8 @@ ags_channel_class_init(AgsChannelClass *channel)
    * @nth: the nth effect
    *
    * The ::remove-effect signal notifies about removed effect.
+   * 
+   * Since: 2.0.0
    */
   channel_signals[REMOVE_EFFECT] =
     g_signal_new("remove-effect",
@@ -550,37 +754,13 @@ ags_channel_class_init(AgsChannelClass *channel)
 		 G_TYPE_UINT);
 
   /**
-   * AgsChannel::recycling-changed:
-   * @channel the object recycling changed
-   * @old_start_region: first recycling
-   * @old_end_region: last recycling
-   * @new_start_region: new first recycling
-   * @new_end_region: new last recycling
-   * @old_start_changed_region: modified link recycling start
-   * @old_end_changed_region: modified link recyclig end
-   * @new_start_changed_region: replacing link recycling start
-   * @new_end_changed_region: replacing link recycling end
-   *
-   * The ::recycling-changed signal is invoked to notify modified recycling tree.
-   */
-  channel_signals[RECYCLING_CHANGED] =
-    g_signal_new("recycling-changed",
-		 G_TYPE_FROM_CLASS (channel),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsChannelClass, recycling_changed),
-		 NULL, NULL,
-		 ags_cclosure_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT,
-		 G_TYPE_NONE, 8,
-		 G_TYPE_OBJECT, G_TYPE_OBJECT,
-		 G_TYPE_OBJECT, G_TYPE_OBJECT,
-		 G_TYPE_OBJECT, G_TYPE_OBJECT,
-		 G_TYPE_OBJECT, G_TYPE_OBJECT);
-  /**
-   * AgsChannel::done:
+   * AgsChannel::done-recall:
    * @channel: the object done playing.
    * @recall_id: the appropriate #AgsRecallID
    *
    * The ::done signal is invoked during termination of playback.
+   * 
+   * Since: 2.0.0
    */
   channel_signals[DONE] =
     g_signal_new("done",
@@ -822,13 +1002,24 @@ ags_channel_set_property(GObject *gobject,
       channel->audio = (GObject *) audio;
     }
     break;
-  case PROP_SOUNDCARD:
+  case PROP_OUTPUT_SOUNDCARD:
     {
-      GObject *soundcard;
+      GObject *output_soundcard;
 
-      soundcard = (GObject *) g_value_get_object(value);
+      output_soundcard = (GObject *) g_value_get_object(value);
 
-      ags_channel_set_soundcard(channel, (GObject *) soundcard);
+      ags_channel_set_output_soundcard(channel,
+				       output_soundcard);
+    }
+    break;
+  case PROP_INPUT_SOUNDCARD:
+    {
+      GObject *input_soundcard;
+
+      input_soundcard = (GObject *) g_value_get_object(value);
+
+      ags_channel_set_input_soundcard(channel,
+				      input_soundcard);
     }
     break;
   case PROP_SAMPLERATE:
@@ -861,21 +1052,61 @@ ags_channel_set_property(GObject *gobject,
 			     format);
     }
     break;
-  case PROP_NOTE:
+  case PROP_OCTAVE:
     {
-      gchar *note;
+      channel->octave = g_value_get_int(value);
+    }
+    break;
+  case PROP_KEY:
+    {
+      channel->key = g_value_get_uint(value);
+    }
+    break;
+  case PROP_ABSOLUTE_KEY:
+    {
+      channel->absolute_key = g_value_get_int(value);
+    }
+    break;
+  case PROP_NOTE_FREQUENCY:
+    {
+      channel->note_frequency = g_value_get_double(value);
+    }
+    break;
+  case PROP_NOTE_KEY:
+    {
+      gchar *note_key;
 
-      note = g_value_get_string(value);
+      note_key = g_value_get_string(value);
 
-      if(channel->note == note){
+      if(channel->note_key == note_key){
 	return;
       }
 
-      if(channel->note != NULL){
-	g_free(channel->note);
+      if(channel->note_key != NULL){
+	g_free(channel->note_key);
       }
 
-      channel->note = g_strdup(channel->note);
+      channel->note_key = g_strdup(note_key);
+    }
+    break;
+  case PROP_MIDI_NOTE:
+    {
+      channel->midi_note = g_value_get_uint(value);
+    }
+    break;
+  case PROP_LINK:
+    {
+      AgsChannel *link;
+
+      link = (AgsChannel *) g_value_get_object(value);
+
+      if(channel->link == link){
+	return;
+      }
+
+      ags_channel_set_link(channel,
+			   link,
+			   NULL);
     }
     break;
   case PROP_PLAYBACK:
@@ -897,6 +1128,21 @@ ags_channel_set_property(GObject *gobject,
       }
 
       channel->playback = (GObject *) playback;
+    }
+    break;
+  case PROP_PATTERN:
+    {
+      AgsPattern *pattern;
+
+      pattern = (AgsPattern *) g_value_get_pointer(value);
+
+      if(pattern == NULL ||
+	 g_list_find(channel->pattern, pattern) != NULL){
+	return;
+      }
+
+      ags_channel_add_pattern(channel,
+			      (GObject *) pattern);
     }
     break;
   case PROP_REMOTE_CHANNEL:
@@ -929,6 +1175,21 @@ ags_channel_set_property(GObject *gobject,
 				recall_id);
     }
     break;
+  case PROP_RECYCLING_CONTEXT:
+    {
+      AgsRecyclingContext *recycling_context;
+
+      recycling_context = (AgsRecyclingContext *) g_value_get_pointer(value);
+
+      if(recycling_context == NULL ||
+	 g_list_find(channel->context, recycling_context) != NULL){
+	return;
+      }
+
+      ags_channel_add_recycling_context(channel,
+				       (GObject *) recycling_context);
+    }
+    break;
   case PROP_RECALL_CONTAINER:
     {
       AgsRecallContainer *recall_container;
@@ -944,46 +1205,14 @@ ags_channel_set_property(GObject *gobject,
 				       (GObject *) recall_container);
     }
     break;
-  case PROP_RECALL:
-    {
-      AgsRecall *recall;
-
-      gboolean recall_added;
-      
-      recall = (AgsRecall *) g_value_get_pointer(value);
-
-      pthread_mutex_lock(channel->recall_mutex);
-
-      recall_added = (g_list_find(channel->recall, recall) != NULL) ? TRUE: FALSE;
-      
-      pthread_mutex_unlock(channel->recall_mutex);
-
-      if(recall == NULL ||
-	 recall_added){
-	return;
-      }
-
-      ags_channel_add_recall(channel,
-			     (GObject *) recall,
-			     FALSE);
-    }
-    break;
   case PROP_PLAY:
     {
       AgsRecall *play;
 
-      gboolean play_added;
-      
       play = (AgsRecall *) g_value_get_pointer(value);
 
-      pthread_mutex_lock(channel->play_mutex);
-
-      play_added = (g_list_find(channel->play, play) != NULL) ? TRUE: FALSE;
-      
-      pthread_mutex_unlock(channel->play_mutex);
-	    
       if(play == NULL ||
-	 play_added){
+	 g_list_find(channel->play, play) != NULL){
 	return;
       }
 
@@ -992,34 +1221,20 @@ ags_channel_set_property(GObject *gobject,
 			     TRUE);
     }
     break;
-  case PROP_LINK:
+  case PROP_RECALL:
     {
-      AgsChannel *link;
+      AgsRecall *recall;
+      
+      recall = (AgsRecall *) g_value_get_pointer(value);
 
-      link = (AgsChannel *) g_value_get_object(value);
-
-      if(channel->link == link){
+      if(recall == NULL ||
+	 g_list_find(channel->recall, recall) != NULL){
 	return;
       }
 
-      ags_channel_set_link(channel,
-			   link,
-			   NULL);
-    }
-    break;
-  case PROP_PATTERN:
-    {
-      AgsPattern *pattern;
-
-      pattern = (AgsPattern *) g_value_get_pointer(value);
-
-      if(pattern == NULL ||
-	 g_list_find(channel->pattern, pattern) != NULL){
-	return;
-      }
-
-      ags_channel_add_pattern(channel,
-			      (GObject *) pattern);
+      ags_channel_add_recall(channel,
+			     (GObject *) recall,
+			     FALSE);
     }
     break;
   default:

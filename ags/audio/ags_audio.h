@@ -68,11 +68,10 @@ typedef enum{
   AGS_AUDIO_OUTPUT_HAS_RECYCLING        = 1 <<  6,
   AGS_AUDIO_INPUT_HAS_RECYCLING         = 1 <<  7,
   AGS_AUDIO_INPUT_HAS_FILE              = 1 <<  8,
-  AGS_AUDIO_INPUT_HAS_SYNTH_GENERATOR   = 1 <<  9,
-  AGS_AUDIO_CAN_NEXT_ACTIVE             = 1 << 10,
-  AGS_AUDIO_SKIP_OUTPUT                 = 1 << 11,
-  AGS_AUDIO_SKIP_INPUT                  = 1 << 12,
-  AGS_AUDIO_BYPASS                      = 1 << 13,
+  AGS_AUDIO_CAN_NEXT_ACTIVE             = 1 <<  9,
+  AGS_AUDIO_SKIP_OUTPUT                 = 1 << 10,
+  AGS_AUDIO_SKIP_INPUT                  = 1 << 11,
+  AGS_AUDIO_BYPASS                      = 1 << 12,
 }AgsAudioFlags;
 
 struct _AgsAudio
@@ -139,10 +138,12 @@ struct _AgsAudio
   GList *preset;
 
   GObject *playback_domain;
+
+  GList *synth_generator;
   
   GList *notation;
   GList *automation;
-
+  
   GList *wave;
   GObject *output_audio_file;
   GObject *input_audio_file;  
@@ -259,11 +260,11 @@ void ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size);
 void ags_audio_set_format(AgsAudio *audio, guint format);
 
 /* children */
-void ags_audio_add_audio_connection(AgsAudio *audio, GObject *audio_connection);
-void ags_audio_remove_audio_connection(AgsAudio *audio, GObject *audio_connection);
-
 void ags_audio_add_preset(AgsAudio *audio, GObject *preset);
 void ags_audio_remove_preset(AgsAudio *audio, GObject *preset);
+
+void ags_audio_add_synth_generator(AgsAudio *audio, GObject *synth_generator);
+void ags_audio_remove_synth_generator(AgsAudio *audio, GObject *synth_generator);
 
 void ags_audio_add_notation(AgsAudio *audio, GObject *notation);
 void ags_audio_remove_notation(AgsAudio *audio, GObject *notation);

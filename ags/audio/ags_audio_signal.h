@@ -78,6 +78,11 @@ struct _AgsAudioSignal
 
   gdouble delay;
   guint attack;
+
+  AgsComplex *damping;
+  AgsComplex *vibration;
+  guint timbre_start;
+  guint timbre_end;
   
   GList *stream_beginning;
   GList *stream_current;
