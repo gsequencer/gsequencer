@@ -2758,47 +2758,51 @@ ags_channel_unset_staging_flags(AgsChannel *channel, gint sound_scope,
  *
  * Returns: the first #AgsChannel
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsChannel*
 ags_channel_first(AgsChannel *channel)
 {
-  AgsMutexManager *mutex_manager;
+  gboolean has_prev;
+  
+  pthread_mutex_t *channel_mutex;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
-
-  if(channel == NULL){
+  if(!AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
 
   /* first */
   channel = ags_channel_pad_first(channel);
-  
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* iterate */
-  while(channel != NULL){
-    pthread_mutex_lock(application_mutex);
-
-    mutex = ags_mutex_manager_lookup(mutex_manager,
-				     (GObject *) channel);
     
-    pthread_mutex_unlock(application_mutex);
+  while(channel != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+    channel_mutex = channel->obj_mutex;
+  
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
-    pthread_mutex_lock(mutex);
+    /* check prev */
+    has_prev = TRUE;
+    
+    pthread_mutex_lock(channel_mutex);
 
     if(channel->prev == NULL){
-      pthread_mutex_unlock(mutex);
-
-      break;
-    }else{
-      channel = channel->prev;
-      
-      pthread_mutex_unlock(mutex);
+      has_prev = FALSE;
     }
+    
+    pthread_mutex_unlock(channel_mutex);
+
+    if(!has_prev){
+      break;
+    }
+    
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+
+    channel = channel->prev;
+
+    pthread_mutex_unlock(channel_mutex);
   }
   
   return(channel);
@@ -2812,47 +2816,51 @@ ags_channel_first(AgsChannel *channel)
  *
  * Returns: the last #AgsChannel
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsChannel*
 ags_channel_last(AgsChannel *channel)
 {
-  AgsMutexManager *mutex_manager;
+  gboolean has_next;
+  
+  pthread_mutex_t *channel_mutex;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
-
-  if(channel == NULL){
+  if(!AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
   
   /* last */
   channel = ags_channel_pad_last(channel);
 
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* iterate */
   while(channel != NULL){
-    pthread_mutex_lock(application_mutex);
+    /* get channel mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+    channel_mutex = channel->obj_mutex;
+  
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
-    mutex = ags_mutex_manager_lookup(mutex_manager,
-				     (GObject *) channel);
+    /* check next */
+    has_next = TRUE;
     
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_lock(channel_mutex);
 
-    pthread_mutex_lock(mutex);
-
-    if(channel->next == NULL){    
-      pthread_mutex_unlock(mutex);
-
-      break;
-    }else{
-      channel = channel->next;
-    
-      pthread_mutex_unlock(mutex);
+    if(channel->next == NULL){
+      has_next = FALSE;
     }
+
+    pthread_mutex_unlock(channel_mutex);
+
+    if(!has_next){
+      break;
+    }
+    
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+    
+    channel = channel->next;
+    
+    pthread_mutex_unlock(channel_mutex);
   }
 
   return(channel);
@@ -2867,40 +2875,33 @@ ags_channel_last(AgsChannel *channel)
  *
  * Returns: the nth #AgsChannel
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsChannel*
 ags_channel_nth(AgsChannel *channel, guint nth)
 {
-  AgsMutexManager *mutex_manager;
-
   guint i;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  pthread_mutex_t *channel_mutex;
 
-  if(channel == NULL){
+  if(!AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
   
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* nth */
   for(i = 0; i < nth && channel != NULL; i++){
-    pthread_mutex_lock(application_mutex);
-
-    mutex = ags_mutex_manager_lookup(mutex_manager,
-				     (GObject *) channel);
-
-    pthread_mutex_unlock(application_mutex);
+    /* get channel mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
   
-    pthread_mutex_lock(mutex);
+    channel_mutex = channel->obj_mutex;
+  
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
     
     channel = channel->next;
     
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(channel_mutex);
   }
 
 #ifdef AGS_DEBUG
@@ -2930,7 +2931,7 @@ ags_channel_pad_first(AgsChannel *channel)
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
-  if(channel == NULL){
+  if(!AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
 
@@ -2988,7 +2989,7 @@ ags_channel_pad_last(AgsChannel *channel)
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
-  if(channel == NULL){
+  if(!AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
 
@@ -3041,6 +3042,10 @@ ags_channel_pad_nth(AgsChannel *channel, guint nth)
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
   /* lookup mutex */
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -3088,7 +3093,7 @@ ags_channel_first_with_recycling(AgsChannel *channel)
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
-  if(channel == NULL){
+  if(!AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
 
@@ -3141,7 +3146,7 @@ ags_channel_last_with_recycling(AgsChannel *channel)
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
-  if(channel == NULL){
+  if(!AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
 
@@ -3186,7 +3191,7 @@ ags_channel_prev_with_recycling(AgsChannel *channel)
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
-  if(channel == NULL){
+  if(!AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
 
@@ -3251,7 +3256,7 @@ ags_channel_next_with_recycling(AgsChannel *channel)
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
-  if(channel == NULL){
+  if(!AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
 
