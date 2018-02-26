@@ -5939,7 +5939,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
  * @channel_type: AGS_TYPE_INPUT or AGS_TYPE_OUTPUT
  * @pads: new pad count
  *
- * Sets pad count for the apropriate @channel_type
+ * Set pad count for the apropriate @channel_type
  *
  * Since: 2.0.0
  */
@@ -5978,7 +5978,7 @@ ags_audio_set_pads(AgsAudio *audio,
  * @audio: the #AgsAudio
  * @soundcard: an #AgsSoundcard
  *
- * Sets the output soundcard object on audio.
+ * Set the output soundcard object of @audio.
  *
  * Since: 2.0.0
  */
@@ -6007,7 +6007,6 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *playback_domain_mutex;
   pthread_mutex_t *play_mutex, *recall_mutex;
-  pthread_mutex_t *audio_thread_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return;
@@ -6066,15 +6065,11 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
     pthread_mutex_unlock(soundcard_mutex);
 
     /* apply presets */
-    pthread_mutex_lock(audio_mutex);
-
     g_object_set(audio,
 		 "samplerate", samplerate,
 		 "buffer-size", buffer_size,
 		 "format", format,
 		 NULL);
-
-    pthread_mutex_unlock(audio_mutex);
   }
 
   /* output */
@@ -6178,21 +6173,10 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
     pthread_mutex_unlock(playback_domain_mutex);
     
     if(audio_thread != NULL){
-      /* get audio thread mutex */
-      pthread_mutex_lock(ags_thread_get_class_mutex());
-
-      audio_thread_mutex = audio_thread->obj_mutex;
-  
-      pthread_mutex_unlock(ags_thread_get_class_mutex());
-      
       /* set output soundcard */
-      pthread_mutex_lock(audio_thread_mutex);
-      
       g_object_set(audio_thread,
 		   "output-soundcard", soundcard,
 		   NULL);
-
-      pthread_mutex_unlock(audio_thread_mutex);
     }
   }
   
@@ -6255,7 +6239,7 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
  * @audio: the #AgsAudio
  * @soundcard: an #AgsSoundcard
  *
- * Sets the input soundcard object on audio.
+ * Set the input soundcard object on audio.
  *
  * Since: 2.0.0
  */
