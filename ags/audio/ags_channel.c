@@ -2921,51 +2921,49 @@ ags_channel_nth(AgsChannel *channel, guint nth)
  *
  * Returns: the first #AgsChannel with the same audio channel as @channel
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsChannel*
 ags_channel_pad_first(AgsChannel *channel)
 {
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  gboolean has_prev_pad;
+  
+  pthread_mutex_t *channel_mutex;
 
   if(!AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
 
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* lookup mutex */
-  pthread_mutex_lock(application_mutex);
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* pad first */
   while(channel != NULL){
-    pthread_mutex_lock(application_mutex);
+    /* get channel mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+    channel_mutex = channel->obj_mutex;
+  
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
-    mutex = ags_mutex_manager_lookup(mutex_manager,
-				     (GObject *) channel);
+    /* check has prev pad */
+    has_prev_pad = TRUE;
     
-    pthread_mutex_unlock(application_mutex);
-
-    pthread_mutex_lock(mutex);
+    pthread_mutex_lock(channel_mutex);
 
     if(channel->prev_pad == NULL){
-      pthread_mutex_unlock(mutex);
+      has_prev_pad = FALSE;
+    }
 
+    pthread_mutex_unlock(channel_mutex);
+
+    if(!has_prev_pad){
       break;
     }
+    
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
 
     channel = channel->prev_pad;
       
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(channel_mutex);
   }
 
   return(channel);
@@ -2979,43 +2977,48 @@ ags_channel_pad_first(AgsChannel *channel)
  *
  * Returns: the last #AgsChannel with the same audio channel as @channel
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsChannel*
 ags_channel_pad_last(AgsChannel *channel)
 {
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
+  gboolean has_next_pad;
+  
   pthread_mutex_t *mutex;
 
   if(!AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
 
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   while(channel != NULL){
-    pthread_mutex_lock(application_mutex);
+    /* get channel mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+    channel_mutex = channel->obj_mutex;
+  
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
-    mutex = ags_mutex_manager_lookup(mutex_manager,
-				     (GObject *) channel);
+    /* check has next pad */
+    has_next_pad = TRUE;
     
-    pthread_mutex_unlock(application_mutex);
-
     pthread_mutex_lock(mutex);
     
     if(channel->next_pad == NULL){
-      pthread_mutex_unlock(mutex);
-      
-      break;
-    }else{
-      channel = channel->next_pad;
-
-      pthread_mutex_unlock(mutex);
+      has_next_pad = FALSE;
     }
+
+    pthread_mutex_unlock(mutex);
+
+    if(!has_next_pad){
+      break;
+    }
+    
+    /* iterate */
+    pthread_mutex_lock(mutex);    
+
+    channel = channel->next_pad;
+
+    pthread_mutex_unlock(mutex);
   }
 
   return(channel);
@@ -3030,40 +3033,33 @@ ags_channel_pad_last(AgsChannel *channel)
  *
  * Returns: the nth pad
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsChannel*
 ags_channel_pad_nth(AgsChannel *channel, guint nth)
 {
-  AgsMutexManager *mutex_manager;
-
   guint i;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  pthread_mutex_t *channel_mutex;
 
   if(!AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
-
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
-  /* pad nth */
   for(i = 0; i < nth && channel != NULL; i++){
-    pthread_mutex_lock(application_mutex);
-
-    mutex = ags_mutex_manager_lookup(mutex_manager,
-				     (GObject *) channel);
-
-    pthread_mutex_unlock(application_mutex);
+    /* get channel mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
   
-    pthread_mutex_lock(mutex);
+    channel_mutex = channel->obj_mutex;
+  
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
 
     channel = channel->next_pad;
     
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(channel_mutex);
   }
 
 #ifdef AGS_DEBUG
