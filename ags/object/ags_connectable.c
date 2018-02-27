@@ -59,6 +59,31 @@ ags_connectable_base_init(AgsConnectableInterface *interface)
 }
 
 /**
+ * ags_connectable_get_uuid:
+ * @connectable: the #AgsConnectable
+ *
+ * Get UUID of @connectable.
+ *
+ * Returns: the assigned #AgsUUID
+ *
+ * Since: 2.0.0
+ */
+gpointer
+ags_connectable_get_uuid(AgsConnectable *connectable)
+{
+  AgsConnectableInterface *connectable_interface;
+
+  g_return_val_if_fail(AGS_IS_CONNECTABLE(connectable), NULL);
+  connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
+
+  if(connectable_interface->get_uuid == NULL){
+    return(NULL);
+  }
+
+  return(connectable_interface->get_uuid(connectable));
+}
+
+/**
  * ags_connectable_has_resource:
  * @connectable: the #AgsConnectable
  *
@@ -75,10 +100,7 @@ ags_connectable_has_resource(AgsConnectable *connectable)
 
   g_return_val_if_fail(AGS_IS_CONNECTABLE(connectable), FALSE);
   connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
-
-  if(connectable_interface->has_resource == NULL){
-    return(FALSE);
-  }
+  g_return_val_if_fail(connectable_interface->has_resource, FALSE);
 
   return(connectable_interface->has_resource(connectable));
 }
@@ -100,10 +122,7 @@ ags_connectable_is_ready(AgsConnectable *connectable)
 
   g_return_val_if_fail(AGS_IS_CONNECTABLE(connectable), TRUE);
   connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
-
-  if(connectable_interface->is_ready == NULL){
-    return(TRUE);
-  }
+  g_return_val_if_fail(connectable_interface->is_ready, TRUE);
 
   return(connectable_interface->is_ready(connectable));
 }
@@ -147,25 +166,47 @@ ags_connectable_remove_from_registry(AgsConnectable *connectable)
 }
 
 /**
- * ags_connectable_update:
+ * ags_connectable_xml_compose:
  * @connectable: the #AgsConnectable
  *
- * Disconnect the connectable.
+ * Compose an XML element and return it.
  *
- * Returns: the #xmlNode-struct describing howto update
+ * Returns: the #xmlNode-struct
  *
  * Since: 2.0.0
  */
 xmlNode*
-ags_connectable_update(AgsConnectable *connectable)
+ags_connectable_xml_compose(AgsConnectable *connectable)
 {
   AgsConnectableInterface *connectable_interface;
 
   g_return_val_if_fail(AGS_IS_CONNECTABLE(connectable), NULL);
   connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
-  g_return_val_if_fail(connectable_interface->update, NULL);
+  g_return_val_if_fail(connectable_interface->xml_compose, NULL);
 
-  return(connectable_interface->update(connectable));
+  return(connectable_interface->xml_compose(connectable));
+}
+
+/**
+ * ags_connectable_xml_parse:
+ * @connectable: the #AgsConnectable
+ * @node: the #xmlNode-struct
+ *
+ * Parse @node as XML element and apply it.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_connectable_xml_parse(AgsConnectable *connectable,
+			  xmlNode *node)
+{
+  AgsConnectableInterface *connectable_interface;
+
+  g_return_val_if_fail(AGS_IS_CONNECTABLE(connectable), NULL);
+  connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
+  g_return_val_if_fail(connectable_interface->xml_parse, NULL);
+
+  return(connectable_interface->xml_parse(connectable));
 }
 
 /**

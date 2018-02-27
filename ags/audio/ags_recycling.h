@@ -23,6 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
+#include <ags/libags.h>
+
 #include <ags/audio/ags_audio_signal.h>
 
 #define AGS_TYPE_RECYCLING                (ags_recycling_get_type())
@@ -59,8 +63,8 @@ struct _AgsRecycling
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
 
-  gboolean parent_locked;
-  
+  AgsUUID *uuid;
+
   GObject *channel;
 
   GObject *output_soundcard;

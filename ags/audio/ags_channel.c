@@ -1988,6 +1988,8 @@ ags_channel_add_to_registry(AgsConnectable *connectable)
   
   channel = AGS_CHANNEL(connectable);
 
+  ags_channel_set_flags(channel, AGS_CHANNEL_ADDED_TO_REGISTRY);
+
   application_context = ags_application_context_get_instance();
 
   registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));

@@ -335,7 +335,8 @@ libags_h_sources = \
 	ags/lib/ags_string_util.h \
 	ags/lib/ags_time.h \
 	ags/lib/ags_turtle.h \
-	ags/lib/ags_turtle_manager.h
+	ags/lib/ags_turtle_manager.h \
+	ags/lib/ags_uuid.h
 
 deprecated_libags_c_sources =
 
@@ -352,7 +353,8 @@ libags_c_sources = \
 	ags/lib/ags_string_util.c \
 	ags/lib/ags_time.c \
 	ags/lib/ags_turtle.c \
-	ags/lib/ags_turtle_manager.c
+	ags/lib/ags_turtle_manager.c \
+	ags/lib/ags_uuid.c
 
 deprecated_libags_util_h_sources =
 
@@ -385,6 +387,7 @@ libags_object_h_sources =  \
 	ags/object/ags_concurrent_tree.h \
 	ags/object/ags_distributed_manager.h \
 	ags/object/ags_dynamic_connectable.h \
+	ags/object/ags_globals.h \
 	ags/object/ags_macros.h \
 	ags/object/ags_main_loop.h \
 	ags/object/ags_marshal.h \
@@ -411,6 +414,7 @@ libags_object_c_sources = \
 	ags/object/ags_concurrent_tree.c \
 	ags/object/ags_distributed_manager.c \
 	ags/object/ags_dynamic_connectable.c \
+	ags/object/ags_globals.c \
 	ags/object/ags_main_loop.c \
 	ags/object/ags_marshal.c \
 	ags/object/ags_mutable.c \

@@ -25,6 +25,8 @@
 
 #include <pthread.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_dependency.h>
@@ -107,6 +109,8 @@ struct _AgsRecall
   
   gboolean rt_safe;
   
+  AgsUUID *uuid;
+
   gchar *version;
   gchar *build_id;
 
@@ -115,29 +119,34 @@ struct _AgsRecall
 
   gchar *xml_type;
 
-  GObject *output_soundcard;
-  GObject *input_soundcard;
-  
   GObject *recall_container;
 
-  GList *dependencies;
+  GObject *output_soundcard;
+  guint output_soundcard_channel;
 
+  GObject *input_soundcard;
+  guint input_soundcard_channel;
+
+  GList *port;
+  GList *automation_port;
+  
   AgsRecallID *recall_id;
+
+  GList *dependency;
+  GList *handler;  
 
   pthread_mutexattr_t *children_attr;
   pthread_mutex_t *children_mutex;
 
   AgsRecall *parent;
-  GList *children;
-
-  GType child_type;
-  GParameter *child_parameters;
-  guint n_params;
-
-  GList *port;
-  GList *automation_port;
   
-  GList *handlers;
+  GType child_type;
+  
+  guint n_params;
+  gchar **child_parameter_name;
+  GValue *child_value;
+
+  GList *children;  
 };
 
 struct _AgsRecallClass
