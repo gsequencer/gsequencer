@@ -17,11 +17,34 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_ID_GENERATOR_H__
-#define __AGS_ID_GENERATOR_H__
+#ifndef __AGS_UUID__
+#define __AGS_UUID__
 
 #include <glib.h>
+#include <glib-object.h>
 
-gchar* ags_id_generator_create_uuid();
+#include <uuid/uuid.h>
 
-#endif /*__AGS_ID_GENERATOR_H__*/
+#define AGS_TYPE_UUID                (ags_uuid_get_type())
+
+#define AGS_UUID_DEFAULT_LENGTH (16)
+#define AGS_UUID_STRING_DEFAULT_LENGTH (36)
+
+typedef uuid_t AgsUUID;
+
+GType ags_uuid_get_type(void);
+
+AgsUUID* ags_uuid_alloc();
+
+gpointer ags_uuid_copy(AgsUUID *ptr);
+void ags_uuid_free(AgsUUID *ptr);
+
+void ags_uuid_generate(AgsUUID *ptr);
+
+gint ags_uuid_compare(AgsUUID *a,
+		      AgsUUID *b);
+
+gchar* ags_uuid_to_string(AgsUUID *ptr);
+AgsUUID* ags_uuid_from_string(gchar *str);
+
+#endif /*__AGS_UUID__*/

@@ -66,8 +66,14 @@ void ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
 
 enum{
   PROP_0,
-  PROP_SOUNDCARD,
   PROP_CHANNEL,
+  PROP_OUTPUT_SOUNDCARD,
+  PROP_OUTPUT_SOUNDCARD_CHANNEL,
+  PROP_INPUT_SOUNDCARD,
+  PROP_INPUT_SOUNDCARD_CHANNEL,
+  PROP_SAMPLERATE,
+  PROP_BUFFER_SIZE,
+  PROP_FORMAT,
   PROP_PARENT,
   PROP_NEXT,
   PROP_PREV,
@@ -154,7 +160,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The assigned #AgsChannel.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   "assigned channel",
@@ -166,19 +172,125 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
 				  param_spec);
 
   /**
-   * AgsRecycling:soundcard:
+   * AgsRecycling:output-soundcard:
    *
-   * The assigned #GObject acting as default sink.
+   * The assigned output soundcard acting as default sink.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("output-soundcard",
-				   "assigned soundcard",
-				   "The soundcard it is assigned with",
+				   "assigned output soundcard",
+				   "The output soundcard it is assigned with",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SOUNDCARD,
+				  PROP_OUTPUT_SOUNDCARD,
+				  param_spec);
+
+  /**
+   * AgsRecycling:output-soundcard-channel:
+   *
+   * The output soundcard channel.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_uint("output-soundcard-channel",
+				  i18n_pspec("output soundcard channel"),
+				  i18n_pspec("The output soundcard channel"),
+				  0,
+				  G_MAXUINT32,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_OUTPUT_SOUNDCARD_CHANNEL,
+				  param_spec);
+  
+  /**
+   * AgsRecycling:input-soundcard:
+   *
+   * The assigned input soundcard.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("input-soundcard",
+				   "assigned input soundcard",
+				   "The input soundcard it is assigned with",
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_INPUT_SOUNDCARD,
+				  param_spec);
+
+  /**
+   * AgsRecycling:input-soundcard-channel:
+   *
+   * The input soundcard channel.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_uint("input-soundcard-channel",
+				  i18n_pspec("input soundcard channel"),
+				  i18n_pspec("The input soundcard channel"),
+				  0,
+				  G_MAXUINT32,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_INPUT_SOUNDCARD_CHANNEL,
+				  param_spec);
+  
+  /**
+   * AgsRecycling:samplerate:
+   *
+   * The samplerate.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_uint("samplerate",
+				  i18n_pspec("samplerate"),
+				  i18n_pspec("The samplerate"),
+				  0,
+				  G_MAXUINT32,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SAMPLERATE,
+				  param_spec);
+
+  /**
+   * AgsRecycling:buffer-size:
+   *
+   * The buffer size.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_uint("buffer-size",
+				  i18n_pspec("buffer size"),
+				  i18n_pspec("The buffer size"),
+				  0,
+				  G_MAXUINT32,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BUFFER_SIZE,
+				  param_spec);
+
+  /**
+   * AgsRecycling:format:
+   *
+   * The format.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_uint("format",
+				  i18n_pspec("format"),
+				  i18n_pspec("The format"),
+				  0,
+				  G_MAXUINT32,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FORMAT,
 				  param_spec);
 
   /**
@@ -186,7 +298,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The assigned parent #AgsRecycling.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("parent",
 				   "assigned parent",
@@ -202,7 +314,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The assigned prev #AgsRecycling.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("prev",
 				   "assigned prev",
@@ -218,7 +330,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The assigned next #AgsRecycling.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("next",
 				   "assigned next",
@@ -234,13 +346,12 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    *
    * The containing  #AgsAudioSignal.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("audio-signal",
-				   "containing audio signal",
-				   "The audio signal it contains",
-				   AGS_TYPE_AUDIO_SIGNAL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("audio-signal",
+				    "containing audio signal",
+				    "The audio signal it contains",
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_SIGNAL,
 				  param_spec);
@@ -255,6 +366,8 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    * @audio_signal: the #AgsAudioSignal to add
    *
    * The ::add-audio-signal signal is emited as adding #AgsAudioSignal
+   * 
+   * Since: 2.0.0
    */
   recycling_signals[ADD_AUDIO_SIGNAL] =
     g_signal_new("add-audio-signal",
@@ -272,6 +385,8 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
    * @audio_signal: the #AgsAudioSignal to remove
    *
    * The ::remove-audio-signal signal is emited as removing #AgsAudioSignal
+   * 
+   * Since: 2.0.0
    */
   recycling_signals[REMOVE_AUDIO_SIGNAL] =
     g_signal_new("remove-audio-signal",
@@ -361,13 +476,32 @@ ags_recycling_set_property(GObject *gobject,
   recycling = AGS_RECYCLING(gobject);
 
   switch(prop_id){
-  case PROP_SOUNDCARD:
+  case PROP_OUTPUT_SOUNDCARD:
     {
       GObject *soundcard;
 
       soundcard = (GObject *) g_value_get_object(value);
 
-      ags_recycling_set_soundcard(recycling, (GObject *) soundcard);
+      ags_recycling_set_output_soundcard(recycling, (GObject *) soundcard);
+    }
+    break;
+  case PROP_OUTPUT_SOUNDCARD_CHANNEL:
+    {
+      channel->output_soundcard_channel = g_value_get_uint(value);
+    }
+    break;
+  case PROP_INPUT_SOUNDCARD:
+    {
+      GObject *soundcard;
+
+      soundcard = (GObject *) g_value_get_object(value);
+
+      ags_recycling_set_input_soundcard(recycling, (GObject *) soundcard);
+    }
+    break;
+  case PROP_INPUT_SOUNDCARD_CHANNEL:
+    {
+      channel->input_soundcard_channel = g_value_get_uint(value);
     }
     break;
   case PROP_CHANNEL:
@@ -738,17 +872,106 @@ ags_recycling_finalize(GObject *gobject)
 }
 
 /**
- * ags_recycling_set_soundcard:
- * @recycling:  an #AgsRecycling
- * @soundcard: the #GObject to set
+ * ags_recycling_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
  *
- * Sets #GObject to recycling.
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_recycling_get_class_mutex()
+{
+  return(&ags_recycling_class_mutex);
+}
+
+/**
+ * ags_recycling_set_flags:
+ * @recycling: the #AgsRecycling
+ * @flags: see #AgsRecyclingFlags-enum
+ *
+ * Enable a feature of @recycling.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_recycling_set_flags(AgsRecycling *recycling, guint flags)
+{
+  pthread_mutex_t *recycling_mutex;
+
+  if(!AGS_IS_RECYCLING(recycling)){
+    return;
+  }
+
+  /* get recycling mutex */
+  pthread_mutex_lock(ags_recycling_get_class_mutex());
+  
+  recycling_mutex = recycling->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+
+  //TODO:JK: add more?
+
+  /* set flags */
+  pthread_mutex_lock(recycling_mutex);
+
+  recycling->flags |= flags;
+  
+  pthread_mutex_unlock(recycling_mutex);
+}
+    
+/**
+ * ags_recycling_unset_flags:
+ * @recycling: the #AgsRecycling
+ * @flags: see #AgsRecyclingFlags-enum
+ *
+ * Disable a feature of @recycling.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_recycling_unset_flags(AgsRecycling *recycling, guint flags)
+{  
+  pthread_mutex_t *recycling_mutex;
+
+  if(!AGS_IS_RECYCLING(recycling)){
+    return;
+  }
+
+  /* get recycling mutex */
+  pthread_mutex_lock(ags_recycling_get_class_mutex());
+  
+  recycling_mutex = recycling->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+
+  //TODO:JK: add more?
+
+  /* unset flags */
+  pthread_mutex_lock(recycling_mutex);
+
+  recycling->flags &= (~flags);
+  
+  pthread_mutex_unlock(recycling_mutex);
+}
+
+/**
+ * ags_recycling_set_output_soundcard:
+ * @recycling:  an #AgsRecycling
+ * @output_soundcard: the #GObject to set
+ *
+ * Set @output_soundcard to recycling.
  *
  * Since: 1.0.0
  */
 void
-ags_recycling_set_soundcard(AgsRecycling *recycling, GObject *soundcard)
+ags_recycling_set_output_soundcard(AgsRecycling *recycling, GObject *output_soundcard)
 {
+  if(!AGS_IS_RECYCLING(recycling)){
+    return;
+  }
+
   /* recycling */
   if(recycling->soundcard == soundcard){
     return;
@@ -766,61 +989,121 @@ ags_recycling_set_soundcard(AgsRecycling *recycling, GObject *soundcard)
 }
 
 /**
- * ags_recycling_add_audio_signal:
- * @recycling:  an #AgsRecycling
- * @audio_signal: the #AgsAudioSignal to add
+ * ags_recycling_set_input_soundcard:
+ * @recycling: the #AgsRecycling
+ * @soundcard: an #AgsSoundcard
  *
- * Add #AgsAudioSignal to recycling.
+ * Set the input soundcard object on recycling.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_recycling_set_input_soundcard(AgsRecycling *recycling, GObject *input_soundcard)
+{
+  if(!AGS_IS_RECYCLING(recycling)){
+    return;
+  }
+  
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_recycling_set_samplerate:
+ * @recycling: the #AgsRecycling
+ * @samplerate: the samplerate
+ *
+ * Sets buffer-size.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_recycling_set_samplerate(AgsRecycling *recycling, guint samplerate)
+{
+  AgsAudioSignal *template;
+
+  GList *audio_signal;
+  GList *rt_template;
+  
+  pthread_mutex_t *recycling_mutex;
+
+  if(!AGS_IS_RECYCLING(recycling)){
+    return;
+  }
+
+  /* get recycling mutex */  
+  pthread_mutex_lock(ags_recycling_get_class_mutex());
+
+  recycling_mutex = recycling->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+
+  /* get audio signal */
+  pthread_mutex_lock(recycling_mutex);
+
+  audio_signal = g_list_copy(recycling->audio_signal);
+
+  pthread_mutex_unlock(recycling_mutex);
+
+  /* get template */
+  template = ags_audio_signal_get_template(audio_signal);
+    
+  if(template != NULL){
+    g_object_set(template,
+		 "samplerate", samplerate,
+		 NULL);
+  }
+
+  /* get rt-template */
+  rt_template = ags_audio_signal_get_rt_template(audio_signal);
+
+  while(rt_template != NULL){
+    g_object_set(rt_template->data,
+		 "samplerate", samplerate,
+		 NULL);
+
+    rt_template = rt_template->next;
+  }
+
+  /* free list */
+  g_list_free(audio_signal);
+}
+
+/**
+ * ags_recycling_set_buffer_size:
+ * @recycling: the #AgsRecycling
+ * @buffer_size: the buffer_size
+ *
+ * Sets buffer length.
  *
  * Since: 1.0.0
  */
 void
-ags_recycling_add_audio_signal(AgsRecycling *recycling,
-			       AgsAudioSignal *audio_signal)
+ags_recycling_set_buffer_size(AgsRecycling *recycling, guint buffer_size)
 {
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *recycling_mutex;
-
-  if(recycling == NULL){
-    return;
-  }
-  
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  pthread_mutex_lock(application_mutex);
-  
-  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) recycling);
-
-  pthread_mutex_unlock(application_mutex);
-
-  pthread_mutex_lock(recycling_mutex);
-
   if(!AGS_IS_RECYCLING(recycling)){
-    pthread_mutex_unlock(recycling_mutex);
-
-    return;
-  }
-  
-  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
-    pthread_mutex_unlock(recycling_mutex);
-
     return;
   }
 
-  /* emit signal */
-  g_object_ref(G_OBJECT(recycling));
-  g_signal_emit(G_OBJECT(recycling),
-		recycling_signals[ADD_AUDIO_SIGNAL], 0,
-		audio_signal);
-  g_object_unref(G_OBJECT(recycling));
+  //TODO:JK: implement me
+}
 
-  /* release lock */
-  pthread_mutex_unlock(recycling_mutex);
+/**
+ * ags_recycling_set_format:
+ * @recycling: the #AgsRecycling
+ * @format: the format
+ *
+ * Set format.
+ *
+ * Since: 1.0.0
+ */
+void
+ags_recycling_set_format(AgsRecycling *recycling, guint format)
+{
+  if(!AGS_IS_RECYCLING(recycling)){
+    return;
+  }
+
+  //TODO:JK: implement me
 }
 
 void
@@ -910,63 +1193,26 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
 }
 
 /**
- * ags_recycling_remove_audio_signal:
- * @recycling:  an #AgsRecycling
- * @audio_signal: the #AgsAudioSignal to remove
+ * ags_recycling_add_audio_signal:
+ * @recycling: the #AgsRecycling
+ * @audio_signal: the #AgsAudioSignal to add
  *
- * Remove #AgsAudioSignal of recycling.
+ * Add #AgsAudioSignal to recycling.
  *
  * Since: 1.0.0
  */
 void
-ags_recycling_remove_audio_signal(AgsRecycling *recycling,
-				  AgsAudioSignal *audio_signal)
+ags_recycling_add_audio_signal(AgsRecycling *recycling,
+			       AgsAudioSignal *audio_signal)
 {
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *recycling_mutex;
-
-  if(recycling == NULL){
-    return;
-  }
+  g_return_if_fail(AGS_IS_RECYCLING(recycling) && AGS_IS_AUDIO_SIGNAL(audio_signal));
   
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  pthread_mutex_lock(application_mutex);
-  
-  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) recycling);
-
-  pthread_mutex_unlock(application_mutex);
-  
-  pthread_mutex_lock(recycling_mutex);
-
-  if(!AGS_IS_RECYCLING(recycling)){
-    pthread_mutex_unlock(recycling_mutex);
-
-    return;
-  }
-  
-  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
-    pthread_mutex_unlock(recycling_mutex);
-
-    return;
-  }
-
   /* emit signal */
-  g_object_ref((GObject *) recycling);
-  g_object_ref((GObject *) audio_signal);
+  g_object_ref(G_OBJECT(recycling));
   g_signal_emit(G_OBJECT(recycling),
-		recycling_signals[REMOVE_AUDIO_SIGNAL], 0,
+		recycling_signals[ADD_AUDIO_SIGNAL], 0,
 		audio_signal);
-  g_object_unref((GObject *) audio_signal);
-  g_object_unref((GObject *) recycling);
-
-  /* release lock */
-  pthread_mutex_unlock(recycling_mutex);
+  g_object_unref(G_OBJECT(recycling));
 }
 
 void
@@ -987,8 +1233,56 @@ ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
 }
 
 /**
+ * ags_recycling_remove_audio_signal:
+ * @recycling: the #AgsRecycling
+ * @audio_signal: the #AgsAudioSignal to remove
+ *
+ * Remove #AgsAudioSignal of recycling.
+ *
+ * Since: 1.0.0
+ */
+void
+ags_recycling_remove_audio_signal(AgsRecycling *recycling,
+				  AgsAudioSignal *audio_signal)
+{
+  g_return_if_fail(AGS_IS_RECYCLING(recycling) && AGS_IS_AUDIO_SIGNAL(audio_signal));
+
+  /* emit signal */
+  g_object_ref((GObject *) recycling);
+  g_object_ref((GObject *) audio_signal);
+  g_signal_emit(G_OBJECT(recycling),
+		recycling_signals[REMOVE_AUDIO_SIGNAL], 0,
+		audio_signal);
+  g_object_unref((GObject *) audio_signal);
+  g_object_unref((GObject *) recycling);
+}
+
+/**
+ * ags_recycling_data_request:
+ * @recycling: the #AgsRecycling
+ * @audio_signal: the #AgsAudioSignal
+ *
+ * Request data of @audio_signal.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_recycling_data_request(AgsRecycling *recycling,
+			   AgsAudioSignal *audio_signal)
+{
+  g_return_if_fail(AGS_IS_RECYCLING(recycling));
+
+  /* emit signal */
+  g_object_ref((GObject *) recycling);
+  g_signal_emit(G_OBJECT(recycling),
+		recycling_signals[DATA_REQUEST], 0,
+		audio_signal);
+  g_object_unref((GObject *) recycling);
+}
+
+/**
  * ags_recycling_create_audio_signal_with_defaults:
- * @recycling: an #AgsRecycling
+ * @recycling: the #AgsRecycling
  * @audio_signal: the #AgsAudioSignal to apply defaults 
  * @delay: the delay
  * @attack: the attack

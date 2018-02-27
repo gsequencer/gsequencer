@@ -10,6 +10,7 @@ ags (2.0.0)
 	* TODO:JK: implemented AgsAudiorec
 	* TODO:JK: implemented damping/vibration of AgsAudioSignal
 	* TODO:JK: implemented exponential curve option for ags-envelope recall
+	* new ags_uuid.[ch]
 	* new ags_midi.[ch]
 	* new ags_track.[ch]
 	* new ags_char_buffer_util.[ch]
@@ -36,6 +37,7 @@ ags (2.0.0)
 	* renamed ags_audio_signal_find_stream_current()
 	* removed ags_connection_manager.[ch]
 	* removed ags_connection.[ch]
+	* TODO:JK: removed ags_id_generator.[ch]
 	* removed ags_audio_connection.[ch]
 	* removed ags_message.[ch]
 	* removed ags_playable.[ch]

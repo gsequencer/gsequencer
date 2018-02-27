@@ -169,7 +169,9 @@ enum{
   PROP_0,
   PROP_AUDIO,
   PROP_OUTPUT_SOUNDCARD,
+  PROP_OUTPUT_SOUNDCARD_CHANNEL,
   PROP_INPUT_SOUNDCARD,
+  PROP_INPUT_SOUNDCARD_CHANNEL,
   PROP_SAMPLERATE,
   PROP_BUFFER_SIZE,
   PROP_FORMAT,
@@ -287,6 +289,24 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
+   * AgsChannel:output-soundcard-channel:
+   *
+   * The output soundcard channel.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_uint("output-soundcard-channel",
+				  i18n_pspec("output soundcard channel"),
+				  i18n_pspec("The output soundcard channel"),
+				  0,
+				  G_MAXUINT32,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_OUTPUT_SOUNDCARD_CHANNEL,
+				  param_spec);
+
+  /**
    * AgsChannel:input-soundcard:
    *
    * The assigned input #AgsSoundcard.
@@ -303,7 +323,25 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsAudio:samplerate:
+   * AgsChannel:input-soundcard-channel:
+   *
+   * The input soundcard channel.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_uint("input-soundcard-channel",
+				  i18n_pspec("input soundcard channel"),
+				  i18n_pspec("The input soundcard channel"),
+				  0,
+				  G_MAXUINT32,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_INPUT_SOUNDCARD_CHANNEL,
+				  param_spec);
+  
+  /**
+   * AgsChannel:samplerate:
    *
    * The samplerate.
    * 
@@ -321,7 +359,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsAudio:buffer-size:
+   * AgsChannel:buffer-size:
    *
    * The buffer size.
    * 
@@ -339,7 +377,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsAudio:format:
+   * AgsChannel:format:
    *
    * The format.
    * 
@@ -357,7 +395,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
   
   /**
-   * AgsAudio:pad:
+   * AgsChannel:pad:
    *
    * The nth pad.
    * 
@@ -375,7 +413,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsAudio:audio-channel:
+   * AgsChannel:audio-channel:
    *
    * The nth audio channel.
    * 
@@ -393,7 +431,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsAudio:line:
+   * AgsChannel:line:
    *
    * The nth line.
    * 
@@ -411,7 +449,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsAudio:octave:
+   * AgsChannel:octave:
    *
    * The nth octave.
    * 
@@ -429,7 +467,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsAudio:key:
+   * AgsChannel:key:
    *
    * The nth key.
    * 
@@ -447,7 +485,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsAudio:absolute-key:
+   * AgsChannel:absolute-key:
    *
    * The nth absolute key.
    * 
@@ -465,7 +503,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsAudio:note-frequency:
+   * AgsChannel:note-frequency:
    *
    * The note frequency.
    * 
@@ -499,7 +537,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /**
-   * AgsAudio:midi-note:
+   * AgsChannel:midi-note:
    *
    * The nth midi note.
    * 
@@ -1048,7 +1086,8 @@ ags_channel_init(AgsChannel *channel)
 
   channel->input_soundcard = NULL;
   channel->input_soundcard_channel = 0;
-    
+
+  /* presets */
   channel->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   channel->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   channel->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
@@ -1231,6 +1270,11 @@ ags_channel_set_property(GObject *gobject,
 				       output_soundcard);
     }
     break;
+  case PROP_OUTPUT_SOUNDCARD_CHANNEL:
+    {
+      channel->output_soundcard_channel = g_value_get_uint(value);
+    }
+    break;
   case PROP_INPUT_SOUNDCARD:
     {
       GObject *input_soundcard;
@@ -1239,6 +1283,11 @@ ags_channel_set_property(GObject *gobject,
 
       ags_channel_set_input_soundcard(channel,
 				      input_soundcard);
+    }
+    break;
+  case PROP_INPUT_SOUNDCARD_CHANNEL:
+    {
+      channel->input_soundcard_channel = g_value_get_uint(value);
     }
     break;
   case PROP_SAMPLERATE:
@@ -1895,9 +1944,27 @@ ags_channel_has_resource(AgsConnectable *connectable)
 gboolean
 ags_channel_is_ready(AgsConnectable *connectable)
 {
+  AgsChannel *channel;
+  
   gboolean is_ready;
 
-  is_ready = (((AGS_CHANNEL_ADDED_TO_REGISTRY & (AGS_CHANNEL(connectable)->flags)) != 0) ? TRUE: FALSE);
+  pthread_mutex_t *channel_mutex;
+
+  channel = AGS_CHANNEL(connectable);
+
+  /* get audio signal mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* check is added */
+  pthread_mutex_lock(channel_mutex);
+
+  is_ready = (((AGS_CHANNEL_ADDED_TO_REGISTRY & (channel->flags)) != 0) ? TRUE: FALSE);
+
+  pthread_mutex_unlock(channel_mutex);
   
   return(is_ready);
 }
@@ -1906,6 +1973,7 @@ void
 ags_channel_add_to_registry(AgsConnectable *connectable)
 {
   AgsChannel *channel;
+  AgsRecycling *recycling;
 
   AgsRegistry *registry;
   AgsRegistryEntry *entry;
@@ -1913,10 +1981,14 @@ ags_channel_add_to_registry(AgsConnectable *connectable)
   AgsApplicationContext *application_context;
 
   GList *list;
+
+  if(ags_connectable_is_ready(connectable)){
+    return;
+  }
   
   channel = AGS_CHANNEL(connectable);
 
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(channel->soundcard));
+  application_context = ags_application_context_get_instance();
 
   registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
 
@@ -1926,6 +1998,17 @@ ags_channel_add_to_registry(AgsConnectable *connectable)
 		       (gpointer) channel);
     ags_registry_add_entry(registry,
 			   entry);
+  }
+
+  /* add recycling */
+  recycling = channel->first_recycling;
+
+  if(recycling != NULL){
+    while(recycling != channel->last_recycling->next){
+      ags_connectable_add_to_registry(AGS_CONNECTABLE(recycling));
+      
+      recycling = recycling->next;
+    }
   }
   
   /* add play */
@@ -1950,6 +2033,10 @@ ags_channel_add_to_registry(AgsConnectable *connectable)
 void
 ags_channel_remove_from_registry(AgsConnectable *connectable)
 {
+  if(!ags_connectable_is_ready(connectable)){
+    return;
+  }
+
   //TODO:JK: implement me
 }
 
@@ -1968,9 +2055,27 @@ ags_channel_update(AgsConnectable *connectable)
 gboolean
 ags_channel_is_connected(AgsConnectable *connectable)
 {
+  AgsChannel *channel;
+  
   gboolean is_connected;
 
-  is_connected = (((AGS_CHANNEL_CONNECTED & (AGS_CHANNEL(connectable)->flags)) != 0) ? TRUE: FALSE);
+  pthread_mutex_t *channel_mutex;
+
+  channel = AGS_CHANNEL(connectable);
+
+  /* get audio signal mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* check is connected */
+  pthread_mutex_lock(channel_mutex);
+
+  is_connected = (((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0) ? TRUE: FALSE);
+  
+  pthread_mutex_unlock(channel_mutex);
   
   return(is_connected);
 }
@@ -1983,14 +2088,14 @@ ags_channel_connect(AgsConnectable *connectable)
 
   GList *list;
   
-  channel = AGS_CHANNEL(connectable);
-
-  if((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0){
+  if(ags_connectable_is_connect(connectable)){
     return;
   }
 
-  channel->flags |= AGS_CHANNEL_CONNECTED;
-  
+  channel = AGS_CHANNEL(connectable);
+
+  ags_channel_set_flags(channel, AGS_CHANNEL_CONNECTED);
+
 #ifdef AGS_DEBUG
   g_message("connecting channel");
 #endif
@@ -2059,15 +2164,15 @@ ags_channel_disconnect(AgsConnectable *connectable)
   AgsChannel *channel;
   AgsRecycling *recycling;
 
-  GList *list;
-  
-  channel = AGS_CHANNEL(connectable);
+  GList *list;  
 
-  if((AGS_CHANNEL_CONNECTED & (channel->flags)) == 0){
+  if(!ags_connectable_is_connect(connectable)){
     return;
   }
+
+  channel = AGS_CHANNEL(connectable);
   
-  channel->flags &= (~AGS_CHANNEL_CONNECTED);
+  ags_channel_unset_flags(channel, AGS_CHANNEL_CONNECTED);
   
 #ifdef AGS_DEBUG
   g_message("disconnecting channel");
@@ -2163,9 +2268,9 @@ ags_channel_get_class_mutex()
 /**
  * ags_channel_set_flags:
  * @channel: the #AgsChannel
- * @flags: see enum AgsChannelFlags
+ * @flags: see #AgsChannelFlags-enum
  *
- * Enable a feature of AgsChannel.
+ * Enable a feature of @channel.
  *
  * Since: 2.0.0
  */
@@ -2198,9 +2303,9 @@ ags_channel_set_flags(AgsChannel *channel, guint flags)
 /**
  * ags_channel_unset_flags:
  * @channel: the #AgsChannel
- * @flags: see enum AgsChannelFlags
+ * @flags: see #AgsChannelFlags-enum
  *
- * Disable a feature of AgsChannel.
+ * Disable a feature of @channel.
  *
  * Since: 2.0.0
  */
@@ -3600,7 +3705,7 @@ ags_channel_set_input_soundcard(AgsChannel *channel,
     pthread_mutex_unlock(channel_mutex);
 
     g_object_set(G_OBJECT(recycling),
-		 "output-soundcard", soundcard,
+		 "input-soundcard", soundcard,
 		 NULL); 
   }
 
@@ -3659,36 +3764,30 @@ ags_channel_set_input_soundcard(AgsChannel *channel,
 }
 
 /**
- * ags_audio_set_samplerate:
- * @audio: the #AgsAudio
+ * ags_channel_set_samplerate:
+ * @channel: the #AgsChannel
  * @samplerate: the samplerate
  *
- * Sets buffer length.
+ * Set samplerate.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
 {
-  AgsAudio *audio;
-
-  AgsConfig *config;
+  AgsRecycling *recycling;
+  AgsPlaybackDomain *playback_domain;
   
-  gchar *str0, *str1;
+  AgsThread *audio_thread;
 
-  gdouble freq;
+  gdouble frequency;
+
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *playback_mutex;
 
   auto void ags_channel_set_samplerate_audio_signal(GList *audio_signal, guint samplerate);
 
   void ags_channel_set_samplerate_audio_signal(GList *audio_signal, guint samplerate){
-    AgsAudioSignal *template;
-    
-    template = ags_audio_signal_get_template(audio_signal);
-    
-    if(template != NULL){
-      ags_audio_signal_set_samplerate(template,
-				      samplerate);
-    }
   }
 
   audio = (AgsAudio *) channel->audio;
@@ -3776,11 +3875,11 @@ ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
 }
 
 /**
- * ags_audio_set_buffer_size:
- * @audio: the #AgsAudio
+ * ags_channel_set_buffer_size:
+ * @channel: the #AgsChannel
  * @buffer_size: the buffer_size
  *
- * Sets buffer length.
+ * Set buffer-size.
  *
  * Since: 1.0.0
  */
@@ -3893,11 +3992,11 @@ ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
 }
 
 /**
- * ags_audio_set_format:
- * @audio: the #AgsAudio
+ * ags_channel_set_format:
+ * @channel: the #AgsChannel
  * @format: the format
  *
- * Sets buffer length.
+ * Set format.
  *
  * Since: 1.0.0
  */

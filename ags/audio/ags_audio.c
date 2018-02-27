@@ -45,8 +45,6 @@
 
 #include <libxml/tree.h>
 
-#include <pthread.h>
-
 #include <stdlib.h>
 #include <string.h>
 
@@ -2868,9 +2866,13 @@ ags_audio_has_resource(AgsConnectable *connectable)
 gboolean
 ags_audio_is_ready(AgsConnectable *connectable)
 {
+  AgsAudio *audio;
+  
   gboolean is_ready;
 
-  is_ready = (((AGS_AUDIO_ADDED_TO_REGISTRY & (AGS_AUDIO(connectable)->flags)) != 0) ? TRUE: FALSE);
+  audio = AGS_AUDIO(connectable);
+  
+  is_ready = (((AGS_AUDIO_ADDED_TO_REGISTRY & (audio->flags)) != 0) ? TRUE: FALSE);
   
   return(is_ready);
 }
@@ -2890,7 +2892,7 @@ ags_audio_add_to_registry(AgsConnectable *connectable)
   
   audio = AGS_AUDIO(connectable);
 
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(audio->output_soundcard));
+  application_context = ags_application_context_get_instance();
 
   registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
 

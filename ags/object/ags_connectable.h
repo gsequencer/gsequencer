@@ -39,13 +39,17 @@ struct _AgsConnectableInterface
 {
   GTypeInterface ginterface;
 
+  gchar* (*get_uuid)(AgsConnectable *connectable);
   gboolean (*has_resource)(AgsConnectable *connectable);
+
   gboolean (*is_ready)(AgsConnectable *connectable);
   
   void (*add_to_registry)(AgsConnectable *connectable);
   void (*remove_from_registry)(AgsConnectable *connectable);
 
-  xmlNode* (*update)(AgsConnectable *connectable);
+  xmlNode* (*xml_serialize)(AgsConnectable *connectable);
+  void (*xml_deserialize)(AgsConnectable *connectable,
+			  xmlNode *node);
   
   gboolean (*is_connected)(AgsConnectable *connectable);
 
@@ -60,13 +64,16 @@ struct _AgsConnectableInterface
 
 GType ags_connectable_get_type();
 
+gchar* ags_connectable_get_uuid(AgsConnectable *connectable);
 gboolean ags_connectable_has_resource(AgsConnectable *connectable);
+
 gboolean ags_connectable_is_ready(AgsConnectable *connectable);
 
 void ags_connectable_add_to_registry(AgsConnectable *connectable);
 void ags_connectable_remove_from_registry(AgsConnectable *connectable);
 
-xmlNode* ags_connectable_update(AgsConnectable *connectable);
+xmlNode* ags_connectable_xml_serialize(AgsConnectable *connectable);
+void ags_connectable_xml_deserialize(AgsConnectable *connectable, xmlNode *node);
 
 gboolean ags_connectable_is_connected(AgsConnectable *connectable);
 
