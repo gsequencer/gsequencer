@@ -27,6 +27,7 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_dependency.h>

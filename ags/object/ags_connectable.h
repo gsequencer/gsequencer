@@ -41,19 +41,17 @@ struct _AgsConnectableInterface
 
   gpointer (*get_uuid)(AgsConnectable *connectable);
   
-  gboolean (*has_resource)(AgsConnectable *connectable);
-
   gboolean (*is_ready)(AgsConnectable *connectable);
-  
   void (*add_to_registry)(AgsConnectable *connectable);
   void (*remove_from_registry)(AgsConnectable *connectable);
+
+  xmlNode* (*list_resource)(AgsConnectable *connectable);
 
   xmlNode* (*xml_compose)(AgsConnectable *connectable);
   void (*xml_parse)(AgsConnectable *connectable,
 		    xmlNode *node);
   
   gboolean (*is_connected)(AgsConnectable *connectable);
-
   void (*connect)(AgsConnectable *connectable);
   void (*disconnect)(AgsConnectable *connectable);
 
@@ -67,18 +65,17 @@ GType ags_connectable_get_type();
 
 gpointer ags_connectable_get_uuid(AgsConnectable *connectable);
 
-gboolean ags_connectable_has_resource(AgsConnectable *connectable);
-
 gboolean ags_connectable_is_ready(AgsConnectable *connectable);
-
 void ags_connectable_add_to_registry(AgsConnectable *connectable);
 void ags_connectable_remove_from_registry(AgsConnectable *connectable);
 
+xmlNode* ags_connectable_list_resource(AgsConnectable *connectable);
+
 xmlNode* ags_connectable_xml_compose(AgsConnectable *connectable);
-void ags_connectable_xml_parse(AgsConnectable *connectable, xmlNode *node);
+void ags_connectable_xml_parse(AgsConnectable *connectable,
+			       xmlNode *node);
 
 gboolean ags_connectable_is_connected(AgsConnectable *connectable);
-
 void ags_connectable_connect(AgsConnectable *connectable);
 void ags_connectable_disconnect(AgsConnectable *connectable);
 

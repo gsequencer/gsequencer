@@ -166,6 +166,28 @@ ags_connectable_remove_from_registry(AgsConnectable *connectable)
 }
 
 /**
+ * ags_connectable_list_resource:
+ * @connectable: the #AgsConnectable
+ *
+ * List resources as an XML element and return it.
+ *
+ * Returns: the #xmlNode-struct
+ *
+ * Since: 2.0.0
+ */
+xmlNode*
+ags_connectable_list_resource(AgsConnectable *connectable)
+{
+  AgsConnectableInterface *connectable_interface;
+
+  g_return_val_if_fail(AGS_IS_CONNECTABLE(connectable), NULL);
+  connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
+  g_return_val_if_fail(connectable_interface->list_resource, NULL);
+
+  return(connectable_interface->list_resource(connectable));
+}
+
+/**
  * ags_connectable_xml_compose:
  * @connectable: the #AgsConnectable
  *

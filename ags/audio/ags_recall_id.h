@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_recycling_context.h>
 
 #define AGS_TYPE_RECALL_ID                (ags_recall_id_get_type ())
