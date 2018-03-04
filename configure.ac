@@ -32,9 +32,9 @@ AC_ARG_ENABLE(alsa, [AS_HELP_STRING([--enable-alsa],
 	      [enable_alsa=yes])
 
 AC_ARG_ENABLE(oss, [AS_HELP_STRING([--enable-oss],
-				   [enable oss (default is yes)])],
+				   [enable oss (default is no)])],
 	      [],
-	      [enable_oss=yes])
+	      [enable_oss=no])
 
 AC_ARG_ENABLE(jack, [AS_HELP_STRING([--enable-jack],
 				    [enable jack (default is yes)])],

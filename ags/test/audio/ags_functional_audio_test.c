@@ -648,6 +648,10 @@ ags_functional_audio_test_playback()
 
   for(i = 0; i < AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_AUDIO; i++){
     AgsNotation *notation;
+
+    AgsTimestamp *timestamp;
+
+    GList *list_notation;
     
     audio[i] = ags_audio_new(soundcard);
     g_object_ref(audio[i]);
@@ -678,6 +682,11 @@ ags_functional_audio_test_playback()
     link = ags_channel_pad_nth(mixer->input,
 			       i);
   
+    timestamp = ags_timestamp_new();
+
+    timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+    timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
     for(j = 0; j < AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_AUDIO_CHANNELS; j++){
       AgsAudioSignal *destination;
 
@@ -690,9 +699,6 @@ ags_functional_audio_test_playback()
 				     destination);
       
       /* populate notation */
-      notation = g_list_nth(audio[i]->notation,
-			    j)->data;
-
       for(k = 0; k < AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_NOTES; k++){
 	AgsNote *note;
 
@@ -701,6 +707,21 @@ ags_functional_audio_test_playback()
 	note->x[1] = note->x[0] + (rand() % 3) + 1;
 	note->y = rand() % AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_PADS;
 
+	timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) note->x[0] / (double) AGS_NOTATION_DEFAULT_OFFSET);
+
+	list_notation = audio[i]->notation;
+	list_notation = ags_notation_find_near_timestamp(list_notation, j,
+							 timestamp);
+
+	if(list_notation != NULL){
+	  notation = list_notation->data;
+	}else{
+	  notation = ags_notation_new(audio[i],
+				      j);
+	  audio[i]->notation = ags_notation_add(audio[i]->notation,
+						notation);
+	}
+	
 	ags_notation_add_note(notation,
 			      note,
 			      FALSE);

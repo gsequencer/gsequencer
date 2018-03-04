@@ -213,7 +213,8 @@ am__objects_2 = $(am__objects_1) ags/lib/libags_la-ags_buffer_util.lo \
 	ags/lib/libags_la-ags_regex.lo \
 	ags/lib/libags_la-ags_string_util.lo \
 	ags/lib/libags_la-ags_time.lo ags/lib/libags_la-ags_turtle.lo \
-	ags/lib/libags_la-ags_turtle_manager.lo
+	ags/lib/libags_la-ags_turtle_manager.lo \
+	ags/lib/libags_la-ags_uuid.lo
 am__objects_3 = $(am__objects_1) \
 	ags/util/libags_la-ags_destroy_util.lo \
 	ags/util/libags_la-ags_id_generator.lo \
@@ -228,6 +229,7 @@ am__objects_4 = $(am__objects_1) \
 	ags/object/libags_la-ags_concurrent_tree.lo \
 	ags/object/libags_la-ags_distributed_manager.lo \
 	ags/object/libags_la-ags_dynamic_connectable.lo \
+	ags/object/libags_la-ags_globals.lo \
 	ags/object/libags_la-ags_main_loop.lo \
 	ags/object/libags_la-ags_marshal.lo \
 	ags/object/libags_la-ags_mutable.lo \
@@ -2389,6 +2391,7 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -3179,7 +3182,8 @@ libags_h_sources = \
 	ags/lib/ags_string_util.h \
 	ags/lib/ags_time.h \
 	ags/lib/ags_turtle.h \
-	ags/lib/ags_turtle_manager.h
+	ags/lib/ags_turtle_manager.h \
+	ags/lib/ags_uuid.h
 
 deprecated_libags_c_sources = 
 libags_c_sources = \
@@ -3195,7 +3199,8 @@ libags_c_sources = \
 	ags/lib/ags_string_util.c \
 	ags/lib/ags_time.c \
 	ags/lib/ags_turtle.c \
-	ags/lib/ags_turtle_manager.c
+	ags/lib/ags_turtle_manager.c \
+	ags/lib/ags_uuid.c
 
 deprecated_libags_util_h_sources = 
 
@@ -3227,6 +3232,7 @@ libags_object_h_sources = \
 	ags/object/ags_concurrent_tree.h \
 	ags/object/ags_distributed_manager.h \
 	ags/object/ags_dynamic_connectable.h \
+	ags/object/ags_globals.h \
 	ags/object/ags_macros.h \
 	ags/object/ags_main_loop.h \
 	ags/object/ags_marshal.h \
@@ -3252,6 +3258,7 @@ libags_object_c_sources = \
 	ags/object/ags_concurrent_tree.c \
 	ags/object/ags_distributed_manager.c \
 	ags/object/ags_dynamic_connectable.c \
+	ags/object/ags_globals.c \
 	ags/object/ags_main_loop.c \
 	ags/object/ags_marshal.c \
 	ags/object/ags_mutable.c \
@@ -4900,6 +4907,8 @@ ags/lib/libags_la-ags_turtle.lo: ags/lib/$(am__dirstamp) \
 	ags/lib/$(DEPDIR)/$(am__dirstamp)
 ags/lib/libags_la-ags_turtle_manager.lo: ags/lib/$(am__dirstamp) \
 	ags/lib/$(DEPDIR)/$(am__dirstamp)
+ags/lib/libags_la-ags_uuid.lo: ags/lib/$(am__dirstamp) \
+	ags/lib/$(DEPDIR)/$(am__dirstamp)
 ags/util/$(am__dirstamp):
 	@$(MKDIR_P) ags/util
 	@: > ags/util/$(am__dirstamp)
@@ -4939,6 +4948,8 @@ ags/object/libags_la-ags_distributed_manager.lo:  \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
 ags/object/libags_la-ags_dynamic_connectable.lo:  \
 	ags/object/$(am__dirstamp) \
+	ags/object/$(DEPDIR)/$(am__dirstamp)
+ags/object/libags_la-ags_globals.lo: ags/object/$(am__dirstamp) \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
 ags/object/libags_la-ags_main_loop.lo: ags/object/$(am__dirstamp) \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
@@ -7973,6 +7984,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_time.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_turtle.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_turtle_manager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_uuid.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_applicable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_application_context.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_async_queue.Plo@am__quote@
@@ -7982,6 +7994,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_countable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_distributed_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_dynamic_connectable.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_globals.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_main_loop.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_marshal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_mutable.Plo@am__quote@
@@ -8282,6 +8295,13 @@ ags/lib/libags_la-ags_turtle_manager.lo: ags/lib/ags_turtle_manager.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/lib/libags_la-ags_turtle_manager.lo `test -f 'ags/lib/ags_turtle_manager.c' || echo '$(srcdir)/'`ags/lib/ags_turtle_manager.c
 
+ags/lib/libags_la-ags_uuid.lo: ags/lib/ags_uuid.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/lib/libags_la-ags_uuid.lo -MD -MP -MF ags/lib/$(DEPDIR)/libags_la-ags_uuid.Tpo -c -o ags/lib/libags_la-ags_uuid.lo `test -f 'ags/lib/ags_uuid.c' || echo '$(srcdir)/'`ags/lib/ags_uuid.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/lib/$(DEPDIR)/libags_la-ags_uuid.Tpo ags/lib/$(DEPDIR)/libags_la-ags_uuid.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/lib/ags_uuid.c' object='ags/lib/libags_la-ags_uuid.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/lib/libags_la-ags_uuid.lo `test -f 'ags/lib/ags_uuid.c' || echo '$(srcdir)/'`ags/lib/ags_uuid.c
+
 ags/util/libags_la-ags_destroy_util.lo: ags/util/ags_destroy_util.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/util/libags_la-ags_destroy_util.lo -MD -MP -MF ags/util/$(DEPDIR)/libags_la-ags_destroy_util.Tpo -c -o ags/util/libags_la-ags_destroy_util.lo `test -f 'ags/util/ags_destroy_util.c' || echo '$(srcdir)/'`ags/util/ags_destroy_util.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/util/$(DEPDIR)/libags_la-ags_destroy_util.Tpo ags/util/$(DEPDIR)/libags_la-ags_destroy_util.Plo
@@ -8365,6 +8385,13 @@ ags/object/libags_la-ags_dynamic_connectable.lo: ags/object/ags_dynamic_connecta
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/object/ags_dynamic_connectable.c' object='ags/object/libags_la-ags_dynamic_connectable.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/object/libags_la-ags_dynamic_connectable.lo `test -f 'ags/object/ags_dynamic_connectable.c' || echo '$(srcdir)/'`ags/object/ags_dynamic_connectable.c
+
+ags/object/libags_la-ags_globals.lo: ags/object/ags_globals.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/object/libags_la-ags_globals.lo -MD -MP -MF ags/object/$(DEPDIR)/libags_la-ags_globals.Tpo -c -o ags/object/libags_la-ags_globals.lo `test -f 'ags/object/ags_globals.c' || echo '$(srcdir)/'`ags/object/ags_globals.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/object/$(DEPDIR)/libags_la-ags_globals.Tpo ags/object/$(DEPDIR)/libags_la-ags_globals.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/object/ags_globals.c' object='ags/object/libags_la-ags_globals.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/object/libags_la-ags_globals.lo `test -f 'ags/object/ags_globals.c' || echo '$(srcdir)/'`ags/object/ags_globals.c
 
 ags/object/libags_la-ags_main_loop.lo: ags/object/ags_main_loop.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/object/libags_la-ags_main_loop.lo -MD -MP -MF ags/object/$(DEPDIR)/libags_la-ags_main_loop.Tpo -c -o ags/object/libags_la-ags_main_loop.lo `test -f 'ags/object/ags_main_loop.c' || echo '$(srcdir)/'`ags/object/ags_main_loop.c
