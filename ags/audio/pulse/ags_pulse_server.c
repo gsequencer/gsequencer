@@ -21,7 +21,15 @@
 #include <ags/audio/pulse/ags_pulse_client.h>
 #include <ags/audio/pulse/ags_pulse_port.h>
 
-#include <ags/libags.h>
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_distributed_manager.h>
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_distributed_manager.h>
+#include <ags/object/ags_soundcard.h>
+#include <ags/object/ags_sequencer.h>
+
+#include <ags/thread/ags_mutex_manager.h>
+#include <ags/thread/ags_thread-posix.h>
 
 #include <ags/audio/pulse/ags_pulse_devout.h>
 #include <ags/audio/pulse/ags_pulse_devin.h>
@@ -310,8 +318,8 @@ ags_pulse_server_init(AgsPulseServer *pulse_server)
   pulse_server->application_context = NULL;
 
 #ifdef AGS_WITH_PULSE
-  pulse_server->main_loop = pa_glib_mainloop_new(NULL);
-  pulse_server->main_loop_api = pa_glib_mainloop_get_api(pulse_server->main_loop);
+  pulse_server->main_loop = pa_mainloop_new();
+  pulse_server->main_loop_api = pa_mainloop_get_api(pulse_server->main_loop);
 #else
   pulse_server->main_loop = NULL;
   pulse_server->main_loop_api = NULL;
@@ -1257,7 +1265,7 @@ void
 ags_pulse_server_start_poll(AgsPulseServer *pulse_server)
 {
   pthread_create(pulse_server->thread, NULL,
-  		 ags_pulse_server_do_poll_loop, pulse_server);
+		 ags_pulse_server_do_poll_loop, pulse_server);
 }
 
 /**

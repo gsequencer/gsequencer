@@ -1,7 +1,7 @@
 ags (1.4.21)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* no-more animation since pulseaudio glib mainloop integration doesn't allow it
+	* work-around reverted pulseaudio GMainLoop integration
 	* implemented property AgsBasePlugin:id
 	* improved ags_lv2_manager.c to be faster
 
