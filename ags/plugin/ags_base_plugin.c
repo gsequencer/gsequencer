@@ -61,6 +61,7 @@ enum{
 
 enum{
   PROP_0,
+  PROP_ID,
   PROP_FILENAME,
   PROP_EFFECT,
   PROP_EFFECT_INDEX,
@@ -118,6 +119,22 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
   gobject->finalize = ags_base_plugin_finalize;
 
   /* properties */
+  /**
+   * AgsBasePlugin:id:
+   *
+   * The assigned id.
+   * 
+   * Since: 1.4.21
+   */
+  param_spec = g_param_spec_string("id",
+				   i18n_pspec("id of the plugin"),
+				   i18n_pspec("The id this plugin is located in"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ID,
+				  param_spec);
+
   /**
    * AgsBasePlugin:filename:
    *
@@ -365,6 +382,8 @@ void
 ags_base_plugin_init(AgsBasePlugin *base_plugin)
 {
   base_plugin->flags = 0;
+
+  base_plugin->id = NULL;
   
   base_plugin->filename = NULL;
   base_plugin->effect = NULL;
@@ -392,6 +411,23 @@ ags_base_plugin_set_property(GObject *gobject,
   base_plugin = AGS_BASE_PLUGIN(gobject);
 
   switch(prop_id){
+  case PROP_ID:
+    {
+      gchar *id;
+
+      id = (gchar *) g_value_get_string(value);
+
+      if(base_plugin->id == id){
+	return;
+      }
+      
+      if(base_plugin->id != NULL){
+	g_free(base_plugin->id);
+      }
+
+      base_plugin->id = g_strdup(id);
+    }
+    break;
   case PROP_FILENAME:
     {
       gchar *filename;
@@ -516,6 +552,11 @@ ags_base_plugin_get_property(GObject *gobject,
   base_plugin = AGS_BASE_PLUGIN(gobject);
 
   switch(prop_id){
+  case PROP_ID:
+    {
+      g_value_set_string(value, base_plugin->id);
+    }
+    break;
   case PROP_FILENAME:
     {
       g_value_set_string(value, base_plugin->filename);

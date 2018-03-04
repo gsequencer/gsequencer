@@ -911,20 +911,11 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
     escaped_effect = ags_string_util_escape_single_quote(base_plugin->effect);
 
-    /* retrieve name node as context node */
-    xpath = g_strdup_printf("(//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='\"%s\"']]/ancestor::*[self::rdf-triple])[1]",
-			    escaped_effect);
+    /* retrieve triple node */
+    triple_node = g_hash_table_lookup(ags_lv2_manager_get_instance()->current_plugin_node,
+				      base_plugin->id);
     
-    list = ags_turtle_find_xpath(lv2_plugin->turtle,
-				 xpath);
-
-    free(xpath);
-
-    if(list != NULL){
-      triple_node = (xmlNode *) list->data;
-
-      g_list_free(list);
-    }else{
+    if(triple_node == NULL){
       g_warning("rdf-triple not found");
       
       return;

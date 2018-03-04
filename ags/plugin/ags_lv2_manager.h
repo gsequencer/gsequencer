@@ -50,6 +50,8 @@ struct _AgsLv2Manager
 
   GList *lv2_plugin_blacklist;
   GList *lv2_plugin;
+
+  GHashTable *current_plugin_node;
 };
 
 struct _AgsLv2ManagerClass

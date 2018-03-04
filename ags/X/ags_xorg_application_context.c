@@ -1692,7 +1692,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   if(has_pulse){
     ags_pulse_server_connect_client(pulse_server);
 
-    //    ags_pulse_server_start_poll(pulse_server);
+    ags_pulse_server_start_poll(pulse_server);
   }
 
   if(has_jack){

@@ -506,7 +506,7 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
 
     while(list != NULL){
       /* find URI */
-      xpath = "//rdf-triple/rdf-subject/rdf-iri";    
+      xpath = "/rdf-turtle-doc/rdf-statement/rdf-triple/rdf-subject/rdf-iri";    
       uri_list = ags_turtle_find_xpath_with_context_node(turtle,
 							 xpath,
 							 list->data);
@@ -614,7 +614,7 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
 	continue;
       }
 
-      xpath = "//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.so>') + 1) = '.so>']";
+      xpath = "/rdf-turtle-doc/rdf-statement/rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.so>') + 1) = '.so>']";
       binary_list = ags_turtle_find_xpath_with_context_node(turtle,
 							    xpath,
 							    list->data);
@@ -736,23 +736,25 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
   pthread_mutex_lock(&(mutex));
 
   /* check if gtk UI */
-  xpath = "//rdf-triple//rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':gtkui') + 1) = ':gtkui']//ancestor::*[self::rdf-triple]";
+  xpath = "/rdf-turtle-doc/rdf-statement/rdf-triple/rdf-predicate-object-list/rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':gtkui') + 1) = ':gtkui']//ancestor::*[self::rdf-triple]";
   gtk_uri_list = ags_turtle_find_xpath(turtle,
 				       xpath);
   ags_lv2ui_manager_load_file_ui_plugin(gtk_uri_list);
-  
+
+#if 0
   /* check if qt4 UI */
-  xpath = "//rdf-triple//rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':qt4ui') + 1) = ':qt4ui']//ancestor::*[self::rdf-triple]";
+  xpath = "/rdf-turtle-doc/rdf-statement/rdf-triple/rdf-predicate-object-list/rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':qt4ui') + 1) = ':qt4ui']//ancestor::*[self::rdf-triple]";
   qt4_uri_list = ags_turtle_find_xpath(turtle,
 				       xpath);
   ags_lv2ui_manager_load_file_ui_plugin(qt4_uri_list);
   
   /* check if qt5 UI */
-  xpath = "//rdf-triple//rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':qt5ui') + 1) = ':qt5ui']//ancestor::*[self::rdf-triple]";
+  xpath = "/rdf-turtle-doc/rdf-statement/rdf-triple/rdf-predicate-object-list/rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':qt5ui') + 1) = ':qt5ui']//ancestor::*[self::rdf-triple]";
   qt5_uri_list = ags_turtle_find_xpath(turtle,
 				       xpath);
   ags_lv2ui_manager_load_file_ui_plugin(qt5_uri_list);
-
+#endif
+  
   /*  */
   pthread_mutex_unlock(&(mutex));
 }
@@ -848,7 +850,7 @@ ags_lv2ui_manager_load_default_directory(AgsLv2uiManager *lv2ui_manager)
 
 	/* read binary from turtle */
 	binary_list = ags_turtle_find_xpath(manifest,
-					    "//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.so>') + 1) = '.so>']");
+					    "/rdf-turtle-doc/rdf-statement/rdf-triple/rdf-predicate-object-list/rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.so>') + 1) = '.so>']");
 
 	/* persist XML */
 	//NOTE:JK: no need for it

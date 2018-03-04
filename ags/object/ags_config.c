@@ -437,8 +437,8 @@ ags_config_real_load_defaults(AgsConfig *config)
 #endif
   
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "48000");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "1024");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "44100");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "2048");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
 
   //ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "backend", "jack");

@@ -92,10 +92,12 @@ struct _AgsBasePlugin
   GObject object;
 
   guint flags;
+
+  gchar *id;
   
   gchar *filename;
   gchar *effect;
-
+  
   guint port_group_count;
   guint *port_group;
   GList *port;
