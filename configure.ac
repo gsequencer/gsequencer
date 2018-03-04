@@ -6,7 +6,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[1.4.19],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[1.4.20],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -27,9 +27,9 @@ AC_ARG_ENABLE(alsa, [AS_HELP_STRING([--enable-alsa],
 	      [enable_alsa=yes])
 
 AC_ARG_ENABLE(oss, [AS_HELP_STRING([--enable-oss],
-				   [enable oss (default is yes)])],
+				   [enable oss (default is no)])],
 	      [],
-	      [enable_oss=yes])
+	      [enable_oss=no])
 
 AC_ARG_ENABLE(jack, [AS_HELP_STRING([--enable-jack],
 				    [enable jack (default is yes)])],

@@ -1,3 +1,9 @@
+ags (1.4.20)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_functional_audio_test.c to create notation as needed
+	* defaulted to disable OSS4 dependency
+
 ags (1.4.19)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
