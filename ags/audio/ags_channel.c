@@ -3441,7 +3441,6 @@ ags_channel_set_output_soundcard(AgsChannel *channel,
   AgsRecycling *recycling;
   AgsPlayback *playback;
   
-  AgsMutexManager *mutex_manager;
   AgsThread *channel_thread;
 
   GObject *old_soundcard;
@@ -3453,8 +3452,6 @@ ags_channel_set_output_soundcard(AgsChannel *channel,
   guint format;  
   gboolean reset_recycling;
   
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *playback_mutex;
   pthread_mutex_t *play_mutex, *recall_mutex;
@@ -3481,9 +3478,6 @@ ags_channel_set_output_soundcard(AgsChannel *channel,
     return;
   }
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   /* ref and set new soundcard */
   if(soundcard != NULL){
     g_object_ref(soundcard);
@@ -3496,24 +3490,12 @@ ags_channel_set_output_soundcard(AgsChannel *channel,
   pthread_mutex_unlock(channel_mutex);
 
   if(soundcard != NULL){
-    /* lookup soundcard mutex */
-    pthread_mutex_lock(application_mutex);
-    
-    soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       soundcard);
-
-    pthread_mutex_unlock(application_mutex);
-
     /* get presets */
-    pthread_mutex_lock(soundcard_mutex);
-
     ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			      NULL,
 			      &samplerate,
 			      &buffer_size,
 			      &format);
-
-    pthread_mutex_unlock(soundcard_mutex);
 
     /* apply presets */
     g_object_set(channel,
@@ -3777,102 +3759,72 @@ ags_channel_set_input_soundcard(AgsChannel *channel,
 void
 ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
 {
+  AgsChannel *link;
   AgsRecycling *recycling;
-  AgsPlaybackDomain *playback_domain;
+  AgsPlayback *playback;
   
-  AgsThread *audio_thread;
+  AgsThread *channel_thread;
 
   gdouble frequency;
 
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *playback_mutex;
 
-  auto void ags_channel_set_samplerate_audio_signal(GList *audio_signal, guint samplerate);
-
-  void ags_channel_set_samplerate_audio_signal(GList *audio_signal, guint samplerate){
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
   }
 
-  audio = (AgsAudio *) channel->audio;
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* set samplerate */
+  pthread_mutex_lock(channel_mutex);
 
   channel->samplerate = samplerate;
 
-  /* reset threads */
-  config = ags_config_get_instance();
+  link = channel->link;
+  recycling = channel->first_recycling;
   
-  freq = ceil((gdouble) audio->samplerate / (gdouble) audio->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
+  playback = channel->playback;
+  
+  frequency = ceil((gdouble) channel->samplerate / (gdouble) channel->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
 
-  str0 = ags_config_get_value(config,
-			      AGS_CONFIG_THREAD,
-			      "model");
-  str1 = ags_config_get_value(config,
-			      AGS_CONFIG_THREAD,
-			      "super-threaded-scope");
+  pthread_mutex_unlock(channel_mutex);
 
-  if(str0 != NULL && str1 != NULL){
-    if(!g_ascii_strncasecmp(str0,
-			    "super-threaded",
-			    15)){
-      if(!g_ascii_strncasecmp(str1,
-			      "channel",
-			      8) ||
-	 !g_ascii_strncasecmp(str1,
-			      "recycling",
-			      10)){
-	g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[0],
-		     "frequency", freq,
-		     NULL);
-	g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[1],
-		     "frequency", freq,
-		     NULL);
-	g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[2],
-		     "frequency", freq,
+  if(playback != NULL){
+    /* get playback domain mutex */
+    pthread_mutex_lock(ags_playback_get_class_mutex());
+
+    playback_mutex = playback->obj_mutex;
+  
+    pthread_mutex_unlock(ags_playback_get_class_mutex());
+
+    /* channel thread - frequency */
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      pthread_mutex_lock(playback_mutex);
+    
+      channel_thread = playback->channel_thread[i];
+
+      pthread_mutex_unlock(playback_mutex);
+    
+      if(channel_thread != NULL){
+	/* apply new frequency */
+	g_object_set(channel_thread,
+		     "frequency", frequency,
 		     NULL);
       }
     }
   }
-
-  g_free(str0);
-  g_free(str1);
-
-  /* reset recycling */
-  if(audio != NULL){
-    AgsRecycling *recycling;
-
-    GList *audio_signal;
-    
-    if(AGS_IS_OUTPUT(channel) &&
-       (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
-      recycling = channel->first_recycling;
-
-      if(recycling != NULL){
-	ags_channel_set_samplerate_audio_signal(recycling->audio_signal,
-						samplerate);
-      }
-    }
-
-    if(AGS_IS_INPUT(channel) &&
-       channel->link == NULL &&
-       (AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
-      recycling = channel->first_recycling;
-
-      if(AGS_INPUT(channel)->file_link == NULL){
-	if(recycling != NULL){
-	  ags_channel_set_samplerate_audio_signal(recycling->audio_signal,
-						  samplerate);
-	}
-      }else{
-	AgsFileLink *file_link;
-
-	file_link = (AgsFileLink *) AGS_INPUT(channel)->file_link;
-	
-	ags_input_open_file(AGS_INPUT(channel),
-			    file_link->filename,
-			    AGS_AUDIO_FILE_LINK(file_link)->preset,
-			    AGS_AUDIO_FILE_LINK(file_link)->instrument,
-			    AGS_AUDIO_FILE_LINK(file_link)->sample,
-			    AGS_AUDIO_FILE_LINK(file_link)->audio_channel);
-      }
-    }
+  
+  if(link == NULL &&
+     recycling != NULL){
+    g_object_set(recycling,
+		 "samplerate", samplerate,
+		 NULL);
   }
 }
 
@@ -3883,113 +3835,77 @@ ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
  *
  * Set buffer-size.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
 {
-  AgsAudio *audio;
-
-  AgsConfig *config;
+  AgsChannel *link;
+  AgsRecycling *recycling;
+  AgsPlayback *playback;
   
-  gchar *str0, *str1;
+  AgsThread *channel_thread;
 
-  gdouble freq;
+  gdouble frequency;
 
-  auto void ags_channel_set_buffer_size_audio_signal(GList *audio_signal, guint buffer_size);
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *playback_mutex;
 
-  void ags_channel_set_buffer_size_audio_signal(GList *audio_signal, guint buffer_size){
-    AgsAudioSignal *template;
-    
-    template = ags_audio_signal_get_template(audio_signal);
-    
-    if(template != NULL){
-      ags_audio_signal_set_buffer_size(template,
-				       buffer_size);
-    }
-  }  
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+
+  channel_mutex = channel->obj_mutex;
   
-  audio = (AgsAudio *) channel->audio;
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
   
+  /* set buffer size */
+  pthread_mutex_lock(channel_mutex);
+
   channel->buffer_size = buffer_size;
 
-  /* reset threads */
-  config = ags_config_get_instance();
+  link = channel->link;
+  recycling = channel->first_recycling;
   
-  freq = ceil((gdouble) audio->samplerate / (gdouble) audio->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
+  playback = channel->playback;
 
-  str0 = ags_config_get_value(config,
-			      AGS_CONFIG_THREAD,
-			      "model");
-  str1 = ags_config_get_value(config,
-			      AGS_CONFIG_THREAD,
-			      "super-threaded-scope");
+  frequency = ceil((gdouble) channel->samplerate / (gdouble) channel->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
+  
+  pthread_mutex_unlock(channel_mutex);
 
-  if(str0 != NULL && str1 != NULL){
-    if(!g_ascii_strncasecmp(str0,
-			    "super-threaded",
-			    15)){
-      if(!g_ascii_strncasecmp(str1,
-			      "channel",
-			      8) ||
-	 !g_ascii_strncasecmp(str1,
-			      "recycling",
-			      10)){
-	g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[0],
-		     "frequency", freq,
-		     NULL);
-	g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[1],
-		     "frequency", freq,
-		     NULL);
-	g_object_set(AGS_PLAYBACK(channel->playback)->channel_thread[2],
-		     "frequency", freq,
+  if(playback != NULL){
+    /* get playback domain mutex */
+    pthread_mutex_lock(ags_playback_get_class_mutex());
+
+    playback_mutex = playback->obj_mutex;
+  
+    pthread_mutex_unlock(ags_playback_get_class_mutex());
+
+    /* channel thread - frequency */
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      pthread_mutex_lock(playback_mutex);
+    
+      channel_thread = playback->channel_thread[i];
+
+      pthread_mutex_unlock(playback_mutex);
+    
+      if(channel_thread != NULL){
+	/* apply new frequency */
+	g_object_set(channel_thread,
+		     "frequency", frequency,
 		     NULL);
       }
     }
   }
-
-  g_free(str0);
-  g_free(str1);
-
-  /* reset recycling */
-  if(audio != NULL){
-    AgsRecycling *recycling;
-
-    GList *audio_signal;
-    
-    if(AGS_IS_OUTPUT(channel) &&
-       (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
-      recycling = channel->first_recycling;
-
-      if(recycling != NULL){
-	ags_channel_set_buffer_size_audio_signal(recycling->audio_signal,
-						 buffer_size);
-      }
-    }
-
-    if(AGS_IS_INPUT(channel) &&
-       channel->link == NULL &&
-       (AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
-      recycling = channel->first_recycling;
-
-      if(AGS_INPUT(channel)->file_link == NULL){
-	if(recycling != NULL){
-	  ags_channel_set_buffer_size_audio_signal(recycling->audio_signal,
-						   buffer_size);
-	}
-      }else{
-	AgsFileLink *file_link;
-
-	file_link = (AgsFileLink *) AGS_INPUT(channel)->file_link;
-	
-	ags_input_open_file(AGS_INPUT(channel),
-			    file_link->filename,
-			    AGS_AUDIO_FILE_LINK(file_link)->preset,
-			    AGS_AUDIO_FILE_LINK(file_link)->instrument,
-			    AGS_AUDIO_FILE_LINK(file_link)->sample,
-			    AGS_AUDIO_FILE_LINK(file_link)->audio_channel);
-      }
-    }
+  
+  if(link == NULL &&
+     recycling != NULL){
+    g_object_set(recycling,
+		 "buffer-size", buffer_size,
+		 NULL);
   }
 }
 

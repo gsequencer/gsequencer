@@ -3201,19 +3201,13 @@ ags_audio_get_class_mutex()
 void
 ags_audio_set_flags(AgsAudio *audio, guint flags)
 {
-  AgsMutexManager *mutex_manager;
-
   guint audio_flags;
   
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return;
   }
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* get audio mutex */
   pthread_mutex_lock(ags_audio_get_class_mutex());
@@ -3371,19 +3365,13 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
 void
 ags_audio_unset_flags(AgsAudio *audio, guint flags)
 {
-  AgsMutexManager *mutex_manager;
-
   guint audio_flags;
   
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return;
   }
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* get audio mutex */
   pthread_mutex_lock(ags_audio_get_class_mutex());
@@ -3529,11 +3517,8 @@ ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags)
   AgsChannel *output, *input;  
   AgsPlaybackDomain *playback_domain;
   
-  AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
   AgsThread *audio_loop;
-
-  AgsApplicationContext *application_context;
   
   GObject *soundcard;
   
@@ -3541,7 +3526,6 @@ ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags)
   guint audio_ability_flags;
   gboolean super_threaded_audio;
   
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *playback_domain_mutex;
 
@@ -3574,17 +3558,10 @@ ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags)
     return;
   }
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   application_context = ags_application_context_get_instance();
 
   /* get main loop */
-  pthread_mutex_lock(application_mutex);
-
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-  
-  pthread_mutex_unlock(application_mutex);
   
   /* get audio mutex */
   pthread_mutex_lock(ags_audio_get_class_mutex());
@@ -3756,15 +3733,11 @@ ags_audio_unset_ability_flags(AgsAudio *audio, guint ability_flags)
   AgsChannel *output, *input;  
   AgsPlaybackDomain *playback_domain;
 
-  AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
   AgsThread *audio_loop;
 
-  AgsApplicationContext *application_context;
-
   guint audio_ability_flags;
   
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
 
   auto void ags_audio_unset_ability_flags_channel(AgsChannel *channel, guint ability_flags);
@@ -3796,17 +3769,10 @@ ags_audio_unset_ability_flags(AgsAudio *audio, guint ability_flags)
     return;
   }
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   application_context = ags_application_context_get_instance();
 
   /* get main loop */
-  pthread_mutex_lock(application_mutex);
-
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-  
-  pthread_mutex_unlock(application_mutex);
 
   /* get audio mutex */
   pthread_mutex_lock(ags_audio_get_class_mutex());
@@ -5991,7 +5957,6 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
   AgsChannel *channel;
   AgsPlaybackDomain *playback_domain;
   
-  AgsMutexManager *mutex_manager;
   AgsThread *audio_thread;
   
   GObject *old_soundcard;
@@ -6003,8 +5968,6 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
   guint format;
   guint i;
   
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *playback_domain_mutex;
@@ -6032,9 +5995,6 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
     return;
   }
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   /* ref and set new soundcard */
   if(soundcard != NULL){
     g_object_ref(soundcard);
@@ -6047,24 +6007,12 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
   pthread_mutex_unlock(audio_mutex);
 
   if(soundcard != NULL){
-    /* lookup soundcard mutex */
-    pthread_mutex_lock(application_mutex);
-    
-    soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       soundcard);
-
-    pthread_mutex_unlock(application_mutex);
-
-    /* get presets */
-    pthread_mutex_lock(soundcard_mutex);
-    
+    /* get presets */    
     ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			      NULL,
 			      &samplerate,
 			      &buffer_size,
 			      &format);
-
-    pthread_mutex_unlock(soundcard_mutex);
 
     /* apply presets */
     g_object_set(audio,
@@ -6555,7 +6503,6 @@ ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
   
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *playback_domain_mutex;
-  pthread_mutex_t *audio_thread_mutex;
   
   auto void ags_audio_set_samplerate_channel(AgsChannel *channel);
 
@@ -6571,7 +6518,9 @@ ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
       pthread_mutex_unlock(ags_channel_get_class_mutex());
 
       /* set samplerate */
-      ags_channel_set_samplerate(channel, samplerate);
+      g_object_set(channel,
+		   "samplerate", samplerate,
+		    NULL);
 
       /* iterate */
       pthread_mutex_lock(channel_mutex);
@@ -6607,40 +6556,31 @@ ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
   
   pthread_mutex_unlock(audio_mutex);
 
-  /* get playback domain mutex */
-  pthread_mutex_lock(ags_playback_domain_get_class_mutex());
+  if(playback_domain != NULL){
+    /* get playback domain mutex */
+    pthread_mutex_lock(ags_playback_domain_get_class_mutex());
 
-  playback_domain_mutex = playback_domain->obj_mutex;
+    playback_domain_mutex = playback_domain->obj_mutex;
   
-  pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
+    pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
 
-  /* audio thread - frequency */
-  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-    pthread_mutex_lock(playback_domain_mutex);
+    /* audio thread - frequency */
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      pthread_mutex_lock(playback_domain_mutex);
     
-    audio_thread = playback_domain->audio_thread[i];
+      audio_thread = playback_domain->audio_thread[i];
 
-    pthread_mutex_unlock(playback_domain_mutex);
+      pthread_mutex_unlock(playback_domain_mutex);
     
-    if(audio_thread != NULL){
-      /* get audio thread mutex */
-      pthread_mutex_lock(ags_thread_get_class_mutex());
-
-      audio_thread_mutex = audio_thread->obj_mutex;
-  
-      pthread_mutex_unlock(ags_thread_get_class_mutex());
-
-      /* apply new frequency */
-      pthread_mutex_lock(audio_thread_mutex);
-
-      g_object_set(audio_thread,
-		   "frequency", frequency,
-		   NULL);
-
-      pthread_mutex_unlock(audio_thread_mutex);
+      if(audio_thread != NULL){
+	/* apply new frequency */
+	g_object_set(audio_thread,
+		     "frequency", frequency,
+		     NULL);
+      }
     }
   }
-
+  
   /* set samplerate output/input */
   ags_audio_set_samplerate_channel(output);
   ags_audio_set_samplerate_channel(input);
@@ -6668,7 +6608,6 @@ ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
   
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *playback_domain_mutex;
-  pthread_mutex_t *audio_thread_mutex;
 
   auto void ags_audio_set_buffer_size_channel(AgsChannel *channel);
 
@@ -6684,7 +6623,9 @@ ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
       pthread_mutex_unlock(ags_channel_get_class_mutex());
 
       /* set buffer size */
-      ags_channel_set_buffer_size(channel, buffer_size);
+      g_object_set(channel,
+		   "buffer-size", buffer_size,
+		   NULL);
       
       /* iterate */
       pthread_mutex_lock(channel_mutex);
@@ -6711,12 +6652,12 @@ ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
 
   audio->buffer_size = buffer_size;
 
-  frequency = ceil((gdouble) audio->samplerate / (gdouble) audio->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
-
   output = audio->output;
   input = audio->input;
 
   playback_domain = audio->playback_domain;
+
+  frequency = ceil((gdouble) audio->samplerate / (gdouble) audio->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
   
   pthread_mutex_unlock(audio_mutex);
 
@@ -6736,21 +6677,10 @@ ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
     pthread_mutex_unlock(playback_domain_mutex);
 
     if(audio_thread != NULL){
-      /* get audio thread mutex */
-      pthread_mutex_lock(ags_thread_get_class_mutex());
-
-      audio_thread_mutex = audio_thread->obj_mutex;
-  
-      pthread_mutex_unlock(ags_thread_get_class_mutex());
-
       /* apply new frequency */
-      pthread_mutex_lock(audio_thread_mutex);
-
       g_object_set(playback_domain->audio_thread[i],
 		   "frequency", frequency,
 		   NULL);
-
-      pthread_mutex_unlock(audio_thread_mutex);
     }
   }  
 
@@ -8791,7 +8721,6 @@ ags_audio_real_start(AgsAudio *audio,
   AgsPlayback *playback;
   AgsRecallID *current_recall_id;
   
-  AgsMutexManager *mutex_manager;
   AgsMessageDelivery *message_delivery;
   AgsMessageQueue *message_queue;
 
@@ -8981,7 +8910,6 @@ ags_audio_real_stop(AgsAudio *audio,
   AgsPlayback *playback;
   AgsRecyclingContext *recycling_context;
 
-  AgsMutexManager *mutex_manager;
   AgsMessageDelivery *message_delivery;
   AgsMessageQueue *message_queue;
   
@@ -9828,11 +9756,8 @@ ags_audio_real_recursive_reset_stage(AgsAudio *audio,
 {
   AgsChannel *channel;
 
-  AgsMutexManager *mutex_manager;
-
   GList *recall_id;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
@@ -9840,16 +9765,12 @@ ags_audio_real_recursive_reset_stage(AgsAudio *audio,
     return(NULL);
   }
 
-  /* get application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
   audio_mutex = audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* get channel */
   pthread_mutex_lock(audio_mutex);
@@ -9871,11 +9792,11 @@ ags_audio_real_recursive_reset_stage(AgsAudio *audio,
 			      current);
 
     /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_channel_get_class_mutex());
       
     channel_mutex = channel->obj_mutex;
   
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
     /* iterate */
     pthread_mutex_lock(channel_mutex);
