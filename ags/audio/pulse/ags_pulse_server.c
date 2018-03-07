@@ -310,8 +310,8 @@ ags_pulse_server_init(AgsPulseServer *pulse_server)
   pulse_server->application_context = NULL;
 
 #ifdef AGS_WITH_PULSE
-  pulse_server->main_loop = pa_glib_mainloop_new(NULL);
-  pulse_server->main_loop_api = pa_glib_mainloop_get_api(pulse_server->main_loop);
+  pulse_server->main_loop = pa_mainloop_new();
+  pulse_server->main_loop_api = pa_mainloop_get_api(pulse_server->main_loop);
 #else
   pulse_server->main_loop = NULL;
   pulse_server->main_loop_api = NULL;
@@ -1257,7 +1257,7 @@ void
 ags_pulse_server_start_poll(AgsPulseServer *pulse_server)
 {
   pthread_create(pulse_server->thread, NULL,
-  		 ags_pulse_server_do_poll_loop, pulse_server);
+		 ags_pulse_server_do_poll_loop, pulse_server);
 }
 
 /**

@@ -53,6 +53,13 @@ ags (2.0.0)
 	* removed ags_synth_generator_compute_extended()
 	* removed ags_synth_generator_compute_with_audio_signal()
 
+ags (1.4.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* work-around reverted pulseaudio GMainLoop integration
+	* implemented property AgsBasePlugin:id
+	* improved ags_lv2_manager.c to be faster
+
 ags (1.4.20)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
@@ -113,7 +120,7 @@ ags (1.4.11)
 	* fixed AgsRecallID:recycling property
 	* improved mutex lookup of rt-safe functions
 
-ags (1.4.10)
+gs (1.4.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* minor-fixes to updating AGS_AUDIO_SIGNAL_RT_TEMPLATE

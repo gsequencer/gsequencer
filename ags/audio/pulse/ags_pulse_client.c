@@ -655,7 +655,6 @@ ags_pulse_client_open(AgsPulseClient *pulse_client,
     pa_context_set_state_callback(pulse_client->context,
 				  ags_pulse_client_state_callback,
 				  pulse_client);
-#if 0
     ready = FALSE;
     
     while(!ready){
@@ -671,7 +670,6 @@ ags_pulse_client_open(AgsPulseClient *pulse_client,
 			    NULL);
       }
     }
-#endif
 #endif
   }
 }

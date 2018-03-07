@@ -58,7 +58,7 @@ void ags_lv2_plugin_dispose(GObject *gobject);
 void ags_lv2_plugin_finalize(GObject *gobject);
 
 gpointer ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
-				    guint samplerate, guint buffer_size);
+				    guint samplerate);
 void ags_lv2_plugin_connect_port(AgsBasePlugin *base_plugin,
 				 gpointer plugin_handle,
 				 guint port_index,
@@ -266,7 +266,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsLv2PluginClass, change_program),
 		 NULL, NULL,
-		 ags_cclosure_marshal_VOID__POINTER_UINT_UINT,
+		 g_cclosure_user_marshal_VOID__POINTER_UINT_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_POINTER,
 		 G_TYPE_UINT,
@@ -507,7 +507,7 @@ ags_lv2_plugin_finalize(GObject *gobject)
 
 gpointer
 ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
-			   guint samplerate, guint buffer_size)
+			   guint samplerate)
 {
   AgsLv2Plugin *lv2_plugin;
   
@@ -542,6 +542,8 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   float *ptr_samplerate;
   float *ptr_buffer_size;
 
+  guint conf_buffer_size;
+  guint conf_samplerate;
   double rate;
   guint total_feature;
   guint nth;
@@ -556,6 +558,46 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   worker_handle = NULL;
   
   if(lv2_plugin->feature == NULL){
+    /* samplerate */
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD,
+			       "samplerate");
+  
+    if(str == NULL){
+      str = ags_config_get_value(config,
+				 AGS_CONFIG_SOUNDCARD_0,
+				 "samplerate");
+    }  
+
+    if(str != NULL){
+      conf_samplerate = g_ascii_strtoull(str,
+					 NULL,
+					 10);
+      free(str);
+    }else{
+      conf_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+    }
+
+    /* buffer-size */
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD,
+			       "buffer-size");
+
+    if(str == NULL){
+      str = ags_config_get_value(config,
+				 AGS_CONFIG_SOUNDCARD_0,
+				 "buffer-size");
+    }
+  
+    if(str != NULL){
+      conf_buffer_size = g_ascii_strtoull(str,
+					  NULL,
+					  10);
+      free(str);
+    }else{
+      conf_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+    }
+
     /**/
     total_feature = 8;
     nth = 0;
@@ -669,12 +711,8 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   /* alloc handle and path */
   lv2_handle = (LV2_Handle *) malloc(sizeof(LV2_Handle));
 
-  path = NULL;
-
-  if(base_plugin->filename != NULL){
-    path = g_strndup(base_plugin->filename,
-		     rindex(base_plugin->filename, '/') - base_plugin->filename + 1);
-  }
+  path = g_strndup(base_plugin->filename,
+		   rindex(base_plugin->filename, '/') - base_plugin->filename + 1);
   
   /* instantiate */
   rate = (double) samplerate;
@@ -687,6 +725,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     /* some options */
     options = (LV2_Options_Option *) malloc(6 * sizeof(LV2_Options_Option));
 
+
     /* samplerate */
     options[0].context = LV2_OPTIONS_INSTANCE;
     options[0].subject = 0;
@@ -694,7 +733,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 						 LV2_PARAMETERS__sampleRate);
 
     ptr_samplerate = (float *) malloc(sizeof(float));
-    ptr_samplerate[0] = samplerate;
+    ptr_samplerate[0] = conf_samplerate;
   
     options[0].size = sizeof(float);
     options[0].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
@@ -708,7 +747,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 						 LV2_BUF_SIZE__minBlockLength);
 
     ptr_buffer_size = (float *) malloc(sizeof(float));
-    ptr_buffer_size[0] = buffer_size;
+    ptr_buffer_size[0] = conf_buffer_size;
   
     options[1].size = sizeof(float);
     options[1].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
@@ -722,7 +761,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 						 LV2_BUF_SIZE__maxBlockLength);
 
     ptr_buffer_size = (float *) malloc(sizeof(float));
-    ptr_buffer_size[0] = buffer_size;
+    ptr_buffer_size[0] = conf_buffer_size;
 
     options[2].size = sizeof(float);
     options[2].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
@@ -736,7 +775,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 						 LV2_BUF_SIZE__boundedBlockLength);
 
     ptr_buffer_size = (float *) malloc(sizeof(float));
-    ptr_buffer_size[0] = buffer_size;
+    ptr_buffer_size[0] = conf_buffer_size;
 
     options[3].size = sizeof(float);
     options[3].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
@@ -750,7 +789,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 						 LV2_BUF_SIZE__fixedBlockLength);
 
     ptr_buffer_size = (float *) malloc(sizeof(float));
-    ptr_buffer_size[0] = buffer_size;
+    ptr_buffer_size[0] = conf_buffer_size;
 
     options[4].size = sizeof(float);
     options[4].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
@@ -776,7 +815,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     AGS_LV2_WORKER(worker_handle)->handle = *lv2_handle;
   }
 
-  g_free(path);
+  free(path);
   
   return(lv2_handle);
 }
@@ -872,20 +911,11 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
     escaped_effect = ags_string_util_escape_single_quote(base_plugin->effect);
 
-    /* retrieve name node as context node */
-    xpath = g_strdup_printf("(//rdf-triple//rdf-verb[//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name'] and following-sibling::*//rdf-string[text()='\"%s\"']]/ancestor::*[self::rdf-triple])[1]",
-			    escaped_effect);
+    /* retrieve triple node */
+    triple_node = g_hash_table_lookup(ags_lv2_manager_get_instance()->current_plugin_node,
+				      base_plugin->id);
     
-    list = ags_turtle_find_xpath(lv2_plugin->turtle,
-				 xpath);
-
-    free(xpath);
-
-    if(list != NULL){
-      triple_node = (xmlNode *) list->data;
-
-      g_list_free(list);
-    }else{
+    if(triple_node == NULL){
       g_warning("rdf-triple not found");
       
       return;

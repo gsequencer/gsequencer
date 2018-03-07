@@ -19,11 +19,7 @@
 
 #include <ags/plugin/ags_lv2_manager.h>
 
-#include <ags/lib/ags_string_util.h>
-#include <ags/lib/ags_log.h>
-#include <ags/lib/ags_turtle_manager.h>
-
-#include <ags/object/ags_marshal.h>
+#include <ags/libags.h>
 
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_lv2_plugin.h>
@@ -141,8 +137,11 @@ ags_lv2_manager_init(AgsLv2Manager *lv2_manager)
   /* initialize lv2 plugin blacklist */
   lv2_manager->lv2_plugin_blacklist = NULL;
 
-  /* initialize lv2_plugin GList */
+  /* initialize lv2 plugin GList */
   lv2_manager->lv2_plugin = NULL;
+
+  /* current plugin node */
+  lv2_manager->current_plugin_node = NULL;
 
   /* initiliaze ags_lv2_default_path string vector */
   if(ags_lv2_default_path == NULL){
@@ -551,14 +550,38 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
 
   g_message("lv2 check - %s", path);
 
+  plugin_so = dlopen(path,
+		     RTLD_NOW);
+  
+  if(plugin_so == NULL){
+    g_warning("ags_lv2_manager.c - failed to load static object file");    
+    dlerror();
+    
+    pthread_mutex_unlock(&(mutex));
+
+    return;
+  }
+  
+  if(dlerror() != NULL){
+    return;
+  }
+  
   //  xmlSaveFormatFileEnc("-", turtle->doc, "UTF-8", 1);
   
   /* parse lv2 plugin */
-  xpath = "//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length('doap:name') + 1) = 'doap:name']/ancestor::*[self::rdf-verb][1]/following-sibling::rdf-object-list[1]//rdf-string[text()]";
+  lv2_manager->current_plugin_node = g_hash_table_new_full(g_str_hash, g_str_equal,
+							   g_free,
+							   NULL);
+
+  xpath = "/rdf-turtle-doc/rdf-statement/rdf-triple/rdf-predicate-object-list/rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length('doap:name') + 1) = 'doap:name']/ancestor::*[self::rdf-verb][1]/following-sibling::rdf-object-list[1]//rdf-string[text()]";
   effect_list = ags_turtle_find_xpath(turtle,
 				      xpath);
 
   while(effect_list != NULL){
+    xmlNode *current_triple;
+    
+    gchar *current_uuid;
+    
     /* read effect name */
     node = effect_list->data;
     
@@ -578,16 +601,24 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
 
     effect = g_strndup(str + 1,
 		       strlen(str) - 2);
+
+    /* fill current plugin node */
+    xpath = "./ancestor::*[self::rdf-triple][1]";
+    current_triple = ags_turtle_find_xpath_with_context_node(turtle,
+							     xpath,
+							     node)->data;
+
+    current_uuid = ags_id_generator_create_uuid();
+    escaped_effect = ags_string_util_escape_single_quote(effect);
+
+    g_hash_table_insert(lv2_manager->current_plugin_node,
+			current_uuid, current_triple);
     
     /* find URI */
-    escaped_effect = ags_string_util_escape_single_quote(effect);
-    xpath = "//rdf-triple//rdf-string[text()='\"%s\"']/ancestor::*[self::rdf-triple][1]/rdf-subject/rdf-iri";
-    
-    xpath = g_strdup_printf(xpath,
-			    escaped_effect);
-    uri_list = ags_turtle_find_xpath(turtle,
-				     xpath);
-    free(xpath);
+    xpath = "./rdf-subject/rdf-iri";
+    uri_list = ags_turtle_find_xpath_with_context_node(turtle,
+						       xpath,
+						       current_triple);
     
     uri = NULL;
   
@@ -651,8 +682,9 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
 
 		str = g_strdup_printf("//rdf-pname-ns[text()='%s']/following-sibling::*[self::rdf-iriref][1]",
 				      prefix);
-		prefix_node = ags_turtle_find_xpath(turtle,
-						    str);
+		prefix_node = ags_turtle_find_xpath_with_context_node(turtle,
+								      str,
+								      current_triple);
 		free(str);
 
 		if(prefix_node != NULL){
@@ -687,11 +719,10 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
     }
 
     /* turtle pname */
-    xpath = g_strdup_printf("//rdf-triple//rdf-string[text()='\"%s\"']/ancestor::*[self::rdf-triple]//rdf-pname-ln[1]",
-			    escaped_effect);
-
-    pname_list = ags_turtle_find_xpath(turtle,
-				       xpath);
+    xpath = "./rdf-pname-ln[1]";
+    pname_list = ags_turtle_find_xpath_with_context_node(turtle,
+							 xpath,
+							 current_triple);
 
     if(pname_list != NULL){
       turtle_pname = xmlNodeGetContent(pname_list->data);
@@ -702,23 +733,10 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
     }
     
     /* get uri index and append plugin */
-    plugin_so = dlopen(path,
-		       RTLD_NOW);
-  
-    if(plugin_so == NULL){
-      g_warning("ags_lv2_manager.c - failed to load static object file");
-    
-      dlerror();
-
-      effect_list = effect_list->next;
-      
-      continue;
-    }
-
     lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
 						     "lv2_descriptor");
   
-    if(dlerror() == NULL && lv2_descriptor){
+    if(lv2_descriptor){
       for(i = 0; (plugin_descriptor = lv2_descriptor(i)) != NULL; i++){
 	if(path != NULL &&
 	   effect != NULL &&
@@ -745,6 +763,7 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
 	    lv2_plugin = g_object_new(AGS_TYPE_LV2_PLUGIN,
 				      "manifest", manifest,
 				      "turtle", turtle,
+				      "id", current_uuid,
 				      "filename", path,
 				      "effect", effect,
 				      "pname", turtle_pname,
@@ -765,6 +784,10 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
   }
 
   pthread_mutex_unlock(&(mutex));
+
+  g_hash_table_destroy(lv2_manager->current_plugin_node);
+  
+  lv2_manager->current_plugin_node = NULL;
 }
 
 /**
@@ -797,7 +820,7 @@ ags_lv2_manager_load_preset(AgsLv2Manager *lv2_manager,
     return;
   }
   
-  xpath = "//rdf-triple//rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':preset') + 1) = ':preset']/ancestor::*[self::rdf-triple][1]/rdf-subject/rdf-iri";
+  xpath = "/rdf-turtle-doc/rdf-statement/rdf-triple/rdf-predicate-object-list/rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':preset') + 1) = ':preset']/ancestor::*[self::rdf-triple][1]/rdf-subject/rdf-iri";
 
   preset_list = ags_turtle_find_xpath(preset,
 				      xpath);
@@ -1024,7 +1047,7 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 			NULL);
 
 	/* read binary from turtle */
-	str = g_strdup_printf("//rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('%s>') + 1) = '%s>']",
+	str = g_strdup_printf("/rdf-turtle-doc/rdf-statement/rdf-triple/rdf-predicate-object-list/rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('%s>') + 1) = '%s>']",
 			      AGS_LIBRARY_SUFFIX,
 			      AGS_LIBRARY_SUFFIX);
 	
@@ -1124,7 +1147,7 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 	}
 
     	/* read presets from turtle */
-	xpath = "//rdf-triple//rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':preset') + 1) = ':preset']/ancestor::*[self::rdf-triple]";
+	xpath = "/rdf-turtle-doc/rdf-statement/rdf-triple/rdf-predicate-object-list/rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':preset') + 1) = ':preset']/ancestor::*[self::rdf-triple]";
 	preset_list = ags_turtle_find_xpath(manifest,
 					    xpath);
 
