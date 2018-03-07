@@ -647,6 +647,8 @@ libags_audio_h_sources = \
 	ags/audio/ags_devin.h \
 	ags/audio/ags_effect.h \
 	ags/audio/ags_fifoout.h \
+	ags/audio/ags_generic_recall_channel_run.h \
+	ags/audio/ags_generic_recall_recycling.h \
 	ags/audio/ags_input.h \
 	ags/audio/ags_midi.h \
 	ags/audio/ags_midiin.h \
@@ -662,7 +664,6 @@ libags_audio_h_sources = \
 	ags/audio/ags_recall_audio_run.h \
 	ags/audio/ags_recall_audio_signal.h \
 	ags/audio/ags_recall_channel.h \
-	ags/audio/ags_recall_channel_run_dummy.h \
 	ags/audio/ags_recall_channel_run.h \
 	ags/audio/ags_recall_container.h \
 	ags/audio/ags_recall_dependency.h \
@@ -676,7 +677,6 @@ libags_audio_h_sources = \
 	ags/audio/ags_recall_lv2.h \
 	ags/audio/ags_recall_lv2_run.h \
 	ags/audio/ags_recall_adaptor_run.h \
-	ags/audio/ags_recall_recycling_dummy.h \
 	ags/audio/ags_recall_recycling.h \
 	ags/audio/ags_recycling_context.h \
 	ags/audio/ags_recycling.h \
@@ -704,6 +704,8 @@ libags_audio_c_sources = \
 	ags/audio/ags_devin.c \
 	ags/audio/ags_input.c \
 	ags/audio/ags_fifoout.c \
+	ags/audio/ags_generic_recall_channel_run.c \
+	ags/audio/ags_generic_recall_recycling.c \
 	ags/audio/ags_midi.c \
 	ags/audio/ags_midiin.c \
 	ags/audio/ags_notation.c \
@@ -720,7 +722,6 @@ libags_audio_c_sources = \
 	ags/audio/ags_recall.c \
 	ags/audio/ags_recall_channel.c \
 	ags/audio/ags_recall_channel_run.c \
-	ags/audio/ags_recall_channel_run_dummy.c \
 	ags/audio/ags_recall_container.c \
 	ags/audio/ags_recall_dependency.c \
 	ags/audio/ags_recall_factory.c \
@@ -733,7 +734,6 @@ libags_audio_c_sources = \
 	ags/audio/ags_recall_lv2_run.c \
 	ags/audio/ags_recall_adaptor_run.c \
 	ags/audio/ags_recall_recycling.c \
-	ags/audio/ags_recall_recycling_dummy.c \
 	ags/audio/ags_recycling.c \
 	ags/audio/ags_recycling_context.c \
 	ags/audio/ags_sound_provider.c \
