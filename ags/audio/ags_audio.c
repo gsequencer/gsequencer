@@ -6719,7 +6719,9 @@ ags_audio_set_format(AgsAudio *audio, guint format)
       pthread_mutex_unlock(ags_channel_get_class_mutex());
 
       /* set format */
-      ags_channel_set_format(channel, format);
+      g_object_set(channel,
+		   "format", format,
+		   NULL);
       
       /* iterate */
       pthread_mutex_lock(channel_mutex);
