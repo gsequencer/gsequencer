@@ -123,10 +123,10 @@ struct _AgsRecall
   GObject *recall_container;
 
   GObject *output_soundcard;
-  guint output_soundcard_channel;
-
+  gint output_soundcard_channel;
+  
   GObject *input_soundcard;
-  guint input_soundcard_channel;
+  gint input_soundcard_channel;
 
   GList *port;
   GList *automation_port;

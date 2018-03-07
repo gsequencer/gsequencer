@@ -91,10 +91,10 @@ struct _AgsAudio
   AgsUUID *uuid;
   
   GObject *output_soundcard;
-  guint *output_soundcard_channel_map;
+  gint *output_soundcard_channel_map;
   
   GObject *input_soundcard;
-  guint *input_soundcard_channel_map;
+  gint *input_soundcard_channel_map;
 
   GObject *output_sequencer;
   GObject *input_sequencer;

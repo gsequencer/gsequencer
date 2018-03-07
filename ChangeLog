@@ -32,6 +32,8 @@ ags (2.0.0)
 	* renamed g_cclosure_user_marshal_* to ags_cclosure_marshal_*
 	* renamed ags_connectable_connect_scope() to ags_connectable_connect_connection()
 	* renamed ags_connectable_disconnect_scope() to ags_connectable_disconnect_connection()
+	* renamed AgsRecallChannelDummyRun to AgsGenericRecallChannelRun
+	* renamed AgsRecallRecyclingDummy to AgsGenericRecallRecycling
 	* renamed ags_audio_play_recall()
 	* renamed ags_audio_cancel_recall()
 	* renamed ags_audio_signal_find_by_recall_id()

@@ -104,10 +104,10 @@ struct _AgsChannel
   GObject *audio;
 
   GObject *output_soundcard;
-  guint output_soundcard_channel;
+  gint output_soundcard_channel;
   
   GObject *input_soundcard;
-  guint input_soundcard_channel;
+  gint input_soundcard_channel;
 
   guint samplerate;
   guint buffer_size;
@@ -269,8 +269,8 @@ void ags_channel_remove_recall_id(AgsChannel *channel, AgsRecallID *recall_id);
 void ags_channel_add_recall_container(AgsChannel *channel, GObject *recall_container);
 void ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_container);
 
-void ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play);
-void ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play);
+void ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play_context);
+void ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play_context);
 
 /* add/remove effect */
 GList* ags_channel_add_effect(AgsChannel *channel,

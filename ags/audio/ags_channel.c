@@ -49,8 +49,6 @@
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_recall_id.h>
 
-#include <ags/audio/client/ags_remote_channel.h>
-
 #include <ags/audio/thread/ags_channel_thread.h>
 #include <ags/audio/thread/ags_recycling_thread.h>
 
@@ -4106,39 +4104,33 @@ ags_channel_remove_recall_id(AgsChannel *channel, AgsRecallID *recall_id)
  *
  * Adds a recall container.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_channel_add_recall_container(AgsChannel *channel, GObject *recall_container)
 {
-  AgsMutexManager *mutex_manager;
+  pthread_mutex_t *channel_mutex;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
-
-  if(channel == NULL || recall_container == NULL){
+  if(!AGS_IS_CHANNEL(channel) ||
+     !AGS_IS_RECALL_CONTAINER(recall_container)){
     return;
   }
 
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
+  channel_mutex = channel->obj_mutex;
   
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) channel);
-
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
 
   /* add recall container */    
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(channel_mutex);
 
   g_object_ref(G_OBJECT(recall_container));
-
-  channel->container = g_list_prepend(channel->container, recall_container);
+  channel->recall_container = g_list_prepend(channel->recall_container,
+					     recall_container);
   
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(channel_mutex);
 }
 
 /**
@@ -4148,73 +4140,109 @@ ags_channel_add_recall_container(AgsChannel *channel, GObject *recall_container)
  *
  * Removes a recall container.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_container)
 {
-  AgsMutexManager *mutex_manager;
+  pthread_mutex_t *channel_mutex;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
-
-  if(channel == NULL || recall_container == NULL){
+  if(!AGS_IS_CHANNEL(channel) ||
+     !AGS_IS_RECALL_CONTAINER(recall_container)){
     return;
   }
 
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
+  channel_mutex = channel->obj_mutex;
   
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) channel);
-
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
 
   /* remove recall container */    
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(channel_mutex);
 
-  channel->container = g_list_remove(channel->container, recall_container);
+  channel->recall_container = g_list_remove(channel->recall_container,
+					    recall_container);
   g_object_unref(G_OBJECT(recall_container));
   
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(channel_mutex);
 }
-
 
 /**
  * ags_channel_add_recall:
  * @channel: an #AgsChannel
  * @recall: the #AgsRecall
- * @play: %TRUE if simple playback.
+ * @play_context: %TRUE if play context, else if %FALSE recall context
  *
  * Adds a recall.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
 {
-  if(channel == NULL || recall == NULL){
+  if(!AGS_IS_CHANNEL(channel) ||
+     !AGS_IS_RECALL(recall)){
     return;
   }
+  
+  if(play_context){
+    pthread_mutex_t *play_mutex;
 
-  /* add recall */
-  g_object_ref(recall);
+    /* get play mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
 
-  if(play){
-    pthread_mutex_lock(channel->play_mutex);
+    play_mutex = channel->play_mutex;
+  
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
-    channel->play = g_list_prepend(channel->play, recall);
+    /* add recall */
+    pthread_mutex_lock(play_mutex);
+    
+    if(g_list_find(channel->play, recall) == NULL){
+      g_object_ref(G_OBJECT(recall));
+    
+      channel->play = g_list_prepend(channel->play,
+				     recall);
+            
+      if(AGS_IS_RECALL_CHANNEL(recall) ||
+	 AGS_IS_RECALL_CHANNEL_RUN(recall)){
+	g_object_set(recall,
+		     "channel", channel,
+		     NULL);
+      }
+    }
 
-    pthread_mutex_unlock(channel->play_mutex);
+    pthread_mutex_unlock(play_mutex);
   }else{
-    pthread_mutex_lock(channel->recall_mutex);
+    pthread_mutex_t *recall_mutex;
 
-    channel->recall = g_list_prepend(channel->recall, recall);
+    /* get recall mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
 
-    pthread_mutex_unlock(channel->recall_mutex);
+    recall_mutex = channel->recall_mutex;
+  
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+    /* add recall */
+    pthread_mutex_lock(recall_mutex);
+
+    if(g_list_find(channel->recall, recall) == NULL){
+      g_object_ref(G_OBJECT(recall));
+    
+      channel->recall = g_list_prepend(channel->recall,
+				       recall);
+            
+      if(AGS_IS_RECALL_CHANNEL(recall) ||
+	 AGS_IS_RECALL_CHANNEL_RUN(recall)){
+	g_object_set(recall,
+		     "channel", channel,
+		     NULL);
+      }
+    }
+
+    pthread_mutex_unlock(recall_mutex);
   }
 }
 
@@ -4222,60 +4250,77 @@ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play)
  * ags_channel_remove_recall:
  * @channel: an #AgsChannel
  * @recall: the #AgsRecall
- * @play: %TRUE if simple playback.
+ * @play_context: %TRUE if play context, else if %FALSE recall context
  *
  * Removes a recall.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
-ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play)
+ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play_context)
 {
-  if(channel == NULL || recall == NULL){
+  if(!AGS_IS_CHANNEL(channel) ||
+     !AGS_IS_RECALL(recall)){
     return;
   }
+  
+  if(play_context){
+    pthread_mutex_t *play_mutex;
 
-  /* remove recall */
-  if(play){
-    pthread_mutex_lock(channel->play_mutex);
+    /* get play mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
 
-    channel->play = g_list_remove(channel->play, recall);
+    play_mutex = channel->play_mutex;
+  
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
-    pthread_mutex_unlock(channel->play_mutex);
-  }else{
-    pthread_mutex_lock(channel->recall_mutex);
+    /* add recall */
+    pthread_mutex_lock(play_mutex);
+    
+    if(g_list_find(channel->play, recall) != NULL){
+      channel->play = g_list_remove(channel->play,
+				    recall);
+            
+      if(AGS_IS_RECALL_CHANNEL(recall) ||
+	 AGS_IS_RECALL_CHANNEL_RUN(recall)){
+	g_object_set(recall,
+		     "channel", NULL,
+		     NULL);
+      }
 
-    channel->recall = g_list_remove(channel->recall, recall);
-
-    pthread_mutex_unlock(channel->recall_mutex);
-  }
-
-  g_object_unref(G_OBJECT(recall));
-}
-
-GList*
-ags_channel_get_recall_by_effect(AgsChannel *channel, gchar *filename, gchar *effect)
-{
-  AgsRecall *recall;
-  GList *list, *tmp;
-
-  list = ags_recall_get_by_effect(channel->play,
-				  filename,
-				  effect);
-  tmp = ags_recall_get_by_effect(channel->play,
-				 filename,
-				 effect);
-
-  if(tmp != NULL){
-    if(list != NULL){
-      list = g_list_concat(list,
-			   tmp);
-    }else{
-      list = tmp;
+      g_object_unref(G_OBJECT(recall));
     }
-  }
 
-  return(list);
+    pthread_mutex_unlock(play_mutex);
+  }else{
+    pthread_mutex_t *recall_mutex;
+
+    /* get recall mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
+
+    recall_mutex = channel->recall_mutex;
+  
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+    /* add recall */
+    pthread_mutex_lock(recall_mutex);
+
+    if(g_list_find(channel->recall, recall) != NULL){
+      channel->recall = g_list_remove(channel->recall,
+				      recall);
+            
+      if(AGS_IS_RECALL_CHANNEL(recall) ||
+	 AGS_IS_RECALL_CHANNEL_RUN(recall)){
+	g_object_set(recall,
+		     "channel", NULL,
+		     NULL);
+      }
+
+      g_object_unref(G_OBJECT(recall));
+    }
+
+    pthread_mutex_unlock(recall_mutex);
+  }
 }
 
 GList*
@@ -4283,7 +4328,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 			      gchar *filename,
 			      gchar *effect)
 {
-  GObject *soundcard;
+  GObject *output_soundcard, *input_soundcard;
   AgsAudio *audio;
   AgsRecallContainer *recall_container;
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
@@ -4292,32 +4337,38 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
   AgsLadspaManager *ladspa_manager;
   AgsLadspaPlugin *ladspa_plugin;
   
-  AgsMutexManager *mutex_manager;
-
   GList *port;
-
+  
+  gint output_soundcard_channel, input_soundcard_channel;
+  
   void *plugin_so;
   LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_Descriptor *plugin_descriptor;
   unsigned long effect_index;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
 
-  pthread_mutex_lock(application_mutex);
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
 
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
+  channel_mutex = channel->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
 
+  /*  */
   pthread_mutex_lock(channel_mutex);
 
-  soundcard = channel->soundcard;
   audio = (AgsAudio *) channel->audio;
+
+  output_soundcard = channel->output_soundcard;
+  output_soundcard_channel = channel->output_soundcard_channel;
+  
+  input_soundcard = channel->input_soundcard;
+  input_soundcard_channel = channel->input_soundcard_channel;
   
   pthread_mutex_unlock(channel_mutex);
 
@@ -4338,7 +4389,10 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 					effect,
 					effect_index);
   g_object_set(G_OBJECT(recall_ladspa),
-	       "output-soundcard", soundcard,
+	       "output-soundcard", output_soundcard,
+	       "output-soundcard-channel", output_soundcard_channel,
+	       "input-soundcard", input_soundcard,
+	       "input-soundcard-channel", input_soundcard_channel,
 	       "recall-container", recall_container,
 	       NULL);
   AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
@@ -4350,13 +4404,16 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
   ags_recall_ladspa_load(recall_ladspa);
   port = ags_recall_ladspa_load_ports(recall_ladspa);  
   
-  /* dummy */
+  /* generic */
   recall_channel_run_dummy = ags_recall_channel_run_dummy_new(channel,
 							      AGS_TYPE_RECALL_RECYCLING_DUMMY,
 							      AGS_TYPE_RECALL_LADSPA_RUN);
   AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_channel_run_dummy),
-	       "output-soundcard", soundcard,
+	       "output-soundcard", output_soundcard,
+	       "output-soundcard-channel", output_soundcard_channel,
+	       "input-soundcard", input_soundcard,
+	       "input-soundcard-channel", input_soundcard_channel,
 	       "recall-container", recall_container,
 	       "recall-channel", recall_ladspa,
 	       NULL);
