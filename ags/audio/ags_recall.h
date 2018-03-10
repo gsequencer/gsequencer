@@ -108,7 +108,10 @@ struct _AgsRecall
   guint staging_flags;
   guint state_flags;
   
-  gboolean rt_safe;
+  //  gboolean rt_safe; note replace by globals
+
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
   
   AgsUUID *uuid;
 
@@ -206,6 +209,8 @@ struct _AgsRecallHandler
 };
 
 GType ags_recall_get_type();
+
+pthread_mutex_t* ags_recall_get_class_mutex();
 
 void ags_recall_set_flags(AgsRecall *recall, guint flags);
 

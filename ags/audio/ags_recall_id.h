@@ -49,6 +49,9 @@ struct _AgsRecallID
   guint staging_flags;
   guint state_flags;
   
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   AgsRecyclingContext *recycling_context;
 };
 
@@ -58,6 +61,8 @@ struct _AgsRecallIDClass
 };
 
 GType ags_recall_id_get_type(void);
+
+pthread_mutex_t* ags_recall_id_get_class_mutex();
 
 /* scope */
 void ags_recall_id_set_sound_scope(AgsRecallID *recall_id, gint sound_scope);

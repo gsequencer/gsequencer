@@ -38,8 +38,8 @@
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_container.h>
-#include <ags/audio/ags_recall_channel_run_dummy.h>
-#include <ags/audio/ags_recall_recycling_dummy.h>
+#include <ags/audio/ags_generic_recall_channel_run.h>
+#include <ags/audio/ags_generic_recall_recycling.h>
 #include <ags/audio/ags_recall_ladspa.h>
 #include <ags/audio/ags_recall_ladspa_run.h>
 #include <ags/audio/ags_recall_dssi.h>
@@ -1840,20 +1840,6 @@ ags_channel_finalize(GObject *gobject)
   AgsChannel *channel;
   AgsRecycling *recycling, *recycling_next;
 
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
-
-  ags_mutex_manager_remove(mutex_manager,
-			   gobject);
-  
-  pthread_mutex_unlock(application_mutex);
-
   channel = AGS_CHANNEL(gobject);
 
   pthread_mutexattr_destroy(channel->obj_mutexattr);
@@ -2351,25 +2337,18 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
   AgsPlaybackDomain *playback_domain;
   AgsPlayback *playback;
   
-  AgsMutexManager *mutex_manager;
-
   GObject *soundcard;
   
   guint samplerate, buffer_size;
   guint channel_ability_flags;
   gboolean super_threaded_channel;
   
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *playback_mutex;
 
   if(!AGS_IS_CHANNEL(channel)){
     return;
   }
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* get channel mutex */
   pthread_mutex_lock(ags_channel_get_class_mutex());
@@ -2409,13 +2388,6 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
   super_threaded_channel = ((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0) ? TRUE: FALSE;
 
   pthread_mutex_unlock(playback_mutex);
-
-  /* get audio mutex */
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-  
-  audio_mutex = audio->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
   
   if(super_threaded_channel){
     /* playback ability */
@@ -2560,20 +2532,14 @@ ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags)
 {
   AgsPlayback *playback;
 
-  AgsMutexManager *mutex_manager;
-
   guint channel_ability_flags;
   
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *playback_mutex;
 
   if(!AGS_IS_CHANNEL(channel)){
     return;
   }
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* get channel mutex */
   pthread_mutex_lock(ags_channel_get_class_mutex());
@@ -4331,7 +4297,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
   GObject *output_soundcard, *input_soundcard;
   AgsAudio *audio;
   AgsRecallContainer *recall_container;
-  AgsRecallChannelRunDummy *recall_channel_run_dummy;
+  AgsGenericRecallChannelRun *generic_recall_channel_run;
   AgsRecallLadspa *recall_ladspa;
 
   AgsLadspaManager *ladspa_manager;
@@ -4405,11 +4371,11 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
   port = ags_recall_ladspa_load_ports(recall_ladspa);  
   
   /* generic */
-  recall_channel_run_dummy = ags_recall_channel_run_dummy_new(channel,
-							      AGS_TYPE_RECALL_RECYCLING_DUMMY,
-							      AGS_TYPE_RECALL_LADSPA_RUN);
-  AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
-  g_object_set(G_OBJECT(recall_channel_run_dummy),
+  generic_recall_channel_run = ags_generic_recall_channel_run_new(channel,
+								  AGS_TYPE_GENERIC_RECALL_RECYCLING,
+								  AGS_TYPE_RECALL_LADSPA_RUN);
+  AGS_RECALL(generic_recall_channel_run)->flags |= AGS_RECALL_TEMPLATE;
+  g_object_set(G_OBJECT(generic_recall_channel_run),
 	       "output-soundcard", output_soundcard,
 	       "output-soundcard-channel", output_soundcard_channel,
 	       "input-soundcard", input_soundcard,
@@ -4418,67 +4384,69 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 	       "recall-channel", recall_ladspa,
 	       NULL);
   ags_channel_add_recall(channel,
-			 (GObject *) recall_channel_run_dummy,
+			 (GObject *) generic_recall_channel_run,
 			 TRUE);
   
   /* check if connected or running */
-  pthread_mutex_lock(channel_mutex);
 
-  if((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0){
+  if(ags_connectable_is_connected(AGS_CONNECTABLE(channel))){
     AgsRecall *current;
-    GList *recall_id;
+
+    GList *recall_id_start, *recall_id;
     
     ags_connectable_connect(AGS_CONNECTABLE(recall_container));
     ags_connectable_connect(AGS_CONNECTABLE(recall_ladspa));
-    ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
+    ags_connectable_connect(AGS_CONNECTABLE(generic_recall_channel_run));
+
+    pthread_mutex_lock(channel_mutex);
     
-    recall_id = channel->recall_id;
+    recall_id = 
+      recall_id_start = g_list_copy(channel->recall_id);
+
+    pthread_mutex_unlock(channel_mutex);
     
     while(recall_id != NULL){
-      if(AGS_RECALL_ID(recall_id->data)->recycling_context->parent == NULL){
-	current = ags_recall_duplicate((AgsRecall *) recall_channel_run_dummy,
-				       (AgsRecallID *) recall_id->data);
+      if(AGS_RECALL_ID(recall_id->data)->recycling_context != NULL &&
+	 AGS_RECALL_ID(recall_id->data)->recycling_context->parent == NULL){
+	if(ags_recall_id_check_staging_flags(recall_id,
+					     AGS_SOUND_STATE_IS_WAITING |
+					     AGS_SOUND_STATE_IS_ACTIVE)){
+	  gint sound_scope;
+	  guint staging_flags;
+	  
+	  current = ags_recall_duplicate((AgsRecall *) generic_recall_channel_run,
+					 (AgsRecallID *) recall_id->data);
 
-	/* set appropriate flag */
-	if((AGS_RECALL_ID_PLAYBACK & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
-	  ags_recall_set_flags(current, AGS_RECALL_PLAYBACK);
-	}else if((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
-	  ags_recall_set_flags(current, AGS_RECALL_SEQUENCER);
-	}else if((AGS_RECALL_ID_NOTATION & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
-	  ags_recall_set_flags(current, AGS_RECALL_NOTATION);
+	  /* set appropriate scope */
+	  sound_scope = AGS_RECALL_ID(recall_id->data)->sound_scope;
+	  staging_flags = AGS_RECALL_ID(recall_id->data)->staging_flags;
+	  
+	  ags_recall_set_sound_scope(current,
+				     sound_scope);
+
+	  /* append to AgsChannel */
+	  ags_channel_add_recall(channel,
+				 current);
+	  
+	  /* connect */
+	  ags_connectable_connect(AGS_CONNECTABLE(current));
+	  
+	  /* notify run */
+	  //ags_recall_notify_dependency(current, AGS_RECALL_NOTIFY_RUN, 1);
+
+	  /* set staging flags */
+	  ags_recall_set_staging_flags(current,
+				       staging_flags);
 	}
-
-	/* append to AgsAudio */
-	channel->play = g_list_append(channel->play, current);
-
-	/* connect */
-	ags_connectable_connect(AGS_CONNECTABLE(current));
-
-	/* notify run */
-	ags_recall_notify_dependency(current, AGS_RECALL_NOTIFY_RUN, 1);
-
-	/* resolve */
-	ags_recall_resolve_dependencies(current);
-
-	/* init */
-	ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(current));
-      
-	current->flags &= (~AGS_RECALL_HIDE);
-	ags_recall_run_init_pre(current);
-	current->flags &= (~AGS_RECALL_REMOVE);
-      
-	ags_recall_run_init_inter(current);
-	ags_recall_run_init_post(current);
-
-	ags_recall_check_rt_stream(current);
       }
       
       /* iterate */
       recall_id = recall_id->next;
     }
-  }
 
-  pthread_mutex_unlock(channel_mutex);
+    /* free GList */
+    g_list_free(recall_id_start);
+  }
 
   /* ladspa recall */
   recall_container = ags_recall_container_new();
@@ -4490,7 +4458,10 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 					effect,
 					effect_index);
   g_object_set(G_OBJECT(recall_ladspa),
-	       "output-soundcard", soundcard,
+	       "output-soundcard", output_soundcard,
+	       "output-soundcard-channel", output_soundcard_channel,
+	       "input-soundcard", input_soundcard,
+	       "input-soundcard-channel", input_soundcard_channel,
 	       "recall-container", recall_container,
 	       NULL);
   ags_channel_add_recall(channel,
@@ -4505,18 +4476,21 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 			 ags_recall_ladspa_load_ports(recall_ladspa));
   }
   
-  /* dummy */
-  recall_channel_run_dummy = ags_recall_channel_run_dummy_new(channel,
-							      AGS_TYPE_RECALL_RECYCLING_DUMMY,
-							      AGS_TYPE_RECALL_LADSPA_RUN);
-  AGS_RECALL(recall_channel_run_dummy)->flags |= AGS_RECALL_TEMPLATE;
-  g_object_set(G_OBJECT(recall_channel_run_dummy),
-	       "output-soundcard", soundcard,
+  /* generic recall */
+  generic_recall_channel_run = ags_generic_recall_channel_run_new(channel,
+								  AGS_TYPE_GENERIC_RECALL_RECYCLING,
+								  AGS_TYPE_RECALL_LADSPA_RUN);
+  AGS_RECALL(generic_recall_channel_run)->flags |= AGS_RECALL_TEMPLATE;
+  g_object_set(G_OBJECT(generic_recall_channel_run),
+	       "output-soundcard", output_soundcard,
+	       "output-soundcard-channel", output_soundcard_channel,
+	       "input-soundcard", input_soundcard,
+	       "input-soundcard-channel", input_soundcard_channel,
 	       "recall-container", recall_container,
 	       "recall-channel", recall_ladspa,
 	       NULL);
   ags_channel_add_recall(channel,
-			 (GObject *) recall_channel_run_dummy,
+			 (GObject *) generic_recall_channel_run,
 			 FALSE);  
   
   pthread_mutex_lock(channel_mutex);
@@ -4527,13 +4501,13 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 
     ags_connectable_connect(AGS_CONNECTABLE(recall_container));
     ags_connectable_connect(AGS_CONNECTABLE(recall_ladspa));
-    ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
+    ags_connectable_connect(AGS_CONNECTABLE(generic_recall_channel_run));
 
     recall_id = channel->recall_id;
     
     while(recall_id != NULL){
       if(AGS_RECALL_ID(recall_id->data)->recycling_context->parent != NULL){
-	current = ags_recall_duplicate((AgsRecall *) recall_channel_run_dummy,
+	current = ags_recall_duplicate((AgsRecall *) generic_recall_channel_run,
 				       (AgsRecallID *) recall_id->data);
 
 	/* set appropriate flag */

@@ -59,6 +59,8 @@ enum{
 
 static gpointer ags_recall_id_parent_class = NULL;
 
+static pthread_mutex_t ags_recall_id_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_recall_id_get_type(void)
 {
@@ -141,11 +143,32 @@ ags_recall_id_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_recall_id_init(AgsRecallID *recall_id)
 {
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
+
   recall_id->flags = 0;
   recall_id->sound_scope = -1;
   recall_id->staging_flags = 0;
   recall_id->state_flags = 0;
   
+  /* add recall id mutex */
+  recall_id->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(attr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  recall_id->obj_mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);  
+
+  /* recycling context */
   recall_id->recycling_context = NULL;
 }
 
@@ -268,6 +291,21 @@ ags_recall_id_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_recall_id_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_recall_id_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_recall_id_get_class_mutex()
+{
+  return(&ags_recall_id_class_mutex);
 }
 
 /**
