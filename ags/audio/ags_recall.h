@@ -250,12 +250,11 @@ void ags_recall_load_automation(AgsRecall *recall,
 void ags_recall_unload_automation(AgsRecall *recall);
 
 void ags_recall_resolve_dependencies(AgsRecall *recall);
-void ags_recall_child_added(AgsRecall *parent, AgsRecall *child);
+void ags_recall_check_rt_data(AgsRecall *recall);
 
 void ags_recall_run_init_pre(AgsRecall *recall);
 void ags_recall_run_init_inter(AgsRecall *recall);
 void ags_recall_run_init_post(AgsRecall *recall);
-void ags_recall_check_rt_stream(AgsRecall *recall);
 
 void ags_recall_automate(AgsRecall *recall);
 void ags_recall_run_pre(AgsRecall *recall);
@@ -274,7 +273,8 @@ AgsRecall* ags_recall_duplicate(AgsRecall *recall,
 void ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id);
 void ags_recall_set_soundcard_recursive(AgsRecall *recall, GObject *soundcard);
 
-void ags_recall_notify_dependency(AgsRecall *recall, guint flags, gint count);
+void ags_recall_notify_dependency(AgsRecall *recall, guint dependency, gboolean increase);
+void ags_recall_child_added(AgsRecall *parent, AgsRecall *child);
 
 void ags_recall_add_dependency(AgsRecall *recall, AgsRecallDependency *recall_dependency);
 void ags_recall_remove_dependency(AgsRecall *recall, AgsRecall *dependency);

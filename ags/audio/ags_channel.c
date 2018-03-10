@@ -4388,7 +4388,6 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 			 TRUE);
   
   /* check if connected or running */
-
   if(ags_connectable_is_connected(AGS_CONNECTABLE(channel))){
     AgsRecall *current;
 
@@ -4432,9 +4431,11 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 	  ags_connectable_connect(AGS_CONNECTABLE(current));
 	  
 	  /* notify run */
-	  //ags_recall_notify_dependency(current, AGS_RECALL_NOTIFY_RUN, 1);
+	  ags_recall_notify_dependency(current, AGS_RECALL_NOTIFY_RUN, 1);
 
-	  /* set staging flags */
+	  ags_recall_resolve_dependencies(current);
+
+	  /* set staging flags */	  
 	  ags_recall_set_staging_flags(current,
 				       staging_flags);
 	}
