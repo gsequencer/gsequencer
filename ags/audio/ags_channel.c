@@ -4393,10 +4393,13 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 
     GList *recall_id_start, *recall_id;
     
+    pthread_mutex_t *recall_id_mutex;
+    
     ags_connectable_connect(AGS_CONNECTABLE(recall_container));
     ags_connectable_connect(AGS_CONNECTABLE(recall_ladspa));
     ags_connectable_connect(AGS_CONNECTABLE(generic_recall_channel_run));
 
+    /* get recall id */
     pthread_mutex_lock(channel_mutex);
     
     recall_id = 
@@ -4407,7 +4410,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
     while(recall_id != NULL){
       if(AGS_RECALL_ID(recall_id->data)->recycling_context != NULL &&
 	 AGS_RECALL_ID(recall_id->data)->recycling_context->parent == NULL){
-	if(ags_recall_id_check_staging_flags(recall_id,
+	if(ags_recall_id_check_staging_flags(recall_id->data,
 					     AGS_SOUND_STATE_IS_WAITING |
 					     AGS_SOUND_STATE_IS_ACTIVE)){
 	  gint sound_scope;
@@ -4416,9 +4419,20 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 	  current = ags_recall_duplicate((AgsRecall *) generic_recall_channel_run,
 					 (AgsRecallID *) recall_id->data);
 
+	  /* get recall id mutex */
+	  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+
+	  recall_id_mutex = AGS_RECALL_ID(recall_id->data)->obj_mutex;
+	  
+	  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+	  
 	  /* set appropriate scope */
+	  pthread_mutex_lock(recall_id_mutex);
+
 	  sound_scope = AGS_RECALL_ID(recall_id->data)->sound_scope;
 	  staging_flags = AGS_RECALL_ID(recall_id->data)->staging_flags;
+
+	  pthread_mutex_unlock(recall_id_mutex);
 	  
 	  ags_recall_set_sound_scope(current,
 				     sound_scope);
@@ -4430,7 +4444,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 	  /* connect */
 	  ags_connectable_connect(AGS_CONNECTABLE(current));
 	  
-	  /* notify run */
+	  /* notify run and resolve dependencies */
 	  ags_recall_notify_dependency(current, AGS_RECALL_NOTIFY_RUN, 1);
 
 	  ags_recall_resolve_dependencies(current);
@@ -4498,56 +4512,79 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 
   if((AGS_CHANNEL_CONNECTED & (channel->flags)) != 0){
     AgsRecall *current;
-    GList *recall_id;
+
+    GList *recall_id_start, *recall_id;
 
     ags_connectable_connect(AGS_CONNECTABLE(recall_container));
     ags_connectable_connect(AGS_CONNECTABLE(recall_ladspa));
     ags_connectable_connect(AGS_CONNECTABLE(generic_recall_channel_run));
 
-    recall_id = channel->recall_id;
+    /* get recall id */
+    pthread_mutex_lock(channel_mutex);
+    
+    recall_id = 
+      recall_id_start = g_list_copy(channel->recall_id);
+
+    pthread_mutex_unlock(channel_mutex);
     
     while(recall_id != NULL){
-      if(AGS_RECALL_ID(recall_id->data)->recycling_context->parent != NULL){
-	current = ags_recall_duplicate((AgsRecall *) generic_recall_channel_run,
-				       (AgsRecallID *) recall_id->data);
+      if(AGS_RECALL_ID(recall_id->data)->recycling_context != NULL &&
+	 AGS_RECALL_ID(recall_id->data)->recycling_context->parent != NULL){
+	if(ags_recall_id_check_staging_flags(recall_id->data,
+					     AGS_SOUND_STATE_IS_WAITING |
+					     AGS_SOUND_STATE_IS_ACTIVE)){
 
-	/* set appropriate flag */
-	if((AGS_RECALL_ID_PLAYBACK & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
-	  ags_recall_set_flags(current, AGS_RECALL_PLAYBACK);
-	}else if((AGS_RECALL_ID_SEQUENCER & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
-	  ags_recall_set_flags(current, AGS_RECALL_SEQUENCER);
-	}else if((AGS_RECALL_ID_NOTATION & (AGS_RECALL_ID(recall_id->data)->flags)) != 0){
-	  ags_recall_set_flags(current, AGS_RECALL_NOTATION);
+	  gint sound_scope;
+	  guint staging_flags;
+	  
+	  pthread_mutex_t *recall_id_mutex;
+	  
+	  current = ags_recall_duplicate((AgsRecall *) generic_recall_channel_run,
+					 (AgsRecallID *) recall_id->data);
+	  
+
+	  /* get recall id mutex */
+	  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+
+	  recall_id_mutex = AGS_RECALL_ID(recall_id->data)->obj_mutex;
+	  
+	  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+	  
+	  /* set appropriate scope */
+	  pthread_mutex_lock(recall_id_mutex);
+
+	  sound_scope = AGS_RECALL_ID(recall_id->data)->sound_scope;
+	  staging_flags = AGS_RECALL_ID(recall_id->data)->staging_flags;
+
+	  pthread_mutex_unlock(recall_id_mutex);
+	  
+	  ags_recall_set_sound_scope(current,
+				     sound_scope);
+
+	  /* append to AgsChannel */
+	  ags_channel_add_recall(channel,
+				 current);
+	  
+	  /* connect */
+	  ags_connectable_connect(AGS_CONNECTABLE(current));
+	  
+	  /* notify run and resolve dependencies */
+	  ags_recall_notify_dependency(current, AGS_RECALL_NOTIFY_RUN, 1);
+
+	  ags_recall_resolve_dependencies(current);
+
+	  /* set staging flags */	  
+	  ags_recall_set_staging_flags(current,
+				       staging_flags);
 	}
-
-	/* append to AgsAudio */
-	channel->recall = g_list_append(channel->recall, current);
-
-	/* connect */
-	ags_connectable_connect(AGS_CONNECTABLE(current));
-
-	/* notify run */
-	ags_recall_notify_dependency(current, AGS_RECALL_NOTIFY_RUN, 1);
-
-	/* resolve */
-	ags_recall_resolve_dependencies(current);
-
-	/* init */
-	ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(current));
-      
-	current->flags &= (~AGS_RECALL_HIDE);
-	ags_recall_run_init_pre(current);
-	current->flags &= (~AGS_RECALL_REMOVE);
-      
-	ags_recall_run_init_inter(current);
-	ags_recall_run_init_post(current);
-
-	ags_recall_check_rt_stream(current);
       }
       
       /* iterate */
       recall_id = recall_id->next;
     }
+
+    /* free GList */
+    g_list_free(recall_id_start);
   }
 
   pthread_mutex_unlock(channel_mutex);
@@ -5160,6 +5197,18 @@ ags_channel_real_add_effect(AgsChannel *channel,
   return(port);
 }
 
+/**
+ * @channel: the #AgsChannel
+ * @filename: the filename
+ * @effect: the effect
+ * 
+ * Add specified effect to @channel.
+ * 
+ * Returns: the #GList-struct containing #AgsPort
+ * 
+ * Since: 2.0.0
+ */
+//FIXME:JK: use #AgsRecall as return value
 GList*
 ags_channel_add_effect(AgsChannel *channel,
 		       gchar *filename,
@@ -5168,8 +5217,9 @@ ags_channel_add_effect(AgsChannel *channel,
   GList *port;
 
   //FIXME:JK: make it thread-safe
-
   g_return_val_if_fail(AGS_IS_CHANNEL(channel), NULL);
+
+  port = NULL;  
 
   g_object_ref((GObject *) channel);
   g_signal_emit(G_OBJECT(channel),

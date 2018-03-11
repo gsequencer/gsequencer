@@ -184,7 +184,7 @@ struct _AgsRecallClass
 
   AgsRecall* (*duplicate)(AgsRecall *recall,
 			  AgsRecallID *recall_id,
-			  guint *n_params, GParameter *params); // if a sequencer is linked with a sequencer the AgsRecall's with the flag AGS_RECALL_SOURCE must be duplicated
+			  guint *n_params, gchar **parameter_name, GValue *value);
 
   void (*notify_dependency)(AgsRecall *recall, guint dependency, gboolean increase);
 
@@ -244,7 +244,7 @@ void ags_recall_unset_state_flags(AgsRecall *recall, guint state_flags);
 
 gboolean ags_recall_check_state_flags(AgsRecall *recall, guint state_flags);
 
-/*  */
+/* events */
 void ags_recall_load_automation(AgsRecall *recall,
 				GList *automation_port);
 void ags_recall_unload_automation(AgsRecall *recall);
@@ -268,7 +268,8 @@ void ags_recall_done(AgsRecall *recall);
 gboolean ags_recall_is_done(GList *recalls, GObject *recycling_context);
 
 AgsRecall* ags_recall_duplicate(AgsRecall *recall,
-				AgsRecallID *recall_id);
+				AgsRecallID *recall_id,
+				guint *n_params, gchar **parameter_name, GValue *value);
 
 void ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id);
 void ags_recall_set_soundcard_recursive(AgsRecall *recall, GObject *soundcard);
