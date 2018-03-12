@@ -5885,6 +5885,102 @@ ags_channel_duplicate_recall(AgsChannel *channel,
   g_object_unref((GObject *) channel);
 }
 
+void
+ags_channel_real_resolve_recall(AgsChannel *channel,
+				AgsRecallID *recall_id)
+{
+  AgsRecall *recall;
+  AgsRecyclingContext *parent_recycling_context, *recycling_context;
+  
+  GList *list_start, *list;
+
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *recall_mutex;
+  pthread_mutex_t *recall_id_mutex;
+
+#ifdef AGS_DEBUG
+  g_message("resolve channel %d", channel->line);
+#endif
+
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_id_mutex);
+  
+  recycling_context = recall_id->recycling_context;
+  
+  pthread_mutex_unlock(recall_id_mutex);
+
+  if(recycling_context == NULL){
+    return;
+  }
+  
+  /* get some fields */
+  pthread_mutex_lock(recycling_context_mutex);
+  
+  parent_recycling_context = recycling_context->parent;
+  
+  pthread_mutex_unlock(recycling_context_mutex);
+
+  /* play or recall context */
+  if(parent_recycling_context == NULL){
+    /* get recall mutex */
+    pthread_mutex_lock(channel_mutex);
+
+    recall_mutex = channel->play_mutex;
+  
+    pthread_mutex_unlock(channel_mutex);
+
+    /* copy list */
+    pthread_mutex_lock(recall_mutex);
+
+    list =
+      list_start = g_list_copy(channel->play);
+
+    pthread_mutex_unlock(recall_mutex);
+  }else{
+    /* get recall mutex */
+    pthread_mutex_lock(channel_mutex);
+
+    recall_mutex = channel->recall_mutex;
+  
+    pthread_mutex_unlock(channel_mutex);
+
+    /* copy list */
+    pthread_mutex_lock(recall_mutex);
+
+    list =
+      list_start = g_list_copy(channel->recall);
+
+    pthread_mutex_unlock(recall_mutex);
+  }
+
+  /* resolve dependencies */
+  while((list = ags_recall_find_recycling_context(list, recycling_context)) != NULL){
+    recall = AGS_RECALL(list->data);
+    
+    ags_recall_resolve_dependencies(recall);
+
+    /* iterate */    
+    list = list->next;
+  }
+
+  /* free list copy */
+  g_list_free(list_start);
+}
+
 /**
  * ags_channel_resolve_recall:
  * @channel: an #AgsChannel
@@ -5892,61 +5988,19 @@ ags_channel_duplicate_recall(AgsChannel *channel,
  * 
  * Resolve step of initialization.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_channel_resolve_recall(AgsChannel *channel,
 			   AgsRecallID *recall_id)
 {
-  AgsRecall *recall;
-  GList *list_recall;
+  g_return_if_fail(AGS_IS_CHANNEL(channel) && AGS_IS_RECALL_ID(recall_id));
 
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
-
-  if(channel == NULL ||
-     recall_id == NULL){
-    return;
-  }
-
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  pthread_mutex_lock(application_mutex);
-  
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) channel);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* get the appropriate lists */
-  pthread_mutex_lock(mutex);
-  
-#ifdef AGS_DEBUG
-  g_message("resolve channel %d", channel->line);
-#endif
-
-  if(recall_id->recycling_context->parent == NULL){
-    list_recall = channel->play;
-  }else{
-    list_recall = channel->recall;
-  }
-
-  /* resolve dependencies */
-  //  g_message("res b");
-
-  while((list_recall = ags_recall_find_recycling_context(list_recall, G_OBJECT(recall_id->recycling_context))) != NULL){
-    recall = AGS_RECALL(list_recall->data);
-    
-    ags_recall_resolve_dependencies(recall);
-
-    list_recall = list_recall->next;
-  }
-
-  pthread_mutex_unlock(mutex);
+  g_object_ref((GObject *) channel);
+  g_signal_emit(G_OBJECT(channel),
+		channel_signals[RESOLVE_RECALL], 0,
+		recall_id);
+  g_object_unref((GObject *) channel);
 }
 
 /**
