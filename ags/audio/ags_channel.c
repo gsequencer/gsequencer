@@ -5381,55 +5381,56 @@ ags_channel_real_remove_effect(AgsChannel *channel,
   AgsRecall *recall_channel, *recall_channel_run;
   AgsRecallContainer *recall_container;
 
-  AgsMutexManager *mutex_manager;
   AgsMessageDelivery *message_delivery;
   AgsMessageQueue *message_queue;
 
-  GList *automation, *automation_next;
+  GList *automation_start, *automation;
   GList *port;
-  GList *list, *list_next;
+  GList *list_start, *list;
   
-  GList *play, *recall;
+  GList *play_start, *play;
+  GList *recall_start, *recall;
   GList *task;
 
   gchar *specifier;
   
   guint nth_effect;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *play_mutex, *recall_mutex;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
-
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
+  channel_mutex = channel->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
 
-  /*  */
+  /* get some fields */
   pthread_mutex_lock(channel_mutex);
 
-  audio = (AgsAudio *) channel->audio;
-
+  audio = channel->audio;
+  
+  play_mutex = channel->play_mutex;
+  recall_mutex = channel->recall_mutex;
+  
   pthread_mutex_unlock(channel_mutex);
 
-  /*  */
-  pthread_mutex_lock(application_mutex);
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
+  audio_mutex = audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* play */
-  pthread_mutex_lock(channel_mutex);
-
-  play = channel->play;
   nth_effect = 0;
+
+  pthread_mutex_lock(play_mutex);
+  
+  play =
+    play_start = g_list_copy(channel->play);
 
   while((play = ags_recall_template_find_all_type(play,
 						  AGS_TYPE_RECALL_LADSPA,
@@ -5446,13 +5447,15 @@ ags_channel_real_remove_effect(AgsChannel *channel,
     play = play->next;
   }
 
-  pthread_mutex_unlock(channel_mutex);
-
-  /* recall */
-  pthread_mutex_lock(channel_mutex);
+  pthread_mutex_unlock(play_mutex);
   
-  recall = channel->recall;
+  /* recall */
   nth_effect = 0;
+
+  pthread_mutex_lock(recall_mutex);
+  
+  recall =
+    recall_start = g_list_copy(channel->recall);
 
   while((recall = ags_recall_template_find_all_type(recall,
 						    AGS_TYPE_RECALL_LADSPA,
@@ -5469,146 +5472,147 @@ ags_channel_real_remove_effect(AgsChannel *channel,
     recall = recall->next;
   }
     
-  pthread_mutex_unlock(channel_mutex);
+  pthread_mutex_unlock(recall_mutex);
 
   /* play context */
   /* automation */
-  pthread_mutex_lock(channel_mutex);
+  pthread_mutex_lock(play_mutex);
 
   port = AGS_RECALL(play->data)->port;
 
-  pthread_mutex_unlock(channel_mutex);
+  pthread_mutex_unlock(play_mutex);
   
   while(port != NULL){
-    pthread_mutex_lock(channel_mutex);
-
     specifier = AGS_PORT(port->data)->specifier;
     
-    pthread_mutex_unlock(channel_mutex);
-
-    /* find specifier and remove */
+    /* get automation */
     pthread_mutex_lock(audio_mutex);
 
-    automation = audio->automation;
+    automation =
+      automation_start = g_list_copy(audio->automation);
+
+    pthread_mutex_unlock(audio_mutex);
     
     while((automation = ags_automation_find_specifier(automation,
 						      specifier)) != NULL){
-      automation_next = automation->next;
-      
+      /* remove automation  */
       ags_audio_remove_automation(audio,
 				  automation->data);
-      
-      
-      automation = automation_next;
+
+      /* run dispose and unref */
+      g_object_run_dispose(automation->data);
+      g_object_unref(automation->data);
+
+      /* iterate */
+      automation = automation->next;
     }
-    
-    pthread_mutex_unlock(audio_mutex);
 
+    g_list_free(automation_start);
+    
     /* iterate */
-    pthread_mutex_lock(channel_mutex);
-
     port = port->next;
-    
-    pthread_mutex_unlock(channel_mutex);
   }  
 
-  /* remove recall */
-  pthread_mutex_lock(channel_mutex);
-
+  /* remove - recall channel run */
   recall_container = (AgsRecallContainer *) AGS_RECALL(play->data)->container;
   recall_channel = (AgsRecall *) play->data;
   recall_channel_run = (AgsRecall *) ags_recall_find_template(recall_container->recall_channel_run)->data;
   
-  list = recall_container->recall_channel_run;
+  list =
+    list_start = g_list_copy(recall_container->recall_channel_run);
 
   while(list != NULL){
-    list_next = list->next;
-    
     ags_channel_remove_recall(channel,
 			      (GObject *) list->data,
 			      TRUE);
-	  
-    list = list_next;
-  }
 
+    /* iterate */
+    list = list->next;
+  }
+  
+  g_list_free(list_start);
+
+  /* remove - recall channel */
   ags_channel_remove_recall(channel,
 			    (GObject *) recall_channel,
 			    TRUE);
 
-  pthread_mutex_unlock(channel_mutex);
-
+  /* remove recal container */
   ags_channel_remove_recall_container(channel,
 				      (GObject *) recall_container);
 
   /* recall context */
   /* automation */
-  pthread_mutex_lock(channel_mutex);
-
+  pthread_mutex_lock(recall_mutex);
+  
   port = AGS_RECALL(recall->data)->port;
 
-  pthread_mutex_unlock(channel_mutex);
-  
+  pthread_mutex_unlock(recall_mutex);
+
   while(port != NULL){
-    pthread_mutex_lock(channel_mutex);
-
     specifier = AGS_PORT(port->data)->specifier;
-    
-    pthread_mutex_unlock(channel_mutex);
 
-    /* find specifier and remove */
+    /* get automation */
     pthread_mutex_lock(audio_mutex);
 
-    automation = audio->automation;
+    automation =
+      automation_start = g_list_copy(audio->automation);
+
+    pthread_mutex_unlock(audio_mutex);
     
     while((automation = ags_automation_find_specifier(automation,
 						      specifier)) != NULL){
-      automation_next = automation->next;
-      
+      /* remove automation  */
       ags_audio_remove_automation(audio,
-				  automation->data);
-      
-      
-      automation = automation_next;
+				  automation->data);      
+
+      /* run dispose and unref */
+      g_object_run_dispose(automation->data);
+      g_object_unref(automation->data);
+
+      /* iterate */
+      automation = automation->next;
     }
     
-    pthread_mutex_unlock(audio_mutex);
+    g_list_free(automation_start);
 
     /* iterate */
-    pthread_mutex_lock(channel_mutex);
-
     port = port->next;
-    
-    pthread_mutex_unlock(channel_mutex);
   }
 
-  /* remove recall */
-  pthread_mutex_lock(channel_mutex);
-
+  /* remove - recall channel */
   recall_container = (AgsRecallContainer *) AGS_RECALL(recall->data)->container;
   recall_channel = (AgsRecall *) recall->data;
   recall_channel_run = (AgsRecall *) ags_recall_find_template(recall_container->recall_channel_run)->data;
   
-  list = recall_container->recall_channel_run;
+  list =
+    list_start = g_list_copy(recall_container->recall_channel_run);
 
   while(list != NULL){
-    list_next = list->next;
-    
     ags_channel_remove_recall(channel,
 			      (GObject *) list->data,
 			      FALSE);
-	  
-    list = list_next;
+    
+    /* iterate */
+    list = list->next;
   }
 
+  g_list_free(list_start);
+
+  /* remove - recall channel */
   ags_channel_remove_recall(channel,
 			    (GObject *) recall_channel,
 			    FALSE);
 
-  pthread_mutex_unlock(channel_mutex);
-  
+  /* remove recal container */  
   ags_channel_remove_recall_container(channel,
 				      (GObject *) recall_container);
 
+
+  /* free lists */
+  g_list_free(play_start);
+  g_list_free(recall_start);
+  
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
@@ -5638,15 +5642,21 @@ ags_channel_real_remove_effect(AgsChannel *channel,
 					 doc);
 
     /* set parameter */
-    message->parameter = g_new0(GParameter,
-				1);
     message->n_params = 1;
     
-    message->parameter[0].name = "nth";
-    g_value_init(&(message->parameter[0].value),
+    message->parameter_name = (gchar **) malloc(2 * sizeof(gchar *));
+    message->value = g_new0(GValue,
+			    1);
+
+    /* nth */
+    message->parameter_name[0] = "nth";
+    g_value_init(&(message->value[0]),
 		 G_TYPE_UINT);
-    g_value_set_uint(&(message->parameter[0].value),
+    g_value_set_uint(&(message->value[0]),
 		     nth);
+
+    /* terminate string vector */
+    message->parameter_name[1] = NULL;
 
     /* add message */
     ags_message_delivery_add_message(message_delivery,
@@ -5655,12 +5665,19 @@ ags_channel_real_remove_effect(AgsChannel *channel,
   }
 }
 
+/**
+ * ags_channel_remove_effect:
+ * @channel: the #AgsChannel
+ * @nth: nth effect
+ * 
+ * Remove specified effect of @channel.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_channel_remove_effect(AgsChannel *channel,
 			  guint nth)
 {
-  //FIXME:JK: make it thread-safe
-  
   g_return_if_fail(AGS_IS_CHANNEL(channel));
 
   g_object_ref((GObject *) channel);
@@ -5672,7 +5689,7 @@ ags_channel_remove_effect(AgsChannel *channel,
 
 /**
  * ags_channel_safe_resize_audio_signal:
- * @channel: an #AgsChannel
+ * @channel: the #AgsChannel
  * @length: new frame count length
  *
  * Resize audio data.

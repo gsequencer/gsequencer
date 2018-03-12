@@ -378,7 +378,7 @@ ags_add_effect_launch(AgsTask *task)
  *
  * Returns: an new #AgsAddEffect.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsAddEffect*
 ags_add_effect_new(AgsChannel *channel,
