@@ -2611,10 +2611,13 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 	effect_bulk_plugin = effect_bulk->plugin;
 
 	while(effect_bulk_plugin != NULL){
-	  ags_channel_add_effect(current,
-				 AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->filename,
-				 AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->effect);
-
+	  GList *recall_list;
+	  
+	  recall_list = ags_channel_add_effect(current,
+					       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->filename,
+					       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->effect);
+	  g_list_free(recall_list);
+	  
 	  effect_bulk_plugin = effect_bulk_plugin->next;
 	}
 
@@ -2761,9 +2764,12 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 	effect_bulk_plugin = effect_bulk->plugin;
 
 	while(effect_bulk_plugin != NULL){
-	  ags_channel_add_effect(current,
-				 AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->filename,
-				 AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->effect);
+	  GList *recall_list;
+	  
+	  recall_list = ags_channel_add_effect(current,
+					       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->filename,
+					       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->effect);
+	  g_list_free(recall_list);
 
 	  effect_bulk_plugin = effect_bulk_plugin->next;
 	}

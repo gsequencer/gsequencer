@@ -3482,13 +3482,19 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 						 effect);
 
 		  if(AGS_IS_LINE(gobject)){
-		    ags_channel_add_effect(AGS_LINE(gobject)->channel,
-					   filename,
-					   effect);
+		    GList *recall_list;
+		    
+		    recall_list = ags_channel_add_effect(AGS_LINE(gobject)->channel,
+							 filename,
+							 effect);
+		    g_list_free(recall_list);
 		  }else if(AGS_IS_CHANNEL(gobject)){
-		    ags_channel_add_effect((AgsChannel *) gobject,
-					   filename,
-					   effect);
+		    GList *recall_list;
+
+		    recall_list = ags_channel_add_effect((AgsChannel *) gobject,
+							 filename,
+							 effect);
+		    g_list_free(recall_list);
 		  }
 		}
 	      }

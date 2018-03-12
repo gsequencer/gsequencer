@@ -4304,7 +4304,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
   
   GObject *output_soundcard, *input_soundcard;
 
-  GList *port;
+  GList *recall_list;
   
   gint output_soundcard_channel, input_soundcard_channel;
   
@@ -4339,6 +4339,9 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
   
   pthread_mutex_unlock(channel_mutex);
 
+  /* initialize return value */
+  recall_list = NULL;
+  
   /* load plugin */
   ladspa_manager = ags_ladspa_manager_get_instance();
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ladspa_manager,
@@ -4354,7 +4357,8 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
   recall_ladspa = ags_recall_ladspa_new(channel,
 					filename,
 					effect,
-					effect_index);
+					effect_index);  
+  AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_ladspa),
 	       "output-soundcard", output_soundcard,
 	       "output-soundcard-channel", output_soundcard_channel,
@@ -4362,14 +4366,16 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 	       "input-soundcard-channel", input_soundcard_channel,
 	       "recall-container", recall_container,
 	       NULL);
-  AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
   ags_channel_add_recall(channel,
 			 (GObject *) recall_ladspa,
 			 TRUE);
 
+  recall_list = g_list_prepend(recall_list,
+			       recall_ladspa);
+  
   /* load */
   ags_recall_ladspa_load(recall_ladspa);
-  port = ags_recall_ladspa_load_ports(recall_ladspa);  
+  ags_recall_ladspa_load_ports(recall_ladspa);  
   
   /* generic */
   generic_recall_channel_run = ags_generic_recall_channel_run_new(channel,
@@ -4387,6 +4393,9 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
   ags_channel_add_recall(channel,
 			 (GObject *) generic_recall_channel_run,
 			 TRUE);
+
+  recall_list = g_list_prepend(recall_list,
+			       generic_recall_channel_run);
   
   /* check if connected or running */
   if(ags_connectable_is_connected(AGS_CONNECTABLE(channel))){
@@ -4473,6 +4482,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 					filename,
 					effect,
 					effect_index);
+  AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_ladspa),
 	       "output-soundcard", output_soundcard,
 	       "output-soundcard-channel", output_soundcard_channel,
@@ -4484,13 +4494,12 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 			 (GObject *) recall_ladspa,
 			 FALSE);
   
-  AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_TEMPLATE;
-  ags_recall_ladspa_load(recall_ladspa);
+  recall_list = g_list_prepend(recall_list,
+			       recall_ladspa);
 
-  if(port != NULL){
-    port = g_list_concat(port,
-			 ags_recall_ladspa_load_ports(recall_ladspa));
-  }
+  /* load */
+  ags_recall_ladspa_load(recall_ladspa);
+  ags_recall_ladspa_load_ports(recall_ladspa);
   
   /* generic recall */
   generic_recall_channel_run = ags_generic_recall_channel_run_new(channel,
@@ -4509,6 +4518,9 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 			 (GObject *) generic_recall_channel_run,
 			 FALSE);  
   
+  recall_list = g_list_prepend(recall_list,
+			       generic_recall_channel_run);
+
   /* check if connected or running */
   if(ags_connectable_is_connected(AGS_CONNECTABLE(channel))){
     AgsRecall *current;
@@ -4605,7 +4617,7 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
 
   GObject *output_soundcard, *input_soundcard;
   
-  GList *port;
+  GList *recall_list;
 
   gint output_soundcard_channel, input_soundcard_channel;
 
@@ -4640,6 +4652,8 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
   
   pthread_mutex_unlock(channel_mutex);
 
+  recall_list = NULL;
+  
   /* load plugin */
   dssi_manager = ags_dssi_manager_get_instance();
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(dssi_manager,
@@ -4656,6 +4670,7 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
 				    filename,
 				    effect,
 				    effect_index);
+  AGS_RECALL(recall_dssi)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_dssi),
 	       "output-soundcard", output_soundcard,
 	       "output-soundcard-channel", output_soundcard_channel,
@@ -4663,15 +4678,16 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
 	       "input-soundcard-channel", input_soundcard_channel,
 	       "recall-container", recall_container,
 	       NULL);
-  AGS_RECALL(recall_dssi)->flags |= AGS_RECALL_TEMPLATE;
   ags_channel_add_recall(channel,
 			 (GObject *) recall_dssi,
 			 TRUE);
 
+  recall_list = g_list_prepend(recall_list,
+			       recall_dssi);
+  
   /* load */
   ags_recall_dssi_load(recall_dssi);
-  port = ags_recall_dssi_load_ports(recall_dssi);
-  
+  ags_recall_dssi_load_ports(recall_dssi);  
   
   /* generic */
   generic_recall_channel_run = ags_generic_recall_channel_run_new(channel,
@@ -4690,6 +4706,9 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
 			 (GObject *) generic_recall_channel_run,
 			 TRUE);
   
+  recall_list = g_list_prepend(recall_list,
+			       generic_recall_channel_run);
+
   /* check if connected or running */
   if(ags_connectable_is_connected(AGS_CONNECTABLE(channel))){
     AgsRecall *current;
@@ -4775,6 +4794,7 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
 				    filename,
 				    effect,
 				    effect_index);
+  AGS_RECALL(recall_dssi)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_dssi),
 	       "output-soundcard", output_soundcard,
 	       "output-soundcard-channel", output_soundcard_channel,
@@ -4786,13 +4806,12 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
 			 (GObject *) recall_dssi,
 			 FALSE);
   
-  AGS_RECALL(recall_dssi)->flags |= AGS_RECALL_TEMPLATE;
-  ags_recall_dssi_load(recall_dssi);
+  recall_list = g_list_prepend(recall_list,
+			       recall_dssi);
 
-  if(port != NULL){
-    port = g_list_concat(port,
-			 ags_recall_dssi_load_ports(recall_dssi));
-  }
+  /* load */
+  ags_recall_dssi_load(recall_dssi);
+  ags_recall_dssi_load_ports(recall_dssi);
   
   /* generic */
   generic_recall_channel_run = ags_generic_recall_channel_run_new(channel,
@@ -4811,6 +4830,9 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
 			 (GObject *) generic_recall_channel_run,
 			 FALSE);  
   
+  recall_list = g_list_prepend(recall_list,
+			       generic_recall_channel_run);
+
   /* check if connected or running */
   if(ags_connectable_is_connected(AGS_CONNECTABLE(channel))){
     AgsRecall *current;
@@ -4889,7 +4911,7 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
     g_list_free(recall_id_start);
   }
   
-  return(port);
+  return(recall_list);
 }
 
 GList*
@@ -4908,7 +4930,7 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
   GObject *output_soundcard, *input_soundcard;
 
   GList *uri_node;
-  GList *port;
+  GList *recall_list;
 
   gchar *uri;
   gchar *str;
@@ -4943,6 +4965,8 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
   input_soundcard_channel = channel->input_soundcard_channel;
   
   pthread_mutex_unlock(channel_mutex);
+
+  recall_list = NULL;
   
   /* load plugin */
   lv2_manager = ags_lv2_manager_get_instance();
@@ -4963,6 +4987,7 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
 				  effect,
 				  uri,
 				  effect_index);
+  AGS_RECALL(recall_lv2)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_lv2),
 	       "output-soundcard", output_soundcard,
 	       "output-soundcard-channel", output_soundcard_channel,
@@ -4970,10 +4995,12 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
 	       "input-soundcard-channel", input_soundcard_channel,
 	       "recall-container", recall_container,
 	       NULL);
-  AGS_RECALL(recall_lv2)->flags |= AGS_RECALL_TEMPLATE;
   ags_channel_add_recall(channel,
 			 (GObject *) recall_lv2,
 			 TRUE);
+
+  recall_list = g_list_prepend(recall_list,
+			       recall_lv2);
 
   /* load */
   ags_recall_lv2_load(recall_lv2);
@@ -4996,6 +5023,9 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
 			 (GObject *) generic_recall_channel_run,
 			 TRUE);
   
+  recall_list = g_list_prepend(recall_list,
+			       generic_recall_channel_run);
+
   /* check if connected or running */
   if(ags_connectable_is_connected(AGS_CONNECTABLE(channel))){
     AgsRecall *current;
@@ -5083,6 +5113,7 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
 				  effect,
 				  uri,
 				  effect_index);
+  AGS_RECALL(recall_lv2)->flags |= AGS_RECALL_TEMPLATE;
   g_object_set(G_OBJECT(recall_lv2),
 	       "output-soundcard", output_soundcard,
 	       "output-soundcard-channel", output_soundcard_channel,
@@ -5090,19 +5121,16 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
 	       "input-soundcard-channel", input_soundcard_channel,
 	       "recall-container", recall_container,
 	       NULL);
-  AGS_RECALL(recall_lv2)->flags |= AGS_RECALL_TEMPLATE;
   ags_channel_add_recall(channel,
 			 (GObject *) recall_lv2,
 			 FALSE);
+
+  recall_list = g_list_prepend(recall_list,
+			       recall_lv2);
   
   /* load */
   ags_recall_lv2_load(recall_lv2);
-  port = ags_recall_lv2_load_ports(recall_lv2);
-
-  if(port != NULL){
-    port = g_list_concat(port,
-			 ags_recall_lv2_load_ports(recall_lv2));
-  }
+  ags_recall_lv2_load_ports(recall_lv2);
   
   /* generic */
   generic_recall_channel_run = ags_generic_recall_channel_run_new(channel,
@@ -5121,6 +5149,9 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
 			 (GObject *) generic_recall_channel_run,
 			 FALSE);  
   
+  recall_list = g_list_prepend(recall_list,
+			       generic_recall_channel_run);
+
   /* check if connected or running */
   if(ags_connectable_is_connected(AGS_CONNECTABLE(channel))){
     AgsRecall *current;
@@ -5197,7 +5228,7 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
     g_list_free(recall_id_start);
   }
 
-  return(port);
+  return(recall_list);
 }
 
 GList*
@@ -5212,17 +5243,17 @@ ags_channel_real_add_effect(AgsChannel *channel,
   AgsMessageDelivery *message_delivery;
   AgsMessageQueue *message_queue;
 
-  GList *port;
+  GList *recall_list;
   
   /* load plugin */
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
 							filename, effect);
-  port = NULL;
+  recall_list = NULL;
   
   if(ladspa_plugin != NULL){
-    port = ags_channel_add_ladspa_effect(channel,
-					 filename,
-					 effect);
+    recall_list = ags_channel_add_ladspa_effect(channel,
+						filename,
+						effect);
   }
 
   if(ladspa_plugin == NULL){
@@ -5230,9 +5261,9 @@ ags_channel_real_add_effect(AgsChannel *channel,
 						    filename, effect);
     
     if(dssi_plugin != NULL){
-      port = ags_channel_add_dssi_effect(channel,
-					 filename,
-					 effect);
+      recall_list = ags_channel_add_dssi_effect(channel,
+						filename,
+						effect);
     }
   }
   
@@ -5242,9 +5273,9 @@ ags_channel_real_add_effect(AgsChannel *channel,
 						 filename, effect);
     
     if(lv2_plugin != NULL){
-      port = ags_channel_add_lv2_effect(channel,
-					filename,
-					effect);
+      recall_list = ags_channel_add_lv2_effect(channel,
+					       filename,
+					       effect);
     }
   }
 
@@ -5277,21 +5308,28 @@ ags_channel_real_add_effect(AgsChannel *channel,
 					 doc);
 
     /* set parameter */
-    message->parameter = g_new0(GParameter,
-				2);
     message->n_params = 2;
-    
-    message->parameter[0].name = "filename";
-    g_value_init(&(message->parameter[0].value),
+
+    message->parameter_name = (gchar **) malloc(3 * sizeof(gchar *));
+    message->value = g_new0(GValue,
+			    2);
+
+    /* filename */
+    message->parameter_name[0] = "filename";
+    g_value_init(&(message->value[0]),
 		 G_TYPE_STRING);
-    g_value_set_string(&(message->parameter[0].value),
+    g_value_set_string(&(message->value[0]),
 		       filename);
 
-    message->parameter[1].name = "effect";
-    g_value_init(&(message->parameter[1].value),
+    /* effect */
+    message->parameter_name[1] = "effect";
+    g_value_init(&(message->value[1]),
 		 G_TYPE_STRING);
-    g_value_set_string(&(message->parameter[1].value),
+    g_value_set_string(&(message->value[1]),
 		       effect);
+
+    /* terminate string vector */
+    message->parameter_name[2] = NULL;
 
     /* add message */
     ags_message_delivery_add_message(message_delivery,
@@ -5299,7 +5337,7 @@ ags_channel_real_add_effect(AgsChannel *channel,
 				     message);
   }
   
-  return(port);
+  return(recall_list);
 }
 
 /**
@@ -5309,32 +5347,30 @@ ags_channel_real_add_effect(AgsChannel *channel,
  * 
  * Add specified effect to @channel.
  * 
- * Returns: the #GList-struct containing #AgsPort
+ * Returns: the #GList-struct containing #AgsRecall
  * 
  * Since: 2.0.0
  */
-//FIXME:JK: use #AgsRecall as return value
 GList*
 ags_channel_add_effect(AgsChannel *channel,
 		       gchar *filename,
 		       gchar *effect)
 {
-  GList *port;
+  GList *recall_list;
 
-  //FIXME:JK: make it thread-safe
   g_return_val_if_fail(AGS_IS_CHANNEL(channel), NULL);
 
-  port = NULL;  
+  recall_list = NULL;
 
   g_object_ref((GObject *) channel);
   g_signal_emit(G_OBJECT(channel),
 		channel_signals[ADD_EFFECT], 0,
 		filename,
 		effect,
-		&port);
+		&recall_list);
   g_object_unref((GObject *) channel);
 
-  return(port);
+  return(recall_list);
 }
 
 void
