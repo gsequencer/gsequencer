@@ -6122,264 +6122,123 @@ ags_channel_init_recall(AgsChannel *channel,
   g_object_unref((GObject *) channel);
 }
 
-/**
- * ags_channel_play:
- * @channel: an #AgsChannel
- * @recall_id: appropriate #AgsRecallID
- * @stage: run_pre, run_inter or run_post
- * 
- * Play one single run of @stage step.
- *
- * Since: 1.0.0
- */
 void
-ags_channel_play(AgsChannel *channel,
-		 AgsRecallID *recall_id,
-		 gint stage)
+ags_channel_real_play_recall(AgsChannel *channel,
+			     AgsRecallID *recall_id, guint staging_flags)
 {
   AgsRecall *recall;
 
-  AgsMutexManager *mutex_manager;
+  GList *list_start, *list;
 
-  GList *list_start, *list, *list_next;
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *recall_mutex;
+  pthread_mutex_t *recall_id_mutex;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+#ifdef AGS_DEBUG
+  g_message("resolve channel %d", channel->line);
+#endif
 
-  if(channel == NULL ||
-     recall_id == NULL ||
-     recall_id->recycling_context == NULL){
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_id_mutex);
+  
+  recycling_context = recall_id->recycling_context;
+  
+  pthread_mutex_unlock(recall_id_mutex);
+
+  if(recycling_context == NULL){
     return;
   }
-
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  pthread_mutex_lock(application_mutex);
   
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) channel);
+  /* get some fields */
+  pthread_mutex_lock(recycling_context_mutex);
   
-  pthread_mutex_unlock(application_mutex);
+  parent_recycling_context = recycling_context->parent;
+  
+  pthread_mutex_unlock(recycling_context_mutex);
 
-  /* play or recall */
-  pthread_mutex_lock(mutex);
+  /* play or recall context */
+  if(parent_recycling_context == NULL){
+    /* get recall mutex */
+    pthread_mutex_lock(channel_mutex);
 
-  if(recall_id->recycling_context->parent != NULL){
-    g_object_get(channel,
-		 "recall", &list_start,
-		 NULL);
+    recall_mutex = channel->play_mutex;
+  
+    pthread_mutex_unlock(channel_mutex);
+
+    /* copy list */
+    pthread_mutex_lock(recall_mutex);
+
+    list =
+      list_start = g_list_copy(channel->play);
+
+    pthread_mutex_unlock(recall_mutex);
   }else{
-    g_object_get(channel,
-		 "play", &list_start,
-		 NULL);
-  }
+    /* get recall mutex */
+    pthread_mutex_lock(channel_mutex);
 
-  pthread_mutex_unlock(mutex);
-
+    recall_mutex = channel->recall_mutex;
   
-  /* run - automate */
-  list = list_start;
+    pthread_mutex_unlock(channel_mutex);
 
-  while(list != NULL){
-    guint recall_flags;
-    
-    list_next = list->next;
+    /* copy list */
+    pthread_mutex_lock(recall_mutex);
 
-    recall = AGS_RECALL(list->data);
-    
-    if(recall == NULL ||
-       !AGS_IS_RECALL(recall)){
-      list = list_next;
-      
-      continue;
-    }
+    list =
+      list_start = g_list_copy(channel->recall);
 
-    if(AGS_IS_RECALL_CHANNEL(recall)){
-      /* run automation*/
-      if(stage == 0){
-	ags_recall_automate(recall);
-      }
-    }
-    
-    list = list_next;
+    pthread_mutex_unlock(recall_mutex);
   }
 
-  /* run - first */
-  list = list_start;
-
-  while(list != NULL){
-    guint recall_flags;
-    
-    list_next = list->next;
-
+  /* resolve dependencies */
+  while((list = ags_recall_find_recycling_context(list, recycling_context)) != NULL){
     recall = AGS_RECALL(list->data);
-    
-    if(recall == NULL ||
-       !AGS_IS_RECALL(recall)){
-      list = list_next;
-      
-      continue;
-    }
 
-    if(AGS_IS_RECALL_CHANNEL(recall)){
-      list = list_next;
+    ags_recall_set_staging_flags(recall, staging_flags);
+    ags_recall_unset_staging_flags(recall, staging_flags);
 
-      continue;
-    }
-
-    if(recall->recall_id == NULL ||
-       recall->recall_id->recycling_context != recall_id->recycling_context){
-      list = list_next;
-
-      continue;
-    }
-
-    g_object_ref(recall);
-
-    recall_flags = recall->flags;
-        
-    if((AGS_RECALL_TEMPLATE & (recall_flags)) == 0 &&
-       (AGS_RECALL_RUN_FIRST & (recall_flags)) != 0){
-#ifdef AGS_DEBUG
-      g_message("%s play first channel %x:%d @%x -> %x", G_OBJECT_TYPE_NAME(recall), channel, channel->line, recall, recall->recall_id);
-#endif
-
-      if((AGS_RECALL_HIDE & (recall_flags)) == 0){
-	g_object_ref(recall);
-	
-	if(stage == 0){
-	  AGS_RECALL_GET_CLASS(recall)->run_pre(recall);
-	}else if(stage == 1){
-	  AGS_RECALL_GET_CLASS(recall)->run_inter(recall);
-	}else{
-	  AGS_RECALL_GET_CLASS(recall)->run_post(recall);
-	}
-
-	g_object_unref(recall);
-      }
-    }
-
-    list = list_next;
+    /* iterate */    
+    list = list->next;
   }
   
-  /* run */
-  list = list_start;
-
-  while(list != NULL){
-    guint recall_flags;
-    
-    list_next = list->next;
-
-    recall = AGS_RECALL(list->data);
-    
-    if(recall == NULL ||
-       !AGS_IS_RECALL(recall)){
-      list = list_next;
-      
-      continue;
-    }
-
-    if(AGS_IS_RECALL_CHANNEL(recall)){
-      list = list_next;
-
-      continue;
-    }
-
-    if(recall->recall_id == NULL ||
-       recall->recall_id->recycling_context != recall_id->recycling_context){
-      list = list_next;
-
-      continue;
-    }
-
-    recall_flags = recall->flags;
-        
-    if((AGS_RECALL_TEMPLATE & (recall_flags)) == 0 &&
-       (AGS_RECALL_RUN_FIRST & (recall_flags)) == 0 &&
-       (AGS_RECALL_RUN_LAST & (recall_flags)) == 0){
-#ifdef AGS_DEBUG
-      g_message("%s play channel %x:%d @%x -> %x", G_OBJECT_TYPE_NAME(recall), channel, channel->line, recall, recall->recall_id);
-#endif
-
-      if((AGS_RECALL_HIDE & (recall_flags)) == 0){
-	g_object_ref(recall);
-	
-	if(stage == 0){
-	  AGS_RECALL_GET_CLASS(recall)->run_pre(recall);
-	}else if(stage == 1){
-	  AGS_RECALL_GET_CLASS(recall)->run_inter(recall);
-	}else{
-	  AGS_RECALL_GET_CLASS(recall)->run_post(recall);
-	}
-
-	g_object_unref(recall);
-      }
-    }
-
-    list = list_next;
-  }
-
-  /* run - last */
-  list = list_start;
-
-  while(list != NULL){
-    guint recall_flags;
-    
-    list_next = list->next;
-
-    recall = AGS_RECALL(list->data);
-    
-    if(recall == NULL ||
-       !AGS_IS_RECALL(recall)){
-      list = list_next;
-      
-      continue;
-    }
-
-    if(AGS_IS_RECALL_CHANNEL(recall)){
-      list = list_next;
-
-      continue;
-    }
-
-    if(recall->recall_id == NULL ||
-       recall->recall_id->recycling_context != recall_id->recycling_context){
-      list = list_next;
-
-      continue;
-    }
-
-    recall_flags = recall->flags;
-        
-    if((AGS_RECALL_TEMPLATE & (recall_flags)) == 0 &&
-       (AGS_RECALL_RUN_LAST & (recall_flags)) != 0){
-#ifdef AGS_DEBUG
-      g_message("%s play last channel %x:%d @%x -> %x", G_OBJECT_TYPE_NAME(recall), channel, channel->line, recall, recall->recall_id);
-#endif
-
-      if((AGS_RECALL_HIDE & (recall_flags)) == 0){
-	g_object_ref(recall);
-	
-	if(stage == 0){
-	  AGS_RECALL_GET_CLASS(recall)->run_pre(recall);
-	}else if(stage == 1){
-	  AGS_RECALL_GET_CLASS(recall)->run_inter(recall);
-	}else{
-	  AGS_RECALL_GET_CLASS(recall)->run_post(recall);
-	}
-
-	g_object_unref(recall);
-      }
-    }
-
-    g_object_unref(recall);
-
-    list = list_next;
-  }
-  
+  /* free list copy */
   g_list_free(list_start);
+}
+
+/**
+ * ags_channel_play_recall:
+ * @channel: the #AgsChannel
+ * @recall_id: the #AgsRecallID
+ * @staging_flags: the stages to invoke
+ * 
+ * Run the specified steps by @recall_id of @channel.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_channel_play_recall(AgsChannel *channel,
+			AgsRecallID *recall_id, guint staging_flags)
+{
+  g_return_if_fail(AGS_IS_CHANNEL(channel) && AGS_IS_RECALL_ID(recall_id));
+
+  g_object_ref((GObject *) channel);
+  g_signal_emit(G_OBJECT(channel),
+		channel_signals[PLAY_RECALL], 0,
+		recall_id, staging_flags);
+  g_object_unref((GObject *) channel);
 }
 
 void
