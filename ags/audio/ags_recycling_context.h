@@ -44,9 +44,9 @@ struct _AgsRecyclingContext
   pthread_mutexattr_t *obj_mutexattr;
   pthread_mutex_t *obj_mutex;
   
-  AgsRecyclingContext *parent;
-
   GObject *recall_id;
+
+  AgsRecyclingContext *parent;
 
   AgsRecycling **recycling;
   guint64 allocated_length;
@@ -61,6 +61,8 @@ struct _AgsRecyclingContextClass
 };
 
 GType ags_recycling_context_get_type();
+
+pthread_mutex_t* ags_recycling_context_get_class_mutex();
 
 /* replace, add, remove and insert */
 void ags_recycling_context_replace(AgsRecyclingContext *recycling_context,

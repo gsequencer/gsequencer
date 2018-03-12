@@ -47,6 +47,7 @@ ags (2.0.0)
 	* removed ags_message.[ch]
 	* removed ags_playable.[ch]
 	* removed ags_audio_remove()
+	* removed ags_channel_safe_resize_audio_signal()
 	* removed ags_channel_recursive_play_init()
 	* removed ags_channel_tillrecycling_cancel()
 	* removed ags_channel_recursive_reset_recall_ids()

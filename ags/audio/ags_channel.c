@@ -5687,109 +5687,152 @@ ags_channel_remove_effect(AgsChannel *channel,
   g_object_unref((GObject *) channel);
 }
 
-/**
- * ags_channel_duplicate_recall:
- * @channel: an #AgsChannel that contains the #AgsRecall templates
- * @recall_id: the #AgsRecallID the newly allocated #AgsRecall objects belongs to
- *
- * Duplicate #AgsRecall templates for use with ags_channel_recursive_play(),
- * but ags_channel_recursive_play_init() may call this function for you.
- *
- * Since: 1.0.0
- */
 void
-ags_channel_duplicate_recall(AgsChannel *channel,
-			     AgsRecallID *recall_id)
+ags_channel_real_duplicate_recall(AgsChannel *channel,
+				  AgsRecallID *recall_id)
 {
-  AgsAudio *audio;
-  AgsRecall *recall, *copy;
-  GList *list_recall, *list_recall_start;
-  gboolean do_playback, do_sequencer, do_notation;
-
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  AgsRecall *recall, *recall_copy;
+  AgsRecyclingContext *parent_recycling_context, *recycling_context;
   
-  if(channel == NULL ||
-     recall_id == NULL){
-    return;
-  }
-  
+  GList *list_start, *list;
+
+  gint sound_scope;
+
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *recall_mutex;
+  pthread_mutex_t *recall_id_mutex;
+  pthread_mutex_t *recycling_context_mutex;
+    
 #ifdef AGS_DEBUG
   g_message("duplicate channel %d", channel->line);
 #endif
 
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
+  channel_mutex = channel->obj_mutex;
   
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) channel);
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+
+  recall_id_mutex = recall_id->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
 
-  /* playback mode */
-  pthread_mutex_lock(mutex);
-
-  audio = AGS_AUDIO(channel->audio);
+  /* get some fields */
+  pthread_mutex_lock(recall_id_mutex);
   
-  do_playback = FALSE;
-  do_sequencer = FALSE;
-  do_notation = FALSE;
+  sound_scope = recall_id->scope;
 
-  if((AGS_RECALL_ID_PLAYBACK & (recall_id->flags)) != 0){
-    do_playback = TRUE;
+  recycling_context = recall_id->recycling_context;
+  
+  pthread_mutex_unlock(recall_id_mutex);
+  
+  /* get recycling context mutex */
+  pthread_mutex_lock(ags_recycling_context_get_class_mutex());
+
+  recycling_context_mutex = recycling_context->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
+
+  if(recycling_context == NULL){
+    return;
   }
-
-  if((AGS_RECALL_ID_SEQUENCER & (recall_id->flags)) != 0){
-    do_sequencer = TRUE;
-  }
-
-  if((AGS_RECALL_ID_NOTATION & (recall_id->flags)) != 0){
-    do_notation = TRUE;
-  }
   
-  /* recall or play */
-  if(recall_id->recycling_context->parent == NULL){
-    list_recall = g_list_copy(channel->play);
-    list_recall_start = 
-      list_recall = g_list_reverse(list_recall);
+  /* get some fields */
+  pthread_mutex_lock(recycling_context_mutex);
+  
+  parent_recycling_context = recycling_context->parent;
+  
+  pthread_mutex_unlock(recycling_context_mutex);
+
+  /* play or recall context */
+  if(parent_recycling_context == NULL){
+    /* get recall mutex */
+    pthread_mutex_lock(channel_mutex);
+
+    recall_mutex = channel->play_mutex;
+  
+    pthread_mutex_unlock(channel_mutex);
+
+    /* copy list */
+    pthread_mutex_lock(recall_mutex);
+
+    list =
+      list_start = g_list_reverse(g_list_copy(channel->play));
+
+    pthread_mutex_unlock(recall_mutex);
   }else{
-    list_recall = g_list_copy(channel->recall);
-    list_recall_start =
-      list_recall = g_list_reverse(list_recall);
+    /* get recall mutex */
+    pthread_mutex_lock(channel_mutex);
+
+    recall_mutex = channel->recall_mutex;
+  
+    pthread_mutex_unlock(channel_mutex);
+
+    /* copy list */
+    pthread_mutex_lock(recall_mutex);
+
+    list =
+      list_start = g_list_reverse(g_list_copy(channel->recall));
+
+    pthread_mutex_unlock(recall_mutex);
   }
 
   /* duplicate */
-  while(list_recall != NULL){
-    recall = AGS_RECALL(list_recall->data);
+  while(list != NULL){
+    AgsRecallID *current_recall_id;
+    
+    guint recall_flags;
+    
+    pthread_mutex_t *mutex;
+    
+    recall = AGS_RECALL(list->data);
 
-    /* ignore initialized or non-runnable AgsRecalls */
-    if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0 ||
-       AGS_IS_RECALL_AUDIO(recall) ||
+    /* get mutex */
+    pthread_mutex_lock(ags_recall_get_class_mutex());
+    
+    mutex = recall->obj_mutex;
+
+    pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+    /* get some fields */
+    pthread_mutex_lock(mutex);
+
+    recall_flags = recall->flags;
+    
+    current_recall_id = recall->recall_id;
+    
+    pthread_mutex_unlock(mutex);
+    
+    /* ignore initialized or non-runnable AgsRecalls */    
+    if(AGS_IS_RECALL_AUDIO(recall) ||
        AGS_IS_RECALL_CHANNEL(recall) ||
-       recall->recall_id != NULL){
-      list_recall = list_recall->next;
+       (AGS_RECALL_TEMPLATE & (recall_flags)) == 0 ||
+       current_recall_id != NULL){
+
+      list = list->next;
+      
       continue;
     }
 
-    if((do_playback && (AGS_RECALL_PLAYBACK & (recall->flags)) == 0) ||
-       (do_sequencer && (AGS_RECALL_SEQUENCER & (recall->flags)) == 0) ||
-       (do_notation && (AGS_RECALL_NOTATION & (recall->flags)) == 0)){
-      list_recall = list_recall->next;
-      //      g_message("%x - %x", recall->flags, recall_id->flags);
+    /* check scope */
+    if(!ags_recall_match_ability_flags_to_scope(recall, sound_scope)){
+      list = list->next;
+
       continue;
     }
  
     /* duplicate the recall */
-    copy = ags_recall_duplicate(recall, recall_id);
+    recall_copy = ags_recall_duplicate(recall, recall_id);
     
-    if(copy == NULL){
+    if(recall_copy == NULL){
+      g_warning("AgsRecall::duplicate returning NULL");
+      
       /* iterate */    
-      list_recall = list_recall->next;
+      list = list->next;
 
       continue;
     }
@@ -5798,33 +5841,48 @@ ags_channel_duplicate_recall(AgsChannel *channel,
     g_message("recall duplicated: %s", G_OBJECT_TYPE_NAME(copy));
 #endif
     
-    /* set appropriate flag */
-    if(do_playback){
-      ags_recall_set_flags(copy, AGS_RECALL_PLAYBACK);
-    }else if(do_sequencer){
-      ags_recall_set_flags(copy, AGS_RECALL_SEQUENCER);
-    }else if(do_notation){
-      ags_recall_set_flags(copy, AGS_RECALL_NOTATION);
-    }
+    /* set sound scope */
+    ags_recall_set_sound_scope(recall_copy, sound_scope);
 
     /* append to AgsAudio */
     ags_channel_add_recall(channel,
-			   (GObject *) copy,
-			   ((recall_id->recycling_context->parent == NULL) ? TRUE: FALSE));
+			   (GObject *) recall_copy,
+			   ((parent_recycling_context == NULL) ? TRUE: FALSE));
     
     /* connect */
-    ags_connectable_connect(AGS_CONNECTABLE(copy));
-
+    ags_connectable_connect(AGS_CONNECTABLE(recall_copy));
+    
     /* notify run */
-    ags_recall_notify_dependency(copy, AGS_RECALL_NOTIFY_RUN, 1);
+    ags_recall_notify_dependency(recall_copy, AGS_RECALL_NOTIFY_RUN, 1);
 
     /* iterate */    
-    list_recall = list_recall->next;
+    list = list->next;
   }
 
-  g_list_free(list_recall_start);
+  /* free list copy */
+  g_list_free(list_start);
+}
 
-  pthread_mutex_unlock(mutex);
+/**
+ * ags_channel_duplicate_recall:
+ * @channel: the #AgsChannel
+ * @recall_id: the #AgsRecallID
+ *
+ * Duplicate #AgsRecall template and assign @recall_id to it.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_channel_duplicate_recall(AgsChannel *channel,
+			     AgsRecallID *recall_id)
+{
+  g_return_if_fail(AGS_IS_CHANNEL(channel) && AGS_IS_RECALL_ID(recall_id));
+
+  g_object_ref((GObject *) channel);
+  g_signal_emit(G_OBJECT(channel),
+		channel_signals[DUPLICATE_RECALL], 0,
+		recall_id);
+  g_object_unref((GObject *) channel);
 }
 
 /**

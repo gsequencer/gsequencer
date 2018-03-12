@@ -377,6 +377,21 @@ ags_recycling_context_finalize(GObject *gobject)
 }
 
 /**
+ * ags_recycling_context_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_recycling_context_get_class_mutex()
+{
+  return(&ags_recycling_context_class_mutex);
+}
+
+/**
  * ags_recycling_context_replace:
  * @recycling_context: the #AgsRecyclingContext
  * @recycling: the #AgsRecycling to add
