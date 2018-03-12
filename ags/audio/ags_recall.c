@@ -2027,6 +2027,8 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
 
     if((AGS_SOUND_STAGING_CANCEL & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_CANCEL & (recall->staging_flags)) == 0){
+      recall->staging_flags |= AGS_SOUND_STAGING_FINI;
+      
       ags_recall_run_init_cancel(recall);
     }
   }
