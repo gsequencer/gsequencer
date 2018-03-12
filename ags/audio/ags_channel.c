@@ -6003,114 +6003,123 @@ ags_channel_resolve_recall(AgsChannel *channel,
   g_object_unref((GObject *) channel);
 }
 
-/**
- * ags_channel_init_recall:
- * @channel: an #AgsChannel that contains the recalls
- * @stage: the stage to init
- * @recall_id: the #AgsRecallID this recall belongs to
- *
- * Prepare #AgsRecall objects to become runnning, ags_channel_recursive_play_init()
- * may call this function for you.
- *
- * Since: 1.0.0
- */
 void
-ags_channel_init_recall(AgsChannel *channel, gint stage,
-			AgsRecallID *recall_id)
+ags_channel_real_init_recall(AgsChannel *channel,
+			     AgsRecallID *recall_id, guint staging_flags)
 {
   AgsRecall *recall;
-  GList *list_recall;
 
-  AgsMutexManager *mutex_manager;
+  GList *list_start, *list;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *recall_mutex;
+  pthread_mutex_t *recall_id_mutex;
 
-  if(channel == NULL ||
-     recall_id == NULL){
+#ifdef AGS_DEBUG
+  g_message("resolve channel %d", channel->line);
+#endif
+
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_id_mutex);
+  
+  recycling_context = recall_id->recycling_context;
+  
+  pthread_mutex_unlock(recall_id_mutex);
+
+  if(recycling_context == NULL){
     return;
-  }  
-
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  pthread_mutex_lock(application_mutex);
+  }
   
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) channel);
+  /* get some fields */
+  pthread_mutex_lock(recycling_context_mutex);
   
-  pthread_mutex_unlock(application_mutex);
+  parent_recycling_context = recycling_context->parent;
+  
+  pthread_mutex_unlock(recycling_context_mutex);
 
-  /* recall or play */
-  pthread_mutex_lock(mutex);
+  /* play or recall context */
+  if(parent_recycling_context == NULL){
+    /* get recall mutex */
+    pthread_mutex_lock(channel_mutex);
+
+    recall_mutex = channel->play_mutex;
   
-#ifdef AGS_DEBUG
-  g_message("ags_channel_init_recall@%d - channel: %llu %llu\n",
-	    stage,
-	    (long long unsigned int) channel->audio_channel,
-	    (long long unsigned int) channel->pad);  
-#endif
-    
-  if(recall_id->recycling_context->parent == NULL){
-    list_recall = channel->play;
+    pthread_mutex_unlock(channel_mutex);
+
+    /* copy list */
+    pthread_mutex_lock(recall_mutex);
+
+    list =
+      list_start = g_list_copy(channel->play);
+
+    pthread_mutex_unlock(recall_mutex);
   }else{
-    list_recall = channel->recall;
+    /* get recall mutex */
+    pthread_mutex_lock(channel_mutex);
+
+    recall_mutex = channel->recall_mutex;
+  
+    pthread_mutex_unlock(channel_mutex);
+
+    /* copy list */
+    pthread_mutex_lock(recall_mutex);
+
+    list =
+      list_start = g_list_copy(channel->recall);
+
+    pthread_mutex_unlock(recall_mutex);
   }
 
-  /* init recall */
-  while(list_recall != NULL){
-    recall = AGS_RECALL(list_recall->data);
-    
-    if(recall->recall_id == NULL ||
-       recall->recall_id->recycling_context == NULL ||
-       AGS_IS_RECALL_CHANNEL(recall)){
-      list_recall = list_recall->next;
-      continue;
-    }
+  /* resolve dependencies */
+  while((list = ags_recall_find_recycling_context(list, recycling_context)) != NULL){
+    recall = AGS_RECALL(list->data);
 
-    if(recall->recall_id->recycling_context != recall_id->recycling_context){
-      if(AGS_IS_INPUT(channel) &&
-	 recall->recall_id->recycling_context->parent == NULL){
-	AgsRecyclingContext *parent_container;
+    ags_recall_set_staging_flags(recall, staging_flags);
 
-	parent_container = (AgsRecyclingContext *) ags_recall_id_find_parent_recycling_context(AGS_AUDIO(channel->audio)->recall_id,
-											       recall->recall_id->recycling_context);
-	
-	if(recall_id->recycling_context->parent != parent_container){
-	  list_recall = list_recall->next;
-  	  continue;
-	}
-      }else{
-	list_recall = list_recall->next;
-  	continue;
-      }
-    }
-    
-    if((AGS_RECALL_TEMPLATE & (recall->flags)) == 0){
-#ifdef AGS_DEBUG
-      g_message("recall run init@%d: %s - %x", stage, G_OBJECT_TYPE_NAME(recall), recall->flags);
-#endif
-
-      if(stage == 0){
-	ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
-
-	recall->flags &= (~AGS_RECALL_HIDE);
-	ags_recall_run_init_pre(recall);
-	recall->flags &= (~AGS_RECALL_REMOVE);
-      }else if(stage == 1){
-	ags_recall_run_init_inter(recall);
-      }else if(stage == 2){
-	ags_recall_run_init_post(recall);
-      }else{
-	ags_recall_check_rt_stream(recall);
-      }
-    }
-    
-    list_recall = list_recall->next;
+    /* iterate */    
+    list = list->next;
   }
 
-  pthread_mutex_unlock(mutex);
+  /* free list copy */
+  g_list_free(list_start);
+}
+
+/**
+ * ags_channel_init_recall:
+ * @channel: the #AgsChannel
+ * @recall_id: the #AgsRecallID
+ * @staging_flags: the stages to invoke
+ *
+ * Prepare #AgsRecall objects and invoke #AgsRecall::run-init-pre, #AgsRecall::run-init-inter or
+ * #AgsRecall::run-init-post as specified by @staging_flags.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_channel_init_recall(AgsChannel *channel,
+			AgsRecallID *recall_id, guint staging_flags)
+{
+  g_return_if_fail(AGS_IS_CHANNEL(channel) && AGS_IS_RECALL_ID(recall_id));
+
+  g_object_ref((GObject *) channel);
+  g_signal_emit(G_OBJECT(channel),
+		channel_signals[INIT_RECALL], 0,
+		recall_id, staging_flags);
+  g_object_unref((GObject *) channel);
 }
 
 /**
