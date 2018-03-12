@@ -19,9 +19,10 @@
 
 #include <ags/audio/ags_port.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
 
-#include <ags/object/ags_marshal.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <ags/i18n.h>
 
@@ -78,11 +79,10 @@ enum{
 static gpointer ags_port_parent_class = NULL;
 static guint port_signals[LAST_SIGNAL];
 
-#include <stdlib.h>
-#include <string.h>
+static pthread_mutex_t ags_port_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
-ags_port_get_type (void)
+ags_port_get_type(void)
 {
   static GType ags_type_port = 0;
 
@@ -353,7 +353,27 @@ ags_port_init(AgsPort *port)
 {
   pthread_mutexattr_t mutexattr;
 
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
+
   port->flags = 0; // AGS_PORT_CONVERT_ALWAYS;
+
+  /* add port mutex */
+  port->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(attr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  port->obj_mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);  
   
   port->plugin_name = NULL;
   port->specifier = NULL;
@@ -557,6 +577,21 @@ void
 ags_port_disconnect(AgsConnectable *connectable)
 {
   /* empty */
+}
+
+/**
+ * ags_port_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_port_get_class_mutex()
+{
+  return(&ags_port_class_mutex);
 }
 
 void

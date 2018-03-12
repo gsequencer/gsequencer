@@ -27,8 +27,7 @@
 
 #include <ladspa.h>
 
-#include <ags/lib/ags_complex.h>
-#include <ags/lib/ags_conversion.h>
+#include <ags/libags.h>
 
 #define AGS_TYPE_PORT                (ags_port_get_type())
 #define AGS_PORT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PORT, AgsPort))
@@ -67,6 +66,9 @@ struct _AgsPort
 
   guint flags;
   
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   gchar *plugin_name;
   gchar *specifier;
 
@@ -116,6 +118,8 @@ struct _AgsPortClass
 };
 
 GType ags_port_get_type();
+
+pthread_mutex_t* ags_port_get_class_mutex();
 
 void ags_port_safe_read(AgsPort *port, GValue *value);
 void ags_port_safe_write(AgsPort *port, GValue *value);

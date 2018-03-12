@@ -143,8 +143,9 @@ GList* ags_channel_real_start(AgsChannel *channel,
 void ags_channel_real_stop(AgsChannel *channel,
 			   GList *recall_id, gint sound_scope);
 
-GList* ags_channel_real_recursive_reset_stage(AgsChannel *channel,
-					      gint sound_scope, guint staging_flags);
+GList* ags_channel_real_check_scope(AgsChannel *channel, gint sound_scope);
+void ags_channel_real_recursive_run_stage(AgsChannel *channel,
+					  gint sound_scope, guint staging_flags);
 
 enum{
   ADD_EFFECT,
@@ -159,7 +160,7 @@ enum{
   START,
   STOP,
   CHECK_SCOPE,
-  RECURSIVE_RESET_STAGE,
+  RECURSIVE_RUN_STAGE,
   LAST_SIGNAL,
 };
 
@@ -736,6 +737,12 @@ ags_channel_class_init(AgsChannelClass *channel)
   channel->cancel_recall = ags_channel_real_cancel_recall;
   channel->done_recall = ags_channel_real_done_recall;
 
+  channel->start = ags_channel_real_start;
+  channel->stop = ags_channel_real_stop;
+
+  channel->check_scope = ags_channel_real_check_scope;
+  channel->recursive_run_stage = ags_channel_real_recursive_run_stage;
+  
   /* signals */
   /**
    * AgsChannel::recycling-changed:
@@ -985,25 +992,23 @@ ags_channel_class_init(AgsChannelClass *channel)
 		 G_TYPE_INT);
 
   /**
-   * AgsChannel::recursive-reset-stage:
+   * AgsChannel::recursive-run-stage:
    * @channel: the #AgsChannel
    * @sound_scope: the sound scope
    * @staging_flags: the staging flags
    *
-   * The ::recursive-reset-stage signal gives you control of checking scope.
-   * 
-   * Returns: the #GList-struct containing #AgsRecallID
+   * The ::recursive-run-stage signal gives you control of checking scope.
    * 
    * Since: 2.0.0
    */
-  channel_signals[RECURSIVE_RESET_STAGE] =
-    g_signal_new("recursive-reset-stage",
+  channel_signals[RECURSIVE_RUN_STAGE] =
+    g_signal_new("recursive-run-stage",
 		 G_TYPE_FROM_CLASS(channel),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsChannelClass, recursive_reset_stage),
+		 G_STRUCT_OFFSET(AgsChannelClass, recursive_run_stage),
 		 NULL, NULL,
-		 ags_cclosure_marshal_POINTER__INT_UINT,
-		 G_TYPE_POINTER, 2,
+		 ags_cclosure_marshal_VOID__INT_UINT,
+		 G_TYPE_NONE, 2,
 		 G_TYPE_INT,
 		 G_TYPE_UINT);
 }
@@ -6338,54 +6343,6 @@ ags_channel_real_done_recall(AgsChannel *channel,
   
   /* free list copy */
   g_list_free(list_start);
-
-  /* emit message */
-  message_delivery = ags_message_delivery_get_instance();
-
-  message_queue = ags_message_delivery_find_namespace(message_delivery,
-						      "libags-audio");
-
-  if(message_queue != NULL){
-    AgsMessageEnvelope *message;
-
-    xmlDoc *doc;
-    xmlNode *root_node;
-
-    /* specify message body */
-    doc = xmlNewDoc("1.0");
-
-    root_node = xmlNewNode(NULL,
-			   "ags-command");
-    xmlDocSetRootElement(doc, root_node);    
-
-    xmlNewProp(root_node,
-	       "method",
-	       "AgsChannel::done-recall");
-
-    /* add message */
-    message = ags_message_envelope_alloc(channel,
-					 NULL,
-					 doc);
-
-    /* set parameter */
-    message->n_params = 1;
-
-    message->parameter_name = (gchar **) malloc(2 * sizeof(gchar *));
-    message->value = g_new0(GValue,
-			    1);
-
-    /* recall id */
-    message->parameter_name[0] = "recall-id";
-    g_value_init(&(message->value[0]),
-		 G_TYPE_OBJECT);
-    g_value_set_object(&(message->value[0]),
-		       recall_id);
-
-    /* add message */
-    ags_message_delivery_add_message(message_delivery,
-				     "libags-audio",
-				     message);
-  }
 }
 
 /**
@@ -6531,158 +6488,474 @@ ags_channel_cancel_recall(AgsChannel *channel,
   g_object_unref((GObject *) channel);
 }
 
+GList*
+ags_channel_real_start(AgsChannel *channel,
+		       gint sound_scope)
+{
+  AgsMessageDelivery *message_delivery;
+  AgsMessageQueue *message_queue;
+
+  GList *recall_id;
+
+  recall_id = NULL;
+
+  //TODO:JK: implement me
+
+  /* emit message */
+  message_delivery = ags_message_delivery_get_instance();
+
+  message_queue = ags_message_delivery_find_namespace(message_delivery,
+						      "libags-audio");
+
+  if(message_queue != NULL){
+    AgsMessageEnvelope *message;
+
+    xmlDoc *doc;
+    xmlNode *root_node;
+
+    /* specify message body */
+    doc = xmlNewDoc("1.0");
+
+    root_node = xmlNewNode(NULL,
+			   "ags-command");
+    xmlDocSetRootElement(doc, root_node);    
+
+    xmlNewProp(root_node,
+	       "method",
+	       "AgsChannel::start");
+
+    /* add message */
+    message = ags_message_envelope_alloc(channel,
+					 NULL,
+					 doc);
+
+    /* set parameter */
+    message->n_params = 1;
+
+    message->parameter_name = (gchar **) malloc(2 * sizeof(gchar *));
+    message->value = g_new0(GValue,
+			    1);
+
+    /* sound scope */
+    message->parameter_name[0] = "sound-scope";
+    g_value_init(&(message->value[0]),
+		 G_TYPE_INT);
+    g_value_set_int(&(message->value[0]),
+		    sound_scope);
+
+    /* terminate string vector */
+    message->parameter_name[1] = NULL;
+
+    /* add message */
+    ags_message_delivery_add_message(message_delivery,
+				     "libags-audio",
+				     message);
+  }
+
+  return(recall_id);
+}
+
 /**
- * ags_channel_find_port:
- * @channel: an #AgsChannel
- *
- * Retrieve all ports of #AgsChannel
- *
- * Returns: a #GList containing #AgsPort
- *
- * Since: 1.0.0
+ * ags_channel_start:
+ * @channel: the #AgsChannel
+ * @sound_scope: the sound scope
+ * 
+ * Start @channel's @sound_scope to do playback.
+ * 
+ * Returns: the #GList-struct containing #AgsRecallID
+ * 
+ * Since: 2.0.0
  */
 GList*
-ags_channel_find_port(AgsChannel *channel)
+ags_channel_start(AgsChannel *channel,
+		  gint sound_scope)
 {
-  AgsMutexManager *mutex_manager;
+  GList *recall_id;
+  
+  g_return_val_if_fail(AGS_IS_CHANNEL(channel), NULL);
 
-  GList *recall;
+  recall_id = NULL;
+  
+  g_object_ref((GObject *) channel);
+  g_signal_emit(G_OBJECT(channel),
+		channel_signals[START], 0,
+		sound_scope,
+		&recall_id);
+  g_object_unref((GObject *) channel);
+
+  return(recall_id);
+}
+
+void
+ags_channel_real_stop(AgsChannel *channel,
+		      GList *recall_id, gint sound_scope)
+{
+  AgsMessageDelivery *message_delivery;
+  AgsMessageQueue *message_queue;
+
+  //TODO:JK: implement me
+
+  /* emit message */
+  message_delivery = ags_message_delivery_get_instance();
+
+  message_queue = ags_message_delivery_find_namespace(message_delivery,
+						      "libags-audio");
+
+  if(message_queue != NULL){
+    AgsMessageEnvelope *message;
+
+    xmlDoc *doc;
+    xmlNode *root_node;
+
+    /* specify message body */
+    doc = xmlNewDoc("1.0");
+
+    root_node = xmlNewNode(NULL,
+			   "ags-command");
+    xmlDocSetRootElement(doc, root_node);    
+
+    xmlNewProp(root_node,
+	       "method",
+	       "AgsChannel::stop");
+
+    /* add message */
+    message = ags_message_envelope_alloc(channel,
+					 NULL,
+					 doc);
+
+    /* set parameter */
+    message->n_params = 2;
+
+    message->parameter_name = (gchar **) malloc(3 * sizeof(gchar *));
+    message->value = g_new0(GValue,
+			    2);
+    
+    /* recall id */
+    message->parameter_name[0] = "recall-id";
+    g_value_init(&(message->value[0]),
+		 G_TYPE_POINTER);
+    g_value_set_pointer(&(message->value[0]),
+			recall_id);
+    
+    /* sound scope */
+    message->parameter_name[1] = "sound-scope";
+    g_value_init(&(message->value[1]),
+		 G_TYPE_INT);
+    g_value_set_object(&(message->value[1]),
+		       sound_scope);
+    
+    /* terminate string vector */
+    message->parameter_name[2] = NULL;
+
+    /* add message */
+    ags_message_delivery_add_message(message_delivery,
+				     "libags-audio",
+				     message);
+  }
+}
+
+/**
+ * ags_channel_stop:
+ * @channel: the #AgsChannel
+ * @recall_id: the #GList-struct containing #AgsRecallID
+ * @sound_scope: the sound scope
+ * 
+ * Stop @channel's @sound_scope playback specified by @recall_id.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_channel_stop(AgsChannel *channel,
+		 GList *recall_id, gint sound_scope)
+{
+  g_return_if_fail(AGS_IS_CHANNEL(channel));
+
+  g_object_ref((GObject *) channel);
+  g_signal_emit(G_OBJECT(channel),
+		channel_signals[START], 0,
+		recall_id, sound_scope);
+  g_object_unref((GObject *) channel);
+}
+
+GList*
+ags_channel_real_check_scope(AgsChannel *channel, gint sound_scope)
+{
+  GList *recall_id;
+
+  recall_id = NULL;
+  
+  //TODO:JK: implement me
+
+  return(recall_id);
+}
+
+/**
+ * ags_channel_check_scope:
+ * @channel: the #AgsChannel
+ * @sound_scope: the sound scope
+ * 
+ * Check @channel's @sound_scope.
+ * 
+ * Returns: the #GList-struct containing #AgsRecallID or %NULL if not playing
+ * 
+ * Since: 2.0.0
+ */
+GList*
+ags_channel_check_scope(AgsChannel *channel, gint sound_scope)
+{
+  GList *recall_id;
+  
+  g_return_val_if_fail(AGS_IS_CHANNEL(channel), NULL);
+
+  recall_id = NULL;
+  
+  g_object_ref((GObject *) channel);
+  g_signal_emit(G_OBJECT(channel),
+		channel_signals[CHECK_SCOPE], 0,
+		sound_scope,
+		&recall_id);
+  g_object_unref((GObject *) channel);
+
+  return(recall_id);
+}
+
+/**
+ * ags_channel_collect_all_channel_ports:
+ * @channel: the #AgsChannel
+ *
+ * Retrieve all ports of #AgsChannel.
+ *
+ * Returns: a new #GList containing #AgsPort
+ *
+ * Since: 2.0.0
+ */
+GList*
+ags_channel_collect_all_channel_ports(AgsChannel *channel)
+{
+  GList *recall_start, *recall;
   GList *list;
 
-  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *recall_mutex, *play_mutex;
   pthread_mutex_t *mutex;
 
   if(!AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
-  
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  pthread_mutex_lock(application_mutex);
-  
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) channel);
-  
-  pthread_mutex_unlock(application_mutex);
- 
-  /* collect port of playing recall */
-  pthread_mutex_lock(mutex);
-  
-  recall = channel->play;
 
   list = NULL;
-   
-  while(recall != NULL){
-    if(AGS_RECALL(recall->data)->port != NULL){
-      if(list == NULL){
-	list = g_list_copy(AGS_RECALL(recall->data)->port);
-      }else{
-	if(AGS_RECALL(recall->data)->port != NULL){
-	  list = g_list_concat(list,
-			       g_list_copy(AGS_RECALL(recall->data)->port));
-	}
-      }
-    }
-     
-    recall = recall->next;
-  }
  
-  /* the same for true recall */
-  recall = channel->recall;
+  /* get play mutex */  
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+
+  play_mutex = channel->play_mutex;
   
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* collect port of playing recall */
+  pthread_mutex_lock(play_mutex);
+
+  recall =
+    recall_start = g_list_copy(channel->play);
+
+  pthread_mutex_unlock(play_mutex);
+   
   while(recall != NULL){
-    if(AGS_RECALL(recall->data)->port != NULL){
+    AgsRecall *current;
+
+    current = AGS_RECALL(recall->data);
+    
+    /* get mutex */  
+    pthread_mutex_lock(ags_recall_get_class_mutex());
+
+    mutex = current->obj_mutex;
+  
+    pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+    /* concat port */
+    pthread_mutex_lock(mutex);
+    
+    if(current->port != NULL){
       if(list == NULL){
-	list = g_list_copy(AGS_RECALL(recall->data)->port);
+	list = g_list_copy(current->port);
       }else{
-	if(AGS_RECALL(recall->data)->port != NULL){
+	if(current->port != NULL){
 	  list = g_list_concat(list,
-			       g_list_copy(AGS_RECALL(recall->data)->port));
+			       g_list_copy(current->port));
 	}
       }
     }
-     
+
+    pthread_mutex_unlock(mutex);
+
+    /* iterate */
     recall = recall->next;
   }
-  
-  /*  */
-  pthread_mutex_unlock(mutex);
 
-  list = g_list_reverse(list);
+  g_list_free(recall_start);
+  
+  /* get recall mutex */  
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+
+  recall_mutex = channel->recall_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* the same for true recall */
+  pthread_mutex_lock(recall_mutex);
+
+  recall =
+    recall_start = g_list_copy(channel->recall);
+
+  pthread_mutex_unlock(recall_mutex);
    
+  while(recall != NULL){
+    AgsRecall *current;
+
+    current = AGS_RECALL(recall->data);
+    
+    /* get mutex */  
+    pthread_mutex_lock(ags_recall_get_class_mutex());
+
+    mutex = current->obj_mutex;
+  
+    pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+    /* concat port */
+    pthread_mutex_lock(mutex);
+    
+    if(current->port != NULL){
+      if(list == NULL){
+	list = g_list_copy(current->port);
+      }else{
+	if(current->port != NULL){
+	  list = g_list_concat(list,
+			       g_list_copy(current->port));
+	}
+      }
+    }
+
+    pthread_mutex_unlock(mutex);
+
+    /* iterate */
+    recall = recall->next;
+  }
+   
+  g_list_free(recall_start);
+
+  /*  */
+  list = g_list_reverse(list);
+  
   return(list);
 }
 
 /**
- * ags_channel_find_port_by_specifier_and_scope:
+ * ags_channel_collect_all_channel_ports_by_specifier_and_scope:
  * @channel: an #AgsChannel
  * @specifier: the port's name
- * @scope: either %TRUE for play or %FALSE for recall
+ * @play_context: either %TRUE for play or %FALSE for recall
  *
  * Retrieve specified port of #AgsChannel
  *
- * Returns: an #AgsPort if found otherwise %NULL
+ * Returns: a #GList-struct of #AgsPort if found, otherwise %NULL
  *
- * Since: 1.3.0
+ * Since: 2.0.0
  */
-GObject*
-ags_channel_find_port_by_specifier_and_scope(AgsChannel *channel,
-					     gchar *specifier,
-					     gboolean play)
+GList*
+ags_channel_collect_all_channel_ports_by_specifier_and_context(AgsChannel *channel,
+							       gchar *specifier,
+							       gboolean play_context)
 {
-  AgsMutexManager *mutex_manager;
-
-  GList *recall, *port;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  GList *recall_start, *recall;
+  GList *port_start, *port;
+  GList *list;
+  
+  pthread_mutex_t *recall_mutex;
 
   if(!AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
   
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  pthread_mutex_lock(application_mutex);
+  if(play_context){
+    /* get play mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
+    
+    recall_mutex = channel->play_mutex;
   
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) channel);
-  
-  pthread_mutex_unlock(application_mutex);
- 
-  /* collect port of playing recall */
-  pthread_mutex_lock(mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
-  if(play){
-    recall = channel->play;
+    /* get recall */
+    pthread_mutex_lock(recall_mutex);
+
+    recall =
+      recall_start = g_list_copy(channel->play);
+    
+    pthread_mutex_unlock(recall_mutex);
   }else{
-    recall = channel->recall;
+    /* get recall mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
+
+    recall_mutex = channel->recall_mutex;
+  
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+    /* get recall */
+    pthread_mutex_lock(recall_mutex);
+
+    recall =
+      recall_start = g_list_copy(channel->recall);
+    
+    pthread_mutex_unlock(recall_mutex);
   }
+  
+  /* collect port of playing recall */
+  list = NULL;
 
   while(recall != NULL){
-    port = AGS_RECALL(recall->data)->port;
+    AgsRecall *current;
 
-    while(port != NULL){
-      if(!g_strcmp0(AGS_PORT(port->data)->specifier,
-		    specifier)){
-	pthread_mutex_unlock(mutex);
+    pthread_mutex_t *mutex;
 
-	return(port->data);
-      }
+    current = AGS_RECALL(recall->data);
+    
+    /* get mutex */  
+    pthread_mutex_lock(ags_recall_get_class_mutex());
 
+    mutex = current->obj_mutex;
+  
+    pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+    /* get port */
+    pthread_mutex_lock(mutex);
+    
+    port =
+      port_start = g_list_copy(current->port);
+
+    pthread_mutex_unlock(mutex);
+
+    /* check specifier */
+    while((port = ags_port_find_specifier(port, specifier)) != NULL){
+      AgsPort *current;
+
+      current = AGS_PORT(port->data);
+      list = g_list_prepend(list,
+			    current);
+
+      /* iterate - port */
       port = port->next;
     }
-    
+
+    g_list_free(port_start);
+
+    /* iterate - recall */
     recall = recall->next;
   }
 
-  pthread_mutex_unlock(mutex);
+  g_list_free(recall_start);
 
-  return(NULL);
+  /* reverse result */
+  list = g_list_reverse(list);
+  
+  return(list);
 }
 
 /**

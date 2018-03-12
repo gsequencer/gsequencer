@@ -9179,7 +9179,6 @@ ags_audio_check_scope(AgsAudio *audio, gint sound_scope)
   return(recall_id);
 }
 
-
 /**
  * ags_audio_collect_all_audio_ports:
  * @audio: the #AgsAudio
@@ -9193,10 +9192,11 @@ ags_audio_check_scope(AgsAudio *audio, gint sound_scope)
 GList*
 ags_audio_collect_all_audio_ports(AgsAudio *audio)
 {
-  GList *recall;
+  GList *recall_start, *recall;
   GList *list;
 
   pthread_mutex_t *recall_mutex, *play_mutex;
+  pthread_mutex_t *mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -9214,25 +9214,45 @@ ags_audio_collect_all_audio_ports(AgsAudio *audio)
   /* collect port of playing recall */
   pthread_mutex_lock(play_mutex);
 
-  recall = audio->play;
+  recall =
+    recall_start = g_list_copy(audio->play);
+
+  pthread_mutex_unlock(play_mutex);
    
   while(recall != NULL){
-    if(AGS_RECALL(recall->data)->port != NULL){
+    AgsRecall *current;
+
+    current = AGS_RECALL(recall->data);
+    
+    /* get mutex */  
+    pthread_mutex_lock(ags_recall_get_class_mutex());
+
+    mutex = current->obj_mutex;
+  
+    pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+    /* concat port */
+    pthread_mutex_lock(mutex);
+    
+    if(current->port != NULL){
       if(list == NULL){
-	list = g_list_copy(AGS_RECALL(recall->data)->port);
+	list = g_list_copy(current->port);
       }else{
-	if(AGS_RECALL(recall->data)->port != NULL){
+	if(current->port != NULL){
 	  list = g_list_concat(list,
-			       g_list_copy(AGS_RECALL(recall->data)->port));
+			       g_list_copy(current->port));
 	}
       }
     }
-     
+
+    pthread_mutex_unlock(mutex);
+
+    /* iterate */
     recall = recall->next;
   }
 
-  pthread_mutex_unlock(play_mutex);
- 
+  g_list_free(recall_start);
+  
   /* get recall mutex */  
   pthread_mutex_lock(ags_audio_get_class_mutex());
 
@@ -9243,26 +9263,46 @@ ags_audio_collect_all_audio_ports(AgsAudio *audio)
   /* the same for true recall */
   pthread_mutex_lock(recall_mutex);
 
-  recall = audio->recall;
+  recall =
+    recall_start = g_list_copy(audio->recall);
+
+  pthread_mutex_unlock(recall_mutex);
    
   while(recall != NULL){
-    if(AGS_RECALL(recall->data)->port != NULL){
+    AgsRecall *current;
+
+    current = AGS_RECALL(recall->data);
+    
+    /* get mutex */  
+    pthread_mutex_lock(ags_recall_get_class_mutex());
+
+    mutex = current->obj_mutex;
+  
+    pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+    /* concat port */
+    pthread_mutex_lock(mutex);
+    
+    if(current->port != NULL){
       if(list == NULL){
-	list = g_list_copy(AGS_RECALL(recall->data)->port);
+	list = g_list_copy(current->port);
       }else{
-	if(AGS_RECALL(recall->data)->port != NULL){
+	if(current->port != NULL){
 	  list = g_list_concat(list,
-			       g_list_copy(AGS_RECALL(recall->data)->port));
+			       g_list_copy(current->port));
 	}
       }
     }
-       
+
+    pthread_mutex_unlock(mutex);
+
+    /* iterate */
     recall = recall->next;
   }
    
-  pthread_mutex_unlock(recall_mutex);
+  g_list_free(recall_start);
 
-  /*  */
+  /* reverse result */
   list = g_list_reverse(list);
   
   return(list);
@@ -9278,17 +9318,18 @@ ags_audio_collect_all_audio_ports(AgsAudio *audio)
  *
  * Returns: a #GList-struct of #AgsPort if found, otherwise %NULL
  *
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 GList*
 ags_audio_collect_all_audio_ports_by_specifier_and_context(AgsAudio *audio,
 							   gchar *specifier,
 							   gboolean play_context)
 {
-  GList *recall, *port;
+  GList *recall_start, *recall;
+  GList *port_start, *port;
   GList *list;
   
-  pthread_mutex_t *mutex;
+  pthread_mutex_t *recall_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
     return(NULL);
@@ -9298,47 +9339,80 @@ ags_audio_collect_all_audio_ports_by_specifier_and_context(AgsAudio *audio,
     /* get play mutex */
     pthread_mutex_lock(ags_audio_get_class_mutex());
     
-    mutex = audio->play_mutex;
+    recall_mutex = audio->play_mutex;
   
     pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+    /* get recall */
+    pthread_mutex_lock(recall_mutex);
+
+    recall =
+      recall_start = g_list_copy(audio->play);
+    
+    pthread_mutex_unlock(recall_mutex);
   }else{
     /* get recall mutex */
     pthread_mutex_lock(ags_audio_get_class_mutex());
 
-    mutex = audio->recall_mutex;
+    recall_mutex = audio->recall_mutex;
   
     pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+    /* get recall */
+    pthread_mutex_lock(recall_mutex);
+
+    recall =
+      recall_start = g_list_copy(audio->recall);
+    
+    pthread_mutex_unlock(recall_mutex);
   }
   
   /* collect port of playing recall */
   list = NULL;
-  
-  pthread_mutex_lock(mutex);
-
-  if(play_context){
-    recall = audio->play;
-  }else{
-    recall = audio->recall;
-  }
 
   while(recall != NULL){
-    port = AGS_RECALL(recall->data)->port;
+    AgsRecall *current;
 
-    while(port != NULL){
-      if(!g_strcmp0(AGS_PORT(port->data)->specifier,
-		    specifier)){
-	list = g_list_prepend(list,
-			      port->data);
-      }
+    pthread_mutex_t *mutex;
 
+    current = AGS_RECALL(recall->data);
+    
+    /* get mutex */  
+    pthread_mutex_lock(ags_recall_get_class_mutex());
+
+    mutex = current->obj_mutex;
+  
+    pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+    /* get port */
+    pthread_mutex_lock(mutex);
+    
+    port =
+      port_start = g_list_copy(current->port);
+
+    pthread_mutex_unlock(mutex);
+
+    /* check specifier */
+    while((port = ags_port_find_specifier(port, specifier)) != NULL){
+      AgsPort *current;
+
+      current = AGS_PORT(port->data);
+      list = g_list_prepend(list,
+			    current);
+
+      /* iterate - port */
       port = port->next;
     }
-    
+
+    g_list_free(port_start);
+
+    /* iterate - recall */
     recall = recall->next;
   }
 
-  pthread_mutex_unlock(mutex);
+  g_list_free(recall_start);
 
+  /* reverse result */
   list = g_list_reverse(list);
   
   return(list);

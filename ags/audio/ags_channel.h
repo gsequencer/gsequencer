@@ -199,8 +199,8 @@ struct _AgsChannelClass
 
   GList* (*check_scope)(AgsChannel *channel, gint sound_scope);
   
-  GList* (*recursive_reset_stage)(AgsChannel *channel,
-				  gint sound_scope, guint staging_flags);
+  void (*recursive_run_stage)(AgsChannel *channel,
+			      gint sound_scope, guint staging_flags);
 };
 
 GType ags_channel_get_type();
@@ -315,38 +315,11 @@ GList* ags_channel_collect_all_channel_ports_by_specifier_and_context(AgsChannel
 AgsChannel* ags_channel_get_level(AgsChannel *channel);
 
 void ags_channel_recursive_set_property(AgsChannel *channel,
-					GParameter *parameter, gint n_params);
+					gint n_params,
+					gchar **parameter_name, GValue *value);
 
-void ags_channel_recursive_reset_recycling_context(AgsChannel *channel,
-						   AgsRecyclingContext *old_recycling_context,
-						   AgsRecyclingContext *recycling_context);
-
-void ags_channel_recursive_reset_recall_id(AgsChannel *channel,
-					   AgsRecallID *valid_recall_id, gboolean valid_set_up, gboolean valid_set_down,
-					   AgsRecallID *invalid_recall_id, gboolean invalid_set_up, gboolean invalid_set_down);
-
-void ags_channel_recursive_init(AgsChannel *channel,
-				AgsRecallID *recall_id,
-				gint stage, gint init_stage,
-				gboolean init_up, gboolean init_down);
-
-void ags_channel_recursive_run(AgsChannel *channel,
-			       AgsRecallID *recall_id,
-			       gint run_stage,
-			       gboolean run_up, gboolean run_down,
-			       gboolean current_level_only);
-
-void ags_channel_recursive_cancel(AgsChannel *channel,
-				  AgsRecallID *recall_id,
-				  gboolean cancel_up, gboolean cancel_down);
-
-void ags_channel_recursive_play_threaded(AgsChannel *channel,
-					 AgsRecallID *recall_id, gint stage);
-void ags_channel_recursive_play(AgsChannel *channel,
-				AgsRecallID *recall_id, gint stage);
-
-GList* ags_channel_recursive_reset_stage(AgsChannel *channel,
-					 gint sound_scope, guint staging_flags);
+void ags_channel_recursive_run_stage(AgsChannel *channel,
+				     gint sound_scope, guint staging_flags);
 
 /* instantiate */
 AgsChannel* ags_channel_new(GObject *audio);

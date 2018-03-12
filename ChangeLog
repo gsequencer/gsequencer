@@ -51,6 +51,13 @@ ags (2.0.0)
 	* removed ags_channel_recursive_play_init()
 	* removed ags_channel_tillrecycling_cancel()
 	* removed ags_channel_recursive_reset_recall_ids()
+	* removed ags_channel_recursive_reset_recycling_context
+	* removed ags_channel_recursive_reset_recall_id
+	* removed ags_channel_recursive_init
+	* removed ags_channel_recursive_run
+	* removed ags_channel_recursive_cancel
+	* removed ags_channel_recursive_play_threaded
+	* removed ags_channel_recursive_play
 	* removed ags_audio_signal_realloc_buffer_size()
 	* removed ags_audio_signal_tile()
 	* removed ags_audio_signal_scale()
