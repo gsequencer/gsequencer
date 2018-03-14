@@ -1191,13 +1191,24 @@ ags_gui_thread_animation_prepare(GSource *source,
   AgsGuiThread *gui_thread;
   
   AgsThread *main_loop;
+  AgsMutexManager *mutex_manager;
 
   AgsLog *log;
 
   guint nth;
+
+  pthread_mutex_t *application_mutex;
   
   application_context = ags_application_context_get_instance();
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
   main_loop = AGS_APPLICATION_CONTEXT(application_context)->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
   
   gui_thread = ags_thread_find_type(main_loop,
 				    AGS_TYPE_GUI_THREAD);
@@ -1234,13 +1245,24 @@ ags_gui_thread_animation_check(GSource *source)
   AgsGuiThread *gui_thread;
   
   AgsThread *main_loop;
+  AgsMutexManager *mutex_manager;
 
   AgsLog *log;
 
   guint nth;
 
+  pthread_mutex_t *application_mutex;
+
   application_context = ags_application_context_get_instance();
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
   main_loop = AGS_APPLICATION_CONTEXT(application_context)->main_loop;
+
+  pthread_mutex_unlock(application_mutex);
   
   gui_thread = ags_thread_find_type(main_loop,
 				    AGS_TYPE_GUI_THREAD);
@@ -1277,10 +1299,21 @@ ags_gui_thread_animation_dispatch(GSource *source,
   
   AgsThread *main_loop;
   AgsTaskThread *task_thread;
+  AgsMutexManager *mutex_manager;
+
+  pthread_mutex_t *application_mutex;
 
   application_context = ags_application_context_get_instance();
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
   main_loop = AGS_APPLICATION_CONTEXT(application_context)->main_loop;
-  
+
+  pthread_mutex_unlock(application_mutex);
+
   gui_thread = ags_thread_find_type(main_loop,
 				    AGS_TYPE_GUI_THREAD);
 
@@ -1610,6 +1643,7 @@ gboolean
 ags_gui_thread_do_animation_callback(GtkWidget *widget, GdkEventExpose *event,
 				     AgsGuiThread *gui_thread)
 {
+  AgsApplicationContext *application_context;
   AgsLog *log;
 
   GdkRectangle rectangle;
@@ -1629,6 +1663,12 @@ ags_gui_thread_do_animation_callback(GtkWidget *widget, GdkEventExpose *event,
   guint i;
   guint nth = 0;
 
+  application_context = ags_application_context_get_instance();
+
+  if(!ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
+    return;
+  }
+  
   log = ags_log_get_instance();  
   
   if(filename == NULL){
