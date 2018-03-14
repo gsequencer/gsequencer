@@ -110,6 +110,12 @@ void ags_channel_connect_connection(AgsConnectable *connectable,
 void ags_channel_disconnect_connection(AgsConnectable *connectable,
 				       GObject *connection);
 
+void ags_channel_real_recycling_changed(AgsChannel *channel,
+					AgsRecycling *old_start_region, AgsRecycling *old_end_region,
+					AgsRecycling *new_start_region, AgsRecycling *new_end_region,
+					AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+					AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
+
 GList* ags_channel_add_ladspa_effect(AgsChannel *channel,
 				     gchar *filename,
 				     gchar *effect);
@@ -723,7 +729,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  param_spec);
 
   /* AgsChannelClass */
-  channel->recycling_changed = NULL;
+  channel->recycling_changed = ags_channel_real_recycling_changed;
 
   channel->add_effect = ags_channel_real_add_effect;
   channel->remove_effect = ags_channel_real_remove_effect;
@@ -5394,6 +5400,16 @@ ags_channel_reset_recycling(AgsChannel *channel,
   }else{
     ags_channel_reset_recycling_emit_changed_output(channel);
   }
+}
+
+void
+ags_channel_real_recycling_changed(AgsChannel *channel,
+				   AgsRecycling *old_start_region, AgsRecycling *old_end_region,
+				   AgsRecycling *new_start_region, AgsRecycling *new_end_region,
+				   AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+				   AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region)
+{
+  //TODO:JK: implement me
 }
 
 /**
