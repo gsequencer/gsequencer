@@ -1581,8 +1581,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   ags_connectable_connect(AGS_CONNECTABLE(window));
 
   /* stop animation */
-  g_atomic_int_set(&(xorg_application_context->show_animation),
-		   FALSE);  
+  ags_ui_provider_set_show_animation(AGS_UI_PROVIDER(xorg_application_context),
+				     FALSE);
 
   /* AgsServer */
   xorg_application_context->server = ags_server_new((GObject *) xorg_application_context);
