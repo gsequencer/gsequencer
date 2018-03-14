@@ -1352,6 +1352,9 @@ ags_gui_thread_animation_dispatch(GSource *source,
   if(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
     return(G_SOURCE_CONTINUE);
   }else{
+    g_main_context_iteration(main_context,
+			     FALSE);
+    
     gdk_threads_enter();
     
     gtk_widget_destroy(window);
