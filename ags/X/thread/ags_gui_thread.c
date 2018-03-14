@@ -1197,6 +1197,8 @@ ags_gui_thread_animation_prepare(GSource *source,
 
   guint nth;
 
+  static gboolean initial_run = TRUE;
+  
   pthread_mutex_t *application_mutex;
   
   application_context = ags_application_context_get_instance();
@@ -1221,11 +1223,14 @@ ags_gui_thread_animation_prepare(GSource *source,
 
   pthread_mutex_unlock(log->mutex);
 
-  if(nth > gui_thread->nth_message ||
+  if(initial_run ||
+     nth > gui_thread->nth_message ||
      !ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
     if(timeout_ != NULL){
       *timeout_ = 0;
     }
+
+    intial_run = FALSE;
 
     return(TRUE);
   }else{
@@ -1251,6 +1256,8 @@ ags_gui_thread_animation_check(GSource *source)
 
   guint nth;
 
+  static gboolean initial_run = TRUE;
+
   pthread_mutex_t *application_mutex;
 
   application_context = ags_application_context_get_instance();
@@ -1275,8 +1282,11 @@ ags_gui_thread_animation_check(GSource *source)
 
   pthread_mutex_unlock(log->mutex);
 
-  if(nth > gui_thread->nth_message ||
+  if(initial_run ||
+     nth > gui_thread->nth_message ||
      !ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
+    intial_run = FALSE;
+
     return(TRUE);
   }else{
     return(FALSE);
@@ -1352,12 +1362,65 @@ ags_gui_thread_animation_dispatch(GSource *source,
   
     return(G_SOURCE_CONTINUE);
   }else{    
+    AgsWindow *app_window;
+
+    gchar *filename;
+
+    gchar **argv;
+    
+    guint argc;
+    
+    /* AgsWindow */
+    gdk_threads_enter();
+
+#ifdef AGS_WITH_QUARTZ
+    g_object_new(GTKOSX_TYPE_APPLICATION,
+		 NULL);
+#endif
+  
+    app_window = g_object_new(AGS_TYPE_WINDOW,
+			      "soundcard", soundcard,
+			      "application-context", application_context,
+			      NULL);
+    g_object_set(application_context,
+		 "window", app_window,
+		 NULL);
+
+    gtk_window_set_default_size((GtkWindow *) app_window, 500, 500);
+    gtk_paned_set_position((GtkPaned *) app_window->paned, 300);
+
+    ags_connectable_connect(AGS_CONNECTABLE(app_window));
+
+    gdk_threads_leave();
+
+    /* filename */
+    filename = NULL;
+
+    pthread_mutex_lock(application_mutex);
+
+    argv = AGS_APPLICATION_CONTEXT(application_context)->argv;
+    argc = AGS_APPLICATION_CONTEXT(application_context)->argc;
+
+    for(i = 0; i < argc; i++){
+      if(!strncmp(argv[i], "--filename", 11)){
+	filename = argv[i + 1];
+	i++;
+      }
+    }
+
+    pthread_mutex_unlock(application_mutex);
+    
+    /*  */
     gdk_threads_enter();
     
     gtk_widget_destroy(window);
     window = NULL;
 
-    gtk_widget_show_all(ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)));
+    if(filename != NULL){
+      app_window->filename = filename;
+    }
+    
+    gtk_widget_show_all(app_window);
 
     gdk_threads_leave();
 

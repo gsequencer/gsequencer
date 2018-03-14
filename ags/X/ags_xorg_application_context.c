@@ -975,7 +975,6 @@ void
 ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 {
   AgsXorgApplicationContext *xorg_application_context;
-  AgsWindow *window;
 
   AgsGuiThread *gui_thread;
   
@@ -1561,25 +1560,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   }
 
   g_free(sequencer_group);
-  
-  /* AgsWindow */
-#ifdef AGS_WITH_QUARTZ
-  g_object_new(GTKOSX_TYPE_APPLICATION,
-	       NULL);
-#endif
-  window = g_object_new(AGS_TYPE_WINDOW,
-			"soundcard", soundcard,
-			"application-context", xorg_application_context,
-			NULL);
-  g_object_set(xorg_application_context,
-	       "window", window,
-	       NULL);
-
-  gtk_window_set_default_size((GtkWindow *) window, 500, 500);
-  gtk_paned_set_position((GtkPaned *) window->paned, 300);
-
-  ags_connectable_connect(AGS_CONNECTABLE(window));
-
+    
   /* stop animation */
   ags_ui_provider_set_show_animation(AGS_UI_PROVIDER(xorg_application_context),
 				     FALSE);
@@ -1699,9 +1680,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     ags_jack_server_connect_client(jack_server);
   }
   
-  if(filename != NULL){
-    window->filename = filename;
-  }
+  //  if(filename != NULL){
+  //    window->filename = filename;
+  //  }
   //  pthread_mutex_unlock(ags_gui_thread_get_dispatch_mutex());
 }
 
