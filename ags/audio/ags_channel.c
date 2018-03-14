@@ -9133,458 +9133,6 @@ ags_channel_collect_all_channel_ports_by_specifier_and_context(AgsChannel *chann
 }
 
 /**
- * ags_channel_recursive_reset_recycling_context:
- * @channel: the channel to reset
- * @old_recycling_context: the old recycling container context
- * @recycling_context: the new recycling container context
- *
- * Resets the recycling container context and update recycling field of recall ids if
- * needed. Invoke only by a task.
- *
- * Since: 1.0.0
- */
-void
-ags_channel_recursive_reset_recycling_context(AgsChannel *channel,
-					      AgsRecyclingContext *old_recycling_context,
-					      AgsRecyclingContext *recycling_context)
-{
-  AgsAudio *audio;
-  AgsChannel *link;
-
-  AgsMutexManager *mutex_manager;
-  
-  gboolean is_output;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *channel_mutex;
-
-  auto void ags_channel_reset_recycling_context(GList *recall_id, AgsRecycling *recycling);
-  auto void ags_channel_recursive_reset_recycling_context_up(AgsChannel *channel);
-  auto void ags_channel_recursive_reset_recycling_context_down_input(AgsChannel *channel);
-  auto void ags_channel_recursive_reset_recycling_context_down_output(AgsChannel *channel);
-
-  void ags_channel_reset_recycling_context(GList *recall_id, AgsRecycling *recycling){
-    while(recall_id != NULL){
-      if(AGS_RECALL_ID(recall_id->data)->recycling_context == old_recycling_context){
-	g_object_set(recall_id->data,
-		     "recycling", recycling,
-		     "recycling-context", recycling_context,
-		     NULL);
-      }
-      
-      recall_id = recall_id->next;
-    }
-  }
-
-  void ags_channel_recursive_reset_recycling_context_up(AgsChannel *channel){
-    AgsAudio *audio;
-    AgsChannel *current, *output;
-
-    GList *recall_id;
-    
-    guint flags;
-    guint audio_channel, line;
-    gboolean is_output;
-
-    pthread_mutex_t *audio_mutex;
-    pthread_mutex_t *channel_mutex;
-    pthread_mutex_t *current_mutex;
-    
-    if(channel == NULL){
-      return;
-    }
-
-    current = channel;
-
-    /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
-
-    current_mutex = 
-      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) channel);
-  
-    pthread_mutex_unlock(application_mutex);
-
-    /* get some fields */
-    pthread_mutex_lock(channel_mutex);
-    
-    audio_channel = channel->audio_channel;
-    line = channel->line;
-
-    audio = (AgsAudio *) channel->audio;
-
-    pthread_mutex_unlock(channel_mutex);
-
-    /*  */
-    is_output = AGS_IS_OUTPUT(channel);
-
-    if(is_output){
-      /* get audio mutex */
-      pthread_mutex_lock(application_mutex);
-  
-      audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) audio);
-  
-      pthread_mutex_unlock(application_mutex);
-
-      /* prepare jump and reset recycling context */
-      pthread_mutex_lock(audio_mutex);
-        
-      flags = audio->flags;
-      
-      ags_channel_reset_recycling_context(audio->recall_id,
-					  channel->first_recycling);
-
-      pthread_mutex_unlock(audio_mutex);
-      
-      goto ags_channel_recursive_reset_recycling_context_up_OUTPUT;
-    }
-
-    /* reset current channel */
-    while(current != NULL){
-      /* get some fields and reset recycling context */
-      pthread_mutex_lock(current_mutex);
-
-      audio = (AgsAudio *) current->audio;
-
-      audio_channel = current->audio_channel;
-      line = current->line;
-      
-      ags_channel_reset_recycling_context(current->recall_id,
-					  current->first_recycling);
-
-      pthread_mutex_unlock(current_mutex);
-
-      /* get audio mutex */
-      pthread_mutex_lock(application_mutex);
-  
-      audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) audio);
-  
-      pthread_mutex_unlock(application_mutex);
-
-      /* reset recycling container */
-      pthread_mutex_lock(audio_mutex);
-
-      flags = audio->flags;
-      output = audio->output;
-      
-      ags_channel_reset_recycling_context(audio->recall_id,
-					  current->first_recycling);
-
-      pthread_mutex_unlock(audio_mutex);
-
-      /* check break */
-      if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (flags)) != 0){
-	break;
-      }
-
-      /* get current */
-      current = ags_channel_nth(output,
-				((AGS_AUDIO_ASYNC & (flags)) ? audio_channel: line));
-      
-    ags_channel_recursive_reset_recycling_context_up_OUTPUT:
-
-      /* get current mutex */
-      pthread_mutex_lock(application_mutex);
-  
-      current_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) current);
-  
-      pthread_mutex_unlock(application_mutex);
-
-      /* reset recycling container */
-      pthread_mutex_lock(current_mutex);
-
-      ags_channel_reset_recycling_context(current->recall_id,
-					  current->first_recycling);
-
-      /* iterate */
-      current = current->link;
-
-      pthread_mutex_unlock(current_mutex);
-    }
-
-    /* update all in recycling context */
-    if(AGS_IS_INPUT(current) &&
-       (AGS_AUDIO_ASYNC & (flags)) != 0){
-      AgsChannel *input, *link;
-
-      pthread_mutex_t *audio_mutex;
-      pthread_mutex_t *input_mutex;
-
-      /* get audio mutex */
-      pthread_mutex_lock(application_mutex);
-  
-      audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) audio);
-  
-      pthread_mutex_unlock(application_mutex);
-
-      /* get some fields */
-      pthread_mutex_lock(audio_mutex);
-      
-      input = audio->input;
-
-      pthread_mutex_unlock(audio_mutex);
-
-      /* get input */
-      input = ags_channel_nth(input,
-			      audio_channel);
-
-      while(input != NULL){
-	/* get input mutex */
-	pthread_mutex_lock(application_mutex);
-  
-	input_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) input);
-  
-	pthread_mutex_unlock(application_mutex);
-	
-	if(input != current){
-	  pthread_mutex_lock(input_mutex);
-	  
-	  link = input->link;
-	  ags_channel_reset_recycling_context(input->recall_id,
-					      input->first_recycling);
-
-	  pthread_mutex_unlock(input_mutex);
-
-	  /* traverse the tree */
-	  ags_channel_recursive_reset_recycling_context_down_output(link);
-	}
-
-	/* iterate */
-	pthread_mutex_lock(input_mutex);
-
-	input = input->next_pad;
-
-	pthread_mutex_unlock(input_mutex);
-      }
-    }
-  }
-
-  void ags_channel_recursive_reset_recycling_context_down_input(AgsChannel *output){
-    AgsAudio *audio;
-    AgsChannel *input;
-    AgsChannel *link;
-
-    guint flags;
-    guint audio_channel, line;
-
-    pthread_mutex_t *audio_mutex;
-    pthread_mutex_t *output_mutex;
-    pthread_mutex_t *input_mutex;
-    
-    if(output == NULL){
-      return;
-    }
-
-    /* get output mutex */
-    pthread_mutex_lock(application_mutex);
-  
-    output_mutex = ags_mutex_manager_lookup(mutex_manager,
-					    (GObject *) output);
-  
-    pthread_mutex_unlock(application_mutex);
-
-    /* get audio and defaults */
-    pthread_mutex_lock(output_mutex);
-    
-    audio = (AgsAudio *) output->audio;
-
-    audio_channel = output->audio_channel;
-    line = output->line;
-
-    pthread_mutex_unlock(output_mutex);
-
-    /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
-  
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) audio);
-  
-    pthread_mutex_unlock(application_mutex);
-
-    /* reset recycling container */
-    pthread_mutex_lock(audio_mutex);
-
-    input = audio->input;
-
-    flags = audio->flags;
-
-    pthread_mutex_unlock(audio_mutex);
-
-    if((AGS_AUDIO_ASYNC & (flags)) != 0){
-      input = ags_channel_nth(input,
-			      audio_channel);
-
-      while(input != NULL){
-	/* get input mutex */
-	pthread_mutex_lock(application_mutex);
-  
-	input_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) input);
-  
-	pthread_mutex_unlock(application_mutex);
-	
-	/* reset recycling container */
-	pthread_mutex_lock(input_mutex);
-	
-	link = input->link;
-	
-	ags_channel_reset_recycling_context(input->recall_id,
-					    input->first_recycling);
-
-	pthread_mutex_unlock(input_mutex);
-
-	ags_channel_recursive_reset_recycling_context_down_output(link);
-
-	/* iterate */
-	pthread_mutex_lock(input_mutex);
-
-	input = input->next_pad;
-
-	pthread_mutex_unlock(input_mutex);
-      }
-    }else{
-      input = ags_channel_nth(input,
-			      line);
-
-      /* get input mutex */
-      pthread_mutex_lock(application_mutex);
-  
-      input_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) input);
-  
-      pthread_mutex_unlock(application_mutex);
-
-      /* reset recycling container */
-      pthread_mutex_lock(input_mutex);
-
-      link = input->link;
-      
-      ags_channel_reset_recycling_context(input->recall_id,
-					  input->first_recycling);
-
-      pthread_mutex_unlock(input_mutex);
-
-      ags_channel_recursive_reset_recycling_context_down_output(link);
-    }
-  }
-
-  void ags_channel_recursive_reset_recycling_context_down_output(AgsChannel *output){
-    AgsAudio *audio;
-
-    guint flags;
-    
-    pthread_mutex_t *audio_mutex;
-    pthread_mutex_t *output_mutex;
-
-    if(output == NULL){
-      return;
-    }
-
-    /* get output mutex */
-    pthread_mutex_lock(application_mutex);
-  
-    output_mutex = ags_mutex_manager_lookup(mutex_manager,
-					    (GObject *) output);
-  
-    pthread_mutex_unlock(application_mutex);
-
-    /* get audio and defaults */
-    pthread_mutex_lock(output_mutex);
-    
-    audio = (AgsAudio *) output->audio;
-
-    pthread_mutex_unlock(output_mutex);
-
-    /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
-  
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) audio);
-  
-    pthread_mutex_unlock(application_mutex);
-
-    /* check if still reset recycling container */
-    pthread_mutex_lock(audio_mutex);
-
-    flags = audio->flags;
-
-    pthread_mutex_unlock(audio_mutex);
-
-    if(output != channel &&
-       (AGS_AUDIO_OUTPUT_HAS_RECYCLING & (flags)) != 0){
-      return;
-    }
-
-    /* reset recycling container - output */
-    pthread_mutex_lock(output_mutex);
-
-    ags_channel_reset_recycling_context(output->recall_id,
-					output->first_recycling);
-
-    pthread_mutex_unlock(output_mutex);
-
-    /* reset recycling container - audio */
-    pthread_mutex_lock(audio_mutex);
-
-    ags_channel_reset_recycling_context(audio->recall_id,
-					output->first_recycling);
-
-    pthread_mutex_unlock(audio_mutex);
-
-    /* traverse the tree */
-    ags_channel_recursive_reset_recycling_context_down_input(output);
-  }
-
-  /* entry point */
-  if(!AGS_IS_CHANNEL(channel)){
-    return;
-  }
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* traverse the tree */
-  is_output = AGS_IS_OUTPUT(channel);
-
-  /* get channel mutex */
-  pthread_mutex_lock(application_mutex);
-  
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* get some fields */
-  pthread_mutex_lock(channel_mutex);
-
-  audio = channel->audio;
-  
-  link = channel->link;
-  
-  pthread_mutex_unlock(channel_mutex);
-
-  /* recursive reset */
-  if(!is_output){
-    ags_channel_recursive_reset_recycling_context_down_output(link);
-    ags_channel_recursive_reset_recycling_context_up(channel);
-  }else{
-    ags_channel_recursive_reset_recycling_context_down_output(channel);
-    ags_channel_recursive_reset_recycling_context_up(link);
-  }
-
-  ags_audio_add_recycling_context(audio,
-				  (GObject *) recycling_context);
-
-  ags_audio_remove_recycling_context(audio,
-				     (GObject *) old_recycling_context);
-}
-
-/**
  * ags_channel_get_level:
  * @channel: the #AgsChannel
  * 
@@ -9592,7 +9140,7 @@ ags_channel_recursive_reset_recycling_context(AgsChannel *channel,
  * 
  * Returns: the level of @channel as #AgsChannel or %NULL if no parent recycling.
  * 
- * Since: 1.2.7
+ * Since: 2.0.0
  */
 AgsChannel*
 ags_channel_get_level(AgsChannel *channel)
@@ -9600,19 +9148,13 @@ ags_channel_get_level(AgsChannel *channel)
   AgsAudio *audio;
   AgsChannel *output;
   AgsChannel *level;
-  
-  AgsMutexManager *mutex_manager;
 
   guint audio_flags;
   guint audio_channel;
   guint input_line;
 	
   pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *level_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* check above recycling */
   level = channel;
@@ -9623,12 +9165,11 @@ ags_channel_get_level(AgsChannel *channel)
 	
   while(level != NULL){
     /* get level mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_channel_get_class_mutex());
 
-    level_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) level);
+    level_mutex = level->obj_mutex;
   
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
     /* get some fields */
     pthread_mutex_lock(level_mutex);
@@ -9642,12 +9183,11 @@ ags_channel_get_level(AgsChannel *channel)
     pthread_mutex_unlock(level_mutex);
 
     /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_audio_get_class_mutex());
 
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) audio);
+    audio_mutex = audio->obj_mutex;
   
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_audio_get_class_mutex());
 
     /* get some fields */
     pthread_mutex_lock(audio_mutex);
@@ -9676,12 +9216,11 @@ ags_channel_get_level(AgsChannel *channel)
 
   ags_channel_get_level_ITERATE:
     /* get level mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_channel_get_class_mutex());
 
-    level_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) level);
+    level_mutex = level->obj_mutex;
   
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
     /* iterate */
     pthread_mutex_lock(level_mutex);
@@ -9697,8 +9236,9 @@ ags_channel_get_level(AgsChannel *channel)
 /**
  * ags_channel_recursive_set_property:
  * @channel: the #AgsChannel
- * @parameter: the #GParameter-struct array containing properties
- * @n_params: the length of @parameter array
+ * @n_params: the count of paramter name and value pairs
+ * @parameter_name: a string vector containing parameter names
+ * @value: the value array
  *
  * Recursive set property for #AgsChannel.
  *
@@ -9706,48 +9246,54 @@ ags_channel_get_level(AgsChannel *channel)
  */
 void
 ags_channel_recursive_set_property(AgsChannel *channel,
-				   GParameter *parameter, gint n_params)
+				   gint n_params,
+				   gchar **parameter_name, GValue *value)
 {
   AgsChannel *link;
 
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *link_mutex;
   
-  auto void ags_channel_set_property(AgsChannel *channel,
-				     GParameter *parameter, gint n_params);
+  auto void ags_channel_recursive_set_property_setv(AgsChannel *channel,
+						    gint n_params,
+						    gchar **parameter_name, GValue *value);
   auto void ags_channel_recursive_set_property_down(AgsChannel *channel,
-						    GParameter *parameter, gint n_params);
+						    gint n_params,
+						    gchar **parameter_name, GValue *value);
   auto void ags_channel_recursive_set_property_down_input(AgsChannel *channel,
-							  GParameter *parameter, gint n_params);
+							  gint n_params,
+							  gchar **parameter_name, GValue *value);
 
   void ags_channel_set_property(AgsChannel *channel,
-				GParameter *parameter, gint n_params){
+				gint n_params,
+				gchar **parameter_name, GValue *value){
     guint i;
 
     for(i = 0; i < n_params; i++){
-      g_object_set_property((GObject *) channel,
-			    parameter[i].name, &(parameter[i].value));
+      g_object_setv((GObject *) channel,
+		    n_params,
+		    parameter_name, value);
     }
   }
   
   void ags_channel_recursive_set_property_down(AgsChannel *channel,
-					       GParameter *parameter, gint n_params){
+					       gint n_params,
+					       gchar **parameter_name, GValue *value){
     if(channel == NULL){
       return;
     }
 
-    ags_channel_set_property(channel,
-			     parameter, n_params);
+    ags_channel_recursive_set_property_setv(channel,
+					    n_params,
+					    parameter_name, value);
     
     ags_channel_recursive_set_property_down_input(channel,
 						  parameter, n_params);
   }
     
   void ags_channel_recursive_set_property_down_input(AgsChannel *channel,
-						     GParameter *parameter, gint n_params){
+						     gint n_params,
+						     gchar **parameter_name, GValue *value){
     AgsAudio *audio;
     AgsChannel *input;
     AgsChannel *link;
@@ -9763,12 +9309,11 @@ ags_channel_recursive_set_property(AgsChannel *channel,
     }
 
     /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_channel_get_class_mutex());
 
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
+    channel_mutex = channel->obj_mutex;
 
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
     
     /* get some fields */
     pthread_mutex_lock(channel_mutex);
@@ -9784,12 +9329,11 @@ ags_channel_recursive_set_property(AgsChannel *channel,
     }
 
     /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_audio_get_class_mutex());
 
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) audio);
+    audio_mutex = audio->obj_mutex;
 
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_audio_get_class_mutex());
 
     /* get some fields */
     pthread_mutex_lock(channel_mutex);
@@ -9804,12 +9348,11 @@ ags_channel_recursive_set_property(AgsChannel *channel,
 
     while(input != NULL){
       /* get input mutex */
-      pthread_mutex_lock(application_mutex);
+      pthread_mutex_lock(ags_channel_get_class_mutex());
 
-      input_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) input);
+      input_mutex = input->obj_mutex;
 
-      pthread_mutex_unlock(application_mutex);
+      pthread_mutex_unlock(ags_channel_get_class_mutex());
 
       /* get some fields */
       pthread_mutex_lock(input_mutex);
@@ -9819,11 +9362,13 @@ ags_channel_recursive_set_property(AgsChannel *channel,
       pthread_mutex_unlock(input_mutex);
       
       /* set property */
-      ags_channel_set_property(input,
-			       parameter, n_params);
+      ags_channel_recursive_set_property_setv(input,
+					      n_params,
+					      parameter_name, value);
       
       ags_channel_recursive_set_property_down(link,
-					      parameter, n_params);
+					      n_params,
+					      parameter_name, value);
 
       /* iterate */
       pthread_mutex_lock(input_mutex);
@@ -9834,20 +9379,16 @@ ags_channel_recursive_set_property(AgsChannel *channel,
     }
   }
   
-  if(channel == NULL){
+  if(!AGS_IS_CHANNEL(channel)){
     return;
   }
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   /* get channel mutex */
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_lock(ags_channel_get_class_mutex());
 
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
+  channel_mutex = channel->obj_mutex;
 
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
 
   /* get some fields */
   pthread_mutex_lock(channel_mutex);
@@ -9857,14 +9398,17 @@ ags_channel_recursive_set_property(AgsChannel *channel,
   pthread_mutex_unlock(channel_mutex);
     
   if(AGS_IS_INPUT(channel)){
-    ags_channel_set_property(channel,
-			     parameter, n_params);
+    ags_channel_recursive_set_property_setv(channel,
+					    n_params,
+					    parameter_name, value);
     
     ags_channel_recursive_set_property_down(link,
-					    parameter, n_params);
+					    n_params,
+					    parameter_name, value);
   }else{
     ags_channel_recursive_set_property_down(channel,
-					    parameter, n_params);
+					    n_params,
+					    parameter_name, value);
   }
 }
 
