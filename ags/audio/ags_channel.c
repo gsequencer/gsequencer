@@ -3400,7 +3400,7 @@ ags_channel_next_with_recycling(AgsChannel *channel)
  * @link: an other #AgsChannel to link with
  * @error: you may retrieve a AGS_CHANNEL_ERROR_LOOP_IN_LINK error
  *
- * Change the linking of #AgsChannel objects. Sets link, calls ags_channel_set_recycling()
+ * Change the linking of #AgsChannel objects. Sets link, calls ags_channel_reset_recycling()
  * and ags_channel_recursive_reset_recall_ids(). Further it does loop detection and makes
  * your machine running. Thus it adds #AgsRecallID. Invoke only by a task.
  *
@@ -4260,7 +4260,7 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 }
 
 /**
- * ags_channel_set_recycling:
+ * ags_channel_reset_recycling:
  * @channel: the channel to reset
  * @first_recycling: the recycling to set for channel->first_recycling
  * @last_recycling: the recycling to set for channel->last_recycling
@@ -4283,11 +4283,8 @@ ags_channel_reset_recycling(AgsChannel *channel,
   AgsRecycling *changed_old_first_recycling, *changed_old_last_recycling;
   AgsRecycling *nth_recycling, *next_recycling, *stop_recycling;
   AgsRecycling *next_first_recycling, *prev_last_recycling;
-  AgsRecyclingContext *recycling_context, *old_recycling_context;
-  AgsRecallID *current_recall_id;
 
   guint audio_flags;
-  guint flags;
   guint complete_level_first, complete_level_last;
   gboolean is_output;
   gboolean replace_first, replace_last;
@@ -4301,15 +4298,15 @@ ags_channel_reset_recycling(AgsChannel *channel,
   pthread_mutex_t *recycling_mutex;
   pthread_mutex_t *nth_recycling_mutex;
    
-  auto gboolean ags_channel_set_recycling_recursive_input(AgsChannel *input);
-  auto void ags_channel_set_recycling_recursive_output(AgsChannel *output);
-  auto void ags_channel_set_recycling_recursive(AgsChannel *input);
+  auto gboolean ags_channel_reset_recycling_recursive_input(AgsChannel *input);
+  auto void ags_channel_reset_recycling_recursive_output(AgsChannel *output);
+  auto void ags_channel_reset_recycling_recursive(AgsChannel *input);
 
-  auto void ags_channel_set_recycling_emit_changed_input(AgsChannel *input);
-  auto void ags_channel_set_recycling_emit_changed_output(AgsChannel *output);
-  auto void ags_channel_set_recycling_emit_changed(AgsChannel *input);
+  auto void ags_channel_reset_recycling_emit_changed_input(AgsChannel *input);
+  auto void ags_channel_reset_recycling_emit_changed_output(AgsChannel *output);
+  auto void ags_channel_reset_recycling_emit_changed(AgsChannel *input);
   
-  gboolean ags_channel_set_recycling_recursive_input(AgsChannel *input){
+  gboolean ags_channel_reset_recycling_recursive_input(AgsChannel *input){
     AgsAudio *audio;
     AgsChannel *nth_channel_prev, *nth_channel_next;
 
@@ -4320,19 +4317,21 @@ ags_channel_reset_recycling(AgsChannel *channel,
     pthread_mutex_t *next_channel_mutex;
     pthread_mutex_t *prev_channel_mutex;
 
+    if(input == NULL){
+      return(TRUE);
+    }
+    
     /* get input mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_channel_get_class_mutex());
   
-    input_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) input);
+    input_mutex = input->obj_mutex;
   
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
     /* check done */
     pthread_mutex_lock(input_mutex);
     
-    if(input == NULL ||
-       (input->first_recycling == replace_with_first_recycling &&
+    if((input->first_recycling == replace_with_first_recycling &&
 	input->last_recycling == replace_with_last_recycling)){
       pthread_mutex_unlock(input_mutex);
       
@@ -4354,12 +4353,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
     pthread_mutex_unlock(input_mutex);
 
     /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_audio_get_class_mutex());
   
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) audio);
+    audio_mutex = audio->obj_mutex;
   
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_audio_get_class_mutex());
 
     /* audio flags */
     pthread_mutex_lock(audio_mutex);
@@ -4420,12 +4418,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	if(next_channel == NULL){
 	  if(replace_with_last_recycling == NULL){
 	    /* get prev channel mutex */
-	    pthread_mutex_lock(application_mutex);
+	    pthread_mutex_lock(ags_channel_get_class_mutex());
   
-	    prev_channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-							  (GObject *) prev_channel);
+	    prev_channel_mutex = prev_channel->obj_mutex;
   
-	    pthread_mutex_unlock(application_mutex);
+	    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
 	    /* prev channel */
 	    pthread_mutex_lock(prev_channel_mutex);
@@ -4439,14 +4436,12 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	  }
 	}else{
 	  /* get prev and next channel mutex */
-	  pthread_mutex_lock(application_mutex);
+	  pthread_mutex_lock(ags_channel_get_class_mutex());
   
-	  prev_channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-							(GObject *) prev_channel);
-	  next_channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-							(GObject *) next_channel);
+	  prev_channel_mutex = prev_channel->obj_mutex;
+	  next_channel_mutex = next_channel->obj_mutex;
   
-	  pthread_mutex_unlock(application_mutex);
+	  pthread_mutex_unlock(ags_channel_get_class_mutex());
 	  
 	  /* prev channel */
 	  pthread_mutex_lock(prev_channel_mutex);
@@ -4466,12 +4461,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	if(next_channel != NULL){
 	  if(replace_with_first_recycling == NULL){
 	    /* get prev and next channel mutex */
-	    pthread_mutex_lock(application_mutex);
+	    pthread_mutex_lock(ags_channel_get_class_mutex());
   
-	    next_channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-							  (GObject *) next_channel);
+	    next_channel_mutex = next_channel->obj_mutex;
   
-	    pthread_mutex_unlock(application_mutex);
+	    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
 	    /* next channel */
 	    pthread_mutex_lock(next_channel_mutex);
@@ -4494,14 +4488,14 @@ ags_channel_reset_recycling(AgsChannel *channel,
     }
   }
   
-  void ags_channel_set_recycling_recursive_output(AgsChannel *output){
+  void ags_channel_reset_recycling_recursive_output(AgsChannel *output){
     AgsAudio *audio;
     AgsChannel *input;
     AgsChannel *link;
     AgsChannel *nth_channel_prev, *nth_channel_next;
     AgsRecycling *first_recycling, *last_recycling;
 
-    guint flags;
+    guint audio_flags;
     guint audio_channel;
 
     pthread_mutex_t *audio_mutex;
@@ -4512,35 +4506,33 @@ ags_channel_reset_recycling(AgsChannel *channel,
     }
 
     /* get output mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_channel_get_class_mutex());
   
-    output_mutex = ags_mutex_manager_lookup(mutex_manager,
-					    (GObject *) output);
+    output_mutex = output->obj_mutex;
   
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
     /* get audio and audio channel */
     pthread_mutex_lock(output_mutex);
 
-    audio = AGS_AUDIO(output->audio);
+    audio = output->audio;
 
     audio_channel = output->audio_channel;
 
     pthread_mutex_unlock(output_mutex);
 
     /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_audio_get_class_mutex());
   
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) audio);
+    audio_mutex = audio->obj_mutex;
   
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_audio_get_class_mutex());
 
     /* get input and flags */    
     pthread_mutex_lock(audio_mutex);
 
     input = audio->input;
-    flags = audio->flags;
+    audio_flags = audio->flags;
 
     pthread_mutex_unlock(audio_mutex);
 
@@ -4577,15 +4569,15 @@ ags_channel_reset_recycling(AgsChannel *channel,
     pthread_mutex_unlock(output_mutex);
     
     if(link != NULL){
-      ags_channel_set_recycling_recursive(link);
+      ags_channel_reset_recycling_recursive(link);
     }
   }
 
-  void ags_channel_set_recycling_recursive(AgsChannel *input){
+  void ags_channel_reset_recycling_recursive(AgsChannel *input){
     AgsAudio *audio;
     AgsChannel *output;
 
-    guint flags;
+    guint audio_flags;
     guint audio_channel, line;
     gboolean completed;
 
@@ -4597,12 +4589,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
     }
 
     /* get input mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_channel_get_class_mutex());
   
-    input_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) input);
+    input_mutex = input->obj_mutex;
   
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
     /* get audio and audio channel */    
     pthread_mutex_lock(input_mutex);
@@ -4615,41 +4606,40 @@ ags_channel_reset_recycling(AgsChannel *channel,
     pthread_mutex_unlock(input_mutex);
 
     /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_audio_get_class_mutex());
   
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) audio);
+    audio_mutex = audio->obj_mutex;
   
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_audio_get_class_mutex());
 
     /* get output */
     pthread_mutex_lock(audio_mutex);
 
     output = audio->output;
-    flags = audio->flags;
+    audio_flags = audio->flags;
         
     pthread_mutex_unlock(audio_mutex);
 
     /* AgsInput */
-    completed = ags_channel_set_recycling_recursive_input(input);
+    completed = ags_channel_reset_recycling_recursive_input(input);
 
     if(completed){
       return;
     }
     
     /* AgsOutput */
-    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (flags)) == 0){
-      if((AGS_AUDIO_ASYNC & (flags)) != 0){
+    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio_flags)) == 0){
+      if((AGS_AUDIO_ASYNC & (audio_flags)) != 0){
 	output = ags_channel_nth(output, audio_channel);
       }else{
 	output = ags_channel_nth(output, line);
       }
       
-      ags_channel_set_recycling_recursive_output(output);
+      ags_channel_reset_recycling_recursive_output(output);
     }
   }
   
-  void ags_channel_set_recycling_emit_changed_input(AgsChannel *input){
+  void ags_channel_reset_recycling_emit_changed_input(AgsChannel *input){
     AgsRecycling *input_first_recycling, *input_last_recycling;
     
     pthread_mutex_t *input_mutex;
@@ -4659,12 +4649,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
     }
 
     /* get input mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_channel_get_class_mutex());
   
-    input_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) input);
+    input_mutex = input->obj_mutex;
   
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
     /* get current recycling */
     pthread_mutex_lock(input_mutex);
@@ -4684,7 +4673,7 @@ ags_channel_reset_recycling(AgsChannel *channel,
     }
   }
 
-  void ags_channel_set_recycling_emit_changed_output(AgsChannel *output){
+  void ags_channel_reset_recycling_emit_changed_output(AgsChannel *output){
     AgsChannel *link;
     AgsRecycling *output_first_recycling, *output_last_recycling;
     
@@ -4695,12 +4684,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
     }
 
     /* get output mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_channel_get_class_mutex());
   
-    output_mutex = ags_mutex_manager_lookup(mutex_manager,
-					    (GObject *) output);
+    output_mutex = output->obj_mutex;
   
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
     /* get current recycling */
     pthread_mutex_lock(output_mutex);
@@ -4722,17 +4710,18 @@ ags_channel_reset_recycling(AgsChannel *channel,
     }
     
     if(link != NULL){
-      ags_channel_set_recycling_emit_changed(link);
+      ags_channel_reset_recycling_emit_changed(link);
     }
   }
 
-  void ags_channel_set_recycling_emit_changed(AgsChannel *input){
+  void ags_channel_reset_recycling_emit_changed(AgsChannel *input){
     AgsAudio *audio;
     AgsChannel *output;
 
-    guint flags;
+    guint audio_flags;
     guint audio_channel, line;
 
+    pthread_mutex_t *audio_mutex;
     pthread_mutex_t *input_mutex;
 
     if(input == NULL){
@@ -4740,12 +4729,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
     }
 
     /* get input mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_channel_get_class_mutex());
   
-    input_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) input);
+    input_mutex = input->obj_mutex;
   
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
     /* get audio and audio channel */
     pthread_mutex_lock(input_mutex);
@@ -4758,58 +4746,53 @@ ags_channel_reset_recycling(AgsChannel *channel,
     pthread_mutex_unlock(input_mutex);
 
     /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_audio_get_class_mutex());
   
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) audio);
+    audio_mutex = audio->obj_mutex;
   
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_audio_get_class_mutex());
 
     /* get output */
     pthread_mutex_lock(audio_mutex);
 
     output = audio->output;
-    flags = audio->flags;
+    audio_flags = audio->flags;
 
     pthread_mutex_unlock(audio_mutex);
     
     /* AgsInput */
-    ags_channel_set_recycling_emit_changed_input(input);
+    ags_channel_reset_recycling_emit_changed_input(input);
 
     /* higher level */
-    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (flags)) == 0){
-      if((AGS_AUDIO_ASYNC & (flags)) != 0){
+    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio_flags)) == 0){
+      if((AGS_AUDIO_ASYNC & (audio_flags)) != 0){
 	output = ags_channel_nth(output, audio_channel);
       }else{
 	output = ags_channel_nth(output, line);
       }
       
-      ags_channel_set_recycling_emit_changed_output(output);
+      ags_channel_reset_recycling_emit_changed_output(output);
     }
 
     return;
   }
 
   /* entry point */
-  if(channel == NULL){
+  if(!AGS_IS_CHANNEL(channel)){
     return;
   }
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   /* get channel mutex */
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_lock(ags_channel_get_class_mutex());
   
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
+  channel_mutex = channel->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
 
   /*  */
   pthread_mutex_lock(channel_mutex);
 
-  audio = AGS_AUDIO(channel->audio);
+  audio = channel->audio;
   
   pthread_mutex_unlock(channel_mutex);
   
@@ -4825,10 +4808,6 @@ ags_channel_reset_recycling(AgsChannel *channel,
   /* set old recycling */
   old_first_recycling = channel->first_recycling;
   old_last_recycling = channel->last_recycling;
-
-  if(!update && old_first_recycling == first_recycling && old_last_recycling == last_recycling){
-    return;
-  }
 
   /* initialising */
   found_prev = NULL;
@@ -4858,26 +4837,18 @@ ags_channel_reset_recycling(AgsChannel *channel,
   change_old_last = TRUE;
 
   if((old_first_recycling == first_recycling)){
-    if(!update){
-      if(old_last_recycling == last_recycling){
-	return;
-      }
-
-      replace_first = FALSE;
-    }
+    replace_first = FALSE;
   }
 
   if((old_last_recycling == last_recycling)){
-    if(!update){
-      replace_last = FALSE;
-    }
+    replace_last = FALSE;
   }
 
   /* set recycling - update AgsChannel */
   if(AGS_IS_INPUT(channel)){
-    ags_channel_set_recycling_recursive(channel);    
+    ags_channel_reset_recycling_recursive(channel);    
   }else{
-    ags_channel_set_recycling_recursive_output(channel);
+    ags_channel_reset_recycling_recursive_output(channel);
   }
 
   pthread_mutex_lock(channel_mutex);
@@ -4888,12 +4859,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
   pthread_mutex_unlock(channel_mutex);
 
   /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_lock(ags_audio_get_class_mutex());
   
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
+  audio_mutex = audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* audio flags */
   pthread_mutex_lock(audio_mutex);
@@ -4911,12 +4881,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
     if(first_recycling != NULL){
       if(prev_channel != NULL){
 	/* get prev channel mutex */
-	pthread_mutex_lock(application_mutex);
+	pthread_mutex_lock(ags_channel_get_class_mutex());
   
-	nth_channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						     (GObject *) prev_channel);
+	nth_channel_mutex = prev_channel->obj_mutex;
   
-	pthread_mutex_unlock(application_mutex);
+	pthread_mutex_unlock(ags_channel_get_class_mutex());
 
 	/* get prev channel last recycling */
 	pthread_mutex_lock(nth_channel_mutex);
@@ -4927,12 +4896,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	
 	if(prev_last_recycling != NULL){
 	  /* get nth recycling mutex */
-	  pthread_mutex_lock(application_mutex);
+	  pthread_mutex_lock(ags_recycling_get_class_mutex());
   
-	  nth_recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-							 (GObject *) prev_last_recycling);
+	  nth_recycling_mutex = prev_last_recycling->obj_mutex;
   
-	  pthread_mutex_unlock(application_mutex);
+	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	  /* prev channel last recycling next */
 	  pthread_mutex_lock(nth_recycling_mutex);
@@ -4942,12 +4910,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	  pthread_mutex_unlock(nth_recycling_mutex);
 
 	  /* get nth recycling mutex */
-	  pthread_mutex_lock(application_mutex);
+	  pthread_mutex_lock(ags_recycling_get_class_mutex());
   
-	  nth_recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-							 (GObject *) first_recycling);
+	  nth_recycling_mutex = first_recycling->obj_mutex;
   
-	  pthread_mutex_unlock(application_mutex);
+	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	  /* first recycling prev */	  
 	  pthread_mutex_lock(nth_recycling_mutex);
@@ -4957,12 +4924,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	  pthread_mutex_unlock(nth_recycling_mutex);
 	}else{
 	  /* get nth recycling mutex */
-	  pthread_mutex_lock(application_mutex);
+	  pthread_mutex_lock(ags_recycling_get_class_mutex());
   
-	  nth_recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-							 (GObject *) first_recycling);
+	  nth_recycling_mutex = first_recycling->obj_mutex;
   
-	  pthread_mutex_unlock(application_mutex);
+	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	  /* first recycling prev */	  
 	  pthread_mutex_lock(nth_recycling_mutex);
@@ -4973,12 +4939,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	}
       }else{
 	/* get nth recycling mutex */
-	pthread_mutex_lock(application_mutex);
+	pthread_mutex_lock(ags_recycling_get_class_mutex());
   
-	nth_recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						       (GObject *) first_recycling);
+	nth_recycling_mutex = first_recycling->obj_mutex;
   
-	pthread_mutex_unlock(application_mutex);
+	pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	/* first recycling prev */	  
 	pthread_mutex_lock(nth_recycling_mutex);
@@ -4990,12 +4955,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
     
       if(next_channel != NULL){
 	/* get next channel mutex */
-	pthread_mutex_lock(application_mutex);
+	pthread_mutex_lock(ags_channel_get_class_mutex());
   
-	nth_channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						     (GObject *) next_channel);
+	nth_channel_mutex = next_channel->obj_mutex;
   
-	pthread_mutex_unlock(application_mutex);
+	pthread_mutex_unlock(ags_channel_get_class_mutex());
 	
 	/* get prev channel last recycling */
 	pthread_mutex_lock(nth_channel_mutex);
@@ -5006,12 +4970,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
 
 	if(next_first_recycling != NULL){
 	  /* get nth recycling mutex */
-	  pthread_mutex_lock(application_mutex);
+	  pthread_mutex_lock(ags_recycling_get_class_mutex());
   
-	  nth_recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-							 (GObject *) next_first_recycling);
+	  nth_recycling_mutex = next_first_recycling->obj_mutex;
   
-	  pthread_mutex_unlock(application_mutex);
+	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
 	  
 	  /* next channel first recycling next */
 	  pthread_mutex_lock(nth_recycling_mutex);
@@ -5021,12 +4984,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	  pthread_mutex_unlock(nth_recycling_mutex);
 	  
 	  /* get nth recycling mutex */
-	  pthread_mutex_lock(application_mutex);
+	  pthread_mutex_lock(ags_recycling_get_class_mutex());
   
-	  nth_recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-							 (GObject *) last_recycling);
+	  nth_recycling_mutex = last_recycling->obj_mutex;
   
-	  pthread_mutex_unlock(application_mutex);
+	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	  /* last recycling next */	  
 	  pthread_mutex_lock(nth_recycling_mutex);
@@ -5036,12 +4998,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	  pthread_mutex_unlock(nth_recycling_mutex);
 	}else{
 	  /* get nth recycling mutex */
-	  pthread_mutex_lock(application_mutex);
+	  pthread_mutex_lock(ags_recycling_get_class_mutex());
   
-	  nth_recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-							 (GObject *) last_recycling);
+	  nth_recycling_mutex = last_recycling->obj_mutex;
   
-	  pthread_mutex_unlock(application_mutex);
+	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	  /* last recycling next */	  
 	  pthread_mutex_lock(nth_recycling_mutex);
@@ -5052,12 +5013,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	}
       }else{
 	/* get nth recycling mutex */
-	pthread_mutex_lock(application_mutex);
+	pthread_mutex_lock(ags_recycling_get_class_mutex());
   
-	nth_recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						       (GObject *) last_recycling);
+	nth_recycling_mutex = last_recycling->obj_mutex;
   
-	pthread_mutex_unlock(application_mutex);
+	pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	/* last recycling next */	  
 	pthread_mutex_lock(nth_recycling_mutex);
@@ -5071,12 +5031,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
 
       if(prev_channel != NULL){
 	/* get prev channel mutex */
-	pthread_mutex_lock(application_mutex);
+	pthread_mutex_lock(ags_channel_get_class_mutex());
   
-	nth_channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						     (GObject *) prev_channel);
+	nth_channel_mutex = prev_channel->obj_mutex;
   
-	pthread_mutex_unlock(application_mutex);
+	pthread_mutex_unlock(ags_channel_get_class_mutex());
 
 	/*  */
 	pthread_mutex_lock(nth_channel_mutex);
@@ -5096,12 +5055,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
     
       if(next_channel != NULL){
 	/* get prev channel mutex */
-	pthread_mutex_lock(application_mutex);
+	pthread_mutex_lock(ags_channel_get_class_mutex());
   
-	nth_channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						     (GObject *) next_channel);
+	nth_channel_mutex = next_channel->obj_mutex;
   
-	pthread_mutex_unlock(application_mutex);
+	pthread_mutex_unlock(ags_channel_get_class_mutex());
 
 	/*  */
 	pthread_mutex_lock(nth_channel_mutex);
@@ -5124,12 +5082,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	  AgsRecycling *first_recycling, *last_recycling;
 
 	  /* get first recycling mutex */
-	  pthread_mutex_lock(application_mutex);
+	  pthread_mutex_lock(ags_channel_get_class_mutex());
   
-	  nth_channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						       (GObject *) next_channel);
+	  nth_channel_mutex = next_channel->obj_mutex;
   
-	  pthread_mutex_unlock(application_mutex);
+	  pthread_mutex_unlock(ags_channel_get_class_mutex());
 
 	  pthread_mutex_lock(nth_channel_mutex);
 
@@ -5138,12 +5095,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	  pthread_mutex_unlock(nth_channel_mutex);
 	  
 	  /* get last recycling mutex */
-	  pthread_mutex_lock(application_mutex);
+	  pthread_mutex_lock(ags_channel_get_class_mutex());
   
-	  nth_channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						       (GObject *) prev_channel);
+	  nth_channel_mutex = prev_channel->obj_mutex;
   
-	  pthread_mutex_unlock(application_mutex);
+	  pthread_mutex_unlock(ags_channel_get_class_mutex());
 	  
 	  pthread_mutex_lock(nth_channel_mutex);
 
@@ -5155,12 +5111,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	   * 
 	   */
 	  /* get nth recycling mutex */
-	  pthread_mutex_lock(application_mutex);
+	  pthread_mutex_lock(ags_recycling_get_class_mutex());
   
-	  nth_recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-							 (GObject *) next_first_recycling);
+	  nth_recycling_mutex = next_first_recycling->obj_mutex;
   
-	  pthread_mutex_unlock(application_mutex);
+	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	  /* next channel first recycling next */
 	  pthread_mutex_lock(nth_recycling_mutex);
@@ -5173,12 +5128,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	   * 
 	   */
 	  /* get nth recycling mutex */
-	  pthread_mutex_lock(application_mutex);
+	  pthread_mutex_lock(ags_recycling_get_class_mutex());
   
-	  nth_recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-							 (GObject *) prev_last_recycling);
+	  nth_recycling_mutex = prev_last_recycling->obj_mutex;
   
-	  pthread_mutex_unlock(application_mutex);
+	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	  /* prev channel last recycling next */
 	  pthread_mutex_lock(nth_recycling_mutex);
@@ -5188,12 +5142,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	  pthread_mutex_unlock(nth_recycling_mutex);
 	}else{
 	  /* get nth recycling mutex */
-	  pthread_mutex_lock(application_mutex);
+	  pthread_mutex_lock(ags_recycling_get_class_mutex());
   
-	  nth_recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-							 (GObject *) prev_last_recycling);
+	  nth_recycling_mutex = prev_last_recycling->obj_mutex;
   
-	  pthread_mutex_unlock(application_mutex);
+	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	  /* prev channel last recycling next */
 	  pthread_mutex_lock(nth_recycling_mutex);
@@ -5204,12 +5157,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	}
       }else if(link_prev){
 	/* get nth recycling mutex */
-	pthread_mutex_lock(application_mutex);
+	pthread_mutex_lock(ags_recycling_get_class_mutex());
   
-	nth_recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						       (GObject *) next_first_recycling);
+	nth_recycling_mutex = next_first_recycling->obj_mutex;
   
-	pthread_mutex_unlock(application_mutex);
+	pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	/* next channel first recycling next */
 	pthread_mutex_lock(nth_recycling_mutex);
@@ -5223,13 +5175,6 @@ ags_channel_reset_recycling(AgsChannel *channel,
 
   /* find and set parent */
   if(first_recycling != NULL){
-    AgsAudio *audio;
-    AgsChannel *output;
-
-    guint audio_channel, line;
-    
-    pthread_mutex_t *audio_mutex;
-    
     /* find parent */
     parent = NULL;
     
@@ -5245,13 +5190,21 @@ ags_channel_reset_recycling(AgsChannel *channel,
     
     while(current != NULL &&
 	  parent == NULL){
+      AgsAudio *audio;
+      AgsChannel *output;
+
+      guint audio_channel, line;
+    
+      pthread_mutex_t *audio_mutex;
+    
+      guint audio_flags;
+      
       /* get current mutex */
-      pthread_mutex_lock(application_mutex);
+      pthread_mutex_lock(ags_channel_get_class_mutex());
   
-      current_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) current);
+      current_mutex = current->obj_mutex;
   
-      pthread_mutex_unlock(application_mutex);
+      pthread_mutex_unlock(ags_channel_get_class_mutex());
       
       /* get audio */
       pthread_mutex_lock(current_mutex);
@@ -5264,12 +5217,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
       pthread_mutex_unlock(current_mutex);
 
       /* get audio mutex */
-      pthread_mutex_lock(application_mutex);
+      pthread_mutex_lock(ags_audio_get_class_mutex());
   
-      audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) audio);
+      audio_mutex = audio->obj_mutex;
   
-      pthread_mutex_unlock(application_mutex);
+      pthread_mutex_unlock(ags_audio_get_class_mutex());
 
       /* get nth */
       pthread_mutex_lock(audio_mutex);
@@ -5290,12 +5242,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
       }
 
       /* get current mutex */
-      pthread_mutex_lock(application_mutex);
+      pthread_mutex_lock(ags_channel_get_class_mutex());
   
-      current_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) current);
+      current_mutex = current->obj_mutex;
   
-      pthread_mutex_unlock(application_mutex);
+      pthread_mutex_unlock(ags_channel_get_class_mutex());
 
       /* check if parent found */
       if(current != NULL){
@@ -5319,12 +5270,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
       nth_recycling = first_recycling;
 
       /* get recycling mutex */
-      pthread_mutex_lock(application_mutex);
+      pthread_mutex_lock(ags_recycling_get_class_mutex());
   
-      recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) last_recycling);
+      recycling_mutex = last_recycling->obj_mutex;
   
-      pthread_mutex_unlock(application_mutex);
+      pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
       /*  */
       pthread_mutex_lock(recycling_mutex);
@@ -5337,12 +5287,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	nth_recycling = old_last_recycling;
 
 	/* get recycling mutex */
-	pthread_mutex_lock(application_mutex);
+	pthread_mutex_lock(ags_recycling_get_class_mutex());
   
-	recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						   (GObject *) last_recycling);
+	recycling_mutex = last_recycling->obj_mutex;
   
-	pthread_mutex_unlock(application_mutex);
+	pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	/*  */
 	pthread_mutex_lock(recycling_mutex);
@@ -5355,12 +5304,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
 
 	if(old_first_recycling != NULL){
 	  /* get recycling mutex */
-	  pthread_mutex_lock(application_mutex);
+	  pthread_mutex_lock(ags_recycling_get_class_mutex());
   
-	  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						     (GObject *) last_recycling);
+	  recycling_mutex = last_recycling->obj_mutex;
   
-	  pthread_mutex_unlock(application_mutex);
+	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	  /*  */
 	  pthread_mutex_lock(recycling_mutex);
@@ -5377,12 +5325,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
     /* parent - do it so */
     while(nth_recycling != stop_recycling){
       /* get nth recycling mutex */
-      pthread_mutex_lock(application_mutex);
+      pthread_mutex_lock(ags_recycling_get_class_mutex());
   
-      nth_recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						     (GObject *) nth_recycling);
+      nth_recycling_mutex = nth_recycling->obj_mutex;
   
-      pthread_mutex_unlock(application_mutex);
+      pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
       /* set parent and iterate */
       pthread_mutex_lock(nth_recycling_mutex);
@@ -5394,51 +5341,6 @@ ags_channel_reset_recycling(AgsChannel *channel,
       pthread_mutex_unlock(nth_recycling_mutex);
     }
   }
-
-  /* update recycling container */
-  pthread_mutex_lock(channel_mutex);
-
-  recall_id = channel->recall_id;
-
-  pthread_mutex_unlock(channel_mutex);
-    
-  while(recall_id != NULL){
-    AgsRecyclingContext *parent;
-    
-    /* check recycling context */
-    pthread_mutex_lock(audio_mutex);
-    
-    old_recycling_context = (AgsRecyclingContext *) AGS_RECALL_ID(recall_id->data)->recycling_context;
-    
-    pthread_mutex_unlock(audio_mutex);
-        
-    /* reset recycling context */
-    recycling_context = ags_recycling_context_reset_recycling(old_recycling_context,
-							      old_first_recycling, old_last_recycling,
-							      first_recycling, last_recycling);
-
-    /* add child */
-    pthread_mutex_lock(old_recycling_context->mutex);
-      
-    parent = old_recycling_context->parent;
-
-    pthread_mutex_unlock(old_recycling_context->mutex);
-
-    ags_recycling_context_add_child(parent,
-				    recycling_context);
-    
-    /* reset recycling context */
-    ags_channel_recursive_reset_recycling_context(channel,
-						  old_recycling_context,
-						  recycling_context);
-
-    /* iterate */
-    pthread_mutex_lock(channel_mutex);
-
-    recall_id = recall_id->next;
-
-    pthread_mutex_unlock(channel_mutex);
-  }
   
   /* emit changed */
   changed_old_first_recycling = NULL;
@@ -5447,20 +5349,24 @@ ags_channel_reset_recycling(AgsChannel *channel,
   is_output = AGS_IS_OUTPUT(channel);
 
   if(!is_output){
-    AgsChannel *output;
-
     if(old_first_recycling != NULL){
       changed_old_first_recycling = old_first_recycling;
       changed_old_last_recycling = old_last_recycling;
     }
     
-    ags_channel_set_recycling_emit_changed_input(channel);
+    ags_channel_reset_recycling_emit_changed_input(channel);
     
     if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio_flags)) == 0){
+      AgsChannel *output;
+
+      pthread_mutex_lock(audio_mutex);
+      
       output = audio->output;
 
+      pthread_mutex_unlock(audio_mutex);
+
       /* get matching output */
-      if((AGS_AUDIO_ASYNC & (flags)) != 0){
+      if((AGS_AUDIO_ASYNC & (audio_flags)) != 0){
 	guint audio_channel;
 	
 	pthread_mutex_lock(channel_mutex);
@@ -5472,7 +5378,7 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	output = ags_channel_nth(output, audio_channel);
       }else{
 	guint line;
-
+ 
 	pthread_mutex_lock(channel_mutex);
 
 	line = channel->line;
@@ -5483,10 +5389,10 @@ ags_channel_reset_recycling(AgsChannel *channel,
       }
 
       /* emit */
-      ags_channel_set_recycling_emit_changed_output(output);
+      ags_channel_reset_recycling_emit_changed_output(output);
     }
   }else{
-    ags_channel_set_recycling_emit_changed_output(channel);
+    ags_channel_reset_recycling_emit_changed_output(channel);
   }
 }
 
