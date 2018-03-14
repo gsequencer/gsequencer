@@ -88,15 +88,15 @@ pthread_mutex_t* ags_playback_get_class_mutex();
 /* get and set */
 void ags_playback_set_channel_thread(AgsPlayback *playback,
 				     AgsThread *thread,
-				     guint scope);
+				     gint sound_scope);
 AgsThread* ags_playback_get_channel_thread(AgsPlayback *playback,
-					   guint scope);
+					   gint sound_scope);
 
 void ags_playback_set_recall_id(AgsPlayback *playback,
 				AgsRecallID *recall_id,
-				guint scope);
+				gint sound_scope);
 AgsRecallID* ags_playback_get_recall_id(AgsPlayback *playback,
-					guint scope);
+					gint sound_scope);
 
 /* find */
 AgsPlayback* ags_playback_find_channel(GList *playback,

@@ -533,7 +533,7 @@ ags_playback_get_class_mutex()
  * ags_playback_set_channel_thread:
  * @playback: the #AgsPlayback
  * @thread: the #AgsChannelThread
- * @scope: the scope of the thread to set
+ * @sound_scope: the scope of the thread to set
  * 
  * Set channel thread of appropriate scope.
  * 
@@ -542,12 +542,12 @@ ags_playback_get_class_mutex()
 void
 ags_playback_set_channel_thread(AgsPlayback *playback,
 				AgsThread *thread,
-				guint scope)
+				gint sound_scope)
 {
   pthread_mutex_t *playback_mutex;
 
   if(!AGS_IS_PLAYBACK(playback) ||
-     scope >= AGS_SOUND_SCOPE_LAST){
+     sound_scope >= AGS_SOUND_SCOPE_LAST){
     return;
   }
 
@@ -561,13 +561,13 @@ ags_playback_set_channel_thread(AgsPlayback *playback,
   /* unset old */
   pthread_mutex_lock(playback_mutex);
 
-  if(playback->channel_thread[scope] != NULL){
+  if(playback->channel_thread[sound_scope] != NULL){
     if(ags_thread_is_running(playback->channel_thread[sound_scope])){
       ags_thread_stop(playback->channel_thread[sound_scope]);
     }
     
     g_object_run_dispose(playback->channel_thread[sound_scope]);
-    g_object_unref(playback->channel_thread[scope]);
+    g_object_unref(playback->channel_thread[sound_scope]);
   }
 
   /* set new */
@@ -575,7 +575,7 @@ ags_playback_set_channel_thread(AgsPlayback *playback,
     g_object_ref(thread);
   }
   
-  playback->channel_thread[scope] = thread;
+  playback->channel_thread[sound_scope] = thread;
 
   pthread_mutex_unlock(playback_mutex);
 }
@@ -583,7 +583,7 @@ ags_playback_set_channel_thread(AgsPlayback *playback,
 /**
  * ags_playback_get_channel_thread:
  * @playback: the #AgsPlayback
- * @scope: the scope of the thread to get
+ * @sound_scope: the scope of the thread to get
  * 
  * Get channel thread of appropriate scope.
  * 
@@ -593,14 +593,14 @@ ags_playback_set_channel_thread(AgsPlayback *playback,
  */
 AgsThread*
 ags_playback_get_channel_thread(AgsPlayback *playback,
-				guint scope)
+				gint sound_scope)
 {
   AgsThread *channel_thread;
   
   pthread_mutex_t *playback_mutex;
 
   if(!AGS_IS_PLAYBACK(playback) ||
-     scope >= AGS_SOUND_SCOPE_LAST){
+     sound_scope >= AGS_SOUND_SCOPE_LAST){
     return(NULL);
   }
 
@@ -618,7 +618,7 @@ ags_playback_get_channel_thread(AgsPlayback *playback,
     return(NULL);
   }
 
-  channel_thread = playback->channel_thread[scope];
+  channel_thread = playback->channel_thread[sound_scope];
 
   pthread_mutex_unlock(playback_mutex);
   
@@ -629,7 +629,7 @@ ags_playback_get_channel_thread(AgsPlayback *playback,
  * ags_playback_set_recall_id:
  * @playback: the #AgsPlayback
  * @recall_id: the #AgsRecallID
- * @scope: the scope of the recall id to set
+ * @sound_scope: the scope of the recall id to set
  * 
  * Set recall id of appropriate scope.
  * 
@@ -638,12 +638,12 @@ ags_playback_get_channel_thread(AgsPlayback *playback,
 void
 ags_playback_set_recall_id(AgsPlayback *playback,
 			   AgsRecallID *recall_id,
-			   guint scope)
+			   gint sound_scope)
 {
   pthread_mutex_t *playback_mutex;
   
   if(!AGS_IS_PLAYBACK(playback) ||
-     scope >= AGS_SOUND_SCOPE_LAST){
+     sound_scope >= AGS_SOUND_SCOPE_LAST){
     return;
   }
 
@@ -657,8 +657,8 @@ ags_playback_set_recall_id(AgsPlayback *playback,
   /* unref old */
   pthread_mutex_lock(playback_mutex);
 
-  if(playback->recall_id[scope] != NULL){
-    g_object_unref(playback->recall_id[scope]);
+  if(playback->recall_id[sound_scope] != NULL){
+    g_object_unref(playback->recall_id[sound_scope]);
   }
 
   /* ref new */
@@ -667,7 +667,7 @@ ags_playback_set_recall_id(AgsPlayback *playback,
   }
 
   /* set recall id */
-  playback->recall_id[scope] = recall_id;
+  playback->recall_id[sound_scope] = recall_id;
 
   pthread_mutex_unlock(playback_mutex);
 }
@@ -675,7 +675,7 @@ ags_playback_set_recall_id(AgsPlayback *playback,
 /**
  * ags_playback_get_recall_id:
  * @playback: the #AgsPlayback
- * @scope: the scope of the recall id to get
+ * @sound_scope: the scope of the recall id to get
  * 
  * Get recall id of appropriate scope.
  * 
@@ -685,14 +685,14 @@ ags_playback_set_recall_id(AgsPlayback *playback,
  */
 AgsRecallID*
 ags_playback_get_recall_id(AgsPlayback *playback,
-			   guint scope)
+			   gint sound_scope)
 {
   AgsRecallID *recall_id;
 
   pthread_mutex_t *playback_mutex;
   
   if(!AGS_IS_PLAYBACK(playback) ||
-     scope >= AGS_SOUND_SCOPE_LAST){
+     sound_scope >= AGS_SOUND_SCOPE_LAST){
     return(NULL);
   }
 
@@ -712,7 +712,7 @@ ags_playback_get_recall_id(AgsPlayback *playback,
     return(NULL);
   }
   
-  recall_id = playback->recall_id[scope];
+  recall_id = playback->recall_id[sound_scope];
 
   pthread_mutex_unlock(playback_mutex);
   

@@ -8586,15 +8586,56 @@ GList*
 ags_channel_real_start(AgsChannel *channel,
 		       gint sound_scope)
 {
+  AgsPlayback *playback;
+  
   AgsMessageDelivery *message_delivery;
   AgsMessageQueue *message_queue;
 
   GList *recall_id;
 
+  gint i;
+
+  pthread_mutex_t *channel_mutex;
+
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(channel_mutex);
+
+  playback = channel->playback;
+  
+  pthread_mutex_unlock(channel_mutex);
+
+  /* run stage */
   recall_id = NULL;
 
-  //TODO:JK: implement me
+  if(sound_scope >= 0){
+    ags_channel_recursive_run_stage(channel,
+				    sound_scope, (AGS_SOUND_STAGING_CHECK_RT_DATA |
+						  AGS_SOUND_STAGING_RUN_INIT_PRE |
+						  AGS_SOUND_STAGING_RUN_INIT_INTER |
+						  AGS_SOUND_STAGING_RUN_INIT_POST));
+    recall_id = g_list_prepend(recall_id,
+			       ags_playback_get_recall_id(playback, sound_scope));
+  }else{
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      ags_channel_recursive_run_stage(channel,
+				      i, (AGS_SOUND_STAGING_CHECK_RT_DATA |
+					  AGS_SOUND_STAGING_RUN_INIT_PRE |
+					  AGS_SOUND_STAGING_RUN_INIT_INTER |
+					  AGS_SOUND_STAGING_RUN_INIT_POST));
+      recall_id = g_list_prepend(recall_id,
+				 ags_playback_get_recall_id(playback, i));
+    }
+  }
 
+  recall_id = g_list_reverse(recall_id);
+  
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
@@ -8684,10 +8725,49 @@ void
 ags_channel_real_stop(AgsChannel *channel,
 		      GList *recall_id, gint sound_scope)
 {
+  AgsPlayback *playback;
+  
   AgsMessageDelivery *message_delivery;
   AgsMessageQueue *message_queue;
 
-  //TODO:JK: implement me
+  gint i;
+
+  pthread_mutex_t *channel_mutex;
+
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(channel_mutex);
+
+  playback = channel->playback;
+  
+  pthread_mutex_unlock(channel_mutex);
+
+  /* run stage */
+  if(sound_scope >= 0){
+    ags_channel_recursive_run_stage(channel,
+				    sound_scope, (AGS_SOUND_STAGING_CANCEL |
+						  AGS_SOUND_STAGING_DONE |
+						  AGS_SOUND_STAGING_REMOVE));
+    ags_playback_set_recall_id(playback,
+			       NULL,
+			       sound_scope);
+  }else{
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      ags_channel_recursive_run_stage(channel,
+				      i, (AGS_SOUND_STAGING_CANCEL |
+					  AGS_SOUND_STAGING_DONE |
+					  AGS_SOUND_STAGING_REMOVE));
+      ags_playback_set_recall_id(playback,
+				 NULL,
+				 i);
+    }
+  }
 
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();

@@ -83,9 +83,9 @@ pthread_mutex_t* ags_playback_domain_get_class_mutex();
 /* get and set */
 void ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
 					  AgsThread *thread,
-					  guint scope);
+					  gint sound_scope);
 AgsThread* ags_playback_domain_get_audio_thread(AgsPlaybackDomain *playback_domain,
-						guint scope);
+						gint sound_scope);
 
 /* add and remove */
 void ags_playback_domain_add_playback(AgsPlaybackDomain *playback_domain,

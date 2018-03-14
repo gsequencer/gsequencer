@@ -527,7 +527,7 @@ ags_playback_domain_get_class_mutex()
 void
 ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
 				     AgsThread *thread,
-				     guint sound_scope)
+				     gint sound_scope)
 {
   pthread_mutex_t *playback_domain_mutex;
 
@@ -577,7 +577,7 @@ ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
  */
 AgsThread*
 ags_playback_domain_get_audio_thread(AgsPlaybackDomain *playback_domain,
-				     guint sound_scope)
+				     gint sound_scope)
 {
   AgsThread *thread;
   
