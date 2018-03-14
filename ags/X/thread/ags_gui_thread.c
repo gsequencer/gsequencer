@@ -39,6 +39,10 @@
 #include <libinstpatch/libinstpatch.h>
 #endif
 
+#ifdef AGS_WITH_QUARTZ
+#include <gtkmacintegration-gtk2/gtkosxapplication.h>
+#endif
+
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
 #include <libxml/xpath.h>
