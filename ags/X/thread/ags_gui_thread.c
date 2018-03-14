@@ -1340,21 +1340,18 @@ ags_gui_thread_animation_dispatch(GSource *source,
 		     G_CALLBACK(ags_gui_thread_do_animation_callback), gui_thread);
   }
 
-  gdk_threads_enter();
-
-  gtk_widget_queue_draw(widget);
-
-  gdk_threads_leave();
-
-  g_main_context_iteration(main_context,
-  			   FALSE);
-  
   if(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
-    return(G_SOURCE_CONTINUE);
-  }else{
+    gdk_threads_enter();
+
+    gtk_widget_queue_draw(widget);
+
+    gdk_threads_leave();
+
     g_main_context_iteration(main_context,
 			     FALSE);
-    
+  
+    return(G_SOURCE_CONTINUE);
+  }else{    
     gdk_threads_enter();
     
     gtk_widget_destroy(window);
