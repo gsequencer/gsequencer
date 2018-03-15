@@ -39,6 +39,7 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_window.h>
 #include <ags/X/ags_xorg_application_context.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
@@ -357,6 +358,8 @@ main(int argc, char **argv)
   ags_gui_init(&argc, &argv);  
   gtk_init(&argc, &argv);
   
+  ags_window_get_type();
+  
   if(!builtin_theme_disabled){
     g_object_set(gtk_settings_get_default(),
 		 "gtk-theme-name", "Raleigh",
@@ -375,7 +378,6 @@ main(int argc, char **argv)
   ipatch_init();
 #endif
   
-
 #if 0
   g_log_set_fatal_mask("GLib-GObject", // "Gtk" , // 
   		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL); // G_LOG_LEVEL_WARNING

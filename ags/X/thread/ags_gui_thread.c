@@ -25,7 +25,6 @@
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_ui_provider.h>
-#include <ags/X/ags_window.h>
 
 #include <ags/X/file/ags_simple_file.h>
 
@@ -1305,6 +1304,7 @@ ags_gui_thread_animation_dispatch(GSource *source,
 {
   AgsApplicationContext *application_context;
 
+  static AgsWindow *app_window;
   static GtkWindow *window = NULL;
   static GtkWidget *widget;
 
@@ -1335,6 +1335,11 @@ ags_gui_thread_animation_dispatch(GSource *source,
   main_context = g_main_context_default();
 
   if(window == NULL){
+    app_window = g_object_new(AGS_TYPE_WINDOW,
+			      "app-paintable", TRUE,
+			      "type", GTK_WINDOW_TOPLEVEL,
+			      NULL);
+    
     window = g_object_new(GTK_TYPE_WINDOW,
 			  "app-paintable", TRUE,
 			  "type", GTK_WINDOW_TOPLEVEL,
@@ -1362,9 +1367,7 @@ ags_gui_thread_animation_dispatch(GSource *source,
 			     FALSE);
   
     return(G_SOURCE_CONTINUE);
-  }else{    
-    AgsWindow *app_window;
-
+  }else{
     GObject *soundcard;
 
     gchar *filename;
@@ -1376,21 +1379,21 @@ ags_gui_thread_animation_dispatch(GSource *source,
 
     pthread_mutex_lock(application_mutex);
 
-    soundcard = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard;
-
-    pthread_mutex_unlock(application_mutex);
+    if(AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard != NULL){
+      soundcard = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard->data;
+    }
     
+    pthread_mutex_unlock(application_mutex);
+        
     /* AgsWindow */
 #ifdef AGS_WITH_QUARTZ
     g_object_new(GTKOSX_TYPE_APPLICATION,
 		 NULL);
 #endif
-    
-    ags_window_get_type();
-    app_window = g_object_new(AGS_TYPE_WINDOW,
-			      "soundcard", soundcard,
-			      "application-context", application_context,
-			      NULL);
+    g_object_set(app_window,
+		 "soundcard", G_OBJECT(soundcard),
+		 "application-context", G_OBJECT(application_context),
+		 NULL);
     g_object_set(application_context,
 		 "window", app_window,
 		 NULL);
@@ -1399,7 +1402,7 @@ ags_gui_thread_animation_dispatch(GSource *source,
     gtk_paned_set_position((GtkPaned *) app_window->paned, 300);
 
     ags_connectable_connect(AGS_CONNECTABLE(app_window));
-
+    
     /* filename */
     filename = NULL;
 
@@ -1417,9 +1420,7 @@ ags_gui_thread_animation_dispatch(GSource *source,
 
     pthread_mutex_unlock(application_mutex);
     
-    /*  */
-    gdk_threads_enter();
-    
+    /*  */    
     gtk_widget_destroy(window);
     window = NULL;
 
@@ -1428,8 +1429,6 @@ ags_gui_thread_animation_dispatch(GSource *source,
     }
     
     gtk_widget_show_all(app_window);
-
-    gdk_threads_leave();
 
     return(G_SOURCE_REMOVE);
   }
