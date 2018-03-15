@@ -1304,7 +1304,6 @@ ags_gui_thread_animation_dispatch(GSource *source,
 {
   AgsApplicationContext *application_context;
 
-  static AgsWindow *app_window;
   static GtkWindow *window = NULL;
   static GtkWidget *widget;
 
@@ -1335,11 +1334,6 @@ ags_gui_thread_animation_dispatch(GSource *source,
   main_context = g_main_context_default();
 
   if(window == NULL){
-    app_window = g_object_new(AGS_TYPE_WINDOW,
-			      "app-paintable", TRUE,
-			      "type", GTK_WINDOW_TOPLEVEL,
-			      NULL);
-    
     window = g_object_new(GTK_TYPE_WINDOW,
 			  "app-paintable", TRUE,
 			  "type", GTK_WINDOW_TOPLEVEL,
@@ -1368,6 +1362,8 @@ ags_gui_thread_animation_dispatch(GSource *source,
   
     return(G_SOURCE_CONTINUE);
   }else{
+    AgsWindow *app_window;
+    
     GObject *soundcard;
 
     gchar *filename;
@@ -1381,19 +1377,39 @@ ags_gui_thread_animation_dispatch(GSource *source,
 
     if(AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard != NULL){
       soundcard = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard->data;
+    }else{
+      soundcard = NULL;
     }
     
     pthread_mutex_unlock(application_mutex);
         
+    /* acquire main context */
+    if(!g_main_context_acquire(main_context)){
+      gboolean got_ownership = FALSE;
+
+      g_mutex_lock(&(gui_thread->mutex));
+    
+      while(!got_ownership){
+	got_ownership = g_main_context_wait(main_context,
+					    &(gui_thread->cond),
+					    &(gui_thread->mutex));
+      }
+
+      g_mutex_unlock(&(gui_thread->mutex));
+    }
+
     /* AgsWindow */
 #ifdef AGS_WITH_QUARTZ
     g_object_new(GTKOSX_TYPE_APPLICATION,
 		 NULL);
 #endif
-    g_object_set(app_window,
-		 "soundcard", G_OBJECT(soundcard),
-		 "application-context", G_OBJECT(application_context),
-		 NULL);
+
+    app_window = g_object_new(AGS_TYPE_WINDOW,
+			      "app-paintable", TRUE,
+			      "type", GTK_WINDOW_TOPLEVEL,    
+			      "soundcard", soundcard,
+			      "application-context", application_context,
+			      NULL);
     g_object_set(application_context,
 		 "window", app_window,
 		 NULL);
@@ -1429,6 +1445,8 @@ ags_gui_thread_animation_dispatch(GSource *source,
     }
     
     gtk_widget_show_all(app_window);
+
+    g_main_context_release(main_context);
 
     return(G_SOURCE_REMOVE);
   }
