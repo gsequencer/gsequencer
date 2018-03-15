@@ -1356,11 +1356,7 @@ ags_gui_thread_animation_dispatch(GSource *source,
   }
 
   if(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
-    gdk_threads_enter();
-
     gtk_widget_queue_draw(widget);
-
-    gdk_threads_leave();
 
     g_main_context_iteration(main_context,
 			     FALSE);
@@ -1369,23 +1365,30 @@ ags_gui_thread_animation_dispatch(GSource *source,
   }else{    
     AgsWindow *app_window;
 
+    GObject *soundcard;
+
     gchar *filename;
 
     gchar **argv;
     
     guint argc;
     guint i;
+
+    pthread_mutex_lock(application_mutex);
+
+    soundcard = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard;
+
+    pthread_mutex_unlock(application_mutex);
     
     /* AgsWindow */
-    gdk_threads_enter();
-
 #ifdef AGS_WITH_QUARTZ
     g_object_new(GTKOSX_TYPE_APPLICATION,
 		 NULL);
 #endif
-  
+    
+    ags_window_get_type();
     app_window = g_object_new(AGS_TYPE_WINDOW,
-			      "soundcard", AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard,
+			      "soundcard", soundcard,
 			      "application-context", application_context,
 			      NULL);
     g_object_set(application_context,
@@ -1396,8 +1399,6 @@ ags_gui_thread_animation_dispatch(GSource *source,
     gtk_paned_set_position((GtkPaned *) app_window->paned, 300);
 
     ags_connectable_connect(AGS_CONNECTABLE(app_window));
-
-    gdk_threads_leave();
 
     /* filename */
     filename = NULL;
