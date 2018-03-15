@@ -25,6 +25,7 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_recycling.h>
 
 #define AGS_TYPE_RECYCLING_CONTEXT                (ags_recycling_context_get_type())
@@ -40,6 +41,8 @@ typedef struct _AgsRecyclingContextClass AgsRecyclingContextClass;
 struct _AgsRecyclingContext
 {
   GObject object;
+
+  gint sound_scope;
 
   pthread_mutexattr_t *obj_mutexattr;
   pthread_mutex_t *obj_mutex;
@@ -63,6 +66,8 @@ struct _AgsRecyclingContextClass
 GType ags_recycling_context_get_type();
 
 pthread_mutex_t* ags_recycling_context_get_class_mutex();
+
+GList* ags_recycling_context_find_scope(GList *recycling_context, gint sound_scope);
 
 /* replace, add, remove and insert */
 void ags_recycling_context_replace(AgsRecyclingContext *recycling_context,

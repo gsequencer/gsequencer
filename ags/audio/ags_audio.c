@@ -9073,19 +9073,12 @@ ags_audio_stop(AgsAudio *audio,
 GList*
 ags_audio_real_check_scope(AgsAudio *audio, gint sound_scope)
 {
-  AgsChannel *channel;  
-  AgsPlayback *playback;
-
+  GList *list_start, *list;
   GList *recall_id;
 
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-  pthread_mutex_t *playback_mutex;
+  gint i;
 
-  if(sound_scope < 0 ||
-     sound_scope >= AGS_SOUND_SCOPE_LAST){
-    return;
-  }
+  pthread_mutex_t *audio_mutex;
 
   /* get audio mutex */
   pthread_mutex_lock(ags_audio_get_class_mutex());
@@ -9093,57 +9086,47 @@ ags_audio_real_check_scope(AgsAudio *audio, gint sound_scope)
   audio_mutex = audio->obj_mutex;
   
   pthread_mutex_unlock(ags_audio_get_class_mutex());
-  
-  /* get some fields */
-  pthread_mutex_lock(audio_mutex);
 
-  channel = audio->output;
+  /* get recall id */
+  pthread_mutex_lock(audio_mutex);
+  
+  list = 
+    list_start = g_list_copy(audio->recall_id);
   
   pthread_mutex_unlock(audio_mutex);
 
-  /* collect recall id */
+  /* iterate recall id */
   recall_id = NULL;
-  
-  while(channel != NULL){
-    /* get channel mutex */
-    pthread_mutex_lock(ags_channel_get_class_mutex());
 
-    channel_mutex = channel->obj_mutex;
-  
-    pthread_mutex_unlock(ags_channel_get_class_mutex());
+  if(sound_scope >= 0){
+    while(list != NULL){
+      /* check sound scope */
+      if(ags_recall_id_check_sound_scope(list->data, sound_scope)){
+	recall_id = g_list_prepend(list->data);
+      }
 
-    /* get current recall id */
-    pthread_mutex_lock(channel_mutex);
-
-    playback = channel->playback;
-
-    pthread_mutex_unlock(channel_mutex);
-
-    /* get playback mutex */
-    pthread_mutex_lock(ags_playback_get_class_mutex());
-
-    playback_mutex = playback->obj_mutex;
-  
-    pthread_mutex_unlock(ags_playback_get_class_mutex());
-
-    /* collect recall id */
-    pthread_mutex_lock(playback_mutex);
-
-    if(playback->recall_id[sound_scope] != NULL){
-      recall_id = g_list_prepend(recall_id,
-				 playback->recall_id[sound_scope]);
+      /* iterate */
+      list = list->next;
     }
+  }else{
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      list = list_start;
 
-    pthread_mutex_unlock(playback_mutex);
+      while(list != NULL){
+	/* check sound scope */
+	if(ags_recall_id_check_sound_scope(list->data, i)){
+	  recall_id = g_list_prepend(list->data);
+	}
 
-    /* iterate */
-    pthread_mutex_lock(channel_mutex);    
-    
-    channel = channel->next;
-
-    pthread_mutex_unlock(channel_mutex);
+	/* iterate */
+	list = list->next;
+      }
+    }
   }
 
+  g_list_free(list_start);
+
+  /* reverse recall id */
   recall_id = g_list_reverse(recall_id);
   
   return(recall_id);

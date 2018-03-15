@@ -392,6 +392,53 @@ ags_recycling_context_get_class_mutex()
 }
 
 /**
+ * ags_recycling_context_find_scope:
+ * @recycling_context: the #GList-struct containing #AgsRecyclingContext
+ * @sound_scope: the sound scope
+ * 
+ * Find matching @sound_scope in @recycling_context.
+ *
+ * Returns: the matching #GList-struct or %NULL if not found
+ * 
+ * Since: 2.0.0
+ */
+GList*
+ags_recycling_context_find_scope(GList *recycling_context, gint sound_scope)
+{
+  gboolean success;
+
+  pthread_mutex_t *recycling_context_mutex;
+  
+  while(recycling_context != NULL){
+    AgsRecyclingContext *current;
+
+    current = AGS_RECYCLING_CONTEXT(recycling_context->data);
+
+    /* get recycling context mutex */
+    pthread_mutex_lock(ags_recycling_context_get_class_mutex());
+
+    recycling_context_mutex = current->obj_mutex;
+    
+    pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
+
+    /* check success */
+    pthread_mutex_lock(recycling_context_mutex);
+
+    success = (current->sound_scope == sound_scope) ? TRUE: FALSE;
+    
+    pthread_mutex_unlock(recycling_context_mutex);
+    
+    if(success){
+      break;
+    }
+
+    recycling_context = recycling_context->next;
+  }
+
+  return(recycling_context);
+}
+
+/**
  * ags_recycling_context_replace:
  * @recycling_context: the #AgsRecyclingContext
  * @recycling: the #AgsRecycling to add
