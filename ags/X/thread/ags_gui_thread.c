@@ -1359,87 +1359,22 @@ ags_gui_thread_animation_dispatch(GSource *source,
   }
 
   if(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
+    gdk_threads_enter();
+
     gtk_widget_queue_draw(widget);
+
+    gdk_threads_leave();
 
     g_main_context_iteration(main_context,
 			     FALSE);
   
     return(G_SOURCE_CONTINUE);
-  }else{
-    AgsWindow *app_window;
-    
-    GObject *soundcard;
-
-    gchar *filename;
-
-    gchar **argv;
-    
-    guint argc;
-    guint i;
-
-    pthread_mutex_lock(application_mutex);
-
-    if(AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard != NULL){
-      soundcard = AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard->data;
-    }else{
-      soundcard = NULL;
-    }
-    
-    pthread_mutex_unlock(application_mutex);
-        
-    gdk_threads_enter();
-    
-    /* AgsWindow */
-#ifdef AGS_WITH_QUARTZ
-    g_object_new(GTKOSX_TYPE_APPLICATION,
-		 NULL);
-#endif
-
-    app_window = g_object_new(AGS_TYPE_WINDOW,
-			      "app-paintable", TRUE,
-			      "type", GTK_WINDOW_TOPLEVEL,    
-			      "soundcard", soundcard,
-			      "application-context", application_context,
-			      NULL);
-    g_object_set(application_context,
-		 "window", app_window,
-		 NULL);
-
-    gtk_window_set_default_size((GtkWindow *) app_window, 500, 500);
-    gtk_paned_set_position((GtkPaned *) app_window->paned, 300);
-
-    ags_connectable_connect(AGS_CONNECTABLE(app_window));
-    
-    gdk_threads_leave();
-
-    /* filename */
-    filename = NULL;
-
-    pthread_mutex_lock(application_mutex);
-
-    argv = AGS_APPLICATION_CONTEXT(application_context)->argv;
-    argc = AGS_APPLICATION_CONTEXT(application_context)->argc;
-
-    for(i = 0; i < argc; i++){
-      if(!strncmp(argv[i], "--filename", 11)){
-	filename = argv[i + 1];
-	i++;
-      }
-    }
-
-    pthread_mutex_unlock(application_mutex);
-    
+  }else{    
     /*  */
     gdk_threads_enter();
     
     gtk_widget_destroy(window);
     window = NULL;
-
-    if(filename != NULL){
-      app_window->filename = filename;
-    }
-    
-    gtk_widget_show_all(app_window);
 
     gdk_threads_leave();
 
