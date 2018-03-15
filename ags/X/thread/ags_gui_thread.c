@@ -1398,7 +1398,7 @@ ags_gui_thread_sync_task_prepare(GSource *source,
 
   pthread_mutex_lock(application_mutex);
 
-  task_thread = ags_concurreny_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
   
   gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
@@ -1438,7 +1438,7 @@ ags_gui_thread_sync_task_check(GSource *source)
 
   pthread_mutex_lock(application_mutex);
 
-  task_thread = ags_concurreny_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
   
   gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
@@ -1481,7 +1481,7 @@ ags_gui_thread_sync_task_dispatch(GSource *source,
 
   pthread_mutex_lock(application_mutex);
 
-  task_thread = ags_concurreny_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
   
   gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
@@ -1672,7 +1672,7 @@ ags_gui_thread_task_dispatch(GSource *source,
 
   pthread_mutex_lock(application_mutex);
 
-  task_thread = ags_concurreny_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
   
   gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
