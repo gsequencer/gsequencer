@@ -1333,7 +1333,9 @@ ags_gui_thread_animation_dispatch(GSource *source,
 
   main_context = g_main_context_default();
 
-  if(window == NULL){
+  if(window == NULL){        
+    gdk_threads_enter();
+    
     window = g_object_new(GTK_TYPE_WINDOW,
 			  "app-paintable", TRUE,
 			  "type", GTK_WINDOW_TOPLEVEL,
@@ -1352,6 +1354,8 @@ ags_gui_thread_animation_dispatch(GSource *source,
 
     g_signal_connect(widget, "expose-event",
 		     G_CALLBACK(ags_gui_thread_do_animation_callback), gui_thread);
+
+    gdk_threads_leave();
   }
 
   if(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
@@ -1383,21 +1387,8 @@ ags_gui_thread_animation_dispatch(GSource *source,
     
     pthread_mutex_unlock(application_mutex);
         
-    /* acquire main context */
-    if(!g_main_context_acquire(main_context)){
-      gboolean got_ownership = FALSE;
-
-      g_mutex_lock(&(gui_thread->mutex));
+    gdk_threads_enter();
     
-      while(!got_ownership){
-	got_ownership = g_main_context_wait(main_context,
-					    &(gui_thread->cond),
-					    &(gui_thread->mutex));
-      }
-
-      g_mutex_unlock(&(gui_thread->mutex));
-    }
-
     /* AgsWindow */
 #ifdef AGS_WITH_QUARTZ
     g_object_new(GTKOSX_TYPE_APPLICATION,
@@ -1419,6 +1410,8 @@ ags_gui_thread_animation_dispatch(GSource *source,
 
     ags_connectable_connect(AGS_CONNECTABLE(app_window));
     
+    gdk_threads_leave();
+
     /* filename */
     filename = NULL;
 
@@ -1436,7 +1429,9 @@ ags_gui_thread_animation_dispatch(GSource *source,
 
     pthread_mutex_unlock(application_mutex);
     
-    /*  */    
+    /*  */
+    gdk_threads_enter();
+    
     gtk_widget_destroy(window);
     window = NULL;
 
@@ -1446,7 +1441,7 @@ ags_gui_thread_animation_dispatch(GSource *source,
     
     gtk_widget_show_all(app_window);
 
-    g_main_context_release(main_context);
+    gdk_threads_leave();
 
     return(G_SOURCE_REMOVE);
   }
