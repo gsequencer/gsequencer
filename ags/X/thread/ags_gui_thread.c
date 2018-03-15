@@ -1194,7 +1194,6 @@ ags_gui_thread_animation_prepare(GSource *source,
 
   AgsGuiThread *gui_thread;
   
-  AgsThread *main_loop;
   AgsMutexManager *mutex_manager;
 
   AgsLog *log;
@@ -1212,12 +1211,9 @@ ags_gui_thread_animation_prepare(GSource *source,
 
   pthread_mutex_lock(application_mutex);
 
-  main_loop = AGS_APPLICATION_CONTEXT(application_context)->main_loop;
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   pthread_mutex_unlock(application_mutex);
-  
-  gui_thread = ags_thread_find_type(main_loop,
-				    AGS_TYPE_GUI_THREAD);
   
   log = ags_log_get_instance();
   
@@ -1228,7 +1224,7 @@ ags_gui_thread_animation_prepare(GSource *source,
   pthread_mutex_unlock(log->mutex);
 
   if(initial_run ||
-     nth > gui_thread->nth_message ||
+     (gui_thread != NULL && nth > gui_thread->nth_message) ||
      !ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
     if(timeout_ != NULL){
       *timeout_ = 0;
@@ -1253,7 +1249,6 @@ ags_gui_thread_animation_check(GSource *source)
 
   AgsGuiThread *gui_thread;
   
-  AgsThread *main_loop;
   AgsMutexManager *mutex_manager;
 
   AgsLog *log;
@@ -1271,13 +1266,10 @@ ags_gui_thread_animation_check(GSource *source)
 
   pthread_mutex_lock(application_mutex);
 
-  main_loop = AGS_APPLICATION_CONTEXT(application_context)->main_loop;
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   pthread_mutex_unlock(application_mutex);
   
-  gui_thread = ags_thread_find_type(main_loop,
-				    AGS_TYPE_GUI_THREAD);
-
   log = ags_log_get_instance();
   
   pthread_mutex_lock(log->mutex);
@@ -1287,7 +1279,7 @@ ags_gui_thread_animation_check(GSource *source)
   pthread_mutex_unlock(log->mutex);
 
   if(initial_run ||
-     nth > gui_thread->nth_message ||
+     (gui_thread != NULL && nth > gui_thread->nth_message) ||
      !ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
     initial_run = FALSE;
 
@@ -1311,10 +1303,11 @@ ags_gui_thread_animation_dispatch(GSource *source,
 
   GMainContext *main_context;
   
-  AgsThread *main_loop;
   AgsTaskThread *task_thread;
   AgsMutexManager *mutex_manager;
 
+  gboolean retval;
+  
   pthread_mutex_t *application_mutex;
 
   application_context = ags_application_context_get_instance();
@@ -1324,18 +1317,27 @@ ags_gui_thread_animation_dispatch(GSource *source,
 
   pthread_mutex_lock(application_mutex);
 
-  main_loop = AGS_APPLICATION_CONTEXT(application_context)->main_loop;
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   pthread_mutex_unlock(application_mutex);
 
-  gui_thread = ags_thread_find_type(main_loop,
-				    AGS_TYPE_GUI_THREAD);
-
   main_context = g_main_context_default();
 
-  if(window == NULL){        
-    gdk_threads_enter();
+  if(!g_main_context_acquire(main_context)){
+    gboolean got_ownership = FALSE;
+
+    g_mutex_lock(&(gui_thread->mutex));
     
+    while(!got_ownership){
+      got_ownership = g_main_context_wait(main_context,
+					  &(gui_thread->cond),
+					  &(gui_thread->mutex));
+    }
+
+    g_mutex_unlock(&(gui_thread->mutex));
+  }
+  
+  if(window == NULL){            
     window = g_object_new(GTK_TYPE_WINDOW,
 			  "app-paintable", TRUE,
 			  "type", GTK_WINDOW_TOPLEVEL,
@@ -1354,32 +1356,26 @@ ags_gui_thread_animation_dispatch(GSource *source,
 
     g_signal_connect(widget, "expose-event",
 		     G_CALLBACK(ags_gui_thread_do_animation_callback), gui_thread);
-
-    gdk_threads_leave();
   }
 
   if(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
-    gdk_threads_enter();
-
     gtk_widget_queue_draw(widget);
-
-    gdk_threads_leave();
 
     g_main_context_iteration(main_context,
 			     FALSE);
   
-    return(G_SOURCE_CONTINUE);
+    retval = G_SOURCE_CONTINUE;
   }else{    
     /*  */
-    gdk_threads_enter();
-    
-    gtk_widget_destroy(window);
+    gtk_widget_hide(window);
     window = NULL;
 
-    gdk_threads_leave();
-
-    return(G_SOURCE_REMOVE);
+    retval = G_SOURCE_REMOVE;
   }
+
+  g_main_context_release(main_context);
+
+  return(retval);
 }
 
 gboolean
@@ -1387,22 +1383,28 @@ ags_gui_thread_sync_task_prepare(GSource *source,
 				 gint *timeout_)
 {  
   AgsGuiThread *gui_thread;
-
-  AgsApplicationContext *application_context;
   
-  AgsThread *main_loop;
+  AgsMutexManager *mutex_manager;
   AgsTaskThread *task_thread;
 
-  application_context = ags_application_context_get_instance();
-  main_loop = application_context->main_loop;
-  
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  AgsApplicationContext *application_context;
 
-  gui_thread = ags_thread_find_type(main_loop,
-				    AGS_TYPE_GUI_THREAD);
+  pthread_mutex_t *application_mutex;
+
+  application_context = ags_application_context_get_instance();
   
-  if(gui_thread->queued_sync > 0){
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
+
+  task_thread = ags_concurreny_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+
+  pthread_mutex_unlock(application_mutex);
+  
+  if(gui_thread != NULL && gui_thread->queued_sync > 0){
     if(timeout_ != NULL){
       *timeout_ = 0;
     }
@@ -1422,19 +1424,25 @@ ags_gui_thread_sync_task_check(GSource *source)
 {
   AgsGuiThread *gui_thread;
 
-  AgsApplicationContext *application_context;
-  
-  AgsThread *main_loop;
+  AgsMutexManager *mutex_manager;
   AgsTaskThread *task_thread;
 
-  application_context = ags_application_context_get_instance();
-  main_loop = application_context->main_loop;
+  AgsApplicationContext *application_context;
   
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  pthread_mutex_t *application_mutex;
+  
+  application_context = ags_application_context_get_instance();
+  
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  gui_thread = ags_thread_find_type(main_loop,
-				    AGS_TYPE_GUI_THREAD);
+  pthread_mutex_lock(application_mutex);
+
+  task_thread = ags_concurreny_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+
+  pthread_mutex_unlock(application_mutex);
 
   if(gui_thread->queued_sync > 0){    
     return(TRUE);
@@ -1450,10 +1458,10 @@ ags_gui_thread_sync_task_dispatch(GSource *source,
 {
   AgsGuiThread *gui_thread;
 
-  AgsApplicationContext *application_context;
-
-  AgsThread *main_loop;
+  AgsMutexManager *mutex_manager;
   AgsTaskThread *task_thread;
+
+  AgsApplicationContext *application_context;
 
   GMainContext *main_context;
 
@@ -1464,15 +1472,25 @@ ags_gui_thread_sync_task_dispatch(GSource *source,
     AGS_GUI_THREAD_SYNC_AVAILABLE_TIMEOUT,
   };
   
+  pthread_mutex_t *application_mutex;
+
   application_context = ags_application_context_get_instance();
-  main_loop = application_context->main_loop;
   
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  gui_thread = ags_thread_find_type(main_loop,
-				    AGS_TYPE_GUI_THREAD);
+  pthread_mutex_lock(application_mutex);
 
+  task_thread = ags_concurreny_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+
+  pthread_mutex_unlock(application_mutex);
+
+  if(gui_thread == NULL || task_thread == NULL){
+    return(G_SOURCE_CONTINUE);
+  }
+  
   main_context = gui_thread->main_context;
 
   if(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
@@ -1607,19 +1625,26 @@ ags_gui_thread_task_prepare(GSource *source,
 gboolean
 ags_gui_thread_task_check(GSource *source)
 {
+  AgsGuiThread *gui_thread;
+
+  AgsMutexManager *mutex_manager;
+  
   AgsApplicationContext *application_context;
 
-  AgsGuiThread *gui_thread;
-  
-  AgsThread *main_loop;
+  pthread_mutex_t *application_mutex;
 
   application_context = ags_application_context_get_instance();
-  main_loop = application_context->main_loop;
   
-  gui_thread = ags_thread_find_type(main_loop,
-				    AGS_TYPE_GUI_THREAD);
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  pthread_mutex_lock(application_mutex);
   
-  if(gui_thread->collected_task != NULL){
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+
+  pthread_mutex_unlock(application_mutex);
+  
+  if(gui_thread != NULL && gui_thread->collected_task != NULL){
     return(TRUE);
   }else{
     return(FALSE);
@@ -1631,27 +1656,36 @@ ags_gui_thread_task_dispatch(GSource *source,
 			     GSourceFunc callback,
 			     gpointer user_data)
 {
-  AgsApplicationContext *application_context;
-
   AgsGuiThread *gui_thread;
   
-  AgsThread *main_loop;
+  AgsMutexManager *mutex_manager;
   AgsTaskThread *task_thread;
 
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_mutex;
+
   application_context = ags_application_context_get_instance();
-  main_loop = application_context->main_loop;
   
-  gui_thread = ags_thread_find_type(main_loop,
-				    AGS_TYPE_GUI_THREAD);
-  task_thread = ags_thread_find_type(main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  ags_task_thread_append_tasks(task_thread,
-			       g_list_reverse(gui_thread->collected_task));
+  pthread_mutex_lock(application_mutex);
 
-  gui_thread->collected_task = NULL;
+  task_thread = ags_concurreny_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
-  ags_gui_thread_complete_task(gui_thread);
+  pthread_mutex_unlock(application_mutex);
+  
+  if(gui_thread != NULL){
+    ags_task_thread_append_tasks(task_thread,
+				 g_list_reverse(gui_thread->collected_task));
+
+    gui_thread->collected_task = NULL;
+
+    ags_gui_thread_complete_task(gui_thread);
+  }
   
   return(G_SOURCE_CONTINUE);
 }

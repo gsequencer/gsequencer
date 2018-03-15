@@ -1,6 +1,7 @@
 ags (1.4.22)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed do async start of AgsWindow
 	* fixed concurrent access during animation
 
 ags (1.4.21)
