@@ -23,6 +23,7 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
@@ -1234,7 +1235,7 @@ ags_gui_thread_animation_prepare(GSource *source,
       *timeout_ = 0;
     }
 
-    intial_run = FALSE;
+    initial_run = FALSE;
 
     return(TRUE);
   }else{
@@ -1289,7 +1290,7 @@ ags_gui_thread_animation_check(GSource *source)
   if(initial_run ||
      nth > gui_thread->nth_message ||
      !ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
-    intial_run = FALSE;
+    initial_run = FALSE;
 
     return(TRUE);
   }else{
@@ -1373,6 +1374,7 @@ ags_gui_thread_animation_dispatch(GSource *source,
     gchar **argv;
     
     guint argc;
+    guint i;
     
     /* AgsWindow */
     gdk_threads_enter();
@@ -1383,7 +1385,7 @@ ags_gui_thread_animation_dispatch(GSource *source,
 #endif
   
     app_window = g_object_new(AGS_TYPE_WINDOW,
-			      "soundcard", soundcard,
+			      "soundcard", AGS_XORG_APPLICATION_CONTEXT(application_context)->soundcard,
 			      "application-context", application_context,
 			      NULL);
     g_object_set(application_context,
@@ -1733,7 +1735,7 @@ ags_gui_thread_do_animation_callback(GtkWidget *widget, GdkEventExpose *event,
   application_context = ags_application_context_get_instance();
 
   if(!ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
-    return;
+    return(TRUE);
   }
   
   log = ags_log_get_instance();  
