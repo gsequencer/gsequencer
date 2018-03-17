@@ -37,7 +37,9 @@ typedef struct _AgsRecallID AgsRecallID;
 typedef struct _AgsRecallIDClass AgsRecallIDClass;
 
 typedef enum{
-  AGS_RECALL_ID_CONNECTED         = 1,
+  AGS_RECALL_ID_CONNECTED           = 1,
+  AGS_RECALL_ID_CHAINED_TO_OUTPUT   = 1 <<  1,
+  AGS_RECALL_ID_CHAINED_TO_INPUT    = 1 <<  2,
 }AgsRecallIDFlags;
 
 struct _AgsRecallID

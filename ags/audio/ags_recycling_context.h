@@ -38,10 +38,17 @@
 typedef struct _AgsRecyclingContext AgsRecyclingContext;
 typedef struct _AgsRecyclingContextClass AgsRecyclingContextClass;
 
+typedef enum{
+  AGS_RECYCLING_CONTEXT_CONNECTED           = 1,
+  AGS_RECYCLING_CONTEXT_CHAINED_TO_OUTPUT   = 1 <<  1,
+  AGS_RECYCLING_CONTEXT_CHAINED_TO_INPUT    = 1 <<  2,
+}AgsRecyclingContextFlags;
+
 struct _AgsRecyclingContext
 {
   GObject object;
 
+  guint flags;
   gint sound_scope;
 
   pthread_mutexattr_t *obj_mutexattr;

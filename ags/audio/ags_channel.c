@@ -4206,26 +4206,27 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 				       n_params,
 				       parameter_name, value);
   }
+
+  /* unset recall id */
+  if(old_channel_link != NULL){
+    //TODO:JK: implement me
+  }
   
+  if(old_link_link != NULL){
+    //TODO:JK: implement me
+  }
+
   /* reset recall id */
   if(channel != NULL){
-    AgsPlayback *playback;
-
     gint i;
     
-    pthread_mutex_lock(channel_mutex);
-    
-    playback = channel->playback;
-      
-    pthread_mutex_unlock(channel_mutex);
-
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
       GList *recall_id;
 
       recall_id = ags_channel_check_scope(channel, i);
       
       if(recall_id != NULL){
-	ags_channel_recursive_run_stage(channel,
+	ags_channel_recursive_run_stage(link,
 					i, (AGS_SOUND_STAGING_CHECK_RT_DATA |
 					    AGS_SOUND_STAGING_RUN_INIT_PRE |
 					    AGS_SOUND_STAGING_RUN_INIT_INTER |
@@ -4237,15 +4238,7 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
   }
   
   if(link != NULL){
-    AgsPlayback *playback;
-
     gint i;
-    
-    pthread_mutex_lock(link_mutex);
-    
-    playback = link->playback;
-      
-    pthread_mutex_unlock(link_mutex);
 
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
       GList *recall_id;
@@ -4253,7 +4246,7 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
       recall_id = ags_channel_check_scope(link, i);
       
       if(recall_id != NULL){
-	ags_channel_recursive_run_stage(link,
+	ags_channel_recursive_run_stage(channel,
 					i, (AGS_SOUND_STAGING_CHECK_RT_DATA |
 					    AGS_SOUND_STAGING_RUN_INIT_PRE |
 					    AGS_SOUND_STAGING_RUN_INIT_INTER |
@@ -5410,10 +5403,10 @@ ags_channel_real_recycling_changed(AgsChannel *channel,
 				   AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region)
 {
   AgsAudio *audio;
-  AgsAudio *level_audio;
   AgsChannel *level_channel;
   
-  GList *list_start, *list;
+  GList *recall_id_start, *recall_id;
+  GList *level_recall_id_start, *level_recall_id;
   GList *recycling_context_start, *recycling_context;    
 
   guint audio_flags;
@@ -5421,7 +5414,6 @@ ags_channel_real_recycling_changed(AgsChannel *channel,
   gboolean reset_recycling_context;
 
   pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *level_audio_mutex;
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *level_channel_mutex;
 
@@ -5465,27 +5457,27 @@ ags_channel_real_recycling_changed(AgsChannel *channel,
 
   if(reset_recycling_context){
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-      list =
-	list_start = ags_channel_check_scope(channel, i);
+      recall_id =
+	recall_id_start = ags_channel_check_scope(channel, i);
 
-      while(list != NULL){
-	AgsRecallID *recall_id;
+      while(recall_id != NULL){
+	AgsRecallID *current_recall_id;
 	AgsRecyclingContext *recycling_context, *new_recycling_context;
 
 	pthread_mutex_t *recall_id_mutex;
 
-	recall_id = AGS_RECALL_ID(list->data);
+	current_recall_id = AGS_RECALL_ID(recall_id->data);
 
 	pthread_mutex_lock(ags_recall_id_get_class_mutex());
       
-	recall_id_mutex = recall_id->obj_mutex;
+	recall_id_mutex = current_recall_id->obj_mutex;
       
 	pthread_mutex_unlock(ags_recall_id_get_class_mutex());
 
 	/* get recycling context */
 	pthread_mutex_lock(recall_id_mutex);
       
-	recycling_context = recall_id->recycling_context;
+	recycling_context = current_recall_id->recycling_context;
 
 	pthread_mutex_unlock(recall_id_mutex);
 
@@ -5502,80 +5494,325 @@ ags_channel_real_recycling_changed(AgsChannel *channel,
 					new_recycling_context);
 
 	/* iterate */
-	list = list->next;
+	recall_id = recall_id->next;
       }
 
-      g_list_free(list_start);
+      g_list_free(recall_id_start);
     }
   }
 
   /* get level */
   level_channel = ags_channel_get_level(channel);
-  
-  /* get level mutex */
-  pthread_mutex_lock(ags_channel_get_class_mutex());
-  
-  level_channel_mutex = level_channel->obj_mutex;
 
-  pthread_mutex_unlock(ags_channel_get_class_mutex());
-  
-  /* get level audio */
-  pthread_mutex_lock(level_channel_mutex);
-
-  level_audio = level_channel->audio;
-
-  pthread_mutex_unlock(level_channel_mutex);
-
-  /* get level audio mutex */
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-  
-  level_audio_mutex = level_audio->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
-
-  /* get recycling context */
-  pthread_mutex_lock(level_audio_mutex);
-
-  recycling_context_start = g_list_copy(level_audio->recycling_context);
-
-  pthread_mutex_unlock(level_audio_mutex);
-
-  /* update recall ids - audio */  
-  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-    list =
-      list_start = ags_audio_check_scope(audio, i);
-
-    recycling_context = ags_recycling_context_find_scope(recycling_context_start, i);
+  if(level_channel != NULL){
+    AgsAudio *level_audio;
     
-    while(list != NULL){
-      g_object_set(list->data,
-		   "recycling-context", recycling_context->data,
-		   NULL);
-	
-      /* iterate */
-      list = list->next;
-    }
-
-    g_list_free(list_start);
-  }
+    pthread_mutex_t *level_audio_mutex;
+    
+    /* get level mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
   
-  /* update recall ids - channel */  
-  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-    list =
-      list_start = ags_channel_check_scope(channel, i);
+    level_channel_mutex = level_channel->obj_mutex;
 
-    recycling_context = ags_recycling_context_find_scope(recycling_context_start, i);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
+  
+    /* get level audio */
+    pthread_mutex_lock(level_channel_mutex);
 
-    while(list != NULL){
-      g_object_set(list->data,
-		   "recycling-context", recycling_context->data,
-		   NULL);
+    level_audio = level_channel->audio;
+
+    pthread_mutex_unlock(level_channel_mutex);
+
+    /* get level audio mutex */
+    pthread_mutex_lock(ags_audio_get_class_mutex());
+  
+    level_audio_mutex = level_audio->obj_mutex;
+  
+    pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+    /* get recycling context */
+    pthread_mutex_lock(level_audio_mutex);
+
+    recycling_context_start = g_list_copy(level_audio->recycling_context);
+
+    pthread_mutex_unlock(level_audio_mutex);
+
+    /* update and compare recall ids - audio */  
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      guint recall_id_flags;
+      guint recycling_context_flags;
       
-      /* iterate */
-      list = list->next;
-    }
+      recall_id =
+	recall_id_start = ags_audio_check_scope(audio, i);
+      
+      while(recall_id != NULL){
+	recall_id_flags = ags_recall_id_get_flags(recall_id->data);
 
-    g_list_free(list_start);
+	recycling_context = recycling_context_start;
+	
+	if((AGS_RECALL_ID_CHAINED_TO_OUTPUT & (recall_id_flags)) != 0){
+	  while((recycling_context = ags_recycling_context_find_scope(recycling_context, i)) != NULL){
+	    recycling_context_flags = ags_recycling_context_get_flags(recycling_context->data);
+	    
+	    if((AGS_RECYCLING_CONTEXT_CHAINED_TO_OUTPUT & (recycling_context_flags)) != 0){
+	      break;
+	    }
+
+	    recycling_context = recycling_context->next;
+	  }
+	}else if((AGS_RECALL_ID_CHAINED_TO_INPUT & (recall_id_flags)) != 0){
+	  while((recycling_context = ags_recycling_context_find_scope(recycling_context, i)) != NULL){
+	    recycling_context_flags = ags_recycling_context_get_flags(recycling_context->data);
+	    
+	    if((AGS_RECYCLING_CONTEXT_CHAINED_TO_INPUT & (recycling_context_flags)) != 0){
+	      break;
+	    }
+
+	    recycling_context = recycling_context->next;
+	  }
+	}
+
+	if(recycling_context != NULL){
+	  g_object_set(recall_id->data,
+		       "recycling-context", recycling_context->data,
+		       NULL);
+	}
+
+	/* iterate */
+	recall_id = recall_id->next;
+      }
+      
+      g_list_free(recall_id_start);
+    }
+  
+    /* update and compare recall ids - channel */  
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      guint recall_id_flags;
+      guint recycling_context_flags;
+      
+      recall_id =
+	recall_id_start = ags_channel_check_scope(channel, i);
+
+      /* update */
+      while(recall_id != NULL){
+	recall_id_flags = ags_recall_id_get_flags(recall_id->data);
+
+	recycling_context = recycling_context_start;
+
+	if((AGS_RECALL_ID_CHAINED_TO_OUTPUT & (recall_id_flags)) != 0){
+	  while((recycling_context = ags_recycling_context_find_scope(recycling_context, i)) != NULL){
+	    recycling_context_flags = ags_recycling_context_get_flags(recycling_context->data);
+	    
+	    if((AGS_RECYCLING_CONTEXT_CHAINED_TO_OUTPUT & (recycling_context_flags)) != 0){
+	      break;
+	    }
+
+	    recycling_context = recycling_context->next;
+	  }
+	}else if((AGS_RECALL_ID_CHAINED_TO_INPUT & (recall_id_flags)) != 0){
+	  while((recycling_context = ags_recycling_context_find_scope(recycling_context, i)) != NULL){
+	    recycling_context_flags = ags_recycling_context_get_flags(recycling_context->data);
+	    
+	    if((AGS_RECYCLING_CONTEXT_CHAINED_TO_INPUT & (recycling_context_flags)) != 0){
+	      break;
+	    }
+
+	    recycling_context = recycling_context->next;
+	  }
+	}
+
+	if(recycling_context != NULL){
+	  g_object_set(recall_id->data,
+		       "recycling-context", recycling_context->data,
+		       NULL);
+	}
+	
+	/* iterate */
+	recall_id = recall_id->next;
+      }
+      
+      g_list_free(recall_id_start);
+    }
+  }else{
+    AgsRecycling *recycling, *end_recycling;
+
+    pthread_mutex_t *recycling_mutex;
+    pthread_mutex_t *new_end_region_mutex;
+    
+    recycling = new_start_region;
+
+    /*  */
+    pthread_mutex_lock(ags_recycling_get_class_mutex());
+    
+    new_end_region_mutex = new_end_region->obj_mutex;
+
+    pthread_mutex_unlock(ags_recycling_get_class_mutex());
+
+    /*  */
+    pthread_mutex_lock(new_end_region_mutex);
+    
+    end_recycling = new_end_region->next;
+
+    pthread_mutex_unlock(new_end_region_mutex);
+
+    while(recycling != end_recycling){
+      AgsAudio *current_audio;
+      AgsChannel *current_channel;
+
+      pthread_mutex_t *current_audio_mutex;
+      pthread_mutex_t *current_channel_mutex;
+      
+      /*  */
+      pthread_mutex_lock(ags_recycling_get_class_mutex());
+    
+      recycling_mutex = recycling->obj_mutex;
+
+      pthread_mutex_unlock(ags_recycling_get_class_mutex());
+
+      /*  */
+      pthread_mutex_lock(recycling_mutex);
+      
+      current_channel = recycling->channel;
+
+      pthread_mutex_unlock(recycling_mutex);
+
+      /*  */
+      pthread_mutex_lock(ags_channel_get_class_mutex());
+    
+      current_channel_mutex = current_channel->obj_mutex;
+
+      pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+      /*  */
+      pthread_mutex_lock(current_channel_mutex);
+
+      current_audio = current_channel->audio;
+
+      pthread_mutex_unlock(current_channel_mutex);
+
+      /* get current audio mutex */
+      pthread_mutex_lock(ags_audio_get_class_mutex());
+  
+      current_audio_mutex = current_audio->obj_mutex;
+  
+      pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+      /* get recycling context */
+      pthread_mutex_lock(current_audio_mutex);
+
+      recycling_context_start = g_list_copy(current_audio->recycling_context);
+
+      pthread_mutex_unlock(current_audio_mutex);
+
+      /* update recall ids - audio */  
+      for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+	guint recall_id_flags;
+	guint recycling_context_flags;
+      
+	recall_id =
+	  recall_id_start = ags_audio_check_scope(audio, i);
+
+	recycling_context = ags_recycling_context_find_scope(recycling_context_start, i);
+	recycling_context_flags = ags_recycling_context_get_flags(recycling_context->data);
+      
+	while(recall_id != NULL){
+	  recall_id_flags = ags_recall_id_get_flags(recall_id->data);
+	  
+	  recycling_context = recycling_context_start;
+	  
+	  if((AGS_RECALL_ID_CHAINED_TO_OUTPUT & (recall_id_flags)) != 0){
+	    while((recycling_context = ags_recycling_context_find_scope(recycling_context, i)) != NULL){
+	      recycling_context_flags = ags_recycling_context_get_flags(recycling_context->data);
+	    
+	      if((AGS_RECYCLING_CONTEXT_CHAINED_TO_OUTPUT & (recycling_context_flags)) != 0){
+		break;
+	      }
+
+	      recycling_context = recycling_context->next;
+	    }
+	  }else if((AGS_RECALL_ID_CHAINED_TO_INPUT & (recall_id_flags)) != 0){
+	    while((recycling_context = ags_recycling_context_find_scope(recycling_context, i)) != NULL){
+	      recycling_context_flags = ags_recycling_context_get_flags(recycling_context->data);
+	    
+	      if((AGS_RECYCLING_CONTEXT_CHAINED_TO_INPUT & (recycling_context_flags)) != 0){
+		break;
+	      }
+
+	      recycling_context = recycling_context->next;
+	    }
+	  }
+
+	  if(recycling_context != NULL){
+	    g_object_set(recall_id->data,
+			 "recycling-context", recycling_context->data,
+			 NULL);
+	  }
+	
+	  /* iterate */
+	  recall_id = recall_id->next;
+	}
+
+	g_list_free(recall_id_start);
+      }
+      
+      /* update recall ids - channel */
+      for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+	guint recall_id_flags;
+	guint recycling_context_flags;
+      
+	recall_id =
+	  recall_id_start = ags_channel_check_scope(channel, i);
+
+	recycling_context = ags_recycling_context_find_scope(recycling_context_start, i);
+	recycling_context_flags = ags_recycling_context_get_flags(recycling_context->data);
+
+	while(recall_id != NULL){
+	  recall_id_flags = ags_recall_id_get_flags(recall_id->data);
+
+	  recycling_context = recycling_context_start;
+	  
+	  if((AGS_RECALL_ID_CHAINED_TO_OUTPUT & (recall_id_flags)) != 0){
+	    while((recycling_context = ags_recycling_context_find_scope(recycling_context, i)) != NULL){
+	      recycling_context_flags = ags_recycling_context_get_flags(recycling_context->data);
+	    
+	      if((AGS_RECYCLING_CONTEXT_CHAINED_TO_OUTPUT & (recycling_context_flags)) != 0){
+		break;
+	      }
+
+	      recycling_context = recycling_context->next;
+	    }
+	  }else if((AGS_RECALL_ID_CHAINED_TO_INPUT & (recall_id_flags)) != 0){
+	    while((recycling_context = ags_recycling_context_find_scope(recycling_context, i)) != NULL){
+	      recycling_context_flags = ags_recycling_context_get_flags(recycling_context->data);
+	    
+	      if((AGS_RECYCLING_CONTEXT_CHAINED_TO_INPUT & (recycling_context_flags)) != 0){
+		break;
+	      }
+
+	      recycling_context = recycling_context->next;
+	    }
+	  }
+
+	  if(recycling_context != NULL){
+	    g_object_set(recall_id->data,
+			 "recycling-context", recycling_context->data,
+			 NULL);
+	  }
+	
+	  /* iterate */
+	  recall_id = recall_id->next;
+	}
+
+	g_list_free(recall_id_start);
+      }
+
+      /* iterate */
+      pthread_mutex_lock(recycling_mutex);
+
+      recycling = recycling->next;
+
+      pthread_mutex_unlock(recycling_mutex);
+    }
   }
 }
 
