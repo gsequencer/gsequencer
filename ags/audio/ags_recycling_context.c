@@ -852,7 +852,7 @@ ags_recycling_context_find(AgsRecyclingContext *recycling_context,
  *
  * Returns: recycling array index
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gint
 ags_recycling_context_find_child(AgsRecyclingContext *recycling_context,
@@ -869,12 +869,20 @@ ags_recycling_context_find_child(AgsRecyclingContext *recycling_context,
     return(-1);
   }
 
-  pthread_mutex_lock(recycling_context->mutex);
+  /* get recycling context mutex */
+  pthread_mutex_lock(ags_recycling_context_get_class_mutex());
+  
+  recycling_context_mutex = recycling_context->mutex;
+  
+  pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
+
+  /* get child */
+  pthread_mutex_lock(recycling_context_mutex);
 
   child =
     child_start = g_list_copy(recycling_context->children);
 
-  pthread_mutex_unlock(recycling_context->mutex);
+  pthread_mutex_unlock(recycling_context_mutex);
 
   for(i = 0; child != NULL; i++){
     if(ags_recycling_context_find(AGS_RECYCLING_CONTEXT(child->data),
@@ -1126,7 +1134,7 @@ ags_recycling_context_get_child_recall_id(AgsRecyclingContext *recycling_context
  *
  * Returns: the new #AgsRecyclingContext
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecyclingContext*
 ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
