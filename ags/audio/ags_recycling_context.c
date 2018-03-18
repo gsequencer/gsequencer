@@ -19,6 +19,8 @@
 
 #include <ags/audio/ags_recycling_context.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_recall_id.h>
 
 #include <stdlib.h>
@@ -52,9 +54,10 @@ void ags_recycling_context_finalize(GObject *gobject);
 
 enum{
   PROP_0,
-  PROP_PARENT,
-  PROP_LENGTH,
   PROP_RECALL_ID,
+  PROP_PARENT,
+  PROP_CHILD,
+  PROP_LENGTH,
 };
 
 static gpointer ags_recycling_context_parent_class = NULL;
@@ -106,11 +109,27 @@ ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context)
 
   /* properties */
   /**
+   * AgsRecyclingContext:recall-id:
+   *
+   * The assigned #AgsRecallID.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("recall-id",
+				   i18n_pspec("the default recall id"),
+				   i18n_pspec("The recall id located in audio object as destiny"),
+				   AGS_TYPE_RECALL_ID,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_ID,
+				  param_spec);
+
+  /**
    * AgsRecyclingContext:parent:
    *
    * The parent recycling context within tree.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("parent",
 				   i18n_pspec("parent context"),
@@ -122,11 +141,26 @@ ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context)
 				  param_spec);
 
   /**
+   * AgsRecyclingContext:child:
+   *
+   * The child recycling contexts.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("child",
+				    i18n_pspec("child context"),
+				    i18n_pspec("The child context"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHILD,
+				  param_spec);
+  
+  /**
    * AgsRecyclingContext:length:
    *
    * Boundary length.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint64("length",
 				   i18n_pspec("length of the array of assigned recycling"),
@@ -137,27 +171,15 @@ ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context)
   g_object_class_install_property(gobject,
 				  PROP_LENGTH,
 				  param_spec);
-
-  /**
-   * AgsRecyclingContext:recall-id:
-   *
-   * The assigned #AgsRecallID.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_object("recall-id",
-				   i18n_pspec("the default recall id"),
-				   i18n_pspec("The recall id located in audio object as destiny"),
-				   AGS_TYPE_RECALL_ID,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_RECALL_ID,
-				  param_spec);
 }
 
 void
 ags_recycling_context_init(AgsRecyclingContext *recycling_context)
 {
+  recycling_context->flags = 0;
+  recycling_context->sound_scope = 0;
+
+  /* object mutex */
   recycling_context->mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
 
   pthread_mutexattr_init(recycling_context->mutexattr);
@@ -172,14 +194,17 @@ ags_recycling_context_init(AgsRecyclingContext *recycling_context)
   recycling_context->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(recycling_context->mutex,
 		     recycling_context->mutexattr);
-  
+
+  /* recall id */
   recycling_context->recall_id = NULL;
 
-  recycling_context->recycling = NULL;
-  recycling_context->length = 0;
-
+  /* parent and child */
   recycling_context->parent = NULL;
   recycling_context->children = NULL;
+
+  /* context */
+  recycling_context->recycling = NULL;
+  recycling_context->length = 0;
 }
 
 void
@@ -193,44 +218,6 @@ ags_recycling_context_set_property(GObject *gobject,
   recycling_context = AGS_RECYCLING_CONTEXT(gobject);
 
   switch(prop_id){
-  case PROP_PARENT:
-    {
-      AgsRecyclingContext *parent;
-
-      parent = (AgsRecyclingContext *) g_value_get_object(value);
-
-      if(recycling_context->parent == parent){
-	return;
-      }
-      
-      if(recycling_context->parent != NULL){
-	ags_recycling_context_remove_child(recycling_context->parent,
-					   recycling_context);
-      }
-
-      if(parent != NULL){
-	ags_recycling_context_add_child(parent,
-					recycling_context);
-      }
-
-      recycling_context->parent = parent;
-    }
-    break;
-  case PROP_LENGTH:
-    {
-      guint64 length;
-      guint64 i;
-
-      length = g_value_get_uint64(value);
-
-      recycling_context->recycling = (AgsRecycling **) malloc(length * sizeof(AgsRecycling *));
-      recycling_context->length = length;
-
-      for(i = 0; i < length; i++){
-	recycling_context->recycling[i] = NULL;
-      }
-    }
-    break;
   case PROP_RECALL_ID:
     {
       AgsRecallID *recall_id;
@@ -252,6 +239,74 @@ ags_recycling_context_set_property(GObject *gobject,
       recycling_context->recall_id = (GObject *) recall_id;
     }
     break;
+  case PROP_PARENT:
+    {
+      AgsRecyclingContext *parent;
+
+      parent = (AgsRecyclingContext *) g_value_get_object(value);
+
+      if(recycling_context->parent == parent){
+	return;
+      }
+      
+      if(recycling_context->parent != NULL){
+	ags_recycling_context_remove_child(recycling_context->parent,
+					   recycling_context);
+      }
+
+      if(parent != NULL){
+	g_object_ref(parent);
+      }
+
+      recycling_context->parent = parent;
+    }
+    break;
+  case PROP_CHILD:
+    {
+      AgsRecyclingContext *child;
+
+      child = (AgsRecyclingContext *) g_value_get_pointer(value);
+
+      if(!AGS_IS_RECYCLING_CONTEXT(child) ||
+	 g_list_find(recycling_context->children, child) != NULL){
+	return;
+      }
+
+      ags_recycling_context_add_child(recycling_context,
+				      child);
+    }
+    break;
+  case PROP_LENGTH:
+    {
+      guint64 length, old_length;
+      guint64 i;
+
+      length = g_value_get_uint64(value);
+
+      if(length == 0){
+	g_free(recycling_context->recycling);
+
+	recycling_context->recycling = NULL;
+
+	return;
+      }
+	  
+      if(recycling_context->recycling == NULL){
+	recycling_context->recycling = (AgsRecycling **) malloc(length * sizeof(AgsRecycling *));
+	old_length = 0;
+      }else{
+	recycling_context->recycling = (AgsRecycling **) realloc(recycling_context->recycling,
+								 length * sizeof(AgsRecycling *));
+	old_length = recycling_context->length;
+      }
+      
+      recycling_context->length = length;
+
+      for(i = old_length; i < length; i++){
+	recycling_context->recycling[i] = NULL;
+      }
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -269,19 +324,24 @@ ags_recycling_context_get_property(GObject *gobject,
   recycling_context = AGS_RECYCLING_CONTEXT(gobject);
 
   switch(prop_id){
+  case PROP_RECALL_ID:
+    {
+      g_value_set_object(value, recycling_context->recall_id);
+    }
+    break;
   case PROP_PARENT:
     {
       g_value_set_object(value, recycling_context->parent);
     }
     break;
+  case PROP_CHILD:
+    {
+      g_value_set_pointer(value, g_list_copy(recycling_context->children));
+    }
+    break;
   case PROP_LENGTH:
     {
       g_value_set_uint64(value, recycling_context->length);
-    }
-    break;
-  case PROP_RECALL_ID:
-    {
-      g_value_set_object(value, recycling_context->recall_id);
     }
     break;
   default:
@@ -295,7 +355,7 @@ ags_recycling_context_dispose(GObject *gobject)
 {
   AgsRecyclingContext *recycling_context;
 
-  GList *list, *list_next;
+  GList *list_start, *list;
 
   guint i;
   
@@ -304,11 +364,15 @@ ags_recycling_context_dispose(GObject *gobject)
   /* parent */
   if(recycling_context->parent != NULL){
     g_object_unref(recycling_context->parent);
+
+    recycling_context->parent = NULL;
   }
   
   /* recall id */
   if(recycling_context->recall_id != NULL){
     g_object_unref(recycling_context->recall_id);
+
+    recycling_context->recall_id = NULL;
   }
 
   /* recycling */
@@ -324,16 +388,17 @@ ags_recycling_context_dispose(GObject *gobject)
   }
   
   /* children */
-  list = recycling_context->children;
+  list = 
+    list_start = g_list_copy(recycling_context->children);
 
   while(list != NULL){
-    list_next = list->next;
-    
     ags_recycling_context_remove_child(recycling_context,
 				       list->data);
     
-    list = list_next;
+    list = list->next;
   }
+
+  g_list_free(list_start);
   
   /* call parent */
   G_OBJECT_CLASS(ags_recycling_context_parent_class)->dispose(gobject);
@@ -370,7 +435,8 @@ ags_recycling_context_finalize(GObject *gobject)
   }
   
   /* children */
-  g_list_free(recycling_context->children);
+  g_list_free_full(recycling_context->children,
+		   g_object_unref);
 
   /* call parent */
   G_OBJECT_CLASS(ags_recycling_context_parent_class)->finalize(gobject);
@@ -446,28 +512,57 @@ ags_recycling_context_find_scope(GList *recycling_context, gint sound_scope)
  *
  * Replaces one recycling entry in a context.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_recycling_context_replace(AgsRecyclingContext *recycling_context,
 			      AgsRecycling *recycling,
 			      gint position)
 {
+  AgsRecycling *old_recycling;
+  
+  guint64 length;
+  
+  pthread_mutex_t *recycling_context_mutex;
+  
   if(!AGS_IS_RECYCLING_CONTEXT(recycling_context)){
     return;
   }
 
-  pthread_mutex_lock(recycling_context->mutex);
+  /* get recycling context mutex */
+  pthread_mutex_lock(ags_recycling_context_get_class_mutex());
   
-  if(position >= recycling_context->length){
-    pthread_mutex_unlock(recycling_context->mutex);
-    
+  recycling_context_mutex = recycling_context->mutex;
+  
+  pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recycling_context_mutex);
+
+  length = recycling_context->length;
+
+  pthread_mutex_unlock(recycling_context_mutex);
+  
+  if(position >= length){    
     return;
   }
 
+  /* replace */
+  pthread_mutex_lock(recycling_context_mutex);
+  
+  old_recycling = recycling_context->recycling[position];
   recycling_context->recycling[position] = recycling;
   
-  pthread_mutex_unlock(recycling_context->mutex);
+  pthread_mutex_unlock(recycling_context_mutex);
+
+  /* ref count */
+  if(old_recycling != NULL){
+    g_object_unref(old_recycling);
+  }
+
+  if(recycling != NULL){
+    g_object_ref(recycling);
+  }
 }
 
 /**
@@ -477,41 +572,45 @@ ags_recycling_context_replace(AgsRecyclingContext *recycling_context,
  *
  * Adds a recycling to a context.
  *
- * Returns: the new recycling context
- *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
-AgsRecyclingContext*
+void
 ags_recycling_context_add(AgsRecyclingContext *recycling_context,
 			  AgsRecycling *recycling)
 {
-  AgsRecyclingContext *new_recycling_context;
-
   gint new_length;
-  guint i;
+
+  pthread_mutex_t *recycling_context_mutex;
   
-  if(!AGS_IS_RECYCLING_CONTEXT(recycling_context)){
-    return(NULL);
+  if(!AGS_IS_RECYCLING_CONTEXT(recycling_context) ||
+     !AGS_IS_RECYCLING(recycling)){
+    return;
   }
 
-  pthread_mutex_lock(recycling_context->mutex);
+  /* get recycling context mutex */
+  pthread_mutex_lock(ags_recycling_context_get_class_mutex());
+  
+  recycling_context_mutex = recycling_context->mutex;
+  
+  pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recycling_context_mutex);
 
   new_length = recycling_context->length + 1;
-  new_recycling_context = (AgsRecyclingContext *) g_object_new(AGS_TYPE_RECYCLING_CONTEXT,
-							       "length", new_length,
-							       NULL);
 
-  memcpy(new_recycling_context->recycling, recycling_context->recycling, new_length * sizeof(AgsRecycling *));
-  new_recycling_context->recycling[new_length] = recycling;
+  pthread_mutex_unlock(recycling_context_mutex);
+
+  /* resize */
+  g_object_set(recycling_context,
+	       "length", new_length,
+	       NULL);
+  
+  /*  */
+  recycling_context->recycling[new_length - 1] = recycling;
 
   /* ref count */
-  for(i = 0; i < new_recycling_context->length; i++){
-    g_object_ref(new_recycling_context->recycling[i]);
-  }
-
-  pthread_mutex_unlock(recycling_context->mutex);
-
-  return(new_recycling_context);
+  g_object_ref(recycling);
 }
 
 /**
@@ -521,46 +620,69 @@ ags_recycling_context_add(AgsRecyclingContext *recycling_context,
  *
  * Removes a recycling in a context.
  *
- * Returns: the new recycling context
- *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
-AgsRecyclingContext*
+void
 ags_recycling_context_remove(AgsRecyclingContext *recycling_context,
 			     AgsRecycling *recycling)
 {
-  AgsRecyclingContext *new_recycling_context;
+  AgsRecycling **old_context;
 
   gint new_length;
-  gint position;
-  guint i;
+  guint i, j;
 
-  if(!AGS_IS_RECYCLING_CONTEXT(recycling_context)){
-    return(NULL);
+  pthread_mutex_t *recycling_context_mutex;
+
+  if(!AGS_IS_RECYCLING_CONTEXT(recycling_context) ||
+     !AGS_IS_RECYCLING(recycling)){
+    return;
   }
 
-  pthread_mutex_lock(recycling_context->mutex);
+  /* get recycling context mutex */
+  pthread_mutex_lock(ags_recycling_context_get_class_mutex());
   
-  new_recycling_context = (AgsRecyclingContext *) g_object_new(AGS_TYPE_RECYCLING_CONTEXT,
-							       NULL);
+  recycling_context_mutex = recycling_context->mutex;
+  
+  pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
 
-  new_length = recycling_context->length - 1;
+  /* get some fields */
+  pthread_mutex_lock(recycling_context_mutex);
 
-  new_recycling_context->recycling = (AgsRecycling **) malloc(new_length * sizeof(AgsRecycling *));
+  if(recycling_context->length > 0){
+    old_context = (AgsRecycling **) malloc(recycling_context->length * sizeof(AgsRecycling *));
+    memcpy(old_context, recycling_context->recycling, recycling_context->length * sizeof(AgsRecycling *));
+  
+    new_length = recycling_context->length - 1;
+  }else{
+    old_context = NULL;
+    
+    new_length = 0;
+  }
+  
+  pthread_mutex_unlock(recycling_context_mutex);
 
-  for(position = 0; recycling_context->recycling[position] != recycling; position++);
+  /* resize */
+  g_object_set(recycling_context,
+	       "length", new_length,
+	       NULL);
 
-  memcpy(new_recycling_context->recycling, recycling_context->recycling, (new_length - position) * sizeof(AgsRecycling *));
-  memcpy(&(new_recycling_context->recycling[position + 1]), recycling_context->recycling, (-1 * (position - new_length)) * sizeof(AgsRecycling *));
+  /* reset */
+  pthread_mutex_lock(recycling_context_mutex);
+
+  for(i = 0, j = 0; i < new_length; i++){
+    if(recycling_context->recycling[j] != recycling){
+      recycling_context->recycling[j] = old_context[i];
+      j++;
+    }
+  }
+  
+  pthread_mutex_unlock(recycling_context_mutex);
 
   /* ref count */
-  for(i = 0; i < new_recycling_context->length; i++){
-    g_object_ref(new_recycling_context->recycling[i]);
-  }
+  g_object_unref(recycling);
 
-  pthread_mutex_unlock(recycling_context->mutex);
-
-  return(new_recycling_context);
+  /* free old context */
+  g_free(old_context);
 }
 
 /**
@@ -571,45 +693,67 @@ ags_recycling_context_remove(AgsRecyclingContext *recycling_context,
  *
  * Inserts a recycling to a context.
  *
- * Returns: the new recycling context
- *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
-AgsRecyclingContext*
+void
 ags_recycling_context_insert(AgsRecyclingContext *recycling_context,
 			     AgsRecycling *recycling,
 			     gint position)
 {
-  AgsRecyclingContext *new_recycling_context;
+  AgsRecycling **old_context;
 
   gint new_length;
-  guint i;
+  guint i, j;
 
-  if(!AGS_IS_RECYCLING_CONTEXT(recycling_context)){
-    return(NULL);
+  pthread_mutex_t *recycling_context_mutex;
+
+  if(!AGS_IS_RECYCLING_CONTEXT(recycling_context) ||
+     !AGS_IS_RECYCLING(recycling)){
+    return;
   }
 
-  pthread_mutex_lock(recycling_context->mutex);
-
-  new_recycling_context = (AgsRecyclingContext *) g_object_new(AGS_TYPE_RECYCLING_CONTEXT,
-							       NULL);
-
-  new_length = recycling_context->length + 1;
-
-  new_recycling_context->recycling = (AgsRecycling **) malloc(new_length * sizeof(AgsRecycling *));
-
-  memcpy(new_recycling_context->recycling, recycling_context->recycling, (new_length - position) * sizeof(AgsRecycling *));
-  new_recycling_context->recycling[position] = recycling;
-  memcpy(&(new_recycling_context->recycling[position + 1]), recycling_context->recycling, (-1 * (position - new_length)) * sizeof(AgsRecycling *));
+  /* get recycling context mutex */
+  pthread_mutex_lock(ags_recycling_context_get_class_mutex());
   
-  /* ref count */
-  for(i = 0; i < new_recycling_context->length; i++){
-    g_object_ref(new_recycling_context->recycling[i]);
+  recycling_context_mutex = recycling_context->mutex;
+  
+  pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recycling_context_mutex);
+
+  if(recycling_context->length > 0){
+    old_context = (AgsRecycling **) malloc(recycling_context->length * sizeof(AgsRecycling *));
+    memcpy(old_context, recycling_context->recycling, recycling_context->length * sizeof(AgsRecycling *));
+  }else{
+    old_context = NULL;
+  }
+  
+  new_length = recycling_context->length + 1;
+  
+  pthread_mutex_unlock(recycling_context_mutex);
+
+  /* resize */
+  g_object_set(recycling_context,
+	       "length", new_length,
+	       NULL);
+
+  /* reset */
+  pthread_mutex_lock(recycling_context_mutex);
+
+  for(i = 0, j = 0; i < new_length - 1; i++){
+    if(i != position){
+      recycling_context->recycling[i] = old_context[j];
+      j++;
+    }
   }
 
-  pthread_mutex_unlock(recycling_context->mutex);
+  recycling_context->recycling[position] = recycling;
+  
+  pthread_mutex_unlock(recycling_context_mutex);
 
-  return(new_recycling_context);
+  /* ref count */
+  g_object_ref(recycling);
 }
 
 /**
@@ -620,26 +764,34 @@ ags_recycling_context_insert(AgsRecyclingContext *recycling_context,
  *
  * Returns: the topmost recycling context
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecyclingContext*
 ags_recycling_context_get_toplevel(AgsRecyclingContext *recycling_context)
 {
+  AgsRecyclingContext *parent;
+  
+  pthread_mutex_t *recycling_context_mutex;
+
   if(!AGS_IS_RECYCLING_CONTEXT(recycling_context)){
     return(NULL);
   }
 
-  pthread_mutex_lock(recycling_context->mutex);
+  do{
+    /* get recycling context mutex */
+    pthread_mutex_lock(ags_recycling_context_get_class_mutex());
+  
+    recycling_context_mutex = recycling_context->mutex;
+  
+    pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
 
-  while(recycling_context->parent != NULL){
-    recycling_context = recycling_context->parent;
+    /* get some fields */
+    pthread_mutex_lock(recycling_context_mutex);
 
-    pthread_mutex_unlock(recycling_context->mutex);
-
-    pthread_mutex_lock(recycling_context->mutex);
-  }
-
-  pthread_mutex_unlock(recycling_context->mutex);
+    parent = recycling_context->parent;
+    
+    pthread_mutex_unlock(recycling_context_mutex);
+  }while(parent != NULL && (recycling_context = parent) != NULL);
   
   return(recycling_context);
 }
@@ -653,7 +805,7 @@ ags_recycling_context_get_toplevel(AgsRecyclingContext *recycling_context)
  *
  * Returns: recycling array index
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gint
 ags_recycling_context_find(AgsRecyclingContext *recycling_context,
@@ -661,21 +813,30 @@ ags_recycling_context_find(AgsRecyclingContext *recycling_context,
 {
   gint i;
 
-  if(!AGS_IS_RECYCLING_CONTEXT(recycling_context)){
+  if(!AGS_IS_RECYCLING_CONTEXT(recycling_context) ||
+     !AGS_IS_RECYCLING(recycling)){
     return(-1);
   }
+  
+  /* get recycling context mutex */
+  pthread_mutex_lock(ags_recycling_context_get_class_mutex());
+  
+  recycling_context_mutex = recycling_context->mutex;
+  
+  pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
 
-  pthread_mutex_lock(recycling_context->mutex);
+  /* find */
+  pthread_mutex_lock(recycling_context_mutex);
 
   for(i = 0; i < recycling_context->length; i++){
     if(recycling_context->recycling[i] == recycling){
-      pthread_mutex_unlock(recycling_context->mutex);
+      pthread_mutex_unlock(recycling_context_mutex);
       
       return(i);
     }
   }
 
-  pthread_mutex_unlock(recycling_context->mutex);
+  pthread_mutex_unlock(recycling_context_mutex);
 
   return(-1);
 }
