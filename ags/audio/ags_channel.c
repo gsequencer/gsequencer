@@ -9920,14 +9920,133 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 						  AgsRecyclingContext *recycling_context,
 						  gint sound_scope, guint staging_flags)
   {
-    //TODO:JK: implement me
+    AgsAudio *current_audio;
+    AgsChannel *current_channel;
+    AgsRecallID *current_recall_id;
+
+    GList *recall_id;
+
+    guint current_audio_flags;
+    guint audio_channel;
+    guitn line;
+    
+    pthread_mutex_t *current_channel_mutex;
+
+    if(!AGS_IS_CHANNEL(channel) ||
+       !AGS_IS_RECYCLING_CONTEXT(recycling_context)){
+      return;
+    }
+
+    current_channel = channel;
+    
+    if(AGS_IS_OUTPUT(channel)){
+      goto ags_channel_recursive_prepare_run_stage_up_OUTPUT;
+    }
+
+    while(current_channel != NULL){
+      /* get current channel mutex */
+      pthread_mutex_lock(ags_channel_get_class_mutex());
+    
+      current_channel_mutex = current_channel->obj_mutex;
+    
+      pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+      /* check scope - input */
+      recall_id = ags_channel_check_scope(current_channel, sound_scope);
+      
+      if(recall_id == NULL){
+	current_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+					 "recycling-context", recycling_context,
+					 NULL);
+	ags_recall_id_set_sound_scope(current_recall_id, sound_scope);
+
+	ags_channel_add_recall_id(channel,
+				  recall_id);
+      }
+      
+      /* get current audio */
+      pthread_mutex_lock(current_channel_mutex);
+      
+      current_audio = current_channel->audio;
+
+      pthread_mutex_unlock(current_channel_mutex);
+      
+      /* get current audio mutex */
+      pthread_mutex_lock(ags_audio_get_class_mutex());
+  
+      current_audio_mutex = current_audio->obj_mutex;
+  
+      pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+      /* check scope - audio */
+      recall_id = ags_audio_check_scope(current_channel, sound_scope);
+      
+      if(recall_id == NULL){
+	current_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+					 "recycling-context", recycling_context,
+					 NULL);
+	ags_recall_id_set_sound_scope(current_recall_id, sound_scope);
+
+	ags_audio_add_recall_id(channel,
+				recall_id);
+      }
+
+      /* get output */
+      pthread_mutex_lock(current_audio_mutex);
+
+      current_channel = current_audio->output;
+      current_audio_flags = current_audio->flags;
+
+      audio_channel = current_channel->audio_channel;
+      line = current_channel->line;
+      
+      pthread_mutex_unlock(current_audio_mutex);
+
+      if((AGS_AUDIO_ASYNC & (audio_flags)) != 0){
+	current_channel = ags_channel_nth(current_channel,
+					  audio_channel);
+      }else{
+	current_channel = ags_channel_nth(current_channel,
+					  line);
+      }
+      
+    ags_channel_recursive_prepare_run_stage_up_OUTPUT:
+      
+      /* get current channel mutex */
+      pthread_mutex_lock(ags_channel_get_class_mutex());
+    
+      current_channel_mutex = current_channel->obj_mutex;
+    
+      pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+      /* check scope - output */
+      recall_id = ags_channel_check_scope(current_channel, sound_scope);
+      
+      if(recall_id == NULL){
+	current_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+					 "recycling-context", recycling_context,
+					 NULL);
+	ags_recall_id_set_sound_scope(current_recall_id, sound_scope);
+
+	ags_channel_add_recall_id(channel,
+				  recall_id);
+      }
+      
+      /* iterate */
+      pthread_mutex_lock(current_channel_mutex);
+      
+      current_channel = current_channel->link;
+
+      pthread_mutex_unlock(current_channel_mutex);
+    }
   }
 
   void ags_channel_recursive_prepare_run_stage_down(AgsChannel *channel,
 						    AgsRecyclingContext *recycling_context,
 						    gint sound_scope, guint staging_flags)
   {
-    if(channel == NULL){
+    if(!AGS_IS_CHANNEL(channel) ||
+       !AGS_IS_RECYCLING_CONTEXT(recycling_context)){
       return;
     }
 
@@ -9952,7 +10071,8 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     pthread_mutex_t *channel_mutex;
     pthread_mutex_t *input_mutex;
 
-    if(channel == NULL){
+    if(!AGS_IS_CHANNEL(channel) ||
+       !AGS_IS_RECYCLING_CONTEXT(recycling_context)){
       return;
     }
 

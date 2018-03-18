@@ -1038,7 +1038,7 @@ ags_recycling_context_remove_child(AgsRecyclingContext *parent,
   if(g_list_find(parent->children, child) == NULL){
     parent->children = g_list_remove(parent->children,
 				     child);
-    g_object_UNref(child);
+    g_object_unref(child);
   }
   
   pthread_mutex_unlock(parent_mutex);
