@@ -12122,28 +12122,28 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 						 sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_RESOLVE);
     }else{
       /* add recall id */
-      ags_channel_recursive_prepare_run_stage_up(channel,
-						 recycling_context,
-						 sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_ADD_RECALL_ID);
       ags_channel_recursive_prepare_run_stage_down(link,
 						   recycling_context,
 						   sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_ADD_RECALL_ID);
-
-      /* duplicate */
       ags_channel_recursive_prepare_run_stage_up(channel,
 						 recycling_context,
-						 sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_DUPLICATE);
+						 sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_ADD_RECALL_ID);
+
+      /* duplicate */
       ags_channel_recursive_prepare_run_stage_down(link,
 						   recycling_context,
 						   sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_DUPLICATE);
-
-      /* resolve */
       ags_channel_recursive_prepare_run_stage_up(channel,
 						 recycling_context,
-						 sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_RESOLVE);
+						 sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_DUPLICATE);
+
+      /* resolve */
       ags_channel_recursive_prepare_run_stage_down(link,
 						   recycling_context,
 						   sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_RESOLVE);
+      ags_channel_recursive_prepare_run_stage_up(channel,
+						 recycling_context,
+						 sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_RESOLVE);
     }
   }
 
@@ -12157,12 +12157,12 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 					  sound_scope, staging_flags);
   }else{
     /* do run stage - init/play recall */
-    ags_channel_recursive_do_run_stage_up(channel,
-					  recycling_context,
-					  sound_scope, staging_flags);
     ags_channel_recursive_do_run_stage_down(link,
 					    recycling_context,
 					    sound_scope, staging_flags);
+    ags_channel_recursive_do_run_stage_up(channel,
+					  recycling_context,
+					  sound_scope, staging_flags);
   }
     
   if((AGS_SOUND_STAGING_CANCEL & (staging_flags)) != 0){
@@ -12176,12 +12176,12 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 						 sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_CANCEL);
     }else{
       /* cancel */
-      ags_channel_recursive_cleanup_run_stage_up(channel,
-						 recycling_context,
-						 sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_CANCEL);
       ags_channel_recursive_cleanup_run_stage_down(link,
 						   recycling_context,
 						   sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_CANCEL);
+      ags_channel_recursive_cleanup_run_stage_up(channel,
+						 recycling_context,
+						 sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_CANCEL);
     }
   }
     
@@ -12196,12 +12196,12 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 						 sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_REMOVE);
     }else{
       /* remove */
-      ags_channel_recursive_cleanup_run_stage_up(channel,
-						 recycling_context,
-						 sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_REMOVE);
       ags_channel_recursive_cleanup_run_stage_down(link,
 						   recycling_context,
 						   sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_REMOVE);
+      ags_channel_recursive_cleanup_run_stage_up(channel,
+						 recycling_context,
+						 sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_REMOVE);
     }
   }
 }
