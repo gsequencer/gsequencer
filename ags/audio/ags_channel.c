@@ -8758,6 +8758,10 @@ ags_channel_real_resolve_recall(AgsChannel *channel,
       list_start = g_list_copy(channel->play);
 
     pthread_mutex_unlock(play_mutex);
+
+    /* reverse play context */
+    list =
+      list_start = g_list_reverse(list_start);
   }else{
     pthread_mutex_t *recall_mutex;
 
@@ -8775,6 +8779,10 @@ ags_channel_real_resolve_recall(AgsChannel *channel,
       list_start = g_list_copy(channel->recall);
     
     pthread_mutex_unlock(recall_mutex);
+
+    /* reverse recall context */
+    list =
+      list_start = g_list_reverse(list_start);
   }
 
   /* resolve */
@@ -8904,6 +8912,10 @@ ags_channel_real_init_recall(AgsChannel *channel,
       list_start = g_list_copy(channel->play);
 
     pthread_mutex_unlock(play_mutex);
+
+    /* reverse play context */
+    list =
+      list_start = g_list_reverse(list_start);
   }else{
     pthread_mutex_t *recall_mutex;
 
@@ -8921,6 +8933,10 @@ ags_channel_real_init_recall(AgsChannel *channel,
       list_start = g_list_copy(channel->recall);
     
     pthread_mutex_unlock(recall_mutex);
+
+    /* reverse recall context */
+    list =
+      list_start = g_list_reverse(list_start);
   }
   
   /* init  */
@@ -9066,6 +9082,10 @@ ags_channel_real_play_recall(AgsChannel *channel,
     list_start = g_list_copy(channel->play);
 
     pthread_mutex_unlock(play_mutex);
+
+    /* reverse play context */
+    list =
+      list_start = g_list_reverse(list_start);
   }else{
     pthread_mutex_t *recall_mutex;
 
@@ -9082,6 +9102,10 @@ ags_channel_real_play_recall(AgsChannel *channel,
     list_start = g_list_copy(channel->recall);
     
     pthread_mutex_unlock(recall_mutex);
+
+    /* reverse recall context */
+    list =
+      list_start = g_list_reverse(list_start);
   }
 
   /* play  */
@@ -9217,6 +9241,10 @@ ags_channel_real_cancel_recall(AgsChannel *channel,
       list_start = g_list_copy(channel->play);
 
     pthread_mutex_unlock(play_mutex);
+
+    /* reverse play context */
+    list =
+      list_start = g_list_reverse(list_start);
   }else{
     pthread_mutex_t *recall_mutex;
 
@@ -9234,6 +9262,10 @@ ags_channel_real_cancel_recall(AgsChannel *channel,
       list_start = g_list_copy(channel->recall);
     
     pthread_mutex_unlock(recall_mutex);
+
+    /* reverse recall context */
+    list =
+      list_start = g_list_reverse(list_start);
   }
 
   /* cancel  */  
@@ -9366,6 +9398,10 @@ ags_channel_real_done_recall(AgsChannel *channel,
       list_start = g_list_copy(channel->play);
 
     pthread_mutex_unlock(play_mutex);
+
+    /* reverse play context */
+    list =
+      list_start = g_list_reverse(list_start);
   }else{
     pthread_mutex_t *recall_mutex;
 
@@ -9383,6 +9419,10 @@ ags_channel_real_done_recall(AgsChannel *channel,
       list_start = g_list_copy(channel->recall);
     
     pthread_mutex_unlock(recall_mutex);
+
+    /* reverse recall context */
+    list =
+      list_start = g_list_reverse(list_start);
   }
 
   /* done  */

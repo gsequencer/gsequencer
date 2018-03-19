@@ -8087,6 +8087,10 @@ ags_audio_real_duplicate_recall(AgsAudio *audio,
     /* reverse play context */
     list =
       list_start = g_list_reverse(list_start);
+
+    /* reverse play context */
+    list =
+      list_start = g_list_reverse(list_start);
   }else{
     pthread_mutex_t *recall_mutex;
 
@@ -8105,6 +8109,10 @@ ags_audio_real_duplicate_recall(AgsAudio *audio,
     list_start = g_list_copy(audio->recall);
     
     pthread_mutex_unlock(recall_mutex);
+
+    /* reverse recall context */
+    list =
+      list_start = g_list_reverse(list_start);
 
     /* reverse recall context */
     list =
