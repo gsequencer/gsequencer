@@ -399,6 +399,8 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   core_audio_port->midi_port = NULL;
 #endif
 
+  core_audio_port->midi_port_number = 0;
+  
   g_atomic_int_set(&(core_audio_port->is_empty),
 		   FALSE);
   
@@ -836,8 +838,10 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       //NOTE:JK: not implemented
     }else{
 #ifdef AGS_WITH_CORE_AUDIO
+      MIDIEndpointRef endpoint;
+      
       retval = MIDIClientCreate(CFSTR("Advanced Gtk+ Sequencer - Core MIDI to System Sounds Demo"),
-				ags_core_audio_port_midi_notify_callback,
+				NULL,
 				core_audio_port,
 				core_audio_port->midi_client);
 
@@ -853,7 +857,19 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       if(retval != noErr){
 	return;
       }
-#endif
+
+      endpoint = MIDIGetSource(core_audio_port->midi_port_number);
+
+      if(endpoint == 0){
+	return;
+      }
+      
+      retval = MIDIPortConnectSource(*(core_audio_port->midi_port), endpoint, NULL);
+
+      if(retval != noErr){
+	return;
+      }
+ #endif
     }
   }
   
@@ -1206,6 +1222,7 @@ void
 ags_core_audio_port_midi_notify_callback(const MIDINotification  *message,
 					 void *ref_con)
 {
+  //NOTE:JK: unused
 }
 
 void
@@ -1213,6 +1230,190 @@ ags_core_audio_port_midi_read_callback(const MIDIPacketList *pkt_list,
 				       void *ref_con,
 				       void *conn_ref_con)
 {
+  AgsCoreAudioPort *core_audio_port;
+  AgsCoreAudioMidiin *core_audio_midiin;
+  
+  AgsAudioLoop *audio_loop;
+
+  AgsMutexManager *mutex_manager;
+  AgsTaskThread *task_thread;
+  
+  AgsApplicationContext *application_context;
+
+  MIDIPacket *packet;
+  
+  guint nth_buffer;
+  guint i;
+  gboolean no_event;
+
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *mutex;
+  pthread_mutex_t *device_mutex;
+  pthread_mutex_t *callback_mutex;
+  pthread_mutex_t *callback_finish_mutex;
+
+  core_audio_port = (AgsCoreAudioPort *) ref_con;
+
+  if(core_audio_port == NULL){
+    return;
+  }
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  application_context = ags_application_context_get_instance();
+  
+  /*  */  
+  pthread_mutex_lock(application_mutex);
+
+  mutex = ags_mutex_manager_lookup(mutex_manager,
+				   (GObject *) core_audio_port);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /*
+   * process midi
+   */
+  /*  */  
+  pthread_mutex_lock(application_mutex);
+
+  if(application_context != NULL){
+    audio_loop = (AgsAudioLoop *) application_context->main_loop;
+    task_thread = (AgsTaskThread *) application_context->task_thread;
+  }else{
+    audio_loop = NULL;
+    task_thread = NULL;
+  }
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* interrupt GUI */
+  if(task_thread != NULL){
+    pthread_mutex_lock(task_thread->launch_mutex);
+  }
+  
+  if(audio_loop != NULL){
+    pthread_mutex_lock(audio_loop->timing_mutex);
+  
+    g_atomic_int_set(&(audio_loop->time_spent),
+		     audio_loop->time_cycle);
+  
+    pthread_mutex_unlock(audio_loop->timing_mutex);
+  
+    //    ags_main_loop_interrupt(AGS_MAIN_LOOP(audio_loop),
+    //			    AGS_THREAD_SUSPEND_SIG,
+    //			    0, &time_spent);
+  }
+
+  if(task_thread != NULL){
+    pthread_mutex_unlock(task_thread->launch_mutex);
+  }
+
+  /*  */
+  pthread_mutex_lock(mutex);
+
+  core_audio_midiin = core_audio_port->core_audio_device;
+
+  pthread_mutex_unlock(mutex);
+  
+  /*  */  
+  pthread_mutex_lock(application_mutex);
+  
+  device_mutex = ags_mutex_manager_lookup(mutex_manager,
+					  (GObject *) core_audio_midiin);
+  
+  pthread_mutex_unlock(application_mutex);
+  
+  /*  */
+  pthread_mutex_lock(device_mutex);
+  
+  /* wait callback */
+  no_event = TRUE;
+  
+  if((AGS_CORE_AUDIO_MIDIIN_PASS_THROUGH & (g_atomic_int_get(&(core_audio_midiin->sync_flags)))) == 0){
+    callback_mutex = core_audio_midiin->callback_mutex;
+    
+    pthread_mutex_unlock(device_mutex);
+	
+    /* give back computing time until ready */
+    pthread_mutex_lock(callback_mutex);
+    
+    if((AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE & (g_atomic_int_get(&(core_audio_midiin->sync_flags)))) == 0){
+      g_atomic_int_or(&(core_audio_midiin->sync_flags),
+		      AGS_CORE_AUDIO_MIDIIN_CALLBACK_WAIT);
+      
+      while((AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE & (g_atomic_int_get(&(core_audio_midiin->sync_flags)))) == 0 &&
+	    (AGS_CORE_AUDIO_MIDIIN_CALLBACK_WAIT & (g_atomic_int_get(&(core_audio_midiin->sync_flags)))) != 0){
+	pthread_cond_wait(core_audio_midiin->callback_cond,
+			  callback_mutex);
+      }
+    
+      g_atomic_int_and(&(core_audio_midiin->sync_flags),
+		       (~(AGS_CORE_AUDIO_MIDIIN_CALLBACK_WAIT |
+			  AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE)));
+    }
+    
+    pthread_mutex_unlock(callback_mutex);
+    
+    no_event = FALSE;
+
+    pthread_mutex_lock(device_mutex);
+  }
+
+  /* get buffer */  
+  if((AGS_CORE_AUDIO_MIDIIN_BUFFER0 & (core_audio_midiin->flags)) != 0){
+    nth_buffer = 3;
+  }else if((AGS_CORE_AUDIO_MIDIIN_BUFFER1 & (core_audio_midiin->flags)) != 0){
+    nth_buffer = 0;
+  }else if((AGS_CORE_AUDIO_MIDIIN_BUFFER2 & (core_audio_midiin->flags)) != 0){
+    nth_buffer = 1;
+  }else if((AGS_CORE_AUDIO_MIDIIN_BUFFER3 & (core_audio_midiin->flags)) != 0){
+    nth_buffer = 2;
+  }
+
+  packet = &pkt_list->packet[0];
+
+  for(i = 0; i < pkt_list->numPackets; i++){
+    if(packet->length == 0){
+      packet = MIDIPacketNext(packet);
+      
+      continue;
+    }
+
+    if(ceil((core_audio_midiin->buffer_size[nth_buffer] + packet->length) / 4096.0) > ceil(core_audio_midiin->buffer_size[nth_buffer] / 4096.0)){
+      if(core_audio_midiin->buffer[nth_buffer] == NULL){
+	core_audio_midiin->buffer[nth_buffer] = malloc(4096 * sizeof(char));
+      }else{
+	core_audio_midiin->buffer[nth_buffer] = realloc(core_audio_midiin->buffer[nth_buffer],
+						  (ceil(core_audio_midiin->buffer_size[nth_buffer] / 4096.0) * 4096 + 4096) * sizeof(char));
+      }
+    }
+
+    memcpy(&(core_audio_midiin->buffer[nth_buffer][core_audio_midiin->buffer_size[nth_buffer]]),
+	   packet->data,
+	   packet->length);
+    core_audio_midiin->buffer_size[nth_buffer] += packet->length;
+
+    packet = MIDIPacketNext(packet);
+  }
+  
+  /* signal finish */
+  if(!no_event){        
+    callback_finish_mutex = core_audio_midiin->callback_finish_mutex;
+	
+    pthread_mutex_lock(callback_finish_mutex);
+
+    g_atomic_int_or(&(core_audio_midiin->sync_flags),
+		    AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE);
+    
+    if((AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(core_audio_midiin->sync_flags)))) != 0){
+      pthread_cond_signal(core_audio_midiin->callback_finish_cond);
+    }
+
+    pthread_mutex_unlock(callback_finish_mutex);
+  }
+  
+  pthread_mutex_unlock(device_mutex);
 }
 #endif
 
