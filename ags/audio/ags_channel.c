@@ -1245,7 +1245,16 @@ ags_channel_set_property(GObject *gobject,
 {
   AgsChannel *channel;
   
+  pthread_mutex_t *channel_mutex;
+
   channel = AGS_CHANNEL(gobject);
+
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -1254,7 +1263,11 @@ ags_channel_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
+      pthread_mutex_lock(channel_mutex);
+
       if((AgsAudio *) channel->audio == audio){
+	pthread_mutex_unlock(channel_mutex);
+	
 	return;
       }
 
@@ -1267,6 +1280,8 @@ ags_channel_set_property(GObject *gobject,
       }
 
       channel->audio = (GObject *) audio;
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_OUTPUT_SOUNDCARD:
@@ -1281,7 +1296,11 @@ ags_channel_set_property(GObject *gobject,
     break;
   case PROP_OUTPUT_SOUNDCARD_CHANNEL:
     {
+      pthread_mutex_lock(channel_mutex);
+
       channel->output_soundcard_channel = g_value_get_uint(value);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_INPUT_SOUNDCARD:
@@ -1296,7 +1315,11 @@ ags_channel_set_property(GObject *gobject,
     break;
   case PROP_INPUT_SOUNDCARD_CHANNEL:
     {
+      pthread_mutex_lock(channel_mutex);
+
       channel->input_soundcard_channel = g_value_get_uint(value);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_SAMPLERATE:
@@ -1331,22 +1354,38 @@ ags_channel_set_property(GObject *gobject,
     break;
   case PROP_OCTAVE:
     {
+      pthread_mutex_lock(channel_mutex);
+
       channel->octave = g_value_get_int(value);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_KEY:
     {
+      pthread_mutex_lock(channel_mutex);
+
       channel->key = g_value_get_uint(value);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_ABSOLUTE_KEY:
     {
+      pthread_mutex_lock(channel_mutex);
+
       channel->absolute_key = g_value_get_int(value);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_NOTE_FREQUENCY:
     {
+      pthread_mutex_lock(channel_mutex);
+
       channel->note_frequency = g_value_get_double(value);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_NOTE_KEY:
@@ -1355,7 +1394,11 @@ ags_channel_set_property(GObject *gobject,
 
       note_key = g_value_get_string(value);
 
+      pthread_mutex_lock(channel_mutex);
+
       if(channel->note_key == note_key){
+	pthread_mutex_unlock(channel_mutex);
+	
 	return;
       }
 
@@ -1364,11 +1407,17 @@ ags_channel_set_property(GObject *gobject,
       }
 
       channel->note_key = g_strdup(note_key);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_MIDI_NOTE:
     {
+      pthread_mutex_lock(channel_mutex);
+
       channel->midi_note = g_value_get_uint(value);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_LINK:
@@ -1377,10 +1426,16 @@ ags_channel_set_property(GObject *gobject,
 
       link = (AgsChannel *) g_value_get_object(value);
 
+      pthread_mutex_lock(channel_mutex);
+      
       if(channel->link == link){
+	pthread_mutex_unlock(channel_mutex);
+	
 	return;
       }
 
+      pthread_mutex_unlock(channel_mutex);
+      
       ags_channel_set_link(channel,
 			   link,
 			   NULL);
@@ -1392,7 +1447,11 @@ ags_channel_set_property(GObject *gobject,
 
       playback = (AgsPlayback *) g_value_get_object(value);
 
+      pthread_mutex_lock(channel_mutex);
+      
       if(channel->playback == (GObject *) playback){
+	pthread_mutex_unlock(channel_mutex);
+
 	return;
       }
 
@@ -1405,6 +1464,8 @@ ags_channel_set_property(GObject *gobject,
       }
 
       channel->playback = (GObject *) playback;
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_PATTERN:
@@ -1413,10 +1474,16 @@ ags_channel_set_property(GObject *gobject,
 
       pattern = (AgsPattern *) g_value_get_pointer(value);
 
+      pthread_mutex_lock(channel_mutex);
+      
       if(pattern == NULL ||
 	 g_list_find(channel->pattern, pattern) != NULL){
+	pthread_mutex_unlock(channel_mutex);
+	
 	return;
       }
+
+      pthread_mutex_unlock(channel_mutex);
 
       ags_channel_add_pattern(channel,
 			      (GObject *) pattern);
@@ -1428,10 +1495,16 @@ ags_channel_set_property(GObject *gobject,
 
       remote_channel = (AgsRemoteChannel *) g_value_get_object(value);
 
+      pthread_mutex_lock(channel_mutex);
+      
       if(remote_channel == NULL ||
 	 g_list_find(channel->remote_channel, remote_channel) != NULL){
+	pthread_mutex_unlock(channel_mutex);
+
 	return;
       }
+
+      pthread_mutex_unlock(channel_mutex);
 
       ags_channel_add_remote_channel(channel,
 				     (GObject *) remote_channel);
@@ -1445,8 +1518,12 @@ ags_channel_set_property(GObject *gobject,
 
       if(recall_id == NULL ||
 	 g_list_find(channel->recall_id, recall_id) != NULL){
+	pthread_mutex_unlock(channel_mutex);
+
 	return;
       }
+
+      pthread_mutex_unlock(channel_mutex);
 
       ags_channel_add_recall_id(channel,
 				recall_id);
@@ -1458,10 +1535,16 @@ ags_channel_set_property(GObject *gobject,
 
       recycling_context = (AgsRecyclingContext *) g_value_get_pointer(value);
 
+      pthread_mutex_lock(channel_mutex);
+
       if(recycling_context == NULL ||
 	 g_list_find(channel->context, recycling_context) != NULL){
+	pthread_mutex_unlock(channel_mutex);
+
 	return;
       }
+
+      pthread_mutex_unlock(channel_mutex);
 
       ags_channel_add_recycling_context(channel,
 				       (GObject *) recycling_context);
@@ -1473,10 +1556,16 @@ ags_channel_set_property(GObject *gobject,
 
       recall_container = (AgsRecallContainer *) g_value_get_pointer(value);
 
+      pthread_mutex_lock(channel_mutex);
+
       if(recall_container == NULL ||
 	 g_list_find(channel->container, recall_container) != NULL){
+	pthread_mutex_unlock(channel_mutex);
+
 	return;
       }
+
+      pthread_mutex_unlock(channel_mutex);
 
       ags_channel_add_recall_container(channel,
 				       (GObject *) recall_container);
@@ -1486,12 +1575,28 @@ ags_channel_set_property(GObject *gobject,
     {
       AgsRecall *play;
 
+      pthread_mutex_t *play_mutex;
+
+      /* get play mutex */
+      pthread_mutex_lock(ags_audio_get_class_mutex());
+  
+      play_mutex = audio->play_mutex;
+  
+      pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+      /*  */
       play = (AgsRecall *) g_value_get_pointer(value);
+
+      pthread_mutex_lock(play_mutex);
 
       if(play == NULL ||
 	 g_list_find(channel->play, play) != NULL){
+	pthread_mutex_unlock(play_mutex);
+
 	return;
       }
+
+      pthread_mutex_unlock(play_mutex);
 
       ags_channel_add_recall(channel,
 			     (GObject *) play,
@@ -1502,12 +1607,28 @@ ags_channel_set_property(GObject *gobject,
     {
       AgsRecall *recall;
       
+      pthread_mutex_t *recall_mutex;
+
+      /* get recall mutex */
+      pthread_mutex_lock(ags_audio_get_class_mutex());
+  
+      recall_mutex = audio->recall_mutex;
+  
+      pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+      /*  */
       recall = (AgsRecall *) g_value_get_pointer(value);
+
+      pthread_mutex_lock(recall_mutex);
 
       if(recall == NULL ||
 	 g_list_find(channel->recall, recall) != NULL){
+	pthread_mutex_unlock(recall_mutex);
+	
 	return;
       }
+
+      pthread_mutex_unlock(recall_mutex);
 
       ags_channel_add_recall(channel,
 			     (GObject *) recall,
@@ -1528,107 +1649,218 @@ ags_channel_get_property(GObject *gobject,
 {
   AgsChannel *channel;
 
+  pthread_mutex_t *channel_mutex;
+
   channel = AGS_CHANNEL(gobject);
+
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
 
   switch(prop_id){
   case PROP_AUDIO:
     {
+      pthread_mutex_lock(channel_mutex);
+
       g_value_set_object(value, channel->audio);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_SOUNDCARD:
     {
+      pthread_mutex_lock(channel_mutex);
+
       g_value_set_object(value, channel->soundcard);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_SAMPLERATE:
     {
+      pthread_mutex_lock(channel_mutex);
+
       g_value_set_uint(value, channel->samplerate);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_BUFFER_SIZE:
     {
+      pthread_mutex_lock(channel_mutex);
+
       g_value_set_uint(value, channel->buffer_size);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_FORMAT:
     {
+      pthread_mutex_lock(channel_mutex);
+
       g_value_set_uint(value, channel->format);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_PAD:
     {
+      pthread_mutex_lock(channel_mutex);
+
       g_value_set_uint(value, channel->pad);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_AUDIO_CHANNEL:
     {
+      pthread_mutex_lock(channel_mutex);
+
       g_value_set_uint(value, channel->audio_channel);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_LINE:
     {
+      pthread_mutex_lock(channel_mutex);
+
       g_value_set_uint(value, channel->line);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_NOTE:
     {
+      pthread_mutex_lock(channel_mutex);
+
       g_value_set_string(value, channel->note);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_LINK:
     {
+      pthread_mutex_lock(channel_mutex);
+
       g_value_set_object(value, channel->link);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_FIRST_RECYCLING:
     {
+      pthread_mutex_lock(channel_mutex);
+
       g_value_set_object(value, channel->first_recycling);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_LAST_RECYCLING:
     {
+      pthread_mutex_lock(channel_mutex);
+
       g_value_set_object(value, channel->last_recycling);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_PLAYBACK:
     {
+      pthread_mutex_lock(channel_mutex);
+
       g_value_set_object(value, channel->playback);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_PATTERN:
     {
+      pthread_mutex_lock(channel_mutex);
+
       g_value_set_pointer(value, g_list_copy(channel->pattern));
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_REMOTE_CHANNEL:
     {
+      pthread_mutex_lock(channel_mutex);
+
       g_value_set_pointer(value, g_list_copy(channel->remote_channel));
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_RECALL_ID:
     {
+      pthread_mutex_lock(channel_mutex);
+
       g_value_set_pointer(value, g_list_copy(channel->recall_id));
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_RECYCLING_CONTEXT:
     {
+      pthread_mutex_lock(channel_mutex);
+
       g_value_set_pointer(value, g_list_copy(channel->recycling_context));
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_RECALL_CONTAINER:
     {
+      pthread_mutex_lock(channel_mutex);
+
       g_value_set_pointer(value, g_list_copy(channel->recall_container));
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_PLAY:
     {
-      g_value_set_pointer(value, g_list_copy(channel->play));
+      pthread_mutex_t *play_mutex;
+
+      /* get play mutex */
+      pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+      recall_mutex = channel->recall_mutex;
+  
+      pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+      /*  */
+      pthread_mutex_lock(play_mutex);
+      
+      g_value_set_pointer(value,
+			  g_list_copy(channel->play));
+
+      pthread_mutex_unlock(play_mutex);
     }
     break;
   case PROP_RECALL:
     {      
-      g_value_set_pointer(value, g_list_copy(channel->recall));
+      pthread_mutex_t *recall_mutex;
+
+      /* get recall mutex */
+      pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+      recall_mutex = channel->recall_mutex;
+  
+      pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+      /*  */
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_pointer(value,
+			  g_list_copy(channel->recall));
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:

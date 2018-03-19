@@ -2203,6 +2203,7 @@ ags_audio_set_property(GObject *gobject,
   
       pthread_mutex_unlock(ags_audio_get_class_mutex());
 
+      /*  */
       recall = (AgsRecall *) g_value_get_pointer(value);
 
       pthread_mutex_lock(recall_mutex);
@@ -2678,6 +2679,7 @@ ags_audio_get_property(GObject *gobject,
   
       pthread_mutex_unlock(ags_audio_get_class_mutex());
 
+      /*  */
       pthread_mutex_lock(play_mutex);
       
       g_value_set_pointer(value,
@@ -2697,6 +2699,7 @@ ags_audio_get_property(GObject *gobject,
   
       pthread_mutex_unlock(ags_audio_get_class_mutex());
 
+      /*  */
       pthread_mutex_lock(recall_mutex);
 
       g_value_set_pointer(value,
