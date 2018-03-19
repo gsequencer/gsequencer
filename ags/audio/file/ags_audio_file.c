@@ -19,9 +19,7 @@
 
 #include <ags/audio/file/ags_audio_file.h>
 
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_playable.h>
@@ -692,8 +690,8 @@ void
 ags_audio_file_write(AgsAudioFile *audio_file,
 		     void *buffer, guint buffer_size, guint format)
 {
-  double *playable_buffer;
-
+  int *playable_buffer;
+  
   guint copy_mode;
   guint i;
 
@@ -702,21 +700,32 @@ ags_audio_file_write(AgsAudioFile *audio_file,
     return;
   }
   
-  playable_buffer = (double *) malloc(audio_file->channels * buffer_size * sizeof(double));
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-						  ags_audio_buffer_util_format_from_soundcard(format));
-  
+  playable_buffer = (int *) malloc(audio_file->channels * buffer_size * sizeof(int));
+
+#if __x86_64__
+    copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S64,
+						    ags_audio_buffer_util_format_from_soundcard(format));
+#else
+    copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S32,
+						    ags_audio_buffer_util_format_from_soundcard(format));
+#endif
+      
   for(i = 0; i < audio_file->channels; i++){
-    ags_audio_buffer_util_clear_double(&(playable_buffer[i]), audio_file->channels,
-				       buffer_size);
+#if __x86_64__
+    ags_audio_buffer_util_clear_buffer(&(playable_buffer[i]), audio_file->channels,
+				       buffer_size, AGS_AUDIO_BUFFER_UTIL_S64);
+#else
+    ags_audio_buffer_util_clear_buffer(&(playable_buffer[i]), audio_file->channels,
+				       buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
+#endif
     
     ags_audio_buffer_util_copy_buffer_to_buffer(playable_buffer, audio_file->channels, i,
 						buffer, audio_file->channels, i,
 						buffer_size, copy_mode);
   }					   
   
-  ags_playable_write(AGS_PLAYABLE(audio_file->playable),
-		     playable_buffer, buffer_size);
+  ags_playable_write_int(AGS_PLAYABLE(audio_file->playable),
+			 playable_buffer, buffer_size);
   
   free(playable_buffer);
 }

@@ -19,8 +19,7 @@
 
 #include <ags/audio/file/ags_sndfile.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_playable.h>
 #include <ags/audio/ags_audio_buffer_util.h>
@@ -55,7 +54,9 @@ void ags_sndfile_info(AgsPlayable *playable,
 guint ags_sndfile_get_samplerate(AgsPlayable *playable);
 guint ags_sndfile_get_format(AgsPlayable *playable);
 double* ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error);
+int* ags_sndfile_read_int(AgsPlayable *playable, guint channel, GError **error);
 void ags_sndfile_write(AgsPlayable *playable, double *buffer, guint buffer_length);
+void ags_sndfile_write_int(AgsPlayable *playable, int *buffer, guint buffer_length);
 void ags_sndfile_flush(AgsPlayable *playable);
 void ags_sndfile_seek(AgsPlayable *playable, guint frames, gint whence);
 void ags_sndfile_close(AgsPlayable *playable);
@@ -181,8 +182,10 @@ ags_sndfile_playable_interface_init(AgsPlayableInterface *playable)
   playable->get_format = ags_sndfile_get_format;
 
   playable->read = ags_sndfile_read;
+  playable->read_int = ags_sndfile_read_int;
 
   playable->write = ags_sndfile_write;
+  playable->write_int = ags_sndfile_write_int;
   playable->flush = ags_sndfile_flush;
 
   playable->seek = ags_sndfile_seek;
@@ -445,6 +448,67 @@ ags_sndfile_read(AgsPlayable *playable, guint channel, GError **error)
   return(buffer);
 }
 
+int*
+ags_sndfile_read_int(AgsPlayable *playable, guint channel, GError **error)
+{
+  AgsSndfile *sndfile;
+  int *buffer, *source;
+  guint i;
+  guint num_read;
+
+  sndfile = AGS_SNDFILE(playable);
+
+  if(sndfile->buffer == NULL){
+    sndfile->buffer = 
+      source = (int *) malloc((size_t) sndfile->info->channels *
+			      sndfile->info->frames *
+			      sizeof(int));
+#if __x86_64__
+    ags_audio_buffer_util_clear_buffer(source, sndfile->info->channels,
+				       sndfile->info->frames, AGS_AUDIO_BUFFER_UTIL_S64);
+#else
+    ags_audio_buffer_util_clear_buffer(source, sndfile->info->channels,
+				       sndfile->info->frames, AGS_AUDIO_BUFFER_UTIL_S32);
+#endif
+    
+    //FIXME:JK: work-around comment me out
+    //    sf_seek(sndfile->file, 0, SEEK_SET);  
+    num_read = sf_read_int(sndfile->file, source, sndfile->info->frames * sndfile->info->channels);
+
+    if(num_read != sndfile->info->frames * sndfile->info->channels){
+      g_warning("ags_sndfile_read(): read to many items");
+    }
+  }else{
+    source = sndfile->buffer;
+  }
+
+  if(sndfile->info->frames != 0){
+    buffer = (int *) malloc((size_t) sndfile->info->frames *
+			    sizeof(int));
+#if __x86_64__
+    ags_audio_buffer_util_clear_buffer(buffer, 1,
+				       sndfile->info->frames, AGS_AUDIO_BUFFER_UTIL_S64);
+#else
+    ags_audio_buffer_util_clear_buffer(buffer, 1,
+				       sndfile->info->frames, AGS_AUDIO_BUFFER_UTIL_S32);
+#endif
+    
+#if __x86_64__
+    ags_audio_buffer_util_copy_s64_to_s64(buffer, 1,
+					  &(source[channel]), sndfile->info->channels,
+					  sndfile->info->frames);
+#else
+    ags_audio_buffer_util_copy_s32_to_s32(buffer, 1,
+					  &(source[channel]), sndfile->info->channels,
+					  sndfile->info->frames);
+#endif
+  }else{
+    buffer = NULL;
+  }
+  
+  return(buffer);
+}
+
 void
 ags_sndfile_write(AgsPlayable *playable, double *buffer, guint buffer_length)
 {
@@ -456,6 +520,24 @@ ags_sndfile_write(AgsPlayable *playable, double *buffer, guint buffer_length)
   multi_frames = buffer_length * sndfile->info->channels;
 
   retval = sf_write_double(sndfile->file, buffer, multi_frames);
+
+  if(retval > multi_frames){
+    g_warning("retval > multi_frames");
+    //    sf_seek(sndfile->file, (multi_frames - retval), SEEK_CUR);
+  }
+}
+
+void
+ags_sndfile_write_int(AgsPlayable *playable, int *buffer, guint buffer_length)
+{
+  AgsSndfile *sndfile;
+  sf_count_t multi_frames, retval;
+
+  sndfile = AGS_SNDFILE(playable);
+
+  multi_frames = buffer_length * sndfile->info->channels;
+
+  retval = sf_write_int(sndfile->file, buffer, multi_frames);
 
   if(retval > multi_frames){
     g_warning("retval > multi_frames");

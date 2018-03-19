@@ -79,10 +79,15 @@ struct _AgsPlayableInterface
   double* (*read)(AgsPlayable *playable,
 		  guint channel,
 		  GError **error);
+  int* (*read_int)(AgsPlayable *playable,
+		   guint channel,
+		   GError **error);
 
   /* write sample data */
   void (*write)(AgsPlayable *playable,
 		double *buffer, guint buffer_length);
+  void (*write_int)(AgsPlayable *playable,
+		    int *buffer, guint buffer_length);
   void (*flush)(AgsPlayable *playable);
 
   /* position */
@@ -128,6 +133,9 @@ guint ags_playable_get_format(AgsPlayable *playable);
 double* ags_playable_read(AgsPlayable *playable,
 			  guint channel,
 			  GError **error);
+int* ags_playable_read_int(AgsPlayable *playable,
+			   guint channel,
+			   GError **error);
 
 void ags_playable_write(AgsPlayable *playable,
 			double *buffer, guint buffer_length);

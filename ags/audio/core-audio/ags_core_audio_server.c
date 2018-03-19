@@ -932,9 +932,11 @@ ags_core_audio_server_register_sequencer(AgsDistributedManager *distributed_mana
   
   core_audio_server = AGS_CORE_AUDIO_SERVER(distributed_manager);
 
+#ifdef AGS_WITH_CORE_AUDIO
   if(core_audio_server->n_sequencers >= MIDIGetNumberOfDestinations()){
     return(NULL);
   }
+#endif
   
   /* the default client */
   if(core_audio_server->default_client == NULL){

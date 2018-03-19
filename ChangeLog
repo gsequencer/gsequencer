@@ -1,3 +1,12 @@
+ags (1.4.23)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented MIDI input callback of AgsCoreAudioPort
+	* implemented ags_playable_read_int() and ags_playable_write_int()
+	* implemented new AgsPlayable interface functions in ags_sndfile.c and ags_ipatch.c
+	* refactored AgsSequencerEditor to support AgsCoreAudioMidiin
+	* added AgsCoreAudioMidiin support to ags_core_audio_server.c
+
 ags (1.4.22)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

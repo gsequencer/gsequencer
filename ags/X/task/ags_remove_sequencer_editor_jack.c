@@ -183,8 +183,8 @@ ags_remove_sequencer_editor_jack_launch(AgsTask *task)
   gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) main_loop,
 						      AGS_TYPE_GUI_THREAD);
   /*  */
-  ags_sequencer_editor_remove_jack(AGS_REMOVE_SEQUENCER_EDITOR_JACK(task)->sequencer_editor,
-				   AGS_REMOVE_SEQUENCER_EDITOR_JACK(task)->card);
+  ags_sequencer_editor_remove_source(AGS_REMOVE_SEQUENCER_EDITOR_JACK(task)->sequencer_editor,
+				     AGS_REMOVE_SEQUENCER_EDITOR_JACK(task)->card);
 }
 
 /**

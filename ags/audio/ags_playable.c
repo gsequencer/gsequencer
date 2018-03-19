@@ -19,10 +19,7 @@
 
 #include <ags/audio/ags_playable.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
@@ -427,6 +424,33 @@ ags_playable_read(AgsPlayable *playable,
 }
 
 /**
+ * ags_playable_read_int:
+ * @playable: an #AgsPlayable
+ * @channel: nth channel
+ * @error: returned error
+ *
+ * Read audio buffer of playable audio data.
+ * 
+ * Returns: audio buffer
+ *
+ * Since: 1.4.23
+ */
+int*
+ags_playable_read_int(AgsPlayable *playable,
+		      guint channel,
+		      GError **error)
+{
+  AgsPlayableInterface *playable_interface;
+
+  g_return_val_if_fail(AGS_IS_PLAYABLE(playable),
+		       NULL);
+  playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
+  g_return_val_if_fail(playable_interface->read_int,
+		       NULL);
+  return(playable_interface->read_int(playable, channel, error));
+}
+
+/**
  * ags_playable_write:
  * @playable: an #AgsPlayable
  * @buffer: audio data
@@ -446,6 +470,28 @@ ags_playable_write(AgsPlayable *playable,
   playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
   g_return_if_fail(playable_interface->write);
   playable_interface->write(playable, buffer, buffer_length);
+}
+
+/**
+ * ags_playable_write_int:
+ * @playable: an #AgsPlayable
+ * @buffer: audio data
+ * @buffer_length: frame count
+ *
+ * Write @buffer_length of @buffer audio data.
+ *
+ * Since: 1.0.0
+ */
+void
+ags_playable_write_int(AgsPlayable *playable,
+		       int *buffer, guint buffer_length)
+{
+  AgsPlayableInterface *playable_interface;
+
+  g_return_if_fail(AGS_IS_PLAYABLE(playable));
+  playable_interface = AGS_PLAYABLE_GET_INTERFACE(playable);
+  g_return_if_fail(playable_interface->write_int);
+  playable_interface->write_int(playable, buffer, buffer_length);
 }
 
 /**
@@ -534,8 +580,8 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
   
   gchar *str;
   
-  double *buffer;
-
+  int *buffer;
+  
   guint copy_mode;
   guint channels;
   guint frames;
@@ -656,9 +702,15 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
 
     pthread_mutex_unlock(soundcard_mutex);
   }
-
+  
+#if __x86_64__
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						  AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+						  AGS_AUDIO_BUFFER_UTIL_S64);
+#else
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
+						  AGS_AUDIO_BUFFER_UTIL_S32);
+#endif
+  
   samplerate = ags_playable_get_samplerate(playable);
   
   if(target_samplerate != samplerate){
@@ -709,23 +761,31 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
     //    audio_signal->format = AGS_SOUNDCARD_SIGNED_16_BIT;
 
     error = NULL;
-    buffer = ags_playable_read(playable,
-			       i,
-			       &error);
-
+    buffer = ags_playable_read_int(playable,
+				   i,
+				   &error);
+    
     if(error != NULL){
       g_error("%s", error->message);
     }
 
     if(buffer != NULL){
       if(resample){
-	double *tmp;
+	int *tmp;
 
 	tmp = buffer;
+#if __x86_64__
 	buffer = ags_audio_buffer_util_resample(buffer, 1,
-						AGS_AUDIO_BUFFER_UTIL_DOUBLE, samplerate,
+						AGS_AUDIO_BUFFER_UTIL_S64, samplerate,
 						frames,
 						target_samplerate);
+#else
+	buffer = ags_audio_buffer_util_resample(buffer, 1,
+						AGS_AUDIO_BUFFER_UTIL_S32, samplerate,
+						frames,
+						target_samplerate);
+#endif
+	
 	free(tmp);
       }
       

@@ -19,7 +19,7 @@
 
 #include <ags/audio/file/ags_ipatch.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_playable.h>
 #include <ags/audio/ags_audio_buffer_util.h>
@@ -62,6 +62,8 @@ guint ags_ipatch_get_samplerate(AgsPlayable *playable);
 guint ags_ipatch_get_format(AgsPlayable *playable);
 double* ags_ipatch_read(AgsPlayable *playable, guint channel,
 			GError **error);
+int* ags_ipatch_read_int(AgsPlayable *playable, guint channel,
+			 GError **error);
 void ags_ipatch_close(AgsPlayable *playable);
 
 /**
@@ -226,6 +228,7 @@ ags_ipatch_playable_interface_init(AgsPlayableInterface *playable)
   playable->get_format = ags_ipatch_get_format;
 
   playable->read = ags_ipatch_read;
+  playable->read_int = ags_ipatch_read_int;
 
   playable->close = ags_ipatch_close;
 }
@@ -1090,6 +1093,108 @@ ags_ipatch_read(AgsPlayable *playable, guint channel,
   if(this_error != NULL){
     g_warning("%s", this_error->message);
   }
+#endif
+  
+  return(buffer);
+}
+
+int*
+ags_ipatch_read_int(AgsPlayable *playable, guint channel,
+		    GError **error)
+{
+  AgsIpatch *ipatch;
+
+#ifdef AGS_WITH_LIBINSTPATCH
+  IpatchSample *sample;
+#endif
+  
+  int *buffer;
+  gint32 *source;
+  guint channels, frames;
+  guint loop_start, loop_end;
+  guint i;
+
+  GError *this_error;
+
+  ipatch = AGS_IPATCH(playable);
+
+  this_error = NULL;
+  ags_playable_info(playable,
+		    &channels, &frames,
+		    &loop_start, &loop_end,
+		    &this_error);
+
+  if(this_error != NULL){
+    g_warning("%s", this_error->message);
+  }
+
+  if(channels == 0 ||
+     frames == 0){
+    source = NULL;
+  }else{
+    source = (gint32 *) malloc(channels * frames * sizeof(gint32));
+  }
+  
+#ifdef AGS_WITH_LIBINSTPATCH
+  if(ipatch->nth_level == 3){
+    if(AGS_IPATCH_SF2_READER(ipatch->reader)->sample != NULL){
+      sample = AGS_IPATCH_SF2_READER(ipatch->reader)->sample;
+    }else{
+      if(ipatch->iter != NULL){
+	sample = IPATCH_SAMPLE(ipatch->iter->data);
+      }else{
+	sample = NULL;
+      }
+    }
+  }else{
+    sample = NULL;
+
+    if((AGS_IPATCH_DLS2 & (ipatch->flags)) != 0){
+      //TODO:JK: implement me
+    }else if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
+      AgsIpatchSF2Reader *reader;
+
+      reader = AGS_IPATCH_SF2_READER(ipatch->reader);
+
+      this_error = NULL;
+      sample = (IpatchSample *) ipatch_sf2_find_sample(reader->sf2,
+						       reader->selected[3],
+						       NULL);
+    }else if((AGS_IPATCH_GIG & (ipatch->flags)) != 0){
+      //TODO:JK: implement me
+    }
+  }
+
+  this_error = NULL;
+  ipatch_sample_read_transform(sample,
+			       0,
+			       frames,
+			       source,
+			       IPATCH_SAMPLE_32BIT | IPATCH_SAMPLE_MONO,
+			       IPATCH_SAMPLE_UNITY_CHANNEL_MAP,
+			       &this_error);
+      
+  if(this_error != NULL){
+    g_warning("%s", this_error->message);
+  }
+#endif
+  
+#if __x86_64__
+  if(channels == 0 ||
+     frames == 0){
+    buffer = NULL;
+  }else{
+    buffer = (int *) malloc(channels * frames * sizeof(int));
+    ags_audio_buffer_util_clear_buffer(buffer, 1,
+				       frames, AGS_AUDIO_BUFFER_UTIL_S64);
+    ags_audio_buffer_util_copy_s32_to_s64(buffer, 1,
+					  source, 1,
+					  frames);
+
+    free(source);
+  }
+#else
+  buffer = source;
 #endif
   
   return(buffer);
