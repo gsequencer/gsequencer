@@ -919,16 +919,118 @@ GObject*
 ags_core_audio_server_register_sequencer(AgsDistributedManager *distributed_manager,
 					 gboolean is_output)
 {
-  g_message("GSequencer - can't register core audio sequencer");
+  AgsCoreAudioServer *core_audio_server;
+  AgsCoreAudioClient *default_client;
+  AgsCoreAudioPort *core_audio_port;
+  AgsCoreAudioMidiin *core_audio_midiin;
+  gchar *str;
   
-  return(NULL);
+  if(is_output){
+    g_warning("GSequencer - MIDI output not implemented");
+    return(NULL);
+  }
+  
+  core_audio_server = AGS_CORE_AUDIO_SERVER(distributed_manager);
+
+#ifdef AGS_WITH_CORE_AUDIO
+  if(core_audio_server->n_sequencers >= MIDIGetNumberOfDestinations()){
+    return(NULL);
+  }
+#endif
+  
+  /* the default client */
+  if(core_audio_server->default_client == NULL){
+    g_object_set(core_audio_server,
+		 "default-core-audio-client", (GObject *) ags_core_audio_client_new((GObject *) core_audio_server),
+		 NULL);
+    ags_core_audio_server_add_client(core_audio_server,
+				     core_audio_server->default_client);
+    
+    ags_core_audio_client_open((AgsCoreAudioClient *) core_audio_server->default_client,
+			       "ags-default-client");
+    
+    if(AGS_CORE_AUDIO_CLIENT(core_audio_server->default_client)->graph == NULL){
+      g_warning("ags_core_audio_server.c - can't open core audio client");
+    }
+  }
+
+  default_client = (AgsCoreAudioClient *) core_audio_server->default_client;
+
+  str = g_strdup_printf("ags-core-audio-midiin-%d",
+			core_audio_server->n_sequencers);
+  core_audio_midiin = ags_core_audio_midiin_new(core_audio_server->application_context);
+  g_object_set(AGS_CORE_AUDIO_MIDIIN(core_audio_midiin),
+	       "core-audio-client", default_client,
+	       "device", str,
+	       NULL);
+  g_object_set(default_client,
+	       "device", core_audio_midiin,
+	       NULL);
+
+  /* register sequencer */
+  str = g_strdup_printf("ags-sequencer%d",
+			core_audio_server->n_sequencers);
+
+#ifdef AGS_DEBUG
+  g_message("%s", str);
+#endif
+  
+  core_audio_port = ags_core_audio_port_new((GObject *) default_client);
+  core_audio_port->midi_port_number = core_audio_server->n_sequencers;
+  ags_core_audio_client_add_port(default_client,
+				 (GObject *) core_audio_port);
+
+  g_object_set(core_audio_midiin,
+	       "core-audio-port", core_audio_port,
+	       NULL);
+  
+  ags_core_audio_port_register(core_audio_port,
+			       str,
+			       FALSE, TRUE,
+			       FALSE);
+
+  core_audio_server->n_sequencers += 1;
+  
+  return((GObject *) core_audio_midiin);
 }
 
 void
 ags_core_audio_server_unregister_sequencer(AgsDistributedManager *distributed_manager,
 					   GObject *sequencer)
 {
-  g_message("GSequencer - can't unregister core audio sequencer");
+  AgsCoreAudioServer *core_audio_server;
+  AgsCoreAudioClient *default_client;
+
+  GList *list;
+  
+  core_audio_server = AGS_CORE_AUDIO_SERVER(distributed_manager);
+
+  /* the default client */
+  default_client = (AgsCoreAudioClient *) core_audio_server->default_client;
+
+  if(default_client == NULL){
+    g_warning("GSequencer - no core_audio client");
+    
+    return;
+  }
+
+  list = AGS_CORE_AUDIO_MIDIIN(sequencer)->core_audio_port;
+
+  while(list != NULL){
+    ags_core_audio_port_unregister(list->data);
+    ags_core_audio_client_remove_port(default_client,
+				list->data);
+    
+
+    list = list->next;
+  }
+
+  ags_core_audio_client_remove_device(default_client,
+				sequencer);
+  
+  if(default_client->port == NULL){
+    core_audio_server->n_sequencers = 0;
+  }
 }
 
 GObject*

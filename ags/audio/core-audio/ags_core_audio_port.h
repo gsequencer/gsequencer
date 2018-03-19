@@ -111,6 +111,8 @@ struct _AgsCoreAudioPort
   gpointer midi_port;
 #endif
 
+  unsigned int midi_port_number;
+
   volatile gboolean running;
   volatile gboolean is_empty;
   volatile guint queued;
