@@ -32,6 +32,9 @@
 #include <ags/audio/jack/ags_jack_server.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
 
+#include <ags/audio/core-audio/ags_core_audio_server.h>
+#include <ags/audio/core-audio/ags_core_audio_midiin.h>
+
 #include <ags/audio/task/ags_set_input_device.h>
 
 #include <ags/X/ags_xorg_application_context.h>
@@ -55,23 +58,29 @@ ags_sequencer_editor_backend_changed_callback(GtkComboBox *combo,
 
   if(str != NULL){
     if(!g_ascii_strncasecmp(str,
+			    "core-audio",
+			    5)){
+      ags_sequencer_editor_load_core_audio_card(sequencer_editor);
+
+      gtk_widget_show_all((GtkWidget *) sequencer_editor->source_hbox);
+    }else if(!g_ascii_strncasecmp(str,
 			    "jack",
 			    5)){
       ags_sequencer_editor_load_jack_card(sequencer_editor);
 
-      gtk_widget_show_all((GtkWidget *) sequencer_editor->jack_hbox);
+      gtk_widget_show_all((GtkWidget *) sequencer_editor->source_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "alsa",
 				  5)){
       ags_sequencer_editor_load_alsa_card(sequencer_editor);
 
-      gtk_widget_hide((GtkWidget *) sequencer_editor->jack_hbox);
+      gtk_widget_hide((GtkWidget *) sequencer_editor->source_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "oss",
 				  4)){
       ags_sequencer_editor_load_oss_card(sequencer_editor);
 
-      gtk_widget_hide((GtkWidget *) sequencer_editor->jack_hbox);
+      gtk_widget_hide((GtkWidget *) sequencer_editor->source_hbox);
     }
   }
 }
@@ -130,7 +139,9 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
 
   str = NULL;
   
-  if(AGS_IS_JACK_MIDIIN(sequencer)){
+  if(AGS_IS_CORE_AUDIO_MIDIIN(sequencer)){
+    str = "core-audio";
+  }else if(AGS_IS_JACK_MIDIIN(sequencer)){
     str = "jack";
   }else if(AGS_IS_MIDIIN(sequencer)){
     if((AGS_MIDIIN_ALSA & (AGS_MIDIIN(sequencer)->flags)) != 0){
@@ -172,84 +183,17 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
 }
 
 void
-ags_sequencer_editor_add_jack_callback(GtkWidget *button,
+ags_sequencer_editor_add_source_callback(GtkWidget *button,
 				       AgsSequencerEditor *sequencer_editor)
 {
-  AgsWindow *window;
-  AgsAddSequencerEditorJack *add_sequencer_editor_jack;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsGuiThread *gui_thread;
-
-  AgsApplicationContext *application_context;
-
-  pthread_mutex_t *application_mutex;  
-
-  window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
-							      AGS_TYPE_PREFERENCES))->window);
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task and sequencer thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
-
-  /* create set input device task */
-  add_sequencer_editor_jack = ags_add_sequencer_editor_jack_new(sequencer_editor);
-
-  /* append AgsSetAudioChannels */
-  ags_gui_thread_schedule_task(gui_thread,
-			       add_sequencer_editor_jack);
+  ags_sequencer_editor_add_source(sequencer_editor,
+				  NULL);
 }
 
 void
-ags_sequencer_editor_remove_jack_callback(GtkWidget *button,
+ags_sequencer_editor_remove_source_callback(GtkWidget *button,
 					  AgsSequencerEditor *sequencer_editor)
 {
-  AgsWindow *window;
-  AgsRemoveSequencerEditorJack *remove_sequencer_editor_jack;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsGuiThread *gui_thread;
-
-  AgsApplicationContext *application_context;
-
-  pthread_mutex_t *application_mutex;  
-
-  window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
-							      AGS_TYPE_PREFERENCES))->window);
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get gui thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
-
-  /* create set input device task */
-  remove_sequencer_editor_jack = ags_remove_sequencer_editor_jack_new(sequencer_editor,
-								      gtk_combo_box_text_get_active_text(sequencer_editor->card));
-
-  /* append AgsSetAudioChannels */
-  ags_gui_thread_schedule_task(gui_thread,
-			       remove_sequencer_editor_jack);
+  ags_sequencer_editor_remove_source(sequencer_editor,
+				     gtk_combo_box_text_get_active_text(sequencer_editor->card));
 }

@@ -23,6 +23,12 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/audio/jack/ags_jack_server.h>
+#include <ags/audio/jack/ags_jack_midiin.h>
+
+#include <ags/audio/core-audio/ags_core_audio_server.h>
+#include <ags/audio/core-audio/ags_core_audio_midiin.h>
+
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
@@ -169,9 +175,16 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
+#ifdef AGS_WITH_CORE_AUDIO
+  gtk_combo_box_text_append_text(sequencer_editor->backend,
+				 "core-audio");
+#endif
+
+#ifdef AGS_WITH_JACK
   gtk_combo_box_text_append_text(sequencer_editor->backend,
 				 "jack");
-  
+#endif
+
 #ifdef AGS_WITH_ALSA
   gtk_combo_box_text_append_text(sequencer_editor->backend,
 				 "alsa");
@@ -206,28 +219,28 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
 		   0, 0);
 
   /* jack */
-  sequencer_editor->jack_hbox = NULL;
-  sequencer_editor->add_jack = NULL;
-  sequencer_editor->remove_jack = NULL;
+  sequencer_editor->source_hbox = NULL;
+  sequencer_editor->add_source = NULL;
+  sequencer_editor->remove_source = NULL;
 
-  sequencer_editor->jack_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+  sequencer_editor->source_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
 							 0);
   gtk_table_attach(table,
-		   GTK_WIDGET(sequencer_editor->jack_hbox),
+		   GTK_WIDGET(sequencer_editor->source_hbox),
 		   2, 3,
 		   1, 2,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  sequencer_editor->add_jack = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
-  gtk_box_pack_start((GtkBox *) sequencer_editor->jack_hbox,
-		     (GtkWidget *) sequencer_editor->add_jack,
+  sequencer_editor->add_source = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
+  gtk_box_pack_start((GtkBox *) sequencer_editor->source_hbox,
+		     (GtkWidget *) sequencer_editor->add_source,
 		     FALSE, FALSE,
 		     0);
   
-  sequencer_editor->remove_jack = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
-  gtk_box_pack_start((GtkBox *) sequencer_editor->jack_hbox,
-		     (GtkWidget *) sequencer_editor->remove_jack,
+  sequencer_editor->remove_source = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  gtk_box_pack_start((GtkBox *) sequencer_editor->source_hbox,
+		     (GtkWidget *) sequencer_editor->remove_source,
 		     FALSE, FALSE,
 		     0);
   
@@ -262,11 +275,11 @@ ags_sequencer_editor_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_sequencer_editor_card_changed_callback), sequencer_editor);
 
   /* add / remove jack */
-  g_signal_connect(G_OBJECT(sequencer_editor->add_jack), "clicked",
-		   G_CALLBACK(ags_sequencer_editor_add_jack_callback), sequencer_editor);
+  g_signal_connect(G_OBJECT(sequencer_editor->add_source), "clicked",
+		   G_CALLBACK(ags_sequencer_editor_add_source_callback), sequencer_editor);
 
-  g_signal_connect(G_OBJECT(sequencer_editor->remove_jack), "clicked",
-		   G_CALLBACK(ags_sequencer_editor_remove_jack_callback), sequencer_editor);
+  g_signal_connect(G_OBJECT(sequencer_editor->remove_source), "clicked",
+		   G_CALLBACK(ags_sequencer_editor_remove_source_callback), sequencer_editor);
 }
 
 void
@@ -296,15 +309,15 @@ ags_sequencer_editor_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   /* add / remove jack */
-  g_object_disconnect(G_OBJECT(sequencer_editor->add_jack),
+  g_object_disconnect(G_OBJECT(sequencer_editor->add_source),
 		      "any_signal::clicked",
-		      G_CALLBACK(ags_sequencer_editor_add_jack_callback),
+		      G_CALLBACK(ags_sequencer_editor_add_source_callback),
 		      sequencer_editor,
 		      NULL);
 
-  g_object_disconnect(G_OBJECT(sequencer_editor->remove_jack),
+  g_object_disconnect(G_OBJECT(sequencer_editor->remove_source),
 		      "any_signal::clicked",
-		      G_CALLBACK(ags_sequencer_editor_remove_jack_callback),
+		      G_CALLBACK(ags_sequencer_editor_remove_source_callback),
 		      sequencer_editor,
 		      NULL);
 }
@@ -342,7 +355,7 @@ ags_sequencer_editor_apply(AgsApplicable *applicable)
   char *device, *str;
 
   gint nth;
-  gboolean use_jack, use_alsa, use_oss;
+  gboolean use_core_audio, use_jack, use_alsa, use_oss;
   
   GValue value =  {0,};
 
@@ -368,7 +381,11 @@ ags_sequencer_editor_apply(AgsApplicable *applicable)
   g_list_free(list);
   
   /* backend */
+#ifdef AGS_WITH_CORE_AUDIO
+  use_core_audio = TRUE;
+#else
   use_jack = TRUE;
+#endif
   use_alsa = FALSE;
   use_oss = FALSE;
 
@@ -380,6 +397,10 @@ ags_sequencer_editor_apply(AgsApplicable *applicable)
 
   if(backend != NULL){
     if(!g_ascii_strncasecmp(backend,
+			    "core-audio",
+			    11)){
+      use_core_audio = TRUE;
+    }else if(!g_ascii_strncasecmp(backend,
 			    "jack",
 			    5)){
       use_jack = TRUE;
@@ -411,7 +432,12 @@ ags_sequencer_editor_apply(AgsApplicable *applicable)
   /* handle */
   g_message("%s", device);
 
-  if(use_jack){
+  if(use_core_audio){
+    ags_config_set_value(config,
+			 sequencer_group,
+			 "device",
+			 device);
+  }else if(use_jack){
     ags_config_set_value(config,
 			 sequencer_group,
 			 "device",
@@ -456,7 +482,9 @@ ags_sequencer_editor_reset(AgsApplicable *applicable)
 
   backend = NULL;
   
-  if(AGS_IS_JACK_MIDIIN(sequencer)){
+  if(AGS_IS_CORE_AUDIO_MIDIIN(sequencer)){
+    backend = "core-audio";
+  }else if(AGS_IS_JACK_MIDIIN(sequencer)){
     backend = "jack";
   }else if(AGS_IS_MIDIIN(sequencer)){
     if((AGS_MIDIIN_ALSA & (AGS_MIDIIN(sequencer)->flags)) != 0){
@@ -468,6 +496,13 @@ ags_sequencer_editor_reset(AgsApplicable *applicable)
 
   if(backend != NULL){
     if(!g_ascii_strncasecmp(backend,
+			    "core-audio",
+			    5)){
+      gtk_combo_box_set_active(GTK_COMBO_BOX(sequencer_editor->backend),
+			       0);
+      
+      ags_sequencer_editor_load_core_audio_card(sequencer_editor);
+    }else if(!g_ascii_strncasecmp(backend,
 			    "jack",
 			    5)){
       gtk_combo_box_set_active(GTK_COMBO_BOX(sequencer_editor->backend),
@@ -567,11 +602,14 @@ ags_sequencer_editor_reset(AgsApplicable *applicable)
 }
 
 void
-ags_sequencer_editor_add_jack(AgsSequencerEditor *sequencer_editor,
-			      gchar *device)
+ags_sequencer_editor_add_source(AgsSequencerEditor *sequencer_editor,
+				gchar *device)
 {
   AgsWindow *window;
   AgsPreferences *preferences;
+
+  AgsCoreAudioServer *core_audio_server;
+  AgsCoreAudioMidiin *core_audio_midiin;
 
   AgsJackServer *jack_server;
   AgsJackMidiin *jack_midiin;
@@ -582,8 +620,17 @@ ags_sequencer_editor_add_jack(AgsSequencerEditor *sequencer_editor,
 
   AgsApplicationContext *application_context;
 
+  GObject *sequencer;
+
+  GType server_type;
+
   GList *distributed_manager;
   GList *card_name, *card_uri;
+
+  gchar *backend;
+
+  gboolean use_core_audio, use_jack;
+  gboolean initial_sequencer;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
@@ -597,14 +644,62 @@ ags_sequencer_editor_add_jack(AgsSequencerEditor *sequencer_editor,
 
   mutex_manager = ags_mutex_manager_get_instance();
   
+  core_audio_server = NULL;
+  core_audio_midiin = NULL;
+
+  jack_server = NULL;
+  jack_midiin = NULL;
+
+  sequencer = NULL;
+
+  server_type = G_TYPE_NONE;
+  
+  backend = NULL;
+
+  use_core_audio = FALSE;
+  use_jack = FALSE;
+
+  initial_sequencer = FALSE;
+
+  /* determine backend */
+  backend = gtk_combo_box_text_get_active_text(sequencer_editor->backend);
+
+  if(backend != NULL){
+    if(!g_ascii_strncasecmp(backend,
+			    "core-audio",
+			    11)){
+      server_type = AGS_TYPE_CORE_AUDIO_SERVER;
+      
+      use_core_audio = TRUE;
+    }else if(!g_ascii_strncasecmp(backend,
+			    "jack",
+			    5)){
+      server_type = AGS_TYPE_JACK_SERVER;
+
+      use_jack = TRUE;
+    }
+  }
+  
   /* create sequencer */
   pthread_mutex_lock(application_mutex);
 
   distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
 
   if((distributed_manager = ags_list_util_find_type(distributed_manager,
-						    AGS_TYPE_JACK_SERVER)) != NULL){
-    jack_server = AGS_JACK_SERVER(distributed_manager->data);
+						    server_type)) != NULL){
+    if(use_core_audio){
+      core_audio_server = AGS_CORE_AUDIO_SERVER(distributed_manager->data);
+
+      sequencer = 
+	core_audio_midiin = (AgsCoreAudioMidiin *) ags_distributed_manager_register_sequencer(AGS_DISTRIBUTED_MANAGER(core_audio_server),
+											      FALSE);
+    }else if(use_jack){
+      jack_server = AGS_JACK_SERVER(distributed_manager->data);
+
+      sequencer = 
+	jack_midiin = (AgsJackMidiin *) ags_distributed_manager_register_sequencer(AGS_DISTRIBUTED_MANAGER(jack_server),
+										   FALSE);
+    }
   }else{
     g_warning("distributed manager not found");
 
@@ -613,35 +708,36 @@ ags_sequencer_editor_add_jack(AgsSequencerEditor *sequencer_editor,
     return;
   }
   
-  jack_midiin = (AgsJackMidiin *) ags_distributed_manager_register_sequencer(AGS_DISTRIBUTED_MANAGER(jack_server),
-									     FALSE);
-
   pthread_mutex_unlock(application_mutex);
 
-  if(jack_midiin == NULL){
+  if(sequencer == NULL){
     return;
   }
 
   pthread_mutex_lock(application_mutex);
 
   mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) jack_midiin);
+				   (GObject *) sequencer);
   
 
   /* add new */
   main_loop = (AgsThread *) application_context->main_loop;
   
-  sequencer_editor->sequencer = jack_midiin;
+  if(ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context)) == NULL){
+    initial_sequencer = TRUE;
+  }
+
+  sequencer_editor->sequencer = sequencer;
 
   ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context)),
-						 jack_midiin));
-
+						 sequencer));
+  
   pthread_mutex_unlock(application_mutex);  
     
-  g_object_ref(jack_midiin);
+  g_object_ref(sequencer);
 
-  sequencer_thread = (AgsThread *) ags_sequencer_thread_new(jack_midiin);
+  sequencer_thread = (AgsThread *) ags_sequencer_thread_new(sequencer);
   sequencer_editor->sequencer_thread = (GObject *) sequencer_thread;
   
   ags_thread_add_child_extended(main_loop,
@@ -653,7 +749,7 @@ ags_sequencer_editor_add_jack(AgsSequencerEditor *sequencer_editor,
 
   card_name = NULL;
   card_uri = NULL;
-  ags_sequencer_list_cards(AGS_SEQUENCER(jack_midiin),
+  ags_sequencer_list_cards(AGS_SEQUENCER(sequencer),
 			   &card_uri, &card_name);
 
   pthread_mutex_unlock(mutex);
@@ -671,21 +767,35 @@ ags_sequencer_editor_add_jack(AgsSequencerEditor *sequencer_editor,
 }
 
 void
-ags_sequencer_editor_remove_jack(AgsSequencerEditor *sequencer_editor,
-				 gchar *device)
+ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
+				   gchar *device)
 {
   AgsWindow *window;
   AgsPreferences *preferences;
   GtkDialog *dialog;
  
+  AgsCoreAudioServer *core_audio_server;
+  AgsCoreAudioMidiin *core_audio_midiin;
+
+  AgsJackServer *jack_server;
   AgsJackMidiin *jack_midiin;
 
   AgsApplicationContext *application_context;
   AgsThread *main_loop;
 
+  GObject *server;
+  GObject *sequencer;
+
+  GType server_type;
+
+  GList *machine, *machine_start;
   GList *distributed_manager;
-  GList *sequencer;
+  GList *list;
   GList *card_id;
+
+  gchar *backend;
+  
+  gboolean use_core_audio, use_pulse, use_jack;
 
   pthread_mutex_t *application_mutex;
 
@@ -695,15 +805,59 @@ ags_sequencer_editor_remove_jack(AgsSequencerEditor *sequencer_editor,
   application_context = (AgsApplicationContext *) window->application_context;
 
   application_mutex = window->application_mutex;
+
+  core_audio_server = NULL;
+  core_audio_midiin = NULL;
   
-  /* create sequencer */
+  jack_server = NULL;
+  jack_midiin = NULL;
+
+  server = NULL;
+  sequencer = NULL;
+
+  server_type = G_TYPE_NONE;
+  
+  backend = NULL;
+
+  use_core_audio = FALSE;
+  use_pulse = FALSE;
+  use_jack = FALSE;
+
+  /* determine backend */
+  backend = gtk_combo_box_text_get_active_text(sequencer_editor->backend);
+
+  if(backend != NULL){
+    if(!g_ascii_strncasecmp(backend,
+			    "core-audio",
+			    6)){
+      server_type = AGS_TYPE_CORE_AUDIO_SERVER;
+      
+      use_core_audio = TRUE;
+    }else if(!g_ascii_strncasecmp(backend,
+			    "jack",
+			    5)){
+      server_type = AGS_TYPE_JACK_SERVER;
+
+      use_jack = TRUE;
+    }
+  }
+  
+  /* destroy sequencer */
   pthread_mutex_lock(application_mutex);
 
   main_loop = application_context->main_loop;
   distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
 
   if((distributed_manager = ags_list_util_find_type(distributed_manager,
-						    AGS_TYPE_JACK_SERVER)) == NULL){
+						    server_type)) != NULL){
+    if(use_core_audio){
+      server = 
+	core_audio_server = AGS_CORE_AUDIO_SERVER(distributed_manager->data);
+    }else if(use_jack){
+      server = 
+	jack_server = AGS_JACK_SERVER(distributed_manager->data);
+    }
+  }else{
     g_warning("distributed manager not found");
 
     pthread_mutex_unlock(application_mutex);
@@ -711,23 +865,33 @@ ags_sequencer_editor_remove_jack(AgsSequencerEditor *sequencer_editor,
     return;
   }
 
-  sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
-  jack_midiin = NULL;
+  list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
   
-  while(sequencer != NULL){
-    if(AGS_IS_JACK_MIDIIN(sequencer->data) &&
-       !g_ascii_strcasecmp(ags_sequencer_get_device(AGS_SEQUENCER(sequencer->data)),
-			   device)){
-      jack_midiin = sequencer->data;
-      break;
+  while(list != NULL){
+    if(use_core_audio){
+      if(AGS_IS_CORE_AUDIO_MIDIIN(list->data) &&
+	 !g_ascii_strcasecmp(ags_sequencer_get_device(AGS_SEQUENCER(list->data)),
+			     device)){
+	sequencer = 
+	  core_audio_midiin = list->data;
+	break;
+      }
+    }else if(use_jack){
+      if(AGS_IS_JACK_MIDIIN(list->data) &&
+	 !g_ascii_strcasecmp(ags_sequencer_get_device(AGS_SEQUENCER(list->data)),
+			     device)){
+	sequencer = 
+	  jack_midiin = list->data;
+	break;
+      }
     }
     
-    sequencer = sequencer->next;
+    list = list->next;
   }
 
   pthread_mutex_unlock(application_mutex);
 
-  if(jack_midiin == NULL){
+  if(sequencer == NULL){
     return;
   }
   
@@ -737,28 +901,25 @@ ags_sequencer_editor_remove_jack(AgsSequencerEditor *sequencer_editor,
 			   -1);
 
 #if 0
-  if((distributed_manager = ags_list_util_find_type(distributed_manager,
-						    AGS_TYPE_JACK_SERVER)) != NULL){
-    ags_distributed_manager_unregister_sequencer(AGS_DISTRIBUTED_MANAGER(distributed_manager->data),
-						 jack_midiin);
-  }
-#endif
-
-  /* remove */
-  if(jack_midiin == sequencer_editor->sequencer){
-    sequencer_editor->sequencer = NULL;
-  }
-
-#if 0
-  if(jack_midiin != NULL){
-    ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
-				     g_list_remove(ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context)),
-						   jack_midiin));
-    g_object_unref(jack_midiin);
+  if(server != NULL){
+    ags_distributed_manager_unregister_sequencer(AGS_DISTRIBUTED_MANAGER(server),
+						 sequencer);
   }
 #endif
   
-#if 0
+  /* remove */
+  if(sequencer == sequencer_editor->sequencer){
+    sequencer_editor->sequencer = NULL;
+  }
+    
+#if 0  
+  if(sequencer != NULL){
+    ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
+				     g_list_remove(ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context)),
+						   sequencer));
+    g_object_unref(sequencer);
+  }
+  
   if(sequencer_editor->sequencer_thread != NULL){
     ags_thread_stop((AgsThread *) sequencer_editor->sequencer_thread);
 
@@ -770,7 +931,7 @@ ags_sequencer_editor_remove_jack(AgsSequencerEditor *sequencer_editor,
     sequencer_editor->sequencer_thread = NULL;
   }
 #endif
-  
+
   /* notify user about restarting GSequencer */
   dialog = gtk_message_dialog_new(preferences,
 				  GTK_DIALOG_MODAL,
@@ -918,6 +1079,74 @@ ags_sequencer_editor_remove_sequencer(AgsSequencerEditor *sequencer_editor,
   g_signal_connect(dialog, "response",
 		   G_CALLBACK(gtk_widget_destroy), NULL);
   gtk_widget_show_all(dialog);
+}
+
+void
+ags_sequencer_editor_load_core_audio_card(AgsSequencerEditor *sequencer_editor)
+{
+  AgsWindow *window;
+  AgsPreferences *preferences;
+
+  AgsCoreAudioMidiin *core_audio_midiin;
+
+  AgsApplicationContext *application_context;
+
+  GList *distributed_manager;
+  GList *sequencer;
+  GList *card_id;
+
+  pthread_mutex_t *application_mutex;
+
+  preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
+							   AGS_TYPE_PREFERENCES);
+  window = AGS_WINDOW(preferences->window);
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  application_mutex = window->application_mutex;
+
+  /* create sequencer */
+  pthread_mutex_lock(application_mutex);
+
+  distributed_manager = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
+
+  if((distributed_manager = ags_list_util_find_type(distributed_manager,
+						    AGS_TYPE_CORE_AUDIO_SERVER)) == NULL){
+    g_warning("distributed manager not found");
+
+    pthread_mutex_unlock(application_mutex);
+
+    return;
+  }
+
+  sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
+  core_audio_midiin = NULL;
+  
+  while(sequencer != NULL){
+    if(AGS_IS_CORE_AUDIO_MIDIIN(sequencer->data)){
+      core_audio_midiin = sequencer->data;
+      break;
+    }
+    
+    sequencer = sequencer->next;
+  }
+
+  card_id = NULL;
+  ags_sequencer_list_cards(AGS_SEQUENCER(core_audio_midiin),
+			   &card_id, NULL);
+
+  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(sequencer_editor->card))));
+
+  while(card_id != NULL){
+    if(card_id->data != NULL){
+      gtk_combo_box_text_append_text(sequencer_editor->card,
+				     card_id->data);
+    }
+    
+    card_id = card_id->next;
+  }
+
+  /*  */
+  pthread_mutex_unlock(application_mutex);
 }
 
 void

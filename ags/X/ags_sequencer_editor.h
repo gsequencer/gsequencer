@@ -52,9 +52,9 @@ struct _AgsSequencerEditor
   
   GtkComboBoxText *card;
   
-  GtkHBox *jack_hbox;
-  GtkButton *add_jack;
-  GtkButton *remove_jack;
+  GtkHBox *source_hbox;
+  GtkButton *add_source;
+  GtkButton *remove_source;
 
   GtkButton *remove;
 };
@@ -66,16 +66,17 @@ struct _AgsSequencerEditorClass
 
 GType ags_sequencer_editor_get_type(void);
 
-void ags_sequencer_editor_add_jack(AgsSequencerEditor *sequencer_editor,
-				   gchar *device);
-void ags_sequencer_editor_remove_jack(AgsSequencerEditor *sequencer_editor,
-				      gchar *device);
+void ags_sequencer_editor_add_source(AgsSequencerEditor *sequencer_editor,
+				     gchar *device);
+void ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
+					gchar *device);
 
 void ags_sequencer_editor_add_sequencer(AgsSequencerEditor *sequencer_editor,
 					GObject *sequencer);
 void ags_sequencer_editor_remove_sequencer(AgsSequencerEditor *sequencer_editor,
 					   GObject *sequencer);
 
+void ags_sequencer_editor_load_core_audio_card(AgsSequencerEditor *sequencer_editor);
 void ags_sequencer_editor_load_jack_card(AgsSequencerEditor *sequencer_editor);
 void ags_sequencer_editor_load_alsa_card(AgsSequencerEditor *sequencer_editor);
 void ags_sequencer_editor_load_oss_card(AgsSequencerEditor *sequencer_editor);

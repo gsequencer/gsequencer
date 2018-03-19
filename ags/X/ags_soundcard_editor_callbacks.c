@@ -212,83 +212,16 @@ void
 ags_soundcard_editor_add_sink_callback(GtkWidget *button,
 				       AgsSoundcardEditor *soundcard_editor)
 {
-  AgsWindow *window;
-  AgsAddSoundcardEditorSink *add_soundcard_editor_sink;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsGuiThread *gui_thread;
-
-  AgsApplicationContext *application_context;
-
-  pthread_mutex_t *application_mutex;  
-
-  window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
-							      AGS_TYPE_PREFERENCES))->window);
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task and soundcard thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
-
-  /* create set output device task */
-  add_soundcard_editor_sink = ags_add_soundcard_editor_sink_new(soundcard_editor);
-
-  /* append AgsSetAudioChannels */
-  ags_gui_thread_schedule_task(gui_thread,
-			       add_soundcard_editor_sink);
+  ags_soundcard_editor_add_sink(soundcard_editor,
+				NULL);
 }
 
 void
 ags_soundcard_editor_remove_sink_callback(GtkWidget *button,
 					  AgsSoundcardEditor *soundcard_editor)
 {
-  AgsWindow *window;
-  AgsRemoveSoundcardEditorSink *remove_soundcard_editor_sink;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsGuiThread *gui_thread;
-
-  AgsApplicationContext *application_context;
-
-  pthread_mutex_t *application_mutex;  
-
-  window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
-							      AGS_TYPE_PREFERENCES))->window);
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task and soundcard thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
-
-  /* create set output device task */
-  remove_soundcard_editor_sink = ags_remove_soundcard_editor_sink_new(soundcard_editor,
-								      gtk_combo_box_text_get_active_text(soundcard_editor->card));
-
-  /* append AgsSetAudioChannels */
-  ags_gui_thread_schedule_task(gui_thread,
-			       remove_soundcard_editor_sink);
+  ags_soundcard_editor_remove_sink(soundcard_editor,
+				   gtk_combo_box_text_get_active_text(soundcard_editor->card));
 }
 
 void
