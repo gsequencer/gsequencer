@@ -8564,14 +8564,17 @@ ags_audio_real_start(AgsAudio *audio,
 		     gint sound_scope)
 {
   AgsChannel *channel;
+  AgsRecycling *recycling;
   AgsPlayback *playback;
   AgsRecallID *current_recall_id;
+  AgsRecyclingContext *current_recycling_context;
   
   AgsMessageDelivery *message_delivery;
   AgsMessageQueue *message_queue;
 
   GList *recall_id;
 
+  guint audio_flags;
   guint audio_channels;
   guint output_pads;
   guint i;
@@ -8582,7 +8585,7 @@ ags_audio_real_start(AgsAudio *audio,
 
   if(sound_scope < 0 ||
      sound_scope >= AGS_SOUND_SCOPE_LAST){
-    return;
+    return(NULL);
   }
   
   /* get audio mutex */
@@ -8596,8 +8599,14 @@ ags_audio_real_start(AgsAudio *audio,
   pthread_mutex_lock(audio_mutex);
 
   channel = audio->output;
+
+  audio_flags = audio->flags;
   
   pthread_mutex_unlock(audio_mutex);
+
+  if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio_flags)) == 0){
+    return(NULL);
+  }
   
   /* initialize channel */
   recall_id = NULL;
@@ -8610,13 +8619,34 @@ ags_audio_real_start(AgsAudio *audio,
   
     pthread_mutex_unlock(ags_channel_get_class_mutex());
 
+    /* recycling context */
+    recycling_context = ags_recycling_context_new(1);
+    ags_audio_add_recycling_context(audio,
+				    recycling_context);
+
+    /* get recycling */
+    pthread_mutex_lock(channel_mutex);
+
+    recycling = channel->first_recycling
+    
+    pthread_mutex_unlock(channel_mutex);
+
+    /* set recycling */
+    ags_recycling_context_replace(recycling_context,
+				  recycling,
+				  0);
+
     /* create recall id */
-    current_recall_id = ags_recall_id_new();
+    current_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
+				     "recycling-context", recycling_context,
+				     NULL);
     ags_recall_id_set_sound_scope(current_recall_id,  sound_scope);
+    ags_audio_add_recall_id(audio,
+			    current_recall_id);
     
     recall_id = g_list_prepend(recall_id,
 			       current_recall_id);
-
+        
     /* get playback */
     pthread_mutex_lock(channel_mutex);
 
