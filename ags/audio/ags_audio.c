@@ -8305,6 +8305,10 @@ ags_audio_real_resolve_recall(AgsAudio *audio,
       list_start = g_list_copy(audio->play);
 
     pthread_mutex_unlock(play_mutex);
+
+    /* reverse play context */
+    list =
+      list_start = g_list_reverse(list_start);
   }else{
     pthread_mutex_t *recall_mutex;
 
@@ -8322,6 +8326,10 @@ ags_audio_real_resolve_recall(AgsAudio *audio,
       list_start = g_list_copy(audio->recall);
     
     pthread_mutex_unlock(recall_mutex);
+
+    /* reverse recall context */
+    list =
+      list_start = g_list_reverse(list_start);
   }
 
   /* resolve */
@@ -8451,6 +8459,10 @@ ags_audio_real_init_recall(AgsAudio *audio,
       list_start = g_list_copy(audio->play);
 
     pthread_mutex_unlock(play_mutex);
+
+    /* reverse play context */
+    list =
+      list_start = g_list_reverse(list_start);
   }else{
     pthread_mutex_t *recall_mutex;
 
@@ -8468,6 +8480,10 @@ ags_audio_real_init_recall(AgsAudio *audio,
       list_start = g_list_copy(audio->recall);
     
     pthread_mutex_unlock(recall_mutex);
+
+    /* reverse recall context */
+    list =
+      list_start = g_list_reverse(list_start);
   }
   
   /* init  */
@@ -8612,6 +8628,10 @@ ags_audio_real_play_recall(AgsAudio *audio,
     list_start = g_list_copy(audio->play);
 
     pthread_mutex_unlock(play_mutex);
+
+    /* reverse play context */
+    list =
+      list_start = g_list_reverse(list_start);
   }else{
     pthread_mutex_t *recall_mutex;
 
@@ -8628,6 +8648,10 @@ ags_audio_real_play_recall(AgsAudio *audio,
     list_start = g_list_copy(audio->recall);
     
     pthread_mutex_unlock(recall_mutex);
+
+    /* reverse recall context */
+    list =
+      list_start = g_list_reverse(list_start);
   }
 
   /* play  */
@@ -8763,6 +8787,10 @@ ags_audio_real_cancel_recall(AgsAudio *audio,
       list_start = g_list_copy(audio->play);
 
     pthread_mutex_unlock(play_mutex);
+
+    /* reverse play context */
+    list =
+      list_start = g_list_reverse(list_start);
   }else{
     pthread_mutex_t *recall_mutex;
 
@@ -8780,6 +8808,10 @@ ags_audio_real_cancel_recall(AgsAudio *audio,
       list_start = g_list_copy(audio->recall);
     
     pthread_mutex_unlock(recall_mutex);
+
+    /* reverse recall context */
+    list =
+      list_start = g_list_reverse(list_start);
   }
 
   /* cancel  */
@@ -8912,6 +8944,10 @@ ags_audio_real_done_recall(AgsAudio *audio,
       list_start = g_list_copy(audio->play);
 
     pthread_mutex_unlock(play_mutex);
+
+    /* reverse play context */
+    list =
+      list_start = g_list_reverse(list_start);
   }else{
     pthread_mutex_t *recall_mutex;
 
@@ -8929,6 +8965,10 @@ ags_audio_real_done_recall(AgsAudio *audio,
       list_start = g_list_copy(audio->recall);
     
     pthread_mutex_unlock(recall_mutex);
+
+    /* reverse recall context */
+    list =
+      list_start = g_list_reverse(list_start);
   }
 
   /* done  */  
