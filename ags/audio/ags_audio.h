@@ -210,8 +210,8 @@ struct _AgsAudioClass
 
   GList* (*check_scope)(AgsAudio *audio, gint sound_scope);
   
-  GList* (*recursive_reset_stage)(AgsAudio *audio,
-				  gint sound_scope, guint staging_flags);
+  GList* (*recursive_run_stage)(AgsAudio *audio,
+				gint sound_scope, guint staging_flags);
 };
 
 GType ags_audio_get_type();
@@ -355,8 +355,8 @@ void ags_audio_recursive_set_property(AgsAudio *audio,
 				      gint n_params,
 				      const gchar *parameter_name[], const GValue value[]);
 
-GList* ags_audio_recursive_reset_stage(AgsAudio *audio,
-				       gint sound_scope, guint staging_flags);
+GList* ags_audio_recursive_run_stage(AgsAudio *audio,
+				     gint sound_scope, guint staging_flags);
 
 /* instantiate */
 AgsAudio* ags_audio_new(GObject *output_soundcard);

@@ -126,8 +126,8 @@ void ags_audio_real_stop(AgsAudio *audio,
 
 GList* ags_audio_real_check_scope(AgsAudio *audio, gint sound_scope);
 
-GList* ags_audio_real_recursive_reset_stage(AgsAudio *audio,
-					    gint sound_scope, guint stage);
+void ags_audio_real_recursive_run_stage(AgsAudio *audio,
+					gint sound_scope, guint stage);
 
 enum{
   SET_AUDIO_CHANNELS,
@@ -141,7 +141,7 @@ enum{
   START,
   STOP,
   CHECK_SCOPE,
-  RECURSIVE_RESET_STAGE,
+  RECURSIVE_RUN_STAGE,
   LAST_SIGNAL,
 };
 
@@ -1026,7 +1026,7 @@ ags_audio_class_init(AgsAudioClass *audio)
   audio->stop = ags_audio_real_stop;
 
   audio->check_scope = ags_audio_real_check_scope;
-  audio->recursive_reset_stage = ags_audio_real_recursive_reset_stage;
+  audio->recursive_run_stage = ags_audio_real_recursive_run_stage;
   
   /* signals */
   /**
@@ -1257,26 +1257,24 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 G_TYPE_INT);
 
   /**
-   * AgsAudio::recursive-reset-stage:
-   * @audio: the #AgsAudio to reset
+   * AgsAudio::recursive-run-stage:
+   * @audio: the #AgsAudio to run
    * @sound_scope: the affected scope
    * @staging_flags: the flags to set
    *
-   * The ::recursive-reset-stage signal is invoked while resetting staging
+   * The ::recursive-run-stage signal is invoked while run staging
    * of @audio for @sound_scope.
-   *
-   * Returns: the #GList-struct containing #AgsRecallID
    * 
    * Since: 2.0.0
    */
-  audio_signals[RECURSIVE_RESET_STAGE] = 
-    g_signal_new("recursive-reset-stage",
+  audio_signals[RECURSIVE_RUN_STAGE] = 
+    g_signal_new("recursive-run-stage",
 		 G_TYPE_FROM_CLASS(audio),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsAudioClass, recursive_reset_stage),
+		 G_STRUCT_OFFSET(AgsAudioClass, recursive_run_stage),
 		 NULL, NULL,
-		 ags_cclosure_marshal_POINTER__INT_UINT,
-		 G_TYPE_POINTER, 2,
+		 ags_cclosure_marshal_VOID__INT_UINT,
+		 G_TYPE_NONE, 2,
 		 G_TYPE_INT,
 		 G_TYPE_UINT);
 }
@@ -8641,9 +8639,11 @@ ags_audio_real_start(AgsAudio *audio,
     pthread_mutex_unlock(playback_mutex);
     
     /* reset recall id */
-    ags_channel_recursive_reset_recall_id(channel,
-					  current_recall_id, TRUE, TRUE,
-					  NULL, FALSE, FALSE);
+    ags_channel_recursive_run_stage(channel,
+				    sound_scope, (AGS_SOUND_STAGING_CHECK_RT_DATA |
+						  AGS_SOUND_STAGING_RUN_INIT_PRE |
+						  AGS_SOUND_STAGING_RUN_INIT_INTER |
+						  AGS_SOUND_STAGING_RUN_INIT_POST));
 
     /* iterate */
     pthread_mutex_lock(channel_mutex);
@@ -8809,6 +8809,11 @@ ags_audio_real_stop(AgsAudio *audio,
   
     pthread_mutex_unlock(ags_playback_get_class_mutex());
 
+    /* recursive cancel */
+    ags_channel_recursive_run_stage(channel,
+				    sound_scope, (AGS_SOUND_STAGING_CANCEL |
+						  AGS_SOUND_STAGING_REMOVE));
+
     /* get/set recall id */
     pthread_mutex_lock(playback_mutex);
     
@@ -8817,11 +8822,6 @@ ags_audio_real_stop(AgsAudio *audio,
     playback->recall_id[sound_scope] = NULL;
 
     pthread_mutex_unlock(playback_mutex);
-
-    /* recursive cancel */
-    ags_channel_recursive_cancel(channel,
-				 current_recall_id,
-				 TRUE, TRUE);
 
     /* iterate */
     pthread_mutex_lock(channel_mutex);    
@@ -9655,9 +9655,9 @@ ags_audio_recursive_set_property(AgsAudio *audio,
   }
 }
 
-GList*
-ags_audio_real_recursive_reset_stage(AgsAudio *audio,
-				     gint sound_scope, guint staging_flags)
+void
+ags_audio_real_recursive_run_stage(AgsAudio *audio,
+				   gint sound_scope, guint staging_flags)
 {
   AgsChannel *channel;
 
@@ -9691,8 +9691,8 @@ ags_audio_real_recursive_reset_stage(AgsAudio *audio,
     AgsRecallID *current;
 
     /* reset recursive channel stage */
-    current = ags_channel_recursive_reset_stage(channel,
-						sound_scope, staging_flags);
+    current = ags_channel_recursive_run_stage(channel,
+					      sound_scope, staging_flags);
     recall_id = g_list_append(recall_id,
 			      current);
 
@@ -9715,55 +9715,48 @@ ags_audio_real_recursive_reset_stage(AgsAudio *audio,
 }
 
 /**
- * ags_audio_recursive_reset_stage:
+ * ags_audio_recursive_run_stage:
  * @audio: the #AgsAudio object
  * @sound_scope: the scope to reset
  * @staging_flags: the stage to enable
  *
  * Resets @audio's @sound_scope specified by @staging_flags.
  *
- * Returns: a list containing current #AgsRecallID
- *
  * Since: 2.0.0
  */
-GList*
-ags_audio_recursive_reset_stage(AgsAudio *audio,
-				gint sound_scope, guint staging_flags)
-{
-  GList *list;
-  
-  g_return_val_if_fail(AGS_IS_AUDIO(audio), NULL);
+void
+ags_audio_recursive_run_stage(AgsAudio *audio,
+			      gint sound_scope, guint staging_flags)
+{  
+  g_return_if_fail(AGS_IS_AUDIO(audio));
   
   /* emit */
   list = NULL;
   
   g_object_ref((GObject *) audio);
   g_signal_emit(G_OBJECT(audio),
-		audio_signals[RECURSIVE_RESET_STAGE], 0,
-		sound_scope, staging_flags,
-		&list);
+		audio_signals[RECURSIVE_RUN_STAGE], 0,
+		sound_scope, staging_flags);
   g_object_unref((GObject *) audio);
-
-  return(list);
 }
 
 /**
  * ags_audio_new:
- * @soundcard: the #AgsSoundcard to use for output
+ * @output_soundcard: the #AgsSoundcard to use for output
  *
  * Creates an #AgsAudio, with defaults of @soundcard.
  *
  * Returns: a new #AgsAudio
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsAudio*
-ags_audio_new(GObject *soundcard)
+ags_audio_new(GObject *output_soundcard)
 {
   AgsAudio *audio;
 
   audio = (AgsAudio *) g_object_new(AGS_TYPE_AUDIO,
-				    "output-soundcard", soundcard,
+				    "output-soundcard", output_soundcard,
 				    NULL);
 
   return(audio);
