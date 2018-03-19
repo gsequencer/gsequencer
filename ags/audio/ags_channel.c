@@ -1947,7 +1947,7 @@ ags_channel_is_ready(AgsConnectable *connectable)
 
   channel = AGS_CHANNEL(connectable);
 
-  /* get audio signal mutex */
+  /* get channel mutex */
   pthread_mutex_lock(ags_channel_get_class_mutex());
   
   channel_mutex = channel->obj_mutex;
@@ -2060,7 +2060,7 @@ ags_channel_is_connected(AgsConnectable *connectable)
 
   channel = AGS_CHANNEL(connectable);
 
-  /* get audio signal mutex */
+  /* get channel mutex */
   pthread_mutex_lock(ags_channel_get_class_mutex());
   
   channel_mutex = channel->obj_mutex;
