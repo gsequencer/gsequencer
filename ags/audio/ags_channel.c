@@ -4209,45 +4209,49 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
   }
 
   /* unset recall id - old channel */
-  old_channel_level = ags_channel_get_level(old_channel_level);
+  if(AGS_IS_INPUT(old_channel)){
+    old_channel_level = ags_channel_get_level(old_channel);
 
-  if(old_channel_level == NULL){
-    gint i;
+    if(old_channel_level == NULL){
+      gint i;
     
-    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-      GList *recall_id;
+      for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+	GList *recall_id;
 
-      recall_id = ags_channel_check_scope(old_channel_level, i);
+	recall_id = ags_channel_check_scope(old_channel, i);
       
-      if(recall_id != NULL){
-	ags_channel_recursive_run_stage(old_channel_level,
-					i, (AGS_SOUND_STAGING_CANCEL |
-					    AGS_SOUND_STAGING_DONE |
-					    AGS_SOUND_STAGING_REMOVE));
+	if(recall_id != NULL){
+	  ags_channel_recursive_run_stage(old_channel,
+					  i, (AGS_SOUND_STAGING_CANCEL |
+					      AGS_SOUND_STAGING_DONE |
+					      AGS_SOUND_STAGING_REMOVE));
 
-	g_list_free(recall_id);
+	  g_list_free(recall_id);
+	}
       }
     }
   }
-
+  
   /* unset recall id - old link */
-  old_link_level = ags_channel_get_level(old_link_level);
+  if(AGS_IS_INPUT(old_link)){
+    old_link_level = ags_channel_get_level(old_link);
 
-  if(old_link_level == NULL){
-    gint i;
+    if(old_link_level == NULL){
+      gint i;
     
-    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-      GList *recall_id;
+      for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+	GList *recall_id;
 
-      recall_id = ags_channel_check_scope(old_link_level, i);
+	recall_id = ags_channel_check_scope(old_link, i);
       
-      if(recall_id != NULL){
-	ags_channel_recursive_run_stage(old_link_level,
-					i, (AGS_SOUND_STAGING_CANCEL |
-					    AGS_SOUND_STAGING_DONE |
-					    AGS_SOUND_STAGING_REMOVE));
+	if(recall_id != NULL){
+	  ags_channel_recursive_run_stage(old_link,
+					  i, (AGS_SOUND_STAGING_CANCEL |
+					      AGS_SOUND_STAGING_DONE |
+					      AGS_SOUND_STAGING_REMOVE));
 
-	g_list_free(recall_id);
+	  g_list_free(recall_id);
+	}
       }
     }
   }
@@ -4680,6 +4684,8 @@ ags_channel_reset_recycling(AgsChannel *channel,
   }
 
   void ags_channel_reset_recycling_reset_recycling_context_up(AgsChannel *current){
+    //NOTE:JK: actually handled by ags_channel_set_link()
+#if 0
     gint i;
 
     if(!AGS_IS_CHANNEL(current)){
@@ -4698,6 +4704,7 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	g_list_free(recall_id);
       }
     }
+#endif
   }
   
   void ags_channel_reset_recycling_reset_recycling_context_down(AgsChannel *current_output,
