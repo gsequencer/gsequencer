@@ -1968,8 +1968,8 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
   if(!AGS_IS_RECALL(recall)){
     return;
   }
-
-  if((AGS_SOUND_STAGING_FINI & (recall->staging_flags)) != 0){
+  
+  if((AGS_SOUND_STAGING_FINI & (recall->staging_flags)) == 0){
     if((AGS_SOUND_STAGING_CHECK_RT_DATA & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_CHECK_RT_DATA & (recall->staging_flags)) == 0){    
       ags_recall_check_rt_data(recall);
@@ -2024,15 +2024,27 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
        (AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (recall->staging_flags)) == 0){
       ags_recall_run_init_feed_output_queue(recall);
     }
-
-    if((AGS_SOUND_STAGING_CANCEL & (staging_flags)) != 0 &&
-       (AGS_SOUND_STAGING_CANCEL & (recall->staging_flags)) == 0){
-      recall->staging_flags |= AGS_SOUND_STAGING_FINI;
-      
-      ags_recall_run_init_cancel(recall);
-    }
   }
 
+  if((AGS_SOUND_STAGING_FINI & (staging_flags)) != 0){
+    ags_recall_unset_staging_flags(recall,
+				   (AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
+				    AGS_SOUND_STAGING_AUTOMATE |
+				    AGS_SOUND_STAGING_RUN_PRE |
+				    AGS_SOUND_STAGING_RUN_INTER |
+				    AGS_SOUND_STAGING_RUN_POST |
+				    AGS_SOUND_STAGING_DO_FEEDBACK |
+				    AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE));    
+  }
+
+  if((AGS_SOUND_STAGING_CANCEL & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_CANCEL & (recall->staging_flags)) == 0){
+    ags_recall_set_state_flags(recall,
+			       AGS_SOUND_STATE_IS_TERMINATING);
+
+    ags_recall_run_init_cancel(recall);
+  }
+  
   if((AGS_SOUND_STAGING_DONE & (staging_flags)) != 0 &&
      (AGS_SOUND_STAGING_DONE & (recall->staging_flags)) == 0){
     ags_recall_run_init_done(recall);

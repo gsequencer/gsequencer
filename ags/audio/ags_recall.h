@@ -73,8 +73,6 @@ typedef enum{
   AGS_RECALL_HIDE                  = 1 <<  5,
   AGS_RECALL_SKIP_DEPENDENCIES     = 1 <<  6,
   AGS_RECALL_HAS_OUTPUT_PORT       = 1 <<  7,
-  AGS_RECALL_RUN_FIRST             = 1 <<  8,
-  AGS_RECALL_RUN_LAST              = 1 <<  9,
 }AgsRecallFlags;
 
 /**
