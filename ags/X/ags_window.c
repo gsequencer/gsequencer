@@ -238,16 +238,7 @@ ags_window_init(AgsWindow *window)
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
   gtk_container_add((GtkContainer *) window, (GtkWidget*) vbox);
 
-  /* menubar */
-  window->context_menu = ags_context_menu_new();
-  gtk_widget_set_events(GTK_WIDGET(window), 
-			(GDK_BUTTON_PRESS_MASK
-			 | GDK_BUTTON_RELEASE_MASK));
-  gtk_widget_show_all(window->context_menu);
-
-  g_signal_connect((GObject *) window, "button-press-event",
-		   G_CALLBACK(ags_window_button_press_event), (gpointer) window);
-  
+  /* menubar */  
   window->menu_bar = ags_menu_bar_new();
   gtk_box_pack_start((GtkBox *) vbox,
   		     (GtkWidget *) window->menu_bar,
@@ -851,6 +842,17 @@ ags_window_load_libags_audio_timeout(AgsWindow *window)
 		       "window", window,
 		       NULL);
 
+	  /* context menu */
+	  window->context_menu = ags_context_menu_new();
+	  gtk_widget_set_events(GTK_WIDGET(window), 
+				(GDK_BUTTON_PRESS_MASK
+				 | GDK_BUTTON_RELEASE_MASK));
+	  gtk_widget_show_all(window->context_menu);
+
+	  g_signal_connect((GObject *) window, "button-press-event",
+			   G_CALLBACK(ags_window_button_press_event), (gpointer) window);
+
+	  /* plugin menubar */
 	  gtk_menu_item_set_submenu((GtkMenuItem*) window->menu_bar->ladspa, (GtkWidget*) ags_ladspa_bridge_menu_new());
 	  gtk_menu_item_set_submenu((GtkMenuItem*) window->menu_bar->dssi, (GtkWidget*) ags_dssi_bridge_menu_new());
 	  gtk_menu_item_set_submenu((GtkMenuItem*) window->menu_bar->lv2, (GtkWidget*) ags_lv2_bridge_menu_new());

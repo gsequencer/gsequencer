@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 1.4.22\n"
+"Project-Id-Version: gsequencer 1.4.23\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2018-03-15 07:12+0100\n"
+"POT-Creation-Date: 2018-03-20 16:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -105,17 +105,17 @@ msgstr ""
 msgid "FPlayer"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:203 ags/X/ags_menu_bar.c:200
+#: ags/X/ags_context_menu.c:203 ags/X/ags_menu_bar.c:201
 msgid "LADSPA"
 msgstr ""
 
 #: ags/X/ags_context_menu.c:207 ags/X/ags_context_menu.c:222
-#: ags/X/ags_menu_bar.c:204 ags/X/ags_menu_bar.c:219
+#: ags/X/ags_menu_bar.c:205 ags/X/ags_menu_bar.c:220
 msgid "DSSI"
 msgstr ""
 
 #: ags/X/ags_context_menu.c:211 ags/X/ags_context_menu.c:226
-#: ags/X/ags_menu_bar.c:208 ags/X/ags_menu_bar.c:223
+#: ags/X/ags_menu_bar.c:209 ags/X/ags_menu_bar.c:224
 msgid "Lv2"
 msgstr ""
 
@@ -182,7 +182,7 @@ msgstr ""
 msgid "group"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:163 ags/X/ags_sequencer_editor.c:154
+#: ags/X/ags_export_soundcard.c:163 ags/X/ags_sequencer_editor.c:160
 #: ags/X/ags_soundcard_editor.c:153
 msgid "backend"
 msgstr ""
@@ -497,7 +497,7 @@ msgstr ""
 msgid "inputs"
 msgstr ""
 
-#: ags/X/ags_sequencer_editor.c:190
+#: ags/X/ags_sequencer_editor.c:203
 msgid "MIDI card"
 msgstr ""
 
@@ -546,12 +546,12 @@ msgstr ""
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1533
+#: ags/X/ags_xorg_application_context.c:1540
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1543
+#: ags/X/ags_xorg_application_context.c:1550
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
