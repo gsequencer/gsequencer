@@ -1179,23 +1179,23 @@ ags_ipatch_read_int(AgsPlayable *playable, guint channel,
   }
 #endif
   
-#if __x86_64__
-  if(channels == 0 ||
-     frames == 0){
+  if(sizeof(int) == 8){
+    if(channels == 0 ||
+      frames == 0){
     buffer = NULL;
   }else{
     buffer = (int *) malloc(channels * frames * sizeof(int));
     ags_audio_buffer_util_clear_buffer(buffer, 1,
-				       frames, AGS_AUDIO_BUFFER_UTIL_S64);
+      frames, AGS_AUDIO_BUFFER_UTIL_S64);
     ags_audio_buffer_util_copy_s32_to_s64(buffer, 1,
-					  source, 1,
-					  frames);
+      source, 1,
+      frames);
 
     free(source);
   }
-#else
+  }else{
   buffer = source;
-#endif
+  }
   
   return(buffer);
 }

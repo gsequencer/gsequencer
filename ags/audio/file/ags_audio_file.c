@@ -702,22 +702,22 @@ ags_audio_file_write(AgsAudioFile *audio_file,
   
   playable_buffer = (int *) malloc(audio_file->channels * buffer_size * sizeof(int));
 
-#if __x86_64__
+  if(sizeof(int) == 8){
     copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S64,
 						    ags_audio_buffer_util_format_from_soundcard(format));
-#else
+  }else{
     copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S32,
 						    ags_audio_buffer_util_format_from_soundcard(format));
-#endif
+  }
       
   for(i = 0; i < audio_file->channels; i++){
-#if __x86_64__
-    ags_audio_buffer_util_clear_buffer(&(playable_buffer[i]), audio_file->channels,
+  if(sizeof(int) == 8){
+  ags_audio_buffer_util_clear_buffer(&(playable_buffer[i]), audio_file->channels,
 				       buffer_size, AGS_AUDIO_BUFFER_UTIL_S64);
-#else
+}else{
     ags_audio_buffer_util_clear_buffer(&(playable_buffer[i]), audio_file->channels,
-				       buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
-#endif
+					 buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
+  }
     
     ags_audio_buffer_util_copy_buffer_to_buffer(playable_buffer, audio_file->channels, i,
 						buffer, audio_file->channels, i,

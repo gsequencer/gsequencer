@@ -1511,6 +1511,13 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     /* change sequencer */
     if(str != NULL){
       if(!g_ascii_strncasecmp(str,
+			      "core-audio",
+			      5)){
+	sequencer = ags_distributed_manager_register_sequencer(AGS_DISTRIBUTED_MANAGER(core_audio_server),
+							       FALSE);
+
+	has_core_audio = TRUE;
+      }else if(!g_ascii_strncasecmp(str,
 			      "jack",
 			      5)){
 	sequencer = ags_distributed_manager_register_sequencer(AGS_DISTRIBUTED_MANAGER(jack_server),

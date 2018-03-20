@@ -88,6 +88,7 @@ typedef enum{
   AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE                  = 1 <<  3,
   AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT           = 1 <<  4,
   AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE           = 1 <<  5,
+  AGS_CORE_AUDIO_MIDIIN_DO_SYNC                        = 1 <<  6,
 }AgsCoreAudioMidiinSyncFlags;
 
 #define AGS_CORE_AUDIO_MIDIIN_ERROR (ags_core_audio_midiin_error_quark())

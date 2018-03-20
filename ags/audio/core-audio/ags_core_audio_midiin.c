@@ -1172,20 +1172,22 @@ ags_core_audio_midiin_port_record(AgsSequencer *sequencer,
 				  GError **error)
 {
   AgsCoreAudioClient *core_audio_client;
+  AgsCoreAudioPort *core_audio_port;
   AgsCoreAudioMidiin *core_audio_midiin;
-
+  
   AgsMutexManager *mutex_manager;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
 
   gboolean core_audio_client_activated;
-
+  gboolean do_sync;
+  
   pthread_mutex_t *mutex;
+  pthread_mutex_t *client_mutex;
   pthread_mutex_t *callback_mutex;
   pthread_mutex_t *callback_finish_mutex;
-  pthread_mutex_t *client_mutex;
-
+  
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
 
   /*  */
@@ -1206,9 +1208,6 @@ ags_core_audio_midiin_port_record(AgsSequencer *sequencer,
 
   core_audio_client = (AgsCoreAudioClient *) core_audio_midiin->core_audio_client;
   
-  callback_mutex = core_audio_midiin->callback_mutex;
-  callback_finish_mutex = core_audio_midiin->callback_finish_mutex;
-
   pthread_mutex_unlock(mutex);
 
   /* do record */
@@ -1222,6 +1221,9 @@ ags_core_audio_midiin_port_record(AgsSequencer *sequencer,
     return;
   }
 
+  callback_mutex = core_audio_midiin->callback_mutex;
+  callback_finish_mutex = core_audio_midiin->callback_finish_mutex;
+  
   pthread_mutex_unlock(mutex);
 
   /*  */
@@ -1238,45 +1240,60 @@ ags_core_audio_midiin_port_record(AgsSequencer *sequencer,
 
   pthread_mutex_unlock(client_mutex);
 
+  do_sync = FALSE;
+  
   if(core_audio_client_activated){
-    /* signal client */
     if((AGS_CORE_AUDIO_MIDIIN_INITIAL_CALLBACK & (g_atomic_int_get(&(core_audio_midiin->sync_flags)))) == 0){
-      pthread_mutex_lock(callback_mutex);
+      if((AGS_CORE_AUDIO_MIDIIN_DO_SYNC & (g_atomic_int_get(&(core_audio_midiin->sync_flags)))) != 0){
+	g_atomic_int_and(&(core_audio_midiin->sync_flags),
+			 (~AGS_CORE_AUDIO_MIDIIN_DO_SYNC));
+	do_sync = TRUE;
+      
+	/* signal client - wait callback */
+	pthread_mutex_lock(callback_mutex);
+
+	g_atomic_int_and(&(core_audio_midiin->sync_flags),
+			 (~AGS_CORE_AUDIO_MIDIIN_CALLBACK_WAIT));
+
+	if((AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE & (g_atomic_int_get(&(core_audio_midiin->sync_flags)))) == 0){
+	  pthread_cond_signal(core_audio_midiin->callback_cond);
+	}
+
+	pthread_mutex_unlock(callback_mutex);
+      }  
+    }else{
+      g_atomic_int_and(&(core_audio_midiin->sync_flags),
+			 (~AGS_CORE_AUDIO_MIDIIN_DO_SYNC));
 
       g_atomic_int_or(&(core_audio_midiin->sync_flags),
-		      AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE);
-    
-      if((AGS_CORE_AUDIO_MIDIIN_CALLBACK_WAIT & (g_atomic_int_get(&(core_audio_midiin->sync_flags)))) != 0){
-	pthread_cond_signal(core_audio_midiin->callback_cond);
-      }
-
-      pthread_mutex_unlock(callback_mutex);
-    }
-    
-    /* wait callback */	
-    if((AGS_CORE_AUDIO_MIDIIN_INITIAL_CALLBACK & (g_atomic_int_get(&(core_audio_midiin->sync_flags)))) == 0){
-      pthread_mutex_lock(callback_finish_mutex);
-    
-      if((AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(core_audio_midiin->sync_flags)))) == 0){
-	g_atomic_int_or(&(core_audio_midiin->sync_flags),
-			AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT);
-    
-	while((AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(core_audio_midiin->sync_flags)))) == 0 &&
-	      (AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(core_audio_midiin->sync_flags)))) != 0){
-	  pthread_cond_wait(core_audio_midiin->callback_finish_cond,
-			    callback_finish_mutex);
-	}
-      }
-    
-      g_atomic_int_and(&(core_audio_midiin->sync_flags),
-		       (~(AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT |
-			  AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE)));
-    
-      pthread_mutex_unlock(callback_finish_mutex);
-    }else{
+		     (AGS_CORE_AUDIO_MIDIIN_CALLBACK_WAIT | AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE));
+      g_atomic_int_or(&(core_audio_midiin->sync_flags),
+		     (AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT | AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE));
+      
       g_atomic_int_and(&(core_audio_midiin->sync_flags),
 		       (~AGS_CORE_AUDIO_MIDIIN_INITIAL_CALLBACK));
     }
+  }
+
+  /* implied wait - callback finish wait */
+  if(do_sync){
+    pthread_mutex_lock(callback_finish_mutex);
+
+    if((AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(core_audio_midiin->sync_flags)))) != 0){
+      g_atomic_int_and(&(core_audio_midiin->sync_flags),
+		      (~AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE));
+
+      while((AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE & (g_atomic_int_get(&(core_audio_midiin->sync_flags)))) == 0 &&
+	    (AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(core_audio_midiin->sync_flags)))) != 0){
+	pthread_cond_wait(core_audio_midiin->callback_finish_cond,
+			  core_audio_midiin->callback_finish_mutex);
+      }
+    }
+
+    pthread_mutex_unlock(callback_finish_mutex);
+
+    g_atomic_int_or(&(core_audio_midiin->sync_flags),
+		    (AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT |  AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE));
   }
 
   if(task_thread != NULL){

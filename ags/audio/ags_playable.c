@@ -703,13 +703,13 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
     pthread_mutex_unlock(soundcard_mutex);
   }
   
-#if __x86_64__
+if(sizeof(int) == 8){
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 						  AGS_AUDIO_BUFFER_UTIL_S64);
-#else
+ }else{
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 						  AGS_AUDIO_BUFFER_UTIL_S32);
-#endif
+ }
   
   samplerate = ags_playable_get_samplerate(playable);
   
@@ -774,17 +774,17 @@ ags_playable_read_audio_signal(AgsPlayable *playable,
 	int *tmp;
 
 	tmp = buffer;
-#if __x86_64__
+	if(sizeof(int) == 8){
 	buffer = ags_audio_buffer_util_resample(buffer, 1,
 						AGS_AUDIO_BUFFER_UTIL_S64, samplerate,
 						frames,
 						target_samplerate);
-#else
+	}else{
 	buffer = ags_audio_buffer_util_resample(buffer, 1,
 						AGS_AUDIO_BUFFER_UTIL_S32, samplerate,
 						frames,
 						target_samplerate);
-#endif
+	}
 	
 	free(tmp);
       }

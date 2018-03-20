@@ -463,13 +463,13 @@ ags_sndfile_read_int(AgsPlayable *playable, guint channel, GError **error)
       source = (int *) malloc((size_t) sndfile->info->channels *
 			      sndfile->info->frames *
 			      sizeof(int));
-#if __x86_64__
-    ags_audio_buffer_util_clear_buffer(source, sndfile->info->channels,
-				       sndfile->info->frames, AGS_AUDIO_BUFFER_UTIL_S64);
-#else
-    ags_audio_buffer_util_clear_buffer(source, sndfile->info->channels,
-				       sndfile->info->frames, AGS_AUDIO_BUFFER_UTIL_S32);
-#endif
+    if(sizeof(int) == 8){
+      ags_audio_buffer_util_clear_buffer(source, sndfile->info->channels,
+					 sndfile->info->frames, AGS_AUDIO_BUFFER_UTIL_S64);
+    }else{
+      ags_audio_buffer_util_clear_buffer(source, sndfile->info->channels,
+	sndfile->info->frames, AGS_AUDIO_BUFFER_UTIL_S32);
+    }
     
     //FIXME:JK: work-around comment me out
     //    sf_seek(sndfile->file, 0, SEEK_SET);  
@@ -485,23 +485,23 @@ ags_sndfile_read_int(AgsPlayable *playable, guint channel, GError **error)
   if(sndfile->info->frames != 0){
     buffer = (int *) malloc((size_t) sndfile->info->frames *
 			    sizeof(int));
-#if __x86_64__
-    ags_audio_buffer_util_clear_buffer(buffer, 1,
-				       sndfile->info->frames, AGS_AUDIO_BUFFER_UTIL_S64);
-#else
-    ags_audio_buffer_util_clear_buffer(buffer, 1,
-				       sndfile->info->frames, AGS_AUDIO_BUFFER_UTIL_S32);
-#endif
+    if(sizeof(int) == 8){
+      ags_audio_buffer_util_clear_buffer(buffer, 1,
+	sndfile->info->frames, AGS_AUDIO_BUFFER_UTIL_S64);
+    }else{
+      ags_audio_buffer_util_clear_buffer(buffer, 1,
+					 sndfile->info->frames, AGS_AUDIO_BUFFER_UTIL_S32);
+    }
     
-#if __x86_64__
+    if(sizeof(int) == 8){
     ags_audio_buffer_util_copy_s64_to_s64(buffer, 1,
 					  &(source[channel]), sndfile->info->channels,
 					  sndfile->info->frames);
-#else
-    ags_audio_buffer_util_copy_s32_to_s32(buffer, 1,
-					  &(source[channel]), sndfile->info->channels,
-					  sndfile->info->frames);
-#endif
+  }else{
+      ags_audio_buffer_util_copy_s32_to_s32(buffer, 1,
+	&(source[channel]), sndfile->info->channels,
+	sndfile->info->frames);
+    }
   }else{
     buffer = NULL;
   }
