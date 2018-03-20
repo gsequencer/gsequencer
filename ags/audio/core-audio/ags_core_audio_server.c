@@ -977,12 +977,19 @@ ags_core_audio_server_register_sequencer(AgsDistributedManager *distributed_mana
   
   core_audio_port = ags_core_audio_port_new((GObject *) default_client);
   core_audio_port->midi_port_number = core_audio_server->n_sequencers;
+  g_object_set(core_audio_port,
+	       "core-audio-device", core_audio_midiin,
+	       NULL);
   ags_core_audio_client_add_port(default_client,
 				 (GObject *) core_audio_port);
 
   g_object_set(core_audio_midiin,
 	       "core-audio-port", core_audio_port,
 	       NULL);
+
+  core_audio_midiin->port_name = (gchar **) malloc(2 * sizeof(gchar *));
+  core_audio_midiin->port_name[0] = g_strdup(str);
+  core_audio_midiin->port_name[1] = NULL;
   
   ags_core_audio_port_register(core_audio_port,
 			       str,
