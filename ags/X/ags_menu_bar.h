@@ -52,6 +52,14 @@ struct _AgsMenuBar
 
   GtkMenu *edit;
   GtkMenu *add;
+
+  GtkMenuItem *ladspa;
+  GtkMenuItem *dssi;
+  GtkMenuItem *lv2;
+
+  GtkMenuItem *live_dssi;
+  GtkMenuItem *live_lv2;
+  
   GtkMenu *live;
 
   GtkMenu *midi;

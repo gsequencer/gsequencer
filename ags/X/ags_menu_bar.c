@@ -197,16 +197,16 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
 #endif
   
   /* bridge */
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("LADSPA"));
-  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_ladspa_bridge_menu_new());
+  menu_bar->ladspa = 
+    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("LADSPA"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("DSSI"));
-  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_dssi_bridge_menu_new());
+  menu_bar->dssi = 
+    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("DSSI"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Lv2"));
-  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_lv2_bridge_menu_new());
+  menu_bar->lv2 = 
+    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Lv2"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
   /* live */
@@ -216,12 +216,12 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   gtk_menu_item_set_submenu((GtkMenuItem*) item, menu_bar->live);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("DSSI"));
-  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_dssi_bridge_menu_new());
+  menu_bar->live_dssi = 
+    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("DSSI"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->live, (GtkWidget*) item);
 
-  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Lv2"));
-  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget*) ags_live_lv2_bridge_menu_new());
+  menu_bar->live_lv2 = 
+    item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Lv2"));
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->live, (GtkWidget*) item);  
 
   /* automation */

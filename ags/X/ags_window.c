@@ -851,6 +851,13 @@ ags_window_load_libags_audio_timeout(AgsWindow *window)
 		       "window", window,
 		       NULL);
 
+	  gtk_menu_item_set_submenu((GtkMenuItem*) window->menu_bar->ladspa, (GtkWidget*) ags_ladspa_bridge_menu_new());
+	  gtk_menu_item_set_submenu((GtkMenuItem*) window->menu_bar->dssi, (GtkWidget*) ags_dssi_bridge_menu_new());
+	  gtk_menu_item_set_submenu((GtkMenuItem*) window->menu_bar->lv2, (GtkWidget*) ags_lv2_bridge_menu_new());
+
+	  gtk_menu_item_set_submenu((GtkMenuItem*) window->menu_bar->live_dssi, (GtkWidget*) ags_live_dssi_bridge_menu_new());
+	  gtk_menu_item_set_submenu((GtkMenuItem*) window->menu_bar->live_lv2, (GtkWidget*) ags_live_lv2_bridge_menu_new());
+	  
 	  gtk_window_set_default_size((GtkWindow *) window, 500, 500);
 	  gtk_paned_set_position((GtkPaned *) window->paned, 300);
 
