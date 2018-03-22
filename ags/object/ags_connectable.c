@@ -68,17 +68,14 @@ ags_connectable_base_init(AgsConnectableInterface *interface)
  *
  * Since: 2.0.0
  */
-gpointer
+AgsUUID*
 ags_connectable_get_uuid(AgsConnectable *connectable)
 {
   AgsConnectableInterface *connectable_interface;
 
   g_return_val_if_fail(AGS_IS_CONNECTABLE(connectable), NULL);
   connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
-
-  if(connectable_interface->get_uuid == NULL){
-    return(NULL);
-  }
+  g_return_val_if_fail(connectable_interface->get_uuid, NULL);
 
   return(connectable_interface->get_uuid(connectable));
 }
@@ -224,11 +221,11 @@ ags_connectable_xml_parse(AgsConnectable *connectable,
 {
   AgsConnectableInterface *connectable_interface;
 
-  g_return_val_if_fail(AGS_IS_CONNECTABLE(connectable), NULL);
+  g_return_if_fail(AGS_IS_CONNECTABLE(connectable));
   connectable_interface = AGS_CONNECTABLE_GET_INTERFACE(connectable);
-  g_return_val_if_fail(connectable_interface->xml_parse, NULL);
-
-  return(connectable_interface->xml_parse(connectable));
+  g_return_if_fail(connectable_interface->xml_parse);
+  connectable_interface->xml_parse(connectable,
+				   node);
 }
 
 /**

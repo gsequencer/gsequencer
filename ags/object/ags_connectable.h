@@ -25,6 +25,8 @@
 
 #include <libxml/tree.h>
 
+#include <ags/lib/ags_uuid.h>
+
 #define AGS_TYPE_CONNECTABLE                    (ags_connectable_get_type())
 #define AGS_CONNECTABLE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CONNECTABLE, AgsConnectable))
 #define AGS_CONNECTABLE_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_CONNECTABLE, AgsConnectableInterface))
@@ -38,8 +40,9 @@ typedef struct _AgsConnectableInterface AgsConnectableInterface;
 struct _AgsConnectableInterface
 {
   GTypeInterface ginterface;
-
-  gpointer (*get_uuid)(AgsConnectable *connectable);
+  
+  AgsUUID* (*get_uuid)(AgsConnectable *connectable);
+  gboolean (*has_resource)(AgsConnectable *connectable);
   
   gboolean (*is_ready)(AgsConnectable *connectable);
   void (*add_to_registry)(AgsConnectable *connectable);
@@ -63,7 +66,8 @@ struct _AgsConnectableInterface
 
 GType ags_connectable_get_type();
 
-gpointer ags_connectable_get_uuid(AgsConnectable *connectable);
+AgsUUID* ags_connectable_get_uuid(AgsConnectable *connectable);
+gboolean ags_connectable_has_resource(AgsConnectable *connectable);
 
 gboolean ags_connectable_is_ready(AgsConnectable *connectable);
 void ags_connectable_add_to_registry(AgsConnectable *connectable);

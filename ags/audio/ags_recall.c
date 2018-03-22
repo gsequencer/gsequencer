@@ -104,7 +104,7 @@ void ags_recall_real_remove(AgsRecall *recall);
 
 AgsRecall* ags_recall_real_duplicate(AgsRecall *reall,
 				     AgsRecallID *recall_id,
-				     guint *n_params, GParameter *parameter);
+				     guint *n_params, gchar **parameter_name, GValue *value);
 
 void ags_recall_child_done(AgsRecall *child,
 			   AgsRecall *parent);
@@ -654,11 +654,12 @@ ags_recall_class_init(AgsRecallClass *recall)
    * @recall: the #AgsRecall to duplicate
    * @recall_id: the assigned #AgsRecallID
    * @n_params: pointer to array length
-   * @parameter: parameter array
+   * @parameter_name: parameter name string vector
+   * @value: the #GValue-struct array
    *
    * The ::duplicate signal notifies about instantiating.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   recall_signals[DUPLICATE] =
     g_signal_new("duplicate",
@@ -666,10 +667,10 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsRecallClass, duplicate),
 		 NULL, NULL,
-		 ags_cclosure_marshal_OBJECT__OBJECT_POINTER_POINTER,
-		 G_TYPE_OBJECT, 3,
+		 ags_cclosure_marshal_OBJECT__OBJECT_POINTER_POINTER_POINTER,
+		 G_TYPE_OBJECT, 4,
 		 G_TYPE_OBJECT,
-		 G_TYPE_POINTER, G_TYPE_POINTER);
+		 G_TYPE_POINTER, G_TYPE_POINTER, G_TYPE_POINTER);
 
   /**
    * AgsRecall::notify-dependency:
@@ -2913,22 +2914,60 @@ ags_recall_is_done(GList *recalls, GObject *recycling_context)
 AgsRecall*
 ags_recall_real_duplicate(AgsRecall *recall,
 			  AgsRecallID *recall_id,
-			  guint *n_params, GParameter *parameter)
+			  guint *n_params, gchar **parameter_name, GValue *value)
 {
   AgsRecall *copy;
   AgsRecallClass *recall_class, *copy_class;
   AgsRecallContainer *recall_container;
   AgsRecallHandler *recall_handler, *recall_handler_copy;
+
   GList *list, *child;
 
+  guint local_n_params;
+
+  local_n_params = 0;
+  
+  if(n_params == NULL){
+    n_params = &local_n_params;
+  }
+  
+  if(n_params[0] == 0){
+    parameter_name = (gchar **) malloc(5 * sizeof(gchar *));
+    value = g_new0(GValue,
+		   4);
+  }else{
+    parameter_name = (gchar **) realloc(parameter_name,
+					(n_params[0] + 5) * sizeof(gchar *));
+    value = g_renew(GValue,
+		    n_params[0] + 4);
+  }
+
+  parameter_name[n_params[0]] = "output-soundcard";
+  value[n_params[0]] = {0,};
+  g_value_set_object(&(value[n_params[0]]), recall->output_soundcard);
+
+  parameter_name[n_params[0] + 1] = "input-soundcard";
+  value[n_params[1]] = {0,};
+  g_value_set_object(&(value[n_params[0] + 1]), recall->input_soundcard);
+    
+  parameter_name[n_params[0] + 2] = "recall-id";
+  value[n_params[2]] = {0,};
+  g_value_set_object(&(value[n_params[0] + 2]), recall_id);
+    
+  parameter_name[n_params[0] + 3] = "recall-container";
+  value[n_params[3]] = {0,};
+  g_value_set_object(&(value[n_params[0] + 3]), recall->container);
+
+  parameter_name[n_params[0] + 4] = NULL;
+
+  n_params[0] += 4;
+  
   parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
 				 parameter, n_params,
-				 "output-soundcard", recall->soundcard,
-				 "recall-id", recall_id,
-				 "recall-container", recall->container,
 				 NULL);
 
-  copy = g_object_newv(G_OBJECT_TYPE(recall), *n_params, parameter);
+  copy = g_object_new_with_properties(G_OBJECT_TYPE(recall),
+				      *n_params, parameter_name, value);
   g_free(parameter);
   
   ags_recall_set_flags(copy,

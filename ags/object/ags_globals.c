@@ -55,9 +55,9 @@ ags_globals_get_hash_table()
   pthread_mutex_lock(&mutex);
 
   if(ags_globals == NULL){
-    ags_line_message_monitor = g_hash_table_new_full(g_direct_hash, g_ascii_strcasecmp,
-						     NULL,
-						     NULL);    
+    ags_globals = g_hash_table_new_full(g_direct_hash, g_ascii_strcasecmp,
+					NULL,
+					NULL);    
   }
   
   pthread_mutex_unlock(&mutex);

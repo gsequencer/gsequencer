@@ -385,7 +385,6 @@ libags_object_h_sources =  \
 	ags/object/ags_connectable.h \
 	ags/object/ags_countable.h \
 	ags/object/ags_concurrent_tree.h \
-	ags/object/ags_distributed_manager.h \
 	ags/object/ags_dynamic_connectable.h \
 	ags/object/ags_globals.h \
 	ags/object/ags_macros.h \
@@ -398,6 +397,7 @@ libags_object_h_sources =  \
 	ags/object/ags_seekable.h \
 	ags/object/ags_sequencer.h \
 	ags/object/ags_soundcard.h \
+	ags/object/ags_sound_server.h \
 	ags/object/ags_tactable.h \
 	ags/object/ags_tree_iterator.h
 
@@ -412,7 +412,6 @@ libags_object_c_sources = \
 	ags/object/ags_connectable.c \
 	ags/object/ags_countable.c \
 	ags/object/ags_concurrent_tree.c \
-	ags/object/ags_distributed_manager.c \
 	ags/object/ags_dynamic_connectable.c \
 	ags/object/ags_globals.c \
 	ags/object/ags_main_loop.c \
@@ -424,6 +423,7 @@ libags_object_c_sources = \
 	ags/object/ags_seekable.c \
 	ags/object/ags_sequencer.c \
 	ags/object/ags_soundcard.c \
+	ags/object/ags_sound_server.c \
 	ags/object/ags_tactable.c \
 	ags/object/ags_tree_iterator.c
 

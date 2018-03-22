@@ -116,7 +116,7 @@ ags_uuid_generate(AgsUUID *ptr)
     return;
   }
 
-  uuid_generate_time_safe((uuid_t) ptr[0]);
+  uuid_generate_time_safe(ptr[0]);
 }
 
 /**
@@ -146,8 +146,8 @@ ags_uuid_compare(AgsUUID *a,
     return(FALSE);
   }
 
-  retval = uuid_compare((uuid_t) a[0],
-			(uuid_t) b[0]);
+  retval = uuid_compare(a[0],
+			b[0]);
 
   return(retval);
 }
@@ -171,8 +171,8 @@ ags_uuid_to_string(AgsUUID *ptr)
     return(NULL);
   }
   
-  uuid_str = (gchar *) malloc((AGS_ID_GENERATOR_DEFAULT_UUID_LENGTH + 1) * sizeof(gchar));
-  uuid_unparse((uuid_t) ptr[0],
+  uuid_str = (gchar *) malloc((AGS_UUID_STRING_DEFAULT_LENGTH + 1) * sizeof(gchar));
+  uuid_unparse(ptr[0],
 	       uuid_str);
 
   return(uuid_str);
@@ -200,7 +200,7 @@ ags_uuid_from_string(gchar *str)
   }
 
   id = ags_uuid_alloc();
-  retval = uuid_parse(str, (uuid_t) id[0]);
+  retval = uuid_parse(str, id[0]);
 
   if(retval != 0){
     ags_uuid_free(id);

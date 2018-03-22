@@ -227,7 +227,6 @@ am__objects_4 = $(am__objects_1) \
 	ags/object/libags_la-ags_connectable.lo \
 	ags/object/libags_la-ags_countable.lo \
 	ags/object/libags_la-ags_concurrent_tree.lo \
-	ags/object/libags_la-ags_distributed_manager.lo \
 	ags/object/libags_la-ags_dynamic_connectable.lo \
 	ags/object/libags_la-ags_globals.lo \
 	ags/object/libags_la-ags_main_loop.lo \
@@ -239,6 +238,7 @@ am__objects_4 = $(am__objects_1) \
 	ags/object/libags_la-ags_seekable.lo \
 	ags/object/libags_la-ags_sequencer.lo \
 	ags/object/libags_la-ags_soundcard.lo \
+	ags/object/libags_la-ags_sound_server.lo \
 	ags/object/libags_la-ags_tactable.lo \
 	ags/object/libags_la-ags_tree_iterator.lo
 am__objects_5 = $(am__objects_1) ags/file/libags_la-ags_file.lo \
@@ -3230,7 +3230,6 @@ libags_object_h_sources = \
 	ags/object/ags_connectable.h \
 	ags/object/ags_countable.h \
 	ags/object/ags_concurrent_tree.h \
-	ags/object/ags_distributed_manager.h \
 	ags/object/ags_dynamic_connectable.h \
 	ags/object/ags_globals.h \
 	ags/object/ags_macros.h \
@@ -3243,6 +3242,7 @@ libags_object_h_sources = \
 	ags/object/ags_seekable.h \
 	ags/object/ags_sequencer.h \
 	ags/object/ags_soundcard.h \
+	ags/object/ags_sound_server.h \
 	ags/object/ags_tactable.h \
 	ags/object/ags_tree_iterator.h
 
@@ -3256,7 +3256,6 @@ libags_object_c_sources = \
 	ags/object/ags_connectable.c \
 	ags/object/ags_countable.c \
 	ags/object/ags_concurrent_tree.c \
-	ags/object/ags_distributed_manager.c \
 	ags/object/ags_dynamic_connectable.c \
 	ags/object/ags_globals.c \
 	ags/object/ags_main_loop.c \
@@ -3268,6 +3267,7 @@ libags_object_c_sources = \
 	ags/object/ags_seekable.c \
 	ags/object/ags_sequencer.c \
 	ags/object/ags_soundcard.c \
+	ags/object/ags_sound_server.c \
 	ags/object/ags_tactable.c \
 	ags/object/ags_tree_iterator.c
 
@@ -4943,9 +4943,6 @@ ags/object/libags_la-ags_countable.lo: ags/object/$(am__dirstamp) \
 ags/object/libags_la-ags_concurrent_tree.lo:  \
 	ags/object/$(am__dirstamp) \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
-ags/object/libags_la-ags_distributed_manager.lo:  \
-	ags/object/$(am__dirstamp) \
-	ags/object/$(DEPDIR)/$(am__dirstamp)
 ags/object/libags_la-ags_dynamic_connectable.lo:  \
 	ags/object/$(am__dirstamp) \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
@@ -4968,6 +4965,8 @@ ags/object/libags_la-ags_seekable.lo: ags/object/$(am__dirstamp) \
 ags/object/libags_la-ags_sequencer.lo: ags/object/$(am__dirstamp) \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
 ags/object/libags_la-ags_soundcard.lo: ags/object/$(am__dirstamp) \
+	ags/object/$(DEPDIR)/$(am__dirstamp)
+ags/object/libags_la-ags_sound_server.lo: ags/object/$(am__dirstamp) \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
 ags/object/libags_la-ags_tactable.lo: ags/object/$(am__dirstamp) \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
@@ -7992,7 +7991,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_config.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_connectable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_countable.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_distributed_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_dynamic_connectable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_globals.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_main_loop.Plo@am__quote@
@@ -8003,6 +8001,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_portlet.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_seekable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_sequencer.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_sound_server.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_soundcard.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_tactable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_tree_iterator.Plo@am__quote@
@@ -8372,13 +8371,6 @@ ags/object/libags_la-ags_concurrent_tree.lo: ags/object/ags_concurrent_tree.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/object/libags_la-ags_concurrent_tree.lo `test -f 'ags/object/ags_concurrent_tree.c' || echo '$(srcdir)/'`ags/object/ags_concurrent_tree.c
 
-ags/object/libags_la-ags_distributed_manager.lo: ags/object/ags_distributed_manager.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/object/libags_la-ags_distributed_manager.lo -MD -MP -MF ags/object/$(DEPDIR)/libags_la-ags_distributed_manager.Tpo -c -o ags/object/libags_la-ags_distributed_manager.lo `test -f 'ags/object/ags_distributed_manager.c' || echo '$(srcdir)/'`ags/object/ags_distributed_manager.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/object/$(DEPDIR)/libags_la-ags_distributed_manager.Tpo ags/object/$(DEPDIR)/libags_la-ags_distributed_manager.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/object/ags_distributed_manager.c' object='ags/object/libags_la-ags_distributed_manager.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/object/libags_la-ags_distributed_manager.lo `test -f 'ags/object/ags_distributed_manager.c' || echo '$(srcdir)/'`ags/object/ags_distributed_manager.c
-
 ags/object/libags_la-ags_dynamic_connectable.lo: ags/object/ags_dynamic_connectable.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/object/libags_la-ags_dynamic_connectable.lo -MD -MP -MF ags/object/$(DEPDIR)/libags_la-ags_dynamic_connectable.Tpo -c -o ags/object/libags_la-ags_dynamic_connectable.lo `test -f 'ags/object/ags_dynamic_connectable.c' || echo '$(srcdir)/'`ags/object/ags_dynamic_connectable.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/object/$(DEPDIR)/libags_la-ags_dynamic_connectable.Tpo ags/object/$(DEPDIR)/libags_la-ags_dynamic_connectable.Plo
@@ -8455,6 +8447,13 @@ ags/object/libags_la-ags_soundcard.lo: ags/object/ags_soundcard.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/object/ags_soundcard.c' object='ags/object/libags_la-ags_soundcard.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/object/libags_la-ags_soundcard.lo `test -f 'ags/object/ags_soundcard.c' || echo '$(srcdir)/'`ags/object/ags_soundcard.c
+
+ags/object/libags_la-ags_sound_server.lo: ags/object/ags_sound_server.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/object/libags_la-ags_sound_server.lo -MD -MP -MF ags/object/$(DEPDIR)/libags_la-ags_sound_server.Tpo -c -o ags/object/libags_la-ags_sound_server.lo `test -f 'ags/object/ags_sound_server.c' || echo '$(srcdir)/'`ags/object/ags_sound_server.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/object/$(DEPDIR)/libags_la-ags_sound_server.Tpo ags/object/$(DEPDIR)/libags_la-ags_sound_server.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/object/ags_sound_server.c' object='ags/object/libags_la-ags_sound_server.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/object/libags_la-ags_sound_server.lo `test -f 'ags/object/ags_sound_server.c' || echo '$(srcdir)/'`ags/object/ags_sound_server.c
 
 ags/object/libags_la-ags_tactable.lo: ags/object/ags_tactable.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/object/libags_la-ags_tactable.lo -MD -MP -MF ags/object/$(DEPDIR)/libags_la-ags_tactable.Tpo -c -o ags/object/libags_la-ags_tactable.lo `test -f 'ags/object/ags_tactable.c' || echo '$(srcdir)/'`ags/object/ags_tactable.c
