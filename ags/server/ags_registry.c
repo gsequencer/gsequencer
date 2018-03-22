@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/server/ags_registry.h>
-
-#include <ags/util/ags_id_generator.h>
 
 #include <ags/object/ags_application_context.h>
 #include <ags/object/ags_connectable.h>
@@ -168,16 +166,12 @@ ags_registry_init(AgsRegistry *registry)
   pthread_mutex_init(registry->mutex,
 		     registry->mutexattr);
 
-  registry->previous = NULL;
-  registry->current = NULL;
-
 #ifdef AGS_WITH_XMLRPC_C
   registry->registry = xmlrpc_registry_new(ags_service_provider_get_env(AGS_SERVICE_PROVIDER(application_context)));
 #else
   registry->registry = NULL;
 #endif
   
-  registry->id_length = AGS_REGISTRY_DEFAULT_ID_LENGTH;
   registry->counter = 0;
   
   registry->entry = NULL;
@@ -277,18 +271,6 @@ ags_registry_dispose(GObject *gobject)
   AgsRegistry *registry;
 
   registry = AGS_REGISTRY(gobject);
-
-  if(registry->previous != NULL){
-    g_object_unref(registry->previous);
-    
-    registry->previous = NULL;
-  }
-
-  if(registry->current != NULL){
-    g_object_unref(registry->current);
-
-    registry->current = NULL;
-  }
     
   if(registry->server != NULL){
     g_object_unref(registry->server);
@@ -311,14 +293,6 @@ ags_registry_finalize(GObject *gobject)
   AgsRegistry *registry;
 
   registry = AGS_REGISTRY(gobject);
-
-  if(registry->previous != NULL){
-    g_object_unref(registry->previous);
-  }
-
-  if(registry->current != NULL){
-    g_object_unref(registry->current);
-  }
     
   if(registry->server != NULL){
     g_object_unref(registry->server);
@@ -354,9 +328,11 @@ ags_registry_entry_alloc()
 
   registry_entry = (AgsRegistryEntry *) malloc(sizeof(AgsRegistryEntry));
 
-  registry_entry->id = ags_id_generator_create_uuid();
-  memset(&(registry_entry->entry), 0, sizeof(GValue));
-  g_value_init(&(registry_entry->entry),
+  registry_entry->id = NULL;
+
+  registry_entry->entry = g_new0(GValue,
+				 1);
+  g_value_init(registry_entry->entry,
 	       G_TYPE_OBJECT);
 
   return(registry_entry);
@@ -381,7 +357,8 @@ ags_registry_entry_free(AgsRegistryEntry *registry_entry)
     g_object_unref(gobject);
   }
   
-  g_value_unset(&(registry_entry->entry));
+  g_value_unset(registry_entry->entry);
+  g_free(registry_entry->entry);
 
   free(registry_entry);
 }
@@ -410,7 +387,7 @@ ags_registry_add_entry(AgsRegistry *registry,
 /**
  * ags_registry_find_entry:
  * @registry: the #AgsRegistry
- * @id: the id to find
+ * @id: the #AgsUUID to find
  * 
  * Find @id as #AgsRegistryEntry-struct in @registry.
  * 
@@ -418,7 +395,7 @@ ags_registry_add_entry(AgsRegistry *registry,
  */
 AgsRegistryEntry*
 ags_registry_find_entry(AgsRegistry *registry,
-			gchar *id)
+			AgsUUID *id)
 {
   GList *current;
   AgsRegistryEntry *entry;
@@ -430,9 +407,8 @@ ags_registry_find_entry(AgsRegistry *registry,
   while(current != NULL){
     entry = (AgsRegistryEntry *) current->data;
 
-    if(!g_ascii_strncasecmp(entry->id,
-			    id,
-			    registry->id_length)){
+    if(!ags_uuid_compare(entry->id,
+			 id)){
       return(entry);
     }
 

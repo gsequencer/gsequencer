@@ -52,11 +52,15 @@ void ags_audio_signal_get_property(GObject *gobject,
 void ags_audio_signal_dispose(GObject *gobject);
 void ags_audio_signal_finalize(GObject *gobject);
 
+AgsUUID* ags_audio_signal_get_uuid(AgsConnectable *connectable);
 gboolean ags_audio_signal_has_resource(AgsConnectable *connectable);
 gboolean ags_audio_signal_is_ready(AgsConnectable *connectable);
 void ags_audio_signal_add_to_registry(AgsConnectable *connectable);
 void ags_audio_signal_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_audio_signal_update(AgsConnectable *connectable);
+xmlNode* ags_audio_signal_list_resource(AgsConnectable *connectable);
+xmlNode* ags_audio_signal_xml_compose(AgsConnectable *connectable);
+void ags_audio_signal_xml_parse(AgsConnectable *connectable,
+				xmlNode *node);
 gboolean ags_audio_signal_is_connected(AgsConnectable *connectable);
 void ags_audio_signal_connect(AgsConnectable *connectable);
 void ags_audio_signal_disconnect(AgsConnectable *connectable);
@@ -651,13 +655,16 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 void
 ags_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = ags_audio_signal_get_uuid;
   connectable->has_resource = ags_audio_signal_has_resource;
   connectable->is_ready = ags_audio_signal_is_ready;
 
   connectable->add_to_registry = ags_audio_signal_add_to_registry;
   connectable->remove_from_registry = ags_audio_signal_remove_from_registry;
 
-  connectable->update = ags_audio_signal_update;
+  connectable->list_resource = ags_audio_signal_list_resource;
+  connectable->xml_compose = ags_audio_signal_xml_compose;
+  connectable->xml_parse = ags_audio_signal_xml_parse;
 
   connectable->is_connected = ags_audio_signal_is_connected;
   
@@ -686,7 +693,7 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->flags = 0;
 
   /* add audio signal mutex */
-  audio_signal-o>obj_mutexattr = 
+  audio_signal->obj_mutexattr = 
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
@@ -701,6 +708,10 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
     mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);  
+
+  /* uuid */
+  audio_signal->uuid = ags_uuid_alloc();
+  ags_uuid_generate(audio_signal->uuid);
 
   /* config */
   mutex_manager = ags_mutex_manager_get_instance();
@@ -1449,6 +1460,34 @@ ags_audio_signal_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_audio_signal_parent_class)->finalize(gobject);
 }
 
+AgsUUID*
+ags_audio_signal_get_uuid(AgsConnectable *connectable)
+{
+  AgsAudioSignal *audio_signal;
+  
+  AgsUUID *ptr;
+
+  pthread_mutex_t *audio_signal_mutex;
+
+  audio_signal = AGS_AUDIO_SIGNAL(connectable);
+
+  /* get audio_signal signal mutex */
+  pthread_mutex_lock(ags_audio_signal_get_class_mutex());
+  
+  audio_signal_mutex = audio_signal->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
+
+  /* get UUID */
+  pthread_mutex_lock(audio_signal_mutex);
+
+  ptr = audio_signal->uuid;
+
+  pthread_mutex_unlock(audio_signal_mutex);
+  
+  return(ptr);
+}
+
 gboolean
 ags_audio_signal_has_resource(AgsConnectable *connectable)
 {
@@ -1515,15 +1554,34 @@ ags_audio_signal_remove_from_registry(AgsConnectable *connectable)
 }
 
 xmlNode*
-ags_audio_signal_update(AgsConnectable *connectable)
+ags_audio_signal_list_resource(AgsConnectable *connectable)
 {
-  xmlNode *audio_signal_node;
+  xmlNode *node;
   
-  audio_signal_node = NULL;
+  node = NULL;
 
   //TODO:JK: implement me
   
-  return(audio_signal_node);
+  return(node);
+}
+
+xmlNode*
+ags_audio_signal_xml_compose(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+void
+ags_audio_signal_xml_parse(AgsConnectable *connectable,
+			   xmlNode *node)
+{
+  //TODO:JK: implement me  
 }
 
 gboolean
@@ -1621,7 +1679,7 @@ ags_audio_signal_get_class_mutex()
  * Since: 2.0.0
  */
 void
-ags_audio_signal_set_flags(AgsAudio_Signal *audio_signal, guint flags)
+ags_audio_signal_set_flags(AgsAudioSignal *audio_signal, guint flags)
 {
   pthread_mutex_t *audio_signal_mutex;
 
@@ -1656,7 +1714,7 @@ ags_audio_signal_set_flags(AgsAudio_Signal *audio_signal, guint flags)
  * Since: 2.0.0
  */
 void
-ags_audio_signal_unset_flags(AgsAudio_Signal *audio_signal, guint flags)
+ags_audio_signal_unset_flags(AgsAudioSignal *audio_signal, guint flags)
 {  
   pthread_mutex_t *audio_signal_mutex;
 

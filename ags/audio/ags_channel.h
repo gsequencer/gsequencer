@@ -285,9 +285,9 @@ void ags_channel_resolve_recall(AgsChannel *channel,
 				AgsRecallID *recall_id);
 
 void ags_channel_init_recall(AgsChannel *channel,
-			     AgsRecallID *recall_id, gint staging_flags);
+			     AgsRecallID *recall_id, guint staging_flags);
 void ags_channel_play_recall(AgsChannel *channel,
-			     AgsRecallID *recall_id, gint staging_flags);
+			     AgsRecallID *recall_id, guint staging_flags);
 
 void ags_channel_done_recall(AgsChannel *channel,
 			     AgsRecallID *recall_id);

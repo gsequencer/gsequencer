@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,7 +30,7 @@
 #include <xmlrpc_server.h>
 #endif
 
-#include <ags/file/ags_file.h>
+#include <ags/lib/ags_uuid.h>
 
 #define AGS_TYPE_REGISTRY                (ags_registry_get_type())
 #define AGS_REGISTRY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_REGISTRY, AgsRegistry))
@@ -39,27 +39,21 @@
 #define AGS_IS_REGISTRY_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_REGISTRY))
 #define AGS_REGISTRY_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_REGISTRY, AgsRegistryClass))
 
-#define AGS_REGISTRY_DEFAULT_ID_LENGTH (36)
-
 typedef struct _AgsRegistry AgsRegistry;
 typedef struct _AgsRegistryClass AgsRegistryClass;
 typedef struct _AgsRegistryEntry AgsRegistryEntry;
 
 /**
  * AgsRegistryFlags:
+ * @AGS_REGISTRY_ADDED_TO_REGISTRY: the registry was added to registry, see #AgsConnectable::add_to_registry()
  * @AGS_REGISTRY_CONNECTED: the registry was connected by #AgsConnectable::connect()
- * @AGS_REGISTRY_XML_DOCUMENT: //TODO:JK: implement me
- * @AGS_REGISTRY_XML_RPC: //TODO:JK: implement me
- * @AGS_REGISTRY_DIRTY: //TODO:JK: implement me
  *
  * Enum values to control the behavior or indicate internal state of #AgsRegistry by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_REGISTRY_CONNECTED     = 1,
-  AGS_REGISTRY_XML_DOCUMENT  = 1 <<  1,
-  AGS_REGISTRY_XML_RPC       = 1 <<  2,
-  AGS_REGISTRY_DIRTY         = 1 <<  3,
+  AGS_REGISTRY_ADDED_TO_REGISTRY   = 1,
+  AGS_REGISTRY_CONNECTED           = 1 <<  1,
 }AgsRegistryFlags;
 
 struct _AgsRegistry
@@ -71,9 +65,6 @@ struct _AgsRegistry
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *mutexattr;
 
-  AgsFile *previous;
-  AgsFile *current;
-
 #ifdef AGS_WITH_XMLRPC_C
   xmlrpc_registry *registry;
 #else
@@ -82,7 +73,6 @@ struct _AgsRegistry
   
   GObject *server;
 
-  guint id_length;
   guint counter;
 
   GList *entry;
@@ -95,15 +85,15 @@ struct _AgsRegistryClass
 
 /**
  * AgsRegistryEntry:
- * @id: the id
+ * @id: the #AgsUUID
  * @entry: the actual entry
  * 
  * #AgsRegistryEntry is an entry that you might want to lookup remotely.
  */
 struct _AgsRegistryEntry
 {
-  gchar *id;
-  GValue entry;
+  AgsUUID *id;
+  GValue *entry;
 };
 
 GType ags_registry_get_type();
@@ -115,7 +105,7 @@ void ags_registry_add_entry(AgsRegistry *registry,
 			    AgsRegistryEntry *registry_entry);
 
 AgsRegistryEntry* ags_registry_find_entry(AgsRegistry *registry,
-					  gchar *id);
+					  AgsUUID *id);
 
 AgsRegistry* ags_registry_new();
 

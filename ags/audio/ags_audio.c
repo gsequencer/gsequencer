@@ -1342,6 +1342,10 @@ ags_audio_init(AgsAudio *audio)
   pthread_mutex_init(mutex,
 		     attr);
 
+  /* uuid */
+  audio->uuid = ags_uuid_alloc();
+  ags_uuid_generate(audio->uuid);
+  
   /* config */
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -3321,8 +3325,11 @@ ags_audio_add_to_registry(AgsConnectable *connectable)
 
   if(registry != NULL){
     entry = ags_registry_entry_alloc(registry);
-    g_value_set_object(&(entry->entry),
+
+    entry->id = audio->uuid;
+    g_value_set_object(entry->entry,
 		       (gpointer) audio);
+    
     ags_registry_add_entry(registry,
 			   entry);
   }
