@@ -9125,7 +9125,8 @@ ags_audio_real_cleanup_recall(AgsAudio *audio,
   guint sound_scope;
   guint current_staging_flags;
   gboolean play_context;
-
+  gboolean remove_recycling_context;
+  
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *recall_id_mutex;
   pthread_mutex_t *recycling_context_mutex;
@@ -9176,6 +9177,12 @@ ags_audio_real_cleanup_recall(AgsAudio *audio,
 
   parent_recycling_context = recycling_context->parent;
 
+  remove_recycling_context = FALSE;
+  
+  if(recycling_context->recall_id == recall_id){
+    remove_recycling_context = TRUE;
+  }
+  
   pthread_mutex_unlock(recycling_context_mutex);
 
   /* get the appropriate lists */
@@ -9242,6 +9249,11 @@ ags_audio_real_cleanup_recall(AgsAudio *audio,
 
   /* remove recall id */
   ags_audio_remove_recall_id(audio, recall_id);
+
+  /* remove recycling context */
+  if(remove_recycling_context){
+    ags_audio_remove_recycling_context(audio, recycling_context);
+  }
 }
 
 /**

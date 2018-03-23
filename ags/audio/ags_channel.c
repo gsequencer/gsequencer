@@ -9847,6 +9847,10 @@ ags_channel_real_start(AgsChannel *channel,
     ags_recall_id_set_sound_scope(current_recall_id,  sound_scope);
     ags_audio_add_recall_id(audio,
 			    current_recall_id);
+
+    g_object_set(current_recycling_context,
+		 "recall-id", current_recall_id,
+		 NULL);
     
     recall_id = g_list_prepend(recall_id,
 			       current_recall_id);
@@ -9904,7 +9908,11 @@ ags_channel_real_start(AgsChannel *channel,
       ags_recall_id_set_sound_scope(current_recall_id, i);
       ags_audio_add_recall_id(audio,
 			      current_recall_id);
-    
+
+      g_object_set(current_recycling_context,
+		   "recall-id", current_recall_id,
+		   NULL);
+      
       recall_id = g_list_prepend(recall_id,
 				 current_recall_id);
 
@@ -11368,6 +11376,10 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 
 	  ags_audio_add_recall_id(current_audio,
 				  next_recall_id);
+
+	  g_object_set(next_recycling_context,
+		       "recall-id", next_recall_id,
+		       NULL);
 	}
       }
     }
