@@ -121,6 +121,11 @@ void ags_sound_resource_flush(AgsSoundResource *sound_resource);
 void ags_sound_resource_seek(AgsSoundResource *sound_resource,
 			     guint frame_count, gint whence);
 
+/* read audio signal */
+GList* ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
+					    GObject *soundcard,
+					    gint audio_channel);
+
 /* close */
 void ags_sound_resource_close(AgsSoundResource *sound_resource);
 

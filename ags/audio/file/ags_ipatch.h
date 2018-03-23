@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,13 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/config.h>
+#include <ags/libags.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <libinstpatch/libinstpatch.h>
 #endif
-
-#include <ags/object/ags_soundcard.h>
 
 #define AGS_TYPE_IPATCH                (ags_ipatch_get_type())
 #define AGS_IPATCH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_IPATCH, AgsIpatch))
@@ -115,6 +113,7 @@ GType ags_ipatch_get_type();
 
 gboolean ags_ipatch_check_suffix(gchar *filename);
 
-AgsIpatch* ags_ipatch_new();
+AgsIpatch* ags_ipatch_new(gchar *filename,
+			  GObject *soundcard);
 
 #endif /*__AGS_IPATCH_H__*/

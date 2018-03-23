@@ -24,8 +24,9 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
+#include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>
-#include <ags/audio/file/ags_sndfile.h>
+#include <ags/audio/file/ags_ipatch.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -57,9 +58,7 @@ enum{
   PROP_AUDIO_CHANNEL,
   PROP_SAMPLERATE,
   PROP_BUFFER_SIZE,
-  PROP_FORMAT,
   PROP_AUDIO_SIGNAL,
-  PROP_WAVE,
 };
 
 enum{
@@ -139,7 +138,7 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    *
    * The assigned soundcard.
    * 
-   * Since: 2.0.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of audio file"),
@@ -155,7 +154,7 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    *
    * The assigned filename.
    * 
-   * Since: 2.0.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("filename of audio file"),
@@ -167,20 +166,38 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
 				  param_spec);
 
   /**
-   * AgsAudioFile:audio-channel:
+   * AgsAudioFile:start-channel:
    *
-   * The audio channel to be read.
+   * The audio file's offset to start reading from.
    * 
-   * Since: 2.0.0
+   * Since: 1.0.0
    */
-  param_spec = g_param_spec_int("audio-channel",
-				i18n_pspec("read audio channel"),
-				i18n_pspec("The audio channel to be read"),
-				-1, G_MAXUINT,
-				0,
-				G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("start-channel",
+				 i18n_pspec("start-channel is the start offset"),
+				 i18n_pspec("The start-channel indicates what audio channel should be read"),
+				 0, G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_AUDIO_CHANNEL,
+				  PROP_START_CHANNEL,
+				  param_spec);
+
+
+  /**
+   * AgsAudioFile:audio-channels:
+   *
+   * The audio file's count of channels to be read.
+   * 
+   * Since: 1.0.0
+   */
+  param_spec = g_param_spec_uint("audio-channels",
+				 i18n_pspec("read audio-channels of channels"),
+				 i18n_pspec("The audio-channels indicates how many channels should be read"),
+				 0, G_MAXUINT,
+				 1,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CHANNELS,
 				  param_spec);
 
   /**
@@ -188,13 +205,13 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    *
    * The samplerate to be used.
    * 
-   * Since: 2.0.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("using samplerate"),
 				 i18n_pspec("The samplerate to be used"),
 				 0,
-				 G_MAXUINT,
+				 65535,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -206,13 +223,13 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
    *
    * The buffer size to be used.
    * 
-   * Since: 2.0.0
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("using buffer size"),
 				 i18n_pspec("The buffer size to be used"),
 				 0,
-				 G_MAXUINT,
+				 65535,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -220,51 +237,35 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
 				  param_spec);
 
   /**
-   * AgsAudioFile:format:
+   * AgsAudioFile:playable:
    *
-   * The format to be used.
+   * The containing  #AgsAudioSignal.
    * 
-   * Since: 2.0.0
+   * Since: 1.0.0
    */
-  param_spec = g_param_spec_uint("format",
-				 i18n_pspec("using format"),
-				 i18n_pspec("The format to be used"),
-				 0,
-				 G_MAXUINT,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_object("playable",
+				   i18n_pspec("containing playable"),
+				   i18n_pspec("The playable it contains"),
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_FORMAT,
+				  PROP_PLAYABLE,
 				  param_spec);
 
   /**
    * AgsAudioFile:audio-signal:
    *
-   * The containing #AgsAudioSignal.
+   * The containing  #AgsAudioSignal.
    * 
-   * Since: 2.0.0
+   * Since: 1.0.0
    */
-  param_spec = g_param_spec_pointer("audio-signal",
-				    i18n_pspec("containing audio signal"),
-				    i18n_pspec("The audio signal it contains"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_object("audio-signal",
+				   i18n_pspec("containing audio signal"),
+				   i18n_pspec("The audio signal it contains"),
+				   AGS_TYPE_AUDIO_SIGNAL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_SIGNAL,
-				  param_spec);
-
-  /**
-   * AgsAudioFile:wave:
-   *
-   * The containing #AgsWave.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_pointer("wave",
-				    i18n_pspec("containing wave"),
-				    i18n_pspec("The wave it contains"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_WAVE,
 				  param_spec);
 }
 
@@ -285,15 +286,15 @@ ags_audio_file_init(AgsAudioFile *audio_file)
   audio_file->filename = NULL;
 
   audio_file->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  audio_file->buffer_size = 0;
-  audio_file->format = 0;
+  audio_file->frames = 0;
+  audio_file->channels = 1;
+  audio_file->format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
 
-  audio_file->audio_channel = 0;
+  audio_file->start_channel = 0;
+  audio_file->audio_channels = 1;
 
-  audio_file->sound_resource = NULL;
-  
+  audio_file->playable = NULL;
   audio_file->audio_signal = NULL;
-  audio_file->wave = NULL;
 }
 
 void
@@ -345,24 +346,14 @@ ags_audio_file_set_property(GObject *gobject,
       audio_file->filename = g_strdup(filename);
     }
     break;
-  case PROP_SAMPLERATE:
+  case PROP_START_CHANNEL:
     {
-      audio_file->samplerate = g_value_get_uint(value);
+      audio_file->start_channel = g_value_get_uint(value);
     }
     break;
-  case PROP_BUFFER_SIZE:
+  case PROP_AUDIO_CHANNELS:
     {
-      audio_file->buffer_size = g_value_get_uint(value);
-    }
-    break;
-  case PROP_FORMAT:
-    {
-      audio_file->format = g_value_get_uint(value);
-    }
-    break;
-  case PROP_AUDIO_CHANNEL:
-    {
-      audio_file->audio_channel = g_value_get_int(value);
+      audio_file->audio_channels = g_value_get_uint(value);
     }
     break;
   default:
@@ -392,9 +383,14 @@ ags_audio_file_get_property(GObject *gobject,
       g_value_set_string(value, audio_file->filename);
     }
     break;
-  case PROP_AUDIO_CHANNEL:
+  case PROP_START_CHANNEL:
     {
-      g_value_set_int(value, audio_file->audio_channels);
+      g_value_set_uint(value, audio_file->start_channel);
+    }
+    break;
+  case PROP_AUDIO_CHANNELS:
+    {
+      g_value_set_uint(value, audio_file->audio_channels);
     }
     break;
   default:
@@ -453,30 +449,6 @@ ags_audio_file_check_suffix(gchar *filename)
   }
 
   return(FALSE);
-}
-
-void
-ags_audio_file_add_audio_signal(AgsAudioFile *audio_file, GObject *audio_signal)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_audio_file_remove_audio_signal(AgsAudioFile *audio_file, GObject *audio_signal)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_audio_file_add_wave(AgsAudioFile *audio_file, GObject *wave)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_audio_file_remove_wave(AgsAudioFile *audio_file, GObject *wave)
-{
-  //TODO:JK: implement me
 }
 
 /**
@@ -828,7 +800,7 @@ ags_audio_file_flush(AgsAudioFile *audio_file)
 AgsAudioFile*
 ags_audio_file_new(gchar *filename,
 		   GObject *soundcard,
-		   gint audio_channels)
+		   gint audio_channel)
 {
   AgsAudioFile *audio_file;
 

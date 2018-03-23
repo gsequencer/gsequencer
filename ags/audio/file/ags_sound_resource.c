@@ -355,3 +355,23 @@ ags_sound_resource_close(AgsSoundResource *sound_resource)
   g_return_if_fail(sound_resource_interface->close);  
   sound_resource_interface->close(sound_resource);
 }
+
+/**
+ * ags_sound_resource_read_audio_signal:
+ * @sound_resource: the #AgsSoundResource
+ * @soundcard: the #AgsSoundcard
+ * @audio_channel: the audio channel or -1 for all
+ * 
+ * Read audio signal from @sound_resource.
+ * 
+ * Returns: a #GList-struct containing #AgsAudioSignal
+ * 
+ * Since: 2.0.0
+ */
+GList*
+ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
+				     GObject *soundcard,
+				     gint audio_channel)
+{
+  //TODO:JK: implement me
+}
