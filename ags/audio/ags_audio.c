@@ -119,10 +119,13 @@ void ags_audio_real_init_recall(AgsAudio *audio,
 void ags_audio_real_play_recall(AgsAudio *audio,
 				AgsRecallID *recall_id, guint staging_flags);
 
-void ags_audio_real_cancel_recall(AgsAudio *audio,
-				  AgsRecallID *recall_id);
 void ags_audio_real_done_recall(AgsAudio *audio,
 				AgsRecallID *recall_id);
+void ags_audio_real_cancel_recall(AgsAudio *audio,
+				  AgsRecallID *recall_id);
+
+void ags_audio_real_cleanup_recall(AgsAudio *audio,
+				   AgsRecallID *recall_id);
 
 GList* ags_audio_real_start(AgsAudio *audio,
 			    gint sound_scope);
@@ -141,8 +144,9 @@ enum{
   RESOLVE_RECALL,
   INIT_RECALL,
   PLAY_RECALL,
-  CANCEL_RECALL,
   DONE_RECALL,
+  CANCEL_RECALL,
+  CLEANUP_RECALL,
   START,
   STOP,
   CHECK_SCOPE,
@@ -1024,8 +1028,10 @@ ags_audio_class_init(AgsAudioClass *audio)
   audio->init_recall = ags_audio_real_init_recall;
   audio->play_recall = ags_audio_real_play_recall;
   
-  audio->cancel_recall = ags_audio_real_cancel_recall;
   audio->done_recall = ags_audio_real_done_recall;
+  audio->cancel_recall = ags_audio_real_cancel_recall;
+
+  audio->cleanup_recall = ags_audio_real_cleanup_recall;
 
   audio->start = ags_audio_real_start;
   audio->stop = ags_audio_real_stop;
@@ -1159,6 +1165,25 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 G_TYPE_UINT);
 
   /**
+   * AgsAudio::done-recall:
+   * @audio: the #AgsAudio
+   * @recall_id: the #AgsRecallID
+   *
+   * The ::done-recall signal notifies about doned recalls.
+   *
+   * Since: 2.0.0
+   */
+  audio_signals[DONE_RECALL] = 
+    g_signal_new("done-recall",
+		 G_TYPE_FROM_CLASS(audio),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsAudioClass, done_recall),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__OBJECT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
+
+  /**
    * AgsAudio::cancel-recall:
    * @audio: the #AgsAudio
    * @recall_id: the #AgsRecallID
@@ -1178,19 +1203,19 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 G_TYPE_OBJECT);
 
   /**
-   * AgsAudio::done-recall:
+   * AgsAudio::cleanup-recall:
    * @audio: the #AgsAudio
    * @recall_id: the #AgsRecallID
    *
-   * The ::done-recall signal notifies about doned recalls.
+   * The ::cleanup-recall signal notifies about cleanup recalls.
    *
    * Since: 2.0.0
    */
-  audio_signals[DONE_RECALL] = 
-    g_signal_new("done-recall",
+  audio_signals[CLEANUP_RECALL] = 
+    g_signal_new("cleanup-recall",
 		 G_TYPE_FROM_CLASS(audio),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsAudioClass, done_recall),
+		 G_STRUCT_OFFSET(AgsAudioClass, cleanup_recall),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__OBJECT,
 		 G_TYPE_NONE, 1,
@@ -8460,7 +8485,6 @@ ags_audio_real_init_recall(AgsAudio *audio,
 				     AGS_SOUND_STAGING_RUN_INIT_PRE |
 				     AGS_SOUND_STAGING_RUN_INIT_INTER |
 				     AGS_SOUND_STAGING_RUN_INIT_POST);
-  gboolean play_context;
 
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *recall_id_mutex;
@@ -8629,7 +8653,6 @@ ags_audio_real_play_recall(AgsAudio *audio,
 				     AGS_SOUND_STAGING_DO_FEEDBACK |
 				     AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE |
 				     AGS_SOUND_STAGING_FINI);
-  gboolean play_context;
 
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *recall_id_mutex;
@@ -8777,6 +8800,163 @@ ags_audio_play_recall(AgsAudio *audio,
 }
 
 void
+ags_audio_real_done_recall(AgsAudio *audio,
+			   AgsRecallID *recall_id)
+{
+  AgsRecall *recall;
+  AgsRecyclingContext *parent_recycling_context, *recycling_context;
+  
+  GList *list_start, *list;
+
+  guint sound_scope;
+  guint current_staging_flags;
+  static const guint staging_flags = (AGS_SOUND_STAGING_DONE);  
+
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *recall_id_mutex;
+  pthread_mutex_t *recycling_context_mutex;
+
+  if(!AGS_IS_RECALL_ID(recall_id)){
+    return;
+  }
+  
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_id_mutex);
+
+  recycling_context = recall_id->recycling_context;
+
+  sound_scope = recall_id->sound_scope;
+
+  pthread_mutex_unlock(recall_id_mutex);
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* get staging flags */
+  pthread_mutex_lock(audio_mutex);
+
+  current_staging_flags = audio->staging_flags[sound_scope];
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  if(!AGS_IS_RECYCLING_CONTEXT(recycling_context) ||
+     (AGS_SOUND_STAGING_RUN_INIT_PRE & (current_staging_flags)) == 0 ||
+     (AGS_SOUND_STAGING_RUN_INIT_INTER & (current_staging_flags)) == 0 ||
+     (AGS_SOUND_STAGING_RUN_INIT_POST & (current_staging_flags)) == 0){
+    return;
+  }
+
+  /* get recycling context mutex */
+  pthread_mutex_lock(ags_recycling_context_get_class_mutex());
+  
+  recycling_context_mutex = recycling_context->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
+
+  /* get parent recycling context */
+  pthread_mutex_lock(recycling_context_mutex);
+
+  parent_recycling_context = recycling_context->parent;
+
+  pthread_mutex_unlock(recycling_context_mutex);
+
+  /* get the appropriate lists */
+  if(parent_recycling_context == NULL){
+    pthread_mutex_t *play_mutex;
+
+    /* get play mutex */
+    pthread_mutex_lock(ags_audio_get_class_mutex());
+
+    play_mutex = audio->play_mutex;
+  
+    pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+    /* copy play context */
+    pthread_mutex_lock(play_mutex);
+
+    list = 
+      list_start = g_list_copy(audio->play);
+
+    pthread_mutex_unlock(play_mutex);
+
+    /* reverse play context */
+    list =
+      list_start = g_list_reverse(list_start);
+  }else{
+    pthread_mutex_t *recall_mutex;
+
+    /* get recall mutex */
+    pthread_mutex_lock(ags_audio_get_class_mutex());
+
+    recall_mutex = audio->recall_mutex;
+  
+    pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+    /* copy recall context */
+    pthread_mutex_lock(recall_mutex);
+
+    list = 
+      list_start = g_list_copy(audio->recall);
+    
+    pthread_mutex_unlock(recall_mutex);
+
+    /* reverse recall context */
+    list =
+      list_start = g_list_reverse(list_start);
+  }
+
+  /* done  */  
+  while((list = ags_recall_find_recycling_context(list,
+						  (GObject *) recycling_context)) != NULL){
+    recall = AGS_RECALL(list->data);
+    
+    /* done stages */
+    ags_recall_set_staging_flags(recall,
+				 staging_flags);
+
+    list = list->next;
+  }
+  
+  g_list_free(list_start);
+
+  ags_audio_set_staging_flags(audio, sound_scope,
+			      staging_flags);
+}
+
+/**
+ * ags_audio_done_recall:
+ * @audio: the #AgsAudio
+ * @recall_id: the #AgsRecallID to apply to
+ *
+ * Done processing audio data.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_audio_done_recall(AgsAudio *audio,
+			AgsRecallID *recall_id)
+{
+  g_return_if_fail(AGS_IS_AUDIO(audio));
+
+  g_object_ref((GObject *) audio);
+  g_signal_emit(G_OBJECT(audio),
+		audio_signals[DONE_RECALL], 0,
+		recall_id);
+  g_object_unref((GObject *) audio);
+}
+
+void
 ags_audio_real_cancel_recall(AgsAudio *audio,
 			     AgsRecallID *recall_id)
 {
@@ -8788,7 +8968,6 @@ ags_audio_real_cancel_recall(AgsAudio *audio,
   guint sound_scope;
   guint current_staging_flags;
   static const guint staging_flags = (AGS_SOUND_STAGING_CANCEL);
-  gboolean play_context;
 
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *recall_id_mutex;
@@ -8935,8 +9114,8 @@ ags_audio_cancel_recall(AgsAudio *audio,
 }
 
 void
-ags_audio_real_done_recall(AgsAudio *audio,
-			   AgsRecallID *recall_id)
+ags_audio_real_cleanup_recall(AgsAudio *audio,
+			     AgsRecallID *recall_id)
 {
   AgsRecall *recall;
   AgsRecyclingContext *parent_recycling_context, *recycling_context;
@@ -8945,7 +9124,6 @@ ags_audio_real_done_recall(AgsAudio *audio,
 
   guint sound_scope;
   guint current_staging_flags;
-  static const guint staging_flags = (AGS_SOUND_STAGING_DONE);  
   gboolean play_context;
 
   pthread_mutex_t *audio_mutex;
@@ -8986,13 +9164,6 @@ ags_audio_real_done_recall(AgsAudio *audio,
   
   pthread_mutex_unlock(audio_mutex);
 
-  if(!AGS_IS_RECYCLING_CONTEXT(recycling_context) ||
-     (AGS_SOUND_STAGING_RUN_INIT_PRE & (current_staging_flags)) == 0 ||
-     (AGS_SOUND_STAGING_RUN_INIT_INTER & (current_staging_flags)) == 0 ||
-     (AGS_SOUND_STAGING_RUN_INIT_POST & (current_staging_flags)) == 0){
-    return;
-  }
-
   /* get recycling context mutex */
   pthread_mutex_lock(ags_recycling_context_get_class_mutex());
   
@@ -9011,6 +9182,8 @@ ags_audio_real_done_recall(AgsAudio *audio,
   if(parent_recycling_context == NULL){
     pthread_mutex_t *play_mutex;
 
+    play_context = TRUE;
+    
     /* get play mutex */
     pthread_mutex_lock(ags_audio_get_class_mutex());
 
@@ -9032,6 +9205,8 @@ ags_audio_real_done_recall(AgsAudio *audio,
   }else{
     pthread_mutex_t *recall_mutex;
 
+    play_context = FALSE;
+    
     /* get recall mutex */
     pthread_mutex_lock(ags_audio_get_class_mutex());
 
@@ -9052,42 +9227,41 @@ ags_audio_real_done_recall(AgsAudio *audio,
       list_start = g_list_reverse(list_start);
   }
 
-  /* done  */  
+  /* cleanup  */
   while((list = ags_recall_find_recycling_context(list,
 						  (GObject *) recycling_context)) != NULL){
     recall = AGS_RECALL(list->data);
     
-    /* done stages */
-    ags_recall_set_staging_flags(recall,
-				 staging_flags);
+    /* remove recall */
+    ags_audio_remove_recall(audio, recall, play_context);
 
     list = list->next;
   }
-  
+
   g_list_free(list_start);
 
-  ags_audio_set_staging_flags(audio, sound_scope,
-			      staging_flags);
+  /* remove recall id */
+  ags_audio_remove_recall_id(audio, recall_id);
 }
 
 /**
- * ags_audio_done_recall:
+ * ags_audio_cleanup_recall:
  * @audio: the #AgsAudio
  * @recall_id: the #AgsRecallID to apply to
  *
- * Done processing audio data.
+ * Cleanup processing audio data.
  *
  * Since: 2.0.0
  */
 void
-ags_audio_done_recall(AgsAudio *audio,
+ags_audio_cleanup_recall(AgsAudio *audio,
 			AgsRecallID *recall_id)
 {
   g_return_if_fail(AGS_IS_AUDIO(audio));
 
   g_object_ref((GObject *) audio);
   g_signal_emit(G_OBJECT(audio),
-		audio_signals[DONE_RECALL], 0,
+		audio_signals[CLEANUP_RECALL], 0,
 		recall_id);
   g_object_unref((GObject *) audio);
 }

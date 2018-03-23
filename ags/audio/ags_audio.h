@@ -198,11 +198,14 @@ struct _AgsAudioClass
   void (*play_recall)(AgsAudio *audio,
 		      AgsRecallID *recall_id, guint staging_flags);
 
-  void (*cancel_recall)(AgsAudio *audio,
-			AgsRecallID *recall_id);
   void (*done_recall)(AgsAudio *audio,
 		      AgsRecallID *recall_id);
-  
+  void (*cancel_recall)(AgsAudio *audio,
+			AgsRecallID *recall_id);
+
+  void (*cleanup_recall)(AgsAudio *audio,
+			 AgsRecallID *recall_id);
+
   GList* (*start)(AgsAudio *audio,
 		  gint sound_scope);
   void (*stop)(AgsAudio *audio,
@@ -308,10 +311,13 @@ void ags_audio_init_recall(AgsAudio *audio,
 void ags_audio_play_recall(AgsAudio *audio,
 			   AgsRecallID *recall_id, guint staging_flags);
 
-void ags_audio_cancel_recall(AgsAudio *audio,
-			     AgsRecallID *recall_id);
 void ags_audio_done_recall(AgsAudio *audio,
 			   AgsRecallID *recall_id);
+void ags_audio_cancel_recall(AgsAudio *audio,
+			     AgsRecallID *recall_id);
+
+void ags_audio_cleanup_recall(AgsAudio *audio,
+			      AgsRecallID *recall_id);
 
 /* control */
 GList* ags_audio_start(AgsAudio *audio,

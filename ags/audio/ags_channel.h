@@ -187,11 +187,14 @@ struct _AgsChannelClass
   void (*play_recall)(AgsChannel *channel,
 		      AgsRecallID *recall_id, guint staging_flags);
 
-  void (*cancel_recall)(AgsChannel *channel,
-			AgsRecallID *recall_id);
   void (*done_recall)(AgsChannel *channel,
 		      AgsRecallID *recall_id);
-  
+  void (*cancel_recall)(AgsChannel *channel,
+			AgsRecallID *recall_id);
+
+  void (*cleanup_recall)(AgsChannel *channel,
+			 AgsRecallID *recall_id);
+
   GList* (*start)(AgsChannel *channel,
 		  gint sound_scope);
   void (*stop)(AgsChannel *channel,
@@ -293,6 +296,9 @@ void ags_channel_done_recall(AgsChannel *channel,
 			     AgsRecallID *recall_id);
 void ags_channel_cancel_recall(AgsChannel *channel,
 			       AgsRecallID *recall_id);
+
+void ags_channel_cleanup_recall(AgsChannel *channel,
+				AgsRecallID *recall_id);
 
 /* control */
 GList* ags_channel_start(AgsChannel *channel,
