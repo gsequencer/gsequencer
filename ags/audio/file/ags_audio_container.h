@@ -40,9 +40,16 @@ struct _AgsAudioContainer
   GObject *soundcard;
 
   gchar *filename;
+  gchar *preset;
+  gchar *instrument;
+  gchar *sample;
+
+  guint file_audio_channels;
+  guint file_samplerate;
+  guint file_frame_count;
+
   guint samplerate;
-  guint frames;
-  guint channels;
+  guint buffer_size;
   guint format;
 
   gint audio_channel;
@@ -62,6 +69,14 @@ GType ags_audio_container_get_type();
 
 gboolean ags_audio_container_check_suffix(gchar *filename);
 
+/* fields */
+void ags_audio_container_add_audio_signal(AgsAudioContainer *audio_container, GObject *audio_signal);
+void ags_audio_container_remove_audio_signal(AgsAudioContainer *audio_container, GObject *audio_signal);
+
+void ags_audio_container_add_wave(AgsAudioContainer *audio_container, GObject *wave);
+void ags_audio_container_remove_wave(AgsAudioContainer *audio_container, GObject *wave);
+
+/* IO functions */
 gboolean ags_audio_container_open(AgsAudioContainer *audio_container);
 gboolean ags_audio_container_open_from_data(AgsAudioContainer *audio_container, gchar *data);
 gboolean ags_audio_container_rw_open(AgsAudioContainer *audio_container,
@@ -82,7 +97,11 @@ void ags_audio_container_write(AgsAudioContainer *audio_container,
 			       guint format);
 void ags_audio_container_flush(AgsAudioContainer *audio_container);
 
+/* instantiate */
 AgsAudioContainer* ags_audio_container_new(gchar *filename,
+					   gchar *preset,
+					   gchar *instrument,
+					   gchar *sample,
 					   GObject *soundcard,
 					   gint audio_channel);
 

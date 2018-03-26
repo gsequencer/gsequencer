@@ -26,8 +26,8 @@
 #include <ags/audio/ags_synth_generator.h>
 
 #include <ags/audio/file/ags_audio_file_link.h>
+#include <ags/audio/file/ags_audio_container.h>
 #include <ags/audio/file/ags_audio_file.h>
-#include <ags/audio/file/ags_ipatch.h>
 #include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>
 
@@ -351,7 +351,6 @@ ags_input_is_active(AgsInput *input,
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *recycling_mutex;
   pthread_mutex_t *audio_signal_mutex;
-  pthread_mutex_t *recall_id_mutex;
   
   if(!AGS_IS_INPUT(input) ||
      !AGS_IS_RECYCLING_CONTEXT(recycling_context)){
@@ -418,24 +417,26 @@ ags_input_is_active(AgsInput *input,
     while(list != NULL){
       AgsRecallID *current_recall_id;
       AgsRecyclingContext *current_recycling_context;
-      
+
+      pthread_mutex_t *current_recall_id_mutex;
+
       audio_signal = list->data;
 
       /* get audio signal mutex */
       pthread_mutex_lock(ags_audio_signal_get_class_mutex());
   
-      audio_signal_mutex = last_audio_signal->obj_mutex;
+      audio_signal_mutex = audio_signal->obj_mutex;
   
       pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
 
       /* get recall id */
       pthread_mutex_lock(audio_signal_mutex);
       
-      recall_id = audio_signal->recall_id;
+      current_recall_id = audio_signal->recall_id;
 
       pthread_mutex_unlock(audio_signal_mutex);
       
-      if(recall_id == NULL){
+      if(current_recall_id == NULL){
 	list = list->next;
 	
 	continue; 
@@ -444,16 +445,16 @@ ags_input_is_active(AgsInput *input,
       /* get recall id mutex */
       pthread_mutex_lock(ags_recall_id_get_class_mutex());
   
-      recall_id_mutex = last_recall_id->obj_mutex;
+      current_recall_id_mutex = current_recall_id->obj_mutex;
   
       pthread_mutex_unlock(ags_recall_id_get_class_mutex());
 
       /* get recycling context */
-      pthread_mutex_lock(recall_id_mutex);
+      pthread_mutex_lock(current_recall_id_mutex);
       
-      current_recycling_context = recall_id->recycling_context;
+      current_recycling_context = current_recall_id->recycling_context;
 
-      pthread_mutex_unlock(recall_id_mutex);      
+      pthread_mutex_unlock(current_recall_id_mutex);      
       
       if(current_recycling_context == active_context) {
 	g_list_free(list_start);
@@ -503,7 +504,6 @@ ags_input_next_active(AgsInput *input,
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *recycling_mutex;
   pthread_mutex_t *audio_signal_mutex;
-  pthread_mutex_t *recall_id_mutex;
 
   if(!AGS_IS_INPUT(input) ||
      !AGS_IS_RECYCLING_CONTEXT(recycling_context)){
@@ -578,24 +578,26 @@ ags_input_next_active(AgsInput *input,
       while(list != NULL){
 	AgsRecallID *current_recall_id;
 	AgsRecyclingContext *current_recycling_context;
+
+	pthread_mutex_t *current_recall_id_mutex;
       
 	audio_signal = list->data;
 
 	/* get audio signal mutex */
 	pthread_mutex_lock(ags_audio_signal_get_class_mutex());
   
-	audio_signal_mutex = last_audio_signal->obj_mutex;
+	audio_signal_mutex = audio_signal->obj_mutex;
   
 	pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
 
 	/* get recall id */
 	pthread_mutex_lock(audio_signal_mutex);
       
-	recall_id = audio_signal->recall_id;
+	current_recall_id = audio_signal->recall_id;
 
 	pthread_mutex_unlock(audio_signal_mutex);
       
-	if(recall_id == NULL){
+	if(current_recall_id == NULL){
 	  list = list->next;
 	
 	  continue; 
@@ -604,16 +606,16 @@ ags_input_next_active(AgsInput *input,
 	/* get recall id mutex */
 	pthread_mutex_lock(ags_recall_id_get_class_mutex());
   
-	recall_id_mutex = last_recall_id->obj_mutex;
+	current_recall_id_mutex = current_recall_id->obj_mutex;
   
 	pthread_mutex_unlock(ags_recall_id_get_class_mutex());
 
 	/* get recycling context */
-	pthread_mutex_lock(recall_id_mutex);
+	pthread_mutex_lock(current_recall_id_mutex);
       
-	current_recycling_context = recall_id->recycling_context;
+	current_recycling_context = current_recall_id->recycling_context;
 
-	pthread_mutex_unlock(recall_id_mutex);      
+	pthread_mutex_unlock(current_recall_id_mutex);      
       
 	if(current_recycling_context == active_context) {
 	  g_list_free(list_start);
@@ -738,8 +740,8 @@ ags_input_open_file(AgsInput *input,
     
     /* open audio file and read audio signal */
     audio_file = ags_audio_file_new(filename,
-				    AGS_CHANNEL(input)->soundcard,
-				    audio_channel, 1);
+				    AGS_CHANNEL(input)->output_soundcard,
+				    audio_channel);
     
     ags_audio_file_open(audio_file);
     ags_audio_file_read_audio_signal(audio_file);
@@ -747,37 +749,26 @@ ags_input_open_file(AgsInput *input,
     audio_signal = audio_file->audio_signal;
     //    g_object_unref(audio_file);
   }else if(ags_ipatch_check_suffix(filename)){
-    AgsIpatch *ipatch;
+    AgsAudioContainer *audio_container;
 
-    GError *error;
-    
     success = TRUE;
+
+    preset = NULL;
+    instrument = NULL;
     
-    ipatch = g_object_new(AGS_TYPE_IPATCH,
-			  "soundcard", AGS_CHANNEL(input)->soundcard,
-			  "mode", AGS_IPATCH_READ,
-			  "filename", filename,
-			  NULL);
+    /* open audio container and read audio signal */
+    audio_container = ags_audio_container_new(filename,
+					      preset,
+					      instrument,
+					      sample,
+					      AGS_CHANNEL(input)->output_soundcard,
+					      audio_channel);
+    
+    ags_audio_container_open(audio_container);
+    ags_audio_container_read_audio_signal(audio_container);
 
-    ags_sound_container_select_level_by_id(AGS_SOUND_CONTAINER(ipatch),
-					   filename);
-
-    /* select first - preset */  
-    ags_sound_container_select_level_by_id(AGS_SOUND_CONTAINER(ipatch),
-					   preset);
-
-    /* select second - instrument */
-    ags_sound_container_select_level_by_id(AGS_SOUND_CONTAINER(ipatch),
-					   instrument);
-
-    /* select third - sample */
-    ags_sound_container_select_level_by_id(AGS_SOUND_CONTAINER(ipatch),
-					   sample);
-
-    /* read audio signal */
-    audio_signal = ags_playable_read_audio_signal(playable,
-						  AGS_CHANNEL(input)->soundcard,
-						  audio_channel, 1);
+    audio_signal = audio_container->audio_signal;
+    //    g_object_unref(audio_container);
   }
 
   if(success){

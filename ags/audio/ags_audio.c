@@ -10063,7 +10063,7 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
       for(i = 0; i < input_pads && filename != NULL; i++){
 	audio_file = ags_audio_file_new((gchar *) filename->data,
 					soundcard,
-					0, audio_channels);
+					-1);
 	
 	if(!ags_audio_file_open(audio_file)){
 	  filename = filename->next;
@@ -10131,9 +10131,9 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	  pthread_mutex_unlock(channel_mutex);
 	}
 
-	if(audio_file->channels < audio_channels){
+	if(audio_file->file_audio_channels < audio_channels){
 	  channel = ags_channel_nth(channel,
-				    audio_channels - audio_file->channels);
+				    audio_channels - audio_file->file_audio_channels);
 	}
 	
 	filename = filename->next;
@@ -10154,7 +10154,7 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
     while(filename != NULL){
       audio_file = ags_audio_file_new((gchar *) filename->data,
 				      soundcard,
-				      0, audio_channels);
+				      -1);
       
       if(!ags_audio_file_open(audio_file)){
 	filename = filename->next;
@@ -10211,9 +10211,9 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	pthread_mutex_unlock(channel_mutex);
       }
       
-      if(audio_channels > audio_file->channels){
+      if(audio_channels > audio_file->file_audio_channels){
 	channel = ags_channel_nth(channel,
-				  audio_channels - audio_file->channels);
+				  audio_channels - audio_file->file_audio_channels);
       }
       
       filename = filename->next;
@@ -10267,7 +10267,7 @@ ags_audio_open_audio_file_as_wave(AgsAudio *audio,
   /* open audio file */
   audio_file = ags_audio_file_new(filename,
 				  soundcard,
-				  0, audio_channels);
+				  -1);
 
   if(!ags_audio_file_open(audio_file)){
     return;

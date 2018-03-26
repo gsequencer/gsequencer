@@ -134,7 +134,7 @@ struct _AgsRecall
   
   AgsRecallID *recall_id;
 
-  GList *dependency;
+  GList *recall_dependency;
   GList *handler;  
 
   pthread_mutexattr_t *children_attr;

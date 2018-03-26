@@ -847,6 +847,7 @@ deprecated_libags_audio_file_h_sources =
 
 libags_audio_file_h_sources = \
 	$(deprecated_libags_audio_file_h_sources) \
+	ags/audio/file/ags_audio_container.h \
 	ags/audio/file/ags_audio_file.h \
 	ags/audio/file/ags_audio_file_link.h \
 	ags/audio/file/ags_audio_file_xml.h \
@@ -863,6 +864,7 @@ deprecated_libags_audio_file_c_sources =
 
 libags_audio_file_c_sources = \
 	$(deprecated_libags_audio_file_c_sources) \
+	ags/audio/file/ags_audio_container.c \
 	ags/audio/file/ags_audio_file.c \
 	ags/audio/file/ags_audio_file_link.c \
 	ags/audio/file/ags_audio_file_xml.c \

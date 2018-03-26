@@ -54,6 +54,9 @@ enum{
   PROP_0,
   PROP_SOUNDCARD,
   PROP_FILENAME,
+  PROP_FILE_AUDIO_CHANNELS,
+  PROP_FILE_SAMPLERATE,
+  PROP_FILE_FRAME_COUNT,
   PROP_AUDIO_CHANNEL,
   PROP_SAMPLERATE,
   PROP_BUFFER_SIZE,
@@ -167,6 +170,57 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
 				  param_spec);
 
   /**
+   * AgsAudioFile:file-audio-channels:
+   *
+   * The audio channel count of this file.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("file-audio-channels",
+				 i18n_pspec("file audio channels"),
+				 i18n_pspec("The audio channel count of the file"),
+				 0, G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILE_AUDIO_CHANNELS,
+				  param_spec);
+
+  /**
+   * AgsAudioFile:file-samplerate:
+   *
+   * The samplerate of this file.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("file-samplerate",
+				 i18n_pspec("file samplerate"),
+				 i18n_pspec("The samplerate of the file"),
+				 0, G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILE_SAMPLERATE,
+				  param_spec);
+
+  /**
+   * AgsAudioFile:file-frame_count:
+   *
+   * The frame count of this file.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("file-frame-count",
+				 i18n_pspec("file frame count"),
+				 i18n_pspec("The frame count of the file"),
+				 0, G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILE_FRAME_COUNT,
+				  param_spec);
+  
+  /**
    * AgsAudioFile:audio-channel:
    *
    * The audio channel to be read.
@@ -176,7 +230,7 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
   param_spec = g_param_spec_int("audio-channel",
 				i18n_pspec("read audio channel"),
 				i18n_pspec("The audio channel to be read"),
-				-1, G_MAXUINT,
+				-1, G_MAXINT,
 				0,
 				G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

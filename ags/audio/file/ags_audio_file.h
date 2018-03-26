@@ -40,6 +40,10 @@ struct _AgsAudioFile
   GObject *soundcard;
 
   gchar *filename;
+
+  guint file_audio_channels;
+  guint file_samplerate;
+  guint file_frame_count;
   
   guint samplerate;
   guint buffer_size;

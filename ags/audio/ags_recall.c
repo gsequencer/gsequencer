@@ -143,13 +143,15 @@ enum{
 
 enum{
   PROP_0,
-  PROP_SOUNDCARD,
-  PROP_CONTAINER,
-  PROP_DEPENDENCY,
+  PROP_OUTPUT_SOUNDCARD,
+  PROP_INPUT_SOUNDCARD,
+  PROP_RECALL_CONTAINER,
+  PROP_RECALL_DEPENDENCY,
   PROP_RECALL_ID,
+  PROP_PORT,
   PROP_PARENT,
   PROP_CHILD,
-  PROP_PORT,
+  PROP_CHILD_TYPE,
 };
 
 static gpointer ags_recall_parent_class = NULL;
@@ -243,27 +245,43 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   /* properties */
   /**
-   * AgsRecall:soundcard:
+   * AgsRecall:output-soundcard:
    *
    * The assigned soundcard.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("output-soundcard",
-				   i18n_pspec("soundcard of recall"),
-				   i18n_pspec("The soundcard which this recall is packed into"),
+				   i18n_pspec("output soundcard"),
+				   i18n_pspec("The output soundcard which this recall is packed into"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SOUNDCARD,
+				  PROP_OUTPUT_SOUNDCARD,
+				  param_spec);
+
+  /**
+   * AgsRecall:input-soundcard:
+   *
+   * The assigned soundcard.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("input-soundcard",
+				   i18n_pspec("input soundcard"),
+				   i18n_pspec("The input soundcard which this recall is packed into"),
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_INPUT_SOUNDCARD,
 				  param_spec);
 
   /**
    * AgsRecall:recall-container:
    *
-   * The recall container packed into.
+   * The #AgsRecallContainer packed into.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("recall-container",
 				   i18n_pspec("container of recall"),
@@ -275,27 +293,41 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  param_spec);
 
   /**
-   * AgsRecall:dependency:
+   * AgsRecall:recall-dependency:
    *
-   * The recall depending on.
+   * The assigned #AgsRecallDependency.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("dependency",
-				   i18n_pspec("dependency of recall"),
-				   i18n_pspec("The dependency that can be added"),
-				   AGS_TYPE_RECALL_DEPENDENCY,
-				   G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("recall-dependency",
+				    i18n_pspec("recall dependency"),
+				    i18n_pspec("The recall dependency that can be added"),
+				    G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEPENDENCY,
 				  param_spec);
 
   /**
+   * AgsRecall:port:
+   *
+   * The assigned #AgsPort
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("port",
+				    i18n_pspec("port of recall"),
+				    i18n_pspec("The port of recall"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PORT,
+				  param_spec);
+
+  /**
    * AgsRecall:recall-id:
    *
-   * The recall id running in.
+   * The #AgsRecallID running in.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("recall-id",
 				   i18n_pspec("run id of recall"),
@@ -307,11 +339,11 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  param_spec);
   
   /**
-   * AgsRecall:audio-channel:
+   * AgsRecall:parent:
    *
-   * The parent recall.
+   * The parent #AgsRecall.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("parent",
 				   i18n_pspec("parent recall of this recall"),
@@ -325,33 +357,17 @@ ags_recall_class_init(AgsRecallClass *recall)
   /**
    * AgsRecall:child:
    *
-   * The child recall.
+   * The child #AgsRecall.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("child",
-				   i18n_pspec("child of recall"),
-				   i18n_pspec("The child that can be added"),
-				   AGS_TYPE_RECALL,
-				   G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("child",
+				    i18n_pspec("child of recall"),
+				    i18n_pspec("The child that can be added"),
+				    AGS_TYPE_RECALL,
+				    G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CHILD,
-				  param_spec);
-
-  /**
-   * AgsRecall:port:
-   *
-   * The assigned #AgsPort
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_object("port",
-				   i18n_pspec("port of recall"),
-				   i18n_pspec("The port of recall"),
-				   AGS_TYPE_PORT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_PORT,
 				  param_spec);
   
   /* AgsRecallClass */

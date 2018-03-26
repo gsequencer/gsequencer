@@ -238,21 +238,21 @@ ags_generic_recall_channel_run_duplicate(AgsRecall *recall,
 					 guint *n_params, GParameter *parameter)
 {
   AgsGenericRecallChannelRun *generic_recall_channel_run, *copy;
-  GList *recycling_dummy;
+  GList *generic_recycling;
   
   generic_recall_channel_run = (AgsGenericRecallChannelRun *) recall;  
   copy = (AgsGenericRecallChannelRun *) AGS_RECALL_CLASS(ags_generic_recall_channel_run_parent_class)->duplicate(recall,
 														 recall_id,
 														 n_params, parameter);
   AGS_RECALL(copy)->child_type = recall->child_type;
-  copy->recycling_dummy_child_type = generic_recall_channel_run->recycling_dummy_child_type;
+  copy->generic_recycling_child_type = generic_recall_channel_run->generic_recycling_child_type;
 
-  recycling_dummy = AGS_RECALL(copy)->children;
+  generic_recycling = AGS_RECALL(copy)->children;
 
-  while(recycling_dummy != NULL){
-    AGS_RECALL(recycling_dummy->data)->child_type = generic_recall_channel_run->recycling_dummy_child_type;
+  while(generic_recycling != NULL){
+    AGS_RECALL(generic_recycling->data)->child_type = generic_recall_channel_run->generic_recycling_child_type;
 
-    recycling_dummy = recycling_dummy->next;
+    generic_recycling = generic_recycling->next;
   }
 
   return((AgsRecall *) copy);
@@ -274,8 +274,8 @@ ags_generic_recall_channel_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plu
 				   "reference", gobject,
 				   NULL));
 
-  gobject->recycling_dummy_child_type = g_type_from_name(xmlGetProp(node,
-								    "recycling-child-type"));
+  gobject->generic_recycling_child_type = g_type_from_name(xmlGetProp(node,
+								      "recycling-child-type"));
 }
 
 xmlNode*
@@ -290,7 +290,7 @@ ags_generic_recall_channel_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *
   id = ags_id_generator_create_uuid();
   
   node = xmlNewNode(NULL,
-		    "ags-recall-channel-run-dummy");
+		    "ags-generic-recall-channel-run");
   xmlNewProp(node,
 	     AGS_FILE_ID_PROP,
 	     id);
@@ -306,7 +306,7 @@ ags_generic_recall_channel_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *
 
   xmlNewProp(node,
 	     "recycling-child-type",
-	     g_strdup(g_type_name(generic_recall_channel_run->recycling_dummy_child_type)));
+	     g_strdup(g_type_name(generic_recall_channel_run->generic_recycling_child_type)));
 
   xmlAddChild(parent,
 	      node);
@@ -318,7 +318,7 @@ ags_generic_recall_channel_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *
  * ags_generic_recall_channel_run_new:
  * @source: the source #AgsChannel
  * @child_type: child type
- * @recycling_dummy_child_type: recycling child type
+ * @generic_recycling_child_type: recycling child type
  *
  * Creates an #AgsGenericRecallChannelRun.
  *
@@ -329,15 +329,16 @@ ags_generic_recall_channel_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *
 AgsGenericRecallChannelRun*
 ags_generic_recall_channel_run_new(AgsChannel *source,
 				   GType child_type,
-				   GType recycling_dummy_child_type)
+				   GType generic_recycling_child_type)
 {
   AgsGenericRecallChannelRun *generic_recall_channel_run;
 
   generic_recall_channel_run = (AgsGenericRecallChannelRun *) g_object_new(AGS_TYPE_GENERIC_RECALL_CHANNEL_RUN,
+									   "child-type", child_type,
 									   "source", source,
 									   NULL);
 
-  AGS_RECALL(generic_recall_channel_run)->child_type = child_type;
+  AGS_RECALL(generic_recall_channel_run)->;
   generic_recall_channel_run->recycling_dummy_child_type = recycling_dummy_child_type;
 
   return(generic_recall_channel_run);
