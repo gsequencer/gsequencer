@@ -535,7 +535,7 @@ ags_sndfile_write_int(AgsPlayable *playable, int *buffer, guint buffer_length)
 
   sndfile = AGS_SNDFILE(playable);
 
-  multi_frames = buffer_length * sndfile->info->channels;
+  multi_frames = buffer_length * sndfile->info->channels * sizeof(int);
 
   retval = sf_write_int(sndfile->file, buffer, multi_frames);
 

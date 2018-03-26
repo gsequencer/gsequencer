@@ -690,7 +690,7 @@ void
 ags_audio_file_write(AgsAudioFile *audio_file,
 		     void *buffer, guint buffer_size, guint format)
 {
-  int *playable_buffer;
+  double *playable_buffer;
   
   guint copy_mode;
   guint i;
@@ -700,32 +700,22 @@ ags_audio_file_write(AgsAudioFile *audio_file,
     return;
   }
   
-  playable_buffer = (int *) malloc(audio_file->channels * buffer_size * sizeof(int));
+  playable_buffer = (double *) malloc(audio_file->channels * buffer_size * sizeof(double));
 
-  if(sizeof(int) == 8){
-    copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S64,
-						    ags_audio_buffer_util_format_from_soundcard(format));
-  }else{
-    copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S32,
-						    ags_audio_buffer_util_format_from_soundcard(format));
-  }
+  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
+						  ags_audio_buffer_util_format_from_soundcard(format));
       
   for(i = 0; i < audio_file->channels; i++){
-  if(sizeof(int) == 8){
-  ags_audio_buffer_util_clear_buffer(&(playable_buffer[i]), audio_file->channels,
-				       buffer_size, AGS_AUDIO_BUFFER_UTIL_S64);
-}else{
-    ags_audio_buffer_util_clear_buffer(&(playable_buffer[i]), audio_file->channels,
-					 buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
-  }
+    ags_audio_buffer_util_clear_double(&(playable_buffer[i]), audio_file->channels,
+				       buffer_size);
     
     ags_audio_buffer_util_copy_buffer_to_buffer(playable_buffer, audio_file->channels, i,
 						buffer, audio_file->channels, i,
 						buffer_size, copy_mode);
   }					   
   
-  ags_playable_write_int(AGS_PLAYABLE(audio_file->playable),
-			 playable_buffer, buffer_size);
+  ags_playable_write(AGS_PLAYABLE(audio_file->playable),
+		     playable_buffer, buffer_size);
   
   free(playable_buffer);
 }
