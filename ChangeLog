@@ -1,3 +1,8 @@
+ags (1.4.24)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* reverted write double as exporting to audio file
+
 ags (1.4.23)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
