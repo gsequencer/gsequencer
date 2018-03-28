@@ -201,7 +201,7 @@ ags_sound_provider_get_sequencer(AgsSoundProvider *sound_provider)
  */
 void
 ags_sound_provider_set_audio(AgsSoundProvider *sound_provider,
-				 GList *audio)
+			     GList *audio)
 {
   AgsSoundProviderInterface *sound_provider_interface;
 
@@ -210,7 +210,7 @@ ags_sound_provider_set_audio(AgsSoundProvider *sound_provider,
   g_return_if_fail(sound_provider_interface->set_audio);
 
   sound_provider_interface->set_audio(sound_provider,
-					  audio);
+				      audio);
 }
 
 /**
@@ -236,46 +236,46 @@ ags_sound_provider_get_audio(AgsSoundProvider *sound_provider)
 }
 
 /**
- * ags_sound_provider_set_distributed_manager:
+ * ags_sound_provider_set_sound_server:
  * @sound_provider: the #AgsSoundProvider
- * @distributed_manager: a #GList-struct containing #AgsDistributedManager
+ * @sound_server: a #GList-struct containing #AgsSoundServer
  *
  * Set distributed manager.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
-ags_sound_provider_set_distributed_manager(AgsSoundProvider *sound_provider,
-					   GList *distributed_manager)
+ags_sound_provider_set_sound_server(AgsSoundProvider *sound_provider,
+				    GList *sound_server)
 {
   AgsSoundProviderInterface *sound_provider_interface;
 
   g_return_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider));
   sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
-  g_return_if_fail(sound_provider_interface->set_distributed_manager);
+  g_return_if_fail(sound_provider_interface->set_sound_server);
 
-  sound_provider_interface->set_distributed_manager(sound_provider,
-						    distributed_manager);
+  sound_provider_interface->set_sound_server(sound_provider,
+					     sound_server);
 }
 
 /**
- * ags_sound_provider_get_distributed_manager:
+ * ags_sound_provider_get_sound_server:
  * @sound_provider: the #AgsSoundProvider
  *
  * Set distributed manager.
  * 
- * Returns: a #GList-struct containing #AgsDistributedManager
+ * Returns: a #GList-struct containing #AgsSoundServer
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
-ags_sound_provider_get_distributed_manager(AgsSoundProvider *sound_provider)
+ags_sound_provider_get_sound_server(AgsSoundProvider *sound_provider)
 {
   AgsSoundProviderInterface *sound_provider_interface;
 
   g_return_val_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider), NULL);
   sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
-  g_return_val_if_fail(sound_provider_interface->get_distributed_manager, NULL);
+  g_return_val_if_fail(sound_provider_interface->get_sound_server, NULL);
 
-  return(sound_provider_interface->get_distributed_manager(sound_provider));
+  return(sound_provider_interface->get_sound_server(sound_provider));
 }

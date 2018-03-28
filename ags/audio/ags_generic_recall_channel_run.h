@@ -41,7 +41,7 @@ struct _AgsGenericRecallChannelRun
 {
   AgsRecallChannelRun recall_channel_run;
 
-  GType recycling_dummy_child_type;
+  GType generic_recall_recycling_child_type;
 };
 
 struct _AgsGenericRecallChannelRunClass
@@ -53,6 +53,6 @@ GType ags_generic_recall_channel_run_get_type();
 
 AgsGenericRecallChannelRun* ags_generic_recall_channel_run_new(AgsChannel *source,
 							       GType child_type,
-							       GType recycling_dummy_child_type);
+							       GType generic_recall_recycling_child_type);
 
 #endif /*__AGS_GENERIC_RECALL_CHANNEL_RUN_H__*/

@@ -230,6 +230,7 @@ void
 ags_recall_class_init(AgsRecallClass *recall)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_recall_parent_class = g_type_class_peek_parent(recall);
@@ -289,7 +290,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 				   AGS_TYPE_RECALL_CONTAINER,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_CONTAINER,
+				  PROP_RECALL_CONTAINER,
 				  param_spec);
 
   /**
@@ -302,9 +303,9 @@ ags_recall_class_init(AgsRecallClass *recall)
   param_spec = g_param_spec_pointer("recall-dependency",
 				    i18n_pspec("recall dependency"),
 				    i18n_pspec("The recall dependency that can be added"),
-				    G_PARAM_WRITABLE);
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DEPENDENCY,
+				  PROP_RECALL_DEPENDENCY,
 				  param_spec);
 
   /**
@@ -365,9 +366,25 @@ ags_recall_class_init(AgsRecallClass *recall)
 				    i18n_pspec("child of recall"),
 				    i18n_pspec("The child that can be added"),
 				    AGS_TYPE_RECALL,
-				    G_PARAM_WRITABLE);
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CHILD,
+				  param_spec);
+
+  /**
+   * AgsRecall:child-type:
+   *
+   * The type of child #AgsRecall.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_gtype("child-type",
+				  i18n_pspec("child type"),
+				  i18n_pspec("The type of child that can be added"),
+				  AGS_TYPE_RECALL,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHILD_TYPE,
 				  param_spec);
   
   /* AgsRecallClass */
@@ -1056,6 +1073,11 @@ ags_recall_set_property(GObject *gobject,
 				    port);
     }
     break;
+  case PROP_GENERIC_RECALL_RECYCLING_CHILD_TYPE:
+    {
+      recall->child_type = g_value_get_gtype(value);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -1096,6 +1118,12 @@ ags_recall_get_property(GObject *gobject,
   case PROP_PORT:
     {
       g_value_set_object(value, g_list_copy(recall->port));
+    }
+    break;
+  case PROP_CHILD_TYPE:
+    {
+      g_value_set_gtype(value,
+			recall->child_type);
     }
     break;
   default:

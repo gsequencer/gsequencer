@@ -53,9 +53,9 @@ struct _AgsSoundProviderInterface
 		    GList *audio);
   GList* (*get_audio)(AgsSoundProvider *sound_provider);
   
-  void (*set_distributed_manager)(AgsSoundProvider *sound_provider,
-				 GList *distributed_manager);
-  GList* (*get_distributed_manager)(AgsSoundProvider *sound_provider);
+  void (*set_sound_server)(AgsSoundProvider *sound_provider,
+			   GList *sound_server);
+  GList* (*get_sound_server)(AgsSoundProvider *sound_provider);
 };
 
 GType ags_sound_provider_get_type();
@@ -76,8 +76,8 @@ void ags_sound_provider_set_audio(AgsSoundProvider *sound_provider,
 				  GList *audio);
 GList* ags_sound_provider_get_audio(AgsSoundProvider *sound_provider);
 
-void ags_sound_provider_set_distributed_manager(AgsSoundProvider *sound_provider,
-					       GList *distributed_manager);
-GList* ags_sound_provider_get_distributed_manager(AgsSoundProvider *sound_provider);
+void ags_sound_provider_set_sound_server(AgsSoundProvider *sound_provider,
+					 GList *sound_server);
+GList* ags_sound_provider_get_sound_server(AgsSoundProvider *sound_provider);
 
 #endif /*__AGS_SOUND_PROVIDER_H__*/

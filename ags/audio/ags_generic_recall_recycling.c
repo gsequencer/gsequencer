@@ -22,23 +22,10 @@
 
 #include <ags/libags.h>
 
-#include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/audio/task/ags_remove_audio_signal.h>
-
 void ags_generic_recall_recycling_class_init(AgsGenericRecallRecyclingClass *generic_recall_recycling);
 void ags_generic_recall_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_generic_recall_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_generic_recall_recycling_init(AgsGenericRecallRecycling *generic_recall_recycling);
-void ags_generic_recall_recycling_connect(AgsConnectable *connectable);
-void ags_generic_recall_recycling_disconnect(AgsConnectable *connectable);
-void ags_generic_recall_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_generic_recall_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_generic_recall_recycling_finalize(GObject *gobject);
-
-AgsRecall* ags_generic_recall_recycling_duplicate(AgsRecall *recall,
-						  AgsRecallID *recall_id,
-						  guint *n_params, GParameter *parameter);
 
 /**
  * SECTION:ags_generic_recall_recycling
@@ -104,39 +91,19 @@ ags_generic_recall_recycling_get_type()
 void
 ags_generic_recall_recycling_class_init(AgsGenericRecallRecyclingClass *generic_recall_recycling)
 {
-  GObjectClass *gobject;
-  AgsRecallClass *recall;
-  GParamSpec *param_spec;
-
   ags_generic_recall_recycling_parent_class = g_type_class_peek_parent(generic_recall_recycling);
-
-  /* GObjectClass */
-  gobject = (GObjectClass *) generic_recall_recycling;
-
-  gobject->finalize = ags_generic_recall_recycling_finalize;
-
-  /* AgsRecallClass */
-  recall = (AgsRecallClass *) generic_recall_recycling;
-
-  recall->duplicate = ags_generic_recall_recycling_duplicate;
 }
 
 void
 ags_generic_recall_recycling_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_generic_recall_recycling_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_generic_recall_recycling_connect;
-  connectable->disconnect = ags_generic_recall_recycling_disconnect;
 }
 
 void
 ags_generic_recall_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
 {
   ags_generic_recall_recycling_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_generic_recall_recycling_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_generic_recall_recycling_disconnect_dynamic;
 }
 
 void
@@ -148,62 +115,9 @@ ags_generic_recall_recycling_init(AgsGenericRecallRecycling *generic_recall_recy
   AGS_RECALL(generic_recall_recycling)->xml_type = "ags-generic-recall-recycling";
   AGS_RECALL(generic_recall_recycling)->port = NULL;
 
-  AGS_RECALL(generic_recall_recycling)->flags |= AGS_RECALL_PERSISTENT;
+  AGS_RECALL(generic_recall_recycling)->behaviour_flags |= AGS_SOUND_BEHAVIOUR_PERSISTENT;
+  
   AGS_RECALL(generic_recall_recycling)->child_type = G_TYPE_NONE;
-}
-
-void
-ags_generic_recall_recycling_finalize(GObject *gobject)
-{
-  /* empty */
-
-  /* call parent */
-  G_OBJECT_CLASS(ags_generic_recall_recycling_parent_class)->finalize(gobject);
-}
-
-void
-ags_generic_recall_recycling_connect(AgsConnectable *connectable)
-{
-  ags_generic_recall_recycling_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_generic_recall_recycling_disconnect(AgsConnectable *connectable)
-{
-  ags_generic_recall_recycling_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_generic_recall_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  AgsGenericRecallRecycling *generic_recall_recycling;
-
-  ags_generic_recall_recycling_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-}
-
-void
-ags_generic_recall_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  ags_generic_recall_recycling_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-}
-
-AgsRecall*
-ags_generic_recall_recycling_duplicate(AgsRecall *recall,
-				       AgsRecallID *recall_id,
-				       guint *n_params, GParameter *parameter)
-{
-  AgsGenericRecallRecycling *copy;
-
-  copy = (AgsGenericRecallRecycling *) AGS_RECALL_CLASS(ags_generic_recall_recycling_parent_class)->duplicate(recall,
-													      recall_id,
-													      n_params, parameter);
-  AGS_RECALL(copy)->child_type = recall->child_type;
-
-  return((AgsRecall *) copy);
 }
 
 /**
@@ -215,7 +129,7 @@ ags_generic_recall_recycling_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsGenericRecallRecycling.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsGenericRecallRecycling*
 ags_generic_recall_recycling_new(AgsRecycling *recycling, GType child_type)
@@ -224,8 +138,8 @@ ags_generic_recall_recycling_new(AgsRecycling *recycling, GType child_type)
 
   generic_recall_recycling = (AgsGenericRecallRecycling *) g_object_new(AGS_TYPE_GENERIC_RECALL_RECYCLING,
 									"source", recycling,
+									"child-type", child_type,
 									NULL);
-  AGS_RECALL(generic_recall_recycling)->child_type = child_type;
-
+  
   return(generic_recall_recycling);
 }

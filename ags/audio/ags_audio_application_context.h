@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,19 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_concurrency_provider.h>
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif
-
-#include <ags/thread/ags_thread_pool.h>
-
-#include <ags/server/ags_server.h>
+#include <ags/libags.h>
 
 #define AGS_TYPE_AUDIO_APPLICATION_CONTEXT                (ags_audio_application_context_get_type())
 #define AGS_AUDIO_APPLICATION_CONTEXT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_APPLICATION_CONTEXT, AgsAudioApplicationContext))
@@ -46,8 +34,8 @@
 
 #define AGS_AUDIO_RT_PRIORITY (49)
 
-#define AGS_AUDIO_DEFAULT_VERSION "0.7.122.8"
-#define AGS_AUDIO_BUILD_ID "Tue Mar 21 20:03:29 CET 2017"
+#define AGS_AUDIO_DEFAULT_VERSION "2.0.0"
+#define AGS_AUDIO_BUILD_ID "Wed Mar 28 09:19:10 UTC 2018"
 
 #define AGS_EFFECTS_DEFAULT_VERSION "0.7.13"
 
@@ -88,7 +76,7 @@ struct _AgsAudioApplicationContext
   GList *soundcard;
   GList *sequencer;
 
-  GList *distributed_manager;
+  GList *sound_server;
 };
 
 struct _AgsAudioApplicationContextClass
