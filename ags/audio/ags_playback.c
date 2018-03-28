@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,7 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_note.h>
 
 #include <ags/audio/thread/ags_channel_thread.h>
@@ -36,13 +37,13 @@ void ags_playback_class_init(AgsPlaybackClass *playback);
 void ags_playback_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_playback_init(AgsPlayback *playback);
 void ags_playback_set_property(GObject *gobject,
-				      guint prop_id,
-				      const GValue *value,
-				      GParamSpec *param_spec);
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *param_spec);
 void ags_playback_get_property(GObject *gobject,
-				      guint prop_id,
-				      GValue *value,
-				      GParamSpec *param_spec);
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *param_spec);
 void ags_playback_disconnect(AgsConnectable *connectable);
 void ags_playback_connect(AgsConnectable *connectable);
 void ags_playback_dispose(GObject *gobject);
@@ -134,7 +135,7 @@ ags_playback_class_init(AgsPlaybackClass *playback)
   param_spec = g_param_spec_object("playback-domain",
 				   i18n_pspec("parent playback domain"),
 				   i18n_pspec("The playback domain it is child of"),
-				   G_TYPE_OBJECT,
+				   AGS_TYPE_PLAYBACK_DOMAIN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PLAYBACK_DOMAIN,
@@ -150,7 +151,7 @@ ags_playback_class_init(AgsPlaybackClass *playback)
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("assigned channel"),
 				   i18n_pspec("The channel it is assigned with"),
-				   G_TYPE_OBJECT,
+				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CHANNEL,
@@ -197,7 +198,6 @@ ags_playback_init(AgsPlayback *playback)
   guint i;
   
   pthread_mutex_t *application_mutex;
-
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
@@ -274,7 +274,7 @@ ags_playback_init(AgsPlayback *playback)
   playback->playback_domain = NULL;
   
   /* super threaded channel */
-  playback_domain->channel_thread = (AgsThread **) malloc(AGS_SOUND_SCOPE_LAST * sizeof(AgsThread *));
+  playback->channel_thread = (AgsThread **) malloc(AGS_SOUND_SCOPE_LAST * sizeof(AgsThread *));
 
   for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
     playback->channel_thread[i] = NULL;
@@ -290,9 +290,9 @@ ags_playback_init(AgsPlayback *playback)
 
 void
 ags_playback_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec)
+			  guint prop_id,
+			  const GValue *value,
+			  GParamSpec *param_spec)
 {
   AgsPlayback *playback;
   
@@ -356,9 +356,9 @@ ags_playback_set_property(GObject *gobject,
 
 void
 ags_playback_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec)
+			  guint prop_id,
+			  GValue *value,
+			  GParamSpec *param_spec)
 {
   AgsPlayback *playback;
 
@@ -374,7 +374,7 @@ ags_playback_get_property(GObject *gobject,
   case PROP_CHANNEL:
     {
       g_value_set_object(value,
-			  playback->channel);
+			 playback->channel);
     }
     break;
   case PROP_AUDIO_CHANNEL:

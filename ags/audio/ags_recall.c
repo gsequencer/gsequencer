@@ -1073,7 +1073,7 @@ ags_recall_set_property(GObject *gobject,
 				    port);
     }
     break;
-  case PROP_GENERIC_RECALL_RECYCLING_CHILD_TYPE:
+  case PROP_CHILD_TYPE:
     {
       recall->child_type = g_value_get_gtype(value);
     }

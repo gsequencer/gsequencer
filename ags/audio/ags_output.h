@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,7 +24,7 @@
 #include <glib-object.h>
 
 #include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recycling.h>
 
 #define AGS_TYPE_OUTPUT                (ags_output_get_type())
 #define AGS_OUTPUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OUTPUT, AgsOutput))
@@ -47,8 +47,6 @@ struct _AgsOutputClass
 };
 
 GType ags_output_get_type();
-
-G_DEPRECATED GList* ags_output_map_audio_signal(AgsOutput *output, AgsRecallID *recall_id);
 
 AgsRecycling* ags_output_find_first_input_recycling(AgsOutput *output);
 AgsRecycling* ags_output_find_last_input_recycling(AgsOutput *output);

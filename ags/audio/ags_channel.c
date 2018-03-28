@@ -67,6 +67,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include <pthread.h>
+
 #include <ladspa.h>
 #include <dssi.h>
 #include <lv2.h>
