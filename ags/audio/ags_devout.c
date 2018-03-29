@@ -60,7 +60,6 @@
 void ags_devout_class_init(AgsDevoutClass *devout);
 void ags_devout_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard);
-void ags_devout_concurrent_tree_interface_init(AgsConcurrentTreeInterface *concurrent_tree);
 void ags_devout_init(AgsDevout *devout);
 void ags_devout_set_property(GObject *gobject,
 			     guint prop_id,
@@ -72,8 +71,6 @@ void ags_devout_get_property(GObject *gobject,
 			     GParamSpec *param_spec);
 void ags_devout_disconnect(AgsConnectable *connectable);
 void ags_devout_connect(AgsConnectable *connectable);
-pthread_mutex_t* ags_devout_get_lock(AgsConcurrentTree *concurrent_tree);
-pthread_mutex_t* ags_devout_get_parent_lock(AgsConcurrentTree *concurrent_tree);
 void ags_devout_dispose(GObject *gobject);
 void ags_devout_finalize(GObject *gobject);
 
@@ -244,12 +241,6 @@ ags_devout_get_type (void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_concurrent_tree_interface_info = {
-      (GInterfaceInitFunc) ags_devout_concurrent_tree_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_devout = g_type_register_static(G_TYPE_OBJECT,
 					     "AgsDevout",
 					     &ags_devout_info,
@@ -262,10 +253,6 @@ ags_devout_get_type (void)
     g_type_add_interface_static(ags_type_devout,
 				AGS_TYPE_SOUNDCARD,
 				&ags_soundcard_interface_info);
-
-    g_type_add_interface_static(ags_type_devout,
-				AGS_TYPE_CONCURRENT_TREE,
-				&ags_concurrent_tree_interface_info);
   }
 
   return (ags_type_devout);
@@ -512,13 +499,6 @@ ags_devout_connectable_interface_init(AgsConnectableInterface *connectable)
   connectable->is_connected = NULL;
   connectable->connect = ags_devout_connect;
   connectable->disconnect = ags_devout_disconnect;
-}
-
-void
-ags_devout_concurrent_tree_interface_init(AgsConcurrentTreeInterface *concurrent_tree)
-{
-  concurrent_tree->get_lock = ags_devout_get_lock;
-  concurrent_tree->get_parent_lock = ags_devout_get_parent_lock;
 }
 
 void
@@ -1106,34 +1086,6 @@ ags_devout_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-pthread_mutex_t*
-ags_devout_get_lock(AgsConcurrentTree *concurrent_tree)
-{
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *devout_mutex;
-  
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
-  
-  devout_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  G_OBJECT(concurrent_tree));
-
-  pthread_mutex_unlock(application_mutex);
-
-  return(devout_mutex);
-}
-
-pthread_mutex_t*
-ags_devout_get_parent_lock(AgsConcurrentTree *concurrent_tree)
-{
-  return(NULL);
 }
 
 void

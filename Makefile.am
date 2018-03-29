@@ -420,8 +420,7 @@ libags_object_c_sources = \
 	ags/object/ags_sequencer.c \
 	ags/object/ags_soundcard.c \
 	ags/object/ags_sound_server.c \
-	ags/object/ags_tactable.c \
-	ags/object/ags_tree_iterator.c
+	ags/object/ags_tactable.c
 
 deprecated_libags_file_h_sources =
 
@@ -2045,7 +2044,7 @@ gen-symbols-ags:
 	find ags/lib -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym
 	echo "ags_application_context" >> libags.sym
 	find ags/object -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym
-	find ags/object -name "ags_marshal.h" | xargs grep --no-filename -o -P "(g_cclosure_user_marshal_[a-zA-Z0-9_]+)" >> libags.sym
+	find ags/object -name "ags_marshal.h" | xargs grep --no-filename -o -P "(ags_cclosure_marshal_[a-zA-Z0-9_]+)" >> libags.sym
 	find ags/file -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym
 
 gen-symbols-ags-thread:
@@ -2068,6 +2067,7 @@ gen-symbols-ags-gui:
 	rm -f libags_gui.sym
 	touch libags_gui.sym
 	find ags/widget -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_gui.sym
+	find ags/widget -name "ags_widget_marshal.h" | xargs grep --no-filename -o -P "(ags_widget_cclosure_marshal_[a-zA-Z0-9_]+)" >> libags_gui.sym
 
 gen-symbols-all: gen-symbols-ags gen-symbols-ags-thread gen-symbols-ags-server gen-symbols-ags-audio gen-symbols-ags-gui
 	echo "Generated all symbols"

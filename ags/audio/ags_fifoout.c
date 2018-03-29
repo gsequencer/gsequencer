@@ -19,18 +19,7 @@
 
 #include <ags/audio/ags_fifoout.h>
 
-#include <ags/lib/ags_time.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_concurrent_tree.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
-#include <ags/thread/ags_poll_fd.h>
+#include <ags/libags.h>
 
 #include <ags/audio/task/ags_switch_buffer_flag.h>
 
@@ -56,7 +45,6 @@
 void ags_fifoout_class_init(AgsFifooutClass *fifoout);
 void ags_fifoout_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_fifoout_soundcard_interface_init(AgsSoundcardInterface *soundcard);
-void ags_fifoout_concurrent_tree_interface_init(AgsConcurrentTreeInterface *concurrent_tree);
 void ags_fifoout_init(AgsFifoout *fifoout);
 void ags_fifoout_set_property(GObject *gobject,
 			      guint prop_id,
@@ -68,8 +56,6 @@ void ags_fifoout_get_property(GObject *gobject,
 			      GParamSpec *param_spec);
 void ags_fifoout_disconnect(AgsConnectable *connectable);
 void ags_fifoout_connect(AgsConnectable *connectable);
-pthread_mutex_t* ags_fifoout_get_lock(AgsConcurrentTree *concurrent_tree);
-pthread_mutex_t* ags_fifoout_get_parent_lock(AgsConcurrentTree *concurrent_tree);
 void ags_fifoout_finalize(GObject *gobject);
 
 void ags_fifoout_switch_buffer_flag(AgsFifoout *fifoout);
@@ -219,12 +205,6 @@ ags_fifoout_get_type (void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_concurrent_tree_interface_info = {
-      (GInterfaceInitFunc) ags_fifoout_concurrent_tree_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_fifoout = g_type_register_static(G_TYPE_OBJECT,
 					      "AgsFifoout",
 					      &ags_fifoout_info,
@@ -237,10 +217,6 @@ ags_fifoout_get_type (void)
     g_type_add_interface_static(ags_type_fifoout,
 				AGS_TYPE_SOUNDCARD,
 				&ags_soundcard_interface_info);
-
-    g_type_add_interface_static(ags_type_fifoout,
-				AGS_TYPE_CONCURRENT_TREE,
-				&ags_concurrent_tree_interface_info);
   }
 
   return (ags_type_fifoout);
@@ -486,13 +462,6 @@ ags_fifoout_connectable_interface_init(AgsConnectableInterface *connectable)
   connectable->is_connected = NULL;
   connectable->connect = ags_fifoout_connect;
   connectable->disconnect = ags_fifoout_disconnect;
-}
-
-void
-ags_fifoout_concurrent_tree_interface_init(AgsConcurrentTreeInterface *concurrent_tree)
-{
-  concurrent_tree->get_lock = ags_fifoout_get_lock;
-  concurrent_tree->get_parent_lock = ags_fifoout_get_parent_lock;
 }
 
 void
@@ -1021,34 +990,6 @@ ags_fifoout_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-pthread_mutex_t*
-ags_fifoout_get_lock(AgsConcurrentTree *concurrent_tree)
-{
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *fifoout_mutex;
-  
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
-  
-  fifoout_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   G_OBJECT(concurrent_tree));
-
-  pthread_mutex_unlock(application_mutex);
-
-  return(fifoout_mutex);
-}
-
-pthread_mutex_t*
-ags_fifoout_get_parent_lock(AgsConcurrentTree *concurrent_tree)
-{
-  return(NULL);
 }
 
 void

@@ -238,8 +238,7 @@ am__objects_4 = $(am__objects_1) \
 	ags/object/libags_la-ags_sequencer.lo \
 	ags/object/libags_la-ags_soundcard.lo \
 	ags/object/libags_la-ags_sound_server.lo \
-	ags/object/libags_la-ags_tactable.lo \
-	ags/object/libags_la-ags_tree_iterator.lo
+	ags/object/libags_la-ags_tactable.lo
 am__objects_5 = $(am__objects_1) ags/file/libags_la-ags_file.lo \
 	ags/file/libags_la-ags_file_id_ref.lo \
 	ags/file/libags_la-ags_file_launch.lo \
@@ -3260,8 +3259,7 @@ libags_object_c_sources = \
 	ags/object/ags_sequencer.c \
 	ags/object/ags_soundcard.c \
 	ags/object/ags_sound_server.c \
-	ags/object/ags_tactable.c \
-	ags/object/ags_tree_iterator.c
+	ags/object/ags_tactable.c
 
 deprecated_libags_file_h_sources = 
 
@@ -4944,8 +4942,6 @@ ags/object/libags_la-ags_soundcard.lo: ags/object/$(am__dirstamp) \
 ags/object/libags_la-ags_sound_server.lo: ags/object/$(am__dirstamp) \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
 ags/object/libags_la-ags_tactable.lo: ags/object/$(am__dirstamp) \
-	ags/object/$(DEPDIR)/$(am__dirstamp)
-ags/object/libags_la-ags_tree_iterator.lo: ags/object/$(am__dirstamp) \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
 ags/file/$(am__dirstamp):
 	@$(MKDIR_P) ags/file
@@ -7962,7 +7958,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_sound_server.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_soundcard.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_tactable.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_tree_iterator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_base_plugin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_dssi_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_dssi_plugin.Plo@am__quote@
@@ -8412,13 +8407,6 @@ ags/object/libags_la-ags_tactable.lo: ags/object/ags_tactable.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/object/ags_tactable.c' object='ags/object/libags_la-ags_tactable.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/object/libags_la-ags_tactable.lo `test -f 'ags/object/ags_tactable.c' || echo '$(srcdir)/'`ags/object/ags_tactable.c
-
-ags/object/libags_la-ags_tree_iterator.lo: ags/object/ags_tree_iterator.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/object/libags_la-ags_tree_iterator.lo -MD -MP -MF ags/object/$(DEPDIR)/libags_la-ags_tree_iterator.Tpo -c -o ags/object/libags_la-ags_tree_iterator.lo `test -f 'ags/object/ags_tree_iterator.c' || echo '$(srcdir)/'`ags/object/ags_tree_iterator.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/object/$(DEPDIR)/libags_la-ags_tree_iterator.Tpo ags/object/$(DEPDIR)/libags_la-ags_tree_iterator.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/object/ags_tree_iterator.c' object='ags/object/libags_la-ags_tree_iterator.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/object/libags_la-ags_tree_iterator.lo `test -f 'ags/object/ags_tree_iterator.c' || echo '$(srcdir)/'`ags/object/ags_tree_iterator.c
 
 ags/file/libags_la-ags_file.lo: ags/file/ags_file.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/file/libags_la-ags_file.lo -MD -MP -MF ags/file/$(DEPDIR)/libags_la-ags_file.Tpo -c -o ags/file/libags_la-ags_file.lo `test -f 'ags/file/ags_file.c' || echo '$(srcdir)/'`ags/file/ags_file.c
@@ -15126,7 +15114,7 @@ gen-symbols-ags:
 	find ags/lib -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym
 	echo "ags_application_context" >> libags.sym
 	find ags/object -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym
-	find ags/object -name "ags_marshal.h" | xargs grep --no-filename -o -P "(g_cclosure_user_marshal_[a-zA-Z0-9_]+)" >> libags.sym
+	find ags/object -name "ags_marshal.h" | xargs grep --no-filename -o -P "(ags_cclosure_marshal_[a-zA-Z0-9_]+)" >> libags.sym
 	find ags/file -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym
 
 gen-symbols-ags-thread:
@@ -15149,6 +15137,7 @@ gen-symbols-ags-gui:
 	rm -f libags_gui.sym
 	touch libags_gui.sym
 	find ags/widget -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_gui.sym
+	find ags/widget -name "ags_widget_marshal.h" | xargs grep --no-filename -o -P "(ags_widget_cclosure_marshal_[a-zA-Z0-9_]+)" >> libags_gui.sym
 
 gen-symbols-all: gen-symbols-ags gen-symbols-ags-thread gen-symbols-ags-server gen-symbols-ags-audio gen-symbols-ags-gui
 	echo "Generated all symbols"
