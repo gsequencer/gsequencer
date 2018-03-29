@@ -44,7 +44,6 @@
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_countable.h>
-#include <ags/object/ags_concurrent_tree.h>
 #include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_macros.h>
 #include <ags/object/ags_main_loop.h>
@@ -58,7 +57,6 @@
 #include <ags/object/ags_soundcard.h>
 #include <ags/object/ags_sound_server.h>
 #include <ags/object/ags_tactable.h>
-#include <ags/object/ags_tree_iterator.h>
 
 /* file */
 #include <ags/file/ags_file.h>

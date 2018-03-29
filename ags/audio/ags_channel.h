@@ -140,8 +140,6 @@ struct _AgsChannel
 
   GList *pattern;
 
-  GList *remote_channel;
-
   GList *recall_id;
   GList *recycling_context;
 

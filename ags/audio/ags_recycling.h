@@ -114,11 +114,6 @@ void ags_recycling_set_samplerate(AgsRecycling *recycling, guint samplerate);
 void ags_recycling_set_buffer_size(AgsRecycling *recycling, guint buffer_size);
 void ags_recycling_set_format(AgsRecycling *recycling, guint format);
 
-/* presets */
-void ags_recycling_set_samplerate(AgsRecycling *recycling, guint samplerate);
-void ags_recycling_set_buffer_size(AgsRecycling *recycling, guint buffer_size);
-void ags_recycling_set_format(AgsRecycling *recycling, guint format);
-
 /* children */
 void ags_recycling_add_audio_signal(AgsRecycling *recycling,
 				    AgsAudioSignal *audio_signal);

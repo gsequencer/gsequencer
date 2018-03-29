@@ -50,8 +50,6 @@
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_recall_id.h>
 
-#include <ags/audio/client/ags_remote_channel.h>
-
 #include <ags/audio/thread/ags_audio_thread.h>
 #include <ags/audio/thread/ags_channel_thread.h>
 #include <ags/audio/thread/ags_recycling_thread.h>
@@ -208,7 +206,6 @@ enum{
   PROP_LAST_RECYCLING,
   PROP_PLAYBACK,
   PROP_PATTERN,
-  PROP_REMOTE_CHANNEL,
   PROP_RECALL_ID,
   PROP_RECYCLING_CONTEXT,
   PROP_RECALL_CONTAINER,
@@ -650,21 +647,6 @@ ags_channel_class_init(AgsChannelClass *channel)
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PATTERN,
-				  param_spec);
-
-  /**
-   * AgsChannel:remote-channel:
-   *
-   * The containing #AgsRemoteChannel.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_pointer("remote-channel",
-				    i18n_pspec("remote channel"),
-				    i18n_pspec("The remote channel it contains"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_REMOTE_CHANNEL,
 				  param_spec);
 
   /**
@@ -1237,9 +1219,6 @@ ags_channel_init(AgsChannel *channel)
   /* pattern */
   channel->pattern = NULL;
 
-  /* remote channel */
-  channel->remote_channel = NULL;
-
   /* recall id and recycling context */
   channel->recall_id = NULL;
   channel->recycling_context = NULL;
@@ -1528,27 +1507,6 @@ ags_channel_set_property(GObject *gobject,
 
       ags_channel_add_pattern(channel,
 			      (GObject *) pattern);
-    }
-    break;
-  case PROP_REMOTE_CHANNEL:
-    {
-      AgsRemoteChannel *remote_channel;
-
-      remote_channel = (AgsRemoteChannel *) g_value_get_object(value);
-
-      pthread_mutex_lock(channel_mutex);
-      
-      if(remote_channel == NULL ||
-	 g_list_find(channel->remote_channel, remote_channel) != NULL){
-	pthread_mutex_unlock(channel_mutex);
-
-	return;
-      }
-
-      pthread_mutex_unlock(channel_mutex);
-
-      ags_channel_add_remote_channel(channel,
-				     (GObject *) remote_channel);
     }
     break;
   case PROP_RECALL_ID:
@@ -1883,15 +1841,6 @@ ags_channel_get_property(GObject *gobject,
       pthread_mutex_unlock(channel_mutex);
     }
     break;
-  case PROP_REMOTE_CHANNEL:
-    {
-      pthread_mutex_lock(channel_mutex);
-
-      g_value_set_pointer(value, g_list_copy(channel->remote_channel));
-
-      pthread_mutex_unlock(channel_mutex);
-    }
-    break;
   case PROP_RECALL_ID:
     {
       pthread_mutex_lock(channel_mutex);
@@ -2028,24 +1977,6 @@ ags_channel_dispose(GObject *gobject)
     channel->first_recycling = NULL;
     channel->last_recycling = NULL;
   }
-
-  /* remote channel */
-  if(channel->remote_channel != NULL){
-    list = channel->remote_channel;
-
-    while(list != NULL){
-      list_next = list->next;
-
-      g_object_run_dispose(list->data);
-
-      list = list_next;
-    }
-
-    g_list_free_full(channel->remote_channel,
-		     g_object_unref);
-  
-    channel->remote_channel = NULL;
-  }
   
   /* playback */
   if(channel->playback != NULL){
@@ -2157,7 +2088,7 @@ ags_channel_dispose(GObject *gobject)
   }
   
   /* pattern */
-  if(channel->remote_channel != NULL){
+  if(channel->pattern != NULL){
     list = channel->pattern;
 
     while(list != NULL){
@@ -2167,7 +2098,6 @@ ags_channel_dispose(GObject *gobject)
 
       list = list_next;
     }
-
     
     g_list_free_full(channel->pattern,
 		     g_object_unref);
@@ -2220,12 +2150,6 @@ ags_channel_finalize(GObject *gobject)
   /* key string */
   if(channel->note_key != NULL){
     free(channel->note_key);
-  }
-
-  /* remote channel */
-  if(channel->remote_channel != NULL){
-    g_list_free_full(channel->remote_channel,
-		     g_object_unref);
   }
 
   /* playback */
