@@ -2117,6 +2117,9 @@ ags_channel_finalize(GObject *gobject)
 
   channel = AGS_CHANNEL(gobject);
 
+  pthread_mutex_destroy(channel->obj_mutex);
+  free(channel->obj_mutex);
+
   pthread_mutexattr_destroy(channel->obj_mutexattr);
   free(channel->obj_mutexattr);
 
