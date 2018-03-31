@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,11 +19,7 @@
 
 #include <ags/audio/ags_pattern.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_tactable.h>
-#include <ags/object/ags_portlet.h>
-
-#include <ags/thread/ags_mutex_manager.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_port.h>
 
@@ -34,7 +30,6 @@
 void ags_pattern_class_init(AgsPatternClass *pattern_class);
 void ags_pattern_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_pattern_tactable_interface_init(AgsTactableInterface *tactable);
-void ags_pattern_portlet_interface_init(AgsPortletInterface *portlet);
 void ags_pattern_init(AgsPattern *pattern);
 void ags_pattern_set_property(GObject *gobject,
 			      guint prop_id,
@@ -44,18 +39,13 @@ void ags_pattern_get_property(GObject *gobject,
 			      guint prop_id,
 			      GValue *value,
 			      GParamSpec *param_spec);
-void ags_pattern_connect(AgsConnectable *connectable);
-void ags_pattern_disconnect(AgsConnectable *connectable);
 void ags_pattern_dispose(GObject *gobject);
 void ags_pattern_finalize(GObject *gobject);
 
-void ags_pattern_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
+void ags_pattern_connect(AgsConnectable *connectable);
+void ags_pattern_disconnect(AgsConnectable *connectable);
 
-void ags_pattern_set_port(AgsPortlet *portlet, GObject *port);
-GObject* ags_pattern_get_port(AgsPortlet *portlet);
-GList* ags_pattern_list_safe_properties(AgsPortlet *portlet);
-void ags_pattern_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
-void ags_pattern_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
+void ags_pattern_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
 
 /**
  * SECTION:ags_pattern
@@ -109,12 +99,6 @@ ags_pattern_get_type (void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_portlet_interface_info = {
-      (GInterfaceInitFunc) ags_pattern_portlet_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_pattern = g_type_register_static(G_TYPE_OBJECT,
 					      "AgsPattern",
 					      &ags_pattern_info,
@@ -127,10 +111,6 @@ ags_pattern_get_type (void)
     g_type_add_interface_static(ags_type_pattern,
 				AGS_TYPE_TACTABLE,
 				&ags_tactable_interface_info);
-
-    g_type_add_interface_static(ags_type_pattern,
-				AGS_TYPE_PORTLET,
-				&ags_portlet_interface_info);
   }
 
   return (ags_type_pattern);
@@ -269,16 +249,6 @@ ags_pattern_tactable_interface_init(AgsTactableInterface *tactable)
 }
 
 void
-ags_pattern_portlet_interface_init(AgsPortletInterface *portlet)
-{
-  portlet->set_port = ags_pattern_set_port;
-  portlet->get_port = ags_pattern_get_port;
-  portlet->list_safe_properties = ags_pattern_list_safe_properties;
-  portlet->safe_set_property = ags_pattern_safe_set_property;
-  portlet->safe_get_property = ags_pattern_safe_get_property;
-}
-
-void
 ags_pattern_init(AgsPattern *pattern)
 {
   AgsMutexManager *mutex_manager;
@@ -342,73 +312,31 @@ ags_pattern_set_property(GObject *gobject,
   pattern = AGS_PATTERN(gobject);
 
   switch(prop_id){
-  case PROP_PORT:
-    {
-      AgsPort *port;
-
-      port = (AgsPort *) g_value_get_object(value);
-
-      if(port == (AgsPort *) pattern->port){
-	return;
-      }
-
-      if(pattern->port != NULL){
-	g_object_unref(G_OBJECT(pattern->port));
-      }
-
-      if(port != NULL){
-	g_object_ref(G_OBJECT(port));
-      }
-
-      pattern->port = (GObject *) port;
-    }
-    break;
   case PROP_FIRST_INDEX:
     {
-      AgsPort *port;
       guint i;
 
       i = g_value_get_uint(value);
 
-      port = (AgsPort *) ags_portlet_get_port(AGS_PORTLET(pattern));
-
-      pthread_mutex_lock(port->mutex);
-
       pattern->i = i;
-
-      pthread_mutex_unlock(port->mutex);
     }
     break;
   case PROP_SECOND_INDEX:
     {
-      AgsPort *port;
       guint j;
 
       j = g_value_get_uint(value);
 
-      port = (AgsPort *) ags_portlet_get_port(AGS_PORTLET(pattern));
-
-      pthread_mutex_lock(port->mutex);
-
       pattern->j = j;
-
-      pthread_mutex_unlock(port->mutex);
     }
     break;
   case PROP_OFFSET:
     {
-      AgsPort *port;
       guint bit;
 
       bit = g_value_get_uint(value);
 
-      port = (AgsPort *) ags_portlet_get_port(AGS_PORTLET(pattern));
-
-      pthread_mutex_lock(port->mutex);
-
       pattern->bit = bit;
-
-      pthread_mutex_unlock(port->mutex);
     }
     break;
   case PROP_TIMESTAMP:
@@ -454,57 +382,25 @@ ags_pattern_get_property(GObject *gobject,
     break;
   case PROP_FIRST_INDEX:
     {
-      AgsPort *port;
-
-      port = (AgsPort *) ags_portlet_get_port(AGS_PORTLET(pattern));
-
-      pthread_mutex_lock(port->mutex);
-
       g_value_set_uint(value, pattern->i);
-
-      pthread_mutex_unlock(port->mutex);
     }
     break;
   case PROP_SECOND_INDEX:
     {
-      AgsPort *port;
-
-      port = (AgsPort *) ags_portlet_get_port(AGS_PORTLET(pattern));
-
-      pthread_mutex_lock(port->mutex);
-
       g_value_set_uint(value, pattern->j);
-
-      pthread_mutex_unlock(port->mutex);
     }
     break;
   case PROP_OFFSET:
     {
-      AgsPort *port;
-
-      port = (AgsPort *) ags_portlet_get_port(AGS_PORTLET(pattern));
-
-      pthread_mutex_lock(port->mutex);
-
       g_value_set_uint(value, pattern->bit);
-
-      pthread_mutex_unlock(port->mutex);
     }
     break;
   case PROP_CURRENT_BIT:
     {
-      AgsPort *port;
-
-      port = (AgsPort *) ags_portlet_get_port(AGS_PORTLET(pattern));
-
-      pthread_mutex_lock(port->mutex);
-
       g_value_set_boolean(value, ags_pattern_get_bit(pattern,
 						     pattern->i,
 						     pattern->j,
 						     pattern->bit));
-
-      pthread_mutex_unlock(port->mutex);
     }
     break;
   case PROP_TIMESTAMP:
@@ -514,34 +410,6 @@ ags_pattern_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_pattern_connect(AgsConnectable *connectable)
-{
-  AgsPattern *pattern;
-
-  pattern = AGS_PATTERN(connectable);
-
-  if((AGS_PATTERN_CONNECTED & (pattern->flags)) != 0){
-    return;
-  }
-
-  pattern->flags |= AGS_PATTERN_CONNECTED;
-}
-
-void
-ags_pattern_disconnect(AgsConnectable *connectable)
-{
-  AgsPattern *pattern;
-
-  pattern = AGS_PATTERN(connectable);
-
-  if((AGS_PATTERN_CONNECTED & (pattern->flags)) == 0){
-    return;
-  }
-
-  pattern->flags &= (~AGS_PATTERN_CONNECTED);
 }
 
 void
@@ -610,74 +478,43 @@ ags_pattern_finalize(GObject *gobject)
 }
 
 void
+ags_pattern_connect(AgsConnectable *connectable)
+{
+  AgsPattern *pattern;
+
+  pattern = AGS_PATTERN(connectable);
+
+  if((AGS_PATTERN_CONNECTED & (pattern->flags)) != 0){
+    return;
+  }
+
+  pattern->flags |= AGS_PATTERN_CONNECTED;
+}
+
+void
+ags_pattern_disconnect(AgsConnectable *connectable)
+{
+  AgsPattern *pattern;
+
+  pattern = AGS_PATTERN(connectable);
+
+  if((AGS_PATTERN_CONNECTED & (pattern->flags)) == 0){
+    return;
+  }
+
+  pattern->flags &= (~AGS_PATTERN_CONNECTED);
+}
+
+void
 ags_pattern_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm)
 {
   //TODO:JK: implement me
 }
 
-void
-ags_pattern_set_port(AgsPortlet *portlet, GObject *port)
-{
-  g_object_set(G_OBJECT(portlet),
-	       "port", port,
-	       NULL);
-}
-
-GObject*
-ags_pattern_get_port(AgsPortlet *portlet)
-{
-  AgsPort *port;
-
-  g_object_get(G_OBJECT(portlet),
-	       "port", &port,
-	       NULL);
-
-  return((GObject *) port);
-}
-
-GList*
-ags_pattern_list_safe_properties(AgsPortlet *portlet)
-{
-  static GList *list = NULL;
-
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-  
-  pthread_mutex_lock(&mutex);
-
-  if(list == NULL){
-    list = g_list_prepend(list, "first-index");
-    list = g_list_prepend(list, "second-index");
-    list = g_list_prepend(list, "offset");
-    list = g_list_prepend(list, "current-bit");
- }
-
-  pthread_mutex_unlock(&mutex);
-
-  return(list);
-}
-
-void
-ags_pattern_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
-{
-  //TODO:JK: add check for safe property
-
-  g_object_set_property(G_OBJECT(portlet),
-			property_name, value);
-}
-
-void
-ags_pattern_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
-{
-  //TODO:JK: add check for safe property
-
-  g_object_get_property(G_OBJECT(portlet),
-			property_name, value);
-}
-
 /**
  * ags_pattern_find_near_timestamp:
  * @pattern: a #GList containing #AgsPattern
- * @timestamp: the matching timestamp
+ * @timestamp: the matching #AgsTimestamp
  *
  * Retrieve appropriate pattern for timestamp.
  *
@@ -686,7 +523,7 @@ ags_pattern_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue 
  * Since: 1.0.0
  */
 GList*
-ags_pattern_find_near_timestamp(GList *pattern, GObject *timestamp)
+ags_pattern_find_near_timestamp(GList *pattern, AgsTimestamp *timestamp)
 {
   AgsTimestamp *current_timestamp;
 

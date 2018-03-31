@@ -321,7 +321,7 @@ ags_recall_audio_pack(AgsPackable *packable, GObject *recall_container)
 
   pthread_mutex_t *recall_container_mutex;
 
-  if(ags_recall_audio_parent_packable_interface->pack(packable, container)){
+  if(ags_recall_audio_parent_packable_interface->pack(packable, recall_container)){
     return(TRUE);
   }
   
@@ -443,7 +443,7 @@ ags_recall_audio_load_automation(AgsRecall *recall,
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+  recall_mutex = recall->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -514,7 +514,7 @@ ags_recall_audio_unload_automation(AgsRecall *recall)
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+  recall_mutex = recall->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -698,7 +698,7 @@ ags_recall_audio_duplicate(AgsRecall *recall,
 										     recall_id,
 										     n_params, parameter_name, value));
 
-  g_message("ags warning - ags_recall_audio_duplicate: you shouldn't do this %s", G_OBJECT_TYPE_NAME(recall));
+  g_warning("ags_recall_audio_duplicate - you shouldn't do this %s", G_OBJECT_TYPE_NAME(recall));
   
   return((AgsRecall *) copy);
 }

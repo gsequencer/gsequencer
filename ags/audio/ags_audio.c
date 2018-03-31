@@ -5835,12 +5835,12 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
     while(notation != NULL){
       note =
-	note_start = g_list_copy(AGS_NOTATION(notation->data)->notes);
+	note_start = g_list_copy(AGS_NOTATION(notation->data)->note);
 
       while(note != NULL){
 	if(AGS_NOTE(note->data)->y >= pads){
-	  AGS_NOTATION(notation->data)->notes = g_list_remove(AGS_NOTATION(notation->data)->notes,
-							      note->data);
+	  AGS_NOTATION(notation->data)->note = g_list_remove(AGS_NOTATION(notation->data)->note,
+							     note->data);
 	  
 	  g_object_unref(note->data);
 	}

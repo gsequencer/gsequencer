@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,8 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
+#include <pthread.h>
 
 #include <libxml/tree.h>
 
@@ -75,10 +77,13 @@ struct _AgsNotation
 
   guint flags;
 
-  AgsTimestamp *timestamp;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
 
-  guint audio_channel;
   GObject *audio;
+  guint audio_channel;
+
+  AgsTimestamp *timestamp;
 
   gchar *key;
   gchar *base_note;
@@ -89,18 +94,13 @@ struct _AgsNotation
 
   gdouble maximum_note_length;
 
-  GList *notes;
+  GList *note;
   
   gdouble loop_start;
   gdouble loop_end;
   gdouble offset;
 
   GList *selection;
-
-  GObject *port;
-
-  GList *current_notes;
-  GList *next_notes;
 };
 
 struct _AgsNotationClass
@@ -109,6 +109,8 @@ struct _AgsNotationClass
 };
 
 GType ags_notation_get_type();
+
+pthread_mutex_t* ags_notation_get_class_mutex();
 
 GList* ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 					AgsTimestamp *timestamp);

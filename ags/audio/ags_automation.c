@@ -39,7 +39,6 @@
 
 void ags_automation_class_init(AgsAutomationClass *automation);
 void ags_automation_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_automation_portlet_interface_init(AgsPortletInterface *portlet);
 void ags_automation_init(AgsAutomation *automation);
 void ags_automation_set_property(GObject *gobject,
 				 guint prop_id,
@@ -49,16 +48,11 @@ void ags_automation_get_property(GObject *gobject,
 				 guint prop_id,
 				 GValue *value,
 				 GParamSpec *param_spec);
-void ags_automation_connect(AgsConnectable *connectable);
-void ags_automation_disconnect(AgsConnectable *connectable);
 void ags_automation_dispose(GObject *gobject);
 void ags_automation_finalize(GObject *gobject);
 
-void ags_automation_set_port(AgsPortlet *portlet, GObject *port);
-GObject* ags_automation_get_port(AgsPortlet *portlet);
-GList* ags_automation_list_safe_properties(AgsPortlet *portlet);
-void ags_automation_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
-void ags_automation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
+void ags_automation_connect(AgsConnectable *connectable);
+void ags_automation_disconnect(AgsConnectable *connectable);
 
 void ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
 						       xmlNode *root_node, char *version,
@@ -80,8 +74,9 @@ void ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation
 enum{
   PROP_0,
   PROP_AUDIO,
-  PROP_LINE,
   PROP_CHANNEL_TYPE,
+  PROP_LINE,
+  PROP_TIMESTAMP,
   PROP_CONTROL_NAME,
   PROP_PORT,
   PROP_STEPS,
@@ -89,12 +84,11 @@ enum{
   PROP_LOWER,
   PROP_DEFAULT_VALUE,
   PROP_ACCELERATION,
-  PROP_CURRENT_ACCELERATIONS,
-  PROP_NEXT_ACCELERATIONS,
-  PROP_TIMESTAMP,
 };
 
 static gpointer ags_automation_parent_class = NULL;
+
+static pthread_mutex_t ags_automation_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_automation_get_type()
@@ -120,12 +114,6 @@ ags_automation_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_portlet_interface_info = {
-      (GInterfaceInitFunc) ags_automation_portlet_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_automation = g_type_register_static(G_TYPE_OBJECT,
 						 "AgsAutomation",
 						 &ags_automation_info,
@@ -134,10 +122,6 @@ ags_automation_get_type()
     g_type_add_interface_static(ags_type_automation,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_automation,
-				AGS_TYPE_PORTLET,
-				&ags_portlet_interface_info);
   }
 
   return(ags_type_automation);
@@ -334,36 +318,6 @@ ags_automation_class_init(AgsAutomationClass *automation)
 				  param_spec);
 
   /**
-   * AgsAutomation:current-accelerations:
-   *
-   * Offset of current position.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_pointer("current-accelerations",
-				    i18n_pspec("current accelerations for offset"),
-				    i18n_pspec("The current accelerations for offset"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_CURRENT_ACCELERATIONS,
-				  param_spec);
-
-  /**
-   * AgsAutomation:next-accelerations:
-   *
-   * Offset of next position.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_pointer("next-accelerations",
-				    i18n_pspec("next accelerations for offset"),
-				    i18n_pspec("The next accelerations for offset"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_NEXT_ACCELERATIONS,
-				  param_spec);
-
-  /**
    * AgsAutomation:timestamp:
    *
    * The automation's timestamp.
@@ -390,21 +344,34 @@ ags_automation_connectable_interface_init(AgsConnectableInterface *connectable)
 }
 
 void
-ags_automation_portlet_interface_init(AgsPortletInterface *portlet)
-{
-  portlet->set_port = ags_automation_set_port;
-  portlet->get_port = ags_automation_get_port;
-  portlet->list_safe_properties = ags_automation_list_safe_properties;
-  portlet->safe_set_property = ags_automation_safe_set_property;
-  portlet->safe_get_property = ags_automation_safe_get_property;
-}
-
-void
 ags_automation_init(AgsAutomation *automation)
 {
-  AgsAcceleration *acceleration;
-  
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
+
   automation->flags = AGS_AUTOMATION_BYPASS;
+
+  /* add automation mutex */
+  automation->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(attr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  automation->obj_mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);  
+
+  /*  */
+  automation->audio = NULL;
+  automation->channel_type = G_TYPE_NONE;
+  automation->line = 0;
 
   automation->timestamp = ags_timestamp_new();
 
@@ -415,15 +382,16 @@ ags_automation_init(AgsAutomation *automation)
 
   g_object_ref(automation->timestamp);
   
-  automation->audio = NULL;
-  automation->line = 0;
-  automation->channel_type = G_TYPE_NONE;
   automation->control_name = NULL;
 
   automation->steps = 8;
   automation->upper = 1.0;
   automation->lower = 0.0;
   automation->default_value = 0.0;
+
+  automation->source_function = NULL;
+
+  automation->port = NULL;
   
   automation->acceleration = NULL;
 
@@ -432,61 +400,6 @@ ags_automation_init(AgsAutomation *automation)
   automation->offset = 0.0;
   
   automation->selection = NULL;
-
-  automation->port = NULL;
-
-  automation->current_accelerations = NULL;
-  automation->next_accelerations = NULL;
-}
-
-void
-ags_automation_connect(AgsConnectable *connectable)
-{
-  AgsAutomation *automation;
-
-  GList *list;
-  
-  automation = AGS_AUTOMATION(connectable);
-
-  if((AGS_AUTOMATION_CONNECTED & (automation->flags)) != 0){
-    return;
-  }
-
-  automation->flags |= AGS_AUTOMATION_CONNECTED;
-
-  /* acceleration */
-  list = automation->acceleration;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-}
-
-void
-ags_automation_disconnect(AgsConnectable *connectable)
-{
-  AgsAutomation *automation;
-
-  GList *list;
-
-  automation = AGS_AUTOMATION(connectable);
-
-  if((AGS_AUTOMATION_CONNECTED & (automation->flags)) == 0){
-    return;
-  }
-
-  automation->flags &= (~AGS_AUTOMATION_CONNECTED);
-
-  /* acceleration */
-  list = automation->acceleration;
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
 }
 
 void
@@ -644,32 +557,6 @@ ags_automation_set_property(GObject *gobject,
 				      FALSE);
     }
     break;
-  case PROP_CURRENT_ACCELERATIONS:
-    {
-      GList *current_accelerations;
-
-      current_accelerations = g_value_get_pointer(value);
-
-      if(automation->current_accelerations == current_accelerations){
-	return;
-      }
-
-      automation->current_accelerations = current_accelerations;
-    }
-    break;
-  case PROP_NEXT_ACCELERATIONS:
-    {
-      GList *next_accelerations;
-
-      next_accelerations = g_value_get_pointer(value);
-
-      if(automation->next_accelerations == next_accelerations){
-	return;
-      }
-
-      automation->next_accelerations = next_accelerations;
-    }
-    break;
   case PROP_TIMESTAMP:
     {
       AgsTimestamp *timestamp;
@@ -753,16 +640,6 @@ ags_automation_get_property(GObject *gobject,
       g_value_set_double(value, automation->default_value);
     }
     break;
-  case PROP_CURRENT_ACCELERATIONS:
-    {
-      g_value_set_pointer(value, automation->current_accelerations);
-    }
-    break;
-  case PROP_NEXT_ACCELERATIONS:
-    {
-      g_value_set_pointer(value, automation->next_accelerations);
-    }
-    break;
   case PROP_TIMESTAMP:
     {
       g_value_set_object(value, automation->timestamp);
@@ -840,6 +717,12 @@ ags_automation_finalize(GObject *gobject)
 
   automation = AGS_AUTOMATION(gobject);
 
+  pthread_mutex_destroy(automation->obj_mutex);
+  free(automation->obj_mutex);
+
+  pthread_mutexattr_destroy(automation->obj_mutexattr);
+  free(automation->obj_mutexattr);
+
   /* timestamp */
   if(automation->timestamp != NULL){
     g_object_unref(automation->timestamp);
@@ -875,61 +758,70 @@ ags_automation_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_automation_parent_class)->finalize(gobject);
 }
 
+
 void
-ags_automation_set_port(AgsPortlet *portlet, GObject *port)
+ags_automation_connect(AgsConnectable *connectable)
 {
-  g_object_set(G_OBJECT(portlet),
-	       "port", port,
-	       NULL);
-}
+  AgsAutomation *automation;
 
-GObject*
-ags_automation_get_port(AgsPortlet *portlet)
-{
-  GObject *port;
+  GList *list;
+  
+  automation = AGS_AUTOMATION(connectable);
 
-  g_object_get(G_OBJECT(portlet),
-	       "port", &port,
-	       NULL);
-
-  return(port);
-}
-
-GList*
-ags_automation_list_safe_properties(AgsPortlet *portlet)
-{
-  static GList *list = NULL;
-
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-
-  pthread_mutex_lock(&mutex);
-
-  if(list == NULL){
-    list = g_list_prepend(list, "current-accelerations");
-    list = g_list_prepend(list, "next-accelerations");
+  if((AGS_AUTOMATION_CONNECTED & (automation->flags)) != 0){
+    return;
   }
 
-  pthread_mutex_unlock(&mutex);
+  automation->flags |= AGS_AUTOMATION_CONNECTED;
 
-  return(list);
+  /* acceleration */
+  list = automation->acceleration;
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
 }
 
 void
-ags_automation_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
+ags_automation_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: add check for safe property
+  AgsAutomation *automation;
 
-  g_object_set_property(G_OBJECT(portlet),
-			property_name, value);
+  GList *list;
+
+  automation = AGS_AUTOMATION(connectable);
+
+  if((AGS_AUTOMATION_CONNECTED & (automation->flags)) == 0){
+    return;
+  }
+
+  automation->flags &= (~AGS_AUTOMATION_CONNECTED);
+
+  /* acceleration */
+  list = automation->acceleration;
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
 }
 
-void
-ags_automation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
+/**
+ * ags_automation_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_automation_get_class_mutex()
 {
-  //TODO:JK: add check for safe property
-
-  g_object_get_property(G_OBJECT(portlet),
-			property_name, value);
+  return(&ags_automation_class_mutex);
 }
 
 /**

@@ -68,6 +68,9 @@ struct _AgsRecallContainer
   
   guint flags;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   GType recall_audio_type;
   AgsRecall *recall_audio;
 
@@ -87,6 +90,8 @@ struct _AgsRecallContainerClass
 };
 
 GType ags_recall_container_get_type();
+
+pthread_mutex_t* ags_recall_container_get_class_mutex();
 
 AgsRecall* ags_recall_container_get_recall_audio(AgsRecallContainer *container);
 GList* ags_recall_container_get_recall_audio_run(AgsRecallContainer *container);

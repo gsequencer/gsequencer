@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,9 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
+#include <pthread.h>
+
 #include <libxml/tree.h>
 
 #include <ags/libags.h>
@@ -76,11 +79,15 @@ struct _AgsAutomation
 
   guint flags;
 
-  AgsTimestamp *timestamp;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
 
   GObject *audio;
-  guint line;
   GType channel_type;
+  guint line;
+
+  AgsTimestamp *timestamp;
+
   gchar *control_name;
 
   guint steps;
@@ -89,6 +96,8 @@ struct _AgsAutomation
   gdouble default_value;
 
   AgsFunction *source_function;
+
+  GObject *port;
   
   GList *acceleration;
 
@@ -97,11 +106,6 @@ struct _AgsAutomation
   gdouble offset;
   
   GList *selection;
-
-  GObject *port;
-
-  GList *current_accelerations;
-  GList *next_accelerations;
 };
 
 struct _AgsAutomationClass
@@ -110,6 +114,8 @@ struct _AgsAutomationClass
 };
 
 GType ags_automation_get_type(void);
+
+pthread_mutex_t* ags_automation_get_class_mutex();
 
 GList* ags_automation_find_port(GList *automation,
 				GObject *port);

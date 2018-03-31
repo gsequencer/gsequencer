@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,8 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/thread/ags_timestamp_thread.h>
-#include <ags/thread/ags_timestamp.h>
+#include <pthread.h>
+
+#include <ags/libags.h>
 
 #define AGS_TYPE_PATTERN                (ags_pattern_get_type())
 #define AGS_PATTERN(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_PATTERN, AgsPattern))
@@ -62,8 +63,13 @@ struct _AgsPattern
   GObject gobject;
 
   guint flags;
-  
-  GObject *timestamp;
+
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  GObject *channel;
+
+  AgsTimestamp *timestamp;
 
   guint dim[3];
   guint ***pattern;
@@ -82,7 +88,9 @@ struct _AgsPatternClass
 
 GType ags_pattern_get_type();
 
-GList* ags_pattern_find_near_timestamp(GList *pattern, GObject *timestamp);
+pthread_mutex_t* ags_pattern_get_class_mutex();
+
+GList* ags_pattern_find_near_timestamp(GList *pattern, AgsTimestamp *timestamp);
 
 void ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length);
 
