@@ -867,6 +867,8 @@ ags_preset_remove_parameter(AgsPreset *preset,
     }
 
     preset->n_params -= 1;
+
+    preset->parameter_name[preset->n_params] = NULL;
   }
 
   /* free old preset array */

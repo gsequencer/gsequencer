@@ -53,7 +53,10 @@ struct _AgsTimestamp
   GObject object;
 
   guint flags;
-  
+
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   union{
     struct _unix{
       time_t time_val;
@@ -73,6 +76,10 @@ struct _AgsTimestampClass
 };
 
 GType ags_timestamp_get_type(void);
+
+pthread_mutex_t* ags_timestamp_get_class_mutex();
+
+guint64 ags_timestamp_get_ags_offset(AgsTimestamp *timestamp);
 
 /* */
 AgsTimestamp* ags_timestamp_new();

@@ -80,8 +80,6 @@ struct _AgsPort
   guint port_value_size;
   guint port_value_length;
 
-  pthread_mutex_t *mutex;
-
   gpointer port_descriptor;
   AgsConversion *conversion;
 

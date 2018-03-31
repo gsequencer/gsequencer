@@ -37,6 +37,8 @@ void ags_port_get_property(GObject *gobject,
 			   guint prop_id,
 			   GValue *value,
 			   GParamSpec *param_spec);
+void ags_port_finalize(GObject *gobject);
+
 void ags_port_connect(AgsConnectable *connectable);
 void ags_port_disconnect(AgsConnectable *connectable);
 
@@ -73,6 +75,7 @@ enum{
   PROP_PORT_VALUE_SIZE,
   PROP_PORT_VALUE_LENGTH,
   PROP_CONVERSION,
+  PROP_AUTOMATION,
   PROP_PORT_VALUE,
 };
 
@@ -132,6 +135,8 @@ ags_port_class_init(AgsPortClass *port)
   gobject->set_property = ags_port_set_property;
   gobject->get_property = ags_port_get_property;
 
+  gobject->finalize = ags_port_finalize;
+  
   /* properties */
   /**
    * AgsPort:plugin-name:
@@ -263,6 +268,21 @@ ags_port_class_init(AgsPortClass *port)
 				  PROP_CONVERSION,
 				  param_spec);
 
+  /**
+   * AgsPort:automation:
+   *
+   * The port's automation.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("automation",
+				    i18n_pspec("automation"),
+				    i18n_pspec("The automation to apply"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUTOMATION,
+				  param_spec);
+
   /* AgsPortClass */
   port->safe_read = ags_port_real_safe_read;
   port->safe_write = ags_port_real_safe_write;
@@ -276,6 +296,8 @@ ags_port_class_init(AgsPortClass *port)
    * @port: the object providing safe read
    *
    * The ::safe-read signal is emited while doing safe read operation.
+   * 
+   * Since: 2.0.0
    */
   port_signals[SAFE_READ] =
     g_signal_new("safe-read",
@@ -292,6 +314,8 @@ ags_port_class_init(AgsPortClass *port)
    * @port: the object providing safe write
    *
    * The ::safe-write signal is emited while doing safe write operation.
+   * 
+   * Since: 2.0.0
    */
   port_signals[SAFE_WRITE] =
     g_signal_new("safe-write",
@@ -308,6 +332,8 @@ ags_port_class_init(AgsPortClass *port)
    * @port: the object providing safe get property
    *
    * The ::safe-get-property signal is emited while safe get property.
+   * 
+   * Since: 2.0.0
    */
   port_signals[SAFE_GET_PROPERTY] =
     g_signal_new("safe-get-property",
@@ -324,6 +350,8 @@ ags_port_class_init(AgsPortClass *port)
    * @port: the object providing safe set property
    *
    * The ::safe-set-property signal is emited while safe set property.
+   * 
+   * Since: 2.0.0
    */
   port_signals[SAFE_SET_PROPERTY] =
     g_signal_new("safe-set-property",
@@ -351,8 +379,6 @@ ags_port_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_port_init(AgsPort *port)
 {
-  pthread_mutexattr_t mutexattr;
-
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
@@ -374,7 +400,8 @@ ags_port_init(AgsPort *port)
     mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);  
-  
+
+  /* common fields */
   port->plugin_name = NULL;
   port->specifier = NULL;
 
@@ -386,19 +413,13 @@ ags_port_init(AgsPort *port)
   port->port_value_size = sizeof(gdouble);
   port->port_value_length = 1;
 
-  port->port_value.ags_port_double = 0.0;
-  
-  pthread_mutexattr_init(&mutexattr);
-  pthread_mutexattr_settype(&mutexattr, PTHREAD_MUTEX_RECURSIVE);
-
-  port->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(port->mutex, &mutexattr);
-
   port->port_descriptor = NULL;
   port->conversion = ags_conversion_new();
   g_object_ref(port->conversion);
   
   port->automation = NULL;
+
+  port->port_value.ags_port_double = 0.0;
 }
 
 void
@@ -409,7 +430,16 @@ ags_port_set_property(GObject *gobject,
 {
   AgsPort *port;
 
+  pthread_mutex_t *port_mutex;
+
   port = AGS_PORT(gobject);
+
+  /* get port mutex */
+  pthread_mutex_lock(ags_port_get_class_mutex());
+  
+  port_mutex = port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_port_get_class_mutex());
 
   switch(prop_id){
   case PROP_PLUGIN_NAME:
@@ -418,7 +448,11 @@ ags_port_set_property(GObject *gobject,
 
       plugin_name = (gchar *) g_value_get_string(value);
 
+      pthread_mutex_lock(port_mutex);
+      
       if(port->plugin_name == plugin_name){
+	pthread_mutex_unlock(port_mutex);
+	
 	return;
       }
       
@@ -427,6 +461,8 @@ ags_port_set_property(GObject *gobject,
       }
 
       port->plugin_name = g_strdup(plugin_name);
+
+      pthread_mutex_unlock(port_mutex);
     }
     break;
   case PROP_SPECIFIER:
@@ -435,7 +471,11 @@ ags_port_set_property(GObject *gobject,
 
       specifier = (gchar *) g_value_get_string(value);
 
+      pthread_mutex_lock(port_mutex);
+
       if(port->specifier == specifier){
+	pthread_mutex_unlock(port_mutex);
+	
 	return;
       }
 
@@ -444,6 +484,8 @@ ags_port_set_property(GObject *gobject,
       }
 
       port->specifier = g_strdup(specifier);
+
+      pthread_mutex_unlock(port_mutex);
     }
     break;
   case PROP_CONTROL_PORT:
@@ -452,7 +494,11 @@ ags_port_set_property(GObject *gobject,
 
       control_port = (gchar *) g_value_get_string(value);
       
+      pthread_mutex_lock(port_mutex);
+
       if(port->control_port == control_port){
+	pthread_mutex_unlock(port_mutex);
+	
 	return;
       }
 
@@ -461,26 +507,44 @@ ags_port_set_property(GObject *gobject,
       }
 
       port->control_port = g_strdup(control_port);
+
+      pthread_mutex_unlock(port_mutex);
     }
     break;
   case PROP_PORT_VALUE_IS_POINTER:
     {
+      pthread_mutex_lock(port_mutex);
+
       port->port_value_is_pointer = g_value_get_boolean(value);
+
+      pthread_mutex_unlock(port_mutex);
     }
     break;
   case PROP_PORT_VALUE_TYPE:
     {
+      pthread_mutex_lock(port_mutex);
+
       port->port_value_type = g_value_get_gtype(value);
+
+      pthread_mutex_unlock(port_mutex);
     }
     break;
   case PROP_PORT_VALUE_SIZE:
     {
+      pthread_mutex_lock(port_mutex);
+
       port->port_value_size = g_value_get_uint(value);
+
+      pthread_mutex_unlock(port_mutex);
     }
     break;
   case PROP_PORT_VALUE_LENGTH:
     {
+      pthread_mutex_lock(port_mutex);
+
       port->port_value_length = g_value_get_uint(value);
+
+      pthread_mutex_unlock(port_mutex);
     }
     break;
   case PROP_CONVERSION:
@@ -489,7 +553,11 @@ ags_port_set_property(GObject *gobject,
       
       conversion = g_value_get_object(value);
 
+      pthread_mutex_lock(port_mutex);
+
       if(conversion == port->conversion){
+	pthread_mutex_unlock(port_mutex);
+	
 	return;
       }
 
@@ -502,6 +570,30 @@ ags_port_set_property(GObject *gobject,
       }
 
       port->conversion = conversion;
+
+      pthread_mutex_unlock(port_mutex);
+    }
+    break;
+  case PROP_AUTOMATION:
+    {
+      AgsAutomation *automation;
+      
+      automation = g_value_get_pointer(value);
+
+      if(g_list_find(port->automation, automation) != NULL){
+	pthread_mutex_unlock(port_mutex);
+	
+	return;
+      }
+
+      if(automation != NULL){
+	g_object_ref(automation);
+      }
+
+      port->automation = ags_automation_add(port->automation,
+					    automation);
+      
+      pthread_mutex_unlock(port_mutex);
     }
     break;
   default:
@@ -518,53 +610,120 @@ ags_port_get_property(GObject *gobject,
 {
   AgsPort *port;
 
+  pthread_mutex_t *port_mutex;
+
   port = AGS_PORT(gobject);
+
+  /* get port mutex */
+  pthread_mutex_lock(ags_port_get_class_mutex());
+  
+  port_mutex = port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_port_get_class_mutex());
 
   switch(prop_id){
   case PROP_PLUGIN_NAME:
     {
+      pthread_mutex_lock(port_mutex);
+
       g_value_set_string(value, port->plugin_name);
+
+      pthread_mutex_unlock(port_mutex);
     }
     break;
   case PROP_SPECIFIER:
     {
+      pthread_mutex_lock(port_mutex);
+
       g_value_set_string(value, port->specifier);
+
+      pthread_mutex_unlock(port_mutex);
     }
     break;
   case PROP_CONTROL_PORT:
     {
+      pthread_mutex_lock(port_mutex);
+
       g_value_set_string(value, port->control_port);
+
+      pthread_mutex_unlock(port_mutex);
     }
     break;
   case PROP_PORT_VALUE_IS_POINTER:
     {
+      pthread_mutex_lock(port_mutex);
+
       g_value_set_boolean(value, port->port_value_is_pointer);
+
+      pthread_mutex_unlock(port_mutex);
     }
     break;
   case PROP_PORT_VALUE_TYPE:
     {
+      pthread_mutex_lock(port_mutex);
+
       g_value_set_gtype(value, port->port_value_type);
+
+      pthread_mutex_unlock(port_mutex);
     }
     break;
   case PROP_PORT_VALUE_SIZE:
     {
+      pthread_mutex_lock(port_mutex);
+
       g_value_set_uint(value, port->port_value_size);
+
+      pthread_mutex_unlock(port_mutex);
     }
     break;
   case PROP_PORT_VALUE_LENGTH:
     {
+      pthread_mutex_lock(port_mutex);
+
       g_value_set_uint(value, port->port_value_length);
+
+      pthread_mutex_unlock(port_mutex);
     }
     break;
   case PROP_CONVERSION:
     {
+      pthread_mutex_lock(port_mutex);
+
       g_value_set_object(value, port->conversion);
+
+      pthread_mutex_unlock(port_mutex);
+    }
+    break;
+  case PROP_AUTOMATION:
+    {
+      pthread_mutex_lock(port_mutex);
+
+      g_value_set_pointer(value, g_list_copy(port->automation));
+
+      pthread_mutex_unlock(port_mutex);
     }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_port_finalize(GObject *gobject)
+{
+  AgsPort *port;
+
+  port = AGS_PORT(gobject);
+
+  pthread_mutex_destroy(port->obj_mutex);
+  free(port->obj_mutex);
+
+  pthread_mutexattr_destroy(port->obj_mutexattr);
+  free(port->obj_mutexattr);
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_port_parent_class)->finalize(gobject);
 }
 
 void
@@ -600,7 +759,17 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
   guint overall_size;
   gpointer data;
 
-  pthread_mutex_lock(port->mutex);
+  pthread_mutex_t *port_mutex;
+
+  /* get port mutex */
+  pthread_mutex_lock(ags_port_get_class_mutex());
+  
+  port_mutex = port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_port_get_class_mutex());
+
+  /* safe read */
+  pthread_mutex_lock(port_mutex);
 
   overall_size = port->port_value_length * port->port_value_size;
 
@@ -680,7 +849,7 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
     g_value_set_pointer(value, data);
   }
   
-  pthread_mutex_unlock(port->mutex);
+  pthread_mutex_unlock(port_mutex);
 }
 
 /**
@@ -690,7 +859,7 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
  *
  * Perform safe read.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_port_safe_read(AgsPort *port, GValue *value)
@@ -709,13 +878,19 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
   guint overall_size;
   gpointer data;
 
-  if(port == NULL){
-    return;
-  }
+  pthread_mutex_t *port_mutex;
+
+  /* get port mutex */
+  pthread_mutex_lock(ags_port_get_class_mutex());
+  
+  port_mutex = port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_port_get_class_mutex());
+
+  /* write */
+  pthread_mutex_lock(port_mutex);
 
   overall_size = port->port_value_length * port->port_value_size;
-
-  pthread_mutex_lock(port->mutex);
 
   if(!port->port_value_is_pointer){
     if(port->port_value_type == G_TYPE_BOOLEAN){
@@ -786,7 +961,7 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
     }
   }
 
-  pthread_mutex_unlock(port->mutex);
+  pthread_mutex_unlock(port_mutex);
 }
 
 /**
@@ -796,7 +971,7 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
  *
  * Perform safe write.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_port_safe_write(AgsPort *port, GValue *value)
@@ -815,13 +990,23 @@ ags_port_safe_write_raw(AgsPort *port, GValue *value)
   guint overall_size;
   gpointer data;
 
-  if(port == NULL){
+  pthread_mutex_t *port_mutex;
+
+  if(!AGS_IS_PORT(port)){
     return;
   }
 
-  overall_size = port->port_value_length * port->port_value_size;
+  /* get port mutex */
+  pthread_mutex_lock(ags_port_get_class_mutex());
+  
+  port_mutex = port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_port_get_class_mutex());
 
-  pthread_mutex_lock(port->mutex);
+  /* write raw */
+  pthread_mutex_lock(port_mutex);
+
+  overall_size = port->port_value_length * port->port_value_size;
 
   if(!port->port_value_is_pointer){
     if(port->port_value_type == G_TYPE_BOOLEAN){
@@ -869,19 +1054,29 @@ ags_port_safe_write_raw(AgsPort *port, GValue *value)
     }
   }
 
-  pthread_mutex_unlock(port->mutex);
+  pthread_mutex_unlock(port_mutex);
 }
 
 void
 ags_port_real_safe_get_property(AgsPort *port, gchar *property_name, GValue *value)
 {
-  pthread_mutex_lock(port->mutex);
+  pthread_mutex_t *port_mutex;
+
+  /* get port mutex */
+  pthread_mutex_lock(ags_port_get_class_mutex());
+  
+  port_mutex = port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_port_get_class_mutex());
+
+  /* get property */
+  pthread_mutex_lock(port_mutex);
 
   g_object_get_property(port->port_value.ags_port_object,
 			property_name,
 			value);
 
-  pthread_mutex_unlock(port->mutex);
+  pthread_mutex_unlock(port_mutex);
 }
 
 /**
@@ -892,7 +1087,7 @@ ags_port_real_safe_get_property(AgsPort *port, gchar *property_name, GValue *val
  *
  * Perform safe get property.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_port_safe_get_property(AgsPort *port, gchar *property_name, GValue *value)
@@ -908,13 +1103,23 @@ ags_port_safe_get_property(AgsPort *port, gchar *property_name, GValue *value)
 void
 ags_port_real_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
 {
-  pthread_mutex_lock(port->mutex);
+  pthread_mutex_t *port_mutex;
+
+  /* get port mutex */
+  pthread_mutex_lock(ags_port_get_class_mutex());
+  
+  port_mutex = port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_port_get_class_mutex());
+
+  /* set property */
+  pthread_mutex_lock(port_mutex);
 
   g_object_set_property(port->port_value.ags_port_object,
 			property_name,
 			value);
 
-  pthread_mutex_unlock(port->mutex);
+  pthread_mutex_unlock(port_mutex);
 }
 
 /**
@@ -925,7 +1130,7 @@ ags_port_real_safe_set_property(AgsPort *port, gchar *property_name, GValue *val
  *
  * Perform safe set property.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
