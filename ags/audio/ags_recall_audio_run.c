@@ -27,6 +27,8 @@
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_container.h>
 
+#include <pthread.h>
+
 #include <ags/i18n.h>
 
 void ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run);

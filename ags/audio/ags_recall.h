@@ -129,16 +129,17 @@ struct _AgsRecall
   GObject *input_soundcard;
   gint input_soundcard_channel;
 
+  guint samplerate;
+  guint buffer_size;
+  guint format;
+
   GList *port;
   GList *automation_port;
   
   AgsRecallID *recall_id;
 
   GList *recall_dependency;
-  GList *handler;  
-
-  pthread_mutexattr_t *children_attr;
-  pthread_mutex_t *children_mutex;
+  GList *recall_handler;  
 
   AgsRecall *parent;
   
@@ -159,7 +160,7 @@ struct _AgsRecallClass
 			  GList *automation_port);
   void (*unload_automation)(AgsRecall *recall);
   
-  void (*resolve_dependencies)(AgsRecall *recall);
+  void (*resolve_dependency)(AgsRecall *recall);
   void (*check_rt_data)(AgsRecall *recall);
   
   void (*run_init_pre)(AgsRecall *recall);
@@ -242,46 +243,69 @@ void ags_recall_unset_state_flags(AgsRecall *recall, guint state_flags);
 
 gboolean ags_recall_check_state_flags(AgsRecall *recall, guint state_flags);
 
+/* children */
+void ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id);
+void ags_recall_set_output_soundcard(AgsRecall *recall, GObject *soundcard);
+
+void ags_recall_add_recall_dependency(AgsRecall *recall, AgsRecallDependency *recall_dependency);
+void ags_recall_remove_recall_dependency(AgsRecall *recall, AgsRecallDependency *recall_dependency);
+
+void ags_recall_add_child(AgsRecall *parent, AgsRecall *child);
+void ags_recall_remove_child(AgsRecall *recall, AgsRecall *child);
+
+AgsRecallHandler* ags_recall_handler_alloc(const gchar *signal_name,
+					   GCallback callback,
+					   GObject *data);
+
+void ags_recall_add_recall_handler(AgsRecall *recall,
+				   AgsRecallHandler *recall_handler);
+void ags_recall_remove_recall_handler(AgsRecall *recall,
+				      AgsRecallHandler *recall_handler);
+
+/* soundcard */
+void ags_recall_set_output_soundcard(AgsRecall *recall, GObject *output_soundcard);
+void ags_recall_set_input_soundcard(AgsRecall *recall, GObject *input_soundcard);
+
+/* presets */
+void ags_recall_set_samplerate(AgsRecall *recall, guint samplerate);
+void ags_recall_set_buffer_size(AgsRecall *recall, guint buffer_size);
+void ags_recall_set_format(AgsRecall *recall, guint format);
+
 /* events */
 void ags_recall_load_automation(AgsRecall *recall,
 				GList *automation_port);
 void ags_recall_unload_automation(AgsRecall *recall);
 
-void ags_recall_resolve_dependencies(AgsRecall *recall);
+void ags_recall_resolve_dependency(AgsRecall *recall);
 void ags_recall_check_rt_data(AgsRecall *recall);
 
 void ags_recall_run_init_pre(AgsRecall *recall);
 void ags_recall_run_init_inter(AgsRecall *recall);
 void ags_recall_run_init_post(AgsRecall *recall);
 
+void ags_recall_feed_input_queue(AgsRecall *recall);
 void ags_recall_automate(AgsRecall *recall);
+
 void ags_recall_run_pre(AgsRecall *recall);
 void ags_recall_run_inter(AgsRecall *recall);
 void ags_recall_run_post(AgsRecall *recall);
+
+void ags_recall_do_feedback(AgsRecall *recall);
+void ags_recall_feed_output_queue(AgsRecall *recall);
 
 void ags_recall_stop_persistent(AgsRecall *recall);
 void ags_recall_cancel(AgsRecall *recall);
 void ags_recall_done(AgsRecall *recall);
 
-gboolean ags_recall_is_done(GList *recalls, GObject *recycling_context);
-
 AgsRecall* ags_recall_duplicate(AgsRecall *recall,
 				AgsRecallID *recall_id,
 				guint *n_params, gchar **parameter_name, GValue *value);
 
-void ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id);
-void ags_recall_set_soundcard_recursive(AgsRecall *recall, GObject *soundcard);
-
 void ags_recall_notify_dependency(AgsRecall *recall, guint dependency, gboolean increase);
 void ags_recall_child_added(AgsRecall *parent, AgsRecall *child);
 
-void ags_recall_add_dependency(AgsRecall *recall, AgsRecallDependency *recall_dependency);
-void ags_recall_remove_dependency(AgsRecall *recall, AgsRecall *dependency);
-GList* ags_recall_get_dependencies(AgsRecall *recall);
-
-void ags_recall_remove_child(AgsRecall *recall, AgsRecall *child);
-void ags_recall_add_child(AgsRecall *parent, AgsRecall *child);
-GList* ags_recall_get_children(AgsRecall *recall);
+/* query */
+gboolean ags_recall_is_done(GList *recalls, GObject *recycling_context);
 
 GList* ags_recall_get_by_effect(GList *list, gchar *filename, gchar *effect);
 GList* ags_recall_find_recall_id_with_effect(GList *list, AgsRecallID *recall_id, gchar *filename, gchar *effect);
@@ -296,20 +320,11 @@ GList* ags_recall_find_provider(GList *recall, GObject *provider);
 GList* ags_recall_template_find_provider(GList *recall, GObject *provider);
 GList* ags_recall_find_provider_with_recycling_context(GList *recall_i, GObject *provider, GObject *recycling_context);
 
-void ags_recall_run_init(AgsRecall *recall, guint stage);
-
-AgsRecallHandler* ags_recall_handler_alloc(const gchar *signal_name,
-					   GCallback callback,
-					   GObject *data);
-
-void ags_recall_add_handler(AgsRecall *recall,
-			    AgsRecallHandler *recall_handler);
-void ags_recall_remove_handler(AgsRecall *recall,
-			       AgsRecallHandler *recall_handler);
-
+/* control */
 void ags_recall_lock_port(AgsRecall *recall);
 void ags_recall_unlock_port(AgsRecall *recall);
 
+/* instantiate */
 AgsRecall* ags_recall_new();
 
 #endif /*__AGS_RECALL_H__*/

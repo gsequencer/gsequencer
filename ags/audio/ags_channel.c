@@ -1072,7 +1072,6 @@ ags_channel_init(AgsChannel *channel)
   AgsConfig *config;
 
   gchar *str;
-  gchar *str0, *str1;
 
   pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;

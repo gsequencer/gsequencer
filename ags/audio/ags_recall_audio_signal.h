@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,9 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_recall.h>
 
-#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_audio_signal.h>
 
 #define AGS_TYPE_RECALL_AUDIO_SIGNAL                (ags_recall_audio_signal_get_type())
@@ -38,27 +39,13 @@
 typedef struct _AgsRecallAudioSignal AgsRecallAudioSignal;
 typedef struct _AgsRecallAudioSignalClass AgsRecallAudioSignalClass;
 
-/**
- * AgsRecallAudioSignalFlags:
- * @AGS_RECALL_AUDIO_SIGNAL_INITIAL_RUN: initial run
- * 
- * Enum values to control the behavior or indicate internal state of #AgsRecallAudioSignal by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_RECALL_AUDIO_SIGNAL_INITIAL_RUN      = 1,
-}AgsRecallAudioSignalFlags;
-
 struct _AgsRecallAudioSignal
 {
   AgsRecall recall;
 
-  guint flags;
-
   guint audio_channel;
 
   AgsAudioSignal *destination;
-
   AgsAudioSignal *source;
 };
 
@@ -71,7 +58,6 @@ GType ags_recall_audio_signal_get_type();
 
 AgsRecallAudioSignal* ags_recall_audio_signal_new(AgsAudioSignal *destination,
 						  AgsAudioSignal *source,
-						  GObject *soundcard);
+						  GObject *output_soundcard);
 
 #endif /*__AGS_RECALL_AUDIO_SIGNAL_H__*/
-
