@@ -124,7 +124,7 @@ any later version published by the Free Software Foundation.
 * docs/listings/complete_example.c
 
 The Advanced Gtk+ Sequencer logo and splash screen are used by the final binary hence it is applied under the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This are the mentioned files (logo and splashscreen):
+the Free Software Foundation, either version 3 of the License, or any later version. This are the mentioned files (logo and splashscreen):
 
 * gsequencer.share/images/ags.png
 * gsequencer.share/images/ags_supermoon-800x450.png
