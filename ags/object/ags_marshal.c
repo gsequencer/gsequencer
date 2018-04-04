@@ -2752,7 +2752,52 @@ ags_cclosure_marshal_OBJECT__OBJECT_POINTER_POINTER (GClosure     *closure,
   g_value_take_object (return_value, v_return);
 }
 
-/* OBJECT:OBJECT,OBJECT (ags_marshallers.list:68) */
+/* OBJECT:OBJECT,POINTER,POINTER,POINTER (ags_marshallers.list:68) */
+void
+ags_cclosure_marshal_OBJECT__OBJECT_POINTER_POINTER_POINTER (GClosure     *closure,
+                                                             GValue       *return_value,
+                                                             guint         n_param_values,
+                                                             const GValue *param_values,
+                                                             gpointer      invocation_hint G_GNUC_UNUSED,
+                                                             gpointer      marshal_data)
+{
+  typedef GObject* (*GMarshalFunc_OBJECT__OBJECT_POINTER_POINTER_POINTER) (gpointer data1,
+                                                                           gpointer arg1,
+                                                                           gpointer arg2,
+                                                                           gpointer arg3,
+                                                                           gpointer arg4,
+                                                                           gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
+  gpointer data1, data2;
+  GMarshalFunc_OBJECT__OBJECT_POINTER_POINTER_POINTER callback;
+  GObject* v_return;
+
+  g_return_if_fail (return_value != NULL);
+  g_return_if_fail (n_param_values == 5);
+
+  if (G_CCLOSURE_SWAP_DATA (closure))
+    {
+      data1 = closure->data;
+      data2 = g_value_peek_pointer (param_values + 0);
+    }
+  else
+    {
+      data1 = g_value_peek_pointer (param_values + 0);
+      data2 = closure->data;
+    }
+  callback = (GMarshalFunc_OBJECT__OBJECT_POINTER_POINTER_POINTER) (marshal_data ? marshal_data : cc->callback);
+
+  v_return = callback (data1,
+                       g_marshal_value_peek_object (param_values + 1),
+                       g_marshal_value_peek_pointer (param_values + 2),
+                       g_marshal_value_peek_pointer (param_values + 3),
+                       g_marshal_value_peek_pointer (param_values + 4),
+                       data2);
+
+  g_value_take_object (return_value, v_return);
+}
+
+/* OBJECT:OBJECT,OBJECT (ags_marshallers.list:69) */
 void
 ags_cclosure_marshal_OBJECT__OBJECT_OBJECT (GClosure     *closure,
                                             GValue       *return_value,

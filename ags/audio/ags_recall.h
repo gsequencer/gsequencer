@@ -50,29 +50,25 @@ typedef struct _AgsRecallHandler AgsRecallHandler;
 
 /**
  * AgsRecallFlags:
+ * @AGS_RECALL_ADDED_TO_REGISTRY: the recall was added to registry, see #AgsConnectable::add_to_registry()
  * @AGS_RECALL_CONNECTED: indicates the port was connected by calling #AgsConnectable::connect()
  * @AGS_RECALL_DYNAMIC_CONNECTED: dynamic connected
  * @AGS_RECALL_TEMPLATE: is template
  * @AGS_RECALL_DEFAULT_TEMPLATE: 
- * @AGS_RECALL_PACKED: is packed
- * @AGS_RECALL_HIDE: is hidden
- * @AGS_RECALL_SKIP_DEPENDENCIES: skip dependencies
  * @AGS_RECALL_HAS_OUTPUT_PORT: has output port
- * @AGS_RECALL_RUN_FIRST: scheduled for run-first
- * @AGS_RECALL_RUN_LAST: scheduled for run-last
+ * @AGS_RECALL_BYPASS: don't apply effect processing
  * 
  * Enum values to control the behavior or indicate internal state of #AgsRecall by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_RECALL_CONNECTED             = 1,
-  AGS_RECALL_DYNAMIC_CONNECTED     = 1 <<  1,
-  AGS_RECALL_TEMPLATE              = 1 <<  2,
-  AGS_RECALL_DEFAULT_TEMPLATE      = 1 <<  3,
-  AGS_RECALL_PACKED                = 1 <<  4,
-  AGS_RECALL_HIDE                  = 1 <<  5,
-  AGS_RECALL_SKIP_DEPENDENCIES     = 1 <<  6,
-  AGS_RECALL_HAS_OUTPUT_PORT       = 1 <<  7,
+  AGS_RECALL_ADDED_TO_REGISTRY     = 1,
+  AGS_RECALL_CONNECTED             = 1 <<  1,
+  AGS_RECALL_DYNAMIC_CONNECTED     = 1 <<  2,
+  AGS_RECALL_TEMPLATE              = 1 <<  3,
+  AGS_RECALL_DEFAULT_TEMPLATE      = 1 <<  4,
+  AGS_RECALL_HAS_OUTPUT_PORT       = 1 <<  6,
+  AGS_RECALL_BYPASS                = 1 <<  7,
 }AgsRecallFlags;
 
 /**
@@ -145,7 +141,7 @@ struct _AgsRecall
   
   GType child_type;
   
-  guint n_params;
+  guint n_child_params;
   gchar **child_parameter_name;
   GValue *child_value;
 
@@ -253,6 +249,7 @@ void ags_recall_remove_recall_dependency(AgsRecall *recall, AgsRecallDependency 
 void ags_recall_add_child(AgsRecall *parent, AgsRecall *child);
 void ags_recall_remove_child(AgsRecall *recall, AgsRecall *child);
 
+void ags_recall_handler_free(AgsRecallHandler *recall_handler);
 AgsRecallHandler* ags_recall_handler_alloc(const gchar *signal_name,
 					   GCallback callback,
 					   GObject *data);

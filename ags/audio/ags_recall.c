@@ -67,11 +67,22 @@ void ags_recall_get_property(GObject *gobject,
 void ags_recall_dispose(GObject *gobject);
 void ags_recall_finalize(GObject *gobject);
 
+AgsUUID* ags_recall_get_uuid(AgsConnectable *connectable);
+gboolean ags_recall_has_resource(AgsConnectable *connectable);
+gboolean ags_recall_is_ready(AgsConnectable *connectable);
 void ags_recall_add_to_registry(AgsConnectable *connectable);
 void ags_recall_remove_from_registry(AgsConnectable *connectable);
+xmlNode* ags_recall_list_resource(AgsConnectable *connectable);
+xmlNode* ags_recall_xml_compose(AgsConnectable *connectable);
+void ags_recall_xml_parse(AgsConnectable *connectable,
+			  xmlNode *node);
 gboolean ags_recall_is_connected(AgsConnectable *connectable);
 void ags_recall_connect(AgsConnectable *connectable);
 void ags_recall_disconnect(AgsConnectable *connectable);
+void ags_recall_connect_connection(AgsConnectable *connectable,
+				   GObject *connection);
+void ags_recall_disconnect_connection(AgsConnectable *connectable,
+				      GObject *connection);
 
 gboolean ags_recall_pack(AgsPackable *packable, GObject *container);
 gboolean ags_recall_unpack(AgsPackable *packable);
@@ -468,7 +479,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 				    i18n_pspec("The assigned recall dependency"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_RECALL-DEPENDENCY,
+				  PROP_RECALL_DEPENDENCY,
 				  param_spec);
 
   /**
@@ -586,19 +597,19 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_TYPE_NONE, 0);
 
   /**
-   * AgsRecall::resolve-depedency:
+   * AgsRecall::resolve-dependency:
    * @recall: the #AgsRecall to resolve
    *
-   * The ::resolve-depedency signal notifies about resolving
-   * depedency.
+   * The ::resolve-dependency signal notifies about resolving
+   * dependency.
    *
    * Since: 2.0.0
    */
-  recall_signals[RESOLVE_DEPEDENCY] =
-    g_signal_new("resolve-depedency",
+  recall_signals[RESOLVE_DEPENDENCY] =
+    g_signal_new("resolve-dependency",
 		 G_TYPE_FROM_CLASS(recall),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsRecallClass, resolve_depedency),
+		 G_STRUCT_OFFSET(AgsRecallClass, resolve_dependency),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
@@ -882,7 +893,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    * @dependency: the kind of dependency
    * @count: the reference count
    *
-   * The ::notify-dependency signal notifies about depedency
+   * The ::notify-dependency signal notifies about dependency
    * added.
    *
    * Since: 2.0.0
@@ -921,13 +932,23 @@ ags_recall_class_init(AgsRecallClass *recall)
 void
 ags_recall_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = ags_recall_get_uuid;
+  connectable->has_resource = ags_recall_has_resource;
+
+  connectable->is_ready = ags_recall_is_ready;
   connectable->add_to_registry = ags_recall_add_to_registry;
   connectable->remove_from_registry = ags_recall_remove_from_registry;
 
-  connectable->is_ready = NULL;
-  connectable->is_connected = ags_recall_is_connected;
+  connectable->list_resource = ags_recall_list_resource;
+  connectable->xml_compose = ags_recall_xml_compose;
+  connectable->xml_parse = ags_recall_xml_parse;
+
+  connectable->is_connected = ags_recall_is_connected;  
   connectable->connect = ags_recall_connect;
   connectable->disconnect = ags_recall_disconnect;
+
+  connectable->connect_connection = ags_recall_connect_connection;
+  connectable->disconnect_connection = ags_recall_disconnect_connection;
 }
 
 void
@@ -1103,7 +1124,7 @@ ags_recall_init(AgsRecall *recall)
   recall->recall_id = NULL;
 
   /* recall dependency */
-  recall->recall_depedency = NULL;
+  recall->recall_dependency = NULL;
 
   /* recall handler */
   recall->recall_handler = NULL;
@@ -1112,8 +1133,10 @@ ags_recall_init(AgsRecall *recall)
   recall->parent = NULL;
 
   recall->child_type = G_TYPE_NONE;
-  recall->child_parameters = NULL;
-  recall->n_params = 0;
+
+  recall->n_child_params = 0;
+  recall->child_parameter_name = NULL;
+  recall->child_value = NULL;
 
   recall->children = NULL;
 }
@@ -1263,11 +1286,11 @@ ags_recall_set_property(GObject *gobject,
     {
       AgsPort *port;
 
-      port = (AgsPort *) g_value_get_object(value);
+      port = (AgsPort *) g_value_get_pointer(value);
 
       pthread_mutex_lock(recall_mutex);
 
-      if(port == NULL ||
+      if(!AGS_IS_PORT(port) ||
 	 g_list_find(recall->port, port) != NULL){
 	pthread_mutex_unlock(recall_mutex);
 	
@@ -1285,11 +1308,11 @@ ags_recall_set_property(GObject *gobject,
     {
       AgsPort *automation_port;
 
-      automation_port = (AgsPort *) g_value_get_object(value);
+      automation_port = (AgsPort *) g_value_get_pointer(value);
 
       pthread_mutex_lock(recall_mutex);
 
-      if(automation_port == NULL ||
+      if(!AGS_IS_PORT(automation_port) ||
 	 g_list_find(recall->automation_port, automation_port) != NULL){
 	pthread_mutex_unlock(recall_mutex);
 	
@@ -1326,11 +1349,12 @@ ags_recall_set_property(GObject *gobject,
     {
       AgsRecallDependency *recall_dependency;
 
-      recall_dependency = (AgsRecallDependency *) g_value_get_object(value);
+      recall_dependency = (AgsRecallDependency *) g_value_get_pointer(value);
 
       pthread_mutex_lock(recall_mutex);
       
-      if(g_list_find(recall->recall_dependency, recall_dependency) != NULL){
+      if(!AGS_IS_RECALL_DEPENDENCY(recall_dependency) ||
+	 g_list_find(recall->recall_dependency, recall_dependency) != NULL){
 	pthread_mutex_unlock(recall_mutex);
 	
 	return;
@@ -1375,7 +1399,7 @@ ags_recall_set_property(GObject *gobject,
     {
       AgsRecall *child;
       
-      child = (AgsRecall *) g_value_get_object(value);
+      child = (AgsRecall *) g_value_get_pointer(value);
 
       pthread_mutex_lock(recall_mutex);
 
@@ -1405,38 +1429,144 @@ ags_recall_get_property(GObject *gobject,
 {
   AgsRecall *recall;
 
+  pthread_mutex_t *recall_mutex;
+
   recall = AGS_RECALL(gobject);
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
   switch(prop_id){
-  case PROP_SOUNDCARD:
+  case PROP_RECALL_CONTAINER:
     {
-      g_value_set_object(value, recall->soundcard);
+      pthread_mutex_lock(recall_mutex);
+      
+      g_value_set_object(value, recall->recall_container);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
-  case PROP_CONTAINER:
+  case PROP_OUTPUT_SOUNDCARD:
     {
-      g_value_set_object(value, recall->container);
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, recall->output_soundcard);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
-  case PROP_RECALL_ID:
+  case PROP_OUTPUT_SOUNDCARD_RECALL:
     {
-      g_value_set_object(value, recall->recall_id);
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_int(value, recall->output_soundcard_channel);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
-  case PROP_PARENT:
+  case PROP_INPUT_SOUNDCARD:
     {
-      g_value_set_object(value, recall->parent);
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_object(value,
+			 recall->input_soundcard);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_INPUT_SOUNDCARD_RECALL:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_int(value, recall->input_soundcard_channel);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_SAMPLERATE:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_uint(value, recall->samplerate);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_uint(value, recall->buffer_size);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_uint(value, recall->format);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_PORT:
     {
-      g_value_set_object(value, g_list_copy(recall->port));
+      pthread_mutex_lock(recall_mutex);
+      
+      g_value_set_pointer(value, g_list_copy(recall->port));
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_AUTOMATION_PORT:
+    {
+      pthread_mutex_lock(recall_mutex);
+      
+      g_value_set_pointer(value, g_list_copy(recall->automation_port));
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_RECALL_ID:
+    {
+      pthread_mutex_lock(recall_mutex);
+      
+      g_value_set_object(value, recall->recall_id);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_RECALL_DEPENDENCY:
+    {
+      pthread_mutex_lock(recall_mutex);
+      
+      g_value_set_pointer(value, g_list_copy(recall->recall_dependency));
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_PARENT:
+    {
+      pthread_mutex_lock(recall_mutex);
+      
+      g_value_set_object(value, recall->parent);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_CHILD_TYPE:
     {
+      pthread_mutex_lock(recall_mutex);
+      
       g_value_set_gtype(value,
 			recall->child_type);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -1450,56 +1580,32 @@ ags_recall_dispose(GObject *gobject)
 {
   AgsRecall *recall;
 
-  GList *list, *list_next;
+  GList *list_start, *list;
 
   recall = AGS_RECALL(gobject);
 
-  /* soundcard */
-  if(recall->soundcard != NULL){
-    g_object_unref(recall->soundcard);
-
-    recall->soundcard = NULL;
-  }
-
-  /* dependency */
-  if(recall->depedency != NULL){
-    g_list_free_full(recall->depedency,
-		     g_object_unref);
-
-    recall->depedency = NULL;
-  }
-  
-  /* recall id */
-  if(recall->recall_id != NULL){
-    g_object_unref(recall->recall_id);
-
-    recall->recall_id = NULL;
-  }
-  
-  /* children */
-  if(recall->children != NULL){
-    list = recall->children;
-
-    while(list != NULL){
-      list_next = list->next;
-      
-      g_object_run_dispose(G_OBJECT(list->data));
-
-      list = list_next;
-    }
-    
-    g_list_free_full(recall->children,
-		     g_object_unref);
-
-    recall->children = NULL;
-  }
-  
-  if(recall->container != NULL){
+  /* recall container */
+  if(recall->recall_container != NULL){
     ags_packable_unpack(AGS_PACKABLE(recall));
 
-    recall->container = NULL;
+    g_object_unref(recall->recall_container);
+    
+    recall->recall_container = NULL;
   }
 
+  /* output/input soundcard */
+  if(recall->output_soundcard != NULL){
+    g_object_unref(recall->output_soundcard);
+
+    recall->output_soundcard = NULL;
+  }
+
+  if(recall->input_soundcard != NULL){
+    g_object_unref(recall->input_soundcard);
+
+    recall->input_soundcard = NULL;
+  }
+  
   /* port */
   if(recall->port != NULL){
     g_list_free_full(recall->port,
@@ -1508,12 +1614,53 @@ ags_recall_dispose(GObject *gobject)
     recall->port = NULL;
   }
   
+  /* automation port */
+  if(recall->automation_port != NULL){
+    g_list_free_full(recall->automation_port,
+		     g_object_unref);
+
+    recall->automation_port = NULL;
+  }
+
+  /* recall id */
+  if(recall->recall_id != NULL){
+    g_object_unref(recall->recall_id);
+
+    recall->recall_id = NULL;
+  }
+
+  /* recall dependency */
+  if(recall->recall_dependency != NULL){
+    g_list_free_full(recall->recall_dependency,
+		     g_object_unref);
+
+    recall->recall_dependency = NULL;
+  }
+  
   /* parent */
   if(recall->parent != NULL){
     ags_recall_remove_child(recall->parent,
 			    recall);
 
     recall->parent = NULL;
+  }
+    
+  /* children */
+  if(recall->children != NULL){
+    list =
+      list_start = g_list_copy(recall->children);
+
+    while(list != NULL){      
+      g_object_run_dispose(G_OBJECT(list->data));
+
+      list = list->next;
+    }
+
+    g_list_free(list_start);
+    g_list_free_full(recall->children,
+		     g_object_unref);
+
+    recall->children = NULL;
   }
 
   /* call parent */
@@ -1524,11 +1671,14 @@ void
 ags_recall_finalize(GObject *gobject)
 {
   AgsRecall *recall;
-
-  guint *ids;
-  guint i, n_ids;
+  
+  guint i;
   
   recall = AGS_RECALL(gobject);
+
+#ifdef AGS_DEBUG
+  g_message("finalize %s\n", G_OBJECT_TYPE_NAME(gobject));
+#endif
 
   pthread_mutex_destroy(recall->obj_mutex);
   free(recall->obj_mutex);
@@ -1536,10 +1686,11 @@ ags_recall_finalize(GObject *gobject)
   pthread_mutexattr_destroy(recall->obj_mutexattr);
   free(recall->obj_mutexattr);
 
-#ifdef AGS_DEBUG
-  g_message("finalize %s\n", G_OBJECT_TYPE_NAME(gobject));
-#endif
-
+  //TODO:JK: check removal
+#if 0
+  guint *ids;
+  guint i, n_ids;
+  
   ids = g_signal_list_ids(AGS_TYPE_RECALL,
 			  &n_ids);
   
@@ -1554,65 +1705,146 @@ ags_recall_finalize(GObject *gobject)
   }
 
   g_free(ids);
-
-  /* soundcard */
-  if(recall->soundcard != NULL){
-    g_object_unref(recall->soundcard);
+#endif
+  
+  /* output/input soundcard */
+  if(recall->output_soundcard != NULL){
+    g_object_unref(recall->output_soundcard);
   }
 
-  //  if(recall->name != NULL){
-    //    g_free(recall->name);
-  //  }
-
-  /* dependency */
-  g_list_free_full(recall->depedency,
-		   g_object_unref);
-
-  /* recall id */
-  if(recall->recall_id != NULL){
-    g_object_unref(recall->recall_id);
-  }
-  
-  /* children */
-  g_list_free_full(recall->children,
-		   g_object_unref);
-  
-  if(recall->container != NULL){
-    ags_packable_unpack(AGS_PACKABLE(recall));
-  }
-
-  
-  if(recall->child_parameters != NULL){
-    g_free(recall->child_parameters);
+  if(recall->input_soundcard != NULL){
+    g_object_unref(recall->input_soundcard);
   }
 
   /* port */
   g_list_free_full(recall->port,
 		   g_object_unref);
 
-  /* parent */
-  if(recall->parent != NULL){
-    ags_recall_remove_child(recall->parent,
-			    recall);
-    //TODO:JK: implement me
+  /* automation port */
+  g_list_free_full(recall->automation_port,
+		   g_object_unref);
+
+  /* recall id */
+  if(recall->recall_id != NULL){
+    g_object_unref(recall->recall_id);
   }
 
+  /* recall dependency */
+  g_list_free_full(recall->recall_dependency,
+		   g_object_unref);
+
+  /* recall handler */
+  g_list_free_full(recall->recall_handler,
+		   ags_recall_handler_free);
+
+  /* parent */
+  if(recall->parent != NULL){
+    g_object_unref(recall->parent);
+  }
+
+  /* children */
+  if(recall->child_parameter_name != NULL){
+    g_strfreev(recall->child_parameter_name);
+  }
+
+  if(recall->child_value != NULL){
+    for(i = 0; i < recall->n_child_params; i++){
+      g_value_unset(&(recall->child_value[i]));
+    }
+    
+    g_free(recall->child_value);
+  }
+
+  g_list_free_full(recall->children,
+		   g_object_unref);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_recall_parent_class)->finalize(gobject);
+}
+
+AgsUUID*
+ags_recall_get_uuid(AgsConnectable *connectable)
+{
+  AgsRecall *recall;
+  
+  AgsUUID *ptr;
+
+  pthread_mutex_t *recall_mutex;
+
+  recall = AGS_RECALL(connectable);
+
+  /* get recall signal mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get UUID */
+  pthread_mutex_lock(recall_mutex);
+
+  ptr = recall->uuid;
+
+  pthread_mutex_unlock(recall_mutex);
+  
+  return(ptr);
+}
+
+gboolean
+ags_recall_has_resource(AgsConnectable *connectable)
+{
+  return(TRUE);
+}
+
+gboolean
+ags_recall_is_ready(AgsConnectable *connectable)
+{
+  AgsRecall *recall;
+  
+  gboolean is_ready;
+
+  pthread_mutex_t *recall_mutex;
+
+  recall = AGS_RECALL(connectable);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* check is added */
+  pthread_mutex_lock(recall_mutex);
+
+  is_ready = (((AGS_RECALL_ADDED_TO_REGISTRY & (recall->flags)) != 0) ? TRUE: FALSE);
+
+  pthread_mutex_unlock(recall_mutex);
+  
+  return(is_ready);
 }
 
 void
 ags_recall_add_to_registry(AgsConnectable *connectable)
 {
-  AgsApplicationContext *application_context;
-  AgsRegistry *registry;
   AgsRecall *recall;
+
+  AgsRegistry *registry;
   AgsRegistryEntry *entry;
+
+  AgsApplicationContext *application_context;
+
   GList *list;
+
+  if(ags_connectable_is_ready(connectable)){
+    return;
+  }
   
   recall = AGS_RECALL(connectable);
 
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(recall->soundcard));
+  ags_recall_set_flags(recall, AGS_RECALL_ADDED_TO_REGISTRY);
+
+  application_context = ags_application_context_get_instance();
 
   registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
 
@@ -1623,10 +1855,47 @@ ags_recall_add_to_registry(AgsConnectable *connectable)
     ags_registry_add_entry(registry,
 			   entry);
   }
+
+  //TODO:JK: implement me
 }
 
 void
 ags_recall_remove_from_registry(AgsConnectable *connectable)
+{
+  if(!ags_connectable_is_ready(connectable)){
+    return;
+  }
+
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_recall_list_resource(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+xmlNode*
+ags_recall_xml_compose(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+void
+ags_recall_xml_parse(AgsConnectable *connectable,
+		     xmlNode *node)
 {
   //TODO:JK: implement me
 }
@@ -1635,14 +1904,28 @@ gboolean
 ags_recall_is_connected(AgsConnectable *connectable)
 {
   AgsRecall *recall;
+  
+  gboolean is_connected;
+
+  pthread_mutex_t *recall_mutex;
 
   recall = AGS_RECALL(connectable);
 
-  if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
-    return(TRUE);
-  }else{
-    return(FALSE);
-  }
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* check is connected */
+  pthread_mutex_lock(recall_mutex);
+
+  is_connected = (((AGS_RECALL_CONNECTED & (recall->flags)) != 0) ? TRUE: FALSE);
+  
+  pthread_mutex_unlock(recall_mutex);
+  
+  return(is_connected);
 }
 
 void
@@ -1650,13 +1933,14 @@ ags_recall_connect(AgsConnectable *connectable)
 {
   AgsRecall *recall;
   AgsRecallHandler *recall_handler;
+
   GList *list;
 
-  recall = AGS_RECALL(connectable);
-
-  if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
+  if(ags_connectable_is_connect(connectable)){
     return;
   }
+
+  recall = AGS_RECALL(connectable);
   
   list = recall->children;
 
@@ -1684,7 +1968,12 @@ void
 ags_recall_disconnect(AgsConnectable *connectable)
 {
   AgsRecall *recall;
+
   GList *list;
+
+  if(!ags_connectable_is_connect(connectable)){
+    return;
+  }
 
   recall = AGS_RECALL(connectable);
 
@@ -1699,6 +1988,20 @@ ags_recall_disconnect(AgsConnectable *connectable)
   recall->flags &= (~AGS_RECALL_CONNECTED);
 
   ags_recall_unload_automation(recall);
+}
+
+void
+ags_recall_connect_connection(AgsConnectable *connectable,
+			      GObject *connection)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_recall_disconnect_connection(AgsConnectable *connectable,
+				 GObject *connection)
+{
+  //TODO:JK: implement me
 }
 
 gboolean
@@ -1753,7 +2056,7 @@ ags_recall_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
   }
 
 #ifdef AGS_DEBUG
-      g_message("dynamic connect: %s", G_OBJECT_TYPE_NAME(recall));
+  g_message("dynamic connect: %s", G_OBJECT_TYPE_NAME(recall));
 #endif
 
   /* connect children */
@@ -2651,16 +2954,16 @@ ags_recall_unload_automation(AgsRecall *recall)
 }
 
 /**
- * ags_recall_resolve_depedency:
+ * ags_recall_resolve_dependency:
  * @recall: an #AgsRecall
  *
  * A signal indicating that the inheriting object should resolve
- * it's depedency.
+ * it's dependency.
  * 
  * Since: 1.0.0
  */
 void
-ags_recall_resolve_depedency(AgsRecall *recall)
+ags_recall_resolve_dependency(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
 
@@ -2670,7 +2973,7 @@ ags_recall_resolve_depedency(AgsRecall *recall)
   
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
-		recall_signals[RESOLVE_DEPEDENCY], 0);
+		recall_signals[RESOLVE_DEPENDENCY], 0);
   g_object_unref(G_OBJECT(recall));
 }
 
@@ -3419,7 +3722,7 @@ ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id)
  * ags_recall_notify_dependency:
  * @recall: an #AgsRecall
  * @flags: see AgsRecallNotifyDependencyMode
- * @count: how many depedencies
+ * @count: how many dependencies
  *
  * Notifies a recall that an other depends on it.
  * 
@@ -3549,6 +3852,26 @@ ags_recall_remove_child(AgsRecall *recall, AgsRecall *child)
 }
 
 /**
+ * ags_recall_handler_free:
+ * @recall_handler: the #AgsRecallHandler-struct
+ *
+ * Free @recall_hanlder. 
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_recall_handler_free(AgsRecallHandler *recall_handler)
+{
+  if(recall_handler == NULL){
+    return;
+  }
+
+  g_free(recall_handler->signal_name);
+
+  free(recall_handler);
+}
+
+/**
  * ags_recall_handler_alloc:
  * @signal_name: signal's name to connect
  * @callback: the #GCallback function
@@ -3569,7 +3892,7 @@ ags_recall_handler_alloc(const gchar *signal_name,
 
   recall_handler = (AgsRecallHandler *) malloc(sizeof(AgsRecallHandler));
   
-  recall_handler->signal_name = signal_name;
+  recall_handler->signal_name = g_strdup(signal_name);
   recall_handler->callback = callback;
   recall_handler->data = data;
 

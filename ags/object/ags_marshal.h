@@ -609,7 +609,16 @@ void ags_cclosure_marshal_OBJECT__OBJECT_POINTER_POINTER (GClosure     *closure,
                                                           gpointer      invocation_hint,
                                                           gpointer      marshal_data);
 
-/* OBJECT:OBJECT,OBJECT (ags_marshallers.list:68) */
+/* OBJECT:OBJECT,POINTER,POINTER,POINTER (ags_marshallers.list:68) */
+extern
+void ags_cclosure_marshal_OBJECT__OBJECT_POINTER_POINTER_POINTER (GClosure     *closure,
+                                                                  GValue       *return_value,
+                                                                  guint         n_param_values,
+                                                                  const GValue *param_values,
+                                                                  gpointer      invocation_hint,
+                                                                  gpointer      marshal_data);
+
+/* OBJECT:OBJECT,OBJECT (ags_marshallers.list:69) */
 extern
 void ags_cclosure_marshal_OBJECT__OBJECT_OBJECT (GClosure     *closure,
                                                  GValue       *return_value,
