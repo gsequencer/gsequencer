@@ -127,7 +127,14 @@ The Advanced Gtk+ Sequencer logo and splash screen are used by the final binary 
 the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This are the mentioned files (logo and splash screen):
 
 * gsequencer.share/images/ags.png (GPLv3+)
-* gsequencer.share/images/ags_supermoon-800x450.png  (GPLv3+)
+* gsequencer.share/images/ags_supermoon-800x450.png (GPLv3+)
+
+Other images used by the binary applied under the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+* gsequencer.share/icons/ags.png (GPLv3+)
+* gsequencer.share/icons/ags.xpm (GPLv3+)
+* gsequencer.share/icons/jumper.png (GPLv3+)
 
 As well the desktop file:
 
