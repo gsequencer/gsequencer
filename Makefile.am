@@ -384,13 +384,11 @@ libags_object_h_sources =  \
 	ags/object/ags_config.h \
 	ags/object/ags_connectable.h \
 	ags/object/ags_countable.h \
-	ags/object/ags_dynamic_connectable.h \
 	ags/object/ags_globals.h \
 	ags/object/ags_macros.h \
 	ags/object/ags_main_loop.h \
 	ags/object/ags_marshal.h \
 	ags/object/ags_mutable.h \
-	ags/object/ags_packable.h \
 	ags/object/ags_plugin.h \
 	ags/object/ags_portlet.h \
 	ags/object/ags_seekable.h \
@@ -408,12 +406,10 @@ libags_object_c_sources = \
 	ags/object/ags_config.c \
 	ags/object/ags_connectable.c \
 	ags/object/ags_countable.c \
-	ags/object/ags_dynamic_connectable.c \
 	ags/object/ags_globals.c \
 	ags/object/ags_main_loop.c \
 	ags/object/ags_marshal.c \
 	ags/object/ags_mutable.c \
-	ags/object/ags_packable.c \
 	ags/object/ags_plugin.c \
 	ags/object/ags_portlet.c \
 	ags/object/ags_seekable.c \

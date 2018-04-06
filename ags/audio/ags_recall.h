@@ -52,7 +52,6 @@ typedef struct _AgsRecallHandler AgsRecallHandler;
  * AgsRecallFlags:
  * @AGS_RECALL_ADDED_TO_REGISTRY: the recall was added to registry, see #AgsConnectable::add_to_registry()
  * @AGS_RECALL_CONNECTED: indicates the port was connected by calling #AgsConnectable::connect()
- * @AGS_RECALL_DYNAMIC_CONNECTED: dynamic connected
  * @AGS_RECALL_TEMPLATE: is template
  * @AGS_RECALL_DEFAULT_TEMPLATE: 
  * @AGS_RECALL_HAS_OUTPUT_PORT: has output port
@@ -64,11 +63,10 @@ typedef struct _AgsRecallHandler AgsRecallHandler;
 typedef enum{
   AGS_RECALL_ADDED_TO_REGISTRY     = 1,
   AGS_RECALL_CONNECTED             = 1 <<  1,
-  AGS_RECALL_DYNAMIC_CONNECTED     = 1 <<  2,
-  AGS_RECALL_TEMPLATE              = 1 <<  3,
-  AGS_RECALL_DEFAULT_TEMPLATE      = 1 <<  4,
-  AGS_RECALL_HAS_OUTPUT_PORT       = 1 <<  6,
-  AGS_RECALL_BYPASS                = 1 <<  7,
+  AGS_RECALL_TEMPLATE              = 1 <<  2,
+  AGS_RECALL_DEFAULT_TEMPLATE      = 1 <<  3,
+  AGS_RECALL_HAS_OUTPUT_PORT       = 1 <<  4,
+  AGS_RECALL_BYPASS                = 1 <<  5,
 }AgsRecallFlags;
 
 /**
@@ -200,7 +198,6 @@ struct _AgsRecallHandler
   const gchar *signal_name;
   GCallback callback;
   GObject *data;
-  gulong handler;
 };
 
 GType ags_recall_get_type();
@@ -208,6 +205,7 @@ GType ags_recall_get_type();
 pthread_mutex_t* ags_recall_get_class_mutex();
 
 void ags_recall_set_flags(AgsRecall *recall, guint flags);
+void ags_recall_unset_flags(AgsRecall *recall, guint flags);
 
 /* ability flags */
 void ags_recall_set_ability_flags(AgsRecall *recall, guint ability_flags);

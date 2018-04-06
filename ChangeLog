@@ -42,6 +42,7 @@ ags (2.0.0)
 	* removed ags_connection_manager.[ch]
 	* removed ags_connection.[ch]
 	* TODO:JK: removed ags_id_generator.[ch]
+	* TODO:JK: removed ags_packable.[ch]
 	* removed property :soundcard from AgsAudio, AgsChannel, AgsRecycling, AgsAudioSignal and AgsRecall
 	* removed ags_audio_connection.[ch]
 	* removed ags_message.[ch]

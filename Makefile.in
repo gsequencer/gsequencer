@@ -226,12 +226,10 @@ am__objects_4 = $(am__objects_1) \
 	ags/object/libags_la-ags_config.lo \
 	ags/object/libags_la-ags_connectable.lo \
 	ags/object/libags_la-ags_countable.lo \
-	ags/object/libags_la-ags_dynamic_connectable.lo \
 	ags/object/libags_la-ags_globals.lo \
 	ags/object/libags_la-ags_main_loop.lo \
 	ags/object/libags_la-ags_marshal.lo \
 	ags/object/libags_la-ags_mutable.lo \
-	ags/object/libags_la-ags_packable.lo \
 	ags/object/libags_la-ags_plugin.lo \
 	ags/object/libags_la-ags_portlet.lo \
 	ags/object/libags_la-ags_seekable.lo \
@@ -3224,13 +3222,11 @@ libags_object_h_sources = \
 	ags/object/ags_config.h \
 	ags/object/ags_connectable.h \
 	ags/object/ags_countable.h \
-	ags/object/ags_dynamic_connectable.h \
 	ags/object/ags_globals.h \
 	ags/object/ags_macros.h \
 	ags/object/ags_main_loop.h \
 	ags/object/ags_marshal.h \
 	ags/object/ags_mutable.h \
-	ags/object/ags_packable.h \
 	ags/object/ags_plugin.h \
 	ags/object/ags_portlet.h \
 	ags/object/ags_seekable.h \
@@ -3247,12 +3243,10 @@ libags_object_c_sources = \
 	ags/object/ags_config.c \
 	ags/object/ags_connectable.c \
 	ags/object/ags_countable.c \
-	ags/object/ags_dynamic_connectable.c \
 	ags/object/ags_globals.c \
 	ags/object/ags_main_loop.c \
 	ags/object/ags_marshal.c \
 	ags/object/ags_mutable.c \
-	ags/object/ags_packable.c \
 	ags/object/ags_plugin.c \
 	ags/object/ags_portlet.c \
 	ags/object/ags_seekable.c \
@@ -4916,9 +4910,6 @@ ags/object/libags_la-ags_connectable.lo: ags/object/$(am__dirstamp) \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
 ags/object/libags_la-ags_countable.lo: ags/object/$(am__dirstamp) \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
-ags/object/libags_la-ags_dynamic_connectable.lo:  \
-	ags/object/$(am__dirstamp) \
-	ags/object/$(DEPDIR)/$(am__dirstamp)
 ags/object/libags_la-ags_globals.lo: ags/object/$(am__dirstamp) \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
 ags/object/libags_la-ags_main_loop.lo: ags/object/$(am__dirstamp) \
@@ -4926,8 +4917,6 @@ ags/object/libags_la-ags_main_loop.lo: ags/object/$(am__dirstamp) \
 ags/object/libags_la-ags_marshal.lo: ags/object/$(am__dirstamp) \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
 ags/object/libags_la-ags_mutable.lo: ags/object/$(am__dirstamp) \
-	ags/object/$(DEPDIR)/$(am__dirstamp)
-ags/object/libags_la-ags_packable.lo: ags/object/$(am__dirstamp) \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
 ags/object/libags_la-ags_plugin.lo: ags/object/$(am__dirstamp) \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
@@ -7945,12 +7934,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_config.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_connectable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_countable.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_dynamic_connectable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_globals.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_main_loop.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_marshal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_mutable.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_packable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_plugin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_portlet.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_seekable.Plo@am__quote@
@@ -8317,13 +8304,6 @@ ags/object/libags_la-ags_countable.lo: ags/object/ags_countable.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/object/libags_la-ags_countable.lo `test -f 'ags/object/ags_countable.c' || echo '$(srcdir)/'`ags/object/ags_countable.c
 
-ags/object/libags_la-ags_dynamic_connectable.lo: ags/object/ags_dynamic_connectable.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/object/libags_la-ags_dynamic_connectable.lo -MD -MP -MF ags/object/$(DEPDIR)/libags_la-ags_dynamic_connectable.Tpo -c -o ags/object/libags_la-ags_dynamic_connectable.lo `test -f 'ags/object/ags_dynamic_connectable.c' || echo '$(srcdir)/'`ags/object/ags_dynamic_connectable.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/object/$(DEPDIR)/libags_la-ags_dynamic_connectable.Tpo ags/object/$(DEPDIR)/libags_la-ags_dynamic_connectable.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/object/ags_dynamic_connectable.c' object='ags/object/libags_la-ags_dynamic_connectable.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/object/libags_la-ags_dynamic_connectable.lo `test -f 'ags/object/ags_dynamic_connectable.c' || echo '$(srcdir)/'`ags/object/ags_dynamic_connectable.c
-
 ags/object/libags_la-ags_globals.lo: ags/object/ags_globals.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/object/libags_la-ags_globals.lo -MD -MP -MF ags/object/$(DEPDIR)/libags_la-ags_globals.Tpo -c -o ags/object/libags_la-ags_globals.lo `test -f 'ags/object/ags_globals.c' || echo '$(srcdir)/'`ags/object/ags_globals.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/object/$(DEPDIR)/libags_la-ags_globals.Tpo ags/object/$(DEPDIR)/libags_la-ags_globals.Plo
@@ -8351,13 +8331,6 @@ ags/object/libags_la-ags_mutable.lo: ags/object/ags_mutable.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/object/ags_mutable.c' object='ags/object/libags_la-ags_mutable.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/object/libags_la-ags_mutable.lo `test -f 'ags/object/ags_mutable.c' || echo '$(srcdir)/'`ags/object/ags_mutable.c
-
-ags/object/libags_la-ags_packable.lo: ags/object/ags_packable.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/object/libags_la-ags_packable.lo -MD -MP -MF ags/object/$(DEPDIR)/libags_la-ags_packable.Tpo -c -o ags/object/libags_la-ags_packable.lo `test -f 'ags/object/ags_packable.c' || echo '$(srcdir)/'`ags/object/ags_packable.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/object/$(DEPDIR)/libags_la-ags_packable.Tpo ags/object/$(DEPDIR)/libags_la-ags_packable.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/object/ags_packable.c' object='ags/object/libags_la-ags_packable.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/object/libags_la-ags_packable.lo `test -f 'ags/object/ags_packable.c' || echo '$(srcdir)/'`ags/object/ags_packable.c
 
 ags/object/libags_la-ags_plugin.lo: ags/object/ags_plugin.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/object/libags_la-ags_plugin.lo -MD -MP -MF ags/object/$(DEPDIR)/libags_la-ags_plugin.Tpo -c -o ags/object/libags_la-ags_plugin.lo `test -f 'ags/object/ags_plugin.c' || echo '$(srcdir)/'`ags/object/ags_plugin.c

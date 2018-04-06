@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,12 +44,10 @@
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_countable.h>
-#include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_macros.h>
 #include <ags/object/ags_main_loop.h>
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_mutable.h>
-#include <ags/object/ags_packable.h>
 #include <ags/object/ags_plugin.h>
 #include <ags/object/ags_portlet.h>
 #include <ags/object/ags_seekable.h>

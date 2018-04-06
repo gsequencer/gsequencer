@@ -52,8 +52,6 @@
 
 void ags_recall_class_init(AgsRecallClass *recall_class);
 void ags_recall_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_recall_packable_interface_init(AgsPackableInterface *packable);
-void ags_recall_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_recall_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_recall_init(AgsRecall *recall);
 void ags_recall_set_property(GObject *gobject,
@@ -79,16 +77,6 @@ void ags_recall_xml_parse(AgsConnectable *connectable,
 gboolean ags_recall_is_connected(AgsConnectable *connectable);
 void ags_recall_connect(AgsConnectable *connectable);
 void ags_recall_disconnect(AgsConnectable *connectable);
-void ags_recall_connect_connection(AgsConnectable *connectable,
-				   GObject *connection);
-void ags_recall_disconnect_connection(AgsConnectable *connectable,
-				      GObject *connection);
-
-gboolean ags_recall_pack(AgsPackable *packable, GObject *container);
-gboolean ags_recall_unpack(AgsPackable *packable);
-
-void ags_recall_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_recall_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 
 gchar* ags_recall_get_name(AgsPlugin *plugin);
 void ags_recall_set_name(AgsPlugin *plugin, gchar *name);
@@ -206,18 +194,6 @@ ags_recall_get_type (void)
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_packable_interface_info = {
-      (GInterfaceInitFunc) ags_recall_packable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_recall_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     static const GInterfaceInfo ags_plugin_interface_info = {
       (GInterfaceInitFunc) ags_recall_plugin_interface_init,
       NULL, /* interface_finalize */
@@ -232,14 +208,6 @@ ags_recall_get_type (void)
     g_type_add_interface_static(ags_type_recall,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_recall,
-				AGS_TYPE_PACKABLE,
-				&ags_packable_interface_info);
-
-    g_type_add_interface_static(ags_type_recall,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_recall,
 				AGS_TYPE_PLUGIN,
@@ -952,20 +920,6 @@ ags_recall_connectable_interface_init(AgsConnectableInterface *connectable)
 }
 
 void
-ags_recall_packable_interface_init(AgsPackableInterface *packable)
-{
-  packable->pack = ags_recall_pack;
-  packable->unpack = ags_recall_unpack;
-}
-
-void
-ags_recall_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  dynamic_connectable->connect_dynamic = ags_recall_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_recall_disconnect_dynamic;
-}
-
-void
 ags_recall_plugin_interface_init(AgsPluginInterface *plugin)
 {
   plugin->get_name = ags_recall_get_name;
@@ -1176,8 +1130,6 @@ ags_recall_set_property(GObject *gobject,
       }
       
       if(recall->recall_container != NULL){
-	ags_packable_unpack(AGS_PACKABLE(recall));
-
 	g_object_unref(G_OBJECT(recall->recall_container));
 
 	recall->recall_container = NULL;
@@ -1192,8 +1144,6 @@ ags_recall_set_property(GObject *gobject,
       pthread_mutex_unlock(recall_mutex);
 
       if(recall_container != NULL){
-	ags_packable_pack(AGS_PACKABLE(recall), G_OBJECT(recall_container));
-	
 	if(AGS_IS_RECALL_AUDIO(recall)){
 	  g_object_set(G_OBJECT(recall_container),
 		       "recall-audio", recall,
@@ -1243,7 +1193,7 @@ ags_recall_set_property(GObject *gobject,
 				     input_soundcard);
     }
     break;
-  case PROP_INPUT_SOUNDCARD_RECALL:
+  case PROP_INPUT_SOUNDCARD_CHANNEL:
     {
       pthread_mutex_lock(recall_mutex);
 
@@ -1459,7 +1409,7 @@ ags_recall_get_property(GObject *gobject,
       pthread_mutex_unlock(recall_mutex);
     }
     break;
-  case PROP_OUTPUT_SOUNDCARD_RECALL:
+  case PROP_OUTPUT_SOUNDCARD_CHANNEL:
     {
       pthread_mutex_lock(recall_mutex);
 
@@ -1478,7 +1428,7 @@ ags_recall_get_property(GObject *gobject,
       pthread_mutex_unlock(recall_mutex);
     }
     break;
-  case PROP_INPUT_SOUNDCARD_RECALL:
+  case PROP_INPUT_SOUNDCARD_CHANNEL:
     {
       pthread_mutex_lock(recall_mutex);
 
@@ -1586,8 +1536,6 @@ ags_recall_dispose(GObject *gobject)
 
   /* recall container */
   if(recall->recall_container != NULL){
-    ags_packable_unpack(AGS_PACKABLE(recall));
-
     g_object_unref(recall->recall_container);
     
     recall->recall_container = NULL;
@@ -1932,17 +1880,33 @@ void
 ags_recall_connect(AgsConnectable *connectable)
 {
   AgsRecall *recall;
-  AgsRecallHandler *recall_handler;
 
-  GList *list;
+  GList *list_start, *list;
+
+  pthread_mutex_t *recall_mutex;
 
   if(ags_connectable_is_connect(connectable)){
     return;
   }
 
   recall = AGS_RECALL(connectable);
+
+  ags_recall_set_flags(recall, AGS_RECALL_CONNECTED);  
   
-  list = recall->children;
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* connect children */
+  pthread_mutex_lock(recall_mutex);
+
+  list =
+    list_start = g_list_copy(recall->children);
+
+  pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));
@@ -1950,18 +1914,30 @@ ags_recall_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  /* handlers */
-  list = recall->handlers;
+  g_list_free(list_start);
+  
+  /* recall handler */
+  pthread_mutex_lock(recall_mutex);
+
+  list =
+    list_start = g_list_copy(recall->recall_handler);
+
+  pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
+    AgsRecallHandler *recall_handler;
+    
     recall_handler = AGS_RECALL_HANDLER(list->data);
-    recall_handler->handler = g_signal_connect_after(G_OBJECT(recall), recall_handler->signal_name,
-						     G_CALLBACK(recall_handler->callback), recall_handler->data);
-
+    g_signal_connect_after(G_OBJECT(recall), recall_handler->signal_name,
+			   G_CALLBACK(recall_handler->callback), recall_handler->data);
+    
     list = list->next;
   }
 
-  recall->flags |= AGS_RECALL_CONNECTED;
+  g_list_free(list_start);
+
+  /* load automation */
+  ags_recall_load_automation(recall);
 }
 
 void
@@ -1969,7 +1945,9 @@ ags_recall_disconnect(AgsConnectable *connectable)
 {
   AgsRecall *recall;
 
-  GList *list;
+  GList *list_start, *list;
+
+  pthread_mutex_t *recall_mutex;
 
   if(!ags_connectable_is_connect(connectable)){
     return;
@@ -1977,7 +1955,22 @@ ags_recall_disconnect(AgsConnectable *connectable)
 
   recall = AGS_RECALL(connectable);
 
-  list = recall->children;
+  ags_recall_unset_flags(recall, AGS_RECALL_CONNECTED);    
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* connect children */
+  pthread_mutex_lock(recall_mutex);
+
+  list =
+    list_start = g_list_copy(recall->children);
+
+  pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
     ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
@@ -1985,138 +1978,33 @@ ags_recall_disconnect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  recall->flags &= (~AGS_RECALL_CONNECTED);
+  g_list_free(list_start);
+  
+  /* recall handler */
+  pthread_mutex_lock(recall_mutex);
 
+  list =
+    list_start = g_list_copy(recall->recall_handler);
+
+  pthread_mutex_unlock(recall_mutex);
+
+  while(list != NULL){
+    AgsRecallHandler *recall_handler;
+    
+    recall_handler = AGS_RECALL_HANDLER(list->data);
+    g_object_disconnect(G_OBJECT(recall),
+			recall_handler->signal_name,
+			G_CALLBACK(recall_handler->callback),
+			recall_handler->data,
+			NULL);
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  /* unload automation */
   ags_recall_unload_automation(recall);
-}
-
-void
-ags_recall_connect_connection(AgsConnectable *connectable,
-			      GObject *connection)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_recall_disconnect_connection(AgsConnectable *connectable,
-				 GObject *connection)
-{
-  //TODO:JK: implement me
-}
-
-gboolean
-ags_recall_pack(AgsPackable *packable, GObject *container)
-{
-  AgsRecall *recall;
-
-  recall = AGS_RECALL(packable);
-
-  if(!AGS_IS_RECALL(recall) ||
-     (AGS_RECALL_PACKED & (recall->flags)) != 0){
-    return(TRUE);
-  }
-
-  recall->flags |= AGS_RECALL_PACKED;
-  
-#ifdef AGS_DEBUG
-  g_message("===== packing: %s", G_OBJECT_TYPE_NAME(recall));
-#endif
-
-  return(FALSE);
-}
-
-gboolean
-ags_recall_unpack(AgsPackable *packable)
-{
-  AgsRecall *recall;
-
-  recall = AGS_RECALL(packable);
-
-  if(!AGS_IS_RECALL(recall) ||
-     (AGS_RECALL_PACKED & (recall->flags)) == 0){
-    return(TRUE);
-  }
-
-  recall->flags &= (~AGS_RECALL_PACKED);
-  
-  return(FALSE);
-}
-
-void
-ags_recall_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  AgsRecall *recall;
-  AgsRecallHandler *recall_handler;
-  GList *list;
-
-  recall = AGS_RECALL(dynamic_connectable);
-
-  if((AGS_RECALL_DYNAMIC_CONNECTED & (recall->flags)) != 0){
-    return;
-  }
-
-#ifdef AGS_DEBUG
-  g_message("dynamic connect: %s", G_OBJECT_TYPE_NAME(recall));
-#endif
-
-  /* connect children */
-  list = recall->children;
-
-  while(list != NULL){
-    ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  /* connect handlers */
-  list = recall->handlers;
-
-  while(list != NULL){
-    recall_handler = AGS_RECALL_HANDLER(list->data);
-    recall_handler->handler = g_signal_connect_after(G_OBJECT(recall), recall_handler->signal_name,
-						     G_CALLBACK(recall_handler->callback), recall_handler->data);
-
-    list = list->next;
-  }
-
-  //TODO:JK: fixme
-  recall->flags |= AGS_RECALL_DYNAMIC_CONNECTED;
-}
-
-void
-ags_recall_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  AgsRecall *recall;
-  AgsRecallHandler *recall_handler;
-  GList *list;
-
-  recall = AGS_RECALL(dynamic_connectable);
-
-  if((AGS_RECALL_DYNAMIC_CONNECTED & (recall->flags)) == 0){
-    return;
-  }
-
-  /* disconnect children */
-  list = recall->children;
-
-  while(list != NULL){
-    ags_dynamic_connectable_disconnect_dynamic(AGS_DYNAMIC_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  /* disconnect handlers */
-  list = recall->handlers;
-
-  while(list != NULL){
-    recall_handler = AGS_RECALL_HANDLER(list->data);
-
-    g_signal_handler_disconnect(G_OBJECT(recall), recall_handler->handler);
-
-    list = list->next;
-  }
-
-  recall->flags &= (~AGS_RECALL_DYNAMIC_CONNECTED);
 }
 
 gchar*
@@ -3631,10 +3519,9 @@ ags_recall_real_duplicate(AgsRecall *recall,
   g_free(parameter);
   
   ags_recall_set_flags(copy,
-		       (recall->flags & (~ (AGS_RECALL_TEMPLATE |
-					    AGS_RECALL_RUN_INITIALIZED |
+		       (recall->flags & (~ (AGS_RECALL_ADDED_TO_REGISTRY |
 					    AGS_RECALL_CONNECTED |
-					    AGS_RECALL_DYNAMIC_CONNECTED))));
+					    AGS_RECALL_TEMPLATE))));
 
   copy->child_type = recall->child_type;
 
@@ -3833,10 +3720,6 @@ ags_recall_remove_child(AgsRecall *recall, AgsRecall *child)
   if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
     ags_connectable_disconnect(AGS_CONNECTABLE(child));
   }
-
-  if((AGS_RECALL_DYNAMIC_CONNECTED & (recall->flags)) != 0){
-    ags_dynamic_connectable_disconnect_dynamic(AGS_DYNAMIC_CONNECTABLE(child));
-  }
   
   pthread_mutex_lock(recall->children_mutex);
 
@@ -4016,14 +3899,32 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 
   ags_connectable_connect(AGS_CONNECTABLE(child));
 
-  if(parent != NULL &&
-     (AGS_RECALL_DYNAMIC_CONNECTED & (parent->flags)) != 0 &&
-     (AGS_RECALL_DYNAMIC_CONNECTED & (child->flags)) == 0){
-    ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(child));
+  if(AGS_IS_RECALL(parent)){
+    guint staging_flags;
+    pthread_mutex_t *parent_mutex;
 
-    ags_recall_run_init_pre(AGS_RECALL(child));
-    ags_recall_run_init_inter(AGS_RECALL(child));
-    ags_recall_run_init_post(AGS_RECALL(child));
+    staging_flags = (AGS_SOUND_STAGING_CHECK_RT_DATA |
+		     AGS_SOUND_STAGING_RUN_INIT_PRE |
+		     AGS_SOUND_STAGING_RUN_INIT_INTER |
+		     AGS_SOUND_STAGING_RUN_INIT_POST);
+
+    /* get recall mutex */
+    pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+    parent_mutex = parent->obj_mutex;
+  
+    pthread_mutex_unlock(ags_recall_get_class_mutex());
+    
+    /* get mask */
+    pthread_mutex_lock(parent_mutex);
+
+    staging_flags = (staging_flags & (parent->staging_flags));
+    
+    pthread_mutex_unlock(parent_mutex);
+
+    /* set staging flags */
+    ags_recall_set_staging_flags(child,
+				 staging_flags);
   }
 
   g_object_unref(child);
