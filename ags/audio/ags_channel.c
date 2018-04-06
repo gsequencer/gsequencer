@@ -113,10 +113,6 @@ void ags_channel_xml_parse(AgsConnectable *connectable,
 gboolean ags_channel_is_connected(AgsConnectable *connectable);
 void ags_channel_connect(AgsConnectable *connectable);
 void ags_channel_disconnect(AgsConnectable *connectable);
-void ags_channel_connect_connection(AgsConnectable *connectable,
-				    GObject *connection);
-void ags_channel_disconnect_connection(AgsConnectable *connectable,
-				       GObject *connection);
 
 void ags_channel_real_recycling_changed(AgsChannel *channel,
 					AgsRecycling *old_start_region, AgsRecycling *old_end_region,
@@ -1054,8 +1050,8 @@ ags_channel_connectable_interface_init(AgsConnectableInterface *connectable)
   connectable->connect = ags_channel_connect;
   connectable->disconnect = ags_channel_disconnect;
 
-  connectable->connect_connection = ags_channel_connect_connection;
-  connectable->disconnect_connection = ags_channel_disconnect_connection;
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 GQuark
@@ -2392,9 +2388,15 @@ void
 ags_channel_connect(AgsConnectable *connectable)
 {
   AgsChannel *channel;
-  AgsRecycling *recycling;
+  AgsChannel *link;
+  AgsRecycling *first_recycling, *last_recycling;
+  AgsRecycling *end_recycling, *recycling;
 
-  GList *list;
+  GList *list_start, *list;
+
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *recycling_mutex;
+  pthread_mutex_t *recall_mutex;
   
   if(ags_connectable_is_connect(connectable)){
     return;
@@ -2408,71 +2410,188 @@ ags_channel_connect(AgsConnectable *connectable)
   g_message("connecting channel");
 #endif
 
-  //  ags_connectable_add_to_registry(connectable);
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
 
-  /* connect recall ids */
-  list = channel->recall_id;
+  /* get some fields */
+  pthread_mutex_lock(channel_mutex);
 
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+  link = channel->link;
 
-    list = list->next;
-  }
-
-  /* connect recall containers */
-  list = channel->recall_container;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  /* connect recalls */
-  list = channel->recall;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  list = channel->play;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
+  first_recycling = channel->first_recycling;
+  last_recycling = channel->last_recycling;
+  
+  pthread_mutex_unlock(channel_mutex);
+  
   /* connect recycling */
-  recycling = channel->first_recycling;
+  if(recycling != NULL &&
+     (AGS_IS_OUTPUT(channel) ||
+      (AGS_IS_INPUT(channel) && link == NULL))){
+    /* get recycling mutex */
+    pthread_mutex_lock(ags_recycling_get_class_mutex());
+  
+    recycling_mutex = last_recycling->obj_mutex;
+  
+    pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
-  if(recycling != NULL){
-    while(recycling != channel->last_recycling->next){
+    /* get end recycling */
+    pthread_mutex_lock(recycling_mutex);
+    
+    end_recycling = last_recycling->next;
+    
+    pthread_mutex_unlock(recycling_mutex);
+
+    while(recycling != end_recycling){
+      /* get recycling mutex */
+      pthread_mutex_lock(ags_recycling_get_class_mutex());
+  
+      recycling_mutex = recycling->obj_mutex;
+  
+      pthread_mutex_unlock(ags_recycling_get_class_mutex());
+
+      /* connect */
       ags_connectable_connect(AGS_CONNECTABLE(recycling));
+
+      /* iterate */
+      pthread_mutex_lock(recycling_mutex);
       
       recycling = recycling->next;
+
+      pthread_mutex_unlock(recycling_mutex);
     }
   }
 
-  /* connect pattern and notation */
-  list = channel->pattern;
+  //NOTE:JK: playback connected by playback domain
+  
+  /* connect pattern */
+  pthread_mutex_lock(channel_mutex);
+
+  list =
+    list_start = g_list_copy(channel->pattern);
+
+  pthread_mutex_unlock(channel_mutex);
 
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));
 
     list = list->next;
   }
+
+  g_list_free(list_start);
+  
+  /* connect recall id */
+  pthread_mutex_lock(channel_mutex);
+
+  list =
+    list_start = g_list_copy(channel->recall_id);
+
+  pthread_mutex_unlock(channel_mutex);
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  /* connect recycling context */
+  pthread_mutex_lock(channel_mutex);
+
+  list =
+    list_start = g_list_copy(channel->recycling_context);
+
+  pthread_mutex_unlock(channel_mutex);
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+  
+  /* connect recall container */
+  pthread_mutex_lock(channel_mutex);
+
+  list =
+    list_start = g_list_copy(channel->recall_container);
+
+  pthread_mutex_unlock(channel_mutex);
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+  
+  /* get play context mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  recall_mutex = channel->play_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* connect recall - play context */
+  pthread_mutex_lock(recall_mutex);
+
+  list =
+    list_start = g_list_copy(channel->play);
+
+  pthread_mutex_unlock(recall_mutex);
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  /* get play context mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  recall_mutex = channel->recall_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* connect recall - recall context */
+  pthread_mutex_lock(recall_mutex);
+
+  list =
+    list_start = g_list_copy(channel->recall);
+
+  pthread_mutex_unlock(recall_mutex);
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 void
 ags_channel_disconnect(AgsConnectable *connectable)
 {
-  AgsChannel *channel;
-  AgsRecycling *recycling;
 
-  GList *list;  
+  AgsChannel *channel;
+  AgsChannel *link;
+  AgsRecycling *first_recycling, *last_recycling;
+  AgsRecycling *end_recycling, *recycling;
+
+  GList *list_start, *list;
+
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *recycling_mutex;
+  pthread_mutex_t *recall_mutex;
 
   if(!ags_connectable_is_connect(connectable)){
     return;
@@ -2485,77 +2604,173 @@ ags_channel_disconnect(AgsConnectable *connectable)
 #ifdef AGS_DEBUG
   g_message("disconnecting channel");
 #endif
+  
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
 
-  //  ags_connectable_add_to_registry(connectable);
+  /* get some fields */
+  pthread_mutex_lock(channel_mutex);
 
-  /* connect recall ids */
-  list = channel->recall_id;
+  link = channel->link;
 
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+  first_recycling = channel->first_recycling;
+  last_recycling = channel->last_recycling;
+  
+  pthread_mutex_unlock(channel_mutex);
+  
+  /* disconnect recycling */
+  if(recycling != NULL &&
+     (AGS_IS_OUTPUT(channel) ||
+      (AGS_IS_INPUT(channel) && link == NULL))){
+    /* get recycling mutex */
+    pthread_mutex_lock(ags_recycling_get_class_mutex());
+  
+    recycling_mutex = last_recycling->obj_mutex;
+  
+    pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
-    list = list->next;
-  }
+    /* get end recycling */
+    pthread_mutex_lock(recycling_mutex);
+    
+    end_recycling = last_recycling->next;
+    
+    pthread_mutex_unlock(recycling_mutex);
 
-  /* connect recall containers */
-  list = channel->recall_container;
+    while(recycling != end_recycling){
+      /* get recycling mutex */
+      pthread_mutex_lock(ags_recycling_get_class_mutex());
+  
+      recycling_mutex = recycling->obj_mutex;
+  
+      pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  /* connect recalls */
-  list = channel->recall;
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  list = channel->play;
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  /* connect recycling */
-  recycling = channel->first_recycling;
-
-  if(recycling != NULL){
-    while(recycling != channel->last_recycling->next){
+      /* disconnect */
       ags_connectable_disconnect(AGS_CONNECTABLE(recycling));
+
+      /* iterate */
+      pthread_mutex_lock(recycling_mutex);
       
       recycling = recycling->next;
+
+      pthread_mutex_unlock(recycling_mutex);
     }
   }
 
-  /* connect pattern and notation */
-  list = channel->pattern;
+  //NOTE:JK: playback disconnected by playback domain
+  
+  /* disconnect pattern */
+  pthread_mutex_lock(channel_mutex);
+
+  list =
+    list_start = g_list_copy(channel->pattern);
+
+  pthread_mutex_unlock(channel_mutex);
 
   while(list != NULL){
     ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
 
     list = list->next;
   }
-}
 
-void
-ags_channel_connect_connection(AgsConnectable *connectable,
-			       GObject *connection)
-{
-  //TODO:JK: implement me
-}
+  g_list_free(list_start);
+  
+  /* disconnect recall id */
+  pthread_mutex_lock(channel_mutex);
 
-void
-ags_channel_disconnect_connection(AgsConnectable *connectable,
-				  GObject *connection)
-{
-  //TODO:JK: implement me
+  list =
+    list_start = g_list_copy(channel->recall_id);
+
+  pthread_mutex_unlock(channel_mutex);
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  /* disconnect recycling context */
+  pthread_mutex_lock(channel_mutex);
+
+  list =
+    list_start = g_list_copy(channel->recycling_context);
+
+  pthread_mutex_unlock(channel_mutex);
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+  
+  /* disconnect recall container */
+  pthread_mutex_lock(channel_mutex);
+
+  list =
+    list_start = g_list_copy(channel->recall_container);
+
+  pthread_mutex_unlock(channel_mutex);
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+  
+  /* get play context mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  recall_mutex = channel->play_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* disconnect recall - play context */
+  pthread_mutex_lock(recall_mutex);
+
+  list =
+    list_start = g_list_copy(channel->play);
+
+  pthread_mutex_unlock(recall_mutex);
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  /* get play context mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  recall_mutex = channel->recall_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* disconnect recall - recall context */
+  pthread_mutex_lock(recall_mutex);
+
+  list =
+    list_start = g_list_copy(channel->recall);
+
+  pthread_mutex_unlock(recall_mutex);
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 /**

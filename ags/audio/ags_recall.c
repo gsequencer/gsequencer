@@ -915,8 +915,8 @@ ags_recall_connectable_interface_init(AgsConnectableInterface *connectable)
   connectable->connect = ags_recall_connect;
   connectable->disconnect = ags_recall_disconnect;
 
-  connectable->connect_connection = ags_recall_connect_connection;
-  connectable->disconnect_connection = ags_recall_disconnect_connection;
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
