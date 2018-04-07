@@ -29,7 +29,6 @@
 #include <stdlib.h>
 
 void ags_buffer_class_init(AgsBufferClass *buffer);
-void ags_buffer_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_buffer_init(AgsBuffer *buffer);
 void ags_buffer_set_property(GObject *gobject,
 			     guint prop_id,
@@ -39,8 +38,6 @@ void ags_buffer_get_property(GObject *gobject,
 			     guint prop_id,
 			     GValue *value,
 			     GParamSpec *param_spec);
-void ags_buffer_connect(AgsConnectable *connectable);
-void ags_buffer_disconnect(AgsConnectable *connectable);
 void ags_buffer_finalize(GObject *gobject);
 
 /**
@@ -84,20 +81,10 @@ ags_buffer_get_type()
       (GInstanceInitFunc) ags_buffer_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_buffer_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_buffer = g_type_register_static(G_TYPE_OBJECT,
 					     "AgsBuffer",
 					     &ags_buffer_info,
 					     0);
-    
-    g_type_add_interface_static(ags_type_buffer,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
 
   return(ags_type_buffer);
@@ -245,13 +232,6 @@ ags_buffer_class_init(AgsBufferClass *buffer)
 }
 
 void
-ags_buffer_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->connect = ags_buffer_connect;
-  connectable->disconnect = ags_buffer_disconnect;
-}
-
-void
 ags_buffer_init(AgsBuffer *buffer)
 {  
   buffer->flags = 0;
@@ -266,34 +246,6 @@ ags_buffer_init(AgsBuffer *buffer)
 
   buffer->data = ags_stream_alloc(buffer->buffer_size,
 				  buffer->format);
-}
-
-void
-ags_buffer_connect(AgsConnectable *connectable)
-{
-  AgsBuffer *buffer;
-
-  buffer = AGS_BUFFER(connectable);
-
-  if((AGS_BUFFER_CONNECTED & (buffer->flags)) != 0){
-    return;
-  }
-
-  buffer->flags |= AGS_BUFFER_CONNECTED;
-}
-
-void
-ags_buffer_disconnect(AgsConnectable *connectable)
-{
-  AgsBuffer *buffer;
-
-  buffer = AGS_BUFFER(connectable);
-
-  if((AGS_BUFFER_CONNECTED & (buffer->flags)) == 0){
-    return;
-  }
-
-  buffer->flags &= (~AGS_BUFFER_CONNECTED);
 }
 
 void

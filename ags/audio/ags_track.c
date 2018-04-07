@@ -29,7 +29,6 @@
 #include <stdlib.h>
 
 void ags_track_class_init(AgsTrackClass *track);
-void ags_track_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_track_init(AgsTrack *track);
 void ags_track_set_property(GObject *gobject,
 			    guint prop_id,
@@ -39,8 +38,6 @@ void ags_track_get_property(GObject *gobject,
 			    guint prop_id,
 			    GValue *value,
 			    GParamSpec *param_spec);
-void ags_track_connect(AgsConnectable *connectable);
-void ags_track_disconnect(AgsConnectable *connectable);
 void ags_track_finalize(GObject *gobject);
 
 /**
@@ -79,20 +76,10 @@ ags_track_get_type()
       (GInstanceInitFunc) ags_track_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_track_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_track = g_type_register_static(G_TYPE_OBJECT,
 					    "AgsTrack",
 					    &ags_track_info,
 					    0);
-    
-    g_type_add_interface_static(ags_type_track,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
 
   return(ags_type_track);
@@ -150,13 +137,6 @@ ags_track_class_init(AgsTrackClass *track)
 }
 
 void
-ags_track_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->connect = ags_track_connect;
-  connectable->disconnect = ags_track_disconnect;
-}
-
-void
 ags_track_init(AgsTrack *track)
 {  
   track->flags = 0;
@@ -164,34 +144,6 @@ ags_track_init(AgsTrack *track)
   track->x = 0;
 
   track->smf_buffer = NULL;
-}
-
-void
-ags_track_connect(AgsConnectable *connectable)
-{
-  AgsTrack *track;
-
-  track = AGS_TRACK(connectable);
-
-  if((AGS_TRACK_CONNECTED & (track->flags)) != 0){
-    return;
-  }
-
-  track->flags |= AGS_TRACK_CONNECTED;
-}
-
-void
-ags_track_disconnect(AgsConnectable *connectable)
-{
-  AgsTrack *track;
-
-  track = AGS_TRACK(connectable);
-
-  if((AGS_TRACK_CONNECTED & (track->flags)) == 0){
-    return;
-  }
-
-  track->flags &= (~AGS_TRACK_CONNECTED);
 }
 
 void

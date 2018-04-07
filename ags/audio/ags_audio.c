@@ -98,10 +98,6 @@ void ags_audio_xml_parse(AgsConnectable *connectable,
 gboolean ags_audio_is_connected(AgsConnectable *connectable);
 void ags_audio_connect(AgsConnectable *connectable);
 void ags_audio_disconnect(AgsConnectable *connectable);
-void ags_audio_connect_connection(AgsConnectable *connectable,
-				  GObject *connection);
-void ags_audio_disconnect_connection(AgsConnectable *connectable,
-				     GObject *connection);
 
 void ags_audio_real_set_audio_channels(AgsAudio *audio,
 				       guint audio_channels, guint audio_channels_old);
@@ -1327,8 +1323,8 @@ ags_audio_connectable_interface_init(AgsConnectableInterface *connectable)
   connectable->connect = ags_audio_connect;
   connectable->disconnect = ags_audio_disconnect;
 
-  connectable->connect_connection = ags_audio_connect_connection;
-  connectable->disconnect_connection = ags_audio_disconnect_connection;
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -3272,7 +3268,7 @@ ags_audio_get_uuid(AgsConnectable *connectable)
 
   audio = AGS_AUDIO(connectable);
 
-  /* get audio signal mutex */
+  /* get audio mutex */
   pthread_mutex_lock(ags_audio_get_class_mutex());
   
   audio_mutex = audio->obj_mutex;
@@ -3306,7 +3302,7 @@ ags_audio_is_ready(AgsConnectable *connectable)
 
   audio = AGS_AUDIO(connectable);
 
-  /* get audio signal mutex */
+  /* get audio mutex */
   pthread_mutex_lock(ags_audio_get_class_mutex());
   
   audio_mutex = audio->obj_mutex;
@@ -3448,7 +3444,7 @@ ags_audio_is_connected(AgsConnectable *connectable)
 
   audio = AGS_AUDIO(connectable);
 
-  /* get audio signal mutex */
+  /* get audio mutex */
   pthread_mutex_lock(ags_audio_get_class_mutex());
   
   audio_mutex = audio->obj_mutex;
@@ -3471,7 +3467,11 @@ ags_audio_connect(AgsConnectable *connectable)
   AgsAudio *audio;
   AgsChannel *channel;
 
-  GList *list;
+  GList *list_start, *list;
+
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *recall_mutex;
 
   if(ags_connectable_is_connected(connectable)){
     return;
@@ -3485,61 +3485,116 @@ ags_audio_connect(AgsConnectable *connectable)
   g_message("connecting audio");
 #endif
 
-  /* connect channels */
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+  
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* connect channels - output */
+  pthread_mutex_lock(audio_mutex);
+
   channel = audio->output;
 
+  pthread_mutex_unlock(audio_mutex);
+
   while(channel != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+    channel_mutex = channel->obj_mutex;
+  
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+    /* connect */
     ags_connectable_connect(AGS_CONNECTABLE(channel));
 
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+    
     channel = channel->next;
+
+    pthread_mutex_unlock(channel_mutex);
   }
+
+  /* connect channels - input */
+  pthread_mutex_lock(audio_mutex);
 
   channel = audio->input;
 
+  pthread_mutex_unlock(audio_mutex);
+
   while(channel != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+    channel_mutex = channel->obj_mutex;
+  
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+    /* connect */
     ags_connectable_connect(AGS_CONNECTABLE(channel));
 
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+    
     channel = channel->next;
+
+    pthread_mutex_unlock(channel_mutex);
   }
 
-  /* connect notation */
-  list = audio->notation;
+  /* connect recall container */
+  pthread_mutex_lock(audio_mutex);
+
+  list =
+    list_start = g_list_copy(audio->recall_container);
+
+  pthread_mutex_unlock(audio_mutex);
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
   
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-    
-    list = list->next;
-  }
+  recall_mutex = audio->play_mutex;
   
-  /* connect automation */
-  list = audio->automation;
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* connect recall - play context */
+  pthread_mutex_lock(recall_mutex);
+
+  list = g_list_copy(audio->play);
+
+  pthread_mutex_unlock(recall_mutex);
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
   
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-    
-    list = list->next;
-  }
-
-  /* connect wave */
-  list = audio->wave;
+  recall_mutex = audio->recall_mutex;
   
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-    
-    list = list->next;
-  }
-  
-  /* connect midi */
-  list = audio->midi;
-  
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-    
-    list = list->next;
-  }
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
-  /* connect recall ids */
-  list = audio->recall_id;
+  /* connect recall - recall context */
+  pthread_mutex_lock(recall_mutex);
+
+  list = g_list_copy(audio->recall);
+
+  pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));
@@ -3547,31 +3602,7 @@ ags_audio_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  /* connect recall containers */
-  list = audio->recall_container;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  /* connect recalls */
-  list = audio->play;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  list = audio->recall;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
+  g_list_free(list_start);
 }
 
 void
@@ -3580,94 +3611,142 @@ ags_audio_disconnect(AgsConnectable *connectable)
   AgsAudio *audio;
   AgsChannel *channel;
 
-  GList *list;
+  GList *list_start, *list;
+
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *recall_mutex;
 
   if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
   audio = AGS_AUDIO(connectable);
-  
+
   ags_audio_unset_flags(audio, AGS_AUDIO_CONNECTED);
-  
+
 #ifdef AGS_DEBUG
   g_message("disconnecting audio");
 #endif
 
-  /* connect channels */
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+  
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* disconnect channels - output */
+  pthread_mutex_lock(audio_mutex);
+
   channel = audio->output;
 
+  pthread_mutex_unlock(audio_mutex);
+
   while(channel != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+    channel_mutex = channel->obj_mutex;
+  
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+    /* disconnect */
     ags_connectable_disconnect(AGS_CONNECTABLE(channel));
 
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
+    
     channel = channel->next;
+
+    pthread_mutex_unlock(channel_mutex);
   }
+
+  /* disconnect channels - input */
+  pthread_mutex_lock(audio_mutex);
 
   channel = audio->input;
 
+  pthread_mutex_unlock(audio_mutex);
+
   while(channel != NULL){
+    /* get channel mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+    channel_mutex = channel->obj_mutex;
+  
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+    /* disconnect */
     ags_connectable_disconnect(AGS_CONNECTABLE(channel));
 
-    channel = channel->next;
-  }
-
-  /* connect recall ids */
-  list = audio->recall_id;
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  /* connect recall containers */
-  list = audio->recall_container;
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  /* connect recalls */
-  list = audio->recall;
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  list = audio->play;
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  /* connect notation */
-  list = audio->notation;
-  
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+    /* iterate */
+    pthread_mutex_lock(channel_mutex);
     
+    channel = channel->next;
+
+    pthread_mutex_unlock(channel_mutex);
+  }
+
+  /* disconnect recall container */
+  pthread_mutex_lock(audio_mutex);
+
+  list =
+    list_start = g_list_copy(audio->recall_container);
+
+  pthread_mutex_unlock(audio_mutex);
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
     list = list->next;
   }
-}
 
-void
-ags_audio_connect_connection(AgsConnectable *connectable,
-			     GObject *connection)
-{
-  //TODO:JK: implement me
-}
+  g_list_free(list_start);
 
-void
-ags_audio_disconnect_connection(AgsConnectable *connectable,
-				GObject *connection)
-{
-  //TODO:JK: implement me
+  /* get recall mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+  
+  recall_mutex = audio->play_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* disconnect recall - play context */
+  pthread_mutex_lock(recall_mutex);
+
+  list = g_list_copy(audio->play);
+
+  pthread_mutex_unlock(recall_mutex);
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+  
+  recall_mutex = audio->recall_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* disconnect recall - recall context */
+  pthread_mutex_lock(recall_mutex);
+
+  list = g_list_copy(audio->recall);
+
+  pthread_mutex_unlock(recall_mutex);
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 /**

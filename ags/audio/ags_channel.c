@@ -2482,39 +2482,7 @@ ags_channel_connect(AgsConnectable *connectable)
   }
 
   g_list_free(list_start);
-  
-  /* connect recall id */
-  pthread_mutex_lock(channel_mutex);
-
-  list =
-    list_start = g_list_copy(channel->recall_id);
-
-  pthread_mutex_unlock(channel_mutex);
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  g_list_free(list_start);
-
-  /* connect recycling context */
-  pthread_mutex_lock(channel_mutex);
-
-  list =
-    list_start = g_list_copy(channel->recycling_context);
-
-  pthread_mutex_unlock(channel_mutex);
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  g_list_free(list_start);
-  
+    
   /* connect recall container */
   pthread_mutex_lock(channel_mutex);
 
@@ -2659,57 +2627,7 @@ ags_channel_disconnect(AgsConnectable *connectable)
       pthread_mutex_unlock(recycling_mutex);
     }
   }
-
-  //NOTE:JK: playback disconnected by playback domain
-  
-  /* disconnect pattern */
-  pthread_mutex_lock(channel_mutex);
-
-  list =
-    list_start = g_list_copy(channel->pattern);
-
-  pthread_mutex_unlock(channel_mutex);
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  g_list_free(list_start);
-  
-  /* disconnect recall id */
-  pthread_mutex_lock(channel_mutex);
-
-  list =
-    list_start = g_list_copy(channel->recall_id);
-
-  pthread_mutex_unlock(channel_mutex);
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  g_list_free(list_start);
-
-  /* disconnect recycling context */
-  pthread_mutex_lock(channel_mutex);
-
-  list =
-    list_start = g_list_copy(channel->recycling_context);
-
-  pthread_mutex_unlock(channel_mutex);
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-
-  g_list_free(list_start);
-  
+    
   /* disconnect recall container */
   pthread_mutex_lock(channel_mutex);
 

@@ -27,7 +27,6 @@
 #include <ags/i18n.h>
 
 void ags_recall_id_class_init(AgsRecallIDClass *recall_id);
-void ags_recall_id_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_id_init(AgsRecallID *recall_id);
 void ags_recall_id_set_property(GObject *gobject,
 				guint prop_id,
@@ -37,8 +36,6 @@ void ags_recall_id_get_property(GObject *gobject,
 				guint prop_id,
 				GValue *value,
 				GParamSpec *param_spec);
-void ags_recall_id_connect(AgsConnectable *connectable);
-void ags_recall_id_disconnect(AgsConnectable *connectable);
 void ags_recall_id_dispose(GObject *gobject);
 void ags_recall_id_finalize(GObject *gobject);
 
@@ -68,34 +65,24 @@ ags_recall_id_get_type(void)
 
   if(!ags_type_recall_id){
     static const GTypeInfo ags_recall_id_info = {
-      sizeof (AgsRecallIDClass),
+      sizeof(AgsRecallIDClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_recall_id_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsRecallID),
+      sizeof(AgsRecallID),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_recall_id_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_recall_id_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_recall_id = g_type_register_static(G_TYPE_OBJECT,
 						"AgsRecallID",
 						&ags_recall_id_info,
 						0);
-
-    g_type_add_interface_static(ags_type_recall_id,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
 
-  return (ags_type_recall_id);
+  return(ags_type_recall_id);
 }
 
 void
@@ -131,13 +118,6 @@ ags_recall_id_class_init(AgsRecallIDClass *recall_id)
   g_object_class_install_property(gobject,
 				  PROP_RECYCLING_CONTEXT,
 				  param_spec);
-}
-
-void
-ags_recall_id_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->connect = ags_recall_id_connect;
-  connectable->disconnect = ags_recall_id_disconnect;
 }
 
 void
@@ -230,35 +210,6 @@ ags_recall_id_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_recall_id_connect(AgsConnectable *connectable)
-{
-  AgsRecallID *recall_id;
-
-  recall_id = AGS_RECALL_ID(connectable);
-
-  if((AGS_RECALL_ID_CONNECTED & (recall_id->flags)) != 0){
-    return;
-  }
-
-  recall_id->flags |= AGS_RECALL_ID_CONNECTED;
-}
-
-void
-ags_recall_id_disconnect(AgsConnectable *connectable)
-{
-  AgsRecallID *recall_id;
-
-  recall_id = AGS_RECALL_ID(connectable);
-
-
-  if((AGS_RECALL_ID_CONNECTED & (recall_id->flags)) == 0){
-    return;
-  }
-
-  recall_id->flags &= (~AGS_RECALL_ID_CONNECTED);
 }
 
 void

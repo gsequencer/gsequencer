@@ -36,7 +36,6 @@
 #include <ags/i18n.h>
 
 void ags_playback_domain_class_init(AgsPlaybackDomainClass *playback_domain);
-void ags_playback_domain_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_playback_domain_init(AgsPlaybackDomain *playback_domain);
 void ags_playback_domain_set_property(GObject *gobject,
 				      guint prop_id,
@@ -46,8 +45,6 @@ void ags_playback_domain_get_property(GObject *gobject,
 				      guint prop_id,
 				      GValue *value,
 				      GParamSpec *param_spec);
-void ags_playback_domain_disconnect(AgsConnectable *connectable);
-void ags_playback_domain_connect(AgsConnectable *connectable);
 void ags_playback_domain_dispose(GObject *gobject);
 void ags_playback_domain_finalize(GObject *gobject);
 
@@ -90,20 +87,10 @@ ags_playback_domain_get_type (void)
       (GInstanceInitFunc) ags_playback_domain_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_playback_domain_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_playback_domain = g_type_register_static(G_TYPE_OBJECT,
 						      "AgsPlaybackDomain",
 						      &ags_playback_domain_info,
 						      0);
-
-    g_type_add_interface_static(ags_type_playback_domain,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
 
   return (ags_type_playback_domain);
@@ -172,15 +159,6 @@ ags_playback_domain_class_init(AgsPlaybackDomainClass *playback_domain)
   g_object_class_install_property(gobject,
 				  PROP_INPUT_PLAYBACK,
 				  param_spec);
-}
-
-void
-ags_playback_domain_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
-  connectable->connect = ags_playback_domain_connect;
-  connectable->disconnect = ags_playback_domain_disconnect;
 }
 
 void
@@ -468,35 +446,6 @@ ags_playback_domain_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_playback_domain_parent_class)->finalize(gobject);
-}
-
-void
-ags_playback_domain_connect(AgsConnectable *connectable)
-{
-  AgsPlaybackDomain *playback_domain;
-
-  playback_domain = AGS_PLAYBACK_DOMAIN(connectable);
-
-  if((AGS_PLAYBACK_DOMAIN_CONNECTED & (playback_domain->flags)) != 0){
-    return;
-  }
-
-  playback_domain->flags |= AGS_PLAYBACK_DOMAIN_CONNECTED;
-}
-
-void
-ags_playback_domain_disconnect(AgsConnectable *connectable)
-{
-  AgsPlaybackDomain *playback_domain;
-
-  playback_domain = AGS_PLAYBACK_DOMAIN(connectable);
-
-
-  if((AGS_PLAYBACK_DOMAIN_CONNECTED & (playback_domain->flags)) == 0){
-    return;
-  }
-
-  playback_domain->flags &= (~AGS_PLAYBACK_DOMAIN_CONNECTED);
 }
 
 /**

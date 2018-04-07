@@ -19,8 +19,6 @@
 
 #include <ags/audio/ags_note.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/audio/midi/ags_midi_buffer_util.h>
 
 #include <stdlib.h>
@@ -29,7 +27,6 @@
 #include <ags/i18n.h>
 
 void ags_note_class_init(AgsNoteClass *note);
-void ags_note_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_note_init(AgsNote *note);
 void ags_note_set_property(GObject *gobject,
 			   guint prop_id,
@@ -39,8 +36,6 @@ void ags_note_get_property(GObject *gobject,
 			   guint prop_id,
 			   GValue *value,
 			   GParamSpec *param_spec);
-void ags_note_connect(AgsConnectable *connectable);
-void ags_note_disconnect(AgsConnectable *connectable);
 void ags_note_finalize(GObject *gobject);
 
 /**
@@ -88,20 +83,10 @@ ags_note_get_type()
       (GInstanceInitFunc) ags_note_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_note_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_note = g_type_register_static(G_TYPE_OBJECT,
 					   "AgsNote",
 					   &ags_note_info,
 					   0);
-    
-    g_type_add_interface_static(ags_type_note,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
 
   return(ags_type_note);
@@ -312,13 +297,6 @@ ags_note_class_init(AgsNoteClass *note)
 }
 
 void
-ags_note_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->connect = ags_note_connect;
-  connectable->disconnect = ags_note_disconnect;
-}
-
-void
 ags_note_init(AgsNote *note)
 {
   complex z;
@@ -357,34 +335,6 @@ ags_note_init(AgsNote *note)
   
   note->note_name = NULL;
   note->frequency = 440.0;
-}
-
-void
-ags_note_connect(AgsConnectable *connectable)
-{
-  AgsNote *note;
-
-  note = AGS_NOTE(connectable);
-
-  if((AGS_NOTE_CONNECTED & (note->flags)) != 0){
-    return;
-  }
-
-  note->flags |= AGS_NOTE_CONNECTED;
-}
-
-void
-ags_note_disconnect(AgsConnectable *connectable)
-{
-  AgsNote *note;
-
-  note = AGS_NOTE(connectable);
-
-  if((AGS_NOTE_CONNECTED & (note->flags)) == 0){
-    return;
-  }
-
-  note->flags &= (~AGS_NOTE_CONNECTED);
 }
 
 void

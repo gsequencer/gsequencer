@@ -33,7 +33,6 @@
 #include <errno.h>
 
 void ags_notation_class_init(AgsNotationClass *notation);
-void ags_notation_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_notation_tactable_interface_init(AgsTactableInterface *tactable);
 void ags_notation_init(AgsNotation *notation);
 void ags_notation_set_property(GObject *gobject,
@@ -46,9 +45,6 @@ void ags_notation_get_property(GObject *gobject,
 			       GParamSpec *param_spec);
 void ags_notation_dispose(GObject *gobject);
 void ags_notation_finalize(GObject *gobject);
-
-void ags_notation_connect(AgsConnectable *connectable);
-void ags_notation_disconnect(AgsConnectable *connectable);
 
 void ags_notation_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
 
@@ -100,12 +96,6 @@ ags_notation_get_type()
       (GInstanceInitFunc) ags_notation_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_notation_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     static const GInterfaceInfo ags_tactable_interface_info = {
       (GInterfaceInitFunc) ags_notation_tactable_interface_init,
       NULL, /* interface_finalize */
@@ -116,10 +106,6 @@ ags_notation_get_type()
 					       "AgsNotation",
 					       &ags_notation_info,
 					       0);
-
-    g_type_add_interface_static(ags_type_notation,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_notation,
 				AGS_TYPE_TACTABLE,
@@ -212,15 +198,6 @@ ags_notation_class_init(AgsNotationClass *notation)
   g_object_class_install_property(gobject,
 				  PROP_TIMESTAMP,
 				  param_spec);
-}
-
-void
-ags_notation_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
-  connectable->connect = ags_notation_connect;
-  connectable->disconnect = ags_notation_disconnect;
 }
 
 void
@@ -503,56 +480,6 @@ ags_notation_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_notation_parent_class)->finalize(gobject);
-}
-
-void
-ags_notation_connect(AgsConnectable *connectable)
-{
-  AgsNotation *notation;
-
-  GList *list;
-  
-  notation = AGS_NOTATION(connectable);
-
-  if((AGS_NOTATION_CONNECTED & (notation->flags)) != 0){
-    return;
-  }
-
-  notation->flags |= AGS_NOTATION_CONNECTED;
-
-  /* note */
-  list = notation->note;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-}
-
-void
-ags_notation_disconnect(AgsConnectable *connectable)
-{
-  AgsNotation *notation;
-
-  GList *list;
-
-  notation = AGS_NOTATION(connectable);
-
-  if((AGS_NOTATION_CONNECTED & (notation->flags)) == 0){
-    return;
-  }
-
-  notation->flags &= (~AGS_NOTATION_CONNECTED);
-
-  /* note */
-  list = notation->note;
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
 }
 
 void

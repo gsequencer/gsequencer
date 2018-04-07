@@ -38,7 +38,6 @@
 #include <ags/i18n.h>
 
 void ags_automation_class_init(AgsAutomationClass *automation);
-void ags_automation_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_automation_init(AgsAutomation *automation);
 void ags_automation_set_property(GObject *gobject,
 				 guint prop_id,
@@ -50,9 +49,6 @@ void ags_automation_get_property(GObject *gobject,
 				 GParamSpec *param_spec);
 void ags_automation_dispose(GObject *gobject);
 void ags_automation_finalize(GObject *gobject);
-
-void ags_automation_connect(AgsConnectable *connectable);
-void ags_automation_disconnect(AgsConnectable *connectable);
 
 void ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
 						       xmlNode *root_node, char *version,
@@ -108,20 +104,10 @@ ags_automation_get_type()
       (GInstanceInitFunc) ags_automation_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_automation_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_automation = g_type_register_static(G_TYPE_OBJECT,
 						 "AgsAutomation",
 						 &ags_automation_info,
 						 0);
-
-    g_type_add_interface_static(ags_type_automation,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
 
   return(ags_type_automation);
@@ -332,15 +318,6 @@ ags_automation_class_init(AgsAutomationClass *automation)
   g_object_class_install_property(gobject,
 				  PROP_TIMESTAMP,
 				  param_spec);
-}
-
-void
-ags_automation_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
-  connectable->connect = ags_automation_connect;
-  connectable->disconnect = ags_automation_disconnect;
 }
 
 void
@@ -756,57 +733,6 @@ ags_automation_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_automation_parent_class)->finalize(gobject);
-}
-
-
-void
-ags_automation_connect(AgsConnectable *connectable)
-{
-  AgsAutomation *automation;
-
-  GList *list;
-  
-  automation = AGS_AUTOMATION(connectable);
-
-  if((AGS_AUTOMATION_CONNECTED & (automation->flags)) != 0){
-    return;
-  }
-
-  automation->flags |= AGS_AUTOMATION_CONNECTED;
-
-  /* acceleration */
-  list = automation->acceleration;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-}
-
-void
-ags_automation_disconnect(AgsConnectable *connectable)
-{
-  AgsAutomation *automation;
-
-  GList *list;
-
-  automation = AGS_AUTOMATION(connectable);
-
-  if((AGS_AUTOMATION_CONNECTED & (automation->flags)) == 0){
-    return;
-  }
-
-  automation->flags &= (~AGS_AUTOMATION_CONNECTED);
-
-  /* acceleration */
-  list = automation->acceleration;
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
 }
 
 /**

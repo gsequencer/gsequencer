@@ -34,7 +34,6 @@
 #include <ags/i18n.h>
 
 void ags_playback_class_init(AgsPlaybackClass *playback);
-void ags_playback_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_playback_init(AgsPlayback *playback);
 void ags_playback_set_property(GObject *gobject,
 			       guint prop_id,
@@ -44,8 +43,6 @@ void ags_playback_get_property(GObject *gobject,
 			       guint prop_id,
 			       GValue *value,
 			       GParamSpec *param_spec);
-void ags_playback_disconnect(AgsConnectable *connectable);
-void ags_playback_connect(AgsConnectable *connectable);
 void ags_playback_dispose(GObject *gobject);
 void ags_playback_finalize(GObject *gobject);
 
@@ -77,34 +74,24 @@ ags_playback_get_type (void)
 
   if(!ags_type_playback){
     static const GTypeInfo ags_playback_info = {
-      sizeof (AgsPlaybackClass),
+      sizeof(AgsPlaybackClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_playback_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsPlayback),
+      sizeof(AgsPlayback),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_playback_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_playback_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_playback = g_type_register_static(G_TYPE_OBJECT,
 					       "AgsPlayback",
 					       &ags_playback_info,
 					       0);
-
-    g_type_add_interface_static(ags_type_playback,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
 
-  return (ags_type_playback);
+  return(ags_type_playback);
 }
 
 void
@@ -174,15 +161,6 @@ ags_playback_class_init(AgsPlaybackClass *playback)
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_CHANNEL,
 				  param_spec);
-}
-
-void
-ags_playback_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
-  connectable->connect = ags_playback_connect;
-  connectable->disconnect = ags_playback_disconnect;
 }
 
 void
@@ -483,35 +461,6 @@ ags_playback_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_playback_parent_class)->finalize(gobject);
-}
-
-void
-ags_playback_connect(AgsConnectable *connectable)
-{
-  AgsPlayback *playback;
-
-  playback = AGS_PLAYBACK(connectable);
-
-  if((AGS_PLAYBACK_CONNECTED & (playback->flags)) != 0){
-    return;
-  }
-
-  playback->flags |= AGS_PLAYBACK_CONNECTED;
-}
-
-void
-ags_playback_disconnect(AgsConnectable *connectable)
-{
-  AgsPlayback *playback;
-
-  playback = AGS_PLAYBACK(connectable);
-
-
-  if((AGS_PLAYBACK_CONNECTED & (playback->flags)) == 0){
-    return;
-  }
-
-  playback->flags &= (~AGS_PLAYBACK_CONNECTED);
 }
 
 /**

@@ -28,7 +28,6 @@
 #include <string.h>
 
 void ags_pattern_class_init(AgsPatternClass *pattern_class);
-void ags_pattern_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_pattern_tactable_interface_init(AgsTactableInterface *tactable);
 void ags_pattern_init(AgsPattern *pattern);
 void ags_pattern_set_property(GObject *gobject,
@@ -41,9 +40,6 @@ void ags_pattern_get_property(GObject *gobject,
 			      GParamSpec *param_spec);
 void ags_pattern_dispose(GObject *gobject);
 void ags_pattern_finalize(GObject *gobject);
-
-void ags_pattern_connect(AgsConnectable *connectable);
-void ags_pattern_disconnect(AgsConnectable *connectable);
 
 void ags_pattern_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
 
@@ -87,12 +83,6 @@ ags_pattern_get_type (void)
       (GInstanceInitFunc) ags_pattern_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_pattern_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     static const GInterfaceInfo ags_tactable_interface_info = {
       (GInterfaceInitFunc) ags_pattern_tactable_interface_init,
       NULL, /* interface_finalize */
@@ -103,10 +93,6 @@ ags_pattern_get_type (void)
 					      "AgsPattern",
 					      &ags_pattern_info,
 					      0);
-
-    g_type_add_interface_static(ags_type_pattern,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_pattern,
 				AGS_TYPE_TACTABLE,
@@ -231,15 +217,6 @@ ags_pattern_class_init(AgsPatternClass *pattern)
   g_object_class_install_property(gobject,
 				  PROP_TIMESTAMP,
 				  param_spec);
-}
-
-void
-ags_pattern_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
-  connectable->connect = ags_pattern_connect;
-  connectable->disconnect = ags_pattern_disconnect;
 }
 
 void
@@ -475,34 +452,6 @@ ags_pattern_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_pattern_parent_class)->finalize(gobject);
-}
-
-void
-ags_pattern_connect(AgsConnectable *connectable)
-{
-  AgsPattern *pattern;
-
-  pattern = AGS_PATTERN(connectable);
-
-  if((AGS_PATTERN_CONNECTED & (pattern->flags)) != 0){
-    return;
-  }
-
-  pattern->flags |= AGS_PATTERN_CONNECTED;
-}
-
-void
-ags_pattern_disconnect(AgsConnectable *connectable)
-{
-  AgsPattern *pattern;
-
-  pattern = AGS_PATTERN(connectable);
-
-  if((AGS_PATTERN_CONNECTED & (pattern->flags)) == 0){
-    return;
-  }
-
-  pattern->flags &= (~AGS_PATTERN_CONNECTED);
 }
 
 void

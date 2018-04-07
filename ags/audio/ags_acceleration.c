@@ -26,7 +26,6 @@
 #include <ags/i18n.h>
 
 void ags_acceleration_class_init(AgsAccelerationClass *acceleration);
-void ags_acceleration_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_acceleration_init(AgsAcceleration *acceleration);
 void ags_acceleration_set_property(GObject *gobject,
 				   guint prop_id,
@@ -36,8 +35,6 @@ void ags_acceleration_get_property(GObject *gobject,
 				   guint prop_id,
 				   GValue *value,
 				   GParamSpec *param_spec);
-void ags_acceleration_connect(AgsConnectable *connectable);
-void ags_acceleration_disconnect(AgsConnectable *connectable);
 void ags_acceleration_finalize(GObject *gobject);
 
 /**
@@ -77,20 +74,10 @@ ags_acceleration_get_type()
       (GInstanceInitFunc) ags_acceleration_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_acceleration_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_acceleration = g_type_register_static(G_TYPE_OBJECT,
 						   "AgsAcceleration",
 						   &ags_acceleration_info,
 						   0);
-    
-    g_type_add_interface_static(ags_type_acceleration,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
 
   return(ags_type_acceleration);
@@ -164,13 +151,6 @@ ags_acceleration_class_init(AgsAccelerationClass *acceleration)
   g_object_class_install_property(gobject,
 				  PROP_ACCELERATION_NAME,
 				  param_spec);
-}
-
-void
-ags_acceleration_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->connect = ags_acceleration_connect;
-  connectable->disconnect = ags_acceleration_disconnect;
 }
 
 void
@@ -259,34 +239,6 @@ ags_acceleration_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_acceleration_connect(AgsConnectable *connectable)
-{
-  AgsAcceleration *acceleration;
-
-  acceleration = AGS_ACCELERATION(connectable);
-
-  if((AGS_ACCELERATION_CONNECTED & (acceleration->flags)) != 0){
-    return;
-  }
-
-  acceleration->flags |= AGS_ACCELERATION_CONNECTED;
-}
-
-void
-ags_acceleration_disconnect(AgsConnectable *connectable)
-{
-  AgsAcceleration *acceleration;
-
-  acceleration = AGS_ACCELERATION(connectable);
-
-  if((AGS_ACCELERATION_CONNECTED & (acceleration->flags)) == 0){
-    return;
-  }
-
-  acceleration->flags &= (~AGS_ACCELERATION_CONNECTED);
 }
 
 void

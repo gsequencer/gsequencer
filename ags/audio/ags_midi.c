@@ -28,7 +28,6 @@
 #include <errno.h>
 
 void ags_midi_class_init(AgsMidiClass *midi);
-void ags_midi_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_midi_init(AgsMidi *midi);
 void ags_midi_set_property(GObject *gobject,
 			   guint prop_id,
@@ -38,8 +37,6 @@ void ags_midi_get_property(GObject *gobject,
 			   guint prop_id,
 			   GValue *value,
 			   GParamSpec *param_spec);
-void ags_midi_connect(AgsConnectable *connectable);
-void ags_midi_disconnect(AgsConnectable *connectable);
 void ags_midi_dispose(GObject *gobject);
 void ags_midi_finalize(GObject *gobject);
 
@@ -81,20 +78,10 @@ ags_midi_get_type()
       (GInstanceInitFunc) ags_midi_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_midi_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_midi = g_type_register_static(G_TYPE_OBJECT,
 					   "AgsMidi",
 					   &ags_midi_info,
 					   0);
-
-    g_type_add_interface_static(ags_type_midi,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
 
   return(ags_type_midi);
@@ -185,15 +172,6 @@ ags_midi_class_init(AgsMidiClass *midi)
 }
 
 void
-ags_midi_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
-  connectable->connect = ags_midi_connect;
-  connectable->disconnect = ags_midi_disconnect;
-}
-
-void
 ags_midi_init(AgsMidi *midi)
 {
   midi->flags = 0;
@@ -217,56 +195,6 @@ ags_midi_init(AgsMidi *midi)
   midi->offset = 0.0;
 
   midi->selection = NULL;
-}
-
-void
-ags_midi_connect(AgsConnectable *connectable)
-{
-  AgsMidi *midi;
-
-  GList *list;
-  
-  midi = AGS_MIDI(connectable);
-
-  if((AGS_MIDI_CONNECTED & (midi->flags)) != 0){
-    return;
-  }
-
-  midi->flags |= AGS_MIDI_CONNECTED;
-
-  /* track */
-  list = midi->track;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-}
-
-void
-ags_midi_disconnect(AgsConnectable *connectable)
-{
-  AgsMidi *midi;
-
-  GList *list;
-
-  midi = AGS_MIDI(connectable);
-
-  if((AGS_MIDI_CONNECTED & (midi->flags)) == 0){
-    return;
-  }
-
-  midi->flags &= (~AGS_MIDI_CONNECTED);
-
-  /* track */
-  list = midi->track;
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
 }
 
 void

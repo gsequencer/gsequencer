@@ -28,7 +28,6 @@
 #include <errno.h>
 
 void ags_wave_class_init(AgsWaveClass *wave);
-void ags_wave_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_wave_init(AgsWave *wave);
 void ags_wave_set_property(GObject *gobject,
 			   guint prop_id,
@@ -38,8 +37,6 @@ void ags_wave_get_property(GObject *gobject,
 			   guint prop_id,
 			   GValue *value,
 			   GParamSpec *param_spec);
-void ags_wave_connect(AgsConnectable *connectable);
-void ags_wave_disconnect(AgsConnectable *connectable);
 void ags_wave_dispose(GObject *gobject);
 void ags_wave_finalize(GObject *gobject);
 void ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
@@ -90,20 +87,10 @@ ags_wave_get_type()
       (GInstanceInitFunc) ags_wave_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_wave_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_wave = g_type_register_static(G_TYPE_OBJECT,
 					   "AgsWave",
 					   &ags_wave_info,
 					   0);
-
-    g_type_add_interface_static(ags_type_wave,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
 
   return(ags_type_wave);
@@ -248,15 +235,6 @@ ags_wave_class_init(AgsWaveClass *wave)
 }
 
 void
-ags_wave_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
-  connectable->connect = ags_wave_connect;
-  connectable->disconnect = ags_wave_disconnect;
-}
-
-void
 ags_wave_init(AgsWave *wave)
 {
   wave->flags = 0;
@@ -284,56 +262,6 @@ ags_wave_init(AgsWave *wave)
   wave->offset = 0.0;
 
   wave->selection = NULL;
-}
-
-void
-ags_wave_connect(AgsConnectable *connectable)
-{
-  AgsWave *wave;
-
-  GList *list;
-  
-  wave = AGS_WAVE(connectable);
-
-  if((AGS_WAVE_CONNECTED & (wave->flags)) != 0){
-    return;
-  }
-
-  wave->flags |= AGS_WAVE_CONNECTED;
-
-  /* buffer */
-  list = wave->buffer;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-}
-
-void
-ags_wave_disconnect(AgsConnectable *connectable)
-{
-  AgsWave *wave;
-
-  GList *list;
-
-  wave = AGS_WAVE(connectable);
-
-  if((AGS_WAVE_CONNECTED & (wave->flags)) == 0){
-    return;
-  }
-
-  wave->flags &= (~AGS_WAVE_CONNECTED);
-
-  /* buffer */
-  list = wave->buffer;
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
 }
 
 void
