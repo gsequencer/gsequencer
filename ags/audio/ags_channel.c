@@ -1922,6 +1922,8 @@ ags_channel_dispose(GObject *gobject)
   
   channel = AGS_CHANNEL(gobject);
 
+  ags_connectable_disconnect(AGS_CONNECTABLE(channel));
+
   /* audio */
   dispose_recycling = FALSE;
 

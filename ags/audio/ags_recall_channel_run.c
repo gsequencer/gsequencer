@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,12 +38,8 @@
 
 #include <ags/i18n.h>
 
-#include <ags/audio/recall/ags_copy_pattern_channel_run.h>
-
 void ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run);
 void ags_recall_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_recall_channel_run_packable_interface_init(AgsPackableInterface *packable);
-void ags_recall_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_recall_channel_run_init(AgsRecallChannelRun *recall_channel_run);
 void ags_recall_channel_run_set_property(GObject *gobject,
 					 guint prop_id,
@@ -53,14 +49,15 @@ void ags_recall_channel_run_get_property(GObject *gobject,
 					 guint prop_id,
 					 GValue *value,
 					 GParamSpec *param_spec);
-void ags_recall_channel_run_connect(AgsConnectable *connectable);
-void ags_recall_channel_run_disconnect(AgsConnectable *connectable);
-gboolean ags_recall_channel_run_pack(AgsPackable *packable, GObject *container);
-gboolean ags_recall_channel_run_unpack(AgsPackable *packable);
-void ags_recall_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_recall_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_recall_channel_run_dispose(GObject *gobject);
 void ags_recall_channel_run_finalize(GObject *gobject);
+
+void ags_recall_channel_run_notify_recall_container_callback(GObject *gobject,
+							     GParamSpec *pspec,
+							     gpointer user_data);
+
+void ags_recall_channel_run_connect(AgsConnectable *connectable);
+void ags_recall_channel_run_disconnect(AgsConnectable *connectable);
 
 void ags_recall_channel_run_remove(AgsRecall *recall);
 AgsRecall* ags_recall_channel_run_duplicate(AgsRecall *recall,
@@ -118,8 +115,6 @@ enum{
 
 static gpointer ags_recall_channel_run_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_channel_run_parent_connectable_interface;
-static AgsPackableInterface* ags_recall_channel_run_parent_packable_interface;
-static AgsDynamicConnectableInterface *ags_recall_channel_run_parent_dynamic_connectable_interface;
 
 static guint recall_channel_run_signals[LAST_SIGNAL];
 
@@ -147,18 +142,6 @@ ags_recall_channel_run_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_packable_interface_info = {
-      (GInterfaceInitFunc) ags_recall_channel_run_packable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_recall_channel_run_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_recall_channel_run = g_type_register_static(AGS_TYPE_RECALL,
 							 "AgsRecallChannelRun",
 							 &ags_recall_channel_run_info,
@@ -167,14 +150,6 @@ ags_recall_channel_run_get_type()
     g_type_add_interface_static(ags_type_recall_channel_run,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_recall_channel_run,
-				AGS_TYPE_PACKABLE,
-				&ags_packable_interface_info);
-    
-    g_type_add_interface_static(ags_type_recall_channel_run,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
   }
 
   return(ags_type_recall_channel_run);
@@ -322,26 +297,11 @@ ags_recall_channel_run_connectable_interface_init(AgsConnectableInterface *conne
 }
 
 void
-ags_recall_channel_run_packable_interface_init(AgsPackableInterface *packable)
-{
-  ags_recall_channel_run_parent_packable_interface = g_type_interface_peek_parent(packable);
-
-  packable->pack = ags_recall_channel_run_pack;
-  packable->unpack = ags_recall_channel_run_unpack;
-}
-
-void
-ags_recall_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_recall_channel_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_recall_channel_run_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_recall_channel_run_disconnect_dynamic;
-}
-
-void
 ags_recall_channel_run_init(AgsRecallChannelRun *recall_channel_run)
 {
+  g_signal_connect_after(recall_channel_run, "notify::recall-container",
+			 G_CALLBACK(ags_recall_channel_run_notify_recall_container_callback), NULL);
+
   recall_channel_run->audio_channel = 0;
 
   recall_channel_run->recall_audio_run = NULL;
@@ -523,22 +483,6 @@ ags_recall_channel_run_dispose(GObject *gobject)
   AgsRecallChannelRun *recall_channel_run;
 
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(gobject);
-
-  /* unpack */
-  ags_packable_unpack(AGS_PACKABLE(recall_channel_run));
-
-  if(AGS_RECALL(gobject)->container != NULL){
-    AgsRecallContainer *recall_container;
-
-    recall_container = AGS_RECALL(gobject)->container;
-
-    recall_container->recall_channel_run = g_list_remove(recall_container->recall_channel_run,
-							 gobject);
-    g_object_unref(gobject);
-    g_object_unref(AGS_RECALL(gobject)->container);
-
-    AGS_RECALL(gobject)->container = NULL;
-  }
   
   /* recall audio run */
   if(recall_channel_run->recall_audio_run != NULL){
@@ -614,21 +558,95 @@ ags_recall_channel_run_finalize(GObject *gobject)
 }
 
 void
+ags_recall_channel_run_notify_recall_container_callback(GObject *gobject,
+							GParamSpec *pspec,
+							gpointer user_data)
+{
+  AgsChannel *source;
+  AgsRecallContainer *recall_container;
+  AgsRecallChannelRun *recall_channel_run;
+  
+  recall_channel_run = AGS_RECALL_CHANNEL_RUN(gobject);
+
+  source = recall_channel_run->source;
+
+  recall_container = AGS_RECALL(recall_channell_run)->recall_container;
+  
+  if(recall_container != NULL){
+    AgsRecallID *recall_id;
+    AgsRecyclingContext *recycling_context;
+    
+    GList *list_start, *list;
+
+    guint recall_flags;
+
+    recall_flags = AGS_RECALL(recall_channell_run)->flags;
+
+    recall_id = AGS_RECALL(recall_channell_run)->recall_id;
+
+    recycling_context = recall_id->recycling_context;
+
+    /* recall audio run */
+    g_object_get(recall_container,
+		 "recall-audio-run", &list_start,
+		 NULL);
+
+    if(recall_id != NULL){
+      if((list = ags_recall_find_recycling_context(list_start,
+						   (GObject *) recycling_context)) != NULL){
+	g_object_set(recall_channel_run,
+		     "recall-audio-run", list->data,
+		     NULL);
+      }
+    }else if((AGS_RECALL_TEMPLATE & (recall_flags)) != 0){      
+      if((list = ags_recall_find_template(list_start)) != NULL){
+	recall_audio_run = AGS_RECALL_AUDIO_RUN(list->data);
+	
+	g_object_set(recall_channel_run,
+		     "recall-audio-run", list->data,
+		     NULL);
+      }
+    }
+
+    g_list_free(list_start);
+
+    /* recall channel */
+    g_object_get(recall_container,
+		 "recall-channel", &list_start,
+		 NULL);
+    
+    if((list = ags_recall_find_provider(list_start,
+					source)) != NULL){
+      g_object_set(recall_channel_run,
+		   "recall-channel", list->data,
+		   NULL);
+    }
+
+    g_list_free(list_start);
+  }else{
+    g_object_set(recall_channel_run,
+		 "recall-audio-run", NULL,
+		 "recall-channel", NULL,
+		 NULL);
+  }
+}
+
+void
 ags_recall_channel_run_connect(AgsConnectable *connectable)
 {
   AgsRecallChannelRun *recall_channel_run;
 
   GObject *gobject;
 
-  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
   ags_recall_channel_run_parent_connectable_interface->connect(connectable);
 
-  /* AgsCopyChannelRun */
+  /* recall channel run */
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(connectable);
-
+  
   /* destination */
   if(recall_channel_run->destination != NULL){
     gobject = G_OBJECT(recall_channel_run->destination);
@@ -654,13 +672,15 @@ ags_recall_channel_run_disconnect(AgsConnectable *connectable)
 
   GObject *gobject;
 
-  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) == 0){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
-  /* AgsRecallChannelRun */
-  recall_channel_run = AGS_RECALL_CHANNEL_RUN(connectable);
+  ags_recall_channel_run_parent_connectable_interface->disconnect(connectable);
 
+  /* recall channel run */
+  recall_channel_run = AGS_RECALL_CHANNEL_RUN(connectable);
+  
   /* destination */
   if(recall_channel_run->destination != NULL){
     gobject = G_OBJECT(recall_channel_run->destination);
@@ -682,145 +702,6 @@ ags_recall_channel_run_disconnect(AgsConnectable *connectable)
 			recall_channel_run,
 			NULL);
   }
-
-  /* call parent */
-  ags_recall_channel_run_parent_connectable_interface->disconnect(connectable);
-}
-
-gboolean
-ags_recall_channel_run_pack(AgsPackable *packable, GObject *container)
-{
-  AgsRecallAudioRun *recall_audio_run;
-  AgsRecallContainer *recall_container;
-  GList *list;
-  AgsRecallID *recall_id;
-
-  if(ags_recall_channel_run_parent_packable_interface->pack(packable, container)){
-    return(TRUE);
-  }
-
-  //  g_message("pack b %d", (AGS_IS_COPY_PATTERN_CHANNEL_RUN(packable) ? TRUE: FALSE));
-
-  recall_container = AGS_RECALL_CONTAINER(container);
-
-  /* set AgsRecallAudioRun */
-  list = recall_container->recall_audio_run;
-
-  if(AGS_RECALL(packable)->recall_id != NULL){
-    recall_id = AGS_RECALL(packable)->recall_id;
-      
-    list = ags_recall_find_recycling_context(list,
-					     (GObject *) recall_id->recycling_context);
-
-    if(list != NULL){
-      recall_audio_run = AGS_RECALL_AUDIO_RUN(list->data);
-
-      g_object_set(G_OBJECT(packable),
-		   "recall-audio-run", recall_audio_run,
-		   NULL);
-    }
-  }else if((AGS_RECALL_TEMPLATE & (AGS_RECALL(packable)->flags)) != 0){
-    list = ags_recall_find_template(list);
-
-    if(list != NULL){
-      recall_audio_run = AGS_RECALL_AUDIO_RUN(list->data);
-
-      g_object_set(G_OBJECT(packable),
-		   "recall-audio-run", recall_audio_run,
-		   NULL);
-    }
-  }
-
-  /* set AgsRecallChannel */
-  if(AGS_RECALL_CHANNEL_RUN(packable)->source != NULL){
-    list = recall_container->recall_channel;
-
-    if((list = ags_recall_find_provider(list,
-					G_OBJECT(AGS_RECALL_CHANNEL_RUN(packable)->source))) != NULL){
-      g_object_set(G_OBJECT(packable),
-		   "recall-channel", AGS_RECALL_CHANNEL(list->data),
-		   NULL);
-    }
-  }
-
-  g_object_set(G_OBJECT(recall_container),
-	       "recall-channel-run", AGS_RECALL(packable),
-	       NULL);
-
-  return(FALSE);
-}
-
-gboolean
-ags_recall_channel_run_unpack(AgsPackable *packable)
-{
-  AgsRecall *recall;
-  AgsRecallContainer *recall_container;
-  GList *list;
-  AgsRecallID *recall_id;
-
-  recall = AGS_RECALL(packable);
-
-  if(recall == NULL){
-    return(TRUE);
-  }
-
-  recall_container = AGS_RECALL_CONTAINER(recall->container);
-
-  if(recall_container == NULL){
-    return(TRUE);
-  }
-
-  /* ref */
-  g_object_ref(recall);
-  g_object_ref(recall_container);
-
-  /* unset AgsRecallAudioRun */
-  g_object_set(G_OBJECT(packable),
-	       "recall_audio_run", NULL,
-	       NULL);
-
-  /* unset AgsRecallChannel */
-  g_object_set(G_OBJECT(packable),
-	       "recall_channel", NULL,
-	       NULL);
-
-  /* call parent */
-  if(ags_recall_channel_run_parent_packable_interface->unpack(packable)){
-    g_object_unref(recall);
-    g_object_unref(recall_container);
-
-    return(TRUE);
-  }
-
-  /* remove from list */
-  recall_container->recall_channel_run = g_list_remove(recall_container->recall_channel_run,
-						       recall);
-
-  /* unref */
-  g_object_unref(recall);
-  g_object_unref(recall_container);
-
-  return(FALSE);
-}
-
-void
-ags_recall_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
-    return;
-  }
-
-  ags_recall_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
-ags_recall_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  ags_recall_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-
-  /* empty */
 }
 
 void

@@ -1534,6 +1534,8 @@ ags_recall_dispose(GObject *gobject)
 
   recall = AGS_RECALL(gobject);
 
+  ags_connectable_disconnect(AGS_CONNECTABLE(recall));
+  
   /* recall container */
   if(recall->recall_container != NULL){
     g_object_unref(recall->recall_container);
@@ -1990,13 +1992,20 @@ ags_recall_disconnect(AgsConnectable *connectable)
 
   while(list != NULL){
     AgsRecallHandler *recall_handler;
+
+    gchar *signal_name;
     
     recall_handler = AGS_RECALL_HANDLER(list->data);
+
+    signal_name = g_strdup_printf("any_signal::%s",
+				  recall_handler->signal_name);
     g_object_disconnect(G_OBJECT(recall),
-			recall_handler->signal_name,
+			signal_name,
 			G_CALLBACK(recall_handler->callback),
 			recall_handler->data,
 			NULL);
+
+    g_free(signal_name);
 
     list = list->next;
   }

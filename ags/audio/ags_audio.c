@@ -2755,6 +2755,8 @@ ags_audio_dispose(GObject *gobject)
   pthread_mutex_t *play_mutex, *recall_mutex;
 
   audio = AGS_AUDIO(gobject);
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(audio));
   
   /* soundcard */
   if(audio->output_soundcard != NULL){    
