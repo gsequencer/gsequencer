@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -128,7 +128,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    *
    * The associated recall type within audio context.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_gtype("recall-audio-type",
 				  i18n_pspec("audio level recall type"),
@@ -144,7 +144,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    *
    * The associated recall within audio context.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("recall-audio",
 				   i18n_pspec("audio level recall"),
@@ -160,7 +160,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    *
    * The associated recall type within dynamic audio context.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_gtype("recall-audio-run-type",
 				  i18n_pspec("audio runlevel recall type"),
@@ -176,7 +176,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    *
    * The associated recall within dynamic audio context.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("recall-audio-run",
 				   i18n_pspec("audio runlevel recall"),
@@ -192,7 +192,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    *
    * The associated recall type within channel context.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_gtype("recall-channel-type",
 				  i18n_pspec("channel level recall type"),
@@ -208,7 +208,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    *
    * The associated recall within channel context.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
  param_spec = g_param_spec_object("recall-channel",
 				  i18n_pspec("channel level recall"),
@@ -224,7 +224,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    *
    * The associated recall type within dynamic channel context.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_gtype("recall-channel-run-type",
 				  i18n_pspec("channel runlevel recall type"),
@@ -240,7 +240,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
    *
    * The associated recall within dynamic channel context.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("recall-channel-run",
 				   i18n_pspec("channel runlevel recall"),
@@ -313,6 +313,7 @@ ags_recall_container_set_property(GObject *gobject,
     break;
   case PROP_RECALL_AUDIO:
     {
+      AgsAudio *audio;
       AgsRecallAudio *recall_audio;
 
       recall_audio = (AgsRecallAudio *) g_value_get_object(value);
@@ -329,6 +330,54 @@ ags_recall_container_set_property(GObject *gobject,
       }
 
       recall_container->recall_audio = (AgsRecall *) recall_audio;
+
+      /* set recall audio - recall audio run */
+      audio = recall_audio->audio;
+      
+      list =
+	list_start = g_list_copy(recall_container->recall_audio_run);
+
+      while(list != NULL){
+	g_object_set(G_OBJECT(list->data),
+		     "recall-audio", recall_audio,
+		     NULL);
+
+	list = list->next;
+      }
+
+      g_list_free(list_start);
+
+      /* set recall audio - recall channel */
+      audio = recall_audio->audio;
+      
+      list =
+	list_start = g_list_copy(recall_container->recall_channel);
+
+      while(list != NULL){
+	g_object_set(G_OBJECT(list->data),
+		     "recall-audio", recall_audio,
+		     NULL);
+
+	list = list->next;
+      }
+
+      g_list_free(list_start);
+
+      /* set recall audio - recall channel run */
+      audio = recall_audio->audio;
+      
+      list =
+	list_start = g_list_copy(recall_container->recall_channel_run);
+
+      while(list != NULL){
+	g_object_set(G_OBJECT(list->data),
+		     "recall-audio", recall_audio,
+		     NULL);
+
+	list = list->next;
+      }
+
+      g_list_free(list_start);
     }
     break;
   case PROP_RECALL_AUDIO_RUN_TYPE:
@@ -343,7 +392,9 @@ ags_recall_container_set_property(GObject *gobject,
   case PROP_RECALL_AUDIO_RUN:
     {
       AgsRecallAudioRun *recall_audio_run;
-
+      AgsRecallID *recall_id;
+      AgsRecyclingContext *recycling_context;
+      
       recall_audio_run = (AgsRecallAudioRun *) g_value_get_object(value);
 
       if(recall_audio_run == NULL ||
@@ -357,6 +408,39 @@ ags_recall_container_set_property(GObject *gobject,
 
       recall_container->recall_audio_run = g_list_prepend(recall_container->recall_audio_run,
 							  recall_audio_run);
+
+      /* set recall audio run - recall channel run */
+      recall_id = AGS_RECALL(recall_channell_run)->recall_id;
+
+      recycling_context = recall_id->recycling_context;
+      
+      list =
+	list_start = g_list_copy(recall_container->recall_channel_run);
+
+      if(recall_id != NULL){
+	recycling_context = recall_id->recycling_context;
+
+	while((list = ags_recall_find_recycling_context(list,
+							(GObject *) recycling_context)) != NULL){
+	  g_object_set(list->data,
+		       "recall-audio-run", recall_audio_run,
+		       NULL);
+
+	  list = list->next;
+	}
+      }else if((AGS_RECALL_TEMPLATE & (recall_flags)) != 0){      
+	while((list = ags_recall_find_template(list_start)) != NULL){
+	  recall_audio_run = AGS_RECALL_AUDIO_RUN(list->data);
+	
+	  g_object_set(list->data,
+		       "recall-audio-run", recall_audio_run,
+		       NULL);
+
+	  list = list->next;
+	}
+      }
+      
+      g_list_free(list_start);
     }
     break;
   case PROP_RECALL_CHANNEL_TYPE:
@@ -370,7 +454,10 @@ ags_recall_container_set_property(GObject *gobject,
     break;
   case PROP_RECALL_CHANNEL:
     {
+      AgsChannel *source;
       AgsRecallChannel *recall_channel;
+
+      GList *list_start, *list;
 
       recall_channel = (AgsRecallChannel *) g_value_get_object(value);
 
@@ -379,10 +466,25 @@ ags_recall_container_set_property(GObject *gobject,
 	return;
       }
 
-      g_object_ref(G_OBJECT(recall_channel));
-      
+      g_object_ref(G_OBJECT(recall_channel));      
       recall_container->recall_channel = g_list_prepend(recall_container->recall_channel,
 							recall_channel);
+
+      /* set recall channel - recall channel run */
+      source = recall_channel->source;
+      
+      list =
+	list_start = g_list_copy(recall_container->recall_channel_run);
+
+      while((list = ags_recall_find_provider(list, source)) != NULL){
+	g_object_set(G_OBJECT(list->data),
+		     "recall-channel", recall_channel,
+		     NULL);
+
+	list = list->next;
+      }
+
+      g_list_free(list_start);
     }
     break;
   case PROP_RECALL_CHANNEL_RUN_TYPE:

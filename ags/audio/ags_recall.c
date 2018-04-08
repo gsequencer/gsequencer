@@ -4303,64 +4303,64 @@ ags_recall_find_recycling_context(GList *recall_i, GObject *recycling_context)
 
 /**
  * ags_recall_find_provider:
- * @recall_i: a #GList containing recalls
+ * @recall: a #GList-struct containing recalls
  * @provider: a #GObject
  * 
  * Finds next matching recall for type which has @provider. The @provider may be either an #AgsChannel
  * or an #AgsAudio object. This function tries to find the corresponding #AgsRecallChannel and #AgsRecallAudio
  * objects of a #AgsRecall to find. If these recalls contains the @provider, the function will return.
  *
- * Returns: a #GList containing recalls, or %NULL if not found
+ * Returns: a #GList-struct containing recalls, or %NULL if not found
  *
  * Since: 1.0.0
  */
 GList*
-ags_recall_find_provider(GList *recall_i, GObject *provider)
+ags_recall_find_provider(GList *recall, GObject *provider)
 {
-  AgsRecall *recall;
+  while(recall != NULL){
+    AgsRecall *current;
 
-  while(recall_i != NULL){
-    recall = AGS_RECALL(recall_i->data);
+    current = AGS_RECALL(recall->data);
 
     if(AGS_IS_AUDIO(provider)){
-      if(AGS_IS_RECALL_AUDIO(recall)){
-	if(((GObject *) AGS_RECALL_AUDIO(recall)->audio) == provider){
-	  return(recall_i);
+      if(AGS_IS_RECALL_AUDIO(current)){
+	if(((GObject *) AGS_RECALL_AUDIO(current)->audio) == provider){
+	  return(recall);
 	}
-      }else if(AGS_IS_RECALL_AUDIO_RUN(recall)){
+      }else if(AGS_IS_RECALL_AUDIO_RUN(current)){
 	AgsRecallAudio *recall_audio;
 
-	recall_audio = AGS_RECALL_AUDIO_RUN(recall)->recall_audio;
+	recall_audio = AGS_RECALL_AUDIO_RUN(current)->recall_audio;
 
 	if(recall_audio != NULL &&
 	   ((GObject *) recall_audio->audio) == provider){
-	  return(recall_i);
+	  return(recall);
 	}
       }
     }else if(AGS_IS_CHANNEL(provider)){
-      if(AGS_IS_RECALL_CHANNEL(recall)){
-	if(((GObject *) AGS_RECALL_CHANNEL(recall)->source) == provider)
-	  return(recall_i);
-      }else if(AGS_IS_RECALL_CHANNEL_RUN(recall)){
-	if(((GObject *) AGS_RECALL_CHANNEL_RUN(recall)->source) == provider){
-	  return(recall_i);
+      if(AGS_IS_RECALL_CHANNEL(current)){
+	if(((GObject *) AGS_RECALL_CHANNEL(current)->source) == provider)
+	  return(recall);
+      }else if(AGS_IS_RECALL_CHANNEL_RUN(current)){
+	if(((GObject *) AGS_RECALL_CHANNEL_RUN(current)->source) == provider){
+	  return(recall);
 	}
       }
     }else if(AGS_IS_RECYCLING(provider)){
-      if(AGS_IS_RECALL_RECYCLING(recall)){
-	if(((GObject *) AGS_RECALL_RECYCLING(recall)->source) == provider){
-	  return(recall_i);
+      if(AGS_IS_RECALL_RECYCLING(current)){
+	if(((GObject *) AGS_RECALL_RECYCLING(current)->source) == provider){
+	  return(recall);
 	}
       }
     }else if(AGS_IS_AUDIO_SIGNAL(provider)){
-      if(AGS_IS_RECALL_AUDIO_SIGNAL(recall)){
-	if(((GObject *) AGS_RECALL_AUDIO_SIGNAL(recall)->source) == provider){
-	  return(recall_i);
+      if(AGS_IS_RECALL_AUDIO_SIGNAL(current)){
+	if(((GObject *) AGS_RECALL_AUDIO_SIGNAL(current)->source) == provider){
+	  return(recall);
 	}
       }
     }
 
-    recall_i = recall_i->next;
+    recall = recall->next;
   }
 
   return(NULL);

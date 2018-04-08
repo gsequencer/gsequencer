@@ -86,9 +86,6 @@ void ags_recall_channel_run_destination_recycling_changed_callback(AgsChannel *c
 								   AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
 								   AgsRecallChannelRun *recall_channel_run);
 
-void ags_recall_channel_run_real_run_order_changed(AgsRecallChannelRun *recall_channel_run,
-						   guint run_order);
-
 /**
  * SECTION:ags_recall_channel_run
  * @short_description: dynamic channel context of recall
@@ -100,23 +97,16 @@ void ags_recall_channel_run_real_run_order_changed(AgsRecallChannelRun *recall_c
  */
 
 enum{
-  RUN_ORDER_CHANGED,
-  LAST_SIGNAL,
-};
-
-enum{
   PROP_0,
-  PROP_AUDIO_CHANNEL,
-  PROP_DESTINATION,
-  PROP_SOURCE,
+  PROP_RECALL_AUDIO,
   PROP_RECALL_AUDIO_RUN,
   PROP_RECALL_CHANNEL,
+  PROP_DESTINATION,
+  PROP_SOURCE,
 };
 
 static gpointer ags_recall_channel_run_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_channel_run_parent_connectable_interface;
-
-static guint recall_channel_run_signals[LAST_SIGNAL];
 
 GType
 ags_recall_channel_run_get_type()
@@ -175,29 +165,27 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
 
   /* properties */
   /**
-   * AgsRecallChannelRun:audio-channel:
+   * AgsRecallChannelRun:recall-audio:
    *
-   * The audio channel to output.
+   * The audio context of this recall.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec = g_param_spec_uint("audio-channel",
-				 i18n_pspec("assigned audio channel"),
-				 i18n_pspec("The audio channel this recall is assigned to"),
-				 0, 65535,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_object("recall-audio",
+				   i18n_pspec("AgsRecallAudio of this recall"),
+				   i18n_pspec("The AgsRecallAudio which this recall needs"),
+				   AGS_TYPE_RECALL_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_AUDIO_CHANNEL,
+				  PROP_RECALL_AUDIO,
 				  param_spec);
-
 
   /**
    * AgsRecallChannelRun:recall-audio-run:
    *
-   * The audio run opposite of this recall.
+   * The audio run context of this recall.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("recall-audio-run",
 				   i18n_pspec("AgsRecallAudioRun of this recall"),
@@ -213,7 +201,7 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
    *
    * The channel context of this recall.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("recall-channel",
 				   i18n_pspec("AsgRecallChannel of this recall"),
@@ -229,7 +217,7 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
    *
    * The channel to do output to.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("destination",
 				   i18n_pspec("destination of output"),
@@ -245,7 +233,7 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
    *
    * The channel to do input from.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("source",
 				   i18n_pspec("source of input"),
@@ -261,28 +249,6 @@ ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run)
 
   recall->duplicate = ags_recall_channel_run_duplicate;
   recall->remove = ags_recall_channel_run_remove;
-
-  /* AgsRecallChannelRunClass */
-  recall_channel_run->run_order_changed = ags_recall_channel_run_real_run_order_changed;
-
-  /* signals */
-  /**
-   * AgsRecallChannelRun::run-order-changed:
-   * @recall_channel_run: the object run order changed
-   * @run_order: nth run of parent recycling. 
-   *
-   * The ::run-order-changed signal is invoked as changing link of destination
-   * during playback.
-   */
-  recall_channel_run_signals[RUN_ORDER_CHANGED] =
-    g_signal_new("run-order-changed",
-		 G_TYPE_FROM_CLASS (recall_channel_run),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsRecallChannelRunClass, run_order_changed),
-		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT,
-		 G_TYPE_NONE, 1,
-		 G_TYPE_UINT);
 }
 
 void
@@ -302,15 +268,12 @@ ags_recall_channel_run_init(AgsRecallChannelRun *recall_channel_run)
   g_signal_connect_after(recall_channel_run, "notify::recall-container",
 			 G_CALLBACK(ags_recall_channel_run_notify_recall_container_callback), NULL);
 
-  recall_channel_run->audio_channel = 0;
-
+  recall_channel_run->recall_audio = NULL;
   recall_channel_run->recall_audio_run = NULL;
   recall_channel_run->recall_channel = NULL;
 
   recall_channel_run->source = NULL;
   recall_channel_run->destination = NULL;
-
-  recall_channel_run->run_order = 0;
 }
 
 
@@ -325,11 +288,6 @@ ags_recall_channel_run_set_property(GObject *gobject,
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(gobject);
 
   switch(prop_id){
-  case PROP_AUDIO_CHANNEL:
-    {
-      recall_channel_run->audio_channel = g_value_get_uint(value);
-    }
-    break;
   case PROP_RECALL_AUDIO_RUN:
     {
       AgsRecallAudioRun *recall_audio_run;
@@ -446,9 +404,9 @@ ags_recall_channel_run_get_property(GObject *gobject,
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(gobject);
 
   switch(prop_id){
-  case PROP_AUDIO_CHANNEL:
+  case PROP_RECALL_AUDIO:
     {
-      g_value_set_uint(value, recall_channel_run->audio_channel);
+      g_value_set_object(value, recall_channel_run->recall_audio);
     }
     break;
   case PROP_RECALL_AUDIO_RUN:
@@ -570,9 +528,10 @@ ags_recall_channel_run_notify_recall_container_callback(GObject *gobject,
 
   source = recall_channel_run->source;
 
-  recall_container = AGS_RECALL(recall_channell_run)->recall_container;
+  recall_container = AGS_RECALL(recall_channel_run)->recall_container;
   
   if(recall_container != NULL){
+    AgsRecallAudio *recall_audio;
     AgsRecallID *recall_id;
     AgsRecyclingContext *recycling_context;
     
@@ -580,18 +539,27 @@ ags_recall_channel_run_notify_recall_container_callback(GObject *gobject,
 
     guint recall_flags;
 
-    recall_flags = AGS_RECALL(recall_channell_run)->flags;
+    recall_flags = AGS_RECALL(recall_channel_run)->flags;
 
-    recall_id = AGS_RECALL(recall_channell_run)->recall_id;
+    recall_id = AGS_RECALL(recall_channel_run)->recall_id;
 
-    recycling_context = recall_id->recycling_context;
-
+    /* recall audio */
+    g_object_get(recall_container,
+		 "recall-audio", &recall_audio,
+		 NULL);
+    
+    g_object_set(recall_channel_run,
+		 "recall-audio", recall_audio,
+		 NULL);
+    
     /* recall audio run */
     g_object_get(recall_container,
 		 "recall-audio-run", &list_start,
 		 NULL);
 
     if(recall_id != NULL){
+      recycling_context = recall_id->recycling_context;
+      
       if((list = ags_recall_find_recycling_context(list_start,
 						   (GObject *) recycling_context)) != NULL){
 	g_object_set(recall_channel_run,
@@ -599,9 +567,7 @@ ags_recall_channel_run_notify_recall_container_callback(GObject *gobject,
 		     NULL);
       }
     }else if((AGS_RECALL_TEMPLATE & (recall_flags)) != 0){      
-      if((list = ags_recall_find_template(list_start)) != NULL){
-	recall_audio_run = AGS_RECALL_AUDIO_RUN(list->data);
-	
+      if((list = ags_recall_find_template(list_start)) != NULL){	
 	g_object_set(recall_channel_run,
 		     "recall-audio-run", list->data,
 		     NULL);
@@ -625,6 +591,7 @@ ags_recall_channel_run_notify_recall_container_callback(GObject *gobject,
     g_list_free(list_start);
   }else{
     g_object_set(recall_channel_run,
+		 "recall-audio", NULL,
 		 "recall-audio-run", NULL,
 		 "recall-channel", NULL,
 		 NULL);
@@ -754,22 +721,6 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 						copy->source->first_recycling, copy->source->last_recycling);
     }
   }
-
-  //TODO:JK: remove because run order isn't used anymore
-  /*
-    if(recall_id->recycling_context->parent != NULL){
-    copy->run_order = g_list_index(recall_id->recycling_context->parent->children,
-    recall_id->recycling_context);
-  }else if(copy->destination != NULL){
-    copy->run_order = copy->destination->audio_channel;
-  }else{
-    AgsRecycling *recycling;
-
-    recycling = AGS_RECYCLING(recall_id->recycling);
-
-    copy->run_order = AGS_CHANNEL(recycling->channel)->audio_channel;
-  }
-  */
 
   return((AgsRecall *) copy);
 }
@@ -1004,35 +955,6 @@ ags_recall_channel_run_destination_recycling_changed_callback(AgsChannel *channe
 							      AgsRecallChannelRun *recall_channel_run)
 {
   /* empty */
-}
-
-void
-ags_recall_channel_run_real_run_order_changed(AgsRecallChannelRun *recall_channel_run,
-					      guint run_order)
-{
-  recall_channel_run->run_order = run_order;
-}
-
-/**
- * ags_recall_channel_run_run_order_changed:
- * @recall_channel_run: an #AgsRecallChannelRun
- * @run_order: the run order
- *
- * Modify run order.
- *
- * Since: 1.0.0
- */
-void
-ags_recall_channel_run_run_order_changed(AgsRecallChannelRun *recall_channel_run,
-					 guint run_order)
-{
-  g_return_if_fail(AGS_IS_RECALL(recall_channel_run));
-
-  g_object_ref(G_OBJECT(recall_channel_run));
-  g_signal_emit(G_OBJECT(recall_channel_run),
-		recall_channel_run_signals[RUN_ORDER_CHANGED], 0,
-		run_order);
-  g_object_unref(G_OBJECT(recall_channel_run));
 }
 
 /**

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,30 +43,21 @@ struct _AgsRecallChannelRun
 {
   AgsRecall recall;
 
-  guint audio_channel;
-
-  AgsRecallChannel *recall_channel;
+  AgsRecallAudio *recall_audio;
   AgsRecallAudioRun *recall_audio_run;
 
+  AgsRecallChannel *recall_channel;
+
   AgsChannel *destination;
-
   AgsChannel *source;
-
-  guint run_order;
 };
 
 struct _AgsRecallChannelRunClass
 {
   AgsRecallClass recall;
-
-  void (*run_order_changed)(AgsRecallChannelRun *recall_channel_run,
-			    guint nth_run);
 };
 
 GType ags_recall_channel_run_get_type();
-
-void ags_recall_channel_run_run_order_changed(AgsRecallChannelRun *recall_channel_run,
-					      guint run_order);
 
 AgsRecallChannelRun* ags_recall_channel_run_new();
 

@@ -40,6 +40,8 @@ struct _AgsRecallChannel
 {
   AgsRecall recall;
 
+  AgsRecallAudio *recall_audio;
+  
   AgsChannel *destination;
   AgsChannel *source;
 };
@@ -51,7 +53,7 @@ struct _AgsRecallChannelClass
 
 GType ags_recall_channel_get_type();
 
-GList* ags_recall_channel_find_channel(GList *recall_channel_i, AgsChannel *source);
+GList* ags_recall_channel_find_channel(GList *recall_channel, AgsChannel *source);
 
 AgsRecallChannel* ags_recall_channel_new();
 

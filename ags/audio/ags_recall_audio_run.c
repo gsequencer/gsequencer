@@ -33,8 +33,6 @@
 
 void ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run);
 void ags_recall_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_recall_audio_run_packable_interface_init(AgsPackableInterface *packable);
-void ags_recall_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_recall_audio_run_init(AgsRecallAudioRun *recall_audio_run);
 void ags_recall_audio_run_set_property(GObject *gobject,
 				       guint prop_id,
@@ -47,8 +45,9 @@ void ags_recall_audio_run_get_property(GObject *gobject,
 void ags_recall_audio_run_dispose(GObject *gobject);
 void ags_recall_audio_run_finalize(GObject *gobject);
 
-gboolean ags_recall_audio_run_pack(AgsPackable *packable, GObject *container);
-gboolean ags_recall_audio_run_unpack(AgsPackable *packable);
+void ags_recall_audio_run_notify_recall_container_callback(GObject *gobject,
+							   GParamSpec *pspec,
+							   gpointer user_data);
 
 AgsRecall* ags_recall_audio_run_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
@@ -72,8 +71,6 @@ enum{
 
 static gpointer ags_recall_audio_run_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_audio_run_parent_connectable_interface;
-static AgsPackableInterface* ags_recall_audio_run_parent_packable_interface;
-static AgsDynamicConnectableInterface *ags_recall_audio_run_parent_dynamic_connectable_interface;
 
 GType
 ags_recall_audio_run_get_type()
@@ -99,18 +96,6 @@ ags_recall_audio_run_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_packable_interface_info = {
-      (GInterfaceInitFunc) ags_recall_audio_run_packable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_recall_audio_run_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_recall_audio_run = g_type_register_static(AGS_TYPE_RECALL,
 						       "AgsRecallAudioRun",
 						       &ags_recall_audio_run_info,
@@ -119,14 +104,6 @@ ags_recall_audio_run_get_type()
     g_type_add_interface_static(ags_type_recall_audio_run,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_recall_audio_run,
-				AGS_TYPE_PACKABLE,
-				&ags_packable_interface_info);
-
-    g_type_add_interface_static(ags_type_recall_audio_run,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
   }
 
   return(ags_type_recall_audio_run);
@@ -190,29 +167,17 @@ ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run)
 }
 
 void
-ags_recall_audio_runconnectable_interface_init(AgsConnectableInterface *connectable)
+ags_recall_audio_run_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_recall_audio_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 }
 
 void
-ags_recall_audio_run_packable_interface_init(AgsPackableInterface *packable)
-{
-  ags_recall_audio_run_parent_packable_interface = g_type_interface_peek_parent(packable);
-
-  packable->pack = ags_recall_audio_run_pack;
-  packable->unpack = ags_recall_audio_run_unpack;
-}
-
-void
-ags_recall_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_recall_audio_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-}
-
-void
 ags_recall_audio_run_init(AgsRecallAudioRun *recall_audio_run)
 {
+  g_signal_connect_after(recall_audio_run, "notify::recall-container",
+			 G_CALLBACK(ags_recall_audio_run_notify_recall_container_callback), NULL);
+
   recall_audio_run->audio = NULL;
   recall_audio_run->recall_audio = NULL;
 }
@@ -413,222 +378,37 @@ ags_recall_audio_run_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_recall_audio_run_parent_class)->finalize(gobject);
 }
 
-gboolean
-ags_recall_audio_run_pack(AgsPackable *packable, GObject *recall_container)
+void
+ags_recall_audio_run_notify_recall_container_callback(GObject *gobject,
+						      GParamSpec *pspec,
+						      gpointer user_data)
 {
-  AgsRecallAudio *recall_audio;
-  AgsRecallAudioRun *recall_audio_run;
-  AgsRecallID *recall_id;
-  AgsRecyclingContext *recycling_context;
-  
-  GList *list_start, *list;
-
-  guint recall_flags;
-  
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *recall_id_mutex;
-
-  if(ags_recall_audio_run_parent_packable_interface->pack(packable, recall_container)){
-    return(TRUE);
-  }
-
-  recall_audio_run = AGS_RECALL_AUDIO_RUN(packable);
-
-  g_object_get(recall_container,
-	       "recall-audio", &recall_audio,
-	       NULL);
-
-  /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(recall_audio_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
-  
-  /* set AgsRecallAudio */
-  g_object_set(G_OBJECT(recall_audio_run),
-	       "recall-audio", recall_audio,
-	       NULL);
-
-  /* set in AgsRecallChannelRun */
-  g_object_get(recall_container,
-	       "recall-channel-run", &list_start,
-	       NULL);
-
-  /* get some fields */
-  pthread_mutex_lock(recall_mutex);
-  
-  recall_flags = AGS_RECALL(recall_audio_run)->flags;
-  recall_id = AGS_RECALL(recall_audio_run)->recall_id;
-
-  pthread_mutex_unlock(recall_mutex);
-  
-  list = list_start;
-
-  if(recall_id != NULL){
-    /* get recall id mutex */
-    pthread_mutex_lock(ags_recall_id_get_class_mutex());
-    
-    recall_id_mutex = AGS_RECALL(recall_id)->obj_mutex;
-    
-    pthread_mutex_unlock(ags_recall_id_get_class_mutex());
-
-    /* get recycling context */
-    pthread_mutex_lock(recall_id_mutex);
-  
-    recycling_context = recall_id->recycling_context;
-    
-    pthread_mutex_unlock(recall_id_mutex);
-
-    while((list = ags_recall_find_recycling_context(list, (GObject *) recycling_context)) != NULL){
-      g_object_set(G_OBJECT(list->data),
-		   "recall-audio-run", recall_audio_run,
-		   NULL);
-
-      list= list->next;
-    }
-  }else if((AGS_RECALL_TEMPLATE & (recall_flags)) != 0){
-    while((list = ags_recall_find_template(list)) != NULL){
-      g_object_set(G_OBJECT(list->data),
-		   "recall-audio-run", recall_audio_run,
-		   NULL);
-
-      list= list->next;
-    }
-  }
-
-  g_list_free(list_start);
-  
-  g_object_set(G_OBJECT(recall_container),
-	       "recall-audio-run", recall_audio_run,
-	       NULL);
-
-  return(FALSE);
-}
-
-gboolean
-ags_recall_audio_run_unpack(AgsPackable *packable)
-{
-  AgsRecallAudioRun *recall_audio_run;
+  AgsAudio *audio;
   AgsRecallContainer *recall_container;
-  AgsRecallID *recall_id;
-  AgsRecyclingContext *recycling_context;
-
-  GList *list_start, *list;
-
-  guint recall_flags;
+  AgsRecallAudioRun *recall_audio_run;
   
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *recall_container_mutex;
-  pthread_mutex_t *recall_id_mutex;
+  recall_audio_run = AGS_RECALL_AUDIO_RUN(gobject);
 
-  if(!AGS_IS_RECALL_AUDIO_RUN(packable)){
-    return(TRUE);
-  }
+  audio = recall_audio_run->audio;
 
-  recall_audio_run = AGS_RECALL_AUDIO_RUN(packable);
+  recall_container = AGS_RECALL(recall_audio_run)->recall_container;
 
-  g_object_get(recall_audio_run,
-	       "recall-container", &recall_container,
-	       NULL);
- 
-  if(!AGS_IS_RECALL_CONTAINER(recall_container)){
-    return(TRUE);
-  }
-  
-  /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(recall_audio_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  if(recall_container != NULL){
+    AgsRecallAudio *recall_audio;
 
-  /* ref */
-  g_object_ref(recall_audio_run);
-  g_object_ref(recall_container);
-  
-  /* unset AgsRecallAudio */
-  g_object_set(recall_audio_run,
-	       "recall-audio", NULL,
-	       NULL);
-
-  /* set in AgsRecallChannelRun */
-  g_object_get(recall_container,
-	       "recall-channel-run", &list_start,
-	       NULL);
-
-  /* get some fields */
-  pthread_mutex_lock(recall_mutex);
-  
-  recall_flags = AGS_RECALL(recall_audio_run)->flags;
-  recall_id = AGS_RECALL(recall_audio_run)->recall_id;
-
-  pthread_mutex_unlock(recall_mutex);
-  
-  list = list_start;
-
-  if(recall_id != NULL){
-    /* get recall id mutex */
-    pthread_mutex_lock(ags_recall_id_get_class_mutex());
+    /* recall audio */
+    g_object_get(recall_container,
+		 "recall-audio", &recall_audio,
+		 NULL);
     
-    recall_id_mutex = AGS_RECALL(recall_id)->obj_mutex;
-    
-    pthread_mutex_unlock(ags_recall_id_get_class_mutex());
-
-    /* get recycling context */
-    pthread_mutex_lock(recall_id_mutex);
-  
-    recycling_context = recall_id->recycling_context;
-    
-    pthread_mutex_unlock(recall_id_mutex);
-
-    while((list = ags_recall_find_recycling_context(list, recycling_context)) != NULL){
-      g_object_set(G_OBJECT(list->data),
-		   "recall-audio-run", NULL,
-		   NULL);
-
-      list= list->next;
-    }
-  }else if((AGS_RECALL_TEMPLATE & (recall_flags)) != 0){
-    while((list = ags_recall_find_template(list)) != NULL){
-      g_object_set(G_OBJECT(list->data),
-		   "recall-audio-run", NULL,
-		   NULL);
-
-      list= list->next;
-    }
+    g_object_set(recall_audio_run,
+		 "recall-audio", recall_audio,
+		 NULL);
+  }else{
+    g_object_set(recall_channel_run,
+		 "recall-audio", NULL,
+		 NULL);
   }
-
-  g_list_free(list_start);
-
-  /* call parent */
-  if(ags_recall_audio_run_parent_packable_interface->unpack(packable)){
-    g_object_unref(recall_audio_run);
-    g_object_unref(recall_container);
-
-    return(TRUE);
-  }
-
-  /* get recall container mutex */
-  pthread_mutex_lock(ags_recall_container_get_class_mutex());
-  
-  recall_container_mutex = recall_container->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_container_get_class_mutex());
-
-  /* remove from list */
-  pthread_mutex_lock(recall_container_mutex);
-
-  recall_container->recall_audio_run = g_list_remove(recall_container->recall_audio_run,
-						     recall_audio_run);
-
-  pthread_mutex_unlock(recall_container_mutex);
-
-  /* unref */
-  g_object_unref(recall_audio_run);
-  g_object_unref(recall_container);
-
-  return(FALSE);
 }
 
 AgsRecall*
