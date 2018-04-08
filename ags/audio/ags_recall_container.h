@@ -93,16 +93,24 @@ GType ags_recall_container_get_type();
 
 pthread_mutex_t* ags_recall_container_get_class_mutex();
 
-AgsRecall* ags_recall_container_get_recall_audio(AgsRecallContainer *container);
-GList* ags_recall_container_get_recall_audio_run(AgsRecallContainer *container);
-GList* ags_recall_container_get_recall_channel(AgsRecallContainer *container);
-GList* ags_recall_container_get_recall_channel_run(AgsRecallContainer *container);
+/* children */
+void ags_recall_container_add(AgsRecallContainer *recall_container,
+			      AgsRecall *recall);
+void ags_recall_container_remove(AgsRecallContainer *recall_container,
+				 AgsRecall *recall);
+
+/* query */
+AgsRecall* ags_recall_container_get_recall_audio(AgsRecallContainer *recall_container);
+GList* ags_recall_container_get_recall_audio_run(AgsRecallContainer *recall_container);
+GList* ags_recall_container_get_recall_channel(AgsRecallContainer *recall_container);
+GList* ags_recall_container_get_recall_channel_run(AgsRecallContainer *recall_container);
 
 GList* ags_recall_container_find(GList *recall_container,
 				 GType type,
 				 guint find_flags,
 				 AgsRecallID *recall_id);
 
+/* instantiate */
 AgsRecallContainer* ags_recall_container_new();
 
 #endif /*__AGS_RECALL_CONTAINER_H__*/

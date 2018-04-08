@@ -1142,26 +1142,6 @@ ags_recall_set_property(GObject *gobject,
       recall->recall_container = (GObject *) recall_container;
 
       pthread_mutex_unlock(recall_mutex);
-
-      if(recall_container != NULL){
-	if(AGS_IS_RECALL_AUDIO(recall)){
-	  g_object_set(G_OBJECT(recall_container),
-		       "recall-audio", recall,
-		       NULL);
-	}else if(AGS_IS_RECALL_AUDIO_RUN(recall)){
-	  g_object_set(G_OBJECT(recall_container),
-		       "recall-audio-run", recall,
-		       NULL);
-	}else if(AGS_IS_RECALL_CHANNEL(recall)){
-	  g_object_set(G_OBJECT(recall_container),
-		       "recall-channel", recall,
-		       NULL);
-	}else if(AGS_IS_RECALL_CHANNEL_RUN(recall)){
-	  g_object_set(G_OBJECT(recall_container),
-		       "recall-channel-run", recall,
-		       NULL);
-	}
-      }      
     }
     break;
   case PROP_OUTPUT_SOUNDCARD:

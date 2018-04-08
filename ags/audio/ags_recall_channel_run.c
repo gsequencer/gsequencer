@@ -32,8 +32,6 @@
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_recycling.h>
 
-#include <ags/audio/thread/ags_audio_loop.h>
-
 #include <ags/audio/task/ags_cancel_recall.h>
 
 #include <ags/i18n.h>
@@ -285,7 +283,16 @@ ags_recall_channel_run_set_property(GObject *gobject,
 {
   AgsRecallChannelRun *recall_channel_run;
 
+  pthread_mutex_t *recall_mutex;
+
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(recall_channel_run)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_RECALL_AUDIO_RUN:
@@ -294,12 +301,16 @@ ags_recall_channel_run_set_property(GObject *gobject,
 
       recall_audio_run = (AgsRecallAudioRun *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(recall_channel_run->recall_audio_run == recall_audio_run){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
       if(recall_channel_run->recall_audio_run != NULL){
-	g_object_unref(G_OBJECT(recall_channel_run->recall_audio_run));
+	g_object_unref(recall_channel_run->recall_audio_run);
       }
 
       if(recall_audio_run != NULL){
@@ -307,6 +318,8 @@ ags_recall_channel_run_set_property(GObject *gobject,
       }
 
       recall_channel_run->recall_audio_run = recall_audio_run;
+      
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_RECALL_CHANNEL:
@@ -315,12 +328,16 @@ ags_recall_channel_run_set_property(GObject *gobject,
 
       recall_channel = (AgsRecallChannel *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(recall_channel_run->recall_channel == recall_channel){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
       if(recall_channel_run->recall_channel != NULL){
-	g_object_unref(G_OBJECT(recall_channel_run->recall_channel));
+	g_object_unref(recall_channel_run->recall_channel);
       }
 
       if(recall_channel != NULL){
@@ -328,6 +345,8 @@ ags_recall_channel_run_set_property(GObject *gobject,
       }
 
       recall_channel_run->recall_channel = recall_channel;
+      
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_DESTINATION:
@@ -337,7 +356,11 @@ ags_recall_channel_run_set_property(GObject *gobject,
 
       destination = (AgsChannel *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(recall_channel_run->destination == destination){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -357,6 +380,8 @@ ags_recall_channel_run_set_property(GObject *gobject,
       if(old_destination != NULL){
 	g_object_unref(G_OBJECT(old_destination));
       }
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SOURCE:
@@ -366,7 +391,11 @@ ags_recall_channel_run_set_property(GObject *gobject,
 
       source = (AgsChannel *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(recall_channel_run->source == source){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -385,6 +414,8 @@ ags_recall_channel_run_set_property(GObject *gobject,
       if(old_source != NULL){
 	g_object_unref(G_OBJECT(old_source));
       }
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -401,32 +432,61 @@ ags_recall_channel_run_get_property(GObject *gobject,
 {
   AgsRecallChannelRun *recall_channel_run;
 
+  pthread_mutex_t *recall_mutex;
+
   recall_channel_run = AGS_RECALL_CHANNEL_RUN(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(recall_channel_run)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_RECALL_AUDIO:
     {
+      pthread_mutex_lock(recall_mutex);
+      
       g_value_set_object(value, recall_channel_run->recall_audio);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_RECALL_AUDIO_RUN:
     {
+      pthread_mutex_lock(recall_mutex);
+      
       g_value_set_object(value, recall_channel_run->recall_audio_run);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_RECALL_CHANNEL:
     {
+      pthread_mutex_lock(recall_mutex);
+      
       g_value_set_object(value, recall_channel_run->recall_channel);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_DESTINATION:
     {
+      pthread_mutex_lock(recall_mutex);
+      
       g_value_set_object(value, recall_channel_run->destination);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SOURCE:
     {
+      pthread_mutex_lock(recall_mutex);
+      
       g_value_set_object(value, recall_channel_run->source);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
