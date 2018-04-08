@@ -3453,15 +3453,15 @@ ags_recall_real_duplicate(AgsRecall *recall,
 			  AgsRecallID *recall_id,
 			  guint *n_params, gchar **parameter_name, GValue *value)
 {
-  AgsRecall *copy;
+  AgsRecall *copy_recall;
   AgsRecallClass *recall_class, *copy_class;
   AgsRecallContainer *recall_container;
-  AgsRecallHandler *recall_handler, *recall_handler_copy;
 
   GList *list, *child;
 
   guint local_n_params;
-
+  guint i;
+  
   local_n_params = 0;
   
   if(n_params == NULL){
@@ -3469,66 +3469,85 @@ ags_recall_real_duplicate(AgsRecall *recall,
   }
   
   if(n_params[0] == 0){
-    parameter_name = (gchar **) malloc(5 * sizeof(gchar *));
+    parameter_name = (gchar **) malloc(8 * sizeof(gchar *));
     value = g_new0(GValue,
-		   4);
+		   7);
   }else{
     parameter_name = (gchar **) realloc(parameter_name,
-					(n_params[0] + 5) * sizeof(gchar *));
+					(n_params[0] + 8) * sizeof(gchar *));
     value = g_renew(GValue,
-		    n_params[0] + 4);
+		    n_params[0] + 7);
   }
 
   parameter_name[n_params[0]] = "output-soundcard";
   value[n_params[0]] = {0,};
   g_value_set_object(&(value[n_params[0]]), recall->output_soundcard);
 
-  parameter_name[n_params[0] + 1] = "input-soundcard";
-  value[n_params[1]] = {0,};
-  g_value_set_object(&(value[n_params[0] + 1]), recall->input_soundcard);
-    
-  parameter_name[n_params[0] + 2] = "recall-id";
-  value[n_params[2]] = {0,};
-  g_value_set_object(&(value[n_params[0] + 2]), recall_id);
-    
-  parameter_name[n_params[0] + 3] = "recall-container";
-  value[n_params[3]] = {0,};
-  g_value_set_object(&(value[n_params[0] + 3]), recall->container);
+  parameter_name[n_params[0] + 1] = "output-soundcard-channel";
+  value[n_params[0] + 1] = {0,};
+  g_value_set_int(&(value[n_params[0] + 1]), recall->output_soundcard_channel);
 
-  parameter_name[n_params[0] + 4] = NULL;
+  parameter_name[n_params[0] + 2] = "input-soundcard";
+  value[n_params[0] + 2] = {0,};
+  g_value_set_object(&(value[n_params[0] + 2]), recall->input_soundcard);
+    
+  parameter_name[n_params[0] + 3] = "input-soundcard-channel";
+  value[n_params[0] + 3] = {0,};
+  g_value_set_int(&(value[n_params[0 + 3]]), recall->input_soundcard_channel);
 
-  n_params[0] += 4;
+  parameter_name[n_params[0] + 4] = "recall-id";
+  value[n_params[0]+ 4] = {0,};
+  g_value_set_object(&(value[n_params[0] + 4]), recall_id);
+    
+  parameter_name[n_params[0] + 5] = "recall-container";
+  value[n_params[0] + 5] = {0,};
+  g_value_set_object(&(value[n_params[0] + 5]), recall->recall_container);
+
+  parameter_name[n_params[0] + 6] = "child-type";
+  value[n_params[0] + 6] = {0,};
+  g_value_set_gtype(&(value[n_params[0] + 6]), recall->child_type);
+
+  parameter_name[n_params[0] + 7] = NULL;
+
+  n_params[0] += 7;
   
-  parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
-				 parameter, n_params,
-				 NULL);
-
-  copy = g_object_new_with_properties(G_OBJECT_TYPE(recall),
+  copy_recall = g_object_new_with_properties(G_OBJECT_TYPE(recall),
 				      *n_params, parameter_name, value);
-  g_free(parameter);
+
+  /* free parameter name and value */
+  g_free(parameter_name);
+
+  for(i = 0; i < n_params[0]; i++){
+    g_value_unset(&(value[i]));
+  }
   
-  ags_recall_set_flags(copy,
+  g_free(value);
+
+  /* apply flags */
+  ags_recall_set_flags(copy_recall,
 		       (recall->flags & (~ (AGS_RECALL_ADDED_TO_REGISTRY |
 					    AGS_RECALL_CONNECTED |
 					    AGS_RECALL_TEMPLATE))));
 
-  copy->child_type = recall->child_type;
-
+  //TODO:JK: implement me
+  
   /* duplicate handlers */
-  list = recall->handlers;
+  list = recall->recall_handler;
   
   while(list != NULL){
+    AgsRecallHandler *recall_handler, *copy_recall_handler;
+    
     recall_handler = AGS_RECALL_HANDLER(list->data);
 
-    recall_handler_copy = ags_recall_handler_alloc(recall_handler->signal_name,
+    copy_recall_handler = ags_recall_handler_alloc(recall_handler->signal_name,
 						   recall_handler->callback,
 						   recall_handler->data);
-    ags_recall_add_handler(copy, recall_handler_copy);
+    ags_recall_add_handler(copy_recall, copy_recall_handler);
 
     list = list->next;
   }
 
-  return(copy);
+  return(copy_recall);
 }
 
 /**
