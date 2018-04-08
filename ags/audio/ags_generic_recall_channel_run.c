@@ -26,13 +26,10 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
 
-#include <ags/audio/task/ags_cancel_recall.h>
-
 #include <libxml/tree.h>
 
 void ags_generic_recall_channel_run_class_init(AgsGenericRecallChannelRunClass *generic_recall_channel_run);
 void ags_generic_recall_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_generic_recall_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_generic_recall_channel_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_generic_recall_channel_run_init(AgsGenericRecallChannelRun *generic_recall_channel_run);
 void ags_generic_recall_channel_run_set_property(GObject *gobject,
@@ -47,9 +44,6 @@ void ags_generic_recall_channel_run_finalize(GObject *gobject);
 
 void ags_generic_recall_channel_run_connect(AgsConnectable *connectable);
 void ags_generic_recall_channel_run_disconnect(AgsConnectable *connectable);
-
-void ags_generic_recall_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_generic_recall_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 
 void ags_generic_recall_channel_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_generic_recall_channel_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
@@ -70,7 +64,6 @@ AgsRecall* ags_generic_recall_channel_run_duplicate(AgsRecall *recall,
 
 static gpointer ags_generic_recall_channel_run_parent_class = NULL;
 static AgsConnectableInterface *ags_generic_recall_channel_run_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_generic_recall_channel_run_parent_dynamic_connectable_interface;
 static AgsPluginInterface *ags_generic_recall_channel_run_parent_plugin_interface;
 
 enum{
@@ -102,12 +95,6 @@ ags_generic_recall_channel_run_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_generic_recall_channel_run_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     static const GInterfaceInfo ags_plugin_interface_info = {
       (GInterfaceInitFunc) ags_generic_recall_channel_run_plugin_interface_init,
       NULL, /* interface_finalize */
@@ -122,10 +109,6 @@ ags_generic_recall_channel_run_get_type()
     g_type_add_interface_static(ags_type_generic_recall_channel_run,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_generic_recall_channel_run,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_generic_recall_channel_run,
 				AGS_TYPE_PLUGIN,
@@ -183,15 +166,6 @@ ags_generic_recall_channel_run_connectable_interface_init(AgsConnectableInterfac
 
   connectable->connect = ags_generic_recall_channel_run_connect;
   connectable->disconnect = ags_generic_recall_channel_run_disconnect;
-}
-
-void
-ags_generic_recall_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_generic_recall_channel_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_generic_recall_channel_run_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_generic_recall_channel_run_disconnect_dynamic;
 }
 
 void
@@ -297,56 +271,62 @@ ags_generic_recall_channel_run_disconnect(AgsConnectable *connectable)
   /* empty */
 }
 
-void
-ags_generic_recall_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_generic_recall_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
-ags_generic_recall_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  AgsChannel *channel;
-  AgsGenericRecallChannelRun *generic_recall_channel_run;
-
-  ags_generic_recall_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
 AgsRecall*
 ags_generic_recall_channel_run_duplicate(AgsRecall *recall,
 					 AgsRecallID *recall_id,
 					 guint *n_params, gchar **parameter_name, GValue *value)
 {
-  AgsGenericRecallChannelRun *generic_recall_channel_run, *copy;
-  GList *generic_recycling;
+  AgsGenericRecallChannelRun *generic_recall_channel_run, *copy_generic_recall_channel_run;
+
+  GList *list_start, *list;
+
+  GType generic_recall_recycling_child_type;
+  
+  pthread_mutex_t *recall_mutex;
   
   generic_recall_channel_run = (AgsGenericRecallChannelRun *) recall;  
-  copy = (AgsGenericRecallChannelRun *) AGS_RECALL_CLASS(ags_generic_recall_channel_run_parent_class)->duplicate(recall,
-														 recall_id,
-														 n_params, parameter_name, value);
 
-  g_object_set(copy,
-	       "child-type", recall->child_type,
-	       "generic-recall-recycling-child-type", generic_recall_channel_run->generic_recall_recycling_child_type,
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_mutex);
+
+  generic_recall_recycling_child_type = generic_recall_channel_run->generic_recall_recycling_child_type;
+
+  pthread_mutex_unlock(recall_mutex);
+
+  /* duplicate */
+  copy_generic_recall_channel_run = AGS_RECALL_CLASS(ags_generic_recall_channel_run_parent_class)->duplicate(recall,
+													     recall_id,
+													     n_params, parameter_name, value);
+  
+  g_object_set(copy_generic_recall_channel_run,
+	       "generic-recall-recycling-child-type", generic_recall_recycling_child_type,
 	       NULL);
 
   /* set child type on AgsRecallRecycling */
-  generic_recycling = AGS_RECALL(copy)->children;
+  g_object_get(copy_generic_recall_channel_run,
+	       "children", &list_start,
+	       NULL);
 
-  while(generic_recycling != NULL){
-    g_object_set(generic_recycling->data,
-		 "child-type", generic_recall_channel_run->generic_recall_recycling_child_type,
+  list = list_start;
+  
+  while(list != NULL){
+    g_object_set(list->data,
+		 "child-type", generic_recall_recycling_child_type,
 		 NULL);
     
-    generic_recycling = generic_recycling->next;
+    list = list->next;
   }
 
-  return((AgsRecall *) copy);
+  g_list_free(list_start);
+  
+  return((AgsRecall *) copy_generic_recall_channel_run);
 }
 
 void

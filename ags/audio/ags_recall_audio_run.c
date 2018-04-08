@@ -91,7 +91,7 @@ ags_recall_audio_run_get_type()
     };
 
     static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_recall_audio_run_dynamic_connectable_interface_init,
+      (GInterfaceInitFunc) ags_recall_audio_run_connectable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
@@ -405,7 +405,7 @@ ags_recall_audio_run_notify_recall_container_callback(GObject *gobject,
 		 "recall-audio", recall_audio,
 		 NULL);
   }else{
-    g_object_set(recall_channel_run,
+    g_object_set(recall_audio_run,
 		 "recall-audio", NULL,
 		 NULL);
   }
@@ -416,19 +416,40 @@ ags_recall_audio_run_duplicate(AgsRecall *recall,
 			       AgsRecallID *recall_id,
 			       guint *n_params, gchar **parameter_name, GValue *value)
 {
-  AgsRecallAudioRun *recall_audio_run, *copy;
+  AgsAudio *audio;
+  AgsRecallAudio *recall_audio;
+  AgsRecallAudioRun *recall_audio_run, *copy_recall_audio_run;
+
+  pthread_mutex_t *recall_mutex;
 
   recall_audio_run = AGS_RECALL_AUDIO_RUN(recall);
 
-  copy = AGS_RECALL_AUDIO_RUN(AGS_RECALL_CLASS(ags_recall_audio_run_parent_class)->duplicate(recall,
-											     recall_id,
-											     n_params, parameter_name, value));
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
-  g_object_set(G_OBJECT(copy),
-	       "recall-audio", recall_audio_run->recall_audio,
+  /* get some fields */
+  pthread_mutex_lock(recall_mutex);
+
+  audio = recall_audio_run->audio;
+  
+  recall_audio = recall_audio_run->recall_audio;
+
+  pthread_mutex_unlock(recall_mutex);
+
+  /* duplicate */
+  copy_recall_audio_run = AGS_RECALL_CLASS(ags_recall_audio_run_parent_class)->duplicate(recall,
+											 recall_id,
+											 n_params, parameter_name, value);
+  g_object_set(copy_recall_audio_run,
+	       "audio", audio,
+	       "recall-audio", recall_audio,
 	       NULL);
 
-  return((AgsRecall *) copy);
+  return((AgsRecall *) copy_recall_audio_run);
 }
 
 /**

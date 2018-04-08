@@ -165,4 +165,6 @@ ags_task_thread_remove_cyclic_task
 ags_task_thread_clear_cache
 ags_task_thread_new
 ags_timestamp_get_type
+ags_timestamp_get_class_mutex
+ags_timestamp_get_ags_offset
 ags_timestamp_new

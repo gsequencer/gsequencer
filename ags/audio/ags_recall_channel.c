@@ -49,9 +49,6 @@ void ags_recall_channel_notify_recall_container_callback(GObject *gobject,
 							 GParamSpec *pspec,
 							 gpointer user_data);
 
-void ags_recall_channel_load_automation(AgsRecall *recall,
-					GList *automation_port);
-void ags_recall_channel_unload_automation(AgsRecall *recall);
 void ags_recall_channel_automate(AgsRecall *recall);
 AgsRecall* ags_recall_channel_duplicate(AgsRecall *recall,
 					AgsRecallID *recall_id,
@@ -167,8 +164,6 @@ ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel)
   /* AgsRecallClass */
   recall = (AgsRecallClass *) recall_channel;
 
-  recall->load_automation = ags_recall_channel_load_automation;
-  recall->unload_automation = ags_recall_channel_unload_automation;
   recall->automate = ags_recall_channel_automate;
   recall->duplicate = ags_recall_channel_duplicate;
 }
@@ -361,102 +356,6 @@ ags_recall_channel_notify_recall_container_callback(GObject *gobject,
 }
 
 void
-ags_recall_channel_load_automation(AgsRecall *recall,
-				   GList *automation_port)
-{
-  AgsChannel *channel;
-  AgsAudio *audio;
-  
-  GList *automation;
-  
-  GType channel_type;
-
-  channel = AGS_RECALL_CHANNEL(recall)->source;
-  audio = AGS_AUDIO(channel->audio);
-  
-  if(AGS_IS_OUTPUT(channel)){
-    channel_type = AGS_TYPE_OUTPUT;
-  }else{
-    channel_type = AGS_TYPE_INPUT;
-  }
-  
-  while(automation_port != NULL){
-    if((AGS_PORT_IS_OUTPUT & (AGS_PORT(automation_port->data)->flags)) != 0){
-      automation_port = automation_port->next;
-
-      continue;
-    }
-    
-    if((automation = ags_automation_find_port(audio->automation,
-					      automation_port->data)) == NULL){
-      AgsAutomation *current;
-      
-      current = ags_automation_new(channel->audio,
-				   channel->line,
-				   channel_type,
-				   AGS_PORT(automation_port->data)->specifier);
-      g_object_set(current,
-		   "port", automation_port->data,
-		   NULL);
-      ags_audio_add_automation((AgsAudio *) channel->audio,
-			       (GObject *) current);
-
-      //TODO:JK: property
-      AGS_PORT(automation_port->data)->automation = ags_automation_add(AGS_PORT(automation_port->data)->automation,
-								       current);
-    }else{
-      //TODO:JK: property
-      if(g_list_find(AGS_PORT(automation_port->data)->automation, automation->data) == NULL){
-	AGS_PORT(automation_port->data)->automation = ags_automation_add(AGS_PORT(automation_port->data)->automation,
-									 automation->data);
-      }
-    }
-    
-    automation_port = automation_port->next;
-  }
-
-  if(recall->automation_port == NULL){
-    recall->automation_port = automation_port;
-  }else{
-    recall->automation_port = g_list_concat(recall->automation_port,
-					    automation_port);
-  }
-}
-
-void
-ags_recall_channel_unload_automation(AgsRecall *recall)
-{
-  AgsAudio *audio;
-  AgsChannel *channel;
-
-  AgsAutomation *current;
-
-  GList *automation;
-  GList *automation_port;
-  
-  channel = AGS_RECALL_CHANNEL(recall)->source;
-  audio = AGS_AUDIO(channel->audio);
-  
-  automation_port = recall->automation_port;
-    
-  while(automation_port != NULL){
-    while((automation = ags_automation_find_port(audio->automation,
-						 automation_port->data)) != NULL){
-      current = automation->data;
-      ags_audio_remove_automation(audio,
-				  (GObject *) current);
-
-      automation = automation->next;
-    }
-    
-    automation_port = automation_port->next;
-  }
-
-  g_list_free(recall->automation_port);
-  recall->automation_port = NULL;
-}
-
-void
 ags_recall_channel_automate(AgsRecall *recall)
 {
   GObject *soundcard;
@@ -545,25 +444,19 @@ ags_recall_channel_automate(AgsRecall *recall)
 AgsRecall*
 ags_recall_channel_duplicate(AgsRecall *recall,
 			     AgsRecallID *recall_id,
-			     guint *n_params, GParameter *parameter)
+			     guint *n_params, gchar **parameter_name, GValue *value)
 {
-  AgsRecallChannel *recall_channel, *copy;
+  AgsRecallChannel *recall_channel, *copy_recall_channel;
 
   recall_channel = AGS_RECALL_CHANNEL(recall);
 
-  parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
-				 parameter, n_params,
-				 "source", recall_channel->source,
-				 "destination", recall_channel->destination,
-				 NULL);
-
-  copy = AGS_RECALL_CHANNEL(AGS_RECALL_CLASS(ags_recall_channel_parent_class)->duplicate(recall,
-											 recall_id,
-											 n_params, parameter));
+  copy_recall_channel = AGS_RECALL_CHANNEL(AGS_RECALL_CLASS(ags_recall_channel_parent_class)->duplicate(recall,
+													recall_id,
+													n_params, parameter_name, value));
 
   g_message("ags warning - ags_recall_channel_duplicate: you shouldn't do this %s", G_OBJECT_TYPE_NAME(recall));
 
-  return((AgsRecall *) copy);
+  return((AgsRecall *) copy_recall_channel);
 }
 
 /**

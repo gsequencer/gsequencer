@@ -101,7 +101,7 @@ ags_xml_authentication_get_type()
     };
     
     ags_type_xml_authentication = g_type_register_static(G_TYPE_OBJECT,
-							 "AgsXmlAuthentication\0",
+							 "AgsXmlAuthentication",
 							 &ags_xml_authentication_info,
 							 0);
 
@@ -174,8 +174,8 @@ ags_xml_authenticaiton_get_authentication_module(AgsAuthentication *authenticati
   if(authentication_module == NULL){
     authentication_module = (gchar **) malloc(3 * sizeof(gchar *));
 
-    authentication_module[0] = "ags-base-authentication\0";
-    authentication_module[1] = "ags-xml-authentication\0";
+    authentication_module[0] = "ags-base-authentication";
+    authentication_module[1] = "ags-xml-authentication";
     authentication_module[2] = NULL;
   }
   
@@ -297,7 +297,7 @@ ags_xml_authentication_find_user_uuid(AgsXmlAuthentication *xml_authentication,
   xpath_context = xmlXPathNewContext(xml_authentication->doc);
 
   if(xpath_context == NULL) {
-    g_warning("Error: unable to create new XPath context\0");
+    g_warning("Error: unable to create new XPath context");
 
     return(NULL);
   }
@@ -307,7 +307,7 @@ ags_xml_authentication_find_user_uuid(AgsXmlAuthentication *xml_authentication,
 			      xpath_context);
 
   if(xpath_object == NULL) {
-    g_warning("Error: unable to evaluate xpath expression\0");
+    g_warning("Error: unable to evaluate xpath expression");
     xmlXPathFreeContext(xpath_context); 
 
     return(NULL);

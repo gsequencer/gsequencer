@@ -18,14 +18,10 @@
  */
 
 #include <ags/audio/ags_recall_audio_signal.h>
-#include <ags/audio/ags_recall_recycling.h>
 
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_recycling.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_recall_id.h>
 
 #include <pthread.h>
 
@@ -33,7 +29,6 @@
 
 void ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signal);
 void ags_recall_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_recall_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_recall_audio_signal_init(AgsRecallAudioSignal *recall_audio_signal);
 void ags_recall_audio_signal_set_property(GObject *gobject,
 					  guint prop_id,
@@ -56,14 +51,12 @@ void ags_recall_audio_signal_finalize(GObject *gobject);
 
 enum{
   PROP_0,
-  PROP_AUDIO_CHANNEL,
   PROP_DESTINATION,
   PROP_SOURCE,
 };
 
 static gpointer ags_recall_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_recall_audio_signal_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_recall_audio_signal_parent_dynamic_connectable_interface;
 
 GType
 ags_recall_audio_signal_get_type()
@@ -89,12 +82,6 @@ ags_recall_audio_signal_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_recall_audio_signal_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_recall_audio_signal = g_type_register_static(AGS_TYPE_RECALL,
 							  "AgsRecallAudioSignal",
 							  &ags_recall_audio_signal_info,
@@ -103,10 +90,6 @@ ags_recall_audio_signal_get_type()
     g_type_add_interface_static(ags_type_recall_audio_signal,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_recall_audio_signal,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
   }
 
   return(ags_type_recall_audio_signal);
@@ -131,24 +114,6 @@ ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signa
   gobject->finalize = ags_recall_audio_signal_finalize;
 
   /* properties */
-  /**
-   * AgsRecallAudioSignal:audio-channel:
-   *
-   * The audio channel to write use.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_uint("audio-channel",
-				 i18n_pspec("output to audio channel"),
-				 i18n_pspec("The audio channel to which it should write"),
-				 0,
-				 65536,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_AUDIO_CHANNEL,
-				  param_spec);
-
   /**
    * AgsRecallAudioSignal:destination:
    *
@@ -189,16 +154,8 @@ ags_recall_audio_signal_connectable_interface_init(AgsConnectableInterface *conn
 }
 
 void
-ags_recall_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_recall_audio_signal_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-}
-
-void
 ags_recall_audio_signal_init(AgsRecallAudioSignal *recall_audio_signal)
 {
-  recall_audio_signal->audio_channel = 0;
-
   recall_audio_signal->source = NULL;
   recall_audio_signal->destination = NULL;
 }
@@ -223,19 +180,6 @@ ags_recall_audio_signal_set_property(GObject *gobject,
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
-  case PROP_AUDIO_CHANNEL:
-    {
-      guint audio_channel;
-
-      audio_channel = (guint) g_value_get_uint(value);
-
-      pthread_mutex_lock(recall_mutex);
-
-      recall_audio_signal->audio_channel = audio_channel;
-
-      pthread_mutex_unlock(recall_mutex);
-    }
-    break;
   case PROP_DESTINATION:
     {
       AgsAudioSignal *destination;
@@ -316,15 +260,6 @@ ags_recall_audio_signal_get_property(GObject *gobject,
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
-  case PROP_AUDIO_CHANNEL:
-    {
-      pthread_mutex_lock(recall_mutex);
-
-      g_value_set_uint(value, recall_audio_signal->audio_channel);
-
-      pthread_mutex_unlock(recall_mutex);
-    }
-    break;
   case PROP_DESTINATION:
     {
       pthread_mutex_lock(recall_mutex);
@@ -397,9 +332,6 @@ ags_recall_audio_signal_finalize(GObject *gobject)
 
 /**
  * ags_recall_audio_signal_new:
- * @destination: destination #AgsAudioSignal
- * @source: source #AgsAudioSignal
- * @output_soundcard: default sink #AgsSoundcard
  *
  * Creates an #AgsRecallAudioSignal.
  *
@@ -408,16 +340,11 @@ ags_recall_audio_signal_finalize(GObject *gobject)
  * Since: 2.0.0
  */
 AgsRecallAudioSignal*
-ags_recall_audio_signal_new(AgsAudioSignal *destination,
-			    AgsAudioSignal *source,
-			    GObject *output_soundcard)
+ags_recall_audio_signal_new()
 {
   AgsRecallAudioSignal *recall_audio_signal;
 
   recall_audio_signal = (AgsRecallAudioSignal *) g_object_new(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-							      "output-soundcard", output_soundcard,
-							      "destination", destination,
-							      "source", source, 
 							      NULL);
 
   return(recall_audio_signal);

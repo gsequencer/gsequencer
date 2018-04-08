@@ -501,12 +501,10 @@
 ./ags/object/ags_config.c
 ./ags/object/ags_connectable.c
 ./ags/object/ags_countable.c
-./ags/object/ags_dynamic_connectable.c
 ./ags/object/ags_globals.c
 ./ags/object/ags_main_loop.c
 ./ags/object/ags_marshal.c
 ./ags/object/ags_mutable.c
-./ags/object/ags_packable.c
 ./ags/object/ags_plugin.c
 ./ags/object/ags_portlet.c
 ./ags/object/ags_seekable.c

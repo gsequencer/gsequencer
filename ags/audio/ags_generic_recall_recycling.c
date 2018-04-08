@@ -18,13 +18,13 @@
  */
 
 #include <ags/audio/ags_generic_recall_recycling.h>
-#include <ags/audio/ags_recall_audio_signal.h>
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_recall_audio_signal.h>
+
 void ags_generic_recall_recycling_class_init(AgsGenericRecallRecyclingClass *generic_recall_recycling);
 void ags_generic_recall_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_generic_recall_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_generic_recall_recycling_init(AgsGenericRecallRecycling *generic_recall_recycling);
 
 /**
@@ -39,7 +39,6 @@ void ags_generic_recall_recycling_init(AgsGenericRecallRecycling *generic_recall
 
 static gpointer ags_generic_recall_recycling_parent_class = NULL;
 static AgsConnectableInterface *ags_generic_recall_recycling_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_generic_recall_recycling_parent_dynamic_connectable_interface;
 
 GType
 ags_generic_recall_recycling_get_type()
@@ -65,12 +64,6 @@ ags_generic_recall_recycling_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_generic_recall_recycling_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_generic_recall_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
 							       "AgsGenericRecallRecycling",
 							       &ags_generic_recall_recycling_info,
@@ -79,10 +72,6 @@ ags_generic_recall_recycling_get_type()
     g_type_add_interface_static(ags_type_generic_recall_recycling,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_generic_recall_recycling,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
   }
 
   return (ags_type_generic_recall_recycling);
@@ -98,12 +87,6 @@ void
 ags_generic_recall_recycling_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_generic_recall_recycling_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-}
-
-void
-ags_generic_recall_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_generic_recall_recycling_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
 }
 
 void

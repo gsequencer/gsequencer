@@ -23,9 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
+
+#include <ags/audio/ags_channel.h>
 
 #define AGS_TYPE_GENERIC_RECALL_CHANNEL_RUN                (ags_generic_recall_channel_run_get_type())
 #define AGS_GENERIC_RECALL_CHANNEL_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_GENERIC_RECALL_CHANNEL_RUN, AgsGenericRecallChannelRun))

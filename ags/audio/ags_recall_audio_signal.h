@@ -43,8 +43,6 @@ struct _AgsRecallAudioSignal
 {
   AgsRecall recall;
 
-  guint audio_channel;
-
   AgsAudioSignal *destination;
   AgsAudioSignal *source;
 };
@@ -56,8 +54,6 @@ struct _AgsRecallAudioSignalClass
 
 GType ags_recall_audio_signal_get_type();
 
-AgsRecallAudioSignal* ags_recall_audio_signal_new(AgsAudioSignal *destination,
-						  AgsAudioSignal *source,
-						  GObject *output_soundcard);
+AgsRecallAudioSignal* ags_recall_audio_signal_new();
 
 #endif /*__AGS_RECALL_AUDIO_SIGNAL_H__*/
