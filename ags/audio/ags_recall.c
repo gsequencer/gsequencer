@@ -123,8 +123,6 @@ void ags_recall_child_done(AgsRecall *child,
  */
 
 enum{
-  LOAD_AUTOMATION,
-  UNLOAD_AUTOMATION,
   RESOLVE_DEPENDENCY,
   CHECK_RT_DATA,  
   RUN_INIT_PRE,
@@ -498,9 +496,6 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  param_spec);
   
   /* AgsRecallClass */
-  recall->load_automation = NULL;
-  recall->unload_automation = NULL;
-
   recall->resolve_dependency = NULL;
   recall->check_rt_data = NULL;
   
@@ -529,41 +524,6 @@ ags_recall_class_init(AgsRecallClass *recall)
   recall->child_added = NULL;
 
   /* signals */
-  /**
-   * AgsRecall::load-automation:
-   * @recall: the #AgsRecall to initialize
-   *
-   * The ::load-automation signal notifies about loading automation.
-   *
-   * Since: 2.0.0
-   */
-  recall_signals[LOAD_AUTOMATION] =
-    g_signal_new("load-automation",
-		 G_TYPE_FROM_CLASS(recall),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsRecallClass, load_automation),
-		 NULL, NULL,
-		 g_cclosure_marshal_VOID__POINTER,
-		 G_TYPE_NONE, 1,
-		 G_TYPE_POINTER);
-
-  /**
-   * AgsRecall::unload-automation:
-   * @recall: the #AgsRecall to initialize
-   *
-   * The ::unload-automation signal notifies about unloading automation.
-   *
-   * Since: 2.0.0
-   */
-  recall_signals[UNLOAD_AUTOMATION] =
-    g_signal_new("unload-automation",
-		 G_TYPE_FROM_CLASS(recall),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsRecallClass, unload_automation),
-		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
-
   /**
    * AgsRecall::resolve-dependency:
    * @recall: the #AgsRecall to resolve
@@ -1917,9 +1877,6 @@ ags_recall_connect(AgsConnectable *connectable)
   }
 
   g_list_free(list_start);
-
-  /* load automation */
-  ags_recall_load_automation(recall);
 }
 
 void
@@ -1991,9 +1948,6 @@ ags_recall_disconnect(AgsConnectable *connectable)
   }
 
   g_list_free(list_start);
-
-  /* unload automation */
-  ags_recall_unload_automation(recall);
 }
 
 gchar*
@@ -2788,46 +2742,6 @@ ags_recall_check_state_flags(AgsRecall *recall, guint state_flags)
   }
   
   return(TRUE);
-}
-
-/**
- * ags_recall_load_automation:
- * @recall: an #AgsRecall
- * @automation_port: a #GList-struct containing #AgsPort
- *
- * A signal indicating that additional automation will be loaded from
- * @automation_port.
- * 
- * Since: 1.0.0
- */
-void
-ags_recall_load_automation(AgsRecall *recall,
-			   GList *automation_port)
-{
-  g_return_if_fail(AGS_IS_RECALL(recall));
-  g_object_ref(G_OBJECT(recall));
-  g_signal_emit(G_OBJECT(recall),
-		recall_signals[LOAD_AUTOMATION], 0,
-		automation_port);
-  g_object_unref(G_OBJECT(recall));
-}
-
-/**
- * ags_recall_unload_automation:
- * @recall: an #AgsRecall
- *
- * A signal indicating that the automation will be unloaded.
- * 
- * Since: 1.0.0
- */
-void
-ags_recall_unload_automation(AgsRecall *recall)
-{
-  g_return_if_fail(AGS_IS_RECALL(recall));  
-  g_object_ref(G_OBJECT(recall));
-  g_signal_emit(G_OBJECT(recall),
-		recall_signals[UNLOAD_AUTOMATION], 0);
-  g_object_unref(G_OBJECT(recall));
 }
 
 /**

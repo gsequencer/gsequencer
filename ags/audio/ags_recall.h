@@ -150,10 +150,6 @@ struct _AgsRecallClass
 {
   GObjectClass object;
 
-  void (*load_automation)(AgsRecall *recall,
-			  GList *automation_port);
-  void (*unload_automation)(AgsRecall *recall);
-  
   void (*resolve_dependency)(AgsRecall *recall);
   void (*check_rt_data)(AgsRecall *recall);
   
@@ -267,10 +263,6 @@ void ags_recall_set_buffer_size(AgsRecall *recall, guint buffer_size);
 void ags_recall_set_format(AgsRecall *recall, guint format);
 
 /* events */
-void ags_recall_load_automation(AgsRecall *recall,
-				GList *automation_port);
-void ags_recall_unload_automation(AgsRecall *recall);
-
 void ags_recall_resolve_dependency(AgsRecall *recall);
 void ags_recall_check_rt_data(AgsRecall *recall);
 
