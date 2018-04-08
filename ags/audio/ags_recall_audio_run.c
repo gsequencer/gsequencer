@@ -102,7 +102,7 @@ ags_recall_audio_run_get_type()
     };
 
     static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_recall_audio_run_dynamic_connectable_interface_init,
+      (GInterfaceInitFunc) ags_recall_audio_run_connectable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
