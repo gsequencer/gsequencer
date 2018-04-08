@@ -23,16 +23,14 @@
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recycling_context.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_recycling.h>
-
-#include <ags/audio/task/ags_cancel_recall.h>
 
 #include <ags/i18n.h>
 
@@ -1308,71 +1306,240 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
 					       AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
 					       AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region)
 {
-  AgsRecycling *destination_recycling, *source_recycling;
-  AgsRecallRecycling *recall_recycling;
-  GList *list, *list_start;
+  AgsChannel *destination, *source;
+  AgsRecycling *destination_first_recycling, *destination_last_recycling;
+  AgsRecycling *destination_end_recycling;
+  AgsRecycling *destination_recycling;
+  AgsRecycling *source_first_recycling, *source_last_recycling;
+  AgsRecycling *source_end_recycling;
+  AgsRecycling *source_recycling;
+  AgsRecallID *recall_id;
 
-  if(recall_channel_run->source == NULL ||
-     AGS_RECALL(recall_channel_run)->child_type == G_TYPE_NONE ||
-     (AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_channel_run)->flags)) != 0){
+  GObject *output_soundcard, *input_soundcard;
+  
+  GType child_type;
+
+  guint recall_flags;
+  guint ability_flags;
+  guint behaviour_flags;
+  gint sound_scope;
+  gint output_soundcard_channel, input_soundcard_channel;
+  guint samplerate;
+  guint buffer_size;
+  guint format;
+  
+  pthread_mutex_t *recall_mutex;
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(recall_channel_run)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_mutex);
+
+  recall_flags = AGS_RECALL(recall_channel_run)->flags;
+
+  destination = recall_channel_run->destination;
+  source = recall_channel_run->source;
+
+  child_type = AGS_RECALL(recall_channel_run)->child_type;
+  
+  pthread_mutex_unlock(recall_mutex);
+
+  /* check instantiable child */
+  if(source == NULL ||
+     child_type == G_TYPE_NONE ||
+     (AGS_RECALL_TEMPLATE & (recall_flags)) != 0){
     return;
   }
 
   /* remove old */
   if(old_start_changed_region != NULL){
-    AgsRecall *recall;
-    AgsCancelRecall *cancel_recall;
+    pthread_mutex_t *destination_recycling_mutex;
 
+    /* get recycling mutex */
+    pthread_mutex_lock(ags_recycling_get_class_mutex());
+  
+    destination_recycling_mutex = old_end_changed_region->obj_mutex;
+  
+    pthread_mutex_unlock(ags_recycling_get_class_mutex());
+
+    /* get end recycling */
+    pthread_mutex_lock(destination_recycling_mutex);
+
+    destination_end_recycling = old_end_changed_region->next;
+
+    pthread_mutex_unlock(destination_recycling_mutex);
+
+    /*  */
     destination_recycling = old_start_changed_region;
     
-    while(destination_recycling != old_end_changed_region->next){
-      list_start = 
-	list = ags_recall_get_children(AGS_RECALL(recall_channel_run));
+    while(destination_recycling != destination_end_recycling){
+      /* get recycling mutex */
+      pthread_mutex_lock(ags_recycling_get_class_mutex());
+  
+      source_recycling_mutex = source_recycling->obj_mutex;
+  
+      pthread_mutex_unlock(ags_recycling_get_class_mutex());
+
+      /* get children */
+      g_object_get(recall_channel_run,
+		   "children", &list_start,
+		   NULL);
+
+      list = list_start;
 
       while(list != NULL){
-	if(AGS_RECALL_RECYCLING(list->data)->destination == destination_recycling){
-	  recall = AGS_RECALL(list->data);
+	AgsRecycling *current_destination;
+	AgsRecall *current_recall;
 
-	  ags_recall_remove(recall);
+	current_recall = AGS_RECALL(list->data);
+
+	g_object_get(current_recall,
+		     "destination", &current_destination,
+		     NULL);
+	
+	if(current_destination == destination_recycling){
+	  ags_recall_cancel(recall);
+	  ags_recall_remove_child(recall_channel_run,
+				  recall);
+
+	  g_object_run_dispose(recall);
+	  g_object_unref(recall);
 	}
 
 	list = list->next;
       }
 
       g_list_free(list_start);
+
+      /* iterate */
+      pthread_mutex_lock(destination_recycling_mutex);
       
       destination_recycling = destination_recycling->next;
+
+      pthread_mutex_unlock(destination_recycling_mutex);
     }
   }
 
   /* add new */
-  if(new_start_changed_region != NULL){
-    if(recall_channel_run->source != NULL){
-      if(recall_channel_run->source->first_recycling == NULL){
-	return;
-      }
+  if(new_start_changed_region == NULL ||
+     source == NULL){
+    return;
+  }
+  
+  g_object_get(source,
+	       "first-recycling", &source_first_recycling,
+	       "last-recycling", &source_last_recycling,
+	       NULL);
       
-      destination_recycling = new_start_changed_region;
-      
-      while(destination_recycling != new_end_changed_region->next){
-	source_recycling = recall_channel_run->source->first_recycling;
-	
-	while(source_recycling != recall_channel_run->source->last_recycling->next){
-	  recall_recycling = g_object_new(AGS_RECALL(recall_channel_run)->child_type,
-					  "soundcard", AGS_RECALL(recall_channel_run)->soundcard,
-					  "recall_id", AGS_RECALL(recall_channel_run)->recall_id,
-					  "audio_channel", recall_channel_run->audio_channel,
-					  "source", source_recycling,
-					  "destination", destination_recycling,
-					  NULL);
-	  
-	  ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
+  if(source_first_recycling != NULL){
+    pthread_mutex_t *destination_recycling_mutex;
+    pthread_mutex_t *source_recycling_mutex;
+  
+    /* get some fields */
+    pthread_mutex_lock(recall_mutex);
 
-	  source_recycling = source_recycling->next;
-	}
+    ability_flags = AGS_RECALL(recall_channel_run)->ability_flags;
+    behaviour_flags = AGS_RECALL(recall_channel_run)->behaviour_flags;
+    sound_scope = AGS_RECALL(recall_channel_run)->sound_scope;
+    
+    recall_id = AGS_RECALL(recall_channel_run)->recall_id;
+    
+    output_soundcard = AGS_RECALL(recall_channel_run)->output_soundcard;
+    output_soundcard_channel = AGS_RECALL(recall_channel_run)->output_soundcard_channel;
+
+    input_soundcard = AGS_RECALL(recall_channel_run)->input_soundcard;
+    input_soundcard_channel = AGS_RECALL(recall_channel_run)->input_soundcard_channel;
+
+    samplerate = AGS_RECALL(recall_channel_run)->samplerate;
+    buffer_size = AGS_RECALL(recall_channel_run)->buffer_size;
+    format =  AGS_RECALL(recall_channel_run)->format;
+    
+    pthread_mutex_unlock(recall_mutex);    
+
+    /* get recycling mutex */
+    pthread_mutex_lock(ags_recycling_get_class_mutex());
+  
+    destination_recycling_mutex = new_end_changed_region->obj_mutex;
+  
+    pthread_mutex_unlock(ags_recycling_get_class_mutex());
+
+    /* get end recycling */
+    pthread_mutex_lock(destination_recycling_mutex);
+
+    destination_end_recycling = new_end_changed_region->next;
+
+    pthread_mutex_unlock(destination_recycling_mutex);
+
+    /*  */
+    destination_recycling = new_start_changed_region;
+      
+    while(destination_recycling != destination_end_recycling){
+      /* get recycling mutex */
+      pthread_mutex_lock(ags_recycling_get_class_mutex());
+  
+      destination_recycling_mutex = destination_recycling->obj_mutex;
+  
+      pthread_mutex_unlock(ags_recycling_get_class_mutex());
+
+      /* get recycling mutex */
+      pthread_mutex_lock(ags_recycling_get_class_mutex());
+  
+      source_recycling_mutex = source_last_recycling->obj_mutex;
+  
+      pthread_mutex_unlock(ags_recycling_get_class_mutex());
+
+      /* get end recycling */
+      pthread_mutex_lock(source_recycling_mutex);
+
+      source_end_recycling = source_last_recycling->next;
+
+      pthread_mutex_unlock(source_recycling_mutex);
+
+      /*  */
+      source_recycling = source_first_recycling;
 	
-	destination_recycling = destination_recycling->next;
+      while(source_recycling != source_end_recycling){
+	/* get recycling mutex */
+	pthread_mutex_lock(ags_recycling_get_class_mutex());
+  
+	source_recycling_mutex = source_recycling->obj_mutex;
+  
+	pthread_mutex_unlock(ags_recycling_get_class_mutex());
+	
+	recall_recycling = g_object_new(AGS_RECALL(recall_channel_run)->child_type,
+					"recall-id", recall_id,
+					"output-soundcard", output_soundcard,
+					"output-soundcard-channel", output_soundcard_channel,
+					"input-soundcard", input_soundcard,
+					"input-soundcard-channel", input_soundcard_channel,
+					"samplerate", samplerate,
+					"buffer-size", buffer_size,
+					"format", format,
+					"source", source_recycling,
+					"destination", destination_recycling,
+					NULL);
+	  
+	ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
+
+	/* iterate */
+	pthread_mutex_lock(source_recycling_mutex);
+      
+	source_recycling = source_recycling->next;
+
+	pthread_mutex_unlock(source_recycling_mutex);
       }
+
+      /* iterate */
+      pthread_mutex_lock(destination_recycling_mutex);
+      
+      destination_recycling = destination_recycling->next;
+
+      pthread_mutex_unlock(destination_recycling_mutex);
     }
   }
 }
@@ -1384,14 +1551,27 @@ ags_recall_channel_run_source_recycling_changed_callback(AgsChannel *channel,
 							 AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
 							 AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
 							 AgsRecallChannelRun *recall_channel_run)
-{  
-  if(recall_channel_run->destination != NULL){
+{
+  AgsChannel *destination;
+
+  g_object_get(recall_channel_run,
+	       "destination", &destination,
+	       NULL);
+  
+  if(destination != NULL){
+    AgsRecycling *first_recycling, *last_recycling;
+
+    g_object_get(destination,
+		 "first-recycling", &first_recycling,
+		 "last-recycling", &last_recycling,
+		 NULL);
+    
     ags_recall_channel_run_remap_child_source(recall_channel_run,
 					      NULL, NULL,
 					      NULL, NULL);
     ags_recall_channel_run_remap_child_destination(recall_channel_run,
 						   NULL, NULL,
-						   recall_channel_run->destination->first_recycling, recall_channel_run->destination->last_recycling);
+						   first_recycling, last_recycling);
   }else{
     ags_recall_channel_run_remap_child_source(recall_channel_run,
 					      old_start_changed_region, old_end_changed_region,
@@ -1424,7 +1604,8 @@ ags_recall_channel_run_new()
 {
   AgsRecallChannelRun *recall_channel_run;
 
-  recall_channel_run = (AgsRecallChannelRun *) g_object_new(AGS_TYPE_RECALL_CHANNEL_RUN, NULL);
+  recall_channel_run = (AgsRecallChannelRun *) g_object_new(AGS_TYPE_RECALL_CHANNEL_RUN,
+							    NULL);
 
   return(recall_channel_run);
 }
