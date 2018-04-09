@@ -235,7 +235,6 @@ gboolean ags_recall_check_state_flags(AgsRecall *recall, guint state_flags);
 
 /* children */
 void ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id);
-void ags_recall_set_output_soundcard(AgsRecall *recall, GObject *soundcard);
 
 void ags_recall_add_recall_dependency(AgsRecall *recall, AgsRecallDependency *recall_dependency);
 void ags_recall_remove_recall_dependency(AgsRecall *recall, AgsRecallDependency *recall_dependency);
