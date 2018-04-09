@@ -201,7 +201,7 @@ ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run)
 }
 
 void
-ags_recall_audio_runconnectable_interface_init(AgsConnectableInterface *connectable)
+ags_recall_audio_run_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_recall_audio_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
