@@ -90,20 +90,26 @@ GList* ags_recall_get_ports(AgsPlugin *plugin);
 void ags_recall_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_recall_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
+void ags_recall_real_resolve_dependency(AgsRecall *recall);
+void ags_recall_real_check_rt_data(AgsRecall *recall);
+
 void ags_recall_real_run_init_pre(AgsRecall *recall);
 void ags_recall_real_run_init_inter(AgsRecall *recall);
 void ags_recall_real_run_init_post(AgsRecall *recall);
 
+void ags_recall_real_feed_input_queue(AgsRecall *recall);
 void ags_recall_real_run_automate(AgsRecall *recall);
+
 void ags_recall_real_run_pre(AgsRecall *recall);
 void ags_recall_real_run_inter(AgsRecall *recall);
 void ags_recall_real_run_post(AgsRecall *recall);
 
-void ags_recall_real_stop_persistent(AgsRecall *recall);
-void ags_recall_real_done(AgsRecall *recall);
+void ags_recall_real_do_feedback(AgsRecall *recall);
+void ags_recall_real_feed_output_queue(AgsRecall *recall);
 
+void ags_recall_real_stop_persistent(AgsRecall *recall);
 void ags_recall_real_cancel(AgsRecall *recall);
-void ags_recall_real_remove(AgsRecall *recall);
+void ags_recall_real_done(AgsRecall *recall);
 
 AgsRecall* ags_recall_real_duplicate(AgsRecall *reall,
 				     AgsRecallID *recall_id,
@@ -159,8 +165,8 @@ enum{
   PROP_RECALL_ID,
   PROP_RECALL_DEPENDENCY,
   PROP_PARENT,
-  PROP_CHILD,
   PROP_CHILD_TYPE,
+  PROP_CHILD,
 };
 
 static gpointer ags_recall_parent_class = NULL;
@@ -373,21 +379,6 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  param_spec);
   
   /**
-   * AgsRecall:recall-dependency:
-   *
-   * The assigned #AgsRecallDependency.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_pointer("recall-dependency",
-				    i18n_pspec("recall dependency"),
-				    i18n_pspec("The recall dependency that can be added"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_RECALL_DEPENDENCY,
-				  param_spec);
-
-  /**
    * AgsRecall:port:
    *
    * The assigned #AgsPort
@@ -463,21 +454,6 @@ ags_recall_class_init(AgsRecallClass *recall)
   g_object_class_install_property(gobject,
 				  PROP_PARENT,
 				  param_spec);
-  
-  /**
-   * AgsRecall:child:
-   *
-   * The child #AgsRecall.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_pointer("child",
-				    i18n_pspec("child of recall"),
-				    i18n_pspec("The child that can be added"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_CHILD,
-				  param_spec);
 
   /**
    * AgsRecall:child-type:
@@ -495,23 +471,38 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  PROP_CHILD_TYPE,
 				  param_spec);
   
+  /**
+   * AgsRecall:child:
+   *
+   * The child #AgsRecall.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("child",
+				    i18n_pspec("child of recall"),
+				    i18n_pspec("The child that can be added"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHILD,
+				  param_spec);
+  
   /* AgsRecallClass */
-  recall->resolve_dependency = NULL;
-  recall->check_rt_data = NULL;
+  recall->resolve_dependency = ags_recall_real_resolve_dependency;
+  recall->check_rt_data = ags_recall_real_check_rt_data;
   
   recall->run_init_pre = ags_recall_real_run_init_pre;
   recall->run_init_inter = ags_recall_real_run_init_inter;
   recall->run_init_post = ags_recall_real_run_init_post;
 
-  recall->feed_input_queue = NULL;
-  recall->automate = NULL;
+  recall->feed_input_queue = ags_recall_real_feed_input_queue;
+  recall->automate = ags_recall_real_automat;
 
   recall->run_pre = ags_recall_real_run_pre;
   recall->run_inter = ags_recall_real_run_inter;
   recall->run_post = ags_recall_real_run_post;
 
-  recall->do_feedback = NULL;
-  recall->feed_output_queue = NULL;
+  recall->do_feedback = ags_recall_real_do_feedback;
+  recall->feed_output_queue = ags_recall_real_feed_output_queue;
 
   recall->stop_persistent = ags_recall_real_stop_persistent;
   recall->cancel = ags_recall_real_cancel;
@@ -819,7 +810,7 @@ ags_recall_class_init(AgsRecallClass *recall)
    * AgsRecall::notify-dependency:
    * @recall: the #AgsRecall to notify
    * @dependency: the kind of dependency
-   * @count: the reference count
+   * @increase: if %TRUE increase dependency count, else if %FALSE decrease
    *
    * The ::notify-dependency signal notifies about dependency
    * added.
@@ -832,9 +823,9 @@ ags_recall_class_init(AgsRecallClass *recall)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsRecallClass, notify_dependency),
 		 NULL, NULL,
-		 ags_cclosure_marshal_VOID__UINT_INT,
+		 ags_cclosure_marshal_VOID__UINT_BOOLEAN,
 		 G_TYPE_NONE, 2,
-		 G_TYPE_UINT, G_TYPE_INT);
+		 G_TYPE_UINT, G_TYPE_BOOLEAN);
 
   /**
    * AgsRecall::child-added:
@@ -906,6 +897,7 @@ ags_recall_init(AgsRecall *recall)
   gchar *str;
   gchar *str0, *str1;
 
+  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
@@ -1293,7 +1285,7 @@ ags_recall_set_property(GObject *gobject,
 
       pthread_mutex_lock(recall_mutex);
 
-      if(child == NULL ||
+      if(!AGS_IS_RECALL(child) ||
 	 g_list_find(recall->children, child) != NULL){
 	pthread_mutex_unlock(recall_mutex);
 	
@@ -1449,6 +1441,15 @@ ags_recall_get_property(GObject *gobject,
       pthread_mutex_unlock(recall_mutex);
     }
     break;
+  case PROP_CHILD:
+    {
+      pthread_mutex_lock(recall_mutex);
+      
+      g_value_set_pointer(value, g_list_copy(recall->child));
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
   case PROP_CHILD_TYPE:
     {
       pthread_mutex_lock(recall_mutex);
@@ -1478,9 +1479,9 @@ ags_recall_dispose(GObject *gobject)
   
   /* recall container */
   if(recall->recall_container != NULL){
-    g_object_unref(recall->recall_container);
-    
-    recall->recall_container = NULL;
+    g_object_set(recall,
+		 "recall-container", NULL,
+		 NULL);
   }
 
   /* output/input soundcard */
@@ -1597,6 +1598,13 @@ ags_recall_finalize(GObject *gobject)
   g_free(ids);
 #endif
   
+  /* recall container */
+  if(recall->recall_container != NULL){
+    g_object_set(recall,
+		 "recall-container", NULL,
+		 NULL);
+  }
+
   /* output/input soundcard */
   if(recall->output_soundcard != NULL){
     g_object_unref(recall->output_soundcard);
@@ -1663,7 +1671,7 @@ ags_recall_get_uuid(AgsConnectable *connectable)
 
   recall = AGS_RECALL(connectable);
 
-  /* get recall signal mutex */
+  /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
   recall_mutex = recall->obj_mutex;
@@ -2078,12 +2086,25 @@ ags_recall_get_class_mutex()
 void
 ags_recall_set_flags(AgsRecall *recall, guint flags)
 {
+  pthread_mutex_t *recall_mutex;
+
   if(!AGS_IS_RECALL(recall)){
     return;
   }
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
   /* set flags */
+  pthread_mutex_lock(recall_mutex);
+
   recall->flags |= flags;
+
+  pthread_mutex_unlock(recall_mutex);
 }
 
 /**
@@ -2098,22 +2119,39 @@ ags_recall_set_flags(AgsRecall *recall, guint flags)
 void
 ags_recall_set_ability_flags(AgsRecall *recall, guint ability_flags)
 {
-  GList *child;
+  GList *child_start, *child;
+
+  pthread_mutex_t *recall_mutex;
 
   if(!AGS_IS_RECALL(recall)){
     return;
   }
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* set ability flags */
+  pthread_mutex_lock(recall_mutex);
+
   recall->ability_flags |= ability_flags;
 
   /* apply recursivly */
-  child = recall->children;
+  child =
+    child_start = g_list_copy(recall->children);
+
+  pthread_mutex_unlock(recall_mutex);
 
   while(child != NULL){
     ags_recall_set_ability_flags(AGS_RECALL(child->data), ability_flags);
 
     child = child->next;
   }
+
+  g_list_free(child_start);
 }
 
 /**
@@ -2128,22 +2166,39 @@ ags_recall_set_ability_flags(AgsRecall *recall, guint ability_flags)
 void
 ags_recall_unset_ability_flags(AgsRecall *recall, guint ability_flags)
 {
-  GList *child;
+  GList *child_start, *child;
+
+  pthread_mutex_t *recall_mutex;
 
   if(!AGS_IS_RECALL(recall)){
     return;
   }
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* unset ability flags */
+  pthread_mutex_lock(recall_mutex);
+
   recall->ability_flags &= (~ability_flags);
 
   /* apply recursivly */
-  child = recall->children;
+  child =
+    child_start = g_list_copy(recall->children);
+
+  pthread_mutex_unlock(recall_mutex);
 
   while(child != NULL){
     ags_recall_set_ability_flags(AGS_RECALL(child->data), ability_flags);
 
     child = child->next;
   }
+
+  g_list_free(child_start);
 }
 
 /**
@@ -2160,32 +2215,50 @@ ags_recall_unset_ability_flags(AgsRecall *recall, guint ability_flags)
 gboolean
 ags_recall_check_ability_flags(AgsRecall *recall, guint ability_flags)
 {
+  guint recall_ability_flags;
+  
+  pthread_mutex_t *recall_mutex;
+
   if(!AGS_IS_RECALL(recall)){
     return(FALSE);
   }
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get ability flags */
+  pthread_mutex_lock(recall_mutex);
+
+  recall_ability_flags = recall->ability_flags;
+
+  pthread_mutex_unlock(recall_mutex);
+
   if((AGS_SOUND_ABILITY_PLAYBACK & (ability_flags)) != 0 &&
-     (AGS_SOUND_ABILITY_PLAYBACK & (recall->ability_flags)) == 0){
+     (AGS_SOUND_ABILITY_PLAYBACK & (recall_ability_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_ABILITY_NOTATION & (ability_flags)) != 0 &&
-     (AGS_SOUND_ABILITY_NOTATION & (recall->ability_flags)) == 0){
+     (AGS_SOUND_ABILITY_NOTATION & (recall_ability_flags)) == 0){
     return(FALSE);
   }
 
   if((AGS_SOUND_ABILITY_SEQUENCER & (ability_flags)) != 0 &&
-     (AGS_SOUND_ABILITY_SEQUENCER & (recall->ability_flags)) == 0){
+     (AGS_SOUND_ABILITY_SEQUENCER & (recall_ability_flags)) == 0){
     return(FALSE);
   }
 
   if((AGS_SOUND_ABILITY_WAVE & (ability_flags)) != 0 &&
-     (AGS_SOUND_ABILITY_WAVE & (recall->ability_flags)) == 0){
+     (AGS_SOUND_ABILITY_WAVE & (recall_ability_flags)) == 0){
     return(FALSE);
   }
 
   if((AGS_SOUND_ABILITY_MIDI & (ability_flags)) != 0 &&
-     (AGS_SOUND_ABILITY_MIDI & (recall->ability_flags)) == 0){
+     (AGS_SOUND_ABILITY_MIDI & (recall_ability_flags)) == 0){
     return(FALSE);
   }
 
@@ -2206,14 +2279,32 @@ ags_recall_check_ability_flags(AgsRecall *recall, guint ability_flags)
 gboolean
 ags_recall_match_ability_flags_to_scope(AgsRecall *recall, gint sound_scope)
 {
+  guint recall_ability_flags;
+  
+  pthread_mutex_t *recall_mutex;
+
   if(!AGS_IS_RECALL(recall)){
     return(FALSE);
   }
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get ability flags */
+  pthread_mutex_lock(recall_mutex);
+
+  recall_ability_flags = recall->ability_flags;
+
+  pthread_mutex_unlock(recall_mutex);
+
   switch(sound_scope){
   case AGS_SOUND_SCOPE_PLAYBACK:
     {
-      if((AGS_SOUND_ABILITY_PLAYBACK & (recall->ability_flags)) != 0){
+      if((AGS_SOUND_ABILITY_PLAYBACK & (recall_ability_flags)) != 0){
 	return(TRUE);
       }else{
 	return(FALSE);
@@ -2221,7 +2312,7 @@ ags_recall_match_ability_flags_to_scope(AgsRecall *recall, gint sound_scope)
     }
   case AGS_SOUND_SCOPE_NOTATION:
     {
-      if((AGS_SOUND_ABILITY_NOTATION & (recall->ability_flags)) != 0){
+      if((AGS_SOUND_ABILITY_NOTATION & (recall_ability_flags)) != 0){
 	return(TRUE);
       }else{
 	return(FALSE);
@@ -2229,7 +2320,7 @@ ags_recall_match_ability_flags_to_scope(AgsRecall *recall, gint sound_scope)
     }
   case AGS_SOUND_SCOPE_SEQUENCER:
     {
-      if((AGS_SOUND_ABILITY_SEQUENCER & (recall->ability_flags)) != 0){
+      if((AGS_SOUND_ABILITY_SEQUENCER & (recall_ability_flags)) != 0){
 	return(TRUE);
       }else{
 	return(FALSE);
@@ -2237,7 +2328,7 @@ ags_recall_match_ability_flags_to_scope(AgsRecall *recall, gint sound_scope)
     }
   case AGS_SOUND_SCOPE_WAVE:
     {
-      if((AGS_SOUND_ABILITY_WAVE & (recall->ability_flags)) != 0){
+      if((AGS_SOUND_ABILITY_WAVE & (recall_ability_flags)) != 0){
 	return(TRUE);
       }else{
 	return(FALSE);
@@ -2245,7 +2336,7 @@ ags_recall_match_ability_flags_to_scope(AgsRecall *recall, gint sound_scope)
     }
   case AGS_SOUND_SCOPE_MIDI:
     {
-      if((AGS_SOUND_ABILITY_MIDI & (recall->ability_flags)) != 0){
+      if((AGS_SOUND_ABILITY_MIDI & (recall_ability_flags)) != 0){
 	return(TRUE);
       }else{
 	return(FALSE);
@@ -2268,11 +2359,25 @@ ags_recall_match_ability_flags_to_scope(AgsRecall *recall, gint sound_scope)
 void
 ags_recall_set_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
 {
+  pthread_mutex_t *recall_mutex;
+
   if(!AGS_IS_RECALL(recall)){
     return;
   }
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* set behaviour flags */
+  pthread_mutex_lock(recall_mutex);
+
   recall->behaviour_flags |= behaviour_flags;
+
+  pthread_mutex_unlock(recall_mutex);
 }
 
 /**
@@ -2287,11 +2392,25 @@ ags_recall_set_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
 void
 ags_recall_unset_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
 {
+  pthread_mutex_t *recall_mutex;
+
   if(!AGS_IS_RECALL(recall)){
     return;
   }
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* unset behaviour flags */
+  pthread_mutex_lock(recall_mutex);
+
   recall->behaviour_flags &= (~behaviour_flags);
+
+  pthread_mutex_unlock(recall_mutex);
 }
 
 /**
@@ -2308,77 +2427,95 @@ ags_recall_unset_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
 gboolean
 ags_recall_check_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
 {
+  guint recall_behaviour_flags;
+  
+  pthread_mutex_t *recall_mutex;
+
   if(!AGS_IS_RECALL(recall)){
     return(FALSE);
   }
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get behaviour flags */
+  pthread_mutex_lock(recall_mutex);
+
+  recall_behaviour_flags = recall->behaviour_flags;
+
+  pthread_mutex_unlock(recall_mutex);
+
   if((AGS_SOUND_BEHAVIOUR_PATTERN_MODE & (behaviour_flags)) != 0 &&
-     (AGS_SOUND_BEHAVIOUR_PATTERN_MODE & (recall->behaviour_flags)) == 0){
+     (AGS_SOUND_BEHAVIOUR_PATTERN_MODE & (recall_behaviour_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_BEHAVIOUR_BULK_MODE & (behaviour_flags)) != 0 &&
-     (AGS_SOUND_BEHAVIOUR_BULK_MODE & (recall->behaviour_flags)) == 0){
+     (AGS_SOUND_BEHAVIOUR_BULK_MODE & (recall_behaviour_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING & (behaviour_flags)) != 0 &&
-     (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING & (recall->behaviour_flags)) == 0){
+     (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING & (recall_behaviour_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT & (behaviour_flags)) != 0 &&
-     (AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT & (recall->behaviour_flags)) == 0){
+     (AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT & (recall_behaviour_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT & (behaviour_flags)) != 0 &&
-     (AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT & (recall->behaviour_flags)) == 0){
+     (AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT & (recall_behaviour_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT & (behaviour_flags)) != 0 &&
-     (AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUPUT & (recall->behaviour_flags)) == 0){
+     (AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUPUT & (recall_behaviour_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT & (behaviour_flags)) != 0 &&
-     (AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT & (recall->behaviour_flags)) == 0){
+     (AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT & (recall_behaviour_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_BEHAVIOUR_PERSISTENT & (behaviour_flags)) != 0 &&
-     (AGS_SOUND_BEHAVIOUR_PERSISTENT & (recall->behaviour_flags)) == 0){
+     (AGS_SOUND_BEHAVIOUR_PERSISTENT & (recall_behaviour_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_BEHAVIOUR_PERSISTENT_PLAYBACK & (behaviour_flags)) != 0 &&
-     (AGS_SOUND_BEHAVIOUR_PERSISTENT_PLAYBACK & (recall->behaviour_flags)) == 0){
+     (AGS_SOUND_BEHAVIOUR_PERSISTENT_PLAYBACK & (recall_behaviour_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_BEHAVIOUR_PERSISTENT_NOTATION & (behaviour_flags)) != 0 &&
-     (AGS_SOUND_BEHAVIOUR_PERSISTENT_NOTATION & (recall->behaviour_flags)) == 0){
+     (AGS_SOUND_BEHAVIOUR_PERSISTENT_NOTATION & (recall_behaviour_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_BEHAVIOUR_PERSISTENT_SEQUENCER & (behaviour_flags)) != 0 &&
-     (AGS_SOUND_BEHAVIOUR_PERSISTENT_SEQUENCER & (recall->behaviour_flags)) == 0){
+     (AGS_SOUND_BEHAVIOUR_PERSISTENT_SEQUENCER & (recall_behaviour_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_BEHAVIOUR_PERSISTENT_WAVE & (behaviour_flags)) != 0 &&
-     (AGS_SOUND_BEHAVIOUR_PERSISTENT_WAVE & (recall->behaviour_flags)) == 0){
+     (AGS_SOUND_BEHAVIOUR_PERSISTENT_WAVE & (recall_behaviour_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_BEHAVIOUR_PERSISTENT_MIDI & (behaviour_flags)) != 0 &&
-     (AGS_SOUND_BEHAVIOUR_PERSISTENT_MIDI & (recall->behaviour_flags)) == 0){
+     (AGS_SOUND_BEHAVIOUR_PERSISTENT_MIDI & (recall_behaviour_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_BEHAVIOUR_PROPAGATE_DONE & (behaviour_flags)) != 0 &&
-     (AGS_SOUND_BEHAVIOUR_PROPAGATE_DONE & (recall->behaviour_flags)) == 0){
+     (AGS_SOUND_BEHAVIOUR_PROPAGATE_DONE & (recall_behaviour_flags)) == 0){
     return(FALSE);
   }
 
@@ -2397,13 +2534,27 @@ ags_recall_check_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
 void
 ags_recall_set_sound_scope(AgsRecall *recall, gint sound_scope)
 {
+  pthread_mutex_t *recall_mutex;
+
   if(!AGS_IS_RECALL(recall) &&
      ags_recall_check_scope(recall,
 			    -1)){
     return;
   }
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* set sound scope */
+  pthread_mutex_lock(recall_mutex);
+
   recall->sound_scope = sound_scope;
+
+  pthread_mutex_unlock(recall_mutex);
 }
 
 /**
@@ -2420,12 +2571,30 @@ ags_recall_set_sound_scope(AgsRecall *recall, gint sound_scope)
 gboolean
 ags_recall_check_sound_scope(AgsRecall *recall, gint sound_scope)
 {
+  gint recall_sound_scope;
+  
+  pthread_mutex_t *recall_mutex;
+
   if(!AGS_IS_RECALL(recall)){
     return(FALSE);
   }
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get ability flags */
+  pthread_mutex_lock(recall_mutex);
+
+  recall_sound_scope = recall->sound_scope;
+
+  pthread_mutex_unlock(recall_mutex);
+
   if(sound_scope < 0){
-    switch(recall->sound_scope){
+    switch(recall_sound_scope){
     case AGS_SOUND_SCOPE_PLAYBACK:
     case AGS_SOUND_SCOPE_NOTATION:
     case AGS_SOUND_SCOPE_SEQUENCER:
@@ -2437,7 +2606,7 @@ ags_recall_check_sound_scope(AgsRecall *recall, gint sound_scope)
     }
   }else{
     if(sound_scope < AGS_SOUND_SCOPE_LAST &&
-       sound_scope == recall->sound_scope){
+       sound_scope == recall_sound_scope){
       return(TRUE);
     }else{
       return(FALSE);
@@ -2457,63 +2626,82 @@ ags_recall_check_sound_scope(AgsRecall *recall, gint sound_scope)
 void
 ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
 {
+  guint recall_staging_flags;
+  
+  pthread_mutex_t *recall_mutex;
+
   if(!AGS_IS_RECALL(recall)){
     return;
   }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
   
-  if((AGS_SOUND_STAGING_FINI & (recall->staging_flags)) == 0){
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get staging flags */
+  pthread_mutex_lock(recall_mutex);
+
+  recall_staging_flags = recall->staging_flags;
+
+  pthread_mutex_unlock(recall_mutex);
+
+  /* invoke appropriate staging */
+  if((AGS_SOUND_STAGING_FINI & (recall_staging_flags)) == 0){
     if((AGS_SOUND_STAGING_CHECK_RT_DATA & (staging_flags)) != 0 &&
-       (AGS_SOUND_STAGING_CHECK_RT_DATA & (recall->staging_flags)) == 0){    
+       (AGS_SOUND_STAGING_CHECK_RT_DATA & (recall_staging_flags)) == 0){    
       ags_recall_check_rt_data(recall);
     }
 
     if((AGS_SOUND_STAGING_RUN_INIT_PRE & (staging_flags)) != 0 &&
-       (AGS_SOUND_STAGING_RUN_INIT_PRE & (recall->staging_flags)) == 0){
+       (AGS_SOUND_STAGING_RUN_INIT_PRE & (recall_staging_flags)) == 0){
       ags_recall_run_init_pre(recall);
     }
 
     if((AGS_SOUND_STAGING_RUN_INIT_INTER & (staging_flags)) != 0 &&
-       (AGS_SOUND_STAGING_RUN_INIT_INTER & (recall->staging_flags)) == 0){
+       (AGS_SOUND_STAGING_RUN_INIT_INTER & (recall_staging_flags)) == 0){
       ags_recall_run_init_inter(recall);
     }
 
     if((AGS_SOUND_STAGING_RUN_INIT_POST & (staging_flags)) != 0 &&
-       (AGS_SOUND_STAGING_RUN_INIT_POST & (recall->staging_flags)) == 0){
+       (AGS_SOUND_STAGING_RUN_INIT_POST & (recall_staging_flags)) == 0){
       ags_recall_run_init_post(recall);
     }
   
     if((AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (staging_flags)) != 0 &&
-       (AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (recall->staging_flags)) == 0){
+       (AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (recall_staging_flags)) == 0){
       ags_recall_run_init_feed_input_queue(recall);
     }
 
     if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0 &&
-       (AGS_SOUND_STAGING_AUTOMATE & (recall->staging_flags)) == 0){
+       (AGS_SOUND_STAGING_AUTOMATE & (recall_staging_flags)) == 0){
       ags_recall_run_init_automate(recall);
     }
 
     if((AGS_SOUND_STAGING_RUN_PRE & (staging_flags)) != 0 &&
-       (AGS_SOUND_STAGING_RUN_PRE & (recall->staging_flags)) == 0){
+       (AGS_SOUND_STAGING_RUN_PRE & (recall_staging_flags)) == 0){
       ags_recall_run_pre(recall);
     }
 
     if((AGS_SOUND_STAGING_RUN_INTER & (staging_flags)) != 0 &&
-       (AGS_SOUND_STAGING_RUN_INTER & (recall->staging_flags)) == 0){
+       (AGS_SOUND_STAGING_RUN_INTER & (recall_staging_flags)) == 0){
       ags_recall_run_inter(recall);
     }
 
     if((AGS_SOUND_STAGING_RUN_POST & (staging_flags)) != 0 &&
-       (AGS_SOUND_STAGING_RUN_POST & (recall->staging_flags)) == 0){
+       (AGS_SOUND_STAGING_RUN_POST & (recall_staging_flags)) == 0){
       ags_recall_run_post(recall);
     }
 
     if((AGS_SOUND_STAGING_DO_FEEDBACK & (staging_flags)) != 0 &&
-       (AGS_SOUND_STAGING_DO_FEEDBACK & (recall->staging_flags)) == 0){
+       (AGS_SOUND_STAGING_DO_FEEDBACK & (recall_staging_flags)) == 0){
       ags_recall_run_init_do_feedback(recall);
     }
 
     if((AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (staging_flags)) != 0 &&
-       (AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (recall->staging_flags)) == 0){
+       (AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (recall_staging_flags)) == 0){
       ags_recall_run_init_feed_output_queue(recall);
     }
   }
@@ -2530,7 +2718,7 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
   }
 
   if((AGS_SOUND_STAGING_CANCEL & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_CANCEL & (recall->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_CANCEL & (recall_staging_flags)) == 0){
     ags_recall_set_state_flags(recall,
 			       AGS_SOUND_STATE_IS_TERMINATING);
 
@@ -2538,16 +2726,21 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
   }
   
   if((AGS_SOUND_STAGING_DONE & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_DONE & (recall->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_DONE & (recall_staging_flags)) == 0){
     ags_recall_run_init_done(recall);
   }
 
   if((AGS_SOUND_STAGING_REMOVE & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_REMOVE & (recall->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_REMOVE & (recall_staging_flags)) == 0){
     ags_recall_run_init_remove(recall);
   }
-  
+
+  /* apply flags */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
   recall->staging_flags |= staging_flags;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 }
 
 /**
@@ -2562,11 +2755,25 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
 void
 ags_recall_unset_staging_flags(AgsRecall *recall, guint staging_flags)
 {
+  pthread_mutex_t *recall_mutex;
+
   if(!AGS_IS_RECALL(recall)){
     return;
   }
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* unset staging flags */
+  pthread_mutex_lock(recall_mutex);
+
   recall->staging_flags &= (~staging_flags);
+
+  pthread_mutex_unlock(recall_mutex);
 }
 
 /**
@@ -2583,82 +2790,101 @@ ags_recall_unset_staging_flags(AgsRecall *recall, guint staging_flags)
 gboolean
 ags_recall_check_staging_flags(AgsRecall *recall, guint staging_flags)
 {
+  guint recall_staging_flags;
+  
+  pthread_mutex_t *recall_mutex;
+
   if(!AGS_IS_RECALL(recall)){
     return(FALSE);
   }
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get staging flags */
+  pthread_mutex_lock(recall_mutex);
+
+  recall_staging_flags = recall->staging_flags;
+
+  pthread_mutex_unlock(recall_mutex);
+
+  /* check staging flags */
   if((AGS_SOUND_STAGING_CHECK_RT & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_CHECK_RT & (recall->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_CHECK_RT & (recall_staging_flags)) == 0){
     return(FALSE);
   }
 
   if((AGS_SOUND_STAGING_RUN_INIT_PRE & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_RUN_INIT_PRE & (recall->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_RUN_INIT_PRE & (recall_staging_flags)) == 0){
     return(FALSE);
   }
 
   if((AGS_SOUND_STAGING_RUN_INIT_INTER & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_RUN_INIT_INTER & (recall->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_RUN_INIT_INTER & (recall_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_RUN_INIT_POST & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_RUN_INIT_POST & (recall->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_RUN_INIT_POST & (recall_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (recall->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (recall_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_AUTOMATE & (recall->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_AUTOMATE & (recall_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_RUN_PRE & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_RUN_PRE & (recall->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_RUN_PRE & (recall_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_RUN_INTER & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_RUN_INTER & (recall->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_RUN_INTER & (recall_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_RUN_POST & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_RUN_POST & (recall->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_RUN_POST & (recall_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_DO_FEEDBACK & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_DO_FEEDBACK & (recall->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_DO_FEEDBACK & (recall_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (recall->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (recall_staging_flags)) == 0){
     return(FALSE);
   }
 
   if((AGS_SOUND_STAGING_FINI & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_FINI & (recall->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_FINI & (recall_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_CANCEL & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_CANCEL & (recall->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_CANCEL & (recall_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_DONE & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_DONE & (recall->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_DONE & (recall_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_REMOVE & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_REMOVE & (recall->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_REMOVE & (recall_staging_flags)) == 0){
     return(FALSE);
   }
   
@@ -2676,12 +2902,26 @@ ags_recall_check_staging_flags(AgsRecall *recall, guint staging_flags)
  */
 void
 ags_recall_set_state_flags(AgsRecall *recall, guint state_flags)
-{
+{  
+  pthread_mutex_t *recall_mutex;
+
   if(!AGS_IS_RECALL(recall)){
     return;
   }
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* set state flags */
+  pthread_mutex_lock(recall_mutex);
+
   recall->state_flags |= state_flags;
+
+  pthread_mutex_unlock(recall_mutex);
 }
 
 /**
@@ -2696,11 +2936,25 @@ ags_recall_set_state_flags(AgsRecall *recall, guint state_flags)
 void
 ags_recall_unset_state_flags(AgsRecall *recall, guint state_flags)
 {
+  pthread_mutex_t *recall_mutex;
+
   if(!AGS_IS_RECALL(recall)){
     return;
   }
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* unset state flags */
+  pthread_mutex_lock(recall_mutex);
+
   recall->state_flags &= (~state_flags);
+
+  pthread_mutex_unlock(recall_mutex);
 }
 
 /**
@@ -2717,27 +2971,46 @@ ags_recall_unset_state_flags(AgsRecall *recall, guint state_flags)
 gboolean
 ags_recall_check_state_flags(AgsRecall *recall, guint state_flags)
 {
+  guint recall_state_flags;
+  
+  pthread_mutex_t *recall_mutex;
+
   if(!AGS_IS_RECALL(recall)){
     return(FALSE);
   }
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get state flags */
+  pthread_mutex_lock(recall_mutex);
+
+  recall_state_flags = recall->state_flags;
+  
+  pthread_mutex_unlock(recall_mutex);
+
+  /* check state flags */
   if((AGS_SOUND_STATE_IS_WAITING & (state_flags)) != 0 &&
-     (AGS_SOUND_STATE_IS_WAITING & (recall->state_flags)) == 0){
+     (AGS_SOUND_STATE_IS_WAITING & (recall_state_flags)) == 0){
     return(FALSE);
   }
 
   if((AGS_SOUND_STATE_IS_ACTIVE & (state_flags)) != 0 &&
-     (AGS_SOUND_STATE_IS_ACTIVE & (recall->state_flags)) == 0){
+     (AGS_SOUND_STATE_IS_ACTIVE & (recall_state_flags)) == 0){
     return(FALSE);
   }
 
   if((AGS_SOUND_STATE_IS_PROCESSING & (state_flags)) != 0 &&
-     (AGS_SOUND_STATE_IS_PROCESSING & (recall->state_flags)) == 0){
+     (AGS_SOUND_STATE_IS_PROCESSING & (recall_state_flags)) == 0){
     return(FALSE);
   }
 
   if((AGS_SOUND_STATE_IS_TERMINATING & (state_flags)) != 0 &&
-     (AGS_SOUND_STATE_IS_TERMINATING & (recall->state_flags)) == 0){
+     (AGS_SOUND_STATE_IS_TERMINATING & (recall_state_flags)) == 0){
     return(FALSE);
   }
   
