@@ -1980,12 +1980,16 @@ ags_recall_run_post(AgsRecall *recall)
 void
 ags_recall_real_stop_persistent(AgsRecall *recall)
 {
-  g_return_if_fail(AGS_IS_RECALL(recall));
+  if((AGS_RECALL_DONE & (recall->flags)) != 0){
+    return;
+  }
 
-  g_object_ref(G_OBJECT(recall));
-  g_signal_emit(G_OBJECT(recall),
-		recall_signals[STOP_PERSISTENT], 0);
-  g_object_unref(G_OBJECT(recall));
+  recall->flags &= (~(AGS_RECALL_PERSISTENT |
+		      AGS_RECALL_PERSISTENT_PLAYBACK |
+		      AGS_RECALL_PERSISTENT_SEQUENCER |
+		      AGS_RECALL_PERSISTENT_NOTATION));
+
+  ags_recall_done(recall);
 }
 
 /**
@@ -1999,16 +2003,12 @@ ags_recall_real_stop_persistent(AgsRecall *recall)
 void
 ags_recall_stop_persistent(AgsRecall *recall)
 {
-  if((AGS_RECALL_DONE & (recall->flags)) != 0){
-    return;
-  }
+  g_return_if_fail(AGS_IS_RECALL(recall));
 
-  recall->flags &= (~(AGS_RECALL_PERSISTENT |
-		      AGS_RECALL_PERSISTENT_PLAYBACK |
-		      AGS_RECALL_PERSISTENT_SEQUENCER |
-		      AGS_RECALL_PERSISTENT_NOTATION));
-
-  ags_recall_done(recall);
+  g_object_ref(G_OBJECT(recall));
+  g_signal_emit(G_OBJECT(recall),
+		recall_signals[STOP_PERSISTENT], 0);
+  g_object_unref(G_OBJECT(recall));
 }
 
 void

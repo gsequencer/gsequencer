@@ -1,3 +1,9 @@
+ags (1.4.25)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wrong connectable interface of AgsRecallAudioRun
+	* fixed AgsRecall::stop-persistent and do event invocation
+
 ags (1.4.24)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
