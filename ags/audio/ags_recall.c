@@ -30,8 +30,8 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_port.h>
-#include <ags/audio/ags_recycling_context.h>
 #include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recycling_context.h>
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_dependency.h>
 #include <ags/audio/ags_recall_audio.h>
@@ -3022,28 +3022,54 @@ ags_recall_check_state_flags(AgsRecall *recall, guint state_flags)
  * @recall: the #AgsRecall
  * @recall_id: the #AgsRecallID to set
  *
- * Sets the recall id recursively.
+ * Set @recall_id of @recall and all its children.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id)
 {
-  GList *list;
+  GList *list_start, *list;
 
-  list = recall->children;
+  pthread_mutex_t *recall_mutex;
+
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+  
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* set recall id - children */
+  pthread_mutex_lock(recall_mutex);
+
+  if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
+    g_warning("set recall id on template");
+  }
+
+  list =
+    list_start = g_list_copy(recall->children);
+
+  pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
-    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
-      g_warning("running on template");
-    }
-
     ags_recall_set_recall_id(AGS_RECALL(list->data), recall_id);
 
     list = list->next;
   }
 
+  g_list_free(list_start);
+  
+  /* set recall id */
+  pthread_mutex_lock(recall_mutex);
+
   recall->recall_id = recall_id;
+
+  pthread_mutex_unlock(recall_mutex);
 }
 
 /**
@@ -3111,33 +3137,74 @@ ags_recall_remove_recall_dependency(AgsRecall *recall, AgsRecallDependency *reca
   /* remove recall dependency */
   pthread_mutex_lock(recall_mutex);
 
-  recall->recall_dependency = g_list_remove(recall->recall_dependency,
-					    recall_dependency);
-  g_object_unref(G_OBJECT(recall_dependency));
-
+  if(g_list_find(recall->recall_dependency,
+		 recall_dependency) != NULL){
+    recall->recall_dependency = g_list_remove(recall->recall_dependency,
+					      recall_dependency);
+    g_object_unref(G_OBJECT(recall_dependency));
+  }
+  
   pthread_mutex_unlock(recall_mutex);
 }
 
 /**
  * ags_recall_add_child:
- * @parent: an #AgsRecall
- * @child: an #AgsRecall
+ * @parent: the parent #AgsRecall
+ * @child: the child #AgsRecall
  *
- * An #AgsRecall may have children.
+ * Add @child to @parent.
  * 
  * Since: 1.0.0
  */
 void
 ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 {
+  AgsRecall *old_parent;
+  AgsRecallID *recall_id;
+
+  GObject *output_soundcard;
+  GObject *input_soundcard;
+
+  gint output_soundcard_channel;
+  gint input_soundcard_channel;
+  guint samplerate;
+  guint buffer_size;
+  guint format;
+  guint parent_flags;
   guint inheritated_flags_mask;
+
+  guint staging_flags;
   
-  if(child == NULL ||
-     parent == NULL ||
-     child->parent == parent){
+  pthread_mutex_t *parent_mutex, *child_mutex;
+  
+  if(!AGS_IS_RECALL(child) ||
+     !AGS_IS_RECALL(parent)){
     return;
   }
 
+  /* get recall mutex - parent and child */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  parent_mutex = parent->obj_mutex;
+  child_mutex = child->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* check if already set */
+  pthread_mutex_lock(child_mutex);
+
+  if(child->parent == parent){
+    pthread_mutex_unlock(child_mutex);
+    
+    return;
+  }
+
+  old_parent = child->parent;
+  
+  pthread_mutex_unlock(child_mutex);
+
+  /*  */
+  g_object_ref(parent);
   g_object_ref(child);
 
   inheritated_flags_mask = (AGS_RECALL_PLAYBACK |
@@ -3153,118 +3220,136 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 			       AGS_RECALL_PERSISTENT_NOTATION);
   }
 
-  /* unref old */
-  if(child->parent != NULL){
-    child->flags &= (~inheritated_flags_mask);
-
-    pthread_mutex_lock(child->parent->children_mutex);
-    
-    child->parent->children = g_list_remove(child->parent->children, child);
-
-    pthread_mutex_unlock(child->parent->children_mutex);
-
-    g_object_unref(child->parent);
-    g_object_unref(child);
-    g_object_set(G_OBJECT(child),
-		 "recall_id", NULL,
-		 NULL);
+  /* remove old */
+  if(old_parent != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(child));
+    ags_recall_remove_child(old_parent,
+			    child);
   }
+
+  /* add child */
+  pthread_mutex_lock(parent_mutex);
+
+  parent_flags = parent->flags;
+
+  output_soundcard = parent->output_soundcard;
+  output_soundcard_channel = parent->output_soundcard_channel;
+
+  input_soundcard = parent->input_soundcard;
+  input_soundcard_channel = parent->input_soundcard_channel;
+
+  samplerate = parent->samplerate;
+  buffer_size = parent->buffer_size;
+  format = parent->format;
+  
+  recall_id = parent->recall_id;
+  
+  parent->children = g_list_prepend(parent->children,
+				    child);
+  
+  pthread_mutex_unlock(parent_mutex);
 
   /* ref new */
-  if(parent != NULL){
-    g_object_ref(parent);
-    g_object_ref(child);
+  pthread_mutex_lock(child_mutex);
 
-    child->flags |= (inheritated_flags_mask & (parent->flags));
+  child->flags |= (inheritated_flags_mask & (parent_flags));
 
-    pthread_mutex_lock(parent->children_mutex);
-    
-    parent->children = g_list_prepend(parent->children,
-				      child);
-
-    pthread_mutex_unlock(parent->children_mutex);
-
-    g_object_set(G_OBJECT(child),
-		 "output-soundcard", parent->soundcard,
-		 "recall_id", parent->recall_id,
-		 NULL);
-    g_signal_connect(G_OBJECT(child), "done",
-    		     G_CALLBACK(ags_recall_child_done), parent);
-  }
-  
   child->parent = parent;
 
-  if(parent != NULL){
-    ags_recall_child_added(parent,
-			   child);
+  pthread_mutex_unlock(child_mutex);
+
+  g_object_set(G_OBJECT(child),
+	       "output-soundcard", output_soundcard,
+	       "output-soundcard-channel", output_soundcard_channel,
+	       "input-soundcard", input_soundcard,
+	       "input-soundcard-channel", input_soundcard_channel,
+	       "samplerate", samplerate,
+	       "buffer-size", buffer_size,
+	       "format", format,
+	       "recall_id", parent->recall_id,
+	       NULL);
+
+  g_signal_connect(G_OBJECT(child), "done",
+		   G_CALLBACK(ags_recall_child_done), parent);
+
+  ags_recall_child_added(parent,
+			 child);
+
+  if(ags_connectable_is_connected(AGS_CONNECTABLE(parent))){
+    ags_connectable_connect(AGS_CONNECTABLE(child));
   }
-
-  ags_connectable_connect(AGS_CONNECTABLE(child));
-
-  if(AGS_IS_RECALL(parent)){
-    guint staging_flags;
-    pthread_mutex_t *parent_mutex;
-
-    staging_flags = (AGS_SOUND_STAGING_CHECK_RT_DATA |
-		     AGS_SOUND_STAGING_RUN_INIT_PRE |
-		     AGS_SOUND_STAGING_RUN_INIT_INTER |
-		     AGS_SOUND_STAGING_RUN_INIT_POST);
-
-    /* get recall mutex */
-    pthread_mutex_lock(ags_recall_get_class_mutex());
   
-    parent_mutex = parent->obj_mutex;
+  /* get mask */
+  staging_flags = (AGS_SOUND_STAGING_CHECK_RT_DATA |
+		   AGS_SOUND_STAGING_RUN_INIT_PRE |
+		   AGS_SOUND_STAGING_RUN_INIT_INTER |
+		   AGS_SOUND_STAGING_RUN_INIT_POST)
   
-    pthread_mutex_unlock(ags_recall_get_class_mutex());
+  pthread_mutex_lock(parent_mutex);
+
+  staging_flags = (staging_flags & (parent->staging_flags));
     
-    /* get mask */
-    pthread_mutex_lock(parent_mutex);
+  pthread_mutex_unlock(parent_mutex);
 
-    staging_flags = (staging_flags & (parent->staging_flags));
-    
-    pthread_mutex_unlock(parent_mutex);
-
-    /* set staging flags */
-    ags_recall_set_staging_flags(child,
-				 staging_flags);
-  }
-
-  g_object_unref(child);
+  /* set staging flags */
+  ags_recall_set_staging_flags(child,
+			       staging_flags);
 }
 
 /**
  * ags_recall_remove_child:
  * @parent: the parent #AgsRecall
- * @child: the chile #AgsRecall
+ * @child: the child #AgsRecall
  *
- * An #AgsRecall may have children.
+ * Remove @child from @parent.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_recall_remove_child(AgsRecall *parent, AgsRecall *child)
 {
-  if(parent == NULL ||
-     child == NULL ||
-     child->parent != parent){
+  pthread_mutex_t *parent_mutex, *child_mutex;
+  
+  if(!AGS_IS_RECALL(child) ||
+     !AGS_IS_RECALL(parent)){
     return;
   }
 
-  if((AGS_RECALL_CONNECTED & (parent->flags)) != 0){
-    ags_connectable_disconnect(AGS_CONNECTABLE(child));
+  /* get recall mutex - parent and child */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  parent_mutex = parent->obj_mutex;
+  child_mutex = child->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* check if not set */
+  pthread_mutex_lock(child_mutex);
+
+  if(child->parent != parent){
+    pthread_mutex_unlock(child_mutex);
+    
+    return;
   }
-  
-  pthread_mutex_lock(parent->children_mutex);
 
-  parent->children = g_list_remove(parent->children,
-				   child);
+  pthread_mutex_unlock(child_mutex);
 
-  pthread_mutex_unlock(parent->children_mutex);
-  
+  /* remove from parent */
+  pthread_mutex_lock(parent_mutex);
+
+  if(g_list_find(parent->children,
+		 child) != NULL){
+    parent->children = g_list_remove(parent->children,
+				     child);
+    g_object_unref(child);
+  }
+    
+  pthread_mutex_unlock(parent_mutex);
+
+  /* unref parent */
   child->parent = NULL;
 
   g_object_unref(parent);
-  g_object_unref(child);
 }
 
 /**
