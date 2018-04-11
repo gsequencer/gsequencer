@@ -174,6 +174,8 @@ static guint recall_signals[LAST_SIGNAL];
 
 static pthread_mutex_t ags_recall_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+static gboolean ags_recall_global_omit_event = TRUE;
+
 GType
 ags_recall_get_type (void)
 {
@@ -3472,40 +3474,222 @@ ags_recall_remove_recall_handler(AgsRecall *recall,
   pthread_mutex_unlock(recall_mutex);
 }
 
+/**
+ * ags_recall_set_output_soundcard:
+ * @recall: the #AgsRecall
+ * @output_soundcard: the #GObject implementing #AgsSoundcard
+ * 
+ * Set output soundcard of @recall.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_recall_set_output_soundcard(AgsRecall *recall, GObject *output_soundcard)
 {
-  //TODO:JK: implement me
+  pthread_mutex_t *recall_mutex;
+
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* unref of old soundcard */
+  pthread_mutex_lock(recall_mutex);
+
+  if(recall->output_soundcard != NULL){
+    g_object_unref(recall->output_soundcard);
+  }
+
+  /* ref and set output soundcard */
+  if(output_soundcard != NULL){
+    g_object_ref(output_soundcard);
+  }
+
+  recall->output_soundcard = output_soundcard;
+  
+  pthread_mutex_unlock(recall_mutex);
 }
 
+/**
+ * ags_recall_set_input_soundcard:
+ * @recall: the #AgsRecall
+ * @input_soundcard: the #GObject implementing #AgsSoundcard
+ * 
+ * Set input soundcard of @recall.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_recall_set_input_soundcard(AgsRecall *recall, GObject *input_soundcard)
 {
-  //TODO:JK: implement me
+  pthread_mutex_t *recall_mutex;
+
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* unref of old soundcard */
+  pthread_mutex_lock(recall_mutex);
+
+  if(recall->input_soundcard != NULL){
+    g_object_unref(recall->input_soundcard);
+  }
+
+  /* ref and set input soundcard */
+  if(input_soundcard != NULL){
+    g_object_ref(input_soundcard);
+  }
+
+  recall->input_soundcard = input_soundcard;
+  
+  pthread_mutex_unlock(recall_mutex);
 }
 
+/**
+ * ags_recall_set_samplerate:
+ * @recall: the #AgsRecall
+ * @samplerate: the samplerate
+ * 
+ * Set samplerate of @recall.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_recall_set_samplerate(AgsRecall *recall, guint samplerate)
 {
-  //TODO:JK: implement me
+  pthread_mutex_t *recall_mutex;
+
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* set samplerate */
+  pthread_mutex_lock(recall_mutex);
+
+  recall->samplerate = samplerate;
+  
+  pthread_mutex_unlock(recall_mutex);
 }
 
+/**
+ * ags_recall_set_buffer_size:
+ * @recall: the #AgsRecall
+ * @buffer_size: the buffer size
+ * 
+ * Set buffer size of @recall.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_recall_set_buffer_size(AgsRecall *recall, guint buffer_size)
 {
-  //TODO:JK: implement me
+  pthread_mutex_t *recall_mutex;
+
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* set buffer size */
+  pthread_mutex_lock(recall_mutex);
+
+  recall->buffer_size = buffer_size;
+  
+  pthread_mutex_unlock(recall_mutex);
 }
 
+/**
+ * ags_recall_set_format:
+ * @recall: the #AgsRecall
+ * @format: the format
+ * 
+ * Set format of @recall.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_recall_set_format(AgsRecall *recall, guint format)
 {
-  //TODO:JK: implement me
+  pthread_mutex_t *recall_mutex;
+
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* set format */
+  pthread_mutex_lock(recall_mutex);
+
+  recall->format = format;
+  
+  pthread_mutex_unlock(recall_mutex);
 }
 
 void
 ags_recall_real_resolve_dependency(AgsRecall *recall)
 {
-  //TODO:JK: implement me
+  GList *list_start, *list;
+
+  pthread_mutex_t *recall_mutex;
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* resolve dependency */
+  pthread_mutex_lock(recall_mutex);
+
+  if((AGS_RECALL_TEMPLATE & (AGS_RECALL(recall)->flags)) != 0){
+    g_warning("running on template");
+  }
+
+  list =
+    list_start = g_list_copy(recall->children);
+
+  pthread_mutex_unlock(recall_mutex);
+
+  while(list != NULL){
+    ags_recall_resolve_dependency(AGS_RECALL(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);  
 }
 
 /**
@@ -3535,7 +3719,45 @@ ags_recall_resolve_dependency(AgsRecall *recall)
 void
 ags_recall_check_rt_data(AgsRecall *recall)
 {
-  //TODO:JK: implement me
+  GList *list_start, *list;
+
+  pthread_mutex_t *recall_mutex;
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* check rt data */
+  pthread_mutex_lock(recall_mutex);
+  
+  recall->staging_flags |= AGS_SOUND_STAGING_CHECK_RT_DATA;
+
+  if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
+    g_warning("running on template");
+  }
+
+  list =
+    list_start = g_list_copy(recall->children);
+
+  pthread_mutex_unlock(recall_mutex);
+
+  while(list != NULL){
+    ags_recall_check_rt_data(AGS_RECALL(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);  
+
+  /* set is waiting */
+  pthread_mutex_lock(recall_mutex);
+
+  recall->state_flags |= (AGS_SOUND_STATE_IS_WAITING);
+
+  pthread_mutex_unlock(recall_mutex);
 }
 
 /**
@@ -3560,21 +3782,38 @@ ags_recall_check_rt_data(AgsRecall *recall)
 void
 ags_recall_real_run_init_pre(AgsRecall *recall)
 {
-  GList *list, *list_next;
+  GList *list_start, *list;
 
-  list = recall->children;
+  pthread_mutex_t *recall_mutex;
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* run init pre */
+  pthread_mutex_lock(recall_mutex);
+
+  recall->staging_flags |= AGS_SOUND_STAGING_RUN_INIT_PRE;
+
+  if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
+    g_warning("running on template");
+  }
+
+  list =
+    list_start = g_list_copy(recall->children);
+
+  pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
-    list_next = list->next;
-
-    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
-      g_warning("running on template");
-    }
-
     ags_recall_run_init_pre(AGS_RECALL(list->data));
 
-    list = list_next;
+    list = list->next;
   }
+
+  g_list_free(list_start);  
 }
 
 /**
@@ -3583,7 +3822,7 @@ ags_recall_real_run_init_pre(AgsRecall *recall)
  *
  * Prepare for run, this is the pre stage within the preparation.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_recall_run_init_pre(AgsRecall *recall)
@@ -3599,21 +3838,38 @@ ags_recall_run_init_pre(AgsRecall *recall)
 void
 ags_recall_real_run_init_inter(AgsRecall *recall)
 {
-  GList *list, *list_next;
+  GList *list_start, *list;
 
-  list = recall->children;
+  pthread_mutex_t *recall_mutex;
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* run init inter */
+  pthread_mutex_lock(recall_mutex);
+
+  recall->staging_flags |= AGS_SOUND_STAGING_RUN_INIT_INTER;
+
+  if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
+    g_warning("running on template");
+  }
+
+  list =
+    list_start = g_list_copy(recall->children);
+
+  pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
-    list_next = list->next;
-    
-    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
-      g_warning("running on template");
-    }
-
     ags_recall_run_init_inter(AGS_RECALL(list->data));
 
-    list = list_next;
+    list = list->next;
   }
+
+  g_list_free(list_start);  
 }
 
 /**
@@ -3622,7 +3878,7 @@ ags_recall_real_run_init_inter(AgsRecall *recall)
  *
  * Prepare for run, this is the inter stage within the preparation.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_recall_run_init_inter(AgsRecall *recall)
@@ -3638,24 +3894,46 @@ ags_recall_run_init_inter(AgsRecall *recall)
 void
 ags_recall_real_run_init_post(AgsRecall *recall)
 {
-  GList *list, *list_next;
+  GList *list_start, *list;
 
-  list = recall->children;
+  pthread_mutex_t *recall_mutex;
 
-  while(list != NULL){
-    list_next = list->next;
-    
-    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
-      g_warning("running on template");
-    }
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
-    ags_recall_run_init_post(AGS_RECALL(list->data));
+  /* run init post */
+  pthread_mutex_lock(recall_mutex);
 
-    list = list_next;
+  recall->staging_flags |= AGS_SOUND_STAGING_RUN_INIT_POST;
+
+  if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
+    g_warning("running on template");
   }
 
-  recall->flags |= (AGS_RECALL_INITIAL_RUN |
-		    AGS_RECALL_RUN_INITIALIZED);
+  list =
+    list_start = g_list_copy(recall->children);
+
+  pthread_mutex_unlock(recall_mutex);
+
+  while(list != NULL){
+    ags_recall_run_init_post(AGS_RECALL(list->data));
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  /* set active */
+  pthread_mutex_lock(recall_mutex);
+
+  recall->state_flags &= (~AGS_SOUND_STATE_IS_WAITING);
+  recall->state_flags |= (AGS_SOUND_STATE_IS_ACTIVE);
+
+  pthread_mutex_unlock(recall_mutex);
 }
 
 /**
@@ -3664,7 +3942,7 @@ ags_recall_real_run_init_post(AgsRecall *recall)
  *
  * Prepare for run, this is the post stage within the preparation.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_recall_run_init_post(AgsRecall *recall)
@@ -3680,7 +3958,46 @@ ags_recall_run_init_post(AgsRecall *recall)
 void
 ags_recall_real_feed_input_queue(AgsRecall *recall)
 {
-  //TODO:JK: implement me
+  GList *list_start, *list;
+
+  pthread_mutex_t *recall_mutex;
+
+  gboolean omit_event;
+  
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+
+  omit_event = ags_recall_global_omit_event;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* feed input queue */
+  pthread_mutex_lock(recall_mutex);
+
+  recall->staging_flags |= AGS_SOUND_STAGING_FEED_INPUT_QUEUE;
+
+  if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
+    g_warning("running on template");
+  }
+
+  list =
+    list_start = ags_list_util_copy_and_ref(recall->children);
+
+  pthread_mutex_unlock(recall_mutex);
+
+  while(list != NULL){
+    if(omit_event){
+      AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->feed_inut_queue(AGS_RECALL(list->data));
+    }else{
+      ags_recall_feed_input_queue(AGS_RECALL(list->data));
+    }    
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);  
 }
 
 /**
@@ -3705,7 +4022,46 @@ ags_recall_feed_input_queue(AgsRecall *recall)
 void
 ags_recall_real_automate(AgsRecall *recall)
 {
-  //TODO:JK: implement me
+  GList *list_start, *list;
+
+  pthread_mutex_t *recall_mutex;
+
+  gboolean omit_event;
+  
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+
+  omit_event = ags_recall_global_omit_event;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* automate */
+  pthread_mutex_lock(recall_mutex);
+
+  recall->staging_flags |= AGS_SOUND_STAGING_AUTOMATE;
+
+  if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
+    g_warning("running on template");
+  }
+
+  list =
+    list_start = g_list_copy(recall->children);
+
+  pthread_mutex_unlock(recall_mutex);
+
+  while(list != NULL){
+    if(omit_event){
+      AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->automate(AGS_RECALL(list->data));
+    }else{
+      ags_recall_automate(AGS_RECALL(list->data));
+    }    
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);  
 }
 
 /**
@@ -3730,34 +4086,46 @@ ags_recall_automate(AgsRecall *recall)
 void
 ags_recall_real_run_pre(AgsRecall *recall)
 {
-  GList *list, *list_start;
+  GList *list_start, *list;
 
-  /* lock ports */
-  ags_recall_lock_port(recall);
+  pthread_mutex_t *recall_mutex;
 
-  /* run */
-  list_start = 
-    list = ags_list_util_copy_and_ref(recall->children);
+  gboolean omit_event;
+  
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+
+  omit_event = ags_recall_global_omit_event;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* run pre */
+  pthread_mutex_lock(recall_mutex);
+
+  recall->staging_flags |= AGS_SOUND_STAGING_RUN_PRE;
+
+  if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
+    g_warning("running on template");
+  }
+
+  list =
+    list_start = g_list_copy(recall->children);
+
+  pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
-    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
-      g_warning("running on template");
-      list = list->next;
-      continue;
-    }
+    if(omit_event){
+      AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->run_pre(AGS_RECALL(list->data));
+    }else{
+      ags_recall_run_pre(AGS_RECALL(list->data));
+    }    
 
-    g_object_ref(list->data);
-    AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->run_pre(AGS_RECALL(list->data));
-    g_object_unref(list->data);
-    g_object_unref(list->data);
-    
     list = list->next;
   }
 
-  g_list_free(list_start);
-
-  /* unlock ports */
-  ags_recall_unlock_port(recall);
+  g_list_free(list_start);  
 }
 
 /**
@@ -3766,7 +4134,7 @@ ags_recall_real_run_pre(AgsRecall *recall)
  *
  * This is the pre stage within a run.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_recall_run_pre(AgsRecall *recall)
@@ -3782,34 +4150,46 @@ ags_recall_run_pre(AgsRecall *recall)
 void
 ags_recall_real_run_inter(AgsRecall *recall)
 {
-  GList *list, *list_start;
+  GList *list_start, *list;
 
-  /* lock port */
-  ags_recall_lock_port(recall);
+  pthread_mutex_t *recall_mutex;
 
-  /* run */
-  list_start = 
-    list = ags_list_util_copy_and_ref(recall->children);
+  gboolean omit_event;
+  
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+
+  omit_event = ags_recall_global_omit_event;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* run inter */
+  pthread_mutex_lock(recall_mutex);
+
+  recall->staging_flags |= AGS_SOUND_STAGING_RUN_INTER;
+
+  if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
+    g_warning("running on template");
+  }
+
+  list =
+    list_start = g_list_copy(recall->children);
+
+  pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
-    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
-      g_warning("running on template");
-      list = list->next;
-      continue;
-    }
+    if(omit_event){
+      AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->run_inter(AGS_RECALL(list->data));
+    }else{
+      ags_recall_run_inter(AGS_RECALL(list->data));
+    }    
 
-    g_object_ref(list->data);
-    AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->run_inter(AGS_RECALL(list->data));
-    g_object_unref(list->data);
-    g_object_unref(list->data);
-    
     list = list->next;
   }
 
-  g_list_free(list_start);
-
-  /* unlock port */
-  ags_recall_unlock_port(recall);
+  g_list_free(list_start);  
 }
 
 /**
@@ -3818,7 +4198,7 @@ ags_recall_real_run_inter(AgsRecall *recall)
  *
  * This is the inter stage within a run.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_recall_run_inter(AgsRecall *recall)
@@ -3834,38 +4214,46 @@ ags_recall_run_inter(AgsRecall *recall)
 void
 ags_recall_real_run_post(AgsRecall *recall)
 {
-  GList *list, *list_start;
+  GList *list_start, *list;
 
-  /* lock port */
-  ags_recall_lock_port(recall);
+  pthread_mutex_t *recall_mutex;
 
-  /* run */
-  list_start = 
-    list = ags_list_util_copy_and_ref(recall->children);
+  gboolean omit_event;
   
-  while(list != NULL){
-    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
-      g_warning("running on template");
-      list = list->next;
-      continue;
-    }
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
 
-    g_object_ref(list->data);
-    AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->run_post(AGS_RECALL(list->data));
-    g_object_unref(list->data);
-    g_object_unref(list->data);
-    
+  omit_event = ags_recall_global_omit_event;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* run post */
+  pthread_mutex_lock(recall_mutex);
+
+  recall->staging_flags |= AGS_SOUND_STAGING_RUN_POST;
+
+  if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
+    g_warning("running on template");
+  }
+
+  list =
+    list_start = g_list_copy(recall->children);
+
+  pthread_mutex_unlock(recall_mutex);
+
+  while(list != NULL){
+    if(omit_event){
+      AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->run_post(AGS_RECALL(list->data));
+    }else{
+      ags_recall_run_post(AGS_RECALL(list->data));
+    }    
+
     list = list->next;
   }
 
-  g_list_free(list_start);
-  
-  if((AGS_RECALL_INITIAL_RUN & (recall->flags)) != 0){
-    recall->flags &= (~AGS_RECALL_INITIAL_RUN);
-  }
-
-  /* unlock port */
-  ags_recall_unlock_port(recall);
+  g_list_free(list_start);  
 }
 
 /**
@@ -3874,7 +4262,7 @@ ags_recall_real_run_post(AgsRecall *recall)
  *
  * This is the post stage within a run.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_recall_run_post(AgsRecall *recall)
@@ -3890,7 +4278,46 @@ ags_recall_run_post(AgsRecall *recall)
 void
 ags_recall_real_do_feedback(AgsRecall *recall)
 {
-  //TODO:JK: implement me
+  GList *list_start, *list;
+
+  pthread_mutex_t *recall_mutex;
+
+  gboolean omit_event;
+  
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+
+  omit_event = ags_recall_global_omit_event;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* do feedback */
+  pthread_mutex_lock(recall_mutex);
+
+  recall->staging_flags |= AGS_SOUND_STAGING_DO_FEEDBACK;
+
+  if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
+    g_warning("running on template");
+  }
+
+  list =
+    list_start = g_list_copy(recall->children);
+
+  pthread_mutex_unlock(recall_mutex);
+
+  while(list != NULL){
+    if(omit_event){
+      AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->do_feedback(AGS_RECALL(list->data));
+    }else{
+      ags_recall_do_feedback(AGS_RECALL(list->data));
+    }    
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);  
 }
 
 /**
@@ -3915,7 +4342,47 @@ ags_recall_do_feedback(AgsRecall *recall)
 void
 ags_recall_real_feed_output_queue(AgsRecall *recall)
 {
-  //TODO:JK: implement me
+  GList *list_start, *list;
+
+  pthread_mutex_t *recall_mutex;
+
+  gboolean omit_event;
+  
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+
+  omit_event = ags_recall_global_omit_event;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* feed output queue */
+  pthread_mutex_lock(recall_mutex);
+
+  recall->staging_flags |= AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE;
+
+  if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
+    g_warning("running on template");
+  }
+
+  list =
+    list_start = g_list_copy(recall->children);
+
+  pthread_mutex_unlock(recall_mutex);
+
+  while(list != NULL){
+    if(omit_event){
+      AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->feed_output_queue(AGS_RECALL(list->data));
+    }else{
+      ags_recall_feed_output_queue(AGS_RECALL(list->data));
+    }    
+
+    list = list->next;
+  }
+
+  g_list_free_full(list_start,
+		   g_object_unref);
 }
 
 /**
@@ -3940,15 +4407,35 @@ ags_recall_feed_output_queue(AgsRecall *recall)
 void
 ags_recall_real_stop_persistent(AgsRecall *recall)
 {
-  if((AGS_RECALL_DONE & (recall->flags)) != 0){
+  pthread_mutex_t *recall_mutex;
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* check state and staging */
+  pthread_mutex_lock(recall_mutex);
+
+  if((AGS_SOUND_STATE_IS_TERMINATING & (recall->state_flags)) != 0 ||
+     (AGS_SOUND_STAGING_DONE & (recall->staging_flags)) != 0){
+    pthread_mutex_unlock(recall_mutex);
+    
     return;
   }
 
-  recall->flags &= (~(AGS_RECALL_PERSISTENT |
-		      AGS_RECALL_PERSISTENT_PLAYBACK |
-		      AGS_RECALL_PERSISTENT_SEQUENCER |
-		      AGS_RECALL_PERSISTENT_NOTATION));
+  recall->behaviour_flags &= (~(AGS_SOUND_BEHAVIOUR_PERSISTENT |
+				AGS_SOUND_BEHAVIOUR_PERSISTENT_PLAYBACK |
+				AGS_SOUND_BEHAVIOUR_PERSISTENT_NOTATION |
+				AGS_SOUND_BEHAVIOUR_PERSISTENT_SEQUENCER |
+				AGS_SOUND_BEHAVIOUR_PERSISTENT_WAVE |
+				AGS_SOUND_BEHAVIOUR_PERSISTENT_MIDI));
 
+  pthread_mutex_unlock(recall_mutex);
+
+  /* emit done */
   ags_recall_done(recall);
 }
 
@@ -3956,9 +4443,10 @@ ags_recall_real_stop_persistent(AgsRecall *recall)
  * ags_recall_stop_persistent:
  * @recall: the #AgsRecall
  *
- * Unsets the %AGS_RECALL_PERSISTENT flag set and invokes ags_recall_done().
+ * Unsets the %AGS_SOUND_BEHAVIOUR_PERSISTENT and related behaviour flags and
+ * invokes ags_recall_done().
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_recall_stop_persistent(AgsRecall *recall)
@@ -3974,29 +4462,41 @@ ags_recall_stop_persistent(AgsRecall *recall)
 void
 ags_recall_real_cancel(AgsRecall *recall)
 {
-  GList *list, *list_next;
+  GList *list_start, *list;
+
+  pthread_mutex_t *recall_mutex;
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* cancel */
+  pthread_mutex_lock(recall_mutex);
+
+  recall->staging_flags |= AGS_SOUND_STAGING_CANCEL;
 
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
-    return;
+    g_warning("running on template");
   }
 
-  /* call cancel for children */
-  list = recall->children;
+  list =
+    list_start = g_list_copy(recall->children);
+
+  pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
-    list_next = list->next;
-    
     ags_recall_cancel(AGS_RECALL(list->data));
-    
-    list = list_next;
+
+    list = list->next;
   }
 
-  if((AGS_RECALL_PERSISTENT & (recall->flags)) != 0 ||
-     (AGS_RECALL_PERSISTENT_PLAYBACK & (recall->flags)) != 0){
-    ags_recall_stop_persistent(recall);
-  }else{
-    ags_recall_done(recall);
-  }
+  g_list_free(list_start);  
+
+  /* stop any recall */
+  ags_recall_stop_persistent(recall);
 }
 
 /**
@@ -4005,7 +4505,7 @@ ags_recall_real_cancel(AgsRecall *recall)
  *
  * The #AgsRecall doesn't want to run anymore, it aborts further execution.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_recall_cancel(AgsRecall *recall)
@@ -4021,13 +4521,38 @@ ags_recall_cancel(AgsRecall *recall)
 void
 ags_recall_real_done(AgsRecall *recall)
 {
-  if((AGS_RECALL_DONE & (recall->flags)) != 0){
-    return;
+  GList *list_start, *list;
+
+  pthread_mutex_t *recall_mutex;
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* do feedback */
+  pthread_mutex_lock(recall_mutex);
+
+  recall->staging_flags |= AGS_SOUND_STAGING_DONE;
+
+  if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
+    g_warning("running on template");
+  }
+  
+  list =
+    list_start = g_list_copy(recall->children);
+
+  pthread_mutex_unlock(recall_mutex);
+  
+  while(list != NULL){
+    ags_recall_done(AGS_RECALL(list->data));
+
+    list = list->next;
   }
 
-  recall->flags |= AGS_RECALL_DONE;
-  
-  ags_recall_remove(recall);
+  g_list_free(list_start);  
 }
 
 /**
@@ -4037,21 +4562,12 @@ ags_recall_real_done(AgsRecall *recall)
  * The #AgsRecall doesn't want to run anymore, it has been done its
  * work.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_recall_done(AgsRecall *recall)
 {
   g_return_if_fail(AGS_IS_RECALL(recall));
-  
-  if((AGS_RECALL_PERSISTENT & (recall->flags)) != 0 ||
-     (AGS_RECALL_TEMPLATE & (recall->flags)) != 0 ||
-     ((AGS_RECALL_PERSISTENT_PLAYBACK & (recall->flags)) != 0 && (AGS_RECALL_PLAYBACK & (recall->flags)) != 0) ||
-     ((AGS_RECALL_PERSISTENT_SEQUENCER & (recall->flags)) != 0 && (AGS_RECALL_SEQUENCER & (recall->flags)) != 0) ||
-     ((AGS_RECALL_PERSISTENT_NOTATION & (recall->flags)) != 0 && (AGS_RECALL_NOTATION & (recall->flags)) != 0)){
-    return;
-  }
-
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),
 		recall_signals[DONE], 0);
