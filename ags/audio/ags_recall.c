@@ -3401,47 +3401,75 @@ ags_recall_handler_alloc(const gchar *signal_name,
 }
 
 /**
- * ags_recall_add_handler:
+ * ags_recall_add_recall_handler:
  * @recall: the #AgsRecall to connect
  * @recall_handler: the signal specs
  *
  * Connect callback to @recall specified by @recall_handler.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
-ags_recall_add_handler(AgsRecall *recall,
-		       AgsRecallHandler *recall_handler)
+ags_recall_add_recall_handler(AgsRecall *recall,
+			      AgsRecallHandler *recall_handler)
 {
+  pthread_mutex_t *recall_mutex;
+
   if(!AGS_IS_RECALL(recall) ||
      recall_handler == NULL){
     return;
   }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
   
-  recall->handlers = g_list_prepend(recall->handlers,
-				    recall_handler);
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* add handler */
+  pthread_mutex_lock(recall_mutex);
+
+  recall->recall_handler = g_list_prepend(recall->recall_handler,
+					  recall_handler);
+
+ pthread_mutex_unlock(recall_mutex);
 }
 
 /**
- * ags_recall_remove_handler:
+ * ags_recall_remove_recall_handler:
  * @recall: the #AgsRecall to connect
  * @recall_handler: the signal specs
- *
+  *
  * Remove a #AgsRecallHandler-struct from @recall.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
-ags_recall_remove_handler(AgsRecall *recall,
-			  AgsRecallHandler *recall_handler)
+ags_recall_remove_recall_handler(AgsRecall *recall,
+				 AgsRecallHandler *recall_handler)
 {
+  pthread_mutex_t *recall_mutex;
+
   if(!AGS_IS_RECALL(recall) ||
      recall_handler == NULL){
     return;
   }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
   
-  recall->handlers = g_list_remove(recall->handlers,
-				   recall_handler);
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  
+  /* remove handler */
+  pthread_mutex_lock(recall_mutex);
+
+  recall->recall_handler = g_list_remove(recall->recall_handler,
+					 recall_handler);
+
+  pthread_mutex_unlock(recall_mutex);
 }
 
 void
