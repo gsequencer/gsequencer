@@ -3983,7 +3983,7 @@ ags_recall_real_feed_input_queue(AgsRecall *recall)
   }
 
   list =
-    list_start = ags_list_util_copy_and_ref(recall->children);
+    list_start = g_list_copy(recall->children);
 
   pthread_mutex_unlock(recall_mutex);
 
@@ -4381,8 +4381,7 @@ ags_recall_real_feed_output_queue(AgsRecall *recall)
     list = list->next;
   }
 
-  g_list_free_full(list_start,
-		   g_object_unref);
+  g_list_free(list_start);
 }
 
 /**
