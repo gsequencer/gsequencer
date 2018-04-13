@@ -4582,11 +4582,52 @@ ags_recall_real_duplicate(AgsRecall *recall,
   AgsRecallClass *recall_class, *copy_class;
   AgsRecallContainer *recall_container;
 
+  GObject *output_soundcard;
+  GObject *input_soundcard;
+
+  GType child_type;
+  
   GList *list, *child;
 
+  guint recall_flags;
+  guint ability_flags;
+  guint behaviour_flags;
+  gint sound_scope;
+  gint output_soundcard_channel;
+  gint input_soundcard_channel;
   guint local_n_params;
   guint i;
   
+  pthread_mutex_t *recall_mutex;
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_mutex);
+
+  recall_flags = recall->flags;
+  ability_flags = recall->ability_flags;
+  behaviour_flags = recall->behaviour_flags;
+  sound_scope = recall->sound_scope;
+  
+  recall_container = recall->recall_container;
+  
+  output_soundcard = recall->output_soundcard;
+  output_soundcard_channel = recall->output_soundcard_channel;
+
+  input_soundcard = recall->input_soundcard;
+  input_soundcard_channel = recall->input_soundcard_channel;
+
+  child_type = recall->child_type;
+  
+  pthread_mutex_unlock(recall_mutex);
+
+  /* grow parameter name and value */
   local_n_params = 0;
   
   if(n_params == NULL){
@@ -4604,21 +4645,22 @@ ags_recall_real_duplicate(AgsRecall *recall,
 		    n_params[0] + 7);
   }
 
+  /* set parameter name and value */
   parameter_name[n_params[0]] = "output-soundcard";
   value[n_params[0]] = {0,};
-  g_value_set_object(&(value[n_params[0]]), recall->output_soundcard);
+  g_value_set_object(&(value[n_params[0]]), output_soundcard);
 
   parameter_name[n_params[0] + 1] = "output-soundcard-channel";
   value[n_params[0] + 1] = {0,};
-  g_value_set_int(&(value[n_params[0] + 1]), recall->output_soundcard_channel);
+  g_value_set_int(&(value[n_params[0] + 1]), output_soundcard_channel);
 
   parameter_name[n_params[0] + 2] = "input-soundcard";
   value[n_params[0] + 2] = {0,};
-  g_value_set_object(&(value[n_params[0] + 2]), recall->input_soundcard);
+  g_value_set_object(&(value[n_params[0] + 2]), input_soundcard);
     
   parameter_name[n_params[0] + 3] = "input-soundcard-channel";
   value[n_params[0] + 3] = {0,};
-  g_value_set_int(&(value[n_params[0 + 3]]), recall->input_soundcard_channel);
+  g_value_set_int(&(value[n_params[0 + 3]]), input_soundcard_channel);
 
   parameter_name[n_params[0] + 4] = "recall-id";
   value[n_params[0]+ 4] = {0,};
@@ -4626,18 +4668,18 @@ ags_recall_real_duplicate(AgsRecall *recall,
     
   parameter_name[n_params[0] + 5] = "recall-container";
   value[n_params[0] + 5] = {0,};
-  g_value_set_object(&(value[n_params[0] + 5]), recall->recall_container);
+  g_value_set_object(&(value[n_params[0] + 5]), recall_container);
 
   parameter_name[n_params[0] + 6] = "child-type";
   value[n_params[0] + 6] = {0,};
-  g_value_set_gtype(&(value[n_params[0] + 6]), recall->child_type);
+  g_value_set_gtype(&(value[n_params[0] + 6]), child_type);
 
   parameter_name[n_params[0] + 7] = NULL;
 
   n_params[0] += 7;
   
   copy_recall = g_object_new_with_properties(G_OBJECT_TYPE(recall),
-				      *n_params, parameter_name, value);
+					     n_params[0], parameter_name, value);
 
   /* free parameter name and value */
   g_free(parameter_name);
@@ -4650,13 +4692,17 @@ ags_recall_real_duplicate(AgsRecall *recall,
 
   /* apply flags */
   ags_recall_set_flags(copy_recall,
-		       (recall->flags & (~ (AGS_RECALL_ADDED_TO_REGISTRY |
-					    AGS_RECALL_CONNECTED |
-					    AGS_RECALL_TEMPLATE))));
+		       (recall_flags & (~ (AGS_RECALL_ADDED_TO_REGISTRY |
+					   AGS_RECALL_CONNECTED |
+					   AGS_RECALL_TEMPLATE))));
 
-  //TODO:JK: implement me
+  ags_recall_set_ability_flags(copy_recall, ability_flags);
+  ags_recall_set_behaviour_flags(copy_recall, behaviour_flags);
+  ags_recall_set_sound_scope(copy_recall, sound_scope);
   
   /* duplicate handlers */
+  pthread_mutex_lock(recall_mutex);
+
   list = recall->recall_handler;
   
   while(list != NULL){
@@ -4671,6 +4717,8 @@ ags_recall_real_duplicate(AgsRecall *recall,
 
     list = list->next;
   }
+
+  pthread_mutex_unlock(recall_mutex);
 
   return(copy_recall);
 }
@@ -4765,12 +4813,19 @@ ags_recall_child_added(AgsRecall *parent, AgsRecall *child)
  * 
  * Returns: %TRUE if recall is done, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_recall_is_done(GList *recall, GObject *recycling_context)
 {
   AgsRecall *current_recall;
+  AgsRecallID *current_recall_id;
+  AgsRecyclingContext *current_recycling_context;
+  
+  guint current_recall_flags;
+  
+  pthread_mutex_t *current_recall_mutex;
+  pthread_mutex_t *current_recall_id_mutex;
 
   if(recall == NULL ||
      !AGS_IS_RECYCLING_CONTEXT(recycling_context)){
@@ -4780,14 +4835,49 @@ ags_recall_is_done(GList *recall, GObject *recycling_context)
   while(recall != NULL){
     current_recall = AGS_RECALL(recall->data);
 
-    if((AGS_RECALL_TEMPLATE & (current_recall->flags)) == 0 &&
+    /* get recall mutex */
+    pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+    current_recall_mutex = current_recall->obj_mutex;
+
+    pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+    /* get some fields */
+    pthread_mutex_lock(current_recall_mutex);
+
+    current_recall_flags = current_recall->flags;
+
+    current_recall_id = current_recall->recall_id;
+
+    pthread_mutex_unlock(current_recall_mutex);
+
+    if(current_recall_id != NULL){
+      /* get recall id mutex */
+      pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+      current_recall_id_mutex = current_recall_id->obj_mutex;
+
+      pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+      /* get some fields */
+      pthread_mutex_lock(current_recall_id_mutex);
+
+      current_recycling_context = current_recall_id->recycling_context;
+
+      pthread_mutex_unlock(current_recall_id_mutex);
+    }else{
+      current_recycling_context = NULL;
+    } 
+    
+    if((AGS_RECALL_TEMPLATE & (current_recall_flags)) == 0 &&
        !AGS_IS_RECALL_AUDIO(current_recall) &&
        !AGS_IS_RECALL_CHANNEL(current_recall) &&
-       current_recall->recall_id != NULL &&
-       current_recall->recall_id->recycling_context == (AgsRecyclingContext *) recycling_context){
-      if((AGS_RECALL_DONE & (current_recall->flags)) == 0){
-	current_recall->flags &= (~AGS_RECALL_RUN_INITIALIZED);
+       current_recycling_context == (AgsRecyclingContext *) recycling_context){
+      if((AGS_RECALL_DONE & (current_recall_flags)) == 0){
+	//FIXME:JK: replacement
+	//	current_recall->flags &= (~AGS_RECALL_RUN_INITIALIZED);
 	//	g_message("done: %s", G_OBJECT_TYPE_NAME(recall));
+	
 	return(FALSE);
       }
     }
