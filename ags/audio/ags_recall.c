@@ -3295,7 +3295,7 @@ ags_recall_remove_recall_dependency(AgsRecall *recall, AgsRecallDependency *reca
  *
  * Add @child to @parent.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
@@ -5327,7 +5327,7 @@ ags_recall_find_template(GList *recall)
  *
  * Returns: next matching #GList-struct, or %NULL if not found
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_template_find_type(GList *recall, GType gtype)
@@ -5922,7 +5922,7 @@ ags_recall_lock_port(AgsRecall *recall)
  *
  * Unlocks the ports.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_recall_unlock_port(AgsRecall *recall)
