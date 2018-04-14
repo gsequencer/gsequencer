@@ -152,6 +152,9 @@ enum{
 
 enum{
   PROP_0,
+  PROP_FILENAME,
+  PROP_EFFECT,
+  PROP_EFFECT_INDEX,
   PROP_RECALL_CONTAINER,
   PROP_OUTPUT_SOUNDCARD,
   PROP_OUTPUT_SOUNDCARD_CHANNEL,
@@ -242,6 +245,56 @@ ags_recall_class_init(AgsRecallClass *recall)
   gobject->finalize = ags_recall_finalize;
 
   /* properties */
+    /**
+   * AgsRecall:filename:
+   *
+   * The plugin's filename.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_string("filename",
+				    i18n_pspec("the object file"),
+				    i18n_pspec("The filename as string of object file"),
+				    NULL,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILENAME,
+				  param_spec);
+
+  /**
+   * AgsRecall:effect:
+   *
+   * The plugin's effect.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_string("effect",
+				    i18n_pspec("the effect"),
+				    i18n_pspec("The effect's string representation"),
+				    NULL,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_EFFECT,
+				  param_spec);
+
+  /**
+   * AgsRecall:effect-index:
+   *
+   * The effect's index.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_uint("effect-index",
+				  i18n_pspec("index of effect"),
+				  i18n_pspec("The numerical index of effect"),
+				  0,
+				  G_MAXUINT32,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_EFFECT_INDEX,
+				  param_spec);
+
   /**
    * AgsRecall:recall-container:
    *
@@ -935,9 +988,13 @@ ags_recall_init(AgsRecall *recall)
   recall->version = NULL;
   recall->build_id = NULL;
 
-  /* effect and name */
-  recall->effect = NULL;
+  /* name */
   recall->name = NULL;
+
+  /* filename and effect */
+  recall->filename = NULL;
+  recall->effect = NULL;
+  recall->effect_index = 0;
 
   /* xml type  */
   recall->xml_type = NULL;
@@ -1069,6 +1126,61 @@ ags_recall_set_property(GObject *gobject,
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
+  case PROP_FILENAME:
+    {
+      gchar *filename;
+
+      filename = g_value_get_string(value);
+
+      pthread_mutex_lock(recall_mutex);
+
+      if(filename == recall->filename){
+	pthread_mutex_unlock(recall_mutex);
+	
+	return;
+      }
+
+      if(recall->filename != NULL){
+	g_free(recall->filename);
+      }
+
+      recall->filename = g_strdup(filename);
+      
+      pthread_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_EFFECT:
+    {
+      gchar *effect;
+      
+      effect = g_value_get_string(value);
+
+      pthread_mutex_lock(recall_mutex);
+
+      if(effect == recall->effect){
+	pthread_mutex_unlock(recall_mutex);
+	
+	return;
+      }
+
+      if(recall->effect != NULL){
+	g_free(recall->effect);
+      }
+
+      recall->effect = g_strdup(effect);
+      
+      pthread_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_EFFECT_INDEX:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      recall->effect_index = g_value_get_uint(value);
+      
+      pthread_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_RECALL_CONTAINER:
     {
       AgsRecallContainer *recall_container;
@@ -1325,6 +1437,33 @@ ags_recall_get_property(GObject *gobject,
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
+  case PROP_FILENAME:
+    {
+      pthread_mutex_lock(recall_mutex);
+      
+      g_value_set_string(value, recall->filename);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_EFFECT:
+    {
+      pthread_mutex_lock(recall_mutex);
+      
+      g_value_set_string(value, recall->effect);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_EFFECT_INDEX:
+    {
+      pthread_mutex_lock(recall_mutex);
+      
+      g_value_set_uint(value, recall->effect_index);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
   case PROP_RECALL_CONTAINER:
     {
       pthread_mutex_lock(recall_mutex);
@@ -4882,6 +5021,7 @@ ags_recall_is_done(GList *recall, GObject *recycling_context)
       }
     }
 
+    /* iterate */
     recall = recall->next;
   }
 
@@ -4890,49 +5030,71 @@ ags_recall_is_done(GList *recall, GObject *recycling_context)
 
 /**
  * ags_recall_get_by_effect:
- * @recall: a #GList with recalls
+ * @recall: the #GList-struct containing #AgsRecall
  * @filename: the filename containing @effect or %NULL
  * @effect: the effect name
  *
- * Finds all matching effect and filename.
+ * Finds all recalls matching @filename and @effect.
  *
- * Returns: a GList, or %NULL if not found
+ * Returns: a #GList-struct containing #AgsRecall, or %NULL if not found
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_get_by_effect(GList *recall, gchar *filename, gchar *effect)
 {
   AgsRecall *current_recall;
+  
   GList *list;
 
+  gchar *current_filename, *current_effect;
+  
+  pthread_mutex_t *current_recall_mutex;
+
+  if(recall == NULL ||
+     effect == NULL){
+    return(NULL);
+  }
+  
   list = NULL;
 
   while(recall != NULL){
     current_recall = AGS_RECALL(recall->data);
     
-    if(filename != NULL){
-      if(AGS_IS_RECALL_LADSPA(current_recall) &&
-	 !g_strcmp0(AGS_RECALL_LADSPA(current_recall)->filename, filename) &&
-	 !g_strcmp0(AGS_RECALL_LADSPA(current_recall)->effect, effect)){
-	list = g_list_prepend(list,
-			      current_recall);
-      }else if(AGS_IS_RECALL_DSSI(current_recall) &&
-	       !g_strcmp0(AGS_RECALL_DSSI(current_recall)->filename, filename) &&
-	       !g_strcmp0(AGS_RECALL_DSSI(current_recall)->effect, effect)){
-	list = g_list_prepend(list,
-			      current_recall);
-      }else if(AGS_IS_RECALL_LV2(current_recall) &&
-	       !g_strcmp0(AGS_RECALL_LV2(current_recall)->filename, filename) &&
-	       !g_strcmp0(AGS_RECALL_LV2(current_recall)->effect, effect)){
-	list = g_list_prepend(list,
-			      current_recall);
-      }else if(!g_strcmp0(current_recall->effect, effect)){
+    /* get recall mutex */
+    pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+    current_recall_mutex = current_recall->obj_mutex;
+
+    pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+    /* get some fields */
+    pthread_mutex_lock(current_recall_mutex);
+
+    current_filename = current_recall->filename;
+    current_effect = current_recall->effect;
+    
+    pthread_mutex_unlock(current_recall_mutex);
+    
+    /* check filename and effect */
+    if(filename == NULL){
+      if(current_filename == NULL &&
+	 current_effect != NULL &&
+	 !g_strcmp0(current_effect, effect)){
 	list = g_list_prepend(list,
 			      current_recall);
       }
-    }
+    }else{
+      if(current_filename != NULL &&
+	 !g_strcmp0(current_filename, filename) &&
+	 current_effect != NULL &&
+	 !g_strcmp0(current_effect, effect)){
+	list = g_list_prepend(list,
+			      current_recall);
+      }
+    }    
     
+    /* iterate */
     recall = recall->next;
   }
   
@@ -4943,9 +5105,9 @@ ags_recall_get_by_effect(GList *recall, gchar *filename, gchar *effect)
 
 /**
  * ags_recall_find_recall_id_with_effect:
- * @recall: a #GList-struct with recalls
- * @recall_id: an #AgsRecallId, may be %NULL
- * @filename: the filename containing @effect or %NULL
+ * @recall: the #GList-struct containing #AgsRecall
+ * @recall_id: the #AgsRecallID, may be %NULL
+ * @filename: the filename or %NULL
  * @effect: the effect name
  *
  * Finds next matching effect name. Intended to be used as
@@ -4953,56 +5115,122 @@ ags_recall_get_by_effect(GList *recall, gchar *filename, gchar *effect)
  *
  * Returns: next matching #GList-struct, or %NULL if not found
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_find_recall_id_with_effect(GList *recall, AgsRecallID *recall_id, gchar *filename, gchar *effect)
 {
   AgsRecall *current_recall;
+  AgsRecallID *current_recall_id;
+  AgsRecyclingContext *recycling_context;
+  AgsRecyclingContext *current_recycling_context;
+  
+  gchar *current_filename, *current_effect;
+  
+  pthread_mutex_t *current_recall_mutex;
+  pthread_mutex_t *recall_id_mutex;
+  pthread_mutex_t *current_recall_id_mutex;
+
+  if(recall == NULL ||
+     effect == NULL){
+    return(NULL);
+  }
+  
+  /* get recycling context */
+  recycling_context = NULL;
+    
+  if(recall_id != NULL){
+    /* get recall id mutex */
+    pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+    recall_id_mutex = recall_id->obj_mutex;
+
+    pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+    /* recycling context */
+    pthread_mutex_lock(recall_id_mutex);
+
+    recycling_context = recall_id->recycling_cotext;
+      
+    pthread_mutex_unlock(recall_id_mutex);
+  }
 
   while(recall != NULL){
     current_recall = AGS_RECALL(recall->data);
 
+    /* get recall mutex */
+    pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+    current_recall_mutex = current_recall->obj_mutex;
+
+    pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+    /* get some fields */
+    pthread_mutex_lock(current_recall_mutex);
+
+    current_filename = current_recall->filename;
+    current_effect = current_recall->effect;
+    
+    current_recall_id = current_recall->recall_id;
+    
+    pthread_mutex_unlock(current_recall_mutex);
+
+    /* get recycling context */
+    current_recycling_context = NULL;
+    
+    if(current_recall_id != NULL){
+      /* get recall id mutex */
+      pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+      current_recall_id_mutex = current_recall_id->obj_mutex;
+
+      pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+      /* recycling context */
+      pthread_mutex_lock(current_recall_id_mutex);
+
+      current_recycling_context = current_recall_id->recycling_cotext;
+      
+      pthread_mutex_unlock(current_recall_id_mutex);
+    }
+
+    /* check recall id, filename and effect */
     if(filename == NULL){
-      if(((recall_id != NULL &&
-	   current_recall->recall_id != NULL &&
-	   recall_id->recycling_context == current_recall->recall_id->recycling_context) ||
-	  (recall_id == NULL &&
-	   current_recall->recall_id == NULL)) &&
-	 !g_strcmp0(current_recall->effect, effect)){
-	return(recall);
+      if(current_filename == NULL &&
+	 current_effect != NULL &&
+	 !g_strcmp0(current_effect, effect)){
+	if(recall_id == NULL){
+	  if(current_recall_id == NULL){
+	    list = g_list_prepend(list,
+				  current_recall);
+	  }
+	}else{
+	  if(recycling_context == current_recycling_context){
+	    list = g_list_prepend(list,
+				  current_recall);
+	  }
+	}
       }
     }else{
-      if(AGS_IS_RECALL_LADSPA(current_recall) &&
-	 ((recall_id != NULL &&
-	   current_recall->recall_id != NULL &&
-	   recall_id->recycling_context == current_recall->recall_id->recycling_context) ||
-	  (recall_id == NULL &&
-	   current_recall->recall_id == NULL)) &&
-	 !g_strcmp0(AGS_RECALL_LADSPA(current_recall)->filename, filename) &&
-	 !g_strcmp0(AGS_RECALL_LADSPA(current_recall)->effect, effect)){
-	return(recall);
-      }else if(AGS_IS_RECALL_DSSI(current_recall) &&
-	 ((recall_id != NULL &&
-	   current_recall->recall_id != NULL &&
-	   recall_id->recycling_context == current_recall->recall_id->recycling_context) ||
-	  (recall_id == NULL &&
-	   current_recall->recall_id == NULL)) &&
-	 !g_strcmp0(AGS_RECALL_DSSI(current_recall)->filename, filename) &&
-	 !g_strcmp0(AGS_RECALL_DSSI(current_recall)->effect, effect)){
-	return(recall);
-      }else if(AGS_IS_RECALL_LV2(current_recall) &&
-	       ((recall_id != NULL &&
-		 current_recall->recall_id != NULL &&
-		 recall_id->recycling_context == current_recall->recall_id->recycling_context) ||
-		(recall_id == NULL &&
-		 current_recall->recall_id == NULL)) &&
-	       !g_strcmp0(AGS_RECALL_LV2(current_recall)->filename, filename) &&
-	       !g_strcmp0(AGS_RECALL_LV2(current_recall)->effect, effect)){
-	return(recall);
+      if(current_filename != NULL &&
+	 !g_strcmp0(current_filename, filename) &&
+	 current_effect != NULL &&
+	 !g_strcmp0(current_effect, effect)){
+	if(recall_id == NULL){
+	  if(current_recall_id == NULL){
+	    list = g_list_prepend(list,
+				  current_recall);
+	  }
+	}else{
+	  if(recycling_context == current_recycling_context){
+	    list = g_list_prepend(list,
+				  current_recall);
+	  }
+	}
       }
-    }
-  
+    }    
+
+    /* iterate */
     recall = recall->next;
   }
 
@@ -5011,15 +5239,15 @@ ags_recall_find_recall_id_with_effect(GList *recall, AgsRecallID *recall_id, gch
 
 /**
  * ags_recall_find_type:
- * @recall: the #GList-struct containing recalls
- * @type: a #GType
+ * @recall: the #GList-struct containing #AgsRecall
+ * @type: the #GType
  * 
  * Finds next matching recall for type. Intended to be used as
  * iteration function.
  *
- * Returns: next matching #GList-struct containing recalls, or %NULL if not found
+ * Returns: next matching #GList-struct, or %NULL if not found
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_find_type(GList *recall, GType gtype)
@@ -5033,6 +5261,7 @@ ags_recall_find_type(GList *recall, GType gtype)
       break;
     }
 
+    /* iterate */
     recall = recall->next;
   }
 
@@ -5048,20 +5277,40 @@ ags_recall_find_type(GList *recall, GType gtype)
  *
  * Returns: next matching #GList-struct, or %NULL if not found
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_find_template(GList *recall)
 {
   AgsRecall *current_recall;
 
+  guint current_recall_flags;
+  
+  pthread_mutex_t *current_recall_mutex;
+  
   while(recall != NULL){
     current_recall = AGS_RECALL(recall->data);
 
-    if((AGS_RECALL_TEMPLATE & (current_recall->flags)) != 0){
+    /* get recall mutex */
+    pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+    current_recall_mutex = current_recall->obj_mutex;
+
+    pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+    /* get some fields */
+    pthread_mutex_lock(current_recall_mutex);
+
+    current_recall_flags = current_recall->flags;
+
+    pthread_mutex_unlock(current_recall_mutex);
+
+    /* check recall flags */
+    if((AGS_RECALL_TEMPLATE & (current_recall_flags)) != 0){
       return(recall);
     }
 
+    /* iterate */
     recall = recall->next;
   }
 
@@ -5110,7 +5359,7 @@ ags_recall_template_find_type(GList *recall, GType gtype)
  *
  * Returns: next matching #GList-struct, or %NULL if not found
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_template_find_all_type(GList *recall, ...)
@@ -5120,10 +5369,14 @@ ags_recall_template_find_all_type(GList *recall, ...)
   GType *recall_type, *offset;
   GType current;
 
+  guint current_recall_flags;
   guint i;
   
   va_list ap;
 
+  pthread_mutex_t *current_recall_mutex;
+
+  /* read all types */
   va_start(ap,
 	   recall);
 
@@ -5148,15 +5401,31 @@ ags_recall_template_find_all_type(GList *recall, ...)
   recall_type[i] = G_TYPE_NONE;
   
   va_end(ap);
-  
+
+  /* find all types */
   while(recall != NULL){
     current_recall = (AgsRecall *) recall->data;
-
+    
     if(AGS_IS_RECALL(current_recall)){
+      /* get recall mutex */
+      pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+      current_recall_mutex = current_recall->obj_mutex;
+
+      pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+      /* get some fields */
+      pthread_mutex_lock(current_recall_mutex);
+
+      current_recall_flags = current_recall->flags;
+
+      pthread_mutex_unlock(current_recall_mutex);
+
+      /**/
       offset = recall_type;
     
       while(*offset != G_TYPE_NONE){      
-	if((AGS_RECALL_TEMPLATE & (current_recall->flags)) != 0 &&
+	if((AGS_RECALL_TEMPLATE & (current_recall_flags)) != 0 &&
 	   g_type_is_a(G_OBJECT_TYPE(current_recall), *offset)){
 	  free(recall_type);
 	
@@ -5166,7 +5435,8 @@ ags_recall_template_find_all_type(GList *recall, ...)
 	offset++;
       }
     }
-    
+
+    /* iterate */
     recall = recall->next;
   }
 
@@ -5178,7 +5448,7 @@ ags_recall_template_find_all_type(GList *recall, ...)
 /**
  * ags_recall_find_type_with_recycling_context:
  * @recall: the #GList-struct containing #AgsRecall
- * @type: a #GType
+ * @type: the #GType
  * @recycling_context: the #AgsRecyclingContext
  * 
  * Finds next matching recall for type which has @recycling_context, see #AgsRecallId for further
@@ -5186,22 +5456,59 @@ ags_recall_template_find_all_type(GList *recall, ...)
  *
  * Returns: next matching #GList-struct, or %NULL if not found
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_find_type_with_recycling_context(GList *recall, GType gtype, GObject *recycling_context)
 {
   AgsRecall *current_recall;
+  AgsRecallID *current_recall_id;
 
+  pthread_mutex_t *current_recall_mutex;
+  pthread_mutex_t *current_recall_id_mutex;
+  
   while(recall != NULL){
     current_recall = AGS_RECALL(recall->data);
 
+    /* get recall mutex */
+    pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+    current_recall_mutex = current_recall->obj_mutex;
+
+    pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+    /* get some fields */
+    pthread_mutex_lock(current_recall_mutex);
+
+    current_recall_id = current_recall->recall_id;
+    
+    pthread_mutex_unlock(current_recall_mutex);
+
+    /* get recycling context */
+    current_recycling_context = NULL;
+    
+    if(current_recall_id != NULL){
+      /* get recall id mutex */
+      pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+      current_recall_id_mutex = current_recall_id->obj_mutex;
+
+      pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+      /* recycling context */
+      pthread_mutex_lock(current_recall_id_mutex);
+
+      current_recycling_context = current_recall_id->recycling_cotext;
+      
+      pthread_mutex_unlock(current_recall_id_mutex);
+    }
+
     if(g_type_is_a(G_OBJECT_TYPE(current_recall), gtype) &&
-       current_recall->recalld != NULL &&
-       current_recall->recalld->recycling_context == (AgsRecyclingContext *) recycling_context){
+       current_recycling_context == (AgsRecyclingContext *) recycling_context){
       return(recall);
     }
 
+    /* iterate */
     recall = recall->next;
   }
 
@@ -5211,38 +5518,66 @@ ags_recall_find_type_with_recycling_context(GList *recall, GType gtype, GObject 
 /**
  * ags_recall_find_recycling_context:
  * @recall: the #GList-struct containing #AgsRecall
- * @recycling_context: an #AgsRecyclingContext
+ * @recycling_context: the #AgsRecyclingContext
  * 
  * Finds next matching recall which has @recycling_context, see #AgsRecallId for further
  * details about #AgsRecyclingContext. Intended to be used as iteration function.
  *
  * Returns: next matching #GList-struct, or %NULL if not found
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_find_recycling_context(GList *recall, GObject *recycling_context)
 {
   AgsRecall *current_recall;
+  AgsRecallID *current_recall_id;
 
-#ifdef AGS_DEBUG
-  g_message("ags_recall_find_recycling_context: recycling_context = %llx\n", recycling_context);
-#endif
+  pthread_mutex_t *current_recall_mutex;
+  pthread_mutex_t *current_recall_id_mutex;
 
   while(recall != NULL){
     current_recall = AGS_RECALL(recall->data);
 
-#ifdef AGS_DEBUG
-    if(current_recall->recall_id != NULL){
-      g_message("ags_recall_find_recycling_context: recall_id->recycling_contianer = %llx\n", (long long unsigned int) current_recall->recall_id->recycling_context);
-    }
-#endif
+    /* get recall mutex */
+    pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+    current_recall_mutex = current_recall->obj_mutex;
 
-    if(current_recall->recall_id != NULL &&
-       current_recall->recall_id->recycling_context == (AgsRecyclingContext *) recycling_context){
+    pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+    /* get some fields */
+    pthread_mutex_lock(current_recall_mutex);
+
+    current_recall_id = current_recall->recall_id;
+    
+    pthread_mutex_unlock(current_recall_mutex);
+
+    /* get recycling context */
+    current_recycling_context = NULL;
+    
+    if(current_recall_id != NULL){
+      /* get recall id mutex */
+      pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+      current_recall_id_mutex = current_recall_id->obj_mutex;
+
+      pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+      /* recycling context */
+      pthread_mutex_lock(current_recall_id_mutex);
+
+      current_recycling_context = current_recall_id->recycling_cotext;
+      
+      pthread_mutex_unlock(current_recall_id_mutex);
+    }
+
+    /* check recycling context */
+    if(current_recycling_context == (AgsRecyclingContext *) recycling_context){
       return(recall);
     }
 
+    /* iterate */
     recall = recall->next;
   }
 
@@ -5252,62 +5587,87 @@ ags_recall_find_recycling_context(GList *recall, GObject *recycling_context)
 /**
  * ags_recall_find_provider:
  * @recall: the #GList-struct containing #AgsRecall
- * @provider: a #GObject
- * 
+ * @provider: the #GObject, either #AgsAudio, #AgsChannel, #AgsRecycling or #AgsAudioSignal
+a * 
  * Finds next matching recall for type which has @provider. The @provider may be either an #AgsChannel
  * or an #AgsAudio object. This function tries to find the corresponding #AgsRecallChannel and #AgsRecallAudio
  * objects of a #AgsRecall to find. If these recalls contains the @provider, the function will return.
  *
  * Returns: next matching #GList-struct, or %NULL if not found
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_find_provider(GList *recall, GObject *provider)
 {
+  AgsAudio *current_audio;
+  AgsChannel *current_channel;
+  AgsRecycling *current_recycling;
+  AgsAudioSignal *current_audio_signal;
+  AgsRecall *current_recall;
+  
   while(recall != NULL){
-    AgsRecall *current;
-
-    current = AGS_RECALL(recall->data);
+    current_recall = AGS_RECALL(recall->data);
 
     if(AGS_IS_AUDIO(provider)){
-      if(AGS_IS_RECALL_AUDIO(current)){
-	if(((GObject *) AGS_RECALL_AUDIO(current)->audio) == provider){
+      if(AGS_IS_RECALL_AUDIO(current_recall)){
+	g_object_get(current_recall,
+		     "audio", &current_audio,
+		     NULL);
+	
+	if(current_audio == provider){
 	  return(recall);
 	}
-      }else if(AGS_IS_RECALL_AUDIO_RUN(current)){
-	AgsRecallAudio *recall_audio;
+      }else if(AGS_IS_RECALL_AUDIO_RUN(current_recall)){
+	g_object_get(current_recall,
+		     "audio", &current_audio,
+		     NULL);
 
-	recall_audio = AGS_RECALL_AUDIO_RUN(current)->recall_audio;
-
-	if(recall_audio != NULL &&
-	   ((GObject *) recall_audio->audio) == provider){
+	if(current_audio == provider){
 	  return(recall);
 	}
       }
     }else if(AGS_IS_CHANNEL(provider)){
-      if(AGS_IS_RECALL_CHANNEL(current)){
-	if(((GObject *) AGS_RECALL_CHANNEL(current)->source) == provider)
+      if(AGS_IS_RECALL_CHANNEL(current_recall)){
+	g_object_get(current_recall,
+		     "source", &current_channel,
+		     NULL);
+
+	if(current_channel == provider){
 	  return(recall);
-      }else if(AGS_IS_RECALL_CHANNEL_RUN(current)){
-	if(((GObject *) AGS_RECALL_CHANNEL_RUN(current)->source) == provider){
+	}
+      }else if(AGS_IS_RECALL_CHANNEL_RUN(current_recall)){
+	g_object_get(current_recall,
+		     "source", &current_channel,
+		     NULL);
+
+	if(current_channel == provider){
 	  return(recall);
 	}
       }
     }else if(AGS_IS_RECYCLING(provider)){
-      if(AGS_IS_RECALL_RECYCLING(current)){
-	if(((GObject *) AGS_RECALL_RECYCLING(current)->source) == provider){
+      if(AGS_IS_RECALL_RECYCLING(current_recall)){
+	g_object_get(current_recall,
+		     "source", &current_recycling,
+		     NULL);
+
+	if(current_recycling == provider){
 	  return(recall);
 	}
       }
     }else if(AGS_IS_AUDIO_SIGNAL(provider)){
-      if(AGS_IS_RECALL_AUDIO_SIGNAL(current)){
-	if(((GObject *) AGS_RECALL_AUDIO_SIGNAL(current)->source) == provider){
+      if(AGS_IS_RECALL_AUDIO_SIGNAL(current_recall)){
+	g_object_get(current_recall,
+		     "source", &current_audio_signal,
+		     NULL);
+
+	if(current_audio_signal == provider){
 	  return(recall);
 	}
       }
     }
 
+    /* iterate */
     recall = recall->next;
   }
 

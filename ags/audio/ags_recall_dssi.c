@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -71,9 +71,6 @@ xmlNode* ags_recall_dssi_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin
 
 enum{
   PROP_0,
-  PROP_FILENAME,
-  PROP_EFFECT,
-  PROP_INDEX,
 };
 
 static gpointer ags_recall_dssi_parent_class = NULL;
@@ -144,55 +141,6 @@ ags_recall_dssi_class_init(AgsRecallDssiClass *recall_dssi)
   gobject->finalize = ags_recall_dssi_finalize;
 
   /* properties */
-  /**
-   * AgsRecallDssi:filename:
-   *
-   * The plugins filename.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec =  g_param_spec_string("filename",
-				    i18n_pspec("the object file"),
-				    i18n_pspec("The filename as string of object file"),
-				    NULL,
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_FILENAME,
-				  param_spec);
-
-  /**
-   * AgsRecallDssi:effect:
-   *
-   * The effect's name.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec =  g_param_spec_string("effect",
-				    i18n_pspec("the effect"),
-				    i18n_pspec("The effect's string representation"),
-				    NULL,
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_EFFECT,
-				  param_spec);
-
-  /**
-   * AgsRecallDssi:index:
-   *
-   * The effect's index.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec =  g_param_spec_ulong("index",
-				   i18n_pspec("index of effect"),
-				   i18n_pspec("The numerical index of effect"),
-				   0,
-				   65535,
-				   0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_INDEX,
-				  param_spec);
 }
 
 void
@@ -250,50 +198,6 @@ ags_recall_dssi_set_property(GObject *gobject,
   recall_dssi = AGS_RECALL_DSSI(gobject);
 
   switch(prop_id){
-  case PROP_FILENAME:
-    {
-      GObject *soundcard;
-      gchar *filename;
-
-      filename = g_value_get_string(value);
-
-      if(filename == recall_dssi->filename){
-	return;
-      }
-
-      if(recall_dssi->filename != NULL){
-	g_free(recall_dssi->filename);
-      }
-
-      recall_dssi->filename = g_strdup(filename);
-    }
-    break;
-  case PROP_EFFECT:
-    {
-      gchar *effect;
-      
-      effect = g_value_get_string(value);
-
-      if(effect == recall_dssi->effect){
-	return;
-      }
-
-      recall_dssi->effect = g_strdup(effect);
-    }
-    break;
-  case PROP_INDEX:
-    {
-      unsigned long index;
-      
-      index = g_value_get_ulong(value);
-
-      if(index == recall_dssi->index){
-	return;
-      }
-
-      recall_dssi->index = index;
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -311,21 +215,6 @@ ags_recall_dssi_get_property(GObject *gobject,
   recall_dssi = AGS_RECALL_DSSI(gobject);
 
   switch(prop_id){
-  case PROP_FILENAME:
-    {
-      g_value_set_string(value, recall_dssi->filename);
-    }
-    break;
-  case PROP_EFFECT:
-    {
-      g_value_set_string(value, recall_dssi->effect);
-    }
-    break;
-  case PROP_INDEX:
-    {
-      g_value_set_uint(value, recall_dssi->index);
-    }
-    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;

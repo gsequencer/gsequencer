@@ -76,10 +76,7 @@ xmlNode* ags_recall_lv2_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 enum{
   PROP_0,
   PROP_TURTLE,
-  PROP_FILENAME,
-  PROP_EFFECT,
   PROP_URI,
-  PROP_INDEX,
 };
 
 static gpointer ags_recall_lv2_parent_class = NULL;
@@ -168,38 +165,6 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
 				  param_spec);
 
   /**
-   * AgsRecallLv2:filename:
-   *
-   * The plugins filename.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec =  g_param_spec_string("filename",
-				    i18n_pspec("the object file"),
-				    i18n_pspec("The filename as string of object file"),
-				    NULL,
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_FILENAME,
-				  param_spec);
-
-  /**
-   * AgsRecallLv2:effect:
-   *
-   * The effect's name.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec =  g_param_spec_string("effect",
-				    i18n_pspec("the effect"),
-				    i18n_pspec("The effect's string representation"),
-				    NULL,
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_EFFECT,
-				  param_spec);
-
-  /**
    * AgsRecallLv2:uri:
    *
    * The uri's name.
@@ -213,24 +178,6 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_URI,
-				  param_spec);
-
-  /**
-   * AgsRecallLv2:index:
-   *
-   * The uri's index.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec =  g_param_spec_ulong("index",
-				   i18n_pspec("index of uri"),
-				   i18n_pspec("The numerical index of uri"),
-				   0,
-				   65535,
-				   0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_INDEX,
 				  param_spec);
 }
 
@@ -319,40 +266,6 @@ ags_recall_lv2_set_property(GObject *gobject,
       recall_lv2->turtle = turtle;
     }
     break;
-  case PROP_FILENAME:
-    {
-      gchar *filename;
-
-      filename = g_value_get_string(value);
-
-      if(filename == recall_lv2->filename){
-	return;
-      }
-
-      if(recall_lv2->filename != NULL){
-	g_free(recall_lv2->filename);
-      }
-
-      recall_lv2->filename = g_strdup(filename);
-    }
-    break;
-  case PROP_EFFECT:
-    {
-      gchar *effect;
-      
-      effect = g_value_get_string(value);
-
-      if(effect == recall_lv2->effect){
-	return;
-      }
-
-      if(recall_lv2->effect != NULL){
-	g_free(recall_lv2->effect);
-      }
-
-      recall_lv2->effect = g_strdup(effect);
-    }
-    break;
   case PROP_URI:
     {
       gchar *uri;
@@ -368,19 +281,6 @@ ags_recall_lv2_set_property(GObject *gobject,
       }
 
       recall_lv2->uri = g_strdup(uri);
-    }
-    break;
-  case PROP_INDEX:
-    {
-      uint32_t index;
-      
-      index = g_value_get_ulong(value);
-
-      if(index == recall_lv2->index){
-	return;
-      }
-
-      recall_lv2->index = index;
     }
     break;
   default:
@@ -405,24 +305,9 @@ ags_recall_lv2_get_property(GObject *gobject,
       g_value_set_object(value, recall_lv2->turtle);
     }
     break;
-  case PROP_FILENAME:
-    {
-      g_value_set_string(value, recall_lv2->filename);
-    }
-    break;
-  case PROP_EFFECT:
-    {
-      g_value_set_string(value, recall_lv2->effect);
-    }
-    break;
   case PROP_URI:
     {
       g_value_set_string(value, recall_lv2->uri);
-    }
-    break;
-  case PROP_INDEX:
-    {
-      g_value_set_ulong(value, recall_lv2->index);
     }
     break;
   default:

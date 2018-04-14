@@ -110,9 +110,12 @@ struct _AgsRecall
   gchar *version;
   gchar *build_id;
 
-  gchar *effect;
   gchar *name;
 
+  gchar *filename;
+  gchar *effect;
+  guint effect_index;
+  
   gchar *xml_type;
 
   GObject *recall_container;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,20 +19,7 @@
 
 #include <ags/audio/ags_recall_ladspa.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_plugin.h>
-
-#include <ags/plugin/ags_ladspa_conversion.h>
-#include <ags/plugin/ags_ladspa_manager.h>
-#include <ags/plugin/ags_ladspa_plugin.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_port.h>
 
@@ -51,14 +38,6 @@ void ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa_class);
 void ags_recall_ladspa_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_ladspa_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_recall_ladspa_init(AgsRecallLadspa *recall_ladspa);
-void ags_recall_ladspa_set_property(GObject *gobject,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *param_spec);
-void ags_recall_ladspa_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec);
 void ags_recall_ladspa_connect(AgsConnectable *connectable);
 void ags_recall_ladspa_disconnect(AgsConnectable *connectable);
 void ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port);
@@ -76,13 +55,6 @@ xmlNode* ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plug
  *
  * #AgsRecallLadspa provides LADSPA support.
  */
-
-enum{
-  PROP_0,
-  PROP_FILENAME,
-  PROP_EFFECT,
-  PROP_INDEX,
-};
 
 static gpointer ags_recall_ladspa_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_ladspa_parent_connectable_interface;
@@ -146,61 +118,7 @@ ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa)
   /* GObjectClass */
   gobject = (GObjectClass *) recall_ladspa;
 
-  gobject->set_property = ags_recall_ladspa_set_property;
-  gobject->get_property = ags_recall_ladspa_get_property;
-
   gobject->finalize = ags_recall_ladspa_finalize;
-
-  /* properties */
-  /**
-   * AgsRecallLadspa:filename:
-   *
-   * The plugins filename.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec =  g_param_spec_string("filename",
-				    i18n_pspec("the object file"),
-				    i18n_pspec("The filename as string of object file"),
-				    NULL,
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_FILENAME,
-				  param_spec);
-
-  /**
-   * AgsRecallLadspa:recycling:
-   *
-   * The effect's name.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec =  g_param_spec_string("effect",
-				    i18n_pspec("the effect"),
-				    i18n_pspec("The effect's string representation"),
-				    NULL,
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_EFFECT,
-				  param_spec);
-
-  /**
-   * AgsRecallLadspa:recycling:
-   *
-   * The effect's index.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec =  g_param_spec_ulong("index",
-				   i18n_pspec("index of effect"),
-				   i18n_pspec("The numerical index of effect"),
-				   0,
-				   65535,
-				   0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_INDEX,
-				  param_spec);
 }
 
 
@@ -232,8 +150,6 @@ ags_recall_ladspa_init(AgsRecallLadspa *recall_ladspa)
   AGS_RECALL(recall_ladspa)->xml_type = "ags-recall-ladspa";
   AGS_RECALL(recall_ladspa)->port = NULL;
 
-  recall_ladspa->filename = NULL;
-  recall_ladspa->effect = NULL;
   recall_ladspa->index = 0;
 
   recall_ladspa->plugin_descriptor = NULL;
@@ -243,102 +159,6 @@ ags_recall_ladspa_init(AgsRecallLadspa *recall_ladspa)
 
   recall_ladspa->output_port = NULL;
   recall_ladspa->output_lines = 0;
-}
-
-void
-ags_recall_ladspa_set_property(GObject *gobject,
-			       guint prop_id,
-			       const GValue *value,
-			       GParamSpec *param_spec)
-{
-  AgsRecallLadspa *recall_ladspa;
-
-  recall_ladspa = AGS_RECALL_LADSPA(gobject);
-
-  switch(prop_id){
-  case PROP_FILENAME:
-    {
-      gchar *filename;
-
-      filename = g_value_get_string(value);
-
-      if(filename == recall_ladspa->filename){
-	return;
-      }
-
-      if(recall_ladspa->filename != NULL){
-	g_free(recall_ladspa->filename);
-      }
-
-      recall_ladspa->filename = g_strdup(filename);
-    }
-    break;
-  case PROP_EFFECT:
-    {
-      gchar *effect;
-      
-      effect = g_value_get_string(value);
-
-      if(effect == recall_ladspa->effect){
-	return;
-      }
-
-      if(recall_ladspa->effect != NULL){
-	g_free(recall_ladspa->effect);
-      }
-
-      recall_ladspa->effect = g_strdup(effect);
-    }
-    break;
-  case PROP_INDEX:
-    {
-      unsigned long index;
-      
-      index = g_value_get_ulong(value);
-
-      if(index == recall_ladspa->index){
-	return;
-      }
-
-      recall_ladspa->index = index;
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  };
-}
-
-void
-ags_recall_ladspa_get_property(GObject *gobject,
-			       guint prop_id,
-			       GValue *value,
-			       GParamSpec *param_spec)
-{
-  AgsRecallLadspa *recall_ladspa;
-
-  recall_ladspa = AGS_RECALL_LADSPA(gobject);
-
-  switch(prop_id){
-  case PROP_FILENAME:
-    {
-      g_value_set_string(value, recall_ladspa->filename);
-    }
-    break;
-  case PROP_EFFECT:
-    {
-      g_value_set_string(value, recall_ladspa->effect);
-    }
-    break;
-  case PROP_INDEX:
-    {
-      g_value_set_uint(value, recall_ladspa->index);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
 }
 
 void

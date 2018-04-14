@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,9 +25,10 @@
 
 #include <dssi.h>
 
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_channel_run.h>
+#include <ags/audio/ags_recall_channel.h>
+
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall.h>
 
 #define AGS_TYPE_RECALL_DSSI                (ags_recall_dssi_get_type())
 #define AGS_RECALL_DSSI(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_DSSI, AgsRecallDssi))
@@ -42,10 +43,6 @@ typedef struct _AgsRecallDssiClass AgsRecallDssiClass;
 struct _AgsRecallDssi
 {
   AgsRecallChannel recall_channel;
-
-  gchar *filename;
-  gchar *effect;
-  unsigned long index;
 
   unsigned long bank;
   unsigned long program;
@@ -78,6 +75,6 @@ GList* ags_recall_dssi_find(GList *recall,
 AgsRecallDssi* ags_recall_dssi_new(AgsChannel *source,
 				   gchar *filename,
 				   gchar *effect,
-				   unsigned long index);
+				   guint effect_index);
 
 #endif /*__AGS_RECALL_DSSI_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,13 +25,14 @@
 
 #include <lv2.h>
 
-#include <ags/lib/ags_turtle.h>
+#include <ags/libags.h>
+
+#include <ags/audio/ags_recall_channel.h>
 
 #include <ags/plugin/ags_lv2_plugin.h>
 
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall.h>
 
 #define AGS_TYPE_RECALL_LV2                (ags_recall_lv2_get_type())
 #define AGS_RECALL_LV2(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_LV2, AgsRecallLv2))
@@ -66,10 +67,7 @@ struct _AgsRecallLv2
   
   AgsTurtle *turtle;
   
-  gchar *filename;
-  gchar *effect;
   gchar *uri;
-  uint32_t index;
 
   AgsLv2Plugin *plugin;
   LV2_Descriptor *plugin_descriptor;
@@ -108,6 +106,6 @@ AgsRecallLv2* ags_recall_lv2_new(AgsChannel *source,
 				 gchar *filename,
 				 gchar *effect,
 				 gchar *uri,
-				 uint32_t index);
+				 guint effect_index);
 
 #endif /*__AGS_RECALL_LV2_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,9 +25,10 @@
 
 #include <ladspa.h>
 
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_channel_run.h>
+#include <ags/audio/ags_recall_channel.h>
+
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall.h>
 
 #define AGS_TYPE_RECALL_LADSPA                (ags_recall_ladspa_get_type())
 #define AGS_RECALL_LADSPA(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_LADSPA, AgsRecallLadspa))
@@ -42,10 +43,6 @@ typedef struct _AgsRecallLadspaClass AgsRecallLadspaClass;
 struct _AgsRecallLadspa
 {
   AgsRecallChannel recall_channel;
-
-  gchar *filename;
-  gchar *effect;
-  unsigned long index;
 
   LADSPA_Descriptor *plugin_descriptor;
 
@@ -75,6 +72,6 @@ GList* ags_recall_ladspa_find(GList *recall,
 AgsRecallLadspa* ags_recall_ladspa_new(AgsChannel *source,
 				       gchar *filename,
 				       gchar *effect,
-				       unsigned long index);
+				       guint effect_index);
 
 #endif /*__AGS_RECALL_LADSPA_H__*/
