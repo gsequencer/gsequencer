@@ -5588,7 +5588,7 @@ ags_recall_find_recycling_context(GList *recall, GObject *recycling_context)
  * ags_recall_find_provider:
  * @recall: the #GList-struct containing #AgsRecall
  * @provider: the #GObject, either #AgsAudio, #AgsChannel, #AgsRecycling or #AgsAudioSignal
-a * 
+ * 
  * Finds next matching recall for type which has @provider. The @provider may be either an #AgsChannel
  * or an #AgsAudio object. This function tries to find the corresponding #AgsRecallChannel and #AgsRecallAudio
  * objects of a #AgsRecall to find. If these recalls contains the @provider, the function will return.
@@ -5683,21 +5683,41 @@ ags_recall_find_provider(GList *recall, GObject *provider)
  *
  * Returns: next matching #GList-struct, or %NULL if not found
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_template_find_provider(GList *recall, GObject *provider)
 {
-  GList *list;
+  AgsRecall *current_recall;
 
-  list = recall;
+  guint current_recall_flags;
+  
+  pthread_mutex_t *current_recall_mutex;
 
-  while((list = (ags_recall_find_provider(list, provider))) != NULL){
-    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) != 0){
-      return(list);
+  while((recall = (ags_recall_find_provider(recall, provider))) != NULL){
+    current_recall = AGS_RECALL(recall->data);  
+
+    /* get recall mutex */
+    pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+    current_recall_mutex = current_recall->obj_mutex;
+
+    pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+    /* get some fields */
+    pthread_mutex_lock(current_recall_mutex);
+
+    current_recall_flags = current_recall->flags;
+    
+    pthread_mutex_unlock(current_recall_mutex);
+
+    /* check template */
+    if((AGS_RECALL_TEMPLATE & (current_recall_flags)) != 0){
+      return(recall);
     }
 
-    list = list->next;
+    /* iterate */
+    recall = recall->next;
   }
 
   return(NULL);
@@ -5713,7 +5733,7 @@ ags_recall_template_find_provider(GList *recall, GObject *provider)
  *
  * Returns: next matching #GList-struct, or %NULL if not found
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_find_provider_with_recycling_context(GList *recall, GObject *provider, GObject *recycling_context)
@@ -5723,11 +5743,44 @@ ags_recall_find_provider_with_recycling_context(GList *recall, GObject *provider
   while((recall = ags_recall_find_provider(recall, provider)) != NULL){
     current_recall = AGS_RECALL(recall->data);
     
-    if(current_recall->recalld != NULL &&
-       current_recall->recalld->recycling_context == (AgsRecyclingContext *) recycling_context){
+    /* get recall mutex */
+    pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+    current_recall_mutex = current_recall->obj_mutex;
+
+    pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+    /* get some fields */
+    pthread_mutex_lock(current_recall_mutex);
+
+    current_recall_id = current_recall->recall_id;
+    
+    pthread_mutex_unlock(current_recall_mutex);
+
+    /* get recycling context */
+    current_recycling_context = NULL;
+    
+    if(current_recall_id != NULL){
+      /* get recall id mutex */
+      pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+      current_recall_id_mutex = current_recall_id->obj_mutex;
+
+      pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+      /* recycling context */
+      pthread_mutex_lock(current_recall_id_mutex);
+
+      current_recycling_context = current_recall_id->recycling_cotext;
+      
+      pthread_mutex_unlock(current_recall_id_mutex);
+    }
+
+    if(current_recycling_context == (AgsRecyclingContext *) recycling_context){
       return(recall);
     }
 
+    /* iterate */
     recall = recall->next;
   }
 
@@ -5738,86 +5791,23 @@ void
 ags_recall_child_done(AgsRecall *child,
 		      AgsRecall *parent)
 {
-  if(child == NULL ||
-     parent == NULL){
-    return;
-  }
-  
-  ags_recall_remove_child(parent,
-			  child);
-  g_object_run_dispose(child);
-}
-
-/**
- * ags_recall_lock_port:
- * @recall: the #AgsRecall
- *
- * Unlocks the ports.
- *
- * Since: 1.0.0
- */
-void
-ags_recall_lock_port(AgsRecall *recall)
-{
-  GList *port;
-
-  if(recall == NULL){
-    return;
-  }
-  
-  port = recall->port;
-
-  while(port != NULL){
-    pthread_mutex_lock(AGS_PORT(port->data)->mutex);
-
-    port = port->next;
-  }
-}
-
-/**
- * ags_recall_unlock_port:
- * @recall: the #AgsRecall
- *
- * Unlocks the ports.
- *
- * Since: 1.0.0
- */
-void
-ags_recall_unlock_port(AgsRecall *recall)
-{
-  GList *port;
-
-  if(recall == NULL){
-    return;
-  }
-  
-  port = recall->port;
-
-  while(port != NULL){
-    pthread_mutex_unlock(AGS_PORT(port->data)->mutex);
-
-    port = port->next;
-  }
-}
-
-void
-ags_recall_real_remove(AgsRecall *recall)
-{
   AgsMutexManager *mutex_manager;
   AgsDestroyWorker *destroy_worker;
-  
+
   AgsApplicationContext *application_context;
 
-  AgsRecall *parent;
-
   GList *worker;
+  GList *children;
+
+  guint parent_behaviour_flags;
   
   pthread_mutex_t *application_mutex;
-  
+  pthread_mutex_t *parent_mutex;
+
+  /*  */
   application_context = ags_application_context_get_instance();
 
   mutex_manager = ags_mutex_manager_get_instance();
-  
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* get destroy worker */
@@ -5834,63 +5824,151 @@ ags_recall_real_remove(AgsRecall *recall)
   }
   
   pthread_mutex_unlock(application_mutex);
+
+  /* remove child */
+  ags_recall_remove_child(parent,
+			  child);
   
   /* dispose and unref */
-  g_object_ref(recall);
-
-  if(recall->parent == NULL){
-#if 0
-    if(destroy_worker != NULL){
-      ags_destroy_worker_add(destroy_worker,
-			     recall, g_object_run_dispose);
-    }else{
-      g_object_run_dispose(recall);
-    }
-#endif
-    
-    return;
+  if(destroy_worker != NULL){
+    ags_destroy_worker_add(destroy_worker,
+			   child, ags_destroy_util_dispose_and_unref);
   }else{
-    parent = AGS_RECALL(recall->parent);
+    g_object_run_dispose(child);
+    g_object_unref(child);
+  }  
 
-    ags_recall_remove_child(parent,
-    			    recall);
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  parent_mutex = parent->obj_mutex;
 
-    if(destroy_worker != NULL){
-      ags_destroy_worker_add(destroy_worker,
-			     recall, ags_destroy_util_dispose_and_unref);
-    }else{
-      g_object_run_dispose(recall);
-      g_object_unref(recall);
-    }
-  }
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   /* propagate done */
-  if(parent != NULL &&
-     (AGS_RECALL_PROPAGATE_DONE & (parent->flags)) != 0 &&
-     (AGS_RECALL_PERSISTENT & (parent->flags)) == 0 &&
-     parent->children == NULL){
+  pthread_mutex_lock(parent_mutex);
+
+  parent_behaviour_flags = parent->behaviour_flags;
+  
+  children = parent->children;
+
+  pthread_mutex_unlock(parent_mutex);
+  
+  if((AGS_SOUND_BEHAVIOUR_PROPAGATE_DONE & (parent_behaviour_flags)) != 0 &&
+     (AGS_SOUND_BEHAVIOUR_PERSISTENT & (parent_behaviour_flags)) == 0 &&
+     children == NULL){
     ags_recall_done(parent);
   }
 }
 
 /**
- * ags_recall_remove:
- * @recall: an #AgsRecall
+ * ags_recall_lock_port:
+ * @recall: the #AgsRecall
  *
- * The #AgsRecall will be removed immediately.
- * 
+ * Locks the ports.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_recall_lock_port(AgsRecall *recall)
+{
+  AgsPort *port;
+  
+  GList *list_start, *list;
+
+  pthread_mutex_t *recall_mutex;
+  pthread_mutex_t *port_mutex;
+
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }  
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_mutex);
+
+  list =
+    list_start = g_list_copy(recall->port);
+
+  pthread_mutex_unlock(recall_mutex);
+
+  while(list != NULL){
+    /* get port mutex */
+    pthread_mutex_lock(ags_port_get_class_mutex());
+  
+    port_mutex = port->obj_mutex;
+
+    pthread_mutex_unlock(ags_port_get_class_mutex());
+
+    /* lock port mutex */
+    pthread_mutex_lock(port_mutex);
+
+    /* iterate */
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+}
+
+/**
+ * ags_recall_unlock_port:
+ * @recall: the #AgsRecall
+ *
+ * Unlocks the ports.
+ *
  * Since: 1.0.0
  */
 void
-ags_recall_remove(AgsRecall *recall)
+ags_recall_unlock_port(AgsRecall *recall)
 {
-  g_return_if_fail(AGS_IS_RECALL(recall));
+  AgsPort *port;
+  
+  GList *list_start, *list;
 
-  g_object_ref(G_OBJECT(recall));
-  g_signal_emit(G_OBJECT(recall),
-		recall_signals[REMOVE], 0);
-  g_object_unref(G_OBJECT(recall));
-  //  g_object_unref(recall);
+  pthread_mutex_t *recall_mutex;
+  pthread_mutex_t *port_mutex;
+
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }  
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_mutex);
+
+  list =
+    list_start = g_list_copy(recall->port);
+
+  pthread_mutex_unlock(recall_mutex);
+
+  while(list != NULL){
+    /* get port mutex */
+    pthread_mutex_lock(ags_port_get_class_mutex());
+  
+    port_mutex = port->obj_mutex;
+
+    pthread_mutex_unlock(ags_port_get_class_mutex());
+
+    /* lock port mutex */
+    pthread_mutex_unlock(port_mutex);
+
+    /* iterate */
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 /**
