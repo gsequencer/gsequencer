@@ -337,7 +337,7 @@ ags_recall_class_init(AgsRecallClass *recall)
   param_spec =  g_param_spec_int("output-soundcard-channel",
 				 i18n_pspec("output soundcard channel"),
 				 i18n_pspec("The output soundcard channel"),
-				 0,
+				 -1,
 				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -371,7 +371,7 @@ ags_recall_class_init(AgsRecallClass *recall)
   param_spec =  g_param_spec_int("input-soundcard-channel",
 				 i18n_pspec("input soundcard channel"),
 				 i18n_pspec("The input soundcard channel"),
-				 0,
+				 -1,
 				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -1976,7 +1976,7 @@ ags_recall_connect(AgsConnectable *connectable)
 
   pthread_mutex_t *recall_mutex;
 
-  if(ags_connectable_is_connect(connectable)){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -2037,7 +2037,7 @@ ags_recall_disconnect(AgsConnectable *connectable)
 
   pthread_mutex_t *recall_mutex;
 
-  if(!ags_connectable_is_connect(connectable)){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 

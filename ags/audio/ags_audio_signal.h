@@ -70,10 +70,10 @@ struct _AgsAudioSignal
   GObject *recycling;
 
   GObject *output_soundcard;
-  guint output_soundcard_channel;
+  gint output_soundcard_channel;
 
   GObject *input_soundcard;
-  guint input_soundcard_channel;
+  gint input_soundcard_channel;
 
   guint samplerate;
   guint buffer_size;

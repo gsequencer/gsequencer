@@ -185,6 +185,22 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 
   /* properties */
   /**
+   * AgsAudioSignal:recycling:
+   *
+   * The assigned #AgsRecycling linking tree.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("recycling",
+				   i18n_pspec("assigned recycling"),
+				   i18n_pspec("The recycling it is assigned with"),
+				   AGS_TYPE_RECYCLING,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECYCLING,
+				  param_spec);
+
+  /**
    * AgsAudioSignal:output-soundcard:
    *
    * The assigned output #AgsSoundcard providing default settings.
@@ -198,6 +214,24 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_OUTPUT_SOUNDCARD,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:output-soundcard-channel:
+   *
+   * The output soundcard channel.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_int("output-soundcard-channel",
+				 i18n_pspec("output soundcard channel"),
+				 i18n_pspec("The output soundcard channel"),
+				 -1,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_OUTPUT_SOUNDCARD_CHANNEL,
 				  param_spec);
 
   /**
@@ -217,20 +251,23 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				  param_spec);
   
   /**
-   * AgsAudioSignal:recycling:
+   * AgsAudioSignal:input-soundcard-channel:
    *
-   * The assigned #AgsRecycling linking tree.
+   * The input soundcard channel.
    * 
    * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("recycling",
-				   i18n_pspec("assigned recycling"),
-				   i18n_pspec("The recycling it is assigned with"),
-				   AGS_TYPE_RECYCLING,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec =  g_param_spec_int("input-soundcard-channel",
+				 i18n_pspec("input soundcard channel"),
+				 i18n_pspec("The input soundcard channel"),
+				 -1,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_RECYCLING,
+				  PROP_INPUT_SOUNDCARD_CHANNEL,
 				  param_spec);
+  
 
   /**
    * AgsAudioSignal:recall-id:
@@ -895,6 +932,27 @@ ags_audio_signal_set_property(GObject *gobject,
   audio_signal = AGS_AUDIO_SIGNAL(gobject);
 
   switch(prop_id){
+  case PROP_RECYCLING:
+    {
+      GObject *recycling;
+
+      recycling = g_value_get_object(value);
+
+      if(audio_signal->recycling == recycling){
+	return;
+      }
+
+      if(audio_signal->recycling != NULL){
+	g_object_unref(audio_signal->recycling);
+      }
+      
+      if(recycling != NULL){
+	g_object_ref(recycling);
+      }
+      
+      audio_signal->recycling = recycling;
+    }
+    break;
   case PROP_OUTPUT_SOUNDCARD:
     {
       GObject *output_soundcard;
@@ -953,27 +1011,6 @@ ags_audio_signal_set_property(GObject *gobject,
       }
       
       audio_signal->input_soundcard = input_soundcard;
-    }
-    break;
-  case PROP_RECYCLING:
-    {
-      GObject *recycling;
-
-      recycling = g_value_get_object(value);
-
-      if(audio_signal->recycling == recycling){
-	return;
-      }
-
-      if(audio_signal->recycling != NULL){
-	g_object_unref(audio_signal->recycling);
-      }
-      
-      if(recycling != NULL){
-	g_object_ref(recycling);
-      }
-      
-      audio_signal->recycling = recycling;
     }
     break;
   case PROP_RECALL_ID:

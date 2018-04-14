@@ -310,7 +310,7 @@ ags_channel_class_init(AgsChannelClass *channel)
   param_spec =  g_param_spec_int("output-soundcard-channel",
 				 i18n_pspec("output soundcard channel"),
 				 i18n_pspec("The output soundcard channel"),
-				 0,
+				 -1,
 				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -344,7 +344,7 @@ ags_channel_class_init(AgsChannelClass *channel)
   param_spec =  g_param_spec_int("input-soundcard-channel",
 				 i18n_pspec("input soundcard channel"),
 				 i18n_pspec("The input soundcard channel"),
-				 0,
+				 -1,
 				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -2258,14 +2258,18 @@ void
 ags_channel_add_to_registry(AgsConnectable *connectable)
 {
   AgsChannel *channel;
-  AgsRecycling *recycling;
+  AgsRecycling *first_recycling, *last_recycling;
+  AgsRecycling *recycling, *recycling_end;
 
   AgsRegistry *registry;
   AgsRegistryEntry *entry;
 
   AgsApplicationContext *application_context;
 
-  GList *list;
+  GList *list_start, *list;
+
+  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *recycling_mutex;
 
   if(ags_connectable_is_ready(connectable)){
     return;
@@ -2287,34 +2291,90 @@ ags_channel_add_to_registry(AgsConnectable *connectable)
 			   entry);
   }
 
-  /* add recycling */
-  recycling = channel->first_recycling;
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
 
-  if(recycling != NULL){
-    while(recycling != channel->last_recycling->next){
+  /* get some fields */
+  pthread_mutex_lock(channel_mutex);
+
+  first_recycling = channel->first_recycling;
+  last_recycling = channel->last_recycling;
+
+  pthread_mutex_unlock(channel_mutex);
+
+  /* add recycling */
+  if(first_recycling != NULL){
+    recycling = first_recycling;
+
+    /* get recycling mutex */
+    pthread_mutex_lock(ags_recycling_get_class_mutex());
+  
+    recycling_mutex = last_recycling->obj_mutex;
+  
+    pthread_mutex_unlock(ags_recycling_get_class_mutex());
+
+    /* get end recycling */
+    pthread_mutex_lock(recycling_mutex);
+    
+    end_recycling = last_recycling->next;
+    
+    pthread_mutex_unlock(recycling_mutex);
+
+    while(recycling != end_recycling){
+      /* get recycling mutex */
+      pthread_mutex_lock(ags_recycling_get_class_mutex());
+  
+      recycling_mutex = recycling->obj_mutex;
+  
+      pthread_mutex_unlock(ags_recycling_get_class_mutex());
+
+      /* add */
       ags_connectable_add_to_registry(AGS_CONNECTABLE(recycling));
+
+      /* iterate */
+      pthread_mutex_lock(recycling_mutex);
       
       recycling = recycling->next;
+
+      pthread_mutex_unlock(recycling_mutex);
     }
   }
   
   /* add play */
-  list = channel->play;
+  pthread_mutex_lock(channel_mutex);
+
+  list = 
+    list_start = g_list_copy(channel->play);
+
+  pthread_mutex_unlock(channel_mutex);
 
   while(list != NULL){
     ags_connectable_add_to_registry(AGS_CONNECTABLE(list->data));
 
     list = list->next;
   }
+
+  g_list_free(list_start);
   
   /* add recall */
-  list = channel->recall;
+  pthread_mutex_lock(channel_mutex);
+
+  list = 
+    list_start = g_list_copy(channel->recall);
+
+  pthread_mutex_unlock(channel_mutex);
 
   while(list != NULL){
     ags_connectable_add_to_registry(AGS_CONNECTABLE(list->data));
 
     list = list->next;
   }
+
+  g_list_free(list_start);
 }
 
 void
@@ -2400,7 +2460,7 @@ ags_channel_connect(AgsConnectable *connectable)
   pthread_mutex_t *recycling_mutex;
   pthread_mutex_t *recall_mutex;
   
-  if(ags_connectable_is_connect(connectable)){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -2563,7 +2623,7 @@ ags_channel_disconnect(AgsConnectable *connectable)
   pthread_mutex_t *recycling_mutex;
   pthread_mutex_t *recall_mutex;
 
-  if(!ags_connectable_is_connect(connectable)){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
