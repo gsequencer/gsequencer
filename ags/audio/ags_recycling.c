@@ -1417,53 +1417,136 @@ ags_recycling_unset_flags(AgsRecycling *recycling, guint flags)
 
 /**
  * ags_recycling_set_output_soundcard:
- * @recycling:  an #AgsRecycling
+ * @recycling: the #AgsRecycling
  * @output_soundcard: the #GObject to set
  *
- * Set @output_soundcard to recycling.
+ * Set @output_soundcard of @recycling.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_recycling_set_output_soundcard(AgsRecycling *recycling, GObject *output_soundcard)
 {
+  GList *list_start, *list;
+  
+  pthread_mutex_t *recycling_mutex;
+
   if(!AGS_IS_RECYCLING(recycling)){
     return;
   }
 
+  /* get recycling mutex */
+  pthread_mutex_lock(ags_recycling_get_class_mutex());
+  
+  recycling_mutex = recycling->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+
   /* recycling */
-  if(recycling->soundcard == soundcard){
+  pthread_mutex_lock(recycling_mutex);
+
+  if(recycling->output_soundcard == output_soundcard){
+    pthread_mutex_unlock(recycling_mutex);
+    
     return;
   }
 
-  if(recycling->soundcard != NULL){
-    g_object_unref(recycling->soundcard);
+  if(recycling->output_soundcard != NULL){
+    g_object_unref(recycling->output_soundcard);
   }
   
-  if(soundcard != NULL){
-    g_object_ref(soundcard);
+  if(output_soundcard != NULL){
+    g_object_ref(output_soundcard);
   }
   
-  recycling->soundcard = (GObject *) soundcard;
+  recycling->output_soundcard = (GObject *) output_soundcard;
+
+  pthread_mutex_unlock(recycling_mutex);
+
+  /* audio signal */
+  pthread_mutex_lock(recycling_mutex);
+
+  list =
+    list_start = g_list_copy(recycling->audio_signal);
+  
+  pthread_mutex_unlock(recycling_mutex);
+
+  while(list != NULL){
+    g_object_set(list->data,
+		 "output-soundcard", output_soundcard,
+		 NULL);
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 /**
  * ags_recycling_set_input_soundcard:
  * @recycling: the #AgsRecycling
- * @soundcard: an #AgsSoundcard
+ * @input_soundcard: the #GObject to set
  *
- * Set the input soundcard object on recycling.
+ * Set @input_soundcard of @recycling.
  *
  * Since: 2.0.0
  */
 void
 ags_recycling_set_input_soundcard(AgsRecycling *recycling, GObject *input_soundcard)
 {
+  GList *list_start, *list;
+  
+  pthread_mutex_t *recycling_mutex;
+
   if(!AGS_IS_RECYCLING(recycling)){
     return;
   }
+
+  /* get recycling mutex */
+  pthread_mutex_lock(ags_recycling_get_class_mutex());
   
-  //TODO:JK: implement me
+  recycling_mutex = recycling->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+
+  /* recycling */
+  pthread_mutex_lock(recycling_mutex);
+
+  if(recycling->input_soundcard == input_soundcard){
+    pthread_mutex_unlock(recycling_mutex);
+    
+    return;
+  }
+
+  if(recycling->input_soundcard != NULL){
+    g_object_unref(recycling->input_soundcard);
+  }
+  
+  if(input_soundcard != NULL){
+    g_object_ref(input_soundcard);
+  }
+  
+  recycling->input_soundcard = (GObject *) input_soundcard;
+
+  pthread_mutex_unlock(recycling_mutex);
+
+  /* audio signal */
+  pthread_mutex_lock(recycling_mutex);
+
+  list =
+    list_start = g_list_copy(recycling->audio_signal);
+  
+  pthread_mutex_unlock(recycling_mutex);
+
+  while(list != NULL){
+    g_object_set(list->data,
+		 "input-soundcard", input_soundcard,
+		 NULL);
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 /**
