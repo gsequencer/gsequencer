@@ -675,6 +675,9 @@ ags_recycling_dispose(GObject *gobject)
 		   g_object_unref);
 
   recycling->audio_signal = NULL;
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_recycling_parent_class)->dispose(gobject);
 }
 
 void
