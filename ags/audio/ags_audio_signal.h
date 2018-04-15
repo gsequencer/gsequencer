@@ -106,7 +106,7 @@ struct _AgsAudioSignal
   pthread_mutexattr_t *stream_mutexattr;
   pthread_mutex_t *stream_mutex;
   
-  GList *stream_beginning;
+  GList *stream;
   GList *stream_current;
   GList *stream_end;
 };

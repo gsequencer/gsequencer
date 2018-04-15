@@ -64,10 +64,6 @@ void ags_audio_signal_xml_parse(AgsConnectable *connectable,
 gboolean ags_audio_signal_is_connected(AgsConnectable *connectable);
 void ags_audio_signal_connect(AgsConnectable *connectable);
 void ags_audio_signal_disconnect(AgsConnectable *connectable);
-void ags_audio_signal_connect_connection(AgsConnectable *connectable,
-					 GObject *connection);
-void ags_audio_signal_disconnect_connection(AgsConnectable *connectable,
-					    GObject *connection);
 
 void ags_audio_signal_real_add_note(AgsAudioSignal *audio_signal,
 				    GObject *note);
@@ -120,6 +116,7 @@ enum{
 enum{
   ADD_NOTE,
   REMOVE_NOTE,
+  REFRESH_DATA,
   LAST_SIGNAL,
 };
 
@@ -268,22 +265,6 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				  PROP_INPUT_SOUNDCARD_CHANNEL,
 				  param_spec);
   
-
-  /**
-   * AgsAudioSignal:recall-id:
-   *
-   * The assigned #AgsRecallID providing context.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("recall_id",
-				   i18n_pspec("assigned recall id"),
-				   i18n_pspec("The recall id it is assigned with"),
-				   AGS_TYPE_RECALL_ID,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_RECALL_ID,
-				  param_spec);
 
   /**
    * AgsAudioSignal:samplerate:
@@ -570,6 +551,69 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				  param_spec);
 
   /**
+   * AgsAudioSignal:template:
+   *
+   * The assigned #AgsAudioSignal template.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("template",
+				   i18n_pspec("assigned template"),
+				   i18n_pspec("The assigend template"),
+				   AGS_TYPE_AUDIO_SIGNAL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TEMPLATE,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:rt-template:
+   *
+   * The assigned #AgsAudioSignal realtime template.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("rt-template",
+				   i18n_pspec("assigned realtime template"),
+				   i18n_pspec("The assigend realtime template"),
+				   AGS_TYPE_AUDIO_SIGNAL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RT_TEMPLATE,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:note:
+   *
+   * The assigned #AgsNote providing default settings.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("note",
+				    i18n_pspec("assigned note"),
+				    i18n_pspec("The note it is assigned with"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NOTE,
+				  param_spec);
+
+  /**
+   * AgsAudioSignal:recall-id:
+   *
+   * The assigned #AgsRecallID providing context.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("recall_id",
+				   i18n_pspec("assigned recall id"),
+				   i18n_pspec("The recall id it is assigned with"),
+				   AGS_TYPE_RECALL_ID,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_ID,
+				  param_spec);
+
+  /**
    * AgsAudioSignal:stream:
    *
    * The stream it contains.
@@ -614,37 +658,6 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				  PROP_STREAM_CURRENT,
 				  param_spec);
 
-  /**
-   * AgsAudioSignal:note:
-   *
-   * The assigned #AgsNote providing default settings.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_pointer("note",
-				    i18n_pspec("assigned note"),
-				    i18n_pspec("The note it is assigned with"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_NOTE,
-				  param_spec);
-
-  /**
-   * AgsAudioSignal:rt-template:
-   *
-   * The assigned #AgsAudioSignal realtime template.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("rt-template",
-				   i18n_pspec("assigned realtime template"),
-				   i18n_pspec("The assigend realtime template"),
-				   AGS_TYPE_AUDIO_SIGNAL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_RT_TEMPLATE,
-				  param_spec);
-
   /* AgsAudioSignalClass */
   audio_signal->add_note = ags_audio_signal_real_add_note;
   audio_signal->remove_note = ags_audio_signal_real_remove_note;
@@ -687,6 +700,24 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 		 g_cclosure_marshal_VOID__OBJECT,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_OBJECT);
+
+
+  /**
+   * AgsAudioSignal::refresh-data:
+   * @audio_signal: the #AgsAudioSignal
+   *
+   * The ::refresh-data signal notifies about requesting to refresh data.
+   * 
+   * Since: 2.0.0
+   */
+  audio_signal_signals[REFRESH_DATA] =
+    g_signal_new("refresh-data",
+		 G_TYPE_FROM_CLASS(audio_signal),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsAudioSignalClass, refresh_data),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 }
 
 void
@@ -708,8 +739,8 @@ ags_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable
   connectable->connect = ags_audio_signal_connect;
   connectable->disconnect = ags_audio_signal_disconnect;
 
-  connectable->connect_connection = ags_audio_signal_connect_connection;
-  connectable->disconnect_connection = ags_audio_signal_disconnect_connection;
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -750,6 +781,9 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->uuid = ags_uuid_alloc();
   ags_uuid_generate(audio_signal->uuid);
 
+  /* recycling */
+  audio_signal->recycling = NULL;
+
   /* config */
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -757,8 +791,6 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   config = ags_config_get_instance();
 
   /* base init */
-  audio_signal->recycling = NULL;
-
   audio_signal->output_soundcard = NULL;
   audio_signal->output_soundcard_channel = 0;
 
@@ -897,6 +929,9 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
 
   audio_signal->timbre_start = 0;
   audio_signal->timbre_end = 0;
+
+  /* template */
+  audio_signal->template = NULL;
   
   /* realtime fields */
   audio_signal->rt_template = NULL;
@@ -916,7 +951,7 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   pthread_mutex_init(audio_signal->stream_mutex,
 		     attr);
 
-  audio_signal->stream_beginning = NULL;
+  audio_signal->stream = NULL;
   audio_signal->stream_current = NULL;
   audio_signal->stream_end = NULL;
 }
@@ -929,8 +964,17 @@ ags_audio_signal_set_property(GObject *gobject,
 {
   AgsAudioSignal *audio_signal;
 
+  pthread_mutex_t *audio_signal_mutex;
+
   audio_signal = AGS_AUDIO_SIGNAL(gobject);
 
+  /* get audio signal mutex */
+  pthread_mutex_lock(ags_audio_signal_get_class_mutex());
+  
+  audio_signal_mutex = audio_signal->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
+  
   switch(prop_id){
   case PROP_RECYCLING:
     {
@@ -938,7 +982,11 @@ ags_audio_signal_set_property(GObject *gobject,
 
       recycling = g_value_get_object(value);
 
+      pthread_mutex_lock(audio_signal_mutex);
+
       if(audio_signal->recycling == recycling){
+	pthread_mutex_unlock(audio_signal_mutex);
+
 	return;
       }
 
@@ -951,45 +999,18 @@ ags_audio_signal_set_property(GObject *gobject,
       }
       
       audio_signal->recycling = recycling;
+
+      pthread_mutex_unlock(audio_signal_mutex);
     }
     break;
   case PROP_OUTPUT_SOUNDCARD:
     {
       GObject *output_soundcard;
 
-      guint samplerate;
-      guint buffer_size;
-      guint format;
-      
       output_soundcard = g_value_get_object(value);
 
-      if(audio_signal->output_soundcard == output_soundcard){
-	return;
-      }
-
-      if(audio_signal->output_soundcard != NULL){
-	g_object_unref(audio_signal->output_soundcard);
-      }
-      
-      if(output_soundcard != NULL){
-	g_object_ref(output_soundcard);
-      }
-      
-      audio_signal->output_soundcard = output_soundcard;
-
-      if(output_soundcard != NULL){
-	ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
-				  NULL,
-				  &samplerate,
-				  &buffer_size,
-				  &format);
-
-	g_object_set(audio_signal,
-		     "samplerate", samplerate,
-		     "buffer-size", buffer_size,
-		     "format", format,
-		     NULL);
-      }
+      ags_audio_signal_set_output_soundcard(audio_signal,
+					    output_soundcard);
     }
     break;
   case PROP_INPUT_SOUNDCARD:
@@ -998,19 +1019,8 @@ ags_audio_signal_set_property(GObject *gobject,
       
       input_soundcard = g_value_get_object(value);
 
-      if(audio_signal->input_soundcard == input_soundcard){
-	return;
-      }
-
-      if(audio_signal->input_soundcard != NULL){
-	g_object_unref(audio_signal->input_soundcard);
-      }
-      
-      if(input_soundcard != NULL){
-	g_object_ref(input_soundcard);
-      }
-      
-      audio_signal->input_soundcard = input_soundcard;
+      ags_audio_signal_set_input_soundcard(audio_signal,
+					   input_soundcard);
     }
     break;
   case PROP_RECALL_ID:
@@ -1677,20 +1687,6 @@ ags_audio_signal_disconnect(AgsConnectable *connectable)
   ags_audio_signal_unset_flags(audio_signal, AGS_AUDIO_SIGNAL_CONNECTED);
 }
 
-void
-ags_audio_signal_connect_connection(AgsConnectable *connectable,
-				    GObject *connection)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_audio_signal_disconnect_connection(AgsConnectable *connectable,
-				       GObject *connection)
-{
-  //TODO:JK: implement me
-}
-
 /**
  * ags_audio_signal_get_class_mutex:
  * 
@@ -1860,6 +1856,121 @@ void
 ags_stream_free(void *buffer)
 {
   g_free(buffer);
+}
+
+/**
+ * ags_audio_signal_set_output_soundcard:
+ * @audio_signal: the #AgsAudioSignal
+ * @output_soundcard: the #GObject implementing #AgsSoundcard
+ * 
+ * Set output soundcarod of @audio_signal.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_audio_signal_set_output_soundcard(AgsAudioSignal *audio_signal, GObject *output_soundcard)
+{
+  guint samplerate;
+  guint buffer_size;
+  guint format;
+
+  pthread_mutex_t *audio_signal_mutex;
+
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal) ||
+     !AGS_IS_SOUNDCARD(output_soundcard)){
+    return;
+  }
+  
+  /* get audio signal mutex */
+  pthread_mutex_lock(ags_audio_signal_get_class_mutex());
+  
+  audio_signal_mutex = audio_signal->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
+
+  /* set output soundcard */
+  pthread_mutex_lock(audio_signal_mutex);
+
+  if(audio_signal->output_soundcard == output_soundcard){
+    pthread_mutex_unlock(audio_signal_mutex);
+    
+    return;
+  }
+
+  if(audio_signal->output_soundcard != NULL){
+    g_object_unref(audio_signal->output_soundcard);
+  }
+      
+  if(output_soundcard != NULL){
+    g_object_ref(output_soundcard);
+  }
+      
+  audio_signal->output_soundcard = output_soundcard;
+
+  pthread_mutex_unlock(audio_signal_mutex);
+
+  /* apply presets */
+  if(output_soundcard != NULL){
+    ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
+			      NULL,
+			      &samplerate,
+			      &buffer_size,
+			      &format);
+
+    g_object_set(audio_signal,
+		 "samplerate", samplerate,
+		 "buffer-size", buffer_size,
+		 "format", format,
+		 NULL);
+  }
+}
+
+/**
+ * ags_audio_signal_set_input_soundcard:
+ * @audio_signal: the #AgsAudioSignal
+ * @input_soundcard: the #GObject implementing #AgsSoundcard
+ * 
+ * Set input soundcarod of @audio_signal.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_audio_signal_set_input_soundcard(AgsAudioSignal *audio_signal, GObject *input_soundcard)
+{
+  pthread_mutex_t *audio_signal_mutex;
+
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal) ||
+     !AGS_IS_SOUNDCARD(input_soundcard)){
+    return;
+  }
+  
+  /* get audio signal mutex */
+  pthread_mutex_lock(ags_audio_signal_get_class_mutex());
+  
+  audio_signal_mutex = audio_signal->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
+
+  /* set input soundcard */
+  pthread_mutex_lock(audio_signal_mutex);
+
+  if(audio_signal->input_soundcard == input_soundcard){
+    pthread_mutex_unlock(audio_signal_mutex);
+    
+    return;
+  }
+
+  if(audio_signal->input_soundcard != NULL){
+    g_object_unref(audio_signal->input_soundcard);
+  }
+      
+  if(input_soundcard != NULL){
+    g_object_ref(input_soundcard);
+  }
+      
+  audio_signal->input_soundcard = input_soundcard;
+
+  pthread_mutex_unlock(audio_signal_mutex);
 }
 
 /**
@@ -2716,7 +2827,7 @@ ags_audio_signal_is_active(GList *audio_signal,
  * @recycling: the #AgsRecycling
  * @recall_id: the #AgsRecallID, it can be NULL if %AGS_AUDIO_SIGNAL_TEMPLATE is set
  *
- * Creates a #AgsAudioSignal, with defaults of @soundcard, linking @recycling tree
+ * Creates a #AgsAudioSignal, with defaults of @output_soundcard, linking @recycling tree
  * and refering to @recall_id.
  *
  * Returns: a new #AgsAudioSignal
