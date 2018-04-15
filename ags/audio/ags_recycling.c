@@ -446,6 +446,8 @@ ags_recycling_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_recycling_init(AgsRecycling *recycling)
 {
+  AgsAudioSignal *audio_signal;
+  
   AgsMutexManager *mutex_manager;
 
   AgsConfig *config;
@@ -568,7 +570,14 @@ ags_recycling_init(AgsRecycling *recycling)
   recycling->next = NULL;
   recycling->prev = NULL;
 
-  recycling->audio_signal = NULL;
+  /* audio signal */
+  audio_signal = ags_audio_signal_new(NULL,
+				      recycling,
+				      NULL);
+  audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+
+  recycling->audio_signal = g_list_alloc();
+  recycling->audio_signal->data = audio_signal;
 }
 
 void
@@ -2413,7 +2422,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
  *
  * Returns: Matching recycling.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecycling*
 ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_region,
@@ -2421,45 +2430,25 @@ ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_re
 {
   AgsRecycling *recycling;
   
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *recycling_mutex, *start_recycling_mutex;
 
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  pthread_mutex_lock(application_mutex);
-  
-  start_recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						   (GObject *) start_region);
-
-  pthread_mutex_unlock(application_mutex);
-
   /* verify objects and get pointer for safe access */
-  pthread_mutex_lock(start_recycling_mutex);
-
-  if(!AGS_IS_RECYCLING(start_region)){
-    pthread_mutex_unlock(start_recycling_mutex);
-    
+  if(!AGS_IS_RECYCLING(start_region) ||
+     !AGS_IS_CHANNEL(prev_channel)){
     return(NULL);
   }
-
-  pthread_mutex_lock(start_recycling_mutex);
 
   /* find */
   recycling = start_region;
 
   while(recycling != NULL &&
 	recycling != end_region){
-    /* lock current */
-    pthread_mutex_lock(application_mutex);
-    
-    recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) recycling);
+    /* get recycling mutex */  
+    pthread_mutex_lock(ags_recycling_get_class_mutex());
 
-    pthread_mutex_unlock(application_mutex);
+    recycling_mutex = recycling->obj_mutex;
+  
+    pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
     /* check if new match */
     pthread_mutex_lock(recycling_mutex);
@@ -2471,6 +2460,7 @@ ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_re
     }
 
     recycling = recycling->next;
+
     pthread_mutex_unlock(recycling_mutex);
   }
 
@@ -2488,7 +2478,7 @@ ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_re
  *
  * Returns: position within boundary.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gint
 ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
@@ -2496,20 +2486,13 @@ ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
 {
   AgsRecycling *current;
 
-  AgsMutexManager *mutex_manager;
-
   gint position;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *current_mutex;
 
-  if(start_region == NULL){
+  if(!AGS_IS_RECYCLING(start_region)){
     return(-1);
   }
-
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* determine position */
   current = start_region;
@@ -2518,20 +2501,19 @@ ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
   while(current != NULL && current != end_region){
     position++;
 
-    /* lock current */
-    pthread_mutex_lock(application_mutex);
-    
-    current_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) current);
-
-    pthread_mutex_unlock(application_mutex);
-
     /* check if new match */
-
     if(current == recycling){
       return(position);
     }
 
+    /* get recycling mutex */  
+    pthread_mutex_lock(ags_recycling_get_class_mutex());
+
+    current_mutex = current->obj_mutex;
+  
+    pthread_mutex_unlock(ags_recycling_get_class_mutex());
+
+    /* iterate */
     pthread_mutex_lock(current_mutex);
 
     current = current->next;
@@ -2539,7 +2521,8 @@ ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
     pthread_mutex_unlock(current_mutex);
   }
 
-  if(end_region == NULL){
+  if(end_region == NULL &&
+     current == NULL){
     return(position);
   }else{
     return(-1);
@@ -2556,49 +2539,55 @@ ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
  * 
  * Returns: %TRUE if related audio signal to recall id is available, otherwise %FALSE
  * 
- * Since: 1.0.0.9
+ * Since: 2.0.0
  */
 gboolean
 ags_recycling_is_active(AgsRecycling *start_region, AgsRecycling *end_region,
 			GObject *recall_id)
 {
   AgsRecycling *current;
+  AgsRecyclingContext *recycling_context;
 
-  AgsMutexManager *mutex_manager;
+  GList *list_start, *list;
+
+  gboolean is_active;
   
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *current_mutex;
+  pthread_mutex_t *recall_id_mutex;
   
-  if(recall_id == NULL ||
-     AGS_RECALL_ID(recall_id)->recycling_context == NULL){
+  if(!AGS_IS_RECALL_ID(recall_id)){
     return(FALSE);
   }
-
-  /* lookup mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   current = start_region;
 
   while(current != end_region){
-    /* lock current */
-    pthread_mutex_lock(application_mutex);
-    
-    current_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) current);
+    /* get recycling mutex */  
+    pthread_mutex_lock(ags_recycling_get_class_mutex());
 
-    pthread_mutex_unlock(application_mutex);
+    current_mutex = current->obj_mutex;
+  
+    pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
-    /* is active */
+    /* get audio signal */
     pthread_mutex_lock(current_mutex);
 
-    if(ags_audio_signal_is_active(current->audio_signal,
-				  recall_id)){
-      pthread_mutex_unlock(current_mutex);
-      
+    list =
+      list_start = g_list_copy(current->audio_signal);
+    
+    pthread_mutex_unlock(current_mutex);
+
+    /* is active */
+    is_active = (ags_audio_signal_is_active(list_start,
+					    recall_id)) ? TRUE: FALSE;
+    g_list_free(list_start);
+    
+    if(is_active){      
       return(TRUE);
     }
 
+    /* iterate */
+    pthread_mutex_lock(current_mutex);
     
     current = current->next;
 
@@ -2610,33 +2599,22 @@ ags_recycling_is_active(AgsRecycling *start_region, AgsRecycling *end_region,
 
 /**
  * ags_recycling_new:
- * @soundcard: the #AgsSoundcard to use for output
+ * @output_soundcard: the #GObject implementing #AgsSoundcard
  *
  * Creates a #AgsRecycling, with defaults of @soundcard.
  *
  * Returns: a new #AgsRecycling
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecycling*
-ags_recycling_new(GObject *soundcard)
+ags_recycling_new(GObject *output_soundcard)
 {
   AgsRecycling *recycling;
-  AgsAudioSignal *audio_signal;
 
   recycling = (AgsRecycling *) g_object_new(AGS_TYPE_RECYCLING,
-					    "output-soundcard", soundcard,
+					    "output-soundcard", output-soundcard,
 					    NULL);
-
-  audio_signal = ags_audio_signal_new(soundcard,
-				      (GObject *) recycling,
-				      NULL);
-  audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-
-  ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
-
-  recycling->audio_signal = g_list_alloc();
-  recycling->audio_signal->data = (gpointer) audio_signal;
 
   return(recycling);
 }
