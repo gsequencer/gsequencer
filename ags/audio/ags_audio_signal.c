@@ -2767,7 +2767,7 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
 
   guint samplerate;
   guint buffer_size;
-  guint template_format;
+  guint template_format, format;
   guint length;
   guint copy_mode;
 
@@ -2842,8 +2842,8 @@ ags_audio_signal_duplicate_stream(AgsAudioSignal *audio_signal,
   //NOTE:JK: lock only template
   pthread_mutex_lock(template_stream_mutex);
 
-  template_stream = template->stream_beginning;
-  stream = audio_signal->stream_beginning;
+  template_stream = template->stream;
+  stream = audio_signal->stream;
     
   while(template_stream != NULL){
     ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
@@ -3028,7 +3028,7 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
 	i + copy_n_frames < loop_start + loop_frame_count &&
 	i + copy_n_frames >= loop_start + (nth_loop + 1) * loop_length)){
       j = loop_start % buffer_size;
-      template_stream = g_list_nth(stream_beginning,
+      template_stream = g_list_nth(stream,
 				   floor(loop_start / buffer_size));
 
       nth_loop++;
@@ -3226,7 +3226,7 @@ ags_audio_signal_get_rt_template(GList *audio_signal)
  * Since: 2.0.0
  */
 GList*
-ags_audio_signal_find_by_recall_id(GList *list_audio_signal,
+ags_audio_signal_find_by_recall_id(GList *audio_signal,
 				   GObject *recall_id)
 {
   AgsAudioSignal *current_audio_signal;
@@ -3234,7 +3234,7 @@ ags_audio_signal_find_by_recall_id(GList *list_audio_signal,
 
   pthread_mutex_t *audio_signal_mutex;
 
-  while(list != NULL){
+  while(audio_signal != NULL){
     current_audio_signal = audio_signal->data;
 
     /* get audio signal mutex */
@@ -3317,7 +3317,8 @@ ags_audio_signal_is_active(GList *audio_signal,
 			   GObject *recall_id)
 {
   AgsAudioSignal *current_audio_signal;
-  AgsRecyclingContext *current_recycling_context, recycling_context;
+  AgsRecallID *current_recall_id;
+  AgsRecyclingContext *current_recycling_context, *recycling_context;
   
   pthread_mutex_t *audio_signal_mutex;
   pthread_mutex_t *recall_id_mutex;
@@ -3325,8 +3326,20 @@ ags_audio_signal_is_active(GList *audio_signal,
   if(!AGS_IS_RECALL_ID(recall_id)){
     return(FALSE);
   }
+
+  /* get audio signal mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = AGS_RECALL_ID(recall_id)->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* get recycling context */
+  pthread_mutex_lock(recall_id_mutex);
   
   recycling_context = AGS_RECALL_ID(recall_id)->recycling_context;
+
+  pthread_mutex_unlock(recall_id_mutex);
   
   while(audio_signal != NULL){
     current_audio_signal = audio_signal->data;
@@ -3359,7 +3372,7 @@ ags_audio_signal_is_active(GList *audio_signal,
       /* get some fields */
       pthread_mutex_lock(recall_id_mutex);
       
-      current_recycling_context = recall_id->recycling_context;
+      current_recycling_context = current_recall_id->recycling_context;
 
       pthread_mutex_unlock(recall_id_mutex);
     }

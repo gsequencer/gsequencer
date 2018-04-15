@@ -2259,7 +2259,7 @@ ags_channel_add_to_registry(AgsConnectable *connectable)
 {
   AgsChannel *channel;
   AgsRecycling *first_recycling, *last_recycling;
-  AgsRecycling *recycling, *recycling_end;
+  AgsRecycling *recycling, *end_recycling;
 
   AgsRegistry *registry;
   AgsRegistryEntry *entry;
