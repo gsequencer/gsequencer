@@ -3284,17 +3284,8 @@ ags_audio_signal_find_stream_current(GList *audio_signal,
 
   GList *stream_current;
   
-  pthread_mutex_t *audio_signal_mutex;
-
   while((audio_signal = ags_audio_signal_find_by_recall_id(audio_signal, recall_id)) != NULL){
     current_audio_signal = audio_signal->data;
-
-    /* get audio signal mutex */
-    pthread_mutex_lock(ags_audio_signal_get_class_mutex());
-  
-    audio_signal_mutex = current_audio_signal->obj_mutex;
-
-    pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
 
     /* get some fields */
     stream_current = current_audio_signal->stream_current;
