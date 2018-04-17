@@ -25,8 +25,8 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_container.h>
-#include <ags/audio/ags_recall_channel_run_dummy.h>
-#include <ags/audio/ags_recall_recycling_dummy.h>
+#include <ags/audio/ags_generic_recall_channel_run.h>
+#include <ags/audio/ags_generic_recall_recycling.h>
 #include <ags/audio/ags_recall_dssi.h>
 #include <ags/audio/ags_recall_dssi_run.h>
 #include <ags/audio/ags_recall_ladspa.h>

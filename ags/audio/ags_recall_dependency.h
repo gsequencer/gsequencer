@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,22 +35,14 @@
 typedef struct _AgsRecallDependency AgsRecallDependency;
 typedef struct _AgsRecallDependencyClass AgsRecallDependencyClass;
 
-/**
- * AgsRecallDependencyFlags:
- * @AGS_RECALL_DEPENDENCY_CONNECTED: indicates the recall dependency was connected by calling #AgsConnectable::connect()
- *
- * Enum values to control the behavior or indicate internal state of #AgsPlayback by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_RECALL_DEPENDENCY_CONNECTED      = 1,
-}AgsRecallDependencyFlags;
-
 struct _AgsRecallDependency
 {
   GObject object;
 
   guint flags;
+
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
   
   GObject *dependency;
 };
@@ -62,8 +54,10 @@ struct _AgsRecallDependencyClass
 
 GType ags_recall_dependency_get_type(void);
 
-GList* ags_recall_dependency_find_dependency(GList *recall_dependencies, GObject *dependency);
-GList* ags_recall_dependency_find_dependency_by_provider(GList *recall_dependencies,
+pthread_mutex_t* ags_recall_dependency_get_class_mutex();
+
+GList* ags_recall_dependency_find_dependency(GList *recall_dependency, GObject *dependency);
+GList* ags_recall_dependency_find_dependency_by_provider(GList *recall_dependency,
 							 GObject *provider);
 
 GObject* ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallID *recall_id);
