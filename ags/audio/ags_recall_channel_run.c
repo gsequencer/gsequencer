@@ -888,7 +888,17 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 						   first_recycling, last_recycling);
   }else if(source != NULL){
     AgsRecycling *first_recycling, *last_recycling;
-    
+
+    pthread_mutex_t *channel_mutex;
+
+    /* get channel mutex */
+    pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+    channel_mutex = destination->obj_mutex;
+  
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+    /* get some fields */
     pthread_mutex_lock(channel_mutex);
 
     first_recycling = destination->first_recycling;
@@ -1067,9 +1077,12 @@ ags_recall_channel_run_map_recall_recycling(AgsRecallChannelRun *recall_channel_
 					"destination", destination_recycling,
 					NULL);
 
-	recall_recycling->ability_flags = ability_flags;
-	recall_recycling->behaviour_flags = behaviour_flags;
-	recall_recycling->sound_scope = sound_scope;
+	ags_recall_set_ability_flags(recall_recycling,
+				     ability_flags);
+	ags_recall_set_behaviour_flags(recall_recycling,
+				       behaviour_flags);
+	ags_recall_set_sound_scope(recall_recycling,
+				   sound_scope);
 	
 	ags_recall_add_child(recall_channel_run,
 			     recall_recycling);
@@ -1202,12 +1215,12 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 		     NULL);
 	
 	if(current_source == source_recycling){
-	  ags_recall_cancel(recall);
+	  ags_recall_cancel(current_recall);
 	  ags_recall_remove_child(recall_channel_run,
-				  recall);
+				  current_recall);
 
-	  g_object_run_dispose(recall);
-	  g_object_unref(recall);
+	  g_object_run_dispose(current_recall);
+	  g_object_unref(current_recall);
 	}
 
 	list = list->next;
@@ -1275,7 +1288,9 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
     source_recycling = new_start_changed_region;
       
     while(source_recycling != source_end_recycling){
-      recall_recycling = g_object_new(AGS_RECALL(recall_channel_run)->child_type,
+      AgsRecallRecycling *recall_recycling;
+      
+      recall_recycling = g_object_new(child_type,
 				      "recall-id", recall_id,
 				      "output-soundcard", output_soundcard,
 				      "output-soundcard-channel", output_soundcard_channel,
@@ -1359,6 +1374,7 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
   /* remove old */
   if(old_start_changed_region != NULL){
     pthread_mutex_t *destination_recycling_mutex;
+    pthread_mutex_t *source_recycling_mutex;
 
     /* get recycling mutex */
     pthread_mutex_lock(ags_recycling_get_class_mutex());
@@ -1378,6 +1394,8 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
     destination_recycling = old_start_changed_region;
     
     while(destination_recycling != destination_end_recycling){
+      GList *list_start, *list;
+      
       /* get recycling mutex */
       pthread_mutex_lock(ags_recycling_get_class_mutex());
   
@@ -1403,12 +1421,12 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
 		     NULL);
 	
 	if(current_destination == destination_recycling){
-	  ags_recall_cancel(recall);
+	  ags_recall_cancel(current_recall);
 	  ags_recall_remove_child(recall_channel_run,
-				  recall);
+				  current_recall);
 
-	  g_object_run_dispose(recall);
-	  g_object_unref(recall);
+	  g_object_run_dispose(current_recall);
+	  g_object_unref(current_recall);
 	}
 
 	list = list->next;
@@ -1504,6 +1522,8 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
       source_recycling = source_first_recycling;
 	
       while(source_recycling != source_end_recycling){
+	AgsRecallRecycling *recall_recycling;
+	
 	/* get recycling mutex */
 	pthread_mutex_lock(ags_recycling_get_class_mutex());
   
@@ -1511,7 +1531,7 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
   
 	pthread_mutex_unlock(ags_recycling_get_class_mutex());
 	
-	recall_recycling = g_object_new(AGS_RECALL(recall_channel_run)->child_type,
+	recall_recycling = g_object_new(child_type,
 					"recall-id", recall_id,
 					"output-soundcard", output_soundcard,
 					"output-soundcard-channel", output_soundcard_channel,

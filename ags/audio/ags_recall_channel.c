@@ -52,7 +52,7 @@ void ags_recall_channel_notify_recall_container_callback(GObject *gobject,
 void ags_recall_channel_automate(AgsRecall *recall);
 AgsRecall* ags_recall_channel_duplicate(AgsRecall *recall,
 					AgsRecallID *recall_id,
-					guint *n_params, GParameter *parameter);
+					guint *n_params, gchar **parameter_name, GValue *value);
 
 /**
  * SECTION:ags_recall_channel
@@ -134,7 +134,7 @@ ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel)
    *
    * The assigned destination channel.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("destination",
 				   i18n_pspec("assigned destination channel"),
@@ -150,7 +150,7 @@ ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel)
    *
    * The assigned source channel.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("source",
 				   i18n_pspec("assigned source channel"),
@@ -192,7 +192,16 @@ ags_recall_channel_set_property(GObject *gobject,
 {
   AgsRecallChannel *recall_channel;
 
+  pthread_mutex_t *recall_mutex;
+
   recall_channel = AGS_RECALL_CHANNEL(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(recall_channel)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_DESTINATION:
@@ -201,7 +210,11 @@ ags_recall_channel_set_property(GObject *gobject,
 
       destination = (AgsChannel *) g_value_get_object(value);
 
-      if(recall_channel->destination == destination){
+      pthread_mutex_lock(recall_mutex);
+
+      if(recall_channel->destination == destination){      
+	pthread_mutex_unlock(recall_mutex);	
+
 	return;
       }
 
@@ -214,6 +227,8 @@ ags_recall_channel_set_property(GObject *gobject,
       }
        
       recall_channel->destination = destination;
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_SOURCE:
@@ -222,7 +237,11 @@ ags_recall_channel_set_property(GObject *gobject,
 
       source = (AgsChannel *) g_value_get_object(value);
 
-      if(recall_channel->source == source){
+      pthread_mutex_lock(recall_mutex);
+
+      if(recall_channel->source == source){      
+	pthread_mutex_unlock(recall_mutex);	
+
 	return;
       }
 
@@ -235,6 +254,8 @@ ags_recall_channel_set_property(GObject *gobject,
       }
        
       recall_channel->source = source;
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -251,17 +272,34 @@ ags_recall_channel_get_property(GObject *gobject,
 {
   AgsRecallChannel *recall_channel;
 
+  pthread_mutex_t *recall_mutex;
+
   recall_channel = AGS_RECALL_CHANNEL(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(recall_channel)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_DESTINATION:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, recall_channel->destination);
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_SOURCE:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, recall_channel->source);
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -276,9 +314,6 @@ ags_recall_channel_dispose(GObject *gobject)
   AgsRecallChannel *recall_channel;
 
   recall_channel = AGS_RECALL_CHANNEL(gobject);
-
-  /* unpack */
-  ags_packable_unpack(AGS_PACKABLE(recall_channel));
   
   /* source */
   if(recall_channel->source != NULL){
@@ -328,11 +363,25 @@ ags_recall_channel_notify_recall_container_callback(GObject *gobject,
   AgsRecallContainer *recall_container;
   AgsRecallChannel *recall_channel;
   
+  pthread_mutex_t *recall_mutex;
+
   recall_channel = AGS_RECALL_CHANNEL(gobject);
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(recall_channel)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_mutex);
+  
   source = recall_channel->source;
 
   recall_container = AGS_RECALL(recall_channel)->recall_container;
+
+  pthread_mutex_unlock(recall_mutex);
 
   if(recall_container != NULL){
     AgsRecallAudio *recall_audio;
@@ -349,7 +398,7 @@ ags_recall_channel_notify_recall_container_callback(GObject *gobject,
 		 NULL);
 
   }else{
-    g_object_set(recall_channel_run,
+    g_object_set(recall_channel,
 		 "recall-audio", NULL,
 		 NULL);
   }
@@ -358,12 +407,12 @@ ags_recall_channel_notify_recall_container_callback(GObject *gobject,
 void
 ags_recall_channel_automate(AgsRecall *recall)
 {
-  GObject *soundcard;
   AgsAudio *audio;
-  AgsAutomation *current;
   
-  GList *automation;
-  GList *port;
+  GObject *soundcard;
+
+  GList *automation_start, *automation;
+  GList *port_start, *port;
 
   gdouble delay;
   guint note_offset, delay_counter;
@@ -375,12 +424,19 @@ ags_recall_channel_automate(AgsRecall *recall)
   guint ret_x;
   gboolean return_prev_on_failure;
 
-  audio = (AgsAudio *) AGS_CHANNEL(AGS_RECALL_CHANNEL(recall)->source)->audio;
-  soundcard = audio->soundcard;
+  g_object_get(recall,
+	       "audio", &audio,
+	       NULL);
+  
+  g_object_get(audio,
+	       "soundcard", &soundcard,
+	       NULL);
+  
+  g_object_get(recall,
+	       "port", &port_start,
+	       NULL);
 
   /* retrieve position */
-  port = recall->port;
-
   note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
   
   delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
@@ -392,7 +448,7 @@ ags_recall_channel_automate(AgsRecall *recall)
 			 &do_loop);
 
   return_prev_on_failure = TRUE;
-  
+
   if(do_loop &&
      loop_left <= note_offset){
     if(note_offset == loop_left){
@@ -400,26 +456,57 @@ ags_recall_channel_automate(AgsRecall *recall)
     }
   }
 
-  /*  */
+  /* apply automation */
+  port = port_start;
+
   x = ((double) note_offset + (delay_counter / delay)) * ((1.0 / AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
   step = ((1.0 / AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
 
   while(port != NULL){
-    automation = (AgsAutomation *) AGS_PORT(port->data)->automation;
-    
-    while(automation != NULL){
-      current = automation->data;
+    g_object_get(AGS_PORT(port->data),
+		 "automation", &automation_start,
+		 NULL);
 
-      if(current->timestamp->timer.ags_offset.offset + AGS_AUTOMATION_DEFAULT_OFFSET < x){
+    /* find offset */
+    automation = automation_start;
+
+    while(automation != NULL){
+      AgsAutomation *current_automation;
+
+      AgsTimestamp *timestamp;
+      
+      guint current_automation_flags;
+
+      pthread_mutex_t *automation_mutex;
+      
+      current_automation = automation->data;
+
+      /* get automation mutex */
+      pthread_mutex_lock(ags_automation_get_class_mutex());
+
+      automation_mutex = current_automation->obj_mutex;
+      
+      pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+      /* get some fields */
+      pthread_mutex_lock(automation_mutex);
+
+      current_automation_flags = current_automation->flags;
+      
+      timestamp = current_automation->timestamp;
+
+      pthread_mutex_unlock(automation_mutex);
+      
+      if(ags_timestamp_get_ags_offset(timestamp) + AGS_AUTOMATION_DEFAULT_OFFSET < x){
 	automation = automation->next;
 	
 	continue;
       }
       
-      if((AGS_AUTOMATION_BYPASS & (current->flags)) == 0){
+      if((AGS_AUTOMATION_BYPASS & (current_automation_flags)) == 0){
 	GValue value = {0,};
 	
-	ret_x = ags_automation_get_value(current,
+	ret_x = ags_automation_get_value(current_automation,
 					 floor(x), ceil(x + step),
 					 return_prev_on_failure,
 					 &value);
@@ -430,15 +517,21 @@ ags_recall_channel_automate(AgsRecall *recall)
 	}
       }
 
-      if(current->timestamp->timer.ags_offset.offset > ceil(x + step)){
+      if(ags_timestamp_get_ags_offset(timestamp) > ceil(x + step)){
 	break;
       }
 
+      /* iterate */
       automation = automation->next;
     }
 
+    g_list_free(automation_start);
+    
+    /* iterate */
     port = port->next;
   }
+
+  g_list_free(port_start);
 }
 
 AgsRecall*
@@ -461,28 +554,33 @@ ags_recall_channel_duplicate(AgsRecall *recall,
 
 /**
  * ags_recall_channel_find_channel:
- * @recall_channel_i: a #GList containing #AgsRecallChannel
+ * @recall_channel: a #GList containing #AgsRecallChannel
  * @source: the #AgsChannel to find
  *
  * Retrieve next recall assigned to channel.
  *
- * Returns: Next match.
+ * Returns: next matching #GList-struct or %NULL
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
-ags_recall_channel_find_channel(GList *recall_channel_i, AgsChannel *source)
+ags_recall_channel_find_channel(GList *recall_channel, AgsChannel *source)
 {
-  AgsRecallChannel *recall_channel;
+  AgsChannel *current_source;
+  AgsRecallChannel *current_recall_channel;
 
-  while(recall_channel_i != NULL){
-    recall_channel = AGS_RECALL_CHANNEL(recall_channel_i->data);
+  while(recall_channel != NULL){
+    current_recall_channel = AGS_RECALL_CHANNEL(recall_channel->data);
 
-    if(recall_channel->source == source){
-      return(recall_channel_i);
+    g_object_get(current_recall_channel,
+		 "source", &current_source,
+		 NULL);
+    
+    if(current_source == source){
+      return(recall_channel);
     }
 
-    recall_channel_i = recall_channel_i->next;
+    recall_channel = recall_channel->next;
   }
 
   return(NULL);
@@ -495,7 +593,7 @@ ags_recall_channel_find_channel(GList *recall_channel_i, AgsChannel *source)
  *
  * Returns: a new #AgsRecallChannel.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecallChannel*
 ags_recall_channel_new()

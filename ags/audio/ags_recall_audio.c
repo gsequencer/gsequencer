@@ -354,11 +354,25 @@ ags_recall_audio_automate(AgsRecall *recall)
       
       guint current_automation_flags;
       
+      pthread_mutex_t *automation_mutex;
+
       current_automation = automation->data;
+
+      /* get automation mutex */
+      pthread_mutex_lock(ags_automation_get_class_mutex());
+
+      automation_mutex = current_automation->obj_mutex;
+      
+      pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+      /* get some fields */
+      pthread_mutex_lock(automation_mutex);
 
       current_automation_flags = current_automation->flags;
       
       timestamp = current_automation->timestamp;
+
+      pthread_mutex_unlock(automation_mutex);
       
       if(ags_timestamp_get_ags_offset(timestamp) + AGS_AUTOMATION_DEFAULT_OFFSET < x){
 	automation = automation->next;
@@ -402,16 +416,16 @@ ags_recall_audio_duplicate(AgsRecall *recall,
 			   AgsRecallID *recall_id,
 			   guint *n_params, gchar **parameter_name, GValue *value)
 {
-  AgsRecallAudio *copy;
+  AgsRecallAudio *copy_recall_audio;
 
   /* duplicate */
-  copy = AGS_RECALL_AUDIO(AGS_RECALL_CLASS(ags_recall_audio_parent_class)->duplicate(recall,
-										     recall_id,
-										     n_params, parameter_name, value));
-
+  copy_recall_audio = AGS_RECALL_AUDIO(AGS_RECALL_CLASS(ags_recall_audio_parent_class)->duplicate(recall,
+												  recall_id,
+												  n_params, parameter_name, value));
+  
   g_warning("ags_recall_audio_duplicate - you shouldn't do this %s", G_OBJECT_TYPE_NAME(recall));
   
-  return((AgsRecall *) copy);
+  return((AgsRecall *) copy_recall_audio);
 }
 
 /**
@@ -422,7 +436,7 @@ ags_recall_audio_duplicate(AgsRecall *recall,
  *
  * Returns: a new #AgsRecallAudio.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecallAudio*
 ags_recall_audio_new(AgsAudio *audio)

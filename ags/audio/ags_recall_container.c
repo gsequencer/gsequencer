@@ -283,7 +283,7 @@ ags_recall_container_set_property(GObject *gobject,
   /* get recall container mutex */
   pthread_mutex_lock(ags_recall_container_get_class_mutex());
   
-  recall_mutex = recall_container->obj_mutex;
+  recall_container_mutex = recall_container->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_container_get_class_mutex());
 
@@ -306,6 +306,8 @@ ags_recall_container_set_property(GObject *gobject,
       AgsAudio *audio;
       AgsRecallAudio *recall_audio;
 
+      GList *list_start, *list;
+      
       recall_audio = (AgsRecallAudio *) g_value_get_object(value);
 
       pthread_mutex_lock(recall_container_mutex);
@@ -402,6 +404,10 @@ ags_recall_container_set_property(GObject *gobject,
       AgsRecallID *recall_id;
       AgsRecyclingContext *recycling_context;
 
+      GList *list_start, *list;
+
+      guint recall_flags;
+      
       pthread_mutex_t *recall_mutex;
 	
       recall_audio_run = (AgsRecallAudioRun *) g_value_get_pointer(value);
@@ -435,7 +441,7 @@ ags_recall_container_set_property(GObject *gobject,
       
       pthread_mutex_unlock(recall_mutex);
 
-      g_object_get(recall_channell_run,
+      g_object_get(recall_audio_run,
 		   "recall-id", &recall_id,
 		   NULL);
       
@@ -599,7 +605,7 @@ ags_recall_container_get_property(GObject *gobject,
   /* get recall container mutex */
   pthread_mutex_lock(ags_recall_container_get_class_mutex());
   
-  recall_mutex = recall_container->obj_mutex;
+  recall_container_mutex = recall_container->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_container_get_class_mutex());
 
