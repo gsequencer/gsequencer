@@ -636,7 +636,9 @@ ags_recall_factory_create_play_master(AgsAudio *audio,
 	recall = g_list_prepend(recall,
 				play_audio);
 
-	play_container = AGS_RECALL_CONTAINER(AGS_RECALL(play_audio)->container);
+	g_object_get(play_audio,
+		     "recall-container", &play_container,
+		     NULL);
       }else{
 	play_audio = AGS_PLAY_AUDIO(play_container->recall_audio);
 	recall = g_list_prepend(recall,
@@ -762,7 +764,9 @@ ags_recall_factory_create_play_master(AgsAudio *audio,
 	recall = g_list_prepend(recall,
 				play_audio);
 
-	recall_container = AGS_RECALL_CONTAINER(AGS_RECALL(play_audio)->container);
+	g_object_get(play_audio,
+		     "recall-container", &recall_container,
+		     NULL);
       }else{
 	play_audio = AGS_PLAY_AUDIO(recall_container->recall_audio);
 	recall = g_list_prepend(recall,
@@ -3214,7 +3218,7 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
 
   GObject *output_soundcard;
 
-  GList *list;
+  GList *list_start, *list;
   GList *recall;
 
   guint audio_channels;
@@ -3305,33 +3309,51 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
       recall = g_list_prepend(recall,
 			      copy_pattern_audio_run);
     }else{
-      pthread_mutex_lock(audio_mutex);
-
       if(play_container == NULL){
-	list = ags_recall_find_type(audio->play, AGS_TYPE_COPY_PATTERN_AUDIO);
+	g_object_get(audio,
+		     "play", &list_start,
+		     NULL);
 
+	list = ags_recall_find_type(list_start,
+				    AGS_TYPE_COPY_PATTERN_AUDIO);
 	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+	g_list_free(list_start);
+	
 	recall = g_list_prepend(recall,
 				copy_pattern_audio);
 
-	play_container = AGS_RECALL_CONTAINER(AGS_RECALL(copy_pattern_audio)->container);
+	g_object_get(copy_pattern_audio,
+		     "recall-container", &play_container,
+		     NULL);
 
-	list = ags_recall_find_template(play_container->recall_audio_run);
+	g_object_get(play_container,
+		     "recall-audio-run", &list_start,
+		     NULL);
+	
+	list = ags_recall_find_template(list_start);
 	copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(list->data);
+	g_list_free(list_start);
+	
 	recall = g_list_prepend(recall,
 				copy_pattern_audio_run);
       }else{
-	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(play_container->recall_audio);
+	g_object_get(play_container,
+		     "recall-audio", &copy_pattern_audio,
+		     NULL);
 	recall = g_list_prepend(recall,
 				copy_pattern_audio);
 
-	list = ags_recall_find_template(play_container->recall_audio_run);
+	g_object_get(play_container,
+		     "recall-audio-run", &list_start,
+		     NULL);
+
+	list = ags_recall_find_template(list_start);
 	copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(list->data);
+	g_list_free(list_start);
+	
 	recall = g_list_prepend(recall,
 				copy_pattern_audio_run);
       }
-
-      pthread_mutex_unlock(audio_mutex);
     }
 
     for(i = 0; i < stop_pad - start_pad; i++){
@@ -3461,7 +3483,9 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
 	  recall = g_list_prepend(recall,
 				  copy_pattern_audio);
 
-	  recall_container = AGS_RECALL_CONTAINER(AGS_RECALL(copy_pattern_audio)->container);
+	  g_object_get(copy_pattern_audio,
+		     "recall-container", &recall_container,
+		     NULL);
 
 	  list = ags_recall_find_template(recall_container->recall_audio_run);
 
@@ -3628,16 +3652,17 @@ ags_recall_factory_create_play_dssi(AgsAudio *audio,
 							"audio", audio,
 							"recall-container", play_container,
 							NULL);
-    ags_recall_set_flags(play_dssi_channel,
+    ags_recall_set_flags(play_dssi_audio,
 			 (AGS_RECALL_TEMPLATE));
-    ags_recall_set_ability_flags(play_dssi_channel,
+    ags_recall_set_ability_flags(play_dssi_audio,
 				 (AGS_SOUND_ABILITY_NOTATION |
 				  AGS_SOUND_ABILITY_MIDI));
-    ags_recall_set_behaviour_flags(play_dssi_channel,
+    ags_recall_set_behaviour_flags(play_dssi_audio,
 				   (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
     if((AGS_RECALL_FACTORY_BULK & create_flags) != 0){
-      AGS_RECALL(play_dssi_audio)->flags |= AGS_RECALL_BULK_MODE;
+      ags_recall_set_behaviour_flags(play_dssi_audio,
+				     (AGS_SOUND_BEHAVIOUR_BULK_MODE));
     }
     
     ags_audio_add_recall(audio, (GObject *) play_dssi_audio, TRUE);
@@ -3650,12 +3675,12 @@ ags_recall_factory_create_play_dssi(AgsAudio *audio,
 							       "recall-audio", play_dssi_audio,
 							       "recall-container", play_container,
 							       NULL);
-    ags_recall_set_flags(play_dssi_channel_run,
+    ags_recall_set_flags(play_dssi_audio_run,
 			 (AGS_RECALL_TEMPLATE));
-    ags_recall_set_ability_flags(play_dssi_channel_run,
+    ags_recall_set_ability_flags(play_dssi_audio_run,
 				 (AGS_SOUND_ABILITY_NOTATION |
 				  AGS_SOUND_ABILITY_MIDI));
-    ags_recall_set_behaviour_flags(play_dssi_channel_run,
+    ags_recall_set_behaviour_flags(play_dssi_audio_run,
 				   (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
     ags_audio_add_recall(audio, (GObject *) play_dssi_audio_run, TRUE);
@@ -3686,7 +3711,8 @@ ags_recall_factory_create_play_dssi(AgsAudio *audio,
 				   (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
     if((AGS_RECALL_FACTORY_BULK & create_flags) != 0){
-      AGS_RECALL(play_dssi_audio)->flags |= AGS_RECALL_BULK_MODE;
+      ags_recall_set_behaviour_flags(play_dssi_audio,
+				     (AGS_SOUND_BEHAVIOUR_BULK_MODE));
     }
     
     ags_audio_add_recall(audio, (GObject *) play_dssi_audio, FALSE);
@@ -3803,7 +3829,8 @@ ags_recall_factory_create_play_lv2(AgsAudio *audio,
 				   (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
     if((AGS_RECALL_FACTORY_BULK & create_flags) != 0){
-      AGS_RECALL(play_lv2_audio)->flags |= AGS_RECALL_BULK_MODE;
+      ags_recall_set_behaviour_flags(play_lv2_audio,
+				     (AGS_SOUND_BEHAVIOUR_BULK_MODE));
     }
 
     ags_audio_add_recall(audio, (GObject *) play_lv2_audio_run, TRUE);
@@ -3834,7 +3861,8 @@ ags_recall_factory_create_play_lv2(AgsAudio *audio,
 				   (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
     
     if((AGS_RECALL_FACTORY_BULK & create_flags) != 0){
-      AGS_RECALL(play_lv2_audio)->flags |= AGS_RECALL_BULK_MODE;
+      ags_recall_set_behaviour_flags(play_lv2_audio,
+				     (AGS_SOUND_BEHAVIOUR_BULK_MODE));
     }
 
     ags_audio_add_recall(audio, (GObject *) play_lv2_audio, FALSE);
@@ -4367,7 +4395,9 @@ ags_recall_factory_create_mute(AgsAudio *audio,
 	recall = g_list_prepend(recall,
 				mute_audio);
 
-	play_container = AGS_RECALL_CONTAINER(AGS_RECALL(mute_audio)->container);
+	g_object_get(mute_audio,
+		     "recall-container", &play_container,
+		     NULL);
 
 	list = ags_recall_find_template(play_container->recall_audio_run);
 
@@ -4547,7 +4577,9 @@ ags_recall_factory_create_mute(AgsAudio *audio,
 	if(list != NULL){
 	  mute_audio = AGS_MUTE_AUDIO(list->data);
 	  
-	  recall_container = AGS_RECALL_CONTAINER(AGS_RECALL(mute_audio)->container);
+	  g_object_get(mute_audio,
+		       "recall-container", &recall_container,
+		       NULL);
 
 	  list = ags_recall_find_template(recall_container->recall_audio_run);
 
@@ -5223,14 +5255,14 @@ ags_recall_factory_create_ladspa(AgsAudio *audio,
 							 "source", channel,
 							 "recall-container", play_container,
 							 NULL);
-	ags_recall_set_flags(ladspa_channel,
+	ags_recall_set_flags(recall_ladspa,
 			     (AGS_RECALL_TEMPLATE));
-	ags_recall_set_ability_flags(ladspa_channel,
+	ags_recall_set_ability_flags(recall_ladspa,
 				     (AGS_SOUND_ABILITY_PLAYBACK |
 				      AGS_SOUND_ABILITY_NOTATION |
 				      AGS_SOUND_ABILITY_SEQUENCER |
 				      AGS_SOUND_ABILITY_MIDI));
-	ags_recall_set_behaviour_flags(ladspa_channel,
+	ags_recall_set_behaviour_flags(recall_ladspa,
 				       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
 	ags_channel_add_recall(channel, (GObject *) recall_ladspa, TRUE);
@@ -5309,14 +5341,14 @@ ags_recall_factory_create_ladspa(AgsAudio *audio,
 							 "source", channel,
 							 "recall-container", recall_container,
 							 NULL);
-	ags_recall_set_flags(ladspa_channel,
+	ags_recall_set_flags(recall_ladspa,
 			     (AGS_RECALL_TEMPLATE));
-	ags_recall_set_ability_flags(ladspa_channel,
+	ags_recall_set_ability_flags(recall_ladspa,
 				     (AGS_SOUND_ABILITY_PLAYBACK |
 				      AGS_SOUND_ABILITY_NOTATION |
 				      AGS_SOUND_ABILITY_SEQUENCER |
 				      AGS_SOUND_ABILITY_MIDI));
-	ags_recall_set_behaviour_flags(ladspa_channel,
+	ags_recall_set_behaviour_flags(recall_ladspa,
 				       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
 	ags_channel_add_recall(channel, (GObject *) recall_ladspa, FALSE);
@@ -5324,7 +5356,7 @@ ags_recall_factory_create_ladspa(AgsAudio *audio,
 				recall_ladspa);
 	ags_connectable_connect(AGS_CONNECTABLE(recall_ladspa));
 
-	/* AgsRecallChannelRunDummy */
+	/* AgsGenericRecallChannelRun */
 	generic_recall_channel_run = ags_generic_recall_channel_run_new(channel,
 									AGS_TYPE_GENERIC_RECALL_RECYCLING,
 									AGS_TYPE_RECALL_LADSPA_RUN);
@@ -5377,7 +5409,7 @@ ags_recall_factory_create_lv2(AgsAudio *audio,
 			      guint create_flags, guint recall_flags)
 {
   AgsRecallLv2 *recall_lv2;
-  AgsRecallChannelRunDummy *generic_recall_channel_run;
+  AgsGenericRecallChannelRun *generic_recall_channel_run;
   AgsChannel *output, *input;
   AgsChannel *start, *channel;
   AgsPort *port;
@@ -5460,14 +5492,14 @@ ags_recall_factory_create_lv2(AgsAudio *audio,
 						   "source", channel,
 						   "recall-container", play_container,
 						   NULL);
-	ags_recall_set_flags(lv2_channel,
+	ags_recall_set_flags(recall_lv2,
 			     (AGS_RECALL_TEMPLATE));
-	ags_recall_set_ability_flags(lv2_channel,
+	ags_recall_set_ability_flags(recall_lv2,
 				     (AGS_SOUND_ABILITY_PLAYBACK |
 				      AGS_SOUND_ABILITY_NOTATION |
 				      AGS_SOUND_ABILITY_SEQUENCER |
 				      AGS_SOUND_ABILITY_MIDI));
-	ags_recall_set_behaviour_flags(lv2_channel,
+	ags_recall_set_behaviour_flags(recall_lv2,
 				       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
 	ags_channel_add_recall(channel, (GObject *) recall_lv2, TRUE);
@@ -5475,7 +5507,7 @@ ags_recall_factory_create_lv2(AgsAudio *audio,
 				recall_lv2);
 	ags_connectable_connect(AGS_CONNECTABLE(recall_lv2));
 
-	/* AgsRecallChannelRunDummy */
+	/* AgsGenericRecallChannelRun */
 	generic_recall_channel_run = ags_generic_recall_channel_run_new(channel,
 									AGS_TYPE_GENERIC_RECALL_RECYCLING,
 									AGS_TYPE_RECALL_LV2_RUN);
@@ -5546,14 +5578,14 @@ ags_recall_factory_create_lv2(AgsAudio *audio,
 						   "source", channel,
 						   "recall-container", recall_container,
 						   NULL);
-	ags_recall_set_flags(lv2_channel,
+	ags_recall_set_flags(recall_lv2,
 			     (AGS_RECALL_TEMPLATE));
-	ags_recall_set_ability_flags(lv2_channel,
+	ags_recall_set_ability_flags(recall_lv2,
 				     (AGS_SOUND_ABILITY_PLAYBACK |
 				      AGS_SOUND_ABILITY_NOTATION |
 				      AGS_SOUND_ABILITY_SEQUENCER |
 				      AGS_SOUND_ABILITY_MIDI));
-	ags_recall_set_behaviour_flags(lv2_channel,
+	ags_recall_set_behaviour_flags(recall_lv2,
 				       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
 	ags_channel_add_recall(channel, (GObject *) recall_lv2, FALSE);
@@ -5561,7 +5593,7 @@ ags_recall_factory_create_lv2(AgsAudio *audio,
 				recall_lv2);
 	ags_connectable_connect(AGS_CONNECTABLE(recall_lv2));
 
-	/* AgsRecallChannelRunDummy */
+	/* AgsGenericRecallChannelRun */
 	generic_recall_channel_run = ags_generic_recall_channel_run_new(channel,
 									AGS_TYPE_GENERIC_RECALL_RECYCLING,
 									AGS_TYPE_RECALL_LV2_RUN);
@@ -5614,7 +5646,7 @@ ags_recall_factory_create_dssi(AgsAudio *audio,
 			       guint create_flags, guint recall_flags)
 {
   AgsRecallDssi *recall_dssi;
-  AgsRecallChannelRunDummy *generic_recall_channel_run;
+  AgsGenericRecallChannelRun *generic_recall_channel_run;
   AgsChannel *output, *input;
   AgsChannel *start, *channel;
   AgsPort *port;
@@ -5697,14 +5729,14 @@ ags_recall_factory_create_dssi(AgsAudio *audio,
 						     "source", channel,
 						     "recall-container", play_container,
 						     NULL);
-	ags_recall_set_flags(dssi_channel,
+	ags_recall_set_flags(recall_dssi,
 			     (AGS_RECALL_TEMPLATE));
-	ags_recall_set_ability_flags(dssi_channel,
+	ags_recall_set_ability_flags(recall_dssi,
 				     (AGS_SOUND_ABILITY_PLAYBACK |
 				      AGS_SOUND_ABILITY_NOTATION |
 				      AGS_SOUND_ABILITY_SEQUENCER |
 				      AGS_SOUND_ABILITY_MIDI));
-	ags_recall_set_behaviour_flags(dssi_channel,
+	ags_recall_set_behaviour_flags(recall_dssi,
 				       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
 	ags_channel_add_recall(channel, (GObject *) recall_dssi, TRUE);
@@ -5712,7 +5744,7 @@ ags_recall_factory_create_dssi(AgsAudio *audio,
 				recall_dssi);
 	ags_connectable_connect(AGS_CONNECTABLE(recall_dssi));
 
-	/* AgsRecallChannelRunDummy */
+	/* AgsGenericRecallChannelRun */
 	generic_recall_channel_run = ags_generic_recall_channel_run_new(channel,
 									AGS_TYPE_GENERIC_RECALL_RECYCLING,
 									AGS_TYPE_RECALL_DSSI_RUN);
@@ -5783,14 +5815,14 @@ ags_recall_factory_create_dssi(AgsAudio *audio,
 						     "source", channel,
 						     "recall-container", recall_container,
 						     NULL);
-	ags_recall_set_flags(dssi_channel,
+	ags_recall_set_flags(recall_dssi,
 			     (AGS_RECALL_TEMPLATE));
-	ags_recall_set_ability_flags(dssi_channel,
+	ags_recall_set_ability_flags(recall_dssi,
 				     (AGS_SOUND_ABILITY_PLAYBACK |
 				      AGS_SOUND_ABILITY_NOTATION |
 				      AGS_SOUND_ABILITY_SEQUENCER |
 				      AGS_SOUND_ABILITY_MIDI));
-	ags_recall_set_behaviour_flags(dssi_channel,
+	ags_recall_set_behaviour_flags(recall_dssi,
 				       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
 	ags_channel_add_recall(channel, (GObject *) recall_dssi, FALSE);
@@ -5798,7 +5830,7 @@ ags_recall_factory_create_dssi(AgsAudio *audio,
 				recall_dssi);
 	ags_connectable_connect(AGS_CONNECTABLE(recall_dssi));
 
-	/* AgsRecallChannelRunDummy */
+	/* AgsGenericRecallChannelRun */
 	generic_recall_channel_run = ags_generic_recall_channel_run_new(channel,
 									AGS_TYPE_GENERIC_RECALL_RECYCLING,
 									AGS_TYPE_RECALL_DSSI_RUN);
