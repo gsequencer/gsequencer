@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <ags/plugin/ags_plugin_port.h>
+
 #include <ags/i18n.h>
 
 void ags_base_plugin_class_init(AgsBasePluginClass *base_plugin);
@@ -63,6 +65,7 @@ enum{
   PROP_0,
   PROP_FILENAME,
   PROP_EFFECT,
+  PROP_PLUGIN_PORT,
   PROP_EFFECT_INDEX,
   PROP_UI_FILENAME,
   PROP_UI_EFFECT,
@@ -152,6 +155,21 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 				  PROP_EFFECT,
 				  param_spec);
 
+  /**
+   * AgsBasePlugin:plugin-port:
+   *
+   * The assigned #AgsPluginPort
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("plugin-port",
+				    i18n_pspec("plugin port of base plugin"),
+				    i18n_pspec("The plugin _port of base plugin"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLUGIN_PORT,
+				  param_spec);
+  
   /**
    * AgsBasePlugin:effect-index:
    *
@@ -480,6 +498,28 @@ ags_base_plugin_set_property(GObject *gobject,
       pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
+  case PROP_PLUGIN_PORT:
+    {
+      AgsPluginPort *plugin_port;
+
+      plugin_port = (AgsPluginPort *) g_value_get_pointer(value);
+
+      pthread_mutex_lock(base_plugin_mutex);
+
+      if(!AGS_IS_PLUGIN_PORT(plugin_port) ||
+	 g_list_find(base_plugin->plugin_port, plugin_port) != NULL){
+	pthread_mutex_unlock(base_plugin_mutex);
+	
+	return;
+      }
+
+      g_object_ref(plugin_port);
+      base_plugin->plugin_port = g_list_prepend(base_plugin->plugin_port,
+						plugin_port);
+
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
+    break;
   case PROP_EFFECT_INDEX:
     {
       guint effect_index;
@@ -619,6 +659,15 @@ ags_base_plugin_get_property(GObject *gobject,
       pthread_mutex_lock(base_plugin_mutex);
 
       g_value_set_string(value, base_plugin->effect);
+
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
+    break;
+  case PROP_PLUGIN_PORT:
+    {
+      pthread_mutex_lock(base_plugin_mutex);
+      
+      g_value_set_pointer(value, g_list_copy(base_plugin->plugin_port));
 
       pthread_mutex_unlock(base_plugin_mutex);
     }
