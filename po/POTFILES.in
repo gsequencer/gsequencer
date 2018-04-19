@@ -532,6 +532,7 @@
 ./ags/plugin/ags_lv2ui_manager.c
 ./ags/plugin/ags_lv2ui_plugin.c
 ./ags/plugin/ags_plugin_factory.c
+./ags/plugin/ags_plugin_port.c
 ./ags/server/ags_registry.c
 ./ags/server/ags_server.c
 ./ags/server/ags_server_application_context.c

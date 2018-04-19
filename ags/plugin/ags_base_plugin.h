@@ -32,11 +32,8 @@
 #define AGS_IS_BASE_PLUGIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_BASE_PLUGIN))
 #define AGS_BASE_PLUGIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_BASE_PLUGIN, AgsBasePluginClass))
 
-#define AGS_PORT_DESCRIPTOR(ptr) ((AgsPortDescriptor *)(ptr))
-
 typedef struct _AgsBasePlugin AgsBasePlugin;
 typedef struct _AgsBasePluginClass AgsBasePluginClass;
-typedef struct _AgsPortDescriptor AgsPortDescriptor;
 
 /**
  * AgsBasePluginFlags:
@@ -49,47 +46,9 @@ typedef enum{
   AGS_BASE_PLUGIN_IS_INSTRUMENT      =  1,
 }AgsBasePluginFlags;
 
-/**
- * AgsPortDescriptorFlags:
- * @AGS_PORT_DESCRIPTOR_ATOM: atom port
- * @AGS_PORT_DESCRIPTOR_AUDIO: audio port
- * @AGS_PORT_DESCRIPTOR_CONTROL: control port
- * @AGS_PORT_DESCRIPTOR_MIDI: MIDI port
- * @AGS_PORT_DESCRIPTOR_EVENT: event port
- * @AGS_PORT_DESCRIPTOR_OUTPUT: is output
- * @AGS_PORT_DESCRIPTOR_INPUT: is input
- * @AGS_PORT_DESCRIPTOR_TOGGLED: toggle control
- * @AGS_PORT_DESCRIPTOR_ENUMERATION: enumerated
- * @AGS_PORT_DESCRIPTOR_LOGARITHMIC: logarithmic
- * @AGS_PORT_DESCRIPTOR_INTEGER: integer
- * @AGS_PORT_DESCRIPTOR_SAMPLERATE: samplerate
- * @AGS_PORT_DESCRIPTOR_BOUNDED_BELOW: bounded below
- * @AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE: bounded above
- * @AGS_PORT_DESCRIPTOR_UI_NOTIFICATION: ui notification
- * 
- * Common port attributes.
- */
-typedef enum{
-  AGS_PORT_DESCRIPTOR_ATOM            = 1,
-  AGS_PORT_DESCRIPTOR_AUDIO           = 1 <<  1,
-  AGS_PORT_DESCRIPTOR_CONTROL         = 1 <<  2,
-  AGS_PORT_DESCRIPTOR_MIDI            = 1 <<  3,
-  AGS_PORT_DESCRIPTOR_EVENT           = 1 <<  4,
-  AGS_PORT_DESCRIPTOR_OUTPUT          = 1 <<  5,
-  AGS_PORT_DESCRIPTOR_INPUT           = 1 <<  6,
-  AGS_PORT_DESCRIPTOR_TOGGLED         = 1 <<  7,
-  AGS_PORT_DESCRIPTOR_ENUMERATION     = 1 <<  8,
-  AGS_PORT_DESCRIPTOR_LOGARITHMIC     = 1 <<  9,
-  AGS_PORT_DESCRIPTOR_INTEGER         = 1 << 10,
-  AGS_PORT_DESCRIPTOR_SAMPLERATE      = 1 << 11,
-  AGS_PORT_DESCRIPTOR_BOUNDED_BELOW   = 1 << 12,
-  AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE   = 1 << 13,
-  AGS_PORT_DESCRIPTOR_UI_NOTIFICATION = 1 << 14,
-}AgsPortDescriptorFlags;
-
 struct _AgsBasePlugin
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
   
@@ -101,7 +60,7 @@ struct _AgsBasePlugin
 
   guint port_group_count;
   guint *port_group;
-  GList *port_descriptor;
+  GList *plugin_port;
   
   guint effect_index;
   void *plugin_so;
@@ -121,7 +80,7 @@ struct _AgsBasePlugin
 
 struct _AgsBasePluginClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 
   gpointer (*instantiate)(AgsBasePlugin *base_plugin,
 			  guint samplerate, guint buffer_size);
@@ -139,36 +98,9 @@ struct _AgsBasePluginClass
   void (*load_plugin)(AgsBasePlugin *base_plugin);
 };
 
-struct _AgsPortDescriptor
-{
-  guint flags;
-  
-  guint port_index;
-
-  gchar *port_name;
-  gchar *port_symbol;
-
-  gint scale_steps;
-  gchar **scale_points;
-  float *scale_value;
-  
-  GValue *lower_value;
-  GValue *upper_value;
-
-  GValue *default_value;  
-  
-  gpointer user_data;
-};
-
 GType ags_base_plugin_get_type(void);
 
 pthread_mutex_t* ags_base_plugin_get_class_mutex();
-
-AgsPortDescriptor* ags_port_descriptor_alloc();
-void ags_port_descriptor_free(AgsPortDescriptor *port_descriptor);
-
-GList* ags_port_descriptor_find_symbol(GList *port_descriptor,
-				       gchar *port_symbol);
 
 GList* ags_base_plugin_find_filename(GList *base_plugin, gchar *filename);
 GList* ags_base_plugin_find_effect(GList *base_plugin, gchar *filename, gchar *effect);

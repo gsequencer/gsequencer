@@ -82,13 +82,13 @@ ags_base_plugin_get_type (void)
 
   if(!ags_type_base_plugin){
     static const GTypeInfo ags_base_plugin_info = {
-      sizeof (AgsBasePluginClass),
+      sizeof(AgsBasePluginClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_base_plugin_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsBasePlugin),
+      sizeof(AgsBasePlugin),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_base_plugin_init,
     };
@@ -404,7 +404,7 @@ ags_base_plugin_init(AgsBasePlugin *base_plugin)
 
   base_plugin->port_group_count = 0;
   base_plugin->port_group = NULL;
-  base_plugin->port_descriptor = NULL;
+  base_plugin->plugin_port = NULL;
 
   base_plugin->effect_index = 0;
   base_plugin->plugin_so = NULL;
@@ -687,6 +687,14 @@ ags_base_plugin_dispose(GObject *gobject)
     base_plugin->ui_plugin = NULL;
   }
 
+  /* plugin port */
+  if(base_plugin->plugin_port != NULL){
+    g_list_free_full(base_plugin->plugin_port,
+		     g_object_unref);
+
+    base_plugin->plugin_port = NULL;
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_base_plugin_parent_class)->dispose(gobject);
 }
@@ -713,9 +721,9 @@ ags_base_plugin_finalize(GObject *gobject)
   g_free(base_plugin->ui_filename);
   g_free(base_plugin->ui_effect);
 
-  /* port descriptor */
-  g_list_free_full(base_plugin->port_descriptor,
-		   ags_port_descriptor_free);
+  /* plugin port */
+  g_list_free_full(base_plugin->plugin_port,
+		   g_object_unref);
 
   /* ui-plugin */
   if(base_plugin->ui_plugin != NULL){
@@ -739,108 +747,6 @@ pthread_mutex_t*
 ags_base_plugin_get_class_mutex()
 {
   return(&ags_base_plugin_class_mutex);
-}
-
-/**
- * ags_port_descriptor_alloc:
- * 
- * Alloc the #AgsPortDescriptor-struct
- *
- * Returns: the #AgsPortDescriptor-struct
- *
- * Since: 2.0.0
- */
-AgsPortDescriptor*
-ags_port_descriptor_alloc()
-{
-  AgsPortDescriptor *port_descriptor;
-
-  port_descriptor = (AgsPortDescriptor *) malloc(sizeof(AgsPortDescriptor));
-
-  port_descriptor->flags = 0;
-
-  port_descriptor->port_index = 0;
-
-  port_descriptor->port_name = NULL;
-  port_descriptor->port_symbol = NULL;
-
-  port_descriptor->scale_steps = -1;
-  port_descriptor->scale_points = NULL;
-  port_descriptor->scale_value = NULL;
-  
-  port_descriptor->lower_value = g_new0(GValue,
-					1);
-  port_descriptor->upper_value = g_new0(GValue,
-					1);
-
-  port_descriptor->default_value = g_new0(GValue,
-					  1);
-
-  port_descriptor->user_data = NULL;
-  
-  return(port_descriptor);
-}
-
-/**
- * ags_port_descriptor_free:
- * @port_descriptor: the #AgsPortDescriptor-struct
- * 
- * Free the #AgsPortDescriptor-struct
- *
- * Since: 2.0.0
- */
-void
-ags_port_descriptor_free(AgsPortDescriptor *port_descriptor)
-{
-  if(port_descriptor->port_name != NULL){
-    g_free(port_descriptor->port_name);
-  }
-  
-  if(port_descriptor->port_symbol != NULL){
-    g_free(port_descriptor->port_symbol);
-  }
-
-  if(port_descriptor->scale_points != NULL){
-    g_free(port_descriptor->scale_points);
-  }
-
-  g_free(port_descriptor->lower_value);
-  g_free(port_descriptor->upper_value);
-
-  g_free(port_descriptor->default_value);
-
-  free(port_descriptor);
-}
-
-/**
- * ags_port_descriptor_find_symbol:
- * @port_descriptor: the #GList-struct containing #AgsPortDescriptor
- * @port_symbol: the port symbol
- * 
- * Find @port_symbol within @port_descriptor.
- * 
- * Returns: the matching #GList-struct containing #AgsPortDescriptor
- * 
- * Since: 2.0.0
- */
-GList*
-ags_port_descriptor_find_symbol(GList *port_descriptor,
-				gchar *port_symbol)
-{
-  if(port_symbol == NULL){
-    return(NULL);
-  }
-
-  while(port_descriptor != NULL){
-    if(!g_strcmp0(port_symbol,
-		  AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_symbol)){
-      return(port_descriptor);
-    }
-    
-    port_descriptor = port_descriptor->next;
-  }
-  
-  return(NULL);
 }
 
 /**

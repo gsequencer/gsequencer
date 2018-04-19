@@ -35,6 +35,7 @@ ags (2.0.0)
 	* new ags_sound_container.[ch]
 	* new ags_sound_resource.[ch]
 	* new ags_wav_file.[ch]
+	* new ags_plugin_port.[ch]
 	* incompatible AgsBasePlugin::instantiate() function prototype
 	* added ags_connectable_has_resource()
 	* added ags_audio_done_recall()
@@ -43,6 +44,7 @@ ags (2.0.0)
 	* added propertiy :input-soundcard to AgsAudio, AgsChannel, AgsRecycling, AgsAudioSignal and AgsRecall
 	* replaced use of GParameter by string vector and value array of AgsMessageEnvelope
 	* replaced use of GParameter by string vector and value array of AgsPreset
+	* replaced AgsPortDescriptor struct by AgsPluginPort object
 	* modified prototype of ags_audio_collect_all_audio_ports_by_specifier_and_context()
 	* modified prototype of ags_midi_file_read_*()
 	* modified prototype of ags_synth_generator_compute()
