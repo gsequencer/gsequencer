@@ -44,8 +44,8 @@ struct _AgsRecallDssi
 {
   AgsRecallChannel recall_channel;
 
-  unsigned long bank;
-  unsigned long program;
+  guint bank;
+  guint program;
   
   DSSI_Descriptor *plugin_descriptor;
 

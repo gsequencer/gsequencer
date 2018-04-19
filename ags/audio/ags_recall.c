@@ -246,18 +246,18 @@ ags_recall_class_init(AgsRecallClass *recall)
   gobject->finalize = ags_recall_finalize;
 
   /* properties */
-    /**
+  /**
    * AgsRecall:filename:
    *
    * The plugin's filename.
    * 
    * Since: 2.0.0
    */
-  param_spec =  g_param_spec_string("filename",
-				    i18n_pspec("the object file"),
-				    i18n_pspec("The filename as string of object file"),
-				    NULL,
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_string("filename",
+				   i18n_pspec("the object file"),
+				   i18n_pspec("The filename as string of object file"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FILENAME,
 				  param_spec);
@@ -269,11 +269,11 @@ ags_recall_class_init(AgsRecallClass *recall)
    * 
    * Since: 2.0.0
    */
-  param_spec =  g_param_spec_string("effect",
-				    i18n_pspec("the effect"),
-				    i18n_pspec("The effect's string representation"),
-				    NULL,
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_string("effect",
+				   i18n_pspec("the effect"),
+				   i18n_pspec("The effect's string representation"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_EFFECT,
 				  param_spec);
@@ -285,13 +285,13 @@ ags_recall_class_init(AgsRecallClass *recall)
    * 
    * Since: 2.0.0
    */
-  param_spec =  g_param_spec_uint("effect-index",
-				  i18n_pspec("index of effect"),
-				  i18n_pspec("The numerical index of effect"),
-				  0,
-				  G_MAXUINT32,
-				  0,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("effect-index",
+				 i18n_pspec("index of effect"),
+				 i18n_pspec("The numerical index of effect"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_EFFECT_INDEX,
 				  param_spec);
@@ -335,13 +335,13 @@ ags_recall_class_init(AgsRecallClass *recall)
    * 
    * Since: 2.0.0
    */
-  param_spec =  g_param_spec_int("output-soundcard-channel",
-				 i18n_pspec("output soundcard channel"),
-				 i18n_pspec("The output soundcard channel"),
-				 -1,
-				 G_MAXUINT32,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_int("output-soundcard-channel",
+				i18n_pspec("output soundcard channel"),
+				i18n_pspec("The output soundcard channel"),
+				-1,
+				G_MAXUINT32,
+				0,
+				G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_OUTPUT_SOUNDCARD_CHANNEL,
 				  param_spec);
@@ -369,13 +369,13 @@ ags_recall_class_init(AgsRecallClass *recall)
    * 
    * Since: 2.0.0
    */
-  param_spec =  g_param_spec_int("input-soundcard-channel",
-				 i18n_pspec("input soundcard channel"),
-				 i18n_pspec("The input soundcard channel"),
-				 -1,
-				 G_MAXUINT32,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_int("input-soundcard-channel",
+				i18n_pspec("input soundcard channel"),
+				i18n_pspec("The input soundcard channel"),
+				-1,
+				G_MAXUINT32,
+				0,
+				G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_INPUT_SOUNDCARD_CHANNEL,
 				  param_spec);
@@ -387,13 +387,13 @@ ags_recall_class_init(AgsRecallClass *recall)
    * 
    * Since: 2.0.0
    */
-  param_spec =  g_param_spec_uint("samplerate",
-				  i18n_pspec("samplerate"),
-				  i18n_pspec("The samplerate"),
-				  0,
-				  G_MAXUINT32,
-				  0,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("samplerate",
+				 i18n_pspec("samplerate"),
+				 i18n_pspec("The samplerate"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SAMPLERATE,
 				  param_spec);
@@ -405,13 +405,13 @@ ags_recall_class_init(AgsRecallClass *recall)
    * 
    * Since: 2.0.0
    */
-  param_spec =  g_param_spec_uint("buffer-size",
-				  i18n_pspec("buffer size"),
-				  i18n_pspec("The buffer size"),
-				  0,
-				  G_MAXUINT32,
-				  0,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("buffer-size",
+				 i18n_pspec("buffer size"),
+				 i18n_pspec("The buffer size"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BUFFER_SIZE,
 				  param_spec);
@@ -423,13 +423,13 @@ ags_recall_class_init(AgsRecallClass *recall)
    * 
    * Since: 2.0.0
    */
-  param_spec =  g_param_spec_uint("format",
-				  i18n_pspec("format"),
-				  i18n_pspec("The format"),
-				  0,
-				  G_MAXUINT32,
-				  0,
-				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("format",
+				 i18n_pspec("format"),
+				 i18n_pspec("The format"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FORMAT,
 				  param_spec);
@@ -1739,6 +1739,9 @@ ags_recall_finalize(GObject *gobject)
 
   g_free(ids);
 #endif
+
+  g_free(recall->filename);
+  g_free(recall->effect);
   
   /* recall container */
   if(recall->recall_container != NULL){
@@ -3569,14 +3572,14 @@ ags_recall_add_recall_handler(AgsRecall *recall,
   recall->recall_handler = g_list_prepend(recall->recall_handler,
 					  recall_handler);
 
- pthread_mutex_unlock(recall_mutex);
+  pthread_mutex_unlock(recall_mutex);
 }
 
 /**
  * ags_recall_remove_recall_handler:
  * @recall: the #AgsRecall to connect
  * @recall_handler: the signal specs
-  *
+ *
  * Remove a #AgsRecallHandler-struct from @recall.
  * 
  * Since: 2.0.0

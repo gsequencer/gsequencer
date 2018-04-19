@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -73,6 +73,8 @@ enum{
 static gpointer ags_base_plugin_parent_class = NULL;
 static guint base_plugin_signals[LAST_SIGNAL];
 
+static pthread_mutex_t ags_base_plugin_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_base_plugin_get_type (void)
 {
@@ -123,7 +125,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The assigned filename.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("filename of the plugin"),
@@ -139,7 +141,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The assigned effect.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("effect",
 				   i18n_pspec("effect of the plugin"),
@@ -155,7 +157,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The assigned effect-index.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("effect-index",
 				 i18n_pspec("effect-index of the plugin"),
@@ -173,7 +175,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The assigned UI filename.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("ui-filename",
 				   i18n_pspec("UI filename of the plugin"),
@@ -189,7 +191,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The assigned ui-effect.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("ui-effect",
 				   i18n_pspec("UI effect of the plugin"),
@@ -205,7 +207,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The assigned ui-effect-index.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("ui-effect-index",
 				 i18n_pspec("UI effect-index of the plugin"),
@@ -223,7 +225,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The assigned ui-plugin.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("ui-plugin",
 				   i18n_pspec("ui-plugin of the plugin"),
@@ -272,10 +274,13 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
   /**
    * AgsBasePlugin::connect-port:
    * @base_plugin: the plugin to connect-port
+   * @plugin_handle: the plugin handle
+   * @port_index: the port index
+   * @data_location: the data location
    *
    * The ::connect-port signal creates a new instance of plugin.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   base_plugin_signals[CONNECT_PORT] =
     g_signal_new("connect-port",
@@ -292,10 +297,11 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
   /**
    * AgsBasePlugin::activate:
    * @base_plugin: the plugin to activate
+   * @plugin_handle: the plugin handle
    *
    * The ::activate signal creates a new instance of plugin.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   base_plugin_signals[ACTIVATE] =
     g_signal_new("activate",
@@ -310,10 +316,11 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
   /**
    * AgsBasePlugin::deactivate:
    * @base_plugin: the plugin to deactivate
+   * @plugin_handle: the plugin handle
    *
    * The ::deactivate signal creates a new instance of plugin.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   base_plugin_signals[DEACTIVATE] =
     g_signal_new("deactivate",
@@ -328,10 +335,13 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
   /**
    * AgsBasePlugin::run:
    * @base_plugin: the plugin to run
+   * @plugin_handle: the plugin handle
+   * @seq_event: the MIDI data
+   * @frame_count: the frame count
    *
    * The ::run signal creates a new instance of plugin.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   base_plugin_signals[RUN] =
     g_signal_new("run",
@@ -351,7 +361,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    *
    * The ::load_plugin signal creates a new instance of plugin.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   base_plugin_signals[LOAD_PLUGIN] =
     g_signal_new("load_plugin",
@@ -366,8 +376,29 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 void
 ags_base_plugin_init(AgsBasePlugin *base_plugin)
 {
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
+
   base_plugin->flags = 0;
-  
+
+  /* add base plugin mutex */
+  base_plugin->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(attr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  base_plugin->obj_mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);
+
+  /*  */
   base_plugin->filename = NULL;
   base_plugin->effect = NULL;
 
@@ -391,7 +422,16 @@ ags_base_plugin_set_property(GObject *gobject,
 {
   AgsBasePlugin *base_plugin;
 
+  pthread_mutex_t *base_plugin_mutex;
+
   base_plugin = AGS_BASE_PLUGIN(gobject);
+
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = base_plugin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
   switch(prop_id){
   case PROP_FILENAME:
@@ -400,7 +440,11 @@ ags_base_plugin_set_property(GObject *gobject,
 
       filename = (gchar *) g_value_get_string(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       if(base_plugin->filename == filename){
+	pthread_mutex_unlock(base_plugin_mutex);
+	
 	return;
       }
       
@@ -409,6 +453,8 @@ ags_base_plugin_set_property(GObject *gobject,
       }
 
       base_plugin->filename = g_strdup(filename);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_EFFECT:
@@ -417,7 +463,11 @@ ags_base_plugin_set_property(GObject *gobject,
 
       effect = (gchar *) g_value_get_string(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       if(base_plugin->effect == effect){
+	pthread_mutex_unlock(base_plugin_mutex);
+
 	return;
       }
       
@@ -426,6 +476,8 @@ ags_base_plugin_set_property(GObject *gobject,
       }
 
       base_plugin->effect = g_strdup(effect);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_EFFECT_INDEX:
@@ -434,7 +486,11 @@ ags_base_plugin_set_property(GObject *gobject,
 
       effect_index = g_value_get_uint(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       base_plugin->effect_index = effect_index;
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_FILENAME:
@@ -443,7 +499,11 @@ ags_base_plugin_set_property(GObject *gobject,
 
       ui_filename = (gchar *) g_value_get_string(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       if(base_plugin->ui_filename == ui_filename){
+	pthread_mutex_unlock(base_plugin_mutex);
+
 	return;
       }
       
@@ -452,6 +512,8 @@ ags_base_plugin_set_property(GObject *gobject,
       }
 
       base_plugin->ui_filename = g_strdup(ui_filename);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_EFFECT:
@@ -460,7 +522,11 @@ ags_base_plugin_set_property(GObject *gobject,
 
       ui_effect = (gchar *) g_value_get_string(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       if(base_plugin->ui_effect == ui_effect){
+	pthread_mutex_unlock(base_plugin_mutex);
+
 	return;
       }
       
@@ -469,6 +535,8 @@ ags_base_plugin_set_property(GObject *gobject,
       }
 
       base_plugin->ui_effect = g_strdup(ui_effect);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_EFFECT_INDEX:
@@ -477,7 +545,11 @@ ags_base_plugin_set_property(GObject *gobject,
 
       ui_effect_index = g_value_get_uint(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       base_plugin->ui_effect_index = ui_effect_index;
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_PLUGIN:
@@ -486,7 +558,11 @@ ags_base_plugin_set_property(GObject *gobject,
 
       ui_plugin = g_value_get_object(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       if(base_plugin->ui_plugin == ui_plugin){
+	pthread_mutex_unlock(base_plugin_mutex);
+
 	return;
       }
 
@@ -499,6 +575,8 @@ ags_base_plugin_set_property(GObject *gobject,
       }
       
       base_plugin->ui_plugin = ui_plugin;
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   default:
@@ -515,42 +593,79 @@ ags_base_plugin_get_property(GObject *gobject,
 {
   AgsBasePlugin *base_plugin;
 
+  pthread_mutex_t *base_plugin_mutex;
+
   base_plugin = AGS_BASE_PLUGIN(gobject);
+
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = base_plugin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
   switch(prop_id){
   case PROP_FILENAME:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       g_value_set_string(value, base_plugin->filename);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_EFFECT:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       g_value_set_string(value, base_plugin->effect);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_EFFECT_INDEX:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       g_value_set_uint(value, base_plugin->effect_index);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_FILENAME:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       g_value_set_string(value, base_plugin->ui_filename);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_EFFECT:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       g_value_set_string(value, base_plugin->ui_effect);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_EFFECT_INDEX:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       g_value_set_uint(value, base_plugin->ui_effect_index);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_PLUGIN:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       g_value_set_object(value, base_plugin->ui_plugin);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   default:
@@ -595,13 +710,28 @@ ags_base_plugin_finalize(GObject *gobject)
 }
 
 /**
+ * ags_base_plugin_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_base_plugin_get_class_mutex()
+{
+  return(&ags_base_plugin_class_mutex);
+}
+
+/**
  * ags_port_descriptor_alloc:
  * 
  * Alloc the #AgsPortDescriptor-struct
  *
  * Returns: the #AgsPortDescriptor-struct
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPortDescriptor*
 ags_port_descriptor_alloc()
@@ -640,7 +770,7 @@ ags_port_descriptor_alloc()
  * 
  * Free the #AgsPortDescriptor-struct
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_port_descriptor_free(AgsPortDescriptor *port_descriptor)
@@ -674,7 +804,7 @@ ags_port_descriptor_free(AgsPortDescriptor *port_descriptor)
  * 
  * Returns: the matching #GList-struct containing #AgsPortDescriptor
  * 
- * Since: 1.0.0.8 
+ * Since: 2.0.0
  */
 GList*
 ags_port_descriptor_find_symbol(GList *port_descriptor,
@@ -705,14 +835,36 @@ ags_port_descriptor_find_symbol(GList *port_descriptor,
  *
  * Returns: the next matching #GList-struct
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_base_plugin_find_filename(GList *base_plugin, gchar *filename)
 {
+  AgsBasePlugin *current_base_plugin;
+  
+  gboolean success;
+  
+  pthread_mutex_t *base_plugin_mutex;
+
   while(base_plugin != NULL){
-    if(!g_ascii_strcasecmp(AGS_BASE_PLUGIN(base_plugin->data)->filename,
-			   filename)){
+    current_base_plugin = AGS_BASE_PLUGIN(base_plugin->data);
+    
+    /* get base plugin mutex */
+    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+    base_plugin_mutex = current_base_plugin->obj_mutex;
+  
+    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+    /* check filename */
+    pthread_mutex_lock(base_plugin_mutex);
+
+    success = (!g_ascii_strcasecmp(current_base_plugin->filename,
+				   filename)) ? TRUE: FALSE;
+    
+    pthread_mutex_unlock(base_plugin_mutex);
+
+    if(success){
       return(base_plugin);
     }
 
@@ -732,16 +884,38 @@ ags_base_plugin_find_filename(GList *base_plugin, gchar *filename)
  *
  * Returns: the next matching #GList-struct
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_base_plugin_find_effect(GList *base_plugin, gchar *filename, gchar *effect)
 {
+  AgsBasePlugin *current_base_plugin;
+  
+  gboolean success;
+  
+  pthread_mutex_t *base_plugin_mutex;
+
   while(base_plugin != NULL){
-    if(!g_ascii_strcasecmp(AGS_BASE_PLUGIN(base_plugin->data)->filename,
-			   filename) &&
-       !g_ascii_strcasecmp(AGS_BASE_PLUGIN(base_plugin->data)->effect,
-			   effect)){
+    current_base_plugin = AGS_BASE_PLUGIN(base_plugin->data);
+    
+    /* get base plugin mutex */
+    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+    base_plugin_mutex = current_base_plugin->obj_mutex;
+  
+    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+    /* check filename and effect*/
+    pthread_mutex_lock(base_plugin_mutex);
+
+    success = (!g_ascii_strcasecmp(current_base_plugin->filename,
+				   filename) &&
+	       !g_ascii_strcasecmp(current_base_plugin->effect,
+				   effect)) ? TRUE: FALSE;
+    
+    pthread_mutex_unlock(base_plugin_mutex);
+
+    if(success){
       return(base_plugin);
     }
 
@@ -761,15 +935,37 @@ ags_base_plugin_find_effect(GList *base_plugin, gchar *filename, gchar *effect)
  *
  * Returns: the next matching #GList-struct
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_base_plugin_find_ui_effect_index(GList *base_plugin, gchar *ui_filename, guint ui_effect_index)
 {
+  AgsBasePlugin *current_base_plugin;
+  
+  gboolean success;
+  
+  pthread_mutex_t *base_plugin_mutex;
+
   while(base_plugin != NULL){
-    if(!g_ascii_strcasecmp(AGS_BASE_PLUGIN(base_plugin->data)->ui_filename,
-			   ui_filename) &&
-       AGS_BASE_PLUGIN(base_plugin->data)->ui_effect_index == ui_effect_index){
+    current_base_plugin = AGS_BASE_PLUGIN(base_plugin->data);
+    
+    /* get base plugin mutex */
+    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+    base_plugin_mutex = current_base_plugin->obj_mutex;
+  
+    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+    /* check UI filename and effect index */
+    pthread_mutex_lock(base_plugin_mutex);
+
+    success = (!g_ascii_strcasecmp(current_base_plugin->ui_filename,
+				   ui_filename) &&
+	       current_base_plugin->ui_effect_index == ui_effect_index) ? TRUE: FALSE;
+    
+    pthread_mutex_unlock(base_plugin_mutex);
+
+    if(success){
       return(base_plugin);
     }
 
@@ -787,7 +983,7 @@ ags_base_plugin_find_ui_effect_index(GList *base_plugin, gchar *ui_filename, gui
  * 
  * Returns: the sorted #GList-struct
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_base_plugin_sort(GList *base_plugin)
@@ -797,8 +993,51 @@ ags_base_plugin_sort(GList *base_plugin)
   auto gint ags_base_plugin_sort_compare_function(gpointer a, gpointer b);
 
   gint ags_base_plugin_sort_compare_function(gpointer a, gpointer b){
-    return(strcmp(AGS_BASE_PLUGIN(a)->effect,
-		  AGS_BASE_PLUGIN(b)->effect));
+    AgsBasePlugin *a_plugin;
+    AgsBasePlugin *b_plugin;
+    
+    gchar *a_effect;
+    gchar *b_effect;
+
+    gint retval;
+    
+    pthread_mutex_t *a_mutex;
+    pthread_mutex_t *b_mutex;
+
+    /* a and b */
+    a_plugin = AGS_BASE_PLUGIN(a);
+    b_plugin = AGS_BASE_PLUGIN(b);
+    
+    /* get base plugin mutex - a and b */
+    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+    a_plugin_mutex = a_plugin->obj_mutex;
+    b_plugin_mutex = b_plugin->obj_mutex;
+  
+    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+    /* duplicate effect - a */
+    pthread_mutex_lock(a_plugin_mutex);
+
+    a_effect = g_strdup(a_plugin->effect);
+    
+    pthread_mutex_unlock(a_plugin_mutex);
+
+    /* duplicate effect - b */
+    pthread_mutex_lock(b_plugin_mutex);
+
+    b_effect = g_strdup(b_plugin->effect);
+    
+    pthread_mutex_unlock(b_plugin_mutex);
+
+    /* compare and free */
+    retval = strcmp(a_effect,
+		    b_effect);
+
+    g_free(a_effect);
+    g_free(b_effect);
+    
+    return(retval);
   }
 
   if(base_plugin == NULL){
@@ -863,7 +1102,7 @@ ags_base_plugin_instantiate(AgsBasePlugin *base_plugin,
  *
  * Connect a plugin instance.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_base_plugin_connect_port(AgsBasePlugin *base_plugin, gpointer plugin_handle, guint port_index, gpointer data_location)
@@ -883,7 +1122,7 @@ ags_base_plugin_connect_port(AgsBasePlugin *base_plugin, gpointer plugin_handle,
  *
  * Activate a plugin instance
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_base_plugin_activate(AgsBasePlugin *base_plugin, gpointer plugin_handle)
@@ -903,7 +1142,7 @@ ags_base_plugin_activate(AgsBasePlugin *base_plugin, gpointer plugin_handle)
  *
  * Deactivat a plugin instance
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_base_plugin_deactivate(AgsBasePlugin *base_plugin, gpointer plugin_handle)
@@ -925,7 +1164,7 @@ ags_base_plugin_deactivate(AgsBasePlugin *base_plugin, gpointer plugin_handle)
  *
  * Deactivat a plugin instance
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_base_plugin_run(AgsBasePlugin *base_plugin,
@@ -950,7 +1189,7 @@ ags_base_plugin_run(AgsBasePlugin *base_plugin,
  *
  * Load the plugin
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_base_plugin_load_plugin(AgsBasePlugin *base_plugin)
@@ -973,7 +1212,7 @@ ags_base_plugin_load_plugin(AgsBasePlugin *base_plugin)
  *
  * Returns: a new #AgsBasePlugin
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsBasePlugin*
 ags_base_plugin_new(gchar *filename, gchar *effect, guint effect_index)

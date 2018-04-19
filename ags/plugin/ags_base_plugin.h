@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -93,6 +93,9 @@ struct _AgsBasePlugin
 
   guint flags;
   
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   gchar *filename;
   gchar *effect;
 
@@ -158,6 +161,8 @@ struct _AgsPortDescriptor
 };
 
 GType ags_base_plugin_get_type(void);
+
+pthread_mutex_t* ags_base_plugin_get_class_mutex();
 
 AgsPortDescriptor* ags_port_descriptor_alloc();
 void ags_port_descriptor_free(AgsPortDescriptor *port_descriptor);

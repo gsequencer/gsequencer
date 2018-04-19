@@ -6237,7 +6237,7 @@ ags_recall_factory_create_route_lv2(AgsAudio *audio,
  *
  * Returns: The available AgsPort objects of the plugin to modify.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_factory_create(AgsAudio *audio,
