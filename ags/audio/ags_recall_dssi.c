@@ -408,7 +408,6 @@ void
 ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
 {
   AgsRecallDssi *recall_dssi;
-  AgsPort *current;
 
   AgsDssiPlugin *dssi_plugin;
 
@@ -421,6 +420,7 @@ ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
   unsigned long i;
   
   pthread_mutex_t *recall_mutex;
+  pthread_mutex_t *base_plugin_mutex;
 
   recall_dssi = AGS_RECALL_DSSI(plugin);
 
@@ -445,45 +445,96 @@ ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
   g_free(filename);
   g_free(effect);
   
-  port_descriptor = AGS_BASE_PLUGIN(dssi_plugin)->port;
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* get port descriptor */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  port_descriptor = AGS_BASE_PLUGIN(dssi_plugin)->port_descriptor;
+
+  pthread_mutex_unlock(base_plugin_mutex);
 
   if(port_descriptor != NULL){
+    pthread_mutex_lock(base_plugin_mutex);
+
     port_count = g_list_length(port_descriptor);
 
+    pthread_mutex_unlock(base_plugin_mutex);
+
     for(i = 0; i < port_count; i++){
-      if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      AgsPortDescriptor *current_port_descriptor;
+      
+      guint port_descriptor_flags;
+
+      pthread_mutex_lock(base_plugin_mutex);
+
+      current_port_descriptor = AGS_PORT_DESCRIPTOR(port_descriptor->data);
+      
+      port_descriptor_flags = current_port_descriptor->flags;
+      
+      pthread_mutex_unlock(base_plugin_mutex);
+
+      if((AGS_PORT_DESCRIPTOR_CONTROL & (port_descriptor_flags)) != 0){
+	AgsPort *current_port;
+
 	gchar *specifier;
 	
-	specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
+	GValue *default_value;
+
+	pthread_mutex_lock(base_plugin_mutex);
+
+	specifier = g_strdup(current_port_descriptor->port_name);
+
+	default_value = current_port_descriptor->default_value;
 	
+	pthread_mutex_unlock(base_plugin_mutex);
+
 	list = port;
 	current = NULL;
 	
 	while(list != NULL){
+	  gchar *current_specifier;
+
+	  g_object_get(list->data,
+		       "specifier", &current_specifier,
+		       NULL);
+	  
 	  if(!g_strcmp0(specifier,
-			AGS_PORT(list->data)->specifier)){
+			current_specifier)){
 	    current = list->data;
+	    
 	    break;
 	  }
 	  
 	  list = list->next;
 	}
 
+	g_free(specifier);
+	
 	if(current != NULL){
-	  current->port_descriptor = port_descriptor->data;
+	  current->port_descriptor = current_port_descriptor;
 	  ags_recall_dssi_load_conversion(recall_dssi,
 					  (GObject *) current,
-					  port_descriptor->data);
+					  current_port_descriptor);
 
-	  current->port_value.ags_port_float = (LADSPA_Data) g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
+	  //TODO:JK: check non-raw write
+	  ags_port_safe_write_raw(current,
+				  default_value);
 	  //	ags_conversion_convert(current->conversion,
 	  //		       g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value),
 	  //		       FALSE);
 	    
 	  g_message("connecting port: %lu/%lu", i, port_count);
 	}
-      }else if((AGS_PORT_DESCRIPTOR_AUDIO & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      }else if((AGS_PORT_DESCRIPTOR_AUDIO & (port_descriptor_flags)) != 0){
+	pthread_mutex_lock(recall_mutex);
+	
+	if((AGS_PORT_DESCRIPTOR_INPUT & (port_descriptor_flags)) != 0){
 	  if(recall_dssi->input_port == NULL){
 	    recall_dssi->input_port = (unsigned long *) malloc(sizeof(unsigned long));
 	    recall_dssi->input_port[0] = i;
@@ -494,7 +545,7 @@ ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
 	  }
 
 	  recall_dssi->input_lines += 1;
-	}else if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	}else if((AGS_PORT_DESCRIPTOR_OUTPUT & (port_descriptor_flags)) != 0){
 	  if(recall_dssi->output_port == NULL){
 	    recall_dssi->output_port = (unsigned long *) malloc(sizeof(unsigned long));
 	    recall_dssi->output_port[0] = i;
@@ -506,12 +557,24 @@ ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
 
 	  recall_dssi->output_lines += 1;
 	}
+
+	pthread_mutex_unlock(recall_mutex);
       }
 
+      /* iterate port descriptor */
+      pthread_mutex_lock(base_plugin_mutex);
+      
       port_descriptor = port_descriptor->next;
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
 
+    /* reverse port */
+    pthread_mutex_lock(recall_mutex);
+    
     AGS_RECALL(recall_dssi)->port = g_list_reverse(port);
+
+    pthread_mutex_unlock(recall_mutex);
   }
 }
 
@@ -521,20 +584,50 @@ ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
  *
  * Set up DSSI handle.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
 {
   AgsDssiPlugin *dssi_plugin;
 
+  gchar *filename;
+  gchar *effect;
+
+  guint effect_index;
+  
   void *plugin_so;
   DSSI_Descriptor_Function dssi_descriptor;
   DSSI_Descriptor *plugin_descriptor;
 
-  /*  */
+  pthread_mutex_t *recall_mutex;
+
+  if(!AGS_IS_RECALL_DSSI(recall_dssi)){
+    return;
+  }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(recall_dssi)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_mutex);
+
+  filename = g_strdup(AGS_RECALL(recall_dssi)->filename);
+  effect = g_strdup(AGS_RECALL(recall_dssi)->effect);
+  
+  effect_index = AGS_RECALL(recall_dssi)->effect_index;
+
+  pthread_mutex_unlock(recall_mutex);
+  
+  /* find dssi plugin */
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
-						  recall_dssi->filename, recall_dssi->effect);
+						  filename, effect);
+  g_free(filename);
+  g_free(effect);
   
   plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;
 
@@ -544,7 +637,7 @@ ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
 
     if(dlerror() == NULL && dssi_descriptor){
       recall_dssi->plugin_descriptor = 
-	plugin_descriptor = dssi_descriptor(recall_dssi->index);
+	plugin_descriptor = dssi_descriptor((unsigned long) effect_index);
     }
   }
 }
@@ -555,9 +648,9 @@ ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
  *
  * Set up DSSI ports.
  *
- * Returns: a #GList containing #AgsPort.
+ * Returns: the #GList-struct containing #AgsPort
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
@@ -565,28 +658,98 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
   AgsDssiPlugin *dssi_plugin;
   AgsPort *current;
 
-  GList *port;
+  GList *port, *retval;
   GList *port_descriptor;
 
+  gchar *filename;
+  gchar *effect;
+
+  guint effect_index;
+  
   unsigned long port_count;
   unsigned long i;
 
+  pthread_mutex_t *recall_mutex;
+  pthread_mutex_t *base_plugin_mutex;
+
+  if(!AGS_IS_RECALL_DSSI(recall_dssi)){
+    return;
+  }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(recall_dssi)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_mutex);
+
+  filename = g_strdup(AGS_RECALL(recall_dssi)->filename);
+  effect = g_strdup(AGS_RECALL(recall_dssi)->effect);
+  
+  effect_index = AGS_RECALL(recall_dssi)->effect_index;
+
+  pthread_mutex_unlock(recall_mutex);
+
+  /* find dssi plugin */
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
-						  recall_dssi->filename, recall_dssi->effect);
+						  filename, effect);
+
+
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* get port descriptor */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  port_descriptor = AGS_BASE_PLUGIN(dssi_plugin)->port_descriptor;
+
+  pthread_mutex_unlock(base_plugin_mutex);
 
   port = NULL;
-  port_descriptor = AGS_BASE_PLUGIN(dssi_plugin)->port;
+  retval = NULL;
   
   if(port_descriptor != NULL){
+    pthread_mutex_lock(base_plugin_mutex);
+
     port_count = g_list_length(port_descriptor);
+
+    pthread_mutex_unlock(base_plugin_mutex);
     
     for(i = 0; i < port_count; i++){
-      if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      AgsPortDescriptor *current_port_descriptor;
+      
+      guint port_descriptor_flags;
+
+      pthread_mutex_lock(base_plugin_mutex);
+
+      current_port_descriptor = AGS_PORT_DESCRIPTOR(port_descriptor->data);
+      
+      port_descriptor_flags = current_port_descriptor->flags;
+      
+      pthread_mutex_unlock(base_plugin_mutex);
+
+      if((AGS_PORT_DESCRIPTOR_CONTROL & (current_port_descriptor)) != 0){
 	gchar *plugin_name;
 	gchar *specifier;
+
+	GValue *default_value;
+	
+	pthread_mutex_lock(base_plugin_mutex);
 	
 	plugin_name = g_strdup_printf("dssi-%lu", dssi_plugin->unique_id);
-	specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
+
+	specifier = g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name);
+
+	default_value = current_port_descriptor->default_value;
+
+	pthread_mutex_unlock(base_plugin_mutex);
 
 	current = g_object_new(AGS_TYPE_PORT,
 			       "plugin-name", plugin_name,
@@ -597,31 +760,38 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 			       "port-value-is-pointer", FALSE,
 			       "port-value-type", G_TYPE_FLOAT,
 			       NULL);
-	g_object_ref(current);
 	current->flags |= AGS_PORT_USE_LADSPA_FLOAT;
+	g_object_ref(current);
 
-	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	  AGS_RECALL(recall_dssi)->flags |= AGS_RECALL_HAS_OUTPUT_PORT;
-
+	g_free(plugin_name);
+	g_free(specifier);
+	
+	if((AGS_PORT_DESCRIPTOR_OUTPUT & (current_port_descriptor)) != 0){
 	  current->flags |= AGS_PORT_IS_OUTPUT;
+
+	  ags_recall_set_flags(recall_dssi,
+			       AGS_RECALL_HAS_OUTPUT_PORT);
+
 	}else{
-	  if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) == 0 &&
-	     (AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) == 0){
+	  if((AGS_PORT_DESCRIPTOR_INTEGER & (current_port_descriptor)) == 0 &&
+	     (AGS_PORT_DESCRIPTOR_TOGGLED & (current_port_descriptor)) == 0){
 	    current->flags |= AGS_PORT_INFINITE_RANGE;
 	  }
 	}
 	
-	current->port_descriptor = port_descriptor->data;
+	current->port_descriptor = current_port_descriptor;
 	ags_recall_dssi_load_conversion(recall_dssi,
 					(GObject *) current,
-					port_descriptor->data);
+					current_port_descriptor);
 	
-	current->port_value.ags_port_ladspa = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
-	//	g_message("connecting port: %d/%d %f", i, port_count, current->port_value.ags_port_float);
+	ags_port_safe_write_raw(current,
+				default_value);
 
 	port = g_list_prepend(port,
 			      current);
-      }else if((AGS_PORT_DESCRIPTOR_AUDIO & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      }else if((AGS_PORT_DESCRIPTOR_AUDIO & (current_port_descriptor)) != 0){
+	pthread_mutex_lock(recall_mutex);
+
 	if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	  if(recall_dssi->input_port == NULL){
 	    recall_dssi->input_port = (unsigned long *) malloc(sizeof(unsigned long));
@@ -633,7 +803,7 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 	  }
 	  
 	  recall_dssi->input_lines += 1;
-	}else if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	}else if((AGS_PORT_DESCRIPTOR_OUTPUT & (current_port_descriptor)) != 0){
 	  if(recall_dssi->output_port == NULL){
 	    recall_dssi->output_port = (unsigned long *) malloc(sizeof(unsigned long));
 	    recall_dssi->output_port[0] = i;
@@ -645,17 +815,29 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 	  
 	  recall_dssi->output_lines += 1;
 	}
+
+	pthread_mutex_unlock(recall_mutex);
       }
 
+      /* iterate port descriptor */
+      pthread_mutex_lock(base_plugin_mutex);
+      
       port_descriptor = port_descriptor->next;
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     
+    /* reverse port */
+    pthread_mutex_lock(recall_mutex);
+    
     AGS_RECALL(recall_dssi)->port = g_list_reverse(port);
+    
+    retval = g_list_copy(AGS_RECALL(recall_dssi)->port);
+    
+    pthread_mutex_unlock(recall_mutex);
   }
 
-  //  g_message("output lines: %d", recall_dssi->output_lines);
-
-  return(g_list_copy(AGS_RECALL(recall_dssi)->port));
+  return(retval);
 }
 
 /**

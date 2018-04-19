@@ -404,7 +404,7 @@ ags_base_plugin_init(AgsBasePlugin *base_plugin)
 
   base_plugin->port_group_count = 0;
   base_plugin->port_group = NULL;
-  base_plugin->port = NULL;
+  base_plugin->port_descriptor = NULL;
 
   base_plugin->effect_index = 0;
   base_plugin->plugin_so = NULL;
@@ -698,13 +698,30 @@ ags_base_plugin_finalize(GObject *gobject)
 
   base_plugin = AGS_BASE_PLUGIN(gobject);
 
+  /* destroy object mutex */
+  pthread_mutex_destroy(base_plugin->obj_mutex);
+  free(base_plugin->obj_mutex);
+
+  pthread_mutexattr_destroy(base_plugin->obj_mutexattr);
+  free(base_plugin->obj_mutexattr);
+
+  /* filename and effect */
   g_free(base_plugin->filename);
   g_free(base_plugin->effect);
 
+  /* UI filename and effect */
+  g_free(base_plugin->ui_filename);
+  g_free(base_plugin->ui_effect);
+
+  /* port descriptor */
+  g_list_free_full(base_plugin->port_descriptor,
+		   ags_port_descriptor_free);
+
+  /* ui-plugin */
   if(base_plugin->ui_plugin != NULL){
     g_object_unref(base_plugin->ui_plugin);
   }
-
+  
   /* call parent */
   G_OBJECT_CLASS(ags_base_plugin_parent_class)->finalize(gobject);
 }

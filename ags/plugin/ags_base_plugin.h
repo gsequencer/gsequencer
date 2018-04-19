@@ -101,7 +101,7 @@ struct _AgsBasePlugin
 
   guint port_group_count;
   guint *port_group;
-  GList *port;
+  GList *port_descriptor;
   
   guint effect_index;
   void *plugin_so;
