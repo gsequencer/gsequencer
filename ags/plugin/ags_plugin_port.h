@@ -86,8 +86,8 @@ struct _AgsPluginPort
   gchar *port_symbol;
 
   gint scale_steps;
-  gchar **scale_points;
-  float *scale_value;
+  gchar **scale_point;
+  gdouble *scale_value;
   
   GValue *lower_value;
   GValue *upper_value;

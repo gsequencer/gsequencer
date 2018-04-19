@@ -158,7 +158,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
   /**
    * AgsBasePlugin:plugin-port:
    *
-   * The assigned #AgsPluginPort
+   * The assigned #GList-struct containing #AgsPluginPort
    * 
    * Since: 2.0.0
    */
@@ -178,10 +178,10 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("effect-index",
-				 i18n_pspec("effect-index of the plugin"),
-				 i18n_pspec("The effect-index this plugin is assigned with"),
+				 i18n_pspec("effect index of the plugin"),
+				 i18n_pspec("The effect's index this plugin is assigned with"),
 				 0,
-				 G_MAXUINT,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -231,7 +231,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 				 i18n_pspec("UI effect-index of the plugin"),
 				 i18n_pspec("The UI effect-index this plugin is assigned with"),
 				 0,
-				 G_MAXUINT,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
