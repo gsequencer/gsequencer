@@ -41,6 +41,7 @@ void ags_port_get_property(GObject *gobject,
 			   guint prop_id,
 			   GValue *value,
 			   GParamSpec *param_spec);
+void ags_port_dispose(GObject *gobject);
 void ags_port_finalize(GObject *gobject);
 
 void ags_port_connect(AgsConnectable *connectable);
@@ -140,6 +141,7 @@ ags_port_class_init(AgsPortClass *port)
   gobject->set_property = ags_port_set_property;
   gobject->get_property = ags_port_get_property;
 
+  gobject->dispose = ags_port_dispose;
   gobject->finalize = ags_port_finalize;
   
   /* properties */
@@ -436,7 +438,8 @@ ags_port_init(AgsPort *port)
   port->port_value_size = sizeof(gdouble);
   port->port_value_length = 1;
 
-  port->port_descriptor = NULL;
+  port->plugin_port = NULL;
+  
   port->conversion = ags_conversion_new();
   g_object_ref(port->conversion);
   
@@ -769,6 +772,36 @@ ags_port_get_property(GObject *gobject,
 }
 
 void
+ags_port_dispose(GObject *gobject)
+{
+  AgsPort *port;
+
+  port = AGS_PORT(gobject);
+
+  if(port->plugin_port != NULL){
+    g_object_unref(port->plugin_port);
+
+    port->plugin_port = NULL;
+  }
+  
+  if(port->conversion != NULL){
+    g_object_unref(port->conversion);
+
+    port->conversion = NULL;
+  }
+
+  if(port->automation != NULL){
+    g_list_free_full(port->automation,
+		     g_object_unref);
+
+    port->automation = NULL;
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_port_parent_class)->dispose(gobject);
+}
+
+void
 ags_port_finalize(GObject *gobject)
 {
   AgsPort *port;
@@ -780,6 +813,24 @@ ags_port_finalize(GObject *gobject)
 
   pthread_mutexattr_destroy(port->obj_mutexattr);
   free(port->obj_mutexattr);
+
+  g_free(port->plugin_name);
+  g_free(port->specifier);
+
+  g_free(port->control_port);
+  
+  if(port->plugin_port != NULL){
+    g_object_unref(port->plugin_port);
+  }
+  
+  if(port->conversion != NULL){
+    g_object_unref(port->conversion);
+  }
+
+  if(port->automation != NULL){
+    g_list_free_full(port->automation,
+		     g_object_unref);
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_port_parent_class)->finalize(gobject);
@@ -1204,21 +1255,41 @@ ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
 
 /**
  * ags_port_find_specifier:
- * @port: a #GList containing #AgsPort
+ * @port: the #GList-struct containing #AgsPort
  * @specifier: the recall specifier to match
  *
  * Retrieve port by specifier.
  *
- * Returns: Next match.
+ * Returns: Next matching #GList-struct or %NULL
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_port_find_specifier(GList *port, gchar *specifier)
 {
+  gboolean success;
+
+  pthread_mutex_t *port_mutex;
+  
   while(port != NULL){
-    if(!g_strcmp0(AGS_PORT(port->data)->specifier,
-		  specifier)){
+    current_port = port->data;
+
+    /* get port mutex */
+    pthread_mutex_lock(ags_port_get_class_mutex());
+  
+    port_mutex = current_port->obj_mutex;
+  
+    pthread_mutex_unlock(ags_port_get_class_mutex());
+
+    /* check specifier */
+    pthread_mutex_lock(port_mutex);
+
+    success = (!g_strcmp0(current_port->specifier,
+			  specifier)) ? TRUE: FALSE;
+
+    pthread_mutex_unlock(port_mutex);
+
+    if(success){
       return(port);
     }
 
@@ -1235,7 +1306,7 @@ ags_port_find_specifier(GList *port, gchar *specifier)
  *
  * Returns: a new #AgsPort.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPort*
 ags_port_new()

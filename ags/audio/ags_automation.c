@@ -777,6 +777,13 @@ ags_automation_dispose(GObject *gobject)
     automation->source_function = NULL;
   }
 
+  /* port */
+  if(automation->port != NULL){
+    g_object_unref(automation->port);
+
+    automation->port = NULL;
+  }
+
   /* acceleration */
   list = automation->acceleration;
 
@@ -792,13 +799,6 @@ ags_automation_dispose(GObject *gobject)
 
   automation->acceleration = NULL;
   automation->selection = NULL;
-
-  /* port */
-  if(automation->port != NULL){
-    g_object_unref(automation->port);
-
-    automation->port = NULL;
-  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_automation_parent_class)->dispose(gobject);
@@ -836,17 +836,17 @@ ags_automation_finalize(GObject *gobject)
   if(automation->source_function != NULL){
     g_object_unref(automation->source_function);
   }
+
+  /* port */
+  if(automation->port != NULL){
+    g_object_unref(automation->port);
+  }
   
   /* acceleration */
   g_list_free_full(automation->acceleration,
 		   g_object_unref);
 
   g_list_free(automation->selection);
-
-  /* port */
-  if(automation->port != NULL){
-    g_object_unref(automation->port);
-  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_automation_parent_class)->finalize(gobject);
@@ -876,19 +876,25 @@ ags_automation_get_class_mutex()
  * 
  * Returns: next matching automation as #GList-struct or %NULL if not found
  * 
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 GList*
 ags_automation_find_port(GList *automation,
 			 GObject *port)
 {
+  GObject *current_port;
+  
   if(automation == NULL ||
      !AGS_IS_PORT(port)){
     return(NULL);
   }
 
   while(automation != NULL){
-    if(AGS_AUTOMATION(automation->data)->port == port){
+    g_object_get(automation_data,
+		 "port", &current_port,
+		 NULL);
+    
+    if(current_port == port){
       break;
     }
     
@@ -900,15 +906,15 @@ ags_automation_find_port(GList *automation,
 
 /**
  * ags_automation_find_near_timestamp:
- * @automation: a #GList containing #AgsAutomation
+ * @automation: the #GList-struct containing #AgsAutomation
  * @line: the matching audio channel
  * @timestamp: the matching timestamp
  *
  * Retrieve appropriate automation for timestamp.
  *
- * Returns: Next match.
+ * Returns: Next matching #GList-struct or %NULL if not found
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_automation_find_near_timestamp(GList *automation, guint line,
@@ -916,8 +922,14 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
 {
   AgsTimestamp *current_timestamp;
 
+  guint current_line;
+
   while(automation != NULL){
-    if(AGS_AUTOMATION(automation->data)->line != line){
+    g_object_get(automation->data,
+		 "line", &current_line,
+		 NULL);
+    
+    if(current_line != line){
       automation = automation->next;
       
       continue;
@@ -926,22 +938,15 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
     if(timestamp == NULL){
       return(automation);
     }
-    
-    current_timestamp = (AgsTimestamp *) AGS_AUTOMATION(automation->data)->timestamp;
 
+    g_object_get(automation->data,
+		 "timestamp", &current_timestamp,
+		 NULL);
+    
     if(current_timestamp != NULL){
-      if((AGS_TIMESTAMP_UNIX & (timestamp->flags)) != 0 &&
-	 (AGS_TIMESTAMP_UNIX & (current_timestamp->flags)) != 0){
-	if(current_timestamp->timer.unix_time.time_val >= timestamp->timer.unix_time.time_val &&
-	   current_timestamp->timer.unix_time.time_val < timestamp->timer.unix_time.time_val + AGS_AUTOMATION_DEFAULT_DURATION){
-	  return(automation);
-	}
-      }else if((AGS_TIMESTAMP_OFFSET & (timestamp->flags)) != 0 &&
-	       (AGS_TIMESTAMP_OFFSET & (current_timestamp->flags)) != 0){
-	if(current_timestamp->timer.ags_offset.offset >= timestamp->timer.ags_offset.offset &&
-	   current_timestamp->timer.ags_offset.offset < timestamp->timer.ags_offset.offset + AGS_AUTOMATION_DEFAULT_OFFSET){
-	  return(automation);
-	}
+      if(ags_timestamp_get_ags_offset(current_timestamp) >= ags_timestamp_get_ags_offset(timestamp) &&
+	 ags_timestamp_get_ags_offset(current_timestamp) < ags_timestamp_get_ags_offset(timestamp) + AGS_AUTOMATION_DEFAULT_OFFSET){
+	return(automation);
       }
     }
     
@@ -953,7 +958,7 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
 
 /**
  * ags_automation_find_near_timestamp_extended:
- * @automation: a #GList containing #AgsAutomation
+ * @automation: the #GList-struct containing #AgsAutomation
  * @line: the matching audio channel
  * @channel_type: the matching channel type
  * @control_name: the matching control name
@@ -961,22 +966,57 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
  *
  * Retrieve appropriate automation for timestamp.
  *
- * Returns: Next match.
+ * Returns: Next matching #GList-struct or %NULL if not found
  *
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 GList*
 ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 					    GType channel_type, gchar *control_name,
 					    AgsTimestamp *timestamp)
 {
+  AgsAutomation *current_automation;
+  
   AgsTimestamp *current_timestamp;
 
+  GType current_channel_type;
+
+  gchar *current_control_name;
+  
+  guint current_line;
+  gboolean success;
+
+  pthread_mutex_t *automation_mutex;
+
   while(automation != NULL){
-    if(AGS_AUTOMATION(automation->data)->line != line ||
-       AGS_AUTOMATION(automation->data)->channel_type != channel_type ||
-       g_strcmp0(AGS_AUTOMATION(automation->data)->control_name,
-		 control_name)){
+    current_automation = AGS_AUTOMATION(automation->data);
+    
+    /* get automation mutex */
+    pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+    automation_mutex = current_automation->obj_mutex;
+  
+    pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+    /* get some fields */
+    pthread_mutex_lock(automation_mutex);
+
+    current_line = current_automation->line;
+
+    current_channel_type = current_automation->channel_type;
+
+    current_control_name = g_strdup(current_automation->control_name);
+    
+    pthread_mutex_unlock(automation_mutex);
+
+    success = (current_line == line &&
+	       current_channel_type == channel_type &&
+	       !g_strcmp0(current_control_name,
+			  control_name)) ? TRUE: FALSE;
+
+    g_free(current_control_name);
+    
+    if(!success){
       automation = automation->next;
       
       continue;
@@ -986,21 +1026,14 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
       return(automation);
     }
     
-    current_timestamp = (AgsTimestamp *) AGS_AUTOMATION(automation->data)->timestamp;
-
+    g_object_get(current_automation,
+		 "timestamp", &current_timestamp,
+		 NULL);
+    
     if(current_timestamp != NULL){
-      if((AGS_TIMESTAMP_UNIX & (timestamp->flags)) != 0 &&
-	 (AGS_TIMESTAMP_UNIX & (current_timestamp->flags)) != 0){
-	if(current_timestamp->timer.unix_time.time_val >= timestamp->timer.unix_time.time_val &&
-	   current_timestamp->timer.unix_time.time_val < timestamp->timer.unix_time.time_val + AGS_AUTOMATION_DEFAULT_DURATION){
-	  return(automation);
-	}
-      }else if((AGS_TIMESTAMP_OFFSET & (timestamp->flags)) != 0 &&
-	       (AGS_TIMESTAMP_OFFSET & (current_timestamp->flags)) != 0){
-	if(current_timestamp->timer.ags_offset.offset >= timestamp->timer.ags_offset.offset &&
-	   current_timestamp->timer.ags_offset.offset < timestamp->timer.ags_offset.offset + AGS_AUTOMATION_DEFAULT_OFFSET){
-	  return(automation);
-	}
+      if(ags_timestamp_get_ags_offset(current_timestamp) >= ags_timestamp_get_ags_offset(timestamp) &&
+	 ags_timestamp_get_ags_offset(current_timestamp) < ags_timestamp_get_ags_offset(timestamp) + AGS_AUTOMATION_DEFAULT_OFFSET){
+	return(automation);
       }
     }
     
