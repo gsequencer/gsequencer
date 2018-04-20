@@ -21,6 +21,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/plugin/ags_plugin_port.h>
+
 #include <ags/audio/ags_automation.h>
 
 #include <stdlib.h>
@@ -76,6 +78,7 @@ enum{
   PROP_PORT_VALUE_TYPE,
   PROP_PORT_VALUE_SIZE,
   PROP_PORT_VALUE_LENGTH,
+  PROP_PLUGIN_PORT,
   PROP_CONVERSION,
   PROP_AUTOMATION,
   PROP_PORT_VALUE,
@@ -145,7 +148,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The assigned plugin.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("plugin-name",
 				   i18n_pspec("plugin-name of port"),
@@ -161,7 +164,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The assigned plugin identifier.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("specifier",
 				   i18n_pspec("specifier of port"),
@@ -177,7 +180,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The assigned plugin control port.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("control-port",
 				   i18n_pspec("control-port of port"),
@@ -193,7 +196,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * Specify port data as pointer.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_boolean("port-value-is-pointer",
 				    i18n_pspec("port-value-is-pointer indicates if value is a pointer"),
@@ -209,7 +212,7 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The port's data type.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_gtype("port-value-type",
 				  i18n_pspec("port-value-type tells you the type of the values"),
@@ -225,12 +228,13 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The port's data type size.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("port-value-size",
 				 i18n_pspec("port-value-size is the size of a single entry"),
 				 i18n_pspec("The port-value-size is the size of a single entry"),
-				 1, 8,
+				 1,
+				 8,
 				 sizeof(gdouble),
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -242,12 +246,13 @@ ags_port_class_init(AgsPortClass *port)
    *
    * The port's data array length.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("port-value-length",
 				 i18n_pspec("port-value-length is the array size"),
 				 i18n_pspec("The port-value-length is the array size"),
-				 0, 65535,
+				 0,
+				 G_MAXUINT32,
 				 1,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -255,11 +260,27 @@ ags_port_class_init(AgsPortClass *port)
 				  param_spec);
   
   /**
+   * AgsPort:plugin-port:
+   *
+   * The plugin-port.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("plugin-port",
+				   i18n_pspec("plugin port"),
+				   i18n_pspec("The plugin port"),
+				   AGS_TYPE_PLUGIN_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLUGIN_PORT,
+				  param_spec);
+
+  /**
    * AgsPort:conversion:
    *
    * The port's conversion object.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("conversion",
 				   i18n_pspec("conversion converts values"),
@@ -549,6 +570,33 @@ ags_port_set_property(GObject *gobject,
       pthread_mutex_unlock(port_mutex);
     }
     break;
+  case PROP_PLUGIN_PORT:
+    {
+      AgsPluginPort *plugin_port;
+      
+      plugin_port = g_value_get_object(value);
+
+      pthread_mutex_lock(port_mutex);
+
+      if(plugin_port == port->plugin_port){
+	pthread_mutex_unlock(port_mutex);
+	
+	return;
+      }
+
+      if(port->plugin_port != NULL){
+	g_object_unref(port->plugin_port);
+      }
+
+      if(plugin_port != NULL){
+	g_object_ref(plugin_port);
+      }
+
+      port->plugin_port = plugin_port;
+
+      pthread_mutex_unlock(port_mutex);
+    }
+    break;
   case PROP_CONVERSION:
     {
       AgsConversion *conversion;
@@ -683,6 +731,15 @@ ags_port_get_property(GObject *gobject,
       pthread_mutex_lock(port_mutex);
 
       g_value_set_uint(value, port->port_value_length);
+
+      pthread_mutex_unlock(port_mutex);
+    }
+    break;
+  case PROP_PLUGIN_PORT:
+    {
+      pthread_mutex_lock(port_mutex);
+
+      g_value_set_object(value, port->plugin_port);
 
       pthread_mutex_unlock(port_mutex);
     }

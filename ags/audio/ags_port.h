@@ -80,7 +80,7 @@ struct _AgsPort
   guint port_value_size;
   guint port_value_length;
 
-  gpointer port_descriptor;
+  GObject *plugin_port;
   AgsConversion *conversion;
 
   GList *automation;

@@ -310,7 +310,7 @@ ags_plugin_port_set_property(GObject *gobject,
 
   plugin_port = AGS_PLUGIN_PORT(gobject);
 
-  /* get base plugin mutex */
+  /* get plugin port mutex */
   pthread_mutex_lock(ags_plugin_port_get_class_mutex());
   
   plugin_port_mutex = plugin_port->obj_mutex;
@@ -479,7 +479,7 @@ ags_plugin_port_get_property(GObject *gobject,
 
   plugin_port = AGS_PLUGIN_PORT(gobject);
 
-  /* get base plugin mutex */
+  /* get plugin port mutex */
   pthread_mutex_lock(ags_plugin_port_get_class_mutex());
   
   plugin_port_mutex = plugin_port->obj_mutex;
@@ -659,13 +659,35 @@ GList*
 ags_plugin_port_find_symbol(GList *plugin_port,
 			    gchar *port_symbol)
 {
+  AgsPluginPort *current_plugin_port;
+
+  gboolean success;
+  
+  pthread_mutex_t *plugin_port_mutex;
+
   if(port_symbol == NULL){
     return(NULL);
   }
 
   while(plugin_port != NULL){
-    if(!g_strcmp0(port_symbol,
-		  AGS_PLUGIN_PORT(plugin_port->data)->port_symbol)){
+    current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
+    
+    /* get plugin port mutex */
+    pthread_mutex_lock(ags_plugin_port_get_class_mutex());
+  
+    plugin_port_mutex = current_plugin_port->obj_mutex;
+  
+    pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+    
+    /* check port symbol */
+    pthread_mutex_lock(plugin_port_mutex);
+
+    success = (!g_strcmp0(port_symbol,
+			  current_plugin_port->port_symbol)) ? TRUE: FALSE;
+    
+    pthread_mutex_unlock(plugin_port_mutex);
+
+    if(success){
       return(plugin_port);
     }
     

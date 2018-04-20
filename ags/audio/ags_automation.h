@@ -62,6 +62,7 @@ typedef struct _AgsAutomationClass AgsAutomationClass;
 
 /**
  * AgsAutomationFlags:
+ * @AGS_AUTOMATION_ADDED_TO_REGISTRY: the automation was added to registry, see #AgsConnectable::add_to_registry()
  * @AGS_AUTOMATION_CONNECTED: indicates the automation was connected by calling #AgsConnectable::connect()
  * @AGS_AUTOMATION_BYPASS: ignore any automation data
  * 
@@ -69,8 +70,9 @@ typedef struct _AgsAutomationClass AgsAutomationClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_AUTOMATION_CONNECTED            = 1,
-  AGS_AUTOMATION_BYPASS               = 1 <<  1,
+  AGS_AUTOMATION_ADDED_TO_REGISTRY    = 1,
+  AGS_AUTOMATION_CONNECTED            = 1 <<  1,
+  AGS_AUTOMATION_BYPASS               = 1 <<  2,
 }AgsAutomationFlags;
 
 struct _AgsAutomation

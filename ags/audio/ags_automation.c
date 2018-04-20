@@ -22,6 +22,7 @@
 #include <ags/libags.h>
 
 #include <ags/plugin/ags_base_plugin.h>
+#include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_port.h>
@@ -74,11 +75,11 @@ enum{
   PROP_LINE,
   PROP_TIMESTAMP,
   PROP_CONTROL_NAME,
-  PROP_PORT,
   PROP_STEPS,
   PROP_UPPER,
   PROP_LOWER,
   PROP_DEFAULT_VALUE,
+  PROP_PORT,
   PROP_ACCELERATION,
 };
 
@@ -135,7 +136,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of automation"),
@@ -146,13 +147,28 @@ ags_automation_class_init(AgsAutomationClass *automation)
 				  PROP_AUDIO,
 				  param_spec);
 
+  /**
+   * AgsAutomation:channel-type:
+   *
+   * The effect's assigned channel type.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_gtype("channel-type",
+				   i18n_pspec("channel type to apply"),
+				   i18n_pspec("The channel type to apply"),
+				   G_TYPE_NONE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL_TYPE,
+				  param_spec);
 
   /**
    * AgsAutomation:line:
    *
    * The effect's line.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_uint("line",
 				  i18n_pspec("line of effect"),
@@ -166,28 +182,27 @@ ags_automation_class_init(AgsAutomationClass *automation)
 				  param_spec);
 
   /**
-   * AgsAutomation:channel-type:
+   * AgsAutomation:timestamp:
    *
-   * The effect's assigned channel type.
+   * The automation's timestamp.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec =  g_param_spec_gtype("channel-type",
-				   i18n_pspec("channel type to apply"),
-				   i18n_pspec("The channel type to apply"),
-				   G_TYPE_NONE,
+  param_spec = g_param_spec_object("timestamp",
+				   i18n_pspec("timestamp of automation"),
+				   i18n_pspec("The timestamp of automation"),
+				   AGS_TYPE_TIMESTAMP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_CHANNEL_TYPE,
+				  PROP_TIMESTAMP,
 				  param_spec);
-
   
   /**
    * AgsAutomation:control-name:
    *
    * The effect's assigned control name.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_string("control-name",
 				    i18n_pspec("control name"),
@@ -199,33 +214,17 @@ ags_automation_class_init(AgsAutomationClass *automation)
 				  param_spec);
 
   /**
-   * AgsAutomation:port:
-   *
-   * The assigned #AgsPort
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_object("port",
-				   i18n_pspec("port of automation"),
-				   i18n_pspec("The port of automation"),
-				   AGS_TYPE_PORT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_PORT,
-				  param_spec);
-
-  /**
    * AgsAutomation:steps:
    *
    * The effect's steps.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_uint("steps",
 				  i18n_pspec("steps of effect"),
 				  i18n_pspec("The steps of effect"),
 				  0,
-				  65535,
+				  G_MAXUINT32,
 				  0,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -237,14 +236,14 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's upper.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_double("upper",
 				    i18n_pspec("upper of effect"),
 				    i18n_pspec("The upper of effect"),
-				    -65535.0,
-				    65535.0,
-				    0,
+				    -1.0 * G_MAXDOUBLE,
+				    G_MAXDOUBLE,
+				    0.0,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_UPPER,
@@ -255,14 +254,14 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's lower.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_double("lower",
 				    i18n_pspec("lower of effect"),
 				    i18n_pspec("The lower of effect"),
-				    -65535.0,
-				    65535.0,
-				    0,
+				    -1.0 * G_MAXDOUBLE,
+				    G_MAXDOUBLE,
+				    0.0,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_LOWER,
@@ -274,26 +273,41 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's default-value.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_double("default-value",
 				    i18n_pspec("default value of effect"),
 				    i18n_pspec("The default value of effect"),
-				    -65535.0,
-				    65535.0,
-				    0,
+				    -1.0 * G_MAXDOUBLE,
+				    G_MAXDOUBLE,
+				    0.0,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEFAULT_VALUE,
 				  param_spec);
 
+  /**
+   * AgsAutomation:port:
+   *
+   * The assigned #AgsPort
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("port",
+				   i18n_pspec("port of automation"),
+				   i18n_pspec("The port of automation"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PORT,
+				  param_spec);
 
   /**
    * AgsAutomation:acceleration:
    *
    * The acceleration list.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("acceleration",
 				    i18n_pspec("acceleration"),
@@ -301,22 +315,6 @@ ags_automation_class_init(AgsAutomationClass *automation)
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_ACCELERATION,
-				  param_spec);
-
-  /**
-   * AgsAutomation:timestamp:
-   *
-   * The automation's timestamp.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_object("timestamp",
-				   i18n_pspec("timestamp of automation"),
-				   i18n_pspec("The timestamp of automation"),
-				   AGS_TYPE_TIMESTAMP,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_TIMESTAMP,
 				  param_spec);
 }
 
@@ -387,7 +385,16 @@ ags_automation_set_property(GObject *gobject,
 {
   AgsAutomation *automation;
 
+  pthread_mutex_t *automation_mutex;
+
   automation = AGS_AUTOMATION(gobject);
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -396,7 +403,11 @@ ags_automation_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
-      if(automation->audio == (GObject *) audio){
+      pthread_mutex_lock(automation_mutex);
+
+      if(automation->audio == (GObject *) audio){      
+	pthread_mutex_unlock(automation_mutex);
+	
 	return;
       }
 
@@ -409,6 +420,8 @@ ags_automation_set_property(GObject *gobject,
       }
 
       automation->audio = (GObject *) audio;
+      
+      pthread_mutex_unlock(automation_mutex);
     }
     break;
   case PROP_LINE:
@@ -417,7 +430,11 @@ ags_automation_set_property(GObject *gobject,
 
       line = g_value_get_uint(value);
 
+      pthread_mutex_lock(automation_mutex);
+
       automation->line = line;
+      
+      pthread_mutex_unlock(automation_mutex);
     }
     break;
   case PROP_CHANNEL_TYPE:
@@ -426,7 +443,11 @@ ags_automation_set_property(GObject *gobject,
 
       channel_type = (GType) g_value_get_gtype(value);
 
+      pthread_mutex_lock(automation_mutex);
+
       automation->channel_type = channel_type;
+      
+      pthread_mutex_unlock(automation_mutex);
     }
     break;
   case PROP_CONTROL_NAME:
@@ -435,11 +456,15 @@ ags_automation_set_property(GObject *gobject,
 
       control_name = g_value_get_string(value);
 
+      pthread_mutex_lock(automation_mutex);
+
       if(automation->control_name != NULL){
 	g_free(automation->control_name);
       }
 
       automation->control_name = g_strdup(control_name);
+      
+      pthread_mutex_unlock(automation_mutex);
     }
     break;
   case PROP_PORT:
@@ -448,7 +473,11 @@ ags_automation_set_property(GObject *gobject,
 
       port = g_value_get_object(value);
 
-      if(automation->port == (GObject *) port){
+      pthread_mutex_lock(automation_mutex);
+
+      if(automation->port == (GObject *) port){      
+	pthread_mutex_unlock(automation_mutex);
+	
 	return;
       }
 
@@ -465,7 +494,9 @@ ags_automation_set_property(GObject *gobject,
       }
 
       automation->port = (GObject *) port;
-
+      
+      pthread_mutex_unlock(automation_mutex);
+      
       if(port->port_descriptor != NULL){
 	automation->lower = g_value_get_float(AGS_PORT_DESCRIPTOR(port->port_descriptor)->lower_value);
 	automation->upper = g_value_get_float(AGS_PORT_DESCRIPTOR(port->port_descriptor)->upper_value);
@@ -482,65 +513,17 @@ ags_automation_set_property(GObject *gobject,
       }
     }
     break;
-  case PROP_STEPS:
-    {
-      guint steps;
-
-      steps = g_value_get_uint(value);
-
-      automation->steps = steps;
-    }
-    break;
-  case PROP_UPPER:
-    {
-      gdouble upper;
-
-      upper = g_value_get_double(value);
-
-      automation->upper = upper;      
-    }
-    break;
-  case PROP_LOWER:
-    {
-      gdouble lower;
-
-      lower = g_value_get_double(value);
-
-      automation->lower = lower;      
-    }
-    break;
-  case PROP_DEFAULT_VALUE:
-    {
-      gdouble default_value;
-
-      default_value = g_value_get_double(value);
-
-      automation->default_value = default_value;      
-    }
-    break;
-  case PROP_ACCELERATION:
-    {
-      AgsAcceleration *acceleration;
-
-      acceleration = (AgsAcceleration *) g_value_get_object(value);
-
-      if(acceleration == NULL ||
-	 g_list_find(automation->acceleration, acceleration) != NULL){
-	return;
-      }
-
-      ags_automation_add_acceleration(automation,
-				      acceleration,
-				      FALSE);
-    }
-    break;
   case PROP_TIMESTAMP:
     {
       AgsTimestamp *timestamp;
 
       timestamp = (AgsTimestamp *) g_value_get_object(value);
 
+      pthread_mutex_lock(automation_mutex);
+
       if(automation->timestamp == (GObject *) timestamp){
+	pthread_mutex_unlock(automation_mutex);
+	
 	return;
       }
 
@@ -553,6 +536,82 @@ ags_automation_set_property(GObject *gobject,
       }
 
       automation->timestamp = (GObject *) timestamp;
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_STEPS:
+    {
+      guint steps;
+
+      steps = g_value_get_uint(value);
+
+      pthread_mutex_lock(automation_mutex);
+
+      automation->steps = steps;
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_UPPER:
+    {
+      gdouble upper;
+
+      upper = g_value_get_double(value);
+
+      pthread_mutex_lock(automation_mutex);
+
+      automation->upper = upper;      
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_LOWER:
+    {
+      gdouble lower;
+
+      lower = g_value_get_double(value);
+
+      pthread_mutex_lock(automation_mutex);
+
+      automation->lower = lower;      
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_DEFAULT_VALUE:
+    {
+      gdouble default_value;
+
+      default_value = g_value_get_double(value);
+
+      pthread_mutex_lock(automation_mutex);
+
+      automation->default_value = default_value;      
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_ACCELERATION:
+    {
+      AgsAcceleration *acceleration;
+
+      acceleration = (AgsAcceleration *) g_value_get_object(value);
+
+      pthread_mutex_lock(automation_mutex);
+
+      if(!AGS_IS_ACCELERATION(acceleration) ||
+	 g_list_find(automation->acceleration, acceleration) != NULL){
+	pthread_mutex_unlock(automation_mutex);
+	
+	return;
+      }
+
+      pthread_mutex_unlock(automation_mutex);
+
+      ags_automation_add_acceleration(automation,
+				      acceleration,
+				      FALSE);
     }
     break;
   default:
@@ -569,57 +628,115 @@ ags_automation_get_property(GObject *gobject,
 {
   AgsAutomation *automation;
 
+  pthread_mutex_t *automation_mutex;
+
   automation = AGS_AUTOMATION(gobject);
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
 
   switch(prop_id){
   case PROP_AUDIO:
     {
+      pthread_mutex_lock(automation_mutex);
+
       g_value_set_object(value, automation->audio);
+
+      pthread_mutex_unlock(automation_mutex);
     }
     break;
   case PROP_LINE:
     {
+      pthread_mutex_lock(automation_mutex);
+
       g_value_set_uint(value, automation->line);
+
+      pthread_mutex_unlock(automation_mutex);
     }
     break;
   case PROP_CHANNEL_TYPE:
     {
+      pthread_mutex_lock(automation_mutex);
+
       g_value_set_gtype(value, automation->channel_type);
-    }
-    break;
-  case PROP_CONTROL_NAME:
-    {
-      g_value_set_string(value, automation->control_name);
-    }
-    break;
-  case PROP_PORT:
-    {
-      g_value_set_object(value, automation->port);
-    }
-    break;
-  case PROP_STEPS:
-    {
-      g_value_set_uint(value, automation->steps);
-    }
-    break;
-  case PROP_UPPER:
-    {
-      g_value_set_double(value, automation->upper);
-    }
-    break;
-  case PROP_LOWER:
-    {
-      g_value_set_double(value, automation->lower);
-    }
-    break;
-  case PROP_DEFAULT_VALUE:
-    {
-      g_value_set_double(value, automation->default_value);
+
+      pthread_mutex_unlock(automation_mutex);
     }
     break;
   case PROP_TIMESTAMP:
     {
+      pthread_mutex_lock(automation_mutex);
+
       g_value_set_object(value, automation->timestamp);
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_CONTROL_NAME:
+    {
+      pthread_mutex_lock(automation_mutex);
+
+      g_value_set_string(value, automation->control_name);
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_STEPS:
+    {
+      pthread_mutex_lock(automation_mutex);
+
+      g_value_set_uint(value, automation->steps);
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_UPPER:
+    {
+      pthread_mutex_lock(automation_mutex);
+
+      g_value_set_double(value, automation->upper);
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_LOWER:
+    {
+      pthread_mutex_lock(automation_mutex);
+
+      g_value_set_double(value, automation->lower);
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_DEFAULT_VALUE:
+    {
+      pthread_mutex_lock(automation_mutex);
+
+      g_value_set_double(value, automation->default_value);
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_PORT:
+    {
+      pthread_mutex_lock(automation_mutex);
+
+      g_value_set_object(value, automation->port);
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_ACCELERATION:
+    {
+      pthread_mutex_lock(automation_mutex);
+
+      g_value_set_pointer(value, g_list_copy(automation->acceleration));
+
+      pthread_mutex_unlock(automation_mutex);
     }
     break;
   default:
@@ -637,18 +754,18 @@ ags_automation_dispose(GObject *gobject)
   
   automation = AGS_AUTOMATION(gobject);
 
-  /* timestamp */
-  if(automation->timestamp != NULL){
-    g_object_unref(automation->timestamp);
-
-    automation->timestamp = NULL;
-  }
-
   /* audio */
   if(automation->audio != NULL){
     g_object_unref(automation->audio);
 
     automation->audio = NULL;
+  }
+
+  /* timestamp */
+  if(automation->timestamp != NULL){
+    g_object_unref(automation->timestamp);
+
+    automation->timestamp = NULL;
   }
 
   /* source function */
@@ -699,15 +816,15 @@ ags_automation_finalize(GObject *gobject)
 
   pthread_mutexattr_destroy(automation->obj_mutexattr);
   free(automation->obj_mutexattr);
-
-  /* timestamp */
-  if(automation->timestamp != NULL){
-    g_object_unref(automation->timestamp);
-  }
   
   /* audio */
   if(automation->audio != NULL){
     g_object_unref(automation->audio);
+  }
+
+  /* timestamp */
+  if(automation->timestamp != NULL){
+    g_object_unref(automation->timestamp);
   }
 
   /* control name */
