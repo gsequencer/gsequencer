@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -79,6 +79,16 @@ GType ags_timestamp_get_type(void);
 
 pthread_mutex_t* ags_timestamp_get_class_mutex();
 
+/* flags */
+gboolean ags_timestamp_test_flags(AgsTimestamp *timestamp,
+				  guint flags);
+void ags_timestamp_set_flags(AgsTimestamp *timestamp,
+			     guint flags);
+void ags_timestamp_unset_flags(AgsTimestamp *timestamp,
+			       guint flags);
+
+/* query */
+time_t ags_timestamp_get_unix_time(AgsTimestamp *timestamp);
 guint64 ags_timestamp_get_ags_offset(AgsTimestamp *timestamp);
 
 /* */

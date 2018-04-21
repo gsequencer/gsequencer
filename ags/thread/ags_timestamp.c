@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,13 +44,13 @@ ags_timestamp_get_type (void)
 
   if(!ags_type_timestamp){
     static const GTypeInfo ags_timestamp_info = {
-      sizeof (AgsTimestampClass),
+      sizeof(AgsTimestampClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_timestamp_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsTimestamp),
+      sizeof(AgsTimestamp),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_timestamp_init,
     };
@@ -139,6 +139,152 @@ pthread_mutex_t*
 ags_timestamp_get_class_mutex()
 {
   return(&ags_timestamp_class_mutex);
+}
+
+/**
+ * ags_timestamp_test_flags:
+ * @timestamp: the #AgsTimestamp
+ * @flags: the flags
+ * 
+ * Test @flags to be set.
+ * 
+ * Returns: if @flags set returning %TRUE otherwise %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_timestamp_test_flags(AgsTimestamp *timestamp,
+			 guint flags)
+{
+  gboolean success;
+  
+  pthread_mutex_t *timestamp_mutex;
+
+  if(!AGS_IS_TIMESTAMP(timestamp)){
+    return(FALSE);
+  }
+  
+  /* get timestamp mutex */
+  pthread_mutex_lock(ags_timestamp_get_class_mutex());
+  
+  timestamp_mutex = timestamp->obj_mutex;
+  
+  pthread_mutex_unlock(ags_timestamp_get_class_mutex());
+
+  /* test flags */
+  pthread_mutex_lock(timestamp_mutex);
+
+  success = ((flags & (timestamp->flags)) != 0) ? TRUE: FALSE;
+
+  pthread_mutex_unlock(timestamp_mutex);
+
+  return(success);
+}
+
+/**
+ * ags_timestamp_set_flags:
+ * @timestamp: the #AgsTimestamp
+ * @flags: the flags
+ * 
+ * Set @flags of @timestamp.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_timestamp_set_flags(AgsTimestamp *timestamp,
+			guint flags)
+{
+  pthread_mutex_t *timestamp_mutex;
+
+  if(!AGS_IS_TIMESTAMP(timestamp)){
+    return;
+  }
+  
+  /* get timestamp mutex */
+  pthread_mutex_lock(ags_timestamp_get_class_mutex());
+  
+  timestamp_mutex = timestamp->obj_mutex;
+  
+  pthread_mutex_unlock(ags_timestamp_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(timestamp_mutex);
+
+  timestamp->flags |= flags;
+
+  pthread_mutex_unlock(timestamp_mutex);
+}
+
+/**
+ * ags_timestamp_unset_flags:
+ * @timestamp: the #AgsTimestamp
+ * @flags: the flags
+ * 
+ * Unset @flags of @timestamp.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_timestamp_unset_flags(AgsTimestamp *timestamp,
+			  guint flags)
+{
+  pthread_mutex_t *timestamp_mutex;
+
+  if(!AGS_IS_TIMESTAMP(timestamp)){
+    return;
+  }
+  
+  /* get timestamp mutex */
+  pthread_mutex_lock(ags_timestamp_get_class_mutex());
+  
+  timestamp_mutex = timestamp->obj_mutex;
+  
+  pthread_mutex_unlock(ags_timestamp_get_class_mutex());
+
+  /* unset flags */
+  pthread_mutex_lock(timestamp_mutex);
+
+  timestamp->flags &= (~flags);
+
+  pthread_mutex_unlock(timestamp_mutex);
+}
+
+/**
+ * ags_timestamp_get_unix_time:
+ * @timestamp: the #AgsTimestamp
+ * 
+ * Get unix time.
+ * 
+ * Returns: the unix time as time_t value
+ * 
+ * Since: 2.0.0
+ */
+guint64
+ags_timestamp_get_unix_time(AgsTimestamp *timestamp)
+{
+  time_t unix_time;
+
+  pthread_mutex_t *timestamp_mutex;
+
+  if(!AGS_IS_TIMESTAMP(timestamp)){
+    return(0);
+  }
+  
+  /* get timestamp mutex */
+  pthread_mutex_lock(ags_timestamp_get_class_mutex());
+  
+  timestamp_mutex = timestamp->obj_mutex;
+  
+  pthread_mutex_unlock(ags_timestamp_get_class_mutex());
+
+  /* get ags offset */
+  pthread_mutex_lock(timestamp_mutex);
+  
+  unix_time = timestamp->timer.unix_time.time_val;
+
+  pthread_mutex_unlock(timestamp_mutex);
+  
+  return(unix_time);
 }
 
 /**
