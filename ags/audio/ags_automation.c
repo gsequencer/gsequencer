@@ -1860,10 +1860,18 @@ ags_automation_remove_region_from_selection(AgsAutomation *automation,
   g_list_free(region);
 }
 
+/**
+ * ags_automation_add_all_to_selection:
+ * @automation: the #AgsAutomation
+ * 
+ * Add all acceleration to selection.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_automation_add_all_to_selection(AgsAutomation *automation)
 {
-  GList *list, *list_start;
+  GList *list;
   
   pthread_mutex_t *automation_mutex;
 
@@ -1881,10 +1889,7 @@ ags_automation_add_all_to_selection(AgsAutomation *automation)
   /* select all */
   pthread_mutex_lock(automation_mutex);
 
-  list =
-    list_start = g_list_copy(automation->acceleration);
-
-  pthread_mutex_unlock(automation_mutex);
+  list = automation->acceleration;
 
   while(list != NULL){
     ags_automation_add_acceleration(automation,
@@ -1893,34 +1898,47 @@ ags_automation_add_all_to_selection(AgsAutomation *automation)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  pthread_mutex_unlock(automation_mutex);
 }
 
 /**
  * ags_automation_copy_selection:
- * @automation: an #AgsAutomation
+ * @automation: the #AgsAutomation
  *
  * Copy selection to clipboard.
  *
- * Returns: the selection as XML.
+ * Returns: the selection as xmlNode
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 xmlNode*
 ags_automation_copy_selection(AgsAutomation *automation)
 {
-  AgsAcceleration *acceleration;
-
   xmlNode *automation_node, *current_acceleration;
 
   GList *selection;
 
+  guint current_x;
+  gdouble current_y;
   guint x_boundary;
   gdouble y_boundary;
   
-  selection = automation->selection;
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
 
   /* create root node */
+  pthread_mutex_lock(automation_mutex);
+
   automation_node = xmlNewNode(NULL, BAD_CAST "automation");
 
   xmlNewProp(automation_node, BAD_CAST "program", BAD_CAST "ags");
@@ -1933,7 +1951,11 @@ ags_automation_copy_selection(AgsAutomation *automation)
   selection = automation->selection;
 
   if(selection != NULL){
-    x_boundary = AGS_ACCELERATION(selection->data)->x;
+    g_object_get(selection->data,
+		 "x", &current_x,
+		 NULL);
+    
+    x_boundary = current_x;
     y_boundary = G_MAXDOUBLE;
   }else{
     x_boundary = 0;
@@ -1941,18 +1963,24 @@ ags_automation_copy_selection(AgsAutomation *automation)
   }
 
   while(selection != NULL){
-    acceleration = AGS_ACCELERATION(selection->data);
+    g_object_get(selection->data,
+		 "x", &current_x,
+		 "y", &current_y,
+		 NULL);
+
     current_acceleration = xmlNewChild(automation_node, NULL, BAD_CAST "acceleration", NULL);
 
-    xmlNewProp(current_acceleration, BAD_CAST "x", BAD_CAST g_strdup_printf("%u", acceleration->x));
-    xmlNewProp(current_acceleration, BAD_CAST "y", BAD_CAST g_strdup_printf("%f", acceleration->y));
+    xmlNewProp(current_acceleration, BAD_CAST "x", BAD_CAST g_strdup_printf("%u", current_x));
+    xmlNewProp(current_acceleration, BAD_CAST "y", BAD_CAST g_strdup_printf("%f", current_y));
 
-    if(y_boundary > acceleration->y){
-      y_boundary = acceleration->y;
+    if(y_boundary > current_y){
+      y_boundary = current_y;
     }
 
     selection = selection->next;
   }
+
+  pthread_mutex_unlock(automation_mutex);
 
   xmlNewProp(automation_node, BAD_CAST "x-boundary", BAD_CAST g_strdup_printf("%u", x_boundary));
   xmlNewProp(automation_node, BAD_CAST "y-boundary", BAD_CAST g_strdup_printf("%f", y_boundary));
@@ -1962,52 +1990,53 @@ ags_automation_copy_selection(AgsAutomation *automation)
 
 /**
  * ags_automation_cut_selection:
- * @automation: an #AgsAutomation
+ * @automation: the #AgsAutomation
  *
  * Cut selection to clipboard.
  *
  * Returns: the selection as XML.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 xmlNode*
 ags_automation_cut_selection(AgsAutomation *automation)
 {
   xmlNode *automation_node;
+  
   GList *selection, *acceleration;
   
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* copy selection */
   automation_node = ags_automation_copy_selection(automation);
 
+  /* cut */
+  pthread_mutex_lock(automation_mutex);
+
   selection = automation->selection;
-  acceleration = automation->acceleration;
 
   while(selection != NULL){
-    acceleration = g_list_find(acceleration, selection->data);
-
-    if(acceleration->prev == NULL){
-      automation->acceleration = g_list_remove_link(acceleration, acceleration);
-      acceleration = automation->acceleration;
-    }else{
-      GList *next_acceleration;
-
-      next_acceleration = acceleration->next;
-      acceleration->prev->next = next_acceleration;
-
-      if(next_acceleration != NULL){
-	next_acceleration->prev = acceleration->prev;
-      }
-      
-      g_list_free1(acceleration);
-
-      acceleration = next_acceleration;
-    }
-
-    AGS_ACCELERATION(selection->data)->flags &= (~AGS_ACCELERATION_IS_SELECTED);
+    automation->acceleration = g_list_remove(automation->acceleration,
+					     selection->data);
     g_object_unref(selection->data);
 
     selection = selection->next;
   }
 
+  pthread_mutex_unlock(automation_mutex);
+
+  /* free selection */
   ags_automation_free_selection(automation);
 
   return(automation_node);
@@ -2028,10 +2057,15 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
   void ags_automation_insert_from_clipboard_version_0_4_3()
   {
     AgsAcceleration *acceleration;
+
+    AgsTimestamp *timestamp;
+    
     xmlNode *node;
+
     char *endptr;
-    guint x_boundary_val, y_boundary_val;
     char *x, *y;
+
+    guint x_boundary_val, y_boundary_val;
     guint x_val;
     gdouble y_val;
     guint base_x_difference, base_y_difference;
@@ -2174,8 +2208,12 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
 	}
 	
 	/* add acceleration */
+	g_object_get(automation,
+		     "timestamp", &timestamp,
+		     NULL);
+	
 	if(!match_timestamp ||
-	   x_val < automation->timestamp->timer.ags_offset.offset + AGS_AUTOMATION_DEFAULT_OFFSET){
+	   x_val < ags_timestamp_get_ags_offset(timestamp) + AGS_AUTOMATION_DEFAULT_OFFSET){
 	  acceleration = ags_acceleration_new();
 	  
 	  acceleration->x = x_val;
@@ -2216,106 +2254,19 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
   }
 }
 
-void
-ags_automation_merge_clipboard(xmlNode *audio_node,
-			       xmlNode *automation_node)
-{
-  xmlNode *find_automation;
-  xmlNode *find_acceleration;
-  xmlNode *child;
-
-  auto gboolean ags_automation_merge_clipboard_find_acceleration(xmlNode *automation_node,
-								 xmlChar *x,
-								 xmlChar *y);
-  
-  gboolean ags_automation_merge_clipboard_find_acceleration(xmlNode *automation_node,
-							    xmlChar *x,
-							    xmlChar *y){
-    xmlNode *child;
-    
-    child = automation_node->children;
-  
-    while(child != NULL){
-      if(child->type == XML_ELEMENT_NODE){
-	if(!xmlStrncmp(child->name,
-		       "acceleration",
-		       13)){
-	  if(!xmlStrcmp(xmlGetProp(child,
-				   "x"),
-			x) &&
-	     !xmlStrcmp(xmlGetProp(child,
-				   "y"),
-			y)){
-	    return(TRUE);
-	  }
-	}
-      }
-
-      child = child->next;
-    }
-    
-    return(FALSE);
-  }
-  
-  if(audio_node == NULL ||
-     automation_node == NULL){
-    return;
-  }
-
-  find_automation = audio_node->children;
-
-  while(find_automation != NULL){
-    if(find_automation->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp(find_automation->name,
-		     "automation",
-		     11)){
-	if(!xmlStrcmp(xmlGetProp(find_automation,
-				 "line"),
-		      xmlGetProp(automation_node,
-				 "line")) &&
-	   !xmlStrcmp(xmlGetProp(find_automation,
-				 "control-name"),
-		      xmlGetProp(automation_node,
-				 "control-name"))){
-	  break;
-	}
-      }
-    }
-
-    find_automation = find_automation->next;
-  }
-
-  if(find_automation == NULL){
-    xmlAddChild(audio_node,
-		xmlCopyNode(automation_node,
-			    1));
-    
-    return;
-  }
-
-  child = automation_node->children;
-  
-  while(child != NULL){
-    if(child->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp(child->name,
-		     "acceleration",
-		     13)){
-	if(!ags_automation_merge_clipboard_find_acceleration(find_automation,
-							     xmlGetProp(child,
-									"x"),
-							     xmlGetProp(child,
-									"y"))){
-	  xmlAddChild(find_automation,
-		      xmlCopyNode(child,
-				  1));
-	}
-      }
-    }
-
-    child = child->next;
-  }
-}
-
+/**
+ * ags_automation_insert_from_clipboard:
+ * @automation: the #AgsAutomation
+ * @automation_node: the xmlNode
+ * @reset_x_offset: if %TRUE reset x offset
+ * @x_offset: the x offset to use
+ * @reset_y_offset: if %TRUE reset y offset
+ * @y_offset: the y offset to use
+ * 
+ * Insert clipboard @automation_node to @automation.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_automation_insert_from_clipboard(AgsAutomation *automation,
 				     xmlNode *automation_node,
@@ -2329,6 +2280,21 @@ ags_automation_insert_from_clipboard(AgsAutomation *automation,
 						FALSE, FALSE);
 }
 
+/**
+ * ags_automation_insert_from_clipboard_extended:
+ * @automation: the #AgsAutomation
+ * @automation_node: the xmlNode
+ * @reset_x_offset: if %TRUE reset x offset
+ * @x_offset: the x offset to use
+ * @reset_y_offset: if %TRUE reset y offset
+ * @y_offset: the y offset to use
+ * @match_line: if %TRUE match line or discard
+ * @no_duplicates: if %TRUE eliminate duplicates
+ * 
+ * Insert clipboard @automation_node to @automation.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_automation_insert_from_clipboard_extended(AgsAutomation *automation,
 					      xmlNode *automation_node,
@@ -2374,112 +2340,165 @@ ags_automation_insert_from_clipboard_extended(AgsAutomation *automation,
   }
 }
 
-GList*
-ags_automation_get_current(AgsAutomation *automation)
-{
-  //TODO:JK: implement me
-
-  return(NULL);
-}
-
 /**
  * ags_automation_get_specifier_unique:
- * @automation: a #GList containing #AgsAutomation
+ * @automation: the #GList-struct containing #AgsAutomation
  *
  * Retrieve automation port specifier.
  *
  * Returns: a %NULL terminated string array
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar**
 ags_automation_get_specifier_unique(GList *automation)
 {
-  gchar **specifier, **current;
-
+  AgsAutomation *current_automation;
+  
+  gchar **specifier;
+  gchar *current_control_name;
+  
   guint length, i;
   gboolean contains_control_name;
-    
+
+  pthread_mutex_t *automation_mutex;
+
+  if(automation == NULL){
+    return(NULL);
+  }
+  
   specifier = (gchar **) malloc(sizeof(gchar*));
   specifier[0] = NULL;
   length = 1;
   
   while(automation != NULL){
-    current = specifier;
+    current_automation = automation->data;
+    
+    /* get automation mutex */
+    pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+    automation_mutex = current_automation->obj_mutex;
+  
+    pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+    /* duplicate control name */
+    pthread_mutex_lock(automation_mutex);
+
+    current_control_name = g_strdup(current_automation->control_name);
+    
+    pthread_mutex_unlock(automation_mutex);
     
 #ifdef HAVE_GLIB_2_44
     contains_control_name = g_strv_contains(specifier,
-					    AGS_AUTOMATION(automation->data)->control_name);
+					    current_control_name);
 #else
     contains_control_name = ags_strv_contains(specifier,
-					      AGS_AUTOMATION(automation->data)->control_name);
+					      current_control_name);
 #endif
     
     if(!contains_control_name){
       specifier = (gchar **) realloc(specifier,
 				     (length + 1) * sizeof(gchar *));
-      specifier[length - 1] = AGS_AUTOMATION(automation->data)->control_name;
+      specifier[length - 1] = current_control_name;
       specifier[length] = NULL;
 
       length++;
+    }else{
+      g_free(current_control_name);
     }
-      
+
+    /* iterate */
     automation = automation->next;
   }
-    
+  
   return(specifier);
 }
 
 /**
  * ags_automation_get_specifier_unique_with_channel_type:
- * @automation: a #GList containing #AgsAutomation
+ * @automation: the #GList-struct containing #AgsAutomation
  * @channel_type: the channel's #GType
  *
  * Retrieve automation port specifier.
  *
  * Returns: a %NULL terminated string array
  *
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 gchar**
 ags_automation_get_specifier_unique_with_channel_type(GList *automation,
 						      GType channel_type)
 {
-  gchar **specifier, **current;
+  AgsAutomation *current_automation;  
+
+  GType current_channel_type;
+
+  gchar **specifier;
+  gchar *current_control_name;
 
   guint length, i;
   gboolean contains_control_name;
+
+  pthread_mutex_t *automation_mutex;
+
+  if(automation == NULL){
+    return(NULL);
+  }
     
   specifier = (gchar **) malloc(sizeof(gchar*));
   specifier[0] = NULL;
   length = 1;
   
   while(automation != NULL){
-    current = specifier;
+    current_automation = automation->data;
+    
+    /* get automation mutex */
+    pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+    automation_mutex = current_automation->obj_mutex;
+  
+    pthread_mutex_unlock(ags_automation_get_class_mutex());
 
-    if(AGS_AUTOMATION(automation->data)->channel_type != channel_type){
+    /* get channel type */
+    pthread_mutex_lock(automation_mutex);
+
+    current_channel_type = current_automation->channel_type;
+
+    pthread_mutex_unlock(automation_mutex);
+    
+    if(current_channel_type != channel_type){
       automation = automation->next;
 
       continue;
     }
+
+    /* duplicate control name */
+    pthread_mutex_lock(automation_mutex);
+
+    current_control_name = g_strdup(current_automation->control_name);
+    
+    pthread_mutex_unlock(automation_mutex);
     
 #ifdef HAVE_GLIB_2_44
     contains_control_name = g_strv_contains(specifier,
-					    AGS_AUTOMATION(automation->data)->control_name);
+					    current_control_name);
 #else
     contains_control_name = ags_strv_contains(specifier,
-					      AGS_AUTOMATION(automation->data)->control_name);
+					      current_control_name);
 #endif
     
     if(!contains_control_name){
       specifier = (gchar **) realloc(specifier,
 				     (length + 1) * sizeof(gchar *));
-      specifier[length - 1] = AGS_AUTOMATION(automation->data)->control_name;
+      specifier[length - 1] = current_control_name;
       specifier[length] = NULL;
 
       length++;
+    }else{
+      g_free(current_control_name);
     }
-      
+
+    /* iterate */
     automation = automation->next;
   }
     
@@ -2488,22 +2507,50 @@ ags_automation_get_specifier_unique_with_channel_type(GList *automation,
 
 /**
  * ags_automation_find_specifier:
- * @automation: a #GList-struct containing #AgsAutomation
+ * @automation: the #GList-struct containing #AgsAutomation
  * @specifier: the string specifier to find
  *
  * Find port specifier.
  *
  * Returns: Next matching #GList
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_automation_find_specifier(GList *automation,
 			      gchar *specifier)
 {
+  AgsAutomation *current_automation;
+  
+  gchar *current_control_name;
+
+  gboolean success;
+  
+  pthread_mutex_t *automation_mutex;
+ 
   while(automation != NULL){
-    if(!g_ascii_strcasecmp(AGS_AUTOMATION(automation->data)->control_name,
-			   specifier)){
+    current_automation = automation->data;
+
+    /* get automation mutex */
+    pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+    automation_mutex = current_automation->obj_mutex;
+  
+    pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+    /* duplicate control name */
+    pthread_mutex_lock(automation_mutex);
+
+    current_control_name = g_strdup(current_automation->control_name);
+    
+    pthread_mutex_unlock(automation_mutex);
+
+    /* check control name */
+    success = (!g_ascii_strcasecmp(current_control_name,
+				   specifier)) ? TRUE: FALSE;
+    g_free(current_control_name);
+    
+    if(success){
       break;
     }
 

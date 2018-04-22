@@ -170,8 +170,6 @@ void ags_automation_add_all_to_selection(AgsAutomation *automation);
 
 xmlNode* ags_automation_copy_selection(AgsAutomation *automation);
 xmlNode* ags_automation_cut_selection(AgsAutomation *automation);
-void ags_automation_merge_clipboard(xmlNode *audio_node,
-				    xmlNode *automation_node);
 
 void ags_automation_insert_from_clipboard(AgsAutomation *automation,
 					  xmlNode *automation_node,
@@ -183,8 +181,6 @@ void ags_automation_insert_from_clipboard_extended(AgsAutomation *automation,
 						   gboolean reset_x_offset, guint x_offset,
 						   gboolean reset_y_offset, gdouble y_offset,
 						   gboolean match_line, gboolean no_duplicates);
-
-GList* ags_automation_get_current(AgsAutomation *automation);
 
 gchar** ags_automation_get_specifier_unique(GList *automation);
 gchar** ags_automation_get_specifier_unique_with_channel_type(GList *automation,
