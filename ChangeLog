@@ -4,6 +4,7 @@ ags (1.4.26)
 	* fixed wrong ref count in ags_automation.c
 	* fixed wrong ref count in ags_notation.c
 	* fixed allow select all first and last acceleration of automation
+	* improved AgsExportWindow to reset backend
 
 ags (1.4.25)
 
