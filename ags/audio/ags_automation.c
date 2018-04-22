@@ -1157,6 +1157,7 @@ ags_automation_add_acceleration(AgsAutomation *automation,
   g_object_ref(acceleration);
   
   if(use_selection_list){
+    acceleration->flags |= AGS_ACCELERATION_IS_SELECTED;
     automation->selection = g_list_insert_sorted(automation->selection,
 						 acceleration,
 						 (GCompareFunc) ags_automation_add_acceleration_compare_function);
@@ -1412,12 +1413,12 @@ ags_automation_add_point_to_selection(AgsAutomation *automation,
     }
   }else{
     /* add to or replace selection */
-    acceleration->flags |= AGS_ACCELERATION_IS_SELECTED;
-    g_object_ref(acceleration);
-
     if(replace_current_selection){
       GList *list;
 
+      acceleration->flags |= AGS_ACCELERATION_IS_SELECTED;
+      g_object_ref(acceleration);
+      
       list = g_list_alloc();
       list->data = acceleration;
       
@@ -1449,7 +1450,7 @@ ags_automation_remove_point_from_selection(AgsAutomation *automation,
 
   acceleration = ags_automation_find_point(automation,
 					   x, y,
-					   FALSE);
+					   TRUE);
 
   if(acceleration != NULL){
     acceleration->flags &= (~AGS_ACCELERATION_IS_SELECTED);
@@ -1493,8 +1494,6 @@ ags_automation_add_region_to_selection(AgsAutomation *automation,
       acceleration = AGS_ACCELERATION(region->data);
 
       if(!ags_automation_is_acceleration_selected(automation, acceleration)){
-	acceleration->flags |= AGS_ACCELERATION_IS_SELECTED;
-	g_object_ref(G_OBJECT(acceleration));
 	ags_automation_add_acceleration(automation,
 					acceleration,
 					TRUE);
@@ -1556,9 +1555,8 @@ ags_automation_add_all_to_selection(AgsAutomation *automation)
   }
   
   acceleration = automation->acceleration;
-  acceleration = acceleration->next;
   
-  while(acceleration->next != NULL){
+  while(acceleration != NULL){
     AGS_ACCELERATION(acceleration->data)->flags |= AGS_ACCELERATION_IS_SELECTED;
     
     acceleration = acceleration->next;

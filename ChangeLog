@@ -1,3 +1,10 @@
+ags (1.4.26)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wrong ref count in ags_automation.c
+	* fixed wrong ref count in ags_notation.c
+	* fixed allow select all first and last acceleration of automation
+
 ags (1.4.25)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

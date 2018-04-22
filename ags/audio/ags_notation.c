@@ -943,6 +943,7 @@ ags_notation_add_note(AgsNotation *notation,
   g_object_ref(note);
   
   if(use_selection_list){
+    note->flags |= AGS_NOTE_IS_SELECTED;
     notation->selection = g_list_insert_sorted(notation->selection,
 					       note,
 					       (GCompareFunc) ags_note_sort_func);
@@ -1338,11 +1339,11 @@ ags_notation_add_point_to_selection(AgsNotation *notation,
     }
   }else{
     /* add to or replace selection */
-    note->flags |= AGS_NOTE_IS_SELECTED;
-    g_object_ref(note);
-
     if(replace_current_selection){
       GList *list;
+
+      note->flags |= AGS_NOTE_IS_SELECTED;
+      g_object_ref(note);
 
       list = g_list_alloc();
       list->data = note;
@@ -1433,8 +1434,6 @@ ags_notation_add_region_to_selection(AgsNotation *notation,
       note = AGS_NOTE(region->data);
 
       if(!ags_notation_is_note_selected(notation, note)){
-	note->flags |= AGS_NOTE_IS_SELECTED;
-	g_object_ref(G_OBJECT(note));
 	ags_notation_add_note(notation,
 			      note,
 			      TRUE);
