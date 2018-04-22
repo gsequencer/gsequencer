@@ -1079,7 +1079,7 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
  * 
  * Returns: the new beginning of @automation
  * 
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 GList*
 ags_automation_add(GList *automation,
@@ -1091,19 +1091,28 @@ ags_automation_add(GList *automation,
   gint ags_automation_add_compare(gconstpointer a,
 				  gconstpointer b)
   {
-    if(AGS_AUTOMATION(a)->timestamp->timer.ags_offset.offset == AGS_AUTOMATION(b)->timestamp->timer.ags_offset.offset){
+    AgsTimestamp *timestamp_a, *timestamp_b;
+
+    g_object_get(a,
+		 "timestamp", &timestamp_a,
+		 NULL);
+
+    g_object_get(b,
+		 "timestamp", &timestamp_b,
+		 NULL);
+    
+    if(ags_timestamp_get_ags_offset(timestamp_a) == ags_timestamp_get_ags_offset(timestamp_b)){
       return(0);
-    }else if(AGS_AUTOMATION(a)->timestamp->timer.ags_offset.offset < AGS_AUTOMATION(b)->timestamp->timer.ags_offset.offset){
+    }else if(ags_timestamp_get_ags_offset(timestamp_a) < ags_timestamp_get_ags_offset(timestamp_b)){
       return(-1);
-    }else if(AGS_AUTOMATION(a)->timestamp->timer.ags_offset.offset > AGS_AUTOMATION(b)->timestamp->timer.ags_offset.offset){
+    }else if(ags_timestamp_get_ags_offset(timestamp_a) > ags_timestamp_get_ags_offset(timestamp_b)){
       return(1);
     }
 
     return(0);
   }
   
-  if(!AGS_IS_AUTOMATION(new_automation) ||
-     !AGS_IS_TIMESTAMP(new_automation->timestamp)){
+  if(!AGS_IS_AUTOMATION(new_automation)){
     return(automation);
   }
   
@@ -1116,93 +1125,156 @@ ags_automation_add(GList *automation,
 
 /**
  * ags_automation_add_acceleration:
- * @automation: an #AgsAutomation
+ * @automation: the #AgsAutomation
  * @acceleration: the #AgsAcceleration to add
  * @use_selection_list: if %TRUE add to selection, else to default automation
  *
- * Adds a acceleration to automation.
+ * Adds @acceleration to @automation.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_automation_add_acceleration(AgsAutomation *automation,
 				AgsAcceleration *acceleration,
 				gboolean use_selection_list)
 {
-  GList *list, *list_new;
+  pthread_mutex_t *automation_mutex;
 
   auto gint ags_automation_add_acceleration_compare_function(gpointer a, gpointer b);
 
   gint ags_automation_add_acceleration_compare_function(gpointer a, gpointer b){
-    if(AGS_ACCELERATION(a)->x == AGS_ACCELERATION(b)->x){
+    guint a_x, b_x;
+
+    g_object_get(a,
+		 "x", &a_x,
+		 NULL);
+    
+    g_object_get(b,
+		 "x", &b_x,
+		 NULL);
+    
+    if(a_x == b_x){
       return(0);
     }
 
-    if(AGS_ACCELERATION(a)->x < AGS_ACCELERATION(b)->x){
+    if(a_x < b_x){
       return(-1);
     }else{
       return(1);
     }
   }
 
-  if(acceleration == NULL){
+  if(!AGS_IS_AUTOMATION(automation) ||
+     !AGS_IS_ACCELERATION(acceleration)){
     return;
   }
 
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* insert sorted */
   g_object_ref(acceleration);
   
+  pthread_mutex_lock(automation_mutex);
+
   if(use_selection_list){
     automation->selection = g_list_insert_sorted(automation->selection,
 						 acceleration,
 						 (GCompareFunc) ags_automation_add_acceleration_compare_function);
+    ags_acceleration_set_flags(acceleration,
+			       AGS_ACCELERATION_IS_SELECTED);
   }else{
     automation->acceleration = g_list_insert_sorted(automation->acceleration,
 						    acceleration,
 						    (GCompareFunc) ags_automation_add_acceleration_compare_function);
   }
+
+  pthread_mutex_unlock(automation_mutex);
 }
 
 /**
  * ags_automation_remove_acceleration_at_position:
- * @automation: an #AgsAutomation
- * @x: offset
- * @y: acceleration
+ * @automation: the #AgsAutomation
+ * @x: x offset
+ * @y: y value of acceleration
  *
  * Removes one #AgsAcceleration of automation.
  *
- * Returns: %TRUE if successfully removed acceleration.
+ * Returns: %TRUE if successfully removed acceleration, else %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
 					       guint x, gdouble y)
 {
-  GList *list, *current;
-  gboolean retval;
+  AgsAcceleration *acceleration;
   
+  GList *list, *current;
+
+  guint current_x;
+  gdouble current_y;
+  gboolean retval;
+
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(FALSE);
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* find acceleration */
+  pthread_mutex_lock(automation_mutex);
+
   list = automation->acceleration;
+
+  acceleration = NULL;
   current = NULL;
+
   retval = FALSE;
   
   while(list != NULL){
-    if(AGS_ACCELERATION(list->data)->x == x &&
-       (AGS_ACCELERATION(list->data)->y - ((automation->upper - automation->lower) / AGS_AUTOMATION_MAXIMUM_STEPS) <= y &&
-	AGS_ACCELERATION(list->data)->y + ((automation->upper - automation->lower) / AGS_AUTOMATION_MAXIMUM_STEPS) >= y)){
+    g_object_get(list->data,
+		 "x", &current_x,
+		 "y", &current_y,
+		 NULL);
+    
+    if(current_x == x &&
+       (current_y - ((automation->upper - automation->lower) / AGS_AUTOMATION_MAXIMUM_STEPS) <= y &&
+	current_y + ((automation->upper - automation->lower) / AGS_AUTOMATION_MAXIMUM_STEPS) >= y)){
+      acceleration = list->data;
       current = list;
+      
       retval = TRUE;
+      
       break;
     }
 
-    if(AGS_ACCELERATION(list->data)->x > x){
+    if(current_x > x){
       break;
     }
     
     list = list->next;
   }
 
-  automation->acceleration = g_list_delete_link(automation->acceleration,
-						current);
+  /* delete link and unref */
+  if(retval){
+    automation->acceleration = g_list_delete_link(automation->acceleration,
+						  current);
+    g_object_unref(acceleration);
+  }
+  
+  pthread_mutex_unlock(automation_mutex);
 
   return(retval);
 }
@@ -1215,12 +1287,34 @@ ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
  *
  * Returns: the selection.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_automation_get_selection(AgsAutomation *automation)
 {
-  return(automation->selection);
+  GList *selection;
+
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(NULL);
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* selection */
+  pthread_mutex_lock(automation_mutex);
+
+  selection = automation->selection;
+  
+  pthread_mutex_unlock(automation_mutex);
+  
+  return(selection);
 }
 
 /**
@@ -1230,47 +1324,106 @@ ags_automation_get_selection(AgsAutomation *automation)
  *
  * Check selection for acceleration.
  *
- * Returns: %TRUE if selected
+ * Returns: %TRUE if selected, else %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_automation_is_acceleration_selected(AgsAutomation *automation, AgsAcceleration *acceleration)
 {
   GList *selection;
 
-  selection = automation->selection;
+  guint x, current_x;
+  gboolean retval;
+  
+  pthread_mutex_t *automation_mutex;
 
-  while(selection != NULL && AGS_ACCELERATION(selection->data)->x <= acceleration->x){
+  if(!AGS_IS_AUTOMATION(automation) ||
+     !AGS_IS_ACCELERATION(acceleration)){
+    return(FALSE);
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* get x */
+  g_object_get(acceleration,
+	       "x", &x,
+	       NULL);
+  
+  /* match acceleration */
+  pthread_mutex_lock(automation_mutex);
+
+  selection = automation->selection;
+  retval = FALSE;
+  
+  while(selection != NULL){
+    /* get current x */
+    g_object_get(selection->data,
+		 "x", &current_x,
+		 NULL);
+
+    if(current_x > x){
+      break;
+    }
+    
     if(selection->data == acceleration){
-      return(TRUE);
+      retval = TRUE;
+
+      break;
     }
 
     selection = selection->next;
   }
 
-  return(FALSE);
+  pthread_mutex_unlock(automation_mutex);
+
+  return(retval);
 }
 
 /**
  * ags_automation_find_point:
- * @automation: an #AgsAutomation
- * @x: offset
- * @y: acceleration, will be ignored
+ * @automation: the #AgsAutomation
+ * @x: x offset
+ * @y: y value acceleration, will be ignored
  * @use_selection_list: if %TRUE selection is searched
  *
  * Find acceleration by offset and acceleration.
  *
  * Returns: the matching acceleration.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */ 
 AgsAcceleration*
 ags_automation_find_point(AgsAutomation *automation,
 			  guint x, gdouble y,
 			  gboolean use_selection_list)
 {
+  AgsAcceleration *retval;
+  
   GList *acceleration;
+
+  guint current_x;
+
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(NULL);
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* find acceleration */
+  pthread_mutex_lock(automation_mutex);
 
   if(use_selection_list){
     acceleration = automation->selection;
@@ -1278,21 +1431,32 @@ ags_automation_find_point(AgsAutomation *automation,
     acceleration = automation->acceleration;
   }
 
-  while(acceleration != NULL && AGS_ACCELERATION(acceleration->data)->x < x){
+  retval = NULL;
+  
+  while(acceleration != NULL){
+    g_object_get(acceleration->data,
+		 "x", &current_x,
+		 NULL);
+    
+    if(current_x > x){
+      break;
+    }
+
+    if(current_x == x){
+      retval = acceleration->data;
+
+      break;
+    }
+    
     acceleration = acceleration->next;
   }
 
-  if(acceleration == NULL ||
-     AGS_ACCELERATION(acceleration->data)->x != x){
-    return(NULL);
-  }else{
-    return(acceleration->data);
-  }
+  return(retval);
 }
 
 /**
  * ags_automation_find_region:
- * @automation: an #AgsAutomation
+ * @automation: the #AgsAutomation
  * @x0: start offset
  * @y0: start tone
  * @x1: end offset
@@ -1303,7 +1467,7 @@ ags_automation_find_point(AgsAutomation *automation,
  *
  * Returns: the matching acceleration as #GList.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_automation_find_region(AgsAutomation *automation,
@@ -1311,10 +1475,24 @@ ags_automation_find_region(AgsAutomation *automation,
 			   guint x1, gdouble y1,
 			   gboolean use_selection_list)
 {
-  AgsAcceleration *current;
-
   GList *acceleration;
   GList *region;
+
+  guint current_x;
+  gdouble current_y;
+  
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(NULL);
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
 
   if(y0 > y1){
     gdouble tmp_y;
@@ -1324,25 +1502,47 @@ ags_automation_find_region(AgsAutomation *automation,
     y1 = tmp_y;
   }
   
+  /* find acceleration */
+  pthread_mutex_lock(automation_mutex);
+
   if(use_selection_list){
     acceleration = automation->selection;
   }else{
     acceleration = automation->acceleration;
   }
 
-  while(acceleration != NULL && AGS_ACCELERATION(acceleration->data)->x < x0){
+  while(acceleration != NULL){
+    g_object_get(acceleration->data,
+		 "x", &current_x,
+		 NULL);
+    
+    if(current_x >= x0){
+      break;
+    }
+    
     acceleration = acceleration->next;
   }
 
   region = NULL;
 
-  while(acceleration != NULL && (current = AGS_ACCELERATION(acceleration->data))->x < x1){
-    if(current->y >= y0 && current->y < y1){
+  while(acceleration != NULL){
+    g_object_get(acceleration->data,
+		 "x", &current_x,
+		 "y", &current_y,
+		 NULL);
+
+    if(current_x > x1){
+      break;
+    }
+
+    if(current_y >= y0 && current_y < y1){
       region = g_list_prepend(region, current);
     }
 
     acceleration = acceleration->next;
   }
+
+  pthread_mutex_unlock(automation_mutex);
 
   region = g_list_reverse(region);
 
@@ -1355,39 +1555,59 @@ ags_automation_find_region(AgsAutomation *automation,
  *
  * Clear selection.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_automation_free_selection(AgsAutomation *automation)
 {
   AgsAcceleration *acceleration;
-  GList *list;
 
-  list = automation->selection;
+  GList *list_start, *list;
+
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* free selection */
+  pthread_mutex_lock(automation_mutex);
+
+  list =
+    list_start = automation->selection;
   
   while(list != NULL){
-    acceleration = AGS_ACCELERATION(list->data);
-    acceleration->flags &= (~AGS_ACCELERATION_IS_SELECTED);
-    g_object_unref(G_OBJECT(acceleration));
+    ags_acceleration_unset_flags(list->data,
+				 AGS_ACCELERATION_IS_SELECTED);
     
     list = list->next;
   }
 
-  list = automation->selection;
   automation->selection = NULL;
-  g_list_free(list);
+
+  pthread_mutex_unlock(automation_mutex);
+  
+  g_list_free_full(list_start,
+		   g_object_unref);
 }
 
 /**
  * ags_automation_add_point_to_selection:
- * @automation: an #AgsAutomation
- * @x: offset
- * @y: tone
+ * @automation: the #AgsAutomation
+ * @x: x offset
+ * @y: y value acceleration
  * @replace_current_selection: if %TRUE selection is replaced
  *
  * Select acceleration at position.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */ 
 void
 ags_automation_add_point_to_selection(AgsAutomation *automation,
@@ -1396,6 +1616,20 @@ ags_automation_add_point_to_selection(AgsAutomation *automation,
 {
   AgsAcceleration *acceleration;
 
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* find acceleration */
   acceleration = ags_automation_find_point(automation,
 					   x, y,
 					   FALSE);
@@ -1407,20 +1641,29 @@ ags_automation_add_point_to_selection(AgsAutomation *automation,
     }
   }else{
     /* add to or replace selection */
-    acceleration->flags |= AGS_ACCELERATION_IS_SELECTED;
-    g_object_ref(acceleration);
+    ags_acceleration_set_flags(acceleration, AGS_ACCELERATION_IS_SELECTED);
 
     if(replace_current_selection){
       GList *list;
 
       list = g_list_alloc();
       list->data = acceleration;
+      g_object_ref(acceleration);
       
       ags_automation_free_selection(automation);
+
+      /* replace */
+      pthread_mutex_lock(automation_mutex);
+
       automation->selection = list;
+      
+      pthread_mutex_unlock(automation_mutex);
     }else{
-      if(!ags_automation_is_acceleration_selected(automation, acceleration)){
-	ags_automation_add_acceleration(automation, acceleration, TRUE);
+      if(!ags_automation_is_acceleration_selected(automation,
+						  acceleration)){
+	/* add */
+	ags_automation_add_acceleration(automation,
+					acceleration, TRUE);
       }
     }
   }
@@ -1428,34 +1671,65 @@ ags_automation_add_point_to_selection(AgsAutomation *automation,
 
 /**
  * ags_automation_remove_point_from_selection:
- * @automation: an #AgsAutomation
- * @x: offset
- * @y: tone
+ * @automation: the #AgsAutomation
+ * @x: x offset
+ * @y: y value acceleration
  *
  * Remove acceleration at position of selection.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */ 
 void
 ags_automation_remove_point_from_selection(AgsAutomation *automation,
 					   guint x, gdouble y)
 {
-  AgsAcceleration *acceleration;
+  pthread_mutex_t *automation_mutex;
 
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* find point */
   acceleration = ags_automation_find_point(automation,
 					   x, y,
-					   FALSE);
+					   TRUE);
 
   if(acceleration != NULL){
-    acceleration->flags &= (~AGS_ACCELERATION_IS_SELECTED);
+    ags_acceleration_unset_flags(acceleration,
+				 AGS_ACCELERATION_IS_SELECTED);
 
     /* remove acceleration from selection */
-    automation->selection = g_list_remove(automation->selection, acceleration);
-
+    pthread_mutex_lock(automation_mutex);
+    
+    automation->selection = g_list_remove(automation->selection,
+					  acceleration);
     g_object_unref(acceleration);
+
+    pthread_mutex_unlock(automation_mutex);
   }
 }
 
+/**
+ * ags_automation_add_region_from_selection:
+ * @automation: the #AgsAutomation
+ * @x0: x start offset
+ * @y0: y start acceleration
+ * @x1: x end offset
+ * @y1: y end acceleration
+ * @replace_current_selection: if %TRUE current selection is replaced, else if %FALSE
+ * it is added to current selection.
+ *
+ * Add acceleration within region of selection.
+ *
+ * Since: 2.0.0
+ */ 
 void
 ags_automation_add_region_to_selection(AgsAutomation *automation,
 				       guint x0, gdouble y0,
@@ -1463,8 +1737,23 @@ ags_automation_add_region_to_selection(AgsAutomation *automation,
 				       gboolean replace_current_selection)
 {
   AgsAcceleration *acceleration;
+
   GList *region, *list;
 
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* find region */
   region = ags_automation_find_region(automation,
 				      x0, y0,
 				      x1, y1,
@@ -1476,26 +1765,31 @@ ags_automation_add_region_to_selection(AgsAutomation *automation,
     list = region;
 
     while(list != NULL){
-      AGS_ACCELERATION(list->data)->flags |= AGS_ACCELERATION_IS_SELECTED;
-      g_object_ref(G_OBJECT(list->data));
+      ags_acceleration_set_flags(list->data,
+				 AGS_ACCELERATION_IS_SELECTED);
+      g_object_ref(list->data);
 
       list = list->next;
     }
 
+    /* replace */
+    pthread_mutex_lock(automation_mutex);
+     
     automation->selection = region;
-  }else{
-    while(region != NULL){
-      acceleration = AGS_ACCELERATION(region->data);
 
-      if(!ags_automation_is_acceleration_selected(automation, acceleration)){
-	acceleration->flags |= AGS_ACCELERATION_IS_SELECTED;
-	g_object_ref(G_OBJECT(acceleration));
+    pthread_mutex_unlock(automation_mutex);
+  }else{
+    list = region;
+    
+    while(list != NULL){
+      if(!ags_automation_is_acceleration_selected(automation, list->data)){
+	/* add */
 	ags_automation_add_acceleration(automation,
-					acceleration,
+					list->data,
 					TRUE);
       }
       
-      region = region->next;
+      list = list->next;
     }
     
     g_list_free(region);
@@ -1505,14 +1799,14 @@ ags_automation_add_region_to_selection(AgsAutomation *automation,
 /**
  * ags_automation_remove_region_from_selection:
  * @automation: an #AgsAutomation
- * @x0: start offset
- * @y0: start tone
- * @x1: end offset
- * @y1: end tone
+ * @x0: x start offset
+ * @y0: y start acceleration
+ * @x1: x end offset
+ * @y1: y end acceleration
  *
  * Remove acceleration within region of selection.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */ 
 void
 ags_automation_remove_region_from_selection(AgsAutomation *automation,
@@ -1520,21 +1814,47 @@ ags_automation_remove_region_from_selection(AgsAutomation *automation,
 					    guint x1, gdouble y1)
 {
   AgsAcceleration *acceleration;
-  GList *region;
 
+  GList *region;
+  GList *list;
+  
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* find region */
   region = ags_automation_find_region(automation,
 				      x0, y0,
 				      x1, y1,
 				      TRUE);
 
-  while(region != NULL){
-    acceleration = AGS_ACCELERATION(region->data);
-    acceleration->flags &= (~AGS_ACCELERATION_IS_SELECTED);
+  list = region;
+  
+  while(list != NULL){
+    ags_acceleration_unset_flags(list->data,
+				 AGS_ACCELERATION_IS_SELECTED);
 
-    automation->selection = g_list_remove(automation->selection, acceleration);
-    g_object_unref(G_OBJECT(acceleration));
+    /* remove */
+    pthread_mutex_lock(automation_mutex);
 
-    region = region->next;
+    automation->selection = g_list_remove(automation->selection,
+					  list->data);
+
+    pthread_mutex_unlock(automation_mutex);
+
+    g_object_unref(list->data);
+
+    /* iterate */
+    list = list->next;
   }
 
   g_list_free(region);
@@ -1543,21 +1863,37 @@ ags_automation_remove_region_from_selection(AgsAutomation *automation,
 void
 ags_automation_add_all_to_selection(AgsAutomation *automation)
 {
-  GList *acceleration;
+  GList *list, *list_start;
+  
+  pthread_mutex_t *automation_mutex;
 
-  if(automation == NULL ||
-     automation->acceleration == NULL){
+  if(!AGS_IS_AUTOMATION(automation)){
     return;
   }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
   
-  acceleration = automation->acceleration;
-  acceleration = acceleration->next;
+  automation_mutex = automation->obj_mutex;
   
-  while(acceleration->next != NULL){
-    AGS_ACCELERATION(acceleration->data)->flags |= AGS_ACCELERATION_IS_SELECTED;
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* select all */
+  pthread_mutex_lock(automation_mutex);
+
+  list =
+    list_start = g_list_copy(automation->acceleration);
+
+  pthread_mutex_unlock(automation_mutex);
+
+  while(list != NULL){
+    ags_automation_add_acceleration(automation,
+				    list->data, TRUE);
     
-    acceleration = acceleration->next;
+    list = list->next;
   }
+
+  g_list_free(list_start);
 }
 
 /**

@@ -71,6 +71,9 @@ struct _AgsNote
 
   guint flags;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+  
   // gui format, convert easy to visualization
   guint x[2];
   guint y;

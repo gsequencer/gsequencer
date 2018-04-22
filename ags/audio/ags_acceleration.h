@@ -61,6 +61,9 @@ struct _AgsAcceleration
 
   guint flags;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   // gui format, convert easy to visualization
   guint x;
   gdouble y;
@@ -74,6 +77,12 @@ struct _AgsAccelerationClass
 };
 
 GType ags_acceleration_get_type();
+
+pthread_mutex_t* ags_acceleration_get_class_mutex();
+
+gboolean ags_acceleration_test_flags(AgsAcceleration *acceleration, guint flags);
+void ags_acceleration_set_flags(AgsAcceleration *acceleration, guint flags);
+void ags_acceleration_unset_flags(AgsAcceleration *acceleration, guint flags);
 
 AgsAcceleration* ags_acceleration_duplicate(AgsAcceleration *acceleration);
 
