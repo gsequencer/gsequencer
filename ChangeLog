@@ -1,3 +1,9 @@
+ags (1.4.27)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed if statement in ags_automation_find_specifier_with_type_and_line()
+	* fixed missing return in ags_automation_get_value()
+
 ags (1.4.26)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

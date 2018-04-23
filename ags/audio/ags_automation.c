@@ -2240,7 +2240,7 @@ ags_automation_find_specifier_with_type_and_line(GList *automation,
        !g_ascii_strcasecmp(AGS_AUTOMATION(automation->data)->control_name,
 			   specifier) &&
        AGS_AUTOMATION(automation->data)->channel_type == channel_type &&
-       AGS_AUTOMATION(automation->data)->line == AGS_AUTOMATION(automation->data)->line){
+       AGS_AUTOMATION(automation->data)->line == line){
 
       break;
     }
@@ -2307,6 +2307,8 @@ ags_automation_get_value(AgsAutomation *automation,
     }
     
     ret_x = AGS_ACCELERATION(acceleration->data)->x;
+  }else{
+    return(G_MAXUINT);
   }
   
   if(!port->port_value_is_pointer){
