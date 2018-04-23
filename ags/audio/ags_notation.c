@@ -1700,18 +1700,6 @@ ags_notation_insert_from_clipboard_extended(AgsNotation *notation,
   }
 }
 
-GList*
-ags_notation_get_current(AgsNotation *notation)
-{
-  GList *list;
-
-  list = NULL;
-
-  //TODO:JK: get current
-
-  return(list);
-}
-
 /**
  * ags_notation_to_raw_midi:
  * @notation: the #AgsNotation

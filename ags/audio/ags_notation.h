@@ -170,8 +170,6 @@ void ags_notation_insert_from_clipboard_extended(AgsNotation *notation,
 						 gboolean reset_y_offset, guint y_offset,
 						 gboolean match_channel, gboolean no_duplicates);
 
-GList* ags_notation_get_current(AgsNotation *notation);
-
 unsigned char* ags_notation_to_raw_midi(AgsNotation *notation,
 					gdouble bpm, gdouble delay_factor,
 					glong nn, glong dd, glong cc, glong bb,

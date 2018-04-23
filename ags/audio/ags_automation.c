@@ -2050,6 +2050,8 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
 						  gboolean from_y_offset, guint y_offset,
 						  gboolean match_line, gboolean no_duplicates)
 {
+  guint current_line;
+  
   gboolean match_timestamp;
   
   auto void ags_automation_insert_from_clipboard_version_0_4_3();
@@ -2241,12 +2243,16 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
     ags_automation_insert_from_clipboard_version_0_4_3();
   }else if(!xmlStrncmp("1.3.0", version, 6)){
     match_timestamp = TRUE;
+
+    g_object_get(automation,
+		 "line", &current_line,
+		 NULL);
     
     if(match_line &&
-       automation->line != g_ascii_strtoull(xmlGetProp(root_node,
-						       "line"),
-					    NULL,
-					    10)){
+       current_line != g_ascii_strtoull(xmlGetProp(root_node,
+						   "line"),
+					NULL,
+					10)){
       return;
     }
 
@@ -2563,26 +2569,59 @@ ags_automation_find_specifier(GList *automation,
 /**
  * ags_automation_find_channel_type_with_control_name:
  * @automation: the #GList-struct containing #AgsAutomation
- * @channel_type: the #AgsPort to match
+ * @channel_type: the #GType to match
  * 
- * Find automation by port.
+ * Find automation by @channel_type.
  * 
  * Returns: next matching automation as #GList-struct or %NULL if not found
  * 
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 GList*
 ags_automation_find_channel_type_with_control_name(GList *automation,
 						   GType channel_type, gchar *specifier)
 {
+  AgsAutomation *current_automation;
+
+  GType current_channel_type;
+  
+  gchar *current_control_name;
+ 
+  gboolean success;
+  
+  pthread_mutex_t *automation_mutex;
+
   if(automation == NULL){
     return(NULL);
   }
 
   while(automation != NULL){
-    if(AGS_AUTOMATION(automation->data)->channel_type == channel_type &&
-       !g_strcmp0(AGS_AUTOMATION(automation->data)->control_name,
-		  specifier)){
+    current_automation = automation->data;
+    
+    /* get automation mutex */
+    pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+    automation_mutex = current_automation->obj_mutex;
+  
+    pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+    /* duplicate control name */
+    pthread_mutex_lock(automation_mutex);
+
+    current_channel_type = current_automation->channel_type;
+    
+    current_control_name = g_strdup(current_automation->control_name);
+    
+    pthread_mutex_unlock(automation_mutex);
+
+    /* check channel type and control name */
+    success = (current_channel_type == channel_type &&
+	       !g_strcmp0(current_control_name,
+			  specifier)) ? TRUE: FALSE;
+
+    g_free(current_control_name);
+    
+    if(success){
       break;
     }
     
@@ -2594,7 +2633,7 @@ ags_automation_find_channel_type_with_control_name(GList *automation,
 
 /**
  * ags_automation_find_specifier_with_type_and_line:
- * @automation: a #GList-struct containing #AgsAutomation
+ * @automation: the #GList-struct containing #AgsAutomation
  * @specifier: the string specifier to find
  * @channel_type: the channel #GType
  * @line: the line
@@ -2603,7 +2642,7 @@ ags_automation_find_channel_type_with_control_name(GList *automation,
  *
  * Returns: Next matching #GList-struct
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_automation_find_specifier_with_type_and_line(GList *automation,
@@ -2611,17 +2650,50 @@ ags_automation_find_specifier_with_type_and_line(GList *automation,
 						 GType channel_type,
 						 guint line)
 {
-  if(specifier == NULL){
+  AgsAutomation *current_automation;
+  
+  GType current_channel_type;
+
+  gchar *current_control_name;
+
+  guint current_line;
+  gboolean success;
+  
+  pthread_mutex_t *automation_mutex;
+
+  if(automation == NULL){
     return(NULL);
   }
   
   while(automation != NULL){
-    if(AGS_AUTOMATION(automation->data)->control_name != NULL &&
-       !g_ascii_strcasecmp(AGS_AUTOMATION(automation->data)->control_name,
-			   specifier) &&
-       AGS_AUTOMATION(automation->data)->channel_type == channel_type &&
-       AGS_AUTOMATION(automation->data)->line == AGS_AUTOMATION(automation->data)->line){
+    current_automation = automation->data;
+    
+    /* get automation mutex */
+    pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+    automation_mutex = current_automation->obj_mutex;
+  
+    pthread_mutex_unlock(ags_automation_get_class_mutex());
 
+    /* duplicate control name */
+    pthread_mutex_lock(automation_mutex);
+
+    current_channel_type = current_automation->channel_type;
+    current_line = current_automation->line;    
+    
+    current_control_name = g_strdup(current_automation->control_name);
+    
+    pthread_mutex_unlock(automation_mutex);
+
+    /* check channel type, line and control name */
+    success = (!g_ascii_strcasecmp(current_control_name,
+				   specifier) &&
+	       current_channel_type == channel_type &&
+	       current_line == line) ? TRUE: FALSE;
+
+    g_free(current_control_name);
+
+    if(success){
       break;
     }
 
@@ -2643,7 +2715,7 @@ ags_automation_find_specifier_with_type_and_line(GList *automation,
  *
  * Returns: the x_offset
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 guint
 ags_automation_get_value(AgsAutomation *automation,
@@ -2651,30 +2723,62 @@ ags_automation_get_value(AgsAutomation *automation,
 			 gboolean use_prev_on_failure,
 			 GValue *value)
 {
+  AgsAcceleration *current_acceleration;
   AgsPort *port;
 
+  GType port_value_type;
+  
   GList *acceleration;
 
+  guint current_x;
   guint ret_x;
+  gdouble default_value;
+  gdouble y;
+  gboolean port_value_is_pointer;
   
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(G_MAXUINT);
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /*  */
+  pthread_mutex_lock(automation_mutex);
+
   port = (AgsPort *) automation->port;
   acceleration = automation->acceleration;
 
+  current_acceleration = NULL;
   ret_x = 0;
   
   if(acceleration != NULL){
     while(acceleration != NULL){
-      if(AGS_ACCELERATION(acceleration->data)->x >= x &&
-	 AGS_ACCELERATION(acceleration->data)->x < x_end){
+      current_acceleration = acceleration->data;
+      
+      g_object_get(current_acceleration,
+		   "x", &current_x,
+		   NULL);
+      
+      if(current_x >= x &&
+	 current_x < x_end){
 	break;
       }
 
-      if(AGS_ACCELERATION(acceleration->data)->x > x_end){
+      if(current_x > x_end){
 	if(use_prev_on_failure){
 	  acceleration = acceleration->prev;
 
 	  break;
 	}else{
+	  pthread_mutex_unlock(automation_mutex);
+	  
 	  return(G_MAXUINT);
 	}
       }
@@ -2683,24 +2787,44 @@ ags_automation_get_value(AgsAutomation *automation,
     }
     
     if(acceleration == NULL){
+      pthread_mutex_unlock(automation_mutex);
+      
       return(G_MAXUINT);
     }
     
-    ret_x = AGS_ACCELERATION(acceleration->data)->x;
+    ret_x = current_x;
+  }else{
+    return(G_MAXUINT);
   }
+
+  pthread_mutex_unlock(automation_mutex);
+
+  /* apply port */
+  g_object_get(automation,
+	       "default-value", &default_value,
+	       NULL);
   
-  if(!port->port_value_is_pointer){
-    if(port->port_value_type == G_TYPE_BOOLEAN){
+  g_object_get(port,
+	       "port-value-is-pointer", &port_value_is_pointer,
+	       "port-value-type", &port_value_type,
+	       NULL);
+  
+  g_object_get(current_acceleration,
+	       "y", &y,
+	       NULL);
+
+  if(!port_value_is_pointer){
+    if(port_value_type == G_TYPE_BOOLEAN){
       gboolean current;
 
       current = FALSE;
 
       if(acceleration == NULL){
-	if(automation->default_value != 0){
+	if(default_value != 0.0){
 	  current = TRUE;
 	}
       }else{
-	if(AGS_ACCELERATION(acceleration->data)->y != 0){
+	if(y != 0.0){
 	  current = TRUE;
 	}
       }
@@ -2709,45 +2833,45 @@ ags_automation_get_value(AgsAutomation *automation,
 		   G_TYPE_BOOLEAN);
       g_value_set_boolean(value,
 			  current);
-    }else if(port->port_value_type == G_TYPE_INT64){
+    }else if(port_value_type == G_TYPE_INT64){
       gint64 current;
       
-      current = floor(AGS_ACCELERATION(acceleration->data)->y);
+      current = floor(y);
 
       g_value_init(value,
 		   G_TYPE_INT64);
       g_value_set_int64(value,
 			current);
-    }else if(port->port_value_type == G_TYPE_UINT64){
+    }else if(port_value_type == G_TYPE_UINT64){
       guint64 current;
 
-      current = floor(AGS_ACCELERATION(acceleration->data)->y);
+      current = floor(y);
       
       g_value_init(value,
 		   G_TYPE_UINT64);
       g_value_set_uint64(value,
 			 current);
-    }else if(port->port_value_type == G_TYPE_FLOAT){
+    }else if(port_value_type == G_TYPE_FLOAT){
       gfloat current;
 	
-      current = AGS_ACCELERATION(acceleration->data)->y;
+      current = y;
       
       g_value_init(value,
 		   G_TYPE_FLOAT);
       g_value_set_float(value,
 			current);
-    }else if(port->port_value_type == G_TYPE_DOUBLE){
+    }else if(port_value_type == G_TYPE_DOUBLE){
       gdouble current;
 
-      current = AGS_ACCELERATION(acceleration->data)->y;
+      current = y;
       
       g_value_init(value,
 		   G_TYPE_DOUBLE);
       g_value_set_double(value,
 			 current);
-    }else if(port->port_value_type == G_TYPE_POINTER){
+    }else if(port_value_type == G_TYPE_POINTER){
       g_warning("ags_automation.c - unsupported value type pointer");
-    }else if(port->port_value_type == G_TYPE_OBJECT){
+    }else if(port_value_type == G_TYPE_OBJECT){
       g_warning("ags_automation.c - unsupported value type object");
     }else{
       g_warning("ags_automation.c - unknown type");
@@ -2770,7 +2894,7 @@ ags_automation_get_value(AgsAutomation *automation,
  *
  * Returns: a new #AgsAutomation
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsAutomation*
 ags_automation_new(GObject *audio,
