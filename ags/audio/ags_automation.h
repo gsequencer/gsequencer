@@ -62,17 +62,13 @@ typedef struct _AgsAutomationClass AgsAutomationClass;
 
 /**
  * AgsAutomationFlags:
- * @AGS_AUTOMATION_ADDED_TO_REGISTRY: the automation was added to registry, see #AgsConnectable::add_to_registry()
- * @AGS_AUTOMATION_CONNECTED: indicates the automation was connected by calling #AgsConnectable::connect()
  * @AGS_AUTOMATION_BYPASS: ignore any automation data
  * 
  * Enum values to control the behavior or indicate internal state of #AgsAutomation by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_AUTOMATION_ADDED_TO_REGISTRY    = 1,
-  AGS_AUTOMATION_CONNECTED            = 1 <<  1,
-  AGS_AUTOMATION_BYPASS               = 1 <<  2,
+  AGS_AUTOMATION_BYPASS               = 1,
 }AgsAutomationFlags;
 
 struct _AgsAutomation
@@ -118,6 +114,10 @@ struct _AgsAutomationClass
 GType ags_automation_get_type(void);
 
 pthread_mutex_t* ags_automation_get_class_mutex();
+
+gboolean ags_automation_test_flags(AgsAutomation *automation, guint flags);
+void ags_automation_set_flags(AgsAutomation *automation, guint flags);
+void ags_automation_unset_flags(AgsAutomation *automation, guint flags);
 
 GList* ags_automation_find_port(GList *automation,
 				GObject *port);

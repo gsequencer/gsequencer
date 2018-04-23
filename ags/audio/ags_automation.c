@@ -868,6 +868,111 @@ ags_automation_get_class_mutex()
 }
 
 /**
+ * ags_automation_test_flags:
+ * @automation: the #AgsAutomation
+ * @flags: the flags
+ * 
+ * Test @flags to be set on @automation.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_automation_test_flags(AgsAutomation *automation, guint flags)
+{
+  gboolean retval;
+  
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(FALSE);
+  }
+      
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = current_automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(automation_mutex);
+
+  retval = (flags & (automation->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(automation_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_automation_set_flags:
+ * @automation: the #AgsAutomation
+ * @flags: the flags
+ * 
+ * Set @flags on @automation.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_automation_set_flags(AgsAutomation *automation, guint flags)
+{
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+      
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = current_automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* set */
+  pthread_mutex_lock(automation_mutex);
+
+  automation->flags |= flags;
+  
+  pthread_mutex_unlock(automation_mutex);
+}
+
+/**
+ * ags_automation_unset_flags:
+ * @automation: the #AgsAutomation
+ * @flags: the flags
+ * 
+ * Unset @flags on @automation.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_automation_unset_flags(AgsAutomation *automation, guint flags)
+{
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+      
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = current_automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* set */
+  pthread_mutex_lock(automation_mutex);
+
+  automation->flags &= (~flags);
+  
+  pthread_mutex_unlock(automation_mutex);
+}
+
+/**
  * ags_automation_find_port:
  * @automation: the #GList-struct containing #AgsAutomation
  * @port: the #AgsPort to match
