@@ -75,12 +75,7 @@ struct _AgsMidi
   GObject *audio;
   guint audio_channel;
   
-  GList *track;
-
-  gdouble loop_start;
-  gdouble loop_end;
-  gdouble offset;
-  
+  GList *track;  
   GList *selection;
 };
 

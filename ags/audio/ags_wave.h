@@ -80,11 +80,6 @@ struct _AgsWave
   guint format;
   
   GList *buffer;
-
-  gdouble loop_start;
-  gdouble loop_end;
-  gdouble offset;
-  
   GList *selection;
 };
 

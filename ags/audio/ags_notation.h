@@ -85,21 +85,9 @@ struct _AgsNotation
 
   AgsTimestamp *timestamp;
 
-  gchar *key;
-  gchar *base_note;
-  gdouble base_frequency;
-
-  gdouble tact;
-  gdouble bpm;
-
   gdouble maximum_note_length;
 
   GList *note;
-  
-  gdouble loop_start;
-  gdouble loop_end;
-  gdouble offset;
-
   GList *selection;
 };
 
@@ -111,6 +99,10 @@ struct _AgsNotationClass
 GType ags_notation_get_type();
 
 pthread_mutex_t* ags_notation_get_class_mutex();
+
+gboolean ags_notation_test_flags(AgsNotation *notation, guint flags);
+void ags_notation_set_flags(AgsNotation *notation, guint flags);
+void ags_notation_unset_flags(AgsNotation *notation, guint flags);
 
 GList* ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 					AgsTimestamp *timestamp);

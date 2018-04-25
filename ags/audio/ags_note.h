@@ -103,6 +103,12 @@ struct _AgsNoteClass
 
 GType ags_note_get_type();
 
+pthread_mutex_t* ags_note_get_class_mutex();
+
+gboolean ags_note_test_flags(AgsNote *note, guint flags);
+void ags_note_set_flags(AgsNote *note, guint flags);
+void ags_note_unset_flags(AgsNote *note, guint flags);
+
 gint ags_note_sort_func(gconstpointer a,
 			gconstpointer b);
 

@@ -97,12 +97,7 @@ struct _AgsAutomation
 
   GObject *port;
   
-  GList *acceleration;
-
-  gdouble loop_start;
-  gdouble loop_end;
-  gdouble offset;
-  
+  GList *acceleration;  
   GList *selection;
 };
 

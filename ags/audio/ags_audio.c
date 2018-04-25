@@ -159,6 +159,7 @@ enum{
   PROP_SAMPLERATE,
   PROP_BUFFER_SIZE,
   PROP_FORMAT,
+  PROP_BPM,
   PROP_MAX_AUDIO_CHANNELS,
   PROP_MAX_OUTPUT_PADS,
   PROP_MAX_INPUT_PADS,
@@ -180,6 +181,9 @@ enum{
   PROP_OCTAVE,
   PROP_KEY,
   PROP_ABSOLUTE_KEY,
+  PROP_LOOP_START,
+  PROP_LOOP_END,
+  PROP_OFFSET,
   PROP_OUTPUT,
   PROP_INPUT,
   PROP_PRESET,
@@ -374,6 +378,24 @@ ags_audio_class_init(AgsAudioClass *audio)
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FORMAT,
+				  param_spec);
+
+  /**
+   * AgsAudio:bpm:
+   *
+   * The bpm.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_double("bpm",
+				   i18n_pspec("bpm"),
+				   i18n_pspec("The bpm"),
+				   0,
+				   G_MAXDOUBLE,
+				   AGS_SOUNDCARD_DEFAULT_BPM,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BPM,
 				  param_spec);
 
   /**
@@ -748,6 +770,61 @@ ags_audio_class_init(AgsAudioClass *audio)
 				G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_ABSOLUTE_KEY,
+				  param_spec);
+
+
+  /**
+   * AgsAudio:loop-start:
+   *
+   * The audio's loop start.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_uint64("loop-start",
+				    i18n_pspec("loop start of audio"),
+				    i18n_pspec("The loop start of audio"),
+				    0.0,
+				    G_MAXUINT64,
+				    0.0,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LOOP_START,
+				  param_spec);
+
+  /**
+   * AgsAudio:loop-end:
+   *
+   * The audio's loop end.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_uint64("loop-end",
+				    i18n_pspec("loop end of audio"),
+				    i18n_pspec("The loop end of audio"),
+				    0.0,
+				    G_MAXUINT64,
+				    0.0,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LOOP_END,
+				  param_spec);
+
+  /**
+   * AgsAudio:offset:
+   *
+   * The audio's offset.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_uint64("offset",
+				    i18n_pspec("offset of audio"),
+				    i18n_pspec("The offset of audio"),
+				    0.0,
+				    G_MAXUINT64,
+				    0.0,
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_OFFSET,
 				  param_spec);
 
   /**
@@ -1387,6 +1464,8 @@ ags_audio_init(AgsAudio *audio)
   audio->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   audio->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
 
+  audio->bpm = AGS_SOUNDCARD_DEFAULT_BPM;
+
   /* read config */
   pthread_mutex_lock(application_mutex);
   
@@ -1493,6 +1572,11 @@ ags_audio_init(AgsAudio *audio)
   audio->key = 0;
   
   audio->absolute_key = 0;
+
+  /* loop */
+  audio->loop_start = 0;
+  audio->loop_end = 0;
+  audio->offset = 0;
   
   /* channels */
   audio->output = NULL;
@@ -1648,6 +1732,19 @@ ags_audio_set_property(GObject *gobject,
 
       ags_audio_set_format(audio,
 			   format);
+    }
+    break;
+  case PROP_BPM:
+    {
+      gdouble bpm;
+
+      bpm = g_value_get_double(value);
+
+      pthread_mutex_lock(audio_mutex);
+      
+      audio->bpm = bpm;
+
+      pthread_mutex_unlock(audio_mutex);
     }
     break;
   case PROP_MAX_AUDIO_CHANNELS:
@@ -1878,6 +1975,45 @@ ags_audio_set_property(GObject *gobject,
       pthread_mutex_lock(audio_mutex);
 
       audio->absolute_key = absolute_key;
+
+      pthread_mutex_unlock(audio_mutex);
+    }
+    break;
+  case PROP_LOOP_START:
+    {
+      guint64 loop_start;
+
+      loop_start = g_value_get_uint64(value);
+
+      pthread_mutex_lock(audio_mutex);
+
+      audio->loop_start = loop_start;
+
+      pthread_mutex_unlock(audio_mutex);
+    }
+    break;
+  case PROP_LOOP_END:
+    {
+      guint64 loop_end;
+
+      loop_end = g_value_get_uint64(value);
+
+      pthread_mutex_lock(audio_mutex);
+
+      audio->loop_end = loop_end;
+
+      pthread_mutex_unlock(audio_mutex);
+    }
+    break;
+  case PROP_OFFSET:
+    {
+      guint64 offset;
+
+      offset = g_value_get_uint64(value);
+
+      pthread_mutex_lock(audio_mutex);
+
+      audio->offset = offset;
 
       pthread_mutex_unlock(audio_mutex);
     }
@@ -2350,6 +2486,16 @@ ags_audio_get_property(GObject *gobject,
       pthread_mutex_unlock(audio_mutex);
     }
     break;
+  case PROP_BPM:
+    {
+      pthread_mutex_lock(audio_mutex);
+
+      g_value_set_double(value,
+			 audio->bpm);
+
+      pthread_mutex_unlock(audio_mutex);
+    }
+    break;
   case PROP_MAX_AUDIO_CHANNELS:
     {
       pthread_mutex_lock(audio_mutex);
@@ -2556,6 +2702,36 @@ ags_audio_get_property(GObject *gobject,
 
       g_value_set_int(value,
 		      audio->absolute_key);
+
+      pthread_mutex_unlock(audio_mutex);
+    }
+    break;
+  case PROP_LOOP_START:
+    {
+      pthread_mutex_lock(audio_mutex);
+
+      g_value_set_uint64(value,
+			 audio->loop_start);
+
+      pthread_mutex_unlock(audio_mutex);
+    }
+    break;
+  case PROP_LOOP_END:
+    {
+      pthread_mutex_lock(audio_mutex);
+
+      g_value_set_uint64(value,
+			 audio->loop_end);
+
+      pthread_mutex_unlock(audio_mutex);
+    }
+    break;
+  case PROP_OFFSET:
+    {
+      pthread_mutex_lock(audio_mutex);
+
+      g_value_set_uint64(value,
+			 audio->offset);
 
       pthread_mutex_unlock(audio_mutex);
     }

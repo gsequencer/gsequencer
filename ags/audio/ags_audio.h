@@ -103,6 +103,8 @@ struct _AgsAudio
   guint buffer_size;
   guint format;
 
+  gdouble bpm;
+
   guint bank_dim[3];
 
   guint max_audio_channels;
@@ -135,6 +137,10 @@ struct _AgsAudio
   gint octave;
   guint key;
   gint absolute_key;
+
+  guint64 loop_start;
+  guint64 loop_end;
+  guint64 offset;
   
   AgsChannel *output;
   AgsChannel *input;

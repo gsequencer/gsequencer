@@ -33,7 +33,6 @@
 #include <errno.h>
 
 void ags_notation_class_init(AgsNotationClass *notation);
-void ags_notation_tactable_interface_init(AgsTactableInterface *tactable);
 void ags_notation_init(AgsNotation *notation);
 void ags_notation_set_property(GObject *gobject,
 			       guint prop_id,
@@ -45,8 +44,6 @@ void ags_notation_get_property(GObject *gobject,
 			       GParamSpec *param_spec);
 void ags_notation_dispose(GObject *gobject);
 void ags_notation_finalize(GObject *gobject);
-
-void ags_notation_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
 
 void ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 						     xmlNode *root_node, char *version,
@@ -96,20 +93,10 @@ ags_notation_get_type()
       (GInstanceInitFunc) ags_notation_init,
     };
 
-    static const GInterfaceInfo ags_tactable_interface_info = {
-      (GInterfaceInitFunc) ags_notation_tactable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_notation = g_type_register_static(G_TYPE_OBJECT,
 					       "AgsNotation",
 					       &ags_notation_info,
 					       0);
-
-    g_type_add_interface_static(ags_type_notation,
-				AGS_TYPE_TACTABLE,
-				&ags_tactable_interface_info);
   }
 
   return(ags_type_notation);
@@ -137,7 +124,7 @@ ags_notation_class_init(AgsNotationClass *notation)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of notation"),
@@ -154,7 +141,7 @@ ags_notation_class_init(AgsNotationClass *notation)
    *
    * The effect's audio-channel.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_uint("audio-channel",
 				  i18n_pspec("audio-channel of effect"),
@@ -168,11 +155,27 @@ ags_notation_class_init(AgsNotationClass *notation)
 				  param_spec);
   
   /**
+   * AgsNotation:timestamp:
+   *
+   * The notation's timestamp.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("timestamp",
+				   i18n_pspec("timestamp of notation"),
+				   i18n_pspec("The timestamp of notation"),
+				   AGS_TYPE_TIMESTAMP,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TIMESTAMP,
+				  param_spec);
+  
+  /**
    * AgsNotation:note:
    *
    * The assigned #AgsNote
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("note",
 				   i18n_pspec("note of notation"),
@@ -181,29 +184,7 @@ ags_notation_class_init(AgsNotationClass *notation)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NOTE,
-				  param_spec);
-   
-  /**
-   * AgsPattern:timestamp:
-   *
-   * The pattern's timestamp.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_object("timestamp",
-				   i18n_pspec("timestamp of pattern"),
-				   i18n_pspec("The timestamp of pattern"),
-				   AGS_TYPE_TIMESTAMP,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_TIMESTAMP,
-				  param_spec);
-}
-
-void
-ags_notation_tactable_interface_init(AgsTactableInterface *tactable)
-{
-  tactable->change_bpm = ags_notation_change_bpm;
+				  param_spec);   
 }
 
 void
@@ -243,22 +224,10 @@ ags_notation_init(AgsNotation *notation)
   notation->timestamp->timer.ags_offset.offset = 0;
 
   g_object_ref(notation->timestamp);
-  
-  notation->key = g_strdup("violine");
-  notation->base_note = g_strdup("A");
-  notation->base_frequency = 440.0;
-
-  notation->tact = AGS_NOTATION_MINIMUM_NOTE_LENGTH;
-  notation->bpm = 120.0;
 
   notation->maximum_note_length = AGS_NOTATION_MAXIMUM_NOTE_LENGTH;
 
   notation->note = NULL;
-
-  notation->loop_start = 0.0;
-  notation->loop_end = 0.0;
-  notation->offset = 0.0;
-
   notation->selection = NULL;
 }
 
@@ -270,7 +239,16 @@ ags_notation_set_property(GObject *gobject,
 {
   AgsNotation *notation;
 
+  pthread_mutex_t *notation_mutex;
+
   notation = AGS_NOTATION(gobject);
+
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -279,7 +257,11 @@ ags_notation_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
+      pthread_mutex_lock(notation_mutex);
+
       if(notation->audio == (GObject *) audio){
+	pthread_mutex_unlock(notation_mutex);
+
 	return;
       }
 
@@ -292,6 +274,8 @@ ags_notation_set_property(GObject *gobject,
       }
 
       notation->audio = (GObject *) audio;
+
+      pthread_mutex_unlock(notation_mutex);
     }
     break;
   case PROP_AUDIO_CHANNEL:
@@ -300,23 +284,11 @@ ags_notation_set_property(GObject *gobject,
 
       audio_channel = g_value_get_uint(value);
 
+      pthread_mutex_lock(notation_mutex);
+
       notation->audio_channel = audio_channel;
-    }
-    break;
-  case PROP_NOTE:
-    {
-      AgsNote *note;
 
-      note = (AgsNote *) g_value_get_object(value);
-
-      if(note == NULL ||
-	 g_list_find(notation->note, note) != NULL){
-	return;
-      }
-
-      ags_notation_add_note(notation,
-			    note,
-			    FALSE);
+      pthread_mutex_unlock(notation_mutex);
     }
     break;
   case PROP_TIMESTAMP:
@@ -325,7 +297,11 @@ ags_notation_set_property(GObject *gobject,
 
       timestamp = (AgsTimestamp *) g_value_get_object(value);
 
+      pthread_mutex_lock(notation_mutex);
+
       if(timestamp == (AgsTimestamp *) notation->timestamp){
+	pthread_mutex_unlock(notation_mutex);
+	
 	return;
       }
 
@@ -338,6 +314,30 @@ ags_notation_set_property(GObject *gobject,
       }
 
       notation->timestamp = (GObject *) timestamp;
+
+      pthread_mutex_unlock(notation_mutex);
+    }
+    break;
+  case PROP_NOTE:
+    {
+      AgsNote *note;
+
+      note = (AgsNote *) g_value_get_object(value);
+
+      pthread_mutex_lock(notation_mutex);
+
+      if(note == NULL ||
+	 g_list_find(notation->note, note) != NULL){
+	pthread_mutex_unlock(notation_mutex);
+	
+	return;
+      }
+
+      pthread_mutex_unlock(notation_mutex);
+
+      ags_notation_add_note(notation,
+			    note,
+			    FALSE);
     }
     break;
   default:
@@ -359,22 +359,38 @@ ags_notation_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_AUDIO:
     {
+      pthread_mutex_lock(notation_mutex);
+
       g_value_set_object(value, notation->audio);
+
+      pthread_mutex_unlock(notation_mutex);
     }
     break;
   case PROP_AUDIO_CHANNEL:
     {
+      pthread_mutex_lock(notation_mutex);
+
       g_value_set_uint(value, notation->audio_channel);
-    }
-    break;
-  case PROP_NOTE:
-    {
-      g_value_set_pointer(value, g_list_copy(notation->note));
+
+      pthread_mutex_unlock(notation_mutex);
     }
     break;
   case PROP_TIMESTAMP:
     {
+      pthread_mutex_lock(notation_mutex);
+
       g_value_set_object(value, notation->timestamp);
+
+      pthread_mutex_unlock(notation_mutex);
+    }
+    break;
+  case PROP_NOTE:
+    {
+      pthread_mutex_lock(notation_mutex);
+
+      g_value_set_pointer(value, g_list_copy(notation->note));
+
+      pthread_mutex_unlock(notation_mutex);
     }
     break;
   default:
@@ -392,13 +408,6 @@ ags_notation_dispose(GObject *gobject)
   
   notation = AGS_NOTATION(gobject);
 
-  /* timestamp */
-  if(notation->timestamp != NULL){
-    g_object_unref(notation->timestamp);
-
-    notation->timestamp = NULL;
-  }
-
   /* audio */
   if(notation->audio != NULL){
     g_object_unref(notation->audio);
@@ -406,17 +415,11 @@ ags_notation_dispose(GObject *gobject)
     notation->audio = NULL;
   }
 
-  /* key and base note */
-  if(notation->key != NULL){
-    free(notation->key);
+  /* timestamp */
+  if(notation->timestamp != NULL){
+    g_object_unref(notation->timestamp);
 
-    notation->key = NULL;
-  }
-
-  if(notation->base_note != NULL){
-    free(notation->base_note);
-
-    notation->base_note = NULL;
+    notation->timestamp = NULL;
   }
     
   /* note and selection */
@@ -480,12 +483,6 @@ ags_notation_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_notation_parent_class)->finalize(gobject);
-}
-
-void
-ags_notation_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm)
-{
-  //TODO:JK: implement me
 }
 
 /**
