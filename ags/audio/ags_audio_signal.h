@@ -127,6 +127,7 @@ GType ags_audio_signal_get_type();
 
 pthread_mutex_t* ags_audio_signal_get_class_mutex();
 
+void ags_audio_signal_test_flags(AgsAudioSignal *audio_signal, guint flags);
 void ags_audio_signal_set_flags(AgsAudioSignal *audio_signal, guint flags);
 void ags_audio_signal_unset_flags(AgsAudioSignal *audio_signal, guint flags);
 

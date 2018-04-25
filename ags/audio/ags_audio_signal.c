@@ -1960,6 +1960,45 @@ ags_audio_signal_get_class_mutex()
 }
 
 /**
+ * ags_audio_signal_test_flags:
+ * @audio_signal: the #AgsAudioSignal
+ * @flags: the flags
+ *
+ * Test @flags to be set on @audio_signal.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_audio_signal_test_flags(AgsAudioSignal *audio_signal, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *audio_signal_mutex;
+
+  if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
+    return;
+  }
+
+  /* get audio_signal mutex */
+  pthread_mutex_lock(ags_audio_signal_get_class_mutex());
+  
+  audio_signal_mutex = audio_signal->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(audio_signal_mutex);
+
+  retval = (flags & (audio_signal->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(audio_signal_mutex);
+
+  return(retval);
+}
+
+/**
  * ags_audio_signal_set_flags:
  * @audio_signal: the #AgsAudioSignal
  * @flags: see #AgsAudioSignalFlags-enum

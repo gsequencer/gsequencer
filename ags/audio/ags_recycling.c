@@ -1355,6 +1355,45 @@ ags_recycling_get_class_mutex()
 }
 
 /**
+ * ags_recycling_test_flags:
+ * @recycling: the #AgsRecycling
+ * @flags: the flags
+ *
+ * Test @flags to be set on @recycling.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_recycling_test_flags(AgsRecycling *recycling, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *recycling_mutex;
+
+  if(!AGS_IS_RECYCLING(recycling)){
+    return;
+  }
+
+  /* get recycling mutex */
+  pthread_mutex_lock(ags_recycling_get_class_mutex());
+  
+  recycling_mutex = recycling->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(recycling_mutex);
+
+  retval = (flags & (recycling->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(recycling_mutex);
+
+  return(retval);
+}
+
+/**
  * ags_recycling_set_flags:
  * @recycling: the #AgsRecycling
  * @flags: see #AgsRecyclingFlags-enum

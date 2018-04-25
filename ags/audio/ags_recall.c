@@ -2220,6 +2220,45 @@ ags_recall_get_class_mutex()
 }
 
 /**
+ * ags_recall_test_flags:
+ * @recall: the #AgsRecall
+ * @flags: the flags
+ *
+ * Test @flags to be set on @recall.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_test_flags(AgsRecall *recall, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *recall_mutex;
+
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(recall_mutex);
+
+  retval = (flags & (recall->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(recall_mutex);
+
+  return(retval);
+}
+
+/**
  * ags_recall_set_flags:
  * @recall: the #AgsRecall
  * @flags: flags
@@ -2250,6 +2289,78 @@ ags_recall_set_flags(AgsRecall *recall, guint flags)
   recall->flags |= flags;
 
   pthread_mutex_unlock(recall_mutex);
+}
+
+/**
+ * ags_recall_unset_flags:
+ * @recall: the #AgsRecall
+ * @flags: flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_recall_unset_flags(AgsRecall *recall, guint flags)
+{
+  pthread_mutex_t *recall_mutex;
+
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(recall_mutex);
+
+  recall->flags &= (~flags);
+
+  pthread_mutex_unlock(recall_mutex);
+}
+
+/**
+ * ags_recall_test_ability_flags:
+ * @recall: the #AgsRecall
+ * @ability_flags: the ability flags
+ *
+ * Test @ability_flags to be set on @recall.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_test_ability_flags(AgsRecall *recall, guint ability_flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *recall_mutex;
+
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(recall_mutex);
+
+  retval = (ability_flags & (recall->ability_flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(recall_mutex);
+
+  return(retval);
 }
 
 /**
@@ -2490,6 +2601,45 @@ ags_recall_match_ability_flags_to_scope(AgsRecall *recall, gint sound_scope)
   default:
     return(FALSE);
   }
+}
+
+/**
+ * ags_recall_test_behaviour_flags:
+ * @recall: the #AgsRecall
+ * @behaviour_flags: the behaviour flags
+ *
+ * Test @behaviour_flags to be set on @recall.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_test_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *recall_mutex;
+
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(recall_mutex);
+
+  retval = (behaviour_flags & (recall->behaviour_flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(recall_mutex);
+
+  return(retval);
 }
 
 /**
@@ -2757,6 +2907,46 @@ ags_recall_check_sound_scope(AgsRecall *recall, gint sound_scope)
       return(FALSE);
     }
   }
+}
+
+/**
+ * ags_recall_test_staging_flags:
+ * @recall: the #AgsRecall
+ * @staging_flags: the staging flags
+ *
+ * Test @staging_flags to be set on @recall.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_test_staging_flags(AgsRecall *recall,
+			       guint staging_flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *recall_mutex;
+
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(recall_mutex);
+
+  retval = (staging_flags & (recall->staging_flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(recall_mutex);
+
+  return(retval);
 }
 
 /**

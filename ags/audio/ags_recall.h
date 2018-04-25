@@ -203,10 +203,12 @@ GType ags_recall_get_type();
 
 pthread_mutex_t* ags_recall_get_class_mutex();
 
+void ags_recall_test_flags(AgsRecall *recall, guint flags);
 void ags_recall_set_flags(AgsRecall *recall, guint flags);
 void ags_recall_unset_flags(AgsRecall *recall, guint flags);
 
 /* ability flags */
+void ags_recall_test_ability_flags(AgsRecall *recall, guint ability_flags);
 void ags_recall_set_ability_flags(AgsRecall *recall, guint ability_flags);
 void ags_recall_unset_ability_flags(AgsRecall *recall, guint ability_flags);
 
@@ -214,6 +216,7 @@ gboolean ags_recall_check_ability_flags(AgsRecall *recall, guint ability_flags);
 gboolean ags_recall_match_ability_flags_to_scope(AgsRecall *recall, gint sound_scope);
 
 /* behaviour flags */
+void ags_recall_test_behaviour_flags(AgsRecall *recall, guint behaviour_flags);
 void ags_recall_set_behaviour_flags(AgsRecall *recall, guint behaviour_flags);
 void ags_recall_unset_behaviour_flags(AgsRecall *recall, guint behaviour_flags);
 
