@@ -221,15 +221,20 @@ GType ags_audio_get_type();
 
 pthread_mutex_t* ags_audio_get_class_mutex();
 
+gboolean ags_audio_test_flags(AgsAudio *audio, guint flags);
 void ags_audio_set_flags(AgsAudio *audio, guint flags);
 void ags_audio_unset_flags(AgsAudio *audio, guint flags);
 
+void ags_audio_test_ability_flags(AgsAudio *audio, guint ability_flags);
 void ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags);
 void ags_audio_unset_ability_flags(AgsAudio *audio, guint ability_flags);
 
+void ags_audio_test_behaviour_flags(AgsAudio *audio, guint behaviour_flags);
 void ags_audio_set_behaviour_flags(AgsAudio *audio, guint behaviour_flags);
 void ags_audio_unset_behaviour_flags(AgsAudio *audio, guint behaviour_flags);
 
+void ags_audio_test_staging_flags(AgsAudio *audio, gint sound_scope,
+				  guint staging_flags);
 void ags_audio_set_staging_flags(AgsAudio *audio, gint sound_scope,
 				 guint staging_flags);
 void ags_audio_unset_staging_flags(AgsAudio *audio, gint sound_scope,

@@ -106,7 +106,7 @@ void ags_audio_real_set_pads(AgsAudio *audio,
 			     guint channels, guint channels_old);
 
 void ags_audio_real_duplicate_recall(AgsAudio *audio,
-				    AgsRecallID *recall_id);
+				     AgsRecallID *recall_id);
 void ags_audio_real_resolve_recall(AgsAudio *audio,
 				   AgsRecallID *recall_id);
 
@@ -1118,7 +1118,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 G_TYPE_NONE, 1,
 		 G_TYPE_OBJECT);
 
-   /**
+  /**
    * AgsAudio::init-recall:
    * @audio: the #AgsAudio
    * @recall_id: the #AgsRecallID
@@ -3767,11 +3767,50 @@ ags_audio_get_class_mutex()
 }
 
 /**
+ * ags_audio_test_flags:
+ * @audio: the #AgsAudio
+ * @flags: the flags
+ *
+ * Test @flags to be set on @audio.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_audio_test_flags(AgsAudio *audio, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+  
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(audio_mutex);
+
+  retval = (flags & (audio->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  return(retval);
+}
+
+/**
  * ags_audio_set_flags:
  * @audio: the #AgsAudio
  * @flags: see enum AgsAudioFlags
  *
- * Enable a feature of AgsAudio.
+ * Enable a feature of #AgsAudio.
  *
  * Since: 2.0.0
  */
@@ -4076,6 +4115,45 @@ ags_audio_unset_flags(AgsAudio *audio, guint flags)
   audio->flags &= (~flags);
   
   pthread_mutex_unlock(audio_mutex);
+}
+
+/**
+ * ags_audio_test_ability_flags:
+ * @audio: the #AgsAudio
+ * @ability_flags: the ability flags
+ *
+ * Test @ability_flags to be set on @audio.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_audio_test_ability_flags(AgsAudio *audio, guint ability_flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+  
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(audio_mutex);
+
+  retval = (ability_flags & (audio->ability_flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  return(retval);
 }
 
 /**
@@ -4465,6 +4543,45 @@ ags_audio_unset_ability_flags(AgsAudio *audio, guint ability_flags)
 }
 
 /**
+ * ags_audio_test_behaviour_flags:
+ * @audio: the #AgsAudio
+ * @behaviour_flags: the behaviour flags
+ *
+ * Test @behaviour_flags to be set on @audio.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_audio_test_behaviour_flags(AgsAudio *audio, guint behaviour_flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+  
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(audio_mutex);
+
+  retval = (behaviour_flags & (audio->behaviour_flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  return(retval);
+}
+
+/**
  * ags_audio_set_behaviour_flags:
  * @audio: the #AgsAudio
  * @behaviour_flags: the behaviour flags
@@ -4528,6 +4645,47 @@ ags_audio_unset_behaviour_flags(AgsAudio *audio, guint behaviour_flags)
   audio->behaviour_flags &= (~behaviour_flags);
 
   pthread_mutex_unlock(audio_mutex);
+}
+
+/**
+ * ags_audio_test_staging_flags:
+ * @audio: the #AgsAudio
+ * @sound_scope: the #AgsSoundScope to test
+ * @staging_flags: the staging flags
+ *
+ * Test @staging_flags to be set on @audio.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_audio_test_staging_flags(AgsAudio *audio, gint sound_scope,
+			     guint staging_flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+  
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(audio_mutex);
+
+  retval = (staging_flags & (audio->staging_flags[sound_scope])) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  return(retval);
 }
 
 /**
@@ -7103,7 +7261,7 @@ ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
       /* set samplerate */
       g_object_set(channel,
 		   "samplerate", samplerate,
-		    NULL);
+		   NULL);
 
       /* iterate */
       pthread_mutex_lock(channel_mutex);
@@ -9026,7 +9184,7 @@ ags_audio_real_done_recall(AgsAudio *audio,
  */
 void
 ags_audio_done_recall(AgsAudio *audio,
-			AgsRecallID *recall_id)
+		      AgsRecallID *recall_id)
 {
   g_return_if_fail(AGS_IS_AUDIO(audio));
 
@@ -9196,7 +9354,7 @@ ags_audio_cancel_recall(AgsAudio *audio,
 
 void
 ags_audio_real_cleanup_recall(AgsAudio *audio,
-			     AgsRecallID *recall_id)
+			      AgsRecallID *recall_id)
 {
   AgsRecall *recall;
   AgsRecyclingContext *parent_recycling_context, *recycling_context;
@@ -9348,7 +9506,7 @@ ags_audio_real_cleanup_recall(AgsAudio *audio,
  */
 void
 ags_audio_cleanup_recall(AgsAudio *audio,
-			AgsRecallID *recall_id)
+			 AgsRecallID *recall_id)
 {
   g_return_if_fail(AGS_IS_AUDIO(audio));
 

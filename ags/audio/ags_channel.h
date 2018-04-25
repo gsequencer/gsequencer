@@ -210,15 +210,20 @@ GQuark ags_channel_error_quark();
 
 pthread_mutex_t* ags_channel_get_class_mutex();
 
+void ags_channel_test_flags(AgsChannel *channel, guint flags);
 void ags_channel_set_flags(AgsChannel *channel, guint flags);
 void ags_channel_unset_flags(AgsChannel *channel, guint flags);
 
+void ags_channel_test_ability_flags(AgsChannel *channel, guint ability_flags);
 void ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags);
 void ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags);
 
+void ags_channel_test_behaviour_flags(AgsChannel *channel, guint behaviour_flags);
 void ags_channel_set_behaviour_flags(AgsChannel *channel, guint behaviour_flags);
 void ags_channel_unset_behaviour_flags(AgsChannel *channel, guint behaviour_flags);
 
+void ags_channel_test_staging_flags(AgsChannel *channel, gint sound_scope,
+				    guint staging_flags);
 void ags_channel_set_staging_flags(AgsChannel *channel, gint sound_scope,
 				   guint staging_flags);
 void ags_channel_unset_staging_flags(AgsChannel *channel, gint sound_scope,

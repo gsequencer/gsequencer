@@ -109,7 +109,7 @@ void ags_channel_remove_from_registry(AgsConnectable *connectable);
 xmlNode* ags_channel_list_resource(AgsConnectable *connectable);
 xmlNode* ags_channel_xml_compose(AgsConnectable *connectable);
 void ags_channel_xml_parse(AgsConnectable *connectable,
-			 xmlNode *node);
+			   xmlNode *node);
 gboolean ags_channel_is_connected(AgsConnectable *connectable);
 void ags_channel_connect(AgsConnectable *connectable);
 void ags_channel_disconnect(AgsConnectable *connectable);
@@ -1541,7 +1541,7 @@ ags_channel_set_property(GObject *gobject,
       pthread_mutex_unlock(channel_mutex);
 
       ags_channel_add_recycling_context(channel,
-				       (GObject *) recycling_context);
+					(GObject *) recycling_context);
     }
     break;
   case PROP_RECALL_CONTAINER:
@@ -2413,7 +2413,7 @@ ags_channel_xml_compose(AgsConnectable *connectable)
 
 void
 ags_channel_xml_parse(AgsConnectable *connectable,
-		    xmlNode *node)
+		      xmlNode *node)
 {
   //TODO:JK: implement me
 }
@@ -2769,6 +2769,45 @@ ags_channel_get_class_mutex()
 }
 
 /**
+ * ags_channel_test_flags:
+ * @channel: the #AgsChannel
+ * @flags: the flags
+ *
+ * Test @flags to be set on @channel.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_channel_test_flags(AgsChannel *channel, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(channel_mutex);
+
+  retval = (flags & (channel->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(channel_mutex);
+
+  return(retval);
+}
+
+/**
  * ags_channel_set_flags:
  * @channel: the #AgsChannel
  * @flags: see #AgsChannelFlags-enum
@@ -2836,6 +2875,45 @@ ags_channel_unset_flags(AgsChannel *channel, guint flags)
   channel->flags &= (~flags);
   
   pthread_mutex_unlock(channel_mutex);
+}
+
+/**
+ * ags_channel_test_ability_flags:
+ * @channel: the #AgsChannel
+ * @ability_flags: the ability flags
+ *
+ * Test @ability_flags to be set on @channel.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_channel_test_ability_flags(AgsChannel *channel, guint ability_flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(channel_mutex);
+
+  retval = (ability_flags & (channel->ability_flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(channel_mutex);
+
+  return(retval);
 }
 
 /**
@@ -3188,6 +3266,45 @@ ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags)
 }
 
 /**
+ * ags_channel_test_behaviour_flags:
+ * @channel: the #AgsChannel
+ * @behaviour_flags: the behaviour flags
+ *
+ * Test @behaviour_flags to be set on @channel.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_channel_test_behaviour_flags(AgsChannel *channel, guint behaviour_flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(channel_mutex);
+
+  retval = (behaviour_flags & (channel->behaviour_flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(channel_mutex);
+
+  return(retval);
+}
+
+/**
  * ags_channel_set_behaviour_flags:
  * @channel: the #AgsChannel
  * @behaviour_flags: the behaviour flags
@@ -3251,6 +3368,47 @@ ags_channel_unset_behaviour_flags(AgsChannel *channel, guint behaviour_flags)
   channel->behaviour_flags &= (~behaviour_flags);
 
   pthread_mutex_unlock(channel_mutex);
+}
+
+/**
+ * ags_channel_test_staging_flags:
+ * @channel: the #AgsChannel
+ * @sound_scope: the #AgsSoundScope to test
+ * @staging_flags: the staging flags
+ *
+ * Test @staging_flags to be set on @channel.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_channel_test_staging_flags(AgsChannel *channel, gint sound_scope,
+			       guint staging_flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return;
+  }
+
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(channel_mutex);
+
+  retval = (staging_flags & (channel->staging_flags[sound_scope])) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(channel_mutex);
+
+  return(retval);
 }
 
 /**
@@ -12481,7 +12639,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 
       while(recall_id_iter != NULL){
 	ags_channel_cleanup_recall(channel,
-				  recall_id_iter->data);
+				   recall_id_iter->data);
       }
 
       recall_id_iter = recall_id_iter->next;
@@ -12528,7 +12686,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 
       while(recall_id_iter != NULL){
 	ags_audio_cleanup_recall(current_audio,
-				recall_id_iter->data);
+				 recall_id_iter->data);
       }
 
       recall_id_iter = recall_id_iter->next;
@@ -12698,7 +12856,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 
 	  while(recall_id_iter != NULL){
 	    ags_channel_cleanup_recall(current_input,
-				      recall_id_iter->data);
+				       recall_id_iter->data);
 	  }
 
 	  recall_id_iter = recall_id_iter->next;
@@ -12758,7 +12916,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 
 	while(recall_id_iter != NULL){
 	  ags_channel_cleanup_recall(current_input,
-				    recall_id_iter->data);
+				     recall_id_iter->data);
 	}
 
 	recall_id_iter = recall_id_iter->next;
