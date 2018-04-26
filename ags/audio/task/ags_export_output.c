@@ -494,6 +494,10 @@ ags_export_output_launch(AgsTask *task)
   
   tic = export_output->tic;
 
+  if(soundcard == NULL){
+    return;
+  }  
+  
   /* get soundcard mutex */
   pthread_mutex_lock(application_mutex);
 

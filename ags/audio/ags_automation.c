@@ -1579,6 +1579,7 @@ ags_automation_copy_selection(AgsAutomation *automation)
   AgsAcceleration *acceleration;
 
   xmlNode *automation_node, *current_acceleration;
+  xmlNode *timestamp_node;
 
   GList *selection;
 
@@ -1597,6 +1598,19 @@ ags_automation_copy_selection(AgsAutomation *automation)
   xmlNewProp(automation_node, "control-name", automation->control_name);
   xmlNewProp(automation_node, "line", g_strdup_printf("%u", automation->line));
 
+  /* timestamp */
+  if(automation->timestamp != NULL){
+    timestamp_node = xmlNewNode(NULL,
+				BAD_CAST "timestamp");
+    xmlAddChild(automation_node,
+		timestamp_node);
+
+    xmlNewProp(timestamp_node,
+	       BAD_CAST "offset",
+	       BAD_CAST (g_strdup_printf("%u", AGS_TIMESTAMP(automation->timestamp)->timer.ags_offset.offset)));
+  }
+
+  /* selection */
   selection = automation->selection;
 
   if(selection != NULL){

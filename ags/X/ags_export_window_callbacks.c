@@ -87,7 +87,9 @@ ags_export_window_add_export_soundcard_callback(GtkWidget *button,
   gtk_widget_show_all(hbox);
   gtk_combo_box_set_active(GTK_COMBO_BOX(export_soundcard->backend),
 			   0);
- }
+  gtk_combo_box_set_active(GTK_COMBO_BOX(export_soundcard->card),
+			   0);
+}
 
 void
 ags_export_window_remove_export_soundcard_callback(GtkWidget *button,
