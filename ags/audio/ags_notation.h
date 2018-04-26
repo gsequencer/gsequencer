@@ -106,16 +106,17 @@ void ags_notation_unset_flags(AgsNotation *notation, guint flags);
 
 GList* ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 					AgsTimestamp *timestamp);
+
 GList* ags_notation_add(GList *notation,
 			AgsNotation *new_notation);
 
 void ags_notation_add_note(AgsNotation *notation,
 			   AgsNote *note,
 			   gboolean use_selection_list);
-
 void ags_notation_remove_note(AgsNotation *notation,
 			      AgsNote *note,
 			      gboolean use_selection_list);
+
 gboolean ags_notation_remove_note_at_position(AgsNotation *notation,
 					      guint x, guint y);
 
@@ -132,7 +133,6 @@ GList* ags_notation_find_region(AgsNotation *notation,
 				gboolean use_selection_list);
 
 void ags_notation_free_selection(AgsNotation *notation);
-void ags_notation_add_all_to_selection(AgsNotation *notation);
 
 void ags_notation_add_point_to_selection(AgsNotation *notation,
 					 guint x, guint y,
@@ -147,6 +147,8 @@ void ags_notation_add_region_to_selection(AgsNotation *notation,
 void ags_notation_remove_region_from_selection(AgsNotation *notation,
 					       guint x0, guint y0,
 					       guint x1, guint y1);
+
+void ags_notation_add_all_to_selection(AgsNotation *notation);
 
 xmlNode* ags_notation_copy_selection(AgsNotation *notation);
 xmlNode* ags_notation_cut_selection(AgsNotation *notation);

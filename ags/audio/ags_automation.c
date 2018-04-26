@@ -1297,6 +1297,57 @@ ags_automation_add_acceleration(AgsAutomation *automation,
 }
 
 /**
+ * ags_automation_remove_acceleration:
+ * @automation: the #AgsAutomation
+ * @acceleration: the #AgsAcceleration to remove
+ * @use_selection_list: if %TRUE remove from selection, else from default automation
+ *
+ * Removes @acceleration from @automation.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_automation_remove_acceleration(AgsAutomation *automation,
+				   AgsAcceleration *acceleration,
+				   gboolean use_selection_list)
+{
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation) ||
+     !AGS_IS_ACCELERATION(acceleration)){
+    return;
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* remove if found */
+  pthread_mutex_lock(automation_mutex);
+  
+  if(!use_selection_list){
+    if(g_list_find(automation->acceleration,
+		   acceleration) != NULL){
+      automation->acceleration = g_list_remove(automation->acceleration,
+					       acceleration);
+      g_object_unref(acceleration);
+    }
+  }else{
+    if(g_list_find(automation->selection,
+		   acceleration) != NULL){
+      automation->selection = g_list_remove(automation->selection,
+					    acceleration);
+      g_object_unref(acceleration);
+    }
+  }
+
+  pthread_mutex_unlock(automation_mutex);
+}
+
+/**
  * ags_automation_remove_acceleration_at_position:
  * @automation: the #AgsAutomation
  * @x: x offset
@@ -1551,6 +1602,8 @@ ags_automation_find_point(AgsAutomation *automation,
     acceleration = acceleration->next;
   }
 
+  pthread_mutex_unlock(automation_mutex);
+
   return(retval);
 }
 
@@ -1558,14 +1611,14 @@ ags_automation_find_point(AgsAutomation *automation,
  * ags_automation_find_region:
  * @automation: the #AgsAutomation
  * @x0: start offset
- * @y0: start tone
+ * @y0: value start
  * @x1: end offset
- * @y1: end tone
+ * @y1: value end
  * @use_selection_list: if %TRUE selection is searched
  *
- * Find acceleration by offset and tone region.
+ * Find acceleration by offset and value region.
  *
- * Returns: the matching acceleration as #GList.
+ * Returns: the matching accelerations as #GList-struct
  *
  * Since: 2.0.0
  */
@@ -1651,7 +1704,7 @@ ags_automation_find_region(AgsAutomation *automation,
 
 /**
  * ags_automation_free_selection:
- * @automation: an #AgsAutomation
+ * @automation: the #AgsAutomation
  *
  * Clear selection.
  *
@@ -1702,7 +1755,7 @@ ags_automation_free_selection(AgsAutomation *automation)
  * ags_automation_add_point_to_selection:
  * @automation: the #AgsAutomation
  * @x: x offset
- * @y: y value acceleration
+ * @y: y acceleration value
  * @replace_current_selection: if %TRUE selection is replaced
  *
  * Select acceleration at position.
@@ -1773,7 +1826,7 @@ ags_automation_add_point_to_selection(AgsAutomation *automation,
  * ags_automation_remove_point_from_selection:
  * @automation: the #AgsAutomation
  * @x: x offset
- * @y: y value acceleration
+ * @y: y acceleration value
  *
  * Remove acceleration at position of selection.
  *
@@ -1898,7 +1951,7 @@ ags_automation_add_region_to_selection(AgsAutomation *automation,
 
 /**
  * ags_automation_remove_region_from_selection:
- * @automation: an #AgsAutomation
+ * @automation: the #AgsAutomation
  * @x0: x start offset
  * @y0: y start acceleration
  * @x1: x end offset
@@ -2985,12 +3038,12 @@ ags_automation_get_value(AgsAutomation *automation,
 
 /**
  * ags_automation_new:
- * @audio: an #AgsAudio
+ * @audio: the #AgsAudio
  * @line: the line to apply
  * @channel_type: the channel type
  * @control_name: the control name
  *
- * Creates an #AgsAutomation.
+ * Creates a new instance of #AgsAutomation.
  *
  * Returns: a new #AgsAutomation
  *

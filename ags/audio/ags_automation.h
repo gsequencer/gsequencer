@@ -129,6 +129,9 @@ GList* ags_automation_add(GList *automation,
 void ags_automation_add_acceleration(AgsAutomation *automation,
 				     AgsAcceleration *acceleration,
 				     gboolean use_selection_list);
+void ags_automation_remove_acceleration(AgsAutomation *automation,
+					AgsAcceleration *acceleration,
+					gboolean use_selection_list);
 
 gboolean ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
 							guint x, gdouble y);
