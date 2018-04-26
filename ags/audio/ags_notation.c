@@ -1431,23 +1431,37 @@ ags_notation_add_all_to_selection(AgsNotation *notation)
  *
  * Returns: the selection as XML.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 xmlNode*
 ags_notation_copy_selection(AgsNotation *notation)
 {
-  AgsNote *note;
-
+  AgsTimestamp *timestamp;
+  
   xmlNode *notation_node, *current_note;
   xmlNode *timestamp_node;
 
   GList *selection;
 
+  guint current_x0, current_x1, current_y;
   guint x_boundary, y_boundary;
 
-  selection = notation->selection;
+  pthread_mutex_t *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
 
   /* create root node */
+  pthread_mutex_lock(notation_mutex);
+
   notation_node = xmlNewNode(NULL,
 			     BAD_CAST "notation");
 
@@ -1464,29 +1478,32 @@ ags_notation_copy_selection(AgsNotation *notation)
 	     BAD_CAST "format",
 	     BAD_CAST (AGS_NOTATION_CLIPBOARD_FORMAT));
   xmlNewProp(notation_node,
-	     BAD_CAST "base_frequency",
-	     BAD_CAST (g_strdup_printf("%f", notation->base_frequency)));
-  xmlNewProp(notation_node,
 	     BAD_CAST "audio-channel",
 	     BAD_CAST (g_strdup_printf("%u", notation->audio_channel)));
 
   /* timestamp */
-  if(notation->timestamp != NULL){
+  timestamp = notation->timestamp;
+  
+  if(timestamp != NULL){
     timestamp_node = xmlNewNode(NULL,
 				BAD_CAST "timestamp");
     xmlAddChild(notation_node,
 		timestamp_node);
-
+    
     xmlNewProp(timestamp_node,
 	       BAD_CAST "offset",
-	       BAD_CAST (g_strdup_printf("%u", AGS_TIMESTAMP(notation->timestamp)->timer.ags_offset.offset)));
+	       BAD_CAST (g_strdup_printf("%u", ags_timestamp_get_ags_offset(timestamp))));
   }
   
   /* selection */
   selection = notation->selection;
 
   if(selection != NULL){
-    x_boundary = AGS_NOTE(selection->data)->x[0];
+    g_object_get(selection->data,
+		 "x0", &current_x0,
+		 NULL);
+    
+    x_boundary = current_x0;
     y_boundary = G_MAXUINT;
   }else{
     x_boundary = 0;
@@ -1494,7 +1511,12 @@ ags_notation_copy_selection(AgsNotation *notation)
   }
 
   while(selection != NULL){
-    note = AGS_NOTE(selection->data);
+    g_object_get(selection->data,
+		 "x0", &current_x0,
+		 "x1", &current_x1,
+		 "y", &current_y,
+		 NULL);
+
     current_note = xmlNewChild(notation_node,
 			       NULL,
 			       BAD_CAST "note",
@@ -1502,20 +1524,22 @@ ags_notation_copy_selection(AgsNotation *notation)
 
     xmlNewProp(current_note,
 	       BAD_CAST "x",
-	       BAD_CAST (g_strdup_printf("%u", note->x[0])));
+	       BAD_CAST (g_strdup_printf("%u", current_x0)));
     xmlNewProp(current_note,
 	       BAD_CAST "x1",
-	       BAD_CAST (g_strdup_printf("%u", note->x[1])));
+	       BAD_CAST (g_strdup_printf("%u", current_x1)));
     xmlNewProp(current_note,
 	       BAD_CAST "y",
-	       BAD_CAST (g_strdup_printf("%u", note->y)));
+	       BAD_CAST (g_strdup_printf("%u", current_y)));
 
-    if(y_boundary > note->y){
-      y_boundary = note->y;
+    if(y_boundary > current_y){
+      y_boundary = current_y;
     }
 
     selection = selection->next;
   }
+	       
+  pthread_mutex_unlock(notation_mutex);
 
   xmlNewProp(notation_node,
 	     BAD_CAST "x_boundary",
