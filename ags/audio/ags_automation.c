@@ -2165,7 +2165,7 @@ ags_automation_copy_selection(AgsAutomation *automation)
  *
  * Cut selection to clipboard.
  *
- * Returns: the selection as XML.
+ * Returns: the selection as xmlNod
  *
  * Since: 2.0.0
  */
@@ -2483,6 +2483,10 @@ ags_automation_insert_from_clipboard_extended(AgsAutomation *automation,
   char *base_frequency;
   char *x_boundary, *y_boundary;
 
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+  
   while(automation_node != NULL){
     if(automation_node->type == XML_ELEMENT_NODE && !xmlStrncmp("automation", automation_node->name, 11)){
       break;
@@ -3063,7 +3067,7 @@ ags_automation_get_value(AgsAutomation *automation,
  *
  * Creates a new instance of #AgsAutomation.
  *
- * Returns: a new #AgsAutomation
+ * Returns: the new #AgsAutomation
  *
  * Since: 2.0.0
  */

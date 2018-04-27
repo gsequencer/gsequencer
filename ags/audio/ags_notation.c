@@ -1557,31 +1557,49 @@ ags_notation_copy_selection(AgsNotation *notation)
  *
  * Cut selection to clipboard.
  *
- * Returns: the selection as XML.
+ * Returns: the selection as xmlNode
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 xmlNode*
 ags_notation_cut_selection(AgsNotation *notation)
 {
-  xmlNode* notation_node;
-
-  GList *selection;
+  xmlNode *notation_node;
   
+  GList *selection, *note;
+  
+  pthread_mutex_t *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+  /* copy selection */
   notation_node = ags_notation_copy_selection(notation);
+
+  /* cut */
+  pthread_mutex_lock(notation_mutex);
 
   selection = notation->selection;
 
   while(selection != NULL){
     notation->note = g_list_remove(notation->note,
 				   selection->data);
-    
-    AGS_NOTE(selection->data)->flags &= (~AGS_NOTE_IS_SELECTED);
     g_object_unref(selection->data);
 
     selection = selection->next;
   }
 
+  pthread_mutex_unlock(notation_mutex);
+
+  /* free selection */
   ags_notation_free_selection(notation);
 
   return(notation_node);
@@ -1604,7 +1622,7 @@ ags_notation_cut_selection(AgsNotation *notation)
  *
  * Paste previously copied notes. 
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
@@ -1615,6 +1633,8 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 						gboolean reset_y_offset, guint y_offset,
 						gboolean match_channel, gboolean no_duplicates)
 {
+  guint current_audio_channel;
+  
   gboolean match_timestamp;
   
   auto void ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
@@ -1622,6 +1642,8 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
   void ags_notation_insert_native_piano_from_clipboard_version_0_3_12()
   {
     AgsNote *note;
+
+    AgsTimestamp *timestamp;
 
     xmlNode *node;
 
@@ -1841,8 +1863,12 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 	  }
 	  
 	  /* add note */
+	  g_object_get(notation,
+		       "timestamp", &timestamp,
+		       NULL);
+
 	  if(!match_timestamp ||
-	     x0_val < notation->timestamp->timer.ags_offset.offset + AGS_NOTATION_DEFAULT_OFFSET){
+	     x0_val < ags_timestamp_get_ags_offset(timestamp) + AGS_NOTATION_DEFAULT_OFFSET){
 	    note = ags_note_new();
 
 	    note->x[0] = x0_val;
@@ -1880,11 +1906,15 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
     /* changes contain only optional informations */
     match_timestamp = TRUE;
 
+    g_object_get(notation,
+		 "audio-channel", &current_audio_channel,
+		 NULL);
+
     if(match_channel &&
-       notation->audio_channel != g_ascii_strtoull(xmlGetProp(root_node,
-							      "audio-channel"),
-						   NULL,
-						   10)){
+       current_audio_channel != g_ascii_strtoull(xmlGetProp(root_node,
+							    "audio-channel"),
+						 NULL,
+						 10)){
       return;
     }
         
@@ -1903,7 +1933,7 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
  *
  * Paste previously copied notes. 
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_notation_insert_from_clipboard(AgsNotation *notation,
@@ -1931,7 +1961,7 @@ ags_notation_insert_from_clipboard(AgsNotation *notation,
  * 
  * Paste previously copied notes. 
  * 
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 void
 ags_notation_insert_from_clipboard_extended(AgsNotation *notation,
@@ -1944,6 +1974,10 @@ ags_notation_insert_from_clipboard_extended(AgsNotation *notation,
   char *base_frequency;
   char *x_boundary, *y_boundary;
 
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+  
   while(notation_node != NULL){
     if(notation_node->type == XML_ELEMENT_NODE && !xmlStrncmp("notation", notation_node->name, 9)){
       break;
@@ -1995,7 +2029,7 @@ ags_notation_insert_from_clipboard_extended(AgsNotation *notation,
  * 
  * Returns: the raw-midi buffer
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 unsigned char*
 ags_notation_to_raw_midi(AgsNotation *notation,
@@ -2025,7 +2059,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
  * 
  * Returns: the #AgsNotation
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsNotation*
 ags_notation_from_raw_midi(unsigned char *raw_midi,
@@ -2042,13 +2076,13 @@ ags_notation_from_raw_midi(unsigned char *raw_midi,
 /**
  * ags_notation_new:
  * @audio: the assigned #AgsAudio
- * @audio_channel: the audio channel to be used
+ * @audio_channel: the audio channel to apply
  *
- * Creates a #AgsNotation, assigned to @audio_channel.
+ * Creates a new instance of #AgsNotation.
  *
- * Returns: a new #AgsNotation
+ * Returns: the new #AgsNotation
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsNotation*
 ags_notation_new(GObject *audio,
