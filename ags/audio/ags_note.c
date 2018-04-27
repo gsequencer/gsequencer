@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,15 +40,13 @@ void ags_note_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_note
- * @short_description: Note class.
+ * @short_description: note class
  * @title: AgsNote
  * @section_id:
  * @include: ags/audio/ags_note.h
  *
  * #AgsNote represents a tone.
  */
-
-static gpointer ags_note_parent_class = NULL;
 
 enum{
   PROP_0,
@@ -64,6 +62,10 @@ enum{
   PROP_RATIO,
   PROP_NOTE_NAME,
 };
+
+static gpointer ags_note_parent_class = NULL;
+
+static pthread_mutex_t ags_note_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_note_get_type()
@@ -113,13 +115,13 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Note offset x0.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("x0",
 				 i18n_pspec("offset x0"),
 				 i18n_pspec("The first x offset"),
 				 0,
-				 65535,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -131,13 +133,13 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Note offset x1.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("x1",
 				 i18n_pspec("offset x1"),
 				 i18n_pspec("The last x offset"),
 				 0,
-				 65535,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -149,13 +151,13 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Note offset y.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("y",
 				 i18n_pspec("offset y"),
 				 i18n_pspec("The y offset"),
 				 0,
-				 65535,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -168,13 +170,13 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * The stream's delay.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("stream-delay",
 				   i18n_pspec("delay of stream"),
 				   i18n_pspec("The delay of the stream"),
 				   0.0,
-				   65535.0,
+				   G_MAXDOUBLE
 				   0.0,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -186,13 +188,13 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * The stream's attack.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("stream-attack",
 				 i18n_pspec("offset stream-attack"),
 				 i18n_pspec("The first x offset"),
 				 0,
-				 65535,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -204,7 +206,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Envelope attack.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_boxed("attack",
 				  i18n_pspec("envelope's attack"),
@@ -220,7 +222,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Envelope decay.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_boxed("decay",
 				  i18n_pspec("envelope's decay"),
@@ -236,7 +238,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Envelope sustain.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_boxed("sustain",
 				  i18n_pspec("envelope's sustain"),
@@ -252,7 +254,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Envelope release.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_boxed("release",
 				  i18n_pspec("envelope's release"),
@@ -268,7 +270,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * Envelope ratio.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_boxed("ratio",
 				  i18n_pspec("envelope's ratio"),
@@ -284,7 +286,7 @@ ags_note_class_init(AgsNoteClass *note)
    *
    * The note's name.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("note-name",
 				   i18n_pspec("note name"),
@@ -301,8 +303,29 @@ ags_note_init(AgsNote *note)
 {
   complex z;
   
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
+
   note->flags = 0;
 
+  /* add note mutex */
+  note->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(attr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  note->obj_mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);  
+
+  /* fields */
   note->x[0] = 0;
   note->x[1] = 1;
   note->y = 0;
@@ -345,32 +368,61 @@ ags_note_set_property(GObject *gobject,
 {
   AgsNote *note;
 
+  pthread_mutex_t *note_mutex;
+
   note = AGS_NOTE(gobject);
+
+  /* get note mutex */
+  pthread_mutex_lock(ags_note_get_class_mutex());
+  
+  note_mutex = note->obj_mutex;
+  
+  pthread_mutex_unlock(ags_note_get_class_mutex());
 
   switch(prop_id){
   case PROP_X0:
     {
+      pthread_mutex_lock(note_mutex);
+
       note->x[0] = g_value_get_uint(value);
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   case PROP_X1:
     {
+      pthread_mutex_lock(note_mutex);
+
       note->x[1] = g_value_get_uint(value);
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   case PROP_Y:
     {
+      pthread_mutex_lock(note_mutex);
+
       note->y = g_value_get_uint(value);
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   case PROP_STREAM_DELAY:
     {
+      pthread_mutex_lock(note_mutex);
+
       note->stream_delay = g_value_get_double(value);
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   case PROP_STREAM_ATTACK:
     {
+      pthread_mutex_lock(note_mutex);
+
       note->stream_attack = g_value_get_uint(value);
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   case PROP_ATTACK:
@@ -379,8 +431,12 @@ ags_note_set_property(GObject *gobject,
 
       attack = (AgsComplex *) g_value_get_boxed(value);
 
+      pthread_mutex_lock(note_mutex);
+
       ags_complex_set(&(note->attack),
 		      ags_complex_get(attack));
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   case PROP_SUSTAIN:
@@ -389,8 +445,12 @@ ags_note_set_property(GObject *gobject,
 
       sustain = (AgsComplex *) g_value_get_boxed(value);
 
+      pthread_mutex_lock(note_mutex);
+
       ags_complex_set(&(note->sustain),
 		      ags_complex_get(sustain));
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   case PROP_DECAY:
@@ -399,8 +459,12 @@ ags_note_set_property(GObject *gobject,
 
       decay = (AgsComplex *) g_value_get_boxed(value);
 
+      pthread_mutex_lock(note_mutex);
+
       ags_complex_set(&(note->decay),
 		      ags_complex_get(decay));
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   case PROP_RELEASE:
@@ -409,8 +473,12 @@ ags_note_set_property(GObject *gobject,
 
       release = (AgsComplex *) g_value_get_boxed(value);
 
+      pthread_mutex_lock(note_mutex);
+
       ags_complex_set(&(note->release),
 		      ags_complex_get(release));
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   case PROP_RATIO:
@@ -419,8 +487,12 @@ ags_note_set_property(GObject *gobject,
 
       ratio = (AgsComplex *) g_value_get_boxed(value);
 
+      pthread_mutex_lock(note_mutex);
+
       ags_complex_set(&(note->ratio),
 		      ags_complex_get(ratio));
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   case PROP_NOTE_NAME:
@@ -429,7 +501,11 @@ ags_note_set_property(GObject *gobject,
       
       note_name = g_value_get_string(value);
       
+      pthread_mutex_lock(note_mutex);
+
       if(note_name == note->note_name){
+	pthread_mutex_unlock(note_mutex);
+
 	return;
       }
 
@@ -438,6 +514,8 @@ ags_note_set_property(GObject *gobject,
       }
 
       note->note_name = g_strdup(note_name);
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   default:
@@ -454,62 +532,115 @@ ags_note_get_property(GObject *gobject,
 {
   AgsNote *note;
 
+  pthread_mutex_t *note_mutex;
+
   note = AGS_NOTE(gobject);
+
+  /* get note mutex */
+  pthread_mutex_lock(ags_note_get_class_mutex());
+  
+  note_mutex = note->obj_mutex;
+  
+  pthread_mutex_unlock(ags_note_get_class_mutex());
 
   switch(prop_id){
   case PROP_X0:
     {
+      pthread_mutex_lock(note_mutex);
+
       g_value_set_uint(value, note->x[0]);
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   case PROP_X1:
     {
+      pthread_mutex_lock(note_mutex);
+
       g_value_set_uint(value, note->x[1]);
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   case PROP_Y:
     {
+      pthread_mutex_lock(note_mutex);
+
       g_value_set_uint(value, note->y);
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   case PROP_STREAM_DELAY:
     {
+      pthread_mutex_lock(note_mutex);
+
       g_value_set_double(value, note->stream_delay);
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   case PROP_STREAM_ATTACK:
     {
+      pthread_mutex_lock(note_mutex);
+
       g_value_set_uint(value, note->stream_attack);
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   case PROP_ATTACK:
     {
+      pthread_mutex_lock(note_mutex);
+
       g_value_set_boxed(value, note->attack);
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   case PROP_SUSTAIN:
     {
+      pthread_mutex_lock(note_mutex);
+
       g_value_set_boxed(value, note->sustain);
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   case PROP_DECAY:
     {
+      pthread_mutex_lock(note_mutex);
+
       g_value_set_boxed(value, note->decay);
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   case PROP_RELEASE:
     {
+      pthread_mutex_lock(note_mutex);
+
       g_value_set_boxed(value, note->release);
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   case PROP_RATIO:
     {
+      pthread_mutex_lock(note_mutex);
+
       g_value_set_boxed(value, note->ratio);
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   case PROP_NOTE_NAME:
     {
+      pthread_mutex_lock(note_mutex);
+
       g_value_set_string(value, note->note_name);
+
+      pthread_mutex_unlock(note_mutex);
     }
     break;
   default:
@@ -525,6 +656,12 @@ ags_note_finalize(GObject *gobject)
 
   note = AGS_NOTE(gobject);
 
+  pthread_mutex_destroy(note->obj_mutex);
+  free(note->obj_mutex);
+
+  pthread_mutexattr_destroy(note->obj_mutexattr);
+  free(note->obj_mutexattr);
+
   /* note name */
   if(note->note_name != NULL){
     free(note->note_name);
@@ -532,6 +669,126 @@ ags_note_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_note_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_note_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_note_get_class_mutex()
+{
+  return(&ags_note_class_mutex);
+}
+
+/**
+ * ags_note_test_flags:
+ * @note: the #AgsNote
+ * @flags: the flags
+ * 
+ * Test @flags to be set on @note.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_note_test_flags(AgsNote *note, guint flags)
+{
+  gboolean retval;
+  
+  pthread_mutex_t *note_mutex;
+
+  if(!AGS_IS_NOTE(note)){
+    return(FALSE);
+  }
+      
+  /* get note mutex */
+  pthread_mutex_lock(ags_note_get_class_mutex());
+  
+  note_mutex = current_note->obj_mutex;
+  
+  pthread_mutex_unlock(ags_note_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(note_mutex);
+
+  retval = (flags & (note->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(note_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_note_set_flags:
+ * @note: the #AgsNote
+ * @flags: the flags
+ * 
+ * Set @flags on @note.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_note_set_flags(AgsNote *note, guint flags)
+{
+  pthread_mutex_t *note_mutex;
+
+  if(!AGS_IS_NOTE(note)){
+    return;
+  }
+      
+  /* get note mutex */
+  pthread_mutex_lock(ags_note_get_class_mutex());
+  
+  note_mutex = current_note->obj_mutex;
+  
+  pthread_mutex_unlock(ags_note_get_class_mutex());
+
+  /* set */
+  pthread_mutex_lock(note_mutex);
+
+  note->flags |= flags;
+  
+  pthread_mutex_unlock(note_mutex);
+}
+
+/**
+ * ags_note_unset_flags:
+ * @note: the #AgsNote
+ * @flags: the flags
+ * 
+ * Unset @flags on @note.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_note_unset_flags(AgsNote *note, guint flags)
+{
+  pthread_mutex_t *note_mutex;
+
+  if(!AGS_IS_NOTE(note)){
+    return;
+  }
+      
+  /* get note mutex */
+  pthread_mutex_lock(ags_note_get_class_mutex());
+  
+  note_mutex = current_note->obj_mutex;
+  
+  pthread_mutex_unlock(ags_note_get_class_mutex());
+
+  /* set */
+  pthread_mutex_lock(note_mutex);
+
+  note->flags &= (~flags);
+  
+  pthread_mutex_unlock(note_mutex);
 }
 
 /**
