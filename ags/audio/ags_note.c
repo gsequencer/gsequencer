@@ -783,7 +783,7 @@ ags_note_unset_flags(AgsNote *note, guint flags)
   
   pthread_mutex_unlock(ags_note_get_class_mutex());
 
-  /* set */
+  /* unset */
   pthread_mutex_lock(note_mutex);
 
   note->flags &= (~flags);
@@ -800,29 +800,42 @@ ags_note_unset_flags(AgsNote *note, guint flags)
  * 
  * Returns: 0 if equal, -1 if smaller and 1 if bigger offset
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gint
 ags_note_sort_func(gconstpointer a,
 		   gconstpointer b)
 {
+  guint a_x0, b_x0;
+  guint a_y, b_y;
+  
   if(a == NULL || b == NULL){
     return(0);
   }
+
+  g_object_get(a,
+	       "x0", &a_x0,
+	       "y", &a_y,
+	       NULL);
     
-  if(AGS_NOTE(a)->x[0] == AGS_NOTE(b)->x[0]){
-    if(AGS_NOTE(a)->y == AGS_NOTE(b)->y){
+  g_object_get(b,
+	       "x0", &b_x0,
+	       "y", &b_y,
+	       NULL);
+
+  if(a_x0 == b_x0){
+    if(a_y == b_y){
       return(0);
     }
 
-    if(AGS_NOTE(a)->y < AGS_NOTE(b)->y){
+    if(a_y < b_y){
       return(-1);
     }else{
       return(1);
     }
   }
 
-  if(AGS_NOTE(a)->x[0] < AGS_NOTE(b)->x[0]){
+  if(a_x0 < b_x0){
     return(-1);
   }else{
     return(1);
@@ -831,15 +844,15 @@ ags_note_sort_func(gconstpointer a,
 
 /**
  * ags_note_find_prev:
- * @note: a #GList containing #AgsNote
+ * @note: the #GList-struct containing #AgsNote
  * @x0: x offset
  * @y:  y offset
  * 
  * Find prev note having the same y offset.
  *
- * Returns: the matching entry as #GList if first entry's x offset bigger than @x0, else %NULL
+ * Returns: the matching entry as #GList-struct if first entry's x offset bigger than @x0, else %NULL
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_note_find_prev(GList *note,
@@ -847,22 +860,40 @@ ags_note_find_prev(GList *note,
 {
   GList *current_match;
 
-  if(note == NULL ||
-     AGS_NOTE(note->data)->x[0] > x0){
+  guint current_x0, current_y;
+  
+  if(note == NULL){
+    return(NULL);
+  }
+
+  g_object_get(note->data,
+	       "x0", &current_x0,
+	       NULL);
+  
+  if(current_x0 > x0){
     return(NULL);
   }
 
   current_match = NULL;
   
   while(note != NULL){
-    if(AGS_NOTE(note->data)->y == y){
+    g_object_get(note->data,
+		 "y", &current_y,
+		 NULL);
+    
+    if(current_y == y){
       current_match = note;
 
       note = note->next;
+      
       continue;
     }
 
-    if(AGS_NOTE(note->data)->x[0] > x0){
+    g_object_get(note->data,
+		 "x0", &current_x0,
+		 NULL);
+
+    if(current_x0 > x0){
       return(current_match);
     }
 
@@ -874,15 +905,15 @@ ags_note_find_prev(GList *note,
 
 /**
  * ags_note_find_next:
- * @note: a #GList containing #AgsNote
+ * @note: the #GList-struct containing #AgsNote
  * @x0: x offset
  * @y:  y offset
  * 
  * Find next note having the same y offset.
  *
- * Returns: the matching entry as #GList if last entry's x offset smaller than @x0, else %NULL
+ * Returns: the matching entry as #GList-struct if last entry's x offset smaller than @x0, else %NULL
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_note_find_next(GList *note,
@@ -890,24 +921,40 @@ ags_note_find_next(GList *note,
 {
   GList *current_match;
 
-  note = g_list_last(note);
+  guint current_x0, current_y;
 
-  if(note == NULL ||
-     AGS_NOTE(note->data)->x[0] < x0){
+  if(note == NULL){
+    return(NULL);
+  }
+
+  g_object_get(note->data,
+	       "x0", &current_x0,
+	       NULL);
+  
+  if(current_x0 < x0){
     return(NULL);
   }
 
   current_match = NULL;
 
   while(note != NULL){
-    if(AGS_NOTE(note->data)->y == y){
+    g_object_get(note->data,
+		 "y", &current_y,
+		 NULL);
+    
+    if(current_y == y){
       current_match = note;
 
       note = note->prev;
+      
       continue;
     }
 
-    if(AGS_NOTE(note->data)->x[0] < x0){
+    g_object_get(note->data,
+		 "x0", &current_x0,
+		 NULL);
+
+    if(current_x0 < x0){
       return(current_match);
     }
 
@@ -932,7 +979,7 @@ ags_note_find_next(GList *note,
  * 
  * Returns: the delta-time
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 glong
 ags_note_length_to_smf_delta_time(guint note_length,
@@ -960,7 +1007,7 @@ ags_note_length_to_smf_delta_time(guint note_length,
  * 
  * Returns: the note length
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 guint
 ags_note_smf_delta_time_to_length(glong delta_time,
@@ -985,7 +1032,7 @@ ags_note_smf_delta_time_to_length(glong delta_time,
  *
  * Returns: The sequencer raw midi as array.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 unsigned char*
 ags_note_to_raw_midi(AgsNote *note,
@@ -1151,7 +1198,7 @@ ags_note_to_raw_midi(AgsNote *note,
  * 
  * Returns: the raw-midi buffer
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 unsigned char*
 ags_note_to_raw_midi_extended(AgsNote *note,
@@ -1177,7 +1224,7 @@ ags_note_to_raw_midi_extended(AgsNote *note,
  *
  * Returns: The sequencer events as array.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 snd_seq_event_t*
 ags_note_to_seq_event(AgsNote *note,
@@ -1209,7 +1256,7 @@ ags_note_to_seq_event(AgsNote *note,
  * 
  * Returns: an array of snd_seq_event_t structs
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 snd_seq_event_t*
 ags_note_to_seq_event_extended(AgsNote *note,
@@ -1236,9 +1283,9 @@ ags_note_to_seq_event_extended(AgsNote *note,
  *
  * Parse @raw_midi data and convert to #AgsNote.
  *
- * Returns: a #GList containing the notes
+ * Returns: a #GList-struct containing the notes
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_note_from_raw_midi(unsigned char *raw_midi,
@@ -1268,9 +1315,9 @@ ags_note_from_raw_midi(unsigned char *raw_midi,
  *
  * Parse @raw_midi data and convert to #AgsNote.
  *
- * Returns: a #GList containing the notes
+ * Returns: a #GList-struct containing the notes
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_note_from_raw_midi_extended(unsigned char *raw_midi,
@@ -1297,9 +1344,9 @@ ags_note_from_raw_midi_extended(unsigned char *raw_midi,
  *
  * Convert ALSA sequencer data @event to #AgsNote.
  *
- * Returns: a #GList containing the notes
+ * Returns: a #GList-struct containing the notes
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_note_from_seq_event(snd_seq_event_t *event,
@@ -1329,9 +1376,9 @@ ags_note_from_seq_event(snd_seq_event_t *event,
  *
  * Parse @raw_midi data and convert to #AgsNote.
  *
- * Returns: a #GList containing the notes
+ * Returns: a #GList-struct containing the notes
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_note_from_seq_event_extended(snd_seq_event_t *event,
@@ -1357,52 +1404,66 @@ ags_note_from_seq_event_extended(snd_seq_event_t *event,
  *
  * Returns: the duplicated #AgsNote.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsNote*
 ags_note_duplicate(AgsNote *note)
 {
-  AgsNote *copy;
+  AgsNote *note_copy;
 
-  if(note->x[0] == note->x[1]){
+  pthread_mutex_t *note_mutex;
+
+  if(!AGS_IS_NOTE(note)){
     return(NULL);
   }
   
-  copy = ags_note_new();
+  /* get note mutex */
+  pthread_mutex_lock(ags_note_get_class_mutex());
+  
+  note_mutex = note->obj_mutex;
+  
+  pthread_mutex_unlock(ags_note_get_class_mutex());
 
-  copy->flags = 0;
+  /**/  
+  note_copy = ags_note_new();
 
-  copy->note_name = g_strdup(note->note_name);
+  note_copy->flags = 0;
+
+  pthread_mutex_lock(note_mutex);
+
+  note_copy->note_name = g_strdup(note->note_name);
   
   if(note->x[0] < note->x[1]){
-    copy->x[0] = note->x[0];
-    copy->x[1] = note->x[1];
+    note_copy->x[0] = note->x[0];
+    note_copy->x[1] = note->x[1];
   }else{
-    copy->x[0] = note->x[1];
-    copy->x[1] = note->x[0];
+    note_copy->x[0] = note->x[1];
+    note_copy->x[1] = note->x[0];
   }
   
-  copy->y = note->y;
+  note_copy->y = note->y;
 
-  copy->stream_delay = note->stream_delay;
-  copy->stream_attack = note->stream_attack;
+  note_copy->stream_delay = note->stream_delay;
+  note_copy->stream_attack = note->stream_attack;
   
-  copy->attack[0] = note->attack[0];
-  copy->attack[1] = note->attack[1];
+  note_copy->attack[0] = note->attack[0];
+  note_copy->attack[1] = note->attack[1];
 
-  copy->decay[0] = note->decay[0];
-  copy->decay[1] = note->decay[1];
+  note_copy->decay[0] = note->decay[0];
+  note_copy->decay[1] = note->decay[1];
 
-  copy->sustain[0] = note->sustain[0];
-  copy->sustain[1] = note->sustain[1];
+  note_copy->sustain[0] = note->sustain[0];
+  note_copy->sustain[1] = note->sustain[1];
 
-  copy->release[0] = note->release[0];
-  copy->release[1] = note->release[1];
+  note_copy->release[0] = note->release[0];
+  note_copy->release[1] = note->release[1];
 
-  copy->ratio[0] = note->ratio[0];
-  copy->ratio[1] = note->ratio[1];
+  note_copy->ratio[0] = note->ratio[0];
+  note_copy->ratio[1] = note->ratio[1];
 
-  return(copy);
+  pthread_mutex_unlock(note_mutex);
+
+  return(note_copy);
 }
 
 /**
@@ -1412,14 +1473,15 @@ ags_note_duplicate(AgsNote *note)
  *
  * Returns: a new #AgsNote
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsNote*
 ags_note_new()
 {
   AgsNote *note;
 
-  note = (AgsNote *) g_object_new(AGS_TYPE_NOTE, NULL);
+  note = (AgsNote *) g_object_new(AGS_TYPE_NOTE,
+				  NULL);
 
   return(note);
 }
@@ -1436,7 +1498,7 @@ ags_note_new()
  *
  * Returns: a new #AgsNote
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsNote*
 ags_note_new_with_offset(guint x0, guint x1,

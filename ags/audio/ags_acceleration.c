@@ -441,7 +441,7 @@ ags_acceleration_unset_flags(AgsAcceleration *acceleration, guint flags)
   
   pthread_mutex_unlock(ags_acceleration_get_class_mutex());
 
-  /* set */
+  /* unset */
   pthread_mutex_lock(acceleration_mutex);
 
   acceleration->flags &= (~flags);
@@ -462,7 +462,7 @@ ags_acceleration_unset_flags(AgsAcceleration *acceleration, guint flags)
 AgsAcceleration*
 ags_acceleration_duplicate(AgsAcceleration *acceleration)
 {
-  AgsAcceleration *copy;
+  AgsAcceleration *acceleration_copy;
 
   pthread_mutex_t *acceleration_mutex;
 
@@ -478,20 +478,20 @@ ags_acceleration_duplicate(AgsAcceleration *acceleration)
   pthread_mutex_unlock(ags_acceleration_get_class_mutex());
 
   /**/
-  copy = ags_acceleration_new();
+  acceleration_copy = ags_acceleration_new();
 
-  copy->flags = 0;
-
-  pthread_mutex_lock(acceleration_mutex);
-  
-  copy->x = acceleration->x;
-  copy->y = acceleration->y;
-
-  copy->acceleration_name = g_strdup(acceleration->acceleration_name);
+  acceleration_copy->flags = 0;
 
   pthread_mutex_lock(acceleration_mutex);
   
-  return(copy);
+  acceleration_copy->x = acceleration->x;
+  acceleration_copy->y = acceleration->y;
+
+  acceleration_copy->acceleration_name = g_strdup(acceleration->acceleration_name);
+
+  pthread_mutex_unlock(acceleration_mutex);
+  
+  return(acceleration_copy);
 }
 
 /**
