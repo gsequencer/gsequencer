@@ -56,10 +56,13 @@ struct _AgsBuffer
 
   guint flags;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   guint64 x;
   
-  guint selection_x0;
-  guint selection_x1;
+  guint64 selection_x0;
+  guint64 selection_x1;
 
   guint samplerate;
   guint buffer_size;
@@ -74,6 +77,12 @@ struct _AgsBufferClass
 };
 
 GType ags_buffer_get_type();
+
+pthread_mutex_t* ags_buffer_get_class_mutex();
+
+gboolean ags_buffer_test_flags(AgsBuffer *buffer, guint flags);
+void ags_buffer_set_flags(AgsBuffer *buffer, guint flags);
+void ags_buffer_unset_flags(AgsBuffer *buffer, guint flags);
 
 void ags_buffer_set_samplerate(AgsBuffer *buffer,
 			       guint samplerate);

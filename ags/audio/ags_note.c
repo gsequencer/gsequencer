@@ -1469,9 +1469,9 @@ ags_note_duplicate(AgsNote *note)
 /**
  * ags_note_new:
  *
- * Creates an #AgsNote
+ * Creates a new instance of #AgsNote
  *
- * Returns: a new #AgsNote
+ * Returns: the new #AgsNote
  *
  * Since: 2.0.0
  */
@@ -1494,9 +1494,9 @@ ags_note_new()
  * @stream_delay: delay
  * @stream_attack: attack
  *
- * Creates an #AgsNote
+ * Creates a new instance of #AgsNote
  *
- * Returns: a new #AgsNote
+ * Returns: the new #AgsNote
  *
  * Since: 2.0.0
  */

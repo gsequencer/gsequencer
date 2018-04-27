@@ -50,8 +50,6 @@ void ags_buffer_finalize(GObject *gobject);
  * #AgsBuffer represents a tone.
  */
 
-static gpointer ags_buffer_parent_class = NULL;
-
 enum{
   PROP_0,
   PROP_X,
@@ -62,6 +60,10 @@ enum{
   PROP_FORMAT,
   PROP_DATA,
 };
+
+static gpointer ags_buffer_parent_class = NULL;
+
+static pthread_mutex_t ags_buffer_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_buffer_get_type()
@@ -112,15 +114,15 @@ ags_buffer_class_init(AgsBufferClass *buffer)
    *
    * Buffer's x offset.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
-  param_spec = g_param_spec_uint("x",
-				 i18n_pspec("offset x"),
-				 i18n_pspec("The x offset"),
-				 0,
-				 G_MAXUINT,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint64("x",
+				   i18n_pspec("offset x"),
+				   i18n_pspec("The x offset"),
+				   0,
+				   G_MAXUINT64,
+				   0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_X,
 				  param_spec);
@@ -130,15 +132,15 @@ ags_buffer_class_init(AgsBufferClass *buffer)
    *
    * Buffer's selection x0 offset.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
-  param_spec = g_param_spec_uint("selection-x0",
-				 i18n_pspec("selection offset x0"),
-				 i18n_pspec("The selection's x0 offset"),
-				 0,
-				 G_MAXUINT,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint64("selection-x0",
+				   i18n_pspec("selection offset x0"),
+				   i18n_pspec("The selection's x0 offset"),
+				   0,
+				   G_MAXUINT64,
+				   0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SELECTION_X0,
 				  param_spec);
@@ -148,15 +150,15 @@ ags_buffer_class_init(AgsBufferClass *buffer)
    *
    * Buffer's selection x1 offset.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
-  param_spec = g_param_spec_uint("selection-x1",
-				 i18n_pspec("selection offset x1"),
-				 i18n_pspec("The selection's x1 offset"),
-				 0,
-				 G_MAXUINT,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint64("selection-x1",
+				   i18n_pspec("selection offset x1"),
+				   i18n_pspec("The selection's x1 offset"),
+				   0,
+				   G_MAXUINT64,
+				   0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SELECTION_X1,
 				  param_spec);
@@ -166,13 +168,13 @@ ags_buffer_class_init(AgsBufferClass *buffer)
    *
    * Buffer's audio data samplerate.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("audio data samplerate"),
 				 i18n_pspec("The samplerate of audio data"),
 				 0,
-				 G_MAXUINT,
+				 G_MAXUINT32,
 				 AGS_SOUNDCARD_DEFAULT_SAMPLERATE,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -184,13 +186,13 @@ ags_buffer_class_init(AgsBufferClass *buffer)
    *
    * Buffer's audio data buffer size.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("audio data's buffer size"),
 				 i18n_pspec("The buffer size of audio data"),
 				 0,
-				 G_MAXUINT,
+				 G_MAXUINT32,
 				 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -202,13 +204,13 @@ ags_buffer_class_init(AgsBufferClass *buffer)
    *
    * Buffer's audio data format.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("audio data format"),
 				 i18n_pspec("The format of audio data"),
 				 0,
-				 G_MAXUINT,
+				 G_MAXUINT32,
 				 AGS_SOUNDCARD_DEFAULT_FORMAT,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -220,7 +222,7 @@ ags_buffer_class_init(AgsBufferClass *buffer)
    *
    * Buffer's audio data.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("data",
 				    i18n_pspec("audio data"),
@@ -234,8 +236,29 @@ ags_buffer_class_init(AgsBufferClass *buffer)
 void
 ags_buffer_init(AgsBuffer *buffer)
 {  
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
+  
   buffer->flags = 0;
 
+  /* add buffer mutex */
+  buffer->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(attr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  buffer->obj_mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);  
+
+  /* fields */
   buffer->x = 0;
 
   buffer->selection_x0 = 0;
@@ -256,22 +279,43 @@ ags_buffer_set_property(GObject *gobject,
 {
   AgsBuffer *buffer;
 
+  pthread_mutex_t *buffer_mutex;
+
   buffer = AGS_BUFFER(gobject);
+
+  /* get buffer mutex */
+  pthread_mutex_lock(ags_buffer_get_class_mutex());
+  
+  buffer_mutex = buffer->obj_mutex;
+  
+  pthread_mutex_unlock(ags_buffer_get_class_mutex());
 
   switch(prop_id){
   case PROP_X:
     {
-      buffer->x = g_value_get_uint(value);
+      pthread_mutex_lock(buffer_mutex);
+
+      buffer->x = g_value_get_uint64(value);
+
+      pthread_mutex_unlock(buffer_mutex);
     }
     break;
   case PROP_SELECTION_X0:
     {
-      buffer->selection_x0 = g_value_get_uint(value);
+      pthread_mutex_lock(buffer_mutex);
+
+      buffer->selection_x0 = g_value_get_uint64(value);
+
+      pthread_mutex_unlock(buffer_mutex);
     }
     break;
   case PROP_SELECTION_X1:
     {
-      buffer->selection_x1 = g_value_get_uint(value);
+      pthread_mutex_lock(buffer_mutex);
+
+      buffer->selection_x1 = g_value_get_uint64(value);
+
+      pthread_mutex_unlock(buffer_mutex);
     }
     break;
   case PROP_SAMPLERATE:
@@ -306,7 +350,11 @@ ags_buffer_set_property(GObject *gobject,
     break;
   case PROP_DATA:
     {
+      pthread_mutex_lock(buffer_mutex);
+
       buffer->data = g_value_get_pointer(value);
+
+      pthread_mutex_unlock(buffer_mutex);
     }
     break;
   default:
@@ -323,49 +371,86 @@ ags_buffer_get_property(GObject *gobject,
 {
   AgsBuffer *buffer;
 
+  pthread_mutex_t *buffer_mutex;
+
   buffer = AGS_BUFFER(gobject);
+
+  /* get buffer mutex */
+  pthread_mutex_lock(ags_buffer_get_class_mutex());
+  
+  buffer_mutex = buffer->obj_mutex;
+  
+  pthread_mutex_unlock(ags_buffer_get_class_mutex());
 
   switch(prop_id){
   case PROP_X:
     {
-      g_value_set_uint(value,
-		       buffer->x);
+      pthread_mutex_lock(buffer_mutex);
+
+      g_value_set_uint64(value,
+			 buffer->x);
+
+      pthread_mutex_unlock(buffer_mutex);
     }
     break;
   case PROP_SELECTION_X0:
     {
-      g_value_set_uint(value,
-		       buffer->selection_x0);
+      pthread_mutex_lock(buffer_mutex);
+
+      g_value_set_uint64(value,
+			 buffer->selection_x0);
+
+      pthread_mutex_unlock(buffer_mutex);
     }
     break;
   case PROP_SELECTION_X1:
     {
-      g_value_set_uint(value,
-		       buffer->selection_x1);
+      pthread_mutex_lock(buffer_mutex);
+
+      g_value_set_uint64(value,
+			 buffer->selection_x1);
+
+      pthread_mutex_unlock(buffer_mutex);
     }
     break;
   case PROP_SAMPLERATE:
     {
+      pthread_mutex_lock(buffer_mutex);
+
       g_value_set_uint(value,
 		       buffer->samplerate);
+
+      pthread_mutex_unlock(buffer_mutex);
     }
     break;
   case PROP_BUFFER_SIZE:
     {
+      pthread_mutex_lock(buffer_mutex);
+
       g_value_set_uint(value,
 		       buffer->buffer_size);
+
+      pthread_mutex_unlock(buffer_mutex);
     }
     break;
   case PROP_FORMAT:
     {
+      pthread_mutex_lock(buffer_mutex);
+
       g_value_set_uint(value,
 		       buffer->format);
+
+      pthread_mutex_unlock(buffer_mutex);
     }
     break;
   case PROP_DATA:
     {
+      pthread_mutex_lock(buffer_mutex);
+
       g_value_set_pointer(value,
 			  buffer->data);
+
+      pthread_mutex_unlock(buffer_mutex);
     }
     break;
   default:
@@ -381,6 +466,12 @@ ags_buffer_finalize(GObject *gobject)
 
   buffer = AGS_BUFFER(gobject);
 
+  pthread_mutex_destroy(buffer->obj_mutex);
+  free(buffer->obj_mutex);
+
+  pthread_mutexattr_destroy(buffer->obj_mutexattr);
+  free(buffer->obj_mutexattr);
+
   if(buffer->data != NULL){
     free(buffer->data);
   }
@@ -389,15 +480,170 @@ ags_buffer_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_buffer_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_buffer_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_buffer_get_class_mutex()
+{
+  return(&ags_buffer_class_mutex);
+}
+
+/**
+ * ags_buffer_test_flags:
+ * @buffer: the #AgsBuffer
+ * @flags: the flags
+ * 
+ * Test @flags to be set on @buffer.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_buffer_test_flags(AgsBuffer *buffer, guint flags)
+{
+  gboolean retval;
+  
+  pthread_mutex_t *buffer_mutex;
+
+  if(!AGS_IS_BUFFER(buffer)){
+    return(FALSE);
+  }
+      
+  /* get buffer mutex */
+  pthread_mutex_lock(ags_buffer_get_class_mutex());
+  
+  buffer_mutex = current_buffer->obj_mutex;
+  
+  pthread_mutex_unlock(ags_buffer_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(buffer_mutex);
+
+  retval = (flags & (buffer->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(buffer_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_buffer_set_flags:
+ * @buffer: the #AgsBuffer
+ * @flags: the flags
+ * 
+ * Set @flags on @buffer.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_buffer_set_flags(AgsBuffer *buffer, guint flags)
+{
+  pthread_mutex_t *buffer_mutex;
+
+  if(!AGS_IS_BUFFER(buffer)){
+    return;
+  }
+      
+  /* get buffer mutex */
+  pthread_mutex_lock(ags_buffer_get_class_mutex());
+  
+  buffer_mutex = current_buffer->obj_mutex;
+  
+  pthread_mutex_unlock(ags_buffer_get_class_mutex());
+
+  /* set */
+  pthread_mutex_lock(buffer_mutex);
+
+  buffer->flags |= flags;
+  
+  pthread_mutex_unlock(buffer_mutex);
+}
+
+/**
+ * ags_buffer_unset_flags:
+ * @buffer: the #AgsBuffer
+ * @flags: the flags
+ * 
+ * Unset @flags on @buffer.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_buffer_unset_flags(AgsBuffer *buffer, guint flags)
+{
+  pthread_mutex_t *buffer_mutex;
+
+  if(!AGS_IS_BUFFER(buffer)){
+    return;
+  }
+      
+  /* get buffer mutex */
+  pthread_mutex_lock(ags_buffer_get_class_mutex());
+  
+  buffer_mutex = current_buffer->obj_mutex;
+  
+  pthread_mutex_unlock(ags_buffer_get_class_mutex());
+
+  /* unset */
+  pthread_mutex_lock(buffer_mutex);
+
+  buffer->flags &= (~flags);
+  
+  pthread_mutex_unlock(buffer_mutex);
+}
+
+/**
+ * ags_buffer_set_samplerate:
+ * @buffer: the #AgsBuffer
+ * @samplerate: the samplerate
+ * 
+ * Set samplerate.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_buffer_set_samplerate(AgsBuffer *buffer,
 			  guint samplerate)
 {
-  //TODO:JK: resample data?
+  pthread_mutex_t *buffer_mutex;
+
+  if(!AGS_IS_BUFFER(buffer)){
+    return(FALSE);
+  }
+
+  /* get buffer mutex */
+  pthread_mutex_lock(ags_buffer_get_class_mutex());
   
+  buffer_mutex = current_buffer->obj_mutex;
+  
+  pthread_mutex_unlock(ags_buffer_get_class_mutex());
+
+  /* set samplerate */
+  pthread_mutex_lock(buffer_mutex);
+
+  //TODO:JK: resample data?
   buffer->samplerate = samplerate;
+  
+  pthread_mutex_unlock(buffer_mutex);
 }
 
+/**
+ * ags_buffer_set_buffer_size:
+ * @buffer: the #AgsBuffer
+ * @buffer_size: the buffer size
+ * 
+ * Set buffer size.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_buffer_set_buffer_size(AgsBuffer *buffer,
 			   guint buffer_size)
@@ -405,6 +651,22 @@ ags_buffer_set_buffer_size(AgsBuffer *buffer,
   guint old_buffer_size;
   guint word_size;
   
+  pthread_mutex_t *buffer_mutex;
+
+  if(!AGS_IS_BUFFER(buffer)){
+    return;
+  }
+      
+  /* get buffer mutex */
+  pthread_mutex_lock(ags_buffer_get_class_mutex());
+  
+  buffer_mutex = current_buffer->obj_mutex;
+  
+  pthread_mutex_unlock(ags_buffer_get_class_mutex());
+
+  /* set buffer size */
+  pthread_mutex_lock(buffer_mutex);
+
   old_buffer_size = buffer->buffer_size;
   
   buffer->buffer_size = buffer_size;
@@ -454,8 +716,19 @@ ags_buffer_set_buffer_size(AgsBuffer *buffer,
   if(old_buffer_size < buffer_size){
     memset(buffer->data + old_buffer_size, 0, (buffer_size - old_buffer_size) * word_size);
   }
+
+  pthread_mutex_unlock(buffer_mutex);
 }
 
+/**
+ * ags_buffer_set_format:
+ * @buffer: the #AgsBuffer
+ * @format: the format
+ * 
+ * Set format.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_buffer_set_format(AgsBuffer *buffer,
 		      guint format)
@@ -463,6 +736,22 @@ ags_buffer_set_format(AgsBuffer *buffer,
   void *data;
 
   guint copy_mode;
+
+  pthread_mutex_t *buffer_mutex;
+
+  if(!AGS_IS_BUFFER(buffer)){
+    return;
+  }
+      
+  /* get buffer mutex */
+  pthread_mutex_lock(ags_buffer_get_class_mutex());
+  
+  buffer_mutex = current_buffer->obj_mutex;
+  
+  pthread_mutex_unlock(ags_buffer_get_class_mutex());
+
+  /* set format */
+  pthread_mutex_lock(buffer_mutex);
 
   data = ags_stream_alloc(buffer->buffer_size,
 			  format);
@@ -479,6 +768,8 @@ ags_buffer_set_format(AgsBuffer *buffer,
   buffer->data = data;
 
   buffer->format = format;
+
+  pthread_mutex_unlock(buffer_mutex);
 }
 
 /**
@@ -490,31 +781,90 @@ ags_buffer_set_format(AgsBuffer *buffer,
  * 
  * Returns: 0 if equal, -1 if smaller and 1 if bigger offset
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 gint
 ags_buffer_sort_func(gconstpointer a,
 		     gconstpointer b)
 {
+  guint a_x, b_x ;
+
   if(a == NULL || b == NULL){
     return(0);
   }
     
-  if(AGS_BUFFER(a)->x == AGS_BUFFER(b)->x){
+  g_object_get(a,
+	       "x", &a_x ,
+	       NULL);
+    
+  g_object_get(b,
+	       "x", &b_x ,
+	       NULL);
+
+  if(a_x == b_x){
     return(0);
   }
 
-  if(AGS_BUFFER(a)->x < AGS_BUFFER(b)->x){
+  if(a_x < b_x){
     return(-1);
   }else{
     return(1);
   }  
 }
 
+/**
+ * ags_buffer_duplicate:
+ * @buffer: an #AgsBuffer
+ * 
+ * Duplicate a buffer.
+ *
+ * Returns: the duplicated #AgsBuffer.
+ *
+ * Since: 2.0.0
+ */
 AgsBuffer*
 ags_buffer_duplicate(AgsBuffer *buffer)
 {
-  //TODO:JK: implement me
+  AgsBuffer *buffer_copy;
+
+  guint copy_mode;
+
+  pthread_mutex_t *buffer_mutex;
+
+  if(!AGS_IS_BUFFER(buffer)){
+    return(NULL);
+  }
+  
+  /* get buffer mutex */
+  pthread_mutex_lock(ags_buffer_get_class_mutex());
+  
+  buffer_mutex = buffer->obj_mutex;
+  
+  pthread_mutex_unlock(ags_buffer_get_class_mutex());
+
+  /* instantiate buffer */  
+  buffer_copy = ags_buffer_new();
+
+  buffer_copy->flags = 0;
+
+  pthread_mutex_lock(buffer_mutex);
+
+  buffer_copy->x = buffer->x;
+
+  g_object_set(buffer_copy,
+	       "samplerate", buffer->samplerate,
+	       "buffer-size", buffer->buffer_size,
+	       "format", buffer->format,
+	       NULL);
+
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(buffer_copy->format),
+						  ags_audio_buffer_util_format_from_soundcard(buffer->format));
+  
+  ags_audio_buffer_util_copy_buffer_to_buffer(copy_buffer->data, 1, 0,
+					      buffer->data, 1, 0,
+					      copy_buffer->buffer_size, copy_mode);
+
+  pthread_mutex_unlock(buffer_mutex);
 
   return(NULL);
 }
@@ -522,11 +872,11 @@ ags_buffer_duplicate(AgsBuffer *buffer)
 /**
  * ags_buffer_new:
  *
- * Creates an #AgsBuffer
+ * Creates a new instance of #AgsBuffer
  *
- * Returns: a new #AgsBuffer
+ * Returns: the new #AgsBuffer
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 AgsBuffer*
 ags_buffer_new()

@@ -536,9 +536,9 @@ ags_acceleration_duplicate(AgsAcceleration *acceleration)
 /**
  * ags_acceleration_new:
  *
- * Creates an #AgsAcceleration
+ * Creates a new instance of #AgsAcceleration
  *
- * Returns: a new #AgsAcceleration
+ * Returns: the new #AgsAcceleration
  *
  * Since: 2.0.0
  */
