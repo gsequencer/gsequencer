@@ -866,7 +866,7 @@ ags_buffer_duplicate(AgsBuffer *buffer)
 
   pthread_mutex_unlock(buffer_mutex);
 
-  return(NULL);
+  return(buffer_copy);
 }
 
 /**
