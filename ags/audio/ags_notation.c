@@ -354,7 +354,16 @@ ags_notation_get_property(GObject *gobject,
 {
   AgsNotation *notation;
 
+  pthread_mutex_t *notation_mutex;
+
   notation = AGS_NOTATION(gobject);
+
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -465,10 +474,6 @@ ags_notation_finalize(GObject *gobject)
   if(notation->timestamp != NULL){
     g_object_unref(notation->timestamp);
   }
-
-  /* key and base note */
-  g_free(notation->key);
-  g_free(notation->base_note);
     
   /* note and selection */
   g_list_free_full(notation->note,
@@ -521,7 +526,7 @@ ags_notation_test_flags(AgsNotation *notation, guint flags)
   /* get notation mutex */
   pthread_mutex_lock(ags_notation_get_class_mutex());
   
-  notation_mutex = current_notation->obj_mutex;
+  notation_mutex = notation->obj_mutex;
   
   pthread_mutex_unlock(ags_notation_get_class_mutex());
 
@@ -556,7 +561,7 @@ ags_notation_set_flags(AgsNotation *notation, guint flags)
   /* get notation mutex */
   pthread_mutex_lock(ags_notation_get_class_mutex());
   
-  notation_mutex = current_notation->obj_mutex;
+  notation_mutex = notation->obj_mutex;
   
   pthread_mutex_unlock(ags_notation_get_class_mutex());
 
@@ -589,7 +594,7 @@ ags_notation_unset_flags(AgsNotation *notation, guint flags)
   /* get notation mutex */
   pthread_mutex_lock(ags_notation_get_class_mutex());
   
-  notation_mutex = current_notation->obj_mutex;
+  notation_mutex = notation->obj_mutex;
   
   pthread_mutex_unlock(ags_notation_get_class_mutex());
 
@@ -841,8 +846,6 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
 
   guint current_x0, current_y;
   gboolean retval;
-
-  pthread_mutex_t *notation_mutex;
 
   pthread_mutex_t *notation_mutex;
 
@@ -1173,7 +1176,8 @@ ags_notation_find_region(AgsNotation *notation,
     }
 
     if(current_y >= y0 && current_y < y1){
-      region = g_list_prepend(region, current);
+      region = g_list_prepend(region,
+			      note->data);
     }
 
     note = note->next;
@@ -1320,6 +1324,8 @@ void
 ags_notation_remove_point_from_selection(AgsNotation *notation,
 					 guint x, guint y)
 {
+  AgsNote *note;
+  
   pthread_mutex_t *notation_mutex;
 
   if(!AGS_IS_NOTATION(notation)){

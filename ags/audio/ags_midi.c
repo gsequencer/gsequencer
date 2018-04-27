@@ -60,6 +60,8 @@ enum{
 
 static gpointer ags_midi_parent_class = NULL;
 
+static pthread_mutex_t ags_midi_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_midi_get_type()
 {
@@ -123,41 +125,25 @@ ags_midi_class_init(AgsMidiClass *midi)
   /**
    * AgsMidi:audio-channel:
    *
-   * The effect's audio-channel.
+   * The midi's audio-channel.
    * 
    * Since: 2.0.0
    */
   param_spec =  g_param_spec_uint("audio-channel",
-				  i18n_pspec("audio-channel of effect"),
-				  i18n_pspec("The numerical audio-channel of effect"),
+				  i18n_pspec("audio-channel of midi"),
+				  i18n_pspec("The numerical audio-channel of midi"),
 				  0,
-				  65535,
+				  G_MAXUINT32,
 				  0,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_CHANNEL,
 				  param_spec);  
-
-  /**
-   * AgsMidi:track:
-   *
-   * The assigned #AgsTrack
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("track",
-				   i18n_pspec("track of midi"),
-				   i18n_pspec("The track of midi"),
-				   AGS_TYPE_TRACK,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_TRACK,
-				  param_spec);
   
   /**
    * AgsPattern:timestamp:
    *
-   * The pattern's timestamp.
+   * The midi's timestamp.
    * 
    * Since: 2.0.0
    */
@@ -169,12 +155,51 @@ ags_midi_class_init(AgsMidiClass *midi)
   g_object_class_install_property(gobject,
 				  PROP_TIMESTAMP,
 				  param_spec);
+
+  /**
+   * AgsMidi:track:
+   *
+   * The assigned #AgsTrack
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("track",
+				    i18n_pspec("track of midi"),
+				    i18n_pspec("The track of midi"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TRACK,
+				  param_spec);
 }
 
 void
 ags_midi_init(AgsMidi *midi)
 {
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
+
   midi->flags = 0;
+
+  /* add midi mutex */
+  midi->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(attr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  midi->obj_mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);  
+
+  /* fields */  
+  midi->audio = NULL;
+  midi->audio_channel = 0;
 
   midi->timestamp = ags_timestamp_new();
 
@@ -183,17 +208,9 @@ ags_midi_init(AgsMidi *midi)
 
   midi->timestamp->timer.ags_offset.offset = 0;
 
-  g_object_ref(midi->timestamp);
-  
-  midi->audio_channel = 0;
-  midi->audio = NULL;
+  g_object_ref(midi->timestamp);  
   
   midi->track = NULL;
-
-  midi->loop_start = 0.0;
-  midi->loop_end = 0.0;
-  midi->offset = 0.0;
-
   midi->selection = NULL;
 }
 
@@ -205,7 +222,16 @@ ags_midi_set_property(GObject *gobject,
 {
   AgsMidi *midi;
 
+  pthread_mutex_t *midi_mutex;
+
   midi = AGS_MIDI(gobject);
+
+  /* get midi mutex */
+  pthread_mutex_lock(ags_midi_get_class_mutex());
+  
+  midi_mutex = midi->obj_mutex;
+  
+  pthread_mutex_unlock(ags_midi_get_class_mutex());
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -214,7 +240,11 @@ ags_midi_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
+      pthread_mutex_lock(midi_mutex);
+
       if(midi->audio == (GObject *) audio){
+	pthread_mutex_unlock(midi_mutex);
+
 	return;
       }
 
@@ -227,6 +257,8 @@ ags_midi_set_property(GObject *gobject,
       }
 
       midi->audio = (GObject *) audio;
+
+      pthread_mutex_unlock(midi_mutex);
     }
     break;
   case PROP_AUDIO_CHANNEL:
@@ -235,23 +267,11 @@ ags_midi_set_property(GObject *gobject,
 
       audio_channel = g_value_get_uint(value);
 
+      pthread_mutex_lock(midi_mutex);
+
       midi->audio_channel = audio_channel;
-    }
-    break;
-  case PROP_TRACK:
-    {
-      AgsTrack *track;
 
-      track = (AgsTrack *) g_value_get_object(value);
-
-      if(track == NULL ||
-	 g_list_find(midi->track, track) != NULL){
-	return;
-      }
-
-      ags_midi_add_track(midi,
-			  track,
-			  FALSE);
+      pthread_mutex_unlock(midi_mutex);
     }
     break;
   case PROP_TIMESTAMP:
@@ -260,7 +280,11 @@ ags_midi_set_property(GObject *gobject,
 
       timestamp = (AgsTimestamp *) g_value_get_object(value);
 
+      pthread_mutex_lock(midi_mutex);
+
       if(timestamp == (AgsTimestamp *) midi->timestamp){
+	pthread_mutex_unlock(midi_mutex);
+
 	return;
       }
 
@@ -273,6 +297,30 @@ ags_midi_set_property(GObject *gobject,
       }
 
       midi->timestamp = (GObject *) timestamp;
+
+      pthread_mutex_unlock(midi_mutex);
+    }
+    break;
+  case PROP_TRACK:
+    {
+      AgsTrack *track;
+
+      track = (AgsTrack *) g_value_get_pointer(value);
+
+      pthread_mutex_lock(midi_mutex);
+
+      if(track == NULL ||
+	 g_list_find(midi->track, track) != NULL){
+	pthread_mutex_unlock(midi_mutex);
+	
+	return;
+      }
+
+      pthread_mutex_unlock(midi_mutex);
+
+      ags_midi_add_track(midi,
+			 track,
+			 FALSE);
     }
     break;
   default:
@@ -289,22 +337,52 @@ ags_midi_get_property(GObject *gobject,
 {
   AgsMidi *midi;
 
+  pthread_mutex_t *midi_mutex;
+
   midi = AGS_MIDI(gobject);
+
+  /* get midi mutex */
+  pthread_mutex_lock(ags_midi_get_class_mutex());
+  
+  midi_mutex = midi->obj_mutex;
+  
+  pthread_mutex_unlock(ags_midi_get_class_mutex());
 
   switch(prop_id){
   case PROP_AUDIO:
     {
+      pthread_mutex_lock(midi_mutex);
+
       g_value_set_object(value, midi->audio);
+
+      pthread_mutex_unlock(midi_mutex);
     }
     break;
   case PROP_AUDIO_CHANNEL:
     {
+      pthread_mutex_lock(midi_mutex);
+
       g_value_set_uint(value, midi->audio_channel);
+
+      pthread_mutex_unlock(midi_mutex);
     }
     break;
   case PROP_TIMESTAMP:
     {
+      pthread_mutex_lock(midi_mutex);
+
       g_value_set_object(value, midi->timestamp);
+
+      pthread_mutex_unlock(midi_mutex);
+    }
+    break;
+  case PROP_TRACK:
+    {
+      pthread_mutex_lock(midi_mutex);
+
+      g_value_set_pointer(value, g_list_copy(midi->track));
+
+      pthread_mutex_unlock(midi_mutex);
     }
     break;
   default:
@@ -322,20 +400,19 @@ ags_midi_dispose(GObject *gobject)
   
   midi = AGS_MIDI(gobject);
 
-  /* timestamp */
-  if(midi->timestamp != NULL){
-    g_object_unref(midi->timestamp);
-
-    midi->timestamp = NULL;
-  }
-
   /* audio */
   if(midi->audio != NULL){
     g_object_unref(midi->audio);
 
     midi->audio = NULL;
   }
+  
+  /* timestamp */
+  if(midi->timestamp != NULL){
+    g_object_unref(midi->timestamp);
 
+    midi->timestamp = NULL;
+  }
     
   /* track and selection */
   list = midi->track;
@@ -348,8 +425,8 @@ ags_midi_dispose(GObject *gobject)
   
   g_list_free_full(midi->track,
 		   g_object_unref);
-
-  g_list_free(midi->selection);
+  g_list_free_full(midi->selection,
+		   g_object_unref);
 
   midi->track = NULL;
   midi->selection = NULL;
@@ -365,24 +442,151 @@ ags_midi_finalize(GObject *gobject)
 
   midi = AGS_MIDI(gobject);
 
-  /* timestamp */
-  if(midi->timestamp != NULL){
-    g_object_unref(midi->timestamp);
-  }
+  pthread_mutex_destroy(midi->obj_mutex);
+  free(midi->obj_mutex);
+
+  pthread_mutexattr_destroy(midi->obj_mutexattr);
+  free(midi->obj_mutexattr);
 
   /* audio */
   if(midi->audio != NULL){
     g_object_unref(midi->audio);
   }
-    
+  
+  /* timestamp */
+  if(midi->timestamp != NULL){
+    g_object_unref(midi->timestamp);
+  }
+
   /* track and selection */
   g_list_free_full(midi->track,
 		   g_object_unref);
 
-  g_list_free(midi->selection);
+  g_list_free_full(midi->selection,
+		   g_object_unref);
   
   /* call parent */
   G_OBJECT_CLASS(ags_midi_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_midi_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_midi_get_class_mutex()
+{
+  return(&ags_midi_class_mutex);
+}
+
+/**
+ * ags_midi_test_flags:
+ * @midi: the #AgsMidi
+ * @flags: the flags
+ * 
+ * Test @flags to be set on @midi.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_midi_test_flags(AgsMidi *midi, guint flags)
+{
+  gboolean retval;
+  
+  pthread_mutex_t *midi_mutex;
+
+  if(!AGS_IS_MIDI(midi)){
+    return(FALSE);
+  }
+      
+  /* get midi mutex */
+  pthread_mutex_lock(ags_midi_get_class_mutex());
+  
+  midi_mutex = midi->obj_mutex;
+  
+  pthread_mutex_unlock(ags_midi_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(midi_mutex);
+
+  retval = (flags & (midi->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(midi_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_midi_set_flags:
+ * @midi: the #AgsMidi
+ * @flags: the flags
+ * 
+ * Set @flags on @midi.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_midi_set_flags(AgsMidi *midi, guint flags)
+{
+  pthread_mutex_t *midi_mutex;
+
+  if(!AGS_IS_MIDI(midi)){
+    return;
+  }
+      
+  /* get midi mutex */
+  pthread_mutex_lock(ags_midi_get_class_mutex());
+  
+  midi_mutex = midi->obj_mutex;
+  
+  pthread_mutex_unlock(ags_midi_get_class_mutex());
+
+  /* set */
+  pthread_mutex_lock(midi_mutex);
+
+  midi->flags |= flags;
+  
+  pthread_mutex_unlock(midi_mutex);
+}
+
+/**
+ * ags_midi_unset_flags:
+ * @midi: the #AgsMidi
+ * @flags: the flags
+ * 
+ * Unset @flags on @midi.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_midi_unset_flags(AgsMidi *midi, guint flags)
+{
+  pthread_mutex_t *midi_mutex;
+
+  if(!AGS_IS_MIDI(midi)){
+    return;
+  }
+      
+  /* get midi mutex */
+  pthread_mutex_lock(ags_midi_get_class_mutex());
+  
+  midi_mutex = midi->obj_mutex;
+  
+  pthread_mutex_unlock(ags_midi_get_class_mutex());
+
+  /* set */
+  pthread_mutex_lock(midi_mutex);
+
+  midi->flags &= (~flags);
+  
+  pthread_mutex_unlock(midi_mutex);
 }
 
 /**
@@ -403,8 +607,14 @@ ags_midi_find_near_timestamp(GList *midi, guint audio_channel,
 {
   AgsTimestamp *current_timestamp;
 
+  guint current_audio_channel;
+
   while(midi != NULL){
-    if(AGS_MIDI(midi->data)->audio_channel != audio_channel){
+    g_object_get(midi->data,
+		 "audio-channel", &current_audio_channel,
+		 NULL);
+    
+    if(current_audio_channel != audio_channel){
       midi = midi->next;
       
       continue;
@@ -414,19 +624,25 @@ ags_midi_find_near_timestamp(GList *midi, guint audio_channel,
       return(midi);
     }
     
-    current_timestamp = (AgsTimestamp *) AGS_MIDI(midi->data)->timestamp;
-
+    g_object_get(midi->data,
+		 "timestamp", &current_timestamp,
+		 NULL);
+    
     if(current_timestamp != NULL){
-      if((AGS_TIMESTAMP_UNIX & (timestamp->flags)) != 0 &&
-	 (AGS_TIMESTAMP_UNIX & (current_timestamp->flags)) != 0){
-	if(current_timestamp->timer.unix_time.time_val >= timestamp->timer.unix_time.time_val &&
-	   current_timestamp->timer.unix_time.time_val < timestamp->timer.unix_time.time_val + AGS_MIDI_DEFAULT_DURATION){
+      if(ags_timestamp_test_flags(timestamp,
+				  AGS_TIMESTAMP_OFFSET) &&
+	 ags_timestamp_test_flags(current_timestamp,
+				  AGS_TIMESTAMP_OFFSET)){
+	if(ags_timestamp_get_ags_offset(current_timestamp) >= ags_timestamp_get_ags_offset(timestamp) &&
+	   ags_timestamp_get_ags_offset(current_timestamp) < ags_timestamp_get_ags_offset(timestamp) + AGS_MIDI_DEFAULT_OFFSET){
 	  return(midi);
 	}
-      }else if((AGS_TIMESTAMP_OFFSET & (timestamp->flags)) != 0 &&
-	       (AGS_TIMESTAMP_OFFSET & (current_timestamp->flags)) != 0){
-	if(current_timestamp->timer.ags_offset.offset >= timestamp->timer.ags_offset.offset &&
-	   current_timestamp->timer.ags_offset.offset < timestamp->timer.ags_offset.offset + AGS_MIDI_DEFAULT_OFFSET){
+      }else if(ags_timestamp_test_flags(timestamp,
+					AGS_TIMESTAMP_UNIX) &&
+	       ags_timestamp_test_flags(current_timestamp,
+					AGS_TIMESTAMP_UNIX)){
+	if(ags_timestamp_get_unix_time(current_timestamp) >= ags_timestamp_get_unix_time(timestamp) &&
+	   ags_timestamp_get_unix_time(current_timestamp) < ags_timestamp_get_unix_time(timestamp) + AGS_MIDI_DEFAULT_DURATION){
 	  return(midi);
 	}
       }
@@ -459,19 +675,28 @@ ags_midi_add(GList *midi,
   gint ags_midi_add_compare(gconstpointer a,
 			    gconstpointer b)
   {
-    if(AGS_MIDI(a)->timestamp->timer.ags_offset.offset == AGS_MIDI(b)->timestamp->timer.ags_offset.offset){
+    AgsTimestamp *timestamp_a, *timestamp_b;
+
+    g_object_get(a,
+		 "timestamp", &timestamp_a,
+		 NULL);
+
+    g_object_get(b,
+		 "timestamp", &timestamp_b,
+		 NULL);
+    
+    if(ags_timestamp_get_ags_offset(timestamp_a) == ags_timestamp_get_ags_offset(timestamp_b)){
       return(0);
-    }else if(AGS_MIDI(a)->timestamp->timer.ags_offset.offset < AGS_MIDI(b)->timestamp->timer.ags_offset.offset){
+    }else if(ags_timestamp_get_ags_offset(timestamp_a) < ags_timestamp_get_ags_offset(timestamp_b)){
       return(-1);
-    }else if(AGS_MIDI(a)->timestamp->timer.ags_offset.offset > AGS_MIDI(b)->timestamp->timer.ags_offset.offset){
+    }else if(ags_timestamp_get_ags_offset(timestamp_a) > ags_timestamp_get_ags_offset(timestamp_b)){
       return(1);
     }
 
     return(0);
   }
   
-  if(!AGS_IS_MIDI(new_midi) ||
-     !AGS_IS_TIMESTAMP(new_midi->timestamp)){
+  if(!AGS_IS_MIDI(new_midi)){
     return(midi);
   }
   
@@ -497,22 +722,38 @@ ags_midi_add_track(AgsMidi *midi,
 		    AgsTrack *track,
 		    gboolean use_selection_list)
 {
+  pthread_mutex_t *midi_mutex;
+
   if(!AGS_IS_MIDI(midi) ||
      !AGS_IS_TRACK(track)){
     return;
   }
 
+  /* get midi mutex */
+  pthread_mutex_lock(ags_midi_get_class_mutex());
+  
+  midi_mutex = midi->obj_mutex;
+  
+  pthread_mutex_unlock(ags_midi_get_class_mutex());
+
+  /* insert sorted */
   g_object_ref(track);
   
+  pthread_mutex_lock(midi_mutex);
+
   if(use_selection_list){
     midi->selection = g_list_insert_sorted(midi->selection,
 					   track,
 					   (GCompareFunc) ags_track_sort_func);
+    ags_track_set_flags(track,
+			 AGS_TRACK_IS_SELECTED);
   }else{
     midi->track = g_list_insert_sorted(midi->track,
 					track,
 					(GCompareFunc) ags_track_sort_func);
   }
+
+  pthread_mutex_unlock(midi_mutex);
 }
 
 /**
@@ -530,18 +771,40 @@ ags_midi_remove_track(AgsMidi *midi,
 		       AgsTrack *track,
 		       gboolean use_selection_list)
 {
+  pthread_mutex_t *midi_mutex;
+
   if(!AGS_IS_MIDI(midi) ||
      !AGS_IS_TRACK(track)){
     return;
   }
+
+  /* get midi mutex */
+  pthread_mutex_lock(ags_midi_get_class_mutex());
+  
+  midi_mutex = midi->obj_mutex;
+  
+  pthread_mutex_unlock(ags_midi_get_class_mutex());
+
+  /* remove if found */
+  pthread_mutex_lock(midi_mutex);
   
   if(!use_selection_list){
-    midi->track = g_list_remove(midi->track,
-				 track);
+    if(g_list_find(midi->track,
+		   track) != NULL){
+      midi->track = g_list_remove(midi->track,
+				   track);
+      g_object_unref(track);
+    }
   }else{
-    midi->selection = g_list_remove(midi->selection,
-				    track);
+    if(g_list_find(midi->selection,
+		   track) != NULL){
+      midi->selection = g_list_remove(midi->selection,
+				      track);
+      g_object_unref(track);
+    }
   }
+
+  pthread_mutex_unlock(midi_mutex);
 }
 
 /**
@@ -549,9 +812,9 @@ ags_midi_remove_track(AgsMidi *midi,
  * @audio: the assigned #AgsAudio
  * @audio_channel: the audio channel to be used
  *
- * Creates a #AgsMidi, assigned to @audio_channel.
+ * Creates a new instance of #AgsMidi.
  *
- * Returns: a new #AgsMidi
+ * Returns: the new #AgsMidi
  *
  * Since: 2.0.0
  */

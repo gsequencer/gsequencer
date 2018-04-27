@@ -39,15 +39,13 @@ typedef struct _AgsBufferClass AgsBufferClass;
 
 /**
  * AgsBufferFlags:
- * @AGS_BUFFER_CONNECTED: indicates the buffer was connected by calling #AgsConnectable::connect()
  * @AGS_BUFFER_IS_SELECTED: is selected
  *
  * Enum values to control the behavior or indicate internal state of #AgsBuffer by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_BUFFER_CONNECTED       = 1,
-  AGS_BUFFER_IS_SELECTED     = 1 <<  1,
+  AGS_BUFFER_IS_SELECTED     = 1,
 }AgsBufferFlags;
 
 struct _AgsBuffer

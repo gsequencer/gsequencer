@@ -176,7 +176,7 @@ ags_note_class_init(AgsNoteClass *note)
 				   i18n_pspec("delay of stream"),
 				   i18n_pspec("The delay of the stream"),
 				   0.0,
-				   G_MAXDOUBLE
+				   G_MAXDOUBLE,
 				   0.0,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -711,7 +711,7 @@ ags_note_test_flags(AgsNote *note, guint flags)
   /* get note mutex */
   pthread_mutex_lock(ags_note_get_class_mutex());
   
-  note_mutex = current_note->obj_mutex;
+  note_mutex = note->obj_mutex;
   
   pthread_mutex_unlock(ags_note_get_class_mutex());
 
@@ -746,7 +746,7 @@ ags_note_set_flags(AgsNote *note, guint flags)
   /* get note mutex */
   pthread_mutex_lock(ags_note_get_class_mutex());
   
-  note_mutex = current_note->obj_mutex;
+  note_mutex = note->obj_mutex;
   
   pthread_mutex_unlock(ags_note_get_class_mutex());
 
@@ -779,7 +779,7 @@ ags_note_unset_flags(AgsNote *note, guint flags)
   /* get note mutex */
   pthread_mutex_lock(ags_note_get_class_mutex());
   
-  note_mutex = current_note->obj_mutex;
+  note_mutex = note->obj_mutex;
   
   pthread_mutex_unlock(ags_note_get_class_mutex());
 

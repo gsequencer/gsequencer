@@ -55,13 +55,13 @@ typedef struct _AgsMidiClass AgsMidiClass;
 
 /**
  * AgsMidiFlags:
- * @AGS_MIDI_CONNECTED: indicates the midi was connected by calling #AgsConnectable::connect()
+ * @AGS_MIDI_BYPASS: ignore any midi data
  * 
  * Enum values to control the behavior or indicate internal state of #AgsMidi by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_MIDI_CONNECTED            = 1,
+  AGS_MIDI_BYPASS            = 1,
 }AgsMidiFlags;
 
 struct _AgsMidi
@@ -70,10 +70,13 @@ struct _AgsMidi
 
   guint flags;
 
-  AgsTimestamp *timestamp;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
 
   GObject *audio;
   guint audio_channel;
+
+  AgsTimestamp *timestamp;
   
   GList *track;  
   GList *selection;
@@ -85,6 +88,12 @@ struct _AgsMidiClass
 };
 
 GType ags_midi_get_type(void);
+
+pthread_mutex_t* ags_midi_get_class_mutex();
+
+gboolean ags_midi_test_flags(AgsMidi *midi, guint flags);
+void ags_midi_set_flags(AgsMidi *midi, guint flags);
+void ags_midi_unset_flags(AgsMidi *midi, guint flags);
 
 GList* ags_midi_find_near_timestamp(GList *midi, guint audio_channel,
 				    AgsTimestamp *timestamp);

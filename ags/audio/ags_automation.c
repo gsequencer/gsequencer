@@ -465,7 +465,8 @@ ags_automation_set_property(GObject *gobject,
   case PROP_PORT:
     {
       AgsPort *port;
-
+      AgsPluginPort *plugin_port;
+      
       port = g_value_get_object(value);
 
       pthread_mutex_lock(automation_mutex);
@@ -480,9 +481,15 @@ ags_automation_set_property(GObject *gobject,
 	g_object_unref(automation->port);
       }
 
+      plugin_port = NULL;
+      
       if(port != NULL){
 	g_object_ref(port);
 
+	g_object_get(port,
+		     "plugin-port", &plugin_port,
+		     NULL);
+	
 	if((AGS_PORT_INFINITE_RANGE & (port->flags)) != 0){
 	  automation->steps = AGS_AUTOMATION_MAXIMUM_STEPS;
 	}
@@ -492,16 +499,43 @@ ags_automation_set_property(GObject *gobject,
       
       pthread_mutex_unlock(automation_mutex);
       
-      if(port->port_descriptor != NULL){
-	automation->lower = g_value_get_float(AGS_PORT_DESCRIPTOR(port->port_descriptor)->lower_value);
-	automation->upper = g_value_get_float(AGS_PORT_DESCRIPTOR(port->port_descriptor)->upper_value);
+      if(plugin_port != NULL){
+	gfloat upper, lower;
+	guint steps;
+	guint plugin_port_flags;
+	
+	pthread_mutex_t *plugin_port_mutex;	
 
-	if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port->port_descriptor)->flags)) != 0){
+	/* get plugin port mutex */
+	pthread_mutex_lock(ags_plugin_port_get_class_mutex());
+
+	plugin_port_mutex = plugin_port->obj_mutex;
+	
+	pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+
+	/* get some fields */
+	pthread_mutex_lock(plugin_port_mutex);
+
+	plugin_port_flags = plugin_port->flags;
+	
+	lower = g_value_get_float(plugin_port->lower_value);
+	upper = g_value_get_float(plugin_port->upper_value);
+
+	steps = plugin_port->scale_steps;
+
+	pthread_mutex_unlock(plugin_port_mutex);
+
+	g_object_set(automation,
+		     "upper", upper,
+		     "lower", lower,
+		     NULL);
+	
+	if((AGS_PLUGIN_PORT_TOGGLED & (plugin_port_flags)) != 0){
 	  automation->lower = 0.0;
 	  automation->upper = 1.0;
 	  automation->steps = 1;
-	}else if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port->port_descriptor)->flags)) != 0){
-	  automation->steps = AGS_PORT_DESCRIPTOR(port->port_descriptor)->scale_steps;
+	}else if((AGS_PLUGIN_PORT_INTEGER & (plugin_port_flags)) != 0){
+	  automation->steps = steps;
 	}else{
 	  automation->steps = AGS_AUTOMATION_DEFAULT_PRECISION;
 	}
@@ -889,7 +923,7 @@ ags_automation_test_flags(AgsAutomation *automation, guint flags)
   /* get automation mutex */
   pthread_mutex_lock(ags_automation_get_class_mutex());
   
-  automation_mutex = current_automation->obj_mutex;
+  automation_mutex = automation->obj_mutex;
   
   pthread_mutex_unlock(ags_automation_get_class_mutex());
 
@@ -924,7 +958,7 @@ ags_automation_set_flags(AgsAutomation *automation, guint flags)
   /* get automation mutex */
   pthread_mutex_lock(ags_automation_get_class_mutex());
   
-  automation_mutex = current_automation->obj_mutex;
+  automation_mutex = automation->obj_mutex;
   
   pthread_mutex_unlock(ags_automation_get_class_mutex());
 
@@ -957,7 +991,7 @@ ags_automation_unset_flags(AgsAutomation *automation, guint flags)
   /* get automation mutex */
   pthread_mutex_lock(ags_automation_get_class_mutex());
   
-  automation_mutex = current_automation->obj_mutex;
+  automation_mutex = automation->obj_mutex;
   
   pthread_mutex_unlock(ags_automation_get_class_mutex());
 
@@ -992,7 +1026,7 @@ ags_automation_find_port(GList *automation,
   }
 
   while(automation != NULL){
-    g_object_get(automation_data,
+    g_object_get(automation->data,
 		 "port", &current_port,
 		 NULL);
     
@@ -1675,7 +1709,8 @@ ags_automation_find_region(AgsAutomation *automation,
     }
 
     if(current_y >= y0 && current_y < y1){
-      region = g_list_prepend(region, current);
+      region = g_list_prepend(region,
+			      acceleration->data);
     }
 
     acceleration = acceleration->next;
@@ -1822,6 +1857,8 @@ void
 ags_automation_remove_point_from_selection(AgsAutomation *automation,
 					   guint x, gdouble y)
 {
+  AgsAcceleration *acceleration;
+
   pthread_mutex_t *automation_mutex;
 
   if(!AGS_IS_AUTOMATION(automation)){

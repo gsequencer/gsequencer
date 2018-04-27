@@ -1978,7 +1978,7 @@ ags_audio_signal_test_flags(AgsAudioSignal *audio_signal, guint flags)
   pthread_mutex_t *audio_signal_mutex;
 
   if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
-    return;
+    return(FALSE);
   }
 
   /* get audio_signal mutex */

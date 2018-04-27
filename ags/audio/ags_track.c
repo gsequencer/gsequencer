@@ -50,13 +50,15 @@ void ags_track_finalize(GObject *gobject);
  * #AgsTrack represents a tone.
  */
 
-static gpointer ags_track_parent_class = NULL;
-
 enum{
   PROP_0,
   PROP_X,
   PROP_SMF_BUFFER,
 };
+
+static gpointer ags_track_parent_class = NULL;
+
+static pthread_mutex_t ags_track_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_track_get_type()
@@ -109,13 +111,13 @@ ags_track_class_init(AgsTrackClass *track)
    * 
    * Since: 2.0.0
    */
-  param_spec = g_param_spec_uint("x",
-				 i18n_pspec("offset x"),
-				 i18n_pspec("The x offset"),
-				 0,
-				 G_MAXUINT,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint64("x",
+				   i18n_pspec("offset x"),
+				   i18n_pspec("The x offset"),
+				   0,
+				   G_MAXUINT64,
+				   0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_X,
 				  param_spec);
@@ -139,8 +141,29 @@ ags_track_class_init(AgsTrackClass *track)
 void
 ags_track_init(AgsTrack *track)
 {  
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
+
   track->flags = 0;
 
+  /* add track mutex */
+  track->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(attr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  track->obj_mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);  
+
+  /* fields */
   track->x = 0;
 
   track->smf_buffer = NULL;
@@ -154,17 +177,34 @@ ags_track_set_property(GObject *gobject,
 {
   AgsTrack *track;
 
+  pthread_mutex_t *track_mutex;
+
   track = AGS_TRACK(gobject);
+
+  /* get track mutex */
+  pthread_mutex_lock(ags_track_get_class_mutex());
+  
+  track_mutex = track->obj_mutex;
+  
+  pthread_mutex_unlock(ags_track_get_class_mutex());
 
   switch(prop_id){
   case PROP_X:
     {
-      track->x = g_value_get_uint(value);
+      pthread_mutex_lock(track_mutex);
+
+      track->x = g_value_get_uint64(value);
+
+      pthread_mutex_unlock(track_mutex);
     }
     break;
   case PROP_SMF_BUFFER:
     {
+      pthread_mutex_lock(track_mutex);
+
       track->smf_buffer = g_value_get_pointer(value);
+
+      pthread_mutex_unlock(track_mutex);
     }
     break;
   default:
@@ -181,19 +221,36 @@ ags_track_get_property(GObject *gobject,
 {
   AgsTrack *track;
 
+  pthread_mutex_t *track_mutex;
+
   track = AGS_TRACK(gobject);
+
+  /* get track mutex */
+  pthread_mutex_lock(ags_track_get_class_mutex());
+  
+  track_mutex = track->obj_mutex;
+  
+  pthread_mutex_unlock(ags_track_get_class_mutex());
 
   switch(prop_id){
   case PROP_X:
     {
-      g_value_set_uint(value,
-		       track->x);
+      pthread_mutex_lock(track_mutex);
+
+      g_value_set_uint64(value,
+			 track->x);
+
+      pthread_mutex_unlock(track_mutex);
     }
     break;
   case PROP_SMF_BUFFER:
     {
+      pthread_mutex_lock(track_mutex);
+
       g_value_set_pointer(value,
 			  track->smf_buffer);
+      
+      pthread_mutex_unlock(track_mutex);
     }
     break;
   default:
@@ -209,12 +266,138 @@ ags_track_finalize(GObject *gobject)
 
   track = AGS_TRACK(gobject);
 
+  pthread_mutex_destroy(track->obj_mutex);
+  free(track->obj_mutex);
+
+  pthread_mutexattr_destroy(track->obj_mutexattr);
+  free(track->obj_mutexattr);
+
   if(track->smf_buffer != NULL){
     free(track->smf_buffer);
   }
   
   /* call parent */
   G_OBJECT_CLASS(ags_track_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_track_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_track_get_class_mutex()
+{
+  return(&ags_track_class_mutex);
+}
+
+/**
+ * ags_track_test_flags:
+ * @track: the #AgsTrack
+ * @flags: the flags
+ * 
+ * Test @flags to be set on @track.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_track_test_flags(AgsTrack *track, guint flags)
+{
+  gboolean retval;
+  
+  pthread_mutex_t *track_mutex;
+
+  if(!AGS_IS_TRACK(track)){
+    return(FALSE);
+  }
+      
+  /* get track mutex */
+  pthread_mutex_lock(ags_track_get_class_mutex());
+  
+  track_mutex = track->obj_mutex;
+  
+  pthread_mutex_unlock(ags_track_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(track_mutex);
+
+  retval = (flags & (track->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(track_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_track_set_flags:
+ * @track: the #AgsTrack
+ * @flags: the flags
+ * 
+ * Set @flags on @track.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_track_set_flags(AgsTrack *track, guint flags)
+{
+  pthread_mutex_t *track_mutex;
+
+  if(!AGS_IS_TRACK(track)){
+    return;
+  }
+      
+  /* get track mutex */
+  pthread_mutex_lock(ags_track_get_class_mutex());
+  
+  track_mutex = track->obj_mutex;
+  
+  pthread_mutex_unlock(ags_track_get_class_mutex());
+
+  /* set */
+  pthread_mutex_lock(track_mutex);
+
+  track->flags |= flags;
+  
+  pthread_mutex_unlock(track_mutex);
+}
+
+/**
+ * ags_track_unset_flags:
+ * @track: the #AgsTrack
+ * @flags: the flags
+ * 
+ * Unset @flags on @track.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_track_unset_flags(AgsTrack *track, guint flags)
+{
+  pthread_mutex_t *track_mutex;
+
+  if(!AGS_IS_TRACK(track)){
+    return;
+  }
+      
+  /* get track mutex */
+  pthread_mutex_lock(ags_track_get_class_mutex());
+  
+  track_mutex = track->obj_mutex;
+  
+  pthread_mutex_unlock(ags_track_get_class_mutex());
+
+  /* unset */
+  pthread_mutex_lock(track_mutex);
+
+  track->flags &= (~flags);
+  
+  pthread_mutex_unlock(track_mutex);
 }
 
 /**
@@ -232,21 +415,41 @@ gint
 ags_track_sort_func(gconstpointer a,
 		    gconstpointer b)
 {
+  guint64 a_x, b_x ;
+
   if(a == NULL || b == NULL){
     return(0);
   }
     
-  if(AGS_TRACK(a)->x == AGS_TRACK(b)->x){
+  g_object_get(a,
+	       "x", &a_x ,
+	       NULL);
+    
+  g_object_get(b,
+	       "x", &b_x ,
+	       NULL);
+
+  if(a_x == b_x){
     return(0);
   }
 
-  if(AGS_TRACK(a)->x < AGS_TRACK(b)->x){
+  if(a_x < b_x){
     return(-1);
   }else{
     return(1);
   }  
 }
 
+/**
+ * ags_track_duplicate:
+ * @track: an #AgsTrack
+ * 
+ * Duplicate a track.
+ *
+ * Returns: the duplicated #AgsTrack.
+ *
+ * Since: 2.0.0
+ */
 AgsTrack*
 ags_track_duplicate(AgsTrack *track)
 {
@@ -258,9 +461,9 @@ ags_track_duplicate(AgsTrack *track)
 /**
  * ags_track_new:
  *
- * Creates an #AgsTrack
+ * Creates a new instance of #AgsTrack.
  *
- * Returns: a new #AgsTrack
+ * Returns: the new #AgsTrack
  *
  * Since: 2.0.0
  */

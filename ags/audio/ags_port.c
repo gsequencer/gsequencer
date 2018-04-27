@@ -1267,6 +1267,8 @@ ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value)
 GList*
 ags_port_find_specifier(GList *port, gchar *specifier)
 {
+  AgsPort *current_port;
+  
   gboolean success;
 
   pthread_mutex_t *port_mutex;

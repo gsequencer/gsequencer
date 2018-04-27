@@ -3961,7 +3961,7 @@ ags_audio_test_flags(AgsAudio *audio, guint flags)
   pthread_mutex_t *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
-    return;
+    return(FALSE);
   }
 
   /* get audio mutex */
@@ -4312,7 +4312,7 @@ ags_audio_test_ability_flags(AgsAudio *audio, guint ability_flags)
   pthread_mutex_t *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
-    return;
+    return(FALSE);
   }
 
   /* get audio mutex */
@@ -4737,7 +4737,7 @@ ags_audio_test_behaviour_flags(AgsAudio *audio, guint behaviour_flags)
   pthread_mutex_t *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
-    return;
+    return(FALSE);
   }
 
   /* get audio mutex */
@@ -4844,7 +4844,7 @@ ags_audio_test_staging_flags(AgsAudio *audio, gint sound_scope,
   pthread_mutex_t *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio)){
-    return;
+    return(FALSE);
   }
 
   /* get audio mutex */

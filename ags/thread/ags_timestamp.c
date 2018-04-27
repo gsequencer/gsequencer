@@ -259,7 +259,7 @@ ags_timestamp_unset_flags(AgsTimestamp *timestamp,
  * 
  * Since: 2.0.0
  */
-guint64
+time_t
 ags_timestamp_get_unix_time(AgsTimestamp *timestamp)
 {
   time_t unix_time;

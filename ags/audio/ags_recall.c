@@ -2162,6 +2162,10 @@ ags_recall_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsRecall *recall;
 
+  gchar *filename, *effect;
+
+  guint effect_index;
+
   recall = AGS_RECALL(plugin);
 
   ags_file_add_id_ref(file,
@@ -2171,16 +2175,45 @@ ags_recall_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", xmlGetProp(node, AGS_FILE_ID_PROP)),
 				   "reference", recall,
 				   NULL));
+
+  filename = xmlGetProp(node,
+			"filename");
+  effect = xmlGetProp(node,
+		      "effect");
+  effect_index = g_ascii_strtoull(xmlGetProp(node,
+					     "index"),
+				  NULL,
+			   10);
+
+  g_object_set(recall,
+	       "filename", filename,
+	       "effect", effect,
+	       "effect-index", effect_index,
+	       NULL);
 }
 
 xmlNode*
 ags_recall_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 {
   AgsRecall *recall;
+
   xmlNode *node;
+  
   gchar *id;
 
+  pthread_mutex_t *recall_mutex;
+
   recall = AGS_RECALL(plugin);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /*  */
+  pthread_mutex_lock(recall_mutex);
 
   id = ags_id_generator_create_uuid();
 
@@ -2197,6 +2230,20 @@ ags_recall_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
 				   "reference", recall,
 				   NULL));
+
+  xmlNewProp(node,
+	     "filename",
+	     g_strdup(recall->filename));
+
+  xmlNewProp(node,
+	     "effect",
+	     g_strdup(recall->effect));
+
+  xmlNewProp(node,
+	     "effect-index",
+	     g_strdup_printf("%lu", recall->effect_index));
+
+  pthread_mutex_unlock(recall_mutex);
 
   xmlAddChild(parent,
 	      node);
@@ -2238,7 +2285,7 @@ ags_recall_test_flags(AgsRecall *recall, guint flags)
   pthread_mutex_t *recall_mutex;
 
   if(!AGS_IS_RECALL(recall)){
-    return;
+    return(FALSE);
   }
 
   /* get recall mutex */
@@ -2343,7 +2390,7 @@ ags_recall_test_ability_flags(AgsRecall *recall, guint ability_flags)
   pthread_mutex_t *recall_mutex;
 
   if(!AGS_IS_RECALL(recall)){
-    return;
+    return(FALSE);
   }
 
   /* get recall mutex */
@@ -2622,7 +2669,7 @@ ags_recall_test_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
   pthread_mutex_t *recall_mutex;
 
   if(!AGS_IS_RECALL(recall)){
-    return;
+    return(FALSE);
   }
 
   /* get recall mutex */
@@ -2929,7 +2976,7 @@ ags_recall_test_staging_flags(AgsRecall *recall,
   pthread_mutex_t *recall_mutex;
 
   if(!AGS_IS_RECALL(recall)){
-    return;
+    return(FALSE);
   }
 
   /* get recall mutex */
@@ -3224,6 +3271,46 @@ ags_recall_check_staging_flags(AgsRecall *recall, guint staging_flags)
   }
   
   return(TRUE);
+}
+
+/**
+ * ags_recall_test_state_flags:
+ * @recall: the #AgsRecall
+ * @state_flags: the state flags
+ *
+ * Test @state_flags to be set on @recall.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_test_state_flags(AgsRecall *recall,
+			    guint state_flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *recall_mutex;
+
+  if(!AGS_IS_RECALL(recall)){
+    return(FALSE);
+  }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(recall_mutex);
+
+  retval = (state_flags & (recall->state_flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(recall_mutex);
+
+  return(retval);
 }
 
 /**

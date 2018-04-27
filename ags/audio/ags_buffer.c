@@ -520,7 +520,7 @@ ags_buffer_test_flags(AgsBuffer *buffer, guint flags)
   /* get buffer mutex */
   pthread_mutex_lock(ags_buffer_get_class_mutex());
   
-  buffer_mutex = current_buffer->obj_mutex;
+  buffer_mutex = buffer->obj_mutex;
   
   pthread_mutex_unlock(ags_buffer_get_class_mutex());
 
@@ -555,7 +555,7 @@ ags_buffer_set_flags(AgsBuffer *buffer, guint flags)
   /* get buffer mutex */
   pthread_mutex_lock(ags_buffer_get_class_mutex());
   
-  buffer_mutex = current_buffer->obj_mutex;
+  buffer_mutex = buffer->obj_mutex;
   
   pthread_mutex_unlock(ags_buffer_get_class_mutex());
 
@@ -588,7 +588,7 @@ ags_buffer_unset_flags(AgsBuffer *buffer, guint flags)
   /* get buffer mutex */
   pthread_mutex_lock(ags_buffer_get_class_mutex());
   
-  buffer_mutex = current_buffer->obj_mutex;
+  buffer_mutex = buffer->obj_mutex;
   
   pthread_mutex_unlock(ags_buffer_get_class_mutex());
 
@@ -622,7 +622,7 @@ ags_buffer_set_samplerate(AgsBuffer *buffer,
   /* get buffer mutex */
   pthread_mutex_lock(ags_buffer_get_class_mutex());
   
-  buffer_mutex = current_buffer->obj_mutex;
+  buffer_mutex = buffer->obj_mutex;
   
   pthread_mutex_unlock(ags_buffer_get_class_mutex());
 
@@ -660,7 +660,7 @@ ags_buffer_set_buffer_size(AgsBuffer *buffer,
   /* get buffer mutex */
   pthread_mutex_lock(ags_buffer_get_class_mutex());
   
-  buffer_mutex = current_buffer->obj_mutex;
+  buffer_mutex = buffer->obj_mutex;
   
   pthread_mutex_unlock(ags_buffer_get_class_mutex());
 
@@ -746,7 +746,7 @@ ags_buffer_set_format(AgsBuffer *buffer,
   /* get buffer mutex */
   pthread_mutex_lock(ags_buffer_get_class_mutex());
   
-  buffer_mutex = current_buffer->obj_mutex;
+  buffer_mutex = buffer->obj_mutex;
   
   pthread_mutex_unlock(ags_buffer_get_class_mutex());
 
@@ -787,7 +787,7 @@ gint
 ags_buffer_sort_func(gconstpointer a,
 		     gconstpointer b)
 {
-  guint a_x, b_x ;
+  guint64 a_x, b_x ;
 
   if(a == NULL || b == NULL){
     return(0);
@@ -860,9 +860,9 @@ ags_buffer_duplicate(AgsBuffer *buffer)
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(buffer_copy->format),
 						  ags_audio_buffer_util_format_from_soundcard(buffer->format));
   
-  ags_audio_buffer_util_copy_buffer_to_buffer(copy_buffer->data, 1, 0,
+  ags_audio_buffer_util_copy_buffer_to_buffer(buffer_copy->data, 1, 0,
 					      buffer->data, 1, 0,
-					      copy_buffer->buffer_size, copy_mode);
+					      buffer_copy->buffer_size, copy_mode);
 
   pthread_mutex_unlock(buffer_mutex);
 

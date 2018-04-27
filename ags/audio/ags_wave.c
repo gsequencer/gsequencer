@@ -136,13 +136,13 @@ ags_wave_class_init(AgsWaveClass *wave)
   /**
    * AgsWave:audio-channel:
    *
-   * The effect's audio-channel.
+   * The wave's audio-channel.
    * 
    * Since: 2.0.0
    */
   param_spec =  g_param_spec_uint("audio-channel",
-				  i18n_pspec("audio-channel of effect"),
-				  i18n_pspec("The numerical audio-channel of effect"),
+				  i18n_pspec("audio-channel of wave"),
+				  i18n_pspec("The numerical audio-channel of wave"),
 				  0,
 				  G_MAXUINT32,
 				  0,
@@ -263,8 +263,8 @@ ags_wave_init(AgsWave *wave)
 		     attr);  
 
   /* fields */  
-  wave->audio_channel = 0;
   wave->audio = NULL;
+  wave->audio_channel = 0;
 
   wave->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   wave->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
@@ -339,6 +339,8 @@ ags_wave_set_property(GObject *gobject,
       pthread_mutex_lock(wave_mutex);
 
       wave->audio_channel = audio_channel;
+
+      pthread_mutex_unlock(wave_mutex);
     }
     break;
   case PROP_SAMPLERATE:
@@ -867,7 +869,7 @@ ags_wave_set_format(AgsWave *wave,
  *
  * Returns: Next matching #GList-struct or %NULL if not found
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 GList*
 ags_wave_find_near_timestamp(GList *wave, guint audio_channel,

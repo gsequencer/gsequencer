@@ -369,7 +369,7 @@ ags_acceleration_test_flags(AgsAcceleration *acceleration, guint flags)
   /* get acceleration mutex */
   pthread_mutex_lock(ags_acceleration_get_class_mutex());
   
-  acceleration_mutex = current_acceleration->obj_mutex;
+  acceleration_mutex = acceleration->obj_mutex;
   
   pthread_mutex_unlock(ags_acceleration_get_class_mutex());
 
@@ -404,7 +404,7 @@ ags_acceleration_set_flags(AgsAcceleration *acceleration, guint flags)
   /* get acceleration mutex */
   pthread_mutex_lock(ags_acceleration_get_class_mutex());
   
-  acceleration_mutex = current_acceleration->obj_mutex;
+  acceleration_mutex = acceleration->obj_mutex;
   
   pthread_mutex_unlock(ags_acceleration_get_class_mutex());
 
@@ -437,7 +437,7 @@ ags_acceleration_unset_flags(AgsAcceleration *acceleration, guint flags)
   /* get acceleration mutex */
   pthread_mutex_lock(ags_acceleration_get_class_mutex());
   
-  acceleration_mutex = current_acceleration->obj_mutex;
+  acceleration_mutex = acceleration->obj_mutex;
   
   pthread_mutex_unlock(ags_acceleration_get_class_mutex());
 
@@ -461,7 +461,7 @@ ags_acceleration_unset_flags(AgsAcceleration *acceleration, guint flags)
  * Since: 2.0.0
  */
 gint
-ags_acceleration_sort_func(gpointer a, gpointer b)
+ags_acceleration_sort_func(gconstpointer a, gconstpointer b)
 {
   guint a_x, b_x;
 

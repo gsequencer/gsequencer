@@ -1373,7 +1373,7 @@ ags_recycling_test_flags(AgsRecycling *recycling, guint flags)
   pthread_mutex_t *recycling_mutex;
 
   if(!AGS_IS_RECYCLING(recycling)){
-    return;
+    return(FALSE);
   }
 
   /* get recycling mutex */

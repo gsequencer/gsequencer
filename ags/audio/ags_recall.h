@@ -203,12 +203,12 @@ GType ags_recall_get_type();
 
 pthread_mutex_t* ags_recall_get_class_mutex();
 
-void ags_recall_test_flags(AgsRecall *recall, guint flags);
+gboolean ags_recall_test_flags(AgsRecall *recall, guint flags);
 void ags_recall_set_flags(AgsRecall *recall, guint flags);
 void ags_recall_unset_flags(AgsRecall *recall, guint flags);
 
 /* ability flags */
-void ags_recall_test_ability_flags(AgsRecall *recall, guint ability_flags);
+gboolean ags_recall_test_ability_flags(AgsRecall *recall, guint ability_flags);
 void ags_recall_set_ability_flags(AgsRecall *recall, guint ability_flags);
 void ags_recall_unset_ability_flags(AgsRecall *recall, guint ability_flags);
 
@@ -216,7 +216,7 @@ gboolean ags_recall_check_ability_flags(AgsRecall *recall, guint ability_flags);
 gboolean ags_recall_match_ability_flags_to_scope(AgsRecall *recall, gint sound_scope);
 
 /* behaviour flags */
-void ags_recall_test_behaviour_flags(AgsRecall *recall, guint behaviour_flags);
+gboolean ags_recall_test_behaviour_flags(AgsRecall *recall, guint behaviour_flags);
 void ags_recall_set_behaviour_flags(AgsRecall *recall, guint behaviour_flags);
 void ags_recall_unset_behaviour_flags(AgsRecall *recall, guint behaviour_flags);
 
@@ -228,12 +228,14 @@ void ags_recall_set_sound_scope(AgsRecall *recall, gint sound_scope);
 gboolean ags_recall_check_sound_scope(AgsRecall *recall, gint sound_scope);
 
 /* staging flags */
+gboolean ags_recall_test_staging_flags(AgsRecall *recall, guint behaviour_flags);
 void ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags);
 void ags_recall_unset_staging_flags(AgsRecall *recall, guint staging_flags);
 
 gboolean ags_recall_check_staging_flags(AgsRecall *recall, guint staging_flags);
 
 /* state flags */
+gboolean ags_recall_test_state_flags(AgsRecall *recall, guint behaviour_flags);
 void ags_recall_set_state_flags(AgsRecall *recall, guint state_flags);
 void ags_recall_unset_state_flags(AgsRecall *recall, guint state_flags);
 

@@ -2787,7 +2787,7 @@ ags_channel_test_flags(AgsChannel *channel, guint flags)
   pthread_mutex_t *channel_mutex;
 
   if(!AGS_IS_CHANNEL(channel)){
-    return;
+    return(FALSE);
   }
 
   /* get channel mutex */
@@ -2896,7 +2896,7 @@ ags_channel_test_ability_flags(AgsChannel *channel, guint ability_flags)
   pthread_mutex_t *channel_mutex;
 
   if(!AGS_IS_CHANNEL(channel)){
-    return;
+    return(FALSE);
   }
 
   /* get channel mutex */
@@ -3284,7 +3284,7 @@ ags_channel_test_behaviour_flags(AgsChannel *channel, guint behaviour_flags)
   pthread_mutex_t *channel_mutex;
 
   if(!AGS_IS_CHANNEL(channel)){
-    return;
+    return(FALSE);
   }
 
   /* get channel mutex */
@@ -3391,7 +3391,7 @@ ags_channel_test_staging_flags(AgsChannel *channel, gint sound_scope,
   pthread_mutex_t *channel_mutex;
 
   if(!AGS_IS_CHANNEL(channel)){
-    return;
+    return(FALSE);
   }
 
   /* get channel mutex */

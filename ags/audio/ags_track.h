@@ -37,15 +37,13 @@ typedef struct _AgsTrackClass AgsTrackClass;
 
 /**
  * AgsTrackFlags:
- * @AGS_TRACK_CONNECTED: indicates the track was connected by calling #AgsConnectable::connect()
  * @AGS_TRACK_IS_SELECTED: is selected
  *
  * Enum values to control the behavior or indicate internal state of #AgsTrack by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_TRACK_CONNECTED       = 1,
-  AGS_TRACK_IS_SELECTED     = 1 <<  1,
+  AGS_TRACK_IS_SELECTED     = 1,
 }AgsTrackFlags;
 
 struct _AgsTrack
@@ -54,9 +52,13 @@ struct _AgsTrack
 
   guint flags;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   guint64 x;
 
   unsigned char *smf_buffer;
+  guint smf_buffer_length;
 };
 
 struct _AgsTrackClass
@@ -66,8 +68,14 @@ struct _AgsTrackClass
 
 GType ags_track_get_type();
 
+pthread_mutex_t* ags_track_get_class_mutex();
+
+gboolean ags_track_test_flags(AgsTrack *track, guint flags);
+void ags_track_set_flags(AgsTrack *track, guint flags);
+void ags_track_unset_flags(AgsTrack *track, guint flags);
+
 gint ags_track_sort_func(gconstpointer a,
-			  gconstpointer b);
+			 gconstpointer b);
 
 AgsTrack* ags_track_duplicate(AgsTrack *track);
 

@@ -106,6 +106,10 @@ GType ags_plugin_port_get_type(void);
 
 pthread_mutex_t* ags_plugin_port_get_class_mutex();
 
+gboolean ags_plugin_port_test_flags(AgsPluginPort *plugin_port, guint flags);
+void ags_plugin_port_set_flags(AgsPluginPort *plugin_port, guint flags);
+void ags_plugin_port_unset_flags(AgsPluginPort *plugin_port, guint flags);
+
 GList* ags_plugin_port_find_symbol(GList *plugin_port,
 				   gchar *port_symbol);
 

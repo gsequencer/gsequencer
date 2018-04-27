@@ -645,6 +645,111 @@ ags_plugin_port_get_class_mutex()
 }
 
 /**
+ * ags_plugin_port_test_flags:
+ * @plugin_port: the #AgsPluginPort
+ * @flags: the flags
+ * 
+ * Test @flags to be set on @plugin_port.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_plugin_port_test_flags(AgsPluginPort *plugin_port, guint flags)
+{
+  gboolean retval;
+  
+  pthread_mutex_t *plugin_port_mutex;
+
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return(FALSE);
+  }
+      
+  /* get plugin_port mutex */
+  pthread_mutex_lock(ags_plugin_port_get_class_mutex());
+  
+  plugin_port_mutex = plugin_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(plugin_port_mutex);
+
+  retval = (flags & (plugin_port->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(plugin_port_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_plugin_port_set_flags:
+ * @plugin_port: the #AgsPluginPort
+ * @flags: the flags
+ * 
+ * Set @flags on @plugin_port.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_plugin_port_set_flags(AgsPluginPort *plugin_port, guint flags)
+{
+  pthread_mutex_t *plugin_port_mutex;
+
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return;
+  }
+      
+  /* get plugin_port mutex */
+  pthread_mutex_lock(ags_plugin_port_get_class_mutex());
+  
+  plugin_port_mutex = plugin_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+
+  /* set */
+  pthread_mutex_lock(plugin_port_mutex);
+
+  plugin_port->flags |= flags;
+  
+  pthread_mutex_unlock(plugin_port_mutex);
+}
+
+/**
+ * ags_plugin_port_unset_flags:
+ * @plugin_port: the #AgsPluginPort
+ * @flags: the flags
+ * 
+ * Unset @flags on @plugin_port.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_plugin_port_unset_flags(AgsPluginPort *plugin_port, guint flags)
+{
+  pthread_mutex_t *plugin_port_mutex;
+
+  if(!AGS_IS_PLUGIN_PORT(plugin_port)){
+    return;
+  }
+      
+  /* get plugin_port mutex */
+  pthread_mutex_lock(ags_plugin_port_get_class_mutex());
+  
+  plugin_port_mutex = plugin_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+
+  /* unset */
+  pthread_mutex_lock(plugin_port_mutex);
+
+  plugin_port->flags &= (~flags);
+  
+  pthread_mutex_unlock(plugin_port_mutex);
+}
+
+/**
  * ags_plugin_port_find_symbol:
  * @plugin_port: the #GList-struct containing #AgsPluginPort
  * @port_symbol: the port symbol
