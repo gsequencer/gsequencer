@@ -55,13 +55,13 @@ typedef struct _AgsWaveClass AgsWaveClass;
 
 /**
  * AgsWaveFlags:
- * @AGS_WAVE_CONNECTED: indicates the wave was connected by calling #AgsConnectable::connect()
+ * @AGS_WAVE_BYPASS: ignore any wave data
  * 
  * Enum values to control the behavior or indicate internal state of #AgsWave by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_WAVE_CONNECTED            = 1,
+  AGS_WAVE_BYPASS            = 1,
 }AgsWaveFlags;
 
 struct _AgsWave
@@ -70,7 +70,8 @@ struct _AgsWave
 
   guint flags;
 
-  AgsTimestamp *timestamp;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
 
   GObject *audio;
   guint audio_channel;
@@ -78,6 +79,8 @@ struct _AgsWave
   guint samplerate;
   guint buffer_size;
   guint format;
+
+  AgsTimestamp *timestamp;
   
   GList *buffer;
   GList *selection;
@@ -89,6 +92,12 @@ struct _AgsWaveClass
 };
 
 GType ags_wave_get_type(void);
+
+pthread_mutex_t* ags_wave_get_class_mutex();
+
+gboolean ags_wave_test_flags(AgsWave *wave, guint flags);
+void ags_wave_set_flags(AgsWave *wave, guint flags);
+void ags_wave_unset_flags(AgsWave *wave, guint flags);
 
 void ags_wave_set_samplerate(AgsWave *wave,
 			     guint samplerate);

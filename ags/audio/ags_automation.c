@@ -790,7 +790,8 @@ ags_automation_dispose(GObject *gobject)
   
   g_list_free_full(automation->acceleration,
 		   g_object_unref);
-  g_list_free(automation->selection);
+  g_list_free_full(automation->selection,
+		   g_object_unref);
 
   automation->acceleration = NULL;
   automation->selection = NULL;
@@ -841,7 +842,8 @@ ags_automation_finalize(GObject *gobject)
   g_list_free_full(automation->acceleration,
 		   g_object_unref);
 
-  g_list_free(automation->selection);
+  g_list_free_full(automation->selection,
+		   g_object_unref);
   
   /* call parent */
   G_OBJECT_CLASS(ags_automation_parent_class)->finalize(gobject);
@@ -1173,7 +1175,7 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 /**
  * ags_automation_add:
  * @automation: the #GList-struct containing #AgsAutomation
- * @new_automation: the automation to add
+ * @new_automation: the #AgsAutomation to add
  * 
  * Add @new_automation sorted to @automation
  * 
@@ -1240,30 +1242,6 @@ ags_automation_add_acceleration(AgsAutomation *automation,
 {
   pthread_mutex_t *automation_mutex;
 
-  auto gint ags_automation_add_acceleration_compare_function(gpointer a, gpointer b);
-
-  gint ags_automation_add_acceleration_compare_function(gpointer a, gpointer b){
-    guint a_x, b_x;
-
-    g_object_get(a,
-		 "x", &a_x,
-		 NULL);
-    
-    g_object_get(b,
-		 "x", &b_x,
-		 NULL);
-    
-    if(a_x == b_x){
-      return(0);
-    }
-
-    if(a_x < b_x){
-      return(-1);
-    }else{
-      return(1);
-    }
-  }
-
   if(!AGS_IS_AUTOMATION(automation) ||
      !AGS_IS_ACCELERATION(acceleration)){
     return;
@@ -1284,13 +1262,13 @@ ags_automation_add_acceleration(AgsAutomation *automation,
   if(use_selection_list){
     automation->selection = g_list_insert_sorted(automation->selection,
 						 acceleration,
-						 (GCompareFunc) ags_automation_add_acceleration_compare_function);
+						 (GCompareFunc) ags_acceleration_sort_func);
     ags_acceleration_set_flags(acceleration,
 			       AGS_ACCELERATION_IS_SELECTED);
   }else{
     automation->acceleration = g_list_insert_sorted(automation->acceleration,
 						    acceleration,
-						    (GCompareFunc) ags_automation_add_acceleration_compare_function);
+						    (GCompareFunc) ags_acceleration_sort_func);
   }
 
   pthread_mutex_unlock(automation_mutex);

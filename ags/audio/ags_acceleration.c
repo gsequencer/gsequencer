@@ -450,6 +450,45 @@ ags_acceleration_unset_flags(AgsAcceleration *acceleration, guint flags)
 }
 
 /**
+ * ags_acceleration_sort_func:
+ * @a: an #AgsAcceleration
+ * @b: an #AgsAcceleration
+ * 
+ * Sort accelerations.
+ * 
+ * Returns: 0 if equal, -1 if smaller and 1 if bigger offset
+ *
+ * Since: 2.0.0
+ */
+gint
+ags_acceleration_sort_func(gpointer a, gpointer b)
+{
+  guint a_x, b_x;
+
+  if(a == NULL || b == NULL){
+    return(0);
+  }
+
+  g_object_get(a,
+	       "x", &a_x,
+	       NULL);
+    
+  g_object_get(b,
+	       "x", &b_x,
+	       NULL);
+    
+  if(a_x == b_x){
+    return(0);
+  }
+
+  if(a_x < b_x){
+    return(-1);
+  }else{
+    return(1);
+  }
+}
+
+/**
  * ags_acceleration_duplicate:
  * @acceleration: an #AgsAcceleration
  * 
@@ -477,7 +516,7 @@ ags_acceleration_duplicate(AgsAcceleration *acceleration)
   
   pthread_mutex_unlock(ags_acceleration_get_class_mutex());
 
-  /**/
+  /* instantiate acceleration */
   acceleration_copy = ags_acceleration_new();
 
   acceleration_copy->flags = 0;

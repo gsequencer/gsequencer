@@ -212,7 +212,7 @@ ags_notation_init(AgsNotation *notation)
   pthread_mutex_init(mutex,
 		     attr);  
 
-  /*  */
+  /* fields */
   notation->audio = NULL;
   notation->audio_channel = 0;
 
@@ -433,8 +433,8 @@ ags_notation_dispose(GObject *gobject)
   
   g_list_free_full(notation->note,
 		   g_object_unref);
-
-  g_list_free(notation->selection);
+  g_list_free_full(notation->selection,
+		   g_object_unref);
 
   notation->note = NULL;
   notation->selection = NULL;
@@ -474,7 +474,8 @@ ags_notation_finalize(GObject *gobject)
   g_list_free_full(notation->note,
 		   g_object_unref);
 
-  g_list_free(notation->selection);
+  g_list_free_full(notation->selection,
+		   g_object_unref);
   
   /* call parent */
   G_OBJECT_CLASS(ags_notation_parent_class)->finalize(gobject);
@@ -496,6 +497,111 @@ ags_notation_get_class_mutex()
 }
 
 /**
+ * ags_notation_test_flags:
+ * @notation: the #AgsNotation
+ * @flags: the flags
+ * 
+ * Test @flags to be set on @notation.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_notation_test_flags(AgsNotation *notation, guint flags)
+{
+  gboolean retval;
+  
+  pthread_mutex_t *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return(FALSE);
+  }
+      
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = current_notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(notation_mutex);
+
+  retval = (flags & (notation->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(notation_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_notation_set_flags:
+ * @notation: the #AgsNotation
+ * @flags: the flags
+ * 
+ * Set @flags on @notation.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_notation_set_flags(AgsNotation *notation, guint flags)
+{
+  pthread_mutex_t *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+      
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = current_notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+  /* set */
+  pthread_mutex_lock(notation_mutex);
+
+  notation->flags |= flags;
+  
+  pthread_mutex_unlock(notation_mutex);
+}
+
+/**
+ * ags_notation_unset_flags:
+ * @notation: the #AgsNotation
+ * @flags: the flags
+ * 
+ * Unset @flags on @notation.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_notation_unset_flags(AgsNotation *notation, guint flags)
+{
+  pthread_mutex_t *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+      
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = current_notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+  /* set */
+  pthread_mutex_lock(notation_mutex);
+
+  notation->flags &= (~flags);
+  
+  pthread_mutex_unlock(notation_mutex);
+}
+
+/**
  * ags_notation_find_near_timestamp:
  * @notation: a #GList containing #AgsNotation
  * @audio_channel: the matching audio channel
@@ -503,9 +609,9 @@ ags_notation_get_class_mutex()
  *
  * Retrieve appropriate notation for timestamp.
  *
- * Returns: Next match.
+ * Returns: Next matching #GList-struct or %NULL if not found
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
@@ -516,8 +622,8 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
   guint current_audio_channel;
 
   while(notation != NULL){
-    g_object_get(automation->data,
-		 "audio-channe", &current_audio_channel,
+    g_object_get(notation->data,
+		 "audio-channel", &current_audio_channel,
 		 NULL);
     
     if(current_audio_channel != audio_channel){
@@ -563,7 +669,7 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 /**
  * ags_notation_add:
  * @notation: the #GList-struct containing #AgsNotation
- * @new_notation: the notation to add
+ * @new_notation: the #AgsNotation to add
  * 
  * Add @new_notation sorted to @notation
  * 
@@ -621,7 +727,7 @@ ags_notation_add(GList *notation,
  *
  * Adds @note to @notation.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_notation_add_note(AgsNotation *notation,
@@ -841,9 +947,9 @@ ags_notation_get_selection(AgsNotation *notation)
  *
  * Check selection for note.
  *
- * Returns: %TRUE if selected
+ * Returns: %TRUE if selected otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_notation_is_note_selected(AgsNotation *notation, AgsNote *note)

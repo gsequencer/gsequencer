@@ -1424,7 +1424,7 @@ ags_note_duplicate(AgsNote *note)
   
   pthread_mutex_unlock(ags_note_get_class_mutex());
 
-  /**/  
+  /* instantiate note */  
   note_copy = ags_note_new();
 
   note_copy->flags = 0;

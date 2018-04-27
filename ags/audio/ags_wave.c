@@ -23,6 +23,8 @@
 
 #include <ags/audio/ags_audio.h>
 
+#include <pthread.h>
+
 #include <ags/i18n.h>
 
 #include <errno.h>
@@ -60,14 +62,16 @@ enum{
   PROP_0,
   PROP_AUDIO,
   PROP_AUDIO_CHANNEL,
-  PROP_BUFFER,
-  PROP_TIMESTAMP,
   PROP_SAMPLERATE,
   PROP_BUFFER_SIZE,
   PROP_FORMAT,
+  PROP_TIMESTAMP,
+  PROP_BUFFER,
 };
 
 static gpointer ags_wave_parent_class = NULL;
+
+static pthread_mutex_t ags_wave_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_wave_get_type()
@@ -118,7 +122,7 @@ ags_wave_class_init(AgsWaveClass *wave)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of wave"),
@@ -134,63 +138,31 @@ ags_wave_class_init(AgsWaveClass *wave)
    *
    * The effect's audio-channel.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_uint("audio-channel",
 				  i18n_pspec("audio-channel of effect"),
 				  i18n_pspec("The numerical audio-channel of effect"),
 				  0,
-				  65535,
+				  G_MAXUINT32,
 				  0,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_CHANNEL,
-				  param_spec);  
-
-  /**
-   * AgsWave:buffer:
-   *
-   * The assigned #AgsBuffer
-   * 
-   * Since: 1.4.0
-   */
-  param_spec = g_param_spec_object("buffer",
-				   i18n_pspec("buffer of wave"),
-				   i18n_pspec("The buffer of wave"),
-				   AGS_TYPE_BUFFER,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_BUFFER,
 				  param_spec);
   
-  /**
-   * AgsPattern:timestamp:
-   *
-   * The pattern's timestamp.
-   * 
-   * Since: 1.4.0
-   */
-  param_spec = g_param_spec_object("timestamp",
-				   i18n_pspec("timestamp of pattern"),
-				   i18n_pspec("The timestamp of pattern"),
-				   AGS_TYPE_TIMESTAMP,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_TIMESTAMP,
-				  param_spec);
-
   /**
    * AgsWave:samplerate:
    *
    * The audio buffer's samplerate.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_uint("samplerate",
 				  i18n_pspec("samplerate of audio buffer"),
 				  i18n_pspec("The samplerate of audio buffer"),
 				  0,
-				  G_MAXUINT,
+				  G_MAXUINT32,
 				  AGS_SOUNDCARD_DEFAULT_SAMPLERATE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -202,13 +174,13 @@ ags_wave_class_init(AgsWaveClass *wave)
    *
    * The audio buffer's buffer size.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_uint("buffer-size",
 				  i18n_pspec("buffer size of audio buffer"),
 				  i18n_pspec("The buffer size of audio buffer"),
 				  0,
-				  G_MAXUINT,
+				  G_MAXUINT32,
 				  AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -220,25 +192,84 @@ ags_wave_class_init(AgsWaveClass *wave)
    *
    * The audio buffer's format.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_uint("format",
 				  i18n_pspec("format of audio buffer"),
 				  i18n_pspec("The format of audio buffer"),
 				  0,
-				  G_MAXUINT,
+				  G_MAXUINT32,
 				  AGS_SOUNDCARD_DEFAULT_FORMAT,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FORMAT,
+				  param_spec);
+
+  /**
+   * AgsPattern:timestamp:
+   *
+   * The pattern's timestamp.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("timestamp",
+				   i18n_pspec("timestamp of pattern"),
+				   i18n_pspec("The timestamp of pattern"),
+				   AGS_TYPE_TIMESTAMP,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TIMESTAMP,
+				  param_spec);
+
+  /**
+   * AgsWave:buffer:
+   *
+   * The assigned #AgsBuffer
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("buffer",
+				    i18n_pspec("buffer of wave"),
+				    i18n_pspec("The buffer of wave"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BUFFER,
 				  param_spec);
 }
 
 void
 ags_wave_init(AgsWave *wave)
 {
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
+
   wave->flags = 0;
 
+  /* add wave mutex */
+  wave->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(attr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  wave->obj_mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);  
+
+  /* fields */  
+  wave->audio_channel = 0;
+  wave->audio = NULL;
+
+  wave->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  wave->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  wave->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  
   wave->timestamp = ags_timestamp_new();
 
   wave->timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
@@ -247,20 +278,8 @@ ags_wave_init(AgsWave *wave)
   wave->timestamp->timer.ags_offset.offset = 0;
 
   g_object_ref(wave->timestamp);
-  
-  wave->audio_channel = 0;
-  wave->audio = NULL;
 
-  wave->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  wave->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  wave->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  
   wave->buffer = NULL;
-
-  wave->loop_start = 0.0;
-  wave->loop_end = 0.0;
-  wave->offset = 0.0;
-
   wave->selection = NULL;
 }
 
@@ -272,7 +291,16 @@ ags_wave_set_property(GObject *gobject,
 {
   AgsWave *wave;
 
+  pthread_mutex_t *wave_mutex;
+
   wave = AGS_WAVE(gobject);
+
+  /* get wave mutex */
+  pthread_mutex_lock(ags_wave_get_class_mutex());
+  
+  wave_mutex = wave->obj_mutex;
+  
+  pthread_mutex_unlock(ags_wave_get_class_mutex());
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -281,7 +309,11 @@ ags_wave_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
+      pthread_mutex_lock(wave_mutex);
+
       if(wave->audio == (GObject *) audio){
+	pthread_mutex_unlock(wave_mutex);
+	
 	return;
       }
 
@@ -294,6 +326,8 @@ ags_wave_set_property(GObject *gobject,
       }
 
       wave->audio = (GObject *) audio;
+
+      pthread_mutex_unlock(wave_mutex);
     }
     break;
   case PROP_AUDIO_CHANNEL:
@@ -302,44 +336,9 @@ ags_wave_set_property(GObject *gobject,
 
       audio_channel = g_value_get_uint(value);
 
+      pthread_mutex_lock(wave_mutex);
+
       wave->audio_channel = audio_channel;
-    }
-    break;
-  case PROP_BUFFER:
-    {
-      AgsBuffer *buffer;
-
-      buffer = (AgsBuffer *) g_value_get_object(value);
-
-      if(buffer == NULL ||
-	 g_list_find(wave->buffer, buffer) != NULL){
-	return;
-      }
-
-      ags_wave_add_buffer(wave,
-			  buffer,
-			  FALSE);
-    }
-    break;
-  case PROP_TIMESTAMP:
-    {
-      AgsTimestamp *timestamp;
-
-      timestamp = (AgsTimestamp *) g_value_get_object(value);
-
-      if(timestamp == (AgsTimestamp *) wave->timestamp){
-	return;
-      }
-
-      if(wave->timestamp != NULL){
-	g_object_unref(G_OBJECT(wave->timestamp));
-      }
-
-      if(timestamp != NULL){
-	g_object_ref(G_OBJECT(timestamp));
-      }
-
-      wave->timestamp = (GObject *) timestamp;
     }
     break;
   case PROP_SAMPLERATE:
@@ -372,6 +371,55 @@ ags_wave_set_property(GObject *gobject,
 			  format);
     }
     break;
+  case PROP_TIMESTAMP:
+    {
+      AgsTimestamp *timestamp;
+
+      timestamp = (AgsTimestamp *) g_value_get_object(value);
+
+      pthread_mutex_lock(wave_mutex);
+
+      if(timestamp == (AgsTimestamp *) wave->timestamp){
+	pthread_mutex_unlock(wave_mutex);
+	
+	return;
+      }
+
+      if(wave->timestamp != NULL){
+	g_object_unref(G_OBJECT(wave->timestamp));
+      }
+
+      if(timestamp != NULL){
+	g_object_ref(G_OBJECT(timestamp));
+      }
+
+      wave->timestamp = (GObject *) timestamp;
+
+      pthread_mutex_unlock(wave_mutex);
+    }
+    break;
+  case PROP_BUFFER:
+    {
+      AgsBuffer *buffer;
+
+      buffer = (AgsBuffer *) g_value_get_pointer(value);
+
+      pthread_mutex_lock(wave_mutex);
+
+      if(buffer == NULL ||
+	 g_list_find(wave->buffer, buffer) != NULL){
+	pthread_mutex_unlock(wave_mutex);
+
+	return;
+      }
+
+      pthread_mutex_unlock(wave_mutex);
+
+      ags_wave_add_buffer(wave,
+			  buffer,
+			  FALSE);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -386,37 +434,79 @@ ags_wave_get_property(GObject *gobject,
 {
   AgsWave *wave;
 
+  pthread_mutex_t *wave_mutex;
+
   wave = AGS_WAVE(gobject);
+
+  /* get wave mutex */
+  pthread_mutex_lock(ags_wave_get_class_mutex());
+  
+  wave_mutex = wave->obj_mutex;
+  
+  pthread_mutex_unlock(ags_wave_get_class_mutex());
 
   switch(prop_id){
   case PROP_AUDIO:
     {
+      pthread_mutex_lock(wave_mutex);
+
       g_value_set_object(value, wave->audio);
+
+      pthread_mutex_unlock(wave_mutex);
     }
     break;
   case PROP_AUDIO_CHANNEL:
     {
+      pthread_mutex_lock(wave_mutex);
+
       g_value_set_uint(value, wave->audio_channel);
-    }
-    break;
-  case PROP_TIMESTAMP:
-    {
-      g_value_set_object(value, wave->timestamp);
+
+      pthread_mutex_unlock(wave_mutex);
     }
     break;
   case PROP_SAMPLERATE:
     {
+      pthread_mutex_lock(wave_mutex);
+
       g_value_set_uint(value, wave->samplerate);
+
+      pthread_mutex_unlock(wave_mutex);
     }
     break;
   case PROP_BUFFER_SIZE:
     {
+      pthread_mutex_lock(wave_mutex);
+
       g_value_set_uint(value, wave->buffer_size);
+
+      pthread_mutex_unlock(wave_mutex);
     }
     break;
   case PROP_FORMAT:
     {
+      pthread_mutex_lock(wave_mutex);
+
       g_value_set_uint(value, wave->format);
+
+      pthread_mutex_unlock(wave_mutex);
+    }
+    break;
+  case PROP_TIMESTAMP:
+    {
+      pthread_mutex_lock(wave_mutex);
+
+      g_value_set_object(value, wave->timestamp);
+
+      pthread_mutex_unlock(wave_mutex);
+    }
+    break;
+  case PROP_BUFFER:
+    {
+      pthread_mutex_lock(wave_mutex);
+
+      g_value_set_pointer(value, g_list_copy(wave->buffer));
+
+      pthread_mutex_unlock(wave_mutex);
     }
     break;
   default:
@@ -434,13 +524,6 @@ ags_wave_dispose(GObject *gobject)
   
   wave = AGS_WAVE(gobject);
 
-  /* timestamp */
-  if(wave->timestamp != NULL){
-    g_object_unref(wave->timestamp);
-
-    wave->timestamp = NULL;
-  }
-
   /* audio */
   if(wave->audio != NULL){
     g_object_unref(wave->audio);
@@ -448,7 +531,13 @@ ags_wave_dispose(GObject *gobject)
     wave->audio = NULL;
   }
 
-    
+  /* timestamp */
+  if(wave->timestamp != NULL){
+    g_object_unref(wave->timestamp);
+
+    wave->timestamp = NULL;
+  }
+
   /* buffer and selection */
   list = wave->buffer;
 
@@ -460,8 +549,8 @@ ags_wave_dispose(GObject *gobject)
   
   g_list_free_full(wave->buffer,
 		   g_object_unref);
-
-  g_list_free(wave->selection);
+  g_list_free_full(wave->selection,
+		   g_object_unref);
 
   wave->buffer = NULL;
   wave->selection = NULL;
@@ -477,24 +566,151 @@ ags_wave_finalize(GObject *gobject)
 
   wave = AGS_WAVE(gobject);
 
-  /* timestamp */
-  if(wave->timestamp != NULL){
-    g_object_unref(wave->timestamp);
-  }
+  pthread_mutex_destroy(wave->obj_mutex);
+  free(wave->obj_mutex);
+
+  pthread_mutexattr_destroy(wave->obj_mutexattr);
+  free(wave->obj_mutexattr);
 
   /* audio */
   if(wave->audio != NULL){
     g_object_unref(wave->audio);
+  }
+
+  /* timestamp */
+  if(wave->timestamp != NULL){
+    g_object_unref(wave->timestamp);
   }
     
   /* buffer and selection */
   g_list_free_full(wave->buffer,
 		   g_object_unref);
 
-  g_list_free(wave->selection);
+  g_list_free_full(wave->selection,
+		   g_object_unref);
   
   /* call parent */
   G_OBJECT_CLASS(ags_wave_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_wave_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_wave_get_class_mutex()
+{
+  return(&ags_wave_class_mutex);
+}
+
+/**
+ * ags_wave_test_flags:
+ * @wave: the #AgsWave
+ * @flags: the flags
+ * 
+ * Test @flags to be set on @wave.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_wave_test_flags(AgsWave *wave, guint flags)
+{
+  gboolean retval;
+  
+  pthread_mutex_t *wave_mutex;
+
+  if(!AGS_IS_WAVE(wave)){
+    return(FALSE);
+  }
+      
+  /* get wave mutex */
+  pthread_mutex_lock(ags_wave_get_class_mutex());
+  
+  wave_mutex = current_wave->obj_mutex;
+  
+  pthread_mutex_unlock(ags_wave_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(wave_mutex);
+
+  retval = (flags & (wave->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(wave_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_wave_set_flags:
+ * @wave: the #AgsWave
+ * @flags: the flags
+ * 
+ * Set @flags on @wave.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_wave_set_flags(AgsWave *wave, guint flags)
+{
+  pthread_mutex_t *wave_mutex;
+
+  if(!AGS_IS_WAVE(wave)){
+    return;
+  }
+      
+  /* get wave mutex */
+  pthread_mutex_lock(ags_wave_get_class_mutex());
+  
+  wave_mutex = current_wave->obj_mutex;
+  
+  pthread_mutex_unlock(ags_wave_get_class_mutex());
+
+  /* set */
+  pthread_mutex_lock(wave_mutex);
+
+  wave->flags |= flags;
+  
+  pthread_mutex_unlock(wave_mutex);
+}
+
+/**
+ * ags_wave_unset_flags:
+ * @wave: the #AgsWave
+ * @flags: the flags
+ * 
+ * Unset @flags on @wave.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_wave_unset_flags(AgsWave *wave, guint flags)
+{
+  pthread_mutex_t *wave_mutex;
+
+  if(!AGS_IS_WAVE(wave)){
+    return;
+  }
+      
+  /* get wave mutex */
+  pthread_mutex_lock(ags_wave_get_class_mutex());
+  
+  wave_mutex = current_wave->obj_mutex;
+  
+  pthread_mutex_unlock(ags_wave_get_class_mutex());
+
+  /* set */
+  pthread_mutex_lock(wave_mutex);
+
+  wave->flags &= (~flags);
+  
+  pthread_mutex_unlock(wave_mutex);
 }
 
 /**
@@ -504,43 +720,84 @@ ags_wave_finalize(GObject *gobject)
  * 
  * Set samplerate. 
  * 
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 void
 ags_wave_set_samplerate(AgsWave *wave,
 			guint samplerate)
 {
-  GList *list;
+  GList *list_start, *list;
 
+  pthread_mutex_t *wave_mutex;
+
+  if(!AGS_IS_WAVE(wave)){
+    return;
+  }
+  
+  /* get wave mutex */
+  pthread_mutex_lock(ags_wave_get_class_mutex());
+  
+  wave_mutex = wave->obj_mutex;
+  
+  pthread_mutex_unlock(ags_wave_get_class_mutex());
+
+  /* apply samplerate */
+  pthread_mutex_lock(notation_mutex);
+  
   wave->samplerate = samplerate;
 
-  list = wave->buffer;
+  list =
+    list_start = g_list_copy(wave->buffer);
   
+  pthread_mutex_unlock(notation_mutex);
+
   while(list != NULL){
     ags_buffer_set_samplerate(list->data,
 			      samplerate);
 
     list = list->next;
   }
+
+  g_list_free(list_start);
 }
 
 /**
  * ags_wave_set_buffer_size:
  * @wave: the #AgsWave
+ * @buffer_size: the buffer size
  * 
  * Set buffer size.
  * 
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 void
 ags_wave_set_buffer_size(AgsWave *wave,
 			 guint buffer_size)
 {
-  GList *list;
+  GList *list_start, *list;
 
+  pthread_mutex_t *wave_mutex;
+
+  if(!AGS_IS_WAVE(wave)){
+    return;
+  }
+  
+  /* get wave mutex */
+  pthread_mutex_lock(ags_wave_get_class_mutex());
+  
+  wave_mutex = wave->obj_mutex;
+  
+  pthread_mutex_unlock(ags_wave_get_class_mutex());
+
+  /* apply buffer size */
+  pthread_mutex_lock(notation_mutex);
+  
   wave->buffer_size = buffer_size;
 
-  list = wave->buffer;
+  list =
+    list_start = g_list_copy(wave->buffer);
+  
+  pthread_mutex_unlock(notation_mutex);
   
   while(list != NULL){
     ags_buffer_set_buffer_size(list->data,
@@ -548,6 +805,8 @@ ags_wave_set_buffer_size(AgsWave *wave,
 
     list = list->next;
   }
+
+  g_list_free(list_start);
 }
 
 /**
@@ -557,17 +816,36 @@ ags_wave_set_buffer_size(AgsWave *wave,
  * 
  * Set format. 
  * 
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 void
 ags_wave_set_format(AgsWave *wave,
 		    guint format)
 {
-  GList *list;
+  GList *list_start, *list;
 
+  pthread_mutex_t *wave_mutex;
+
+  if(!AGS_IS_WAVE(wave)){
+    return;
+  }
+  
+  /* get wave mutex */
+  pthread_mutex_lock(ags_wave_get_class_mutex());
+  
+  wave_mutex = wave->obj_mutex;
+  
+  pthread_mutex_unlock(ags_wave_get_class_mutex());
+
+  /* apply format */
+  pthread_mutex_lock(notation_mutex);
+  
   wave->format = format;
 
-  list = wave->buffer;
+  list =
+    list_start = g_list_copy(wave->buffer);
+  
+  pthread_mutex_unlock(notation_mutex);
   
   while(list != NULL){
     ags_buffer_set_format(list->data,
@@ -575,17 +853,19 @@ ags_wave_set_format(AgsWave *wave,
 
     list = list->next;
   }
+
+  g_list_free(list_start);
 }
 
 /**
  * ags_wave_find_near_timestamp:
  * @wave: a #GList containing #AgsWave
  * @audio_channel: the matching audio channel
- * @timestamp: (allow-none): the matching timestamp, or %NULL to match any timestamp
+ * @timestamp: the matching #AgsTimestamp, or %NULL to match any timestamp
  *
  * Retrieve appropriate wave for timestamp.
  *
- * Returns: Next match.
+ * Returns: Next matching #GList-struct or %NULL if not found
  *
  * Since: 1.4.0
  */
@@ -595,8 +875,14 @@ ags_wave_find_near_timestamp(GList *wave, guint audio_channel,
 {
   AgsTimestamp *current_timestamp;
 
+  guint current_audio_channel;
+
   while(wave != NULL){
-    if(AGS_WAVE(wave->data)->audio_channel != audio_channel){
+    g_object_get(wave->data,
+		 "audio-channel", &current_audio_channel,
+		 NULL);
+    
+    if(current_audio_channel != audio_channel){
       wave = wave->next;
       
       continue;
@@ -606,19 +892,25 @@ ags_wave_find_near_timestamp(GList *wave, guint audio_channel,
       return(wave);
     }
     
-    current_timestamp = (AgsTimestamp *) AGS_WAVE(wave->data)->timestamp;
-
+    g_object_get(wave->data,
+		 "timestamp", &current_timestamp,
+		 NULL);
+    
     if(current_timestamp != NULL){
-      if((AGS_TIMESTAMP_UNIX & (timestamp->flags)) != 0 &&
-	 (AGS_TIMESTAMP_UNIX & (current_timestamp->flags)) != 0){
-	if(current_timestamp->timer.unix_time.time_val >= timestamp->timer.unix_time.time_val &&
-	   current_timestamp->timer.unix_time.time_val < timestamp->timer.unix_time.time_val + AGS_WAVE_DEFAULT_DURATION){
+      if(ags_timestamp_test_flags(timestamp,
+				  AGS_TIMESTAMP_OFFSET) &&
+	 ags_timestamp_test_flags(current_timestamp,
+				  AGS_TIMESTAMP_OFFSET)){
+	if(ags_timestamp_get_ags_offset(current_timestamp) >= ags_timestamp_get_ags_offset(timestamp) &&
+	   ags_timestamp_get_ags_offset(current_timestamp) < ags_timestamp_get_ags_offset(timestamp) + AGS_WAVE_DEFAULT_OFFSET){
 	  return(wave);
 	}
-      }else if((AGS_TIMESTAMP_OFFSET & (timestamp->flags)) != 0 &&
-	       (AGS_TIMESTAMP_OFFSET & (current_timestamp->flags)) != 0){
-	if(current_timestamp->timer.ags_offset.offset >= timestamp->timer.ags_offset.offset &&
-	   current_timestamp->timer.ags_offset.offset < timestamp->timer.ags_offset.offset + AGS_WAVE_DEFAULT_OFFSET){
+      }else if(ags_timestamp_test_flags(timestamp,
+					AGS_TIMESTAMP_UNIX) &&
+	       ags_timestamp_test_flags(current_timestamp,
+					AGS_TIMESTAMP_UNIX)){
+	if(ags_timestamp_get_unix_time(current_timestamp) >= ags_timestamp_get_unix_time(timestamp) &&
+	   ags_timestamp_get_unix_time(current_timestamp) < ags_timestamp_get_unix_time(timestamp) + AGS_WAVE_DEFAULT_DURATION){
 	  return(wave);
 	}
       }
@@ -633,13 +925,13 @@ ags_wave_find_near_timestamp(GList *wave, guint audio_channel,
 /**
  * ags_wave_add:
  * @wave: the #GList-struct containing #AgsWave
- * @new_wave: the wave to add
+ * @new_wave: the #AgsWave to add
  * 
  * Add @new_wave sorted to @wave
  * 
  * Returns: the new beginning of @wave
  * 
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 GList*
 ags_wave_add(GList *wave,
@@ -651,19 +943,28 @@ ags_wave_add(GList *wave,
   gint ags_wave_add_compare(gconstpointer a,
 			    gconstpointer b)
   {
-    if(AGS_WAVE(a)->timestamp->timer.ags_offset.offset == AGS_WAVE(b)->timestamp->timer.ags_offset.offset){
+    AgsTimestamp *timestamp_a, *timestamp_b;
+
+    g_object_get(a,
+		 "timestamp", &timestamp_a,
+		 NULL);
+
+    g_object_get(b,
+		 "timestamp", &timestamp_b,
+		 NULL);
+    
+    if(ags_timestamp_get_ags_offset(timestamp_a) == ags_timestamp_get_ags_offset(timestamp_b)){
       return(0);
-    }else if(AGS_WAVE(a)->timestamp->timer.ags_offset.offset < AGS_WAVE(b)->timestamp->timer.ags_offset.offset){
+    }else if(ags_timestamp_get_ags_offset(timestamp_a) < ags_timestamp_get_ags_offset(timestamp_b)){
       return(-1);
-    }else if(AGS_WAVE(a)->timestamp->timer.ags_offset.offset > AGS_WAVE(b)->timestamp->timer.ags_offset.offset){
+    }else if(ags_timestamp_get_ags_offset(timestamp_a) > ags_timestamp_get_ags_offset(timestamp_b)){
       return(1);
     }
 
     return(0);
   }
   
-  if(!AGS_IS_WAVE(new_wave) ||
-     !AGS_IS_TIMESTAMP(new_wave->timestamp)){
+  if(!AGS_IS_WAVE(new_wave)){
     return(wave);
   }
   
@@ -680,31 +981,47 @@ ags_wave_add(GList *wave,
  * @buffer: the #AgsBuffer to add
  * @use_selection_list: if %TRUE add to selection, else to default wave
  *
- * Adds a buffer to wave.
+ * Add @buffer to @wave.
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 void
 ags_wave_add_buffer(AgsWave *wave,
 		    AgsBuffer *buffer,
 		    gboolean use_selection_list)
 {
+  pthread_mutex_t *wave_mutex;
+
   if(!AGS_IS_WAVE(wave) ||
      !AGS_IS_BUFFER(buffer)){
     return;
   }
 
+  /* get wave mutex */
+  pthread_mutex_lock(ags_wave_get_class_mutex());
+  
+  wave_mutex = wave->obj_mutex;
+  
+  pthread_mutex_unlock(ags_wave_get_class_mutex());
+
+  /* insert sorted */
   g_object_ref(buffer);
   
+  pthread_mutex_lock(wave_mutex);
+
   if(use_selection_list){
     wave->selection = g_list_insert_sorted(wave->selection,
 					   buffer,
 					   (GCompareFunc) ags_buffer_sort_func);
+    ags_buffer_set_flags(buffer,
+			 AGS_BUFFER_IS_SELECTED);
   }else{
     wave->buffer = g_list_insert_sorted(wave->buffer,
 					buffer,
 					(GCompareFunc) ags_buffer_sort_func);
   }
+
+  pthread_mutex_unlock(wave_mutex);
 }
 
 /**
@@ -713,27 +1030,49 @@ ags_wave_add_buffer(AgsWave *wave,
  * @buffer: the #AgsBuffer to remove
  * @use_selection_list: if %TRUE remove from selection, else from default wave
  *
- * Removes a buffer from wave.
+ * Removes @buffer from @wave.
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 void
 ags_wave_remove_buffer(AgsWave *wave,
 		       AgsBuffer *buffer,
 		       gboolean use_selection_list)
 {
+  pthread_mutex_t *wave_mutex;
+
   if(!AGS_IS_WAVE(wave) ||
      !AGS_IS_BUFFER(buffer)){
     return;
   }
+
+  /* get wave mutex */
+  pthread_mutex_lock(ags_wave_get_class_mutex());
+  
+  wave_mutex = wave->obj_mutex;
+  
+  pthread_mutex_unlock(ags_wave_get_class_mutex());
+
+  /* remove if found */
+  pthread_mutex_lock(wave_mutex);
   
   if(!use_selection_list){
-    wave->buffer = g_list_remove(wave->buffer,
-				 buffer);
+    if(g_list_find(wave->buffer,
+		   buffer) != NULL){
+      wave->buffer = g_list_remove(wave->buffer,
+				   buffer);
+      g_object_unref(buffer);
+    }
   }else{
-    wave->selection = g_list_remove(wave->selection,
-				    buffer);
+    if(g_list_find(wave->selection,
+		   buffer) != NULL){
+      wave->selection = g_list_remove(wave->selection,
+				      buffer);
+      g_object_unref(buffer);
+    }
   }
+
+  pthread_mutex_unlock(wave_mutex);
 }
 
 /**
@@ -744,12 +1083,34 @@ ags_wave_remove_buffer(AgsWave *wave,
  *
  * Returns: the selection.
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 GList*
 ags_wave_get_selection(AgsWave *wave)
 {
-  return(wave->selection);
+  GList *selection;
+
+  pthread_mutex_t *wave_mutex;
+
+  if(!AGS_IS_WAVE(wave)){
+    return(NULL);
+  }
+
+  /* get wave mutex */
+  pthread_mutex_lock(ags_wave_get_class_mutex());
+  
+  wave_mutex = wave->obj_mutex;
+  
+  pthread_mutex_unlock(ags_wave_get_class_mutex());
+
+  /* selection */
+  pthread_mutex_lock(wave_mutex);
+
+  selection = wave->selection;
+  
+  pthread_mutex_unlock(wave_mutex);
+  
+  return(selection);
 }
 
 /**
@@ -759,26 +1120,66 @@ ags_wave_get_selection(AgsWave *wave)
  *
  * Check selection for buffer.
  *
- * Returns: %TRUE if selected
+ * Returns: %TRUE if selected otherwise %FALSE
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 gboolean
 ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer)
 {
   GList *selection;
 
-  selection = wave->selection;
+  guint x0;
+  guint current_x0;
+  gboolean retval;
+  
+  pthread_mutex_t *wave_mutex;
 
-  while(selection != NULL && AGS_BUFFER(selection->data)->x <= buffer->x){
+  if(!AGS_IS_WAVE(wave) ||
+     !AGS_IS_BUFFER(buffer)){
+    return(FALSE);
+  }
+
+  /* get wave mutex */
+  pthread_mutex_lock(ags_wave_get_class_mutex());
+  
+  wave_mutex = wave->obj_mutex;
+  
+  pthread_mutex_unlock(ags_wave_get_class_mutex());
+
+  /* get x */
+  g_object_get(buffer,
+	       "x0", &x0,
+	       NULL);
+  
+  /* match buffer */
+  pthread_mutex_lock(wave_mutex);
+
+  selection = wave->selection;
+  retval = FALSE;
+  
+  while(selection != NULL){
+    /* get current x */
+    g_object_get(selection->data,
+		 "x0", &current_x0,
+		 NULL);
+
+    if(current_x0 > x0){
+      break;
+    }
+    
     if(selection->data == buffer){
-      return(TRUE);
+      retval = TRUE;
+
+      break;
     }
 
     selection = selection->next;
   }
 
-  return(FALSE);
+  pthread_mutex_unlock(wave_mutex);
+
+  return(retval);
 }
 
 /**

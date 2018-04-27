@@ -82,6 +82,9 @@ gboolean ags_acceleration_test_flags(AgsAcceleration *acceleration, guint flags)
 void ags_acceleration_set_flags(AgsAcceleration *acceleration, guint flags);
 void ags_acceleration_unset_flags(AgsAcceleration *acceleration, guint flags);
 
+gint ags_acceleration_sort_func(gconstpointer a,
+				gconstpointer b);
+
 AgsAcceleration* ags_acceleration_duplicate(AgsAcceleration *acceleration);
 
 AgsAcceleration* ags_acceleration_new();

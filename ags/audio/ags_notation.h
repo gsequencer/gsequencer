@@ -58,17 +58,15 @@ typedef struct _AgsNotationClass AgsNotationClass;
 
 /**
  * AgsNotationFlags:
- * @AGS_NOTATION_CONNECTED: indicates the notation was connected by calling #AgsConnectable::connect()
- * @AGS_NOTATION_STICKY: sticky
  * @AGS_NOTATION_PATTERN_MODE: pattern mode
+ * @AGS_NOTATION_BYPASS: ignore any notation data
  *
  * Enum values to control the behavior or indicate internal state of #AgsNotation by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_NOTATION_CONNECTED           = 1,
-  AGS_NOTATION_STICKY              = 1 <<  1,
-  AGS_NOTATION_PATTERN_MODE        = 1 <<  2,
+  AGS_NOTATION_PATTERN_MODE         = 1,
+  AGS_NOTATION_BYPASS               = 1 <<  1,
 }AgsNotationFlags;
 
 struct _AgsNotation
