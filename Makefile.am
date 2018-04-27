@@ -53,7 +53,18 @@ EXTRA_DIST = config.rpath \
 	m4/Makefile.am \
 	m4/Makefile.in \
 	ags/i18n.h \
-	ags/gettext.h
+	ags/gettext.h \
+	ags/object/README \
+	docs/images/README \
+	docs/listings/README \
+	docs/reference/libags-audio/README \
+	docs/reference/libags-gui/README \
+	docs/reference/libags/README \
+	docs/reference/libgsequencer/README \
+	gsequencer.share/icons/README \
+	gsequencer.share/images/README \
+	m4/README \
+	po/README
 
 EXTRA_DIST += \
 	functional-system-tests.mk.am \

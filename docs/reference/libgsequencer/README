@@ -1,0 +1,11 @@
+Third-party files of gtk-doc licensed under the terms of GNU GPLv3+, copyright provided by James Henstridge and Stefan Sauer
+
+* gtk-doc.make (GPLv3+)
+
+Third-party files of gtk-doc permissive licensed see specific files for warranty disclaimer and a notice preservation requirement, copyright provided by James Henstridge, Damon Chaplin and Stefan Sauer
+
+* git.mk
+
+Third-party files of gtk-doc licensed under the terms of GNU GPLv3+, copyright provided by Stefan Sauer
+
+* Makefile.am (GPLv3+)

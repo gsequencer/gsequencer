@@ -1,0 +1,9 @@
+Files used for code generation applied under the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+* ags_marshallers.list (GPLv3+)
+
+Generated files by glib-genmarshal licensed under the terms of GNU LGPLv2.1+, copyright provided by http://www.gnome.org:
+
+* ags_marshal.c (LGPLv2.1+)
+* ags_marshal.h (LGPLv2.1+)
