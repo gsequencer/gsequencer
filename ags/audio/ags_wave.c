@@ -742,14 +742,14 @@ ags_wave_set_samplerate(AgsWave *wave,
   pthread_mutex_unlock(ags_wave_get_class_mutex());
 
   /* apply samplerate */
-  pthread_mutex_lock(notation_mutex);
+  pthread_mutex_lock(wave_mutex);
   
   wave->samplerate = samplerate;
 
   list =
     list_start = g_list_copy(wave->buffer);
   
-  pthread_mutex_unlock(notation_mutex);
+  pthread_mutex_unlock(wave_mutex);
 
   while(list != NULL){
     ags_buffer_set_samplerate(list->data,
@@ -790,14 +790,14 @@ ags_wave_set_buffer_size(AgsWave *wave,
   pthread_mutex_unlock(ags_wave_get_class_mutex());
 
   /* apply buffer size */
-  pthread_mutex_lock(notation_mutex);
+  pthread_mutex_lock(wave_mutex);
   
   wave->buffer_size = buffer_size;
 
   list =
     list_start = g_list_copy(wave->buffer);
   
-  pthread_mutex_unlock(notation_mutex);
+  pthread_mutex_unlock(wave_mutex);
   
   while(list != NULL){
     ags_buffer_set_buffer_size(list->data,
@@ -838,14 +838,14 @@ ags_wave_set_format(AgsWave *wave,
   pthread_mutex_unlock(ags_wave_get_class_mutex());
 
   /* apply format */
-  pthread_mutex_lock(notation_mutex);
+  pthread_mutex_lock(wave_mutex);
   
   wave->format = format;
 
   list =
     list_start = g_list_copy(wave->buffer);
   
-  pthread_mutex_unlock(notation_mutex);
+  pthread_mutex_unlock(wave_mutex);
   
   while(list != NULL){
     ags_buffer_set_format(list->data,
@@ -977,7 +977,7 @@ ags_wave_add(GList *wave,
 
 /**
  * ags_wave_add_buffer:
- * @wave: an #AgsWave
+ * @wave: the #AgsWave
  * @buffer: the #AgsBuffer to add
  * @use_selection_list: if %TRUE add to selection, else to default wave
  *
@@ -1026,7 +1026,7 @@ ags_wave_add_buffer(AgsWave *wave,
 
 /**
  * ags_wave_remove_buffer:
- * @wave: an #AgsWave
+ * @wave: the #AgsWave
  * @buffer: the #AgsBuffer to remove
  * @use_selection_list: if %TRUE remove from selection, else from default wave
  *
@@ -1129,8 +1129,8 @@ ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer)
 {
   GList *selection;
 
-  guint x0;
-  guint current_x0;
+  guint64 x;
+  guint64 current_x;
   gboolean retval;
   
   pthread_mutex_t *wave_mutex;
@@ -1149,7 +1149,7 @@ ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer)
 
   /* get x */
   g_object_get(buffer,
-	       "x0", &x0,
+	       "x", &x,
 	       NULL);
   
   /* match buffer */
@@ -1161,10 +1161,10 @@ ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer)
   while(selection != NULL){
     /* get current x */
     g_object_get(selection->data,
-		 "x0", &current_x0,
+		 "x", &current_x,
 		 NULL);
 
-    if(current_x0 > x0){
+    if(current_x > x){
       break;
     }
     
@@ -1184,7 +1184,7 @@ ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer)
 
 /**
  * ags_wave_find_point:
- * @wave: an #AgsWave
+ * @wave: the #AgsWave
  * @x: offset
  * @use_selection_list: if %TRUE selection is searched
  *
@@ -1192,45 +1192,71 @@ ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer)
  *
  * Returns: the matching buffer as #AgsBuffer.
  *
- * Since: 1.5.0
+ * Since: 2.0.0
  */
 AgsBuffer*
 ags_wave_find_point(AgsWave *wave,
 		    guint64 x,
 		    gboolean use_selection_list)
 {
-  AgsBuffer *buffer;
+  AgsBuffer *retval;
+  
+  GList *buffer;
 
-  GList *list;
+  guint64 current_x;
+
+  pthread_mutex_t *wave_mutex;
+
+  if(!AGS_IS_WAVE(wave)){
+    return(NULL);
+  }
+
+  /* get wave mutex */
+  pthread_mutex_lock(ags_wave_get_class_mutex());
+  
+  wave_mutex = wave->obj_mutex;
+  
+  pthread_mutex_unlock(ags_wave_get_class_mutex());
+
+  /* find buffer */
+  pthread_mutex_lock(wave_mutex);
 
   if(use_selection_list){
-    list = wave->selection;
+    buffer = wave->selection;
   }else{
-    list = wave->buffer;
+    buffer = wave->buffer;
   }
 
-  while(list != NULL && AGS_BUFFER(list->data)->x < x){
-    list = list->next;
-  }
-
-  if(list == NULL){
-    return(NULL);
-  }
-
-  buffer = list->data;
+  retval = NULL;
   
-  if(buffer->x == x){
-    return(buffer);
-  }else{
-    return(NULL);
+  while(buffer != NULL){
+    g_object_get(buffer->data,
+		 "x", &current_x,
+		 NULL);
+    
+    if(current_x > x){
+      break;
+    }
+
+    if(x == current_x){
+      retval = buffer->data;
+
+      break;
+    }
+    
+    buffer = buffer->next;
   }
+
+  pthread_mutex_unlock(wave_mutex);
+
+  return(retval);
 }
 
 /**
  * ags_wave_find_region:
- * @wave: an #AgsWave
- * @x0: start offset
- * @x1: end offset
+ * @wave: the #AgsWave
+ * @x0: x start offset
+ * @x1: x end offset
  * @use_selection_list: if %TRUE selection is searched
  *
  * Find buffers by offset and region.
@@ -1245,36 +1271,70 @@ ags_wave_find_region(AgsWave *wave,
 		     guint64 x1,
 		     gboolean use_selection_list)
 {
-  AgsBuffer *buffer;
-  
-  GList *buffer_list;
+  GList *buffer;
   GList *region;
 
+  guint64 current_x;
+  
+  pthread_mutex_t *wave_mutex;
+
+  if(!AGS_IS_WAVE(wave)){
+    return(NULL);
+  }
+
+  /* get wave mutex */
+  pthread_mutex_lock(ags_wave_get_class_mutex());
+  
+  wave_mutex = wave->obj_mutex;
+  
+  pthread_mutex_unlock(ags_wave_get_class_mutex());
+
   if(x0 > x1){
-    guint64 tmp;
+    guint tmp;
 
     tmp = x1;
     x1 = x0;
     x0 = x1;
   }
-    
+  
+  /* find buffer */
+  pthread_mutex_lock(wave_mutex);
+
   if(use_selection_list){
-    buffer_list = wave->selection;
+    buffer = wave->selection;
   }else{
-    buffer_list = wave->buffer;
+    buffer = wave->buffer;
   }
 
-  while(buffer_list != NULL && AGS_BUFFER(buffer_list->data)->x < x0){
-    buffer_list = buffer_list->next;
+  while(buffer != NULL){
+    g_object_get(buffer->data,
+		 "x", &current_x,
+		 NULL);
+    
+    if(current_x >= x0){
+      break;
+    }
+    
+    buffer = buffer->next;
   }
 
   region = NULL;
 
-  while(buffer_list != NULL && (buffer = AGS_BUFFER(buffer_list->data))->x < x1){
-    region = g_list_prepend(region, buffer);
+  while(buffer != NULL){
+    g_object_get(buffer->data,
+		 "x", &current_x,
+		 NULL);
 
-    buffer_list = buffer_list->next;
+    if(current_x > x1){
+      break;
+    }
+
+    region = g_list_prepend(region, current);
+
+    buffer = buffer->next;
   }
+
+  pthread_mutex_unlock(wave_mutex);
 
   region = g_list_reverse(region);
 
@@ -1283,58 +1343,63 @@ ags_wave_find_region(AgsWave *wave,
 
 /**
  * ags_wave_free_selection:
- * @wave: an #AgsWave
+ * @wave: the #AgsWave
  *
  * Clear selection.
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 void
 ags_wave_free_selection(AgsWave *wave)
 {
-  g_list_free_full(wave->selection,
-		   g_object_unref);
-  
-  wave->selection = NULL;
-}
-
-/**
- * ags_wave_add_all_to_selection:
- * @wave: an #AgsWave
- *
- * Select all.
- *
- * Since: 1.4.0
- */
-void
-ags_wave_add_all_to_selection(AgsWave *wave)
-{
   AgsBuffer *buffer;
-  GList *region, *list;
 
-  ags_wave_free_selection(wave);
-  list = wave->buffer;
+  GList *list_start, *list;
+
+  pthread_mutex_t *wave_mutex;
+
+  if(!AGS_IS_WAVE(wave)){
+    return;
+  }
+
+  /* get wave mutex */
+  pthread_mutex_lock(ags_wave_get_class_mutex());
+  
+  wave_mutex = wave->obj_mutex;
+  
+  pthread_mutex_unlock(ags_wave_get_class_mutex());
+
+  /* free selection */
+  pthread_mutex_lock(wave_mutex);
+
+  list =
+    list_start = wave->selection;
   
   while(list != NULL){
-    AGS_BUFFER(list->data)->flags |= AGS_BUFFER_IS_SELECTED;
-    g_object_ref(G_OBJECT(list->data));
+    ags_buffer_unset_flags(list->data,
+			   AGS_BUFFER_IS_SELECTED);
     
     list = list->next;
   }
 
-  wave->selection = g_list_copy(wave->buffer);
+  wave->selection = NULL;
+
+  pthread_mutex_unlock(wave_mutex);
+  
+  g_list_free_full(list_start,
+		   g_object_unref);
 }
 
 /**
  * ags_wave_add_region_to_selection:
- * @wave: an #AgsWave
- * @x0: start offset
- * @x1: end offset
+ * @wave: the #AgsWave
+ * @x0: x start offset
+ * @x1: x end offset
  * @replace_current_selection: if %TRUE selection is replaced
  *
- * Select buffers within region.
+ * Add buffer within region to selection.
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 void
 ags_wave_add_region_to_selection(AgsWave *wave,
@@ -1345,6 +1410,20 @@ ags_wave_add_region_to_selection(AgsWave *wave,
 
   GList *region, *list;
 
+  pthread_mutex_t *wave_mutex;
+
+  if(!AGS_IS_WAVE(wave)){
+    return;
+  }
+
+  /* get wave mutex */
+  pthread_mutex_lock(ags_wave_get_class_mutex());
+  
+  wave_mutex = wave->obj_mutex;
+  
+  pthread_mutex_unlock(ags_wave_get_class_mutex());
+
+  /* find region */
   region = ags_wave_find_region(wave,
 				x0,
 				x1,
@@ -1356,26 +1435,31 @@ ags_wave_add_region_to_selection(AgsWave *wave,
     list = region;
 
     while(list != NULL){
-      AGS_BUFFER(list->data)->flags |= AGS_BUFFER_IS_SELECTED;
-      g_object_ref(G_OBJECT(list->data));
+      ags_buffer_set_flags(list->data,
+			   AGS_BUFFER_IS_SELECTED);
+      g_object_ref(list->data);
 
       list = list->next;
     }
 
+    /* replace */
+    pthread_mutex_lock(wave_mutex);
+     
     wave->selection = region;
-  }else{
-    while(region != NULL){
-      buffer = AGS_BUFFER(region->data);
 
-      if(!ags_wave_is_buffer_selected(wave, buffer)){
-	buffer->flags |= AGS_BUFFER_IS_SELECTED;
-	g_object_ref(G_OBJECT(buffer));
+    pthread_mutex_unlock(wave_mutex);
+  }else{
+    list = region;
+    
+    while(list != NULL){
+      if(!ags_wave_is_buffer_selected(wave, list->data)){
+	/* add */
 	ags_wave_add_buffer(wave,
-			    buffer,
+			    list->data,
 			    TRUE);
       }
       
-      region = region->next;
+      list = list->next;
     }
     
     g_list_free(region);
@@ -1384,51 +1468,115 @@ ags_wave_add_region_to_selection(AgsWave *wave,
 
 /**
  * ags_wave_remove_region_from_selection:
- * @wave: an #AgsWave
- * @x0: start offset
- * @y0: start tone
- * @x1: end offset
- * @y1: end tone
+ * @wave: the #AgsWave
+ * @x0: x start offset
+ * @x1: x end offset
  *
  * Remove buffers within region of selection.
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */ 
 void
 ags_wave_remove_region_from_selection(AgsWave *wave,
 				      guint64 x0, guint64 x1)
 {
   AgsBuffer *buffer;
-  
-  GList *region;
 
+  GList *region;
+  GList *list;
+  
+  pthread_mutex_t *wave_mutex;
+
+  if(!AGS_IS_WAVE(wave)){
+    return;
+  }
+
+  /* get wave mutex */
+  pthread_mutex_lock(ags_wave_get_class_mutex());
+  
+  wave_mutex = wave->obj_mutex;
+  
+  pthread_mutex_unlock(ags_wave_get_class_mutex());
+
+  /* find region */
   region = ags_wave_find_region(wave,
-				x0,
-				x1,
+				x0, y0,
+				x1, y1,
 				TRUE);
 
-  while(region != NULL){
-    buffer = AGS_BUFFER(region->data);
-    buffer->flags &= (~AGS_BUFFER_IS_SELECTED);
+  list = region;
+  
+  while(list != NULL){
+    ags_buffer_unset_flags(list->data,
+			   AGS_BUFFER_IS_SELECTED);
 
-    wave->selection = g_list_remove(wave->selection, buffer);
-    g_object_unref(G_OBJECT(buffer));
+    /* remove */
+    pthread_mutex_lock(wave_mutex);
 
-    region = region->next;
+    wave->selection = g_list_remove(wave->selection,
+				    list->data);
+
+    pthread_mutex_unlock(wave_mutex);
+
+    g_object_unref(list->data);
+
+    /* iterate */
+    list = list->next;
   }
 
   g_list_free(region);
 }
 
 /**
+ * ags_wave_add_all_to_selection:
+ * @wave: the #AgsWave
+ *
+ * Select all buffer to selection.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_wave_add_all_to_selection(AgsWave *wave)
+{
+  GList *list;
+  
+  pthread_mutex_t *wave_mutex;
+
+  if(!AGS_IS_WAVE(wave)){
+    return;
+  }
+
+  /* get wave mutex */
+  pthread_mutex_lock(ags_wave_get_class_mutex());
+  
+  wave_mutex = wave->obj_mutex;
+  
+  pthread_mutex_unlock(ags_wave_get_class_mutex());
+
+  /* select all */
+  pthread_mutex_lock(wave_mutex);
+
+  list = wave->buffer;
+
+  while(list != NULL){
+    ags_wave_add_buffer(wave,
+			list->data, TRUE);
+    
+    list = list->next;
+  }
+
+  pthread_mutex_unlock(wave_mutex);
+}
+
+/**
  * ags_wave_copy_selection:
- * @wave: an #AgsWave
+ * @wave: the #AgsWave
  *
  * Copy selection to clipboard.
  *
  * Returns: the selection as XML.
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 xmlNode*
 ags_wave_copy_selection(AgsWave *wave)
@@ -1444,9 +1592,20 @@ ags_wave_copy_selection(AgsWave *wave)
   
   guint64 x_boundary, y_boundary;
 
-  selection = wave->selection;
+  if(!AGS_IS_WAVE(wave)){
+    return;
+  }
+
+  /* get wave mutex */
+  pthread_mutex_lock(ags_wave_get_class_mutex());
+  
+  wave_mutex = wave->obj_mutex;
+  
+  pthread_mutex_unlock(ags_wave_get_class_mutex());
 
   /* create root node */
+  pthread_mutex_lock(wave_mutex);
+
   wave_node = xmlNewNode(NULL,
 			 BAD_CAST "wave");
 
@@ -1502,7 +1661,9 @@ ags_wave_copy_selection(AgsWave *wave)
 	     BAD_CAST (str));
   
   /* timestamp */
-  if(wave->timestamp != NULL){
+  timestamp = wave->timestamp;
+
+  if(timestamp != NULL){
     timestamp_node = xmlNewNode(NULL,
 				BAD_CAST "timestamp");
     xmlAddChild(wave_node,
@@ -1510,7 +1671,7 @@ ags_wave_copy_selection(AgsWave *wave)
 
     xmlNewProp(timestamp_node,
 	       BAD_CAST "offset",
-	       BAD_CAST (g_strdup_printf("%u", AGS_TIMESTAMP(wave->timestamp)->timer.ags_offset.offset)));
+	       BAD_CAST (g_strdup_printf("%u", ags_timestamp_get_ags_offset(timestamp))));
   }
   
   /* selection */
@@ -1628,46 +1789,64 @@ ags_wave_copy_selection(AgsWave *wave)
     selection = selection->next;
   }
 
+  pthread_mutex_unlock(wave_mutex);
+
   xmlNewProp(wave_node,
 	     BAD_CAST "x-boundary",
 	     BAD_CAST (g_strdup_printf("%u", x_boundary)));
 
   return(wave_node);
-
-  return(NULL);
 }
 
 /**
  * ags_wave_cut_selection:
- * @wave: an #AgsWave
+ * @wave: the #AgsWave
  *
  * Cut selection to clipboard.
  *
- * Returns: the selection as XML.
+ * Returns: the selection as xmlNode
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 xmlNode*
 ags_wave_cut_selection(AgsWave *wave)
 {
-  xmlNode* wave_node;
-
-  GList *selection;
+  xmlNode *wave_node;
   
+  GList *selection, *buffer;
+  
+  pthread_mutex_t *wave_mutex;
+
+  if(!AGS_IS_WAVE(wave)){
+    return;
+  }
+
+  /* get wave mutex */
+  pthread_mutex_lock(ags_wave_get_class_mutex());
+  
+  wave_mutex = wave->obj_mutex;
+  
+  pthread_mutex_unlock(ags_wave_get_class_mutex());
+
+  /* copy selection */
   wave_node = ags_wave_copy_selection(wave);
+
+  /* cut */
+  pthread_mutex_lock(wave_mutex);
 
   selection = wave->selection;
 
   while(selection != NULL){
     wave->buffer = g_list_remove(wave->buffer,
 				 selection->data);
-    
-    AGS_BUFFER(selection->data)->flags &= (~AGS_BUFFER_IS_SELECTED);
     g_object_unref(selection->data);
 
     selection = selection->next;
   }
 
+  pthread_mutex_unlock(wave_mutex);
+
+  /* free selection */
   ags_wave_free_selection(wave);
 
   return(wave_node);
@@ -1675,7 +1854,7 @@ ags_wave_cut_selection(AgsWave *wave)
 
 /**
  * ags_wave_insert_native_level_from_clipboard:
- * @wave: an #AgsWave
+ * @wave: the #AgsWave
  * @wave_node: the clipboard XML data
  * @version: clipboard version
  * @x_boundary: region start offset
@@ -1688,7 +1867,7 @@ ags_wave_cut_selection(AgsWave *wave)
  *
  * Paste previously copied buffers. 
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 void
 ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
@@ -1698,6 +1877,8 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 					    gdouble delay, guint attack,
 					    gboolean match_channel, gboolean do_replace)
 {
+  guint current_audio_channel;
+  
   gboolean match_timestamp;
   
   auto void ags_wave_insert_native_level_from_clipboard_version_1_4_0();
@@ -1705,6 +1886,8 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
   void ags_wave_insert_native_level_from_clipboard_version_1_4_0()
   {
     AgsBuffer *buffer;
+
+    AgsTimestamp *timestamp;
 
     xmlNode *node;
 
@@ -1961,9 +2144,14 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 
 	    continue;
 	  }
-	  
+
+	  /* add buffer */
+	  g_object_get(wave,
+		       "timestamp", &timestamp,
+		       NULL);
+
 	  if(!match_timestamp ||
-	     x_val < wave->timestamp->timer.ags_offset.offset + AGS_WAVE_DEFAULT_OFFSET){
+	     x_val < ags_timestamp_get_ags_offset(timestamp) + AGS_WAVE_DEFAULT_OFFSET){
 	    /* find first */
 	    buffer = ags_wave_find_point(wave,
 					 x_val,
@@ -2086,11 +2274,15 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 		 version,
 		 6)){
     /* changes contain only optional informations */
+    g_object_get(wave,
+		 "audio-channel", &current_audio_channel,
+		 NULL);
+
     if(match_channel &&
-       wave->audio_channel != g_ascii_strtoull(xmlGetProp(root_node,
-							  "audio-channel"),
-						   NULL,
-						   10)){
+       current_audio_channel != g_ascii_strtoull(xmlGetProp(root_node,
+							    "audio-channel"),
+						 NULL,
+						 10)){
       return;
     }
     
@@ -2100,7 +2292,7 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 
 /**
  * ags_wave_insert_from_clipboard:
- * @wave: an #AgsWave
+ * @wave: the #AgsWave
  * @wave_node: the clipboard XML data
  * @reset_x_offset: if %TRUE @x_offset used as cursor
  * @x_offset: region start cursor offset
@@ -2109,7 +2301,7 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
  *
  * Paste previously copied buffers. 
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 void
 ags_wave_insert_from_clipboard(AgsWave *wave,
@@ -2126,7 +2318,7 @@ ags_wave_insert_from_clipboard(AgsWave *wave,
 
 /**
  * ags_wave_insert_from_clipboard_extended:
- * @wave: an #AgsWave
+ * @wave: the #AgsWave
  * @wave_node: the clipboard XML data
  * @reset_x_offset: if %TRUE @x_offset used as cursor
  * @x_offset: region start cursor offset
@@ -2137,7 +2329,7 @@ ags_wave_insert_from_clipboard(AgsWave *wave,
  * 
  * Paste previously copied buffers. 
  * 
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 void
 ags_wave_insert_from_clipboard_extended(AgsWave *wave,
@@ -2148,6 +2340,10 @@ ags_wave_insert_from_clipboard_extended(AgsWave *wave,
 {
   char *program, *version, *type, *format;
   char *x_boundary;
+
+  if(!AGS_IS_WAVE(wave)){
+    return;
+  }
 
   while(wave_node != NULL){
     if(wave_node->type == XML_ELEMENT_NODE && !xmlStrncmp("wave", wave_node->name, 9)){
@@ -2185,11 +2381,11 @@ ags_wave_insert_from_clipboard_extended(AgsWave *wave,
  * @audio: the assigned #AgsAudio
  * @audio_channel: the audio channel to be used
  *
- * Creates a #AgsWave, assigned to @audio_channel.
+ * Creates a new instance of #AgsWave.
  *
  * Returns: a new #AgsWave
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 AgsWave*
 ags_wave_new(GObject *audio,

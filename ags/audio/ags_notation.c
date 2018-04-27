@@ -1123,6 +1123,14 @@ ags_notation_find_region(AgsNotation *notation,
   
   pthread_mutex_unlock(ags_notation_get_class_mutex());
 
+  if(x0 > x1){
+    guint tmp;
+
+    tmp = x1;
+    x1 = x0;
+    x0 = x1;
+  }
+
   if(y0 > y1){
     gdouble tmp_y;
 
@@ -1354,7 +1362,7 @@ ags_notation_remove_point_from_selection(AgsNotation *notation,
  * @y1: y end tone
  * @replace_current_selection: if %TRUE selection is replaced
  *
- * Add note within region of selection.
+ * Add note within region to selection.
  *
  * Since: 2.0.0
  */

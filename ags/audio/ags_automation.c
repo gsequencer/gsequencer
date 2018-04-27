@@ -1625,6 +1625,14 @@ ags_automation_find_region(AgsAutomation *automation,
   
   pthread_mutex_unlock(ags_automation_get_class_mutex());
 
+  if(x0 > x1){
+    guint tmp;
+
+    tmp = x1;
+    x1 = x0;
+    x0 = x1;
+  }
+
   if(y0 > y1){
     gdouble tmp_y;
 
