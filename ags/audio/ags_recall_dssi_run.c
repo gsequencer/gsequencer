@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,8 +43,6 @@ void ags_recall_dssi_run_class_init(AgsRecallDssiRunClass *recall_dssi_run_class
 void ags_recall_dssi_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_dssi_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_recall_dssi_run_init(AgsRecallDssiRun *recall_dssi_run);
-void ags_recall_dssi_run_connect(AgsConnectable *connectable);
-void ags_recall_dssi_run_disconnect(AgsConnectable *connectable);
 void ags_recall_dssi_run_finalize(GObject *gobject);
 
 void ags_recall_dssi_run_run_init_pre(AgsRecall *recall);
@@ -131,14 +129,10 @@ ags_recall_dssi_run_class_init(AgsRecallDssiRunClass *recall_dssi_run)
   recall->run_pre = ags_recall_dssi_run_run_pre;
 }
 
-
 void
 ags_recall_dssi_run_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_recall_dssi_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_recall_dssi_run_connect;
-  connectable->disconnect = ags_recall_dssi_run_disconnect;
 }
 
 void
@@ -150,9 +144,9 @@ ags_recall_dssi_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_recall_dssi_run_init(AgsRecallDssiRun *recall_dssi_run)
 {
-  recall_dssi_run->audio_channels = 0;
-  
   recall_dssi_run->ladspa_handle = NULL;
+
+  recall_dssi_run->audio_channels = 0;
 
   recall_dssi_run->input = NULL;
   recall_dssi_run->output = NULL;
@@ -175,18 +169,6 @@ ags_recall_dssi_run_init(AgsRecallDssiRun *recall_dssi_run)
 
   recall_dssi_run->note = NULL;
   recall_dssi_run->route_dssi_audio_run = NULL;
-}
-
-void
-ags_recall_dssi_run_connect(AgsConnectable *connectable)
-{
-  ags_recall_dssi_run_parent_connectable_interface->connect(connectable);
-}
-
-void
-ags_recall_dssi_run_disconnect(AgsConnectable *connectable)
-{
-  ags_recall_dssi_run_parent_connectable_interface->disconnect(connectable);
 }
 
 void
@@ -223,7 +205,7 @@ ags_recall_dssi_run_finalize(GObject *gobject)
   g_list_free_full(recall_dssi_run->note,
 		   g_object_unref);
   
-  /* call parent */
+   /* call parent */
   G_OBJECT_CLASS(ags_recall_dssi_run_parent_class)->finalize(gobject);
 }
 
@@ -231,27 +213,46 @@ void
 ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
 {
   AgsRecallDssi *recall_dssi;
+  AgsRecallChannelRun *recall_channel_run;
+  AgsRecallRecycling *recall_recycling;
   AgsRecallDssiRun *recall_dssi_run;
   AgsAudioSignal *audio_signal;
 
+  guint output_lines, input_lines;
+  guint samplerate;
+  guint buffer_size;
   unsigned long port_count;
-  unsigned long samplerate;
-  unsigned long buffer_size;
   unsigned long i, i_stop;
-
+  
   /* call parent */
   AGS_RECALL_CLASS(ags_recall_dssi_run_parent_class)->run_init_pre(recall);
 
   recall_dssi_run = AGS_RECALL_DSSI_RUN(recall);
-  recall_dssi = AGS_RECALL_DSSI(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
+
+  g_object_get(recall,
+	       "parent", &recal_recycling,
+	       NULL);
+
+  g_object_get(recall_recycling,
+	       "parent", &recal_channel_run,
+	       NULL);
+
+  g_object_get(recall_channel_run,
+	       "recall-channel", &recall_dssi,
+	       NULL);
   
   /* set up buffer */
-  audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall_dssi_run)->source;
-  
-  /* set up buffer */ 
-  samplerate = audio_signal->samplerate;
-  buffer_size = audio_signal->buffer_size;
+  g_object_get(recall_dssi_run,
+	       "source", &audio_signal,
+	       NULL);
 
+  /* set up buffer */
+  g_object_get(audio_signal,
+	       "samplerate", &samplerate,
+	       "buffer-size", &buffer_size,
+	       NULL);
+
+  /*  */
   if(recall_dssi->input_lines > 0){
     recall_dssi_run->input = (LADSPA_Data *) malloc(recall_dssi->input_lines *
 						    buffer_size *
@@ -342,11 +343,28 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
   guint copy_mode_in, copy_mode_out;
   unsigned long buffer_size;
   unsigned long i, i_stop;
-  
-  /* call parent */
-  AGS_RECALL_CLASS(ags_recall_dssi_run_parent_class)->run_pre(recall);
 
-  if(recall->rt_safe &&
+  void (*parent_class_run_pre)(AgsRecall *recall);
+
+  pthread_mutex_t *recall_mutex;
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  parent_class_run_pre = AGS_RECALL_CLASS(ags_recall_dssi_run_parent_class)->run_pre;
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* call parent */
+  parent_class_run_pre(recall);
+
+  if(ags_recall_global_get_rt_safe()){
+    return;
+  }
+
+  &&
      recall->recall_id->recycling_context->parent != NULL &&
      AGS_RECALL_AUDIO_SIGNAL(recall)->source->note == NULL){
     return;

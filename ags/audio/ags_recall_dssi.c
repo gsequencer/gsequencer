@@ -900,13 +900,13 @@ ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
 
 /**
  * ags_recall_dssi_find:
- * @recall: a #GList containing #AgsRecall
+ * @recall: the #GList-struct containing #AgsRecall
  * @filename: plugin filename
  * @effect: effect's name
  *
  * Retrieve DSSI recall.
  *
- * Returns: Next match.
+ * Returns: Next matching #GList-struct or %NULL
  * 
  * Since: 2.0.0
  */
@@ -914,12 +914,26 @@ GList*
 ags_recall_dssi_find(GList *recall,
 		     gchar *filename, gchar *effect)
 {
+  gboolean success;
+  
+  pthread_mutex_t *recall_mutex;
+
   while(recall != NULL){
     if(AGS_IS_RECALL_DSSI(recall->data)){
-      if(!g_strcmp0(AGS_RECALL_DSSI(recall->data)->filename,
-		    filename) &&
-	 !g_strcmp0(AGS_RECALL_DSSI(recall->data)->effect,
-		    effect)){
+      /* get recall mutex */
+      pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+      recall_mutex = AGS_RECALL(recall->data)->obj_mutex;
+  
+      pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+      /* check filename and effect */
+      success = (!g_strcmp0(AGS_RECALL(recall->data)->filename,
+			    filename) &&
+		 !g_strcmp0(AGS_RECALL(recall->data)->effect,
+			    effect)) ? TRUE: FALSE;
+      
+      if(success){
 	return(recall);
       }
     }
@@ -947,23 +961,26 @@ AgsRecallDssi*
 ags_recall_dssi_new(AgsChannel *source,
 		    gchar *filename,
 		    gchar *effect,
-		    unsigned long index)
+		    guint effect_index)
 {
-  GObject *soundcard;
   AgsRecallDssi *recall_dssi;
 
+  GObject *output_soundcard;
+
+  output_soundcard = NULL;
+
   if(source != NULL){
-    soundcard = (GObject *) source->soundcard;
-  }else{
-    soundcard = NULL;
+    g_object_get(source,
+		 "output-soundcard", &output_soundcard,
+		 NULL);
   }
 
   recall_dssi = (AgsRecallDssi *) g_object_new(AGS_TYPE_RECALL_DSSI,
-					       "soundcard", soundcard,
+					       "output-soundcard", output_soundcard,
 					       "source", source,
 					       "filename", filename,
 					       "effect", effect,
-					       "index", index,
+					       "effect-index", effect_index,
 					       NULL);
 
   return(recall_dssi);

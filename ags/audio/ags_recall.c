@@ -179,9 +179,10 @@ static guint recall_signals[LAST_SIGNAL];
 static pthread_mutex_t ags_recall_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static gboolean ags_recall_global_omit_event = TRUE;
+static gboolean ags_recall_global_rt_safe = FALSE;
 
 GType
-ags_recall_get_type (void)
+ags_recall_get_type(void)
 {
   static GType ags_type_recall = 0;
 
@@ -2264,6 +2265,21 @@ pthread_mutex_t*
 ags_recall_get_class_mutex()
 {
   return(&ags_recall_class_mutex);
+}
+
+/**
+ * ags_recall_global_get_rt_safe:
+ * 
+ * Get global config value rt-safe.
+ *
+ * Returns: if %TRUE does rt-safe strategy, else not
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_global_get_rt_safe()
+{
+  return(ags_recall_global_rt_safe);
 }
 
 /**
