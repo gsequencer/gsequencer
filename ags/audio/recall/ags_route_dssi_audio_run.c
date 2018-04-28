@@ -189,6 +189,7 @@ ags_route_dssi_audio_run_class_init(AgsRouteDssiAudioRunClass *route_dssi_audio_
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
+
   GParamSpec *param_spec;
 
   ags_route_dssi_audio_run_parent_class = g_type_class_peek_parent(route_dssi_audio_run);
