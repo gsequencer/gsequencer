@@ -36,12 +36,6 @@
 typedef struct _AgsRecallID AgsRecallID;
 typedef struct _AgsRecallIDClass AgsRecallIDClass;
 
-typedef enum{
-  AGS_RECALL_ID_CONNECTED           = 1,
-  AGS_RECALL_ID_CHAINED_TO_OUTPUT   = 1 <<  1,
-  AGS_RECALL_ID_CHAINED_TO_INPUT    = 1 <<  2,
-}AgsRecallIDFlags;
-
 struct _AgsRecallID
 {
   GObject object;
@@ -72,12 +66,14 @@ void ags_recall_id_set_sound_scope(AgsRecallID *recall_id, gint sound_scope);
 gboolean ags_recall_id_check_sound_scope(AgsRecallID *recall_id, gint sound_scope);
 
 /* staging flags */
+gboolean ags_recall_id_test_staging_flags(AgsRecallID *recall_id, guint staging_flags);
 void ags_recall_id_set_staging_flags(AgsRecallID *recall_id, guint staging_flags);
 void ags_recall_id_unset_staging_flags(AgsRecallID *recall_id, guint staging_flags);
 
 gboolean ags_recall_id_check_staging_flags(AgsRecallID *recall_id, guint staging_flags);
 
 /* state flags */
+gboolean ags_recall_id_test_state_flags(AgsRecallID *recall_id, guint state_flags);
 void ags_recall_id_set_state_flags(AgsRecallID *recall_id, guint state_flags);
 void ags_recall_id_unset_state_flags(AgsRecallID *recall_id, guint state_flags);
 

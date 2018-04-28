@@ -89,6 +89,7 @@ void
 ags_recall_id_class_init(AgsRecallIDClass *recall_id)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_recall_id_parent_class = g_type_class_peek_parent(recall_id);
@@ -160,7 +161,16 @@ ags_recall_id_set_property(GObject *gobject,
 {
   AgsRecallID *recall_id;
 
+  pthread_mutex_t *recall_id_mutex;
+
   recall_id = AGS_RECALL_ID(gobject);
+
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
 
   switch(prop_id){
   case PROP_RECYCLING_CONTEXT:
@@ -169,7 +179,11 @@ ags_recall_id_set_property(GObject *gobject,
 
       recycling_context = g_value_get_object(value);
 
+      pthread_mutex_lock(recall_id_mutex);
+      
       if(recall_id->recycling_context == recycling_context){
+	pthread_mutex_unlock(recall_id_mutex);
+
 	return;
       }
 
@@ -182,6 +196,8 @@ ags_recall_id_set_property(GObject *gobject,
       }
 
       recall_id->recycling_context = recycling_context;
+
+      pthread_mutex_unlock(recall_id_mutex);
     }
     break;
   default:
@@ -203,7 +219,11 @@ ags_recall_id_get_property(GObject *gobject,
   switch(prop_id){
   case PROP_RECYCLING_CONTEXT:
     {
+      pthread_mutex_lock(recall_id_mutex);
+
       g_value_set_object(value, recall_id->recycling_context);
+
+      pthread_mutex_unlock(recall_id_mutex);
     }
     break;
   default:
@@ -235,6 +255,12 @@ ags_recall_id_finalize(GObject *gobject)
   AgsRecallID *recall_id;
 
   recall_id = AGS_RECALL_ID(gobject);
+
+  pthread_mutex_destroy(recall_id->obj_mutex);
+  free(recall_id->obj_mutex);
+
+  pthread_mutexattr_destroy(recall_id->obj_mutexattr);
+  free(recall_id->obj_mutexattr);
   
   if(recall_id->recycling_context != NULL){
     g_object_unref(recall_id->recycling_context);
@@ -271,13 +297,27 @@ ags_recall_id_get_class_mutex()
 void
 ags_recall_id_set_sound_scope(AgsRecallID *recall_id, gint sound_scope)
 {
+  pthread_mutex_t *recall_id_mutex;
+
   if(!AGS_IS_RECALL_ID(recall_id) ||
      ags_recall_id_check_scope(recall_id,
 			       -1)){
     return;
   }
 
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* set sound scope */
+  pthread_mutex_lock(recall_id_mutex);
+
   recall_id->sound_scope = sound_scope;
+
+  pthread_mutex_unlock(recall_id_mutex);
 }
 
 /**
@@ -294,12 +334,30 @@ ags_recall_id_set_sound_scope(AgsRecallID *recall_id, gint sound_scope)
 gboolean
 ags_recall_id_check_sound_scope(AgsRecallID *recall_id, gint sound_scope)
 {
+  gint recall_id_sound_scope;
+  
+  pthread_mutex_t *recall_id_mutex;
+
   if(!AGS_IS_RECALL_ID(recall_id)){
     return(FALSE);
   }
+
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* get sound scope */
+  pthread_mutex_lock(recall_id_mutex);
+
+  recall_id_sound_scope = recall_id->sound_scope;
+
+  pthread_mutex_unlock(recall_id_mutex);
   
   if(sound_scope < 0){
-    switch(recall_id->sound_scope){
+    switch(recall_id_sound_scope){
     case AGS_SOUND_SCOPE_PLAYBACK:
     case AGS_SOUND_SCOPE_NOTATION:
     case AGS_SOUND_SCOPE_SEQUENCER:
@@ -311,12 +369,52 @@ ags_recall_id_check_sound_scope(AgsRecallID *recall_id, gint sound_scope)
     }
   }else{
     if(sound_scope < AGS_SOUND_SCOPE_LAST &&
-       sound_scope == recall_id->sound_scope){
+       sound_scope == recall_id_sound_scope){
       return(TRUE);
     }else{
       return(FALSE);
     }
   }
+}
+
+/**
+ * ags_recall_id_test_staging_flags:
+ * @recall_id: the #AgsRecallID
+ * @staging_flags: the staging flags
+ *
+ * Test @staging_flags to be set on @recall_id.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_id_test_staging_flags(AgsRecallID *recall_id,
+				 guint staging_flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *recall_id_mutex;
+
+  if(!AGS_IS_RECALL_ID(recall_id)){
+    return(FALSE);
+  }
+
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(recall_id_mutex);
+
+  retval = (staging_flags & (recall_id->staging_flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(recall_id_mutex);
+
+  return(retval);
 }
 
 /**
@@ -331,11 +429,25 @@ ags_recall_id_check_sound_scope(AgsRecallID *recall_id, gint sound_scope)
 void
 ags_recall_id_set_staging_flags(AgsRecallID *recall_id, guint staging_flags)
 {
+  pthread_mutex_t *recall_id_mutex;
+
   if(!AGS_IS_RECALL_ID(recall_id)){
     return;
   }
 
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* set staging flags */
+  pthread_mutex_lock(recall_id_mutex);
+
   recall_id->staging_flags |= staging_flags;
+
+  pthread_mutex_unlock(recall_id_mutex);
 }
 
 /**
@@ -350,11 +462,25 @@ ags_recall_id_set_staging_flags(AgsRecallID *recall_id, guint staging_flags)
 void
 ags_recall_id_unset_staging_flags(AgsRecallID *recall_id, guint staging_flags)
 {
+  pthread_mutex_t *recall_id_mutex;
+
   if(!AGS_IS_RECALL_ID(recall_id)){
     return;
   }
 
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* unset staging flags */
+  pthread_mutex_lock(recall_id_mutex);
+
   recall_id->staging_flags &= (~staging_flags);
+
+  pthread_mutex_unlock(recall_id_mutex);
 }
 
 /**
@@ -371,86 +497,145 @@ ags_recall_id_unset_staging_flags(AgsRecallID *recall_id, guint staging_flags)
 gboolean
 ags_recall_id_check_staging_flags(AgsRecallID *recall_id, guint staging_flags)
 {
+  guint recall_staging_flags;
+  
+  pthread_mutex_t *recall_mutex;
+
   if(!AGS_IS_RECALL_ID(recall_id)){
     return(FALSE);
   }
 
-  if((AGS_SOUND_STAGING_CHECK_RT & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_CHECK_RT & (recall_id->staging_flags)) == 0){
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* get staging flags */
+  pthread_mutex_lock(recall_id_mutex);
+
+  recall_id_staging_flags = recall_id->staging_flags;
+
+  pthread_mutex_unlock(recall_id_mutex);
+
+  /* check staging flags */
+  if((AGS_SOUND_STAGING_CHECK_RT_DATA & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_CHECK_RT_DATA & (recall_id_staging_flags)) == 0){
     return(FALSE);
   }
 
   if((AGS_SOUND_STAGING_RUN_INIT_PRE & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_RUN_INIT_PRE & (recall_id->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_RUN_INIT_PRE & (recall_id_staging_flags)) == 0){
     return(FALSE);
   }
 
   if((AGS_SOUND_STAGING_RUN_INIT_INTER & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_RUN_INIT_INTER & (recall_id->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_RUN_INIT_INTER & (recall_id_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_RUN_INIT_POST & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_RUN_INIT_POST & (recall_id->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_RUN_INIT_POST & (recall_id_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (recall_id->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (recall_id_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_AUTOMATE & (recall_id->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_AUTOMATE & (recall_id_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_RUN_PRE & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_RUN_PRE & (recall_id->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_RUN_PRE & (recall_id_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_RUN_INTER & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_RUN_INTER & (recall_id->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_RUN_INTER & (recall_id_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_RUN_POST & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_RUN_POST & (recall_id->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_RUN_POST & (recall_id_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_DO_FEEDBACK & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_DO_FEEDBACK & (recall_id->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_DO_FEEDBACK & (recall_id_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (recall_id->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (recall_id_staging_flags)) == 0){
     return(FALSE);
   }
 
   if((AGS_SOUND_STAGING_FINI & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_FINI & (recall_id->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_FINI & (recall_id_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_CANCEL & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_CANCEL & (recall_id->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_CANCEL & (recall_id_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_DONE & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_DONE & (recall_id->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_DONE & (recall_id_staging_flags)) == 0){
     return(FALSE);
   }
   
   if((AGS_SOUND_STAGING_REMOVE & (staging_flags)) != 0 &&
-     (AGS_SOUND_STAGING_REMOVE & (recall_id->staging_flags)) == 0){
+     (AGS_SOUND_STAGING_REMOVE & (recall_id_staging_flags)) == 0){
     return(FALSE);
   }
   
   return(TRUE);
+}
+
+/**
+ * ags_recall_id_test_state_flags:
+ * @recall_id: the #AgsRecallID
+ * @state_flags: the state flags
+ *
+ * Test @state_flags to be set on @recall_id.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_id_test_state_flags(AgsRecallID *recall_id,
+			       guint state_flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *recall_id_mutex;
+
+  if(!AGS_IS_RECALL_ID(recall_id)){
+    return(FALSE);
+  }
+
+  /* get recall_id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(recall_id_mutex);
+
+  retval = (state_flags & (recall_id->state_flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(recall_id_mutex);
+
+  return(retval);
 }
 
 /**
@@ -465,11 +650,25 @@ ags_recall_id_check_staging_flags(AgsRecallID *recall_id, guint staging_flags)
 void
 ags_recall_id_set_state_flags(AgsRecallID *recall_id, guint state_flags)
 {
+  pthread_mutex_t *recall_id_mutex;
+
   if(!AGS_IS_RECALL_ID(recall_id)){
     return;
   }
 
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* set state flags */
+  pthread_mutex_lock(recall_id_mutex);
+
   recall_id->state_flags |= state_flags;
+
+  pthread_mutex_unlock(recall_id_mutex);
 }
 
 /**
@@ -484,11 +683,25 @@ ags_recall_id_set_state_flags(AgsRecallID *recall_id, guint state_flags)
 void
 ags_recall_id_unset_state_flags(AgsRecallID *recall_id, guint state_flags)
 {
+  pthread_mutex_t *recall_id_mutex;
+
   if(!AGS_IS_RECALL_ID(recall_id)){
     return;
   }
 
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* unset state flags */
+  pthread_mutex_lock(recall_id_mutex);
+
   recall_id->state_flags &= (~state_flags);
+
+  pthread_mutex_unlock(recall_id_mutex);
 }
 
 /**
@@ -505,27 +718,46 @@ ags_recall_id_unset_state_flags(AgsRecallID *recall_id, guint state_flags)
 gboolean
 ags_recall_id_check_state_flags(AgsRecallID *recall_id, guint state_flags)
 {
+  guint recall_id_state_flags;
+  
+  pthread_mutex_t *recall_id_mutex;
+
   if(!AGS_IS_RECALL_ID(recall_id)){
     return(FALSE);
   }
+  
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
 
+  /* get state flags */
+  pthread_mutex_lock(recall_id_mutex);
+
+  recall_id_state_flags = recall_id->state_flags;
+  
+  pthread_mutex_unlock(recall_id_mutex);
+
+  /* check state flags */
   if((AGS_SOUND_STATE_IS_WAITING & (state_flags)) != 0 &&
-     (AGS_SOUND_STATE_IS_WAITING & (recall_id->state_flags)) == 0){
+     (AGS_SOUND_STATE_IS_WAITING & (recall_id_state_flags)) == 0){
     return(FALSE);
   }
 
   if((AGS_SOUND_STATE_IS_ACTIVE & (state_flags)) != 0 &&
-     (AGS_SOUND_STATE_IS_ACTIVE & (recall_id->state_flags)) == 0){
+     (AGS_SOUND_STATE_IS_ACTIVE & (recall_id_state_flags)) == 0){
     return(FALSE);
   }
 
   if((AGS_SOUND_STATE_IS_PROCESSING & (state_flags)) != 0 &&
-     (AGS_SOUND_STATE_IS_PROCESSING & (recall_id->state_flags)) == 0){
+     (AGS_SOUND_STATE_IS_PROCESSING & (recall_id_state_flags)) == 0){
     return(FALSE);
   }
 
   if((AGS_SOUND_STATE_IS_TERMINATING & (state_flags)) != 0 &&
-     (AGS_SOUND_STATE_IS_TERMINATING & (recall_id->state_flags)) == 0){
+     (AGS_SOUND_STATE_IS_TERMINATING & (recall_id_state_flags)) == 0){
     return(FALSE);
   }
   
@@ -547,8 +779,14 @@ AgsRecallID*
 ags_recall_id_find_recycling_context(GList *recall_id,
 				     AgsRecyclingContext *recycling_context)
 {
+  AgsRecyclingContext *current_recycling_context;
+  
   while(recall_id != NULL){
-    if(AGS_RECALL_ID(recall_id->data)->recycling_context == recycling_context){
+    g_object_get(recall_id->data,
+		 "recycling-context", &current_reycling_context,
+		 NULL);
+    
+    if(current_recycling_context == recycling_context){
       return(recall_id->data);
     }
 
@@ -573,12 +811,21 @@ AgsRecallID*
 ags_recall_id_find_parent_recycling_context(GList *recall_id,
 					    AgsRecyclingContext *parent_recycling_context)
 {
-  AgsRecallID *recall_id;
+  AgsRecyclingContext *current_parent_recycling_context, *current_recycling_context;
 
   while(recall_id != NULL){
-    if(AGS_RECALL_ID(recall_id->data)->recycling_context != NULL &&
-       AGS_RECALL_ID(recall_id->data)->recycling_context->parent == parent_recycling_context){
-      return(recall_id);
+    g_object_get(recall_id->data,
+		 "recycling-context", &current_reycling_context,
+		 NULL);
+
+    if(current_recycling_context != NULL){
+      g_object_get(current_reycling_context,
+		   "parent", &current_parent_reycling_context,
+		   NULL);
+      
+      if(current_parent_recycling_context == parent_recycling_context){
+	return(recall_id);
+      }
     }
 
     recall_id = recall_id->next;

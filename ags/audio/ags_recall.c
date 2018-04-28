@@ -2944,7 +2944,7 @@ ags_recall_check_sound_scope(AgsRecall *recall, gint sound_scope)
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
-  /* get ability flags */
+  /* get sound scope */
   pthread_mutex_lock(recall_mutex);
 
   recall_sound_scope = recall->sound_scope;
