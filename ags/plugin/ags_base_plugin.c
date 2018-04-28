@@ -111,6 +111,7 @@ void
 ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
   
   ags_base_plugin_parent_class = g_type_class_peek_parent(base_plugin);

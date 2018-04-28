@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -69,6 +69,7 @@ void ags_returnable_thread_resume(AgsThread *thread);
 enum{
   PROP_0,
   PROP_THREAD_POOL,
+  PROP_SAFE_DATA,
 };
 
 enum{
