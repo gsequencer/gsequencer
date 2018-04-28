@@ -615,8 +615,12 @@ ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
 						       "dssi_descriptor");
 
     if(dlerror() == NULL && dssi_descriptor){
+      pthread_mutex_lock(recall_mutex);
+      
       recall_dssi->plugin_descriptor = 
 	plugin_descriptor = dssi_descriptor((unsigned long) effect_index);
+
+      pthread_mutex_unlock(recall_mutex);
     }
   }
 }

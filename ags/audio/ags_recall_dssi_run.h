@@ -45,7 +45,7 @@ struct _AgsRecallDssiRun
 
   LADSPA_Handle *ladspa_handle;
 
-  unsigned long audio_channels;
+  guint audio_channels;
 
   LADSPA_Data *input;
   LADSPA_Data *output;
@@ -68,6 +68,6 @@ struct _AgsRecallDssiRunClass
 
 GType ags_recall_dssi_run_get_type();
 
-AgsRecallDssiRun* ags_recall_dssi_run_new(AgsAudioSignal *audio_signal);
+AgsRecallDssiRun* ags_recall_dssi_run_new(AgsAudioSignal *source);
 
 #endif /*__AGS_RECALL_DSSI_RUN_H__*/

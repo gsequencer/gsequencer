@@ -49,11 +49,11 @@ struct _AgsRecallDssi
   
   DSSI_Descriptor *plugin_descriptor;
 
-  unsigned long *input_port;
-  unsigned long input_lines;
+  guint *input_port;
+  guint input_lines;
 
-  unsigned long *output_port;
-  unsigned long output_lines;
+  guint *output_port;
+  guint output_lines;
 };
 
 struct _AgsRecallDssiClass
