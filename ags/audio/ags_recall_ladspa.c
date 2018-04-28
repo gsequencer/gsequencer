@@ -574,6 +574,10 @@ ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
   LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_Descriptor *plugin_descriptor;
 
+  if(!AGS_IS_RECALL_LADSPA(recall_ladspa)){
+    return;
+  }
+
   /*  */
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
 							recall_ladspa->filename, recall_ladspa->effect);

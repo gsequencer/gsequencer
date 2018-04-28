@@ -564,6 +564,10 @@ ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
   DSSI_Descriptor_Function dssi_descriptor;
   DSSI_Descriptor *plugin_descriptor;
 
+  if(!AGS_IS_RECALL_DSSI(recall_dssi)){
+    return;
+  }
+
   /*  */
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
 						  recall_dssi->filename, recall_dssi->effect);

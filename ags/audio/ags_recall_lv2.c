@@ -697,8 +697,7 @@ ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
   LV2_Descriptor_Function lv2_descriptor;
   LV2_Descriptor *plugin_descriptor;
 
-  if(recall_lv2 == NULL ||
-     !AGS_RECALL_LV2(recall_lv2)){
+  if(!AGS_IS_RECALL_LV2(recall_lv2)){
     return;
   }
   
