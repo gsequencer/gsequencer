@@ -867,6 +867,111 @@ ags_base_plugin_get_class_mutex()
 }
 
 /**
+ * ags_base_plugin_test_flags:
+ * @base_plugin: the #AgsBasePlugin
+ * @flags: the flags
+ * 
+ * Test @flags to be set on @recall.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_base_plugin_test_flags(AgsBasePlugin *base_plugin, guint flags)
+{
+  gboolean retval;
+  
+  pthread_mutex_t *base_plugin_mutex;
+
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return(FALSE);
+  }
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = base_plugin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* test flags */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  retval = ((flags & (base_plugin->flags)) != 0) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(base_plugin_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_base_plugin_set_flags:
+ * @base_plugin: the #AgsBasePlugin
+ * @flags: the flags
+ *
+ * Set flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_base_plugin_set_flags(AgsBasePlugin *base_plugin, guint flags)
+{
+  pthread_mutex_t *base_plugin_mutex;
+
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return;
+  }
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = base_plugin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  base_plugin->flags |= flags;
+  
+  pthread_mutex_unlock(base_plugin_mutex);
+}
+
+/**
+ * ags_base_plugin_unset_flags:
+ * @base_plugin: the #AgsBasePlugin
+ * @flags: the flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_base_plugin_unset_flags(AgsBasePlugin *base_plugin, guint flags)
+{
+  pthread_mutex_t *base_plugin_mutex;
+
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return;
+  }
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = base_plugin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* unset flags */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  base_plugin->flags &= (~flags);
+  
+  pthread_mutex_unlock(base_plugin_mutex);
+}
+
+/**
  * ags_base_plugin_find_filename:
  * @base_plugin: the #GList-struct containing #AgsBasePlugin
  * @filename: the filename as string

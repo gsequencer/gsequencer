@@ -1400,6 +1400,111 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 }
 
 /**
+ * ags_lv2_plugin_test_flags:
+ * @lv2_plugin: the #AgsLv2Plugin
+ * @flags: the flags
+ * 
+ * Test @flags to be set on @recall.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_lv2_plugin_test_flags(AgsLv2Plugin *lv2_plugin, guint flags)
+{
+  gboolean retval;
+  
+  pthread_mutex_t *base_plugin_mutex;
+
+  if(!AGS_IS_LV2_PLUGIN(lv2_plugin)){
+    return(FALSE);
+  }
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* test flags */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  retval = ((flags & (lv2_plugin->flags)) != 0) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(base_plugin_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_lv2_plugin_set_flags:
+ * @lv2_plugin: the #AgsLv2Plugin
+ * @flags: the flags
+ *
+ * Set flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_lv2_plugin_set_flags(AgsLv2Plugin *lv2_plugin, guint flags)
+{
+  pthread_mutex_t *base_plugin_mutex;
+
+  if(!AGS_IS_LV2_PLUGIN(lv2_plugin)){
+    return;
+  }
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  lv2_plugin->flags |= flags;
+  
+  pthread_mutex_unlock(base_plugin_mutex);
+}
+
+/**
+ * ags_lv2_plugin_unset_flags:
+ * @lv2_plugin: the #AgsLv2Plugin
+ * @flags: the flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_lv2_plugin_unset_flags(AgsLv2Plugin *lv2_plugin, guint flags)
+{
+  pthread_mutex_t *base_plugin_mutex;
+
+  if(!AGS_IS_LV2_PLUGIN(lv2_plugin)){
+    return;
+  }
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* unset flags */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  lv2_plugin->flags &= (~flags);
+  
+  pthread_mutex_unlock(base_plugin_mutex);
+}
+
+/**
  * ags_lv2_plugin_alloc_event_buffer:
  * @buffer_size: the allocated size
  *

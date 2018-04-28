@@ -118,6 +118,10 @@ struct _AgsLv2PluginClass
 
 GType ags_lv2_plugin_get_type(void);
 
+gboolean ags_lv2_plugin_test_flags(AgsLv2Plugin *lv2_plugin, guint flags);
+void ags_lv2_plugin_set_flags(AgsLv2Plugin *lv2_plugin, guint flags);
+void ags_lv2_plugin_unset_flags(AgsLv2Plugin *lv2_plugin, guint flags);
+
 G_DEPRECATED_FOR(ags_lv2_plugin_event_buffer_alloc) void* ags_lv2_plugin_alloc_event_buffer(guint buffer_size);
 G_DEPRECATED_FOR(ags_lv2_plugin_event_buffer_concat) void* ags_lv2_plugin_concat_event_buffer(void *buffer0, ...);
 

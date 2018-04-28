@@ -2324,7 +2324,7 @@ ags_recall_test_flags(AgsRecall *recall, guint flags)
 /**
  * ags_recall_set_flags:
  * @recall: the #AgsRecall
- * @flags: flags
+ * @flags: the flags
  *
  * Set flags.
  * 
@@ -2357,7 +2357,7 @@ ags_recall_set_flags(AgsRecall *recall, guint flags)
 /**
  * ags_recall_unset_flags:
  * @recall: the #AgsRecall
- * @flags: flags
+ * @flags: the flags
  *
  * Unset flags.
  * 

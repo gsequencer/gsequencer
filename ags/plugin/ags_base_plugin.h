@@ -102,6 +102,10 @@ GType ags_base_plugin_get_type(void);
 
 pthread_mutex_t* ags_base_plugin_get_class_mutex();
 
+gboolean ags_base_plugin_test_flags(AgsBasePlugin *base_plugin, guint flags);
+void ags_base_plugin_set_flags(AgsBasePlugin *base_plugin, guint flags);
+void ags_base_plugin_unset_flags(AgsBasePlugin *base_plugin, guint flags);
+
 GList* ags_base_plugin_find_filename(GList *base_plugin, gchar *filename);
 GList* ags_base_plugin_find_effect(GList *base_plugin, gchar *filename, gchar *effect);
 
