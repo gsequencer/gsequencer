@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -157,7 +157,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    *
    * The assigned pname.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("pname",
 				   i18n_pspec("pname of the plugin"),
@@ -173,7 +173,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    *
    * The assigned uri.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("uri",
 				   i18n_pspec("uri of the plugin"),
@@ -189,7 +189,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    *
    * The assigned ui-uri.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("ui-uri",
 				   i18n_pspec("ui-uri of the plugin"),
@@ -205,7 +205,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    *
    * The assigned manifest.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("manifest",
 				   i18n_pspec("manifest of the plugin"),
@@ -221,7 +221,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    *
    * The assigned turtle.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("turtle",
 				   i18n_pspec("turtle of the plugin"),
@@ -258,7 +258,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    *
    * The ::change-program signal creates a new instance of plugin.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   lv2_plugin_signals[CHANGE_PROGRAM] =
     g_signal_new("change-program",
@@ -266,7 +266,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsLv2PluginClass, change_program),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__POINTER_UINT_UINT,
+		 ags_cclosure_marshal_VOID__POINTER_UINT_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_POINTER,
 		 G_TYPE_UINT,
@@ -305,7 +305,16 @@ ags_lv2_plugin_set_property(GObject *gobject,
 {
   AgsLv2Plugin *lv2_plugin;
 
+  pthread_mutex_t *base_plugin_mutex;
+
   lv2_plugin = AGS_LV2_PLUGIN(gobject);
+
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
   switch(prop_id){
   case PROP_PNAME:
@@ -314,7 +323,11 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       pname = (gchar *) g_value_get_string(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       if(lv2_plugin->pname == pname){
+	pthread_mutex_unlock(base_plugin_mutex);
+
 	return;
       }
       
@@ -323,6 +336,8 @@ ags_lv2_plugin_set_property(GObject *gobject,
       }
 
       lv2_plugin->pname = g_strdup(pname);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_URI:
@@ -331,7 +346,11 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       uri = (gchar *) g_value_get_string(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       if(lv2_plugin->uri == uri){
+	pthread_mutex_unlock(base_plugin_mutex);
+
 	return;
       }
       
@@ -340,6 +359,8 @@ ags_lv2_plugin_set_property(GObject *gobject,
       }
 
       lv2_plugin->uri = g_strdup(uri);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_URI:
@@ -348,7 +369,11 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       ui_uri = (gchar *) g_value_get_string(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       if(lv2_plugin->ui_uri == ui_uri){
+	pthread_mutex_unlock(base_plugin_mutex);
+
 	return;
       }
       
@@ -357,6 +382,8 @@ ags_lv2_plugin_set_property(GObject *gobject,
       }
 
       lv2_plugin->ui_uri = g_strdup(ui_uri);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_MANIFEST:
@@ -365,7 +392,11 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       manifest = (AgsTurtle *) g_value_get_object(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       if(lv2_plugin->manifest == manifest){
+	pthread_mutex_unlock(base_plugin_mutex);
+
 	return;
       }
 
@@ -378,6 +409,8 @@ ags_lv2_plugin_set_property(GObject *gobject,
       }
       
       lv2_plugin->manifest = manifest;
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_TURTLE:
@@ -386,7 +419,11 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       turtle = (AgsTurtle *) g_value_get_object(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       if(lv2_plugin->turtle == turtle){
+	pthread_mutex_unlock(base_plugin_mutex);
+
 	return;
       }
 
@@ -399,6 +436,8 @@ ags_lv2_plugin_set_property(GObject *gobject,
       }
       
       lv2_plugin->turtle = turtle;
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   default:
@@ -415,32 +454,61 @@ ags_lv2_plugin_get_property(GObject *gobject,
 {
   AgsLv2Plugin *lv2_plugin;
 
+  pthread_mutex_t *base_plugin_mutex;
+
   lv2_plugin = AGS_LV2_PLUGIN(gobject);
+
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
   switch(prop_id){
   case PROP_PNAME:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       g_value_set_string(value, lv2_plugin->pname);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_URI:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       g_value_set_string(value, lv2_plugin->uri);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_URI:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       g_value_set_string(value, lv2_plugin->ui_uri);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_MANIFEST:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       g_value_set_object(value, lv2_plugin->manifest);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_TURTLE:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       g_value_set_object(value, lv2_plugin->turtle);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   default:
