@@ -21,8 +21,8 @@
 
 #include <ags/libags.h>
 
-#include <ags/plugin/ags_plugin_port.h>
 #include <ags/plugin/ags_ladspa_manager.h>
+#include <ags/plugin/ags_plugin_port.h>
 #include <ags/plugin/ags_ladspa_conversion.h>
 
 #include <ags/audio/ags_port.h>
@@ -45,7 +45,6 @@ void ags_recall_ladspa_init(AgsRecallLadspa *recall_ladspa);
 void ags_recall_ladspa_finalize(GObject *gobject);
 
 void ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port);
-
 void ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
@@ -375,8 +374,6 @@ ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsRecallLadspa *gobject;
   AgsLadspaPlugin *ladspa_plugin;
-  gchar *filename, *effect;
-  unsigned long index;
 
   gobject = AGS_RECALL_LADSPA(plugin);
 
@@ -396,7 +393,9 @@ xmlNode*
 ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 {
   AgsRecallLadspa *recall_ladspa;
+
   xmlNode *node;
+
   gchar *id;
 
   recall_ladspa = AGS_RECALL_LADSPA(plugin);

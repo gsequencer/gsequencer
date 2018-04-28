@@ -2214,8 +2214,6 @@ ags_recall_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   /*  */
-  pthread_mutex_lock(recall_mutex);
-
   id = ags_id_generator_create_uuid();
 
   node = xmlNewNode(NULL,
@@ -2231,6 +2229,8 @@ ags_recall_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 				   "xpath", g_strdup_printf("xpath=//*[@id='%s']", id),
 				   "reference", recall,
 				   NULL));
+
+  pthread_mutex_lock(recall_mutex);
 
   xmlNewProp(node,
 	     "filename",

@@ -72,17 +72,17 @@ struct _AgsRecallLv2
   AgsLv2Plugin *plugin;
   LV2_Descriptor *plugin_descriptor;
 
-  uint32_t *input_port;
-  uint32_t input_lines;
+  guint *input_port;
+  guint input_lines;
 
-  uint32_t *output_port;
-  uint32_t output_lines;
+  guint *output_port;
+  guint output_lines;
 
-  uint32_t event_port;
-  uint32_t atom_port;
+  guint event_port;
+  guint atom_port;
 
-  uint32_t bank;
-  uint32_t program;
+  guint bank;
+  guint program;
 };
 
 struct _AgsRecallLv2Class
@@ -96,7 +96,7 @@ void ags_recall_lv2_load(AgsRecallLv2 *recall_lv2);
 GList* ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2);
 void ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_lv2,
 				    GObject *port,
-				    gpointer port_descriptor);
+				    gpointer plugin_port);
 
 GList* ags_recall_lv2_find(GList *recall,
 			   gchar *filename, gchar *uri);

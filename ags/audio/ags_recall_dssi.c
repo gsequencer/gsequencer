@@ -21,8 +21,8 @@
 
 #include <ags/libags.h>
 
-#include <ags/plugin/ags_plugin_port.h>
 #include <ags/plugin/ags_dssi_manager.h>
+#include <ags/plugin/ags_plugin_port.h>
 #include <ags/plugin/ags_ladspa_conversion.h>
 
 #include <ags/audio/ags_port.h>
@@ -55,7 +55,6 @@ void ags_recall_dssi_get_property(GObject *gobject,
 void ags_recall_dssi_finalize(GObject *gobject);
 
 void ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port);
-
 void ags_recall_dssi_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_recall_dssi_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
@@ -191,9 +190,9 @@ ags_recall_dssi_plugin_interface_init(AgsPluginInterface *plugin)
 {
   ags_recall_dssi_parent_plugin_interface = g_type_interface_peek_parent(plugin);
 
+  plugin->set_ports = ags_recall_dssi_set_ports;
   plugin->read = ags_recall_dssi_read;
   plugin->write = ags_recall_dssi_write;
-  plugin->set_ports = ags_recall_dssi_set_ports;
 }
 
 void
