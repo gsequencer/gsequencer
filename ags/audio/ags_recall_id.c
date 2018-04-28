@@ -214,7 +214,16 @@ ags_recall_id_get_property(GObject *gobject,
 {
   AgsRecallID *recall_id;
 
+  pthread_mutex_t *recall_id_mutex;
+
   recall_id = AGS_RECALL_ID(gobject);
+
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
 
   switch(prop_id){
   case PROP_RECYCLING_CONTEXT:
@@ -497,9 +506,9 @@ ags_recall_id_unset_staging_flags(AgsRecallID *recall_id, guint staging_flags)
 gboolean
 ags_recall_id_check_staging_flags(AgsRecallID *recall_id, guint staging_flags)
 {
-  guint recall_staging_flags;
+  guint recall_id_staging_flags;
   
-  pthread_mutex_t *recall_mutex;
+  pthread_mutex_t *recall_id_mutex;
 
   if(!AGS_IS_RECALL_ID(recall_id)){
     return(FALSE);
@@ -783,7 +792,7 @@ ags_recall_id_find_recycling_context(GList *recall_id,
   
   while(recall_id != NULL){
     g_object_get(recall_id->data,
-		 "recycling-context", &current_reycling_context,
+		 "recycling-context", &current_recycling_context,
 		 NULL);
     
     if(current_recycling_context == recycling_context){
@@ -815,12 +824,12 @@ ags_recall_id_find_parent_recycling_context(GList *recall_id,
 
   while(recall_id != NULL){
     g_object_get(recall_id->data,
-		 "recycling-context", &current_reycling_context,
+		 "recycling-context", &current_recycling_context,
 		 NULL);
 
     if(current_recycling_context != NULL){
-      g_object_get(current_reycling_context,
-		   "parent", &current_parent_reycling_context,
+      g_object_get(current_recycling_context,
+		   "parent", &current_parent_recycling_context,
 		   NULL);
       
       if(current_parent_recycling_context == parent_recycling_context){

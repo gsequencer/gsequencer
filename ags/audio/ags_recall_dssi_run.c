@@ -1066,7 +1066,7 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
 
 	g_free(specifier);
 
-	if(current_port != NULL){
+	if(list != NULL){
 	  for(j = 0; j < j_stop; j++){
 #ifdef AGS_DEBUG
 	    g_message("connecting port[%d]: %d/%d - %f", j, i, port_count, current->port_value.ags_port_ladspa);

@@ -46,11 +46,11 @@ struct _AgsRecallLadspa
 
   LADSPA_Descriptor *plugin_descriptor;
 
-  unsigned long *input_port;
-  unsigned long input_lines;
+  guint *input_port;
+  guint input_lines;
 
-  unsigned long *output_port;
-  unsigned long output_lines;
+  guint *output_port;
+  guint output_lines;
 };
 
 struct _AgsRecallLadspaClass
@@ -64,7 +64,7 @@ void ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa);
 GList* ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa);
 void ags_recall_ladspa_load_conversion(AgsRecallLadspa *recall_ladspa,
 				       GObject *port,
-				       gpointer port_descriptor);
+				       gpointer plugin_port);
 
 GList* ags_recall_ladspa_find(GList *recall,
 			      gchar *filename, gchar *effect);

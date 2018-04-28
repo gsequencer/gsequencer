@@ -67,9 +67,11 @@ enum{
   PROP_EFFECT,
   PROP_PLUGIN_PORT,
   PROP_EFFECT_INDEX,
+  PROP_PLUGIN_SO,
   PROP_UI_FILENAME,
   PROP_UI_EFFECT,
   PROP_UI_EFFECT_INDEX,  
+  PROP_UI_PLUGIN_SO,
   PROP_UI_PLUGIN,
 };
 
@@ -164,7 +166,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
    */
   param_spec = g_param_spec_pointer("plugin-port",
 				    i18n_pspec("plugin port of base plugin"),
-				    i18n_pspec("The plugin _port of base plugin"),
+				    i18n_pspec("The plugin port of base plugin"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PLUGIN_PORT,
@@ -188,6 +190,21 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 				  PROP_EFFECT_INDEX,
 				  param_spec);
 
+  /**
+   * AgsBasePlugin:plugin-so:
+   *
+   * The assigned plugin.so
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("plugin-so",
+				    i18n_pspec("plugin.so"),
+				    i18n_pspec("The plugin.so"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLUGIN_SO,
+				  param_spec);
+  
   /**
    * AgsBasePlugin:ui-filename:
    *
@@ -238,6 +255,21 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 				  PROP_UI_EFFECT_INDEX,
 				  param_spec);
 
+  /**
+   * AgsBasePlugin:ui-plugin-so:
+   *
+   * The assigned ui_plugin.so
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("ui-plugin-so",
+				    i18n_pspec("ui_plugin.so"),
+				    i18n_pspec("The ui_plugin.so"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_UI_PLUGIN_SO,
+				  param_spec);
+  
   /**
    * AgsBasePlugin:ui-plugin:
    *
@@ -533,6 +565,15 @@ ags_base_plugin_set_property(GObject *gobject,
       pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
+  case PROP_PLUGIN_SO:
+    {
+      pthread_mutex_lock(base_plugin_mutex);
+
+      base_plugin->plugin_so = g_value_get_pointer(value);
+
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
+    break;
   case PROP_UI_FILENAME:
     {
       gchar *ui_filename;
@@ -588,6 +629,15 @@ ags_base_plugin_set_property(GObject *gobject,
       pthread_mutex_lock(base_plugin_mutex);
 
       base_plugin->ui_effect_index = ui_effect_index;
+
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
+    break;
+  case PROP_UI_PLUGIN_SO:
+    {
+      pthread_mutex_lock(base_plugin_mutex);
+
+      base_plugin->ui_plugin_so = g_value_get_pointer(value);
 
       pthread_mutex_unlock(base_plugin_mutex);
     }
@@ -681,6 +731,15 @@ ags_base_plugin_get_property(GObject *gobject,
       pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
+  case PROP_PLUGIN_SO:
+    {
+      pthread_mutex_lock(base_plugin_mutex);
+      
+      g_value_set_pointer(value, base_plugin->plugin_so);
+
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
+    break;
   case PROP_UI_FILENAME:
     {
       pthread_mutex_lock(base_plugin_mutex);
@@ -704,6 +763,15 @@ ags_base_plugin_get_property(GObject *gobject,
       pthread_mutex_lock(base_plugin_mutex);
 
       g_value_set_uint(value, base_plugin->ui_effect_index);
+
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
+    break;
+  case PROP_UI_PLUGIN_SO:
+    {
+      pthread_mutex_lock(base_plugin_mutex);
+      
+      g_value_set_pointer(value, base_plugin->ui_plugin_so);
 
       pthread_mutex_unlock(base_plugin_mutex);
     }

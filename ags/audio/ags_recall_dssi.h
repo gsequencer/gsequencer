@@ -67,7 +67,7 @@ void ags_recall_dssi_load(AgsRecallDssi *recall_dssi);
 GList* ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi);
 void ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
 				     GObject *port,
-				     gpointer port_descriptor);
+				     gpointer plugin_port);
 
 GList* ags_recall_dssi_find(GList *recall,
 			    gchar *filename, gchar *effect);
