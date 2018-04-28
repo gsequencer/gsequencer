@@ -626,46 +626,9 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   worker_handle = NULL;
   
   if(lv2_plugin->feature == NULL){
-    /* samplerate */
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD,
-			       "samplerate");
-  
-    if(str == NULL){
-      str = ags_config_get_value(config,
-				 AGS_CONFIG_SOUNDCARD_0,
-				 "samplerate");
-    }  
-
-    if(str != NULL){
-      conf_samplerate = g_ascii_strtoull(str,
-					 NULL,
-					 10);
-      free(str);
-    }else{
-      conf_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-    }
-
-    /* buffer-size */
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD,
-			       "buffer-size");
-
-    if(str == NULL){
-      str = ags_config_get_value(config,
-				 AGS_CONFIG_SOUNDCARD_0,
-				 "buffer-size");
-    }
-  
-    if(str != NULL){
-      conf_buffer_size = g_ascii_strtoull(str,
-					  NULL,
-					  10);
-      free(str);
-    }else{
-      conf_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-    }
-
+    conf_samplerate = ags_soundcard_helper_config_get_samplerate(config);
+    conf_buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+    
     /**/
     total_feature = 8;
     nth = 0;

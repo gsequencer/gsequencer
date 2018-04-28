@@ -1407,14 +1407,11 @@ ags_audio_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_audio_init(AgsAudio *audio)
 {
-  AgsMutexManager *mutex_manager;
-  
   AgsConfig *config;
   
   gchar *str;
   gchar *str0, *str1;
-  
-  pthread_mutex_t *application_mutex;
+
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
@@ -1445,9 +1442,6 @@ ags_audio_init(AgsAudio *audio)
   ags_uuid_generate(audio->uuid);
   
   /* config */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   config = ags_config_get_instance();
   
   /* base init */
@@ -1460,73 +1454,11 @@ ags_audio_init(AgsAudio *audio)
   audio->output_sequencer = NULL;
   audio->input_sequencer = NULL;
   
-  audio->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  audio->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  audio->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  audio->samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  audio->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+  audio->format = ags_soundcard_helper_config_get_format(config);
 
   audio->bpm = AGS_SOUNDCARD_DEFAULT_BPM;
-
-  /* read config */
-  pthread_mutex_lock(application_mutex);
-  
-  /* samplerate */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate");
-  }
-  
-  if(str != NULL){
-    audio->samplerate = g_ascii_strtoull(str,
-					 NULL,
-					 10);
-
-    free(str);
-  }
-
-  /* buffer size */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size");
-  }
-  
-  if(str != NULL){
-    audio->buffer_size = g_ascii_strtoull(str,
-					  NULL,
-					  10);
-
-    free(str);
-  }
-
-  /* format */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "format");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "format");
-  }
-  
-  if(str != NULL){
-    audio->format = g_ascii_strtoull(str,
-				     NULL,
-				     10);
-
-    free(str);
-  }
-
-  pthread_mutex_unlock(application_mutex);
 
   /* bank */
   audio->bank_dim[0] = 0;

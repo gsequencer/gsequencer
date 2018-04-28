@@ -47,6 +47,7 @@
     <xi:include href="xml/ags_destroy_util.xml"/>
     <xi:include href="xml/ags_id_generator.xml"/>
     <xi:include href="xml/ags_list_util.xml"/>
+    <xi:include href="xml/ags_soundcard_helper.xml"/>
   </part>
   
   <part id="object">

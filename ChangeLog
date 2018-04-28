@@ -35,6 +35,7 @@ ags (2.0.0)
 	* new ags_sound_container.[ch]
 	* new ags_sound_resource.[ch]
 	* new ags_wav_file.[ch]
+	* new ags_soundcard_util.[ch]
 	* new ags_plugin_port.[ch]
 	* incompatible AgsBasePlugin::instantiate() function prototype
 	* added ags_connectable_has_resource()

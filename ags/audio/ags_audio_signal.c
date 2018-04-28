@@ -746,15 +746,12 @@ ags_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable
 void
 ags_audio_signal_init(AgsAudioSignal *audio_signal)
 {
-  AgsMutexManager *mutex_manager;
-
   AgsConfig *config;
   
   gchar *str;
 
   complex z;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
@@ -785,9 +782,6 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->recycling = NULL;
 
   /* config */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   config = ags_config_get_instance();
 
   /* base init */
@@ -798,112 +792,50 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->input_soundcard_channel = 0;
 
   /* presets */
-  audio_signal->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  audio_signal->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  audio_signal->format = AGS_SOUNDCARD_SIGNED_16_BIT;
+  audio_signal->samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  audio_signal->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+  audio_signal->format = ags_soundcard_helper_config_get_format(config);
 
   audio_signal->word_size = sizeof(gint16);
 
-
-  /* read config */
-  pthread_mutex_lock(application_mutex);
-
-  /* samplerate */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate");
-  }
-  
-  if(str != NULL){
-    audio_signal->samplerate = g_ascii_strtoull(str,
-						NULL,
-						10);
-
-    free(str);
-  }
-
-  /* buffer size */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size");
-  }
-  
-  if(str != NULL){
-    audio_signal->buffer_size = g_ascii_strtoull(str,
-						 NULL,
-						 10);
-
-    free(str);
-  }
-  
   /* format */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "format");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "format");
-  }
-  
-  if(str != NULL){
-    audio_signal->format = g_ascii_strtoull(str,
-					    NULL,
-					    10);
-
-    free(str);
-
-    switch(audio_signal->format){
-    case AGS_SOUNDCARD_SIGNED_8_BIT:
-      {
-	audio_signal->word_size = sizeof(gint8);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_16_BIT:
-      {
-	audio_signal->word_size = sizeof(gint16);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_24_BIT:
-      {
-	audio_signal->word_size = sizeof(gint32);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_32_BIT:
-      {
-	audio_signal->word_size = sizeof(gint32);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_64_BIT:
-      {
-	audio_signal->word_size = sizeof(gint64);
-      }
-      break;
-    case AGS_SOUNDCARD_FLOAT:
-      {
-	audio_signal->word_size = sizeof(gfloat);
-      }
-      break;
-    case AGS_SOUNDCARD_DOUBLE:
-      {
-	audio_signal->word_size = sizeof(gdouble);
-      }
-      break;
-    }    
-  }
-
-  pthread_mutex_unlock(application_mutex);
+  switch(audio_signal->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      audio_signal->word_size = sizeof(gint8);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      audio_signal->word_size = sizeof(gint16);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      audio_signal->word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      audio_signal->word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      audio_signal->word_size = sizeof(gint64);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      audio_signal->word_size = sizeof(gfloat);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      audio_signal->word_size = sizeof(gdouble);
+    }
+    break;
+  }    
 
   /* duration */
   audio_signal->length = 0;

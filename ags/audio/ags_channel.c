@@ -1063,13 +1063,10 @@ ags_channel_error_quark()
 void
 ags_channel_init(AgsChannel *channel)
 {
-  AgsMutexManager *mutex_manager;
-
   AgsConfig *config;
 
   gchar *str;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
@@ -1100,9 +1097,6 @@ ags_channel_init(AgsChannel *channel)
   ags_uuid_generate(channel->uuid);
 
   /* config */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   config = ags_config_get_instance();
 
   /* base init */
@@ -1115,71 +1109,9 @@ ags_channel_init(AgsChannel *channel)
   channel->input_soundcard_channel = 0;
 
   /* presets */
-  channel->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  channel->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  channel->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-
-  /* read config */
-  pthread_mutex_lock(application_mutex);
-
-  /* samplerate */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate");
-  }
-  
-  if(str != NULL){
-    channel->samplerate = g_ascii_strtoull(str,
-					   NULL,
-					   10);
-
-    free(str);
-  }
-
-  /* buffer size */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size");
-  }
-  
-  if(str != NULL){
-    channel->buffer_size = g_ascii_strtoull(str,
-					    NULL,
-					    10);
-
-    free(str);
-  }
-  
-  /* format */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "format");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "format");
-  }
-  
-  if(str != NULL){
-    channel->format = g_ascii_strtoull(str,
-				       NULL,
-				       10);
-
-    free(str);
-  }
-
-  pthread_mutex_unlock(application_mutex);
+  channel->samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  channel->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+  channel->format = ags_soundcard_helper_config_get_format(config);
 
   /* allocation info */
   channel->pad = 0;

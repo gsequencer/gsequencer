@@ -23,6 +23,7 @@
 #include <ags/util/ags_destroy_util.h>
 #include <ags/util/ags_list_util.h>
 #include <ags/util/ags_id_generator.h>
+#include <ags/util/ags_soundcard_helper.h>
 
 /* library */
 #include <ags/lib/ags_buffer_util.h>

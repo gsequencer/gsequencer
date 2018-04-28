@@ -448,14 +448,11 @@ ags_recycling_init(AgsRecycling *recycling)
 {
   AgsAudioSignal *audio_signal;
   
-  AgsMutexManager *mutex_manager;
-
   AgsConfig *config;
 
   gchar *str;
   gchar *str0, *str1;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
@@ -483,9 +480,6 @@ ags_recycling_init(AgsRecycling *recycling)
   ags_uuid_generate(recycling->uuid);
 
   /* config */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   config = ags_config_get_instance();
 
   /* base init */
@@ -498,71 +492,9 @@ ags_recycling_init(AgsRecycling *recycling)
   recycling->input_soundcard_channel = 0;
 
   /* presets */
-  recycling->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  recycling->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  recycling->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-
-  /* read config */
-  pthread_mutex_lock(application_mutex);
-
-  /* samplerate */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate");
-  }
-  
-  if(str != NULL){
-    recycling->samplerate = g_ascii_strtoull(str,
-					     NULL,
-					     10);
-
-    free(str);
-  }
-
-  /* buffer size */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size");
-  }
-  
-  if(str != NULL){
-    recycling->buffer_size = g_ascii_strtoull(str,
-					      NULL,
-					      10);
-
-    free(str);
-  }
-  
-  /* format */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "format");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "format");
-  }
-  
-  if(str != NULL){
-    recycling->format = g_ascii_strtoull(str,
-					 NULL,
-					 10);
-
-    free(str);
-  }
-
-  pthread_mutex_unlock(application_mutex);
+  recycling->samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  recycling->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+  recycling->format = ags_soundcard_helper_config_get_format(config);
   
   /* nested tree */
   recycling->parent = NULL;
