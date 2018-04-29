@@ -129,6 +129,7 @@ void
 ags_recall_dssi_class_init(AgsRecallDssiClass *recall_dssi)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_recall_dssi_parent_class = g_type_class_peek_parent(recall_dssi);
@@ -671,7 +672,7 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
   pthread_mutex_t *base_plugin_mutex;
 
   if(!AGS_IS_RECALL_DSSI(recall_dssi)){
-    return;
+    return(NULL);
   }
 
   /* get recall mutex */
@@ -780,7 +781,10 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 	  }
 	}
 	
-	current_port->plugin_port = current_plugin_port;
+	g_object_set(current_port,
+		     "plugin-port", current_plugin_port,
+		     NULL);
+
 	ags_recall_dssi_load_conversion(recall_dssi,
 					(GObject *) current_port,
 					current_plugin_port);
@@ -873,8 +877,7 @@ ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
 
   if(ags_plugin_port_test_flags(plugin_port,
 				AGS_PLUGIN_PORT_BOUNDED_BELOW)){
-    if(ladspa_conversion == NULL ||
-       !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+    if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
       ladspa_conversion = ags_ladspa_conversion_new();
     }
 
@@ -883,8 +886,7 @@ ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
 
   if(ags_plugin_port_test_flags(plugin_port,
 				AGS_PLUGIN_PORT_BOUNDED_ABOVE)){
-    if(ladspa_conversion == NULL ||
-       !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+    if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
       ladspa_conversion = ags_ladspa_conversion_new();
     }
 
@@ -893,8 +895,7 @@ ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
   
   if(ags_plugin_port_test_flags(plugin_port,
 				AGS_PLUGIN_PORT_SAMPLERATE)){
-    if(ladspa_conversion == NULL ||
-       !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+    if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
       ladspa_conversion = ags_ladspa_conversion_new();
     }
         
@@ -903,8 +904,7 @@ ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
 
   if(ags_plugin_port_test_flags(plugin_port,
 				AGS_PLUGIN_PORT_LOGARITHMIC)){
-    if(ladspa_conversion == NULL ||
-       !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+    if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
       ladspa_conversion = ags_ladspa_conversion_new();
     }
     

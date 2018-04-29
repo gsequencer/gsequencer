@@ -867,6 +867,9 @@ ags_base_plugin_finalize(GObject *gobject)
   pthread_mutexattr_destroy(base_plugin->obj_mutexattr);
   free(base_plugin->obj_mutexattr);
 
+  /* uuid */
+  ags_uuid_free(base_plugin->uuid);
+  
   /* filename and effect */
   g_free(base_plugin->filename);
   g_free(base_plugin->effect);
