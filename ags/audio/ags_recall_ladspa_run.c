@@ -197,6 +197,11 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   AgsRecallLadspaRun *recall_ladspa_run;
   AgsAudioSignal *audio_signal;
 
+  LADSPA_Handle *ladspa_handle;
+
+  LADSPA_Data *output, *input;
+  LADSPA_Data *port_data;  
+
   guint output_lines, input_lines;
   guint samplerate;
   guint buffer_size;
@@ -270,20 +275,33 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   pthread_mutex_unlock(recall_ladspa_mutex);
   
   /* set up buffer */ 
+  output = NULL;
+  input = NULL;
+
   if(input_lines > 0){
-    recall_ladspa_run->input = (LADSPA_Data *) malloc(input_lines *
-						      buffer_size *
-						      sizeof(LADSPA_Data));
+    input = (LADSPA_Data *) malloc(input_lines *
+				   buffer_size *
+				   sizeof(LADSPA_Data));
   }
 
-  recall_ladspa_run->output = (LADSPA_Data *) malloc(output_lines *
-						     buffer_size *
-						     sizeof(LADSPA_Data));
+  output = (LADSPA_Data *) malloc(output_lines *
+				  buffer_size *
+				  sizeof(LADSPA_Data));
+
+  recall_ladspa_run->output = output;
+  recall_ladspa_run->input = input;
 
   if(input_lines < output_lines){
     i_stop = output_lines;
   }else{
     i_stop = input_lines;
+  }
+  
+  ladspa_handle = NULL;
+
+  if(i_stop > 0){
+    ladspa_handle = (LADSPA_Handle *) malloc(i_stop *
+					     sizeof(LADSPA_Handle));
   }
   
   recall_ladspa_run->audio_channels = i_stop;
@@ -292,9 +310,9 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   pthread_mutex_lock(recall_ladspa_mutex);
 
   for(i = 0; i < i_stop; i++){
-    recall_ladspa_run->ladspa_handle[i] = instantiate(recall_ladspa->plugin_descriptor,
-						      (unsigned long) samplerate);
-
+    ladspa_handle[i] = instantiate(recall_ladspa->plugin_descriptor,
+				   (unsigned long) samplerate);
+    
 #ifdef AGS_DEBUG
       g_message("instantiated LADSPA handle");
 #endif
@@ -303,8 +321,18 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
 
   pthread_mutex_unlock(recall_ladspa_mutex);
 
+  /* load ports */
+  if(port_count > 0){    
+    port_data = (LADSPA_Data *) malloc(port_count * sizeof(LADSPA_Data));
+  }
+
+  recall_ladspa_run->ladspa_handle = ladspa_handle;
+
+  recall_ladspa_run->port_data = port_data;
+
   ags_recall_ladspa_run_load_ports(recall_ladspa_run);
 
+  /* activate */
   for(i = 0; i < i_stop; i++){
     if(activate != NULL){
       activate(recall_ladspa_run->ladspa_handle[i]);
@@ -313,7 +341,6 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
 #ifdef AGS_DEBUG
     g_message("activated LADSPA handle");
 #endif
-
   }
 }
 
@@ -342,15 +369,12 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
   void (*deactivate)(LADSPA_Handle Instance);
   void (*cleanup)(LADSPA_Handle Instance);
   
-  pthread_mutex_t *recall_mutex;
   pthread_mutex_t *recall_ladspa_mutex;
 
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
 
   parent_class_run_inter = AGS_RECALL_CLASS(ags_recall_ladspa_run_parent_class)->run_inter;
-  
-  recall_mutex = recall->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 

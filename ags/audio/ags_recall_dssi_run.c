@@ -164,6 +164,21 @@ ags_recall_dssi_run_class_init(AgsRecallDssiRunClass *recall_dssi_run)
 				  PROP_ROUTE_DSSI_AUDIO_RUN,
 				  param_spec);
 
+  /**
+   * AgsRecallDssiRun:note:
+   *
+   * The assigned #AgsNote.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("note",
+				    i18n_pspec("assigned note"),
+				    i18n_pspec("The note it is assigned with"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NOTE,
+				  param_spec);
+
   /* AgsRecallClass */
   recall = (AgsRecallClass *) recall_dssi_run;
 
@@ -209,8 +224,8 @@ ags_recall_dssi_run_init(AgsRecallDssiRun *recall_dssi_run)
   recall_dssi_run->event_count[0] = 0;
   recall_dssi_run->event_count[1] = 0;
 
-  recall_dssi_run->note = NULL;
   recall_dssi_run->route_dssi_audio_run = NULL;
+  recall_dssi_run->note = NULL;
 }
 
 void
@@ -233,28 +248,6 @@ ags_recall_dssi_run_set_property(GObject *gobject,
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
-  case PROP_NOTE:
-    {
-      GObject *note;
-
-      note = g_value_get_pointer(value);
-
-      pthread_mutex_lock(recall_mutex);
-
-      if(!AGS_IS_NOTE(note) ||
-	 g_list_find(recall_dssi_run->note, note) != NULL){
-	pthread_mutex_lock(recall_mutex);
-	
-	return;
-      }
-
-      recall_dssi_run->note = g_list_prepend(recall_dssi_run->note,
-					     note);
-      g_object_ref(note);
-
-      pthread_mutex_lock(recall_mutex);
-    }
-    break;
   case PROP_ROUTE_DSSI_AUDIO_RUN:
     {
       AgsDelayAudioRun *route_dssi_audio_run;
@@ -280,6 +273,28 @@ ags_recall_dssi_run_set_property(GObject *gobject,
       recall_dssi_run->route_dssi_audio_run = route_dssi_audio_run;
 
       pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_NOTE:
+    {
+      GObject *note;
+
+      note = g_value_get_pointer(value);
+
+      pthread_mutex_lock(recall_mutex);
+
+      if(!AGS_IS_NOTE(note) ||
+	 g_list_find(recall_dssi_run->note, note) != NULL){
+	pthread_mutex_lock(recall_mutex);
+	
+	return;
+      }
+
+      recall_dssi_run->note = g_list_prepend(recall_dssi_run->note,
+					     note);
+      g_object_ref(note);
+
+      pthread_mutex_lock(recall_mutex);
     }
     break;
   default:
@@ -339,8 +354,6 @@ ags_recall_dssi_run_finalize(GObject *gobject)
   AgsRecallDssi *recall_dssi;
   AgsRecallDssiRun *recall_dssi_run;
   
-  unsigned long i;
-
   recall_dssi_run = AGS_RECALL_DSSI_RUN(gobject);
 
   g_free(recall_dssi_run->ladspa_handle);
@@ -364,6 +377,10 @@ ags_recall_dssi_run_finalize(GObject *gobject)
     free(recall_dssi_run->event_count);
   }
 
+  if(recall_dssi_run->route_dssi_audio_run != NULL){
+    g_object_unref(recall_dssi_run->route_dssi_audio_run);
+  }
+  
   g_list_free_full(recall_dssi_run->note,
 		   g_object_unref);
   
@@ -380,6 +397,11 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
   AgsRecallDssiRun *recall_dssi_run;
   AgsAudioSignal *audio_signal;
 
+  LADSPA_Handle *ladspa_handle;
+
+  LADSPA_Data *output, *input;
+  LADSPA_Data *port_data;  
+  
   guint output_lines, input_lines;
   guint samplerate;
   guint buffer_size;
@@ -392,15 +414,12 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
                                unsigned long SampleRate);
   void (*activate)(LADSPA_Handle Instance);
 
-  pthread_mutex_t *recall_mutex;
   pthread_mutex_t *recall_dssi_mutex;
   
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
 
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_recall_dssi_run_parent_class)->run_init_pre;
-  
-  recall_mutex = recall->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -426,7 +445,6 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
 	       "source", &audio_signal,
 	       NULL);
 
-  /* set up buffer */
   g_object_get(audio_signal,
 	       "samplerate", &samplerate,
 	       "buffer-size", &buffer_size,
@@ -452,38 +470,44 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
   
   pthread_mutex_unlock(recall_dssi_mutex);
   
-  /* set up buffer */ 
+  /* set up buffer */
+  output = NULL;
+  input = NULL;
+  
   if(input_lines > 0){
-    recall_dssi_run->input = (LADSPA_Data *) malloc(input_lines *
-						    buffer_size *
-						    sizeof(LADSPA_Data));
+    input = (LADSPA_Data *) malloc(input_lines *
+				   buffer_size *
+				   sizeof(LADSPA_Data));
   }
 
-  recall_dssi_run->output = (LADSPA_Data *) malloc(output_lines *
-						   buffer_size *
-						   sizeof(LADSPA_Data));
+  output = (LADSPA_Data *) malloc(output_lines *
+				  buffer_size *
+				  sizeof(LADSPA_Data));
+
+  recall_dssi_run->output = output;
+  recall_dssi_run->input = input;
 
   if(input_lines < output_lines){
     i_stop = output_lines;
   }else{
     i_stop = input_lines;
   }
-  
-  recall_dssi_run->audio_channels = i_stop;
+
+  ladspa_handle = NULL;
 
   if(i_stop > 0){
-    recall_dssi_run->ladspa_handle = (LADSPA_Handle *) malloc(i_stop *
-							      sizeof(LADSPA_Handle));
-  }else{
-    recall_dssi_run->ladspa_handle = NULL;
+    ladspa_handle = (LADSPA_Handle *) malloc(i_stop *
+					     sizeof(LADSPA_Handle));
   }
+    
+  recall_dssi_run->audio_channels = i_stop;
   
   /* instantiate dssi */
   pthread_mutex_lock(recall_dssi_mutex);
 
   for(i = 0; i < i_stop; i++){
-    recall_dssi_run->ladspa_handle[i] = instantiate(recall_dssi->plugin_descriptor->LADSPA_Plugin,
-						    (unsigned long) samplerate);
+    ladspa_handle[i] = instantiate(recall_dssi->plugin_descriptor->LADSPA_Plugin,
+				   (unsigned long) samplerate);
 
 #ifdef AGS_DEBUG
     g_message("instantiated DSSI handle %d %d",
@@ -495,11 +519,17 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
   pthread_mutex_unlock(recall_dssi_mutex);
 
   if(port_count > 0){    
-    recall_dssi_run->port_data = (LADSPA_Data *) malloc(port_count * sizeof(LADSPA_Data));
+    port_data = (LADSPA_Data *) malloc(port_count * sizeof(LADSPA_Data));
   }
 
+  /*  */  
+  recall_dssi_run->ladspa_handle = ladspa_handle;
+
+  recall_dssi_run->port_data = port_data;
+
+  /*  */
   ags_recall_dssi_run_load_ports(recall_dssi_run);
-  
+ 
   for(i = 0; i < i_stop; i++){
     if(activate != NULL){
       activate(recall_dssi_run->ladspa_handle[i]);
@@ -561,16 +591,13 @@ ags_recall_dssi_run_feed_input_queue(AgsRecall *recall)
   void (*deactivate)(LADSPA_Handle Instance);
   void (*cleanup)(LADSPA_Handle Instance);
   
-  pthread_mutex_t *recall_mutex;
   pthread_mutex_t *recall_dssi_mutex;
   pthread_mutex_t *port_mutex;
 
-  /* get recall mutex */
+  /* get parent class */
   pthread_mutex_lock(ags_recall_get_class_mutex());
 
   parent_class_feed_input_queue = AGS_RECALL_CLASS(ags_recall_dssi_run_parent_class)->feed_input_queue;
-  
-  recall_mutex = recall->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -694,7 +721,7 @@ ags_recall_dssi_run_feed_input_queue(AgsRecall *recall)
     
     if(audio_signal->stream_current == NULL ||
        (x1 <= notation_counter &&
-	!ags_note_test_flags(note->data, AGS_NOTE_FEED)) ||
+	!ags_note_test_flags(note_start->data, AGS_NOTE_FEED)) ||
        x0 > notation_counter){
       //    g_message("done");
 
@@ -716,6 +743,7 @@ ags_recall_dssi_run_feed_input_queue(AgsRecall *recall)
       }
       
       ags_recall_done(recall);
+      g_list_free(note_start);
       
       return;
     }
@@ -887,7 +915,6 @@ ags_recall_dssi_run_feed_input_queue(AgsRecall *recall)
   
   pthread_mutex_unlock(recall_dssi_mutex);
 
-
   g_object_get(recall_dssi_run,
 	       "note", &note_start,
 	       NULL);
@@ -966,20 +993,12 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
 		       unsigned long Port,
 		       LADSPA_Data * DataLocation);
 
-  pthread_mutex_t *recall_mutex;
   pthread_mutex_t *recall_dssi_mutex;
   pthread_mutex_t *port_mutex;
 
   if(!AGS_IS_RECALL_DSSI_RUN(recall_dssi_run)){
     return;
   }
-  
-  /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = AGS_RECALL(recall_dssi_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   g_object_get(recall_dssi_run,
 	       "parent", &recall_recycling,
