@@ -63,6 +63,7 @@ enum{
 
 enum{
   PROP_0,
+  PROP_UUID,
   PROP_FILENAME,
   PROP_EFFECT,
   PROP_PLUGIN_PORT,
@@ -126,6 +127,21 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
   gobject->finalize = ags_base_plugin_finalize;
 
   /* properties */
+  /**
+   * AgsBasePlugin:uuid:
+   *
+   * The assigned AgsUUID
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("uuid",
+				    i18n_pspec("UUID"),
+				    i18n_pspec("The UUID"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_UUID,
+				  param_spec);
+
   /**
    * AgsBasePlugin:filename:
    *
@@ -450,6 +466,8 @@ ags_base_plugin_init(AgsBasePlugin *base_plugin)
 		     attr);
 
   /*  */
+  base_plugin->uuid = NULL;
+
   base_plugin->filename = NULL;
   base_plugin->effect = NULL;
 
@@ -485,6 +503,15 @@ ags_base_plugin_set_property(GObject *gobject,
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
   switch(prop_id){
+  case PROP_UUID:
+    {
+      pthread_mutex_lock(base_plugin_mutex);
+
+      base_plugin->uuid = (AgsUUID *) g_value_get_pointer(value);
+
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
+    break;
   case PROP_FILENAME:
     {
       gchar *filename;
@@ -696,6 +723,15 @@ ags_base_plugin_get_property(GObject *gobject,
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
   switch(prop_id){
+  case PROP_UUID:
+    {
+      pthread_mutex_lock(base_plugin_mutex);
+      
+      g_value_set_pointer(value, base_plugin->uuid);
+
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
+    break;
   case PROP_FILENAME:
     {
       pthread_mutex_lock(base_plugin_mutex);

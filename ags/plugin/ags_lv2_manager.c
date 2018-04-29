@@ -569,8 +569,8 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
   //  xmlSaveFormatFileEnc("-", turtle->doc, "UTF-8", 1);
   
   /* parse lv2 plugin */
-  lv2_manager->current_plugin_node = g_hash_table_new_full(g_str_hash, g_str_equal,
-							   g_free,
+  lv2_manager->current_plugin_node = g_hash_table_new_full(g_direct_hash, ags_uuid_compare,
+							   NULL,
 							   NULL);
 
   xpath = "/rdf-turtle-doc/rdf-statement/rdf-triple/rdf-predicate-object-list/rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length('doap:name') + 1) = 'doap:name']/ancestor::*[self::rdf-verb][1]/following-sibling::rdf-object-list[1]//rdf-string[text()]";
@@ -580,7 +580,7 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
   while(effect_list != NULL){
     xmlNode *current_triple;
     
-    gchar *current_uuid;
+    AgsUUID *current_uuid;
     
     /* read effect name */
     node = effect_list->data;
@@ -608,7 +608,9 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
 							     xpath,
 							     node)->data;
 
-    current_uuid = ags_id_generator_create_uuid();
+    current_uuid = ags_uuid_alloc();
+    ags_uuid_generate(current_uuid);
+    
     escaped_effect = ags_string_util_escape_single_quote(effect);
 
     g_hash_table_insert(lv2_manager->current_plugin_node,
@@ -763,7 +765,7 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
 	    lv2_plugin = g_object_new(AGS_TYPE_LV2_PLUGIN,
 				      "manifest", manifest,
 				      "turtle", turtle,
-				      "id", current_uuid,
+				      "uuid", current_uuid,
 				      "filename", path,
 				      "effect", effect,
 				      "pname", turtle_pname,

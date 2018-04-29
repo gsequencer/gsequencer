@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <alsa/seq_event.h>
 
 #define AGS_TYPE_BASE_PLUGIN                (ags_base_plugin_get_type())
@@ -54,6 +56,8 @@ struct _AgsBasePlugin
   
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
+
+  AgsUUID *uuid;
 
   gchar *filename;
   gchar *effect;
