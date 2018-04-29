@@ -627,42 +627,13 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 	
 	pthread_mutex_unlock(plugin_port_mutex);
 
-	list = port;
-	
-	while(list != NULL){
-	  gchar *current_specifier;
-
-	  gboolean success;
-
-	  current_port = list->data;
-	  
-	  /* get port mutex */
-	  pthread_mutex_lock(ags_port_get_class_mutex());
-
-	  port_mutex = current_port->obj_mutex;
-      
-	  pthread_mutex_unlock(ags_port_get_class_mutex());
-
-	  /* check specifier */
-	  pthread_mutex_lock(port_mutex);
-
-	  current_specifier = g_strdup(current_port->specifier);
-	  
-	  pthread_mutex_unlock(port_mutex);
-
-	  success = (!g_strcmp0(specifier,
-				current_specifier)) ? TRUE: FALSE;
-	  g_free(current_specifier);
-	  
-	  if(success){
-	    break;
-	  }
-	  
-	  list = list->next;
-	}
+	list = ags_port_find_specifier(port, specifier);
 
 	if(list != NULL){
-	  current_port->plugin_port = current_plugin_port;
+	  current_port = list;
+	  g_object_set(current_port,
+		       "plugin-port", current_plugin_port,
+		       NULL);
 	  ags_recall_lv2_load_conversion(recall_lv2,
 					 (GObject *) current_port,
 					 current_plugin_port);

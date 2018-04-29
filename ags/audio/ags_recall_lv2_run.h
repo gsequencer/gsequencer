@@ -71,6 +71,6 @@ struct _AgsRecallLv2RunClass
 
 GType ags_recall_lv2_run_get_type();
 
-AgsRecallLv2Run* ags_recall_lv2_run_new(AgsAudioSignal *audio_signal);
+AgsRecallLv2Run* ags_recall_lv2_run_new(AgsAudioSignal *source);
 
 #endif /*__AGS_RECALL_LV2_RUN_H__*/

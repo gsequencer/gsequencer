@@ -479,7 +479,7 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
 
     ags_audio_buffer_util_copy_buffer_to_buffer(recall_ladspa_run->input, (guint) input_lines, 0,
 						audio_signal->stream_current->data, 1, 0,
-						(guint) audio_signal->buffer_size, copy_mode_in);
+						(guint) buffer_size, copy_mode_in);
   }
   
   /* process data */
@@ -511,7 +511,6 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
   AgsRecallLadspa *recall_ladspa;
   AgsRecallChannelRun *recall_channel_run;
   AgsRecallRecycling *recall_recycling;
-  AgsLadspaPlugin *ladspa_plugin;
   AgsPort *current_port;
 
   GList *list_start, *list;
@@ -607,14 +606,12 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 
 	pthread_mutex_unlock(recall_ladspa_mutex);
 
-	list = list_start;
-	current_port = NULL;
-	
-	while(list != NULL){
-	  gboolean success;
-      
-	  current_port = list->data;
+	list = ags_port_find_specifier(port, specifier);
+	g_free(specifier);
 
+	if(list != NULL){
+	  current_port = list->data;
+	  
 	  /* get port mutex */
 	  pthread_mutex_lock(ags_port_get_class_mutex());
 
@@ -622,27 +619,6 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
       
 	  pthread_mutex_unlock(ags_port_get_class_mutex());
 
-	  /* check specifier */
-	  pthread_mutex_lock(port_mutex);
-
-	  current_specifier = g_strdup(current_port->specifier);
-      
-	  pthread_mutex_unlock(port_mutex);
-      
-	  success = (!g_strcmp0(specifier,
-				current_specifier)) ? TRUE: FALSE;
-	  g_free(current_specifier);
-
-	  if(success){
-	    break;
-	  }
-
-	  list = list->next;
-	}
-
-	g_free(specifier);
-
-	if(list != NULL){
 	  for(j = 0; j < j_stop; j++){
 #ifdef AGS_DEBUG
 	    g_message("connecting port[%d]: %d/%d - %f", j, i, port_count, current->port_value.ags_port_ladspa);

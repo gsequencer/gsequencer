@@ -627,8 +627,9 @@ ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
 GList*
 ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 {
-  AgsDssiPlugin *dssi_plugin;
   AgsPort *current_port;
+
+  AgsDssiPlugin *dssi_plugin;
 
   GList *port, *retval;
   GList *plugin_port_start, *plugin_port;

@@ -974,8 +974,9 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
   AgsRecallDssi *recall_dssi;
   AgsRecallChannelRun *recall_channel_run;
   AgsRecallRecycling *recall_recycling;
-  AgsDssiPlugin *dssi_plugin;
   AgsPort *current_port;
+
+  AgsDssiPlugin *dssi_plugin;
 
   GList *list_start, *list;
 
@@ -1062,14 +1063,12 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
 
 	pthread_mutex_unlock(recall_dssi_mutex);
 
-	list = list_start;
-	current_port = NULL;
-	
-	while(list != NULL){
-	  gboolean success;
-      
-	  current_port = list->data;
+	list = ags_port_find_specifier(list_start, specifier);
+	g_free(specifier);
 
+	if(list != NULL){
+	  current_port = list->data;
+	  
 	  /* get port mutex */
 	  pthread_mutex_lock(ags_port_get_class_mutex());
 
@@ -1077,37 +1076,17 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
       
 	  pthread_mutex_unlock(ags_port_get_class_mutex());
 
-	  /* check specifier */
+	  /* get port pointer */
 	  pthread_mutex_lock(port_mutex);
+	    
+	  port_pointer = (LADSPA_Data *) &(current_port->port_value.ags_port_ladspa);
 
-	  current_specifier = g_strdup(current_port->specifier);
-      
 	  pthread_mutex_unlock(port_mutex);
-      
-	  success = (!g_strcmp0(specifier,
-				current_specifier)) ? TRUE: FALSE;
-	  g_free(current_specifier);
 
-	  if(success){
-	    break;
-	  }
-
-	  list = list->next;
-	}
-
-	g_free(specifier);
-
-	if(list != NULL){
 	  for(j = 0; j < j_stop; j++){
 #ifdef AGS_DEBUG
 	    g_message("connecting port[%d]: %d/%d - %f", j, i, port_count, current->port_value.ags_port_ladspa);
-#endif
-	    pthread_mutex_lock(port_mutex);
-	    
-	    port_pointer = (LADSPA_Data *) &(current_port->port_value.ags_port_ladspa);
-
-	    pthread_mutex_unlock(port_mutex);
-	  
+#endif	  
 	    connect_port(recall_dssi_run->ladspa_handle[j],
 			 (unsigned long) i,
 			 port_pointer);
