@@ -81,6 +81,10 @@ struct _AgsReturnableThreadClass
 
 GType ags_returnable_thread_get_type();
 
+gboolean ags_returnable_thread_test_flags(AgsReturnableThread *returnable_thread, guint flags);
+void ags_returnable_thread_set_flags(AgsReturnableThread *returnable_thread, guint flags);
+void ags_returnable_thread_unset_flags(AgsReturnableThread *returnable_thread, guint flags);
+
 void ags_returnable_thread_safe_run(AgsReturnableThread *returnable_thread);
 
 void ags_returnable_thread_connect_safe_run(AgsReturnableThread *returnable_thread, AgsReturnableThreadCallback callback);

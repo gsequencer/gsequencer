@@ -408,6 +408,69 @@ ags_returnable_thread_resume(AgsThread *thread)
 }
 
 /**
+ * ags_returnable_thread_test_flags:
+ * @returnable_thread: the #AgsReturnableThread
+ * @flags: the flags
+ *
+ * Test @flags to be set on @returnable_thread.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_returnable_thread_test_flags(AgsReturnableThread *returnable_thread, guint flags)
+{
+  gboolean retval;  
+
+  if(!AGS_IS_RETURNABLE_THREAD(returnable_thread)){
+    return(FALSE);
+  }
+  
+  retval = ((flags & (g_atomic_int_get(&(returnable_thread->flags)))) != 0) ? TRUE: FALSE;
+    
+  return(retval);
+}
+
+/**
+ * ags_returnable_thread_set_flags:
+ * @returnable_thread: the #AgsReturnableThread
+ * @flags: the flags
+ *
+ * Set flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_returnable_thread_set_flags(AgsReturnableThread *returnable_thread, guint flags)
+{
+  if(!AGS_IS_RETURNABLE_THREAD(returnable_thread)){
+    return;
+  }
+
+  g_atomic_int_or(&(returnable_thread->flags), flags);
+}
+
+/**
+ * ags_returnable_thread_unset_flags:
+ * @returnable_thread: the #AgsReturnableThread
+ * @flags: the flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_returnable_thread_unset_flags(AgsReturnableThread *returnable_thread, guint flags)
+{
+  if(!AGS_IS_RETURNABLE_THREAD(returnable_thread)){
+    return;
+  }
+
+  g_atomic_int_and(&(returnable_thread->flags), (~flags));
+}
+
+/**
  * ags_returnable_thread_connect_safe_run:
  * @returnable_thread: the thread to connect
  * @callback: the callback
