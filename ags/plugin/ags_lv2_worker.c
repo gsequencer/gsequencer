@@ -823,7 +823,7 @@ ags_lv2_worker_interrupted_callback(AgsThread *thread,
 				    guint time_cycle, guint *time_spent,
 				    AgsLv2Worker *lv2_worker)
 {
-  if((AGS_THREAD_INTERRUPTED & (g_atomic_int_get(&(thread->sync_flags)))) == 0){
+  if(!ags_thread_test_sync_flags(thread, AGS_THREAD_INTERRUPTED)){
     g_atomic_int_or(&(thread->sync_flags),
     		    AGS_THREAD_INTERRUPTED);
     

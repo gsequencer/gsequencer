@@ -837,13 +837,15 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     options[5].value = NULL;
 
     /* set options */
-    ags_lv2_option_manager_lv2_options_set(*lv2_handle,
+    ags_lv2_option_manager_lv2_options_set(lv2_handle[0],
 					   options);
   }
   
   /*  */  
   if(worker_handle != NULL){
-    AGS_LV2_WORKER(worker_handle)->handle = *lv2_handle;
+    g_object_set(worker_handle,
+		 "handle", lv2_handle[0],
+		 NULL);
   }
 
   free(path);

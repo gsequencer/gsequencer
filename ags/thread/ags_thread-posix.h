@@ -282,6 +282,14 @@ GType ags_thread_get_type();
 
 pthread_mutex_t* ags_thread_get_class_mutex();
 
+gboolean ags_thread_test_flags(AgsThread *thread, guint flags);
+void ags_thread_set_flags(AgsThread *thread, guint flags);
+void ags_thread_unset_flags(AgsThread *thread, guint flags);
+
+gboolean ags_thread_test_sync_flags(AgsThread *thread, guint flags);
+void ags_thread_set_sync_flags(AgsThread *thread, guint flags);
+void ags_thread_unset_sync_flags(AgsThread *thread, guint flags);
+
 void ags_thread_resume_handler(int sig);
 void ags_thread_suspend_handler(int sig);
 

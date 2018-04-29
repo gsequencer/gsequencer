@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -860,6 +860,132 @@ pthread_mutex_t*
 ags_thread_get_class_mutex()
 {
   return(&ags_thread_class_mutex);
+}
+
+/**
+ * ags_thread_test_flags:
+ * @thread: the #AgsThread
+ * @flags: the flags
+ *
+ * Test @flags to be set on @thread.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_thread_test_flags(AgsThread *thread, guint flags)
+{
+  gboolean retval;  
+
+  if(!AGS_IS_THREAD(thread)){
+    return(FALSE);
+  }
+  
+  retval = ((flags & (g_atomic_int_get(&(thread->flags)))) != 0) ? TRUE: FALSE;
+    
+  return(retval);
+}
+
+/**
+ * ags_thread_set_flags:
+ * @thread: the #AgsThread
+ * @flags: the flags
+ *
+ * Set flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_thread_set_flags(AgsThread *thread, guint flags)
+{
+  if(!AGS_IS_THREAD(thread)){
+    return;
+  }
+
+  g_atomic_int_or(&(thread->flags), flags);
+}
+
+/**
+ * ags_thread_unset_flags:
+ * @thread: the #AgsThread
+ * @flags: the flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_thread_unset_flags(AgsThread *thread, guint flags)
+{
+  if(!AGS_IS_THREAD(thread)){
+    return;
+  }
+
+  g_atomic_int_and(&(thread->flags), (~flags));
+}
+
+/**
+ * ags_thread_test_sync_flags:
+ * @thread: the #AgsThread
+ * @sync_flags: the syn flags
+ *
+ * Test @sync_flags to be set on @thread.
+ * 
+ * Returns: %TRUE if sync flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_thread_test_sync_flags(AgsThread *thread, guint sync_flags)
+{
+  gboolean retval;  
+
+  if(!AGS_IS_THREAD(thread)){
+    return(FALSE);
+  }
+  
+  retval = ((sync_flags & (g_atomic_int_get(&(thread->sync_flags)))) != 0) ? TRUE: FALSE;
+    
+  return(retval);
+}
+
+/**
+ * ags_thread_set_sync_flags:
+ * @thread: the #AgsThread
+ * @sync_flags: the sync flags
+ *
+ * Set sync flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_thread_set_sync_flags(AgsThread *thread, guint sync_flags)
+{
+  if(!AGS_IS_THREAD(thread)){
+    return;
+  }
+
+  g_atomic_int_or(&(thread->sync_flags), sync_flags);
+}
+
+/**
+ * ags_thread_unset_sync_flags:
+ * @thread: the #AgsThread
+ * @sync_flags: the sync flags
+ *
+ * Unset sync flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_thread_unset_sync_flags(AgsThread *thread, guint sync_flags)
+{
+  if(!AGS_IS_THREAD(thread)){
+    return;
+  }
+
+  g_atomic_int_and(&(thread->sync_flags), (~sync_flags));
 }
 
 void
