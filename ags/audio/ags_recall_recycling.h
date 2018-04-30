@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,6 @@
 
 #include <ags/audio/ags_recall.h>
 
-#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 
@@ -65,12 +64,7 @@ struct _AgsRecallRecycling
   guint audio_channel;
 
   AgsRecycling *destination;
-  gulong destination_add_audio_signal_handler;
-  gulong destination_remove_audio_signal_handler;
-
   AgsRecycling *source;
-  gulong source_add_audio_signal_handler;
-  gulong source_remove_audio_signal_handler;
 
   AgsAudioSignal *child_destination;
   GList *child_source;
@@ -82,8 +76,6 @@ struct _AgsRecallRecyclingClass
 };
 
 GType ags_recall_recycling_get_type();
-
-GList* ags_recall_recycling_get_child_source(AgsRecallRecycling *recall_recycling);
 
 AgsRecallRecycling* ags_recall_recycling_new();
 

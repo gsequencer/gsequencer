@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/ags_recall_recycling.h>
-
-#include <ags/lib/ags_parameter.h>
 
 #include <ags/libags.h>
 
@@ -42,7 +40,6 @@
 
 void ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling);
 void ags_recall_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_recall_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_recall_recycling_init(AgsRecallRecycling *recall_recycling);
 void ags_recall_recycling_set_property(GObject *gobject,
 				       guint prop_id,
@@ -52,16 +49,19 @@ void ags_recall_recycling_get_property(GObject *gobject,
 				       guint prop_id,
 				       GValue *value,
 				       GParamSpec *param_spec);
-void ags_recall_recycling_connect(AgsConnectable *connectable);
-void ags_recall_recycling_disconnect(AgsConnectable *connectable);
-void ags_recall_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_recall_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_recall_recycling_dispose(GObject *gobject);
 void ags_recall_recycling_finalize(GObject *gobject);
 
+void ags_recall_recycling_connect(AgsConnectable *connectable);
+void ags_recall_recycling_disconnect(AgsConnectable *connectable);
+void ags_recall_recycling_connect_connection(AgsConnectable *connectable,
+					     GObject *connection);
+void ags_recall_recycling_disconnect_connection(AgsConnectable *connectable,
+						GObject *connection);
+
 AgsRecall* ags_recall_recycling_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
-					  guint *n_params, GParameter *parameter);
+					  guint *n_params, gchar **parameter_name, GValue *value);
 
 void ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 							   AgsAudioSignal *audio_signal,
@@ -97,7 +97,6 @@ enum{
 
 static gpointer ags_recall_recycling_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_recycling_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_recall_recycling_parent_dynamic_connectable_interface;
 
 GType
 ags_recall_recycling_get_type()
@@ -123,12 +122,6 @@ ags_recall_recycling_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_recall_recycling_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_recall_recycling = g_type_register_static(AGS_TYPE_RECALL,
 						       "AgsRecallRecycling",
 						       &ags_recall_recycling_info,
@@ -137,10 +130,6 @@ ags_recall_recycling_get_type()
     g_type_add_interface_static(ags_type_recall_recycling,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-    
-    g_type_add_interface_static(ags_type_recall_recycling,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
   }
 
   return(ags_type_recall_recycling);
@@ -170,7 +159,7 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
    *
    * The assigned destination recycling.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("audio-channel",
 				 i18n_pspec("assigned audio channel"),
@@ -188,7 +177,7 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
    *
    * The assigned destination recycling.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("destination",
 				   i18n_pspec("AgsRecycling destination of this recall"),
@@ -200,11 +189,11 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
 				  param_spec);
 
   /**
-   * AgsRecallRecycling:destination:
+   * AgsRecallRecycling:source:
    *
    * The assigned source recycling.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("source",
 				   i18n_pspec("AgsRecycling source of this recall"),
@@ -220,7 +209,7 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
    *
    * The assigned destination audio signal.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("child-destination",
 				   i18n_pspec("AgsAudioSignal of this recall"),
@@ -236,13 +225,12 @@ ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling)
    *
    * The assigned source audio signal.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("child-source",
-				   i18n_pspec("AgsAudioSignal of this recall"),
-				   i18n_pspec("The source AgsAudioSignal child recall needs"),
-				   AGS_TYPE_AUDIO_SIGNAL,
-				   G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("child-source",
+				    i18n_pspec("AgsAudioSignal of this recall"),
+				    i18n_pspec("The source AgsAudioSignal child recall needs"),
+				    G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CHILD_SOURCE,
 				  param_spec);
@@ -264,15 +252,6 @@ ags_recall_recycling_connectable_interface_init(AgsConnectableInterface *connect
 
   connectable->connect = ags_recall_recycling_connect;
   connectable->disconnect = ags_recall_recycling_disconnect;
-}
-
-void
-ags_recall_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_recall_recycling_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_recall_recycling_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_recall_recycling_disconnect_dynamic;
 }
 
 void
@@ -298,12 +277,25 @@ ags_recall_recycling_set_property(GObject *gobject,
 {
   AgsRecallRecycling *recall_recycling;
 
+  pthread_mutex_t *recall_mutex;
+
   recall_recycling = AGS_RECALL_RECYCLING(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(recall_recycling)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_AUDIO_CHANNEL:
     {
+      pthread_mutex_lock(recall_mutex);
+
       recall_recycling->audio_channel = g_value_get_uint(value);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_DESTINATION:
@@ -312,21 +304,15 @@ ags_recall_recycling_set_property(GObject *gobject,
 
       destination = (AgsRecycling *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(recall_recycling->destination == destination){
+	pthread_mutex_unlock(recall_mutex);
+	
 	return;
       }
 
       if(recall_recycling->destination != NULL){
-	if((AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_recycling)->flags)) == 0){
-	  gobject = G_OBJECT(recall_recycling->destination);
-	    
-	  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(recall_recycling)->flags)) != 0){
-	    //	    g_signal_handler_disconnect(gobject, recall_recycling->destination_add_audio_signal_handler);
-	      
-	    //	    g_signal_handler_disconnect(gobject, recall_recycling->destination_remove_audio_signal_handler);
-	  }
-	}
-
 	g_object_unref(G_OBJECT(recall_recycling->destination));
       }
 
@@ -334,21 +320,9 @@ ags_recall_recycling_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(destination));
       }
 
-      if((AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_recycling)->flags)) == 0){
-	gobject = G_OBJECT(destination);
-	  
-	if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(recall_recycling)->flags)) != 0){
-	  //	  recall_recycling->destination_add_audio_signal_handler =
-	  //	    g_signal_connect_after(gobject, "add_audio_signal",
-	  //				   G_CALLBACK(ags_recall_recycling_destination_add_audio_signal_callback), recall_recycling);
-	    
-	  //	  recall_recycling->destination_remove_audio_signal_handler =
-	  //	    g_signal_connect(gobject, "remove_audio_signal",
-	  //			     G_CALLBACK(ags_recall_recycling_destination_remove_audio_signal_callback), recall_recycling);
-	}
-      }
-
       recall_recycling->destination = destination;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SOURCE:
@@ -357,22 +331,21 @@ ags_recall_recycling_set_property(GObject *gobject,
 
       source = (AgsRecycling *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(recall_recycling->source == source){
+	pthread_mutex_unlock(recall_mutex);
+	
 	return;
       }
 
       if(recall_recycling->source != NULL){
 	if((AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_recycling)->flags)) == 0){
-	  gobject = G_OBJECT(recall_recycling->source);
-	    
-	  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(recall_recycling)->flags)) != 0){
-	    g_signal_handler_disconnect(gobject, recall_recycling->source_add_audio_signal_handler);
-	      
-	    g_signal_handler_disconnect(gobject, recall_recycling->source_remove_audio_signal_handler);
-	  }
+	  ags_connectable_disconnect_connection(AGS_CONNECTABLE(recall_recycling),
+						recall_recycling->source);
 	}
 
-	g_object_unref(G_OBJECT(recall_recycling->source));
+	g_object_unref(recall_recycling->source);
       }
 
       if(source != NULL){
@@ -383,19 +356,12 @@ ags_recall_recycling_set_property(GObject *gobject,
 
       if(source != NULL){
 	if((AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_recycling)->flags)) == 0){
-	  gobject = G_OBJECT(source);
-
-	  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(recall_recycling)->flags)) != 0){
-	    recall_recycling->source_add_audio_signal_handler =
-	      g_signal_connect_after(gobject, "add_audio_signal",
-				     G_CALLBACK(ags_recall_recycling_source_add_audio_signal_callback), recall_recycling);
-	    
-	    recall_recycling->source_remove_audio_signal_handler =
-	      g_signal_connect(gobject, "remove_audio_signal",
-	    		       G_CALLBACK(ags_recall_recycling_source_remove_audio_signal_callback), recall_recycling);
-	  }
+	  ags_connectable_connect_connection(AGS_CONNECTABLE(recall_recycling),
+					     source);
 	}
       }
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_CHILD_DESTINATION:
@@ -404,7 +370,11 @@ ags_recall_recycling_set_property(GObject *gobject,
 
       child_destination = (AgsAudioSignal *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(recall_recycling->child_destination == child_destination){
+	pthread_mutex_unlock(recall_mutex);
+	
 	return;
       }
 
@@ -417,24 +387,30 @@ ags_recall_recycling_set_property(GObject *gobject,
       }
 
       recall_recycling->child_destination = child_destination;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_CHILD_SOURCE:
     {
       AgsAudioSignal *child_source;
 
-      child_source = (AgsAudioSignal *) g_value_get_object(value);
+      child_source = (AgsAudioSignal *) g_value_get_pointer(value);
 
-      if(g_list_find(recall_recycling->child_source, child_source) != NULL){
+      pthread_mutex_lock(recall_mutex);
+
+      if(!AGS_IS_AUDIO_SIGNAL(child_source) ||
+	 g_list_find(recall_recycling->child_source, child_source) != NULL){
+	pthread_mutex_unlock(recall_mutex);
+	
 	return;
       }
 
-      if(child_source != NULL){
-	g_object_ref(G_OBJECT(child_source));
+      g_object_ref(G_OBJECT(child_source));
+      recall_recycling->child_source = g_list_prepend(recall_recycling->child_source,
+						      child_source);
 
-	recall_recycling->child_source = g_list_prepend(recall_recycling->child_source,
-							child_source);
-      }
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -451,27 +427,61 @@ ags_recall_recycling_get_property(GObject *gobject,
 {
   AgsRecallRecycling *recall_recycling;
 
+  pthread_mutex_t *recall_mutex;
+
   recall_recycling = AGS_RECALL_RECYCLING(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(recall_recycling)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_AUDIO_CHANNEL:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_uint(value, recall_recycling->audio_channel);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_DESTINATION:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, recall_recycling->destination);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SOURCE:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, recall_recycling->source);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_CHILD_DESTINATION:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, recall_recycling->child_destination);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_CHILD_SOURCE:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_pointer(value, g_list_copy(recall_recycling->child_source));
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   };
@@ -552,132 +562,101 @@ ags_recall_recycling_finalize(GObject *gobject)
 void
 ags_recall_recycling_connect(AgsConnectable *connectable)
 {
-  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
-    return;
-  }
-
   ags_recall_recycling_parent_connectable_interface->connect(connectable);
-
-  /* empty */
 }
 
 void
 ags_recall_recycling_disconnect(AgsConnectable *connectable)
 {
   ags_recall_recycling_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
 }
 
 void
-ags_recall_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
+ags_recall_recycling_connect_connection(AgsConnectable *connectable,
+					GObject *connection)
 {
   AgsRecallRecycling *recall_recycling;
-  GObject *gobject;
 
-  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
-    return;
-  }
+  recall_recycling = AGS_RECALL_RECYCLING(connectable);
 
-  ags_recall_recycling_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* AgsRecallRecycling */
-  recall_recycling = AGS_RECALL_RECYCLING(dynamic_connectable);
-
-  /* destination */
-  if(recall_recycling->destination != NULL){
-    gobject = G_OBJECT(recall_recycling->destination);
-
-    //    recall_recycling->destination_add_audio_signal_handler =
-    //      g_signal_connect_after(gobject, "add_audio_signal",
-    //			     G_CALLBACK(ags_recall_recycling_destination_add_audio_signal_callback), recall_recycling);
-      
-    //    recall_recycling->destination_remove_audio_signal_handler =
-    //      g_signal_connect(gobject, "remove_audio_signal",
-    //    		       G_CALLBACK(ags_recall_recycling_destination_remove_audio_signal_callback), recall_recycling);
-  }
-
-  /* source */
-  gobject = G_OBJECT(recall_recycling->source);
-
-  recall_recycling->source_add_audio_signal_handler =
-    g_signal_connect_after(gobject, "add_audio_signal",
+  if(recall_recycling->destination == connection){
+    //empty
+  }else if(recall_recycling->source == connection){
+    g_signal_connect_after(connection, "add-audio-signal",
 			   G_CALLBACK(ags_recall_recycling_source_add_audio_signal_callback), recall_recycling);
 
-  recall_recycling->source_remove_audio_signal_handler =
-    g_signal_connect(gobject, "remove_audio_signal",
+    g_signal_connect(connection, "remove-audio-signal",
   		     G_CALLBACK(ags_recall_recycling_source_remove_audio_signal_callback), recall_recycling);
+    
+  }
 }
 
 void
-ags_recall_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
+ags_recall_recycling_disconnect_connection(AgsConnectable *connectable,
+					   GObject *connection)
 {
   AgsRecallRecycling *recall_recycling;
-  GObject *gobject;
-  
-  recall_recycling = AGS_RECALL_RECYCLING(dynamic_connectable);
 
-  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(recall_recycling)->flags)) == 0){
-    return;
+  recall_recycling = AGS_RECALL_RECYCLING(connectable);
+
+  if(recall_recycling->destination == connection){
+    //empty
+  }else if(recall_recycling->source == connection){
+    g_object_disconnect(connection,
+			"add-audio-signal",
+			G_CALLBACK(ags_recall_recycling_source_add_audio_signal_callback),
+			recall_recycling,
+			NULL);
+
+    g_object_disconnect(connection,
+			"remove-audio-signal",
+			G_CALLBACK(ags_recall_recycling_source_add_audio_signal_callback),
+			recall_recycling,
+			NULL);
   }
-
-  /* destination */
-  if(recall_recycling->destination != NULL &&
-     (AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_recycling)->flags)) == 0){
-
-    gobject = G_OBJECT(recall_recycling->destination);
-    
-    //    g_signal_handler_disconnect(gobject, recall_recycling->destination_add_audio_signal_handler);
-    //    g_signal_handler_disconnect(gobject, recall_recycling->destination_remove_audio_signal_handler);
-  }
-
-  /* source */
-  if(recall_recycling->source != NULL &&
-     (AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_recycling)->flags)) == 0){
-    gobject = G_OBJECT(recall_recycling->source);
-
-    g_signal_handler_disconnect(gobject, recall_recycling->source_add_audio_signal_handler);
-    
-    g_signal_handler_disconnect(gobject, recall_recycling->source_remove_audio_signal_handler);
-  }
-
-  /* call parent */
-  ags_recall_recycling_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
 }
 
 AgsRecall*
 ags_recall_recycling_duplicate(AgsRecall *recall,
 			       AgsRecallID *recall_id,
-			       guint *n_params, GParameter *parameter)
+			       guint *n_params, gchar **parameter_name, GValue *value)
 {
-  AgsRecallRecycling *recall_recycling, *copy;
-  GList *list;
+  AgsRecycling *destination, *source;
+  AgsRecallRecycling *recall_recycling, *copy_recall_recycling;
+
+  guint audio_channel;
+  
+  pthread_mutex_t *recall_mutex;
 
   recall_recycling = AGS_RECALL_RECYCLING(recall);
 
-  parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
-				 parameter, n_params,
-				 "soundcard", recall->soundcard,
-				 "audio_channel", recall_recycling->audio_channel,
-				 "destination", recall_recycling->destination,
-				 "source", recall_recycling->source,
-				 NULL);
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  
+  /* get some fields */
+  pthread_mutex_lock(recall_mutex);
 
-  copy = AGS_RECALL_RECYCLING(AGS_RECALL_CLASS(ags_recall_recycling_parent_class)->duplicate(recall,
-											     recall_id,
-											     n_params, parameter));
+  audio_channel = recall_recycling->audio_channel;
+    
+  destination = recall_recycling->destination;
+  source = recall_recycling->source;
+  
+  pthread_mutex_unlock(recall_mutex);
 
+  copy_recall_recycling = AGS_RECALL_RECYCLING(AGS_RECALL_CLASS(ags_recall_recycling_parent_class)->duplicate(recall,
+													      recall_id,
+													      n_params, parameter_name, value));
+  g_object_set(copy_recall_recycling,
+	       "audio-channel", audio_channel,
+	       "destination", destination,
+	       "source", source,
+	       NULL);
+  
   return((AgsRecall *) copy);
-}
-
-GList*
-ags_recall_recycling_get_child_source(AgsRecallRecycling *recall_recycling)
-{
-  GList *child_source;
-
-  child_source = g_list_copy(recall_recycling->child_source);
-
-  return(child_source);
 }
 
 void
