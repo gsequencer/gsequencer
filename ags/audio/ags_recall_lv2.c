@@ -944,8 +944,8 @@ ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
     if(dlerror() == NULL && lv2_descriptor){
       pthread_mutex_lock(recall_mutex);
       
-      recall_dssi->plugin_descriptor = 
-	plugin_descriptor = dssi_descriptor((unsigned long) effect_index);
+      recall_lv2->plugin_descriptor = 
+	plugin_descriptor = lv2_descriptor((unsigned long) effect_index);
 
       pthread_mutex_unlock(recall_mutex);
       
@@ -1018,7 +1018,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
   /* get base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
   
-  base_plugin_mutex = AGS_BASE_PLUGIN(ladspa_plugin)->obj_mutex;
+  base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
   
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
@@ -1026,7 +1026,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
   pthread_mutex_lock(base_plugin_mutex);
 
   plugin_port =
-    plugin_port_start = g_list_copy(AGS_BASE_PLUGIN(ladspa_plugin)->plugin_port);
+    plugin_port_start = g_list_copy(AGS_BASE_PLUGIN(lv2_plugin)->plugin_port);
 
   pthread_mutex_unlock(base_plugin_mutex);
 
@@ -1147,7 +1147,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 		     NULL);
 
 	ags_recall_lv2_load_conversion(recall_lv2,
-				       (GObject *) current,
+				       (GObject *) current_port,
 				       current_plugin_port);
 
 	ags_port_safe_write_raw(current_port,
@@ -1158,7 +1158,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 #endif
 	
 	port = g_list_prepend(port,
-			      current);
+			      current_port);
 
 	g_free(default_value);
 	g_free(plugin_name);
@@ -1219,7 +1219,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
  * ags_recall_lv2_load_conversion:
  * @recall_lv2: the #AgsRecallLv2
  * @port: the #AgsPort
- * @port_descriptor: the #AgsPluginPort
+ * @plugin_port: the #AgsPluginPort
  * 
  * Loads conversion object by using @plugin_port and sets in on @port.
  * 
@@ -1228,7 +1228,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 void
 ags_recall_lv2_load_conversion(AgsRecallLv2 *recall_lv2,
 			       GObject *port,
-			       gpointer port_descriptor)
+			       gpointer plugin_port)
 {
   AgsLv2Conversion *lv2_conversion;
 
@@ -1277,7 +1277,7 @@ ags_recall_lv2_find(GList *recall,
   pthread_mutex_t *recall_mutex;
 
   while(recall != NULL){
-    if(AGS_IS_RECALL_DSSI(recall->data)){
+    if(AGS_IS_RECALL_LV2(recall->data)){
       /* get recall mutex */
       pthread_mutex_lock(ags_recall_get_class_mutex());
   

@@ -24,6 +24,7 @@
 
 #include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2_plugin.h>
+#include <ags/plugin/ags_plugin_port.h>
 #include <ags/plugin/ags_lv2_worker.h>
 
 #include <ags/audio/ags_input.h>
@@ -505,7 +506,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   pthread_mutex_lock(recall_lv2_mutex);
 
   lv2_handle = (LV2_Handle *) ags_base_plugin_instantiate(lv2_plugin,
-							  samplerate);
+							  samplerate, buffer_size);
 
   pthread_mutex_unlock(recall_lv2_mutex);
 
@@ -923,13 +924,13 @@ ags_recall_lv2_run_feed_input_queue(AgsRecall *recall)
   }
   
   /* process data */
-  pthread_mutex_lock(recall_dssi_mutex);
+  pthread_mutex_lock(recall_lv2_mutex);
 
   run = recall_lv2->plugin_descriptor->run;
     
-  pthread_mutex_unlock(recall_dssi_mutex);
+  pthread_mutex_unlock(recall_lv2_mutex);
   
-  g_object_get(recall_dssi_run,
+  g_object_get(recall_lv2_run,
 	       "note", &note_start,
 	       NULL);
   
@@ -1132,10 +1133,13 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
   AgsRecallRecycling *recall_recycling;
   AgsPort *current_port;
 
+  AgsLv2Plugin *lv2_plugin;
+  
   GList *plugin_port_start, *plugin_port;
   GList *port;
   GList *list;
-  
+
+  gchar *filename, *effect;
   gchar *specifier, *current_specifier;
   
   guint output_lines, input_lines;
@@ -1191,7 +1195,7 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
   output_lines = recall_lv2->output_lines;
   input_lines = recall_lv2->input_lines;
 
-  list_start = g_list_copy(AGS_RECALL(recall_lv2)->port);
+  port = g_list_copy(AGS_RECALL(recall_lv2)->port);
 
   connect_port = recall_lv2->plugin_descriptor->connect_port;
   
@@ -1226,18 +1230,14 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
 
       if(ags_plugin_port_test_flags(current_plugin_port,
 				    AGS_PLUGIN_PORT_CONTROL)){
+	pthread_mutex_lock(plugin_port_mutex);
 	  
-	specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
-	    
-	while(port != NULL){
-	  if(!g_strcmp0(specifier,
-			AGS_PORT(port->data)->specifier)){
-	    current = port->data;
-	    break;
-	  }
+	specifier = g_strdup(current_plugin_port->port_name);
+	
+	pthread_mutex_unlock(plugin_port_mutex);
 
-	  port = port->next;
-	}
+	list = ags_port_find_specifier(port, specifier);
+	g_free(specifier);
 
 	if(list != NULL){
 	  float *port_pointer;

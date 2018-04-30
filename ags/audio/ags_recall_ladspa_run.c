@@ -200,7 +200,6 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   LADSPA_Handle *ladspa_handle;
 
   LADSPA_Data *output, *input;
-  LADSPA_Data *port_data;  
 
   guint output_lines, input_lines;
   guint samplerate;
@@ -322,13 +321,7 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   pthread_mutex_unlock(recall_ladspa_mutex);
 
   /* load ports */
-  if(port_count > 0){    
-    port_data = (LADSPA_Data *) malloc(port_count * sizeof(LADSPA_Data));
-  }
-
   recall_ladspa_run->ladspa_handle = ladspa_handle;
-
-  recall_ladspa_run->port_data = port_data;
 
   ags_recall_ladspa_run_load_ports(recall_ladspa_run);
 
@@ -606,7 +599,7 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 
 	pthread_mutex_unlock(recall_ladspa_mutex);
 
-	list = ags_port_find_specifier(port, specifier);
+	list = ags_port_find_specifier(list_start, specifier);
 	g_free(specifier);
 
 	if(list != NULL){

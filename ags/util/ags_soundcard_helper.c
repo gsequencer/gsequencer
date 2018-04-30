@@ -19,6 +19,8 @@
 
 #include <ags/util/ags_soundcard_helper.h>
 
+#include <ags/object/ags_soundcard.h>
+
 /**
  * SECTION:ags_soundcard_util
  * @short_description: soundcard util
