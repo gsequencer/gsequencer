@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,8 +39,6 @@ void ags_channel_thread_get_property(GObject *gobject,
 				     guint prop_id,
 				     GValue *value,
 				     GParamSpec *param_spec);
-void ags_channel_thread_connect(AgsConnectable *connectable);
-void ags_channel_thread_disconnect(AgsConnectable *connectable);
 void ags_channel_thread_dispose(GObject *gobject);
 void ags_channel_thread_finalize(GObject *gobject);
 
@@ -60,7 +58,7 @@ void ags_channel_thread_stop(AgsThread *thread);
 
 enum{
   PROP_0,
-  PROP_SOUNDCARD,
+  PROP_DEFAULT_OUTPUT_SOUNDCARD,
   PROP_CHANNEL,
 };
 
@@ -124,19 +122,19 @@ ags_channel_thread_class_init(AgsChannelThreadClass *channel_thread)
 
   /* properties */
   /**
-   * AgsChannelThread:soundcard:
+   * AgsChannelThread:default-output-soundcard:
    *
-   * The assigned #AgsChannel.
+   * The assigned default soundcard.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("soundcard",
-				   i18n_pspec("soundcard assigned to"),
-				   i18n_pspec("The AgsSoundcard it is assigned to."),
+  param_spec = g_param_spec_object("default-output-soundcard",
+				   i18n_pspec("default output soundcard assigned to"),
+				   i18n_pspec("The default output AgsSoundcard it is assigned to"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SOUNDCARD,
+				  PROP_DEFAULT_OUTPUT_SOUNDCARD,
 				  param_spec);
 
   /**
@@ -144,7 +142,7 @@ ags_channel_thread_class_init(AgsChannelThreadClass *channel_thread)
    *
    * The assigned #AgsChannel.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("channel assigned to"),
@@ -167,9 +165,6 @@ void
 ags_channel_thread_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_channel_thread_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_channel_thread_connect;
-  connectable->disconnect = ags_channel_thread_disconnect;
 }
 
 void
@@ -179,7 +174,8 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
 
   AgsConfig *config;
 
-  gchar *str0, *str1;
+  guint samplerate;
+  guint buffer_size;
   
   thread = (AgsThread *) channel_thread;
 
@@ -188,49 +184,15 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
   
   config = ags_config_get_instance();
   
-  str0 = ags_config_get_value(config,
-			      AGS_CONFIG_SOUNDCARD,
-			      "samplerate");
-
-  if(str0 == NULL){
-    str0 = ags_config_get_value(config,
-				AGS_CONFIG_SOUNDCARD_0,
-				"samplerate");
-  }
+  samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
   
-  str1 = ags_config_get_value(config,
-			      AGS_CONFIG_SOUNDCARD,
-			      "buffer-size");
-
-  if(str1 == NULL){
-    str1 = ags_config_get_value(config,
-				AGS_CONFIG_SOUNDCARD_0,
-				"buffer-size");
-  }
-  
-  if(str0 == NULL || str1 == NULL){
-    thread->freq = AGS_CHANNEL_THREAD_DEFAULT_JIFFIE;
-  }else{
-    guint samplerate;
-    guint buffer_size;
-
-    samplerate = g_ascii_strtoull(str0,
-				  NULL,
-				  10);
-    buffer_size = g_ascii_strtoull(str1,
-				   NULL,
-				   10);
-
-    thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
-  }
-
-  g_free(str0);
-  g_free(str1);
+  thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;  
 
   g_atomic_int_set(&(channel_thread->flags),
 		   0);
 
-  channel_thread->soundcard = NULL;
+  channel_thread->default_output_soundcard = NULL;
   
   /* start */
   pthread_mutexattr_init(&(channel_thread->wakeup_attr));
@@ -265,28 +227,43 @@ ags_channel_thread_set_property(GObject *gobject,
 {
   AgsChannelThread *channel_thread;
 
+  pthread_mutex_t *thread_mutex;
+
   channel_thread = AGS_CHANNEL_THREAD(gobject);
 
+  /* get thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = AGS_THREAD(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+
   switch(prop_id){
-  case PROP_SOUNDCARD:
+  case PROP_DEFAULT_OUTPUT_SOUNDCARD:
     {
-      GObject *soundcard;
+      GObject *default_output_soundcard;
 
-      soundcard = g_value_get_object(value);
+      default_output_soundcard = g_value_get_object(value);
 
-      if(soundcard == channel_thread->soundcard){
+      pthread_mutex_lock(thread_mutex);
+
+      if(channel_thread->default_output_soundcard == default_output_soundcard){
+	pthread_mutex_unlock(thread_mutex);
+
 	return;
       }
-      
-      if(channel_thread->soundcard != NULL){
-	g_object_unref(channel_thread->soundcard);
+
+      if(channel_thread->default_output_soundcard != NULL){
+	g_object_unref(channel_thread->default_output_soundcard);
       }
 
-      if(soundcard != NULL){
-	g_object_ref(soundcard);
+      if(default_output_soundcard != NULL){
+	g_object_ref(default_output_soundcard);
       }
 
-      channel_thread->soundcard = soundcard;
+      channel_thread->default_output_soundcard = default_output_soundcard;
+
+      pthread_mutex_unlock(thread_mutex);
     }
     break;
   case PROP_CHANNEL:
@@ -295,7 +272,11 @@ ags_channel_thread_set_property(GObject *gobject,
 
       channel = (AgsChannel *) g_value_get_object(value);
 
+      pthread_mutex_lock(thread_mutex);
+
       if(channel_thread->channel == (GObject *) channel){
+	pthread_mutex_unlock(thread_mutex);
+	
 	return;
       }
       
@@ -308,6 +289,8 @@ ags_channel_thread_set_property(GObject *gobject,
       }
 
       channel_thread->channel = (GObject *) channel;
+
+      pthread_mutex_unlock(thread_mutex);
     }
     break;
   default:
@@ -324,39 +307,40 @@ ags_channel_thread_get_property(GObject *gobject,
 {
   AgsChannelThread *channel_thread;
 
+  pthread_mutex_t *thread_mutex;
+
   channel_thread = AGS_CHANNEL_THREAD(gobject);
 
+  /* get thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = AGS_THREAD(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+
   switch(prop_id){
-  case PROP_SOUNDCARD:
+  case PROP_DEFAULT_OUTPUT_SOUNDCARD:
     {
-      g_value_set_object(value, channel_thread->soundcard);
+      pthread_mutex_lock(thread_mutex);
+
+      g_value_set_object(value, channel_thread->default_output_soundcard);
+
+      pthread_mutex_unlock(thread_mutex);
     }
     break;
   case PROP_CHANNEL:
     {
+      pthread_mutex_lock(thread_mutex);
+
       g_value_set_object(value, G_OBJECT(channel_thread->channel));
+
+      pthread_mutex_unlock(thread_mutex);
     }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_channel_thread_connect(AgsConnectable *connectable)
-{
-  ags_channel_thread_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_channel_thread_disconnect(AgsConnectable *connectable)
-{
-  ags_channel_thread_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
 }
 
 void
@@ -367,10 +351,10 @@ ags_channel_thread_dispose(GObject *gobject)
   channel_thread = AGS_CHANNEL_THREAD(gobject);
 
   /* soundcard */
-  if(channel_thread->soundcard != NULL){
-    g_object_unref(channel_thread->soundcard);
+  if(channel_thread->default_output_soundcard != NULL){
+    g_object_unref(channel_thread->default_output_soundcard);
 
-    channel_thread->soundcard = NULL;
+    channel_thread->default_output_soundcard = NULL;
   }
 
   /* channel */
@@ -392,8 +376,8 @@ ags_channel_thread_finalize(GObject *gobject)
   channel_thread = AGS_CHANNEL_THREAD(gobject);
 
   /* soundcard */
-  if(channel_thread->soundcard != NULL){
-    g_object_unref(channel_thread->soundcard);
+  if(channel_thread->default_output_soundcard != NULL){
+    g_object_unref(channel_thread->default_output_soundcard);
   }
 
   /* wakeup mutex and cond */
@@ -441,17 +425,20 @@ ags_channel_thread_run(AgsThread *thread)
 {
   AgsChannel *channel;
   AgsPlayback *playback;
-
-  AgsMutexManager *mutex_manager;
-  AgsChannelThread *channel_thread;
-  AgsRecallID *current_recall_id;
-
-  AgsThread *current_thread;
-
-  gint stage;
   
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *channel_mutex;
+  AgsChannelThread *channel_thread;
+
+  GList *recall_id;
+  
+  gint sound_scope;
+
+  static const guint playback_staging_flags = (AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
+					       AGS_SOUND_STAGING_AUTOMATE |
+					       AGS_SOUND_STAGING_RUN_PRE |
+					       AGS_SOUND_STAGING_RUN_INTER |
+					       AGS_SOUND_STAGING_RUN_POST |
+					       AGS_SOUND_STAGING_DO_FEEDBACK |
+					       AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE);
 
 #ifdef AGS_WITH_RT
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
@@ -473,30 +460,15 @@ ags_channel_thread_run(AgsThread *thread)
     return;
   }
 
-  //  g_message("eer");
   channel_thread = AGS_CHANNEL_THREAD(thread);
 
-  //  thread->freq = AGS_SOUNDCARD(thread->soundcard)->delay[AGS_SOUNDCARD(thread->soundcard)->tic_counter] / AGS_SOUNDCARD(thread->soundcard)->delay_factor;
+  g_object_get(channel_thread,
+	       "channel", &channel,
+	       NULL);
 
-  channel = (AgsChannel *) channel_thread->channel;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* lookup channel mutex */
-  pthread_mutex_lock(application_mutex);
-
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) channel);
-      
-  pthread_mutex_unlock(application_mutex);
-
-  /* get soundcard play */
-  pthread_mutex_lock(channel_mutex);
-
-  playback = (AgsPlayback *) channel->playback;
-  
-  pthread_mutex_unlock(channel_mutex);
+  g_object_get(channel,
+	       "playback", &playback,
+	        NULL);
   
   /* start - wait until signaled */
   pthread_mutex_lock(channel_thread->wakeup_mutex);
@@ -520,56 +492,28 @@ ags_channel_thread_run(AgsThread *thread)
   
   pthread_mutex_unlock(channel_thread->wakeup_mutex);
   
-  
-  /* do channel processing */
-  for(stage = 0; stage < 3; stage++){
-    /* playback */
-    pthread_mutex_lock(channel_mutex);
-
-    current_thread = playback->channel_thread[0];
-    current_recall_id = playback->recall_id[0];
-    
-    pthread_mutex_unlock(channel_mutex);
-
-    if(thread == current_thread){
-      ags_channel_recursive_play(channel, current_recall_id, stage);
-    }
-
-    /* sequencer */
-    pthread_mutex_lock(channel_mutex);
-
-    current_thread = playback->channel_thread[1];
-    current_recall_id = playback->recall_id[1];
-    
-    pthread_mutex_unlock(channel_mutex);
-
-    if(thread == current_thread){
-      ags_channel_recursive_play(channel, current_recall_id, stage);
-    }
-
-    /* notation */
-    pthread_mutex_lock(channel_mutex);
-
-    current_thread = playback->channel_thread[2];
-    current_recall_id = playback->recall_id[2];
-    
-    pthread_mutex_unlock(channel_mutex);
-
-    if(thread == current_thread){
-      ags_channel_recursive_play(channel, current_recall_id, stage);
+  /* 
+   * do audio processing
+   */  
+  for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){
+    if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
+      ags_channel_recursive_run_stage(channel,
+				      sound_scope, playback_staging_flags);
+	  
+      g_list_free(recall_id);
     }
   }
 
   /* sync */
   pthread_mutex_lock(channel_thread->done_mutex);
-
-  g_atomic_int_and(&(channel_thread->flags),
-		   (~AGS_CHANNEL_THREAD_WAIT_SYNC));	    
   
-
+  g_atomic_int_and(&(channel_thread->flags),
+		   (~AGS_CHANNEL_THREAD_WAIT_SYNC));  
+  
   if((AGS_CHANNEL_THREAD_DONE_SYNC & (g_atomic_int_get(&(channel_thread->flags)))) == 0){
     pthread_cond_signal(channel_thread->done_cond);
   }
+  
   pthread_mutex_unlock(channel_thread->done_mutex);
 }
 
@@ -605,23 +549,23 @@ ags_channel_thread_stop(AgsThread *thread)
 
 /**
  * ags_channel_thread_new:
- * @soundcard: the #GObject
+ * @default_output_soundcard: the #GObject
  * @channel: the #AgsChannel
  *
  * Create a new #AgsChannelThread.
  *
  * Returns: the new #AgsChannelThread
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsChannelThread*
-ags_channel_thread_new(GObject *soundcard,
+ags_channel_thread_new(GObject *default_output_soundcard,
 		       GObject *channel)
 {
   AgsChannelThread *channel_thread;
 
   channel_thread = (AgsChannelThread *) g_object_new(AGS_TYPE_CHANNEL_THREAD,
-						     "soundcard", soundcard,
+						     "default-output-soundcard", default_output_soundcard,
 						     "channel", channel,
 						     NULL);
 

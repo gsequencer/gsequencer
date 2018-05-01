@@ -318,11 +318,7 @@ am__objects_7 = $(am__objects_1) \
 	ags/audio/thread/libags_audio_la-ags_channel_thread.lo \
 	ags/audio/thread/libags_audio_la-ags_sequencer_thread.lo \
 	ags/audio/thread/libags_audio_la-ags_soundcard_thread.lo \
-	ags/audio/thread/libags_audio_la-ags_export_thread.lo \
-	ags/audio/thread/libags_audio_la-ags_iterator_thread.lo \
-	ags/audio/thread/libags_audio_la-ags_record_thread.lo \
-	ags/audio/thread/libags_audio_la-ags_recycling_thread.lo \
-	ags/audio/thread/libags_audio_la-ags_recycling_thread_callbacks.lo
+	ags/audio/thread/libags_audio_la-ags_export_thread.lo
 am__objects_8 = $(am__objects_1) \
 	ags/audio/file/libags_audio_la-ags_audio_container.lo \
 	ags/audio/file/libags_audio_la-ags_audio_file.lo \
@@ -3578,11 +3574,7 @@ libags_audio_thread_h_sources = \
 	ags/audio/thread/ags_channel_thread.h \
 	ags/audio/thread/ags_sequencer_thread.h \
 	ags/audio/thread/ags_soundcard_thread.h \
-	ags/audio/thread/ags_export_thread.h \
-	ags/audio/thread/ags_iterator_thread.h \
-	ags/audio/thread/ags_record_thread.h \
-	ags/audio/thread/ags_recycling_thread_callbacks.h \
-	ags/audio/thread/ags_recycling_thread.h
+	ags/audio/thread/ags_export_thread.h
 
 deprecated_libags_audio_thread_c_sources = 
 libags_audio_thread_c_sources = \
@@ -3592,11 +3584,7 @@ libags_audio_thread_c_sources = \
 	ags/audio/thread/ags_channel_thread.c \
 	ags/audio/thread/ags_sequencer_thread.c \
 	ags/audio/thread/ags_soundcard_thread.c \
-	ags/audio/thread/ags_export_thread.c \
-	ags/audio/thread/ags_iterator_thread.c \
-	ags/audio/thread/ags_record_thread.c \
-	ags/audio/thread/ags_recycling_thread.c \
-	ags/audio/thread/ags_recycling_thread_callbacks.c
+	ags/audio/thread/ags_export_thread.c
 
 
 # libags-audio - plugin
@@ -5094,18 +5082,6 @@ ags/audio/thread/libags_audio_la-ags_soundcard_thread.lo:  \
 	ags/audio/thread/$(am__dirstamp) \
 	ags/audio/thread/$(DEPDIR)/$(am__dirstamp)
 ags/audio/thread/libags_audio_la-ags_export_thread.lo:  \
-	ags/audio/thread/$(am__dirstamp) \
-	ags/audio/thread/$(DEPDIR)/$(am__dirstamp)
-ags/audio/thread/libags_audio_la-ags_iterator_thread.lo:  \
-	ags/audio/thread/$(am__dirstamp) \
-	ags/audio/thread/$(DEPDIR)/$(am__dirstamp)
-ags/audio/thread/libags_audio_la-ags_record_thread.lo:  \
-	ags/audio/thread/$(am__dirstamp) \
-	ags/audio/thread/$(DEPDIR)/$(am__dirstamp)
-ags/audio/thread/libags_audio_la-ags_recycling_thread.lo:  \
-	ags/audio/thread/$(am__dirstamp) \
-	ags/audio/thread/$(DEPDIR)/$(am__dirstamp)
-ags/audio/thread/libags_audio_la-ags_recycling_thread_callbacks.lo:  \
 	ags/audio/thread/$(am__dirstamp) \
 	ags/audio/thread/$(DEPDIR)/$(am__dirstamp)
 ags/audio/file/$(am__dirstamp):
@@ -7913,10 +7889,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_audio_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_channel_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_export_thread.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_iterator_thread.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_record_thread.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_recycling_thread.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_recycling_thread_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_sequencer_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_soundcard_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/file/$(DEPDIR)/libags_la-ags_file.Plo@am__quote@
@@ -8841,34 +8813,6 @@ ags/audio/thread/libags_audio_la-ags_export_thread.lo: ags/audio/thread/ags_expo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/thread/ags_export_thread.c' object='ags/audio/thread/libags_audio_la-ags_export_thread.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/thread/libags_audio_la-ags_export_thread.lo `test -f 'ags/audio/thread/ags_export_thread.c' || echo '$(srcdir)/'`ags/audio/thread/ags_export_thread.c
-
-ags/audio/thread/libags_audio_la-ags_iterator_thread.lo: ags/audio/thread/ags_iterator_thread.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/thread/libags_audio_la-ags_iterator_thread.lo -MD -MP -MF ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_iterator_thread.Tpo -c -o ags/audio/thread/libags_audio_la-ags_iterator_thread.lo `test -f 'ags/audio/thread/ags_iterator_thread.c' || echo '$(srcdir)/'`ags/audio/thread/ags_iterator_thread.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_iterator_thread.Tpo ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_iterator_thread.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/thread/ags_iterator_thread.c' object='ags/audio/thread/libags_audio_la-ags_iterator_thread.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/thread/libags_audio_la-ags_iterator_thread.lo `test -f 'ags/audio/thread/ags_iterator_thread.c' || echo '$(srcdir)/'`ags/audio/thread/ags_iterator_thread.c
-
-ags/audio/thread/libags_audio_la-ags_record_thread.lo: ags/audio/thread/ags_record_thread.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/thread/libags_audio_la-ags_record_thread.lo -MD -MP -MF ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_record_thread.Tpo -c -o ags/audio/thread/libags_audio_la-ags_record_thread.lo `test -f 'ags/audio/thread/ags_record_thread.c' || echo '$(srcdir)/'`ags/audio/thread/ags_record_thread.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_record_thread.Tpo ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_record_thread.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/thread/ags_record_thread.c' object='ags/audio/thread/libags_audio_la-ags_record_thread.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/thread/libags_audio_la-ags_record_thread.lo `test -f 'ags/audio/thread/ags_record_thread.c' || echo '$(srcdir)/'`ags/audio/thread/ags_record_thread.c
-
-ags/audio/thread/libags_audio_la-ags_recycling_thread.lo: ags/audio/thread/ags_recycling_thread.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/thread/libags_audio_la-ags_recycling_thread.lo -MD -MP -MF ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_recycling_thread.Tpo -c -o ags/audio/thread/libags_audio_la-ags_recycling_thread.lo `test -f 'ags/audio/thread/ags_recycling_thread.c' || echo '$(srcdir)/'`ags/audio/thread/ags_recycling_thread.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_recycling_thread.Tpo ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_recycling_thread.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/thread/ags_recycling_thread.c' object='ags/audio/thread/libags_audio_la-ags_recycling_thread.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/thread/libags_audio_la-ags_recycling_thread.lo `test -f 'ags/audio/thread/ags_recycling_thread.c' || echo '$(srcdir)/'`ags/audio/thread/ags_recycling_thread.c
-
-ags/audio/thread/libags_audio_la-ags_recycling_thread_callbacks.lo: ags/audio/thread/ags_recycling_thread_callbacks.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/thread/libags_audio_la-ags_recycling_thread_callbacks.lo -MD -MP -MF ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_recycling_thread_callbacks.Tpo -c -o ags/audio/thread/libags_audio_la-ags_recycling_thread_callbacks.lo `test -f 'ags/audio/thread/ags_recycling_thread_callbacks.c' || echo '$(srcdir)/'`ags/audio/thread/ags_recycling_thread_callbacks.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_recycling_thread_callbacks.Tpo ags/audio/thread/$(DEPDIR)/libags_audio_la-ags_recycling_thread_callbacks.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/thread/ags_recycling_thread_callbacks.c' object='ags/audio/thread/libags_audio_la-ags_recycling_thread_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/thread/libags_audio_la-ags_recycling_thread_callbacks.lo `test -f 'ags/audio/thread/ags_recycling_thread_callbacks.c' || echo '$(srcdir)/'`ags/audio/thread/ags_recycling_thread_callbacks.c
 
 ags/audio/file/libags_audio_la-ags_audio_container.lo: ags/audio/file/ags_audio_container.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/file/libags_audio_la-ags_audio_container.lo -MD -MP -MF ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_container.Tpo -c -o ags/audio/file/libags_audio_la-ags_audio_container.lo `test -f 'ags/audio/file/ags_audio_container.c' || echo '$(srcdir)/'`ags/audio/file/ags_audio_container.c

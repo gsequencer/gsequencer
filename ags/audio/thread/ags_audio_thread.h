@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -60,7 +60,7 @@ struct _AgsAudioThread
 
   volatile guint flags;
 
-  GObject *soundcard;
+  GObject *default_output_soundcard;
   
   pthread_mutexattr_t wakeup_attr;
   pthread_mutex_t *wakeup_mutex;
@@ -80,7 +80,7 @@ struct _AgsAudioThreadClass
 
 GType ags_audio_thread_get_type();
 
-AgsAudioThread* ags_audio_thread_new(GObject *soundcard,
+AgsAudioThread* ags_audio_thread_new(GObject *default_output_soundcard,
 				     GObject *audio);
 
 #endif /*__AGS_AUDIO_THREAD_H__*/

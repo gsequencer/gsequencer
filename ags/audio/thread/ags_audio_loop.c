@@ -315,15 +315,6 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   audio_loop->recall_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(audio_loop->recall_mutex, NULL);
 
-  /* event main loop */
-  g_cond_init(&(audio_loop->cond));
-  g_mutex_init(&(audio_loop->mutex));
-
-  audio_loop->main_context = NULL;
-
-  audio_loop->cached_poll_array_size = 0;
-  audio_loop->cached_poll_array = NULL;
-
   /* timing thread */
   audio_loop->timing_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(audio_loop->timing_mutex, NULL);
@@ -395,6 +386,12 @@ ags_audio_loop_set_property(GObject *gobject,
       default_output_soundcard = g_value_get_object(value);
 
       pthread_mutex_lock(thread_mutex);
+
+      if(audio_loop->default_output_soundcard == default_output_soundcard){
+	pthread_mutex_unlock(thread_mutex);
+
+	return;
+      }
 
       if(audio_loop->default_output_soundcard != NULL){
 	g_object_unref(audio_loop->default_output_soundcard);
@@ -817,15 +814,6 @@ ags_audio_loop_run(AgsThread *thread)
 
   AgsPollingThread *polling_thread;
   
-  GPollFD *fds = NULL;  
-
-  gint max_priority;
-  gint timeout;
-  gint nfds, allocated_nfds;
-  gboolean some_ready;
-  
-  guint val;
-
   audio_loop = AGS_AUDIO_LOOP(thread);
   
   polling_thread = (AgsPollingThread *) ags_thread_find_type(thread,

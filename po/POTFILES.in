@@ -269,7 +269,6 @@
 ./ags/audio/ags_port.c
 ./ags/audio/ags_preset.c
 ./ags/audio/ags_recall.c
-./ags/audio/ags_recall_adaptor_run.c
 ./ags/audio/ags_recall_audio.c
 ./ags/audio/ags_recall_audio_run.c
 ./ags/audio/ags_recall_audio_signal.c
@@ -469,10 +468,6 @@
 ./ags/audio/thread/ags_audio_thread.c
 ./ags/audio/thread/ags_channel_thread.c
 ./ags/audio/thread/ags_export_thread.c
-./ags/audio/thread/ags_iterator_thread.c
-./ags/audio/thread/ags_record_thread.c
-./ags/audio/thread/ags_recycling_thread.c
-./ags/audio/thread/ags_recycling_thread_callbacks.c
 ./ags/audio/thread/ags_sequencer_thread.c
 ./ags/audio/thread/ags_soundcard_thread.c
 ./ags/file/ags_file.c
@@ -585,6 +580,7 @@
 ./ags/util/ags_destroy_util.c
 ./ags/util/ags_id_generator.c
 ./ags/util/ags_list_util.c
+./ags/util/ags_soundcard_helper.c
 ./ags/widget/ags_cartesian.c
 ./ags/widget/ags_container.c
 ./ags/widget/ags_dial.c
