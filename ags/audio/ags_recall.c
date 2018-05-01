@@ -179,6 +179,7 @@ static guint recall_signals[LAST_SIGNAL];
 static pthread_mutex_t ags_recall_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static gboolean ags_recall_global_omit_event = TRUE;
+static gboolean ags_recall_global_performance_mode = FALSE;
 static gboolean ags_recall_global_rt_safe = FALSE;
 
 GType
@@ -2200,6 +2201,52 @@ ags_recall_get_class_mutex()
 }
 
 /**
+ * ags_recall_global_get_omit_event:
+ * 
+ * Get global config value omit event.
+ *
+ * Returns: if %TRUE does omit events, else not
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_global_get_omit_event()
+{
+  gboolean omit_event;
+
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  omit_event = ags_recall_global_omit_event;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  
+  return(omit_event);
+}
+
+/**
+ * ags_recall_global_get_performance_mode:
+ * 
+ * Get global config value performance mode.
+ *
+ * Returns: if %TRUE does performance mode, else not
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_global_get_performance_mode()
+{
+  gboolean performance_mode;
+
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  performance_mode = ags_recall_global_performance_mode;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  
+  return(performance_mode);
+}
+
+/**
  * ags_recall_global_get_rt_safe:
  * 
  * Get global config value rt-safe.
@@ -2211,7 +2258,15 @@ ags_recall_get_class_mutex()
 gboolean
 ags_recall_global_get_rt_safe()
 {
-  return(ags_recall_global_rt_safe);
+  gboolean rt_safe;
+
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  rt_safe = ags_recall_global_rt_safe;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  
+  return(rt_safe);
 }
 
 /**
