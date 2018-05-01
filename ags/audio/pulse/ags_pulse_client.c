@@ -757,8 +757,10 @@ ags_pulse_client_deactivate(AgsPulseClient *pulse_client)
   if(pulse_client->context == NULL){
     return;
   }
-
+  
+#ifdef AGS_WITH_PULSE
   pa_context_disconnect(pulse_client->context);
+#endif
   
   pulse_client->flags &= (~AGS_PULSE_CLIENT_ACTIVATED);
 }
