@@ -22,7 +22,6 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_audio_track_util.h>
 
 #include <ags/i18n.h>
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -180,20 +180,20 @@ ags_recycling_context_init(AgsRecyclingContext *recycling_context)
   recycling_context->sound_scope = 0;
 
   /* object mutex */
-  recycling_context->mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  recycling_context->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
 
-  pthread_mutexattr_init(recycling_context->mutexattr);
-  pthread_mutexattr_settype(recycling_context->mutexattr,
+  pthread_mutexattr_init(recycling_context->obj_mutexattr);
+  pthread_mutexattr_settype(recycling_context->obj_mutexattr,
 			    PTHREAD_MUTEX_RECURSIVE);
 
 #ifdef __linux__
-  pthread_mutexattr_setprotocol(recycling_context->mutexattr,
+  pthread_mutexattr_setprotocol(recycling_context->obj_mutexattr,
 				PTHREAD_PRIO_INHERIT);
 #endif
 
-  recycling_context->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(recycling_context->mutex,
-		     recycling_context->mutexattr);
+  recycling_context->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(recycling_context->obj_mutex,
+		     recycling_context->obj_mutexattr);
 
   /* recall id */
   recycling_context->recall_id = NULL;
@@ -532,7 +532,7 @@ ags_recycling_context_replace(AgsRecyclingContext *recycling_context,
   /* get recycling context mutex */
   pthread_mutex_lock(ags_recycling_context_get_class_mutex());
   
-  recycling_context_mutex = recycling_context->mutex;
+  recycling_context_mutex = recycling_context->obj_mutex;
   
   pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
 
@@ -590,7 +590,7 @@ ags_recycling_context_add(AgsRecyclingContext *recycling_context,
   /* get recycling context mutex */
   pthread_mutex_lock(ags_recycling_context_get_class_mutex());
   
-  recycling_context_mutex = recycling_context->mutex;
+  recycling_context_mutex = recycling_context->obj_mutex;
   
   pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
 
@@ -641,7 +641,7 @@ ags_recycling_context_remove(AgsRecyclingContext *recycling_context,
   /* get recycling context mutex */
   pthread_mutex_lock(ags_recycling_context_get_class_mutex());
   
-  recycling_context_mutex = recycling_context->mutex;
+  recycling_context_mutex = recycling_context->obj_mutex;
   
   pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
 
@@ -715,7 +715,7 @@ ags_recycling_context_insert(AgsRecyclingContext *recycling_context,
   /* get recycling context mutex */
   pthread_mutex_lock(ags_recycling_context_get_class_mutex());
   
-  recycling_context_mutex = recycling_context->mutex;
+  recycling_context_mutex = recycling_context->obj_mutex;
   
   pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
 
@@ -781,7 +781,7 @@ ags_recycling_context_get_toplevel(AgsRecyclingContext *recycling_context)
     /* get recycling context mutex */
     pthread_mutex_lock(ags_recycling_context_get_class_mutex());
   
-    recycling_context_mutex = recycling_context->mutex;
+    recycling_context_mutex = recycling_context->obj_mutex;
   
     pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
 
@@ -823,7 +823,7 @@ ags_recycling_context_find(AgsRecyclingContext *recycling_context,
   /* get recycling context mutex */
   pthread_mutex_lock(ags_recycling_context_get_class_mutex());
   
-  recycling_context_mutex = recycling_context->mutex;
+  recycling_context_mutex = recycling_context->obj_mutex;
   
   pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
 
@@ -872,7 +872,7 @@ ags_recycling_context_find_child(AgsRecyclingContext *recycling_context,
   /* get recycling context mutex */
   pthread_mutex_lock(ags_recycling_context_get_class_mutex());
   
-  recycling_context_mutex = recycling_context->mutex;
+  recycling_context_mutex = recycling_context->obj_mutex;
   
   pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
 
@@ -930,7 +930,7 @@ ags_recycling_context_find_parent(AgsRecyclingContext *recycling_context,
   /* get recycling context mutex */
   pthread_mutex_lock(ags_recycling_context_get_class_mutex());
   
-  recycling_context_mutex = recycling_context->mutex;
+  recycling_context_mutex = recycling_context->obj_mutex;
   
   pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
 
@@ -945,7 +945,7 @@ ags_recycling_context_find_parent(AgsRecyclingContext *recycling_context,
     /* get parent mutex */
     pthread_mutex_lock(ags_recycling_context_get_class_mutex());
   
-    parent_mutex = parent->mutex;
+    parent_mutex = parent->obj_mutex;
   
     pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
 
@@ -1079,7 +1079,7 @@ ags_recycling_context_get_child_recall_id(AgsRecyclingContext *recycling_context
   /* get recycling context mutex */
   pthread_mutex_lock(ags_recycling_context_get_class_mutex());
   
-  recycling_context_mutex = recycling_context->mutex;
+  recycling_context_mutex = recycling_context->obj_mutex;
   
   pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
 
@@ -1097,7 +1097,7 @@ ags_recycling_context_get_child_recall_id(AgsRecyclingContext *recycling_context
     /* get recycling context mutex */
     pthread_mutex_lock(ags_recycling_context_get_class_mutex());
   
-    child_mutex = AGS_RECYCLING_CONTEXT(child->data)->mutex;
+    child_mutex = AGS_RECYCLING_CONTEXT(child->data)->obj_mutex;
   
     pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
 
@@ -1192,7 +1192,7 @@ ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
   /* get recycling context mutex */
   pthread_mutex_lock(ags_recycling_context_get_class_mutex());
   
-  recycling_context_mutex = recycling_context->mutex;
+  recycling_context_mutex = recycling_context->obj_mutex;
   
   pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
 

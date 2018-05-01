@@ -635,7 +635,7 @@ ags_wave_test_flags(AgsWave *wave, guint flags)
   /* get wave mutex */
   pthread_mutex_lock(ags_wave_get_class_mutex());
   
-  wave_mutex = current_wave->obj_mutex;
+  wave_mutex = wave->obj_mutex;
   
   pthread_mutex_unlock(ags_wave_get_class_mutex());
 
@@ -670,7 +670,7 @@ ags_wave_set_flags(AgsWave *wave, guint flags)
   /* get wave mutex */
   pthread_mutex_lock(ags_wave_get_class_mutex());
   
-  wave_mutex = current_wave->obj_mutex;
+  wave_mutex = wave->obj_mutex;
   
   pthread_mutex_unlock(ags_wave_get_class_mutex());
 
@@ -703,7 +703,7 @@ ags_wave_unset_flags(AgsWave *wave, guint flags)
   /* get wave mutex */
   pthread_mutex_lock(ags_wave_get_class_mutex());
   
-  wave_mutex = current_wave->obj_mutex;
+  wave_mutex = wave->obj_mutex;
   
   pthread_mutex_unlock(ags_wave_get_class_mutex());
 
@@ -1331,7 +1331,8 @@ ags_wave_find_region(AgsWave *wave,
       break;
     }
 
-    region = g_list_prepend(region, current);
+    region = g_list_prepend(region,
+			    buffer->data);
 
     buffer = buffer->next;
   }
@@ -1502,8 +1503,8 @@ ags_wave_remove_region_from_selection(AgsWave *wave,
 
   /* find region */
   region = ags_wave_find_region(wave,
-				x0, y0,
-				x1, y1,
+				x0,
+				x1,
 				TRUE);
 
   list = region;
@@ -1585,6 +1586,8 @@ ags_wave_copy_selection(AgsWave *wave)
 {
   AgsBuffer *buffer;
 
+  AgsTimestamp *timestamp;
+  
   xmlNode *wave_node, *current_buffer;
   xmlNode *timestamp_node;
 
@@ -1593,6 +1596,8 @@ ags_wave_copy_selection(AgsWave *wave)
   xmlChar *str;
   
   guint64 x_boundary, y_boundary;
+
+  pthread_mutex_t *wave_mutex;
 
   if(!AGS_IS_WAVE(wave)){
     return;

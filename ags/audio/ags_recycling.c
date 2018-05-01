@@ -572,7 +572,7 @@ ags_recycling_set_property(GObject *gobject,
     {
       pthread_mutex_lock(recycling_mutex);
 
-      channel->output_soundcard_channel = g_value_get_int(value);
+      recycling->output_soundcard_channel = g_value_get_int(value);
 
       pthread_mutex_unlock(recycling_mutex);
     }
@@ -590,7 +590,7 @@ ags_recycling_set_property(GObject *gobject,
     {
       pthread_mutex_lock(recycling_mutex);
 
-      channel->input_soundcard_channel = g_value_get_int(value);
+      recycling->input_soundcard_channel = g_value_get_int(value);
 
       pthread_mutex_unlock(recycling_mutex);
     }
@@ -1834,6 +1834,11 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
     list = list_start;
       
     while(list != NULL){
+      AgsAudioSignal *current_audio_signal;
+      AgsAudioSignal *rt_template;
+
+      pthread_mutex_t *current_audio_signal_mutex;
+
       current_audio_signal = list->data;
       
       /* get audio signal mutex */  
@@ -2146,6 +2151,8 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 {
   AgsAudioSignal *template;
 
+  GObject *output_soundcard;
+  
   GList *list_start, *list;
   GList *stream, *template_stream;
 
@@ -2311,12 +2318,12 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
  						  ags_audio_buffer_util_format_from_soundcard(format));
 
   /* generic copying */
-  stream = g_list_nth(audio_signal->stream_beginning,
+  stream = g_list_nth(audio_signal->stream,
 		      (guint) ((delay * buffer_size) + attack) / buffer_size);
   
   pthread_mutex_lock(template_stream_mutex);
   
-  template_stream = template->stream_beginning;
+  template_stream = template->stream;
 
   for(i = 0, j = 0, k = attack, nth_loop = 0; i < frame_count;){    
     /* compute count of frames to copy */
@@ -2364,7 +2371,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 	i + copy_n_frames < loop_start + loop_frame_count &&
 	i + copy_n_frames >= loop_start + (nth_loop + 1) * loop_length)){
       j = loop_start % buffer_size;
-      template_stream = g_list_nth(stream_beginning,
+      template_stream = g_list_nth(template->stream,
 				   floor(loop_start / buffer_size));
 
       nth_loop++;
@@ -2584,7 +2591,7 @@ ags_recycling_new(GObject *output_soundcard)
   AgsRecycling *recycling;
 
   recycling = (AgsRecycling *) g_object_new(AGS_TYPE_RECYCLING,
-					    "output-soundcard", output-soundcard,
+					    "output-soundcard", output_soundcard,
 					    NULL);
 
   return(recycling);

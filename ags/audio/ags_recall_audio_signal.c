@@ -45,6 +45,8 @@ void ags_recall_audio_signal_finalize(GObject *gobject);
  * SECTION:ags_recall_audio_signal
  * @Short_description: audio signal context of recall
  * @Title: AgsRecallAudioSignal
+ * @section_id:
+ * @include: ags/audio/ags_recall_audio_signal.h
  *
  * #AgsRecallAudioSignal acts as audio signal recall.
  */

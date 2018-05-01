@@ -650,7 +650,7 @@ ags_recall_recycling_duplicate(AgsRecall *recall,
 	       "source", source,
 	       NULL);
   
-  return((AgsRecall *) copy);
+  return((AgsRecall *) copy_recall_recycling);
 }
 
 void
@@ -703,7 +703,7 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 	       NULL);
 
   g_object_get(recall_channel_run,
-	       "source", &channnel,
+	       "source", &channel,
 	       NULL);
 
   g_object_get(recall_recycling,
@@ -822,7 +822,7 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 	       NULL);
 
   g_object_get(recall_channel_run,
-	       "source", &channnel,
+	       "source", &channel,
 	       NULL);
 
   g_object_get(recall_recycling,
@@ -884,7 +884,7 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 	    AGS_CHANNEL(recall_recycling->source->channel)->line);
 #endif
 
-  g_object_get(recall,
+  g_object_get(recall_recycling,
 	       "child", &list_start,
 	       NULL);
   
@@ -905,8 +905,6 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
   }
 
   g_list_free(list_start);
-
-  pthread_mutex_unlock(mutex);
 }
 
 /**

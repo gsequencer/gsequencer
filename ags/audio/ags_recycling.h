@@ -102,7 +102,7 @@ GType ags_recycling_get_type(void);
 
 pthread_mutex_t* ags_recycling_get_class_mutex();
 
-void ags_recycling_test_flags(AgsRecycling *recycling, guint flags);
+gboolean ags_recycling_test_flags(AgsRecycling *recycling, guint flags);
 void ags_recycling_set_flags(AgsRecycling *recycling, guint flags);
 void ags_recycling_unset_flags(AgsRecycling *recycling, guint flags);
 
