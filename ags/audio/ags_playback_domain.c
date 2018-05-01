@@ -178,6 +178,8 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
+  playback_domain->flags = 0;
+  
   /* add playback domain mutex */
   playback_domain->obj_mutexattr = 
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
@@ -236,11 +238,7 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
     
   /* default flags */
   if(super_threaded_audio){
-    g_atomic_int_set(&(playback_domain->flags),
-		     AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO);
-  }else{
-    g_atomic_int_set(&(playback_domain->flags),
-		     0);
+    playback_domain->flags |= AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO;
   }
 
   /* domain */
@@ -266,7 +264,16 @@ ags_playback_domain_set_property(GObject *gobject,
 {
   AgsPlaybackDomain *playback_domain;
   
+  pthread_mutex_t *playback_domain_mutex;
+
   playback_domain = AGS_PLAYBACK_DOMAIN(gobject);
+
+  /* get playback_domain mutex */
+  pthread_mutex_lock(ags_playback_domain_get_class_mutex());
+  
+  playback_domain_mutex = playback_domain->obj_mutex;
+  
+  pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -275,7 +282,11 @@ ags_playback_domain_set_property(GObject *gobject,
 
       audio = (GObject *) g_value_get_object(value);
 
+      pthread_mutex_lock(playback_domain_mutex);
+
       if((GObject *) playback_domain->audio == audio){
+	pthread_mutex_unlock(playback_domain_mutex);
+	
 	return;
       }
 
@@ -288,6 +299,8 @@ ags_playback_domain_set_property(GObject *gobject,
       }
 
       playback_domain->audio = (GObject *) audio;
+      
+      pthread_mutex_unlock(playback_domain_mutex);
     }
     break;
   case PROP_OUTPUT_PLAYBACK:
@@ -296,11 +309,17 @@ ags_playback_domain_set_property(GObject *gobject,
 
       output_playback = (AgsPlayback *) g_value_get_pointer(value);
 
+      pthread_mutex_lock(playback_domain_mutex);
+
       if(output_playback == NULL ||
 	 g_list_find(playback_domain->output_playback,
 		     output_playback) != NULL){
+	pthread_mutex_unlock(playback_domain_mutex);
+	
 	return;
       }
+      
+      pthread_mutex_unlock(playback_domain_mutex);
 
       ags_playback_domain_add_playback(playback_domain,
 				       (GObject *) output_playback, AGS_TYPE_OUTPUT);
@@ -312,11 +331,17 @@ ags_playback_domain_set_property(GObject *gobject,
 
       input_playback = (AgsPlayback *) g_value_get_pointer(value);
 
+      pthread_mutex_lock(playback_domain_mutex);
+
       if(input_playback == NULL ||
 	 g_list_find(playback_domain->input_playback,
 		     input_playback) != NULL){
+	pthread_mutex_unlock(playback_domain_mutex);
+	
 	return;
       }
+      
+      pthread_mutex_unlock(playback_domain_mutex);
 
       ags_playback_domain_add_playback(playback_domain,
 				       (GObject *) input_playback, AGS_TYPE_INPUT);
@@ -336,25 +361,46 @@ ags_playback_domain_get_property(GObject *gobject,
 {
   AgsPlaybackDomain *playback_domain;
 
+  pthread_mutex_t *playback_domain_mutex;
+
   playback_domain = AGS_PLAYBACK_DOMAIN(gobject);
+
+  /* get playback_domain mutex */
+  pthread_mutex_lock(ags_playback_domain_get_class_mutex());
+  
+  playback_domain_mutex = playback_domain->obj_mutex;
+  
+  pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
 
   switch(prop_id){
   case PROP_AUDIO:
     {
+      pthread_mutex_lock(playback_domain_mutex);
+
       g_value_set_object(value,
 			 playback_domain->audio);
+      
+      pthread_mutex_unlock(playback_domain_mutex);
     }
     break;
   case PROP_OUTPUT_PLAYBACK:
     {
+      pthread_mutex_lock(playback_domain_mutex);
+
       g_value_set_pointer(value,
 			  g_list_copy(playback_domain->output_playback));
+      
+      pthread_mutex_unlock(playback_domain_mutex);
     }
     break;
   case PROP_INPUT_PLAYBACK:
     {
+      pthread_mutex_lock(playback_domain_mutex);
+
       g_value_set_pointer(value,
 			  g_list_copy(playback_domain->input_playback));
+      
+      pthread_mutex_unlock(playback_domain_mutex);
     }
     break;
   default:
@@ -419,6 +465,12 @@ ags_playback_domain_finalize(GObject *gobject)
   
   playback_domain = AGS_PLAYBACK_DOMAIN(gobject);
 
+  pthread_mutex_destroy(playback_domain->obj_mutex);
+  free(playback_domain->obj_mutex);
+
+  pthread_mutexattr_destroy(playback_domain->obj_mutexattr);
+  free(playback_domain->obj_mutexattr);
+
   /* audio thread */
   if(playback_domain->audio_thread != NULL){
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
@@ -461,6 +513,111 @@ pthread_mutex_t*
 ags_playback_domain_get_class_mutex()
 {
   return(&ags_playback_domain_class_mutex);
+}
+
+/**
+ * ags_playback_domain_test_flags:
+ * @playback_domain: the #AgsPlaybackDomain
+ * @flags: the flags
+ *
+ * Test @flags to be set on @playback_domain.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_playback_domain_test_flags(AgsPlaybackDomain *playback_domain, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *playback_domain_mutex;
+
+  if(!AGS_IS_PLAYBACK_DOMAIN(playback_domain)){
+    return(FALSE);
+  }
+
+  /* get playback_domain mutex */
+  pthread_mutex_lock(ags_playback_domain_get_class_mutex());
+  
+  playback_domain_mutex = playback_domain->obj_mutex;
+  
+  pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(playback_domain_mutex);
+
+  retval = (flags & (playback_domain->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(playback_domain_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_playback_domain_set_flags:
+ * @playback_domain: the #AgsPlaybackDomain
+ * @flags: the flags
+ *
+ * Set flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_playback_domain_set_flags(AgsPlaybackDomain *playback_domain, guint flags)
+{
+  pthread_mutex_t *playback_domain_mutex;
+
+  if(!AGS_IS_PLAYBACK_DOMAIN(playback_domain)){
+    return;
+  }
+
+  /* get playback_domain mutex */
+  pthread_mutex_lock(ags_playback_domain_get_class_mutex());
+  
+  playback_domain_mutex = playback_domain->obj_mutex;
+  
+  pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(playback_domain_mutex);
+
+  playback_domain->flags |= flags;
+
+  pthread_mutex_unlock(playback_domain_mutex);
+}
+
+/**
+ * ags_playback_domain_unset_flags:
+ * @playback_domain: the #AgsPlaybackDomain
+ * @flags: the flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_playback_domain_unset_flags(AgsPlaybackDomain *playback_domain, guint flags)
+{
+  pthread_mutex_t *playback_domain_mutex;
+
+  if(!AGS_IS_PLAYBACK_DOMAIN(playback_domain)){
+    return;
+  }
+
+  /* get playback_domain mutex */
+  pthread_mutex_lock(ags_playback_domain_get_class_mutex());
+  
+  playback_domain_mutex = playback_domain->obj_mutex;
+  
+  pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(playback_domain_mutex);
+
+  playback_domain->flags &= (~flags);
+
+  pthread_mutex_unlock(playback_domain_mutex);
 }
 
 /**

@@ -59,7 +59,7 @@ struct _AgsPlayback
 {
   GObject gobject;
   
-  volatile guint flags;
+  guint flags;
 
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
@@ -84,6 +84,10 @@ struct _AgsPlaybackClass
 GType ags_playback_get_type();
 
 pthread_mutex_t* ags_playback_get_class_mutex();
+
+gboolean ags_playback_test_flags(AgsPlayback *playback, guint flags);
+void ags_playback_set_flags(AgsPlayback *playback, guint flags);
+void ags_playback_unset_flags(AgsPlayback *playback, guint flags);
 
 /* get and set */
 void ags_playback_set_channel_thread(AgsPlayback *playback,

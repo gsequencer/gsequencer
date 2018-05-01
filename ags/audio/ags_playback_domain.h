@@ -58,7 +58,7 @@ struct _AgsPlaybackDomain
 {
   GObject gobject;
 
-  volatile guint flags;
+  guint flags;
   
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
@@ -79,6 +79,10 @@ struct _AgsPlaybackDomainClass
 GType ags_playback_domain_get_type();
 
 pthread_mutex_t* ags_playback_domain_get_class_mutex();
+
+gboolean ags_playback_domain_test_flags(AgsPlaybackDomain *playback_domain, guint flags);
+void ags_playback_domain_set_flags(AgsPlaybackDomain *playback_domain, guint flags);
+void ags_playback_domain_unset_flags(AgsPlaybackDomain *playback_domain, guint flags);
 
 /* get and set */
 void ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
