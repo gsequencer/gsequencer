@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -53,8 +53,9 @@ void ags_audio_loop_get_property(GObject *gobject,
 				 guint prop_id,
 				 GValue *value,
 				 GParamSpec *param_spec);
-void ags_audio_loop_connect(AgsConnectable *connectable);
-void ags_audio_loop_disconnect(AgsConnectable *connectable);
+void ags_audio_loop_dispose(GObject *gobject);
+void ags_audio_loop_finalize(GObject *gobject);
+
 pthread_mutex_t* ags_audio_loop_get_tree_lock(AgsMainLoop *main_loop);
 void ags_audio_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue);
 GObject* ags_audio_loop_get_async_queue(AgsMainLoop *main_loop);
@@ -66,8 +67,6 @@ gboolean ags_audio_loop_monitor(AgsMainLoop *main_loop,
 				guint time_cycle, guint *time_spent);
 void ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
 				     gdouble frequency);
-void ags_audio_loop_dispose(GObject *gobject);
-void ags_audio_loop_finalize(GObject *gobject);
 
 void ags_audio_loop_start(AgsThread *thread);
 void ags_audio_loop_run(AgsThread *thread);
@@ -183,7 +182,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 1.0.0.7
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("the application context object"),
@@ -199,7 +198,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    *
    * The assigned #AgsAudio.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard assigned to"),
@@ -215,7 +214,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    *
    * An #AgsRecall to add for playback.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("play-recall",
 				   i18n_pspec("recall to run"),
@@ -231,7 +230,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    *
    * An #AgsChannel to add for playback.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("play-channel",
 				   i18n_pspec("channel to run"),
@@ -247,7 +246,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
    *
    * An #AgsAudio to add for playback.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("play-audio",
 				   i18n_pspec("audio to run"),
@@ -271,9 +270,6 @@ void
 ags_audio_loop_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_audio_loop_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-  
-  connectable->connect = ags_audio_loop_connect;
-  connectable->disconnect = ags_audio_loop_disconnect;
 }
 
 void
@@ -547,22 +543,6 @@ ags_audio_loop_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_audio_loop_connect(AgsConnectable *connectable)
-{
-  ags_audio_loop_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_audio_loop_disconnect(AgsConnectable *connectable)
-{
-  ags_audio_loop_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
 }
 
 pthread_mutex_t*
@@ -1046,12 +1026,12 @@ ags_audio_loop_timing_thread(void *ptr)
 
 /**
  * ags_audio_loop_play_recall:
- * @audio_loop: an #AgsAudioLoop
+ * @audio_loop: the #AgsAudioLoop
  *
  * Runs all recalls assigned with @audio_loop. You may want to use
  * #AgsAppendRecall task to add an #AgsRecall.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
@@ -1059,7 +1039,7 @@ ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
   AgsPlayback *playback;
   AgsRecall *recall;
 
-  GList *list, *list_next;
+  GList *list_start, *list;
 
   guint stage;
   guint recall_flags;
@@ -1070,7 +1050,8 @@ ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
 
  ags_audio_loop_play_recall0:
 
-  list = audio_loop->play_recall;
+  list =
+    list_start = g_list_copy(audio_loop->play_recall);
 
   if(list == NULL){
     if((AGS_AUDIO_LOOP_PLAY_RECALL_TERMINATING & (audio_loop->flags)) != 0){
@@ -1085,8 +1066,6 @@ ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
 
   /*  */
   while(list != NULL){
-    list_next = list->next;
-
     /* get playback fields */
     playback = AGS_PLAYBACK(list->data);
     recall = (AgsRecall *) playback->source;
@@ -1112,9 +1091,11 @@ ags_audio_loop_play_recall(AgsAudioLoop *audio_loop)
     }    
 
     /* iterate */
-    list = list_next;
+    list = list->next;
   }
 
+  g_list_free(list_start);
+  
   /* 3 stages */
   if(stage == 0){
     stage = 1;
