@@ -260,7 +260,7 @@ ags_ipatch_sf2_reader_finalize(GObject *gobject)
  * 
  * Load Soundfont2 file.
  * 
- * Returns: %TRUE on success, else %FALSE on failue
+ * Returns: %TRUE on success, else %FALSE on failure
  * 
  * Since: 2.0.0
  */
@@ -298,43 +298,203 @@ ags_ipatch_sf2_reader_load(AgsIpatchSF2Reader *ipatch_sf2_reader,
   return(TRUE);
 }
 
+/**
+ * ags_ipatch_sf2_reader_select_preset:
+ * @ipatch_sf2_reader: the #AgsSF2Reader
+ * @preset_index: the preset index
+ * 
+ * Select preset.
+ * 
+ * Returns: %TRUE on success, else %FALSE on failure
+ * 
+ * Since: 2.0.0
+ */
 gboolean
 ags_ipatch_sf2_reader_select_preset(AgsIpatchSF2Reader *ipatch_sf2_reader,
 				    guint preset_index)
 {
+#ifdef AGS_WITH_LIBINSTPATCH
+  IpatchSF2 *sf2;
+  IpatchItem *ipatch_item;
+  IpatchList *ipatch_list;
+
+  IpatchIter preset_iter;
+#endif
+  
+  gboolean success;
+  
   if(!AGS_IS_IPATCH_SF2_READER(ipatch_sf2_reader)){
     return(FALSE);
   }
 
-  //TODO:JK: implement me
+  success = FALSE;
 
-  return(TRUE);
+#ifdef AGS_WITH_LIBINSTPATCH
+  sf2 = ipatch_sf2_reader->sf2;
+  
+  ipatch_list = ipatch_container_get_children(sf2, IPATCH_TYPE_SF2_PRESET);
+
+  if(ipatch_list != NULL){
+    ipatch_list_init_iter(ipatch_list, &preset_iter);
+    
+    if(preset_index < ipatch_iter_count(&preset_iter)){
+      success = TRUE;
+
+      ipatch_iter_index(&preset_iter, preset_index);
+      item = ipatch_iter_get(&preset_iter);
+
+      /* selected index and name */
+      ipatch_sf2_reader->index_selected[AGS_SF2_PHDR] = preset_index;
+
+      ipatch_sf2_reader->index_selected[AGS_SF2_IHDR] = 0;
+
+      ipatch_sf2_reader->index_selected[AGS_SF2_SHDR] = 0;
+
+      ipatch_sf2_reader->name_selected[AGS_SF2_PHDR] = g_strdup(ipatch_sf2_preset_get_name(IPATCH_SF2_PRESET(item)));
+
+      g_free(ipatch_sf2_reader->name_selected[AGS_SF2_IHDR]);
+      ipatch_sf2_reader->name_selected[AGS_SF2_IHDR] = NULL;
+      
+      g_free(ipatch_sf2_reader->name_selected[AGS_SF2_SHDR]);
+      ipatch_sf2_reader->name_selected[AGS_SF2_SHDR] = NULL;
+
+      /* container */
+      ipatch_sf2_reader->preset = item;
+      
+      ipatch_sf2_reader->instrument = NULL;
+      ipatch_sf2_reader->sample = NULL;
+    }
+  }
+#endif
+  
+  return(success);
 }
 
+/**
+ * ags_ipatch_sf2_reader_select_instrument:
+ * @ipatch_sf2_reader: the #AgsSF2Reader
+ * @instrument_index: the instrument index
+ * 
+ * Select instrument.
+ * 
+ * Returns: %TRUE on success, else %FALSE on failure
+ * 
+ * Since: 2.0.0
+ */
 gboolean
 ags_ipatch_sf2_reader_select_instrument(AgsIpatchSF2Reader *ipatch_sf2_reader,
 					guint instrument_index)
 {
+#ifdef AGS_WITH_LIBINSTPATCH
+  IpatchSF2 *sf2;
+  IpatchItem *ipatch_item;
+  IpatchList *ipatch_list;
+
+  IpatchIter instrument_iter;
+#endif
+  
+  gboolean success;
+
   if(!AGS_IS_IPATCH_SF2_READER(ipatch_sf2_reader)){
     return(FALSE);
   }
 
-  //TODO:JK: implement me
+  success = FALSE;
 
-  return(TRUE);
+#ifdef AGS_WITH_LIBINSTPATCH
+  sf2 = ipatch_sf2_reader->sf2;
+
+  ipatch_list = ipatch_sf2_preset_get_zones(ipatch_sf2_reader->preset);
+
+  if(ipatch_list != NULL){
+    ipatch_list_init_iter(ipatch_list, &instrument_iter);
+    
+    if(instrument_index < ipatch_iter_count(&instrument_iter)){
+      success = TRUE;
+
+      ipatch_iter_index(&instrument_iter, instrument_index);
+      item = ipatch_iter_get(&instrument_iter);
+
+      /* selected index and name */
+      ipatch_sf2_reader->index_selected[AGS_SF2_IHDR] = instrument_index;
+
+      ipatch_sf2_reader->index_selected[AGS_SF2_SHDR] = 0;
+
+      g_free(ipatch_sf2_reader->name_selected[AGS_SF2_IHDR]);
+      ipatch_sf2_reader->name_selected[AGS_SF2_IHDR] = g_strdup(ipatch_sf2_inst_get_name(IPATCH_SF2_PRESET(item)));
+      
+      g_free(ipatch_sf2_reader->name_selected[AGS_SF2_SHDR]);
+      ipatch_sf2_reader->name_selected[AGS_SF2_SHDR] = NULL;
+
+      /* container */
+      ipatch_sf2_reader->instrument = item;
+      
+      ipatch_sf2_reader->sample = NULL;
+    }
+  }
+#endif
+  
+  return(success);
 }
 
+/**
+ * ags_ipatch_sf2_reader_select_sample:
+ * @ipatch_sf2_reader: the #AgsSF2Reader
+ * @sample_index: the sample index
+ * 
+ * Select sample.
+ * 
+ * Returns: %TRUE on success, else %FALSE on failure
+ * 
+ * Since: 2.0.0
+ */
 gboolean
 ags_ipatch_sf2_reader_select_sample(AgsIpatchSF2Reader *ipatch_sf2_reader,
 				    guint sample_index)
 {
+#ifdef AGS_WITH_LIBINSTPATCH
+  IpatchSF2 *sf2;
+  IpatchItem *ipatch_item;
+  IpatchList *ipatch_list;
+
+  IpatchIter sample_iter;
+#endif
+  
+  gboolean success;
+
   if(!AGS_IS_IPATCH_SF2_READER(ipatch_sf2_reader)){
     return(FALSE);
   }
 
-  //TODO:JK: implement me
+  success = FALSE;
 
-  return(TRUE);
+#ifdef AGS_WITH_LIBINSTPATCH
+  sf2 = ipatch_sf2_reader->sf2;
+
+  ipatch_list = ipatch_sf2_inst_get_zones(ipatch_sf2_reader->instrument);
+
+  if(ipatch_list != NULL){
+    ipatch_list_init_iter(ipatch_list, &sample_iter);
+    
+    if(sample_index < ipatch_iter_count(&sample_iter)){
+      success = TRUE;
+
+      ipatch_iter_index(&sample_iter, sample_index);
+      item = ipatch_iter_get(&sample_iter);
+
+      /* selected index and name */
+      ipatch_sf2_reader->index_selected[AGS_SF2_SHDR] = sample_index;
+
+      g_free(ipatch_sf2_reader->name_selected[AGS_SF2_SHDR]);
+      ipatch_sf2_reader->name_selected[AGS_SF2_SHDR] = g_strdup(ipatch_sf2_sample_get_name(IPATCH_SF2_SAMPLE(item)));
+
+      /* container */
+      ipatch_sf2_reader->sample = item;
+    }
+  }
+#endif
+  
+  return(success);
 }
 
 /**
