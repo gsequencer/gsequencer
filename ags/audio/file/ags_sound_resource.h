@@ -125,6 +125,11 @@ void ags_sound_resource_seek(AgsSoundResource *sound_resource,
 GList* ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 					    GObject *soundcard,
 					    gint audio_channel);
+GList* ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
+				    GObject *soundcard,
+				    gint audio_channel,
+				    guint64 x_offset,
+				    gdouble delay, guint attack);
 
 /* close */
 void ags_sound_resource_close(AgsSoundResource *sound_resource);

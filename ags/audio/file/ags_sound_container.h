@@ -37,27 +37,37 @@ struct _AgsSoundContainerInterface
 {
   GTypeInterface ginterface;
 
+  gboolean (*open)(AgsSoundContainer *sound_container);
+
+  /* level information */
   guint (*get_level_count)(AgsSoundContainer *sound_container);
   guint (*get_nesting_level)(AgsSoundContainer *sound_container);
   
   gchar* (*get_level_id)(AgsSoundContainer *sound_container);
   guint (*get_level_index)(AgsSoundContainer *sound_container);
 
+  /* levels */
   guint (*level_up)(AgsSoundContainer *sound_container,
 		    guint level_count);
   guint (*select_level_by_id)(AgsSoundContainer *sound_container,
 			      gchar *level_id);
   guint (*select_level_by_index)(AgsSoundContainer *sound_container,
 				 guint level_index);
-  
+
+  /* get sound resource */
   GList* (*get_resource_all)(AgsSoundContainer *sound_container);
   GList* (*get_resource_by_name)(AgsSoundContainer *sound_container,
 				 gchar *resource_name);
   GList* (*get_resource_by_index)(AgsSoundContainer *sound_container,
 				  guint resource_index);
+
+  /* close */
+  void (*close)(AgsSoundResource *sound_resource);
 };
 
 GType ags_sound_container_get_type();
+
+gboolean ags_sound_container_open(AgsSoundContainer *sound_container);
 
 guint ags_sound_container_get_level_count(AgsSoundContainer *sound_container);
 guint ags_sound_container_get_nesting_level(AgsSoundContainer *sound_container);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,11 +19,12 @@
 
 #include <ags/audio/file/ags_ipatch.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
 
-#include <ags/audio/ags_playable.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
+#include <ags/audio/file/ags_sound_container.h>
+#include <ags/audio/file/ags_sound_resource.h>
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
 
 #include <ags/i18n.h>
@@ -45,24 +46,48 @@ void ags_ipatch_finalize(GObject *gobject);
 void ags_ipatch_connect(AgsConnectable *connectable);
 void ags_ipatch_disconnect(AgsConnectable *connectable);
 
-gboolean ags_ipatch_open(AgsPlayable *playable, gchar *name);
-guint ags_ipatch_level_count(AgsPlayable *playable);
-guint ags_ipatch_nth_level(AgsPlayable *playable);
-gchar** ags_ipatch_sublevel_names(AgsPlayable *playable);
-void ags_ipatch_level_select(AgsPlayable *playable,
-			     guint nth_level, gchar *sublevel_name,
-			     GError **error);
-void ags_ipatch_iter_start(AgsPlayable *playable);
-gboolean ags_ipatch_iter_next(AgsPlayable *playable);
-void ags_ipatch_info(AgsPlayable *playable,
-		     guint *channels, guint *frames,
-		     guint *loop_start, guint *loop_end,
-		     GError **error);
-guint ags_ipatch_get_samplerate(AgsPlayable *playable);
-guint ags_ipatch_get_format(AgsPlayable *playable);
-double* ags_ipatch_read(AgsPlayable *playable, guint channel,
-			GError **error);
-void ags_ipatch_close(AgsPlayable *playable);
+gboolean ags_ipatch_open(AgsSoundContainer *sound_container, gchar *name);
+guint ags_ipatch_get_level_count(AgsSoundContainer *sound_container);
+guint ags_ipatch_get_nesting_level(AgsSoundContainer *sound_container);
+gchar* ags_ipatch_get_level_id(AgsSoundContainer *sound_container);
+guint ags_ipatch_get_level_index(AgsSoundContainer *sound_container);
+guint ags_ipatch_level_up(AgsSoundContainer *sound_container,
+			  guint level_count);
+guint ags_ipatch_get_level_by_id(AgsSoundContainer *sound_container,
+				 gchar *level_id);
+guint ags_ipatch_get_level_by_index(AgsSoundContainer *sound_container,
+				    guint level_index);
+GList* ags_ipatch_get_resource_all(AgsSoundContainer *sound_container);
+GList* ags_ipatch_get_resource_by_name(AgsSoundContainer *sound_container,
+				       gchar *resource_name);
+GList* ags_ipatch_get_resource_by_index(AgsSoundContainer *sound_container,
+					guint resource_index);
+void ags_ipatch_close(AgsSoundResource *sound_resource);
+
+gboolean ags_ipatch_info(AgsSoundResource *sound_resource,
+			 guint *frame_count,
+			 guint *loop_start, guint *loop_end);
+void ags_ipatch_set_presets(AgsSoundResource *sound_resource,
+			    guint channels,
+			    guint samplerate,
+			    guint buffer_size,
+			    guint format);
+void ags_ipatch_get_presets(AgsSoundResource *sound_resource,
+			    guint *channels,
+			    guint *samplerate,
+			    guint *buffer_size,
+			    guint *format);
+guint ags_ipatch_read(AgsSoundResource *sound_resource,
+	      void *dbuffer,
+	      guint audio_channel,
+	      guint frame_count, guint format);
+void ags_ipatch_write(AgsSoundResource *sound_resource,
+	      void *sbuffer,
+	      guint audio_channel,
+	      guint frame_count, guint format);
+void ags_ipatch_flush(AgsSoundResource *sound_resource);
+void ags_ipatch_seek(AgsSoundResource *sound_resource,
+		     guint frame_count, gint whence);
 
 /**
  * SECTION:ags_ipatch
@@ -1119,11 +1144,14 @@ ags_ipatch_finalize(GObject *gobject)
  * Since: 1.0.0
  */
 AgsIpatch*
-ags_ipatch_new()
+ags_ipatch_new(gchar *filename,
+	       GObject *soundcard)
 {
   AgsIpatch *ipatch;
 
   ipatch = (AgsIpatch *) g_object_new(AGS_TYPE_IPATCH,
+				      "filename", filename,
+				      "soundcard", soundcard,
 				      NULL);
 
   return(ipatch);

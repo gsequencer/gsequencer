@@ -19,11 +19,11 @@
 
 #include <ags/audio/file/ags_sndfile.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
+#include <ags/libags.h>
 
-#include <ags/audio/ags_playable.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+
+#include <ags/audio/file/ags_sound_resource.h>
 
 #include <string.h>
 
@@ -44,10 +44,6 @@ gboolean ags_sndfile_rw_open(AgsPlayable *playable, gchar *name,
 			     guint samplerate, guint channels,
 			     guint frames,
 			     guint format);
-guint ags_sndfile_level_count(AgsPlayable *playable);
-gchar** ags_sndfile_sublevel_names(AgsPlayable *playable);
-void ags_sndfile_iter_start(AgsPlayable *playable);
-gboolean ags_sndfile_iter_next(AgsPlayable *playable);
 void ags_sndfile_info(AgsPlayable *playable,
 		      guint *channels, guint *frames,
 		      guint *loop_start, guint *loop_end,

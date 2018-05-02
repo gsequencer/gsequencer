@@ -62,6 +62,32 @@ ags_sound_container_base_init(AgsSoundContainerInterface *interface)
 }
 
 /**
+ * ags_sound_container_open:
+ * @sound_countainer: the #AgsSoundcontainer
+ * 
+ * Open @sound_container.
+ * 
+ * Returns: %TRUE if open succeeded, else %FALSE
+ * 
+ * Since: 2.0.0
+ */
+guint
+ags_sound_container_open(AgsSoundContainer *sound_container)
+{
+  AgsSoundContainerInterface *sound_container_interface;
+
+  gboolean retval;
+
+  g_return_val_if_fail(AGS_IS_SOUND_CONTAINER(sound_container), FALSE);
+  sound_container_interface = AGS_SOUND_CONTAINER_GET_INTERFACE(sound_container);
+  g_return_val_if_fail(sound_container_interface->open, FALSE);
+
+  retval = sound_container_interface->open(sound_container);
+
+  return(retval);
+}
+
+/**
  * ags_sound_container_get_level_count:
  * @sound_countainer: the #AgsSoundcontainer
  * 
@@ -217,7 +243,8 @@ ags_sound_container_select_level_by_id(AgsSoundContainer *sound_container,
   sound_container_interface = AGS_SOUND_CONTAINER_GET_INTERFACE(sound_container);
   g_return_val_if_fail(sound_container_interface->select_level_by_id, 0);
 
-  retval = sound_container_interface->select_level_by_id(sound_container);
+  retval = sound_container_interface->select_level_by_id(sound_container,
+							 level_id);
 
   return(retval);
 }
@@ -245,7 +272,8 @@ ags_sound_container_select_level_by_index(AgsSoundContainer *sound_container,
   sound_container_interface = AGS_SOUND_CONTAINER_GET_INTERFACE(sound_container);
   g_return_val_if_fail(sound_container_interface->select_level_by_index, 0);
 
-  retval = sound_container_interface->select_level_by_index(sound_container);
+  retval = sound_container_interface->select_level_by_index(sound_container,
+							    level_index);
 
   return(retval);
 }

@@ -117,9 +117,9 @@ ags_sound_resource_rw_open(AgsSoundResource *sound_resource,
   g_return_val_if_fail(sound_resource_interface->open, FALSE);
 
   retval = sound_resource_interface->rw_open(sound_resource,
-					      filename,
-					      create,);
-
+					     filename,
+					     create);
+  
   return(retval);
 }
 
@@ -250,7 +250,7 @@ ags_sound_resource_read(AgsSoundResource *sound_resource,
 			void *dbuffer, guint daudio_channels,
 			guint frame_count, guint format)
 {
-  AgsSound_ResourceInterface *sound_resource_interface;
+  AgsSoundResourceInterface *sound_resource_interface;
 
   guint retval;
   
@@ -284,7 +284,7 @@ ags_sound_resource_write(AgsSoundResource *sound_resource,
 			 void *sbuffer, guint saudio_channels,
 			 guint frame_count, guint format)
 {
-  AgsSound_ResourceInterface *sound_resource_interface;
+  AgsSoundResourceInterface *sound_resource_interface;
 
   g_return_if_fail(AGS_IS_SOUND_RESOURCE(sound_resource));
   sound_resource_interface = AGS_SOUND_RESOURCE_GET_INTERFACE(sound_resource);
@@ -306,7 +306,7 @@ ags_sound_resource_write(AgsSoundResource *sound_resource,
 void
 ags_sound_resource_flush(AgsSoundResource *sound_resource)
 {
-  AgsSound_ResourceInterface *sound_resource_interface;
+  AgsSoundResourceInterface *sound_resource_interface;
 
   g_return_if_fail(AGS_IS_SOUND_RESOURCE(sound_resource));
   sound_resource_interface = AGS_SOUND_RESOURCE_GET_INTERFACE(sound_resource);
@@ -328,7 +328,7 @@ void
 ags_sound_resource_seek(AgsSoundResource *sound_resource,
 			guint frame_count, gint whence)
 {
-  AgsSound_ResourceInterface *sound_resource_interface;
+  AgsSoundResourceInterface *sound_resource_interface;
 
   g_return_if_fail(AGS_IS_SOUND_RESOURCE(sound_resource));
   sound_resource_interface = AGS_SOUND_RESOURCE_GET_INTERFACE(sound_resource);
@@ -348,7 +348,7 @@ ags_sound_resource_seek(AgsSoundResource *sound_resource,
 void
 ags_sound_resource_close(AgsSoundResource *sound_resource)
 {
-  AgsSound_ResourceInterface *sound_resource_interface;
+  AgsSoundResourceInterface *sound_resource_interface;
 
   g_return_if_fail(AGS_IS_SOUND_RESOURCE(sound_resource));
   sound_resource_interface = AGS_SOUND_RESOURCE_GET_INTERFACE(sound_resource);
@@ -372,6 +372,31 @@ GList*
 ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 				     GObject *soundcard,
 				     gint audio_channel)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_sound_resource_read_wave:
+ * @sound_resource: the #AgsSoundResource
+ * @soundcard: the #AgsSoundcard
+ * @audio_channel: the audio channel or -1 for all
+ * @x_offset: the x offset
+ * @delay: the delay
+ * @attack: the attack
+ * 
+ * Read wave from @sound_resource.
+ * 
+ * Returns: a #GList-struct containing #AgsWave
+ * 
+ * Since: 2.0.0
+ */
+GList*
+ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
+			     GObject *soundcard,
+			     gint audio_channel,
+			     guint64 x_offset,
+			     gdouble delay, guint attack)
 {
   //TODO:JK: implement me
 }
