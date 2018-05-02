@@ -37,7 +37,7 @@ struct _AgsSoundContainerInterface
 {
   GTypeInterface ginterface;
 
-  gboolean (*open)(AgsSoundContainer *sound_container);
+  gboolean (*open)(AgsSoundContainer *sound_container, gchar *filename);
 
   /* level information */
   guint (*get_level_count)(AgsSoundContainer *sound_container);
@@ -67,7 +67,7 @@ struct _AgsSoundContainerInterface
 
 GType ags_sound_container_get_type();
 
-gboolean ags_sound_container_open(AgsSoundContainer *sound_container);
+gboolean ags_sound_container_open(AgsSoundContainer *sound_container, gchar *filename);
 
 guint ags_sound_container_get_level_count(AgsSoundContainer *sound_container);
 guint ags_sound_container_get_nesting_level(AgsSoundContainer *sound_container);

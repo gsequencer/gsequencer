@@ -101,7 +101,10 @@ struct _AgsIpatch
 
   GList *iter;
 
-  guint nth_level;
+  guint nesting_level;
+  
+  gchar *level_id;
+  guint level_index;
 };
 
 struct _AgsIpatchClass

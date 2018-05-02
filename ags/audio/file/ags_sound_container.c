@@ -64,6 +64,7 @@ ags_sound_container_base_init(AgsSoundContainerInterface *interface)
 /**
  * ags_sound_container_open:
  * @sound_countainer: the #AgsSoundcontainer
+ * @filename: the filename
  * 
  * Open @sound_container.
  * 
@@ -72,7 +73,7 @@ ags_sound_container_base_init(AgsSoundContainerInterface *interface)
  * Since: 2.0.0
  */
 guint
-ags_sound_container_open(AgsSoundContainer *sound_container)
+ags_sound_container_open(AgsSoundContainer *sound_container, gchar *filename)
 {
   AgsSoundContainerInterface *sound_container_interface;
 
@@ -82,7 +83,7 @@ ags_sound_container_open(AgsSoundContainer *sound_container)
   sound_container_interface = AGS_SOUND_CONTAINER_GET_INTERFACE(sound_container);
   g_return_val_if_fail(sound_container_interface->open, FALSE);
 
-  retval = sound_container_interface->open(sound_container);
+  retval = sound_container_interface->open(sound_container, filename);
 
   return(retval);
 }

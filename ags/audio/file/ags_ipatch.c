@@ -31,7 +31,8 @@
 
 void ags_ipatch_class_init(AgsIpatchClass *ipatch);
 void ags_ipatch_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_ipatch_playable_interface_init(AgsPlayableInterface *playable);
+void ags_ipatch_sound_container_interface_init(AgsSoundContainerInterface *sound_container);
+void ags_ipatch_sound_resource_interface_init(AgsSoundResourceInterface *sound_resource);
 void ags_ipatch_init(AgsIpatch *ipatch);
 void ags_ipatch_set_property(GObject *gobject,
 			     guint prop_id,
@@ -43,10 +44,7 @@ void ags_ipatch_get_property(GObject *gobject,
 			     GParamSpec *param_spec);
 void ags_ipatch_finalize(GObject *gobject);
 
-void ags_ipatch_connect(AgsConnectable *connectable);
-void ags_ipatch_disconnect(AgsConnectable *connectable);
-
-gboolean ags_ipatch_open(AgsSoundContainer *sound_container, gchar *name);
+gboolean ags_ipatch_open(AgsSoundContainer *sound_container, gchar *filename);
 guint ags_ipatch_get_level_count(AgsSoundContainer *sound_container);
 guint ags_ipatch_get_nesting_level(AgsSoundContainer *sound_container);
 gchar* ags_ipatch_get_level_id(AgsSoundContainer *sound_container);
@@ -78,13 +76,13 @@ void ags_ipatch_get_presets(AgsSoundResource *sound_resource,
 			    guint *buffer_size,
 			    guint *format);
 guint ags_ipatch_read(AgsSoundResource *sound_resource,
-	      void *dbuffer,
-	      guint audio_channel,
-	      guint frame_count, guint format);
+		      void *dbuffer,
+		      guint audio_channel,
+		      guint frame_count, guint format);
 void ags_ipatch_write(AgsSoundResource *sound_resource,
-	      void *sbuffer,
-	      guint audio_channel,
-	      guint frame_count, guint format);
+		      void *sbuffer,
+		      guint audio_channel,
+		      guint frame_count, guint format);
 void ags_ipatch_flush(AgsSoundResource *sound_resource);
 void ags_ipatch_seek(AgsSoundResource *sound_resource,
 		     guint frame_count, gint whence);
@@ -101,8 +99,9 @@ void ags_ipatch_seek(AgsSoundResource *sound_resource,
 
 static gpointer ags_ipatch_parent_class = NULL;
 static AgsConnectableInterface *ags_ipatch_parent_connectable_interface;
-static AgsPlayableInterface *ags_ipatch_parent_playable_interface;
-
+static AgsSoundContainerInterface *ags_ipatch_parent_sound_container_interface;
+static AgsSoundResourceInterface *ags_ipatch_parent_sound_resource_interface;
+ 
 enum{
   PROP_0,
   PROP_SOUNDCARD,
@@ -134,8 +133,14 @@ ags_ipatch_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_playable_interface_info = {
-      (GInterfaceInitFunc) ags_ipatch_playable_interface_init,
+    static const GInterfaceInfo ags_sound_container_interface_info = {
+      (GInterfaceInitFunc) ags_ipatch_sound_container_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
+    static const GInterfaceInfo ags_sound_resource_interface_info = {
+      (GInterfaceInitFunc) ags_ipatch_sound_resource_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
@@ -150,8 +155,12 @@ ags_ipatch_get_type()
 				&ags_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_ipatch,
-				AGS_TYPE_PLAYABLE,
-				&ags_playable_interface_info);
+				AGS_TYPE_SOUND_CONTAINER,
+				&ags_sound_container_interface_info);
+
+    g_type_add_interface_static(ags_type_ipatch,
+				AGS_TYPE_SOUND_RESOURCE,
+				&ags_sound_resource_interface_info);
   }
   
   return (ags_type_ipatch);
@@ -179,7 +188,7 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
    *
    * The assigned soundcard.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of ipatch"),
@@ -195,12 +204,13 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
    *
    * The assigned filename.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec = g_param_spec_pointer("filename",
-				    i18n_pspec("the filename"),
-				    i18n_pspec("The filename to open"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_string("filename",
+				   i18n_pspec("the filename"),
+				   i18n_pspec("The filename to open"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FILENAME,
 				  param_spec);
@@ -210,12 +220,13 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
    *
    * The assigned mode.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec = g_param_spec_pointer("mode",
-				    i18n_pspec("the mode"),
-				    i18n_pspec("The mode to open the file"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_string("mode",
+				   i18n_pspec("the mode"),
+				   i18n_pspec("The mode to open the file"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MODE,
 				  param_spec);
@@ -225,34 +236,55 @@ void
 ags_ipatch_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_ipatch_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_ipatch_connect;
-  connectable->disconnect = ags_ipatch_disconnect;
 }
 
 void
-ags_ipatch_playable_interface_init(AgsPlayableInterface *playable)
+ags_ipatch_sound_container_interface_init(AgsSoundContainerInterface *sound_container)
 {
-  ags_ipatch_parent_playable_interface = g_type_interface_peek_parent(playable);
+  ags_ipatch_parent_sound_container_interface = g_type_interface_peek_parent(sound_container);
 
-  playable->open = ags_ipatch_open;
+  sound_container->open = ags_ipatch_open;
+  
+  sound_container->get_level_count = ags_ipatch_get_level_count;
+  sound_container->get_nesting_level = ags_ipatch_get_nesting_level;
+  
+  sound_container->get_level_id = ags_ipatch_get_level_id;
+  sound_container->get_level_index = ags_ipatch_get_level_index;
+  
+  sound_container->level_up = ags_ipatch_level_up;
+  sound_container->select_level_by_id = ags_ipatch_select_level_by_id;
+  sound_container->select_level_by_index = ags_ipatch_select_level_by_index;
+  
+  sound_container->get_resource_all = ags_ipatch_get_resource_all;
+  sound_container->get_resource_by_name = ags_ipatch_get_resource_by_name;
+  sound_container->get_resource_by_index = ags_ipatch_get_resource_by_index;
 
-  playable->nth_level = ags_ipatch_nth_level;
-  playable->level_count = ags_ipatch_level_count;
-  playable->sublevel_names = ags_ipatch_sublevel_names;
-  playable->level_select = ags_ipatch_level_select;
+  sound_container->close = ags_ipatch_close;
+}
 
-  playable->iter_start = ags_ipatch_iter_start;
-  playable->iter_next = ags_ipatch_iter_next;
+void
+ags_ipatch_sound_resource_interface_init(AgsSoundResourceInterface *sound_resource)
+{
+  ags_ipatch_parent_sound_resource_interface = g_type_interface_peek_parent(sound_resource);
 
-  playable->info = ags_ipatch_info;
+  sound_resource->open = NULL;
+  sound_resource->rw_open = NULL;
 
-  playable->get_samplerate = ags_ipatch_get_samplerate;
-  playable->get_format = ags_ipatch_get_format;
+  sound_resource->load = NULL;
 
-  playable->read = ags_ipatch_read;
+  sound_resource->info = ags_ipatch_info;
 
-  playable->close = ags_ipatch_close;
+  sound_resource->set_presets = ags_ipatch_set_presets;
+  sound_resource->get_presets = ags_ipatch_get_presets;
+  
+  sound_resource->read = ags_ipatch_read;
+
+  sound_resource->write = ags_ipatch_write;
+  sound_resource->flush = ags_ipatch_flush;
+  
+  sound_resource->seek = ags_ipatch_seek;
+
+  sound_resource->close = NULL;
 }
 
 void
@@ -277,7 +309,10 @@ ags_ipatch_init(AgsIpatch *ipatch)
   ipatch->samples = NULL;
   ipatch->iter = NULL;
 
-  ipatch->nth_level = 0;
+  ipatch->nesting_level = 0;
+
+  ipatch->level_id = NULL;
+  ipatch->level_index = 0;
 }
 
 void
@@ -316,16 +351,16 @@ ags_ipatch_set_property(GObject *gobject,
     {
       gchar *filename;
 
-      filename = (gchar *) g_value_get_pointer(value);
+      filename = (gchar *) g_value_get_string(value);
 
-      ags_playable_open(AGS_PLAYABLE(ipatch), g_strdup(filename));
+      ags_sound_container_open(AGS_SOUND_CONTAINER(sound_container), filename);
     }
     break;
   case PROP_MODE:
     {
       gchar *mode;
       
-      mode = (gchar *) g_value_get_pointer(value);
+      mode = (gchar *) g_value_get_string(value);
       
       ipatch->mode = mode;
 
@@ -370,12 +405,12 @@ ags_ipatch_get_property(GObject *gobject,
     break;
   case PROP_FILENAME:
     {
-      g_value_set_pointer(value, ipatch->filename);
+      g_value_set_string(value, ipatch->filename);
     }
     break;
   case PROP_MODE:
     {
-      g_value_set_pointer(value, ipatch->mode);
+      g_value_set_string(value, ipatch->mode);
     }
     break;
   default:
@@ -384,22 +419,255 @@ ags_ipatch_get_property(GObject *gobject,
   }
 }
 
-void
-ags_ipatch_connect(AgsConnectable *connectable)
+gboolean
+ags_ipatch_open(AgsSoundContainer *sound_container, gchar *filename)
 {
-  ags_ipatch_parent_connectable_interface->connect(connectable);
+  AgsIpatch *ipatch;
 
-  /* empty */
+#ifdef AGS_WITH_LIBINSTPATCH
+  IpatchFileIOFuncs *io_funcs;
+#endif
+
+  GError *error;
+
+  ipatch = AGS_IPATCH(sound_container);
+
+  /* close current */
+  if(ipatch->filename != NULL){
+    ags_sound_container_close(sound_container);
+    
+    g_free(ipatch->filename);
+  }
+
+  /* check suffix */
+  ipatch->filename = g_strdup(filename);
+  
+  if(!ags_ipatch_check_suffix(filename)){
+    return(FALSE);
+  }
+  
+  error = NULL;
+
+#ifdef AGS_WITH_LIBINSTPATCH
+  ipatch->handle = ipatch_file_identify_open(ipatch->filename,
+					     &error);
+#endif
+  
+  if(error != NULL){
+    g_warning("%s", error->message);
+  }
+
+  if(ipatch->handle == NULL){
+    return(FALSE);
+  }
+
+  if(IPATCH_IS_DLS_FILE(ipatch->handle->file)){
+    ipatch->flags |= AGS_IPATCH_DLS2;
+
+    //TODO:JK: implement me
+  }else if(IPATCH_IS_SF2_FILE(ipatch->handle->file)){
+    ipatch->flags |= AGS_IPATCH_SF2;
+
+    //TODO:JK: implement me
+
+    /*  */
+    ipatch->reader = (GObject *) ags_ipatch_sf2_reader_new();
+    AGS_IPATCH_SF2_READER(ipatch->reader)->ipatch = ipatch;
+
+    AGS_IPATCH_SF2_READER(ipatch->reader)->reader = ipatch_sf2_reader_new(ipatch->handle);
+
+    error = NULL;
+    ipatch->base = (IpatchBase *) ipatch_sf2_reader_load(AGS_IPATCH_SF2_READER(ipatch->reader)->reader,
+							 &error);
+
+    error = NULL;
+    AGS_IPATCH_SF2_READER(ipatch->reader)->sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) ipatch->handle->file,
+											     IPATCH_TYPE_SF2,
+											     &error);
+
+    if(error != NULL){
+      g_warning("%s", error->message);
+
+      return(FALSE);
+    }
+
+    /* load samples */
+    ipatch->samples = (IpatchList *) ipatch_container_get_children(IPATCH_CONTAINER(ipatch->base),
+								   IPATCH_TYPE_SF2_SAMPLE);
+    
+    while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ipatch->base))->mutex) != 0);
+  }else if(IPATCH_IS_GIG_FILE(ipatch->handle->file)){
+    ipatch->flags |= AGS_IPATCH_GIG;
+
+    //TODO:JK: implement me
+  }
+
+  return(TRUE);
 }
 
-void
-ags_ipatch_disconnect(AgsConnectable *connectable)
+guint
+ags_ipatch_get_level_count(AgsSoundContainer *sound_container)
 {
-  ags_ipatch_parent_connectable_interface->disconnect(connectable);
+  AgsIpatch *ipatch;
 
-  /* empty */
+  ipatch = AGS_IPATCH(sound_container);
+
+  if((AGS_IPATCH_DLS2 & (ipatch->flags)) != 0){
+    return(3);
+  }else if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
+    return(4);
+  }else if((AGS_IPATCH_GIG & (ipatch->flags)) != 0){
+    return(3);
+  }
+
+  return(0);
 }
 
+guint
+ags_ipatch_get_nesting_level(AgsSoundContainer *sound_container)
+{
+  AgsIpatch *ipatch;
+
+  ipatch = AGS_IPATCH(sound_container);
+  
+  return(ipatch->nesting_level);
+}
+
+gchar*
+ags_ipatch_get_level_id(AgsSoundContainer *sound_container)
+{
+  AgsIpatch *ipatch;
+
+  ipatch = AGS_IPATCH(sound_container);
+  
+  return(ipatch->level_id);
+}
+
+guint
+ags_ipatch_get_level_index(AgsSoundContainer *sound_container)
+{
+  AgsIpatch *ipatch;
+
+  ipatch = AGS_IPATCH(sound_container);
+  
+  return(ipatch->level_index);
+}
+
+guint
+ags_ipatch_level_up(AgsSoundContainer *sound_container,
+		    guint level_count)
+{
+  AgsIpatch *ipatch;
+
+  ipatch = AGS_IPATCH(playable);
+
+  if(level_count == 0){
+    return;
+  }
+
+  if(ipatch->nesting_level >= level_count){
+    ipatch->nesting_level -= level_count;
+  }else{
+    ipatch->nesting_level = 0;
+  }
+}
+
+guint ags_ipatch_get_level_by_id(AgsSoundContainer *sound_container,
+				 gchar *level_id)
+{
+  //TODO:JK: implement me
+}
+
+guint ags_ipatch_get_level_by_index(AgsSoundContainer *sound_container,
+				    guint level_index)
+{
+  //TODO:JK: implement me
+}
+
+GList* ags_ipatch_get_resource_all(AgsSoundContainer *sound_container)
+{
+  //TODO:JK: implement me
+}
+
+GList* ags_ipatch_get_resource_by_name(AgsSoundContainer *sound_container,
+				       gchar *resource_name)
+{
+  //TODO:JK: implement me
+}
+
+GList* ags_ipatch_get_resource_by_index(AgsSoundContainer *sound_container,
+					guint resource_index)
+{
+  //TODO:JK: implement me
+}
+
+void ags_ipatch_close(AgsSoundResource *sound_resource)
+{
+  //TODO:JK: implement me
+}
+
+gboolean ags_ipatch_info(AgsSoundResource *sound_resource,
+			 guint *frame_count,
+			 guint *loop_start, guint *loop_end)
+{
+  //TODO:JK: implement me
+}
+
+void ags_ipatch_set_presets(AgsSoundResource *sound_resource,
+			    guint channels,
+			    guint samplerate,
+			    guint buffer_size,
+			    guint format)
+{
+  //TODO:JK: implement me
+}
+
+void ags_ipatch_get_presets(AgsSoundResource *sound_resource,
+			    guint *channels,
+			    guint *samplerate,
+			    guint *buffer_size,
+			    guint *format)
+{
+  //TODO:JK: implement me
+}
+
+guint ags_ipatch_read(AgsSoundResource *sound_resource,
+		      void *dbuffer,
+		      guint audio_channel,
+		      guint frame_count, guint format)
+{
+  //TODO:JK: implement me
+}
+
+void ags_ipatch_write(AgsSoundResource *sound_resource,
+		      void *sbuffer,
+		      guint audio_channel,
+		      guint frame_count, guint format)
+{
+  //TODO:JK: implement me
+}
+
+void ags_ipatch_flush(AgsSoundResource *sound_resource)
+{
+  //TODO:JK: implement me
+}
+
+void ags_ipatch_seek(AgsSoundResource *sound_resource,
+		     guint frame_count, gint whence)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_ipatch_check_suffix:
+ * @filename: the filename
+ * 
+ * Check @filename's suffix to be supported.
+ * 
+ * Returns: %TRUE if supported, else %FALSE
+ * 
+ * Since: 2.0.0
+ */
 gboolean
 ags_ipatch_check_suffix(gchar *filename)
 {

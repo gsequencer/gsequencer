@@ -76,7 +76,7 @@ struct _AgsSoundResourceInterface
   /* position */
   void (*seek)(AgsSoundResource *sound_resource,
 	       guint frame_count, gint whence);
-
+o
   /* close */
   void (*close)(AgsSoundResource *sound_resource);
 };
