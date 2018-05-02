@@ -26,6 +26,8 @@
 #include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
+#include <ags/audio/file/ags_ipatch_dls2_reader.h>
+#include <ags/audio/file/ags_ipatch_gig_reader.h>
 
 #include <ags/i18n.h>
 
@@ -539,160 +541,50 @@ ags_ipatch_get_level_index(AgsSoundContainer *sound_container)
 
 gchar**
 ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container)
-{
+{  
   AgsIpatch *ipatch;
-  
-  AgsIpatch *ipatch;
-  AgsIpatchSF2Reader *ipatch_sf2_reader;
-
-#ifdef AGS_WITH_LIBINSTPATCH
-  IpatchItem *ipatch_item;
-  IpatchList *ipatch_list;
-#endif
-
-  GList *list;
-
-  gchar **sublevel_name;
-  gchar *name;
 
   guint sublevel;
-  guint i;
-
-  ipatch = AGS_IPATCH(sound_container);
   
-  list = NULL;
+  ipatch = AGS_IPATCH(sound_container);
 
-  sublevel_name = NULL;
-  i  = 0;
+  sublevel = ipatch->nesting_level;
   
 #ifdef AGS_WITH_LIBINSTPATCH
   if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
+    AgsIpatchSF2Reader *ipatch_sf2_reader;
+    
     ipatch_sf2_reader = AGS_IPATCH_SF2_READER(ipatch->reader);
     
-    sublevel = ipatch->nesting_level;
-
     switch(sublevel){
     case AGS_SF2_FILENAME:
       {
 	sublevel_name = (gchar **) malloc(2 * sizeof(gchar*));
 
-	sublevel_name[0] = ipatch_sf2_reader->ipatch->filename;
+	sublevel_name[0] = ipatch->filename;
 	sublevel_name[1] = NULL;
 
 	return(sublevel_name);
       }
     case AGS_SF2_PHDR:
       {
-	ipatch_list = ipatch_container_get_children(IPATCH_CONTAINER(ipatch_sf2_reader->sf2),
-						    IPATCH_TYPE_SF2_PRESET);
-
-	while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ipatch_sf2_reader->sf2))->mutex) != 0);
-	
-	if(ipatch_list != NULL){
-	  list = ipatch_list->items;
-	}else{
-	  return(sublevel_name);
-	}
+	return(ags_ipatch_sf2_reader_get_preset_all(ipatch_sf2_reader));
       }
-      break;
     case AGS_SF2_IHDR:
       {
-	GList *tmp;
-
-	ipatch_list = ipatch_sf2_preset_get_zones(ipatch_sf2_reader->preset);
-	tmp = ipatch_list->items;
-
-	while(tmp != NULL){
-	  list = g_list_prepend(list, ipatch_sf2_zone_get_link_item(IPATCH_SF2_ZONE(tmp->data)));
-
-	  tmp = tmp->next;
-	}
-
-	if(list != NULL){
-	  list = g_list_reverse(list);
-	}else{
-	  return(sublevel_name);
-	}
+	return(ags_ipatch_sf2_reader_get_instrument_by_preset_index(ipatch_sf2_reader,
+								    ipatch_sf2_reader->index_selected[1]));
       }
-      break;
     case AGS_SF2_SHDR:
       {
-	GList *tmp;
-
-	ipatch_list = ipatch_sf2_preset_get_zones(ipatch_sf2_reader->instrument);
-	tmp = ipatch_list->items;
-	
-	while(tmp != NULL){
-	  list = g_list_prepend(list, ipatch_sf2_zone_get_link_item(IPATCH_SF2_ZONE(tmp->data)));
-
-	  tmp = tmp->next;
-	}
-
-	if(list != NULL){
-	  list = g_list_reverse(list);
-	}else{
-	  return(sublevel_name);
-	}
+	return(ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument_index(ipatch_sf2_reader,
+									       ipatch_sf2_reader->index_selected[1], ipatch_sf2_reader->index_selected[2]));
       }
-      break;
     };
-  }
-
-  for(i = 0; list != NULL; i++){
-    switch(sublevel){
-    case AGS_SF2_PHDR:
-      {
-	if(IPATCH_IS_SF2_PRESET(list->data)){
-	  if(sublevel_name == NULL){
-	    sublevel_name = (gchar **) malloc(2 * sizeof(gchar *));
-	  }else{
-	    sublevel_name = (gchar **) realloc(sublevel_name,
-					       (i + 2) * sizeof(gchar *));
-	  }
-	  
-	  sublevel_name[i] = ipatch_sf2_preset_get_name(IPATCH_SF2_PRESET(list->data));
-	}
-      }
-      break;
-    case AGS_SF2_IHDR:
-      {
-	if(IPATCH_IS_SF2_INST(list->data)){
-	  if(sublevel_name == NULL){
-	    sublevel_name = (gchar **) malloc(2 * sizeof(gchar *));
-	  }else{
-	    sublevel_name = (gchar **) realloc(sublevel_name,
-					       (i + 2) * sizeof(gchar *));
-	  }
-
-	  sublevel_name[i] = ipatch_sf2_inst_get_name(IPATCH_SF2_INST(list->data));
-	}
-      }
-      break;
-    case AGS_SF2_SHDR:
-      {
-	if(IPATCH_IS_SF2_SAMPLE(list->data)){
-	  if(sublevel_name == NULL){
-	    sublevel_name = (gchar **) malloc(2 * sizeof(gchar *));
-	  }else{
-	    sublevel_name = (gchar **) realloc(sublevel_name,
-					       (i + 2) * sizeof(gchar *));
-	  }
-
-	  sublevel_name[i] = ipatch_sf2_sample_get_name(IPATCH_SF2_SAMPLE(list->data));
-	}
-      }
-      break;
-    };
-    
-    list = list->next;
-  }
-
-  if(i > 0){
-    sublevel_name[i] = NULL;
   }
 #endif
   
-  return(sublevel_name);
+  return(NULL);
 }
 
 guint
@@ -733,7 +625,54 @@ guint
 ags_ipatch_select_level_by_index(AgsSoundContainer *sound_container,
 				 guint level_index)
 {
-  //TODO:JK: implement me
+  AgsIpatch *ipatch;
+
+  guint sublevel;
+  guint retval;
+  
+  ipatch = AGS_IPATCH(sound_container);
+
+  sublevel = ipatch->nesting_level;
+  retval = 0;
+  
+#ifdef AGS_WITH_LIBINSTPATCH
+  if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
+    AgsIpatchSF2Reader *ipatch_sf2_reader;
+    
+    ipatch_sf2_reader = AGS_IPATCH_SF2_READER(ipatch->reader);
+    
+    switch(sublevel){
+    case AGS_SF2_FILENAME:
+      {
+	if(ags_ipatch_sf2_reader_select_preset(ipatch_sf2_reader, level_index)){
+	  retval = AGS_SF2_FILENAME;
+	}
+      }
+      break;
+    case AGS_SF2_PHDR:
+      {
+	if(ags_ipatch_sf2_reader_select_instrument(ipatch_sf2_reader, level_index)){
+	  retval = AGS_SF2_PHDR;
+	}
+      }
+      break;
+    case AGS_SF2_IHDR:
+      {
+	if(ags_ipatch_sf2_reader_select_sample(ipatch_sf2_reader, level_index)){
+	  retval = AGS_SF2_IHDR;
+	}
+      }
+      break;
+    case AGS_SF2_SHDR:
+      {
+	retval = AGS_SF2_SHDR;
+      }
+      break;
+    };
+  }
+#endif
+  
+  return(retval);
 }
 
 GList*
@@ -742,10 +681,11 @@ ags_ipatch_get_resource_all(AgsSoundContainer *sound_container)
   //TODO:JK: implement me
 }
 
-GList* ags_ipatch_get_resource_by_name(AgsSoundContainer *sound_container,
-				       gchar *resource_name)
+GList*
+ags_ipatch_get_resource_by_name(AgsSoundContainer *sound_container,
+				gchar *resource_name)
 {
-  //TODO:JK: implement me
+  return(NULL);  
 }
 
 GList* ags_ipatch_get_resource_by_index(AgsSoundContainer *sound_container,
