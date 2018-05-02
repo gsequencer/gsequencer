@@ -102,12 +102,13 @@ gchar** ags_ipatch_sf2_reader_get_preset_all(AgsIpatchSF2Reader *ipatch_sf2_read
 gchar** ags_ipatch_sf2_reader_get_instrument_all(AgsIpatchSF2Reader *ipatch_sf2_reader);
 gchar** ags_ipatch_sf2_reader_get_sample_all(AgsIpatchSF2Reader *ipatch_sf2_reader);
 
-gchar** ags_ipatch_sf2_reader_get_instrument_by_preset(AgsIpatchSF2Reader *ipatch_sf2_reader,
-						       gchar *preset);
-gchar** ags_ipatch_sf2_reader_get_sample_by_preset(AgsIpatchSF2Reader *ipatch_sf2_reader,
-						   gchar *preset);
-gchar** ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument(AgsIpatchSF2Reader *ipatch_sf2_reader,
-								  gchar *preset, gchar *instrument);
+gchar** ags_ipatch_sf2_reader_get_instrument_by_preset_index(AgsIpatchSF2Reader *ipatch_sf2_reader,
+							     guint preset_index);
+
+gchar** ags_ipatch_sf2_reader_get_sample_by_preset_index(AgsIpatchSF2Reader *ipatch_sf2_reader,
+							 guitn preset_index);
+gchar** ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument_index(AgsIpatchSF2Reader *ipatch_sf2_reader,
+									guint preset_index, guint instrument_index);
 
 AgsIpatchSF2Reader* ags_ipatch_sf2_reader_new(AgsIpatch *ipatch);
 

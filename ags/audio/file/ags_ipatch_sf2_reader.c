@@ -245,6 +245,16 @@ ags_ipatch_sf2_reader_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_ipatch_sf2_reader_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_ipatch_sf2_reader_get_preset_all:
+ * @ipatch_sf2_reader: the #AgsSF2Reader
+ * 
+ * Get all preset names.
+ * 
+ * Returns: the string vector cotaining preset names or %NULL on failure
+ * 
+ * Since: 2.0.0
+ */
 gchar**
 ags_ipatch_sf2_reader_get_preset_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
 {
@@ -300,25 +310,169 @@ ags_ipatch_sf2_reader_get_preset_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
   return(preset);
 }
 
+/**
+ * ags_ipatch_sf2_reader_get_instrument_all:
+ * @ipatch_sf2_reader: the #AgsSF2Reader
+ * 
+ * Get all instrument names.
+ * 
+ * Returns: the string vector cotaining instrument names or %NULL on failure
+ * 
+ * Since: 2.0.0
+ */
 gchar**
 ags_ipatch_sf2_reader_get_instrument_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
 {
 #ifdef AGS_WITH_LIBINSTPATCH
   IpatchSF2 *sf2;
-  IpatchContainer *preset;
+  IpatchItem *ipatch_item;
+  IpatchList *ipatch_list;
+  
+  IpatchIter instrument_iter;
+#endif
+  
+  gchar **instrument;
+  
+  guint i, i_stop;
+  
+  if(!AGS_IS_IPATCH_SF2_READER(ipatch_sf2_reader)){
+    return(NULL);
+  }
+  
+  instrument = NULL;
+
+#ifdef AGS_WITH_LIBINSTPATCH
+  sf2 = ipatch_sf2_reader->sf2;
+  
+  ipatch_list = ipatch_container_get_children(sf2, IPATCH_TYPE_SF2_INST);
+  
+  if(ipatch_list != NULL){
+    ipatch_list_init_iter(ipatch_list, &instrument_iter);
+
+    i_stop = ipatch_iter_count(&instrument_iter);
+
+    if(i_stop > 0){
+      instrument = (gchar **) malloc((i_stop + 1) * sizeof(gchar *));
+
+      ipatch_iter_first(&instrument_iter);
+      
+      for(i = 0; i < i_stop; i++){
+	item = ipatch_iter_get(&instrument_iter);
+	instrument[i] = ipatch_sf2_inst_get_name(IPATCH_SF2_INST(item));
+
+	/* iterate */
+	ipatch_iter_next(&instrument_iter);
+      }
+
+      instrument[i] = NULL;
+    }
+  }
+  
+  //FIXME:JK: still needed?
+  while(g_static_rec_mutex_unlock_full(((IpatchItem *) (sf2))->mutex) != 0);
+#endif
+  
+  return(instrument);
+}
+
+/**
+ * ags_ipatch_sf2_reader_get_sample_all:
+ * @ipatch_sf2_reader: the #AgsSF2Reader
+ * 
+ * Get all sample names.
+ * 
+ * Returns: the string vector cotaining sample names or %NULL on failure
+ * 
+ * Since: 2.0.0
+ */
+gchar**
+ags_ipatch_sf2_reader_get_sample_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
+{
+#ifdef AGS_WITH_LIBINSTPATCH
+  IpatchSF2 *sf2;
+  IpatchItem *ipatch_item;
+  IpatchList *ipatch_list;
+  
+  IpatchIter sample_iter;
+#endif
+  
+  gchar **sample;
+  
+  guint i, i_stop;
+  
+  if(!AGS_IS_IPATCH_SF2_READER(ipatch_sf2_reader)){
+    return(NULL);
+  }
+  
+  sample = NULL;
+
+#ifdef AGS_WITH_LIBINSTPATCH
+  sf2 = ipatch_sf2_reader->sf2;
+  
+  ipatch_list = ipatch_container_get_children(sf2, IPATCH_TYPE_SF2_SAMPLE);
+  
+  if(ipatch_list != NULL){
+    ipatch_list_init_iter(ipatch_list, &sample_iter);
+
+    i_stop = ipatch_iter_count(&sample_iter);
+
+    if(i_stop > 0){
+      sample = (gchar **) malloc((i_stop + 1) * sizeof(gchar *));
+
+      ipatch_iter_first(&sample_iter);
+      
+      for(i = 0; i < i_stop; i++){
+	item = ipatch_iter_get(&sample_iter);
+	sample[i] = ipatch_sf2_sample_get_name(IPATCH_SF2_SAMPLE(item));
+
+	/* iterate */
+	ipatch_iter_next(&sample_iter);
+      }
+
+      sample[i] = NULL;
+    }
+  }
+  
+  //FIXME:JK: still needed?
+  while(g_static_rec_mutex_unlock_full(((IpatchItem *) (sf2))->mutex) != 0);
+#endif
+  
+  return(sample);
+}
+
+/**
+ * ags_ipatch_sf2_reader_get_instrument_by_preset_index:
+ * @ipatch_sf2_reader: the #AgsSF2Reader
+ * @preset_index: the preset index
+ * 
+ * Get instrument by preset index.
+ * 
+ * Returns: the string vector cotaining instrument names or %NULL on failure
+ * 
+ * Since: 2.0.0
+ */
+gchar**
+ags_ipatch_sf2_reader_get_instrument_by_preset_index(AgsIpatchSF2Reader *ipatch_sf2_reader,
+						     guint preset_index)
+{
+#ifdef AGS_WITH_LIBINSTPATCH
+  IpatchSF2 *sf2;
+  IpatchContainer *preset;  
+  IpatchContainer *instrument;
   
   IpatchItem *ipatch_item;
   IpatchList *ipatch_list;
   
-  IpatchIter preset_iter, instrument_iter;
+  IpatchIter preset_iter, instrument_iter, sample_iter;
 #endif
 
   gchar **instrument;
 
   guint i, i_stop;
   guint j, j_stop;
+  guint k, k_stop;
   guint count;
-  
+
   if(!AGS_IS_IPATCH_SF2_READER(ipatch_sf2_reader)){
     return(NULL);
   }
@@ -336,45 +490,35 @@ ags_ipatch_sf2_reader_get_instrument_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
 
     i_stop = ipatch_iter_count(&preset_iter);
 
-    if(i_stop > 0){
-      ipatch_iter_first(&preset_iter);
+    if(i_stop > 0 && preset_index < i_stop){
+      ipatch_iter_index(&preset_iter, preset_index);
 
-      for(i = 0, count = 0; i < i_stop; i++){
-	preset = ipatch_iter_get(&preset_iter);
+      preset = ipatch_iter_get(&preset_iter);
 
-	/* instruments */
-	ipatch_list = ipatch_sf2_preset_get_zones(preset);
+      /* instruments */
+      ipatch_list = ipatch_sf2_preset_get_zones(preset);
 
-	if(ipatch_list != NULL){
-	  ipatch_list_init_iter(ipatch_list, &instrument_iter);
+      if(ipatch_list != NULL){
+	ipatch_list_init_iter(ipatch_list, &instrument_iter);
 
-	  j_stop = ipatch_iter_count(&instrument_iter);
+	j_stop = ipatch_iter_count(&instrument_iter);
 
-	  if(j_stop > 0){
-	    if(instrument == NULL){
-	      instrument = (gchar **) malloc((j_stop + 1) * sizeof(gchar *));
-	    }else{
-	      instrument = (gchar **) realloc(instrument,
-					      (count + j_stop + 1) * sizeof(gchar *));
-	    }
+	if(j_stop > 0){
+	  instrument = (gchar **) malloc((j_stop + 1) * sizeof(gchar *));
 	    
-	    for(j = 0; j < j_stop; j++){
-	      ipatch_item = ipatch_iter_get(&instrument_iter);
-	      instrument[count] = ipatch_sf2_inst_get_name(ipatch_item);
+	  for(j = 0, count = 0; j < j_stop; j++){
+	    instrument = ipatch_iter_get(&instrument_iter);
 
-	      /* iterate */
-	      ipatch_iter_next(&instrument_iter);
-	      count++;
-	    }
+	    ipatch_item = ipatch_iter_get(&sample_iter);
+	    instrument[count] = ipatch_sf2_inst_get_name(ipatch_item);
+
+	    /* iterate */
+	    ipatch_iter_next(&instrument_iter);
+	    count++;
 	  }
-	}
-	
-	/* iterate */
-	ipatch_iter_next(&preset_iter);
-      }
 
-      if(instrument != NULL){
-	instrument[count] = NULL;
+	  instrument[count] = NULL;
+	}
       }
     }
   }
@@ -386,8 +530,20 @@ ags_ipatch_sf2_reader_get_instrument_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
   return(instrument);
 }
 
+/**
+ * ags_ipatch_sf2_reader_get_sample_by_preset_index:
+ * @ipatch_sf2_reader: the #AgsSF2Reader
+ * @preset_index: the preset index
+ * 
+ * Get sample by preset index.
+ * 
+ * Returns: the string vector cotaining sample names or %NULL on failure
+ * 
+ * Since: 2.0.0
+ */
 gchar**
-ags_ipatch_sf2_reader_get_sample_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
+ags_ipatch_sf2_reader_get_sample_by_preset_index(AgsIpatchSF2Reader *ipatch_sf2_reader,
+						 gchar *preset_index)
 {
 #ifdef AGS_WITH_LIBINSTPATCH
   IpatchSF2 *sf2;
@@ -425,62 +581,57 @@ ags_ipatch_sf2_reader_get_sample_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
     i_stop = ipatch_iter_count(&preset_iter);
 
     if(i_stop > 0){
-      ipatch_iter_first(&preset_iter);
+      ipatch_iter_index(&preset_iter, preset_index);
 
-      for(i = 0, count = 0; i < i_stop; i++){
-	preset = ipatch_iter_get(&preset_iter);
+      preset = ipatch_iter_get(&preset_iter);
 
-	/* instruments */
-	ipatch_list = ipatch_sf2_preset_get_zones(preset);
+      /* instruments */
+      ipatch_list = ipatch_sf2_preset_get_zones(preset);
+      
+      if(ipatch_list != NULL){
+	ipatch_list_init_iter(ipatch_list, &instrument_iter);
 
-	if(ipatch_list != NULL){
-	  ipatch_list_init_iter(ipatch_list, &instrument_iter);
-
-	  j_stop = ipatch_iter_count(&instrument_iter);
-
-	  if(j_stop > 0){
-	    for(j = 0; j < j_stop; j++){
-	      instrument = ipatch_iter_get(&instrument_iter);
-
-	      /* samples */
-	      ipatch_list = ipatch_sf2_inst_get_zones(preset);
-
-	      if(ipatch_list != NULL){
-		ipatch_list_init_iter(ipatch_list, &sample_iter);
-
-		k_stop = ipatch_iter_count(&sample_iter);
-
-		if(k_stop > 0){
-		  if(sample == NULL){
-		    sample = (gchar **) malloc((k_stop + 1) * sizeof(gchar *));
-		  }else{
-		    sample = (gchar **) realloc(sample,
-						(count + k_stop + 1) * sizeof(gchar *));
-		  }
+	j_stop = ipatch_iter_count(&instrument_iter);
+	
+	if(j_stop > 0){
+	  for(j = 0, count = 0; j < j_stop; j++){
+	    instrument = ipatch_iter_get(&instrument_iter);
 	    
-		  for(k = 0; k < k_stop; k++){
-		    ipatch_item = ipatch_iter_get(&sample_iter);
-		    sample[count] = ipatch_sf2_sample_get_name(ipatch_item);
+	    /* samples */
+	    ipatch_list = ipatch_sf2_inst_get_zones(preset);
+
+	    if(ipatch_list != NULL){
+	      ipatch_list_init_iter(ipatch_list, &sample_iter);
+
+	      k_stop = ipatch_iter_count(&sample_iter);
+
+	      if(k_stop > 0){
+		if(sample == NULL){
+		  sample = (gchar **) malloc((k_stop + 1) * sizeof(gchar *));
+		}else{
+		  sample = (gchar **) realloc(sample,
+					      (count + k_stop + 1) * sizeof(gchar *));
+		}
+	    
+		for(k = 0; k < k_stop; k++){
+		  ipatch_item = ipatch_iter_get(&sample_iter);
+		  sample[count] = ipatch_sf2_sample_get_name(ipatch_item);
 		    
-		    /* iterate */
-		    ipatch_iter_next(&sample_iter);
-		    count++;
-		  }
+		  /* iterate */
+		  ipatch_iter_next(&sample_iter);
+		  count++;
 		}
 	      }
-
-	      /* iterate */
-	      ipatch_iter_next(&instrument_iter);
 	    }
+
+	    /* iterate */
+	    ipatch_iter_next(&instrument_iter);
 	  }
 	}
-	
-	/* iterate */
-	ipatch_iter_next(&preset_iter);
       }
 
-      if(instrument != NULL){
-	instrument[count] = NULL;
+      if(sample != NULL){
+	sample[count] = NULL;
       }
     }
   }
@@ -492,45 +643,38 @@ ags_ipatch_sf2_reader_get_sample_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
   return(sample);
 }
 
+/**
+ * ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument_index:
+ * @ipatch_sf2_reader: the #AgsSF2Reader
+ * @preset_index: the preset index
+ * 
+ * Get sample by preset and instrument index.
+ * 
+ * Returns: the string vector cotaining sample names or %NULL on failure
+ * 
+ * Since: 2.0.0
+ */
 gchar**
-ags_ipatch_sf2_reader_get_instrument_by_preset(AgsIpatchSF2Reader *ipatch_sf2_reader,
-					       gchar *preset)
+ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument_index(AgsIpatchSF2Reader *ipatch_sf2_reader,
+								guint preset_index, guint instrument_index)
 {
-  gchar **instrument;
-
-  if(!AGS_IS_IPATCH_SF2_READER(ipatch_sf2_reader)){
-    return(NULL);
-  }
+#ifdef AGS_WITH_LIBINSTPATCH
+  IpatchSF2 *sf2;
+  IpatchContainer *preset;  
+  IpatchContainer *instrument;
   
-  instrument = NULL;
+  IpatchItem *ipatch_item;
+  IpatchList *ipatch_list;
   
-  //TODO:JK: implement me
+  IpatchIter preset_iter, instrument_iter, sample_iter;
+#endif
 
-  return(instrument);
-}
+  gchar **sample;
 
-gchar**
-ags_ipatch_sf2_reader_get_sample_by_preset(AgsIpatchSF2Reader *ipatch_sf2_reader,
-					   gchar *preset)
-{
-  gcahr **sample;
-
-  if(!AGS_IS_IPATCH_SF2_READER(ipatch_sf2_reader)){
-    return(NULL);
-  }
-  
-  sample = NULL;
-  
-  //TODO:JK: implement me
-
-  return(sample);
-}
-
-gchar**
-ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument(AgsIpatchSF2Reader *ipatch_sf2_reader,
-							  gchar *preset, gchar *instrument)
-{
-  gcahr **sample;
+  guint i, i_stop;
+  guint j, j_stop;
+  guint k, k_stop;
+  guint count;
 
   if(!AGS_IS_IPATCH_SF2_READER(ipatch_sf2_reader)){
     return(NULL);
@@ -538,7 +682,66 @@ ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument(AgsIpatchSF2Reader *ip
   
   sample = NULL;
   
-  //TODO:JK: implement me
+#ifdef AGS_WITH_LIBINSTPATCH
+  sf2 = ipatch_sf2_reader->sf2;
+  
+  /* presets */
+  ipatch_list = ipatch_container_get_children(sf2, IPATCH_TYPE_SF2_PRESET);
+  
+  if(ipatch_list != NULL){
+    ipatch_list_init_iter(ipatch_list, &preset_iter);
+    
+    i_stop = ipatch_iter_count(&preset_iter);
+
+    if(i_stop > 0 && preset_index < i_stop){
+      ipatch_iter_index(&preset_iter, preset_index);
+
+      preset = ipatch_iter_get(&preset_iter);
+
+      /* instruments */
+      ipatch_list = ipatch_sf2_preset_get_zones(preset);
+      
+      if(ipatch_list != NULL){
+	ipatch_list_init_iter(ipatch_list, &instrument_iter);
+
+	j_stop = ipatch_iter_count(&instrument_iter);
+
+	if(j_stop > 0 && instrument_index < j_stop){	  
+	  ipatch_iter_index(&instrument_iter, instrument_index);
+
+	  instrument = ipatch_iter_get(&instrument_iter);
+
+	  /* samples */
+	  ipatch_list = ipatch_sf2_inst_get_zones(instrument);
+
+	  if(ipatch_list != NULL){
+	    ipatch_list_init_iter(ipatch_list, &sample_iter);
+
+	    k_stop = ipatch_iter_count(&sample_iter);
+
+	    if(k_stop > 0){
+	      sample = (gchar **) malloc((k_stop + 1) * sizeof(gchar *));
+	    
+	      for(k = 0, count = 0; k < k_stop; k++){
+		ipatch_item = ipatch_iter_get(&sample_iter);
+		sample[count] = ipatch_sf2_sample_get_name(ipatch_item);
+		    
+		/* iterate */
+		ipatch_iter_next(&sample_iter);
+		count++;
+	      }
+
+	      sample[count] = NULL;
+	    }
+	  }
+	}
+      }
+    }
+  }
+
+  //FIXME:JK: still needed?
+  while(g_static_rec_mutex_unlock_full(((IpatchItem *) (sf2))->mutex) != 0);
+#endif
 
   return(sample);
 }
