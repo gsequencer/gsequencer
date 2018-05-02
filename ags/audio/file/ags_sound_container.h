@@ -36,7 +36,7 @@ typedef struct _AgsSoundContainerInterface AgsSoundContainerInterface;
 struct _AgsSoundContainerInterface
 {
   GTypeInterface ginterface;
-
+  
   gboolean (*open)(AgsSoundContainer *sound_container, gchar *filename);
 
   /* level information */
@@ -45,7 +45,9 @@ struct _AgsSoundContainerInterface
   
   gchar* (*get_level_id)(AgsSoundContainer *sound_container);
   guint (*get_level_index)(AgsSoundContainer *sound_container);
-
+  
+  gchar** (*get_sublevel_name)(AgsSoundContainer *sound_container);
+  
   /* levels */
   guint (*level_up)(AgsSoundContainer *sound_container,
 		    guint level_count);
@@ -74,6 +76,8 @@ guint ags_sound_container_get_nesting_level(AgsSoundContainer *sound_container);
   
 gchar* ags_sound_container_get_level_id(AgsSoundContainer *sound_container);
 guint ags_sound_container_get_level_index(AgsSoundContainer *sound_container);
+
+gchar** ags_sound_container_get_sublevel_name(AgsSoundContainer *sound_container);
 
 guint ags_sound_container_level_up(AgsSoundContainer *sound_container,
 				   guint level_count);

@@ -193,6 +193,32 @@ ags_sound_container_get_level_index(AgsSoundContainer *sound_container)
 }
 
 /**
+ * ags_sound_container_get_sublevel_name:
+ * @sound_countainer: the #AgsSoundcontainer
+ * 
+ * Get sublevel names.
+ * 
+ * Returns: the string vector containing sublevel names
+ * 
+ * Since: 2.0.0
+ */
+gchar**
+ags_sound_container_get_sublevel_name(AgsSoundContainer *sound_container)
+{
+  AgsSoundContainerInterface *sound_container_interface;
+
+  gchar **retval;
+
+  g_return_val_if_fail(AGS_IS_SOUND_CONTAINER(sound_container), NULL);
+  sound_container_interface = AGS_SOUND_CONTAINER_GET_INTERFACE(sound_container);
+  g_return_val_if_fail(sound_container_interface->get_sublevel_name, NULL);
+
+  retval = sound_container_interface->get_sublevel_name(sound_container);
+
+  return(retval);
+}
+
+/**
  * ags_sound_container_level_up:
  * @sound_countainer: the #AgsSoundcontainer
  * @level_count: the count of levels to go up

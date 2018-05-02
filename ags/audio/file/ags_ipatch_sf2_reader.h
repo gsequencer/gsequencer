@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -98,6 +98,17 @@ struct _AgsIpatchSF2ReaderClass
 
 GType ags_ipatch_sf2_reader_get_type();
 
-AgsIpatchSF2Reader* ags_ipatch_sf2_reader_new();
+gchar** ags_ipatch_sf2_reader_get_preset_all(AgsIpatchSF2Reader *ipatch_sf2_reader);
+gchar** ags_ipatch_sf2_reader_get_instrument_all(AgsIpatchSF2Reader *ipatch_sf2_reader);
+gchar** ags_ipatch_sf2_reader_get_sample_all(AgsIpatchSF2Reader *ipatch_sf2_reader);
+
+gchar** ags_ipatch_sf2_reader_get_instrument_by_preset(AgsIpatchSF2Reader *ipatch_sf2_reader,
+						       gchar *preset);
+gchar** ags_ipatch_sf2_reader_get_sample_by_preset(AgsIpatchSF2Reader *ipatch_sf2_reader,
+						   gchar *preset);
+gchar** ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument(AgsIpatchSF2Reader *ipatch_sf2_reader,
+								  gchar *preset, gchar *instrument);
+
+AgsIpatchSF2Reader* ags_ipatch_sf2_reader_new(AgsIpatch *ipatch);
 
 #endif /*__AGS_IPATCH_SF2_READER_H__*/
