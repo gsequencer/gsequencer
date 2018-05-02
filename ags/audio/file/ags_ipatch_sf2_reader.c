@@ -136,21 +136,29 @@ ags_ipatch_sf2_reader_connectable_interface_init(AgsConnectableInterface *connec
 void
 ags_ipatch_sf2_reader_init(AgsIpatchSF2Reader *ipatch_sf2_reader)
 {
+  guint i;
+  
   ipatch_sf2_reader->ipatch = NULL;
 
-  ipatch_sf2_reader->bank = -1;
-  ipatch_sf2_reader->program = -1;
+  /* reader */
+  ipatch_sf2_reader->reader = NULL;
+  ipatch_sf2_reader->sf2 = NULL;
+  
+  /* selected */
+  ipatch_sf2_reader->index_selected = (guint *) malloc(4 * sizeof(guint));
+  memset(ipatch_sf2_reader->index_selected, 0, 4 * sizeof(guint));
+  
+  ipatch_sf2_reader->name_selected = (gchar **) malloc(5 * sizeof(gchar *));
 
-  ipatch_sf2_reader->selected = (gchar **) malloc(5 * sizeof(gchar *));
-  ipatch_sf2_reader->selected[0] = NULL;
-  ipatch_sf2_reader->selected[1] = NULL;
-  ipatch_sf2_reader->selected[2] = NULL;
-  ipatch_sf2_reader->selected[3] = NULL;
-  ipatch_sf2_reader->selected[4] = NULL;
+  for(i = 0; i < 5; i++){
+    ipatch_sf2_reader->name_selected[i] = NULL;
+  }
   
   ipatch_sf2_reader->preset = NULL;
   ipatch_sf2_reader->instrument = NULL;
   ipatch_sf2_reader->sample = NULL;
+
+  ipatch_sf2_reader->error = NULL;
 }
 
 void
@@ -243,6 +251,90 @@ ags_ipatch_sf2_reader_finalize(GObject *gobject)
 
   /* call parent */  
   G_OBJECT_CLASS(ags_ipatch_sf2_reader_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_ipatch_sf2_reader_load:
+ * @ipatch_sf2_reader: the #AgsSF2Reader
+ * @handle: the #IpatchFileHandle
+ * 
+ * Load Soundfont2 file.
+ * 
+ * Returns: %TRUE on success, else %FALSE on failue
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_ipatch_sf2_reader_load(AgsIpatchSF2Reader *ipatch_sf2_reader,
+			   IpatchFileHandle *handle)
+{
+  if(!AGS_IS_IPATCH_SF2_READER(ipatch_sf2_reader)){
+    return(FALSE);
+  }
+
+  ipatch_sf2_reader->reader = ipatch_sf2_reader_new(handle);
+
+  ipatch_sf2_reader->error = NULL;
+  ipatch_sf2_reader->base = (IpatchBase *) ipatch_sf2_reader_load(ipatch_sf2_reader->reader,
+								  &(ipatch_sf2_reader->error));
+
+  if(ipatch_sf2_reader->error != NULL){
+    g_warning("%s", ipatch_sf2_reader->error->message);
+    
+    return(FALSE);
+  }
+  
+  ipatch_sf2_reader->error = NULL;
+  ipatch_sf2_reader->sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) handle->file,
+								       IPATCH_TYPE_SF2,
+								       &(ipatch_sf2_reader->error));
+
+  if(ipatch_sf2_reader->error != NULL){
+    g_warning("%s", ipatch_sf2_reader->error->message);
+    
+    return(FALSE);
+  }
+
+  return(TRUE);
+}
+
+gboolean
+ags_ipatch_sf2_reader_select_preset(AgsIpatchSF2Reader *ipatch_sf2_reader,
+				    guint preset_index)
+{
+  if(!AGS_IS_IPATCH_SF2_READER(ipatch_sf2_reader)){
+    return(FALSE);
+  }
+
+  //TODO:JK: implement me
+
+  return(TRUE);
+}
+
+gboolean
+ags_ipatch_sf2_reader_select_instrument(AgsIpatchSF2Reader *ipatch_sf2_reader,
+					guint instrument_index)
+{
+  if(!AGS_IS_IPATCH_SF2_READER(ipatch_sf2_reader)){
+    return(FALSE);
+  }
+
+  //TODO:JK: implement me
+
+  return(TRUE);
+}
+
+gboolean
+ags_ipatch_sf2_reader_select_sample(AgsIpatchSF2Reader *ipatch_sf2_reader,
+				    guint sample_index)
+{
+  if(!AGS_IS_IPATCH_SF2_READER(ipatch_sf2_reader)){
+    return(FALSE);
+  }
+
+  //TODO:JK: implement me
+
+  return(TRUE);
 }
 
 /**

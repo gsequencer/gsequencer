@@ -471,32 +471,13 @@ ags_ipatch_open(AgsSoundContainer *sound_container, gchar *filename)
   }else if(IPATCH_IS_SF2_FILE(ipatch->handle->file)){
     ipatch->flags |= AGS_IPATCH_SF2;
 
-    //TODO:JK: implement me
-
     /*  */
-    ipatch->reader = (GObject *) ags_ipatch_sf2_reader_new();
-    AGS_IPATCH_SF2_READER(ipatch->reader)->ipatch = ipatch;
+    ipatch->reader = (GObject *) ags_ipatch_sf2_reader_new(ipatch);
 
-    AGS_IPATCH_SF2_READER(ipatch->reader)->reader = ipatch_sf2_reader_new(ipatch->handle);
-
-    error = NULL;
-    ipatch->base = (IpatchBase *) ipatch_sf2_reader_load(AGS_IPATCH_SF2_READER(ipatch->reader)->reader,
-							 &error);
-
-    error = NULL;
-    AGS_IPATCH_SF2_READER(ipatch->reader)->sf2 = (IpatchSF2 *) ipatch_convert_object_to_type((GObject *) ipatch->handle->file,
-											     IPATCH_TYPE_SF2,
-											     &error);
-
-    if(error != NULL){
-      g_warning("%s", error->message);
-
+    if(!ags_ipatch_sf2_reader_load(ipatch->reader,
+				   ipatch->handle)){
       return(FALSE);
     }
-
-    /* load samples */
-    ipatch->samples = (IpatchList *) ipatch_container_get_children(IPATCH_CONTAINER(ipatch->base),
-								   IPATCH_TYPE_SF2_SAMPLE);
     
     while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ipatch->base))->mutex) != 0);
   }else if(IPATCH_IS_GIG_FILE(ipatch->handle->file)){
@@ -745,135 +726,6 @@ guint
 ags_ipatch_select_level_by_id(AgsSoundContainer *sound_container,
 			      gchar *level_id)
 {
-  AgsIpatch *ipatch;
-
-  gchar **preset, **instrument, **sample;
-  gchar **preset_iter, **instrument_iter, **sample_iter;
-
-  gboolean success;
-
-  ipatch = AGS_IPATCH(sound_container);
-
-  /* check filename */
-  ipatch->nesting_level = 0;
-
-  if(level_id == NULL){
-    return(0);
-  }
-  
-  if(ipatch->filename == NULL){
-    return(0);
-  }
-
-  success = (!g_strcmp0(ipatch->filename,
-			level_id)) ? TRUE: FALSE;
-  
-  if(success){
-    ipatch->level_id = g_strdup(level_id);
-    ipatch->level_index = 0;
-    
-    return(0);
-  }
-
-  if(){
-  }else if(){
-    preset = ags_ipatch_sf2_reader_get_preset_all();
-  }else if(){
-  }
-
-  /* check preset */
-  ipatch->nesting_level = 1;
-
-  preset = 
-    sublevel_name = ags_ipatch_get_sublevel_name(sound_container);
-
-  if(sublevel_name == NULL){
-    ipatch->nesting_level = 0;
-    
-    return(0);
-  }
-
-  for(iter = sublevel_name; *iter != NULL; iter++){
-    if(!g_strcmp0(level_id,
-		  *iter)){
-      success = TRUE;
-
-      break;
-    }
-  }
-
-  if(success){
-    ipatch->level_id = g_strdup(level_id);
-    ipatch->level_index = i;
-
-    g_strfreev(preset);
-    
-    return(1);
-  }
-      
-  /* check instrument */
-  ipatch->nesting_level = 2;
-
-  instrument = 
-    sublevel_name = ags_ipatch_get_sublevel_name(sound_container);
-
-  if(sublevel_name == NULL){
-    ipatch->nesting_level = 0;
-
-    g_strfreev(preset);
-    
-    return(0);
-  }
-
-  for(iter = sublevel_name; *iter != NULL; iter++){
-    if(!g_strcmp0(level_id,
-		  *iter)){
-      success = TRUE;
-
-      break;
-    }
-  }
-
-  if(success){
-    ipatch->level_id = g_strdup(level_id);
-    ipatch->level_index = i;
-    
-    g_strfreev(preset);
-    g_strfreev(instrument);
-
-    return(2);
-  }
-
-  /* check preset */
-  ipatch->nesting_level = 3;
-
-  sample =
-    sublevel_name = ags_ipatch_get_sublevel_name(sound_container);
-
-  if(sublevel_name == NULL){
-    ipatch->nesting_level = 0;
-    
-    return(0);
-  }
-
-  for(iter = sublevel_name; *iter != NULL; iter++){
-    if(!g_strcmp0(level_id,
-		  *iter)){
-      success = TRUE;
-
-      break;
-    }
-  }
-
-  g_strfreev(sublevel_name);
-
-  if(success){
-    ipatch->level_id = g_strdup(level_id);
-    ipatch->level_index = i;
-    
-    return(3);
-  }
-
   return(0);
 }
 

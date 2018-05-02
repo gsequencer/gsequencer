@@ -82,22 +82,8 @@ struct _AgsIpatch
 #else
   gpointer handle;
 #endif
-  
-  GError *error;
-
-#ifdef AGS_WITH_LIBINSTPATCH
-  IpatchBase *base;
-#else
-  gpointer base;
-#endif
-  
+    
   GObject *reader;
-
-#ifdef AGS_WITH_LIBINSTPATCH
-  IpatchList *samples;
-#else
-  gpointer samples;
-#endif
 
   GList *iter;
 
