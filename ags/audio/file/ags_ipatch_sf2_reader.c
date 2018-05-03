@@ -295,6 +295,8 @@ ags_ipatch_sf2_reader_load(AgsIpatchSF2Reader *ipatch_sf2_reader,
     return(FALSE);
   }
 
+  while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ipatch_sf2_reader->base))->mutex) != 0);
+
   return(TRUE);
 }
 

@@ -66,31 +66,27 @@ struct _AgsIpatch
   guint flags;
 
   GObject *soundcard;
-  GList *audio_signal;
-
-#ifdef AGS_WITH_LIBINSTPATCH
-  IpatchFile *file;
-#else
-  gpointer file;
-#endif
   
   char *filename;
   char *mode;
 
 #ifdef AGS_WITH_LIBINSTPATCH
+  IpatchFile *file;
   IpatchFileHandle *handle;
 #else
+  gpointer file;
   gpointer handle;
 #endif
     
-  GObject *reader;
-
-  GList *iter;
-
   guint nesting_level;
   
   gchar *level_id;
   guint level_index;
+
+  GObject *reader;
+  GObject *writer;
+
+  GList *audio_signal;
 };
 
 struct _AgsIpatchClass
