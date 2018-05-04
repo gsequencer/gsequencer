@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -59,32 +59,32 @@ struct _AgsIpatchDLS2Reader
 {
   GObject object;
 
+  guint level;
+  
   AgsIpatch *ipatch;
 
-  gchar **selected;
-
+  guint *index_selected;
+  gchar **name_selected;
+  	
 #ifdef AGS_WITH_LIBINSTPATCH
-  IpatchDLSReader *reader;
+  IpatchGigReader *reader;
 
-  IpatchDLS2 *dls2;
-#else
-  gpointer reader;
+  IpatchBase *base;
+  IpatchGig *gig;
 
-  gpointer dls2;
-#endif
-  
-  int bank;
-  int program;
-
-#ifdef AGS_WITH_LIBINSTPATCH
   IpatchContainer *instrument;
   IpatchContainer *sample;
 #else
+  gpointer reader;
+
+  gpointer base;
+  gpointer gig;
+
   gpointer instrument;
   gpointer sample;
 #endif
-  
-  int count;
+
+  GError *error;
 };
 
 struct _AgsIpatchDLS2ReaderClass
@@ -94,6 +94,23 @@ struct _AgsIpatchDLS2ReaderClass
 
 GType ags_ipatch_dls2_reader_get_type();
 
-AgsIpatchDLS2Reader* ags_ipatch_dls2_reader_new();
+gboolean ags_ipatch_dls2_reader_load(AgsIpatchDLS2Reader *ipatch_dls2_reader,
+				     IpatchFileHandle *handle);
+
+/* select sample */
+gboolean ags_ipatch_dls2_reader_select_instrument(AgsIpatchDLS2Reader *ipatch_dls2_reader,
+						  guint instrument_index);
+gboolean ags_ipatch_dls2_reader_select_sample(AgsIpatchDLS2Reader *ipatch_dls2_reader,
+					      guint sample_index);
+
+/* query */
+gchar** ags_ipatch_dls2_reader_get_instrument_all(AgsIpatchDLS2Reader *ipatch_dls2_reader);
+gchar** ags_ipatch_dls2_reader_get_sample_all(AgsIpatchDLS2Reader *ipatch_dls2_reader);
+
+gchar** ags_ipatch_dls2_reader_get_sample_by_instrument_index(AgsIpatchDLS2Reader *ipatch_dls2_reader,
+							      guitn instrument_index);
+
+/* instantiate */
+AgsIpatchDLS2Reader* ags_ipatch_dls2_reader_new(AgsIpatch *ipatch);
 
 #endif /*__AGS_IPATCH_DLS2_READER_H__*/

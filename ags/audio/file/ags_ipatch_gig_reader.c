@@ -252,6 +252,46 @@ ags_ipatch_gig_reader_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_ipatch_gig_reader_parent_class)->finalize(gobject);
 }
 
+gboolean
+ags_ipatch_gig_reader_load(AgsIpatchGigReader *ipatch_gig_reader,
+			   IpatchFileHandle *handle)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_ipatch_gig_reader_select_instrument(AgsIpatchGigReader *ipatch_gig_reader,
+					guint instrument_index)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_ipatch_gig_reader_select_sample(AgsIpatchGigReader *ipatch_gig_reader,
+				    guint sample_index)
+{
+  //TODO:JK: implement me
+}
+
+gchar**
+ags_ipatch_gig_reader_get_instrument_all(AgsIpatchGigReader *ipatch_gig_reader)
+{
+  //TODO:JK: implement me
+}
+
+gchar**
+ags_ipatch_gig_reader_get_sample_all(AgsIpatchGigReader *ipatch_gig_reader)
+{
+  //TODO:JK: implement me
+}
+
+gchar**
+ags_ipatch_gig_reader_get_sample_by_instrument_index(AgsIpatchGigReader *ipatch_gig_reader,
+						     guitn instrument_index)
+{
+  //TODO:JK: implement me
+}
+
 /**
  * ags_ipatch_gig_reader_new:
  * @ipatch: the #AgsIpatch

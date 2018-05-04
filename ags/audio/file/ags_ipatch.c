@@ -535,8 +535,33 @@ ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container)
 
   sublevel = ipatch->nesting_level;
   
-#ifdef AGS_WITH_LIBINSTPATCH
-  if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
+#ifdef AGS_WITH_LIBINSTPATCH  
+  if((AGS_IPATCH_DLS2 & (ipatch->flags)) != 0){
+    AgsIpatchDLS2Reader *ipatch_dls2_reader;
+    
+    ipatch_dls2_reader = AGS_IPATCH_DLS2_READER(ipatch->reader);
+
+    switch(sublevel){
+    case AGS_DLS2_FILENAME:
+      {
+	sublevel_name = (gchar **) malloc(2 * sizeof(gchar*));
+
+	sublevel_name[0] = ipatch->filename;
+	sublevel_name[1] = NULL;
+
+	return(sublevel_name);
+      }
+    case AGS_DLS2_IHDR:
+      {
+	return(ags_ipatch_dls2_reader_get_instrument_all(ipatch_dls2_reader));
+      }
+    case AGS_DLS2_SHDR:
+      {
+	return(ags_ipatch_dls2_reader_get_sample_by_instrument_index(ipatch_dls2_reader,
+								     ipatch_dls2_reader->index_selected[1]));
+      }
+    };
+  }else if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
     AgsIpatchSF2Reader *ipatch_sf2_reader;
     
     ipatch_sf2_reader = AGS_IPATCH_SF2_READER(ipatch->reader);
@@ -564,6 +589,31 @@ ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container)
       {
 	return(ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument_index(ipatch_sf2_reader,
 									       ipatch_sf2_reader->index_selected[1], ipatch_sf2_reader->index_selected[2]));
+      }
+    };
+  }else if((AGS_IPATCH_GIG & (ipatch->flags)) != 0){
+    AgsIpatchGIGReader *ipatch_gig_reader;
+    
+    ipatch_gig_reader = AGS_IPATCH_GIG_READER(ipatch->reader);
+
+    switch(sublevel){
+    case AGS_GIG_FILENAME:
+      {
+	sublevel_name = (gchar **) malloc(2 * sizeof(gchar*));
+
+	sublevel_name[0] = ipatch->filename;
+	sublevel_name[1] = NULL;
+
+	return(sublevel_name);
+      }
+    case AGS_GIG_IHDR:
+      {
+	return(ags_ipatch_gig_reader_get_instrument_all(ipatch_gig_reader));
+      }
+    case AGS_GIG_SHDR:
+      {
+	return(ags_ipatch_gig_reader_get_sample_by_instrument_index(ipatch_gig_reader,
+								    ipatch_gig_reader->index_selected[1]));
       }
     };
   }
@@ -621,7 +671,33 @@ ags_ipatch_select_level_by_index(AgsSoundContainer *sound_container,
   retval = 0;
   
 #ifdef AGS_WITH_LIBINSTPATCH
-  if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
+  if((AGS_IPATCH_DLS2 & (ipatch->flags)) != 0){
+    AgsIpatchDLS2Reader *ipatch_dls2_reader;
+    
+    ipatch_dls2_reader = AGS_IPATCH_DLS2_READER(ipatch->reader);
+    
+    switch(sublevel){
+    case AGS_DLS2_FILENAME:
+      {
+	if(ags_ipatch_dls2_reader_select_instrument(ipatch_dls2_reader, level_index)){
+	  retval = AGS_DLS2_FILENAME;
+	}
+      }
+      break;
+    case AGS_DLS2_IHDR:
+      {
+	if(ags_ipatch_dls2_reader_select_sample(ipatch_dls2_reader, level_index)){
+	  retval = AGS_DLS2_IHDR;
+	}
+      }
+      break;
+    case AGS_DLS2_SHDR:
+      {
+	retval = AGS_DLS2_SHDR;
+      }
+      break;
+    };
+  }else if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
     AgsIpatchSF2Reader *ipatch_sf2_reader;
     
     ipatch_sf2_reader = AGS_IPATCH_SF2_READER(ipatch->reader);
@@ -651,6 +727,32 @@ ags_ipatch_select_level_by_index(AgsSoundContainer *sound_container,
     case AGS_SF2_SHDR:
       {
 	retval = AGS_SF2_SHDR;
+      }
+      break;
+    };
+  }else if((AGS_IPATCH_GIG & (ipatch->flags)) != 0){
+    AgsIpatchGIGReader *ipatch_gig_reader;
+    
+    ipatch_gig_reader = AGS_IPATCH_GIG_READER(ipatch->reader);
+    
+    switch(sublevel){
+    case AGS_GIG_FILENAME:
+      {
+	if(ags_ipatch_gig_reader_select_instrument(ipatch_gig_reader, level_index)){
+	  retval = AGS_GIG_FILENAME;
+	}
+      }
+      break;
+    case AGS_GIG_IHDR:
+      {
+	if(ags_ipatch_gig_reader_select_sample(ipatch_gig_reader, level_index)){
+	  retval = AGS_GIG_IHDR;
+	}
+      }
+      break;
+    case AGS_GIG_SHDR:
+      {
+	retval = AGS_GIG_SHDR;
       }
       break;
     };

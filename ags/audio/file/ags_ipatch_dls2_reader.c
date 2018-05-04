@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,9 +37,6 @@ void ags_ipatch_dls2_reader_get_property(GObject *gobject,
 					 GValue *value,
 					 GParamSpec *param_spec);
 void ags_ipatch_dls2_reader_finalize(GObject *gobject);
-
-void ags_ipatch_dls2_reader_connect(AgsConnectable *connectable);
-void ags_ipatch_dls2_reader_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_ipatch_dls2_reader
@@ -133,9 +130,6 @@ void
 ags_ipatch_dls2_reader_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_ipatch_dls2_reader_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_ipatch_dls2_reader_connect;
-  connectable->disconnect = ags_ipatch_dls2_reader_disconnect;
 }
 
 void
@@ -208,45 +202,70 @@ ags_ipatch_dls2_reader_get_property(GObject *gobject,
 }
 
 void
-ags_ipatch_dls2_reader_connect(AgsConnectable *connectable)
-{
-  ags_ipatch_dls2_reader_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_ipatch_dls2_reader_disconnect(AgsConnectable *connectable)
-{
-  ags_ipatch_dls2_reader_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_ipatch_dls2_reader_finalize(GObject *gobject)
 {
+  /* call parent */
   G_OBJECT_CLASS(ags_ipatch_dls2_reader_parent_class)->finalize(gobject);
-
-  /* empty */
 }
 
+
+gboolean
+ags_ipatch_dls2_reader_load(AgsIpatchDLS2Reader *ipatch_dls2_reader,
+			    IpatchFileHandle *handle)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_ipatch_dls2_reader_select_instrument(AgsIpatchDLS2Reader *ipatch_dls2_reader,
+					 guint instrument_index)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_ipatch_dls2_reader_select_sample(AgsIpatchDLS2Reader *ipatch_dls2_reader,
+				     guint sample_index)
+{
+  //TODO:JK: implement me
+}
+
+gchar**
+ags_ipatch_dls2_reader_get_instrument_all(AgsIpatchDLS2Reader *ipatch_dls2_reader)
+{
+  //TODO:JK: implement me
+}
+
+gchar**
+ags_ipatch_dls2_reader_get_sample_all(AgsIpatchDLS2Reader *ipatch_dls2_reader)
+{
+  //TODO:JK: implement me
+}
+
+gchar**
+ags_ipatch_dls2_reader_get_sample_by_instrument_index(AgsIpatchDLS2Reader *ipatch_dls2_reader,
+						      guitn instrument_index)
+{
+  //TODO:JK: implement me
+}
 
 /**
  * ags_ipatch_dls2_reader_new:
+ * @ipatch: the #AgsIpatch
  *
  * Creates an #AgsIpatchDLS2Reader.
  *
  * Returns: an empty #AgsIpatchDLS2Reader.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsIpatchDLS2Reader*
-ags_ipatch_dls2_reader_new()
+ags_ipatch_dls2_reader_new(AgsIpatch *ipatch)
 {
   AgsIpatchDLS2Reader *ipatch_dls2_reader;
 
   ipatch_dls2_reader = (AgsIpatchDLS2Reader *) g_object_new(AGS_TYPE_IPATCH_DLS2_READER,
+							    "ipatch", ipatch,
 							    NULL);
 
   return(ipatch_dls2_reader);
