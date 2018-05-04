@@ -23,6 +23,8 @@
 
 #include <ags/audio/ags_audio_signal.h>
 
+#include <ags/audio/file/ags_sound_resource.h>
+
 #include <stdlib.h>
 
 #include <ags/i18n.h>
@@ -38,6 +40,7 @@ void ags_ipatch_sample_get_property(GObject *gobject,
 				    guint prop_id,
 				    GValue *value,
 				    GParamSpec *param_spec);
+void ags_ipatch_sample_dispose(GObject *gobject);
 void ags_ipatch_sample_finalize(GObject *gobject);
 
 gboolean ags_ipatch_sample_info(AgsSoundResource *sound_resource,
@@ -63,7 +66,7 @@ void ags_ipatch_sample_write(AgsSoundResource *sound_resource,
 			     guint frame_count, guint format);
 void ags_ipatch_sample_flush(AgsSoundResource *sound_resource);
 void ags_ipatch_sample_seek(AgsSoundResource *sound_resource,
-			    guint frame_count, gint whence);
+			    gint64 frame_count, gint whence);
 
 /**
  * SECTION:ags_ipatch_sample
@@ -103,8 +106,8 @@ ags_ipatch_sample_get_type()
       (GInstanceInitFunc) ags_ipatch_sample_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_ipatch_sample_connectable_interface_init,
+    static const GInterfaceInfo ags_sound_resource_interface_info = {
+      (GInterfaceInitFunc) ags_ipatch_sample_sound_resource_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
@@ -115,8 +118,8 @@ ags_ipatch_sample_get_type()
 						    0);
 
     g_type_add_interface_static(ags_type_ipatch_sample,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
+				AGS_TYPE_SOUND_RESOURCE,
+				&ags_sound_resource_interface_info);
   }
   
   return(ags_type_ipatch_sample);
@@ -297,7 +300,7 @@ ags_ipatch_sample_set_property(GObject *gobject,
       }
       
       ipatch_sample->sample = sample;
-#else      
+#endif
     }
     break;
   default:
@@ -538,7 +541,7 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
     switch(ipatch_sample->format){
     case AGS_SOUNDCARD_SIGNED_8_BIT:
       {
-	ipatch_sample_read_transform(ipatch_sample->sample,
+	ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				     ipatch_sample->offset,
 				     read_count,
 				     ipatch_sample->buffer,
@@ -549,7 +552,7 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
       break;
     case AGS_SOUNDCARD_SIGNED_16_BIT:
       {
-	ipatch_sample_read_transform(ipatch_sample->sample,
+	ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				     ipatch_sample->offset,
 				     read_count,
 				     ipatch_sample->buffer,
@@ -560,7 +563,7 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
       break;
     case AGS_SOUNDCARD_SIGNED_24_BIT:
       {
-	ipatch_sample_read_transform(ipatch_sample->sample,
+	ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				     ipatch_sample->offset,
 				     read_count,
 				     ipatch_sample->buffer,
@@ -571,7 +574,7 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
       break;
     case AGS_SOUNDCARD_SIGNED_32_BIT:
       {
-	ipatch_sample_read_transform(ipatch_sample->sample,
+	ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				     ipatch_sample->offset,
 				     read_count,
 				     ipatch_sample->buffer,
@@ -582,7 +585,7 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
       break;
     case AGS_SOUNDCARD_FLOAT:
       {
-	ipatch_sample_read_transform(ipatch_sample->sample,
+	ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				     ipatch_sample->offset,
 				     read_count,
 				     ipatch_sample->buffer,
@@ -593,7 +596,7 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
       break;
     case AGS_SOUNDCARD_DOUBLE:
       {
-	ipatch_sample_read_transform(ipatch_sample->sample,
+	ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				     ipatch_sample->offset,
 				     read_count,
 				     ipatch_sample->buffer,
@@ -640,7 +643,7 @@ ags_ipatch_sample_write(AgsSoundResource *sound_resource,
   switch(format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
-      ipatch_sample_write_transform(ipatch_sample->sample,
+      ipatch_sample_write_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				    ipatch_sample->offset,
 				    frame_count,
 				    sbuffer,
@@ -651,7 +654,7 @@ ags_ipatch_sample_write(AgsSoundResource *sound_resource,
     break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
-      ipatch_sample_write_transform(ipatch_sample->sample,
+      ipatch_sample_write_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				    ipatch_sample->offset,
 				    frame_count,
 				    sbuffer,
@@ -662,7 +665,7 @@ ags_ipatch_sample_write(AgsSoundResource *sound_resource,
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
-      ipatch_sample_write_transform(ipatch_sample->sample,
+      ipatch_sample_write_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				    ipatch_sample->offset,
 				    frame_count,
 				    sbuffer,
@@ -673,7 +676,7 @@ ags_ipatch_sample_write(AgsSoundResource *sound_resource,
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
-      ipatch_sample_write_transform(ipatch_sample->sample,
+      ipatch_sample_write_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				    ipatch_sample->offset,
 				    frame_count,
 				    sbuffer,
@@ -684,7 +687,7 @@ ags_ipatch_sample_write(AgsSoundResource *sound_resource,
     break;
   case AGS_SOUNDCARD_FLOAT:
     {
-      ipatch_sample_write_transform(ipatch_sample->sample,
+      ipatch_sample_write_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				    ipatch_sample->offset,
 				    frame_count,
 				    sbuffer,
@@ -695,7 +698,7 @@ ags_ipatch_sample_write(AgsSoundResource *sound_resource,
     break;
   case AGS_SOUNDCARD_DOUBLE:
     {
-      ipatch_sample_write_transform(ipatch_sample->sample,
+      ipatch_sample_write_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				    ipatch_sample->offset,
 				    frame_count,
 				    sbuffer,

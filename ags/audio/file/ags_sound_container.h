@@ -65,7 +65,7 @@ struct _AgsSoundContainerInterface
   GList* (*get_resource_current)(AgsSoundContainer *sound_container);
   
   /* close */
-  void (*close)(AgsSoundResource *sound_resource);
+  void (*close)(AgsSoundContainer *sound_resource);
 };
 
 GType ags_sound_container_get_type();

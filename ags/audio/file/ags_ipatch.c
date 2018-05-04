@@ -28,6 +28,7 @@
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
 #include <ags/audio/file/ags_ipatch_dls2_reader.h>
 #include <ags/audio/file/ags_ipatch_gig_reader.h>
+#include <ags/audio/file/ags_ipatch_sample.h>
 
 #include <ags/i18n.h>
 
@@ -93,13 +94,13 @@ ags_ipatch_get_type()
 
   if(!ags_type_ipatch){
     static const GTypeInfo ags_ipatch_info = {
-      sizeof (AgsIpatchClass),
+      sizeof(AgsIpatchClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_ipatch_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsIpatch),
+      sizeof(AgsIpatch),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_ipatch_init,
     };
@@ -116,12 +117,6 @@ ags_ipatch_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_sound_resource_interface_info = {
-      (GInterfaceInitFunc) ags_ipatch_sound_resource_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_ipatch = g_type_register_static(G_TYPE_OBJECT,
 					     "AgsIpatch",
 					     &ags_ipatch_info,
@@ -134,13 +129,9 @@ ags_ipatch_get_type()
     g_type_add_interface_static(ags_type_ipatch,
 				AGS_TYPE_SOUND_CONTAINER,
 				&ags_sound_container_interface_info);
-
-    g_type_add_interface_static(ags_type_ipatch,
-				AGS_TYPE_SOUND_RESOURCE,
-				&ags_sound_resource_interface_info);
   }
   
-  return (ags_type_ipatch);
+  return(ags_type_ipatch);
 }
 
 void
@@ -304,7 +295,7 @@ ags_ipatch_set_property(GObject *gobject,
 
       filename = (gchar *) g_value_get_string(value);
 
-      ags_sound_container_open(AGS_SOUND_CONTAINER(sound_container), filename);
+      ags_sound_container_open(AGS_SOUND_CONTAINER(ipatch), filename);
     }
     break;
   case PROP_MODE:
@@ -544,6 +535,8 @@ ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container)
     switch(sublevel){
     case AGS_DLS2_FILENAME:
       {
+	gchar **sublevel_name;
+	
 	sublevel_name = (gchar **) malloc(2 * sizeof(gchar*));
 
 	sublevel_name[0] = ipatch->filename;
@@ -569,6 +562,8 @@ ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container)
     switch(sublevel){
     case AGS_SF2_FILENAME:
       {
+	gchar **sublevel_name;
+	
 	sublevel_name = (gchar **) malloc(2 * sizeof(gchar*));
 
 	sublevel_name[0] = ipatch->filename;
@@ -592,13 +587,15 @@ ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container)
       }
     };
   }else if((AGS_IPATCH_GIG & (ipatch->flags)) != 0){
-    AgsIpatchGIGReader *ipatch_gig_reader;
+    AgsIpatchGigReader *ipatch_gig_reader;
     
     ipatch_gig_reader = AGS_IPATCH_GIG_READER(ipatch->reader);
 
     switch(sublevel){
     case AGS_GIG_FILENAME:
       {
+	gchar **sublevel_name;
+	
 	sublevel_name = (gchar **) malloc(2 * sizeof(gchar*));
 
 	sublevel_name[0] = ipatch->filename;
@@ -630,7 +627,7 @@ ags_ipatch_level_up(AgsSoundContainer *sound_container,
   
   guint retval;
   
-  ipatch = AGS_IPATCH(playable);
+  ipatch = AGS_IPATCH(sound_container);
 
   if(level_count == 0){
     return(0);
@@ -731,7 +728,7 @@ ags_ipatch_select_level_by_index(AgsSoundContainer *sound_container,
       break;
     };
   }else if((AGS_IPATCH_GIG & (ipatch->flags)) != 0){
-    AgsIpatchGIGReader *ipatch_gig_reader;
+    AgsIpatchGigReader *ipatch_gig_reader;
     
     ipatch_gig_reader = AGS_IPATCH_GIG_READER(ipatch->reader);
     
@@ -765,13 +762,33 @@ ags_ipatch_select_level_by_index(AgsSoundContainer *sound_container,
 GList*
 ags_ipatch_get_resource_all(AgsSoundContainer *sound_container)
 {
-  //TODO:JK: implement me
+  AgsIpatch *ipatch;
+  
+  GList *resource;
+
+  ipatch = AGS_IPATCH(sound_container);
+
+  resource = NULL;
+  
+#ifdef AGS_WITH_LIBINSTPATCH
+  if((AGS_IPATCH_DLS2 & (ipatch->flags)) != 0){
+    //TODO:JK: implement me
+  }else if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
+    //TODO:JK: implement me
+  }else if((AGS_IPATCH_GIG & (ipatch->flags)) != 0){
+    //TODO:JK: implement me
+  }
+#endif
+  
+  return(resource);
 }
 
 GList*
 ags_ipatch_get_resource_by_name(AgsSoundContainer *sound_container,
 				gchar *resource_name)
 {
+  //TODO:JK: implement me
+
   return(NULL);  
 }
 
@@ -780,12 +797,16 @@ ags_ipatch_get_resource_by_index(AgsSoundContainer *sound_container,
 				 guint resource_index)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 GList*
 ags_ipatch_get_resource_current(AgsSoundContainer *sound_container)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 void

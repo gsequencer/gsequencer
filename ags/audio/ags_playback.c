@@ -26,8 +26,6 @@
 #include <ags/audio/ags_note.h>
 
 #include <ags/audio/thread/ags_channel_thread.h>
-#include <ags/audio/thread/ags_iterator_thread.h>
-#include <ags/audio/thread/ags_recycling_thread.h>
 
 #include <math.h>
 

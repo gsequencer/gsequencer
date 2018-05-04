@@ -25,9 +25,9 @@
 
 #include <ags/i18n.h>
 
-void ags_ipatch_gig_reader_class_init(AgsIpatchGIGReaderClass *ipatch_gig_reader);
+void ags_ipatch_gig_reader_class_init(AgsIpatchGigReaderClass *ipatch_gig_reader);
 void ags_ipatch_gig_reader_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_ipatch_gig_reader_init(AgsIpatchGIGReader *ipatch_gig_reader);
+void ags_ipatch_gig_reader_init(AgsIpatchGigReader *ipatch_gig_reader);
 void ags_ipatch_gig_reader_set_property(GObject *gobject,
 					guint prop_id,
 					const GValue *value,
@@ -36,16 +36,17 @@ void ags_ipatch_gig_reader_get_property(GObject *gobject,
 					guint prop_id,
 					GValue *value,
 					GParamSpec *param_spec);
+void ags_ipatch_gig_reader_dispose(GObject *gobject);
 void ags_ipatch_gig_reader_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_ipatch_gig_reader
  * @short_description: interfacing Soundfont2 related API of libinstpatch
- * @title: AgsIpatchGIGReader
+ * @title: AgsIpatchGigReader
  * @section_id:
  * @include: ags/audio/file/ags_ipatch_gig_reader.h
  *
- * #AgsIpatchGIGReader is the base object to ineract with Soundfont2 related API.
+ * #AgsIpatchGigReader is the base object to ineract with Soundfont2 related API.
  */
 
 static gpointer ags_ipatch_gig_reader_parent_class = NULL;
@@ -63,13 +64,13 @@ ags_ipatch_gig_reader_get_type()
 
   if(!ags_type_ipatch_gig_reader){
     static const GTypeInfo ags_ipatch_gig_reader_info = {
-      sizeof(AgsIpatchGIGReaderClass),
+      sizeof(AgsIpatchGigReaderClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_ipatch_gig_reader_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsIpatchGIGReader),
+      sizeof(AgsIpatchGigReader),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_ipatch_gig_reader_init,
     };
@@ -81,7 +82,7 @@ ags_ipatch_gig_reader_get_type()
     };
 
     ags_type_ipatch_gig_reader = g_type_register_static(G_TYPE_OBJECT,
-							"AgsIpatchGIGReader",
+							"AgsIpatchGigReader",
 							&ags_ipatch_gig_reader_info,
 							0);
 
@@ -94,7 +95,7 @@ ags_ipatch_gig_reader_get_type()
 }
 
 void
-ags_ipatch_gig_reader_class_init(AgsIpatchGIGReaderClass *ipatch_gig_reader)
+ags_ipatch_gig_reader_class_init(AgsIpatchGigReaderClass *ipatch_gig_reader)
 {
   GObjectClass *gobject;
   GParamSpec *param_spec;
@@ -111,7 +112,7 @@ ags_ipatch_gig_reader_class_init(AgsIpatchGIGReaderClass *ipatch_gig_reader)
 
   /* properties */
   /**
-   * AgsIpatchGIGReader:ipatch:
+   * AgsIpatchGigReader:ipatch:
    *
    * The assigned #AgsIpatch
    * 
@@ -134,7 +135,7 @@ ags_ipatch_gig_reader_connectable_interface_init(AgsConnectableInterface *connec
 }
 
 void
-ags_ipatch_gig_reader_init(AgsIpatchGIGReader *ipatch_gig_reader)
+ags_ipatch_gig_reader_init(AgsIpatchGigReader *ipatch_gig_reader)
 {
   guint i;
   
@@ -166,7 +167,7 @@ ags_ipatch_gig_reader_set_property(GObject *gobject,
 				   const GValue *value,
 				   GParamSpec *param_spec)
 {
-  AgsIpatchGIGReader *ipatch_gig_reader;
+  AgsIpatchGigReader *ipatch_gig_reader;
 
   ipatch_gig_reader = AGS_IPATCH_GIG_READER(gobject);
 
@@ -204,7 +205,7 @@ ags_ipatch_gig_reader_get_property(GObject *gobject,
 				   GValue *value,
 				   GParamSpec *param_spec)
 {
-  AgsIpatchGIGReader *ipatch_gig_reader;
+  AgsIpatchGigReader *ipatch_gig_reader;
 
   ipatch_gig_reader = AGS_IPATCH_GIG_READER(gobject);
 
@@ -223,7 +224,7 @@ ags_ipatch_gig_reader_get_property(GObject *gobject,
 void
 ags_ipatch_gig_reader_dispose(GObject *gobject)
 {
-  AgsIpatchGIGReader *ipatch_gig_reader;
+  AgsIpatchGigReader *ipatch_gig_reader;
 
   ipatch_gig_reader = AGS_IPATCH_GIG_READER(gobject);
 
@@ -240,7 +241,7 @@ ags_ipatch_gig_reader_dispose(GObject *gobject)
 void
 ags_ipatch_gig_reader_finalize(GObject *gobject)
 {
-  AgsIpatchGIGReader *ipatch_gig_reader;
+  AgsIpatchGigReader *ipatch_gig_reader;
 
   ipatch_gig_reader = AGS_IPATCH_GIG_READER(gobject);
 
@@ -287,7 +288,7 @@ ags_ipatch_gig_reader_get_sample_all(AgsIpatchGigReader *ipatch_gig_reader)
 
 gchar**
 ags_ipatch_gig_reader_get_sample_by_instrument_index(AgsIpatchGigReader *ipatch_gig_reader,
-						     guitn instrument_index)
+						     guint instrument_index)
 {
   //TODO:JK: implement me
 }
@@ -296,18 +297,18 @@ ags_ipatch_gig_reader_get_sample_by_instrument_index(AgsIpatchGigReader *ipatch_
  * ags_ipatch_gig_reader_new:
  * @ipatch: the #AgsIpatch
  *
- * Creates a new instance of #AgsIpatchGIGReader.
+ * Creates a new instance of #AgsIpatchGigReader.
  *
- * Returns: the new #AgsIpatchGIGReader.
+ * Returns: the new #AgsIpatchGigReader.
  *
  * Since: 2.0.0
  */
-AgsIpatchGIGReader*
+AgsIpatchGigReader*
 ags_ipatch_gig_reader_new(AgsIpatch *ipatch)
 {
-  AgsIpatchGIGReader *ipatch_gig_reader;
+  AgsIpatchGigReader *ipatch_gig_reader;
 
-  ipatch_gig_reader = (AgsIpatchGIGReader *) g_object_new(AGS_TYPE_IPATCH_GIG_READER,
+  ipatch_gig_reader = (AgsIpatchGigReader *) g_object_new(AGS_TYPE_IPATCH_GIG_READER,
 							  "ipatch", ipatch,
 							  NULL);
 

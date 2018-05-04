@@ -84,9 +84,6 @@
 #include <ags/audio/thread/ags_soundcard_thread.h>
 #include <ags/audio/thread/ags_sequencer_thread.h>
 #include <ags/audio/thread/ags_export_thread.h>
-#include <ags/audio/thread/ags_record_thread.h>
-#include <ags/audio/thread/ags_recycling_thread.h>
-#include <ags/audio/thread/ags_iterator_thread.h>
 
 #include <sys/types.h>
 #include <pwd.h>

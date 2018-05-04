@@ -118,7 +118,7 @@ gchar** ags_ipatch_sf2_reader_get_instrument_by_preset_index(AgsIpatchSF2Reader 
 							     guint preset_index);
 
 gchar** ags_ipatch_sf2_reader_get_sample_by_preset_index(AgsIpatchSF2Reader *ipatch_sf2_reader,
-							 guitn preset_index);
+							 guint preset_index);
 gchar** ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument_index(AgsIpatchSF2Reader *ipatch_sf2_reader,
 									guint preset_index, guint instrument_index);
 

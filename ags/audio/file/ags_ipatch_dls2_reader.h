@@ -67,10 +67,10 @@ struct _AgsIpatchDLS2Reader
   gchar **name_selected;
   	
 #ifdef AGS_WITH_LIBINSTPATCH
-  IpatchGigReader *reader;
+  IpatchDLSReader *reader;
 
   IpatchBase *base;
-  IpatchGig *gig;
+  IpatchDLS2 *dls2;
 
   IpatchContainer *instrument;
   IpatchContainer *sample;
@@ -108,7 +108,7 @@ gchar** ags_ipatch_dls2_reader_get_instrument_all(AgsIpatchDLS2Reader *ipatch_dl
 gchar** ags_ipatch_dls2_reader_get_sample_all(AgsIpatchDLS2Reader *ipatch_dls2_reader);
 
 gchar** ags_ipatch_dls2_reader_get_sample_by_instrument_index(AgsIpatchDLS2Reader *ipatch_dls2_reader,
-							      guitn instrument_index);
+							      guint instrument_index);
 
 /* instantiate */
 AgsIpatchDLS2Reader* ags_ipatch_dls2_reader_new(AgsIpatch *ipatch);
