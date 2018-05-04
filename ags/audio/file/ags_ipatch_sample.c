@@ -131,10 +131,48 @@ ags_ipatch_sample_class_init(AgsIpatchSampleClass *ipatch_sample)
 
   gobject = (GObjectClass *) ipatch_sample;
 
+  gobject->set_property = ags_ipatch_sample_set_property;
+  gobject->get_property = ags_ipatch_sample_get_property;
+
   gobject->dispose = ags_ipatch_sample_dispose;
   gobject->finalize = ags_ipatch_sample_finalize;
 
   /* properties */
+  /**
+   * AgsIpatchSample:buffer-size:
+   *
+   * The buffer size to be used.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("buffer-size",
+				 i18n_pspec("using buffer size"),
+				 i18n_pspec("The buffer size to be used"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BUFFER_SIZE,
+				  param_spec);
+
+  /**
+   * AgsIpatchSample:format:
+   *
+   * The format to be used.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("format",
+				 i18n_pspec("using format"),
+				 i18n_pspec("The format to be used"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FORMAT,
+				  param_spec);
 }
 
 void
@@ -170,10 +208,84 @@ ags_ipatch_sample_init(AgsIpatchSample *ipatch_sample)
   config = ags_config_get_instance();
   
   ipatch_sample->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
-  ipatch_sample->format = ags_soundcard_helper_config_get_format(config);
+  ipatch_sample->format = AGS_SOUNDCARD_DOUBLE;
 
   ipatch_sample->buffer = ags_stream_alloc(ipatch_sample->buffer_size,
 					   ipatch_sample->format);
+}
+
+void
+ags_ipatch_sample_set_property(GObject *gobject,
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsIpatchSample *ipatch_sample;
+
+  ipatch_sample = AGS_IPATCH_SAMPLE(gobject);
+
+  switch(prop_id){
+  case PROP_BUFFER_SIZE:
+    {
+      guint buffer_size;
+
+      buffer_size = g_value_get_uint(value);
+
+      if(buffer_size == ipatch_sample->buffer_size){
+	return;	
+      }
+      
+      ags_stream_free(ipatch_sample->buffer);
+
+      ipatch_sample->buffer_size = buffer_size;
+      ipatch_sample->buffer = ags_stream_alloc(ipatch_sample->buffer_size,
+					       ipatch_sample->format);
+    }
+  case PROP_FORMAT:
+    {
+      guint format;
+
+      format = g_value_get_uint(value);
+
+      if(format == ipatch_sample->format){
+	return;	
+      }
+
+      ags_stream_free(ipatch_sample->buffer);
+
+      ipatch_sample->format = format;
+      ipatch_sample->buffer = ags_stream_alloc(ipatch_sample->buffer_size,
+					       ipatch_sample->format);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_ipatch_sample_get_property(GObject *gobject,
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsIpatchSample *ipatch_sample;
+
+  switch(prop_id){
+  case PROP_BUFFER_SIZE:
+    {
+      g_value_set_uint(value, ipatch_sample->buffer_size);
+    }
+  case PROP_FORMAT:
+    {
+      g_value_set_uint(value, ipatch_sample->format);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -245,7 +357,36 @@ ags_ipatch_sample_set_presets(AgsSoundResource *sound_resource,
 			      guint buffer_size,
 			      guint format)
 {
-  //TODO:JK: implement me
+  AgsIpatchSample *ipatch_sample;
+
+  gint sample_format;
+  
+  ipatch_sample = AGS_IPATCH_SAMPLE(sound_resource);
+
+  if(channels > IPATCH_SAMPLE_MAX_CHANNELS){
+    g_critical("max channels exceeded");
+
+    return;
+  }
+  
+#ifdef AGS_WITH_LIBINSTPATCH
+  g_object_get(ipatch_sample->sample,
+	       "sample-format", &sample_format,
+	       NULL);
+
+  sample_format &= (~IPATCH_SAMPLE_CHANNEL_MASK);
+  sample_format |= (IPATCH_SAMPLE_CHANNEL_MASK & ((channels - 1) << IPATCH_SAMPLE_CHANNEL_SHIFT));
+  
+  g_object_set(ipatch_sample->sample,
+	       "sample-rate", samplerate,
+	       "sample-format", sample_format,
+	       NULL);
+#endif
+
+  g_object_set(ipatch_sample,
+	       "buffer-size", buffer_size,
+	       "format", format,
+	       NULL);
 }
 
 void
@@ -257,10 +398,12 @@ ags_ipatch_sample_get_presets(AgsSoundResource *sound_resource,
 {
   AgsIpatchSample *ipatch_sample;
 
-  guint sample_format;
+  gint sample_format;
   guint sample_channels;
   guint sample_samplerate;
 
+  ipatch_sample = AGS_IPATCH_SAMPLE(sound_resource);
+  
   sample_format = 0;
   sample_samplerate = 0;
   
@@ -294,7 +437,112 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
 		       guint audio_channel,
 		       guint frame_count, guint format)
 {
-  //TODO:JK: implement me
+  AgsIpatchSample *ipatch_sample;
+
+  guint copy_mode;
+  guint read_count;
+  guint i;
+  
+  GError *error;
+  
+  ipatch_sample = AGS_IPATCH_SAMPLE(sound_resource);
+
+#ifdef AGS_WITH_LIBINSTPATCH
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
+						  ags_audio_buffer_util_format_from_soundcard(ipatch_sample->format));
+  
+  read_count = ipatch_sample->buffer_size;
+  
+  for(i = 0; i < frame_count; ){
+    if(i + ipatch_sample->buffer_size > frame_count){
+      read_count = frame_count - i;
+    }
+    
+    ags_audio_buffer_util_clear_buffer(ipatch_sample->buffer, 1,
+				       ipatch_sample->buffer_size, ipatch_sample->format);
+  
+    error = NULL;
+
+    switch(ipatch_sample->format){
+    case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	ipatch_sample_read_transform(ipatch_sample->sample,
+				     ipatch_sample->offset,
+				     read_count,
+				     ipatch_sample->buffer,
+				     IPATCH_SAMPLE_8BIT | IPATCH_SAMPLE_MONO,
+				     IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
+				     &error);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	ipatch_sample_read_transform(ipatch_sample->sample,
+				     ipatch_sample->offset,
+				     read_count,
+				     ipatch_sample->buffer,
+				     IPATCH_SAMPLE_16BIT | IPATCH_SAMPLE_MONO,
+				     IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
+				     &error);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {
+	ipatch_sample_read_transform(ipatch_sample->sample,
+				     ipatch_sample->offset,
+				     read_count,
+				     ipatch_sample->buffer,
+				     IPATCH_SAMPLE_24BIT | IPATCH_SAMPLE_MONO,
+				     IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
+				     &error);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	ipatch_sample_read_transform(ipatch_sample->sample,
+				     ipatch_sample->offset,
+				     read_count,
+				     ipatch_sample->buffer,
+				     IPATCH_SAMPLE_32BIT | IPATCH_SAMPLE_MONO,
+				     IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
+				     &error);
+      }
+      break;
+    case AGS_SOUNDCARD_FLOAT:
+      {
+	ipatch_sample_read_transform(ipatch_sample->sample,
+				     ipatch_sample->offset,
+				     read_count,
+				     ipatch_sample->buffer,
+				     IPATCH_SAMPLE_FLOAT | IPATCH_SAMPLE_MONO,
+				     IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
+				     &error);
+      }
+      break;
+    case AGS_SOUNDCARD_DOUBLE:
+      {
+	ipatch_sample_read_transform(ipatch_sample->sample,
+				     ipatch_sample->offset,
+				     read_count,
+				     ipatch_sample->buffer,
+				     IPATCH_SAMPLE_DOUBLE | IPATCH_SAMPLE_MONO,
+				     IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
+				     &error);
+      }
+      break;
+    default:
+      {
+	g_warning("unsupported format");
+      }
+    }
+
+    ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, 1, i,
+						ipatch_sample->buffer, 1, 0,
+						read_count, copy_mode);
+    
+    i += read_count;
+  }
+#endif
 }
 
 void

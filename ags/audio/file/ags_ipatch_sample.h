@@ -45,6 +45,8 @@ struct _AgsIpatchSample
 
   guint buffer_size;
   guint format;
+
+  guint offset;
   
   void *buffer;
   
