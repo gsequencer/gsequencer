@@ -34,7 +34,6 @@
 void ags_ipatch_class_init(AgsIpatchClass *ipatch);
 void ags_ipatch_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_ipatch_sound_container_interface_init(AgsSoundContainerInterface *sound_container);
-void ags_ipatch_sound_resource_interface_init(AgsSoundResourceInterface *sound_resource);
 void ags_ipatch_init(AgsIpatch *ipatch);
 void ags_ipatch_set_property(GObject *gobject,
 			     guint prop_id,
@@ -63,32 +62,7 @@ GList* ags_ipatch_get_resource_by_name(AgsSoundContainer *sound_container,
 				       gchar *resource_name);
 GList* ags_ipatch_get_resource_by_index(AgsSoundContainer *sound_container,
 					guint resource_index);
-void ags_ipatch_close(AgsSoundResource *sound_resource);
-
-gboolean ags_ipatch_info(AgsSoundResource *sound_resource,
-			 guint *frame_count,
-			 guint *loop_start, guint *loop_end);
-void ags_ipatch_set_presets(AgsSoundResource *sound_resource,
-			    guint channels,
-			    guint samplerate,
-			    guint buffer_size,
-			    guint format);
-void ags_ipatch_get_presets(AgsSoundResource *sound_resource,
-			    guint *channels,
-			    guint *samplerate,
-			    guint *buffer_size,
-			    guint *format);
-guint ags_ipatch_read(AgsSoundResource *sound_resource,
-		      void *dbuffer,
-		      guint audio_channel,
-		      guint frame_count, guint format);
-void ags_ipatch_write(AgsSoundResource *sound_resource,
-		      void *sbuffer,
-		      guint audio_channel,
-		      guint frame_count, guint format);
-void ags_ipatch_flush(AgsSoundResource *sound_resource);
-void ags_ipatch_seek(AgsSoundResource *sound_resource,
-		     guint frame_count, gint whence);
+void ags_ipatch_close(AgsSoundContainer *sound_container);
 
 /**
  * SECTION:ags_ipatch
@@ -103,7 +77,6 @@ void ags_ipatch_seek(AgsSoundResource *sound_resource,
 static gpointer ags_ipatch_parent_class = NULL;
 static AgsConnectableInterface *ags_ipatch_parent_connectable_interface;
 static AgsSoundContainerInterface *ags_ipatch_parent_sound_container_interface;
-static AgsSoundResourceInterface *ags_ipatch_parent_sound_resource_interface;
  
 enum{
   PROP_0,
@@ -265,31 +238,6 @@ ags_ipatch_sound_container_interface_init(AgsSoundContainerInterface *sound_cont
   sound_container->get_resource_by_index = ags_ipatch_get_resource_by_index;
 
   sound_container->close = ags_ipatch_close;
-}
-
-void
-ags_ipatch_sound_resource_interface_init(AgsSoundResourceInterface *sound_resource)
-{
-  ags_ipatch_parent_sound_resource_interface = g_type_interface_peek_parent(sound_resource);
-
-  sound_resource->open = NULL;
-  sound_resource->rw_open = NULL;
-
-  sound_resource->load = NULL;
-
-  sound_resource->info = ags_ipatch_info;
-
-  sound_resource->set_presets = ags_ipatch_set_presets;
-  sound_resource->get_presets = ags_ipatch_get_presets;
-  
-  sound_resource->read = ags_ipatch_read;
-
-  sound_resource->write = ags_ipatch_write;
-  sound_resource->flush = ags_ipatch_flush;
-  
-  sound_resource->seek = ags_ipatch_seek;
-
-  sound_resource->close = NULL;
 }
 
 void
@@ -729,59 +677,7 @@ GList* ags_ipatch_get_resource_by_index(AgsSoundContainer *sound_container,
   //TODO:JK: implement me
 }
 
-void ags_ipatch_close(AgsSoundResource *sound_resource)
-{
-  //TODO:JK: implement me
-}
-
-gboolean ags_ipatch_info(AgsSoundResource *sound_resource,
-			 guint *frame_count,
-			 guint *loop_start, guint *loop_end)
-{
-  //TODO:JK: implement me
-}
-
-void ags_ipatch_set_presets(AgsSoundResource *sound_resource,
-			    guint channels,
-			    guint samplerate,
-			    guint buffer_size,
-			    guint format)
-{
-  //TODO:JK: implement me
-}
-
-void ags_ipatch_get_presets(AgsSoundResource *sound_resource,
-			    guint *channels,
-			    guint *samplerate,
-			    guint *buffer_size,
-			    guint *format)
-{
-  //TODO:JK: implement me
-}
-
-guint ags_ipatch_read(AgsSoundResource *sound_resource,
-		      void *dbuffer,
-		      guint audio_channel,
-		      guint frame_count, guint format)
-{
-  //TODO:JK: implement me
-}
-
-void ags_ipatch_write(AgsSoundResource *sound_resource,
-		      void *sbuffer,
-		      guint audio_channel,
-		      guint frame_count, guint format)
-{
-  //TODO:JK: implement me
-}
-
-void ags_ipatch_flush(AgsSoundResource *sound_resource)
-{
-  //TODO:JK: implement me
-}
-
-void ags_ipatch_seek(AgsSoundResource *sound_resource,
-		     guint frame_count, gint whence)
+void ags_ipatch_close(AgsSoundContainer *sound_container)
 {
   //TODO:JK: implement me
 }
