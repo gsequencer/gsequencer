@@ -832,7 +832,9 @@ libags_audio_file_h_sources = \
 	ags/audio/file/ags_audio_file_xml.h \
 	ags/audio/file/ags_audio_xml_serialization_factory.h \
 	ags/audio/file/ags_ipatch.h \
+	ags/audio/file/ags_ipatch_sample.h \
 	ags/audio/file/ags_ipatch_dls2_reader.h \
+	ags/audio/file/ags_ipatch_gig_reader.h \
 	ags/audio/file/ags_ipatch_sf2_reader.h \
 	ags/audio/file/ags_sound_container.h \
 	ags/audio/file/ags_sound_resource.h \
@@ -849,7 +851,9 @@ libags_audio_file_c_sources = \
 	ags/audio/file/ags_audio_file_xml.c \
 	ags/audio/file/ags_audio_xml_serialization_factory.c \
 	ags/audio/file/ags_ipatch.c \
+	ags/audio/file/ags_ipatch_sample.c \
 	ags/audio/file/ags_ipatch_dls2_reader.c \
+	ags/audio/file/ags_ipatch_gig_reader.c \
 	ags/audio/file/ags_ipatch_sf2_reader.c \
 	ags/audio/file/ags_sound_container.c \
 	ags/audio/file/ags_sound_resource.c \

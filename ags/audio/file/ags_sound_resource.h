@@ -75,8 +75,8 @@ struct _AgsSoundResourceInterface
 
   /* position */
   void (*seek)(AgsSoundResource *sound_resource,
-	       guint frame_count, gint whence);
-o
+	       gint64 frame_count, gint whence);
+
   /* close */
   void (*close)(AgsSoundResource *sound_resource);
 };
@@ -119,7 +119,7 @@ void ags_sound_resource_flush(AgsSoundResource *sound_resource);
 
 /* position */
 void ags_sound_resource_seek(AgsSoundResource *sound_resource,
-			     guint frame_count, gint whence);
+			     gint64 frame_count, gint whence);
 
 /* read audio signal */
 GList* ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,

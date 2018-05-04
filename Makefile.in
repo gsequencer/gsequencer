@@ -326,7 +326,9 @@ am__objects_8 = $(am__objects_1) \
 	ags/audio/file/libags_audio_la-ags_audio_file_xml.lo \
 	ags/audio/file/libags_audio_la-ags_audio_xml_serialization_factory.lo \
 	ags/audio/file/libags_audio_la-ags_ipatch.lo \
+	ags/audio/file/libags_audio_la-ags_ipatch_sample.lo \
 	ags/audio/file/libags_audio_la-ags_ipatch_dls2_reader.lo \
+	ags/audio/file/libags_audio_la-ags_ipatch_gig_reader.lo \
 	ags/audio/file/libags_audio_la-ags_ipatch_sf2_reader.lo \
 	ags/audio/file/libags_audio_la-ags_sound_container.lo \
 	ags/audio/file/libags_audio_la-ags_sound_resource.lo \
@@ -3650,7 +3652,9 @@ libags_audio_file_h_sources = \
 	ags/audio/file/ags_audio_file_xml.h \
 	ags/audio/file/ags_audio_xml_serialization_factory.h \
 	ags/audio/file/ags_ipatch.h \
+	ags/audio/file/ags_ipatch_sample.h \
 	ags/audio/file/ags_ipatch_dls2_reader.h \
+	ags/audio/file/ags_ipatch_gig_reader.h \
 	ags/audio/file/ags_ipatch_sf2_reader.h \
 	ags/audio/file/ags_sound_container.h \
 	ags/audio/file/ags_sound_resource.h \
@@ -3666,7 +3670,9 @@ libags_audio_file_c_sources = \
 	ags/audio/file/ags_audio_file_xml.c \
 	ags/audio/file/ags_audio_xml_serialization_factory.c \
 	ags/audio/file/ags_ipatch.c \
+	ags/audio/file/ags_ipatch_sample.c \
 	ags/audio/file/ags_ipatch_dls2_reader.c \
+	ags/audio/file/ags_ipatch_gig_reader.c \
 	ags/audio/file/ags_ipatch_sf2_reader.c \
 	ags/audio/file/ags_sound_container.c \
 	ags/audio/file/ags_sound_resource.c \
@@ -5108,7 +5114,13 @@ ags/audio/file/libags_audio_la-ags_audio_xml_serialization_factory.lo:  \
 ags/audio/file/libags_audio_la-ags_ipatch.lo:  \
 	ags/audio/file/$(am__dirstamp) \
 	ags/audio/file/$(DEPDIR)/$(am__dirstamp)
+ags/audio/file/libags_audio_la-ags_ipatch_sample.lo:  \
+	ags/audio/file/$(am__dirstamp) \
+	ags/audio/file/$(DEPDIR)/$(am__dirstamp)
 ags/audio/file/libags_audio_la-ags_ipatch_dls2_reader.lo:  \
+	ags/audio/file/$(am__dirstamp) \
+	ags/audio/file/$(DEPDIR)/$(am__dirstamp)
+ags/audio/file/libags_audio_la-ags_ipatch_gig_reader.lo:  \
 	ags/audio/file/$(am__dirstamp) \
 	ags/audio/file/$(DEPDIR)/$(am__dirstamp)
 ags/audio/file/libags_audio_la-ags_ipatch_sf2_reader.lo:  \
@@ -7725,6 +7737,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_xml_serialization_factory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_dls2_reader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_gig_reader.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_sample.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_sf2_reader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_sndfile.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_sound_container.Plo@am__quote@
@@ -8856,12 +8870,26 @@ ags/audio/file/libags_audio_la-ags_ipatch.lo: ags/audio/file/ags_ipatch.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/file/libags_audio_la-ags_ipatch.lo `test -f 'ags/audio/file/ags_ipatch.c' || echo '$(srcdir)/'`ags/audio/file/ags_ipatch.c
 
+ags/audio/file/libags_audio_la-ags_ipatch_sample.lo: ags/audio/file/ags_ipatch_sample.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/file/libags_audio_la-ags_ipatch_sample.lo -MD -MP -MF ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_sample.Tpo -c -o ags/audio/file/libags_audio_la-ags_ipatch_sample.lo `test -f 'ags/audio/file/ags_ipatch_sample.c' || echo '$(srcdir)/'`ags/audio/file/ags_ipatch_sample.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_sample.Tpo ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_sample.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/file/ags_ipatch_sample.c' object='ags/audio/file/libags_audio_la-ags_ipatch_sample.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/file/libags_audio_la-ags_ipatch_sample.lo `test -f 'ags/audio/file/ags_ipatch_sample.c' || echo '$(srcdir)/'`ags/audio/file/ags_ipatch_sample.c
+
 ags/audio/file/libags_audio_la-ags_ipatch_dls2_reader.lo: ags/audio/file/ags_ipatch_dls2_reader.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/file/libags_audio_la-ags_ipatch_dls2_reader.lo -MD -MP -MF ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_dls2_reader.Tpo -c -o ags/audio/file/libags_audio_la-ags_ipatch_dls2_reader.lo `test -f 'ags/audio/file/ags_ipatch_dls2_reader.c' || echo '$(srcdir)/'`ags/audio/file/ags_ipatch_dls2_reader.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_dls2_reader.Tpo ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_dls2_reader.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/file/ags_ipatch_dls2_reader.c' object='ags/audio/file/libags_audio_la-ags_ipatch_dls2_reader.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/file/libags_audio_la-ags_ipatch_dls2_reader.lo `test -f 'ags/audio/file/ags_ipatch_dls2_reader.c' || echo '$(srcdir)/'`ags/audio/file/ags_ipatch_dls2_reader.c
+
+ags/audio/file/libags_audio_la-ags_ipatch_gig_reader.lo: ags/audio/file/ags_ipatch_gig_reader.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/file/libags_audio_la-ags_ipatch_gig_reader.lo -MD -MP -MF ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_gig_reader.Tpo -c -o ags/audio/file/libags_audio_la-ags_ipatch_gig_reader.lo `test -f 'ags/audio/file/ags_ipatch_gig_reader.c' || echo '$(srcdir)/'`ags/audio/file/ags_ipatch_gig_reader.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_gig_reader.Tpo ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_gig_reader.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/file/ags_ipatch_gig_reader.c' object='ags/audio/file/libags_audio_la-ags_ipatch_gig_reader.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/file/libags_audio_la-ags_ipatch_gig_reader.lo `test -f 'ags/audio/file/ags_ipatch_gig_reader.c' || echo '$(srcdir)/'`ags/audio/file/ags_ipatch_gig_reader.c
 
 ags/audio/file/libags_audio_la-ags_ipatch_sf2_reader.lo: ags/audio/file/ags_ipatch_sf2_reader.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/file/libags_audio_la-ags_ipatch_sf2_reader.lo -MD -MP -MF ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_sf2_reader.Tpo -c -o ags/audio/file/libags_audio_la-ags_ipatch_sf2_reader.lo `test -f 'ags/audio/file/ags_ipatch_sf2_reader.c' || echo '$(srcdir)/'`ags/audio/file/ags_ipatch_sf2_reader.c

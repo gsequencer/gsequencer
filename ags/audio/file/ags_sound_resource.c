@@ -326,7 +326,7 @@ ags_sound_resource_flush(AgsSoundResource *sound_resource)
  */
 void
 ags_sound_resource_seek(AgsSoundResource *sound_resource,
-			guint frame_count, gint whence)
+			gint64 frame_count, gint whence)
 {
   AgsSoundResourceInterface *sound_resource_interface;
 
