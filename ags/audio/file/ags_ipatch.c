@@ -62,6 +62,7 @@ GList* ags_ipatch_get_resource_by_name(AgsSoundContainer *sound_container,
 				       gchar *resource_name);
 GList* ags_ipatch_get_resource_by_index(AgsSoundContainer *sound_container,
 					guint resource_index);
+GList* ags_ipatch_get_resource_current(AgsSoundContainer *sound_container);
 void ags_ipatch_close(AgsSoundContainer *sound_container);
 
 /**
@@ -236,7 +237,8 @@ ags_ipatch_sound_container_interface_init(AgsSoundContainerInterface *sound_cont
   sound_container->get_resource_all = ags_ipatch_get_resource_all;
   sound_container->get_resource_by_name = ags_ipatch_get_resource_by_name;
   sound_container->get_resource_by_index = ags_ipatch_get_resource_by_index;
-
+  sound_container->get_resource_current = ags_ipatch_get_resource_current;
+  
   sound_container->close = ags_ipatch_close;
 }
 
@@ -678,6 +680,12 @@ ags_ipatch_get_resource_by_index(AgsSoundContainer *sound_container,
   //TODO:JK: implement me
 }
 
+GList*
+ags_ipatch_get_resource_current(AgsSoundContainer *sound_container)
+{
+  //TODO:JK: implement me
+}
+
 void
 ags_ipatch_close(AgsSoundContainer *sound_container)
 {
@@ -713,7 +721,7 @@ ags_ipatch_check_suffix(gchar *filename)
  *
  * Returns: an empty #AgsIpatch.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsIpatch*
 ags_ipatch_new(gchar *filename,

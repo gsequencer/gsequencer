@@ -72,7 +72,7 @@ ags_sound_container_base_init(AgsSoundContainerInterface *interface)
  * 
  * Since: 2.0.0
  */
-guint
+gboolean
 ags_sound_container_open(AgsSoundContainer *sound_container, gchar *filename)
 {
   AgsSoundContainerInterface *sound_container_interface;
@@ -334,6 +334,7 @@ ags_sound_container_get_resource_all(AgsSoundContainer *sound_container)
 /**
  * ags_sound_container_get_resource_by_name:
  * @sound_countainer: the #AgsSoundcontainer
+ * @resource_name: the resource name
  * 
  * Get resources by name as a #GList-struct.
  * 
@@ -362,6 +363,7 @@ ags_sound_container_get_resource_by_name(AgsSoundContainer *sound_container,
 /**
  * ags_sound_container_get_resource_by_index:
  * @sound_countainer: the #AgsSoundcontainer
+ * @resource_index: the index
  * 
  * Get resources by index as a #GList-struct.
  * 
@@ -385,4 +387,50 @@ ags_sound_container_get_resource_by_index(AgsSoundContainer *sound_container,
 							    resource_index);
 
   return(retval);
+}
+
+/**
+ * ags_sound_container_get_resource_current:
+ * @sound_countainer: the #AgsSoundcontainer
+ * 
+ * Get resources by index as a #GList-struct.
+ * 
+ * Returns: the #GList-struct containing #AgsResource
+ * 
+ * Since: 2.0.0
+ */
+GList*
+ags_sound_container_get_resource_current(AgsSoundContainer *sound_container)
+{
+  AgsSoundContainerInterface *sound_container_interface;
+
+  GList *retval;
+
+  g_return_val_if_fail(AGS_IS_SOUND_CONTAINER(sound_container), NULL);
+  sound_container_interface = AGS_SOUND_CONTAINER_GET_INTERFACE(sound_container);
+  g_return_val_if_fail(sound_container_interface->get_resource_current, NULL);
+
+  retval = sound_container_interface->get_resource_current(sound_container);
+
+  return(retval);
+}
+
+/**
+ * ags_sound_container_close:
+ * @sound_countainer: the #AgsSoundcontainer
+ * 
+ * Close @sound_container.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_sound_container_close(AgsSoundContainer *sound_container)
+{
+  AgsSoundContainerInterface *sound_container_interface;
+  
+  g_return_if_fail(AGS_IS_SOUND_CONTAINER(sound_container));
+  sound_container_interface = AGS_SOUND_CONTAINER_GET_INTERFACE(sound_container);
+  g_return_if_fail(sound_container_interface->close);
+
+  sound_container_interface->close(sound_container);
 }

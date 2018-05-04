@@ -62,7 +62,8 @@ struct _AgsSoundContainerInterface
 				 gchar *resource_name);
   GList* (*get_resource_by_index)(AgsSoundContainer *sound_container,
 				  guint resource_index);
-
+  GList* (*get_resource_current)(AgsSoundContainer *sound_container);
+  
   /* close */
   void (*close)(AgsSoundResource *sound_resource);
 };
@@ -91,5 +92,8 @@ GList* ags_sound_container_get_resource_by_name(AgsSoundContainer *sound_contain
 						gchar *resource_name);
 GList* ags_sound_container_get_resource_by_index(AgsSoundContainer *sound_container,
 						 guint resource_index);
+GList* ags_sound_container_get_resource_current(AgsSoundContainer *sound_container);
+
+void ags_sound_container_close(AgsSoundContainer *sound_container);
 
 #endif /*__AGS_SOUND_CONTAINER_H__*/
