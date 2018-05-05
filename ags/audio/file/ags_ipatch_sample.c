@@ -263,6 +263,7 @@ ags_ipatch_sample_set_property(GObject *gobject,
       ipatch_sample->buffer = ags_stream_alloc(ipatch_sample->buffer_size,
 					       ipatch_sample->format);
     }
+    break;
   case PROP_FORMAT:
     {
       guint format;
@@ -305,7 +306,6 @@ ags_ipatch_sample_set_property(GObject *gobject,
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
   }
 }
 
@@ -322,6 +322,7 @@ ags_ipatch_sample_get_property(GObject *gobject,
     {
       g_value_set_uint(value, ipatch_sample->buffer_size);
     }
+    break;
   case PROP_FORMAT:
     {
       g_value_set_uint(value, ipatch_sample->format);
@@ -334,7 +335,6 @@ ags_ipatch_sample_get_property(GObject *gobject,
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
   }
 }
 
@@ -685,6 +685,8 @@ ags_ipatch_sample_write(AgsSoundResource *sound_resource,
     }
     break;
   }
+
+  ipatch_sample->offset += frame_count;
 }
 
 void

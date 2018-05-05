@@ -44,6 +44,7 @@ typedef struct _AgsSndfileClass AgsSndfileClass;
  */
 typedef enum{
   AGS_SNDFILE_VIRTUAL       = 1,
+  AGS_SNDFILE_FILL_CACHE    = 1 <<  1,
 }AgsSndfileFlags;
 
 struct _AgsSndfile
@@ -52,10 +53,14 @@ struct _AgsSndfile
 
   guint flags;
 
+  guint audio_channels;
+  gint64 *audio_channel_written;
+  
   guint buffer_size;
   guint format;
 
-  guint offset;
+  guint64 offset;
+  guint64 buffer_offset;
   
   void *buffer;
 

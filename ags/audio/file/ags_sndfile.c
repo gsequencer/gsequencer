@@ -94,6 +94,7 @@ sf_count_t ags_sndfile_vio_tell(const void *ptr, sf_count_t count, void *user_da
 
 enum{
   PROP_0,
+  PROP_AUDIO_CHANNELS,
   PROP_BUFFER_SIZE,
   PROP_FORMAT,
   PROP_SAMPLE,
@@ -169,6 +170,24 @@ ags_sndfile_class_init(AgsSndfileClass *sndfile)
 
   /* properties */
   /**
+   * AgsSndfile:audio-channels:
+   *
+   * The audio channels to be used.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("audio-channels",
+				 i18n_pspec("using audio channels"),
+				 i18n_pspec("The audio channels to be used"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CHANNELS,
+				  param_spec);
+
+  /**
    * AgsSndfile:buffer-size:
    *
    * The buffer size to be used.
@@ -185,7 +204,7 @@ ags_sndfile_class_init(AgsSndfileClass *sndfile)
   g_object_class_install_property(gobject,
 				  PROP_BUFFER_SIZE,
 				  param_spec);
-
+  
   /**
    * AgsSndfile:format:
    *
@@ -250,17 +269,23 @@ ags_sndfile_init(AgsSndfile *sndfile)
 {
   AgsConfig *config;
 
-  sndfile->flags = 0;
+  sndfile->flags = AGS_SNDFILE_FILL_CACHE;
 
   config = ags_config_get_instance();
-  
-  ipatch_sample->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
-  ipatch_sample->format = AGS_SOUNDCARD_DOUBLE;
 
-  ipatch_sample->offset = 0;
+  sndfile->audio_channels = 1;
+  sndfile->audio_channel_written = (guint64 *) malloc(1 * sizeof(guint64));
+
+  sndfile->audio_channel_written[0] = -1;
   
-  ipatch_sample->buffer = ags_stream_alloc(ipatch_sample->buffer_size,
-					   ipatch_sample->format);
+  sndfile->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+  sndfile->format = AGS_SOUNDCARD_DOUBLE;
+
+  sndfile->offset = 0;
+  sndfile->buffer_offset = 0;
+  
+  sndfile->buffer = ags_stream_alloc(sndfile->buffer_size,
+				     sndfile->format);
 
   sndfile->pointer = NULL;
   sndfile->current = NULL;
@@ -268,6 +293,132 @@ ags_sndfile_init(AgsSndfile *sndfile)
 
   sndfile->info = NULL;
   sndfile->file = NULL;
+}
+
+void
+ags_sndfile_set_property(GObject *gobject,
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsSndfile *sndfile;
+
+  sndfile = AGS_SNDFILE(gobject);
+
+  switch(prop_id){
+  case PROP_AUDIO_CHANNELS:
+    {
+      guint audio_channels;
+      guint i;
+      
+      audio_channels = g_value_get_uint(value);
+
+      if(audio_channels == sndfile->audio_channels){
+	return;	
+      }
+      
+      ags_stream_free(sndfile->buffer);
+
+      if(audio_channels > 0){
+	sndfile->audio_channel_written = (guint64 *) realloc(sndfile->audio_channel_written,
+							     audio_channels * sizeof(guint64));
+	
+	for(i = audio->audio_channels; i < audio_channels; i++){
+	  sndfile->audio_channel_written[i] = -1;
+	}
+      }else{
+	free(sndfile->audio_channel_written);
+      }
+
+      sndfile->audio_channels = audio_channels;
+      
+      sndfile->buffer = ags_stream_alloc(sndfile->audio_channels * sndfile->buffer_size,
+					 sndfile->format);
+    }
+  case PROP_BUFFER_SIZE:
+    {
+      guint buffer_size;
+
+      buffer_size = g_value_get_uint(value);
+
+      if(buffer_size == sndfile->buffer_size){
+	return;	
+      }
+      
+      ags_stream_free(sndfile->buffer);
+
+      sndfile->buffer_size = buffer_size;
+      sndfile->buffer = ags_stream_alloc(sndfile->audio_channels * sndfile->buffer_size,
+					 sndfile->format);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      guint format;
+
+      format = g_value_get_uint(value);
+
+      if(format == sndfile->format){
+	return;	
+      }
+
+      ags_stream_free(sndfile->buffer);
+
+      sndfile->format = format;
+      sndfile->buffer = ags_stream_alloc(sndfile->audio_channels * sndfile->buffer_size,
+					 sndfile->format);
+    }
+    break;
+  case PROP_FILE:
+    {
+      SNDFILE *file;
+
+      file = g_value_get_pointer(value);
+
+      if(sndfile->file == file){
+	return;
+      }
+      
+      sndfile->file = file;
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+  }
+}
+
+void
+ags_sndfile_get_property(GObject *gobject,
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *param_spec)
+{
+  AgsSndfile *sndfile;
+
+  switch(prop_id){
+  case PROP_AUDIO_CHANNELS:
+    {
+      g_value_set_uint(value, sndfile->audio_channels);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      g_value_set_uint(value, sndfile->buffer_size);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      g_value_set_uint(value, sndfile->format);
+    }
+    break;
+  case PROP_FILE:
+    {
+      g_value_set_pointer(value, sndfile->file);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+  }
 }
 
 void
@@ -544,9 +695,11 @@ ags_sndfile_sample_read(AgsSoundResource *sound_resource,
 {
   AgsSndfile *sndfile;
 
+  sf_count_t multi_frames;
   guint total_frame_count;
   guint read_count;
   guint copy_mode;
+  gboolean use_cache;
   guint i;
 
   sndfile = AGS_SNDFILE(sound_resource);
@@ -560,9 +713,18 @@ ags_sndfile_sample_read(AgsSoundResource *sound_resource,
   }
 
   if(sndfile->offset + frame_count >= total_frame_count){
-    frame_count = total_frame_count - ipatch_sample->offset;
+    frame_count = total_frame_count - sndfile->offset;
   }
 
+  use_cache = FALSE;
+
+  if(sndfile->buffer_offset == sndfile->offset &&
+     frame_count <= sndfile->buffer_size){
+    use_cache = TRUE;
+  }
+  
+  sndfile->buffer_offset = sndfile->offset;
+  
   read_count = sndfile->buffer_size;
 
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
@@ -573,7 +735,98 @@ ags_sndfile_sample_read(AgsSoundResource *sound_resource,
       read_count = frame_count - i;
     }
 
-    switch(ipatch_sample->format){
+    multi_frames = read_count * sndfile->info->channels;
+
+    if(!use_cache){
+      switch(sndfile->format){
+      case AGS_SOUNDCARD_SIGNED_8_BIT:
+	{
+	  //TODO:JK: implement me
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_16_BIT:
+	{
+	  sf_read_short(sndfile->file, sndfile->buffer, multi_frames);
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_24_BIT:
+	{
+	  //TODO:JK: implement me
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_32_BIT:
+	{
+	  //TODO:JK: implement me
+	}
+	break;
+      case AGS_SOUNDCARD_FLOAT:
+	{
+	  sf_read_float(sndfile->file, sndfile->buffer, multi_frames);
+	}
+	break;
+      case AGS_SOUNDCARD_DOUBLE:
+	{
+	  sf_read_double(sndfile->file, sndfile->buffer, multi_frames);
+	}
+	break;
+      }
+    }
+    
+    ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, 1, i,
+						sndfile->buffer, audio_channel, 0,
+						read_count, copy_mode);
+    
+    i += read_count;
+  }
+
+  sndfile->offset += frame_count;
+  
+  return(frame_count);
+}
+
+void
+ags_sndfile_sample_write(AgsSoundResource *sound_resource,
+			 void *sbuffer,
+			 guint audio_channel,
+			 guint frame_count, guint format)
+{
+  AgsSndfile *sndfile;
+
+  gint64 current_offset;
+  guint copy_mode;
+  sf_count_t multi_frames;
+  gboolean write_cache;
+  guint i;
+  
+  sndfile = AGS_SNDFILE(sound_resource);
+
+  sndfile->audio_channel_written[audio_channel] = sndfile->offset;
+
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sndfile->format),
+						  ags_audio_buffer_util_format_from_soundcard(format));
+  
+  /* check write */
+  write_cache = TRUE;
+
+  if((AGS_SNDFILE_FILL_CACHE & (sndfile->flags)) != 0){
+    ags_audio_buffer_util_copy_buffer_to_buffer(sndfile->buffer, audio_channel, 0,
+						sbuffer, 1, i,
+						frame_count, copy_mode);
+    current_offset = sndfile->audio_channel_written[0];
+    
+    for(i = 0; i < sndfile->audio_channels; i++){
+      if(sndfile->audio_channel_written != current_offset){
+	write_cache = FALSE;
+
+	break;
+      }
+    } 
+  }
+  
+  if(write_cache){
+    multi_frames = frame_count * sndfile->audio_channels;
+
+    switch(format){
     case AGS_SOUNDCARD_SIGNED_8_BIT:
       {
 	//TODO:JK: implement me
@@ -581,7 +834,7 @@ ags_sndfile_sample_read(AgsSoundResource *sound_resource,
       break;
     case AGS_SOUNDCARD_SIGNED_16_BIT:
       {
-	sf_read_short(sndfile->file, sndfile->buffer, read_count * sndfile->info->channels);
+	sf_write_short(sndfile->file, sndfile->buffer, multi_frames);
       }
       break;
     case AGS_SOUNDCARD_SIGNED_24_BIT:
@@ -596,68 +849,19 @@ ags_sndfile_sample_read(AgsSoundResource *sound_resource,
       break;
     case AGS_SOUNDCARD_FLOAT:
       {
-	sf_read_float(sndfile->file, sndfile->buffer, read_count * sndfile->info->channels);
+	sf_write_float(sndfile->file, sndfile->buffer, multi_frames);
       }
       break;
     case AGS_SOUNDCARD_DOUBLE:
       {
-	sf_read_double(sndfile->file, sndfile->buffer, read_count * sndfile->info->channels);
+	sf_write_double(sndfile->file, sndfile->buffer, multi_frames);
       }
       break;
     }
 
-    ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, 1, i,
-						sndfile->buffer, 1, 0,
-						read_count, copy_mode);
+    sndfile->buffer_offfset = sndfile->offset;
     
-    i += read_count;
-  }
-  
-  return(frame_count);
-}
-
-void
-ags_sndfile_sample_write(AgsSoundResource *sound_resource,
-			 void *sbuffer,
-			 guint audio_channel,
-			 guint frame_count, guint format)
-{
-  AgsSndfile *sndfile;
-   
-  sndfile = AGS_SNDFILE(sound_resource);
-
-  switch(format){
-  case AGS_SOUNDCARD_SIGNED_8_BIT:
-    {
-      //TODO:JK: implement me
-    }
-    break;
-  case AGS_SOUNDCARD_SIGNED_16_BIT:
-    {
-      //TODO:JK: implement me
-    }
-    break;
-  case AGS_SOUNDCARD_SIGNED_24_BIT:
-    {
-      //TODO:JK: implement me
-    }
-    break;
-  case AGS_SOUNDCARD_SIGNED_32_BIT:
-    {
-      //TODO:JK: implement me
-    }
-    break;
-  case AGS_SOUNDCARD_FLOAT:
-    {
-      //TODO:JK: implement me
-    }
-    break;
-  case AGS_SOUNDCARD_DOUBLE:
-    {
-      sf_write_double(sndfile->file, sbuffer, multi_frames);
-      //TODO:JK: implement me
-    }
-    break;
+    sndfile->offset += frame_count;
   }
 }
 
@@ -736,24 +940,6 @@ ags_sndfile_close(AgsSoundResource *sound_resource)
 
   sndfile->file = NULL;
   sndfile->info = NULL;
-}
-
-void
-ags_sndfile_write(AgsPlayable *playable, double *buffer, guint buffer_length)
-{
-  AgsSndfile *sndfile;
-  sf_count_t multi_frames, retval;
-
-  sndfile = AGS_SNDFILE(playable);
-
-  multi_frames = buffer_length * sndfile->info->channels;
-
-  retval = 
-
-  if(retval > multi_frames){
-    g_warning("retval > multi_frames");
-    //    sf_seek(sndfile->file, (multi_frames - retval), SEEK_CUR);
-  }
 }
 
 sf_count_t
