@@ -65,7 +65,6 @@
 #include <ags/audio/ags_note.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_pattern.h>
-#include <ags/audio/ags_playable.h>
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_port.h>
@@ -109,9 +108,13 @@
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file_xml.h>
 #include <ags/audio/file/ags_ipatch.h>
+#include <ags/audio/file/ags_ipatch_gig_reader.h>
 #include <ags/audio/file/ags_ipatch_dls2_reader.h>
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
+#include <ags/audio/file/ags_ipatch_sample.h>
 #include <ags/audio/file/ags_sndfile.h>
+#include <ags/audio/file/ags_sound_container.h>
+#include <ags/audio/file/ags_sound_resource.h>
 
 /* audio midi */
 #include <ags/audio/midi/ags_midi_buffer_util.h>

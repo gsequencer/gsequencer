@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,14 +19,7 @@
 
 #include <ags/audio/jack/ags_jack_port.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_distributed_manager.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_distributed_manager.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_sequencer.h>
-
-#include <ags/thread/ags_mutex_manager.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_sound_provider.h>
 
@@ -40,7 +33,6 @@
 
 void ags_jack_port_class_init(AgsJackPortClass *jack_port);
 void ags_jack_port_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_jack_port_distributed_manager_interface_init(AgsDistributedManagerInterface *distributed_manager);
 void ags_jack_port_init(AgsJackPort *jack_port);
 void ags_jack_port_set_property(GObject *gobject,
 				guint prop_id,

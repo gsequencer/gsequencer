@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,7 +41,6 @@
 
 void ags_pulse_port_class_init(AgsPulsePortClass *pulse_port);
 void ags_pulse_port_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_pulse_port_distributed_manager_interface_init(AgsDistributedManagerInterface *distributed_manager);
 void ags_pulse_port_init(AgsPulsePort *pulse_port);
 void ags_pulse_port_set_property(GObject *gobject,
 				 guint prop_id,

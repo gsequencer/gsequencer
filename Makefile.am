@@ -838,8 +838,7 @@ libags_audio_file_h_sources = \
 	ags/audio/file/ags_ipatch_sf2_reader.h \
 	ags/audio/file/ags_sound_container.h \
 	ags/audio/file/ags_sound_resource.h \
-	ags/audio/file/ags_sndfile.h \
-	ags/audio/file/ags_wav_file.h
+	ags/audio/file/ags_sndfile.h
 
 deprecated_libags_audio_file_c_sources =
 
@@ -857,8 +856,7 @@ libags_audio_file_c_sources = \
 	ags/audio/file/ags_ipatch_sf2_reader.c \
 	ags/audio/file/ags_sound_container.c \
 	ags/audio/file/ags_sound_resource.c \
-	ags/audio/file/ags_sndfile.c \
-	ags/audio/file/ags_wav_file.c
+	ags/audio/file/ags_sndfile.c
 
 # libags-audio - midi
 deprecated_libags_audio_midi_h_sources =

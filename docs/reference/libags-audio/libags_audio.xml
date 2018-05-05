@@ -162,8 +162,10 @@
       <xi:include href="xml/ags_audio_file_link.xml"/>
       <xi:include href="xml/ags_audio_file_xml.xml"/>
       <xi:include href="xml/ags_ipatch.xml"/>
+      <xi:include href="xml/ags_ipatch_gig_reader.xml"/>
       <xi:include href="xml/ags_ipatch_sf2_reader.xml"/>
       <xi:include href="xml/ags_ipatch_dls2_reader.xml"/>
+      <xi:include href="xml/ags_ipatch_sample.xml"/>
       <xi:include href="xml/ags_sndfile.xml"/>
       <xi:include href="xml/ags_audio_xml_serialization_factory.xml"/>
       <xi:include href="xml/ags_sound_container.xml"/>

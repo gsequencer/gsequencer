@@ -129,6 +129,7 @@ void
 ags_ipatch_sample_class_init(AgsIpatchSampleClass *ipatch_sample)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
   
   ags_ipatch_sample_parent_class = g_type_class_peek_parent(ipatch_sample);

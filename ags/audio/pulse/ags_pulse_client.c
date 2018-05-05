@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,7 +34,6 @@
 
 void ags_pulse_client_class_init(AgsPulseClientClass *pulse_client);
 void ags_pulse_client_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_pulse_client_distributed_manager_interface_init(AgsDistributedManagerInterface *distributed_manager);
 void ags_pulse_client_init(AgsPulseClient *pulse_client);
 void ags_pulse_client_set_property(GObject *gobject,
 				   guint prop_id,

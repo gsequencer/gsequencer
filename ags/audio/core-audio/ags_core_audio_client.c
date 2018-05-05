@@ -19,18 +19,7 @@
 
 #include <ags/audio/core-audio/ags_core_audio_client.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_distributed_manager.h>
-#include <ags/object/ags_main_loop.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_distributed_manager.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_sequencer.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_channel.h>
@@ -45,7 +34,6 @@
 
 void ags_core_audio_client_class_init(AgsCoreAudioClientClass *core_audio_client);
 void ags_core_audio_client_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_core_audio_client_distributed_manager_interface_init(AgsDistributedManagerInterface *distributed_manager);
 void ags_core_audio_client_init(AgsCoreAudioClient *core_audio_client);
 void ags_core_audio_client_set_property(GObject *gobject,
 					guint prop_id,

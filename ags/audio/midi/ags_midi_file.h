@@ -130,10 +130,13 @@ GType ags_midi_file_get_type(void);
 
 GQuark ags_midi_file_error_quark();
 
-gboolean ags_midi_file_open(AgsMidiFile *midi_file);
+gboolean ags_midi_file_open(AgsMidiFile *midi_file,
+			    gchar *filename);
 gboolean ags_midi_file_open_from_data(AgsMidiFile *midi_file,
 				      unsigned char *data, guint buffer_length);
-gboolean ags_midi_file_rw_open(AgsMidiFile *midi_file);
+gboolean ags_midi_file_rw_open(AgsMidiFile *midi_file,
+			       gchar *filename,
+			       gboolean create);
 
 void ags_midi_file_close(AgsMidiFile *midi_file);
 

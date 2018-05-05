@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,7 +34,7 @@
 
 void ags_pulse_server_class_init(AgsPulseServerClass *pulse_server);
 void ags_pulse_server_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_pulse_server_distributed_manager_interface_init(AgsDistributedManagerInterface *distributed_manager);
+void ags_pulse_server_sound_server_interface_init(AgsSoundServerInterface *sound_server);
 void ags_pulse_server_init(AgsPulseServer *pulse_server);
 void ags_pulse_server_set_property(GObject *gobject,
 				   guint prop_id,
@@ -49,30 +49,30 @@ void ags_pulse_server_disconnect(AgsConnectable *connectable);
 void ags_pulse_server_dispose(GObject *gobject);
 void ags_pulse_server_finalize(GObject *gobject);
 
-void ags_pulse_server_set_url(AgsDistributedManager *distributed_manager,
+void ags_pulse_server_set_url(AgsSoundServer *sound_server,
 			      gchar *url);
-gchar* ags_pulse_server_get_url(AgsDistributedManager *distributed_manager);
-void ags_pulse_server_set_ports(AgsDistributedManager *distributed_manager,
+gchar* ags_pulse_server_get_url(AgsSoundServer *sound_server);
+void ags_pulse_server_set_ports(AgsSoundServer *sound_server,
 				guint *ports, guint port_count);
-guint* ags_pulse_server_get_ports(AgsDistributedManager *distributed_manager,
+guint* ags_pulse_server_get_ports(AgsSoundServer *sound_server,
 				  guint *port_count);
-void ags_pulse_server_set_soundcard(AgsDistributedManager *distributed_manager,
+void ags_pulse_server_set_soundcard(AgsSoundServer *sound_server,
 				    gchar *client_uuid,
 				    GList *soundcard);
-GList* ags_pulse_server_get_soundcard(AgsDistributedManager *distributed_manager,
+GList* ags_pulse_server_get_soundcard(AgsSoundServer *sound_server,
 				      gchar *client_uuid);
-void ags_pulse_server_set_sequencer(AgsDistributedManager *distributed_manager,
+void ags_pulse_server_set_sequencer(AgsSoundServer *sound_server,
 				    gchar *client_uuid,
 				    GList *sequencer);
-GList* ags_pulse_server_get_sequencer(AgsDistributedManager *distributed_manager,
+GList* ags_pulse_server_get_sequencer(AgsSoundServer *sound_server,
 				      gchar *client_uuid);
-GObject* ags_pulse_server_register_soundcard(AgsDistributedManager *distributed_manager,
+GObject* ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
 					     gboolean is_output);
-void ags_pulse_server_unregister_soundcard(AgsDistributedManager *distributed_manager,
+void ags_pulse_server_unregister_soundcard(AgsSoundServer *sound_server,
 					   GObject *soundcard);
-GObject* ags_pulse_server_register_sequencer(AgsDistributedManager *distributed_manager,
+GObject* ags_pulse_server_register_sequencer(AgsSoundServer *sound_server,
 					     gboolean is_output);
-void ags_pulse_server_unregister_sequencer(AgsDistributedManager *distributed_manager,
+void ags_pulse_server_unregister_sequencer(AgsSoundServer *sound_server,
 					   GObject *sequencer);
 
 void* ags_pulse_server_do_poll_loop(void *ptr);
@@ -122,8 +122,8 @@ ags_pulse_server_get_type()
       NULL, /* interface_data */
     };
     
-    static const GInterfaceInfo ags_distributed_manager_interface_info = {
-      (GInterfaceInitFunc) ags_pulse_server_distributed_manager_interface_init,
+    static const GInterfaceInfo ags_sound_server_interface_info = {
+      (GInterfaceInitFunc) ags_pulse_server_sound_server_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
@@ -138,8 +138,8 @@ ags_pulse_server_get_type()
 				&ags_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_pulse_server,
-				AGS_TYPE_DISTRIBUTED_MANAGER,
-				&ags_distributed_manager_interface_info);
+				AGS_TYPE_SOUND_SERVER,
+				&ags_sound_server_interface_info);
   }
 
   return (ags_type_pulse_server);
@@ -252,20 +252,20 @@ ags_pulse_server_connectable_interface_init(AgsConnectableInterface *connectable
 }
 
 void
-ags_pulse_server_distributed_manager_interface_init(AgsDistributedManagerInterface *distributed_manager)
+ags_pulse_server_sound_server_interface_init(AgsSoundServerInterface *sound_server)
 {
-  distributed_manager->set_url = ags_pulse_server_set_url;
-  distributed_manager->get_url = ags_pulse_server_get_url;
-  distributed_manager->set_ports = ags_pulse_server_set_ports;
-  distributed_manager->get_ports = ags_pulse_server_get_ports;
-  distributed_manager->set_soundcard = ags_pulse_server_set_soundcard;
-  distributed_manager->get_soundcard = ags_pulse_server_get_soundcard;
-  distributed_manager->set_sequencer = ags_pulse_server_set_sequencer;
-  distributed_manager->get_sequencer = ags_pulse_server_get_sequencer;
-  distributed_manager->register_soundcard = ags_pulse_server_register_soundcard;
-  distributed_manager->unregister_soundcard = ags_pulse_server_unregister_soundcard;
-  distributed_manager->register_sequencer = ags_pulse_server_register_sequencer;
-  distributed_manager->unregister_sequencer = ags_pulse_server_unregister_sequencer;
+  sound_server->set_url = ags_pulse_server_set_url;
+  sound_server->get_url = ags_pulse_server_get_url;
+  sound_server->set_ports = ags_pulse_server_set_ports;
+  sound_server->get_ports = ags_pulse_server_get_ports;
+  sound_server->set_soundcard = ags_pulse_server_set_soundcard;
+  sound_server->get_soundcard = ags_pulse_server_get_soundcard;
+  sound_server->set_sequencer = ags_pulse_server_set_sequencer;
+  sound_server->get_sequencer = ags_pulse_server_get_sequencer;
+  sound_server->register_soundcard = ags_pulse_server_register_soundcard;
+  sound_server->unregister_soundcard = ags_pulse_server_unregister_soundcard;
+  sound_server->register_sequencer = ags_pulse_server_register_sequencer;
+  sound_server->unregister_sequencer = ags_pulse_server_unregister_sequencer;
 }
 
 void
@@ -644,39 +644,39 @@ ags_pulse_server_finalize(GObject *gobject)
 }
 
 void
-ags_pulse_server_set_url(AgsDistributedManager *distributed_manager,
+ags_pulse_server_set_url(AgsSoundServer *sound_server,
 			 gchar *url)
 {
-  AGS_PULSE_SERVER(distributed_manager)->url = url;
+  AGS_PULSE_SERVER(sound_server)->url = url;
 }
 
 gchar*
-ags_pulse_server_get_url(AgsDistributedManager *distributed_manager)
+ags_pulse_server_get_url(AgsSoundServer *sound_server)
 {
-  return(AGS_PULSE_SERVER(distributed_manager)->url);
+  return(AGS_PULSE_SERVER(sound_server)->url);
 }
 
 void
-ags_pulse_server_set_ports(AgsDistributedManager *distributed_manager,
+ags_pulse_server_set_ports(AgsSoundServer *sound_server,
 			   guint *port, guint port_count)
 {
-  AGS_PULSE_SERVER(distributed_manager)->port = port;
-  AGS_PULSE_SERVER(distributed_manager)->port_count = port_count;
+  AGS_PULSE_SERVER(sound_server)->port = port;
+  AGS_PULSE_SERVER(sound_server)->port_count = port_count;
 }
 
 guint*
-ags_pulse_server_get_ports(AgsDistributedManager *distributed_manager,
+ags_pulse_server_get_ports(AgsSoundServer *sound_server,
 			   guint *port_count)
 {
   if(port_count != NULL){
-    *port_count = AGS_PULSE_SERVER(distributed_manager)->port_count;
+    *port_count = AGS_PULSE_SERVER(sound_server)->port_count;
   }
   
-  return(AGS_PULSE_SERVER(distributed_manager)->port);
+  return(AGS_PULSE_SERVER(sound_server)->port);
 }
 
 void
-ags_pulse_server_set_soundcard(AgsDistributedManager *distributed_manager,
+ags_pulse_server_set_soundcard(AgsSoundServer *sound_server,
 			       gchar *client_uuid,
 			       GList *soundcard)
 {
@@ -685,7 +685,7 @@ ags_pulse_server_set_soundcard(AgsDistributedManager *distributed_manager,
 
   GList *list;
 
-  pulse_server = AGS_PULSE_SERVER(distributed_manager);
+  pulse_server = AGS_PULSE_SERVER(sound_server);
 
   pulse_client = (AgsPulseClient *) ags_pulse_server_find_client(pulse_server,
 								 client_uuid);
@@ -702,7 +702,7 @@ ags_pulse_server_set_soundcard(AgsDistributedManager *distributed_manager,
 }
 
 GList*
-ags_pulse_server_get_soundcard(AgsDistributedManager *distributed_manager,
+ags_pulse_server_get_soundcard(AgsSoundServer *sound_server,
 			       gchar *client_uuid)
 {
   AgsPulseServer *pulse_server;
@@ -710,7 +710,7 @@ ags_pulse_server_get_soundcard(AgsDistributedManager *distributed_manager,
 
   GList *list, *device;
   
-  pulse_server = AGS_PULSE_SERVER(distributed_manager);
+  pulse_server = AGS_PULSE_SERVER(sound_server);
 
   pulse_client = (AgsPulseClient *) ags_pulse_server_find_client(pulse_server,
 								 client_uuid);
@@ -732,7 +732,7 @@ ags_pulse_server_get_soundcard(AgsDistributedManager *distributed_manager,
 }
 
 void
-ags_pulse_server_set_sequencer(AgsDistributedManager *distributed_manager,
+ags_pulse_server_set_sequencer(AgsSoundServer *sound_server,
 			       gchar *client_uuid,
 			       GList *sequencer)
 {
@@ -741,7 +741,7 @@ ags_pulse_server_set_sequencer(AgsDistributedManager *distributed_manager,
 
   GList *list;
 
-  pulse_server = AGS_PULSE_SERVER(distributed_manager);
+  pulse_server = AGS_PULSE_SERVER(sound_server);
 
   pulse_client = (AgsPulseClient *) ags_pulse_server_find_client(pulse_server,
 								 client_uuid);
@@ -758,7 +758,7 @@ ags_pulse_server_set_sequencer(AgsDistributedManager *distributed_manager,
 }
 
 GList*
-ags_pulse_server_get_sequencer(AgsDistributedManager *distributed_manager,
+ags_pulse_server_get_sequencer(AgsSoundServer *sound_server,
 			       gchar *client_uuid)
 {
   AgsPulseServer *pulse_server;
@@ -766,7 +766,7 @@ ags_pulse_server_get_sequencer(AgsDistributedManager *distributed_manager,
 
   GList *list, *device;
   
-  pulse_server = AGS_PULSE_SERVER(distributed_manager);
+  pulse_server = AGS_PULSE_SERVER(sound_server);
 
   pulse_client = (AgsPulseClient *) ags_pulse_server_find_client(pulse_server,
 								 client_uuid);
@@ -787,7 +787,7 @@ ags_pulse_server_get_sequencer(AgsDistributedManager *distributed_manager,
 }
 
 GObject*
-ags_pulse_server_register_soundcard(AgsDistributedManager *distributed_manager,
+ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
 				    gboolean is_output)
 {
   AgsPulseServer *pulse_server;
@@ -803,7 +803,7 @@ ags_pulse_server_register_soundcard(AgsDistributedManager *distributed_manager,
   gboolean initial_set;
   guint i;  
 
-  pulse_server = AGS_PULSE_SERVER(distributed_manager);
+  pulse_server = AGS_PULSE_SERVER(sound_server);
   initial_set = FALSE;
   
   /* the default client */
@@ -922,7 +922,7 @@ ags_pulse_server_register_soundcard(AgsDistributedManager *distributed_manager,
 }
 
 void
-ags_pulse_server_unregister_soundcard(AgsDistributedManager *distributed_manager,
+ags_pulse_server_unregister_soundcard(AgsSoundServer *sound_server,
 				      GObject *soundcard)
 {
   AgsPulseServer *pulse_server;
@@ -930,7 +930,7 @@ ags_pulse_server_unregister_soundcard(AgsDistributedManager *distributed_manager
 
   GList *list;
 
-  pulse_server = AGS_PULSE_SERVER(distributed_manager);
+  pulse_server = AGS_PULSE_SERVER(sound_server);
   
   /* the default client */
   default_client = (AgsPulseClient *) pulse_server->default_client;
@@ -972,7 +972,7 @@ ags_pulse_server_unregister_soundcard(AgsDistributedManager *distributed_manager
 }
 
 GObject*
-ags_pulse_server_register_sequencer(AgsDistributedManager *distributed_manager,
+ags_pulse_server_register_sequencer(AgsSoundServer *sound_server,
 				    gboolean is_output)
 {
   g_message("GSequencer - can't register pulseaudio sequencer");
@@ -981,7 +981,7 @@ ags_pulse_server_register_sequencer(AgsDistributedManager *distributed_manager,
 }
 
 void
-ags_pulse_server_unregister_sequencer(AgsDistributedManager *distributed_manager,
+ags_pulse_server_unregister_sequencer(AgsSoundServer *sound_server,
 				      GObject *sequencer)
 {
   g_message("GSequencer - can't unregister pulseaudio sequencer");

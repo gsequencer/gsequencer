@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,15 +19,7 @@
 
 #include <ags/audio/jack/ags_jack_midiin.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_sequencer.h>
-#include <ags/object/ags_distributed_manager.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_sound_provider.h>
 

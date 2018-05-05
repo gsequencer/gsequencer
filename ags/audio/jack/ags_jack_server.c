@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,14 +21,7 @@
 #include <ags/audio/jack/ags_jack_client.h>
 #include <ags/audio/jack/ags_jack_port.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_distributed_manager.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_distributed_manager.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_sequencer.h>
-
-#include <ags/thread/ags_mutex_manager.h>
+#include <ags/libags.h>
 
 #include <ags/audio/jack/ags_jack_devout.h>
 #include <ags/audio/jack/ags_jack_devin.h>
@@ -42,7 +35,7 @@
 
 void ags_jack_server_class_init(AgsJackServerClass *jack_server);
 void ags_jack_server_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_jack_server_distributed_manager_interface_init(AgsDistributedManagerInterface *distributed_manager);
+void ags_jack_server_sound_server_interface_init(AgsSoundServerInterface *sound_server);
 void ags_jack_server_init(AgsJackServer *jack_server);
 void ags_jack_server_set_property(GObject *gobject,
 				  guint prop_id,
@@ -57,30 +50,30 @@ void ags_jack_server_disconnect(AgsConnectable *connectable);
 void ags_jack_server_dispose(GObject *gobject);
 void ags_jack_server_finalize(GObject *gobject);
 
-void ags_jack_server_set_url(AgsDistributedManager *distributed_manager,
+void ags_jack_server_set_url(AgsSoundServer *sound_server,
 			     gchar *url);
-gchar* ags_jack_server_get_url(AgsDistributedManager *distributed_manager);
-void ags_jack_server_set_ports(AgsDistributedManager *distributed_manager,
+gchar* ags_jack_server_get_url(AgsSoundServer *sound_server);
+void ags_jack_server_set_ports(AgsSoundServer *sound_server,
 			       guint *ports, guint port_count);
-guint* ags_jack_server_get_ports(AgsDistributedManager *distributed_manager,
+guint* ags_jack_server_get_ports(AgsSoundServer *sound_server,
 				 guint *port_count);
-void ags_jack_server_set_soundcard(AgsDistributedManager *distributed_manager,
+void ags_jack_server_set_soundcard(AgsSoundServer *sound_server,
 				   gchar *client_uuid,
 				   GList *soundcard);
-GList* ags_jack_server_get_soundcard(AgsDistributedManager *distributed_manager,
+GList* ags_jack_server_get_soundcard(AgsSoundServer *sound_server,
 				     gchar *client_uuid);
-void ags_jack_server_set_sequencer(AgsDistributedManager *distributed_manager,
+void ags_jack_server_set_sequencer(AgsSoundServer *sound_server,
 				   gchar *client_uuid,
 				   GList *sequencer);
-GList* ags_jack_server_get_sequencer(AgsDistributedManager *distributed_manager,
+GList* ags_jack_server_get_sequencer(AgsSoundServer *sound_server,
 				     gchar *client_uuid);
-GObject* ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
+GObject* ags_jack_server_register_soundcard(AgsSoundServer *sound_server,
 					    gboolean is_output);
-void ags_jack_server_unregister_soundcard(AgsDistributedManager *distributed_manager,
+void ags_jack_server_unregister_soundcard(AgsSoundServer *sound_server,
 					  GObject *soundcard);
-GObject* ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
+GObject* ags_jack_server_register_sequencer(AgsSoundServer *sound_server,
 					    gboolean is_output);
-void ags_jack_server_unregister_sequencer(AgsDistributedManager *distributed_manager,
+void ags_jack_server_unregister_sequencer(AgsSoundServer *sound_server,
 					  GObject *sequencer);
 
 /**
@@ -128,8 +121,8 @@ ags_jack_server_get_type()
       NULL, /* interface_data */
     };
     
-    static const GInterfaceInfo ags_distributed_manager_interface_info = {
-      (GInterfaceInitFunc) ags_jack_server_distributed_manager_interface_init,
+    static const GInterfaceInfo ags_sound_server_interface_info = {
+      (GInterfaceInitFunc) ags_jack_server_sound_server_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
@@ -144,8 +137,8 @@ ags_jack_server_get_type()
 				&ags_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_jack_server,
-				AGS_TYPE_DISTRIBUTED_MANAGER,
-				&ags_distributed_manager_interface_info);
+				AGS_TYPE_SOUND_SERVER,
+				&ags_sound_server_interface_info);
   }
 
   return (ags_type_jack_server);
@@ -258,20 +251,20 @@ ags_jack_server_connectable_interface_init(AgsConnectableInterface *connectable)
 }
 
 void
-ags_jack_server_distributed_manager_interface_init(AgsDistributedManagerInterface *distributed_manager)
+ags_jack_server_sound_server_interface_init(AgsSoundServerInterface *sound_server)
 {
-  distributed_manager->set_url = ags_jack_server_set_url;
-  distributed_manager->get_url = ags_jack_server_get_url;
-  distributed_manager->set_ports = ags_jack_server_set_ports;
-  distributed_manager->get_ports = ags_jack_server_get_ports;
-  distributed_manager->set_soundcard = ags_jack_server_set_soundcard;
-  distributed_manager->get_soundcard = ags_jack_server_get_soundcard;
-  distributed_manager->set_sequencer = ags_jack_server_set_sequencer;
-  distributed_manager->get_sequencer = ags_jack_server_get_sequencer;
-  distributed_manager->register_soundcard = ags_jack_server_register_soundcard;
-  distributed_manager->unregister_soundcard = ags_jack_server_unregister_soundcard;
-  distributed_manager->register_sequencer = ags_jack_server_register_sequencer;
-  distributed_manager->unregister_sequencer = ags_jack_server_unregister_sequencer;
+  sound_server->set_url = ags_jack_server_set_url;
+  sound_server->get_url = ags_jack_server_get_url;
+  sound_server->set_ports = ags_jack_server_set_ports;
+  sound_server->get_ports = ags_jack_server_get_ports;
+  sound_server->set_soundcard = ags_jack_server_set_soundcard;
+  sound_server->get_soundcard = ags_jack_server_get_soundcard;
+  sound_server->set_sequencer = ags_jack_server_set_sequencer;
+  sound_server->get_sequencer = ags_jack_server_get_sequencer;
+  sound_server->register_soundcard = ags_jack_server_register_soundcard;
+  sound_server->unregister_soundcard = ags_jack_server_unregister_soundcard;
+  sound_server->register_sequencer = ags_jack_server_register_sequencer;
+  sound_server->unregister_sequencer = ags_jack_server_unregister_sequencer;
 }
 
 void
@@ -643,39 +636,39 @@ ags_jack_server_finalize(GObject *gobject)
 }
 
 void
-ags_jack_server_set_url(AgsDistributedManager *distributed_manager,
+ags_jack_server_set_url(AgsSoundServer *sound_server,
 			gchar *url)
 {
-  AGS_JACK_SERVER(distributed_manager)->url = url;
+  AGS_JACK_SERVER(sound_server)->url = url;
 }
 
 gchar*
-ags_jack_server_get_url(AgsDistributedManager *distributed_manager)
+ags_jack_server_get_url(AgsSoundServer *sound_server)
 {
-  return(AGS_JACK_SERVER(distributed_manager)->url);
+  return(AGS_JACK_SERVER(sound_server)->url);
 }
 
 void
-ags_jack_server_set_ports(AgsDistributedManager *distributed_manager,
+ags_jack_server_set_ports(AgsSoundServer *sound_server,
 			  guint *port, guint port_count)
 {
-  AGS_JACK_SERVER(distributed_manager)->port = port;
-  AGS_JACK_SERVER(distributed_manager)->port_count = port_count;
+  AGS_JACK_SERVER(sound_server)->port = port;
+  AGS_JACK_SERVER(sound_server)->port_count = port_count;
 }
 
 guint*
-ags_jack_server_get_ports(AgsDistributedManager *distributed_manager,
+ags_jack_server_get_ports(AgsSoundServer *sound_server,
 			  guint *port_count)
 {
   if(port_count != NULL){
-    *port_count = AGS_JACK_SERVER(distributed_manager)->port_count;
+    *port_count = AGS_JACK_SERVER(sound_server)->port_count;
   }
   
-  return(AGS_JACK_SERVER(distributed_manager)->port);
+  return(AGS_JACK_SERVER(sound_server)->port);
 }
 
 void
-ags_jack_server_set_soundcard(AgsDistributedManager *distributed_manager,
+ags_jack_server_set_soundcard(AgsSoundServer *sound_server,
 			      gchar *client_uuid,
 			      GList *soundcard)
 {
@@ -684,7 +677,7 @@ ags_jack_server_set_soundcard(AgsDistributedManager *distributed_manager,
 
   GList *list;
 
-  jack_server = AGS_JACK_SERVER(distributed_manager);
+  jack_server = AGS_JACK_SERVER(sound_server);
 
   jack_client = (AgsJackClient *) ags_jack_server_find_client(jack_server,
 							      client_uuid);
@@ -701,7 +694,7 @@ ags_jack_server_set_soundcard(AgsDistributedManager *distributed_manager,
 }
 
 GList*
-ags_jack_server_get_soundcard(AgsDistributedManager *distributed_manager,
+ags_jack_server_get_soundcard(AgsSoundServer *sound_server,
 			      gchar *client_uuid)
 {
   AgsJackServer *jack_server;
@@ -709,7 +702,7 @@ ags_jack_server_get_soundcard(AgsDistributedManager *distributed_manager,
 
   GList *list, *device;
   
-  jack_server = AGS_JACK_SERVER(distributed_manager);
+  jack_server = AGS_JACK_SERVER(sound_server);
 
   jack_client = (AgsJackClient *) ags_jack_server_find_client(jack_server,
 							      client_uuid);
@@ -731,7 +724,7 @@ ags_jack_server_get_soundcard(AgsDistributedManager *distributed_manager,
 }
 
 void
-ags_jack_server_set_sequencer(AgsDistributedManager *distributed_manager,
+ags_jack_server_set_sequencer(AgsSoundServer *sound_server,
 			      gchar *client_uuid,
 			      GList *sequencer)
 {
@@ -740,7 +733,7 @@ ags_jack_server_set_sequencer(AgsDistributedManager *distributed_manager,
 
   GList *list;
 
-  jack_server = AGS_JACK_SERVER(distributed_manager);
+  jack_server = AGS_JACK_SERVER(sound_server);
 
   jack_client = (AgsJackClient *) ags_jack_server_find_client(jack_server,
 							      client_uuid);
@@ -757,7 +750,7 @@ ags_jack_server_set_sequencer(AgsDistributedManager *distributed_manager,
 }
 
 GList*
-ags_jack_server_get_sequencer(AgsDistributedManager *distributed_manager,
+ags_jack_server_get_sequencer(AgsSoundServer *sound_server,
 			      gchar *client_uuid)
 {
   AgsJackServer *jack_server;
@@ -765,7 +758,7 @@ ags_jack_server_get_sequencer(AgsDistributedManager *distributed_manager,
 
   GList *list, *device;
   
-  jack_server = AGS_JACK_SERVER(distributed_manager);
+  jack_server = AGS_JACK_SERVER(sound_server);
 
   jack_client = (AgsJackClient *) ags_jack_server_find_client(jack_server,
 							      client_uuid);
@@ -786,7 +779,7 @@ ags_jack_server_get_sequencer(AgsDistributedManager *distributed_manager,
 }
 
 GObject*
-ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
+ags_jack_server_register_soundcard(AgsSoundServer *sound_server,
 				   gboolean is_output)
 {
   AgsJackServer *jack_server;
@@ -802,11 +795,11 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
   int rc;
   guint i;
   
-  if(!AGS_IS_JACK_SERVER(distributed_manager)){
+  if(!AGS_IS_JACK_SERVER(sound_server)){
     return(NULL);
   }
 
-  jack_server = AGS_JACK_SERVER(distributed_manager);
+  jack_server = AGS_JACK_SERVER(sound_server);
   initial_set = FALSE;
   
   /* the default client */
@@ -971,7 +964,7 @@ ags_jack_server_register_soundcard(AgsDistributedManager *distributed_manager,
 }
 
 void
-ags_jack_server_unregister_soundcard(AgsDistributedManager *distributed_manager,
+ags_jack_server_unregister_soundcard(AgsSoundServer *sound_server,
 				     GObject *soundcard)
 {
   AgsJackServer *jack_server;
@@ -979,7 +972,7 @@ ags_jack_server_unregister_soundcard(AgsDistributedManager *distributed_manager,
 
   GList *list;
 
-  jack_server = AGS_JACK_SERVER(distributed_manager);
+  jack_server = AGS_JACK_SERVER(sound_server);
   
   /* the default client */
   default_client = (AgsJackClient *) jack_server->default_client;
@@ -1021,7 +1014,7 @@ ags_jack_server_unregister_soundcard(AgsDistributedManager *distributed_manager,
 }
 
 GObject*
-ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
+ags_jack_server_register_sequencer(AgsSoundServer *sound_server,
 				   gboolean is_output)
 {
   AgsJackServer *jack_server;
@@ -1035,7 +1028,7 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
     return(NULL);
   }
   
-  jack_server = AGS_JACK_SERVER(distributed_manager);
+  jack_server = AGS_JACK_SERVER(sound_server);
   
   /* the default client */
   if(jack_server->default_client == NULL){
@@ -1093,7 +1086,7 @@ ags_jack_server_register_sequencer(AgsDistributedManager *distributed_manager,
 }
 
 void
-ags_jack_server_unregister_sequencer(AgsDistributedManager *distributed_manager,
+ags_jack_server_unregister_sequencer(AgsSoundServer *sound_server,
 				     GObject *sequencer)
 {
   AgsJackServer *jack_server;
@@ -1101,7 +1094,7 @@ ags_jack_server_unregister_sequencer(AgsDistributedManager *distributed_manager,
 
   GList *list;
   
-  jack_server = AGS_JACK_SERVER(distributed_manager);
+  jack_server = AGS_JACK_SERVER(sound_server);
 
   /* the default client */
   default_client = (AgsJackClient *) jack_server->default_client;
