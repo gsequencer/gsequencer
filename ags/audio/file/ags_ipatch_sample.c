@@ -502,9 +502,6 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
   AgsIpatchSample *ipatch_sample;
 
   guint total_frame_count;
-  guint copy_mode;
-  guint read_count;
-  guint i;
   
   GError *error;
   
@@ -522,100 +519,80 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
   if(ipatch_sample->offset + frame_count >= total_frame_count){
     frame_count = total_frame_count - ipatch_sample->offset;
   }
+  
+  error = NULL;
 
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						  ags_audio_buffer_util_format_from_soundcard(ipatch_sample->format));
-  
-  read_count = ipatch_sample->buffer_size;
-  
-  for(i = 0; i < frame_count; ){
-    if(i + ipatch_sample->buffer_size > frame_count){
-      read_count = frame_count - i;
+  switch(ipatch_sample->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
+				   ipatch_sample->offset,
+				   frame_count,
+				   dbuffer,
+				   IPATCH_SAMPLE_8BIT | IPATCH_SAMPLE_MONO,
+				   IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
+				   &error);
     }
-    
-    ags_audio_buffer_util_clear_buffer(ipatch_sample->buffer, 1,
-				       ipatch_sample->buffer_size, ipatch_sample->format);
-  
-    error = NULL;
-
-    switch(ipatch_sample->format){
-    case AGS_SOUNDCARD_SIGNED_8_BIT:
-      {
-	ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
-				     ipatch_sample->offset,
-				     read_count,
-				     ipatch_sample->buffer,
-				     IPATCH_SAMPLE_8BIT | IPATCH_SAMPLE_MONO,
-				     IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
-				     &error);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_16_BIT:
-      {
-	ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
-				     ipatch_sample->offset,
-				     read_count,
-				     ipatch_sample->buffer,
-				     IPATCH_SAMPLE_16BIT | IPATCH_SAMPLE_MONO,
-				     IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
-				     &error);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_24_BIT:
-      {
-	ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
-				     ipatch_sample->offset,
-				     read_count,
-				     ipatch_sample->buffer,
-				     IPATCH_SAMPLE_24BIT | IPATCH_SAMPLE_MONO,
-				     IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
-				     &error);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_32_BIT:
-      {
-	ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
-				     ipatch_sample->offset,
-				     read_count,
-				     ipatch_sample->buffer,
-				     IPATCH_SAMPLE_32BIT | IPATCH_SAMPLE_MONO,
-				     IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
-				     &error);
-      }
-      break;
-    case AGS_SOUNDCARD_FLOAT:
-      {
-	ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
-				     ipatch_sample->offset,
-				     read_count,
-				     ipatch_sample->buffer,
-				     IPATCH_SAMPLE_FLOAT | IPATCH_SAMPLE_MONO,
-				     IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
-				     &error);
-      }
-      break;
-    case AGS_SOUNDCARD_DOUBLE:
-      {
-	ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
-				     ipatch_sample->offset,
-				     read_count,
-				     ipatch_sample->buffer,
-				     IPATCH_SAMPLE_DOUBLE | IPATCH_SAMPLE_MONO,
-				     IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
-				     &error);
-      }
-      break;
-    default:
-      {
-	g_warning("unsupported format");
-      }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
+				   ipatch_sample->offset,
+				   frame_count,
+				   dbuffer,
+				   IPATCH_SAMPLE_16BIT | IPATCH_SAMPLE_MONO,
+				   IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
+				   &error);
     }
-
-    ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, 1, i,
-						ipatch_sample->buffer, 1, 0,
-						read_count, copy_mode);
-    
-    i += read_count;
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
+				   ipatch_sample->offset,
+				   frame_count,
+				   dbuffer,
+				   IPATCH_SAMPLE_24BIT | IPATCH_SAMPLE_MONO,
+				   IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
+				   &error);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
+				   ipatch_sample->offset,
+				   frame_count,
+				   dbuffer,
+				   IPATCH_SAMPLE_32BIT | IPATCH_SAMPLE_MONO,
+				   IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
+				   &error);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
+				   ipatch_sample->offset,
+				   frame_count,
+				   dbuffer,
+				   IPATCH_SAMPLE_FLOAT | IPATCH_SAMPLE_MONO,
+				   IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
+				   &error);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
+				   ipatch_sample->offset,
+				   frame_count,
+				   dbuffer,
+				   IPATCH_SAMPLE_DOUBLE | IPATCH_SAMPLE_MONO,
+				   IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
+				   &error);
+    }
+    break;
+  default:
+    {
+      g_warning("unsupported format");
+    }
   }
 
   ipatch_sample->offset += frame_count;

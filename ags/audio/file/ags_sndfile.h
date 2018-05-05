@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <sndfile.h>
 
 #define AGS_TYPE_SNDFILE                (ags_sndfile_get_type())
@@ -36,15 +37,13 @@ typedef struct _AgsSndfileClass AgsSndfileClass;
 
 /**
  * AgsSndfileFlags:
- * @AGS_SNDFILE_ITER_START: iter start
  * @AGS_SNDFILE_VIRTUAL: virtual IO
  * 
  * Enum values to control the behavior or indicate internal state of #AgsSndfile by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_SNDFILE_ITER_START    = 1,
-  AGS_SNDFILE_VIRTUAL       = 1 << 1,
+  AGS_SNDFILE_VIRTUAL       = 1,
 }AgsSndfileFlags;
 
 struct _AgsSndfile
@@ -53,14 +52,19 @@ struct _AgsSndfile
 
   guint flags;
 
-  SF_INFO *info;
-  SNDFILE *file;
+  guint buffer_size;
+  guint format;
+
+  guint offset;
+  
+  void *buffer;
 
   guchar *pointer;
   guchar *current;
   gsize length;
 
-  void *buffer;
+  SF_INFO *info;
+  SNDFILE *file;
 };
 
 struct _AgsSndfileClass
