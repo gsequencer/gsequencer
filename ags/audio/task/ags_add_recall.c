@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,8 @@
  */
 
 #include <ags/audio/task/ags_add_recall.h>
+
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -375,7 +377,7 @@ ags_add_recall_launch(AgsTask *task)
     pthread_mutex_unlock(application_mutex);
 
     /* check container */
-    if(g_list_find(AGS_AUDIO(add_recall->context)->container,
+    if(g_list_find(AGS_AUDIO(add_recall->context)->recall_container,
 		   add_recall->recall->container) == NULL){
       ags_audio_add_recall_container(AGS_AUDIO(add_recall->context),
 				     add_recall->recall->container);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,8 @@
  */
 
 #include <ags/audio/task/ags_add_audio_signal.h>
+
+#include <ags/libags.h>
 
 #include <ags/i18n.h>
 
@@ -520,7 +522,7 @@ ags_add_audio_signal_launch(AgsTask *task)
   ags_recycling_create_audio_signal_with_defaults(add_audio_signal->recycling,
 						  audio_signal,
 						  delay, attack);
-  audio_signal->stream_current = audio_signal->stream_beginning;
+  audio_signal->stream_current = audio_signal->stream;
   ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
   
   /*

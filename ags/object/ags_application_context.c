@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -92,6 +92,8 @@ static gpointer ags_application_context_parent_class = NULL;
 static guint application_context_signals[LAST_SIGNAL];
 
 AgsApplicationContext *ags_application_context = NULL;
+
+static pthread_mutex_t ags_application_context_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_application_context_get_type()
@@ -321,20 +323,20 @@ ags_application_context_init(AgsApplicationContext *application_context)
   application_context->domain = NULL;
   application_context->config = NULL;
 
-  application_context->mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  application_context->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
 
-  pthread_mutexattr_init(application_context->mutexattr);
-  pthread_mutexattr_settype(application_context->mutexattr,
+  pthread_mutexattr_init(application_context->obj_mutexattr);
+  pthread_mutexattr_settype(application_context->obj_mutexattr,
 			    PTHREAD_MUTEX_RECURSIVE);
 
 #ifdef __linux__
-  pthread_mutexattr_setprotocol(application_context->mutexattr,
+  pthread_mutexattr_setprotocol(application_context->obj_mutexattr,
 				PTHREAD_PRIO_INHERIT);
 #endif
 
   
-  application_context->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(application_context->mutex, application_context->mutexattr);
+  application_context->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(application_context->obj_mutex, application_context->obj_mutexattr);
 
   application_context->main_loop = NULL;
   application_context->task_thread = NULL;
@@ -570,11 +572,11 @@ ags_application_context_finalize(GObject *gobject)
   application_context = AGS_APPLICATION_CONTEXT(gobject);
 
   /* application mutex */
-  pthread_mutexattr_destroy(application_context->mutexattr);
-  free(application_context->mutexattr);
+  pthread_mutexattr_destroy(application_context->obj_mutexattr);
+  free(application_context->obj_mutexattr);
 
-  pthread_mutex_destroy(application_context->mutex);
-  free(application_context->mutex);
+  pthread_mutex_destroy(application_context->obj_mutex);
+  free(application_context->obj_mutex);
 
   /* log */
   if(application_context->log != NULL){
@@ -624,6 +626,21 @@ ags_application_context_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_application_context_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_application_context_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_application_context_get_class_mutex()
+{
+  return(&ags_application_context_class_mutex);
 }
 
 void

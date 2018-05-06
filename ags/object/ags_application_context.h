@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -79,6 +79,9 @@ struct _AgsApplicationContext
 
   guint flags;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+  
   gchar *version;
   gchar *build_id;
 
@@ -91,9 +94,6 @@ struct _AgsApplicationContext
   GList *sibling;
   
   AgsConfig *config;
-
-  pthread_mutexattr_t *mutexattr;
-  pthread_mutex_t *mutex;
   
   GObject *main_loop;
   GObject *autosave_thread;
@@ -121,6 +121,8 @@ struct _AgsApplicationContextClass
 };
 
 GType ags_application_context_get_type();
+
+pthread_mutex_t* ags_application_context_get_class_mutex();
 
 void ags_application_context_load_config(AgsApplicationContext *application_context);
 
