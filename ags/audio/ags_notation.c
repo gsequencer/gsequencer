@@ -1277,6 +1277,16 @@ ags_notation_find_region(AgsNotation *notation,
 void
 ags_notation_free_selection(AgsNotation *notation)
 {
+  GList *list;
+
+  list = notation->selection;
+
+  while(list != NULL){
+    AGS_NOTE(list->data)->flags &= (~AGS_NOTE_IS_SELECTED);
+
+    list = list->next;
+  }
+  
   g_list_free_full(notation->selection,
 		   g_object_unref);
   
@@ -1301,13 +1311,12 @@ ags_notation_add_all_to_selection(AgsNotation *notation)
   list = notation->notes;
   
   while(list != NULL){
-    AGS_NOTE(list->data)->flags |= AGS_NOTE_IS_SELECTED;
-    g_object_ref(G_OBJECT(list->data));
+    ags_notation_add_note(notation,
+			  list->data,
+			  TRUE);
     
     list = list->next;
   }
-
-  notation->selection = g_list_copy(notation->notes);
 }
 
 /**
@@ -1422,9 +1431,10 @@ ags_notation_add_region_to_selection(AgsNotation *notation,
     list = region;
 
     while(list != NULL){
-      AGS_NOTE(list->data)->flags |= AGS_NOTE_IS_SELECTED;
-      g_object_ref(G_OBJECT(list->data));
-
+      ags_notation_add_note(notation,
+			    list->data,
+			    TRUE);
+      
       list = list->next;
     }
 

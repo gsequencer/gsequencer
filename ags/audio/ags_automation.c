@@ -1366,22 +1366,20 @@ ags_automation_find_region(AgsAutomation *automation,
 void
 ags_automation_free_selection(AgsAutomation *automation)
 {
-  AgsAcceleration *acceleration;
   GList *list;
 
   list = automation->selection;
   
   while(list != NULL){
-    acceleration = AGS_ACCELERATION(list->data);
-    acceleration->flags &= (~AGS_ACCELERATION_IS_SELECTED);
-    g_object_unref(G_OBJECT(acceleration));
+    AGS_ACCELERATION(list->data)->flags &= (~AGS_ACCELERATION_IS_SELECTED);
     
     list = list->next;
   }
 
-  list = automation->selection;
+  g_list_free_full(automation->selection,
+		   g_object_unref);
+  
   automation->selection = NULL;
-  g_list_free(list);
 }
 
 /**
@@ -1482,8 +1480,9 @@ ags_automation_add_region_to_selection(AgsAutomation *automation,
     list = region;
 
     while(list != NULL){
-      AGS_ACCELERATION(list->data)->flags |= AGS_ACCELERATION_IS_SELECTED;
-      g_object_ref(G_OBJECT(list->data));
+      ags_automation_add_acceleration(automation,
+				      list->data,
+				      TRUE);
 
       list = list->next;
     }

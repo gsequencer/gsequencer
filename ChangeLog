@@ -2,6 +2,7 @@ ags (1.4.28)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed integrity check of ags_recall_lv2_load()
+	* fixed selection of notation region
 
 ags (1.4.27)
 

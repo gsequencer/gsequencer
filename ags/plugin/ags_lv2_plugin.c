@@ -2010,7 +2010,8 @@ ags_lv2_plugin_find_pname(GList *lv2_plugin,
   }
 
   while(lv2_plugin != NULL){
-    if(!g_ascii_strcasecmp(pname,
+    if(AGS_LV2_PLUGIN(lv2_plugin->data)->pname != NULL &&
+       !g_ascii_strcasecmp(pname,
 			   AGS_LV2_PLUGIN(lv2_plugin->data)->pname)){
       return(lv2_plugin);
     }
