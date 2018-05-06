@@ -2540,7 +2540,8 @@ ags_lv2_plugin_find_pname(GList *lv2_plugin,
     /* check pname */
     pthread_mutex_lock(base_plugin_mutex);
     
-    success = (!g_ascii_strcasecmp(pname,
+    success = (AGS_LV2_PLUGIN(lv2_plugin->data)->pname != NULL &&
+	       !g_ascii_strcasecmp(pname,
 				   AGS_LV2_PLUGIN(lv2_plugin->data)->pname)) ? TRUE: FALSE;
 
     pthread_mutex_unlock(base_plugin_mutex);
