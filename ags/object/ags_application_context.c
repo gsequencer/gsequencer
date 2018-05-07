@@ -45,10 +45,21 @@ void ags_application_context_get_property(GObject *gobject,
 					  guint prop_id,
 					  GValue *value,
 					  GParamSpec *param_spec);
-void ags_application_context_connect(AgsConnectable *connectable);
-void ags_application_context_disconnect(AgsConnectable *connectable);
 void ags_application_context_dispose(GObject *gobject);
 void ags_application_context_finalize(GObject *gobject);
+
+AgsUUID* ags_application_context_get_uuid(AgsConnectable *connectable);
+gboolean ags_application_context_has_resource(AgsConnectable *connectable);
+gboolean ags_application_context_is_ready(AgsConnectable *connectable);
+void ags_application_context_add_to_registry(AgsConnectable *connectable);
+void ags_application_context_remove_from_registry(AgsConnectable *connectable);
+xmlNode* ags_application_context_list_resource(AgsConnectable *connectable);
+xmlNode* ags_application_context_xml_compose(AgsConnectable *connectable);
+void ags_application_context_xml_parse(AgsConnectable *connectable,
+				       xmlNode *node);
+gboolean ags_application_context_is_connected(AgsConnectable *connectable);
+void ags_application_context_connect(AgsConnectable *connectable);
+void ags_application_context_disconnect(AgsConnectable *connectable);
 
 void ags_application_context_real_load_config(AgsApplicationContext *application_context);
 
@@ -155,7 +166,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    *
    * The assigned main-loop.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("main-loop",
 				   i18n_pspec("main-loop of application context"),
@@ -171,7 +182,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    *
    * The assigned config.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("config",
 				   i18n_pspec("config of application context"),
@@ -187,7 +198,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    *
    * The assigned file.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("file",
 				   i18n_pspec("file of application context"),
@@ -215,7 +226,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    *
    * The ::load-config notifies to load configuration.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   application_context_signals[LOAD_CONFIG] =
     g_signal_new("load-config",
@@ -233,7 +244,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * The ::prepare signal should be implemented to prepare
    * your application context.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   application_context_signals[PREPARE] =
     g_signal_new("prepare",
@@ -251,7 +262,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * The ::setup signal should be implemented to setup
    * your application context.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   application_context_signals[SETUP] =
     g_signal_new("setup",
@@ -269,7 +280,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * The ::register-types signal should be implemented to load
    * your types.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   application_context_signals[REGISTER_TYPES] =
     g_signal_new("register-types",
@@ -286,7 +297,7 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    *
    * The ::quit notifies to load configuration.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   application_context_signals[QUIT] =
     g_signal_new("quit",
@@ -301,8 +312,23 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
 void
 ags_application_context_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = ags_application_context_get_uuid;
+  connectable->has_resource = ags_application_context_has_resource;
+
+  connectable->is_ready = ags_application_context_is_ready;
+  connectable->add_to_registry = ags_application_context_add_to_registry;
+  connectable->remove_from_registry = ags_application_context_remove_from_registry;
+
+  connectable->list_resource = ags_application_context_list_resource;
+  connectable->xml_compose = ags_application_context_xml_compose;
+  connectable->xml_parse = ags_application_context_xml_parse;
+
+  connectable->is_connected = ags_application_context_is_connected;
   connectable->connect = ags_application_context_connect;
   connectable->disconnect = ags_application_context_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -312,16 +338,6 @@ ags_application_context_init(AgsApplicationContext *application_context)
   struct passwd *pw;
 
   application_context->flags = 0;
-
-  application_context->argc = 0;
-  application_context->argv = NULL;
-  
-  application_context->version = AGS_VERSION;
-  application_context->build_id = AGS_BUILD_ID;
-
-  application_context->log = NULL;  
-  application_context->domain = NULL;
-  application_context->config = NULL;
 
   application_context->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
 
@@ -337,6 +353,20 @@ ags_application_context_init(AgsApplicationContext *application_context)
   
   application_context->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(application_context->obj_mutex, application_context->obj_mutexattr);
+
+  /* uuid */
+  application_context->uuid = ags_uuid_alloc();
+  ags_uuid_generate(application_context->uuid);
+  
+  application_context->argc = 0;
+  application_context->argv = NULL;
+  
+  application_context->version = AGS_VERSION;
+  application_context->build_id = AGS_BUILD_ID;
+
+  application_context->log = NULL;  
+  application_context->domain = NULL;
+  application_context->config = NULL;
 
   application_context->main_loop = NULL;
   application_context->task_thread = NULL;
@@ -355,37 +385,29 @@ ags_application_context_set_property(GObject *gobject,
 {
   AgsApplicationContext *application_context;
 
+  pthread_mutex_t *application_context_mutex;
+  
   application_context = AGS_APPLICATION_CONTEXT(gobject);
 
+  /* get application context mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = application_context->obj_mutex;
+  
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  
   switch(prop_id){
-  case PROP_CONFIG:
-    {
-      AgsConfig *config;
-      
-      config = (AgsConfig *) g_value_get_object(value);
-
-      if(config == application_context->config){
-	return;
-      }
-
-      if(application_context->config != NULL){
-	g_object_unref(application_context->config);
-      }
-      
-      if(config != NULL){
-	g_object_ref(G_OBJECT(config));
-      }
-      
-      application_context->config = config;
-    }
-    break;
   case PROP_MAIN_LOOP:
     {
       GObject *main_loop;
       
       main_loop = (GObject *) g_value_get_object(value);
 
-      if(main_loop == application_context->main_loop){
+      pthread_mutex_lock(application_context_mutex);
+      
+      if(main_loop == application_context->main_loop){  
+	pthread_mutex_unlock(application_context_mutex);
+
 	return;
       }
 
@@ -398,6 +420,35 @@ ags_application_context_set_property(GObject *gobject,
       }
       
       application_context->main_loop = main_loop;
+  
+      pthread_mutex_unlock(application_context_mutex);
+    }
+    break;
+  case PROP_CONFIG:
+    {
+      AgsConfig *config;
+      
+      config = (AgsConfig *) g_value_get_object(value);
+
+      pthread_mutex_lock(application_context_mutex);
+      
+      if(config == application_context->config){  
+	pthread_mutex_unlock(application_context_mutex);
+
+	return;
+      }
+
+      if(application_context->config != NULL){
+	g_object_unref(application_context->config);
+      }
+      
+      if(config != NULL){
+	g_object_ref(G_OBJECT(config));
+      }
+      
+      application_context->config = config;
+  
+      pthread_mutex_unlock(application_context_mutex);
     }
     break;
   case PROP_FILE:
@@ -406,7 +457,11 @@ ags_application_context_set_property(GObject *gobject,
       
       file = (AgsFile *) g_value_get_object(value);
 
+      pthread_mutex_lock(application_context_mutex);
+
       if(file == application_context->file){
+	pthread_mutex_unlock(application_context_mutex);
+	
 	return;
       }
 
@@ -419,6 +474,8 @@ ags_application_context_set_property(GObject *gobject,
       }
       
       application_context->file = (AgsFile *) file;
+  
+      pthread_mutex_unlock(application_context_mutex);
     }
     break;
   default:
@@ -436,63 +493,49 @@ ags_application_context_get_property(GObject *gobject,
 {
   AgsApplicationContext *application_context;
 
+  pthread_mutex_t *application_context_mutex;
+  
   application_context = AGS_APPLICATION_CONTEXT(gobject);
 
+  /* get application context mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = application_context->obj_mutex;
+  
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+
   switch(prop_id){
-  case PROP_CONFIG:
-    {
-      g_value_set_object(value, application_context->config);
-    }
-    break;
   case PROP_MAIN_LOOP:
     {
+      pthread_mutex_lock(application_context_mutex);
+
       g_value_set_object(value, application_context->main_loop);
+  
+      pthread_mutex_unlock(application_context_mutex);
+    }
+    break;
+  case PROP_CONFIG:
+    {
+      pthread_mutex_lock(application_context_mutex);
+
+      g_value_set_object(value, application_context->config);
+  
+      pthread_mutex_unlock(application_context_mutex);
     }
     break;
   case PROP_FILE:
     {
+      pthread_mutex_lock(application_context_mutex);
+
       g_value_set_object(value, application_context->file);
+  
+      pthread_mutex_unlock(application_context_mutex);
     }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_application_context_connect(AgsConnectable *connectable)
-{
-  AgsApplicationContext *application_context;
-
-  application_context = AGS_APPLICATION_CONTEXT(connectable);
-
-  if((AGS_APPLICATION_CONTEXT_CONNECTED & (application_context->flags)) != 0)
-    return;
-
-  application_context->flags |= AGS_APPLICATION_CONTEXT_CONNECTED;
-
-  if((AGS_APPLICATION_CONTEXT_DEFAULT & (application_context->flags)) != 0){
-    GList *list;
-
-    list = application_context->sibling;
-
-    while(list != NULL){
-      if(application_context != list->data){
-	ags_connectable_connect(AGS_CONNECTABLE(list->data));
-      }
-
-      list = list->next;
-    }
-  }
-
-  /* note main loop won't connect here */
-}
-
-void
-ags_application_context_disconnect(AgsConnectable *connectable)
-{
-  /* empty */
 }
 
 void
@@ -628,6 +671,183 @@ ags_application_context_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_application_context_parent_class)->finalize(gobject);
 }
 
+AgsUUID*
+ags_application_context_get_uuid(AgsConnectable *connectable)
+{
+  AgsApplicationContext *application_context;
+  
+  AgsUUID *ptr;
+
+  pthread_mutex_t *application_context_mutex;
+
+  application_context = AGS_APPLICATION_CONTEXT(connectable);
+
+  /* get application_context mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = application_context->obj_mutex;
+  
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+
+  /* get UUID */
+  pthread_mutex_lock(application_context_mutex);
+
+  ptr = application_context->uuid;
+
+  pthread_mutex_unlock(application_context_mutex);
+  
+  return(ptr);
+}
+
+gboolean
+ags_application_context_has_resource(AgsConnectable *connectable)
+{
+  return(TRUE);
+}
+
+gboolean
+ags_application_context_is_ready(AgsConnectable *connectable)
+{
+  AgsApplicationContext *application_context;
+  
+  gboolean is_ready;
+
+  pthread_mutex_t *application_context_mutex;
+
+  application_context = AGS_APPLICATION_CONTEXT(connectable);
+
+  /* get application_context mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = application_context->obj_mutex;
+  
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+
+  /* check is added */
+  pthread_mutex_lock(application_context_mutex);
+
+  is_ready = (((AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY & (application_context->flags)) != 0) ? TRUE: FALSE);
+
+  pthread_mutex_unlock(application_context_mutex);
+  
+  return(is_ready);
+}
+
+void
+ags_application_context_add_to_registry(AgsConnectable *connectable)
+{
+  AgsApplicationContext *application_context;
+  
+  if(ags_connectable_is_ready(connectable)){
+    return;
+  }
+  
+  application_context = AGS_APPLICATION_CONTEXT(connectable);
+
+  ags_application_context_set_flags(application_context, AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY);
+}
+
+void
+ags_application_context_remove_from_registry(AgsConnectable *connectable)
+{
+  AgsApplicationContext *application_context;
+
+  if(!ags_connectable_is_ready(connectable)){
+    return;
+  }
+
+  application_context = AGS_APPLICATION_CONTEXT(connectable);
+
+  ags_application_context_unset_flags(application_context, AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY);
+}
+
+xmlNode*
+ags_application_context_list_resource(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+xmlNode*
+ags_application_context_xml_compose(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+void
+ags_application_context_xml_parse(AgsConnectable *connectable,
+				  xmlNode *node)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_application_context_is_connected(AgsConnectable *connectable)
+{
+  AgsApplicationContext *application_context;
+  
+  gboolean is_connected;
+
+  pthread_mutex_t *application_context_mutex;
+
+  application_context = AGS_APPLICATION_CONTEXT(connectable);
+
+  /* get application_context mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = application_context->obj_mutex;
+  
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+
+  /* check is connected */
+  pthread_mutex_lock(application_context_mutex);
+
+  is_connected = (((AGS_APPLICATION_CONTEXT_CONNECTED & (application_context->flags)) != 0) ? TRUE: FALSE);
+  
+  pthread_mutex_unlock(application_context_mutex);
+  
+  return(is_connected);
+}
+
+void
+ags_application_context_connect(AgsConnectable *connectable)
+{
+  AgsApplicationContext *application_context;
+
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  application_context = AGS_APPLICATION_CONTEXT(connectable);
+
+  ags_application_context_set_flags(application_context, AGS_APPLICATION_CONTEXT_CONNECTED);
+}
+
+void
+ags_application_context_disconnect(AgsConnectable *connectable)
+{
+  AgsApplicationContext *application_context;
+
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  application_context = AGS_APPLICATION_CONTEXT(connectable);
+
+  ags_application_context_unset_flags(application_context, AGS_APPLICATION_CONTEXT_CONNECTED);
+}
+
 /**
  * ags_application_context_get_class_mutex:
  * 
@@ -641,6 +861,115 @@ pthread_mutex_t*
 ags_application_context_get_class_mutex()
 {
   return(&ags_application_context_class_mutex);
+}
+
+/**
+ * ags_application_context_test_flags:
+ * @application_context: the #AgsApplicationContext
+ * @flags: the flags
+ *
+ * Test @flags to be set on @application_context.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_application_context_test_flags(AgsApplicationContext *application_context, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *application_context_mutex;
+
+  if(!AGS_IS_APPLICATION_CONTEXT(application_context)){
+    return(FALSE);
+  }
+
+  /* get application_context mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = application_context->obj_mutex;
+  
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(application_context_mutex);
+
+  retval = (flags & (application_context->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(application_context_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_application_context_set_flags:
+ * @application_context: the #AgsApplicationContext
+ * @flags: see enum AgsApplicationContextFlags
+ *
+ * Enable a feature of #AgsApplicationContext.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_application_context_set_flags(AgsApplicationContext *application_context, guint flags)
+{
+  guint application_context_flags;
+  
+  pthread_mutex_t *application_context_mutex;
+
+  if(!AGS_IS_APPLICATION_CONTEXT(application_context)){
+    return;
+  }
+
+  /* get application_context mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = application_context->obj_mutex;
+  
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(application_context_mutex);
+
+  application_context->flags |= flags;
+  
+  pthread_mutex_unlock(application_context_mutex);
+}
+    
+/**
+ * ags_application_context_unset_flags:
+ * @application_context: the #AgsApplicationContext
+ * @flags: see enum AgsApplicationContextFlags
+ *
+ * Disable a feature of AgsApplicationContext.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_application_context_unset_flags(AgsApplicationContext *application_context, guint flags)
+{
+  guint application_context_flags;
+  
+  pthread_mutex_t *application_context_mutex;
+
+  if(!AGS_IS_APPLICATION_CONTEXT(application_context)){
+    return;
+  }
+
+  /* get application_context mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = application_context->obj_mutex;
+  
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+
+  /* unset flags */
+  pthread_mutex_lock(application_context_mutex);
+
+  application_context->flags &= (~flags);
+  
+  pthread_mutex_unlock(application_context_mutex);
 }
 
 void

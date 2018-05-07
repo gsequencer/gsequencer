@@ -2409,7 +2409,8 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
 		     NULL);
 	
 	if(!match_timestamp ||
-	   x_val < ags_timestamp_get_ags_offset(timestamp) + AGS_AUTOMATION_DEFAULT_OFFSET){
+	   (x_val >= ags_timestamp_get_ags_offset(timestamp) &&
+	    x_val < ags_timestamp_get_ags_offset(timestamp) + AGS_AUTOMATION_DEFAULT_OFFSET)){
 	  acceleration = ags_acceleration_new();
 	  
 	  acceleration->x = x_val;

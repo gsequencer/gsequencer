@@ -1987,8 +1987,9 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 		       "timestamp", &timestamp,
 		       NULL);
 
-	  if(!match_timestamp ||
-	     x0_val < ags_timestamp_get_ags_offset(timestamp) + AGS_NOTATION_DEFAULT_OFFSET){
+	  if(!match_timestamp || 
+	     (x0_val >= ags_timestamp_get_ags_offset(timestamp) &&
+	      x0_val < ags_timestamp_get_ags_offset(timestamp) + AGS_NOTATION_DEFAULT_OFFSET)){
 	    note = ags_note_new();
 
 	    note->x[0] = x0_val;

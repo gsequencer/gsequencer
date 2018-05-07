@@ -178,10 +178,6 @@ struct _AgsSoundcardInterface
 		   gboolean *do_loop);
 
   guint (*get_loop_offset)(AgsSoundcard *soundcard);
-
-  void (*set_audio)(AgsSoundcard *soundcard,
-		    GList *audio);
-  GList* (*get_audio)(AgsSoundcard *soundcard);
 };
 
 GType ags_soundcard_get_type();
@@ -277,9 +273,5 @@ void ags_soundcard_get_loop(AgsSoundcard *soundcard,
 			    gboolean *do_loop);
 
 guint ags_soundcard_get_loop_offset(AgsSoundcard *soundcard);
-
-void ags_soundcard_set_audio(AgsSoundcard *soundcard,
-			     GList *audio);
-GList* ags_soundcard_get_audio(AgsSoundcard *soundcard);
 
 #endif /*__AGS_SOUNDCARD_H__*/

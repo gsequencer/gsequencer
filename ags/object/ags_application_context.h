@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/lib/ags_uuid.h>
+
 #include <ags/object/ags_config.h>
 
 #include <ags/file/ags_file.h>
@@ -65,12 +67,12 @@ typedef struct _AgsApplicationContextClass AgsApplicationContextClass;
  */
 typedef enum{
   AGS_APPLICATION_CONTEXT_DEFAULT            = 1,
-  AGS_APPLICATION_CONTEXT_REGISTER_TYPES     = 1 << 1,
-  AGS_APPLICATION_CONTEXT_ADD_TO_REGISTRY    = 1 << 2,
-  AGS_APPLICATION_CONTEXT_CONNECT            = 1 << 3,
-  AGS_APPLICATION_CONTEXT_TYPES_REGISTERED   = 1 << 4,
-  AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY  = 1 << 5,
-  AGS_APPLICATION_CONTEXT_CONNECTED          = 1 << 6,
+  AGS_APPLICATION_CONTEXT_REGISTER_TYPES     = 1 <<  1,
+  AGS_APPLICATION_CONTEXT_ADD_TO_REGISTRY    = 1 <<  2,
+  AGS_APPLICATION_CONTEXT_CONNECT            = 1 <<  3,
+  AGS_APPLICATION_CONTEXT_TYPES_REGISTERED   = 1 <<  4,
+  AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY  = 1 <<  5,
+  AGS_APPLICATION_CONTEXT_CONNECTED          = 1 <<  6,
 }AgsApplicationContextFlags;
 
 struct _AgsApplicationContext
@@ -81,6 +83,8 @@ struct _AgsApplicationContext
 
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
+
+  AgsUUID *uuid;
   
   gchar *version;
   gchar *build_id;
@@ -123,6 +127,10 @@ struct _AgsApplicationContextClass
 GType ags_application_context_get_type();
 
 pthread_mutex_t* ags_application_context_get_class_mutex();
+
+gboolean ags_application_context_test_flags(AgsApplicationContext *application_context, guint flags);
+void ags_application_context_set_flags(AgsApplicationContext *application_context, guint flags);
+void ags_application_context_unset_flags(AgsApplicationContext *application_context, guint flags);
 
 void ags_application_context_load_config(AgsApplicationContext *application_context);
 
