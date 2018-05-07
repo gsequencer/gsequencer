@@ -234,7 +234,7 @@ ags_sound_resource_get_presets(AgsSoundResource *sound_resource,
  * ags_sound_resource_read:
  * @sound_resource: the #AgsSoundResource
  * @dbuffer: the destination buffer
- * @daudio_channels: the audio channel of destination
+ * @audio_channel: the audio channel
  * @frame_count: the frame count to read
  * @format: the format to read
  * 
@@ -247,7 +247,8 @@ ags_sound_resource_get_presets(AgsSoundResource *sound_resource,
  */
 guint
 ags_sound_resource_read(AgsSoundResource *sound_resource,
-			void *dbuffer, guint daudio_channels,
+			void *dbuffer,
+			guint audio_channel,
 			guint frame_count, guint format)
 {
   AgsSoundResourceInterface *sound_resource_interface;
@@ -270,7 +271,7 @@ ags_sound_resource_read(AgsSoundResource *sound_resource,
  * ags_sound_resource_write:
  * @sound_resource: the #AgsSoundResource
  * @sbuffer: the source buffer
- * @saudio_channels: the audio channel source
+ * @saudio_channel: the audio channel
  * @frame_count: the frame count to write
  * @format: the format to write
  * 
@@ -281,7 +282,8 @@ ags_sound_resource_read(AgsSoundResource *sound_resource,
  */
 void
 ags_sound_resource_write(AgsSoundResource *sound_resource,
-			 void *sbuffer, guint saudio_channels,
+			 void *sbuffer,
+			 guint audio_channel,
 			 guint frame_count, guint format)
 {
   AgsSoundResourceInterface *sound_resource_interface;
