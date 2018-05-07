@@ -647,6 +647,8 @@ ags_notation_editor_add_note(AgsNotationEditor *notation_editor,
       }else{
 	notation = ags_notation_new(machine->audio,
 				    i);
+	notation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+	
 	machine->audio->notation = ags_notation_add(machine->audio->notation,
 						    notation);
       }

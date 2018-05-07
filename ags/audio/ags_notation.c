@@ -1891,7 +1891,8 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 	  
 	  /* add note */
 	  if(!match_timestamp ||
-	     x0_val < notation->timestamp->timer.ags_offset.offset + AGS_NOTATION_DEFAULT_OFFSET){
+	     (x0_val >= notation->timestamp->timer.ags_offset.offset &&
+	      x0_val < notation->timestamp->timer.ags_offset.offset + AGS_NOTATION_DEFAULT_OFFSET)){
 	    note = ags_note_new();
 
 	    note->x[0] = x0_val;

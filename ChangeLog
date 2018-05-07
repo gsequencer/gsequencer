@@ -1,3 +1,9 @@
+ags (1.4.29)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed timestamp offset clipboard insert
+	* fixed missing timestamp of notation
+
 ags (1.4.28)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

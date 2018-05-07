@@ -1855,7 +1855,8 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
 	
 	/* add acceleration */
 	if(!match_timestamp ||
-	   x_val < automation->timestamp->timer.ags_offset.offset + AGS_AUTOMATION_DEFAULT_OFFSET){
+	   (x_val >= automation->timestamp->timer.ags_offset.offset &&
+	    x_val < automation->timestamp->timer.ags_offset.offset + AGS_AUTOMATION_DEFAULT_OFFSET)){
 	  acceleration = ags_acceleration_new();
 	  
 	  acceleration->x = x_val;
