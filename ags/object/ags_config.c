@@ -848,14 +848,20 @@ ags_config_clear(AgsConfig *config)
  *
  * Returns: the config instance
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsConfig*
 ags_config_get_instance()
 {
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  pthread_mutex_lock(&mutex);
+
   if(ags_config == NULL){
     ags_config = ags_config_new(NULL);
   }
+
+  pthread_mutex_unlock(&mutex);
 
   return(ags_config);
 }

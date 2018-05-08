@@ -95,7 +95,6 @@ struct _AgsApplicationContext
   GObject *log;
 
   gchar *domain;
-  GList *sibling;
   
   AgsConfig *config;
   
@@ -138,14 +137,6 @@ void ags_application_context_prepare(AgsApplicationContext *application_context)
 void ags_application_context_setup(AgsApplicationContext *application_context);
 
 void ags_application_context_register_types(AgsApplicationContext *application_context);
-
-void ags_application_context_add_sibling(AgsApplicationContext *application_context,
-					 AgsApplicationContext *sibling);
-void ags_application_context_remove_sibling(AgsApplicationContext *application_context,
-					    AgsApplicationContext *sibling);
-
-AgsApplicationContext* ags_application_context_find_default(GList *application_context);
-GList* ags_application_context_find_main_loop(GList *application_context);
 
 void ags_application_context_quit(AgsApplicationContext *application_context);
 

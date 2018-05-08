@@ -975,18 +975,6 @@ ags_application_context_unset_flags(AgsApplicationContext *application_context, 
 void
 ags_application_context_real_load_config(AgsApplicationContext *application_context)
 {
-  AgsConfig *config;
-
-  if(application_context == NULL){
-    return;
-  }
-
-  config = application_context->config;
-
-  if(config == NULL){
-    return;
-  }
-
   //TODO:JK: implement me
 }
 
@@ -996,7 +984,7 @@ ags_application_context_real_load_config(AgsApplicationContext *application_cont
  *
  * Signal to load and parse configuration.
  *
- * Since 0.7.0
+ * Since: 2.0.0
  */
 void
 ags_application_context_load_config(AgsApplicationContext *application_context)
@@ -1016,6 +1004,14 @@ ags_application_context_real_prepare(AgsApplicationContext *application_context)
   ags_log_add_message(ags_log_get_instance(), "prepare Advanced Gtk+ Sequencer");
 }
 
+/**
+ * ags_application_context_prepare:
+ * @application_context: the #AgsApplicationContext
+ *
+ * Prepare @application_context.
+ *
+ * Since: 2.0.0
+ */
 void
 ags_application_context_prepare(AgsApplicationContext *application_context)
 {
@@ -1034,6 +1030,14 @@ ags_application_context_real_setup(AgsApplicationContext *application_context)
   ags_log_add_message(ags_log_get_instance(), "setup Advanced Gtk+ Sequencer");
 }
 
+/**
+ * ags_application_context_setup:
+ * @application_context: the #AgsApplicationContext
+ *
+ * Setup @application_context.
+ *
+ * Since: 2.0.0
+ */
 void
 ags_application_context_setup(AgsApplicationContext *application_context)
 {
@@ -1058,7 +1062,7 @@ ags_application_context_real_register_types(AgsApplicationContext *application_c
  *
  * Notification to register your types.
  *
- * Since 0.7.0
+ * Since: 2.0.0
  */
 void
 ags_application_context_register_types(AgsApplicationContext *application_context)
@@ -1073,66 +1077,6 @@ ags_application_context_register_types(AgsApplicationContext *application_contex
 }
 
 void
-ags_application_context_add_sibling(AgsApplicationContext *application_context,
-				    AgsApplicationContext *sibling)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_application_context_remove_sibling(AgsApplicationContext *application_context,
-				       AgsApplicationContext *sibling)
-{
-  //TODO:JK: implement me
-}
-
-/**
- * ags_application_context_find_default:
- * @application_context: the #GList-struct containing #AgsApplicationContext
- *
- * Find default context in @application_context #GList-struct containing
- * #AgsApplicationContext.
- *
- * Since: 1.0.0
- */
-AgsApplicationContext*
-ags_application_context_find_default(GList *application_context)
-{
-  while(application_context != NULL){
-    if((AGS_APPLICATION_CONTEXT_DEFAULT & (AGS_APPLICATION_CONTEXT(application_context->data)->flags)) != 0){
-      return(application_context->data);
-    }
-    
-    application_context = application_context->next;
-  }
-
-  return(NULL);
-}
-
-/**
- * ags_application_context_find_main_loop:
- * @application_context: the #GList-struct containing #AgsApplicationContext
- *
- * Find :main-loop in @application_context #GList-struct containing
- * #AgsApplicationContext.
- *
- * Since: 1.0.0
- */
-GList*
-ags_application_context_find_main_loop(GList *application_context)
-{
-  while(application_context != NULL){
-    if(AGS_APPLICATION_CONTEXT(application_context->data)->main_loop != NULL){
-      break;
-    }
-    
-    application_context = application_context->next;
-  }
-  
-  return(application_context);
-}
-
-void
 ags_application_context_real_quit(AgsApplicationContext *application_context)
 {
   //TODO:JK: enhance me
@@ -1141,11 +1085,11 @@ ags_application_context_real_quit(AgsApplicationContext *application_context)
 
 /**
  * ags_application_context_quit:
- * @application_context: the context to quit
+ * @application_context: the #AgsApplicationContext
  *
  * Calls exit()
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_application_context_quit(AgsApplicationContext *application_context)
@@ -1165,16 +1109,22 @@ ags_application_context_quit(AgsApplicationContext *application_context)
  *
  * Returns: the #AgsApplicationContext instance
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsApplicationContext*
 ags_application_context_get_instance()
 {
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  pthread_mutex_lock(&mutex);
+  
   if(ags_application_context == NULL){
     ags_application_context = ags_application_context_new(NULL,
 							  NULL);
   }
 
+  pthread_mutex_unlock(&mutex);
+  
   return(ags_application_context);
 }
 
@@ -1187,7 +1137,7 @@ ags_application_context_get_instance()
  * 
  * Returns: the #AgsApplicationContext instance
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsApplicationContext*
 ags_application_context_new(GObject *main_loop,
