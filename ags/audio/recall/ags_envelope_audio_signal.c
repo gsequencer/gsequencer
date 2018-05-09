@@ -513,7 +513,6 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 				       current_buffer_size,
 				       current_volume,
 				       current_ratio);
-	g_message("--- %f %f", current_volume, current_ratio);
 	
 	current_frame += current_buffer_size;
       }
