@@ -32,6 +32,48 @@
  */
 
 /**
+ * ags_soundcard_helper_config_get_dsp_channels:
+ * @config: the #AgsConfig
+ * 
+ * Get dsp channels count.
+ * 
+ * Returns: the count of dsp channels
+ * 
+ * Since: 2.0.0
+ */
+guint
+ags_soundcard_helper_config_get_dsp_channels(AgsConfig *config)
+{
+  gchar *str;
+
+  guint dsp_channels;
+
+  if(!AGS_IS_CONFIG(config)){
+    return(AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS);
+  }
+  
+  /* buffer-size */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_SOUNDCARD,
+			     "buffer-size");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_SOUNDCARD_0,
+			       "buffer-size");
+  }
+  
+  if(str != NULL){
+    dsp_channels = g_ascii_strtoull(str,
+				   NULL,
+				   10);
+    free(str);
+  }else{
+    dsp_channels = AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS;
+  }
+}
+
+/**
  * ags_soundcard_helper_config_get_pcm_channels:
  * @config: the #AgsConfig
  * 

@@ -169,12 +169,28 @@ ags_application_context_class_init(AgsApplicationContextClass *application_conte
    * Since: 2.0.0
    */
   param_spec = g_param_spec_object("main-loop",
-				   i18n_pspec("main-loop of application context"),
-				   i18n_pspec("The main-loop what application context is running in"),
+				   i18n_pspec("main loop of application context"),
+				   i18n_pspec("The main loop of application context running"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MAIN_LOOP,
+				  param_spec);
+
+  /**
+   * AgsApplicationContext:task-thread:
+   *
+   * The assigned task thread.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("task-thread",
+				   i18n_pspec("task thread"),
+				   i18n_pspec("The task thread"),
+				   G_TYPE_OBJECT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TASK_THREAD,
 				  param_spec);
 
   /**
@@ -424,6 +440,33 @@ ags_application_context_set_property(GObject *gobject,
       pthread_mutex_unlock(application_context_mutex);
     }
     break;
+  case PROP_TASK_THREAD:
+    {
+      GObject *task_thread;
+      
+      task_thread = (GObject *) g_value_get_object(value);
+
+      pthread_mutex_lock(application_context_mutex);
+      
+      if(task_thread == application_context->task_thread){  
+	pthread_mutex_unlock(application_context_mutex);
+
+	return;
+      }
+
+      if(application_context->task_thread != NULL){
+	g_object_unref(application_context->task_thread);
+      }
+      
+      if(task_thread != NULL){
+	g_object_ref(G_OBJECT(task_thread));
+      }
+      
+      application_context->task_thread = task_thread;
+  
+      pthread_mutex_unlock(application_context_mutex);
+    }
+    break;
   case PROP_CONFIG:
     {
       AgsConfig *config;
@@ -510,6 +553,15 @@ ags_application_context_get_property(GObject *gobject,
       pthread_mutex_lock(application_context_mutex);
 
       g_value_set_object(value, application_context->main_loop);
+  
+      pthread_mutex_unlock(application_context_mutex);
+    }
+    break;
+  case PROP_TASK_THREAD:
+    {
+      pthread_mutex_lock(application_context_mutex);
+
+      g_value_set_object(value, application_context->task_thread);
   
       pthread_mutex_unlock(application_context_mutex);
     }

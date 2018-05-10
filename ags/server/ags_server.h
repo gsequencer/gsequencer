@@ -41,6 +41,8 @@
 
 #include <pthread.h>
 
+#include <ags/lib/ags_uuid.h>
+
 #define AGS_TYPE_SERVER                (ags_server_get_type())
 #define AGS_SERVER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SERVER, AgsServer))
 #define AGS_SERVER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_SERVER, AgsServerClass))
@@ -56,6 +58,7 @@ typedef struct _AgsServerInfo AgsServerInfo;
 
 /**
  * AgsServerFlags:
+ * @AGS_SERVER_ADDED_TO_REGISTRY: indicates the application context was added to #AgsRegistry
  * @AGS_SERVER_CONNECTED: the server was connected by #AgsConnectable::connect()
  * @AGS_SERVER_STARTED: the server was started
  * @AGS_SERVER_RUNNING: the server is up and running
@@ -129,7 +132,7 @@ gboolean ags_server_test_flags(AgsServer *server, guint flags);
 void ags_server_set_flags(AgsServer *server, guint flags);
 void ags_server_unset_flags(AgsServer *server, guint flags);
 
-AgsServerInfo* ags_server_info_alloc(gchar *server_name);
+AgsServerInfo* ags_server_info_alloc(gchar *server_name, gchar *uuid);
 
 void ags_server_start(AgsServer *server);
 

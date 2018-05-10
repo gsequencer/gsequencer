@@ -108,8 +108,12 @@ struct _AgsDevout
 
   guint flags;
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  GObject *application_context;
+
+  AgsUUID *uuid;
 
   guint dsp_channels;
   guint pcm_channels;
@@ -169,13 +173,8 @@ struct _AgsDevout
 #endif
   }out;
 
-  GObject *application_context;
-  pthread_mutex_t *application_mutex;
-
   GList *poll_fd;
   GObject *notify_soundcard;
-  
-  GList *audio;
 };
 
 struct _AgsDevoutClass
@@ -186,6 +185,12 @@ struct _AgsDevoutClass
 GType ags_devout_get_type();
 
 GQuark ags_devout_error_quark();
+
+pthread_mutex_t* ags_devout_get_class_mutex();
+
+gboolean ags_devout_test_flags(AgsDevout *devout, guint flags);
+void ags_devout_set_flags(AgsDevout *devout, guint flags);
+void ags_devout_unset_flags(AgsDevout *devout, guint flags);
 
 void ags_devout_switch_buffer_flag(AgsDevout *devout);
 

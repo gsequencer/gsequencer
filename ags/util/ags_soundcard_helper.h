@@ -25,6 +25,7 @@
 
 #include <ags/object/ags_config.h>
 
+guint ags_soundcard_helper_config_get_dsp_channels(AgsConfig *config);
 guint ags_soundcard_helper_config_get_pcm_channels(AgsConfig *config);
 
 gdouble ags_soundcard_helper_config_get_samplerate(AgsConfig *config);
