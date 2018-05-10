@@ -468,9 +468,10 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
   }else{
     if(audio_signal->stream_current == NULL ||
        (count_beats_audio_run == NULL ||
-	((AGS_NOTE(recall_lv2_run->note->data)->x[1] <= count_beats_audio_run->notation_counter &&
-	  (AGS_NOTE_FEED & (AGS_NOTE(recall_lv2_run->note->data)->flags)) == 0) ||
-	 AGS_NOTE(recall_lv2_run->note->data)->x[0] > count_beats_audio_run->notation_counter))){
+	(recall_lv2_run->note != NULL &&
+	 (((AGS_NOTE(recall_lv2_run->note->data)->x[1] <= count_beats_audio_run->notation_counter &&
+	    (AGS_NOTE_FEED & (AGS_NOTE(recall_lv2_run->note->data)->flags)) == 0) ||
+	   AGS_NOTE(recall_lv2_run->note->data)->x[0] > count_beats_audio_run->notation_counter))))){
       //    g_message("done");
       /* deactivate */
       if(recall_lv2->plugin_descriptor->deactivate != NULL){

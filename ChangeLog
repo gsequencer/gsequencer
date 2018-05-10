@@ -1,3 +1,9 @@
+ags (1.4.30)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wrong if statement in ags_route_dssi_audio_run.c causing DSSI silence
+	* fixed potential SIGSEGV related to AgsRecyclingContext wrong ref count
+
 ags (1.4.29)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

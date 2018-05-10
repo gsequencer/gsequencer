@@ -211,7 +211,7 @@ ags_recycling_context_set_property(GObject *gobject,
 					recycling_context);
       }
 
-      recycling_context->parent = parent;
+      //      recycling_context->parent = parent;
     }
     break;
   case PROP_LENGTH:
@@ -293,7 +293,7 @@ ags_recycling_context_dispose(GObject *gobject)
 {
   AgsRecyclingContext *recycling_context;
 
-  GList *list, *list_next;
+  GList *list, *list_start;
 
   guint i;
   
@@ -302,11 +302,15 @@ ags_recycling_context_dispose(GObject *gobject)
   /* parent */
   if(recycling_context->parent != NULL){
     g_object_unref(recycling_context->parent);
+
+    recycling_context->parent = NULL;
   }
   
   /* recall id */
   if(recycling_context->recall_id != NULL){
     g_object_unref(recycling_context->recall_id);
+
+    recycling_context->recall_id = NULL;
   }
 
   /* recycling */
@@ -322,16 +326,17 @@ ags_recycling_context_dispose(GObject *gobject)
   }
   
   /* children */
-  list = recycling_context->children;
+  list =
+    list_start = g_list_copy(recycling_context->children);
 
   while(list != NULL){
-    list_next = list->next;
-    
     ags_recycling_context_remove_child(recycling_context,
 				       list->data);
     
-    list = list_next;
+    list = list->next;
   }
+
+  g_list_free(list_start);
   
   /* call parent */
   G_OBJECT_CLASS(ags_recycling_context_parent_class)->dispose(gobject);
@@ -365,10 +370,14 @@ ags_recycling_context_finalize(GObject *gobject)
     }
   
     free(recycling_context->recycling);
+
+    recycling_context->recycling = NULL;
+    recycling_context->length = 0;
   }
   
   /* children */
-  g_list_free(recycling_context->children);
+  g_list_free_full(recycling_context->children,
+		   g_object_unref);
 
   /* call parent */
   G_OBJECT_CLASS(ags_recycling_context_parent_class)->finalize(gobject);
@@ -724,23 +733,31 @@ ags_recycling_context_add_child(AgsRecyclingContext *parent,
     return;
   }
 
-  g_object_ref(G_OBJECT(parent));
-  g_object_ref(G_OBJECT(child));
-
-  /* set parent */
-  pthread_mutex_lock(child->mutex);
-
-  child->parent = parent;
-
-  pthread_mutex_unlock(child->mutex);
-
-  /* add child */
   pthread_mutex_lock(parent->mutex);
+  
+  if(g_list_find(parent->children, child) == NULL){
+    pthread_mutex_unlock(parent->mutex);
 
-  parent->children = g_list_append(parent->children,
-				   child);
+    g_object_ref(G_OBJECT(parent));
+    g_object_ref(G_OBJECT(child));
 
-  pthread_mutex_unlock(parent->mutex);
+    /* set parent */
+    pthread_mutex_lock(child->mutex);
+
+    child->parent = parent;
+
+    pthread_mutex_unlock(child->mutex);
+
+    /* add child */
+    pthread_mutex_lock(parent->mutex);
+
+    parent->children = g_list_append(parent->children,
+				     child);
+
+    pthread_mutex_unlock(parent->mutex);
+  }else{
+    pthread_mutex_unlock(parent->mutex);
+  }
 }
 
 /**
@@ -761,23 +778,31 @@ ags_recycling_context_remove_child(AgsRecyclingContext *parent,
     return;
   }
 
-  /* unset parent */
-  pthread_mutex_lock(child->mutex);
-
-  child->parent = NULL;
-
-  pthread_mutex_unlock(child->mutex);
-
-  /* remove child */
   pthread_mutex_lock(parent->mutex);
+  
+  if(g_list_find(parent->children, child) != NULL){
+    pthread_mutex_unlock(parent->mutex);
+    
+    /* unset parent */
+    pthread_mutex_lock(child->mutex);
 
-  parent->children = g_list_remove(parent->children,
-				   child);
+    child->parent = NULL;
 
-  pthread_mutex_unlock(parent->mutex);
+    pthread_mutex_unlock(child->mutex);
 
-  g_object_unref(G_OBJECT(parent));
-  g_object_unref(G_OBJECT(child));
+    /* remove child */
+    pthread_mutex_lock(parent->mutex);
+
+    parent->children = g_list_remove(parent->children,
+				     child);
+
+    pthread_mutex_unlock(parent->mutex);
+
+    g_object_unref(G_OBJECT(parent));
+    g_object_unref(G_OBJECT(child));
+  }else{
+    pthread_mutex_unlock(parent->mutex);
+  }
 }
 
 /**
@@ -853,6 +878,8 @@ ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
 
   AgsMutexManager *mutex_manager;
 
+  GList *list;
+  
   gint new_length;
   gint first_index, last_index;
   guint i;
@@ -1086,9 +1113,19 @@ ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
   }
   
   pthread_mutex_lock(recycling_context->mutex);
+
+  list = 
+    new_recycling_context->children = g_list_copy(recycling_context->children);
   
-  new_recycling_context->children = g_list_copy(recycling_context->children);
-  
+  while(list != NULL){
+    g_object_ref(list->data);
+    g_object_ref(new_recycling_context);
+     
+    AGS_RECYCLING_CONTEXT(list->data)->parent = new_recycling_context;
+    
+    list = list->next;
+  }
+
   pthread_mutex_unlock(recycling_context->mutex);
   
   /* copy heading */
