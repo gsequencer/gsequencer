@@ -1,3 +1,8 @@
+ags (1.4.31)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* disabled GLib-GObject fatal mask
+
 ags (1.4.30)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
