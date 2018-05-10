@@ -49,11 +49,21 @@ void ags_server_get_property(GObject *gobject,
 			     guint prop_id,
 			     GValue *value,
 			     GParamSpec *param_spec);
+void ags_server_dispose(GObject *gobject);
+void ags_server_finalize(GObject *gobject);
+
+AgsUUID* ags_server_get_uuid(AgsConnectable *connectable);
+gboolean ags_server_has_resource(AgsConnectable *connectable);
+gboolean ags_server_is_ready(AgsConnectable *connectable);
 void ags_server_add_to_registry(AgsConnectable *connectable);
 void ags_server_remove_from_registry(AgsConnectable *connectable);
+xmlNode* ags_server_list_resource(AgsConnectable *connectable);
+xmlNode* ags_server_xml_compose(AgsConnectable *connectable);
+void ags_server_xml_parse(AgsConnectable *connectable,
+			   xmlNode *node);
+gboolean ags_server_is_connected(AgsConnectable *connectable);
 void ags_server_connect(AgsConnectable *connectable);
 void ags_server_disconnect(AgsConnectable *connectable);
-void ags_server_finalize(GObject *gobject);
 
 void ags_server_real_start(AgsServer *server);
 
@@ -82,6 +92,8 @@ static guint server_signals[LAST_SIGNAL];
 
 static GList *ags_server_list = NULL;
 
+static pthread_mutex_t ags_server_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_server_get_type()
 {
@@ -89,13 +101,13 @@ ags_server_get_type()
 
   if(!ags_type_server){
     static const GTypeInfo ags_server = {
-      sizeof (AgsServerClass),
+      sizeof(AgsServerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_server_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsServer),
+      sizeof(AgsServer),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_server_init,
     };
@@ -133,6 +145,7 @@ ags_server_class_init(AgsServerClass *server)
   gobject->set_property = ags_server_set_property;
   gobject->get_property = ags_server_get_property;
 
+  gobject->dispose = ags_server_dispose;
   gobject->finalize = ags_server_finalize;
 
   /* properties */
@@ -141,7 +154,7 @@ ags_server_class_init(AgsServerClass *server)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n("application context object"),
@@ -162,7 +175,7 @@ ags_server_class_init(AgsServerClass *server)
    *
    * The ::start signal is emitted as the server starts.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   server_signals[START] =
     g_signal_new("start",
@@ -177,10 +190,23 @@ ags_server_class_init(AgsServerClass *server)
 void
 ags_server_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = ags_server_get_uuid;
+  connectable->has_resource = ags_server_has_resource;
+
+  connectable->is_ready = ags_server_is_ready;
   connectable->add_to_registry = ags_server_add_to_registry;
   connectable->remove_from_registry = ags_server_remove_from_registry;
+
+  connectable->list_resource = ags_server_list_resource;
+  connectable->xml_compose = ags_server_xml_compose;
+  connectable->xml_parse = ags_server_xml_parse;
+
+  connectable->is_connected = ags_server_is_connected;  
   connectable->connect = ags_server_connect;
   connectable->disconnect = ags_server_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -188,22 +214,26 @@ ags_server_init(AgsServer *server)
 {
   server->flags = 0;
 
-  server->mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(server->mutexattr);
-  pthread_mutexattr_settype(server->mutexattr,
+  server->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(server->obj_mutexattr);
+  pthread_mutexattr_settype(server->obj_mutexattr,
 			    PTHREAD_MUTEX_RECURSIVE);
 
 #ifdef __linux__
-  pthread_mutexattr_setprotocol(server->mutexattr,
+  pthread_mutexattr_setprotocol(server->obj_mutexattr,
 				PTHREAD_PRIO_INHERIT);
 #endif
   
-  server->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(server->mutex,
-		     server->mutexattr);
+  server->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(server->obj_mutex,
+		     server->obj_mutexattr);
+
+  /* uuid */
+  server->uuid = ags_uuid_alloc();
+  ags_uuid_generate(server->uuid);
 
   /*  */
-  server->server_info = ags_server_info_alloc("localhost");
+  server->server_info = ags_server_info_alloc("localhost", ags_uuid_to_string(server->uuid));
 
 #ifdef AGS_WITH_XMLRPC_C
   server->abyss_server = (TServer *) malloc(sizeof(TServer));
@@ -213,7 +243,6 @@ ags_server_init(AgsServer *server)
   server->socket = NULL;
 #endif
 
-  
   server->address = (struct sockaddr_in *) malloc(sizeof(struct sockaddr_in));
   memset(server->address, 0, sizeof(struct sockaddr_in));
   
@@ -227,7 +256,6 @@ ags_server_init(AgsServer *server)
   server->controller = NULL;
   
   server->application_context = NULL;
-  server->application_mutex = NULL;
 }
 
 void
@@ -238,9 +266,16 @@ ags_server_set_property(GObject *gobject,
 {
   AgsServer *server;
 
+  pthread_mutex_t *server_mutex;
+
   server = AGS_SERVER(gobject);
 
-  //TODO:JK: implement set functionality
+  /* get server mutex */
+  pthread_mutex_lock(ags_server_get_class_mutex());
+  
+  server_mutex = server->obj_mutex;
+  
+  pthread_mutex_unlock(ags_server_get_class_mutex());
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -249,7 +284,11 @@ ags_server_set_property(GObject *gobject,
 
       application_context = (AgsApplicationContext *) g_value_get_object(value);
 
+      pthread_mutex_lock(server_mutex);
+
       if(server->application_context == (GObject *) application_context){
+	pthread_mutex_unlock(server_mutex);
+
 	return;
       }
 
@@ -259,13 +298,11 @@ ags_server_set_property(GObject *gobject,
 
       if(application_context != NULL){
 	g_object_ref(G_OBJECT(application_context));
-
-	server->application_mutex = application_context->mutex;
-      }else{
-	server->application_mutex = NULL;
       }
 
       server->application_context = application_context;
+
+      pthread_mutex_unlock(server_mutex);
     }
     break;
   default:
@@ -282,12 +319,25 @@ ags_server_get_property(GObject *gobject,
 {
   AgsServer *server;
 
+  pthread_mutex_t *server_mutex;
+
   server = AGS_SERVER(gobject);
+
+  /* get server mutex */
+  pthread_mutex_lock(ags_server_get_class_mutex());
+  
+  server_mutex = server->obj_mutex;
+  
+  pthread_mutex_unlock(ags_server_get_class_mutex());
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
     {
+      pthread_mutex_lock(server_mutex);
+
       g_value_set_object(value, server->application_context);
+
+      pthread_mutex_unlock(server_mutex);
     }
     break;
   default:
@@ -297,35 +347,18 @@ ags_server_get_property(GObject *gobject,
 }
 
 void
-ags_server_add_to_registry(AgsConnectable *connectable)
+ags_server_dispose(GObject *gobject)
 {
   AgsServer *server;
-  //  AgsRegistry *registry;
 
-  server = AGS_SERVER(connectable);
+  if(server->application_context != NULL){
+    g_object_unref(server->application_context);
+
+    server->application_context = NULL;
+  }
   
-
-  /* children */
-  //  ags_connectable_add_to_registry(AGS_CONNECTABLE(server->registry));
-  //  ags_connectable_add_to_registry(AGS_CONNECTABLE(server->remote_task));
-}
-
-void
-ags_server_remove_from_registry(AgsConnectable *connectable)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_server_connect(AgsConnectable *connectable)
-{
-  /* empty */
-}
-
-void
-ags_server_disconnect(AgsConnectable *connectable)
-{
-  /* empty */
+  /* call parent */
+  G_OBJECT_CLASS(ags_server_parent_class)->dispose(gobject);
 }
 
 void
@@ -336,34 +369,341 @@ ags_server_finalize(GObject *gobject)
   server = AGS_SERVER(gobject);
 
   /* mutex */
-  pthread_mutex_destroy(server->mutex);
-  free(server->mutex);
+  pthread_mutex_destroy(server->obj_mutex);
+  free(server->obj_mutex);
 
-  pthread_mutexattr_destroy(server->mutexattr);
-  free(server->mutexattr);
+  pthread_mutexattr_destroy(server->obj_mutexattr);
+  free(server->obj_mutexattr);
 
+  if(server->application_context != NULL){
+    g_object_unref(server->application_context);
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_server_parent_class)->finalize(gobject);
+}
+
+AgsUUID*
+ags_server_get_uuid(AgsConnectable *connectable)
+{
+  AgsServer *server;
+  
+  AgsUUID *ptr;
+
+  pthread_mutex_t *server_mutex;
+
+  server = AGS_SERVER(connectable);
+
+  /* get server signal mutex */
+  pthread_mutex_lock(ags_server_get_class_mutex());
+  
+  server_mutex = server->obj_mutex;
+  
+  pthread_mutex_unlock(ags_server_get_class_mutex());
+
+  /* get UUID */
+  pthread_mutex_lock(server_mutex);
+
+  ptr = server->uuid;
+
+  pthread_mutex_unlock(server_mutex);
+  
+  return(ptr);
+}
+
+gboolean
+ags_server_has_resource(AgsConnectable *connectable)
+{
+  return(FALSE);
+}
+
+gboolean
+ags_server_is_ready(AgsConnectable *connectable)
+{
+  AgsServer *server;
+  
+  gboolean is_ready;
+
+  pthread_mutex_t *server_mutex;
+
+  server = AGS_SERVER(connectable);
+
+  /* get server mutex */
+  pthread_mutex_lock(ags_server_get_class_mutex());
+  
+  server_mutex = server->obj_mutex;
+  
+  pthread_mutex_unlock(ags_server_get_class_mutex());
+
+  /* check is added */
+  pthread_mutex_lock(server_mutex);
+
+  is_ready = (((AGS_SERVER_ADDED_TO_REGISTRY & (server->flags)) != 0) ? TRUE: FALSE);
+
+  pthread_mutex_unlock(server_mutex);
+  
+  return(is_ready);
+}
+
+void
+ags_server_add_to_registry(AgsConnectable *connectable)
+{
+  AgsServer *server;
+
+  if(ags_connectable_is_ready(connectable)){
+    return;
+  }
+  
+  server = AGS_SERVER(connectable);
+
+  ags_server_set_flags(server, AGS_SERVER_ADDED_TO_REGISTRY);
+}
+
+void
+ags_server_remove_from_registry(AgsConnectable *connectable)
+{
+  AgsServer *server;
+
+  if(!ags_connectable_is_ready(connectable)){
+    return;
+  }
+
+  server = AGS_SERVER(connectable);
+
+  ags_server_unset_flags(server, AGS_SERVER_ADDED_TO_REGISTRY);
+}
+
+xmlNode*
+ags_server_list_resource(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+xmlNode*
+ags_server_xml_compose(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+void
+ags_server_xml_parse(AgsConnectable *connectable,
+		      xmlNode *node)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_server_is_connected(AgsConnectable *connectable)
+{
+  AgsServer *server;
+  
+  gboolean is_connected;
+
+  pthread_mutex_t *server_mutex;
+
+  server = AGS_SERVER(connectable);
+
+  /* get server mutex */
+  pthread_mutex_lock(ags_server_get_class_mutex());
+  
+  server_mutex = server->obj_mutex;
+  
+  pthread_mutex_unlock(ags_server_get_class_mutex());
+
+  /* check is connected */
+  pthread_mutex_lock(server_mutex);
+
+  is_connected = (((AGS_SERVER_CONNECTED & (server->flags)) != 0) ? TRUE: FALSE);
+  
+  pthread_mutex_unlock(server_mutex);
+  
+  return(is_connected);
+}
+
+void
+ags_server_connect(AgsConnectable *connectable)
+{
+  AgsServer *server;
+  
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  server = AGS_SERVER(connectable);
+
+  ags_server_set_flags(server, AGS_SERVER_CONNECTED);
+}
+
+void
+ags_server_disconnect(AgsConnectable *connectable)
+{
+
+  AgsServer *server;
+
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  server = AGS_SERVER(connectable);
+  
+  ags_server_unset_flags(server, AGS_SERVER_CONNECTED);
+}
+
+/**
+ * ags_server_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_server_get_class_mutex()
+{
+  return(&ags_server_class_mutex);
+}
+
+/**
+ * ags_server_test_flags:
+ * @server: the #AgsServer
+ * @flags: the flags
+ *
+ * Test @flags to be set on @server.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_server_test_flags(AgsServer *server, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *server_mutex;
+
+  if(!AGS_IS_SERVER(server)){
+    return(FALSE);
+  }
+
+  /* get server mutex */
+  pthread_mutex_lock(ags_server_get_class_mutex());
+  
+  server_mutex = server->obj_mutex;
+  
+  pthread_mutex_unlock(ags_server_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(server_mutex);
+
+  retval = (flags & (server->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(server_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_server_set_flags:
+ * @server: the #AgsServer
+ * @flags: see #AgsServerFlags-enum
+ *
+ * Enable a feature of @server.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_server_set_flags(AgsServer *server, guint flags)
+{
+  pthread_mutex_t *server_mutex;
+
+  if(!AGS_IS_SERVER(server)){
+    return;
+  }
+
+  /* get server mutex */
+  pthread_mutex_lock(ags_server_get_class_mutex());
+  
+  server_mutex = server->obj_mutex;
+  
+  pthread_mutex_unlock(ags_server_get_class_mutex());
+
+  //TODO:JK: add more?
+
+  /* set flags */
+  pthread_mutex_lock(server_mutex);
+
+  server->flags |= flags;
+  
+  pthread_mutex_unlock(server_mutex);
+}
+    
+/**
+ * ags_server_unset_flags:
+ * @server: the #AgsServer
+ * @flags: see #AgsServerFlags-enum
+ *
+ * Disable a feature of @server.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_server_unset_flags(AgsServer *server, guint flags)
+{  
+  pthread_mutex_t *server_mutex;
+
+  if(!AGS_IS_SERVER(server)){
+    return;
+  }
+
+  /* get server mutex */
+  pthread_mutex_lock(ags_server_get_class_mutex());
+  
+  server_mutex = server->obj_mutex;
+  
+  pthread_mutex_unlock(ags_server_get_class_mutex());
+
+  //TODO:JK: add more?
+
+  /* unset flags */
+  pthread_mutex_lock(server_mutex);
+
+  server->flags &= (~flags);
+  
+  pthread_mutex_unlock(server_mutex);
 }
 
 /**
  * ags_server_info_alloc:
  * @server_name: the server name
+ * @uuid: the uuid
  * 
  * Allocate server info.
  * 
  * Returns: the allocated #AgsServerInfo-struct
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsServerInfo*
-ags_server_info_alloc(gchar *server_name)
+ags_server_info_alloc(gchar *server_name, gchar *uuid)
 {
   AgsServerInfo *server_info;
 
   server_info = (AgsServerInfo *) malloc(sizeof(AgsServerInfo));
 
-  server_info->uuid = ags_id_generator_create_uuid();
+  server_info->uuid = uuid;
   server_info->server_name = server_name;
 
   return(server_info);
