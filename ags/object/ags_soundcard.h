@@ -90,10 +90,6 @@ struct _AgsSoundcardInterface
 				  AgsApplicationContext *application_context);
   AgsApplicationContext* (*get_application_context)(AgsSoundcard *soundcard);
 
-  void (*set_application_mutex)(AgsSoundcard *soundcard,
-				pthread_mutex_t *application_mutex);
-  pthread_mutex_t* (*get_application_mutex)(AgsSoundcard *soundcard);
-
   void (*set_device)(AgsSoundcard *soundcard,
 		     gchar *card_id);
   gchar* (*get_device)(AgsSoundcard *soundcard);
@@ -185,10 +181,6 @@ GType ags_soundcard_get_type();
 void ags_soundcard_set_application_context(AgsSoundcard *soundcard,
 					   AgsApplicationContext *application_context);
 AgsApplicationContext* ags_soundcard_get_application_context(AgsSoundcard *soundcard);
-
-void ags_soundcard_set_application_mutex(AgsSoundcard *soundcard,
-					 pthread_mutex_t *application_mutex);
-pthread_mutex_t* ags_soundcard_get_application_mutex(AgsSoundcard *soundcard);
 
 void ags_soundcard_set_device(AgsSoundcard *soundcard,
 			      gchar *device_id);

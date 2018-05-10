@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -64,9 +64,10 @@ typedef struct _AgsServerInfo AgsServerInfo;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_SERVER_CONNECTED      = 1,
-  AGS_SERVER_STARTED        = 1 << 1,
-  AGS_SERVER_RUNNING        = 1 << 2,
+  AGS_SERVER_ADDED_TO_REGISTRY  = 1,
+  AGS_SERVER_CONNECTED          = 1 <<  1,
+  AGS_SERVER_STARTED            = 1 <<  2,
+  AGS_SERVER_RUNNING            = 1 <<  3,
 }AgsServerFlags;
 
 struct _AgsServer
@@ -75,8 +76,10 @@ struct _AgsServer
 
   guint flags;
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  AgsUUID *uuid;
 
   AgsServerInfo *server_info;
 
@@ -96,7 +99,6 @@ struct _AgsServer
   GList *controller;
   
   GObject *application_context;
-  pthread_mutex_t  *application_mutex;
 };
 
 struct _AgsServerClass
@@ -120,6 +122,12 @@ struct _AgsServerInfo
 };
 
 GType ags_server_get_type();
+
+pthread_mutex_t* ags_server_get_class_mutex();
+
+gboolean ags_server_test_flags(AgsServer *server, guint flags);
+void ags_server_set_flags(AgsServer *server, guint flags);
+void ags_server_unset_flags(AgsServer *server, guint flags);
 
 AgsServerInfo* ags_server_info_alloc(gchar *server_name);
 
