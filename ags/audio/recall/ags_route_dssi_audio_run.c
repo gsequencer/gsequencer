@@ -901,7 +901,7 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 	      recall_dssi_run->route_dssi_audio_run = (GObject *) route_dssi_audio_run;
 	    
 	      if(AGS_RECALL(recall_dssi_run)->rt_safe ||
-		 recall_dssi_run->event_buffer != NULL){
+		 recall_dssi_run->note == NULL){
 		/* prepend note */
 		//		route_dssi_audio_run->feed_midi = g_list_prepend(route_dssi_audio_run->feed_midi,
 		//						 note);
