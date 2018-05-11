@@ -35,6 +35,8 @@
 #include <alsa/asoundlib.h>
 #endif
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_DEVIN                (ags_devin_get_type())
 #define AGS_DEVIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DEVIN, AgsDevin))
 #define AGS_DEVIN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_DEVIN, AgsDevin))
@@ -42,8 +44,8 @@
 #define AGS_IS_DEVIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_DEVIN))
 #define AGS_DEVIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_DEVIN, AgsDevinClass))
 
-#define AGS_DEVIN_DEFAULT_ALSA_DEVICE "hw:0,0\0"
-#define AGS_DEVIN_DEFAULT_OSS_DEVICE "/dev/dsp\0"
+#define AGS_DEVIN_DEFAULT_ALSA_DEVICE "hw:0,0"
+#define AGS_DEVIN_DEFAULT_OSS_DEVICE "/dev/dsp"
 
 #define AGS_DEVIN_DEFAULT_RING_BUFFER_SIZE (8)
 
@@ -52,6 +54,8 @@ typedef struct _AgsDevinClass AgsDevinClass;
 
 /**
  * AgsDevinFlags:
+ * @AGS_DEVIN_ADDED_TO_REGISTRY: the devin was added to registry, see #AgsConnectable::add_to_registry()
+ * @AGS_DEVIN_CONNECTED: indicates the devin was connected by calling #AgsConnectable::connect()
  * @AGS_DEVIN_BUFFER0: ring-buffer 0
  * @AGS_DEVIN_BUFFER1: ring-buffer 1
  * @AGS_DEVIN_BUFFER2: ring-buffer 2
@@ -69,25 +73,28 @@ typedef struct _AgsDevinClass AgsDevinClass;
  * enable/disable as flags.
  */
 typedef enum
-  {
-    AGS_DEVIN_BUFFER0                        = 1,
-    AGS_DEVIN_BUFFER1                        = 1 <<  1,
-    AGS_DEVIN_BUFFER2                        = 1 <<  2,
-    AGS_DEVIN_BUFFER3                        = 1 <<  3,
+{
+  AGS_DEVIN_ADDED_TO_REGISTRY  = 1,
+  AGS_DEVIN_CONNECTED          = 1 <<  1,
 
-    AGS_DEVIN_ATTACK_FIRST                   = 1 <<  4,
+  AGS_DEVIN_BUFFER0            = 1 <<  2,
+  AGS_DEVIN_BUFFER1            = 1 <<  3,
+  AGS_DEVIN_BUFFER2            = 1 <<  4,
+  AGS_DEVIN_BUFFER3            = 1 <<  5,
 
-    AGS_DEVIN_RECORD                         = 1 <<  5,
+  AGS_DEVIN_ATTACK_FIRST       = 1 <<  6,
 
-    AGS_DEVIN_OSS                            = 1 <<  6,
-    AGS_DEVIN_ALSA                           = 1 <<  7,
+  AGS_DEVIN_PLAY               = 1 <<  7,
 
-    AGS_DEVIN_SHUTDOWN                       = 1 <<  8,
-    AGS_DEVIN_START_RECORD                   = 1 <<  9,
+  AGS_DEVIN_OSS                = 1 <<  8,
+  AGS_DEVIN_ALSA               = 1 <<  9,
 
-    AGS_DEVIN_NONBLOCKING                    = 1 << 10,
-    AGS_DEVIN_INITIALIZED                    = 1 << 11,
-  }AgsDevinFlags;
+  AGS_DEVIN_SHUTDOWN           = 1 << 10,
+  AGS_DEVIN_START_PLAY         = 1 << 11,
+
+  AGS_DEVIN_NONBLOCKING        = 1 << 12,
+  AGS_DEVIN_INITIALIZED        = 1 << 13,
+}AgsDevinFlags;
 
 #define AGS_DEVIN_ERROR (ags_devin_error_quark())
 
@@ -186,6 +193,12 @@ struct _AgsDevinClass
 GType ags_devin_get_type();
 
 GQuark ags_devin_error_quark();
+
+pthread_mutex_t* ags_devin_get_class_mutex();
+
+gboolean ags_devin_test_flags(AgsDevin *devin, guint flags);
+void ags_devin_set_flags(AgsDevin *devin, guint flags);
+void ags_devin_unset_flags(AgsDevin *devin, guint flags);
 
 void ags_devin_switch_buffer_flag(AgsDevin *devin);
 
