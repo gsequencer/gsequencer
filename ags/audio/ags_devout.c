@@ -178,10 +178,6 @@ void ags_devout_get_loop(AgsSoundcard *soundcard,
 
 guint ags_devout_get_loop_offset(AgsSoundcard *soundcard);
 
-void ags_devout_set_audio(AgsSoundcard *soundcard,
-			  GList *audio);
-GList* ags_devout_get_audio(AgsSoundcard *soundcard);
-
 /**
  * SECTION:ags_devout
  * @short_description: Output to soundcard
@@ -567,9 +563,6 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->get_loop = ags_devout_get_loop;
 
   soundcard->get_loop_offset = ags_devout_get_loop_offset;
-
-  soundcard->set_audio = ags_devout_set_audio;
-  soundcard->get_audio = ags_devout_get_audio;
 }
 
 void
@@ -656,12 +649,12 @@ ags_devout_init(AgsDevout *devout)
     devout->flags = (AGS_DEVOUT_OSS);
   }
 
-  channel->dsp_channels = ags_soundcard_helper_config_get_dsp_channels(config);
-  channel->pcm_channels = ags_soundcard_helper_config_get_pcm_channels(config);
+  devout->dsp_channels = ags_soundcard_helper_config_get_dsp_channels(config);
+  devout->pcm_channels = ags_soundcard_helper_config_get_pcm_channels(config);
 
-  channel->samplerate = ags_soundcard_helper_config_get_samplerate(config);
-  channel->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
-  channel->format = ags_soundcard_helper_config_get_format(config);
+  devout->samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  devout->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+  devout->format = ags_soundcard_helper_config_get_format(config);
 
   /* device */
   if(use_alsa){
@@ -738,9 +731,6 @@ ags_devout_init(AgsDevout *devout)
   /* poll fd and notify task */
   devout->poll_fd = NULL;
   devout->notify_soundcard = NULL;
-  
-  /* all AgsAudio */
-  devout->audio = NULL;
 }
 
 void
@@ -1099,21 +1089,12 @@ ags_devout_dispose(GObject *gobject)
   AgsDevout *devout;
 
   devout = AGS_DEVOUT(gobject);
-
-  /* application context */
-  if(devout->application_context != NULL){
-    g_object_unref(devout->application_context);
-
-    devout->application_context = NULL;
-  }
   
   /* notify soundcard */
   if(devout->notify_soundcard != NULL){
-    AgsTaskThread *task_thread;
-
-    g_object_get();
-    
     if(devout->application_context != NULL){
+      AgsTaskThread *task_thread;
+    
       g_object_get(devout->application_context,
 		   "task-thread", &task_thread,
 		   NULL);
@@ -1125,6 +1106,13 @@ ags_devout_dispose(GObject *gobject)
     g_object_unref(devout->notify_soundcard);
 
     devout->notify_soundcard = NULL;
+  }
+
+  /* application context */
+  if(devout->application_context != NULL){
+    g_object_unref(devout->application_context);
+
+    devout->application_context = NULL;
   }
 
   /* call parent */
@@ -1145,11 +1133,6 @@ ags_devout_finalize(GObject *gobject)
   pthread_mutexattr_destroy(devout->obj_mutexattr);
   free(devout->obj_mutexattr);
 
-  /* application context */
-  if(devout->application_context != NULL){
-    g_object_unref(devout->application_context);
-  }
-
   /* free output buffer */
   free(devout->buffer[0]);
   free(devout->buffer[1]);
@@ -1164,11 +1147,9 @@ ags_devout_finalize(GObject *gobject)
 
   /* notify soundcard */
   if(devout->notify_soundcard != NULL){
-    AgsTaskThread *task_thread;
-
-    g_object_get();
-    
     if(devout->application_context != NULL){
+      AgsTaskThread *task_thread;
+      
       g_object_get(devout->application_context,
 		   "task-thread", &task_thread,
 		   NULL);
@@ -1178,6 +1159,11 @@ ags_devout_finalize(GObject *gobject)
     }
 
     g_object_unref(devout->notify_soundcard);
+  }
+
+  /* application context */
+  if(devout->application_context != NULL){
+    g_object_unref(devout->application_context);
   }
   
   /* call parent */
@@ -1696,6 +1682,8 @@ ags_devout_list_cards(AgsSoundcard *soundcard,
 		      GList **card_id, GList **card_name)
 {
   AgsDevout *devout;
+
+  pthread_mutex_t *devout_mutex;
 
   devout = AGS_DEVOUT(soundcard);
 
@@ -2681,6 +2669,8 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   AgsThread *task_thread;
   AgsPollFd *poll_fd;
 
+  AgsApplicationContext *application_context;
+  
   GList *task;
   GList *list;
 
@@ -2793,6 +2783,8 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   /* lock */
   pthread_mutex_lock(devout_mutex);
 
+  application_context = devout->application_context;
+  
   notify_soundcard = AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard);
   
   /* notify cyclic task */
@@ -2908,8 +2900,9 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   pthread_mutex_unlock(devout_mutex);
 
   /* update soundcard */
-  task_thread = ags_thread_find_type((AgsThread *) application_context->main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  g_object_get(application_context,
+	       "task-thread", &task_thread,
+	       NULL);
   task = NULL;
   
   /* tic soundcard */
@@ -3499,6 +3492,8 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   AgsThread *task_thread;
   AgsPollFd *poll_fd;
 
+  AgsApplicationContext *application_context;
+
   GList *task;
   GList *list;
   
@@ -3507,7 +3502,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   guint word_size;
   guint nth_buffer;
   
-  pthread_mutex_t *mutex;
+  pthread_mutex_t *devout_mutex;
 
   static const struct timespec poll_interval = {
     0,
@@ -3629,6 +3624,8 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   /* lock */
   pthread_mutex_lock(devout_mutex);
 
+  application_context = devout->application_context;
+  
   notify_soundcard = AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard);
 
   /* notify cyclic task */
@@ -3784,8 +3781,9 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   pthread_mutex_unlock(devout_mutex);
 
   /* update soundcard */
-  task_thread = ags_thread_find_type((AgsThread *) application_context->main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  g_object_get(application_context,
+	       "task-thread", &task_thread,
+	       NULL);
   task = NULL;
   
   /* tic soundcard */
@@ -4246,7 +4244,7 @@ ags_devout_get_next_buffer(AgsSoundcard *soundcard)
   if(ags_devout_test_flags(devout, AGS_DEVOUT_BUFFER0)){
     buffer = devout->buffer[1];
   }else if(ags_devout_test_flags(devout, AGS_DEVOUT_BUFFER1)){
-    buffer = devout->buffer[2;
+    buffer = devout->buffer[2];
   }else if(ags_devout_test_flags(devout, AGS_DEVOUT_BUFFER2)){
     buffer = devout->buffer[3];
   }else if(ags_devout_test_flags(devout, AGS_DEVOUT_BUFFER3)){
@@ -4368,8 +4366,6 @@ ags_devout_set_note_offset_absolute(AgsSoundcard *soundcard,
 				    guint note_offset_absolute)
 {
   AgsDevout *devout;
-
-  guint note_offset_absolute;
   
   pthread_mutex_t *devout_mutex;  
 
@@ -4480,7 +4476,7 @@ ags_devout_get_loop(AgsSoundcard *soundcard,
   }
 
   if(do_loop != NULL){
-    *do_loop = devout_loop;
+    *do_loop = devout->do_loop;
   }
 
   pthread_mutex_unlock(devout_mutex);
@@ -4699,6 +4695,8 @@ ags_devout_realloc_buffer(AgsDevout *devout)
   guint pcm_channels;
   guint buffer_size;
   guint word_size;
+  
+  pthread_mutex_t *devout_mutex;  
 
   if(!AGS_IS_DEVOUT(devout)){
     return;
@@ -4750,6 +4748,8 @@ ags_devout_realloc_buffer(AgsDevout *devout)
 
   pthread_mutex_unlock(devout_mutex);
 
+  //NOTE:JK: there is no lock applicable to buffer
+  
   /* AGS_DEVOUT_BUFFER_0 */
   if(devout->buffer[0] != NULL){
     free(devout->buffer[0]);
