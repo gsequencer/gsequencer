@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,10 +23,6 @@
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio_buffer_util.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
-#include <ags/thread/ags_poll_fd.h>
 
 #include <ags/audio/task/ags_tic_device.h>
 #include <ags/audio/task/ags_clear_buffer.h>
@@ -69,18 +65,25 @@ void ags_devin_get_property(GObject *gobject,
 			    guint prop_id,
 			    GValue *value,
 			    GParamSpec *param_spec);
-void ags_devin_disconnect(AgsConnectable *connectable);
-void ags_devin_connect(AgsConnectable *connectable);
 void ags_devin_dispose(GObject *gobject);
 void ags_devin_finalize(GObject *gobject);
+
+AgsUUID* ags_devin_get_uuid(AgsConnectable *connectable);
+gboolean ags_devin_has_resource(AgsConnectable *connectable);
+gboolean ags_devin_is_ready(AgsConnectable *connectable);
+void ags_devin_add_to_registry(AgsConnectable *connectable);
+void ags_devin_remove_from_registry(AgsConnectable *connectable);
+xmlNode* ags_devin_list_resource(AgsConnectable *connectable);
+xmlNode* ags_devin_xml_compose(AgsConnectable *connectable);
+void ags_devin_xml_parse(AgsConnectable *connectable,
+			 xmlNode *node);
+gboolean ags_devin_is_connected(AgsConnectable *connectable);
+void ags_devin_connect(AgsConnectable *connectable);
+void ags_devin_disconnect(AgsConnectable *connectable);
 
 void ags_devin_set_application_context(AgsSoundcard *soundcard,
 				       AgsApplicationContext *application_context);
 AgsApplicationContext* ags_devin_get_application_context(AgsSoundcard *soundcard);
-
-void ags_devin_set_application_mutex(AgsSoundcard *soundcard,
-				     pthread_mutex_t *application_mutex);
-pthread_mutex_t* ags_devin_get_application_mutex(AgsSoundcard *soundcard);
 
 void ags_devin_set_device(AgsSoundcard *soundcard,
 			  gchar *device);
@@ -171,18 +174,14 @@ void ags_devin_get_loop(AgsSoundcard *soundcard,
 
 guint ags_devin_get_loop_offset(AgsSoundcard *soundcard);
 
-void ags_devin_set_audio(AgsSoundcard *soundcard,
-			 GList *audio);
-GList* ags_devin_get_audio(AgsSoundcard *soundcard);
-
 /**
  * SECTION:ags_devin
- * @short_description: Output to soundcard
+ * @short_description: Input from soundcard
  * @title: AgsDevin
  * @section_id:
  * @include: ags/audio/ags_devin.h
  *
- * #AgsDevin represents a soundcard and supports output.
+ * #AgsDevin represents a soundcard and supports input.
  */
 
 enum{
@@ -201,15 +200,9 @@ enum{
   PROP_ATTACK,
 };
 
-enum{
-  LAST_SIGNAL,
-};
-
 static gpointer ags_devin_parent_class = NULL;
-static guint devin_signals[LAST_SIGNAL];
 
-const int ags_devin_endian_i = 1;
-#define is_bigendian() ( (*(char*)&ags_devin_endian_i) == 0 )
+static pthread_mutex_t ags_devout_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_devin_get_type (void)
@@ -218,13 +211,13 @@ ags_devin_get_type (void)
 
   if(!ags_type_devin){
     static const GTypeInfo ags_devin_info = {
-      sizeof (AgsDevinClass),
+      sizeof(AgsDevinClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_devin_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsDevin),
+      sizeof(AgsDevin),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_devin_init,
     };
@@ -262,6 +255,7 @@ void
 ags_devin_class_init(AgsDevinClass *devin)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_devin_parent_class = g_type_class_peek_parent(devin);
@@ -281,7 +275,7 @@ ags_devin_class_init(AgsDevinClass *devin)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("the application context object"),
@@ -293,31 +287,16 @@ ags_devin_class_init(AgsDevinClass *devin)
 				  param_spec);
 
   /**
-   * AgsDevin:application-mutex:
-   *
-   * The assigned application mutex
-   * 
-   * Since: 1.2.0
-   */
-  param_spec = g_param_spec_pointer("application-mutex",
-				    i18n_pspec("the application mutex object"),
-				    i18n_pspec("The application mutex object"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_MUTEX,
-				  param_spec);
-
-  /**
    * AgsDevin:device:
    *
    * The alsa soundcard indentifier
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("device",
 				   i18n_pspec("the device identifier"),
 				   i18n_pspec("The device to perform output to"),
-				   "hw:0",
+				   AGS_DEVIN_DEFAULT_ALSA_DEVICE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVICE,
@@ -328,14 +307,14 @@ ags_devin_class_init(AgsDevinClass *devin)
    *
    * The dsp channel count
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("dsp-channels",
 				 i18n_pspec("count of DSP channels"),
 				 i18n_pspec("The count of DSP channels to use"),
-				 1,
-				 64,
-				 2,
+				 AGS_SOUNDCARD_MIN_DSP_CHANNELS,
+				 AGS_SOUNDCARD_MAX_DSP_CHANNELS,
+				 AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DSP_CHANNELS,
@@ -346,34 +325,31 @@ ags_devin_class_init(AgsDevinClass *devin)
    *
    * The pcm channel count
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("pcm-channels",
 				 i18n_pspec("count of PCM channels"),
 				 i18n_pspec("The count of PCM channels to use"),
-				 1,
-				 64,
-				 2,
+				 AGS_SOUNDCARD_MIN_PCM_CHANNELS,
+				 AGS_SOUNDCARD_MAX_PCM_CHANNELS,
+				 AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PCM_CHANNELS,
 				  param_spec);
 
-  /*
-   * TODO:JK: add support for other quality than 16 bit
-   */
   /**
    * AgsDevin:format:
    *
    * The precision of the buffer
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("precision of buffer"),
 				 i18n_pspec("The precision to use for a frame"),
-				 1,
-				 64,
+				 0,
+				 G_MAXUINT32,
 				 AGS_SOUNDCARD_DEFAULT_FORMAT,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -385,13 +361,13 @@ ags_devin_class_init(AgsDevinClass *devin)
    *
    * The buffer size
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("frame count of a buffer"),
 				 i18n_pspec("The count of frames a buffer contains"),
-				 1,
-				 44100,
+				 AGS_SOUNDCARD_MIN_BUFFER_SIZE,
+				 AGS_SOUNDCARD_MAX_BUFFER_SIZE,
 				 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -403,14 +379,14 @@ ags_devin_class_init(AgsDevinClass *devin)
    *
    * The samplerate
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("frames per second"),
 				 i18n_pspec("The frames count recorded during a second"),
-				 8000,
-				 96000,
-				 44100,
+				 AGS_SOUNDCARD_MIN_SAMPLERATE,
+				 AGS_SOUNDCARD_MAX_SAMPLERATE,
+				 AGS_SOUNDCARD_DEFAULT_SAMPLERATE,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SAMPLERATE,
@@ -421,7 +397,7 @@ ags_devin_class_init(AgsDevinClass *devin)
    *
    * The buffer
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("buffer",
 				    i18n_pspec("the buffer"),
@@ -436,7 +412,7 @@ ags_devin_class_init(AgsDevinClass *devin)
    *
    * Beats per minute
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("bpm",
 				   i18n_pspec("beats per minute"),
@@ -454,7 +430,7 @@ ags_devin_class_init(AgsDevinClass *devin)
    *
    * tact
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -472,7 +448,7 @@ ags_devin_class_init(AgsDevinClass *devin)
    *
    * Attack of the buffer
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),
@@ -481,8 +457,7 @@ ags_devin_class_init(AgsDevinClass *devin)
   g_object_class_install_property(gobject,
 				  PROP_ATTACK,
 				  param_spec);
-
-
+  
   /* AgsDevinClass */
 }
 
@@ -495,10 +470,23 @@ ags_devin_error_quark()
 void
 ags_devin_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->get_uuid = ags_devin_get_uuid;
+  connectable->has_resource = ags_devin_has_resource;
+
+  connectable->is_ready = ags_devin_is_ready;
+  connectable->add_to_registry = ags_devin_add_to_registry;
+  connectable->remove_from_registry = ags_devin_remove_from_registry;
+
+  connectable->list_resource = ags_devin_list_resource;
+  connectable->xml_compose = ags_devin_xml_compose;
+  connectable->xml_parse = ags_devin_xml_parse;
+
+  connectable->is_connected = ags_devin_is_connected;  
   connectable->connect = ags_devin_connect;
   connectable->disconnect = ags_devin_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -506,9 +494,6 @@ ags_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 {
   soundcard->set_application_context = ags_devin_set_application_context;
   soundcard->get_application_context = ags_devin_get_application_context;
-
-  soundcard->set_application_mutex = ags_devin_set_application_mutex;
-  soundcard->get_application_mutex = ags_devin_get_application_mutex;
 
   soundcard->set_device = ags_devin_set_device;
   soundcard->get_device = ags_devin_get_device;
@@ -523,16 +508,16 @@ ags_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->is_available = ags_devin_is_available;
 
   soundcard->is_starting =  ags_devin_is_starting;
+  soundcard->is_playing = NULL;
   soundcard->is_recording = ags_devin_is_recording;
-  soundcard->is_recording = NULL;
 
   soundcard->get_uptime = ags_devin_get_uptime;
   
+  soundcard->play_init = NULL;
+  soundcard->play = NULL;
+
   soundcard->record_init = ags_devin_delegate_record_init;
   soundcard->record = ags_devin_delegate_record;
-  
-  soundcard->record_init = NULL;
-  soundcard->record = NULL;
   
   soundcard->stop = ags_devin_delegate_stop;
 
@@ -566,28 +551,26 @@ ags_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->get_loop = ags_devin_get_loop;
 
   soundcard->get_loop_offset = ags_devin_get_loop_offset;
-
-  soundcard->set_audio = ags_devin_set_audio;
-  soundcard->get_audio = ags_devin_get_audio;
 }
 
 void
 ags_devin_init(AgsDevin *devin)
-{
-  AgsMutexManager *mutex_manager;
-  
+{  
   AgsConfig *config;
   
   gchar *str;
+  gchar *segmentation;
 
+  guint denumerator, numerator;
   gboolean use_alsa;  
   
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
+  devin->flags = 0;
+
   /* insert devin mutex */
-  devin->mutexattr = 
+  devin->obj_mutexattr = 
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
@@ -598,21 +581,17 @@ ags_devin_init(AgsDevin *devin)
 				PTHREAD_PRIO_INHERIT);
 #endif
 
-  devin->mutex = 
+  devin->obj_mutex = 
     mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
+  /* parent */
+  devin->application_context = NULL;
 
-  ags_mutex_manager_insert(mutex_manager,
-			   (GObject *) devin,
-			   mutex);
-  
-  pthread_mutex_unlock(application_mutex);
+  /* uuid */
+  devin->uuid = ags_uuid_alloc();
+  ags_uuid_generate(devin->uuid);
 
   /* flags */
   config = ags_config_get_instance();
@@ -641,110 +620,20 @@ ags_devin_init(AgsDevin *devin)
   }
 
   if(use_alsa){
-    devin->flags = (AGS_DEVIN_ALSA);
+    devin->flags |= (AGS_DEVIN_ALSA);
   }else{
-    devin->flags = (AGS_DEVIN_OSS);
+    devin->flags |= (AGS_DEVIN_OSS);
   }
 
-  /* quality */
-  devin->dsp_channels = AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS;
-  devin->pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
-  devin->format = AGS_SOUNDCARD_SIGNED_16_BIT;
-  devin->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  devin->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  g_free(str);
 
-  /* read config */
-  /* dsp channels */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "dsp-channels");
+  /* presets */
+  devin->dsp_channels = ags_soundcard_helper_config_get_dsp_channels(config);
+  devin->pcm_channels = ags_soundcard_helper_config_get_pcm_channels(config);
 
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "dsp-channels");
-  }
-  
-  if(str != NULL){
-    devin->dsp_channels = g_ascii_strtoull(str,
-					   NULL,
-					   10);
-	  
-    g_free(str);
-  }
-
-  /* pcm channels */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "pcm-channels");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "pcm-channels");
-  }
-  
-  if(str != NULL){
-    devin->pcm_channels = g_ascii_strtoull(str,
-					   NULL,
-					   10);
-	  
-    g_free(str);
-  }
-
-  /* samplerate */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate");
-  }
-  
-  if(str != NULL){
-    devin->samplerate = g_ascii_strtoull(str,
-					 NULL,
-					 10);
-    free(str);
-  }
-
-  /* buffer size */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size");
-  }
-  
-  if(str != NULL){
-    devin->buffer_size = g_ascii_strtoull(str,
-					  NULL,
-					  10);
-    free(str);
-  }
-
-  /* format */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "format");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "format");
-  }
-  
-  if(str != NULL){
-    devin->format = g_ascii_strtoull(str,
-				     NULL,
-				     10);
-    free(str);
-  }
+  devin->samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  devin->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+  devin->format = ags_soundcard_helper_config_get_format(config);
 
   /* device */
   if(use_alsa){
@@ -779,6 +668,21 @@ ags_devin_init(AgsDevin *devin)
   /* delay factor */
   devin->delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;
   
+  /* segmentation */
+  segmentation = ags_config_get_value(config,
+				      AGS_CONFIG_GENERIC,
+				      "segmentation");
+
+  if(segmentation != NULL){
+    sscanf(segmentation, "%d/%d",
+	   &denumerator,
+	   &numerator);
+    
+    devout->delay_factor = 1.0 / numerator * (numerator / denumerator);
+
+    g_free(segmentation);
+  }
+
   /* delay and attack */
   devin->delay = (gdouble *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
 				    sizeof(gdouble));
@@ -803,15 +707,9 @@ ags_devin_init(AgsDevin *devin)
 
   devin->loop_offset = 0;
   
-  /* parent */
-  devin->application_context = NULL;
-  devin->application_mutex = NULL;
-
+  /* poll fd and notify task */
   devin->poll_fd = NULL;
   devin->notify_soundcard = NULL;
-  
-  /* all AgsAudio */
-  devin->audio = NULL;
 }
 
 void
@@ -822,7 +720,16 @@ ags_devin_set_property(GObject *gobject,
 {
   AgsDevin *devin;
 
+  pthread_mutex_t *devin_mutex;
+
   devin = AGS_DEVIN(gobject);
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -831,7 +738,11 @@ ags_devin_set_property(GObject *gobject,
 
       application_context = (AgsApplicationContext *) g_value_get_object(value);
 
-      if(devin->application_context == (GObject *) application_context){
+      pthread_mutex_lock(devin_mutex);
+
+      if(devin->application_context == application_context){
+	pthread_mutex_unlock(devin_mutex);
+
 	return;
       }
 
@@ -840,52 +751,12 @@ ags_devin_set_property(GObject *gobject,
       }
 
       if(application_context != NULL){
-	AgsConfig *config;
-
-	gchar *segmentation;
-	guint denumerator, numerator;
-	
-	g_object_ref(G_OBJECT(application_context));
-
 	devin->application_mutex = application_context->mutex;
-	
-	config = ags_config_get_instance();
-
-	/* segmentation */
-	segmentation = ags_config_get_value(config,
-					    AGS_CONFIG_GENERIC,
-					    "segmentation");
-
-	if(segmentation != NULL){
-	  sscanf(segmentation, "%d/%d",
-		 &denumerator,
-		 &numerator);
-    
-	  devin->delay_factor = 1.0 / numerator * (numerator / denumerator);
-
-	  g_free(segmentation);
-	}
-
-	ags_devin_adjust_delay_and_attack(devin);
-	ags_devin_realloc_buffer(devin);
-      }else{
-	devin->application_mutex = NULL;
       }
 
-      devin->application_context = (GObject *) application_context;
-    }
-    break;
-  case PROP_APPLICATION_MUTEX:
-    {
-      pthread_mutex_t *application_mutex;
+      devin->application_context = application_context;
 
-      application_mutex = (pthread_mutex_t *) g_value_get_pointer(value);
-
-      if(devin->application_mutex == application_mutex){
-	return;
-      }
-      
-      devin->application_mutex = application_mutex;
+      pthread_mutex_unlock(devin_mutex);
     }
     break;
   case PROP_DEVICE:
@@ -894,11 +765,15 @@ ags_devin_set_property(GObject *gobject,
 
       device = (char *) g_value_get_string(value);
 
+      pthread_mutex_lock(devin_mutex);
+
       if((AGS_DEVIN_OSS & (devin->flags)) != 0){
 	devin->out.oss.device = g_strdup(device);
       }else if((AGS_DEVIN_ALSA & (devin->flags)) != 0){
 	devin->out.alsa.device = g_strdup(device);
       }
+
+      pthread_mutex_unlock(devin_mutex);
     }
     break;
   case PROP_DSP_CHANNELS:
@@ -907,11 +782,17 @@ ags_devin_set_property(GObject *gobject,
 
       dsp_channels = g_value_get_uint(value);
 
+      pthread_mutex_lock(devin_mutex);
+
       if(dsp_channels == devin->dsp_channels){
+	pthread_mutex_unlock(devin_mutex);
+	
 	return;
       }
 
       devin->dsp_channels = dsp_channels;
+
+      pthread_mutex_unlock(devin_mutex);
     }
     break;
   case PROP_PCM_CHANNELS:
@@ -920,11 +801,17 @@ ags_devin_set_property(GObject *gobject,
 
       pcm_channels = g_value_get_uint(value);
 
+      pthread_mutex_lock(devin_mutex);
+
       if(pcm_channels == devin->pcm_channels){
+	pthread_mutex_unlock(devin_mutex);
+
 	return;
       }
 
       devin->pcm_channels = pcm_channels;
+
+      pthread_mutex_unlock(devin_mutex);
 
       ags_devin_realloc_buffer(devin);
     }
@@ -935,11 +822,17 @@ ags_devin_set_property(GObject *gobject,
 
       format = g_value_get_uint(value);
 
+      pthread_mutex_lock(devin_mutex);
+
       if(format == devin->format){
+	pthread_mutex_unlock(devin_mutex);
+
 	return;
       }
 
       devin->format = format;
+
+      pthread_mutex_unlock(devin_mutex);
 
       ags_devin_realloc_buffer(devin);
     }
@@ -950,11 +843,17 @@ ags_devin_set_property(GObject *gobject,
 
       buffer_size = g_value_get_uint(value);
 
+      pthread_mutex_lock(devin_mutex);
+
       if(buffer_size == devin->buffer_size){
+	pthread_mutex_unlock(devin_mutex);
+
 	return;
       }
 
       devin->buffer_size = buffer_size;
+
+      pthread_mutex_unlock(devin_mutex);
 
       ags_devin_realloc_buffer(devin);
       ags_devin_adjust_delay_and_attack(devin);
@@ -966,11 +865,18 @@ ags_devin_set_property(GObject *gobject,
 
       samplerate = g_value_get_uint(value);
 
+      pthread_mutex_lock(devin_mutex);
+
       if(samplerate == devin->samplerate){
+	pthread_mutex_unlock(devin_mutex);
+	
 	return;
       }
 
       devin->samplerate = samplerate;
+
+      pthread_mutex_unlock(devin_mutex);
+
       ags_devin_adjust_delay_and_attack(devin);
     }
     break;
@@ -985,7 +891,17 @@ ags_devin_set_property(GObject *gobject,
       
       bpm = g_value_get_double(value);
 
+      pthread_mutex_lock(devin_mutex);
+
+      if(bpm == devin->bpm){
+	pthread_mutex_unlock(devin_mutex);
+
+	return;
+      }
+
       devin->bpm = bpm;
+
+      pthread_mutex_unlock(devin_mutex);
 
       ags_devin_adjust_delay_and_attack(devin);
     }
@@ -996,7 +912,17 @@ ags_devin_set_property(GObject *gobject,
       
       delay_factor = g_value_get_double(value);
 
+      pthread_mutex_lock(devin_mutex);
+
+      if(delay_factor == devin->delay_factor){
+	pthread_mutex_unlock(devin_mutex);
+
+	return;
+      }
+
       devin->delay_factor = delay_factor;
+
+      pthread_mutex_unlock(devin_mutex);
 
       ags_devin_adjust_delay_and_attack(devin);
     }
@@ -1015,71 +941,119 @@ ags_devin_get_property(GObject *gobject,
 {
   AgsDevin *devin;
 
+  pthread_mutex_t *devin_mutex;
+
   devin = AGS_DEVIN(gobject);
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
     {
+      pthread_mutex_lock(devin_mutex);
+
       g_value_set_object(value, devin->application_context);
-    }
-    break;
-  case PROP_APPLICATION_MUTEX:
-    {
-      g_value_set_pointer(value, devin->application_mutex);
+
+      pthread_mutex_unlock(devin_mutex);
     }
     break;
   case PROP_DEVICE:
     {
+      pthread_mutex_lock(devin_mutex);
+
       if((AGS_DEVIN_OSS & (devin->flags)) != 0){
 	g_value_set_string(value, devin->out.oss.device);
       }else if((AGS_DEVIN_ALSA & (devin->flags)) != 0){
 	g_value_set_string(value, devin->out.alsa.device);
       }
+
+      pthread_mutex_unlock(devin_mutex);
     }
     break;
   case PROP_DSP_CHANNELS:
     {
+      pthread_mutex_lock(devin_mutex);
+
       g_value_set_uint(value, devin->dsp_channels);
+
+      pthread_mutex_unlock(devin_mutex);
     }
     break;
   case PROP_PCM_CHANNELS:
     {
+      pthread_mutex_lock(devin_mutex);
+
       g_value_set_uint(value, devin->pcm_channels);
+
+      pthread_mutex_unlock(devin_mutex);
     }
     break;
   case PROP_FORMAT:
     {
+      pthread_mutex_lock(devin_mutex);
+
       g_value_set_uint(value, devin->format);
+
+      pthread_mutex_unlock(devin_mutex);
     }
     break;
   case PROP_BUFFER_SIZE:
     {
+      pthread_mutex_lock(devin_mutex);
+
       g_value_set_uint(value, devin->buffer_size);
+
+      pthread_mutex_unlock(devin_mutex);
     }
     break;
   case PROP_SAMPLERATE:
     {
+      pthread_mutex_lock(devin_mutex);
+
       g_value_set_uint(value, devin->samplerate);
+
+      pthread_mutex_unlock(devin_mutex);
     }
     break;
   case PROP_BUFFER:
     {
+      pthread_mutex_lock(devin_mutex);
+
       g_value_set_pointer(value, devin->buffer);
+
+      pthread_mutex_unlock(devin_mutex);
     }
     break;
   case PROP_BPM:
     {
+      pthread_mutex_lock(devin_mutex);
+
       g_value_set_double(value, devin->bpm);
+
+      pthread_mutex_unlock(devin_mutex);
     }
     break;
   case PROP_DELAY_FACTOR:
     {
+      pthread_mutex_lock(devin_mutex);
+
       g_value_set_double(value, devin->delay_factor);
+
+      pthread_mutex_unlock(devin_mutex);
     }
     break;
   case PROP_ATTACK:
     {
+      pthread_mutex_lock(devin_mutex);
+
       g_value_set_pointer(value, devin->attack);
+
+      pthread_mutex_unlock(devin_mutex);
     }
     break;
   default:
@@ -1097,29 +1071,29 @@ ags_devin_dispose(GObject *gobject)
 
   devin = AGS_DEVIN(gobject);
 
+  /* notify soundcard */
+  if(devin->notify_soundcard != NULL){
+    if(devin->application_context != NULL){
+      AgsTaskThread *task_thread;
+    
+      g_object_get(devin->application_context,
+		   "task-thread", &task_thread,
+		   NULL);
+      
+      ags_task_thread_remove_cyclic_task(task_thread,
+					 devin->notify_soundcard);
+    }
+
+    g_object_unref(devin->notify_soundcard);
+
+    devin->notify_soundcard = NULL;
+  }
+
   /* application context */
   if(devin->application_context != NULL){
     g_object_unref(devin->application_context);
 
     devin->application_context = NULL;
-  }
-
-  /* unref audio */  
-  if(devin->audio != NULL){
-    list = devin->audio;
-
-    while(list != NULL){
-      g_object_set(G_OBJECT(list->data),
-		   "soundcard", NULL,
-		   NULL);
-      
-      list = list->next;
-    }
-    
-    g_list_free_full(devin->audio,
-		     g_object_unref);
-
-    devin->audio = NULL;
   }
   
   /* call parent */
@@ -1131,21 +1105,14 @@ ags_devin_finalize(GObject *gobject)
 {
   AgsDevin *devin;
 
-  AgsMutexManager *mutex_manager;
-  
-  GList *list;
-
   devin = AGS_DEVIN(gobject);
 
-  /* remove devin mutex */
-  pthread_mutex_lock(devin->application_mutex);
-  
-  mutex_manager = ags_mutex_manager_get_instance();
+  /* mutex */
+  pthread_mutex_destroy(devin->obj_mutex);
+  free(devin->obj_mutex);
 
-  ags_mutex_manager_remove(mutex_manager,
-			   gobject);
-  
-  pthread_mutex_unlock(devin->application_mutex);
+  pthread_mutexattr_destroy(devin->obj_mutexattr);
+  free(devin->obj_mutexattr);
 
   /* free output buffer */
   free(devin->buffer[0]);
@@ -1169,60 +1136,331 @@ ags_devin_finalize(GObject *gobject)
     g_object_unref(devin->notify_soundcard);
   }
 
+  /* notify soundcard */
+  if(devin->notify_soundcard != NULL){
+    if(devin->application_context != NULL){
+      AgsTaskThread *task_thread;
+      
+      g_object_get(devin->application_context,
+		   "task-thread", &task_thread,
+		   NULL);
+      
+      ags_task_thread_remove_cyclic_task(task_thread,
+					 devin->notify_soundcard);
+    }
+
+    g_object_unref(devin->notify_soundcard);
+  }
+
   /* application context */
   if(devin->application_context != NULL){
     g_object_unref(devin->application_context);
   }
-  
-  /* unref audio */  
-  if(devin->audio != NULL){
-    list = devin->audio;
-
-    while(list != NULL){
-      g_object_set(G_OBJECT(list->data),
-		   "soundcard", NULL,
-		   NULL);
-      
-      list = list->next;
-    }
-
-    g_list_free_full(devin->audio,
-		     g_object_unref);
-  }
-  
-  pthread_mutex_destroy(devin->mutex);
-  free(devin->mutex);
-
-  pthread_mutexattr_destroy(devin->mutexattr);
-  free(devin->mutexattr);
 
   /* call parent */
   G_OBJECT_CLASS(ags_devin_parent_class)->finalize(gobject);
+}
+
+AgsUUID*
+ags_devin_get_uuid(AgsConnectable *connectable)
+{
+  AgsDevin *devin;
+  
+  AgsUUID *ptr;
+
+  pthread_mutex_t *devin_mutex;
+
+  devin = AGS_DEVIN(connectable);
+
+  /* get devin signal mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* get UUID */
+  pthread_mutex_lock(devin_mutex);
+
+  ptr = devin->uuid;
+
+  pthread_mutex_unlock(devin_mutex);
+  
+  return(ptr);
+}
+
+gboolean
+ags_devin_has_resource(AgsConnectable *connectable)
+{
+  return(FALSE);
+}
+
+gboolean
+ags_devin_is_ready(AgsConnectable *connectable)
+{
+  AgsDevin *devin;
+  
+  gboolean is_ready;
+
+  pthread_mutex_t *devin_mutex;
+
+  devin = AGS_DEVIN(connectable);
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* check is added */
+  pthread_mutex_lock(devin_mutex);
+
+  is_ready = (((AGS_DEVIN_ADDED_TO_REGISTRY & (devin->flags)) != 0) ? TRUE: FALSE);
+
+  pthread_mutex_unlock(devin_mutex);
+  
+  return(is_ready);
+}
+
+void
+ags_devin_add_to_registry(AgsConnectable *connectable)
+{
+  AgsDevin *devin;
+
+  if(ags_connectable_is_ready(connectable)){
+    return;
+  }
+  
+  devin = AGS_DEVIN(connectable);
+
+  ags_devin_set_flags(devin, AGS_DEVIN_ADDED_TO_REGISTRY);
+}
+
+void
+ags_devin_remove_from_registry(AgsConnectable *connectable)
+{
+  AgsDevin *devin;
+
+  if(!ags_connectable_is_ready(connectable)){
+    return;
+  }
+
+  devin = AGS_DEVIN(connectable);
+
+  ags_devin_unset_flags(devin, AGS_DEVIN_ADDED_TO_REGISTRY);
+}
+
+xmlNode*
+ags_devin_list_resource(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+xmlNode*
+ags_devin_xml_compose(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+void
+ags_devin_xml_parse(AgsConnectable *connectable,
+		    xmlNode *node)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_devin_is_connected(AgsConnectable *connectable)
+{
+  AgsDevin *devin;
+  
+  gboolean is_connected;
+
+  pthread_mutex_t *devin_mutex;
+
+  devin = AGS_DEVIN(connectable);
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* check is connected */
+  pthread_mutex_lock(devin_mutex);
+
+  is_connected = (((AGS_DEVIN_CONNECTED & (devin->flags)) != 0) ? TRUE: FALSE);
+  
+  pthread_mutex_unlock(devin_mutex);
+  
+  return(is_connected);
 }
 
 void
 ags_devin_connect(AgsConnectable *connectable)
 {
   AgsDevin *devin;
-
-  GList *list;
+  
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
 
   devin = AGS_DEVIN(connectable);
 
-  /*  */  
-  list = devin->audio;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
+  ags_devin_set_flags(devin, AGS_DEVIN_CONNECTED);
 }
 
 void
 ags_devin_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+
+  AgsDevin *devin;
+
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  devin = AGS_DEVIN(connectable);
+  
+  ags_devin_unset_flags(devin, AGS_DEVIN_CONNECTED);
+}
+
+/**
+ * ags_devin_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_devin_get_class_mutex()
+{
+  return(&ags_devin_class_mutex);
+}
+
+/**
+ * ags_devin_test_flags:
+ * @devin: the #AgsDevin
+ * @flags: the flags
+ *
+ * Test @flags to be set on @devin.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_devin_test_flags(AgsDevin *devin, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *devin_mutex;
+
+  if(!AGS_IS_DEVIN(devin)){
+    return(FALSE);
+  }
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(devin_mutex);
+
+  retval = (flags & (devin->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(devin_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_devin_set_flags:
+ * @devin: the #AgsDevin
+ * @flags: see #AgsDevinFlags-enum
+ *
+ * Enable a feature of @devin.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_devin_set_flags(AgsDevin *devin, guint flags)
+{
+  pthread_mutex_t *devin_mutex;
+
+  if(!AGS_IS_DEVIN(devin)){
+    return;
+  }
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  //TODO:JK: add more?
+
+  /* set flags */
+  pthread_mutex_lock(devin_mutex);
+
+  devin->flags |= flags;
+  
+  pthread_mutex_unlock(devin_mutex);
+}
+    
+/**
+ * ags_devin_unset_flags:
+ * @devin: the #AgsDevin
+ * @flags: see #AgsDevinFlags-enum
+ *
+ * Disable a feature of @devin.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_devin_unset_flags(AgsDevin *devin, guint flags)
+{  
+  pthread_mutex_t *devin_mutex;
+
+  if(!AGS_IS_DEVIN(devin)){
+    return;
+  }
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  //TODO:JK: add more?
+
+  /* unset flags */
+  pthread_mutex_lock(devin_mutex);
+
+  devin->flags &= (~flags);
+  
+  pthread_mutex_unlock(devin_mutex);
 }
 
 /**
@@ -1284,8 +1522,23 @@ ags_devin_set_application_context(AgsSoundcard *soundcard,
 {
   AgsDevin *devin;
 
+  pthread_mutex_t *devin_mutex;
+
   devin = AGS_DEVIN(soundcard);
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* set application context */
+  pthread_mutex_lock(devin_mutex);
+  
   devin->application_context = (GObject *) application_context;
+  
+  pthread_mutex_unlock(devin_mutex);
 }
 
 AgsApplicationContext*
@@ -1293,29 +1546,27 @@ ags_devin_get_application_context(AgsSoundcard *soundcard)
 {
   AgsDevin *devin;
 
-  devin = AGS_DEVIN(soundcard);
-
-  return((AgsApplicationContext *) devin->application_context);
-}
-
-void
-ags_devin_set_application_mutex(AgsSoundcard *soundcard,
-				pthread_mutex_t *application_mutex)
-{
-  AgsDevin *devin;
-
-  devin = AGS_DEVIN(soundcard);
-  devin->application_mutex = application_mutex;
-}
-
-pthread_mutex_t*
-ags_devin_get_application_mutex(AgsSoundcard *soundcard)
-{
-  AgsDevin *devin;
+  AgsApplicationContext *application_context;
+  
+  pthread_mutex_t *devin_mutex;
 
   devin = AGS_DEVIN(soundcard);
 
-  return(devin->application_mutex);
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* get application context */
+  pthread_mutex_lock(devin_mutex);
+
+  application_context = (AgsApplicationContext *) devin->application_context;
+
+  pthread_mutex_unlock(devin_mutex);
+  
+  return(application_context);
 }
 
 void
@@ -2353,7 +2604,7 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
 	}
 	
 	/* Generate data in native endian format */
-	if(is_bigendian()){
+	if(ags_endian_host_is_be()){
 	  for(i = 0; i < bps; i++){
 	    *(ring_buffer + chn * bps + word_size - 1 - i) = (res >> i * 8) & 0xff;
 	  }

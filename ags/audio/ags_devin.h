@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -115,8 +115,12 @@ struct _AgsDevin
 
   guint flags;
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  AgsApplicationContext *application_context;
+
+  AgsUUID *uuid;
 
   guint dsp_channels;
   guint pcm_channels;
@@ -175,9 +179,6 @@ struct _AgsDevin
     }alsa;
 #endif
   }out;
-
-  GObject *application_context;
-  pthread_mutex_t *application_mutex;
 
   GList *poll_fd;
   GObject *notify_soundcard;

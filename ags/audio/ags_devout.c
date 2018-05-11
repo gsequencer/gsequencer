@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,10 +23,6 @@
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio_buffer_util.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
-#include <ags/thread/ags_poll_fd.h>
 
 #include <ags/audio/task/ags_tic_device.h>
 #include <ags/audio/task/ags_clear_buffer.h>
@@ -204,12 +200,7 @@ enum{
   PROP_ATTACK,
 };
 
-enum{
-  LAST_SIGNAL,
-};
-
 static gpointer ags_devout_parent_class = NULL;
-static guint devout_signals[LAST_SIGNAL];
 
 static pthread_mutex_t ags_devout_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -264,6 +255,7 @@ void
 ags_devout_class_init(AgsDevoutClass *devout)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_devout_parent_class = g_type_class_peek_parent(devout);
@@ -304,7 +296,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
   param_spec = g_param_spec_string("device",
 				   i18n_pspec("the device identifier"),
 				   i18n_pspec("The device to perform output to"),
-				   "hw:0",
+				   AGS_DEVOUT_DEFAULT_ALSA_DEVICE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVICE,
@@ -346,9 +338,6 @@ ags_devout_class_init(AgsDevoutClass *devout)
 				  PROP_PCM_CHANNELS,
 				  param_spec);
 
-  /*
-   * TODO:JK: add support for other quality than 16 bit
-   */
   /**
    * AgsDevout:format:
    *
@@ -360,7 +349,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
 				 i18n_pspec("precision of buffer"),
 				 i18n_pspec("The precision to use for a frame"),
 				 0,
-				 G_MAXUINT,
+				 G_MAXUINT32,
 				 AGS_SOUNDCARD_DEFAULT_FORMAT,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -468,8 +457,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
   g_object_class_install_property(gobject,
 				  PROP_ATTACK,
 				  param_spec);
-
-
+  
   /* AgsDevoutClass */
 }
 
@@ -567,9 +555,7 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
 void
 ags_devout_init(AgsDevout *devout)
-{
-  AgsMutexManager *mutex_manager;
-  
+{  
   AgsConfig *config;
   
   gchar *str;
@@ -578,10 +564,11 @@ ags_devout_init(AgsDevout *devout)
   guint denumerator, numerator;
   gboolean use_alsa;  
   
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
+  devout->flags = 0;
+  
   /* insert devout mutex */
   devout->obj_mutexattr = 
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
@@ -598,17 +585,6 @@ ags_devout_init(AgsDevout *devout)
     mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
-
-  ags_mutex_manager_insert(mutex_manager,
-			   (GObject *) devout,
-			   mutex);
-  
-  pthread_mutex_unlock(application_mutex);
 
   /* parent */
   devout->application_context = NULL;
@@ -644,11 +620,14 @@ ags_devout_init(AgsDevout *devout)
   }
 
   if(use_alsa){
-    devout->flags = (AGS_DEVOUT_ALSA);
+    devout->flags |= (AGS_DEVOUT_ALSA);
   }else{
-    devout->flags = (AGS_DEVOUT_OSS);
+    devout->flags |= (AGS_DEVOUT_OSS);
   }
 
+  g_free(str);
+
+  /* presets */
   devout->dsp_channels = ags_soundcard_helper_config_get_dsp_channels(config);
   devout->pcm_channels = ags_soundcard_helper_config_get_pcm_channels(config);
 
@@ -761,7 +740,7 @@ ags_devout_set_property(GObject *gobject,
 
       pthread_mutex_lock(devout_mutex);
 
-      if(devout->application_context == (GObject *) application_context){
+      if(devout->application_context == application_context){
 	pthread_mutex_unlock(devout_mutex);
 
 	return;
@@ -775,7 +754,7 @@ ags_devout_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(application_context));
       }
 
-      devout->application_context = (GObject *) application_context;
+      devout->application_context = application_context;
 
       pthread_mutex_unlock(devout_mutex);
     }
@@ -1169,7 +1148,6 @@ ags_devout_finalize(GObject *gobject)
   /* call parent */
   G_OBJECT_CLASS(ags_devout_parent_class)->finalize(gobject);
 }
-
 
 AgsUUID*
 ags_devout_get_uuid(AgsConnectable *connectable)
