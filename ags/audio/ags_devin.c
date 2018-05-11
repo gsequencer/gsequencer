@@ -202,7 +202,7 @@ enum{
 
 static gpointer ags_devin_parent_class = NULL;
 
-static pthread_mutex_t ags_devout_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t ags_devin_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_devin_get_type (void)
@@ -678,7 +678,7 @@ ags_devin_init(AgsDevin *devin)
 	   &denumerator,
 	   &numerator);
     
-    devout->delay_factor = 1.0 / numerator * (numerator / denumerator);
+    devin->delay_factor = 1.0 / numerator * (numerator / denumerator);
 
     g_free(segmentation);
   }
@@ -748,10 +748,6 @@ ags_devin_set_property(GObject *gobject,
 
       if(devin->application_context != NULL){
 	g_object_unref(G_OBJECT(devin->application_context));
-      }
-
-      if(application_context != NULL){
-	devin->application_mutex = application_context->mutex;
       }
 
       devin->application_context = application_context;
@@ -1463,59 +1459,6 @@ ags_devin_unset_flags(AgsDevin *devin, guint flags)
   pthread_mutex_unlock(devin_mutex);
 }
 
-/**
- * ags_devin_switch_buffer_flag:
- * @devin: an #AgsDevin
- *
- * The buffer flag indicates the currently recorded buffer.
- *
- * Since: 1.2.0
- */
-void
-ags_devin_switch_buffer_flag(AgsDevin *devin)
-{
-  AgsApplicationContext *application_context;
-  
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *mutex;
-  
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(devin));
-  
-  pthread_mutex_lock(application_context->mutex);
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) devin);
-  
-  pthread_mutex_unlock(application_context->mutex);
-
-  //  g_message("switch - 0x%0x", ((AGS_DEVIN_BUFFER0 |
-  //				  AGS_DEVIN_BUFFER1 |
-  //				  AGS_DEVIN_BUFFER2 |
-  //				  AGS_DEVIN_BUFFER3) & (devin->flags)));
-  
-  /* switch buffer flag */
-  pthread_mutex_lock(mutex);
-
-  if((AGS_DEVIN_BUFFER0 & (devin->flags)) != 0){
-    devin->flags &= (~AGS_DEVIN_BUFFER0);
-    devin->flags |= AGS_DEVIN_BUFFER1;
-  }else if((AGS_DEVIN_BUFFER1 & (devin->flags)) != 0){
-    devin->flags &= (~AGS_DEVIN_BUFFER1);
-    devin->flags |= AGS_DEVIN_BUFFER2;
-  }else if((AGS_DEVIN_BUFFER2 & (devin->flags)) != 0){
-    devin->flags &= (~AGS_DEVIN_BUFFER2);
-    devin->flags |= AGS_DEVIN_BUFFER3;
-  }else if((AGS_DEVIN_BUFFER3 & (devin->flags)) != 0){
-    devin->flags &= (~AGS_DEVIN_BUFFER3);
-    devin->flags |= AGS_DEVIN_BUFFER0;
-  }
-
-  pthread_mutex_unlock(mutex);
-}
-
 void
 ags_devin_set_application_context(AgsSoundcard *soundcard,
 				  AgsApplicationContext *application_context)
@@ -1576,9 +1519,19 @@ ags_devin_set_device(AgsSoundcard *soundcard,
   AgsDevin *devin;
 
   GList *card_id, *card_id_start, *card_name, *card_name_start;
+
+  pthread_mutex_t *devin_mutex;
   
   devin = AGS_DEVIN(soundcard);
 
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* list cards */
   card_id = NULL;
   card_name = NULL;
   
@@ -1588,6 +1541,9 @@ ags_devin_set_device(AgsSoundcard *soundcard,
   card_id_start = card_id;
   card_name_start = card_name;
   
+  /* check card */
+  pthread_mutex_lock(devin_mutex);
+
   while(card_id != NULL){
     if(!g_ascii_strncasecmp(card_id->data,
 			    device,
@@ -1604,6 +1560,9 @@ ags_devin_set_device(AgsSoundcard *soundcard,
     card_id = card_id->next;
   }
 
+  pthread_mutex_unlock(devin_mutex);
+
+  /* free card id and name */
   g_list_free_full(card_id_start,
 		   g_free);
   g_list_free_full(card_name_start,
@@ -1614,14 +1573,33 @@ gchar*
 ags_devin_get_device(AgsSoundcard *soundcard)
 {
   AgsDevin *devin;
+
+  gchar *device;
+  
+  pthread_mutex_t *devin_mutex;
   
   devin = AGS_DEVIN(soundcard);
   
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  device = NULL;
+  
+  pthread_mutex_lock(devin_mutex);
+
   if((AGS_DEVIN_ALSA & (devin->flags)) != 0){
-    return(devin->out.alsa.device);
-  }else{
-    return(devin->out.oss.device);
+    device = g_strdup(devin->out.alsa.device);
+  }else if((AGS_DEVIN_OSS & (devin->flags)) != 0){
+    device = g_strdup(devin->out.oss.device);
   }
+
+  pthread_mutex_unlock(devin_mutex);
+
+  return(device);
 }
 
 void
@@ -1634,6 +1612,7 @@ ags_devin_set_presets(AgsSoundcard *soundcard,
   AgsDevin *devin;
 
   devin = AGS_DEVIN(soundcard);
+
   g_object_set(devin,
 	       "pcm-channels", channels,
 	       "samplerate", rate,
@@ -1651,7 +1630,19 @@ ags_devin_get_presets(AgsSoundcard *soundcard,
 {
   AgsDevin *devin;
 
+  pthread_mutex_t *devin_mutex;
+
   devin = AGS_DEVIN(soundcard);
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* get presets */
+  pthread_mutex_lock(devin_mutex);
 
   if(channels != NULL){
     *channels = devin->pcm_channels;
@@ -1668,25 +1659,26 @@ ags_devin_get_presets(AgsSoundcard *soundcard,
   if(format != NULL){
     *format = devin->format;
   }
+
+  pthread_mutex_unlock(devin_mutex);
 }
 
-/**
- * ags_devin_list_cards:
- * @soundcard: the #AgsSoundcard
- * @card_id: alsa identifier
- * @card_name: card name
- *
- * List available soundcards.
- *
- * Since: 1.2.0
- */
 void
 ags_devin_list_cards(AgsSoundcard *soundcard,
 		     GList **card_id, GList **card_name)
 {
   AgsDevin *devin;
 
+  pthread_mutex_t *devin_mutex;
+
   devin = AGS_DEVIN(soundcard);
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
 
   if(card_id != NULL){
     *card_id = NULL;
@@ -1695,6 +1687,8 @@ ags_devin_list_cards(AgsSoundcard *soundcard,
   if(card_name != NULL){
     *card_name = NULL;
   }
+
+  pthread_mutex_lock(devin_mutex);
 
   if((AGS_DEVIN_ALSA & (devin->flags)) != 0){
 #ifdef AGS_WITH_ALSA
@@ -1855,6 +1849,8 @@ ags_devin_list_cards(AgsSoundcard *soundcard,
 #endif
   }
 
+  pthread_mutex_unlock(devin_mutex);
+
   if(card_id != NULL){
     *card_id = g_list_reverse(*card_id);
   }
@@ -1874,12 +1870,25 @@ ags_devin_pcm_info(AgsSoundcard *soundcard,
 {
   AgsDevin *devin;
 
+  pthread_mutex_t *devin_mutex;
+
   if(card_id == NULL){
     return;
   }
   
   devin = AGS_DEVIN(soundcard);
   
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* pcm info */
+  pthread_mutex_lock(devin_mutex);
+
   if((AGS_DEVIN_ALSA & (devin->flags)) != 0){
 #ifdef AGS_WITH_ALSA
     snd_pcm_t *handle;
@@ -1913,7 +1922,7 @@ ags_devin_pcm_info(AgsSoundcard *soundcard,
     
       //    free(str);
     
-      return;
+      goto ags_devin_pcm_info_ERR;
     }
 
     /* Allocate a hardware parameters object. */
@@ -1975,7 +1984,7 @@ ags_devin_pcm_info(AgsSoundcard *soundcard,
 		    str);
       }
     
-      return;      
+      goto ags_devin_pcm_info_ERR;
     }
     
     memset(&ainfo, 0, sizeof (ainfo));
@@ -1994,7 +2003,7 @@ ags_devin_pcm_info(AgsSoundcard *soundcard,
 	ainfo.dev = 0;
       }
     }else{
-      return;
+      goto ags_devin_pcm_info_ERR;
     }
     
     if(ioctl(mixerfd, cmd, &ainfo) == -1){
@@ -2011,7 +2020,7 @@ ags_devin_pcm_info(AgsSoundcard *soundcard,
 		    str);
       }
     
-      return;
+      goto ags_devin_pcm_info_ERR;
     }
   
     *channels_min = ainfo.min_channels;
@@ -2022,6 +2031,10 @@ ags_devin_pcm_info(AgsSoundcard *soundcard,
     *buffer_size_max = 8192;
 #endif
   }
+
+ ags_devin_pcm_info_ERR:
+
+  pthread_mutex_unlock(devin_mutex);
 }
 
 GList*
@@ -2037,18 +2050,34 @@ ags_devin_get_poll_fd(AgsSoundcard *soundcard)
   gint count;
   guint i;
 
+  pthread_mutex_t *devin_mutex;
+
   devin = AGS_DEVIN(soundcard);
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
   
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* get poll fd */
+  pthread_mutex_lock(devin_mutex);  
+
   if((AGS_DEVIN_ALSA & (devin->flags)) != 0){
     if(devin->out.alsa.handle == NULL){
+      pthread_mutex_unlock(devin_mutex);
+      
       return(NULL);
     }
-  }else{
+  }else if((AGS_DEVIN_OSS & (devin->flags)) != 0){
     if(devin->out.oss.device_fd == -1){
+      pthread_mutex_unlock(devin_mutex);
+      
       return(NULL);
     }
   }
-  
+
   if(devin->poll_fd == NULL){
     count = 0;
     
@@ -2086,6 +2115,8 @@ ags_devin_get_poll_fd(AgsSoundcard *soundcard)
   }else{
     list = devin->poll_fd;
   }
+
+  pthread_mutex_unlock(devin_mutex);
   
   return(list);
 }
@@ -2094,11 +2125,28 @@ gboolean
 ags_devin_is_available(AgsSoundcard *soundcard)
 {
   AgsDevin *devin;
+
   GList *list;
+
+  gboolean retval;
+  
+  pthread_mutex_t *devin_mutex;
   
   devin = AGS_DEVIN(soundcard);
   
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* check available */
+  pthread_mutex_lock(devin_mutex);
+
   list = devin->poll_fd;
+
+  retval = FALSE;
 
   while(list !=	NULL){
     signed short revents;
@@ -2113,7 +2161,9 @@ ags_devin_is_available(AgsSoundcard *soundcard)
 			 TRUE);
 	AGS_POLL_FD(list->data)->poll_fd->revents = 0;
 
-  	return(TRUE);
+  	retval = TRUE;
+
+	break;
       }
     }else{
 #ifdef AGS_WITH_OSS
@@ -2127,7 +2177,9 @@ ags_devin_is_available(AgsSoundcard *soundcard)
 			 TRUE);
 	AGS_POLL_FD(list->data)->poll_fd->revents = 0;
 
-	return(TRUE);
+  	retval = TRUE;
+
+	break;
       }
 #endif
     }
@@ -2135,7 +2187,9 @@ ags_devin_is_available(AgsSoundcard *soundcard)
     list = list->next;
   }
   
-  return(FALSE);
+  pthread_mutex_unlock(devin_mutex);
+
+  return(retval);
 }
 
 gboolean
@@ -2143,9 +2197,27 @@ ags_devin_is_starting(AgsSoundcard *soundcard)
 {
   AgsDevin *devin;
 
-  devin = AGS_DEVIN(soundcard);
+  gboolean is_starting;
   
-  return(((AGS_DEVIN_START_RECORD & (devin->flags)) != 0) ? TRUE: FALSE);
+  pthread_mutex_t *devin_mutex;
+  
+  devin = AGS_DEVIN(soundcard);
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* check is starting */
+  pthread_mutex_lock(devin_mutex);
+
+  is_starting = ((AGS_DEVIN_START_RECORD & (devin->flags)) != 0) ? TRUE: FALSE;
+
+  pthread_mutex_unlock(devin_mutex);
+  
+  return(is_starting);
 }
 
 gboolean
@@ -2153,9 +2225,27 @@ ags_devin_is_recording(AgsSoundcard *soundcard)
 {
   AgsDevin *devin;
 
+  gboolean is_recording;
+  
+  pthread_mutex_t *devin_mutex;
+
   devin = AGS_DEVIN(soundcard);
   
-  return(((AGS_DEVIN_RECORD & (devin->flags)) != 0) ? TRUE: FALSE);
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* check is starting */
+  pthread_mutex_lock(devin_mutex);
+
+  is_recording = ((AGS_DEVIN_RECORD & (devin->flags)) != 0) ? TRUE: FALSE;
+
+  pthread_mutex_unlock(devin_mutex);
+
+  return(is_recording);
 }
 
 gchar*
@@ -2206,10 +2296,10 @@ ags_devin_delegate_record_init(AgsSoundcard *soundcard,
 
   devin = AGS_DEVIN(soundcard);
 
-  if((AGS_DEVIN_ALSA & (devin->flags)) != 0){
+  if(ags_devin_test_flags(devin, AGS_DEVIN_ALSA)){
     ags_devin_alsa_init(soundcard,
 			error);
-  }else if((AGS_DEVIN_OSS & (devin->flags)) != 0){
+  }else if(ags_devin_test_flags(devin, AGS_DEVIN_OSS)){
     ags_devin_oss_init(soundcard,
 		       error);
   }
@@ -2223,10 +2313,10 @@ ags_devin_delegate_record(AgsSoundcard *soundcard,
 
   devin = AGS_DEVIN(soundcard);
 
-  if((AGS_DEVIN_ALSA & (devin->flags)) != 0){
+  if(ags_devin_test_flags(devin, AGS_DEVIN_ALSA)){
     ags_devin_alsa_record(soundcard,
 			  error);
-  }else if((AGS_DEVIN_OSS & (devin->flags)) != 0){
+  }else if(ags_devin_test_flags(devin, AGS_DEVIN_OSS)){
     ags_devin_oss_record(soundcard,
 			 error);
   }
@@ -2239,9 +2329,9 @@ ags_devin_delegate_stop(AgsSoundcard *soundcard)
 
   devin = AGS_DEVIN(soundcard);
 
-  if((AGS_DEVIN_ALSA & (devin->flags)) != 0){
+  if(ags_devin_test_flags(devin, AGS_DEVIN_ALSA)){
     ags_devin_alsa_free(soundcard);
-  }else if((AGS_DEVIN_OSS & (devin->flags)) != 0){
+  }else if(ags_devin_test_flags(devin, AGS_DEVIN_OSS)){
     ags_devin_oss_free(soundcard);
   }
 }
@@ -2252,10 +2342,6 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
 {
   AgsDevin *devin;
   
-  AgsMutexManager *mutex_manager;
-
-  AgsApplicationContext *application_context;
-
   gchar *str;
 
   guint word_size;
@@ -2263,23 +2349,19 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
   int tmp;
   guint i;
 
-  pthread_mutex_t *mutex;
+  pthread_mutex_t *devin_mutex;
 
   devin = AGS_DEVIN(soundcard);
 
-  application_context = ags_soundcard_get_application_context(soundcard);
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
   
-  pthread_mutex_lock(application_context->mutex);
+  devin_mutex = devin->obj_mutex;
   
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) devin);
-  
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
 
   /* retrieve word size */
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(devin_mutex);
 
   switch(devin->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -2356,7 +2438,7 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
   devin->out.oss.device_fd = open(str, O_RDONLY, 0);
 
   if(devin->out.oss.device_fd == -1){
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(devin_mutex);
 
     g_warning("couldn't open device %s", devin->out.oss.device);
 
@@ -2378,7 +2460,7 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
   tmp = format;
 
   if(ioctl(devin->out.oss.device_fd, SNDCTL_DSP_SETFMT, &tmp) == -1){
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(devin_mutex);
 
     str = strerror(errno);
     g_warning("failed to select bits/sample");
@@ -2397,7 +2479,7 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
   }
   
   if(tmp != format){
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(devin_mutex);
 
     str = strerror(errno);
     g_warning("failed to select bits/sample");
@@ -2418,7 +2500,7 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
   tmp = devin->dsp_channels;
 
   if(ioctl(devin->out.oss.device_fd, SNDCTL_DSP_CHANNELS, &tmp) == -1){
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(devin_mutex);
 
     str = strerror(errno);
     g_warning("Channels count (%i) not available for recordbacks: %s", devin->dsp_channels, str);
@@ -2437,7 +2519,7 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
   }
 
   if(tmp != devin->dsp_channels){
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(devin_mutex);
 
     str = strerror(errno);
     g_warning("Channels count (%i) not available for capture: %s", devin->dsp_channels, str);
@@ -2458,7 +2540,7 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
   tmp = devin->samplerate;
 
   if(ioctl(devin->out.oss.device_fd, SNDCTL_DSP_SPEED, &tmp) == -1){
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(devin_mutex);
 
     str = strerror(errno);
     g_warning("Rate %iHz not available for capture: %s", devin->samplerate, str);
@@ -2499,7 +2581,7 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
 		     AGS_DEVIN_BUFFER2 |
 		     AGS_DEVIN_BUFFER3));
   
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(devin_mutex);
 }
 
 void
@@ -2515,7 +2597,6 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
   
   AgsThread *task_thread;
   AgsPollFd *poll_fd;
-  AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
 
@@ -2529,7 +2610,7 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
 
   int n_write;
   
-  pthread_mutex_t *mutex;
+  pthread_mutex_t *devin_mutex;
 
   static const struct timespec poll_interval = {
     0,
@@ -2621,20 +2702,18 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
   
   devin = AGS_DEVIN(soundcard);
 
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
   /* retrieve mutex */
   application_context = ags_soundcard_get_application_context(soundcard);
   
-  pthread_mutex_lock(application_context->mutex);
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) devin);
-  
-  pthread_mutex_unlock(application_context->mutex);
-
   /* lock */
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(devin_mutex);
 
   notify_soundcard = AGS_NOTIFY_SOUNDCARD(devin->notify_soundcard);
   
@@ -2686,7 +2765,7 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
   devin->flags &= (~AGS_DEVIN_START_RECORD);
 
   if((AGS_DEVIN_INITIALIZED & (devin->flags)) == 0){
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(devin_mutex);
     
     return;
   }
@@ -2748,11 +2827,12 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
     devin->nth_ring_buffer += 1;
   }
   
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(devin_mutex);
 
   /* update soundcard */
-  task_thread = ags_thread_find_type((AgsThread *) application_context->main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  g_object_get(application_context,
+	       "task-thread", &task_thread,
+	       NULL);
   task = NULL;
   
   /* tic soundcard */
@@ -2786,32 +2866,24 @@ ags_devin_oss_free(AgsSoundcard *soundcard)
   AgsDevin *devin;
 
   AgsNotifySoundcard *notify_soundcard;
-  
-  AgsMutexManager *mutex_manager;
-
-  AgsApplicationContext *application_context;
 
   GList *poll_fd;
 
   guint i;
   
-  pthread_mutex_t *mutex;
+  pthread_mutex_t *devin_mutex;
   
   devin = AGS_DEVIN(soundcard);
-  
-  application_context = ags_soundcard_get_application_context(soundcard);
-  
-  pthread_mutex_lock(application_context->mutex);
-  
-  mutex_manager = ags_mutex_manager_get_instance();
 
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) devin);
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
   
-  pthread_mutex_unlock(application_context->mutex);
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
 
   /*  */
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(devin_mutex);
 
 #ifdef AGS_WITH_OSS
   /* remove poll fd */
@@ -2833,7 +2905,7 @@ ags_devin_oss_free(AgsSoundcard *soundcard)
   notify_soundcard = AGS_NOTIFY_SOUNDCARD(devin->notify_soundcard);
 
   if((AGS_DEVIN_INITIALIZED & (devin->flags)) == 0){
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(devin_mutex);
     
     return;
   }
@@ -2876,7 +2948,7 @@ ags_devin_oss_free(AgsSoundcard *soundcard)
   devin->note_offset = 0;
   devin->note_offset_absolute = 0;
 
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(devin_mutex);
 }
 
 void
@@ -2884,10 +2956,6 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
 		    GError **error)
 {
   AgsDevin *devin;
-
-  AgsMutexManager *mutex_manager;
-
-  AgsApplicationContext *application_context;
 
 #ifdef AGS_WITH_ALSA
 
@@ -2916,26 +2984,22 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   guint word_size;
   guint i;
   
-  pthread_mutex_t *mutex; 
+  pthread_mutex_t *devin_mutex; 
  
   static unsigned int period_time = 100000;
   static unsigned int buffer_time = 100000;
 
   devin = AGS_DEVIN(soundcard);
 
-  application_context = ags_soundcard_get_application_context(soundcard);
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
   
-  pthread_mutex_lock(application_context->mutex);
+  devin_mutex = devin->obj_mutex;
   
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) devin);
-  
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
 
   /* retrieve word size */
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(devin_mutex);
 
   switch(devin->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -2981,7 +3045,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
     }
     break;
   default:
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(devin_mutex);
 
     g_warning("ags_devin_alsa_init(): unsupported word size");
 
@@ -3017,7 +3081,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   
   /* Open PCM device for capture. */
   if ((err = snd_pcm_open(&handle, devin->out.alsa.device, SND_PCM_STREAM_CAPTURE, 0)) < 0) {
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
     g_warning("Capture open error: %s", str);
@@ -3042,7 +3106,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   err = snd_pcm_hw_params_any(handle, hwparams);
 
   if (err < 0) {
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
     g_warning("Broken configuration for capture: no configurations available: %s", str);
@@ -3065,7 +3129,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   /* set hardware resampling * /
      err = snd_pcm_hw_params_set_rate_resample(handle, hwparams, 0);
      if (err < 0) {
-     pthread_mutex_unlock(mutex);
+     pthread_mutex_unlock(devin_mutex);
 
      str = snd_strerror(err);
      g_warning("Resampling setup failed for capture: %s\n", str);
@@ -3079,7 +3143,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   /* set the interleaved read/write format */
   err = snd_pcm_hw_params_set_access(handle, hwparams, SND_PCM_ACCESS_RW_INTERLEAVED);
   if (err < 0) {
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
     g_warning("Access type not available for capture: %s", str);
@@ -3102,7 +3166,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   /* set the sample format */
   err = snd_pcm_hw_params_set_format(handle, hwparams, format);
   if (err < 0) {
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
     g_warning("Sample format not available for capture: %s", str);
@@ -3126,7 +3190,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   channels = devin->pcm_channels;
   err = snd_pcm_hw_params_set_channels(handle, hwparams, channels);
   if (err < 0) {
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
     g_warning("Channels count (%i) not available for capture: %s", channels, str);
@@ -3151,7 +3215,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   rrate = rate;
   err = snd_pcm_hw_params_set_rate_near(handle, hwparams, &rrate, 0);
   if (err < 0) {
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
     g_warning("Rate %iHz not available for capture: %s", rate, str);
@@ -3172,7 +3236,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   }
 
   if (rrate != rate) {
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(devin_mutex);
     g_warning("Rate doesn't match (requested %iHz, get %iHz)", rate, err);
 
     if(error != NULL){
@@ -3192,7 +3256,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   size = 2 * devin->buffer_size;
   err = snd_pcm_hw_params_set_buffer_size(handle, hwparams, size);
   if (err < 0) {
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
     g_warning("Unable to set buffer size %lu for capture: %s", size, str);
@@ -3216,7 +3280,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
      period_size = devin->buffer_size;
      err = snd_pcm_hw_params_set_period_size_near(handle, hwparams, period_size, dir);
      if (err < 0) {
-     pthread_mutex_unlock(mutex);
+     pthread_mutex_unlock(devin_mutex);
 
      str = snd_strerror(err);
      g_warning("Unable to get period size for capture: %s\n", str);
@@ -3230,7 +3294,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   /* write the parameters to device */
   err = snd_pcm_hw_params(handle, hwparams);
   if (err < 0) {
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
     g_warning("Unable to set hw params for capture: %s", str);
@@ -3253,7 +3317,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   /* get the current swparams * /
      err = snd_pcm_sw_params_current(handle, swparams);
      if (err < 0) {
-     pthread_mutex_unlock(mutex);
+     pthread_mutex_unlock(devin_mutex);
 
      str = snd_strerror(err);
      g_warning("Unable to determine current swparams for capture: %s\n", str);
@@ -3267,7 +3331,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   /* (buffer_size / avail_min) * avail_min * /
      err = snd_pcm_sw_params_set_start_threshold(handle, swparams, (buffer_size / period_size) * period_size);
      if (err < 0) {
-     pthread_mutex_unlock(mutex);
+     pthread_mutex_unlock(devin_mutex);
 
      str = snd_strerror(err);
      g_warning("Unable to set start threshold mode for capture: %s\n", str);
@@ -3281,7 +3345,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   /* or disable this mechanism when period event is enabled (aka interrupt like style processing) * /
      err = snd_pcm_sw_params_set_avail_min(handle, swparams, period_event ? buffer_size : period_size);
      if (err < 0) {
-     pthread_mutex_unlock(mutex);
+     pthread_mutex_unlock(devin_mutex);
 
      str = snd_strerror(err);
      g_warning("Unable to set avail min for capture: %s\n", str);
@@ -3294,7 +3358,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
      /* write the parameters to the capture device * /
      err = snd_pcm_sw_params(handle, swparams);
      if (err < 0) {
-     pthread_mutex_unlock(mutex);
+     pthread_mutex_unlock(devin_mutex);
 
      str = snd_strerror(err);
      g_warning("Unable to set sw params for capture: %s\n", str);
@@ -3325,7 +3389,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
 		     AGS_DEVIN_BUFFER2 |
 		     AGS_DEVIN_BUFFER3));
   
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(devin_mutex);
 }
 
 void
@@ -3341,7 +3405,6 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
   
   AgsThread *task_thread;
   AgsPollFd *poll_fd;
-  AgsMutexManager *mutex_manager;
 
   AgsApplicationContext *application_context;
 
@@ -3353,7 +3416,7 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
   guint word_size;
   guint nth_buffer;
   
-  pthread_mutex_t *mutex;
+  pthread_mutex_t *devin_mutex;
 
   static const struct timespec poll_interval = {
     0,
@@ -3465,20 +3528,15 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
   
   devin = AGS_DEVIN(soundcard);
 
-  /*  */
-  application_context = ags_soundcard_get_application_context(soundcard);
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
   
-  pthread_mutex_lock(application_context->mutex);
+  devin_mutex = devin->obj_mutex;
   
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) devin);
-  
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
 
   /* lock */
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(devin_mutex);
 
   notify_soundcard = AGS_NOTIFY_SOUNDCARD(devin->notify_soundcard);
 
@@ -3522,7 +3580,7 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
     }
     break;
   default:
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(devin_mutex);
     
     g_warning("ags_devin_alsa_record(): unsupported word size");
 
@@ -3533,7 +3591,7 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
   devin->flags &= (~AGS_DEVIN_START_RECORD);
 
   if((AGS_DEVIN_INITIALIZED & (devin->flags)) == 0){
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(devin_mutex);
     
     return;
   }
@@ -3632,11 +3690,12 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
     devin->nth_ring_buffer += 1;
   }
   
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(devin_mutex);
 
   /* update soundcard */
-  task_thread = ags_thread_find_type((AgsThread *) application_context->main_loop,
-				     AGS_TYPE_TASK_THREAD);
+  g_object_get(application_context,
+	       "task-thread", &task_thread,
+	       NULL);
   task = NULL;
   
   /* tic soundcard */
@@ -3678,23 +3737,19 @@ ags_devin_alsa_free(AgsSoundcard *soundcard)
 
   guint i;
   
-  pthread_mutex_t *mutex;
+  pthread_mutex_t *devin_mutex;
   
   devin = AGS_DEVIN(soundcard);
-  
-  application_context = ags_soundcard_get_application_context(soundcard);
-  
-  pthread_mutex_lock(application_context->mutex);
-  
-  mutex_manager = ags_mutex_manager_get_instance();
 
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) devin);
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
   
-  pthread_mutex_unlock(application_context->mutex);
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
 
   /* lock */
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(devin_mutex);
 
 #ifdef AGS_WITH_ALSA
   /* remove poll fd */
@@ -3716,7 +3771,7 @@ ags_devin_alsa_free(AgsSoundcard *soundcard)
   notify_soundcard = AGS_NOTIFY_SOUNDCARD(devin->notify_soundcard);
 
   if((AGS_DEVIN_INITIALIZED & (devin->flags)) == 0){
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(devin_mutex);
     
     return;
   }
@@ -3759,42 +3814,78 @@ ags_devin_alsa_free(AgsSoundcard *soundcard)
   devin->note_offset = 0;
   devin->note_offset_absolute = 0;
 
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(devin_mutex);
 }
 
 void
 ags_devin_tic(AgsSoundcard *soundcard)
 {
   AgsDevin *devin;
+
   gdouble delay;
+  gdouble delay_counter;
+  guint note_offset_absolute;
+  guint note_offset;
+  guint loop_left, loop_right;
+  gboolean do_loop;
+  
+  pthread_mutex_t *devin_mutex;
   
   devin = AGS_DEVIN(soundcard);
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
   
   /* determine if attack should be switched */
-  delay = devin->delay[devin->tic_counter];
+  pthread_mutex_lock(devin_mutex);
 
-  if((guint) devin->delay_counter + 1 >= (guint) delay){
-    if(devin->do_loop &&
-       devin->note_offset + 1 == devin->loop_right){
+  delay = devin->delay[devin->tic_counter];
+  delay_counter = devin->delay_counter;
+
+  note_offset = devin->note_offset;
+  note_offset_absolute = devin->note_offset_absolute;
+  
+  loop_left = devin->loop_left;
+  loop_right = devin->loop_right;
+  
+  do_loop = devin->do_loop;
+
+  pthread_mutex_unlock(devin_mutex);
+
+  if((guint) delay_counter + 1 >= (guint) delay){
+    if(do_loop &&
+       note_offset + 1 == loop_right){
       ags_soundcard_set_note_offset(soundcard,
-				    devin->loop_left);
+				    loop_left);
     }else{
       ags_soundcard_set_note_offset(soundcard,
-				    devin->note_offset + 1);
+				    note_offset + 1);
     }
     
     ags_soundcard_set_note_offset_absolute(soundcard,
-					   devin->note_offset_absolute + 1);
+					   note_offset_absolute + 1);
 
     /* delay */
     ags_soundcard_offset_changed(soundcard,
-				 devin->note_offset);
+				 note_offset);
     
     /* reset - delay counter */
+    pthread_mutex_lock(devin_mutex);
+    
     devin->delay_counter = 0.0;
     devin->tact_counter += 1.0;
+
+    pthread_mutex_unlock(devin_mutex);
   }else{
+    pthread_mutex_lock(devin_mutex);
+    
     devin->delay_counter += 1.0;
+
+    pthread_mutex_unlock(devin_mutex);
   }
 }
 
@@ -3804,7 +3895,19 @@ ags_devin_offset_changed(AgsSoundcard *soundcard,
 {
   AgsDevin *devin;
   
+  pthread_mutex_t *devin_mutex;
+  
   devin = AGS_DEVIN(soundcard);
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* offset changed */
+  pthread_mutex_lock(devin_mutex);
 
   devin->tic_counter += 1;
 
@@ -3812,6 +3915,8 @@ ags_devin_offset_changed(AgsSoundcard *soundcard,
     /* reset - tic counter i.e. modified delay index within period */
     devin->tic_counter = 0;
   }
+
+  pthread_mutex_unlock(devin_mutex);
 }
 
 void
@@ -3820,9 +3925,23 @@ ags_devin_set_bpm(AgsSoundcard *soundcard,
 {
   AgsDevin *devin;
 
+  pthread_mutex_t *devin_mutex;
+  
   devin = AGS_DEVIN(soundcard);
 
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* set bpm */
+  pthread_mutex_lock(devin_mutex);
+
   devin->bpm = bpm;
+
+  pthread_mutex_unlock(devin_mutex);
 
   ags_devin_adjust_delay_and_attack(devin);
 }
@@ -3831,10 +3950,28 @@ gdouble
 ags_devin_get_bpm(AgsSoundcard *soundcard)
 {
   AgsDevin *devin;
+
+  gdouble bpm;
+  
+  pthread_mutex_t *devin_mutex;
   
   devin = AGS_DEVIN(soundcard);
 
-  return(devin->bpm);
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* get bpm */
+  pthread_mutex_lock(devin_mutex);
+
+  bpm = devin->bpm;
+  
+  pthread_mutex_unlock(devin_mutex);
+
+  return(bpm);
 }
 
 void
@@ -3843,9 +3980,23 @@ ags_devin_set_delay_factor(AgsSoundcard *soundcard,
 {
   AgsDevin *devin;
 
+  pthread_mutex_t *devin_mutex;
+  
   devin = AGS_DEVIN(soundcard);
 
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* set delay factor */
+  pthread_mutex_lock(devin_mutex);
+
   devin->delay_factor = delay_factor;
+
+  pthread_mutex_unlock(devin_mutex);
 
   ags_devin_adjust_delay_and_attack(devin);
 }
@@ -3854,22 +4005,59 @@ gdouble
 ags_devin_get_delay_factor(AgsSoundcard *soundcard)
 {
   AgsDevin *devin;
+
+  gdouble delay_factor;
+  
+  pthread_mutex_t *devin_mutex;
   
   devin = AGS_DEVIN(soundcard);
 
-  return(devin->delay_factor);
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* get delay factor */
+  pthread_mutex_lock(devin_mutex);
+
+  delay_factor = devin->delay_factor;
+  
+  pthread_mutex_unlock(devin_mutex);
+
+  return(delay_factor);
 }
 
 gdouble
 ags_devin_get_delay(AgsSoundcard *soundcard)
 {
   AgsDevin *devin;
+
   guint index;
+  gdouble delay;
+  
+  pthread_mutex_t *devin_mutex;
   
   devin = AGS_DEVIN(soundcard);
-  index = devin->tic_counter;
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
   
-  return(devin->delay[index]);
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* get delay */
+  pthread_mutex_lock(devin_mutex);
+
+  index = devin->tic_counter;
+
+  delay = devin->delay[index];
+  
+  pthread_mutex_unlock(devin_mutex);
+  
+  return(delay);
 }
 
 gdouble
@@ -3877,38 +4065,76 @@ ags_devin_get_absolute_delay(AgsSoundcard *soundcard)
 {
   AgsDevin *devin;
 
+  gdouble absolute_delay;
+  
+  pthread_mutex_t *devin_mutex;
+  
   devin = AGS_DEVIN(soundcard);
   
-  return((60.0 * (((gdouble) devin->samplerate / (gdouble) devin->buffer_size) / (gdouble) devin->bpm) * ((1.0 / 16.0) * (1.0 / (gdouble) devin->delay_factor))));
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* get absolute delay */
+  pthread_mutex_lock(devin_mutex);
+
+  absolute_delay = (60.0 * (((gdouble) devin->samplerate / (gdouble) devin->buffer_size) / (gdouble) devin->bpm) * ((1.0 / 16.0) * (1.0 / (gdouble) devin->delay_factor)));
+
+  pthread_mutex_unlock(devin_mutex);
+
+  return(absolute_delay);
 }
 
 guint
 ags_devin_get_attack(AgsSoundcard *soundcard)
 {
   AgsDevin *devin;
+
   guint index;
+  guint attack;
   
+  pthread_mutex_t *devin_mutex;  
+
   devin = AGS_DEVIN(soundcard);
-  index = devin->tic_counter;
   
-  return(devin->attack[index]);
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* get attack */
+  pthread_mutex_lock(devin_mutex);
+
+  index = devin->tic_counter;
+
+  attack = devin->attack[index];
+
+  pthread_mutex_unlock(devin_mutex);
+  
+  return(attack);
 }
 
 void*
 ags_devin_get_buffer(AgsSoundcard *soundcard)
 {
   AgsDevin *devin;
+
   void *buffer;
   
   devin = AGS_DEVIN(soundcard);
 
-  if((AGS_DEVIN_BUFFER0 & (devin->flags)) != 0){
+  if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER0)){
     buffer = devin->buffer[0];
-  }else if((AGS_DEVIN_BUFFER1 & (devin->flags)) != 0){
+  }else if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER1)){
     buffer = devin->buffer[1];
-  }else if((AGS_DEVIN_BUFFER2 & (devin->flags)) != 0){
+  }else if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER2)){
     buffer = devin->buffer[2];
-  }else if((AGS_DEVIN_BUFFER3 & (devin->flags)) != 0){
+  }else if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER3)){
     buffer = devin->buffer[3];
   }else{
     buffer = NULL;
@@ -3921,6 +4147,7 @@ void*
 ags_devin_get_next_buffer(AgsSoundcard *soundcard)
 {
   AgsDevin *devin;
+
   void *buffer;
   
   devin = AGS_DEVIN(soundcard);
@@ -3929,14 +4156,14 @@ ags_devin_get_next_buffer(AgsSoundcard *soundcard)
   //				AGS_DEVIN_BUFFER1 |
   //				AGS_DEVIN_BUFFER2 |
   //				AGS_DEVIN_BUFFER3) & (devin->flags)));
-  
-  if((AGS_DEVIN_BUFFER0 & (devin->flags)) != 0){
+
+  if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER0)){
     buffer = devin->buffer[1];
-  }else if((AGS_DEVIN_BUFFER1 & (devin->flags)) != 0){
+  }else if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER1)){
     buffer = devin->buffer[2];
-  }else if((AGS_DEVIN_BUFFER2 & (devin->flags)) != 0){
+  }else if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER2)){
     buffer = devin->buffer[3];
-  }else if((AGS_DEVIN_BUFFER3 & (devin->flags)) != 0){
+  }else if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER3)){
     buffer = devin->buffer[0];
   }else{
     buffer = NULL;
@@ -3949,17 +4176,18 @@ void*
 ags_devin_get_prev_buffer(AgsSoundcard *soundcard)
 {
   AgsDevin *devin;
+
   void *buffer;
   
   devin = AGS_DEVIN(soundcard);
 
-  if((AGS_DEVIN_BUFFER0 & (devin->flags)) != 0){
+  if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER0)){
     buffer = devin->buffer[3];
-  }else if((AGS_DEVIN_BUFFER1 & (devin->flags)) != 0){
+  }else if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER1)){
     buffer = devin->buffer[0];
-  }else if((AGS_DEVIN_BUFFER2 & (devin->flags)) != 0){
+  }else if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER2)){
     buffer = devin->buffer[1];
-  }else if((AGS_DEVIN_BUFFER3 & (devin->flags)) != 0){
+  }else if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER3)){
     buffer = devin->buffer[2];
   }else{
     buffer = NULL;
@@ -3971,33 +4199,135 @@ ags_devin_get_prev_buffer(AgsSoundcard *soundcard)
 guint
 ags_devin_get_delay_counter(AgsSoundcard *soundcard)
 {
-  return(AGS_DEVIN(soundcard)->delay_counter);
+  AgsDevin *devin;
+
+  guint delay_counter;
+  
+  pthread_mutex_t *devin_mutex;  
+
+  devin = AGS_DEVIN(soundcard);
+  
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* delay counter */
+  pthread_mutex_lock(devin_mutex);
+
+  delay_counter = devin->delay_counter;
+  
+  pthread_mutex_unlock(devin_mutex);
+
+  return(delay_counter);
 }
 
 void
 ags_devin_set_note_offset(AgsSoundcard *soundcard,
 			  guint note_offset)
 {
-  AGS_DEVIN(soundcard)->note_offset = note_offset;
+  AgsDevin *devin;
+
+  pthread_mutex_t *devin_mutex;  
+
+  devin = AGS_DEVIN(soundcard);
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(devin_mutex);
+
+  devin->note_offset = note_offset;
+
+  pthread_mutex_unlock(devin_mutex);
 }
 
 guint
 ags_devin_get_note_offset(AgsSoundcard *soundcard)
 {
-  return(AGS_DEVIN(soundcard)->note_offset);
+  AgsDevin *devin;
+
+  guint note_offset;
+  
+  pthread_mutex_t *devin_mutex;  
+
+  devin = AGS_DEVIN(soundcard);
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(devin_mutex);
+
+  note_offset = devin->note_offset;
+
+  pthread_mutex_unlock(devin_mutex);
+
+  return(note_offset);
 }
 
 void
 ags_devin_set_note_offset_absolute(AgsSoundcard *soundcard,
-				   guint note_offset)
+				   guint note_offset_absolute)
 {
-  AGS_DEVIN(soundcard)->note_offset_absolute = note_offset;
+  AgsDevin *devin;
+  
+  pthread_mutex_t *devin_mutex;  
+
+  devin = AGS_DEVIN(soundcard);
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(devin_mutex);
+
+  devin->note_offset_absolute = note_offset_absolute;
+
+  pthread_mutex_unlock(devin_mutex);
 }
 
 guint
 ags_devin_get_note_offset_absolute(AgsSoundcard *soundcard)
 {
-  return(AGS_DEVIN(soundcard)->note_offset_absolute);
+  AgsDevin *devin;
+
+  guint note_offset_absolute;
+  
+  pthread_mutex_t *devin_mutex;  
+
+  devin = AGS_DEVIN(soundcard);
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(devin_mutex);
+
+  note_offset_absolute = devin->note_offset_absolute;
+
+  pthread_mutex_unlock(devin_mutex);
+
+  return(note_offset_absolute);
 }
 
 void
@@ -4005,13 +4335,31 @@ ags_devin_set_loop(AgsSoundcard *soundcard,
 		   guint loop_left, guint loop_right,
 		   gboolean do_loop)
 {
-  AGS_DEVIN(soundcard)->loop_left = loop_left;
-  AGS_DEVIN(soundcard)->loop_right = loop_right;
-  AGS_DEVIN(soundcard)->do_loop = do_loop;
+  AgsDevin *devin;
+
+  pthread_mutex_t *devin_mutex;  
+
+  devin = AGS_DEVIN(soundcard);
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* set loop */
+  pthread_mutex_lock(devin_mutex);
+
+  devin->loop_left = loop_left;
+  devin->loop_right = loop_right;
+  devin->do_loop = do_loop;
 
   if(do_loop){
-    AGS_DEVIN(soundcard)->loop_offset = AGS_DEVIN(soundcard)->note_offset;
+    devin->loop_offset = devin->note_offset;
   }
+
+  pthread_mutex_unlock(devin_mutex);
 }
 
 void
@@ -4019,43 +4367,107 @@ ags_devin_get_loop(AgsSoundcard *soundcard,
 		   guint *loop_left, guint *loop_right,
 		   gboolean *do_loop)
 {
+  AgsDevin *devin;
+
+  pthread_mutex_t *devin_mutex;  
+
+  devin = AGS_DEVIN(soundcard);
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* get loop */
+  pthread_mutex_lock(devin_mutex);
+
   if(loop_left != NULL){
-    *loop_left = AGS_DEVIN(soundcard)->loop_left;
+    *loop_left = devin->loop_left;
   }
 
   if(loop_right != NULL){
-    *loop_right = AGS_DEVIN(soundcard)->loop_right;
+    *loop_right = devin->loop_right;
   }
 
   if(do_loop != NULL){
-    *do_loop = AGS_DEVIN(soundcard)->do_loop;
+    *do_loop = devin->do_loop;
   }
+
+  pthread_mutex_unlock(devin_mutex);
 }
 
 guint
 ags_devin_get_loop_offset(AgsSoundcard *soundcard)
 {
-  return(AGS_DEVIN(soundcard)->loop_offset);
+  AgsDevin *devin;
+
+  guint loop_offset;
+  
+  pthread_mutex_t *devin_mutex;  
+
+  devin = AGS_DEVIN(soundcard);
+
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* get loop offset */
+  pthread_mutex_lock(devin_mutex);
+
+  loop_offset = devin->loop_offset;
+  
+  pthread_mutex_unlock(devin_mutex);
+
+  return(loop_offset);
 }
 
+/**
+ * ags_devin_switch_buffer_flag:
+ * @devin: the #AgsDevin
+ *
+ * The buffer flag indicates the currently recorded buffer.
+ *
+ * Since: 2.0.0
+ */
 void
-ags_devin_set_audio(AgsSoundcard *soundcard,
-		    GList *audio)
+ags_devin_switch_buffer_flag(AgsDevin *devin)
 {
-  AgsDevin *devin;
+  pthread_mutex_t *devin_mutex;
+  
+  if(!AGS_IS_DEVIN(devin)){
+    return;
+  }
 
-  devin = AGS_DEVIN(soundcard);
-  devin->audio = audio;
-}
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
 
-GList*
-ags_devin_get_audio(AgsSoundcard *soundcard)
-{
-  AgsDevin *devin;
+  /* switch buffer flag */
+  pthread_mutex_lock(devin_mutex);
 
-  devin = AGS_DEVIN(soundcard);
+  if((AGS_DEVIN_BUFFER0 & (devin->flags)) != 0){
+    devin->flags &= (~AGS_DEVIN_BUFFER0);
+    devin->flags |= AGS_DEVIN_BUFFER1;
+  }else if((AGS_DEVIN_BUFFER1 & (devin->flags)) != 0){
+    devin->flags &= (~AGS_DEVIN_BUFFER1);
+    devin->flags |= AGS_DEVIN_BUFFER2;
+  }else if((AGS_DEVIN_BUFFER2 & (devin->flags)) != 0){
+    devin->flags &= (~AGS_DEVIN_BUFFER2);
+    devin->flags |= AGS_DEVIN_BUFFER3;
+  }else if((AGS_DEVIN_BUFFER3 & (devin->flags)) != 0){
+    devin->flags &= (~AGS_DEVIN_BUFFER3);
+    devin->flags |= AGS_DEVIN_BUFFER0;
+  }
 
-  return(devin->audio);
+  pthread_mutex_unlock(devin_mutex);
 }
 
 /**
@@ -4064,7 +4476,7 @@ ags_devin_get_audio(AgsSoundcard *soundcard)
  *
  * Calculate delay and attack and reset it.
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_devin_adjust_delay_and_attack(AgsDevin *devin)
@@ -4076,10 +4488,20 @@ ags_devin_adjust_delay_and_attack(AgsDevin *devin)
   gint next_attack;
   guint i;
 
-  if(devin == NULL){
+  pthread_mutex_t *devin_mutex;
+
+  if(!AGS_IS_DEVIN(devin)){
     return;
   }
   
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* get some initial values */  
   delay = ags_devin_get_absolute_delay(AGS_SOUNDCARD(devin));
 
 #ifdef AGS_DEBUG
@@ -4169,6 +4591,8 @@ ags_devin_adjust_delay_and_attack(AgsDevin *devin)
   }
 
   devin->delay[i] = ((gdouble) (default_tact_frames + devin->attack[i] - devin->attack[0])) / (gdouble) devin->buffer_size;
+
+  pthread_mutex_unlock(devin_mutex);
 }
 
 /**
@@ -4177,86 +4601,107 @@ ags_devin_adjust_delay_and_attack(AgsDevin *devin)
  *
  * Reallocate the internal audio buffer.
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_devin_realloc_buffer(AgsDevin *devin)
 {
+  guint pcm_channels;
+  guint buffer_size;
   guint word_size;
+  
+  pthread_mutex_t *devin_mutex;  
 
-  if(devin == NULL){
+  if(!AGS_IS_DEVIN(devin)){
     return;
   }
 
+  /* get devin mutex */
+  pthread_mutex_lock(ags_devin_get_class_mutex());
+  
+  devin_mutex = devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devin_get_class_mutex());
+
+  /* get word size */  
+  pthread_mutex_lock(devin_mutex);
+
+  pcm_channels = devin->pcm_channels;
+  buffer_size = devin->buffer_size;
+  
   switch(devin->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
-      word_size = sizeof(signed char);
+      word_size = sizeof(gint8);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
-      word_size = sizeof(signed short);
+      word_size = sizeof(gint16);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
-      word_size = sizeof(signed long long);
+      word_size = sizeof(gint64);
     }
     break;
   default:
     g_warning("ags_devin_realloc_buffer(): unsupported word size");
     return;
-  }
+  }  
+
+  pthread_mutex_unlock(devin_mutex);
+
+  //NOTE:JK: there is no lock applicable to buffer
   
   /* AGS_DEVIN_BUFFER_0 */
   if(devin->buffer[0] != NULL){
     free(devin->buffer[0]);
   }
   
-  devin->buffer[0] = (void *) malloc(devin->pcm_channels * devin->buffer_size * word_size);
+  devin->buffer[0] = (void *) malloc(pcm_channels * buffer_size * word_size);
   
   /* AGS_DEVIN_BUFFER_1 */
   if(devin->buffer[1] != NULL){
     free(devin->buffer[1]);
   }
 
-  devin->buffer[1] = (void *) malloc(devin->pcm_channels * devin->buffer_size * word_size);
+  devin->buffer[1] = (void *) malloc(pcm_channels * buffer_size * word_size);
   
   /* AGS_DEVIN_BUFFER_2 */
   if(devin->buffer[2] != NULL){
     free(devin->buffer[2]);
   }
 
-  devin->buffer[2] = (void *) malloc(devin->pcm_channels * devin->buffer_size * word_size);
+  devin->buffer[2] = (void *) malloc(pcm_channels * buffer_size * word_size);
   
   /* AGS_DEVIN_BUFFER_3 */
   if(devin->buffer[3] != NULL){
     free(devin->buffer[3]);
   }
   
-  devin->buffer[3] = (void *) malloc(devin->pcm_channels * devin->buffer_size * word_size);
+  devin->buffer[3] = (void *) malloc(pcm_channels * buffer_size * word_size);
 }
 
 /**
  * ags_devin_new:
  * @application_context: the #AgsApplicationContext
  *
- * Creates an #AgsDevin, refering to @application_context.
+ * Creates a new instance of #AgsDevin.
  *
- * Returns: a new #AgsDevin
+ * Returns: the new #AgsDevin
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 AgsDevin*
 ags_devin_new(GObject *application_context)

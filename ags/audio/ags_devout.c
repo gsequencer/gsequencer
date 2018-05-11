@@ -2345,10 +2345,10 @@ ags_devout_delegate_play_init(AgsSoundcard *soundcard,
 
   devout = AGS_DEVOUT(soundcard);
 
-  if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
+  if(ags_devout_test_flags(devout, AGS_DEVOUT_ALSA)){
     ags_devout_alsa_init(soundcard,
 			 error);
-  }else if((AGS_DEVOUT_OSS & (devout->flags)) != 0){
+  }else if(ags_devout_test_flags(devout, AGS_DEVOUT_OSS)){
     ags_devout_oss_init(soundcard,
 			error);
   }

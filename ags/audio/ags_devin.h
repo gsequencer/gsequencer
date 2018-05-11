@@ -84,13 +84,13 @@ typedef enum
 
   AGS_DEVIN_ATTACK_FIRST       = 1 <<  6,
 
-  AGS_DEVIN_PLAY               = 1 <<  7,
+  AGS_DEVIN_RECORD             = 1 <<  7,
 
   AGS_DEVIN_OSS                = 1 <<  8,
   AGS_DEVIN_ALSA               = 1 <<  9,
 
   AGS_DEVIN_SHUTDOWN           = 1 << 10,
-  AGS_DEVIN_START_PLAY         = 1 << 11,
+  AGS_DEVIN_START_RECORD       = 1 << 11,
 
   AGS_DEVIN_NONBLOCKING        = 1 << 12,
   AGS_DEVIN_INITIALIZED        = 1 << 13,
