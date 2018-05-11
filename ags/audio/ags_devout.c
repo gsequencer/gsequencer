@@ -4564,7 +4564,7 @@ ags_devout_switch_buffer_flag(AgsDevout *devout)
  *
  * Calculate delay and attack and reset it.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_devout_adjust_delay_and_attack(AgsDevout *devout)
@@ -4576,16 +4576,28 @@ ags_devout_adjust_delay_and_attack(AgsDevout *devout)
   gint next_attack;
   guint i;
 
+  pthread_mutex_t *devout_mutex;
+
   if(!AGS_IS_DEVOUT(devout)){
     return;
   }
   
+  /* get devout mutex */
+  pthread_mutex_lock(ags_devout_get_class_mutex());
+  
+  devout_mutex = devout->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devout_get_class_mutex());
+
+  /* get some initial values */
   delay = ags_devout_get_absolute_delay(AGS_SOUNDCARD(devout));
 
 #ifdef AGS_DEBUG
   g_message("delay : %f", delay);
 #endif
   
+  pthread_mutex_lock(devout_mutex);
+
   default_tact_frames = (guint) (delay * devout->buffer_size);
   delay_tact_frames = (guint) (floor(delay) * devout->buffer_size);
   default_period = (1.0 / AGS_SOUNDCARD_DEFAULT_PERIOD) * (default_tact_frames);
@@ -4669,6 +4681,8 @@ ags_devout_adjust_delay_and_attack(AgsDevout *devout)
   }
 
   devout->delay[i] = ((gdouble) (default_tact_frames + devout->attack[i] - devout->attack[0])) / (gdouble) devout->buffer_size;
+
+  pthread_mutex_unlock(devout_mutex);
 }
 
 /**
@@ -4677,86 +4691,103 @@ ags_devout_adjust_delay_and_attack(AgsDevout *devout)
  *
  * Reallocate the internal audio buffer.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_devout_realloc_buffer(AgsDevout *devout)
 {
+  guint pcm_channels;
+  guint buffer_size;
   guint word_size;
 
-  if(devout == NULL){
+  if(!AGS_IS_DEVOUT(devout)){
     return;
   }
 
+  /* get devout mutex */
+  pthread_mutex_lock(ags_devout_get_class_mutex());
+  
+  devout_mutex = devout->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devout_get_class_mutex());
+
+  /* get word size */  
+  pthread_mutex_lock(devout_mutex);
+
+  pcm_channels = devout->pcm_channels;
+  buffer_size = devout->buffer_size;
+  
   switch(devout->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
-      word_size = sizeof(signed char);
+      word_size = sizeof(gint8);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
-      word_size = sizeof(signed short);
+      word_size = sizeof(gint16);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
-      word_size = sizeof(signed long long);
+      word_size = sizeof(gint64);
     }
     break;
   default:
     g_warning("ags_devout_realloc_buffer(): unsupported word size");
     return;
-  }
-  
+  }  
+
+  pthread_mutex_unlock(devout_mutex);
+
   /* AGS_DEVOUT_BUFFER_0 */
   if(devout->buffer[0] != NULL){
     free(devout->buffer[0]);
   }
   
-  devout->buffer[0] = (void *) malloc(devout->pcm_channels * devout->buffer_size * word_size);
+  devout->buffer[0] = (void *) malloc(pcm_channels * buffer_size * word_size);
   
   /* AGS_DEVOUT_BUFFER_1 */
   if(devout->buffer[1] != NULL){
     free(devout->buffer[1]);
   }
 
-  devout->buffer[1] = (void *) malloc(devout->pcm_channels * devout->buffer_size * word_size);
+  devout->buffer[1] = (void *) malloc(pcm_channels * buffer_size * word_size);
   
   /* AGS_DEVOUT_BUFFER_2 */
   if(devout->buffer[2] != NULL){
     free(devout->buffer[2]);
   }
 
-  devout->buffer[2] = (void *) malloc(devout->pcm_channels * devout->buffer_size * word_size);
+  devout->buffer[2] = (void *) malloc(pcm_channels * buffer_size * word_size);
   
   /* AGS_DEVOUT_BUFFER_3 */
   if(devout->buffer[3] != NULL){
     free(devout->buffer[3]);
   }
   
-  devout->buffer[3] = (void *) malloc(devout->pcm_channels * devout->buffer_size * word_size);
+  devout->buffer[3] = (void *) malloc(pcm_channels * buffer_size * word_size);
 }
 
 /**
  * ags_devout_new:
  * @application_context: the #AgsApplicationContext
  *
- * Creates an #AgsDevout, refering to @application_context.
+ * Creates a new instance of #AgsDevout.
  *
- * Returns: a new #AgsDevout
+ * Returns: the new #AgsDevout
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsDevout*
 ags_devout_new(GObject *application_context)
