@@ -538,7 +538,7 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
 
   pthread_mutex_unlock(soundcard_mutex);
 
-  while(audio != NULL){
+  while(list != NULL){
     /* get some fields */
     pthread_mutex_lock(soundcard_mutex);
 
