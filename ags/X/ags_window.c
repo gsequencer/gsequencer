@@ -838,9 +838,13 @@ ags_window_load_libags_audio_timeout(AgsWindow *window)
 		       "soundcard", soundcard,
 		       NULL);
     
+	  pthread_mutex_lock(application_mutex);
+
 	  g_object_set(application_context,
 		       "window", window,
 		       NULL);
+
+	  pthread_mutex_unlock(application_mutex);
 
 	  /* context menu */
 	  window->context_menu = ags_context_menu_new();
