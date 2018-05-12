@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -63,10 +63,6 @@ struct _AgsSequencerInterface
 				  AgsApplicationContext *application_context);
   AgsApplicationContext* (*get_application_context)(AgsSequencer *sequencer);
 
-  void (*set_application_mutex)(AgsSequencer *sequencer,
-				pthread_mutex_t *application_mutex);
-  pthread_mutex_t* (*get_application_mutex)(AgsSequencer *sequencer);
-
   void (*set_device)(AgsSequencer *sequencer,
 		     gchar *card_id);
   gchar* (*get_device)(AgsSequencer *sequencer);
@@ -110,10 +106,6 @@ struct _AgsSequencerInterface
   void (*set_note_offset)(AgsSequencer *sequencer,
 			  guint note_offset);
   guint (*get_note_offset)(AgsSequencer *sequencer);
-
-  void (*set_audio)(AgsSequencer *sequencer,
-		    GList *audio);
-  GList* (*get_audio)(AgsSequencer *sequencer);
 };
 
 GType ags_sequencer_get_type();
@@ -121,10 +113,6 @@ GType ags_sequencer_get_type();
 void ags_sequencer_set_application_context(AgsSequencer *sequencer,
 					   AgsApplicationContext *application_context);
 AgsApplicationContext* ags_sequencer_get_application_context(AgsSequencer *sequencer);
-
-void ags_sequencer_set_application_mutex(AgsSequencer *sequencer,
-					 pthread_mutex_t *application_mutex);
-pthread_mutex_t* ags_sequencer_get_application_mutex(AgsSequencer *sequencer);
 
 void ags_sequencer_set_device(AgsSequencer *sequencer,
 			      gchar *device_id);
@@ -169,9 +157,5 @@ gdouble ags_sequencer_get_delay_factor(AgsSequencer *sequencer);
 void ags_sequencer_set_note_offset(AgsSequencer *sequencer,
 				   guint note_offset);
 guint ags_sequencer_get_note_offset(AgsSequencer *sequencer);
-
-void ags_sequencer_set_audio(AgsSequencer *sequencer,
-			     GList *audio);
-GList* ags_sequencer_get_audio(AgsSequencer *sequencer);
 
 #endif /*__AGS_SEQUENCER_H__*/

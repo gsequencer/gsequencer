@@ -1541,7 +1541,7 @@ ags_devout_set_device(AgsSoundcard *soundcard,
 			    strlen(card_id->data))){
       if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
 	devout->out.alsa.device = g_strdup(device);
-      }else{
+      }else if((AGS_DEVOUT_OSS & (devout->flags)) != 0){
 	devout->out.oss.device = g_strdup(device);
       }
 

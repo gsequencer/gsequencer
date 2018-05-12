@@ -38,6 +38,8 @@
 
 #define AGS_FIFOOUT_DEFAULT_DEVICE "/dev/null"
 
+#define AGS_FIFOOUT_DEFAULT_RING_BUFFER_SIZE (8)
+
 typedef struct _AgsFifoout AgsFifoout;
 typedef struct _AgsFifooutClass AgsFifooutClass;
 
@@ -125,6 +127,7 @@ struct _AgsFifoout
   guint tic_counter; // in the range of default period
 
   guint note_offset;
+  guint note_offset_absolute;
 
   guint loop_left;
   guint loop_right;

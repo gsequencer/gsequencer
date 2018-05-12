@@ -129,6 +129,8 @@ void ags_fifoout_set_delay_factor(AgsSoundcard *soundcard,
 				  gdouble delay_factor);
 gdouble ags_fifoout_get_delay_factor(AgsSoundcard *soundcard);
 
+gdouble ags_fifoout_get_absolute_delay(AgsSoundcard *soundcard);
+
 gdouble ags_fifoout_get_delay(AgsSoundcard *soundcard);
 guint ags_fifoout_get_attack(AgsSoundcard *soundcard);
 
@@ -140,6 +142,10 @@ guint ags_fifoout_get_delay_counter(AgsSoundcard *soundcard);
 void ags_fifoout_set_note_offset(AgsSoundcard *soundcard,
 				 guint note_offset);
 guint ags_fifoout_get_note_offset(AgsSoundcard *soundcard);
+
+void ags_fifoout_set_note_offset_absolute(AgsSoundcard *soundcard,
+					  guint note_offset);
+guint ags_fifoout_get_note_offset_absolute(AgsSoundcard *soundcard);
 
 void ags_fifoout_set_loop(AgsSoundcard *soundcard,
 			  guint loop_left, guint loop_right,
@@ -505,6 +511,8 @@ ags_fifoout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->set_delay_factor = ags_fifoout_set_delay_factor;
   soundcard->get_delay_factor = ags_fifoout_get_delay_factor;
   
+  soundcard->get_absolute_delay = ags_fifoout_get_absolute_delay;
+
   soundcard->get_delay = ags_fifoout_get_delay;
   soundcard->get_attack = ags_fifoout_get_attack;
 
@@ -515,6 +523,9 @@ ags_fifoout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->set_note_offset = ags_fifoout_set_note_offset;
   soundcard->get_note_offset = ags_fifoout_get_note_offset;
+
+  soundcard->set_note_offset_absolute = ags_fifoout_set_note_offset_absolute;
+  soundcard->get_note_offset_absolute = ags_fifoout_get_note_offset_absolute;
 
   soundcard->set_loop = ags_fifoout_set_loop;
   soundcard->get_loop = ags_fifoout_get_loop;

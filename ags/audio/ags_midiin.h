@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,6 +33,8 @@
 #include <alsa/asoundlib.h>
 #endif
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_MIDIIN                (ags_midiin_get_type())
 #define AGS_MIDIIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MIDIIN, AgsMidiin))
 #define AGS_MIDIIN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_MIDIIN, AgsMidiin))
@@ -40,8 +42,8 @@
 #define AGS_IS_MIDIIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MIDIIN))
 #define AGS_MIDIIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_MIDIIN, AgsMidiinClass))
 
-#define AGS_MIDIIN_DEFAULT_ALSA_DEVICE "hw:0,0\0"
-#define AGS_MIDIIN_DEFAULT_OSS_DEVICE "/dev/midi00\0"
+#define AGS_MIDIIN_DEFAULT_ALSA_DEVICE "hw:0,0"
+#define AGS_MIDIIN_DEFAULT_OSS_DEVICE "/dev/midi00"
 #define AGS_MIDIIN_DEFAULT_BUFFER_SIZE (4096)
 
 typedef struct _AgsMidiin AgsMidiin;
@@ -49,6 +51,8 @@ typedef struct _AgsMidiinClass AgsMidiinClass;
 
 /**
  * AgsMidiinFlags:
+ * @AGS_MIDIIN_ADDED_TO_REGISTRY: the midiin was added to registry, see #AgsConnectable::add_to_registry()
+ * @AGS_MIDIIN_CONNECTED: indicates the midiin was connected by calling #AgsConnectable::connect()
  * @AGS_MIDIIN_BUFFER0: ring-buffer 0
  * @AGS_MIDIIN_BUFFER1: ring-buffer 1
  * @AGS_MIDIIN_BUFFER2: ring-buffer 2
@@ -65,22 +69,26 @@ typedef struct _AgsMidiinClass AgsMidiinClass;
  */
 typedef enum
 {
-  AGS_MIDIIN_BUFFER0                        = 1,
-  AGS_MIDIIN_BUFFER1                        = 1 << 1,
-  AGS_MIDIIN_BUFFER2                        = 1 << 2,
-  AGS_MIDIIN_BUFFER3                        = 1 << 3,
-  AGS_MIDIIN_ATTACK_FIRST                   = 1 << 4,
+  AGS_MIDIIN_ADDED_TO_REGISTRY  = 1,
+  AGS_MIDIIN_CONNECTED          = 1 <<  1,
 
-  AGS_MIDIIN_RECORD                         = 1 << 5,
+  AGS_MIDIIN_BUFFER0            = 1 <<  2,
+  AGS_MIDIIN_BUFFER1            = 1 <<  3,
+  AGS_MIDIIN_BUFFER2            = 1 <<  4,
+  AGS_MIDIIN_BUFFER3            = 1 <<  5,
 
-  AGS_MIDIIN_OSS                            = 1 << 6,
-  AGS_MIDIIN_ALSA                           = 1 << 7,
+  AGS_MIDIIN_ATTACK_FIRST       = 1 <<  6,
 
-  AGS_MIDIIN_SHUTDOWN                       = 1 << 8,
-  AGS_MIDIIN_START_RECORD                   = 1 << 9,
+  AGS_MIDIIN_RECORD             = 1 <<  7,
 
-  AGS_MIDIIN_NONBLOCKING                    = 1 << 10,
-  AGS_MIDIIN_INITIALIZED                    = 1 << 11,
+  AGS_MIDIIN_OSS                = 1 <<  8,
+  AGS_MIDIIN_ALSA               = 1 <<  9,
+
+  AGS_MIDIIN_SHUTDOWN           = 1 << 10,
+  AGS_MIDIIN_START_RECORD       = 1 << 11,
+
+  AGS_MIDIIN_NONBLOCKING        = 1 << 12,
+  AGS_MIDIIN_INITIALIZED        = 1 << 13,
 }AgsMidiinFlags;
 
 /**
@@ -118,8 +126,12 @@ struct _AgsMidiin
   guint flags;
   volatile guint sync_flags;
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  AgsApplicationContext *application_context;
+
+  AgsUUID *uuid;
   
   char **ring_buffer;
   guint ring_buffer_size[2];
@@ -138,7 +150,7 @@ struct _AgsMidiin
   guint tic_counter; // in the range of default period
 
   guint note_offset;
-  
+
   union{
     struct _AgsOssMidi{
       int device_fd;
@@ -162,11 +174,6 @@ struct _AgsMidiin
 
   pthread_mutex_t *poll_finish_mutex;
   pthread_cond_t *poll_finish_cond;
-
-  GObject *application_context;
-  pthread_mutex_t *application_mutex;
-  
-  GList *audio;
 };
 
 struct _AgsMidiinClass
@@ -177,6 +184,12 @@ struct _AgsMidiinClass
 GType ags_midiin_get_type();
 
 GQuark ags_midiin_error_quark();
+
+pthread_mutex_t* ags_midiin_get_class_mutex();
+
+gboolean ags_midiin_test_flags(AgsMidiin *midiin, guint flags);
+void ags_midiin_set_flags(AgsMidiin *midiin, guint flags);
+void ags_midiin_unset_flags(AgsMidiin *midiin, guint flags);
 
 void ags_midiin_switch_buffer_flag(AgsMidiin *midiin);
 

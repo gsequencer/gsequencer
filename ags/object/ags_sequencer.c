@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -65,7 +65,7 @@ ags_sequencer_class_init(AgsSequencerInterface *interface)
    * The ::tic signal is emitted every tic of the sequencer. This notifies
    * about a newly played buffer.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   g_signal_new("tic",
 	       G_TYPE_FROM_INTERFACE(interface),
@@ -83,7 +83,7 @@ ags_sequencer_class_init(AgsSequencerInterface *interface)
    * The ::offset-changed signal notifies about changed position within
    * notation.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   g_signal_new("offset-changed",
 	       G_TYPE_FROM_INTERFACE(interface),
@@ -97,12 +97,12 @@ ags_sequencer_class_init(AgsSequencerInterface *interface)
 
 /**
  * ags_sequencer_set_application_context:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  * @application_context: the application context to set
  *
  * Set application context.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_sequencer_set_application_context(AgsSequencer *sequencer,
@@ -119,13 +119,13 @@ ags_sequencer_set_application_context(AgsSequencer *sequencer,
 
 /**
  * ags_sequencer_get_application_context:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  *
  * Get application context. 
  *
  * Returns: #AgsApplicationContext
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsApplicationContext*
 ags_sequencer_get_application_context(AgsSequencer *sequencer)
@@ -139,58 +139,15 @@ ags_sequencer_get_application_context(AgsSequencer *sequencer)
   return(sequencer_interface->get_application_context(sequencer));
 }
 
-/**
- * ags_sequencer_set_application_mutex:
- * @sequencer: an #AgsSequencer
- * @application_mutex: the application mutex to set
- *
- * Set application mutex.
- *
- * Since: 1.0.0
- */
-void
-ags_sequencer_set_application_mutex(AgsSequencer *sequencer,
-				    pthread_mutex_t *application_mutex)
-{
-  AgsSequencerInterface *sequencer_interface;
-
-  g_return_if_fail(AGS_IS_SEQUENCER(sequencer));
-  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
-  g_return_if_fail(sequencer_interface->set_application_mutex);
-  sequencer_interface->set_application_mutex(sequencer,
-					       application_mutex);
-}
-
-/**
- * ags_sequencer_get_application_mutex:
- * @sequencer: an #AgsSequencer
- *
- * Get application mutex. 
- *
- * Returns: the application mutex
- *
- * Since: 1.0.0
- */
-pthread_mutex_t*
-ags_sequencer_get_application_mutex(AgsSequencer *sequencer)
-{
-  AgsSequencerInterface *sequencer_interface;
-
-  g_return_val_if_fail(AGS_IS_SEQUENCER(sequencer), NULL);
-  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
-  g_return_val_if_fail(sequencer_interface->get_application_mutex, NULL);
-
-  return(sequencer_interface->get_application_mutex(sequencer));
-}
 
 /**
  * ags_sequencer_set_device:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  * @device_id: the device to set
  *
  * Set device.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_sequencer_set_device(AgsSequencer *sequencer,
@@ -207,13 +164,13 @@ ags_sequencer_set_device(AgsSequencer *sequencer,
 
 /**
  * ags_sequencer_get_device:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  *
  * Get device.
  *
  * Returns: the device's identifier
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_sequencer_get_device(AgsSequencer *sequencer)
@@ -229,13 +186,13 @@ ags_sequencer_get_device(AgsSequencer *sequencer)
 
 /**
  * ags_sequencer_list_cards:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  * @card_id: a list containing card ids
  * @card_name: a list containing card names
  *
  * Retrieve @card_id and @card_name as a list of strings.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_sequencer_list_cards(AgsSequencer *sequencer,
@@ -251,13 +208,13 @@ ags_sequencer_list_cards(AgsSequencer *sequencer,
 
 /**
  * ags_sequencer_is_starting:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  *
  * Get starting.
  *
  * Returns: %TRUE if starting, else %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_sequencer_is_starting(AgsSequencer *sequencer)
@@ -273,13 +230,13 @@ ags_sequencer_is_starting(AgsSequencer *sequencer)
 
 /**
  * ags_sequencer_is_playing:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  *
  * Get playing.
  *
  * Returns: %TRUE if playing, else %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_sequencer_is_playing(AgsSequencer *sequencer)
@@ -295,13 +252,13 @@ ags_sequencer_is_playing(AgsSequencer *sequencer)
 
 /**
  * ags_sequencer_is_recording:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  *
  * Get recording.
  *
  * Returns: %TRUE if recording, else %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_sequencer_is_recording(AgsSequencer *sequencer)
@@ -317,12 +274,12 @@ ags_sequencer_is_recording(AgsSequencer *sequencer)
 
 /**
  * ags_sequencer_play:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  * @error: an error that may occure
  *
  * Initializes the sequencer for playback.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_sequencer_play_init(AgsSequencer *sequencer,
@@ -339,12 +296,12 @@ ags_sequencer_play_init(AgsSequencer *sequencer,
 
 /**
  * ags_sequencer_play:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  * @error: an error that may occure
  *
  * Plays the current buffer of sequencer.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_sequencer_play(AgsSequencer *sequencer,
@@ -361,12 +318,12 @@ ags_sequencer_play(AgsSequencer *sequencer,
 
 /**
  * ags_sequencer_record:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  * @error: an error that may occure
  *
  * Initializes the sequencer for recordback.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_sequencer_record_init(AgsSequencer *sequencer,
@@ -383,12 +340,12 @@ ags_sequencer_record_init(AgsSequencer *sequencer,
 
 /**
  * ags_sequencer_record:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  * @error: an error that may occure
  *
  * Records the current buffer of sequencer.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_sequencer_record(AgsSequencer *sequencer,
@@ -405,11 +362,11 @@ ags_sequencer_record(AgsSequencer *sequencer,
 
 /**
  * ags_sequencer_stop:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  *
  * Stops the sequencer from playing to it.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_sequencer_stop(AgsSequencer *sequencer)
@@ -424,11 +381,11 @@ ags_sequencer_stop(AgsSequencer *sequencer)
 
 /**
  * ags_sequencer_tic:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  *
  * Every call to play may generate a tic. 
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_sequencer_tic(AgsSequencer *sequencer)
@@ -443,11 +400,11 @@ ags_sequencer_tic(AgsSequencer *sequencer)
 
 /**
  * ags_sequencer_tic:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  *
  * Callback when counter expires minor note offset.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_sequencer_offset_changed(AgsSequencer *sequencer,
@@ -464,14 +421,14 @@ ags_sequencer_offset_changed(AgsSequencer *sequencer,
 
 /**
  * ags_sequencer_get_buffer:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  * @buffer_length: the buffer's length
  *
  * Get current playback buffer. 
  *
  * Returns: current playback buffer
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void*
 ags_sequencer_get_buffer(AgsSequencer *sequencer,
@@ -489,14 +446,14 @@ ags_sequencer_get_buffer(AgsSequencer *sequencer,
 
 /**
  * ags_sequencer_get_next_buffer:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  * @buffer_length: the buffer's length
  *
  * Get future playback buffer.
  *
  * Returns: next playback buffer
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void*
 ags_sequencer_get_next_buffer(AgsSequencer *sequencer,
@@ -514,12 +471,12 @@ ags_sequencer_get_next_buffer(AgsSequencer *sequencer,
 
 /**
  * ags_sequencer_set_bpm:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  * @bpm: the bpm to set
  *
  * Set current playback bpm. 
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_sequencer_set_bpm(AgsSequencer *sequencer,
@@ -536,13 +493,13 @@ ags_sequencer_set_bpm(AgsSequencer *sequencer,
 
 /**
  * ags_sequencer_get_bpm:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  *
  * Get current playback bpm. 
  *
  * Returns: bpm
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gdouble
 ags_sequencer_get_bpm(AgsSequencer *sequencer)
@@ -558,12 +515,12 @@ ags_sequencer_get_bpm(AgsSequencer *sequencer)
 
 /**
  * ags_sequencer_set_delay_factor:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  * @delay_factor: the delay factor to set
  *
  * Set current playback delay factor. 
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_sequencer_set_delay_factor(AgsSequencer *sequencer,
@@ -580,13 +537,13 @@ ags_sequencer_set_delay_factor(AgsSequencer *sequencer,
 
 /**
  * ags_sequencer_get_delay_factor:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  *
  * Get current playback delay factor. 
  *
  * Returns: delay factor
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gdouble
 ags_sequencer_get_delay_factor(AgsSequencer *sequencer)
@@ -602,13 +559,13 @@ ags_sequencer_get_delay_factor(AgsSequencer *sequencer)
 
 /**
  * ags_sequencer_get_note_offset:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  *
  * Get current playback note offset. 
  *
  * Returns: offset
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 guint
 ags_sequencer_get_note_offset(AgsSequencer *sequencer)
@@ -624,12 +581,12 @@ ags_sequencer_get_note_offset(AgsSequencer *sequencer)
 
 /**
  * ags_sequencer_set_note_offset:
- * @sequencer: an #AgsSequencer
+ * @sequencer: the #AgsSequencer
  * @note_offset: the note offset to set
  *
  * Set current playback note offset. 
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_sequencer_set_note_offset(AgsSequencer *sequencer,
@@ -642,48 +599,4 @@ ags_sequencer_set_note_offset(AgsSequencer *sequencer,
   g_return_if_fail(sequencer_interface->set_note_offset);
   sequencer_interface->set_note_offset(sequencer,
 				       note_offset);
-}
-
-/**
- * ags_sequencer_set_audio:
- * @sequencer: an #AgsSequencer
- * @audio: the audio to set
- *
- * Set audio. 
- *
- * Since: 1.0.0
- */
-void
-ags_sequencer_set_audio(AgsSequencer *sequencer,
-			GList *audio)
-{
-  AgsSequencerInterface *sequencer_interface;
-
-  g_return_if_fail(AGS_IS_SEQUENCER(sequencer));
-  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
-  g_return_if_fail(sequencer_interface->set_audio);
-  sequencer_interface->set_audio(sequencer,
-				 audio);
-}
-
-/**
- * ags_sequencer_get_audio:
- * @sequencer: an #AgsSequencer
- *
- * Get audio. 
- *
- * Returns: a #GList container #AgsAudio
- *
- * Since: 1.0.0
- */
-GList*
-ags_sequencer_get_audio(AgsSequencer *sequencer)
-{
-  AgsSequencerInterface *sequencer_interface;
-
-  g_return_val_if_fail(AGS_IS_SEQUENCER(sequencer), NULL);
-  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
-  g_return_val_if_fail(sequencer_interface->get_audio, NULL);
-
-  return(sequencer_interface->get_audio(sequencer));
 }
