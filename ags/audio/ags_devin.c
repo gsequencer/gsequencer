@@ -187,7 +187,6 @@ guint ags_devin_get_loop_offset(AgsSoundcard *soundcard);
 enum{
   PROP_0,
   PROP_APPLICATION_CONTEXT,
-  PROP_APPLICATION_MUTEX,
   PROP_DEVICE,
   PROP_DSP_CHANNELS,
   PROP_PCM_CHANNELS,

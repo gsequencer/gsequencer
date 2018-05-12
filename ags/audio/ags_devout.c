@@ -187,7 +187,6 @@ guint ags_devout_get_loop_offset(AgsSoundcard *soundcard);
 enum{
   PROP_0,
   PROP_APPLICATION_CONTEXT,
-  PROP_APPLICATION_MUTEX,
   PROP_DEVICE,
   PROP_DSP_CHANNELS,
   PROP_PCM_CHANNELS,
@@ -419,7 +418,7 @@ ags_devout_class_init(AgsDevoutClass *devout)
 				   i18n_pspec("Beats per minute to use"),
 				   1.0,
 				   240.0,
-				   120.0,
+				   AGS_SOUNDCARD_DEFAULT_BPM,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BPM,
