@@ -52,10 +52,21 @@ void ags_jack_client_get_property(GObject *gobject,
 				  guint prop_id,
 				  GValue *value,
 				  GParamSpec *param_spec);
-void ags_jack_client_connect(AgsConnectable *connectable);
-void ags_jack_client_disconnect(AgsConnectable *connectable);
 void ags_jack_client_dispose(GObject *gobject);
 void ags_jack_client_finalize(GObject *gobject);
+
+AgsUUID* ags_jack_client_get_uuid(AgsConnectable *connectable);
+gboolean ags_jack_client_has_resource(AgsConnectable *connectable);
+gboolean ags_jack_client_is_ready(AgsConnectable *connectable);
+void ags_jack_client_add_to_registry(AgsConnectable *connectable);
+void ags_jack_client_remove_from_registry(AgsConnectable *connectable);
+xmlNode* ags_jack_client_list_resource(AgsConnectable *connectable);
+xmlNode* ags_jack_client_xml_compose(AgsConnectable *connectable);
+void ags_jack_client_xml_parse(AgsConnectable *connectable,
+			       xmlNode *node);
+gboolean ags_jack_client_is_connected(AgsConnectable *connectable);
+void ags_jack_client_connect(AgsConnectable *connectable);
+void ags_jack_client_disconnect(AgsConnectable *connectable);
 
 #ifdef AGS_WITH_JACK
 void ags_jack_client_shutdown(void *arg);
@@ -76,11 +87,14 @@ int ags_jack_client_xrun_callback(void *ptr);
 enum{
   PROP_0,
   PROP_JACK_SERVER,
+  PROP_CLIENT_NAME,
   PROP_DEVICE,
   PROP_PORT,
 };
 
 static gpointer ags_jack_client_parent_class = NULL;
+
+static pthread_mutex_t ags_jack_client_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_jack_client_get_type()
@@ -89,13 +103,13 @@ ags_jack_client_get_type()
 
   if(!ags_type_jack_client){
     static const GTypeInfo ags_jack_client_info = {
-      sizeof (AgsJackClientClass),
+      sizeof(AgsJackClientClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_jack_client_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsJackClient),
+      sizeof(AgsJackClient),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_jack_client_init,
     };
@@ -142,7 +156,7 @@ ags_jack_client_class_init(AgsJackClientClass *jack_client)
    *
    * The assigned #AgsJackServer.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("jack-server",
 				   i18n_pspec("assigned JACK server"),
@@ -152,13 +166,29 @@ ags_jack_client_class_init(AgsJackClientClass *jack_client)
   g_object_class_install_property(gobject,
 				  PROP_JACK_SERVER,
 				  param_spec);
+  
+  /**
+   * AgsJackClient:client-name:
+   *
+   * The JACK client name.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_string("client-name",
+				   i18n_pspec("the client name"),
+				   i18n_pspec("The client name"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CLIENT_NAME,
+				  param_spec);
 
   /**
    * AgsJackClient:device:
    *
    * The assigned devices.
    * 
-   * Since: 1.0.0.7
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("device",
 				   i18n_pspec("assigned device"),
@@ -174,7 +204,7 @@ ags_jack_client_class_init(AgsJackClientClass *jack_client)
    *
    * The assigned ports.
    * 
-   * Since: 1.0.0.7
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("port",
 				   i18n_pspec("assigned port"),
@@ -189,44 +219,45 @@ ags_jack_client_class_init(AgsJackClientClass *jack_client)
 void
 ags_jack_client_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = ags_jack_client_get_uuid;
+  connectable->has_resource = ags_jack_client_has_resource;
+
+  connectable->is_ready = ags_jack_client_is_ready;
+  connectable->add_to_registry = ags_jack_client_add_to_registry;
+  connectable->remove_from_registry = ags_jack_client_remove_from_registry;
+
+  connectable->list_resource = ags_jack_client_list_resource;
+  connectable->xml_compose = ags_jack_client_xml_compose;
+  connectable->xml_parse = ags_jack_client_xml_parse;
+
+  connectable->is_connected = ags_jack_client_is_connected;  
   connectable->connect = ags_jack_client_connect;
   connectable->disconnect = ags_jack_client_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
 ags_jack_client_init(AgsJackClient *jack_client)
 {
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
+  /* flags */
+  jack_client->flags = 0;
+
   /* insert client mutex */
-  jack_client->mutexattr = 
+  jack_client->obj_mutexattr = 
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
 
-  jack_client->mutex =
+  jack_client->obj_mutex =
     mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
-
-  ags_mutex_manager_insert(mutex_manager,
-			   (GObject *) jack_client,
-			   mutex);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* flags */
-  jack_client->flags = 0;
 
   /* server */
   jack_client->jack_server = NULL;
@@ -275,6 +306,15 @@ ags_jack_client_set_property(GObject *gobject,
       }
       
       jack_client->jack_server = (GObject *) jack_server;
+    }
+    break;
+  case PROP_CLIENT_NAME:
+    {
+      char *client_name;
+
+      client_name = (char *) g_value_get_string(value);
+
+      jack_client->name = g_strdup(client_name);
     }
     break;
   case PROP_DEVICE:
@@ -335,6 +375,11 @@ ags_jack_client_get_property(GObject *gobject,
   case PROP_JACK_SERVER:
     {
       g_value_set_object(value, jack_client->jack_server);
+    }
+    break;
+  case PROP_CLIENT_NAME:
+    {
+      g_value_set_string(value, jack_client->name);
     }
     break;
   case PROP_DEVICE:
@@ -464,22 +509,13 @@ ags_jack_client_finalize(GObject *gobject)
 {
   AgsJackClient *jack_client;
 
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-
   jack_client = AGS_JACK_CLIENT(gobject);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  pthread_mutex_destroy(jack_client->obj_mutex);
+  free(jack_client->obj_mutex);
 
-  /* remove jack client mutex */
-  pthread_mutex_lock(application_mutex);  
-
-  ags_mutex_manager_remove(mutex_manager,
-			   gobject);
-  
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutexattr_destroy(jack_client->obj_mutexattr);
+  free(jack_client->obj_mutexattr);
 
   /* jack server */
   if(jack_client->jack_server != NULL){
@@ -498,12 +534,6 @@ ags_jack_client_finalize(GObject *gobject)
 		     g_object_unref);
   }
   
-  pthread_mutex_destroy(jack_client->mutex);
-  free(jack_client->mutex);
-
-  pthread_mutexattr_destroy(jack_client->mutexattr);
-  free(jack_client->mutexattr);
-
   /* call parent */
   G_OBJECT_CLASS(ags_jack_client_parent_class)->finalize(gobject);
 }

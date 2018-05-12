@@ -892,7 +892,7 @@ ags_audio_file_read(AgsAudioFile *audio_file,
 			    format);
   
   ags_sound_resource_read(AGS_SOUND_RESOURCE(audio_file->sound_resource),
-			  buffer,
+			  buffer, 1,
 			  audio_channel,
 			  audio_file->file_frame_count, format);
 
@@ -985,8 +985,8 @@ ags_audio_file_seek(AgsAudioFile *audio_file, guint frames, gint whence)
  */
 void
 ags_audio_file_write(AgsAudioFile *audio_file,
-		     void *buffer, guint buffer_size,
-		     guint format)
+		     void *buffer,
+		     guint buffer_size, guint format)
 {
   guint i;
   
@@ -998,12 +998,14 @@ ags_audio_file_write(AgsAudioFile *audio_file,
   if(audio_file->audio_channel == -1){
     for(i = 0; i < audio_file->file_audio_channels; i++){      
       ags_sound_resource_write(AGS_SOUND_RESOURCE(audio_file->sound_resource),
-			       buffer, i,
+			       buffer, audio_file->file_audio_channels,
+			       i,
 			       buffer_size, format);
     }
   }else{
     ags_sound_resource_write(AGS_SOUND_RESOURCE(audio_file->sound_resource),
-			     buffer, audio_file->audio_channel,
+			     buffer, 1,
+			     audio_file->audio_channel,
 			     buffer_size, format);
   }
 }

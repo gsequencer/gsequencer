@@ -62,13 +62,13 @@ struct _AgsSoundResourceInterface
 
   /* read sample data */
   guint (*read)(AgsSoundResource *sound_resource,
-		void *dbuffer,
+		void *dbuffer, guint daudio_channels,
 		guint audio_channel,
 		guint frame_count, guint format);
 
   /* write sample data */
   void (*write)(AgsSoundResource *sound_resource,
-		void *sbuffer,
+		void *sbuffer, guint saudio_channels,
 		guint audio_channel,
 		guint frame_count, guint format);
   void (*flush)(AgsSoundResource *sound_resource);
@@ -108,13 +108,13 @@ void ags_sound_resource_get_presets(AgsSoundResource *sound_resource,
 
 /* read sample data */
 guint ags_sound_resource_read(AgsSoundResource *sound_resource,
-			      void *dbuffer,
+			      void *dbuffer, guint daudio_channels,
 			      guint audio_channel,
 			      guint frame_count, guint format);
 
 /* write sample data */
 void ags_sound_resource_write(AgsSoundResource *sound_resource,
-			      void *sbuffer,
+			      void *sbuffer, guint saudio_channels,
 			      guint audio_channel,
 			      guint frame_count, guint format);
 void ags_sound_resource_flush(AgsSoundResource *sound_resource);

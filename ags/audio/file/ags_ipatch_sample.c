@@ -57,11 +57,11 @@ void ags_ipatch_sample_get_presets(AgsSoundResource *sound_resource,
 				   guint *buffer_size,
 				   guint *format);
 guint ags_ipatch_sample_read(AgsSoundResource *sound_resource,
-			     void *dbuffer,
+			     void *dbuffer, guint daudio_channels,
 			     guint audio_channel,
 			     guint frame_count, guint format);
 void ags_ipatch_sample_write(AgsSoundResource *sound_resource,
-			     void *sbuffer,
+			     void *sbuffer, guint saudio_channels,
 			     guint audio_channel,
 			     guint frame_count, guint format);
 void ags_ipatch_sample_flush(AgsSoundResource *sound_resource);
@@ -496,17 +496,21 @@ ags_ipatch_sample_get_presets(AgsSoundResource *sound_resource,
 
 guint
 ags_ipatch_sample_read(AgsSoundResource *sound_resource,
-		       void *dbuffer,
+		       void *dbuffer, guint daudio_channels,
 		       guint audio_channel,
 		       guint frame_count, guint format)
 {
   AgsIpatchSample *ipatch_sample;
 
   guint total_frame_count;
+  guint copy_mode;
   
   GError *error;
   
   ipatch_sample = AGS_IPATCH_SAMPLE(sound_resource);
+
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
+						  ags_audio_buffer_util_format_from_soundcard(ipatch_sample->format));
 
 #ifdef AGS_WITH_LIBINSTPATCH
   ags_sound_resource_info(sound_resource,
@@ -529,7 +533,7 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
       ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				   ipatch_sample->offset,
 				   frame_count,
-				   dbuffer,
+				   ipatch_sample->buffer,
 				   IPATCH_SAMPLE_8BIT | IPATCH_SAMPLE_MONO,
 				   IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
 				   &error);
@@ -540,7 +544,7 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
       ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				   ipatch_sample->offset,
 				   frame_count,
-				   dbuffer,
+				   ipatch_sample->buffer,
 				   IPATCH_SAMPLE_16BIT | IPATCH_SAMPLE_MONO,
 				   IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
 				   &error);
@@ -551,7 +555,7 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
       ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				   ipatch_sample->offset,
 				   frame_count,
-				   dbuffer,
+				   ipatch_sample->buffer,
 				   IPATCH_SAMPLE_24BIT | IPATCH_SAMPLE_MONO,
 				   IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
 				   &error);
@@ -562,7 +566,7 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
       ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				   ipatch_sample->offset,
 				   frame_count,
-				   dbuffer,
+				   ipatch_sample->buffer,
 				   IPATCH_SAMPLE_32BIT | IPATCH_SAMPLE_MONO,
 				   IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
 				   &error);
@@ -573,7 +577,7 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
       ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				   ipatch_sample->offset,
 				   frame_count,
-				   dbuffer,
+				   ipatch_sample->buffer,
 				   IPATCH_SAMPLE_FLOAT | IPATCH_SAMPLE_MONO,
 				   IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
 				   &error);
@@ -584,7 +588,7 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
       ipatch_sample_read_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				   ipatch_sample->offset,
 				   frame_count,
-				   dbuffer,
+				   ipatch_sample->buffer,
 				   IPATCH_SAMPLE_DOUBLE | IPATCH_SAMPLE_MONO,
 				   IPATCH_SAMPLE_MAP_CHANNEL(0, audio_channel),
 				   &error);
@@ -596,6 +600,10 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
     }
   }
 
+  ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, 0,
+					      ipatch_sample->buffer, 1, 0,
+					      frame_count, copy_mode);
+
   ipatch_sample->offset += frame_count;
 #else
   frame_count = 0;
@@ -606,25 +614,34 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
 
 void
 ags_ipatch_sample_write(AgsSoundResource *sound_resource,
-			void *sbuffer,
+			void *sbuffer, guint saudio_channels,
 			guint audio_channel,
 			guint frame_count, guint format)
 {
   AgsIpatchSample *ipatch_sample;
 
+  guint copy_mode;
+
   GError *error;
 
   ipatch_sample = AGS_IPATCH_SAMPLE(sound_resource);
 
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(ipatch_sample->format),
+						  ags_audio_buffer_util_format_from_soundcard(format));
+
+  ags_audio_buffer_util_copy_buffer_to_buffer(ipatch_sample->buffer, 1, audio_channel,
+					      sbuffer, saudio_channels, 0,
+					      frame_count, copy_mode);
+
   error = NULL;
   
-  switch(format){
+  switch(ipatch_sample->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
       ipatch_sample_write_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				    ipatch_sample->offset,
 				    frame_count,
-				    sbuffer,
+				    ipatch_sample->buffer,
 				    IPATCH_SAMPLE_8BIT | IPATCH_SAMPLE_MONO,
 				    IPATCH_SAMPLE_MAP_CHANNEL(audio_channel, 0), 
 				    &error);
@@ -635,7 +652,7 @@ ags_ipatch_sample_write(AgsSoundResource *sound_resource,
       ipatch_sample_write_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				    ipatch_sample->offset,
 				    frame_count,
-				    sbuffer,
+				    ipatch_sample->buffer,
 				    IPATCH_SAMPLE_16BIT | IPATCH_SAMPLE_MONO,
 				    IPATCH_SAMPLE_MAP_CHANNEL(audio_channel, 0), 
 				    &error);
@@ -646,7 +663,7 @@ ags_ipatch_sample_write(AgsSoundResource *sound_resource,
       ipatch_sample_write_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				    ipatch_sample->offset,
 				    frame_count,
-				    sbuffer,
+				    ipatch_sample->buffer,
 				    IPATCH_SAMPLE_24BIT | IPATCH_SAMPLE_MONO,
 				    IPATCH_SAMPLE_MAP_CHANNEL(audio_channel, 0), 
 				    &error);
@@ -657,7 +674,7 @@ ags_ipatch_sample_write(AgsSoundResource *sound_resource,
       ipatch_sample_write_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				    ipatch_sample->offset,
 				    frame_count,
-				    sbuffer,
+				    ipatch_sample->buffer,
 				    IPATCH_SAMPLE_32BIT | IPATCH_SAMPLE_MONO,
 				    IPATCH_SAMPLE_MAP_CHANNEL(audio_channel, 0), 
 				    &error);
@@ -668,7 +685,7 @@ ags_ipatch_sample_write(AgsSoundResource *sound_resource,
       ipatch_sample_write_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				    ipatch_sample->offset,
 				    frame_count,
-				    sbuffer,
+				    ipatch_sample->buffer,
 				    IPATCH_SAMPLE_FLOAT | IPATCH_SAMPLE_MONO,
 				    IPATCH_SAMPLE_MAP_CHANNEL(audio_channel, 0), 
 				    &error);
@@ -679,14 +696,14 @@ ags_ipatch_sample_write(AgsSoundResource *sound_resource,
       ipatch_sample_write_transform(IPATCH_SAMPLE(ipatch_sample->sample),
 				    ipatch_sample->offset,
 				    frame_count,
-				    sbuffer,
+				    ipatch_sample->buffer,
 				    IPATCH_SAMPLE_DOUBLE | IPATCH_SAMPLE_MONO,
 				    IPATCH_SAMPLE_MAP_CHANNEL(audio_channel, 0), 
 				    &error);
     }
     break;
   }
-
+  
   ipatch_sample->offset += frame_count;
 }
 

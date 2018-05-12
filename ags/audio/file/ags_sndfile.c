@@ -65,11 +65,11 @@ void ags_sndfile_get_presets(AgsSoundResource *sound_resource,
 			     guint *buffer_size,
 			     guint *format);
 guint ags_sndfile_read(AgsSoundResource *sound_resource,
-		       void *dbuffer,
+		       void *dbuffer, guint daudio_channels,
 		       guint audio_channel,
 		       guint frame_count, guint format);
 void ags_sndfile_write(AgsSoundResource *sound_resource,
-		       void *sbuffer,
+		       void *sbuffer, guint saudio_channels,
 		       guint audio_channel,
 		       guint frame_count, guint format);
 void ags_sndfile_flush(AgsSoundResource *sound_resource);
@@ -710,7 +710,7 @@ ags_sndfile_get_presets(AgsSoundResource *sound_resource,
 
 guint
 ags_sndfile_read(AgsSoundResource *sound_resource,
-		 void *dbuffer,
+		 void *dbuffer, guint daudio_channels,
 		 guint audio_channel,
 		 guint frame_count, guint format)
 {
@@ -793,8 +793,8 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
       }
     }
     
-    ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, 1, i,
-						sndfile->buffer, audio_channel, 0,
+    ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, i,
+						sndfile->buffer, sndfile->audio_channels, audio_channel,
 						read_count, copy_mode);
     
     i += read_count;
@@ -807,7 +807,7 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
 
 void
 ags_sndfile_write(AgsSoundResource *sound_resource,
-		  void *sbuffer,
+		  void *sbuffer, guint saudio_channels,
 		  guint audio_channel,
 		  guint frame_count, guint format)
 {
@@ -830,8 +830,8 @@ ags_sndfile_write(AgsSoundResource *sound_resource,
   write_cache = TRUE;
 
   if((AGS_SNDFILE_FILL_CACHE & (sndfile->flags)) != 0){
-    ags_audio_buffer_util_copy_buffer_to_buffer(sndfile->buffer, audio_channel, 0,
-						sbuffer, 1, i,
+    ags_audio_buffer_util_copy_buffer_to_buffer(sndfile->buffer, sndfile->audio_channels, audio_channel,
+						sbuffer, saudio_channels, 0,
 						frame_count, copy_mode);
     current_offset = sndfile->audio_channel_written[0];
     

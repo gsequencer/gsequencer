@@ -234,7 +234,8 @@ ags_sound_resource_get_presets(AgsSoundResource *sound_resource,
  * ags_sound_resource_read:
  * @sound_resource: the #AgsSoundResource
  * @dbuffer: the destination buffer
- * @audio_channel: the audio channel
+ * @daudio_channels: destination buffer audio channel count
+ * @audio_channel: the audio channel to read
  * @frame_count: the frame count to read
  * @format: the format to read
  * 
@@ -247,7 +248,7 @@ ags_sound_resource_get_presets(AgsSoundResource *sound_resource,
  */
 guint
 ags_sound_resource_read(AgsSoundResource *sound_resource,
-			void *dbuffer,
+			void *dbuffer, guint daudio_channels,
 			guint audio_channel,
 			guint frame_count, guint format)
 {
@@ -260,8 +261,8 @@ ags_sound_resource_read(AgsSoundResource *sound_resource,
   g_return_val_if_fail(sound_resource_interface->read, 0);
 
   retval = sound_resource_interface->read(sound_resource,
-					  dbuffer,
-					  daudio_channels,
+					  dbuffer, daudio_channels,
+					  audio_channel,
 					  frame_count, format);
   
   return(retval);
@@ -271,7 +272,8 @@ ags_sound_resource_read(AgsSoundResource *sound_resource,
  * ags_sound_resource_write:
  * @sound_resource: the #AgsSoundResource
  * @sbuffer: the source buffer
- * @saudio_channel: the audio channel
+ * @saudio_channels: source buffer audio channel count
+ * @audio_channel: the audio channel
  * @frame_count: the frame count to write
  * @format: the format to write
  * 
@@ -282,7 +284,7 @@ ags_sound_resource_read(AgsSoundResource *sound_resource,
  */
 void
 ags_sound_resource_write(AgsSoundResource *sound_resource,
-			 void *sbuffer,
+			 void *sbuffer, guint saudio_channels,
 			 guint audio_channel,
 			 guint frame_count, guint format)
 {
@@ -292,8 +294,8 @@ ags_sound_resource_write(AgsSoundResource *sound_resource,
   sound_resource_interface = AGS_SOUND_RESOURCE_GET_INTERFACE(sound_resource);
   g_return_if_fail(sound_resource_interface->write);
   sound_resource_interface->write(sound_resource,
-				  sbuffer,
-				  saudio_channels,
+				  sbuffer, saudio_channels,
+				  audio_channel,
 				  frame_count, format);
 }
 

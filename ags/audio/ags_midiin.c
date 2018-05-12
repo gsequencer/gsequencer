@@ -767,6 +767,8 @@ ags_midiin_finalize(GObject *gobject)
   pthread_mutexattr_destroy(midiin->obj_mutexattr);
   free(midiin->obj_mutexattr);
 
+  ags_uuid_free(midiin->uuid);
+  
   /* free input buffer */
   if(midiin->buffer[0] != NULL){
     free(midiin->buffer[0]);
@@ -2442,6 +2444,8 @@ ags_midiin_get_note_offset(AgsSequencer *sequencer)
 
   return(note_offset);
 }
+
+
 
 /**
  * ags_midiin_new:

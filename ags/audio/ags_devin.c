@@ -1109,6 +1109,8 @@ ags_devin_finalize(GObject *gobject)
   pthread_mutexattr_destroy(devin->obj_mutexattr);
   free(devin->obj_mutexattr);
 
+  ags_uuid_free(devin->uuid);
+
   /* free output buffer */
   free(devin->buffer[0]);
   free(devin->buffer[1]);

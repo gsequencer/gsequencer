@@ -50,18 +50,25 @@ void ags_jack_midiin_get_property(GObject *gobject,
 				  guint prop_id,
 				  GValue *value,
 				  GParamSpec *param_spec);
-void ags_jack_midiin_disconnect(AgsConnectable *connectable);
-void ags_jack_midiin_connect(AgsConnectable *connectable);
 void ags_jack_midiin_dispose(GObject *gobject);
 void ags_jack_midiin_finalize(GObject *gobject);
+
+AgsUUID* ags_jack_midiin_get_uuid(AgsConnectable *connectable);
+gboolean ags_jack_midiin_has_resource(AgsConnectable *connectable);
+gboolean ags_jack_midiin_is_ready(AgsConnectable *connectable);
+void ags_jack_midiin_add_to_registry(AgsConnectable *connectable);
+void ags_jack_midiin_remove_from_registry(AgsConnectable *connectable);
+xmlNode* ags_jack_midiin_list_resource(AgsConnectable *connectable);
+xmlNode* ags_jack_midiin_xml_compose(AgsConnectable *connectable);
+void ags_jack_midiin_xml_parse(AgsConnectable *connectable,
+			       xmlNode *node);
+gboolean ags_jack_midiin_is_connected(AgsConnectable *connectable);
+void ags_jack_midiin_connect(AgsConnectable *connectable);
+void ags_jack_midiin_disconnect(AgsConnectable *connectable);
 
 void ags_jack_midiin_set_application_context(AgsSequencer *sequencer,
 					     AgsApplicationContext *application_context);
 AgsApplicationContext* ags_jack_midiin_get_application_context(AgsSequencer *sequencer);
-
-void ags_jack_midiin_set_application_mutex(AgsSequencer *sequencer,
-					   pthread_mutex_t *application_mutex);
-pthread_mutex_t* ags_jack_midiin_get_application_mutex(AgsSequencer *sequencer);
 
 void ags_jack_midiin_set_device(AgsSequencer *sequencer,
 				gchar *device);
@@ -100,10 +107,6 @@ void ags_jack_midiin_set_note_offset(AgsSequencer *sequencer,
 				     guint note_offset);
 guint ags_jack_midiin_get_note_offset(AgsSequencer *sequencer);
 
-void ags_jack_midiin_set_audio(AgsSequencer *sequencer,
-			       GList *audio);
-GList* ags_jack_midiin_get_audio(AgsSequencer *sequencer);
-
 /**
  * SECTION:ags_jack_midiin
  * @short_description: Input from sequencer
@@ -117,7 +120,6 @@ GList* ags_jack_midiin_get_audio(AgsSequencer *sequencer);
 enum{
   PROP_0,
   PROP_APPLICATION_CONTEXT,
-  PROP_APPLICATION_MUTEX,
   PROP_DEVICE,
   PROP_BUFFER,
   PROP_BPM,
@@ -127,12 +129,9 @@ enum{
   PROP_JACK_PORT,
 };
 
-enum{
-  LAST_SIGNAL,
-};
-
 static gpointer ags_jack_midiin_parent_class = NULL;
-static guint jack_midiin_signals[LAST_SIGNAL];
+
+static pthread_mutex_t ags_jack_midiin_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_jack_midiin_get_type (void)
@@ -141,13 +140,13 @@ ags_jack_midiin_get_type (void)
 
   if(!ags_type_jack_midiin){
     static const GTypeInfo ags_jack_midiin_info = {
-      sizeof (AgsJackMidiinClass),
+      sizeof(AgsJackMidiinClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_jack_midiin_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsJackMidiin),
+      sizeof(AgsJackMidiin),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_jack_midiin_init,
     };
@@ -185,6 +184,7 @@ void
 ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_jack_midiin_parent_class = g_type_class_peek_parent(jack_midiin);
@@ -204,7 +204,7 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("the application context object"),
@@ -216,31 +216,16 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
 				  param_spec);
 
   /**
-   * AgsJackMidiin:application-mutex:
-   *
-   * The assigned application mutex
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_pointer("application-mutex",
-				    i18n_pspec("the application mutex object"),
-				    i18n_pspec("The application mutex object"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_MUTEX,
-				  param_spec);
-
-  /**
    * AgsJackMidiin:device:
    *
    * The JACK sequencer indentifier
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("device",
 				   i18n_pspec("the device identifier"),
 				   i18n_pspec("The device to perform output to"),
-				   "hw:0",
+				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVICE,
@@ -251,7 +236,7 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    *
    * The buffer
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("buffer",
 				    i18n_pspec("the buffer"),
@@ -266,14 +251,14 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    *
    * Beats per minute
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("bpm",
 				   i18n_pspec("beats per minute"),
 				   i18n_pspec("Beats per minute to use"),
 				   1.0,
 				   240.0,
-				   120.0,
+				   AGS_SEQUENCER_DEFAULT_BPM,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BPM,
@@ -284,7 +269,7 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    *
    * tact
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -302,7 +287,7 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    *
    * Attack of the buffer
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),
@@ -318,7 +303,7 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    *
    * The assigned #AgsJackClient
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("jack-client",
 				   i18n_pspec("jack client object"),
@@ -334,7 +319,7 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
    *
    * The assigned #AgsJackPort
    * 
-   * Since: 1.0.0.7
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("jack-port",
 				   i18n_pspec("jack port object"),
@@ -357,10 +342,23 @@ ags_jack_midiin_error_quark()
 void
 ags_jack_midiin_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->get_uuid = ags_jack_midiin_get_uuid;
+  connectable->has_resource = ags_jack_midiin_has_resource;
+
+  connectable->is_ready = ags_jack_midiin_is_ready;
+  connectable->add_to_registry = ags_jack_midiin_add_to_registry;
+  connectable->remove_from_registry = ags_jack_midiin_remove_from_registry;
+
+  connectable->list_resource = ags_jack_midiin_list_resource;
+  connectable->xml_compose = ags_jack_midiin_xml_compose;
+  connectable->xml_parse = ags_jack_midiin_xml_parse;
+
+  connectable->is_connected = ags_jack_midiin_is_connected;  
   connectable->connect = ags_jack_midiin_connect;
   connectable->disconnect = ags_jack_midiin_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -368,9 +366,6 @@ ags_jack_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
 {
   sequencer->set_application_context = ags_jack_midiin_set_application_context;
   sequencer->get_application_context = ags_jack_midiin_get_application_context;
-
-  sequencer->set_application_mutex = ags_jack_midiin_set_application_mutex;
-  sequencer->get_application_mutex = ags_jack_midiin_get_application_mutex;
 
   sequencer->set_device = ags_jack_midiin_set_device;
   sequencer->get_device = ags_jack_midiin_get_device;
@@ -403,22 +398,25 @@ ags_jack_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
 
   sequencer->set_note_offset = ags_jack_midiin_set_note_offset;
   sequencer->get_note_offset = ags_jack_midiin_get_note_offset;
-
-  sequencer->set_audio = ags_jack_midiin_set_audio;
-  sequencer->get_audio = ags_jack_midiin_get_audio;
 }
 
 void
 ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
 {
-  AgsMutexManager *mutex_manager;
+  AgsConfig *config;
+  
+  gchar *str;
+  gchar *segmentation;
 
-  pthread_mutex_t *application_mutex;
+  guint denumerator, numerator;
+
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
+  jack_midiin->flags = 0;
+
   /* insert jack midiin mutex */
-  jack_midiin->mutexattr = 
+  jack_midiin->obj_mutexattr = 
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
@@ -429,24 +427,21 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
 				PTHREAD_PRIO_INHERIT);
 #endif
 
-  jack_midiin->mutex = 
+  jack_midiin->obj_mutex = 
     mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
+  /* parent */
+  jack_midiin->application_context = NULL;
 
-  ags_mutex_manager_insert(mutex_manager,
-			   (GObject *) jack_midiin,
-			   mutex);
-  
-  pthread_mutex_unlock(application_mutex);
+  /* uuid */
+  jack_midiin->uuid = ags_uuid_alloc();
+  ags_uuid_generate(jack_midiin->uuid);
 
   /* flags */
-  jack_midiin->flags = (AGS_JACK_MIDIIN_ALSA);
+  config = ags_config_get_instance();
+
   g_atomic_int_set(&(jack_midiin->sync_flags),
 		   AGS_JACK_MIDIIN_PASS_THROUGH);
 
@@ -476,8 +471,24 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
   jack_midiin->delay = AGS_SEQUENCER_DEFAULT_DELAY;
   jack_midiin->delay_factor = AGS_SEQUENCER_DEFAULT_DELAY_FACTOR;
     
+  /* segmentation */
+  segmentation = ags_config_get_value(config,
+				      AGS_CONFIG_GENERIC,
+				      "segmentation");
+
+  if(segmentation != NULL){
+    sscanf(segmentation, "%d/%d",
+	   &denumerator,
+	   &numerator);
+    
+    jack_midiin->delay_factor = 1.0 / numerator * (numerator / denumerator);
+
+    g_free(segmentation);
+  }
+
   /* counters */
   jack_midiin->note_offset = 0;
+
   jack_midiin->tact_counter = 0.0;
   jack_midiin->delay_counter = 0;
   jack_midiin->tic_counter = 0;
@@ -497,13 +508,6 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
 
   jack_midiin->callback_finish_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
   pthread_cond_init(jack_midiin->callback_finish_cond, NULL);
-
-  /* parent */
-  jack_midiin->application_context = NULL;
-  jack_midiin->application_mutex = NULL;
-
-  /* all AgsAudio */
-  jack_midiin->audio = NULL;
 }
 
 void
@@ -514,18 +518,29 @@ ags_jack_midiin_set_property(GObject *gobject,
 {
   AgsJackMidiin *jack_midiin;
 
+  pthread_mutex_t *jack_midiin_mutex;
+
   jack_midiin = AGS_JACK_MIDIIN(gobject);
 
-  //TODO:JK: implement set functionality
+  /* get jack midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
     {
       AgsApplicationContext *application_context;
 
-      application_context = g_value_get_object(value);
+      application_context = (AgsApplicationContext *) g_value_get_object(value);
 
-      if(jack_midiin->application_context == (GObject *) application_context){
+      pthread_mutex_lock(jack_midiin_mutex);
+
+      if(jack_midiin->application_context == application_context){
+	pthread_mutex_unlock(jack_midiin_mutex);
+
 	return;
       }
 
@@ -533,34 +548,13 @@ ags_jack_midiin_set_property(GObject *gobject,
 	g_object_unref(G_OBJECT(jack_midiin->application_context));
       }
 
-      if(application_context != NULL){
-	AgsConfig *config;
-
-	gchar *str;
-	gchar *segmentation;
-	guint discriminante, nominante;
-	
+      if(application_context != NULL){	
 	g_object_ref(G_OBJECT(application_context));
-
-	jack_midiin->application_mutex = application_context->mutex;	
-      }else{
-	jack_midiin->application_mutex = NULL;
       }
 
-      jack_midiin->application_context = (GObject *) application_context;
-    }
-    break;
-  case PROP_APPLICATION_MUTEX:
-    {
-      pthread_mutex_t *application_mutex;
+      jack_midiin->application_context = application_context;
 
-      application_mutex = (pthread_mutex_t *) g_value_get_pointer(value);
-
-      if(jack_midiin->application_mutex == application_mutex){
-	return;
-      }
-      
-      jack_midiin->application_mutex = application_mutex;
+      pthread_mutex_unlock(jack_midiin_mutex);
     }
     break;
   case PROP_DEVICE:
@@ -569,7 +563,11 @@ ags_jack_midiin_set_property(GObject *gobject,
 
       device = (char *) g_value_get_string(value);
 
+      pthread_mutex_lock(jack_midiin_mutex);
+
       jack_midiin->card_uri = g_strdup(device);
+
+      pthread_mutex_unlock(jack_midiin_mutex);
     }
     break;
   case PROP_BUFFER:
@@ -583,7 +581,11 @@ ags_jack_midiin_set_property(GObject *gobject,
       
       bpm = g_value_get_double(value);
 
+      pthread_mutex_lock(jack_midiin_mutex);
+
       jack_midiin->bpm = bpm;
+
+      pthread_mutex_unlock(jack_midiin_mutex);
     }
     break;
   case PROP_DELAY_FACTOR:
@@ -592,7 +594,11 @@ ags_jack_midiin_set_property(GObject *gobject,
       
       delay_factor = g_value_get_double(value);
 
+      pthread_mutex_lock(jack_midiin_mutex);
+
       jack_midiin->delay_factor = delay_factor;
+
+      pthread_mutex_unlock(jack_midiin_mutex);
     }
     break;
   case PROP_JACK_CLIENT:
@@ -601,7 +607,11 @@ ags_jack_midiin_set_property(GObject *gobject,
 
       jack_client = g_value_get_object(value);
 
+      pthread_mutex_lock(jack_midiin_mutex);
+
       if(jack_midiin->jack_client == (GObject *) jack_client){
+	pthread_mutex_unlock(jack_midiin_mutex);
+	
 	return;
       }
 
@@ -614,6 +624,8 @@ ags_jack_midiin_set_property(GObject *gobject,
       }
 
       jack_midiin->jack_client = (GObject *) jack_client;
+
+      pthread_mutex_unlock(jack_midiin_mutex);
     }
     break;
   case PROP_JACK_PORT:
@@ -622,7 +634,11 @@ ags_jack_midiin_set_property(GObject *gobject,
 
       jack_port = (AgsJackPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(jack_midiin_mutex);
+
       if(g_list_find(jack_midiin->jack_port, jack_port) != NULL){
+	pthread_mutex_unlock(jack_midiin_mutex);
+
 	return;
       }
 
@@ -631,6 +647,8 @@ ags_jack_midiin_set_property(GObject *gobject,
 	jack_midiin->jack_port = g_list_append(jack_midiin->jack_port,
 					       jack_port);
       }
+
+      pthread_mutex_unlock(jack_midiin_mutex);
     }
     break;
   default:
@@ -647,48 +665,80 @@ ags_jack_midiin_get_property(GObject *gobject,
 {
   AgsJackMidiin *jack_midiin;
 
+  pthread_mutex_t *jack_midiin_mutex;
+
   jack_midiin = AGS_JACK_MIDIIN(gobject);
+
+  /* get jack midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
     {
+      pthread_mutex_lock(jack_midiin_mutex);
+
       g_value_set_object(value, jack_midiin->application_context);
-    }
-    break;
-  case PROP_APPLICATION_MUTEX:
-    {
-      g_value_set_pointer(value, jack_midiin->application_mutex);
+
+      pthread_mutex_unlock(jack_midiin_mutex);
     }
     break;
   case PROP_DEVICE:
     {
+      pthread_mutex_lock(jack_midiin_mutex);
+
       g_value_set_string(value, jack_midiin->card_uri);
+
+      pthread_mutex_unlock(jack_midiin_mutex);
     }
     break;
   case PROP_BUFFER:
     {
+      pthread_mutex_lock(jack_midiin_mutex);
+
       g_value_set_pointer(value, jack_midiin->buffer);
+
+      pthread_mutex_unlock(jack_midiin_mutex);
     }
     break;
   case PROP_BPM:
     {
+      pthread_mutex_lock(jack_midiin_mutex);
+
       g_value_set_double(value, jack_midiin->bpm);
+
+      pthread_mutex_unlock(jack_midiin_mutex);
     }
     break;
   case PROP_DELAY_FACTOR:
     {
+      pthread_mutex_lock(jack_midiin_mutex);
+
       g_value_set_double(value, jack_midiin->delay_factor);
+
+      pthread_mutex_unlock(jack_midiin_mutex);
     }
     break;
   case PROP_JACK_CLIENT:
     {
+      pthread_mutex_lock(jack_midiin_mutex);
+
       g_value_set_object(value, jack_midiin->jack_client);
+
+      pthread_mutex_unlock(jack_midiin_mutex);
     }
     break;
   case PROP_JACK_PORT:
     {
+      pthread_mutex_lock(jack_midiin_mutex);
+
       g_value_set_pointer(value,
 			  g_list_copy(jack_midiin->jack_port));
+
+      pthread_mutex_unlock(jack_midiin_mutex);
     }
     break;
   default:
@@ -706,22 +756,11 @@ ags_jack_midiin_dispose(GObject *gobject)
 
   jack_midiin = AGS_JACK_MIDIIN(gobject);
 
-  /* audio */
-  if(jack_midiin->audio != NULL){
-    list = jack_midiin->audio;
-
-    while(list != NULL){
-      g_object_set(list->data,
-		   "sequencer", NULL,
-		   NULL);
-
-      list = list->next;
-    }
-
-    g_list_free_full(jack_midiin->audio,
+  if(jack_midiin->jack_port != NULL){
+    g_list_free_full(jack_midiin->jack_port,
 		     g_object_unref);
 
-    jack_midiin->audio = NULL;
+    jack_midiin->jack_port = NULL;
   }
   
   /* call parent */
@@ -732,23 +771,17 @@ void
 ags_jack_midiin_finalize(GObject *gobject)
 {
   AgsJackMidiin *jack_midiin;
-
-  AgsMutexManager *mutex_manager;
   
-  GList *list;
-
   jack_midiin = AGS_JACK_MIDIIN(gobject);
 
-  /* remove jack_midiin mutex */
-  pthread_mutex_lock(jack_midiin->application_mutex);
-  
-  mutex_manager = ags_mutex_manager_get_instance();
+  pthread_mutex_destroy(jack_midiin->obj_mutex);
+  free(jack_midiin->obj_mutex);
 
-  ags_mutex_manager_remove(mutex_manager,
-			   gobject);
-  
-  pthread_mutex_unlock(jack_midiin->application_mutex);
+  pthread_mutexattr_destroy(jack_midiin->obj_mutexattr);
+  free(jack_midiin->obj_mutexattr);
 
+  ags_uuid_free(jack_midiin->uuid);
+  
   /* free output buffer */
   if(jack_midiin->buffer[0] != NULL){
     free(jack_midiin->buffer[0]);
@@ -769,30 +802,162 @@ ags_jack_midiin_finalize(GObject *gobject)
   /* free buffer array */
   free(jack_midiin->buffer);
 
-  /* audio */
-  if(jack_midiin->audio != NULL){
-    list = jack_midiin->audio;
-
-    while(list != NULL){
-      g_object_set(list->data,
-		   "sequencer", NULL,
-		   NULL);
-
-      list = list->next;
-    }
-
-    g_list_free_full(jack_midiin->audio,
+  if(jack_midiin->jack_port != NULL){
+    g_list_free_full(jack_midiin->jack_port,
 		     g_object_unref);
   }
   
-  pthread_mutex_destroy(jack_midiin->mutex);
-  free(jack_midiin->mutex);
-
-  pthread_mutexattr_destroy(jack_midiin->mutexattr);
-  free(jack_midiin->mutexattr);
-
   /* call parent */
   G_OBJECT_CLASS(ags_jack_midiin_parent_class)->finalize(gobject);
+}
+
+AgsUUID*
+ags_jack_midiin_get_uuid(AgsConnectable *connectable)
+{
+  AgsJackMidiin *jack_midiin;
+  
+  AgsUUID *ptr;
+
+  pthread_mutex_t *jack_midiin_mutex;
+
+  jack_midiin = AGS_JACK_MIDIIN(connectable);
+
+  /* get jack_midiin signal mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+
+  /* get UUID */
+  pthread_mutex_lock(jack_midiin_mutex);
+
+  ptr = jack_midiin->uuid;
+
+  pthread_mutex_unlock(jack_midiin_mutex);
+  
+  return(ptr);
+}
+
+gboolean
+ags_jack_midiin_has_resource(AgsConnectable *connectable)
+{
+  return(FALSE);
+}
+
+gboolean
+ags_jack_midiin_is_ready(AgsConnectable *connectable)
+{
+  AgsJackMidiin *jack_midiin;
+  
+  gboolean is_ready;
+
+  pthread_mutex_t *jack_midiin_mutex;
+
+  jack_midiin = AGS_JACK_MIDIIN(connectable);
+
+  /* get jack_midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+
+  /* check is added */
+  pthread_mutex_lock(jack_midiin_mutex);
+
+  is_ready = (((AGS_JACK_MIDIIN_ADDED_TO_REGISTRY & (jack_midiin->flags)) != 0) ? TRUE: FALSE);
+
+  pthread_mutex_unlock(jack_midiin_mutex);
+  
+  return(is_ready);
+}
+
+void
+ags_jack_midiin_add_to_registry(AgsConnectable *connectable)
+{
+  AgsJackMidiin *jack_midiin;
+
+  if(ags_connectable_is_ready(connectable)){
+    return;
+  }
+  
+  jack_midiin = AGS_JACK_MIDIIN(connectable);
+
+  ags_jack_midiin_set_flags(jack_midiin, AGS_JACK_MIDIIN_ADDED_TO_REGISTRY);
+}
+
+void
+ags_jack_midiin_remove_from_registry(AgsConnectable *connectable)
+{
+  AgsJackMidiin *jack_midiin;
+
+  if(!ags_connectable_is_ready(connectable)){
+    return;
+  }
+
+  jack_midiin = AGS_JACK_MIDIIN(connectable);
+
+  ags_jack_midiin_unset_flags(jack_midiin, AGS_JACK_MIDIIN_ADDED_TO_REGISTRY);
+}
+
+xmlNode*
+ags_jack_midiin_list_resource(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+xmlNode*
+ags_jack_midiin_xml_compose(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+void
+ags_jack_midiin_xml_parse(AgsConnectable *connectable,
+			  xmlNode *node)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_jack_midiin_is_connected(AgsConnectable *connectable)
+{
+  AgsJackMidiin *jack_midiin;
+  
+  gboolean is_connected;
+
+  pthread_mutex_t *jack_midiin_mutex;
+
+  jack_midiin = AGS_JACK_MIDIIN(connectable);
+
+  /* get jack_midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+
+  /* check is connected */
+  pthread_mutex_lock(jack_midiin_mutex);
+
+  is_connected = (((AGS_JACK_MIDIIN_CONNECTED & (jack_midiin->flags)) != 0) ? TRUE: FALSE);
+  
+  pthread_mutex_unlock(jack_midiin_mutex);
+  
+  return(is_connected);
 }
 
 void
@@ -800,108 +965,152 @@ ags_jack_midiin_connect(AgsConnectable *connectable)
 {
   AgsJackMidiin *jack_midiin;
   
-  AgsMutexManager *mutex_manager;
-
-  GList *list;
-
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t attr;
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
 
   jack_midiin = AGS_JACK_MIDIIN(connectable);
 
-  /* create jack_midiin mutex */
-  //FIXME:JK: memory leak
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_settype(&attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-  
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     &attr);
-
-  /* insert mutex */
-  pthread_mutex_lock(jack_midiin->application_mutex);
-
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  ags_mutex_manager_insert(mutex_manager,
-			   (GObject *) jack_midiin,
-			   mutex);
-  
-  pthread_mutex_unlock(jack_midiin->application_mutex);
-
-  /*  */  
-  list = jack_midiin->audio;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
+  ags_jack_midiin_set_flags(jack_midiin, AGS_JACK_MIDIIN_CONNECTED);
 }
 
 void
 ags_jack_midiin_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+
+  AgsJackMidiin *jack_midiin;
+
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  jack_midiin = AGS_JACK_MIDIIN(connectable);
+  
+  ags_jack_midiin_unset_flags(jack_midiin, AGS_JACK_MIDIIN_CONNECTED);
 }
 
 /**
- * ags_jack_midiin_switch_buffer_flag:
- * @jack_midiin: an #AgsJackMidiin
+ * ags_jack_midiin_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
  *
- * The buffer flag indicates the currently recorded buffer.
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_jack_midiin_get_class_mutex()
+{
+  return(&ags_jack_midiin_class_mutex);
+}
+
+/**
+ * ags_jack_midiin_test_flags:
+ * @jack_midiin: the #AgsJackMidiin
+ * @flags: the flags
  *
- * Since: 1.0.0
+ * Test @flags to be set on @jack_midiin.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_jack_midiin_test_flags(AgsJackMidiin *jack_midiin, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *jack_midiin_mutex;
+
+  if(!AGS_IS_JACK_MIDIIN(jack_midiin)){
+    return(FALSE);
+  }
+
+  /* get jack_midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(jack_midiin_mutex);
+
+  retval = (flags & (jack_midiin->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(jack_midiin_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_jack_midiin_set_flags:
+ * @jack_midiin: the #AgsJackMidiin
+ * @flags: see #AgsJackMidiinFlags-enum
+ *
+ * Enable a feature of @jack_midiin.
+ *
+ * Since: 2.0.0
  */
 void
-ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin)
+ags_jack_midiin_set_flags(AgsJackMidiin *jack_midiin, guint flags)
 {
-  if((AGS_JACK_MIDIIN_BUFFER0 & (jack_midiin->flags)) != 0){
-    jack_midiin->flags &= (~AGS_JACK_MIDIIN_BUFFER0);
-    jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER1;
+  pthread_mutex_t *jack_midiin_mutex;
 
-    /* clear buffer */
-    if(jack_midiin->buffer[3] != NULL){
-      free(jack_midiin->buffer[3]);
-    }
-
-    jack_midiin->buffer[3] = NULL;
-    jack_midiin->buffer_size[3] = 0;
-  }else if((AGS_JACK_MIDIIN_BUFFER1 & (jack_midiin->flags)) != 0){
-    jack_midiin->flags &= (~AGS_JACK_MIDIIN_BUFFER1);
-    jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER2;
-
-    /* clear buffer */
-    if(jack_midiin->buffer[0] != NULL){
-      free(jack_midiin->buffer[0]);
-    }
-
-    jack_midiin->buffer[0] = NULL;
-    jack_midiin->buffer_size[0] = 0;
-  }else if((AGS_JACK_MIDIIN_BUFFER2 & (jack_midiin->flags)) != 0){
-    jack_midiin->flags &= (~AGS_JACK_MIDIIN_BUFFER2);
-    jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER3;
-
-    /* clear buffer */
-    if(jack_midiin->buffer[1] != NULL){
-      free(jack_midiin->buffer[1]);
-    }
-
-    jack_midiin->buffer[1] = NULL;
-    jack_midiin->buffer_size[1] = 0;
-  }else if((AGS_JACK_MIDIIN_BUFFER3 & (jack_midiin->flags)) != 0){
-    jack_midiin->flags &= (~AGS_JACK_MIDIIN_BUFFER3);
-    jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER0;
-
-    /* clear buffer */
-    if(jack_midiin->buffer[2] != NULL){
-      free(jack_midiin->buffer[2]);
-    }
-
-    jack_midiin->buffer[2] = NULL;
-    jack_midiin->buffer_size[2] = 0;
+  if(!AGS_IS_JACK_MIDIIN(jack_midiin)){
+    return;
   }
+
+  /* get jack_midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+
+  //TODO:JK: add more?
+
+  /* set flags */
+  pthread_mutex_lock(jack_midiin_mutex);
+
+  jack_midiin->flags |= flags;
+  
+  pthread_mutex_unlock(jack_midiin_mutex);
+}
+    
+/**
+ * ags_jack_midiin_unset_flags:
+ * @jack_midiin: the #AgsJackMidiin
+ * @flags: see #AgsJackMidiinFlags-enum
+ *
+ * Disable a feature of @jack_midiin.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_jack_midiin_unset_flags(AgsJackMidiin *jack_midiin, guint flags)
+{  
+  pthread_mutex_t *jack_midiin_mutex;
+
+  if(!AGS_IS_JACK_MIDIIN(jack_midiin)){
+    return;
+  }
+
+  /* get jack_midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+
+  //TODO:JK: add more?
+
+  /* unset flags */
+  pthread_mutex_lock(jack_midiin_mutex);
+
+  jack_midiin->flags &= (~flags);
+  
+  pthread_mutex_unlock(jack_midiin_mutex);
 }
 
 void
@@ -910,8 +1119,23 @@ ags_jack_midiin_set_application_context(AgsSequencer *sequencer,
 {
   AgsJackMidiin *jack_midiin;
 
+  pthread_mutex_t *jack_midiin_mutex;
+
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
+
+  /* get jack_midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+
+  /* set application context */
+  pthread_mutex_lock(jack_midiin_mutex);
+  
   jack_midiin->application_context = (GObject *) application_context;
+  
+  pthread_mutex_unlock(jack_midiin_mutex);
 }
 
 AgsApplicationContext*
@@ -919,29 +1143,27 @@ ags_jack_midiin_get_application_context(AgsSequencer *sequencer)
 {
   AgsJackMidiin *jack_midiin;
 
-  jack_midiin = AGS_JACK_MIDIIN(sequencer);
-
-  return((AgsApplicationContext *) jack_midiin->application_context);
-}
-
-void
-ags_jack_midiin_set_application_mutex(AgsSequencer *sequencer,
-				      pthread_mutex_t *application_mutex)
-{
-  AgsJackMidiin *jack_midiin;
-
-  jack_midiin = AGS_JACK_MIDIIN(sequencer);
-  jack_midiin->application_mutex = application_mutex;
-}
-
-pthread_mutex_t*
-ags_jack_midiin_get_application_mutex(AgsSequencer *sequencer)
-{
-  AgsJackMidiin *jack_midiin;
+  AgsApplicationContext *application_context;
+  
+  pthread_mutex_t *jack_midiin_mutex;
 
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
-  return(jack_midiin->application_mutex);
+  /* get jack_midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+
+  /* get application context */
+  pthread_mutex_lock(jack_midiin_mutex);
+
+  application_context = (AgsApplicationContext *) jack_midiin->application_context;
+
+  pthread_mutex_unlock(jack_midiin_mutex);
+  
+  return(application_context);
 }
 
 void
@@ -957,18 +1179,33 @@ ags_jack_midiin_set_device(AgsSequencer *sequencer,
   int ret;
   guint nth_card;
   guint i;
+
+  pthread_mutex_t *jack_midiin_mutex;
   
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
+
+  /* get jack_midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+
+  pthread_mutex_lock(jack_midiin_mutex);
 
   if(jack_midiin->card_uri == device ||
      !g_ascii_strcasecmp(jack_midiin->card_uri,
 			 device)){
+    pthread_mutex_unlock(jack_midiin_mutex);
+    
     return;
   }
 
   if(!g_str_has_prefix(device,
 		       "ags-jack-midiin-")){
     g_warning("invalid JACK device prefix");
+
+    pthread_mutex_unlock(jack_midiin_mutex);
 
     return;
   }
@@ -979,6 +1216,8 @@ ags_jack_midiin_set_device(AgsSequencer *sequencer,
 
   if(ret != 1){
     g_warning("invalid JACK device specifier");
+
+    pthread_mutex_unlock(jack_midiin_mutex);
 
     return;
   }
@@ -1002,29 +1241,51 @@ ags_jack_midiin_set_device(AgsSequencer *sequencer,
   g_free(str);
 
   g_list_free(jack_port_start);
+  
+  pthread_mutex_unlock(jack_midiin_mutex);
 }
 
 gchar*
 ags_jack_midiin_get_device(AgsSequencer *sequencer)
 {
   AgsJackMidiin *jack_midiin;
+
+  gchar *device;
+  
+  pthread_mutex_t *jack_midiin_mutex;
   
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
   
-  return(jack_midiin->card_uri);
+  /* get jack_midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+
+  device = NULL;
+  
+  pthread_mutex_lock(jack_midiin_mutex);
+
+  device = g_strdup(jack_midiin->card_uri);
+
+  pthread_mutex_unlock(jack_midiin_mutex);
+
+  return(device);
 }
 
 void
 ags_jack_midiin_list_cards(AgsSequencer *sequencer,
 			   GList **card_id, GList **card_name)
 {
+  AgsJackClient *jack_client;
   AgsJackMidiin *jack_midiin;
 
   AgsApplicationContext *application_context;
   
   GList *list, *list_start;
 
-  pthread_mutex_t *application_mutex;
+  gchar *device, *client_name;
   
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
@@ -1033,9 +1294,7 @@ ags_jack_midiin_list_cards(AgsSequencer *sequencer,
   if(application_context == NULL){
     return;
   }
-  
-  application_mutex = jack_midiin->application_mutex;
-  
+    
   if(card_id != NULL){
     *card_id = NULL;
   }
@@ -1044,22 +1303,29 @@ ags_jack_midiin_list_cards(AgsSequencer *sequencer,
     *card_name = NULL;
   }
 
-  pthread_mutex_lock(application_mutex);
-
   list_start = 
     list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
   
   while(list != NULL){
     if(AGS_IS_JACK_MIDIIN(list->data)){
+      g_object_get(list->data,
+		   "device", &device,
+		   "jack-client", &jack_client,
+		   NULL);
+      
       if(card_id != NULL){
 	*card_id = g_list_prepend(*card_id,
-				  g_strdup(AGS_JACK_MIDIIN(list->data)->card_uri));
+				  device);
       }
 
-      if(card_name != NULL){
-	if(AGS_JACK_MIDIIN(list->data)->jack_client != NULL){
+      if(card_name != NULL){	
+	if(jack_client != NULL){
+	  g_object_get(jack_client,
+		       "client-name", &client_name,
+		       NULL);
+	  
 	  *card_name = g_list_prepend(*card_name,
-				      g_strdup(AGS_JACK_CLIENT(AGS_JACK_MIDIIN(list->data)->jack_client)->name));
+				      client_name);
 	}else{
 	  *card_name = g_list_prepend(*card_name,
 				      g_strdup("(null)"));
@@ -1071,8 +1337,6 @@ ags_jack_midiin_list_cards(AgsSequencer *sequencer,
 
     list = list->next;
   }
-
-  pthread_mutex_unlock(application_mutex);
   
   if(card_id != NULL && *card_id != NULL){
     *card_id = g_list_reverse(*card_id);
@@ -1088,9 +1352,27 @@ ags_jack_midiin_is_starting(AgsSequencer *sequencer)
 {
   AgsJackMidiin *jack_midiin;
 
-  jack_midiin = AGS_JACK_MIDIIN(sequencer);
+  gboolean is_starting;
   
-  return(((AGS_JACK_MIDIIN_START_RECORD & (jack_midiin->flags)) != 0) ? TRUE: FALSE);
+  pthread_mutex_t *jack_midiin_mutex;
+  
+  jack_midiin = AGS_JACK_MIDIIN(sequencer);
+
+  /* get jack_midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+
+  /* check is starting */
+  pthread_mutex_lock(jack_midiin_mutex);
+
+  is_starting = ((AGS_JACK_MIDIIN_START_RECORD & (jack_midiin->flags)) != 0) ? TRUE: FALSE;
+
+  pthread_mutex_unlock(jack_midiin_mutex);
+  
+  return(is_starting);
 }
 
 gboolean
@@ -1098,9 +1380,27 @@ ags_jack_midiin_is_recording(AgsSequencer *sequencer)
 {
   AgsJackMidiin *jack_midiin;
 
+  gboolean is_recording;
+  
+  pthread_mutex_t *jack_midiin_mutex;
+
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
   
-  return(((AGS_JACK_MIDIIN_RECORD & (jack_midiin->flags)) != 0) ? TRUE: FALSE);
+  /* get jack_midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+
+  /* check is starting */
+  pthread_mutex_lock(jack_midiin_mutex);
+
+  is_recording = ((AGS_JACK_MIDIIN_RECORD & (jack_midiin->flags)) != 0) ? TRUE: FALSE;
+
+  pthread_mutex_unlock(jack_midiin_mutex);
+
+  return(is_recording);
 }
 
 void
@@ -1109,27 +1409,19 @@ ags_jack_midiin_port_init(AgsSequencer *sequencer,
 {
   AgsJackMidiin *jack_midiin;
 
-  AgsMutexManager *mutex_manager;
-
-  AgsApplicationContext *application_context;
-  
-  pthread_mutex_t *mutex;
+  pthread_mutex_t *jack_midiin_mutex;
   
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
-
-  application_context = ags_sequencer_get_application_context(sequencer);
   
-  pthread_mutex_lock(application_context->mutex);
+  /* get jack midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
   
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) jack_midiin);
+  jack_midiin_mutex = jack_midiin->obj_mutex;
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
 
   /*  */
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(jack_midiin_mutex);
 
   /* prepare for record */
   jack_midiin->flags |= (AGS_JACK_MIDIIN_BUFFER3 |
@@ -1156,7 +1448,7 @@ ags_jack_midiin_port_init(AgsSequencer *sequencer,
   g_atomic_int_or(&(jack_midiin->sync_flags),
 		  AGS_JACK_MIDIIN_INITIAL_CALLBACK);
   
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(jack_midiin_mutex);
 }
 
 void
@@ -1166,69 +1458,62 @@ ags_jack_midiin_port_record(AgsSequencer *sequencer,
   AgsJackClient *jack_client;
   AgsJackMidiin *jack_midiin;
 
-  AgsMutexManager *mutex_manager;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
 
   gboolean jack_client_activated;
 
-  pthread_mutex_t *mutex;
+  pthread_mutex_t *jack_midiin_mutex;
   pthread_mutex_t *callback_mutex;
   pthread_mutex_t *callback_finish_mutex;
-  pthread_mutex_t *client_mutex;
+  pthread_mutex_t *jack_client_mutex;
 
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
-
-  /*  */
-  application_context = ags_sequencer_get_application_context(sequencer);
   
-  pthread_mutex_lock(application_context->mutex);
+  /* get jack midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
   
-  mutex_manager = ags_mutex_manager_get_instance();
-  task_thread = (AgsTaskThread *) application_context->task_thread;
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) jack_midiin);
+  jack_midiin_mutex = jack_midiin->obj_mutex;
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
 
   /* client */
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(jack_midiin_mutex);
 
   jack_client = (AgsJackClient *) jack_midiin->jack_client;
   
   callback_mutex = jack_midiin->callback_mutex;
   callback_finish_mutex = jack_midiin->callback_finish_mutex;
 
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(jack_midiin_mutex);
 
   /* do record */
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(jack_midiin_mutex);
   
   jack_midiin->flags &= (~AGS_JACK_MIDIIN_START_RECORD);
 
   if((AGS_JACK_MIDIIN_INITIALIZED & (jack_midiin->flags)) == 0){
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(jack_midiin_mutex);
     
     return;
   }
 
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(jack_midiin_mutex);
 
-  /*  */
-  pthread_mutex_lock(application_context->mutex);
+  /* get jack client mutex */
+  pthread_mutex_lock(ags_jack_client_get_class_mutex());
   
-  client_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  (GObject *) jack_client);
+  jack_client_mutex = jack_client->obj_mutex;
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(ags_jack_client_get_class_mutex());
 
-  pthread_mutex_lock(client_mutex);
+  /* check activated */
+  pthread_mutex_lock(jack_client_mutex);
 
   jack_client_activated = ((AGS_JACK_CLIENT_ACTIVATED & (jack_client->flags)) != 0) ? TRUE: FALSE;
 
-  pthread_mutex_unlock(client_mutex);
+  pthread_mutex_unlock(jack_client_mutex);
 
   if(jack_client_activated){
     /* signal client */
@@ -1306,33 +1591,24 @@ ags_jack_midiin_port_free(AgsSequencer *sequencer)
 {
   AgsJackMidiin *jack_midiin;
 
-  AgsMutexManager *mutex_manager;
-
-  AgsApplicationContext *application_context;
-
-  pthread_mutex_t *mutex;
+  pthread_mutex_t *jack_midiin_mutex;
   pthread_mutex_t *callback_mutex;
   pthread_mutex_t *callback_finish_mutex;
 
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
   
-  jack_midiin = AGS_JACK_MIDIIN(sequencer);
-
-  application_context = ags_sequencer_get_application_context(sequencer);
+  /* get jack_midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
   
-  pthread_mutex_lock(application_context->mutex);
+  jack_midiin_mutex = jack_midiin->obj_mutex;
   
-  mutex_manager = ags_mutex_manager_get_instance();
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
 
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) jack_midiin);
-  
-  pthread_mutex_unlock(application_context->mutex);
-
-  pthread_mutex_lock(mutex);
+  /* check initialized */
+  pthread_mutex_lock(jack_midiin_mutex);
 
   if((AGS_JACK_MIDIIN_INITIALIZED & (jack_midiin->flags)) == 0){
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(jack_midiin_mutex);
     
     return;
   }
@@ -1351,7 +1627,7 @@ ags_jack_midiin_port_free(AgsSequencer *sequencer)
   g_atomic_int_and(&(jack_midiin->sync_flags),
 		   (~AGS_JACK_MIDIIN_INITIAL_CALLBACK));
 
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(jack_midiin_mutex);
 
   /* signal callback */
   pthread_mutex_lock(callback_mutex);
@@ -1378,7 +1654,7 @@ ags_jack_midiin_port_free(AgsSequencer *sequencer)
   pthread_mutex_unlock(callback_finish_mutex);
 
   /*  */
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(jack_midiin_mutex);
 
   if(jack_midiin->buffer[1] != NULL){
     free(jack_midiin->buffer[1]);
@@ -1400,33 +1676,60 @@ ags_jack_midiin_port_free(AgsSequencer *sequencer)
     jack_midiin->buffer_size[0] = 0;
   }
 
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(jack_midiin_mutex);
 }
 
 void
 ags_jack_midiin_tic(AgsSequencer *sequencer)
 {
   AgsJackMidiin *jack_midiin;
+
   gdouble delay;
+  gdouble delay_counter;    
+  guint note_offset;
   
+  pthread_mutex_t *jack_midiin_mutex;
+
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
   
+  /* get jack_midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  
   /* determine if attack should be switched */
-  delay = jack_midiin->delay;
+  pthread_mutex_lock(jack_midiin_mutex);
 
-  if((guint) jack_midiin->delay_counter + 1 >= (guint) delay){
+  delay = jack_midiin->delay;
+  delay_counter = jack_midiin->delay_counter;
+
+  note_offset = jack_midiin->note_offset;
+
+  pthread_mutex_unlock(jack_midiin_mutex);
+
+  if((guint) delay_counter + 1 >= (guint) delay){
     ags_sequencer_set_note_offset(sequencer,
-				  jack_midiin->note_offset_absolute + 1);
+				  note_offset + 1);
     
     /* delay */
     ags_sequencer_offset_changed(sequencer,
-				 jack_midiin->note_offset);
+				 note_offset);
     
     /* reset - delay counter */
+    pthread_mutex_lock(jack_midiin_mutex);
+
     jack_midiin->delay_counter = 0.0;
     jack_midiin->tact_counter += 1.0;
+
+    pthread_mutex_unlock(jack_midiin_mutex);
   }else{
+    pthread_mutex_lock(jack_midiin_mutex);
+
     jack_midiin->delay_counter += 1.0;
+
+    pthread_mutex_unlock(jack_midiin_mutex);
   }
 }
 
@@ -1436,7 +1739,19 @@ ags_jack_midiin_offset_changed(AgsSequencer *sequencer,
 {
   AgsJackMidiin *jack_midiin;
   
+  pthread_mutex_t *jack_midiin_mutex;
+  
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
+
+  /* get jack_midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+
+  /* offset changed */
+  pthread_mutex_lock(jack_midiin_mutex);
 
   jack_midiin->tic_counter += 1;
 
@@ -1444,6 +1759,8 @@ ags_jack_midiin_offset_changed(AgsSequencer *sequencer,
     /* reset - tic counter i.e. modified delay index within period */
     jack_midiin->tic_counter = 0;
   }
+
+  pthread_mutex_unlock(jack_midiin_mutex);
 }
 
 void
@@ -1452,39 +1769,108 @@ ags_jack_midiin_set_bpm(AgsSequencer *sequencer,
 {
   AgsJackMidiin *jack_midiin;
 
+  pthread_mutex_t *jack_midiin_mutex;
+  
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
+  /* get jack_midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+
+  /* set bpm */
+  pthread_mutex_lock(jack_midiin_mutex);
+
   jack_midiin->bpm = bpm;
+
+  pthread_mutex_unlock(jack_midiin_mutex);
+
+  ags_jack_midiin_adjust_delay_and_attack(jack_midiin);
 }
 
 gdouble
 ags_jack_midiin_get_bpm(AgsSequencer *sequencer)
 {
   AgsJackMidiin *jack_midiin;
+
+  gdouble bpm;
+  
+  pthread_mutex_t *jack_midiin_mutex;
   
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
-  return(jack_midiin->bpm);
+  /* get jack_midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+
+  /* get bpm */
+  pthread_mutex_lock(jack_midiin_mutex);
+
+  bpm = jack_midiin->bpm;
+  
+  pthread_mutex_unlock(jack_midiin_mutex);
+
+  return(bpm);
 }
 
 void
-ags_jack_midiin_set_delay_factor(AgsSequencer *sequencer, gdouble delay_factor)
+ags_jack_midiin_set_delay_factor(AgsSequencer *sequencer,
+				 gdouble delay_factor)
 {
   AgsJackMidiin *jack_midiin;
 
+  pthread_mutex_t *jack_midiin_mutex;
+  
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
+  /* get jack_midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+
+  /* set delay factor */
+  pthread_mutex_lock(jack_midiin_mutex);
+
   jack_midiin->delay_factor = delay_factor;
+
+  pthread_mutex_unlock(jack_midiin_mutex);
+
+  ags_jack_midiin_adjust_delay_and_attack(jack_midiin);
 }
 
 gdouble
 ags_jack_midiin_get_delay_factor(AgsSequencer *sequencer)
 {
   AgsJackMidiin *jack_midiin;
+
+  gdouble delay_factor;
+  
+  pthread_mutex_t *jack_midiin_mutex;
   
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
-  return(jack_midiin->delay_factor);
+  /* get jack_midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+
+  /* get delay factor */
+  pthread_mutex_lock(jack_midiin_mutex);
+
+  delay_factor = jack_midiin->delay_factor;
+  
+  pthread_mutex_unlock(jack_midiin_mutex);
+
+  return(delay_factor);
 }
 
 void*
@@ -1508,7 +1894,7 @@ ags_jack_midiin_get_buffer(AgsSequencer *sequencer,
   }else{
     buffer = NULL;
   }
-  
+
   /* return the buffer's length */
   if(buffer_length != NULL){
     if((AGS_JACK_MIDIIN_BUFFER0 & (jack_midiin->flags)) != 0){
@@ -1523,7 +1909,7 @@ ags_jack_midiin_get_buffer(AgsSequencer *sequencer,
       *buffer_length = 0;
     }
   }
-
+  
   return(buffer);
 }
 
@@ -1532,18 +1918,18 @@ ags_jack_midiin_get_next_buffer(AgsSequencer *sequencer,
 				guint *buffer_length)
 {
   AgsJackMidiin *jack_midiin;
-  unsigned char *buffer;
+  char *buffer;
   
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
   /* get buffer */
-  if((AGS_JACK_MIDIIN_BUFFER0 & (jack_midiin->flags)) != 0){
+  if(ags_jack_midiin_test_flags(jack_midiin, AGS_JACK_MIDIIN_BUFFER0)){
     buffer = jack_midiin->buffer[1];
-  }else if((AGS_JACK_MIDIIN_BUFFER1 & (jack_midiin->flags)) != 0){
+  }else if(ags_jack_midiin_test_flags(jack_midiin, AGS_JACK_MIDIIN_BUFFER1)){
     buffer = jack_midiin->buffer[2];
-  }else if((AGS_JACK_MIDIIN_BUFFER2 & (jack_midiin->flags)) != 0){
+  }else if(ags_jack_midiin_test_flags(jack_midiin, AGS_JACK_MIDIIN_BUFFER2)){
     buffer = jack_midiin->buffer[3];
-  }else if((AGS_JACK_MIDIIN_BUFFER3 & (jack_midiin->flags)) != 0){
+  }else if(ags_jack_midiin_test_flags(jack_midiin, AGS_JACK_MIDIIN_BUFFER3)){
     buffer = jack_midiin->buffer[0];
   }else{
     buffer = NULL;
@@ -1551,19 +1937,19 @@ ags_jack_midiin_get_next_buffer(AgsSequencer *sequencer,
 
   /* return the buffer's length */
   if(buffer_length != NULL){
-    if((AGS_JACK_MIDIIN_BUFFER0 & (jack_midiin->flags)) != 0){
+    if(ags_jack_midiin_test_flags(jack_midiin, AGS_JACK_MIDIIN_BUFFER0)){
       *buffer_length = jack_midiin->buffer_size[1];
-    }else if((AGS_JACK_MIDIIN_BUFFER1 & (jack_midiin->flags)) != 0){
+    }else if(ags_jack_midiin_test_flags(jack_midiin, AGS_JACK_MIDIIN_BUFFER1)){
       *buffer_length = jack_midiin->buffer_size[2];
-    }else if((AGS_JACK_MIDIIN_BUFFER2 & (jack_midiin->flags)) != 0){
+    }else if(ags_jack_midiin_test_flags(jack_midiin, AGS_JACK_MIDIIN_BUFFER2)){
       *buffer_length = jack_midiin->buffer_size[3];
-    }else if((AGS_JACK_MIDIIN_BUFFER3 & (jack_midiin->flags)) != 0){
+    }else if(ags_jack_midiin_test_flags(jack_midiin, AGS_JACK_MIDIIN_BUFFER3)){
       *buffer_length = jack_midiin->buffer_size[0];
     }else{
       *buffer_length = 0;
     }
-  }  
-
+  }
+  
   return(buffer);
 }
 
@@ -1571,44 +1957,136 @@ void
 ags_jack_midiin_set_note_offset(AgsSequencer *sequencer,
 				guint note_offset)
 {
-  AGS_JACK_MIDIIN(sequencer)->note_offset = note_offset;
+  AgsJackMidiin *jack_midiin;
+
+  pthread_mutex_t *jack_midiin_mutex;  
+
+  jack_midiin = AGS_JACK_MIDIIN(sequencer);
+
+  /* get jack midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(jack_midiin_mutex);
+
+  jack_midiin->note_offset = note_offset;
+
+  pthread_mutex_unlock(jack_midiin_mutex);
 }
 
 guint
 ags_jack_midiin_get_note_offset(AgsSequencer *sequencer)
 {
-  return(AGS_JACK_MIDIIN(sequencer)->note_offset);
+  AgsJackMidiin *jack_midiin;
+
+  guint note_offset;
+  
+  pthread_mutex_t *jack_midiin_mutex;  
+
+  jack_midiin = AGS_JACK_MIDIIN(sequencer);
+
+  /* get jack midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(jack_midiin_mutex);
+
+  note_offset = jack_midiin->note_offset;
+
+  pthread_mutex_unlock(jack_midiin_mutex);
+
+  return(note_offset);
 }
 
+/**
+ * ags_jack_midiin_switch_buffer_flag:
+ * @jack_midiin: the #AgsJackMidiin
+ *
+ * The buffer flag indicates the currently recorded buffer.
+ *
+ * Since: 2.0.0
+ */
 void
-ags_jack_midiin_set_audio(AgsSequencer *sequencer,
-			  GList *audio)
+ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin)
 {
-  AgsJackMidiin *jack_midiin;
+  pthread_mutex_t *jack_midiin_mutex;  
 
-  jack_midiin = AGS_JACK_MIDIIN(sequencer);
-  jack_midiin->audio = audio;
-}
+  /* get jack midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
 
-GList*
-ags_jack_midiin_get_audio(AgsSequencer *sequencer)
-{
-  AgsJackMidiin *jack_midiin;
+  /* switch buffer flag */
+  pthread_mutex_lock(jack_midiin_mutex);
 
-  jack_midiin = AGS_JACK_MIDIIN(sequencer);
+  if((AGS_JACK_MIDIIN_BUFFER0 & (jack_midiin->flags)) != 0){
+    jack_midiin->flags &= (~AGS_JACK_MIDIIN_BUFFER0);
+    jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER1;
 
-  return(jack_midiin->audio);
+    /* clear buffer */
+    if(jack_midiin->buffer[3] != NULL){
+      free(jack_midiin->buffer[3]);
+    }
+
+    jack_midiin->buffer[3] = NULL;
+    jack_midiin->buffer_size[3] = 0;
+  }else if((AGS_JACK_MIDIIN_BUFFER1 & (jack_midiin->flags)) != 0){
+    jack_midiin->flags &= (~AGS_JACK_MIDIIN_BUFFER1);
+    jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER2;
+
+    /* clear buffer */
+    if(jack_midiin->buffer[0] != NULL){
+      free(jack_midiin->buffer[0]);
+    }
+
+    jack_midiin->buffer[0] = NULL;
+    jack_midiin->buffer_size[0] = 0;
+  }else if((AGS_JACK_MIDIIN_BUFFER2 & (jack_midiin->flags)) != 0){
+    jack_midiin->flags &= (~AGS_JACK_MIDIIN_BUFFER2);
+    jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER3;
+
+    /* clear buffer */
+    if(jack_midiin->buffer[1] != NULL){
+      free(jack_midiin->buffer[1]);
+    }
+
+    jack_midiin->buffer[1] = NULL;
+    jack_midiin->buffer_size[1] = 0;
+  }else if((AGS_JACK_MIDIIN_BUFFER3 & (jack_midiin->flags)) != 0){
+    jack_midiin->flags &= (~AGS_JACK_MIDIIN_BUFFER3);
+    jack_midiin->flags |= AGS_JACK_MIDIIN_BUFFER0;
+
+    /* clear buffer */
+    if(jack_midiin->buffer[2] != NULL){
+      free(jack_midiin->buffer[2]);
+    }
+
+    jack_midiin->buffer[2] = NULL;
+    jack_midiin->buffer_size[2] = 0;
+  }
+
+  pthread_mutex_unlock(jack_midiin_mutex);
 }
 
 /**
  * ags_jack_midiin_new:
  * @application_context: the #AgsApplicationContext
  *
- * Creates an #AgsJackMidiin, refering to @application_context.
+ * Creates a new instance of #AgsJackMidiin.
  *
- * Returns: a new #AgsJackMidiin
+ * Returns: the new #AgsJackMidiin
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsJackMidiin*
 ags_jack_midiin_new(GObject *application_context)

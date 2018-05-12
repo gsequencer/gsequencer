@@ -41,6 +41,7 @@ typedef struct _AgsJackClientClass AgsJackClientClass;
 
 /**
  * AgsJackClientFlags:
+ * @AGS_JACK_CLIENT_ADDED_TO_REGISTRY: the JACK client was added to registry, see #AgsConnectable::add_to_registry()
  * @AGS_JACK_CLIENT_CONNECTED: indicates the client was connected by calling #AgsConnectable::connect()
  * @AGS_JACK_CLIENT_ACTIVATED: the client was activated
  * 
@@ -48,8 +49,9 @@ typedef struct _AgsJackClientClass AgsJackClientClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_JACK_CLIENT_CONNECTED       = 1,
-  AGS_JACK_CLIENT_ACTIVATED       = 1 <<  1,
+  AGS_JACK_CLIENT_ADDED_TO_REGISTRY  = 1,
+  AGS_JACK_CLIENT_CONNECTED          = 1 <<  1,
+  AGS_JACK_CLIENT_ACTIVATED          = 1 <<  2,
 }AgsJackClientFlags;
 
 struct _AgsJackClient
@@ -58,8 +60,8 @@ struct _AgsJackClient
 
   guint flags;
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
 
   GObject *jack_server;
   
@@ -84,6 +86,12 @@ struct _AgsJackClientClass
 };
 
 GType ags_jack_client_get_type();
+
+pthread_mutex_t* ags_jack_client_get_class_mutex();
+
+gboolean ags_jack_client_test_flags(AgsJackClient *jack_client, guint flags);
+void ags_jack_client_set_flags(AgsJackClient *jack_client, guint flags);
+void ags_jack_client_unset_flags(AgsJackClient *jack_client, guint flags);
 
 GList* ags_jack_client_find_uuid(GList *jack_client,
 				 gchar *client_uuid);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,6 +27,8 @@
 
 #include <pthread.h>
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_JACK_MIDIIN                (ags_jack_midiin_get_type())
 #define AGS_JACK_MIDIIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_JACK_MIDIIN, AgsJackMidiin))
 #define AGS_JACK_MIDIIN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_JACK_MIDIIN, AgsJackMidiin))
@@ -41,6 +43,8 @@ typedef struct _AgsJackMidiinClass AgsJackMidiinClass;
 
 /**
  * AgsJackMidiinFlags:
+ * @AGS_JACK_MIDIIN_ADDED_TO_REGISTRY: the JACK midiin was added to registry, see #AgsConnectable::add_to_registry()
+ * @AGS_JACK_MIDIIN_CONNECTED: indicates the JACK midiin was connected by calling #AgsConnectable::connect()
  * @AGS_JACK_MIDIIN_BUFFER0: ring-buffer 0
  * @AGS_JACK_MIDIIN_BUFFER1: ring-buffer 1
  * @AGS_JACK_MIDIIN_BUFFER2: ring-buffer 2
@@ -57,28 +61,23 @@ typedef struct _AgsJackMidiinClass AgsJackMidiinClass;
  */
 typedef enum
 {
-  AGS_JACK_MIDIIN_BUFFER0                        = 1,
-  AGS_JACK_MIDIIN_BUFFER1                        = 1 <<  1,
-  AGS_JACK_MIDIIN_BUFFER2                        = 1 <<  2,
-  AGS_JACK_MIDIIN_BUFFER3                        = 1 <<  3,
-  AGS_JACK_MIDIIN_ATTACK_FIRST                   = 1 <<  4,
+  AGS_JACK_MIDIIN_ADDED_TO_REGISTRY  = 1,
+  AGS_JACK_MIDIIN_CONNECTED          = 1 <<  1,
 
-  AGS_JACK_MIDIIN_RECORD                         = 1 <<  5,
+  AGS_JACK_MIDIIN_BUFFER0            = 1 <<  2,
+  AGS_JACK_MIDIIN_BUFFER1            = 1 <<  3,
+  AGS_JACK_MIDIIN_BUFFER2            = 1 <<  4,
+  AGS_JACK_MIDIIN_BUFFER3            = 1 <<  5,
 
-  AGS_JACK_MIDIIN_SHUTDOWN                       = 1 <<  6,
-  AGS_JACK_MIDIIN_START_RECORD                   = 1 <<  7,
+  AGS_JACK_MIDIIN_ATTACK_FIRST       = 1 <<  6,
 
-  AGS_JACK_MIDIIN_NONBLOCKING                    = 1 <<  8,
-  AGS_JACK_MIDIIN_INITIALIZED                    = 1 <<  9,
+  AGS_JACK_MIDIIN_RECORD             = 1 <<  7,
 
-  AGS_JACK_MIDIIN_DUMMY                          = 1 << 10,
-  AGS_JACK_MIDIIN_OSS                            = 1 << 11,
-  AGS_JACK_MIDIIN_ALSA                           = 1 << 12,
-  AGS_JACK_MIDIIN_FREEBOB                        = 1 << 13,
-  AGS_JACK_MIDIIN_FIREWIRE                       = 1 << 14,
-  AGS_JACK_MIDIIN_NET                            = 1 << 15,
-  AGS_JACK_MIDIIN_SUN                            = 1 << 16,
-  AGS_JACK_MIDIIN_PORTAUDIO                      = 1 << 17,
+  AGS_JACK_MIDIIN_SHUTDOWN           = 1 <<  8,
+  AGS_JACK_MIDIIN_START_RECORD       = 1 <<  9,
+
+  AGS_JACK_MIDIIN_NONBLOCKING        = 1 << 10,
+  AGS_JACK_MIDIIN_INITIALIZED        = 1 << 11,
 }AgsJackMidiinFlags;
 
 /**
@@ -114,9 +113,13 @@ struct _AgsJackMidiin
   guint flags;
   volatile guint sync_flags;
   
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  GObject *application_context;
   
+  AgsUUID *uuid;
+
   char **buffer;
   guint buffer_size[4];
 
@@ -131,7 +134,6 @@ struct _AgsJackMidiin
   guint tic_counter; // in the range of default period
 
   guint note_offset;
-  guint note_offset_absolute;
 
   gchar *card_uri;
   GObject *jack_client;
@@ -143,12 +145,7 @@ struct _AgsJackMidiin
   pthread_cond_t *callback_cond;
 
   pthread_mutex_t *callback_finish_mutex;
-  pthread_cond_t *callback_finish_cond;
-  
-  GObject *application_context;
-  pthread_mutex_t *application_mutex;
-  
-  GList *audio;
+  pthread_cond_t *callback_finish_cond;    
 };
 
 struct _AgsJackMidiinClass
@@ -159,6 +156,14 @@ struct _AgsJackMidiinClass
 GType ags_jack_midiin_get_type();
 
 GQuark ags_jack_midiin_error_quark();
+
+pthread_mutex_t* ags_jack_midiin_get_class_mutex();
+
+gboolean ags_jack_midiin_test_flags(AgsJackMidiin *jack_midiin, guint flags);
+void ags_jack_midiin_set_flags(AgsJackMidiin *jack_midiin, guint flags);
+void ags_jack_midiin_unset_flags(AgsJackMidiin *jack_midiin, guint flags);
+
+void ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin);
 
 void ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin);
 

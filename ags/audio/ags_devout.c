@@ -1111,6 +1111,8 @@ ags_devout_finalize(GObject *gobject)
   pthread_mutexattr_destroy(devout->obj_mutexattr);
   free(devout->obj_mutexattr);
 
+  ags_uuid_free(devout->uuid);
+  
   /* free output buffer */
   free(devout->buffer[0]);
   free(devout->buffer[1]);
