@@ -87,25 +87,18 @@ struct _AgsCoreAudioPort
   guint samplerate;
   
 #ifdef AGS_WITH_CORE_AUDIO
-  AudioComponentDescription desc;
-  AudioComponent comp;
-
+  AudioQueueRef aq_ref;
   AudioStreamBasicDescription data_format;
 
-  AURenderCallbackStruct input;
-  AudioUnit au_unit;
+  AudioQueueBufferRef buf_ref[8];
   
   MIDIClientRef *midi_client;
   MIDIPortRef *midi_port;
 #else
-  gpointer comp;
-  gpointer desc;
-
+  gpointer aq_ref;
   gpointer data_format;
-  gpointer packet_descs;
 
-  gpointer input;
-  gpointer au_unit;
+  gpointer buffer;
   
   gpointer midi_client;
   gpointer midi_port;

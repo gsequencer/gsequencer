@@ -37,7 +37,11 @@
 
 #include <ags/audio/ags_port.h>
 
+#ifdef __APPLE__
+#include <machine/endian.h>
+#else
 #include <endian.h>
+#endif
 
 #include <dlfcn.h>
 #include <stdio.h>

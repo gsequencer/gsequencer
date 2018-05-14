@@ -1,3 +1,9 @@
+ags (1.4.32)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* reworked CoreAudio output
+	* fixed wrong loop condition in ags_apply_presets.c
+
 ags (1.4.31)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

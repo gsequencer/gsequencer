@@ -19,6 +19,8 @@
 
 #include <ags/audio/task/ags_apply_presets.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>

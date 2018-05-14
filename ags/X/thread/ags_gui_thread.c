@@ -40,7 +40,7 @@
 #endif
 
 #ifdef AGS_WITH_QUARTZ
-#include <gtkmacintegration-gtk2/gtkosxapplication.h>
+#include <gtkmacintegration/gtkosxapplication.h>
 #endif
 
 #include <libxml/parser.h>
@@ -63,7 +63,10 @@
 
 #include <gdk/gdk.h>
 
+#ifndef AGS_WITH_QUARTZ
 #include <fontconfig/fontconfig.h>
+#endif
+
 #include <math.h>
 
 void ags_gui_thread_signal_handler(int signr);
