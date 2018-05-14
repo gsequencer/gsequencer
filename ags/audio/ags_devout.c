@@ -4097,7 +4097,7 @@ ags_devout_get_delay(AgsSoundcard *soundcard)
 {
   AgsDevout *devout;
 
-  guint index;
+  guint delay_index;
   gdouble delay;
   
   pthread_mutex_t *devout_mutex;
@@ -4114,9 +4114,9 @@ ags_devout_get_delay(AgsSoundcard *soundcard)
   /* get delay */
   pthread_mutex_lock(devout_mutex);
 
-  index = devout->tic_counter;
+  delay_index = devout->tic_counter;
 
-  delay = devout->delay[index];
+  delay = devout->delay[delay_index];
   
   pthread_mutex_unlock(devout_mutex);
   
@@ -4156,7 +4156,7 @@ ags_devout_get_attack(AgsSoundcard *soundcard)
 {
   AgsDevout *devout;
 
-  guint index;
+  guint attack_index;
   guint attack;
   
   pthread_mutex_t *devout_mutex;  
@@ -4173,9 +4173,9 @@ ags_devout_get_attack(AgsSoundcard *soundcard)
   /* get attack */
   pthread_mutex_lock(devout_mutex);
 
-  index = devout->tic_counter;
+  attack_index = devout->tic_counter;
 
-  attack = devout->attack[index];
+  attack = devout->attack[attack_index];
 
   pthread_mutex_unlock(devout_mutex);
   

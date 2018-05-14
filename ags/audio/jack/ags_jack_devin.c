@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,16 +19,7 @@
 
 #include <ags/audio/jack/ags_jack_devin.h>
 
-#include <ags/lib/ags_time.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_main_loop.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_channel.h>
@@ -72,10 +63,6 @@ void ags_jack_devin_finalize(GObject *gobject);
 void ags_jack_devin_set_application_context(AgsSoundcard *soundcard,
 					    AgsApplicationContext *application_context);
 AgsApplicationContext* ags_jack_devin_get_application_context(AgsSoundcard *soundcard);
-
-void ags_jack_devin_set_application_mutex(AgsSoundcard *soundcard,
-					  pthread_mutex_t *application_mutex);
-pthread_mutex_t* ags_jack_devin_get_application_mutex(AgsSoundcard *soundcard);
 
 void ags_jack_devin_set_device(AgsSoundcard *soundcard,
 			       gchar *device);
@@ -150,10 +137,6 @@ void ags_jack_devin_get_loop(AgsSoundcard *soundcard,
 			     gboolean *do_loop);
 
 guint ags_jack_devin_get_loop_offset(AgsSoundcard *soundcard);
-
-void ags_jack_devin_set_audio(AgsSoundcard *soundcard,
-			      GList *audio);
-GList* ags_jack_devin_get_audio(AgsSoundcard *soundcard);
 
 /**
  * SECTION:ags_jack_devin

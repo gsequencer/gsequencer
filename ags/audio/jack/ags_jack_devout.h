@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #include <pthread.h>
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_JACK_DEVOUT                (ags_jack_devout_get_type())
 #define AGS_JACK_DEVOUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_JACK_DEVOUT, AgsJackDevout))
 #define AGS_JACK_DEVOUT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_JACK_DEVOUT, AgsJackDevout))
@@ -37,6 +39,8 @@ typedef struct _AgsJackDevoutClass AgsJackDevoutClass;
 
 /**
  * AgsJackDevoutFlags:
+ * @AGS_JACK_DEVOUT_ADDED_TO_REGISTRY: the JACK devout was added to registry, see #AgsConnectable::add_to_registry()
+ * @AGS_JACK_DEVOUT_CONNECTED: indicates the JACK devout was connected by calling #AgsConnectable::connect()
  * @AGS_JACK_DEVOUT_BUFFER0: ring-buffer 0
  * @AGS_JACK_DEVOUT_BUFFER1: ring-buffer 1
  * @AGS_JACK_DEVOUT_BUFFER2: ring-buffer 2
@@ -53,28 +57,31 @@ typedef struct _AgsJackDevoutClass AgsJackDevoutClass;
  */
 typedef enum
 {
-  AGS_JACK_DEVOUT_BUFFER0                        = 1,
-  AGS_JACK_DEVOUT_BUFFER1                        = 1 <<  1,
-  AGS_JACK_DEVOUT_BUFFER2                        = 1 <<  2,
-  AGS_JACK_DEVOUT_BUFFER3                        = 1 <<  3,
+  AGS_JACK_DEVOUT_ADDED_TO_REGISTRY              = 1,
+  AGS_JACK_DEVOUT_CONNECTED                      = 1 <<  1,
 
-  AGS_JACK_DEVOUT_ATTACK_FIRST                   = 1 <<  4,
+  AGS_JACK_DEVOUT_BUFFER0                        = 1 <<  2,
+  AGS_JACK_DEVOUT_BUFFER1                        = 1 <<  3,
+  AGS_JACK_DEVOUT_BUFFER2                        = 1 <<  4,
+  AGS_JACK_DEVOUT_BUFFER3                        = 1 <<  5,
 
-  AGS_JACK_DEVOUT_PLAY                           = 1 <<  5,
-  AGS_JACK_DEVOUT_SHUTDOWN                       = 1 <<  6,
-  AGS_JACK_DEVOUT_START_PLAY                     = 1 <<  7,
+  AGS_JACK_DEVOUT_ATTACK_FIRST                   = 1 <<  6,
 
-  AGS_JACK_DEVOUT_NONBLOCKING                    = 1 <<  8,
-  AGS_JACK_DEVOUT_INITIALIZED                    = 1 <<  9,
+  AGS_JACK_DEVOUT_PLAY                           = 1 <<  7,
+  AGS_JACK_DEVOUT_SHUTDOWN                       = 1 <<  8,
+  AGS_JACK_DEVOUT_START_PLAY                     = 1 <<  9,
 
-  AGS_JACK_DEVOUT_DUMMY                          = 1 << 10,
-  AGS_JACK_DEVOUT_OSS                            = 1 << 11,
-  AGS_JACK_DEVOUT_ALSA                           = 1 << 12,
-  AGS_JACK_DEVOUT_FREEBOB                        = 1 << 13,
-  AGS_JACK_DEVOUT_FIREWIRE                       = 1 << 14,
-  AGS_JACK_DEVOUT_NET                            = 1 << 15,
-  AGS_JACK_DEVOUT_SUN                            = 1 << 16,
-  AGS_JACK_DEVOUT_PORTAUDIO                      = 1 << 17,
+  AGS_JACK_DEVOUT_NONBLOCKING                    = 1 << 10,
+  AGS_JACK_DEVOUT_INITIALIZED                    = 1 << 11,
+
+  AGS_JACK_DEVOUT_DUMMY                          = 1 << 12,
+  AGS_JACK_DEVOUT_OSS                            = 1 << 13,
+  AGS_JACK_DEVOUT_ALSA                           = 1 << 14,
+  AGS_JACK_DEVOUT_FREEBOB                        = 1 << 15,
+  AGS_JACK_DEVOUT_FIREWIRE                       = 1 << 16,
+  AGS_JACK_DEVOUT_NET                            = 1 << 17,
+  AGS_JACK_DEVOUT_SUN                            = 1 << 18,
+  AGS_JACK_DEVOUT_PORTAUDIO                      = 1 << 19,
 }AgsJackDevoutFlags;
 
 /**
@@ -110,8 +117,12 @@ struct _AgsJackDevout
   guint flags;
   volatile guint sync_flags;
   
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  AgsApplicationContext *application_context;
+
+  AgsUUID *uuid;
 
   guint dsp_channels;
   guint pcm_channels;
@@ -152,13 +163,7 @@ struct _AgsJackDevout
   pthread_mutex_t *callback_finish_mutex;
   pthread_cond_t *callback_finish_cond;
 
-  GObject *application_context;
-  pthread_mutex_t *application_mutex;
-
   GObject *notify_soundcard;
-  
-  GObject *channel;
-  GList *audio;
 };
 
 struct _AgsJackDevoutClass
@@ -169,6 +174,12 @@ struct _AgsJackDevoutClass
 GType ags_jack_devout_get_type();
 
 GQuark ags_jack_devout_error_quark();
+
+pthread_mutex_t* ags_jack_devout_get_class_mutex();
+
+gboolean ags_jack_devout_test_flags(AgsJackDevout *jack_devout, guint flags);
+void ags_jack_devout_set_flags(AgsJackDevout *jack_devout, guint flags);
+void ags_jack_devout_unset_flags(AgsJackDevout *jack_devout, guint flags);
 
 void ags_jack_devout_switch_buffer_flag(AgsJackDevout *jack_devout);
 
