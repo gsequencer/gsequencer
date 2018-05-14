@@ -19,6 +19,8 @@
 
 #include <ags/audio/task/ags_apply_presets.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
@@ -538,7 +540,7 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
 
   pthread_mutex_unlock(soundcard_mutex);
 
-  while(audio != NULL){
+  while(list != NULL){
     /* get some fields */
     pthread_mutex_lock(soundcard_mutex);
 
