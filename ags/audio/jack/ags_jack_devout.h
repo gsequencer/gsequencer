@@ -55,8 +55,8 @@ typedef struct _AgsJackDevoutClass AgsJackDevoutClass;
  * Enum values to control the behavior or indicate internal state of #AgsJackDevout by
  * enable/disable as flags.
  */
-typedef enum
-{
+
+typedef enum{
   AGS_JACK_DEVOUT_ADDED_TO_REGISTRY              = 1,
   AGS_JACK_DEVOUT_CONNECTED                      = 1 <<  1,
 
@@ -73,15 +73,6 @@ typedef enum
 
   AGS_JACK_DEVOUT_NONBLOCKING                    = 1 << 10,
   AGS_JACK_DEVOUT_INITIALIZED                    = 1 << 11,
-
-  AGS_JACK_DEVOUT_DUMMY                          = 1 << 12,
-  AGS_JACK_DEVOUT_OSS                            = 1 << 13,
-  AGS_JACK_DEVOUT_ALSA                           = 1 << 14,
-  AGS_JACK_DEVOUT_FREEBOB                        = 1 << 15,
-  AGS_JACK_DEVOUT_FIREWIRE                       = 1 << 16,
-  AGS_JACK_DEVOUT_NET                            = 1 << 17,
-  AGS_JACK_DEVOUT_SUN                            = 1 << 18,
-  AGS_JACK_DEVOUT_PORTAUDIO                      = 1 << 19,
 }AgsJackDevoutFlags;
 
 /**

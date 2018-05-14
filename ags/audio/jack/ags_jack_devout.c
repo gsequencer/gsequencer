@@ -231,6 +231,7 @@ void
 ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_jack_devout_parent_class = g_type_class_peek_parent(jack_devout);
@@ -1098,6 +1099,19 @@ ags_jack_devout_dispose(GObject *gobject)
     jack_devout->application_context = NULL;
   }
 
+  /* jack client */
+  if(jack_devout->jack_client != NULL){
+    g_object_unref(jack_devout->jack_client);
+
+    jack_devout->jack_client = NULL;
+  }
+
+  /* jack port */
+  g_list_free_full(jack_devout->jack_port,
+		   g_object_unref);
+
+  jack_devout->jack_port = NULL;
+  
   /* call parent */
   G_OBJECT_CLASS(ags_jack_devout_parent_class)->dispose(gobject);
 }
@@ -1137,11 +1151,20 @@ ags_jack_devout_finalize(GObject *gobject)
     g_object_unref(jack_devout->notify_soundcard);
   }
 
+  /* jack client */
+  if(jack_devout->jack_client != NULL){
+    g_object_unref(jack_devout->jack_client);
+  }
+
+  /* jack port */
+  g_list_free_full(jack_devout->jack_port,
+		   g_object_unref);
+
   /* application context */
   if(jack_devout->application_context != NULL){
     g_object_unref(jack_devout->application_context);
   }  
-
+  
   /* call parent */
   G_OBJECT_CLASS(ags_jack_devout_parent_class)->finalize(gobject);
 }
@@ -1937,28 +1960,28 @@ ags_jack_devout_port_init(AgsSoundcard *soundcard,
   switch(jack_devout->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
-      word_size = sizeof(signed char);
+      word_size = sizeof(gint8);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
-      word_size = sizeof(signed short);
+      word_size = sizeof(gint16);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {      
       //NOTE:JK: The 24-bit linear samples use 32-bit physical space
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
-      word_size = sizeof(signed long long);
+      word_size = sizeof(gint64);
     }
     break;
   default:
@@ -2058,28 +2081,28 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
   switch(jack_devout->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
-      word_size = sizeof(signed char);
+      word_size = sizeof(gint8);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
-      word_size = sizeof(signed short);
+      word_size = sizeof(gint16);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {      
       //NOTE:JK: The 24-bit linear samples use 32-bit physical space
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
-      word_size = sizeof(signed long long);
+      word_size = sizeof(gint64);
     }
     break;
   default:
@@ -2282,27 +2305,27 @@ ags_jack_devout_port_free(AgsSoundcard *soundcard)
   switch(jack_devout->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
-      word_size = sizeof(signed char);
+      word_size = sizeof(gint8);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
-      word_size = sizeof(signed short);
+      word_size = sizeof(gint16);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
-      word_size = sizeof(signed long long);
+      word_size = sizeof(gint64);
     }
     break;
   default:
@@ -2728,7 +2751,7 @@ ags_jack_devout_get_delay_counter(AgsSoundcard *soundcard)
 
 void
 ags_jack_devout_set_note_offset(AgsSoundcard *soundcard,
-			   guint note_offset)
+				guint note_offset)
 {
   AgsJackDevout *jack_devout;
 
@@ -2781,7 +2804,7 @@ ags_jack_devout_get_note_offset(AgsSoundcard *soundcard)
 
 void
 ags_jack_devout_set_note_offset_absolute(AgsSoundcard *soundcard,
-				    guint note_offset_absolute)
+					 guint note_offset_absolute)
 {
   AgsJackDevout *jack_devout;
   
@@ -2834,8 +2857,8 @@ ags_jack_devout_get_note_offset_absolute(AgsSoundcard *soundcard)
 
 void
 ags_jack_devout_set_loop(AgsSoundcard *soundcard,
-		    guint loop_left, guint loop_right,
-		    gboolean do_loop)
+			 guint loop_left, guint loop_right,
+			 gboolean do_loop)
 {
   AgsJackDevout *jack_devout;
 
@@ -2866,8 +2889,8 @@ ags_jack_devout_set_loop(AgsSoundcard *soundcard,
 
 void
 ags_jack_devout_get_loop(AgsSoundcard *soundcard,
-		    guint *loop_left, guint *loop_right,
-		    gboolean *do_loop)
+			 guint *loop_left, guint *loop_right,
+			 gboolean *do_loop)
 {
   AgsJackDevout *jack_devout;
 

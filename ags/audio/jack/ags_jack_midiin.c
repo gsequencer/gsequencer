@@ -756,12 +756,18 @@ ags_jack_midiin_dispose(GObject *gobject)
 
   jack_midiin = AGS_JACK_MIDIIN(gobject);
 
-  if(jack_midiin->jack_port != NULL){
-    g_list_free_full(jack_midiin->jack_port,
-		     g_object_unref);
+  /* jack client */
+  if(jack_midiin->jack_client != NULL){
+    g_object_unref(jack_midiin->jack_client);
 
-    jack_midiin->jack_port = NULL;
+    jack_midiin->jack_client = NULL;
   }
+
+  /* jack port */
+  g_list_free_full(jack_midiin->jack_port,
+		   g_object_unref);
+
+  jack_midiin->jack_port = NULL;
   
   /* call parent */
   G_OBJECT_CLASS(ags_jack_midiin_parent_class)->dispose(gobject);
@@ -802,11 +808,15 @@ ags_jack_midiin_finalize(GObject *gobject)
   /* free buffer array */
   free(jack_midiin->buffer);
 
-  if(jack_midiin->jack_port != NULL){
-    g_list_free_full(jack_midiin->jack_port,
-		     g_object_unref);
+  /* jack client */
+  if(jack_midiin->jack_client != NULL){
+    g_object_unref(jack_midiin->jack_client);
   }
-  
+
+  /* jack port */
+  g_list_free_full(jack_midiin->jack_port,
+		   g_object_unref);
+
   /* call parent */
   G_OBJECT_CLASS(ags_jack_midiin_parent_class)->finalize(gobject);
 }

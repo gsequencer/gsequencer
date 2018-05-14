@@ -25,6 +25,8 @@
 
 #include <pthread.h>
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_JACK_DEVIN                (ags_jack_devin_get_type())
 #define AGS_JACK_DEVIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_JACK_DEVIN, AgsJackDevin))
 #define AGS_JACK_DEVIN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_JACK_DEVIN, AgsJackDevin))
@@ -37,6 +39,8 @@ typedef struct _AgsJackDevinClass AgsJackDevinClass;
 
 /**
  * AgsJackDevinFlags:
+ * @AGS_JACK_DEVIN_ADDED_TO_REGISTRY: the JACK devin was added to registry, see #AgsConnectable::add_to_registry()
+ * @AGS_JACK_DEVIN_CONNECTED: indicates the JACK devin was connected by calling #AgsConnectable::connect()
  * @AGS_JACK_DEVIN_BUFFER0: ring-buffer 0
  * @AGS_JACK_DEVIN_BUFFER1: ring-buffer 1
  * @AGS_JACK_DEVIN_BUFFER2: ring-buffer 2
@@ -51,30 +55,23 @@ typedef struct _AgsJackDevinClass AgsJackDevinClass;
  * Enum values to control the behavior or indicate internal state of #AgsJackDevin by
  * enable/disable as flags.
  */
-typedef enum
-  {
-    AGS_JACK_DEVIN_BUFFER0                        = 1,
-    AGS_JACK_DEVIN_BUFFER1                        = 1 <<  1,
-    AGS_JACK_DEVIN_BUFFER2                        = 1 <<  2,
-    AGS_JACK_DEVIN_BUFFER3                        = 1 <<  3,
+typedef enum{
+  AGS_JACK_DEVIN_ADDED_TO_REGISTRY              = 1,
+  AGS_JACK_DEVIN_CONNECTED                      = 1 <<  1,
 
-    AGS_JACK_DEVIN_ATTACK_FIRST                   = 1 <<  4,
+  AGS_JACK_DEVIN_BUFFER0                        = 1 <<  2,
+  AGS_JACK_DEVIN_BUFFER1                        = 1 <<  3,
+  AGS_JACK_DEVIN_BUFFER2                        = 1 <<  4,
+  AGS_JACK_DEVIN_BUFFER3                        = 1 <<  5,
 
-    AGS_JACK_DEVIN_RECORD                         = 1 <<  5,
-    AGS_JACK_DEVIN_SHUTDOWN                       = 1 <<  6,
-    AGS_JACK_DEVIN_START_RECORD                   = 1 <<  7,
+  AGS_JACK_DEVIN_ATTACK_FIRST                   = 1 <<  6,
 
-    AGS_JACK_DEVIN_NONBLOCKING                    = 1 <<  8,
-    AGS_JACK_DEVIN_INITIALIZED                    = 1 <<  9,
+  AGS_JACK_DEVIN_RECORD                         = 1 <<  7,
+  AGS_JACK_DEVIN_SHUTDOWN                       = 1 <<  6,
+  AGS_JACK_DEVIN_START_RECORD                   = 1 <<  8,
 
-    AGS_JACK_DEVIN_DUMMY                          = 1 << 10,
-    AGS_JACK_DEVIN_OSS                            = 1 << 11,
-    AGS_JACK_DEVIN_ALSA                           = 1 << 12,
-    AGS_JACK_DEVIN_FREEBOB                        = 1 << 13,
-    AGS_JACK_DEVIN_FIREWIRE                       = 1 << 14,
-    AGS_JACK_DEVIN_NET                            = 1 << 15,
-    AGS_JACK_DEVIN_SUN                            = 1 << 16,
-    AGS_JACK_DEVIN_PORTAUDIO                      = 1 << 17,
+  AGS_JACK_DEVIN_NONBLOCKING                    = 1 <<  9,
+  AGS_JACK_DEVIN_INITIALIZED                    = 1 << 10,
   }AgsJackDevinFlags;
 
 /**
@@ -110,8 +107,12 @@ struct _AgsJackDevin
   guint flags;
   volatile guint sync_flags;
   
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  AgsApplicationContext *application_context;
+
+  AgsUUID *uuid;
 
   guint dsp_channels;
   guint pcm_channels;
@@ -152,13 +153,7 @@ struct _AgsJackDevin
   pthread_mutex_t *callback_finish_mutex;
   pthread_cond_t *callback_finish_cond;
 
-  GObject *application_context;
-  pthread_mutex_t *application_mutex;
-
   GObject *notify_soundcard;
-  
-  GObject *channel;
-  GList *audio;
 };
 
 struct _AgsJackDevinClass
@@ -169,6 +164,12 @@ struct _AgsJackDevinClass
 GType ags_jack_devin_get_type();
 
 GQuark ags_jack_devin_error_quark();
+
+pthread_mutex_t* ags_jack_devin_get_class_mutex();
+
+gboolean ags_jack_devin_test_flags(AgsJackDevin *jack_devin, guint flags);
+void ags_jack_devin_set_flags(AgsJackDevin *jack_devin, guint flags);
+void ags_jack_devin_unset_flags(AgsJackDevin *jack_devin, guint flags);
 
 void ags_jack_devin_switch_buffer_flag(AgsJackDevin *jack_devin);
 
