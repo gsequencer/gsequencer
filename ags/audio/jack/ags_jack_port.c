@@ -83,13 +83,13 @@ ags_jack_port_get_type()
 
   if(!ags_type_jack_port){
     static const GTypeInfo ags_jack_port_info = {
-      sizeof (AgsJackPortClass),
+      sizeof(AgsJackPortClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_jack_port_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsJackPort),
+      sizeof(AgsJackPort),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_jack_port_init,
     };
@@ -700,12 +700,12 @@ ags_jack_port_unset_flags(AgsJackPort *jack_port, guint flags)
 
 /**
  * ags_jack_port_find:
- * @jack_port: a #GList
+ * @jack_port: the #GList-struct containing #AgsJackPort
  * @port_name: the port name to find
  *
  * Finds next match of @port_name in @jack_port.
  *
- * Returns: a #GList or %NULL
+ * Returns: the next matching #GList-struct or %NULL
  * 
  * Since: 1.0.0
  */
@@ -714,8 +714,30 @@ ags_jack_port_find(GList *jack_port,
 		   gchar *port_name)
 {
 #ifdef AGS_WITH_JACK
+  jack_port_t *port;
+#else
+  gpointer port;
+#endif
+
+  pthread_mutex_t *jack_port_mutex;
+
+#ifdef AGS_WITH_JACK
   while(jack_port != NULL){
-    if(!g_ascii_strcasecmp(jack_port_name(AGS_JACK_PORT(jack_port->data)->port),
+    /* get jack port mutex */
+    pthread_mutex_lock(ags_jack_port_get_class_mutex());
+  
+    jack_port_mutex = AGS_JACK_PORT(jack_port->data)->obj_mutex;
+  
+    pthread_mutex_unlock(ags_jack_port_get_class_mutex());
+
+    /* get port */
+    pthread_mutex_lock(jack_port_mutex);
+
+    port = AGS_JACK_PORT(jack_port->data)->port;
+    
+    pthread_mutex_unlock(jack_port_mutex);
+    
+    if(!g_ascii_strcasecmp(jack_port_name(port),
 			   port_name)){
       return(jack_port);
     }
@@ -750,6 +772,9 @@ ags_jack_port_register(AgsJackPort *jack_port,
 #ifdef AGS_WITH_JACK
   jack_client_t *client;
   jack_port_t *port;
+#else
+  gpointer client;
+  gpointer port;
 #endif
   
   GList *list;
@@ -822,7 +847,7 @@ ags_jack_port_register(AgsJackPort *jack_port,
 
   /* create sequencer or soundcard */
   if(is_output){
-    jack_port->flags |= AGS_JACK_PORT_IS_OUTPUT;
+    ags_jack_port_set_flags(jack_port, AGS_JACK_PORT_IS_OUTPUT);
   }
 
 #ifdef AGS_WITH_JACK
@@ -959,7 +984,7 @@ ags_jack_port_unregister(AgsJackPort *jack_port)
  * ags_jack_port_new:
  * @jack_client: the #AgsJackClient assigned to
  *
- * Instantiate a new #AgsJackPort.
+ * Create a new instance of #AgsJackPort.
  *
  * Returns: the new #AgsJackPort
  *
