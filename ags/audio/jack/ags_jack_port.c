@@ -378,11 +378,11 @@ ags_jack_port_finalize(GObject *gobject)
 
   jack_port = AGS_JACK_PORT(gobject);
 
-  pthread_mutex_destroy(jack_port->mutex);
-  free(jack_port->mutex);
+  pthread_mutex_destroy(jack_port->obj_mutex);
+  free(jack_port->obj_mutex);
 
-  pthread_mutexattr_destroy(jack_port->mutexattr);
-  free(jack_port->mutexattr);
+  pthread_mutexattr_destroy(jack_port->obj_mutexattr);
+  free(jack_port->obj_mutexattr);
 
   /* jack client */
   if(jack_port->jack_client != NULL){
@@ -754,7 +754,7 @@ ags_jack_port_register(AgsJackPort *jack_port,
   
   GList *list;
 
-  gchar *port_name, *port_uuid;
+  gchar *port_uuid;
 
   pthread_mutex_t *jack_client_mutex;
   pthread_mutex_t *jack_port_mutex;
@@ -845,7 +845,7 @@ ags_jack_port_register(AgsJackPort *jack_port,
 			      (is_output ? JackPortIsOutput: JackPortIsInput),
 			      0);
   }
-  
+
   pthread_mutex_lock(jack_port_mutex);
 
   jack_port->port = port;

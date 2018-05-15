@@ -933,12 +933,16 @@ ags_jack_client_find_uuid(GList *jack_client,
     jack_client_mutex = current_jack_client->obj_mutex;
   
     pthread_mutex_unlock(ags_jack_client_get_class_mutex());
-
+    
     /* check uuid */
+    pthread_mutex_lock(jack_client_mutex);
+    
     success = (current_jack_client->client != NULL &&
 	       !g_ascii_strcasecmp(jack_get_uuid_for_client_name(current_jack_client->client,
 								 jack_get_client_name(current_jack_client->client)),
 				   client_uuid)) ? TRUE: FALSE;
+
+    pthread_mutex_unlock(jack_client_mutex);
     
     if(success){
       return(jack_client);
@@ -984,9 +988,13 @@ ags_jack_client_find(GList *jack_client,
     pthread_mutex_unlock(ags_jack_client_get_class_mutex());
 
     /* check client name */
+    pthread_mutex_lock(jack_client_mutex);
+    
     success = (current_jack_client->client != NULL &&
 	       !g_ascii_strcasecmp(jack_get_client_name(current_jack_client->client),
 				   client_name));
+
+    pthread_mutex_unlock(jack_client_mutex);
     
     if(success){
       return(jack_client);
@@ -1143,8 +1151,6 @@ ags_jack_client_activate(AgsJackClient *jack_client)
     return;
   }
 
-  ags_jack_client_set_flags(jack_client, AGS_JACK_CLIENT_ACTIVATED);
-
   pthread_mutex_lock(jack_client_mutex);
 
   port =
@@ -1167,6 +1173,8 @@ ags_jack_client_activate(AgsJackClient *jack_client)
     
     port = port->next;
   }
+
+  ags_jack_client_set_flags(jack_client, AGS_JACK_CLIENT_ACTIVATED);
 
   g_list_free(port_start);
 }

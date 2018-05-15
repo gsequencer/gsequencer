@@ -53,8 +53,8 @@ struct _AgsPulseServer
 
   guint flags;
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
 
   volatile gboolean running;
   pthread_t *thread;
