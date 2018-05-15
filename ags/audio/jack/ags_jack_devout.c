@@ -576,7 +576,7 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
   g_atomic_int_set(&(jack_devout->sync_flags),
 		   AGS_JACK_DEVOUT_PASS_THROUGH);
 
-  /* insert devout mutex */
+  /* devout mutex */
   jack_devout->obj_mutexattr = 
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
