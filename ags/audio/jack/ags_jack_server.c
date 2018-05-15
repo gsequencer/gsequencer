@@ -774,7 +774,7 @@ ags_jack_server_xml_compose(AgsConnectable *connectable)
 
 void
 ags_jack_server_xml_parse(AgsConnectable *connectable,
-		      xmlNode *node)
+			  xmlNode *node)
 {
   //TODO:JK: implement me
 }
@@ -2027,7 +2027,7 @@ ags_jack_server_find_client(AgsJackServer *jack_server,
     /* check client UUID */
     pthread_mutex_lock(jack_client_mutex);
     
-    if(!g_ascii_strcasecmp(AGS_JACK_CLIENT(list->data)->uuid,
+    if(!g_ascii_strcasecmp(AGS_JACK_CLIENT(list->data)->client_uuid,
 			   client_uuid)){
       retval = list->data;
 
@@ -2092,7 +2092,7 @@ ags_jack_server_find_port(AgsJackServer *jack_server,
       /* check port UUID */
       pthread_mutex_lock(jack_port_mutex);
       
-      success = (!g_ascii_strcasecmp(AGS_JACK_PORT(port->data)->uuid,
+      success = (!g_ascii_strcasecmp(AGS_JACK_PORT(port->data)->port_uuid,
 				     port_uuid)) ? TRUE: FALSE;
 
       pthread_mutex_unlock(jack_port_mutex);
@@ -2262,10 +2262,10 @@ ags_jack_server_connect_client(AgsJackServer *jack_server)
  *
  * Returns: the new #AgsJackServer
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsJackServer*
-ags_jack_server_new(GObject *application_context,
+ags_jack_server_new(AgsApplicationContext *application_context,
 		    gchar *url)
 {
   AgsJackServer *jack_server;

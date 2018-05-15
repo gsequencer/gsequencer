@@ -50,7 +50,7 @@ typedef struct _AgsJackServerClass AgsJackServerClass;
 
 /**
  * AgsJackServerFlags:
- * @AGS_JACK_PORT_ADDED_TO_REGISTRY: the JACK port was added to registry, see #AgsConnectable::add_to_registry()
+ * @AGS_JACK_SERVER_ADDED_TO_REGISTRY: the JACK server was added to registry, see #AgsConnectable::add_to_registry()
  * @AGS_JACK_SERVER_CONNECTED: indicates the server was connected by calling #AgsConnectable::connect()
  * 
  * Enum values to control the behavior or indicate internal state of #AgsJackServer by
@@ -118,7 +118,7 @@ void ags_jack_server_remove_client(AgsJackServer *jack_server,
 
 void ags_jack_server_connect_client(AgsJackServer *jack_server);
 
-AgsJackServer* ags_jack_server_new(GObject *application_context,
+AgsJackServer* ags_jack_server_new(AgsApplicationContext *application_context,
 				   gchar *url);
 
 #endif /*__AGS_JACK_SERVER_H__*/
