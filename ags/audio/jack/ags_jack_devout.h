@@ -177,6 +177,6 @@ void ags_jack_devout_switch_buffer_flag(AgsJackDevout *jack_devout);
 void ags_jack_devout_adjust_delay_and_attack(AgsJackDevout *jack_devout);
 void ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout);
 
-AgsJackDevout* ags_jack_devout_new(GObject *application_context);
+AgsJackDevout* ags_jack_devout_new(AgsApplicationContext *application_context);
 
 #endif /*__AGS_JACK_DEVOUT_H__*/

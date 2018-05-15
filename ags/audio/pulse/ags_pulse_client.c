@@ -22,7 +22,6 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/pulse/ags_pulse_server.h>
@@ -48,6 +47,19 @@ void ags_pulse_client_disconnect(AgsConnectable *connectable);
 void ags_pulse_client_dispose(GObject *gobject);
 void ags_pulse_client_finalize(GObject *gobject);
 
+AgsUUID* ags_pulse_client_get_uuid(AgsConnectable *connectable);
+gboolean ags_pulse_client_has_resource(AgsConnectable *connectable);
+gboolean ags_pulse_client_is_ready(AgsConnectable *connectable);
+void ags_pulse_client_add_to_registry(AgsConnectable *connectable);
+void ags_pulse_client_remove_from_registry(AgsConnectable *connectable);
+xmlNode* ags_pulse_client_list_resource(AgsConnectable *connectable);
+xmlNode* ags_pulse_client_xml_compose(AgsConnectable *connectable);
+void ags_pulse_client_xml_parse(AgsConnectable *connectable,
+			       xmlNode *node);
+gboolean ags_pulse_client_is_connected(AgsConnectable *connectable);
+void ags_pulse_client_connect(AgsConnectable *connectable);
+void ags_pulse_client_disconnect(AgsConnectable *connectable);
+
 #ifdef AGS_WITH_PULSE
 void ags_pulse_client_state_callback(pa_context *c, AgsPulseClient *pulse_client);
 #endif
@@ -65,6 +77,7 @@ void ags_pulse_client_state_callback(pa_context *c, AgsPulseClient *pulse_client
 enum{
   PROP_0,
   PROP_PULSE_SERVER,
+  PROP_CLIENT_NAME,
   PROP_DEVICE,
   PROP_PORT,
 };
@@ -78,13 +91,13 @@ ags_pulse_client_get_type()
 
   if(!ags_type_pulse_client){
     static const GTypeInfo ags_pulse_client_info = {
-      sizeof (AgsPulseClientClass),
+      sizeof(AgsPulseClientClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_pulse_client_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsPulseClient),
+      sizeof(AgsPulseClient),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_pulse_client_init,
     };
@@ -131,7 +144,7 @@ ags_pulse_client_class_init(AgsPulseClientClass *pulse_client)
    *
    * The assigned #AgsPulseServer.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("pulse-server",
 				   i18n_pspec("assigned pulseaudio server"),
@@ -143,11 +156,27 @@ ags_pulse_client_class_init(AgsPulseClientClass *pulse_client)
 				  param_spec);
 
   /**
+   * AgsPulseClient:client-name:
+   *
+   * The pulseaudio client name.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_string("client-name",
+				   i18n_pspec("the client name"),
+				   i18n_pspec("The client name"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CLIENT_NAME,
+				  param_spec);
+
+  /**
    * AgsPulseClient:device:
    *
    * The assigned devices.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("device",
 				   i18n_pspec("assigned device"),
@@ -163,7 +192,7 @@ ags_pulse_client_class_init(AgsPulseClientClass *pulse_client)
    *
    * The assigned ports.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("port",
 				   i18n_pspec("assigned port"),
@@ -178,50 +207,51 @@ ags_pulse_client_class_init(AgsPulseClientClass *pulse_client)
 void
 ags_pulse_client_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  connectable->connect = ags_pulse_client_connect;
-  connectable->disconnect = ags_pulse_client_disconnect;
+  connectable->get_uuid = ags_jack_client_get_uuid;
+  connectable->has_resource = ags_jack_client_has_resource;
+
+  connectable->is_ready = ags_jack_client_is_ready;
+  connectable->add_to_registry = ags_jack_client_add_to_registry;
+  connectable->remove_from_registry = ags_jack_client_remove_from_registry;
+
+  connectable->list_resource = ags_jack_client_list_resource;
+  connectable->xml_compose = ags_jack_client_xml_compose;
+  connectable->xml_parse = ags_jack_client_xml_parse;
+
+  connectable->is_connected = ags_jack_client_is_connected;  
+  connectable->connect = ags_jack_client_connect;
+  connectable->disconnect = ags_jack_client_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
 ags_pulse_client_init(AgsPulseClient *pulse_client)
 {
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
+  /* flags */
+  pulse_client->flags = 0;
+
   /* insert client mutex */
-  pulse_client->mutexattr = 
+  pulse_client->obj_mutexattr = 
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
 
-  pulse_client->mutex =
+  pulse_client->obj_mutex =
     mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
-
-  ags_mutex_manager_insert(mutex_manager,
-			   (GObject *) pulse_client,
-			   mutex);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* flags */
-  pulse_client->flags = 0;
-
   /* server */
   pulse_client->pulse_server = NULL;
   
-  pulse_client->uuid = ags_id_generator_create_uuid();
-  pulse_client->name = NULL;
+  pulse_client->client_uuid = ags_id_generator_create_uuid();
+  pulse_client->client_name = NULL;
 
   /* client */
   pulse_client->context = NULL;
@@ -511,7 +541,7 @@ ags_pulse_client_find_uuid(GList *pulse_client,
 {
   while(pulse_client != NULL){
     if(AGS_PULSE_CLIENT(pulse_client->data)->context != NULL &&
-       !g_ascii_strcasecmp(AGS_PULSE_CLIENT(pulse_client->data)->uuid,
+       !g_ascii_strcasecmp(AGS_PULSE_CLIENT(pulse_client->data)->client_uuid,
 			   client_uuid)){
       return(pulse_client);
     }
@@ -537,7 +567,7 @@ ags_pulse_client_find(GList *pulse_client,
 { 
   while(pulse_client != NULL){
     if(AGS_PULSE_CLIENT(pulse_client->data)->context != NULL &&
-       !g_ascii_strcasecmp(AGS_PULSE_CLIENT(pulse_client->data)->name,
+       !g_ascii_strcasecmp(AGS_PULSE_CLIENT(pulse_client->data)->client_name,
 			   client_name)){
       return(pulse_client);
     }
@@ -637,7 +667,7 @@ ags_pulse_client_open(AgsPulseClient *pulse_client,
   /*  */
   g_message("Advanced Gtk+ Sequencer open pulseaudio client");
   
-  pulse_client->name = g_strdup(client_name);
+  pulse_client->client_name = g_strdup(client_name);
 
 #ifdef AGS_WITH_PULSE
   pulse_client->context = pa_context_new(AGS_PULSE_SERVER(pulse_client->pulse_server)->main_loop_api, client_name);
@@ -719,7 +749,7 @@ ags_pulse_client_activate(AgsPulseClient *pulse_client)
 
   while(port != NULL){
     ags_pulse_port_register(port->data,
-			    AGS_PULSE_PORT(port->data)->name,
+			    AGS_PULSE_PORT(port->data)->client_name,
 			    (((AGS_PULSE_PORT_IS_AUDIO & (AGS_PULSE_PORT(port->data)->flags)) != 0) ? TRUE: FALSE), (((AGS_PULSE_PORT_IS_MIDI & (AGS_PULSE_PORT(port->data)->flags)) != 0) ? TRUE: FALSE),
 			    (((AGS_PULSE_PORT_IS_OUTPUT & (AGS_PULSE_PORT(port->data)->flags)) != 0) ? TRUE: FALSE));
     

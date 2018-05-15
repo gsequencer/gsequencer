@@ -29,6 +29,8 @@
 #include <jack/jack.h>
 #endif
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_JACK_CLIENT                (ags_jack_client_get_type())
 #define AGS_JACK_CLIENT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_JACK_CLIENT, AgsJackClient))
 #define AGS_JACK_CLIENT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_JACK_CLIENT, AgsJackClient))
@@ -65,8 +67,10 @@ struct _AgsJackClient
 
   GObject *jack_server;
   
-  gchar *uuid;
-  gchar *name;
+  AgsUUID *uuid;
+
+  gchar *client_uuid;
+  gchar *client_name;
   
 #ifdef AGS_WITH_JACK
   jack_client_t *client;

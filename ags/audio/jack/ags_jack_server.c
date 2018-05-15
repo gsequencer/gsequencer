@@ -199,7 +199,7 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    *
    * The default soundcard.
    * 
-   * Since: 1.0.0.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("default-soundcard",
 				   i18n_pspec("default soundcard"),
@@ -215,7 +215,7 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    *
    * The default jack client.
    * 
-   * Since: 1.0.0.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("default-jack-client",
 				   i18n_pspec("default jack client"),
@@ -231,7 +231,7 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    *
    * The jack client list.
    * 
-   * Since: 1.0.0.7
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_object("jack-client",
 				   i18n_pspec("jack client list"),
@@ -1374,7 +1374,7 @@ ags_jack_server_connect_client(AgsJackServer *jack_server)
 
   while(client != NULL){
     ags_jack_client_open((AgsJackClient *) client->data,
-			 AGS_JACK_CLIENT(client->data)->name);
+			 AGS_JACK_CLIENT(client->data)->client_name);
     ags_jack_client_activate(client->data);
 
     client = client->next;

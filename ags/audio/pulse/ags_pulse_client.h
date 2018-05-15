@@ -31,6 +31,8 @@
 #include <pulse/error.h>
 #endif
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_PULSE_CLIENT                (ags_pulse_client_get_type())
 #define AGS_PULSE_CLIENT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PULSE_CLIENT, AgsPulseClient))
 #define AGS_PULSE_CLIENT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_PULSE_CLIENT, AgsPulseClient))
@@ -43,6 +45,7 @@ typedef struct _AgsPulseClientClass AgsPulseClientClass;
 
 /**
  * AgsPulseClientFlags:
+ * @AGS_PULSE_CLIENT_ADDED_TO_REGISTRY: the PULSE client was added to registry, see #AgsConnectable::add_to_registry()
  * @AGS_PULSE_CLIENT_CONNECTED: indicates the client was connected by calling #AgsConnectable::connect()
  * @AGS_PULSE_CLIENT_ACTIVATED: the client was activated
  * @AGS_PULSE_CLIENT_READY: the client is ready
@@ -51,9 +54,10 @@ typedef struct _AgsPulseClientClass AgsPulseClientClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_PULSE_CLIENT_CONNECTED       = 1,
-  AGS_PULSE_CLIENT_ACTIVATED       = 1 <<  1,
-  AGS_PULSE_CLIENT_READY           = 1 <<  2,
+  AGS_PULSE_CLIENT_ADDED_TO_REGISTRY  = 1,
+  AGS_PULSE_CLIENT_CONNECTED          = 1 <<  1,
+  AGS_PULSE_CLIENT_ACTIVATED          = 1 <<  2,
+  AGS_PULSE_CLIENT_READY              = 1 <<  3,
 }AgsPulseClientFlags;
 
 struct _AgsPulseClient
@@ -62,13 +66,15 @@ struct _AgsPulseClient
 
   guint flags;
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
   
   GObject *pulse_server;
 
-  gchar *uuid;
-  gchar *name;
+  AgsUUID *uuid;
+
+  gchar *client_uuid;
+  gchar *client_name;
 
 #ifdef AGS_WITH_PULSE
   pa_context *context;
@@ -86,6 +92,12 @@ struct _AgsPulseClientClass
 };
 
 GType ags_pulse_client_get_type();
+
+pthread_mutex_t* ags_pulse_client_get_class_mutex();
+
+gboolean ags_pulse_client_test_flags(AgsPulseClient *pulse_client, guint flags);
+void ags_pulse_client_set_flags(AgsPulseClient *pulse_client, guint flags);
+void ags_pulse_client_unset_flags(AgsPulseClient *pulse_client, guint flags);
 
 GList* ags_pulse_client_find_uuid(GList *pulse_client,
 				  gchar *client_uuid);

@@ -198,8 +198,8 @@ ags_jack_port_init(AgsJackPort *jack_port)
 
   jack_port->jack_client = NULL;
   
-  jack_port->uuid = NULL;
-  jack_port->name = NULL;
+  jack_port->port_uuid = NULL;
+  jack_port->port_name = NULL;
 
   jack_port->port = NULL;
 }
@@ -242,17 +242,17 @@ ags_jack_port_set_property(GObject *gobject,
 
       port_name = g_value_get_string(value);
 
-      if(jack_port->name == port_name ||
-	 !g_ascii_strcasecmp(jack_port->name,
+      if(jack_port->port_name == port_name ||
+	 !g_ascii_strcasecmp(jack_port->port_name,
 			     port_name)){
 	return;
       }
 
-      if(jack_port->name != NULL){
-	g_free(jack_port->name);
+      if(jack_port->port_name != NULL){
+	g_free(jack_port->port_name);
       }
 
-      jack_port->name = port_name;
+      jack_port->port_name = port_name;
 
 #ifdef AGS_WITH_JACK
       if(jack_port->port != NULL){
@@ -286,7 +286,7 @@ ags_jack_port_get_property(GObject *gobject,
     break;
   case PROP_PORT_NAME:
     {
-      g_value_set_string(value, jack_port->name);
+      g_value_set_string(value, jack_port->port_name);
     }
     break;
   default:
@@ -338,7 +338,7 @@ ags_jack_port_dispose(GObject *gobject)
   }
 
   /* name */
-  g_free(jack_port->name);
+  g_free(jack_port->port_name);
 
   /* call parent */
   G_OBJECT_CLASS(ags_jack_port_parent_class)->dispose(gobject);
@@ -372,7 +372,7 @@ ags_jack_port_finalize(GObject *gobject)
   }
 
   /* name */
-  g_free(jack_port->name);
+  g_free(jack_port->port_name);
 
   pthread_mutex_destroy(jack_port->mutex);
   free(jack_port->mutex);
@@ -455,14 +455,14 @@ ags_jack_port_register(AgsJackPort *jack_port,
     return;
   }
 
-  uuid = jack_port->uuid;
-  name = jack_port->name;
+  uuid = jack_port->port_uuid;
+  name = jack_port->port_name;
 
   if(AGS_JACK_CLIENT(jack_port->jack_client)->client == NULL){
     return;
   }
   
-  jack_port->name = g_strdup(port_name);
+  jack_port->port_name = g_strdup(port_name);
 
   /* create sequencer or soundcard */
   if(is_output){
@@ -474,7 +474,7 @@ ags_jack_port_register(AgsJackPort *jack_port,
     jack_port->flags |= AGS_JACK_PORT_IS_AUDIO;
     
     jack_port->port = jack_port_register(AGS_JACK_CLIENT(jack_port->jack_client)->client,
-					 jack_port->name,
+					 jack_port->port_name,
 					 JACK_DEFAULT_AUDIO_TYPE,
 					 (is_output ? JackPortIsOutput: JackPortIsInput),
 					 0);
@@ -482,7 +482,7 @@ ags_jack_port_register(AgsJackPort *jack_port,
     jack_port->flags |= AGS_JACK_PORT_IS_MIDI;
     
     jack_port->port = jack_port_register(AGS_JACK_CLIENT(jack_port->jack_client)->client,
-					 jack_port->name,
+					 jack_port->port_name,
 					 JACK_DEFAULT_MIDI_TYPE,
 					 (is_output ? JackPortIsOutput: JackPortIsInput),
 					 0);
@@ -494,7 +494,7 @@ ags_jack_port_register(AgsJackPort *jack_port,
     
 #ifdef HAVE_JACK_PORT_UUID
   if(jack_port->port != NULL){
-    jack_port->uuid = jack_port_uuid(jack_port->port);
+    jack_port->port_uuid = jack_port_uuid(jack_port->port);
   }
 #endif
 #endif

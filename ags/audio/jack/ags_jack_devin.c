@@ -1778,7 +1778,7 @@ ags_jack_devin_list_cards(AgsSoundcard *soundcard,
 	  /* get client name */
 	  pthread_mutex_lock(jack_client_mutex);
 
-	  client_name = g_strdup(jack_client->name);
+	  client_name = g_strdup(jack_client->client_name);
 
 	  pthread_mutex_unlock(jack_client_mutex);
 	  
@@ -2963,6 +2963,22 @@ ags_jack_devin_get_loop_offset(AgsSoundcard *soundcard)
 void
 ags_jack_devin_switch_buffer_flag(AgsJackDevin *jack_devin)
 {
+  pthread_mutex_t *jack_devin_mutex;
+  
+  if(!AGS_IS_JACK_DEVIN(jack_devin)){
+    return;
+  }
+
+  /* get jack devin mutex */
+  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
+  
+  jack_devin_mutex = jack_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+
+  /* switch buffer flag */
+  pthread_mutex_lock(jack_devin_mutex);
+
   if((AGS_JACK_DEVIN_BUFFER0 & (jack_devin->flags)) != 0){
     jack_devin->flags &= (~AGS_JACK_DEVIN_BUFFER0);
     jack_devin->flags |= AGS_JACK_DEVIN_BUFFER1;
@@ -2976,6 +2992,8 @@ ags_jack_devin_switch_buffer_flag(AgsJackDevin *jack_devin)
     jack_devin->flags &= (~AGS_JACK_DEVIN_BUFFER3);
     jack_devin->flags |= AGS_JACK_DEVIN_BUFFER0;
   }
+
+  pthread_mutex_unlock(jack_devin_mutex);
 }
 
 /**

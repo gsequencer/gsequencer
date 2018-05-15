@@ -31,6 +31,8 @@
 #include <jack/jack.h>
 #endif
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_JACK_PORT                (ags_jack_port_get_type())
 #define AGS_JACK_PORT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_JACK_PORT, AgsJackPort))
 #define AGS_JACK_PORT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_JACK_PORT, AgsJackPort))
@@ -68,13 +70,13 @@ struct _AgsJackPort
 
   guint flags;
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
 
   GObject *jack_client;
   
-  gchar *uuid;
-  gchar *name;
+  gchar *port_uuid;
+  gchar *port_name;
   
 #ifdef AGS_WITH_JACK
   jack_port_t *port;
@@ -89,6 +91,12 @@ struct _AgsJackPortClass
 };
 
 GType ags_jack_port_get_type();
+
+pthread_mutex_t* ags_jack_port_get_class_mutex();
+
+gboolean ags_jack_port_test_flags(AgsJackPort *jack_port, guint flags);
+void ags_jack_port_set_flags(AgsJackPort *jack_port, guint flags);
+void ags_jack_port_unset_flags(AgsJackPort *jack_port, guint flags);
 
 GList* ags_jack_port_find(GList *jack_port,
 			  gchar *port_name);
