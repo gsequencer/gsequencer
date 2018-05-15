@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,6 +32,8 @@
 #include <stdbool.h>
 #endif
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_JACK_SERVER                (ags_jack_server_get_type())
 #define AGS_JACK_SERVER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_JACK_SERVER, AgsJackServer))
 #define AGS_JACK_SERVER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_JACK_SERVER, AgsJackServer))
@@ -48,13 +50,15 @@ typedef struct _AgsJackServerClass AgsJackServerClass;
 
 /**
  * AgsJackServerFlags:
+ * @AGS_JACK_PORT_ADDED_TO_REGISTRY: the JACK port was added to registry, see #AgsConnectable::add_to_registry()
  * @AGS_JACK_SERVER_CONNECTED: indicates the server was connected by calling #AgsConnectable::connect()
  * 
- * Enum values to control the behavior or indicate internal state of #AgsJackPort by
+ * Enum values to control the behavior or indicate internal state of #AgsJackServer by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_JACK_SERVER_CONNECTED       = 1,
+  AGS_JACK_SERVER_ADDED_TO_REGISTRY  = 1,
+  AGS_JACK_SERVER_CONNECTED          = 1 <<  1,
 }AgsJackServerFlags;
 
 struct _AgsJackServer
@@ -63,10 +67,12 @@ struct _AgsJackServer
 
   guint flags;
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
 
-  GObject *application_context;
+  AgsApplicationContext *application_context;
+
+  AgsUUID *uuid;
 
   gchar *url;
   //  jackctl_server_t *jackctl;
@@ -89,6 +95,12 @@ struct _AgsJackServerClass
 };
 
 GType ags_jack_server_get_type();
+
+pthread_mutex_t* ags_jack_server_get_class_mutex();
+
+gboolean ags_jack_server_test_flags(AgsJackServer *jack_server, guint flags);
+void ags_jack_server_set_flags(AgsJackServer *jack_server, guint flags);
+void ags_jack_server_unset_flags(AgsJackServer *jack_server, guint flags);
 
 GList* ags_jack_server_find_url(GList *jack_server,
 				gchar *url);

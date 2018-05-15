@@ -74,6 +74,8 @@ enum{
 
 static gpointer ags_jack_port_parent_class = NULL;
 
+static pthread_mutex_t ags_jack_port_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_jack_port_get_type()
 {
@@ -374,22 +376,13 @@ ags_jack_port_finalize(GObject *gobject)
 {
   AgsJackPort *jack_port;
 
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-
   jack_port = AGS_JACK_PORT(gobject);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  pthread_mutex_destroy(jack_port->mutex);
+  free(jack_port->mutex);
 
-  /* remove jack port mutex */
-  pthread_mutex_lock(application_mutex);  
-
-  ags_mutex_manager_remove(mutex_manager,
-			   gobject);
-  
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutexattr_destroy(jack_port->mutexattr);
+  free(jack_port->mutexattr);
 
   /* jack client */
   if(jack_port->jack_client != NULL){
@@ -398,12 +391,6 @@ ags_jack_port_finalize(GObject *gobject)
 
   /* name */
   g_free(jack_port->port_name);
-
-  pthread_mutex_destroy(jack_port->mutex);
-  free(jack_port->mutex);
-
-  pthread_mutexattr_destroy(jack_port->mutexattr);
-  free(jack_port->mutexattr);
 
   /* call parent */
   G_OBJECT_CLASS(ags_jack_port_parent_class)->finalize(gobject);
@@ -825,7 +812,8 @@ ags_jack_port_register(AgsJackPort *jack_port,
   
   pthread_mutex_unlock(ags_jack_port_get_class_mutex());
 
-  /*  */
+  /* get port name */
+  //FIXME:JK: memory leak?
   pthread_mutex_lock(jack_port_mutex);
   
   port_name = g_strdup(jack_port->port_name);
