@@ -1012,8 +1012,12 @@ void
 ags_jack_client_open(AgsJackClient *jack_client,
 		     gchar *client_name)
 {
+#ifdef AGS_WITH_JACK
   jack_client_t *client;
-
+#else
+  gpointer client;
+#endif
+  
   gchar *client_uuid;
   
   pthread_mutex_t *jack_client_mutex;
@@ -1094,8 +1098,12 @@ ags_jack_client_open(AgsJackClient *jack_client,
 void
 ags_jack_client_activate(AgsJackClient *jack_client)
 {
+#ifdef AGS_WITH_JACK
   jack_client_t *client;
-
+#else
+  gpointer client;
+#endif
+  
   GList *port_start, *port;
   
   int ret;
@@ -1113,7 +1121,7 @@ ags_jack_client_activate(AgsJackClient *jack_client)
   
   pthread_mutex_unlock(ags_jack_client_get_class_mutex());
 
-  /*  */
+  /* get client */
   pthread_mutex_lock(jack_client_mutex);
 
   client = jack_client->client;
@@ -1174,8 +1182,12 @@ ags_jack_client_activate(AgsJackClient *jack_client)
 void
 ags_jack_client_deactivate(AgsJackClient *jack_client)
 {
+#ifdef AGS_WITH_JACK
   jack_client_t *client;
-
+#else
+  gpointer client;
+#endif
+  
   pthread_mutex_t *jack_client_mutex;
 
   if(!AGS_IS_JACK_CLIENT(jack_client)){
