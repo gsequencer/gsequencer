@@ -135,6 +135,7 @@ void
 ags_pulse_port_class_init(AgsPulsePortClass *pulse_port)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
   
   ags_pulse_port_parent_class = g_type_class_peek_parent(pulse_port);
@@ -239,12 +240,14 @@ ags_pulse_port_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_pulse_port_init(AgsPulsePort *pulse_port)
 {
+  AgsConfig *config;
+  
   gchar *str;
 
   guint word_size;
   guint fixed_size;
 
-  pthread_mutex_t *pulse_port_mutex;
+  pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
   /* flags */
@@ -283,13 +286,13 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
 
 #ifdef AGS_WITH_PULSE
   pulse_port->sample_spec = (pa_sample_spec *) malloc(sizeof(pa_sample_spec));
-  pulse_port->sample_spec->rate = samplerate;
-  pulse_port->sample_spec->channels = pcm_channels;
+  pulse_port->sample_spec->rate = pulse_port->samplerate;
+  pulse_port->sample_spec->channels = pulse_port->pcm_channels;
 #else
   pulse_port->sample_spec = NULL;
 #endif
 
-  switch(format){
+  switch(pulse_port->format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
 #ifdef AGS_WITH_PULSE
@@ -346,7 +349,7 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
   pulse_port->buffer_attr = NULL;
 #endif
 
-  pulse_port->empty_buffer = ags_stream_alloc(8 * pulse_port->pcm_channels * buffer_size,
+  pulse_port->empty_buffer = ags_stream_alloc(8 * pulse_port->pcm_channels * pulse_port->buffer_size,
 					      AGS_SOUNDCARD_DEFAULT_FORMAT);
 
   g_atomic_int_set(&(pulse_port->is_empty),
@@ -1018,6 +1021,9 @@ ags_pulse_port_register(AgsPulsePort *pulse_port,
   gchar *name, *uuid;
 
   int r;
+
+  pthread_mutex_t *pulse_client_mutex;
+  pthread_mutex_t *pulse_port_mutex;
   
   if(!AGS_IS_PULSE_PORT(pulse_port) ||
      port_name == NULL){
@@ -1304,16 +1310,16 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   pthread_mutex_unlock(pulse_port_mutex);
   
   /* get device mutex */
-  if(AGS_IS_PULSE_DEVOUT(device->data)){
+  if(AGS_IS_PULSE_DEVOUT(soundcard)){
     pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
 
-    device_mutex = AGS_PULSE_DEVOUT(device->data)->obj_mutex;
+    device_mutex = AGS_PULSE_DEVOUT(soundcard)->obj_mutex;
 
     pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
-  }else if(AGS_IS_PULSE_DEVIN(device->data)){
+  }else if(AGS_IS_PULSE_DEVIN(soundcard)){
     pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
 
-    device_mutex = AGS_PULSE_DEVIN(device->data)->obj_mutex;
+    device_mutex = AGS_PULSE_DEVIN(soundcard)->obj_mutex;
 
     pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
   }else{
@@ -1771,6 +1777,8 @@ ags_pulse_port_stream_underflow_callback(pa_stream *stream, AgsPulsePort *pulse_
   AgsApplicationContext *application_context;
   
   guint time_spent;
+
+  pthread_mutex_t *pulse_port_mutex;
       
   application_context = ags_application_context_get_instance();
 

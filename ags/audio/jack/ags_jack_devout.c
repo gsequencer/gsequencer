@@ -596,6 +596,8 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
   ags_uuid_generate(jack_devout->uuid);
 
   /* presets */
+  config = ags_config_get_instance();
+  
   jack_devout->dsp_channels = ags_soundcard_helper_config_get_dsp_channels(config);
   jack_devout->pcm_channels = ags_soundcard_helper_config_get_pcm_channels(config);
 

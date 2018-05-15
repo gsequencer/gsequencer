@@ -161,7 +161,6 @@ guint ags_pulse_devout_get_loop_offset(AgsSoundcard *soundcard);
 enum{
   PROP_0,
   PROP_APPLICATION_CONTEXT,
-  PROP_APPLICATION_MUTEX,
   PROP_DEVICE,
   PROP_DSP_CHANNELS,
   PROP_PCM_CHANNELS,
@@ -324,7 +323,7 @@ ags_pulse_devout_class_init(AgsPulseDevoutClass *pulse_devout)
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("precision of buffer"),
 				 i18n_pspec("The precision to use for a frame"),
-				 0,
+ 				 0,
 				 G_MAXUINT32,
 				 AGS_SOUNDCARD_DEFAULT_FORMAT,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -696,6 +695,8 @@ ags_pulse_devout_set_property(GObject *gobject,
 			      const GValue *value,
 			      GParamSpec *param_spec)
 {
+  AgsPulseDevout *pulse_devout;
+  
   pthread_mutex_t *pulse_devout_mutex;
 
   pulse_devout = AGS_PULSE_DEVOUT(gobject);
@@ -1112,7 +1113,7 @@ ags_pulse_devout_dispose(GObject *gobject)
     if(pulse_devout->application_context != NULL){
       AgsTaskThread *task_thread;
     
-      g_object_get(devout->application_context,
+      g_object_get(pulse_devout->application_context,
 		   "task-thread", &task_thread,
 		   NULL);
       
@@ -1179,7 +1180,7 @@ ags_pulse_devout_finalize(GObject *gobject)
     if(pulse_devout->application_context != NULL){
       AgsTaskThread *task_thread;
       
-      g_object_get(devout->application_context,
+      g_object_get(pulse_devout->application_context,
 		   "task-thread", &task_thread,
 		   NULL);
 
@@ -1799,7 +1800,7 @@ ags_pulse_devout_list_cards(AgsSoundcard *soundcard,
 	  /* get client name */
 	  pthread_mutex_lock(pulse_client_mutex);
 
-	  client_name = g_strdup(pulse_client->name);
+	  client_name = g_strdup(pulse_client->client_name);
 
 	  pthread_mutex_unlock(pulse_client_mutex);
 	  
@@ -2133,11 +2134,11 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
   pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
 
   /* get activated */
-  pthread_mutex_lock(client_mutex);
+  pthread_mutex_lock(pulse_client_mutex);
 
   pulse_client_activated = ((AGS_PULSE_CLIENT_ACTIVATED & (pulse_client->flags)) != 0) ? TRUE: FALSE;
 
-  pthread_mutex_unlock(client_mutex);
+  pthread_mutex_unlock(pulse_client_mutex);
 
   if(pulse_client_activated){
     /* signal */

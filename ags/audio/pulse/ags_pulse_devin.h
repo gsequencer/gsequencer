@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #include <pthread.h>
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_PULSE_DEVIN                (ags_pulse_devin_get_type())
 #define AGS_PULSE_DEVIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PULSE_DEVIN, AgsPulseDevin))
 #define AGS_PULSE_DEVIN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_PULSE_DEVIN, AgsPulseDevin))
@@ -37,6 +39,8 @@ typedef struct _AgsPulseDevinClass AgsPulseDevinClass;
 
 /**
  * AgsPulseDevinFlags:
+ * @AGS_PULSE_DEVIN_ADDED_TO_REGISTRY: the pulseaudio devin was added to registry, see #AgsConnectable::add_to_registry()
+ * @AGS_PULSE_DEVIN_CONNECTED: indicates the pulseaudio devin was connected by calling #AgsConnectable::connect()
  * @AGS_PULSE_DEVIN_BUFFER0: ring-buffer 0
  * @AGS_PULSE_DEVIN_BUFFER1: ring-buffer 1
  * @AGS_PULSE_DEVIN_BUFFER2: ring-buffer 2
@@ -55,26 +59,28 @@ typedef struct _AgsPulseDevinClass AgsPulseDevinClass;
  * Enum values to control the behavior or indicate internal state of #AgsPulseDevin by
  * enable/disable as flags.
  */
-typedef enum
-  {
-    AGS_PULSE_DEVIN_BUFFER0                        = 1,
-    AGS_PULSE_DEVIN_BUFFER1                        = 1 <<  1,
-    AGS_PULSE_DEVIN_BUFFER2                        = 1 <<  2,
-    AGS_PULSE_DEVIN_BUFFER3                        = 1 <<  3,
-    AGS_PULSE_DEVIN_BUFFER4                        = 1 <<  4,
-    AGS_PULSE_DEVIN_BUFFER5                        = 1 <<  5,
-    AGS_PULSE_DEVIN_BUFFER6                        = 1 <<  6,
-    AGS_PULSE_DEVIN_BUFFER7                        = 1 <<  7,
+typedef enum{
+  AGS_PULSE_DEVIN_ADDED_TO_REGISTRY              = 1,
+  AGS_PULSE_DEVIN_CONNECTED                      = 1 <<  1,
 
-    AGS_PULSE_DEVIN_ATTACK_FIRST                   = 1 <<  8,
+  AGS_PULSE_DEVIN_BUFFER0                        = 1 <<  2,
+  AGS_PULSE_DEVIN_BUFFER1                        = 1 <<  3,
+  AGS_PULSE_DEVIN_BUFFER2                        = 1 <<  4,
+  AGS_PULSE_DEVIN_BUFFER3                        = 1 <<  5,
+  AGS_PULSE_DEVIN_BUFFER4                        = 1 <<  6,
+  AGS_PULSE_DEVIN_BUFFER5                        = 1 <<  7,
+  AGS_PULSE_DEVIN_BUFFER6                        = 1 <<  8,
+  AGS_PULSE_DEVIN_BUFFER7                        = 1 <<  9,
 
-    AGS_PULSE_DEVIN_RECORD                         = 1 <<  9,
-    AGS_PULSE_DEVIN_SHUTDOWN                       = 1 << 10,
-    AGS_PULSE_DEVIN_START_RECORD                  = 1 << 11,
+  AGS_PULSE_DEVIN_ATTACK_FIRST                   = 1 << 10,
 
-    AGS_PULSE_DEVIN_NONBLOCKING                    = 1 << 12,
-    AGS_PULSE_DEVIN_INITIALIZED                    = 1 << 13,
-  }AgsPulseDevinFlags;
+  AGS_PULSE_DEVIN_RECORD                         = 1 << 11,
+  AGS_PULSE_DEVIN_SHUTDOWN                       = 1 << 12,
+  AGS_PULSE_DEVIN_START_RECORD                   = 1 << 13,
+
+  AGS_PULSE_DEVIN_NONBLOCKING                    = 1 << 14,
+  AGS_PULSE_DEVIN_INITIALIZED                    = 1 << 15,
+}AgsPulseDevinFlags;
 
 /**
  * AgsPulseDevinSyncFlags:
@@ -104,13 +110,17 @@ typedef enum{
 
 struct _AgsPulseDevin
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
   volatile guint sync_flags;
   
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  AgsApplicationContext *application_context;
+
+  AgsUUID *uuid;
 
   guint dsp_channels;
   guint pcm_channels;
@@ -151,28 +161,29 @@ struct _AgsPulseDevin
   pthread_mutex_t *callback_finish_mutex;
   pthread_cond_t *callback_finish_cond;
 
-  GObject *application_context;
-  pthread_mutex_t *application_mutex;
-
   GObject *notify_soundcard;
-
-  GList *audio;
 };
 
 struct _AgsPulseDevinClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_pulse_devin_get_type();
 
 GQuark ags_pulse_devin_error_quark();
 
+pthread_mutex_t* ags_pulse_devin_get_class_mutex();
+
+gboolean ags_pulse_devin_test_flags(AgsPulseDevin *pulse_devin, guint flags);
+void ags_pulse_devin_set_flags(AgsPulseDevin *pulse_devin, guint flags);
+void ags_pulse_devin_unset_flags(AgsPulseDevin *pulse_devin, guint flags);
+
 void ags_pulse_devin_switch_buffer_flag(AgsPulseDevin *pulse_devin);
 
 void ags_pulse_devin_adjust_delay_and_attack(AgsPulseDevin *pulse_devin);
 void ags_pulse_devin_realloc_buffer(AgsPulseDevin *pulse_devin);
 
-AgsPulseDevin* ags_pulse_devin_new(GObject *application_context);
+AgsPulseDevin* ags_pulse_devin_new(AgsApplicationContext *application_context);
 
 #endif /*__AGS_PULSE_DEVIN_H__*/

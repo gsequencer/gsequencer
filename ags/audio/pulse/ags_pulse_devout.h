@@ -110,7 +110,7 @@ typedef enum{
 
 struct _AgsPulseDevout
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
   volatile guint sync_flags;
@@ -166,7 +166,7 @@ struct _AgsPulseDevout
 
 struct _AgsPulseDevoutClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_pulse_devout_get_type();

@@ -127,7 +127,7 @@ void ags_pulse_server_connect_client(AgsPulseServer *pulse_server);
 
 void ags_pulse_server_start_poll(AgsPulseServer *pulse_server);
 
-AgsPulseServer* ags_pulse_server_new(GObject *application_context,
+AgsPulseServer* ags_pulse_server_new(AgsApplicationContext *application_context,
 				     gchar *url);
 
 #endif /*__AGS_PULSE_SERVER_H__*/

@@ -176,6 +176,6 @@ void ags_jack_devin_switch_buffer_flag(AgsJackDevin *jack_devin);
 void ags_jack_devin_adjust_delay_and_attack(AgsJackDevin *jack_devin);
 void ags_jack_devin_realloc_buffer(AgsJackDevin *jack_devin);
 
-AgsJackDevin* ags_jack_devin_new(GObject *application_context);
+AgsJackDevin* ags_jack_devin_new(AgsApplicationContext *application_context);
 
 #endif /*__AGS_JACK_DEVIN_H__*/

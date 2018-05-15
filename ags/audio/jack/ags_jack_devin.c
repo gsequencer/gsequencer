@@ -596,6 +596,8 @@ ags_jack_devin_init(AgsJackDevin *jack_devin)
   ags_uuid_generate(jack_devin->uuid);
 
   /* presets */
+  config = ags_config_get_instance();
+
   jack_devin->dsp_channels = ags_soundcard_helper_config_get_dsp_channels(config);
   jack_devin->pcm_channels = ags_soundcard_helper_config_get_pcm_channels(config);
 
@@ -3326,7 +3328,7 @@ ags_jack_devin_realloc_buffer(AgsJackDevin *jack_devin)
  * Since: 2.0.0
  */
 AgsJackDevin*
-ags_jack_devin_new(GObject *application_context)
+ags_jack_devin_new(AgsApplicationContext *application_context)
 {
   AgsJackDevin *jack_devin;
 

@@ -629,10 +629,6 @@ ags_pulse_server_finalize(GObject *gobject)
 {
   AgsPulseServer *pulse_server;
 
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-
   pulse_server = AGS_PULSE_SERVER(gobject);
 
   pthread_mutex_destroy(pulse_server->obj_mutex);
@@ -1576,6 +1572,8 @@ ags_pulse_server_register_default_soundcard(AgsPulseServer *pulse_server)
   AgsPulseDevout *pulse_devout;
   AgsPulsePort *pulse_port;
 
+  AgsApplicationContext *application_context;
+  
 #ifdef AGS_WITH_PULSE
   pa_context *context;
 #else
@@ -1585,6 +1583,9 @@ ags_pulse_server_register_default_soundcard(AgsPulseServer *pulse_server)
   gchar *str;
   
   guint i;
+
+  pthread_mutex_t *pulse_server_mutex;
+  pthread_mutex_t *pulse_client_mutex;
 
   if(!AGS_IS_PULSE_SERVER(pulse_server)){
     return(NULL);
@@ -1600,12 +1601,10 @@ ags_pulse_server_register_default_soundcard(AgsPulseServer *pulse_server)
   /* get some fields */
   pthread_mutex_lock(pulse_server_mutex);
 
-  application_context= pulse_server->application_context;
+  application_context = pulse_server->application_context;
 
   default_client = pulse_server->default_client;
 
-  n_soundcards = pulse_server->n_soundcards;
-  
   pthread_mutex_unlock(pulse_server_mutex);
   
   /* the default client */
@@ -1626,6 +1625,13 @@ ags_pulse_server_register_default_soundcard(AgsPulseServer *pulse_server)
     ags_pulse_client_open((AgsPulseClient *) default_client,
 			  "ags-default-client");
   }
+
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+  pulse_client_mutex = default_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
 
   /* get context */
   pthread_mutex_lock(pulse_client_mutex);
