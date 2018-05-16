@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,9 +43,7 @@ struct _AgsCancelAudio
 
   AgsAudio *audio;
 
-  gboolean do_playback;
-  gboolean do_sequencer;
-  gboolean do_notation;
+  gint sound_scope;
 };
 
 struct _AgsCancelAudioClass
@@ -56,6 +54,6 @@ struct _AgsCancelAudioClass
 GType ags_cancel_audio_get_type();
 
 AgsCancelAudio* ags_cancel_audio_new(AgsAudio *audio,
-				     gboolean do_playback, gboolean do_sequencer, gboolean do_notation);
+				     gint sound_scope);
 
 #endif /*__AGS_CANCEL_AUDIO_H__*/

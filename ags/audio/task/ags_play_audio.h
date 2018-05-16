@@ -42,7 +42,7 @@ struct _AgsPlayAudio
   GObject *audio_loop;
   GObject *audio;
 
-  guint sound_scope;
+  gint sound_scope;
 };
 
 struct _AgsPlayAudioClass
@@ -54,6 +54,6 @@ GType ags_play_audio_get_type();
 
 AgsPlayAudio* ags_play_audio_new(GObject *audio_loop,
 				 GObject *audio,
-				 guint sound_scope);
+				 gint sound_scope);
 
 #endif /*__AGS_PLAY_AUDIO_H__*/

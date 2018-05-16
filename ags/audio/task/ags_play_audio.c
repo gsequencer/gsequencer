@@ -154,13 +154,13 @@ ags_play_audio_class_init(AgsPlayAudioClass *play_audio)
    * 
    * Since: 1.0.0
    */
-  param_spec =  g_param_spec_boolean("sound-scope",
-				     i18n_pspec("sound scope"),
-				     i18n_pspec("The sound scope"),
-				     0,
-				     AGS_SOUND_SCOPE_LAST,
-				     0,
-				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec =  g_param_spec_int("sound-scope",
+				 i18n_pspec("sound scope"),
+				 i18n_pspec("The sound scope"),
+				 0,
+				 AGS_SOUND_SCOPE_LAST,
+				 -1,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SOUND_SCOPE,
 				  param_spec);
@@ -177,7 +177,7 @@ ags_play_audio_init(AgsPlayAudio *play_audio)
   play_audio->audio_loop = NULL;
   play_audio->audio = NULL;
 
-  play_audio->sound_scope = 0;
+  play_audio->sound_scope = -1;
 }
 
 void
@@ -235,11 +235,7 @@ ags_play_audio_set_property(GObject *gobject,
     break;
   case PROP_SOUND_SCOPE:
     {
-      guint sound_scope;
-
-      sound_scope = g_value_get_uint(value);
-
-      play_audio->sound_scope = sound_scope;
+      play_audio->sound_scope = g_value_get_int(value);
     }
     break;
   default:
@@ -271,7 +267,7 @@ ags_play_audio_get_property(GObject *gobject,
     break;
   case PROP_SOUND_SCOPE:
     {
-      g_value_set_uint(value, play_audio->sound_scope);
+      g_value_set_int(value, play_audio->sound_scope);
     }
     break;
   default:
@@ -672,7 +668,7 @@ ags_play_audio_launch(AgsTask *task)
 AgsPlayAudio*
 ags_play_audio_new(GObject *audio_loop,
 		   GObject *audio,
-		   guint sound_scope)
+		   gint sound_scope)
 {
   AgsPlayAudio *play_audio;
 
