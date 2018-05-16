@@ -1124,18 +1124,11 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_add_audio_signal.h \
 	ags/audio/task/ags_add_effect.h \
 	ags/audio/task/ags_add_note.h \
-	ags/audio/task/ags_add_recall_container.h \
-	ags/audio/task/ags_add_recall.h \
 	ags/audio/task/ags_add_soundcard.h \
-	ags/audio/task/ags_append_audio.h \
-	ags/audio/task/ags_append_audio_threaded.h \
-	ags/audio/task/ags_append_channel.h \
-	ags/audio/task/ags_append_recall.h \
 	ags/audio/task/ags_apply_presets.h \
 	ags/audio/task/ags_apply_synth.h \
 	ags/audio/task/ags_cancel_audio.h \
 	ags/audio/task/ags_cancel_channel.h \
-	ags/audio/task/ags_cancel_recall.h \
 	ags/audio/task/ags_change_soundcard.h \
 	ags/audio/task/ags_clear_audio_signal.h \
 	ags/audio/task/ags_clear_buffer.h \
@@ -1150,13 +1143,11 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_open_file.h \
 	ags/audio/task/ags_open_sf2_sample.h \
 	ags/audio/task/ags_open_single_file.h \
+	ags/audio/task/ags_play_audio.h \
+	ags/audio/task/ags_play_channel.h \
 	ags/audio/task/ags_remove_audio.h \
 	ags/audio/task/ags_remove_audio_signal.h \
 	ags/audio/task/ags_remove_note.h \
-	ags/audio/task/ags_remove_point_from_selection.h \
-	ags/audio/task/ags_remove_recall_container.h \
-	ags/audio/task/ags_remove_recall.h \
-	ags/audio/task/ags_remove_region_from_selection.h \
 	ags/audio/task/ags_remove_soundcard.h \
 	ags/audio/task/ags_reset_audio_connection.h \
 	ags/audio/task/ags_resize_audio.h \
@@ -1188,18 +1179,11 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_add_audio_signal.c \
 	ags/audio/task/ags_add_effect.c \
 	ags/audio/task/ags_add_note.c \
-	ags/audio/task/ags_add_recall.c \
-	ags/audio/task/ags_add_recall_container.c \
 	ags/audio/task/ags_add_soundcard.c \
-	ags/audio/task/ags_append_audio.c \
-	ags/audio/task/ags_append_audio_threaded.c \
-	ags/audio/task/ags_append_channel.c \
-	ags/audio/task/ags_append_recall.c \
 	ags/audio/task/ags_apply_presets.c \
 	ags/audio/task/ags_apply_synth.c \
 	ags/audio/task/ags_cancel_audio.c \
 	ags/audio/task/ags_cancel_channel.c \
-	ags/audio/task/ags_cancel_recall.c \
 	ags/audio/task/ags_change_soundcard.c \
 	ags/audio/task/ags_clear_audio_signal.c \
 	ags/audio/task/ags_clear_buffer.c \
@@ -1214,13 +1198,11 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_open_file.c \
 	ags/audio/task/ags_open_sf2_sample.c \
 	ags/audio/task/ags_open_single_file.c \
+	ags/audio/task/ags_play_audio.c \
+	ags/audio/task/ags_play_channel.c \
 	ags/audio/task/ags_remove_audio.c \
 	ags/audio/task/ags_remove_audio_signal.c \
 	ags/audio/task/ags_remove_note.c \
-	ags/audio/task/ags_remove_point_from_selection.c \
-	ags/audio/task/ags_remove_recall.c \
-	ags/audio/task/ags_remove_recall_container.c \
-	ags/audio/task/ags_remove_region_from_selection.c \
 	ags/audio/task/ags_remove_soundcard.c \
 	ags/audio/task/ags_reset_audio_connection.c \
 	ags/audio/task/ags_resize_audio.c \

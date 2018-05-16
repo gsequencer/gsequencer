@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,7 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_synth_generator.h>
 
 #define AGS_TYPE_APPLY_SYNTH                (ags_apply_synth_get_type())
 #define AGS_APPLY_SYNTH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_APPLY_SYNTH, AgsApplySynth))
@@ -37,54 +38,16 @@
 typedef struct _AgsApplySynth AgsApplySynth;
 typedef struct _AgsApplySynthClass AgsApplySynthClass;
 
-/**
- * AgsApplySynthWave:
- * @AGS_APPLY_SYNTH_INVALID: invalid
- * @AGS_APPLY_SYNTH_SIN: sin wave
- * @AGS_APPLY_SYNTH_SAW: sawtooth wave
- * @AGS_APPLY_SYNTH_SQUARE: square
- * @AGS_APPLY_SYNTH_TRIANGLE: triangle wave
- *
- * Specify the wave of the synth to apply
- */
-typedef enum{
-  AGS_APPLY_SYNTH_INVALID,
-  AGS_APPLY_SYNTH_SIN,
-  AGS_APPLY_SYNTH_SAW,
-  AGS_APPLY_SYNTH_SQUARE,
-  AGS_APPLY_SYNTH_TRIANGLE,
-}AgsApplySynthWave;
-
 struct _AgsApplySynth
 {
   AgsTask task;
 
+  AgsSynthGenerator *synth_generator;
+
   AgsChannel *start_channel;
-  guint count;
 
-  gboolean fixed_length;
-  
-  guint wave;
   gdouble base_note;
-
-  gdouble frequency;
-  gdouble volume;
-
-  gdouble phase;
-  gdouble start_frequency;
-
-  gdouble delay;
-  guint attack;
-
-  guint frame_count;
-  guint loop_start;
-  guint loop_end;
-  
-  gboolean do_sync;
-  guint sync_mode;
-  
-  AgsComplex **sync_point;
-  guint sync_point_count;  
+  guint count;
 };
 
 struct _AgsApplySynthClass
@@ -94,11 +57,8 @@ struct _AgsApplySynthClass
 
 GType ags_apply_synth_get_type();
 
-AgsApplySynth* ags_apply_synth_new(AgsChannel *start_channel, guint count,
-				   guint wave,
-				   guint attack, guint frame_count,
-				   gdouble frequency, gdouble phase, gdouble start_frequency,
-				   gdouble volume,
-				   guint loop_start, guint loop_end);
+AgsApplySynth* ags_apply_synth_new(AgsSynthGenerator *synth_generator,
+				   AgsChannel *start_channel,
+				   gdouble base_note, guint count);
 
 #endif /*__AGS_APPLY_SYNTH_H__*/

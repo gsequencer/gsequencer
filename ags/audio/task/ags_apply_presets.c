@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,7 +43,6 @@
 #include <ags/i18n.h>
 
 void ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets);
-void ags_apply_presets_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_apply_presets_init(AgsApplyPresets *apply_presets);
 void ags_apply_presets_set_property(GObject *gobject,
 				    guint prop_id,
@@ -53,8 +52,6 @@ void ags_apply_presets_get_property(GObject *gobject,
 				    guint prop_id,
 				    GValue *value,
 				    GParamSpec *param_spec);
-void ags_apply_presets_connect(AgsConnectable *connectable);
-void ags_apply_presets_disconnect(AgsConnectable *connectable);
 void ags_apply_presets_dispose(GObject *gobject);
 void ags_apply_presets_finalize(GObject *gobject);
 
@@ -87,7 +84,6 @@ enum{
 };
 
 static gpointer ags_apply_presets_parent_class = NULL;
-static AgsConnectableInterface *ags_apply_presets_parent_connectable_interface;
 
 GType
 ags_apply_presets_get_type()
@@ -96,34 +92,24 @@ ags_apply_presets_get_type()
 
   if(!ags_type_apply_presets){
     static const GTypeInfo ags_apply_presets_info = {
-      sizeof (AgsApplyPresetsClass),
+      sizeof(AgsApplyPresetsClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_apply_presets_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsApplyPresets),
+      sizeof(AgsApplyPresets),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_apply_presets_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_apply_presets_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_apply_presets = g_type_register_static(AGS_TYPE_TASK,
 						    "AgsApplyPresets",
 						    &ags_apply_presets_info,
 						    0);
-
-    g_type_add_interface_static(ags_type_apply_presets,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
   
-  return (ags_type_apply_presets);
+  return(ags_type_apply_presets);
 }
 
 void
@@ -150,7 +136,7 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
    *
    * The assigned #GObject
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("scope",
 				   i18n_pspec("scope of apply presets"),
@@ -166,7 +152,7 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
    *
    * The count of pcm-channels to apply.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("pcm-channels",
 				 i18n_pspec("pcm channel count"),
@@ -184,7 +170,7 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
    *
    * The count of samplerate to apply.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("samplerate"),
@@ -203,7 +189,7 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
    *
    * The count of buffer-size to apply.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("buffer size"),
@@ -221,7 +207,7 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
    *
    * The count of format to apply.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("format"),
@@ -238,15 +224,6 @@ ags_apply_presets_class_init(AgsApplyPresetsClass *apply_presets)
   task = (AgsTaskClass *) apply_presets;
 
   task->launch = ags_apply_presets_launch;
-}
-
-void
-ags_apply_presets_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_apply_presets_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_apply_presets_connect;
-  connectable->disconnect = ags_apply_presets_disconnect;
 }
 
 void
@@ -361,22 +338,6 @@ ags_apply_presets_get_property(GObject *gobject,
 }
 
 void
-ags_apply_presets_connect(AgsConnectable *connectable)
-{
-  ags_apply_presets_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_apply_presets_disconnect(AgsConnectable *connectable)
-{
-  ags_apply_presets_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_apply_presets_dispose(GObject *gobject)
 {
   AgsApplyPresets *apply_presets;
@@ -448,52 +409,28 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
   AgsThread *audio_thread;
   AgsThread *channel_thread;
   
-  AgsMutexManager *mutex_manager;
-
   AgsApplicationContext *application_context;
   
-  GList *list;
+  GList *list_start, *list;
 
   gdouble freq;
   guint channels;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-  
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get some fields */
-  pthread_mutex_lock(application_mutex);
-
   application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
 
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
+  g_object_get(application_context,
+	       "main-loop", &main_loop,
+	       NULL);
+  
   /* calculate thread frequency */
   freq = ceil((gdouble) apply_presets->samplerate / (gdouble) apply_presets->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
 
-  /* get soundcard mutex */
-  pthread_mutex_lock(application_mutex);
-
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) apply_presets->scope);
-
-  pthread_mutex_unlock(application_mutex);
-
   /* reset soundcard */
-  pthread_mutex_lock(soundcard_mutex);
-
   ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
 			    apply_presets->pcm_channels,
 			    apply_presets->samplerate,
 			    apply_presets->buffer_size,
 			    apply_presets->format);
-
-  pthread_mutex_unlock(soundcard_mutex);
 
   /* reset audio loop frequency */
   g_object_set(G_OBJECT(main_loop),
@@ -534,31 +471,21 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
   }
   
   /* descend children */
-  pthread_mutex_lock(soundcard_mutex);
-
-  list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
-
-  pthread_mutex_unlock(soundcard_mutex);
+  list =
+    list_start = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
 
   while(list != NULL){
-    /* get some fields */
-    pthread_mutex_lock(soundcard_mutex);
-
     audio = AGS_AUDIO(list->data);
-    
-    pthread_mutex_unlock(soundcard_mutex);
 
     /* apply presets to audio */
     ags_apply_presets_audio(apply_presets,
 			    audio);
 
     /* iterate */
-    pthread_mutex_lock(soundcard_mutex);
-
     list = list->next;
-
-    pthread_mutex_unlock(soundcard_mutex);
   }
+
+  g_list_free(list_start);
 }
 
 void
@@ -602,11 +529,11 @@ ags_apply_presets_audio_signal(AgsApplyPresets *apply_presets,
  * @buffer_size: buffer size
  * @format: format
  *
- * Creates an #AgsApplyPresets.
+ * Creates a new instance of #AgsApplyPresets.
  *
- * Returns: an new #AgsApplyPresets.
+ * Returns: the new #AgsApplyPresets.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsApplyPresets*
 ags_apply_presets_new(GObject *scope,

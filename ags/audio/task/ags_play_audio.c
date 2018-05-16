@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/task/ags_append_audio.h>
+#include <ags/audio/task/ags_play_audio.h>
 
 #include <ags/libags.h>
 
@@ -33,112 +33,98 @@
 
 #include <ags/i18n.h>
 
-void ags_append_audio_class_init(AgsAppendAudioClass *append_audio);
-void ags_append_audio_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_append_audio_init(AgsAppendAudio *append_audio);
-void ags_append_audio_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec);
-void ags_append_audio_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec);
-void ags_append_audio_connect(AgsConnectable *connectable);
-void ags_append_audio_disconnect(AgsConnectable *connectable);
-void ags_append_audio_dispose(GObject *gobject);
-void ags_append_audio_finalize(GObject *gobject);
+void ags_play_audio_class_init(AgsPlayAudioClass *play_audio);
+void ags_play_audio_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_play_audio_init(AgsPlayAudio *play_audio);
+void ags_play_audio_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec);
+void ags_play_audio_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec);
+void ags_play_audio_dispose(GObject *gobject);
+void ags_play_audio_finalize(GObject *gobject);
 
-void ags_append_audio_launch(AgsTask *task);
+void ags_play_audio_launch(AgsTask *task);
 
 /**
- * SECTION:ags_append_audio
- * @short_description: append audio object to audio loop
- * @title: AgsAppendAudio
+ * SECTION:ags_play_audio
+ * @short_description: play audio object to audio loop
+ * @title: AgsPlayAudio
  * @section_id:
- * @include: ags/audio/task/ags_append_audio.h
+ * @include: ags/audio/task/ags_play_audio.h
  *
- * The #AgsAppendAudio task appends #AgsAudio to #AgsAudioLoop.
+ * The #AgsPlayAudio task plays #AgsAudio to #AgsAudioLoop.
  */
 
-static gpointer ags_append_audio_parent_class = NULL;
-static AgsConnectableInterface *ags_append_audio_parent_connectable_interface;
+static gpointer ags_play_audio_parent_class = NULL;
 
 enum{
   PROP_0,
   PROP_AUDIO_LOOP,
   PROP_AUDIO,
-  PROP_DO_PLAYBACK,
-  PROP_DO_SEQUENCER,
-  PROP_DO_NOTATION,
+  PROP_SOUND_SCOPE,
 };
 
 GType
-ags_append_audio_get_type()
+ags_play_audio_get_type()
 {
-  static GType ags_type_append_audio = 0;
+  static GType ags_type_play_audio = 0;
 
-  if(!ags_type_append_audio){
-    static const GTypeInfo ags_append_audio_info = {
-      sizeof (AgsAppendAudioClass),
+  if(!ags_type_play_audio){
+    static const GTypeInfo ags_play_audio_info = {
+      sizeof (AgsPlayAudioClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
-      (GClassInitFunc) ags_append_audio_class_init,
+      (GClassInitFunc) ags_play_audio_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsAppendAudio),
+      sizeof (AgsPlayAudio),
       0,    /* n_preallocs */
-      (GInstanceInitFunc) ags_append_audio_init,
+      (GInstanceInitFunc) ags_play_audio_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_append_audio_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    ags_type_append_audio = g_type_register_static(AGS_TYPE_TASK,
-						   "AgsAppendAudio",
-						   &ags_append_audio_info,
-						   0);
-
-    g_type_add_interface_static(ags_type_append_audio,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
+    ags_type_play_audio = g_type_register_static(AGS_TYPE_TASK,
+						 "AgsPlayAudio",
+						 &ags_play_audio_info,
+						 0);
   }
   
-  return (ags_type_append_audio);
+  return(ags_type_play_audio);
 }
 
 void
-ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
+ags_play_audio_class_init(AgsPlayAudioClass *play_audio)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+
   GParamSpec *param_spec;
   
-  ags_append_audio_parent_class = g_type_class_peek_parent(append_audio);
+  ags_play_audio_parent_class = g_type_class_peek_parent(play_audio);
 
   /* gobject */
-  gobject = (GObjectClass *) append_audio;
+  gobject = (GObjectClass *) play_audio;
 
-  gobject->set_property = ags_append_audio_set_property;
-  gobject->get_property = ags_append_audio_get_property;
+  gobject->set_property = ags_play_audio_set_property;
+  gobject->get_property = ags_play_audio_get_property;
 
-  gobject->dispose = ags_append_audio_dispose;
-  gobject->finalize = ags_append_audio_finalize;
+  gobject->dispose = ags_play_audio_dispose;
+  gobject->finalize = ags_play_audio_finalize;
 
   /* properties */
   /**
-   * AgsAppendAudio:audio-loop:
+   * AgsPlayAudio:audio-loop:
    *
    * The assigned #AgsAudioLoop
    * 
    * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio-loop",
-				   i18n_pspec("audio loop of append audio"),
-				   i18n_pspec("The audio loop of append audio task"),
+				   i18n_pspec("audio loop of play audio"),
+				   i18n_pspec("The audio loop of play audio task"),
 				   AGS_TYPE_AUDIO_LOOP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -146,15 +132,15 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
 				  param_spec);
 
   /**
-   * AgsAppendAudio:audio:
+   * AgsPlayAudio:audio:
    *
    * The assigned #AgsAudio
    * 
    * Since: 1.0.0
    */
   param_spec = g_param_spec_object("audio",
-				   i18n_pspec("audio of append audio"),
-				   i18n_pspec("The audio of append audio task"),
+				   i18n_pspec("audio of play audio"),
+				   i18n_pspec("The audio of play audio task"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -162,88 +148,47 @@ ags_append_audio_class_init(AgsAppendAudioClass *append_audio)
 				  param_spec);
 
   /**
-   * AgsAppendAudio:do-playback:
+   * AgsPlayAudio:sound-scope:
    *
-   * The effects do-playback.
+   * The effects sound-scope.
    * 
    * Since: 1.0.0
    */
-  param_spec =  g_param_spec_boolean("do-playback",
-				     i18n_pspec("do playback"),
-				     i18n_pspec("Do playback of audio"),
-				     FALSE,
+  param_spec =  g_param_spec_boolean("sound-scope",
+				     i18n_pspec("sound scope"),
+				     i18n_pspec("The sound scope"),
+				     0,
+				     AGS_SOUND_SCOPE_LAST,
+				     0,
 				     G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DO_PLAYBACK,
-				  param_spec);
-
-  /**
-   * AgsAppendAudio:do-sequencer:
-   *
-   * The effects do-sequencer.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec =  g_param_spec_boolean("do-sequencer",
-				     i18n_pspec("do sequencer"),
-				     i18n_pspec("Do sequencer of audio"),
-				     FALSE,
-				     G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DO_SEQUENCER,
-				  param_spec);
-
-  /**
-   * AgsAppendAudio:do-notation:
-   *
-   * The effects do-notation.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec =  g_param_spec_boolean("do-notation",
-				     i18n_pspec("do notation"),
-				     i18n_pspec("Do notation of audio"),
-				     FALSE,
-				     G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DO_NOTATION,
+				  PROP_SOUND_SCOPE,
 				  param_spec);
 
   /* task */
-  task = (AgsTaskClass *) append_audio;
+  task = (AgsTaskClass *) play_audio;
 
-  task->launch = ags_append_audio_launch;
+  task->launch = ags_play_audio_launch;
 }
 
 void
-ags_append_audio_connectable_interface_init(AgsConnectableInterface *connectable)
+ags_play_audio_init(AgsPlayAudio *play_audio)
 {
-  ags_append_audio_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+  play_audio->audio_loop = NULL;
+  play_audio->audio = NULL;
 
-  connectable->connect = ags_append_audio_connect;
-  connectable->disconnect = ags_append_audio_disconnect;
+  play_audio->sound_scope = 0;
 }
 
 void
-ags_append_audio_init(AgsAppendAudio *append_audio)
+ags_play_audio_set_property(GObject *gobject,
+			    guint prop_id,
+			    const GValue *value,
+			    GParamSpec *param_spec)
 {
-  append_audio->audio_loop = NULL;
-  append_audio->audio = NULL;
+  AgsPlayAudio *play_audio;
 
-  append_audio->do_playback = FALSE;
-  append_audio->do_sequencer = FALSE;
-  append_audio->do_notation = FALSE;
-}
-
-void
-ags_append_audio_set_property(GObject *gobject,
-			      guint prop_id,
-			      const GValue *value,
-			      GParamSpec *param_spec)
-{
-  AgsAppendAudio *append_audio;
-
-  append_audio = AGS_APPEND_AUDIO(gobject);
+  play_audio = AGS_PLAY_AUDIO(gobject);
 
   switch(prop_id){
   case PROP_AUDIO_LOOP:
@@ -252,19 +197,19 @@ ags_append_audio_set_property(GObject *gobject,
 
       audio_loop = (AgsAudioLoop *) g_value_get_object(value);
 
-      if(append_audio->audio_loop == (GObject *) audio_loop){
+      if(play_audio->audio_loop == (GObject *) audio_loop){
 	return;
       }
 
-      if(append_audio->audio_loop != NULL){
-	g_object_unref(append_audio->audio_loop);
+      if(play_audio->audio_loop != NULL){
+	g_object_unref(play_audio->audio_loop);
       }
 
       if(audio_loop != NULL){
 	g_object_ref(audio_loop);
       }
 
-      append_audio->audio_loop = (GObject *) audio_loop;
+      play_audio->audio_loop = (GObject *) audio_loop;
     }
     break;
   case PROP_AUDIO:
@@ -273,46 +218,28 @@ ags_append_audio_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
-      if(append_audio->audio == (GObject *) audio){
+      if(play_audio->audio == (GObject *) audio){
 	return;
       }
 
-      if(append_audio->audio != NULL){
-	g_object_unref(append_audio->audio);
+      if(play_audio->audio != NULL){
+	g_object_unref(play_audio->audio);
       }
 
       if(audio != NULL){
 	g_object_ref(audio);
       }
 
-      append_audio->audio = (GObject *) audio;
+      play_audio->audio = (GObject *) audio;
     }
     break;
-  case PROP_DO_PLAYBACK:
+  case PROP_SOUND_SCOPE:
     {
-      gboolean do_playback;
+      guint sound_scope;
 
-      do_playback = g_value_get_boolean(value);
+      sound_scope = g_value_get_uint(value);
 
-      append_audio->do_playback = do_playback;
-    }
-    break;
-  case PROP_DO_SEQUENCER:
-    {
-      gboolean do_sequencer;
-
-      do_sequencer = g_value_get_boolean(value);
-
-      append_audio->do_sequencer = do_sequencer;
-    }
-    break;
-  case PROP_DO_NOTATION:
-    {
-      gboolean do_notation;
-
-      do_notation = g_value_get_boolean(value);
-
-      append_audio->do_notation = do_notation;
+      play_audio->sound_scope = sound_scope;
     }
     break;
   default:
@@ -322,39 +249,29 @@ ags_append_audio_set_property(GObject *gobject,
 }
 
 void
-ags_append_audio_get_property(GObject *gobject,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *param_spec)
+ags_play_audio_get_property(GObject *gobject,
+			    guint prop_id,
+			    GValue *value,
+			    GParamSpec *param_spec)
 {
-  AgsAppendAudio *append_audio;
+  AgsPlayAudio *play_audio;
 
-  append_audio = AGS_APPEND_AUDIO(gobject);
+  play_audio = AGS_PLAY_AUDIO(gobject);
 
   switch(prop_id){
   case PROP_AUDIO_LOOP:
     {
-      g_value_set_object(value, append_audio->audio_loop);
+      g_value_set_object(value, play_audio->audio_loop);
     }
     break;
   case PROP_AUDIO:
     {
-      g_value_set_object(value, append_audio->audio);
+      g_value_set_object(value, play_audio->audio);
     }
     break;
-  case PROP_DO_PLAYBACK:
+  case PROP_SOUND_SCOPE:
     {
-      g_value_set_boolean(value, append_audio->do_playback);
-    }
-    break;
-  case PROP_DO_SEQUENCER:
-    {
-      g_value_set_boolean(value, append_audio->do_sequencer);
-    }
-    break;
-  case PROP_DO_NOTATION:
-    {
-      g_value_set_boolean(value, append_audio->do_notation);
+      g_value_set_uint(value, play_audio->sound_scope);
     }
     break;
   default:
@@ -364,88 +281,67 @@ ags_append_audio_get_property(GObject *gobject,
 }
 
 void
-ags_append_audio_connect(AgsConnectable *connectable)
+ags_play_audio_dispose(GObject *gobject)
 {
-  ags_append_audio_parent_connectable_interface->connect(connectable);
+  AgsPlayAudio *play_audio;
 
-  /* empty */
-}
+  play_audio = AGS_PLAY_AUDIO(gobject);
 
-void
-ags_append_audio_disconnect(AgsConnectable *connectable)
-{
-  ags_append_audio_parent_connectable_interface->disconnect(connectable);
+  if(play_audio->audio_loop != NULL){
+    g_object_unref(play_audio->audio_loop);
 
-  /* empty */
-}
-
-void
-ags_append_audio_dispose(GObject *gobject)
-{
-  AgsAppendAudio *append_audio;
-
-  append_audio = AGS_APPEND_AUDIO(gobject);
-
-  if(append_audio->audio_loop != NULL){
-    g_object_unref(append_audio->audio_loop);
-
-    append_audio->audio_loop = NULL;
+    play_audio->audio_loop = NULL;
   }
 
-  if(append_audio->audio != NULL){
-    g_object_unref(append_audio->audio);
+  if(play_audio->audio != NULL){
+    g_object_unref(play_audio->audio);
 
-    append_audio->audio = NULL;
+    play_audio->audio = NULL;
   }
     
   /* call parent */
-  G_OBJECT_CLASS(ags_append_audio_parent_class)->dispose(gobject);
+  G_OBJECT_CLASS(ags_play_audio_parent_class)->dispose(gobject);
 }
 
 void
-ags_append_audio_finalize(GObject *gobject)
+ags_play_audio_finalize(GObject *gobject)
 {
-  AgsAppendAudio *append_audio;
+  AgsPlayAudio *play_audio;
 
-  append_audio = AGS_APPEND_AUDIO(gobject);
+  play_audio = AGS_PLAY_AUDIO(gobject);
 
-  if(append_audio->audio_loop != NULL){
-    g_object_unref(append_audio->audio_loop);
+  if(play_audio->audio_loop != NULL){
+    g_object_unref(play_audio->audio_loop);
   }
 
-  if(append_audio->audio != NULL){
-    g_object_unref(append_audio->audio);
+  if(play_audio->audio != NULL){
+    g_object_unref(play_audio->audio);
   }
     
   /* call parent */
-  G_OBJECT_CLASS(ags_append_audio_parent_class)->finalize(gobject);
+  G_OBJECT_CLASS(ags_play_audio_parent_class)->finalize(gobject);
 }
 
 void
-ags_append_audio_launch(AgsTask *task)
+ags_play_audio_launch(AgsTask *task)
 {
   AgsAudio *audio;
   AgsChannel *output;
   AgsPlaybackDomain *playback_domain;
   AgsPlayback *playback;
   
-  AgsAppendAudio *append_audio;
+  AgsPlayAudio *play_audio;
 
   AgsAudioLoop *audio_loop;
   AgsAudioThread *audio_thread;
   AgsChannelThread *channel_thread;
   
-  AgsServer *server;
-
-  AgsMutexManager *mutex_manager;
-
   AgsConfig *config;
 
   GList *start_queue;
       
   gchar *str0, *str1;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *audio_loop_mutex;
@@ -457,11 +353,11 @@ ags_append_audio_launch(AgsTask *task)
   
   config = ags_config_get_instance();
 
-  append_audio = AGS_APPEND_AUDIO(task);
+  play_audio = AGS_PLAY_AUDIO(task);
   
-  audio = AGS_AUDIO(append_audio->audio);
+  audio = AGS_AUDIO(play_audio->audio);
   
-  audio_loop = AGS_AUDIO_LOOP(append_audio->audio_loop);  
+  audio_loop = AGS_AUDIO_LOOP(play_audio->audio_loop);  
 
   /* get audio mutex */
   pthread_mutex_lock(application_mutex);
@@ -479,7 +375,7 @@ ags_append_audio_launch(AgsTask *task)
   
   pthread_mutex_unlock(application_mutex);
 
-  /* append to AgsAudioLoop */
+  /* play to AgsAudioLoop */
   ags_audio_loop_add_audio(audio_loop,
 			   (GObject *) audio);
 
@@ -537,7 +433,7 @@ ags_append_audio_launch(AgsTask *task)
   
 	  pthread_mutex_unlock(application_mutex);
 
-	  if(append_audio->do_sequencer){
+	  if(play_audio->do_sequencer){
 	    /* get some fields */
 	    pthread_mutex_lock(channel_mutex);
 
@@ -620,7 +516,7 @@ ags_append_audio_launch(AgsTask *task)
   
 	  pthread_mutex_unlock(application_mutex);
 
-	  if(append_audio->do_notation){
+	  if(play_audio->do_notation){
 	    /* get some fields */
 	    pthread_mutex_lock(channel_mutex);
 
@@ -678,7 +574,7 @@ ags_append_audio_launch(AgsTask *task)
       /* super threaded setup - audio */
       start_queue = NULL;
       
-      if(append_audio->do_sequencer){
+      if(play_audio->do_sequencer){
 	/* get some fields */
 	pthread_mutex_lock(audio_mutex);
 	
@@ -704,7 +600,7 @@ ags_append_audio_launch(AgsTask *task)
 	}
       }
 
-      if(append_audio->do_notation){
+      if(play_audio->do_notation){
 	/* get some fields */
 	pthread_mutex_lock(audio_mutex);
 	
@@ -757,38 +653,34 @@ ags_append_audio_launch(AgsTask *task)
   //  server = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(audio_loop->application_context));
 
   //  if(server != NULL && (AGS_SERVER_RUNNING & (server->flags)) != 0){
-  //    ags_connectable_add_to_registry(AGS_CONNECTABLE(append_audio->audio));
+  //    ags_connectable_add_to_registry(AGS_CONNECTABLE(play_audio->audio));
   //  }
 }
 
 /**
- * ags_append_audio_new:
+ * ags_play_audio_new:
  * @audio_loop: the #AgsAudioLoop
- * @audio: the #AgsAudio to append
- * @do_playback: playback scope
- * @do_sequencer: sequencer scope
- * @do_notation: notation scope
+ * @audio: the #AgsAudio to play
+ * @sound_scope: sound scope
  *
- * Creates an #AgsAppendAudio.
+ * Creates a new instance of #AgsPlayAudio.
  *
- * Returns: an new #AgsAppendAudio.
+ * Returns: the new #AgsPlayAudio.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
-AgsAppendAudio*
-ags_append_audio_new(GObject *audio_loop,
-		     GObject *audio,
-		     gboolean do_playback, gboolean do_sequencer, gboolean do_notation)
+AgsPlayAudio*
+ags_play_audio_new(GObject *audio_loop,
+		   GObject *audio,
+		   guint sound_scope)
 {
-  AgsAppendAudio *append_audio;
+  AgsPlayAudio *play_audio;
 
-  append_audio = (AgsAppendAudio *) g_object_new(AGS_TYPE_APPEND_AUDIO,
-						 "audio-loop", audio_loop,
-						 "audio", audio,
-						 "do-playback", do_playback,
-						 "do-sequencer", do_sequencer,
-						 "do-notation", do_notation,
-						 NULL);
+  play_audio = (AgsPlayAudio *) g_object_new(AGS_TYPE_PLAY_AUDIO,
+					     "audio-loop", audio_loop,
+					     "audio", audio,
+					     "sound-scope", sound_scope,
+					     NULL);
   
-  return(append_audio);
+  return(play_audio);
 }
