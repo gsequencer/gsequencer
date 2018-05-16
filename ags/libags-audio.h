@@ -91,6 +91,8 @@
 #include <ags/audio/ags_recycling_context.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_sound_provider.h>
+#include <ags/audio/ags_sequencer_util.h>
+#include <ags/audio/ags_soundcard_util.h>
 #include <ags/audio/ags_synth_generator.h>
 #include <ags/audio/ags_synth_util.h>
 #include <ags/audio/ags_wave.h>

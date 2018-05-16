@@ -97,6 +97,8 @@
     <xi:include href="xml/ags_recycling.xml"/>
     <xi:include href="xml/ags_recycling_context.xml"/>
     <xi:include href="xml/ags_sound_provider.xml"/>
+    <xi:include href="xml/ags_sequencer_util.xml"/>
+    <xi:include href="xml/ags_soundcard_util.xml"/>
     <xi:include href="xml/ags_synth_generator.xml"/>
     <xi:include href="xml/ags_synth_util.xml"/>
     <xi:include href="xml/ags_wave.xml"/>

@@ -314,7 +314,7 @@ ags_add_audio_launch(AgsTask *task)
     list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(add_audio->application_context));
     list = g_list_prepend(list,
 			  add_audio->audio);
-    ags_sound_provider_set_audio(AGS_SOUNDCARD(add_audio->soundcard),
+    ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(add_audio->application_context),
 				 list);
     
     /* AgsAudio */
@@ -324,23 +324,23 @@ ags_add_audio_launch(AgsTask *task)
 
 /**
  * ags_add_audio_new:
- * @soundcard: the #AgsSoundcard
+ * @AgsApplicationContext: the #AgsApplicationContext
  * @audio: the #AgsAudio to add
  *
  * Creates an #AgsAddAudio.
  *
  * Returns: an new #AgsAddAudio.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsAddAudio*
-ags_add_audio_new(GObject *soundcard,
+ags_add_audio_new(AgsApplicationContext *application_context,
 		  AgsAudio *audio)
 {
   AgsAddAudio *add_audio;
 
   add_audio = (AgsAddAudio *) g_object_new(AGS_TYPE_ADD_AUDIO,
-					   "soundcard", soundcard,
+					   "application-context", application_context,
 					   "audio", audio,
 					   NULL);
 

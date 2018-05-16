@@ -24,7 +24,6 @@
 #include <ags/i18n.h>
 
 void ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal);
-void ags_add_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_add_audio_signal_init(AgsAddAudioSignal *add_audio_signal);
 void ags_add_audio_signal_set_property(GObject *gobject,
 				       guint prop_id,
@@ -34,8 +33,6 @@ void ags_add_audio_signal_get_property(GObject *gobject,
 				       guint prop_id,
 				       GValue *value,
 				       GParamSpec *param_spec);
-void ags_add_audio_signal_connect(AgsConnectable *connectable);
-void ags_add_audio_signal_disconnect(AgsConnectable *connectable);
 void ags_add_audio_signal_dispose(GObject *gobject);
 void ags_add_audio_signal_finalize(GObject *gobject);
 
@@ -52,7 +49,6 @@ void ags_add_audio_signal_launch(AgsTask *task);
  */
 
 static gpointer ags_add_audio_signal_parent_class = NULL;
-static AgsConnectableInterface *ags_add_audio_signal_parent_connectable_interface;
 
 enum{
   PROP_0,
@@ -81,20 +77,10 @@ ags_add_audio_signal_get_type()
       (GInstanceInitFunc) ags_add_audio_signal_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_add_audio_signal_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_add_audio_signal = g_type_register_static(AGS_TYPE_TASK,
 						       "AgsAddAudioSignal",
 						       &ags_add_audio_signal_info,
 						       0);
-    
-    g_type_add_interface_static(ags_type_add_audio_signal,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
   
   return (ags_type_add_audio_signal);
@@ -124,7 +110,7 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
    *
    * The assigned #AgsRecycling
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("recycling",
 				   i18n_pspec("recycling of add audio signal"),
@@ -140,7 +126,7 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
    *
    * The assigned #AgsAudioSignal
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("audio-signal",
 				   i18n_pspec("audio signal of add audio signal"),
@@ -156,7 +142,7 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of add audio signal"),
@@ -172,7 +158,7 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
    *
    * The assigned #AgsRecallID
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("recall-id",
 				   i18n_pspec("audio signal of add audio signal"),
@@ -188,7 +174,7 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
    *
    * The audio signal's flags.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_uint("audio-signal-flags",
 				  i18n_pspec("audio signal flags of effect"),
@@ -205,15 +191,6 @@ ags_add_audio_signal_class_init(AgsAddAudioSignalClass *add_audio_signal)
   task = (AgsTaskClass *) add_audio_signal;
 
   task->launch = ags_add_audio_signal_launch;
-}
-
-void
-ags_add_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_add_audio_signal_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_add_audio_signal_connect;
-  connectable->disconnect = ags_add_audio_signal_disconnect;
 }
 
 void
@@ -374,22 +351,6 @@ ags_add_audio_signal_get_property(GObject *gobject,
 }
 
 void
-ags_add_audio_signal_connect(AgsConnectable *connectable)
-{
-  ags_add_audio_signal_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_add_audio_signal_disconnect(AgsConnectable *connectable)
-{
-  ags_add_audio_signal_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_add_audio_signal_dispose(GObject *gobject)
 {
   AgsAddAudioSignal *add_audio_signal;
@@ -454,39 +415,41 @@ ags_add_audio_signal_finalize(GObject *gobject)
 void
 ags_add_audio_signal_launch(AgsTask *task)
 {
-  AgsAddAudioSignal *add_audio_signal;
+  AgsRecycling *recycling;
   AgsAudioSignal *audio_signal, *old_template;
   AgsRecallID *recall_id;
 
-  AgsMutexManager *mutex_manager;
+  AgsAddAudioSignal *add_audio_signal;
 
   GObject *soundcard;
 
+  guint audio_signal_flags;
   gdouble delay;
   guint attack;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *recycling_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   add_audio_signal = AGS_ADD_AUDIO_SIGNAL(task);
 
   soundcard = add_audio_signal->soundcard;
 
+  recycling = add_audio_signal->recycling;
+
+  audio_signal = add_audio_signal->audio_signal;
+  
+  audio_signal_flags = add_audio_signal->audio_signal_flags;
+
+  recall_id = add_audio_signal->recall_id;
+  
   /* get recycling mutex */
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_lock(ags_recycling_get_class_mutex());
 
-  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) add_audio_signal->recycling);
+  recycling_mutex = recycling->obj_mutex;
 
-  pthread_mutex_unlock(application_mutex);
-
+  pthread_mutex_unlock(ags_recycling_get_class_mutex());
   
   /* check for template to remove */
-  if((AGS_AUDIO_SIGNAL_TEMPLATE & (add_audio_signal->audio_signal_flags)) != 0){
+  if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal_flags)) != 0){
     pthread_mutex_lock(recycling_mutex);
     
     old_template = ags_audio_signal_get_template(add_audio_signal->recycling->audio_signal);
@@ -496,17 +459,13 @@ ags_add_audio_signal_launch(AgsTask *task)
     old_template = NULL;
   }
 
-  recall_id = add_audio_signal->recall_id;
-
   /* create audio signal */
-  if(add_audio_signal->audio_signal == NULL){
-    add_audio_signal->audio_signal = 
-      audio_signal = ags_audio_signal_new((GObject *) soundcard,
-					  (GObject *) add_audio_signal->recycling,
-					  (GObject *) recall_id);
+  if(audio_signal == NULL){
+      audio_signal =
+	add_audio_signal->audio_signal = ags_audio_signal_new((GObject *) soundcard,
+							      (GObject *) recycling,
+							      (GObject *) recall_id);
     audio_signal->flags = add_audio_signal->audio_signal_flags;
-  }else{
-    audio_signal = add_audio_signal->audio_signal;
   }
 
   /* delay and attack */
@@ -519,23 +478,23 @@ ags_add_audio_signal_launch(AgsTask *task)
   //			 tic_counter_incr)];
   
   /* add audio signal */
-  ags_recycling_create_audio_signal_with_defaults(add_audio_signal->recycling,
+  ags_recycling_create_audio_signal_with_defaults(recycling,
 						  audio_signal,
 						  delay, attack);
   audio_signal->stream_current = audio_signal->stream;
   ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
-  
-  /*
-   * emit add_audio_signal on AgsRecycling
-   */
-  ags_recycling_add_audio_signal(add_audio_signal->recycling,
-				 audio_signal);
 
   /* remove template */
   if(old_template != NULL){
     ags_recycling_remove_audio_signal(add_audio_signal->recycling,
 				      old_template);
   }
+  
+  /*
+   * emit add_audio_signal on AgsRecycling
+   */
+  ags_recycling_add_audio_signal(add_audio_signal->recycling,
+				 audio_signal);
 }
 
 /**
@@ -550,7 +509,7 @@ ags_add_audio_signal_launch(AgsTask *task)
  *
  * Returns: an new #AgsAddAudioSignal.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsAddAudioSignal*
 ags_add_audio_signal_new(AgsRecycling *recycling,

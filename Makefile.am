@@ -684,6 +684,8 @@ libags_audio_h_sources = \
 	ags/audio/ags_recycling_context.h \
 	ags/audio/ags_recycling.h \
 	ags/audio/ags_sound_provider.h \
+	ags/audio/ags_sequencer_util.h \
+	ags/audio/ags_soundcard_util.h \
 	ags/audio/ags_synth_generator.h \
 	ags/audio/ags_synth_util.h \
 	ags/audio/ags_track.h \
@@ -739,6 +741,8 @@ libags_audio_c_sources = \
 	ags/audio/ags_recycling.c \
 	ags/audio/ags_recycling_context.c \
 	ags/audio/ags_sound_provider.c \
+	ags/audio/ags_sequencer_util.c \
+	ags/audio/ags_soundcard_util.c \
 	ags/audio/ags_synth_generator.c \
 	ags/audio/ags_synth_util.c \
 	ags/audio/ags_track.c \
@@ -1120,10 +1124,8 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_add_audio_signal.h \
 	ags/audio/task/ags_add_effect.h \
 	ags/audio/task/ags_add_note.h \
-	ags/audio/task/ags_add_point_to_selection.h \
 	ags/audio/task/ags_add_recall_container.h \
 	ags/audio/task/ags_add_recall.h \
-	ags/audio/task/ags_add_region_to_selection.h \
 	ags/audio/task/ags_add_soundcard.h \
 	ags/audio/task/ags_append_audio.h \
 	ags/audio/task/ags_append_audio_threaded.h \
@@ -1186,10 +1188,8 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_add_audio_signal.c \
 	ags/audio/task/ags_add_effect.c \
 	ags/audio/task/ags_add_note.c \
-	ags/audio/task/ags_add_point_to_selection.c \
 	ags/audio/task/ags_add_recall.c \
 	ags/audio/task/ags_add_recall_container.c \
-	ags/audio/task/ags_add_region_to_selection.c \
 	ags/audio/task/ags_add_soundcard.c \
 	ags/audio/task/ags_append_audio.c \
 	ags/audio/task/ags_append_audio_threaded.c \
