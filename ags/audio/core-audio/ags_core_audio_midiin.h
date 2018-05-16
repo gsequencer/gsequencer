@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #include <pthread.h>
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_CORE_AUDIO_MIDIIN                (ags_core_audio_midiin_get_type())
 #define AGS_CORE_AUDIO_MIDIIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CORE_AUDIO_MIDIIN, AgsCoreAudioMidiin))
 #define AGS_CORE_AUDIO_MIDIIN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_CORE_AUDIO_MIDIIN, AgsCoreAudioMidiin))
@@ -39,6 +41,8 @@ typedef struct _AgsCoreAudioMidiinClass AgsCoreAudioMidiinClass;
 
 /**
  * AgsCoreAudioMidiinFlags:
+ * @AGS_CORE_AUDIO_MIDIIN_ADDED_TO_REGISTRY: the CoreAudio midiin was added to registry, see #AgsConnectable::add_to_registry()
+ * @AGS_CORE_AUDIO_MIDIIN_CONNECTED: indicates the CoreAudio midiin was connected by calling #AgsConnectable::connect()
  * @AGS_CORE_AUDIO_MIDIIN_BUFFER0: ring-buffer 0
  * @AGS_CORE_AUDIO_MIDIIN_BUFFER1: ring-buffer 1
  * @AGS_CORE_AUDIO_MIDIIN_BUFFER2: ring-buffer 2
@@ -55,19 +59,23 @@ typedef struct _AgsCoreAudioMidiinClass AgsCoreAudioMidiinClass;
  */
 typedef enum
 {
-  AGS_CORE_AUDIO_MIDIIN_BUFFER0                        = 1,
-  AGS_CORE_AUDIO_MIDIIN_BUFFER1                        = 1 <<  1,
-  AGS_CORE_AUDIO_MIDIIN_BUFFER2                        = 1 <<  2,
-  AGS_CORE_AUDIO_MIDIIN_BUFFER3                        = 1 <<  3,
-  AGS_CORE_AUDIO_MIDIIN_ATTACK_FIRST                   = 1 <<  4,
+  AGS_CORE_AUDIO_MIDIIN_ADDED_TO_REGISTRY  = 1,
+  AGS_CORE_AUDIO_MIDIIN_CONNECTED          = 1 <<  1,
 
-  AGS_CORE_AUDIO_MIDIIN_RECORD                         = 1 <<  5,
+  AGS_CORE_AUDIO_MIDIIN_BUFFER0            = 1 <<  2,
+  AGS_CORE_AUDIO_MIDIIN_BUFFER1            = 1 <<  3,
+  AGS_CORE_AUDIO_MIDIIN_BUFFER2            = 1 <<  4,
+  AGS_CORE_AUDIO_MIDIIN_BUFFER3            = 1 <<  5,
 
-  AGS_CORE_AUDIO_MIDIIN_SHUTDOWN                       = 1 <<  6,
-  AGS_CORE_AUDIO_MIDIIN_START_RECORD                   = 1 <<  7,
+  AGS_CORE_AUDIO_MIDIIN_ATTACK_FIRST       = 1 <<  6,
 
-  AGS_CORE_AUDIO_MIDIIN_NONBLOCKING                    = 1 <<  8,
-  AGS_CORE_AUDIO_MIDIIN_INITIALIZED                    = 1 <<  9,
+  AGS_CORE_AUDIO_MIDIIN_RECORD             = 1 <<  7,
+
+  AGS_CORE_AUDIO_MIDIIN_SHUTDOWN           = 1 <<  8,
+  AGS_CORE_AUDIO_MIDIIN_START_RECORD       = 1 <<  9,
+
+  AGS_CORE_AUDIO_MIDIIN_NONBLOCKING        = 1 << 10,
+  AGS_CORE_AUDIO_MIDIIN_INITIALIZED        = 1 << 11,
 }AgsCoreAudioMidiinFlags;
 
 /**
@@ -104,8 +112,12 @@ struct _AgsCoreAudioMidiin
   guint flags;
   volatile guint sync_flags;
   
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  GObject *application_context;
+  
+  AgsUUID *uuid;
   
   char **buffer;
   guint buffer_size[4];
@@ -134,11 +146,6 @@ struct _AgsCoreAudioMidiin
 
   pthread_mutex_t *callback_finish_mutex;
   pthread_cond_t *callback_finish_cond;
-  
-  GObject *application_context;
-  pthread_mutex_t *application_mutex;
-  
-  GList *audio;
 };
 
 struct _AgsCoreAudioMidiinClass
@@ -150,8 +157,14 @@ GType ags_core_audio_midiin_get_type();
 
 GQuark ags_core_audio_midiin_error_quark();
 
+pthread_mutex_t* ags_core_audio_midiin_get_class_mutex();
+
+gboolean ags_core_audio_midiin_test_flags(AgsCoreAudioMidiin *core_audio_midiin, guint flags);
+void ags_core_audio_midiin_set_flags(AgsCoreAudioMidiin *core_audio_midiin, guint flags);
+void ags_core_audio_midiin_unset_flags(AgsCoreAudioMidiin *core_audio_midiin, guint flags);
+
 void ags_core_audio_midiin_switch_buffer_flag(AgsCoreAudioMidiin *core_audio_midiin);
 
-AgsCoreAudioMidiin* ags_core_audio_midiin_new(GObject *application_context);
+AgsCoreAudioMidiin* ags_core_audio_midiin_new(AgsApplicationContext *application_context);
 
 #endif /*__AGS_CORE_AUDIO_MIDIIN_H__*/

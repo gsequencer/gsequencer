@@ -576,7 +576,7 @@ ags_pulse_devout_init(AgsPulseDevout *pulse_devout)
   g_atomic_int_set(&(pulse_devout->sync_flags),
 		   AGS_PULSE_DEVOUT_PASS_THROUGH);
 
-  /* insert devout mutex */
+  /* devout mutex */
   pulse_devout->obj_mutexattr = 
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
@@ -596,6 +596,8 @@ ags_pulse_devout_init(AgsPulseDevout *pulse_devout)
   ags_uuid_generate(pulse_devout->uuid);
 
   /* presets */
+  config = ags_config_get_instance();
+
   pulse_devout->dsp_channels = ags_soundcard_helper_config_get_dsp_channels(config);
   pulse_devout->pcm_channels = ags_soundcard_helper_config_get_pcm_channels(config);
 

@@ -415,7 +415,10 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
 
   jack_midiin->flags = 0;
 
-  /* insert jack midiin mutex */
+  g_atomic_int_set(&(jack_midiin->sync_flags),
+		   AGS_JACK_MIDIIN_PASS_THROUGH);
+
+  /* jack midiin mutex */
   jack_midiin->obj_mutexattr = 
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
@@ -439,12 +442,7 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
   jack_midiin->uuid = ags_uuid_alloc();
   ags_uuid_generate(jack_midiin->uuid);
 
-  /* flags */
-  config = ags_config_get_instance();
-
-  g_atomic_int_set(&(jack_midiin->sync_flags),
-		   AGS_JACK_MIDIIN_PASS_THROUGH);
-
+  /* card and port */
   jack_midiin->card_uri = NULL;
   jack_midiin->jack_client = NULL;
 
@@ -472,6 +470,8 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
   jack_midiin->delay_factor = AGS_SEQUENCER_DEFAULT_DELAY_FACTOR;
     
   /* segmentation */
+  config = ags_config_get_instance();
+
   segmentation = ags_config_get_value(config,
 				      AGS_CONFIG_GENERIC,
 				      "segmentation");
@@ -1468,9 +1468,14 @@ ags_jack_midiin_port_record(AgsSequencer *sequencer,
   AgsJackClient *jack_client;
   AgsJackMidiin *jack_midiin;
 
+  AgsTicDevice *tic_device;
+  AgsSwitchBufferFlag *switch_buffer_flag;
+
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
+
+  GList *task;
 
   gboolean jack_client_activated;
 
@@ -1566,34 +1571,24 @@ ags_jack_midiin_port_record(AgsSequencer *sequencer,
     }
   }
 
-  if(task_thread != NULL){
-    AgsTicDevice *tic_device;
-    AgsSwitchBufferFlag *switch_buffer_flag;
-      
-    GList *task;
-      
-    task = NULL;
+  g_object_get(application_context,
+	       "task-thread", &task_thread,
+	       NULL);  
+  task = NULL;
   
-    /* tic sequencer */
-    tic_device = ags_tic_device_new((GObject *) jack_midiin);
-    task = g_list_append(task,
-			 tic_device);
+  /* tic sequencer */
+  tic_device = ags_tic_device_new((GObject *) jack_midiin);
+  task = g_list_append(task,
+		       tic_device);
   
-    /* reset - switch buffer flags */
-    switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) jack_midiin);
-    task = g_list_append(task,
-			 switch_buffer_flag);
+  /* reset - switch buffer flags */
+  switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) jack_midiin);
+  task = g_list_append(task,
+		       switch_buffer_flag);
 
-    /* append tasks */
-    ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
-				 task);
-  }else{
-    /* tic */
-    ags_sequencer_tic(AGS_SEQUENCER(jack_midiin));
-	  
-    /* reset - switch buffer flags */
-    ags_jack_midiin_switch_buffer_flag(jack_midiin);
-  }  
+  /* append tasks */
+  ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
+			       task);
 }
 
 void
@@ -2099,7 +2094,7 @@ ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin)
  * Since: 2.0.0
  */
 AgsJackMidiin*
-ags_jack_midiin_new(GObject *application_context)
+ags_jack_midiin_new(AgsApplicationContext *application_context)
 {
   AgsJackMidiin *jack_midiin;
 
