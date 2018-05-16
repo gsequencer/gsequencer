@@ -1482,6 +1482,12 @@ ags_core_audio_server_register_sequencer(AgsSoundServer *sound_server,
 
   AgsApplicationContext *application_context;
 
+#ifdef AGS_WITH_CORE_AUDIO
+  AUGraph *graph;
+#else
+  gpointer graph;
+#endif
+
   gchar *str;
 
   guint n_sequencers;
@@ -2143,7 +2149,7 @@ ags_core_audio_server_connect_client(AgsCoreAudioServer *core_audio_server)
  * Since: 2.0.0
  */
 AgsCoreAudioServer*
-ags_core_audio_server_new(GObject *application_context,
+ags_core_audio_server_new(AgsApplicationContext *application_context,
 			  gchar *url)
 {
   AgsCoreAudioServer *core_audio_server;

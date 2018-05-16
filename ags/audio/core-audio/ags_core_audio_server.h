@@ -96,6 +96,12 @@ struct _AgsCoreAudioServerClass
 
 GType ags_core_audio_server_get_type();
 
+pthread_mutex_t* ags_core_audio_server_get_class_mutex();
+
+gboolean ags_core_audio_server_test_flags(AgsCoreAudioServer *core_audio_server, guint flags);
+void ags_core_audio_server_set_flags(AgsCoreAudioServer *core_audio_server, guint flags);
+void ags_core_audio_server_unset_flags(AgsCoreAudioServer *core_audio_server, guint flags);
+
 GList* ags_core_audio_server_find_url(GList *core_audio_server,
 				      gchar *url);
 

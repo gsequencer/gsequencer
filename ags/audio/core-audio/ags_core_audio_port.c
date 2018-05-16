@@ -46,7 +46,6 @@
 
 void ags_core_audio_port_class_init(AgsCoreAudioPortClass *core_audio_port);
 void ags_core_audio_port_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_core_audio_port_distributed_manager_interface_init(AgsDistributedManagerInterface *distributed_manager);
 void ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port);
 void ags_core_audio_port_set_property(GObject *gobject,
 				      guint prop_id,

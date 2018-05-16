@@ -2065,7 +2065,7 @@ ags_core_audio_devout_port_play(AgsSoundcard *soundcard,
   gboolean core_audio_client_activated;
 
   pthread_mutex_t *core_audio_devout_mutex;
-  pthread_mutex_t *client_mutex;
+  pthread_mutex_t *core_audio_client_mutex;
   pthread_mutex_t *callback_mutex;
   pthread_mutex_t *callback_finish_mutex;
   
@@ -2132,11 +2132,11 @@ ags_core_audio_devout_port_play(AgsSoundcard *soundcard,
   pthread_mutex_unlock(ags_core_audio_client_get_class_mutex());
 
   /* get activated */
-  pthread_mutex_lock(client_mutex);
+  pthread_mutex_lock(core_audio_client_mutex);
 
   core_audio_client_activated = ((AGS_CORE_AUDIO_CLIENT_ACTIVATED & (core_audio_client->flags)) != 0) ? TRUE: FALSE;
 
-  pthread_mutex_unlock(client_mutex);
+  pthread_mutex_unlock(core_audio_client_mutex);
 
   if(core_audio_client_activated){
     /* signal */
@@ -3311,7 +3311,7 @@ ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout)
  * Since: 2.0.0
  */
 AgsCoreAudioDevout*
-ags_core_audio_devout_new(GObject *application_context)
+ags_core_audio_devout_new(AgsApplicationContext *application_context)
 {
   AgsCoreAudioDevout *core_audio_devout;
 

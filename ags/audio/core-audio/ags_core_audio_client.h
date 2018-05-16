@@ -32,6 +32,8 @@
 #include <AudioUnit/AudioComponent.h>
 #endif
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_CORE_AUDIO_CLIENT                (ags_core_audio_client_get_type())
 #define AGS_CORE_AUDIO_CLIENT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CORE_AUDIO_CLIENT, AgsCoreAudioClient))
 #define AGS_CORE_AUDIO_CLIENT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_CORE_AUDIO_CLIENT, AgsCoreAudioClient))
@@ -91,11 +93,11 @@ struct _AgsCoreAudioClientClass
 
 GType ags_core_audio_client_get_type();
 
-pthread_mutex_t* ags_jack_client_get_class_mutex();
+pthread_mutex_t* ags_core_audio_client_get_class_mutex();
 
-gboolean ags_jack_client_test_flags(AgsJackClient *jack_client, guint flags);
-void ags_jack_client_set_flags(AgsJackClient *jack_client, guint flags);
-void ags_jack_client_unset_flags(AgsJackClient *jack_client, guint flags);
+gboolean ags_core_audio_client_test_flags(AgsCoreAudioClient *core_audio_client, guint flags);
+void ags_core_audio_client_set_flags(AgsCoreAudioClient *core_audio_client, guint flags);
+void ags_core_audio_client_unset_flags(AgsCoreAudioClient *core_audio_client, guint flags);
 
 GList* ags_core_audio_client_find_uuid(GList *core_audio_client,
 				       gchar *client_uuid);

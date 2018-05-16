@@ -25,6 +25,8 @@
 
 #include <pthread.h>
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_CORE_AUDIO_DEVOUT                (ags_core_audio_devout_get_type())
 #define AGS_CORE_AUDIO_DEVOUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CORE_AUDIO_DEVOUT, AgsCoreAudioDevout))
 #define AGS_CORE_AUDIO_DEVOUT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_CORE_AUDIO_DEVOUT, AgsCoreAudioDevout))
@@ -182,6 +184,6 @@ void ags_core_audio_devout_switch_buffer_flag(AgsCoreAudioDevout *core_audio_dev
 void ags_core_audio_devout_adjust_delay_and_attack(AgsCoreAudioDevout *core_audio_devout);
 void ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout);
 
-AgsCoreAudioDevout* ags_core_audio_devout_new(GObject *application_context);
+AgsCoreAudioDevout* ags_core_audio_devout_new(AgsApplicationContext *application_context);
 
 #endif /*__AGS_CORE_AUDIO_DEVOUT_H__*/

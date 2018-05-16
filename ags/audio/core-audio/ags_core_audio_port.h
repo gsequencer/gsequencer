@@ -63,12 +63,11 @@ typedef struct _AgsCoreAudioPortClass AgsCoreAudioPortClass;
 typedef enum{
   AGS_CORE_AUDIO_PORT_ADDED_TO_REGISTRY  = 1,
   AGS_CORE_AUDIO_PORT_CONNECTED          = 1 <<  1,
-  AGS_CORE_AUDIO_PORT_CONNECTED          = 1 <<  2,
-  AGS_CORE_AUDIO_PORT_REGISTERED         = 1 <<  3,
-  AGS_CORE_AUDIO_PORT_IS_AUDIO           = 1 <<  4,
-  AGS_CORE_AUDIO_PORT_IS_MIDI            = 1 <<  5,
-  AGS_CORE_AUDIO_PORT_IS_OUTPUT          = 1 <<  6,
-  AGS_CORE_AUDIO_PORT_IS_INPUT           = 1 <<  7,
+  AGS_CORE_AUDIO_PORT_REGISTERED         = 1 <<  2,
+  AGS_CORE_AUDIO_PORT_IS_AUDIO           = 1 <<  3,
+  AGS_CORE_AUDIO_PORT_IS_MIDI            = 1 <<  4,
+  AGS_CORE_AUDIO_PORT_IS_OUTPUT          = 1 <<  5,
+  AGS_CORE_AUDIO_PORT_IS_INPUT           = 1 <<  6,
 }AgsCoreAudioPortFlags;
 
 struct _AgsCoreAudioPort
@@ -129,9 +128,9 @@ GType ags_core_audio_port_get_type();
 
 pthread_mutex_t* ags_core_audio_port_get_class_mutex();
 
-gboolean ags_core_audio_port_test_flags(AgsCore_AudioPort *core_audio_port, guint flags);
-void ags_core_audio_port_set_flags(AgsCore_AudioPort *core_audio_port, guint flags);
-void ags_core_audio_port_unset_flags(AgsCore_AudioPort *core_audio_port, guint flags);
+gboolean ags_core_audio_port_test_flags(AgsCoreAudioPort *core_audio_port, guint flags);
+void ags_core_audio_port_set_flags(AgsCoreAudioPort *core_audio_port, guint flags);
+void ags_core_audio_port_unset_flags(AgsCoreAudioPort *core_audio_port, guint flags);
 
 GList* ags_core_audio_port_find(GList *core_audio_port,
 				gchar *port_name);

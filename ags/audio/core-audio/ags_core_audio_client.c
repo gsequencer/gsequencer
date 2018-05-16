@@ -953,8 +953,8 @@ ags_core_audio_client_find(GList *core_audio_client,
     pthread_mutex_lock(core_audio_client_mutex);
     
     success = (current_core_audio_client->graph != NULL &&
-	       !g_ascii_strcasecmp(current_core_audio_client->client_uuid,
-				   client_uuid)) ? TRUE: FALSE;
+	       !g_ascii_strcasecmp(current_core_audio_client->client_name,
+				   client_name)) ? TRUE: FALSE;
 
     pthread_mutex_unlock(core_audio_client_mutex);
 
@@ -1067,7 +1067,7 @@ ags_core_audio_client_activate(AgsCoreAudioClient *core_audio_client)
   
   int ret;
 
-  pthread_mutex_t *mutex;
+  pthread_mutex_t *core_audio_client_mutex;
 
   if(!AGS_IS_CORE_AUDIO_CLIENT(core_audio_client)){
     return;
