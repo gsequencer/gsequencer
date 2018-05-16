@@ -63,7 +63,7 @@ typedef enum{
 
 struct _AgsJackServer
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -91,7 +91,7 @@ struct _AgsJackServer
 
 struct _AgsJackServerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_jack_server_get_type();

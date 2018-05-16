@@ -60,7 +60,7 @@ typedef enum{
 
 struct _AgsPulseServer
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -98,7 +98,7 @@ struct _AgsPulseServer
 
 struct _AgsPulseServerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_pulse_server_get_type();

@@ -1643,6 +1643,7 @@ ags_jack_server_register_sequencer(AgsSoundServer *sound_server,
     ags_jack_client_open((AgsJackClient *) default_client,
 			 "ags-default-client");
   }
+
   /* get jack client mutex */
   pthread_mutex_lock(ags_jack_client_get_class_mutex());
   
@@ -1760,8 +1761,12 @@ ags_jack_server_unregister_sequencer(AgsSoundServer *sound_server,
 
   ags_jack_client_remove_device(default_client,
 				sequencer);
+
+  g_object_get(default_client,
+	       "port", &port,
+	       NULL);
   
-  if(default_client->port == NULL){
+  if(port == NULL){
     /* reset n-sequencers */
     pthread_mutex_lock(jack_server_mutex);
 
@@ -1769,6 +1774,8 @@ ags_jack_server_unregister_sequencer(AgsSoundServer *sound_server,
 
     pthread_mutex_unlock(jack_server_mutex);
   }
+
+  g_list_free(port);
 }
 
 /**
@@ -1819,7 +1826,7 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
   /* get some fields */
   pthread_mutex_lock(jack_server_mutex);
 
-  application_context= jack_server->application_context;
+  application_context = jack_server->application_context;
 
   default_client = jack_server->default_client;
 
@@ -1883,13 +1890,6 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
 
   /* register ports */
   for(i = 0; i < jack_devout->pcm_channels; i++){
-    str = g_strdup_printf("ags-default-soundcard-%04d",
-			  i);
-
-#ifdef AGS_DEBUG
-    g_message("%s", str);
-#endif
-    
     jack_port = ags_jack_port_new((GObject *) default_client);
     ags_jack_client_add_port(default_client,
 			     (GObject *) jack_port);
@@ -1898,6 +1898,13 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
 		 "jack-port", jack_port,
 		 NULL);
 
+    str = g_strdup_printf("ags-default-soundcard-%04d",
+			  i);
+
+#ifdef AGS_DEBUG
+    g_message("%s", str);
+#endif
+    
     if(jack_devout->port_name == NULL){
       jack_devout->port_name = (gchar **) malloc(2 * sizeof(gchar *));
       jack_devout->port_name[0] = g_strdup(str);

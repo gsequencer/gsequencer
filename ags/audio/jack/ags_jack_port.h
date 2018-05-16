@@ -68,7 +68,7 @@ typedef enum{
 
 struct _AgsJackPort
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -91,7 +91,7 @@ struct _AgsJackPort
 
 struct _AgsJackPortClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_jack_port_get_type();

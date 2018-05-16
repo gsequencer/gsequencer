@@ -66,7 +66,7 @@ typedef enum{
 
 struct _AgsPulsePort
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -112,7 +112,7 @@ struct _AgsPulsePort
 
 struct _AgsPulsePortClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_pulse_port_get_type();

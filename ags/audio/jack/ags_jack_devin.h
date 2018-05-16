@@ -102,7 +102,7 @@ typedef enum{
 
 struct _AgsJackDevin
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
   volatile guint sync_flags;
@@ -158,7 +158,7 @@ struct _AgsJackDevin
 
 struct _AgsJackDevinClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_jack_devin_get_type();

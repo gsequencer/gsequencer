@@ -62,7 +62,7 @@ typedef enum{
 
 struct _AgsPulseClient
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -88,7 +88,7 @@ struct _AgsPulseClient
 
 struct _AgsPulseClientClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_pulse_client_get_type();

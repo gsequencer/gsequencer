@@ -118,13 +118,13 @@ ags_pulse_server_get_type()
 
   if(!ags_type_pulse_server){
     static const GTypeInfo ags_pulse_server_info = {
-      sizeof (AgsPulseServerClass),
+      sizeof(AgsPulseServerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_pulse_server_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsPulseServer),
+      sizeof(AgsPulseServer),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_pulse_server_init,
     };
@@ -162,6 +162,7 @@ void
 ags_pulse_server_class_init(AgsPulseServerClass *pulse_server)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
   
   ags_pulse_server_parent_class = g_type_class_peek_parent(pulse_server);

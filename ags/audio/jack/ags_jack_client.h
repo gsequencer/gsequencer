@@ -58,7 +58,7 @@ typedef enum{
 
 struct _AgsJackClient
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
@@ -86,7 +86,7 @@ struct _AgsJackClient
 
 struct _AgsJackClientClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_jack_client_get_type();
