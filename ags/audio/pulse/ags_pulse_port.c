@@ -253,7 +253,7 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
   /* flags */
   pulse_port->flags = 0;
 
-  /* insert port mutex */
+  /* port mutex */
   pulse_port->obj_mutexattr = 
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
@@ -265,8 +265,14 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
   pthread_mutex_init(mutex,
 		     attr);
 
-  /*  */
+  /* parent */
   pulse_port->pulse_client = NULL;
+
+  /* uuid */
+  pulse_port->uuid = ags_uuid_alloc();
+  ags_uuid_generate(pulse_port->uuid);
+
+  /*  */
   pulse_port->pulse_devout = NULL;
   pulse_port->pulse_devin = NULL;
   
@@ -1017,8 +1023,6 @@ ags_pulse_port_register(AgsPulsePort *pulse_port,
 #endif
 
   GList *list;
-
-  gchar *name, *uuid;
 
   int r;
 

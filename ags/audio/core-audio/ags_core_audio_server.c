@@ -355,7 +355,7 @@ ags_core_audio_server_set_property(GObject *gobject,
 
   core_audio_server = AGS_CORE_AUDIO_SERVER(gobject);
 
-  /* get core_audio server mutex */
+  /* get core-audio server mutex */
   pthread_mutex_lock(ags_core_audio_server_get_class_mutex());
   
   core_audio_server_mutex = core_audio_server->obj_mutex;
@@ -507,7 +507,7 @@ ags_core_audio_server_get_property(GObject *gobject,
 
   core_audio_server = AGS_CORE_AUDIO_SERVER(gobject);
 
-  /* get core_audio server mutex */
+  /* get core-audio server mutex */
   pthread_mutex_lock(ags_core_audio_server_get_class_mutex());
   
   core_audio_server_mutex = core_audio_server->obj_mutex;

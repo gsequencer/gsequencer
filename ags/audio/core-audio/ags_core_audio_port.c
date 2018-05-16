@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,18 +19,7 @@
 
 #include <ags/audio/core-audio/ags_core_audio_port.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_distributed_manager.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_distributed_manager.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_sequencer.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
-#include <ags/thread/ags_polling_thread.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio_signal.h>
@@ -67,10 +56,21 @@ void ags_core_audio_port_get_property(GObject *gobject,
 				      guint prop_id,
 				      GValue *value,
 				      GParamSpec *param_spec);
-void ags_core_audio_port_connect(AgsConnectable *connectable);
-void ags_core_audio_port_disconnect(AgsConnectable *connectable);
 void ags_core_audio_port_dispose(GObject *gobject);
 void ags_core_audio_port_finalize(GObject *gobject);
+
+AgsUUID* ags_core_audio_port_get_uuid(AgsConnectable *connectable);
+gboolean ags_core_audio_port_has_resource(AgsConnectable *connectable);
+gboolean ags_core_audio_port_is_ready(AgsConnectable *connectable);
+void ags_core_audio_port_add_to_registry(AgsConnectable *connectable);
+void ags_core_audio_port_remove_from_registry(AgsConnectable *connectable);
+xmlNode* ags_core_audio_port_list_resource(AgsConnectable *connectable);
+xmlNode* ags_core_audio_port_xml_compose(AgsConnectable *connectable);
+void ags_core_audio_port_xml_parse(AgsConnectable *connectable,
+				   xmlNode *node);
+gboolean ags_core_audio_port_is_connected(AgsConnectable *connectable);
+void ags_core_audio_port_connect(AgsConnectable *connectable);
+void ags_core_audio_port_disconnect(AgsConnectable *connectable);
 
 #ifdef AGS_WITH_CORE_AUDIO
 void* ags_core_audio_port_output_thread(void *data);
@@ -105,8 +105,7 @@ enum{
 
 static gpointer ags_core_audio_port_parent_class = NULL;
 
-const int ags_core_audio_port_endian_i = 1;
-#define is_bigendian() ( (*(char*)&ags_core_audio_port_endian_i) == 0 )
+static pthread_mutex_t ags_core_audio_port_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_core_audio_port_get_type()
@@ -115,13 +114,13 @@ ags_core_audio_port_get_type()
 
   if(!ags_type_core_audio_port){
     static const GTypeInfo ags_core_audio_port_info = {
-      sizeof (AgsCoreAudioPortClass),
+      sizeof(AgsCoreAudioPortClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_core_audio_port_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsCoreAudioPort),
+      sizeof(AgsCoreAudioPort),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_core_audio_port_init,
     };
@@ -168,7 +167,7 @@ ags_core_audio_port_class_init(AgsCoreAudioPortClass *core_audio_port)
    *
    * The assigned #AgsCoreAudioClient.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("core-audio-client",
 				   i18n_pspec("assigned core audio client"),
@@ -184,7 +183,7 @@ ags_core_audio_port_class_init(AgsCoreAudioPortClass *core_audio_port)
    *
    * The assigned #AgsCoreAudioDevout.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("core-audio-device",
 				   i18n_pspec("assigned core audio devout"),
@@ -200,7 +199,7 @@ ags_core_audio_port_class_init(AgsCoreAudioPortClass *core_audio_port)
    *
    * The core audio soundcard indentifier
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("port-name",
 				   i18n_pspec("port name"),
@@ -215,146 +214,73 @@ ags_core_audio_port_class_init(AgsCoreAudioPortClass *core_audio_port)
 void
 ags_core_audio_port_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = ags_core_audio_port_get_uuid;
+  connectable->has_resource = ags_core_audio_port_has_resource;
+
+  connectable->is_ready = ags_core_audio_port_is_ready;
+  connectable->add_to_registry = ags_core_audio_port_add_to_registry;
+  connectable->remove_from_registry = ags_core_audio_port_remove_from_registry;
+
+  connectable->list_resource = ags_core_audio_port_list_resource;
+  connectable->xml_compose = ags_core_audio_port_xml_compose;
+  connectable->xml_parse = ags_core_audio_port_xml_parse;
+
+  connectable->is_connected = ags_core_audio_port_is_connected;  
   connectable->connect = ags_core_audio_port_connect;
   connectable->disconnect = ags_core_audio_port_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
 ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
 {
-  AgsMutexManager *mutex_manager;
-
   AgsConfig *config;
 
   gchar *str;
 
-  guint samplerate;
-  guint pcm_channels;
-  guint buffer_size;
-  guint format;
   guint i;
   
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
-  /* insert port mutex */
-  core_audio_port->mutexattr = 
+  /* flags */
+  core_audio_port->flags = 0;
+
+  /* port mutex */
+  core_audio_port->obj_mutexattr = 
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
 
-  core_audio_port->mutex =
+  core_audio_port->obj_mutex =
     mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
+  /* parent */
+  core_audio_port->core_audio_client = NULL;
 
-  ags_mutex_manager_insert(mutex_manager,
-			   (GObject *) core_audio_port,
-			   mutex);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* flags */
-  core_audio_port->flags = 0;
+  /* uuid */
+  core_audio_port->uuid = ags_uuid_alloc();
+  ags_uuid_generate(core_audio_port->uuid);
 
   /*  */
-  core_audio_port->core_audio_client = NULL;
   core_audio_port->core_audio_device = NULL;
   
-  core_audio_port->uuid = ags_id_generator_create_uuid();
-  core_audio_port->name = NULL;
+  core_audio_port->port_uuid = ags_id_generator_create_uuid();
+  core_audio_port->port_name = NULL;
   
   /* read config */
   config = ags_config_get_instance();
   
-  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
-  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  core_audio_port->pcm_channels = ags_soundcard_helper_config_get_pcm_channels(config);
 
-  /* pcm channels */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "pcm-channels");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "pcm-channels");
-  }
-  
-  if(str != NULL){
-    pcm_channels = g_ascii_strtoull(str,
-				    NULL,
-				    10);
-    g_free(str);
-  }
-
-  /* samplerate */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate");
-  }
-  
-  if(str != NULL){
-    samplerate = g_ascii_strtoull(str,
-				  NULL,
-				  10);
-    free(str);
-  }
-
-  /* buffer size */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size");
-  }
-  
-  if(str != NULL){
-    buffer_size = g_ascii_strtoull(str,
-				   NULL,
-				   10);
-    free(str);
-  }
-
-  /* format */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "format");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "format");
-  }
-  
-  if(str != NULL){
-    format = g_ascii_strtoull(str,
-			      NULL,
-			      10);
-    free(str);
-  }
-  
-  core_audio_port->buffer_size = buffer_size;
-  core_audio_port->format = format;
-  core_audio_port->pcm_channels = pcm_channels;
-  core_audio_port->samplerate = samplerate;
+  core_audio_port->samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  core_audio_port->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+  core_audio_port->format = ags_soundcard_helper_config_get_format(config);
 
 #ifdef AGS_WITH_CORE_AUDIO
   /* Audio */
@@ -368,16 +294,16 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
 
   core_audio_port->data_format.mBitsPerChannel = 8 * bytesPerSample;
 
-  core_audio_port->data_format.mBytesPerPacket = pcm_channels * bytesPerSample;
-  core_audio_port->data_format.mBytesPerFrame = pcm_channels * bytesPerSample;
+  core_audio_port->data_format.mBytesPerPacket = core_audio_port->pcm_channels * bytesPerSample;
+  core_audio_port->data_format.mBytesPerFrame = core_audio_port->pcm_channels * bytesPerSample;
   
   core_audio_port->data_format.mFramesPerPacket = 1;
-  core_audio_port->data_format.mChannelsPerFrame = pcm_channels;
+  core_audio_port->data_format.mChannelsPerFrame = core_audio_port->pcm_channels;
 
   core_audio_port->data_format.mFormatID = kAudioFormatLinearPCM;
   core_audio_port->data_format.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
   
-  core_audio_port->data_format.mSampleRate = (float) samplerate;
+  core_audio_port->data_format.mSampleRate = (float) core_audio_port->samplerate;
   
   /* MIDI */
   core_audio_port->midi_client = (MIDIClientRef *) malloc(sizeof(MIDIClientRef));
@@ -411,7 +337,16 @@ ags_core_audio_port_set_property(GObject *gobject,
 {
   AgsCoreAudioPort *core_audio_port;
 
+  pthread_mutex_t *core_audio_port_mutex;
+
   core_audio_port = AGS_CORE_AUDIO_PORT(gobject);
+
+  /* get core_audio port mutex */
+  pthread_mutex_lock(ags_core_audio_port_get_class_mutex());
+  
+  core_audio_port_mutex = core_audio_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_core_audio_port_get_class_mutex());
 
   switch(prop_id){
   case PROP_CORE_AUDIO_CLIENT:
@@ -420,7 +355,11 @@ ags_core_audio_port_set_property(GObject *gobject,
 
       core_audio_client = (AgsCoreAudioClient *) g_value_get_object(value);
 
+      pthread_mutex_lock(core_audio_port_mutex);
+
       if(core_audio_port->core_audio_client == (GObject *) core_audio_client){
+	pthread_mutex_unlock(core_audio_port_mutex);
+	
 	return;
       }
 
@@ -433,6 +372,8 @@ ags_core_audio_port_set_property(GObject *gobject,
       }
       
       core_audio_port->core_audio_client = (GObject *) core_audio_client;
+
+      pthread_mutex_unlock(core_audio_port_mutex);
     }
     break;
   case PROP_CORE_AUDIO_DEVICE:
@@ -441,7 +382,11 @@ ags_core_audio_port_set_property(GObject *gobject,
 
       core_audio_device = g_value_get_object(value);
 
+      pthread_mutex_lock(core_audio_port_mutex);
+
       if(core_audio_port->core_audio_device == core_audio_device){
+	pthread_mutex_unlock(core_audio_port_mutex);
+	
 	return;
       }
 
@@ -454,6 +399,8 @@ ags_core_audio_port_set_property(GObject *gobject,
       }
       
       core_audio_port->core_audio_device = (GObject *) core_audio_device;
+
+      pthread_mutex_unlock(core_audio_port_mutex);
     }
     break;
   case PROP_PORT_NAME:
@@ -462,17 +409,23 @@ ags_core_audio_port_set_property(GObject *gobject,
 
       port_name = g_value_get_string(value);
 
-      if(core_audio_port->name == port_name ||
-	 !g_ascii_strcasecmp(core_audio_port->name,
+      pthread_mutex_lock(core_audio_port_mutex);
+
+      if(core_audio_port->port_name == port_name ||
+	 !g_ascii_strcasecmp(core_audio_port->port_name,
 			     port_name)){
+	pthread_mutex_unlock(core_audio_port_mutex);
+	
 	return;
       }
 
-      if(core_audio_port->name != NULL){
-	g_free(core_audio_port->name);
+      if(core_audio_port->port_name != NULL){
+	g_free(core_audio_port->port_name);
       }
 
-      core_audio_port->name = port_name;
+      core_audio_port->port_name = port_name;
+
+      pthread_mutex_unlock(core_audio_port_mutex);
     }
     break;
   default:
@@ -489,56 +442,48 @@ ags_core_audio_port_get_property(GObject *gobject,
 {
   AgsCoreAudioPort *core_audio_port;
 
+  pthread_mutex_t *core_audio_port_mutex;
+
   core_audio_port = AGS_CORE_AUDIO_PORT(gobject);
+
+  /* get core_audio port mutex */
+  pthread_mutex_lock(ags_core_audio_port_get_class_mutex());
+  
+  core_audio_port_mutex = core_audio_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_core_audio_port_get_class_mutex());
   
   switch(prop_id){
   case PROP_CORE_AUDIO_CLIENT:
     {
+      pthread_mutex_lock(core_audio_port_mutex);
+
       g_value_set_object(value, core_audio_port->core_audio_client);
+      pthread_mutex_unlock(core_audio_port_mutex);
     }
     break;
   case PROP_CORE_AUDIO_DEVICE:
     {
+      pthread_mutex_lock(core_audio_port_mutex);
+
       g_value_set_object(value, core_audio_port->core_audio_device);
+
+      pthread_mutex_unlock(core_audio_port_mutex);
     }
     break;
   case PROP_PORT_NAME:
     {
-      g_value_set_string(value, core_audio_port->name);
+      pthread_mutex_lock(core_audio_port_mutex);
+
+      g_value_set_string(value, core_audio_port->port_name);
+
+      pthread_mutex_unlock(core_audio_port_mutex);
     }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_core_audio_port_connect(AgsConnectable *connectable)
-{
-  AgsCoreAudioPort *core_audio_port;
-
-  core_audio_port = AGS_CORE_AUDIO_PORT(connectable);
-
-  if((AGS_CORE_AUDIO_PORT_CONNECTED & (core_audio_port->flags)) != 0){
-    return;
-  }
-
-  core_audio_port->flags |= AGS_CORE_AUDIO_PORT_CONNECTED;
-}
-
-void
-ags_core_audio_port_disconnect(AgsConnectable *connectable)
-{
-  AgsCoreAudioPort *core_audio_port;
-
-  core_audio_port = AGS_CORE_AUDIO_PORT(connectable);
-
-  if((AGS_CORE_AUDIO_PORT_CONNECTED & (core_audio_port->flags)) == 0){
-    return;
-  }
-
-  core_audio_port->flags &= (~AGS_CORE_AUDIO_PORT_CONNECTED);
 }
 
 void
@@ -563,7 +508,7 @@ ags_core_audio_port_dispose(GObject *gobject)
   }
 
   /* name */
-  g_free(core_audio_port->name);
+  g_free(core_audio_port->port_name);
 
   /* call parent */
   G_OBJECT_CLASS(ags_core_audio_port_parent_class)->dispose(gobject);
@@ -574,14 +519,13 @@ ags_core_audio_port_finalize(GObject *gobject)
 {
   AgsCoreAudioPort *core_audio_port;
 
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-
   core_audio_port = AGS_CORE_AUDIO_PORT(gobject);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  pthread_mutex_destroy(core_audio_port->obj_mutex);
+  free(core_audio_port->obj_mutex);
+
+  pthread_mutexattr_destroy(core_audio_port->obj_mutexattr);
+  free(core_audio_port->obj_mutexattr);
 
   /* core audio client */
   if(core_audio_port->core_audio_client != NULL){
@@ -594,7 +538,7 @@ ags_core_audio_port_finalize(GObject *gobject)
   }
 
   /* name */
-  g_free(core_audio_port->name);
+  g_free(core_audio_port->port_name);
 
   if(core_audio_port->midi_client != NULL){
     free(core_audio_port->midi_client);
@@ -604,14 +548,310 @@ ags_core_audio_port_finalize(GObject *gobject)
     free(core_audio_port->midi_port);
   }
 
-  pthread_mutex_destroy(core_audio_port->mutex);
-  free(core_audio_port->mutex);
-
-  pthread_mutexattr_destroy(core_audio_port->mutexattr);
-  free(core_audio_port->mutexattr);
-
   /* call parent */
   G_OBJECT_CLASS(ags_core_audio_port_parent_class)->finalize(gobject);
+}
+
+AgsUUID*
+ags_core_audio_port_get_uuid(AgsConnectable *connectable)
+{
+  AgsCoreAudioPort *core_audio_port;
+  
+  AgsUUID *ptr;
+
+  pthread_mutex_t *core_audio_port_mutex;
+
+  core_audio_port = AGS_CORE_AUDIO_PORT(connectable);
+
+  /* get core_audio port signal mutex */
+  pthread_mutex_lock(ags_core_audio_port_get_class_mutex());
+  
+  core_audio_port_mutex = core_audio_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_core_audio_port_get_class_mutex());
+
+  /* get UUID */
+  pthread_mutex_lock(core_audio_port_mutex);
+
+  ptr = core_audio_port->uuid;
+
+  pthread_mutex_unlock(core_audio_port_mutex);
+  
+  return(ptr);
+}
+
+gboolean
+ags_core_audio_port_has_resource(AgsConnectable *connectable)
+{
+  return(FALSE);
+}
+
+gboolean
+ags_core_audio_port_is_ready(AgsConnectable *connectable)
+{
+  AgsCoreAudioPort *core_audio_port;
+  
+  gboolean is_ready;
+
+  pthread_mutex_t *core_audio_port_mutex;
+
+  core_audio_port = AGS_CORE_AUDIO_PORT(connectable);
+
+  /* get core_audio port mutex */
+  pthread_mutex_lock(ags_core_audio_port_get_class_mutex());
+  
+  core_audio_port_mutex = core_audio_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_core_audio_port_get_class_mutex());
+
+  /* check is added */
+  pthread_mutex_lock(core_audio_port_mutex);
+
+  is_ready = (((AGS_CORE_AUDIO_PORT_ADDED_TO_REGISTRY & (core_audio_port->flags)) != 0) ? TRUE: FALSE);
+
+  pthread_mutex_unlock(core_audio_port_mutex);
+  
+  return(is_ready);
+}
+
+void
+ags_core_audio_port_add_to_registry(AgsConnectable *connectable)
+{
+  AgsCoreAudioPort *core_audio_port;
+
+  if(ags_connectable_is_ready(connectable)){
+    return;
+  }
+  
+  core_audio_port = AGS_CORE_AUDIO_PORT(connectable);
+
+  ags_core_audio_port_set_flags(core_audio_port, AGS_CORE_AUDIO_PORT_ADDED_TO_REGISTRY);
+}
+
+void
+ags_core_audio_port_remove_from_registry(AgsConnectable *connectable)
+{
+  AgsCoreAudioPort *core_audio_port;
+
+  if(!ags_connectable_is_ready(connectable)){
+    return;
+  }
+
+  core_audio_port = AGS_CORE_AUDIO_PORT(connectable);
+
+  ags_core_audio_port_unset_flags(core_audio_port, AGS_CORE_AUDIO_PORT_ADDED_TO_REGISTRY);
+}
+
+xmlNode*
+ags_core_audio_port_list_resource(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+xmlNode*
+ags_core_audio_port_xml_compose(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+void
+ags_core_audio_port_xml_parse(AgsConnectable *connectable,
+			      xmlNode *node)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_core_audio_port_is_connected(AgsConnectable *connectable)
+{
+  AgsCoreAudioPort *core_audio_port;
+  
+  gboolean is_connected;
+
+  pthread_mutex_t *core_audio_port_mutex;
+
+  core_audio_port = AGS_CORE_AUDIO_PORT(connectable);
+
+  /* get core_audio port mutex */
+  pthread_mutex_lock(ags_core_audio_port_get_class_mutex());
+  
+  core_audio_port_mutex = core_audio_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_core_audio_port_get_class_mutex());
+
+  /* check is connected */
+  pthread_mutex_lock(core_audio_port_mutex);
+
+  is_connected = (((AGS_CORE_AUDIO_PORT_CONNECTED & (core_audio_port->flags)) != 0) ? TRUE: FALSE);
+  
+  pthread_mutex_unlock(core_audio_port_mutex);
+  
+  return(is_connected);
+}
+
+void
+ags_core_audio_port_connect(AgsConnectable *connectable)
+{
+  AgsCoreAudioPort *core_audio_port;
+  
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  core_audio_port = AGS_CORE_AUDIO_PORT(connectable);
+
+  ags_core_audio_port_set_flags(core_audio_port, AGS_CORE_AUDIO_PORT_CONNECTED);
+}
+
+void
+ags_core_audio_port_disconnect(AgsConnectable *connectable)
+{
+
+  AgsCoreAudioPort *core_audio_port;
+
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  core_audio_port = AGS_CORE_AUDIO_PORT(connectable);
+  
+  ags_core_audio_port_unset_flags(core_audio_port, AGS_CORE_AUDIO_PORT_CONNECTED);
+}
+
+/**
+ * ags_core_audio_port_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_core_audio_port_get_class_mutex()
+{
+  return(&ags_core_audio_port_class_mutex);
+}
+
+/**
+ * ags_core_audio_port_test_flags:
+ * @core_audio_port: the #AgsCoreAudioPort
+ * @flags: the flags
+ *
+ * Test @flags to be set on @core_audio_port.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_core_audio_port_test_flags(AgsCoreAudioPort *core_audio_port, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *core_audio_port_mutex;
+
+  if(!AGS_IS_CORE_AUDIO_PORT(core_audio_port)){
+    return(FALSE);
+  }
+
+  /* get core_audio port mutex */
+  pthread_mutex_lock(ags_core_audio_port_get_class_mutex());
+  
+  core_audio_port_mutex = core_audio_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_core_audio_port_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(core_audio_port_mutex);
+
+  retval = (flags & (core_audio_port->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(core_audio_port_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_core_audio_port_set_flags:
+ * @core_audio_port: the #AgsCoreAudioPort
+ * @flags: see #AgsCoreAudioPortFlags-enum
+ *
+ * Enable a feature of @core_audio_port.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_core_audio_port_set_flags(AgsCoreAudioPort *core_audio_port, guint flags)
+{
+  pthread_mutex_t *core_audio_port_mutex;
+
+  if(!AGS_IS_CORE_AUDIO_PORT(core_audio_port)){
+    return;
+  }
+
+  /* get core_audio port mutex */
+  pthread_mutex_lock(ags_core_audio_port_get_class_mutex());
+  
+  core_audio_port_mutex = core_audio_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_core_audio_port_get_class_mutex());
+
+  //TODO:JK: add more?
+
+  /* set flags */
+  pthread_mutex_lock(core_audio_port_mutex);
+
+  core_audio_port->flags |= flags;
+  
+  pthread_mutex_unlock(core_audio_port_mutex);
+}
+    
+/**
+ * ags_core_audio_port_unset_flags:
+ * @core_audio_port: the #AgsCoreAudioPort
+ * @flags: see #AgsCoreAudioPortFlags-enum
+ *
+ * Disable a feature of @core_audio_port.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_core_audio_port_unset_flags(AgsCoreAudioPort *core_audio_port, guint flags)
+{  
+  pthread_mutex_t *core_audio_port_mutex;
+
+  if(!AGS_IS_CORE_AUDIO_PORT(core_audio_port)){
+    return;
+  }
+
+  /* get core_audio port mutex */
+  pthread_mutex_lock(ags_core_audio_port_get_class_mutex());
+  
+  core_audio_port_mutex = core_audio_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_core_audio_port_get_class_mutex());
+
+  //TODO:JK: add more?
+
+  /* unset flags */
+  pthread_mutex_lock(core_audio_port_mutex);
+
+  core_audio_port->flags &= (~flags);
+  
+  pthread_mutex_unlock(core_audio_port_mutex);
 }
 
 /**
@@ -621,17 +861,35 @@ ags_core_audio_port_finalize(GObject *gobject)
  *
  * Finds next match of @port_name in @core_audio_port.
  *
- * Returns: a #GList or %NULL
+ * Returns: the next matching #GList-struct or %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_core_audio_port_find(GList *core_audio_port,
 			 gchar *port_name)
 {
+  gboolean success;
+  
+  pthread_mutex_t *core_audio_port_mutex;
+
   while(core_audio_port != NULL){
-    if(!g_ascii_strcasecmp(AGS_CORE_AUDIO_PORT(core_audio_port->data)->name,
-			   port_name)){
+    /* get core_audio port mutex */
+    pthread_mutex_lock(ags_core_audio_port_get_class_mutex());
+  
+    core_audio_port_mutex = AGS_CORE_AUDIO_PORT(core_audio_port->data)->obj_mutex;
+  
+    pthread_mutex_unlock(ags_core_audio_port_get_class_mutex());
+
+    /* check port name */
+    pthread_mutex_lock(core_audio_port_mutex);
+
+    success = (!g_ascii_strcasecmp(AGS_CORE_AUDIO_PORT(core_audio_port->data)->port_name,
+				   port_name)) ? TRUE: FALSE;
+    
+    pthread_mutex_unlock(core_audio_port_mutex);
+
+    if(success){
       return(core_audio_port);
     }
   }
@@ -667,7 +925,7 @@ SetCurrentIOBufferFrameSize(AudioObjectID inDeviceID,
  * Register a new core audio port and read uuid. Creates a new AgsSequencer or AgsSoundcard
  * object.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
@@ -675,55 +933,98 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 			     gboolean is_audio, gboolean is_midi,
 			     gboolean is_output)
 {
+  AgsCoreAudioServer *core_audio_server;
+  AgsCoreAudioClient *core_audio_client;
+
   GList *list;
 
   gchar *name, *uuid;
 
+  guint format;
   guint i;
   
 #ifdef AGS_WITH_CORE_AUDIO
+  AUGraph *graph;
   OSStatus retval;
+#else
+  gpointer graph;
 #endif
   
+  pthread_mutex_t *core_audio_client_mutex;
+  pthread_mutex_t *core_audio_port_mutex;
+
   if(!AGS_IS_CORE_AUDIO_PORT(core_audio_port) ||
      port_name == NULL){
     return;
   }
 
-  if(core_audio_port->core_audio_client == NULL){
-    g_warning("ags_core_audio_port.c - no assigned AgsCoreAudioClient");
+  g_object_get(core_audio_port,
+	       "core-audio-client", &core_audio_client,
+	       NULL);
+  
+  if(core_audio_client == NULL){
+    g_warning("ags_core_audio_port.c - no assigned AgsCore_AudioClient");
     
     return;
   }
 
-  if((AGS_CORE_AUDIO_PORT_REGISTERED & (core_audio_port->flags)) != 0){
+  if(ags_core_audio_port_test_flags(core_audio_port, AGS_CORE_AUDIO_PORT_REGISTERED)){
     return;
   }
 
-  /* get core audio server and application context */
-  if(core_audio_port->core_audio_client == NULL ||
-     AGS_CORE_AUDIO_CLIENT(core_audio_port->core_audio_client)->core_audio_server == NULL){
-    return;
-  }
-
-  uuid = core_audio_port->uuid;
-  name = core_audio_port->name;
-
-  if(AGS_CORE_AUDIO_CLIENT(core_audio_port->core_audio_client)->graph == NULL){
-    return;
-  }
+  /* get core_audio server and application context */
+  g_object_get(core_audio_client,
+	       "core-audio-server", &core_audio_server,
+	       NULL);
   
-  core_audio_port->name = g_strdup(port_name);
+  if(core_audio_server == NULL){
+    return;
+  }
+
+  /* get core_audio client mutex */
+  pthread_mutex_lock(ags_core_audio_client_get_class_mutex());
+  
+  core_audio_client_mutex = core_audio_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_core_audio_client_get_class_mutex());
+
+  /* get graph */
+  pthread_mutex_lock(core_audio_client_mutex);
+
+  graph = core_audio_client->graph;
+  
+  pthread_mutex_unlock(core_audio_client_mutex);
+
+  if(graph == NULL){
+    return;
+  }
+
+  /* get core_audio port mutex */
+  pthread_mutex_lock(ags_core_audio_port_get_class_mutex());
+  
+  core_audio_port_mutex = core_audio_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_core_audio_port_get_class_mutex());
+  
+  /* get port name */
+  //FIXME:JK: memory leak?
+  pthread_mutex_lock(core_audio_port_mutex);
+
+  port_name = g_strdup(core_audio_port->port_name);
+
+  format = core_audio_port->format;
+  
+  pthread_mutex_unlock(core_audio_port_mutex);
 
   /* create sequencer or soundcard */
   if(is_output){
-    core_audio_port->flags |= AGS_CORE_AUDIO_PORT_IS_OUTPUT;
+    ags_core_audio_port_set_flags(core_audio_port, AGS_CORE_AUDIO_PORT_IS_OUTPUT);
   }else{
-    core_audio_port->flags |= AGS_CORE_AUDIO_PORT_IS_INPUT;
+    ags_core_audio_port_set_flags(core_audio_port, AGS_CORE_AUDIO_PORT_IS_INPUT);
   }
-  
+
   if(is_audio){  
-    core_audio_port->flags |= AGS_CORE_AUDIO_PORT_IS_AUDIO;
+    ags_core_audio_port_set_flags(core_audio_port, AGS_CORE_AUDIO_PORT_IS_AUDIO);
 
     if(is_output){
       pthread_t *thread;
@@ -732,30 +1033,30 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       
       guint word_size;
 
-      switch(core_audio_port->format){
+      switch(format){
       case AGS_SOUNDCARD_SIGNED_8_BIT:
 	{
-	  word_size = sizeof(signed char);
+	  word_size = sizeof(gint8);
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_16_BIT:
 	{
-	  word_size = sizeof(signed short);
+	  word_size = sizeof(gint16);
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_24_BIT:
 	{
-	  word_size = sizeof(signed long);
+	  word_size = sizeof(gint32);
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_32_BIT:
 	{
-	  word_size = sizeof(signed long);
+	  word_size = sizeof(gint32);
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_64_BIT:
 	{
-	  word_size = sizeof(signed long long);
+	  word_size = sizeof(gint64);
 	}
 	break;
       default:
@@ -791,7 +1092,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       //NOTE:JK: not implemented
     }
   }else if(is_midi){
-    core_audio_port->flags |= AGS_CORE_AUDIO_PORT_IS_MIDI;
+    ags_core_audio_port_set_flags(core_audio_port, AGS_CORE_AUDIO_PORT_IS_MIDI);
 
     if(is_output){
       //NOTE:JK: not implemented
@@ -832,7 +1133,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
     }
   }
   
-  core_audio_port->flags |= AGS_CORE_AUDIO_PORT_REGISTERED;
+  ags_core_audio_port_set_flags(core_audio_port, AGS_CORE_AUDIO_PORT_REGISTERED);
 }
 
 void
@@ -842,19 +1143,9 @@ ags_core_audio_port_unregister(AgsCoreAudioPort *core_audio_port)
     return;
   }
 
-  if((AGS_CORE_AUDIO_PORT_IS_AUDIO & (core_audio_port->flags)) != 0){
-    if((AGS_CORE_AUDIO_PORT_IS_OUTPUT & (core_audio_port->flags)) != 0){
-      //NOTE:JK: not implemented
-    }else if((AGS_CORE_AUDIO_PORT_IS_INPUT & (core_audio_port->flags)) != 0){
-    }
-  }else if((AGS_CORE_AUDIO_PORT_IS_MIDI & (core_audio_port->flags)) != 0){
-    if((AGS_CORE_AUDIO_PORT_IS_OUTPUT & (core_audio_port->flags)) != 0){
-      //NOTE:JK: not implemented
-    }else if((AGS_CORE_AUDIO_PORT_IS_INPUT & (core_audio_port->flags)) != 0){
-    }
-  }
+  //NOTE:JK: not implemented
 
-  core_audio_port->flags &= (~AGS_CORE_AUDIO_PORT_REGISTERED);
+  ags_core_audio_port_unset_flags(core_audio_port, AGS_CORE_AUDIO_PORT_REGISTERED);
 }
 
 #ifdef AGS_WITH_CORE_AUDIO
@@ -866,7 +1157,6 @@ ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
   
   AgsAudioLoop *audio_loop;
 
-  AgsMutexManager *mutex_manager;
   AgsTaskThread *task_thread;
   
   AgsApplicationContext *application_context;
@@ -879,24 +1169,21 @@ ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
   gboolean no_event;
   gboolean empty_run;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  pthread_mutex_t *core_audio_port_mutex;
   pthread_mutex_t *device_mutex;
   pthread_mutex_t *callback_mutex;
   pthread_mutex_t *callback_finish_mutex;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  application_context = ags_application_context_get_instance();
+  if(core_audio_port == NULL){
+    return;
+  }
   
-  /*  */  
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) core_audio_port);
+  /* get core-audio port mutex */
+  pthread_mutex_lock(ags_core_audio_port_get_class_mutex());
   
-  pthread_mutex_unlock(application_mutex);
+  core_audio_port_mutex = core_audio_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_core_audio_port_get_class_mutex());
 
   if(g_atomic_int_get(&(core_audio_port->queued)) > 0){
     g_warning("drop core audio output callback");
@@ -910,17 +1197,12 @@ ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
    * process audio
    */
   /*  */  
-  pthread_mutex_lock(application_mutex);
+  application_context = ags_application_context_get_instance();
 
-  if(application_context != NULL){
-    audio_loop = (AgsAudioLoop *) application_context->main_loop;
-    task_thread = (AgsTaskThread *) application_context->task_thread;
-  }else{
-    audio_loop = NULL;
-    task_thread = NULL;
-  }
-  
-  pthread_mutex_unlock(application_mutex);
+  g_object_get(application_context,
+	       "main-loop", &audio_loop,
+	       "task-thread", &task_thread,
+	       NULL);
 
   /* interrupt GUI */
   if(task_thread != NULL){
@@ -955,19 +1237,18 @@ ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
   }
   
   /*  */
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(core_audio_port_mutex);
 
   core_audio_devout = core_audio_port->core_audio_device;
 
-  pthread_mutex_unlock(mutex);
-  
-  /*  */  
-  pthread_mutex_lock(application_mutex);
-  
-  device_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  (GObject *) core_audio_devout);
-  
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(core_audio_port_mutex);
+
+  /* get device mutex */
+  pthread_mutex_lock(ags_core_audio_devout_get_class_mutex());
+
+  device_mutex = core_audio_devout->obj_mutex;
+
+  pthread_mutex_unlock(ags_core_audio_devout_get_class_mutex());
 
   /*  */
   pthread_mutex_lock(device_mutex);
@@ -980,7 +1261,7 @@ ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
   
   pthread_mutex_unlock(device_mutex);
 
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(core_audio_port_mutex);
 
   switch(core_audio_port->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -1014,7 +1295,7 @@ ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
 
   count = core_audio_port->pcm_channels * core_audio_port->buffer_size;
 
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(core_audio_port_mutex);
 
   pthread_mutex_lock(device_mutex);
   
@@ -1163,7 +1444,6 @@ ags_core_audio_port_midi_read_callback(const MIDIPacketList *pkt_list,
   
   AgsAudioLoop *audio_loop;
 
-  AgsMutexManager *mutex_manager;
   AgsTaskThread *task_thread;
   
   AgsApplicationContext *application_context;
@@ -1175,8 +1455,7 @@ ags_core_audio_port_midi_read_callback(const MIDIPacketList *pkt_list,
   gint i;
   gboolean no_event;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  pthread_mutex_t *core_audio_port_mutex;
   pthread_mutex_t *device_mutex;
   pthread_mutex_t *callback_mutex;
   pthread_mutex_t *callback_finish_mutex;
@@ -1187,34 +1466,23 @@ ags_core_audio_port_midi_read_callback(const MIDIPacketList *pkt_list,
     return;
   }
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  application_context = ags_application_context_get_instance();
+  /* get core-audio port mutex */
+  pthread_mutex_lock(ags_core_audio_port_get_class_mutex());
   
-  /*  */  
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) core_audio_port);
+  core_audio_port_mutex = core_audio_port->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_core_audio_port_get_class_mutex());
 
   /*
    * process midi
    */
   /*  */  
-  pthread_mutex_lock(application_mutex);
+  application_context = ags_application_context_get_instance();
 
-  if(application_context != NULL){
-    audio_loop = (AgsAudioLoop *) application_context->main_loop;
-    task_thread = (AgsTaskThread *) application_context->task_thread;
-  }else{
-    audio_loop = NULL;
-    task_thread = NULL;
-  }
-  
-  pthread_mutex_unlock(application_mutex);
+  g_object_get(application_context,
+	       "main-loop", &audio_loop,
+	       "task-thread", &task_thread,
+	       NULL);
 
   /* interrupt GUI */
   if(task_thread != NULL){
@@ -1239,19 +1507,18 @@ ags_core_audio_port_midi_read_callback(const MIDIPacketList *pkt_list,
   }
 
   /*  */
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(core_audio_port_mutex);
 
   core_audio_midiin = core_audio_port->core_audio_device;
 
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(core_audio_port_mutex);
   
-  /*  */  
-  pthread_mutex_lock(application_mutex);
-  
-  device_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  (GObject *) core_audio_midiin);
-  
-  pthread_mutex_unlock(application_mutex);
+  /* get device mutex */
+  pthread_mutex_lock(ags_core_audio_devout_get_class_mutex());
+
+  device_mutex = core_audio_midiin->obj_mutex;
+
+  pthread_mutex_unlock(ags_core_audio_devout_get_class_mutex());
   
   /*  */
   pthread_mutex_lock(device_mutex);
@@ -1366,50 +1633,38 @@ void
 ags_core_audio_port_set_format(AgsCoreAudioPort *core_audio_port,
 			       guint format)
 {
-  AgsMutexManager *mutex_manager;
+  pthread_mutex_t *core_audio_port_mutex;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  /* get core-audio port mutex */
+  pthread_mutex_lock(ags_core_audio_port_get_class_mutex());
   
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  core_audio_port_mutex = core_audio_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_core_audio_port_get_class_mutex());
 
-  /* lock core audio port */
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) core_audio_port);
-
-  pthread_mutex_unlock(application_mutex);
-
-  pthread_mutex_lock(mutex);
+  /*  */
+  pthread_mutex_lock(core_audio_port_mutex);
 
   core_audio_port->format = format;
   
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(core_audio_port_mutex);
 }
 
 void
 ags_core_audio_port_set_samplerate(AgsCoreAudioPort *core_audio_port,
 				   guint samplerate)
 {
-  AgsMutexManager *mutex_manager;
+  pthread_mutex_t *core_audio_port_mutex;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  /* get core-audio port mutex */
+  pthread_mutex_lock(ags_core_audio_port_get_class_mutex());
   
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  core_audio_port_mutex = core_audio_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_core_audio_port_get_class_mutex());
 
-  /* lock core audio port */
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) core_audio_port);
-
-  pthread_mutex_unlock(application_mutex);
-
-  pthread_mutex_lock(mutex);
+  /*  */
+  pthread_mutex_lock(core_audio_port_mutex);
 
 #ifdef AGS_WITH_CORE_AUDIO
   core_audio_port->data_format.mSampleRate = (float) samplerate;
@@ -1417,30 +1672,24 @@ ags_core_audio_port_set_samplerate(AgsCoreAudioPort *core_audio_port,
 
   core_audio_port->samplerate = samplerate;
   
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(core_audio_port_mutex);
 }
 
 void
 ags_core_audio_port_set_buffer_size(AgsCoreAudioPort *core_audio_port,
 				    guint buffer_size)
-{
-  AgsMutexManager *mutex_manager;
+{  
+  pthread_mutex_t *core_audio_port_mutex;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  /* get core-audio port mutex */
+  pthread_mutex_lock(ags_core_audio_port_get_class_mutex());
   
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* lock core audio port */
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) core_audio_port);
-
-  pthread_mutex_unlock(application_mutex);
+  core_audio_port_mutex = core_audio_port->obj_mutex;
   
-  pthread_mutex_lock(mutex);
+  pthread_mutex_unlock(ags_core_audio_port_get_class_mutex());
+
+  /*  */
+  pthread_mutex_lock(core_audio_port_mutex);
 
 #ifdef AGS_WITH_CORE_AUDIO
   //TODO:JK: implement me
@@ -1448,30 +1697,24 @@ ags_core_audio_port_set_buffer_size(AgsCoreAudioPort *core_audio_port,
 
   core_audio_port->buffer_size = buffer_size;
   
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(core_audio_port_mutex);
 }
 
 void
 ags_core_audio_port_set_pcm_channels(AgsCoreAudioPort *core_audio_port,
 				     guint pcm_channels)
 {
-  AgsMutexManager *mutex_manager;
+  pthread_mutex_t *core_audio_port_mutex;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  /* get core-audio port mutex */
+  pthread_mutex_lock(ags_core_audio_port_get_class_mutex());
   
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  core_audio_port_mutex = core_audio_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_core_audio_port_get_class_mutex());
 
-  /* lock core audio port */
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) core_audio_port);
-
-  pthread_mutex_unlock(application_mutex);
-
-  pthread_mutex_lock(mutex);
+  /*  */
+  pthread_mutex_lock(core_audio_port_mutex);
 
   core_audio_port->pcm_channels = pcm_channels;
 
@@ -1479,18 +1722,18 @@ ags_core_audio_port_set_pcm_channels(AgsCoreAudioPort *core_audio_port,
   core_audio_port->data_format.mChannelsPerFrame = pcm_channels;
 #endif
 
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(core_audio_port_mutex);
 }
 
 /**
  * ags_core_audio_port_new:
  * @core_audio_client: the #AgsCoreAudioClient assigned to
  *
- * Instantiate a new #AgsCoreAudioPort.
+ * Create a new instance of #AgsCoreAudioPort.
  *
  * Returns: the new #AgsCoreAudioPort
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsCoreAudioPort*
 ags_core_audio_port_new(GObject *core_audio_client)

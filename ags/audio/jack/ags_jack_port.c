@@ -848,6 +848,8 @@ ags_jack_port_register(AgsJackPort *jack_port,
   /* create sequencer or soundcard */
   if(is_output){
     ags_jack_port_set_flags(jack_port, AGS_JACK_PORT_IS_OUTPUT);
+  }else{
+    ags_jack_port_set_flags(jack_port, AGS_JACK_PORT_IS_INPUT);
   }
 
 #ifdef AGS_WITH_JACK
