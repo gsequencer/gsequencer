@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,8 +24,6 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
-
-#include <ags/object/ags_application_context.h>
 
 #define AGS_TYPE_START_SEQUENCER                (ags_start_sequencer_get_type())
 #define AGS_START_SEQUENCER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_START_SEQUENCER, AgsStartSequencer))
@@ -54,4 +52,3 @@ GType ags_start_sequencer_get_type();
 AgsStartSequencer* ags_start_sequencer_new(AgsApplicationContext *application_context);
 
 #endif /*__AGS_START_SEQUENCER_H__*/
-

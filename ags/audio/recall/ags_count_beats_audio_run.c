@@ -59,8 +59,8 @@ void ags_count_beats_audio_run_disconnect(AgsConnectable *connectable);
 void ags_count_beats_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_count_beats_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_count_beats_audio_run_seek(AgsSeekable *seekable,
-				    guint steps,
-				    gboolean forward);
+				    gint64 offset,
+				    guint whence);
 guint ags_count_beats_audio_run_get_notation_counter(AgsCountable *countable);
 guint ags_count_beats_audio_run_get_sequencer_counter(AgsCountable *countable);
 guint64 ags_count_beats_audio_run_get_wave_counter(AgsCountable *countable);

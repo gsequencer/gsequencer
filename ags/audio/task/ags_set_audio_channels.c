@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,7 +22,6 @@
 #include <ags/i18n.h>
 
 void ags_set_audio_channels_class_init(AgsSetAudioChannelsClass *set_audio_channels);
-void ags_set_audio_channels_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_set_audio_channels_init(AgsSetAudioChannels *set_audio_channels);
 void ags_set_audio_channels_set_property(GObject *gobject,
 					 guint prop_id,
@@ -32,8 +31,6 @@ void ags_set_audio_channels_get_property(GObject *gobject,
 					 guint prop_id,
 					 GValue *value,
 					 GParamSpec *param_spec);
-void ags_set_audio_channels_connect(AgsConnectable *connectable);
-void ags_set_audio_channels_disconnect(AgsConnectable *connectable);
 void ags_set_audio_channels_dispose(GObject *gobject);
 void ags_set_audio_channels_finalize(GObject *gobject);
 
@@ -50,7 +47,6 @@ void ags_set_audio_channels_launch(AgsTask *task);
  */
 
 static gpointer ags_set_audio_channels_parent_class = NULL;
-static AgsConnectableInterface *ags_set_audio_channels_parent_connectable_interface;
 
 enum{
   PROP_0,
@@ -65,34 +61,24 @@ ags_set_audio_channels_get_type()
 
   if(!ags_type_set_audio_channels){
     static const GTypeInfo ags_set_audio_channels_info = {
-      sizeof (AgsSetAudioChannelsClass),
+      sizeof(AgsSetAudioChannelsClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_set_audio_channels_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsSetAudioChannels),
+      sizeof(AgsSetAudioChannels),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_set_audio_channels_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_set_audio_channels_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_set_audio_channels = g_type_register_static(AGS_TYPE_TASK,
 							 "AgsSetAudioChannels",
 							 &ags_set_audio_channels_info,
 							 0);
-    
-    g_type_add_interface_static(ags_type_set_audio_channels,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
   
-  return (ags_type_set_audio_channels);
+  return(ags_type_set_audio_channels);
 }
 
 void
@@ -100,6 +86,7 @@ ags_set_audio_channels_class_init(AgsSetAudioChannelsClass *set_audio_channels)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+
   GParamSpec *param_spec;
 
   ags_set_audio_channels_parent_class = g_type_class_peek_parent(set_audio_channels);
@@ -119,7 +106,7 @@ ags_set_audio_channels_class_init(AgsSetAudioChannelsClass *set_audio_channels)
    *
    * The assigned #AgsSoundcard instance.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of set audio channels"),
@@ -135,7 +122,7 @@ ags_set_audio_channels_class_init(AgsSetAudioChannelsClass *set_audio_channels)
    *
    * The count of audio channels to apply to audio.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("audio-channels",
 				 i18n_pspec("audio channels"),
@@ -152,15 +139,6 @@ ags_set_audio_channels_class_init(AgsSetAudioChannelsClass *set_audio_channels)
   task = (AgsTaskClass *) set_audio_channels;
 
   task->launch = ags_set_audio_channels_launch;
-}
-
-void
-ags_set_audio_channels_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_set_audio_channels_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_set_audio_channels_connect;
-  connectable->disconnect = ags_set_audio_channels_disconnect;
 }
 
 void
@@ -241,22 +219,6 @@ ags_set_audio_channels_get_property(GObject *gobject,
 }
 
 void
-ags_set_audio_channels_connect(AgsConnectable *connectable)
-{
-  ags_set_audio_channels_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_set_audio_channels_disconnect(AgsConnectable *connectable)
-{
-  ags_set_audio_channels_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_set_audio_channels_dispose(GObject *gobject)
 {
   AgsSetAudioChannels *set_audio_channels;
@@ -300,26 +262,9 @@ ags_set_audio_channels_launch(AgsTask *task)
   guint buffer_size;
   guint format;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   set_audio_channels = AGS_SET_AUDIO_CHANNELS(task);
 
-  /* get soundcard mutex */
-  pthread_mutex_lock(application_mutex);
-
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) set_audio_channels->soundcard);
-
-  pthread_mutex_unlock(application_mutex);
-
   /* set audio channels */
-  pthread_mutex_lock(soundcard_mutex);
-
   ags_soundcard_get_presets(AGS_SOUNDCARD(set_audio_channels->soundcard),
 			    &channels,
 			    &samplerate,
@@ -331,8 +276,6 @@ ags_set_audio_channels_launch(AgsTask *task)
 			    samplerate,
 			    buffer_size,
 			    format);
-
-  pthread_mutex_unlock(soundcard_mutex);
 }
 
 /**
@@ -340,11 +283,11 @@ ags_set_audio_channels_launch(AgsTask *task)
  * @soundcard: the #AgsSoundcard to reset
  * @audio_channels: the new count of audio channels
  *
- * Creates an #AgsSetAudioChannels.
+ * Create a new instance of #AgsSetAudioChannels.
  *
- * Returns: an new #AgsSetAudioChannels.
+ * Returns: the new #AgsSetAudioChannels.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSetAudioChannels*
 ags_set_audio_channels_new(GObject *soundcard, guint audio_channels)

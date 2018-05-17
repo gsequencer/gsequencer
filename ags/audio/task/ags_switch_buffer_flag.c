@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,7 +36,6 @@
 #include <ags/i18n.h>
 
 void ags_switch_buffer_flag_class_init(AgsSwitchBufferFlagClass *switch_buffer_flag);
-void ags_switch_buffer_flag_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_switch_buffer_flag_init(AgsSwitchBufferFlag *switch_buffer_flag);
 void ags_switch_buffer_flag_set_property(GObject *gobject,
 					 guint prop_id,
@@ -46,8 +45,6 @@ void ags_switch_buffer_flag_get_property(GObject *gobject,
 					 guint prop_id,
 					 GValue *value,
 					 GParamSpec *param_spec);
-void ags_switch_buffer_flag_connect(AgsConnectable *connectable);
-void ags_switch_buffer_flag_disconnect(AgsConnectable *connectable);
 void ags_switch_buffer_flag_dispose(GObject *gobject);
 void ags_switch_buffer_flag_finalize(GObject *gobject);
 
@@ -64,7 +61,6 @@ void ags_switch_buffer_flag_launch(AgsTask *task);
  */
 
 static gpointer ags_switch_buffer_flag_parent_class = NULL;
-static AgsConnectableInterface *ags_switch_buffer_flag_parent_connectable_interface;
 
 enum{
   PROP_0,
@@ -78,34 +74,24 @@ ags_switch_buffer_flag_get_type()
 
   if(!ags_type_switch_buffer_flag){
     static const GTypeInfo ags_switch_buffer_flag_info = {
-      sizeof (AgsSwitchBufferFlagClass),
+      sizeof(AgsSwitchBufferFlagClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_switch_buffer_flag_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsSwitchBufferFlag),
+      sizeof(AgsSwitchBufferFlag),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_switch_buffer_flag_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_switch_buffer_flag_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_switch_buffer_flag = g_type_register_static(AGS_TYPE_TASK,
 							 "AgsSwitchBufferFlag",
 							 &ags_switch_buffer_flag_info,
 							 0);
-
-    g_type_add_interface_static(ags_type_switch_buffer_flag,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
   
-  return (ags_type_switch_buffer_flag);
+  return(ags_type_switch_buffer_flag);
 }
 
 void
@@ -113,6 +99,7 @@ ags_switch_buffer_flag_class_init(AgsSwitchBufferFlagClass *switch_buffer_flag)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+
   GParamSpec *param_spec;
 
   ags_switch_buffer_flag_parent_class = g_type_class_peek_parent(switch_buffer_flag);
@@ -132,7 +119,7 @@ ags_switch_buffer_flag_class_init(AgsSwitchBufferFlagClass *switch_buffer_flag)
    *
    * The assigned #AgsSoundcard or #AgsSequencer
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("device",
 				   i18n_pspec("device of change device"),
@@ -147,15 +134,6 @@ ags_switch_buffer_flag_class_init(AgsSwitchBufferFlagClass *switch_buffer_flag)
   task = (AgsTaskClass *) switch_buffer_flag;
 
   task->launch = ags_switch_buffer_flag_launch;
-}
-
-void
-ags_switch_buffer_flag_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_switch_buffer_flag_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_switch_buffer_flag_connect;
-  connectable->disconnect = ags_switch_buffer_flag_disconnect;
 }
 
 void
@@ -225,22 +203,6 @@ ags_switch_buffer_flag_get_property(GObject *gobject,
 }
 
 void
-ags_switch_buffer_flag_connect(AgsConnectable *connectable)
-{
-  ags_switch_buffer_flag_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_switch_buffer_flag_disconnect(AgsConnectable *connectable)
-{
-  ags_switch_buffer_flag_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_switch_buffer_flag_dispose(GObject *gobject)
 {
   AgsSwitchBufferFlag *switch_buffer_flag;
@@ -277,28 +239,9 @@ ags_switch_buffer_flag_launch(AgsTask *task)
 {
   AgsSwitchBufferFlag *switch_buffer_flag;
 
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *device_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   switch_buffer_flag = AGS_SWITCH_BUFFER_FLAG(task);
 
-  /* get main loop and soundcard mutex */
-  pthread_mutex_lock(application_mutex);
-  
-  device_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  (GObject *) switch_buffer_flag->device);
-
-  pthread_mutex_unlock(application_mutex);
-
   /* switch buffer flag */
-  pthread_mutex_lock(device_mutex);
-  
   if(AGS_IS_DEVOUT(switch_buffer_flag->device)){
     ags_devout_switch_buffer_flag(switch_buffer_flag->device);
   }else if(AGS_IS_DEVIN(switch_buffer_flag->device)){
@@ -320,8 +263,6 @@ ags_switch_buffer_flag_launch(AgsTask *task)
   }else if(AGS_IS_CORE_AUDIO_MIDIIN(switch_buffer_flag->device)){
     ags_core_audio_midiin_switch_buffer_flag(switch_buffer_flag->device);
   }
-
-  pthread_mutex_unlock(device_mutex);
 }
 
 /**
@@ -332,7 +273,7 @@ ags_switch_buffer_flag_launch(AgsTask *task)
  *
  * Returns: an new #AgsSwitchBufferFlag.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSwitchBufferFlag*
 ags_switch_buffer_flag_new(GObject *device)

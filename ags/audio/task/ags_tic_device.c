@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,7 +22,6 @@
 #include <ags/i18n.h>
 
 void ags_tic_device_class_init(AgsTicDeviceClass *tic_device);
-void ags_tic_device_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_tic_device_init(AgsTicDevice *tic_device);
 void ags_tic_device_set_property(GObject *gobject,
 				 guint prop_id,
@@ -32,8 +31,6 @@ void ags_tic_device_get_property(GObject *gobject,
 				 guint prop_id,
 				 GValue *value,
 				 GParamSpec *param_spec);
-void ags_tic_device_connect(AgsConnectable *connectable);
-void ags_tic_device_disconnect(AgsConnectable *connectable);
 void ags_tic_device_dispose(GObject *gobject);
 void ags_tic_device_finalize(GObject *gobject);
 
@@ -50,7 +47,6 @@ void ags_tic_device_launch(AgsTask *task);
  */
 
 static gpointer ags_tic_device_parent_class = NULL;
-static AgsConnectableInterface *ags_tic_device_parent_connectable_interface;
 
 enum{
   PROP_0,
@@ -64,34 +60,24 @@ ags_tic_device_get_type()
 
   if(!ags_type_tic_device){
     static const GTypeInfo ags_tic_device_info = {
-      sizeof (AgsTicDeviceClass),
+      sizeof(AgsTicDeviceClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_tic_device_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsTicDevice),
+      sizeof(AgsTicDevice),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_tic_device_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_tic_device_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_tic_device = g_type_register_static(AGS_TYPE_TASK,
 						 "AgsTicDevice",
 						 &ags_tic_device_info,
 						 0);
-
-    g_type_add_interface_static(ags_type_tic_device,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
   
-  return (ags_type_tic_device);
+  return(ags_type_tic_device);
 }
 
 void
@@ -107,16 +93,11 @@ ags_tic_device_class_init(AgsTicDeviceClass *tic_device)
   /* gobject */
   gobject = (GObjectClass *) tic_device;
 
-  gobject->dispose = ags_tic_device_dispose;
-  gobject->finalize = ags_tic_device_finalize;
-
-  /* task */
-  task = (AgsTaskClass *) tic_device;
-
   gobject->set_property = ags_tic_device_set_property;
   gobject->get_property = ags_tic_device_get_property;
 
-  task->launch = ags_tic_device_launch;
+  gobject->dispose = ags_tic_device_dispose;
+  gobject->finalize = ags_tic_device_finalize;
 
   /* properties */
   /**
@@ -124,7 +105,7 @@ ags_tic_device_class_init(AgsTicDeviceClass *tic_device)
    *
    * The assigned #GObject as device.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("device",
 				   i18n_pspec("device to tic"),
@@ -134,15 +115,11 @@ ags_tic_device_class_init(AgsTicDeviceClass *tic_device)
   g_object_class_install_property(gobject,
 				  PROP_DEVICE,
 				  param_spec);  
-}
 
-void
-ags_tic_device_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_tic_device_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+  /* task */
+  task = (AgsTaskClass *) tic_device;
 
-  connectable->connect = ags_tic_device_connect;
-  connectable->disconnect = ags_tic_device_disconnect;
+  task->launch = ags_tic_device_launch;
 }
 
 void
@@ -212,22 +189,6 @@ ags_tic_device_get_property(GObject *gobject,
 }
 
 void
-ags_tic_device_connect(AgsConnectable *connectable)
-{
-  ags_tic_device_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_tic_device_disconnect(AgsConnectable *connectable)
-{
-  ags_tic_device_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_tic_device_dispose(GObject *gobject)
 {
   AgsTicDevice *tic_device;
@@ -266,6 +227,7 @@ ags_tic_device_launch(AgsTask *task)
 
   tic_device = AGS_TIC_DEVICE(task);
 
+  //FIXME:JK: configure realtime disable event
   if(AGS_IS_SOUNDCARD(tic_device->device)){
     AgsSoundcardInterface *soundcard_interface;
     
@@ -291,7 +253,7 @@ ags_tic_device_launch(AgsTask *task)
  *
  * Returns: an new #AgsTicDevice.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsTicDevice*
 ags_tic_device_new(GObject *device)

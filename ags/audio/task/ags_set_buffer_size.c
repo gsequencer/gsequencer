@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,7 +28,6 @@
 #include <ags/i18n.h>
 
 void ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size);
-void ags_set_buffer_size_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_set_buffer_size_init(AgsSetBufferSize *set_buffer_size);
 void ags_set_buffer_size_set_property(GObject *gobject,
 				      guint prop_id,
@@ -38,8 +37,6 @@ void ags_set_buffer_size_get_property(GObject *gobject,
 				      guint prop_id,
 				      GValue *value,
 				      GParamSpec *param_spec);
-void ags_set_buffer_size_connect(AgsConnectable *connectable);
-void ags_set_buffer_size_disconnect(AgsConnectable *connectable);
 void ags_set_buffer_size_dispose(GObject *gobject);
 void ags_set_buffer_size_finalize(GObject *gobject);
 
@@ -53,12 +50,12 @@ void ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *s
 
 /**
  * SECTION:ags_set_buffer_size
- * @short_description: resizes buffer size
+ * @short_description: adjust buffer size
  * @title: AgsSetBufferSize
  * @section_id:
  * @include: ags/audio/task/ags_set_buffer_size.h
  *
- * The #AgsSetBufferSize task resizes buffer size of scope.
+ * The #AgsSetBufferSize task adjusts buffer size of scope.
  */
 
 enum{
@@ -68,7 +65,6 @@ enum{
 };
 
 static gpointer ags_set_buffer_size_parent_class = NULL;
-static AgsConnectableInterface *ags_set_buffer_size_parent_connectable_interface;
 
 GType
 ags_set_buffer_size_get_type()
@@ -77,34 +73,24 @@ ags_set_buffer_size_get_type()
 
   if(!ags_type_set_buffer_size){
     static const GTypeInfo ags_set_buffer_size_info = {
-      sizeof (AgsSetBufferSizeClass),
+      sizeof(AgsSetBufferSizeClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_set_buffer_size_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsSetBufferSize),
+      sizeof(AgsSetBufferSize),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_set_buffer_size_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_set_buffer_size_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_set_buffer_size = g_type_register_static(AGS_TYPE_TASK,
 						      "AgsSetBufferSize",
 						      &ags_set_buffer_size_info,
 						      0);
-    
-    g_type_add_interface_static(ags_type_set_buffer_size,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
   
-  return (ags_type_set_buffer_size);
+  return(ags_type_set_buffer_size);
 }
 
 void
@@ -112,6 +98,7 @@ ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+
   GParamSpec *param_spec;
 
   ags_set_buffer_size_parent_class = g_type_class_peek_parent(set_buffer_size);
@@ -131,7 +118,7 @@ ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size)
    *
    * The assigned #GObject as scope.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("scope",
 				   i18n_pspec("scope of set buffer size"),
@@ -147,7 +134,7 @@ ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size)
    *
    * The buffer size to apply to scope.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("buffer size"),
@@ -164,15 +151,6 @@ ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size)
   task = (AgsTaskClass *) set_buffer_size;
 
   task->launch = ags_set_buffer_size_launch;
-}
-
-void
-ags_set_buffer_size_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_set_buffer_size_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_set_buffer_size_connect;
-  connectable->disconnect = ags_set_buffer_size_disconnect;
 }
 
 void
@@ -253,22 +231,6 @@ ags_set_buffer_size_get_property(GObject *gobject,
 }
 
 void
-ags_set_buffer_size_connect(AgsConnectable *connectable)
-{
-  ags_set_buffer_size_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_set_buffer_size_disconnect(AgsConnectable *connectable)
-{
-  ags_set_buffer_size_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_set_buffer_size_dispose(GObject *gobject)
 {
   AgsSetBufferSize *set_buffer_size;
@@ -326,192 +288,39 @@ ags_set_buffer_size_launch(AgsTask *task)
 void
 ags_set_buffer_size_audio_signal(AgsSetBufferSize *set_buffer_size, AgsAudioSignal *audio_signal)
 {
-  ags_audio_signal_realloc_buffer_size(audio_signal,
-				       set_buffer_size->buffer_size);
+  g_object_set(audio_signal,
+	       "buffer-size", set_buffer_size->buffer_size,
+	       NULL);
 }
 
 void
 ags_set_buffer_size_recycling(AgsSetBufferSize *set_buffer_size, AgsRecycling *recycling)
 {
-  AgsMutexManager *mutex_manager;
-
-  GList *list;
-  
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *recycling_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get recycling mutex */
-  pthread_mutex_lock(application_mutex);
-
-  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) recycling);
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* set buffer size audio signal */
-  pthread_mutex_lock(recycling_mutex);
-
-  list = recycling->audio_signal;
-
-  while(list != NULL){
-    ags_set_buffer_size_audio_signal(set_buffer_size, AGS_AUDIO_SIGNAL(list->data));
-
-    list = list->next;
-  }
-
-  pthread_mutex_unlock(recycling_mutex);
+  g_object_set(recycling,
+	       "buffer-size", set_buffer_size->buffer_size,
+	       NULL);
 }
 
 void
 ags_set_buffer_size_channel(AgsSetBufferSize *set_buffer_size, AgsChannel *channel)
 {
-  GObject *soundcard;
-
-  AgsMutexManager *mutex_manager;
-
-  guint samplerate, buffer_size;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-  pthread_mutex_t *channel_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get channel mutex */
-  pthread_mutex_lock(application_mutex);
-
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) channel);
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get some fields */
-  pthread_mutex_lock(channel_mutex);
-  
-  soundcard = channel->soundcard;
-
-  pthread_mutex_unlock(channel_mutex);
-
-  /* get soundcard mutex */
-  pthread_mutex_lock(application_mutex);
-
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) soundcard);
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get presets */
-  pthread_mutex_lock(soundcard_mutex);
-  
-  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
-			    NULL,
-			    &samplerate,
-			    &buffer_size,
-			    NULL);
-
-  pthread_mutex_unlock(soundcard_mutex);
-
-  /* set buffer size and samplerate */
-  pthread_mutex_lock(channel_mutex);
-  
   g_object_set(channel,
-	       "samplerate", samplerate,
-	       "buffer-size", buffer_size,
+	       "buffer-size", set_buffer_size->buffer_size,
 	       NULL);
-
-  pthread_mutex_unlock(channel_mutex);
 }
 
 void
 ags_set_buffer_size_audio(AgsSetBufferSize *set_buffer_size, AgsAudio *audio)
 {
-  AgsChannel *input, *output;
-  AgsChannel *channel;
-
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get some fields */
-  pthread_mutex_lock(audio_mutex);
-
-  output = audio->output;
-  input = audio->input;
-
-  pthread_mutex_unlock(audio_mutex);
-  
-  /* AgsOutput */
-  channel = output;
-
-  while(channel != NULL){
-    /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
-
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
-
-    pthread_mutex_unlock(application_mutex);
-
-    /* set buffer size */
-    ags_set_buffer_size_channel(set_buffer_size, channel);
-
-    /* iterate */
-    pthread_mutex_lock(channel_mutex);
-    
-    channel = channel->next;
-    
-    pthread_mutex_unlock(channel_mutex);    
-  }
-
-  /* AgsInput */
-  channel = input;
-
-  while(channel != NULL){
-    /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
-
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
-
-    pthread_mutex_unlock(application_mutex);
-
-    /* set buffer size */
-    ags_set_buffer_size_channel(set_buffer_size, channel);
-
-    /* iterate */
-    pthread_mutex_lock(channel_mutex);
-    
-    channel = channel->next;
-    
-    pthread_mutex_unlock(channel_mutex);    
-  }
+  g_object_set(audio,
+	       "buffer-size", set_buffer_size->buffer_size,
+	       NULL);
 }
 
 void
 ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundcard)
 {
-  AgsThread *main_loop;
-  AgsMutexManager *mutex_manager;
+  AgsThread *audio_loop;
   
   AgsApplicationContext *application_context;
   
@@ -523,55 +332,31 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
   guint buffer_size;
   guint format;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
 
-  /* get main loop and soundcard mutex */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = application_context->main_loop;
-  
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) soundcard);
-
-  pthread_mutex_unlock(application_mutex);
+  /* get main loop */
+  g_object_get(application_context,
+	       "main-loop", &audio_loop,
+	       NULL);
   
   /* set buffer size */
-  pthread_mutex_lock(soundcard);
-
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    &channels,
 			    &samplerate,
 			    &buffer_size,
 			    &format);
-
-  pthread_mutex_unlock(soundcard);
     
   /* reset soundcards */
-  pthread_mutex_lock(application_mutex);
-
   list =
-    list_start = g_list_copy(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)));
-
-  pthread_mutex_unlock(application_mutex);
+    list_start = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)));
 
   if(soundcard == list->data){
     /* reset soundcards if applied to first soundcard */
-    pthread_mutex_lock(soundcard_mutex);
-    
     ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
 			      channels,
 			      samplerate,
 			      set_buffer_size->buffer_size,
 			      format);
-
-    pthread_mutex_unlock(soundcard_mutex);
 
     while(list != NULL){
       if(list->data != soundcard){
@@ -581,15 +366,6 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
 	guint target_format;
 
 	/* get soundcard mutex */
-	pthread_mutex_lock(application_mutex);
-
-	soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-						   (GObject *) list->data);
-
-	pthread_mutex_unlock(application_mutex);
-	
-	pthread_mutex_lock(soundcard_mutex);
-	
 	ags_soundcard_get_presets(AGS_SOUNDCARD(list->data),
 				  &target_channels,
 				  &target_samplerate,
@@ -601,8 +377,6 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
 				  target_samplerate,
 				  set_buffer_size->buffer_size * (target_samplerate / samplerate),
 				  target_format);
-
-	pthread_mutex_unlock(soundcard_mutex);
       }
 
       list = list->next;
@@ -611,28 +385,12 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
     /* reset thread frequency */
     thread_frequency = samplerate / set_buffer_size->buffer_size + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
 
-    ags_main_loop_change_frequency(AGS_MAIN_LOOP(main_loop),
+    ags_main_loop_change_frequency(AGS_MAIN_LOOP(audio_loop),
 				   thread_frequency);
   }else{
     g_warning("buffer size can only adjusted of your very first soundcard");
   }
   
-  g_list_free(list_start);
-  
-  /* AgsAudio */
-  pthread_mutex_lock(application_mutex);
-
-  list_start = 
-    list = g_list_copy(ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard)));
-
-  pthread_mutex_unlock(application_mutex);
-
-  while(list != NULL){
-    ags_set_buffer_size_audio(set_buffer_size, AGS_AUDIO(list->data));
-
-    list = list->next;
-  }
-
   g_list_free(list_start);
 }
 
@@ -641,11 +399,11 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
  * @scope: the #GObject to reset
  * @buffer_size: the new buffer size
  *
- * Creates an #AgsSetBufferSize.
+ * Create a new instance of #AgsSetBufferSize.
  *
- * Returns: an new #AgsSetBufferSize.
+ * Returns: the new #AgsSetBufferSize
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSetBufferSize*
 ags_set_buffer_size_new(GObject *scope,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,7 +27,6 @@
 #include <ags/i18n.h>
 
 void ags_set_format_class_init(AgsSetFormatClass *set_format);
-void ags_set_format_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_set_format_init(AgsSetFormat *set_format);
 void ags_set_format_set_property(GObject *gobject,
 				 guint prop_id,
@@ -37,8 +36,6 @@ void ags_set_format_get_property(GObject *gobject,
 				 guint prop_id,
 				 GValue *value,
 				 GParamSpec *param_spec);
-void ags_set_format_connect(AgsConnectable *connectable);
-void ags_set_format_disconnect(AgsConnectable *connectable);
 void ags_set_format_dispose(GObject *gobject);
 void ags_set_format_finalize(GObject *gobject);
 
@@ -52,7 +49,7 @@ void ags_set_format_soundcard(AgsSetFormat *set_format, GObject *soundcard);
 
 /**
  * SECTION:ags_set_format
- * @short_description: resets format
+ * @short_description: reset format
  * @title: AgsSetFormat
  * @section_id:
  * @include: ags/audio/task/ags_set_format.h
@@ -61,7 +58,6 @@ void ags_set_format_soundcard(AgsSetFormat *set_format, GObject *soundcard);
  */
 
 static gpointer ags_set_format_parent_class = NULL;
-static AgsConnectableInterface *ags_set_format_parent_connectable_interface;
 
 enum{
   PROP_0,
@@ -76,34 +72,24 @@ ags_set_format_get_type()
 
   if(!ags_type_set_format){
     static const GTypeInfo ags_set_format_info = {
-      sizeof (AgsSetFormatClass),
+      sizeof(AgsSetFormatClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_set_format_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsSetFormat),
+      sizeof(AgsSetFormat),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_set_format_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_set_format_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_set_format = g_type_register_static(AGS_TYPE_TASK,
 						 "AgsSetFormat",
 						 &ags_set_format_info,
 						 0);
-    
-    g_type_add_interface_static(ags_type_set_format,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
   
-  return (ags_type_set_format);
+  return(ags_type_set_format);
 }
 
 void
@@ -111,6 +97,7 @@ ags_set_format_class_init(AgsSetFormatClass *set_format)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+
   GParamSpec *param_spec;
 
   ags_set_format_parent_class = g_type_class_peek_parent(set_format);
@@ -130,7 +117,7 @@ ags_set_format_class_init(AgsSetFormatClass *set_format)
    *
    * The assigned #GObject as scope.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("scope",
 				   i18n_pspec("scope of set format"),
@@ -146,7 +133,7 @@ ags_set_format_class_init(AgsSetFormatClass *set_format)
    *
    * The format to apply to scope.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("format"),
@@ -163,15 +150,6 @@ ags_set_format_class_init(AgsSetFormatClass *set_format)
   task = (AgsTaskClass *) set_format;
 
   task->launch = ags_set_format_launch;
-}
-
-void
-ags_set_format_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_set_format_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_set_format_connect;
-  connectable->disconnect = ags_set_format_disconnect;
 }
 
 void
@@ -252,22 +230,6 @@ ags_set_format_get_property(GObject *gobject,
 }
 
 void
-ags_set_format_connect(AgsConnectable *connectable)
-{
-  ags_set_format_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_set_format_disconnect(AgsConnectable *connectable)
-{
-  ags_set_format_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_set_format_dispose(GObject *gobject)
 {
   AgsSetFormat *set_format;
@@ -333,37 +295,9 @@ ags_set_format_audio_signal(AgsSetFormat *set_format, AgsAudioSignal *audio_sign
 void
 ags_set_format_recycling(AgsSetFormat *set_format, AgsRecycling *recycling)
 {
-  AgsMutexManager *mutex_manager;
-
-  GList *list;
-  
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *recycling_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get recycling mutex */
-  pthread_mutex_lock(application_mutex);
-
-  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) recycling);
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* set format audio signal */
-  pthread_mutex_lock(recycling_mutex);
-
-  list = recycling->audio_signal;
-
-  while(list != NULL){
-    ags_set_format_audio_signal(set_format, AGS_AUDIO_SIGNAL(list->data));
-
-    list = list->next;
-  }
-
-  pthread_mutex_unlock(recycling_mutex);
+  g_object_set(recycling,
+	       "format", set_format->format,
+	       NULL);
 }
 
 void
@@ -377,112 +311,20 @@ ags_set_format_channel(AgsSetFormat *set_format, AgsChannel *channel)
 void
 ags_set_format_audio(AgsSetFormat *set_format, AgsAudio *audio)
 {
-  AgsChannel *input, *output;
-  AgsChannel *channel;
-
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get some fields */
-  pthread_mutex_lock(audio_mutex);
-
-  output = audio->output;
-  input = audio->input;
-
-  pthread_mutex_unlock(audio_mutex);
-
-  /* AgsOutput */
-  channel = output;
-
-  while(channel != NULL){
-    /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
-
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
-
-    pthread_mutex_unlock(application_mutex);
-
-    /* set format */
-    ags_set_format_channel(set_format, channel);
-
-    /* iterate */
-    pthread_mutex_lock(channel_mutex);
-    
-    channel = channel->next;
-    
-    pthread_mutex_unlock(channel_mutex);    
-  }
-
-  /* AgsInput */
-  channel = input;
-
-  while(channel != NULL){
-    /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
-
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
-
-    pthread_mutex_unlock(application_mutex);
-
-    /* set format */
-    ags_set_format_channel(set_format, channel);
-
-    /* iterate */
-    pthread_mutex_lock(channel_mutex);
-    
-    channel = channel->next;
-    
-    pthread_mutex_unlock(channel_mutex);    
-  }
+  g_object_set(audio,
+	       "format", set_format->format,
+	       NULL);
 }
 
 void
 ags_set_format_soundcard(AgsSetFormat *set_format, GObject *soundcard)
 {
-  AgsMutexManager *mutex_manager;
-
-  GList *list_start, *list;
-
   guint channels;
   guint samplerate;
   guint buffer_size;
   guint format;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get soundcard mutex */
-  pthread_mutex_lock(application_mutex);
-
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) soundcard);
-
-  pthread_mutex_unlock(application_mutex);
   
-  /*  */
-  pthread_mutex_lock(soundcard_mutex);
-
+  /* apply format */
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    &channels,
 			    &samplerate,
@@ -494,20 +336,6 @@ ags_set_format_soundcard(AgsSetFormat *set_format, GObject *soundcard)
 			    samplerate,
 			    buffer_size,
 			    set_format->format);
-
-  pthread_mutex_unlock(soundcard_mutex);
-
-  /* AgsAudio */
-  list =
-    list_start = g_list_copy(ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard)));
-
-  while(list != NULL){
-    ags_set_format_audio(set_format, AGS_AUDIO(list->data));
-
-    list = list->next;
-  }
-
-  g_list_free(list_start);
 }
 
 /**
@@ -515,11 +343,11 @@ ags_set_format_soundcard(AgsSetFormat *set_format, GObject *soundcard)
  * @scope: the #GObject to reset
  * @format: the new format
  *
- * Creates an #AgsSetFormat.
+ * Create a new instance of #AgsSetFormat.
  *
- * Returns: an new #AgsSetFormat.
+ * Returns: the new #AgsSetFormat
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSetFormat*
 ags_set_format_new(GObject *scope,
