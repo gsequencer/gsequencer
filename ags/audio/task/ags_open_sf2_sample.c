@@ -458,7 +458,101 @@ ags_open_sf2_sample_finalize(GObject *gobject)
 void
 ags_open_sf2_sample_launch(AgsTask *task)
 {
-  //TODO:JK implement me
+  AgsChannel *channel;
+  AgsChannel *link;
+  AgsRecycling *first_recycling;
+
+  AgsOpenSf2Sample *open_sf2_sample;
+
+  AgsAudioContainer *audio_container;
+  
+  AgsFileLink *file_link;
+
+  GObject *soundcard;
+  
+  GList *audio_signal;
+
+  guint i;
+
+  GError *error;
+  
+  open_sf2_sample = AGS_OPEN_SF2_SAMPLE(task);
+
+  channel = open_sf2_sample->channel;
+
+  g_object_get(channel,
+	       "output-soundcard", &soundcard,
+	       NULL);
+  
+  /* open audio file and read audio signal */
+  audio_container = ags_audio_container_new(open_sf2_sample->filename,
+					    open_sf2_sample->preset,
+					    open_sf2_sample->instrument,
+					    open_sf2_sample->sample,
+					    soundcard,
+					    open_sf2_sample->audio_channel);
+
+  if(!ags_audio_container_open(audio_container)){
+    g_message("unable to open file - %s", open_sf2_sample->filename);
+
+    return;
+  }
+  
+  ags_audio_container_read_audio_signal(audio_container);
+
+  /* iterate channels */
+  audio_signal = audio_container->audio_signal;
+    
+  /* set link */
+  g_object_get(channel,
+	       "link", &link,
+	       NULL);
+
+  if(link != NULL){
+    error = NULL;
+    ags_channel_set_link(channel, NULL,
+			 &error);
+    
+    if(error != NULL){
+      g_warning("%s", error->message);
+    }
+  }
+  
+  /* file link */
+  if(AGS_IS_INPUT(channel)){
+    g_object_get(channel,
+		 "file-link", &file_link,
+		 NULL);
+    
+    if(file_link == NULL){
+      file_link = g_object_new(AGS_TYPE_AUDIO_CONTAINER_LINK,
+			       NULL);
+      
+      g_object_set(channel,
+		   "file-link", file_link,
+		   NULL);
+    }
+    
+    g_object_set(file_link,
+		 "filename", open_sf2_sample->filename,
+		 "preset", open_sf2_sample->preset,
+		 "instrument", open_sf2_sample->instrument,
+		 "sample", open_sf2_sample->sample,
+		 "audio-channel", open_sf2_sample->audio_channel,
+		 NULL);
+  }
+
+  /* add as template */
+  g_object_get(channel,
+	       "first-recycling", &first_recycling,
+	       NULL);
+  
+  AGS_AUDIO_SIGNAL(audio_container->audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+  ags_recycling_add_audio_signal(first_recycling,
+				 AGS_AUDIO_SIGNAL(audio_container->audio_signal->data));
+
+  /* unref audio file */
+  g_object_unref(audio_container);
 }
 
 /**

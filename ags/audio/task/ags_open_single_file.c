@@ -295,11 +295,11 @@ ags_open_single_file_finalize(GObject *gobject)
 void
 ags_open_single_file_launch(AgsTask *task)
 {
-  AgsOpenSingleFile *open_single_file;
-
   AgsChannel *channel;
   AgsChannel *link;
   AgsRecycling *first_recycling;
+
+  AgsOpenSingleFile *open_single_file;
   
   AgsAudioFile *audio_file;
 
@@ -318,7 +318,7 @@ ags_open_single_file_launch(AgsTask *task)
   channel = open_single_file->channel;
 
   g_object_get(channel,
-	       "output-soundcard", &output_soundcard,
+	       "output-soundcard", &soundcard,
 	       NULL);
   
   /* open audio file and read audio signal */
@@ -372,7 +372,7 @@ ags_open_single_file_launch(AgsTask *task)
 		 "preset", NULL,
 		 "instrument", NULL,
 		 "sample", NULL,
-		 "audio-channel", open_single_file->start_channel + i,
+		 "audio-channel", open_single_file->audio_channel,
 		 NULL);
   }
 
