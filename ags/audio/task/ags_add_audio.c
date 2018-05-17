@@ -301,8 +301,6 @@ ags_add_audio_launch(AgsTask *task)
   GList *list;
   
   add_audio = AGS_ADD_AUDIO(task);
-
-  //TODO:JK: use AgsSoundcard
   
   /* add audio */
   if(add_audio->application_context != NULL &&
@@ -310,7 +308,7 @@ ags_add_audio_launch(AgsTask *task)
     /* ref audio */
     g_object_ref(add_audio->audio);
 
-    /* add to soundcard */
+    /* add to sound provider */
     list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(add_audio->application_context));
     list = g_list_prepend(list,
 			  add_audio->audio);

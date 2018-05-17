@@ -41,7 +41,7 @@ struct _AgsRemoveAudio
 {
   AgsTask task;
 
-  GObject *soundcard;
+  AgsApplicationContext *application_context;
   AgsAudio *audio;
 };
 
@@ -52,7 +52,7 @@ struct _AgsRemoveAudioClass
 
 GType ags_remove_audio_get_type();
 
-AgsRemoveAudio* ags_remove_audio_new(GObject *soundcard,
+AgsRemoveAudio* ags_remove_audio_new(AgsApplicationContext *application_context,
 				     AgsAudio *audio);
 
 #endif /*__AGS_REMOVE_AUDIO_H__*/

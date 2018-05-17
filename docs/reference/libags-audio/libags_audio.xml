@@ -268,17 +268,12 @@
       <xi:include href="xml/ags_apply_sequencer_length.xml"/>
       <xi:include href="xml/ags_apply_synth.xml"/>
       <xi:include href="xml/ags_apply_tact.xml"/>
-      <xi:include href="xml/ags_cancel_audio.xml"/>
-      <xi:include href="xml/ags_cancel_channel.xml"/>
-      <xi:include href="xml/ags_cancel_recall.xml"/>
       <xi:include href="xml/ags_change_soundcard.xml"/>
       <xi:include href="xml/ags_clear_audio_signal.xml"/>
       <xi:include href="xml/ags_clear_buffer.xml"/>
       <xi:include href="xml/ags_crop_note.xml"/>
       <xi:include href="xml/ags_export_output.xml"/>
       <xi:include href="xml/ags_free_selection.xml"/>
-      <xi:include href="xml/ags_init_audio.xml"/>
-      <xi:include href="xml/ags_init_channel.xml"/>
       <xi:include href="xml/ags_link_channel.xml"/>
       <xi:include href="xml/ags_move_note.xml"/>
       <xi:include href="xml/ags_notify_soundcard.xml"/>

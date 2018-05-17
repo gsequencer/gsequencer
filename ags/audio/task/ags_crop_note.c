@@ -518,17 +518,14 @@ ags_crop_note_launch(AgsTask *task)
   gboolean do_resize;
   gboolean initial_run;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-
   crop_note = AGS_CROP_NOTE(task);
 
   /* get some properties */
-  audio = crop_note->audio;
   notation =
     current_notation = crop_note->notation;
 
   g_object_get(notation,
+	       "audio", &audio,
 	       "audio-channel", &audio_channel,
 	       NULL);
   
@@ -611,7 +608,7 @@ ags_crop_note_launch(AgsTask *task)
 	current_notation = ags_notation_new(audio,
 					    audio_channel);
 	
-	current_notation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+	current_notation->timestamp->timer.ags_offset.offset = ags_timestamp_get_ags_offset(timestamp);
 	ags_audio_add_notation(audio,
 			       current_notation);
       }

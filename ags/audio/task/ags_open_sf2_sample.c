@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,21 +22,15 @@
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
-#include <ags/audio/ags_playable.h>
 
 #include <ags/audio/file/ags_audio_file_link.h>
-#include <ags/audio/file/ags_ipatch.h>
+#include <ags/audio/file/ags_audio_container.h>
 
 #include <ags/config.h>
-
-#ifdef AGS_WITH_LIBINSTPATCH
-#include <libinstpatch/libinstpatch.h>
-#endif
 
 #include <ags/i18n.h>
 
 void ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample);
-void ags_open_sf2_sample_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_open_sf2_sample_init(AgsOpenSf2Sample *open_sf2_sample);
 void ags_open_sf2_sample_set_property(GObject *gobject,
 				      guint prop_id,
@@ -46,15 +40,14 @@ void ags_open_sf2_sample_get_property(GObject *gobject,
 				      guint prop_id,
 				      GValue *value,
 				      GParamSpec *param_spec);
-void ags_open_sf2_sample_connect(AgsConnectable *connectable);
-void ags_open_sf2_sample_disconnect(AgsConnectable *connectable);
 void ags_open_sf2_sample_dispose(GObject *gobject);
 void ags_open_sf2_sample_finalize(GObject *gobject);
+
 void ags_open_sf2_sample_launch(AgsTask *task);
 
 /**
  * SECTION:ags_open_sf2_sample
- * @short_description: open SF2 sample object
+ * @short_description: open Soundfont2 sample
  * @title: AgsOpenSf2Sample
  * @section_id:
  * @include: ags/audio/task/ags_open_sf2_sample.h
@@ -63,7 +56,6 @@ void ags_open_sf2_sample_launch(AgsTask *task);
  */
 
 static gpointer ags_open_sf2_sample_parent_class = NULL;
-static AgsConnectableInterface *ags_open_sf2_sample_parent_connectable_interface;
 
 enum{
   PROP_0,
@@ -72,6 +64,7 @@ enum{
   PROP_PRESET,
   PROP_INSTRUMENT,
   PROP_SAMPLE,
+  PROP_AUDIO_CHANNEL,
 };
 
 GType
@@ -81,34 +74,24 @@ ags_open_sf2_sample_get_type()
 
   if(!ags_type_open_sf2_sample){
     static const GTypeInfo ags_open_sf2_sample_info = {
-      sizeof (AgsOpenSf2SampleClass),
+      sizeof(AgsOpenSf2SampleClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_open_sf2_sample_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsOpenSf2Sample),
+      sizeof(AgsOpenSf2Sample),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_open_sf2_sample_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_open_sf2_sample_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_open_sf2_sample = g_type_register_static(AGS_TYPE_TASK,
 						"AgsOpenSf2Sample",
 						&ags_open_sf2_sample_info,
 						0);
-
-    g_type_add_interface_static(ags_type_open_sf2_sample,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
   
-  return (ags_type_open_sf2_sample);
+  return(ags_type_open_sf2_sample);
 }
 
 void
@@ -116,6 +99,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+
   GParamSpec *param_spec;
   
   ags_open_sf2_sample_parent_class = g_type_class_peek_parent(open_sf2_sample);
@@ -135,7 +119,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("channel of open sf2 sample"),
@@ -151,7 +135,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
    *
    * The assigned filename.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("the filename"),
@@ -167,7 +151,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
    *
    * The assigned preset.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("preset",
 				   i18n_pspec("the preset"),
@@ -183,7 +167,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
    *
    * The assigned instrument.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("instrument",
 				   i18n_pspec("the instrument"),
@@ -199,7 +183,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
    *
    * The assigned sample.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("sample",
 				   i18n_pspec("the sample"),
@@ -210,6 +194,24 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
 				  PROP_SAMPLE,
 				  param_spec);
 
+  /**
+   * AgsOpenSf2Sample:audio-channel:
+   *
+   * The nth audio channel.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_uint("audio-channel",
+				  i18n_pspec("nth audio channel"),
+				  i18n_pspec("The nth audio channel"),
+				  0,
+				  G_MAXUINT32,
+				  0,
+				  G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CHANNEL,
+				  param_spec);
+
   /* AgsTask */
   task = (AgsTaskClass *) open_sf2_sample;
 
@@ -217,22 +219,17 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
 }
 
 void
-ags_open_sf2_sample_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_open_sf2_sample_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_open_sf2_sample_connect;
-  connectable->disconnect = ags_open_sf2_sample_disconnect;
-}
-
-void
 ags_open_sf2_sample_init(AgsOpenSf2Sample *open_sf2_sample)
 {
   open_sf2_sample->channel = NULL;
+
   open_sf2_sample->filename = NULL;
+
   open_sf2_sample->preset = NULL;
   open_sf2_sample->instrument = NULL;
   open_sf2_sample->sample = NULL;
+
+  open_sf2_sample->audio_channel = 0;
 }
 
 void
@@ -461,173 +458,7 @@ ags_open_sf2_sample_finalize(GObject *gobject)
 void
 ags_open_sf2_sample_launch(AgsTask *task)
 {
-  AgsChannel *channel;
-  AgsChannel *link;
-  AgsRecycling *first_recycling;
-  AgsAudioSignal *audio_signal;  
-  AgsPlayable *playable;
-
-#ifdef AGS_WITH_LIBINSTPATCH
-  AgsIpatch *ipatch;
-#endif
-
-  AgsOpenSf2Sample *open_sf2_sample;
-
-  AgsFileLink *file_link;
-  
-  AgsMutexManager *mutex_manager;
-
-  GObject *soundcard;
-  
-  GList *list;
-
-  guint audio_channel;
-  
-  GError *error;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *channel_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  open_sf2_sample = AGS_OPEN_SF2_SAMPLE(task);
-
-#ifdef AGS_WITH_LIBINSTPATCH
-#ifdef AGS_DEBUG
-  g_message("Open Soundfont2 [%s] - %s %s %s",
-	    open_sf2_sample->filename,
-	    open_sf2_sample->preset,
-	    open_sf2_sample->instrument,
-	    open_sf2_sample->sample);
-#endif
-  
-  channel = open_sf2_sample->channel;
-
-  /* get channel mutex */
-  pthread_mutex_lock(application_mutex);
-
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) channel);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* file link */
-  if(AGS_IS_INPUT(channel)){
-    pthread_mutex_lock(channel_mutex);
-
-    file_link = AGS_INPUT(channel)->file_link;
-    
-    if(file_link == NULL){
-      file_link = (GObject *) ags_audio_file_link_new();
-
-      g_object_set(channel,
-		   "file-link", file_link,
-		   NULL);
-    }
-
-    g_object_set(file_link,
-		 "filename", open_sf2_sample->filename,
-		 "preset", open_sf2_sample->preset,
-		 "instrument", open_sf2_sample->instrument,
-		 "sample", open_sf2_sample->sample,
-		 "audio-channel", channel->audio_channel,
-		 NULL);
-
-    pthread_mutex_unlock(channel_mutex);
-  }
-  
-  ipatch = g_object_new(AGS_TYPE_IPATCH,
-			"soundcard", channel->soundcard,
-			"mode", AGS_IPATCH_READ,
-			"filename", open_sf2_sample->filename,
-			NULL);
-
-  playable = AGS_PLAYABLE(ipatch);
-  
-  error = NULL;
-  ags_playable_level_select(playable,
-			    0, open_sf2_sample->filename,
-			    &error);
-
-  /* select first - preset */
-  ipatch->nth_level = 1;
-  
-  error = NULL;
-  ags_playable_level_select(playable,
-			    1, open_sf2_sample->preset,
-			    &error);
-
-  if(error != NULL){
-    return;
-  }
-
-  /* select second - instrument */
-  ipatch->nth_level = 2;
-
-  error = NULL;
-  ags_playable_level_select(playable,
-			    2, open_sf2_sample->instrument,
-			    &error);
-
-  if(error != NULL){
-    return;
-  }
-
-  /* select third - sample */
-  ipatch->nth_level = 3;
-
-  error = NULL;
-  ags_playable_level_select(playable,
-			    3, open_sf2_sample->sample,
-			    &error);
-
-  if(error != NULL){
-    return;
-  }
-
-  /* set link */
-  pthread_mutex_lock(channel_mutex);
-
-  soundcard = channel->soundcard;
-  
-  link = channel->link;
-
-  audio_channel = channel->audio_channel;
-  
-  pthread_mutex_unlock(channel_mutex);
-
-  if(link != NULL){
-    error = NULL;
-    
-    ags_channel_set_link(channel, NULL,
-			 &error);
-    
-    if(error != NULL){
-      g_warning("%s", error->message);
-    }
-  }
-
-  /* read audio signal */
-  list = ags_playable_read_audio_signal(playable,
-					soundcard,
-					audio_channel, 1);
-  audio_signal = list->data;
-  
-  /* replace template audio signal */
-  pthread_mutex_lock(channel_mutex);
-
-  first_recycling = channel->first_recycling;
-
-  pthread_mutex_unlock(channel_mutex);
-  
-  audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-  ags_recycling_add_audio_signal(first_recycling,
-				 audio_signal); 
-
-  g_static_rec_mutex_unlock_full(((IpatchItem *) (ipatch->base))->mutex);
-
-  #endif
+  //TODO:JK implement me
 }
 
 /**
@@ -637,19 +468,21 @@ ags_open_sf2_sample_launch(AgsTask *task)
  * @preset: the preset
  * @instrument: the instrument
  * @sample: the sample
+ * @audio_channel: the audio channel
  *
  * Creates an #AgsOpenSf2Sample.
  *
  * Returns: an new #AgsOpenSf2Sample.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsOpenSf2Sample*
 ags_open_sf2_sample_new(AgsChannel *channel,
 			gchar *filename,
 			gchar *preset,
 			gchar *instrument,
-			gchar *sample)
+			gchar *sample,
+			guint audio_channel)
 {
   AgsOpenSf2Sample *open_sf2_sample;
 
@@ -659,6 +492,7 @@ ags_open_sf2_sample_new(AgsChannel *channel,
 						      "preset", preset,
 						      "instrument", instrument,
 						      "sample", sample,
+						      "audio-channel", audio_channel,
 						      NULL);
 
   return(open_sf2_sample);

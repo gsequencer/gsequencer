@@ -420,7 +420,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  0,
 				  G_PARAM_READABLE);
   g_object_class_install_property(gobject,
-				  PROP_AUDIO_CHANNEL,
+				  PROP_PAD,
 				  param_spec);
 
   /**

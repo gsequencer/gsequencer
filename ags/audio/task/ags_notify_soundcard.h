@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
+
+#include <ags/audio/thread/ags_soundcard_thread.h>
 
 #define AGS_TYPE_NOTIFY_SOUNDCARD                (ags_notify_soundcard_get_type())
 #define AGS_NOTIFY_SOUNDCARD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NOTIFY_SOUNDCARD, AgsNotifySoundcard))
@@ -58,7 +60,7 @@ struct _AgsNotifySoundcard
   pthread_mutex_t *return_mutex;
   pthread_cond_t *return_cond;
 
-  GObject *soundcard_thread;
+  AgsSoundcardThread *soundcard_thread;
 };
 
 struct _AgsNotifySoundcardClass
@@ -68,7 +70,7 @@ struct _AgsNotifySoundcardClass
 
 GType ags_notify_soundcard_get_type();
 
-AgsNotifySoundcard* ags_notify_soundcard_new(GObject *soundcard_thread);
+AgsNotifySoundcard* ags_notify_soundcard_new(AgsSoundcardThread *soundcard_thread);
 
 #endif /*__AGS_NOTIFYo_SOUNDCARD_H__*/
 
