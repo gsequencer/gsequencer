@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -49,6 +49,7 @@ typedef enum{
   AGS_EXPORT_OUTPUT_FORMAT_WAV    =  1,
   AGS_EXPORT_OUTPUT_FORMAT_OGG    =  1 <<  1,
   AGS_EXPORT_OUTPUT_FORMAT_FLAC   =  1 <<  2,
+  AGS_EXPORT_OUTPUT_FORMAT_AIFF   =  1 <<  3,
 }AgsExportOutputFormat;
 
 struct _AgsExportOutput

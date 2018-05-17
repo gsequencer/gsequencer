@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,6 @@
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
 
 #define AGS_TYPE_FREE_SELECTION                (ags_free_selection_get_type())
@@ -42,7 +41,6 @@ struct _AgsFreeSelection
 {
   AgsTask task;
 
-  AgsAudio *audio;
   AgsNotation *notation;
 };
 

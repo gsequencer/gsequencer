@@ -19,10 +19,7 @@
 
 #include <ags/audio/thread/ags_export_thread.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_devout.h>
 
@@ -70,6 +67,7 @@ enum{
   PROP_0,
   PROP_SOUNDCARD,
   PROP_AUDIO_FILE,
+  PROP_TIC,
 };
 
 static gpointer ags_export_thread_parent_class = NULL;
@@ -161,6 +159,24 @@ ags_export_thread_class_init(AgsExportThreadClass *export_thread)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_FILE,
+				  param_spec);
+
+  /**
+   * AgsExportThread:tic:
+   *
+   * The tic.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_int("tic",
+				 i18n_pspec("tic"),
+				 i18n_pspec("The tic"),
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TIC,
 				  param_spec);
 
   /* AgsThread */
@@ -319,6 +335,11 @@ ags_export_thread_set_property(GObject *gobject,
       export_thread->audio_file = audio_file;
     }
     break;
+  case PROP_TIC:
+    {
+      export_thread->tic = g_value_get_uint(value);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -344,6 +365,11 @@ ags_export_thread_get_property(GObject *gobject,
   case PROP_AUDIO_FILE:
     {
       g_value_set_object(value, export_thread->audio_file);
+    }
+    break;
+  case PROP_TIC:
+    {
+      g_value_set_uint(value, export_thread->tic);
     }
     break;
   default:

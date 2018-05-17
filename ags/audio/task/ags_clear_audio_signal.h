@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,6 @@
 
 #include <ags/thread/ags_task.h>
 
-#include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 
 #define AGS_TYPE_CLEAR_AUDIO_SIGNAL                (ags_clear_audio_signal_get_type())

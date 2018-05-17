@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_channel.h>
+
 #define AGS_TYPE_PLAY_CHANNEL                (ags_play_channel_get_type())
 #define AGS_PLAY_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_CHANNEL, AgsPlayChannel))
 #define AGS_PLAY_CHANNEL_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PLAY_CHANNEL, AgsPlayChannelClass))
@@ -39,8 +41,7 @@ struct _AgsPlayChannel
 {
   AgsTask task;
 
-  GObject *audio_loop;
-  GObject *channel;
+  AgsChannel *channel;
 };
 
 struct _AgsPlayChannelClass
@@ -50,7 +51,6 @@ struct _AgsPlayChannelClass
 
 GType ags_play_channel_get_type();
 
-AgsPlayChannel* ags_play_channel_new(GObject *audio_loop,
-				     GObject *channel);
+AgsPlayChannel* ags_play_channel_new(AgsChannel *channel);
 
 #endif /*__AGS_PLAY_CHANNEL_H__*/

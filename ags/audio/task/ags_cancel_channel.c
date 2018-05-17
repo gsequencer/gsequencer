@@ -27,7 +27,6 @@
 #include <ags/i18n.h>
 
 void ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel);
-void ags_cancel_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_cancel_channel_init(AgsCancelChannel *cancel_channel);
 void ags_cancel_channel_set_property(GObject *gobject,
 				     guint prop_id,
@@ -37,8 +36,6 @@ void ags_cancel_channel_get_property(GObject *gobject,
 				     guint prop_id,
 				     GValue *value,
 				     GParamSpec *param_spec);
-void ags_cancel_channel_connect(AgsConnectable *connectable);
-void ags_cancel_channel_disconnect(AgsConnectable *connectable);
 void ags_cancel_channel_dispose(GObject *gobject);
 void ags_cancel_channel_finalize(GObject *gobject);
 
@@ -55,13 +52,11 @@ void ags_cancel_channel_launch(AgsTask *task);
  */
 
 static gpointer ags_cancel_channel_parent_class = NULL;
-static AgsConnectableInterface *ags_cancel_channel_parent_connectable_interface;
 
 enum{
   PROP_0,
   PROP_CHANNEL,
-  PROP_RECALL_ID,
-  PROP_PLAYBACK,
+  PROP_SOUND_SCOPE,
 };
 
 GType
@@ -125,7 +120,7 @@ ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("channel of cancel channel"),
@@ -137,37 +132,23 @@ ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel)
 				  param_spec);
 
   /**
-   * AgsCancelChannel:recall-id:
+   * AgsCancelChannel:sound-scope:
    *
-   * The assigned #AgsRecallID
+   * The effects sound-scope.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("recall-id",
-				   i18n_pspec("recall id of cancel channel"),
-				   i18n_pspec("The recall id of cancel channel task"),
-				   AGS_TYPE_RECALL_ID,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec =  g_param_spec_int("sound-scope",
+				 i18n_pspec("sound scope"),
+				 i18n_pspec("The sound scope"),
+				 0,
+				 AGS_SOUND_SCOPE_LAST,
+				 -1,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_RECALL_ID,
+				  PROP_SOUND_SCOPE,
 				  param_spec);
-
-  /**
-   * AgsCancelChannel:playback:
-   *
-   * The assigned #AgsPlayback
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_object("playback",
-				   i18n_pspec("playback of cancel channel"),
-				   i18n_pspec("The playback of cancel channel task"),
-				   AGS_TYPE_PLAYBACK,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_PLAYBACK,
-				  param_spec);
-
+  
   /* task */
   task = (AgsTaskClass *) cancel_channel;
 
@@ -175,21 +156,11 @@ ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel)
 }
 
 void
-ags_cancel_channel_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_cancel_channel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_cancel_channel_connect;
-  connectable->disconnect = ags_cancel_channel_disconnect;
-}
-
-void
 ags_cancel_channel_init(AgsCancelChannel *cancel_channel)
 {
   cancel_channel->channel = NULL;
-  cancel_channel->recall_id = NULL;
 
-  cancel_channel->playback = NULL;
+  cancel_channel->sound_scope = -1;
 }
 
 void
@@ -224,46 +195,9 @@ ags_cancel_channel_set_property(GObject *gobject,
       cancel_channel->channel = (GObject *) channel;
     }
     break;
-  case PROP_RECALL_ID:
+  case PROP_SOUND_SCOPE:
     {
-      AgsRecallID *recall_id;
-
-      recall_id = (AgsRecallID *) g_value_get_object(value);
-
-      if(cancel_channel->recall_id == (GObject *) recall_id){
-	return;
-      }
-
-      if(cancel_channel->recall_id != NULL){
-	g_object_unref(cancel_channel->recall_id);
-      }
-
-      if(recall_id != NULL){
-	g_object_ref(recall_id);
-      }
-
-      cancel_channel->recall_id = (GObject *) recall_id;
-    }
-    break;
-  case PROP_PLAYBACK:
-    {
-      AgsPlayback *playback;
-
-      playback = (AgsPlayback *) g_value_get_object(value);
-
-      if(cancel_channel->playback == (GObject *) playback){
-	return;
-      }
-
-      if(cancel_channel->playback != NULL){
-	g_object_unref(cancel_channel->playback);
-      }
-
-      if(playback != NULL){
-	g_object_ref(playback);
-      }
-
-      cancel_channel->playback = (GObject *) playback;
+      cancel_channel->sound_scope = g_value_get_int(value);
     }
     break;
   default:
@@ -288,36 +222,15 @@ ags_cancel_channel_get_property(GObject *gobject,
       g_value_set_object(value, cancel_channel->channel);
     }
     break;
-  case PROP_RECALL_ID:
+  case PROP_SOUND_SCOPE:
     {
-      g_value_set_object(value, cancel_channel->recall_id);
-    }
-    break;
-  case PROP_PLAYBACK:
-    {
-      g_value_set_object(value, cancel_channel->playback);
+      g_value_set_int(value, cancel_channel->sound_scope);
     }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_cancel_channel_connect(AgsConnectable *connectable)
-{
-  ags_cancel_channel_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_cancel_channel_disconnect(AgsConnectable *connectable)
-{
-  ags_cancel_channel_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
 }
 
 void
@@ -331,18 +244,6 @@ ags_cancel_channel_dispose(GObject *gobject)
     g_object_unref(cancel_channel->channel);
 
     cancel_channel->channel = NULL;
-  }
-
-  if(cancel_channel->recall_id != NULL){
-    g_object_unref(cancel_channel->recall_id);
-
-    cancel_channel->recall_id = NULL;
-  }
-
-  if(cancel_channel->playback != NULL){
-    g_object_unref(cancel_channel->playback);
-
-    cancel_channel->playback = NULL;
   }
   
   /* call parent */
@@ -360,14 +261,6 @@ ags_cancel_channel_finalize(GObject *gobject)
     g_object_unref(cancel_channel->channel);
   }
 
-  if(cancel_channel->recall_id != NULL){
-    g_object_unref(cancel_channel->recall_id);
-  }
-
-  if(cancel_channel->playback != NULL){
-    g_object_unref(cancel_channel->playback);
-  }
-  
   /* call parent */
   G_OBJECT_CLASS(ags_cancel_channel_parent_class)->finalize(gobject);
 }
@@ -375,151 +268,76 @@ ags_cancel_channel_finalize(GObject *gobject)
 void
 ags_cancel_channel_launch(AgsTask *task)
 {
-  AgsPlayback *playback;
   AgsChannel *channel;
-  AgsRecallID *recall_id;
+  AgsPlayback *playback;
   
   AgsCancelChannel *cancel_channel;
 
-  AgsChannelThread *channel_thread;
-  
-  AgsMutexManager *mutex_manager;
+  GList *list_start, *list;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  gint sound_scope;
+  static const guint staging_flags = (AGS_SOUND_STAGING_CANCEL |
+				      AGS_SOUND_STAGING_REMOVE);
 
   cancel_channel = AGS_CANCEL_CHANNEL(task);
 
   channel = cancel_channel->channel;
 
-  /* get channel mutex */
-  pthread_mutex_lock(application_mutex);
+  sound_scope = cancel_audio->sound_scope;
 
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
-  
-  pthread_mutex_unlock(application_mutex);
+  g_object_get(channel,
+	       "playback", &playback,
+	       NULL);
 
-  /* get some fields */
-  pthread_mutex_lock(channel_mutex);
+  if(sound_scope >= 0){
+    /* cancel */
+    ags_channel_recursive_run_stage(channel,
+				    sound_scope, staging_flags);
 
-  playback = AGS_PLAYBACK(channel->playback);
+    ags_thread_stop(ags_playback_get_channel_thread(playback,
+						    sound_scope));
+      
+    ags_playback_set_recall_id(playback,
+			       NULL,
+			       sound_scope);
+  }else{
+    gint i;
 
-  recall_id = playback->recall_id[AGS_PLAYBACK_SCOPE_PLAYBACK];
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){      
+      /* cancel */
+      ags_channel_recursive_run_stage(channel,
+				      i, staging_flags);
 
-  channel_thread = playback->channel_thread[AGS_PLAYBACK_SCOPE_PLAYBACK];
-    
-  pthread_mutex_unlock(channel_mutex);
-  
-  /* cancel playback */
-  if(cancel_channel->recall_id != NULL &&
-     cancel_channel->recall_id == recall_id){
-    g_atomic_int_and(&(playback->flags),
-		     (~AGS_PLAYBACK_PLAYBACK));
-
-    g_object_ref(recall_id);
-    ags_channel_tillrecycling_cancel(channel,
-				     recall_id);
-    
-    pthread_mutex_lock(channel_mutex);
-    
-    playback->recall_id[AGS_PLAYBACK_SCOPE_PLAYBACK] = NULL;
-
-    pthread_mutex_unlock(channel_mutex);
-
-    if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
-      ags_thread_stop(channel_thread);
+      ags_thread_stop(ags_playback_get_channel_thread(playback,
+						      sound_scope));
+      
+      ags_playback_set_recall_id(playback,
+				 NULL,
+				 sound_scope);
     }
   }
-
-  /* cancel sequencer */
-  pthread_mutex_lock(channel_mutex);
-
-  recall_id = playback->recall_id[AGS_PLAYBACK_SCOPE_SEQUENCER];
-
-  channel_thread = playback->channel_thread[AGS_PLAYBACK_SCOPE_SEQUENCER];
-    
-  pthread_mutex_unlock(channel_mutex);
-
-  if(cancel_channel->recall_id != NULL &&
-     cancel_channel->recall_id == recall_id){
-    g_atomic_int_and(&(playback->flags),
-		     (~AGS_PLAYBACK_SEQUENCER));
-
-    g_object_ref(recall_id);
-    ags_channel_tillrecycling_cancel(channel,
-				     recall_id);
-
-    pthread_mutex_lock(channel_mutex);
-    
-    playback->recall_id[AGS_PLAYBACK_SCOPE_SEQUENCER] = NULL;
-
-    pthread_mutex_unlock(channel_mutex);
-
-    if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
-      ags_thread_stop(channel_thread);
-    }
-  }
-
-  /* cancel notation */
-  pthread_mutex_lock(channel_mutex);
-
-  recall_id = playback->recall_id[AGS_PLAYBACK_SCOPE_NOTATION];
-
-  channel_thread = playback->channel_thread[AGS_PLAYBACK_SCOPE_NOTATION];
-    
-  pthread_mutex_unlock(channel_mutex);
-
-  if(cancel_channel->recall_id != NULL &&
-     cancel_channel->recall_id == recall_id){
-    g_atomic_int_and(&(playback->flags),
-		     (~AGS_PLAYBACK_NOTATION));
-
-    g_object_ref(recall_id);
-    ags_channel_tillrecycling_cancel(channel,
-				     recall_id);
-
-    pthread_mutex_lock(channel_mutex);
-    
-    playback->recall_id[AGS_PLAYBACK_SCOPE_NOTATION] = NULL;
-
-    pthread_mutex_unlock(channel_mutex);
-
-    if((AGS_PLAYBACK_SUPER_THREADED_CHANNEL & (g_atomic_int_get(&(playback->flags)))) != 0){
-      ags_thread_stop(channel_thread);
-    }
-  }
-
-  ags_channel_done(channel,
-		   cancel_channel->recall_id);		   
 }
 
 /**
  * ags_cancel_channel_new:
  * @channel: the #AgsChannel to cancel
- * @recall_id: the #AgsRecallID to cancel
- * @playback: the #AgsPlayback
+ * @sound_scope: the #AgsSoundScope-enum or -1 for all
  *
- * Creates an #AgsCancelChannel.
+ * Create a new instance of  #AgsCancelChannel.
  *
- * Returns: an new #AgsCancelChannel.
+ * Returns: the new #AgsCancelChannel.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsCancelChannel*
-ags_cancel_channel_new(AgsChannel *channel, AgsRecallID *recall_id,
-		       GObject *playback)
+ags_cancel_channel_new(AgsChannel *channel,
+		       gint sound_scope)
 {
   AgsCancelChannel *cancel_channel;
 
   cancel_channel = (AgsCancelChannel *) g_object_new(AGS_TYPE_CANCEL_CHANNEL,
 						     "channel", channel,
-						     "recall-id", recall_id,
-						     "playback", playback,
+						     "sound-scope", sound_scope,
 						     NULL);
 
   return(cancel_channel);

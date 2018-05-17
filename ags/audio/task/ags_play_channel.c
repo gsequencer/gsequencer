@@ -33,7 +33,6 @@
 #include <ags/i18n.h>
 
 void ags_play_channel_class_init(AgsPlayChannelClass *play_channel);
-void ags_play_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_play_channel_init(AgsPlayChannel *play_channel);
 void ags_play_channel_set_property(GObject *gobject,
 				   guint prop_id,
@@ -114,27 +113,11 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
 
   /* properties */
   /**
-   * AgsPlayChannel:audio-loop:
-   *
-   * The assigned #AgsAudioLoop
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_object("audio-loop",
-				   i18n_pspec("audio loop of play channel"),
-				   i18n_pspec("The audio loop of play channel task"),
-				   AGS_TYPE_AUDIO_LOOP,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_AUDIO_LOOP,
-				  param_spec);
-
-  /**
    * AgsPlayChannel:channel:
    *
    * The assigned #AgsChannel
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("channel of play channel"),
@@ -154,7 +137,6 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
 void
 ags_play_channel_init(AgsPlayChannel *play_channel)
 {
-  play_channel->audio_loop = NULL;
   play_channel->channel = NULL;
 }
 
@@ -169,27 +151,6 @@ ags_play_channel_set_property(GObject *gobject,
   play_channel = AGS_PLAY_CHANNEL(gobject);
 
   switch(prop_id){
-  case PROP_AUDIO_LOOP:
-    {
-      AgsAudioLoop *audio_loop;
-
-      audio_loop = (AgsAudioLoop *) g_value_get_object(value);
-
-      if(play_channel->audio_loop == (GObject *) audio_loop){
-	return;
-      }
-
-      if(play_channel->audio_loop != NULL){
-	g_object_unref(play_channel->audio_loop);
-      }
-
-      if(audio_loop != NULL){
-	g_object_ref(audio_loop);
-      }
-
-      play_channel->audio_loop = (GObject *) audio_loop;
-    }
-    break;
   case PROP_CHANNEL:
     {
       AgsChannel *channel;
@@ -228,11 +189,6 @@ ags_play_channel_get_property(GObject *gobject,
   play_channel = AGS_PLAY_CHANNEL(gobject);
 
   switch(prop_id){
-  case PROP_AUDIO_LOOP:
-    {
-      g_value_set_object(value, play_channel->audio_loop);
-    }
-    break;
   case PROP_CHANNEL:
     {
       g_value_set_object(value, play_channel->channel);
@@ -251,12 +207,6 @@ ags_play_channel_dispose(GObject *gobject)
 
   play_channel = AGS_PLAY_CHANNEL(gobject);
 
-  if(play_channel->audio_loop != NULL){
-    g_object_unref(play_channel->audio_loop);
-
-    play_channel->audio_loop = NULL;
-  }
-
   if(play_channel->channel != NULL){
     g_object_unref(play_channel->channel);
 
@@ -274,10 +224,6 @@ ags_play_channel_finalize(GObject *gobject)
 
   play_channel = AGS_PLAY_CHANNEL(gobject);
 
-  if(play_channel->audio_loop != NULL){
-    g_object_unref(play_channel->audio_loop);
-  }
-
   if(play_channel->channel != NULL){
     g_object_unref(play_channel->channel);
   }
@@ -290,148 +236,152 @@ void
 ags_play_channel_launch(AgsTask *task)
 {
   AgsChannel *channel;
+  AgsPlaybackDomain *playback_domain;
   AgsPlayback *playback;
   
   AgsPlayChannel *play_channel;
 
   AgsAudioLoop *audio_loop;
-  AgsChannelThread *channel_thread;
 
-  AgsConfig *config;
+  AgsApplicationContext *application_context;
 
-  GList *start_queue;
-  
-  gchar *str0, *str1;
-  
-  pthread_mutex_t *channel_mutex;
-  pthread_mutex_t *audio_loop_mutex;
-  pthread_mutex_t *channel_thread_mutex;
-
-  config = ags_config_get_instance();
+  gint sound_scope;
+  static const guint staging_flags = (AGS_SOUND_STAGING_CHECK_RT_DATA |
+				      AGS_SOUND_STAGING_RUN_INIT_PRE |
+				      AGS_SOUND_STAGING_RUN_INIT_INTER |
+				      AGS_SOUND_STAGING_RUN_INIT_POST);
 
   play_channel = AGS_PLAY_CHANNEL(task);
 
   channel = (AgsChannel *) play_channel->channel;
 
-  audio_loop = AGS_AUDIO_LOOP(play_channel->audio_loop);
+  g_object_get(channel,
+	       "playback", &playback,
+	       NULL);
 
-  /* get channel mutex */
-  pthread_mutex_lock(application_mutex);
-
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
+  g_object_get(playback,
+	       "playback-domain", &playback_domain,
+	       NULL);
   
-  pthread_mutex_unlock(application_mutex);
+  sound_scope = play_audio->sound_scope;
 
-  /* get audio loop mutex */
-  pthread_mutex_lock(application_mutex);
+  application_context = ags_application_context_get_instance();
 
-  audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
-					      (GObject *) audio_loop);
-  
-  pthread_mutex_unlock(application_mutex);
+  g_object_get(application_context,
+	       "main-loop", &audio_loop,
+	       NULL);
 
-  /* play to AgsDevout */
+
+  /* add channel to AgsAudioLoop */
   ags_audio_loop_add_channel(audio_loop,
 			     (GObject *) channel);
 
-  /* read config */  
-  str0 = ags_config_get_value(config,
-			      AGS_CONFIG_THREAD,
-			      "model");
 
-  str1 = ags_config_get_value(config,
-			      AGS_CONFIG_THREAD,
-			      "super-threaded-scope");
+  if(sound_scope >= 0){
+    /* get some fields */
+    g_object_get(channel,
+		 "first-recycling", &recycling,
+		 NULL);
 
-  /* check config */
-  if(!g_ascii_strncasecmp(str0,
-			  "super-threaded",
-			  15)){
-    /* super threaded setup */
-    if(!g_ascii_strncasecmp(str1,
-			    "channel",
-			    8)){
-      start_queue = NULL;  
+    /* create recall id and recycling context */
+    recall_id = ags_recall_id_new();
+
+    recycling_context = ags_recycling_context_new(1);
+    ags_recycling_context_replace(recycling_context,
+				  recycling,
+				  0);
+
+    g_object_set(recycling_context,
+		 "recall-id", recall_id,
+		 NULL);
+      
+    g_object_set(recall_id,
+		 "recycling-context", recycling_context,
+		 NULL);
+      
+    ags_playback_set_recall_id(playback,
+			       recall_id,
+			       sound_scope);
+
+    /* add to start queue */
+    ags_thread_add_start_queue(ags_playback_domain_get_audio_thread(playback_domain,
+								    sound_scope),
+			       ags_playback_get_channel_thread(playback,
+							       sound_scope));
+    
+    /* play init */
+    ags_channel_recursive_run_stage(channel,
+				    sound_scope, staging_flags);
+
+    /* add to start queue */
+    ags_thread_add_start_queue(audio_loop,
+			       ags_playback_domain_get_audio_thread(playback_domain,
+								    sound_scope));
+  }else{
+    gint i;
+
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){      
+      list = list_start;
 
       /* get some fields */
-      pthread_mutex_lock(channel_mutex);
+      g_object_get(channel,
+		   "first-recycling", &recycling,
+		   NULL);
 
-      playback = AGS_PLAYBACK(channel->playback);
-      channel_thread = AGS_CHANNEL_THREAD(playback->channel_thread[AGS_PLAYBACK_SCOPE_PLAYBACK]);
+      /* create recall id and recycling context */
+      recall_id = ags_recall_id_new();
 
-      pthread_mutex_unlock(channel_mutex);
+      recycling_context = ags_recycling_context_new(1);
+      ags_recycling_context_replace(recycling_context,
+				    recycling,
+				    0);
+
+      g_object_set(recycling_context,
+		   "recall-id", recall_id,
+		   NULL);
       
-      if((AGS_PLAYBACK_PLAYBACK & (g_atomic_int_get(&(playback->flags)))) != 0 &&
-	 (AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(channel_thread)->flags)))) == 0){
-	/* start queue */
-	g_atomic_int_or(&(channel_thread->flags),
-			(AGS_CHANNEL_THREAD_WAIT |
-			 AGS_CHANNEL_THREAD_DONE |
-			 AGS_CHANNEL_THREAD_WAIT_SYNC |
-			 AGS_CHANNEL_THREAD_DONE_SYNC));
-	start_queue = g_list_prepend(start_queue,
-				     channel_thread);
+      g_object_set(recall_id,
+		   "recycling-context", recycling_context,
+		   NULL);
 	
-	/* add if needed */
-	if(g_atomic_pointer_get(&(AGS_THREAD(channel_thread)->parent)) == NULL){
-	  ags_thread_add_child_extended((AgsThread *) audio_loop,
-					channel_thread,
-					TRUE, TRUE);
-	  ags_connectable_connect(AGS_CONNECTABLE(channel_thread));
-	}
-      }
+      ags_playback_set_recall_id(playback,
+				 recall_id,
+				 i);
 
-      /* start queue */
-      pthread_mutex_lock(audio_loop_mutex);
-  
-      if(start_queue != NULL){
-	start_queue = g_list_reverse(start_queue);
+      /* add to start queue */
+      ags_thread_add_start_queue(ags_playback_domain_get_audio_thread(playback_domain,
+								      i),
+				 ags_playback_get_channel_thread(playback,
+								 i));
 
-	if(g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue)) != NULL){
-	  g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
-			       g_list_concat(start_queue,
-					     g_atomic_pointer_get(&(AGS_THREAD(audio_loop)->start_queue))));
-	}else{
-	  g_atomic_pointer_set(&(AGS_THREAD(audio_loop)->start_queue),
-			       start_queue);
-	}
-      }
+      /* play init */
+      ags_channel_recursive_run_stage(channel,
+				      i, staging_flags);
 
-      pthread_mutex_unlock(audio_loop_mutex);
+      /* add to start queue */
+      ags_thread_add_start_queue(audio_loop,
+				 ags_playback_domain_get_audio_thread(playback_domain,
+								      i));
     }
   }
-
-  g_free(str0);
-  g_free(str1);
-
-  /* add to server registry */
-  //  server = ags_service_provider_get_server(AGS_SERVICE_PROVIDER(audio_loop->application_context));
-
-  //  if(server != NULL && (AGS_SERVER_RUNNING & (server->flags)) != 0){
-  //    ags_connectable_add_to_registry(AGS_CONNECTABLE(play_channel->channel));
-  //  }
 }
 
 /**
  * ags_play_channel_new:
- * @audio_loop: the #AgsAudioLoop
  * @channel: the #AgsChannel to play
  *
- * Creates an #AgsPlayChannel.
+ * Create a new instance of #AgsPlayChannel.
  *
- * Returns: an new #AgsPlayChannel.
+ * Returns: the new #AgsPlayChannel.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPlayChannel*
-ags_play_channel_new(GObject *audio_loop,
-		     GObject *channel)
+ags_play_channel_new(AgsChannel *channel)
 {
   AgsPlayChannel *play_channel;
 
   play_channel = (AgsPlayChannel *) g_object_new(AGS_TYPE_PLAY_CHANNEL,
-						 "audio-loop", audio_loop,
 						 "channel", channel,
 						 NULL);
 

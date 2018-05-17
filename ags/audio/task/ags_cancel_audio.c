@@ -129,7 +129,7 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
    *
    * The effects sound-scope.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_int("sound-scope",
 				 i18n_pspec("sound scope"),
@@ -262,10 +262,7 @@ void
 ags_cancel_audio_launch(AgsTask *task)
 {
   AgsAudio *audio;
-  AgsChannel *channel;
   AgsPlaybackDomain *playback_domain;
-  AgsPlayback *playback;
-  AgsRecallID *recall_id;
 
   AgsCancelAudio *cancel_audio;
 
@@ -275,9 +272,6 @@ ags_cancel_audio_launch(AgsTask *task)
   static const guint staging_flags = (AGS_SOUND_STAGING_CANCEL |
 				      AGS_SOUND_STAGING_REMOVE);
   
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-
   cancel_audio = AGS_CANCEL_AUDIO(task);
 
   audio = cancel_audio->audio;
@@ -305,13 +299,14 @@ ags_cancel_audio_launch(AgsTask *task)
     list = list_start;
 
     while(list != NULL){
-      ags_thread_stop(ags_playback_get_channel_thread(playback_domain,
+      ags_thread_stop(ags_playback_get_channel_thread(list->data,
 						      sound_scope));
       
       ags_playback_set_recall_id(list->data,
 				 NULL,
 				 sound_scope);
 
+      /* iterate */
       list = list->next;
     }
   }else{
@@ -337,6 +332,7 @@ ags_cancel_audio_launch(AgsTask *task)
 				   NULL,
 				   i);
 
+	/* iterate */
 	list = list->next;
       }
     }

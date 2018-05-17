@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,7 +36,6 @@
 #include <ags/i18n.h>
 
 void ags_clear_buffer_class_init(AgsClearBufferClass *clear_buffer);
-void ags_clear_buffer_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_clear_buffer_init(AgsClearBuffer *clear_buffer);
 void ags_clear_buffer_set_property(GObject *gobject,
 					 guint prop_id,
@@ -46,8 +45,6 @@ void ags_clear_buffer_get_property(GObject *gobject,
 					 guint prop_id,
 					 GValue *value,
 					 GParamSpec *param_spec);
-void ags_clear_buffer_connect(AgsConnectable *connectable);
-void ags_clear_buffer_disconnect(AgsConnectable *connectable);
 void ags_clear_buffer_dispose(GObject *gobject);
 void ags_clear_buffer_finalize(GObject *gobject);
 
@@ -64,7 +61,6 @@ void ags_clear_buffer_launch(AgsTask *task);
  */
 
 static gpointer ags_clear_buffer_parent_class = NULL;
-static AgsConnectableInterface *ags_clear_buffer_parent_connectable_interface;
 
 enum{
   PROP_0,
@@ -78,31 +74,21 @@ ags_clear_buffer_get_type()
 
   if(!ags_type_clear_buffer){
     static const GTypeInfo ags_clear_buffer_info = {
-      sizeof (AgsClearBufferClass),
+      sizeof(AgsClearBufferClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_clear_buffer_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsClearBuffer),
+      sizeof(AgsClearBuffer),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_clear_buffer_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_clear_buffer_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_clear_buffer = g_type_register_static(AGS_TYPE_TASK,
-							 "AgsClearBuffer",
-							 &ags_clear_buffer_info,
-							 0);
-
-    g_type_add_interface_static(ags_type_clear_buffer,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
+						   "AgsClearBuffer",
+						   &ags_clear_buffer_info,
+						   0);
   }
   
   return (ags_type_clear_buffer);
@@ -113,6 +99,7 @@ ags_clear_buffer_class_init(AgsClearBufferClass *clear_buffer)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+
   GParamSpec *param_spec;
 
   ags_clear_buffer_parent_class = g_type_class_peek_parent(clear_buffer);
@@ -132,7 +119,7 @@ ags_clear_buffer_class_init(AgsClearBufferClass *clear_buffer)
    *
    * The assigned #AgsSoundcard or #AgsSequencer
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("device",
 				   i18n_pspec("device of change device"),
@@ -147,15 +134,6 @@ ags_clear_buffer_class_init(AgsClearBufferClass *clear_buffer)
   task = (AgsTaskClass *) clear_buffer;
 
   task->launch = ags_clear_buffer_launch;
-}
-
-void
-ags_clear_buffer_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_clear_buffer_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_clear_buffer_connect;
-  connectable->disconnect = ags_clear_buffer_disconnect;
 }
 
 void
@@ -225,22 +203,6 @@ ags_clear_buffer_get_property(GObject *gobject,
 }
 
 void
-ags_clear_buffer_connect(AgsConnectable *connectable)
-{
-  ags_clear_buffer_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_clear_buffer_disconnect(AgsConnectable *connectable)
-{
-  ags_clear_buffer_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_clear_buffer_dispose(GObject *gobject)
 {
   AgsClearBuffer *clear_buffer;
@@ -277,139 +239,82 @@ ags_clear_buffer_launch(AgsTask *task)
 {
   AgsClearBuffer *clear_buffer;
 
-  AgsMutexManager *mutex_manager;
-
   guint buffer_size;
   guint pcm_channels;
+  guint format;
   guint nth_buffer;
   guint word_size;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   clear_buffer = AGS_CLEAR_BUFFER(task);
 
-  /* get soundcard mutex */
-  pthread_mutex_lock(application_mutex);
+  ags_soundcard_get_presets(AGS_SOUNDCARD(clear_buffer->device),
+			    &pcm_channels,
+			    NULL,
+			    &buffer_size,
+			    &format);
 
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) clear_buffer->device);
-  
-  pthread_mutex_unlock(application_mutex);
+  switch(devout->format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      word_size = sizeof(gint8);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      word_size = sizeof(gint16);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      word_size = sizeof(gint64);
+    }
+    break;
+  default:
+    g_warning("ags_clear_buffer_launch(): unsupported word size");
+      
+    return;
+  }
 
   if(AGS_IS_DEVOUT(clear_buffer->device)){
     AgsDevout *devout;
 
     devout = clear_buffer->device;
 
-    /* retrieve presets */
-    pthread_mutex_lock(soundcard_mutex);
-
-    buffer_size = devout->buffer_size;
-    pcm_channels = devout->pcm_channels;
-    
-    switch(devout->format){
-    case AGS_SOUNDCARD_SIGNED_8_BIT:
-      {
-	word_size = sizeof(signed char);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_16_BIT:
-      {
-	word_size = sizeof(signed short);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_24_BIT:
-      {
-	word_size = sizeof(signed long);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_32_BIT:
-      {
-	word_size = sizeof(signed long);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_64_BIT:
-      {
-	word_size = sizeof(signed long long);
-      }
-      break;
-    default:
-      g_warning("ags_clear_buffer_launch(): unsupported word size");
-
-      pthread_mutex_unlock(soundcard_mutex);
-      
-      return;
-    }
-    
-    if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
+    /* retrieve nth buffer */    
+    if(ags_devout_test_flags(devout, AGS_DEVOUT_BUFFER0)){
       nth_buffer = 0;
-    }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
+    }else if(ags_devout_test_flags(devout, AGS_DEVOUT_BUFFER1)){
       nth_buffer = 1;
-    }else if((AGS_DEVOUT_BUFFER2 & (devout->flags)) != 0){
+    }else if(ags_devout_test_flags(devout, AGS_DEVOUT_BUFFER2)){
       nth_buffer = 2;
-    }else if((AGS_DEVOUT_BUFFER3 & (devout->flags)) != 0){
+    }else if(ags_devout_test_flags(devout, AGS_DEVOUT_BUFFER3)){
       nth_buffer = 3;
     }
-
-    pthread_mutex_unlock(soundcard_mutex);
     
     memset(devout->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
   }else if(AGS_IS_DEVIN(clear_buffer->device)){
     AgsDevin *devin;
 
-    devin = clear_buffer->device;
+    devin = clear_buffer->device;    
 
-    /* retrieve word size */
-    pthread_mutex_lock(soundcard_mutex);
-
-    buffer_size = devin->buffer_size;
-    pcm_channels = devin->pcm_channels;
-
-    switch(devin->format){
-    case AGS_SOUNDCARD_SIGNED_8_BIT:
-      {
-	word_size = sizeof(signed char);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_16_BIT:
-      {
-	word_size = sizeof(signed short);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_24_BIT:
-      {
-	word_size = sizeof(signed long);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_32_BIT:
-      {
-	word_size = sizeof(signed long);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_64_BIT:
-      {
-	word_size = sizeof(signed long long);
-      }
-      break;
-    default:
-      g_warning("ags_clear_buffer_launch(): unsupported word size");
-
-      pthread_mutex_unlock(soundcard_mutex);
-
-      return;
-    }
-    
-    if((AGS_DEVIN_BUFFER0 & (devin->flags)) != 0){
+    /* retrieve nth buffer */    
+    if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER0)){
       nth_buffer = 0;
-    }else if((AGS_DEVIN_BUFFER1 & (devin->flags)) != 0){
+    }else if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER1)){
       nth_buffer = 1;
-    }else if((AGS_DEVIN_BUFFER2 & (devin->flags)) != 0){
+    }else if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER2)){
       nth_buffer = 2;
-    }else if((AGS_DEVIN_BUFFER3 & (devin->flags)) != 0){
+    }else if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER3)){
       nth_buffer = 3;
     }
 
@@ -420,168 +325,57 @@ ags_clear_buffer_launch(AgsTask *task)
     AgsJackDevout *jack_devout;
     
     jack_devout = clear_buffer->device;
-
-    pthread_mutex_lock(soundcard_mutex);
-
-    buffer_size = jack_devout->buffer_size;
-    pcm_channels = jack_devout->pcm_channels;
-
-    switch(jack_devout->format){
-    case AGS_SOUNDCARD_SIGNED_8_BIT:
-      {
-	word_size = sizeof(signed char);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_16_BIT:
-      {
-	word_size = sizeof(signed short);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_24_BIT:
-      {      
-	//NOTE:JK: The 24-bit linear samples use 32-bit physical space
-	word_size = sizeof(signed long);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_32_BIT:
-      {
-	word_size = sizeof(signed long);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_64_BIT:
-      {
-	word_size = sizeof(signed long long);
-      }
-      break;
-    default:    
-      g_warning("ags_clear_buffer_launch(): unsupported word size");
-
-      pthread_mutex_unlock(soundcard_mutex);
-          
-      return;
-    }
     
-    if((AGS_JACK_DEVOUT_BUFFER0 & (jack_devout->flags)) != 0){
+    /* retrieve nth buffer */    
+    if(ags_jack_devout_test_flags(jack_devout, AGS_JACK_DEVOUT_BUFFER0)){
       nth_buffer = 2;
-    }else if((AGS_JACK_DEVOUT_BUFFER1 & (jack_devout->flags)) != 0){
+    }else if(ags_jack_devout_test_flags(jack_devout, AGS_JACK_DEVOUT_BUFFER1)){
       nth_buffer = 3;
-    }else if((AGS_JACK_DEVOUT_BUFFER2 & (jack_devout->flags)) != 0){
+    }else if(ags_jack_devout_test_flags(jack_devout, AGS_JACK_DEVOUT_BUFFER2)){
       nth_buffer = 0;
-    }else if((AGS_JACK_DEVOUT_BUFFER3 & (jack_devout->flags)) != 0){
+    }else if(ags_jack_devout_test_flags(jack_devout, AGS_JACK_DEVOUT_BUFFER3)){
       nth_buffer = 1;
     }
-      
-    pthread_mutex_unlock(soundcard_mutex);
-      
+            
     memset(jack_devout->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
   }else if(AGS_IS_JACK_DEVIN(clear_buffer->device)){
     AgsJackDevin *jack_devin;
     
     jack_devin = clear_buffer->device;
-
-    pthread_mutex_lock(soundcard_mutex);
-
-    buffer_size = jack_devin->buffer_size;
-    pcm_channels = jack_devin->pcm_channels;
-
-    switch(jack_devin->format){
-    case AGS_SOUNDCARD_SIGNED_8_BIT:
-      {
-	word_size = sizeof(signed char);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_16_BIT:
-      {
-	word_size = sizeof(signed short);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_24_BIT:
-      {      
-	//NOTE:JK: The 24-bit linear samples use 32-bit physical space
-	word_size = sizeof(signed long);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_32_BIT:
-      {
-	word_size = sizeof(signed long);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_64_BIT:
-      {
-	word_size = sizeof(signed long long);
-      }
-      break;
-    default:    
-      g_warning("ags_clear_buffer_launch(): unsupported word size");
-
-      pthread_mutex_unlock(soundcard_mutex);
     
-      return;
-    }
-    
-    if((AGS_JACK_DEVIN_BUFFER0 & (jack_devin->flags)) != 0){
+    /* retrieve nth buffer */    
+    if(ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_BUFFER0)){
       nth_buffer = 2;
-    }else if((AGS_JACK_DEVIN_BUFFER1 & (jack_devin->flags)) != 0){
+    }else if(ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_BUFFER1)){
       nth_buffer = 3;
-    }else if((AGS_JACK_DEVIN_BUFFER2 & (jack_devin->flags)) != 0){
+    }else if(ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_BUFFER2)){
       nth_buffer = 0;
-    }else if((AGS_JACK_DEVIN_BUFFER3 & (jack_devin->flags)) != 0){
+    }else if(ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_BUFFER3)){
       nth_buffer = 1;
     }
-      
-    pthread_mutex_unlock(soundcard_mutex);
     
     memset(jack_devin->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
   }else if(AGS_IS_PULSE_DEVOUT(clear_buffer->device)){
     AgsPulseDevout *pulse_devout;
     
     pulse_devout = clear_buffer->device;
-
-    pthread_mutex_lock(soundcard_mutex);
-
-    buffer_size = pulse_devout->buffer_size;
-    pcm_channels = pulse_devout->pcm_channels;
-
-    switch(pulse_devout->format){
-    case AGS_SOUNDCARD_SIGNED_16_BIT:
-      {
-	word_size = sizeof(signed short);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_24_BIT:
-      {      
-	//NOTE:JK: The 24-bit linear samples use 32-bit physical space
-	word_size = sizeof(signed long);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_32_BIT:
-      {
-	word_size = sizeof(signed long);
-      }
-      break;
-    default:    
-      g_warning("ags_clear_buffer_launch(): unsupported word size");
     
-      pthread_mutex_unlock(soundcard_mutex);
-
-      return;
-    }
-    
-    if((AGS_PULSE_DEVOUT_BUFFER0 & (pulse_devout->flags)) != 0){
+    /* retrieve nth buffer */    
+    if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER0)){
       nth_buffer = 2;
-    }else if((AGS_PULSE_DEVOUT_BUFFER1 & (pulse_devout->flags)) != 0){
+    }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER1)){
       nth_buffer = 3;
-    }else if((AGS_PULSE_DEVOUT_BUFFER2 & (pulse_devout->flags)) != 0){
+    }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER2)){
       nth_buffer = 4;
-    }else if((AGS_PULSE_DEVOUT_BUFFER3 & (pulse_devout->flags)) != 0){
+    }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER3)){
       nth_buffer = 5;
-    }else if((AGS_PULSE_DEVOUT_BUFFER4 & (pulse_devout->flags)) != 0){
+    }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER4)){
       nth_buffer = 6;
-    }else if((AGS_PULSE_DEVOUT_BUFFER5 & (pulse_devout->flags)) != 0){
+    }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER5)){
       nth_buffer = 7;
-    }else if((AGS_PULSE_DEVOUT_BUFFER6 & (pulse_devout->flags)) != 0){
+    }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER6)){
       nth_buffer = 0;
-    }else if((AGS_PULSE_DEVOUT_BUFFER7 & (pulse_devout->flags)) != 0){
+    }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER7)){
       nth_buffer = 1;
     }
 
@@ -592,37 +386,8 @@ ags_clear_buffer_launch(AgsTask *task)
     AgsPulseDevin *pulse_devin;
     
     pulse_devin = clear_buffer->device;
-
-    pthread_mutex_lock(soundcard_mutex);
-
-    buffer_size = pulse_devin->buffer_size;
-    pcm_channels = pulse_devin->pcm_channels;
-
-    switch(pulse_devin->format){
-    case AGS_SOUNDCARD_SIGNED_16_BIT:
-      {
-	word_size = sizeof(signed short);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_24_BIT:
-      {      
-	//NOTE:JK: The 24-bit linear samples use 32-bit physical space
-	word_size = sizeof(signed long);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_32_BIT:
-      {
-	word_size = sizeof(signed long);
-      }
-      break;
-    default:    
-      g_warning("ags_clear_buffer_launch(): unsupported word size");
-        
-      pthread_mutex_unlock(soundcard_mutex);
-
-      return;
-    }
     
+    /* retrieve nth buffer */    
     if((AGS_PULSE_DEVIN_BUFFER0 & (pulse_devin->flags)) != 0){
       nth_buffer = 2;
     }else if((AGS_PULSE_DEVIN_BUFFER1 & (pulse_devin->flags)) != 0){
@@ -640,8 +405,6 @@ ags_clear_buffer_launch(AgsTask *task)
     }else if((AGS_PULSE_DEVIN_BUFFER7 & (pulse_devin->flags)) != 0){
       nth_buffer = 1;
     }
-
-    pthread_mutex_unlock(soundcard_mutex);
       
     memset(pulse_devin->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
   }else if(AGS_IS_CORE_AUDIO_DEVOUT(clear_buffer->device)){
@@ -649,65 +412,24 @@ ags_clear_buffer_launch(AgsTask *task)
     
     core_audio_devout = clear_buffer->device;
 
-    pthread_mutex_lock(soundcard_mutex);
-
-    buffer_size = core_audio_devout->buffer_size;
-    pcm_channels = core_audio_devout->pcm_channels;
-
-    switch(core_audio_devout->format){
-    case AGS_SOUNDCARD_SIGNED_8_BIT:
-      {
-	word_size = sizeof(signed char);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_16_BIT:
-      {
-	word_size = sizeof(signed short);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_24_BIT:
-      {      
-	//NOTE:JK: The 24-bit linear samples use 32-bit physical space
-	word_size = sizeof(signed long);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_32_BIT:
-      {
-	word_size = sizeof(signed long);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_64_BIT:
-      {
-	word_size = sizeof(signed long long);
-      }
-      break;
-    default:    
-      g_warning("ags_clear_buffer_launch(): unsupported word size");    
-
-      pthread_mutex_unlock(soundcard_mutex);
-    
-      return;
-    }
-
-    if((AGS_CORE_AUDIO_DEVOUT_BUFFER0 & (core_audio_devout->flags)) != 0){
+    /* retrieve nth buffer */    
+    if((AGS_PULSE_DEVIN_BUFFER0 & (pulse_devin->flags)) != 0){
       nth_buffer = 2;
-    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER1 & (core_audio_devout->flags)) != 0){
+    }else if((AGS_PULSE_DEVIN_BUFFER1 & (pulse_devin->flags)) != 0){
       nth_buffer = 3;
-    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER2 & (core_audio_devout->flags)) != 0){
+    }else if((AGS_PULSE_DEVIN_BUFFER2 & (pulse_devin->flags)) != 0){
       nth_buffer = 4;
-    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER3 & (core_audio_devout->flags)) != 0){
+    }else if((AGS_PULSE_DEVIN_BUFFER3 & (pulse_devin->flags)) != 0){
       nth_buffer = 5;
-    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER4 & (core_audio_devout->flags)) != 0){
+    }else if((AGS_PULSE_DEVIN_BUFFER4 & (pulse_devin->flags)) != 0){
       nth_buffer = 6;
-    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER5 & (core_audio_devout->flags)) != 0){
+    }else if((AGS_PULSE_DEVIN_BUFFER5 & (pulse_devin->flags)) != 0){
       nth_buffer = 7;
-    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER6 & (core_audio_devout->flags)) != 0){
+    }else if((AGS_PULSE_DEVIN_BUFFER6 & (pulse_devin->flags)) != 0){
       nth_buffer = 0;
-    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER7 & (core_audio_devout->flags)) != 0){
+    }else if((AGS_PULSE_DEVIN_BUFFER7 & (pulse_devin->flags)) != 0){
       nth_buffer = 1;
     }
-
-    pthread_mutex_unlock(soundcard_mutex);
       
     memset(core_audio_devout->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
   }else if(AGS_IS_MIDIIN(clear_buffer->device)){
@@ -723,11 +445,11 @@ ags_clear_buffer_launch(AgsTask *task)
  * ags_clear_buffer_new:
  * @device: the #AgsSoundcard or #AgsSequencer
  *
- * Creates an #AgsClearBuffer.
+ * Create a new instance of #AgsClearBuffer.
  *
- * Returns: an new #AgsClearBuffer.
+ * Returns: the new #AgsClearBuffer.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsClearBuffer*
 ags_clear_buffer_new(GObject *device)

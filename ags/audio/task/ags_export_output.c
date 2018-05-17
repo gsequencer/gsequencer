@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,7 +26,6 @@
 #include <ags/i18n.h>
 
 void ags_export_output_class_init(AgsExportOutputClass *export_output);
-void ags_export_output_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_export_output_init(AgsExportOutput *export_output);
 void ags_export_output_set_property(GObject *gobject,
 				    guint prop_id,
@@ -36,8 +35,6 @@ void ags_export_output_get_property(GObject *gobject,
 				    guint prop_id,
 				    GValue *value,
 				    GParamSpec *param_spec);
-void ags_export_output_connect(AgsConnectable *connectable);
-void ags_export_output_disconnect(AgsConnectable *connectable);
 void ags_export_output_dispose(GObject *gobject);
 void ags_export_output_finalize(GObject *gobject);
 
@@ -73,34 +70,24 @@ ags_export_output_get_type()
 
   if(!ags_type_export_output){
     static const GTypeInfo ags_export_output_info = {
-      sizeof (AgsExportOutputClass),
+      sizeof(AgsExportOutputClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_export_output_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsExportOutput),
+      sizeof(AgsExportOutput),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_export_output_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_export_output_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_export_output = g_type_register_static(AGS_TYPE_TASK,
 						    "AgsExportOutput",
 						    &ags_export_output_info,
 						    0);
-
-    g_type_add_interface_static(ags_type_export_output,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
   
-  return (ags_type_export_output);
+  return(ags_type_export_output);
 }
 
 void
@@ -127,7 +114,7 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    *
    * The assigned #AgsExportThread
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("export-thread",
 				   i18n_pspec("export thread of export output"),
@@ -143,7 +130,7 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of export output"),
@@ -159,7 +146,7 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    *
    * The assigned filename.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("the filename"),
@@ -175,7 +162,7 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    *
    * Format to use.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("audio format"),
@@ -193,7 +180,7 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    *
    * Tic offset of output as end tic of it.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("tic",
 				 i18n_pspec("tic offset"),
@@ -211,7 +198,7 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
    *
    * Do output the audio export live.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_boolean("live-performance",
 				     i18n_pspec("export output live"),
@@ -464,8 +451,6 @@ ags_export_output_launch(AgsTask *task)
 
   AgsExportThread *export_thread;
 
-  AgsMutexManager *mutex_manager;
-
   GObject *soundcard;
 
   gchar *filename;
@@ -477,13 +462,6 @@ ags_export_output_launch(AgsTask *task)
   guint val;
   guint major_format;
   
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-  pthread_mutex_t *thread_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   export_output = AGS_EXPORT_OUTPUT(task);
   
   soundcard = export_output->soundcard;
@@ -494,36 +472,24 @@ ags_export_output_launch(AgsTask *task)
   
   tic = export_output->tic;
 
-  /* get soundcard mutex */
-  pthread_mutex_lock(application_mutex);
-
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) soundcard);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* get presets */
-  pthread_mutex_lock(soundcard_mutex);
-  
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    &pcm_channels,
 			    &samplerate,
 			    NULL,
 			    &format);
-  
-  pthread_mutex_unlock(soundcard_mutex);
 
   /* open read/write audio file */
   audio_file = ags_audio_file_new(filename,
 				  soundcard,
-				  0, pcm_channels);
+				  -1);
 
 #ifdef AGS_DEBUG
   g_message("pcm - %d", pcm_channels);
 #endif
   
-  audio_file->samplerate = (int) samplerate;
-  audio_file->channels = pcm_channels;
+  audio_file->file_audio_channels = pcm_channels;
+  audio_file->file_samplerate = (int) samplerate;
 
   //TODO:JK: more formats
   if((AGS_EXPORT_OUTPUT_FORMAT_WAV & (export_output->format)) != 0){
@@ -532,6 +498,10 @@ ags_export_output_launch(AgsTask *task)
     audio_file->format = major_format | SF_FORMAT_PCM_16;
   }else if((AGS_EXPORT_OUTPUT_FORMAT_FLAC & (export_output->format)) != 0){    
     major_format = SF_FORMAT_FLAC;
+
+    audio_file->format = major_format | SF_FORMAT_PCM_24;
+  }else if((AGS_EXPORT_OUTPUT_FORMAT_AIFF & (export_output->format)) != 0){    
+    major_format = SF_FORMAT_AIFF;
 
     audio_file->format = major_format | SF_FORMAT_PCM_24;
   }else if((AGS_EXPORT_OUTPUT_FORMAT_OGG & (export_output->format)) != 0){
@@ -551,25 +521,12 @@ ags_export_output_launch(AgsTask *task)
   g_message("export output");
 #endif
 
-  /* get thread mutex */
-  pthread_mutex_lock(application_mutex);
-
-  thread_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  (GObject *) export_thread);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* start export thread */
-  pthread_mutex_lock(thread_mutex);
-
-  export_thread->tic = tic;
-
   g_object_set(G_OBJECT(export_thread),
 	       "soundcard", soundcard,
 	       "audio-file", audio_file,
+	       "tic", tic,
 	       NULL);
-
-  pthread_mutex_unlock(thread_mutex);
 
   if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(AGS_THREAD(export_thread)->flags)))) == 0){
     AgsThread *parent;
@@ -604,7 +561,7 @@ ags_export_output_launch(AgsTask *task)
  *
  * Returns: an new #AgsExportOutput.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsExportOutput*
 ags_export_output_new(AgsExportThread *export_thread,

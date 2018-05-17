@@ -25,6 +25,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_audio.h.h>
+
 #define AGS_TYPE_PLAY_AUDIO                (ags_play_audio_get_type())
 #define AGS_PLAY_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_AUDIO, AgsPlayAudio))
 #define AGS_PLAY_AUDIO_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PLAY_AUDIO, AgsPlayAudioClass))
@@ -39,8 +41,7 @@ struct _AgsPlayAudio
 {
   AgsTask task;
 
-  GObject *audio_loop;
-  GObject *audio;
+  AgsAudio *audio;
 
   gint sound_scope;
 };
@@ -52,8 +53,7 @@ struct _AgsPlayAudioClass
 
 GType ags_play_audio_get_type();
 
-AgsPlayAudio* ags_play_audio_new(GObject *audio_loop,
-				 GObject *audio,
+AgsPlayAudio* ags_play_audio_new(AgsAudio *audio,
 				 gint sound_scope);
 
 #endif /*__AGS_PLAY_AUDIO_H__*/
