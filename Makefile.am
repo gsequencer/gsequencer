@@ -1149,9 +1149,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_remove_audio_signal.h \
 	ags/audio/task/ags_remove_note.h \
 	ags/audio/task/ags_remove_soundcard.h \
-	ags/audio/task/ags_reset_audio_connection.h \
 	ags/audio/task/ags_resize_audio.h \
-	ags/audio/task/ags_save_file.h \
 	ags/audio/task/ags_seek_soundcard.h \
 	ags/audio/task/ags_set_audio_channels.h \
 	ags/audio/task/ags_set_buffer_size.h \
@@ -1164,12 +1162,11 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_switch_buffer_flag.h \
 	ags/audio/task/ags_tic_device.h \
 	ags/audio/task/ags_toggle_pattern_bit.h \
-	ags/audio/task/ags_unref_audio_signal.h \
-	ags/audio/task/recall/ags_apply_bpm.h \
-	ags/audio/task/recall/ags_apply_sequencer_length.h \
-	ags/audio/task/recall/ags_apply_tact.h \
-	ags/audio/task/recall/ags_reset_peak.h \
-	ags/audio/task/recall/ags_set_muted.h
+	ags/audio/task/ags_apply_bpm.h \
+	ags/audio/task/ags_apply_sequencer_length.h \
+	ags/audio/task/ags_apply_tact.h \
+	ags/audio/task/ags_reset_peak.h \
+	ags/audio/task/ags_set_muted.h
 
 deprecated_libags_audio_task_c_sources =
 
@@ -1204,9 +1201,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_remove_audio_signal.c \
 	ags/audio/task/ags_remove_note.c \
 	ags/audio/task/ags_remove_soundcard.c \
-	ags/audio/task/ags_reset_audio_connection.c \
 	ags/audio/task/ags_resize_audio.c \
-	ags/audio/task/ags_save_file.c \
 	ags/audio/task/ags_seek_soundcard.c \
 	ags/audio/task/ags_set_audio_channels.c \
 	ags/audio/task/ags_set_buffer_size.c \
@@ -1219,12 +1214,11 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_switch_buffer_flag.c \
 	ags/audio/task/ags_tic_device.c \
 	ags/audio/task/ags_toggle_pattern_bit.c \
-	ags/audio/task/ags_unref_audio_signal.c \
-	ags/audio/task/recall/ags_apply_bpm.c \
-	ags/audio/task/recall/ags_apply_sequencer_length.c \
-	ags/audio/task/recall/ags_apply_tact.c \
-	ags/audio/task/recall/ags_reset_peak.c \
-	ags/audio/task/recall/ags_set_muted.c
+	ags/audio/task/ags_apply_bpm.c \
+	ags/audio/task/ags_apply_sequencer_length.c \
+	ags/audio/task/ags_apply_tact.c \
+	ags/audio/task/ags_reset_peak.c \
+	ags/audio/task/ags_set_muted.c
 
 # libags-gui all files
 deprecated_libags_gui_h_sources =

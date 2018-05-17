@@ -244,9 +244,7 @@
 #include <ags/audio/task/ags_remove_audio_signal.h>
 #include <ags/audio/task/ags_remove_note.h>
 #include <ags/audio/task/ags_remove_soundcard.h>
-#include <ags/audio/task/ags_reset_audio_connection.h>
 #include <ags/audio/task/ags_resize_audio.h>
-#include <ags/audio/task/ags_save_file.h>
 #include <ags/audio/task/ags_seek_soundcard.h>
 #include <ags/audio/task/ags_set_audio_channels.h>
 #include <ags/audio/task/ags_set_buffer_size.h>
@@ -259,12 +257,11 @@
 #include <ags/audio/task/ags_switch_buffer_flag.h>
 #include <ags/audio/task/ags_tic_device.h>
 #include <ags/audio/task/ags_toggle_pattern_bit.h>
-#include <ags/audio/task/ags_unref_audio_signal.h>
 
 /* audio recall task */
-#include <ags/audio/task/recall/ags_apply_bpm.h>
-#include <ags/audio/task/recall/ags_apply_sequencer_length.h>
-#include <ags/audio/task/recall/ags_apply_tact.h>
-#include <ags/audio/task/recall/ags_set_muted.h>
+#include <ags/audio/task/ags_apply_bpm.h>
+#include <ags/audio/task/ags_apply_sequencer_length.h>
+#include <ags/audio/task/ags_apply_tact.h>
+#include <ags/audio/task/ags_set_muted.h>
 
 #endif /*__LIBAGS_AUDIO_H__*/

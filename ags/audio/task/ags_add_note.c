@@ -24,7 +24,6 @@
 #include <ags/i18n.h>
 
 void ags_add_note_class_init(AgsAddNoteClass *add_note);
-void ags_add_note_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_add_note_init(AgsAddNote *add_note);
 void ags_add_note_set_property(GObject *gobject,
 			       guint prop_id,
@@ -77,20 +76,10 @@ ags_add_note_get_type()
       (GInstanceInitFunc) ags_add_note_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_add_note_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_add_note = g_type_register_static(AGS_TYPE_TASK,
 					       "AgsAddNote",
 					       &ags_add_note_info,
 					       0);
-
-    g_type_add_interface_static(ags_type_add_note,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
   
   return (ags_type_add_note);
@@ -194,7 +183,7 @@ ags_add_note_init(AgsAddNote *add_note)
   add_note->audio = NULL;
   add_note->note = NULL;
 
-  add_note->audio_channel = NULL;
+  add_note->audio_channel = 0;
   add_note->use_selection_list = FALSE;
 }
 
@@ -423,9 +412,9 @@ ags_add_note_launch(AgsTask *task)
  * @note: the #AgsNote to add
  * @use_selection_list: if %TRUE added to selection, otherwise to notation
  *
- * Creates a new instance of #AgsAddNote.
+ * Create a new instance of #AgsAddNote.
  *
- * Returns: an new #AgsAddNote.
+ * Returns: the new #AgsAddNote
  *
  * Since: 2.0.0
  */

@@ -286,10 +286,8 @@
       <xi:include href="xml/ags_remove_audio_signal.xml"/>
       <xi:include href="xml/ags_remove_note.xml"/>
       <xi:include href="xml/ags_remove_soundcard.xml"/>
-      <xi:include href="xml/ags_reset_audio_connection.xml"/>
       <xi:include href="xml/ags_reset_peak.xml"/>
       <xi:include href="xml/ags_resize_audio.xml"/>
-      <xi:include href="xml/ags_save_file.xml"/>
       <xi:include href="xml/ags_seek_soundcard.xml"/>
       <xi:include href="xml/ags_set_audio_channels.xml"/>
       <xi:include href="xml/ags_set_buffer_size.xml"/>
@@ -303,7 +301,6 @@
       <xi:include href="xml/ags_switch_buffer_flag.xml"/>
       <xi:include href="xml/ags_tic_device.xml"/>
       <xi:include href="xml/ags_toggle_pattern_bit.xml"/>
-      <xi:include href="xml/ags_unref_audio_signal.xml"/>
     </chapter>
   </part>
   

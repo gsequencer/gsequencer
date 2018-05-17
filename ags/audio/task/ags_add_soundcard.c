@@ -281,12 +281,25 @@ ags_add_soundcard_launch(AgsTask *task)
 {
   AgsAddSoundcard *add_soundcard;
   
+  GList *list_start;
+  
   add_soundcard = AGS_ADD_SOUNDCARD(task);
 
+  if(!AGS_IS_SOUND_PROVIDER(add_soundcard->application_context) ||
+     !AGS_IS_SOUNDCARD(add_soundcard->soundcard)){
+    return;
+  }
+
   /* add soundcard */
-  ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(add_soundcard->application_context),
-				   g_list_append(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(add_soundcard->application_context)),
-						 add_soundcard->soundcard));
+  list_start = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(add_soundcard->application_context));
+  
+  if(g_list_find(list_start, add_soundcard->soundcard) == NULL){
+    g_object_ref(add_soundcard->soundcard);
+    
+    ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(add_soundcard->application_context),
+				     g_list_append(list_start,
+						   add_soundcard->soundcard));
+  }
 }
 
 /**
@@ -294,9 +307,9 @@ ags_add_soundcard_launch(AgsTask *task)
  * @application_context: the #AgsApplicationContext
  * @soundcard: the #AgsSoundcard to add
  *
- * Creates an #AgsAddSoundcard.
+ * Create a new instance of #AgsAddSoundcard.
  *
- * Returns: an new #AgsAddSoundcard.
+ * Returns: the new #AgsAddSoundcard.
  *
  * Since: 2.0.0
  */

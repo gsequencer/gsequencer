@@ -19,12 +19,9 @@
 
 #include <ags/audio/task/ags_remove_audio.h>
 
-#include <ags/audio/ags_playback_domain.h>
-#include <ags/audio/ags_playback.h>
+#include <ags/libags.h>
 
-#include <ags/audio/thread/ags_audio_loop.h>
-#include <ags/audio/thread/ags_audio_thread.h>
-#include <ags/audio/thread/ags_channel_thread.h>
+#include <ags/audio/ags_sound_provider.h>
 
 #include <ags/i18n.h>
 

@@ -21,6 +21,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_sound_provider.h>
+
 #include <ags/i18n.h>
 
 void ags_add_audio_class_init(AgsAddAudioClass *add_audio);
