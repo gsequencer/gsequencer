@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,7 +28,6 @@
 #include <ags/i18n.h>
 
 void ags_set_muted_class_init(AgsSetMutedClass *set_muted);
-void ags_set_muted_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_set_muted_init(AgsSetMuted *set_muted);
 void ags_set_muted_set_property(GObject *gobject,
 				guint prop_id,
@@ -38,8 +37,6 @@ void ags_set_muted_get_property(GObject *gobject,
 				guint prop_id,
 				GValue *value,
 				GParamSpec *param_spec);
-void ags_set_muted_connect(AgsConnectable *connectable);
-void ags_set_muted_disconnect(AgsConnectable *connectable);
 void ags_set_muted_dispose(GObject *gobject);
 void ags_set_muted_finalize(GObject *gobject);
 
@@ -51,7 +48,7 @@ void ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio);
 
 /**
  * SECTION:ags_set_muted
- * @short_description: set muted to delay audio
+ * @short_description: set muted
  * @title: AgsSetMuted
  * @section_id:
  * @include: ags/audio/task/recall/ags_set_muted.h
@@ -75,34 +72,24 @@ ags_set_muted_get_type()
 
   if(!ags_type_set_muted){
     static const GTypeInfo ags_set_muted_info = {
-      sizeof (AgsSetMutedClass),
+      sizeof(AgsSetMutedClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_set_muted_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsSetMuted),
+      sizeof(AgsSetMuted),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_set_muted_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_set_muted_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_set_muted = g_type_register_static(AGS_TYPE_TASK,
 						"AgsSetMuted",
 						&ags_set_muted_info,
 						0);
-    
-    g_type_add_interface_static(ags_type_set_muted,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
   
-  return (ags_type_set_muted);
+  return(ags_type_set_muted);
 }
 
 void
@@ -110,6 +97,7 @@ ags_set_muted_class_init(AgsSetMutedClass *set_muted)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+
   GParamSpec *param_spec;
 
   ags_set_muted_parent_class = g_type_class_peek_parent(set_muted);
@@ -129,7 +117,7 @@ ags_set_muted_class_init(AgsSetMutedClass *set_muted)
    *
    * The assigned #GObject as scope.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("scope",
 				   i18n_pspec("scope of set buffer size"),
@@ -145,7 +133,7 @@ ags_set_muted_class_init(AgsSetMutedClass *set_muted)
    *
    * The muted to set to scope.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_boolean("muted",
 				    i18n_pspec("muted"),
@@ -160,15 +148,6 @@ ags_set_muted_class_init(AgsSetMutedClass *set_muted)
   task = (AgsTaskClass *) set_muted;
   
   task->launch = ags_set_muted_launch;
-}
-
-void
-ags_set_muted_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_set_muted_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_set_muted_connect;
-  connectable->disconnect = ags_set_muted_disconnect;
 }
 
 void
@@ -249,22 +228,6 @@ ags_set_muted_get_property(GObject *gobject,
 }
 
 void
-ags_set_muted_connect(AgsConnectable *connectable)
-{
-  ags_set_muted_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_set_muted_disconnect(AgsConnectable *connectable)
-{
-  ags_set_muted_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_set_muted_dispose(GObject *gobject)
 {
   AgsSetMuted *set_muted;
@@ -337,45 +300,37 @@ ags_set_muted_recall(AgsSetMuted *set_muted, AgsRecall *recall)
 void
 ags_set_muted_channel(AgsSetMuted *set_muted, AgsChannel *channel)
 {
-  AgsMutexManager *mutex_manager;
+  GList *list_start, *list;
 
-  GList *list;
+  /* set muted - play */
+  g_object_get(channel,
+	       "play", &list_start,
+	       NULL);
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *channel_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get channel mutex */
-  pthread_mutex_lock(application_mutex);
+  list = list_start;
   
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* apply sequencer length */
-  pthread_mutex_lock(channel_mutex);
-
-  list = channel->play;
-
   while(list != NULL){
     ags_set_muted_recall(set_muted, AGS_RECALL(list->data));
-
+    
     list = list->next;
   }
 
-  list = channel->recall;
+  g_list_free(list_start);
+  
+  /* set muted - recall */
+  g_object_get(channel,
+	       "recall", &list_start,
+	       NULL);
 
+  list = list_start;
+  
   while(list != NULL){
     ags_set_muted_recall(set_muted, AGS_RECALL(list->data));
-
+    
     list = list->next;
   }
 
-  pthread_mutex_unlock(channel_mutex);
+  g_list_free(list_start);
 }
 
 void
@@ -384,25 +339,17 @@ ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio)
   AgsChannel *input, *output;
   AgsChannel *channel;
 
-  AgsMutexManager *mutex_manager;
-
   GList *list;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
+  audio_mutex = audio->obj_mutex;
 
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* get some fields */
   pthread_mutex_lock(audio_mutex);
@@ -410,38 +357,50 @@ ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio)
   output = audio->output;
   input = audio->input;
 
-  /* AgsRecall */
-  list = audio->play;
-
-  while(list != NULL){
-    ags_set_muted_recall(set_muted, AGS_RECALL(list->data));
-
-    list = list->next;
-  }
-
-  list = audio->recall;
-
-  while(list != NULL){
-    ags_set_muted_recall(set_muted, AGS_RECALL(list->data));
-
-    list = list->next;
-  }
-
   pthread_mutex_unlock(audio_mutex);
 
-  /* AgsChannel */
+  /* set muted - play */
+  g_object_get(audio,
+	       "play", &list_start,
+	       NULL);
+
+  list = list_start;
+  
+  while(list != NULL){
+    ags_set_muted_recall(set_muted, AGS_RECALL(list->data));
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+  
+  /* set muted - recall */
+  g_object_get(audio,
+	       "recall", &list_start,
+	       NULL);
+
+  list = list_start;
+  
+  while(list != NULL){
+    ags_set_muted_recall(set_muted, AGS_RECALL(list->data));
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+  
+  /* AgsChannel - output */
   channel = output;
 
   while(channel != NULL){
     /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_channel_get_class_mutex());
 
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
+    channel_mutex = channel->obj_mutex;
 
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
-    /* muted */
+    /* set muted */
     ags_set_muted_channel(set_muted, channel);
 
     /* iterate */
@@ -452,18 +411,18 @@ ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio)
     pthread_mutex_unlock(channel_mutex);    
   }
 
+  /* AgsChannel - input */
   channel = input;
 
   while(channel != NULL){
     /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_channel_get_class_mutex());
 
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
+    channel_mutex = channel->obj_mutex;
 
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
-    /* muted */
+    /* set muted */
     ags_set_muted_channel(set_muted, channel);
 
     /* iterate */
@@ -484,7 +443,7 @@ ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio)
  *
  * Returns: an new #AgsSetMuted.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSetMuted*
 ags_set_muted_new(GObject *scope,

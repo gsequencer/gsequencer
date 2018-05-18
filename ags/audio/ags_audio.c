@@ -390,7 +390,7 @@ ags_audio_class_init(AgsAudioClass *audio)
   param_spec = g_param_spec_double("bpm",
 				   i18n_pspec("bpm"),
 				   i18n_pspec("The bpm"),
-				   0,
+				   0.0,
 				   G_MAXDOUBLE,
 				   AGS_SOUNDCARD_DEFAULT_BPM,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);

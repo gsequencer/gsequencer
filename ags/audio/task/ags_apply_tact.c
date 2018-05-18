@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,7 +28,6 @@
 #include <ags/i18n.h>
 
 void ags_apply_tact_class_init(AgsApplyTactClass *apply_tact);
-void ags_apply_tact_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_apply_tact_init(AgsApplyTact *apply_tact);
 void ags_apply_tact_set_property(GObject *gobject,
 				 guint prop_id,
@@ -38,8 +37,6 @@ void ags_apply_tact_get_property(GObject *gobject,
 				 guint prop_id,
 				 GValue *value,
 				 GParamSpec *param_spec);
-void ags_apply_tact_connect(AgsConnectable *connectable);
-void ags_apply_tact_disconnect(AgsConnectable *connectable);
 void ags_apply_tact_dispose(GObject *gobject);
 void ags_apply_tact_finalize(GObject *gobject);
 
@@ -49,6 +46,8 @@ void ags_apply_tact_recall(AgsApplyTact *apply_tact, AgsRecall *recall);
 void ags_apply_tact_channel(AgsApplyTact *apply_tact, AgsChannel *channel);
 void ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio);
 void ags_apply_tact_soundcard(AgsApplyTact *apply_tact, GObject *soundcard);
+void ags_apply_tact_sequencer(AgsApplyTact *apply_tact, GObject *sequencer);
+void ags_apply_tact_application_context(AgsApplyTact *apply_tact, AgsApplicationContext *application_context);
 
 /**
  * SECTION:ags_apply_tact
@@ -67,7 +66,6 @@ enum{
 };
 
 static gpointer ags_apply_tact_parent_class = NULL;
-static AgsConnectableInterface *ags_apply_tact_parent_connectable_interface;
 
 GType
 ags_apply_tact_get_type()
@@ -76,34 +74,24 @@ ags_apply_tact_get_type()
 
   if(!ags_type_apply_tact){
     static const GTypeInfo ags_apply_tact_info = {
-      sizeof (AgsApplyTactClass),
+      sizeof(AgsApplyTactClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_apply_tact_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsApplyTact),
+      sizeof(AgsApplyTact),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_apply_tact_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_apply_tact_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_apply_tact = g_type_register_static(AGS_TYPE_TASK,
 						 "AgsApplyTact",
 						 &ags_apply_tact_info,
 						 0);
-    
-    g_type_add_interface_static(ags_type_apply_tact,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
   
-  return (ags_type_apply_tact);
+  return(ags_type_apply_tact);
 }
 
 void
@@ -111,6 +99,7 @@ ags_apply_tact_class_init(AgsApplyTactClass *apply_tact)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+
   GParamSpec *param_spec;
 
   ags_apply_tact_parent_class = g_type_class_peek_parent(apply_tact);
@@ -130,7 +119,7 @@ ags_apply_tact_class_init(AgsApplyTactClass *apply_tact)
    *
    * The assigned #GObject as scope.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("scope",
 				   i18n_pspec("scope of set buffer size"),
@@ -146,7 +135,7 @@ ags_apply_tact_class_init(AgsApplyTactClass *apply_tact)
    *
    * The tact to apply to scope.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("tact",
 				   i18n_pspec("tact"),
@@ -163,15 +152,6 @@ ags_apply_tact_class_init(AgsApplyTactClass *apply_tact)
   task = (AgsTaskClass *) apply_tact;
   
   task->launch = ags_apply_tact_launch;
-}
-
-void
-ags_apply_tact_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_apply_tact_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_apply_tact_connect;
-  connectable->disconnect = ags_apply_tact_disconnect;
 }
 
 void
@@ -252,22 +232,6 @@ ags_apply_tact_get_property(GObject *gobject,
 }
 
 void
-ags_apply_tact_connect(AgsConnectable *connectable)
-{
-  ags_apply_tact_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_apply_tact_disconnect(AgsConnectable *connectable)
-{
-  ags_apply_tact_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_apply_tact_dispose(GObject *gobject)
 {
   AgsApplyTact *apply_tact;
@@ -306,12 +270,24 @@ ags_apply_tact_launch(AgsTask *task)
 
   apply_tact = AGS_APPLY_TACT(task);
 
- if(AGS_IS_SOUNDCARD(apply_tact->scope)){
+ if(AGS_IS_APPLICATION_CONTEXT(apply_tact->scope)){
+    AgsApplicationContext *application_context;
+
+    application_context = apply_tact->scope;
+
+    ags_apply_tact_application_context(apply_tact, application_context);
+  }else if(AGS_IS_SOUNDCARD(apply_tact->scope)){
     GObject *soundcard;
 
     soundcard = apply_tact->scope;
 
     ags_apply_tact_soundcard(apply_tact, soundcard);
+ }else if(AGS_IS_SEQUENCER(apply_tact->scope)){
+    GObject *sequencer;
+
+    sequencer = apply_tact->scope;
+
+    ags_apply_tact_sequencer(apply_tact, sequencer);
  }else if(AGS_IS_AUDIO(apply_tact->scope)){
     AgsAudio *audio;
 
@@ -348,45 +324,37 @@ ags_apply_tact_recall(AgsApplyTact *apply_tact, AgsRecall *recall)
 void
 ags_apply_tact_channel(AgsApplyTact *apply_tact, AgsChannel *channel)
 {
-  AgsMutexManager *mutex_manager;
+  GList *list_start, *list;
 
-  GList *list;
+  /* apply tact - play */
+  g_object_get(channel,
+	       "play", &list_start,
+	       NULL);
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *channel_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get channel mutex */
-  pthread_mutex_lock(application_mutex);
+  list = list_start;
   
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* apply tact */
-  pthread_mutex_lock(channel_mutex);
-
-  list = channel->play;
-
   while(list != NULL){
     ags_apply_tact_recall(apply_tact, AGS_RECALL(list->data));
-
+    
     list = list->next;
   }
 
-  list = channel->recall;
+  g_list_free(list_start);
+  
+  /* apply tact - recall */
+  g_object_get(channel,
+	       "recall", &list_start,
+	       NULL);
 
+  list = list_start;
+  
   while(list != NULL){
     ags_apply_tact_recall(apply_tact, AGS_RECALL(list->data));
-
+    
     list = list->next;
   }
 
-  pthread_mutex_unlock(channel_mutex);
+  g_list_free(list_start);
 }
 
 void
@@ -395,25 +363,17 @@ ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio)
   AgsChannel *input, *output;
   AgsChannel *channel;
 
-  AgsMutexManager *mutex_manager;
-
   GList *list;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
+  audio_mutex = audio->obj_mutex;
 
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* get some fields */
   pthread_mutex_lock(audio_mutex);
@@ -421,36 +381,48 @@ ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio)
   output = audio->output;
   input = audio->input;
 
-  /* AgsRecall */
-  list = audio->play;
-
-  while(list != NULL){
-    ags_apply_tact_recall(apply_tact, AGS_RECALL(list->data));
-
-    list = list->next;
-  }
-
-  list = audio->recall;
-
-  while(list != NULL){
-    ags_apply_tact_recall(apply_tact, AGS_RECALL(list->data));
-
-    list = list->next;
-  }
-
   pthread_mutex_unlock(audio_mutex);
 
-  /* AgsChannel */
+  /* apply tact - play */
+  g_object_get(audio,
+	       "play", &list_start,
+	       NULL);
+
+  list = list_start;
+  
+  while(list != NULL){
+    ags_apply_tact_recall(apply_tact, AGS_RECALL(list->data));
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+  
+  /* apply tact - recall */
+  g_object_get(audio,
+	       "recall", &list_start,
+	       NULL);
+
+  list = list_start;
+  
+  while(list != NULL){
+    ags_apply_tact_recall(apply_tact, AGS_RECALL(list->data));
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+  
+  /* AgsChannel - output */
   channel = output;
 
   while(channel != NULL){
     /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_channel_get_class_mutex());
 
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
+    channel_mutex = channel->obj_mutex;
 
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
     /* apply tact */
     ags_apply_tact_channel(apply_tact, channel);
@@ -463,16 +435,16 @@ ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio)
     pthread_mutex_unlock(channel_mutex);    
   }
 
+  /* AgsChannel - input */
   channel = input;
 
   while(channel != NULL){
     /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_channel_get_class_mutex());
 
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
+    channel_mutex = channel->obj_mutex;
 
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
     /* apply tact */
     ags_apply_tact_channel(apply_tact, channel);
@@ -486,45 +458,53 @@ ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio)
   }
 }
 
-
 void
 ags_apply_tact_soundcard(AgsApplyTact *apply_tact, GObject *soundcard)
 {
-  AgsMutexManager *mutex_manager;
-  
+  ags_soundcard_set_delay_factor(AGS_SOUNDCARD(soundcard), apply_tact->tact);
+}
+
+void
+ags_apply_tact_sequencer(AgsApplyTact *apply_tact, GObject *sequencer)
+{
+  ags_sequencer_set_delay_factor(AGS_SEQUENCER(sequencer), apply_tact->tact);
+}
+
+void
+ags_apply_tact_application_context(AgsApplyTact *apply_tact, AgsApplicationContext *application_context)
+{
   GList *list_start, *list;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get soundcard mutex */
-  pthread_mutex_lock(application_mutex);
-  
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) soundcard);
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* set delay factor and get audio */
-  pthread_mutex_lock(soundcard);
-
-  ags_soundcard_set_delay_factor(AGS_SOUNDCARD(soundcard), apply_tact->tact);
-
+  /* soundcard */
   list =
-    list_start = g_list_copy(ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard)));
-
-  pthread_mutex_unlock(soundcard);
-
-  /* AgsAudio */
-  list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
+    list_start = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
   while(list != NULL){
-    ags_apply_tact_audio(apply_tact,
-			 AGS_AUDIO(list->data));
+    ags_apply_tact_soundcard(list->data);
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  /* sequencer */
+  list =
+    list_start = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
+
+  while(list != NULL){
+    ags_apply_tact_sequencer(list->data);
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  /* audio */
+  list =
+    list_start = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+
+  while(list != NULL){
+    ags_apply_tact_audio(list->data);
 
     list = list->next;
   }
@@ -541,7 +521,7 @@ ags_apply_tact_soundcard(AgsApplyTact *apply_tact, GObject *soundcard)
  *
  * Returns: an new #AgsApplyTact.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsApplyTact*
 ags_apply_tact_new(GObject *scope,

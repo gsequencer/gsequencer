@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,11 +24,8 @@
 #include <ags/i18n.h>
 
 void ags_reset_peak_class_init(AgsResetPeakClass *reset_peak);
-void ags_reset_peak_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_reset_peak_init(AgsResetPeak *reset_peak);
 void ags_reset_peak_connect(AgsConnectable *connectable);
-void ags_reset_peak_disconnect(AgsConnectable *connectable);
-void ags_reset_peak_dispose(GObject *gobject);
 void ags_reset_peak_finalize(GObject *gobject);
 
 void ags_reset_peak_launch(AgsTask *task);
@@ -44,7 +41,6 @@ void ags_reset_peak_launch(AgsTask *task);
  */
 
 static gpointer ags_reset_peak_parent_class = NULL;
-static AgsConnectableInterface *ags_reset_peak_parent_connectable_interface;
 
 AgsResetPeak *ags_reset_peak = NULL;
 static pthread_mutex_t peak_channel_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -56,34 +52,24 @@ ags_reset_peak_get_type()
 
   if(!ags_type_reset_peak){
     static const GTypeInfo ags_reset_peak_info = {
-      sizeof (AgsResetPeakClass),
+      sizeof(AgsResetPeakClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_reset_peak_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsResetPeak),
+      sizeof(AgsResetPeak),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_reset_peak_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_reset_peak_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_reset_peak = g_type_register_static(AGS_TYPE_TASK,
 						 "AgsResetPeak",
 						 &ags_reset_peak_info,
 						 0);
-    
-    g_type_add_interface_static(ags_type_reset_peak,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
   
-  return (ags_type_reset_peak);
+  return(ags_type_reset_peak);
 }
 
 void
@@ -108,36 +94,11 @@ ags_reset_peak_class_init(AgsResetPeakClass *reset_peak)
 }
 
 void
-ags_reset_peak_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_reset_peak_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_reset_peak_connect;
-  connectable->disconnect = ags_reset_peak_disconnect;
-}
-
-void
 ags_reset_peak_init(AgsResetPeak *reset_peak)
 {
   AGS_TASK(reset_peak)->flags |= AGS_TASK_CYCLIC;
   
   reset_peak->peak_channel = NULL;
-}
-
-void
-ags_reset_peak_connect(AgsConnectable *connectable)
-{
-  ags_reset_peak_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_reset_peak_disconnect(AgsConnectable *connectable)
-{
-  ags_reset_peak_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
 }
 
 void
@@ -217,7 +178,7 @@ ags_reset_peak_launch(AgsTask *task)
  *
  * Add @peak_channel.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_reset_peak_add(AgsResetPeak *reset_peak,
@@ -239,7 +200,7 @@ ags_reset_peak_add(AgsResetPeak *reset_peak,
  *
  * Remove @peak_channel.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_reset_peak_remove(AgsResetPeak *reset_peak,
@@ -264,7 +225,7 @@ ags_reset_peak_remove(AgsResetPeak *reset_peak,
  *
  * Returns: the #AgsResetPeak
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsResetPeak*
 ags_reset_peak_get_instance()
@@ -274,33 +235,17 @@ ags_reset_peak_get_instance()
   pthread_mutex_lock(&mutex);
 
   if(ags_reset_peak == NULL){
-    AgsThread *main_loop;
     AgsTaskThread *task_thread;
-    AgsMutexManager *mutex_manager;
     
     AgsApplicationContext *application_context;
 
     gboolean no_soundcard;
-  
-    pthread_mutex_t *application_mutex;
 
     application_context = ags_application_context_get_instance();
 
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-    /* get main loop */
-    pthread_mutex_lock(application_mutex);
-
-    main_loop = application_context->main_loop;
-    
-    pthread_mutex_unlock(application_mutex);
-
-    /* get task thread */
-    task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-							 AGS_TYPE_TASK_THREAD);
-
-    ags_reset_peak = ags_reset_peak_new();
+    g_object_get(application_context,
+		 "task-thread", &task_thread,
+		 NULL);
 
     pthread_mutex_unlock(&mutex);
 
@@ -320,7 +265,7 @@ ags_reset_peak_get_instance()
  *
  * Returns: an new #AgsResetPeak.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsResetPeak*
 ags_reset_peak_new()

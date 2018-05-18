@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,7 +30,6 @@
 #include <ags/i18n.h>
 
 void ags_apply_bpm_class_init(AgsApplyBpmClass *apply_bpm);
-void ags_apply_bpm_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_apply_bpm_init(AgsApplyBpm *apply_bpm);
 void ags_apply_bpm_set_property(GObject *gobject,
 				guint prop_id,
@@ -40,8 +39,6 @@ void ags_apply_bpm_get_property(GObject *gobject,
 				guint prop_id,
 				GValue *value,
 				GParamSpec *param_spec);
-void ags_apply_bpm_connect(AgsConnectable *connectable);
-void ags_apply_bpm_disconnect(AgsConnectable *connectable);
 void ags_apply_bpm_dispose(GObject *gobject);
 void ags_apply_bpm_finalize(GObject *gobject);
 
@@ -51,10 +48,12 @@ void ags_apply_bpm_recall(AgsApplyBpm *apply_bpm, AgsRecall *recall);
 void ags_apply_bpm_channel(AgsApplyBpm *apply_bpm, AgsChannel *channel);
 void ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio);
 void ags_apply_bpm_soundcard(AgsApplyBpm *apply_bpm, GObject *soundcard);
+void ags_apply_bpm_sequencer(AgsApplyBpm *apply_bpm, GObject *sequencer);
+void ags_apply_bpm_application_context(AgsApplyBpm *apply_bpm, AgsApplicationContext *application_context);
 
 /**
  * SECTION:ags_apply_bpm
- * @short_description: apply bpm to delay audio
+ * @short_description: apply bpm
  * @title: AgsApplyBpm
  * @section_id:
  * @include: ags/audio/task/recall/ags_apply_bpm.h
@@ -69,7 +68,6 @@ enum{
 };
 
 static gpointer ags_apply_bpm_parent_class = NULL;
-static AgsConnectableInterface *ags_apply_bpm_parent_connectable_interface;
 
 GType
 ags_apply_bpm_get_type()
@@ -89,20 +87,10 @@ ags_apply_bpm_get_type()
       (GInstanceInitFunc) ags_apply_bpm_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_apply_bpm_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_apply_bpm = g_type_register_static(AGS_TYPE_TASK,
 						"AgsApplyBpm",
 						&ags_apply_bpm_info,
 						0);
-    
-    g_type_add_interface_static(ags_type_apply_bpm,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
   
   return (ags_type_apply_bpm);
@@ -113,6 +101,7 @@ ags_apply_bpm_class_init(AgsApplyBpmClass *apply_bpm)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+
   GParamSpec *param_spec;
 
   ags_apply_bpm_parent_class = g_type_class_peek_parent(apply_bpm);
@@ -132,7 +121,7 @@ ags_apply_bpm_class_init(AgsApplyBpmClass *apply_bpm)
    *
    * The assigned #GObject as scope.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("scope",
 				   i18n_pspec("scope of set buffer size"),
@@ -148,14 +137,14 @@ ags_apply_bpm_class_init(AgsApplyBpmClass *apply_bpm)
    *
    * The bpm to apply to scope.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("bpm",
 				   i18n_pspec("bpm"),
 				   i18n_pspec("The bpm to apply"),
-				   0,
+				   0.0,
 				   G_MAXDOUBLE,
-				   0,
+				   AGS_SOUNDCARD_DEFAULT_BPM,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BPM,
@@ -168,19 +157,10 @@ ags_apply_bpm_class_init(AgsApplyBpmClass *apply_bpm)
 }
 
 void
-ags_apply_bpm_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_apply_bpm_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_apply_bpm_connect;
-  connectable->disconnect = ags_apply_bpm_disconnect;
-}
-
-void
 ags_apply_bpm_init(AgsApplyBpm *apply_bpm)
 {
   apply_bpm->scope = NULL;
-  apply_bpm->bpm = 0.0;
+  apply_bpm->bpm = AGS_SOUNDCARD_DEFAULT_BPM;
 }
 
 void
@@ -254,22 +234,6 @@ ags_apply_bpm_get_property(GObject *gobject,
 }
 
 void
-ags_apply_bpm_connect(AgsConnectable *connectable)
-{
-  ags_apply_bpm_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_apply_bpm_disconnect(AgsConnectable *connectable)
-{
-  ags_apply_bpm_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_apply_bpm_dispose(GObject *gobject)
 {
   AgsApplyBpm *apply_bpm;
@@ -308,12 +272,24 @@ ags_apply_bpm_launch(AgsTask *task)
   
   apply_bpm = AGS_APPLY_BPM(task);
   
-  if(AGS_IS_SOUNDCARD(apply_bpm->scope)){
+  if(AGS_IS_APPLICATION_CONTEXT(apply_bpm->scope)){
+    AgsApplicationContext *application_context;
+
+    application_context = apply_bpm->scope;
+
+    ags_apply_bpm_application_context(apply_bpm, application_context);
+  }else if(AGS_IS_SOUNDCARD(apply_bpm->scope)){
     GObject *soundcard;
 
     soundcard = apply_bpm->scope;
 
     ags_apply_bpm_soundcard(apply_bpm, soundcard);
+  }else if(AGS_IS_SEQUENCER(apply_bpm->scope)){
+    GObject *sequencer;
+
+    sequencer = apply_bpm->scope;
+
+    ags_apply_bpm_sequencer(apply_bpm, sequencer);
   }else if(AGS_IS_AUDIO(apply_bpm->scope)){
     AgsAudio *audio;
 
@@ -350,37 +326,14 @@ ags_apply_bpm_recall(AgsApplyBpm *apply_bpm, AgsRecall *recall)
 void
 ags_apply_bpm_channel(AgsApplyBpm *apply_bpm, AgsChannel *channel)
 {
-  AgsMutexManager *mutex_manager;
+  GList *list_start, *list;
 
-  GList *list;
+  /* apply bpm - play */
+  g_object_get(channel,
+	       "play", &list_start,
+	       NULL);
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *channel_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get channel mutex */
-  pthread_mutex_lock(application_mutex);
-  
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* apply bpm */
-  pthread_mutex_lock(channel_mutex);
-
-  list = channel->play;
-  
-  while(list != NULL){
-    ags_apply_bpm_recall(apply_bpm, AGS_RECALL(list->data));
-    
-    list = list->next;
-  }
-  
-  list = channel->recall;
+  list = list_start;
   
   while(list != NULL){
     ags_apply_bpm_recall(apply_bpm, AGS_RECALL(list->data));
@@ -388,7 +341,22 @@ ags_apply_bpm_channel(AgsApplyBpm *apply_bpm, AgsChannel *channel)
     list = list->next;
   }
 
-  pthread_mutex_unlock(channel_mutex);
+  g_list_free(list_start);
+  
+  /* apply bpm - recall */
+  g_object_get(channel,
+	       "recall", &list_start,
+	       NULL);
+
+  list = list_start;
+  
+  while(list != NULL){
+    ags_apply_bpm_recall(apply_bpm, AGS_RECALL(list->data));
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 void
@@ -397,25 +365,17 @@ ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio)
   AgsChannel *input, *output;
   AgsChannel *channel;
 
-  AgsMutexManager *mutex_manager;
-
   GList *list;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
+  audio_mutex = audio->obj_mutex;
 
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* get some fields */
   pthread_mutex_lock(audio_mutex);
@@ -423,16 +383,14 @@ ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio)
   output = audio->output;
   input = audio->input;
 
-  /* AgsRecall */
-  list = audio->play;
-    
-  while(list != NULL){
-    ags_apply_bpm_recall(apply_bpm, AGS_RECALL(list->data));
-    
-    list = list->next;
-  }
-  
-  list = audio->recall;
+  pthread_mutex_unlock(audio_mutex);
+
+  /* apply bpm - play */
+  g_object_get(audio,
+	       "play", &list_start,
+	       NULL);
+
+  list = list_start;
   
   while(list != NULL){
     ags_apply_bpm_recall(apply_bpm, AGS_RECALL(list->data));
@@ -440,19 +398,33 @@ ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio)
     list = list->next;
   }
 
-  pthread_mutex_unlock(audio_mutex);
+  g_list_free(list_start);
   
-  /* AgsChannel */
+  /* apply bpm - recall */
+  g_object_get(audio,
+	       "recall", &list_start,
+	       NULL);
+
+  list = list_start;
+  
+  while(list != NULL){
+    ags_apply_bpm_recall(apply_bpm, AGS_RECALL(list->data));
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+  
+  /* AgsChannel - output */
   channel = output;
 
   while(channel != NULL){
     /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_channel_get_class_mutex());
 
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
+    channel_mutex = channel->obj_mutex;
 
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
     /* apply bpm */
     ags_apply_bpm_channel(apply_bpm, channel);
@@ -465,16 +437,16 @@ ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio)
     pthread_mutex_unlock(channel_mutex);    
   }
 
+  /* AgsChannel - input */
   channel = input;
 
   while(channel != NULL){
     /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_channel_get_class_mutex());
 
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
+    channel_mutex = channel->obj_mutex;
 
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
     /* apply bpm */
     ags_apply_bpm_channel(apply_bpm, channel);
@@ -491,39 +463,50 @@ ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio)
 void
 ags_apply_bpm_soundcard(AgsApplyBpm *apply_bpm, GObject *soundcard)
 {
-  AgsMutexManager *mutex_manager;
-  
+  ags_soundcard_set_bpm(AGS_SOUNDCARD(soundcard), apply_bpm->bpm);
+}
+
+void
+ags_apply_bpm_sequencer(AgsApplyBpm *apply_bpm, GObject *sequencer)
+{
+  ags_sequencer_set_bpm(AGS_SEQUENCER(sequencer), apply_bpm->bpm);
+}
+
+void
+ags_apply_bpm_application_context(AgsApplyBpm *apply_bpm, AgsApplicationContext *application_context)
+{
   GList *list_start, *list;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get soundcard mutex */
-  pthread_mutex_lock(application_mutex);
-  
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) soundcard);
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* set bpm and get audio */
-  pthread_mutex_lock(soundcard_mutex);
-
-  ags_soundcard_set_bpm(AGS_SOUNDCARD(soundcard), apply_bpm->bpm);
-
+  /* soundcard */
   list =
-    list_start = g_list_copy(ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard)));
+    list_start = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  pthread_mutex_unlock(soundcard_mutex);
-
-  /* AgsAudio */
   while(list != NULL){
-    ags_apply_bpm_audio(apply_bpm,
-			AGS_AUDIO(list->data));
+    ags_apply_bpm_soundcard(list->data);
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  /* sequencer */
+  list =
+    list_start = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
+
+  while(list != NULL){
+    ags_apply_bpm_sequencer(list->data);
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  /* audio */
+  list =
+    list_start = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+
+  while(list != NULL){
+    ags_apply_bpm_audio(list->data);
 
     list = list->next;
   }
@@ -536,11 +519,11 @@ ags_apply_bpm_soundcard(AgsApplyBpm *apply_bpm, GObject *soundcard)
  * @scope: the #GObject
  * @bpm: the bpm to apply
  *
- * Creates an #AgsApplyBpm.
+ * Create a new instance of #AgsApplyBpm.
  *
- * Returns: an new #AgsApplyBpm.
+ * Returns: the new #AgsApplyBp
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsApplyBpm*
 ags_apply_bpm_new(GObject *scope,

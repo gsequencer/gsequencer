@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,7 +28,6 @@
 #include <ags/i18n.h>
 
 void ags_apply_sequencer_length_class_init(AgsApplySequencerLengthClass *apply_sequencer_length);
-void ags_apply_sequencer_length_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_apply_sequencer_length_init(AgsApplySequencerLength *apply_sequencer_length);
 void ags_apply_sequencer_length_set_property(GObject *gobject,
 					     guint prop_id,
@@ -38,8 +37,6 @@ void ags_apply_sequencer_length_get_property(GObject *gobject,
 					     guint prop_id,
 					     GValue *value,
 					     GParamSpec *param_spec);
-void ags_apply_sequencer_length_connect(AgsConnectable *connectable);
-void ags_apply_sequencer_length_disconnect(AgsConnectable *connectable);
 void ags_apply_sequencer_length_dispose(GObject *gobject);
 void ags_apply_sequencer_length_finalize(GObject *gobject);
 
@@ -66,7 +63,6 @@ enum{
 };
 
 static gpointer ags_apply_sequencer_length_parent_class = NULL;
-static AgsConnectableInterface *ags_apply_sequencer_length_parent_connectable_interface;
 
 GType
 ags_apply_sequencer_length_get_type()
@@ -75,34 +71,24 @@ ags_apply_sequencer_length_get_type()
 
   if(!ags_type_apply_sequencer_length){
     static const GTypeInfo ags_apply_sequencer_length_info = {
-      sizeof (AgsApplySequencerLengthClass),
+      sizeof(AgsApplySequencerLengthClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_apply_sequencer_length_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsApplySequencerLength),
+      sizeof(AgsApplySequencerLength),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_apply_sequencer_length_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_apply_sequencer_length_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_apply_sequencer_length = g_type_register_static(AGS_TYPE_TASK,
 							     "AgsApplySequencerLength",
 							     &ags_apply_sequencer_length_info,
 							     0);
-    
-    g_type_add_interface_static(ags_type_apply_sequencer_length,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
   
-  return (ags_type_apply_sequencer_length);
+  return(ags_type_apply_sequencer_length);
 }
 
 void
@@ -110,6 +96,7 @@ ags_apply_sequencer_length_class_init(AgsApplySequencerLengthClass *apply_sequen
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+
   GParamSpec *param_spec;
 
   ags_apply_sequencer_length_parent_class = g_type_class_peek_parent(apply_sequencer_length);
@@ -129,7 +116,7 @@ ags_apply_sequencer_length_class_init(AgsApplySequencerLengthClass *apply_sequen
    *
    * The assigned #GObject as scope.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("scope",
 				   i18n_pspec("scope of set buffer size"),
@@ -145,7 +132,7 @@ ags_apply_sequencer_length_class_init(AgsApplySequencerLengthClass *apply_sequen
    *
    * The sequencer length to apply to scope.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("sequencer-length",
 				   i18n_pspec("sequencer length"),
@@ -162,15 +149,6 @@ ags_apply_sequencer_length_class_init(AgsApplySequencerLengthClass *apply_sequen
   task = (AgsTaskClass *) apply_sequencer_length;
   
   task->launch = ags_apply_sequencer_length_launch;
-}
-
-void
-ags_apply_sequencer_length_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_apply_sequencer_length_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_apply_sequencer_length_connect;
-  connectable->disconnect = ags_apply_sequencer_length_disconnect;
 }
 
 void
@@ -251,22 +229,6 @@ ags_apply_sequencer_length_get_property(GObject *gobject,
 }
 
 void
-ags_apply_sequencer_length_connect(AgsConnectable *connectable)
-{
-  ags_apply_sequencer_length_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_apply_sequencer_length_disconnect(AgsConnectable *connectable)
-{
-  ags_apply_sequencer_length_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_apply_sequencer_length_dispose(GObject *gobject)
 {
   AgsApplySequencerLength *apply_sequencer_length;
@@ -339,45 +301,37 @@ ags_apply_sequencer_length_recall(AgsApplySequencerLength *apply_sequencer_lengt
 void
 ags_apply_sequencer_length_channel(AgsApplySequencerLength *apply_sequencer_length, AgsChannel *channel)
 {
-  AgsMutexManager *mutex_manager;
+  GList *list_start, *list;
 
-  GList *list;
+  /* apply sequencer length - play */
+  g_object_get(channel,
+	       "play", &list_start,
+	       NULL);
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *channel_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get channel mutex */
-  pthread_mutex_lock(application_mutex);
+  list = list_start;
   
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* apply sequencer length */
-  pthread_mutex_lock(channel_mutex);
-
-  list = channel->play;
-
   while(list != NULL){
     ags_apply_sequencer_length_recall(apply_sequencer_length, AGS_RECALL(list->data));
-
+    
     list = list->next;
   }
 
-  list = channel->recall;
+  g_list_free(list_start);
+  
+  /* apply sequencer length - recall */
+  g_object_get(channel,
+	       "recall", &list_start,
+	       NULL);
 
+  list = list_start;
+  
   while(list != NULL){
     ags_apply_sequencer_length_recall(apply_sequencer_length, AGS_RECALL(list->data));
-
+    
     list = list->next;
   }
 
-  pthread_mutex_unlock(channel_mutex);
+  g_list_free(list_start);
 }
 
 void
@@ -386,25 +340,17 @@ ags_apply_sequencer_length_audio(AgsApplySequencerLength *apply_sequencer_length
   AgsChannel *input, *output;
   AgsChannel *channel;
 
-  AgsMutexManager *mutex_manager;
-
   GList *list;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
+  audio_mutex = audio->obj_mutex;
 
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* get some fields */
   pthread_mutex_lock(audio_mutex);
@@ -412,36 +358,48 @@ ags_apply_sequencer_length_audio(AgsApplySequencerLength *apply_sequencer_length
   output = audio->output;
   input = audio->input;
 
-  /* AgsRecall */
-  list = audio->play;
-
-  while(list != NULL){
-    ags_apply_sequencer_length_recall(apply_sequencer_length, AGS_RECALL(list->data));
-
-    list = list->next;
-  }
-
-  list = audio->recall;
-
-  while(list != NULL){
-    ags_apply_sequencer_length_recall(apply_sequencer_length, AGS_RECALL(list->data));
-
-    list = list->next;
-  }
-
   pthread_mutex_unlock(audio_mutex);
 
-  /* AgsChannel */
+  /* apply sequencer_length - play */
+  g_object_get(audio,
+	       "play", &list_start,
+	       NULL);
+
+  list = list_start;
+  
+  while(list != NULL){
+    ags_apply_sequencer_length_recall(apply_sequencer_length, AGS_RECALL(list->data));
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+  
+  /* apply sequencer length - recall */
+  g_object_get(audio,
+	       "recall", &list_start,
+	       NULL);
+
+  list = list_start;
+  
+  while(list != NULL){
+    ags_apply_sequencer_length_recall(apply_sequencer_length, AGS_RECALL(list->data));
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+  
+  /* AgsChannel - output */
   channel = output;
 
   while(channel != NULL){
     /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_channel_get_class_mutex());
 
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
+    channel_mutex = channel->obj_mutex;
 
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
     /* apply sequencer length */
     ags_apply_sequencer_length_channel(apply_sequencer_length, channel);
@@ -454,16 +412,16 @@ ags_apply_sequencer_length_audio(AgsApplySequencerLength *apply_sequencer_length
     pthread_mutex_unlock(channel_mutex);    
   }
 
+  /* AgsChannel - input */
   channel = input;
 
   while(channel != NULL){
     /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_channel_get_class_mutex());
 
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
+    channel_mutex = channel->obj_mutex;
 
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
     /* apply sequencer length */
     ags_apply_sequencer_length_channel(apply_sequencer_length, channel);
@@ -486,7 +444,7 @@ ags_apply_sequencer_length_audio(AgsApplySequencerLength *apply_sequencer_length
  *
  * Returns: an new #AgsApplySequencerLength.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsApplySequencerLength*
 ags_apply_sequencer_length_new(GObject *scope,
