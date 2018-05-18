@@ -317,12 +317,6 @@ ags_toggle_pattern_bit_dispose(GObject *gobject)
 
   toggle_pattern_bit = AGS_TOGGLE_PATTERN_BIT(gobject);
 
-  if(toggle_pattern_bit->channel != NULL){
-    g_object_unref(toggle_pattern_bit->channel);
-
-    toggle_pattern_bit->channel = NULL;
-  }
-
   if(toggle_pattern_bit->pattern != NULL){
     g_object_unref(toggle_pattern_bit->pattern);
 
@@ -339,10 +333,6 @@ ags_toggle_pattern_bit_finalize(GObject *gobject)
   AgsTogglePatternBit *toggle_pattern_bit;
 
   toggle_pattern_bit = AGS_TOGGLE_PATTERN_BIT(gobject);
-
-  if(toggle_pattern_bit->channel != NULL){
-    g_object_unref(toggle_pattern_bit->channel);
-  }
 
   if(toggle_pattern_bit->pattern != NULL){
     g_object_unref(toggle_pattern_bit->pattern);

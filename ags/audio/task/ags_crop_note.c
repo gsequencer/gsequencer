@@ -246,15 +246,6 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
 }
 
 void
-ags_crop_note_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_crop_note_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_crop_note_connect;
-  connectable->disconnect = ags_crop_note_disconnect;
-}
-
-void
 ags_crop_note_init(AgsCropNote *crop_note)
 {
   crop_note->audio = NULL;
@@ -427,22 +418,6 @@ ags_crop_note_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_crop_note_connect(AgsConnectable *connectable)
-{
-  ags_crop_note_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_crop_note_disconnect(AgsConnectable *connectable)
-{
-  ags_crop_note_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
 }
 
 void

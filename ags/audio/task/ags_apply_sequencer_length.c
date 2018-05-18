@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/task/recall/ags_apply_sequencer_length.h>
+#include <ags/audio/task/ags_apply_sequencer_length.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -340,7 +340,7 @@ ags_apply_sequencer_length_audio(AgsApplySequencerLength *apply_sequencer_length
   AgsChannel *input, *output;
   AgsChannel *channel;
 
-  GList *list;
+  GList *list_start, *list;
 
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;

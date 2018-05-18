@@ -152,7 +152,7 @@ ags_remove_note_class_init(AgsRemoveNoteClass *remove_note)
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_NOTATION,
+				  PROP_AUDIO_CHANNEL,
 				  param_spec);
   
   /**
@@ -340,7 +340,8 @@ ags_remove_note_launch(AgsTask *task)
 {
   AgsAudio *audio;
   AgsNotation *notation;
-
+  AgsNote *note;
+  
   AgsRemoveNote *remove_note;
 
   AgsTimestamp *timestamp;

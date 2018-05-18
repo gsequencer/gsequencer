@@ -71,7 +71,7 @@ ags_seekable_class_init(AgsSeekableInterface *interface)
    * 
    * Since: 2.0.0
    */
-  seekable_signals[OFFSET_CHANGED] =
+  seekable_signals[SEEK] =
     g_signal_new("seek",
 		 G_TYPE_FROM_INTERFACE(interface),
 		 G_SIGNAL_RUN_LAST,

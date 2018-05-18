@@ -255,7 +255,6 @@ ags_move_note_class_init(AgsMoveNoteClass *move_note)
 void
 ags_move_note_init(AgsMoveNote *move_note)
 {
-  move_note->audio = NULL;
   move_note->notation = NULL;
 
   move_note->selection = NULL;
@@ -365,11 +364,6 @@ ags_move_note_get_property(GObject *gobject,
   move_note = AGS_MOVE_NOTE(gobject);
 
   switch(prop_id){
-  case PROP_AUDIO:
-    {
-      g_value_set_object(value, move_note->audio);
-    }
-    break;
   case PROP_NOTATION:
     {
       g_value_set_object(value, move_note->notation);

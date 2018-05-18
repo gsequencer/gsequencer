@@ -53,11 +53,6 @@
 #include <ags/audio/thread/ags_audio_thread.h>
 #include <ags/audio/thread/ags_channel_thread.h>
 
-#include <ags/audio/task/ags_add_recall_container.h>
-#include <ags/audio/task/ags_add_recall.h>
-#include <ags/audio/task/ags_remove_recall.h>
-#include <ags/audio/task/ags_remove_recall_container.h>
-
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file.h>
 

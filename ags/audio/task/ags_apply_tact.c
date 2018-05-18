@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/task/recall/ags_apply_tact.h>
+#include <ags/audio/task/ags_apply_tact.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -363,7 +363,7 @@ ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio)
   AgsChannel *input, *output;
   AgsChannel *channel;
 
-  GList *list;
+  GList *list_start, *list;
 
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
@@ -480,7 +480,7 @@ ags_apply_tact_application_context(AgsApplyTact *apply_tact, AgsApplicationConte
     list_start = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
   while(list != NULL){
-    ags_apply_tact_soundcard(list->data);
+    ags_apply_tact_soundcard(apply_tact, list->data);
 
     list = list->next;
   }
@@ -489,10 +489,10 @@ ags_apply_tact_application_context(AgsApplyTact *apply_tact, AgsApplicationConte
 
   /* sequencer */
   list =
-    list_start = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
+    list_start = ags_sound_provider_get_sequencer(apply_tact, AGS_SOUND_PROVIDER(application_context));
 
   while(list != NULL){
-    ags_apply_tact_sequencer(list->data);
+    ags_apply_tact_sequencer(apply_tact, list->data);
 
     list = list->next;
   }
@@ -504,7 +504,7 @@ ags_apply_tact_application_context(AgsApplyTact *apply_tact, AgsApplicationConte
     list_start = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
 
   while(list != NULL){
-    ags_apply_tact_audio(list->data);
+    ags_apply_tact_audio(apply_tact, list->data);
 
     list = list->next;
   }

@@ -158,15 +158,6 @@ ags_link_channel_class_init(AgsLinkChannelClass *link_channel)
 }
 
 void
-ags_link_channel_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_link_channel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_link_channel_connect;
-  connectable->disconnect = ags_link_channel_disconnect;
-}
-
-void
 ags_link_channel_init(AgsLinkChannel *link_channel)
 {
   link_channel->channel = NULL;
@@ -273,22 +264,6 @@ ags_link_channel_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_link_channel_connect(AgsConnectable *connectable)
-{
-  ags_link_channel_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_link_channel_disconnect(AgsConnectable *connectable)
-{
-  ags_link_channel_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
 }
 
 void

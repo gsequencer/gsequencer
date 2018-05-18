@@ -144,18 +144,9 @@ ags_remove_audio_class_init(AgsRemoveAudioClass *remove_audio)
 }
 
 void
-ags_remove_audio_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_remove_audio_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_remove_audio_connect;
-  connectable->disconnect = ags_remove_audio_disconnect;
-}
-
-void
 ags_remove_audio_init(AgsRemoveAudio *remove_audio)
 {
-  remove_audio->soundcard = NULL;
+  remove_audio->application_context = NULL;
   remove_audio->audio = NULL;
 }
 

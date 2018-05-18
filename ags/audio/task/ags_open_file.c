@@ -182,15 +182,6 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
 }
 
 void
-ags_open_file_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_open_file_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_open_file_connect;
-  connectable->disconnect = ags_open_file_disconnect;
-}
-
-void
 ags_open_file_init(AgsOpenFile *open_file)
 {
   open_file->audio = NULL;
@@ -300,22 +291,6 @@ ags_open_file_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_open_file_connect(AgsConnectable *connectable)
-{
-  ags_open_file_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_open_file_disconnect(AgsConnectable *connectable)
-{
-  ags_open_file_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
 }
 
 void

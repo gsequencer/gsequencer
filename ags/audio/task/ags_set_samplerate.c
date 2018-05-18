@@ -289,7 +289,7 @@ void
 ags_set_samplerate_audio_signal(AgsSetSamplerate *set_samplerate, AgsAudioSignal *audio_signal)
 {
   g_object_set(audio_signal,
-	       "samplerate", samplerate,
+	       "samplerate", set_samplerate->samplerate,
 	       NULL);
 }
 
@@ -297,7 +297,7 @@ void
 ags_set_samplerate_recycling(AgsSetSamplerate *set_samplerate, AgsRecycling *recycling)
 {
   g_object_set(recycling,
-	       "samplerate", samplerate,
+	       "samplerate", set_samplerate->samplerate,
 	       NULL);
 }
 
@@ -305,7 +305,7 @@ void
 ags_set_samplerate_channel(AgsSetSamplerate *set_samplerate, AgsChannel *channel)
 {
   g_object_set(channel,
-	       "samplerate", samplerate,
+	       "samplerate", set_samplerate->samplerate,
 	       NULL);
 }
 
@@ -313,7 +313,7 @@ void
 ags_set_samplerate_audio(AgsSetSamplerate *set_samplerate, AgsAudio *audio)
 {
   g_object_set(audio,
-	       "samplerate", samplerate,
+	       "samplerate", set_samplerate->samplerate,
 	       NULL);
 }
 
@@ -348,13 +348,13 @@ ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcar
     
   /* reset soundcards */
   list =
-    list_start = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)));
+    list_start = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
   if(soundcard == list->data){
     /* reset soundcards if applied to first soundcard */
     ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
 			      channels,
-			      set_buffer_size->samplerate,
+			      set_samplerate->samplerate,
 			      buffer_size,
 			      format);
 
@@ -375,7 +375,7 @@ ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcar
 	ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
 				  target_channels,
 				  target_samplerate,
-				  set_buffer_size->buffer_size * (target_samplerate / samplerate),
+				  buffer_size * (target_samplerate / samplerate),
 				  target_format);
       }
 
@@ -383,7 +383,7 @@ ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcar
     }
     
     /* reset thread frequency */
-    thread_frequency = set_buffer_size->samplerate / buffer_size + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
+    thread_frequency = set_samplerate->samplerate / buffer_size + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
 
     ags_main_loop_change_frequency(AGS_MAIN_LOOP(audio_loop),
 				   thread_frequency);

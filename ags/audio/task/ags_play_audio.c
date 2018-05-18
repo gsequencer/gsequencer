@@ -215,11 +215,6 @@ ags_play_audio_get_property(GObject *gobject,
   play_audio = AGS_PLAY_AUDIO(gobject);
 
   switch(prop_id){
-  case PROP_AUDIO_LOOP:
-    {
-      g_value_set_object(value, play_audio->audio_loop);
-    }
-    break;
   case PROP_AUDIO:
     {
       g_value_set_object(value, play_audio->audio);
@@ -437,7 +432,7 @@ ags_play_audio_launch(AgsTask *task)
  * Since: 2.0.0
  */
 AgsPlayAudio*
-ags_play_audio_new(GObject *audio,
+ags_play_audio_new(AgsAudio *audio,
 		   gint sound_scope)
 {
   AgsPlayAudio *play_audio;

@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/task/recall/ags_set_muted.h>
+#include <ags/audio/task/ags_set_muted.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -339,7 +339,7 @@ ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio)
   AgsChannel *input, *output;
   AgsChannel *channel;
 
-  GList *list;
+  GList *list_start, *list;
 
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;

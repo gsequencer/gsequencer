@@ -126,15 +126,6 @@ ags_start_soundcard_class_init(AgsStartSoundcardClass *start_soundcard)
 }
 
 void
-ags_start_soundcard_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_start_soundcard_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_start_soundcard_connect;
-  connectable->disconnect = ags_start_soundcard_disconnect;
-}
-
-void
 ags_start_soundcard_init(AgsStartSoundcard *start_soundcard)
 {
   start_soundcard->application_context = NULL;
@@ -198,22 +189,6 @@ ags_start_soundcard_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_start_soundcard_connect(AgsConnectable *connectable)
-{
-  ags_start_soundcard_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_start_soundcard_disconnect(AgsConnectable *connectable)
-{
-  ags_start_soundcard_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
 }
 
 void

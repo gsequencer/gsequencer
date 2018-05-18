@@ -226,7 +226,6 @@
 #include <ags/audio/task/ags_apply_synth.h>
 #include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_cancel_channel.h>
-#include <ags/audio/task/ags_change_soundcard.h>
 #include <ags/audio/task/ags_clear_audio_signal.h>
 #include <ags/audio/task/ags_clear_buffer.h>
 #include <ags/audio/task/ags_crop_note.h>

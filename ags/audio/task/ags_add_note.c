@@ -152,7 +152,7 @@ ags_add_note_class_init(AgsAddNoteClass *add_note)
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_NOTATION,
+				  PROP_AUDIO_CHANNEL,
 				  param_spec);
   
   /**
@@ -340,6 +340,7 @@ ags_add_note_launch(AgsTask *task)
 {
   AgsAudio *audio;
   AgsNotation *notation;
+  AgsNote *note;
   
   AgsAddNote *add_note;
   

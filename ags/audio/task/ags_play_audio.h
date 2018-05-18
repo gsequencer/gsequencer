@@ -25,7 +25,7 @@
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_audio.h.h>
+#include <ags/audio/ags_audio.h>
 
 #define AGS_TYPE_PLAY_AUDIO                (ags_play_audio_get_type())
 #define AGS_PLAY_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_AUDIO, AgsPlayAudio))

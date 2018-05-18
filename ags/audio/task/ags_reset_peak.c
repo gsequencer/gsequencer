@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/task/recall/ags_reset_peak.h>
+#include <ags/audio/task/ags_reset_peak.h>
 
 #include <math.h>
 
@@ -26,6 +26,7 @@
 void ags_reset_peak_class_init(AgsResetPeakClass *reset_peak);
 void ags_reset_peak_init(AgsResetPeak *reset_peak);
 void ags_reset_peak_connect(AgsConnectable *connectable);
+void ags_reset_peak_dispose(GObject *gobject);
 void ags_reset_peak_finalize(GObject *gobject);
 
 void ags_reset_peak_launch(AgsTask *task);

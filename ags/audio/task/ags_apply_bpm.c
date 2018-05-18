@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/task/recall/ags_apply_bpm.h>
+#include <ags/audio/task/ags_apply_bpm.h>
 
 #include <ags/libags.h>
 
@@ -365,7 +365,7 @@ ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio)
   AgsChannel *input, *output;
   AgsChannel *channel;
 
-  GList *list;
+  GList *list_start, *list;
 
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
@@ -482,7 +482,7 @@ ags_apply_bpm_application_context(AgsApplyBpm *apply_bpm, AgsApplicationContext 
     list_start = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
   while(list != NULL){
-    ags_apply_bpm_soundcard(list->data);
+    ags_apply_bpm_soundcard(apply_bpm, list->data);
 
     list = list->next;
   }
@@ -494,7 +494,7 @@ ags_apply_bpm_application_context(AgsApplyBpm *apply_bpm, AgsApplicationContext 
     list_start = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
 
   while(list != NULL){
-    ags_apply_bpm_sequencer(list->data);
+    ags_apply_bpm_sequencer(apply_bpm, list->data);
 
     list = list->next;
   }
@@ -506,7 +506,7 @@ ags_apply_bpm_application_context(AgsApplyBpm *apply_bpm, AgsApplicationContext 
     list_start = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
 
   while(list != NULL){
-    ags_apply_bpm_audio(list->data);
+    ags_apply_bpm_audio(apply_bpm, list->data);
 
     list = list->next;
   }

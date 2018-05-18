@@ -348,7 +348,7 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
     
   /* reset soundcards */
   list =
-    list_start = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)));
+    list_start = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
   if(soundcard == list->data){
     /* reset soundcards if applied to first soundcard */

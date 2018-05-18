@@ -157,7 +157,7 @@ ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file)
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_AUDIO_CHANNELS,
+				  PROP_AUDIO_CHANNEL,
 				  param_spec);
 
   /* AgsTask */

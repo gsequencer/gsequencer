@@ -125,15 +125,6 @@ ags_notify_soundcard_class_init(AgsNotifySoundcardClass *notify_soundcard)
 }
 
 void
-ags_notify_soundcard_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_notify_soundcard_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_notify_soundcard_connect;
-  connectable->disconnect = ags_notify_soundcard_disconnect;
-}
-
-void
 ags_notify_soundcard_init(AgsNotifySoundcard *notify_soundcard)
 {
   notify_soundcard->return_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));

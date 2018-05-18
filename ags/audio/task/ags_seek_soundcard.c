@@ -152,7 +152,7 @@ ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard)
 				    FALSE,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_MOVE_FORWARD,
+				  PROP_WHENCE,
 				  param_spec);
 
   /* task */
@@ -201,14 +201,14 @@ ags_seek_soundcard_set_property(GObject *gobject,
       seek_soundcard->soundcard = (GObject *) soundcard;
     }
     break;
-  case PROP_STEPS:
+  case PROP_OFFSET:
     {
-      seek_soundcard->steps = g_value_get_uint(value);
+      seek_soundcard->offset = g_value_get_uint(value);
     }
     break;
-  case PROP_MOVE_FORWARD:
+  case PROP_WHENCE:
     {
-      seek_soundcard->move_forward = g_value_get_boolean(value);
+      seek_soundcard->whence = g_value_get_boolean(value);
     }
     break;
   default:
@@ -233,14 +233,14 @@ ags_seek_soundcard_get_property(GObject *gobject,
       g_value_set_object(value, seek_soundcard->soundcard);
     }
     break;
-  case PROP_STEPS:
+  case PROP_OFFSET:
     {
-      g_value_set_uint(value, seek_soundcard->steps);
+      g_value_set_uint(value, seek_soundcard->offset);
     }
     break;
-  case PROP_MOVE_FORWARD:
+  case PROP_WHENCE:
     {
-      g_value_set_boolean(value, seek_soundcard->move_forward);
+      g_value_set_boolean(value, seek_soundcard->whence);
     }
     break;
   default:
@@ -358,9 +358,9 @@ ags_seek_soundcard_launch(AgsTask *task)
   case AGS_SEEK_CUR:
     {
       ags_soundcard_set_note_offset(AGS_SOUNDCARD(seek_soundcard->soundcard),
-				    note_offset + seek_soundcard->steps);
+				    note_offset + seek_soundcard->offset);
       ags_soundcard_set_note_offset_absolute(AGS_SOUNDCARD(seek_soundcard->soundcard),
-					     note_offset_absolute + seek_soundcard->steps);
+					     note_offset_absolute + seek_soundcard->offset);
     }
     break;
   case AGS_SEEK_SET:
@@ -374,9 +374,9 @@ ags_seek_soundcard_launch(AgsTask *task)
   case AGS_SEEK_END:
     {
       ags_soundcard_set_note_offset(AGS_SOUNDCARD(seek_soundcard->soundcard),
-				    AGS_NOTATION_DEFAULT_END + seek_soundcard->steps);
+				    AGS_NOTATION_DEFAULT_END + seek_soundcard->offset);
       ags_soundcard_set_note_offset_absolute(AGS_SOUNDCARD(seek_soundcard->soundcard),
-					     AGS_NOTATION_DEFAULT_END + seek_soundcard->steps);
+					     AGS_NOTATION_DEFAULT_END + seek_soundcard->offset);
     }
     break;
   }

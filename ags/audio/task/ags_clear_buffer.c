@@ -253,7 +253,7 @@ ags_clear_buffer_launch(AgsTask *task)
 			    &buffer_size,
 			    &format);
 
-  switch(devout->format){
+  switch(format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
       word_size = sizeof(gint8);
@@ -317,8 +317,6 @@ ags_clear_buffer_launch(AgsTask *task)
     }else if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER3)){
       nth_buffer = 3;
     }
-
-    pthread_mutex_unlock(soundcard_mutex);
     
     memset(devin->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
   }else if(AGS_IS_JACK_DEVOUT(clear_buffer->device)){
@@ -378,8 +376,6 @@ ags_clear_buffer_launch(AgsTask *task)
     }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER7)){
       nth_buffer = 1;
     }
-
-    pthread_mutex_unlock(soundcard_mutex);
       
     memset(pulse_devout->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
   }else if(AGS_IS_PULSE_DEVIN(clear_buffer->device)){
@@ -413,21 +409,21 @@ ags_clear_buffer_launch(AgsTask *task)
     core_audio_devout = clear_buffer->device;
 
     /* retrieve nth buffer */    
-    if((AGS_PULSE_DEVIN_BUFFER0 & (pulse_devin->flags)) != 0){
+    if((AGS_CORE_AUDIO_DEVOUT_BUFFER0 & (core_audio_devout->flags)) != 0){
       nth_buffer = 2;
-    }else if((AGS_PULSE_DEVIN_BUFFER1 & (pulse_devin->flags)) != 0){
+    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER1 & (core_audio_devout->flags)) != 0){
       nth_buffer = 3;
-    }else if((AGS_PULSE_DEVIN_BUFFER2 & (pulse_devin->flags)) != 0){
+    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER2 & (core_audio_devout->flags)) != 0){
       nth_buffer = 4;
-    }else if((AGS_PULSE_DEVIN_BUFFER3 & (pulse_devin->flags)) != 0){
+    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER3 & (core_audio_devout->flags)) != 0){
       nth_buffer = 5;
-    }else if((AGS_PULSE_DEVIN_BUFFER4 & (pulse_devin->flags)) != 0){
+    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER4 & (core_audio_devout->flags)) != 0){
       nth_buffer = 6;
-    }else if((AGS_PULSE_DEVIN_BUFFER5 & (pulse_devin->flags)) != 0){
+    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER5 & (core_audio_devout->flags)) != 0){
       nth_buffer = 7;
-    }else if((AGS_PULSE_DEVIN_BUFFER6 & (pulse_devin->flags)) != 0){
+    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER6 & (core_audio_devout->flags)) != 0){
       nth_buffer = 0;
-    }else if((AGS_PULSE_DEVIN_BUFFER7 & (pulse_devin->flags)) != 0){
+    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER7 & (core_audio_devout->flags)) != 0){
       nth_buffer = 1;
     }
       

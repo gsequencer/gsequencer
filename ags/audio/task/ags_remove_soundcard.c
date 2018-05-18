@@ -142,15 +142,6 @@ ags_remove_soundcard_class_init(AgsRemoveSoundcardClass *remove_soundcard)
 }
 
 void
-ags_remove_soundcard_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_remove_soundcard_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_remove_soundcard_connect;
-  connectable->disconnect = ags_remove_soundcard_disconnect;
-}
-
-void
 ags_remove_soundcard_init(AgsRemoveSoundcard *remove_soundcard)
 {
   remove_soundcard->application_context = NULL;
@@ -242,22 +233,6 @@ ags_remove_soundcard_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_remove_soundcard_connect(AgsConnectable *connectable)
-{
-  ags_remove_soundcard_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_remove_soundcard_disconnect(AgsConnectable *connectable)
-{
-  ags_remove_soundcard_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
 }
 
 void

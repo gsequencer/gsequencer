@@ -381,22 +381,6 @@ ags_open_sf2_sample_get_property(GObject *gobject,
 }
 
 void
-ags_open_sf2_sample_connect(AgsConnectable *connectable)
-{
-  ags_open_sf2_sample_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_open_sf2_sample_disconnect(AgsConnectable *connectable)
-{
-  ags_open_sf2_sample_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_open_sf2_sample_dispose(GObject *gobject)
 {
   AgsOpenSf2Sample *open_sf2_sample;
@@ -525,7 +509,7 @@ ags_open_sf2_sample_launch(AgsTask *task)
 		 NULL);
     
     if(file_link == NULL){
-      file_link = g_object_new(AGS_TYPE_AUDIO_CONTAINER_LINK,
+      file_link = g_object_new(AGS_TYPE_AUDIO_FILE_LINK,
 			       NULL);
       
       g_object_set(channel,

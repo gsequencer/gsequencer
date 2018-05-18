@@ -19,6 +19,9 @@
 
 #include <ags/audio/task/ags_resize_audio.h>
 
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
+
 #include <ags/i18n.h>
 
 void ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio);
@@ -181,15 +184,6 @@ ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio)
 }
 
 void
-ags_resize_audio_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_resize_audio_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_resize_audio_connect;
-  connectable->disconnect = ags_resize_audio_disconnect;
-}
-
-void
 ags_resize_audio_init(AgsResizeAudio *resize_audio)
 {
   resize_audio->audio = NULL;
@@ -286,22 +280,6 @@ ags_resize_audio_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_resize_audio_connect(AgsConnectable *connectable)
-{
-  ags_resize_audio_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_resize_audio_disconnect(AgsConnectable *connectable)
-{
-  ags_resize_audio_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
 }
 
 void

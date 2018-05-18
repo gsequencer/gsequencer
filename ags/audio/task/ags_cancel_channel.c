@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -66,34 +66,24 @@ ags_cancel_channel_get_type()
 
   if(!ags_type_cancel_channel){
     static const GTypeInfo ags_cancel_channel_info = {
-      sizeof (AgsCancelChannelClass),
+      sizeof(AgsCancelChannelClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_cancel_channel_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsCancelChannel),
+      sizeof(AgsCancelChannel),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_cancel_channel_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_cancel_channel_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_cancel_channel = g_type_register_static(AGS_TYPE_TASK,
 						     "AgsCancelChannel",
 						     &ags_cancel_channel_info,
 						     0);
-    
-    g_type_add_interface_static(ags_type_cancel_channel,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
   
-  return (ags_type_cancel_channel);
+  return(ags_type_cancel_channel);
 }
 
 void
@@ -283,7 +273,7 @@ ags_cancel_channel_launch(AgsTask *task)
 
   channel = cancel_channel->channel;
 
-  sound_scope = cancel_audio->sound_scope;
+  sound_scope = cancel_channel->sound_scope;
 
   g_object_get(channel,
 	       "playback", &playback,

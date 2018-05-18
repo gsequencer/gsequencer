@@ -1129,14 +1129,11 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_apply_synth.h \
 	ags/audio/task/ags_cancel_audio.h \
 	ags/audio/task/ags_cancel_channel.h \
-	ags/audio/task/ags_change_soundcard.h \
 	ags/audio/task/ags_clear_audio_signal.h \
 	ags/audio/task/ags_clear_buffer.h \
 	ags/audio/task/ags_crop_note.h \
 	ags/audio/task/ags_export_output.h \
 	ags/audio/task/ags_free_selection.h \
-	ags/audio/task/ags_init_audio.h \
-	ags/audio/task/ags_init_channel.h \
 	ags/audio/task/ags_link_channel.h \
 	ags/audio/task/ags_move_note.h \
 	ags/audio/task/ags_notify_soundcard.h \
@@ -1154,8 +1151,6 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_set_audio_channels.h \
 	ags/audio/task/ags_set_buffer_size.h \
 	ags/audio/task/ags_set_format.h \
-	ags/audio/task/ags_set_input_device.h \
-	ags/audio/task/ags_set_output_device.h \
 	ags/audio/task/ags_set_samplerate.h \
 	ags/audio/task/ags_start_sequencer.h \
 	ags/audio/task/ags_start_soundcard.h \
@@ -1181,14 +1176,11 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_apply_synth.c \
 	ags/audio/task/ags_cancel_audio.c \
 	ags/audio/task/ags_cancel_channel.c \
-	ags/audio/task/ags_change_soundcard.c \
 	ags/audio/task/ags_clear_audio_signal.c \
 	ags/audio/task/ags_clear_buffer.c \
 	ags/audio/task/ags_crop_note.c \
 	ags/audio/task/ags_export_output.c \
 	ags/audio/task/ags_free_selection.c \
-	ags/audio/task/ags_init_audio.c \
-	ags/audio/task/ags_init_channel.c \
 	ags/audio/task/ags_link_channel.c \
 	ags/audio/task/ags_move_note.c \
 	ags/audio/task/ags_notify_soundcard.c \
@@ -1206,8 +1198,6 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_set_audio_channels.c \
 	ags/audio/task/ags_set_buffer_size.c \
 	ags/audio/task/ags_set_format.c \
-	ags/audio/task/ags_set_input_device.c \
-	ags/audio/task/ags_set_output_device.c \
 	ags/audio/task/ags_set_samplerate.c \
 	ags/audio/task/ags_start_sequencer.c \
 	ags/audio/task/ags_start_soundcard.c \

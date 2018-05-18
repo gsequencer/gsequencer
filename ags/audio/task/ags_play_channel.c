@@ -61,8 +61,8 @@ static gpointer ags_play_channel_parent_class = NULL;
 
 enum{
   PROP_0,
-  PROP_AUDIO_LOOP,
   PROP_CHANNEL,
+  PROP_SOUND_SCOPE,
 };
 
 GType
@@ -128,6 +128,24 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
 				  PROP_CHANNEL,
 				  param_spec);
 
+  /**
+   * AgsPlayChannel:sound-scope:
+   *
+   * The effects sound-scope.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_int("sound-scope",
+				 i18n_pspec("sound scope"),
+				 i18n_pspec("The sound scope"),
+				 0,
+				 AGS_SOUND_SCOPE_LAST,
+				 -1,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUND_SCOPE,
+				  param_spec);
+
   /* AgsTaskClass */
   task = (AgsTaskClass *) play_channel;
 
@@ -138,6 +156,8 @@ void
 ags_play_channel_init(AgsPlayChannel *play_channel)
 {
   play_channel->channel = NULL;
+
+  play_channel->sound_scope = -1;
 }
 
 void
@@ -172,6 +192,11 @@ ags_play_channel_set_property(GObject *gobject,
       play_channel->channel = (GObject *) channel;
     }
     break;
+  case PROP_SOUND_SCOPE:
+    {
+      play_channel->sound_scope = g_value_get_int(value);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -192,6 +217,11 @@ ags_play_channel_get_property(GObject *gobject,
   case PROP_CHANNEL:
     {
       g_value_set_object(value, play_channel->channel);
+    }
+    break;
+  case PROP_SOUND_SCOPE:
+    {
+      g_value_set_int(value, play_channel->sound_scope);
     }
     break;
   default:
@@ -236,8 +266,11 @@ void
 ags_play_channel_launch(AgsTask *task)
 {
   AgsChannel *channel;
+  AgsRecycling *recycling;
   AgsPlaybackDomain *playback_domain;
   AgsPlayback *playback;
+  AgsRecallID *recall_id;
+  AgsRecyclingContext *recycling_context;
   
   AgsPlayChannel *play_channel;
 
@@ -245,6 +278,8 @@ ags_play_channel_launch(AgsTask *task)
 
   AgsApplicationContext *application_context;
 
+  GList *list_start, *list;
+  
   gint sound_scope;
   static const guint staging_flags = (AGS_SOUND_STAGING_CHECK_RT_DATA |
 				      AGS_SOUND_STAGING_RUN_INIT_PRE |
@@ -263,7 +298,7 @@ ags_play_channel_launch(AgsTask *task)
 	       "playback-domain", &playback_domain,
 	       NULL);
   
-  sound_scope = play_audio->sound_scope;
+  sound_scope = play_channel->sound_scope;
 
   application_context = ags_application_context_get_instance();
 
@@ -377,12 +412,14 @@ ags_play_channel_launch(AgsTask *task)
  * Since: 2.0.0
  */
 AgsPlayChannel*
-ags_play_channel_new(AgsChannel *channel)
+ags_play_channel_new(AgsChannel *channel,
+		     gint sound_scope)
 {
   AgsPlayChannel *play_channel;
 
   play_channel = (AgsPlayChannel *) g_object_new(AGS_TYPE_PLAY_CHANNEL,
 						 "channel", channel,
+						 "sound-scope", sound_scope,
 						 NULL);
 
   return(play_channel);

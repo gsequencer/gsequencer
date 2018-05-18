@@ -21,6 +21,7 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <math.h>
@@ -77,20 +78,10 @@ ags_clear_audio_signal_get_type()
       (GInstanceInitFunc) ags_clear_audio_signal_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_clear_audio_signal_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_clear_audio_signal = g_type_register_static(AGS_TYPE_TASK,
 						  "AgsClearAudioSignal",
 						  &ags_clear_audio_signal_info,
 						  0);
-
-    g_type_add_interface_static(ags_type_clear_audio_signal,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
   
   return (ags_type_clear_audio_signal);

@@ -51,7 +51,6 @@ void ags_export_output_launch(AgsTask *task);
  */
 
 static gpointer ags_export_output_parent_class = NULL;
-static AgsConnectableInterface *ags_export_output_parent_connectable_interface;
 
 enum{
   PROP_0,
@@ -216,15 +215,6 @@ ags_export_output_class_init(AgsExportOutputClass *export_output)
 }
 
 void
-ags_export_output_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_export_output_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_export_output_connect;
-  connectable->disconnect = ags_export_output_disconnect;
-}
-
-void
 ags_export_output_init(AgsExportOutput *export_output)
 {
   export_output->export_thread = NULL;
@@ -372,22 +362,6 @@ ags_export_output_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_export_output_connect(AgsConnectable *connectable)
-{
-  ags_export_output_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_export_output_disconnect(AgsConnectable *connectable)
-{
-  ags_export_output_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
 }
 
 void

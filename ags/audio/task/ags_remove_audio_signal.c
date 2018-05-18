@@ -144,15 +144,6 @@ ags_remove_audio_signal_class_init(AgsRemoveAudioSignalClass *remove_audio_signa
 }
 
 void
-ags_remove_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_remove_audio_signal_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_remove_audio_signal_connect;
-  connectable->disconnect = ags_remove_audio_signal_disconnect;
-}
-
-void
 ags_remove_audio_signal_init(AgsRemoveAudioSignal *remove_audio_signal)
 {
   remove_audio_signal->recycling = NULL;
@@ -243,22 +234,6 @@ ags_remove_audio_signal_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_remove_audio_signal_connect(AgsConnectable *connectable)
-{
-  ags_remove_audio_signal_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_remove_audio_signal_disconnect(AgsConnectable *connectable)
-{
-  ags_remove_audio_signal_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
 }
 
 void

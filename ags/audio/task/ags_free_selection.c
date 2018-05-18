@@ -125,7 +125,6 @@ ags_free_selection_class_init(AgsFreeSelectionClass *free_selection)
 void
 ags_free_selection_init(AgsFreeSelection *free_selection)
 {
-  free_selection->audio = NULL;
   free_selection->notation = NULL;
 }
 

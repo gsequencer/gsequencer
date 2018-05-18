@@ -42,6 +42,8 @@ struct _AgsPlayChannel
   AgsTask task;
 
   AgsChannel *channel;
+
+  gint sound_scope;
 };
 
 struct _AgsPlayChannelClass
@@ -51,6 +53,7 @@ struct _AgsPlayChannelClass
 
 GType ags_play_channel_get_type();
 
-AgsPlayChannel* ags_play_channel_new(AgsChannel *channel);
+AgsPlayChannel* ags_play_channel_new(AgsChannel *channel,
+				     gint sound_scope);
 
 #endif /*__AGS_PLAY_CHANNEL_H__*/

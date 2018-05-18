@@ -365,6 +365,7 @@ ags_apply_synth_launch(AgsTask *task)
 
   guint audio_flags;
   gdouble base_note;
+  gdouble note;
   guint count;
   guint i;
 
@@ -379,8 +380,8 @@ ags_apply_synth_launch(AgsTask *task)
   
   channel = apply_synth->start_channel;
 
-  base_note = synth_generator->base_note;
-  count = synth_generator->count;
+  base_note = apply_synth->base_note;
+  count = apply_synth->count;
 
   /* get channel mutex */
   pthread_mutex_lock(ags_channel_get_class_mutex());
@@ -453,21 +454,19 @@ ags_apply_synth_launch(AgsTask *task)
     }
 	
     /* compute audio signal */
-    note = (apply_synth->base_note);
+    note = apply_synth->base_note + i;
 	
-    ags_synth_generator_compute_extended(synth_generator,
-					 audio_signal,
-					 note,
-					 sync_point,
-					 sync_point_count);
+    ags_synth_generator_compute(synth_generator,
+				audio_signal,
+				note);
 
     rt_template = 
       rt_template_start = ags_audio_signal_get_rt_template(list_start);
 
     while(rt_template != NULL){
-      ags_synth_generator_compute_extended(synth_generator,
-					   rt_template->data,
-					   note);
+      ags_synth_generator_compute(synth_generator,
+				  rt_template->data,
+				  note);
 	  
       rt_template = rt_template->next;
     }

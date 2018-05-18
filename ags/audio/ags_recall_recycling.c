@@ -34,8 +34,6 @@
 
 #include <ags/audio/recall/ags_stream_recycling.h>
 
-#include <ags/audio/task/ags_cancel_recall.h>
-
 #include <ags/i18n.h>
 
 void ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling);
@@ -811,7 +809,6 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
   AgsRecallID *recall_id, *source_recall_id;
   AgsRecyclingContext *recycling_context, *source_recycling_context;
   AgsRecyclingContext *parent_recycling_context;
-  AgsCancelRecall *cancel_recall;
 
   GList *list_start, *list;
 
