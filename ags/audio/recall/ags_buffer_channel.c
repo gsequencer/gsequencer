@@ -19,9 +19,7 @@
 
 #include <ags/audio/recall/ags_buffer_channel.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_mutable.h>
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
 
 #include <ags/plugin/ags_base_plugin.h>
 

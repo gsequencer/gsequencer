@@ -56,6 +56,7 @@ typedef struct _AgsRecallHandler AgsRecallHandler;
  * @AGS_RECALL_DEFAULT_TEMPLATE: 
  * @AGS_RECALL_HAS_OUTPUT_PORT: has output port
  * @AGS_RECALL_BYPASS: don't apply effect processing
+ * @AGS_RECALL_INITIAL_RUN: initial run, first attack to audio data
  * 
  * Enum values to control the behavior or indicate internal state of #AgsRecall by
  * enable/disable as flags.
@@ -67,6 +68,7 @@ typedef enum{
   AGS_RECALL_DEFAULT_TEMPLATE      = 1 <<  3,
   AGS_RECALL_HAS_OUTPUT_PORT       = 1 <<  4,
   AGS_RECALL_BYPASS                = 1 <<  5,
+  AGS_RECALL_INITIAL_RUN           = 1 <<  6,
 }AgsRecallFlags;
 
 /**
