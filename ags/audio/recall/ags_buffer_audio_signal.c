@@ -39,7 +39,7 @@ void ags_buffer_audio_signal_run_init_pre(AgsRecall *recall);
 void ags_buffer_audio_signal_run_inter(AgsRecall *recall);
 AgsRecall* ags_buffer_audio_signal_duplicate(AgsRecall *recall,
 					     AgsRecallID *recall_id,
-					     guint *n_params, GParameter *parameter);
+					     guint *n_params, gchar **parameter_name, GValue *value);
 
 /**
  * SECTION:ags_buffer_audio_signal
@@ -398,13 +398,13 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
 AgsRecall*
 ags_buffer_audio_signal_duplicate(AgsRecall *recall,
 				  AgsRecallID *recall_id,
-				  guint *n_params, GParameter *parameter)
+				  guint *n_params, gchar **parameter_name, GValue *value)
 {
   AgsBufferAudioSignal *buffer;
 
   buffer = (AgsBufferAudioSignal *) AGS_RECALL_CLASS(ags_buffer_audio_signal_parent_class)->duplicate(recall,
 												      recall_id,
-												      n_params, parameter);
+												      n_params, parameter_name, value);
   
   return((AgsRecall *) buffer);
 }

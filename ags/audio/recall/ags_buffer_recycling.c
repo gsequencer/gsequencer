@@ -20,28 +20,21 @@
 #include <ags/audio/recall/ags_buffer_recycling.h>
 #include <ags/audio/recall/ags_buffer_audio_signal.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_dynamic_connectable.h>
-#include <ags/object/ags_soundcard.h>
+#include <ags/libags.h>
 
 void ags_buffer_recycling_class_init(AgsBufferRecyclingClass *buffer_recycling);
 void ags_buffer_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_buffer_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_buffer_recycling_init(AgsBufferRecycling *buffer_recycling);
-void ags_buffer_recycling_connect(AgsConnectable *connectable);
-void ags_buffer_recycling_disconnect(AgsConnectable *connectable);
-void ags_buffer_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_buffer_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_buffer_recycling_finalize(GObject *gobject);
 
 AgsRecall* ags_buffer_recycling_duplicate(AgsRecall *recall,
 					  AgsRecallID *recall_id,
-					  guint *n_params, GParameter *parameter);
-void ags_buffer_recycling_remove(AgsRecall *recall);
+					  guint *n_params, gchar **parameter_name, GValue *value);
 
 /**
  * SECTION:ags_buffer_recycling
- * @short_description: buffers recycling
+ * @short_description: buffer recycling
  * @title: AgsBufferRecycling
  * @section_id:
  * @include: ags/audio/recall/ags_buffer_recycling.h
@@ -60,13 +53,13 @@ ags_buffer_recycling_get_type()
 
   if(!ags_type_buffer_recycling){
     static const GTypeInfo ags_buffer_recycling_info = {
-      sizeof (AgsBufferRecyclingClass),
+      sizeof(AgsBufferRecyclingClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_buffer_recycling_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsBufferRecycling),
+      sizeof(AgsBufferRecycling),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_buffer_recycling_init,
     };
@@ -91,13 +84,9 @@ ags_buffer_recycling_get_type()
     g_type_add_interface_static(ags_type_buffer_recycling,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_buffer_recycling,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
   }
 
-  return (ags_type_buffer_recycling);
+  return(ags_type_buffer_recycling);
 }
 
 void
@@ -105,7 +94,6 @@ ags_buffer_recycling_class_init(AgsBufferRecyclingClass *buffer_recycling)
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
-  GParamSpec *param_spec;
 
   ags_buffer_recycling_parent_class = g_type_class_peek_parent(buffer_recycling);
 
@@ -124,18 +112,6 @@ void
 ags_buffer_recycling_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_buffer_recycling_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_buffer_recycling_connect;
-  connectable->disconnect = ags_buffer_recycling_disconnect;
-}
-
-void
-ags_buffer_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_buffer_recycling_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_buffer_recycling_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_buffer_recycling_disconnect_dynamic;
 }
 
 void
@@ -145,12 +121,10 @@ ags_buffer_recycling_init(AgsBufferRecycling *buffer_recycling)
   AGS_RECALL(buffer_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(buffer_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(buffer_recycling)->xml_type = "ags-buffer-recycling";
+
   AGS_RECALL(buffer_recycling)->port = NULL;
 
   AGS_RECALL(buffer_recycling)->child_type = AGS_TYPE_BUFFER_AUDIO_SIGNAL;
-
-  AGS_RECALL_RECYCLING(buffer_recycling)->flags |= (AGS_RECALL_RECYCLING_MAP_CHILD_DESTINATION |
-						    AGS_RECALL_RECYCLING_CREATE_DESTINATION_ON_MAP_SOURCE);
 }
 
 void
@@ -162,74 +136,40 @@ ags_buffer_recycling_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_buffer_recycling_parent_class)->finalize(gobject);
 }
 
-void
-ags_buffer_recycling_connect(AgsConnectable *connectable)
-{
-  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
-    return;
-  }
-
-  ags_buffer_recycling_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_buffer_recycling_disconnect(AgsConnectable *connectable)
-{
-  ags_buffer_recycling_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_buffer_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
-    return;
-  }
-
-  ags_buffer_recycling_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-}
-
-void
-ags_buffer_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  ags_buffer_recycling_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-}
-
 AgsRecall*
 ags_buffer_recycling_duplicate(AgsRecall *recall,
 			       AgsRecallID *recall_id,
-			       guint *n_params, GParameter *parameter)
+			       guint *n_params, gchar **parameter_name, GValue *value)
 {
-  AgsBufferRecycling *copy;
+  AgsBufferRecycling *copy_buffer_recycling;
 
-  copy = (AgsBufferRecycling *) AGS_RECALL_CLASS(ags_buffer_recycling_parent_class)->duplicate(recall,
-											       recall_id,
-											       n_params, parameter);
-
-
-  return((AgsRecall *) copy);
+  copy_buffer_recycling = (AgsBufferRecycling *) AGS_RECALL_CLASS(ags_buffer_recycling_parent_class)->duplicate(recall,
+														recall_id,
+														n_params, parameter_name, value);
+  
+  return((AgsRecall *) copy_buffer_recycling);
 }
 
 /**
  * ags_buffer_recycling_new:
- * @recycling: an #AgsRecycling
+ * @destination: the destination #AgsRecycling
+ * @source: the source #AgsRecycling
  *
- * Creates an #AgsBufferRecycling
+ * Create a new instance of #AgsBufferRecycling
  *
- * Returns: a new #AgsBufferRecycling
+ * Returns: the new #AgsBufferRecycling
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsBufferRecycling*
-ags_buffer_recycling_new(AgsRecycling *recycling)
+ags_buffer_recycling_new(AgsRecycling *destination,
+			 AgsRecycling *source)
 {
   AgsBufferRecycling *buffer_recycling;
 
   buffer_recycling = (AgsBufferRecycling *) g_object_new(AGS_TYPE_BUFFER_RECYCLING,
-							 "source", recycling,
+							 "destination", destination,
+							 "source", source,
 							 NULL);
 
   return(buffer_recycling);

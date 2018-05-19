@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,11 +38,10 @@ void ags_buffer_channel_get_property(GObject *gobject,
 				     guint prop_id,
 				     GValue *value,
 				     GParamSpec *param_spec);
-void ags_buffer_channel_connect(AgsConnectable *connectable);
-void ags_buffer_channel_disconnect(AgsConnectable *connectable);
-void ags_buffer_channel_set_ports(AgsPlugin *plugin, GList *port);
 void ags_buffer_channel_dispose(GObject *gobject);
 void ags_buffer_channel_finalize(GObject *gobject);
+
+void ags_buffer_channel_set_ports(AgsPlugin *plugin, GList *port);
 
 void ags_buffer_channel_set_muted(AgsMutable *mutable, gboolean muted);
 
@@ -137,9 +136,6 @@ void
 ags_buffer_channel_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_buffer_channel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_buffer_channel_connect;
-  connectable->disconnect = ags_buffer_channel_disconnect;
 }
 
 void
@@ -324,33 +320,6 @@ ags_buffer_channel_finalize(GObject *gobject)
 }
 
 void
-ags_buffer_channel_connect(AgsConnectable *connectable)
-{
-  AgsRecall *recall;
-  
-  recall = AGS_RECALL(connectable);
-  
-  if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
-    return;
-  }
-
-  /* load automation */
-  ags_recall_load_automation(recall,
-			     g_list_copy(recall->port));
-
-  /* call parent */
-  ags_buffer_channel_parent_connectable_interface->connect(connectable);
-}
-
-void
-ags_buffer_channel_disconnect(AgsConnectable *connectable)
-{
-  ags_buffer_channel_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_buffer_channel_set_ports(AgsPlugin *plugin, GList *port)
 {
   while(port != NULL){
@@ -412,19 +381,24 @@ ags_buffer_channel_get_muted_port_descriptor()
 
 /**
  * ags_buffer_channel_new:
+ * @destination: the destination #AgsChannel
+ * @source: the source #AgsChannel
  *
- * Creates an #AgsBufferChannel
+ * Create a new instance of #AgsBufferChannel
  *
- * Returns: a new #AgsBufferChannel
+ * Returns: the new #AgsBufferChannel
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsBufferChannel*
-ags_buffer_channel_new()
+ags_buffer_channel_new(AgsChannel *destination,
+		       AgsChannel *source)
 {
   AgsBufferChannel *buffer_channel;
 
   buffer_channel = (AgsBufferChannel *) g_object_new(AGS_TYPE_BUFFER_CHANNEL,
+						     "destination", destination,
+						     "source", source,
 						     NULL);
 
   return(buffer_channel);
