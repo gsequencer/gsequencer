@@ -23,6 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_recycling.h>
 
 #define AGS_TYPE_BUFFER_RECYCLING                (ags_buffer_recycling_get_type())

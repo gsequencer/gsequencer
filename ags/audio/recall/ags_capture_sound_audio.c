@@ -19,11 +19,12 @@
 
 #include <ags/audio/recall/ags_capture_sound_audio.h>
 
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
 
 #include <ags/i18n.h>
 
 void ags_capture_sound_audio_class_init(AgsCaptureSoundAudioClass *capture_sound_audio);
+void ags_capture_sound_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_capture_sound_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_capture_sound_audio_init(AgsCaptureSoundAudio *capture_sound_audio);
 void ags_capture_sound_audio_set_property(GObject *gobject,
@@ -59,6 +60,7 @@ enum{
 };
 
 static gpointer ags_capture_sound_audio_parent_class = NULL;
+static AgsConnectableInterface *ags_capture_sound_audio_parent_connectable_interface;
 static AgsPluginInterface *ags_capture_sound_parent_plugin_interface;
 
 static const gchar *ags_capture_sound_audio_plugin_name = "ags-capture-sound";
@@ -89,15 +91,21 @@ ags_capture_sound_audio_get_type()
 
   if(!ags_type_capture_sound_audio){
     static const GTypeInfo ags_capture_sound_audio_info = {
-      sizeof (AgsCaptureSoundAudioClass),
+      sizeof(AgsCaptureSoundAudioClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_capture_sound_audio_class_init,
       NULL, /* class_finalize */
       NULL, /* class_audio */
-      sizeof (AgsCaptureSoundAudio),
+      sizeof(AgsCaptureSoundAudio),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_capture_sound_audio_init,
+    };
+
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_capture_sound_audio_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
     };
 
     static const GInterfaceInfo ags_plugin_interface_info = {
@@ -110,6 +118,10 @@ ags_capture_sound_audio_get_type()
 							  "AgsCaptureSoundAudio",
 							  &ags_capture_sound_audio_info,
 							  0);
+
+    g_type_add_interface_static(ags_type_capture_sound_audio,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_capture_sound_audio,
 				AGS_TYPE_PLUGIN,
@@ -142,7 +154,7 @@ ags_capture_sound_audio_class_init(AgsCaptureSoundAudioClass *capture_sound_audi
    * 
    * The playback port.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("playback",
 				   i18n_pspec("if do playback"),
@@ -158,7 +170,7 @@ ags_capture_sound_audio_class_init(AgsCaptureSoundAudioClass *capture_sound_audi
    * 
    * The record port.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("record",
 				   i18n_pspec("if do record"),
@@ -174,7 +186,7 @@ ags_capture_sound_audio_class_init(AgsCaptureSoundAudioClass *capture_sound_audi
    * 
    * The filename port.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("filename",
 				   i18n_pspec("filename of record"),
@@ -190,7 +202,7 @@ ags_capture_sound_audio_class_init(AgsCaptureSoundAudioClass *capture_sound_audi
    * 
    * The audio channels port.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("audio-channels",
 				   i18n_pspec("audio channels"),
@@ -206,7 +218,7 @@ ags_capture_sound_audio_class_init(AgsCaptureSoundAudioClass *capture_sound_audi
    * 
    * The format port.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("format",
 				   i18n_pspec("format"),
@@ -222,7 +234,7 @@ ags_capture_sound_audio_class_init(AgsCaptureSoundAudioClass *capture_sound_audi
    * 
    * The samplerate port.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("samplerate",
 				   i18n_pspec("samplerate"),
@@ -238,7 +250,7 @@ ags_capture_sound_audio_class_init(AgsCaptureSoundAudioClass *capture_sound_audi
    * 
    * The buffer size port.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("buffer-size",
 				   i18n_pspec("buffer size"),
@@ -248,6 +260,12 @@ ags_capture_sound_audio_class_init(AgsCaptureSoundAudioClass *capture_sound_audi
   g_object_class_install_property(gobject,
 				  PROP_BUFFER_SIZE,
 				  param_spec);
+}
+
+void
+ags_capture_sound_audio_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  ags_capture_sound_audio_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 }
 
 void
@@ -394,7 +412,16 @@ ags_capture_sound_audio_set_property(GObject *gobject,
 {
   AgsCaptureSoundAudio *capture_sound_audio;
 
+  pthread_mutex_t *recall_mutex;
+  
   capture_sound_audio = AGS_CAPTURE_SOUND_AUDIO(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_PLAYBACK:
@@ -403,7 +430,11 @@ ags_capture_sound_audio_set_property(GObject *gobject,
 
       playback = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(capture_sound_audio->playback == playback){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -416,6 +447,8 @@ ags_capture_sound_audio_set_property(GObject *gobject,
       }
       
       capture_sound_audio->playback = playback;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_RECORD:
@@ -424,7 +457,11 @@ ags_capture_sound_audio_set_property(GObject *gobject,
 
       record = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(capture_sound_audio->record == record){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -437,6 +474,8 @@ ags_capture_sound_audio_set_property(GObject *gobject,
       }
       
       capture_sound_audio->record = record;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_FILENAME:
@@ -445,7 +484,11 @@ ags_capture_sound_audio_set_property(GObject *gobject,
 
       filename = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(capture_sound_audio->filename == filename){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -458,6 +501,8 @@ ags_capture_sound_audio_set_property(GObject *gobject,
       }
       
       capture_sound_audio->filename = filename;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_AUDIO_CHANNELS:
@@ -466,7 +511,11 @@ ags_capture_sound_audio_set_property(GObject *gobject,
 
       audio_channels = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(capture_sound_audio->audio_channels == audio_channels){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -479,6 +528,8 @@ ags_capture_sound_audio_set_property(GObject *gobject,
       }
       
       capture_sound_audio->audio_channels = audio_channels;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_FORMAT:
@@ -487,7 +538,11 @@ ags_capture_sound_audio_set_property(GObject *gobject,
 
       format = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(capture_sound_audio->format == format){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -500,6 +555,8 @@ ags_capture_sound_audio_set_property(GObject *gobject,
       }
       
       capture_sound_audio->format = format;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SAMPLERATE:
@@ -508,7 +565,11 @@ ags_capture_sound_audio_set_property(GObject *gobject,
 
       samplerate = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(capture_sound_audio->samplerate == samplerate){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -521,6 +582,8 @@ ags_capture_sound_audio_set_property(GObject *gobject,
       }
       
       capture_sound_audio->samplerate = samplerate;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_BUFFER_SIZE:
@@ -529,7 +592,11 @@ ags_capture_sound_audio_set_property(GObject *gobject,
 
       buffer_size = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(capture_sound_audio->buffer_size == buffer_size){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -542,6 +609,8 @@ ags_capture_sound_audio_set_property(GObject *gobject,
       }
       
       capture_sound_audio->buffer_size = buffer_size;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -558,42 +627,79 @@ ags_capture_sound_audio_get_property(GObject *gobject,
 {
   AgsCaptureSoundAudio *capture_sound_audio;
 
+  pthread_mutex_t *recall_mutex;
+  
   capture_sound_audio = AGS_CAPTURE_SOUND_AUDIO(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_PLAYBACK:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, capture_sound_audio->playback);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_RECORD:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, capture_sound_audio->record);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_FILENAME:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, capture_sound_audio->filename);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_AUDIO_CHANNELS:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, capture_sound_audio->audio_channels);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_FORMAT:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, capture_sound_audio->format);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SAMPLERATE:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, capture_sound_audio->samplerate);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_BUFFER_SIZE:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, capture_sound_audio->buffer_size);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -762,19 +868,21 @@ ags_capture_sound_audio_set_ports(AgsPlugin *plugin, GList *port)
 
 /**
  * ags_capture_sound_audio_new:
+ * @audio: the #AgsAudio
  *
- * Creates an #AgsCaptureSoundAudio
+ * Create a new instance of #AgsCaptureSoundAudio
  *
- * Returns: a new #AgsCaptureSoundAudio
+ * Returns: the new #AgsCaptureSoundAudio
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 AgsCaptureSoundAudio*
-ags_capture_sound_audio_new()
+ags_capture_sound_audio_new(AgsAudio *audio)
 {
   AgsCaptureSoundAudio *capture_sound_audio;
 
   capture_sound_audio = (AgsCaptureSoundAudio *) g_object_new(AGS_TYPE_CAPTURE_SOUND_AUDIO,
+							      "audio", audio,
 							      NULL);
 
   return(capture_sound_audio);

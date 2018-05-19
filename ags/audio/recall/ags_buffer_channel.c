@@ -178,7 +178,7 @@ ags_buffer_channel_class_init(AgsBufferChannelClass *buffer_channel)
    *
    * The mute port.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("muted",
 				   i18n_pspec("mute channel"),
@@ -235,8 +235,17 @@ ags_buffer_channel_set_property(GObject *gobject,
 {
   AgsBufferChannel *buffer_channel;
 
+  pthread_mutex_t *recall_mutex;
+  
   buffer_channel = AGS_BUFFER_CHANNEL(gobject);
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  
   switch(prop_id){
   case PROP_MUTED:
     {
@@ -244,7 +253,11 @@ ags_buffer_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+      
       if(port == buffer_channel->muted){
+	pthread_mutex_unlock(recall_mutex);
+	
 	return;
       }
 
@@ -257,6 +270,8 @@ ags_buffer_channel_set_property(GObject *gobject,
       }
 
       buffer_channel->muted = port;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -273,12 +288,25 @@ ags_buffer_channel_get_property(GObject *gobject,
 {
   AgsBufferChannel *buffer_channel;
 
+  pthread_mutex_t *recall_mutex;
+  
   buffer_channel = AGS_BUFFER_CHANNEL(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_MUTED:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, buffer_channel->muted);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -336,14 +364,20 @@ ags_buffer_channel_set_ports(AgsPlugin *plugin, GList *port)
 }
 
 void
-ags_buffer_channel_set_muted(AgsMutable *mutable, gboolean muted)
+ags_buffer_channel_set_muted(AgsMutable *mutable, gboolean is_muted)
 {
+  AgsPort *muted;
+  
   GValue value = {0,};
 
-  g_value_init(&value, G_TYPE_FLOAT);
-  g_value_set_float(&value, (float) muted);
+  g_object_get(G_OBJECT(mutable),
+	       "muted", &muted,
+	       NULL);
+  
+  G_value_init(&value, G_TYPE_FLOAT);
+  g_value_set_float(&value, (float) is_muted);
 
-  ags_port_safe_write(AGS_BUFFER_CHANNEL(mutable)->muted, &value);
+  ags_port_safe_write(muted, &value);
 }
 
 static AgsPortDescriptor*

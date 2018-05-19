@@ -23,7 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_audio.h>
+#include <ags/audio/ags_port.h>
 
 #define AGS_TYPE_CAPTURE_SOUND_AUDIO                (ags_capture_sound_audio_get_type())
 #define AGS_CAPTURE_SOUND_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CAPTURE_SOUND_AUDIO, AgsCaptureSoundAudio))
@@ -57,6 +59,6 @@ struct _AgsCaptureSoundAudioClass
 
 GType ags_capture_sound_audio_get_type();
 
-AgsCaptureSoundAudio* ags_capture_sound_audio_new();
+AgsCaptureSoundAudio* ags_capture_sound_audio_new(AgsAudio *audio);
 
 #endif /*__AGS_CAPTURE_SOUND_AUDIO_H__*/

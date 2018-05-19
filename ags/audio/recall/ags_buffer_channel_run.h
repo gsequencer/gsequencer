@@ -23,9 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
-
-#include <ags/audio/recall/ags_buffer_channel.h>
 
 #define AGS_TYPE_BUFFER_CHANNEL_RUN                (ags_buffer_channel_run_get_type())
 #define AGS_BUFFER_CHANNEL_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_BUFFER_CHANNEL_RUN, AgsBufferChannelRun))
