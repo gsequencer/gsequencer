@@ -338,12 +338,12 @@ ags_capture_sound_audio_init(AgsCaptureSoundAudio *capture_sound_audio)
 
   /* audio channels */
   capture_sound_audio->audio_channels = g_object_new(AGS_TYPE_PORT,
-					     "plugin-name", ags_capture_sound_audio_plugin_name,
-					     "specifier", ags_capture_sound_audio_specifier[3],
-					     "control-port", ags_capture_sound_audio_control_port[3],
-					     "port-value-is-pointer", FALSE,
-					     "port-value-type", G_TYPE_UINT,
-					     NULL);
+						     "plugin-name", ags_capture_sound_audio_plugin_name,
+						     "specifier", ags_capture_sound_audio_specifier[3],
+						     "control-port", ags_capture_sound_audio_control_port[3],
+						     "port-value-is-pointer", FALSE,
+						     "port-value-type", G_TYPE_UINT64,
+						     NULL);
   g_object_ref(capture_sound_audio->audio_channels);
   
   capture_sound_audio->audio_channels->port_value.ags_port_uint = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
@@ -358,7 +358,7 @@ ags_capture_sound_audio_init(AgsCaptureSoundAudio *capture_sound_audio)
 					     "specifier", ags_capture_sound_audio_specifier[4],
 					     "control-port", ags_capture_sound_audio_control_port[4],
 					     "port-value-is-pointer", FALSE,
-					     "port-value-type", G_TYPE_UINT,
+					     "port-value-type", G_TYPE_UINT64,
 					     NULL);
   g_object_ref(capture_sound_audio->format);
   
@@ -370,12 +370,12 @@ ags_capture_sound_audio_init(AgsCaptureSoundAudio *capture_sound_audio)
 
   /* samplerate */
   capture_sound_audio->samplerate = g_object_new(AGS_TYPE_PORT,
-					     "plugin-name", ags_capture_sound_audio_plugin_name,
-					     "specifier", ags_capture_sound_audio_specifier[5],
-					     "control-port", ags_capture_sound_audio_control_port[5],
-					     "port-value-is-pointer", FALSE,
-					     "port-value-type", G_TYPE_UINT,
-					     NULL);
+						 "plugin-name", ags_capture_sound_audio_plugin_name,
+						 "specifier", ags_capture_sound_audio_specifier[5],
+						 "control-port", ags_capture_sound_audio_control_port[5],
+						 "port-value-is-pointer", FALSE,
+						 "port-value-type", G_TYPE_UINT64,
+						 NULL);
   g_object_ref(capture_sound_audio->samplerate);
   
   capture_sound_audio->samplerate->port_value.ags_port_uint = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
@@ -386,12 +386,12 @@ ags_capture_sound_audio_init(AgsCaptureSoundAudio *capture_sound_audio)
 
   /* buffer size */
   capture_sound_audio->buffer_size = g_object_new(AGS_TYPE_PORT,
-					     "plugin-name", ags_capture_sound_audio_plugin_name,
-					     "specifier", ags_capture_sound_audio_specifier[6],
-					     "control-port", ags_capture_sound_audio_control_port[6],
-					     "port-value-is-pointer", FALSE,
-					     "port-value-type", G_TYPE_UINT,
-					     NULL);
+						  "plugin-name", ags_capture_sound_audio_plugin_name,
+						  "specifier", ags_capture_sound_audio_specifier[6],
+						  "control-port", ags_capture_sound_audio_control_port[6],
+						  "port-value-is-pointer", FALSE,
+						  "port-value-type", G_TYPE_UINT64,
+						  NULL);
   g_object_ref(capture_sound_audio->buffer_size);
   
   capture_sound_audio->buffer_size->port_value.ags_port_uint = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;

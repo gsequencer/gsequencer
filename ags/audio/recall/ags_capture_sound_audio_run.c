@@ -38,21 +38,17 @@
 
 void ags_capture_sound_audio_run_class_init(AgsCaptureSoundAudioRunClass *capture_sound_audio_run);
 void ags_capture_sound_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_capture_sound_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_capture_sound_audio_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_capture_sound_audio_run_init(AgsCaptureSoundAudioRun *capture_sound_audio_run);
 void ags_capture_sound_audio_run_dispose(GObject *gobject);
 void ags_capture_sound_audio_run_finalize(GObject *gobject);
-void ags_capture_sound_audio_run_connect(AgsConnectable *connectable);
-void ags_capture_sound_audio_run_disconnect(AgsConnectable *connectable);
-void ags_capture_sound_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_capture_sound_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable); 
+
 void ags_capture_sound_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_capture_sound_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 AgsRecall* ags_capture_sound_audio_run_duplicate(AgsRecall *recall,
 						 AgsRecallID *recall_id,
-						 guint *n_params, GParameter *parameter);
+						 guint *n_params, gchar **parameter_name, GValue *value);
 void ags_capture_sound_audio_run_run_init_pre(AgsRecall *recall);
 void ags_capture_sound_audio_run_run_pre(AgsRecall *recall);
 void ags_capture_sound_audio_run_done(AgsRecall *recall);
@@ -69,7 +65,6 @@ void ags_capture_sound_audio_run_done(AgsRecall *recall);
 
 static gpointer ags_capture_sound_audio_run_parent_class = NULL;
 static AgsConnectableInterface* ags_capture_sound_audio_run_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_capture_sound_audio_run_parent_dynamic_connectable_interface;
 static AgsPluginInterface *ags_capture_sound_audio_run_parent_plugin_interface;
 
 GType
@@ -79,25 +74,19 @@ ags_capture_sound_audio_run_get_type()
 
   if(!ags_type_capture_sound_audio_run){
     static const GTypeInfo ags_capture_sound_audio_run_info = {
-      sizeof (AgsCaptureSoundAudioRunClass),
+      sizeof(AgsCaptureSoundAudioRunClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_capture_sound_audio_run_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsCaptureSoundAudioRun),
+      sizeof(AgsCaptureSoundAudioRun),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_capture_sound_audio_run_init,
     };
 
     static const GInterfaceInfo ags_connectable_interface_info = {
       (GInterfaceInitFunc) ags_capture_sound_audio_run_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_capture_sound_audio_run_dynamic_connectable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
@@ -118,15 +107,11 @@ ags_capture_sound_audio_run_get_type()
 				&ags_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_capture_sound_audio_run,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_capture_sound_audio_run,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
   }
 
-  return (ags_type_capture_sound_audio_run);
+  return(ags_type_capture_sound_audio_run);
 }
 
 void
@@ -156,18 +141,6 @@ void
 ags_capture_sound_audio_run_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_capture_sound_audio_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_capture_sound_audio_run_connect;
-  connectable->disconnect = ags_capture_sound_audio_run_disconnect;
-}
-
-void
-ags_capture_sound_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_capture_sound_audio_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_capture_sound_audio_run_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_capture_sound_audio_run_disconnect_dynamic;
 }
 
 void
@@ -228,58 +201,12 @@ ags_capture_sound_audio_run_finalize(GObject *gobject)
 }
 
 void
-ags_capture_sound_audio_run_connect(AgsConnectable *connectable)
-{
-  AgsCaptureSoundAudioRun *capture_sound_audio_run;
-
-  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
-    return;
-  }
-
-  /* call parent */
-  ags_capture_sound_audio_run_parent_connectable_interface->connect(connectable);
-
-  capture_sound_audio_run = AGS_CAPTURE_SOUND_AUDIO_RUN(connectable);
-}
-
-void
-ags_capture_sound_audio_run_disconnect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_capture_sound_audio_run_parent_connectable_interface->disconnect(connectable);
-}
-
-void
-ags_capture_sound_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  AgsCaptureSoundAudioRun *capture_sound_audio_run;
-
-  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
-    return;
-  }
-
-  capture_sound_audio_run = AGS_CAPTURE_SOUND_AUDIO_RUN(dynamic_connectable);
-
-  /* call parent */
-  ags_capture_sound_audio_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);  
-}
-
-void
-ags_capture_sound_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  AgsCaptureSoundAudioRun *capture_sound_audio_run;
-
-  /* call parent */
-  ags_capture_sound_audio_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-
-  capture_sound_audio_run = AGS_CAPTURE_SOUND_AUDIO_RUN(dynamic_connectable);
-}
-
-void
 ags_capture_sound_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   /* read parent */
   ags_capture_sound_audio_run_parent_plugin_interface->read(file, node, plugin);
+
+  //TODO:JK: implement me
 }
 
 xmlNode*
@@ -290,31 +217,36 @@ ags_capture_sound_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plu
   /* write parent */
   node = ags_capture_sound_audio_run_parent_plugin_interface->write(file, parent, plugin);
 
+  //TODO:JK: implement me
+  
   return(node);
 }
 
 AgsRecall*
 ags_capture_sound_audio_run_duplicate(AgsRecall *recall,
 				      AgsRecallID *recall_id,
-				      guint *n_params, GParameter *parameter)
+				      guint *n_params, gchar **parameter_name, GValue *value)
 {
-  AgsCaptureSoundAudioRun *copy;
+  AgsCaptureSoundAudioRun *copy_capture_sound_audio_run;
 
-  copy = AGS_CAPTURE_SOUND_AUDIO_RUN(AGS_RECALL_CLASS(ags_capture_sound_audio_run_parent_class)->duplicate(recall,
-													   recall_id,
-													   n_params, parameter));
+  copy_capture_sound_audio_run = AGS_CAPTURE_SOUND_AUDIO_RUN(AGS_RECALL_CLASS(ags_capture_sound_audio_run_parent_class)->duplicate(recall,
+																   recall_id,
+																   n_params, parameter_name, value));
 
-  return((AgsRecall *) copy);
+  return((AgsRecall *) copy_capture_sound_audio_run);
 }
 
 void
 ags_capture_sound_audio_run_run_init_pre(AgsRecall *recall)
 {
   AgsAudio *audio;
+  AgsPort *port;
   
   AgsCaptureSoundAudio *capture_sound_audio;
   AgsCaptureSoundAudioRun *capture_sound_audio_run;
 
+  GObject *output_soundcard;
+  
   gchar *filename;
 
   guint file_audio_channels;
@@ -325,16 +257,26 @@ ags_capture_sound_audio_run_run_init_pre(AgsRecall *recall)
   
   GValue value = {0,};
 
-  capture_sound_audio_run = AGS_CAPTURE_SOUND_AUDIO_RUN(recall);
+  pthread_mutex_t *port_mutex;
   
-  capture_sound_audio = AGS_CAPTURE_SOUND_AUDIO(AGS_RECALL_AUDIO_RUN(capture_sound_audio_run)->recall_audio);
+  capture_sound_audio_run = AGS_CAPTURE_SOUND_AUDIO_RUN(recall);
 
-  audio = AGS_RECALL_AUDIO(capture_sound_audio)->audio;
+  g_object_get(capture_sound_audio_run,
+	       "recall-audio", &capture_sound_audio,
+	       NULL);
+
+  g_object_get(capture_sound_audio,
+	       "audio", &audio,
+	       NULL);
 
   /* record */
+  g_object_get(capture_sound_audio,
+	       "record", &port,
+	       NULL);
+  
   g_value_init(G_TYPE_BOOLEAN,
 	       &value);
-  ags_port_safe_read(capture_sound_audio->record,
+  ags_port_safe_read(port,
 		     &value);
 
   do_record = g_value_get_boolean(&value);
@@ -344,45 +286,70 @@ ags_capture_sound_audio_run_run_init_pre(AgsRecall *recall)
 
   if(do_record){
     /* read filename */
-    g_value_init(G_TYPE_STRING,
-		 &value);
-    ags_port_safe_read(capture_sound_audio->filename,
-		       &value);
+    g_object_get(capture_sound_audio,
+		 "filename", &port,
+		 NULL);
 
-    filename = g_value_get_string(&value);
-    g_value_unset(&value);
+    pthread_mutex_lock(ags_port_class_get_mutex());
+
+    port_mutex = port->obj_mutex;
+    
+    pthread_mutex_unlock(ags_port_class_get_mutex());
+
+    /* get filename */
+    pthread_mutex_lock(port_mutex);
+
+    filename = g_strdup(port->port_value.ags_port_pointer);
+    
+    pthread_mutex_unlock(port_mutex);
 
     /* read audio channels */
-    g_value_init(G_TYPE_UINT,
+    g_object_get(capture_sound_audio,
+		 "audio-channels", &port,
+		 NULL);
+
+    g_value_init(G_TYPE_UINT64,
 		 &value);
-    ags_port_safe_read(capture_sound_audio->audio_channels,
+    ags_port_safe_read(capture_sound_audio->uint,
 		       &value);
 
     file_audio_channels = g_value_get_uint(&value);
     g_value_unset(&value);
 
     /* read format */
-    g_value_init(G_TYPE_UINT,
+    g_object_get(capture_sound_audio,
+		 "format", &port,
+		 NULL);
+
+    g_value_init(G_TYPE_UINT64,
 		 &value);
-    ags_port_safe_read(capture_sound_audio->format,
+    ags_port_safe_read(port,
 		       &value);
 
     file_format = g_value_get_uint(&value);
     g_value_unset(&value);
     
     /* read samplerate */
-    g_value_init(G_TYPE_UINT,
+    g_object_get(capture_sound_audio,
+		 "samplerate", &port,
+		 NULL);
+
+    g_value_init(G_TYPE_UINT64,
 		 &value);
-    ags_port_safe_read(capture_sound_audio->samplerate,
+    ags_port_safe_read(port,
 		       &value);
 
     file_samplerate = g_value_get_uint(&value);
     g_value_unset(&value);
 
     /* read buffer size */
-    g_value_init(G_TYPE_UINT,
+    g_object_get(capture_sound_audio,
+		 "buffer-size", &port,
+		 NULL);
+
+    g_value_init(G_TYPE_UINT64,
 		 &value);
-    ags_port_safe_read(capture_sound_audio->buffer_size,
+    ags_port_safe_read(port,
 		       &value);
 
     file_buffer_size = g_value_get_uint(&value);
@@ -393,8 +360,12 @@ ags_capture_sound_audio_run_run_init_pre(AgsRecall *recall)
 							    file_format);
     
     /* instantiate audio file */
+    g_object_get(recall,
+		 "output-soundcard", &output_soundcard,
+		 NULL);
+    
     capture_sound_audio_run->audio_file = ags_audio_file_new(filename,
-							     recall->soundcard,
+							     output_soundcard,
 							     0, file_audio_channels);
     g_object_set(capture_sound_audio_run->audio_file,
 		 "format", file_format,
