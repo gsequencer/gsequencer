@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,11 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall.h>
-
-#include <ags/object/ags_soundcard.h>
+#include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_recycling.h>
-#include <ags/audio/ags_audio_signal.h>
 
 #define AGS_TYPE_COPY_RECYCLING                (ags_copy_recycling_get_type())
 #define AGS_COPY_RECYCLING(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_COPY_RECYCLING, AgsCopyRecycling))
@@ -52,7 +49,6 @@ struct _AgsCopyRecyclingClass
 GType ags_copy_recycling_get_type();
 
 AgsCopyRecycling* ags_copy_recycling_new(AgsRecycling *destination,
-					 AgsRecycling *source,
-					 GObject *soundcard);
+					 AgsRecycling *source);
 
 #endif /*__AGS_COPY_RECYCLING_H__*/
