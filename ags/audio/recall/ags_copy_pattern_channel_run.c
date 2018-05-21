@@ -85,6 +85,8 @@ static gpointer ags_copy_pattern_channel_run_parent_class = NULL;
 static AgsConnectableInterface* ags_copy_pattern_channel_run_parent_connectable_interface;
 static AgsPluginInterface *ags_copy_pattern_channel_run_parent_plugin_interface;
 
+static gboolean ags_recall_global_rt_safe = FALSE;
+
 GType
 ags_copy_pattern_channel_run_get_type()
 {
@@ -637,91 +639,101 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   /*  */
   if(current_bit){
     AgsChannel *link;
-    AgsRecycling *recycling;
+    AgsRecycling *recycling, *last_recycling;
     AgsRecycling *end_recycling;
     AgsAudioSignal *audio_signal;
     AgsNote *note;
+    AgsPreset *current_preset;
 
-    GList *preset;
+    GObject *output_soundcard;
+    
+    GList *preset_start, *preset;
 
     guint pad;
-    guint audio_channel;
-  
-    pthread_mutex_t *link_mutex;
-
-    //FIXME:JK: thread-safety
+    guint audio_channel;	  
     
     //    g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u",
     //	      AGS_RECALL_CHANNEL(copy_pattern_channel)->source->line,
     //	      copy_pattern_audio_run->count_beats_audio_run->sequencer_counter);
 
     /* get audio */
-    audio = AGS_RECALL_AUDIO(copy_pattern_audio)->audio;
-
-    pthread_mutex_lock(application_mutex);
-  
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					    (GObject *) audio);
-    
-    pthread_mutex_unlock(application_mutex);
+    g_object_get(copy_pattern_audio,
+		 "audio", &audio,
+		 NULL);
     
     /* get source */
-    source = AGS_RECALL_CHANNEL(copy_pattern_channel)->source;
+    g_object_get(copy_pattern_channel,
+		 "source", &source,
+		 NULL);
 
-    pthread_mutex_lock(application_mutex);
-  
-    source_mutex = ags_mutex_manager_lookup(mutex_manager,
-					    (GObject *) source);
-    
-    pthread_mutex_unlock(application_mutex);
+    /* get output soundcard */
+    g_object_get(copy_pattern_channel_run,
+		 "output-soundcard", &output_soundcard,
+		 NULL);
     
     /* source fields */
-    pthread_mutex_lock(source_mutex);
+    g_object_get(source,
+		 "link", &link,
+		 "first-recycling", &recycling,
+		 "last-recycling", &last_recycling,
+		 "pad", &pad,
+		 "audio-channel", &audio_channel,
+		 NULL);
 
-    link = source->link;
+    end_recycling = NULL;
     
-    recycling = source->first_recycling;
-
-    if(recycling != NULL){
-      end_recycling = source->last_recycling->next;
+    if(last_recycling != NULL){
+      g_object_get(last_recycling,
+		   "next", &end_recycling,
+		   NULL);
     }
 
-    pad = source->pad;
-    audio_channel = source->audio_channel;
-    
-    pthread_mutex_unlock(source_mutex);
-
     /* find preset scope envelope */
-    pthread_mutex_lock(audio_mutex);
+    current_preset = NULL;
 
-    preset = audio->preset;
+    g_object_get(audio,
+		 "preset", &preset_start,
+		 NULL);
+
+    preset = preset_start;
 
     while((preset = ags_preset_find_scope(preset,
 					  "ags-envelope")) != NULL){
-      if(audio_channel >= AGS_PRESET(preset->data)->audio_channel_start &&
-	 audio_channel < AGS_PRESET(preset->data)->audio_channel_end &&
-	 pad >= AGS_PRESET(preset->data)->pad_start &&
-	 pad < AGS_PRESET(preset->data)->pad_end &&
-	 sequencer_counter >= AGS_PRESET(preset->data)->x_start &&
-	 sequencer_counter < AGS_PRESET(preset->data)->x_end){
+      guint audio_channel_start, audio_channel_end;
+      guint pad_start, pad_end;
+      guint x_start, x_end;
+
+      g_object_get(preset->data,
+		   "audio-channel-start", &audio_channel_start,
+		   "audio-channel-end", &audio_channel_end,
+		   "pad-start", &pad_start,
+		   "pad-end", &pad_end,
+		   "x-start", &x_start,
+		   "x-end", &x_end,
+		   NULL);
+      
+      if(audio_channel >= audio_channel_start &&
+	 audio_channel < audio_channel_end &&
+	 pad >= pad_start &&
+	 pad < pad_end &&
+	 sequencer_counter >= x_start &&
+	 sequencer_counter < x_end){
+	current_preset = preset->data;
+	
 	break;
       }
 
       preset = preset->next;
     }
-    
-    pthread_mutex_unlock(audio_mutex);
 
-    /* link */
-    if(link != NULL){
-      pthread_mutex_lock(application_mutex);
-      
-      link_mutex = ags_mutex_manager_lookup(mutex_manager,
-					    (GObject *) link);
-      
-      pthread_mutex_unlock(application_mutex);
-    }
+    g_list_free(preset_start);
 
+    note = g_list_nth_data(copy_pattern_channel_run->note,
+			   sequencer_counter);
+
+    //FIXME:JK: thread-safety
+    note->rt_attack = attack;
+        
     /* create audio signals */
     if(recycling != NULL){
       AgsRecallID *child_recall_id;
@@ -730,17 +742,14 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	child_recall_id = AGS_RECALL(copy_pattern_channel_run)->recall_id;
 
 	/* apply preset */
-	note = g_list_nth(copy_pattern_channel_run->note,
-			  sequencer_counter)->data;	
-	note->rt_attack = attack;
-	
-	if(preset != NULL){
+	if(current_preset != NULL){
 	  AgsComplex *val;
 	  
 	  GValue value = {0,};
 
 	  GError *error;
 	  
+	  //FIXME:JK: thread-safety
 	  note->flags |= AGS_NOTE_ENVELOPE;
 	  
 	  /* get attack */
@@ -748,7 +757,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 		       AGS_TYPE_COMPLEX);
 
 	  error = NULL;
-	  ags_preset_get_parameter((AgsPreset *) preset->data,
+	  ags_preset_get_parameter((AgsPreset *) current_preset,
 				   "attack", &value,
 				   &error);
 
@@ -763,7 +772,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	  g_value_reset(&value);
 
 	  error = NULL;
-	  ags_preset_get_parameter((AgsPreset *) preset->data,
+	  ags_preset_get_parameter((AgsPreset *) current_preset,
 				   "decay", &value,
 				   &error);
 
@@ -778,7 +787,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	  g_value_reset(&value);
 
 	  error = NULL;
-	  ags_preset_get_parameter((AgsPreset *) preset->data,
+	  ags_preset_get_parameter((AgsPreset *) current_preset,
 				   "sustain", &value,
 				   &error);
 
@@ -793,7 +802,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	  g_value_reset(&value);
 
 	  error = NULL;
-	  ags_preset_get_parameter((AgsPreset *) preset->data,
+	  ags_preset_get_parameter((AgsPreset *) current_preset,
 				   "release", &value,
 				   &error);
 
@@ -808,7 +817,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	  g_value_reset(&value);
 
 	  error = NULL;
-	  ags_preset_get_parameter((AgsPreset *) preset->data,
+	  ags_preset_get_parameter((AgsPreset *) current_preset,
 				   "ratio", &value,
 				   &error);
 
@@ -820,20 +829,21 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	  }
 	}
 	
-	if(!AGS_RECALL(copy_pattern_audio)->rt_safe){
+	if(!ags_recall_global_rt_safe){
 	  /* create audio signal */
-	  audio_signal = ags_audio_signal_new(AGS_RECALL(copy_pattern_audio)->soundcard,
+	  audio_signal = ags_audio_signal_new(output_soundcard,
 					      (GObject *) recycling,
 					      (GObject *) child_recall_id);
 	  ags_recycling_create_audio_signal_with_defaults(recycling,
 							  audio_signal,
 							  0.0, attack);
-	  audio_signal->flags &= (~AGS_AUDIO_SIGNAL_TEMPLATE);
-	  audio_signal->stream_current = audio_signal->stream_beginning;
+
+	  ags_audio_signal_unset_flags(audio_signal, AGS_AUDIO_SIGNAL_TEMPLATE);
+	  
+	  audio_signal->stream = audio_signal->stream_beginning;
 
 	  ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
 
-	  audio_signal->recall_id = (GObject *) child_recall_id;
 	  ags_recycling_add_audio_signal(recycling,
 					 audio_signal);
 
@@ -841,11 +851,16 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 		       "note", note,
 		       NULL);
 	}else{
-	  GList *list;
+	  GList *list_start, *list;
 
 	  audio_signal = NULL;
-	  list = ags_audio_signal_get_by_recall_id(recycling->audio_signal,
-						   child_recall_id);
+
+	  g_object_get(recycling,
+		       "audio-signal", &list_start,
+		       NULL);
+	  
+	  list = ags_audio_signal_find_by_recall_id(list_start,
+						    child_recall_id);
 	    
 	  if(list != NULL){
 	    audio_signal = list->data;
@@ -854,7 +869,10 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 			 "note", note,
 			 NULL);
 	  }
-	    
+
+	  g_list_free(list_start);
+	  
+	  //FIXME:JK: thread-safety
 	  note->rt_offset = 0;
 	}
 		
@@ -870,8 +888,9 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	 * if you need a valid reference to audio_signal you have to g_object_ref(audio_signal)
 	 */
 	//	g_object_unref(audio_signal);
-		
-	recycling = recycling->next;
+	g_object_get(recycling,
+		     "next", &recycling,
+		     NULL);
       }
     }
   }
@@ -905,6 +924,7 @@ ags_copy_pattern_channel_run_done(AgsRecall *recall)
  			       AGS_RECALL_NOTIFY_CHANNEL_RUN, FALSE);
 
   /* free notes */
+  //FIXME:JK: thread-safety
   g_list_free_full(copy_pattern_channel_run->note,
 		   g_object_unref);
 
