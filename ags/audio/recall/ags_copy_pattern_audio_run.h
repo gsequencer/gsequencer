@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,7 @@
 
 #include <ags/audio/ags_recall_audio_run.h>
 
+#include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 
 #define AGS_TYPE_COPY_PATTERN_AUDIO_RUN                (ags_copy_pattern_audio_run_get_type())
@@ -55,6 +56,7 @@ struct _AgsCopyPatternAudioRunClass
 
 GType ags_copy_pattern_audio_run_get_type();
 
-AgsCopyPatternAudioRun* ags_copy_pattern_audio_run_new(AgsCountBeatsAudioRun *count_beats_audio_run);
+AgsCopyPatternAudioRun* ags_copy_pattern_audio_run_new(AgsDelayAudioRun *delay_audio_run,
+						       AgsCountBeatsAudioRun *count_beats_audio_run);
 
 #endif /*__AGS_COPY_PATTERN_AUDIO_RUN_H__*/

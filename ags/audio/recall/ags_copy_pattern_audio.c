@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,7 +22,7 @@
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
 
 #include <ags/i18n.h>
 
@@ -37,9 +37,10 @@ void ags_copy_pattern_audio_get_property(GObject *gobject,
 					 guint prop_id,
 					 GValue *value,
 					 GParamSpec *param_spec);
-void ags_copy_pattern_audio_set_ports(AgsPlugin *plugin, GList *port);
 void ags_copy_pattern_audio_dispose(GObject *gobject);
 void ags_copy_pattern_audio_finalize(GObject *gobject);
+
+void ags_copy_pattern_audio_set_ports(AgsPlugin *plugin, GList *port);
 
 /**
  * SECTION:ags_copy_pattern_audio
@@ -76,13 +77,13 @@ ags_copy_pattern_audio_get_type()
 
   if(!ags_type_copy_pattern_audio){
     static const GTypeInfo ags_copy_pattern_audio_info = {
-      sizeof (AgsCopyPatternAudioClass),
+      sizeof(AgsCopyPatternAudioClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_copy_pattern_audio_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsCopyPatternAudio),
+      sizeof(AgsCopyPatternAudio),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_copy_pattern_audio_init,
     };
@@ -116,6 +117,7 @@ void
 ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_copy_pattern_audio_parent_class = g_type_class_peek_parent(copy_pattern_audio);
@@ -135,7 +137,7 @@ ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
    *
    * The bank index 0 port.
    * 
-   * Since: 1.0.0.7
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("bank-index-0",
 				   i18n_pspec("current bank index 0"),
@@ -151,7 +153,7 @@ ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
    *
    * The bank index 1 port.
    * 
-   * Since: 1.0.0.7
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("bank-index-1",
 				   i18n_pspec("current bank index 1"),
@@ -223,7 +225,16 @@ ags_copy_pattern_audio_set_property(GObject *gobject,
 {
   AgsCopyPatternAudio *copy_pattern_audio;
 
+  pthread_mutex_t *recall_mutex;
+  
   copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_BANK_INDEX_0:
@@ -232,7 +243,11 @@ ags_copy_pattern_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == copy_pattern_audio->bank_index_0){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -245,6 +260,8 @@ ags_copy_pattern_audio_set_property(GObject *gobject,
       }
 
       copy_pattern_audio->bank_index_0 = port;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_BANK_INDEX_1:
@@ -253,7 +270,11 @@ ags_copy_pattern_audio_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == copy_pattern_audio->bank_index_1){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -266,6 +287,8 @@ ags_copy_pattern_audio_set_property(GObject *gobject,
       }
 
       copy_pattern_audio->bank_index_1 = port;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -281,46 +304,41 @@ ags_copy_pattern_audio_get_property(GObject *gobject,
 				    GParamSpec *param_spec)
 {
   AgsCopyPatternAudio *copy_pattern_audio;
-  
+
+  pthread_mutex_t *recall_mutex;
+    
   copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_BANK_INDEX_0:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, copy_pattern_audio->bank_index_0);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_BANK_INDEX_1:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, copy_pattern_audio->bank_index_1);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   };
-}
-
-void
-ags_copy_pattern_audio_set_ports(AgsPlugin *plugin, GList *port)
-{
-  while(port != NULL){
-    if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./bank-index-0[0]",
-		16)){
-      g_object_set(G_OBJECT(plugin),
-		   "bank-index-0", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./bank-index-1[0]",
-		      16)){
-      g_object_set(G_OBJECT(plugin),
-		   "bank-index-1", AGS_PORT(port->data),
-		   NULL);
-    }
-
-    port = port->next;
-  }
 }
 
 void
@@ -369,42 +387,69 @@ ags_copy_pattern_audio_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_copy_pattern_audio_parent_class)->finalize(gobject);
 }
 
+void
+ags_copy_pattern_audio_set_ports(AgsPlugin *plugin, GList *port)
+{
+  while(port != NULL){
+    if(!strncmp(AGS_PORT(port->data)->specifier,
+		"./bank-index-0[0]",
+		16)){
+      g_object_set(G_OBJECT(plugin),
+		   "bank-index-0", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "./bank-index-1[0]",
+		      16)){
+      g_object_set(G_OBJECT(plugin),
+		   "bank-index-1", AGS_PORT(port->data),
+		   NULL);
+    }
+
+    port = port->next;
+  }
+}
+
 /**
  * ags_copy_pattern_audio_new:
- * @soundcard: the #GObject defaulting to
- * @tact: the offset
  * @i: bank index 0
  * @j: bank index 1
  *
- * Creates an #AgsCopyPatternAudio
+ * Create a new instance of #AgsCopyPatternAudio
  *
- * Returns: a new #AgsCopyPatternAudio
+ * Returns: the new #AgsCopyPatternAudio
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsCopyPatternAudio*
-ags_copy_pattern_audio_new(GObject *soundcard,
-			   gdouble tact,
-			   guint i, guint j)
+ags_copy_pattern_audio_new(guint bank_index_0,
+			   guint bank_index_1)
 {
   AgsCopyPatternAudio *copy_pattern_audio;
-
+  AgsPort *port;
+  
   GValue *value;
   
   copy_pattern_audio = (AgsCopyPatternAudio *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO,
-							    "soundcard", soundcard,
-							    "tact", tact,
 							    NULL);
 
+  /* apply bank index */
   value = g_new0(GValue,
 		 1);
-  g_value_init(value, G_TYPE_UINT);
+  g_value_init(value, G_TYPE_UINT64);
 
-  g_value_set_uint(value, i);
-  ags_port_safe_write(copy_pattern_audio->bank_index_0,
+  g_object_get(copy_pattern_audio,
+	       "bank-index-0" , &port,
+	       NULL);
+  
+  g_value_set_uint64(value, bank_index_0);
+  ags_port_safe_write(port,
 		      value);
 
-  g_value_set_uint(value, j);
+  g_object_get(copy_pattern_audio,
+	       "bank-index-1" , &port,
+	       NULL);
+
+  g_value_set_uint64(value, bank_index_1);
   ags_port_safe_write(copy_pattern_audio->bank_index_1,
 		      value);
 

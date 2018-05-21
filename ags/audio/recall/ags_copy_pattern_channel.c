@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,7 +22,7 @@
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
 
 #include <ags/i18n.h>
 
