@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
 #define AGS_TYPE_COPY_AUDIO_SIGNAL                (ags_copy_audio_signal_get_type())
@@ -48,7 +49,6 @@ struct _AgsCopyAudioSignalClass
 GType ags_copy_audio_signal_get_type();
 
 AgsCopyAudioSignal* ags_copy_audio_signal_new(AgsAudioSignal *destination,
-					      AgsAudioSignal *source,
-					      GObject *soundcard);
+					      AgsAudioSignal *source);
 
 #endif /*__AGS_COPY_AUDIO_SIGNAL_H__*/

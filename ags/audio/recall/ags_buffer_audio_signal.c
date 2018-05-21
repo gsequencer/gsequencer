@@ -315,17 +315,17 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
 
   stream_destination = destination->stream_current;
 
-  g_object_get(source,
-	       "buffer-size", &sourc_buffer_size,
-	       "attack", &attack,
-	       "samplerate", &source_samplerate,
-	       "format", &source_format,
-	       NULL);
-
   g_object_get(destination,
 	       "buffer-size", &destination_buffer_size,
 	       "samplerate", &destination_samplerate,
 	       "format", &destination_format,
+	       NULL);
+
+  g_object_get(source,
+	       "buffer-size", &source_buffer_size,
+	       "attack", &attack,
+	       "samplerate", &source_samplerate,
+	       "format", &source_format,
 	       NULL);
   
   if(stream_destination != NULL){
