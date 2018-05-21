@@ -590,17 +590,25 @@ ags_copy_pattern_audio_run_resolve_dependency(AgsRecall *recall)
   
   guint i, i_stop;
 
-  recall_container = AGS_RECALL_CONTAINER(recall->container);
-  
-  list = ags_recall_find_template(recall_container->recall_audio_run);
+  g_object_get(recall,
+	       "recall-container", &recall_container,
+	       NULL);
 
-  if(list != NULL){
-    template = AGS_RECALL(list->data);
-  }else{
+  g_object_get(recall_container,
+	       "recall-audio-run", &list_start,
+	       NULL);
+  
+  list = ags_recall_find_template(list_start);
+
+  if(list == NULL){
     g_warning("AgsRecallClass::resolve - missing dependency");
+
     return;
   }
 
+  template = AGS_RECALL(list->data);
+  g_list_free(list_start);
+  
   g_object_get(template,
 	       "recall-dependency", &list_start,
 	       NULL);

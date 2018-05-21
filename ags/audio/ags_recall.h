@@ -310,15 +310,15 @@ gboolean ags_recall_is_done(GList *recalls, GObject *recycling_context);
 GList* ags_recall_get_by_effect(GList *list, gchar *filename, gchar *effect);
 GList* ags_recall_find_recall_id_with_effect(GList *list, AgsRecallID *recall_id, gchar *filename, gchar *effect);
 
-GList* ags_recall_find_type(GList *recall_i, GType type);
-GList* ags_recall_find_template(GList *recall_i);
-GList* ags_recall_template_find_type(GList *recall_i, GType type);
-GList* ags_recall_template_find_all_type(GList *recall_i, ...);
-GList* ags_recall_find_type_with_recycling_context(GList *recall_i, GType type, GObject *recycling_context);
-GList* ags_recall_find_recycling_context(GList *recall_i, GObject *recycling_context);
+GList* ags_recall_find_type(GList *recall, GType type);
+GList* ags_recall_find_template(GList *recall);
+GList* ags_recall_template_find_type(GList *recall, GType type);
+GList* ags_recall_template_find_all_type(GList *recall, ...);
+GList* ags_recall_find_type_with_recycling_context(GList *recall, GType type, GObject *recycling_context);
+GList* ags_recall_find_recycling_context(GList *recall, GObject *recycling_context);
 GList* ags_recall_find_provider(GList *recall, GObject *provider);
 GList* ags_recall_template_find_provider(GList *recall, GObject *provider);
-GList* ags_recall_find_provider_with_recycling_context(GList *recall_i, GObject *provider, GObject *recycling_context);
+GList* ags_recall_find_provider_with_recycling_context(GList *recall, GObject *provider, GObject *recycling_context);
 
 /* control */
 void ags_recall_lock_port(AgsRecall *recall);

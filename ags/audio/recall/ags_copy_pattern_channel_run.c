@@ -38,23 +38,33 @@
 
 void ags_copy_pattern_channel_run_class_init(AgsCopyPatternChannelRunClass *copy_pattern_channel_run);
 void ags_copy_pattern_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_copy_pattern_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_copy_pattern_channel_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_copy_pattern_channel_run_init(AgsCopyPatternChannelRun *copy_pattern_channel_run);
-void ags_copy_pattern_channel_run_connect(AgsConnectable *connectable);
-void ags_copy_pattern_channel_run_disconnect(AgsConnectable *connectable);
-void ags_copy_pattern_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_copy_pattern_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_copy_pattern_channel_run_finalize(GObject *gobject);
 
-void ags_copy_pattern_channel_run_resolve_dependencies(AgsRecall *recall);
-void ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall);
-void ags_copy_pattern_channel_run_done(AgsRecall *recall);
-void ags_copy_pattern_channel_run_cancel(AgsRecall *recall);
-void ags_copy_pattern_channel_run_remove(AgsRecall *recall);
+void ags_copy_pattern_channel_run_notify_recall_audio_run(GObject *gobject,
+							  GParamSpec *pspec,
+							  gpointer user_data);
+void ags_copy_pattern_channel_run_notify_recall_audio_run_after(GObject *gobject,
+								GParamSpec *pspec,
+								gpointer user_data);
+void ags_copy_pattern_channel_run_notify_delay_audio_run(GObject *gobject,
+							 GParamSpec *pspec,
+							 AgsCopyPatternChannelRun *copy_pattern_channel_run);
+void ags_copy_pattern_channel_run_notify_delay_audio_run_after(GObject *gobject,
+							       GParamSpec *pspec,
+							       AgsCopyPatternChannelRun *copy_pattern_channel_run);
+
+void ags_copy_pattern_channel_run_connect(AgsConnectable *connectable);
+void ags_copy_pattern_channel_run_disconnect(AgsConnectable *connectable);
+void ags_copy_pattern_channel_run_connect_connection(AgsConnectable *connectable, GObject *connection);
+void ags_copy_pattern_channel_run_disconnect_connection(AgsConnectable *connectable, GObject *connection);
+
 AgsRecall* ags_copy_pattern_channel_run_duplicate(AgsRecall *recall,
 						  AgsRecallID *recall_id,
-						  guint *n_params, GParameter *parameter);
+						  guint *n_params, gchar **parameter_name, GValue *value);
+void ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall);
+void ags_copy_pattern_channel_run_done(AgsRecall *recall);
 
 void ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_audio_run,
 							   guint run_order,
@@ -73,7 +83,6 @@ void ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *del
 
 static gpointer ags_copy_pattern_channel_run_parent_class = NULL;
 static AgsConnectableInterface* ags_copy_pattern_channel_run_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_copy_pattern_channel_run_parent_dynamic_connectable_interface;
 static AgsPluginInterface *ags_copy_pattern_channel_run_parent_plugin_interface;
 
 GType
@@ -100,12 +109,6 @@ ags_copy_pattern_channel_run_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_copy_pattern_channel_run_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     static const GInterfaceInfo ags_plugin_interface_info = {
       (GInterfaceInitFunc) ags_copy_pattern_channel_run_plugin_interface_init,
       NULL, /* interface_finalize */
@@ -122,10 +125,6 @@ ags_copy_pattern_channel_run_get_type()
 				&ags_connectable_interface_info);
     
     g_type_add_interface_static(ags_type_copy_pattern_channel_run,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_copy_pattern_channel_run,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
   }
@@ -138,7 +137,7 @@ ags_copy_pattern_channel_run_class_init(AgsCopyPatternChannelRunClass *copy_patt
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
-  AgsRecallChannelRunClass *recall_channel_run;
+
   GParamSpec *param_spec;
 
   ags_copy_pattern_channel_run_parent_class = g_type_class_peek_parent(copy_pattern_channel_run);
@@ -151,11 +150,8 @@ ags_copy_pattern_channel_run_class_init(AgsCopyPatternChannelRunClass *copy_patt
   /* AgsRecallClass */
   recall = (AgsRecallClass *) copy_pattern_channel_run;
 
-  recall->resolve_dependencies = ags_copy_pattern_channel_run_resolve_dependencies;
   recall->run_init_pre = ags_copy_pattern_channel_run_run_init_pre;
   recall->done = ags_copy_pattern_channel_run_done;
-  recall->cancel = ags_copy_pattern_channel_run_cancel;
-  recall->remove = ags_copy_pattern_channel_run_remove;
   recall->duplicate = ags_copy_pattern_channel_run_duplicate;
 }
 
@@ -168,15 +164,9 @@ ags_copy_pattern_channel_run_connectable_interface_init(AgsConnectableInterface 
 
   connectable->connect = ags_copy_pattern_channel_run_connect;
   connectable->disconnect = ags_copy_pattern_channel_run_disconnect;
-}
 
-void
-ags_copy_pattern_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_copy_pattern_channel_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_copy_pattern_channel_run_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_copy_pattern_channel_run_disconnect_dynamic;
+  connectable->connect_connection = ags_copy_pattern_channel_run_connect_connection;
+  connectable->disconnect_connection = ags_copy_pattern_channel_run_disconnect_connection;
 }
 
 void
@@ -188,6 +178,13 @@ ags_copy_pattern_channel_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_copy_pattern_channel_run_init(AgsCopyPatternChannelRun *copy_pattern_channel_run)
 {
+  g_signal_connect(copy_pattern_channel_run, "notify::recall-audio-run",
+		   G_CALLBACK(ags_copy_pattern_channel_run_notify_recall_audio_run), NULL);
+  
+  g_signal_connect_after(copy_pattern_channel_run, "notify::recall-audio-run",
+			 G_CALLBACK(ags_copy_pattern_channel_run_notify_recall_audio_run_after), NULL);
+
+  /*  */
   AGS_RECALL(copy_pattern_channel_run)->name = "ags-copy-pattern";
   AGS_RECALL(copy_pattern_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(copy_pattern_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
@@ -200,94 +197,266 @@ ags_copy_pattern_channel_run_init(AgsCopyPatternChannelRun *copy_pattern_channel
 }
 
 void
-ags_copy_pattern_channel_run_connect(AgsConnectable *connectable)
-{
-  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
-    return;
-  }
-
-  ags_copy_pattern_channel_run_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_copy_pattern_channel_run_disconnect(AgsConnectable *connectable)
-{
-  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) == 0){
-    return;
-  }
-
-  ags_copy_pattern_channel_run_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_copy_pattern_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  AgsCopyPatternAudioRun *copy_pattern_audio_run;
-  AgsCopyPatternChannelRun *copy_pattern_channel_run;
-  AgsDelayAudioRun *delay_audio_run;
-
-  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
-    return;
-  }
-
-  /* call parent */
-  ags_copy_pattern_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* AgsCopyPatternChannelRun */
-  copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(dynamic_connectable);
-
-  /* get AgsCopyPatternAudioRun */
-  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->recall_audio_run);
-
-  /* connect sequencer_alloc in AgsDelayAudioRun */
-  delay_audio_run = copy_pattern_audio_run->delay_audio_run;
-
-  copy_pattern_channel_run->sequencer_alloc_handler =
-    g_signal_connect(G_OBJECT(delay_audio_run), "sequencer-alloc-input",
-		     G_CALLBACK(ags_copy_pattern_channel_run_sequencer_alloc_callback), copy_pattern_channel_run);
-}
-
-void
-ags_copy_pattern_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  AgsCopyPatternAudioRun *copy_pattern_audio_run;
-  AgsCopyPatternChannelRun *copy_pattern_channel_run;
-  AgsDelayAudioRun *delay_audio_run;
-
-  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) == 0){
-    return;
-  }
-
-  /* AgsCopyPatternChannelRun */
-  copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(dynamic_connectable);
-
-  /* get AgsCopyPatternAudioRun */
-  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->recall_audio_run);
-
-  /* disconnect sequencer_alloc in AgsDelayAudioRun */
-  delay_audio_run = copy_pattern_audio_run->delay_audio_run;
-
-  g_signal_handler_disconnect(G_OBJECT(delay_audio_run),
-			      copy_pattern_channel_run->sequencer_alloc_handler);
-
-  /* call parent */
-  ags_copy_pattern_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-}
-
-void
 ags_copy_pattern_channel_run_finalize(GObject *gobject)
 {
   G_OBJECT_CLASS(ags_copy_pattern_channel_run_parent_class)->finalize(gobject);
 }
 
 void
-ags_copy_pattern_channel_run_resolve_dependencies(AgsRecall *recall)
+ags_copy_pattern_channel_run_notify_recall_audio(GObject *gobject,
+						 GParamSpec *pspec,
+						 gpointer user_data)
 {
-  //TODO:JK: implement me
+  AgsCopyPatternAudioRun *copy_pattern_audio_run;
+  AgsCopyPatternChannelRun *copy_pattern_channel_run;
+  AgsDelayAudioRun *delay_audio_run;
+
+  copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(gobject);
+
+  g_object_get(copy_pattern_channel_run,
+	       "recall-audio-run", &copy_pattern_audio_run,
+	       NULL);
+
+  if(copy_pattern_audio_run != NULL){
+    g_object_disconnect(copy_pattern_audio_run,
+			"notify::delay-audio-run",
+			G_CALLBACK(ags_copy_pattern_channel_run_notify_delay_audio_run),
+			NULL,
+			NULL);
+  
+    g_object_disconnect(copy_pattern_audio_run,
+			"notify::delay-audio-run",
+			G_CALLBACK(ags_copy_pattern_channel_run_notify_delay_audio_run_after),
+			NULL,
+			NULL);
+
+    /* connection */
+    g_object_get(copy_pattern_audio_run,
+		 "delay-audio-run", &delay_audio_run,
+		 NULL);
+
+    if(delay_audio_run != NULL &&
+       ags_connectable_is_connected(AGS_CONNECTABLE(copy_pattern_channel_run))){
+      ags_copy_pattern_channel_run_disconnect_connection(connectable, delay_audio_run);
+    }
+  }
+}
+
+void
+ags_copy_pattern_channel_run_notify_recall_audio_after(GObject *gobject,
+						       GParamSpec *pspec,
+						       gpointer user_data)
+{
+  AgsCopyPatternAudioRun *copy_pattern_audio_run;
+  AgsCopyPatternChannelRun *copy_pattern_channel_run;
+  AgsDelayAudioRun *delay_audio_run;
+
+  copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(gobject);
+
+  g_object_get(copy_pattern_channel_run,
+	       "recall-audio-run", &copy_pattern_audio_run,
+	       NULL);
+
+  if(copy_pattern_audio_run != NULL){
+    g_signal_connect(copy_pattern_audio_run, "notify::delay-audio-run",
+		     G_CALLBACK(ags_copy_pattern_channel_run_notify_delay_audio_run), NULL);
+  
+    g_signal_connect_after(copy_pattern_audio_run, "notify::delay-audio-run",
+			   G_CALLBACK(ags_copy_pattern_channel_run_notify_delay_audio_run_after), NULL);
+
+    /* connection */
+    g_object_get(copy_pattern_audio_run,
+		 "delay-audio-run", &delay_audio_run,
+		 NULL);
+
+    if(delay_audio_run != NULL &&
+       ags_connectable_is_connected(AGS_CONNECTABLE(copy_pattern_channel_run))){
+      ags_copy_pattern_channel_run_connect_connection(AGS_CONNECTABLE(copy_pattern_channel_run), delay_audio_run);
+    }
+  }
+}
+
+void
+ags_copy_pattern_channel_run_notify_delay_audio_run(GObject *gobject,
+						    GParamSpec *pspec,
+						    AgsCopyPatternChannelRun *copy_pattern_channel_run)
+{
+  AgsCopyPatternAudioRun *copy_pattern_audio_run;
+  AgsDelayAudioRun *delay_audio_run;
+
+  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(gobject);
+
+  g_object_get(copy_pattern_audio_run,
+	       "delay-audio-run", &delay_audio_run,
+	       NULL);
+
+  if(delay_audio_run != NULL &&
+     ags_connectable_is_connected(AGS_CONNECTABLE(copy_pattern_channel_run))){
+    ags_connectable_disconnect_connection(AGS_CONNECTABLE(copy_pattern_channel_run), delay_audio_run);
+  }
+}
+
+void
+ags_copy_pattern_channel_run_notify_delay_audio_run_after(GObject *gobject,
+							  GParamSpec *pspec,
+							  AgsCopyPatternChannelRun *copy_pattern_channel_run)
+{
+  AgsCopyPatternAudioRun *copy_pattern_audio_run;
+  AgsDelayAudioRun *delay_audio_run;
+
+  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(gobject);
+
+  g_object_get(copy_pattern_audio_run,
+	       "delay-audio-run", &delay_audio_run,
+	       NULL);
+
+  if(delay_audio_run != NULL &&
+     ags_connectable_is_connected(AGS_CONNECTABLE(copy_pattern_channel_run))){
+    ags_connectable_connect_connection(AGS_CONNECTABLE(copy_pattern_channel_run), delay_audio_run);
+  }
+}
+
+void
+ags_copy_pattern_channel_run_connect(AgsConnectable *connectable)
+{
+  AgsCopyPatternAudioRun *copy_pattern_audio_run;
+  AgsCopyPatternChannelRun *copy_pattern_channel_run;
+  AgsDelayAudioRun *delay_audio_run;
+  
+  pthread_mutex_t *recall_mutex;
+
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(connectable);
+  
+  ags_copy_pattern_channel_run_parent_connectable_interface->connect(connectable);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(copy_pattern_channel_run)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* connection */
+  g_object_get(copy_pattern_channel_run,
+	       "recall-audio-run", &copy_pattern_audio_run,
+	       NULL);
+
+  if(copy_pattern_audio_run != NULL){
+    g_object_get(copy_pattern_audio_run,
+		 "delay-audio-run", &delay_audio_run,
+		 NULL);
+
+    if(delay_audio_run != NULL){
+      ags_copy_pattern_channel_run_connect_connection(connectable, delay_audio_run);
+    }
+  }
+}
+
+void
+ags_copy_pattern_channel_run_disconnect(AgsConnectable *connectable)
+{
+  AgsCopyPatternAudioRun *copy_pattern_audio_run;
+  AgsCopyPatternChannelRun *copy_pattern_channel_run;
+  AgsDelayAudioRun *delay_audio_run;
+  
+  pthread_mutex_t *recall_mutex;
+
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(connectable);
+
+  ags_copy_pattern_channel_run_parent_connectable_interface->disconnect(connectable);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(copy_pattern_channel_run)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* connection */
+  g_object_get(copy_pattern_channel_run,
+	       "recall-audio-run", &copy_pattern_audio_run,
+	       NULL);
+
+  if(copy_pattern_audio_run != NULL){
+    g_object_get(copy_pattern_audio_run,
+		 "delay-audio-run", &delay_audio_run,
+		 NULL);
+
+    if(delay_audio_run != NULL){
+      ags_copy_pattern_channel_run_disconnect_connection(connectable, delay_audio_run);
+    }
+  }
+}
+
+void
+ags_copy_pattern_channel_run_connect_connection(AgsConnectable *connectable, GObject *connection)
+{
+  AgsCopyPatternAudioRun *copy_pattern_audio_run;
+  AgsCopyPatternChannelRun *copy_pattern_channel_run;
+  AgsDelayAudioRun *delay_audio_run;
+
+  copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(connectable);
+  
+  g_object_get(copy_pattern_channel_run,
+	       "recall-audio-run", &copy_pattern_audio_run,
+	       NULL);
+
+  g_object_get(copy_pattern_audio_run,
+	       "delay-audio-run", &delay_audio_run,
+	       NULL);
+
+  if(delay_audio_run == connection){
+    g_signal_connect(G_OBJECT(delay_audio_run), "sequencer-alloc-input",
+		     G_CALLBACK(ags_copy_pattern_channel_run_sequencer_alloc_callback), copy_pattern_channel_run);
+  }
+}
+
+void
+ags_copy_pattern_channel_run_disconnect_connection(AgsConnectable *connectable, GObject *connection)
+{
+  AgsCopyPatternAudioRun *copy_pattern_audio_run;
+  AgsCopyPatternChannelRun *copy_pattern_channel_run;
+  AgsDelayAudioRun *delay_audio_run;
+
+  copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(connectable);
+  
+  g_object_get(copy_pattern_channel_run,
+	       "recall-audio-run", &copy_pattern_audio_run,
+	       NULL);
+
+  g_object_get(copy_pattern_audio_run,
+	       "delay-audio-run", &delay_audio_run,
+	       NULL);
+
+  if(delay_audio_run == connection){
+    g_object_disconnect(G_OBJECT(delay_audio_run),
+			"sequencer-alloc-input",
+			G_CALLBACK(ags_copy_pattern_channel_run_sequencer_alloc_callback),
+			copy_pattern_channel_run,
+			NULL);
+  }
+}
+
+AgsRecall*
+ags_copy_pattern_channel_run_duplicate(AgsRecall *recall,
+				       AgsRecallID *recall_id,
+				       guint *n_params, gchar **parameter_name, GValue *value)
+{
+  AgsCopyPatternChannelRun *copy_copy_pattern_channel_run;
+
+  copy_copy_pattern_channel_run = ags_copy_pattern_channel_run_parent_class)->duplicate(recall,
+											recall_id,
+											n_params, parameter_name, value);
+
+  return(copy_copy_pattern_channel_run);
 }
 
 void
@@ -296,64 +465,54 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
   AgsChannel *source;
   AgsPattern *pattern;
   AgsNote *note;
+  AgsPort *port;
   
   AgsCopyPatternChannel *copy_pattern_channel;
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
-
-  AgsMutexManager *mutex_manager;
 
   guint pad;
   guint i, i_stop;
   
   GValue pattern_value = { 0, };  
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *source_mutex;  
   pthread_mutex_t *pattern_mutex;
   
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->run_init_pre(recall);
 
   /*  */
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
 
-  /* get AgsCopyPatternChannel */
-  copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(copy_pattern_channel_run->recall_channel_run.recall_channel);
-
-  /* get source */
-  source = AGS_RECALL_CHANNEL(copy_pattern_channel)->source;
-
-  pthread_mutex_lock(application_mutex);
-  
-  source_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  (GObject *) source);
-    
-  pthread_mutex_unlock(application_mutex);
+  g_object_get(copy_pattern_channel_run,
+	       "source", &source,
+	       "recall-channel", &copy_pattern_channel,
+	       NULL);
 
   /* get AgsPattern */
+  g_object_get(copy_pattern_channel,
+	       "pattern", &port,
+	       NULL);
+  
   g_value_init(&pattern_value, G_TYPE_POINTER);
-  ags_port_safe_read(copy_pattern_channel->pattern,
+  ags_port_safe_read(port,
 		     &pattern_value);
 
   pattern = g_value_get_pointer(&pattern_value);
 
-  pthread_mutex_lock(application_mutex);
+  g_value_unset(&pattern_value);
   
-  pattern_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) pattern);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* add note */
-  pthread_mutex_lock(source_mutex);
-  
-  pad = source->pad;
+  g_object_get(source,
+	       "pad", &pad,
+	       NULL);
 
-  pthread_mutex_unlock(source_mutex);
+  /* get pattern mutex */
+  pthread_mutex_lock(ags_pattern_get_class_mutex());
 
-  /* i stop */
+  pattern_mutex = pattern->obj_mutex;
+
+  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+
+  /* i stop */  
   pthread_mutex_lock(pattern_mutex);
 
   i_stop = pattern->dim[2];
@@ -377,61 +536,6 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
 }
 
 void
-ags_copy_pattern_channel_run_done(AgsRecall *recall)
-{
-  AgsCopyPatternChannelRun *copy_pattern_channel_run;
-  AgsCopyPatternAudioRun *copy_pattern_audio_run;
-
-  copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
-
-  /* get AgsCopyPatternAudioRun */
-  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->recall_audio_run);
-
-  /* denotify dependency */
-  ags_recall_notify_dependency(AGS_RECALL(copy_pattern_audio_run->count_beats_audio_run),
- 			       AGS_RECALL_NOTIFY_CHANNEL_RUN, -1);
-
-  g_list_free_full(copy_pattern_channel_run->note,
-		   g_object_unref);
-
-  copy_pattern_channel_run->note = NULL;
-  
-  /* call parent */
-  AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->done(recall);
-}
-
-void
-ags_copy_pattern_channel_run_cancel(AgsRecall *recall)
-{
-  AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->cancel(recall);
-}
-
-void
-ags_copy_pattern_channel_run_remove(AgsRecall *recall)
-{
-
-  AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->remove(recall);
-
-  /* empty */
-}
-
-AgsRecall*
-ags_copy_pattern_channel_run_duplicate(AgsRecall *recall,
-				       AgsRecallID *recall_id,
-				       guint *n_params, GParameter *parameter)
-{
-  AgsCopyPatternChannelRun *copy;
-
-  copy = AGS_COPY_PATTERN_CHANNEL_RUN(AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->duplicate(recall,
-													     recall_id,
-													     n_params, parameter));
-
-  /* empty */
-
-  return((AgsRecall *) copy);
-}
-
-void
 ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_audio_run,
 						      guint run_order,
 						      gdouble delay, guint attack,
@@ -440,11 +544,12 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   AgsAudio *audio;
   AgsChannel *source;
   AgsPattern *pattern;
+  AgsPort *port;
+  
   AgsCopyPatternAudio *copy_pattern_audio;
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannel *copy_pattern_channel;
-
-  AgsMutexManager *mutex_manager;
+  AgsCountBeatsAudioRun *count_beats_pattern_audio_run;
 
   guint sequencer_counter;
   gboolean current_bit;
@@ -453,59 +558,69 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   GValue i_value = { 0, };
   GValue j_value = { 0, };
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *source_mutex;
   pthread_mutex_t *pattern_mutex;
   
   if(delay != 0.0){
     return;
   }
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  g_object_get(copy_pattern_channel_run,
+	       "recall-audio", &copy_pattern_audio,
+	       "recall-audio-run", &copy_pattern_audio_run,
+	       "copy-pattern-channel", &copy_pattern_channel,
+	       NULL);
 
-  /* get AgsCopyPatternAudio */
-  copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->recall_audio_run->recall_audio);
-
-  /* get AgsCopyPatternAudioRun */
-  copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->recall_audio_run);
-
-  /* get AgsCopyPatternChannel */
-  copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(copy_pattern_channel_run->recall_channel_run.recall_channel);
-
+  g_object_get(copy_pattern_audio_run,
+	       "count-beats-audio-run", &count_beats_audio_run,
+	       NULL);
+  
+  /* get bank index 0 */
+  g_object_get(copy_pattern_audio,
+	       "bank-index-0", &port,
+	       NULL);
+  
   g_value_init(&i_value, G_TYPE_UINT64);
-  ags_port_safe_read(copy_pattern_audio->bank_index_0, &i_value);
+  ags_port_safe_read(port, &i_value);
+
+  /* get bank index 1 */
+  g_object_get(copy_pattern_audio,
+	       "bank-index-1", &port,
+	       NULL);
 
   g_value_init(&j_value, G_TYPE_UINT64);
-  ags_port_safe_read(copy_pattern_audio->bank_index_1, &j_value);
+  ags_port_safe_read(port, &j_value);
 
   /* get AgsPattern */
+  g_object_get(copy_pattern_channel,
+	       "pattern", &port,
+	       NULL);
+  
   g_value_init(&pattern_value, G_TYPE_POINTER);
-  ags_port_safe_read(copy_pattern_channel->pattern,
+  ags_port_safe_read(port,
 		     &pattern_value);
 
   pattern = g_value_get_pointer(&pattern_value);
 
-  pthread_mutex_lock(application_mutex);
+  /* get pattern mutex */
+  pthread_mutex_lock(ags_pattern_get_class_mutex());
   
-  pattern_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) pattern);
-  
-  pthread_mutex_unlock(application_mutex);
+  pattern_mutex = pattern->obj_mutex;
 
+  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+  
   /* write pattern port - current offset */
-  ags_port_safe_set_property(copy_pattern_channel->pattern,
+  ags_port_safe_set_property(pattern,
 			     "first-index", &i_value);
   g_value_unset(&i_value);
   
-  ags_port_safe_set_property(copy_pattern_channel->pattern,
+  ags_port_safe_set_property(pattern,
 			     "second-index", &j_value);
   g_value_unset(&j_value);
 
   /* get sequencer counter */
-  //FIXME:JK: check thread safety
-  sequencer_counter = copy_pattern_audio_run->count_beats_audio_run->sequencer_counter;
+  g_object_get(count_beats_audio_run,
+	       "sequencer-counter", &sequencer_counter,
+	       NULL);
   
   /* read pattern port - current bit */
   pthread_mutex_lock(pattern_mutex);
@@ -533,6 +648,8 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
     guint audio_channel;
   
     pthread_mutex_t *link_mutex;
+
+    //FIXME:JK: thread-safety
     
     //    g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u",
     //	      AGS_RECALL_CHANNEL(copy_pattern_channel)->source->line,
@@ -764,21 +881,59 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   //  }
 }
 
+
+void
+ags_copy_pattern_channel_run_done(AgsRecall *recall)
+{
+  AgsCopyPatternAudioRun *copy_pattern_audio_run;
+  AgsCopyPatternChannelRun *copy_pattern_channel_run;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
+
+  copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
+
+  /* get AgsCopyPatternAudioRun */
+  g_object_get(recall,
+	       "recall-audio-run", &copy_pattern_audio_run,
+	       NULL);
+
+  /* denotify dependency */
+  g_object_get(copy_pattern_audio_run,
+	       "count-beats-audio-run", &count_beats_audio_run,
+	       NULL);
+
+  ags_recall_notify_dependency(count_beats_audio_run,
+ 			       AGS_RECALL_NOTIFY_CHANNEL_RUN, FALSE);
+
+  /* free notes */
+  g_list_free_full(copy_pattern_channel_run->note,
+		   g_object_unref);
+
+  copy_pattern_channel_run->note = NULL;
+  
+  /* call parent */
+  AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->done(recall);
+}
+
 /**
  * ags_copy_pattern_channel_run_new:
+ * @destination: the destination #AgsChannel
+ * @source: the source #AgsChannel
  *
- * Creates an #AgsCopyPatternChannelRun
+ * Create a new instance of #AgsCopyPatternChannelRun
  *
- * Returns: a new #AgsCopyPatternChannelRun
+ * Returns: the new #AgsCopyPatternChannelRun
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsCopyPatternChannelRun*
-ags_copy_pattern_channel_run_new()
+ags_copy_pattern_channel_run_new(AgsChannel *destination,
+				 AgsChannel *source)
 {
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
 
   copy_pattern_channel_run = (AgsCopyPatternChannelRun *) g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL_RUN,
+								       "destination", destination,
+								       "channel", source,								       
 								       NULL);
 
   return(copy_pattern_channel_run);

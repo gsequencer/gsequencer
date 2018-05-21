@@ -27,6 +27,7 @@
 #include <ags/i18n.h>
 
 void ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio);
+void ags_copy_pattern_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_pattern_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio);
 void ags_copy_pattern_audio_set_property(GObject *gobject,
@@ -59,6 +60,7 @@ enum{
 };
 
 static gpointer ags_copy_pattern_audio_parent_class = NULL;
+static AgsConnectableInterface* ags_copy_pattern_audio_parent_connectable_interface;
 
 static const gchar *ags_copy_pattern_audio_plugin_name = "ags-copy-pattern";
 static const gchar *ags_copy_pattern_audio_specifier[] = {
@@ -88,6 +90,12 @@ ags_copy_pattern_audio_get_type()
       (GInstanceInitFunc) ags_copy_pattern_audio_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_copy_pattern_audio_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     static const GInterfaceInfo ags_plugin_interface_info = {
       (GInterfaceInitFunc) ags_copy_pattern_audio_plugin_interface_init,
       NULL, /* interface_finalize */
@@ -100,11 +108,21 @@ ags_copy_pattern_audio_get_type()
 							 0);
 
     g_type_add_interface_static(ags_type_copy_pattern_audio,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_copy_pattern_audio,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
   }
 
   return(ags_type_copy_pattern_audio);
+}
+
+void
+ags_copy_pattern_audio_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  ags_copy_pattern_audio_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 }
 
 void

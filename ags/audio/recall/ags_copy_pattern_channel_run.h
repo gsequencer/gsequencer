@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 
 #define AGS_TYPE_COPY_PATTERN_CHANNEL_RUN                (ags_copy_pattern_channel_run_get_type())
@@ -39,8 +40,6 @@ struct _AgsCopyPatternChannelRun
 {
   AgsRecallChannelRun recall_channel_run;
 
-  gulong sequencer_alloc_handler;
-
   GList *note;
 };
 
@@ -51,6 +50,7 @@ struct _AgsCopyPatternChannelRunClass
 
 GType ags_copy_pattern_channel_run_get_type();
 
-AgsCopyPatternChannelRun* ags_copy_pattern_channel_run_new();
+AgsCopyPatternChannelRun* ags_copy_pattern_channel_run_new(AgsChannel *destination,
+							   AgsChannel *source);
 
 #endif /*__AGS_COPY_PATTERN_CHANNEL_RUN_H__*/
