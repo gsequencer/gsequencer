@@ -396,8 +396,6 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
     return;
   }
 
-  //FIXME:JK: attack probably needs to be removed
-
   if(destination == NULL){
     g_warning("no destination");
     
@@ -417,16 +415,16 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
 	       "recall-channel", &copy_channel_run,
 	       NULL);
   
-  /*  */
+  /* check muted */
   g_object_get(copy_channel,
 	       "muted", &port,
 	       NULL);
   
-  g_value_init(&value, G_TYPE_BOOLEAN);
+  g_value_init(&value, G_TYPE_FLOAT);
   ags_port_safe_read(port,
 		     &value);
 
-  is_muted = g_value_get_boolean(&value);
+  is_muted = (g_value_get_float(&value) == 0.0) ? TRUE: FALSE;  
   g_value_unset(&value);
 
   if(is_muted){
@@ -434,7 +432,6 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
   }
 
   stream_destination = destination->stream;
-  //  attack = AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->attack;
 
   if(!ags_recall_global_rt_safe &&
      stream_destination->next == NULL){

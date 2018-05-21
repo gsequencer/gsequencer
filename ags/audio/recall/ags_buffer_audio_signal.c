@@ -35,11 +35,11 @@ void ags_buffer_audio_signal_connectable_interface_init(AgsConnectableInterface 
 void ags_buffer_audio_signal_init(AgsBufferAudioSignal *buffer_audio_signal);
 void ags_buffer_audio_signal_finalize(GObject *gobject);
 
-void ags_buffer_audio_signal_run_init_pre(AgsRecall *recall);
-void ags_buffer_audio_signal_run_inter(AgsRecall *recall);
 AgsRecall* ags_buffer_audio_signal_duplicate(AgsRecall *recall,
 					     AgsRecallID *recall_id,
 					     guint *n_params, gchar **parameter_name, GValue *value);
+void ags_buffer_audio_signal_run_init_pre(AgsRecall *recall);
+void ags_buffer_audio_signal_run_inter(AgsRecall *recall);
 
 /**
  * SECTION:ags_buffer_audio_signal
@@ -129,6 +129,20 @@ ags_buffer_audio_signal_finalize(GObject *gobject)
 {
   /* call parent */
   G_OBJECT_CLASS(ags_buffer_audio_signal_parent_class)->finalize(gobject); 
+}
+
+AgsRecall*
+ags_buffer_audio_signal_duplicate(AgsRecall *recall,
+				  AgsRecallID *recall_id,
+				  guint *n_params, gchar **parameter_name, GValue *value)
+{
+  AgsBufferAudioSignal *buffer;
+
+  buffer = (AgsBufferAudioSignal *) AGS_RECALL_CLASS(ags_buffer_audio_signal_parent_class)->duplicate(recall,
+												      recall_id,
+												      n_params, parameter_name, value);
+  
+  return((AgsRecall *) buffer);
 }
 
 void
@@ -290,18 +304,16 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   stream_source = source->stream_current;
 
   if(stream_source == NULL){
-    //    if((AGS_RECALL_PERSISTENT & (recall->flags)) == 0){
-      ags_recall_done(recall);
-      //    }
+    ags_recall_done(recall);
 
     return;
   }
 
+  /* check muted */
   g_object_get(buffer_channel,
 	       "muted", &muted,
 	       NULL);
   
-  //FIXME:JK: attack probably needs to be removed
   g_value_init(&value, G_TYPE_FLOAT);
   ags_port_safe_read(muted,
 		     &value);
@@ -393,20 +405,6 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
       free(buffer_source);
     }
   }
-}
-
-AgsRecall*
-ags_buffer_audio_signal_duplicate(AgsRecall *recall,
-				  AgsRecallID *recall_id,
-				  guint *n_params, gchar **parameter_name, GValue *value)
-{
-  AgsBufferAudioSignal *buffer;
-
-  buffer = (AgsBufferAudioSignal *) AGS_RECALL_CLASS(ags_buffer_audio_signal_parent_class)->duplicate(recall,
-												      recall_id,
-												      n_params, parameter_name, value);
-  
-  return((AgsRecall *) buffer);
 }
 
 /**

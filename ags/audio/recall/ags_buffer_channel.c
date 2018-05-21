@@ -374,7 +374,7 @@ ags_buffer_channel_set_muted(AgsMutable *mutable, gboolean is_muted)
 	       "muted", &muted,
 	       NULL);
   
-  G_value_init(&value, G_TYPE_FLOAT);
+  g_value_init(&value, G_TYPE_FLOAT);
   g_value_set_float(&value, (float) is_muted);
 
   ags_port_safe_write(muted, &value);

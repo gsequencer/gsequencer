@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,8 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_port.h>
+#include <ags/audio/ags_recall_channel.h>
 
 #define AGS_TYPE_COPY_CHANNEL                (ags_copy_channel_get_type())
 #define AGS_COPY_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_COPY_CHANNEL, AgsCopyChannel))
