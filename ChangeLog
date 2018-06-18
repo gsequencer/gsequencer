@@ -3,6 +3,8 @@ ags (1.4.32)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* reworked CoreAudio output
 	* fixed wrong loop condition in ags_apply_presets.c
+	* fixed unsafe reference count in ags_audio.c and ags_channel.c
+	* fixed wrong reference count in ags_recycling_context.c
 
 ags (1.4.31)
 

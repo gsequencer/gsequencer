@@ -4227,8 +4227,10 @@ ags_audio_remove_audio_connection(AgsAudio *audio,
   /* remove audio connection */
   pthread_mutex_lock(mutex);
 
-  audio->audio_connection = g_list_remove(audio->audio_connection, audio_connection);
-  g_object_unref(audio_connection);
+  if(g_list_find(audio->audio_connection, audio_connection) != NULL){
+    audio->audio_connection = g_list_remove(audio->audio_connection, audio_connection);
+    g_object_unref(audio_connection);
+  }
   
   pthread_mutex_unlock(mutex);
 }
@@ -4303,8 +4305,10 @@ ags_audio_remove_preset(AgsAudio *audio,
   /* remove preset */
   pthread_mutex_lock(mutex);
 
-  audio->preset = g_list_remove(audio->preset, preset);
-  g_object_unref(preset);
+  if(g_list_find(audio->preset, preset) != NULL){
+    audio->preset = g_list_remove(audio->preset, preset);
+    g_object_unref(preset);
+  }
   
   pthread_mutex_unlock(mutex);
 }
@@ -4377,13 +4381,15 @@ ags_audio_remove_notation(AgsAudio *audio, GObject *notation)
   /* remove recall id */
   pthread_mutex_lock(mutex);
 
-  audio->notation = g_list_remove(audio->notation,
-				  notation);
-  g_object_set(notation,
-	       "audio", NULL,
-	       NULL);
-  
-  g_object_unref(notation);
+  if(g_list_find(audio->notation, notation) != NULL){
+    audio->notation = g_list_remove(audio->notation,
+				    notation);
+    g_object_set(notation,
+		 "audio", NULL,
+		 NULL);
+    
+    g_object_unref(notation);
+  }
   
   pthread_mutex_unlock(mutex);
 }
@@ -4457,8 +4463,10 @@ ags_audio_remove_automation(AgsAudio *audio, GObject *automation)
   /* remove recall id */
   pthread_mutex_lock(mutex);
 
-  audio->automation = g_list_remove(audio->automation, automation);
-  g_object_unref(automation);
+  if(g_list_find(audio->automation, automation) != NULL){
+    audio->automation = g_list_remove(audio->automation, automation);
+    g_object_unref(automation);
+  }
   
   pthread_mutex_unlock(mutex);
 }
@@ -4531,8 +4539,10 @@ ags_audio_remove_wave(AgsAudio *audio, GObject *wave)
   /* remove recall id */
   pthread_mutex_lock(mutex);
 
-  audio->wave = g_list_remove(audio->wave, wave);
-  g_object_unref(wave);
+  if(g_list_find(audio->wave, wave) != NULL){
+    audio->wave = g_list_remove(audio->wave, wave);
+    g_object_unref(wave);
+  }
   
   pthread_mutex_unlock(mutex);
 }
@@ -4771,8 +4781,10 @@ ags_audio_remove_recall_container(AgsAudio *audio, GObject *recall_container)
   /* remove recall container */
   pthread_mutex_lock(mutex);
 
-  audio->container = g_list_remove(audio->container, recall_container);
-  g_object_unref(recall_container);
+  if(g_list_find(audio->container, recall_container) != NULL){
+    audio->container = g_list_remove(audio->container, recall_container);
+    g_object_unref(recall_container);
+  }
   
   pthread_mutex_unlock(mutex);
 }
@@ -4835,18 +4847,22 @@ ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play)
   if(play){
     pthread_mutex_lock(audio->play_mutex);
 
-    audio->play = g_list_remove(audio->play, recall);
-
+    if(g_list_find(audio->play, recall) != NULL){
+      audio->play = g_list_remove(audio->play, recall);
+      g_object_unref(G_OBJECT(recall));
+    }
+    
     pthread_mutex_unlock(audio->play_mutex);
   }else{
     pthread_mutex_lock(audio->recall_mutex);
 
-    audio->recall = g_list_remove(audio->recall, recall);
-
+    if(g_list_find(audio->recall, recall) != NULL){
+      audio->recall = g_list_remove(audio->recall, recall);
+      g_object_unref(G_OBJECT(recall));
+    }
+    
     pthread_mutex_unlock(audio->recall_mutex);
   }
-
-  g_object_unref(G_OBJECT(recall));
 }
 
 /**

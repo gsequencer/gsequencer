@@ -410,7 +410,15 @@ ags_recycling_context_replace(AgsRecyclingContext *recycling_context,
     return;
   }
 
+  if(recycling_context->recycling[position] != NULL){
+    g_object_unref(recycling_context->recycling[position]);
+  }
+  
   recycling_context->recycling[position] = recycling;
+
+  if(recycling != NULL){
+    g_object_ref(recycling);
+  }
   
   pthread_mutex_unlock(recycling_context->mutex);
 }

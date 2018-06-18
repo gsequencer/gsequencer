@@ -2742,10 +2742,12 @@ ags_channel_remove_remote_channel(AgsChannel *channel, GObject *remote_channel)
   /* remove recall id */    
   pthread_mutex_lock(mutex);
 
-  channel->remote_channel = g_list_remove(channel->remote_channel,
-				     remote_channel);
-  g_object_unref(G_OBJECT(remote_channel));
-
+  if(g_list_find(channel->remote_channel, remote_channel) != NULL){
+    channel->remote_channel = g_list_remove(channel->remote_channel,
+					    remote_channel);
+    g_object_unref(G_OBJECT(remote_channel));
+  }
+    
   pthread_mutex_unlock(mutex);
 }
 
@@ -2914,8 +2916,10 @@ ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_contain
   /* remove recall container */    
   pthread_mutex_lock(mutex);
 
-  channel->container = g_list_remove(channel->container, recall_container);
-  g_object_unref(G_OBJECT(recall_container));
+  if(g_list_find(channel->container, recall_container) != NULL){
+    channel->container = g_list_remove(channel->container, recall_container);
+    g_object_unref(G_OBJECT(recall_container));
+  }
   
   pthread_mutex_unlock(mutex);
 }
@@ -2977,18 +2981,22 @@ ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play)
   if(play){
     pthread_mutex_lock(channel->play_mutex);
 
-    channel->play = g_list_remove(channel->play, recall);
-
+    if(g_list_find(channel->play, recall) != NULL){
+      channel->play = g_list_remove(channel->play, recall);
+      g_object_unref(G_OBJECT(recall));
+    }
+    
     pthread_mutex_unlock(channel->play_mutex);
   }else{
     pthread_mutex_lock(channel->recall_mutex);
 
-    channel->recall = g_list_remove(channel->recall, recall);
+    if(g_list_find(channel->recall, recall) != NULL){
+      channel->recall = g_list_remove(channel->recall, recall);
+      g_object_unref(G_OBJECT(recall));
+    }
 
     pthread_mutex_unlock(channel->recall_mutex);
   }
-
-  g_object_unref(G_OBJECT(recall));
 }
 
 /**
@@ -3068,9 +3076,11 @@ ags_channel_remove_pattern(AgsChannel *channel, GObject *pattern)
   /* remove pattern */
   pthread_mutex_lock(mutex);
 
-  channel->pattern = g_list_remove(channel->pattern, pattern);
-  g_object_unref(G_OBJECT(pattern));
-
+  if(g_list_find(channel->pattern, pattern) != NULL){
+    channel->pattern = g_list_remove(channel->pattern, pattern);
+    g_object_unref(G_OBJECT(pattern));
+  }
+  
   pthread_mutex_unlock(mutex);
 }
 
