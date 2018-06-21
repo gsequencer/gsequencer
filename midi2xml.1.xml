@@ -34,7 +34,7 @@
       <command>/usr/bin/midi2xml</command>
       <arg>--help</arg>
       <arg>--version</arg>
-      <arg>file</arg>
+      <arg choice="plain"><replaceable>file</replaceable></arg>
     </cmdsynopsis>
   </refsynopsisdiv>
 

@@ -36,7 +36,7 @@
       <arg>--version</arg>
       <arg>--single-thread</arg>
       <arg>--no-builtin-theme</arg>
-      <arg rep='repeat'>--filename <replaceable>file</replaceable></arg>
+      <arg>--filename <replaceable>file</replaceable></arg>
     </cmdsynopsis>
   </refsynopsisdiv>
   
