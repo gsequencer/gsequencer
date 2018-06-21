@@ -19,6 +19,8 @@
 
 #include <ags/audio/task/ags_seek_soundcard.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_audio.h>
 
 #include <ags/i18n.h>
@@ -349,17 +351,17 @@ ags_seek_soundcard_launch(AgsTask *task)
   pthread_mutex_lock(application_mutex);
 
   soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) soundcard);
+					     G_OBJECT(soundcard));
 
   pthread_mutex_unlock(application_mutex);
 
   /* seek audio */
-  pthread_mutex_lock(soundcard);
+  pthread_mutex_lock(soundcard_mutex);
 
   audio =
     audio_start = g_list_copy(ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard)));
 
-  pthread_mutex_unlock(soundcard);
+  pthread_mutex_unlock(soundcard_mutex);
 
   while(audio != NULL){
     /* get audio mutex */
@@ -370,7 +372,7 @@ ags_seek_soundcard_launch(AgsTask *task)
 
     pthread_mutex_unlock(application_mutex);
 
-    /* seek recall */
+    /* seek play */
     pthread_mutex_lock(audio_mutex);
     
     recall = AGS_AUDIO(audio->data)->play;
@@ -387,13 +389,30 @@ ags_seek_soundcard_launch(AgsTask *task)
 
     pthread_mutex_unlock(audio_mutex);
 
+    /* seek recall */
+    pthread_mutex_lock(audio_mutex);
+    
+    recall = AGS_AUDIO(audio->data)->recall;
+
+    while(recall != NULL){
+      if(AGS_IS_SEEKABLE(recall->data)){
+	ags_seekable_seek(AGS_SEEKABLE(recall->data),
+			  seek_soundcard->steps,
+			  seek_soundcard->move_forward);
+      }
+
+      recall = recall->next;
+    }
+
+    pthread_mutex_unlock(audio_mutex);
+    
     audio = audio->next;
   }
 
   g_list_free(audio_start);
 
   /* seek soundcard */
-  pthread_mutex_lock(soundcard);
+  pthread_mutex_lock(soundcard_mutex);
 
   note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(seek_soundcard->soundcard));
   note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(seek_soundcard->soundcard));
@@ -420,7 +439,7 @@ ags_seek_soundcard_launch(AgsTask *task)
     }
   }
 
-  pthread_mutex_unlock(soundcard);
+  pthread_mutex_unlock(soundcard_mutex);
 }
 
 /**
