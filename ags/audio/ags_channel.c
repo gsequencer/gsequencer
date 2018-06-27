@@ -155,7 +155,7 @@ static gpointer ags_channel_parent_class = NULL;
 static guint channel_signals[LAST_SIGNAL];
 
 GType
-ags_channel_get_type (void)
+ags_channel_get_type()
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
@@ -163,13 +163,13 @@ ags_channel_get_type (void)
     GType ags_type_channel;
     
     static const GTypeInfo ags_channel_info = {
-      sizeof (AgsChannelClass),
+      sizeof(AgsChannelClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_channel_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsChannel),
+      sizeof(AgsChannel),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_channel_init,
     };

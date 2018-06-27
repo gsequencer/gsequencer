@@ -55,19 +55,21 @@ enum{
 };
 
 GType
-ags_connection_get_type (void)
+ags_connection_get_type()
 {
-  static GType ags_type_connection = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_connection){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_connection;
+    
     static const GTypeInfo ags_connection_info = {
-      sizeof (AgsConnectionClass),
+      sizeof(AgsConnectionClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_connection_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsConnection),
+      sizeof(AgsConnection),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_connection_init,
     };
@@ -76,9 +78,11 @@ ags_connection_get_type (void)
 						 "AgsConnection",
 						 &ags_connection_info,
 						 0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_connection);
   }
 
-  return (ags_type_connection);
+  return g_define_type_id__volatile;
 }
 
 void

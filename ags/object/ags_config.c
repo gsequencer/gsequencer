@@ -94,19 +94,21 @@ static guint config_signals[LAST_SIGNAL];
 AgsConfig *ags_config = NULL;
 
 GType
-ags_config_get_type (void)
+ags_config_get_type()
 {
-  static GType ags_type_config = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_config){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_config;
+    
     static const GTypeInfo ags_config_info = {
-      sizeof (AgsConfigClass),
+      sizeof(AgsConfigClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_config_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsConfig),
+      sizeof(AgsConfig),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_config_init,
     };
@@ -117,7 +119,6 @@ ags_config_get_type (void)
       NULL, /* interface_data */
     };
 
-
     ags_type_config = g_type_register_static(G_TYPE_OBJECT,
 					     "AgsConfig",
 					     &ags_config_info,
@@ -126,9 +127,11 @@ ags_config_get_type (void)
     g_type_add_interface_static(ags_type_config,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_config);
   }
 
-  return(ags_type_config);
+  return g_define_type_id__volatile;
 }
 
 void

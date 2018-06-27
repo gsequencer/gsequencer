@@ -48,17 +48,21 @@ static guint main_loop_signals[LAST_SIGNAL];
 GType
 ags_main_loop_get_type()
 {
-  static GType main_loop_type = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!main_loop_type){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType main_loop_type;
+    
     main_loop_type = g_type_register_static_simple(G_TYPE_INTERFACE,
 						   "AgsMainLoop",
 						   sizeof (AgsMainLoopInterface),
 						   (GClassInitFunc) ags_main_loop_class_init,
 						   0, NULL, 0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_main_loop);
   }
-  
-  return(main_loop_type);
+
+  return g_define_type_id__volatile;
 }
 
 void

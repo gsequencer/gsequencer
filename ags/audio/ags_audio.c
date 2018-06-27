@@ -145,7 +145,7 @@ static gpointer ags_audio_parent_class = NULL;
 static guint audio_signals[LAST_SIGNAL];
 
 GType
-ags_audio_get_type (void)
+ags_audio_get_type()
 {
   static volatile gsize g_define_type_id__volatile = 0;
 

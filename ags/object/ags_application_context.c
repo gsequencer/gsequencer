@@ -98,17 +98,19 @@ AgsApplicationContext *ags_application_context = NULL;
 GType
 ags_application_context_get_type()
 {
-  static GType ags_type_application_context = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_application_context){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_application_context;
+    
     static const GTypeInfo ags_application_context_info = {
-      sizeof (AgsApplicationContextClass),
+      sizeof(AgsApplicationContextClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_application_context_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsApplicationContext),
+      sizeof(AgsApplicationContext),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_application_context_init,
     };
@@ -127,9 +129,11 @@ ags_application_context_get_type()
     g_type_add_interface_static(ags_type_application_context,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_application_context);
   }
 
-  return (ags_type_application_context);
+  return g_define_type_id__volatile;
 }
 
 void

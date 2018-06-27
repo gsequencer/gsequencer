@@ -129,19 +129,21 @@ static gpointer ags_function_parent_class = NULL;
 static pthread_mutex_t regex_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
-ags_function_get_type(void)
+ags_function_get_type()
 {
-  static GType ags_type_function = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_function){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_function;
+    
     static const GTypeInfo ags_function_info = {
-      sizeof (AgsFunctionClass),
+      sizeof(AgsFunctionClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_function_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsFunction),
+      sizeof(AgsFunction),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_function_init,
     };
@@ -150,9 +152,11 @@ ags_function_get_type(void)
 					       "AgsFunction",
 					       &ags_function_info,
 					       0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_function);
   }
 
-  return (ags_type_function);
+  return g_define_type_id__volatile;
 }
 
 void

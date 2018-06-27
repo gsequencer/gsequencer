@@ -156,7 +156,7 @@ static gpointer ags_recall_parent_class = NULL;
 static guint recall_signals[LAST_SIGNAL];
 
 GType
-ags_recall_get_type (void)
+ags_recall_get_type()
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
@@ -164,13 +164,13 @@ ags_recall_get_type (void)
     GType ags_type_recall;
     
     static const GTypeInfo ags_recall_info = {
-      sizeof (AgsRecallClass),
+      sizeof(AgsRecallClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_recall_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsRecall),
+      sizeof(AgsRecall),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_recall_init,
     };

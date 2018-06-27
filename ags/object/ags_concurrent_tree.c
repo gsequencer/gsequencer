@@ -37,9 +37,11 @@ void ags_concurrent_tree_base_init(AgsConcurrentTreeInterface *interface);
 GType
 ags_concurrent_tree_get_type()
 {
-  static GType ags_type_concurrent_tree = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_concurrent_tree){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_concurrent_tree;
+    
     static const GTypeInfo ags_concurrent_tree_info = {
       sizeof(AgsConcurrentTreeInterface),
       (GBaseInitFunc) ags_concurrent_tree_base_init,
@@ -49,9 +51,11 @@ ags_concurrent_tree_get_type()
     ags_type_concurrent_tree = g_type_register_static(G_TYPE_INTERFACE,
 						      "AgsConcurrentTree", &ags_concurrent_tree_info,
 						      0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_concurrent_tree);
   }
 
-  return(ags_type_concurrent_tree);
+  return g_define_type_id__volatile;
 }
 
 void

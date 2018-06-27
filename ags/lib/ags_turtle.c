@@ -73,19 +73,21 @@ static gpointer ags_turtle_parent_class = NULL;
 static pthread_mutex_t regex_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
-ags_turtle_get_type(void)
+ags_turtle_get_type()
 {
-  static GType ags_type_turtle = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_turtle){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_turtle;
+    
     static const GTypeInfo ags_turtle_info = {
-      sizeof (AgsTurtleClass),
+      sizeof(AgsTurtleClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_turtle_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsTurtle),
+      sizeof(AgsTurtle),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_turtle_init,
     };
@@ -94,9 +96,11 @@ ags_turtle_get_type(void)
 					     "AgsTurtle",
 					     &ags_turtle_info,
 					     0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_turtle);
   }
 
-  return (ags_type_turtle);
+  return g_define_type_id__volatile;
 }
 
 void

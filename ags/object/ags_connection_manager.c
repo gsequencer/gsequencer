@@ -41,30 +41,34 @@ static gpointer ags_connection_manager_parent_class = NULL;
 AgsConnectionManager *ags_connection_manager = NULL;
 
 GType
-ags_connection_manager_get_type (void)
+ags_connection_manager_get_type()
 {
-  static GType ags_type_connection_manager = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_connection_manager){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_connection_manager;
+    
     static const GTypeInfo ags_connection_manager_info = {
-      sizeof (AgsConnectionManagerClass),
+      sizeof(AgsConnectionManagerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_connection_manager_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsConnectionManager),
+      sizeof(AgsConnectionManager),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_connection_manager_init,
     };
 
     ags_type_connection_manager = g_type_register_static(G_TYPE_OBJECT,
-						  "AgsConnectionManager",
-						  &ags_connection_manager_info,
-						  0);
+							 "AgsConnectionManager",
+							 &ags_connection_manager_info,
+							 0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_connection_manager);
   }
 
-  return (ags_type_connection_manager);
+  return g_define_type_id__volatile;
 }
 
 void

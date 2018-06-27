@@ -34,17 +34,21 @@ void ags_distributed_manager_class_init(AgsDistributedManagerInterface *interfac
 GType
 ags_distributed_manager_get_type()
 {
-  static GType ags_type_distributed_manager = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_distributed_manager){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_distributed_manager;
+    
     ags_type_distributed_manager = g_type_register_static_simple(G_TYPE_INTERFACE,
 								 "AgsDistributedManager",
 								 sizeof(AgsDistributedManagerInterface),
 								 (GClassInitFunc) ags_distributed_manager_class_init,
 								 0, NULL, 0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_distributed_manager);
   }
 
-  return(ags_type_distributed_manager);
+  return g_define_type_id__volatile;
 }
 
 void

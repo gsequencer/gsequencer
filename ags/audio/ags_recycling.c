@@ -84,7 +84,7 @@ static gpointer ags_recycling_parent_class = NULL;
 static guint recycling_signals[LAST_SIGNAL];
 
 GType
-ags_recycling_get_type(void)
+ags_recycling_get_type()
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
@@ -92,13 +92,13 @@ ags_recycling_get_type(void)
     GType ags_type_recycling;
     
     static const GTypeInfo ags_recycling_info = {
-      sizeof (AgsRecyclingClass),
+      sizeof(AgsRecyclingClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_recycling_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsRecycling),
+      sizeof(AgsRecycling),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_recycling_init,
     };

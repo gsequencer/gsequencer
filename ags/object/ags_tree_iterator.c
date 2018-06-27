@@ -36,9 +36,11 @@ void ags_tree_iterator_base_init(AgsTreeIteratorInterface *interface);
 GType
 ags_tree_iterator_get_type()
 {
-  static GType ags_type_tree_iterator = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_tree_iterator){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_tree_iterator;
+
     static const GTypeInfo ags_tree_iterator_info = {
       sizeof(AgsTreeIteratorInterface),
       (GBaseInitFunc) ags_tree_iterator_base_init,
@@ -48,9 +50,11 @@ ags_tree_iterator_get_type()
     ags_type_tree_iterator = g_type_register_static(G_TYPE_INTERFACE,
 						 "AgsTreeIterator", &ags_tree_iterator_info,
 						 0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_tree_iterator);
   }
 
-  return(ags_type_tree_iterator);
+  return g_define_type_id__volatile;
 }
 
 void

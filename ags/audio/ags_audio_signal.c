@@ -102,7 +102,7 @@ static gpointer ags_audio_signal_parent_class = NULL;
 static guint audio_signal_signals[LAST_SIGNAL];
 
 GType
-ags_audio_signal_get_type(void)
+ags_audio_signal_get_type()
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
@@ -110,13 +110,13 @@ ags_audio_signal_get_type(void)
     GType ags_type_audio_signal;
 
     static const GTypeInfo ags_audio_signal_info = {
-      sizeof (AgsAudioSignalClass),
+      sizeof(AgsAudioSignalClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_audio_signal_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsAudioSignal),
+      sizeof(AgsAudioSignal),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_audio_signal_init,
     };

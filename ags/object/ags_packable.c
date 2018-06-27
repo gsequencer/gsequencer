@@ -34,9 +34,11 @@ void ags_packable_base_init(AgsPackableInterface *interface);
 GType
 ags_packable_get_type()
 {
-  static GType ags_type_packable = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_packable){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_packable;
+
     static const GTypeInfo ags_packable_info = {
       sizeof(AgsPackableInterface),
       (GBaseInitFunc) ags_packable_base_init,
@@ -46,9 +48,11 @@ ags_packable_get_type()
     ags_type_packable = g_type_register_static(G_TYPE_INTERFACE,
 					       "AgsPackable", &ags_packable_info,
 					       0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_packable);
   }
 
-  return(ags_type_packable);
+  return g_define_type_id__volatile;
 }
 
 void

@@ -45,17 +45,21 @@ static guint soundcard_signals[LAST_SIGNAL];
 GType
 ags_soundcard_get_type()
 {
-  static GType ags_type_soundcard = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_soundcard){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_soundcard;
+    
     ags_type_soundcard = g_type_register_static_simple(G_TYPE_INTERFACE,
 						       "AgsSoundcard",
 						       sizeof(AgsSoundcardInterface),
 						       (GClassInitFunc) ags_soundcard_class_init,
 						       0, NULL, 0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_soundcard);
   }
 
-  return(ags_type_soundcard);
+  return g_define_type_id__volatile;
 }
 
 GQuark

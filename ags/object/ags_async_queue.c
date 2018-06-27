@@ -37,9 +37,11 @@ void ags_async_queue_base_init(AgsAsyncQueueInterface *interface);
 GType
 ags_async_queue_get_type()
 {
-  static GType ags_type_async_queue = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_async_queue){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_async_queue;
+    
     static const GTypeInfo ags_async_queue_info = {
       sizeof(AgsAsyncQueueInterface),
       (GBaseInitFunc) ags_async_queue_base_init,
@@ -49,9 +51,11 @@ ags_async_queue_get_type()
     ags_type_async_queue = g_type_register_static(G_TYPE_INTERFACE,
 						  "AgsAsyncQueue", &ags_async_queue_info,
 						  0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_async_queue);
   }
 
-  return(ags_type_async_queue);
+  return g_define_type_id__volatile;
 }
 
 void
