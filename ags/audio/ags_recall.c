@@ -158,9 +158,11 @@ static guint recall_signals[LAST_SIGNAL];
 GType
 ags_recall_get_type (void)
 {
-  static GType ags_type_recall = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_recall){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_recall;
+    
     static const GTypeInfo ags_recall_info = {
       sizeof (AgsRecallClass),
       NULL, /* base_init */
@@ -217,9 +219,11 @@ ags_recall_get_type (void)
     g_type_add_interface_static(ags_type_recall,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_recall);
   }
 
-  return(ags_type_recall);
+  return g_define_type_id__volatile;
 }
 
 void

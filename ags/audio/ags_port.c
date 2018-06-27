@@ -19,9 +19,12 @@
 
 #include <ags/audio/ags_port.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
 
-#include <ags/object/ags_marshal.h>
+#include <pthread.h>
+
+#include <stdlib.h>
+#include <string.h>
 
 #include <ags/i18n.h>
 
@@ -78,15 +81,14 @@ enum{
 static gpointer ags_port_parent_class = NULL;
 static guint port_signals[LAST_SIGNAL];
 
-#include <stdlib.h>
-#include <string.h>
-
 GType
 ags_port_get_type (void)
 {
-  static GType ags_type_port = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_port){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_port;
+    
     static const GTypeInfo ags_port_info = {
       sizeof (AgsPortClass),
       NULL, /* base_init */
@@ -113,9 +115,11 @@ ags_port_get_type (void)
     g_type_add_interface_static(ags_type_port,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_port);
   }
 
-  return(ags_type_port);
+  return g_define_type_id__volatile;
 }
 
 void

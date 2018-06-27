@@ -1,3 +1,10 @@
+ags (1.4.33)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing includes of pthread.h
+	* fixed ags_{audio,channel,recycling,audio_signal}_get_type() to use atomic operations
+	* TODO:JK: fixed ags_{recall,recall_audio,recall_audio_run,recall_channel,recall_channel_run,recall_recycling,recall_audio_signal}_get_type()
+
 ags (1.4.32)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
