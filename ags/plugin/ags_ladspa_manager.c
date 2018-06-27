@@ -33,6 +33,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <pthread.h>
+
 #include <ladspa.h>
 
 #include <ags/config.h>

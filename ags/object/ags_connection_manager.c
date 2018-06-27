@@ -19,6 +19,8 @@
 
 #include <ags/object/ags_connection_manager.h>
 
+#include <pthread.h>
+
 void ags_connection_manager_class_init(AgsConnectionManagerClass *connection_manager);
 void ags_connection_manager_init (AgsConnectionManager *connection_manager);
 void ags_connection_manager_dispose(GObject *gobject);

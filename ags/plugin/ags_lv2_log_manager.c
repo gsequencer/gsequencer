@@ -19,7 +19,7 @@
 
 #include <ags/plugin/ags_lv2_log_manager.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
 
 void ags_lv2_log_manager_class_init(AgsLv2LogManagerClass *lv2_log_manager);
 void ags_lv2_log_manager_connectable_interface_init(AgsConnectableInterface *connectable);

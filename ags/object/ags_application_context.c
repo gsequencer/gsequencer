@@ -32,6 +32,8 @@
 #include <string.h>
 #include <pwd.h>
 
+#include <pthread.h>
+
 #include <ags/i18n.h>
 
 void ags_application_context_class_init(AgsApplicationContextClass *application_context);

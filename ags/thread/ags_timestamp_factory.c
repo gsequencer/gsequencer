@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_marshal.h>
 
+#include <pthread.h>
+
 void ags_timestamp_factory_class_init(AgsTimestampFactoryClass *timestamp_factory);
 void ags_timestamp_factory_init (AgsTimestampFactory *timestamp_factory);
 void ags_timestamp_factory_finalize(GObject *gobject);

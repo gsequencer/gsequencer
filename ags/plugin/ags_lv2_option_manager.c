@@ -19,11 +19,12 @@
 
 #include <ags/plugin/ags_lv2_option_manager.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_marshal.h>
+#include <ags/libags.h>
 
 #include <stdlib.h>
 #include <string.h>
+
+#include <pthread.h>
 
 void ags_lv2_option_manager_class_init(AgsLv2OptionManagerClass *lv2_option_manager);
 void ags_lv2_option_manager_connectable_interface_init(AgsConnectableInterface *connectable);

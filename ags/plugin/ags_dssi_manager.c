@@ -35,6 +35,8 @@
 
 #include <string.h>
 
+#include <pthread.h>
+
 #include <dssi.h>
 
 #include <ags/config.h>

@@ -19,7 +19,9 @@
 
 #include <ags/plugin/ags_plugin_factory.h>
 
-#include <ags/object/ags_marshal.h>
+#include <ags/libags.h>
+
+#include <pthread.h>
 
 void ags_plugin_factory_class_init(AgsPluginFactoryClass *plugin_factory);
 void ags_plugin_factory_init (AgsPluginFactory *plugin_factory);

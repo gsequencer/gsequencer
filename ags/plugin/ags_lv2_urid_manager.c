@@ -19,7 +19,9 @@
 
 #include <ags/plugin/ags_lv2_urid_manager.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
+
+#include <pthread.h>
 
 void ags_lv2_urid_manager_class_init(AgsLv2UridManagerClass *lv2_urid_manager);
 void ags_lv2_urid_manager_connectable_interface_init(AgsConnectableInterface *connectable);

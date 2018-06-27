@@ -34,6 +34,8 @@
 
 #include <string.h>
 
+#include <pthread.h>
+
 #include <ags/config.h>
 
 void ags_lv2_manager_class_init(AgsLv2ManagerClass *lv2_manager);

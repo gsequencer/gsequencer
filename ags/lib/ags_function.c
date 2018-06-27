@@ -22,6 +22,7 @@
 #include <stdlib.h>
 
 #include <regex.h>
+#include <pthread.h>
 
 #include <ags/i18n.h>
 

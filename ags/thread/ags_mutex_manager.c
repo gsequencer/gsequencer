@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_connectable.h>
 
+#include <pthread.h>
+
 void ags_mutex_manager_class_init(AgsMutexManagerClass *mutex_manager);
 void ags_mutex_manager_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_mutex_manager_init(AgsMutexManager *mutex_manager);

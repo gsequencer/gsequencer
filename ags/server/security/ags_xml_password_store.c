@@ -22,10 +22,12 @@
 #include <ags/server/security/ags_password_store.h>
 
 #include <unistd.h>
-#ifndef __APPLE__
+
+#if !defined(__APPLE__) && !defined(_WIN32) && !defined(_WIN64) && !defined(__MSYS__)
 #define __USE_GNU
 #define _GNU_SOURCE
 #include <crypt.h>
+#endif
 #endif
 
 #include <libxml/parser.h>
@@ -221,7 +223,7 @@ ags_xml_password_store_encrypt_password(AgsPasswordStore *password_store,
 
   gchar *password_hash;
   
-#ifndef __APPLE__
+#if !defined(__APPLE__) && !defined(_WIN32) && !defined(_WIN64) && !defined(__MSYS__)
   data = (struct crypt_data *) malloc(sizeof(struct crypt_data));
   data->initialized = 0;
 

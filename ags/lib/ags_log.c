@@ -21,6 +21,8 @@
 
 #include <stdlib.h>
 
+#include <pthread.h>
+
 void ags_log_class_init(AgsLogClass *log);
 void ags_log_init (AgsLog *log);
 void ags_log_finalize(GObject *gobject);

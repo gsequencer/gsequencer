@@ -19,7 +19,9 @@
 
 #include <ags/plugin/ags_lv2_uri_map_manager.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
+
+#include <pthread.h>
 
 void ags_lv2_uri_map_manager_class_init(AgsLv2UriMapManagerClass *lv2_uri_map_manager);
 void ags_lv2_uri_map_manager_connectable_interface_init(AgsConnectableInterface *connectable);

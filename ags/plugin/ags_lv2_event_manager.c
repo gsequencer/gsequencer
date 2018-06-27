@@ -19,9 +19,7 @@
 
 #include <ags/plugin/ags_lv2_event_manager.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/thread/ags_returnable_thread.h>
+#include <ags/libags.h>
 
 void ags_lv2_event_manager_class_init(AgsLv2EventManagerClass *lv2_event_manager);
 void ags_lv2_event_manager_connectable_interface_init(AgsConnectableInterface *connectable);

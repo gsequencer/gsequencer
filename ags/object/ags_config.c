@@ -34,6 +34,8 @@
 #include <string.h>
 #include <pwd.h>
 
+#include <pthread.h>
+
 #include <ags/config.h>
 #include <ags/i18n.h>
 

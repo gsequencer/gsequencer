@@ -20,6 +20,8 @@
 #include <ags/lib/ags_turtle_manager.h>
 #include <ags/lib/ags_turtle.h>
 
+#include <pthread.h>
+
 void ags_turtle_manager_class_init(AgsTurtleManagerClass *turtle_manager);
 void ags_turtle_manager_init (AgsTurtleManager *turtle_manager);
 void ags_turtle_manager_dispose(GObject *gobject);
