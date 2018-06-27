@@ -51,17 +51,19 @@ static guint poll_fd_signals[LAST_SIGNAL];
 GType
 ags_poll_fd_get_type()
 {
-  static GType ags_type_poll_fd = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_poll_fd){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_poll_fd;
+    
     static const GTypeInfo ags_poll_fd_info = {
-      sizeof (AgsPollFdClass),
+      sizeof(AgsPollFdClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_poll_fd_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsPollFd),
+      sizeof(AgsPollFd),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_poll_fd_init,
     };
@@ -80,9 +82,11 @@ ags_poll_fd_get_type()
     g_type_add_interface_static(ags_type_poll_fd,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_poll_fd);
   }
 
-  return (ags_type_poll_fd);
+  return g_define_type_id__volatile;
 }
 
 void

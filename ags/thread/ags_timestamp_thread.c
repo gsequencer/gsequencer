@@ -38,17 +38,19 @@ static AgsConnectableInterface *ags_timestamp_thread_parent_connectable_interfac
 GType
 ags_timestamp_thread_get_type()
 {
-  static GType ags_type_timestamp_thread = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_timestamp_thread){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_timestamp_thread;
+    
     static const GTypeInfo ags_timestamp_thread_info = {
-      sizeof (AgsTimestampThreadClass),
+      sizeof(AgsTimestampThreadClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_timestamp_thread_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsTimestampThread),
+      sizeof(AgsTimestampThread),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_timestamp_thread_init,
     };
@@ -67,9 +69,11 @@ ags_timestamp_thread_get_type()
     g_type_add_interface_static(ags_type_timestamp_thread,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_timestamp_thread);
   }
-  
-  return (ags_type_timestamp_thread);
+
+  return g_define_type_id__volatile;
 }
 
 void

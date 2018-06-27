@@ -56,17 +56,19 @@ static AgsConnectableInterface *ags_generic_main_loop_parent_connectable_interfa
 GType
 ags_generic_main_loop_get_type()
 {
-  static GType ags_type_generic_main_loop = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_generic_main_loop){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_generic_main_loop;
+    
     static const GTypeInfo ags_generic_main_loop_info = {
-      sizeof (AgsGenericMainLoopClass),
+      sizeof(AgsGenericMainLoopClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_generic_main_loop_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsGenericMainLoop),
+      sizeof(AgsGenericMainLoop),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_generic_main_loop_init,
     };
@@ -95,9 +97,11 @@ ags_generic_main_loop_get_type()
     g_type_add_interface_static(ags_type_generic_main_loop,
 				AGS_TYPE_MAIN_LOOP,
 				&ags_main_loop_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_generic_main_loop);
   }
-  
-  return (ags_type_generic_main_loop);
+
+  return g_define_type_id__volatile;
 }
 
 void

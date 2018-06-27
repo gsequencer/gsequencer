@@ -51,30 +51,34 @@ static guint timestamp_factory_signals[LAST_SIGNAL];
 static AgsTimestampFactory *ags_timestamp_factory = NULL;
 
 GType
-ags_timestamp_factory_get_type (void)
+ags_timestamp_factory_get_type()
 {
-  static GType ags_type_timestamp_factory = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_timestamp_factory){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_timestamp_factory;
+
     static const GTypeInfo ags_timestamp_factory_info = {
-      sizeof (AgsTimestampFactoryClass),
+      sizeof(AgsTimestampFactoryClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_timestamp_factory_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsTimestampFactory),
+      sizeof(AgsTimestampFactory),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_timestamp_factory_init,
     };
 
     ags_type_timestamp_factory = g_type_register_static(G_TYPE_OBJECT,
-							"AgsTimestampFactory\0",
+							"AgsTimestampFactory",
 							&ags_timestamp_factory_info,
 							0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_timestamp_factory);
   }
 
-  return (ags_type_timestamp_factory);
+  return g_define_type_id__volatile;
 }
 
 void

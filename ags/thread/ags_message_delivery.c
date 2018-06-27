@@ -47,17 +47,19 @@ static gpointer ags_message_delivery_parent_class = NULL;
 GType
 ags_message_delivery_get_type()
 {
-  static GType ags_type_message_delivery = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_message_delivery){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_message_delivery;
+    
     static const GTypeInfo ags_message_delivery_info = {
-      sizeof (AgsMessageDeliveryClass),
+      sizeof(AgsMessageDeliveryClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_message_delivery_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsMessageDelivery),
+      sizeof(AgsMessageDelivery),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_message_delivery_init,
     };
@@ -76,9 +78,11 @@ ags_message_delivery_get_type()
     g_type_add_interface_static(ags_type_message_delivery,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_message_delivery);
   }
-  
-  return(ags_type_message_delivery);
+
+  return g_define_type_id__volatile;
 }
 
 void

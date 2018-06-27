@@ -76,17 +76,19 @@ static guint task_thread_signals[LAST_SIGNAL];
 GType
 ags_task_thread_get_type()
 {
-  static GType ags_type_task_thread = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_task_thread){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_task_thread;
+    
     static const GTypeInfo ags_task_thread_info = {
-      sizeof (AgsTaskThreadClass),
+      sizeof(AgsTaskThreadClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_task_thread_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsTaskThread),
+      sizeof(AgsTaskThread),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_task_thread_init,
     };
@@ -115,9 +117,11 @@ ags_task_thread_get_type()
     g_type_add_interface_static(ags_type_task_thread,
 				AGS_TYPE_ASYNC_QUEUE,
 				&ags_async_queue_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_task_thread);
   }
-  
-  return (ags_type_task_thread);
+
+  return g_define_type_id__volatile;
 }
 
 void

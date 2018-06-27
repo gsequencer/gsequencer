@@ -36,19 +36,21 @@ void ags_timestamp_finalize(GObject *gobject);
 static gpointer ags_timestamp_parent_class = NULL;
 
 GType
-ags_timestamp_get_type (void)
+ags_timestamp_get_type()
 {
-  static GType ags_type_timestamp = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_timestamp){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_timestamp;
+    
     static const GTypeInfo ags_timestamp_info = {
-      sizeof (AgsTimestampClass),
+      sizeof(AgsTimestampClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_timestamp_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsTimestamp),
+      sizeof(AgsTimestamp),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_timestamp_init,
     };
@@ -57,9 +59,11 @@ ags_timestamp_get_type (void)
 						"AgsTimestamp",
 						&ags_timestamp_info,
 						0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_timestamp);
   }
 
-  return (ags_type_timestamp);
+  return g_define_type_id__volatile;
 }
 
 void

@@ -59,19 +59,21 @@ static gpointer ags_file_lookup_parent_class = NULL;
 static guint file_lookup_signals[LAST_SIGNAL];
 
 GType
-ags_file_lookup_get_type (void)
+ags_file_lookup_get_type()
 {
-  static GType ags_type_file_lookup = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_file_lookup){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_file_lookup;
+    
     static const GTypeInfo ags_file_lookup_info = {
-      sizeof (AgsFileLookupClass),
+      sizeof(AgsFileLookupClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_file_lookup_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsFileLookup),
+      sizeof(AgsFileLookup),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_file_lookup_init,
     };
@@ -80,9 +82,11 @@ ags_file_lookup_get_type (void)
 						  "AgsFileLookup",
 						  &ags_file_lookup_info,
 						  0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_file_lookup);
   }
 
-  return (ags_type_file_lookup);
+  return g_define_type_id__volatile;
 }
 
 void

@@ -65,17 +65,19 @@ static guint file_id_ref_signals[LAST_SIGNAL];
 GType
 ags_file_id_ref_get_type()
 {
-  static GType ags_type_file_id_ref = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_file_id_ref){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_file_id_ref;
+    
     static const GTypeInfo ags_file_id_ref_info = {
-      sizeof (AgsFileIdRefClass),
+      sizeof(AgsFileIdRefClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_file_id_ref_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsFileIdRef),
+      sizeof(AgsFileIdRef),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_file_id_ref_init,
     };
@@ -84,9 +86,11 @@ ags_file_id_ref_get_type()
 						  "AgsFileIdRef",
 						  &ags_file_id_ref_info,
 						  0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_file_id_ref);
   }
 
-  return (ags_type_file_id_ref);
+  return g_define_type_id__volatile;
 }
 
 void

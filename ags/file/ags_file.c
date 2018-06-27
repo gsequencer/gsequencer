@@ -115,19 +115,21 @@ static gpointer ags_file_parent_class = NULL;
 static guint file_signals[LAST_SIGNAL] = { 0 };
 
 GType
-ags_file_get_type (void)
+ags_file_get_type()
 {
-  static GType ags_type_file = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_file){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_file;
+
     static const GTypeInfo ags_file_info = {
-      sizeof (AgsFileClass),
+      sizeof(AgsFileClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_file_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsFile),
+      sizeof(AgsFile),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_file_init,
     };
@@ -136,9 +138,11 @@ ags_file_get_type (void)
 					   "AgsFile",
 					   &ags_file_info,
 					   0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_file);
   }
 
-  return (ags_type_file);
+  return g_define_type_id__volatile;
 }
 
 void

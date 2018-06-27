@@ -64,17 +64,19 @@ static AgsConnectableInterface *ags_message_queue_parent_connectable_interface;
 GType
 ags_message_queue_get_type()
 {
-  static GType ags_type_message_queue = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_message_queue){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_message_queue;
+    
     static const GTypeInfo ags_message_queue_info = {
-      sizeof (AgsMessageQueueClass),
+      sizeof(AgsMessageQueueClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_message_queue_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsMessageQueue),
+      sizeof(AgsMessageQueue),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_message_queue_init,
     };
@@ -93,9 +95,11 @@ ags_message_queue_get_type()
     g_type_add_interface_static(ags_type_message_queue,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_message_queue);
   }
-  
-  return(ags_type_message_queue);
+
+  return g_define_type_id__volatile;
 }
 
 void

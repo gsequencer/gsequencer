@@ -60,17 +60,19 @@ static gpointer ags_polling_thread_parent_class = NULL;
 GType
 ags_polling_thread_get_type()
 {
-  static GType ags_type_polling_thread = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_polling_thread){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_polling_thread;
+    
     static const GTypeInfo ags_polling_thread_info = {
-      sizeof (AgsPollingThreadClass),
+      sizeof(AgsPollingThreadClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_polling_thread_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsPollingThread),
+      sizeof(AgsPollingThread),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_polling_thread_init,
     };
@@ -89,9 +91,11 @@ ags_polling_thread_get_type()
     g_type_add_interface_static(ags_type_polling_thread,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_polling_thread);
   }
-  
-  return (ags_type_polling_thread);
+
+  return g_define_type_id__volatile;
 }
 
 void

@@ -54,17 +54,19 @@ static guint task_completion_signals[LAST_SIGNAL];
 GType
 ags_task_completion_get_type()
 {
-  static GType ags_type_task_completion = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_task_completion){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_task_completion;
+    
     static const GTypeInfo ags_task_completion_info = {
-      sizeof (AgsTaskCompletionClass),
+      sizeof(AgsTaskCompletionClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_task_completion_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsTaskCompletion),
+      sizeof(AgsTaskCompletion),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_task_completion_init,
     };
@@ -83,9 +85,11 @@ ags_task_completion_get_type()
     g_type_add_interface_static(ags_type_task_completion,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_task_completion);
   }
-  
-  return (ags_type_task_completion);
+
+  return g_define_type_id__volatile;
 }
 
 void
