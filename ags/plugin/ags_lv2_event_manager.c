@@ -45,17 +45,19 @@ AgsLv2EventManager *ags_lv2_event_manager = NULL;
 GType
 ags_lv2_event_manager_get_type()
 {
-  static GType ags_type_lv2_event_manager = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_lv2_event_manager){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_lv2_event_manager;
+    
     const GTypeInfo ags_lv2_event_manager_info = {
-      sizeof (AgsLv2EventManagerClass),
+      sizeof(AgsLv2EventManagerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_lv2_event_manager_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsLv2EventManager),
+      sizeof(AgsLv2EventManager),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_lv2_event_manager_init,
     };
@@ -74,9 +76,11 @@ ags_lv2_event_manager_get_type()
     g_type_add_interface_static(ags_type_lv2_event_manager,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_lv2_event_manager);
   }
-  
-  return(ags_type_lv2_event_manager);
+
+  return g_define_type_id__volatile;
 }
 
 void

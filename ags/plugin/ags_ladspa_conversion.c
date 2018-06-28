@@ -44,19 +44,21 @@ gdouble ags_ladspa_conversion_convert(AgsConversion *conversion,
 static gpointer ags_ladspa_conversion_parent_class = NULL;
 
 GType
-ags_ladspa_conversion_get_type(void)
+ags_ladspa_conversion_get_type()
 {
-  static GType ags_type_ladspa_conversion = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_ladspa_conversion){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_ladspa_conversion;
+    
     static const GTypeInfo ags_ladspa_conversion_info = {
-      sizeof (AgsLadspaConversionClass),
+      sizeof(AgsLadspaConversionClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_ladspa_conversion_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsLadspaConversion),
+      sizeof(AgsLadspaConversion),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_ladspa_conversion_init,
     };
@@ -65,9 +67,11 @@ ags_ladspa_conversion_get_type(void)
 							"AgsLadspaConversion",
 							&ags_ladspa_conversion_info,
 							0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_ladspa_conversion);
   }
 
-  return(ags_type_ladspa_conversion);
+  return g_define_type_id__volatile;
 }
 
 void

@@ -66,19 +66,21 @@ AgsLadspaManager *ags_ladspa_manager = NULL;
 gchar **ags_ladspa_default_path = NULL;
 
 GType
-ags_ladspa_manager_get_type (void)
+ags_ladspa_manager_get_type()
 {
-  static GType ags_type_ladspa_manager = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_ladspa_manager){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_ladspa_manager;
+    
     static const GTypeInfo ags_ladspa_manager_info = {
-      sizeof (AgsLadspaManagerClass),
+      sizeof(AgsLadspaManagerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_ladspa_manager_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsLadspaManager),
+      sizeof(AgsLadspaManager),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_ladspa_manager_init,
     };
@@ -87,9 +89,11 @@ ags_ladspa_manager_get_type (void)
 							"AgsLadspaManager",
 							&ags_ladspa_manager_info,
 							0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_ladspa_manager);
   }
 
-  return (ags_type_ladspa_manager);
+  return g_define_type_id__volatile;
 }
 
 void

@@ -47,19 +47,21 @@ static guint plugin_factory_signals[LAST_SIGNAL];
 static AgsPluginFactory *ags_plugin_factory = NULL;
 
 GType
-ags_plugin_factory_get_type (void)
+ags_plugin_factory_get_type()
 {
-  static GType ags_type_plugin_factory = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_plugin_factory){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_plugin_factory;
+
     static const GTypeInfo ags_plugin_factory_info = {
-      sizeof (AgsPluginFactoryClass),
+      sizeof(AgsPluginFactoryClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_plugin_factory_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsPluginFactory),
+      sizeof(AgsPluginFactory),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_plugin_factory_init,
     };
@@ -68,9 +70,11 @@ ags_plugin_factory_get_type (void)
 							"AgsPluginFactory\0",
 							&ags_plugin_factory_info,
 							0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_plugin_factory);
   }
 
-  return (ags_type_plugin_factory);
+  return g_define_type_id__volatile;
 }
 
 void

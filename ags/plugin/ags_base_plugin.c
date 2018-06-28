@@ -75,19 +75,21 @@ static gpointer ags_base_plugin_parent_class = NULL;
 static guint base_plugin_signals[LAST_SIGNAL];
 
 GType
-ags_base_plugin_get_type (void)
+ags_base_plugin_get_type()
 {
-  static GType ags_type_base_plugin = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_base_plugin){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_base_plugin;
+    
     static const GTypeInfo ags_base_plugin_info = {
-      sizeof (AgsBasePluginClass),
+      sizeof(AgsBasePluginClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_base_plugin_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsBasePlugin),
+      sizeof(AgsBasePlugin),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_base_plugin_init,
     };
@@ -96,9 +98,11 @@ ags_base_plugin_get_type (void)
 						  "AgsBasePlugin",
 						  &ags_base_plugin_info,
 						  0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_base_plugin);
   }
 
-  return (ags_type_base_plugin);
+  return g_define_type_id__volatile;
 }
 
 void

@@ -44,19 +44,21 @@ gdouble ags_lv2_conversion_convert(AgsConversion *conversion,
 static gpointer ags_lv2_conversion_parent_class = NULL;
 
 GType
-ags_lv2_conversion_get_type(void)
+ags_lv2_conversion_get_type()
 {
-  static GType ags_type_lv2_conversion = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_lv2_conversion){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_lv2_conversion;
+
     static const GTypeInfo ags_lv2_conversion_info = {
-      sizeof (AgsLv2ConversionClass),
+      sizeof(AgsLv2ConversionClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_lv2_conversion_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsLv2Conversion),
+      sizeof(AgsLv2Conversion),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_lv2_conversion_init,
     };
@@ -65,9 +67,11 @@ ags_lv2_conversion_get_type(void)
 						     "AgsLv2Conversion",
 						     &ags_lv2_conversion_info,
 						     0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_lv2_conversion);
   }
 
-  return(ags_type_lv2_conversion);
+  return g_define_type_id__volatile;
 }
 
 void

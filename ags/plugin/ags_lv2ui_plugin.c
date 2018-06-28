@@ -85,9 +85,11 @@ static gpointer ags_lv2ui_plugin_parent_class = NULL;
 GType
 ags_lv2ui_plugin_get_type (void)
 {
-  static GType ags_type_lv2ui_plugin = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_lv2ui_plugin){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_lv2ui_plugin;
+
     static const GTypeInfo ags_lv2ui_plugin_info = {
       sizeof (AgsLv2uiPluginClass),
       NULL, /* lv2ui_init */
@@ -104,9 +106,11 @@ ags_lv2ui_plugin_get_type (void)
 						   "AgsLv2uiPlugin",
 						   &ags_lv2ui_plugin_info,
 						   0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_lv2ui_plugin);
   }
 
-  return (ags_type_lv2ui_plugin);
+  return g_define_type_id__volatile;
 }
 
 void
