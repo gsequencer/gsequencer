@@ -1037,7 +1037,12 @@ ags_route_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 	break;
       }
     
+      /* iterate */
+      pthread_mutex_lock(audio_mutex);
+    
       current_position = current_position->next;
+
+      pthread_mutex_unlock(audio_mutex);
     }
   }
   

@@ -939,7 +939,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
       }else if(note_x0 > notation_counter){
 	break;
       }
-      
+
+      /* iterate */
       pthread_mutex_lock(audio_mutex);
     
       current_position = current_position->next;
