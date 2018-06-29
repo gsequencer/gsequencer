@@ -782,38 +782,81 @@ ags_play_dssi_audio_run_run_init_pre(AgsRecall *recall)
   AgsPlayDssiAudio *play_dssi_audio;
   AgsPlayDssiAudioRun *play_dssi_audio_run;
 
+  AgsDssiPlugin *dssi_plugin;
+
+  AgsMutexManager *mutex_manager;
+
   GObject *soundcard;
 
+  guint output_lines, input_lines;
   guint samplerate;
   guint buffer_size;
   unsigned long i, i_stop;
     
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *recall_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   play_dssi_audio_run = AGS_PLAY_DSSI_AUDIO_RUN(recall);
   play_dssi_audio = AGS_PLAY_DSSI_AUDIO(AGS_RECALL_AUDIO_RUN(play_dssi_audio_run)->recall_audio);
 
-  /* set up buffer */
+  /* get soundcard */
   soundcard = recall->soundcard;
+
+  /* soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) soundcard);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get presets */
+  pthread_mutex_lock(soundcard_mutex);
 
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    NULL,
 			    &samplerate,
 			    &buffer_size,
 			    NULL);
+
+  pthread_mutex_unlock(soundcard_mutex);
+
+  /* recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = AGS_RECALL(play_dssi_audio)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_mutex);
+
+  dssi_plugin = play_dssi_audio->plugin;
+
+  output_lines = play_dssi_audio->output_lines;
+  input_lines = play_dssi_audio->input_lines;
+  
+  pthread_mutex_unlock(recall_mutex);
     
-  if(play_dssi_audio->input_lines > 0){
-    play_dssi_audio_run->input = (LADSPA_Data *) malloc(play_dssi_audio->input_lines *
+  if(input_lines > 0){
+    play_dssi_audio_run->input = (LADSPA_Data *) malloc(input_lines *
 							buffer_size *
 							sizeof(LADSPA_Data));
   }
 
-  play_dssi_audio_run->output = (float *) malloc(play_dssi_audio->output_lines *
+  play_dssi_audio_run->output = (float *) malloc(output_lines *
 						 buffer_size *
 						 sizeof(LADSPA_Data));
 
-  if(play_dssi_audio->input_lines < play_dssi_audio->output_lines){
-    i_stop = play_dssi_audio->output_lines;
+  if(input_lines < output_lines){
+    i_stop = output_lines;
   }else{
-    i_stop = play_dssi_audio->input_lines;
+    i_stop = input_lines;
   }
   
   play_dssi_audio_run->audio_channels = i_stop;
@@ -827,8 +870,8 @@ ags_play_dssi_audio_run_run_init_pre(AgsRecall *recall)
   
   for(i = 0; i < i_stop; i++){
     /* instantiate dssi */
-    play_dssi_audio_run->ladspa_handle[i] = play_dssi_audio->plugin_descriptor->LADSPA_Plugin->instantiate(play_dssi_audio->plugin_descriptor->LADSPA_Plugin,
-													   samplerate);
+    play_dssi_audio_run->ladspa_handle[i] = (LADSPA_Handle *) ags_base_plugin_instantiate(AGS_BASE_PLUGIN(dssi_plugin),
+											  samplerate);
 
 #ifdef AGS_DEBUG
     g_message("instantiate DSSI handle %d %d",
@@ -840,9 +883,8 @@ ags_play_dssi_audio_run_run_init_pre(AgsRecall *recall)
   ags_play_dssi_audio_run_load_ports(play_dssi_audio_run);
 
   for(i = 0; i < i_stop; i++){
-    if(play_dssi_audio->plugin_descriptor->LADSPA_Plugin->activate != NULL){
-      play_dssi_audio->plugin_descriptor->LADSPA_Plugin->activate(play_dssi_audio_run->ladspa_handle[i]);
-    }
+    ags_base_plugin_activate(AGS_BASE_PLUGIN(dssi_plugin),
+			     play_dssi_audio_run->ladspa_handle[i]);
     
 #ifdef AGS_DEBUG
     g_message("instantiate DSSI handle");
@@ -858,6 +900,7 @@ void
 ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
 {  
   AgsAudio *audio;
+  AgsChannel *output, *input;
   AgsChannel *channel;
   AgsChannel *selected_channel;
   AgsRecycling *recycling;
@@ -874,6 +917,7 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
   snd_seq_event_t **event_buffer;
   unsigned long *event_count;
 
+  guint audio_flags;
   guint audio_channel;
   guint samplerate;
   guint buffer_size;
@@ -881,10 +925,15 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
   unsigned long i, i_stop;
 
   pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *recycling_mutex;
+  pthread_mutex_t *recall_mutex;
   
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   play_dssi_audio_run = AGS_PLAY_DSSI_AUDIO_RUN(recall);
   play_dssi_audio = AGS_PLAY_DSSI_AUDIO(AGS_RECALL_AUDIO_RUN(play_dssi_audio_run)->recall_audio);
 
@@ -892,30 +941,74 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
   
   soundcard = recall->soundcard;
 
+  /* soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) soundcard);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get presets */
+  pthread_mutex_lock(soundcard_mutex);
+
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    NULL,
 			    NULL,
 			    &buffer_size,
 			    NULL);
-    
-  audio = AGS_RECALL_AUDIO(play_dssi_audio)->audio;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  pthread_mutex_unlock(soundcard_mutex);
 
-  /* lookup channel mutex */
+  /* recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = AGS_RECALL(play_dssi_audio)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get audio */
+  audio = AGS_RECALL_AUDIO_RUN(recall)->audio;
+
+  /* audio mutex */
   pthread_mutex_lock(application_mutex);
 
-  channel = (AgsChannel *) AGS_RECYCLING(AGS_RECALL(play_dssi_audio_run)->recall_id->recycling)->channel;
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+  
+  /* get recycling and recycling context */
+  pthread_mutex_lock(audio_mutex);
+
+  audio_flags = audio->flags;
+  
+  output = audio->output;
+  input = audio->input;
+
+  recycling = recall->recall_id->recycling;
+  recycling_context = recall->recall_id->recycling_context;
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  /* get recycling mutex */
+  pthread_mutex_lock(application_mutex);
+
+  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) recycling);
 	
   pthread_mutex_unlock(application_mutex);
 
+  /* get channel */
+  pthread_mutex_lock(recycling_mutex);
+
+  channel = (AgsChannel *) recycling->channel;
+
+  pthread_mutex_unlock(recycling_mutex);
+
   /* lookup channel mutex */
   pthread_mutex_lock(application_mutex);
 
-  channel = (AgsChannel *) AGS_RECYCLING(AGS_RECALL(play_dssi_audio_run)->recall_id->recycling)->channel;
   channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 					   (GObject *) channel);
 	
@@ -929,11 +1022,11 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
   pthread_mutex_unlock(channel_mutex);
     
   /* get channel */
-  if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
-    selected_channel = ags_channel_nth(audio->input,
+  if((AGS_AUDIO_NOTATION_DEFAULT & (audio_flags)) != 0){
+    selected_channel = ags_channel_nth(input,
 				       audio_channel);
   }else{
-    selected_channel = ags_channel_nth(audio->output,
+    selected_channel = ags_channel_nth(output,
 				       audio_channel);
   }
 
@@ -949,14 +1042,9 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
   pthread_mutex_unlock(application_mutex);
 
   if(destination == NULL){
-    AgsRecyclingContext *recycling_context;
-
     gdouble delay;
     guint attack;
     guint length;
-    
-    /* recycling context */
-    recycling_context = recall->recall_id->recycling_context;
 
     //TODO:JK: unclear
     attack = 0;
@@ -1005,7 +1093,15 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
     LADSPA_Data *port_data;
     
     unsigned long port_count;
+
+    GValue value = {0,};
+
+    g_value_init(&value,
+		 G_TYPE_FLOAT);    
     
+    /* retrieve port data */
+    pthread_mutex_lock(audio_mutex);
+
     port = AGS_RECALL(play_dssi_audio)->port;
 
     port_count = play_dssi_audio->plugin_descriptor->LADSPA_Plugin->PortCount;
@@ -1032,11 +1128,17 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
 
 	//	g_warning("didn't find port");
       }else{
-	port_data[i] = current->port_value.ags_port_ladspa;
+	ags_port_safe_read_raw(current, &value);
+      
+	port_data[i] = g_value_get_float(&value);
       }
     }
 
+    pthread_mutex_unlock(audio_mutex);
+
     /* select program */
+    pthread_mutex_lock(recall_mutex);
+
     for(i = 0; i < i_stop; i++){
       play_dssi_audio->plugin_descriptor->select_program(play_dssi_audio_run->ladspa_handle[i],
 							 play_dssi_audio->bank,
@@ -1045,7 +1147,11 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
       //      g_message("b p %u %u", play_dssi_audio->bank, play_dssi_audio->program);
     }
 
+    pthread_mutex_unlock(recall_mutex);
+
     /* reset port data */    
+    pthread_mutex_lock(audio_mutex);
+
     for(i = 0; i < port_count; i++){
       specifier = play_dssi_audio->plugin_descriptor->LADSPA_Plugin->PortNames[i];
       list = port;
@@ -1055,8 +1161,9 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
 
 	if(!g_strcmp0(specifier,
 		      current->specifier)){
-	  current->port_value.ags_port_ladspa = port_data[i];
-	  //	  g_message("%s %f", current->specifier, port_data[i]);
+
+	  g_value_set_float(&value, port_data[i]);
+	  ags_port_safe_write_raw(current, &value);
 	
 	  break;
 	}
@@ -1064,6 +1171,8 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
 	list = list->next;
       }
     }
+
+    pthread_mutex_unlock(audio_mutex);
 
     free(port_data);
   }

@@ -250,27 +250,69 @@ ags_ladspa_plugin_connect_port(AgsBasePlugin *base_plugin,
 			       guint port_index,
 			       gpointer data_location)
 {
+  pthread_mutex_t *base_plugin_mutex;
+
+  /* base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+
+  base_plugin_mutex = base_plugin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* connect port */
+  pthread_mutex_lock(base_plugin_mutex);
+
   AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->connect_port((LADSPA_Handle) plugin_handle,
 									     (unsigned long) port_index,
 									     (LADSPA_Data *) data_location);
+
+  pthread_mutex_unlock(base_plugin_mutex);
 }
 
 void
 ags_ladspa_plugin_activate(AgsBasePlugin *base_plugin,
 			   gpointer plugin_handle)
 {
+  pthread_mutex_t *base_plugin_mutex;
+
+  /* base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+
+  base_plugin_mutex = base_plugin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* connect port */
+  pthread_mutex_lock(base_plugin_mutex);
+
   if(AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->activate != NULL){
     AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->activate((LADSPA_Handle) plugin_handle);
   }
+
+  pthread_mutex_unlock(base_plugin_mutex);
 }
 
 void
 ags_ladspa_plugin_deactivate(AgsBasePlugin *base_plugin,
 			     gpointer plugin_handle)
 {
+  pthread_mutex_t *base_plugin_mutex;
+
+  /* base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+
+  base_plugin_mutex = base_plugin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* connect port */
+  pthread_mutex_lock(base_plugin_mutex);
+
   if(AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->deactivate != NULL){
     AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->deactivate((LADSPA_Handle) plugin_handle);
   }
+
+  pthread_mutex_unlock(base_plugin_mutex);
 }
 
 void

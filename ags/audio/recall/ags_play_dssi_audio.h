@@ -48,6 +48,7 @@ struct _AgsPlayDssiAudio
   unsigned long bank;
   unsigned long program;
   
+  AgsDssiPlugin *plugin;
   DSSI_Descriptor *plugin_descriptor;
 
   unsigned long *input_port;

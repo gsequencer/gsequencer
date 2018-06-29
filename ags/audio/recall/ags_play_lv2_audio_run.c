@@ -892,10 +892,11 @@ ags_play_lv2_audio_run_run_init_pre(AgsRecall *recall)
 #ifdef AGS_DEBUG
     g_message("connect port: %d", play_lv2_audio->input_port[i]);
 #endif
-    
-    play_lv2_audio->plugin_descriptor->connect_port(play_lv2_audio_run->lv2_handle[0],
-						    play_lv2_audio->input_port[i],
-						    play_lv2_audio_run->input);
+
+    ags_base_plugin_connect_port(AGS_BASE_PLUGIN(lv2_plugin),
+				 play_lv2_audio_run->lv2_handle[0],
+				 play_lv2_audio->input_port[i],
+				 play_lv2_audio_run->input);
   }
 
   for(i = 0; i < output_lines; i++){
@@ -903,33 +904,35 @@ ags_play_lv2_audio_run_run_init_pre(AgsRecall *recall)
     g_message("connect port: %d", play_lv2_audio->output_port[i]);
 #endif
     
-    play_lv2_audio->plugin_descriptor->connect_port(play_lv2_audio_run->lv2_handle[0],
-						    play_lv2_audio->output_port[i],
-						    play_lv2_audio_run->output);
+    ags_base_plugin_connect_port(AGS_BASE_PLUGIN(lv2_plugin),
+				 play_lv2_audio_run->lv2_handle[0],
+				 play_lv2_audio->output_port[i],
+				 play_lv2_audio_run->output);
   }
 
   /* connect event port */
   if((AGS_PLAY_LV2_AUDIO_HAS_EVENT_PORT & (play_lv2_audio_flags)) != 0){
     play_lv2_audio_run->event_port = ags_lv2_plugin_alloc_event_buffer(AGS_PLAY_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
     
-    play_lv2_audio->plugin_descriptor->connect_port(play_lv2_audio_run->lv2_handle[0],
-						    play_lv2_audio->event_port,
-						    play_lv2_audio_run->event_port);
+    ags_base_plugin_connect_port(AGS_BASE_PLUGIN(lv2_plugin),
+				 play_lv2_audio_run->lv2_handle[0],
+				 play_lv2_audio->event_port,
+				 play_lv2_audio_run->event_port);
   }
   
   /* connect atom port */
   if((AGS_PLAY_LV2_AUDIO_HAS_ATOM_PORT & (play_lv2_audio_flags)) != 0){
     play_lv2_audio_run->atom_port = ags_lv2_plugin_alloc_atom_sequence(AGS_PLAY_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
     
-    play_lv2_audio->plugin_descriptor->connect_port(play_lv2_audio_run->lv2_handle[0],
-						    play_lv2_audio->atom_port,
-						    play_lv2_audio_run->atom_port);   
+    ags_base_plugin_connect_port(AGS_BASE_PLUGIN(lv2_plugin),
+				 play_lv2_audio_run->lv2_handle[0],
+				 play_lv2_audio->atom_port,
+				 play_lv2_audio_run->atom_port);   
   }
 
   /* activate */
-  if(play_lv2_audio->plugin_descriptor->activate != NULL){
-    play_lv2_audio->plugin_descriptor->activate(play_lv2_audio_run->lv2_handle[0]);
-  }
+  ags_base_plugin_activate(AGS_BASE_PLUGIN(lv2_plugin),			     
+			   play_lv2_audio_run->lv2_handle[0]);
 
   pthread_mutex_unlock(recall_mutex);
 
@@ -988,6 +991,7 @@ ags_play_lv2_audio_run_run_init_pre(AgsRecall *recall)
     for(i = 0; i < port_count; i++){
       current = port->data;
 
+      g_value_set_float(&value, port_data[i]);
       ags_port_safe_write_raw(current, &value);
       
       port = port->next;
@@ -1006,6 +1010,7 @@ void
 ags_play_lv2_audio_run_run_pre(AgsRecall *recall)
 {
   AgsAudio *audio;
+  AgsChannel *output, *input;
   AgsChannel *channel;
   AgsChannel *selected_channel;
   AgsRecycling *recycling;
@@ -1019,6 +1024,7 @@ ags_play_lv2_audio_run_run_pre(AgsRecall *recall)
   
   GObject *soundcard;
 
+  guint audio_flags;
   guint audio_channel;
   guint copy_mode_out;
   guint buffer_size;
@@ -1073,6 +1079,11 @@ ags_play_lv2_audio_run_run_pre(AgsRecall *recall)
   /* get recycling and recycling context */
   pthread_mutex_lock(audio_mutex);
 
+  audio_flags = audio->flags;
+
+  output = audio->output;
+  input = audio->input;
+  
   recycling = recall->recall_id->recycling;
   recycling_context = recall->recall_id->recycling_context;
   
@@ -1109,11 +1120,11 @@ ags_play_lv2_audio_run_run_pre(AgsRecall *recall)
   pthread_mutex_unlock(channel_mutex);
   
   /* get channel */
-  if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
-    selected_channel = ags_channel_nth(audio->input,
+  if((AGS_AUDIO_NOTATION_DEFAULT & (audio_flags)) != 0){
+    selected_channel = ags_channel_nth(input,
 				       audio_channel);
   }else{
-    selected_channel = ags_channel_nth(audio->output,
+    selected_channel = ags_channel_nth(output,
 				       audio_channel);
   }
 

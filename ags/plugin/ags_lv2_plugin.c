@@ -844,27 +844,69 @@ ags_lv2_plugin_connect_port(AgsBasePlugin *base_plugin,
 			    guint port_index,
 			    gpointer data_location)
 {
+  pthread_mutex_t *base_plugin_mutex;
+
+  /* base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+
+  base_plugin_mutex = base_plugin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* connect port */
+  pthread_mutex_lock(base_plugin_mutex);
+
   AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->connect_port((LV2_Handle) plugin_handle,
 									  (uint32_t) port_index,
 									  (float *) data_location);
+
+  pthread_mutex_unlock(base_plugin_mutex);
 }
 
 void
 ags_lv2_plugin_activate(AgsBasePlugin *base_plugin,
 			gpointer plugin_handle)
 {
+  pthread_mutex_t *base_plugin_mutex;
+
+  /* base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+
+  base_plugin_mutex = base_plugin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* activate */
+  pthread_mutex_lock(base_plugin_mutex);
+
   if(AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->activate != NULL){
     AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->activate((LV2_Handle) plugin_handle);
   }
+
+  pthread_mutex_unlock(base_plugin_mutex);
 }
 
 void
 ags_lv2_plugin_deactivate(AgsBasePlugin *base_plugin,
 			  gpointer plugin_handle)
 {
+  pthread_mutex_t *base_plugin_mutex;
+
+  /* base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+
+  base_plugin_mutex = base_plugin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* deactivate */
+  pthread_mutex_lock(base_plugin_mutex);
+
   if(AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->deactivate != NULL){
     AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->deactivate((LV2_Handle) plugin_handle);
   }
+
+  pthread_mutex_unlock(base_plugin_mutex);
 }
 
 void
