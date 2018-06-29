@@ -93,6 +93,9 @@ struct _AgsBasePlugin
 
   guint flags;
 
+  pthread_mutexattr_t *obj_mutexattr;
+  pthread_mutex_t *obj_mutex;
+
   gchar *id;
   
   gchar *filename;
@@ -160,6 +163,8 @@ struct _AgsPortDescriptor
 };
 
 GType ags_base_plugin_get_type(void);
+
+pthread_mutex_t* ags_base_plugin_get_class_mutex();
 
 AgsPortDescriptor* ags_port_descriptor_alloc();
 void ags_port_descriptor_free(AgsPortDescriptor *port_descriptor);

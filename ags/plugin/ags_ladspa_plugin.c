@@ -224,8 +224,22 @@ ags_ladspa_plugin_instantiate(AgsBasePlugin *base_plugin,
 {
   gpointer ladspa_handle;
   
+  pthread_mutex_t *base_plugin_mutex;
+
+  /* base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+
+  base_plugin_mutex = base_plugin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* instantiate */
+  pthread_mutex_lock(base_plugin_mutex);
+  
   ladspa_handle = (gpointer) AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->instantiate(AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor),
 												       (unsigned long) samplerate);
+
+  pthread_mutex_unlock(base_plugin_mutex);
 
   return(ladspa_handle);
 }

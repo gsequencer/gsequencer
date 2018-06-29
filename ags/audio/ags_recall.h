@@ -133,6 +133,9 @@ struct _AgsRecall
   guint flags;
   gboolean rt_safe;
   
+  pthread_mutexattr_t *obj_mutexattr;
+  pthread_mutex_t *obj_mutex;
+
   gchar *version;
   gchar *build_id;
 
@@ -140,7 +143,7 @@ struct _AgsRecall
   gchar *name;
 
   gchar *xml_type;
-
+  
   GObject *soundcard;
   GObject *container; // see AgsRecallContainer
 
@@ -217,6 +220,8 @@ struct _AgsRecallHandler
 };
 
 GType ags_recall_get_type();
+
+pthread_mutex_t* ags_recall_get_class_mutex();
 
 void ags_recall_set_flags(AgsRecall *recall, guint flags);
 

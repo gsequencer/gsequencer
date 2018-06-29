@@ -552,14 +552,26 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   guint total_feature;
   guint nth;
 
+  pthread_mutex_t *base_plugin_mutex;
+  
   lv2_plugin = base_plugin;
 
+  /* base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+
+  base_plugin_mutex = base_plugin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  
   //  xmlSaveFormatFileEnc("-", lv2_plugin->turtle->doc, "UTF-8", 1);
   
+  /* instantiate */
   feature = NULL;
   config = ags_config_get_instance();
 
   worker_handle = NULL;
+
+  pthread_mutex_lock(base_plugin_mutex);
   
   if(lv2_plugin->feature == NULL){
     /* samplerate */
@@ -821,6 +833,8 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 
   free(path);
   
+  pthread_mutex_unlock(base_plugin_mutex);
+
   return(lv2_handle);
 }
 

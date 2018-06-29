@@ -788,6 +788,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   void ags_play_notation_audio_run_alloc_input_callback_play_notation(AgsNotation *notation)
   {
+    GList *list_start, *list;
+
     gdouble notation_delay;
 
     GValue value = {0,};
@@ -802,25 +804,18 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
     g_value_unset(&value);
 
     /*  */
+    list_start = NULL;
+
     pthread_mutex_lock(audio_mutex);
 
     current_position = notation->notes;
 
-    pthread_mutex_unlock(audio_mutex);
-  
     while(current_position != NULL){
-      AgsRecallID *child_recall_id;
-      GList *list;
-
       guint note_x0;
-    
-      pthread_mutex_lock(audio_mutex);
-      
+
       note = AGS_NOTE(current_position->data);
-      note_x0 = note->x[0];
-      
-      pthread_mutex_unlock(audio_mutex);
-  
+      note_x0 = note->x[0];      
+    
       if(note_x0 == notation_counter){      
 	if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
 	  selected_channel = ags_channel_pad_nth(channel, input_pads - note->y - 1);
@@ -830,122 +825,176 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
 	if(selected_channel == NULL){
 	  current_position = current_position->next;
+
 	  continue;
 	}
 
-	/* get child recall id */
-	child_recall_id = NULL;
-	
-	list = selected_channel->recall_id;
-
-	while(list != NULL){
-	  if(AGS_RECALL_ID(list->data)->recycling_context->parent == AGS_RECALL(delay_audio_run)->recall_id->recycling_context){
-	    child_recall_id = (AgsRecallID *) list->data;
-	    break;
-	  }
-	  
-	  list = list->next;
-	}
-
-	/* lookup channel mutex */
-	pthread_mutex_lock(application_mutex);
-
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) selected_channel);
-	
-	pthread_mutex_unlock(application_mutex);
-
-	/* recycling */
-	pthread_mutex_lock(channel_mutex);
-	
-	recycling = selected_channel->first_recycling;
-
-	pthread_mutex_unlock(channel_mutex);
-	
-#ifdef AGS_DEBUG	
-	g_message("playing[%u|%u]: %u | %u\n", audio_channel, selected_channel->pad, note->x[0], note->y);
-#endif
-	
-	note->rt_attack = attack;
-	
-	while(recycling != selected_channel->last_recycling->next){
-	  /* lookup recycling mutex */
-	  pthread_mutex_lock(application_mutex);
-
-	  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						     (GObject *) recycling);
-	
-	  pthread_mutex_unlock(application_mutex);
-
-	  if(!AGS_RECALL(play_notation_audio_run)->rt_safe){
-	    /* create audio signal */
-	    audio_signal = ags_audio_signal_new((GObject *) soundcard,
-						(GObject *) recycling,
-						(GObject *) child_recall_id);
-	    g_object_set(audio_signal,
-			 "note", note,
-			 NULL);
-	  
-	    if((AGS_AUDIO_PATTERN_MODE & (audio->flags)) != 0){
-	      ags_recycling_create_audio_signal_with_defaults(recycling,
-							      audio_signal,
-							      0.0, 0);
-	    }else{
-	      /* create audio signal with frame count */
-	      ags_recycling_create_audio_signal_with_frame_count(recycling,
-								 audio_signal,
-								 (guint) (((gdouble) samplerate / notation_delay) * (gdouble) (note->x[1] - note->x[0])),
-								 0.0, 0);
-	    }
-	  
-	    ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
-
-	    audio_signal->stream_current = audio_signal->stream_beginning;
-
-	    /* lock and add */
-	    ags_recycling_add_audio_signal(recycling,
-					   audio_signal);
-	    //	g_object_unref(audio_signal);
-	  }else{
-	    GList *list;
-
-	    pthread_mutex_lock(recycling_mutex);
-	    
-	    audio_signal = NULL;
-	    list = ags_audio_signal_get_by_recall_id(recycling->audio_signal,
-						     child_recall_id);
-	    
-	    if(list != NULL){
-	      audio_signal = list->data;
-
-	      g_object_set(audio_signal,
-			   "delay", notation_delay,
-			   "note", note,
-			   NULL);
-	    }
-
-	    note->rt_offset = 0;
-
-	    pthread_mutex_unlock(recycling_mutex);
-	  }
-	  
-	  /* iterate */
-	  pthread_mutex_lock(recycling_mutex);
-	  
-	  recycling = recycling->next;
-
-	  pthread_mutex_unlock(recycling_mutex);
-	}
+	list_start = g_list_prepend(list_start,
+				    note);
+	g_object_ref(note);
       }else if(note_x0 > notation_counter){
 	break;
       }
+      
+      current_position = current_position->next;
+    }
+    
+    pthread_mutex_unlock(audio_mutex);
+
+    list =
+      list_start = g_list_reverse(list_start);
+    
+    while(list != NULL){
+      AgsRecycling *last_recycling;
+      AgsRecycling *end_recycling;
+      
+      AgsRecallID *child_recall_id;
+
+      GList *recall_id;
+
+      guint note_x0, note_x1;
+      guint note_y;
+
+      pthread_mutex_lock(audio_mutex);
+
+      note = AGS_NOTE(list->data);
+
+      note_x0 = note->x[0]; 
+      note_x1 = note->x[1];
+      note_y = note->y;
+
+      note->rt_attack = attack;
+      note->rt_offset = 0;
+      
+      pthread_mutex_unlock(audio_mutex);
+  
+      if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
+	selected_channel = ags_channel_pad_nth(channel, input_pads - note_y - 1);
+      }else{
+	selected_channel = ags_channel_pad_nth(channel, note_y);
+      }
+
+      /* get child recall id */
+      child_recall_id = NULL;
+	
+      recall_id = selected_channel->recall_id;
+
+      while(recall_id != NULL){
+	if(AGS_RECALL_ID(recall_id->data)->recycling_context->parent == AGS_RECALL(delay_audio_run)->recall_id->recycling_context){
+	  child_recall_id = (AgsRecallID *) recall_id->data;
+	  break;
+	}
+	  
+	recall_id = recall_id->next;
+      }
+
+      /* lookup channel mutex */
+      pthread_mutex_lock(application_mutex);
+
+      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
+					       (GObject *) selected_channel);
+	
+      pthread_mutex_unlock(application_mutex);
+
+      /* recycling */
+      pthread_mutex_lock(channel_mutex);
+	
+      recycling = selected_channel->first_recycling;
+      last_recycling = selected_channel->last_recycling;
+      
+      pthread_mutex_unlock(channel_mutex);
+	
+#ifdef AGS_DEBUG	
+      g_message("playing[%u|%u]: %u | %u\n", audio_channel, selected_channel->pad, note_x0, note_y);
+#endif
+
+      /* lookup recycling mutex */
+      pthread_mutex_lock(application_mutex);
+
+      recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+						 (GObject *) last_recycling);
+	
+      pthread_mutex_unlock(application_mutex);
+
+      /* get end recycling */
+      pthread_mutex_lock(recycling_mutex);
+      
+      end_recycling = last_recycling->next;
+
+      pthread_mutex_unlock(recycling_mutex);
+
+      /* set rt attack */	
+      while(recycling != end_recycling){
+	/* lookup recycling mutex */
+	pthread_mutex_lock(application_mutex);
+
+	recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+						   (GObject *) recycling);
+	
+	pthread_mutex_unlock(application_mutex);
+
+	if(!AGS_RECALL(play_notation_audio_run)->rt_safe){
+	  /* create audio signal */
+	  audio_signal = ags_audio_signal_new((GObject *) soundcard,
+					      (GObject *) recycling,
+					      (GObject *) child_recall_id);
+	  g_object_set(audio_signal,
+		       "note", note,
+		       NULL);
+	  
+	  if((AGS_AUDIO_PATTERN_MODE & (audio->flags)) != 0){
+	    ags_recycling_create_audio_signal_with_defaults(recycling,
+							    audio_signal,
+							    0.0, 0);
+	  }else{
+	    /* create audio signal with frame count */
+	    ags_recycling_create_audio_signal_with_frame_count(recycling,
+							       audio_signal,
+							       (guint) (((gdouble) samplerate / notation_delay) * (gdouble) (note_x1 - note_x0)),
+							       0.0, 0);
+	  }
+	  
+	  ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
+
+	  audio_signal->stream_current = audio_signal->stream_beginning;
+
+	  /* lock and add */
+	  ags_recycling_add_audio_signal(recycling,
+					 audio_signal);
+	  //	g_object_unref(audio_signal);
+	}else{
+	  GList *tmp_list;
+
+	  pthread_mutex_lock(recycling_mutex);
+	    
+	  audio_signal = NULL;
+	  tmp_list = ags_audio_signal_get_by_recall_id(recycling->audio_signal,
+						       child_recall_id);
+	    
+	  if(tmp_list != NULL){
+	    audio_signal = tmp_list->data;
+
+	    g_object_set(audio_signal,
+			 "delay", notation_delay,
+			 "note", note,
+			 NULL);
+	  }
+
+	  pthread_mutex_unlock(recycling_mutex);
+	}
+	  
+	/* iterate */
+	pthread_mutex_lock(recycling_mutex);
+	  
+	recycling = recycling->next;
+
+	pthread_mutex_unlock(recycling_mutex);
+      }
 
       /* iterate */
-      pthread_mutex_lock(audio_mutex);
-    
-      current_position = current_position->next;
-
-      pthread_mutex_unlock(audio_mutex);
+      g_object_unref(list->data);
+      
+      list = list->next;
     }
   }
   

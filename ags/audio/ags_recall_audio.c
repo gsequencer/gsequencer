@@ -498,6 +498,8 @@ ags_recall_audio_automate(AgsRecall *recall)
   AgsAudio *audio;
   AgsAutomation *current;
 
+  AgsMutexManager *mutex_manager;
+
   GList *automation;
   GList *port;
 
@@ -511,22 +513,66 @@ ags_recall_audio_automate(AgsRecall *recall)
   guint ret_x;
   gboolean return_prev_on_failure;
 
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *recall_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
+  /* recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get audio */
+  pthread_mutex_lock(recall_mutex);
+
   audio = AGS_RECALL_AUDIO(recall)->audio;
+
+  pthread_mutex_unlock(recall_mutex);
+
+  /* audio mutex */
+  pthread_mutex_lock(application_mutex);
+
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get soundcard */
+  pthread_mutex_lock(audio_mutex);
+
   soundcard = audio->soundcard;
 
-  /* retrieve position */
-  port = recall->port;
+  pthread_mutex_unlock(audio_mutex);
+
+  /* soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) soundcard);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* retrieve position and loop information */
+  pthread_mutex_lock(soundcard_mutex);
 
   note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
   
   delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
   delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(soundcard));
 
-  /* retrieve loop information */
   ags_soundcard_get_loop(AGS_SOUNDCARD(soundcard),
 			 &loop_left, &loop_right,
 			 &do_loop);
 
+  pthread_mutex_unlock(soundcard_mutex);
+
+  /*  */
   return_prev_on_failure = TRUE;
 
   if(do_loop &&
@@ -539,6 +585,10 @@ ags_recall_audio_automate(AgsRecall *recall)
   /*  */
   x = ((double) note_offset + (delay_counter / delay)) * ((1.0 / AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
   step = ((1.0 / AGS_AUTOMATION_MINIMUM_ACCELERATION_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);
+
+  pthread_mutex_lock(audio_mutex);
+
+  port = recall->port;
 
   while(port != NULL){
     automation = (AgsAutomation *) AGS_PORT(port->data)->automation;
@@ -561,6 +611,7 @@ ags_recall_audio_automate(AgsRecall *recall)
 					 &value);
 
 	if(ret_x != G_MAXUINT){
+	  //NOTE:JK: warning nested lock
 	  ags_port_safe_write(port->data,
 			      &value);
 	}
@@ -575,6 +626,8 @@ ags_recall_audio_automate(AgsRecall *recall)
 
     port = port->next;
   }
+
+  pthread_mutex_unlock(audio_mutex);
 }
 
 AgsRecall*
