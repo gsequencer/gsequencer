@@ -399,14 +399,38 @@ ags_dssi_plugin_run(AgsBasePlugin *base_plugin,
 		    snd_seq_event_t *seq_event,
 		    guint frame_count)
 {
-  if(AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->run_synth != NULL){
-    AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->run_synth((LADSPA_Handle) plugin_handle,
-									  frame_count,
-									  seq_event,
-									  (unsigned long) 1);
+  void (*run_synth)(LADSPA_Handle instance,
+		    unsigned long sample_count,
+		    snd_seq_event_t *events,
+		    unsigned long event_count);
+  void (*run)(LADSPA_Handle instance,
+              unsigned long sample_count);
+
+  pthread_mutex_t *base_plugin_mutex;
+
+  /* base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+
+  base_plugin_mutex = base_plugin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* get fields */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  run_synth = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->run_synth;
+  run = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->run;
+
+  pthread_mutex_unlock(base_plugin_mutex);
+
+  if(run_synth != NULL){
+    run_synth((LADSPA_Handle) plugin_handle,
+	      (unsigned long) frame_count,
+	      seq_event,
+	      (unsigned long) 1);
   }else{
-    AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->run((LADSPA_Handle) plugin_handle,
-										   (unsigned long) frame_count);
+    run((LADSPA_Handle) plugin_handle,
+	(unsigned long) frame_count);
   }
 }
 

@@ -25,6 +25,8 @@
 
 #include <lv2.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_notation.h>
 
@@ -83,7 +85,7 @@ struct _AgsPlayLv2AudioRun
   GObject *destination;
   
   AgsNotation *notation;
-  GList *offset;
+  AgsTimestamp *timestamp;
 
   GObject *worker_handle;
 };

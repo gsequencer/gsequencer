@@ -321,8 +321,28 @@ ags_ladspa_plugin_run(AgsBasePlugin *base_plugin,
 		      snd_seq_event_t *seq_event,
 		      guint frame_count)
 {
-  AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->run((LADSPA_Handle) plugin_handle,
-								    (unsigned long) frame_count);
+  void (*run)(LADSPA_Handle instance,
+              unsigned long sample_count);
+
+  pthread_mutex_t *base_plugin_mutex;
+
+  /* base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+
+  base_plugin_mutex = base_plugin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* get fields */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  run = AGS_LADSPA_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->run;
+
+  pthread_mutex_unlock(base_plugin_mutex);
+
+  /* run */
+  run((LADSPA_Handle) plugin_handle,
+      (unsigned long) frame_count);
 }
 
 void

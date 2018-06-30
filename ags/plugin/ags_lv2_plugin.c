@@ -915,8 +915,28 @@ ags_lv2_plugin_run(AgsBasePlugin *base_plugin,
 		   snd_seq_event_t *seq_event,
 		   guint frame_count)
 {
-  AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->run((LV2_Handle) plugin_handle,
-								 frame_count);
+  void (*run)(LV2_Handle instance,
+	      uint32_t sample_count);
+
+  pthread_mutex_t *base_plugin_mutex;
+
+  /* base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+
+  base_plugin_mutex = base_plugin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* get fields */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  run = AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->run;
+  
+  pthread_mutex_unlock(base_plugin_mutex);
+
+  /* run */
+  run((LV2_Handle) plugin_handle,
+      (uint32_t) frame_count);
 }
 
 void
