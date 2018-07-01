@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,19 +18,15 @@
  */
 
 #include <ags/audio/recall/ags_buffer_recycling.h>
-#include <ags/audio/recall/ags_buffer_audio_signal.h>
 
 #include <ags/libags.h>
 
+#include <ags/audio/recall/ags_buffer_audio_signal.h>
+
 void ags_buffer_recycling_class_init(AgsBufferRecyclingClass *buffer_recycling);
 void ags_buffer_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_buffer_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_buffer_recycling_init(AgsBufferRecycling *buffer_recycling);
 void ags_buffer_recycling_finalize(GObject *gobject);
-
-AgsRecall* ags_buffer_recycling_duplicate(AgsRecall *recall,
-					  AgsRecallID *recall_id,
-					  guint *n_params, gchar **parameter_name, GValue *value);
 
 /**
  * SECTION:ags_buffer_recycling
@@ -44,7 +40,6 @@ AgsRecall* ags_buffer_recycling_duplicate(AgsRecall *recall,
 
 static gpointer ags_buffer_recycling_parent_class = NULL;
 static AgsConnectableInterface *ags_buffer_recycling_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_buffer_recycling_parent_dynamic_connectable_interface;
 
 GType
 ags_buffer_recycling_get_type()
@@ -66,12 +61,6 @@ ags_buffer_recycling_get_type()
 
     static const GInterfaceInfo ags_connectable_interface_info = {
       (GInterfaceInitFunc) ags_buffer_recycling_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_buffer_recycling_dynamic_connectable_interface_init,
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
@@ -104,8 +93,6 @@ ags_buffer_recycling_class_init(AgsBufferRecyclingClass *buffer_recycling)
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) buffer_recycling;
-
-  recall->duplicate = ags_buffer_recycling_duplicate;
 }
 
 void
@@ -130,24 +117,8 @@ ags_buffer_recycling_init(AgsBufferRecycling *buffer_recycling)
 void
 ags_buffer_recycling_finalize(GObject *gobject)
 {
-  /* empty */
-
   /* call parent */
   G_OBJECT_CLASS(ags_buffer_recycling_parent_class)->finalize(gobject);
-}
-
-AgsRecall*
-ags_buffer_recycling_duplicate(AgsRecall *recall,
-			       AgsRecallID *recall_id,
-			       guint *n_params, gchar **parameter_name, GValue *value)
-{
-  AgsBufferRecycling *copy_buffer_recycling;
-
-  copy_buffer_recycling = (AgsBufferRecycling *) AGS_RECALL_CLASS(ags_buffer_recycling_parent_class)->duplicate(recall,
-														recall_id,
-														n_params, parameter_name, value);
-  
-  return((AgsRecall *) copy_buffer_recycling);
 }
 
 /**

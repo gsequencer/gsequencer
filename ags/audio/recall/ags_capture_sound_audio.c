@@ -36,6 +36,7 @@ void ags_capture_sound_audio_get_property(GObject *gobject,
 					  GValue *value,
 					  GParamSpec *param_spec);
 void ags_capture_sound_audio_finalize(GObject *gobject);
+
 void ags_capture_sound_audio_set_ports(AgsPlugin *plugin, GList *port);
 
 /**
@@ -53,10 +54,10 @@ enum{
   PROP_PLAYBACK,
   PROP_RECORD,
   PROP_FILENAME,
-  PROP_AUDIO_CHANNELS,
-  PROP_FORMAT,
-  PROP_SAMPLERATE,
-  PROP_BUFFER_SIZE,
+  PROP_FILE_AUDIO_CHANNELS,
+  PROP_FILE_SAMPLERATE,
+  PROP_FILE_BUFFER_SIZE,
+  PROP_FILE_FORMAT,
 };
 
 static gpointer ags_capture_sound_audio_parent_class = NULL;
@@ -68,10 +69,10 @@ static const gchar *ags_capture_sound_audio_specifier[] = {
   "./playback[0]"
   "./record[0]",
   "./filename[0]",
-  "./audio-channels[0]",
-  "./format[0]",
-  "./samplerate[0]",
-  "./buffer-size[0]",
+  "./file-audio-channels[0]",
+  "./file-samplerate[0]",
+  "./file-buffer-size[0]",
+  "./file-format[0]",
 };
 
 static const gchar *ags_capture_sound_audio_control_port[] = {
@@ -198,67 +199,67 @@ ags_capture_sound_audio_class_init(AgsCaptureSoundAudioClass *capture_sound_audi
 				  param_spec);
 
   /**
-   * AgsCaptureSoundAudio:audio-channels:
+   * AgsCaptureSoundAudio:file-audio-channels:
    * 
-   * The audio channels port.
+   * The file's audio channels port.
    * 
    * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("audio-channels",
-				   i18n_pspec("audio channels"),
+  param_spec = g_param_spec_object("file-audio-channels",
+				   i18n_pspec("file audio channels"),
 				   i18n_pspec("Audio channels count of file"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_AUDIO_CHANNELS,
+				  PROP_FILE_AUDIO_CHANNELS,
+				  param_spec);
+
+  /**
+   * AgsCaptureSoundAudio:file-samplerate:
+   * 
+   * The file's samplerate port.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("file-samplerate",
+				   i18n_pspec("file samplerate"),
+				   i18n_pspec("Samplerate to use of file"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILE_SAMPLERATE,
+				  param_spec);
+
+  /**
+   * AgsCaptureSoundAudio:file-buffer-size:
+   * 
+   * The file's buffer size port.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("file-buffer-size",
+				   i18n_pspec("files buffer size"),
+				   i18n_pspec("Buffer size to use of file"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FILE_BUFFER_SIZE,
 				  param_spec);
 
   /**
    * AgsCaptureSoundAudio:format:
    * 
-   * The format port.
+   * The file's format port.
    * 
    * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("format",
-				   i18n_pspec("format"),
+  param_spec = g_param_spec_object("file-format",
+				   i18n_pspec("file format"),
 				   i18n_pspec("Format to use of file"),
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_FORMAT,
-				  param_spec);
-
-  /**
-   * AgsCaptureSoundAudio:samplerate:
-   * 
-   * The samplerate port.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("samplerate",
-				   i18n_pspec("samplerate"),
-				   i18n_pspec("Samplerate to use of file"),
-				   AGS_TYPE_PORT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_SAMPLERATE,
-				  param_spec);
-
-  /**
-   * AgsCaptureSoundAudio:buffer-size:
-   * 
-   * The buffer size port.
-   * 
-   * Since: 2.0.0
-   */
-  param_spec = g_param_spec_object("buffer-size",
-				   i18n_pspec("buffer size"),
-				   i18n_pspec("Buffer size to use"),
-				   AGS_TYPE_PORT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_BUFFER_SIZE,
+				  PROP_FILE_FORMAT,
 				  param_spec);
 }
 
@@ -337,68 +338,68 @@ ags_capture_sound_audio_init(AgsCaptureSoundAudio *capture_sound_audio)
   g_object_ref(capture_sound_audio->filename);
 
   /* audio channels */
-  capture_sound_audio->audio_channels = g_object_new(AGS_TYPE_PORT,
-						     "plugin-name", ags_capture_sound_audio_plugin_name,
-						     "specifier", ags_capture_sound_audio_specifier[3],
-						     "control-port", ags_capture_sound_audio_control_port[3],
-						     "port-value-is-pointer", FALSE,
-						     "port-value-type", G_TYPE_UINT64,
-						     NULL);
-  g_object_ref(capture_sound_audio->audio_channels);
+  capture_sound_audio->file_audio_channels = g_object_new(AGS_TYPE_PORT,
+							  "plugin-name", ags_capture_sound_audio_plugin_name,
+							  "specifier", ags_capture_sound_audio_specifier[3],
+							  "control-port", ags_capture_sound_audio_control_port[3],
+							  "port-value-is-pointer", FALSE,
+							  "port-value-type", G_TYPE_UINT64,
+							  NULL);
+  g_object_ref(capture_sound_audio->file_audio_channels);
   
-  capture_sound_audio->audio_channels->port_value.ags_port_uint = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
+  capture_sound_audio->file_audio_channels->port_value.ags_port_uint = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
 
   /* add to port */
-  port = g_list_prepend(port, capture_sound_audio->audio_channels);
-  g_object_ref(capture_sound_audio->audio_channels);
-
-  /* format */
-  capture_sound_audio->format = g_object_new(AGS_TYPE_PORT,
-					     "plugin-name", ags_capture_sound_audio_plugin_name,
-					     "specifier", ags_capture_sound_audio_specifier[4],
-					     "control-port", ags_capture_sound_audio_control_port[4],
-					     "port-value-is-pointer", FALSE,
-					     "port-value-type", G_TYPE_UINT64,
-					     NULL);
-  g_object_ref(capture_sound_audio->format);
-  
-  capture_sound_audio->format->port_value.ags_port_uint = AGS_SOUNDCARD_DEFAULT_FORMAT;
-
-  /* add to port */
-  port = g_list_prepend(port, capture_sound_audio->format);
-  g_object_ref(capture_sound_audio->format);
+  port = g_list_prepend(port, capture_sound_audio->file_audio_channels);
+  g_object_ref(capture_sound_audio->file_audio_channels);
 
   /* samplerate */
-  capture_sound_audio->samplerate = g_object_new(AGS_TYPE_PORT,
-						 "plugin-name", ags_capture_sound_audio_plugin_name,
-						 "specifier", ags_capture_sound_audio_specifier[5],
-						 "control-port", ags_capture_sound_audio_control_port[5],
-						 "port-value-is-pointer", FALSE,
-						 "port-value-type", G_TYPE_UINT64,
-						 NULL);
-  g_object_ref(capture_sound_audio->samplerate);
+  capture_sound_audio->file_samplerate = g_object_new(AGS_TYPE_PORT,
+						      "plugin-name", ags_capture_sound_audio_plugin_name,
+						      "specifier", ags_capture_sound_audio_specifier[5],
+						      "control-port", ags_capture_sound_audio_control_port[5],
+						      "port-value-is-pointer", FALSE,
+						      "port-value-type", G_TYPE_UINT64,
+						      NULL);
+  g_object_ref(capture_sound_audio->file_samplerate);
   
-  capture_sound_audio->samplerate->port_value.ags_port_uint = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  capture_sound_audio->file_samplerate->port_value.ags_port_uint = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
   /* add to port */
-  port = g_list_prepend(port, capture_sound_audio->samplerate);
-  g_object_ref(capture_sound_audio->samplerate);
+  port = g_list_prepend(port, capture_sound_audio->file_samplerate);
+  g_object_ref(capture_sound_audio->file_samplerate);
 
   /* buffer size */
-  capture_sound_audio->buffer_size = g_object_new(AGS_TYPE_PORT,
+  capture_sound_audio->file_buffer_size = g_object_new(AGS_TYPE_PORT,
+						       "plugin-name", ags_capture_sound_audio_plugin_name,
+						       "specifier", ags_capture_sound_audio_specifier[6],
+						       "control-port", ags_capture_sound_audio_control_port[6],
+						       "port-value-is-pointer", FALSE,
+						       "port-value-type", G_TYPE_UINT64,
+						       NULL);
+  g_object_ref(capture_sound_audio->file_buffer_size);
+  
+  capture_sound_audio->file_buffer_size->port_value.ags_port_uint = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+
+  /* add to port */
+  port = g_list_prepend(port, capture_sound_audio->file_buffer_size);
+  g_object_ref(capture_sound_audio->file_buffer_size);
+
+  /* format */
+  capture_sound_audio->file_format = g_object_new(AGS_TYPE_PORT,
 						  "plugin-name", ags_capture_sound_audio_plugin_name,
-						  "specifier", ags_capture_sound_audio_specifier[6],
-						  "control-port", ags_capture_sound_audio_control_port[6],
+						  "specifier", ags_capture_sound_audio_specifier[4],
+						  "control-port", ags_capture_sound_audio_control_port[4],
 						  "port-value-is-pointer", FALSE,
 						  "port-value-type", G_TYPE_UINT64,
 						  NULL);
-  g_object_ref(capture_sound_audio->buffer_size);
+  g_object_ref(capture_sound_audio->file_format);
   
-  capture_sound_audio->buffer_size->port_value.ags_port_uint = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  capture_sound_audio->file_format->port_value.ags_port_uint = AGS_SOUNDCARD_DEFAULT_FORMAT;
 
   /* add to port */
-  port = g_list_prepend(port, capture_sound_audio->buffer_size);
-  g_object_ref(capture_sound_audio->buffer_size);
+  port = g_list_prepend(port, capture_sound_audio->file_format);
+  g_object_ref(capture_sound_audio->file_format);
 
   /* set port */
   AGS_RECALL(capture_sound_audio)->port = port;
@@ -505,110 +506,110 @@ ags_capture_sound_audio_set_property(GObject *gobject,
       pthread_mutex_unlock(recall_mutex);
     }
     break;
-  case PROP_AUDIO_CHANNELS:
+  case PROP_FILE_AUDIO_CHANNELS:
     {
-      AgsPort *audio_channels;
+      AgsPort *file_audio_channels;
 
-      audio_channels = (AgsPort *) g_value_get_object(value);
+      file_audio_channels = (AgsPort *) g_value_get_object(value);
 
       pthread_mutex_lock(recall_mutex);
 
-      if(capture_sound_audio->audio_channels == audio_channels){
+      if(capture_sound_audio->file_audio_channels == file_audio_channels){
 	pthread_mutex_unlock(recall_mutex);
 
 	return;
       }
 
-      if(capture_sound_audio->audio_channels != NULL){
-	g_object_unref(G_OBJECT(capture_sound_audio->audio_channels));
+      if(capture_sound_audio->file_audio_channels != NULL){
+	g_object_unref(G_OBJECT(capture_sound_audio->file_audio_channels));
       }
       
       if(audio_channels != NULL){
-	g_object_ref(G_OBJECT(audio_channels));
+	g_object_ref(G_OBJECT(file_audio_channels));
       }
       
-      capture_sound_audio->audio_channels = audio_channels;
+      capture_sound_audio->file_audio_channels = file_audio_channels;
 
       pthread_mutex_unlock(recall_mutex);
     }
     break;
-  case PROP_FORMAT:
+  case PROP_FILE_SAMPLERATE:
     {
-      AgsPort *format;
+      AgsPort *file_samplerate;
 
-      format = (AgsPort *) g_value_get_object(value);
+      file_samplerate = (AgsPort *) g_value_get_object(value);
 
       pthread_mutex_lock(recall_mutex);
 
-      if(capture_sound_audio->format == format){
+      if(capture_sound_audio->file_samplerate == file_samplerate){
 	pthread_mutex_unlock(recall_mutex);
 
 	return;
       }
 
-      if(capture_sound_audio->format != NULL){
-	g_object_unref(G_OBJECT(capture_sound_audio->format));
+      if(capture_sound_audio->file_samplerate != NULL){
+	g_object_unref(G_OBJECT(capture_sound_audio->file_samplerate));
       }
       
-      if(format != NULL){
-	g_object_ref(G_OBJECT(format));
+      if(file_samplerate != NULL){
+	g_object_ref(G_OBJECT(file_samplerate));
       }
       
-      capture_sound_audio->format = format;
+      capture_sound_audio->file_samplerate = file_samplerate;
 
       pthread_mutex_unlock(recall_mutex);
     }
     break;
-  case PROP_SAMPLERATE:
+  case PROP_FILE_BUFFER_SIZE:
     {
-      AgsPort *samplerate;
+      AgsPort *file_buffer_size;
 
-      samplerate = (AgsPort *) g_value_get_object(value);
+      file_buffer_size = (AgsPort *) g_value_get_object(value);
 
       pthread_mutex_lock(recall_mutex);
 
-      if(capture_sound_audio->samplerate == samplerate){
+      if(capture_sound_audio->file_buffer_size == file_buffer_size){
 	pthread_mutex_unlock(recall_mutex);
 
 	return;
       }
 
-      if(capture_sound_audio->samplerate != NULL){
-	g_object_unref(G_OBJECT(capture_sound_audio->samplerate));
+      if(capture_sound_audio->file_buffer_size != NULL){
+	g_object_unref(G_OBJECT(capture_sound_audio->file_buffer_size));
       }
       
-      if(samplerate != NULL){
-	g_object_ref(G_OBJECT(samplerate));
+      if(file_buffer_size != NULL){
+	g_object_ref(G_OBJECT(file_buffer_size));
       }
       
-      capture_sound_audio->samplerate = samplerate;
+      capture_sound_audio->file_buffer_size = file_buffer_size;
 
       pthread_mutex_unlock(recall_mutex);
     }
     break;
-  case PROP_BUFFER_SIZE:
+  case PROP_FILE_FORMAT:
     {
-      AgsPort *buffer_size;
+      AgsPort *file_format;
 
-      buffer_size = (AgsPort *) g_value_get_object(value);
+      file_format = (AgsPort *) g_value_get_object(value);
 
       pthread_mutex_lock(recall_mutex);
 
-      if(capture_sound_audio->buffer_size == buffer_size){
+      if(capture_sound_audio->file_format == file_format){
 	pthread_mutex_unlock(recall_mutex);
 
 	return;
       }
 
-      if(capture_sound_audio->buffer_size != NULL){
-	g_object_unref(G_OBJECT(capture_sound_audio->buffer_size));
+      if(capture_sound_audio->file_format != NULL){
+	g_object_unref(G_OBJECT(capture_sound_audio->file_format));
       }
       
-      if(buffer_size != NULL){
-	g_object_ref(G_OBJECT(buffer_size));
+      if(file_format != NULL){
+	g_object_ref(G_OBJECT(file_format));
       }
       
-      capture_sound_audio->buffer_size = buffer_size;
+      capture_sound_audio->file_format = file_format;
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -666,38 +667,38 @@ ags_capture_sound_audio_get_property(GObject *gobject,
       pthread_mutex_unlock(recall_mutex);
     }
     break;
-  case PROP_AUDIO_CHANNELS:
+  case PROP_FILE_AUDIO_CHANNELS:
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, capture_sound_audio->audio_channels);
+      g_value_set_object(value, capture_sound_audio->file_audio_channels);
 
       pthread_mutex_unlock(recall_mutex);
     }
     break;
-  case PROP_FORMAT:
+  case PROP_FILE_SAMPLERATE:
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, capture_sound_audio->format);
+      g_value_set_object(value, capture_sound_audio->file_samplerate);
 
       pthread_mutex_unlock(recall_mutex);
     }
     break;
-  case PROP_SAMPLERATE:
+  case PROP_FILE_BUFFER_SIZE:
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, capture_sound_audio->samplerate);
+      g_value_set_object(value, capture_sound_audio->file_buffer_size);
 
       pthread_mutex_unlock(recall_mutex);
     }
     break;
-  case PROP_BUFFER_SIZE:
+  case PROP_FILE_FORMAT:
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, capture_sound_audio->buffer_size);
+      g_value_set_object(value, capture_sound_audio->file_format);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -737,31 +738,31 @@ ags_capture_sound_audio_dispose(GObject *gobject)
   }
 
   /* audio channels */
-  if(capture_sound_audio->audio_channels != NULL){
-    g_object_unref(capture_sound_audio->audio_channels);
+  if(capture_sound_audio->file_audio_channels != NULL){
+    g_object_unref(capture_sound_audio->file_audio_channels);
 
-    capture_sound_audio->audio_channels = NULL;
-  }
-
-  /* format */
-  if(capture_sound_audio->format != NULL){
-    g_object_unref(capture_sound_audio->format);
-
-    capture_sound_audio->format = NULL;
+    capture_sound_audio->file_audio_channels = NULL;
   }
 
   /* samplerate */
-  if(capture_sound_audio->samplerate != NULL){
-    g_object_unref(capture_sound_audio->samplerate);
+  if(capture_sound_audio->file_samplerate != NULL){
+    g_object_unref(capture_sound_audio->file_samplerate);
 
-    capture_sound_audio->samplerate = NULL;
+    capture_sound_audio->file_samplerate = NULL;
   }
 
   /* buffer size */
-  if(capture_sound_audio->buffer_size != NULL){
-    g_object_unref(capture_sound_audio->buffer_size);
+  if(capture_sound_audio->file_buffer_size != NULL){
+    g_object_unref(capture_sound_audio->file_buffer_size);
 
-    capture_sound_audio->buffer_size = NULL;
+    capture_sound_audio->file_buffer_size = NULL;
+  }
+
+  /* format */
+  if(capture_sound_audio->file_format != NULL){
+    g_object_unref(capture_sound_audio->file_format);
+
+    capture_sound_audio->file_format = NULL;
   }
 
   /* call parent */
@@ -795,19 +796,19 @@ ags_capture_sound_audio_finalize(GObject *gobject)
     g_object_unref(capture_sound_audio->audio_channels);
   }
 
-  /* format */
-  if(capture_sound_audio->format != NULL){
-    g_object_unref(capture_sound_audio->format);
-  }
-
   /* samplerate */
-  if(capture_sound_audio->samplerate != NULL){
-    g_object_unref(capture_sound_audio->samplerate);
+  if(capture_sound_audio->file_samplerate != NULL){
+    g_object_unref(capture_sound_audio->file_samplerate);
   }
 
   /* buffer size */
-  if(capture_sound_audio->buffer_size != NULL){
-    g_object_unref(capture_sound_audio->buffer_size);
+  if(capture_sound_audio->file_buffer_size != NULL){
+    g_object_unref(capture_sound_audio->file_buffer_size);
+  }
+
+  /* format */
+  if(capture_sound_audio->file_format != NULL){
+    g_object_unref(capture_sound_audio->file_format);
   }
 
   /* call parent */
@@ -837,28 +838,28 @@ ags_capture_sound_audio_set_ports(AgsPlugin *plugin, GList *port)
 		   "filename", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./audio-channels[0]",
-		      11)){
+		      "./file-audio-channels[0]",
+		      24)){
       g_object_set(G_OBJECT(plugin),
-		   "audio-channels", AGS_PORT(port->data),
+		   "file-audio-channels", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./format[0]",
-		      11)){
+		      "./file-samplerate[0]",
+		      20)){
       g_object_set(G_OBJECT(plugin),
-		   "format", AGS_PORT(port->data),
+		   "file-samplerate", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./samplerate[0]",
-		      11)){
+		      "./file-buffer-size[0]",
+		      21)){
       g_object_set(G_OBJECT(plugin),
-		   "samplerate", AGS_PORT(port->data),
+		   "file-buffer-size", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./buffer-size[0]",
-		      11)){
+		      "./file-format[0]",
+		      16)){
       g_object_set(G_OBJECT(plugin),
-		   "buffer-size", AGS_PORT(port->data),
+		   "file-format", AGS_PORT(port->data),
 		   NULL);
     }
 

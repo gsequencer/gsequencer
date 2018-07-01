@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_port.h>
@@ -46,10 +48,10 @@ struct _AgsCaptureSoundAudio
   AgsPort *record;
   AgsPort *filename;
 
-  AgsPort *audio_channels;
-  AgsPort *format;
-  AgsPort *samplerate;
-  AgsPort *buffer_size;
+  AgsPort *file_audio_channels;
+  AgsPort *file_samplerate;
+  AgsPort *file_buffer_size;
+  AgsPort *file_format;
 };
 
 struct _AgsCaptureSoundAudioClass

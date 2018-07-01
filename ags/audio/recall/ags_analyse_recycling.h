@@ -23,6 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+#include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_recycling.h>
 
 #define AGS_TYPE_ANALYSE_RECYCLING                (ags_analyse_recycling_get_type())
@@ -47,6 +50,6 @@ struct _AgsAnalyseRecyclingClass
 
 GType ags_analyse_recycling_get_type();
 
-AgsAnalyseRecycling* ags_analyse_recycling_new(AgsRecycling *recycling);
+AgsAnalyseRecycling* ags_analyse_recycling_new(AgsRecycling *source);
 
 #endif /*__AGS_ANALYSE_RECYCLING_H__*/

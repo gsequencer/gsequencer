@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_analyse_channel_run.h>
-#include <ags/audio/recall/ags_analyse_channel.h>
-#include <ags/audio/recall/ags_analyse_recycling.h>
 
 #include <ags/libags.h>
 
@@ -28,24 +26,19 @@
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
+#include <ags/audio/recall/ags_analyse_channel.h>
+#include <ags/audio/recall/ags_analyse_recycling.h>
+
 void ags_analyse_channel_run_class_init(AgsAnalyseChannelRunClass *analyse_channel_run);
 void ags_analyse_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_analyse_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_analyse_channel_run_init(AgsAnalyseChannelRun *analyse_channel_run);
-void ags_analyse_channel_run_connect(AgsConnectable *connectable);
-void ags_analyse_channel_run_disconnect(AgsConnectable *connectable);
-void ags_analyse_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_analyse_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_analyse_channel_run_finalize(GObject *gobject);
 
-AgsRecall* ags_analyse_channel_run_duplicate(AgsRecall *recall,
-					     AgsRecallID *recall_id,
-					     guint *n_params, GParameter *parameter);
 void ags_analyse_channel_run_run_pre(AgsRecall *recall);
 
 /**
  * SECTION:ags_analyse_channel_run
- * @short_description: analyse
+ * @short_description: analyse channel
  * @title: AgsAnalyseChannelRun
  * @section_id:
  * @include: ags/audio/recall/ags_analyse_channel_run.h
@@ -55,7 +48,6 @@ void ags_analyse_channel_run_run_pre(AgsRecall *recall);
 
 static gpointer ags_analyse_channel_run_parent_class = NULL;
 static AgsConnectableInterface *ags_analyse_channel_run_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_analyse_channel_run_parent_dynamic_connectable_interface;
 
 GType
 ags_analyse_channel_run_get_type()
@@ -80,12 +72,6 @@ ags_analyse_channel_run_get_type()
       NULL, /* interface_finalize */
       NULL, /* interface_data */
     };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_analyse_channel_run_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
     
     ags_type_analyse_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 							  "AgsAnalyseChannelRun",
@@ -95,10 +81,6 @@ ags_analyse_channel_run_get_type()
     g_type_add_interface_static(ags_type_analyse_channel_run,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_analyse_channel_run,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
   }
 
   return (ags_type_analyse_channel_run);
@@ -120,7 +102,6 @@ ags_analyse_channel_run_class_init(AgsAnalyseChannelRunClass *analyse_channel_ru
   /* AgsRecallClass */
   recall = (AgsRecallClass *) analyse_channel_run;
 
-  recall->duplicate = ags_analyse_channel_run_duplicate;
   recall->run_pre = ags_analyse_channel_run_run_pre;
 }
 
@@ -128,18 +109,6 @@ void
 ags_analyse_channel_run_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_analyse_channel_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_analyse_channel_run_connect;
-  connectable->disconnect = ags_analyse_channel_run_disconnect;
-}
-
-void
-ags_analyse_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_analyse_channel_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_analyse_channel_run_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_analyse_channel_run_disconnect_dynamic;
 }
 
 void
@@ -163,63 +132,37 @@ ags_analyse_channel_run_finalize(GObject *gobject)
 }
 
 void
-ags_analyse_channel_run_connect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_analyse_channel_run_parent_connectable_interface->connect(connectable);
-}
-
-void
-ags_analyse_channel_run_disconnect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_analyse_channel_run_parent_connectable_interface->disconnect(connectable);
-}
-
-void
-ags_analyse_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_analyse_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-}
-
-void
-ags_analyse_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_analyse_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-}
-
-AgsRecall*
-ags_analyse_channel_run_duplicate(AgsRecall *recall,
-				  AgsRecallID *recall_id,
-				  guint *n_params, GParameter *parameter)
-{
-  AgsAnalyseChannelRun *copy;
-
-  copy = (AgsAnalyseChannelRun *) AGS_RECALL_CLASS(ags_analyse_channel_run_parent_class)->duplicate(recall,
-												    recall_id,
-												    n_params, parameter);
-  
-  return((AgsRecall *) copy);
-}
-
-void
 ags_analyse_channel_run_run_pre(AgsRecall *recall)
 {
+  AgsPort *buffer_computed;
   AgsAnalyseChannel *analyse_channel;
 
+  guint cache_buffer_size;
+  guint cache_format;
   gboolean buffer_computed;
   
   GValue value = {0,};
 
+  pthread_mutex_t *buffer_mutex;
+
   AGS_RECALL_CLASS(ags_analyse_channel_run_parent_class)->run_pre(recall);
 
-  /* calculate of previous run */
-  analyse_channel = AGS_RECALL_CHANNEL_RUN(recall)->recall_channel;
+  /* get buffer mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
 
-  pthread_mutex_lock(analyse_channel->buffer_mutex);
+  buffer_mutex = analyse_channel->buffer_mutex;
   
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  g_object_get(recall,
+	       "recall-channel", &analyse_channel,
+	       "buffer-computed", &buffer_computed,
+	       "cache-buffer-size", &cache_buffer_size,
+	       "cache-format", &cache_format,
+	       NULL);
+  
+  /* calculate of previous run */
   g_value_init(&value,
 	       G_TYPE_BOOLEAN);
 
@@ -229,14 +172,15 @@ ags_analyse_channel_run_run_pre(AgsRecall *recall)
 
   if(!buffer_computed){    
     /* set buffer-computed port to TRUE */
+    g_value_reset(&value);
     g_value_set_boolean(&value,
 			TRUE);
 
-    ags_port_safe_write(analyse_channel->buffer_computed,
+    ags_port_safe_write(buffer_computed,
 			&value);
   }
-  
-  pthread_mutex_unlock(analyse_channel->buffer_mutex);
+
+  g_value_unset(&value);
 
   /* lock free - buffer-computed reset by cyclic-task AgsResetAnalyse */
   if(!buffer_computed){
@@ -244,30 +188,32 @@ ags_analyse_channel_run_run_pre(AgsRecall *recall)
     ags_analyse_channel_retrieve_frequency_and_magnitude(analyse_channel);
 
     /* clear buffer */
-    ags_audio_buffer_util_clear_double(analyse_channel->in, 1,
-				       analyse_channel->buffer_size);
+    pthread_mutex_lock(buffer_mutex);
+  
+    ags_audio_buffer_util_clear_buffer(analyse_channel->in, 1,
+				       cache_buffer_size, cache_format);
+  
+    pthread_mutex_unlock(buffer_mutex);
   }
-
-  g_value_unset(&value);
 }
 
 /**
  * ags_analyse_channel_run_new:
- * @channel: the #AgsChannel as source
+ * @source: the source #AgsChannel
  *
- * Creates an #AgsAnalyseChannelRun
+ * Create a new instance of #AgsAnalyseChannelRun
  *
- * Returns: a new #AgsAnalyseChannelRun
+ * Returns: the new #AgsAnalyseChannelRun
  *
- * Since: 1.5.0
+ * Since: 2.0.0
  */
 AgsAnalyseChannelRun*
-ags_analyse_channel_run_new(AgsChannel *channel)
+ags_analyse_channel_run_new(AgsChannel *source)
 {
   AgsAnalyseChannelRun *analyse_channel_run;
 
   analyse_channel_run = (AgsAnalyseChannelRun *) g_object_new(AGS_TYPE_ANALYSE_CHANNEL_RUN,
-							      "source", channel,
+							      "source", source,
 							      NULL);
 
   return(analyse_channel_run);

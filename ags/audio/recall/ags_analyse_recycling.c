@@ -18,27 +18,15 @@
  */
 
 #include <ags/audio/recall/ags_analyse_recycling.h>
-#include <ags/audio/recall/ags_analyse_channel.h>
-#include <ags/audio/recall/ags_analyse_audio_signal.h>
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_recall_id.h>
+#include <ags/audio/recall/ags_analyse_audio_signal.h>
 
 void ags_analyse_recycling_class_init(AgsAnalyseRecyclingClass *analyse_recycling);
 void ags_analyse_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_analyse_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_analyse_recycling_init(AgsAnalyseRecycling *analyse_recycling);
-void ags_analyse_recycling_connect(AgsConnectable *connectable);
-void ags_analyse_recycling_disconnect(AgsConnectable *connectable);
-void ags_analyse_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_analyse_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_analyse_recycling_finalize(GObject *gobject);
-
-AgsRecall* ags_analyse_recycling_duplicate(AgsRecall *recall,
-					   AgsRecallID *recall_id,
-					   guint *n_params, GParameter *parameter);
 
 /**
  * SECTION:ags_analyse_recycling
@@ -52,7 +40,6 @@ AgsRecall* ags_analyse_recycling_duplicate(AgsRecall *recall,
 
 static gpointer ags_analyse_recycling_parent_class = NULL;
 static AgsConnectableInterface *ags_analyse_recycling_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_analyse_recycling_parent_dynamic_connectable_interface;
 
 GType
 ags_analyse_recycling_get_type()
@@ -78,12 +65,6 @@ ags_analyse_recycling_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_analyse_recycling_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_analyse_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
 							"AgsAnalyseRecycling",
 							&ags_analyse_recycling_info,
@@ -92,10 +73,6 @@ ags_analyse_recycling_get_type()
     g_type_add_interface_static(ags_type_analyse_recycling,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_analyse_recycling,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
   }
 
   return (ags_type_analyse_recycling);
@@ -117,26 +94,12 @@ ags_analyse_recycling_class_init(AgsAnalyseRecyclingClass *analyse_recycling)
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) analyse_recycling;
-
-  recall->duplicate = ags_analyse_recycling_duplicate;
 }
 
 void
 ags_analyse_recycling_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_analyse_recycling_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_analyse_recycling_connect;
-  connectable->disconnect = ags_analyse_recycling_disconnect;
-}
-
-void
-ags_analyse_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_analyse_recycling_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_analyse_recycling_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_analyse_recycling_disconnect_dynamic;
 }
 
 void
@@ -156,79 +119,27 @@ ags_analyse_recycling_init(AgsAnalyseRecycling *analyse_recycling)
 void
 ags_analyse_recycling_finalize(GObject *gobject)
 {
-  /* empty */
-
   /* call parent */
   G_OBJECT_CLASS(ags_analyse_recycling_parent_class)->finalize(gobject);
-}
-
-void
-ags_analyse_recycling_connect(AgsConnectable *connectable)
-{ 
-  /* call parent */
-  ags_analyse_recycling_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_analyse_recycling_disconnect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_analyse_recycling_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_analyse_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_analyse_recycling_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
-ags_analyse_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_analyse_recycling_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-AgsRecall*
-ags_analyse_recycling_duplicate(AgsRecall *recall,
-				AgsRecallID *recall_id,
-				guint *n_params, GParameter *parameter)
-{
-  AgsAnalyseRecycling *copy;
-
-  copy = (AgsAnalyseRecycling *) AGS_RECALL_CLASS(ags_analyse_recycling_parent_class)->duplicate(recall,
-												 recall_id,
-												 n_params, parameter);
-
-  return((AgsRecall *) copy);
 }
 
 /**
  * ags_analyse_recycling_new:
  * @recycling: the source #AgsRecycling
  *
- * Creates an #AgsAnalyseRecycling
+ * Create a new instance of #AgsAnalyseRecycling
  *
- * Returns: a new #AgsAnalyseRecycling
+ * Returns: the new #AgsAnalyseRecycling
  *
- * Since: 1.5.0
+ * Since: 2.0.0
  */
 AgsAnalyseRecycling*
-ags_analyse_recycling_new(AgsRecycling *recycling)
+ags_analyse_recycling_new(AgsRecycling *source)
 {
   AgsAnalyseRecycling *analyse_recycling;
 
   analyse_recycling = (AgsAnalyseRecycling *) g_object_new(AGS_TYPE_ANALYSE_RECYCLING,
-							   "source", recycling,
+							   "source", source,
 							   NULL);
 
   return(analyse_recycling);

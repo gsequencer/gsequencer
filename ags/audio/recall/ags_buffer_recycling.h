@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_recycling.h>
 
@@ -48,6 +50,7 @@ struct _AgsBufferRecyclingClass
 
 GType ags_buffer_recycling_get_type();
 
-AgsBufferRecycling* ags_buffer_recycling_new(AgsRecycling *recycling);
+AgsBufferRecycling* ags_buffer_recycling_new(AgsRecycling *destination,
+					     AgsRecycling *source);
 
 #endif /*__AGS_BUFFER_RECYCLING_H__*/

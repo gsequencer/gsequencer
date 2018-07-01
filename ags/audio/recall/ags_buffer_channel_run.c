@@ -34,10 +34,6 @@ void ags_buffer_channel_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_buffer_channel_run_init(AgsBufferChannelRun *buffer_channel_run);
 void ags_buffer_channel_run_finalize(GObject *gobject);
 
-AgsRecall* ags_buffer_channel_run_duplicate(AgsRecall *recall,
-					    AgsRecallID *recall_id,
-					    guint *n_params, gchar **parameter_name, GValue *value);
-
 /**
  * SECTION:ags_buffer_channel_run
  * @short_description: buffer channel
@@ -114,8 +110,6 @@ ags_buffer_channel_run_class_init(AgsBufferChannelRunClass *buffer_channel_run)
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) buffer_channel_run;
-
-  recall->duplicate = ags_buffer_channel_run_duplicate;
 }
 
 void
@@ -146,24 +140,8 @@ ags_buffer_channel_run_init(AgsBufferChannelRun *buffer_channel_run)
 void
 ags_buffer_channel_run_finalize(GObject *gobject)
 {
-  /* empty */
-
   /* call parent */
   G_OBJECT_CLASS(ags_buffer_channel_run_parent_class)->finalize(gobject);
-}
-
-AgsRecall*
-ags_buffer_channel_run_duplicate(AgsRecall *recall,
-				 AgsRecallID *recall_id,
-				 guint *n_params, gchar **parameter_name, GValue *value)
-{
-  AgsBufferChannelRun *copy;
-
-  copy = (AgsBufferChannelRun *) AGS_RECALL_CLASS(ags_buffer_channel_run_parent_class)->duplicate(recall,
-												  recall_id,
-												  n_params, parameter_name, value);
-
-  return((AgsRecall *) copy);
 }
 
 /**
