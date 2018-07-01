@@ -288,12 +288,46 @@ ags_timestamp_get_unix_time(AgsTimestamp *timestamp)
 }
 
 /**
+ * ags_timestamp_get_unix_time:
+ * @timestamp: the #AgsTimestamp
+ * @unix_time: the unix time value
+ * 
+ * Set unix time.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_timestamp_set_unix_time(AgsTimestamp *timestamp,
+			    time_t unix_time)
+{
+  pthread_mutex_t *timestamp_mutex;
+
+  if(!AGS_IS_TIMESTAMP(timestamp)){
+    return;
+  }
+  
+  /* get timestamp mutex */
+  pthread_mutex_lock(ags_timestamp_get_class_mutex());
+  
+  timestamp_mutex = timestamp->obj_mutex;
+  
+  pthread_mutex_unlock(ags_timestamp_get_class_mutex());
+
+  /* get ags offset */
+  pthread_mutex_lock(timestamp_mutex);
+  
+  timestamp->timer.unix_time.time_val = unix_time;
+
+  pthread_mutex_unlock(timestamp_mutex);
+}
+
+/**
  * ags_timestamp_get_ags_offset:
  * @timestamp: the #AgsTimestamp
  * 
  * Get AGS offset.
  * 
- * Returns: the ags offset as unsigned 64 bit integer
+ * Returns: the AGS offset as unsigned 64 bit integer
  * 
  * Since: 2.0.0
  */
@@ -323,6 +357,40 @@ ags_timestamp_get_ags_offset(AgsTimestamp *timestamp)
   pthread_mutex_unlock(timestamp_mutex);
   
   return(ags_offset);
+}
+
+/**
+ * ags_timestamp_get_ags_offset:
+ * @timestamp: the #AgsTimestamp
+ * @ags_offset: the AGS offset
+ * 
+ * Set AGS offset as unsigned 64 bit integer.
+ * 
+ * Since: 2.0.0
+ */
+guint64
+ags_timestamp_get_ags_offset(AgsTimestamp *timestamp,
+			     guint64 ags_offset)
+{
+  pthread_mutex_t *timestamp_mutex;
+
+  if(!AGS_IS_TIMESTAMP(timestamp)){
+    return;
+  }
+  
+  /* get timestamp mutex */
+  pthread_mutex_lock(ags_timestamp_get_class_mutex());
+  
+  timestamp_mutex = timestamp->obj_mutex;
+  
+  pthread_mutex_unlock(ags_timestamp_get_class_mutex());
+
+  /* get ags offset */
+  pthread_mutex_lock(timestamp_mutex);
+  
+  timestamp->timer.ags_offset.offset = ags_offset;
+
+  pthread_mutex_unlock(timestamp_mutex);
 }
 
 /**

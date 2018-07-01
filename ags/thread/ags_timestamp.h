@@ -89,7 +89,12 @@ void ags_timestamp_unset_flags(AgsTimestamp *timestamp,
 
 /* query */
 time_t ags_timestamp_get_unix_time(AgsTimestamp *timestamp);
+void ags_timestamp_set_unix_time(AgsTimestamp *timestamp,
+				 time_t unix_time);
+
 guint64 ags_timestamp_get_ags_offset(AgsTimestamp *timestamp);
+void ags_timestamp_set_ags_offset(AgsTimestamp *timestamp,
+				  guint64 ags_offset);
 
 /* */
 AgsTimestamp* ags_timestamp_new();

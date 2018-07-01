@@ -18,7 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_capture_sound_audio_run.h>
-#include <ags/audio/recall/ags_capture_sound_audio.h>
 
 #include <ags/libags.h>
 
@@ -26,6 +25,8 @@
 #include <ags/audio/ags_buffer.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
+
+#include <ags/audio/recall/ags_capture_sound_audio.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
@@ -40,15 +41,20 @@ void ags_capture_sound_audio_run_class_init(AgsCaptureSoundAudioRunClass *captur
 void ags_capture_sound_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_capture_sound_audio_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_capture_sound_audio_run_init(AgsCaptureSoundAudioRun *capture_sound_audio_run);
+void ags_capture_sound_audio_run_set_property(GObject *gobject,
+					      guint prop_id,
+					      const GValue *value,
+					      GParamSpec *param_spec);
+void ags_capture_sound_audio_run_get_property(GObject *gobject,
+					      guint prop_id,
+					      GValue *value,
+					      GParamSpec *param_spec);
 void ags_capture_sound_audio_run_dispose(GObject *gobject);
 void ags_capture_sound_audio_run_finalize(GObject *gobject);
 
 void ags_capture_sound_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_capture_sound_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
-AgsRecall* ags_capture_sound_audio_run_duplicate(AgsRecall *recall,
-						 AgsRecallID *recall_id,
-						 guint *n_params, gchar **parameter_name, GValue *value);
 void ags_capture_sound_audio_run_run_init_pre(AgsRecall *recall);
 void ags_capture_sound_audio_run_run_pre(AgsRecall *recall);
 void ags_capture_sound_audio_run_done(AgsRecall *recall);
@@ -125,13 +131,48 @@ ags_capture_sound_audio_run_class_init(AgsCaptureSoundAudioRunClass *capture_sou
   /* GObjectClass */
   gobject = (GObjectClass *) capture_sound_audio_run;
 
+  gobject->set_property = ags_capture_sound_audio_run_set_property;
+  gobject->get_property = ags_capture_sound_audio_run_get_property;
+
   gobject->dispose = ags_capture_sound_audio_run_dispose;
   gobject->finalize = ags_capture_sound_audio_run_finalize;
+
+  /* properties */
+  /**
+   * AgsCaptureSoundAudioRun:audio-file:
+   * 
+   * The audio file.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("audio-file",
+				   i18n_pspec("audio file"),
+				   i18n_pspec("The audio file"),
+				   AGS_TYPE_AUDIO_FILE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_FILE,
+				  param_spec);
+
+  /**
+   * AgsCaptureSoundAudioRun:timestamp:
+   * 
+   * The timestamp.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("timestamp",
+				   i18n_pspec("timestamp"),
+				   i18n_pspec("The timestamp"),
+				   AGS_TYPE_TIMESTAMP,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TIMESTAMP,
+				  param_spec);
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) capture_sound_audio_run;
 
-  recall->duplicate = ags_capture_sound_audio_run_duplicate;
   recall->run_init_pre = ags_capture_sound_audio_run_run_init_pre;
   recall->run_pre = ags_capture_sound_audio_run_run_pre;
   recall->done = ags_capture_sound_audio_run_done;
@@ -161,9 +202,140 @@ ags_capture_sound_audio_run_init(AgsCaptureSoundAudioRun *capture_sound_audio_ru
   AGS_RECALL(capture_sound_audio_run)->xml_type = "ags-capture-sound-audio-run";
   AGS_RECALL(capture_sound_audio_run)->port = NULL;
 
+  capture_sound_audio_run->file_buffer = NULL;
+
   capture_sound_audio_run->audio_file = NULL;
 
-  capture_sound_audio_run->file_buffer = NULL;
+  capture_sound_audio_run->timestamp = ags_timestamp_new();
+
+  capture_sound_audio_run->timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  capture_sound_audio_run->timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
+  capture_sound_audio_run->timestamp->timer.ags_offset.offset = 0;
+}
+
+void
+ags_analyse_channel_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec)
+{
+  AgsCaptureSoundAudioRun *capture_sound_audio_run;
+
+  pthread_mutex_t *recall_mutex;
+
+  capture_sound_audio_run = AGS_CAPTURE_SOUND_AUDIO_RUN(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  switch(prop_id){
+  case PROP_AUDIO_FILE:
+    {
+      AgsAudioFile *audio_file;
+
+      audio_file = (AgsAudioFile *) g_value_get_object(value);
+
+      pthread_mutex_lock(recall_mutex);
+
+      if(audio_file == analyse_channel->audio_file){
+	pthread_mutex_unlock(recall_mutex);
+
+	return;
+      }
+
+      if(analyse_channel->audio_file != NULL){
+	g_object_unref(G_OBJECT(analyse_channel->audio_file));
+      }
+      
+      if(audio_file != NULL){
+	g_object_ref(G_OBJECT(audio_file));
+      }
+
+      analyse_channel->audio_file = audio_file;
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_TIMESTAMP:
+    {
+      AgsTimestamp *timestamp;
+
+      timestamp = (AgsTimestamp *) g_value_get_object(value);
+
+      pthread_mutex_lock(recall_mutex);
+
+      if(timestamp == analyse_channel->timestamp){
+	pthread_mutex_unlock(recall_mutex);
+
+	return;
+      }
+
+      if(analyse_channel->timestamp != NULL){
+	g_object_unref(G_OBJECT(analyse_channel->timestamp));
+      }
+      
+      if(timestamp != NULL){
+	g_object_ref(G_OBJECT(timestamp));
+      }
+
+      analyse_channel->timestamp = timestamp;
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }  
+}
+
+void
+ags_analyse_channel_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec)
+{
+  AgsCaptureSoundAudioRun *capture_sound_audio_run;
+
+  pthread_mutex_t *recall_mutex;
+
+  capture_sound_audio_run = AGS_CAPTURE_SOUND_AUDIO_RUN(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  switch(prop_id){
+  case PROP_AUDIO_FILE:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, capture_sound_audio_run->audio_file);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_TIMESTAMP:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, capture_sound_audio_run->timestamp);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -173,10 +345,18 @@ ags_capture_sound_audio_run_dispose(GObject *gobject)
 
   capture_sound_audio_run = AGS_CAPTURE_SOUND_AUDIO_RUN(gobject);
 
+  /* audio file */
   if(capture_sound_audio_run->audio_file != NULL){
     g_object_unref(capture_sound_audio_run->audio_file);
 
     capture_sound_audio_run->audio_file = NULL;
+  }
+
+  /* timestamp */
+  if(capture_sound_audio_run->timestamp != NULL){
+    g_object_unref(capture_sound_audio_run->timestamp);
+
+    capture_sound_audio_run->timestamp = NULL;
   }
 
   /* call parent */
@@ -190,10 +370,17 @@ ags_capture_sound_audio_run_finalize(GObject *gobject)
 
   capture_sound_audio_run = AGS_CAPTURE_SOUND_AUDIO_RUN(gobject);
 
+  /* audio file */
   if(capture_sound_audio_run->audio_file != NULL){
     g_object_unref(capture_sound_audio_run->audio_file);
   }
-  
+
+  /* timestamp */
+  if(capture_sound_audio_run->timestamp != NULL){
+    g_object_unref(capture_sound_audio_run->timestamp);
+  }
+
+  /* file buffer */
   g_free(capture_sound_audio_run->file_buffer);
   
   /* call parent */
@@ -220,20 +407,6 @@ ags_capture_sound_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plu
   //TODO:JK: implement me
   
   return(node);
-}
-
-AgsRecall*
-ags_capture_sound_audio_run_duplicate(AgsRecall *recall,
-				      AgsRecallID *recall_id,
-				      guint *n_params, gchar **parameter_name, GValue *value)
-{
-  AgsCaptureSoundAudioRun *copy_capture_sound_audio_run;
-
-  copy_capture_sound_audio_run = AGS_CAPTURE_SOUND_AUDIO_RUN(AGS_RECALL_CLASS(ags_capture_sound_audio_run_parent_class)->duplicate(recall,
-																   recall_id,
-																   n_params, parameter_name, value));
-
-  return((AgsRecall *) copy_capture_sound_audio_run);
 }
 
 void
@@ -305,7 +478,7 @@ ags_capture_sound_audio_run_run_init_pre(AgsRecall *recall)
 
     /* read audio channels */
     g_object_get(capture_sound_audio,
-		 "audio-channels", &port,
+		 "file-audio-channels", &port,
 		 NULL);
 
     g_value_init(G_TYPE_UINT64,
@@ -315,23 +488,10 @@ ags_capture_sound_audio_run_run_init_pre(AgsRecall *recall)
 
     file_audio_channels = g_value_get_uint(&value);
     g_value_unset(&value);
-
-    /* read format */
-    g_object_get(capture_sound_audio,
-		 "format", &port,
-		 NULL);
-
-    g_value_init(G_TYPE_UINT64,
-		 &value);
-    ags_port_safe_read(port,
-		       &value);
-
-    file_format = g_value_get_uint(&value);
-    g_value_unset(&value);
     
     /* read samplerate */
     g_object_get(capture_sound_audio,
-		 "samplerate", &port,
+		 "file-samplerate", &port,
 		 NULL);
 
     g_value_init(G_TYPE_UINT64,
@@ -344,7 +504,7 @@ ags_capture_sound_audio_run_run_init_pre(AgsRecall *recall)
 
     /* read buffer size */
     g_object_get(capture_sound_audio,
-		 "buffer-size", &port,
+		 "file-buffer-size", &port,
 		 NULL);
 
     g_value_init(G_TYPE_UINT64,
@@ -353,6 +513,19 @@ ags_capture_sound_audio_run_run_init_pre(AgsRecall *recall)
 		       &value);
 
     file_buffer_size = g_value_get_uint(&value);
+    g_value_unset(&value);
+
+    /* read format */
+    g_object_get(capture_sound_audio,
+		 "file-format", &port,
+		 NULL);
+
+    g_value_init(G_TYPE_UINT64,
+		 &value);
+    ags_port_safe_read(port,
+		       &value);
+
+    file_format = g_value_get_uint(&value);
     g_value_unset(&value);
 
     /* file buffer */
@@ -424,6 +597,7 @@ ags_capture_sound_audio_run_run_pre(AgsRecall *recall)
   
   g_object_get(capture_sound_audio_run,
 	       "recall-audio", &capture_sound_audio,
+	       "timestamp", &timestamp,
 	       NULL);
 
   /* get audio and mutex */
@@ -495,13 +669,9 @@ ags_capture_sound_audio_run_run_pre(AgsRecall *recall)
 
     target_copy_mode = ags_audio_buffer_util_get_copy_mode(target_format,
 							   format);
-    
-    timestamp = ags_timestamp_new();
 
-    timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
-    timestamp->flags |= AGS_TIMESTAMP_OFFSET;
-
-    timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(x_offset / AGS_NOTATION_DEFAULT_OFFSET);
+    ags_timestamp_set_ags_offset(timestamp,
+				 AGS_NOTATION_DEFAULT_OFFSET * floor(x_offset / AGS_NOTATION_DEFAULT_OFFSET));
 
     for(i = 0; i < target_audio_channels && i < audio_channels; i++){      
       /* play */
@@ -570,14 +740,18 @@ ags_capture_sound_audio_run_run_pre(AgsRecall *recall)
   
   if(do_record){
     AgsAudioFile *audio_file;
-    
-    audio_file = capture_sound_audio_run->audio_file;
+
+    g_object_get(capture_sound_audio_run,
+		 "audio-file", &audio_file,
+		 NULL);
 
     /* get presets */
-    file_audio_channels = audio_file->file_audio_channels;
-    file_samplerate = audio_file->samplerate;
-    file_buffer_size = audio_file->buffer_size;
-    file_format = audio_file->format;
+    g_object_get(audio_file,
+		 "file-audio-channels", &file_audio_channels,
+		 "samplerate", &file_samplerate,
+		 "buffer-size", &file_buffer_size,
+		 "format", &file_format,
+		 NULL);
 
     ags_audio_buffer_util_clear_buffer(capture_sound_audio_run->file_buffer, 1,
 				       file_audio_channels * file_buffer_size, file_format);
@@ -606,7 +780,7 @@ ags_capture_sound_audio_run_run_pre(AgsRecall *recall)
     }
     
     /* file */
-    ags_audio_file_write(capture_sound_audio_run->audio_file,
+    ags_audio_file_write(audio_file,
 			 capture_sound_audio_run->file_buffer, file_buffer_size,
 			 file_format);
   }
@@ -619,6 +793,7 @@ void
 ags_capture_sound_audio_run_done(AgsRecall *recall)
 {
   AgsPort *port;
+  AgsAudioFile *audio_file;
   AgsCaptureSoundAudio *capture_sound_audio;
   AgsCaptureSoundAudioRun *capture_sound_audio_run;
 
@@ -630,6 +805,7 @@ ags_capture_sound_audio_run_done(AgsRecall *recall)
 
   g_object_get(capture_sound_audio_run,
 	       "recall-audio", &capture_sound_audio,
+	       "audio-file", &audio_file,
 	       NULL);
   
   /* read record */
@@ -645,8 +821,8 @@ ags_capture_sound_audio_run_done(AgsRecall *recall)
   g_value_unset(&value);
   
   if(do_record){
-    ags_audio_file_flush(capture_sound_audio_run->audio_file);
-    ags_audio_file_close(capture_sound_audio_run->audio_file);
+    ags_audio_file_flush(audio_file);
+    ags_audio_file_close(audio_file);
   }
   
   /* call parent */

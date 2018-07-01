@@ -47,6 +47,8 @@ struct _AgsCaptureSoundAudioRun
   void *file_buffer;
 
   AgsAudioFile *audio_file;
+
+  AgsTimestamp *timestamp;
 };
 
 struct _AgsCaptureSoundAudioRunClass
