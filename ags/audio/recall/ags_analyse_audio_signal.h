@@ -23,6 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+#include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
 #define AGS_TYPE_ANALYSE_AUDIO_SIGNAL                (ags_analyse_audio_signal_get_type())
@@ -47,6 +50,6 @@ struct _AgsAnalyseAudioSignalClass
 
 GType ags_analyse_audio_signal_get_type();
 
-AgsAnalyseAudioSignal* ags_analyse_audio_signal_new(AgsAudioSignal *audio_signal);
+AgsAnalyseAudioSignal* ags_analyse_audio_signal_new(AgsAudioSignal *source);
 
 #endif /*__AGS_ANALYSE_AUDIO_SIGNAL_H__*/

@@ -46,11 +46,10 @@ void ags_analyse_channel_get_property(GObject *gobject,
 				      guint prop_id,
 				      GValue *value,
 				      GParamSpec *param_spec);
-void ags_analyse_channel_connect(AgsConnectable *connectable);
-void ags_analyse_channel_disconnect(AgsConnectable *connectable);
-void ags_analyse_channel_set_ports(AgsPlugin *plugin, GList *port);
 void ags_analyse_channel_dispose(GObject *gobject);
 void ags_analyse_channel_finalize(GObject *gobject);
+
+void ags_analyse_channel_set_ports(AgsPlugin *plugin, GList *port);
 
 /**
  * SECTION:ags_analyse_channel
@@ -64,6 +63,9 @@ void ags_analyse_channel_finalize(GObject *gobject);
 
 enum{
   PROP_0,
+  PROP_CACHE_SAMPLERATE,
+  PROP_CACHE_BUFFER_SIZE,
+  PROP_CACHE_FORMAT,
   PROP_BUFFER_CLEARED,
   PROP_BUFFER_COMPUTED,
   PROP_FREQUENCY_BUFFER,
@@ -139,9 +141,6 @@ void
 ags_analyse_channel_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_analyse_channel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_analyse_channel_connect;
-  connectable->disconnect = ags_analyse_channel_disconnect;
 }
 
 void
@@ -171,11 +170,65 @@ ags_analyse_channel_class_init(AgsAnalyseChannelClass *analyse_channel)
 
   /* properties */
   /**
+   * AgsAnalyseChannel:cache-samplerate:
+   *
+   * The cache's samplerate.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("cache-samplerate",
+				 i18n_pspec("cache samplerate"),
+				 i18n_pspec("The samplerate of the cache"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_SOUNDCARD_DEFAULT_SAMPLERATE,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CACHE_SAMPLERATE,
+				  param_spec);
+
+  /**
+   * AgsAnalyseChannel:cache-buffer-size:
+   *
+   * The cache's buffer length.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("cache-buffer-size",
+				 i18n_pspec("cache buffer size"),
+				 i18n_pspec("The buffer size of the cache"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CACHE_BUFFER_SIZE,
+				  param_spec);
+
+  /**
+   * AgsAnalyseChannel:cache-format:
+   *
+   * The cache's format.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("cache-format",
+				 i18n_pspec("cache format"),
+				 i18n_pspec("The format of the cache"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_SOUNDCARD_DEFAULT_FORMAT,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CACHE_FORMAT,
+				  param_spec);
+
+  /**
    * AgsAnalyseChannel:buffer-cleared:
    * 
    * The property indicating if buffer was cleared.
    * 
-   * Since: 1.5.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("buffer-cleared",
 				   i18n_pspec("if buffer was cleared"),
@@ -191,7 +244,7 @@ ags_analyse_channel_class_init(AgsAnalyseChannelClass *analyse_channel)
    * 
    * The property indicating if buffer was computed.
    * 
-   * Since: 1.5.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("buffer-computed",
 				   i18n_pspec("if buffer was computed"),
@@ -207,7 +260,7 @@ ags_analyse_channel_class_init(AgsAnalyseChannelClass *analyse_channel)
    * 
    * The frequency buffer.
    * 
-   * Since: 1.5.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("frequency-buffer",
 				   i18n_pspec("frequency buffer"),
@@ -223,7 +276,7 @@ ags_analyse_channel_class_init(AgsAnalyseChannelClass *analyse_channel)
    * 
    * The magnitude buffer.
    * 
-   * Since: 1.5.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("magnitude-buffer",
 				   i18n_pspec("magnitude buffer"),
@@ -255,8 +308,6 @@ ags_analyse_channel_init(AgsAnalyseChannel *analyse_channel)
   AGS_RECALL(analyse_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(analyse_channel)->xml_type = "ags-analyse-channel";
 
-  config = ags_config_get_instance();
-
   /* buffer field */  
   analyse_channel->buffer_mutexattr = 
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
@@ -273,57 +324,24 @@ ags_analyse_channel_init(AgsAnalyseChannel *analyse_channel)
   pthread_mutex_init(analyse_channel->buffer_mutex,
 		     attr);
 
-  /* samplerate */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate");
+  /* config */
+  config = ags_config_get_instance();
+
+  analyse_channel->cache_samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  analyse_channel->cache_buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+  analyse_channel->cache_format = AGS_AUDIO_BUFFER_UTIL_DOUBLE;
   
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate");
-  }  
-
-  if(str != NULL){
-    analyse_channel->samplerate = g_ascii_strtoull(str,
-						   NULL,
-						   10);
-    free(str);
-  }else{
-    analyse_channel->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  }
-
-  /* buffer-size */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size");
-  }
-  
-  if(str != NULL){
-    analyse_channel->buffer_size = g_ascii_strtoull(str,
-						    NULL,
-						    10);
-    free(str);
-  }else{
-    analyse_channel->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  }
-
   /* FFTW */
-  analyse_channel->in = (double *) fftw_malloc(analyse_channel->buffer_size * sizeof(double));
-  analyse_channel->out = (double *) fftw_malloc(analyse_channel->buffer_size * sizeof(double));
+  analyse_channel->in = (double *) fftw_malloc(analyse_channel->cache_buffer_size * sizeof(double));
+  analyse_channel->out = (double *) fftw_malloc(analyse_channel->cache_buffer_size * sizeof(double));
 
-  analyse_channel->comout = (fftw_complex *) fftw_malloc(analyse_channel->buffer_size * sizeof(fftw_complex));
+  analyse_channel->comout = (fftw_complex *) fftw_malloc(analyse_channel->cache_buffer_size * sizeof(fftw_complex));
 
-  analyse_channel->plan = fftw_plan_r2r_1d(analyse_channel->buffer_size, analyse_channel->in, analyse_channel->out, FFTW_R2HC, FFTW_ESTIMATE);
+  analyse_channel->plan = fftw_plan_r2r_1d(analyse_channel->cache_buffer_size, analyse_channel->in, analyse_channel->out, FFTW_R2HC, FFTW_ESTIMATE);
 
   /* pre buffer */
-  analyse_channel->frequency_pre_buffer = (double *) malloc(ceil(analyse_channel->buffer_size / 2.0) * sizeof(double));
-  analyse_channel->magnitude_pre_buffer = (double *) malloc(ceil(analyse_channel->buffer_size / 2.0) * sizeof(double));
+  analyse_channel->frequency_pre_buffer = (double *) malloc(ceil(analyse_channel->cache_buffer_size / 2.0) * sizeof(double));
+  analyse_channel->magnitude_pre_buffer = (double *) malloc(ceil(analyse_channel->cache_buffer_size / 2.0) * sizeof(double));
   
   /* ports */
   port = NULL;
@@ -421,16 +439,56 @@ ags_analyse_channel_set_property(GObject *gobject,
 {
   AgsAnalyseChannel *analyse_channel;
 
+  pthread_mutex_t *recall_mutex;
+
   analyse_channel = AGS_ANALYSE_CHANNEL(gobject);
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
   switch(prop_id){
+  case PROP_CACHE_SAMPLERATE:
+    { 
+      pthread_mutex_lock(recall_mutex);
+      
+      analyse_channel->cache_samplerate = g_value_get_uint(value);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_CACHE_BUFFER_SIZE:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      analyse_channel->cache_buffer_size = g_value_get_uint(value);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_CACHE_FORMAT:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      analyse_channel->cache_format = g_value_get_uint(value);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
   case PROP_FREQUENCY_BUFFER:
     {
       AgsPort *port;
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+      
       if(port == analyse_channel->frequency_buffer){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -443,6 +501,8 @@ ags_analyse_channel_set_property(GObject *gobject,
       }
 
       analyse_channel->frequency_buffer = port;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_MAGNITUDE_BUFFER:
@@ -451,7 +511,11 @@ ags_analyse_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == analyse_channel->magnitude_buffer){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -464,6 +528,8 @@ ags_analyse_channel_set_property(GObject *gobject,
       }
 
       analyse_channel->magnitude_buffer = port;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -480,17 +546,64 @@ ags_analyse_channel_get_property(GObject *gobject,
 {
   AgsAnalyseChannel *analyse_channel;
 
+  pthread_mutex_t *recall_mutex;
+
   analyse_channel = AGS_ANALYSE_CHANNEL(gobject);
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
   switch(prop_id){
+  case PROP_CACHE_SAMPLERATE:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_uint(value,
+		       analyse_channel->samplerate);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_CACHE_BUFFER_SIZE:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_uint(value,
+		       analyse_channel->buffer_size);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_CACHE_FORMAT:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_uint(value,
+		       analyse_channel->format);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
   case PROP_FREQUENCY_BUFFER:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, analyse_channel->frequency_buffer);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_MAGNITUDE_BUFFER:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, analyse_channel->magnitude_buffer);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -595,26 +708,6 @@ ags_analyse_channel_finalize(GObject *gobject)
 }
 
 void
-ags_analyse_channel_connect(AgsConnectable *connectable)
-{
-  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
-    return;
-  }
-
-  ags_analyse_channel_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_analyse_channel_disconnect(AgsConnectable *connectable)
-{
-  ags_analyse_channel_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_analyse_channel_set_ports(AgsPlugin *plugin, GList *port)
 {
   while(port != NULL){
@@ -644,36 +737,55 @@ ags_analyse_channel_buffer_add(AgsAnalyseChannel *analyse_channel,
   void *buffer_source;
   
   guint copy_mode;
+  guint cache_samplerate;
+  guint cache_buffer_size;
+  guint cache_format;
   gboolean resample;
 
-  if(analyse_channel == NULL){
+  pthread_mutex_t *buffer_mutex;
+
+  if(!AGS_IS_ANALYSE_CHANNEL(analyse_channel)){
     return;
   }
 
-  resample = FALSE;
+  /* get buffer mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  buffer_mutex = analyse_channel->buffer_mutex;
   
-  pthread_mutex_lock(analyse_channel->buffer_mutex);
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
-  copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
+  /* get some fields */
+  g_object_get(analyse_channel,
+	       "cache-samplerate", &cache_samplerate,
+	       "cache-buffer-size", &cache_buffer_size,
+	       "cache-format", &cache_format,
+	       NULL);
+
+  resample = FALSE;
+
+  copy_mode = ags_audio_buffer_util_get_copy_mode(cache_format,
 						  ags_audio_buffer_util_format_from_soundcard(format));
-
-  if(samplerate != analyse_channel->samplerate){
+  
+  if(samplerate != cache_samplerate){
     buffer_source = ags_audio_buffer_util_resample(buffer, 1,
 						   ags_audio_buffer_util_format_from_soundcard(format), samplerate,
 						   buffer_size,
-						   analyse_channel->samplerate);
+						   cache_samplerate);
     
     resample = TRUE;
   }else{
     buffer_source = buffer;
   }
   
+  pthread_mutex_lock(buffer_mutex);
+  
   ags_audio_buffer_util_copy_buffer_to_buffer(analyse_channel->in, 1, 0,
 					      buffer_source, 1, 0,
-					      analyse_channel->buffer_size, copy_mode);
+					      cache_buffer_size, copy_mode);
 
 
-  pthread_mutex_unlock(analyse_channel->buffer_mutex);
+  pthread_mutex_unlock(buffer_mutex);
 
   if(resample){
     free(buffer_source);
@@ -684,12 +796,40 @@ void
 ags_analyse_channel_retrieve_frequency_and_magnitude(AgsAnalyseChannel *analyse_channel)
 {
   double *out;
+  double *frequency_pre_buffer;
+  double *magnitude_pre_buffer;
+
+  guint cache_samplerate;
+  guint cache_buffer_size;
+  guint cache_format;
   double frequency, magnitude;
   double correction;
-  int m;
   guint i;
 
   GValue value = {0,};
+
+  pthread_mutex_t *buffer_mutex;
+
+  if(!AGS_IS_ANALYSE_CHANNEL(analyse_channel)){
+    return;
+  }
+
+  /* get buffer mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  buffer_mutex = analyse_channel->buffer_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  g_object_get(analyse_channel,
+	       "cache-samplerate", &cache_samplerate,
+	       "cache-buffer-size", &cache_buffer_size,
+	       "cache-format", &cache_format,
+	       NULL);
+
+  /* get output buffer */
+  pthread_mutex_lock(buffer_mutex);
 
   out = analyse_channel->out;
   
@@ -697,23 +837,28 @@ ags_analyse_channel_retrieve_frequency_and_magnitude(AgsAnalyseChannel *analyse_
   memset((void *) out, 0, analyse_channel->buffer_size * sizeof(double));
 
   fftw_execute(analyse_channel->plan);
-
-  /* retrieve frequency and magnitude */
-  correction = (double) analyse_channel->samplerate / (double) analyse_channel->buffer_size;
   
-  for(i = 0; i < analyse_channel->buffer_size / 2; i++){
+  /* retrieve frequency and magnitude */
+  correction = (double) cache_samplerate / (double) cache_buffer_size;
+  
+  for(i = 0; i < cache_buffer_size / 2; i++){
     frequency = i * correction;
-    magnitude = sqrt(out[i] * out[i] + out[(analyse_channel->buffer_size / 2) + 1 - i] * out[(analyse_channel->buffer_size / 2) + 1 - i]);
+    magnitude = sqrt(out[i] * out[i] + out[(cache_buffer_size / 2) + 1 - i] * out[(cache_buffer_size / 2) + 1 - i]);
 
     analyse_channel->frequency_pre_buffer[i] = frequency;
     analyse_channel->magnitude_pre_buffer[i] = magnitude;
   }
+
+  frequency_pre_buffer = analyse_channel->frequency_pre_buffer;
+  magnitude_pre_buffer = analyse_channel->magnitude_pre_buffer;
   
+  pthread_mutex_unlock(buffer_mutex);
+
   /* frequency - write array position */
   g_value_init(&value,
 	       G_TYPE_POINTER);
 
-  g_value_set_pointer(&value, analyse_channel->frequency_pre_buffer);
+  g_value_set_pointer(&value, frequency_pre_buffer);
 
   ags_port_safe_write(analyse_channel->frequency_buffer, &value);
     
@@ -729,13 +874,13 @@ ags_analyse_channel_retrieve_frequency_and_magnitude(AgsAnalyseChannel *analyse_
 
 /**
  * ags_analyse_channel_new:
- * @source: the #AgsChannel as source
+ * @source: the source #AgsChannel
  *
- * Creates an #AgsAnalyseChannel
+ * Create a new instance of #AgsAnalyseChannel
  *
- * Returns: a new #AgsAnalyseChannel
+ * Returns: the new #AgsAnalyseChannel
  *
- * Since: 1.5.0
+ * Since: 2.0.0
  */
 AgsAnalyseChannel*
 ags_analyse_channel_new(AgsChannel *source)
@@ -743,7 +888,7 @@ ags_analyse_channel_new(AgsChannel *source)
   AgsAnalyseChannel *analyse_channel;
 
   analyse_channel = (AgsAnalyseChannel *) g_object_new(AGS_TYPE_ANALYSE_CHANNEL,
-						       "channel", source,
+						       "source", source,
 						       NULL);
 
   return(analyse_channel);

@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_buffer_audio_signal.h>
-#include <ags/audio/recall/ags_buffer_recycling.h>
-#include <ags/audio/recall/ags_buffer_channel.h>
 
 #include <ags/libags.h>
 
@@ -29,15 +27,16 @@
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+
+#include <ags/audio/recall/ags_buffer_channel.h>
+#include <ags/audio/recall/ags_buffer_channel_run.h>
+#include <ags/audio/recall/ags_buffer_recycling.h>
  
 void ags_buffer_audio_signal_class_init(AgsBufferAudioSignalClass *buffer_audio_signal);
 void ags_buffer_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_buffer_audio_signal_init(AgsBufferAudioSignal *buffer_audio_signal);
 void ags_buffer_audio_signal_finalize(GObject *gobject);
 
-AgsRecall* ags_buffer_audio_signal_duplicate(AgsRecall *recall,
-					     AgsRecallID *recall_id,
-					     guint *n_params, gchar **parameter_name, GValue *value);
 void ags_buffer_audio_signal_run_init_pre(AgsRecall *recall);
 void ags_buffer_audio_signal_run_inter(AgsRecall *recall);
 
@@ -109,7 +108,6 @@ ags_buffer_audio_signal_class_init(AgsBufferAudioSignalClass *buffer_audio_signa
 
   recall->run_init_pre = ags_buffer_audio_signal_run_init_pre;
   recall->run_inter = ags_buffer_audio_signal_run_inter;
-  recall->duplicate = ags_buffer_audio_signal_duplicate;
 }
 
 void
@@ -129,20 +127,6 @@ ags_buffer_audio_signal_finalize(GObject *gobject)
 {
   /* call parent */
   G_OBJECT_CLASS(ags_buffer_audio_signal_parent_class)->finalize(gobject); 
-}
-
-AgsRecall*
-ags_buffer_audio_signal_duplicate(AgsRecall *recall,
-				  AgsRecallID *recall_id,
-				  guint *n_params, gchar **parameter_name, GValue *value)
-{
-  AgsBufferAudioSignal *buffer;
-
-  buffer = (AgsBufferAudioSignal *) AGS_RECALL_CLASS(ags_buffer_audio_signal_parent_class)->duplicate(recall,
-												      recall_id,
-												      n_params, parameter_name, value);
-  
-  return((AgsRecall *) buffer);
 }
 
 void
@@ -259,7 +243,7 @@ void
 ags_buffer_audio_signal_run_inter(AgsRecall *recall)
 {
   AgsRecycling *recycling;
-  AgsAudioSignal *source, *destination;
+  AgsAudioSignal *destination, *source;
   AgsPort *muted;
 
   AgsBufferChannel *buffer_channel;
@@ -267,11 +251,11 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   AgsBufferRecycling *buffer_recycling;
   AgsBufferAudioSignal *buffer_audio_signal;
   
-  GList *stream_source, *stream_destination;
+  GList *stream_destination, *stream_source;
 
-  guint source_buffer_size, destination_buffer_size;
-  guint source_samplerate, destination_samplerate;
-  guint source_format, destination_format;
+  guint destination_buffer_size, source_buffer_size;
+  guint destination_samplerate, source_samplerate;
+  guint destination_format, source_format;
   guint copy_mode;
   guint attack;
   gboolean is_muted;

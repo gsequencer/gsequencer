@@ -26,8 +26,11 @@
 #include <complex.h>
 #include <fftw3.h>
 
-#include <ags/audio/ags_recall_channel.h>
+#include <ags/libags.h>
+
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall_channel.h>
+#include <ags/audio/ags_port.h>
 
 #define AGS_TYPE_ANALYSE_CHANNEL                (ags_analyse_channel_get_type())
 #define AGS_ANALYSE_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ANALYSE_CHANNEL, AgsAnalyseChannel))
@@ -46,9 +49,9 @@ struct _AgsAnalyseChannel
   pthread_mutexattr_t *buffer_mutexattr;
   pthread_mutex_t *buffer_mutex;
   
-  guint samplerate;
-  guint buffer_size;
-  guint format;
+  guint cache_samplerate;
+  guint cache_buffer_size;
+  guint cache_format;
 
   fftw_plan plan;
   fftw_complex *comout;
