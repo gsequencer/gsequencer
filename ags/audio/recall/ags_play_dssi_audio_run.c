@@ -303,7 +303,12 @@ ags_play_dssi_audio_run_init(AgsPlayDssiAudioRun *play_dssi_audio_run)
   play_dssi_audio_run->destination = NULL;
 
   play_dssi_audio_run->notation = NULL;
-  play_dssi_audio_run->offset = NULL;
+  play_dssi_audio_run->timestamp = ags_timestamp_new();
+
+  play_dssi_audio_run->timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  play_dssi_audio_run->timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
+  play_dssi_audio_run->timestamp->timer.ags_offset.offset = 0;
 }
 
 void
@@ -518,6 +523,11 @@ ags_play_dssi_audio_run_finalize(GObject *gobject)
   /* notation */
   if(play_dssi_audio_run->notation != NULL){
     g_object_unref(G_OBJECT(play_dssi_audio_run->notation));
+  }
+
+  /* timestamp */
+  if(play_dssi_audio_run->timestamp != NULL){
+    g_object_unref(G_OBJECT(play_dssi_audio_run->timestamp));
   }
 
   /* call parent */
@@ -782,38 +792,81 @@ ags_play_dssi_audio_run_run_init_pre(AgsRecall *recall)
   AgsPlayDssiAudio *play_dssi_audio;
   AgsPlayDssiAudioRun *play_dssi_audio_run;
 
+  AgsDssiPlugin *dssi_plugin;
+
+  AgsMutexManager *mutex_manager;
+
   GObject *soundcard;
 
+  guint output_lines, input_lines;
   guint samplerate;
   guint buffer_size;
   unsigned long i, i_stop;
     
+  pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *recall_mutex;
+
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   play_dssi_audio_run = AGS_PLAY_DSSI_AUDIO_RUN(recall);
   play_dssi_audio = AGS_PLAY_DSSI_AUDIO(AGS_RECALL_AUDIO_RUN(play_dssi_audio_run)->recall_audio);
 
-  /* set up buffer */
+  /* get soundcard */
   soundcard = recall->soundcard;
+
+  /* soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) soundcard);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get presets */
+  pthread_mutex_lock(soundcard_mutex);
 
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    NULL,
 			    &samplerate,
 			    &buffer_size,
 			    NULL);
+
+  pthread_mutex_unlock(soundcard_mutex);
+
+  /* recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = AGS_RECALL(play_dssi_audio)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_mutex);
+
+  dssi_plugin = play_dssi_audio->plugin;
+
+  output_lines = play_dssi_audio->output_lines;
+  input_lines = play_dssi_audio->input_lines;
+  
+  pthread_mutex_unlock(recall_mutex);
     
-  if(play_dssi_audio->input_lines > 0){
-    play_dssi_audio_run->input = (LADSPA_Data *) malloc(play_dssi_audio->input_lines *
+  if(input_lines > 0){
+    play_dssi_audio_run->input = (LADSPA_Data *) malloc(input_lines *
 							buffer_size *
 							sizeof(LADSPA_Data));
   }
 
-  play_dssi_audio_run->output = (float *) malloc(play_dssi_audio->output_lines *
+  play_dssi_audio_run->output = (float *) malloc(output_lines *
 						 buffer_size *
 						 sizeof(LADSPA_Data));
 
-  if(play_dssi_audio->input_lines < play_dssi_audio->output_lines){
-    i_stop = play_dssi_audio->output_lines;
+  if(input_lines < output_lines){
+    i_stop = output_lines;
   }else{
-    i_stop = play_dssi_audio->input_lines;
+    i_stop = input_lines;
   }
   
   play_dssi_audio_run->audio_channels = i_stop;
@@ -827,8 +880,8 @@ ags_play_dssi_audio_run_run_init_pre(AgsRecall *recall)
   
   for(i = 0; i < i_stop; i++){
     /* instantiate dssi */
-    play_dssi_audio_run->ladspa_handle[i] = play_dssi_audio->plugin_descriptor->LADSPA_Plugin->instantiate(play_dssi_audio->plugin_descriptor->LADSPA_Plugin,
-													   samplerate);
+    play_dssi_audio_run->ladspa_handle[i] = (LADSPA_Handle *) ags_base_plugin_instantiate(AGS_BASE_PLUGIN(dssi_plugin),
+											  samplerate);
 
 #ifdef AGS_DEBUG
     g_message("instantiate DSSI handle %d %d",
@@ -840,9 +893,8 @@ ags_play_dssi_audio_run_run_init_pre(AgsRecall *recall)
   ags_play_dssi_audio_run_load_ports(play_dssi_audio_run);
 
   for(i = 0; i < i_stop; i++){
-    if(play_dssi_audio->plugin_descriptor->LADSPA_Plugin->activate != NULL){
-      play_dssi_audio->plugin_descriptor->LADSPA_Plugin->activate(play_dssi_audio_run->ladspa_handle[i]);
-    }
+    ags_base_plugin_activate(AGS_BASE_PLUGIN(dssi_plugin),
+			     play_dssi_audio_run->ladspa_handle[i]);
     
 #ifdef AGS_DEBUG
     g_message("instantiate DSSI handle");
@@ -858,14 +910,16 @@ void
 ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
 {  
   AgsAudio *audio;
+  AgsChannel *output, *input;
   AgsChannel *channel;
   AgsChannel *selected_channel;
   AgsRecycling *recycling;
   AgsAudioSignal *destination;
-
   AgsPlayDssiAudio *play_dssi_audio;
   AgsPlayDssiAudioRun *play_dssi_audio_run;
 
+  AgsDssiPlugin *dssi_plugin;
+  
   AgsMutexManager *mutex_manager;
 
   GObject *soundcard;
@@ -874,17 +928,25 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
   snd_seq_event_t **event_buffer;
   unsigned long *event_count;
 
+  guint audio_flags;
+  guint output_lines, input_lines;
   guint audio_channel;
   guint samplerate;
   guint buffer_size;
+  guint format;
   guint copy_mode_in, copy_mode_out;
   unsigned long i, i_stop;
 
   pthread_mutex_t *application_mutex;
+  pthread_mutex_t *soundcard_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *recycling_mutex;
+  pthread_mutex_t *recall_mutex;
   
+  mutex_manager = ags_mutex_manager_get_instance();
+  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+
   play_dssi_audio_run = AGS_PLAY_DSSI_AUDIO_RUN(recall);
   play_dssi_audio = AGS_PLAY_DSSI_AUDIO(AGS_RECALL_AUDIO_RUN(play_dssi_audio_run)->recall_audio);
 
@@ -892,30 +954,84 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
   
   soundcard = recall->soundcard;
 
+  /* soundcard mutex */
+  pthread_mutex_lock(application_mutex);
+
+  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) soundcard);
+  
+  pthread_mutex_unlock(application_mutex);
+
+  /* get presets */
+  pthread_mutex_lock(soundcard_mutex);
+
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			    NULL,
 			    NULL,
 			    &buffer_size,
 			    NULL);
-    
-  audio = AGS_RECALL_AUDIO(play_dssi_audio)->audio;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  pthread_mutex_unlock(soundcard_mutex);
 
-  /* lookup channel mutex */
+  /* recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = AGS_RECALL(play_dssi_audio)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_mutex);
+
+  dssi_plugin = play_dssi_audio->plugin;
+
+  input_lines = play_dssi_audio->input_lines;
+  output_lines = play_dssi_audio->output_lines;
+  
+  pthread_mutex_unlock(recall_mutex);
+
+  /* get audio */
+  audio = AGS_RECALL_AUDIO_RUN(recall)->audio;
+
+  /* audio mutex */
   pthread_mutex_lock(application_mutex);
 
-  channel = (AgsChannel *) AGS_RECYCLING(AGS_RECALL(play_dssi_audio_run)->recall_id->recycling)->channel;
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
+  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					 (GObject *) audio);
+  
+  pthread_mutex_unlock(application_mutex);
+  
+  /* get recycling and recycling context */
+  pthread_mutex_lock(audio_mutex);
+
+  audio_flags = audio->flags;
+  
+  output = audio->output;
+  input = audio->input;
+
+  recycling = recall->recall_id->recycling;
+  recycling_context = recall->recall_id->recycling_context;
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  /* get recycling mutex */
+  pthread_mutex_lock(application_mutex);
+
+  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) recycling);
 	
   pthread_mutex_unlock(application_mutex);
 
+  /* get channel */
+  pthread_mutex_lock(recycling_mutex);
+
+  channel = (AgsChannel *) recycling->channel;
+
+  pthread_mutex_unlock(recycling_mutex);
+
   /* lookup channel mutex */
   pthread_mutex_lock(application_mutex);
 
-  channel = (AgsChannel *) AGS_RECYCLING(AGS_RECALL(play_dssi_audio_run)->recall_id->recycling)->channel;
   channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 					   (GObject *) channel);
 	
@@ -929,11 +1045,11 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
   pthread_mutex_unlock(channel_mutex);
     
   /* get channel */
-  if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
-    selected_channel = ags_channel_nth(audio->input,
+  if((AGS_AUDIO_NOTATION_DEFAULT & (audio_flags)) != 0){
+    selected_channel = ags_channel_nth(input,
 				       audio_channel);
   }else{
-    selected_channel = ags_channel_nth(audio->output,
+    selected_channel = ags_channel_nth(output,
 				       audio_channel);
   }
 
@@ -949,14 +1065,9 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
   pthread_mutex_unlock(application_mutex);
 
   if(destination == NULL){
-    AgsRecyclingContext *recycling_context;
-
     gdouble delay;
     guint attack;
     guint length;
-    
-    /* recycling context */
-    recycling_context = recall->recall_id->recycling_context;
 
     //TODO:JK: unclear
     attack = 0;
@@ -1005,7 +1116,15 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
     LADSPA_Data *port_data;
     
     unsigned long port_count;
+
+    GValue value = {0,};
+
+    g_value_init(&value,
+		 G_TYPE_FLOAT);    
     
+    /* retrieve port data */
+    pthread_mutex_lock(audio_mutex);
+
     port = AGS_RECALL(play_dssi_audio)->port;
 
     port_count = play_dssi_audio->plugin_descriptor->LADSPA_Plugin->PortCount;
@@ -1032,11 +1151,17 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
 
 	//	g_warning("didn't find port");
       }else{
-	port_data[i] = current->port_value.ags_port_ladspa;
+	ags_port_safe_read_raw(current, &value);
+      
+	port_data[i] = g_value_get_float(&value);
       }
     }
 
+    pthread_mutex_unlock(audio_mutex);
+
     /* select program */
+    pthread_mutex_lock(recall_mutex);
+
     for(i = 0; i < i_stop; i++){
       play_dssi_audio->plugin_descriptor->select_program(play_dssi_audio_run->ladspa_handle[i],
 							 play_dssi_audio->bank,
@@ -1045,7 +1170,11 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
       //      g_message("b p %u %u", play_dssi_audio->bank, play_dssi_audio->program);
     }
 
+    pthread_mutex_unlock(recall_mutex);
+
     /* reset port data */    
+    pthread_mutex_lock(audio_mutex);
+
     for(i = 0; i < port_count; i++){
       specifier = play_dssi_audio->plugin_descriptor->LADSPA_Plugin->PortNames[i];
       list = port;
@@ -1055,8 +1184,9 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
 
 	if(!g_strcmp0(specifier,
 		      current->specifier)){
-	  current->port_value.ags_port_ladspa = port_data[i];
-	  //	  g_message("%s %f", current->specifier, port_data[i]);
+
+	  g_value_set_float(&value, port_data[i]);
+	  ags_port_safe_write_raw(current, &value);
 	
 	  break;
 	}
@@ -1064,6 +1194,8 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
 	list = list->next;
       }
     }
+
+    pthread_mutex_unlock(audio_mutex);
 
     free(port_data);
   }
@@ -1091,62 +1223,62 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
   pthread_mutex_lock(recycling_mutex);
   
   buffer_size = destination->buffer_size;
+  format = destination->format;
   
   ags_audio_buffer_util_clear_buffer(destination->stream_current->data, 1,
-				     buffer_size, ags_audio_buffer_util_format_from_soundcard(destination->format));
+				     buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+
+  pthread_mutex_unlock(recycling_mutex);
 
   /* get copy mode and clear buffer */
   copy_mode_in = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
-						     ags_audio_buffer_util_format_from_soundcard(destination->format));
+						     ags_audio_buffer_util_format_from_soundcard(format));
 
-  copy_mode_out = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(destination->format),
+  copy_mode_out = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 						      AGS_AUDIO_BUFFER_UTIL_FLOAT);
   
   if(play_dssi_audio_run->output != NULL){
-    ags_audio_buffer_util_clear_float(play_dssi_audio_run->output, play_dssi_audio->output_lines,
+    ags_audio_buffer_util_clear_float(play_dssi_audio_run->output, output_lines,
 				      buffer_size);
   }
 
   if(play_dssi_audio_run->input != NULL){
-    ags_audio_buffer_util_clear_float(play_dssi_audio_run->input, play_dssi_audio->input_lines,
+    ags_audio_buffer_util_clear_float(play_dssi_audio_run->input, input_lines,
 				      buffer_size);
   }
 
-  /* copy data  */
+  /* copy data */
+  pthread_mutex_lock(recycling_mutex);
+
   if(play_dssi_audio_run->input != NULL){
-    ags_audio_buffer_util_copy_buffer_to_buffer(play_dssi_audio_run->input, (guint) play_dssi_audio->input_lines, 0,
+    ags_audio_buffer_util_copy_buffer_to_buffer(play_dssi_audio_run->input, (guint) input_lines, 0,
 						destination->stream_current->data, 1, 0,
 						(guint) buffer_size, copy_mode_in);
   }
-  
+
   /* process data */
-  if(play_dssi_audio->plugin_descriptor->run_synth != NULL){
-    if(play_dssi_audio_run->event_buffer != NULL &&
-       play_dssi_audio_run->key_on != 0){
-      event_buffer = play_dssi_audio_run->event_buffer;
-      event_count = play_dssi_audio_run->event_count;
+  if(play_dssi_audio_run->event_buffer != NULL &&
+     play_dssi_audio_run->key_on != 0){
+    event_buffer = play_dssi_audio_run->event_buffer;
+    event_count = play_dssi_audio_run->event_count;
+    
+    while(*event_buffer != NULL){
+      seq_event = event_buffer[0];
       
-      while(*event_buffer != NULL){
-	seq_event = event_buffer[0];
-	
-	play_dssi_audio->plugin_descriptor->run_synth(play_dssi_audio_run->ladspa_handle[0],
-						      play_dssi_audio->output_lines * buffer_size,
-						      seq_event,
-						      event_count[0]);
-	  
-	event_buffer++;
-	event_count++;
-      }
+      ags_base_plugin_run(dssi_plugin,
+			  play_dssi_audio_run->ladspa_handle[0],
+			  seq_event,
+			  buffer_size);
+      
+      event_buffer++;
+      event_count++;
     }
-  }else if(play_dssi_audio->plugin_descriptor->LADSPA_Plugin->run != NULL){
-    play_dssi_audio->plugin_descriptor->LADSPA_Plugin->run(play_dssi_audio_run->ladspa_handle[0],
-							   buffer_size);
   }
 
   /* copy data */
   if(play_dssi_audio_run->output != NULL){
     ags_audio_buffer_util_copy_buffer_to_buffer(destination->stream_current->data, 1, 0,
-						play_dssi_audio_run->output, (guint) play_dssi_audio->output_lines, 0,
+						play_dssi_audio_run->output, (guint) output_lines, 0,
 						(guint) buffer_size, copy_mode_out);
   }
 
@@ -1164,8 +1296,10 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 {
   GObject *soundcard;
   AgsAudio *audio;
+  AgsChannel *output, *input;
   AgsChannel *channel;
   AgsChannel *selected_channel;
+  AgsRecycling *recycling;
   AgsNotation *notation;
   AgsNote *note;
 
@@ -1178,9 +1312,13 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   snd_seq_event_t **event_buffer;
   unsigned long *event_count;
 
-  GList *current_position;
   GList *list;
+  GList *current_position;
+  GList *start_append_note, *append_note;
+  GList *start_remove_note, *remove_note;
 
+  guint audio_flags;
+  guint play_dssi_audio_flags;
   guint audio_start_mapping;
   guint midi_start_mapping, midi_end_mapping;
   guint notation_counter;
@@ -1198,26 +1336,38 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   if(delay != 0.0){
     return;
-  }
-  
-  play_dssi_audio = AGS_PLAY_DSSI_AUDIO(AGS_RECALL_AUDIO_RUN(play_dssi_audio_run)->recall_audio);
-
-  delay_audio = AGS_DELAY_AUDIO(AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio);
-  
-  audio = AGS_RECALL_AUDIO(play_dssi_audio)->audio;
+  }  
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  /*  */
+  play_dssi_audio = AGS_PLAY_DSSI_AUDIO(AGS_RECALL_AUDIO_RUN(play_dssi_audio_run)->recall_audio);
+
+  delay_audio = AGS_DELAY_AUDIO(AGS_RECALL_AUDIO_RUN(delay_audio_run)->recall_audio);
+  
+  soundcard = (GObject *) AGS_RECALL(play_dssi_audio_run)->soundcard;
+
+  /* get audio */
+  audio = AGS_RECALL_AUDIO_RUN(play_dssi_audio_run)->audio;
+
+  /* audio mutex */
+  pthread_mutex_lock(application_mutex);
+
   audio_mutex = ags_mutex_manager_lookup(mutex_manager,
 					 (GObject *) audio);
   
   pthread_mutex_unlock(application_mutex);
 
+  /*  */
   pthread_mutex_lock(audio_mutex);
 
-  soundcard = (GObject *) audio->soundcard;
+  audio_flags = audio->flags;
+
+  play_dssi_audio_flags = play_dssi_audio->flags;
+  
+  output = audio->output;
+  input = audio->input;
+
   list = audio->notation;//(GList *) g_value_get_pointer(&value);
 
   pthread_mutex_unlock(audio_mutex);
@@ -1226,10 +1376,31 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     return;
   }
 
+  /* get recycling and recycling context */
+  pthread_mutex_lock(audio_mutex);
+
+  recycling = recall->recall_id->recycling;
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  /* get recycling mutex */
+  pthread_mutex_lock(application_mutex);
+
+  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
+					     (GObject *) recycling);
+	
+  pthread_mutex_unlock(application_mutex);
+
+  /* get channel */
+  pthread_mutex_lock(recycling_mutex);
+
+  channel = (AgsChannel *) recycling->channel;
+
+  pthread_mutex_unlock(recycling_mutex);
+
   /* lookup channel mutex */
   pthread_mutex_lock(application_mutex);
 
-  channel = (AgsChannel *) AGS_RECYCLING(AGS_RECALL(delay_audio_run)->recall_id->recycling)->channel;
   channel_mutex = ags_mutex_manager_lookup(mutex_manager,
 					   (GObject *) channel);
 	
@@ -1243,24 +1414,25 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   pthread_mutex_unlock(channel_mutex);
 
   /* get channel */
-  if((AGS_AUDIO_NOTATION_DEFAULT & (audio->flags)) != 0){
-    selected_channel = ags_channel_nth(audio->input,
+  if((AGS_AUDIO_NOTATION_DEFAULT & (audio_flags)) != 0){
+    selected_channel = ags_channel_nth(input,
 				       audio_channel);
   }else{
-    selected_channel = ags_channel_nth(audio->output,
+    selected_channel = ags_channel_nth(output,
 				       audio_channel);
   }
   
   /* get notation */
+  notation = NULL;
+  current_position = NULL;
+  
+  start_append_note = NULL;
+  start_remove_note = NULL;
+
   pthread_mutex_lock(audio_mutex);
   
-  //TODO:JK: make it advanced
-  notation = AGS_NOTATION(g_list_nth(list, audio_channel)->data);//AGS_NOTATION(ags_notation_find_near_timestamp(list, audio_channel,
-  //						   timestamp_thread->timestamp)->data);
+  notation_counter = play_lv2_audio_run->count_beats_audio_run->notation_counter;
 
-  current_position = notation->notes; // start_loop
-  notation_counter = play_dssi_audio_run->count_beats_audio_run->notation_counter;
-  
   input_pads = audio->input_pads;
 
   audio_start_mapping = audio->audio_start_mapping;
@@ -1268,121 +1440,176 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   midi_start_mapping = audio->midi_start_mapping;
   midi_end_mapping = audio->midi_end_mapping;
 
-  pthread_mutex_unlock(audio_mutex);
+  play_lv2_audio_run->timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(notation_counter / AGS_NOTATION_DEFAULT_OFFSET);
 
+  list = ags_notation_find_near_timestamp(audio->notation, audio_channel,
+					  play_lv2_audio_run->timestamp);
+  
+  if(list != NULL){
+    notation = list->data;
+    
+    current_position = notation->notes;
+  }
+  
   /*
    * feed midi
    */  
-
   while(current_position != NULL){
-    pthread_mutex_lock(audio_mutex);
+    gboolean success;
       
     note = AGS_NOTE(current_position->data);
+
     note_x0 = note->x[0];
     note_x1 = note->x[1];
+
     note_y = note->y;
-      
-    pthread_mutex_unlock(audio_mutex);
-  
+
     if(note_x0 == notation_counter){
-      /* send key-on */
-      if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
-	selected_key = input_pads - note->y - 1;
-      }else{
-	selected_key = note->y;
-      }
-
-      /* key on */
-      seq_event = (snd_seq_event_t *) malloc(sizeof(snd_seq_event_t));
-      memset(seq_event, 0, sizeof(snd_seq_event_t));
-      //memset(seq_event, 0, sizeof(snd_seq_event_t));
-	      
-      seq_event->type = SND_SEQ_EVENT_NOTEON;
-
-      seq_event->data.note.channel = 0;
-      seq_event->data.note.note = 0x7f & (selected_key - audio_start_mapping + midi_start_mapping);
-      seq_event->data.note.velocity = 127;
-
-      /* find end */
-      i = 0;
-      
-      if(play_dssi_audio_run->event_buffer != NULL){
-	event_buffer = play_dssi_audio_run->event_buffer;
-      
-	while(*event_buffer != NULL){
-	  event_buffer++;
-	  event_count++;
-	  i++;
-	}
-
-	if(i + 1 < AGS_PLAY_DSSI_AUDIO_DEFAULT_MIDI_LENGHT){
-	  play_dssi_audio_run->event_buffer[i] = seq_event;
-	  play_dssi_audio_run->event_buffer[i + 1] = NULL;
-		  
-	  play_dssi_audio_run->event_count[i] = 1;
-	  play_dssi_audio_run->event_count[i + 1] = 0;
-
-	  play_dssi_audio_run->key_on += 1;
-	}
-      }
-
-      //fixme:jk: remove notes
+      start_append_note = g_list_prepend(start_append_note,
+					 note);
+      g_object_ref(note);
     }else if(note_x1 == notation_counter){
-      gint match_index;
-      
-      /* send key off */
-      if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
-	selected_key = input_pads - note->y - 1;
-      }else{
-	selected_key = note->y;
-      }
-
-      /* find end */
-      i = 0;
-      match_index = -1;
-      
-      if(play_dssi_audio_run->event_buffer != NULL){
-	event_buffer = play_dssi_audio_run->event_buffer;
-      
-	while(*event_buffer != NULL){
-	  if(event_buffer[0]->data.note.note == (0x7f & (selected_key - audio_start_mapping + midi_start_mapping))){
-	    match_index = i;
-	    //	    free(event_buffer[0]);
-	  }
-	  
-	  event_buffer++;
-	  event_count++;
-	  i++;
-	}
-      }
-
-      /* clear note */
-      if(i > 0 &&
-	 match_index != -1){
-	if(match_index + 1 != i){
-	  memmove(&(play_dssi_audio_run->event_buffer[match_index]),
-		  &(play_dssi_audio_run->event_buffer[match_index + 1]),
-		  i - 1);
-	}
-	
-	play_dssi_audio_run->event_buffer[i - 1] = NULL;
-	
-	play_dssi_audio_run->event_buffer[i] = NULL;
-
-	if(play_dssi_audio_run->key_on > 0){
-	  play_dssi_audio_run->key_on -= 1;
-	}
-      }
+      start_remove_note = g_list_prepend(start_remove_note,
+					 note);
+      g_object_ref(note);
     }else if(note_x0 > notation_counter){
       break;
     }
     
-    pthread_mutex_lock(audio_mutex);
-    
+    /* iterate */
     current_position = current_position->next;
-
-    pthread_mutex_unlock(audio_mutex);
   }
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  append_note =
+    start_append_note = g_list_reverse(start_append_note);
+  
+  remove_note =
+    start_remove_note = g_list_reverse(start_remove_note);
+
+
+  /* append */
+  while(append_note != NULL){
+    note = append_note->data;
+    
+    pthread_mutex_lock(audio_mutex);
+
+    note_y = note->y;
+    
+    pthread_mutex_unlock(audio_mutex);
+  
+    /* send key-on */
+    if((AGS_AUDIO_REVERSE_MAPPING & (audio_flags)) != 0){
+      selected_key = input_pads - note_y - 1;
+    }else{
+      selected_key = note_y;
+    }
+
+    /* key on */
+    seq_event = (snd_seq_event_t *) malloc(sizeof(snd_seq_event_t));
+    memset(seq_event, 0, sizeof(snd_seq_event_t));
+    //memset(seq_event, 0, sizeof(snd_seq_event_t));
+	      
+    seq_event->type = SND_SEQ_EVENT_NOTEON;
+
+    seq_event->data.note.channel = 0;
+    seq_event->data.note.note = 0x7f & (selected_key - audio_start_mapping + midi_start_mapping);
+    seq_event->data.note.velocity = 127;
+
+    /* find end */
+    i = 0;
+      
+    if(play_dssi_audio_run->event_buffer != NULL){
+      event_buffer = play_dssi_audio_run->event_buffer;
+      
+      while(*event_buffer != NULL){
+	event_buffer++;
+	event_count++;
+	i++;
+      }
+
+      if(i + 1 < AGS_PLAY_DSSI_AUDIO_DEFAULT_MIDI_LENGHT){
+	play_dssi_audio_run->event_buffer[i] = seq_event;
+	play_dssi_audio_run->event_buffer[i + 1] = NULL;
+		  
+	play_dssi_audio_run->event_count[i] = 1;
+	play_dssi_audio_run->event_count[i + 1] = 0;
+
+	play_dssi_audio_run->key_on += 1;
+      }
+    }
+    
+    /* iterate */
+    g_object_unref(append_note->data);
+
+    append_note = append_note->next;
+  }
+
+  /* remove */
+  while(remove_note != NULL){
+    gboolean success;
+      
+    note = remove_note->data;
+    
+    pthread_mutex_lock(audio_mutex);
+
+    note_y = note->y;
+    
+    pthread_mutex_unlock(audio_mutex);
+  
+    /* send key-on */
+    if((AGS_AUDIO_REVERSE_MAPPING & (audio_flags)) != 0){
+      selected_key = input_pads - note_y - 1;
+    }else{
+      selected_key = note_y;
+    }
+    
+    /* find end */
+    i = 0;
+    match_index = -1;
+      
+    if(play_dssi_audio_run->event_buffer != NULL){
+      event_buffer = play_dssi_audio_run->event_buffer;
+      
+      while(*event_buffer != NULL){
+	if(event_buffer[0]->data.note.note == (0x7f & (selected_key - audio_start_mapping + midi_start_mapping))){
+	  match_index = i;
+	  //	    free(event_buffer[0]);
+	}
+	  
+	event_buffer++;
+	event_count++;
+	i++;
+      }
+    }
+
+    /* clear note */
+    if(i > 0 &&
+       match_index != -1){
+      if(match_index + 1 != i){
+	memmove(&(play_dssi_audio_run->event_buffer[match_index]),
+		&(play_dssi_audio_run->event_buffer[match_index + 1]),
+		i - 1);
+      }
+	
+      play_dssi_audio_run->event_buffer[i - 1] = NULL;
+	
+      play_dssi_audio_run->event_buffer[i] = NULL;
+
+      if(play_dssi_audio_run->key_on > 0){
+	play_dssi_audio_run->key_on -= 1;
+      }
+    }
+
+    /* iterate */
+    g_object_unref(remove_note->data);
+
+    remove_note = remove_note->next;
+  }
+
+  g_list_free(append_note_start);
+  g_list_free(remove_note_start);
 }  
 
 void

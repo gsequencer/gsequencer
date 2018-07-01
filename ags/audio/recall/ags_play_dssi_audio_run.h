@@ -26,6 +26,8 @@
 #include <ladspa.h>
 #include <dssi.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_notation.h>
 
@@ -83,7 +85,7 @@ struct _AgsPlayDssiAudioRun
   GObject *destination;
   
   AgsNotation *notation;
-  GList *offset;
+  AgsTimestamp *timestamp;
 };
 
 struct _AgsPlayDssiAudioRunClass

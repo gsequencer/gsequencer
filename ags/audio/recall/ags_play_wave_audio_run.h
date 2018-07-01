@@ -58,13 +58,6 @@ struct _AgsPlayWaveAudioRun
   AgsRecallAudioRun recall_audio_run;
 
   guint flags;
-
-  AgsDelayAudioRun *delay_audio_run;
-
-  AgsCountBeatsAudioRun *count_beats_audio_run;
-
-  AgsWave *wave;
-  AgsTimestamp *timestamp;
 };
 
 struct _AgsPlayWaveAudioRunClass

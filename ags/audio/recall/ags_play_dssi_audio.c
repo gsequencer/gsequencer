@@ -37,7 +37,11 @@
 
 #include <ags/audio/ags_port.h>
 
+#ifdef __APPLE__
+#include <machine/endian.h>
+#else
 #include <endian.h>
+#endif
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -482,8 +486,9 @@ ags_play_dssi_audio_load(AgsPlayDssiAudio *play_dssi_audio)
   DSSI_Descriptor *plugin_descriptor;
 
   /*  */
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
-						  play_dssi_audio->filename, play_dssi_audio->effect);
+  play_dssi_audio->plugin = 
+    dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
+						    play_dssi_audio->filename, play_dssi_audio->effect);
   
   plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;
 

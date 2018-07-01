@@ -189,7 +189,6 @@ ags_route_dssi_audio_run_class_init(AgsRouteDssiAudioRunClass *route_dssi_audio_
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
-
   GParamSpec *param_spec;
 
   ags_route_dssi_audio_run_parent_class = g_type_class_peek_parent(route_dssi_audio_run);
@@ -900,7 +899,7 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 	      recall_dssi_run = AGS_RECALL_DSSI_RUN(dssi->data);
 	    
 	      if(AGS_RECALL(recall_dssi_run)->rt_safe ||
-		 recall_dssi_run->event_buffer == NULL){
+		 recall_dssi_run->note == NULL){
 		/* prepend note */
 		//		route_dssi_audio_run->feed_midi = g_list_prepend(route_dssi_audio_run->feed_midi,
 		//						 note);
@@ -977,29 +976,27 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   auto void ags_route_dssi_audio_run_alloc_input_callback_feed_note(AgsNotation *notation);
 
   void ags_route_dssi_audio_run_alloc_input_callback_feed_note(AgsNotation *notation){
+    GList *list_start, *list;
+    
     if(!AGS_IS_NOTATION(notation)){
       return;
     }
+
+    list_start = NULL;
     
     pthread_mutex_lock(audio_mutex);
 
     current_position = notation->notes; // start_loop
 
-    pthread_mutex_unlock(audio_mutex);
+    audio_start_mapping = audio->audio_start_mapping;
+    audio_end_mapping = audio->audio_end_mapping;
 
     while(current_position != NULL){
-      pthread_mutex_lock(audio_mutex);
-
-      audio_start_mapping = audio->audio_start_mapping;
-      audio_end_mapping = audio->audio_end_mapping;
-    
       note = AGS_NOTE(current_position->data);
 
       note_y = note->y;
       note_x0 = note->x[0];
     
-      pthread_mutex_unlock(audio_mutex);
-
       //    g_message("--- %f %f ; %d %d",
       //	      note->stream_delay, delay,
       //	      note_x0, route_dssi_audio_run->count_beats_audio_run->notation_counter);
@@ -1008,15 +1005,32 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
       if(note_y >= audio_start_mapping &&
 	 note_y < audio_end_mapping &&
 	 note_x0 == notation_counter){ // && floor(note->stream_delay) == floor(delay)
-	//      g_object_ref(note);
-	ags_route_dssi_audio_run_feed_midi((AgsRecall *) route_dssi_audio_run,
-					   note);      
+	list_start = g_list_prepend(list_start,
+				    note);
+	g_object_ref(note);
       }else if(note_x0 > notation_counter){
 	break;
       }
     
+      /* iterate */    
       current_position = current_position->next;
     }
+
+    pthread_mutex_unlock(audio_mutex);
+
+    list = 
+      list_start = g_list_reverse(list_start);
+    
+    /* feed midi */
+    while(list != NULL){
+      ags_route_dssi_audio_run_feed_midi((AgsRecall *) route_dssi_audio_run,
+					 list->data);
+      g_object_unref(list->data);
+      
+      list = list->next;
+    }
+
+    g_list_free(list_start);
   }
   
   if((guint) floor(delay) != 0){

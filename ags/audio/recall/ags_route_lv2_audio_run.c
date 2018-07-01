@@ -999,28 +999,26 @@ ags_route_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   auto void ags_route_lv2_audio_run_alloc_input_callback_feed_note(AgsNotation *notation);
 
   void ags_route_lv2_audio_run_alloc_input_callback_feed_note(AgsNotation *notation){
+    GList *list_start, *list;
+    
     if(!AGS_IS_NOTATION(notation)){
       return;
     }
+
+    list_start = NULL;
 
     pthread_mutex_lock(audio_mutex);
 
     current_position = notation->notes; // start_loop
 
-    pthread_mutex_unlock(audio_mutex);
+    audio_start_mapping = audio->audio_start_mapping;
+    audio_end_mapping = audio->audio_end_mapping;
 
     while(current_position != NULL){
-      pthread_mutex_lock(audio_mutex);
-
-      audio_start_mapping = audio->audio_start_mapping;
-      audio_end_mapping = audio->audio_end_mapping;
-    
       note = AGS_NOTE(current_position->data);
 
       note_y = note->y;
       note_x0 = note->x[0];
-    
-      pthread_mutex_unlock(audio_mutex);
 
       //    g_message("--- %f %f ; %d %d",
       //	      note->stream_delay, delay,
@@ -1030,15 +1028,32 @@ ags_route_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
       if(note_y >= audio_start_mapping &&
 	 note_y < audio_end_mapping &&
 	 note_x0 == notation_counter){ // && floor(note->stream_delay) == floor(delay)
-	//      g_object_ref(note);
-	ags_route_lv2_audio_run_feed_midi((AgsRecall *) route_lv2_audio_run,
-					  note);      
+	list_start = g_list_prepend(list_start,
+				    note);
+	g_object_ref(note);
       }else if(note_x0 > notation_counter){
 	break;
       }
     
+      /* iterate */    
       current_position = current_position->next;
     }
+
+    pthread_mutex_unlock(audio_mutex);
+
+    list = 
+      list_start = g_list_reverse(list_start);
+    
+    /* feed midi */
+    while(list != NULL){
+      ags_route_lv2_audio_run_feed_midi((AgsRecall *) route_lv2_audio_run,
+					list->data);
+      g_object_unref(list->data);
+      
+      list = list->next;
+    }
+
+    g_list_free(list_start);
   }
   
   if((guint) floor(delay) != 0){

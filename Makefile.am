@@ -953,6 +953,10 @@ deprecated_libags_audio_recall_h_sources =
 
 libags_audio_recall_h_sources = \
 	$(deprecated_libags_audio_recall_h_sources) \
+	ags/audio/recall/ags_analyse_audio_signal.h \
+	ags/audio/recall/ags_analyse_channel.h \
+	ags/audio/recall/ags_analyse_channel_run.h \
+	ags/audio/recall/ags_analyse_recycling.h \
 	ags/audio/recall/ags_buffer_audio_signal.h \
 	ags/audio/recall/ags_buffer_channel.h \
 	ags/audio/recall/ags_buffer_channel_run.h \
@@ -977,6 +981,10 @@ libags_audio_recall_h_sources = \
 	ags/audio/recall/ags_envelope_channel.h \
 	ags/audio/recall/ags_envelope_channel_run.h \
 	ags/audio/recall/ags_envelope_recycling.h \
+	ags/audio/recall/ags_eq10_audio_signal.h \
+	ags/audio/recall/ags_eq10_channel.h \
+	ags/audio/recall/ags_eq10_channel_run.h \
+	ags/audio/recall/ags_eq10_recycling.h \
 	ags/audio/recall/ags_feed_audio_signal.h \
 	ags/audio/recall/ags_feed_channel.h \
 	ags/audio/recall/ags_feed_channel_run.h \
@@ -1005,10 +1013,11 @@ libags_audio_recall_h_sources = \
 	ags/audio/recall/ags_play_lv2_audio_run.h \
 	ags/audio/recall/ags_play_notation_audio.h \
 	ags/audio/recall/ags_play_notation_audio_run.h \
-	ags/audio/recall/ags_play_note.h \
 	ags/audio/recall/ags_play_recycling.h \
 	ags/audio/recall/ags_play_wave_audio.h \
 	ags/audio/recall/ags_play_wave_audio_run.h \
+	ags/audio/recall/ags_play_wave_channel.h \
+	ags/audio/recall/ags_play_wave_channel_run.h \
 	ags/audio/recall/ags_prepare_audio_signal.h \
 	ags/audio/recall/ags_prepare_channel.h \
 	ags/audio/recall/ags_prepare_channel_run.h \
@@ -1036,6 +1045,10 @@ deprecated_libags_audio_recall_c_sources =
 
 libags_audio_recall_c_sources = \
 	$(deprecated_libags_audio_recall_c_sources) \
+	ags/audio/recall/ags_analyse_audio_signal.c \
+	ags/audio/recall/ags_analyse_channel.c \
+	ags/audio/recall/ags_analyse_channel_run.c \
+	ags/audio/recall/ags_analyse_recycling.c \
 	ags/audio/recall/ags_buffer_audio_signal.c \
 	ags/audio/recall/ags_buffer_channel.c \
 	ags/audio/recall/ags_buffer_channel_run.c \
@@ -1060,6 +1073,10 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_envelope_channel.c \
 	ags/audio/recall/ags_envelope_channel_run.c \
 	ags/audio/recall/ags_envelope_recycling.c \
+	ags/audio/recall/ags_eq10_audio_signal.c \
+	ags/audio/recall/ags_eq10_channel.c \
+	ags/audio/recall/ags_eq10_channel_run.c \
+	ags/audio/recall/ags_eq10_recycling.c \
 	ags/audio/recall/ags_feed_audio_signal.c \
 	ags/audio/recall/ags_feed_channel.c \
 	ags/audio/recall/ags_feed_channel_run.c \
@@ -1088,10 +1105,11 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_play_lv2_audio_run.c \
 	ags/audio/recall/ags_play_notation_audio.c \
 	ags/audio/recall/ags_play_notation_audio_run.c \
-	ags/audio/recall/ags_play_note.c \
 	ags/audio/recall/ags_play_recycling.c \
 	ags/audio/recall/ags_play_wave_audio.c \
 	ags/audio/recall/ags_play_wave_audio_run.c \
+	ags/audio/recall/ags_play_wave_channel.c \
+	ags/audio/recall/ags_play_wave_channel_run.c \
 	ags/audio/recall/ags_prepare_audio_signal.c \
 	ags/audio/recall/ags_prepare_channel.c \
 	ags/audio/recall/ags_prepare_channel_run.c \
@@ -1623,6 +1641,10 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_audiorec_callbacks.h \
 	ags/X/machine/ags_cell_pattern_callbacks.h \
 	ags/X/machine/ags_cell_pattern.h \
+	ags/X/machine/ags_desk_callbacks.h \
+	ags/X/machine/ags_desk.h \
+	ags/X/machine/ags_desk_input_pad_callbacks.h \
+	ags/X/machine/ags_desk_input_pad.h \
 	ags/X/machine/ags_drum_callbacks.h \
 	ags/X/machine/ags_drum.h \
 	ags/X/machine/ags_drum_input_line_callbacks.h \
@@ -1635,6 +1657,8 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_drum_output_pad.h \
 	ags/X/machine/ags_dssi_bridge_callbacks.h \
 	ags/X/machine/ags_dssi_bridge.h \
+	ags/X/machine/ags_equalizer10.h \
+	ags/X/machine/ags_equalizer10_callbacks.h \
 	ags/X/machine/ags_ffplayer_callbacks.h \
 	ags/X/machine/ags_ffplayer.h \
 	ags/X/machine/ags_ffplayer_bridge_callbacks.h \
@@ -1678,7 +1702,9 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_synth.h \
 	ags/X/machine/ags_synth_input_line.h \
 	ags/X/machine/ags_synth_input_line_callbacks.h \
-	ags/X/machine/ags_synth_input_pad.h
+	ags/X/machine/ags_synth_input_pad.h \
+	ags/X/machine/ags_spectrometer.h \
+	ags/X/machine/ags_spectromenter_callbacks.h
 
 deprecated_libgsequencer_machine_c_sources =
 
@@ -1688,6 +1714,10 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_audiorec_callbacks.c \
 	ags/X/machine/ags_cell_pattern.c \
 	ags/X/machine/ags_cell_pattern_callbacks.c \
+	ags/X/machine/ags_desk_callbacks.c \
+	ags/X/machine/ags_desk.c \
+	ags/X/machine/ags_desk_input_pad_callbacks.c \
+	ags/X/machine/ags_desk_input_pad.c \
 	ags/X/machine/ags_drum.c \
 	ags/X/machine/ags_drum_callbacks.c \
 	ags/X/machine/ags_drum_input_line.c \
@@ -1700,6 +1730,8 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_drum_output_pad_callbacks.c \
 	ags/X/machine/ags_dssi_bridge.c \
 	ags/X/machine/ags_dssi_bridge_callbacks.c \
+	ags/X/machine/ags_equalizer10.c \
+	ags/X/machine/ags_equalizer10_callbacks.c \
 	ags/X/machine/ags_ffplayer.c \
 	ags/X/machine/ags_ffplayer_callbacks.c \
 	ags/X/machine/ags_ffplayer_bridge.c \
@@ -1743,7 +1775,9 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_synth_callbacks.c \
 	ags/X/machine/ags_synth_input_line.c \
 	ags/X/machine/ags_synth_input_line_callbacks.c \
-	ags/X/machine/ags_synth_input_pad.c
+	ags/X/machine/ags_synth_input_pad.c \
+	ags/X/machine/ags_spectrometer.c \
+	ags/X/machine/ags_spectromenter_callbacks.c
 
 # libgsequencer - editor
 deprecated_libgsequencer_editor_h_sources =
