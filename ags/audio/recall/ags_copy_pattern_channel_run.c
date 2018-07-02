@@ -741,9 +741,10 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
     note = g_list_nth_data(copy_pattern_channel_run->note,
 			   sequencer_counter);
 
-    //FIXME:JK: thread-safety
-    note->rt_attack = attack;
-        
+    g_object_set(note,
+		 "rt-attack", attack,
+		 NULL);
+    
     /* create audio signals */
     if(recycling != NULL){
       AgsRecallID *child_recall_id;
@@ -759,8 +760,8 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
 	  GError *error;
 	  
-	  //FIXME:JK: thread-safety
-	  note->flags |= AGS_NOTE_ENVELOPE;
+	  ags_note_set_flags(note,
+			     AGS_NOTE_ENVELOPE);
 	  
 	  /* get attack */
 	  g_value_init(&value,
@@ -772,10 +773,9 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 				   &error);
 
 	  if(error == NULL){
-	    val = (AgsComplex *) g_value_get_boxed(&value);
-
-	    note->attack[0] = val[0][0];
-	    note->attack[1] = val[0][1];
+	    g_object_set_property(note,
+				  "attack",
+				  &value);
 	  }
 
 	  /* get decay */
@@ -787,10 +787,9 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 				   &error);
 
 	  if(error == NULL){
-	    val = (AgsComplex *) g_value_get_boxed(&value);
-
-	    note->decay[0] = val[0][0];
-	    note->decay[1] = val[0][1];
+	    g_object_set_property(note,
+				  "decay",
+				  &value);
 	  }
 
 	  /* get sustain */
@@ -802,10 +801,9 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 				   &error);
 
 	  if(error == NULL){
-	    val = (AgsComplex *) g_value_get_boxed(&value);
-
-	    note->sustain[0] = val[0][0];
-	    note->sustain[1] = val[0][1];
+	    g_object_set_property(note,
+				  "sustain",
+				  &value);
 	  }
 
 	  /* get release */
@@ -817,10 +815,9 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 				   &error);
 
 	  if(error == NULL){
-	    val = (AgsComplex *) g_value_get_boxed(&value);
-
-	    note->release[0] = val[0][0];
-	    note->release[1] = val[0][1];
+	    g_object_set_property(note,
+				  "release",
+				  &value);
 	  }
 
 	  /* get ratio */
@@ -832,10 +829,9 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 				   &error);
 
 	  if(error == NULL){
-	    val = (AgsComplex *) g_value_get_boxed(&value);
-
-	    note->ratio[0] = val[0][0];
-	    note->ratio[1] = val[0][1];
+	    g_object_set_property(note,
+				  "ratio",
+				  &value);
 	  }
 	}
 	
@@ -863,6 +859,9 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	}else{
 	  GList *list_start, *list;
 
+	  ags_note_unset_flags(note,
+			       AGS_NOTE_ENVELOPE);
+
 	  audio_signal = NULL;
 
 	  g_object_get(recycling,
@@ -882,8 +881,9 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
 	  g_list_free(list_start);
 	  
-	  //FIXME:JK: thread-safety
-	  note->rt_offset = 0;
+	  g_object_set(note,
+		       "rt-offset", 0,
+		       NULL);
 	}
 		
 	/*

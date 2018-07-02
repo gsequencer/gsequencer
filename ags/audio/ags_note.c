@@ -53,14 +53,18 @@ enum{
   PROP_X0,
   PROP_X1,
   PROP_Y,
+  PROP_RT_OFFSET,
+  PROP_RT_ATTACK,
   PROP_STREAM_DELAY,
   PROP_STREAM_ATTACK,
+  PROP_STREAM_FRAME_COUNT,
   PROP_ATTACK,
   PROP_DECAY,
   PROP_SUSTAIN,
   PROP_RELEASE,
   PROP_RATIO,
   PROP_NOTE_NAME,
+  PROP_FREQUENCY,
 };
 
 static gpointer ags_note_parent_class = NULL;
@@ -164,7 +168,42 @@ ags_note_class_init(AgsNoteClass *note)
 				  PROP_Y,
 				  param_spec);
 
+  /**
+   * AgsNote:rt-offset:
+   *
+   * Note realtime offset.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint64("rt-offset",
+				   i18n_pspec("realtime offset"),
+				   i18n_pspec("The realtime offset"),
+				   0,
+				   G_MAXUINT64,
+				   0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RT_OFFSET,
+				  param_spec);
   
+  /**
+   * AgsNote:rt-attack:
+   *
+   * Note realtime attack.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("rt-attack",
+				 i18n_pspec("realtime attack"),
+				 i18n_pspec("The realtime attack"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RT_ATTACK,
+				  param_spec);
+
   /**
    * AgsNote:stream-delay:
    *
@@ -190,17 +229,35 @@ ags_note_class_init(AgsNoteClass *note)
    * 
    * Since: 2.0.0
    */
-  param_spec = g_param_spec_uint("stream-attack",
-				 i18n_pspec("offset stream-attack"),
-				 i18n_pspec("The first x offset"),
-				 0,
-				 G_MAXUINT32,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_double("stream-attack",
+				   i18n_pspec("stream attack offset"),
+				   i18n_pspec("The first x offset"),
+				   0.0,
+				   G_MAXDOUBLE,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_STREAM_ATTACK,
 				  param_spec);
 
+  /**
+   * AgsNote:stream-frame-count:
+   *
+   * The stream's frame count.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint64("stream-frame-count",
+				   i18n_pspec("stream frame count"),
+				   i18n_pspec("The stream frame count"),
+				   0,
+				   G_MAXUINT64,
+				   0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_STREAM_FRAME_COUNT,
+				  param_spec);
+  
   /**
    * AgsNote:attack:
    *
@@ -295,6 +352,24 @@ ags_note_class_init(AgsNoteClass *note)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NOTE_NAME,
+				  param_spec);
+
+  /**
+   * AgsNote:frequency:
+   *
+   * The note's frequency.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_double("frequency",
+				   i18n_pspec("frequency"),
+				   i18n_pspec("The note's frequency"),
+				   0.0,
+				   G_MAXDOUBLE,
+				   0.0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FREQUENCY,
 				  param_spec);
 }
 
@@ -407,6 +482,24 @@ ags_note_set_property(GObject *gobject,
       pthread_mutex_unlock(note_mutex);
     }
     break;
+  case PROP_RT_OFFSET:
+    {
+      pthread_mutex_lock(note_mutex);
+
+      note->rt_offset = g_value_get_uint64(value);
+
+      pthread_mutex_unlock(note_mutex);
+    }
+    break;
+  case PROP_RT_ATTACK:
+    {
+      pthread_mutex_lock(note_mutex);
+
+      note->rt_attack = g_value_get_uint(value);
+
+      pthread_mutex_unlock(note_mutex);
+    }
+    break;
   case PROP_STREAM_DELAY:
     {
       pthread_mutex_lock(note_mutex);
@@ -420,7 +513,16 @@ ags_note_set_property(GObject *gobject,
     {
       pthread_mutex_lock(note_mutex);
 
-      note->stream_attack = g_value_get_uint(value);
+      note->stream_attack = g_value_get_double(value);
+
+      pthread_mutex_unlock(note_mutex);
+    }
+    break;
+  case PROP_STREAM_FRAME_COUNT:
+    {
+      pthread_mutex_lock(note_mutex);
+
+      note->stream_frame_count = g_value_get_uint64(value);
 
       pthread_mutex_unlock(note_mutex);
     }
@@ -518,6 +620,15 @@ ags_note_set_property(GObject *gobject,
       pthread_mutex_unlock(note_mutex);
     }
     break;
+  case PROP_FREQUENCY:
+    {
+      pthread_mutex_lock(note_mutex);
+
+      note->frequency = g_value_get_double(value);
+
+      pthread_mutex_unlock(note_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -571,6 +682,24 @@ ags_note_get_property(GObject *gobject,
       pthread_mutex_unlock(note_mutex);
     }
     break;
+  case PROP_RT_OFFSET:
+    {
+      pthread_mutex_lock(note_mutex);
+
+      g_value_set_uint64(value, note->rt_offset);
+
+      pthread_mutex_unlock(note_mutex);
+    }
+    break;
+  case PROP_RT_ATTACK:
+    {
+      pthread_mutex_lock(note_mutex);
+
+      g_value_set_uint(value, note->rt_attack);
+
+      pthread_mutex_unlock(note_mutex);
+    }
+    break;
   case PROP_STREAM_DELAY:
     {
       pthread_mutex_lock(note_mutex);
@@ -584,7 +713,16 @@ ags_note_get_property(GObject *gobject,
     {
       pthread_mutex_lock(note_mutex);
 
-      g_value_set_uint(value, note->stream_attack);
+      g_value_set_double(value, note->stream_attack);
+
+      pthread_mutex_unlock(note_mutex);
+    }
+    break;
+  case PROP_STREAM_FRAME_COUNT:
+    {
+      pthread_mutex_lock(note_mutex);
+
+      g_value_set_uint64(value, note->stream_frame_count);
 
       pthread_mutex_unlock(note_mutex);
     }
@@ -639,6 +777,15 @@ ags_note_get_property(GObject *gobject,
       pthread_mutex_lock(note_mutex);
 
       g_value_set_string(value, note->note_name);
+
+      pthread_mutex_unlock(note_mutex);
+    }
+    break;
+  case PROP_FREQUENCY:
+    {
+      pthread_mutex_lock(note_mutex);
+
+      g_value_set_double(value, note->frequency);
 
       pthread_mutex_unlock(note_mutex);
     }
@@ -1517,4 +1664,3 @@ ags_note_new_with_offset(guint x0, guint x1,
 
   return(note);
 }
-

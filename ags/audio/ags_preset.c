@@ -902,7 +902,8 @@ ags_preset_get_parameter(AgsPreset *preset,
 			 GError **error)
 {
   guint i;
-
+  gboolean success;
+  
   pthread_mutex_t *preset_mutex;
 
   if(!AGS_IS_PRESET(preset)){
@@ -916,52 +917,43 @@ ags_preset_get_parameter(AgsPreset *preset,
   
   pthread_mutex_unlock(ags_preset_get_class_mutex());
 
-  /* check NULL */
-  pthread_mutex_lock(preset_mutex);
-  
-  if(preset->parameter_name == NULL){
-    if(error != NULL){
-      g_set_error(error,
-		  AGS_PRESET_ERROR,
-		  AGS_PRESET_ERROR_NO_SUCH_PARAMETER,
-		  "unable to find parameter: %s",
-		  param_name);
-    }
-
-    return;
-  }
-
   /* find */
-  for(i = 0; i < preset->n_params; i++){
-    if(!g_strcmp0(preset->parameter_name[i],
-		  param_name)){
-      g_value_copy(&(preset->value[i]),
-		   value);
-      
-      pthread_mutex_unlock(preset_mutex);
-      
-      return;
+  pthread_mutex_lock(preset_mutex);
+
+  success = FALSE;
+  
+  if(preset->parameter_name != NULL){
+    for(i = 0; i < preset->n_params; i++){
+      if(!g_strcmp0(preset->parameter_name[i],
+		    param_name)){
+	g_value_copy(&(preset->value[i]),
+		     value);
+
+	success = TRUE;      
+
+	break;
+      }
     }
   }
 
+  pthread_mutex_unlock(preset_mutex);
+  
   /* report error */
-  if(error != NULL){
+  if(!success && error != NULL){
     g_set_error(error,
 		AGS_PRESET_ERROR,
 		AGS_PRESET_ERROR_NO_SUCH_PARAMETER,
 		"unable to find parameter: %s",
 		param_name);
   }
-
-  pthread_mutex_unlock(preset_mutex);
 }
 
 /**
  * ags_preset_new:
  *
- * Creates an #AgsPreset
+ * Create a new instance of #AgsPreset
  *
- * Returns: a new #AgsPreset
+ * Returns: the new #AgsPreset
  *
  * Since: 2.0.0
  */

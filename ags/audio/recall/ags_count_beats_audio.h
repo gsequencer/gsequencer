@@ -23,7 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_audio.h>
+#include <ags/audio/ags_port.h>
 
 #define AGS_TYPE_COUNT_BEATS_AUDIO                (ags_count_beats_audio_get_type())
 #define AGS_COUNT_BEATS_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_COUNT_BEATS_AUDIO, AgsCountBeatsAudio))
@@ -39,17 +43,21 @@ struct _AgsCountBeatsAudio
 {
   AgsRecallAudio recall_audio;
 
-  AgsPort *notation_loop;
-  AgsPort *notation_loop_start;
-  AgsPort *notation_loop_end;
-
   AgsPort *sequencer_loop;
   AgsPort *sequencer_loop_start;
   AgsPort *sequencer_loop_end;
 
+  AgsPort *notation_loop;
+  AgsPort *notation_loop_start;
+  AgsPort *notation_loop_end;
+
   AgsPort *wave_loop;
   AgsPort *wave_loop_start;
   AgsPort *wave_loop_end;
+
+  AgsPort *midi_loop;
+  AgsPort *midi_loop_start;
+  AgsPort *midi_loop_end;
 };
 
 struct _AgsCountBeatsAudioClass
@@ -59,6 +67,6 @@ struct _AgsCountBeatsAudioClass
 
 GType ags_count_beats_audio_get_type();
 
-AgsCountBeatsAudio* ags_count_beats_audio_new(gboolean loop);
+AgsCountBeatsAudio* ags_count_beats_audio_new(AgsAudio *audio);
 
 #endif /*__AGS_COUNT_BEATS_AUDIO_H__*/

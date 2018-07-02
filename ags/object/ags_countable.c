@@ -62,27 +62,6 @@ ags_countable_base_init(AgsCountableInterface *interface)
 }
 
 /**
- * ags_countable_get_notation_counter:
- * @countable: an #AgsCountable
- *
- * Retrieve current position of notation.
- *
- * Returns: the current position
- *
- * Since: 1.0.0
- */
-guint
-ags_countable_get_notation_counter(AgsCountable *countable)
-{
-  AgsCountableInterface *countable_interface;
-
-  g_return_val_if_fail(AGS_IS_COUNTABLE(countable), -1);
-  countable_interface = AGS_COUNTABLE_GET_INTERFACE(countable);
-  g_return_val_if_fail(countable_interface->get_notation_counter, -1);
-  return(countable_interface->get_notation_counter(countable));
-}
-
-/**
  * ags_countable_get_sequencer_counter:
  * @countable: an #AgsCountable
  *
@@ -90,17 +69,40 @@ ags_countable_get_notation_counter(AgsCountable *countable)
  *
  * Returns: the current position
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
-guint
+guint64
 ags_countable_get_sequencer_counter(AgsCountable *countable)
 {
   AgsCountableInterface *countable_interface;
 
-  g_return_val_if_fail(AGS_IS_COUNTABLE(countable), -1);
+  g_return_val_if_fail(AGS_IS_COUNTABLE(countable), G_MAXUINT64);
   countable_interface = AGS_COUNTABLE_GET_INTERFACE(countable);
-  g_return_val_if_fail(countable_interface->get_sequencer_counter, -1);
+  g_return_val_if_fail(countable_interface->get_sequencer_counter, G_MAXUINT64);
+  
   return(countable_interface->get_sequencer_counter(countable));
+}
+
+/**
+ * ags_countable_get_notation_counter:
+ * @countable: an #AgsCountable
+ *
+ * Retrieve current position of notation.
+ *
+ * Returns: the current position
+ *
+ * Since: 2.0.0
+ */
+guint64
+ags_countable_get_notation_counter(AgsCountable *countable)
+{
+  AgsCountableInterface *countable_interface;
+
+  g_return_val_if_fail(AGS_IS_COUNTABLE(countable), G_MAXUINT64);
+  countable_interface = AGS_COUNTABLE_GET_INTERFACE(countable);
+  g_return_val_if_fail(countable_interface->get_notation_counter, G_MAXUINT64);
+  
+  return(countable_interface->get_notation_counter(countable));
 }
 
 /**
@@ -111,15 +113,38 @@ ags_countable_get_sequencer_counter(AgsCountable *countable)
  *
  * Returns: the current position
  *
- * Since: 1.5.0
+ * Since: 2.0.0
  */
 guint64
 ags_countable_get_wave_counter(AgsCountable *countable)
 {
   AgsCountableInterface *countable_interface;
 
-  g_return_val_if_fail(AGS_IS_COUNTABLE(countable), -1);
+  g_return_val_if_fail(AGS_IS_COUNTABLE(countable), G_MAXUINT64);
   countable_interface = AGS_COUNTABLE_GET_INTERFACE(countable);
-  g_return_val_if_fail(countable_interface->get_wave_counter, -1);
+  g_return_val_if_fail(countable_interface->get_wave_counter, G_MAXUINT64);
+
   return(countable_interface->get_wave_counter(countable));
+}
+
+/**
+ * ags_countable_get_midi_counter:
+ * @countable: an #AgsCountable
+ *
+ * Retrieve current position of MIDI.
+ *
+ * Returns: the current position
+ *
+ * Since: 2.0.0
+ */
+guint64
+ags_countable_get_midi_counter(AgsCountable *countable)
+{
+  AgsCountableInterface *countable_interface;
+
+  g_return_val_if_fail(AGS_IS_COUNTABLE(countable), G_MAXUINT64);
+  countable_interface = AGS_COUNTABLE_GET_INTERFACE(countable);
+  g_return_val_if_fail(countable_interface->get_midi_counter, G_MAXUINT64);
+
+  return(countable_interface->get_midi_counter(countable));
 }

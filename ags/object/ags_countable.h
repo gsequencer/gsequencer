@@ -37,15 +37,17 @@ struct _AgsCountableInterface
 {
   GTypeInterface ginterface;
 
-  guint (*get_notation_counter)(AgsCountable *countable);
-  guint (*get_sequencer_counter)(AgsCountable *countable);
+  guint64 (*get_sequencer_counter)(AgsCountable *countable);
+  guint64 (*get_notation_counter)(AgsCountable *countable);
   guint64 (*get_wave_counter)(AgsCountable *countable);
+  guint64 (*get_midi_counter)(AgsCountable *countable);
 };
 
 GType ags_countable_get_type();
 
-guint ags_countable_get_notation_counter(AgsCountable *countable);
-guint ags_countable_get_sequencer_counter(AgsCountable *countable);
+guint64 ags_countable_get_sequencer_counter(AgsCountable *countable);
+guint64 ags_countable_get_notation_counter(AgsCountable *countable);
 guint64 ags_countable_get_wave_counter(AgsCountable *countable);
+guint64 ags_countable_get_midi_counter(AgsCountable *countable);
 
 #endif /*__AGS_COUNTABLE_H__*/

@@ -80,7 +80,7 @@ struct _AgsNote
   
   gdouble stream_delay;
   gdouble stream_attack;
-  guint stream_frame_count;
+  guint64 stream_frame_count;
   
   AgsComplex attack;
   AgsComplex decay;
