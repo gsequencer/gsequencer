@@ -18,11 +18,12 @@
  */
 
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
-#include <ags/audio/recall/ags_copy_pattern_audio.h>
 
 #include <ags/libags.h>
 
 #include <ags/audio/ags_recall_container.h>
+
+#include <ags/audio/recall/ags_copy_pattern_audio.h>
 
 #include <ags/i18n.h>
 
@@ -45,9 +46,6 @@ void ags_copy_pattern_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *pl
 xmlNode* ags_copy_pattern_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_copy_pattern_audio_run_resolve_dependency(AgsRecall *recall);
-AgsRecall* ags_copy_pattern_audio_run_duplicate(AgsRecall *recall,
-						AgsRecallID *recall_id,
-						guint *n_params, gchar **parameter_name, GValue *value);
 void ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall, guint dependency, gboolean increase);
 
 void ags_copy_pattern_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
@@ -178,7 +176,6 @@ ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_
   recall = (AgsRecallClass *) copy_pattern_audio_run;
 
   recall->resolve_dependency = ags_copy_pattern_audio_run_resolve_dependency;
-  recall->duplicate = ags_copy_pattern_audio_run_duplicate;
   recall->notify_dependency = ags_copy_pattern_audio_run_notify_dependency;
 }
 
@@ -667,20 +664,6 @@ ags_copy_pattern_audio_run_resolve_dependency(AgsRecall *recall)
 	       NULL);
 }
 
-AgsRecall*
-ags_copy_pattern_audio_run_duplicate(AgsRecall *recall,
-				     AgsRecallID *recall_id,
-				     guint *n_params, gchar **parameter_name, GValue *value)
-{
-  AgsCopyPatternAudioRun *copy_copy_pattern_audio_run;
-
-  copy_copy_pattern_audio_run = AGS_RECALL_CLASS(ags_copy_pattern_audio_run_parent_class)->duplicate(recall,
-												     recall_id,
-												     n_params, parameter_name, value);
-  
-  return(copy_copy_pattern_audio_run);
-}
-
 void
 ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall, guint dependency, gboolean increase)
 {
@@ -713,20 +696,23 @@ ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall, guint dependency
 
 /**
  * ags_copy_pattern_audio_run_new:
- * @count_beats_audio_run: an #AgsCountBeatsAudioRun as dependency
+ * @delay_audio_run: the #AgsDelayAudioRun dependency
+ * @count_beats_audio_run: the #AgsCountBeatsAudioRun dependency
  *
- * Creates an #AgsCopyPatternAudioRun
+ * Create a new instance of #AgsCopyPatternAudioRun
  *
- * Returns: a new #AgsCopyPatternAudioRun
+ * Returns: the new #AgsCopyPatternAudioRun
  *
  * Since: 2.0.0
  */
 AgsCopyPatternAudioRun*
-ags_copy_pattern_audio_run_new(AgsCountBeatsAudioRun *count_beats_audio_run)
+ags_copy_pattern_audio_run_new(AgsDelayAudioRun *delay_audio_run,
+			       AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
 
   copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
+								   "delay-audio-run", delay_audio_run,
 								   "count-beats-audio-run", count_beats_audio_run,
 								   NULL);
 

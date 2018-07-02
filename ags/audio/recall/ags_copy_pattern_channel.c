@@ -18,11 +18,14 @@
  */
 
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
+
+#include <ags/libags.h>
+
+#include <ags/audio/ags_pattern.h>
+
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
-
-#include <ags/libags.h>
 
 #include <ags/i18n.h>
 
@@ -323,7 +326,7 @@ ags_copy_pattern_channel_set_ports(AgsPlugin *plugin, GList *port)
   while(port != NULL){
     if(!strncmp(AGS_PORT(port->data)->specifier,
 		"./pattern[0]",
-		11)){
+		13)){
       g_object_set(G_OBJECT(plugin),
 		   "pattern", AGS_PORT(port->data),
 		   NULL);

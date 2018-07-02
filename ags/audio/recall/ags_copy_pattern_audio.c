@@ -18,11 +18,12 @@
  */
 
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
+
+#include <ags/libags.h>
+
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
-
-#include <ags/libags.h>
 
 #include <ags/i18n.h>
 
@@ -120,18 +121,6 @@ ags_copy_pattern_audio_get_type()
 }
 
 void
-ags_copy_pattern_audio_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_copy_pattern_audio_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-}
-
-void
-ags_copy_pattern_audio_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->set_ports = ags_copy_pattern_audio_set_ports;
-}
-
-void
 ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
 {
   GObjectClass *gobject;
@@ -181,6 +170,18 @@ ags_copy_pattern_audio_class_init(AgsCopyPatternAudioClass *copy_pattern_audio)
   g_object_class_install_property(gobject,
 				  PROP_BANK_INDEX_1,
 				  param_spec);
+}
+
+void
+ags_copy_pattern_audio_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  ags_copy_pattern_audio_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+}
+
+void
+ags_copy_pattern_audio_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  plugin->set_ports = ags_copy_pattern_audio_set_ports;
 }
 
 void

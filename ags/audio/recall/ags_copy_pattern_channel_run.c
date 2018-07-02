@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,6 +40,7 @@ void ags_copy_pattern_channel_run_class_init(AgsCopyPatternChannelRunClass *copy
 void ags_copy_pattern_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_pattern_channel_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_copy_pattern_channel_run_init(AgsCopyPatternChannelRun *copy_pattern_channel_run);
+void ags_copy_pattern_channel_run_dispose(GObject *gobject);
 void ags_copy_pattern_channel_run_finalize(GObject *gobject);
 
 void ags_copy_pattern_channel_run_notify_recall_audio_run(GObject *gobject,
@@ -60,9 +61,6 @@ void ags_copy_pattern_channel_run_disconnect(AgsConnectable *connectable);
 void ags_copy_pattern_channel_run_connect_connection(AgsConnectable *connectable, GObject *connection);
 void ags_copy_pattern_channel_run_disconnect_connection(AgsConnectable *connectable, GObject *connection);
 
-AgsRecall* ags_copy_pattern_channel_run_duplicate(AgsRecall *recall,
-						  AgsRecallID *recall_id,
-						  guint *n_params, gchar **parameter_name, GValue *value);
 void ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall);
 void ags_copy_pattern_channel_run_done(AgsRecall *recall);
 
@@ -147,6 +145,7 @@ ags_copy_pattern_channel_run_class_init(AgsCopyPatternChannelRunClass *copy_patt
   /* GObjectClass */
   gobject = (GObjectClass *) copy_pattern_channel_run;
 
+  gobject->dispose = ags_copy_pattern_channel_run_dispose;
   gobject->finalize = ags_copy_pattern_channel_run_finalize;
 
   /* AgsRecallClass */
@@ -154,7 +153,6 @@ ags_copy_pattern_channel_run_class_init(AgsCopyPatternChannelRunClass *copy_patt
 
   recall->run_init_pre = ags_copy_pattern_channel_run_run_init_pre;
   recall->done = ags_copy_pattern_channel_run_done;
-  recall->duplicate = ags_copy_pattern_channel_run_duplicate;
 }
 
 void
@@ -199,8 +197,34 @@ ags_copy_pattern_channel_run_init(AgsCopyPatternChannelRun *copy_pattern_channel
 }
 
 void
+ags_copy_pattern_channel_run_dispose(GObject *gobject)
+{
+  AgsCopyPatternChannelRun *copy_pattern_channel_run;
+
+  copy_pattern_channel_run = (AgsCopyPatternChannelRun *) gobject;
+
+  /* note */
+  g_list_free_full(copy_pattern_channel_run->note,
+		   g_object_unref);
+
+  copy_pattern_channel_run->note = NULL;
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_copy_pattern_channel_run_parent_class)->dispose(gobject);
+}
+
+void
 ags_copy_pattern_channel_run_finalize(GObject *gobject)
 {
+  AgsCopyPatternChannelRun *copy_pattern_channel_run;
+
+  copy_pattern_channel_run = (AgsCopyPatternChannelRun *) gobject;
+
+  /* note */
+  g_list_free_full(copy_pattern_channel_run->note,
+		   g_object_unref);
+  
+  /* call parent */
   G_OBJECT_CLASS(ags_copy_pattern_channel_run_parent_class)->finalize(gobject);
 }
 
@@ -445,20 +469,6 @@ ags_copy_pattern_channel_run_disconnect_connection(AgsConnectable *connectable, 
 			copy_pattern_channel_run,
 			NULL);
   }
-}
-
-AgsRecall*
-ags_copy_pattern_channel_run_duplicate(AgsRecall *recall,
-				       AgsRecallID *recall_id,
-				       guint *n_params, gchar **parameter_name, GValue *value)
-{
-  AgsCopyPatternChannelRun *copy_copy_pattern_channel_run;
-
-  copy_copy_pattern_channel_run = ags_copy_pattern_channel_run_parent_class)->duplicate(recall,
-											recall_id,
-											n_params, parameter_name, value);
-
-  return(copy_copy_pattern_channel_run);
 }
 
 void

@@ -19,9 +19,7 @@
 
 #include <ags/audio/recall/ags_copy_channel.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_mutable.h>
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
 
 #include <ags/i18n.h>
 
@@ -346,7 +344,7 @@ ags_copy_channel_set_ports(AgsPlugin *plugin, GList *port)
   while(port != NULL){
     if(!strncmp(AGS_PORT(port->data)->specifier,
 		"./muted[0]",
-		9)){
+		11)){
       g_object_set(G_OBJECT(plugin),
 		   "muted", AGS_PORT(port->data),
 		   NULL);

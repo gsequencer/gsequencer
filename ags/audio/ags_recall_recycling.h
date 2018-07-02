@@ -23,10 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_recall.h>
 
 #define AGS_TYPE_RECALL_RECYCLING                (ags_recall_recycling_get_type())
 #define AGS_RECALL_RECYCLING(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_RECYCLING, AgsRecallRecycling))

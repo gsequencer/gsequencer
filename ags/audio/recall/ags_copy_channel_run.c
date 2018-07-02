@@ -18,9 +18,10 @@
  */
 
 #include <ags/audio/recall/ags_copy_channel_run.h>
-#include <ags/audio/recall/ags_copy_recycling.h>
 
 #include <ags/libags.h>
+
+#include <ags/audio/recall/ags_copy_recycling.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -30,10 +31,6 @@ void ags_copy_channel_run_connectable_interface_init(AgsConnectableInterface *co
 void ags_copy_channel_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_copy_channel_run_init(AgsCopyChannelRun *copy_channel_run);
 void ags_copy_channel_run_finalize(GObject *gobject);
-
-AgsRecall* ags_copy_channel_run_duplicate(AgsRecall *recall,
-					  AgsRecallID *recall_id,
-					  guint *n_params, gchar **parameter_name, GValue *value);
 
 /**
  * SECTION:ags_copy_channel_run
@@ -130,32 +127,14 @@ ags_copy_channel_run_init(AgsCopyChannelRun *copy_channel_run)
   AGS_RECALL(copy_channel_run)->xml_type = "ags-copy-channel-run";
   AGS_RECALL(copy_channel_run)->port = NULL;
 
-  AGS_RECALL(copy_channel_run)->flags |= (AGS_RECALL_OUTPUT_ORIENTATED |
-					  AGS_RECALL_INPUT_ORIENTATED);
   AGS_RECALL(copy_channel_run)->child_type = AGS_TYPE_COPY_RECYCLING;
 }
 
 void
 ags_copy_channel_run_finalize(GObject *gobject)
 {
-  /* empty */
-
   /* call parent */
   G_OBJECT_CLASS(ags_copy_channel_run_parent_class)->finalize(gobject);
-}
-
-AgsRecall*
-ags_copy_channel_run_duplicate(AgsRecall *recall,
-			       AgsRecallID *recall_id,
-			       guint *n_params, gchar **parameter_name, GValue *value)
-{
-  AgsCopyChannelRun *copy_copy_chhannel_run;
-
-  copy_copy_chhannel_run = (AgsCopyChannelRun *) AGS_RECALL_CLASS(ags_copy_channel_run_parent_class)->duplicate(recall,
-														recall_id,
-														n_params, parameter_name, value);
-  
-  return((AgsRecall *) copy_copy_chhannel_run);
 }
 
 /**

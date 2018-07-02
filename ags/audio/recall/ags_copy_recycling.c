@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,10 +30,6 @@ void ags_copy_recycling_class_init(AgsCopyRecyclingClass *copy_recycling);
 void ags_copy_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_recycling_init(AgsCopyRecycling *copy_recycling);
 void ags_copy_recycling_finalize(GObject *gobject);
-
-AgsRecall* ags_copy_recycling_duplicate(AgsRecall *recall,
-					AgsRecallID *recall_id,
-					guint *n_params, gchar **parameter_name, GValue *value);
 
 /**
  * SECTION:ags_copy_recycling
@@ -100,8 +96,6 @@ ags_copy_recycling_class_init(AgsCopyRecyclingClass *copy_recycling)
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) copy_recycling;
-
-  recall->duplicate = ags_copy_recycling_duplicate;
 }
 
 void
@@ -126,24 +120,8 @@ ags_copy_recycling_init(AgsCopyRecycling *copy_recycling)
 void
 ags_copy_recycling_finalize(GObject *gobject)
 {
-  /* empty */
-
   /* call parent */
   G_OBJECT_CLASS(ags_copy_recycling_parent_class)->finalize(gobject);
-}
-
-AgsRecall*
-ags_copy_recycling_duplicate(AgsRecall *recall,
-			     AgsRecallID *recall_id,
-			     guint *n_params, gchar **parameter_name, GValue *value)
-{
-  AgsCopyRecycling *copy_copy_recycling;
-
-  copy_copy_recycling = (AgsCopyRecycling *) AGS_RECALL_CLASS(ags_copy_recycling_parent_class)->duplicate(recall,
-													  recall_id,
-													  n_params, parameter_name, value);
-
-  return((AgsRecall *) copy_copy_recycling);
 }
 
 /**

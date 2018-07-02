@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_copy_audio_signal.h>
-#include <ags/audio/recall/ags_copy_channel.h>
-#include <ags/audio/recall/ags_copy_recycling.h>
 
 #include <ags/libags.h>
 
@@ -33,6 +31,7 @@
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/recall/ags_copy_channel.h>
+#include <ags/audio/recall/ags_copy_recycling.h>
 
 #include <stdlib.h>
 
@@ -41,9 +40,6 @@ void ags_copy_audio_signal_connectable_interface_init(AgsConnectableInterface *c
 void ags_copy_audio_signal_init(AgsCopyAudioSignal *copy_audio_signal);
 void ags_copy_audio_signal_finalize(GObject *gobject);
 
-AgsRecall* ags_copy_audio_signal_duplicate(AgsRecall *recall,
-					   AgsRecallID *recall_id,
-					   guint *n_params, gchar **parameter_name, GValue *value);
 void ags_copy_audio_signal_run_init_pre(AgsRecall *recall);
 void ags_copy_audio_signal_run_pre(AgsRecall *recall);
 void ags_copy_audio_signal_run_inter(AgsRecall *recall);
@@ -119,7 +115,6 @@ ags_copy_audio_signal_class_init(AgsCopyAudioSignalClass *copy_audio_signal)
   recall->run_init_pre = ags_copy_audio_signal_run_init_pre;
   recall->run_pre = ags_copy_audio_signal_run_pre;
   recall->run_inter = ags_copy_audio_signal_run_inter;  
-  recall->duplicate = ags_copy_audio_signal_duplicate;
 }
 
 void
@@ -145,20 +140,6 @@ ags_copy_audio_signal_finalize(GObject *gobject)
 {  
   /* call parent */
   G_OBJECT_CLASS(ags_copy_audio_signal_parent_class)->finalize(gobject);
-}
-
-AgsRecall*
-ags_copy_audio_signal_duplicate(AgsRecall *recall,
-				AgsRecallID *recall_id,
-				guint *n_params, gchar **parameter_name, GValue *value)
-{
-  AgsCopyAudioSignal *copy_copy_audio_signal;
-
-  copy_copy_audio_signal = (AgsCopyAudioSignal *) AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->duplicate(recall,
-														  recall_id,
-														  n_params, parameter_name, value);
-
-  return((AgsRecall *) copy);
 }
 
 void
