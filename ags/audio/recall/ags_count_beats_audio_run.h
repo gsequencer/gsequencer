@@ -49,16 +49,16 @@ struct _AgsCountBeatsAudioRun
   gdouble bpm;
   gdouble tact;
   
-  guint64 notation_counter;
   guint64 sequencer_counter;
+  guint64 notation_counter;
   guint64 wave_counter;
   guint64 midi_counter;
 
   guint recall_ref;
 
   guint hide_ref;
-  guint notation_hide_ref_counter;
   guint sequencer_hide_ref_counter;
+  guint notation_hide_ref_counter;
   guint wave_hide_ref_counter;
   guint midi_hide_ref_counter;
 

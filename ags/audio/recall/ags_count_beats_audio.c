@@ -41,9 +41,9 @@ void ags_count_beats_audio_get_property(GObject *gobject,
 void ags_count_beats_audio_dispose(GObject *gobject);
 void ags_count_beats_audio_finalize(GObject *gobject);
 
-void ags_count_beats_audio_notify_output_soundcard(GObject *gobject,
-						   GParamSpec *pspec,
-						   gpointer user_data);
+void ags_count_beats_audio_notify_output_soundcard_callback(GObject *gobject,
+							    GParamSpec *pspec,
+							    gpointer user_data);
 
 void ags_count_beats_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duration);
 void ags_count_beats_audio_change_notation_duration(AgsTactable *tactable, gdouble duration);
@@ -415,8 +415,8 @@ ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio)
 {
   GList *port;
 
-  g_signal_connect(count_beats_audio, "notify::output-soundcard",
-		   G_CALLBACK(ags_count_beats_audio_notify_output_soundcard), NULL);
+  g_signal_connect_after(count_beats_audio, "notify::output-soundcard",
+			 G_CALLBACK(ags_count_beats_audio_notify_output_soundcard_callback), NULL);
 
   AGS_RECALL(count_beats_audio)->name = "ags-count-beats";
   AGS_RECALL(count_beats_audio)->version = AGS_RECALL_DEFAULT_VERSION;
@@ -1280,9 +1280,9 @@ ags_count_beats_audio_finalize(GObject *gobject)
 }
 
 void
-ags_count_beats_audio_notify_output_soundcard(GObject *gobject,
-					      GParamSpec *pspec,
-					      gpointer user_data)
+ags_count_beats_audio_notify_output_soundcard_callback(GObject *gobject,
+						       GParamSpec *pspec,
+						       gpointer user_data)
 {
   AgsCountBeatsAudio *count_beats_audio;
   AgsPort *notation_loop;
