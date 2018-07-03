@@ -234,6 +234,7 @@ ags_recall_dssi_init(AgsRecallDssi *recall_dssi)
   recall_dssi->bank = 0;
   recall_dssi->program = 0;
   
+  recall_dssi->plugin = NULL;
   recall_dssi->plugin_descriptor = NULL;
 
   recall_dssi->input_port = NULL;
@@ -573,8 +574,9 @@ ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
   }
 
   /*  */
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
-						  recall_dssi->filename, recall_dssi->effect);
+  recall_dssi->plugin = 
+    dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
+						    recall_dssi->filename, recall_dssi->effect);
   
   plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;
 

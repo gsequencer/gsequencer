@@ -626,10 +626,30 @@ ags_dssi_plugin_real_change_program(AgsDssiPlugin *dssi_plugin,
 				    guint bank_index,
 				    guint program_index)
 {
-  if(AGS_DSSI_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(dssi_plugin)->plugin_descriptor)->select_program != NULL){
-    AGS_DSSI_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(dssi_plugin)->plugin_descriptor)->select_program((void *) ladspa_handle,
-												(unsigned long) bank_index,
-												(unsigned long) program_index);
+  void (*select_program)(LADSPA_Handle instance,
+			 unsigned long bank,
+			 unsigned long program);
+  
+  pthread_mutex_t *base_plugin_mutex;
+
+  /* base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+
+  base_plugin_mutex = base_plugin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* select program */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  select_program = AGS_DSSI_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(dssi_plugin)->plugin_descriptor)->select_program;
+  
+  pthread_mutex_unlock(base_plugin_mutex);
+
+  if(select_program != NULL){
+    select_program((void *) ladspa_handle,
+		   (unsigned long) bank_index,
+		   (unsigned long) program_index);
   }
 }
 

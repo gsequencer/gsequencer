@@ -50,6 +50,7 @@ struct _AgsRecallDssi
   unsigned long bank;
   unsigned long program;
   
+  AgsDssiPlugin *plugin;
   DSSI_Descriptor *plugin_descriptor;
 
   unsigned long *input_port;

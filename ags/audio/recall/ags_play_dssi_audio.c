@@ -247,6 +247,7 @@ ags_play_dssi_audio_init(AgsPlayDssiAudio *play_dssi_audio)
   play_dssi_audio->bank = 0;
   play_dssi_audio->program = 0;
   
+  play_dssi_audio->plugin = NULL;
   play_dssi_audio->plugin_descriptor = NULL;
 
   play_dssi_audio->input_port = NULL;
