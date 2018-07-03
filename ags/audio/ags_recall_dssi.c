@@ -613,8 +613,20 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
   unsigned long port_count;
   unsigned long i;
 
+  pthread_mutex_t *base_plugin_mutex;
+
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
 						  recall_dssi->filename, recall_dssi->effect);
+
+  /* base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+
+  base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* load port */
+  pthread_mutex_lock(base_plugin_mutex);
 
   port = NULL;
   port_descriptor = AGS_BASE_PLUGIN(dssi_plugin)->port;
@@ -694,6 +706,8 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
     
     AGS_RECALL(recall_dssi)->port = g_list_reverse(port);
   }
+
+  pthread_mutex_unlock(base_plugin_mutex);
 
   //  g_message("output lines: %d", recall_dssi->output_lines);
 
