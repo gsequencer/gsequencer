@@ -753,7 +753,7 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* get audio */
-  audio = AGS_RECALL_AUDIO_RUN(recall)->recall_audio->audio;
+  audio = AGS_RECALL_AUDIO_RUN(recall)->audio;
 
   /* audio mutex */
   pthread_mutex_lock(application_mutex);

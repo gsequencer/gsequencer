@@ -550,22 +550,20 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
 	  
       g_value_init(&value,
 		   G_TYPE_FLOAT);
-      ags_port_safe_read(current,
-			 &value);
+      ags_port_safe_read_raw(current,
+			     &value);
 	
       recall_dssi_run->port_data[i] = g_value_get_float(&value);
     }
   }
     
-  if(plugin_descriptor->select_program != NULL){    
-    for(i = 0; i < i_stop; i++){
-      ags_dssi_plugin_real_change_program(dssi_plugin,
-					  recall_dssi_run->ladspa_handle[i],
-					  bank,
-					  program);
+  for(i = 0; i < i_stop; i++){
+    ags_dssi_plugin_real_change_program(dssi_plugin,
+					recall_dssi_run->ladspa_handle[i],
+					bank,
+					program);
 
-      //      g_message("b p %u %u", recall_dssi->bank, recall_dssi->program);
-    }
+    //      g_message("b p %u %u", recall_dssi->bank, recall_dssi->program);
   }
 
   /* reset port data */    
@@ -600,8 +598,8 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
 
       g_value_set_float(&value,
 			port_data);
-      ags_port_safe_write(current,
-			  &value);
+      ags_port_safe_write_raw(current,
+			      &value);
     }
   }
   
@@ -612,11 +610,13 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
     event_buffer = recall_dssi_run->event_buffer;
     event_count = recall_dssi_run->event_count;
     
-    while(*event_buffer != NULL){
-      ags_base_plugin_run(dssi_plugin,
-			  recall_dssi_run->ladspa_handle[0],
-			  event_buffer,
-			  buffer_size);
+    while(event_buffer[0] != NULL){
+      if(event_buffer[0]->type == SND_SEQ_EVENT_NOTEON){
+	ags_base_plugin_run(dssi_plugin,
+			    recall_dssi_run->ladspa_handle[0],
+			    event_buffer[0],
+			    buffer_size);
+      }
       
       event_buffer++;
       event_count++;

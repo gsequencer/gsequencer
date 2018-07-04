@@ -1263,7 +1263,7 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
     event_buffer = play_dssi_audio_run->event_buffer;
     event_count = play_dssi_audio_run->event_count;
     
-    while(*event_buffer != NULL){
+    while(event_buffer[0] != NULL){
       seq_event = event_buffer[0];
       
       ags_base_plugin_run(dssi_plugin,
