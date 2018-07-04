@@ -1521,7 +1521,7 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     if(play_dssi_audio_run->event_buffer != NULL){
       event_buffer = play_dssi_audio_run->event_buffer;
       
-      while(*event_buffer != NULL){
+      while(event_buffer[0] != NULL){
 	event_buffer++;
 	event_count++;
 	i++;
@@ -1570,8 +1570,9 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
       
     if(play_dssi_audio_run->event_buffer != NULL){
       event_buffer = play_dssi_audio_run->event_buffer;
+      event_count = play_dssi_audio_run->event_count;
       
-      while(*event_buffer != NULL){
+      while(event_buffer[0] != NULL){
 	if(event_buffer[0]->data.note.note == (0x7f & (selected_key - audio_start_mapping + midi_start_mapping))){
 	  match_index = i;
 	  //	    free(event_buffer[0]);
@@ -1591,10 +1592,12 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 		&(play_dssi_audio_run->event_buffer[match_index + 1]),
 		i - 1);
       }
-	
+
       play_dssi_audio_run->event_buffer[i - 1] = NULL;
+      play_dssi_audio_run->event_count[i - 1] = 0;
 	
       play_dssi_audio_run->event_buffer[i] = NULL;
+      play_dssi_audio_run->event_count[i] = 0;
 
       if(play_dssi_audio_run->key_on > 0){
 	play_dssi_audio_run->key_on -= 1;
