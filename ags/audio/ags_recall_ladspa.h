@@ -46,7 +46,8 @@ struct _AgsRecallLadspa
   gchar *filename;
   gchar *effect;
   unsigned long index;
-
+  
+  AgsLadspaPlugin *plugin;
   LADSPA_Descriptor *plugin_descriptor;
 
   unsigned long *input_port;

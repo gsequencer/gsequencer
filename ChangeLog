@@ -2,7 +2,13 @@ ags (1.4.33)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed missing includes of pthread.h
-	* fixed possible concurrent access to ags_route_dssi_audio_run.c and ags_route_lv2_audio_run.c
+	* fixed thread-safety of AgsRouteLv2AudioRun
+	* fixed thread-safety of AgsRouteDssiAudioRun
+	* fixed thread-safety of AgsPlayDssiAudioRun
+	* fixed thread-safety of AgsRecallDssi
+	* fixed thread-safety of AgsRecallDssiRun
+	* fixed thread-safety of AgsRecallLadspa
+	* fixed thread-safety of AgsRecallLadspaRun
 	* TODO:JK: fixed all ags_*_get_type() to use atomic operations
 
 ags (1.4.32)
