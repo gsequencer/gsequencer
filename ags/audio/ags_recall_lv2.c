@@ -756,7 +756,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
   /* base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
 
-  base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin)->obj_mutex;
+  base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
   
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 

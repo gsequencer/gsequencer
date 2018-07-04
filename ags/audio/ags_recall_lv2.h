@@ -25,7 +25,7 @@
 
 #include <lv2.h>
 
-#include <ags/lib/ags_turtle.h>
+#include <ags/libags.h>
 
 #include <ags/plugin/ags_lv2_plugin.h>
 

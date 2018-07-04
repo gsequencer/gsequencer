@@ -25,6 +25,8 @@
 
 #include <ladspa.h>
 
+#include <ags/plugin/ags_ladspa_plugin.h>
+
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_channel.h>

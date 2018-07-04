@@ -575,7 +575,7 @@ ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
   }
 
   /*  */
-  recall_ladpsa->plugin = 
+  recall_ladspa->plugin = 
     ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
 							  recall_ladspa->filename, recall_ladspa->effect);
   

@@ -643,7 +643,7 @@ ags_base_plugin_finalize(GObject *gobject)
 
   base_plugin = AGS_BASE_PLUGIN(gobject);
 
-  pthread_mutexdestroy(base_plugin->obj_mutex);
+  pthread_mutex_destroy(base_plugin->obj_mutex);
   free(base_plugin->obj_mutex);
 
   pthread_mutexattr_destroy(base_plugin->obj_mutexattr);

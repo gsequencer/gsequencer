@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/plugin/ags_dssi_plugin.h>
+
 #include <ags/audio/ags_recall_audio.h>
 
 #include <dssi.h>

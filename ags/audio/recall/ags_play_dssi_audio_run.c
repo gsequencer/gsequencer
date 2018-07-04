@@ -914,10 +914,11 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
   AgsChannel *channel;
   AgsChannel *selected_channel;
   AgsRecycling *recycling;
+  AgsRecyclingContext *recycling_context;
   AgsAudioSignal *destination;
   AgsPlayDssiAudio *play_dssi_audio;
   AgsPlayDssiAudioRun *play_dssi_audio_run;
-
+  
   AgsDssiPlugin *dssi_plugin;
   
   AgsMutexManager *mutex_manager;
@@ -991,7 +992,7 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
   pthread_mutex_unlock(recall_mutex);
 
   /* get audio */
-  audio = AGS_RECALL_AUDIO_RUN(recall)->audio;
+  audio = AGS_RECALL_AUDIO_RUN(play_dssi_audio_run)->audio;
 
   /* audio mutex */
   pthread_mutex_lock(application_mutex);
@@ -1318,7 +1319,6 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   GList *start_remove_note, *remove_note;
 
   guint audio_flags;
-  guint play_dssi_audio_flags;
   guint audio_start_mapping;
   guint midi_start_mapping, midi_end_mapping;
   guint notation_counter;
@@ -1363,8 +1363,6 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   audio_flags = audio->flags;
 
-  play_dssi_audio_flags = play_dssi_audio->flags;
-  
   output = audio->output;
   input = audio->input;
 
@@ -1379,7 +1377,7 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   /* get recycling and recycling context */
   pthread_mutex_lock(audio_mutex);
 
-  recycling = recall->recall_id->recycling;
+  recycling = AGS_RECALL(play_dssi_audio_run)->recall_id->recycling;
   
   pthread_mutex_unlock(audio_mutex);
 
@@ -1431,7 +1429,7 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   pthread_mutex_lock(audio_mutex);
   
-  notation_counter = play_lv2_audio_run->count_beats_audio_run->notation_counter;
+  notation_counter = play_dssi_audio_run->count_beats_audio_run->notation_counter;
 
   input_pads = audio->input_pads;
 
@@ -1440,10 +1438,10 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   midi_start_mapping = audio->midi_start_mapping;
   midi_end_mapping = audio->midi_end_mapping;
 
-  play_lv2_audio_run->timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(notation_counter / AGS_NOTATION_DEFAULT_OFFSET);
+  play_dssi_audio_run->timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(notation_counter / AGS_NOTATION_DEFAULT_OFFSET);
 
   list = ags_notation_find_near_timestamp(audio->notation, audio_channel,
-					  play_lv2_audio_run->timestamp);
+					  play_dssi_audio_run->timestamp);
   
   if(list != NULL){
     notation = list->data;
@@ -1548,6 +1546,7 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   /* remove */
   while(remove_note != NULL){
+    gint match_index;
     gboolean success;
       
     note = remove_note->data;
@@ -1608,8 +1607,8 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     remove_note = remove_note->next;
   }
 
-  g_list_free(append_note_start);
-  g_list_free(remove_note_start);
+  g_list_free(start_append_note);
+  g_list_free(start_remove_note);
 }  
 
 void
@@ -1697,7 +1696,9 @@ ags_play_dssi_audio_run_load_ports(AgsPlayDssiAudioRun *play_dssi_audio_run)
   pthread_mutex_lock(recall_mutex);
 
   port = AGS_RECALL(play_dssi_audio)->port;
-  
+
+  dssi_plugin = play_dssi_audio->plugin;
+
   plugin_descriptor = play_dssi_audio->plugin_descriptor;
 
   input_lines = play_dssi_audio->input_lines;

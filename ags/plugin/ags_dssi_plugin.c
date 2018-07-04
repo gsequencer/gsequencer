@@ -635,7 +635,7 @@ ags_dssi_plugin_real_change_program(AgsDssiPlugin *dssi_plugin,
   /* base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
 
-  base_plugin_mutex = base_plugin->obj_mutex;
+  base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin)->obj_mutex;
   
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 

@@ -252,6 +252,13 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
 
   recall_dssi_run = AGS_RECALL_DSSI_RUN(recall);
   recall_dssi = AGS_RECALL_DSSI(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
+
+  /* recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = AGS_RECALL(recall_dssi)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
   
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
@@ -555,7 +562,7 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
       ags_dssi_plugin_real_change_program(dssi_plugin,
 					  recall_dssi_run->ladspa_handle[i],
 					  bank,
-					  program)
+					  program);
 
       //      g_message("b p %u %u", recall_dssi->bank, recall_dssi->program);
     }
@@ -608,7 +615,7 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
     while(*event_buffer != NULL){
       ags_base_plugin_run(dssi_plugin,
 			  recall_dssi_run->ladspa_handle[0],
-			  seq_event,
+			  event_buffer,
 			  buffer_size);
       
       event_buffer++;
@@ -675,6 +682,8 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
   pthread_mutex_lock(recall_mutex);
 
   port = AGS_RECALL(recall_dssi)->port;
+
+  dssi_plugin = recall_dssi->plugin;
   
   plugin_descriptor = recall_dssi->plugin_descriptor;
 

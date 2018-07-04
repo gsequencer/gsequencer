@@ -881,7 +881,7 @@ ags_play_lv2_audio_run_run_init_pre(AgsRecall *recall)
   /* base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
 
-  base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin)->obj_mutex;
+  base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
   
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
@@ -1112,6 +1112,7 @@ ags_play_lv2_audio_run_run_pre(AgsRecall *recall)
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *recycling_mutex;
   pthread_mutex_t *recall_mutex;
+  pthread_mutex_t *base_plugin_mutex;
 
   mutex_manager = ags_mutex_manager_get_instance();
   application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
@@ -1450,7 +1451,7 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   /* get recycling and recycling context */
   pthread_mutex_lock(audio_mutex);
 
-  recycling = recall->recall_id->recycling;
+  recycling = AGS_RECALL(play_lv2_audio_run)->recall_id->recycling;
   
   pthread_mutex_unlock(audio_mutex);
 
@@ -1561,6 +1562,8 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   /* append */
   while(append_note != NULL){
+    gboolean success;
+    
     note = append_note->data;
     
     pthread_mutex_lock(audio_mutex);
@@ -1652,8 +1655,8 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     remove_note = remove_note->next;
   }
 
-  g_list_free(append_note_start);
-  g_list_free(remove_note_start);
+  g_list_free(start_append_note);
+  g_list_free(start_remove_note);
 }
 
 void

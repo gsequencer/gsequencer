@@ -196,6 +196,7 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   AgsLadspaPlugin *ladspa_plugin;
 
   LADSPA_Descriptor *plugin_descriptor;
+  LADSPA_PortDescriptor *port_descriptor;
 
   guint output_lines, input_lines;
   unsigned long samplerate;
@@ -238,7 +239,7 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   /* get some fields */
   pthread_mutex_lock(base_plugin_mutex);
   
-  port_descriptor = plugin_descriptor->LADSPA_Plugin->PortDescriptors;
+  port_descriptor = plugin_descriptor->PortDescriptors;
 
   pthread_mutex_unlock(base_plugin_mutex);
 
@@ -288,7 +289,7 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
     /* port index */
     pthread_mutex_lock(recall_mutex);
     
-    port_index = recall_ladspa->input_port[j];
+    port_index = recall_ladspa->input_port[i];
 
     pthread_mutex_unlock(recall_mutex);
 
@@ -308,7 +309,7 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
     /* port index */
     pthread_mutex_lock(recall_mutex);
     
-    port_index = recall_ladspa->output_port[j];
+    port_index = recall_ladspa->output_port[i];
 
     pthread_mutex_unlock(recall_mutex);
 
@@ -373,26 +374,26 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
   /* recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
 
-  recall_mutex = AGS_RECALL(recall_dssi)->obj_mutex;
+  recall_mutex = AGS_RECALL(recall_ladspa)->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
 
-  dssi_plugin = recall_dssi->plugin;
+  ladspa_plugin = recall_ladspa->plugin;
 
-  plugin_descriptor = recall_dssi->plugin_descriptor;
+  plugin_descriptor = recall_ladspa->plugin_descriptor;
 
-  input_lines = recall_dssi->input_lines;
-  output_lines = recall_dssi->output_lines;
+  input_lines = recall_ladspa->input_lines;
+  output_lines = recall_ladspa->output_lines;
 
   pthread_mutex_unlock(recall_mutex);
 
   /* base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
 
-  base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin)->obj_mutex;
+  base_plugin_mutex = AGS_BASE_PLUGIN(ladspa_plugin)->obj_mutex;
   
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
@@ -512,7 +513,7 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
   /* base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
 
-  base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin)->obj_mutex;
+  base_plugin_mutex = AGS_BASE_PLUGIN(ladspa_plugin)->obj_mutex;
   
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
@@ -524,7 +525,7 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 
   pthread_mutex_unlock(base_plugin_mutex);
   
-  if(input_output_lines){
+  if(input_lines < output_lines){
     j_stop = output_lines;
   }else{
     j_stop = input_lines;
@@ -550,7 +551,7 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 
 	pthread_mutex_lock(base_plugin_mutex);
 	
-	specifier = g_strdup(plugin_descriptor->LADSPA_Plugin->PortNames[i]);
+	specifier = g_strdup(plugin_descriptor->PortNames[i]);
 
 	pthread_mutex_unlock(base_plugin_mutex);
 

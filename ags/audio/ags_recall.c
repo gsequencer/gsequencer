@@ -1486,7 +1486,7 @@ ags_recall_finalize(GObject *gobject)
   
   recall = AGS_RECALL(gobject);
 
-  pthread_mutexdestroy(recall->obj_mutex);
+  pthread_mutex_destroy(recall->obj_mutex);
   free(recall->obj_mutex);
 
   pthread_mutexattr_destroy(recall->obj_mutexattr);

@@ -583,6 +583,7 @@ ags_recall_audio_run_duplicate(AgsRecall *recall,
 											     n_params, parameter));
 
   g_object_set(G_OBJECT(copy),
+	       "audio", recall_audio_run->audio,
 	       "recall_audio", recall_audio_run->recall_audio,
 	       NULL);
 
