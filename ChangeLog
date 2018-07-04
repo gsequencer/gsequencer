@@ -5,6 +5,7 @@ ags (1.4.33)
 	* fixed thread-safety of AgsRouteLv2AudioRun
 	* fixed thread-safety of AgsRouteDssiAudioRun
 	* fixed thread-safety of AgsPlayDssiAudioRun
+	* fixed thread-safety of AgsPlayLv2AudioRun
 	* fixed thread-safety of AgsRecallDssi
 	* fixed thread-safety of AgsRecallDssiRun
 	* fixed thread-safety of AgsRecallLadspa
