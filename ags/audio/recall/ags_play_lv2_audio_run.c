@@ -971,7 +971,6 @@ ags_play_lv2_audio_run_run_init_pre(AgsRecall *recall)
     
     pthread_mutex_unlock(recall_mutex);
 
-
     /* connect port */
     play_lv2_audio_run->event_port = ags_lv2_plugin_alloc_event_buffer(AGS_PLAY_LV2_AUDIO_DEFAULT_MIDI_LENGHT);
     
@@ -1729,6 +1728,10 @@ ags_play_lv2_audio_run_load_ports(AgsPlayLv2AudioRun *play_lv2_audio_run)
     port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
 
     for(i = 0; port_descriptor != NULL; i++){
+      guint port_index;
+      
+      port_index = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index;
+      
       if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
 	port = AGS_RECALL(play_lv2_audio)->port;
 	current = NULL;
@@ -1748,9 +1751,11 @@ ags_play_lv2_audio_run_load_ports(AgsPlayLv2AudioRun *play_lv2_audio_run)
 #ifdef AGS_DEBUG
 	g_message("connect port: %d", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index);
 #endif
-	play_lv2_audio->plugin_descriptor->connect_port(play_lv2_audio_run->lv2_handle[0],
-							(uint32_t) AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index,
-							(float *) &(current->port_value.ags_port_float));
+
+	ags_base_plugin_connect_port(AGS_BASE_PLUGIN(lv2_plugin),
+				     play_lv2_audio_run->lv2_handle[0],
+				     port_index,
+				     (float *) &(current->port_value.ags_port_float));   
       }
 
       port_descriptor = port_descriptor->next;

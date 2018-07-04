@@ -10,6 +10,8 @@ ags (1.4.33)
 	* fixed thread-safety of AgsRecallDssiRun
 	* fixed thread-safety of AgsRecallLadspa
 	* fixed thread-safety of AgsRecallLadspaRun
+	* fixed thread-safety of AgsRecallLv2
+	* fixed thread-safety of AgsRecallLv2Run
 	* TODO:JK: fixed all ags_*_get_type() to use atomic operations
 
 ags (1.4.32)

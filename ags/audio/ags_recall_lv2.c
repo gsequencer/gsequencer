@@ -745,12 +745,24 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
   uint32_t port_count;
   uint32_t i;
 
+  pthread_mutex_t *base_plugin_mutex;
+
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       recall_lv2->filename, recall_lv2->effect);
 #ifdef AGS_DEBUG
   g_message("ports from ttl: %s", lv2_plugin->turtle->filename);
 #endif
   
+  /* base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+
+  base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* load port */
+  pthread_mutex_lock(base_plugin_mutex);
+
   port = NULL;
   port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
   
@@ -859,6 +871,8 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
     
     AGS_RECALL(recall_lv2)->port = g_list_reverse(port);
   }
+
+  pthread_mutex_unlock(base_plugin_mutex);
   
   return(g_list_copy(AGS_RECALL(recall_lv2)->port));
 }

@@ -641,8 +641,9 @@ void
 ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
 {
   AgsRecallDssi *recall_dssi;
-  AgsDssiPlugin *dssi_plugin;
   AgsPort *current;
+
+  AgsDssiPlugin *dssi_plugin;
 
   GList *port;
   GList *list;
