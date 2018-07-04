@@ -3,6 +3,7 @@ ags (1.4.33)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed missing includes of pthread.h
 	* fixed possible concurrent access to ags_route_dssi_audio_run.c and ags_route_lv2_audio_run.c
+	* fixed possible concurrent access to ags_play_dssi_audio_run.c and ags_play_lv2_audio_run.c
 	* TODO:JK: fixed all ags_*_get_type() to use atomic operations
 
 ags (1.4.32)
