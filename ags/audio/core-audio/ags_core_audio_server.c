@@ -21,15 +21,7 @@
 #include <ags/audio/core-audio/ags_core_audio_client.h>
 #include <ags/audio/core-audio/ags_core_audio_port.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_distributed_manager.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_distributed_manager.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_sequencer.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_thread-posix.h>
+#include <ags/libags.h>
 
 #include <ags/audio/core-audio/ags_core_audio_devout.h>
 #include <ags/audio/core-audio/ags_core_audio_midiin.h>
@@ -109,9 +101,11 @@ static gpointer ags_core_audio_server_parent_class = NULL;
 GType
 ags_core_audio_server_get_type()
 {
-  static GType ags_type_core_audio_server = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_core_audio_server){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_core_audio_server;
+
     static const GTypeInfo ags_core_audio_server_info = {
       sizeof (AgsCoreAudioServerClass),
       NULL, /* base_init */
@@ -148,9 +142,11 @@ ags_core_audio_server_get_type()
     g_type_add_interface_static(ags_type_core_audio_server,
 				AGS_TYPE_DISTRIBUTED_MANAGER,
 				&ags_distributed_manager_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_core_audio_server);
   }
 
-  return (ags_type_core_audio_server);
+  return g_define_type_id__volatile;
 }
 
 void

@@ -22,7 +22,7 @@
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>
 
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
 
 #include <ags/i18n.h>
 
@@ -69,9 +69,11 @@ static const gchar *ags_copy_pattern_channel_control_port[] = {
 GType
 ags_copy_pattern_channel_get_type()
 {
-  static GType ags_type_copy_pattern_channel = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_copy_pattern_channel){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_copy_pattern_channel;
+
     static const GTypeInfo ags_copy_pattern_channel_info = {
       sizeof (AgsCopyPatternChannelClass),
       NULL, /* base_init */
@@ -98,9 +100,11 @@ ags_copy_pattern_channel_get_type()
     g_type_add_interface_static(ags_type_copy_pattern_channel,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_copy_pattern_channel);
   }
 
-  return(ags_type_copy_pattern_channel);
+  return g_define_type_id__volatile;
 }
 
 void

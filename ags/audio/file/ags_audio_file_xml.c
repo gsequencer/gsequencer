@@ -23,20 +23,7 @@
 #include <libxml/xlink.h>
 #include <libxml/xpath.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_plugin.h>
-#include <ags/object/ags_packable.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
-#include <ags/file/ags_file_launch.h>
-#include <ags/file/ags_file_util.h>
-
-#include <ags/thread/file/ags_thread_file_xml.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>

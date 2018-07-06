@@ -185,9 +185,11 @@ static guint pulse_devout_signals[LAST_SIGNAL];
 GType
 ags_pulse_devout_get_type (void)
 {
-  static GType ags_type_pulse_devout = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_pulse_devout){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_pulse_devout;
+
     static const GTypeInfo ags_pulse_devout_info = {
       sizeof (AgsPulseDevoutClass),
       NULL, /* base_init */
@@ -224,9 +226,11 @@ ags_pulse_devout_get_type (void)
     g_type_add_interface_static(ags_type_pulse_devout,
 				AGS_TYPE_SOUNDCARD,
 				&ags_soundcard_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_pulse_devout);
   }
 
-  return (ags_type_pulse_devout);
+  return g_define_type_id__volatile;
 }
 
 void

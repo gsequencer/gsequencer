@@ -21,14 +21,7 @@
 #include <ags/audio/jack/ags_jack_client.h>
 #include <ags/audio/jack/ags_jack_port.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_distributed_manager.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_distributed_manager.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_sequencer.h>
-
-#include <ags/thread/ags_mutex_manager.h>
+#include <ags/libags.h>
 
 #include <ags/audio/jack/ags_jack_devout.h>
 #include <ags/audio/jack/ags_jack_devin.h>
@@ -107,9 +100,11 @@ static gpointer ags_jack_server_parent_class = NULL;
 GType
 ags_jack_server_get_type()
 {
-  static GType ags_type_jack_server = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_jack_server){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_jack_server;
+
     static const GTypeInfo ags_jack_server_info = {
       sizeof (AgsJackServerClass),
       NULL, /* base_init */
@@ -146,9 +141,11 @@ ags_jack_server_get_type()
     g_type_add_interface_static(ags_type_jack_server,
 				AGS_TYPE_DISTRIBUTED_MANAGER,
 				&ags_distributed_manager_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_jack_server);
   }
 
-  return (ags_type_jack_server);
+  return g_define_type_id__volatile;
 }
 
 void

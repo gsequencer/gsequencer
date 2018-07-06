@@ -19,15 +19,7 @@
 
 #include <ags/audio/core-audio/ags_core_audio_midiin.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_sequencer.h>
-#include <ags/object/ags_distributed_manager.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_sound_provider.h>
 
@@ -145,9 +137,11 @@ static guint core_audio_midiin_signals[LAST_SIGNAL];
 GType
 ags_core_audio_midiin_get_type (void)
 {
-  static GType ags_type_core_audio_midiin = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_core_audio_midiin){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_core_audio_midiin;
+
     static const GTypeInfo ags_core_audio_midiin_info = {
       sizeof (AgsCoreAudioMidiinClass),
       NULL, /* base_init */
@@ -184,9 +178,11 @@ ags_core_audio_midiin_get_type (void)
     g_type_add_interface_static(ags_type_core_audio_midiin,
 				AGS_TYPE_SEQUENCER,
 				&ags_sequencer_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_core_audio_midiin);
   }
 
-  return (ags_type_core_audio_midiin);
+  return g_define_type_id__volatile;
 }
 
 void

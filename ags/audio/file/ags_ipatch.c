@@ -90,9 +90,11 @@ enum{
 GType
 ags_ipatch_get_type()
 {
-  static GType ags_type_ipatch = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_ipatch){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_ipatch;
+
     static const GTypeInfo ags_ipatch_info = {
       sizeof (AgsIpatchClass),
       NULL, /* base_init */
@@ -129,9 +131,11 @@ ags_ipatch_get_type()
     g_type_add_interface_static(ags_type_ipatch,
 				AGS_TYPE_PLAYABLE,
 				&ags_playable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_ipatch);
   }
-  
-  return (ags_type_ipatch);
+
+  return g_define_type_id__volatile;
 }
 
 void

@@ -19,20 +19,7 @@
 
 #include <ags/audio/file/ags_audio_file_link.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_plugin.h>
-
-#include <ags/thread/ags_timestamp.h>
-
-#include <ags/thread/file/ags_thread_file_xml.h>
-
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
-#include <ags/file/ags_file_launch.h>
-#include <ags/file/ags_file_link.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
@@ -95,9 +82,11 @@ static const gchar *ags_audio_file_link_plugin_name = "ags-audio-file-link";
 GType
 ags_audio_file_link_get_type()
 {
-  static GType ags_type_audio_file_link = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_audio_file_link){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_audio_file_link;
+
     static const GTypeInfo ags_audio_file_link_info = {
       sizeof (AgsAudioFileLinkClass),
       NULL, /* base_init */
@@ -124,9 +113,11 @@ ags_audio_file_link_get_type()
     g_type_add_interface_static(ags_type_audio_file_link,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_audio_file_link);
   }
 
-  return (ags_type_audio_file_link);
+  return g_define_type_id__volatile;
 }
 
 void
