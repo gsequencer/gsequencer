@@ -20,11 +20,8 @@
 #include <ags/X/editor/ags_sf2_chooser.h>
 #include <ags/X/editor/ags_sf2_chooser_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/audio/ags_playable.h>
-
-#include <ags/audio/file/ags_ipatch_sf2_reader.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 
@@ -56,9 +53,11 @@ static gpointer ags_sf2_chooser_parent_class = NULL;
 GType
 ags_sf2_chooser_get_type(void)
 {
-  static GType ags_type_sf2_chooser = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_sf2_chooser){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_sf2_chooser;
+
     static const GTypeInfo ags_sf2_chooser_info = {
       sizeof (AgsSF2ChooserClass),
       NULL, /* base_init */
@@ -84,9 +83,11 @@ ags_sf2_chooser_get_type(void)
     g_type_add_interface_static(ags_type_sf2_chooser,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_sf2_chooser);
   }
-  
-  return(ags_type_sf2_chooser);
+
+  return g_define_type_id__volatile;
 }
 
 void

@@ -20,20 +20,9 @@
 #include <ags/X/editor/ags_envelope_info.h>
 #include <ags/X/editor/ags_envelope_info_callbacks.h>
 
-#include <ags/util/ags_list_util.h>
-
-#include <ags/lib/ags_complex.h>
-
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_note.h>
-
-#include <ags/widget/ags_cartesian.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -77,9 +66,11 @@ static gpointer ags_envelope_info_parent_class = NULL;
 GType
 ags_envelope_info_get_type(void)
 {
-  static GType ags_type_envelope_info = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_envelope_info){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_envelope_info;
+
     static const GTypeInfo ags_envelope_info_info = {
       sizeof (AgsEnvelopeInfoClass),
       NULL, /* base_init */
@@ -115,9 +106,11 @@ ags_envelope_info_get_type(void)
     g_type_add_interface_static(ags_type_envelope_info,
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_envelope_info);
   }
-  
-  return(ags_type_envelope_info);
+
+  return g_define_type_id__volatile;
 }
 
 void

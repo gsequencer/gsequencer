@@ -68,9 +68,11 @@ static gpointer ags_envelope_dialog_parent_class = NULL;
 GType
 ags_envelope_dialog_get_type(void)
 {
-  static GType ags_type_envelope_dialog = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_envelope_dialog){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    static GType ags_type_envelope_dialog;
+
     static const GTypeInfo ags_envelope_dialog_info = {
       sizeof (AgsEnvelopeDialogClass),
       NULL, /* base_init */
@@ -106,9 +108,11 @@ ags_envelope_dialog_get_type(void)
     g_type_add_interface_static(ags_type_envelope_dialog,
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_envelope_dialog);
   }
-  
-  return(ags_type_envelope_dialog);
+
+  return g_define_type_id__volatile;
 }
 
 void

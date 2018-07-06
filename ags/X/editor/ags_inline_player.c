@@ -20,7 +20,7 @@
 #include <ags/X/editor/ags_inline_player.h>
 #include <ags/X/editor/ags_inline_player_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
 
 #include <ags/X/ags_window.h>
 
@@ -52,9 +52,11 @@ static gpointer ags_inline_player_parent_class = NULL;
 GType
 ags_inline_player_get_type(void)
 {
-  static GType ags_type_inline_player = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_inline_player){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_inline_player;
+
     static const GTypeInfo ags_inline_player_info = {
       sizeof (AgsInlinePlayerClass),
       NULL, /* base_init */
@@ -80,9 +82,11 @@ ags_inline_player_get_type(void)
     g_type_add_interface_static(ags_type_inline_player,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_inline_player);
   }
-  
-  return(ags_type_inline_player);
+
+  return g_define_type_id__volatile;
 }
 
 void

@@ -19,7 +19,7 @@
 
 #include <ags/X/editor/ags_scrolled_wave_edit_box.h>
 
-#include <ags/widget/ags_level.h>
+#include <ags/libags-gui.h>
 
 void ags_scrolled_wave_edit_box_class_init(AgsScrolledWaveEditBoxClass *scrolled_wave_edit_box);
 void ags_scrolled_wave_edit_box_init(AgsScrolledWaveEditBox *scrolled_wave_edit_box);
@@ -61,9 +61,11 @@ static gpointer ags_scrolled_wave_edit_box_parent_class = NULL;
 GType
 ags_scrolled_wave_edit_box_get_type(void)
 {
-  static GType ags_type_scrolled_wave_edit_box = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_scrolled_wave_edit_box){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_scrolled_wave_edit_box;
+
     static const GTypeInfo ags_scrolled_wave_edit_box_info = {
       sizeof (AgsScrolledWaveEditBoxClass),
       NULL, /* base_init */
@@ -79,9 +81,11 @@ ags_scrolled_wave_edit_box_get_type(void)
     ags_type_scrolled_wave_edit_box = g_type_register_static(GTK_TYPE_BIN,
 							     "AgsScrolledWaveEditBox", &ags_scrolled_wave_edit_box_info,
 							     0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_scrolled_wave_edit_box);
   }
-  
-  return(ags_type_scrolled_wave_edit_box);
+
+  return g_define_type_id__volatile;
 }
 
 void
