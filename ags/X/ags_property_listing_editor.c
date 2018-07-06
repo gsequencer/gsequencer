@@ -16,9 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include <ags/X/ags_property_listing_editor.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
 
 void ags_property_listing_editor_class_init(AgsPropertyListingEditorClass *property_listing_editor);
 void ags_property_listing_editor_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -31,9 +32,11 @@ static AgsConnectableInterface* ags_property_listing_editor_parent_connectable_i
 GType
 ags_property_listing_editor_get_type(void)
 {
-  static GType ags_type_property_listing_editor = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_property_listing_editor){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_property_listing_editor;
+
     static const GTypeInfo ags_property_listing_editor_info = {
       sizeof (AgsPropertyListingEditorClass),
       NULL, /* base_init */
@@ -60,9 +63,11 @@ ags_property_listing_editor_get_type(void)
     g_type_add_interface_static(ags_type_property_listing_editor,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_property_listing_editor);
   }
 
-  return(ags_type_property_listing_editor);
+  return g_define_type_id__volatile;
 }
 
 void

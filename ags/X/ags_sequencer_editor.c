@@ -23,12 +23,6 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
-#include <ags/audio/jack/ags_jack_server.h>
-#include <ags/audio/jack/ags_jack_midiin.h>
-
-#include <ags/audio/core-audio/ags_core_audio_server.h>
-#include <ags/audio/core-audio/ags_core_audio_midiin.h>
-
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
@@ -64,9 +58,11 @@ static gpointer ags_sequencer_editor_parent_class = NULL;
 GType
 ags_sequencer_editor_get_type(void)
 {
-  static GType ags_type_sequencer_editor = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_sequencer_editor){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_sequencer_editor;
+
     static const GTypeInfo ags_sequencer_editor_info = {
       sizeof (AgsSequencerEditorClass),
       NULL, /* base_init */
@@ -102,9 +98,11 @@ ags_sequencer_editor_get_type(void)
     g_type_add_interface_static(ags_type_sequencer_editor,
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_sequencer_editor);
   }
 
-  return(ags_type_sequencer_editor);
+  return g_define_type_id__volatile;
 }
 
 void

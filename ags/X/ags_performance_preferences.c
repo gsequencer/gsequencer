@@ -54,9 +54,11 @@ static gpointer ags_performance_preferences_parent_class = NULL;
 GType
 ags_performance_preferences_get_type(void)
 {
-  static GType ags_type_performance_preferences = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_performance_preferences){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_performance_preferences;
+
     static const GTypeInfo ags_performance_preferences_info = {
       sizeof (AgsPerformancePreferencesClass),
       NULL, /* base_init */
@@ -92,9 +94,11 @@ ags_performance_preferences_get_type(void)
     g_type_add_interface_static(ags_type_performance_preferences,
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_performance_preferences);
   }
 
-  return(ags_type_performance_preferences);
+  return g_define_type_id__volatile;
 }
 
 void

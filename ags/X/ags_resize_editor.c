@@ -57,9 +57,11 @@ AgsConnectableInterface *ags_resize_editor_parent_connectable_interface;
 GType
 ags_resize_editor_get_type(void)
 {
-  static GType ags_type_resize_editor = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_resize_editor){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_resize_editor;
+
     static const GTypeInfo ags_resize_editor_info = {
       sizeof (AgsResizeEditorClass),
       NULL, /* base_init */
@@ -96,9 +98,11 @@ ags_resize_editor_get_type(void)
     g_type_add_interface_static(ags_type_resize_editor,
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_resize_editor);
   }
 
-  return(ags_type_resize_editor);
+  return g_define_type_id__volatile;
 }
 
 void

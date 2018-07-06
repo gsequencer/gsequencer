@@ -64,9 +64,11 @@ void ags_menu_bar_disconnect(AgsConnectable *connectable);
 GType
 ags_menu_bar_get_type(void)
 {
-  static GType ags_type_menu_bar = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_menu_bar){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_menu_bar;
+
     static const GTypeInfo ags_menu_bar_info = {
       sizeof (AgsMenuBarClass),
       NULL, /* base_init */
@@ -92,9 +94,11 @@ ags_menu_bar_get_type(void)
     g_type_add_interface_static(ags_type_menu_bar,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_menu_bar);
   }
 
-  return(ags_type_menu_bar);
+  return g_define_type_id__volatile;
 }
 
 void
