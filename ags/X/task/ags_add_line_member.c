@@ -52,9 +52,11 @@ static AgsConnectableInterface *ags_add_line_member_parent_connectable_interface
 GType
 ags_add_line_member_get_type()
 {
-  static GType ags_type_add_line_member = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_add_line_member){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_add_line_member;
+
     static const GTypeInfo ags_add_line_member_info = {
       sizeof (AgsAddLineMemberClass),
       NULL, /* base_init */
@@ -81,9 +83,11 @@ ags_add_line_member_get_type()
     g_type_add_interface_static(ags_type_add_line_member,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_add_line_member);
   }
-  
-  return (ags_type_add_line_member);
+
+  return g_define_type_id__volatile;
 }
 
 void

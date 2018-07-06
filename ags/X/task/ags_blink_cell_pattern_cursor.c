@@ -19,9 +19,8 @@
 
 #include <ags/X/task/ags_blink_cell_pattern_cursor.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/widget/ags_led.h>
+#include <ags/libags.h>
+#include <ags/libags-gui.h>
 
 void ags_blink_cell_pattern_cursor_class_init(AgsBlinkCellPatternCursorClass *blink_cell_pattern_cursor);
 void ags_blink_cell_pattern_cursor_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -47,9 +46,11 @@ static AgsConnectableInterface *ags_blink_cell_pattern_cursor_parent_connectable
 GType
 ags_blink_cell_pattern_cursor_get_type()
 {
-  static GType ags_type_blink_cell_pattern_cursor = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_blink_cell_pattern_cursor){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_blink_cell_pattern_cursor;
+
     static const GTypeInfo ags_blink_cell_pattern_cursor_info = {
       sizeof (AgsBlinkCellPatternCursorClass),
       NULL, /* base_init */
@@ -76,9 +77,11 @@ ags_blink_cell_pattern_cursor_get_type()
     g_type_add_interface_static(ags_type_blink_cell_pattern_cursor,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_blink_cell_pattern_cursor);
   }
-  
-  return (ags_type_blink_cell_pattern_cursor);
+
+  return g_define_type_id__volatile;
 }
 
 void

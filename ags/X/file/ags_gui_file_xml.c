@@ -19,31 +19,9 @@
 
 #include <ags/X/file/ags_gui_file_xml.h>
 
-#include <ags/object/ags_application_context.h>
-
-#include <ags/plugin/ags_plugin_factory.h>
-
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_plugin.h>
-
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
-#include <ags/file/ags_file_launch.h>
-#include <ags/file/ags_file_util.h>
-
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_container.h>
-
-#include <ags/audio/recall/ags_peak_channel.h>
-#include <ags/audio/recall/ags_peak_channel_run.h>
-
-#include <ags/widget/ags_container.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_machine_callbacks.h>
 #include <ags/X/ags_line_callbacks.h>

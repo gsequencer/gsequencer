@@ -79,9 +79,11 @@ const char *AGS_MATRIX_INDEX = "AgsMatrixIndex";
 GType
 ags_matrix_get_type(void)
 {
-  static GType ags_type_matrix = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_matrix){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_matrix;
+
     static const GTypeInfo ags_matrix_info = {
       sizeof(AgsMatrixClass),
       NULL, /* base_init */
@@ -117,9 +119,11 @@ ags_matrix_get_type(void)
     g_type_add_interface_static(ags_type_matrix,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_matrix);
   }
 
-  return(ags_type_matrix);
+  return g_define_type_id__volatile;
 }
 
 void

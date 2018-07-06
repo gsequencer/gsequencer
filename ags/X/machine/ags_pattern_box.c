@@ -82,9 +82,11 @@ GHashTable *ags_pattern_box_led_queue_draw = NULL;
 GType
 ags_pattern_box_get_type(void)
 {
-  static GType ags_type_pattern_box = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_pattern_box){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_pattern_box;
+
     static const GTypeInfo ags_pattern_box_info = {
       sizeof(AgsPatternBoxClass),
       NULL, /* base_init */
@@ -110,17 +112,21 @@ ags_pattern_box_get_type(void)
     g_type_add_interface_static(ags_type_pattern_box,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_pattern_box);
   }
 
-  return(ags_type_pattern_box);
+  return g_define_type_id__volatile;
 }
 
 static GType
 ags_accessible_pattern_box_get_type(void)
 {
-  static GType ags_type_accessible_pattern_box = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_accessible_pattern_box){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_accessible_pattern_box;
+
     const GTypeInfo ags_accesssible_pattern_box_info = {
       sizeof(GtkAccessibleClass),
       NULL,           /* base_init */
@@ -146,9 +152,11 @@ ags_accessible_pattern_box_get_type(void)
     g_type_add_interface_static(ags_type_accessible_pattern_box,
 				ATK_TYPE_ACTION,
 				&atk_action_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_accessible_pattern_box);
   }
-  
-  return(ags_type_accessible_pattern_box);
+
+  return g_define_type_id__volatile;
 }
 
 void

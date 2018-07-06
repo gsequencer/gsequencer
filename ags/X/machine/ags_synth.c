@@ -79,9 +79,11 @@ static AgsConnectableInterface *ags_synth_parent_connectable_interface;
 GType
 ags_synth_get_type(void)
 {
-  static GType ags_type_synth = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_synth){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_synth;
+
     static const GTypeInfo ags_synth_info = {
       sizeof(AgsSynthClass),
       NULL, /* base_init */
@@ -117,9 +119,11 @@ ags_synth_get_type(void)
     g_type_add_interface_static(ags_type_synth,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_synth);
   }
 
-  return(ags_type_synth);
+  return g_define_type_id__volatile;
 }
 
 void

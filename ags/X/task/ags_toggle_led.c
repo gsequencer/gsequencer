@@ -19,9 +19,8 @@
 
 #include <ags/X/task/ags_toggle_led.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/widget/ags_led.h>
+#include <ags/libags.h>
+#include <ags/libags-gui.h>
 
 void ags_toggle_led_class_init(AgsToggleLedClass *toggle_led);
 void ags_toggle_led_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -47,9 +46,11 @@ static AgsConnectableInterface *ags_toggle_led_parent_connectable_interface;
 GType
 ags_toggle_led_get_type()
 {
-  static GType ags_type_toggle_led = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_toggle_led){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_toggle_led;
+
     static const GTypeInfo ags_toggle_led_info = {
       sizeof (AgsToggleLedClass),
       NULL, /* base_init */
@@ -76,9 +77,11 @@ ags_toggle_led_get_type()
     g_type_add_interface_static(ags_type_toggle_led,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_toggle_led);
   }
-  
-  return (ags_type_toggle_led);
+
+  return g_define_type_id__volatile;
 }
 
 void

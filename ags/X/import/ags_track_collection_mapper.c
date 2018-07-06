@@ -82,9 +82,11 @@ enum{
 GType
 ags_track_collection_mapper_get_type(void)
 {
-  static GType ags_type_track_collection_mapper = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_track_collection_mapper){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_track_collection_mapper;
+
     static const GTypeInfo ags_track_collection_mapper_info = {
       sizeof (AgsTrackCollectionMapperClass),
       NULL, /* base_init */
@@ -120,9 +122,11 @@ ags_track_collection_mapper_get_type(void)
     g_type_add_interface_static(ags_type_track_collection_mapper,
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_track_collection_mapper);
   }
-  
-  return(ags_type_track_collection_mapper);
+
+  return g_define_type_id__volatile;
 }
 
 void

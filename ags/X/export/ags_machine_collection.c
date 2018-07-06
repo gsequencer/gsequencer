@@ -20,10 +20,8 @@
 #include <ags/X/export/ags_machine_collection.h>
 #include <ags/X/export/ags_machine_collection_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/audio/ags_audio.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 
@@ -74,9 +72,11 @@ static gpointer ags_machine_collection_parent_class = NULL;
 GType
 ags_machine_collection_get_type(void)
 {
-  static GType ags_type_machine_collection = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_machine_collection){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_machine_collection;
+
     static const GTypeInfo ags_machine_collection_info = {
       sizeof (AgsMachineCollectionClass),
       NULL, /* base_init */
@@ -112,9 +112,11 @@ ags_machine_collection_get_type(void)
     g_type_add_interface_static(ags_type_machine_collection,
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_machine_collection);
   }
 
-  return(ags_type_machine_collection);
+  return g_define_type_id__volatile;
 }
 
 void

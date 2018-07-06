@@ -64,9 +64,11 @@ static AgsConnectableInterface *ags_mixer_parent_connectable_interface;
 GType
 ags_mixer_get_type(void)
 {
-  static GType ags_type_mixer = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_mixer){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_mixer;
+
     static const GTypeInfo ags_mixer_info = {
       sizeof(AgsMixerClass),
       NULL, /* base_init */
@@ -102,9 +104,11 @@ ags_mixer_get_type(void)
     g_type_add_interface_static(ags_type_mixer,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_mixer);
   }
 
-  return(ags_type_mixer);
+  return g_define_type_id__volatile;
 }
 
 void

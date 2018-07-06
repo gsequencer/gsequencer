@@ -19,10 +19,8 @@
 
 #include <ags/X/task/ags_change_tact.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_application_context.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 void ags_change_tact_class_init(AgsChangeTactClass *change_tact);
 void ags_change_tact_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -39,9 +37,11 @@ static AgsConnectableInterface *ags_change_tact_parent_connectable_interface;
 GType
 ags_change_tact_get_type()
 {
-  static GType ags_type_change_tact = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_change_tact){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_change_tact;
+
     static const GTypeInfo ags_change_tact_info = {
       sizeof (AgsChangeTactClass),
       NULL, /* base_init */
@@ -68,9 +68,11 @@ ags_change_tact_get_type()
     g_type_add_interface_static(ags_type_change_tact,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_change_tact);
   }
-  
-  return (ags_type_change_tact);
+
+  return g_define_type_id__volatile;
 }
 
 void
