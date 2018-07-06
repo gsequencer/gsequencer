@@ -53,9 +53,11 @@ static gpointer ags_led_parent_class = NULL;
 GType
 ags_led_get_type(void)
 {
-  static GType ags_type_led = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_led){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_led;
+
     static const GTypeInfo ags_led_info = {
       sizeof(AgsLedClass),
       NULL, /* base_init */
@@ -69,11 +71,13 @@ ags_led_get_type(void)
     };
 
     ags_type_led = g_type_register_static(GTK_TYPE_BIN,
-					  "AgsLed\0", &ags_led_info,
+					  "AgsLed", &ags_led_info,
 					  0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_led);
   }
 
-  return(ags_type_led);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -96,7 +100,7 @@ void
 ags_led_init(AgsLed *led)
 {
   g_object_set(G_OBJECT(led),
-	       "app-paintable\0", TRUE,
+	       "app-paintable", TRUE,
 	       NULL);
 
   led->flags = 0;

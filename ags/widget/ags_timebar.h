@@ -44,6 +44,4 @@ struct _AgsTimebarClass
   GtkRangeClass range;
 };
 
-AgsTimebar* ags_timebar_new();
-
 #endif /*__AGS_TIMEBAR_H__*/

@@ -78,9 +78,11 @@ static gpointer ags_expander_set_parent_class = NULL;
 GType
 ags_expander_set_get_type(void)
 {
-  static GType ags_type_expander_set = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_expander_set){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_expander_set;
+
     static const GTypeInfo ags_expander_set_info = {
       sizeof(AgsExpanderSetClass),
       NULL, /* base_init */
@@ -96,9 +98,11 @@ ags_expander_set_get_type(void)
     ags_type_expander_set = g_type_register_static(GTK_TYPE_TABLE,
 						   "AgsExpanderSet\0", &ags_expander_set_info,
 						   0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_expander_set);
   }
 
-  return(ags_type_expander_set);
+  return g_define_type_id__volatile;
 }
 
 void

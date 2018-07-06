@@ -118,9 +118,11 @@ static GQuark quark_accessible_object = 0;
 GType
 ags_dial_get_type(void)
 {
-  static GType ags_type_dial = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_dial){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_dial;
+
     static const GTypeInfo ags_dial_info = {
       sizeof(AgsDialClass),
       NULL, /* base_init */
@@ -136,17 +138,21 @@ ags_dial_get_type(void)
     ags_type_dial = g_type_register_static(GTK_TYPE_WIDGET,
 					   "AgsDial", &ags_dial_info,
 					   0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_dial);
   }
 
-  return(ags_type_dial);
+  return g_define_type_id__volatile;
 }
 
 static GType
 ags_accessible_dial_get_type(void)
 {
-  static GType ags_type_accessible_dial = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_accessible_dial){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_accessible_dial;
+
     const GTypeInfo ags_accesssible_dial_info = {
       sizeof(GtkAccessibleClass),
       NULL,           /* base_init */
@@ -182,9 +188,11 @@ ags_accessible_dial_get_type(void)
     g_type_add_interface_static(ags_type_accessible_dial,
 				ATK_TYPE_ACTION,
 				&atk_action_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_accessible_dial);
   }
-  
-  return(ags_type_accessible_dial);
+
+  return g_define_type_id__volatile;
 }
 
 void

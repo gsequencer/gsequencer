@@ -125,9 +125,11 @@ static GQuark quark_accessible_object = 0;
 GType
 ags_scale_get_type(void)
 {
-  static GType ags_type_scale = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_scale){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_scale;
+
     static const GTypeInfo ags_scale_info = {
       sizeof(AgsScaleClass),
       NULL, /* base_init */
@@ -143,17 +145,21 @@ ags_scale_get_type(void)
     ags_type_scale = g_type_register_static(GTK_TYPE_WIDGET,
 					    "AgsScale", &ags_scale_info,
 					    0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_scale);
   }
 
-  return(ags_type_scale);
+  return g_define_type_id__volatile;
 }
 
 static GType
 ags_accessible_scale_get_type(void)
 {
-  static GType ags_type_accessible_scale = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_accessible_scale){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_accessible_scale;
+
     const GTypeInfo ags_accesssible_scale_info = {
       sizeof(GtkAccessibleClass),
       NULL,           /* base_init */
@@ -189,9 +195,11 @@ ags_accessible_scale_get_type(void)
     g_type_add_interface_static(ags_type_accessible_scale,
 				ATK_TYPE_ACTION,
 				&atk_action_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_accessible_scale);
   }
-  
-  return(ags_type_accessible_scale);
+
+  return g_define_type_id__volatile;
 }
 
 void

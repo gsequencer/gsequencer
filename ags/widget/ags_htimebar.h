@@ -46,6 +46,4 @@ struct _AgsHTimebarClass
   AgsTimebarClass timebar;
 };
 
-AgsHTimebar* ags_htimebar_new();
-
 #endif /*__AGS_HTIMEBAR_H__*/

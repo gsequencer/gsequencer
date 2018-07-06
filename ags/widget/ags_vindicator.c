@@ -45,9 +45,11 @@ static gpointer ags_vindicator_parent_class = NULL;
 GType
 ags_vindicator_get_type(void)
 {
-  static GType ags_type_vindicator = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_vindicator){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_vindicator;
+
     static const GTypeInfo ags_vindicator_info = {
       sizeof(AgsVIndicatorClass),
       NULL, /* base_init */
@@ -61,11 +63,13 @@ ags_vindicator_get_type(void)
     };
 
     ags_type_vindicator = g_type_register_static(AGS_TYPE_INDICATOR,
-						 "AgsVIndicator\0", &ags_vindicator_info,
+						 "AgsVIndicator", &ags_vindicator_info,
 						 0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_vindicator);
   }
 
-  return(ags_type_vindicator);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -134,7 +138,7 @@ ags_vindicator_draw(AgsVIndicator *indicator)
     return;
   }
   
-  //  g_message("draw %f\0", adjustment->value);
+  //  g_message("draw %f", adjustment->value);
 
   cr = gdk_cairo_create(widget->window);
 
@@ -210,7 +214,7 @@ ags_vindicator_new()
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
 
   indicator = (AgsVIndicator *) g_object_new(AGS_TYPE_VINDICATOR,
-					     "adjustment\0", adjustment,
+					     "adjustment", adjustment,
 					     NULL);
   
   return(indicator);

@@ -124,9 +124,11 @@ static GQuark quark_accessible_object = 0;
 GType
 ags_level_get_type(void)
 {
-  static GType ags_type_level = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_level){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_level;
+
     static const GTypeInfo ags_level_info = {
       sizeof(AgsLevelClass),
       NULL, /* base_init */
@@ -142,9 +144,11 @@ ags_level_get_type(void)
     ags_type_level = g_type_register_static(GTK_TYPE_WIDGET,
 					    "AgsLevel", &ags_level_info,
 					    0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_level);
   }
 
-  return(ags_type_level);
+  return g_define_type_id__volatile;
 }
 
 static GType

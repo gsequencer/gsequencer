@@ -28,9 +28,11 @@ static gpointer ags_waveform_parent_class = NULL;
 GType
 ags_waveform_get_type(void)
 {
-  static GType ags_type_waveform = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_waveform){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_waveform;
+
     static const GTypeInfo ags_waveform_info = {
       sizeof(AgsWaveformClass),
       NULL, /* base_init */
@@ -46,9 +48,11 @@ ags_waveform_get_type(void)
     ags_type_waveform = g_type_register_static(GTK_TYPE_WIDGET,
 					       "AgsWaveform", &ags_waveform_info,
 					       0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_waveform);
   }
 
-  return(ags_type_waveform);
+  return g_define_type_id__volatile;
 }
 
 void

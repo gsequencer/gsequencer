@@ -58,9 +58,11 @@ static gpointer ags_indicator_parent_class = NULL;
 GType
 ags_indicator_get_type(void)
 {
-  static GType ags_type_indicator = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_indicator){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_indicator;
+
     static const GTypeInfo ags_indicator_info = {
       sizeof(AgsIndicatorClass),
       NULL, /* base_init */
@@ -74,11 +76,13 @@ ags_indicator_get_type(void)
     };
 
     ags_type_indicator = g_type_register_static(GTK_TYPE_WIDGET,
-						"AgsIndicator\0", &ags_indicator_info,
+						"AgsIndicator", &ags_indicator_info,
 						0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_indicator);
   }
 
-  return(ags_type_indicator);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -112,9 +116,9 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
    * 
    * Since: 1.0.0
    */
-  param_spec = g_param_spec_object("adjustment\0",
-				   "assigned adjustment\0",
-				   "The adjustment it is assigned with\0",
+  param_spec = g_param_spec_object("adjustment",
+				   "assigned adjustment",
+				   "The adjustment it is assigned with",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -126,7 +130,7 @@ void
 ags_indicator_init(AgsIndicator *indicator)
 {
   g_object_set(G_OBJECT(indicator),
-	       "app-paintable\0", TRUE,
+	       "app-paintable", TRUE,
 	       NULL);
 
   indicator->adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);

@@ -57,9 +57,11 @@ GtkStyle *led_array_style = NULL;
 GType
 ags_led_array_get_type(void)
 {
-  static GType ags_type_led_array = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_led_array){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_led_array;
+
     static const GTypeInfo ags_led_array_info = {
       sizeof(AgsLedArrayClass),
       NULL, /* base_init */
@@ -76,9 +78,11 @@ ags_led_array_get_type(void)
 						"AgsLedArray",
 						&ags_led_array_info,
 						0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_led_array);
   }
 
-  return(ags_type_led_array);
+  return g_define_type_id__volatile;
 }
 
 void

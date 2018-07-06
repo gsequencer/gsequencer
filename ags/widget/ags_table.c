@@ -25,9 +25,11 @@ void ags_table_init(AgsTable *table);
 GType
 ags_table_get_type(void)
 {
-  static GType ags_type_table = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_table){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_table;
+
     static const GTypeInfo ags_table_info = {
       sizeof(AgsTableClass),
       NULL, /* base_init */
@@ -41,11 +43,13 @@ ags_table_get_type(void)
     };
 
     ags_type_table = g_type_register_static(GTK_TYPE_TABLE,
-					    "AgsTable\0", &ags_table_info,
+					    "AgsTable", &ags_table_info,
 					    0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_table);
   }
 
-  return(ags_type_table);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -64,9 +68,9 @@ ags_table_new(guint row, guint columns, gboolean homogeneous)
   AgsTable *table;
 
   table = (AgsTable *) g_object_new(AGS_TYPE_TABLE,
-				    "n-rows\0", row,
-				    "n-columns\0", columns,
-				    "homogeneous\0", homogeneous,
+				    "n-rows", row,
+				    "n-columns", columns,
+				    "homogeneous", homogeneous,
 				    NULL);
   
   return(table);
