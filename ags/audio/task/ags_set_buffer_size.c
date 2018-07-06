@@ -73,9 +73,11 @@ static AgsConnectableInterface *ags_set_buffer_size_parent_connectable_interface
 GType
 ags_set_buffer_size_get_type()
 {
-  static GType ags_type_set_buffer_size = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_set_buffer_size){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_set_buffer_size;
+
     static const GTypeInfo ags_set_buffer_size_info = {
       sizeof (AgsSetBufferSizeClass),
       NULL, /* base_init */
@@ -102,9 +104,11 @@ ags_set_buffer_size_get_type()
     g_type_add_interface_static(ags_type_set_buffer_size,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_set_buffer_size);
   }
-  
-  return (ags_type_set_buffer_size);
+
+  return g_define_type_id__volatile;
 }
 
 void

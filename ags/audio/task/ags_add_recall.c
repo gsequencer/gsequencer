@@ -67,9 +67,11 @@ static AgsConnectableInterface *ags_add_recall_parent_connectable_interface;
 GType
 ags_add_recall_get_type()
 {
-  static GType ags_type_add_recall = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_add_recall){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_add_recall;
+
     static const GTypeInfo ags_add_recall_info = {
       sizeof (AgsAddRecallClass),
       NULL, /* base_init */
@@ -96,9 +98,11 @@ ags_add_recall_get_type()
     g_type_add_interface_static(ags_type_add_recall,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_add_recall);
   }
-  
-  return (ags_type_add_recall);
+
+  return g_define_type_id__volatile;
 }
 
 void

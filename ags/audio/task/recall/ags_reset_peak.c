@@ -52,9 +52,11 @@ static pthread_mutex_t peak_channel_mutex = PTHREAD_MUTEX_INITIALIZER;
 GType
 ags_reset_peak_get_type()
 {
-  static GType ags_type_reset_peak = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_reset_peak){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_reset_peak;
+
     static const GTypeInfo ags_reset_peak_info = {
       sizeof (AgsResetPeakClass),
       NULL, /* base_init */
@@ -81,9 +83,11 @@ ags_reset_peak_get_type()
     g_type_add_interface_static(ags_type_reset_peak,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_reset_peak);
   }
-  
-  return (ags_type_reset_peak);
+
+  return g_define_type_id__volatile;
 }
 
 void

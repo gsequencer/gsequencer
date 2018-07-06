@@ -70,9 +70,11 @@ enum{
 GType
 ags_open_single_file_get_type()
 {
-  static GType ags_type_open_single_file = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_open_single_file){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_open_single_file;
+
     static const GTypeInfo ags_open_single_file_info = {
       sizeof (AgsOpenSingleFileClass),
       NULL, /* base_init */
@@ -99,9 +101,11 @@ ags_open_single_file_get_type()
     g_type_add_interface_static(ags_type_open_single_file,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_open_single_file);
   }
-  
-  return (ags_type_open_single_file);
+
+  return g_define_type_id__volatile;
 }
 
 void

@@ -71,9 +71,11 @@ static guint toggle_pattern_bit_signals[LAST_SIGNAL];
 GType
 ags_toggle_pattern_bit_get_type()
 {
-  static GType ags_type_toggle_pattern_bit = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_toggle_pattern_bit){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_toggle_pattern_bit;
+
     static const GTypeInfo ags_toggle_pattern_bit_info = {
       sizeof (AgsTogglePatternBitClass),
       NULL, /* base_init */
@@ -100,9 +102,11 @@ ags_toggle_pattern_bit_get_type()
     g_type_add_interface_static(ags_type_toggle_pattern_bit,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_toggle_pattern_bit);
   }
-  
-  return (ags_type_toggle_pattern_bit);
+
+  return g_define_type_id__volatile;
 }
 
 void
