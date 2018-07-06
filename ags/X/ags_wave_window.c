@@ -71,7 +71,6 @@ ags_wave_window_get_type()
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_wave_window;
 
-  if(!ags_type_wave_window){
     static const GTypeInfo ags_wave_window_info = {
       sizeof (AgsWaveWindowClass),
       NULL, /* base_init */

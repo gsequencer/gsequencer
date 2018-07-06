@@ -112,7 +112,7 @@ ags_output_collection_editor_get_type(void)
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_notation_editor);
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_output_collection_editor);
   }
 
   return g_define_type_id__volatile;

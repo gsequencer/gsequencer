@@ -116,7 +116,7 @@ ags_panel_get_type(void)
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_base_plugin);
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_panel);
   }
 
   return g_define_type_id__volatile;

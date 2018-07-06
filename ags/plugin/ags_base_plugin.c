@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <pthread.h>
+
 #include <ags/i18n.h>
 
 void ags_base_plugin_class_init(AgsBasePluginClass *base_plugin);

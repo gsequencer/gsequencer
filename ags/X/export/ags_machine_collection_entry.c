@@ -108,7 +108,7 @@ ags_machine_collection_entry_get_type(void)
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_collection_entry);
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_machine_collection_entry);
   }
 
   return g_define_type_id__volatile;

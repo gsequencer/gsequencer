@@ -84,7 +84,7 @@ ags_add_soundcard_editor_sink_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_soundcard_editor_sink);
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_add_soundcard_editor_sink);
   }
 
   return g_define_type_id__volatile;

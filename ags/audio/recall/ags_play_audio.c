@@ -43,7 +43,6 @@ ags_play_audio_get_type()
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_play_audio;
 
-  if(!ags_type_play_audio){
     static const GTypeInfo ags_play_audio_info = {
       sizeof (AgsPlayAudioClass),
       NULL, /* base_init */

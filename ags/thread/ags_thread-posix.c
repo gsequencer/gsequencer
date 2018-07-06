@@ -1435,7 +1435,7 @@ ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
   if(AGS_IS_MAIN_LOOP(main_loop)){
     pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 
-    g_signal_connect(AGS_MAIN_LOOP(main_loop), "interrupt",
+    g_signal_connect(G_OBJECT(main_loop), "interrupt",
 		     G_CALLBACK(ags_thread_interrupt_callback), child);
   }
   

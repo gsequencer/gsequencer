@@ -93,6 +93,8 @@ ags_thread_test_init_suite()
 						    NULL);
   
   main_loop = ags_generic_main_loop_new(application_context);
+  g_object_ref(main_loop);
+  
   ags_main_loop_set_async_queue(AGS_MAIN_LOOP(main_loop),
 				ags_task_thread_new());
   ags_thread_start(main_loop);

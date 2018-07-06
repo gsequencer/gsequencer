@@ -231,6 +231,7 @@ ags_pulse_devin_get_type(void)
   }
 
   return g_define_type_id__volatile;
+}
 
 void
 ags_pulse_devin_class_init(AgsPulseDevinClass *pulse_devin)

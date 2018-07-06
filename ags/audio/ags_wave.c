@@ -78,7 +78,6 @@ ags_wave_get_type()
   if(g_once_init_enter (&g_define_type_id__volatile)){
     GType ags_type_wave;
 
-  if(!ags_type_wave){
     static const GTypeInfo ags_wave_info = {
       sizeof(AgsWaveClass),
       NULL,
