@@ -42,9 +42,11 @@ void ags_playable_base_init(AgsPlayableInterface *interface);
 GType
 ags_playable_get_type()
 {
-  static GType ags_type_playable = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_playable){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_playable;
+
     static const GTypeInfo ags_playable_info = {
       sizeof(AgsPlayableInterface),
       (GBaseInitFunc) ags_playable_base_init,
@@ -54,9 +56,11 @@ ags_playable_get_type()
     ags_type_playable = g_type_register_static(G_TYPE_INTERFACE,
 					       "AgsPlayable", &ags_playable_info,
 					       0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_playable);
   }
 
-  return(ags_type_playable);
+  return g_define_type_id__volatile;
 }
 
 

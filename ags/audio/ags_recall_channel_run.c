@@ -126,9 +126,11 @@ static guint recall_channel_run_signals[LAST_SIGNAL];
 GType
 ags_recall_channel_run_get_type()
 {
-  static GType ags_type_recall_channel_run = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_recall_channel_run){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_recall_channel_run;
+
     static const GTypeInfo ags_recall_channel_run_info = {
       sizeof (AgsRecallChannelRunClass),
       NULL, /* base_init */
@@ -175,9 +177,11 @@ ags_recall_channel_run_get_type()
     g_type_add_interface_static(ags_type_recall_channel_run,
 				AGS_TYPE_DYNAMIC_CONNECTABLE,
 				&ags_dynamic_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_recall_channel_run);
   }
 
-  return(ags_type_recall_channel_run);
+  return g_define_type_id__volatile;
 }
 
 void

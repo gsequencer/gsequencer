@@ -58,9 +58,11 @@ enum{
 GType
 ags_audio_connection_get_type (void)
 {
-  static GType ags_type_audio_connection = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_audio_connection){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_audio_connection;
+
     static const GTypeInfo ags_audio_connection_info = {
       sizeof (AgsAudioConnectionClass),
       NULL, /* base_init */
@@ -77,9 +79,11 @@ ags_audio_connection_get_type (void)
 						       "AgsAudioConnection",
 						       &ags_audio_connection_info,
 						       0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_audio_connection);
   }
 
-  return (ags_type_audio_connection);
+  return g_define_type_id__volatile;
 }
 
 void

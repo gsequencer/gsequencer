@@ -26,17 +26,21 @@ void ags_message_class_init(AgsMessageInterface *interface);
 GType
 ags_message_get_type()
 {
-  static GType ags_type_message = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_message){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_message;
+
     ags_type_message = g_type_register_static_simple(G_TYPE_INTERFACE,
 						     "AgsMessage",
 						     sizeof(AgsMessageInterface),
 						     (GClassInitFunc) ags_message_class_init,
 						     0, NULL, 0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_message);
   }
 
-  return(ags_type_message);
+  return g_define_type_id__volatile;
 }
 
 void

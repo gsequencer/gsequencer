@@ -162,9 +162,11 @@ static guint midiin_signals[LAST_SIGNAL];
 GType
 ags_midiin_get_type (void)
 {
-  static GType ags_type_midiin = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_midiin){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_midiin;
+
     static const GTypeInfo ags_midiin_info = {
       sizeof (AgsMidiinClass),
       NULL, /* base_init */
@@ -201,9 +203,11 @@ ags_midiin_get_type (void)
     g_type_add_interface_static(ags_type_midiin,
 				AGS_TYPE_SEQUENCER,
 				&ags_sequencer_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_midiin);
   }
 
-  return (ags_type_midiin);
+  return g_define_type_id__volatile;
 }
 
 void

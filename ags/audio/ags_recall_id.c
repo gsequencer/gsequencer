@@ -19,7 +19,7 @@
 
 #include <ags/audio/ags_recall_id.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -63,9 +63,11 @@ static gpointer ags_recall_id_parent_class = NULL;
 GType
 ags_recall_id_get_type(void)
 {
-  static GType ags_type_recall_id = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_recall_id){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_recall_id;
+
     static const GTypeInfo ags_recall_id_info = {
       sizeof (AgsRecallIDClass),
       NULL, /* base_init */
@@ -92,9 +94,11 @@ ags_recall_id_get_type(void)
     g_type_add_interface_static(ags_type_recall_id,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_recall_id);
   }
 
-  return (ags_type_recall_id);
+  return g_define_type_id__volatile;
 }
 
 void

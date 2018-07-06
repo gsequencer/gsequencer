@@ -258,9 +258,11 @@ static gpointer ags_recall_factory_parent_class = NULL;
 GType
 ags_recall_factory_get_type (void)
 {
-  static GType ags_type_recall_factory = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_recall_factory){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_recall_factory;
+
     static const GTypeInfo ags_recall_factory_info = {
       sizeof (AgsRecallFactoryClass),
       NULL, /* base_init */
@@ -287,9 +289,11 @@ ags_recall_factory_get_type (void)
     g_type_add_interface_static(ags_type_recall_factory,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_recall_factory);
   }
 
-  return(ags_type_recall_factory);
+  return g_define_type_id__volatile;
 }
 
 void

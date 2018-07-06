@@ -82,9 +82,11 @@ static gpointer ags_pattern_parent_class = NULL;
 GType
 ags_pattern_get_type (void)
 {
-  static GType ags_type_pattern = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_pattern){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_pattern;
+
     static const GTypeInfo ags_pattern_info = {
       sizeof (AgsPatternClass),
       NULL, /* base_init */
@@ -131,9 +133,11 @@ ags_pattern_get_type (void)
     g_type_add_interface_static(ags_type_pattern,
 				AGS_TYPE_PORTLET,
 				&ags_portlet_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_pattern);
   }
 
-  return (ags_type_pattern);
+  return g_define_type_id__volatile;
 }
 
 void

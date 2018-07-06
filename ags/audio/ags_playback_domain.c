@@ -67,9 +67,11 @@ enum{
 GType
 ags_playback_domain_get_type (void)
 {
-  static GType ags_type_playback_domain = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_playback_domain){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_playback_domain;
+
     static const GTypeInfo ags_playback_domain_info = {
       sizeof (AgsPlaybackDomainClass),
       NULL, /* base_init */
@@ -96,9 +98,11 @@ ags_playback_domain_get_type (void)
     g_type_add_interface_static(ags_type_playback_domain,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_playback_domain);
   }
 
-  return (ags_type_playback_domain);
+  return g_define_type_id__volatile;
 }
 
 void

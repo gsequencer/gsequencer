@@ -64,9 +64,11 @@ enum{
 GType
 ags_preset_get_type (void)
 {
-  static GType ags_type_preset = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_preset){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_preset;
+
     static const GTypeInfo ags_preset_info = {
       sizeof (AgsPresetClass),
       NULL, /* base_init */
@@ -83,9 +85,11 @@ ags_preset_get_type (void)
 					     "AgsPreset",
 					     &ags_preset_info,
 					     0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_preset);
   }
 
-  return (ags_type_preset);
+  return g_define_type_id__volatile;
 }
 
 void

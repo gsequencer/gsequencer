@@ -182,9 +182,11 @@ extern AgsApplicationContext *ags_application_context;
 GType
 ags_audio_application_context_get_type()
 {
-  static GType ags_type_audio_application_context = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_audio_application_context){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_audio_application_context;
+
     static const GTypeInfo ags_audio_application_context_info = {
       sizeof (AgsAudioApplicationContextClass),
       NULL, /* base_init */
@@ -231,9 +233,11 @@ ags_audio_application_context_get_type()
     g_type_add_interface_static(ags_type_audio_application_context,
 				AGS_TYPE_SOUND_PROVIDER,
 				&ags_sound_provider_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_audio_application_context);
   }
 
-  return (ags_type_audio_application_context);
+  return g_define_type_id__volatile;
 }
 
 void
