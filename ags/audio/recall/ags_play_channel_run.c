@@ -107,9 +107,11 @@ static const gchar *ags_play_channel_run_plugin_name = "ags-play";
 GType
 ags_play_channel_run_get_type()
 {
-  static GType ags_type_play_channel_run = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_play_channel_run){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_play_channel_run;
+
     static const GTypeInfo ags_play_channel_run_info = {
       sizeof (AgsPlayChannelRunClass),
       NULL, /* base_init */
@@ -156,9 +158,11 @@ ags_play_channel_run_get_type()
     g_type_add_interface_static(ags_type_play_channel_run,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_play_channel_run);
   }
 
-  return(ags_type_play_channel_run);
+  return g_define_type_id__volatile;
 }
 
 void

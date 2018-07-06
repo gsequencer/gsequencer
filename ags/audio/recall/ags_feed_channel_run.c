@@ -20,12 +20,7 @@
 #include <ags/audio/recall/ags_feed_channel_run.h>
 #include <ags/audio/recall/ags_feed_recycling.h>
 
-#include <ags/lib/ags_parameter.h>
-
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_dynamic_connectable.h>
-#include <ags/object/ags_plugin.h>
-#include <ags/object/ags_soundcard.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recycling.h>
@@ -64,9 +59,11 @@ static AgsDynamicConnectableInterface *ags_feed_channel_run_parent_dynamic_conne
 GType
 ags_feed_channel_run_get_type()
 {
-  static GType ags_type_feed_channel_run = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_feed_channel_run){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_feed_channel_run;
+
     static const GTypeInfo ags_feed_channel_run_info = {
       sizeof (AgsFeedChannelRunClass),
       NULL, /* base_init */
@@ -103,9 +100,11 @@ ags_feed_channel_run_get_type()
     g_type_add_interface_static(ags_type_feed_channel_run,
 				AGS_TYPE_DYNAMIC_CONNECTABLE,
 				&ags_dynamic_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_feed_channel_run);
   }
 
-  return (ags_type_feed_channel_run);
+  return g_define_type_id__volatile;
 }
 
 void

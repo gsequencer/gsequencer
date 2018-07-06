@@ -19,17 +19,7 @@
 
 #include <ags/audio/recall/ags_loop_channel_run.h>
 
-#include <ags/util/ags_id_generator.h>
-
-#include <ags/object/ags_dynamic_connectable.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_countable.h>
-#include <ags/object/ags_plugin.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
-#include <ags/file/ags_file_lookup.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_container.h>
@@ -104,9 +94,11 @@ static AgsPluginInterface *ags_loop_channel_run_parent_plugin_interface;
 GType
 ags_loop_channel_run_get_type()
 {
-  static GType ags_type_loop_channel_run = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_loop_channel_run){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_loop_channel_run;
+
     static const GTypeInfo ags_loop_channel_run_info = {
       sizeof (AgsLoopChannelRunClass),
       NULL, /* base_init */
@@ -152,9 +144,11 @@ ags_loop_channel_run_get_type()
     g_type_add_interface_static(ags_type_loop_channel_run,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_loop_channel_run);
   }
 
-  return (ags_type_loop_channel_run);
+  return g_define_type_id__volatile;
 }
 
 void

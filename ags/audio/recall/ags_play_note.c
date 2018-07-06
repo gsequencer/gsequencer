@@ -41,9 +41,11 @@ static gpointer ags_play_note_parent_class = NULL;
 GType
 ags_play_note_get_type()
 {
-  static GType ags_type_play_note = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_play_note){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_play_note;
+
     static const GTypeInfo ags_play_note_info = {
       sizeof (AgsPlayNoteClass),
       NULL, /* base_init */
@@ -55,9 +57,16 @@ ags_play_note_get_type()
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_play_note_init,
     };
-    ags_type_play_note = g_type_register_static(AGS_TYPE_RECALL, "AgsPlayNote", &ags_play_note_info, 0);
+
+    ags_type_play_note = g_type_register_static(AGS_TYPE_RECALL,
+						"AgsPlayNote",
+						&ags_play_note_info,
+						0);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_play_note);
   }
-  return (ags_type_play_note);
+
+  return g_define_type_id__volatile;
 }
 
 void

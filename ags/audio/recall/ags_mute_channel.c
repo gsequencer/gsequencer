@@ -19,9 +19,7 @@
 
 #include <ags/audio/recall/ags_mute_channel.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_mutable.h>
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
 
 #include <ags/plugin/ags_base_plugin.h>
 
@@ -72,9 +70,11 @@ static AgsMutableInterface *ags_mute_channel_parent_mutable_interface;
 GType
 ags_mute_channel_get_type()
 {
-  static GType ags_type_mute_channel = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_mute_channel){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_mute_channel;
+
     static const GTypeInfo ags_mute_channel_info = {
       sizeof (AgsMuteChannelClass),
       NULL, /* base_init */
@@ -121,9 +121,11 @@ ags_mute_channel_get_type()
     g_type_add_interface_static(ags_type_mute_channel,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_mute_channel);
   }
 
-  return(ags_type_mute_channel);
+  return g_define_type_id__volatile;
 }
 
 void

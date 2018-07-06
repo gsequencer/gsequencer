@@ -19,10 +19,7 @@
 
 #include <ags/audio/recall/ags_play_channel.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/object/ags_mutable.h>
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
 
@@ -86,9 +83,11 @@ static const gchar *ags_play_channel_control_port[] = {
 GType
 ags_play_channel_get_type()
 {
-  static GType ags_type_play_channel = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_play_channel){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_play_channel;
+
     static const GTypeInfo ags_play_channel_info = {
       sizeof (AgsPlayChannelClass),
       NULL, /* base_init */
@@ -135,9 +134,11 @@ ags_play_channel_get_type()
     g_type_add_interface_static(ags_type_play_channel,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_play_channel);
   }
 
-  return(ags_type_play_channel);
+  return g_define_type_id__volatile;
 }
 
 void

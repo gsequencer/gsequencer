@@ -20,8 +20,7 @@
 #include <ags/audio/recall/ags_prepare_recycling.h>
 #include <ags/audio/recall/ags_prepare_audio_signal.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_dynamic_connectable.h>
+#include <ags/libags.h>
 
 void ags_prepare_recycling_class_init(AgsPrepareRecyclingClass *prepare_recycling);
 void ags_prepare_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -55,9 +54,11 @@ static AgsDynamicConnectableInterface *ags_prepare_recycling_parent_dynamic_conn
 GType
 ags_prepare_recycling_get_type()
 {
-  static GType ags_type_prepare_recycling = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_prepare_recycling){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_prepare_recycling;
+
     static const GTypeInfo ags_prepare_recycling_info = {
       sizeof (AgsPrepareRecyclingClass),
       NULL, /* base_init */
@@ -94,9 +95,11 @@ ags_prepare_recycling_get_type()
     g_type_add_interface_static(ags_type_prepare_recycling,
 				AGS_TYPE_DYNAMIC_CONNECTABLE,
 				&ags_dynamic_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_prepare_recycling);
   }
 
-  return (ags_type_prepare_recycling);
+  return g_define_type_id__volatile;
 }
 
 void

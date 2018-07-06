@@ -19,7 +19,7 @@
 
 #include <ags/audio/recall/ags_play_audio_file.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_recall_id.h>
 
@@ -57,9 +57,11 @@ static AgsConnectableInterface *ags_play_audio_file_parent_connectable_interface
 GType
 ags_play_audio_file_get_type()
 {
-  static GType ags_type_play_audio_file = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_play_audio_file){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_play_audio_file;
+
     static const GTypeInfo ags_play_audio_file_info = {
       sizeof (AgsPlayAudioFileClass),
       NULL, /* base_init */
@@ -86,9 +88,11 @@ ags_play_audio_file_get_type()
     g_type_add_interface_static(ags_type_play_audio_file,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_play_audio_file);
   }
 
-  return (ags_type_play_audio_file);
+  return g_define_type_id__volatile;
 }
 
 void
