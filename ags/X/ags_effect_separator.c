@@ -19,7 +19,7 @@
 
 #include <ags/X/ags_effect_separator.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
 
 #include <ags/i18n.h>
 
@@ -57,9 +57,11 @@ static gpointer ags_effect_separator_parent_class = NULL;
 GType
 ags_effect_separator_get_type(void)
 {
-  static GType ags_type_effect_separator = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_effect_separator){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_effect_separator;
+
     static const GTypeInfo ags_effect_separator_info = {
       sizeof(AgsEffectSeparatorClass),
       NULL, /* base_init */
@@ -85,9 +87,11 @@ ags_effect_separator_get_type(void)
     g_type_add_interface_static(ags_type_effect_separator,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_effect_separator);
   }
 
-  return(ags_type_effect_separator);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -110,7 +114,7 @@ ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator)
    *
    * The filename.
    * 
-   * Since: 1.0.0.19
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("filename"),
@@ -126,7 +130,7 @@ ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator)
    *
    * The effect.
    * 
-   * Since: 1.0.0.19
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("effect",
 				   i18n_pspec("effect"),
@@ -142,7 +146,7 @@ ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator)
    *
    * The text.
    * 
-   * Since: 1.0.0.19
+   * Since: 1.0.0
    */
   param_spec = g_param_spec_string("text",
 				   i18n_pspec("text"),
@@ -286,7 +290,7 @@ ags_effect_separator_get_property(GObject *gobject,
  *
  * Returns: a new #AgsEffectSeparator
  *
- * Since: 1.0.0.19
+ * Since: 1.0.0
  */
 AgsEffectSeparator*
 ags_effect_separator_new()

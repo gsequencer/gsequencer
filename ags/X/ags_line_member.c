@@ -20,20 +20,9 @@
 #include <ags/X/ags_line_member.h>
 #include <ags/X/ags_line_member_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_channel.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/widget/ags_led.h>
-#include <ags/widget/ags_hindicator.h>
-#include <ags/widget/ags_dial.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -106,9 +95,11 @@ static guint line_member_signals[LAST_SIGNAL];
 GType
 ags_line_member_get_type(void)
 {
-  static GType ags_type_line_member = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_line_member){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_line_member;
+
     static const GTypeInfo ags_line_member_info = {
       sizeof(AgsLineMemberClass),
       NULL, /* base_init */
@@ -134,9 +125,11 @@ ags_line_member_get_type(void)
     g_type_add_interface_static(ags_type_line_member,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_line_member);
   }
 
-  return(ags_type_line_member);
+  return g_define_type_id__volatile;
 }
 
 void

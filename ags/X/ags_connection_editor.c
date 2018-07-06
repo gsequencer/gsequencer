@@ -20,11 +20,8 @@
 #include <ags/X/ags_connection_editor.h>
 #include <ags/X/ags_connection_editor_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_output_collection_editor.h>
 #include <ags/X/ags_output_listing_editor.h>
@@ -78,9 +75,11 @@ static guint connection_editor_signals[LAST_SIGNAL];
 GType
 ags_connection_editor_get_type(void)
 {
-  static GType ags_type_connection_editor = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_connection_editor){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_connection_editor;
+
     static const GTypeInfo ags_connection_editor_info = {
       sizeof (AgsConnectionEditorClass),
       NULL, /* base_init */
@@ -116,9 +115,11 @@ ags_connection_editor_get_type(void)
     g_type_add_interface_static(ags_type_connection_editor,
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_connection_editor);
   }
-  
-  return(ags_type_connection_editor);
+
+  return g_define_type_id__volatile;
 }
 
 void

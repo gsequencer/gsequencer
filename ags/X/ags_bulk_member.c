@@ -20,21 +20,9 @@
 #include <ags/X/ags_bulk_member.h>
 #include <ags/X/ags_bulk_member_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_marshal.h>
-
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
-
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
-
-#include <ags/widget/ags_dial.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_bulk.h>
@@ -101,9 +89,11 @@ static guint bulk_member_signals[LAST_SIGNAL];
 GType
 ags_bulk_member_get_type(void)
 {
-  static GType ags_type_bulk_member = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_bulk_member){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_bulk_member;
+
     static const GTypeInfo ags_bulk_member_info = {
       sizeof(AgsBulkMemberClass),
       NULL, /* base_init */
@@ -129,9 +119,11 @@ ags_bulk_member_get_type(void)
     g_type_add_interface_static(ags_type_bulk_member,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_bulk_member);
   }
 
-  return(ags_type_bulk_member);
+  return g_define_type_id__volatile;
 }
 
 void

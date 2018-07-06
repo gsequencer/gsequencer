@@ -20,19 +20,8 @@
 #include <ags/X/ags_ladspa_browser.h>
 #include <ags/X/ags_ladspa_browser_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/plugin/ags_ladspa_manager.h>
-#include <ags/plugin/ags_ladspa_plugin.h>
-
-#include <ags/object/ags_applicable.h>
-
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
-#include <ags/thread/ags_task_thread.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -69,9 +58,11 @@ void ags_ladspa_browser_reset(AgsApplicable *applicable);
 GType
 ags_ladspa_browser_get_type(void)
 {
-  static GType ags_type_ladspa_browser = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_ladspa_browser){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_ladspa_browser;
+
     static const GTypeInfo ags_ladspa_browser_info = {
       sizeof (AgsLadspaBrowserClass),
       NULL, /* base_init */
@@ -107,9 +98,11 @@ ags_ladspa_browser_get_type(void)
     g_type_add_interface_static(ags_type_ladspa_browser,
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_ladspa_browser);
   }
-  
-  return(ags_type_ladspa_browser);
+
+  return g_define_type_id__volatile;
 }
 
 void
