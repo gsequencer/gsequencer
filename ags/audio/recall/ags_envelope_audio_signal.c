@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,7 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_envelope_audio_signal.h>
-#include <ags/audio/recall/ags_envelope_channel.h>
 
 #include <ags/libags.h>
 
@@ -32,23 +31,17 @@
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 
+#include <ags/audio/recall/ags_envelope_channel.h>
+
 #include <stdlib.h>
 #include <complex.h>
 
 void ags_envelope_audio_signal_class_init(AgsEnvelopeAudioSignalClass *envelope_audio_signal);
 void ags_envelope_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_envelope_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_envelope_audio_signal_init(AgsEnvelopeAudioSignal *envelope_audio_signal);
-void ags_envelope_audio_signal_connect(AgsConnectable *connectable);
-void ags_envelope_audio_signal_disconnect(AgsConnectable *connectable);
-void ags_envelope_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_envelope_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_envelope_audio_signal_finalize(GObject *gobject);
 
 void ags_envelope_audio_signal_run_inter(AgsRecall *recall);
-AgsRecall* ags_envelope_audio_signal_duplicate(AgsRecall *recall,
-					       AgsRecallID *recall_id,
-					       guint *n_params, GParameter *parameter);
 
 /**
  * SECTION:ags_envelope_audio_signal
@@ -62,7 +55,6 @@ AgsRecall* ags_envelope_audio_signal_duplicate(AgsRecall *recall,
 
 static gpointer ags_envelope_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_envelope_audio_signal_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_envelope_audio_signal_parent_dynamic_connectable_interface;
 
 GType
 ags_envelope_audio_signal_get_type()
@@ -88,12 +80,6 @@ ags_envelope_audio_signal_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_envelope_audio_signal_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_envelope_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
 							    "AgsEnvelopeAudioSignal",
 							    &ags_envelope_audio_signal_info,
@@ -102,10 +88,6 @@ ags_envelope_audio_signal_get_type()
     g_type_add_interface_static(ags_type_envelope_audio_signal,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_envelope_audio_signal,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
   }
 
   return(ags_type_envelope_audio_signal);
@@ -128,25 +110,12 @@ ags_envelope_audio_signal_class_init(AgsEnvelopeAudioSignalClass *envelope_audio
   recall = (AgsRecallClass *) envelope_audio_signal;
 
   recall->run_inter = ags_envelope_audio_signal_run_inter;  
-  recall->duplicate = ags_envelope_audio_signal_duplicate;
 }
 
 void
 ags_envelope_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_envelope_audio_signal_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_envelope_audio_signal_connect;
-  connectable->disconnect = ags_envelope_audio_signal_disconnect;
-}
-
-void
-ags_envelope_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_envelope_audio_signal_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_envelope_audio_signal_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_envelope_audio_signal_disconnect_dynamic;
 }
 
 void
@@ -164,103 +133,46 @@ ags_envelope_audio_signal_init(AgsEnvelopeAudioSignal *envelope_audio_signal)
 }
 
 void
-ags_envelope_audio_signal_connect(AgsConnectable *connectable)
-{
-  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
-    return;
-  }
-
-  /* call parent */
-  ags_envelope_audio_signal_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_envelope_audio_signal_disconnect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_envelope_audio_signal_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_envelope_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
-    return;
-  }
-
-  /* call parent */
-  ags_envelope_audio_signal_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
-ags_envelope_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_envelope_audio_signal_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
 ags_envelope_audio_signal_finalize(GObject *gobject)
 {
-  /* empty */
-
   /* call parent */
   G_OBJECT_CLASS(ags_envelope_audio_signal_parent_class)->finalize(gobject);
-}
-
-AgsRecall*
-ags_envelope_audio_signal_duplicate(AgsRecall *recall,
-				    AgsRecallID *recall_id,
-				    guint *n_params, GParameter *parameter)
-{
-  AgsEnvelopeAudioSignal *envelope;
-
-  envelope = (AgsEnvelopeAudioSignal *) AGS_RECALL_CLASS(ags_envelope_audio_signal_parent_class)->duplicate(recall,
-													    recall_id,
-													    n_params, parameter);
-
-  return((AgsRecall *) envelope);
 }
 
 void
 ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 {
+  AgsAudioSignal *source;
+  AgsPort *use_note_length;
+  AgsPort *use_fixed_length;
+  AgsPort *fixed_length;
   AgsEnvelopeChannel *envelope_channel;
+  AgsEnvelopeChannelRun *envelope_channel_run;
+  AgsEnvelopeRecycling *envelope_recycling;
   AgsEnvelopeAudioSignal *envelope_audio_signal;
 
-  AgsAudioSignal *source;
-
-  GList *note;
+  GObject *output_soundcard;
   
-  AgsComplex *attack;
-  AgsComplex *decay;
-  AgsComplex *sustain;
-  AgsComplex *release;  
-  AgsComplex *ratio;  
-
+  GList *note_start, *note;
   GList *stream_source;
 
   guint frame_count;
   guint buffer_size;
+  guint format;
   gdouble delay;
-  gdouble fixed_length;
   gdouble current_volume, current_ratio;
 
   guint i, j;
 
-  gboolean use_note_length, use_fixed_length;
+  gboolean do_use_note_length, do_use_fixed_length;
 
   GValue audio_value = {0,};
   GValue channel_value = {0,};
   GValue value = {0,};
+
+  void (*parent_class_run_inter)(AgsRecall *recall);
+  
+  pthread_mutex_t *recall_mutex;
 
   auto gdouble ags_envelope_audio_signal_run_inter_get_ratio(guint x0, gdouble y0,
 							     guint x1, gdouble y1);
@@ -287,12 +199,25 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
     }
   }
 
-  AGS_RECALL_CLASS(ags_envelope_audio_signal_parent_class)->run_inter(recall);
-
-  envelope_channel = AGS_ENVELOPE_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
   envelope_audio_signal = AGS_ENVELOPE_AUDIO_SIGNAL(recall);
 
-  source = AGS_RECALL_AUDIO_SIGNAL(envelope_audio_signal)->source;
+  /* get mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = recall->obj_mutex;
+  
+  parent_class_run_inter = AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->run_inter;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* call parent */
+  parent_class_run_inter(recall);
+
+  /* get some fields */
+  g_object_get(envelope_audio_signal,
+	       "parent", &envelope_recycling,
+	       "source", &source,
+	       NULL);
 
   stream_source = source->stream_current;
 
@@ -301,85 +226,139 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
     return;
   }
 
+  g_object_get(envelope_recycling,
+	       "parent", &envelope_channel_run,
+	       NULL);
+
+  g_object_get(envelope_channel_run,
+	       "recall-channel", &envelope_channel,
+	       NULL);
+
+  /* get ports */
+  g_object_get(envelope_channel,
+	       "use-note-length", &use_note_length,
+	       "use-fixed-length", &use_fixed_length,
+	       "fixed-length", &fixed_length,
+	       NULL);
+  
   /* get use note length port */
   g_value_init(&value,
 	       G_TYPE_BOOLEAN);
-  ags_port_safe_read(envelope_channel->use_note_length,
+  
+  ags_port_safe_read(use_note_length,
 		     &value);
   
-  use_note_length = g_value_get_boolean(&value);
-  g_value_unset(&value);
+  do_use_note_length = g_value_get_boolean(&value);
+
 
   /* get use fixed length port */
-  g_value_init(&value,
-	       G_TYPE_BOOLEAN);
-  ags_port_safe_read(envelope_channel->use_fixed_length,
+  g_value_reset(&value);
+
+  ags_port_safe_read(use_fixed_length,
 		     &value);
   
-  use_fixed_length = g_value_get_boolean(&value);
+  do_use_fixed_length = g_value_get_boolean(&value);
+  
   g_value_unset(&value);
 
-  note = source->note;
-
   /* initialize some control values */
-  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(source->soundcard));
-  buffer_size = source->buffer_size;
-    
+  g_object_get(source,
+	       "output-soundcard", &output_soundcard,
+	       "note", &note_start,
+	       "buffer-size", &buffer_size,
+	       "format", &format,
+	       NULL);
+
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard));
+
+  note = note_start;
+  
   while(note != NULL){
-    if((AGS_NOTE_ENVELOPE & (AGS_NOTE(note->data)->flags)) != 0){
+    if(ags_note_test_flags(note->data, AGS_NOTE_ENVELOPE)){
       AgsNote *current;
       
+      guint64 rt_offset;
+      AgsComplex attack;
+      AgsComplex decay;
+      AgsComplex sustain;
+      AgsComplex release;  
+      AgsComplex ratio;  
       gdouble x0, y0;
       gdouble x1, y1;
       guint start_position;
       guint start_frame, first_frame, buffer_size;
       guint current_frame, current_buffer_size;
       guint offset, prev_offset;
+
+      current = note->data;
+            
+      g_object_get(current,
+		   "rt-offset", &rt_offset,
+		   "attack", &attack,
+		   "decay", &decay,
+		   "sustain", &sustain,
+		   "release", &release,
+		   NULL);
+
+      ratio = &(current->ratio);
+		   NULL);
       
       /* set frame count */
-      if(use_note_length){
-	frame_count = (AGS_NOTE(note->data)->x[1] - AGS_NOTE(note->data)->x[0]) * (delay * buffer_size);
-      }else if(use_fixed_length){
+      if(do_use_note_length){
+	guint key_x0, key_x1;
+	
+	g_object_get(current,
+		     "x0", &key_x0,
+		     "x1", &key_x1,
+		     NULL);
+      
+	frame_count = (key_x1 - key_x0) * (delay * buffer_size);
+      }else if(do_use_fixed_length){
+	gdouble current_fixed_length;
+	
+	GValue value = {0,};
+
+	/* get fixed length */
 	g_value_init(&value,
 		     G_TYPE_DOUBLE);
 
-	ags_port_safe_read(envelope_channel->fixed_length,
+	ags_port_safe_read(fixed_length,
 			   &value);
 
-	fixed_length = g_value_get_double(&value);
+	current_fixed_length = g_value_get_double(&value);
+
 	g_value_unset(&value);
 
-	frame_count = fixed_length * (delay * buffer_size);
+	/* calculuate frame count */
+	frame_count = current_fixed_length * (delay * buffer_size);
       }
-
-      current = note->data;
       
-      attack = &(current->attack);
-      decay = &(current->decay);
-      sustain = &(current->sustain);
-      release = &(current->release);
-
-      ratio = &(current->ratio);
-
       /* get offsets */
-      start_position = floor((delay * current->rt_offset) / frame_count);
+      start_position = floor((delay * rt_offset) / frame_count);
 
       if(start_position == 0){
+	g_object_get(source,
+		     "first-frame", &first_frame,
+		     NULL);
+	
 	start_frame = 0;
-	first_frame = source->first_frame;
-	buffer_size = source->buffer_size - source->first_frame;
+	buffer_size = buffer_size - first_frame;
       }else{
-	start_frame = start_position * source->buffer_size - source->first_frame;
+	g_object_get(source,
+		     "first-frame", &first_frame,
+		     NULL);
+
+	start_frame = start_position * buffer_size - first_frame;
 	first_frame = 0;
-	buffer_size = source->buffer_size;
+	buffer_size = buffer_size;
       }
 
       /* attack */
       x0 = 0.0;
-      y0 = ratio[0][1];
+      y0 = ratio[1];
 
-      x1 = attack[0][0];
-      y1 = attack[0][1] + ratio[0][1];
+      x1 = attack[0];
+      y1 = attack[1] + ratio[1];
 
       offset = x1 * frame_count;
       current_frame = first_frame;
@@ -401,7 +380,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 									0, start_frame,
 									x1 * frame_count);
 	ags_audio_buffer_util_envelope(stream_source->data + current_frame, 1,
-				       ags_audio_buffer_util_format_from_soundcard(source->format),
+				       ags_audio_buffer_util_format_from_soundcard(format),
 				       current_buffer_size,
 				       current_volume,
 				       current_ratio);
@@ -410,11 +389,11 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       }
     
       /* decay */
-      x0 = *attack[0];
-      y0 = *attack[1] + ratio[0][1];
+      x0 = attack[0];
+      y0 = attack[1] + ratio[1];
 
-      x1 = *decay[0];
-      y1 = *decay[1] + ratio[0][1];
+      x1 = decay[0];
+      y1 = decay[1] + ratio[1];
 
       prev_offset = offset;
       offset += (x1 * frame_count);
@@ -437,7 +416,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 									0, prev_offset + current_frame,
 									x1 * frame_count);
 	ags_audio_buffer_util_envelope(stream_source->data + current_frame, 1,
-				       ags_audio_buffer_util_format_from_soundcard(source->format),
+				       ags_audio_buffer_util_format_from_soundcard(format),
 				       current_buffer_size,
 				       current_volume,
 				       current_ratio);
@@ -446,11 +425,11 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       }
 
       /* sustain */
-      x0 = *decay[0];
-      y0 = *decay[1] + ratio[0][1];
+      x0 = decay[0];
+      y0 = decay[1] + ratio[1];
 
-      x1 = *sustain[0];
-      y1 = *sustain[1] + ratio[0][1];
+      x1 = sustain[0];
+      y1 = sustain[1] + ratio[1];
 
       prev_offset = offset;
       offset += (x1 * frame_count);
@@ -473,7 +452,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 									0, prev_offset + current_frame,
 									x1 * frame_count);
 	ags_audio_buffer_util_envelope(stream_source->data + current_frame, 1,
-				       ags_audio_buffer_util_format_from_soundcard(source->format),
+				       ags_audio_buffer_util_format_from_soundcard(format),
 				       current_buffer_size,
 				       current_volume,
 				       current_ratio);
@@ -482,11 +461,11 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       }
     
       /* release */
-      x0 = *sustain[0];
-      y0 = *sustain[1] + ratio[0][1];
+      x0 = sustain[0];
+      y0 = sustain[1] + ratio[1];
 
-      x1 = *release[0];
-      y1 = *release[1] + ratio[0][1];
+      x1 = release[0];
+      y1 = release[1] + ratio[1];
 
       prev_offset = offset;
       offset += (x1 * frame_count);
@@ -509,7 +488,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 									0, prev_offset + current_frame,
 									x1 * frame_count);
 	ags_audio_buffer_util_envelope(stream_source->data + current_frame, 1,
-				       ags_audio_buffer_util_format_from_soundcard(source->format),
+				       ags_audio_buffer_util_format_from_soundcard(format),
 				       current_buffer_size,
 				       current_volume,
 				       current_ratio);
@@ -520,17 +499,19 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 
     note = note->next;
   }
+
+  g_list_free(note_start);
 }
 
 /**
  * ags_envelope_audio_signal_new:
  * @source: the source #AgsAudioSignal
  *
- * Creates an #AgsEnvelopeAudioSignal
+ * Create a new instance of #AgsEnvelopeAudioSignal
  *
- * Returns: a new #AgsEnvelopeAudioSignal
+ * Returns: the new #AgsEnvelopeAudioSignal
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsEnvelopeAudioSignal*
 ags_envelope_audio_signal_new(AgsAudioSignal *source)
