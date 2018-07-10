@@ -80,8 +80,7 @@ void ags_count_beats_audio_run_notify_output_soundcard_callback(GObject *gobject
 
 void ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall);
 void ags_count_beats_audio_run_notify_dependency(AgsRecall *recall,
-						 guint notify_mode,
-						 gint count);
+						 guint dependency, gboolean increase);
 void ags_count_beats_audio_run_run_init_pre(AgsRecall *recall);
 void ags_count_beats_audio_run_done(AgsRecall *recall);
 
@@ -1497,8 +1496,7 @@ ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall)
 
 void
 ags_count_beats_audio_run_notify_dependency(AgsRecall *recall,
-					    guint dependency,
-					    gboolean increase)
+					    guint dependency, gboolean increase)
 {
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
@@ -1516,7 +1514,7 @@ ags_count_beats_audio_run_notify_dependency(AgsRecall *recall,
   /* notify */
   pthread_mutex_lock(recall_mutex);
 
-  switch(notify_mode){
+  switch(dependency){
   case AGS_RECALL_NOTIFY_RUN:
     if(increase){
       count_beats_audio_run->hide_ref += 1;

@@ -23,6 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+#include <ags/audio/ags_audio.h>
+
 #include <ags/audio/ags_recall_audio_run.h>
 
 #define AGS_TYPE_DELAY_AUDIO_RUN                (ags_delay_audio_run_get_type())
@@ -44,22 +48,15 @@ struct _AgsDelayAudioRun
   guint hide_ref;
   guint hide_ref_counter;
 
-  guint notation_counter;
   guint sequencer_counter;
-  
-  guint wave_counter;
+  guint notation_counter;  
+  guint wave_counter;  
+  guint midi_counter;
 };
 
 struct _AgsDelayAudioRunClass
 {
   AgsRecallAudioRunClass recall_audio_run;
-
-  void (*notation_alloc_output)(AgsDelayAudioRun *delay_audio_run, guint nth_run,
-				gdouble delay, guint attack);
-  void (*notation_alloc_input)(AgsDelayAudioRun *delay_audio_run, guint nth_run,
-			       gdouble delay, guint attack);
-  void (*notation_count)(AgsDelayAudioRun *delay_audio_run, guint nth_run,
-			 gdouble delay, guint attack);
 
   void (*sequencer_alloc_output)(AgsDelayAudioRun *delay_audio_run, guint nth_run,
 				 gdouble delay, guint attack);
@@ -68,22 +65,29 @@ struct _AgsDelayAudioRunClass
   void (*sequencer_count)(AgsDelayAudioRun *delay_audio_run, guint nth_run,
 			  gdouble delay, guint attack);
 
+  void (*notation_alloc_output)(AgsDelayAudioRun *delay_audio_run, guint nth_run,
+				gdouble delay, guint attack);
+  void (*notation_alloc_input)(AgsDelayAudioRun *delay_audio_run, guint nth_run,
+			       gdouble delay, guint attack);
+  void (*notation_count)(AgsDelayAudioRun *delay_audio_run, guint nth_run,
+			 gdouble delay, guint attack);
+
   void (*wave_alloc_output)(AgsDelayAudioRun *delay_audio_run, guint nth_run,
 			    gdouble delay, guint attack);
   void (*wave_alloc_input)(AgsDelayAudioRun *delay_audio_run, guint nth_run,
 			   gdouble delay, guint attack);
   void (*wave_count)(AgsDelayAudioRun *delay_audio_run, guint nth_run,
 		     gdouble delay, guint attack);
+
+  void (*midi_alloc_output)(AgsDelayAudioRun *delay_audio_run, guint nth_run,
+			    gdouble delay, guint attack);
+  void (*midi_alloc_input)(AgsDelayAudioRun *delay_audio_run, guint nth_run,
+			   gdouble delay, guint attack);
+  void (*midi_count)(AgsDelayAudioRun *delay_audio_run, guint nth_run,
+		     gdouble delay, guint attack);
 };
 
 GType ags_delay_audio_run_get_type();
-
-void ags_delay_audio_run_notation_alloc_output(AgsDelayAudioRun *delay_audio_run, guint nth_run,
-					       gdouble delay, guint attack);
-void ags_delay_audio_run_notation_alloc_input(AgsDelayAudioRun *delay_audio_run, guint nth_run,
-					      gdouble delay, guint attack);
-void ags_delay_audio_run_notation_count(AgsDelayAudioRun *delay_audio_run, guint nth_run,
-					gdouble delay, guint attack);
 
 void ags_delay_audio_run_sequencer_alloc_output(AgsDelayAudioRun *delay_audio_run, guint nth_run,
 						gdouble delay, guint attack);
@@ -92,6 +96,13 @@ void ags_delay_audio_run_sequencer_alloc_input(AgsDelayAudioRun *delay_audio_run
 void ags_delay_audio_run_sequencer_count(AgsDelayAudioRun *delay_audio_run, guint nth_run,
 					 gdouble delay, guint attack);
 
+void ags_delay_audio_run_notation_alloc_output(AgsDelayAudioRun *delay_audio_run, guint nth_run,
+					       gdouble delay, guint attack);
+void ags_delay_audio_run_notation_alloc_input(AgsDelayAudioRun *delay_audio_run, guint nth_run,
+					      gdouble delay, guint attack);
+void ags_delay_audio_run_notation_count(AgsDelayAudioRun *delay_audio_run, guint nth_run,
+					gdouble delay, guint attack);
+
 void ags_delay_audio_run_wave_alloc_output(AgsDelayAudioRun *delay_audio_run, guint nth_run,
 					   gdouble delay, guint attack);
 void ags_delay_audio_run_wave_alloc_input(AgsDelayAudioRun *delay_audio_run, guint nth_run,
@@ -99,6 +110,13 @@ void ags_delay_audio_run_wave_alloc_input(AgsDelayAudioRun *delay_audio_run, gui
 void ags_delay_audio_run_wave_count(AgsDelayAudioRun *delay_audio_run, guint nth_run,
 				    gdouble delay, guint attack);
 
-AgsDelayAudioRun* ags_delay_audio_run_new();
+void ags_delay_audio_run_midi_alloc_output(AgsDelayAudioRun *delay_audio_run, guint nth_run,
+					   gdouble delay, guint attack);
+void ags_delay_audio_run_midi_alloc_input(AgsDelayAudioRun *delay_audio_run, guint nth_run,
+					  gdouble delay, guint attack);
+void ags_delay_audio_run_midi_count(AgsDelayAudioRun *delay_audio_run, guint nth_run,
+				    gdouble delay, guint attack);
+
+AgsDelayAudioRun* ags_delay_audio_run_new(AgsAudio *audio);
 
 #endif /*__AGS_DELAY_AUDIO_RUN_H__*/

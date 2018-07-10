@@ -2146,6 +2146,7 @@ ags_delay_audio_midi_duration_changed(AgsDelayAudio *delay_audio)
 
 /**
  * ags_delay_audio_new:
+ * @audio: the #AgsAudio
  *
  * Creates a new instance of #AgsDelayAudio
  *
