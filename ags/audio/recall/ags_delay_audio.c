@@ -188,6 +188,7 @@ void
 ags_delay_audio_class_init(AgsDelayAudioClass *delay_audio)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_delay_audio_parent_class = g_type_class_peek_parent(delay_audio);
@@ -554,14 +555,14 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 
   /* wave delay */
   delay_audio->wave_delay = g_object_new(AGS_TYPE_PORT,
-					      "plugin-name", ags_delay_audio_plugin_name,
-					      "specifier", ags_delay_audio_specifier[2],
-					      "control-port", ags_delay_audio_control_port[2],
-					      "port-value-is-pointer", FALSE,
-					      "port-value-type", G_TYPE_DOUBLE,
-					      "port-value-size", sizeof(gdouble),
-					      "port-value-length", 1,
-					      NULL);
+					 "plugin-name", ags_delay_audio_plugin_name,
+					 "specifier", ags_delay_audio_specifier[2],
+					 "control-port", ags_delay_audio_control_port[2],
+					 "port-value-is-pointer", FALSE,
+					 "port-value-type", G_TYPE_DOUBLE,
+					 "port-value-size", sizeof(gdouble),
+					 "port-value-length", 1,
+					 NULL);
   g_object_ref(delay_audio->wave_delay);
   
   delay_audio->wave_delay->port_value.ags_port_double = delay;
@@ -572,14 +573,14 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 
   /* midi delay */
   delay_audio->midi_delay = g_object_new(AGS_TYPE_PORT,
-					      "plugin-name", ags_delay_audio_plugin_name,
-					      "specifier", ags_delay_audio_specifier[2],
-					      "control-port", ags_delay_audio_control_port[2],
-					      "port-value-is-pointer", FALSE,
-					      "port-value-type", G_TYPE_DOUBLE,
-					      "port-value-size", sizeof(gdouble),
-					      "port-value-length", 1,
-					      NULL);
+					 "plugin-name", ags_delay_audio_plugin_name,
+					 "specifier", ags_delay_audio_specifier[2],
+					 "control-port", ags_delay_audio_control_port[2],
+					 "port-value-is-pointer", FALSE,
+					 "port-value-type", G_TYPE_DOUBLE,
+					 "port-value-size", sizeof(gdouble),
+					 "port-value-length", 1,
+					 NULL);
   g_object_ref(delay_audio->midi_delay);
   
   delay_audio->midi_delay->port_value.ags_port_double = delay;
@@ -626,14 +627,14 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 
   /* wave duration */
   delay_audio->wave_duration = g_object_new(AGS_TYPE_PORT,
-						 "plugin-name", ags_delay_audio_plugin_name,
-						 "specifier", ags_delay_audio_specifier[4],
-						 "control-port", ags_delay_audio_control_port[4],
-						 "port-value-is-pointer", FALSE,
-						 "port-value-type", G_TYPE_UINT64,
-						 "port-value-size", sizeof(guint64),
-						 "port-value-length", 1,
-						 NULL);
+					    "plugin-name", ags_delay_audio_plugin_name,
+					    "specifier", ags_delay_audio_specifier[4],
+					    "control-port", ags_delay_audio_control_port[4],
+					    "port-value-is-pointer", FALSE,
+					    "port-value-type", G_TYPE_UINT64,
+					    "port-value-size", sizeof(guint64),
+					    "port-value-length", 1,
+					    NULL);
   g_object_ref(delay_audio->wave_duration);
   
   delay_audio->wave_duration->port_value.ags_port_double = ceil(16.0 * delay);
@@ -644,14 +645,14 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
 
   /* midi duration */
   delay_audio->midi_duration = g_object_new(AGS_TYPE_PORT,
-						 "plugin-name", ags_delay_audio_plugin_name,
-						 "specifier", ags_delay_audio_specifier[4],
-						 "control-port", ags_delay_audio_control_port[4],
-						 "port-value-is-pointer", FALSE,
-						 "port-value-type", G_TYPE_UINT64,
-						 "port-value-size", sizeof(guint64),
-						 "port-value-length", 1,
-						 NULL);
+					    "plugin-name", ags_delay_audio_plugin_name,
+					    "specifier", ags_delay_audio_specifier[4],
+					    "control-port", ags_delay_audio_control_port[4],
+					    "port-value-is-pointer", FALSE,
+					    "port-value-type", G_TYPE_UINT64,
+					    "port-value-size", sizeof(guint64),
+					    "port-value-length", 1,
+					    NULL);
   g_object_ref(delay_audio->midi_duration);
   
   delay_audio->midi_duration->port_value.ags_port_double = ceil(16.0 * delay);

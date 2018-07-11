@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,13 +19,11 @@
 
 #include <ags/audio/recall/ags_envelope_channel.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
 
 #include <ags/i18n.h>
 
 void ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel);
-void ags_envelope_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_envelope_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel);
 void ags_envelope_channel_set_property(GObject *gobject,
@@ -36,11 +34,10 @@ void ags_envelope_channel_get_property(GObject *gobject,
 				       guint prop_id,
 				       GValue *value,
 				       GParamSpec *param_spec);
-void ags_envelope_channel_connect(AgsConnectable *connectable);
-void ags_envelope_channel_disconnect(AgsConnectable *connectable);
-void ags_envelope_channel_set_ports(AgsPlugin *plugin, GList *port);
 void ags_envelope_channel_dispose(GObject *gobject);
 void ags_envelope_channel_finalize(GObject *gobject);
+
+void ags_envelope_channel_set_ports(AgsPlugin *plugin, GList *port);
 
 /**
  * SECTION:ags_envelope_channel
@@ -65,7 +62,29 @@ enum{
 };
 
 static gpointer ags_envelope_channel_parent_class = NULL;
-static AgsConnectableInterface *ags_envelope_channel_parent_connectable_interface;
+
+static const gchar *ags_envelope_channel_plugin_name = "ags-envelope";
+static const gchar *ags_envelope_channel_specifier[] = {
+  "./use-note-length[0]",
+  "./use-fixed-length[0]",
+  "./fixed-length[0]",
+  "./attack[0]",
+  "./decay[0]",
+  "./sustain[0]",
+  "./release[0]",
+  "./ratio[0]"
+};
+
+static const gchar *ags_envelope_channel_control_port[] = {
+  "1/8",
+  "2/8",
+  "3/8",
+  "4/8",
+  "5/8",
+  "6/8",
+  "7/8",
+  "8/8",
+};
 
 GType
 ags_envelope_channel_get_type()
@@ -84,12 +103,6 @@ ags_envelope_channel_get_type()
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_envelope_channel_init,
     };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_envelope_channel_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
     
     static const GInterfaceInfo ags_plugin_interface_info = {
       (GInterfaceInitFunc) ags_envelope_channel_plugin_interface_init,
@@ -103,24 +116,11 @@ ags_envelope_channel_get_type()
 						       0);
 
     g_type_add_interface_static(ags_type_envelope_channel,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_envelope_channel,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
   }
 
   return(ags_type_envelope_channel);
-}
-
-void
-ags_envelope_channel_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_envelope_channel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_envelope_channel_connect;
-  connectable->disconnect = ags_envelope_channel_disconnect;
 }
 
 void
@@ -133,6 +133,7 @@ void
 ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_envelope_channel_parent_class = g_type_class_peek_parent(envelope_channel);
@@ -152,7 +153,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * Use note length to compute envelope.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("use-note-length",
 				   i18n_pspec("use note length"),
@@ -168,7 +169,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * Use fixed length to compute envelope.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("use-fixed-length",
 				   i18n_pspec("use fixed length"),
@@ -184,7 +185,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * The fixed length to compute envelope.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("fixed-length",
 				   i18n_pspec("fixed length"),
@@ -200,7 +201,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * The attack of envelope.
    * 
-   * Since: 1.0.0.7
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("attack",
 				   i18n_pspec("attack channel"),
@@ -216,7 +217,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * The decay of envelope.
    * 
-   * Since: 1.0.0.7
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("decay",
 				   i18n_pspec("decay channel"),
@@ -232,7 +233,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * The sustain of envelope.
    * 
-   * Since: 1.0.0.7
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("sustain",
 				   i18n_pspec("sustain channel"),
@@ -248,7 +249,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * The release of envelope.
    * 
-   * Since: 1.0.0.7
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("release",
 				   i18n_pspec("release channel"),
@@ -264,7 +265,7 @@ ags_envelope_channel_class_init(AgsEnvelopeChannelClass *envelope_channel)
    *
    * The ratio of envelope.
    * 
-   * Since: 1.0.0.7
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("ratio",
 				   i18n_pspec("envelope ratio"),
@@ -291,9 +292,9 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
   
   /* use note length */
   envelope_channel->use_note_length = g_object_new(AGS_TYPE_PORT,
-						   "plugin-name", "ags-envelope",
-						   "specifier", "./use-note-length[0]",
-						   "control-port", "1/8",
+						   "plugin-name", ags_envelope_channel_plugin_name,
+						   "specifier", ags_envelope_channel_specifier[0],
+						   "control-port", ags_delay_audio_control_port[0],
 						   "port-value-is-pointer", FALSE,
 						   "port-value-type", G_TYPE_BOOLEAN,
 						   "port-value-size", sizeof(gboolean),
@@ -305,9 +306,9 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 
   /* use fixed length */
   envelope_channel->use_fixed_length = g_object_new(AGS_TYPE_PORT,
-						    "plugin-name", "ags-envelope",
-						    "specifier", "./use-fixed-length[0]",
-						    "control-port", "2/8",
+						    "plugin-name", ags_envelope_channel_plugin_name,
+						    "specifier", ags_envelope_channel_specifier[1],
+						    "control-port", ags_delay_audio_control_port[1],
 						    "port-value-is-pointer", FALSE,
 						    "port-value-type", G_TYPE_BOOLEAN,
 						    "port-value-size", sizeof(gboolean),
@@ -319,9 +320,9 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 
   /* fixed length */
   envelope_channel->fixed_length = g_object_new(AGS_TYPE_PORT,
-						"plugin-name", "ags-envelope",
-						"specifier", "./fixed-length[0]",
-						"control-port", "3/8",
+						"plugin-name", ags_envelope_channel_plugin_name,
+						"specifier", ags_envelope_channel_specifier[2],
+						"control-port", ags_delay_audio_control_port[2],
 						"port-value-is-pointer", FALSE,
 						"port-value-type", G_TYPE_DOUBLE,
 						"port-value-size", sizeof(gdouble),
@@ -333,9 +334,9 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 
   /* attack */
   envelope_channel->attack = g_object_new(AGS_TYPE_PORT,
-					  "plugin-name", "ags-envelope",
-					  "specifier", "./attack[0]",
-					  "control-port", "4/8",
+					  "plugin-name", ags_envelope_channel_plugin_name,
+					  "specifier", ags_envelope_channel_specifier[3],
+					  "control-port", ags_delay_audio_control_port[3],
 					  "port-value-is-pointer", FALSE,
 					  "port-value-type", G_TYPE_DOUBLE,
 					  "port-value-size", sizeof(gdouble),
@@ -351,9 +352,9 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 
   /* decay */
   envelope_channel->decay = g_object_new(AGS_TYPE_PORT,
-					 "plugin-name", "ags-envelope",
-					 "specifier", "./decay[0]",
-					 "control-port", "5/8",
+					 "plugin-name", ags_envelope_channel_plugin_name,
+					 "specifier", ags_envelope_channel_specifier[4],
+					 "control-port", ags_delay_audio_control_port[4],
 					 "port-value-is-pointer", FALSE,
 					 "port-value-type", G_TYPE_DOUBLE,
 					 "port-value-size", sizeof(gdouble),
@@ -369,9 +370,9 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 
   /* sustain */
   envelope_channel->sustain = g_object_new(AGS_TYPE_PORT,
-					   "plugin-name", "ags-envelope",
-					   "specifier", "./sustain[0]",
-					   "control-port", "6/8",
+					   "plugin-name", ags_envelope_channel_plugin_name,
+					   "specifier", ags_envelope_channel_specifier[5],
+					   "control-port", ags_delay_audio_control_port[5],
 					   "port-value-is-pointer", FALSE,
 					   "port-value-type", G_TYPE_DOUBLE,
 					   "port-value-size", sizeof(gdouble),
@@ -387,9 +388,9 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 
   /* release */
   envelope_channel->release = g_object_new(AGS_TYPE_PORT,
-					   "plugin-name", "ags-envelope",
-					   "specifier", "./release[0]",
-					   "control-port", "7/8",
+					   "plugin-name", ags_envelope_channel_plugin_name,
+					   "specifier", ags_envelope_channel_specifier[6],
+					   "control-port", ags_delay_audio_control_port[6],
 					   "port-value-is-pointer", FALSE,
 					   "port-value-type", G_TYPE_DOUBLE,
 					   "port-value-size", sizeof(gdouble),
@@ -397,7 +398,7 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 					   NULL);
   g_object_ref(envelope_channel->release);
   
-  envelope_channel->release->port_value.ags_port_boolean = 1.0;
+  envelope_channel->release->port_value.ags_port_double = 1.0;
   
   /* add to port */
   port = g_list_prepend(port, envelope_channel->release);
@@ -405,9 +406,9 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 
   /* ratio */  
   envelope_channel->ratio = g_object_new(AGS_TYPE_PORT,
-					 "plugin-name", "ags-envelope",
-					 "specifier", "./ratio[0]",
-					 "control-port", "8/8",
+					 "plugin-name", ags_envelope_channel_plugin_name,
+					 "specifier", ags_envelope_channel_specifier[7],
+					 "control-port", ags_delay_audio_control_port[7],
 					 "port-value-is-pointer", FALSE,
 					 "port-value-type", G_TYPE_DOUBLE,
 					 "port-value-size", sizeof(gdouble),
@@ -415,7 +416,7 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 					 NULL);
   g_object_ref(envelope_channel->ratio);
   
-  envelope_channel->ratio->port_value.ags_port_boolean = 1.0;
+  envelope_channel->ratio->port_value.ags_port_double = 1.0;
 
   /* add to port */
   port = g_list_prepend(port, envelope_channel->ratio);
@@ -433,7 +434,16 @@ ags_envelope_channel_set_property(GObject *gobject,
 {
   AgsEnvelopeChannel *envelope_channel;
 
+  pthread_mutex_t *recall_mutex;
+
   envelope_channel = AGS_ENVELOPE_CHANNEL(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_USE_NOTE_LENGTH:
@@ -442,7 +452,11 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == envelope_channel->use_note_length){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -455,6 +469,8 @@ ags_envelope_channel_set_property(GObject *gobject,
       }
 
       envelope_channel->use_note_length = port;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_USE_FIXED_LENGTH:
@@ -463,7 +479,11 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == envelope_channel->use_fixed_length){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -476,6 +496,8 @@ ags_envelope_channel_set_property(GObject *gobject,
       }
 
       envelope_channel->use_fixed_length = port;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_FIXED_LENGTH:
@@ -484,7 +506,11 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == envelope_channel->fixed_length){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -497,6 +523,8 @@ ags_envelope_channel_set_property(GObject *gobject,
       }
 
       envelope_channel->fixed_length = port;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_ATTACK:
@@ -505,7 +533,11 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == envelope_channel->attack){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -518,6 +550,8 @@ ags_envelope_channel_set_property(GObject *gobject,
       }
 
       envelope_channel->attack = port;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_DECAY:
@@ -526,7 +560,11 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == envelope_channel->decay){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -539,6 +577,8 @@ ags_envelope_channel_set_property(GObject *gobject,
       }
 
       envelope_channel->decay = port;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SUSTAIN:
@@ -547,7 +587,11 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == envelope_channel->sustain){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -560,6 +604,8 @@ ags_envelope_channel_set_property(GObject *gobject,
       }
 
       envelope_channel->sustain = port;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_RELEASE:
@@ -568,7 +614,11 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == envelope_channel->release){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -581,6 +631,8 @@ ags_envelope_channel_set_property(GObject *gobject,
       }
 
       envelope_channel->release = port;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_RATIO:
@@ -589,7 +641,11 @@ ags_envelope_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == envelope_channel->ratio){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -602,6 +658,8 @@ ags_envelope_channel_set_property(GObject *gobject,
       }
 
       envelope_channel->ratio = port;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -618,109 +676,93 @@ ags_envelope_channel_get_property(GObject *gobject,
 {
   AgsEnvelopeChannel *envelope_channel;
 
+  pthread_mutex_t *recall_mutex;
+
   envelope_channel = AGS_ENVELOPE_CHANNEL(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_USE_NOTE_LENGTH:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, envelope_channel->use_note_length);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_USE_FIXED_LENGTH:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, envelope_channel->use_fixed_length);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_FIXED_LENGTH:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, envelope_channel->fixed_length);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_ATTACK:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, envelope_channel->attack);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_DECAY:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, envelope_channel->decay);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SUSTAIN:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, envelope_channel->sustain);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_RELEASE:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, envelope_channel->release);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_RATIO:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, envelope_channel->ratio);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
-  }
-}
-
-void
-ags_envelope_channel_connect(AgsConnectable *connectable)
-{
-  ags_envelope_channel_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_envelope_channel_disconnect(AgsConnectable *connectable)
-{
-  ags_envelope_channel_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_envelope_channel_set_ports(AgsPlugin *plugin, GList *port)
-{
-  while(port != NULL){
-    if(!strncmp(AGS_PORT(port->data)->specifier,
-		"attack[0]",
-		9)){
-      g_object_set(G_OBJECT(plugin),
-		   "attack", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"decay[0]",
-		9)){
-      g_object_set(G_OBJECT(plugin),
-		   "decay", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"sustain[0]",
-		9)){
-      g_object_set(G_OBJECT(plugin),
-		   "sustain", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"release[0]",
-		9)){
-      g_object_set(G_OBJECT(plugin),
-		   "release", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"ratio[0]",
-		9)){
-      g_object_set(G_OBJECT(plugin),
-		   "ratio", AGS_PORT(port->data),
-		   NULL);
-    }
-
-
-    port = port->next;
   }
 }
 
@@ -826,21 +868,65 @@ ags_envelope_channel_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_envelope_channel_parent_class)->finalize(gobject);
 }
 
+
+void
+ags_envelope_channel_set_ports(AgsPlugin *plugin, GList *port)
+{
+  while(port != NULL){
+    if(!strncmp(AGS_PORT(port->data)->specifier,
+		"attack[0]",
+		9)){
+      g_object_set(G_OBJECT(plugin),
+		   "attack", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		"decay[0]",
+		8)){
+      g_object_set(G_OBJECT(plugin),
+		   "decay", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		"sustain[0]",
+		10)){
+      g_object_set(G_OBJECT(plugin),
+		   "sustain", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		"release[0]",
+		10)){
+      g_object_set(G_OBJECT(plugin),
+		   "release", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		"ratio[0]",
+		8)){
+      g_object_set(G_OBJECT(plugin),
+		   "ratio", AGS_PORT(port->data),
+		   NULL);
+    }
+
+
+    port = port->next;
+  }
+}
+
 /**
  * ags_envelope_channel_new:
+ * @source: the #AgsChannel
  *
- * Creates an #AgsEnvelopeChannel
+ * Create a new instance of #AgsEnvelopeChannel
  *
- * Returns: a new #AgsEnvelopeChannel
+ * Returns: the new #AgsEnvelopeChannel
  *
- * Since: 0.6
+ * Since: 2.0.0
  */
 AgsEnvelopeChannel*
-ags_envelope_channel_new()
+ags_envelope_channel_new(AgsChannel *source)
 {
   AgsEnvelopeChannel *envelope_channel;
 
   envelope_channel = (AgsEnvelopeChannel *) g_object_new(AGS_TYPE_ENVELOPE_CHANNEL,
+							 "source", source,
 							 NULL);
 
   return(envelope_channel);
