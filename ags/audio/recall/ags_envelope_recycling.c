@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,8 +19,7 @@
 
 #include <ags/audio/recall/ags_envelope_recycling.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_dynamic_connectable.h>
+#include <ags/libags.h>
 
 #include <ags/audio/recall/ags_envelope_audio_signal.h>
 
@@ -28,21 +27,8 @@
 #include <stdio.h>
 
 void ags_envelope_recycling_class_init(AgsEnvelopeRecyclingClass *envelope_recycling);
-void ags_envelope_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_envelope_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_envelope_recycling_init(AgsEnvelopeRecycling *envelope_recycling);
-void ags_envelope_recycling_connect(AgsConnectable *connectable);
-void ags_envelope_recycling_disconnect(AgsConnectable *connectable);
-void ags_envelope_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_envelope_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_envelope_recycling_finalize(GObject *gobject);
-
-void ags_envelope_recycling_done(AgsRecall *recall);
-void ags_envelope_recycling_cancel(AgsRecall *recall);
-void ags_envelope_recycling_remove(AgsRecall *recall);
-AgsRecall* ags_envelope_recycling_duplicate(AgsRecall *recall,
-					    AgsRecallID *recall_id,
-					    guint *n_params, GParameter *parameter);
 
 /**
  * SECTION:ags_envelope_recycling
@@ -55,8 +41,6 @@ AgsRecall* ags_envelope_recycling_duplicate(AgsRecall *recall,
  */
 
 static gpointer ags_envelope_recycling_parent_class = NULL;
-static AgsConnectableInterface *ags_envelope_recycling_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_envelope_recycling_parent_dynamic_connectable_interface;
 
 GType
 ags_envelope_recycling_get_type()
@@ -76,30 +60,10 @@ ags_envelope_recycling_get_type()
       (GInstanceInitFunc) ags_envelope_recycling_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_envelope_recycling_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_envelope_recycling_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_envelope_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
 							 "AgsEnvelopeRecycling",
 							 &ags_envelope_recycling_info,
 							 0);
-
-    g_type_add_interface_static(ags_type_envelope_recycling,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_envelope_recycling,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
   }
 
   return(ags_type_envelope_recycling);
@@ -120,30 +84,6 @@ ags_envelope_recycling_class_init(AgsEnvelopeRecyclingClass *envelope_recycling)
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) envelope_recycling;
-
-  recall->done = ags_envelope_recycling_done;
-  recall->cancel = ags_envelope_recycling_cancel;
-  recall->remove = ags_envelope_recycling_remove;
-
-  recall->duplicate = ags_envelope_recycling_duplicate;
-}
-
-void
-ags_envelope_recycling_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_envelope_recycling_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_envelope_recycling_connect;
-  connectable->disconnect = ags_envelope_recycling_disconnect;
-}
-
-void
-ags_envelope_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_envelope_recycling_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_envelope_recycling_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_envelope_recycling_disconnect_dynamic;
 }
 
 void
@@ -161,99 +101,19 @@ ags_envelope_recycling_init(AgsEnvelopeRecycling *envelope_recycling)
 void
 ags_envelope_recycling_finalize(GObject *gobject)
 {
-  /* empty */
-
   /* call parent */
   G_OBJECT_CLASS(ags_envelope_recycling_parent_class)->finalize(gobject);
 }
 
-void
-ags_envelope_recycling_connect(AgsConnectable *connectable)
-{
-  AgsEnvelopeRecycling *envelope_recycling;
-
-  ags_envelope_recycling_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_envelope_recycling_disconnect(AgsConnectable *connectable)
-{
-  AgsEnvelopeRecycling *envelope_recycling;
-
-  ags_envelope_recycling_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_envelope_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  AgsEnvelopeRecycling *envelope_recycling;
-  GObject *gobject;
-
-  ags_envelope_recycling_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-}
-
-void
-ags_envelope_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  AgsEnvelopeRecycling *envelope_recycling;
-  GObject *gobject;
-
-  ags_envelope_recycling_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void 
-ags_envelope_recycling_done(AgsRecall *recall)
-{
-  AGS_RECALL_CLASS(ags_envelope_recycling_parent_class)->done(recall);
-
-  /* empty */
-}
-
-void
-ags_envelope_recycling_cancel(AgsRecall *recall)
-{
-  AGS_RECALL_CLASS(ags_envelope_recycling_parent_class)->cancel(recall);
-
-  /* empty */
-}
-
-void 
-ags_envelope_recycling_remove(AgsRecall *recall)
-{
-  AGS_RECALL_CLASS(ags_envelope_recycling_parent_class)->remove(recall);
-
-  /* empty */
-}
-
-AgsRecall*
-ags_envelope_recycling_duplicate(AgsRecall *recall,
-				 AgsRecallID *recall_id,
-				 guint *n_params, GParameter *parameter)
-{
-  AgsEnvelopeRecycling *envelope;
-
-  envelope = (AgsEnvelopeRecycling *) AGS_RECALL_CLASS(ags_envelope_recycling_parent_class)->duplicate(recall,
-												       recall_id,
-												       n_params, parameter);
-
-  return((AgsRecall *) envelope);
-}
-
 /**
  * ags_envelope_recycling_new:
- * @source: the source #AgsRecycling
+ * @source: the #AgsRecycling
  *
- * Creates an #AgsEnvelopeRecycling
+ * Create a new instance of #AgsEnvelopeRecycling
  *
- * Returns: a new #AgsEnvelopeRecycling
+ * Returns: the new #AgsEnvelopeRecycling
  *
- * Since: 0.6
+ * Since: 2.0.0
  */
 AgsEnvelopeRecycling*
 ags_envelope_recycling_new(AgsRecycling *source)

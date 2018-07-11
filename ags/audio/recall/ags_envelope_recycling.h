@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,10 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_recycling.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_recall_recycling.h>
 
 #define AGS_TYPE_ENVELOPE_RECYCLING                (ags_envelope_recycling_get_type())
 #define AGS_ENVELOPE_RECYCLING(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ENVELOPE_RECYCLING, AgsEnvelopeRecycling))
