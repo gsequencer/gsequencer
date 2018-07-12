@@ -23,6 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+#include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_recycling.h>
 
 #define AGS_TYPE_EQ10_RECYCLING                (ags_eq10_recycling_get_type())
@@ -47,6 +50,6 @@ struct _AgsEq10RecyclingClass
 
 GType ags_eq10_recycling_get_type();
 
-AgsEq10Recycling* ags_eq10_recycling_new(AgsRecycling *recycling);
+AgsEq10Recycling* ags_eq10_recycling_new(AgsRecycling *source);
 
 #endif /*__AGS_EQ10_RECYCLING_H__*/

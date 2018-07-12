@@ -43,9 +43,10 @@ void ags_delay_audio_get_property(GObject *gobject,
 				  guint prop_id,
 				  GValue *value,
 				  GParamSpec *param_spec);
-void ags_delay_audio_set_ports(AgsPlugin *plugin, GList *port);
 void ags_delay_audio_dispose(GObject *gobject);
 void ags_delay_audio_finalize(GObject *gobject);
+
+void ags_delay_audio_set_ports(AgsPlugin *plugin, GList *port);
 
 void ags_delay_audio_notify_audio_callback(GObject *gobject,
 					   GParamSpec *pspec,
@@ -1088,76 +1089,6 @@ ags_delay_audio_get_property(GObject *gobject,
 }
 
 void
-ags_delay_audio_set_ports(AgsPlugin *plugin, GList *port)
-{
-  while(port != NULL){
-    if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./bpm[0]",
-		8)){
-      g_object_set(G_OBJECT(plugin),
-		   "bpm", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./tact[0]",
-		      9)){
-      g_object_set(G_OBJECT(plugin),
-		   "tact", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./sequencer-delay[0]",
-		      19)){
-      g_object_set(G_OBJECT(plugin),
-		   "sequencer-delay", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./notation-delay[0]",
-		      18)){
-      g_object_set(G_OBJECT(plugin),
-		   "notation-delay", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./wave-delay[0]",
-		      15)){
-      g_object_set(G_OBJECT(plugin),
-		   "wave-delay", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./midi-delay[0]",
-		      15)){
-      g_object_set(G_OBJECT(plugin),
-		   "midi-delay", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./sequencer-duration[0]",
-		      22)){
-      g_object_set(G_OBJECT(plugin),
-		   "sequencer-duration", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./notation-duration[0]",
-		      21)){
-      g_object_set(G_OBJECT(plugin),
-		   "notation-duration", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./wave-duration[0]",
-		      18)){
-      g_object_set(G_OBJECT(plugin),
-		   "wave-duration", AGS_PORT(port->data),
-		   NULL);
-    }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		      "./midi-duration[0]",
-		      18)){
-      g_object_set(G_OBJECT(plugin),
-		   "midi-duration", AGS_PORT(port->data),
-		   NULL);
-    }
-
-    port = port->next;
-  }
-}
-
-void
 ags_delay_audio_dispose(GObject *gobject)
 {
   AgsDelayAudio *delay_audio;
@@ -1280,6 +1211,76 @@ ags_delay_audio_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_delay_audio_parent_class)->finalize(gobject);
+}
+
+void
+ags_delay_audio_set_ports(AgsPlugin *plugin, GList *port)
+{
+  while(port != NULL){
+    if(!strncmp(AGS_PORT(port->data)->specifier,
+		"./bpm[0]",
+		8)){
+      g_object_set(G_OBJECT(plugin),
+		   "bpm", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "./tact[0]",
+		      9)){
+      g_object_set(G_OBJECT(plugin),
+		   "tact", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "./sequencer-delay[0]",
+		      19)){
+      g_object_set(G_OBJECT(plugin),
+		   "sequencer-delay", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "./notation-delay[0]",
+		      18)){
+      g_object_set(G_OBJECT(plugin),
+		   "notation-delay", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "./wave-delay[0]",
+		      15)){
+      g_object_set(G_OBJECT(plugin),
+		   "wave-delay", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "./midi-delay[0]",
+		      15)){
+      g_object_set(G_OBJECT(plugin),
+		   "midi-delay", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "./sequencer-duration[0]",
+		      22)){
+      g_object_set(G_OBJECT(plugin),
+		   "sequencer-duration", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "./notation-duration[0]",
+		      21)){
+      g_object_set(G_OBJECT(plugin),
+		   "notation-duration", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "./wave-duration[0]",
+		      18)){
+      g_object_set(G_OBJECT(plugin),
+		   "wave-duration", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "./midi-duration[0]",
+		      18)){
+      g_object_set(G_OBJECT(plugin),
+		   "midi-duration", AGS_PORT(port->data),
+		   NULL);
+    }
+
+    port = port->next;
+  }
 }
 
 void

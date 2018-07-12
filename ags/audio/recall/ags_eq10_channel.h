@@ -23,7 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel.h>
+#include <ags/audio/ags_port.h>
 
 #define AGS_TYPE_EQ10_CHANNEL                (ags_eq10_channel_get_type())
 #define AGS_EQ10_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EQ10_CHANNEL, AgsEq10Channel))
@@ -60,6 +64,6 @@ struct _AgsEq10ChannelClass
 
 GType ags_eq10_channel_get_type();
 
-AgsEq10Channel* ags_eq10_channel_new();
+AgsEq10Channel* ags_eq10_channel_new(AgsChannel *source);
 
 #endif /*__AGS_EQ10_CHANNEL_H__*/

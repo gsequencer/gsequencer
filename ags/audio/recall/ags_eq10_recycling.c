@@ -18,27 +18,13 @@
  */
 
 #include <ags/audio/recall/ags_eq10_recycling.h>
-#include <ags/audio/recall/ags_eq10_channel.h>
-#include <ags/audio/recall/ags_eq10_audio_signal.h>
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_recall_id.h>
-
 void ags_eq10_recycling_class_init(AgsEq10RecyclingClass *eq10_recycling);
-void ags_eq10_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_eq10_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_eq10_recycling_init(AgsEq10Recycling *eq10_recycling);
 void ags_eq10_recycling_connect(AgsConnectable *connectable);
-void ags_eq10_recycling_disconnect(AgsConnectable *connectable);
-void ags_eq10_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_eq10_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_eq10_recycling_finalize(GObject *gobject);
-
-AgsRecall* ags_eq10_recycling_duplicate(AgsRecall *recall,
-					AgsRecallID *recall_id,
-					guint *n_params, GParameter *parameter);
 
 /**
  * SECTION:ags_eq10_recycling
@@ -51,8 +37,6 @@ AgsRecall* ags_eq10_recycling_duplicate(AgsRecall *recall,
  */
 
 static gpointer ags_eq10_recycling_parent_class = NULL;
-static AgsConnectableInterface *ags_eq10_recycling_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_eq10_recycling_parent_dynamic_connectable_interface;
 
 GType
 ags_eq10_recycling_get_type()
@@ -72,30 +56,10 @@ ags_eq10_recycling_get_type()
       (GInstanceInitFunc) ags_eq10_recycling_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_eq10_recycling_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_eq10_recycling_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_eq10_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
 						     "AgsEq10Recycling",
 						     &ags_eq10_recycling_info,
 						     0);
-
-    g_type_add_interface_static(ags_type_eq10_recycling,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_eq10_recycling,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
   }
 
   return(ags_type_eq10_recycling);
@@ -106,7 +70,6 @@ ags_eq10_recycling_class_init(AgsEq10RecyclingClass *eq10_recycling)
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
-  GParamSpec *param_spec;
 
   ags_eq10_recycling_parent_class = g_type_class_peek_parent(eq10_recycling);
 
@@ -117,26 +80,6 @@ ags_eq10_recycling_class_init(AgsEq10RecyclingClass *eq10_recycling)
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) eq10_recycling;
-
-  recall->duplicate = ags_eq10_recycling_duplicate;
-}
-
-void
-ags_eq10_recycling_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_eq10_recycling_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_eq10_recycling_connect;
-  connectable->disconnect = ags_eq10_recycling_disconnect;
-}
-
-void
-ags_eq10_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_eq10_recycling_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_eq10_recycling_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_eq10_recycling_disconnect_dynamic;
 }
 
 void
@@ -149,86 +92,32 @@ ags_eq10_recycling_init(AgsEq10Recycling *eq10_recycling)
   AGS_RECALL(eq10_recycling)->port = NULL;
 
   AGS_RECALL(eq10_recycling)->child_type = AGS_TYPE_EQ10_AUDIO_SIGNAL;
-
-  AGS_RECALL_RECYCLING(eq10_recycling)->flags |= (AGS_RECALL_RECYCLING_MAP_CHILD_SOURCE);
 }
 
 void
 ags_eq10_recycling_finalize(GObject *gobject)
 {
-  /* empty */
-
   /* call parent */
   G_OBJECT_CLASS(ags_eq10_recycling_parent_class)->finalize(gobject);
 }
 
-void
-ags_eq10_recycling_connect(AgsConnectable *connectable)
-{ 
-  /* call parent */
-  ags_eq10_recycling_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_eq10_recycling_disconnect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_eq10_recycling_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_eq10_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_eq10_recycling_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
-ags_eq10_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_eq10_recycling_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-AgsRecall*
-ags_eq10_recycling_duplicate(AgsRecall *recall,
-			     AgsRecallID *recall_id,
-			     guint *n_params, GParameter *parameter)
-{
-  AgsEq10Recycling *copy;
-
-  copy = (AgsEq10Recycling *) AGS_RECALL_CLASS(ags_eq10_recycling_parent_class)->duplicate(recall,
-											   recall_id,
-											   n_params, parameter);
-
-  return((AgsRecall *) copy);
-}
-
 /**
  * ags_eq10_recycling_new:
- * @recycling: the source #AgsRecycling
+ * @source: the #AgsRecycling
  *
- * Creates an #AgsEq10Recycling
+ * Create a new instance of #AgsEq10Recycling
  *
- * Returns: a new #AgsEq10Recycling
+ * Returns: the new #AgsEq10Recycling
  *
- * Since: 1.5.0
+ * Since: 2.0.0
  */
 AgsEq10Recycling*
-ags_eq10_recycling_new(AgsRecycling *recycling)
+ags_eq10_recycling_new(AgsRecycling *source)
 {
   AgsEq10Recycling *eq10_recycling;
 
   eq10_recycling = (AgsEq10Recycling *) g_object_new(AGS_TYPE_EQ10_RECYCLING,
-						     "source", recycling,
+						     "source", source,
 						     NULL);
 
   return(eq10_recycling);

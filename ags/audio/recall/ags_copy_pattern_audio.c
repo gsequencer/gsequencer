@@ -196,13 +196,15 @@ ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio)
 						  NULL);
   g_object_ref(copy_pattern_audio->bank_index_0);
 
-  copy_pattern_audio->bank_index_0->port_value.ags_port_uint = 0.0;
+  copy_pattern_audio->bank_index_0->port_value.ags_port_float = 0.0;
 
   /* plugin port */
+#if 0
   g_object_set(copy_pattern_audio->bank_index_0,
 	       "plugin-port", ags_copy_pattern_audio_get_bank_index_0_plugin_port(),
 	       NULL);
-
+#endif
+  
   /* add to port */
   port = g_list_prepend(port, copy_pattern_audio->bank_index_0);
   g_object_ref(copy_pattern_audio->bank_index_0);
@@ -219,13 +221,15 @@ ags_copy_pattern_audio_init(AgsCopyPatternAudio *copy_pattern_audio)
 						  NULL);
   g_object_ref(copy_pattern_audio->bank_index_1);
 
-  copy_pattern_audio->bank_index_1->port_value.ags_port_uint = 0.0;
+  copy_pattern_audio->bank_index_1->port_value.ags_port_float = 0.0;
 
   /* plugin port */
+#if 0
   g_object_set(copy_pattern_audio->bank_index_1,
 	       "plugin-port", ags_copy_pattern_audio_get_bank_index_1_plugin_port(),
 	       NULL);
-
+#endif
+  
   /* add to port */
   port = g_list_prepend(port, copy_pattern_audio->bank_index_1);
   g_object_ref(copy_pattern_audio->bank_index_1);
