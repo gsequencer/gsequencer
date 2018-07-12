@@ -30,7 +30,6 @@
 #include <ags/audio/recall/ags_analyse_recycling.h>
 
 void ags_analyse_channel_run_class_init(AgsAnalyseChannelRunClass *analyse_channel_run);
-void ags_analyse_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_analyse_channel_run_init(AgsAnalyseChannelRun *analyse_channel_run);
 void ags_analyse_channel_run_finalize(GObject *gobject);
 
@@ -47,7 +46,6 @@ void ags_analyse_channel_run_run_pre(AgsRecall *recall);
  */
 
 static gpointer ags_analyse_channel_run_parent_class = NULL;
-static AgsConnectableInterface *ags_analyse_channel_run_parent_connectable_interface;
 
 GType
 ags_analyse_channel_run_get_type()
@@ -66,21 +64,11 @@ ags_analyse_channel_run_get_type()
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_analyse_channel_run_init,
     };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_analyse_channel_run_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
     
     ags_type_analyse_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 							  "AgsAnalyseChannelRun",
 							  &ags_analyse_channel_run_info,
 							  0);
-    
-    g_type_add_interface_static(ags_type_analyse_channel_run,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
 
   return (ags_type_analyse_channel_run);
@@ -103,12 +91,6 @@ ags_analyse_channel_run_class_init(AgsAnalyseChannelRunClass *analyse_channel_ru
   recall = (AgsRecallClass *) analyse_channel_run;
 
   recall->run_pre = ags_analyse_channel_run_run_pre;
-}
-
-void
-ags_analyse_channel_run_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_analyse_channel_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 }
 
 void
@@ -136,6 +118,7 @@ ags_analyse_channel_run_run_pre(AgsRecall *recall)
 {
   AgsPort *buffer_computed;
   AgsAnalyseChannel *analyse_channel;
+  AgsAnalyseChannelRun *analyse_channel_run;
 
   guint cache_buffer_size;
   guint cache_format;
@@ -143,16 +126,25 @@ ags_analyse_channel_run_run_pre(AgsRecall *recall)
   
   GValue value = {0,};
 
+  void (*parent_class_run_pre)(AgsRecall *recall);
+  
+  pthread_mutex_t *recall_mutex;
   pthread_mutex_t *buffer_mutex;
 
-  AGS_RECALL_CLASS(ags_analyse_channel_run_parent_class)->run_pre(recall);
+  analyse_channel_run = AGS_ANALYSE_CHANNEL_RUN(recall);
 
-  /* get buffer mutex */
+  /* get mutex and buffer mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
 
+  recall_mutex = recall->obj_mutex;
   buffer_mutex = analyse_channel->buffer_mutex;
-  
+
+  parent_class_run_pre = AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->run_pre;
+
   pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* call parent */
+  parent_class_run_pre(recall);
 
   /* get some fields */
   g_object_get(recall,

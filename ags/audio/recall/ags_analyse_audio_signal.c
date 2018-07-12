@@ -30,7 +30,6 @@
 #include <ags/i18n.h>
 
 void ags_analyse_audio_signal_class_init(AgsAnalyseAudioSignalClass *analyse_audio_signal);
-void ags_analyse_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_analyse_audio_signal_init(AgsAnalyseAudioSignal *analyse_audio_signal);
 void ags_analyse_audio_signal_finalize(GObject *gobject);
 
@@ -47,7 +46,6 @@ void ags_analyse_audio_signal_run_inter(AgsRecall *recall);
  */
 
 static gpointer ags_analyse_audio_signal_parent_class = NULL;
-static AgsConnectableInterface *ags_analyse_audio_signal_parent_connectable_interface;
 
 GType
 ags_analyse_audio_signal_get_type()
@@ -67,23 +65,13 @@ ags_analyse_audio_signal_get_type()
       (GInstanceInitFunc) ags_analyse_audio_signal_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_analyse_audio_signal_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_analyse_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
 							   "AgsAnalyseAudioSignal",
 							   &ags_analyse_audio_signal_info,
 							   0);
-
-    g_type_add_interface_static(ags_type_analyse_audio_signal,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
 
-  return (ags_type_analyse_audio_signal);
+  return(ags_type_analyse_audio_signal);
 }
 
 void
@@ -91,7 +79,6 @@ ags_analyse_audio_signal_class_init(AgsAnalyseAudioSignalClass *analyse_audio_si
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
-  GParamSpec *param_spec;
 
   ags_analyse_audio_signal_parent_class = g_type_class_peek_parent(analyse_audio_signal);
 
@@ -106,12 +93,6 @@ ags_analyse_audio_signal_class_init(AgsAnalyseAudioSignalClass *analyse_audio_si
   recall = (AgsRecallClass *) analyse_audio_signal;
 
   recall->run_inter = ags_analyse_audio_signal_run_inter;
-}
-
-void
-ags_analyse_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_analyse_audio_signal_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 }
 
 void
@@ -139,9 +120,25 @@ ags_analyse_audio_signal_run_inter(AgsRecall *recall)
   guint buffer_size;
   guint format;
   
-  /* call parent */
-  AGS_RECALL_CLASS(ags_analyse_audio_signal_parent_class)->run_inter(recall);
+  void (*parent_class_run_inter)(AgsRecall *recall);
+  
+  pthread_mutex_t *recall_mutex;
+  
+  analyse_audio_signal = AGS_ANALYSE_AUDIO_SIGNAL(recall);
 
+  /* get mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = recall->obj_mutex;
+  
+  parent_class_run_inter = AGS_RECALL_CLASS(ags_analyse_audio_signal_parent_class)->run_inter;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* call parent */
+  parent_class_run_inter(recall);
+
+  /* get some fields */
   g_object_get(analyse_audio_signal,
 	       "source", &source,
 	       NULL);

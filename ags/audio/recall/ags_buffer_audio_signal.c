@@ -33,7 +33,6 @@
 #include <ags/audio/recall/ags_buffer_recycling.h>
  
 void ags_buffer_audio_signal_class_init(AgsBufferAudioSignalClass *buffer_audio_signal);
-void ags_buffer_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_buffer_audio_signal_init(AgsBufferAudioSignal *buffer_audio_signal);
 void ags_buffer_audio_signal_finalize(GObject *gobject);
 
@@ -51,7 +50,6 @@ void ags_buffer_audio_signal_run_inter(AgsRecall *recall);
  */
 
 static gpointer ags_buffer_audio_signal_parent_class = NULL;
-static AgsConnectableInterface *ags_buffer_audio_signal_parent_connectable_interface;
 
 GType
 ags_buffer_audio_signal_get_type()
@@ -71,20 +69,10 @@ ags_buffer_audio_signal_get_type()
       (GInstanceInitFunc) ags_buffer_audio_signal_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_buffer_audio_signal_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_buffer_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
 							  "AgsBufferAudioSignal",
 							  &ags_buffer_audio_signal_info,
 							  0);
-
-    g_type_add_interface_static(ags_type_buffer_audio_signal,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
 
   return(ags_type_buffer_audio_signal);
@@ -108,12 +96,6 @@ ags_buffer_audio_signal_class_init(AgsBufferAudioSignalClass *buffer_audio_signa
 
   recall->run_init_pre = ags_buffer_audio_signal_run_init_pre;
   recall->run_inter = ags_buffer_audio_signal_run_inter;
-}
-
-void
-ags_buffer_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_buffer_audio_signal_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 }
 
 void
@@ -153,8 +135,22 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   guint attack;
   guint length;
 
+  void (*parent_class_run_init_pre)(AgsRecall *recall);
+  
+  pthread_mutex_t *recall_mutex;
+  
   buffer_audio_signal = AGS_BUFFER_AUDIO_SIGNAL(recall);
 
+  /* get mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = recall->obj_mutex;
+  
+  parent_class_run_init_pre = AGS_RECALL_CLASS(ags_buffer_audio_signal_parent_class)->run_init_pre;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
   g_object_get(buffer_audio_signal,
 	       "output-soundcard", &output_soundcard,
 	       NULL);
@@ -236,7 +232,7 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
 #endif
   
   /* call parent */
-  AGS_RECALL_CLASS(ags_buffer_audio_signal_parent_class)->run_init_pre(recall);
+  parent_class_run_init_pre(recall);
 }
 
 void
@@ -262,12 +258,25 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   
   GValue value = {0,};
 
-  /* call parent */
-  AGS_RECALL_CLASS(ags_buffer_audio_signal_parent_class)->run_inter(recall);
-
-  /* initialize some variables */
+  void (*parent_class_run_inter)(AgsRecall *recall);
+  
+  pthread_mutex_t *recall_mutex;
+  
   buffer_audio_signal = AGS_BUFFER_AUDIO_SIGNAL(recall);
 
+  /* get mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = recall->obj_mutex;
+  
+  parent_class_run_inter = AGS_RECALL_CLASS(ags_buffer_audio_signal_parent_class)->run_inter;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* call parent */
+  parent_class_run_inter(recall);
+
+  /* initialize some variables */
   g_object_get(recall,
 	       "parent", &buffer_recycling,
 	       NULL);

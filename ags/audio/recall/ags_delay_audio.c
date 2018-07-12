@@ -107,6 +107,7 @@ enum{
 };
 
 static gpointer ags_delay_audio_parent_class = NULL;
+static AgsPluginInterface *ags_delay_audio_parent_plugin_interface;
 
 static guint delay_audio_signals[LAST_SIGNAL];
 
@@ -460,6 +461,8 @@ ags_delay_audio_tactable_interface_init(AgsTactableInterface *tactable)
 void
 ags_delay_audio_plugin_interface_init(AgsPluginInterface *plugin)
 {
+  ags_delay_audio_parent_plugin_interface = g_type_interface_peek_parent(plugin);
+
   plugin->set_ports = ags_delay_audio_set_ports;
 }
 

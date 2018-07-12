@@ -38,7 +38,6 @@
 #include <ags/i18n.h>
 
 void ags_capture_sound_audio_run_class_init(AgsCaptureSoundAudioRunClass *capture_sound_audio_run);
-void ags_capture_sound_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_capture_sound_audio_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_capture_sound_audio_run_init(AgsCaptureSoundAudioRun *capture_sound_audio_run);
 void ags_capture_sound_audio_run_set_property(GObject *gobject,
@@ -70,7 +69,6 @@ void ags_capture_sound_audio_run_done(AgsRecall *recall);
  */
 
 static gpointer ags_capture_sound_audio_run_parent_class = NULL;
-static AgsConnectableInterface* ags_capture_sound_audio_run_parent_connectable_interface;
 static AgsPluginInterface *ags_capture_sound_audio_run_parent_plugin_interface;
 
 GType
@@ -91,12 +89,6 @@ ags_capture_sound_audio_run_get_type()
       (GInstanceInitFunc) ags_capture_sound_audio_run_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_capture_sound_audio_run_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     static const GInterfaceInfo ags_plugin_interface_info = {
       (GInterfaceInitFunc) ags_capture_sound_audio_run_plugin_interface_init,
       NULL, /* interface_finalize */
@@ -107,10 +99,6 @@ ags_capture_sound_audio_run_get_type()
 							      "AgsCaptureSoundAudioRun",
 							      &ags_capture_sound_audio_run_info,
 							      0);
-
-    g_type_add_interface_static(ags_type_capture_sound_audio_run,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_capture_sound_audio_run,
 				AGS_TYPE_PLUGIN,
@@ -176,12 +164,6 @@ ags_capture_sound_audio_run_class_init(AgsCaptureSoundAudioRunClass *capture_sou
   recall->run_init_pre = ags_capture_sound_audio_run_run_init_pre;
   recall->run_pre = ags_capture_sound_audio_run_run_pre;
   recall->done = ags_capture_sound_audio_run_done;
-}
-
-void
-ags_capture_sound_audio_run_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_capture_sound_audio_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 }
 
 void
@@ -414,7 +396,6 @@ ags_capture_sound_audio_run_run_init_pre(AgsRecall *recall)
 {
   AgsAudio *audio;
   AgsPort *port;
-  
   AgsCaptureSoundAudio *capture_sound_audio;
   AgsCaptureSoundAudioRun *capture_sound_audio_run;
 
@@ -430,10 +411,23 @@ ags_capture_sound_audio_run_run_init_pre(AgsRecall *recall)
   
   GValue value = {0,};
 
+  void (*parent_class_run_init_pre)(AgsRecall *recall);
+  
+  pthread_mutex_t *recall_mutex;
   pthread_mutex_t *port_mutex;
   
   capture_sound_audio_run = AGS_CAPTURE_SOUND_AUDIO_RUN(recall);
 
+  /* get mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = recall->obj_mutex;
+  
+  parent_class_run_init_pre = AGS_RECALL_CLASS(ags_capture_sound_audio_run_parent_class)->run_init_pre;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
   g_object_get(capture_sound_audio_run,
 	       "recall-audio", &capture_sound_audio,
 	       NULL);
@@ -553,7 +547,7 @@ ags_capture_sound_audio_run_run_init_pre(AgsRecall *recall)
   }
   
   /* call parent */
-  AGS_RECALL_CLASS(ags_capture_sound_audio_run_parent_class)->run_init_pre(recall);
+  parent_class_run_init_pre(recall);
 }
 
 void
@@ -590,11 +584,24 @@ ags_capture_sound_audio_run_run_pre(AgsRecall *recall)
   
   GValue value = {0,};
 
+  void (*parent_class_run_pre)(AgsRecall *recall);
+  
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *buffer_mutex;
+  pthread_mutex_t *recall_mutex;
   
   capture_sound_audio_run = AGS_CAPTURE_SOUND_AUDIO_RUN(recall);
+
+  /* get mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = recall->obj_mutex;
   
+  parent_class_run_pre = AGS_RECALL_CLASS(ags_capture_sound_audio_run_parent_class)->run_pre;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  
+  /* get some fields */
   g_object_get(capture_sound_audio_run,
 	       "recall-audio", &capture_sound_audio,
 	       "timestamp", &timestamp,
@@ -786,7 +793,7 @@ ags_capture_sound_audio_run_run_pre(AgsRecall *recall)
   }
   
   /* call parent */
-  AGS_RECALL_CLASS(ags_capture_sound_audio_run_parent_class)->run_pre(recall);
+  parent_class_run_pre(recall);
 }
 
 void
@@ -801,8 +808,22 @@ ags_capture_sound_audio_run_done(AgsRecall *recall)
 
   GValue value = {0,};
 
+  void (*parent_class_done)(AgsRecall *recall);
+  
+  pthread_mutex_t *recall_mutex;
+
   capture_sound_audio_run = AGS_CAPTURE_SOUND_AUDIO_RUN(recall);
 
+  /* get mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = recall->obj_mutex;
+  
+  parent_class_done = AGS_RECALL_CLASS(ags_capture_sound_audio_run_parent_class)->done;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
   g_object_get(capture_sound_audio_run,
 	       "recall-audio", &capture_sound_audio,
 	       "audio-file", &audio_file,
@@ -826,7 +847,7 @@ ags_capture_sound_audio_run_done(AgsRecall *recall)
   }
   
   /* call parent */
-  AGS_RECALL_CLASS(ags_capture_sound_audio_run_parent_class)->done(recall);
+  parent_class_done(recall);
 }
 
 /**

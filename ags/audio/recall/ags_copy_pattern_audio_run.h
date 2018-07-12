@@ -25,6 +25,7 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
 
 #include <ags/audio/recall/ags_delay_audio_run.h>
@@ -58,7 +59,8 @@ struct _AgsCopyPatternAudioRunClass
 
 GType ags_copy_pattern_audio_run_get_type();
 
-AgsCopyPatternAudioRun* ags_copy_pattern_audio_run_new(AgsDelayAudioRun *delay_audio_run,
+AgsCopyPatternAudioRun* ags_copy_pattern_audio_run_new(AgsAudio *audio,
+						       AgsDelayAudioRun *delay_audio_run,
 						       AgsCountBeatsAudioRun *count_beats_audio_run);
 
 #endif /*__AGS_COPY_PATTERN_AUDIO_RUN_H__*/

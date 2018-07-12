@@ -26,7 +26,6 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_channel.h>
-
 #include <ags/audio/ags_recall_channel_run.h>
 
 #define AGS_TYPE_ANALYSE_CHANNEL_RUN            (ags_analyse_channel_run_get_type())

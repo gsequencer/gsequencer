@@ -138,8 +138,6 @@ ags_copy_pattern_channel_run_class_init(AgsCopyPatternChannelRunClass *copy_patt
   GObjectClass *gobject;
   AgsRecallClass *recall;
 
-  GParamSpec *param_spec;
-
   ags_copy_pattern_channel_run_parent_class = g_type_class_peek_parent(copy_pattern_channel_run);
 
   /* GObjectClass */
@@ -487,13 +485,26 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
   
   GValue pattern_value = { 0, };  
 
-  pthread_mutex_t *pattern_mutex;
+  void (*parent_class_run_init_pre)(AgsRecall *recall);
   
-  AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->run_init_pre(recall);
+  pthread_mutex_t *recall_mutex;
+  pthread_mutex_t *pattern_mutex;
 
-  /*  */
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
 
+  /* get mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = recall->obj_mutex;
+
+  parent_class_run_init_pre = AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->run_init_pre;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* call parent */
+  parent_class_run_init_pre(recall);
+
+  /* get some fields */
   g_object_get(copy_pattern_channel_run,
 	       "source", &source,
 	       "recall-channel", &copy_pattern_channel,
@@ -548,6 +559,55 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
 }
 
 void
+ags_copy_pattern_channel_run_done(AgsRecall *recall)
+{
+  AgsCopyPatternAudioRun *copy_pattern_audio_run;
+  AgsCopyPatternChannelRun *copy_pattern_channel_run;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
+
+  void (*parent_class_done)(AgsRecall *recall);
+  
+  pthread_mutex_t *recall_mutex;
+
+  copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
+
+  /* get mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = recall->obj_mutex;
+
+  parent_class_done = AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->done;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get AgsCopyPatternAudioRun */
+  g_object_get(recall,
+	       "recall-audio-run", &copy_pattern_audio_run,
+	       NULL);
+
+  /* denotify dependency */
+  g_object_get(copy_pattern_audio_run,
+	       "count-beats-audio-run", &count_beats_audio_run,
+	       NULL);
+
+  ags_recall_notify_dependency(count_beats_audio_run,
+ 			       AGS_RECALL_NOTIFY_CHANNEL_RUN, FALSE);
+
+  /* free notes */
+  pthread_mutex_lock(recall_mutex);
+
+  g_list_free_full(copy_pattern_channel_run->note,
+		   g_object_unref);
+
+  copy_pattern_channel_run->note = NULL;
+  
+  pthread_mutex_unlock(recall_mutex);
+
+  /* call parent */
+  parent_class_done(recall);
+}
+
+void
 ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_audio_run,
 						      guint run_order,
 						      gdouble delay, guint attack,
@@ -591,7 +651,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	       "bank-index-0", &port,
 	       NULL);
   
-  g_value_init(&i_value, G_TYPE_UINT64);
+  g_value_init(&i_value, G_TYPE_FLOAT);
   ags_port_safe_read(port, &i_value);
 
   /* get bank index 1 */
@@ -599,7 +659,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	       "bank-index-1", &port,
 	       NULL);
 
-  g_value_init(&j_value, G_TYPE_UINT64);
+  g_value_init(&j_value, G_TYPE_FLOAT);
   ags_port_safe_read(port, &j_value);
 
   /* get AgsPattern */
@@ -621,30 +681,26 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   pthread_mutex_unlock(ags_pattern_get_class_mutex());
   
   /* write pattern port - current offset */
-  ags_port_safe_set_property(pattern,
-			     "first-index", &i_value);
-  g_value_unset(&i_value);
+  g_object_set(pattern,
+	       "first-index", (guint) g_value_get_float(&i_value),
+	       "second-index", (guint) g_value_get_float(&j_value),
+	       NULL);
   
-  ags_port_safe_set_property(pattern,
-			     "second-index", &j_value);
-  g_value_unset(&j_value);
-
   /* get sequencer counter */
   g_object_get(count_beats_audio_run,
 	       "sequencer-counter", &sequencer_counter,
 	       NULL);
   
-  /* read pattern port - current bit */
-  pthread_mutex_lock(pattern_mutex);
-  
+  /* read pattern port - current bit */  
   current_bit = ags_pattern_get_bit(pattern,
-				    pattern->i,
-				    pattern->j,
+				    (guint) g_value_get_float(&i_value),
+				    (guint) g_value_get_float(&j_value),
 				    sequencer_counter);
   
-  pthread_mutex_unlock(pattern_mutex);
-
   g_value_unset(&pattern_value);
+
+  g_value_unset(&i_value);
+  g_value_unset(&j_value);
   
   /*  */
   if(current_bit){
@@ -910,40 +966,6 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   //  }
 }
 
-
-void
-ags_copy_pattern_channel_run_done(AgsRecall *recall)
-{
-  AgsCopyPatternAudioRun *copy_pattern_audio_run;
-  AgsCopyPatternChannelRun *copy_pattern_channel_run;
-  AgsCountBeatsAudioRun *count_beats_audio_run;
-
-  copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(recall);
-
-  /* get AgsCopyPatternAudioRun */
-  g_object_get(recall,
-	       "recall-audio-run", &copy_pattern_audio_run,
-	       NULL);
-
-  /* denotify dependency */
-  g_object_get(copy_pattern_audio_run,
-	       "count-beats-audio-run", &count_beats_audio_run,
-	       NULL);
-
-  ags_recall_notify_dependency(count_beats_audio_run,
- 			       AGS_RECALL_NOTIFY_CHANNEL_RUN, FALSE);
-
-  /* free notes */
-  //FIXME:JK: thread-safety
-  g_list_free_full(copy_pattern_channel_run->note,
-		   g_object_unref);
-
-  copy_pattern_channel_run->note = NULL;
-  
-  /* call parent */
-  AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->done(recall);
-}
-
 /**
  * ags_copy_pattern_channel_run_new:
  * @destination: the destination #AgsChannel
@@ -963,7 +985,7 @@ ags_copy_pattern_channel_run_new(AgsChannel *destination,
 
   copy_pattern_channel_run = (AgsCopyPatternChannelRun *) g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL_RUN,
 								       "destination", destination,
-								       "channel", source,								       
+								       "channel", source,
 								       NULL);
 
   return(copy_pattern_channel_run);

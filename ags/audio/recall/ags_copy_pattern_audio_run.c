@@ -28,7 +28,6 @@
 #include <ags/i18n.h>
 
 void ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_audio_run);
-void ags_copy_pattern_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_pattern_audio_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_copy_pattern_audio_run_init(AgsCopyPatternAudioRun *copy_pattern_audio_run);
 void ags_copy_pattern_audio_run_set_property(GObject *gobject,
@@ -46,7 +45,8 @@ void ags_copy_pattern_audio_run_read(AgsFile *file, xmlNode *node, AgsPlugin *pl
 xmlNode* ags_copy_pattern_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_copy_pattern_audio_run_resolve_dependency(AgsRecall *recall);
-void ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall, guint dependency, gboolean increase);
+void ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall,
+						  guint dependency, gboolean increase);
 
 void ags_copy_pattern_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
 							 GObject *recall);
@@ -70,7 +70,6 @@ enum{
 };
 
 static gpointer ags_copy_pattern_audio_run_parent_class = NULL;
-static AgsConnectableInterface* ags_copy_pattern_audio_run_parent_connectable_interface;
 static AgsPluginInterface *ags_copy_pattern_audio_run_parent_plugin_interface;
 
 GType
@@ -91,12 +90,6 @@ ags_copy_pattern_audio_run_get_type()
       (GInstanceInitFunc) ags_copy_pattern_audio_run_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_copy_pattern_audio_run_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     static const GInterfaceInfo ags_plugin_interface_info = {
       (GInterfaceInitFunc) ags_copy_pattern_audio_run_plugin_interface_init,
       NULL, /* interface_finalize */
@@ -108,10 +101,6 @@ ags_copy_pattern_audio_run_get_type()
 							     &ags_copy_pattern_audio_run_info,
 							     0);
     
-    g_type_add_interface_static(ags_type_copy_pattern_audio_run,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
     g_type_add_interface_static(ags_type_copy_pattern_audio_run,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
@@ -177,12 +166,6 @@ ags_copy_pattern_audio_run_class_init(AgsCopyPatternAudioRunClass *copy_pattern_
 
   recall->resolve_dependency = ags_copy_pattern_audio_run_resolve_dependency;
   recall->notify_dependency = ags_copy_pattern_audio_run_notify_dependency;
-}
-
-void
-ags_copy_pattern_audio_run_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_copy_pattern_audio_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 }
 
 void
@@ -665,11 +648,24 @@ ags_copy_pattern_audio_run_resolve_dependency(AgsRecall *recall)
 }
 
 void
-ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall, guint dependency, gboolean increase)
+ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall,
+					     guint dependency, gboolean increase)
 {
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
 
+  pthread_mutex_t *recall_mutex;
+
   copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall);
+
+  /* get mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* notify */
+  pthread_mutex_lock(recall_mutex);
 
   switch(dependency){
   case AGS_RECALL_NOTIFY_RUN:
@@ -686,12 +682,13 @@ ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall, guint dependency
     }else{
       copy_pattern_audio_run->hide_ref -= 1;
     }
-    
-    g_message("copy_pattern_audio_run->hide_ref: %u\n", copy_pattern_audio_run->hide_ref);
     break;
   default:
     g_message("ags_copy_pattern_audio_run.c - ags_copy_pattern_audio_run_notify: unknown notify");
   }
+
+
+  pthread_mutex_unlock(recall_mutex);
 }
 
 /**

@@ -24,7 +24,6 @@
 #include <ags/i18n.h>
 
 void ags_capture_sound_audio_class_init(AgsCaptureSoundAudioClass *capture_sound_audio);
-void ags_capture_sound_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_capture_sound_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_capture_sound_audio_init(AgsCaptureSoundAudio *capture_sound_audio);
 void ags_capture_sound_audio_set_property(GObject *gobject,
@@ -61,8 +60,7 @@ enum{
 };
 
 static gpointer ags_capture_sound_audio_parent_class = NULL;
-static AgsConnectableInterface *ags_capture_sound_audio_parent_connectable_interface;
-static AgsPluginInterface *ags_capture_sound_parent_plugin_interface;
+static AgsPluginInterface *ags_capture_sound_audio_parent_plugin_interface;
 
 static const gchar *ags_capture_sound_audio_plugin_name = "ags-capture-sound";
 static const gchar *ags_capture_sound_audio_specifier[] = {
@@ -103,12 +101,6 @@ ags_capture_sound_audio_get_type()
       (GInstanceInitFunc) ags_capture_sound_audio_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_capture_sound_audio_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     static const GInterfaceInfo ags_plugin_interface_info = {
       (GInterfaceInitFunc) ags_capture_sound_audio_plugin_interface_init,
       NULL, /* interface_finalize */
@@ -119,10 +111,6 @@ ags_capture_sound_audio_get_type()
 							  "AgsCaptureSoundAudio",
 							  &ags_capture_sound_audio_info,
 							  0);
-
-    g_type_add_interface_static(ags_type_capture_sound_audio,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_capture_sound_audio,
 				AGS_TYPE_PLUGIN,
@@ -264,15 +252,9 @@ ags_capture_sound_audio_class_init(AgsCaptureSoundAudioClass *capture_sound_audi
 }
 
 void
-ags_capture_sound_audio_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_capture_sound_audio_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-}
-
-void
 ags_capture_sound_audio_plugin_interface_init(AgsPluginInterface *plugin)
 {
-  ags_capture_sound_parent_plugin_interface = g_type_interface_peek_parent(plugin);
+  ags_capture_sound_audio_parent_plugin_interface = g_type_interface_peek_parent(plugin);
 
   plugin->set_ports = ags_capture_sound_audio_set_ports;
 }

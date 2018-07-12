@@ -21,12 +21,9 @@
 
 #include <ags/libags.h>
 
-#include <ags/plugin/ags_base_plugin.h>
-
 #include <ags/i18n.h>
 
 void ags_buffer_channel_class_init(AgsBufferChannelClass *buffer_channel);
-void ags_buffer_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_buffer_channel_mutable_interface_init(AgsMutableInterface *mutable);
 void ags_buffer_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_buffer_channel_init(AgsBufferChannel *buffer_channel);
@@ -45,7 +42,7 @@ void ags_buffer_channel_set_ports(AgsPlugin *plugin, GList *port);
 
 void ags_buffer_channel_set_muted(AgsMutable *mutable, gboolean muted);
 
-static AgsPortDescriptor* ags_buffer_channel_get_muted_port_descriptor();
+static AgsPluginPort* ags_buffer_channel_get_muted_plugin_port();
 
 /**
  * SECTION:ags_buffer_channel
@@ -63,7 +60,6 @@ enum{
 };
 
 static gpointer ags_buffer_channel_parent_class = NULL;
-static AgsConnectableInterface *ags_buffer_channel_parent_connectable_interface;
 static AgsMutableInterface *ags_buffer_channel_parent_mutable_interface;
 static AgsPluginInterface *ags_buffer_channel_parent_plugin_interface;
 
@@ -93,12 +89,6 @@ ags_buffer_channel_get_type()
       (GInstanceInitFunc) ags_buffer_channel_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_buffer_channel_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     static const GInterfaceInfo ags_mutable_interface_info = {
       (GInterfaceInitFunc) ags_buffer_channel_mutable_interface_init,
       NULL, /* interface_finalize */
@@ -117,10 +107,6 @@ ags_buffer_channel_get_type()
 						     0);
 
     g_type_add_interface_static(ags_type_buffer_channel,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_buffer_channel,
 				AGS_TYPE_MUTABLE,
 				&ags_mutable_interface_info);
 
@@ -130,12 +116,6 @@ ags_buffer_channel_get_type()
   }
 
   return (ags_type_buffer_channel);
-}
-
-void
-ags_buffer_channel_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_buffer_channel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 }
 
 void
@@ -214,8 +194,10 @@ ags_buffer_channel_init(AgsBufferChannel *buffer_channel)
   g_object_ref(buffer_channel->muted);
   buffer_channel->muted->port_value.ags_port_float = (float) FALSE;
 
-  /* port descriptor */
-  buffer_channel->muted->port_descriptor = ags_buffer_channel_get_muted_port_descriptor();
+  /* plugin port */
+  g_object_set(buffer_channel->muted,
+	       "plugin-port", ags_buffer_channel_get_muted_plugin_port(),
+	       NULL);
 
   /* add to port */
   port = g_list_prepend(port, buffer_channel->muted);
@@ -380,37 +362,44 @@ ags_buffer_channel_set_muted(AgsMutable *mutable, gboolean is_muted)
   ags_port_safe_write(muted, &value);
 }
 
-static AgsPortDescriptor*
-ags_buffer_channel_get_muted_port_descriptor()
+static AgsPluginPort*
+ags_buffer_channel_get_muted_plugin_port()
 {
-  static AgsPortDescriptor *port_descriptor = NULL;
+  static AgsPluginPort *plugin_port = NULL;
 
-  if(port_descriptor == NULL){
-    port_descriptor = ags_port_descriptor_alloc();
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-    port_descriptor->flags |= (AGS_PORT_DESCRIPTOR_INPUT |
-			       AGS_PORT_DESCRIPTOR_CONTROL |
-			       AGS_PORT_DESCRIPTOR_TOGGLED);
+  pthread_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL |
+			   AGS_PLUGIN_PORT_TOGGLED);
 
-    port_descriptor->port_index = 0;
+    plugin_port->port_index = 0;
 
     /* range */
-    g_value_init(port_descriptor->default_value,
+    g_value_init(plugin_port->default_value,
 		 G_TYPE_FLOAT);
-    g_value_init(port_descriptor->lower_value,
+    g_value_init(plugin_port->lower_value,
 		 G_TYPE_FLOAT);
-    g_value_init(port_descriptor->upper_value,
+    g_value_init(plugin_port->upper_value,
 		 G_TYPE_FLOAT);
 
-    g_value_set_float(port_descriptor->default_value,
+    g_value_set_float(plugin_port->default_value,
 		      0.0);
-    g_value_set_float(port_descriptor->lower_value,
+    g_value_set_float(plugin_port->lower_value,
 		      0.0);
-    g_value_set_float(port_descriptor->upper_value,
+    g_value_set_float(plugin_port->upper_value,
 		      1.0);
   }
   
-  return(port_descriptor);
+  pthread_mutex_unlock(&mutex);
+
+  return(plugin_port);
 }
 
 /**

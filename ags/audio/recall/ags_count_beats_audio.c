@@ -26,7 +26,6 @@
 #include <ags/i18n.h>
 
 void ags_count_beats_audio_class_init(AgsCountBeatsAudioClass *count_beats_audio);
-void ags_count_beats_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_count_beats_audio_tactable_interface_init(AgsTactableInterface *tactable);
 void ags_count_beats_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_count_beats_audio_init(AgsCountBeatsAudio *count_beats_audio);
@@ -76,7 +75,7 @@ enum{
 };
 
 static gpointer ags_count_beats_audio_parent_class = NULL;
-static AgsConnectableInterface* ags_count_beats_audio_parent_connectable_interface;
+static AgsPluginInterface *ags_count_beats_audio_parent_plugin_interface;
 
 static const gchar *ags_count_beats_audio_plugin_name = "ags-count-beats";
 static const gchar *ags_count_beats_audio_specifier[] = {
@@ -125,12 +124,6 @@ ags_count_beats_audio_get_type()
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_count_beats_audio_init,
     };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_count_beats_audio_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
     
     static const GInterfaceInfo ags_tactable_interface_info = {
       (GInterfaceInitFunc) ags_count_beats_audio_tactable_interface_init,
@@ -150,10 +143,6 @@ ags_count_beats_audio_get_type()
 							0);
 
     g_type_add_interface_static(ags_type_count_beats_audio,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_count_beats_audio,
 				AGS_TYPE_TACTABLE,
 				&ags_tactable_interface_info);
 
@@ -163,15 +152,6 @@ ags_count_beats_audio_get_type()
   }
 
   return(ags_type_count_beats_audio);
-}
-
-void
-ags_count_beats_audio_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_count_beats_audio_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_count_beats_audio_connect;
-  connectable->disconnect = ags_count_beats_audio_disconnect;
 }
 
 void
@@ -197,6 +177,8 @@ ags_count_beats_audio_tactable_interface_init(AgsTactableInterface *tactable)
 void
 ags_count_beats_audio_plugin_interface_init(AgsPluginInterface *plugin)
 {
+  ags_count_beats_audio_parent_plugin_interface = g_type_interface_peek_parent(plugin);
+
   plugin->set_ports = ags_count_beats_audio_set_ports;
 }
 

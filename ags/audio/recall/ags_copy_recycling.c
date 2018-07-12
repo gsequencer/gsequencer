@@ -27,7 +27,6 @@
 #include <stdio.h>
 
 void ags_copy_recycling_class_init(AgsCopyRecyclingClass *copy_recycling);
-void ags_copy_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_recycling_init(AgsCopyRecycling *copy_recycling);
 void ags_copy_recycling_finalize(GObject *gobject);
 
@@ -42,7 +41,6 @@ void ags_copy_recycling_finalize(GObject *gobject);
  */
 
 static gpointer ags_copy_recycling_parent_class = NULL;
-static AgsConnectableInterface *ags_copy_recycling_parent_connectable_interface;
 
 GType
 ags_copy_recycling_get_type()
@@ -62,20 +60,10 @@ ags_copy_recycling_get_type()
       (GInstanceInitFunc) ags_copy_recycling_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_copy_recycling_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_copy_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
 						     "AgsCopyRecycling",
 						     &ags_copy_recycling_info,
 						     0);
-
-    g_type_add_interface_static(ags_type_copy_recycling,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
 
   return(ags_type_copy_recycling);
@@ -96,12 +84,6 @@ ags_copy_recycling_class_init(AgsCopyRecyclingClass *copy_recycling)
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) copy_recycling;
-}
-
-void
-ags_copy_recycling_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_copy_recycling_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 }
 
 void

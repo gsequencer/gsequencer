@@ -30,7 +30,6 @@
 #include <ags/i18n.h>
 
 void ags_copy_pattern_channel_class_init(AgsCopyPatternChannelClass *copy_pattern_channel);
-void ags_copy_pattern_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_copy_pattern_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_copy_pattern_channel_init(AgsCopyPatternChannel *copy_pattern_channel);
 void ags_copy_pattern_channel_set_property(GObject *gobject,
@@ -62,7 +61,7 @@ enum{
 };
 
 static gpointer ags_copy_pattern_channel_parent_class = NULL;
-static AgsConnectableInterface* ags_copy_pattern_channel_parent_connectable_interface;
+static AgsPluginInterface *ags_copy_pattern_channel_parent_plugin_interface;
 
 static const gchar *ags_copy_pattern_channel_plugin_name = "ags-copy-pattern";
 static const gchar *ags_copy_pattern_channel_specifier[] = {
@@ -90,12 +89,6 @@ ags_copy_pattern_channel_get_type()
       (GInstanceInitFunc) ags_copy_pattern_channel_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_copy_pattern_channel_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     static const GInterfaceInfo ags_plugin_interface_info = {
       (GInterfaceInitFunc) ags_copy_pattern_channel_plugin_interface_init,
       NULL, /* interface_finalize */
@@ -108,10 +101,6 @@ ags_copy_pattern_channel_get_type()
 							   0);
 
     g_type_add_interface_static(ags_type_copy_pattern_channel,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_copy_pattern_channel,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
   }
@@ -120,14 +109,10 @@ ags_copy_pattern_channel_get_type()
 }
 
 void
-ags_copy_pattern_channel_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_copy_pattern_channel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-}
-
-void
 ags_copy_pattern_channel_plugin_interface_init(AgsPluginInterface *plugin)
 {
+  ags_copy_pattern_channel_parent_plugin_interface = g_type_interface_peek_parent(plugin);
+
   plugin->set_ports = ags_copy_pattern_channel_set_ports;
 }
 
@@ -135,6 +120,7 @@ void
 ags_copy_pattern_channel_class_init(AgsCopyPatternChannelClass *copy_pattern_channel)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_copy_pattern_channel_parent_class = g_type_class_peek_parent(copy_pattern_channel);

@@ -24,6 +24,7 @@ ags (2.0.0)
 	* implemented AgsWave and AgsBuffer
 	* TODO:JK: implemented ags-play-wave recall
 	* implemented ags-capture-sound recall
+	* implemented ags-copy-pattern recall plugin port for automation
 	* TODO:JK: implemented AgsAudiorec
 	* TODO:JK: implemented damping/vibration of AgsAudioSignal
 	* TODO:JK: implemented exponential curve option for ags-envelope recall

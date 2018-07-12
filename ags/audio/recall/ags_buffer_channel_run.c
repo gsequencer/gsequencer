@@ -22,15 +22,11 @@
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_recycling.h>
-#include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_sound_enums.h>
 
-#include <ags/audio/task/ags_cancel_recall.h>
+#include <ags/audio/recall/ags_buffer_recycling.h>
 
 void ags_buffer_channel_run_class_init(AgsBufferChannelRunClass *buffer_channel_run);
-void ags_buffer_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_buffer_channel_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_buffer_channel_run_init(AgsBufferChannelRun *buffer_channel_run);
 void ags_buffer_channel_run_finalize(GObject *gobject);
 
@@ -45,8 +41,6 @@ void ags_buffer_channel_run_finalize(GObject *gobject);
  */
 
 static gpointer ags_buffer_channel_run_parent_class = NULL;
-static AgsConnectableInterface *ags_buffer_channel_run_parent_connectable_interface;
-static AgsPluginInterface *ags_buffer_channel_run_parent_plugin_interface;
 
 GType
 ags_buffer_channel_run_get_type()
@@ -66,12 +60,6 @@ ags_buffer_channel_run_get_type()
       (GInstanceInitFunc) ags_buffer_channel_run_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_buffer_channel_run_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     static const GInterfaceInfo ags_plugin_interface_info = {
       (GInterfaceInitFunc) ags_buffer_channel_run_plugin_interface_init,
       NULL, /* interface_finalize */
@@ -82,17 +70,9 @@ ags_buffer_channel_run_get_type()
 							 "AgsBufferChannelRun",
 							 &ags_buffer_channel_run_info,
 							 0);
-
-    g_type_add_interface_static(ags_type_buffer_channel_run,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_buffer_channel_run,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
   }
 
-  return (ags_type_buffer_channel_run);
+  return(ags_type_buffer_channel_run);
 }
 
 void
@@ -110,18 +90,6 @@ ags_buffer_channel_run_class_init(AgsBufferChannelRunClass *buffer_channel_run)
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) buffer_channel_run;
-}
-
-void
-ags_buffer_channel_run_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_buffer_channel_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-}
-
-void
-ags_buffer_channel_run_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_buffer_channel_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
 }
 
 void

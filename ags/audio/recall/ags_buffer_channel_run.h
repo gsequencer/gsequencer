@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 
