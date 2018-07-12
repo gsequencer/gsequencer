@@ -18,7 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_eq10_audio_signal.h>
-#include <ags/audio/recall/ags_eq10_channel.h>
 
 #include <ags/libags.h>
 
@@ -27,16 +26,12 @@
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
+#include <ags/audio/recall/ags_eq10_channel.h>
+
 #include <math.h>
 
 void ags_eq10_audio_signal_class_init(AgsEq10AudioSignalClass *eq10_audio_signal);
-void ags_eq10_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_eq10_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_eq10_audio_signal_init(AgsEq10AudioSignal *eq10_audio_signal);
-void ags_eq10_audio_signal_connect(AgsConnectable *connectable);
-void ags_eq10_audio_signal_disconnect(AgsConnectable *connectable);
-void ags_eq10_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_eq10_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_eq10_audio_signal_finalize(GObject *gobject);
 
 void ags_eq10_audio_signal_run_init_pre(AgsRecall *recall);
@@ -56,8 +51,8 @@ AgsRecall* ags_eq10_audio_signal_duplicate(AgsRecall *recall,
  */
 
 static gpointer ags_eq10_audio_signal_parent_class = NULL;
-static AgsConnectableInterface *ags_eq10_audio_signal_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_eq10_audio_signal_parent_dynamic_connectable_interface;
+
+static gboolean ags_recall_global_rt_safe = FALSE;
 
 GType
 ags_eq10_audio_signal_get_type()
@@ -77,33 +72,13 @@ ags_eq10_audio_signal_get_type()
       (GInstanceInitFunc) ags_eq10_audio_signal_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_eq10_audio_signal_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_eq10_audio_signal_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_eq10_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
 							"AgsEq10AudioSignal",
 							&ags_eq10_audio_signal_info,
 							0);
-
-    g_type_add_interface_static(ags_type_eq10_audio_signal,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_eq10_audio_signal,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
   }
-
-  return (ags_type_eq10_audio_signal);
+  
+  return(ags_type_eq10_audio_signal);
 }
 
 void
@@ -111,7 +86,6 @@ ags_eq10_audio_signal_class_init(AgsEq10AudioSignalClass *eq10_audio_signal)
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
-  GParamSpec *param_spec;
 
   ags_eq10_audio_signal_parent_class = g_type_class_peek_parent(eq10_audio_signal);
 
@@ -125,24 +99,6 @@ ags_eq10_audio_signal_class_init(AgsEq10AudioSignalClass *eq10_audio_signal)
 
   recall->run_init_pre = ags_eq10_audio_signal_run_init_pre;
   recall->run_inter = ags_eq10_audio_signal_run_inter;
-}
-
-void
-ags_eq10_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_eq10_audio_signal_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_eq10_audio_signal_connect;
-  connectable->disconnect = ags_eq10_audio_signal_disconnect;
-}
-
-void
-ags_eq10_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_eq10_audio_signal_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_eq10_audio_signal_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_eq10_audio_signal_disconnect_dynamic;
 }
 
 void
@@ -173,58 +129,39 @@ ags_eq10_audio_signal_finalize(GObject *gobject)
 }
 
 void
-ags_eq10_audio_signal_connect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_eq10_audio_signal_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_eq10_audio_signal_disconnect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_eq10_audio_signal_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_eq10_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_eq10_audio_signal_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
-ags_eq10_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_eq10_audio_signal_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
 ags_eq10_audio_signal_run_init_pre(AgsRecall *recall)
 {
   AgsAudioSignal *source;
-
   AgsEq10AudioSignal *eq10_audio_signal;
 
   guint buffer_size;
 
-  eq10_audio_signal = recall;
+  void (*parent_class_run_init_pre)(AgsRecall *recall);  
+
+  pthread_mutex_t *recall_mutex;
+
+  eq10_audio_signal = (AgsEq10AudioSignal *) recall;
+
+  /* get mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = recall->obj_mutex;
+  
+  parent_class_run_init_pre = AGS_RECALL_CLASS(ags_eq10_audio_signal_parent_class)->run_init_pre;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   /* call parent */
-  AGS_RECALL_CLASS(ags_eq10_audio_signal_parent_class)->run_init_pre(recall);
+  parent_class_run_init_pre(recall);
 
-  source = AGS_RECALL_AUDIO_SIGNAL(eq10_audio_signal)->source;
+  /* get some fields */
+  g_object_get(eq10_audio_signal,
+	       "source", &source,
+	       NULL);
 
-  buffer_size = source->buffer_size;
+  g_object_get(source,
+	       "buffer-size", &buffer_size,
+	       NULL);
   
   eq10_audio_signal->output_buffer = (double *) malloc(buffer_size * sizeof(double));
   eq10_audio_signal->input_buffer = (double *) malloc(buffer_size * sizeof(double));  
@@ -256,10 +193,15 @@ void
 ags_eq10_audio_signal_run_inter(AgsRecall *recall)
 {
   AgsAudioSignal *source;
-
+  AgsRecallID *recall_id;
+  AgsRecyclingContext *parent_recycling_context, *recycling_context;
+  AgsPort *port;
   AgsEq10Channel *eq10_channel;
+  AgsEq10ChannelRun *eq10_channel_run;
+  AgsEq10Recycling *eq10_recycling;
   AgsEq10AudioSignal *eq10_audio_signal;
 
+  GList *note;
   GList *stream_source;
 
   double *output_buffer;
@@ -274,7 +216,7 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
   double *cache_3584hz;
   double *cache_7168hz;
   double *cache_14336hz;
-  
+
   gfloat pressure;
   gfloat peak_28hz;
   gfloat peak_56hz;
@@ -291,20 +233,53 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
   guint input_copy_mode;
   guint buffer_size;
   guint samplerate;
+  guint format;
   guint i;
 
   GValue value = {0,};
+
+  void (*parent_class_run_inter)(AgsRecall *recall);
   
-  eq10_audio_signal = recall;
+  pthread_mutex_t *recall_mutex;
+  
+  eq10_audio_signal = (AgsEq10AudioSignal *) recall;
+
+  /* get mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = recall->obj_mutex;
+  
+  parent_class_run_inter = AGS_RECALL_CLASS(ags_eq10_audio_signal_parent_class)->run_inter;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   /* call parent */
-  AGS_RECALL_CLASS(ags_eq10_audio_signal_parent_class)->run_inter(recall);
+  parent_class_run_inter(recall);
 
-  source = AGS_RECALL_AUDIO_SIGNAL(eq10_audio_signal)->source;
+  /* get some fields */
+  g_object_get(eq10_audio_signal,
+	       "source", &source,
+	       "recall-id", &recall_id,
+	       NULL);
 
-  if(recall->rt_safe &&
-     recall->recall_id->recycling_context->parent != NULL &&
-     source->note == NULL){
+  g_object_get(recall_id,
+	       "recycling-context", &recycling_context,
+	       NULL);
+
+  g_object_get(recycling_context,
+	       "parent", parent:recycling_context,
+	       NULL);
+
+  g_object_get(source,
+	       "note", &note,
+	       "samplerate", &samplerate,
+	       "buffer-size", &buffer_size,
+	       "format", &format,
+	       NULL);
+  
+  if(ags_recall_global_rt_safe &&
+     parent_recycling_context != NULL &&
+     note == NULL){
     return;
   }
 
@@ -316,17 +291,24 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
     return;
   }
 
-  eq10_channel = AGS_EQ10_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
+  g_object_get(eq10_audio_signal,
+	       "parent", &eq10_recycling,
+	       NULL);
+
+  g_object_get(eq10_recycling,
+	       "parent", &eq10_channel_run,
+	       NULL);
+
+  g_object_get(eq10_channel_run,
+	       "recall-channel", &eq10_channel_run,
+	       NULL);
 
   /* copy mode */
-  output_copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(source->format),
+  output_copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 							 AGS_AUDIO_BUFFER_UTIL_DOUBLE);
 
   input_copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_DOUBLE,
-							ags_audio_buffer_util_format_from_soundcard(source->format));
-
-  buffer_size = source->buffer_size;
-  samplerate = source->samplerate;
+							ags_audio_buffer_util_format_from_soundcard(format));
   
   output_buffer = eq10_audio_signal->output_buffer;
   input_buffer = eq10_audio_signal->input_buffer;
@@ -343,59 +325,103 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
   cache_14336hz = eq10_audio_signal->cache_14336hz;
   
   /* retrieve port values */
-  g_value_init(&value, G_TYPE_FLOAT);
+  g_value_init(&value,
+	       G_TYPE_FLOAT);
 
-  ags_port_safe_read(eq10_channel->pressure, &value);
+  g_object_get(eq10_channel,
+	       "pressure", &port,
+	       NULL);
+  ags_port_safe_read(port,
+		     &value);
   
   pressure = g_value_get_float(&value) / 10.0;
   g_value_reset(&value);
   
-  ags_port_safe_read(eq10_channel->peak_28hz, &value);
+  g_object_get(eq10_channel,
+	       "peak-28hz", &port,
+	       NULL);
+  ags_port_safe_read(port,
+		     &value);
   
   peak_28hz = g_value_get_float(&value) / 2.0 - 0.01;
   g_value_reset(&value);
 
-  ags_port_safe_read(eq10_channel->peak_56hz, &value);
+  g_object_get(eq10_channel,
+	       "peak-56hz", &port,
+	       NULL);
+  ags_port_safe_read(port,
+		     &value);
   
   peak_56hz = g_value_get_float(&value) / 2.0 - 0.01;
   g_value_reset(&value);
 
-  ags_port_safe_read(eq10_channel->peak_112hz, &value);
+  g_object_get(eq10_channel,
+	       "peak-112hz", &port,
+	       NULL);
+  ags_port_safe_read(port,
+		     &value);
   
   peak_112hz = g_value_get_float(&value) / 2.0 - 0.01;
   g_value_reset(&value);
 
-  ags_port_safe_read(eq10_channel->peak_224hz, &value);
+  g_object_get(eq10_channel,
+	       "peak-224hz", &port,
+	       NULL);
+  ags_port_safe_read(port,
+		     &value);
   
   peak_224hz = g_value_get_float(&value) / 2.0 - 0.01;
   g_value_reset(&value);
 
-  ags_port_safe_read(eq10_channel->peak_448hz, &value);
+  g_object_get(eq10_channel,
+	       "peak-448hz", &port,
+	       NULL);
+  ags_port_safe_read(port,
+		     &value);
   
   peak_448hz = g_value_get_float(&value) / 2.0 - 0.01;
   g_value_reset(&value);
-  
-  ags_port_safe_read(eq10_channel->peak_896hz, &value);
+
+  g_object_get(eq10_channel,
+	       "peak-896hz", &port,
+	       NULL);  
+  ags_port_safe_read(port,
+		     &value);
   
   peak_896hz = g_value_get_float(&value) / 2.0 - 0.01;
   g_value_reset(&value);
 
-  ags_port_safe_read(eq10_channel->peak_1792hz, &value);
+  g_object_get(eq10_channel,
+	       "peak-1792hz", &port,
+	       NULL);
+  ags_port_safe_read(port,
+		     &value);
   
   peak_1792hz = g_value_get_float(&value) / 2.0 - 0.01;
   g_value_reset(&value);
 
-  ags_port_safe_read(eq10_channel->peak_3584hz, &value);
+  g_object_get(eq10_channel,
+	       "peak-3584hz", &port,
+	       NULL);
+  ags_port_safe_read(port,
+		     &value);
   
   peak_3584hz = g_value_get_float(&value) / 2.0 - 0.01;
   g_value_reset(&value);
 
-  ags_port_safe_read(eq10_channel->peak_7168hz, &value);
+  g_object_get(eq10_channel,
+	       "peak-7168hz", &port,
+	       NULL);
+  ags_port_safe_read(port,
+		     &value);
   
   peak_7168hz = g_value_get_float(&value) / 2.0 - 0.01;
   g_value_reset(&value);
 
-  ags_port_safe_read(eq10_channel->peak_14336hz, &value);
+  g_object_get(eq10_channel,
+	       "peak-14336hz", &port,
+	       NULL);
+  ags_port_safe_read(port, &value);
   
   peak_14336hz = g_value_get_float(&value) / 2.0 - 0.01;
 
@@ -904,20 +930,21 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
 
 /**
  * ags_eq10_audio_signal_new:
- * @audio_signal: an #AgsAudioSignal
+ * @source: the #AgsAudioSignal
  *
- * Creates an #AgsEq10AudioSignal
+ * Create a new instance of #AgsEq10AudioSignal
  *
- * Returns: a new #AgsEq10AudioSignal
+ * Returns: the new #AgsEq10AudioSignal
  *
- * Since: 1.5.0
+ * Since: 2.0.0
  */
 AgsEq10AudioSignal*
-ags_eq10_audio_signal_new(AgsAudioSignal *audio_signal)
+ags_eq10_audio_signal_new(AgsAudioSignal *source)
 {
   AgsEq10AudioSignal *eq10_audio_signal;
 
   eq10_audio_signal = (AgsEq10AudioSignal *) g_object_new(AGS_TYPE_EQ10_AUDIO_SIGNAL,
+							  "source", source,
 							  NULL);
 
   return(eq10_audio_signal);

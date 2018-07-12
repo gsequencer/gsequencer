@@ -26,7 +26,6 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
-
 #include <ags/audio/ags_recall_audio_run.h>
 
 #define AGS_TYPE_DELAY_AUDIO_RUN                (ags_delay_audio_run_get_type())

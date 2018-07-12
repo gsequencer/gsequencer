@@ -23,6 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+#include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
 #define AGS_TYPE_EQ10_AUDIO_SIGNAL                (ags_eq10_audio_signal_get_type())
@@ -63,6 +66,6 @@ struct _AgsEq10AudioSignalClass
 
 GType ags_eq10_audio_signal_get_type();
 
-AgsEq10AudioSignal* ags_eq10_audio_signal_new(AgsAudioSignal *audio_signal);
+AgsEq10AudioSignal* ags_eq10_audio_signal_new(AgsAudioSignal *source);
 
 #endif /*__AGS_EQ10_AUDIO_SIGNAL_H__*/

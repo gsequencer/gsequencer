@@ -30,8 +30,6 @@
 #include <math.h>
 
 void ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run);
-void ags_delay_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_delay_audio_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_delay_audio_run_init(AgsDelayAudioRun *delay_audio_run);
 void ags_delay_audio_run_finalize(GObject *gobject);
 
@@ -70,8 +68,6 @@ enum{
 };
 
 static gpointer ags_delay_audio_run_parent_class = NULL;
-static AgsConnectableInterface *ags_delay_audio_run_parent_connectable_interface;
-static AgsPluginInterface *ags_delay_audio_run_parent_plugin_interface;
 
 static guint delay_audio_run_signals[LAST_SIGNAL];
 
@@ -82,44 +78,24 @@ ags_delay_audio_run_get_type()
 
   if(!ags_type_delay_audio_run){
     static const GTypeInfo ags_delay_audio_run_info = {
-      sizeof (AgsDelayAudioRunClass),
+      sizeof(AgsDelayAudioRunClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_delay_audio_run_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsDelayAudioRun),
+      sizeof(AgsDelayAudioRun),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_delay_audio_run_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_delay_audio_run_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_delay_audio_run_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_delay_audio_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
 						      "AgsDelayAudioRun",
 						      &ags_delay_audio_run_info,
 						      0);
-
-    g_type_add_interface_static(ags_type_delay_audio_run,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_delay_audio_run,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
   }
 
-  return (ags_type_delay_audio_run);
+  return(ags_type_delay_audio_run);
 }
 
 void
@@ -436,18 +412,6 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
 		 G_TYPE_NONE, 3,
 		 G_TYPE_UINT,
 		 G_TYPE_DOUBLE, G_TYPE_UINT);
-}
-
-void
-ags_delay_audio_run_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_delay_audio_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-}
-
-void
-ags_delay_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_delay_audio_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
 }
 
 void
@@ -854,6 +818,10 @@ ags_delay_audio_run_duplicate(AgsRecall *recall,
 {
   AgsDelayAudioRun *delay_audio_run, *copy_delay_audio_run;
 
+  AgsRecall* (*parent_class_duplicate)(AgsRecall *recall,
+				       AgsRecallID *recall_id,
+				       guint *n_params, gchar **parameter_name, GValue *value);
+	      
   pthread_mutex_t *recall_mutex;
   
   delay_audio_run = (AgsDelayAudioRun *) recall;
@@ -862,14 +830,16 @@ ags_delay_audio_run_duplicate(AgsRecall *recall,
   pthread_mutex_lock(ags_recall_get_class_mutex());
 
   recall_mutex = recall->obj_mutex;
+
+  parent_class_duplicate = AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->duplicate;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   /* duplicate */
-  copy_delay_audio_run = (AgsDelayAudioRun *) AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->duplicate(recall,
-													    recall_id,
-													    n_params, parameter_name, value);
-
+  copy_delay_audio_run = (AgsDelayAudioRun *) parent_class_duplicate(recall,
+								     recall_id,
+								     n_params, parameter_name, value);
+  
   /* initial values copied */
   pthread_mutex_lock(recall_mutex);
 
