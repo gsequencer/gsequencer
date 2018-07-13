@@ -64,6 +64,14 @@ enum{
 static gpointer ags_mute_audio_parent_class = NULL;
 static AgsPluginInterface *ags_mute_audio_parent_plugin_interface;
 
+static const gchar *ags_mute_audio_plugin_name = "ags-mute";
+static const gchar *ags_mute_audio_specifier[] = {
+  "./muted[0]",
+};
+static const gchar *ags_mute_audio_control_port[] = {
+  "1/1",
+};
+
 GType
 ags_mute_audio_get_type()
 {
@@ -174,9 +182,9 @@ ags_mute_audio_init(AgsMuteAudio *mute_audio)
 
   /* muted */
   mute_audio->muted = g_object_new(AGS_TYPE_PORT,
-				   "plugin-name", "ags-mute",
-				   "specifier", "./muted[0]",
-				   "control-port", "1/1",
+				   "plugin-name", ags_mute_audio_plugin_name,
+				   "specifier", ags_mute_audio_specifier[0],
+				   "control-port", ags_mute_audio_control_port[0],
 				   "port-value-is-pointer", FALSE,
 				   "port-value-type", G_TYPE_FLOAT,
 				   "port-value-size", sizeof(gfloat),
@@ -401,6 +409,7 @@ ags_mute_audio_get_muted_plugin_port()
 
 /**
  * ags_mute_audio_new:
+ * @audio: the #AgsAudio
  *
  * Create a new instance of #AgsMuteAudio
  *
@@ -409,11 +418,12 @@ ags_mute_audio_get_muted_plugin_port()
  * Since: 2.0.0
  */
 AgsMuteAudio*
-ags_mute_audio_new()
+ags_mute_audio_new(AgsAudio *audio)
 {
   AgsMuteAudio *mute_audio;
 
   mute_audio = (AgsMuteAudio *) g_object_new(AGS_TYPE_MUTE_AUDIO,
+					     "audio", audio,
 					     NULL);
 
   return(mute_audio);
