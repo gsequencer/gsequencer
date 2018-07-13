@@ -244,7 +244,8 @@ ags_play_channel_init(AgsPlayChannel *play_channel)
   play_channel->audio_channel->port_value.ags_port_uint = 0;
 
   /* add to port */
-  port = g_list_prepend(port, play_channel->audio_channel);
+  port = g_list_prepend(port,
+			play_channel->audio_channel);
   g_object_ref(play_channel->audio_channel);
 
   /* muted */
@@ -262,7 +263,8 @@ ags_play_channel_init(AgsPlayChannel *play_channel)
   play_channel->muted->port_value.ags_port_boolean = FALSE;
 
   /* add to port */
-  port = g_list_prepend(port, play_channel->muted);
+  port = g_list_prepend(port,
+			play_channel->muted);
   g_object_ref(play_channel->muted);
 
   /* set port */

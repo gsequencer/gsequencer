@@ -156,6 +156,9 @@ struct _AgsSoundcardInterface
   void* (*get_next_buffer)(AgsSoundcard *soundcard);  
   void* (*get_prev_buffer)(AgsSoundcard *soundcard);  
 
+  void (*lock_buffer)(AgsSoundcard *soundcard);
+  void (*unlock_buffer)(AgsSoundcard *soundcard);
+
   void (*set_bpm)(AgsSoundcard *soundcard,
 		  gdouble bpm);
   gdouble (*get_bpm)(AgsSoundcard *soundcard);

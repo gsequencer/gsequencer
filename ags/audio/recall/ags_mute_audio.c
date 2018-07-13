@@ -30,13 +30,13 @@ void ags_mute_audio_mutable_interface_init(AgsMutableInterface *mutable);
 void ags_mute_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_mute_audio_init(AgsMuteAudio *mute_audio);
 void ags_mute_audio_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec);
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec);
 void ags_mute_audio_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec);
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec);
 void ags_mute_audio_dispose(GObject *gobject);
 void ags_mute_audio_finalize(GObject *gobject);
 
@@ -206,7 +206,6 @@ ags_mute_audio_init(AgsMuteAudio *mute_audio)
   /* set port */
   AGS_RECALL(mute_audio)->port = port;
 }
-
 
 void
 ags_mute_audio_set_property(GObject *gobject,

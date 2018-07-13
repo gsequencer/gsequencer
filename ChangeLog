@@ -87,6 +87,7 @@ ags (2.0.0)
 	* removed ags_synth_generator_compute_extended()
 	* removed ags_synth_generator_compute_with_audio_signal()
 	* removed ags_play_note.[ch]
+	* removed ags_play_audio_file.[ch]
 
 ags (1.4.21)
 
