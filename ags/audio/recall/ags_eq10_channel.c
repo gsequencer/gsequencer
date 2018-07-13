@@ -617,7 +617,16 @@ ags_eq10_channel_set_property(GObject *gobject,
 {
   AgsEq10Channel *eq10_channel;
 
+  pthread_mutex_t *recall_mutex;
+
   eq10_channel = AGS_EQ10_CHANNEL(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_PEAK_28HZ:
@@ -626,7 +635,11 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == eq10_channel->peak_28hz){
+	pthread_mutex_unlock(recall_mutex);	
+
 	return;
       }
 
@@ -639,6 +652,8 @@ ags_eq10_channel_set_property(GObject *gobject,
       }
 
       eq10_channel->peak_28hz = port;
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_56HZ:
@@ -647,7 +662,11 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == eq10_channel->peak_56hz){
+	pthread_mutex_unlock(recall_mutex);	
+
 	return;
       }
 
@@ -660,6 +679,8 @@ ags_eq10_channel_set_property(GObject *gobject,
       }
 
       eq10_channel->peak_56hz = port;
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_112HZ:
@@ -668,7 +689,11 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == eq10_channel->peak_112hz){
+	pthread_mutex_unlock(recall_mutex);	
+
 	return;
       }
 
@@ -681,6 +706,8 @@ ags_eq10_channel_set_property(GObject *gobject,
       }
 
       eq10_channel->peak_112hz = port;
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_224HZ:
@@ -689,7 +716,11 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == eq10_channel->peak_224hz){
+	pthread_mutex_unlock(recall_mutex);	
+
 	return;
       }
 
@@ -702,6 +733,8 @@ ags_eq10_channel_set_property(GObject *gobject,
       }
 
       eq10_channel->peak_224hz = port;
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_448HZ:
@@ -710,7 +743,11 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == eq10_channel->peak_448hz){
+	pthread_mutex_unlock(recall_mutex);	
+
 	return;
       }
 
@@ -723,6 +760,8 @@ ags_eq10_channel_set_property(GObject *gobject,
       }
 
       eq10_channel->peak_448hz = port;
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_896HZ:
@@ -731,7 +770,11 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == eq10_channel->peak_896hz){
+	pthread_mutex_unlock(recall_mutex);	
+
 	return;
       }
 
@@ -744,6 +787,8 @@ ags_eq10_channel_set_property(GObject *gobject,
       }
 
       eq10_channel->peak_896hz = port;
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_1792HZ:
@@ -752,7 +797,11 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == eq10_channel->peak_1792hz){
+	pthread_mutex_unlock(recall_mutex);	
+
 	return;
       }
 
@@ -765,6 +814,8 @@ ags_eq10_channel_set_property(GObject *gobject,
       }
 
       eq10_channel->peak_1792hz = port;
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_3584HZ:
@@ -773,7 +824,11 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == eq10_channel->peak_3584hz){
+	pthread_mutex_unlock(recall_mutex);	
+
 	return;
       }
 
@@ -786,6 +841,8 @@ ags_eq10_channel_set_property(GObject *gobject,
       }
 
       eq10_channel->peak_3584hz = port;
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_7168HZ:
@@ -794,7 +851,11 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == eq10_channel->peak_7168hz){
+	pthread_mutex_unlock(recall_mutex);	
+
 	return;
       }
 
@@ -807,6 +868,8 @@ ags_eq10_channel_set_property(GObject *gobject,
       }
 
       eq10_channel->peak_7168hz = port;
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_14336HZ:
@@ -815,7 +878,11 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == eq10_channel->peak_14336hz){
+	pthread_mutex_unlock(recall_mutex);	
+
 	return;
       }
 
@@ -828,6 +895,8 @@ ags_eq10_channel_set_property(GObject *gobject,
       }
 
       eq10_channel->peak_14336hz = port;
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PRESSURE:
@@ -836,7 +905,11 @@ ags_eq10_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == eq10_channel->pressure){
+	pthread_mutex_unlock(recall_mutex);	
+
 	return;
       }
 
@@ -849,6 +922,8 @@ ags_eq10_channel_set_property(GObject *gobject,
       }
 
       eq10_channel->pressure = port;
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -865,62 +940,113 @@ ags_eq10_channel_get_property(GObject *gobject,
 {
   AgsEq10Channel *eq10_channel;
 
+  pthread_mutex_t *recall_mutex;
+
   eq10_channel = AGS_EQ10_CHANNEL(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_PEAK_28HZ:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, eq10_channel->peak_28hz);
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_56HZ:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, eq10_channel->peak_56hz);
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_112HZ:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, eq10_channel->peak_112hz);
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_224HZ:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, eq10_channel->peak_224hz);
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_448HZ:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, eq10_channel->peak_448hz);
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_896HZ:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, eq10_channel->peak_896hz);
     }
     break;
   case PROP_PEAK_1792HZ:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, eq10_channel->peak_1792hz);
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_3584HZ:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, eq10_channel->peak_3584hz);
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_7168HZ:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, eq10_channel->peak_7168hz);
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PEAK_14336HZ:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, eq10_channel->peak_14336hz);
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PRESSURE:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, eq10_channel->pressure);
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   default:
