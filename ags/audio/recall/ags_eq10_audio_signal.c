@@ -162,7 +162,8 @@ ags_eq10_audio_signal_run_init_pre(AgsRecall *recall)
   g_object_get(source,
 	       "buffer-size", &buffer_size,
 	       NULL);
-  
+
+  //FIXME:JK: memory leak
   eq10_audio_signal->output_buffer = (double *) malloc(buffer_size * sizeof(double));
   eq10_audio_signal->input_buffer = (double *) malloc(buffer_size * sizeof(double));  
 

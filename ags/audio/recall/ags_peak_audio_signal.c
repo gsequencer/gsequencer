@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,20 +18,16 @@
  */
 
 #include <ags/audio/recall/ags_peak_audio_signal.h>
+
+#include <ags/libags.h>
+
 #include <ags/audio/recall/ags_peak_channel.h>
-
-#include <ags/lib/ags_parameter.h>
-
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_dynamic_connectable.h>
-
-#include <ags/audio/ags_recall_channel_run.h>
+#include <ags/audio/recall/ags_peak_channel_run.h>
+#include <ags/audio/recall/ags_peak_recycling.h>
 
 #include <ags/i18n.h>
 
 void ags_peak_audio_signal_class_init(AgsPeakAudioSignalClass *peak_audio_signal);
-void ags_peak_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_peak_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_peak_audio_signal_init(AgsPeakAudioSignal *peak_audio_signal);
 void ags_peak_audio_signal_set_property(GObject *gobject,
 					guint prop_id,
@@ -41,10 +37,6 @@ void ags_peak_audio_signal_get_property(GObject *gobject,
 					guint prop_id,
 					GValue *value,
 					GParamSpec *param_spec);
-void ags_peak_audio_signal_connect(AgsConnectable *connectable);
-void ags_peak_audio_signal_disconnect(AgsConnectable *connectable);
-void ags_peak_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_peak_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_peak_audio_signal_finalize(GObject *gobject);
 
 void ags_peak_audio_signal_run_inter(AgsRecall *recall);
@@ -68,8 +60,6 @@ enum{
 };
 
 static gpointer ags_peak_audio_signal_parent_class = NULL;
-static AgsConnectableInterface *ags_peak_audio_signal_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_peak_audio_signal_parent_dynamic_connectable_interface;
 
 GType
 ags_peak_audio_signal_get_type()
@@ -89,33 +79,13 @@ ags_peak_audio_signal_get_type()
       (GInstanceInitFunc) ags_peak_audio_signal_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_peak_audio_signal_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_peak_audio_signal_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_peak_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
 							"AgsPeakAudioSignal",
 							&ags_peak_audio_signal_info,
 							0);
-
-    g_type_add_interface_static(ags_type_peak_audio_signal,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_peak_audio_signal,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
   }
 
-  return (ags_type_peak_audio_signal);
+  return(ags_type_peak_audio_signal);
 }
 
 void
@@ -123,6 +93,7 @@ ags_peak_audio_signal_class_init(AgsPeakAudioSignalClass *peak_audio_signal)
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
+
   GParamSpec *param_spec;
 
   ags_peak_audio_signal_parent_class = g_type_class_peek_parent(peak_audio_signal);
@@ -141,7 +112,7 @@ ags_peak_audio_signal_class_init(AgsPeakAudioSignalClass *peak_audio_signal)
    * 
    * The peak.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("peak",
 				   i18n_pspec("resulting peak"),
@@ -161,38 +132,11 @@ ags_peak_audio_signal_class_init(AgsPeakAudioSignalClass *peak_audio_signal)
 }
 
 void
-ags_peak_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_peak_audio_signal_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_peak_audio_signal_connect;
-  connectable->disconnect = ags_peak_audio_signal_disconnect;
-}
-
-void
-ags_peak_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_peak_audio_signal_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_peak_audio_signal_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_peak_audio_signal_disconnect_dynamic;
-}
-
-void
 ags_peak_audio_signal_init(AgsPeakAudioSignal *peak_audio_signal)
 {
   AGS_RECALL(peak_audio_signal)->child_type = G_TYPE_NONE;
 
   peak_audio_signal->peak = 0.0;
-}
-
-void
-ags_peak_audio_signal_finalize(GObject *gobject)
-{
-  /* call parent */
-  G_OBJECT_CLASS(ags_peak_audio_signal_parent_class)->finalize(gobject);
-
-  /* empty */
 }
 
 void
@@ -203,7 +147,16 @@ ags_peak_audio_signal_set_property(GObject *gobject,
 {
   AgsPeakAudioSignal *peak_audio_signal;
 
+  pthread_mutex_t *recall_mutex;
+
   peak_audio_signal = AGS_PEAK_AUDIO_SIGNAL(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_PEAK:
@@ -212,7 +165,11 @@ ags_peak_audio_signal_set_property(GObject *gobject,
 
       peak = g_value_get_double(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       peak_audio_signal->peak = peak;
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -229,12 +186,25 @@ ags_peak_audio_signal_get_property(GObject *gobject,
 {
   AgsPeakAudioSignal *peak_audio_signal;
 
+  pthread_mutex_t *recall_mutex;
+
   peak_audio_signal = AGS_PEAK_AUDIO_SIGNAL(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_PEAK:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_double(value, peak_audio_signal->peak);
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -244,68 +214,72 @@ ags_peak_audio_signal_get_property(GObject *gobject,
 }
 
 void
-ags_peak_audio_signal_connect(AgsConnectable *connectable)
-{
-  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
-    return;
-  }
-
-  /* call parent */
-  ags_peak_audio_signal_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_peak_audio_signal_disconnect(AgsConnectable *connectable)
+ags_peak_audio_signal_finalize(GObject *gobject)
 {
   /* call parent */
-  ags_peak_audio_signal_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_peak_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
-    return;
-  }
-
-  /* call parent */
-  ags_peak_audio_signal_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
-ags_peak_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_peak_audio_signal_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-
-  /* empty */
+  G_OBJECT_CLASS(ags_peak_audio_signal_parent_class)->finalize(gobject);
 }
 
 void
 ags_peak_audio_signal_run_inter(AgsRecall *recall)
 {
-  AGS_RECALL_CLASS(ags_peak_audio_signal_parent_class)->run_inter(recall);
+  AgsAudioSignal *source;
+  AgsPeakChannel *peak_channel;
+  AgsPeakChannelRun *peak_channel_run;
+  AgsPeakRecycling *peak_recycling;
+  AgsPeakAudioSignal *peak_audio_signal;
 
-  if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current != NULL){
-    AgsPeakChannel *peak_channel;
+  guint samplerate;
+  guint buffer_size;
+  guint format;
+  
+  void (*parent_class_run_inter)(AgsRecall *recall);  
 
-    AgsAudioSignal *audio_signal;
+  pthread_mutex_t *recall_mutex;
+
+  peak_audio_signal = (AgsPeakAudioSignal *) recall;
+
+  /* get mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = recall->obj_mutex;
+  
+  parent_class_run_inter = AGS_RECALL_CLASS(ags_peak_audio_signal_parent_class)->run_inter;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* call parent */
+  parent_class_run_inter(recall);
+
+  /* get some fields */
+  g_object_get(peak_audio_signal,
+	       "source", &source,
+	       NULL);
+
+  if(source->stream_current != NULL){
+    g_object_get(peak_audio_signal,
+		 "parent", &peak_recycling,
+		 NULL);
     
-    peak_channel = AGS_PEAK_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
+    g_object_get(peak_recycling,
+		 "parent", &peak_channel_run,
+		 NULL);
 
-    audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
+    g_object_get(peak_channel_run,
+		 "recall-channel", &peak_channel,
+		 NULL);
+
+    g_object_get(source,
+		 "samplerate", &samplerate,
+		 "buffer-size", &buffer_size,
+		 "format", &format,
+		 NULL);
     
     ags_peak_channel_buffer_add(peak_channel,
-				audio_signal->stream_current->data,
-				audio_signal->samplerate,
-				audio_signal->buffer_size,
-				audio_signal->format);
+				source->stream_current->data,
+				samplerate,
+				buffer_size,
+				format);
   }else{
     ags_recall_done(recall);
   }
@@ -313,20 +287,21 @@ ags_peak_audio_signal_run_inter(AgsRecall *recall)
 
 /**
  * ags_peak_audio_signal_new:
- * @audio_signal: an #AgsAudioSignal
+ * @source: the #AgsAudioSignal
  *
- * Creates an #AgsPeakAudioSignal
+ * Create a new instance of #AgsPeakAudioSignal
  *
- * Returns: a new #AgsPeakAudioSignal
+ * Returns: the new #AgsPeakAudioSignal
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPeakAudioSignal*
-ags_peak_audio_signal_new(AgsAudioSignal *audio_signal)
+ags_peak_audio_signal_new(AgsAudioSignal *source)
 {
   AgsPeakAudioSignal *peak_audio_signal;
 
   peak_audio_signal = (AgsPeakAudioSignal *) g_object_new(AGS_TYPE_PEAK_AUDIO_SIGNAL,
+							  "source", source,
 							  NULL);
 
   return(peak_audio_signal);
