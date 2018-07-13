@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel.h>
+
 #include <ags/audio/recall/ags_delay_audio.h>
 
 #define AGS_TYPE_LOOP_CHANNEL                (ags_loop_channel_get_type())
@@ -50,6 +54,6 @@ struct _AgsLoopChannelClass
 
 GType ags_loop_channel_get_type();
 
-AgsLoopChannel* ags_loop_channel_new();
+AgsLoopChannel* ags_loop_channel_new(AgsChannel *source);
 
 #endif /*__AGS_LOOP_CHANNEL_H__*/

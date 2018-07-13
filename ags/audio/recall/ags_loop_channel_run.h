@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,9 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
-#include <ags/audio/ags_recall_id.h>
 
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 
@@ -44,9 +45,6 @@ struct _AgsLoopChannelRun
   AgsRecallChannelRun recall_channel_run;
 
   AgsCountBeatsAudioRun *count_beats_audio_run;
-  gulong start_handler;
-  gulong loop_handler;
-  gulong stop_handler;
 };
 
 struct _AgsLoopChannelRunClass
@@ -56,8 +54,8 @@ struct _AgsLoopChannelRunClass
 
 GType ags_loop_channel_run_get_type();
 
-AgsLoopChannelRun* ags_loop_channel_run_new(AgsChannel *channel,
-					    AgsCountBeatsAudioRun *count_beats_audio_run,
-					    gboolean is_template);
+AgsLoopChannelRun* ags_loop_channel_run_new(AgsChannel *source,
+					    AgsCountBeatsAudioRun *count_beats_audio_run);
 
 #endif /*__AGS_LOOP_CHANNEL_RUN_H__*/
+
