@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -49,9 +49,6 @@
 #include <ags/i18n.h>
 
 void ags_play_channel_run_class_init(AgsPlayChannelRunClass *play_channel_run);
-void ags_play_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_play_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
-void ags_play_channel_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_play_channel_run_init(AgsPlayChannelRun *play_channel_run);
 void ags_play_channel_run_set_property(GObject *gobject,
 				       guint prop_id,
@@ -61,22 +58,12 @@ void ags_play_channel_run_get_property(GObject *gobject,
 				       guint prop_id,
 				       GValue *value,
 				       GParamSpec *param_spec);
-void ags_play_channel_run_connect(AgsConnectable *connectable);
-void ags_play_channel_run_disconnect(AgsConnectable *connectable);
-void ags_play_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_play_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_play_channel_run_dispose(GObject *gobject);
 void ags_play_channel_run_finalize(GObject *gobject);
 
 void ags_play_channel_run_run_init_inter(AgsRecall *recall);
-void ags_play_channel_run_run_pre(AgsRecall *recall);
 void ags_play_channel_run_run_post(AgsRecall *recall);
-void ags_play_channel_run_remove(AgsRecall *recall);
-void ags_play_channel_run_cancel(AgsRecall *recall);
 void ags_play_channel_run_resolve_dependencies(AgsRecall *recall);
-AgsRecall* ags_play_channel_run_duplicate(AgsRecall *recall,
-					  AgsRecallID *recall_id,
-					  guint *n_params, GParameter *parameter);
 
 void ags_play_channel_run_stream_audio_signal_done_callback(AgsRecall *recall,
 							    AgsPlayChannelRun *play_channel_run);
@@ -98,9 +85,6 @@ enum{
 };
 
 static gpointer ags_play_channel_run_parent_class = NULL;
-static AgsConnectableInterface *ags_play_channel_run_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_play_channel_run_parent_dynamic_connectable_interface;
-static AgsPluginInterface *ags_play_channel_run_parent_plugin_interface;
 
 static const gchar *ags_play_channel_run_plugin_name = "ags-play";
 
@@ -122,40 +106,10 @@ ags_play_channel_run_get_type()
       (GInstanceInitFunc) ags_play_channel_run_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_play_channel_run_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_play_channel_run_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_play_channel_run_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };    
-
     ags_type_play_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 						       "AgsPlayChannelRun",
 						       &ags_play_channel_run_info,
 						       0);
-
-    g_type_add_interface_static(ags_type_play_channel_run,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_play_channel_run,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_play_channel_run,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
   }
 
   return(ags_type_play_channel_run);
@@ -185,7 +139,7 @@ ags_play_channel_run_class_init(AgsPlayChannelRunClass *play_channel_run)
    * 
    * The stream channel run dependency.
    * 
-   * Since: 1.0.0.7
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("stream-channel-run",
 				   i18n_pspec("assigned AgsStreamChannelRun"),
@@ -200,36 +154,9 @@ ags_play_channel_run_class_init(AgsPlayChannelRunClass *play_channel_run)
   recall = (AgsRecallClass *) play_channel_run;
 
   recall->run_init_inter = ags_play_channel_run_run_init_inter;
-  recall->run_pre = ags_play_channel_run_run_pre;
   recall->run_post = ags_play_channel_run_run_post;
-  recall->remove = ags_play_channel_run_remove;
-  recall->cancel = ags_play_channel_run_cancel;
   recall->resolve_dependencies = ags_play_channel_run_resolve_dependencies;
   recall->duplicate = ags_play_channel_run_duplicate;
-}
-
-void
-ags_play_channel_run_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_play_channel_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_play_channel_run_connect;
-  connectable->disconnect = ags_play_channel_run_disconnect;
-}
-
-void
-ags_play_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_play_channel_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_play_channel_run_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_play_channel_run_disconnect_dynamic;
-}
-
-void
-ags_play_channel_run_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_play_channel_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
 }
 
 void
@@ -241,7 +168,6 @@ ags_play_channel_run_init(AgsPlayChannelRun *play_channel_run)
   AGS_RECALL(play_channel_run)->xml_type = "ags-play-channel-run";
   AGS_RECALL(play_channel_run)->port = NULL;
 
-  AGS_RECALL(play_channel_run)->flags |= (AGS_RECALL_INPUT_ORIENTATED);
   AGS_RECALL(play_channel_run)->child_type = AGS_TYPE_PLAY_RECYCLING;
 
   play_channel_run->flags = 0;
@@ -257,45 +183,66 @@ ags_play_channel_run_set_property(GObject *gobject,
 {
   AgsPlayChannelRun *play_channel_run;
 
+  pthread_mutex_t *recall_mutex;
+
   play_channel_run = AGS_PLAY_CHANNEL_RUN(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_STREAM_CHANNEL_RUN:
     {
-      AgsStreamChannelRun *stream_channel_run;
+      AgsStreamChannelRun *stream_channel_run, *old_stream_channel_run;
+
       gboolean is_template;
 
       stream_channel_run = (AgsStreamChannelRun *) g_value_get_object(value);
 
-      if(stream_channel_run == play_channel_run->stream_channel_run)
-	return;
+      pthread_mutex_lock(recall_mutex);
 
-      if(stream_channel_run != NULL &&
-	 (AGS_RECALL_TEMPLATE & (AGS_RECALL(stream_channel_run)->flags)) != 0){
-	is_template = TRUE;
-      }else{
-	is_template = FALSE;
+      if(stream_channel_run == play_channel_run->stream_channel_run){
+	pthread_mutex_unlock(recall_mutex);
+
+	return;
       }
 
       if(play_channel_run->stream_channel_run != NULL){
-	if(is_template){
-	  ags_recall_remove_dependency(AGS_RECALL(play_channel_run),
-				       (AgsRecall *) play_channel_run->stream_channel_run);
-	}
+	old_stream_channel_run = play_channel_run->stream_channel_run;
 
 	g_object_unref(G_OBJECT(play_channel_run->stream_channel_run));
       }
 
       if(stream_channel_run != NULL){
 	g_object_ref(G_OBJECT(stream_channel_run));
-
-	if(is_template){
-	  ags_recall_add_dependency(AGS_RECALL(play_channel_run),
-				    ags_recall_dependency_new((GObject *) stream_channel_run));
-	}
       }
 
       play_channel_run->stream_channel_run = stream_channel_run;
+
+      pthread_mutex_unlock(recall_mutex);
+
+      /* dependency */
+      if(ags_recall_test_flags(recall, AGS_RECALL_TEMPLATE)){
+	is_template = TRUE;
+      }else{
+	is_template = FALSE;
+      }
+
+      if(is_template &&
+	 old_delay_audio_run != NULL){
+	ags_recall_remove_dependency(AGS_RECALL(play_channel_run),
+				     (AgsRecall *) old_stream_channel_run);
+      }
+
+      if(is_template &&
+	 delay_audio_run != NULL){
+	ags_recall_add_dependency(AGS_RECALL(play_channel_run),
+				  ags_recall_dependency_new((GObject *) stream_channel_run));
+      }
     }
     break;
   default:
@@ -312,12 +259,25 @@ ags_play_channel_run_get_property(GObject *gobject,
 {
   AgsPlayChannelRun *play_channel_run;
 
+  pthread_mutex_t *recall_mutex;
+
   play_channel_run = AGS_PLAY_CHANNEL_RUN(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_STREAM_CHANNEL_RUN:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, G_OBJECT(play_channel_run->stream_channel_run));
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -363,121 +323,142 @@ ags_play_channel_run_finalize(GObject *gobject)
 }
 
 void
-ags_play_channel_run_connect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_play_channel_run_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_play_channel_run_disconnect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_play_channel_run_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_play_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_play_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
-ags_play_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_play_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
 ags_play_channel_run_run_init_inter(AgsRecall *recall)
 {
-  AGS_PLAY_CHANNEL_RUN(recall)->flags |= AGS_PLAY_CHANNEL_RUN_INITIAL_RUN;
-
-  /* call parent */
-  AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->run_init_inter(recall);
-}
-
-void
-ags_play_channel_run_run_pre(AgsRecall *recall)
-{
-  /* empty */
+  AgsPlayChannelRun *play_channel_run;
   
+  void (*parent_class_run_init_inter)(AgsRecall *recall);
+
+  play_channel_run = (AgsPlayChannelRun *) recall;
+  
+  /* get parent class and mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  run_init_inter = AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->run_init_inter;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* set flags */
+  ags_play_channel_run_set_flags(play_channel_run,
+				 AGS_PLAY_CHANNEL_RUN_INITIAL_RUN);
+
   /* call parent */
-  AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->run_pre(recall);
+  parent_class_run_init_inter(recall);
 }
 
 void
 ags_play_channel_run_run_post(AgsRecall *recall)
 {
+  AgsChannel *source;
+  AgsRecallID *recall_id;
+  AgsRecyclingContext *recycling_context;
   AgsStreamChannelRun *stream_channel_run;
   AgsRtStreamChannelRun *rt_stream_channel_run;
-
-  AgsChannel *source;
   
-  GList *list;
-  GList *recall_recycling_list, *recall_audio_signal_list;
+  GList *list_start, *list;
+  GList *recall_recycling_list, *start_recall_recycling_list;
+  GList *recall_audio_signal_list, *start_recall_audio_signal_list;
 
   gboolean found;
   
-  AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->run_post(recall);
+  void (*parent_class_run_post)(AgsRecall *recall);
 
-  source = AGS_RECALL_CHANNEL_RUN(recall)->source;
+  pthread_mutex_t *recall_mutex;
+
+  play_channel_run = (AgsPlayChannelRun *) recall;
+  
+  /* get parent class and mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  run_post = AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->run_post;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* call parent */
+  parent_class_run_post(recall);
+
+  /* get some fields */
+  g_object_get(recall,
+	       "source", &source,
+	       "recall-id", &recall_id,
+	       NULL);
+
+  g_object_get(recall_id,
+	       "recycling-context", &recycling_context,
+	       NULL);
+  
   found = FALSE;
 
-  if(recall->rt_safe){
+  if(ags_recall_global_get_rt_safe()){
     /* connect done */
-    list = source->play;
+    g_object_get(source,
+		 "play", list_start,
+		 NULL);
+    
+    list = list_start;
 
     while((list = ags_recall_find_type_with_recycling_context(list,
 							      AGS_TYPE_RT_STREAM_CHANNEL_RUN,
-							      (GObject *) recall->recall_id->recycling_context)) != NULL){
+							      (GObject *) recycling_context)) != NULL &&
+	  !found){
       rt_stream_channel_run = AGS_RT_STREAM_CHANNEL_RUN(list->data);
 
-      if((AGS_RECALL_TEMPLATE & (AGS_RECALL(rt_stream_channel_run)->flags)) != 0){
+      if(ags_recall_test_flags(rt_stream_channel_run, AGS_RECALL_TEMPLATE)){
 	list = list->next;
 
 	continue;
       }
-    
-      recall_recycling_list = AGS_RECALL(rt_stream_channel_run)->children;
 
-      while(recall_recycling_list != NULL){
+      g_object_get(rt_stream_channel_run,
+		   "child", &start_recall_recycling_list,
+		   NULL);
+
+      recall_recycling_list = start_recall_recycling_list;
+
+      while(recall_recycling_list != NULL &&
+	    !found){
 	recall_audio_signal_list = AGS_RECALL(recall_recycling_list->data)->children;
       
-	while(recall_audio_signal_list != NULL &&
-	      (AGS_RECALL_DONE & (AGS_RECALL(recall_audio_signal_list->data)->flags)) == 0 &&
-	      (AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_audio_signal_list->data)->flags)) == 0){
-	  found = TRUE;
-	  break;
-	
+	while(recall_audio_signal_list != NULL){
+	  if(!ags_recall_test_staging_flags(recall_audio_signal_list->data, AGS_SOUND_STAGING_DONE)
+	     !ags_recall_test_flags(recall_audio_signal_list->data, AGS_RECALL_TEMPLATE)){
+	    found = TRUE;
+	  
+	    break;
+	  }
+	  
+	  /* iterate */
 	  recall_audio_signal_list = recall_audio_signal_list->next;
 	}
 
+	g_list_free(start_recall_audio_signal_list);
+
+	/* iterate */
 	recall_recycling_list = recall_recycling_list->next;
       }
 
+      g_list_free(start_recall_recycling_list);
+
+      /* iterate */
       list = list->next;
     }
+
+    g_list_free(list_start);
   }else{
     /* connect done */
-    list = source->play;
+    g_object_get(source,
+		 "play", list_start,
+		 NULL);
+    
+    list = list_start;
 
     while((list = ags_recall_find_type_with_recycling_context(list,
 							      AGS_TYPE_STREAM_CHANNEL_RUN,
-							      (GObject *) recall->recall_id->recycling_context)) != NULL){
+							      (GObject *) recycling_context)) != NULL &&
+	  !found){
       stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
 
-      if((AGS_RECALL_TEMPLATE & (AGS_RECALL(stream_channel_run)->flags)) != 0){
+      if(ags_recall_test_flags(rt_stream_channel_run, AGS_RECALL_TEMPLATE)){
 	list = list->next;
 
 	continue;
@@ -485,23 +466,35 @@ ags_play_channel_run_run_post(AgsRecall *recall)
     
       recall_recycling_list = AGS_RECALL(stream_channel_run)->children;
 
-      while(recall_recycling_list != NULL){
+      while(recall_recycling_list != NULL &&
+	    !found){
 	recall_audio_signal_list = AGS_RECALL(recall_recycling_list->data)->children;
       
-	while(recall_audio_signal_list != NULL &&
-	      (AGS_RECALL_DONE & (AGS_RECALL(recall_audio_signal_list->data)->flags)) == 0 &&
-	      (AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_audio_signal_list->data)->flags)) == 0){
-	  found = TRUE;
-	  break;
-	
+	while(recall_audio_signal_list != NULL){
+	  if(!ags_recall_test_staging_flags(recall_audio_signal_list->data, AGS_SOUND_STAGING_DONE)
+	     !ags_recall_test_flags(recall_audio_signal_list->data, AGS_RECALL_TEMPLATE)){
+	    found = TRUE;
+	    
+	    break;
+	  }
+	  
+	  /* iterate */
 	  recall_audio_signal_list = recall_audio_signal_list->next;
 	}
 
+	g_list_free(start_recall_audio_signal_list);
+
+	/* iterate */
 	recall_recycling_list = recall_recycling_list->next;
       }
 
+      g_list_free(start_recall_recycling_list);
+
+      /* iterate */
       list = list->next;
     }
+
+    g_list_free(list_start);
   }
   
   if(!found){
@@ -510,24 +503,10 @@ ags_play_channel_run_run_post(AgsRecall *recall)
 }
 
 void
-ags_play_channel_run_remove(AgsRecall *recall)
-{
-  /* empty */
-  AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->remove(recall);
-}
-
-void 
-ags_play_channel_run_cancel(AgsRecall *recall)
-{  
-  AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->cancel(recall);
-
-  /* empty */
-}
-
-void
 ags_play_channel_run_resolve_dependencies(AgsRecall *recall)
 {
   AgsRecall *template;
+  AgsRecallContainer *recall_container;
   AgsRecallID *recall_id;
   AgsRecallDependency *recall_dependency;
   
@@ -537,20 +516,45 @@ ags_play_channel_run_resolve_dependencies(AgsRecall *recall)
 
   guint i, i_stop;
 
-  template = AGS_RECALL(ags_recall_find_template(AGS_RECALL_CONTAINER(recall->container)->recall_channel_run)->data);
+  /* get template */
+  g_object_get(recall,
+	       "recall-id", &recall_id,
+	       "recall-container", &recall_container,
+	       NULL);
 
-  list = template->dependencies;
-  recall_id = recall->recall_id;
+  g_object_get(recall_container,
+	       "recall-channel-run", &list_start,
+	       NULL);
+
+  template = NULL;
+  list = ags_recall_find_template(list_start);
+
+  if(list != NULL){
+    template = AGS_RECALL(list->data);
+  }
+
+  /* check recall dependency */
+  g_object_get(template,
+	       "recall-dependency", &list_start,
+	       NULL);
 
   stream_channel_run = NULL;
+  list = list_start;
 
   i_stop = 1;
 
   for(i = 0; i < i_stop && list != NULL;){
+    GObject *dependency;
+    
     recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
 
-    if(AGS_IS_STREAM_CHANNEL_RUN(recall_dependency->dependency)){
-      stream_channel_run = (AgsStreamChannelRun *) ags_recall_dependency_resolve(recall_dependency, recall_id);
+    g_object_get(recall_dependency,
+		 "dependency", &dependency,
+		 NULL);
+
+    if(AGS_IS_STREAM_CHANNEL_RUN(dependency)){
+      stream_channel_run = (AgsStreamChannelRun *) ags_recall_dependency_resolve(recall_dependency,
+										 recall_id);
 
       i++;
     }
@@ -558,23 +562,11 @@ ags_play_channel_run_resolve_dependencies(AgsRecall *recall)
     list = list->next;
   }
 
+  g_list_free(list_start);
+
   g_object_set(G_OBJECT(recall),
 	       "stream_channel_run", stream_channel_run,
 	       NULL);
-}
-
-AgsRecall*
-ags_play_channel_run_duplicate(AgsRecall *recall,
-			       AgsRecallID *recall_id,
-			       guint *n_params, GParameter *parameter)
-{
-  AgsPlayChannelRun *copy;
-  
-  copy = (AgsPlayChannelRun *) AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->duplicate(recall,
-											      recall_id,
-											      n_params, parameter);
-
-  return((AgsRecall *) copy);
 }
 
 void
@@ -587,82 +579,181 @@ ags_play_channel_run_stream_audio_signal_done_callback(AgsRecall *recall,
 void
 ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
 {
-  GObject *soundcard;
   AgsChannel *channel;
   AgsCancelChannel *cancel_channel;
 
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsThread *async_queue;
+  AgsThread *task_thread;
 
   AgsApplicationContext *application_context;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-  
-  channel = AGS_RECALL_CHANNEL_RUN(play_channel_run)->source;
+  gint sound_scope;
 
+  pthread_mutex_t *recall_mutex;
+
+  if(!AGS_IS_PLAY_CHANNEL_RUN(play_channel_run)){
+  }
+  
+  g_object_get(play_channel_run,
+	       "source", &channel,
+	       NULL);
+  
   if(channel == NULL){
     return;
   }
 
-  soundcard = AGS_AUDIO(channel->audio)->soundcard;
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(copy_pattern_channel_run)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* lookup soundcard mutex */
-  pthread_mutex_lock(application_mutex);
- 
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  soundcard);
-  
-  pthread_mutex_unlock(application_mutex);
+  /* get sound scope */
+  pthread_mutex_lock(recall_mutex);
+
+  sound_scope = play_channel_run->sound_scope;
+
+  pthread_mutex_unlock(recall_mutex);
   
   /* get application_context */
-  pthread_mutex_lock(soundcard_mutex);
-  
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
-
-  pthread_mutex_unlock(soundcard_mutex);
-  
-  /* get main loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
+  application_context = ags_application_context_get_instance();
 
   /* get async queue */
-  async_queue = (AgsThread *) ags_thread_find_type(main_loop,
-						   AGS_TYPE_TASK_THREAD);
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /* create append task */
   cancel_channel = ags_cancel_channel_new(channel,
-					  AGS_PLAYBACK(channel->playback)->recall_id[0],
-					  channel->playback);
+					  sound_scope);
   
   /* append AgsCancelAudio */
-  ags_task_thread_append_task((AgsTaskThread *) async_queue,
+  ags_task_thread_append_task((AgsTaskThread *) task_thread,
 			      (AgsTask *) cancel_channel);
 }
 
 /**
+ * ags_play_channel_run_test_flags:
+ * @play_channel_run: the #AgsPlayChannelRun
+ * @flags: the flags
+ *
+ * Test @flags to be set on @play_channel_run.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_play_channel_run_test_flags(AgsPlayChannelRun *play_channel_run, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *recall_mutex;
+
+  if(!AGS_IS_PLAY_CHANNEL_RUN(play_channel_run)){
+    return(FALSE);
+  }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(play_channel_run)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(recall_mutex);
+
+  retval = (flags & (play_channel_run->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(recall_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_play_channel_run_set_flags:
+ * @play_channel_run: the #AgsPlayChannelRun
+ * @flags: the flags
+ *
+ * Set flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_play_channel_run_set_flags(AgsPlayChannelRun *play_channel_run, guint flags)
+{
+  pthread_mutex_t *recall_mutex;
+
+  if(!AGS_IS_PLAY_CHANNEL_RUN(play_channel_run)){
+    return;
+  }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(play_channel_run)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(recall_mutex);
+
+  play_channel_run->flags |= flags;
+
+  pthread_mutex_unlock(recall_mutex);
+}
+
+/**
+ * ags_play_channel_run_unset_flags:
+ * @play_channel_run: the #AgsPlayChannelRun
+ * @flags: the flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_play_channel_run_unset_flags(AgsPlayChannelRun *play_channel_run, guint flags)
+{
+  pthread_mutex_t *recall_mutex;
+
+  if(!AGS_IS_PLAY_CHANNEL_RUN(play_channel_run)){
+    return;
+  }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(play_channel_run)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(recall_mutex);
+
+  play_channel_run->flags &= (~flags);
+
+  pthread_mutex_unlock(recall_mutex);
+}
+
+/**
  * ags_play_channel_run_new:
- * @stream_channel_run: the #AgsStreamChannelRun as dependency
+ * @source: the #AgsChannel
+ * @stream_channel_run: the #AgsStreamChannelRun dependency
  *
- * Creates an #AgsPlayChannelRun
+ * Create a new instance of #AgsPlayChannelRun
  *
- * Returns: a new #AgsPlayChannelRun
+ * Returns: the new #AgsPlayChannelRun
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPlayChannelRun*
-ags_play_channel_run_new(AgsStreamChannelRun *stream_channel_run)
+ags_play_channel_run_new(AgsChannel *source,
+			 AgsStreamChannelRun *stream_channel_run)
 {
   AgsPlayChannelRun *play_channel_run;
 
   play_channel_run = (AgsPlayChannelRun *) g_object_new(AGS_TYPE_PLAY_CHANNEL_RUN,
+							"source", source,
 							"stream-channel-run", stream_channel_run,
 							NULL);
   

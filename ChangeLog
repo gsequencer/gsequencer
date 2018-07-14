@@ -6,6 +6,7 @@ ags (2.0.0)
 	* TODO:JK: improved ags-feed recall thread-safety
 	* TODO:JK: improved ags_audio_signal_feed() reduce over-head
 	* TODO:JK: improved AgsApplySynth thread-safety
+	* implemented ags_soundcard_lock_buffer() and ags_soundcard_unlock_buffer()
 	* TODO:JK: implemented AgsFunction
 	* TODO:JK: implemented AgsServer, AgsRegistry and AgsServerStatus
 	* TODO:JK: implemented AgsXmlAuthentication, AgsXmlCertificate and AgsXmlPasswordStore

@@ -83,8 +83,6 @@ static gpointer ags_copy_pattern_channel_run_parent_class = NULL;
 static AgsConnectableInterface* ags_copy_pattern_channel_run_parent_connectable_interface;
 static AgsPluginInterface *ags_copy_pattern_channel_run_parent_plugin_interface;
 
-static gboolean ags_recall_global_rt_safe = FALSE;
-
 GType
 ags_copy_pattern_channel_run_get_type()
 {
@@ -891,7 +889,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	  }
 	}
 	
-	if(!ags_recall_global_rt_safe){
+	if(!ags_recall_global_get_rt_safe()){
 	  /* create audio signal */
 	  audio_signal = ags_audio_signal_new(output_soundcard,
 					      (GObject *) recycling,

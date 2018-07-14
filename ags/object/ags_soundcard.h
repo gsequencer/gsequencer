@@ -156,8 +156,10 @@ struct _AgsSoundcardInterface
   void* (*get_next_buffer)(AgsSoundcard *soundcard);  
   void* (*get_prev_buffer)(AgsSoundcard *soundcard);  
 
-  void (*lock_buffer)(AgsSoundcard *soundcard);
-  void (*unlock_buffer)(AgsSoundcard *soundcard);
+  void (*lock_buffer)(AgsSoundcard *soundcard,
+		      void *buffer);
+  void (*unlock_buffer)(AgsSoundcard *soundcard,
+			void *buffer);
 
   void (*set_bpm)(AgsSoundcard *soundcard,
 		  gdouble bpm);
@@ -249,6 +251,11 @@ void ags_soundcard_offset_changed(AgsSoundcard *soundcard,
 void* ags_soundcard_get_buffer(AgsSoundcard *soundcard);
 void* ags_soundcard_get_next_buffer(AgsSoundcard *soundcard);
 void* ags_soundcard_get_prev_buffer(AgsSoundcard *soundcard);
+
+void ags_soundcard_lock_buffer(AgsSoundcard *soundcard,
+			       void *buffer);
+void ags_soundcard_unlock_buffer(AgsSoundcard *soundcard,
+				 void *buffer);
 
 void ags_soundcard_set_bpm(AgsSoundcard *soundcard,
 			   gdouble bpm);

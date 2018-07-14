@@ -21,7 +21,7 @@
 
 #include <ags/libags.h>
 
-#include <ags/plugin/ags_base_plugin.h>
+#include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/i18n.h>
 
@@ -178,7 +178,7 @@ ags_play_audio_init(AgsPlayAudio *play_audio)
 				   NULL);
   g_object_ref(play_audio->muted);
 
-  play_audio->muted->port_value.ags_port_float = (float) FALSE;
+  play_audio->muted->port_value.ags_port_float = (float) 0.0;
 
   /* plugin port */
   g_object_set(play_audio->muted,
@@ -350,6 +350,8 @@ ags_play_audio_set_muted(AgsMutable *mutable, gboolean muted)
 
   ags_port_safe_write(port,
 		      &value);
+
+  g_value_unset(&value);
 }
 
 static AgsPluginPort*

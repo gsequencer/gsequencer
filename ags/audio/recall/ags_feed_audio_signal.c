@@ -45,8 +45,6 @@ void ags_feed_audio_signal_run_pre(AgsRecall *recall);
 
 static gpointer ags_feed_audio_signal_parent_class = NULL;
 
-static gboolean ags_recall_global_rt_safe = FALSE;
-
 GType
 ags_feed_audio_signal_get_type()
 {
@@ -139,7 +137,7 @@ ags_feed_audio_signal_run_pre(AgsRecall *recall)
   /* call parent */
   parent_class_run_pre(recall);
 
-  if(ags_recall_global_rt_safe){
+  if(ags_recall_global_get_rt_safe()){
     return;
   }
 

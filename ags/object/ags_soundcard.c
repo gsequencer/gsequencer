@@ -667,6 +667,52 @@ ags_soundcard_get_prev_buffer(AgsSoundcard *soundcard)
 }
 
 /**
+ * ags_soundcard_lock_buffer:
+ * @soundcard: the #AgsSoundcard
+ * @buffer: the buffer to lock
+ *
+ * Lock @buffer. 
+ *
+ * Since: 2.0.0
+ */
+void
+ags_soundcard_lock_buffer(AgsSoundcard *soundcard,
+			  void *buffer)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->lock_buffer);
+
+  soundcard_interface->lock_buffer(soundcard,
+				   buffer);
+}
+
+/**
+ * ags_soundcard_unlock_buffer:
+ * @soundcard: the #AgsSoundcard
+ * @buffer: the buffer to unlock
+ *
+ * Unlock @buffer. 
+ *
+ * Since: 2.0.0
+ */
+void
+ags_soundcard_unlock_buffer(AgsSoundcard *soundcard,
+			    void *buffer)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->unlock_buffer);
+
+  soundcard_interface->unlock_buffer(soundcard,
+				     buffer);
+}
+
+/**
  * ags_soundcard_set_bpm:
  * @soundcard: the #AgsSoundcard
  * @bpm: the bpm to set

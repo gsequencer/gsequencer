@@ -55,8 +55,6 @@ void ags_copy_audio_signal_run_inter(AgsRecall *recall);
 
 static gpointer ags_copy_audio_signal_parent_class = NULL;
 
-static gboolean ags_recall_global_rt_safe = FALSE;
-
 GType
 ags_copy_audio_signal_get_type()
 {
@@ -359,7 +357,7 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
 	       "note", &note_start,
 	       NULL);
   
-  if(ags_recall_global_rt_safe &&
+  if(ags_recall_global_get_rt_safe() &&
      parent_recycling_context != NULL &&
      note_start == NULL){
     return;
@@ -438,7 +436,7 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
 
   stream_destination = destination->stream;
 
-  if(!ags_recall_global_rt_safe &&
+  if(!ags_recall_global_get_rt_safe() &&
      stream_destination->next == NULL){
     ags_audio_signal_add_stream(destination);
   }

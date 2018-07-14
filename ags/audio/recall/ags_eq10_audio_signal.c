@@ -52,8 +52,6 @@ AgsRecall* ags_eq10_audio_signal_duplicate(AgsRecall *recall,
 
 static gpointer ags_eq10_audio_signal_parent_class = NULL;
 
-static gboolean ags_recall_global_rt_safe = FALSE;
-
 GType
 ags_eq10_audio_signal_get_type()
 {
@@ -278,7 +276,7 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
 	       "format", &format,
 	       NULL);
   
-  if(ags_recall_global_rt_safe &&
+  if(ags_recall_global_get_rt_safe() &&
      parent_recycling_context != NULL &&
      note == NULL){
     return;

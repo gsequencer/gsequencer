@@ -1403,6 +1403,8 @@ ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall)
 
   guint i, i_stop;
 
+  pthread_mutex_t *recall_mutex;
+  
   g_object_get(recall,
 	       "output-soundcard", &output_soundcard,
 	       NULL);
@@ -1410,6 +1412,13 @@ ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall)
   if(output_soundcard == NULL){
     return;
   }
+
+  /* get mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   /* get template */
   g_object_get(recall,
@@ -1474,10 +1483,14 @@ ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall)
       g_value_init(&value, G_TYPE_UINT64);
       ags_port_safe_read(sequencer_duration, &value);
       
+      pthread_mutex_lock(recall_mutex);
+      
       AGS_COUNT_BEATS_AUDIO_RUN(recall)->sequencer_counter = note_offset % g_value_get_uint64(&value);
       AGS_COUNT_BEATS_AUDIO_RUN(recall)->notation_counter = note_offset;
       AGS_COUNT_BEATS_AUDIO_RUN(recall)->wave_counter = note_offset;
       AGS_COUNT_BEATS_AUDIO_RUN(recall)->midi_counter = note_offset;
+
+      pthread_mutex_unlock(recall_mutex);
 
       g_value_unset(&value);
 

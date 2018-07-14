@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,12 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall_channel_run.h>
+#include <ags/libags.h>
 
-#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_channel.h>
-
-#include <ags/audio/recall/ags_stream_channel_run.h>
+#include <ags/audio/ags_recall_channel_run.h>
 
 #define AGS_TYPE_PLAY_CHANNEL_RUN                (ags_play_channel_run_get_type())
 #define AGS_PLAY_CHANNEL_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_CHANNEL_RUN, AgsPlayChannelRun))
@@ -59,10 +57,7 @@ struct _AgsPlayChannelRun
 
   guint flags;
 
-  AgsStreamChannelRun *stream_channel_run;
-  gulong done_handler;
-
-  gulong source_recycling_changed_handler;
+  GObject *stream_channel_run;
 };
 
 struct _AgsPlayChannelRunClass
@@ -72,6 +67,11 @@ struct _AgsPlayChannelRunClass
 
 GType ags_play_channel_run_get_type();
 
-AgsPlayChannelRun* ags_play_channel_run_new(AgsStreamChannelRun *stream_channel_run);
+gboolean ags_play_channel_run_test_flags(AgsPlayChannelRun *play_channel_run, guint flags);
+void ags_play_channel_run_set_flags(AgsPlayChannelRun *play_channel_run, guint flags);
+void ags_play_channel_run_unset_flags(AgsPlayChannelRun *play_channel_run, guint flags);
+
+AgsPlayChannelRun* ags_play_channel_run_new(AgsChannel *source,
+					    AgsStreamChannelRun *stream_channel_run);
 
 #endif /*__AGS_PLAY_CHANNEL_RUN_H__*/
