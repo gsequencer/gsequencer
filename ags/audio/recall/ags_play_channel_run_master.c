@@ -601,7 +601,9 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
   AgsChannel *current;
   AgsRecycling *recycling;
   AgsRecycling *end_recycling;
-
+  AgsRecallID *recall_id;
+  AgsRecyclingContext *recycling_context;
+  
   pthread_mutex_t *recall_mutex;
 
   if(!AGS_IS_PLAY_CHANNEL_RUN_MASTER(play_channel_run_master)){
@@ -615,6 +617,15 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
+  /* get recycling context */
+  g_object_get(play_channel_run_master,
+	       "recall-id", &recall_id,
+	       NULL);
+
+  g_object_get(recall_id,
+	       "recycling-context", &recycling_context,
+	       NULL);
+  
   /* remove old */
   if(old_start_region != NULL){
     GList *list_start, *list;
@@ -722,7 +733,7 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
 
 	list = list_start;
 
-	while((list = ags_recall_find_type(list, AGS_TYPE_STREAM_CHANNEL_RUN)) != NULL){
+	while((list = ags_recall_find_type_with_recycling_context(list, AGS_TYPE_STREAM_CHANNEL_RUN, recycling_context)) != NULL){
 	  g_object_set(play_channel_run_master,
 		       "stream-channel-run", list->data,
 		       NULL);
