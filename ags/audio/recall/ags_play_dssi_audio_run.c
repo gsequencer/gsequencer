@@ -113,9 +113,11 @@ static AgsPluginInterface *ags_play_dssi_audio_run_parent_plugin_interface;
 GType
 ags_play_dssi_audio_run_get_type()
 {
-  static GType ags_type_play_dssi_audio_run = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_play_dssi_audio_run){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_play_dssi_audio_run;
+
     static const GTypeInfo ags_play_dssi_audio_run_info = {
       sizeof (AgsPlayDssiAudioRunClass),
       NULL, /* base_init */
@@ -162,9 +164,11 @@ ags_play_dssi_audio_run_get_type()
     g_type_add_interface_static(ags_type_play_dssi_audio_run,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
+
+    g_once_init_leave (&g_define_type_id__volatile, ags_type_play_dssi_audio_run);
   }
 
-  return (ags_type_play_dssi_audio_run);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -914,10 +918,11 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
   AgsChannel *channel;
   AgsChannel *selected_channel;
   AgsRecycling *recycling;
+  AgsRecyclingContext *recycling_context;
   AgsAudioSignal *destination;
   AgsPlayDssiAudio *play_dssi_audio;
   AgsPlayDssiAudioRun *play_dssi_audio_run;
-
+  
   AgsDssiPlugin *dssi_plugin;
   
   AgsMutexManager *mutex_manager;
@@ -991,7 +996,7 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
   pthread_mutex_unlock(recall_mutex);
 
   /* get audio */
-  audio = AGS_RECALL_AUDIO_RUN(recall)->audio;
+  audio = AGS_RECALL_AUDIO_RUN(play_dssi_audio_run)->audio;
 
   /* audio mutex */
   pthread_mutex_lock(application_mutex);
@@ -1262,7 +1267,7 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
     event_buffer = play_dssi_audio_run->event_buffer;
     event_count = play_dssi_audio_run->event_count;
     
-    while(*event_buffer != NULL){
+    while(event_buffer[0] != NULL){
       seq_event = event_buffer[0];
       
       ags_base_plugin_run(dssi_plugin,
@@ -1318,7 +1323,6 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   GList *start_remove_note, *remove_note;
 
   guint audio_flags;
-  guint play_dssi_audio_flags;
   guint audio_start_mapping;
   guint midi_start_mapping, midi_end_mapping;
   guint notation_counter;
@@ -1363,8 +1367,6 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   audio_flags = audio->flags;
 
-  play_dssi_audio_flags = play_dssi_audio->flags;
-  
   output = audio->output;
   input = audio->input;
 
@@ -1379,7 +1381,7 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   /* get recycling and recycling context */
   pthread_mutex_lock(audio_mutex);
 
-  recycling = recall->recall_id->recycling;
+  recycling = AGS_RECALL(play_dssi_audio_run)->recall_id->recycling;
   
   pthread_mutex_unlock(audio_mutex);
 
@@ -1431,7 +1433,7 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   pthread_mutex_lock(audio_mutex);
   
-  notation_counter = play_lv2_audio_run->count_beats_audio_run->notation_counter;
+  notation_counter = play_dssi_audio_run->count_beats_audio_run->notation_counter;
 
   input_pads = audio->input_pads;
 
@@ -1440,10 +1442,10 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   midi_start_mapping = audio->midi_start_mapping;
   midi_end_mapping = audio->midi_end_mapping;
 
-  play_lv2_audio_run->timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(notation_counter / AGS_NOTATION_DEFAULT_OFFSET);
+  play_dssi_audio_run->timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(notation_counter / AGS_NOTATION_DEFAULT_OFFSET);
 
   list = ags_notation_find_near_timestamp(audio->notation, audio_channel,
-					  play_lv2_audio_run->timestamp);
+					  play_dssi_audio_run->timestamp);
   
   if(list != NULL){
     notation = list->data;
@@ -1523,7 +1525,7 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     if(play_dssi_audio_run->event_buffer != NULL){
       event_buffer = play_dssi_audio_run->event_buffer;
       
-      while(*event_buffer != NULL){
+      while(event_buffer[0] != NULL){
 	event_buffer++;
 	event_count++;
 	i++;
@@ -1548,6 +1550,7 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   /* remove */
   while(remove_note != NULL){
+    gint match_index;
     gboolean success;
       
     note = remove_note->data;
@@ -1571,8 +1574,9 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
       
     if(play_dssi_audio_run->event_buffer != NULL){
       event_buffer = play_dssi_audio_run->event_buffer;
+      event_count = play_dssi_audio_run->event_count;
       
-      while(*event_buffer != NULL){
+      while(event_buffer[0] != NULL){
 	if(event_buffer[0]->data.note.note == (0x7f & (selected_key - audio_start_mapping + midi_start_mapping))){
 	  match_index = i;
 	  //	    free(event_buffer[0]);
@@ -1592,10 +1596,12 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 		&(play_dssi_audio_run->event_buffer[match_index + 1]),
 		i - 1);
       }
-	
+
       play_dssi_audio_run->event_buffer[i - 1] = NULL;
+      play_dssi_audio_run->event_count[i - 1] = 0;
 	
       play_dssi_audio_run->event_buffer[i] = NULL;
+      play_dssi_audio_run->event_count[i] = 0;
 
       if(play_dssi_audio_run->key_on > 0){
 	play_dssi_audio_run->key_on -= 1;
@@ -1608,8 +1614,8 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     remove_note = remove_note->next;
   }
 
-  g_list_free(append_note_start);
-  g_list_free(remove_note_start);
+  g_list_free(start_append_note);
+  g_list_free(start_remove_note);
 }  
 
 void
@@ -1674,34 +1680,83 @@ ags_play_dssi_audio_run_load_ports(AgsPlayDssiAudioRun *play_dssi_audio_run)
   gchar *specifier;
   gchar *path;
   
+  guint output_lines, input_lines;
   unsigned long port_count;
   unsigned long i, j, j_stop;
 
   DSSI_Descriptor *plugin_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
+  
+  pthread_mutex_t *recall_mutex;
+  pthread_mutex_t *base_plugin_mutex;
 
   play_dssi_audio = AGS_PLAY_DSSI_AUDIO(AGS_RECALL_AUDIO_RUN(play_dssi_audio_run)->recall_audio);
-  port = AGS_RECALL(play_dssi_audio)->port;
+
+  /* recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = AGS_RECALL(play_dssi_audio)->obj_mutex;
   
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_mutex);
+
+  port = AGS_RECALL(play_dssi_audio)->port;
+
+  dssi_plugin = play_dssi_audio->plugin;
+
   plugin_descriptor = play_dssi_audio->plugin_descriptor;
+
+  input_lines = play_dssi_audio->input_lines;
+  output_lines = play_dssi_audio->output_lines;
+
+  pthread_mutex_unlock(recall_mutex);
+    
+  /* base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+
+  base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(base_plugin_mutex);
 
   port_count = plugin_descriptor->LADSPA_Plugin->PortCount;
   
   port_descriptor = plugin_descriptor->LADSPA_Plugin->PortDescriptors;
 
-  if(play_dssi_audio->input_lines < play_dssi_audio->output_lines){
-    j_stop = play_dssi_audio->output_lines;
+  pthread_mutex_unlock(base_plugin_mutex);
+
+  if(input_lines < output_lines){
+    j_stop = output_lines;
   }else{
-    j_stop = play_dssi_audio->input_lines;
+    j_stop = input_lines;
   }
 
   for(i = 0; i < port_count; i++){
-    if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
-      if(LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
-	 LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
+    int descriptor;
+    
+    pthread_mutex_lock(base_plugin_mutex);
+
+    descriptor = port_descriptor[i];
+    
+    pthread_mutex_unlock(base_plugin_mutex);
+
+    if(LADSPA_IS_PORT_CONTROL(descriptor)){
+      if(LADSPA_IS_PORT_INPUT(descriptor) ||
+	 LADSPA_IS_PORT_OUTPUT(descriptor)){
 	LADSPA_Data *port_pointer;
 	
-	specifier = plugin_descriptor->LADSPA_Plugin->PortNames[i];
+	pthread_mutex_lock(base_plugin_mutex);
+	
+	specifier = g_strdup(plugin_descriptor->LADSPA_Plugin->PortNames[i]);
+
+	pthread_mutex_unlock(base_plugin_mutex);
+
+	/* check port */
+	pthread_mutex_lock(recall_mutex);
 
 	list = port;
 	current = NULL;
@@ -1716,16 +1771,29 @@ ags_play_dssi_audio_run_load_ports(AgsPlayDssiAudioRun *play_dssi_audio_run)
 
 	  list = list->next;
 	}
+
+	pthread_mutex_unlock(recall_mutex);
+
+	g_free(specifier);
 	
 	for(j = 0; j < j_stop; j++){
 #ifdef AGS_DEBUG
 	  g_message("connecting port[%d]: %d/%d - %f", j, i, port_count, current->port_value.ags_port_ladspa);
 #endif
-	  port_pointer = (LADSPA_Data *) &(current->port_value.ags_port_ladspa);
+	  pthread_mutex_lock(current->mutex);
 	  
-	  play_dssi_audio->plugin_descriptor->LADSPA_Plugin->connect_port(play_dssi_audio_run->ladspa_handle[j],
-									  i,
-									  port_pointer);
+	  port_pointer = (LADSPA_Data *) &(current->port_value.ags_port_ladspa);
+
+	  pthread_mutex_unlock(current->mutex);
+	  
+	  /* connect */
+	  pthread_mutex_lock(base_plugin_mutex);
+
+	  plugin_descriptor->LADSPA_Plugin->connect_port(play_dssi_audio_run->ladspa_handle[j],
+							 i,
+							 port_pointer);
+
+	  pthread_mutex_unlock(base_plugin_mutex);
 	}
       }
     }
@@ -1733,15 +1801,43 @@ ags_play_dssi_audio_run_load_ports(AgsPlayDssiAudioRun *play_dssi_audio_run)
 
   /* connect audio port */
   for(j = 0; j < play_dssi_audio->input_lines; j++){
-    play_dssi_audio->plugin_descriptor->LADSPA_Plugin->connect_port(play_dssi_audio_run->ladspa_handle[j],
-								    play_dssi_audio->input_port[j],
-								    &(play_dssi_audio_run->input[j]));
+    unsigned long port_index;
+
+    /* port index */
+    pthread_mutex_lock(recall_mutex);
+    
+    port_index = play_dssi_audio->input_port[j];
+
+    pthread_mutex_unlock(recall_mutex);
+
+    /* connect */
+    pthread_mutex_lock(base_plugin_mutex);
+
+    plugin_descriptor->LADSPA_Plugin->connect_port(play_dssi_audio_run->ladspa_handle[j],
+						   port_index,
+						   &(play_dssi_audio_run->input[j]));
+
+    pthread_mutex_unlock(base_plugin_mutex);
   }
   
   for(j = 0; j < play_dssi_audio->output_lines; j++){    
-    play_dssi_audio->plugin_descriptor->LADSPA_Plugin->connect_port(play_dssi_audio_run->ladspa_handle[j],
-								    play_dssi_audio->output_port[j],
-								    &(play_dssi_audio_run->output[j]));
+    unsigned long port_index;
+
+    /* port index */
+    pthread_mutex_lock(recall_mutex);
+
+    port_index = play_dssi_audio->output_port[j];
+
+    pthread_mutex_unlock(recall_mutex);
+
+    /* connect */
+    pthread_mutex_lock(base_plugin_mutex);
+
+    plugin_descriptor->LADSPA_Plugin->connect_port(play_dssi_audio_run->ladspa_handle[j],
+						   port_index,
+						   &(play_dssi_audio_run->output[j]));
+
+    pthread_mutex_unlock(base_plugin_mutex);
   }
 }
 
