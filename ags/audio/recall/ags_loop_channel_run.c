@@ -562,7 +562,6 @@ ags_loop_channel_run_resolve_dependencies(AgsRecall *recall)
   AgsRecall *template;
   AgsRecallContainer *recall_container;
   AgsRecallID *recall_id;
-
   AgsRecallDependency *recall_dependency;
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
@@ -571,7 +570,6 @@ ags_loop_channel_run_resolve_dependencies(AgsRecall *recall)
   GList *list_start, *list;  
 
   guint i, i_stop;
-
 
   g_object_get(recall,
 	       "recall-container", &recall_container,
