@@ -21,6 +21,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/plugin/ags_plugin_port.h>
+
 #include <ags/i18n.h>
 
 void ags_buffer_channel_class_init(AgsBufferChannelClass *buffer_channel);

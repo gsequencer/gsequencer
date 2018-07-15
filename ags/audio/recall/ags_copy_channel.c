@@ -339,18 +339,22 @@ ags_copy_channel_set_ports(AgsPlugin *plugin, GList *port)
 void
 ags_copy_channel_set_muted(AgsMutable *mutable, gboolean muted)
 {
-  AgsPort *muted;
+  AgsPort *port;
   
   GValue value = {0,};
 
   g_object_get(G_OBJECT(mutable),
-	       "muted", &muted,
+	       "muted", &port,
 	       NULL);
   
-  g_value_init(&value, G_TYPE_FLOAT);
-  g_value_set_float(&value, (float) is_muted);
+  g_value_init(&value,
+	       G_TYPE_FLOAT);
+  
+  g_value_set_float(&value,
+		    (float) (muted ? 1.0: 0.0));
 
-  ags_port_safe_write(muted, &value);
+  ags_port_safe_write(port,
+		      &value);
 }
 
 /**

@@ -21,7 +21,7 @@
 
 #include <ags/libags.h>
 
-#include <ags/plugin/ags_base_plugin.h>
+#include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/i18n.h>
 
@@ -44,7 +44,7 @@ void ags_mute_channel_set_ports(AgsPlugin *plugin, GList *port);
 
 void ags_mute_channel_set_muted(AgsMutable *mutable, gboolean muted);
 
-static AgsPortDescriptor* ags_mute_channel_get_muted_plugin_port();
+static AgsPluginPort* ags_mute_channel_get_muted_plugin_port();
 
 /**
  * SECTION:ags_mute_channel
@@ -122,8 +122,6 @@ ags_mute_channel_get_type()
 void
 ags_mute_channel_mutable_interface_init(AgsMutableInterface *mutable)
 {
-  ags_mute_channel_parent_mutable_interface = g_type_interface_peek_parent(mutable);
-
   mutable->set_muted = ags_mute_channel_set_muted;
 }
 
@@ -222,7 +220,7 @@ ags_mute_channel_set_property(GObject *gobject,
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
-  recall_mutex = recall->obj_mutex;
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -275,7 +273,7 @@ ags_mute_channel_get_property(GObject *gobject,
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
-  recall_mutex = recall->obj_mutex;
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -366,10 +364,10 @@ ags_mute_channel_set_muted(AgsMutable *mutable, gboolean muted)
 		      &value);
 }
 
-static AgsPortDescriptor*
+static AgsPluginPort*
 ags_mute_channel_get_muted_plugin_port()
 {
-  static AgsPortDescriptor *plugin_port = NULL;
+  static AgsPluginPort *plugin_port = NULL;
 
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 

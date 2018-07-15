@@ -38,7 +38,6 @@
 
 void ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_audio_run);
 void ags_count_beats_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_count_beats_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_count_beats_audio_run_seekable_interface_init(AgsSeekableInterface *seekable);
 void ags_count_beats_audio_run_countable_interface_init(AgsCountableInterface *countable);
 void ags_count_beats_audio_run_tactable_interface_init(AgsTactableInterface *tactable);
@@ -78,7 +77,7 @@ void ags_count_beats_audio_run_notify_output_soundcard_callback(GObject *gobject
 								GParamSpec *pspec,
 								gpointer user_data);
 
-void ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall);
+void ags_count_beats_audio_run_resolve_dependency(AgsRecall *recall);
 void ags_count_beats_audio_run_notify_dependency(AgsRecall *recall,
 						 guint dependency, gboolean increase);
 void ags_count_beats_audio_run_run_init_pre(AgsRecall *recall);
@@ -180,12 +179,6 @@ ags_count_beats_audio_run_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_count_beats_audio_run_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     static const GInterfaceInfo ags_seekable_interface_info = {
       (GInterfaceInitFunc) ags_count_beats_audio_run_seekable_interface_init,
       NULL, /* interface_finalize */
@@ -218,10 +211,6 @@ ags_count_beats_audio_run_get_type()
     g_type_add_interface_static(ags_type_count_beats_audio_run,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_count_beats_audio_run,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_count_beats_audio_run,
 				AGS_TYPE_COUNTABLE,
@@ -409,7 +398,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
   /* AgsRecallClass */
   recall = (AgsRecallClass *) count_beats_audio_run;
 
-  recall->resolve_dependencies = ags_count_beats_audio_run_resolve_dependencies;
+  recall->resolve_dependency = ags_count_beats_audio_run_resolve_dependency;
   recall->notify_dependency = ags_count_beats_audio_run_notify_dependency;
   recall->run_init_pre = ags_count_beats_audio_run_run_init_pre;
   recall->done = ags_count_beats_audio_run_done;
@@ -1338,7 +1327,7 @@ ags_count_beats_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugi
   xmlAddChild(node,
 	      child);
 
-  list = AGS_RECALL(plugin)->dependencies;
+  list = AGS_RECALL(plugin)->recall_dependency;
 
   while(list != NULL){
     id = ags_id_generator_create_uuid();
@@ -1393,7 +1382,7 @@ ags_count_beats_audio_run_notify_output_soundcard_callback(GObject *gobject,
 }
 
 void
-ags_count_beats_audio_run_resolve_dependencies(AgsRecall *recall)
+ags_count_beats_audio_run_resolve_dependency(AgsRecall *recall)
 {
   AgsRecall *template;
   AgsRecallContainer *recall_container;
@@ -1577,7 +1566,7 @@ ags_count_beats_audio_run_run_init_pre(AgsRecall *recall)
   /* get parent class and mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
-  run_init_pre = AGS_RECALL_CLASS(ags_count_beats_audio_run_parent_class)->run_init_pre;
+  parent_class_run_init_pre = AGS_RECALL_CLASS(ags_count_beats_audio_run_parent_class)->run_init_pre;
 
   recall_mutex = recall->obj_mutex;
   
@@ -1649,7 +1638,7 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
 				      AGS_SOUND_SCOPE_SEQUENCER);
   
   /* append AgsCancelAudio */
-  ags_task_thread_append_task((AgsTaskThread *) async_queue,
+  ags_task_thread_append_task((AgsTaskThread *) task_thread,
 			      (AgsTask *) cancel_audio);  
 
   /* call parent */
@@ -2261,7 +2250,6 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 
   AgsCountBeatsAudio *count_beats_audio;
 
-  gdouble loop_end;
   gboolean loop;
 
   guint64 loop_start, loop_end;
@@ -2740,7 +2728,7 @@ ags_count_beats_audio_run_get_bpm(AgsTactable *tactable)
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
 
-  recall_mutex = AGS_RECALL(count_beats_audio_run)->obj_mutex;
+  recall_mutex = AGS_RECALL(tactable)->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -2764,7 +2752,7 @@ ags_count_beats_audio_run_get_tact(AgsTactable *tactable)
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
 
-  recall_mutex = AGS_RECALL(count_beats_audio_run)->obj_mutex;
+  recall_mutex = AGS_RECALL(tactable)->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -2792,6 +2780,7 @@ ags_count_beats_audio_run_change_tact(AgsTactable *tactable, gdouble new_tact, g
 
 /**
  * ags_count_beats_audio_run_new:
+ * @audio: the #AgsAudio
  * @delay_audio_run: the #AgsDelayAudioRun dependency
  *
  * Create a new instance of #AgsCountBeatsAudioRun
@@ -2801,11 +2790,13 @@ ags_count_beats_audio_run_change_tact(AgsTactable *tactable, gdouble new_tact, g
  * Since: 2.0.0
  */
 AgsCountBeatsAudioRun*
-ags_count_beats_audio_run_new(AgsDelayAudioRun *delay_audio_run)
+ags_count_beats_audio_run_new(AgsAudio *audio,
+			      AgsDelayAudioRun *delay_audio_run)
 {
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
   count_beats_audio_run = (AgsCountBeatsAudioRun *) g_object_new(AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+								 "audio", audio,
 								 "delay-audio-run", delay_audio_run,
 								 NULL);
   

@@ -235,7 +235,7 @@ ags_play_channel_init(AgsPlayChannel *play_channel)
   play_channel->muted->port_value.ags_port_float = (float) 0.0;
 
   /* plugin port */
-  g_object_set(play_audio->muted,
+  g_object_set(play_channel->muted,
 	       "plugin-port", ags_play_audio_get_muted_plugin_port(),
 	       NULL);
   
@@ -263,7 +263,7 @@ ags_play_channel_set_property(GObject *gobject,
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
-  recall_mutex = recall->obj_mutex;
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -343,7 +343,7 @@ ags_play_channel_get_property(GObject *gobject,
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
-  recall_mutex = recall->obj_mutex;
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -466,7 +466,7 @@ ags_play_channel_set_muted(AgsMutable *mutable, gboolean muted)
 static AgsPluginPort*
 ags_play_channel_get_muted_plugin_port()
 {
-  static AgsPortDescriptor *plugin_port = NULL;
+  static AgsPluginPort *plugin_port = NULL;
 
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 

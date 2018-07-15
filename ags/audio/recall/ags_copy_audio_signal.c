@@ -21,6 +21,7 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_recycling.h>
@@ -31,6 +32,7 @@
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/recall/ags_copy_channel.h>
+#include <ags/audio/recall/ags_copy_channel_run.h>
 #include <ags/audio/recall/ags_copy_recycling.h>
 
 #include <stdlib.h>
@@ -162,7 +164,8 @@ ags_copy_audio_signal_run_init_pre(AgsRecall *recall)
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   /* set flags */
-  ags_recall_unset_behaviour_flags(recall, AGS_RECALL_PERSISTENT);
+  ags_recall_unset_behaviour_flags(recall,
+				   AGS_SOUND_BEHAVIOUR_PERSISTENT);
 
   /* get some fields */
   g_object_get(copy_audio_signal,
@@ -209,13 +212,13 @@ ags_copy_audio_signal_run_init_pre(AgsRecall *recall)
 
   /* create new audio signal */
   destination = ags_audio_signal_new((GObject *) output_soundcard,
-				     (GObject *) recycling,
+				     (GObject *) destination_recycling,
 				     (GObject *) parent_recall_id);
   
   g_object_set(copy_audio_signal,
 	       "destination", destination,
 	       NULL);  
-  ags_recycling_create_audio_signal_with_defaults(recycling,
+  ags_recycling_create_audio_signal_with_defaults(destination_recycling,
 						  destination,
 						  delay, attack);
   length = 1; // (guint) (2.0 * soundcard->delay[soundcard->tic_counter]) + 1;
@@ -224,7 +227,7 @@ ags_copy_audio_signal_run_init_pre(AgsRecall *recall)
 
   ags_connectable_connect(AGS_CONNECTABLE(destination));
   
-  destination->stream = destination->stream_beginning;
+  destination->stream_current = destination->stream;
 
   ags_recycling_add_audio_signal(destination_recycling,
 				 destination);

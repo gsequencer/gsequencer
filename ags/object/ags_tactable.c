@@ -80,7 +80,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsTactableInterface, change_sequencer_duration),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT64,
+		 ags_cclosure_marshal_VOID__UINT64,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT64);
 
@@ -100,7 +100,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsTactableInterface, change_notation_duration),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT64,
+		 ags_cclosure_marshal_VOID__UINT64,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT64);
 
@@ -120,7 +120,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsTactableInterface, change_wave_duration),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT64,
+		 ags_cclosure_marshal_VOID__UINT64,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT64);
 
@@ -140,7 +140,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsTactableInterface, change_midi_duration),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT64,
+		 ags_cclosure_marshal_VOID__UINT64,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT64);
 

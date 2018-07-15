@@ -21,6 +21,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/plugin/ags_plugin_port.h>
+
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_copy_pattern_channel_run.h>

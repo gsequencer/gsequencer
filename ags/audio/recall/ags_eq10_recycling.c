@@ -21,6 +21,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/recall/ags_eq10_audio_signal.h>
+
 void ags_eq10_recycling_class_init(AgsEq10RecyclingClass *eq10_recycling);
 void ags_eq10_recycling_init(AgsEq10Recycling *eq10_recycling);
 void ags_eq10_recycling_connect(AgsConnectable *connectable);

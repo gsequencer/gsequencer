@@ -130,7 +130,7 @@ ags_feed_audio_signal_run_pre(AgsRecall *recall)
 
   recall_mutex = recall->obj_mutex;
 
-  parent_class_run_pre = AGS_RECALL_CLASS(ags_copy_pattern_channel_run_parent_class)->run_pre;
+  parent_class_run_pre = AGS_RECALL_CLASS(ags_feed_audio_signal_parent_class)->run_pre;
 
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 

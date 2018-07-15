@@ -259,7 +259,7 @@ ags_copy_pattern_channel_run_notify_recall_audio(GObject *gobject,
 
     if(delay_audio_run != NULL &&
        ags_connectable_is_connected(AGS_CONNECTABLE(copy_pattern_channel_run))){
-      ags_copy_pattern_channel_run_disconnect_connection(connectable, delay_audio_run);
+      ags_copy_pattern_channel_run_disconnect_connection(AGS_CONNECTABLE(copy_pattern_channel_run), delay_audio_run);
     }
   }
 }
@@ -619,7 +619,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   AgsCopyPatternAudio *copy_pattern_audio;
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannel *copy_pattern_channel;
-  AgsCountBeatsAudioRun *count_beats_pattern_audio_run;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
 
   guint sequencer_counter;
   gboolean current_bit;
@@ -900,7 +900,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
 	  ags_audio_signal_unset_flags(audio_signal, AGS_AUDIO_SIGNAL_TEMPLATE);
 	  
-	  audio_signal->stream = audio_signal->stream_beginning;
+	  audio_signal->stream_current = audio_signal->stream;
 
 	  ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
 

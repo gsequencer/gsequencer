@@ -31,7 +31,9 @@
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/recall/ags_play_channel.h>
+#include <ags/audio/recall/ags_play_channel_run.h>
 #include <ags/audio/recall/ags_play_channel_run_master.h>
+#include <ags/audio/recall/ags_play_recycling.h>
 
 #include <stdlib.h>
 
@@ -155,7 +157,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 
   recall_mutex = recall->obj_mutex;
   
-  parent_class_run_inter = AGS_RECALL_CLASS(ags_eq10_audio_signal_parent_class)->run_inter;
+  parent_class_run_inter = AGS_RECALL_CLASS(ags_play_audio_signal_parent_class)->run_inter;
 
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -269,7 +271,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 		   "rt-offset", &rt_offset,
 		   NULL);
 
-      stream = source->stream_beginning;
+      stream = source->stream;
       
       if(stream == NULL){
 	note = note->next;

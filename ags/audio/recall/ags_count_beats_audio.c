@@ -44,10 +44,10 @@ void ags_count_beats_audio_notify_output_soundcard_callback(GObject *gobject,
 							    GParamSpec *pspec,
 							    gpointer user_data);
 
-void ags_count_beats_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duration);
-void ags_count_beats_audio_change_notation_duration(AgsTactable *tactable, gdouble duration);
-void ags_count_beats_audio_change_wave_duration(AgsTactable *tactable, gdouble duration);
-void ags_count_beats_audio_change_midi_duration(AgsTactable *tactable, gdouble duration);
+void ags_count_beats_audio_change_sequencer_duration(AgsTactable *tactable, guint64 duration);
+void ags_count_beats_audio_change_notation_duration(AgsTactable *tactable, guint64 duration);
+void ags_count_beats_audio_change_wave_duration(AgsTactable *tactable, guint64 duration);
+void ags_count_beats_audio_change_midi_duration(AgsTactable *tactable, guint64 duration);
 
 void ags_count_beats_audio_set_ports(AgsPlugin *plugin, GList *port);
 
@@ -72,6 +72,9 @@ enum{
   PROP_WAVE_LOOP,
   PROP_WAVE_LOOP_START,
   PROP_WAVE_LOOP_END,
+  PROP_MIDI_LOOP,
+  PROP_MIDI_LOOP_START,
+  PROP_MIDI_LOOP_END,
 };
 
 static gpointer ags_count_beats_audio_parent_class = NULL;

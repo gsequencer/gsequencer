@@ -27,6 +27,8 @@
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/recall/ags_eq10_channel.h>
+#include <ags/audio/recall/ags_eq10_channel_run.h>
+#include <ags/audio/recall/ags_eq10_recycling.h>
 
 #include <math.h>
 
@@ -266,7 +268,7 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
 	       NULL);
 
   g_object_get(recycling_context,
-	       "parent", parent:recycling_context,
+	       "parent", &parent_recycling_context,
 	       NULL);
 
   g_object_get(source,

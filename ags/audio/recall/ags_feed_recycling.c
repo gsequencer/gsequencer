@@ -21,6 +21,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/recall/ags_feed_audio_signal.h>
+
 void ags_feed_recycling_class_init(AgsFeedRecyclingClass *feed_recycling);
 void ags_feed_recycling_init(AgsFeedRecycling *feed_recycling);
 void ags_feed_recycling_finalize(GObject *gobject);

@@ -102,7 +102,6 @@ ags_analyse_channel_run_init(AgsAnalyseChannelRun *analyse_channel_run)
   AGS_RECALL(analyse_channel_run)->xml_type = "ags-analyse-channel-run";
   AGS_RECALL(analyse_channel_run)->port = NULL;
 
-  AGS_RECALL(analyse_channel_run)->flags |= AGS_RECALL_INPUT_ORIENTATED;
   AGS_RECALL(analyse_channel_run)->child_type = AGS_TYPE_ANALYSE_RECYCLING;
 }
 
@@ -122,7 +121,7 @@ ags_analyse_channel_run_run_pre(AgsRecall *recall)
 
   guint cache_buffer_size;
   guint cache_format;
-  gboolean buffer_computed;
+  gboolean current_buffer_computed;
   
   GValue value = {0,};
 
@@ -139,7 +138,7 @@ ags_analyse_channel_run_run_pre(AgsRecall *recall)
   recall_mutex = recall->obj_mutex;
   buffer_mutex = analyse_channel->buffer_mutex;
 
-  parent_class_run_pre = AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->run_pre;
+  parent_class_run_pre = AGS_RECALL_CLASS(ags_analyse_channel_run_parent_class)->run_pre;
 
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -160,9 +159,10 @@ ags_analyse_channel_run_run_pre(AgsRecall *recall)
 
   ags_port_safe_read(analyse_channel->buffer_computed,
 		     &value);
-  buffer_computed = g_value_get_boolean(&value);
+  
+  current_buffer_computed = g_value_get_boolean(&value);
 
-  if(!buffer_computed){    
+  if(!current_buffer_computed){    
     /* set buffer-computed port to TRUE */
     g_value_reset(&value);
     g_value_set_boolean(&value,
@@ -175,7 +175,7 @@ ags_analyse_channel_run_run_pre(AgsRecall *recall)
   g_value_unset(&value);
 
   /* lock free - buffer-computed reset by cyclic-task AgsResetAnalyse */
-  if(!buffer_computed){
+  if(!current_buffer_computed){
     /* retrieve analyse */    
     ags_analyse_channel_retrieve_frequency_and_magnitude(analyse_channel);
 

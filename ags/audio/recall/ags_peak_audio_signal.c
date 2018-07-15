@@ -154,7 +154,7 @@ ags_peak_audio_signal_set_property(GObject *gobject,
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
-  recall_mutex = recall->obj_mutex;
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -193,7 +193,7 @@ ags_peak_audio_signal_get_property(GObject *gobject,
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
-  recall_mutex = recall->obj_mutex;
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 

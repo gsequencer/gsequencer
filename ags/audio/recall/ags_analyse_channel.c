@@ -28,7 +28,7 @@
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
-#include <ags/audio/task/recall/ags_reset_amplitude.h>
+#include <ags/audio/task/ags_reset_amplitude.h>
 
 #include <math.h>
 
@@ -390,13 +390,13 @@ ags_analyse_channel_init(AgsAnalyseChannel *analyse_channel)
 						   "port-value-is-pointer", TRUE,
 						   "port-value-type", G_TYPE_DOUBLE,
 						   "port-value-size", sizeof(gdouble),
-						   "port-value-length", (guint) ceil(analyse_channel->buffer_size / 2.0),
+						   "port-value-length", (guint) ceil(analyse_channel->cache_buffer_size / 2.0),
 						   NULL);
   g_object_ref(analyse_channel->frequency_buffer);
   
-  analyse_channel->frequency_buffer->port_value.ags_port_double_ptr = (double *) malloc(analyse_channel->buffer_size * sizeof(double));
+  analyse_channel->frequency_buffer->port_value.ags_port_double_ptr = (double *) malloc(analyse_channel->cache_buffer_size * sizeof(double));
   ags_audio_buffer_util_clear_double(analyse_channel->frequency_buffer->port_value.ags_port_double_ptr, 1,
-				     analyse_channel->buffer_size);
+				     analyse_channel->cache_buffer_size);
   
   /* add to port */  
   port = g_list_prepend(port, analyse_channel->frequency_buffer);
@@ -410,13 +410,13 @@ ags_analyse_channel_init(AgsAnalyseChannel *analyse_channel)
 						   "port-value-is-pointer", TRUE,
 						   "port-value-type", G_TYPE_DOUBLE,
 						   "port-value-size", sizeof(gdouble),
-						   "port-value-length", (guint) ceil(analyse_channel->buffer_size / 2.0),
+						   "port-value-length", (guint) ceil(analyse_channel->cache_buffer_size / 2.0),
 						   NULL);
   g_object_ref(analyse_channel->magnitude_buffer);
   
-  analyse_channel->magnitude_buffer->port_value.ags_port_double_ptr = (double *) malloc(analyse_channel->buffer_size * sizeof(double));
+  analyse_channel->magnitude_buffer->port_value.ags_port_double_ptr = (double *) malloc(analyse_channel->cache_buffer_size * sizeof(double));
   ags_audio_buffer_util_clear_double(analyse_channel->magnitude_buffer->port_value.ags_port_double_ptr, 1,
-				     analyse_channel->buffer_size);
+				     analyse_channel->cache_buffer_size);
 
   /* add to port */  
   port = g_list_prepend(port, analyse_channel->magnitude_buffer);
@@ -563,7 +563,7 @@ ags_analyse_channel_get_property(GObject *gobject,
       pthread_mutex_lock(recall_mutex);
 
       g_value_set_uint(value,
-		       analyse_channel->samplerate);
+		       analyse_channel->cache_samplerate);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -573,7 +573,7 @@ ags_analyse_channel_get_property(GObject *gobject,
       pthread_mutex_lock(recall_mutex);
 
       g_value_set_uint(value,
-		       analyse_channel->buffer_size);
+		       analyse_channel->cache_buffer_size);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -583,7 +583,7 @@ ags_analyse_channel_get_property(GObject *gobject,
       pthread_mutex_lock(recall_mutex);
 
       g_value_set_uint(value,
-		       analyse_channel->format);
+		       analyse_channel->cache_format);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -834,7 +834,7 @@ ags_analyse_channel_retrieve_frequency_and_magnitude(AgsAnalyseChannel *analyse_
   out = analyse_channel->out;
   
   /* execute plan */
-  memset((void *) out, 0, analyse_channel->buffer_size * sizeof(double));
+  memset((void *) out, 0, cache_buffer_size * sizeof(double));
 
   fftw_execute(analyse_channel->plan);
   

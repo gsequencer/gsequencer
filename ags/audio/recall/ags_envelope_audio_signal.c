@@ -32,6 +32,8 @@
 #include <ags/audio/ags_recall_channel_run.h>
 
 #include <ags/audio/recall/ags_envelope_channel.h>
+#include <ags/audio/recall/ags_envelope_channel_run.h>
+#include <ags/audio/recall/ags_envelope_recycling.h>
 
 #include <stdlib.h>
 #include <complex.h>
@@ -206,7 +208,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 
   recall_mutex = recall->obj_mutex;
   
-  parent_class_run_inter = AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->run_inter;
+  parent_class_run_inter = AGS_RECALL_CLASS(ags_envelope_audio_signal_parent_class)->run_inter;
 
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -298,11 +300,9 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 		   "decay", &decay,
 		   "sustain", &sustain,
 		   "release", &release,
+		   "ratio", &ratio,
 		   NULL);
-
-      ratio = &(current->ratio);
-		   NULL);
-      
+     
       /* set frame count */
       if(do_use_note_length){
 	guint key_x0, key_x1;

@@ -257,21 +257,21 @@ ags_play_dssi_audio_set_property(GObject *gobject,
 
       pthread_mutex_lock(recall_mutex);
 
-      if(dssi_plugin->plugin == dssi_plugin){
+      if(play_dssi_audio->plugin == dssi_plugin){
 	pthread_mutex_unlock(recall_mutex);
 	
 	return;
       }
 
-      if(dssi_plugin->plugin != NULL){
-	g_object_unref(dssi_plugin->plugin);
+      if(play_dssi_audio->plugin != NULL){
+	g_object_unref(play_dssi_audio->plugin);
       }
 
       if(dssi_plugin != NULL){
 	g_object_ref(dssi_plugin);
       }
 
-      dssi_plugin->plugin = dssi_plugin;
+      play_dssi_audio->plugin = dssi_plugin;
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -814,7 +814,7 @@ ags_play_dssi_audio_load_conversion(AgsPlayDssiAudio *play_dssi_audio,
     ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_ABOVE;
   }
   
-  if((AGS_PORT_DESCRIPTOR_SAMPLERATE & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
+  if(ags_plugin_port_test_flags(plugin_port, AGS_PLUGIN_PORT_SAMPLERATE)){
     if(ladspa_conversion == NULL ||
        !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
       ladspa_conversion = ags_ladspa_conversion_new();

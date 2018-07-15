@@ -18,7 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_play_dssi_audio_run.h>
-#include <ags/audio/recall/ags_play_dssi_audio.h>
 
 #include <ags/libags.h>
 
@@ -26,11 +25,14 @@
 #include <ags/plugin/ags_ladspa_conversion.h>
 #include <ags/plugin/ags_dssi_plugin.h>
 
+#include <ags/audio/ags_sound_enums.h>
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
+#include <ags/audio/recall/ags_play_dssi_audio.h>
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
 
@@ -50,7 +52,6 @@
 
 void ags_play_dssi_audio_run_class_init(AgsPlayDssiAudioRunClass *play_dssi_audio_run);
 void ags_play_dssi_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_play_dssi_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_play_dssi_audio_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_play_dssi_audio_run_init(AgsPlayDssiAudioRun *play_dssi_audio_run);
 void ags_play_dssi_audio_run_set_property(GObject *gobject,
@@ -353,7 +354,7 @@ ags_play_dssi_audio_run_set_property(GObject *gobject,
       }
 
       if(play_dssi_audio_run->delay_audio_run != NULL){
-	old_delay_audio_run = count_beats_audio_run->delay_audio_run;
+	old_delay_audio_run = play_dssi_audio_run->delay_audio_run;
 
 	g_object_unref(G_OBJECT(play_dssi_audio_run->delay_audio_run));
       }
@@ -405,7 +406,7 @@ ags_play_dssi_audio_run_set_property(GObject *gobject,
     break;
   case PROP_COUNT_BEATS_AUDIO_RUN:
     {
-      AgsCountBeatsAudioRun *count_beats_audio_run;
+      AgsCountBeatsAudioRun *count_beats_audio_run, *old_count_beats_audio_run;
 
       gboolean is_template;
 
@@ -448,14 +449,14 @@ ags_play_dssi_audio_run_set_property(GObject *gobject,
       /* dependency - remove */
       if(is_template &&
 	 old_count_beats_audio_run != NULL){
-	ags_recall_remove_dependency(AGS_RECALL(copy_pattern_audio_run),
+	ags_recall_remove_dependency(AGS_RECALL(play_dssi_audio_run),
 				     (AgsRecall *) old_count_beats_audio_run);
       }
 
       /* dependency - add */
       if(is_template &&
 	 count_beats_audio_run != NULL){
-	ags_recall_add_dependency(AGS_RECALL(copy_pattern_audio_run),
+	ags_recall_add_dependency(AGS_RECALL(play_dssi_audio_run),
 				  ags_recall_dependency_new((GObject *) count_beats_audio_run));
       }
     }
@@ -1092,7 +1093,7 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
 	       NULL);
 
   /* get presets */
-  ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+  ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
 			    NULL,
 			    NULL,
 			    &buffer_size,
@@ -1146,7 +1147,7 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
 	       "first-recycling", &recycling,
 	       NULL);
 
-  ags_recall_unset_flags(recall, AGS_RECALL_PERSISTENT);
+  ags_recall_unset_behaviour_flags(recall, AGS_SOUND_BEHAVIOUR_PERSISTENT);
 
   if(destination == NULL){
     gdouble delay;
@@ -1158,7 +1159,7 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
     delay = 0.0;
 
     /* create new audio signal */
-    destination = ags_audio_signal_new((GObject *) soundcard,
+    destination = ags_audio_signal_new((GObject *) output_soundcard,
 				       (GObject *) recycling,
 				       (GObject *) recall_id);
 
@@ -1175,7 +1176,7 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
 
     ags_connectable_connect(AGS_CONNECTABLE(destination));
   
-    destination->stream_current = destination->stream_beginning;
+    destination->stream_current = destination->stream;
     
     ags_recycling_add_audio_signal(recycling,
 				   destination);
@@ -1607,7 +1608,7 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 	i++;
       }
 
-      if(i + 1 < AGS_PLAY_DSSI_AUDIO_DEFAULT_MIDI_LENGHT){
+      if(i + 1 < AGS_PLAY_DSSI_AUDIO_RUN_DEFAULT_MIDI_LENGHT){
 	play_dssi_audio_run->event_buffer[i] = seq_event;
 	play_dssi_audio_run->event_buffer[i + 1] = NULL;
 		  
@@ -1750,7 +1751,7 @@ ags_play_dssi_audio_run_load_ports(AgsPlayDssiAudioRun *play_dssi_audio_run)
   AgsDssiPlugin *dssi_plugin;
   AgsPort *current;
 
-  GList *start_port, port;
+  GList *start_port, *port;
   GList *list;
 
   gchar *plugin_name;

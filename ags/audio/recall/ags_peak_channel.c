@@ -28,7 +28,7 @@
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
-#include <ags/audio/task/recall/ags_reset_peak.h>
+#include <ags/audio/task/ags_reset_peak.h>
 
 #include <math.h>
 
@@ -426,7 +426,7 @@ ags_peak_channel_set_property(GObject *gobject,
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
-  recall_mutex = recall->obj_mutex;
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -587,7 +587,7 @@ ags_peak_channel_get_property(GObject *gobject,
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
-  recall_mutex = recall->obj_mutex;
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -773,7 +773,7 @@ ags_peak_channel_set_ports(AgsPlugin *plugin, GList *port)
 static AgsPluginPort*
 ags_peak_channel_get_peak_plugin_port()
 {
-  static AgsPortDescriptor *plugin_port = NULL;
+  static AgsPluginPort *plugin_port = NULL;
 
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 

@@ -64,14 +64,16 @@ void ags_delay_audio_notify_buffer_size_callback(GObject *gobject,
 
 gdouble ags_delay_audio_get_bpm(AgsTactable *tactable);
 gdouble ags_delay_audio_get_tact(AgsTactable *tactable);
-gdouble ags_delay_audio_get_wave_duration(AgsTactable *tactable);
-gdouble ags_delay_audio_get_sequencer_duration(AgsTactable *tactable);
-gdouble ags_delay_audio_get_notation_duration(AgsTactable *tactable);
+guint64 ags_delay_audio_get_sequencer_duration(AgsTactable *tactable);
+guint64 ags_delay_audio_get_notation_duration(AgsTactable *tactable);
+guint64 ags_delay_audio_get_wave_duration(AgsTactable *tactable);
+guint64 ags_delay_audio_get_midi_duration(AgsTactable *tactable);
 void ags_delay_audio_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
 void ags_delay_audio_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_bpm);
-void ags_delay_audio_change_wave_duration(AgsTactable *tactable, gdouble duration);
-void ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, gdouble duration);
-void ags_delay_audio_change_notation_duration(AgsTactable *tactable, gdouble duration);
+void ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, guint64 duration);
+void ags_delay_audio_change_notation_duration(AgsTactable *tactable, guint64 duration);
+void ags_delay_audio_change_wave_duration(AgsTactable *tactable, guint64 duration);
+void ags_delay_audio_change_midi_duration(AgsTactable *tactable, guint64 duration);
 
 void ags_delay_audio_refresh_delay(AgsDelayAudio *delay_audio);
 
@@ -1526,7 +1528,7 @@ ags_delay_audio_get_sequencer_duration(AgsTactable *tactable)
   delay_audio = AGS_DELAY_AUDIO(tactable);
   
   g_object_get(delay_audio,
-	       "sequencer-duration", &sequencer_durtation,
+	       "sequencer-duration", &sequencer_duration,
 	       NULL);
   
   /* retrieve tact */
@@ -1556,7 +1558,7 @@ ags_delay_audio_get_notation_duration(AgsTactable *tactable)
   delay_audio = AGS_DELAY_AUDIO(tactable);
   
   g_object_get(delay_audio,
-	       "notation-duration", &notation_durtation,
+	       "notation-duration", &notation_duration,
 	       NULL);
   
   /* retrieve tact */
@@ -1586,7 +1588,7 @@ ags_delay_audio_get_wave_duration(AgsTactable *tactable)
   delay_audio = AGS_DELAY_AUDIO(tactable);
   
   g_object_get(delay_audio,
-	       "wave-duration", &wave_durtation,
+	       "wave-duration", &wave_duration,
 	       NULL);
   
   /* retrieve tact */
@@ -1616,7 +1618,7 @@ ags_delay_audio_get_midi_duration(AgsTactable *tactable)
   delay_audio = AGS_DELAY_AUDIO(tactable);
   
   g_object_get(delay_audio,
-	       "midi-duration", &midi_durtation,
+	       "midi-duration", &midi_duration,
 	       NULL);
   
   /* retrieve tact */
@@ -1668,7 +1670,7 @@ ags_delay_audio_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_b
 	       "midi-duration", &midi_duration,
 	       NULL);
 
-  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard));
+  current_delay = ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard));
 
   /* -- start adjust -- */
   g_value_init(&value,
@@ -1709,7 +1711,7 @@ ags_delay_audio_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_b
 	       G_TYPE_UINT64);
 
   g_value_set_uint64(&value,
-		     (guint64) ceil(16.0 * delay));
+		     (guint64) ceil(16.0 * current_delay));
 
   ags_port_safe_write(sequencer_duration, &value);
 
@@ -1770,7 +1772,7 @@ ags_delay_audio_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old
 	       "midi-duration", &midi_duration,
 	       NULL);
 
-  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard));
+  current_delay = ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard));
 
   /* -- start adjust -- */
   g_value_init(&value,
@@ -1811,7 +1813,7 @@ ags_delay_audio_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old
 	       G_TYPE_UINT64);
 
   g_value_set_uint64(&value,
-		     (guint64) ceil(16.0 * delay));
+		     (guint64) ceil(16.0 * current_delay));
 
   ags_port_safe_write(sequencer_duration, &value);
 
@@ -1903,7 +1905,7 @@ ags_delay_audio_refresh_delay(AgsDelayAudio *delay_audio)
 	       G_TYPE_UINT64);
 
   g_value_set_uint64(&value,
-		     (guint64) ceil(16.0 * delay));
+		     (guint64) ceil(16.0 * current_delay));
 
   ags_port_safe_write(sequencer_duration, &value);
 

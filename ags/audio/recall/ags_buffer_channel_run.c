@@ -60,12 +60,6 @@ ags_buffer_channel_run_get_type()
       (GInstanceInitFunc) ags_buffer_channel_run_init,
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_buffer_channel_run_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_buffer_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 							 "AgsBufferChannelRun",
 							 &ags_buffer_channel_run_info,

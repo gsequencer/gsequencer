@@ -288,7 +288,7 @@ ags_timestamp_get_unix_time(AgsTimestamp *timestamp)
 }
 
 /**
- * ags_timestamp_get_unix_time:
+ * ags_timestamp_set_unix_time:
  * @timestamp: the #AgsTimestamp
  * @unix_time: the unix time value
  * 
@@ -360,7 +360,7 @@ ags_timestamp_get_ags_offset(AgsTimestamp *timestamp)
 }
 
 /**
- * ags_timestamp_get_ags_offset:
+ * ags_timestamp_set_ags_offset:
  * @timestamp: the #AgsTimestamp
  * @ags_offset: the AGS offset
  * 
@@ -368,8 +368,8 @@ ags_timestamp_get_ags_offset(AgsTimestamp *timestamp)
  * 
  * Since: 2.0.0
  */
-guint64
-ags_timestamp_get_ags_offset(AgsTimestamp *timestamp,
+void
+ags_timestamp_set_ags_offset(AgsTimestamp *timestamp,
 			     guint64 ags_offset)
 {
   pthread_mutex_t *timestamp_mutex;

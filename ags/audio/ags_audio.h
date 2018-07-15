@@ -68,12 +68,16 @@ typedef enum{
   AGS_AUDIO_SYNC                        = 1 <<  4, // can be combined with below
   AGS_AUDIO_ASYNC                       = 1 <<  5,
   AGS_AUDIO_OUTPUT_HAS_RECYCLING        = 1 <<  6,
-  AGS_AUDIO_INPUT_HAS_RECYCLING         = 1 <<  7,
-  AGS_AUDIO_INPUT_HAS_FILE              = 1 <<  8,
-  AGS_AUDIO_CAN_NEXT_ACTIVE             = 1 <<  9,
-  AGS_AUDIO_SKIP_OUTPUT                 = 1 << 10,
-  AGS_AUDIO_SKIP_INPUT                  = 1 << 11,
-  AGS_AUDIO_BYPASS                      = 1 << 12,
+  AGS_AUDIO_OUTPUT_HAS_SYNTH            = 1 <<  7,
+  AGS_AUDIO_INPUT_HAS_RECYCLING         = 1 <<  8,
+  AGS_AUDIO_INPUT_HAS_SYNTH             = 1 <<  9,
+  AGS_AUDIO_INPUT_HAS_FILE              = 1 << 10,
+  AGS_AUDIO_CAN_NEXT_ACTIVE             = 1 << 11,
+  AGS_AUDIO_SKIP_OUTPUT                 = 1 << 12,
+  AGS_AUDIO_SKIP_INPUT                  = 1 << 13,
+  AGS_AUDIO_REVERSE_MAPPING             = 1 << 14,
+  AGS_AUDIO_NOTATION_DEFAULT            = 1 << 15,
+  AGS_AUDIO_BYPASS                      = 1 << 16,
 }AgsAudioFlags;
 
 struct _AgsAudio

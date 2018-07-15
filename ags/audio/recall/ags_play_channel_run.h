@@ -72,6 +72,6 @@ void ags_play_channel_run_set_flags(AgsPlayChannelRun *play_channel_run, guint f
 void ags_play_channel_run_unset_flags(AgsPlayChannelRun *play_channel_run, guint flags);
 
 AgsPlayChannelRun* ags_play_channel_run_new(AgsChannel *source,
-					    AgsStreamChannelRun *stream_channel_run);
+					    GObject *stream_channel_run);
 
 #endif /*__AGS_PLAY_CHANNEL_RUN_H__*/

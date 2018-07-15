@@ -26,8 +26,6 @@
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
 
-#include <ags/audio/task/ags_cancel_recall.h>
-
 #include <ags/audio/recall/ags_play_channel.h>
 #include <ags/audio/recall/ags_play_recycling.h>
 #include <ags/audio/recall/ags_stream_channel_run.h>
@@ -59,7 +57,7 @@ void ags_play_channel_run_master_disconnect_connection(AgsConnectable *connectab
 						       GObject *connection);
 
 void ags_play_channel_run_master_run_init_pre(AgsRecall *recall);
-void ags_play_channel_run_master_resolve_dependencies(AgsRecall *recall);
+void ags_play_channel_run_master_resolve_dependency(AgsRecall *recall);
 
 void ags_play_channel_run_master_remap_child_source(AgsPlayChannelRunMaster *play_channel_run_master,
 						    AgsRecycling *old_start_region, AgsRecycling *old_end_region,
@@ -172,7 +170,7 @@ ags_play_channel_run_master_class_init(AgsPlayChannelRunMasterClass *play_channe
   recall = (AgsRecallClass *) play_channel_run_master;
 
   recall->run_init_pre = ags_play_channel_run_master_run_init_pre;
-  recall->resolve_dependencies = ags_play_channel_run_master_resolve_dependencies;
+  recall->resolve_dependency = ags_play_channel_run_master_resolve_dependency;
 }
 
 void
@@ -219,7 +217,7 @@ ags_play_channel_run_master_set_property(GObject *gobject,
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
-  recall_mutex = recall->obj_mutex;
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -289,7 +287,7 @@ ags_play_channel_run_master_get_property(GObject *gobject,
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
-  recall_mutex = recall->obj_mutex;
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -354,7 +352,7 @@ ags_play_channel_run_master_connect(AgsConnectable *connectable)
 
   GList *list_start, *list;
   
-  if(ags_connectable_is_connected(connected)){
+  if(ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -394,7 +392,7 @@ ags_play_channel_run_master_disconnect(AgsConnectable *connectable)
 
   GList *list_start, *list;
   
-  if(!ags_connectable_is_connected(connected)){
+  if(!ags_connectable_is_connected(connectable)){
     return;
   }
 
@@ -499,7 +497,7 @@ ags_play_channel_run_master_run_init_pre(AgsRecall *recall)
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+  recall_mutex = recall->obj_mutex;
 
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_play_channel_run_master_parent_class)->run_init_pre;
   
@@ -524,7 +522,7 @@ ags_play_channel_run_master_run_init_pre(AgsRecall *recall)
 }
 
 void
-ags_play_channel_run_master_resolve_dependencies(AgsRecall *recall)
+ags_play_channel_run_master_resolve_dependency(AgsRecall *recall)
 {
   AgsRecall *template;
   AgsRecallContainer *recall_container;
@@ -569,7 +567,7 @@ ags_play_channel_run_master_resolve_dependencies(AgsRecall *recall)
   /* prepare to resolve */
   stream_channel_run = NULL;
 
-  list = list->start;
+  list = list_start;
   
   for(i = 0; list != NULL;){
     recall_dependency = AGS_RECALL_DEPENDENCY(list->data);

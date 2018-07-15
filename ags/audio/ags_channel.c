@@ -11331,7 +11331,8 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     GList *recall_id, *recall_id_iter;
 
     guint current_audio_flags;
-    guint audio_channel, line;
+    guint pad, audio_channel;
+    guint line;
     
     pthread_mutex_t *current_audio_mutex;
     pthread_mutex_t *channel_mutex;

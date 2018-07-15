@@ -966,8 +966,6 @@ libags_audio_recall_h_sources = \
 	ags/audio/recall/ags_copy_audio_signal.h \
 	ags/audio/recall/ags_copy_channel.h \
 	ags/audio/recall/ags_copy_channel_run.h \
-	ags/audio/recall/ags_copy_notation_audio.h \
-	ags/audio/recall/ags_copy_notation_audio_run.h \
 	ags/audio/recall/ags_copy_pattern_audio.h \
 	ags/audio/recall/ags_copy_pattern_audio_run.h \
 	ags/audio/recall/ags_copy_pattern_channel.h \
@@ -1001,7 +999,6 @@ libags_audio_recall_h_sources = \
 	ags/audio/recall/ags_peak_channel.h \
 	ags/audio/recall/ags_peak_channel_run.h \
 	ags/audio/recall/ags_peak_recycling.h \
-	ags/audio/recall/ags_play_audio_file.h \
 	ags/audio/recall/ags_play_audio.h \
 	ags/audio/recall/ags_play_audio_signal.h \
 	ags/audio/recall/ags_play_channel.h \
@@ -1058,8 +1055,6 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_copy_audio_signal.c \
 	ags/audio/recall/ags_copy_channel.c \
 	ags/audio/recall/ags_copy_channel_run.c \
-	ags/audio/recall/ags_copy_notation_audio.c \
-	ags/audio/recall/ags_copy_notation_audio_run.c \
 	ags/audio/recall/ags_copy_pattern_audio.c \
 	ags/audio/recall/ags_copy_pattern_audio_run.c \
 	ags/audio/recall/ags_copy_pattern_channel.c \
@@ -1094,7 +1089,6 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_peak_channel_run.c \
 	ags/audio/recall/ags_peak_recycling.c \
 	ags/audio/recall/ags_play_audio.c \
-	ags/audio/recall/ags_play_audio_file.c \
 	ags/audio/recall/ags_play_audio_signal.c \
 	ags/audio/recall/ags_play_channel.c \
 	ags/audio/recall/ags_play_channel_run.c \
@@ -1178,6 +1172,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_apply_bpm.h \
 	ags/audio/task/ags_apply_sequencer_length.h \
 	ags/audio/task/ags_apply_tact.h \
+	ags/audio/task/ags_reset_amplitude.h \
 	ags/audio/task/ags_reset_peak.h \
 	ags/audio/task/ags_set_muted.h
 
@@ -1225,6 +1220,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_apply_bpm.c \
 	ags/audio/task/ags_apply_sequencer_length.c \
 	ags/audio/task/ags_apply_tact.c \
+	ags/audio/task/ags_reset_amplitude.c \
 	ags/audio/task/ags_reset_peak.c \
 	ags/audio/task/ags_set_muted.c
 

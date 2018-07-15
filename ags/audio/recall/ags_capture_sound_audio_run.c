@@ -71,6 +71,12 @@ void ags_capture_sound_audio_run_done(AgsRecall *recall);
 static gpointer ags_capture_sound_audio_run_parent_class = NULL;
 static AgsPluginInterface *ags_capture_sound_audio_run_parent_plugin_interface;
 
+enum{
+  PROP_0,
+  PROP_AUDIO_FILE,
+  PROP_TIMESTAMP,
+};
+
 GType
 ags_capture_sound_audio_run_get_type()
 {
@@ -114,6 +120,8 @@ ags_capture_sound_audio_run_class_init(AgsCaptureSoundAudioRunClass *capture_sou
   GObjectClass *gobject;
   AgsRecallClass *recall;
 
+  GParamSpec *param_spec;
+  
   ags_capture_sound_audio_run_parent_class = g_type_class_peek_parent(capture_sound_audio_run);
 
   /* GObjectClass */
@@ -197,10 +205,10 @@ ags_capture_sound_audio_run_init(AgsCaptureSoundAudioRun *capture_sound_audio_ru
 }
 
 void
-ags_analyse_channel_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec)
+ags_capture_sound_audio_run_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec)
 {
   AgsCaptureSoundAudioRun *capture_sound_audio_run;
 
@@ -224,21 +232,21 @@ ags_analyse_channel_set_property(GObject *gobject,
 
       pthread_mutex_lock(recall_mutex);
 
-      if(audio_file == analyse_channel->audio_file){
+      if(audio_file == capture_sound_audio_run->audio_file){
 	pthread_mutex_unlock(recall_mutex);
 
 	return;
       }
 
-      if(analyse_channel->audio_file != NULL){
-	g_object_unref(G_OBJECT(analyse_channel->audio_file));
+      if(capture_sound_audio_run->audio_file != NULL){
+	g_object_unref(G_OBJECT(capture_sound_audio_run->audio_file));
       }
       
       if(audio_file != NULL){
 	g_object_ref(G_OBJECT(audio_file));
       }
 
-      analyse_channel->audio_file = audio_file;
+      capture_sound_audio_run->audio_file = audio_file;
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -251,21 +259,21 @@ ags_analyse_channel_set_property(GObject *gobject,
 
       pthread_mutex_lock(recall_mutex);
 
-      if(timestamp == analyse_channel->timestamp){
+      if(timestamp == capture_sound_audio_run->timestamp){
 	pthread_mutex_unlock(recall_mutex);
 
 	return;
       }
 
-      if(analyse_channel->timestamp != NULL){
-	g_object_unref(G_OBJECT(analyse_channel->timestamp));
+      if(capture_sound_audio_run->timestamp != NULL){
+	g_object_unref(G_OBJECT(capture_sound_audio_run->timestamp));
       }
       
       if(timestamp != NULL){
 	g_object_ref(G_OBJECT(timestamp));
       }
 
-      analyse_channel->timestamp = timestamp;
+      capture_sound_audio_run->timestamp = timestamp;
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -277,10 +285,10 @@ ags_analyse_channel_set_property(GObject *gobject,
 }
 
 void
-ags_analyse_channel_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec)
+ags_capture_sound_audio_run_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec)
 {
   AgsCaptureSoundAudioRun *capture_sound_audio_run;
 
@@ -477,7 +485,7 @@ ags_capture_sound_audio_run_run_init_pre(AgsRecall *recall)
 
     g_value_init(G_TYPE_UINT64,
 		 &value);
-    ags_port_safe_read(capture_sound_audio->uint,
+    ags_port_safe_read(port,
 		       &value);
 
     file_audio_channels = g_value_get_uint(&value);
@@ -703,7 +711,8 @@ ags_capture_sound_audio_run_run_pre(AgsRecall *recall)
 	buffer->x = x_offset;
 	
 	ags_wave_add_buffer(wave,
-			    buffer);
+			    buffer,
+			    FALSE);
       }
 
       /* get buffer mutex */

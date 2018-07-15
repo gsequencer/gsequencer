@@ -21,6 +21,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/plugin/ags_plugin_port.h>
+
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_channel.h>
@@ -168,7 +170,7 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
 	       NULL);
   
   /* recycling */
-  ags_recall_unset_behaviour_flags(recall, AGS_RECALL_PERSISTENT);
+  ags_recall_unset_behaviour_flags(recall, AGS_SOUND_BEHAVIOUR_PERSISTENT);
 
   g_object_get(buffer_recycling,
 	       "destination", &recycling,
@@ -221,7 +223,7 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
 
   ags_connectable_connect(AGS_CONNECTABLE(destination));
   
-  destination->stream = destination->stream_beginning;
+  destination->stream_current = destination->stream;
 
   ags_recycling_add_audio_signal(recycling,
 				 destination);

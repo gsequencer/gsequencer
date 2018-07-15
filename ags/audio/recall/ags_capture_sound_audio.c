@@ -506,7 +506,7 @@ ags_capture_sound_audio_set_property(GObject *gobject,
 	g_object_unref(G_OBJECT(capture_sound_audio->file_audio_channels));
       }
       
-      if(audio_channels != NULL){
+      if(file_audio_channels != NULL){
 	g_object_ref(G_OBJECT(file_audio_channels));
       }
       
@@ -774,8 +774,8 @@ ags_capture_sound_audio_finalize(GObject *gobject)
   }
 
   /* audio channels */
-  if(capture_sound_audio->audio_channels != NULL){
-    g_object_unref(capture_sound_audio->audio_channels);
+  if(capture_sound_audio->file_audio_channels != NULL){
+    g_object_unref(capture_sound_audio->file_audio_channels);
   }
 
   /* samplerate */

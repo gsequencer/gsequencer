@@ -245,7 +245,7 @@ ags_copy_pattern_audio_run_set_property(GObject *gobject,
       pthread_mutex_unlock(recall_mutex);
 
       /* dependency */
-      if(ags_recall_test_flags(recall, AGS_RECALL_TEMPLATE)){
+      if(ags_recall_test_flags(delay_audio_run, AGS_RECALL_TEMPLATE)){
 	is_template = TRUE;
       }else{
 	is_template = FALSE;
@@ -483,7 +483,7 @@ ags_copy_pattern_audio_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plug
   xmlAddChild(node,
 	      child);
 
-  list = AGS_RECALL(plugin)->dependencies;
+  list = AGS_RECALL(plugin)->recall_dependency;
 
   while(list != NULL){
     id = ags_id_generator_create_uuid();
@@ -696,6 +696,7 @@ ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall,
 
 /**
  * ags_copy_pattern_audio_run_new:
+ * @audio: the #AgsAudio
  * @delay_audio_run: the #AgsDelayAudioRun dependency
  * @count_beats_audio_run: the #AgsCountBeatsAudioRun dependency
  *
@@ -706,12 +707,14 @@ ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall,
  * Since: 2.0.0
  */
 AgsCopyPatternAudioRun*
-ags_copy_pattern_audio_run_new(AgsDelayAudioRun *delay_audio_run,
+ags_copy_pattern_audio_run_new(AgsAudio *audio,
+			       AgsDelayAudioRun *delay_audio_run,
 			       AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
 
   copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
+								   "audio", audio,
 								   "delay-audio-run", delay_audio_run,
 								   "count-beats-audio-run", count_beats_audio_run,
 								   NULL);
