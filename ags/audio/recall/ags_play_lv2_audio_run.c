@@ -1818,6 +1818,8 @@ ags_play_lv2_audio_run_load_ports(AgsPlayLv2AudioRun *play_lv2_audio_run)
 /**
  * ags_play_lv2_audio_run_new:
  * @audio: the #AgsAudio
+ * @delay_audio_run: the #AgsDelayAudioRun dependency
+ * @count_beats_audio_run: the #AgsCountBeatsAudioRun dependency
  *
  * Create a new instance of #AgsPlayLv2AudioRun
  *
@@ -1826,12 +1828,16 @@ ags_play_lv2_audio_run_load_ports(AgsPlayLv2AudioRun *play_lv2_audio_run)
  * Since: 2.0.0
  */
 AgsPlayLv2AudioRun*
-ags_play_lv2_audio_run_new()
+ags_play_lv2_audio_run_new(AgsAudio *audio,
+			   AgsDelayAudioRun *delay_audio_run,
+			   AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsPlayLv2AudioRun *play_lv2_audio_run;
 
   play_lv2_audio_run = (AgsPlayLv2AudioRun *) g_object_new(AGS_TYPE_PLAY_LV2_AUDIO_RUN,
 							   "audio", audio,
+							   "delay-audio-run", delay_audio_run,
+							   "count-beats-audio-run", count_beats_audio_run,
 							   NULL);
 
   return(play_lv2_audio_run);

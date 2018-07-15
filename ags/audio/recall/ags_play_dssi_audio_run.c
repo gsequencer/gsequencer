@@ -192,7 +192,7 @@ ags_play_dssi_audio_run_class_init(AgsPlayDssiAudioRunClass *play_dssi_audio_run
    */
   param_spec = g_param_spec_object("delay-audio-run",
 				   i18n_pspec("assigned AgsDelayAudioRun"),
-				   i18n_pspec("the AgsDelayAudioRun which emits dssi_alloc_input signal"),
+				   i18n_pspec("the AgsDelayAudioRun which emits notation_alloc_input signal"),
 				   AGS_TYPE_DELAY_AUDIO_RUN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -1958,6 +1958,8 @@ ags_play_dssi_audio_run_load_ports(AgsPlayDssiAudioRun *play_dssi_audio_run)
 /**
  * ags_play_dssi_audio_run_new:
  * @audio: the #AgsAudio
+ * @delay_audio_run: the #AgsDelayAudioRun dependency
+ * @count_beats_audio_run: the #AgsCountBeatsAudioRun dependency
  *
  * Create a new instance of #AgsPlayDssiAudioRun
  *
@@ -1966,12 +1968,16 @@ ags_play_dssi_audio_run_load_ports(AgsPlayDssiAudioRun *play_dssi_audio_run)
  * Since: 2.0.0
  */
 AgsPlayDssiAudioRun*
-ags_play_dssi_audio_run_new(AgsAudio *audio)
+ags_play_dssi_audio_run_new(AgsAudio *audio,
+			    AgsDelayAudioRun *delay_audio_run,
+			    AgsCountBeatsAudioRun *count_beats_audio_run)
 {
   AgsPlayDssiAudioRun *play_dssi_audio_run;
 
   play_dssi_audio_run = (AgsPlayDssiAudioRun *) g_object_new(AGS_TYPE_PLAY_DSSI_AUDIO_RUN,
 							     "audio", audio,
+							     "delay-audio-run", delay_audio_run,
+							     "count-beats-audio-run", count_beats_audio_run,
 							     NULL);
 
   return(play_dssi_audio_run);
