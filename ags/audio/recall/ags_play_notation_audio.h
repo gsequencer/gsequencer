@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_audio.h>
 
 #define AGS_TYPE_PLAY_NOTATION_AUDIO                (ags_play_notation_audio_get_type())
@@ -47,6 +48,6 @@ struct _AgsPlayNotationAudioClass
 
 GType ags_play_notation_audio_get_type();
 
-AgsPlayNotationAudio* ags_play_notation_audio_new();
+AgsPlayNotationAudio* ags_play_notation_audio_new(AgsAudio *audio);
 
 #endif /*__AGS_PLAY_NOTATION_AUDIO_H__*/

@@ -290,6 +290,8 @@ ags_play_dssi_audio_run_init(AgsPlayDssiAudioRun *play_dssi_audio_run)
   
   play_dssi_audio_run->ladspa_handle = NULL;
 
+  play_dssi_audio_run->port_data = NULL;
+  
   play_dssi_audio_run->input = NULL;
   play_dssi_audio_run->output = NULL;
 
@@ -367,7 +369,7 @@ ags_play_dssi_audio_run_set_property(GObject *gobject,
 
       /* check template */
       if(delay_audio_run != NULL &&
-	 ags_recall_test_flags(delay_audio_run, AGS_RECALL_TEMPLATE)){
+	 ags_recall_test_flags(play_dssi_audio_run, AGS_RECALL_TEMPLATE)){
 	is_template = TRUE;
       }else{
 	is_template = FALSE;
@@ -440,7 +442,7 @@ ags_play_dssi_audio_run_set_property(GObject *gobject,
 
       /* check template */
       if(count_beats_audio_run != NULL &&
-	 ags_recall_test_flags(count_beats_audio_run, AGS_RECALL_TEMPLATE)){
+	 ags_recall_test_flags(play_dssi_audio_run, AGS_RECALL_TEMPLATE)){
 	is_template = TRUE;
       }else{
 	is_template = FALSE;
@@ -622,6 +624,15 @@ ags_play_dssi_audio_run_finalize(GObject *gobject)
 
   play_dssi_audio_run = AGS_PLAY_DSSI_AUDIO_RUN(gobject);
 
+  g_free(play_dssi_audio_run->port_data);
+
+  g_free(play_dssi_audio_run->input);
+  g_free(play_dssi_audio_run->output);
+
+  //FIXME:JK: memory leak
+  g_free(play_dssi_audio_run->event_buffer);
+  g_free(play_dssi_audio_run->even_count);
+  
   /* delay audio run */
   if(play_dssi_audio_run->delay_audio_run != NULL){
     g_object_unref(G_OBJECT(play_dssi_audio_run->delay_audio_run));
@@ -846,7 +857,6 @@ ags_play_dssi_audio_run_resolve_dependency(AgsRecall *recall)
   AgsRecall *template;
   AgsRecallID *recall_id;
   AgsRecallContainer *recall_container;
-
   AgsRecallDependency *recall_dependency;
   AgsDelayAudioRun *delay_audio_run;
   AgsCountBeatsAudioRun *count_beats_audio_run;
@@ -1419,7 +1429,6 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   AgsChannel *output, *input;
   AgsChannel *channel;
   AgsChannel *selected_channel;
-  AgsRecycling *recycling;
   AgsNotation *notation;
   AgsNote *note;
   AgsPlayDssiAudio *play_dssi_audio;
@@ -1448,7 +1457,6 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   guint i;
   
   pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *recycling_mutex;
 
   if(delay != 0.0){
     return;
@@ -1618,7 +1626,10 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 	play_dssi_audio_run->key_on += 1;
       }
     }
-    
+
+    //FIXME:JK: check memory leak
+    //    free(seq_event);
+
     /* iterate */
     g_object_unref(append_note->data);
 
@@ -1748,8 +1759,9 @@ void
 ags_play_dssi_audio_run_load_ports(AgsPlayDssiAudioRun *play_dssi_audio_run)
 {
   AgsPlayDssiAudio *play_dssi_audio;
-  AgsDssiPlugin *dssi_plugin;
   AgsPort *current;
+
+  AgsDssiPlugin *dssi_plugin;
 
   GList *start_port, *port;
   GList *list;
