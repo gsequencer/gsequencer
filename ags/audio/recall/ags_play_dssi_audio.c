@@ -408,9 +408,7 @@ ags_play_dssi_audio_finalize(GObject *gobject)
 void
 ags_play_dssi_audio_set_ports(AgsPlugin *plugin, GList *port)
 {
-  while(port != NULL){
-    port = port->next;
-  }
+  //TODO:JK: implement me
 }
 
 void
@@ -587,8 +585,9 @@ ags_play_dssi_audio_load(AgsPlayDssiAudio *play_dssi_audio)
 GList*
 ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
 {
-  AgsDssiPlugin *dssi_plugin;
   AgsPort *current;
+
+  AgsDssiPlugin *dssi_plugin;
 
   GList *start_port;
   GList *start_plugin_port, *plugin_port;
@@ -673,6 +672,12 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
 
 	pthread_mutex_unlock(plugin_port_mutex);
 
+	if(specifier == NULL){
+	  plugin_port = plugin_port->next;
+	  
+	  continue;
+	}
+
 	/* new port */
 	current = g_object_new(AGS_TYPE_PORT,
 			       "plugin-name", plugin_name,
@@ -692,8 +697,8 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
 
 	  current->flags |= AGS_PORT_IS_OUTPUT;
 	}else{
-	  if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INTEGER) &&
-	     ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
+	  if(!ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INTEGER) &&
+	     !ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
 	    current->flags |= AGS_PORT_INFINITE_RANGE;
 	  }
 	}
@@ -704,7 +709,7 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
 	
 	ags_play_dssi_audio_load_conversion(play_dssi_audio,
 					    (GObject *) current,
-					    plugin_port->data);
+					    (GObject *) plugin_port->data);
 
 	g_object_get_property(plugin_port->data,
 			      "default-value",
@@ -857,8 +862,6 @@ ags_play_dssi_audio_find(GList *recall,
 {
   while(recall != NULL){
     if(AGS_IS_PLAY_DSSI_AUDIO(recall->data)){
-      gchar *current_filename, *current_effect;
-
       gboolean success;
       
       pthread_mutex_t *recall_mutex;
@@ -885,6 +888,7 @@ ags_play_dssi_audio_find(GList *recall,
       }
     }
 
+    /* iterate */
     recall = recall->next;
   }
 

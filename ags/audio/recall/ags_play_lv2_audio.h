@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,13 +23,14 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <lv2.h>
-
-#include <ags/lib/ags_turtle.h>
+#include <ags/libags.h>
 
 #include <ags/plugin/ags_lv2_plugin.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_audio.h>
+
+#include <lv2.h>
 
 #define AGS_TYPE_PLAY_LV2_AUDIO                (ags_play_lv2_audio_get_type())
 #define AGS_PLAY_LV2_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_LV2_AUDIO, AgsPlayLv2Audio))
@@ -64,10 +65,7 @@ struct _AgsPlayLv2Audio
   
   AgsTurtle *turtle;
   
-  gchar *filename;
-  gchar *effect;
   gchar *uri;
-  uint32_t index;
 
   AgsLv2Plugin *plugin;
   LV2_Descriptor *plugin_descriptor;
@@ -92,16 +90,20 @@ struct _AgsPlayLv2AudioClass
 
 GType ags_play_lv2_audio_get_type();
 
+gboolean ags_play_lv2_audio_test_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags);
+void ags_play_lv2_audio_set_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags);
+void ags_play_lv2_audio_unset_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags);
+
 void ags_play_lv2_audio_load(AgsPlayLv2Audio *play_lv2_audio);
 
 GList* ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio);
 void ags_play_lv2_audio_load_conversion(AgsPlayLv2Audio *play_lv2_audio,
 					GObject *port,
-					gpointer port_descriptor);
+					GObject *plugin_port);
 
 GList* ags_play_lv2_audio_find(GList *recall,
 			       gchar *filename, gchar *uri);
 
-AgsPlayLv2Audio* ags_play_lv2_audio_new();
+AgsPlayLv2Audio* ags_play_lv2_audio_new(AgsAudio *audio);
 
 #endif /*__AGS_PLAY_LV2_AUDIO_H__*/
