@@ -1293,6 +1293,33 @@ ags_channel_set_property(GObject *gobject,
 			     format);
     }
     break;
+  case PROP_PAD:
+    {
+      pthread_mutex_lock(channel_mutex);
+
+      channel->pad = g_value_get_uint(value);
+      
+      pthread_mutex_unlock(channel_mutex);	
+    }
+    break;
+  case PROP_AUDIO_CHANNEL:
+    {
+      pthread_mutex_lock(channel_mutex);
+
+      channel->audio_channel = g_value_get_uint(value);
+      
+      pthread_mutex_unlock(channel_mutex);	
+    }
+    break;
+  case PROP_LINE:
+    {
+      pthread_mutex_lock(channel_mutex);
+
+      channel->line = g_value_get_uint(value);
+      
+      pthread_mutex_unlock(channel_mutex);	
+    }
+    break;    
   case PROP_OCTAVE:
     {
       pthread_mutex_lock(channel_mutex);
@@ -11076,7 +11103,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     GList *recall_id, *recall_id_iter;
 
     guint current_audio_flags;
-    guint audio_channel;
+    guint pad, audio_channel;
     guint line;
     
     pthread_mutex_t *current_audio_mutex;
@@ -11088,7 +11115,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     }
 
     current_channel = channel;
-    
+
     if(AGS_IS_OUTPUT(channel)){
       goto ags_channel_recursive_prepare_run_stage_up_OUTPUT;
     }
@@ -11177,12 +11204,20 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       }
       
       /* duplicate */
+      g_object_get(current_channel,
+		   "pad", &pad,
+		   "audio-channel", &audio_channel,
+		   "line", &line,
+		   NULL);
+      
       if((AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_DUPLICATE & (local_staging_flags)) != 0){
 	recall_id_iter = recall_id;
 
 	while(recall_id_iter != NULL){
 	  ags_audio_duplicate_recall(current_audio,
-				     recall_id_iter->data);
+				     recall_id_iter->data,
+				     pad, audio_channel,
+				     line);
 	}
 
 	recall_id_iter = recall_id_iter->next;
@@ -11395,12 +11430,20 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     }
 
     /* duplicate */
+    g_object_get(channel,
+		 "pad", &pad,
+		 "audio-channel", &audio_channel,
+		 "line", &line,
+		 NULL);
+
     if((AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_DUPLICATE & (local_staging_flags)) != 0){
       recall_id_iter = recall_id;
 
       while(recall_id_iter != NULL){
 	ags_audio_duplicate_recall(current_audio,
-				   recall_id_iter->data);
+				   recall_id_iter->data,
+				   pad, audio_channel,
+				   line);
       }
 
       recall_id_iter = recall_id_iter->next;

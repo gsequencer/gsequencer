@@ -373,7 +373,7 @@ ags_copy_pattern_channel_run_connect(AgsConnectable *connectable)
 		 NULL);
 
     if(delay_audio_run != NULL){
-      ags_copy_pattern_channel_run_connect_connection(connectable, delay_audio_run);
+      ags_connectable_connect_connection(connectable, delay_audio_run);
     }
   }
 }
@@ -413,7 +413,7 @@ ags_copy_pattern_channel_run_disconnect(AgsConnectable *connectable)
 		 NULL);
 
     if(delay_audio_run != NULL){
-      ags_copy_pattern_channel_run_disconnect_connection(connectable, delay_audio_run);
+      ags_connectable_disconnect_connection(connectable, delay_audio_run);
     }
   }
 }

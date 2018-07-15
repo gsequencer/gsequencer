@@ -106,7 +106,9 @@ void ags_audio_real_set_pads(AgsAudio *audio,
 			     guint channels, guint channels_old);
 
 void ags_audio_real_duplicate_recall(AgsAudio *audio,
-				     AgsRecallID *recall_id);
+				     AgsRecallID *recall_id,
+				     guint pad, guint audio_channel,
+				     guint line);
 void ags_audio_real_resolve_recall(AgsAudio *audio,
 				   AgsRecallID *recall_id);
 
@@ -1161,6 +1163,9 @@ ags_audio_class_init(AgsAudioClass *audio)
    * AgsAudio::duplicate-recall:
    * @audio: the #AgsAudio
    * @recall_id: the #AgsRecallID
+   * @pad: the pad
+   * @audio_channel: the audio channel
+   * @line: the line
    *
    * The ::duplicate-recall signal notifies about duplicated recalls.
    *
@@ -1172,9 +1177,11 @@ ags_audio_class_init(AgsAudioClass *audio)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsAudioClass, duplicate_recall),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__OBJECT,
-		 G_TYPE_NONE, 1,
-		 G_TYPE_OBJECT);
+		 ags_cclosure_marshal_VOID__OBJECT_UINT_UINT_UINT,
+		 G_TYPE_NONE, 4,
+		 G_TYPE_OBJECT,
+		 G_TYPE_UINT, G_TYPE_UINT,
+		 G_TYPE_UINT);
 
   /**
    * AgsAudio::resolve-recall:
@@ -8435,9 +8442,11 @@ ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play_context)
 
 void
 ags_audio_real_duplicate_recall(AgsAudio *audio,
-				AgsRecallID *recall_id)
+				AgsRecallID *recall_id,
+				guint pad, guint audio_channel,
+				guint line)
 {
-  AgsRecall *recall, *copy;
+  AgsRecall *recall, *copy_recall;
   AgsRecyclingContext *parent_recycling_context, *recycling_context;
 
   GList *list_start, *list;
@@ -8609,33 +8618,39 @@ ags_audio_real_duplicate_recall(AgsAudio *audio,
     pthread_mutex_unlock(current_recall_mutex);
 
     /* duplicate the recall */
-    copy = ags_recall_duplicate(recall, recall_id,
-				NULL, NULL, NULL);
+    copy_recall = ags_recall_duplicate(recall, recall_id,
+				       NULL, NULL, NULL);
       
-    if(copy == NULL){
+    if(copy_recall == NULL){
       /* iterate */    
       list = list->next;
 
       continue;
     }
+
+    g_object_set(copy_recall,
+		 "pad", pad,
+		 "audio-channel", audio_channel,
+		 "line", line,
+		 NULL);
     
 #ifdef AGS_DEBUG
-    g_message("recall duplicated: %s\n", G_OBJECT_TYPE_NAME(copy));
+    g_message("recall duplicated: %s\n", G_OBJECT_TYPE_NAME(copy_recall));
 #endif
 
     /* set appropriate sound scope */
-    copy->sound_scope = sound_scope;
+    copy_recall->sound_scope = sound_scope;
       
     /* append to AgsAudio */
     ags_audio_add_recall(audio,
-			 (GObject *) copy,
+			 (GObject *) copy_recall,
 			 play_context);
 
     /* connect */
-    ags_connectable_connect(AGS_CONNECTABLE(copy));
+    ags_connectable_connect(AGS_CONNECTABLE(copy_recall));
 
     /* notify run */
-    ags_recall_notify_dependency(copy, AGS_RECALL_NOTIFY_RUN, 1);
+    ags_recall_notify_dependency(copy_recall, AGS_RECALL_NOTIFY_RUN, 1);
 
     /* iterate */
     list = list->next;
@@ -8649,6 +8664,9 @@ ags_audio_real_duplicate_recall(AgsAudio *audio,
  * ags_audio_duplicate_recall:
  * @audio: the #AgsAudio
  * @recall_id: an #AgsRecallID
+ * @pad: the pad
+ * @audio_channel: the audio channel
+ * @line: the line
  * 
  * Duplicate all #AgsRecall templates of @audio.
  *
@@ -8656,14 +8674,18 @@ ags_audio_real_duplicate_recall(AgsAudio *audio,
  */
 void
 ags_audio_duplicate_recall(AgsAudio *audio,
-			   AgsRecallID *recall_id)
+			   AgsRecallID *recall_id,
+			   guint pad, guint audio_channel,
+			   guint line)
 {  
   g_return_val_if_fail(AGS_IS_AUDIO(audio), NULL);
 
   g_object_ref((GObject *) audio);
   g_signal_emit(G_OBJECT(audio),
 		audio_signals[DUPLICATE_RECALL], 0,
-		recall_id);
+		recall_id,
+		pad, audio_channel,
+		line);
   g_object_unref((GObject *) audio);
 }
 

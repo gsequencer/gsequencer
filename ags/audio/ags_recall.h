@@ -119,7 +119,7 @@ struct _AgsRecall
   guint effect_index;
   
   gchar *xml_type;
-
+  
   GObject *recall_container;
 
   GObject *output_soundcard;
@@ -127,10 +127,15 @@ struct _AgsRecall
   
   GObject *input_soundcard;
   gint input_soundcard_channel;
-
+  
   guint samplerate;
   guint buffer_size;
   guint format;
+
+  guint pad;
+  guint audio_channel;
+
+  guint line;
 
   GList *port;
   GList *automation_port;

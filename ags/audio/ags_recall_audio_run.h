@@ -41,7 +41,7 @@ typedef struct _AgsRecallAudioRunClass AgsRecallAudioRunClass;
 struct _AgsRecallAudioRun
 {
   AgsRecall recall;
-
+  
   AgsAudio *audio;
   
   AgsRecallAudio *recall_audio;

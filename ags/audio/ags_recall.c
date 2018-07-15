@@ -164,6 +164,9 @@ enum{
   PROP_SAMPLERATE,
   PROP_BUFFER_SIZE,
   PROP_FORMAT,
+  PROP_PAD,
+  PROP_AUDIO_CHANNEL,
+  PROP_LINE,
   PROP_PORT,
   PROP_AUTOMATION_PORT,
   PROP_RECALL_ID,
@@ -297,7 +300,7 @@ ags_recall_class_init(AgsRecallClass *recall)
   g_object_class_install_property(gobject,
 				  PROP_EFFECT_INDEX,
 				  param_spec);
-
+  
   /**
    * AgsRecall:recall-container:
    *
@@ -331,7 +334,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  param_spec);
 
   /**
-   * AgsChannel:output-soundcard-channel:
+   * AgsRecall:output-soundcard-channel:
    *
    * The output soundcard channel.
    * 
@@ -365,7 +368,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  param_spec);
 
   /**
-   * AgsChannel:input-soundcard-channel:
+   * AgsRecall:input-soundcard-channel:
    *
    * The input soundcard channel.
    * 
@@ -383,7 +386,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  param_spec);
 
   /**
-   * AgsChannel:samplerate:
+   * AgsRecall:samplerate:
    *
    * The samplerate.
    * 
@@ -401,7 +404,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  param_spec);
 
   /**
-   * AgsChannel:buffer-size:
+   * AgsRecall:buffer-size:
    *
    * The buffer size.
    * 
@@ -419,7 +422,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  param_spec);
 
   /**
-   * AgsChannel:format:
+   * AgsRecall:format:
    *
    * The format.
    * 
@@ -434,6 +437,60 @@ ags_recall_class_init(AgsRecallClass *recall)
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FORMAT,
+				  param_spec);
+
+  /**
+   * AgsRecall:pad:
+   *
+   * The nth pad.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_uint("pad",
+				  i18n_pspec("nth pad"),
+				  i18n_pspec("The nth pad"),
+				  0,
+				  G_MAXUINT32,
+				  0,
+				  G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PAD,
+				  param_spec);
+
+  /**
+   * AgsRecall:audio-channel:
+   *
+   * The nth audio channel.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_uint("audio-channel",
+				  i18n_pspec("nth audio channel"),
+				  i18n_pspec("The nth audio channel"),
+				  0,
+				  G_MAXUINT32,
+				  0,
+				  G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CHANNEL,
+				  param_spec);
+
+  /**
+   * AgsRecall:line:
+   *
+   * The nth line.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_uint("line",
+				  i18n_pspec("nth line"),
+				  i18n_pspec("The nth line"),
+				  0,
+				  G_MAXUINT32,
+				  0,
+				  G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LINE,
 				  param_spec);
   
   /**
@@ -1016,6 +1073,11 @@ ags_recall_init(AgsRecall *recall)
   recall->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
   recall->format = ags_soundcard_helper_config_get_format(config);
 
+  recall->pad = 0;
+  recall->audio_channel = 0;
+
+  recall->line = 0;
+  
   /* port and automation port */
   recall->port = NULL;
   recall->automation_port = NULL;
@@ -1211,6 +1273,33 @@ ags_recall_set_property(GObject *gobject,
 
       ags_recall_set_format(recall,
 			    format);
+    }
+    break;
+  case PROP_PAD:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      recall->pad = g_value_get_uint(value);
+      
+      pthread_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_AUDIO_CHANNEL:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      recall->audio_channel = g_value_get_uint(value);
+      
+      pthread_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_LINE:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      recall->line = g_value_get_uint(value);
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   case PROP_PORT:
@@ -1468,6 +1557,33 @@ ags_recall_get_property(GObject *gobject,
       pthread_mutex_lock(recall_mutex);
 
       g_value_set_uint(value, recall->format);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_PAD:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_uint(value, recall->pad);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_AUDIO_CHANNEL:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_uint(value, recall->audio_channel);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_LINE:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_uint(value, recall->line);
 
       pthread_mutex_unlock(recall_mutex);
     }

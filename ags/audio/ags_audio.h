@@ -195,7 +195,9 @@ struct _AgsAudioClass
 		   guint pads, guint pads_old);  
 
   void (*duplicate_recall)(AgsAudio *audio,
-			   AgsRecallID *recall_id);
+			   AgsRecallID *recall_id,
+			   guint pad, guint audio_channel,
+			   guint line);
   void (*resolve_recall)(AgsAudio *audio,
 			 AgsRecallID *recall_id);
 
@@ -313,7 +315,9 @@ void ags_audio_remove_recall(AgsAudio *audio, GObject *recall,
 
 /* stages */
 void ags_audio_duplicate_recall(AgsAudio *audio,
-				AgsRecallID *recall_id);
+				AgsRecallID *recall_id,
+				guint pad, guint audio_channel,
+				guint line);
 void ags_audio_resolve_recall(AgsAudio *audio,
 			      AgsRecallID *recall_id);
 

@@ -295,19 +295,22 @@ ags_copy_pattern_audio_run_set_property(GObject *gobject,
 
       pthread_mutex_unlock(recall_mutex);
 
-      /* dependency */
-      if(ags_recall_test_flags(recall, AGS_RECALL_TEMPLATE)){
+      /* check template */
+      if(count_beats_audio_run != NULL &&
+	 ags_recall_test_flags(count_beats_audio_run, AGS_RECALL_TEMPLATE)){
 	is_template = TRUE;
       }else{
 	is_template = FALSE;
       }
 
+      /* dependency - remove */
       if(is_template &&
 	 old_count_beats_audio_run != NULL){
 	ags_recall_remove_dependency(AGS_RECALL(copy_pattern_audio_run),
 				     (AgsRecall *) old_count_beats_audio_run);
       }
-
+      
+      /* dependency - add */
       if(is_template &&
 	 count_beats_audio_run != NULL){
 	ags_recall_add_dependency(AGS_RECALL(copy_pattern_audio_run),

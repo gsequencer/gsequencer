@@ -718,13 +718,6 @@ ags_count_beats_audio_run_set_property(GObject *gobject,
 	return;
       }
 
-      if(delay_audio_run != NULL &&
-	 (AGS_RECALL_TEMPLATE & (AGS_RECALL(delay_audio_run)->flags)) != 0){
-	is_template = TRUE;
-      }else{
-	is_template = FALSE;
-      }
-
       if(count_beats_audio_run->delay_audio_run != NULL){
 	old_delay_audio_run = count_beats_audio_run->delay_audio_run;
 	
@@ -735,9 +728,15 @@ ags_count_beats_audio_run_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(delay_audio_run));
       }
 
-      count_beats_audio_run->delay_audio_run = delay_audio_run;
-
       pthread_mutex_unlock(recall_mutex);
+
+      /* check template */
+      if(delay_audio_run != NULL &&
+	 ags_recall_test_flags(delay_audio_run, AGS_RECALL_TEMPLATE)){
+	is_template = TRUE;
+      }else{
+	is_template = FALSE;
+      }
 
       /* old - dependency/connection */
       if(is_template){
@@ -751,6 +750,12 @@ ags_count_beats_audio_run_set_property(GObject *gobject,
       }
 
       /* new - dependency/connection */
+      pthread_mutex_lock(recall_mutex);
+
+      count_beats_audio_run->delay_audio_run = delay_audio_run;
+
+      pthread_mutex_unlock(recall_mutex);
+
       if(delay_audio_run != NULL){
 	if(is_template){
 	  ags_recall_add_dependency(AGS_RECALL(count_beats_audio_run),

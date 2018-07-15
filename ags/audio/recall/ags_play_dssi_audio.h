@@ -46,10 +46,6 @@ struct _AgsPlayDssiAudio
 {
   AgsRecallAudio recall_audio;
 
-  gchar *filename;
-  gchar *effect;
-  unsigned long index;
-
   unsigned long bank;
   unsigned long program;
   
