@@ -25,12 +25,8 @@
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_wave.h>
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
-
-#include <ags/audio/recall/ags_delay_audio_run.h>
-#include <ags/audio/recall/ags_count_beats_audio.h>
-#include <ags/audio/recall/ags_count_beats_audio_run.h>
 
 #define AGS_TYPE_PLAY_WAVE_AUDIO_RUN                (ags_play_wave_audio_run_get_type())
 #define AGS_PLAY_WAVE_AUDIO_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_WAVE_AUDIO_RUN, AgsPlayWaveAudioRun))
@@ -41,17 +37,6 @@
 
 typedef struct _AgsPlayWaveAudioRun AgsPlayWaveAudioRun;
 typedef struct _AgsPlayWaveAudioRunClass AgsPlayWaveAudioRunClass;
-
-/**
- * AgsPlayWaveAudioRunFlags:
- * @AGS_PLAY_WAVE_AUDIO_RUN_DEFAULT: not used
- *
- * Enum values to control the behavior or indicate internal state of #AgsPlayWaveAudioRun by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_PLAY_WAVE_AUDIO_RUN_DEFAULT  =  1,
-}AgsPlayWaveAudioRunFlags;
 
 struct _AgsPlayWaveAudioRun
 {
@@ -67,6 +52,6 @@ struct _AgsPlayWaveAudioRunClass
 
 GType ags_play_wave_audio_run_get_type();
 
-AgsPlayWaveAudioRun* ags_play_wave_audio_run_new();
+AgsPlayWaveAudioRun* ags_play_wave_audio_run_new(AgsAudio *audio);
 
 #endif /*__AGS_PLAY_WAVE_AUDIO_RUN_H__*/

@@ -25,6 +25,7 @@ void ags_play_wave_audio_class_init(AgsPlayWaveAudioClass *play_wave_audio);
 void ags_play_wave_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_play_wave_audio_init(AgsPlayWaveAudio *play_wave_audio);
 void ags_play_wave_audio_finalize(GObject *gobject);
+
 void ags_play_wave_audio_set_ports(AgsPlugin *plugin, GList *port);
 
 /**
@@ -131,26 +132,26 @@ ags_play_wave_audio_finalize(GObject *gobject)
 void
 ags_play_wave_audio_set_ports(AgsPlugin *plugin, GList *port)
 {
-  while(port != NULL){
-    port = port->next;
-  }
+  //TODO:JK: implement me
 }
 
 /**
  * ags_play_wave_audio_new:
+ * @audio: the #AgsAudio
  *
- * Creates an #AgsPlayWaveAudio
+ * Create a new instance of #AgsPlayWaveAudio
  *
- * Returns: a new #AgsPlayWaveAudio
+ * Returns: the new #AgsPlayWaveAudio
  *
- * Since: 1.5.0
+ * Since: 2.0.0
  */
 AgsPlayWaveAudio*
-ags_play_wave_audio_new()
+ags_play_wave_audio_new(AgsAudio *audio)
 {
   AgsPlayWaveAudio *play_wave_audio;
 
   play_wave_audio = (AgsPlayWaveAudio *) g_object_new(AGS_TYPE_PLAY_WAVE_AUDIO,
+						      "audio", audio,
 						      NULL);
 
   return(play_wave_audio);

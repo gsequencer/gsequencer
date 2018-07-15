@@ -23,6 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_audio.h>
 
 #define AGS_TYPE_PLAY_WAVE_AUDIO                (ags_play_wave_audio_get_type())
@@ -47,6 +50,6 @@ struct _AgsPlayWaveAudioClass
 
 GType ags_play_wave_audio_get_type();
 
-AgsPlayWaveAudio* ags_play_wave_audio_new();
+AgsPlayWaveAudio* ags_play_wave_audio_new(AgsAudio *audio);
 
 #endif /*__AGS_PLAY_WAVE_AUDIO_H__*/
