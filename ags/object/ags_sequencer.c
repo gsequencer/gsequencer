@@ -509,10 +509,10 @@ ags_sequencer_unlock_buffer(AgsSequencer *sequencer,
 
   g_return_if_fail(AGS_IS_SEQUENCER(sequencer));
   sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
-  g_return_if_fail(sequencer_interface->lock_buffer);
+  g_return_if_fail(sequencer_interface->unlock_buffer);
 
-  sequencer_interface->lock_buffer(sequencer,
-				   buffer);
+  sequencer_interface->unlock_buffer(sequencer,
+				     buffer);
 }
 
 /**
