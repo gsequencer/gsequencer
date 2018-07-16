@@ -95,6 +95,11 @@ struct _AgsSequencerInterface
   void* (*get_next_buffer)(AgsSequencer *sequencer,
 			   guint *buffer_length);
 
+  void (*lock_buffer)(AgsSequencer *sequencer,
+		      void *buffer);
+  void (*unlock_buffer)(AgsSequencer *sequencer,
+			void *buffer);
+  
   void (*set_bpm)(AgsSequencer *sequencer,
 		  gdouble bpm);
   gdouble (*get_bpm)(AgsSequencer *sequencer);
@@ -145,6 +150,11 @@ void* ags_sequencer_get_buffer(AgsSequencer *sequencer,
 			       guint *buffer_length);
 void* ags_sequencer_get_next_buffer(AgsSequencer *sequencer,
 				    guint *buffer_length);
+
+void ags_sequencer_lock_buffer(AgsSequencer *sequencer,
+			       void *buffer);
+void ags_sequencer_unlock_buffer(AgsSequencer *sequencer,
+				 void *buffer);
 
 void ags_sequencer_set_bpm(AgsSequencer *sequencer,
 			   gdouble bpm);

@@ -75,9 +75,7 @@ typedef enum{
   AGS_AUDIO_CAN_NEXT_ACTIVE             = 1 << 11,
   AGS_AUDIO_SKIP_OUTPUT                 = 1 << 12,
   AGS_AUDIO_SKIP_INPUT                  = 1 << 13,
-  AGS_AUDIO_REVERSE_MAPPING             = 1 << 14,
-  AGS_AUDIO_NOTATION_DEFAULT            = 1 << 15,
-  AGS_AUDIO_BYPASS                      = 1 << 16,
+  AGS_AUDIO_BYPASS                      = 1 << 14,
 }AgsAudioFlags;
 
 struct _AgsAudio

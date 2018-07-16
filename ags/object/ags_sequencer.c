@@ -470,6 +470,52 @@ ags_sequencer_get_next_buffer(AgsSequencer *sequencer,
 }
 
 /**
+ * ags_sequencer_lock_buffer:
+ * @sequencer: the #AgsSequencer
+ * @buffer: the buffer to lock
+ *
+ * Lock @buffer. 
+ *
+ * Since: 2.0.0
+ */
+void
+ags_sequencer_lock_buffer(AgsSequencer *sequencer,
+			  void *buffer)
+{
+  AgsSequencerInterface *sequencer_interface;
+
+  g_return_val_if_fail(AGS_IS_SEQUENCER(sequencer), NULL);
+  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
+  g_return_val_if_fail(sequencer_interface->lock_buffer, NULL);
+
+  sequencer_interface->lock_buffer(sequencer,
+				   buffer);
+}
+
+/**
+ * ags_sequencer_unlock_buffer:
+ * @sequencer: the #AgsSequencer
+ * @buffer: the buffer to unlock
+ *
+ * Unlock @buffer. 
+ *
+ * Since: 2.0.0
+ */
+void
+ags_sequencer_unlock_buffer(AgsSequencer *sequencer,
+			    void *buffer)
+{
+  AgsSequencerInterface *sequencer_interface;
+
+  g_return_val_if_fail(AGS_IS_SEQUENCER(sequencer), NULL);
+  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
+  g_return_val_if_fail(sequencer_interface->lock_buffer, NULL);
+
+  sequencer_interface->lock_buffer(sequencer,
+				   buffer);
+}
+
+/**
  * ags_sequencer_set_bpm:
  * @sequencer: the #AgsSequencer
  * @bpm: the bpm to set
