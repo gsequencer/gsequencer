@@ -32,7 +32,9 @@ void ags_play_wave_channel_get_property(GObject *gobject,
 					guint prop_id,
 					GValue *value,
 					GParamSpec *param_spec);
+void ags_play_wave_channel_dispose(GObject *gobject);
 void ags_play_wave_channel_finalize(GObject *gobject);
+
 void ags_play_wave_channel_set_ports(AgsPlugin *plugin, GList *port);
 
 /**
@@ -116,6 +118,7 @@ ags_play_wave_channel_class_init(AgsPlayWaveChannelClass *play_wave_channel)
   gobject->set_property = ags_play_wave_channel_set_property;
   gobject->get_property = ags_play_wave_channel_get_property;
 
+  gobject->dispose = ags_play_wave_channel_dispose;
   gobject->finalize = ags_play_wave_channel_finalize;
 
   /* properties */
@@ -124,7 +127,7 @@ ags_play_wave_channel_class_init(AgsPlayWaveChannelClass *play_wave_channel)
    *
    * The wave containing the notes.
    * 
-   * Since: 1.5.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("wave",
 				   i18n_pspec("assigned AgsWave"),
@@ -140,7 +143,7 @@ ags_play_wave_channel_class_init(AgsPlayWaveChannelClass *play_wave_channel)
    *
    * The do-playback port.
    * 
-   * Since: 1.5.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("do-playback",
 				   i18n_pspec("do playback"),
@@ -156,7 +159,7 @@ ags_play_wave_channel_class_init(AgsPlayWaveChannelClass *play_wave_channel)
    *
    * The x-offset port.
    * 
-   * Since: 1.5.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("x-offset",
 				   i18n_pspec("x offset"),
@@ -236,7 +239,16 @@ ags_play_wave_channel_set_property(GObject *gobject,
 {
   AgsPlayWaveChannel *play_wave_channel;
 
+  pthread_mutex_t *recall_mutex;
+
   play_wave_channel = AGS_PLAY_WAVE_CHANNEL(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_WAVE:
@@ -245,7 +257,11 @@ ags_play_wave_channel_set_property(GObject *gobject,
 
       wave = (AgsWave *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(play_wave_channel->wave == wave){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -258,6 +274,8 @@ ags_play_wave_channel_set_property(GObject *gobject,
       }
 
       play_wave_channel->wave = wave;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_DO_PLAYBACK:
@@ -266,7 +284,11 @@ ags_play_wave_channel_set_property(GObject *gobject,
 
       do_playback = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(play_wave_channel->do_playback == do_playback){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -279,6 +301,8 @@ ags_play_wave_channel_set_property(GObject *gobject,
       }
       
       play_wave_channel->do_playback = do_playback;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_X_OFFSET:
@@ -287,7 +311,11 @@ ags_play_wave_channel_set_property(GObject *gobject,
 
       x_offset = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(play_wave_channel->x_offset == x_offset){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -300,6 +328,8 @@ ags_play_wave_channel_set_property(GObject *gobject,
       }
       
       play_wave_channel->x_offset = x_offset;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -315,23 +345,44 @@ ags_play_wave_channel_get_property(GObject *gobject,
 				   GParamSpec *param_spec)
 {
   AgsPlayWaveChannel *play_wave_channel;
+
+  pthread_mutex_t *recall_mutex;
   
   play_wave_channel = AGS_PLAY_WAVE_CHANNEL(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_WAVE:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, play_wave_channel->wave);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_DO_PLAYBACK:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, play_wave_channel->do_playback);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_X_OFFSET:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, play_wave_channel->x_offset);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -354,6 +405,20 @@ ags_play_wave_channel_dispose(GObject *gobject)
     play_wave_channel->wave = NULL;
   }
 
+  /* do playback */
+  if(play_wave_channel->do_playback != NULL){
+    g_object_unref(play_wave_channel->do_playback);
+
+    play_wave_channel->do_playback = NULL;
+  }
+  
+  /* x-offset */
+  if(play_wave_channel->x_offset != NULL){
+    g_object_unref(play_wave_channel->x_offset);
+
+    play_wave_channel->x_offset = NULL;
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_play_wave_channel_parent_class)->dispose(gobject);
 }
@@ -368,6 +433,16 @@ ags_play_wave_channel_finalize(GObject *gobject)
   /* wave */
   if(play_wave_channel->wave != NULL){
     g_object_unref(G_OBJECT(play_wave_channel->wave));
+  }
+
+  /* do playback */
+  if(play_wave_channel->do_playback != NULL){
+    g_object_unref(play_wave_channel->do_playback);
+  }
+  
+  /* x-offset */
+  if(play_wave_channel->x_offset != NULL){
+    g_object_unref(play_wave_channel->x_offset);
   }
 
   /* call parent */
@@ -398,19 +473,21 @@ ags_play_wave_channel_set_ports(AgsPlugin *plugin, GList *port)
 
 /**
  * ags_play_wave_channel_new:
+ * @source: the #AgsChannel
  *
- * Creates an #AgsPlayWaveChannel
+ * Create a new instance of #AgsPlayWaveChannel
  *
- * Returns: a new #AgsPlayWaveChannel
+ * Returns: the new #AgsPlayWaveChannel
  *
- * Since: 1.5.0
+ * Since: 2.0.0
  */
 AgsPlayWaveChannel*
-ags_play_wave_channel_new()
+ags_play_wave_channel_new(AgsChannel *source)
 {
   AgsPlayWaveChannel *play_wave_channel;
 
   play_wave_channel = (AgsPlayWaveChannel *) g_object_new(AGS_TYPE_PLAY_WAVE_CHANNEL,
+							  "source", source,
 							  NULL);
 
   return(play_wave_channel);

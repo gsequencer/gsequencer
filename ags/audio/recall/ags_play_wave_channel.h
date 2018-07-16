@@ -56,6 +56,6 @@ struct _AgsPlayWaveChannelClass
 
 GType ags_play_wave_channel_get_type();
 
-AgsPlayWaveChannel* ags_play_wave_channel_new(AgsChannel *channel);
+AgsPlayWaveChannel* ags_play_wave_channel_new(AgsChannel *source);
 
 #endif /*__AGS_PLAY_WAVE_CHANNEL_H__*/

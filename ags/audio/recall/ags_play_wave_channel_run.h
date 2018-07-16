@@ -25,7 +25,7 @@
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_wave.h>
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel_run.h>
 
 #define AGS_TYPE_PLAY_WAVE_CHANNEL_RUN                (ags_play_wave_channel_run_get_type())
@@ -52,6 +52,6 @@ struct _AgsPlayWaveChannelRunClass
 
 GType ags_play_wave_channel_run_get_type();
 
-AgsPlayWaveChannelRun* ags_play_wave_channel_run_new();
+AgsPlayWaveChannelRun* ags_play_wave_channel_run_new(AgsChannel *source);
 
 #endif /*__AGS_PLAY_WAVE_CHANNEL_RUN_H__*/

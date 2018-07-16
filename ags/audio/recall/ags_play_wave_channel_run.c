@@ -18,31 +18,30 @@
  */
 
 #include <ags/audio/recall/ags_play_wave_channel_run.h>
-#include <ags/audio/recall/ags_play_wave_channel.h>
 
 #include <ags/libags.h>
 
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
 
+#include <ags/audio/recall/ags_play_wave_channel.h>
+
 #include <ags/i18n.h>
 
 void ags_play_wave_channel_run_class_init(AgsPlayWaveChannelRunClass *play_wave_channel_run);
-void ags_play_wave_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_play_wave_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
-void ags_play_wave_channel_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_play_wave_channel_run_init(AgsPlayWaveChannelRun *play_wave_channel_run);
+void ags_play_wave_channel_run_set_property(GObject *gobject,
+					    guint prop_id,
+					    const GValue *value,
+					    GParamSpec *param_spec);
+void ags_play_wave_channel_run_get_property(GObject *gobject,
+					    guint prop_id,
+					    GValue *value,
+					    GParamSpec *param_spec);
 void ags_play_wave_channel_run_dispose(GObject *gobject);
 void ags_play_wave_channel_run_finalize(GObject *gobject);
-void ags_play_wave_channel_run_connect(AgsConnectable *connectable);
-void ags_play_wave_channel_run_disconnect(AgsConnectable *connectable);
-void ags_play_wave_channel_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_play_wave_channel_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
 void ags_play_wave_channel_run_run_inter(AgsRecall *recall);
-AgsRecall* ags_play_wave_channel_run_duplicate(AgsRecall *recall,
-					       AgsRecallID *recall_id,
-					       guint *n_params, GParameter *parameter);
 
 /**
  * SECTION:ags_play_wave_channel_run
@@ -55,9 +54,6 @@ AgsRecall* ags_play_wave_channel_run_duplicate(AgsRecall *recall,
  */
 
 static gpointer ags_play_wave_channel_run_parent_class = NULL;
-static AgsConnectableInterface* ags_play_wave_channel_run_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_play_wave_channel_run_parent_dynamic_connectable_interface;
-static AgsPluginInterface *ags_play_wave_channel_run_parent_plugin_interface;
 
 GType
 ags_play_wave_channel_run_get_type()
@@ -77,43 +73,13 @@ ags_play_wave_channel_run_get_type()
       (GInstanceInitFunc) ags_play_wave_channel_run_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_play_wave_channel_run_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_play_wave_channel_run_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_play_wave_channel_run_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_play_wave_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 							    "AgsPlayWaveChannelRun",
 							    &ags_play_wave_channel_run_info,
 							    0);
-
-    g_type_add_interface_static(ags_type_play_wave_channel_run,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_play_wave_channel_run,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_play_wave_channel_run,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
   }
 
-  return (ags_type_play_wave_channel_run);
+  return(ags_type_play_wave_channel_run);
 }
 
 void
@@ -127,6 +93,9 @@ ags_play_wave_channel_run_class_init(AgsPlayWaveChannelRunClass *play_wave_chann
   /* GObjectClass */
   gobject = (GObjectClass *) play_wave_channel_run;
 
+  gobject->set_property = ags_play_wave_channel_run_set_property;
+  gobject->get_property = ags_play_wave_channel_run_get_property;
+
   gobject->dispose = ags_play_wave_channel_run_dispose;
   gobject->finalize = ags_play_wave_channel_run_finalize;
 
@@ -134,31 +103,6 @@ ags_play_wave_channel_run_class_init(AgsPlayWaveChannelRunClass *play_wave_chann
   recall = (AgsRecallClass *) play_wave_channel_run;
 
   recall->run_inter = ags_play_wave_channel_run_run_inter;
-  recall->duplicate = ags_play_wave_channel_run_duplicate;
-}
-
-void
-ags_play_wave_channel_run_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_play_wave_channel_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_play_wave_channel_run_connect;
-  connectable->disconnect = ags_play_wave_channel_run_disconnect;
-}
-
-void
-ags_play_wave_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_play_wave_channel_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-}
-
-void
-ags_play_wave_channel_run_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_play_wave_channel_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-  
-  plugin->read = ags_play_wave_channel_run_read;
-  plugin->write = ags_play_wave_channel_run_write;
 }
 
 void
@@ -179,6 +123,94 @@ ags_play_wave_channel_run_init(AgsPlayWaveChannelRun *play_wave_channel_run)
 }
 
 void
+ags_play_wave_channel_run_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec)
+{
+  AgsPlayWaveChannelRun *play_wave_channel_run;
+
+  pthread_mutex_t *recall_mutex;
+  
+  play_wave_channel_run = AGS_PLAY_WAVE_CHANNEL_RUN(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  switch(prop_id){
+  case PROP_TIMESTAMP:
+    {
+      AgsTimestamp *timestamp;
+
+      timestamp = (AgsTimestamp *) g_value_get_object(value);
+
+      pthread_mutex_lock(recall_mutex);
+
+      if(play_wave_channel_run->timestamp == timestamp){
+	pthread_mutex_unlock(recall_mutex);
+
+	return;
+      }
+
+      if(play_wave_channel_run->timestamp != NULL){
+	g_object_unref(play_wave_channel_run->timestamp);
+      }
+
+      if(timestamp != NULL){
+	g_object_ref(timestamp);
+      }
+
+      play_wave_channel_run->timestamp = timestamp;
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  };
+}
+
+void
+ags_play_wave_channel_run_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec)
+{
+  AgsPlayWaveChannelRun *play_wave_channel_run;
+
+  pthread_mutex_t *recall_mutex;
+  
+  play_wave_channel_run = AGS_PLAY_WAVE_CHANNEL_RUN(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  switch(prop_id){
+  case PROP_TIMESTAMP:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, play_wave_channel_run->timestamp);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  };
+}
+
+void
 ags_play_wave_channel_run_finalize(GObject *gobject)
 {
   AgsPlayWaveChannelRun *play_wave_channel_run;
@@ -186,52 +218,12 @@ ags_play_wave_channel_run_finalize(GObject *gobject)
   play_wave_channel_run = AGS_PLAY_WAVE_CHANNEL_RUN(gobject);
 
   /* timestamp */
-  if(play_wave_channel->timestamp != NULL){
-    g_object_unref(G_OBJECT(play_wave_channel->timestamp));
+  if(play_wave_channel_run->timestamp != NULL){
+    g_object_unref(G_OBJECT(play_wave_channel_run->timestamp));
   }
 
   /* call parent */
   G_OBJECT_CLASS(ags_play_wave_channel_run_parent_class)->finalize(gobject);
-}
-
-void
-ags_play_wave_channel_run_connect(AgsConnectable *connectable)
-{
-  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
-    return;
-  }
-
-  /* call parent */
-  ags_play_wave_channel_run_parent_connectable_interface->connect(connectable);
-}
-
-void
-ags_play_wave_channel_run_disconnect(AgsConnectable *connectable)
-{
-  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) == 0){
-    return;
-  }
-
-  /* call parent */
-  ags_play_wave_channel_run_parent_connectable_interface->disconnect(connectable);
-}
-
-void
-ags_play_wave_channel_run_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
-{
-  /* read parent */
-  ags_play_wave_channel_run_parent_plugin_interface->read(file, node, plugin);
-}
-
-xmlNode*
-ags_play_wave_channel_run_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
-{
-  xmlNode *node;
-
-  /* write parent */
-  node = ags_play_wave_channel_run_parent_plugin_interface->write(file, parent, plugin);
-
-  return(node);
 }
 
 void
@@ -240,13 +232,15 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
   AgsAudio *audio;
   AgsChannel *channel;
   AgsWave *wave;
+  AgsPort *port;
   AgsPlayWaveAudio *play_wave_audio;
   AgsPlayWaveAudioRun *play_wave_audio_run;
   AgsPlayWaveChannel *play_wave_channel;
+  AgsPlayWaveChannelRun *play_wave_channel_run;
 
-  AgsMutexManager *mutex_manager;
-
-  GList *list;
+  AgsTimestamp *timestamp;
+  
+  GList *start_list, *list;
 
   guint line;
   guint samplerate;
@@ -257,122 +251,105 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
   GValue do_playback_value = {0,};
   GValue x_offset_value = {0,};
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
   
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get AgsPlayWaveAudio */
-  play_wave_audio = AGS_PLAY_WAVE_AUDIO(AGS_RECALL_CHANNEL_RUN(play_wave_channel_run)->recall_audio_run->recall_audio);
-
-  /* get AgsPlayWaveAudioRun */
-  play_wave_audio_run = AGS_PLAY_WAVE_AUDIO_RUN(AGS_RECALL_CHANNEL_RUN(play_wave_channel_run)->recall_audio_run);
-
-  /* get AgsPlayWaveChannel */
-  play_wave_channel = AGS_PLAY_WAVE_CHANNEL(play_wave_channel_run->recall_channel_run.recall_channel);
-
-  g_value_init(&do_playback_value, G_TYPE_BOOLEAN);
-  ags_port_safe_read(play_wave_channel->do_playback, &do_playback_value);
+  play_wave_channel_run = (AgsPlayWaveChannelRun *) recall;
+  
+  g_object_get(play_wave_channel_run,
+	       "recall-audio", &play_wave_audio,
+	       "recall-channel", &play_wave_chanel,
+	       "recall-audio-run", &play_wave_audio_run,
+	       NULL);
+  
+  /* get do playback */
+  g_object_get(play_wave_channel,
+	       "do-playback", &port,
+	       NULL);
+  
+  g_value_init(&do_playback_value,
+	       G_TYPE_BOOLEAN);
+  
+  ags_port_safe_read(port,
+		     &do_playback_value);
 
   do_playback = g_value_get_boolean(&do_playback_value);
+  
   g_value_unset(&do_playback_value);
   
   if(!do_playback){
     return;
   }
-  
-  g_value_init(&x_offset_value, G_TYPE_UINT64);
-  ags_port_safe_read(play_wave_channel->x_offset, &x_offset_value);
 
-  x_offset = g_value_get_boolean(&x_offset_value);
+  /* get x-offset */
+  g_object_get(play_wave_channel,
+	       "x-offset", &port,
+	       NULL);
+
+  g_value_init(&x_offset_value,
+	       G_TYPE_UINT64);
+  
+  ags_port_safe_read(port,
+		     &x_offset_value);
+
+  x_offset = g_value_get_uint64(&x_offset_value);
+
   g_value_unset(&x_offset_value);
 
-  /* get audio */
-  audio = AGS_RECALL_AUDIO(play_wave_audio)->audio;
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-  
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-    
-  pthread_mutex_unlock(application_mutex);
-
-  /* get channel */
-  channel = AGS_RECALL_CHANNEL(play_wave_channel)->source;
-
-  /* get channel mutex */
-  pthread_mutex_lock(application_mutex);
-  
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
-    
-  pthread_mutex_unlock(application_mutex);
-  
-  /* get some presets */
-  pthread_mutex_lock(audio_mutex);
-
-  samplerate = audio->samplerate;
-  buffer_size = audio->buffer_size;
-  
-  pthread_mutex_unlock(audio_mutex);
-
   /* get some fields */
-  pthread_mutex_lock(channel_mutex);
+  g_object_get(play_wave_audio_run,
+	       "audio", &audio,
+	       NULL);
 
-  line = channel->line;
-  
-  pthread_mutex_unlock(channel_mutex);
+  g_object_get(play_wave_channel_run,
+	       "source", &channel,
+	       "timestamp", &timestamp,
+	       NULL);
+
+  g_object_get(audio,
+	       "samplerate", &samplerate,
+	       "buffer-size", &buffer_size,
+	       "wave", &start_list,
+	       NULL);
+
+  g_object_get(channel,
+	       "line", &line,
+	       NULL);
 
   /* time stamp offset */
-  play_wave_channel_run->timestamp->timer.ags_offset.offset = (guint64) ((64.0 * (double) samplerate) * floor(x_offset / (64.0 * (double) samplerate)));
-
+  ags_timestamp_set_ags_offset(timestamp,
+			       (guint64) ((64.0 * (double) samplerate) * floor(x_offset / (64.0 * (double) samplerate))));
+  
   /* find wave */
-  pthread_mutex_lock(audio_mutex);
-
-  list = ags_wave_find_near_timestamp(audio->wave, line,
-				      play_wave_channel_run->timestamp);
+  wave = NULL;
+  
+  list = ags_wave_find_near_timestamp(start_list, line,
+				      timestamp);
 
   if(list != NULL){
     wave = list->data;
   }
 
-  pthread_mutex_unlock(audio_mutex);
-
   //TODO:JK: implement me
-}
-
-AgsRecall*
-ags_play_wave_channel_run_duplicate(AgsRecall *recall,
-				    AgsRecallID *recall_id,
-				    guint *n_params, GParameter *parameter)
-{
-  AgsPlayWaveChannelRun *copy_play_wave_channel_run;
-
-  copy_play_wave_channel_run = AGS_RECALL_CLASS(ags_play_wave_channel_run_parent_class)->duplicate(recall,
-												   recall_id,
-												   n_params, parameter));
-
-  return((AgsRecall *) copy_play_wave_channel_run);
 }
 
 /**
  * ags_play_wave_channel_run_new:
+ * @source: the #AgsChannel
  *
- * Creates an #AgsPlayWaveChannelRun
+ * Create a new instance of #AgsPlayWaveChannelRun
  *
- * Returns: a new #AgsPlayWaveChannelRun
+ * Returns: the new #AgsPlayWaveChannelRun
  *
- * Since: 1.5.0
+ * Since: 2.0.0
  */
 AgsPlayWaveChannelRun*
-ags_play_wave_channel_run_new()
+ags_play_wave_channel_run_new(AgsChannel *source)
 {
   AgsPlayWaveChannelRun *play_wave_channel_run;
 
   play_wave_channel_run = (AgsPlayWaveChannelRun *) g_object_new(AGS_TYPE_PLAY_WAVE_CHANNEL_RUN,
+								 "source", source,
 								 NULL);
 
   return(play_wave_channel_run);
