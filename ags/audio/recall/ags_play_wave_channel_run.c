@@ -106,7 +106,8 @@ ags_play_wave_channel_run_init(AgsPlayWaveChannelRun *play_wave_channel_run)
   AGS_RECALL(play_wave_channel_run)->port = NULL;
 
   play_wave_channel_run->timestamp = ags_timestamp_new();
-
+  g_object_ref(play_wave_channel_run->timestamp);
+  
   play_wave_channel_run->timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
   play_wave_channel_run->timestamp->flags |= AGS_TIMESTAMP_OFFSET;
 

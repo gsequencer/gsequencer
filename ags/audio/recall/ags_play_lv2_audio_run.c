@@ -311,8 +311,10 @@ ags_play_lv2_audio_run_init(AgsPlayLv2AudioRun *play_lv2_audio_run)
   play_lv2_audio_run->destination = NULL;  
   
   play_lv2_audio_run->notation = NULL;
+  
   play_lv2_audio_run->timestamp = ags_timestamp_new();
-
+  g_object_ref(play_lv2_audio_run->timestamp);
+  
   play_lv2_audio_run->timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
   play_lv2_audio_run->timestamp->flags |= AGS_TIMESTAMP_OFFSET;
 

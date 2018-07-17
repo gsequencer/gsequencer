@@ -310,8 +310,10 @@ ags_play_dssi_audio_run_init(AgsPlayDssiAudioRun *play_dssi_audio_run)
   play_dssi_audio_run->destination = NULL;
 
   play_dssi_audio_run->notation = NULL;
-  play_dssi_audio_run->timestamp = ags_timestamp_new();
 
+  play_dssi_audio_run->timestamp = ags_timestamp_new();
+  g_object_ref(play_dssi_audio_run->timestamp);
+  
   play_dssi_audio_run->timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
   play_dssi_audio_run->timestamp->flags |= AGS_TIMESTAMP_OFFSET;
 

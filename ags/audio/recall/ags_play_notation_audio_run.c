@@ -246,7 +246,8 @@ ags_play_notation_audio_run_init(AgsPlayNotationAudioRun *play_notation_audio_ru
   play_notation_audio_run->notation = NULL;
 
   play_notation_audio_run->timestamp = ags_timestamp_new();
-
+  g_object_ref(play_notation_audio_run->timestamp);
+  
   play_notation_audio_run->timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
   play_notation_audio_run->timestamp->flags |= AGS_TIMESTAMP_OFFSET;
 
