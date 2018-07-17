@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,25 +18,14 @@
  */
 
 #include <ags/audio/recall/ags_stream_recycling.h>
-#include <ags/audio/recall/ags_stream_audio_signal.h>
 
 #include <ags/libags.h>
 
-#include <ags/audio/task/ags_remove_audio_signal.h>
+#include <ags/audio/recall/ags_stream_audio_signal.h>
 
 void ags_stream_recycling_class_init(AgsStreamRecyclingClass *stream_recycling);
-void ags_stream_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_stream_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_stream_recycling_init(AgsStreamRecycling *stream_recycling);
-void ags_stream_recycling_connect(AgsConnectable *connectable);
-void ags_stream_recycling_disconnect(AgsConnectable *connectable);
-void ags_stream_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_stream_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_stream_recycling_finalize(GObject *gobject);
-
-AgsRecall* ags_stream_recycling_duplicate(AgsRecall *recall,
-					  AgsRecallID *recall_id,
-					  guint *n_params, GParameter *parameter);
 
 /**
  * SECTION:ags_stream_recycling
@@ -70,30 +59,10 @@ ags_stream_recycling_get_type()
       (GInstanceInitFunc) ags_stream_recycling_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_stream_recycling_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_stream_recycling_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_stream_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
 						       "AgsStreamRecycling",
 						       &ags_stream_recycling_info,
 						       0);
-
-    g_type_add_interface_static(ags_type_stream_recycling,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_stream_recycling,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
   }
 
   return (ags_type_stream_recycling);
@@ -103,8 +72,6 @@ void
 ags_stream_recycling_class_init(AgsStreamRecyclingClass *stream_recycling)
 {
   GObjectClass *gobject;
-  AgsRecallClass *recall;
-  GParamSpec *param_spec;
 
   ags_stream_recycling_parent_class = g_type_class_peek_parent(stream_recycling);
 
@@ -112,29 +79,6 @@ ags_stream_recycling_class_init(AgsStreamRecyclingClass *stream_recycling)
   gobject = (GObjectClass *) stream_recycling;
 
   gobject->finalize = ags_stream_recycling_finalize;
-
-  /* AgsRecallClass */
-  recall = (AgsRecallClass *) stream_recycling;
-
-  recall->duplicate = ags_stream_recycling_duplicate;
-}
-
-void
-ags_stream_recycling_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_stream_recycling_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_stream_recycling_connect;
-  connectable->disconnect = ags_stream_recycling_disconnect;
-}
-
-void
-ags_stream_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_stream_recycling_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_stream_recycling_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_stream_recycling_disconnect_dynamic;
 }
 
 void
@@ -154,74 +98,27 @@ ags_stream_recycling_init(AgsStreamRecycling *stream_recycling)
 void
 ags_stream_recycling_finalize(GObject *gobject)
 {
-  /* empty */
-
   /* call parent */
   G_OBJECT_CLASS(ags_stream_recycling_parent_class)->finalize(gobject);
 }
 
-void
-ags_stream_recycling_connect(AgsConnectable *connectable)
-{
-  ags_stream_recycling_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_stream_recycling_disconnect(AgsConnectable *connectable)
-{
-  ags_stream_recycling_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_stream_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  AgsStreamRecycling *stream_recycling;
-
-  ags_stream_recycling_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-}
-
-void
-ags_stream_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  ags_stream_recycling_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-}
-
-AgsRecall*
-ags_stream_recycling_duplicate(AgsRecall *recall,
-			       AgsRecallID *recall_id,
-			       guint *n_params, GParameter *parameter)
-{
-  AgsStreamRecycling *copy;
-
-  copy = (AgsStreamRecycling *) AGS_RECALL_CLASS(ags_stream_recycling_parent_class)->duplicate(recall,
-											       recall_id,
-											       n_params, parameter);
-
-
-  return((AgsRecall *) copy);
-}
-
 /**
  * ags_stream_recycling_new:
- * @recycling: the #AgsRecycling
+ * @source: the #AgsRecycling
  *
- * Creates an #AgsStreamRecycling
+ * Create a new instance of #AgsStreamRecycling
  *
- * Returns: a new #AgsStreamRecycling
+ * Returns: the new #AgsStreamRecycling
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsStreamRecycling*
-ags_stream_recycling_new(AgsRecycling *recycling)
+ags_stream_recycling_new(AgsRecycling *source)
 {
   AgsStreamRecycling *stream_recycling;
 
   stream_recycling = (AgsStreamRecycling *) g_object_new(AGS_TYPE_STREAM_RECYCLING,
-							 "source", recycling,
+							 "source", source,
 							 NULL);
 
   return(stream_recycling);

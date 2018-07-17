@@ -402,14 +402,14 @@ ags_eq10_channel_init(AgsEq10Channel *eq10_channel)
 
   /* peak 112hz */
   eq10_channel->peak_112hz = g_object_new(AGS_TYPE_PORT,
-					 "plugin-name", ags_eq10_channel_plugin_name,
-					 "specifier", ags_eq10_channel_specifier[2],
-					 "control-port", ags_eq10_channel_control_port[2],
-					 "port-value-is-pointer", FALSE,
-					 "port-value-type", G_TYPE_FLOAT,
-					 "port-value-size", sizeof(gfloat),
-					 "port-value-length", 1,
-					 NULL);
+					  "plugin-name", ags_eq10_channel_plugin_name,
+					  "specifier", ags_eq10_channel_specifier[2],
+					  "control-port", ags_eq10_channel_control_port[2],
+					  "port-value-is-pointer", FALSE,
+					  "port-value-type", G_TYPE_FLOAT,
+					  "port-value-size", sizeof(gfloat),
+					  "port-value-length", 1,
+					  NULL);
   g_object_ref(eq10_channel->peak_112hz);
   
   eq10_channel->peak_112hz->port_value.ags_port_float = 1.0;
@@ -425,14 +425,14 @@ ags_eq10_channel_init(AgsEq10Channel *eq10_channel)
 
   /* peak 224hz */
   eq10_channel->peak_224hz = g_object_new(AGS_TYPE_PORT,
-					 "plugin-name", ags_eq10_channel_plugin_name,
-					 "specifier", ags_eq10_channel_specifier[3],
-					 "control-port", ags_eq10_channel_control_port[3],
-					 "port-value-is-pointer", FALSE,
-					 "port-value-type", G_TYPE_FLOAT,
-					 "port-value-size", sizeof(gfloat),
-					 "port-value-length", 1,
-					 NULL);
+					  "plugin-name", ags_eq10_channel_plugin_name,
+					  "specifier", ags_eq10_channel_specifier[3],
+					  "control-port", ags_eq10_channel_control_port[3],
+					  "port-value-is-pointer", FALSE,
+					  "port-value-type", G_TYPE_FLOAT,
+					  "port-value-size", sizeof(gfloat),
+					  "port-value-length", 1,
+					  NULL);
   g_object_ref(eq10_channel->peak_224hz);
   
   eq10_channel->peak_224hz->port_value.ags_port_float = 1.0;
@@ -448,14 +448,14 @@ ags_eq10_channel_init(AgsEq10Channel *eq10_channel)
 
   /* peak 448hz */
   eq10_channel->peak_448hz = g_object_new(AGS_TYPE_PORT,
-					 "plugin-name", ags_eq10_channel_plugin_name,
-					 "specifier", ags_eq10_channel_specifier[4],
-					 "control-port", ags_eq10_channel_control_port[4],
-					 "port-value-is-pointer", FALSE,
-					 "port-value-type", G_TYPE_FLOAT,
-					 "port-value-size", sizeof(gfloat),
-					 "port-value-length", 1,
-					 NULL);
+					  "plugin-name", ags_eq10_channel_plugin_name,
+					  "specifier", ags_eq10_channel_specifier[4],
+					  "control-port", ags_eq10_channel_control_port[4],
+					  "port-value-is-pointer", FALSE,
+					  "port-value-type", G_TYPE_FLOAT,
+					  "port-value-size", sizeof(gfloat),
+					  "port-value-length", 1,
+					  NULL);
   g_object_ref(eq10_channel->peak_448hz);
   
   eq10_channel->peak_448hz->port_value.ags_port_float = 1.0;
@@ -471,14 +471,14 @@ ags_eq10_channel_init(AgsEq10Channel *eq10_channel)
 
   /* peak 896hz */
   eq10_channel->peak_896hz = g_object_new(AGS_TYPE_PORT,
-					 "plugin-name", ags_eq10_channel_plugin_name,
-					 "specifier", ags_eq10_channel_specifier[5],
-					 "control-port", ags_eq10_channel_control_port[5],
-					 "port-value-is-pointer", FALSE,
-					 "port-value-type", G_TYPE_FLOAT,
-					 "port-value-size", sizeof(gfloat),
-					 "port-value-length", 1,
-					 NULL);
+					  "plugin-name", ags_eq10_channel_plugin_name,
+					  "specifier", ags_eq10_channel_specifier[5],
+					  "control-port", ags_eq10_channel_control_port[5],
+					  "port-value-is-pointer", FALSE,
+					  "port-value-type", G_TYPE_FLOAT,
+					  "port-value-size", sizeof(gfloat),
+					  "port-value-length", 1,
+					  NULL);
   g_object_ref(eq10_channel->peak_896hz);
   
   eq10_channel->peak_896hz->port_value.ags_port_float = 1.0;
@@ -492,14 +492,14 @@ ags_eq10_channel_init(AgsEq10Channel *eq10_channel)
 
   /* peak 1792hz */
   eq10_channel->peak_1792hz = g_object_new(AGS_TYPE_PORT,
-					 "plugin-name", ags_eq10_channel_plugin_name,
-					 "specifier", ags_eq10_channel_specifier[6],
-					 "control-port", ags_eq10_channel_control_port[6],
-					 "port-value-is-pointer", FALSE,
-					 "port-value-type", G_TYPE_FLOAT,
-					 "port-value-size", sizeof(gfloat),
-					 "port-value-length", 1,
-					 NULL);
+					   "plugin-name", ags_eq10_channel_plugin_name,
+					   "specifier", ags_eq10_channel_specifier[6],
+					   "control-port", ags_eq10_channel_control_port[6],
+					   "port-value-is-pointer", FALSE,
+					   "port-value-type", G_TYPE_FLOAT,
+					   "port-value-size", sizeof(gfloat),
+					   "port-value-length", 1,
+					   NULL);
   g_object_ref(eq10_channel->peak_1792hz);
   
   eq10_channel->peak_1792hz->port_value.ags_port_float = 1.0;
@@ -515,14 +515,14 @@ ags_eq10_channel_init(AgsEq10Channel *eq10_channel)
 
   /* peak 3584hz */
   eq10_channel->peak_3584hz = g_object_new(AGS_TYPE_PORT,
-					 "plugin-name", ags_eq10_channel_plugin_name,
-					 "specifier", ags_eq10_channel_specifier[7],
-					 "control-port", ags_eq10_channel_control_port[7],
-					 "port-value-is-pointer", FALSE,
-					 "port-value-type", G_TYPE_FLOAT,
-					 "port-value-size", sizeof(gfloat),
-					 "port-value-length", 1,
-					 NULL);
+					   "plugin-name", ags_eq10_channel_plugin_name,
+					   "specifier", ags_eq10_channel_specifier[7],
+					   "control-port", ags_eq10_channel_control_port[7],
+					   "port-value-is-pointer", FALSE,
+					   "port-value-type", G_TYPE_FLOAT,
+					   "port-value-size", sizeof(gfloat),
+					   "port-value-length", 1,
+					   NULL);
   g_object_ref(eq10_channel->peak_3584hz);
   
   eq10_channel->peak_3584hz->port_value.ags_port_float = 1.0;
@@ -538,14 +538,14 @@ ags_eq10_channel_init(AgsEq10Channel *eq10_channel)
 
   /* peak 7168hz */
   eq10_channel->peak_7168hz = g_object_new(AGS_TYPE_PORT,
-					 "plugin-name", ags_eq10_channel_plugin_name,
-					 "specifier", ags_eq10_channel_specifier[8],
-					 "control-port", ags_eq10_channel_control_port[8],
-					 "port-value-is-pointer", FALSE,
-					 "port-value-type", G_TYPE_FLOAT,
-					 "port-value-size", sizeof(gfloat),
-					 "port-value-length", 1,
-					 NULL);
+					   "plugin-name", ags_eq10_channel_plugin_name,
+					   "specifier", ags_eq10_channel_specifier[8],
+					   "control-port", ags_eq10_channel_control_port[8],
+					   "port-value-is-pointer", FALSE,
+					   "port-value-type", G_TYPE_FLOAT,
+					   "port-value-size", sizeof(gfloat),
+					   "port-value-length", 1,
+					   NULL);
   g_object_ref(eq10_channel->peak_7168hz);
   
   eq10_channel->peak_7168hz->port_value.ags_port_float = 1.0;
@@ -561,14 +561,14 @@ ags_eq10_channel_init(AgsEq10Channel *eq10_channel)
 
   /* peak 14336hz */
   eq10_channel->peak_14336hz = g_object_new(AGS_TYPE_PORT,
-					 "plugin-name", ags_eq10_channel_plugin_name,
-					 "specifier", ags_eq10_channel_specifier[9],
-					 "control-port", ags_eq10_channel_control_port[9],
-					 "port-value-is-pointer", FALSE,
-					 "port-value-type", G_TYPE_FLOAT,
-					 "port-value-size", sizeof(gfloat),
-					 "port-value-length", 1,
-					 NULL);
+					    "plugin-name", ags_eq10_channel_plugin_name,
+					    "specifier", ags_eq10_channel_specifier[9],
+					    "control-port", ags_eq10_channel_control_port[9],
+					    "port-value-is-pointer", FALSE,
+					    "port-value-type", G_TYPE_FLOAT,
+					    "port-value-size", sizeof(gfloat),
+					    "port-value-length", 1,
+					    NULL);
   g_object_ref(eq10_channel->peak_14336hz);
   
   eq10_channel->peak_14336hz->port_value.ags_port_float = 1.0;
@@ -1221,56 +1221,56 @@ ags_eq10_channel_set_ports(AgsPlugin *plugin, GList *port)
 		   "peak-28hz", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./peak-56hz[0]",
-		15)){
+		      "./peak-56hz[0]",
+		      15)){
       g_object_set(G_OBJECT(plugin),
 		   "peak-56hz", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./peak-112hz[0]",
-		16)){
+		      "./peak-112hz[0]",
+		      16)){
       g_object_set(G_OBJECT(plugin),
 		   "peak-112hz", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./peak-224hz[0]",
-		16)){
+		      "./peak-224hz[0]",
+		      16)){
       g_object_set(G_OBJECT(plugin),
 		   "peak-224hz", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./peak-448hz[0]",
-		16)){
+		      "./peak-448hz[0]",
+		      16)){
       g_object_set(G_OBJECT(plugin),
 		   "peak-448hz", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./peak-896hz[0]",
-		16)){
+		      "./peak-896hz[0]",
+		      16)){
       g_object_set(G_OBJECT(plugin),
 		   "peak-896hz", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./peak-1792hz[0]",
-		17)){
+		      "./peak-1792hz[0]",
+		      17)){
       g_object_set(G_OBJECT(plugin),
 		   "peak-1792hz", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./peak-3584hz[0]",
-		17)){
+		      "./peak-3584hz[0]",
+		      17)){
       g_object_set(G_OBJECT(plugin),
 		   "peak-3584hz", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./peak-7168hz[0]",
-		17)){
+		      "./peak-7168hz[0]",
+		      17)){
       g_object_set(G_OBJECT(plugin),
 		   "peak-7168hz", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
-		"./peak-14336hz[0]",
-		18)){
+		      "./peak-14336hz[0]",
+		      18)){
       g_object_set(G_OBJECT(plugin),
 		   "peak-14336hz", AGS_PORT(port->data),
 		   NULL);
@@ -1294,7 +1294,7 @@ ags_eq10_channel_get_peak_generic_plugin_port()
     g_object_ref(plugin_port);
     
     plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
-			       AGS_PLUGIN_PORT_CONTROL);
+			   AGS_PLUGIN_PORT_CONTROL);
 
     plugin_port->port_index = 0;
 

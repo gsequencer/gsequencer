@@ -30,9 +30,6 @@
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
 
-#include <ags/audio/thread/ags_audio_loop.h>
-#include <ags/audio/thread/ags_soundcard_thread.h>
-
 #include <alsa/seq_midi_event.h>
 
 #include <ags/i18n.h>
@@ -811,8 +808,6 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
   guint selected_pad;
   guint start_frame, end_frame;
   guint note_y;
-  long seq_length;
-  long velocity, pressure;
 
   pthread_mutex_t *audio_mutex;
   
@@ -854,6 +849,7 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 
   pthread_mutex_unlock(audio_mutex);
 
+  /* note */
   g_object_get(note,
 	       "y", &note_y,
 	       NULL);
@@ -1020,7 +1016,7 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 
 	g_list_free(start_generic_recycling_recall);
 	
-	channel_dummy = channel_dummy->next;
+	generic_channel_recall = generic_channel_recall->next;
       }
 
       g_list_free(start_generic_channel_recall);
@@ -1034,7 +1030,6 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 					      gdouble delay, guint attack,
 					      AgsRouteDssiAudioRun *route_dssi_audio_run)
 {
-  GObject *soundcard;
   AgsAudio *audio;
   AgsNotation *notation;
   AgsCountBeatsAudioRun *count_beats_audio_run;
@@ -1042,6 +1037,8 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   AgsTimestamp *timestamp;
   
+  GObject *output_soundcard;
+
   GList *start_list, *list;
 
   guint audio_channel;

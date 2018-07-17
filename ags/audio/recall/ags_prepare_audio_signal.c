@@ -233,8 +233,10 @@ ags_prepare_audio_signal_run_pre(AgsRecall *recall)
 
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
+  /* call parent */
   parent_class_run_pre(recall);
 
+  /* get some fields */
   g_object_get(recall,
 	       "destination", &destination,
 	       "source", &source,

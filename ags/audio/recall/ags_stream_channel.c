@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,7 +24,6 @@
 #include <ags/i18n.h>
 
 void ags_stream_channel_class_init(AgsStreamChannelClass *stream_channel);
-void ags_stream_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_stream_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_stream_channel_init(AgsStreamChannel *stream_channel);
 void ags_stream_channel_set_property(GObject *gobject,
@@ -35,11 +34,10 @@ void ags_stream_channel_get_property(GObject *gobject,
 				     guint prop_id,
 				     GValue *value,
 				     GParamSpec *param_spec);
-void ags_stream_channel_connect(AgsConnectable *connectable);
-void ags_stream_channel_disconnect(AgsConnectable *connectable);
-void ags_stream_channel_set_ports(AgsPlugin *plugin, GList *port);
 void ags_stream_channel_dispose(GObject *gobject);
 void ags_stream_channel_finalize(GObject *gobject);
+
+void ags_stream_channel_set_ports(AgsPlugin *plugin, GList *port);
 
 /**
  * SECTION:ags_stream_channel
@@ -86,12 +84,6 @@ ags_stream_channel_get_type()
       (GInstanceInitFunc) ags_stream_channel_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_stream_channel_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     static const GInterfaceInfo ags_plugin_interface_info = {
       (GInterfaceInitFunc) ags_stream_channel_plugin_interface_init,
       NULL, /* interface_finalize */
@@ -102,10 +94,6 @@ ags_stream_channel_get_type()
 						     "AgsStreamChannel",
 						     &ags_stream_channel_info,
 						     0);
-
-    g_type_add_interface_static(ags_type_stream_channel,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_stream_channel,
 				AGS_TYPE_PLUGIN,
@@ -120,6 +108,7 @@ ags_stream_channel_class_init(AgsStreamChannelClass *stream_channel)
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
+
   GParamSpec *param_spec;
 
   ags_stream_channel_parent_class = g_type_class_peek_parent(stream_channel);
@@ -139,7 +128,7 @@ ags_stream_channel_class_init(AgsStreamChannelClass *stream_channel)
    * 
    * The auto-sense port.
    * 
-   * Since: 1.0.0.7
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("auto-sense",
 				   i18n_pspec("mute channel"),
@@ -149,15 +138,6 @@ ags_stream_channel_class_init(AgsStreamChannelClass *stream_channel)
   g_object_class_install_property(gobject,
 				  PROP_AUTO_SENSE,
 				  param_spec);
-}
-
-void
-ags_stream_channel_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_stream_channel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_stream_channel_connect;
-  connectable->disconnect = ags_stream_channel_disconnect;
 }
 
 void
@@ -205,7 +185,7 @@ ags_stream_channel_init(AgsStreamChannel *stream_channel)
 			     "auto-sense");
   stream_channel->auto_sense->port_value.ags_port_boolean = ((!g_strcmp0(str, "true")
 							      ) ? TRUE: FALSE);
-  free(str);
+  g_free(str);
 
   /* add to port */
   port = g_list_prepend(port, stream_channel->auto_sense);
@@ -225,7 +205,16 @@ ags_stream_channel_set_property(GObject *gobject,
 {
   AgsStreamChannel *stream_channel;
 
+  pthread_mutex_t *recall_mutex;
+
   stream_channel = AGS_STREAM_CHANNEL(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_AUTO_SENSE:
@@ -234,7 +223,11 @@ ags_stream_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(port == stream_channel->auto_sense){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -247,6 +240,8 @@ ags_stream_channel_set_property(GObject *gobject,
       }
 
       stream_channel->auto_sense = port;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -263,12 +258,25 @@ ags_stream_channel_get_property(GObject *gobject,
 {
   AgsStreamChannel *stream_channel;
 
+  pthread_mutex_t *recall_mutex;
+
   stream_channel = AGS_STREAM_CHANNEL(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_AUTO_SENSE:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, stream_channel->auto_sense);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -312,26 +320,6 @@ ags_stream_channel_finalize(GObject *gobject)
 }
 
 void
-ags_stream_channel_connect(AgsConnectable *connectable)
-{
-  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
-    return;
-  }
-
-  ags_stream_channel_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_stream_channel_disconnect(AgsConnectable *connectable)
-{
-  ags_stream_channel_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_stream_channel_set_ports(AgsPlugin *plugin, GList *port)
 {
   while(port != NULL){
@@ -349,19 +337,21 @@ ags_stream_channel_set_ports(AgsPlugin *plugin, GList *port)
 
 /**
  * ags_stream_channel_new:
+ * @source: the #AgsChannel
  *
- * Creates an #AgsStreamChannel
+ * Create a new instance of #AgsStreamChannel
  *
- * Returns: a new #AgsStreamChannel
+ * Returns: the new #AgsStreamChannel
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsStreamChannel*
-ags_stream_channel_new()
+ags_stream_channel_new(AgsChannel *source)
 {
   AgsStreamChannel *stream_channel;
 
   stream_channel = (AgsStreamChannel *) g_object_new(AGS_TYPE_STREAM_CHANNEL,
+						     "source", source,
 						     NULL);
 
   return(stream_channel);

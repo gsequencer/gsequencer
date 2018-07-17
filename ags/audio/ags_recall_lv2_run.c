@@ -217,8 +217,17 @@ ags_recall_lv2_run_init(AgsRecallLv2Run *recall_lv2_run)
   
   recall_lv2_run->delta_time = 0;
   
-  recall_lv2_run->event_buffer = NULL;
-  recall_lv2_run->event_count = NULL;
+  recall_lv2_run->event_buffer = (snd_seq_event_t **) malloc(2 * sizeof(snd_seq_event_t *));
+
+  recall_lv2_run->event_buffer[0] = (snd_seq_event_t *) malloc(sizeof(snd_seq_event_t));
+  memset(recall_lv2_run->event_buffer[0], 0, sizeof(snd_seq_event_t));
+  
+  recall_lv2_run->event_buffer[1] = NULL;
+
+  recall_lv2_run->event_count = (unsigned long *) malloc(2 * sizeof(unsigned long));
+
+  recall_lv2_run->event_count[0] = 0;
+  recall_lv2_run->event_count[1] = 0;
   
   recall_lv2_run->route_lv2_audio_run = NULL;
   recall_lv2_run->note = NULL;

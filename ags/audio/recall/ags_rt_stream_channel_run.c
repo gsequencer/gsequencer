@@ -18,7 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_rt_stream_channel_run.h>
-#include <ags/audio/recall/ags_rt_stream_recycling.h>
 
 #include <ags/libags.h>
 
@@ -26,24 +25,16 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
 
+#include <ags/audio/recall/ags_rt_stream_recycling.h>
+
 #include <ags/audio/task/ags_cancel_recall.h>
 
 void ags_rt_stream_channel_run_class_init(AgsRtStreamChannelRunClass *rt_stream_channel_run);
-void ags_rt_stream_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_rt_stream_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
-void ags_rt_stream_channel_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_rt_stream_channel_run_init(AgsRtStreamChannelRun *rt_stream_channel_run);
-void ags_rt_stream_channel_run_connect(AgsConnectable *connectable);
-void ags_rt_stream_channel_run_disconnect(AgsConnectable *connectable);
-void ags_rt_stream_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_rt_stream_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_rt_stream_channel_run_finalize(GObject *gobject);
 
-void ags_rt_stream_channel_run_check_rt_stream(AgsRecall *recall);
+void ags_rt_stream_channel_run_check_rt_data(AgsRecall *recall);
 void ags_rt_stream_channel_run_remove(AgsRecall *recall);
-AgsRecall* ags_rt_stream_channel_run_duplicate(AgsRecall *recall,
-					       AgsRecallID *recall_id,
-					       guint *n_params, GParameter *parameter);
 
 /**
  * SECTION:ags_rt_stream_channel_run
@@ -56,9 +47,6 @@ AgsRecall* ags_rt_stream_channel_run_duplicate(AgsRecall *recall,
  */
 
 static gpointer ags_rt_stream_channel_run_parent_class = NULL;
-static AgsConnectableInterface *ags_rt_stream_channel_run_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_rt_stream_channel_run_parent_dynamic_connectable_interface;
-static AgsPluginInterface *ags_rt_stream_channel_run_parent_plugin_interface;
 
 GType
 ags_rt_stream_channel_run_get_type()
@@ -78,43 +66,13 @@ ags_rt_stream_channel_run_get_type()
       (GInstanceInitFunc) ags_rt_stream_channel_run_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_rt_stream_channel_run_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_rt_stream_channel_run_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_rt_stream_channel_run_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };    
-
     ags_type_rt_stream_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 							    "AgsRtStreamChannelRun",
 							    &ags_rt_stream_channel_run_info,
 							    0);
-
-    g_type_add_interface_static(ags_type_rt_stream_channel_run,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_rt_stream_channel_run,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_rt_stream_channel_run,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
   }
 
-  return (ags_type_rt_stream_channel_run);
+  return(ags_type_rt_stream_channel_run);
 }
 
 void
@@ -133,33 +91,8 @@ ags_rt_stream_channel_run_class_init(AgsRtStreamChannelRunClass *rt_stream_chann
   /* AgsRecallClass */
   recall = (AgsRecallClass *) rt_stream_channel_run;
 
-  recall->check_rt_stream = ags_rt_stream_channel_run_check_rt_stream;
-  recall->duplicate = ags_rt_stream_channel_run_duplicate;
+  recall->check_rt_data = ags_rt_stream_channel_run_check_rt_data;
   recall->remove = ags_rt_stream_channel_run_remove;
-}
-
-void
-ags_rt_stream_channel_run_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_rt_stream_channel_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_rt_stream_channel_run_connect;
-  connectable->disconnect = ags_rt_stream_channel_run_disconnect;
-}
-
-void
-ags_rt_stream_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_rt_stream_channel_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_rt_stream_channel_run_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_rt_stream_channel_run_disconnect_dynamic;
-}
-
-void
-ags_rt_stream_channel_run_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_rt_stream_channel_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
 }
 
 void
@@ -171,110 +104,38 @@ ags_rt_stream_channel_run_init(AgsRtStreamChannelRun *rt_stream_channel_run)
   AGS_RECALL(rt_stream_channel_run)->xml_type = "ags-rt_stream-channel-run";
   AGS_RECALL(rt_stream_channel_run)->port = NULL;
 
-  AGS_RECALL(rt_stream_channel_run)->flags |= (AGS_RECALL_OUTPUT_ORIENTATED |
-					       AGS_RECALL_RUN_FIRST);
   AGS_RECALL(rt_stream_channel_run)->child_type = AGS_TYPE_RT_STREAM_RECYCLING;
 }
 
 void
-ags_rt_stream_channel_run_finalize(GObject *gobject)
-{
-  /* empty */
-
-  /* call parent */
-  G_OBJECT_CLASS(ags_rt_stream_channel_run_parent_class)->finalize(gobject);
-}
-
-void
-ags_rt_stream_channel_run_connect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_rt_stream_channel_run_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_rt_stream_channel_run_disconnect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_rt_stream_channel_run_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_rt_stream_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_rt_stream_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
-ags_rt_stream_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  AgsChannel *channel;
-  AgsRtStreamChannelRun *rt_stream_channel_run;
-
-  ags_rt_stream_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
-ags_rt_stream_channel_run_check_rt_stream(AgsRecall *recall)
+ags_rt_stream_channel_run_check_rt_data(AgsRecall *recall)
 {
   AgsChannel *source;
   AgsRecycling *first_recycling, *last_recycling;
   AgsRecycling *recycling, *end_recycling;
-
   AgsRtStreamChannelRun *rt_stream_channel_run;
-
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *source_mutex;
-  pthread_mutex_t *recycling_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  rt_stream_channel_run = recall;
-
-  source = AGS_RECALL_CHANNEL_RUN(rt_stream_channel_run)->source;
-
-  /* lookup mutex */
-  pthread_mutex_lock(application_mutex);
-
-  source_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  (GObject *) source);
+  AgsRecallID *recall_id;
   
-  pthread_mutex_unlock(application_mutex);
+  GObject *output_soundcard;
+  
+  rt_stream_channel_run = (AgsRtStreamChannelRun *) recall;
+
+  g_object_get(rt_stream_channel_run,
+	       "source", &source,
+	       "output-soundcard", &output_soundcard,
+	       "recall-id", &recall_id,
+	       NULL);
 
   /* get first and last recycling */
-  pthread_mutex_lock(source_mutex);
-  
-  first_recycling = source->first_recycling;
-  last_recycling = source->last_recycling;
-  
-  pthread_mutex_unlock(source_mutex);
-
-  /* lookup mutex */
-  pthread_mutex_lock(application_mutex);
-
-  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) last_recycling);
-  
-  pthread_mutex_unlock(application_mutex);
+  g_object_get(source,
+	       "first-recycling", &first_recycling,
+	       "last-recycling", &last_recycling,
+	       NULL);
   
   /* get end */
-  pthread_mutex_lock(recycling_mutex);
-  
-  end_recycling = last_recycling->next;
-
-  pthread_mutex_unlock(recycling_mutex);
+  g_object_get(last_recycling,
+	       "next", &end_recycling,
+	       NULL);
 
   /* */
   recycling = first_recycling;
@@ -283,18 +144,10 @@ ags_rt_stream_channel_run_check_rt_stream(AgsRecall *recall)
     AgsAudioSignal *audio_signal;
     AgsAudioSignal *rt_template, *template;
     
-    /* lookup mutex */
-    pthread_mutex_lock(application_mutex);
-
-    recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) recycling);
-  
-    pthread_mutex_unlock(application_mutex);
-
     /* create rt template */
-    rt_template = ags_audio_signal_new(recall->soundcard,
+    rt_template = ags_audio_signal_new(output_soundcard,
 				       recycling,
-				       recall->recall_id);
+				       recall_id);
     rt_template->flags |= AGS_AUDIO_SIGNAL_RT_TEMPLATE;
     ags_recycling_create_audio_signal_with_defaults(recycling,
 						    rt_template,
@@ -303,45 +156,26 @@ ags_rt_stream_channel_run_check_rt_stream(AgsRecall *recall)
 				   rt_template);
     
     /* create buffer */
-    audio_signal = ags_audio_signal_new(recall->soundcard,
+    audio_signal = ags_audio_signal_new(output_soundcard,
 					recycling,
-					recall->recall_id);
-
-    pthread_mutex_lock(recycling_mutex);
+					recall_id);
 
     g_object_set(audio_signal,
 		 "rt-template", rt_template,
 		 NULL);
     ags_audio_signal_stream_resize(audio_signal,
 				   3);
-    audio_signal->stream_current = audio_signal->stream_beginning;
+    audio_signal->stream_current = audio_signal->stream;
     
-    pthread_mutex_unlock(recycling_mutex);
-
     /* add buffer */
     ags_recycling_add_audio_signal(recycling,
 				   audio_signal);
 
-    pthread_mutex_lock(recycling_mutex);
-    
-    recycling = recycling->next;
-    
-    pthread_mutex_unlock(recycling_mutex);
+    /* iterate */
+    g_object_get(recycling,
+		 "next", &recycling,
+		 NULL);
   }
-}
-
-AgsRecall*
-ags_rt_stream_channel_run_duplicate(AgsRecall *recall,
-				    AgsRecallID *recall_id,
-				    guint *n_params, GParameter *parameter)
-{
-  AgsRtStreamChannelRun *copy;
-
-  copy = (AgsRtStreamChannelRun *) AGS_RECALL_CLASS(ags_rt_stream_channel_run_parent_class)->duplicate(recall,
-												       recall_id,
-												       n_params, parameter);
-
-  return((AgsRecall *) copy);
 }
 
 void
@@ -350,110 +184,85 @@ ags_rt_stream_channel_run_remove(AgsRecall *recall)
   AgsChannel *source;
   AgsRecycling *first_recycling, *last_recycling;
   AgsRecycling *recycling, *end_recycling;
-
   AgsRtStreamChannelRun *rt_stream_channel_run;
 
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *source_mutex;
-  pthread_mutex_t *recycling_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  void (*parent_class_remove)(AgsRecall *recall);  
   
-  rt_stream_channel_run = recall;
+  rt_stream_channel_run = (AgsRtStreamChannelRun *) recall;
 
-  source = AGS_RECALL_CHANNEL_RUN(rt_stream_channel_run)->source;
+  /* get parent class */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
 
-  /* lookup mutex */
-  pthread_mutex_lock(application_mutex);
+  parent_class_remove = AGS_RECALL_CLASS(ags_prepare_audio_signal_parent_class)->remove;
 
-  source_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  (GObject *) source);
-  
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  g_object_get(rt_stream_channel_run,
+	       "source", &source,
+	       "recall-id", &recall_id,
+	       NULL);
 
   /* get first and last recycling */
-  pthread_mutex_lock(source_mutex);
+  g_object_get(source,
+	       "first-recycling", &first_recycling,
+	       "last-recycling", &last_recycling,
+	       NULL);
   
-  first_recycling = source->first_recycling;
-  last_recycling = source->last_recycling;
-
-  pthread_mutex_unlock(source_mutex);
-
-  /* lookup mutex */
-  pthread_mutex_lock(application_mutex);
-
-  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) last_recycling);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* get end */
-  pthread_mutex_lock(recycling_mutex);
-  
-  end_recycling = last_recycling->next;
-
-  pthread_mutex_unlock(recycling_mutex);
+  g_object_get(last_recycling,
+	       "next", &end_recycling,
+	       NULL);
 
   /* */
   recycling = first_recycling;
   
   while(recycling != end_recycling){
-    GList *audio_signal, *audio_signal_start;
+    GList *start_audio_signal, *audio_signal;
     
-    /* lookup mutex */
-    pthread_mutex_lock(application_mutex);
-
-    recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) recycling);
-  
-    pthread_mutex_unlock(application_mutex);
-
-    pthread_mutex_lock(recycling_mutex);
-
-    audio_signal_start = 
-      audio_signal = g_list_copy(recycling->audio_signal);
-
-    pthread_mutex_unlock(recycling_mutex);
+    g_object_get(recycling,
+		 "audio-signal", &start_audio_signal,
+		 NULL);
     
-    while((audio_signal = ags_audio_signal_get_by_recall_id(audio_signal,
-							    recall->recall_id)) != NULL){
+    audio_signal = start_audio_signal;
+    
+    while((audio_signal = ags_audio_signal_find_by_recall_id(audio_signal,
+							     recall_id)) != NULL){
       ags_recycling_remove_audio_signal(recycling,
 					audio_signal->data);
       
       audio_signal = audio_signal->next;
     }
 
-    g_list_free(audio_signal_start);
+    g_list_free(start_audio_signal);
     
-    pthread_mutex_lock(recycling_mutex);
-    
-    recycling = recycling->next;
-    
-    pthread_mutex_unlock(recycling_mutex);
+    /* iterate */
+    g_object_get(recycling,
+		 "next", &recycling,
+		 NULL);
   }
   
   /* call parent */
-  AGS_RECALL_CLASS(ags_rt_stream_channel_run_parent_class)->remove(recall);
+  parent_class_remove(recall);
 }
 
 /**
  * ags_rt_stream_channel_run_new:
+ * @source: the #AgsChannel
  *
- * Creates an #AgsRtStreamChannelRun
+ * Create a new instance of #AgsRtStreamChannelRun
  *
- * Returns: a new #AgsRtStreamChannelRun
+ * Returns: the new #AgsRtStreamChannelRun
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 AgsRtStreamChannelRun*
-ags_rt_stream_channel_run_new()
+ags_rt_stream_channel_run_new(AgsChannel *source)
 {
   AgsRtStreamChannelRun *rt_stream_channel_run;
 
   rt_stream_channel_run = (AgsRtStreamChannelRun *) g_object_new(AGS_TYPE_RT_STREAM_CHANNEL_RUN,
+								 "source", source,
 								 NULL);
   
   return(rt_stream_channel_run);
