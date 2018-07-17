@@ -24,20 +24,14 @@
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
 
+#include <ags/audio/recall/ags_play_wave_audio.h>
+#include <ags/audio/recall/ags_play_wave_audio_run.h>
 #include <ags/audio/recall/ags_play_wave_channel.h>
 
 #include <ags/i18n.h>
 
 void ags_play_wave_channel_run_class_init(AgsPlayWaveChannelRunClass *play_wave_channel_run);
 void ags_play_wave_channel_run_init(AgsPlayWaveChannelRun *play_wave_channel_run);
-void ags_play_wave_channel_run_set_property(GObject *gobject,
-					    guint prop_id,
-					    const GValue *value,
-					    GParamSpec *param_spec);
-void ags_play_wave_channel_run_get_property(GObject *gobject,
-					    guint prop_id,
-					    GValue *value,
-					    GParamSpec *param_spec);
 void ags_play_wave_channel_run_dispose(GObject *gobject);
 void ags_play_wave_channel_run_finalize(GObject *gobject);
 
@@ -93,9 +87,6 @@ ags_play_wave_channel_run_class_init(AgsPlayWaveChannelRunClass *play_wave_chann
   /* GObjectClass */
   gobject = (GObjectClass *) play_wave_channel_run;
 
-  gobject->set_property = ags_play_wave_channel_run_set_property;
-  gobject->get_property = ags_play_wave_channel_run_get_property;
-
   gobject->dispose = ags_play_wave_channel_run_dispose;
   gobject->finalize = ags_play_wave_channel_run_finalize;
 
@@ -120,94 +111,6 @@ ags_play_wave_channel_run_init(AgsPlayWaveChannelRun *play_wave_channel_run)
   play_wave_channel_run->timestamp->flags |= AGS_TIMESTAMP_OFFSET;
 
   play_wave_channel_run->timestamp->timer.ags_offset.offset = 0;
-}
-
-void
-ags_play_wave_channel_run_set_property(GObject *gobject,
-				       guint prop_id,
-				       const GValue *value,
-				       GParamSpec *param_spec)
-{
-  AgsPlayWaveChannelRun *play_wave_channel_run;
-
-  pthread_mutex_t *recall_mutex;
-  
-  play_wave_channel_run = AGS_PLAY_WAVE_CHANNEL_RUN(gobject);
-
-  /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
-
-  switch(prop_id){
-  case PROP_TIMESTAMP:
-    {
-      AgsTimestamp *timestamp;
-
-      timestamp = (AgsTimestamp *) g_value_get_object(value);
-
-      pthread_mutex_lock(recall_mutex);
-
-      if(play_wave_channel_run->timestamp == timestamp){
-	pthread_mutex_unlock(recall_mutex);
-
-	return;
-      }
-
-      if(play_wave_channel_run->timestamp != NULL){
-	g_object_unref(play_wave_channel_run->timestamp);
-      }
-
-      if(timestamp != NULL){
-	g_object_ref(timestamp);
-      }
-
-      play_wave_channel_run->timestamp = timestamp;
-
-      pthread_mutex_unlock(recall_mutex);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  };
-}
-
-void
-ags_play_wave_channel_run_get_property(GObject *gobject,
-				       guint prop_id,
-				       GValue *value,
-				       GParamSpec *param_spec)
-{
-  AgsPlayWaveChannelRun *play_wave_channel_run;
-
-  pthread_mutex_t *recall_mutex;
-  
-  play_wave_channel_run = AGS_PLAY_WAVE_CHANNEL_RUN(gobject);
-
-  /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
-
-  switch(prop_id){
-  case PROP_TIMESTAMP:
-    {
-      pthread_mutex_lock(recall_mutex);
-
-      g_value_set_object(value, play_wave_channel_run->timestamp);
-
-      pthread_mutex_unlock(recall_mutex);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  };
 }
 
 void
@@ -237,8 +140,6 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
   AgsPlayWaveAudioRun *play_wave_audio_run;
   AgsPlayWaveChannel *play_wave_channel;
   AgsPlayWaveChannelRun *play_wave_channel_run;
-
-  AgsTimestamp *timestamp;
   
   GList *start_list, *list;
 
@@ -258,7 +159,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
   
   g_object_get(play_wave_channel_run,
 	       "recall-audio", &play_wave_audio,
-	       "recall-channel", &play_wave_chanel,
+	       "recall-channel", &play_wave_channel,
 	       "recall-audio-run", &play_wave_audio_run,
 	       NULL);
   
@@ -303,7 +204,6 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 
   g_object_get(play_wave_channel_run,
 	       "source", &channel,
-	       "timestamp", &timestamp,
 	       NULL);
 
   g_object_get(audio,
@@ -317,14 +217,14 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 	       NULL);
 
   /* time stamp offset */
-  ags_timestamp_set_ags_offset(timestamp,
+  ags_timestamp_set_ags_offset(play_wave_channel_run->timestamp,
 			       (guint64) ((64.0 * (double) samplerate) * floor(x_offset / (64.0 * (double) samplerate))));
   
   /* find wave */
   wave = NULL;
   
   list = ags_wave_find_near_timestamp(start_list, line,
-				      timestamp);
+				      play_wave_channel_run->timestamp);
 
   if(list != NULL){
     wave = list->data;

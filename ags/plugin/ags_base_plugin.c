@@ -1186,8 +1186,8 @@ ags_base_plugin_sort(GList *base_plugin)
 
     gint retval;
     
-    pthread_mutex_t *a_mutex;
-    pthread_mutex_t *b_mutex;
+    pthread_mutex_t *a_plugin_mutex;
+    pthread_mutex_t *b_plugin_mutex;
 
     /* a and b */
     a_plugin = AGS_BASE_PLUGIN(a);

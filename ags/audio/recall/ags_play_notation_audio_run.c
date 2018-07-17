@@ -468,15 +468,6 @@ ags_play_notation_audio_run_get_property(GObject *gobject,
       pthread_mutex_unlock(recall_mutex);
     }
     break;
-  case PROP_DESTINATION:
-    {
-      pthread_mutex_lock(recall_mutex);
-
-      g_value_set_object(value, play_notation_audio_run->destination);
-
-      pthread_mutex_unlock(recall_mutex);
-    }
-    break;
   case PROP_NOTATION:
     {
       pthread_mutex_lock(recall_mutex);
@@ -843,7 +834,6 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   AgsRecyclingContext *recycling_context;
   AgsPlayNotationAudio *play_notation_audio;
   AgsDelayAudio *delay_audio;
-  AgsDelayAudioRun *delay_audio_run;
   AgsCountBeatsAudioRun *count_beats_audio_run;
   
   AgsTimestamp *timestamp;
@@ -858,7 +848,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   guint audio_flags;
   guint pads;
   guint notation_counter;
-  guint input_pads;
+  guint output_pads, input_pads;
   guint audio_channel;
   guint samplerate;
   guint i;
@@ -912,7 +902,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 		   NULL);
   
       if(note_x0 == notation_counter){      
-	if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
+	if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
 	  selected_channel = ags_channel_pad_nth(channel,
 						 pads - note->y - 1);
 	}else{
@@ -986,7 +976,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 			 "note", note,
 			 NULL);
 	  
-	    if((AGS_AUDIO_PATTERN_MODE & (audio->flags)) != 0){
+	    if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_PATTERN_MODE)){
 	      ags_recycling_create_audio_signal_with_defaults(recycling,
 							      audio_signal,
 							      0.0, 0);
@@ -1114,7 +1104,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   pthread_mutex_unlock(audio_mutex);
 
   /* get channel */
-  if((AGS_AUDIO_NOTATION_DEFAULT & (audio_flags)) != 0){
+  if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT)){
     channel = ags_channel_nth(input,
 			      audio_channel);
     pads = input_pads;

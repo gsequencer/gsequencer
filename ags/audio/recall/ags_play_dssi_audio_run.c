@@ -630,7 +630,7 @@ ags_play_dssi_audio_run_finalize(GObject *gobject)
 
   //FIXME:JK: memory leak
   g_free(play_dssi_audio_run->event_buffer);
-  g_free(play_dssi_audio_run->even_count);
+  g_free(play_dssi_audio_run->event_count);
   
   /* delay audio run */
   if(play_dssi_audio_run->delay_audio_run != NULL){
@@ -1064,7 +1064,6 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
   snd_seq_event_t **event_buffer;
   unsigned long *event_count;
 
-  guint audio_flags;
   guint output_lines, input_lines;
   guint audio_channel;
   guint samplerate;
@@ -1135,15 +1134,13 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
   /* get some fields */
   pthread_mutex_lock(audio_mutex);
 
-  audio_flags = audio->flags;
-  
   output = audio->output;
   input = audio->input;
 
   pthread_mutex_unlock(audio_mutex);
 
   /* get channel */
-  if((AGS_AUDIO_NOTATION_DEFAULT & (audio_flags)) != 0){
+  if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT)){
     selected_channel = ags_channel_nth(input,
 				       audio_channel);
   }else{
@@ -1444,7 +1441,6 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   GList *start_append_note, *append_note;
   GList *start_remove_note, *remove_note;
 
-  guint audio_flags;
   guint audio_start_mapping;
   guint midi_start_mapping, midi_end_mapping;
   guint notation_counter;
@@ -1482,8 +1478,6 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   /* get audio fields */
   pthread_mutex_lock(audio_mutex);
 
-  audio_flags = audio->flags;
-
   output = audio->output;
   input = audio->input;
 
@@ -1496,7 +1490,7 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   }
 
   /* get channel */
-  if((AGS_AUDIO_NOTATION_DEFAULT & (audio_flags)) != 0){
+  if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT)){
     selected_channel = ags_channel_nth(input,
 				       audio_channel);
   }else{
@@ -1586,7 +1580,7 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 		 NULL);
   
     /* send key-on */
-    if((AGS_AUDIO_REVERSE_MAPPING & (audio_flags)) != 0){
+    if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
       selected_key = input_pads - note_y - 1;
     }else{
       selected_key = note_y;
@@ -1647,7 +1641,7 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 		 NULL);
   
     /* send key-on */
-    if((AGS_AUDIO_REVERSE_MAPPING & (audio_flags)) != 0){
+    if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
       selected_key = input_pads - note_y - 1;
     }else{
       selected_key = note_y;

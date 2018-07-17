@@ -123,7 +123,7 @@ ags_prepare_audio_signal_run_init_pre(AgsRecall *recall)
   AgsAudioSignal *destination;
   AgsRecallID *recall_id, *parent_recall_id;
   AgsRecyclingContext *recycling_context, *parent_recycling_context;
-  
+  AgsPrepareChannelRun *prepare_channel_run;  
   AgsPrepareRecycling *prepare_recycling;
   AgsPrepareAudioSignal *prepare_audio_signal;
 
@@ -177,7 +177,7 @@ ags_prepare_audio_signal_run_init_pre(AgsRecall *recall)
 	       "recall-id", &start_list,
 	       NULL);
 
-  g_object_get(recycling_contex,
+  g_object_get(recycling_context,
 	       "parent", &parent_recycling_context,
 	       NULL);
   
@@ -189,7 +189,7 @@ ags_prepare_audio_signal_run_init_pre(AgsRecall *recall)
   delay = 0.0;
 
   /* create new audio signal */
-  destination = ags_audio_signal_new((GObject *) soundcard,
+  destination = ags_audio_signal_new((GObject *) output_soundcard,
 				     (GObject *) recycling,
 				     (GObject *) parent_recall_id);
   
@@ -246,7 +246,7 @@ ags_prepare_audio_signal_run_pre(AgsRecall *recall)
     void *buffer;
 
     guint buffer_size;
-    guinf format;
+    guint format;
 
     buffer = destination->stream_current->data;
 

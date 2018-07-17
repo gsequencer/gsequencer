@@ -27,8 +27,6 @@
 #include <ags/audio/recall/ags_rt_stream_channel_run.h>
 #include <ags/audio/recall/ags_rt_stream_recycling.h>
 
-#include <ags/audio/task/ags_unref_audio_signal.h>
-
 void ags_rt_stream_audio_signal_class_init(AgsRtStreamAudioSignalClass *rt_stream_audio_signal);
 void ags_rt_stream_audio_signal_init(AgsRtStreamAudioSignal *rt_stream_audio_signal);
 void ags_rt_stream_audio_signal_dispose(GObject *gobject);
@@ -188,7 +186,7 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 
   g_object_get(source,
 	       "buffer-size", &buffer_size,
-	       "format", &format,
+	       "format", &source_format,
 	       "delay", &delay,
 	       "recycling", &recycling,
 	       "rt-template", &rt_template,
@@ -210,9 +208,9 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	       NULL);
     
   ags_audio_buffer_util_clear_buffer(buffer, 1,
-				     buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+				     buffer_size, ags_audio_buffer_util_format_from_soundcard(source_format));
 
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(source_format),
 						  ags_audio_buffer_util_format_from_soundcard(rt_template_format));
 
   /* check note */
@@ -243,8 +241,6 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 		 "x1", &note_x1,
 		 NULL);
     
-    pthread_mutex_unlock(recycling_mutex);
-
     if(rt_offset < rt_template_length ||
        rt_offset < delay * note_x1){
       if(loop_start < loop_end){
@@ -257,18 +253,18 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	guint j_start;
 	guint i, j, k;
 
-	frame_count = delay * (x1 - x0) * buffer_size;
+	frame_count = delay * (note_x1 - note_x0) * buffer_size;
 	
 	loop_length = loop_end - loop_start;
 	loop_frame_count = ((frame_count - loop_start) / loop_length) * rt_template_buffer_size;
 
-	if(offset * buffer_size > loop_end){
-	  if(((guint) offset * buffer_size) + buffer_size > frame_count - (rt_template_frame_count - loop_end)){
-	    if(offset * buffer_size > frame_count - (rt_template_frame_count - loop_end)){
-	      j_start = (frame_count - (offset * buffer_size)) % buffer_size;
+	if(rt_offset * buffer_size > loop_end){
+	  if(((guint) rt_offset * buffer_size) + buffer_size > frame_count - (rt_template_frame_count - loop_end)){
+	    if(rt_offset * buffer_size > frame_count - (rt_template_frame_count - loop_end)){
+	      j_start = (frame_count - (rt_offset * buffer_size)) % buffer_size;
 
 	      template_stream = g_list_nth(rt_template->stream,
-					   (frame_count - (offset * buffer_size)) / buffer_size);
+					   (frame_count - (rt_offset * buffer_size)) / buffer_size);
 
 	      if(template_stream == NULL){
 		note = note->next;
@@ -276,10 +272,10 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 		continue;
 	      }	      
 	    }else{
-	      j_start = ((guint) (offset * buffer_size) - loop_end) % (loop_end - loop_start) % buffer_size;
+	      j_start = ((guint) (rt_offset * buffer_size) - loop_end) % (loop_end - loop_start) % buffer_size;
 
 	      template_stream = g_list_nth(rt_template->stream,
-					   (loop_start + ((((guint) (offset * buffer_size) - loop_end) % (loop_end - loop_start)) / buffer_size)));
+					   (loop_start + ((((guint) (rt_offset * buffer_size) - loop_end) % (loop_end - loop_start)) / buffer_size)));
 
 	      if(template_stream == NULL){
 		note = note->next;
@@ -288,10 +284,10 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	      }
 	    }
 	  }else{
-	    j_start = ((guint) (offset * buffer_size) - loop_end) % (loop_end - loop_start) % buffer_size;
+	    j_start = ((guint) (rt_offset * buffer_size) - loop_end) % (loop_end - loop_start) % buffer_size;
 	    
 	    template_stream = g_list_nth(rt_template->stream,
-					 (loop_start + ((((guint) (offset * buffer_size) - loop_end) % (loop_end - loop_start)) / buffer_size)));
+					 (loop_start + ((((guint) (rt_offset * buffer_size) - loop_end) % (loop_end - loop_start)) / buffer_size)));
 
 	    if(template_stream == NULL){
 	      note = note->next;
@@ -300,10 +296,10 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	    }
 	  }
 	}else{
-	  j_start = ((guint) (offset * buffer_size)) % buffer_size;
+	  j_start = ((guint) (rt_offset * buffer_size)) % buffer_size;
 
 	  template_stream = g_list_nth(rt_template->stream,
-				       offset);
+				       rt_offset);
 
 	  if(template_stream == NULL){
 	    note = note->next;
@@ -312,13 +308,13 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	  }
 	}
 
-	if(offset == 0){
+	if(rt_offset == 0){
 	  k = rt_attack;
 	}else{
 	  k = 0;
 	}
 	
-	for(i = 0, j = j_start, nth_loop = offset; i < buffer_size;){
+	for(i = 0, j = j_start, nth_loop = rt_offset; i < buffer_size;){
 	  /* compute count of frames to copy */
 	  copy_n_frames = buffer_size;
 
@@ -382,7 +378,7 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	
       }else{
 	template_stream = g_list_nth(rt_template->stream,
-				     offset);
+				     rt_offset);
 
 	if(template_stream == NULL){
 	  note = note->next;
@@ -390,7 +386,7 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	  continue;
 	}
 	
-	if(offset == 0){
+	if(rt_offset == 0){
 	  ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, rt_attack,
 						      template_stream->data, 1, 0,
 						      buffer_size - rt_attack, copy_mode);

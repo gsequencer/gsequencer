@@ -791,7 +791,7 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 
   GList *start_generic_channel_recall, *generic_channel_recall;
   GList *start_generic_recycling_recall, *generic_recycling_recall;
-  GList *start_dssi_run, dssi_run;
+  GList *start_dssi_run, *dssi_run;
   GList *start_list_recall, *list_recall;
   GList *start_list, *list;
   
@@ -799,7 +799,6 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 
   gchar *str;
 
-  guint audio_flags;
   guint audio_start_mapping;
   guint midi_start_mapping, midi_end_mapping;
   guint audio_channel;
@@ -834,8 +833,6 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
   /* get audio fields */
   pthread_mutex_lock(audio_mutex);
 
-  audio_flags = audio->flags;
-
   audio_start_mapping = audio->audio_start_mapping;
 
   midi_start_mapping = audio->midi_start_mapping;
@@ -856,7 +853,7 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
   
 
   /* get channel */
-  if((AGS_AUDIO_NOTATION_DEFAULT & (audio_flags)) != 0){
+  if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT)){
     selected_channel = ags_channel_nth(input,
 				       audio_channel);
 
@@ -868,7 +865,7 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
     pads = output_pads;
   }
 
-  if((AGS_AUDIO_REVERSE_MAPPING & (audio->flags)) != 0){
+  if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
     selected_channel = ags_channel_pad_nth(selected_channel,
 					   audio_start_mapping + pads - note_y - 1);
   }else{
@@ -920,12 +917,8 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 		   NULL);
      
       //FIXME:JK: use filename and effect to identify
-      pthread_mutex_lock(selected_channel_mutex);
-
-      list_recall = ags_recall_template_find_type(recall,
+      list_recall = ags_recall_template_find_type(start_list_recall,
 						  AGS_TYPE_RECALL_DSSI);
-      
-      generic_channel = NULL;
       
       if(list_recall != NULL){
 	AgsRecallContainer *recall_container;
@@ -941,7 +934,7 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 
       generic_channel_recall = start_generic_channel_recall;
       
-      while(genric_channel_recall != NULL){
+      while(generic_channel_recall != NULL){
 	AgsRecallID *current_recall_id;
 	AgsRecyclingContext *current_recycling_context;
 
@@ -950,7 +943,7 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 		     NULL);
 
 	if(current_recall_id == NULL){
-	  genric_channel_recall = genric_channel_recall->next;
+	  generic_channel_recall = generic_channel_recall->next;
 	  
 	  continue;
 	}
@@ -959,8 +952,8 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 		     "recycling-context", &current_recycling_context,
 		     NULL);
 	
-	if(currrent_recycling_context != child_recycling_context){
-	  genric_channel_recall = genric_channel_recall->next;
+	if(current_recycling_context != child_recycling_context){
+	  generic_channel_recall = generic_channel_recall->next;
 	  
 	  continue;
 	}
@@ -1000,7 +993,10 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 
 	      recall_dssi_run->event_count[0] = 1;
 		  
-	      AGS_RECALL_AUDIO_SIGNAL(recall_dssi_run)->audio_channel = audio_channel;
+	      g_object_set(recall_dssi_run,
+			   "audio-channel", audio_channel,
+			   NULL);
+	      
 	      recall_dssi_run->note = g_list_prepend(recall_dssi_run->note,
 						     (GObject *) note);
 	      g_object_ref(note);

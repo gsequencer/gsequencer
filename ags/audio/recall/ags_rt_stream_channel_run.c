@@ -27,14 +27,12 @@
 
 #include <ags/audio/recall/ags_rt_stream_recycling.h>
 
-#include <ags/audio/task/ags_cancel_recall.h>
-
 void ags_rt_stream_channel_run_class_init(AgsRtStreamChannelRunClass *rt_stream_channel_run);
 void ags_rt_stream_channel_run_init(AgsRtStreamChannelRun *rt_stream_channel_run);
 void ags_rt_stream_channel_run_finalize(GObject *gobject);
 
 void ags_rt_stream_channel_run_check_rt_data(AgsRecall *recall);
-void ags_rt_stream_channel_run_remove(AgsRecall *recall);
+void ags_rt_stream_channel_run_done(AgsRecall *recall);
 
 /**
  * SECTION:ags_rt_stream_channel_run
@@ -92,7 +90,7 @@ ags_rt_stream_channel_run_class_init(AgsRtStreamChannelRunClass *rt_stream_chann
   recall = (AgsRecallClass *) rt_stream_channel_run;
 
   recall->check_rt_data = ags_rt_stream_channel_run_check_rt_data;
-  recall->remove = ags_rt_stream_channel_run_remove;
+  recall->done = ags_rt_stream_channel_run_done;
 }
 
 void
@@ -179,21 +177,22 @@ ags_rt_stream_channel_run_check_rt_data(AgsRecall *recall)
 }
 
 void
-ags_rt_stream_channel_run_remove(AgsRecall *recall)
+ags_rt_stream_channel_run_done(AgsRecall *recall)
 {
   AgsChannel *source;
   AgsRecycling *first_recycling, *last_recycling;
   AgsRecycling *recycling, *end_recycling;
+  AgsRecallID *recall_id;
   AgsRtStreamChannelRun *rt_stream_channel_run;
 
-  void (*parent_class_remove)(AgsRecall *recall);  
+  void (*parent_class_done)(AgsRecall *recall);  
   
   rt_stream_channel_run = (AgsRtStreamChannelRun *) recall;
 
   /* get parent class */
   pthread_mutex_lock(ags_recall_get_class_mutex());
 
-  parent_class_remove = AGS_RECALL_CLASS(ags_prepare_audio_signal_parent_class)->remove;
+  parent_class_done = AGS_RECALL_CLASS(ags_rt_stream_channel_run_parent_class)->done;
 
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -243,7 +242,7 @@ ags_rt_stream_channel_run_remove(AgsRecall *recall)
   }
   
   /* call parent */
-  parent_class_remove(recall);
+  parent_class_done(recall);
 }
 
 /**

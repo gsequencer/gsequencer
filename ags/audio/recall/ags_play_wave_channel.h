@@ -28,6 +28,7 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel.h>
 #include <ags/audio/ags_port.h>
+#include <ags/audio/ags_wave.h>
 
 #define AGS_TYPE_PLAY_WAVE_CHANNEL                (ags_play_wave_channel_get_type())
 #define AGS_PLAY_WAVE_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_WAVE_CHANNEL, AgsPlayWaveChannel))

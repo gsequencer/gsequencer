@@ -25,8 +25,6 @@
 #include <ags/audio/recall/ags_stream_recycling.h>
 #include <ags/audio/recall/ags_stream_audio_signal.h>
 
-#include <ags/audio/task/ags_unref_audio_signal.h>
-
 void ags_stream_audio_signal_class_init(AgsStreamAudioSignalClass *stream_audio_signal);
 void ags_stream_audio_signal_init(AgsStreamAudioSignal *stream_audio_signal);
 void ags_stream_audio_signal_dispose(GObject *gobject);

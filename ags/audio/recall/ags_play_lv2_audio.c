@@ -251,10 +251,7 @@ ags_play_lv2_audio_init(AgsPlayLv2Audio *play_lv2_audio)
 
   play_lv2_audio->turtle = NULL;
 
-  play_lv2_audio->filename = NULL;
-  play_lv2_audio->effect = NULL;
   play_lv2_audio->uri = NULL;
-  play_lv2_audio->index = 0;
 
   play_lv2_audio->plugin = NULL;
   play_lv2_audio->plugin_descriptor = NULL;
@@ -523,8 +520,6 @@ ags_play_lv2_audio_finalize(GObject *gobject)
   }
 
   /* filename, effect and uri */
-  g_free(play_lv2_audio->filename);
-  g_free(play_lv2_audio->effect);
   g_free(play_lv2_audio->uri);
   
   /* call parent */
@@ -558,7 +553,7 @@ ags_play_lv2_audio_set_ports(AgsPlugin *plugin, GList *port)
 
   /* get some fields */
   g_object_get(play_lv2_audio,
-	       "port", &list_start,
+	       "port", &start_list,
 	       "plugin", &lv2_plugin,
 	       NULL);
 
@@ -638,7 +633,7 @@ ags_play_lv2_audio_set_ports(AgsPlugin *plugin, GList *port)
 	  
 	  ags_play_lv2_audio_load_conversion(play_lv2_audio,
 					     (GObject *) current,
-					     (GObject) plugin_port->data);
+					     (GObject *) plugin_port->data);
 
 	  g_object_get_property(plugin_port->data,
 				"default-value",

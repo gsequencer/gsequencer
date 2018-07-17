@@ -38,8 +38,6 @@ void ags_stream_recycling_finalize(GObject *gobject);
  */
 
 static gpointer ags_stream_recycling_parent_class = NULL;
-static AgsConnectableInterface *ags_stream_recycling_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_stream_recycling_parent_dynamic_connectable_interface;
 
 GType
 ags_stream_recycling_get_type()

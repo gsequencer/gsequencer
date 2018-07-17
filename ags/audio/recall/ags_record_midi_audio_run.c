@@ -374,7 +374,7 @@ ags_record_midi_audio_run_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, G_OBJECT(play_notation_audio_run->delay_audio_run));
+      g_value_set_object(value, G_OBJECT(record_midi_audio_run->delay_audio_run));
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -383,7 +383,7 @@ ags_record_midi_audio_run_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, G_OBJECT(play_notation_audio_run->count_beats_audio_run));
+      g_value_set_object(value, G_OBJECT(record_midi_audio_run->count_beats_audio_run));
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -704,7 +704,9 @@ ags_record_midi_audio_run_run_init_pre(AgsRecall *recall)
   /* instantiate midi file and open rw */
   record_midi_audio_run->midi_file = (GObject *) ags_midi_file_new(filename);
   
-  ags_midi_file_rw_open(record_midi_audio_run->midi_file);
+  ags_midi_file_rw_open(record_midi_audio_run->midi_file,
+			filename,
+			TRUE);
 
   /* call parent */
   parent_class_run_init_pre(recall);
@@ -726,7 +728,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   
   GObject *input_sequencer;
 
-  GList *start_list, list;
+  GList *start_list, *list;
   GList *note, *note_next;
   
   unsigned char *midi_buffer;
@@ -794,7 +796,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	       NULL);
 
   /* get sequencer specific data */
-  bpm = ags_sequencer_get_bpm(AGS_SEQUENCER(sequencer));
+  bpm = ags_sequencer_get_bpm(AGS_SEQUENCER(input_sequencer));
 
 
   /* get notation */
