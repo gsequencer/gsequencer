@@ -284,7 +284,7 @@ ags_plugin_port_init(AgsPluginPort *plugin_port)
   plugin_port->port_symbol = NULL;
 
   plugin_port->scale_steps = -1;
-  plugin_port->scale_points = NULL;
+  plugin_port->scale_point = NULL;
   plugin_port->scale_value = NULL;
   
   plugin_port->lower_value = g_new0(GValue,
@@ -616,8 +616,8 @@ ags_plugin_port_finalize(GObject *gobject)
     g_free(plugin_port->port_symbol);
   }
 
-  if(plugin_port->scale_points != NULL){
-    g_free(plugin_port->scale_points);
+  if(plugin_port->scale_point != NULL){
+    g_free(plugin_port->scale_point);
   }
 
   g_free(plugin_port->lower_value);

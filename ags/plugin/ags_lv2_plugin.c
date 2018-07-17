@@ -30,6 +30,7 @@
 #include <ags/plugin/ags_lv2_worker.h>
 #include <ags/plugin/ags_lv2_urid_manager.h>
 #include <ags/plugin/ags_lv2_option_manager.h>
+#include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/audio/midi/ags_midi_buffer_util.h>
 
@@ -852,7 +853,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   }
 
   /* get some config values */
-  intial_call = FALSE;
+  initial_call = FALSE;
   
   config = ags_config_get_instance();
 
@@ -1172,7 +1173,7 @@ ags_lv2_plugin_deactivate(AgsBasePlugin *base_plugin,
   /* get some fields */
   pthread_mutex_lock(base_plugin_mutex);
 
-  activate = AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->deactivate;
+  deactivate = AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->deactivate;
   
   pthread_mutex_unlock(base_plugin_mutex);
 
@@ -1310,7 +1311,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 							    triple_node);
 
     if(metadata_list != NULL){
-      g_object_set(lv2_plugin
+      g_object_set(lv2_plugin,
 		   "doap-name", xmlNodeGetContent((xmlNode *) metadata_list->data),
 		   NULL);
 
@@ -1434,13 +1435,15 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
     while(port_list != NULL){
       current_plugin_port = ags_plugin_port_new();
+      g_object_ref(current_plugin_port);
+      
       found_port = FALSE;
 
-      g_value_init(port->upper_value,
+      g_value_init(current_plugin_port->upper_value,
 		   G_TYPE_FLOAT);
-      g_value_init(port->lower_value,
+      g_value_init(current_plugin_port->lower_value,
 		   G_TYPE_FLOAT);
-      g_value_init(port->default_value,
+      g_value_init(current_plugin_port->default_value,
 		   G_TYPE_FLOAT);
 
       g_value_set_float(current_plugin_port->upper_value,
@@ -1665,26 +1668,26 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       if(list != NULL){
 	current_plugin_port->scale_steps = g_list_length(list) - 1;
 
-	current_plugin_port->scale_points = malloc((current_plugin_port->scale_steps + 2) * sizeof(gchar *));
+	current_plugin_port->scale_point = malloc((current_plugin_port->scale_steps + 2) * sizeof(gchar *));
 	current_plugin_port->scale_value = malloc((current_plugin_port->scale_steps + 1) * sizeof(float));
       
 	for(i = 0; list != NULL; i++){
 	  gchar *str;
 
-	  current_plugin_port->scale_points[i] = NULL;
+	  current_plugin_port->scale_point[i] = NULL;
 	  
 	  current = (xmlNode *) list->data;
 	  str = xmlNodeGetContent(current);
 	
 	  if(strlen(str) > 2){
-	    current_plugin_port->scale_points[i] = g_strndup(str + 1,
+	    current_plugin_port->scale_point[i] = g_strndup(str + 1,
 							     strlen(str) - 2);
 	  }
 
 	  list = list->next;
 	}
 	
-	current_plugin_port->scale_points[i] = NULL;
+	current_plugin_port->scale_point[i] = NULL;
 	  
 	if(list_start != NULL){
 	  g_list_free(list_start);
@@ -1715,7 +1718,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       }else{
 	current_plugin_port->scale_steps = 0;
 
-	current_plugin_port->scale_points = NULL;
+	current_plugin_port->scale_point = NULL;
 	current_plugin_port->scale_value = NULL;
       }      
 

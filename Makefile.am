@@ -1152,8 +1152,6 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_open_file.h \
 	ags/audio/task/ags_open_sf2_sample.h \
 	ags/audio/task/ags_open_single_file.h \
-	ags/audio/task/ags_play_audio.h \
-	ags/audio/task/ags_play_channel.h \
 	ags/audio/task/ags_remove_audio.h \
 	ags/audio/task/ags_remove_audio_signal.h \
 	ags/audio/task/ags_remove_note.h \
@@ -1164,6 +1162,8 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_set_buffer_size.h \
 	ags/audio/task/ags_set_format.h \
 	ags/audio/task/ags_set_samplerate.h \
+	ags/audio/task/ags_start_audio.h \
+	ags/audio/task/ags_start_channel.h \
 	ags/audio/task/ags_start_sequencer.h \
 	ags/audio/task/ags_start_soundcard.h \
 	ags/audio/task/ags_switch_buffer_flag.h \
@@ -1200,8 +1200,6 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_open_file.c \
 	ags/audio/task/ags_open_sf2_sample.c \
 	ags/audio/task/ags_open_single_file.c \
-	ags/audio/task/ags_play_audio.c \
-	ags/audio/task/ags_play_channel.c \
 	ags/audio/task/ags_remove_audio.c \
 	ags/audio/task/ags_remove_audio_signal.c \
 	ags/audio/task/ags_remove_note.c \
@@ -1214,6 +1212,8 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_set_samplerate.c \
 	ags/audio/task/ags_start_sequencer.c \
 	ags/audio/task/ags_start_soundcard.c \
+	ags/audio/task/ags_start_audio.c \
+	ags/audio/task/ags_start_channel.c \
 	ags/audio/task/ags_switch_buffer_flag.c \
 	ags/audio/task/ags_tic_device.c \
 	ags/audio/task/ags_toggle_pattern_bit.c \

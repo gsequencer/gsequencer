@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/task/ags_play_audio.h>
+#include <ags/audio/task/ags_start_audio.h>
 
 #include <ags/libags.h>
 
@@ -33,32 +33,32 @@
 
 #include <ags/i18n.h>
 
-void ags_play_audio_class_init(AgsPlayAudioClass *play_audio);
-void ags_play_audio_init(AgsPlayAudio *play_audio);
-void ags_play_audio_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec);
-void ags_play_audio_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec);
-void ags_play_audio_dispose(GObject *gobject);
-void ags_play_audio_finalize(GObject *gobject);
+void ags_start_audio_class_init(AgsStartAudioClass *start_audio);
+void ags_start_audio_init(AgsStartAudio *start_audio);
+void ags_start_audio_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec);
+void ags_start_audio_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec);
+void ags_start_audio_dispose(GObject *gobject);
+void ags_start_audio_finalize(GObject *gobject);
 
-void ags_play_audio_launch(AgsTask *task);
+void ags_start_audio_launch(AgsTask *task);
 
 /**
- * SECTION:ags_play_audio
- * @short_description: play audio object to audio loop
- * @title: AgsPlayAudio
+ * SECTION:ags_start_audio
+ * @short_description: start audio object to audio loop
+ * @title: AgsStartAudio
  * @section_id:
- * @include: ags/audio/task/ags_play_audio.h
+ * @include: ags/audio/task/ags_start_audio.h
  *
- * The #AgsPlayAudio task plays #AgsAudio to #AgsAudioLoop.
+ * The #AgsStartAudio task starts #AgsAudio to #AgsAudioLoop.
  */
 
-static gpointer ags_play_audio_parent_class = NULL;
+static gpointer ags_start_audio_parent_class = NULL;
 
 enum{
   PROP_0,
@@ -67,62 +67,62 @@ enum{
 };
 
 GType
-ags_play_audio_get_type()
+ags_start_audio_get_type()
 {
-  static GType ags_type_play_audio = 0;
+  static GType ags_type_start_audio = 0;
 
-  if(!ags_type_play_audio){
-    static const GTypeInfo ags_play_audio_info = {
-      sizeof(AgsPlayAudioClass),
+  if(!ags_type_start_audio){
+    static const GTypeInfo ags_start_audio_info = {
+      sizeof(AgsStartAudioClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
-      (GClassInitFunc) ags_play_audio_class_init,
+      (GClassInitFunc) ags_start_audio_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsPlayAudio),
+      sizeof(AgsStartAudio),
       0,    /* n_preallocs */
-      (GInstanceInitFunc) ags_play_audio_init,
+      (GInstanceInitFunc) ags_start_audio_init,
     };
 
-    ags_type_play_audio = g_type_register_static(AGS_TYPE_TASK,
-						 "AgsPlayAudio",
-						 &ags_play_audio_info,
-						 0);
+    ags_type_start_audio = g_type_register_static(AGS_TYPE_TASK,
+						  "AgsStartAudio",
+						  &ags_start_audio_info,
+						  0);
   }
   
-  return(ags_type_play_audio);
+  return(ags_type_start_audio);
 }
 
 void
-ags_play_audio_class_init(AgsPlayAudioClass *play_audio)
+ags_start_audio_class_init(AgsStartAudioClass *start_audio)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
 
   GParamSpec *param_spec;
   
-  ags_play_audio_parent_class = g_type_class_peek_parent(play_audio);
+  ags_start_audio_parent_class = g_type_class_peek_parent(start_audio);
 
   /* gobject */
-  gobject = (GObjectClass *) play_audio;
+  gobject = (GObjectClass *) start_audio;
 
-  gobject->set_property = ags_play_audio_set_property;
-  gobject->get_property = ags_play_audio_get_property;
+  gobject->set_property = ags_start_audio_set_property;
+  gobject->get_property = ags_start_audio_get_property;
 
-  gobject->dispose = ags_play_audio_dispose;
-  gobject->finalize = ags_play_audio_finalize;
+  gobject->dispose = ags_start_audio_dispose;
+  gobject->finalize = ags_start_audio_finalize;
 
   /* properties */
   /**
-   * AgsPlayAudio:audio:
+   * AgsStartAudio:audio:
    *
    * The assigned #AgsAudio
    * 
    * Since: 2.0.0
    */
   param_spec = g_param_spec_object("audio",
-				   i18n_pspec("audio of play audio"),
-				   i18n_pspec("The audio of play audio task"),
+				   i18n_pspec("audio of start audio"),
+				   i18n_pspec("The audio of start audio task"),
 				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -130,7 +130,7 @@ ags_play_audio_class_init(AgsPlayAudioClass *play_audio)
 				  param_spec);
 
   /**
-   * AgsPlayAudio:sound-scope:
+   * AgsStartAudio:sound-scope:
    *
    * The effects sound-scope.
    * 
@@ -148,28 +148,28 @@ ags_play_audio_class_init(AgsPlayAudioClass *play_audio)
 				  param_spec);
 
   /* task */
-  task = (AgsTaskClass *) play_audio;
+  task = (AgsTaskClass *) start_audio;
 
-  task->launch = ags_play_audio_launch;
+  task->launch = ags_start_audio_launch;
 }
 
 void
-ags_play_audio_init(AgsPlayAudio *play_audio)
+ags_start_audio_init(AgsStartAudio *start_audio)
 {
-  play_audio->audio = NULL;
+  start_audio->audio = NULL;
 
-  play_audio->sound_scope = -1;
+  start_audio->sound_scope = -1;
 }
 
 void
-ags_play_audio_set_property(GObject *gobject,
-			    guint prop_id,
-			    const GValue *value,
-			    GParamSpec *param_spec)
+ags_start_audio_set_property(GObject *gobject,
+			     guint prop_id,
+			     const GValue *value,
+			     GParamSpec *param_spec)
 {
-  AgsPlayAudio *play_audio;
+  AgsStartAudio *start_audio;
 
-  play_audio = AGS_PLAY_AUDIO(gobject);
+  start_audio = AGS_START_AUDIO(gobject);
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -178,24 +178,24 @@ ags_play_audio_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
-      if(play_audio->audio == (GObject *) audio){
+      if(start_audio->audio == (GObject *) audio){
 	return;
       }
 
-      if(play_audio->audio != NULL){
-	g_object_unref(play_audio->audio);
+      if(start_audio->audio != NULL){
+	g_object_unref(start_audio->audio);
       }
 
       if(audio != NULL){
 	g_object_ref(audio);
       }
 
-      play_audio->audio = (GObject *) audio;
+      start_audio->audio = (GObject *) audio;
     }
     break;
   case PROP_SOUND_SCOPE:
     {
-      play_audio->sound_scope = g_value_get_int(value);
+      start_audio->sound_scope = g_value_get_int(value);
     }
     break;
   default:
@@ -205,24 +205,24 @@ ags_play_audio_set_property(GObject *gobject,
 }
 
 void
-ags_play_audio_get_property(GObject *gobject,
-			    guint prop_id,
-			    GValue *value,
-			    GParamSpec *param_spec)
+ags_start_audio_get_property(GObject *gobject,
+			     guint prop_id,
+			     GValue *value,
+			     GParamSpec *param_spec)
 {
-  AgsPlayAudio *play_audio;
+  AgsStartAudio *start_audio;
 
-  play_audio = AGS_PLAY_AUDIO(gobject);
+  start_audio = AGS_START_AUDIO(gobject);
 
   switch(prop_id){
   case PROP_AUDIO:
     {
-      g_value_set_object(value, play_audio->audio);
+      g_value_set_object(value, start_audio->audio);
     }
     break;
   case PROP_SOUND_SCOPE:
     {
-      g_value_set_int(value, play_audio->sound_scope);
+      g_value_set_int(value, start_audio->sound_scope);
     }
     break;
   default:
@@ -232,39 +232,39 @@ ags_play_audio_get_property(GObject *gobject,
 }
 
 void
-ags_play_audio_dispose(GObject *gobject)
+ags_start_audio_dispose(GObject *gobject)
 {
-  AgsPlayAudio *play_audio;
+  AgsStartAudio *start_audio;
 
-  play_audio = AGS_PLAY_AUDIO(gobject);
+  start_audio = AGS_START_AUDIO(gobject);
 
-  if(play_audio->audio != NULL){
-    g_object_unref(play_audio->audio);
+  if(start_audio->audio != NULL){
+    g_object_unref(start_audio->audio);
 
-    play_audio->audio = NULL;
+    start_audio->audio = NULL;
   }
     
   /* call parent */
-  G_OBJECT_CLASS(ags_play_audio_parent_class)->dispose(gobject);
+  G_OBJECT_CLASS(ags_start_audio_parent_class)->dispose(gobject);
 }
 
 void
-ags_play_audio_finalize(GObject *gobject)
+ags_start_audio_finalize(GObject *gobject)
 {
-  AgsPlayAudio *play_audio;
+  AgsStartAudio *start_audio;
 
-  play_audio = AGS_PLAY_AUDIO(gobject);
+  start_audio = AGS_START_AUDIO(gobject);
 
-  if(play_audio->audio != NULL){
-    g_object_unref(play_audio->audio);
+  if(start_audio->audio != NULL){
+    g_object_unref(start_audio->audio);
   }
     
   /* call parent */
-  G_OBJECT_CLASS(ags_play_audio_parent_class)->finalize(gobject);
+  G_OBJECT_CLASS(ags_start_audio_parent_class)->finalize(gobject);
 }
 
 void
-ags_play_audio_launch(AgsTask *task)
+ags_start_audio_launch(AgsTask *task)
 {
   AgsAudio *audio;
   AgsChannel *output;
@@ -273,7 +273,7 @@ ags_play_audio_launch(AgsTask *task)
   AgsRecallID *recall_id;
   AgsRecyclingContext *recycling_context;
   
-  AgsPlayAudio *play_audio;
+  AgsStartAudio *start_audio;
 
   AgsAudioLoop *audio_loop;
 
@@ -287,9 +287,9 @@ ags_play_audio_launch(AgsTask *task)
 				      AGS_SOUND_STAGING_RUN_INIT_INTER |
 				      AGS_SOUND_STAGING_RUN_INIT_POST);
 
-  play_audio = AGS_PLAY_AUDIO(task);
+  start_audio = AGS_START_AUDIO(task);
   
-  audio = play_audio->audio;
+  audio = start_audio->audio;
 
   g_object_get(audio,
 	       "playback-domain", &playback_domain,
@@ -299,7 +299,7 @@ ags_play_audio_launch(AgsTask *task)
 	       "output-playback", &list_start,
 	       NULL);
   
-  sound_scope = play_audio->sound_scope;
+  sound_scope = start_audio->sound_scope;
 
   application_context = ags_application_context_get_instance();
 
@@ -421,26 +421,26 @@ ags_play_audio_launch(AgsTask *task)
 }
 
 /**
- * ags_play_audio_new:
- * @audio: the #AgsAudio to play
+ * ags_start_audio_new:
+ * @audio: the #AgsAudio to start
  * @sound_scope: the #AgsSoundScope-enum or -1 for all
  *
- * Create a new instance of #AgsPlayAudio.
+ * Create a new instance of #AgsStartAudio.
  *
- * Returns: the new #AgsPlayAudio.
+ * Returns: the new #AgsStartAudio.
  *
  * Since: 2.0.0
  */
-AgsPlayAudio*
-ags_play_audio_new(AgsAudio *audio,
-		   gint sound_scope)
+AgsStartAudio*
+ags_start_audio_new(AgsAudio *audio,
+		    gint sound_scope)
 {
-  AgsPlayAudio *play_audio;
+  AgsStartAudio *start_audio;
 
-  play_audio = (AgsPlayAudio *) g_object_new(AGS_TYPE_PLAY_AUDIO,
-					     "audio", audio,
-					     "sound-scope", sound_scope,
-					     NULL);
+  start_audio = (AgsStartAudio *) g_object_new(AGS_TYPE_START_AUDIO,
+					       "audio", audio,
+					       "sound-scope", sound_scope,
+					       NULL);
   
-  return(play_audio);
+  return(start_audio);
 }

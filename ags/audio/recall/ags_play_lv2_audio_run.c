@@ -702,7 +702,7 @@ ags_play_lv2_audio_run_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_copy_pattern_channel_run_connect_connection(AgsConnectable *connectable, GObject *connection)
+ags_play_lv2_audio_run_connect_connection(AgsConnectable *connectable, GObject *connection)
 {
   AgsPlayLv2AudioRun *play_lv2_audio_run;  
   AgsDelayAudioRun *delay_audio_run;
@@ -724,7 +724,7 @@ ags_copy_pattern_channel_run_connect_connection(AgsConnectable *connectable, GOb
 }
 
 void
-ags_copy_pattern_channel_run_disconnect_connection(AgsConnectable *connectable, GObject *connection)
+ags_play_lv2_audio_run_disconnect_connection(AgsConnectable *connectable, GObject *connection)
 {
   AgsPlayLv2AudioRun *play_lv2_audio_run;  
   AgsDelayAudioRun *delay_audio_run;

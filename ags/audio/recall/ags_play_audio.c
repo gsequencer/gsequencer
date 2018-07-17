@@ -123,6 +123,7 @@ void
 ags_play_audio_class_init(AgsPlayAudioClass *play_audio)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_play_audio_parent_class = g_type_class_peek_parent(play_audio);

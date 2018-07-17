@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/task/ags_play_channel.h>
+#include <ags/audio/task/ags_start_channel.h>
 
 #include <ags/libags.h>
 
@@ -32,32 +32,32 @@
 
 #include <ags/i18n.h>
 
-void ags_play_channel_class_init(AgsPlayChannelClass *play_channel);
-void ags_play_channel_init(AgsPlayChannel *play_channel);
-void ags_play_channel_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec);
-void ags_play_channel_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec);
-void ags_play_channel_dispose(GObject *gobject);
-void ags_play_channel_finalize(GObject *gobject);
+void ags_start_channel_class_init(AgsStartChannelClass *start_channel);
+void ags_start_channel_init(AgsStartChannel *start_channel);
+void ags_start_channel_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+void ags_start_channel_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
+void ags_start_channel_dispose(GObject *gobject);
+void ags_start_channel_finalize(GObject *gobject);
 
-void ags_play_channel_launch(AgsTask *task);
+void ags_start_channel_launch(AgsTask *task);
 
 /**
- * SECTION:ags_play_channel
- * @short_description: play channel object to audio loop
- * @title: AgsPlayChannel
+ * SECTION:ags_start_channel
+ * @short_description: start channel object to audio loop
+ * @title: AgsStartChannel
  * @section_id:
- * @include: ags/audio/task/ags_play_channel.h
+ * @include: ags/audio/task/ags_start_channel.h
  *
- * The #AgsPlayChannel task plays #AgsChannel to #AgsAudioLoop.
+ * The #AgsStartChannel task starts #AgsChannel to #AgsAudioLoop.
  */
 
-static gpointer ags_play_channel_parent_class = NULL;
+static gpointer ags_start_channel_parent_class = NULL;
 
 enum{
   PROP_0,
@@ -66,62 +66,62 @@ enum{
 };
 
 GType
-ags_play_channel_get_type()
+ags_start_channel_get_type()
 {
-  static GType ags_type_play_channel = 0;
+  static GType ags_type_start_channel = 0;
 
-  if(!ags_type_play_channel){
-    static const GTypeInfo ags_play_channel_info = {
-      sizeof (AgsPlayChannelClass),
+  if(!ags_type_start_channel){
+    static const GTypeInfo ags_start_channel_info = {
+      sizeof (AgsStartChannelClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
-      (GClassInitFunc) ags_play_channel_class_init,
+      (GClassInitFunc) ags_start_channel_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsPlayChannel),
+      sizeof (AgsStartChannel),
       0,    /* n_preallocs */
-      (GInstanceInitFunc) ags_play_channel_init,
+      (GInstanceInitFunc) ags_start_channel_init,
     };
 
-    ags_type_play_channel = g_type_register_static(AGS_TYPE_TASK,
-						   "AgsPlayChannel",
-						   &ags_play_channel_info,
-						   0);
+    ags_type_start_channel = g_type_register_static(AGS_TYPE_TASK,
+						    "AgsStartChannel",
+						    &ags_start_channel_info,
+						    0);
   }
   
-  return(ags_type_play_channel);
+  return(ags_type_start_channel);
 }
 
 void
-ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
+ags_start_channel_class_init(AgsStartChannelClass *start_channel)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
 
   GParamSpec *param_spec;
   
-  ags_play_channel_parent_class = g_type_class_peek_parent(play_channel);
+  ags_start_channel_parent_class = g_type_class_peek_parent(start_channel);
 
   /* GObjectClass */
-  gobject = (GObjectClass *) play_channel;
+  gobject = (GObjectClass *) start_channel;
 
-  gobject->set_property = ags_play_channel_set_property;
-  gobject->get_property = ags_play_channel_get_property;
+  gobject->set_property = ags_start_channel_set_property;
+  gobject->get_property = ags_start_channel_get_property;
 
-  gobject->dispose = ags_play_channel_dispose;
-  gobject->finalize = ags_play_channel_finalize;
+  gobject->dispose = ags_start_channel_dispose;
+  gobject->finalize = ags_start_channel_finalize;
 
   /* properties */
   /**
-   * AgsPlayChannel:channel:
+   * AgsStartChannel:channel:
    *
    * The assigned #AgsChannel
    * 
    * Since: 2.0.0
    */
   param_spec = g_param_spec_object("channel",
-				   i18n_pspec("channel of play channel"),
-				   i18n_pspec("The channel of play channel task"),
+				   i18n_pspec("channel of start channel"),
+				   i18n_pspec("The channel of start channel task"),
 				   AGS_TYPE_CHANNEL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -129,7 +129,7 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
 				  param_spec);
 
   /**
-   * AgsPlayChannel:sound-scope:
+   * AgsStartChannel:sound-scope:
    *
    * The effects sound-scope.
    * 
@@ -147,28 +147,28 @@ ags_play_channel_class_init(AgsPlayChannelClass *play_channel)
 				  param_spec);
 
   /* AgsTaskClass */
-  task = (AgsTaskClass *) play_channel;
+  task = (AgsTaskClass *) start_channel;
 
-  task->launch = ags_play_channel_launch;
+  task->launch = ags_start_channel_launch;
 }
 
 void
-ags_play_channel_init(AgsPlayChannel *play_channel)
+ags_start_channel_init(AgsStartChannel *start_channel)
 {
-  play_channel->channel = NULL;
+  start_channel->channel = NULL;
 
-  play_channel->sound_scope = -1;
+  start_channel->sound_scope = -1;
 }
 
 void
-ags_play_channel_set_property(GObject *gobject,
-			      guint prop_id,
-			      const GValue *value,
-			      GParamSpec *param_spec)
+ags_start_channel_set_property(GObject *gobject,
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *param_spec)
 {
-  AgsPlayChannel *play_channel;
+  AgsStartChannel *start_channel;
 
-  play_channel = AGS_PLAY_CHANNEL(gobject);
+  start_channel = AGS_START_CHANNEL(gobject);
 
   switch(prop_id){
   case PROP_CHANNEL:
@@ -177,24 +177,24 @@ ags_play_channel_set_property(GObject *gobject,
 
       channel = (AgsChannel *) g_value_get_object(value);
 
-      if(play_channel->channel == (GObject *) channel){
+      if(start_channel->channel == (GObject *) channel){
 	return;
       }
 
-      if(play_channel->channel != NULL){
-	g_object_unref(play_channel->channel);
+      if(start_channel->channel != NULL){
+	g_object_unref(start_channel->channel);
       }
 
       if(channel != NULL){
 	g_object_ref(channel);
       }
 
-      play_channel->channel = (GObject *) channel;
+      start_channel->channel = (GObject *) channel;
     }
     break;
   case PROP_SOUND_SCOPE:
     {
-      play_channel->sound_scope = g_value_get_int(value);
+      start_channel->sound_scope = g_value_get_int(value);
     }
     break;
   default:
@@ -204,24 +204,24 @@ ags_play_channel_set_property(GObject *gobject,
 }
 
 void
-ags_play_channel_get_property(GObject *gobject,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *param_spec)
+ags_start_channel_get_property(GObject *gobject,
+			       guint prop_id,
+			       GValue *value,
+			       GParamSpec *param_spec)
 {
-  AgsPlayChannel *play_channel;
+  AgsStartChannel *start_channel;
 
-  play_channel = AGS_PLAY_CHANNEL(gobject);
+  start_channel = AGS_START_CHANNEL(gobject);
 
   switch(prop_id){
   case PROP_CHANNEL:
     {
-      g_value_set_object(value, play_channel->channel);
+      g_value_set_object(value, start_channel->channel);
     }
     break;
   case PROP_SOUND_SCOPE:
     {
-      g_value_set_int(value, play_channel->sound_scope);
+      g_value_set_int(value, start_channel->sound_scope);
     }
     break;
   default:
@@ -231,39 +231,39 @@ ags_play_channel_get_property(GObject *gobject,
 }
 
 void
-ags_play_channel_dispose(GObject *gobject)
+ags_start_channel_dispose(GObject *gobject)
 {
-  AgsPlayChannel *play_channel;
+  AgsStartChannel *start_channel;
 
-  play_channel = AGS_PLAY_CHANNEL(gobject);
+  start_channel = AGS_START_CHANNEL(gobject);
 
-  if(play_channel->channel != NULL){
-    g_object_unref(play_channel->channel);
+  if(start_channel->channel != NULL){
+    g_object_unref(start_channel->channel);
 
-    play_channel->channel = NULL;
+    start_channel->channel = NULL;
   }
   
   /* call parent */
-  G_OBJECT_CLASS(ags_play_channel_parent_class)->dispose(gobject);
+  G_OBJECT_CLASS(ags_start_channel_parent_class)->dispose(gobject);
 }
 
 void
-ags_play_channel_finalize(GObject *gobject)
+ags_start_channel_finalize(GObject *gobject)
 {
-  AgsPlayChannel *play_channel;
+  AgsStartChannel *start_channel;
 
-  play_channel = AGS_PLAY_CHANNEL(gobject);
+  start_channel = AGS_START_CHANNEL(gobject);
 
-  if(play_channel->channel != NULL){
-    g_object_unref(play_channel->channel);
+  if(start_channel->channel != NULL){
+    g_object_unref(start_channel->channel);
   }
   
   /* call parent */
-  G_OBJECT_CLASS(ags_play_channel_parent_class)->finalize(gobject);
+  G_OBJECT_CLASS(ags_start_channel_parent_class)->finalize(gobject);
 }
 
 void
-ags_play_channel_launch(AgsTask *task)
+ags_start_channel_launch(AgsTask *task)
 {
   AgsChannel *channel;
   AgsRecycling *recycling;
@@ -272,7 +272,7 @@ ags_play_channel_launch(AgsTask *task)
   AgsRecallID *recall_id;
   AgsRecyclingContext *recycling_context;
   
-  AgsPlayChannel *play_channel;
+  AgsStartChannel *start_channel;
 
   AgsAudioLoop *audio_loop;
 
@@ -286,9 +286,9 @@ ags_play_channel_launch(AgsTask *task)
 				      AGS_SOUND_STAGING_RUN_INIT_INTER |
 				      AGS_SOUND_STAGING_RUN_INIT_POST);
 
-  play_channel = AGS_PLAY_CHANNEL(task);
+  start_channel = AGS_START_CHANNEL(task);
 
-  channel = (AgsChannel *) play_channel->channel;
+  channel = (AgsChannel *) start_channel->channel;
 
   g_object_get(channel,
 	       "playback", &playback,
@@ -298,7 +298,7 @@ ags_play_channel_launch(AgsTask *task)
 	       "playback-domain", &playback_domain,
 	       NULL);
   
-  sound_scope = play_channel->sound_scope;
+  sound_scope = start_channel->sound_scope;
 
   application_context = ags_application_context_get_instance();
 
@@ -402,25 +402,25 @@ ags_play_channel_launch(AgsTask *task)
 }
 
 /**
- * ags_play_channel_new:
- * @channel: the #AgsChannel to play
+ * ags_start_channel_new:
+ * @channel: the #AgsChannel to start
  *
- * Create a new instance of #AgsPlayChannel.
+ * Create a new instance of #AgsStartChannel.
  *
- * Returns: the new #AgsPlayChannel.
+ * Returns: the new #AgsStartChannel.
  *
  * Since: 2.0.0
  */
-AgsPlayChannel*
-ags_play_channel_new(AgsChannel *channel,
-		     gint sound_scope)
+AgsStartChannel*
+ags_start_channel_new(AgsChannel *channel,
+		      gint sound_scope)
 {
-  AgsPlayChannel *play_channel;
+  AgsStartChannel *start_channel;
 
-  play_channel = (AgsPlayChannel *) g_object_new(AGS_TYPE_PLAY_CHANNEL,
-						 "channel", channel,
-						 "sound-scope", sound_scope,
-						 NULL);
+  start_channel = (AgsStartChannel *) g_object_new(AGS_TYPE_START_CHANNEL,
+						   "channel", channel,
+						   "sound-scope", sound_scope,
+						   NULL);
 
-  return(play_channel);
+  return(start_channel);
 }
