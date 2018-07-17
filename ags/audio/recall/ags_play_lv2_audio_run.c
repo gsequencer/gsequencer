@@ -717,11 +717,8 @@ ags_copy_pattern_channel_run_connect_connection(AgsConnectable *connectable, GOb
 	       NULL);
 
   if(connection == delay_audio_run){
-    g_object_disconnect(G_OBJECT(delay_audio_run),
-			"any_signal::notation-alloc-input",
-			G_CALLBACK(ags_play_lv2_audio_run_alloc_input_callback),
-			play_lv2_audio_run,
-			NULL);
+    g_signal_connect(G_OBJECT(delay_audio_run), "notation-alloc-input",
+		     G_CALLBACK(ags_play_lv2_audio_run_alloc_input_callback), play_lv2_audio_run);  
   }
 }
 
@@ -742,8 +739,11 @@ ags_copy_pattern_channel_run_disconnect_connection(AgsConnectable *connectable, 
 	       NULL);
 
   if(connection == delay_audio_run){
-    g_signal_connect(G_OBJECT(delay_audio_run), "notation-alloc-input",
-		     G_CALLBACK(ags_play_lv2_audio_run_alloc_input_callback), play_lv2_audio_run);  
+    g_object_disconnect(G_OBJECT(delay_audio_run),
+			"any_signal::notation-alloc-input",
+			G_CALLBACK(ags_play_lv2_audio_run_alloc_input_callback),
+			play_lv2_audio_run,
+			NULL);
   }
 }
 

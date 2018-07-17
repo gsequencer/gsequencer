@@ -251,7 +251,6 @@ ags_play_dssi_audio_run_class_init(AgsPlayDssiAudioRunClass *play_dssi_audio_run
   recall = (AgsRecallClass *) play_dssi_audio_run;
 
   recall->resolve_dependency = ags_play_dssi_audio_run_resolve_dependency;
-
   recall->run_init_pre = ags_play_dssi_audio_run_run_init_pre;
   recall->run_pre = ags_play_dssi_audio_run_run_pre;
 }
@@ -718,11 +717,8 @@ ags_copy_pattern_channel_run_connect_connection(AgsConnectable *connectable, GOb
 	       NULL);
 
   if(connection == delay_audio_run){
-    g_object_disconnect(G_OBJECT(delay_audio_run),
-			"any_signal::notation-alloc-input",
-			G_CALLBACK(ags_play_dssi_audio_run_alloc_input_callback),
-			play_dssi_audio_run,
-			NULL);
+    g_signal_connect(G_OBJECT(delay_audio_run), "notation-alloc-input",
+		     G_CALLBACK(ags_play_dssi_audio_run_alloc_input_callback), play_dssi_audio_run);  
   }
 }
 
@@ -743,8 +739,11 @@ ags_copy_pattern_channel_run_disconnect_connection(AgsConnectable *connectable, 
 	       NULL);
 
   if(connection == delay_audio_run){
-    g_signal_connect(G_OBJECT(delay_audio_run), "notation-alloc-input",
-		     G_CALLBACK(ags_play_dssi_audio_run_alloc_input_callback), play_dssi_audio_run);  
+    g_object_disconnect(G_OBJECT(delay_audio_run),
+			"any_signal::notation-alloc-input",
+			G_CALLBACK(ags_play_dssi_audio_run_alloc_input_callback),
+			play_dssi_audio_run,
+			NULL);
   }
 }
 
@@ -1480,7 +1479,7 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   
   pthread_mutex_unlock(ags_audio_get_class_mutex());
 
-  /*  */
+  /* get audio fields */
   pthread_mutex_lock(audio_mutex);
 
   audio_flags = audio->flags;
