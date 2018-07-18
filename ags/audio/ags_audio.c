@@ -7820,7 +7820,7 @@ ags_audio_add_automation(AgsAudio *audio, GObject *automation)
   pthread_mutex_lock(audio_mutex);
 
   if(g_list_find(audio->automation,
-		 automation) != NULL){
+		 automation) == NULL){
     g_object_ref(automation);
     audio->automation = ags_automation_add(audio->automation,
 					   automation);
@@ -7907,7 +7907,7 @@ ags_audio_add_wave(AgsAudio *audio, GObject *wave)
   pthread_mutex_lock(audio_mutex);
 
   if(g_list_find(audio->wave,
-		 wave) != NULL){
+		 wave) == NULL){
     g_object_ref(wave);
     audio->wave = ags_wave_add(audio->wave,
 			       wave);
@@ -7994,7 +7994,7 @@ ags_audio_add_midi(AgsAudio *audio, GObject *midi)
   pthread_mutex_lock(audio_mutex);
 
   if(g_list_find(audio->midi,
-		 midi) != NULL){
+		 midi) == NULL){
     g_object_ref(midi);
     audio->midi = ags_midi_add(audio->midi,
 			       midi);

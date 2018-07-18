@@ -128,6 +128,11 @@ void ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *val
 
 GList* ags_port_find_specifier(GList *port, gchar *specifier);
 
+void ags_port_add_automation(AgsPort *port,
+			     GObject *automation);
+void ags_port_remove_automation(AgsPort *port,
+				GObject *automation);
+
 AgsPort* ags_port_new();
 
 #endif /*__AGS_PORT_H__*/

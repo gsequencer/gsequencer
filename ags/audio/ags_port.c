@@ -1302,6 +1302,93 @@ ags_port_find_specifier(GList *port, gchar *specifier)
 }
 
 /**
+ * ags_port_add_automation:
+ * @port: the #AgsPort
+ * @automation: the #AgsAutomation
+ *
+ * Adds an automation.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_port_add_automation(AgsPort *port, GObject *automation)
+{
+  pthread_mutex_t *port_mutex;
+
+  if(!AGS_IS_PORT(port) ||
+     !AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  /* get port mutex */
+  pthread_mutex_lock(ags_port_get_class_mutex());
+
+  port_mutex = port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_port_get_class_mutex());
+
+  /* add recall id */
+  pthread_mutex_lock(port_mutex);
+
+  if(g_list_find(port->automation,
+		 automation) == NULL){
+    g_object_ref(automation);
+    port->automation = ags_automation_add(port->automation,
+					   automation);
+
+    g_object_set(automation,
+		 "port", port,
+		 NULL);
+  }
+  
+  pthread_mutex_unlock(port_mutex);
+}
+
+/**
+ * ags_port_remove_automation:
+ * @port: the #AgsPort
+ * @automation: the #AgsAutomation
+ *
+ * Removes an automation.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_port_remove_automation(AgsPort *port, GObject *automation)
+{
+  pthread_mutex_t *port_mutex;
+
+  if(!AGS_IS_PORT(port) ||
+     !AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  /* get port mutex */
+  pthread_mutex_lock(ags_port_get_class_mutex());
+
+  port_mutex = port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_port_get_class_mutex());
+
+  /* remove automation */
+  pthread_mutex_lock(port_mutex);
+
+  if(g_list_find(port->automation,
+		 automation) != NULL){
+    port->automation = g_list_remove(port->automation,
+				      automation);
+
+    g_object_set(automation,
+		 "port", NULL,
+		 NULL);
+
+    g_object_unref(automation);
+  }
+  
+  pthread_mutex_unlock(port_mutex);
+}
+
+/**
  * ags_port_new:
  *
  * Creates an #AgsPort.
