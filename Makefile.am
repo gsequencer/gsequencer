@@ -1773,7 +1773,7 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_synth_input_line_callbacks.c \
 	ags/X/machine/ags_synth_input_pad.c \
 	ags/X/machine/ags_spectrometer.c \
-	ags/X/machine/ags_spectromenter_callbacks.c
+	ags/X/machine/ags_spectrometer_callbacks.c
 
 # libgsequencer - editor
 deprecated_libgsequencer_editor_h_sources =

@@ -25,6 +25,9 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
 #include <ags/X/ags_automation_editor.h>
 
 #define AGS_TYPE_AUTOMATION_WINDOW                (ags_automation_window_get_type())

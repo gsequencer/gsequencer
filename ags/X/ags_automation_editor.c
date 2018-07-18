@@ -146,7 +146,7 @@ ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor)
    *
    * The assigned #AgsSoundcard acting as default sink.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -168,7 +168,7 @@ ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor)
    *
    * The ::machine-changed signal notifies about changed machine.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   automation_editor_signals[MACHINE_CHANGED] =
     g_signal_new("machine-changed",
@@ -1048,7 +1048,8 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
   /*
    * add new
    */
-  if(machine != NULL){
+  if(machine != NULL){  
+    GList *start_automation, *automation;
     GList *automation_port;
     
     /* audio */
@@ -1061,8 +1062,6 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
     while(automation_port != NULL){
       AgsAutomationEdit *automation_edit;
       AgsScale *scale;
-      
-      GList *start_automation, *automation;
 	
       gboolean contains_specifier;
 
@@ -1169,10 +1168,10 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 	  g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
 				 G_CALLBACK(ags_automation_editor_input_automation_edit_hscrollbar_value_changed), (gpointer) automation_editor);
 	}
+
+	g_free(control_name);
       }
       
-      g_free(control_name);
-
       /* iterate */
       automation_port = automation_port->next;
     }
@@ -1323,7 +1322,7 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
 	recall_port =
 	  start_recall_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
 											 automation_editor->focused_automation_edit->control_name,
-											 ALSE);
+											 FALSE);
       }
 
       /* play port */
@@ -1573,7 +1572,7 @@ ags_automation_editor_select_region(AgsAutomationEditor *automation_editor,
   GList *start_list_automation, *list_automation;
 
   gint i;
-
+  
   if(!AGS_IS_AUTOMATION_EDITOR(automation_editor) ||
      automation_editor->focused_automation_edit == NULL){
     return;
@@ -1619,8 +1618,6 @@ ags_automation_editor_select_region(AgsAutomationEditor *automation_editor,
     timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
     timestamp->flags |= AGS_TIMESTAMP_OFFSET;
     
-    pthread_mutex_lock(audio_mutex);
-
     i = 0;
 
     while(notebook == NULL ||
@@ -1749,6 +1746,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 						  AgsTimestamp *timestamp,
 						  gboolean match_line, gboolean no_duplicates)
   {    
+    AgsChannel *output, *input;
     AgsAutomation *automation;
 		
     GList *start_list_automation, *list_automation;
@@ -1757,8 +1755,25 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
     guint current_x;
     gint i;
 
+    pthread_mutex_t *audio_mutex;
+    
     first_x = -1;
 
+    /* get audio mutex */
+    pthread_mutex_lock(ags_audio_get_class_mutex());
+  
+    audio_mutex = machine->audio->obj_mutex;
+  
+    pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+    /* get some fields */
+    pthread_mutex_lock(audio_mutex);
+
+    output = machine->audio->output;
+    input = machine->audio->input;
+    
+    pthread_mutex_unlock(audio_mutex);
+    
     /*  */
     g_object_get(machine->audio,
 		 "automation", &start_list_automation,
@@ -1774,6 +1789,8 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 								    timestamp);
 
       if(list_automation == NULL){
+	AgsChannel *channel;
+
 	GList *start_play_port, *play_port;
 	GList *start_recall_port, *recall_port;
 	
@@ -1817,7 +1834,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 	  recall_port =
 	    start_recall_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
 											   automation_editor->focused_automation_edit->control_name,
-											   ALSE);
+											   FALSE);
 	}
 
 	/* play port */

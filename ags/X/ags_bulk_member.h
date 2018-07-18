@@ -22,14 +22,11 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
-#include <ags/lib/ags_conversion.h>
-
-#include <ags/thread/ags_task.h>
-
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_port.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #define AGS_TYPE_BULK_MEMBER                (ags_bulk_member_get_type())
 #define AGS_BULK_MEMBER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_BULK_MEMBER, AgsBulkMember))
@@ -40,8 +37,8 @@
 
 #define AGS_BULK_PORT(ptr) ((AgsBulkPort *)(ptr))
 
-#define AGS_BULK_MEMBER_DEFAULT_VERSION "0.7.21\0"
-#define AGS_BULK_MEMBER_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23\0"
+#define AGS_BULK_MEMBER_DEFAULT_VERSION "0.7.21"
+#define AGS_BULK_MEMBER_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23"
 
 typedef struct _AgsBulkMember AgsBulkMember;
 typedef struct _AgsBulkMemberClass AgsBulkMemberClass;
@@ -115,6 +112,8 @@ struct _AgsBulkPort
 GType ags_bulk_member_get_type(void);
 
 AgsBulkPort* ags_bulk_port_alloc(AgsPort *port);
+void ags_bulk_port_free(AgsBulkPort *bulk_port);
+
 GList* ags_bulk_port_find(GList *list, AgsPort *port);
 
 GtkWidget* ags_bulk_member_get_widget(AgsBulkMember *bulk_member);

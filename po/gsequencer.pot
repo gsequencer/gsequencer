@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 2.0.0\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2018-03-29 21:50+0200\n"
+"POT-Creation-Date: 2018-07-18 20:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,7 +33,7 @@ msgstr ""
 msgid "stop"
 msgstr ""
 
-#: ags/X/ags_audio_preferences_callbacks.c:52
+#: ags/X/ags_audio_preferences_callbacks.c:45
 msgid "connect sink"
 msgstr ""
 
@@ -898,6 +898,18 @@ msgstr ""
 msgid "sequence"
 msgstr ""
 
+#: ags/X/machine/ags_desk.c:199
+msgid "left"
+msgstr ""
+
+#: ags/X/machine/ags_desk.c:213
+msgid "right"
+msgstr ""
+
+#: ags/X/machine/ags_desk_input_pad.c:193
+msgid "grab"
+msgstr ""
+
 #: ags/X/machine/ags_drum.c:270
 msgid "kit"
 msgstr ""
@@ -925,6 +937,50 @@ msgstr ""
 #: ags/X/machine/ags_dssi_bridge.c:318 ags/X/machine/ags_live_dssi_bridge.c:321
 #: ags/X/machine/ags_live_lv2_bridge.c:1565 ags/X/machine/ags_lv2_bridge.c:1942
 msgid "program"
+msgstr ""
+
+#: ags/X/machine/ags_equalizer10.c:195
+msgid "28Hz"
+msgstr ""
+
+#: ags/X/machine/ags_equalizer10.c:221
+msgid "56Hz"
+msgstr ""
+
+#: ags/X/machine/ags_equalizer10.c:247
+msgid "112Hz"
+msgstr ""
+
+#: ags/X/machine/ags_equalizer10.c:273
+msgid "224Hz"
+msgstr ""
+
+#: ags/X/machine/ags_equalizer10.c:299
+msgid "448Hz"
+msgstr ""
+
+#: ags/X/machine/ags_equalizer10.c:325
+msgid "896Hz"
+msgstr ""
+
+#: ags/X/machine/ags_equalizer10.c:351
+msgid "1792Hz"
+msgstr ""
+
+#: ags/X/machine/ags_equalizer10.c:377
+msgid "3584Hz"
+msgstr ""
+
+#: ags/X/machine/ags_equalizer10.c:403
+msgid "7168Hz"
+msgstr ""
+
+#: ags/X/machine/ags_equalizer10.c:429
+msgid "14336Hz"
+msgstr ""
+
+#: ags/X/machine/ags_equalizer10.c:455
+msgid "pressure"
 msgstr ""
 
 #: ags/X/machine/ags_live_lv2_bridge.c:455 ags/X/machine/ags_lv2_bridge.c:433
@@ -987,11 +1043,11 @@ msgstr ""
 msgid "The assigned server"
 msgstr ""
 
-#: ags/server/ags_server.c:147
+#: ags/server/ags_server.c:160
 msgid "application context object"
 msgstr ""
 
-#: ags/server/ags_server.c:148
+#: ags/server/ags_server.c:161
 msgid "The application context object"
 msgstr ""
 
