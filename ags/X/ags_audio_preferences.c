@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -330,6 +330,9 @@ static void
 ags_audio_preferences_finalize(GObject *gobject)
 {
   //TODO:JK: implement me
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_audio_preferences_parent_class)->finalize(gobject);
 }
 
 void
@@ -366,7 +369,8 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   AgsPreferences *preferences;
   AgsAudioPreferences *audio_preferences;
   AgsSoundcardEditor *soundcard_editor;
-  
+
+  AgsThread *main_loop;
   AgsThread *soundcard_thread;
   
   AgsApplicationContext *application_context;
@@ -381,7 +385,11 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   window = (AgsWindow *) preferences->window;
   
   application_context = (AgsApplicationContext *) window->application_context;
-  soundcard_thread = ags_thread_find_type((AgsThread *) application_context->main_loop,
+  g_object_get(application_context,
+	       "main-loop", &main_loop,
+	       NULL);
+  
+  soundcard_thread = ags_thread_find_type((AgsThread *) main_loop,
 					  AGS_TYPE_SOUNDCARD_THREAD);
 
   /* clear */
@@ -424,11 +432,11 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
 /**
  * ags_audio_preferences_new:
  *
- * Creates an #AgsAudioPreferences
+ * Create a new instance of #AgsAudioPreferences
  *
- * Returns: a new #AgsAudioPreferences
+ * Returns: the new #AgsAudioPreferences
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsAudioPreferences*
 ags_audio_preferences_new()
