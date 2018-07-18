@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,10 +42,17 @@ struct _AgsDssiBrowser
   gchar *path;
 
   GtkHBox *plugin;
-  GtkVBox *description;
 
   GtkComboBox *filename;
   GtkComboBox *effect;
+
+  GtkVBox *description;
+
+  GtkLabel *label;
+  GtkLabel *maker;
+  GtkLabel *copyright;
+
+  GtkTable *port_table;
   
   GtkWidget *preview;
 };

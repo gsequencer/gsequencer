@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -152,7 +152,7 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    *
    * The start of a bunch of #AgsAudio to visualize.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("assigned audio"),
@@ -179,6 +179,8 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    *
    * The ::resize-audio-channels signal notifies about changed channel allocation within
    * audio.
+   *
+   * Since: 2.0.0
    */
   effect_bridge_signals[RESIZE_AUDIO_CHANNELS] =
     g_signal_new("resize-audio-channels",
@@ -201,6 +203,8 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    *
    * The ::resize-pads signal notifies about changed channel allocation within
    * audio.
+   *
+   * Since: 2.0.0
    */
   effect_bridge_signals[RESIZE_PADS] =
     g_signal_new("resize-pads",
@@ -219,6 +223,8 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    * @effect_bridge: the #AgsEffectBridge
    *
    * The ::map-recall should be used to add the effect_bridge's default recall.
+   *
+   * Since: 2.0.0
    */
   effect_bridge_signals[MAP_RECALL] =
     g_signal_new("map-recall",
@@ -235,6 +241,8 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
    * Returns: a #GList with associated ports
    *
    * The ::find-port as recall should be mapped
+   *
+   * Since: 2.0.0
    */
   effect_bridge_signals[FIND_PORT] =
     g_signal_new("find-port",
@@ -352,29 +360,48 @@ ags_effect_bridge_set_property(GObject *gobject,
 
       if(audio != NULL){
 	AgsChannel *input, *output;
-	GList *effect_pad, *effect_line;
+
+	GList *start_effect_pad, *effect_pad;
+	GList *start_effect_line, *effect_line;
+
+	guint audio_channels;
+	guint output_pads, input_pads;
 	guint i;
 	
 	g_object_ref(audio);
+	g_object_get(audio,
+		     "output", &output,
+		     "input", &input,
+		     "audio-channels", &audio_channels,
+		     "output-pads", &output_pads,
+		     "input-pads", &input_pads,
+		     NULL);
 
 	/* set channel and resize for AgsOutput */
 	if(effect_bridge->output_pad_type != G_TYPE_NONE){
-	  output = audio->output;
-	  effect_pad = gtk_container_get_children((GtkContainer *) effect_bridge->output);
+	  effect_pad =
+	    start_effect_pad = gtk_container_get_children((GtkContainer *) effect_bridge->output);
 
 	  /* reset */
 	  i = 0;
 
 	  while(effect_pad != NULL && output != NULL){
-	    effect_line = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(effect_pad->data)->table);
+	    effect_line =
+	      start_effect_line = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(effect_pad->data)->table);
 
 	    ags_effect_pad_resize_lines(AGS_EFFECT_PAD(effect_pad->data), effect_bridge->output_line_type,
-					audio->audio_channels, g_list_length(effect_line));
+					audio_channels, g_list_length(effect_line));
 	    g_object_set(G_OBJECT(effect_pad->data),
 			 "channel", output,
 			 NULL);
 
-	    output = output->next_pad;
+	    g_list_free(start_effect_line);
+	    
+	    /* iterate */
+	    g_object_get(output,
+			 "next-pad", &output,
+			 NULL);
+	    
 	    effect_pad = effect_pad->next;
 	    i++;
 	  }
@@ -383,7 +410,7 @@ ags_effect_bridge_set_property(GObject *gobject,
 	    AgsEffectPad *effect_pad;
 
 	    /* add effect pad */
-	    for(; i < audio->output_pads; i++){
+	    for(; i < output_pads; i++){
 	      effect_pad = g_object_new(effect_bridge->output_pad_type,
 					"channel", output,
 					NULL);
@@ -391,40 +418,56 @@ ags_effect_bridge_set_property(GObject *gobject,
 				GTK_WIDGET(effect_pad));
 
 	      ags_effect_pad_resize_lines(effect_pad, effect_bridge->output_line_type,
-					  audio->audio_channels, 0);
+					  audio_channels, 0);
 
-	      output = output->next_pad;
+	      /* iterate */
+	      g_object_get(output,
+			   "next-pad", &output,
+			   NULL);
 	    }
+
+	    g_list_free(start_effect_pad);
 	  }else{
 	    /* destroy effect pad */
-	    effect_pad = gtk_container_get_children((GtkContainer *) effect_bridge->output);
-	    effect_pad = g_list_nth(effect_pad, audio->output_pads);
+	    effect_pad =
+	      start_effect_pad = gtk_container_get_children((GtkContainer *) effect_bridge->output);
+	    effect_pad = g_list_nth(effect_pad,
+				    output_pads);
 
 	    while(effect_pad != NULL){
 	      gtk_widget_destroy(effect_pad->data);
 
 	      effect_pad = effect_pad->next;
 	    }	      
+
+	    g_list_free(start_effect_pad);
 	  }
 	}
 	
 	/* set channel and resize for AgsInput */
 	if(effect_bridge->input_pad_type != G_TYPE_NONE){
-	  input = audio->input;
-	  effect_pad = gtk_container_get_children((GtkContainer *) effect_bridge->input);
+	  effect_pad =
+	    start_effect_pad = gtk_container_get_children((GtkContainer *) effect_bridge->input);
 
 	  i = 0;
 
 	  while(effect_pad != NULL && input != NULL){
-	    effect_line = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(effect_pad->data)->table);
-
+	    effect_line =
+	      start_effect_line = gtk_container_get_children((GtkContainer *) AGS_EFFECT_PAD(effect_pad->data)->table);
+	    
 	    ags_effect_pad_resize_lines(AGS_EFFECT_PAD(effect_pad->data), effect_bridge->input_line_type,
-					audio->audio_channels, g_list_length(effect_line));
+					audio_channels, g_list_length(effect_line));
 	    g_object_set(G_OBJECT(effect_pad->data),
 			 "channel", input,
 			 NULL);
+	    
+	    g_list_free(start_effect_line);
 
-	    input = input->next_pad;
+	    /* iterate */
+	    g_object_get(input,
+			 "next-pad", &input,
+			 NULL);
+
 	    effect_pad = effect_pad->next;
 	    i++;
 	  }
@@ -433,7 +476,7 @@ ags_effect_bridge_set_property(GObject *gobject,
 	    AgsEffectPad *effect_pad;
 
 	    /* add effect pad */
-	    for(; i < audio->input_pads; i++){
+	    for(; i < input_pads; i++){
 	      effect_pad = g_object_new(effect_bridge->input_pad_type,
 					"channel", input,
 					NULL);
@@ -441,20 +484,29 @@ ags_effect_bridge_set_property(GObject *gobject,
 				GTK_WIDGET(effect_pad));
 
 	      ags_effect_pad_resize_lines(effect_pad, effect_bridge->input_line_type,
-					  audio->audio_channels, 0);
+					  audio_channels, 0);
 
-	      input = input->next_pad;
+	      /* iterate */
+	      g_object_get(input,
+			   "next-pad", &input,
+			   NULL);
 	    }
+
+	    g_list_free(start_effect_pad);
 	  }else{
 	    /* destroy effect pad */
-	    effect_pad = gtk_container_get_children((GtkContainer *) effect_bridge->input);
-	    effect_pad = g_list_nth(effect_pad, audio->input_pads);
-
+	    effect_pad =
+	      start_effect_pad = gtk_container_get_children((GtkContainer *) effect_bridge->input);
+	    effect_pad = g_list_nth(effect_pad,
+				    input_pads);
+	    
 	    while(effect_pad != NULL){
 	      gtk_widget_destroy(effect_pad->data);
 
 	      effect_pad = effect_pad->next;
 	    }	      
+
+	    g_list_free(start_effect_pad);
 	  }
 	}
       }
@@ -726,7 +778,7 @@ ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
  *
  * Resize audio channel allocation.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_effect_bridge_resize_audio_channels(AgsEffectBridge *effect_bridge,
@@ -751,8 +803,12 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 {
   AgsEffectPad *effect_pad;
   GtkTable *table;
+
   AgsAudio *audio;
+  AgsChannel *output, *input;
   AgsChannel *current;
+
+  guint audio_channels;
   guint i;
   
   audio = effect_bridge->audio;
@@ -761,14 +817,20 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
     return;
   }
 
+  g_object_get(audio,
+	       "audio-channels", &audio_channels,
+	       "output", &output,
+	       "input", &input,
+	       NULL);
+  
   if(new_size > old_size){
     if(channel_type == AGS_TYPE_OUTPUT){
-      current = ags_channel_nth(audio->output,
-				old_size * audio->audio_channels);
+      current = ags_channel_nth(output,
+				old_size * audio_channels);
 
     }else{
-      current = ags_channel_nth(audio->input,
-				old_size * audio->audio_channels);
+      current = ags_channel_nth(input,
+				old_size * audio_channels);
     }
     
     for(i = 0; i < new_size - old_size && current != NULL; i++){
@@ -794,19 +856,23 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 	}
       }
 
-      current = current->next_pad;
+      /* iterate */
+      g_object_get(current,
+		   "next-pad", &current,
+		   NULL);
     }
 
     /* connect and show */
     if((AGS_EFFECT_BRIDGE_CONNECTED & (effect_bridge->flags)) != 0){
       GtkContainer *container;
-      GList *list;
+
+      GList *start_list, *list;
 
       container = (GtkContainer *) ((channel_type == AGS_TYPE_OUTPUT) ? effect_bridge->output: effect_bridge->input);
 
       if(container != NULL){
-	list = gtk_container_get_children(container);
-	list = g_list_nth(list,
+	start_list = gtk_container_get_children(container);
+	list = g_list_nth(start_list,
 			  old_size);
       
 	while(list != NULL){
@@ -815,34 +881,36 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 	
 	  list = list->next;
 	}
+
+	g_list_free(start_list);
       }
     }
   }else{
-    GList *list, *list_next;
+    GList *start_list, *list;
 
     list = NULL;
     
     if(channel_type == AGS_TYPE_OUTPUT){
       if(effect_bridge->output != NULL){
-	list = gtk_container_get_children((GtkContainer *) effect_bridge->output);
-	list = g_list_nth(list,
+	start_list = gtk_container_get_children((GtkContainer *) effect_bridge->output);
+	list = g_list_nth(start_list,
 			  new_size);
       }
     }else{
       if(effect_bridge->input != NULL){
-	list = gtk_container_get_children((GtkContainer *) effect_bridge->input);
-	list = g_list_nth(list,
+	start_list = gtk_container_get_children((GtkContainer *) effect_bridge->input);
+	list = g_list_nth(start_list,
 			  new_size);
       }
     }
     
     for(i = 0; list != NULL && i < new_size - old_size; i++){
-      list_next = list->next;
-      
       gtk_widget_destroy(list->data);
 
-      list = list_next;
+      list = list->next;
     }
+    
+    g_list_free(start_list);
   }
 }
 
@@ -855,7 +923,7 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
  *
  * Resize pad allocation.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_effect_bridge_resize_pads(AgsEffectBridge *effect_bridge,
@@ -891,6 +959,8 @@ ags_effect_bridge_real_map_recall(AgsEffectBridge *effect_bridge)
  * @effect_bridge: the #AgsEffectBridge to add its default recall.
  *
  * You may want the @effect_bridge to add its default recall.
+ *
+ * Since: 2.0.0
  */
 void
 ags_effect_bridge_map_recall(AgsEffectBridge *effect_bridge)
@@ -989,7 +1059,7 @@ ags_effect_bridge_real_find_port(AgsEffectBridge *effect_bridge)
  *
  * Lookup ports of associated recalls.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_effect_bridge_find_port(AgsEffectBridge *effect_bridge)
@@ -1017,7 +1087,7 @@ ags_effect_bridge_find_port(AgsEffectBridge *effect_bridge)
  *
  * Returns: a new #AgsEffectBridge
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsEffectBridge*
 ags_effect_bridge_new(AgsAudio *audio)

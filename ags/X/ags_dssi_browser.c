@@ -196,28 +196,31 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "xalign", 0.0,
-				    "label", i18n("Label: "),
-				    NULL);
+  dssi_browser->label =
+    label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				      "xalign", 0.0,
+				      "label", i18n("Label: "),
+				      NULL);
   gtk_box_pack_start(GTK_BOX(dssi_browser->description),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "xalign", 0.0,
-				    "label", i18n("Maker: "),
-				    NULL);
+  dssi_browser->maker = 
+    label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				      "xalign", 0.0,
+				      "label", i18n("Maker: "),
+				      NULL);
   gtk_box_pack_start(GTK_BOX(dssi_browser->description),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "xalign", 0.0,
-				    "label", i18n("Copyright: "),
-				    NULL);
+  dssi_browser->copyright = 
+    label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				      "xalign", 0.0,
+				      "label", i18n("Copyright: "),
+				      NULL);
   gtk_box_pack_start(GTK_BOX(dssi_browser->description),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
@@ -232,8 +235,9 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 		     FALSE, FALSE,
 		     0);
   
-  table = (GtkTable *) gtk_table_new(256, 2,
-				     FALSE);
+  dssi_browser->port_table =   
+    table = (GtkTable *) gtk_table_new(256, 2,
+				       FALSE);
   gtk_box_pack_start(GTK_BOX(dssi_browser->description),
 		     GTK_WIDGET(table),
 		     FALSE, FALSE,

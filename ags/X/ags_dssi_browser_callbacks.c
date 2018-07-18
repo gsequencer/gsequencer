@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -113,12 +113,12 @@ void
 ags_dssi_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 					AgsDssiBrowser *dssi_browser)
 {
-  GtkTable *table;
   GtkComboBoxText *filename, *effect;
-  GtkLabel *label;
+  GtkTable *table;
+
   AgsDssiPlugin *dssi_plugin;
 
-  GList *list, *list_start, *child, *child_start;
+  GList *child, *child_start;
 
   gchar *str, *tmp;
 
@@ -137,11 +137,6 @@ ags_dssi_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   filename = dssi_browser->filename;
   effect = dssi_browser->effect;
 
-  /* update description */
-  list_start = 
-    list = gtk_container_get_children(GTK_CONTAINER(dssi_browser->description));
-
-  //  ags_dssi_manager_load_file(gtk_combo_box_text_get_active_text(filename));
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
 						  gtk_combo_box_text_get_active_text(filename),
 						  gtk_combo_box_text_get_active_text(effect));
@@ -151,6 +146,7 @@ ags_dssi_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 	       "effect-index", &effect_index,
 	       NULL);
   
+  /* update description */
   if(plugin_so){
     /* get base plugin mutex */
     pthread_mutex_lock(ags_base_plugin_get_class_mutex());
@@ -167,54 +163,38 @@ ags_dssi_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
     port_descriptor = plugin_descriptor->LADSPA_Plugin->PortDescriptors;   
 
     /* update ui - reading plugin file */
-    label = GTK_LABEL(list->data);
     str = g_strconcat(i18n("Label"),
 		      ": ",
 		      plugin_descriptor->LADSPA_Plugin->Label,
 		      NULL);
-    gtk_label_set_text(label,
+    gtk_label_set_text(dssi_browser->label,
 		       str);
 
     g_free(str);
 
-    list = list->next;
-    label = GTK_LABEL(list->data);
     str = g_strconcat(i18n("Maker"),
 		      ": ",
 		      plugin_descriptor->LADSPA_Plugin->Label,
 		      NULL);
-    gtk_label_set_text(label,
+    gtk_label_set_text(dssi_browser->maker,
 		       str);
 
     g_free(str);
 
-    list = list->next;
-    label = GTK_LABEL(list->data);
     str = g_strconcat(i18n("Copyright"),
 		      ": ",
 		      plugin_descriptor->LADSPA_Plugin->Label,
 		      NULL);
-    gtk_label_set_text(label,
+    gtk_label_set_text(dssi_browser->copyright,
 		       str);
 
     g_free(str);
 
+    /* update ui - port information */
     port_count = plugin_descriptor->LADSPA_Plugin->PortCount;
 
-    list = list->next;
-    label = GTK_LABEL(list->data);
-
-    str = g_strdup_printf("%s: ",
-			  i18n("Ports"));
-    gtk_label_set_text(label,
-		       str);
-
-    g_free(str);
-
-    list = list->next;
-    table = GTK_TABLE(list->data);
+    table = dssi_browser->port_table;
     
-    /* update ui - port information */
     child_start = 
       child = gtk_container_get_children(GTK_CONTAINER(table));
     
@@ -227,6 +207,8 @@ ags_dssi_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
     g_list_free(child_start);
 
     for(i = 0, y = 0; i < port_count; i++){
+      GtkLabel *label;
+      
       if(!(LADSPA_IS_PORT_CONTROL(port_descriptor[i]) && 
 	   (LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
 	    LADSPA_IS_PORT_OUTPUT(port_descriptor[i])))){
@@ -257,45 +239,30 @@ ags_dssi_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
     gtk_widget_show_all((GtkWidget *) table);
   }else{
     /* update ui - empty */
-    label = GTK_LABEL(list->data);
     str = g_strdup_printf("%s: ",
 			  i18n("Label"));
-    gtk_label_set_text(label,
+    gtk_label_set_text(dssi_browser->label,
 		       str);
 
     g_free(str);
     
-    list = list->next;
-    label = GTK_LABEL(list->data);
     str = g_strdup_printf("%s: ",
 			  i18n("Maker"));
-    gtk_label_set_text(label,
+    gtk_label_set_text(dssi_browser->maker,
 		       str);
 
     g_free(str);
 
-    list = list->next;
-    label = GTK_LABEL(list->data);
     str = g_strdup_printf("%s: ",
 			  i18n("Copyright"));
-    gtk_label_set_text(label,
+    gtk_label_set_text(dssi_browser->copyright,
 		       str);
 
     g_free(str);
 
-    list = list->next;
-    label = GTK_LABEL(list->data);
-    str = g_strdup_printf("%s: ",
-			  i18n("Ports"));
-    gtk_label_set_text(label,
-		       str);
-
-    g_free(str);
-
-    list = list->next;
-    table = GTK_TABLE(list->data);
-    
     /* update ui - no ports */
+    table = dssi_browser->port_table;
+    
     child_start = 
       child = gtk_container_get_children(GTK_CONTAINER(table));
     
@@ -307,6 +274,4 @@ ags_dssi_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 
     g_list_free(child_start);
   }
-
-  g_list_free(list_start);
 }

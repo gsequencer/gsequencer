@@ -191,6 +191,10 @@ enum{
   PROP_NOTE_FREQUENCY,
   PROP_NOTE_KEY,
   PROP_MIDI_NOTE,
+  PROP_PREV,
+  PROP_PREV_PAD,
+  PROP_NEXT,
+  PROP_NEXT_PAD,
   PROP_LINK,
   PROP_FIRST_RECYCLING,
   PROP_LAST_RECYCLING,
@@ -560,6 +564,70 @@ ags_channel_class_init(AgsChannelClass *channel)
 				  PROP_MIDI_NOTE,
 				  param_spec);
 
+  /**
+   * AgsChannel:prev:
+   *
+   * The assigned prev #AgsChannel.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("prev",
+				   "assigned prev",
+				   "The prev it is assigned with",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PREV,
+				  param_spec);
+
+  /**
+   * AgsChannel:prev-pad:
+   *
+   * The assigned prev pad #AgsChannel.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("prev-pad",
+				   "assigned prev pad",
+				   "The prev pad it is assigned with",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PREV_PAD,
+				  param_spec);
+
+  /**
+   * AgsChannel:next:
+   *
+   * The assigned next #AgsChannel.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("next",
+				   "assigned next",
+				   "The next it is assigned with",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NEXT,
+				  param_spec);
+
+  /**
+   * AgsChannel:next-pad:
+   *
+   * The assigned next pad #AgsChannel.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("next-pad",
+				   "assigned next pad",
+				   "The next it is assigned with",
+				   AGS_TYPE_CHANNEL,
+				   G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NEXT_PAD,
+				  param_spec);
+  
   /**
    * AgsChannel:link:
    *
@@ -1740,6 +1808,42 @@ ags_channel_get_property(GObject *gobject,
       pthread_mutex_lock(channel_mutex);
 
       g_value_set_uint(value, channel->midi_note);
+
+      pthread_mutex_unlock(channel_mutex);
+    }
+    break;
+  case PROP_PREV:
+    {
+      pthread_mutex_lock(channel_mutex);
+
+      g_value_set_object(value, channel->prev);
+
+      pthread_mutex_unlock(channel_mutex);
+    }
+    break;
+  case PROP_PREV_PAD:
+    {
+      pthread_mutex_lock(channel_mutex);
+
+      g_value_set_object(value, channel->prev_pad);
+
+      pthread_mutex_unlock(channel_mutex);
+    }
+    break;
+  case PROP_NEXT:
+    {
+      pthread_mutex_lock(channel_mutex);
+
+      g_value_set_object(value, channel->next);
+
+      pthread_mutex_unlock(channel_mutex);
+    }
+    break;
+  case PROP_NEXT_PAD:
+    {
+      pthread_mutex_lock(channel_mutex);
+
+      g_value_set_object(value, channel->next_pad);
 
       pthread_mutex_unlock(channel_mutex);
     }
