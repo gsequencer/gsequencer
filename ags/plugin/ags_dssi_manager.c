@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,10 +19,7 @@
 
 #include <ags/plugin/ags_dssi_manager.h>
 
-#include <ags/lib/ags_string_util.h>
-#include <ags/lib/ags_log.h>
-
-#include <ags/object/ags_marshal.h>
+#include <ags/libags.h>
 
 #include <ags/plugin/ags_base_plugin.h>
 
@@ -53,14 +50,10 @@ void ags_dssi_manager_finalize(GObject *gobject);
  *
  * The #AgsDssiManager loads/unloads DSSI plugins.
  */
-enum{
-  ADD,
-  CREATE,
-  LAST_SIGNAL,
-};
 
 static gpointer ags_dssi_manager_parent_class = NULL;
-static guint dssi_manager_signals[LAST_SIGNAL];
+
+static pthread_mutex_t ags_dssi_manager_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 AgsDssiManager *ags_dssi_manager = NULL;
 gchar **ags_dssi_default_path = NULL;
@@ -109,6 +102,22 @@ ags_dssi_manager_class_init(AgsDssiManagerClass *dssi_manager)
 void
 ags_dssi_manager_init(AgsDssiManager *dssi_manager)
 {
+  /* add base plugin mutex */
+  dssi_manager->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(dssi_manager->obj_mutexattr);
+  pthread_mutexattr_settype(dssi_manager->obj_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(dssi_manager->obj_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  dssi_manager->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(dssi_manager->obj_mutex,
+		     dssi_manager->obj_mutexattr);
+
+  /* dssi plugin and path */
   dssi_manager->dssi_plugin = NULL;
 
   if(ags_dssi_default_path == NULL){
@@ -222,6 +231,12 @@ ags_dssi_manager_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_dssi_manager_parent_class)->finalize(gobject);
 }
 
+pthread_mutex_t*
+ags_dssi_manager_get_class_mutex()
+{
+  return(&ags_dssi_manager_class_mutex);
+}
+
 /**
  * ags_dssi_manager_get_default_path:
  * 
@@ -229,7 +244,7 @@ ags_dssi_manager_finalize(GObject *gobject)
  *
  * Returns: the plugin default search path as a string vector
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar**
 ags_dssi_manager_get_default_path()
@@ -243,7 +258,7 @@ ags_dssi_manager_get_default_path()
  * 
  * Set dssi manager default plugin path.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_dssi_manager_set_default_path(gchar** default_path)
@@ -259,54 +274,96 @@ ags_dssi_manager_set_default_path(gchar** default_path)
  *
  * Returns: a %NULL-terminated array of filenames
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar**
 ags_dssi_manager_get_filenames(AgsDssiManager *dssi_manager)
 {
-  GList *dssi_plugin;
+  GList *start_dssi_plugin, *dssi_plugin;
 
   gchar **filenames;
 
   guint i;
   gboolean contains_filename;
 
+  pthread_mutex_t *dssi_manager_mutex;
+  pthread_mutex_t *base_plugin_mutex;
+
   if(!AGS_DSSI_MANAGER(dssi_manager)){
     return(NULL);
   }
   
-  dssi_plugin = dssi_manager->dssi_plugin;
+  /* get dssi manager mutex */
+  pthread_mutex_lock(ags_dssi_manager_get_class_mutex());
+  
+  dssi_manager_mutex = dssi_manager->obj_mutex;
+  
+  pthread_mutex_unlock(ags_dssi_manager_get_class_mutex());
+
+  /* collect */
+  pthread_mutex_lock(dssi_manager_mutex);
+
+  dssi_plugin = 
+    start_dssi_plugin = g_list_copy(dssi_manager->dssi_plugin);
+
+  pthread_mutex_unlock(dssi_manager_mutex);
+
   filenames = NULL;
   
   for(i = 0; dssi_plugin != NULL;){
+    gchar *filename;
+    
+    /* get base plugin mutex */
+    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+    base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin->data)->obj_mutex;
+    
+    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+    /* duplicate filename */
+    pthread_mutex_lock(base_plugin_mutex);
+
+    filename = g_strdup(AGS_BASE_PLUGIN(dssi_plugin->data)->filename);
+
+    pthread_mutex_unlock(base_plugin_mutex);
+    
     if(filenames == NULL){
       filenames = (gchar **) malloc(2 * sizeof(gchar *));
-      filenames[i] = AGS_BASE_PLUGIN(dssi_plugin->data)->filename;
+
+      /* set filename */
+      filenames[i] = filename;
+
+      /* terminate */
       filenames[i + 1] = NULL;
 
       i++;
     }else{
 #ifdef HAVE_GLIB_2_44
       contains_filename = g_strv_contains(filenames,
-					  AGS_BASE_PLUGIN(dssi_plugin->data)->filename);
+					  filename);
 #else
       contains_filename = ags_strv_contains(filenames,
-					    AGS_BASE_PLUGIN(dssi_plugin->data)->filename);
+					    filename);
 #endif
       
       if(!contains_filename){
 	filenames = (gchar **) realloc(filenames,
 				       (i + 2) * sizeof(gchar *));
-	filenames[i] = AGS_BASE_PLUGIN(dssi_plugin->data)->filename;
+	filenames[i] = filename;
 	filenames[i + 1] = NULL;
 
 	i++;
+      }else{
+	g_free(filename);
       }
+      
     }
     
     dssi_plugin = dssi_plugin->next;
   }
 
+  g_list_free(start_dssi_plugin);
+  
   return(filenames);
 }
 
@@ -320,7 +377,7 @@ ags_dssi_manager_get_filenames(AgsDssiManager *dssi_manager)
  *
  * Returns: the #AgsDssiPlugin-struct
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsDssiPlugin*
 ags_dssi_manager_find_dssi_plugin(AgsDssiManager *dssi_manager,
@@ -328,28 +385,68 @@ ags_dssi_manager_find_dssi_plugin(AgsDssiManager *dssi_manager,
 {
   AgsDssiPlugin *dssi_plugin;
   
-  GList *list;
+  GList *start_list, *list;
+
+  gboolean success;  
+
+  pthread_mutex_t *dssi_manager_mutex;
+  pthread_mutex_t *base_plugin_mutex;
 
   if(!AGS_DSSI_MANAGER(dssi_manager)){
     return(NULL);
   }
   
-  list = dssi_manager->dssi_plugin;
+  /* get dssi manager mutex */
+  pthread_mutex_lock(ags_dssi_manager_get_class_mutex());
+  
+  dssi_manager_mutex = dssi_manager->obj_mutex;
+  
+  pthread_mutex_unlock(ags_dssi_manager_get_class_mutex());
 
+  /* collect */
+  pthread_mutex_lock(dssi_manager_mutex);
+
+  list = 
+    start_list = g_list_copy(dssi_manager->dssi_plugin);
+
+  pthread_mutex_unlock(dssi_manager_mutex);
+
+  success = FALSE;
+  
   while(list != NULL){
     dssi_plugin = AGS_DSSI_PLUGIN(list->data);
+
+    /* get base plugin mutex */
+    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+    base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin)->obj_mutex;
     
-    if(!g_strcmp0(AGS_BASE_PLUGIN(dssi_plugin)->filename,
-		  filename) &&
-       !g_strcmp0(AGS_BASE_PLUGIN(dssi_plugin)->effect,
-		  effect)){
-      return(dssi_plugin);
+    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+    /* check filename and effect */
+    pthread_mutex_lock(base_plugin_mutex);
+
+    success = (!g_strcmp0(AGS_BASE_PLUGIN(dssi_plugin)->filename,
+			  filename) &&
+	       !g_strcmp0(AGS_BASE_PLUGIN(dssi_plugin)->effect,
+			  effect)) ? TRUE: FALSE;
+    
+    pthread_mutex_unlock(base_plugin_mutex);
+    
+    if(success){
+      break;
     }
 
     list = list->next;
   }
 
-  return(NULL);
+  g_list_free(start_list);
+
+  if(!success){
+    dssi_plugin = NULL;
+  }
+
+  return(dssi_plugin);
 }
 
 /**
@@ -359,17 +456,29 @@ ags_dssi_manager_find_dssi_plugin(AgsDssiManager *dssi_manager,
  * 
  * Load blacklisted plugin filenames.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_dssi_manager_load_blacklist(AgsDssiManager *dssi_manager,
 				gchar *blacklist_filename)
 {
+  pthread_mutex_t *dssi_manager_mutex;
+
   if(!AGS_DSSI_MANAGER(dssi_manager) ||
      blacklist_filename == NULL){
     return;
   } 
   
+  /* get dssi manager mutex */
+  pthread_mutex_lock(ags_dssi_manager_get_class_mutex());
+  
+  dssi_manager_mutex = dssi_manager->obj_mutex;
+  
+  pthread_mutex_unlock(ags_dssi_manager_get_class_mutex());
+
+  /* fill in */
+  pthread_mutex_lock(dssi_manager_mutex);
+
   if(g_file_test(blacklist_filename,
 		 (G_FILE_TEST_EXISTS |
 		  G_FILE_TEST_IS_REGULAR))){
@@ -385,6 +494,8 @@ ags_dssi_manager_load_blacklist(AgsDssiManager *dssi_manager,
 							   str);
     }
   }
+
+  pthread_mutex_unlock(dssi_manager_mutex);
 } 
 
 /**
@@ -395,7 +506,7 @@ ags_dssi_manager_load_blacklist(AgsDssiManager *dssi_manager,
  *
  * Load @filename specified plugin.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_dssi_manager_load_file(AgsDssiManager *dssi_manager,
@@ -412,7 +523,7 @@ ags_dssi_manager_load_file(AgsDssiManager *dssi_manager,
   DSSI_Descriptor *plugin_descriptor;
   unsigned long i;
 
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_t *dssi_manager_mutex;
 
   if(!AGS_IS_DSSI_MANAGER(dssi_manager) ||
      dssi_path == NULL ||
@@ -420,7 +531,15 @@ ags_dssi_manager_load_file(AgsDssiManager *dssi_manager,
     return;
   }
   
-  pthread_mutex_lock(&(mutex));
+  /* get dssi manager mutex */
+  pthread_mutex_lock(ags_dssi_manager_get_class_mutex());
+  
+  dssi_manager_mutex = dssi_manager->obj_mutex;
+  
+  pthread_mutex_unlock(ags_dssi_manager_get_class_mutex());
+
+  /* load */
+  pthread_mutex_lock(dssi_manager_mutex);
 
   path = g_strdup_printf("%s/%s",
 			 dssi_path,
@@ -436,7 +555,7 @@ ags_dssi_manager_load_file(AgsDssiManager *dssi_manager,
       
     dlerror();
 
-    pthread_mutex_unlock(&(mutex));
+    pthread_mutex_unlock(dssi_manager_mutex);
     
     return;
   }
@@ -459,7 +578,7 @@ ags_dssi_manager_load_file(AgsDssiManager *dssi_manager,
     }
   }
 
-  pthread_mutex_unlock(&(mutex));
+  pthread_mutex_unlock(dssi_manager_mutex);
 
   g_free(path);
 }
@@ -470,7 +589,7 @@ ags_dssi_manager_load_file(AgsDssiManager *dssi_manager,
  * 
  * Loads all available plugins.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_dssi_manager_load_default_directory(AgsDssiManager *dssi_manager)
@@ -534,7 +653,7 @@ ags_dssi_manager_load_default_directory(AgsDssiManager *dssi_manager)
  *
  * Returns: the #AgsDssiManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsDssiManager*
 ags_dssi_manager_get_instance()
@@ -545,11 +664,9 @@ ags_dssi_manager_get_instance()
 
   if(ags_dssi_manager == NULL){
     ags_dssi_manager = ags_dssi_manager_new();
-
-    pthread_mutex_unlock(&(mutex));
-  }else{
-    pthread_mutex_unlock(&(mutex));
   }
+
+  pthread_mutex_unlock(&(mutex));
 
   return(ags_dssi_manager);
 }
@@ -557,11 +674,11 @@ ags_dssi_manager_get_instance()
 /**
  * ags_dssi_manager_new:
  *
- * Creates an #AgsDssiManager
+ * Create a new instance of #AgsDssiManager
  *
- * Returns: a new #AgsDssiManager
+ * Returns: the new #AgsDssiManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsDssiManager*
 ags_dssi_manager_new()

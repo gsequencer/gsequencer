@@ -42,7 +42,8 @@ typedef struct _AgsConnectionEditor AgsConnectionEditor;
 typedef struct _AgsConnectionEditorClass AgsConnectionEditorClass;
 
 typedef enum{
-  AGS_CONNECTION_EDITOR_CLOSING                    = 1,
+  AGS_CONNECTION_EDITOR_CONNECTED                 = 1,
+  AGS_CONNECTION_EDITOR_CLOSING                   = 1 <<  1,
 }AgsConnectionEditorFlags;
 
 struct _AgsConnectionEditor

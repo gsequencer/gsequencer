@@ -19,9 +19,8 @@
 
 #include <ags/X/ags_dssi_browser_callbacks.h>
 
-#include <ags/plugin/ags_dssi_manager.h>
-
-#include <ags/object/ags_applicable.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -43,38 +42,71 @@ ags_dssi_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   AgsDssiManager *dssi_manager;
   AgsDssiPlugin *dssi_plugin;
 
-  GList *list;
-  GList *base_plugin;
+  GList *start_list, *list;
 
   gchar *str;
   
-  void *plugin_so;
-  DSSI_Descriptor_Function dssi_descriptor;
-  DSSI_Descriptor *plugin_descriptor;
+  pthread_mutex_t *dssi_manager_mutex;
+  pthread_mutex_t *base_plugin_mutex;
 
-  list = gtk_container_get_children(GTK_CONTAINER(dssi_browser->plugin));
-
-  filename = GTK_COMBO_BOX_TEXT(list->next->data);
-  effect = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
+  filename = dssi_browser->filename;
+  effect = dssi_browser->effect;
 
   gtk_list_store_clear(GTK_LIST_STORE(effect));
 
   dssi_manager = ags_dssi_manager_get_instance();
-  base_plugin = dssi_manager->dssi_plugin;
+
+  /* get dssi manager mutex */
+  pthread_mutex_lock(ags_dssi_manager_get_class_mutex());
+  
+  dssi_manager_mutex = dssi_manager->obj_mutex;
+  
+  pthread_mutex_unlock(ags_dssi_manager_get_class_mutex());
+
+  /* get dssi plugin */
+  pthread_mutex_lock(dssi_manager_mutex);
+
+  list =
+    start_list = g_list_copy(dssi_manager->dssi_plugin);
+
+  pthread_mutex_unlock(dssi_manager_mutex);
 
   str = gtk_combo_box_text_get_active_text(filename);
   
-  while((base_plugin = ags_base_plugin_find_filename(base_plugin, str)) != NULL){
-    if(AGS_BASE_PLUGIN(base_plugin->data)->effect != NULL){
-      gtk_combo_box_text_append_text(effect,
-				     AGS_BASE_PLUGIN(base_plugin->data)->effect);
-    }
-    
-    base_plugin = base_plugin->next;
-  }
+  while((list = ags_base_plugin_find_filename(list, str)) != NULL){
+    gchar *str;
+
+    dssi_plugin = list->data;
+
+    /* get base plugin mutex */
+    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
   
+    base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin)->obj_mutex;
+    
+    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+    /* set effect */
+    pthread_mutex_lock(base_plugin_mutex);
+
+    str = g_strdup(AGS_BASE_PLUGIN(dssi_plugin)->effect);
+
+    pthread_mutex_unlock(base_plugin_mutex);
+    
+    if(str != NULL){
+      gtk_combo_box_text_append_text(effect,
+				     str);
+    }
+
+    g_free(str);
+
+    /* iterate */
+    list = list->next;
+  }
+
   gtk_combo_box_set_active((GtkComboBox *) effect,
   			   0);
+
+  g_list_free(start_list);
 }
 
 void
@@ -90,24 +122,20 @@ ags_dssi_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
 
   gchar *str, *tmp;
 
+  guint effect_index;
   guint port_count;
   guint y;
   unsigned long i;
 
   void *plugin_so;
-  DSSI_Descriptor_Function dssi_descriptor;
   DSSI_Descriptor *plugin_descriptor;
   LADSPA_PortDescriptor *port_descriptor;
-  unsigned long plugin_index;
+
+  pthread_mutex_t *base_plugin_mutex;
 
   /* retrieve filename and effect */
-  list_start = 
-    list = gtk_container_get_children(GTK_CONTAINER(dssi_browser->plugin));
-
-  filename = GTK_COMBO_BOX_TEXT(list->next->data);
-  effect = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
-
-  g_list_free(list_start);
+  filename = dssi_browser->filename;
+  effect = dssi_browser->effect;
 
   /* update description */
   list_start = 
@@ -117,109 +145,116 @@ ags_dssi_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
 						  gtk_combo_box_text_get_active_text(filename),
 						  gtk_combo_box_text_get_active_text(effect));
+
+  g_object_get(dssi_plugin,
+	       "plugin-so", &plugin_so,
+	       "effect-index", &effect_index,
+	       NULL);
   
-  plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;
-
-  plugin_index = (unsigned long) gtk_combo_box_get_active((GtkComboBox *) effect);
-
-  if(plugin_index != -1 &&
-     plugin_so){
-    dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
-						       "dssi_descriptor");
-
-    if(dlerror() == NULL && dssi_descriptor){
-      plugin_descriptor = dssi_descriptor(plugin_index);
-
-      port_descriptor = plugin_descriptor->LADSPA_Plugin->PortDescriptors;   
-
-      /* update ui - reading plugin file */
-      label = GTK_LABEL(list->data);
-      str = g_strconcat(i18n("Label"),
-			": ",
-			plugin_descriptor->LADSPA_Plugin->Label,
-			NULL);
-      gtk_label_set_text(label,
-			 str);
-
-      g_free(str);
-
-      list = list->next;
-      label = GTK_LABEL(list->data);
-      str = g_strconcat(i18n("Maker"),
-			": ",
-			plugin_descriptor->LADSPA_Plugin->Label,
-			NULL);
-      gtk_label_set_text(label,
-			 str);
-
-      g_free(str);
-
-      list = list->next;
-      label = GTK_LABEL(list->data);
-      str = g_strconcat(i18n("Copyright"),
-			": ",
-			plugin_descriptor->LADSPA_Plugin->Label,
-			NULL);
-      gtk_label_set_text(label,
-			 str);
-
-      g_free(str);
-
-      port_count = plugin_descriptor->LADSPA_Plugin->PortCount;
-
-      list = list->next;
-      label = GTK_LABEL(list->data);
-
-      str = g_strdup_printf("%s: ",
-			    i18n("Ports"));
-      gtk_label_set_text(label,
-			 str);
-
-      g_free(str);
-
-      list = list->next;
-      table = GTK_TABLE(list->data);
+  if(plugin_so){
+    /* get base plugin mutex */
+    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+    base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin)->obj_mutex;
     
-      /* update ui - port information */
-      child_start = 
-	child = gtk_container_get_children(GTK_CONTAINER(table));
+    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+    /* plugin and port descriptor */
+    pthread_mutex_lock(base_plugin_mutex);
+
+    plugin_descriptor = AGS_DSSI_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(dssi_plugin)->plugin_descriptor);
+
+    port_descriptor = plugin_descriptor->LADSPA_Plugin->PortDescriptors;   
+
+    /* update ui - reading plugin file */
+    label = GTK_LABEL(list->data);
+    str = g_strconcat(i18n("Label"),
+		      ": ",
+		      plugin_descriptor->LADSPA_Plugin->Label,
+		      NULL);
+    gtk_label_set_text(label,
+		       str);
+
+    g_free(str);
+
+    list = list->next;
+    label = GTK_LABEL(list->data);
+    str = g_strconcat(i18n("Maker"),
+		      ": ",
+		      plugin_descriptor->LADSPA_Plugin->Label,
+		      NULL);
+    gtk_label_set_text(label,
+		       str);
+
+    g_free(str);
+
+    list = list->next;
+    label = GTK_LABEL(list->data);
+    str = g_strconcat(i18n("Copyright"),
+		      ": ",
+		      plugin_descriptor->LADSPA_Plugin->Label,
+		      NULL);
+    gtk_label_set_text(label,
+		       str);
+
+    g_free(str);
+
+    port_count = plugin_descriptor->LADSPA_Plugin->PortCount;
+
+    list = list->next;
+    label = GTK_LABEL(list->data);
+
+    str = g_strdup_printf("%s: ",
+			  i18n("Ports"));
+    gtk_label_set_text(label,
+		       str);
+
+    g_free(str);
+
+    list = list->next;
+    table = GTK_TABLE(list->data);
     
-      while(child != NULL){
-	gtk_widget_destroy(GTK_WIDGET(child->data));
+    /* update ui - port information */
+    child_start = 
+      child = gtk_container_get_children(GTK_CONTAINER(table));
+    
+    while(child != NULL){
+      gtk_widget_destroy(GTK_WIDGET(child->data));
 
-	child = child->next;
-      }
-
-      g_list_free(child_start);
-
-      for(i = 0, y = 0; i < port_count; i++){
-	if(!(LADSPA_IS_PORT_CONTROL(port_descriptor[i]) && 
-	     (LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
-	      LADSPA_IS_PORT_OUTPUT(port_descriptor[i])))){
-	  continue;
-	}
-
-	str = g_strdup(plugin_descriptor->LADSPA_Plugin->PortNames[i]);
-
-	label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-					  "xalign", 0.0,
-					  "label", str,
-					  NULL);
-	gtk_table_attach_defaults(table,
-				  GTK_WIDGET(label),
-				  0, 1,
-				  y, y + 1);
-
-	gtk_table_attach_defaults(table,
-				  GTK_WIDGET(ags_dssi_browser_combo_box_controls_new()),
-				  1, 2,
-				  y, y + 1);
-
-	y++;
-      }
-
-      gtk_widget_show_all((GtkWidget *) table);
+      child = child->next;
     }
+
+    g_list_free(child_start);
+
+    for(i = 0, y = 0; i < port_count; i++){
+      if(!(LADSPA_IS_PORT_CONTROL(port_descriptor[i]) && 
+	   (LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
+	    LADSPA_IS_PORT_OUTPUT(port_descriptor[i])))){
+	continue;
+      }
+
+      str = g_strdup(plugin_descriptor->LADSPA_Plugin->PortNames[i]);
+
+      label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+					"xalign", 0.0,
+					"label", str,
+					NULL);
+      gtk_table_attach_defaults(table,
+				GTK_WIDGET(label),
+				0, 1,
+				y, y + 1);
+
+      gtk_table_attach_defaults(table,
+				GTK_WIDGET(ags_dssi_browser_combo_box_controls_new()),
+				1, 2,
+				y, y + 1);
+
+      y++;
+    }
+
+    pthread_mutex_unlock(base_plugin_mutex);
+
+    gtk_widget_show_all((GtkWidget *) table);
   }else{
     /* update ui - empty */
     label = GTK_LABEL(list->data);

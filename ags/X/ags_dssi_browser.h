@@ -44,6 +44,9 @@ struct _AgsDssiBrowser
   GtkHBox *plugin;
   GtkVBox *description;
 
+  GtkComboBox *filename;
+  GtkComboBox *effect;
+  
   GtkWidget *preview;
 };
 

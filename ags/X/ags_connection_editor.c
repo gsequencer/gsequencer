@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,11 +20,8 @@
 #include <ags/X/ags_connection_editor.h>
 #include <ags/X/ags_connection_editor_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_output_collection_editor.h>
 #include <ags/X/ags_output_listing_editor.h>
@@ -139,7 +136,7 @@ ags_connection_editor_class_init(AgsConnectionEditorClass *connection_editor)
    *
    * The #AgsMachine to edit.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("machine",
 				   i18n_pspec("assigned machine"),
@@ -160,6 +157,8 @@ ags_connection_editor_class_init(AgsConnectionEditorClass *connection_editor)
    * @machine: the #AgsMachine to set
    *
    * The ::set-machine notify about modified machine.
+   * 
+   * Since: 2.0.0
    */
   connection_editor_signals[SET_MACHINE] =
     g_signal_new("set-machine",
@@ -272,7 +271,9 @@ ags_connection_editor_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_MACHINE:
-    g_value_set_object(value, connection_editor->machine);
+    {
+      g_value_set_object(value, connection_editor->machine);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -287,6 +288,12 @@ ags_connection_editor_connect(AgsConnectable *connectable)
 
   connection_editor = AGS_CONNECTION_EDITOR(connectable);
 
+  if((AGS_CONNECTION_EDITOR_CONNECTED & (connection_editor->flags)) != 0){
+    return;
+  }
+
+  connection_editor->flags |= AGS_CONNECTION_EDITOR_CONNECTED;
+  
   g_signal_connect(connection_editor, "delete-event",
 		   G_CALLBACK(ags_connection_editor_delete_event), connection_editor);
   
@@ -315,6 +322,12 @@ ags_connection_editor_disconnect(AgsConnectable *connectable)
   AgsConnectionEditor *connection_editor;
 
   connection_editor = AGS_CONNECTION_EDITOR(connectable);
+
+  if((AGS_CONNECTION_EDITOR_CONNECTED & (connection_editor->flags)) == 0){
+    return;
+  }
+
+  connection_editor->flags &= (~AGS_CONNECTION_EDITOR_CONNECTED);
 
   /* AgsConnectionEditor tabs */
   ags_connectable_disconnect(AGS_CONNECTABLE(connection_editor->output_listing_editor));
@@ -360,7 +373,7 @@ ags_connection_editor_reset(AgsApplicable *applicable)
  *
  * Add all child editors.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_connection_editor_add_children(AgsConnectionEditor *connection_editor)
@@ -410,7 +423,7 @@ ags_connection_editor_real_set_machine(AgsConnectionEditor *connection_editor, A
  *
  * Is emitted as machine gets modified.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_connection_editor_set_machine(AgsConnectionEditor *connection_editor, AgsMachine *machine)
@@ -426,13 +439,13 @@ ags_connection_editor_set_machine(AgsConnectionEditor *connection_editor, AgsMac
 
 /**
  * ags_connection_editor_new:
- * @machine: the assigned machine.
+ * @machine: the assigned #AgsMachine.
  *
- * Creates an #AgsConnectionEditor
+ * Create a new instance of #AgsConnectionEditor
  *
- * Returns: a new #AgsConnectionEditor
+ * Returns: the new #AgsConnectionEditor
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsConnectionEditor*
 ags_connection_editor_new(AgsMachine *machine)

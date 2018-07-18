@@ -20,18 +20,8 @@
 #include <ags/X/ags_dssi_browser.h>
 #include <ags/X/ags_dssi_browser_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/plugin/ags_dssi_manager.h>
-
-#include <ags/object/ags_applicable.h>
-
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
-#include <ags/thread/ags_task_thread.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -163,7 +153,8 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 		     FALSE, FALSE,
 		     0);
 
-  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+  dssi_browser->filename = 
+    combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_box_pack_start(GTK_BOX(dssi_browser->plugin),
 		     GTK_WIDGET(combo_box),
 		     FALSE, FALSE,
@@ -191,7 +182,8 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 		     FALSE, FALSE,
 		     0);
 
-  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+  dssi_browser->effect = 
+    combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_box_pack_start(GTK_BOX(dssi_browser->plugin),
 		     GTK_WIDGET(combo_box),
 		     FALSE, FALSE,
@@ -315,7 +307,7 @@ ags_dssi_browser_reset(AgsApplicable *applicable)
  *
  * Returns: the active dssi filename
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_dssi_browser_get_plugin_filename(AgsDssiBrowser *dssi_browser)
@@ -339,7 +331,7 @@ ags_dssi_browser_get_plugin_filename(AgsDssiBrowser *dssi_browser)
  *
  * Returns: the active dssi effect
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_dssi_browser_get_plugin_effect(AgsDssiBrowser *dssi_browser)
@@ -362,7 +354,7 @@ ags_dssi_browser_get_plugin_effect(AgsDssiBrowser *dssi_browser)
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GtkWidget*
 ags_dssi_browser_combo_box_controls_new()
@@ -401,11 +393,11 @@ ags_dssi_browser_preview_new()
 /**
  * ags_dssi_browser_new:
  *
- * Creates an #AgsDssiBrowser
+ * Create a new instance of #AgsDssiBrowser
  *
- * Returns: a new #AgsDssiBrowser
+ * Returns: the new #AgsDssiBrowser
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsDssiBrowser*
 ags_dssi_browser_new()

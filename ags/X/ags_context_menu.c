@@ -21,12 +21,8 @@
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_menu_action_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/plugin/ags_base_plugin.h>
-#include <ags/plugin/ags_ladspa_manager.h>
-#include <ags/plugin/ags_dssi_manager.h>
-#include <ags/plugin/ags_lv2_manager.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -498,7 +494,7 @@ ags_context_menu_disconnect(AgsConnectable *connectable)
  *
  * Returns: a new #AgsContextMenu
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsContextMenu*
 ags_context_menu_new()
