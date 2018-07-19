@@ -1728,7 +1728,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       
       pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
 
-      /* get port name */
+      /* get port name and unique id */
       pthread_mutex_lock(plugin_port_mutex);
 
       port_name = g_strdup(AGS_PLUGIN_PORT(plugin_port->data)->port_name);
@@ -1890,10 +1890,12 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
     }
 
     /* iterate */
-    plugin_port = plugin_port->next;    
+    plugin_port = plugin_port->next;
     k++;
   }
 
+  g_list_free(start_plugin_port);
+  
   /* launch tasks */
   task = g_list_reverse(task);      
   ags_gui_thread_schedule_task_list(gui_thread,
@@ -1914,7 +1916,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   GtkAdjustment *adjustment;
   AgsEffectBulkPlugin *effect_bulk_plugin;
 
-  GObject *soundcard;
+  AgsGuiThread *gui_thread;
+
   AgsChannel *current;
   AgsRecallContainer *recall_container;
   AgsRecallChannelRunDummy *recall_channel_run_dummy;
@@ -1926,11 +1929,9 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
   AgsLv2Plugin *lv2_plugin;
   
-  AgsThread *main_loop;
-  AgsGuiThread *gui_thread;
-  AgsMutexManager *mutex_manager;
-
   AgsApplicationContext *application_context;
+
+  GObject *output_soundcard;
 
   xmlNode *parent;
 
@@ -1938,12 +1939,13 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   GList *port, *recall_port;
   GList *list;
   GList *task;
-  GList *port_descriptor;
+  GList *start_plugin_port, *plugin_port;
 
   gchar *uri;
   gchar *port_name;
   gchar *str;
 
+  guint effect_index;
   gdouble step;
   guint pads, audio_channels;
   guint port_count;
@@ -1955,7 +1957,6 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   
   float lower_bound, upper_bound, default_bound;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
@@ -1965,9 +1966,9 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   
   application_context = (AgsApplicationContext *) window->application_context;
 
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  application_context = (AgsApplicationContext *) window->application_context;
+
+  gui_thread = (AgsGuiThread *) ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* alloc effect bulk plugin */
   effect_bulk_plugin = ags_effect_bulk_plugin_alloc(filename,
@@ -1977,28 +1978,17 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   effect_bulk->plugin = g_list_append(effect_bulk->plugin,
 				      effect_bulk_plugin);  
 
-  /* get main loop and task thread */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
-
   /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) effect_bulk->audio);
+  audio_mutex = effect_bulk->audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* get audio properties */
   pthread_mutex_lock(audio_mutex);
   
-  soundcard = effect_bulk->audio->soundcard;
+  output_soundcard = effect_bulk->audio->output_soundcard;
   
   audio_channels = effect_bulk->audio->audio_channels;
 
@@ -2017,6 +2007,9 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   /* load plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       filename, effect);
+  g_object_get(lv2_plugin,
+	       "effect-index", &effect_index,
+	       NULL);
 
   task = NULL;
   retport = NULL;
@@ -2026,40 +2019,39 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   for(i = 0; i < pads; i++){
     for(j = 0; j < audio_channels; j++){
       /* get channel mutex */
-      pthread_mutex_lock(application_mutex);
+      pthread_mutex_lock(ags_channel_get_class_mutex());
 
-      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) current);
+      channel_mutex = current->obj_mutex;
   
-      pthread_mutex_unlock(application_mutex);
+      pthread_mutex_unlock(ags_channel_get_class_mutex());
 
       /* lv2 play */
       recall_container = ags_recall_container_new();
       ags_audio_add_recall_container(effect_bulk->audio,
 				     (GObject *) recall_container);
 
-      //      add_recall_container = ags_add_recall_container_new(current->audio,
-      //						  recall_container);
-      //      task = g_list_prepend(task,
-      //		    add_recall_container);
-
       recall_lv2 = ags_recall_lv2_new(current,
 				      lv2_plugin->turtle,
 				      filename,
 				      effect,
 				      lv2_plugin->uri,
-				      AGS_BASE_PLUGIN(lv2_plugin)->effect_index);
+				      effect_index);
+
+      ags_recall_set_flags(recall_lv2,
+			   AGS_RECALL_TEMPLATE);
+      ags_recall_set_ability_flags(recall_lv2,
+				   (AGS_SOUND_ABILITY_PLAYBACK |
+				    AGS_SOUND_ABILITY_NOTATION |
+				    AGS_SOUND_ABILITY_SEQUENCER));
+      ags_recall_set_behaviour_flags(recall_lv2,
+				     (AGS_SOUND_BEHAVIOUR_BULK_MODE |
+				      AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
       g_object_set(G_OBJECT(recall_lv2),
-		   "soundcard", soundcard,
-		   "source", current,
+		   "output-soundcard", output_soundcard,
 		   "recall-container", recall_container,
 		   NULL);
-      ags_recall_set_flags(AGS_RECALL(recall_lv2), (AGS_RECALL_TEMPLATE |
-						    AGS_RECALL_INPUT_ORIENTATED |
-						    AGS_RECALL_PLAYBACK |
-						    AGS_RECALL_SEQUENCER |
-						    AGS_RECALL_NOTATION |
-						    AGS_RECALL_BULK_MODE));
+
       ags_recall_lv2_load(recall_lv2);
 
       port = ags_recall_lv2_load_ports(recall_lv2);
@@ -2071,7 +2063,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 				port);
       }
 
-      if((AGS_RECALL_HAS_OUTPUT_PORT & (AGS_RECALL(recall_lv2)->flags)) != 0){
+      if(ags_recall_test_flags(recall_lv2, AGS_RECALL_HAS_OUTPUT_PORT)){
 	has_output_port = TRUE;
       }
       
@@ -2080,54 +2072,59 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 			     TRUE);
       ags_connectable_connect(AGS_CONNECTABLE(recall_lv2));
 
-      /* dummy */
-      recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
-								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
-								  AGS_TYPE_RECALL_LV2_RUN);
-      ags_recall_set_flags(AGS_RECALL(recall_channel_run_dummy), (AGS_RECALL_TEMPLATE |
-								  AGS_RECALL_INPUT_ORIENTATED |
-								  AGS_RECALL_PLAYBACK |
-								  AGS_RECALL_SEQUENCER |
-								  AGS_RECALL_NOTATION |
-								  AGS_RECALL_BULK_MODE));
-      g_object_set(G_OBJECT(recall_channel_run_dummy),
-		   "soundcard", soundcard,
-		   "source", current,
-		   "recall-channel", recall_lv2,
+      /* generic */
+      generic_recall_channel_run = ags_generic_recall_channel_run_new(current,
+								      AGS_TYPE_GENERIC_RECALL_RECYCLING,
+								      AGS_TYPE_RECALL_LV2_RUN);
+
+      ags_recall_set_flags(generic_recall_channel_run,
+			   AGS_RECALL_TEMPLATE);
+      ags_recall_set_ability_flags(generic_recall_channel_run,
+				   (AGS_SOUND_ABILITY_PLAYBACK |
+				    AGS_SOUND_ABILITY_NOTATION |
+				    AGS_SOUND_ABILITY_SEQUENCER));
+      ags_recall_set_behaviour_flags(generic_recall_channel_run,
+				     (AGS_SOUND_BEHAVIOUR_BULK_MODE |
+				      AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+      g_object_set(G_OBJECT(generic_recall_channel_run),
+		   "output-soundcard", output-soundcard,
 		   "recall-container", recall_container,
+		   "recall-channel", recall_lv2,
 		   NULL);
+
       ags_channel_add_recall(current,
-			     (GObject *) recall_channel_run_dummy,
-			     TRUE);
-      ags_connectable_connect(AGS_CONNECTABLE(recall_channel_run_dummy));
+			     (GObject *) generic_recall_channel_run,
+			     FALSE);
+      ags_connectable_connect(AGS_CONNECTABLE(generic_recall_channel_run));
 
       /* lv2 recall */
       recall_container = ags_recall_container_new();
       ags_audio_add_recall_container(effect_bulk->audio,
 				     (GObject *) recall_container);
 
-      //      add_recall_container = ags_add_recall_container_new(current->audio,
-      //						  recall_container);
-      //      task = g_list_prepend(task,
-      //		    add_recall_container);
-
       recall_lv2 = ags_recall_lv2_new(current,
 				      lv2_plugin->turtle,
 				      filename,
 				      effect,
 				      lv2_plugin->uri,
-				      AGS_BASE_PLUGIN(lv2_plugin)->effect_index);
+				      effect_index);
+
+      ags_recall_set_flags(recall_lv2,
+			   AGS_RECALL_TEMPLATE);
+      ags_recall_set_ability_flags(recall_lv2,
+				   (AGS_SOUND_ABILITY_PLAYBACK |
+				    AGS_SOUND_ABILITY_NOTATION |
+				    AGS_SOUND_ABILITY_SEQUENCER));
+      ags_recall_set_behaviour_flags(recall_lv2,
+				     (AGS_SOUND_BEHAVIOUR_BULK_MODE |
+				      AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
       g_object_set(G_OBJECT(recall_lv2),
-		   "soundcard", soundcard,
-		   "source", current,
+		   "output-soundcard", output_soundcard,
 		   "recall-container", recall_container,
 		   NULL);
-      ags_recall_set_flags(AGS_RECALL(recall_lv2), (AGS_RECALL_TEMPLATE |
-						    AGS_RECALL_INPUT_ORIENTATED |
-						    AGS_RECALL_PLAYBACK |
-						    AGS_RECALL_SEQUENCER |
-						    AGS_RECALL_NOTATION |
-						    AGS_RECALL_BULK_MODE));
+
       ags_recall_lv2_load(recall_lv2);
 
       recall_port = ags_recall_lv2_load_ports(recall_lv2);
@@ -2145,21 +2142,26 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       ags_connectable_connect(AGS_CONNECTABLE(recall_lv2));
 
       /* dummy */
-      recall_channel_run_dummy = ags_recall_channel_run_dummy_new(current,
-								  AGS_TYPE_RECALL_RECYCLING_DUMMY,
-								  AGS_TYPE_RECALL_LV2_RUN);
-      ags_recall_set_flags(AGS_RECALL(recall_channel_run_dummy), (AGS_RECALL_TEMPLATE |
-								  AGS_RECALL_INPUT_ORIENTATED |
-								  AGS_RECALL_PLAYBACK |
-								  AGS_RECALL_SEQUENCER |
-								  AGS_RECALL_NOTATION |
-								  AGS_RECALL_BULK_MODE));
-      g_object_set(G_OBJECT(recall_channel_run_dummy),
-		   "soundcard", soundcard,
-		   "source", current,
-		   "recall-channel", recall_lv2,
+      generic_recall_channel_run = ags_generic_recall_channel_run_new(current,
+								      AGS_TYPE_GENERIC_RECALL_RECYCLING,
+								      AGS_TYPE_RECALL_LV2_RUN);
+
+      ags_recall_set_flags(generic_recall_channel_run,
+			   AGS_RECALL_TEMPLATE);
+      ags_recall_set_ability_flags(generic_recall_channel_run,
+				   (AGS_SOUND_ABILITY_PLAYBACK |
+				    AGS_SOUND_ABILITY_NOTATION |
+				    AGS_SOUND_ABILITY_SEQUENCER));
+      ags_recall_set_behaviour_flags(generic_recall_channel_run,
+				     (AGS_SOUND_BEHAVIOUR_BULK_MODE |
+				      AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+      g_object_set(G_OBJECT(generic_recall_channel_run),
+		   "output-soundcard", output-soundcard,
 		   "recall-container", recall_container,
+		   "recall-channel", recall_lv2,
 		   NULL);
+
       ags_channel_add_recall(current,
 			     (GObject *) recall_channel_run_dummy,
 			     FALSE);
@@ -2189,13 +2191,17 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   }
 
   /* load ports */
-  port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
+  g_object_get(lv2_plugin,
+	       "plugin-port", &start_plugin_port,
+	       NULL);
 
-  port_count = g_list_length(port_descriptor);
+  plugin_port = start_plugin_port;
+
+  port_count = g_list_length(plugin_port);
   k = 0;
 
-  while(port_descriptor != NULL){
-    if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+  while(plugin_port != NULL){
+    if((AGS_PLUGIN_PORT_CONTROL & (AGS_PLUGIN_PORT(plugin_port->data)->flags)) != 0){
       GtkWidget *child_widget;
 
       AgsLv2Conversion *lv2_conversion;
@@ -2204,6 +2210,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
       gchar *plugin_name;
       gchar *control_port;
+      gchar *uri;
       
       guint step_count;
       gboolean disable_seemless;
@@ -2217,16 +2224,16 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 			 y + 1, AGS_EFFECT_BULK_COLUMNS_COUNT);
       }
 
-      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
 	disable_seemless = TRUE;
 	
-	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
 	  widget_type = AGS_TYPE_LED;
 	}else{
 	  widget_type = GTK_TYPE_TOGGLE_BUTTON;
 	}
       }else{
-	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
 	  widget_type = AGS_TYPE_HINDICATOR;
 	}else{
 	  widget_type = AGS_TYPE_DIAL;
@@ -2235,25 +2242,43 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
       step_count = AGS_DIAL_DEFAULT_PRECISION;
 
-      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+      if((AGS_PLUGIN_PORT_INTEGER & (AGS_PLUGIN_PORT(plugin_port->data)->flags)) != 0){
+	g_object_get(plugin_port->data,
+		     "scale-steps", &step_count,
+		     NULL);
 
 	disable_seemless = TRUE;	
       }
 
+      /* get plugin port mutex */
+      pthread_mutex_lock(ags_plugin_port_get_class_mutex());
+
+      plugin_port_mutex = AGS_PLUGIN_PORT(plugin_port->data)->obj_mutex;
+      
+      pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+
+      /* get port name and uri */
+      pthread_mutex_lock(plugin_port_mutex);
+
+      uri = g_strdup(lv2_plugin->uri);
+
+      port_name = g_strdup(AGS_PLUGIN_PORT(plugin_port->data)->port_name);
+	
+      pthread_mutex_unlock(plugin_port_mutex);
+
       /* add bulk member */
       plugin_name = g_strdup_printf("lv2-<%s>",
-				    lv2_plugin->uri);
+				    uri);
       control_port = g_strdup_printf("%u/%u",
-				     k,
+				     k + 1,
 				     port_count);
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type", widget_type,
-						   "widget-label", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "widget-label", port_name,
 						   "plugin-name", plugin_name,
 						   "filename", filename,
 						   "effect", effect,
-						   "specifier", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "specifier", port_name,
 						   "control-port", control_port,
 						   "steps", step_count,
 						   NULL);
@@ -2261,11 +2286,13 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
       g_free(plugin_name);
       g_free(control_port);
+      g_free(uri);
+      g_free(port_name);
 
       /* lv2 conversion */
       lv2_conversion = NULL;
 
-      if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      if((AGS_PLUGIN_PORT_LOGARITHMIC & (AGS_PLUGIN_PORT(plugin_port->data)->flags)) != 0){
 	if(lv2_conversion == NULL ||
 	   !AGS_IS_LV2_CONVERSION(lv2_conversion)){
 	  lv2_conversion = ags_lv2_conversion_new();
@@ -2277,11 +2304,11 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       bulk_member->conversion = (AgsConversion *) lv2_conversion;
 
       /* child widget */
-      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
 	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_BOOLEAN;
       }
       
-      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INTEGER)){
 	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_INTEGER;
       }
 
@@ -2290,6 +2317,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 	GtkAdjustment *adjustment;
 
 	float lower_bound, upper_bound;
+	float default_value;
 	
 	dial = (AgsDial *) child_widget;
 
@@ -2298,9 +2326,13 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 	}
 
 	/* add controls of ports and apply range  */
-	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
-	upper_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->upper_value);
+	pthread_mutex_lock(plugin_port_mutex);
+	
+	lower_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->lower_value);
+	upper_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->upper_value);
 
+	pthread_mutex_unlock(plugin_port_mutex);
+	
 	adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
 	g_object_set(dial,
 		     "adjustment", adjustment,
@@ -2314,6 +2346,12 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 	  step = (upper_bound - lower_bound) / step_count;
 	}
 
+	pthread_mutex_lock(plugin_port_mutex);
+	
+	default_value = (float) g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
+
+	pthread_mutex_unlock(plugin_port_mutex);
+	
 	gtk_adjustment_set_step_increment(adjustment,
 					  step);
 	gtk_adjustment_set_lower(adjustment,
@@ -2321,7 +2359,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 	gtk_adjustment_set_upper(adjustment,
 				 upper_bound);
 	gtk_adjustment_set_value(adjustment,
-				 g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value));
+				 default_value);
       }else if(AGS_IS_INDICATOR(child_widget) ||
 	       AGS_IS_LED(child_widget)){
 	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
@@ -2344,13 +2382,17 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       ags_connectable_connect(AGS_CONNECTABLE(bulk_member));
       gtk_widget_show_all((GtkWidget *) effect_bulk->table);
 
+      /* iterate */
       x++;
     }
 
-    port_descriptor = port_descriptor->next;    
+    /* iterate */
+    plugin_port = plugin_port->next;    
     k++;
   }
 
+  g_list_free(start_plugin_port);
+  
   /* launch tasks */
   task = g_list_reverse(task);      
   ags_gui_thread_schedule_task_list(gui_thread,
@@ -2447,10 +2489,7 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
 
   AgsEffectBulkPlugin *effect_bulk_plugin;
 
-  AgsMutexManager *mutex_manager;
-
-  GList *recall;
-  GList *list, *list_next;
+  GList *start_list, *list;
 
   gchar *filename, *effect;
 
@@ -2459,28 +2498,21 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
   guint pads, audio_channels;
   guint i, j;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) effect_bulk->audio);
+  audio_mutex = effect_bulk->audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* free plugin specification */
   effect_bulk_plugin = g_list_nth_data(effect_bulk->plugin,
 				       nth);
   effect_bulk->plugin = g_list_remove(effect_bulk->plugin,
 				      effect_bulk_plugin);
-  free(effect_bulk_plugin);
+  ags_effect_bulk_plugin_free(effect_bulk_plugin);
 
   /* retrieve audio properties and channel */
   pthread_mutex_lock(audio_mutex);
@@ -2500,57 +2532,53 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
   pthread_mutex_unlock(audio_mutex);
 
   if(current != NULL){
-    /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
+    GList *start_play, play;
 
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) current);
-  
-    pthread_mutex_unlock(application_mutex);
-
+    g_object_get(current,
+		 "play", &start_play,
+		 NULL);
+    
     /* get nth_effect */
-    pthread_mutex_lock(channel_mutex);
-  
-    recall = current->play;
+    play = start_play;
+    
     nth_effect = 0;
     n_recall = 0;
   
-    while((recall = ags_recall_template_find_all_type(recall,
-						      AGS_TYPE_RECALL_LADSPA,
-						      AGS_TYPE_RECALL_DSSI,
-						      AGS_TYPE_RECALL_LV2,
-						      G_TYPE_NONE)) != NULL){
-      if((AGS_RECALL_TEMPLATE & (AGS_RECALL(recall->data)->flags)) != 0){
+    while((play = ags_recall_template_find_all_type(play,
+						    AGS_TYPE_RECALL_LADSPA,
+						    AGS_TYPE_RECALL_DSSI,
+						    AGS_TYPE_RECALL_LV2,
+						    G_TYPE_NONE)) != NULL){
+      if(ags_recall_test_flags(play->data, AGS_RECALL_TEMPLATE)){
 	nth_effect++;
       }
-
-      if((AGS_RECALL_BULK_MODE & (AGS_RECALL(recall->data)->flags)) == 0){
+      
+      if(ags_recall_test_behaviour_flags(play->data, AGS_SOUND_BEHAVIOUR_BULK_MODE)){
 	n_recall++;
       }
-
+      
       if(nth_effect - n_recall == nth){
 	break;
       }
     
-      recall = recall->next;
+      play = play->next;
     }
 
-    pthread_mutex_unlock(channel_mutex);
+    g_list_free(start_play);
   }
 
   nth_effect--;
   
   /* destroy control */
-  list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
+  list =
+    start_list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
 
   filename = AGS_BULK_MEMBER(list->data)->filename;
   effect = AGS_BULK_MEMBER(list->data)->effect;
 
   i = 0;
   
-  while(list != NULL && i <= nth){
-    list_next = list->next;
-    
+  while(list != NULL && i <= nth){    
     if(AGS_IS_BULK_MEMBER(list->data)){
       if(!(!g_strcmp0(AGS_BULK_MEMBER(list->data)->filename, filename) &&
 	   !g_strcmp0(AGS_BULK_MEMBER(list->data)->effect, effect))){
@@ -2576,31 +2604,23 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
       
     }
 
-    list = list_next;
+    list = list->next;
   }
+
+  g_list_free(start_list);
   
   /* remove recalls */
   if(current != NULL){
     for(i = 0; i < pads; i++){
       for(j = 0; j < audio_channels; j++){
-	/* get channel mutex */
-	pthread_mutex_lock(application_mutex);
-
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) current);
-  
-	pthread_mutex_unlock(application_mutex);
-
 	/* remove effect */
 	ags_channel_remove_effect(current,
 				  nth_effect);
 
 	/* iterate */
-	pthread_mutex_lock(channel_mutex);
-      
-	current = current->next;
-
-	pthread_mutex_unlock(channel_mutex);	  
+	g_object_get(current,
+		     "next", &current,
+		     NULL);
       }
     }
   }
@@ -2627,51 +2647,34 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
   AgsWindow *window;
   AgsUpdateBulkMember *update_bulk_member;
 
-  AgsChannel *current;
-
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
-  AgsMutexManager *mutex_manager;
+
+  AgsChannel *current;
 
   AgsApplicationContext *application_context;
   
   GList *task;
   GList *effect_bulk_plugin;
-  GList *list;
+  GList *start_list, *list;
 
   guint pads;
   guint i, j;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) effect_bulk,
 						 AGS_TYPE_WINDOW);
   
   application_context = (AgsApplicationContext *) window->application_context;
 
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /*  */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
+  gui_thread = (AgsGuiThread *) ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
   
   /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) effect_bulk->audio);
+  audio_mutex = effect_bulk->audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
   
   /* retrieve channel */
   pthread_mutex_lock(audio_mutex);
@@ -2695,7 +2698,8 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
   /* collect bulk member */
   task = NULL;
 
-  list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
+  list =
+    start_list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
 
   while(list != NULL){
     if(AGS_IS_BULK_MEMBER(list->data)){
@@ -2712,6 +2716,8 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
     list = list->next;
   }
 
+  g_list_free(start_list);
+
   if(new_size > old_size){  
     /* add effect */
     for(i = 0; i < pads; i++){
@@ -2720,14 +2726,6 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 
       /*  */      
       for(j = old_size; j < new_size; j++){
-	/* get channel mutex */
-	pthread_mutex_lock(application_mutex);
-
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) current);
-  
-	pthread_mutex_unlock(application_mutex);
-
 	/* add effect */
 	effect_bulk_plugin = effect_bulk->plugin;
 
@@ -2743,11 +2741,9 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 	}
 
 	/* iterate */
-	pthread_mutex_lock(channel_mutex);
-	
-	current = current->next;
-
-	pthread_mutex_unlock(channel_mutex);
+	g_object_get(current,
+		     "next", &current,
+		     NULL);
       }
     }
   }
@@ -2781,11 +2777,9 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
   AgsWindow *window;
   AgsUpdateBulkMember *update_bulk_member;
 
-  AgsChannel *current;
-
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
-  AgsMutexManager *mutex_manager;
+
+  AgsChannel *current;
 
   AgsApplicationContext *application_context;
   
@@ -2796,36 +2790,21 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) effect_bulk,
 						 AGS_TYPE_WINDOW);
   
   application_context = (AgsApplicationContext *) window->application_context;
 
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /*  */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
+  gui_thread = (AgsGuiThread *) ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) effect_bulk->audio);
+  audio_mutex = effect_bulk->audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
   
   /* retrieve channel */
   pthread_mutex_lock(audio_mutex);
@@ -2896,11 +2875,9 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 	}
 
 	/* iterate */
-	pthread_mutex_lock(channel_mutex);
-	
-	current = current->next;
-
-	pthread_mutex_unlock(channel_mutex);
+	g_object_get(current,
+		     "next", &current,
+		     NULL);
       }
     }
   }
