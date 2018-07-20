@@ -35,10 +35,15 @@
 typedef struct _AgsDssiBrowser AgsDssiBrowser;
 typedef struct _AgsDssiBrowserClass AgsDssiBrowserClass;
 
+typedef enum{
+  AGS_DSSI_BROWSER_CONNECTED      = 1,
+}AgsDssiBrowserFlags;
 struct _AgsDssiBrowser
 {
   GtkVBox vbox;
 
+  guint flags;
+  
   gchar *path;
 
   GtkHBox *plugin;

@@ -19,10 +19,8 @@
 
 #include <ags/X/ags_generic_preferences_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-
-#include <ags/thread/ags_thread-posix.h>
-#include <ags/thread/ags_autosave_thread.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences_callbacks.h>
@@ -37,14 +35,21 @@ ags_generic_preferences_autosave_thread_clicked_callback(GtkWidget *check_button
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(generic_preferences),
 							   AGS_TYPE_PREFERENCES);
-  application_context = (AgsApplicationContext *) AGS_WINDOW(preferences->window)->application_context;
-  autosave_thread = (AgsAutosaveThread *) application_context->autosave_thread;
 
+  application_context = (AgsApplicationContext *) AGS_WINDOW(preferences->window)->application_context;
+
+  g_object_get(application_context,
+	       "autosave-thread", &autosave_thread,
+	       NULL);
+
+  //FIXME:JK: defunct
+#if 0
   if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_button))){
     ags_thread_start((AgsThread *) autosave_thread);
   }else{
     ags_thread_stop((AgsThread *) autosave_thread);
   }
+#endif
 }
 
 void

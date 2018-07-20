@@ -31,12 +31,14 @@ void ags_generic_preferences_class_init(AgsGenericPreferencesClass *generic_pref
 void ags_generic_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_generic_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_generic_preferences_init(AgsGenericPreferences *generic_preferences);
+static void ags_generic_preferences_finalize(GObject *gobject);
+
 void ags_generic_preferences_connect(AgsConnectable *connectable);
 void ags_generic_preferences_disconnect(AgsConnectable *connectable);
+
 void ags_generic_preferences_set_update(AgsApplicable *applicable, gboolean update);
 void ags_generic_preferences_apply(AgsApplicable *applicable);
 void ags_generic_preferences_reset(AgsApplicable *applicable);
-static void ags_generic_preferences_finalize(GObject *gobject);
 
 GtkListStore* ags_generic_preferences_create_segmentation();
 
@@ -200,6 +202,7 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
 static void
 ags_generic_preferences_finalize(GObject *gobject)
 {
+  /* call parent */
   G_OBJECT_CLASS(ags_generic_preferences_parent_class)->finalize(gobject);
 }
 
@@ -397,7 +400,7 @@ ags_generic_preferences_create_segmentation()
  *
  * Returns: a new #AgsGenericPreferences
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsGenericPreferences*
 ags_generic_preferences_new()

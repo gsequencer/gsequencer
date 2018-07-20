@@ -20,6 +20,9 @@
 #ifndef __AGS_GENERIC_PREFERENCES_H__
 #define __AGS_GENERIC_PREFERENCES_H__
 
+#include <glib.h>
+#include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_GENERIC_PREFERENCES                (ags_generic_preferences_get_type())
