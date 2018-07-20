@@ -1137,7 +1137,7 @@ ags_channel_init(AgsChannel *channel)
   channel->behaviour_flags = 0;
   memset(channel->staging_flags, 0, (AGS_SOUND_SCOPE_LAST + 1) * sizeof(guint));
 
-  /* add channel mutex */
+  /* channel mutex */
   channel->obj_mutexattr = 
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);

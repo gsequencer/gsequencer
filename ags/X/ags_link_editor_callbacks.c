@@ -19,16 +19,8 @@
 
 #include <ags/X/ags_link_editor_callbacks.h>
 
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_output.h>
-#include <ags/audio/ags_input.h>
-
-#include <ags/file/ags_file_link.h>
-
-#include <ags/audio/recall/ags_play_audio_file.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -38,10 +30,6 @@
 #include <ags/i18n.h>
 
 int ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint response, AgsLinkEditor *link_editor);
-int ags_link_editor_file_chooser_play_callback(GtkToggleButton *toggle_button, AgsLinkEditor *link_editor);
-
-void ags_link_editor_file_chooser_play_done(AgsRecall *recall, AgsLinkEditor *link_editor);
-void ags_link_editor_file_chooser_play_cancel(AgsRecall *recall, AgsLinkEditor *link_editor);
 
 #define AGS_LINK_EDITOR_OPEN_SPIN_BUTTON "AgsLinkEditorOpenSpinButton"
 
@@ -68,8 +56,10 @@ ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
   
     if(channel != NULL){
       GtkTreeIter iter;
-      
-      audio = AGS_AUDIO(channel->audio);
+
+      g_object_get(channel,
+		   "audio", &audio,
+		   NULL);
 
       if(audio != NULL){
 	machine = AGS_MACHINE(audio->machine);
@@ -80,15 +70,41 @@ ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
 	   (AGS_MACHINE_TAKES_FILE_INPUT & (machine->flags)) != 0 &&
 	   ((AGS_MACHINE_ACCEPT_WAV & (machine->file_input_flags)) != 0 ||
 	    ((AGS_MACHINE_ACCEPT_OGG & (machine->file_input_flags)) != 0))){
+	  AgsFileLink *file_link;
+	  
 	  gtk_list_store_append(GTK_LIST_STORE(model), &iter);
 
-	  if(AGS_INPUT(channel)->file_link != NULL){
+	  g_object_get(channel,
+		       "file-link", &file_link,
+		       NULL);
+      
+	  if(file_link != NULL){
+	    gchar *filename;
+
+	    pthread_mutex_t *file_link_mutex;
+
+	    /* get file link mutex */
+	    pthread_mutex_lock(ags_file_link_get_class_mutex());
+	
+	    file_link_mutex = file_link->obj_mutex;
+
+	    pthread_mutex_unlock(ags_file_link_get_class_mutex());
+
+	    /* get some fields */
+	    pthread_mutex_lock(file_link_mutex);
+	
+	    filename = g_strdup(file_link->filename);
+	
+	    pthread_mutex_unlock(file_link_mutex);
+
 	    gtk_list_store_set(GTK_LIST_STORE(model), &iter,
-			       0, g_strdup_printf("file://%s", AGS_FILE_LINK(AGS_INPUT(channel)->file_link)->filename),
+			       0, g_strdup_printf("file://%s", filename),
 			       1, NULL,
 			       -1);
 	    gtk_combo_box_set_active_iter(link_editor->combo,
 					  &iter);
+
+	    g_free(filename);
 	  }else{
 	    gtk_list_store_set(GTK_LIST_STORE(model), &iter,
 			       0, "file://",
@@ -117,6 +133,7 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
     AgsMachine *machine, *link_machine;
     AgsLineEditor *line_editor;
 
+    AgsAudio *audio;
     AgsChannel *channel;
 
     GtkTreeModel *model;
@@ -125,7 +142,12 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
 							  AGS_TYPE_LINE_EDITOR));
 
     channel = line_editor->channel;
-    machine = AGS_MACHINE(AGS_AUDIO(channel->audio)->machine);
+
+    g_object_get(channel,
+		 "audio", &audio,
+		 NULL);
+
+    machine = AGS_MACHINE(audio->machine);
     
     model = gtk_combo_box_get_model(link_editor->combo);
 
@@ -284,111 +306,4 @@ ags_link_editor_file_chooser_response_callback(GtkWidget *widget, guint response
   gtk_widget_destroy((GtkWidget *) file_chooser);
 
   return(0);
-}
-
-int
-ags_link_editor_file_chooser_play_callback(GtkToggleButton *toggle_button, AgsLinkEditor *link_editor)
-{
-  /*
-  GtkFileChooserDialog *file_chooser;
-  AgsDevout *soundcard;
-  AgsPlayAudioFile *play_audio_file;
-  AgsAudioFile *audio_file;
-  char *name;
-  static GStaticMutex mutex = G_STATIC_MUTEX_INIT;
-
-  file_chooser = link_editor->file_chooser;
-  audio_file = link_editor->audio_file;
-
-  soundcard = AGS_DEVOUT(AGS_AUDIO(AGS_LINE_EDITOR(gtk_widget_get_ancestor((GtkWidget *) link_editor, AGS_TYPE_LINE_EDITOR))->channel->audio)->soundcard);
-
-  if(toggle_button->active){
-    /* AgsPlayAudioFile * /
-    play_audio_file = ags_play_audio_file_new();
-    play_audio_file->soundcard = soundcard;
-    ags_play_audio_file_connect(play_audio_file);
-
-    g_object_set_data((GObject *) file_chooser, (char *) g_type_name(AGS_TYPE_PLAY_AUDIO_FILE), play_audio_file);
-
-    g_signal_connect((GObject *) play_audio_file, "done",
-		     G_CALLBACK(ags_link_editor_file_chooser_play_done), link_editor);
-    g_signal_connect((GObject *) play_audio_file, "cancel",
-		     G_CALLBACK(ags_link_editor_file_chooser_play_cancel), link_editor);
-
-    /* AgsAudioFile * /
-    name = gtk_file_chooser_get_filename((GtkFileChooser *) file_chooser);
-
-    if(audio_file != NULL){
-      if(g_strcmp0(audio_file->name, name)){
-	g_object_unref(G_OBJECT(audio_file));
-	goto ags_link_editor_file_chooser_play_callback0;
-      }
-    }else{
-    ags_link_editor_file_chooser_play_callback0:
-      audio_file = ags_audio_file_new();
-      g_object_set_data((GObject *) link_editor->option->menu_item, (char *) g_type_name(AGS_TYPE_AUDIO_FILE), audio_file);
-
-      audio_file->flags |= AGS_AUDIO_FILE_ALL_CHANNELS;
-      audio_file->name = (gchar *) name;
-
-      ags_audio_file_set_soundcard(audio_file, soundcard);
-
-      ags_audio_file_open(audio_file);
-
-      AGS_AUDIO_FILE_GET_CLASS(audio_file)->read_buffer(audio_file);
-    }
-
-    play_audio_file->audio_file = audio_file;
-
-    /* AgsDevout * /
-    g_static_mutex_lock(&mutex);
-    soundcard->play_recall = g_list_append(soundcard->play_recall, play_audio_file);
-    soundcard->flags |= AGS_DEVOUT_PLAY_RECALL;
-    soundcard->play_recall_ref++;
-    AGS_DEVOUT_GET_CLASS(soundcard)->run((void *) soundcard);
-    g_static_mutex_unlock(&mutex);
-  }else{
-    if((AGS_LINK_EDITOR_FILE_CHOOSER_PLAY_DONE & (link_editor->flags)) == 0){
-      play_audio_file = (AgsPlayAudioFile *) g_object_get_data((GObject *) file_chooser, (char *) g_type_name(AGS_TYPE_PLAY_AUDIO_FILE));
-      play_audio_file->recall.flags |= AGS_RECALL_CANCEL;
-    }else
-      link_editor->flags &= (~AGS_LINK_EDITOR_FILE_CHOOSER_PLAY_DONE);
-  }
-*/
-  return(0);
-}
-
-void
-ags_link_editor_file_chooser_play_done(AgsRecall *recall, AgsLinkEditor *link_editor)
-{
-  GtkToggleButton *toggle_button;
-  GList *list;
-
-  recall->flags |= AGS_RECALL_REMOVE;
-
-  list = gtk_container_get_children((GtkContainer *) GTK_DIALOG(link_editor->file_chooser)->action_area);
-  toggle_button = (GtkToggleButton *) list->data;
-
-  link_editor->flags |= AGS_LINK_EDITOR_FILE_CHOOSER_PLAY_DONE;
-  gtk_toggle_button_set_active(toggle_button, FALSE);
-
-  g_list_free(list);
-}
-
-void
-ags_link_editor_file_chooser_play_remove(AgsRecall *recall, AgsLinkEditor *link_editor)
-{
-  AgsPlayAudioFile *play_audio_file;
-
-  play_audio_file = AGS_PLAY_AUDIO_FILE(recall);
-  g_object_unref((GObject *) play_audio_file);
-}
-
-void
-ags_link_editor_file_chooser_play_cancel(AgsRecall *recall, AgsLinkEditor *link_editor)
-{
-  AgsPlayAudioFile *play_audio_file;
-
-  play_audio_file = AGS_PLAY_AUDIO_FILE(recall);
-  g_object_unref((GObject *) play_audio_file);
 }

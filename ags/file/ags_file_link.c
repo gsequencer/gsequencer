@@ -70,6 +70,8 @@ enum{
 
 static gpointer ags_file_link_parent_class = NULL;
 
+static pthread_mutex_t ags_file_link_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_file_link_get_type()
 {
@@ -177,6 +179,22 @@ ags_file_link_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_file_link_init(AgsFileLink *file_link)
 {
+  /* file_link mutex */
+  file_link->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(file_link->obj_mutexattr);
+  pthread_mutexattr_settype(file_link->obj_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(file_link->obj_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  file_link->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(file_link->obj_mutex,
+		     file_link->obj_mutexattr);  
+
+  
   file_link->version = NULL;
   file_link->build_id = NULL;
 
@@ -270,6 +288,12 @@ ags_file_link_finalize(GObject *gobject)
 
   file_link = AGS_FILE_LINK(gobject);
 
+  pthread_mutex_destroy(file_link->obj_mutex);
+  free(file_link->obj_mutex);
+
+  pthread_mutexattr_destroy(file_link->obj_mutexattr);
+  free(file_link->obj_mutexattr);
+
   /* filename */
   if(file_link->filename != NULL){
     g_free(file_link->filename);
@@ -279,6 +303,21 @@ ags_file_link_finalize(GObject *gobject)
   if(file_link->data != NULL){
     g_free(file_link->data);
   }
+}
+
+/**
+ * ags_file_link_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_file_link_get_class_mutex()
+{
+  return(&ags_file_link_class_mutex);
 }
 
 gchar*
