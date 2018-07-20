@@ -1353,7 +1353,7 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
       }
 
       g_object_set(line_member,
-		   conversion, lv2_conversion,
+		   "conversion", lv2_conversion,
 		   NULL);
 
       /* child widget */
@@ -1549,7 +1549,7 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
 
   GList *control, *control_start;
   GList *start_recall, *recall;
-  GList *port;
+  GList *start_port, *port;
 
   gchar *filename, *effect;
   gchar **remove_specifier;

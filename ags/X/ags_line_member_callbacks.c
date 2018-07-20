@@ -100,10 +100,3 @@ ags_line_member_button_clicked_callback(GtkWidget *button, AgsLineMember *line_m
 			      &(line_member->active));
   ags_line_member_chained_event(line_member);
 }
-
-void
-ags_line_member_port_safe_write_callback(AgsPort *port, GValue *value,
-					 AgsLineMember *line_member)
-{
-  //TODO:JK: implement me
-}

@@ -34,12 +34,13 @@ void ags_line_member_editor_class_init(AgsLineMemberEditorClass *line_member_edi
 void ags_line_member_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_line_member_editor_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_line_member_editor_init(AgsLineMemberEditor *line_member_editor);
+
 void ags_line_member_editor_connect(AgsConnectable *connectable);
 void ags_line_member_editor_disconnect(AgsConnectable *connectable);
+
 void ags_line_member_editor_set_update(AgsApplicable *applicable, gboolean update);
 void ags_line_member_editor_apply(AgsApplicable *applicable);
 void ags_line_member_editor_reset(AgsApplicable *applicable);
-void ags_line_member_editor_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_line_member_editor

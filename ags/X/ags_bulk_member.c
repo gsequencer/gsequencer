@@ -904,43 +904,43 @@ ags_bulk_member_disconnect(AgsConnectable *connectable)
   /* widget callback */
   if(bulk_member->widget_type == AGS_TYPE_DIAL){
     g_object_disconnect(GTK_WIDGET(control),
-			"value-changed",
+			"any_signal::value-changed",
 			G_CALLBACK(ags_bulk_member_dial_changed_callback),
 			bulk_member,
 			NULL);
   }else if(bulk_member->widget_type == GTK_TYPE_VSCALE){
     g_object_disconnect(GTK_WIDGET(control),
-			"value-changed",
+			"any_signal::value-changed",
 			G_CALLBACK(ags_bulk_member_vscale_changed_callback),
 			bulk_member,
 			NULL);
   }else if(bulk_member->widget_type == GTK_TYPE_HSCALE){
     g_object_disconnect(GTK_WIDGET(control),
-			"value-changed",
+			"any_signal::value-changed",
 			G_CALLBACK(ags_bulk_member_hscale_changed_callback),
 			bulk_member,
 			NULL);
   }else if(bulk_member->widget_type == GTK_TYPE_SPIN_BUTTON){
     g_object_disconnect(GTK_WIDGET(control),
-			"value-changed",
+			"any_signal::value-changed",
 			G_CALLBACK(ags_bulk_member_spin_button_changed_callback),
 			bulk_member,
 			NULL);
   }else if(bulk_member->widget_type == GTK_TYPE_CHECK_BUTTON){
     g_object_disconnect(GTK_WIDGET(control),
-			"clicked",
+			"any_signal::clicked",
 			G_CALLBACK(ags_bulk_member_check_button_clicked_callback),
 			bulk_member,
 			NULL);
   }else if(bulk_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
     g_object_disconnect(GTK_WIDGET(control),
-			"clicked",
+			"any_signal::clicked",
 			G_CALLBACK(ags_bulk_member_toggle_button_clicked_callback),
 			bulk_member,
 			NULL);
   }else if(bulk_member->widget_type == GTK_TYPE_BUTTON){
     g_object_disconnect(GTK_WIDGET(control),
-			"clicked",
+			"any_signal::clicked",
 			G_CALLBACK(ags_bulk_member_button_clicked_callback),
 			bulk_member,
 			NULL);
@@ -1349,6 +1349,7 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
 #ifdef AGS_DEBUG
       g_message("search port in %s", G_OBJECT_TYPE_NAME(recall->data));
 #endif
+
       if(port != NULL){
 	current_port = port->data;
       }
@@ -1484,7 +1485,7 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
  *
  * Lookup ports of assigned recalls.
  *
- * Returns: an #GList containing all related #AgsPort
+ * Returns: a #GList-struct containing all related #AgsPort
  *
  * Since: 2.0.0
  */
