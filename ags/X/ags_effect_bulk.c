@@ -58,15 +58,19 @@ void ags_effect_bulk_get_property(GObject *gobject,
 				  guint prop_id,
 				  GValue *value,
 				  GParamSpec *param_spec);
+void ags_effect_bulk_dispose(GObject *gobject);
+void ags_effect_bulk_finalize(GObject *gobject);
+
 void ags_effect_bulk_connect(AgsConnectable *connectable);
 void ags_effect_bulk_disconnect(AgsConnectable *connectable);
+
 gchar* ags_effect_bulk_get_name(AgsPlugin *plugin);
 void ags_effect_bulk_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_effect_bulk_get_version(AgsPlugin *plugin);
 void ags_effect_bulk_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_effect_bulk_get_build_id(AgsPlugin *plugin);
 void ags_effect_bulk_set_build_id(AgsPlugin *plugin, gchar *build_id);
-void ags_effect_bulk_finalize(GObject *gobject);
+
 void ags_effect_bulk_show(GtkWidget *widget);
 
 GList* ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
@@ -190,6 +194,7 @@ ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk)
   gobject->set_property = ags_effect_bulk_set_property;
   gobject->get_property = ags_effect_bulk_get_property;
 
+  gobject->dispose = ags_effect_bulk_dispose;
   gobject->finalize = ags_effect_bulk_finalize;
   
   /* properties */
@@ -589,6 +594,61 @@ ags_effect_bulk_get_property(GObject *gobject,
 }
 
 void
+ags_effect_bulk_dispose(GObject *gobject)
+{
+  AgsEffectBulk *effect_bulk;
+
+  GList *list;
+  
+  effect_bulk = (AgsEffectBulk *) gobject;
+
+  /* unref audio */
+  if(effect_bulk->audio != NULL){
+    g_object_unref(effect_bulk->audio);
+
+    effect_bulk->audio = NULL;
+  }
+  
+  /* call parent */  
+  G_OBJECT_CLASS(ags_effect_bulk_parent_class)->dispose(gobject);
+}
+
+void
+ags_effect_bulk_finalize(GObject *gobject)
+{
+  AgsEffectBulk *effect_bulk;
+
+  GList *list;
+  
+  effect_bulk = (AgsEffectBulk *) gobject;
+
+  /* unref audio */
+  if(effect_bulk->audio != NULL){
+    g_object_unref(effect_bulk->audio);
+  }
+
+  /* free plugin list */
+  g_list_free_full(effect_bulk->plugin,
+		   ags_effect_bulk_plugin_free);
+
+  /* destroy plugin browser */
+  gtk_widget_destroy(effect_bulk->plugin_browser);
+
+  /* remove of the queued drawing hash */
+  list = effect_bulk->queued_drawing;
+
+  while(list != NULL){
+    g_hash_table_remove(ags_effect_bulk_indicator_queue_draw,
+			list->data);
+
+    list = list->next;
+  }
+  
+  /* call parent */  
+  G_OBJECT_CLASS(ags_effect_bulk_parent_class)->finalize(gobject);
+}
+
+void
 ags_effect_bulk_connect(AgsConnectable *connectable)
 {
   AgsMachine *machine;
@@ -747,41 +807,6 @@ ags_effect_bulk_set_build_id(AgsPlugin *plugin, gchar *build_id)
   effect_bulk = AGS_EFFECT_BULK(plugin);
 
   effect_bulk->build_id = build_id;
-}
-
-void
-ags_effect_bulk_finalize(GObject *gobject)
-{
-  AgsEffectBulk *effect_bulk;
-
-  GList *list;
-  
-  effect_bulk = (AgsEffectBulk *) gobject;
-
-  /* unref audio */
-  if(effect_bulk->audio != NULL){
-    g_object_unref(effect_bulk->audio);
-  }
-
-  /* free plugin list */
-  g_list_free_full(effect_bulk->plugin,
-		   ags_effect_bulk_plugin_free);
-
-  /* destroy plugin browser */
-  gtk_widget_destroy(effect_bulk->plugin_browser);
-
-  /* remove of the queued drawing hash */
-  list = effect_bulk->queued_drawing;
-
-  while(list != NULL){
-    g_hash_table_remove(ags_effect_bulk_indicator_queue_draw,
-			list->data);
-
-    list = list->next;
-  }
-  
-  /* call parent */  
-  G_OBJECT_CLASS(ags_effect_bulk_parent_class)->finalize(gobject);
 }
 
 void
@@ -1322,18 +1347,12 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 	gtk_adjustment_set_upper(adjustment,
 				 upper_bound);
 
-
+	/* get/set default value */
 	pthread_mutex_lock(plugin_port_mutex);
 	
 	default_value = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
 
 	pthread_mutex_unlock(plugin_port_mutex);
-
-	if(ladspa_conversion != NULL){
-	  //	  default_value = ags_ladspa_conversion_convert(ladspa_conversion,
-	  //						default_value,
-	  //						TRUE);
-	}
 	
 	gtk_adjustment_set_value(adjustment,
 				 default_value);
@@ -1341,9 +1360,13 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 	       AGS_IS_LED(child_widget)){
 	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
 			    child_widget, ags_effect_bulk_indicator_queue_draw_timeout);
+
 	effect_bulk->queued_drawing = g_list_prepend(effect_bulk->queued_drawing,
 						     child_widget);
-	g_timeout_add(1000 / 30, (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout, (gpointer) child_widget);
+
+	g_timeout_add(1000 / 30,
+		      (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout,
+		      (gpointer) child_widget);
       }
 
 #ifdef AGS_DEBUG
@@ -1410,6 +1433,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   GList *task;
   GList *start_plugin_port, *plugin_port;
 
+  guint unique_id;
   guint effect_index;
   guint pads, audio_channels;
   gdouble step;
@@ -1468,8 +1492,10 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   /* load plugin */
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
 						  filename, effect);
+
   g_object_get(dssi_plugin,
 	       "effect-index", &effect_index,
+	       "unique-id", &unique_id,
 	       NULL);
 
   task = NULL;
@@ -1674,7 +1700,6 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       gchar *port_name;
       gchar *control_port;
 
-      guint unique_id;      
       guint step_count;
       gboolean disable_seemless;
 
@@ -1722,12 +1747,10 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       
       pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
 
-      /* get port name and unique id */
+      /* get port name */
       pthread_mutex_lock(plugin_port_mutex);
 
       port_name = g_strdup(AGS_PLUGIN_PORT(plugin_port->data)->port_name);
-
-      unique_id = dssi_plugin->unique_id;
 	
       pthread_mutex_unlock(plugin_port_mutex);
 
@@ -1950,13 +1973,12 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *base_plugin_mutex;
 
   /* get window and application context */
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) effect_bulk,
 						 AGS_TYPE_WINDOW);
   
-  application_context = (AgsApplicationContext *) window->application_context;
-
   application_context = (AgsApplicationContext *) window->application_context;
 
   gui_thread = (AgsGuiThread *) ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
@@ -2002,7 +2024,20 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 	       "effect-index", &effect_index,
 	       NULL);
 
-  task = NULL;
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* get uri */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  uri = g_strdup(lv2_plugin->uri);
+  
+  pthread_mutex_unlock(base_plugin_mutex);
+
   retport = NULL;
 
   has_output_port = FALSE;
@@ -2025,7 +2060,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 				      lv2_plugin->turtle,
 				      filename,
 				      effect,
-				      lv2_plugin->uri,
+				      uri,
 				      effect_index);
 
       ags_recall_set_flags(recall_lv2,
@@ -2098,7 +2133,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 				      lv2_plugin->turtle,
 				      filename,
 				      effect,
-				      lv2_plugin->uri,
+				      uri,
 				      effect_index);
 
       ags_recall_set_flags(recall_lv2,
@@ -2201,7 +2236,6 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
       gchar *plugin_name;
       gchar *control_port;
-      gchar *uri;
       
       guint step_count;
       gboolean disable_seemless;
@@ -2250,10 +2284,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       
       pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
 
-      /* get port name and uri */
+      /* get port name */
       pthread_mutex_lock(plugin_port_mutex);
-
-      uri = g_strdup(lv2_plugin->uri);
 
       port_name = g_strdup(AGS_PLUGIN_PORT(plugin_port->data)->port_name);
 	
@@ -2262,9 +2294,11 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       /* add bulk member */
       plugin_name = g_strdup_printf("lv2-<%s>",
 				    uri);
+
       control_port = g_strdup_printf("%u/%u",
 				     k + 1,
 				     port_count);
+
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", port_name,
@@ -2279,7 +2313,6 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
       g_free(plugin_name);
       g_free(control_port);
-      g_free(uri);
       g_free(port_name);
 
       /* lv2 conversion */
@@ -2338,12 +2371,6 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 	}else{
 	  step = (upper_bound - lower_bound) / step_count;
 	}
-
-	pthread_mutex_lock(plugin_port_mutex);
-	
-	default_value = (float) g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
-
-	pthread_mutex_unlock(plugin_port_mutex);
 	
 	gtk_adjustment_set_step_increment(adjustment,
 					  step);
@@ -2351,15 +2378,27 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 				 lower_bound);
 	gtk_adjustment_set_upper(adjustment,
 				 upper_bound);
+
+	/* get/set default value */
+	pthread_mutex_lock(plugin_port_mutex);
+	
+	default_value = (float) g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
+
+	pthread_mutex_unlock(plugin_port_mutex);
+
 	gtk_adjustment_set_value(adjustment,
 				 default_value);
       }else if(AGS_IS_INDICATOR(child_widget) ||
 	       AGS_IS_LED(child_widget)){
 	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
 			    child_widget, ags_effect_bulk_indicator_queue_draw_timeout);
+
 	effect_bulk->queued_drawing = g_list_prepend(effect_bulk->queued_drawing,
 						     child_widget);
-	g_timeout_add(1000 / 30, (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout, (gpointer) child_widget);
+
+	g_timeout_add(1000 / 30,
+		      (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout,
+		      (gpointer) child_widget);
       }
 
 #ifdef AGS_DEBUG
@@ -2385,12 +2424,9 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   }
 
   g_list_free(start_plugin_port);
-  
-  /* launch tasks */
-  task = g_list_reverse(task);      
-  ags_gui_thread_schedule_task_list(gui_thread,
-				    task);
 
+  g_free(uri);
+  
   return(retport);
 }
 
@@ -2449,6 +2485,19 @@ ags_effect_bulk_real_add_effect(AgsEffectBulk *effect_bulk,
   return(port);
 }
 
+/**
+ * ags_effect_bulk_add_effect:
+ * @effect_bulk: the #AgsEffectBulk to modify
+ * @control_type_name: the #GList-struct containing string representation of a #GType
+ * @filename: the effect's filename
+ * @effect: the effect's name
+ *
+ * Add an effect by its filename and effect specifier.
+ *
+ * Returns: the #GList-struct containing the #AgsPort objects added
+ *
+ * Since: 2.0.0
+ */
 GList*
 ags_effect_bulk_add_effect(AgsEffectBulk *effect_bulk,
 			   GList *control_type_name,
@@ -2619,6 +2668,15 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
   }
 }
 
+/**
+ * ags_effect_bulk_remove_effect:
+ * @effect_bulk: the #AgsEffectBulk to modify
+ * @nth: the nth effect to remove
+ *
+ * Remove an effect by its position.
+ *
+ * Since: 2.0.0
+ */
 void
 ags_effect_bulk_remove_effect(AgsEffectBulk *effect_bulk,
 			      guint nth)

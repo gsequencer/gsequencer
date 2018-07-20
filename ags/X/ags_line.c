@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,7 +47,6 @@ void ags_line_class_init(AgsLineClass *line);
 void ags_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_line_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_line_init(AgsLine *line);
-void ags_line_finalize(GObject *gobject);
 void ags_line_set_property(GObject *gobject,
 			   guint prop_id,
 			   const GValue *value,
@@ -56,8 +55,12 @@ void ags_line_get_property(GObject *gobject,
 			   guint prop_id,
 			   GValue *value,
 			   GParamSpec *param_spec);
+void ags_line_dispose(GObject *gobject);
+void ags_line_finalize(GObject *gobject);
+
 void ags_line_connect(AgsConnectable *connectable);
 void ags_line_disconnect(AgsConnectable *connectable);
+
 gchar* ags_line_get_version(AgsPlugin *plugin);
 void ags_line_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_line_get_build_id(AgsPlugin *plugin);
@@ -177,6 +180,7 @@ ags_line_class_init(AgsLineClass *line)
   gobject->set_property = ags_line_set_property;
   gobject->get_property = ags_line_get_property;
 
+  gobject->dispose = ags_line_dispose;
   gobject->finalize = ags_line_finalize;
   
   /* properties */
@@ -221,6 +225,7 @@ ags_line_class_init(AgsLineClass *line)
   
   line->map_recall = ags_line_real_map_recall;
   line->find_port = ags_line_real_find_port;
+
   line->done = NULL;
 
   /* signals */
@@ -409,9 +414,6 @@ ags_line_init(AgsLine *line)
 							  NULL);
   }
   
-  g_signal_connect_after((GObject *) line, "parent_set",
-			 G_CALLBACK(ags_line_parent_set_callback), (gpointer) line);
-
   line->flags = 0;
 
   line->version = AGS_VERSION;
@@ -452,38 +454,6 @@ ags_line_init(AgsLine *line)
   /* forwarded callbacks */
   g_signal_connect_after(line, "done",
 			 G_CALLBACK(ags_line_done_callback), NULL);
-}
-
-void
-ags_line_finalize(GObject *gobject)
-{
-  AgsLine *line;
-  GList *list;
-  
-  line = AGS_LINE(gobject);
-
-  /* remove message monitor */
-  g_hash_table_remove(ags_line_message_monitor,
-		      line);
-  
-  /* remove indicator widget */
-  if(line->indicator != NULL){
-    g_hash_table_remove(ags_line_indicator_queue_draw,
-			line->indicator);
-  }
-
-  /* remove of the queued drawing hash */
-  list = line->queued_drawing;
-
-  while(list != NULL){
-    g_hash_table_remove(ags_line_indicator_queue_draw,
-			list->data);
-
-    list = list->next;
-  }
-
-  /* call parent */
-  G_OBJECT_CLASS(ags_line_parent_class)->finalize(gobject);
 }
 
 void
@@ -554,6 +524,62 @@ ags_line_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_line_dispose(GObject *gobject)
+{
+  AgsLine *line;
+
+  line = AGS_LINE(gobject);
+
+  /* channel */
+  if(line->channel != NULL){
+    g_object_unref(line->channel);
+
+    line->channel = NULL;
+  }  
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_line_parent_class)->dispose(gobject);
+}
+
+void
+ags_line_finalize(GObject *gobject)
+{
+  AgsLine *line;
+
+  GList *list;
+  
+  line = AGS_LINE(gobject);
+
+  /* remove message monitor */
+  g_hash_table_remove(ags_line_message_monitor,
+		      line);
+  
+  /* remove indicator widget */
+  if(line->indicator != NULL){
+    g_hash_table_remove(ags_line_indicator_queue_draw,
+			line->indicator);
+  }
+
+  /* remove of the queued drawing hash */
+  list = line->queued_drawing;
+
+  while(list != NULL){
+    g_hash_table_remove(ags_line_indicator_queue_draw,
+			list->data);
+
+    list = list->next;
+  }
+
+  /* channel */
+  if(line->channel != NULL){
+    g_object_unref(line->channel);
+  }  
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_line_parent_class)->finalize(gobject);
 }
 
 void
@@ -678,20 +704,12 @@ ags_line_set_build_id(AgsPlugin *plugin, gchar *build_id)
 void
 ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
 {
-  AgsMutexManager *mutex_manager;
-
   gchar *str;
-  
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *channel_mutex;
-  
+    
   if(line->channel == channel){
     return;
   }
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
+  
   if(line->channel != NULL){    
     g_object_unref(G_OBJECT(line->channel));
   }
@@ -707,24 +725,19 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
   line->channel = channel;
 
   if(channel != NULL){
-    /* lookup channel mutex */
-    pthread_mutex_lock(application_mutex);
-
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
-  
-    pthread_mutex_unlock(application_mutex);
-
+    guint audio_channel;
+    
+    /* get audio channel */
+    g_object_get(channel,
+		 "audio-channel", &audio_channel,
+		 NULL);
+    
     /* set label */
-    pthread_mutex_lock(channel_mutex);
-
-    str = g_strdup_printf("%s %d", i18n("channel"), channel->audio_channel + 1);
+    str = g_strdup_printf("%s %d", i18n("channel"), audio_channel + 1);
     gtk_label_set_label(line->label,
 			str);
 
     g_free(str);
-    
-    pthread_mutex_unlock(channel_mutex);
   }else{
     str = g_strdup_printf("%s (null)", i18n("channel"));
     gtk_label_set_label(line->label,
@@ -736,12 +749,12 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
 
 /**
  * ags_line_set_channel:
- * @line: an #AgsLine
+ * @line: the #AgsLine
  * @channel: the #AgsChannel to set
  *
  * Is emitted as channel gets modified.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_line_set_channel(AgsLine *line, AgsChannel *channel)
@@ -1738,8 +1751,6 @@ ags_line_message_monitor_timeout(AgsLine *line)
 	  GValue *value;
 	  
 	  gchar *filename, *effect;
-  
-	  pthread_mutex_t *application_mutex;
 
 	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
 				     "filename");
@@ -1930,7 +1941,7 @@ ags_line_message_monitor_timeout(AgsLine *line)
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
@@ -1959,13 +1970,19 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 
 	AgsPort *current;
 	
+	AgsPluginPort *plugin_port;
+	
 	gdouble average_peak;
 	gdouble lower, upper;
 	gdouble range;
 	gdouble peak;
-
+	gboolean success;
+	
 	GValue value = {0,};
 
+	pthread_mutex_t *port_mutex;
+	pthread_mutex_t *plugin_port_mutex;
+	
 	line_member = AGS_LINE_MEMBER(list->data);
 	child = GTK_BIN(line_member)->child;
       
@@ -1981,25 +1998,58 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	}
 	
 	/* check if output port and specifier matches */
-	pthread_mutex_lock(current->mutex);
-      
-	if((AGS_PORT_IS_OUTPUT & (current->flags)) == 0 ||
-	   current->port_descriptor == NULL ||
-	   g_ascii_strcasecmp(current->specifier,
-			      line_member->specifier)){
-	  pthread_mutex_unlock(current->mutex);
+	if(!ags_port_test_flags(current, AGS_PORT_IS_OUTPUT)){
+	  list = list->next;
+
+	  continue;
+	}
+
+	g_object_get(current,
+		     "plugin-port", &plugin_port,
+		     NULL);
+
+	if(plugin_port == NULL){
+	  list = list->next;
+
+	  continue;
+	}
+
+	/* get port mutex */
+	pthread_mutex_lock(ags_port_get_class_mutex());
 	
+	port_mutex = current->obj_mutex;
+	
+	pthread_mutex_unlock(ags_port_get_class_mutex());
+
+	/* match specifier */
+	pthread_mutex_lock(port_mutex);
+
+	success = (!g_ascii_strcasecmp(current->specifier,
+				       line_member->specifier)) ? TRUE: FALSE;
+	
+	pthread_mutex_unlock(port_mutex);
+
+	if(!success){
 	  list = list->next;
 	
 	  continue;
 	}
 
+	/* get plugin port mutex */
+	pthread_mutex_lock(ags_plugin_port_get_class_mutex());
+	
+	plugin_port_mutex = plugin_port->obj_mutex;
+	
+	pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+	
 	/* lower and upper */
-	lower = g_value_get_float(AGS_PORT_DESCRIPTOR(current->port_descriptor)->lower_value);
-	upper = g_value_get_float(AGS_PORT_DESCRIPTOR(current->port_descriptor)->upper_value);
+	pthread_mutex_lock(plugin_port_mutex);
+	
+	lower = g_value_get_float(plugin_port->lower_value);
+	upper = g_value_get_float(plugin_port->upper_value);
       
-	pthread_mutex_unlock(current->mutex);
-
+	pthread_mutex_unlock(plugin_port_mutex);
+	
 	/* get range */
 	if(line_member->conversion != NULL){
 	  lower = ags_conversion_convert(line_member->conversion,
@@ -2096,13 +2146,13 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 /**
  * ags_line_new:
  * @pad: the parent pad
- * @channel: the channel to visualize
+ * @channel: the #AgsChannel to visualize
  *
- * Creates an #AgsLine
+ * Create a new instance of #AgsLine
  *
- * Returns: a new #AgsLine
+ * Returns: the new #AgsLine
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLine*
 ags_line_new(GtkWidget *pad, AgsChannel *channel)

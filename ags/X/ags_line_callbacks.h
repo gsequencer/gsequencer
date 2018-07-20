@@ -27,10 +27,6 @@
 
 #include <ags/X/ags_line.h>
 
-int ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line);
-
-void ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line);
-
 void ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line);
 
 /* AgsLine */

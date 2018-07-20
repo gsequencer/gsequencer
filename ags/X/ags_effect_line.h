@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,8 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_channel.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #define AGS_TYPE_EFFECT_LINE                (ags_effect_line_get_type())
 #define AGS_EFFECT_LINE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_EFFECT_LINE, AgsEffectLine))
@@ -34,12 +35,12 @@
 #define AGS_IS_EFFECT_LINE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_EFFECT_LINE))
 #define AGS_EFFECT_LINE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_EFFECT_LINE, AgsEffectLineClass))
 
-#define AGS_EFFECT_LINE_DEFAULT_VERSION "0.7.8\0"
-#define AGS_EFFECT_LINE_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23\0"
+#define AGS_EFFECT_LINE_DEFAULT_VERSION "0.7.8"
+#define AGS_EFFECT_LINE_DEFAULT_BUILD_ID "CEST 01-03-2016 00:23"
 
 #define AGS_EFFECT_LINE_COLUMNS_COUNT (2)
-#define AGS_EFFECT_LINE_SEPARATOR_FILENAME "ags-effect-line-separator-filename\0"
-#define AGS_EFFECT_LINE_SEPARATOR_EFFECT "ags-effect-line-separator-effect\0"
+#define AGS_EFFECT_LINE_SEPARATOR_FILENAME "ags-effect-line-separator-filename"
+#define AGS_EFFECT_LINE_SEPARATOR_EFFECT "ags-effect-line-separator-effect"
 
 typedef struct _AgsEffectLine AgsEffectLine;
 typedef struct _AgsEffectLineClass AgsEffectLineClass;
@@ -87,6 +88,9 @@ struct _AgsEffectLineClass
   void (*map_recall)(AgsEffectLine *effect_line,
 		     guint output_pad_start);
   GList* (*find_port)(AgsEffectLine *effect_line);
+
+  void (*done)(AgsEffectLine *effect_line,
+	       GObject *recall_id);
 };
 
 GType ags_effect_line_get_type(void);
@@ -104,8 +108,12 @@ void ags_effect_line_map_recall(AgsEffectLine *effect_line,
 				guint output_pad_start);
 GList* ags_effect_line_find_port(AgsEffectLine *effect_line);
 
+void ags_effect_line_done(AgsEffectLine *effect_line,
+			  GObject *recall_id);
+
 GList* ags_effect_line_find_next_grouped(GList *line);
 
+gboolean ags_effect_line_message_monitor_timeout(AgsLine *line);
 gboolean ags_effect_line_indicator_queue_draw_timeout(GtkWidget *widget);
 
 AgsEffectLine* ags_effect_line_new(AgsChannel *channel);
