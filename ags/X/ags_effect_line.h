@@ -113,7 +113,7 @@ void ags_effect_line_done(AgsEffectLine *effect_line,
 
 GList* ags_effect_line_find_next_grouped(GList *line);
 
-gboolean ags_effect_line_message_monitor_timeout(AgsLine *line);
+gboolean ags_effect_line_message_monitor_timeout(AgsEffectLine *effect_line);
 gboolean ags_effect_line_indicator_queue_draw_timeout(GtkWidget *widget);
 
 AgsEffectLine* ags_effect_line_new(AgsChannel *channel);

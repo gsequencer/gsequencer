@@ -29,8 +29,14 @@
 #include <ags/X/ags_effect_pad.h>
 #include <ags/X/ags_line_member.h>
 #include <ags/X/ags_effect_separator.h>
-
-#include <ags/X/task/ags_add_line_member.h>
+#include <ags/X/ags_machine_editor.h>
+#include <ags/X/ags_pad_editor.h>
+#include <ags/X/ags_line_editor.h>
+#include <ags/X/ags_line_member_editor.h>
+#include <ags/X/ags_plugin_browser.h>
+#include <ags/X/ags_ladspa_browser.h>
+#include <ags/X/ags_dssi_browser.h>
+#include <ags/X/ags_lv2_browser.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -224,7 +230,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
     g_signal_new("set-channel",
 		 G_TYPE_FROM_CLASS(effect_line),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsEffect_LineClass, set_channel),
+		 G_STRUCT_OFFSET(AgsEffectLineClass, set_channel),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__OBJECT,
 		 G_TYPE_NONE, 1,
@@ -326,7 +332,7 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
     g_signal_new("done",
                  G_TYPE_FROM_CLASS(effect_line),
                  G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsEffect_LineClass, done),
+		 G_STRUCT_OFFSET(AgsEffectLineClass, done),
                  NULL, NULL,
                  g_cclosure_marshal_VOID__OBJECT,
                  G_TYPE_NONE, 1,
@@ -855,7 +861,8 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 
       gchar *plugin_name;
       gchar *control_port;
-
+      gchar *port_name;
+      
       guint unique_id;
       guint step_count;
       gboolean disable_seemless;
@@ -1178,32 +1185,7 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
   }else{
     has_output_port = FALSE;
   }
-  /* play - find ports */
-  pthread_mutex_lock(channel_mutex);
-  
-  recall_start =
-    recall = ags_recall_get_by_effect(effect_line->channel->play,
-				      filename,
-				      effect);
-
-  if(recall == NULL){
-    pthread_mutex_unlock(channel_mutex);
     
-    return(NULL);
-  }
-
-  recall = g_list_last(start_recall);
-  g_object_get((GObject *) recall->data,
-	       "port", &port,
-	       NULL);
-
-  /* check has output port */
-  if((AGS_RECALL_HAS_OUTPUT_PORT & (AGS_RECALL(recall->data)->flags)) != 0){
-    has_output_port = TRUE;
-  }else{
-    has_output_port = FALSE;
-  }
-  
   g_list_free(start_recall);
 
   /* recall - find ports */
@@ -1251,7 +1233,7 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
   y++;
 
   /* load ports */
-  g_object_get(ladspa_plugin,
+  g_object_get(lv2_plugin,
 	       "plugin-port", &start_plugin_port,
 	       NULL);
 
@@ -1271,6 +1253,7 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 
       gchar *plugin_name;
       gchar *control_port;
+      gchar *port_name;
       
       guint step_count;
       gboolean disable_seemless;
@@ -1559,7 +1542,7 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
   AgsMachine *machine;
 
   GList *control, *control_start;
-  GList *start_recall;
+  GList *start_recall, *recall;
   GList *port;
 
   gchar *filename, *effect;
@@ -1930,17 +1913,17 @@ ags_effect_line_message_monitor_timeout(AgsEffectLine *effect_line)
 	  GList *line_editor, *line_editor_start;
 	  GList *control_type_name;
 
-	  GValue *value;
-	  
 	  gchar *filename, *effect;
 
-	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
-				     "filename");
-	  filename = g_value_get_string(value);
+	  gint position;
+	  
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
+				 "filename");
+	  filename = g_value_get_string(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
 
-	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
-				     "effect");
-	  effect = g_value_get_string(value);
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
+				    "effect");
+	  effect = g_value_get_string(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
 
 	  /* get machine and machine editor */
 	  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) effect_line,
@@ -2086,12 +2069,13 @@ ags_effect_line_message_monitor_timeout(AgsEffectLine *effect_line)
 			     "AgsChannel::done",
 			     16)){
 	  AgsRecallID *recall_id;
-	  
-	  GValue *value;
 
-	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
-				     "recall-id");
-	  recall_id = g_value_get_object(value);
+	  gint position;
+
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
+				    "recall-id");
+	  
+	  recall_id = g_value_get_object(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
 
 	  /* done */
 	  ags_effect_line_done(effect_line,
@@ -2128,6 +2112,8 @@ ags_effect_line_message_monitor_timeout(AgsEffectLine *effect_line)
 gboolean
 ags_effect_line_indicator_queue_draw_timeout(GtkWidget *widget)
 {
+  AgsEffectLine *effect_line;
+
   if(g_hash_table_lookup(ags_effect_line_indicator_queue_draw,
 			 widget) != NULL){
     GList *list, *list_start;

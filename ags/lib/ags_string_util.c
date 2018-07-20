@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,7 +40,7 @@
  * 
  * Returns: the newly allocated string
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_string_util_escape_single_quote(gchar *str)
@@ -99,7 +99,7 @@ ags_string_util_escape_single_quote(gchar *str)
  * 
  * Returns: the length of the vector
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 guint
 ags_strv_length(gchar **str_array)
@@ -124,7 +124,7 @@ ags_strv_length(gchar **str_array)
  * 
  * Returns: %TRUE if found, else %FALSE
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_strv_contains(gchar **str_array,
@@ -144,3 +144,34 @@ ags_strv_contains(gchar **str_array,
 
   return(FALSE);
 }
+
+/**
+ * ags_strv_contains:
+ * @str_array: the string vector
+ * @str: the string to match
+ * 
+ * Check by comparing @str against @str_array items.
+ * 
+ * Returns: the first matching position or -1, if not found
+ * 
+ * Since: 2.0.0
+ */
+gint
+ags_strv_index(gchar **str_array,
+	       gchar *str)
+{
+  gint i;
+  
+  if(str_array == NULL){
+    return(-1);
+  }
+
+  for(i = 0; *str_array != NULL; i++, str_array++){
+    if(!g_strcmp0(*str_array, str)){
+      return(i);
+    }
+  }
+
+  return(-1);
+}
+
