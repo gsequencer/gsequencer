@@ -20,7 +20,9 @@
 #ifndef __AGS_EXPORT_SOUNDCARD_CALLBACKS_H__
 #define __AGS_EXPORT_SOUNDCARD_CALLBACKS_H__
 
+#include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #include <ags/X/ags_export_soundcard.h>

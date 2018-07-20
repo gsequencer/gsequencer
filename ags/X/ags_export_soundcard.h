@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,9 +32,10 @@
 #define AGS_IS_EXPORT_SOUNDCARD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_EXPORT_SOUNDCARD))
 #define AGS_EXPORT_SOUNDCARD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_EXPORT_SOUNDCARD, AgsExportSoundcardClass))
 
-#define AGS_EXPORT_SOUNDCARD_FORMAT_WAV "wav\0"
-#define AGS_EXPORT_SOUNDCARD_FORMAT_FLAC "flac\0"
-#define AGS_EXPORT_SOUNDCARD_FORMAT_OGG "ogg\0"
+#define AGS_EXPORT_SOUNDCARD_FORMAT_WAV "wav"
+#define AGS_EXPORT_SOUNDCARD_FORMAT_FLAC "flac"
+#define AGS_EXPORT_SOUNDCARD_FORMAT_AIFF "aiff"
+#define AGS_EXPORT_SOUNDCARD_FORMAT_OGG "ogg"
  
 typedef struct _AgsExportSoundcard AgsExportSoundcard;
 typedef struct _AgsExportSoundcardClass AgsExportSoundcardClass;
