@@ -102,7 +102,7 @@ ags_dssi_manager_class_init(AgsDssiManagerClass *dssi_manager)
 void
 ags_dssi_manager_init(AgsDssiManager *dssi_manager)
 {
-  /* add base plugin mutex */
+  /* dssi manager mutex */
   dssi_manager->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(dssi_manager->obj_mutexattr);
   pthread_mutexattr_settype(dssi_manager->obj_mutexattr,
@@ -231,6 +231,15 @@ ags_dssi_manager_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_dssi_manager_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_dssi_manager_get_class_mutex:
+ * 
+ * Get class mutex.
+ * 
+ * Returns: the class mutex of #AgsDssiManager
+ * 
+ * Since: 2.0.0
+ */
 pthread_mutex_t*
 ags_dssi_manager_get_class_mutex()
 {
