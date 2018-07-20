@@ -22,11 +22,13 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_property_listing_editor.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
-#include <ags/audio/ags_audio.h>
+#include <ags/X/ags_property_listing_editor.h>
 
 #define AGS_TYPE_LISTING_EDITOR                (ags_listing_editor_get_type())
 #define AGS_LISTING_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LISTING_EDITOR, AgsListingEditor))

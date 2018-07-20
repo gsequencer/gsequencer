@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,8 @@
 
 #include <ags/X/ags_lv2_browser_callbacks.h>
 
-#include <ags/plugin/ags_lv2_manager.h>
-
-#include <ags/object/ags_applicable.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -41,8 +40,12 @@ ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   GtkComboBoxText *filename, *effect;
 
   AgsLv2Manager *lv2_manager;
-  
-  GList *list;
+  AgsLv2Plugin *lv2_plugin;
+
+  GList *start_list, *list;
+
+  pthread_mutex_t *lv2_manager_mutex;
+  pthread_mutex_t *base_plugin_mutex;
 
   list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
 
@@ -52,19 +55,57 @@ ags_lv2_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model((GtkComboBox *) effect)));
 
   lv2_manager = ags_lv2_manager_get_instance();
-  list = lv2_manager->lv2_plugin;
+
+  /* get lv2 manager mutex */
+  pthread_mutex_lock(ags_lv2_manager_get_class_mutex());
+  
+  lv2_manager_mutex = lv2_manager->obj_mutex;
+  
+  pthread_mutex_unlock(ags_lv2_manager_get_class_mutex());
+
+  /* get lv2 plugin */
+  pthread_mutex_lock(lv2_manager_mutex);
+
+  list =
+    start_list = g_list_copy(lv2_manager->lv2_plugin);
+
+  pthread_mutex_unlock(lv2_manager_mutex);
 
   while((list = ags_base_plugin_find_filename(list, gtk_combo_box_text_get_active_text(filename))) != NULL){
-    if(AGS_BASE_PLUGIN(list->data)->effect != NULL){
-      gtk_combo_box_text_append_text(effect,
-				     AGS_BASE_PLUGIN(list->data)->effect);
-    }
+    gchar *str;
+
+    lv2_plugin = list->data;
+
+    /* get base plugin mutex */
+    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+    base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
     
+    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+    /* set effect */
+    pthread_mutex_lock(base_plugin_mutex);
+
+    str = g_strdup(AGS_BASE_PLUGIN(lv2_plugin)->effect);
+
+    pthread_mutex_unlock(base_plugin_mutex);
+    
+    if(str != NULL){
+      gtk_combo_box_text_append_text(effect,
+				     str);
+    }
+
+    g_free(str);
+
+    /* iterate */
     list = list->next;
   }
   
   gtk_combo_box_set_active((GtkComboBox *) effect,
   			   0);
+
+
+  g_list_free(start_list);
 }
 
 void
@@ -82,6 +123,8 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
 
   gchar *str;
   guint y;
+
+  pthread_mutex_t *base_plugin_mutex;
 
   /* retrieve filename and uri */
   list_start = 
@@ -101,9 +144,18 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
 					       gtk_combo_box_text_get_active_text(effect));
 
   if(lv2_plugin != NULL){
-    GList *port_descriptor;
+    GList *start_plugin_port, *plugin_port;
     
+    /* get base plugin mutex */
+    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+    base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
+    
+    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
     /* update ui - empty */
+    pthread_mutex_lock(base_plugin_mutex);
+
     label = GTK_LABEL(list->data);
     str = g_strdup_printf("%s: %s",
 			  i18n("Name"),
@@ -158,18 +210,33 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
     
     g_list_free(child_start);
 
-    port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
+    start_plugin_port = g_list_copy(AGS_BASE_PLUGIN(lv2_plugin)->plugin_port);
 
+    pthread_mutex_unlock(base_plugin_mutex);
+
+    plugin_port = start_plugin_port;
     y = 0;
     
-    while(port_descriptor != NULL){
-      if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) == 0){
-	port_descriptor = port_descriptor->next;
+    while(plugin_port != NULL){
+      if(!ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
+	plugin_port = plugin_port->next;
 	
 	continue;
       }
       
-      str = g_strdup(AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name);
+      /* get base plugin mutex */
+      pthread_mutex_lock(ags_plugin_port_get_class_mutex());
+  
+      plugin_port_mutex = AGS_PLUGIN_PORT(plugin_port->data)->obj_mutex;
+    
+      pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+
+      /* get some fields */
+      pthread_mutex_lock(plugin_port_mutex);
+      
+      str = g_strdup(AGS_PLUGIN_PORT(plugin_port->data)->port_name);
+
+      pthread_mutex_unlock(plugin_port_mutex);
 
       label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 					"xalign", 0.0,
@@ -180,8 +247,8 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
 				0, 1,
 				y, y + 1);
       
-      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
+	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
 	  gtk_table_attach_defaults(table,
 				    GTK_WIDGET(ags_lv2_browser_combo_box_output_boolean_controls_new()),
 				    1, 2,
@@ -193,7 +260,7 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
 				    y, y + 1);
 	}
       }else{
-	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
 	  gtk_table_attach_defaults(table,
 				    GTK_WIDGET(ags_lv2_browser_combo_box_output_controls_new()),
 				    1, 2,
@@ -205,11 +272,13 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
 				    y, y + 1);
 	}
       }
-	
+      
       y++;
       
-      port_descriptor = port_descriptor->next;
+      plugin_port = plugin_port->next;
     }
+
+    g_list_free(start_plugin_port);
     
     gtk_widget_show_all((GtkWidget *) table);
   }else{

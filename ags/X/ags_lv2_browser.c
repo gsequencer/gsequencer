@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,18 +20,8 @@
 #include <ags/X/ags_lv2_browser.h>
 #include <ags/X/ags_lv2_browser_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/plugin/ags_lv2_manager.h>
-
-#include <ags/object/ags_applicable.h>
-
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
-#include <ags/thread/ags_task_thread.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -45,11 +35,13 @@
 #include <ags/i18n.h>
 
 void ags_lv2_browser_class_init(AgsLv2BrowserClass *lv2_browser);
-void ags_lv2_browser_init(AgsLv2Browser *lv2_browser);
 void ags_lv2_browser_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_lv2_browser_applicable_interface_init(AgsApplicableInterface *applicable);
+void ags_lv2_browser_init(AgsLv2Browser *lv2_browser);
+
 void ags_lv2_browser_connect(AgsConnectable *connectable);
 void ags_lv2_browser_disconnect(AgsConnectable *connectable);
+
 void ags_lv2_browser_set_update(AgsApplicable *applicable, gboolean update);
 void ags_lv2_browser_apply(AgsApplicable *applicable);
 void ags_lv2_browser_reset(AgsApplicable *applicable);
@@ -145,6 +137,8 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 
   gchar *str;
   gchar **filenames, **filenames_start;
+
+  lv2_browser->flags = 0;
   
   /* plugin */
   lv2_browser->plugin = (GtkHBox *) gtk_hbox_new(FALSE, 0);
@@ -266,28 +260,46 @@ void
 ags_lv2_browser_connect(AgsConnectable *connectable)
 {
   AgsLv2Browser *lv2_browser;
-  GList *list, *list_start;
 
   lv2_browser = AGS_LV2_BROWSER(connectable);
 
-  list_start = 
-    list = gtk_container_get_children(GTK_CONTAINER(lv2_browser->plugin));
-  list = list->next;
+  if((AGS_LV2_BROWSER_CONNECTED & (lv2_browser->flags)) != 0){
+    return;
+  }
 
-  g_signal_connect_after(G_OBJECT(list->data), "changed",
+  lv2_browser->flags |= AGS_LV2_BROWSER_CONNECTED;
+  
+  g_signal_connect_after(G_OBJECT(lv2_browser->filename), "changed",
 			 G_CALLBACK(ags_lv2_browser_plugin_filename_callback), lv2_browser);
 
-  list = list->next->next;
-  g_signal_connect_after(G_OBJECT(list->data), "changed",
+  g_signal_connect_after(G_OBJECT(lv2_browser->effect), "changed",
 			 G_CALLBACK(ags_lv2_browser_plugin_uri_callback), lv2_browser);
-
-  g_list_free(list_start);
 }
 
 void
 ags_lv2_browser_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsLv2Browser *lv2_browser;
+
+  lv2_browser = AGS_LV2_BROWSER(connectable);
+
+  if((AGS_LV2_BROWSER_CONNECTED & (lv2_browser->flags)) == 0){
+    return;
+  }
+
+  lv2_browser->flags &= (~AGS_LV2_BROWSER_CONNECTED);
+  
+  g_object_disconnect(G_OBJECT(lv2_browser->filename),
+		      "any_signal::changed",
+		      G_CALLBACK(ags_lv2_browser_plugin_filename_callback),
+		      lv2_browser,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(lv2_browser->effect),
+		      "any_signal::changed",
+		      G_CALLBACK(ags_lv2_browser_plugin_uri_callback),
+		      lv2_browser,
+		      NULL);
 }
 
 void
@@ -328,7 +340,7 @@ ags_lv2_browser_reset(AgsApplicable *applicable)
  *
  * Returns: the active lv2 filename
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_lv2_browser_get_plugin_filename(AgsLv2Browser *lv2_browser)
@@ -353,7 +365,7 @@ ags_lv2_browser_get_plugin_filename(AgsLv2Browser *lv2_browser)
  *
  * Returns: the active lv2 uri
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_lv2_browser_get_plugin_effect(AgsLv2Browser *lv2_browser)
@@ -383,7 +395,7 @@ ags_lv2_browser_get_plugin_effect(AgsLv2Browser *lv2_browser)
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GtkWidget*
 ags_lv2_browser_combo_box_output_boolean_controls_new()
@@ -408,7 +420,7 @@ ags_lv2_browser_combo_box_output_boolean_controls_new()
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GtkWidget*
 ags_lv2_browser_combo_box_output_controls_new()
@@ -435,7 +447,7 @@ ags_lv2_browser_combo_box_output_controls_new()
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GtkWidget*
 ags_lv2_browser_combo_box_boolean_controls_new()
@@ -462,7 +474,7 @@ ags_lv2_browser_combo_box_boolean_controls_new()
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GtkWidget*
 ags_lv2_browser_combo_box_controls_new()
@@ -501,11 +513,11 @@ ags_lv2_browser_preview_new()
 /**
  * ags_lv2_browser_new:
  *
- * Creates an #AgsLv2Browser
+ * Create a new instance of #AgsLv2Browser
  *
- * Returns: a new #AgsLv2Browser
+ * Returns: the new #AgsLv2Browser
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLv2Browser*
 ags_lv2_browser_new()
