@@ -170,6 +170,7 @@ void
 ags_line_class_init(AgsLineClass *line)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_line_parent_class = g_type_class_peek_parent(line);
@@ -189,7 +190,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The assigned #AgsPad.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("pad",
 				   i18n_pspec("parent pad"),
@@ -205,7 +206,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The assigned #AgsChannel to visualize.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("assigned channel"),
@@ -236,7 +237,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The ::set-channel signal notifies about changed channel.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   line_signals[SET_CHANNEL] =
     g_signal_new("set-channel",
@@ -255,7 +256,7 @@ ags_line_class_init(AgsLineClass *line)
    * The ::group-changed signal notifies about changed grouping. This
    * normally happens as toggling group button in #AgsPad or #AgsLine.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   line_signals[GROUP_CHANGED] =
     g_signal_new("group-changed",
@@ -277,7 +278,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * Returns: a #GList-struct containing new #AgsPort objects
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   line_signals[ADD_EFFECT] =
     g_signal_new("add-effect",
@@ -298,7 +299,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The ::remove-effect signal notifies about removed effect.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   line_signals[REMOVE_EFFECT] =
     g_signal_new("remove-effect",
@@ -317,7 +318,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The ::map-recall as recalls should be mapped.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   line_signals[MAP_RECALL] =
     g_signal_new("map-recall",
@@ -335,9 +336,9 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The ::find-port retrieves all associated ports.
    * 
-   * Returns: a #GList with associated ports
+   * Returns: an #GList-struct containing all related #AgsPort
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   line_signals[FIND_PORT] =
     g_signal_new("find-port",
@@ -355,7 +356,7 @@ ags_line_class_init(AgsLineClass *line)
    *
    * The ::done signal gets emited as audio stops playback.
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   line_signals[DONE] =
     g_signal_new("done",
@@ -406,7 +407,9 @@ ags_line_init(AgsLine *line)
   g_hash_table_insert(ags_line_message_monitor,
 		      line, ags_line_message_monitor_timeout);
   
-  g_timeout_add(1000 / 30, (GSourceFunc) ags_line_message_monitor_timeout, (gpointer) line);
+  g_timeout_add(1000 / 30,
+		(GSourceFunc) ags_line_message_monitor_timeout,
+		(gpointer) line);
 
   if(ags_line_indicator_queue_draw == NULL){
     ags_line_indicator_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
@@ -515,10 +518,16 @@ ags_line_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_PAD:
-    g_value_set_object(value, line->pad);
+    {
+      g_value_set_object(value,
+			 line->pad);
+    }
     break;
   case PROP_CHANNEL:
-    g_value_set_object(value, line->channel);
+    {
+      g_value_set_object(value,
+			 line->channel);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -586,6 +595,7 @@ void
 ags_line_connect(AgsConnectable *connectable)
 {
   AgsLine *line;
+
   GList *list, *list_start;
 
   line = AGS_LINE(connectable);
@@ -626,15 +636,14 @@ ags_line_connect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  if(list_start != NULL){
-    g_list_free(list_start);
-  }
+  g_list_free(list_start);
 }
 
 void
 ags_line_disconnect(AgsConnectable *connectable)
 {
   AgsLine *line;
+
   GList *list, *list_start;
 
   line = AGS_LINE(connectable);
@@ -672,9 +681,7 @@ ags_line_disconnect(AgsConnectable *connectable)
     list = list->next;
   }
 
-  if(list_start != NULL){
-    g_list_free(list_start);
-  }
+  g_list_free(list_start);
 }
 
 gchar*
@@ -774,7 +781,7 @@ ags_line_set_channel(AgsLine *line, AgsChannel *channel)
  *
  * Is emitted as group is changed.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_line_group_changed(AgsLine *line)
@@ -797,27 +804,32 @@ ags_line_add_ladspa_effect(AgsLine *line,
   AgsEffectSeparator *separator;
   GtkAdjustment *adjustment;
 
-  AgsRecallHandler *recall_handler;
-
   AgsLadspaPlugin *ladspa_plugin;
 
   GList *list;
-  GList *recall, *recall_start;
+  GList *start_recall, *recall;
   GList *port, *recall_port;
-  GList *port_descriptor;
+  GList *start_plugin_port, *plugin_port;
 
-  gchar *plugin_name;
-  gchar *control_port;
-  
   gdouble step;
   guint port_count;
+  gboolean has_output_port;
 
   guint x, y;
   guint k;
+
+  pthread_mutex_t *base_plugin_mutex;
   
   /* load plugin */
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
 							filename, effect);
+
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(ladspa_plugin)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
   port = NULL;
   recall_port = NULL;
@@ -836,6 +848,67 @@ ags_line_add_ladspa_effect(AgsLine *line,
     list = list->next;
   }
 
+  /* play - find ports */
+  g_object_get(line->channel,
+	       "play", &start_recall,
+	       NULL);
+
+  /* get by effect */
+  recall = start_recall;
+  
+  recall = ags_recall_get_by_effect(start_recall,
+				    filename,
+				    effect);
+
+  g_list_free(start_recall);
+  
+  start_recall = recall;
+  
+  if(recall == NULL){
+    return(NULL);
+  }
+
+  recall = g_list_last(start_recall);
+  g_object_get((GObject *) recall->data,
+	       "port", &port,
+	       NULL);
+  
+  /* check has output port */
+  if(ags_recall_test_flags(recall->data, AGS_RECALL_HAS_OUTPUT_PORT)){
+    has_output_port = TRUE;
+  }else{
+    has_output_port = FALSE;
+  }
+
+  g_list_free(start_recall);
+  
+  /* recall - find ports */
+  g_object_get(line->channel,
+	       "recall", &start_recall,
+	       NULL);
+
+  /* get by effect */
+  recall = start_recall;
+  
+  start_recall = ags_recall_get_by_effect(start_recall,
+					  filename,
+					  effect);
+
+  g_list_free(recall);
+  
+  recall = start_recall;
+  
+  if(recall == NULL){
+    return(NULL);
+  }
+
+  recall = g_list_last(start_recall);
+  g_object_get((GObject *) recall->data,
+	       "port", &recall_port,
+	       NULL);
+
+  g_list_free(start_recall);
+  
   /* add separator */
   separator = ags_effect_separator_new();
   g_object_set(separator,
@@ -852,34 +925,46 @@ ags_line_add_ladspa_effect(AgsLine *line,
   y++;
   
   /* load ports */
-  port_descriptor = AGS_BASE_PLUGIN(ladspa_plugin)->port;
+  g_object_get(ladspa_plugin,
+	       "plugin-port", &start_plugin_port,
+	       NULL);
 
-  port_count = g_list_length(port_descriptor);
+  plugin_port = start_plugin_port;
+  
+  port_count = g_list_length(start_plugin_port);
+  
   k = 0;
   
-  while(port_descriptor != NULL){
-    if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+  while(plugin_port != NULL){
+    if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
       GtkWidget *child_widget;
 
       AgsLadspaConversion *ladspa_conversion;
 
       GType widget_type;
 
+      gchar *plugin_name;
+      gchar *control_port;
+      gchar *port_name;
+      
+      guint unique_id;
       guint step_count;
       gboolean disable_seemless;
 
+      pthread_mutex_t *plugin_port_mutex;
+
       disable_seemless = FALSE;
       
-      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
 	disable_seemless = TRUE;
-	
-	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+
+	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
 	  widget_type = AGS_TYPE_LED;
 	}else{
 	  widget_type = GTK_TYPE_TOGGLE_BUTTON;
 	}
       }else{
-	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
 	  widget_type = AGS_TYPE_HINDICATOR;
 	}else{
 	  widget_type = AGS_TYPE_DIAL;
@@ -894,37 +979,60 @@ ags_line_add_ladspa_effect(AgsLine *line,
       
       step_count = AGS_DIAL_DEFAULT_PRECISION;
 
-      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INTEGER)){
+	g_object_get(plugin_port->data,
+		     "scale-steps", &step_count,
+		     NULL);
+
 	disable_seemless = TRUE;
       }
+
+      /* get plugin port mutex */
+      pthread_mutex_lock(ags_plugin_port_get_class_mutex());
+
+      plugin_port_mutex = AGS_PLUGIN_PORT(plugin_port->data)->obj_mutex;
+      
+      pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+      
+      /* get port name */
+      pthread_mutex_lock(plugin_port_mutex);
+
+      port_name = g_strdup(AGS_PLUGIN_PORT(plugin_port->data)->port_name);
+	
+      pthread_mutex_unlock(plugin_port_mutex);
       
       /* add line member */
+      g_object_get(ladspa_plugin,
+		   "unique-id", &unique_id,
+		   NULL);
+
       plugin_name = g_strdup_printf("ladspa-%u",
-				    ladspa_plugin->unique_id);
+				    unique_id);
+
       control_port = g_strdup_printf("%u/%u",
-				     k,
+				     k + 1,
 				     port_count);
+
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 						   "widget-type", widget_type,
-						   "widget-label", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "widget-label", port_name,
 						   "plugin-name", plugin_name,
 						   "filename", filename,
 						   "effect", effect,
-						   "specifier", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "specifier", port_name,
 						   "control-port", control_port,
 						   "steps", step_count,
-						   NULL);
-      
+						   NULL);      
       child_widget = ags_line_member_get_widget(line_member);
 
       g_free(plugin_name);
       g_free(control_port);
-
+      g_free(port_name);
+      
       /* ladspa conversion */
       ladspa_conversion = NULL;
 
-      if((AGS_PORT_DESCRIPTOR_BOUNDED_BELOW & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_BOUNDED_BELOW)){
 	if(ladspa_conversion == NULL ||
 	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
 	  ladspa_conversion = ags_ladspa_conversion_new();
@@ -933,7 +1041,7 @@ ags_line_add_ladspa_effect(AgsLine *line,
 	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_BELOW;
       }
 
-      if((AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_BOUNDED_ABOVE)){
 	if(ladspa_conversion == NULL ||
 	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
 	  ladspa_conversion = ags_ladspa_conversion_new();
@@ -941,7 +1049,7 @@ ags_line_add_ladspa_effect(AgsLine *line,
 
 	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_ABOVE;
       }
-      if((AGS_PORT_DESCRIPTOR_SAMPLERATE & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_SAMPLERATE)){
 	if(ladspa_conversion == NULL ||
 	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
 	  ladspa_conversion = ags_ladspa_conversion_new();
@@ -950,7 +1058,7 @@ ags_line_add_ladspa_effect(AgsLine *line,
 	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_SAMPLERATE;
       }
 
-      if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_LOGARITHMIC)){
 	if(ladspa_conversion == NULL ||
 	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
 	  ladspa_conversion = ags_ladspa_conversion_new();
@@ -959,21 +1067,25 @@ ags_line_add_ladspa_effect(AgsLine *line,
 	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
       }
 
-      line_member->conversion = (AgsConversion *) ladspa_conversion;
-
+      g_object_set(line_member,
+		   "conversion", ladspa_conversion,
+		   NULL);
+      
       /* child widget */
-      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
 	line_member->port_flags = AGS_LINE_MEMBER_PORT_BOOLEAN;
       }
       
-      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INTEGER)){
 	line_member->port_flags = AGS_LINE_MEMBER_PORT_INTEGER;
       }
       
       if(AGS_IS_DIAL(child_widget)){
 	AgsDial *dial;
 	GtkAdjustment *adjustment;
+
 	float lower_bound, upper_bound;
+	float default_value;
 	
 	dial = (AgsDial *) child_widget;
 
@@ -982,8 +1094,12 @@ ags_line_add_ladspa_effect(AgsLine *line,
 	}
 	
 	/* add controls of ports and apply range  */
-	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
-	upper_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->upper_value);
+	pthread_mutex_lock(plugin_port_mutex);
+
+	lower_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->lower_value);
+	upper_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->upper_value);
+
+	pthread_mutex_unlock(plugin_port_mutex);
 
 	adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
 	g_object_set(dial,
@@ -1004,15 +1120,25 @@ ags_line_add_ladspa_effect(AgsLine *line,
 				 lower_bound);
 	gtk_adjustment_set_upper(adjustment,
 				 upper_bound);
+
+	/* get/set default value */
+	pthread_mutex_lock(plugin_port_mutex);
+	
+	default_value = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
+
+	pthread_mutex_unlock(plugin_port_mutex);
+
 	gtk_adjustment_set_value(adjustment,
-				 g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value));
+				 default_value);
       }else if(AGS_IS_INDICATOR(child_widget) ||
 	       AGS_IS_LED(child_widget)){
 	g_hash_table_insert(ags_line_indicator_queue_draw,
 			    child_widget, ags_line_indicator_queue_draw_timeout);
 	line->queued_drawing = g_list_prepend(line->queued_drawing,
 					      child_widget);
-	g_timeout_add(1000 / 30, (GSourceFunc) ags_line_indicator_queue_draw_timeout, (gpointer) child_widget);
+	g_timeout_add(1000 / 30,
+		      (GSourceFunc) ags_line_indicator_queue_draw_timeout,
+		      (gpointer) child_widget);
       }
       
 #ifdef AGS_DEBUG
@@ -1023,10 +1149,11 @@ ags_line_add_ladspa_effect(AgsLine *line,
 		       (GtkWidget *) line_member,
 		       x % AGS_LINE_COLUMNS_COUNT, y,
 		       1, 1);
+
       ags_connectable_connect(AGS_CONNECTABLE(line_member));
       gtk_widget_show_all((GtkWidget *) line_member);
       
-      //      port = port->next;
+      /* iterate */
       x++;
 
       if(x % AGS_LINE_COLUMNS_COUNT == 0){
@@ -1034,9 +1161,12 @@ ags_line_add_ladspa_effect(AgsLine *line,
       }
     }
 
-    port_descriptor = port_descriptor->next;
+    /* iterate */
+    plugin_port = plugin_port->next;
     k++;
   }
+
+  g_list_free(start_plugin_port);
 
   return(g_list_concat(g_list_copy(port),
 		       g_list_copy(recall_port)));
@@ -1052,17 +1182,14 @@ ags_line_add_lv2_effect(AgsLine *line,
   AgsEffectSeparator *separator;
   GtkAdjustment *adjustment;
 
-  AgsRecallHandler *recall_handler;
-
   AgsLv2Plugin *lv2_plugin;
 
-  AgsMutexManager *mutex_manager;
-
   GList *list;
-  GList *recall, *recall_start;
+  GList *start_recall, *recall;
   GList *port, *recall_port;
-  GList *port_descriptor;
+  GList *start_plugin_port, *plugin_port;
 
+  gchar *uri;
   gchar *port_type_0, *port_type_1;
   gchar *plugin_name;
   gchar *control_port;
@@ -1073,12 +1200,18 @@ ags_line_add_lv2_effect(AgsLine *line,
   guint x, y;
   guint k;
   
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *base_plugin_mutex;
 
   /* load plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       filename, effect);
+
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(ladspa_plugin)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
   port = NULL;
   recall_port = NULL;
@@ -1097,6 +1230,60 @@ ags_line_add_lv2_effect(AgsLine *line,
     list = list->next;
   }
 
+  /* play - find ports */
+  g_object_get(line->channel,
+	       "play", &start_recall,
+	       NULL);
+
+  /* get by effect */
+  recall = start_recall;
+  
+  recall = ags_recall_get_by_effect(start_recall,
+				    filename,
+				    effect);
+
+  g_list_free(start_recall);
+  
+  start_recall = recall;
+  
+  if(recall == NULL){
+    return(NULL);
+  }
+
+  recall = g_list_last(start_recall);
+  g_object_get((GObject *) recall->data,
+	       "port", &port,
+	       NULL);
+  
+  g_list_free(start_recall);
+  
+  /* recall - find ports */
+  g_object_get(line->channel,
+	       "recall", &start_recall,
+	       NULL);
+
+  /* get by effect */
+  recall = start_recall;
+  
+  start_recall = ags_recall_get_by_effect(start_recall,
+					  filename,
+					  effect);
+
+  g_list_free(recall);
+  
+  recall = start_recall;
+  
+  if(recall == NULL){
+    return(NULL);
+  }
+
+  recall = g_list_last(start_recall);
+  g_object_get((GObject *) recall->data,
+	       "port", &recall_port,
+	       NULL);
+
+  g_list_free(start_recall);
+  
   /* add separator */
   separator = ags_effect_separator_new();
   g_object_set(separator,
@@ -1112,22 +1299,40 @@ ags_line_add_lv2_effect(AgsLine *line,
   
   y++;
   
-  /* load ports */
-  port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
+  /* get uri */
+  pthread_mutex_lock(base_plugin_mutex);
 
-  port_count = g_list_length(port_descriptor);
+  uri = g_strdup(lv2_plugin->uri);
+	
+  pthread_mutex_unlock(base_plugin_mutex);
+  
+  /* load ports */
+  g_object_get(ladspa_plugin,
+	       "plugin-port", &start_plugin_port,
+	       NULL);
+
+  plugin_port = start_plugin_port;
+  
+  port_count = g_list_length(start_plugin_port);
+  
   k = 0;
   
-  while(port_descriptor != NULL){
-    if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+  while(plugin_port != NULL){
+    if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
       GtkWidget *child_widget;
 
       AgsLv2Conversion *lv2_conversion;
       
       GType widget_type;
 
+      gchar *plugin_name;
+      gchar *control_port;
+      gchar *port_name;
+
       guint step_count;
       gboolean disable_seemless;
+
+      pthread_mutex_t *plugin_port_mutex;
 
       disable_seemless = FALSE;
       
@@ -1147,6 +1352,22 @@ ags_line_add_lv2_effect(AgsLine *line,
 	}
       }
 
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
+	disable_seemless = TRUE;
+
+	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
+	  widget_type = AGS_TYPE_LED;
+	}else{
+	  widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	}
+      }else{
+	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
+	  widget_type = AGS_TYPE_HINDICATOR;
+	}else{
+	  widget_type = AGS_TYPE_DIAL;
+	}
+      }
+
       if(control_type_name != NULL){
 	widget_type = g_type_from_name(control_type_name->data);
 
@@ -1155,25 +1376,43 @@ ags_line_add_lv2_effect(AgsLine *line,
       
       step_count = AGS_DIAL_DEFAULT_PRECISION;
 
-      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	step_count = AGS_PORT_DESCRIPTOR(port_descriptor->data)->scale_steps;
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INTEGER)){
+	g_object_get(plugin_port->data,
+		     "scale-steps", &step_count,
+		     NULL);
 
 	disable_seemless = TRUE;
       }
 
+      /* get plugin port mutex */
+      pthread_mutex_lock(ags_plugin_port_get_class_mutex());
+
+      plugin_port_mutex = AGS_PLUGIN_PORT(plugin_port->data)->obj_mutex;
+      
+      pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+      
+      /* get port name */
+      pthread_mutex_lock(plugin_port_mutex);
+
+      port_name = g_strdup(AGS_PLUGIN_PORT(plugin_port->data)->port_name);
+	
+      pthread_mutex_unlock(plugin_port_mutex);
+
       /* add line member */
       plugin_name = g_strdup_printf("lv2-<%s>",
-				    lv2_plugin->uri);
+				    uri);
+
       control_port = g_strdup_printf("%d/%d",
-				     k,
+				     k + 1,
 				     port_count);
+
       line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 						   "widget-type", widget_type,
-						   "widget-label", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "widget-label", port_name,
 						   "plugin-name", plugin_name,
 						   "filename", filename,
 						   "effect", effect,
-						   "specifier", AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name,
+						   "specifier", port_name,
 						   "control-port", control_port,
 						   "steps", step_count,
 						   NULL);
@@ -1181,11 +1420,12 @@ ags_line_add_lv2_effect(AgsLine *line,
 
       g_free(plugin_name);
       g_free(control_port);
+      g_free(port_name);
 
       /* lv2 conversion */
       lv2_conversion = NULL;
 
-      if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_LOGARITHMIC)){
 	if(lv2_conversion == NULL ||
 	   !AGS_IS_LV2_CONVERSION(lv2_conversion)){
 	  lv2_conversion = ags_lv2_conversion_new();
@@ -1194,14 +1434,16 @@ ags_line_add_lv2_effect(AgsLine *line,
 	lv2_conversion->flags |= AGS_LV2_CONVERSION_LOGARITHMIC;
       }
 
-      line_member->conversion = (AgsConversion *) lv2_conversion;
+      g_object_set(line_member,
+		   conversion, lv2_conversion,
+		   NULL);
 
       /* child widget */
-      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
 	line_member->port_flags = AGS_LINE_MEMBER_PORT_BOOLEAN;
       }
       
-      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INTEGER)){
 	line_member->port_flags = AGS_LINE_MEMBER_PORT_INTEGER;
       }
 
@@ -1210,6 +1452,7 @@ ags_line_add_lv2_effect(AgsLine *line,
 	GtkAdjustment *adjustment;
 
 	float lower_bound, upper_bound;
+	float default_value;
 	
 	dial = (AgsDial *) child_widget;
 
@@ -1218,8 +1461,12 @@ ags_line_add_lv2_effect(AgsLine *line,
 	}
 	
 	/* add controls of ports and apply range  */
-	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->lower_value);
-	upper_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->upper_value);
+	pthread_mutex_lock(plugin_port_mutex);
+	
+	lower_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->lower_value);
+	upper_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->upper_value);
+
+	pthread_mutex_unlock(plugin_port_mutex);
 
 	adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
 	g_object_set(dial,
@@ -1240,14 +1487,26 @@ ags_line_add_lv2_effect(AgsLine *line,
 				 lower_bound);
 	gtk_adjustment_set_upper(adjustment,
 				 upper_bound);
+
+	/* get/set default value */
+	pthread_mutex_lock(plugin_port_mutex);
+	
+	default_value = (float) g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
+
+	pthread_mutex_unlock(plugin_port_mutex);
+
 	gtk_adjustment_set_value(adjustment,
-				 g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value));
+				 default_value);
       }else if(AGS_IS_INDICATOR(child_widget)){
 	g_hash_table_insert(ags_line_indicator_queue_draw,
-			    child_widget, ags_line_indicator_queue_draw_timeout);
+			    child_widget,
+			    ags_line_indicator_queue_draw_timeout);
+
 	line->queued_drawing = g_list_prepend(line->queued_drawing,
 					      child_widget);
-	g_timeout_add(1000 / 30, (GSourceFunc) ags_line_indicator_queue_draw_timeout, (gpointer) child_widget);
+	g_timeout_add(1000 / 30,
+		      (GSourceFunc) ags_line_indicator_queue_draw_timeout,
+		      (gpointer) child_widget);
       }
 
 #ifdef AGS_DEBUG
@@ -1261,7 +1520,7 @@ ags_line_add_lv2_effect(AgsLine *line,
       ags_connectable_connect(AGS_CONNECTABLE(line_member));
       gtk_widget_show_all((GtkWidget *) line_member);
 
-      //      port = port->next;
+      /* iterate */
       x++;
 
       if(x % AGS_LINE_COLUMNS_COUNT == 0){
@@ -1269,9 +1528,12 @@ ags_line_add_lv2_effect(AgsLine *line,
       }
     }
 
-    port_descriptor = port_descriptor->next;
+    /* iterate */
+    plugin_port = plugin_port->next;
     k++;
   }
+
+  g_free(uri);
   
   return(g_list_concat(g_list_copy(port),
 		       g_list_copy(recall_port)));
@@ -1331,7 +1593,7 @@ ags_line_real_add_effect(AgsLine *line,
  *
  * Returns: a #GList-struct containing new #AgsPort objects
  *
- * Since: 1.0.0 
+ * Since: 2.0.0 
  */
 GList*
 ags_line_add_effect(AgsLine *line,
@@ -1362,11 +1624,9 @@ ags_line_real_remove_effect(AgsLine *line,
   AgsWindow *window;
   AgsMachine *machine;
   
-  AgsMutexManager *mutex_manager;
-
   GList *control, *control_start;
-  GList *recall;
-  GList *port;
+  GList *start_recall, *recall;
+  GList *start_port, *port;
 
   gchar **remove_specifier;
   gchar *filename, *effect;
@@ -1374,29 +1634,19 @@ ags_line_real_remove_effect(AgsLine *line,
   guint nth_effect, n_bulk;
   guint i;
   
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *channel_mutex;
+  pthread_mutex_t *recall_mutex;
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) line);
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
 						   AGS_TYPE_MACHINE);
-  
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get channel mutex */
-  pthread_mutex_lock(application_mutex);
-
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) line->channel);
-  
-  pthread_mutex_unlock(application_mutex);
-  
+    
   /* get nth_effect */
-  pthread_mutex_lock(channel_mutex);
+  g_object_get(effect_line->channel,
+	       "play", &start_recall,
+	       NULL);
   
-  recall = line->channel->play;
+  recall = start_recall;
+  
   nth_effect = 0;
   n_bulk = 0;
   
@@ -1404,12 +1654,12 @@ ags_line_real_remove_effect(AgsLine *line,
 						    AGS_TYPE_RECALL_LADSPA,
 						    AGS_TYPE_RECALL_LV2,
 						    G_TYPE_NONE)) != NULL){
-    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(recall->data)->flags)) != 0){
-      nth_effect += 1;
+    if(ags_recall_test_flags(recall->data, AGS_RECALL_TEMPLATE)){
+      nth_effect++;
     }
 
-    if((AGS_RECALL_BULK_MODE & (AGS_RECALL(recall->data)->flags)) != 0){
-      n_bulk += 1;
+    if(ags_recall_test_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE)){
+      n_bulk++;
     }
 
     if(nth_effect - n_bulk == nth + 1){
@@ -1420,26 +1670,27 @@ ags_line_real_remove_effect(AgsLine *line,
   }
 
   if(recall == NULL){
-    pthread_mutex_unlock(channel_mutex);
-
+    g_list_free(start_recall);
+    
     return;
   }
   
   nth_effect--;
 
-  /* destroy separator */
-  filename = NULL;
-  effect = NULL;
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = AGS_RECALL(recall->data)->obj_mutex;
   
-  if(AGS_IS_RECALL_LV2(recall->data)){
-    filename = AGS_RECALL_LV2(recall->data)->filename;
-    effect = AGS_RECALL_LV2(recall->data)->effect;
-  }else if(AGS_IS_RECALL_LADSPA(recall->data)){
-    filename = AGS_RECALL_LADSPA(recall->data)->filename;
-    effect = AGS_RECALL_LADSPA(recall->data)->effect;
-  }
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
   
-  pthread_mutex_unlock(channel_mutex);
+  /* get filename and effect */
+  pthread_mutex_lock(recall_mutex);
+
+  filename = g_strdup(AGS_RECALL(recall->data)->filename);
+  effect = g_strdup(AGS_RECALL(recall->data)->effect);
+
+  pthread_mutex_unlock(recall_mutex);
 
   /* destroy separator */
   control_start =
@@ -1473,7 +1724,11 @@ ags_line_real_remove_effect(AgsLine *line,
   g_list_free(control_start);
   
   /* destroy controls */
-  port = AGS_RECALL(recall->data)->port;
+  g_object_get(recall->data,
+	       "port", &start_port,
+	       NULL);
+  
+  port = start_port;
   remove_specifier = NULL;
   i = 0;
   
@@ -1512,20 +1767,24 @@ ags_line_real_remove_effect(AgsLine *line,
 	break;
       }
 	
+      /* iterate */
       control = control->next;
     }
 
     g_list_free(control_start);
     
+    /* iterate */
     port = port->next;
   }
 
+  g_list_free(start_recall);
+  g_list_free(start_port);
+    
   if(remove_specifier != NULL){
     remove_specifier[i] = NULL;
   }
   
   /* remove recalls */
-  //FIXME:JK: might be a task
   ags_channel_remove_effect(line->channel,
 			    nth_effect);
 
@@ -1540,7 +1799,7 @@ ags_line_real_remove_effect(AgsLine *line,
  *
  * Remove a line member.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_line_remove_effect(AgsLine *line,
@@ -1575,7 +1834,7 @@ ags_line_real_map_recall(AgsLine *line,
  *
  * Is emitted as group is changed.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_line_map_recall(AgsLine *line,
@@ -1629,13 +1888,13 @@ ags_line_real_find_port(AgsLine *line)
 
 /**
  * ags_line_find_port:
- * @line: an #AgsLine
+ * @line: the #AgsLine
  *
  * Lookup ports of assigned recalls.
  *
- * Returns: an #GList containing all related #AgsPort
+ * Returns: a #GList-struct containing all related #AgsPort
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_line_find_port(AgsLine *line)
@@ -1662,7 +1921,7 @@ ags_line_find_port(AgsLine *line)
  *
  * Notify about to stop playback of @recall_id.
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_line_done(AgsLine *line, GObject *recall_id)
@@ -1684,7 +1943,7 @@ ags_line_done(AgsLine *line, GObject *recall_id)
  *
  * Returns: next matching #GList-struct containing #AgsLine
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_line_find_next_grouped(GList *line)
@@ -1704,7 +1963,7 @@ ags_line_find_next_grouped(GList *line)
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 gboolean
 ags_line_message_monitor_timeout(AgsLine *line)

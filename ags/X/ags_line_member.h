@@ -25,12 +25,8 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/lib/ags_conversion.h>
-
-#include <ags/thread/ags_task.h>
-
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_port.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #define AGS_TYPE_LINE_MEMBER                (ags_line_member_get_type())
 #define AGS_LINE_MEMBER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LINE_MEMBER, AgsLineMember))
@@ -39,8 +35,8 @@
 #define AGS_IS_LINE_MEMBER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LINE_MEMBER))
 #define AGS_LINE_MEMBER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LINE_MEMBER, AgsLineMemberClass))
 
-#define AGS_LINE_MEMBER_DEFAULT_VERSION "0.7.33\0"
-#define AGS_LINE_MEMBER_DEFAULT_BUILD_ID "Wed Jun 15 13:48:15 UTC 2016\0"
+#define AGS_LINE_MEMBER_DEFAULT_VERSION "0.7.33"
+#define AGS_LINE_MEMBER_DEFAULT_BUILD_ID "Wed Jun 15 13:48:15 UTC 2016"
 
 typedef struct _AgsLineMember AgsLineMember;
 typedef struct _AgsLineMemberClass AgsLineMemberClass;

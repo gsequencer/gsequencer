@@ -79,6 +79,7 @@ enum{
   PROP_SPECIFIER,
   PROP_CONTROL_PORT,
   PROP_STEPS,
+  PROP_CONVERSION,
   PROP_TASK_TYPE,
   PROP_BULK_PORT,
   PROP_RECALL_BULK_PORT,
@@ -269,6 +270,22 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_STEPS,
+				  param_spec);
+
+  /**
+   * AgsBulkMember:conversion:
+   *
+   * The conversion of the plugin.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("conversion",
+				   i18n_pspec("conversion"),
+				   i18n_pspec("The conversion of the plugin"),
+				   AGS_TYPE_CONVERSION,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CONVERSION,
 				  param_spec);
 
   /**
@@ -600,6 +617,27 @@ ags_bulk_member_set_property(GObject *gobject,
       }
     }
     break;
+  case PROP_CONVERSION:
+    {
+      AgsConversion *conversion;
+
+      conversion = g_value_get_object(value);
+      
+      if(conversion == bulk_member->conversion){
+	return;
+      }
+      
+      if(bulk_member->conversion != NULL){
+	g_object_unref(bulk_member->conversion);
+      }
+
+      if(conversion != NULL){
+	g_object_ref(conversion);
+      }
+      
+      bulk_member->conversion = conversion;
+    }
+    break;
   case PROP_BULK_PORT:
     {
       AgsPort *port;
@@ -717,6 +755,16 @@ ags_bulk_member_get_property(GObject *gobject,
       g_value_set_string(value, bulk_member->control_port);
     }
     break;
+  case PROP_STEPS:
+    {
+      g_value_set_uint(value, bulk_member->steps);
+    }
+    break;
+  case PROP_CONVERSION:
+    {
+      g_value_set_object(value, bulk_member->conversion);
+    }
+    break;
   case PROP_TASK_TYPE:
     {
       g_value_set_ulong(value, bulk_member->task_type);
@@ -737,13 +785,19 @@ ags_bulk_member_finalize(GObject *gobject)
   
   g_free(bulk_member->widget_label);
 
-  g_free(bulk_member->plugin_name);
-
   g_free(bulk_member->filename);
   g_free(bulk_member->effect);
 
+  g_free(bulk_member->plugin_name);
   g_free(bulk_member->control_port);
 
+  g_free(bulk_member->control_port);
+
+
+  if(bulk_member->conversion != NULL){
+    g_object_unref(bulk_member->conversion);
+  }
+  
   /* bulk port */
   g_list_free_full(bulk_member->bulk_port,
 		   ags_bulk_port_free);

@@ -1295,7 +1295,9 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
       }
 
-      bulk_member->conversion = (AgsConversion *) ladspa_conversion;
+      g_object_set(bulk_member,
+		   "conversion", ladspa_conversion,
+		   NULL);
       
       /* child widget */
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
@@ -1814,7 +1816,9 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
       }
 
-      bulk_member->conversion = (AgsConversion *) ladspa_conversion;
+      g_object_set(bulk_member,
+		   "conversion", ladspa_conversion,
+		   NULL);
 
       /* child widget */
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
@@ -2327,7 +2331,9 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 	lv2_conversion->flags |= AGS_LV2_CONVERSION_LOGARITHMIC;
       }
 
-      bulk_member->conversion = (AgsConversion *) lv2_conversion;
+      g_object_set(bulk_member,
+		   "conversion", lv2_conversion,
+		   NULL);
 
       /* child widget */
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){

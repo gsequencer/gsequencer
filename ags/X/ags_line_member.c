@@ -20,20 +20,9 @@
 #include <ags/X/ags_line_member.h>
 #include <ags/X/ags_line_member_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_channel.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/widget/ags_led.h>
-#include <ags/widget/ags_hindicator.h>
-#include <ags/widget/ags_dial.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -57,9 +46,10 @@ void ags_line_member_get_property(GObject *gobject,
 				  guint prop_id,
 				  GValue *value,
 				  GParamSpec *param_spec);
+void ags_line_member_finalize(GObject *gobject);
+
 void ags_line_member_connect(AgsConnectable *connectable);
 void ags_line_member_disconnect(AgsConnectable *connectable);
-void ags_line_member_finalize(GObject *gobject);
 
 void ags_line_member_real_change_port(AgsLineMember *line_member,
 				      gpointer port_data);
@@ -93,6 +83,7 @@ enum{
   PROP_SPECIFIER,
   PROP_CONTROL_PORT,
   PROP_STEPS,
+  PROP_CONVERSION,
   PROP_PORT,
   PROP_PORT_DATA,
   PROP_RECALL_PORT,
@@ -288,6 +279,22 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  param_spec);
 
   /**
+   * AgsLineMember:conversion:
+   *
+   * The conversion of plugin.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("conversion",
+				   i18n_pspec("conversion to apply"),
+				   i18n_pspec("The conversion to apply"),
+				   AGS_TYPE_CONVERSION,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CONVERSION,
+				  param_spec);
+
+  /**
    * AgsLineMember:port:
    *
    * The matching simple port of plugin name and specifier.
@@ -377,6 +384,8 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
    * @port_data: the port's data
    *
    * The ::change-port signal notifies modified port.
+   * 
+   * Since: 1.0.0
    */
   line_member_signals[CHANGE_PORT] =
     g_signal_new("change-port",
@@ -391,9 +400,12 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
   /**
    * AgsLine_Member::find-port:
    * @line_member: the #AgsLineMember to resize
-   * Returns: a #GList with associated ports
    *
    * The ::find-port retrieves all associated ports
+   * 
+   * Returns: a #GList with associated ports
+   * 
+   * Since: 1.0.0
    */
   line_member_signals[FIND_PORT] =
     g_signal_new("find-port",
@@ -685,7 +697,28 @@ ags_line_member_set_property(GObject *gobject,
       }
     }
     break;
-  case PROP_PORT:
+  case PROP_CONVERSION:
+    {
+      AgsConversion *conversion;
+
+      conversion = g_value_get_object(value);
+      
+      if(conversion == line_member->conversion){
+	return;
+      }
+      
+      if(line_member->conversion != NULL){
+	g_object_unref(line_member->conversion);
+      }
+
+      if(conversion != NULL){
+	g_object_ref(conversion);
+      }
+      
+      line_member->conversion = conversion;
+    }
+    break;
+    case PROP_PORT:
     {
       AgsPort *port;
 
@@ -830,6 +863,16 @@ ags_line_member_get_property(GObject *gobject,
       g_value_set_string(value, line_member->control_port);
     }
     break;
+  case PROP_STEPS:
+    {
+      g_value_set_uint(value, line_member->steps);
+    }
+    break;
+  case PROP_CONVERSION:
+    {
+      g_value_set_object(value, line_member->conversion);
+    }
+    break;
   case PROP_PORT:
     {
       g_value_set_object(value, line_member->port);
@@ -859,6 +902,39 @@ ags_line_member_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_line_member_finalize(GObject *gobject)
+{
+  AgsLineMember *line_member;
+
+  line_member = (AgsLineMember *) gobject;
+
+  g_free(line_member->widget_label);
+
+  g_free(line_member->filename);
+  g_free(line_member->effect);
+
+  g_free(line_member->plugin_name);
+  g_free(line_member->specifier);
+
+  g_free(line_member->control_port);
+  
+  if(line_member->conversion != NULL){
+    g_object_unref(line_member->conversion);
+  }
+  
+  if(line_member->port != NULL){
+    g_object_unref(line_member->port);
+  }
+
+  if(line_member->recall_port != NULL){
+    g_object_unref(line_member->recall_port);
+  }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_line_member_parent_class)->finalize(gobject);  
 }
 
 void
@@ -952,13 +1028,6 @@ void
 ags_line_member_disconnect(AgsConnectable *connectable)
 {
   /* empty */
-}
-
-void
-ags_line_member_finalize(GObject *gobject)
-{
-  /* call parent */
-  G_OBJECT_CLASS(ags_line_member_parent_class)->finalize(gobject);  
 }
 
 GtkWidget*

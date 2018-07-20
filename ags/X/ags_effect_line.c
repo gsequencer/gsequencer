@@ -377,7 +377,9 @@ ags_effect_line_init(AgsEffectLine *effect_line)
   g_hash_table_insert(ags_effect_line_message_monitor,
 		      effect_line, ags_effect_line_message_monitor_timeout);
   
-  g_timeout_add(1000 / 30, (GSourceFunc) ags_effect_line_message_monitor_timeout, (gpointer) effect_line);
+  g_timeout_add(1000 / 30,
+		(GSourceFunc) ags_effect_line_message_monitor_timeout,
+		(gpointer) effect_line);
 
   if(ags_effect_line_indicator_queue_draw == NULL){
     ags_effect_line_indicator_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
@@ -488,6 +490,7 @@ void
 ags_effect_line_finalize(GObject *gobject)
 {
   AgsEffectLine *effect_line;
+
   GList *list;
 
   effect_line = AGS_EFFECT_LINE(gobject);
@@ -520,6 +523,7 @@ void
 ags_effect_line_connect(AgsConnectable *connectable)
 {
   AgsEffectLine *effect_line;
+
   GList *list, *list_start;
 
   effect_line = AGS_EFFECT_LINE(connectable);
@@ -529,37 +533,6 @@ ags_effect_line_connect(AgsConnectable *connectable)
   }
 
   effect_line->flags &= (~AGS_EFFECT_LINE_CONNECTED);
-
-  /* connect line members */
-  list_start = 
-    list = gtk_container_get_children(GTK_CONTAINER(effect_line->table));
-  
-  while(list != NULL){
-    if(AGS_IS_CONNECTABLE(list->data)){
-      ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-    }
-
-    list = list->next;
-  }
-
-  if(list_start != NULL){
-    g_list_free(list_start);
-  }
-}
-
-void
-ags_effect_line_disconnect(AgsConnectable *connectable)
-{
-  AgsEffectLine *effect_line;
-  GList *list, *list_start;
-
-  effect_line = AGS_EFFECT_LINE(connectable);
-
-  if((AGS_EFFECT_LINE_CONNECTED & (effect_line->flags)) != 0){
-    return;
-  }
-
-  effect_line->flags |= AGS_EFFECT_LINE_CONNECTED;
 
   if((AGS_EFFECT_LINE_PREMAPPED_RECALL & (effect_line->flags)) == 0){
     if((AGS_EFFECT_LINE_MAPPED_RECALL & (effect_line->flags)) == 0){
@@ -576,18 +549,44 @@ ags_effect_line_disconnect(AgsConnectable *connectable)
   
   while(list != NULL){
     if(AGS_IS_CONNECTABLE(list->data)){
-      ags_connectable_connect(AGS_CONNECTABLE(list->data));
+      ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
     }
 
     list = list->next;
   }
 
-  if(list_start != NULL){
-    g_list_free(list_start);
+  g_list_free(list_start);
+}
+
+void
+ags_effect_line_disconnect(AgsConnectable *connectable)
+{
+  AgsEffectLine *effect_line;
+
+  GList *list, *list_start;
+
+  effect_line = AGS_EFFECT_LINE(connectable);
+
+  if((AGS_EFFECT_LINE_CONNECTED & (effect_line->flags)) == 0){
+    return;
   }
 
-  g_signal_handlers_disconnect_by_data(effect_line->channel,
-				       effect_line);
+  /* unset connected flag */
+  effect_line->flags &= (~AGS_EFFECT_LINE_CONNECTED);
+
+  /* disconnect line members */
+  list_start = 
+    list = gtk_container_get_children(GTK_CONTAINER(effect_line->table));
+  
+  while(list != NULL){
+    if(AGS_IS_CONNECTABLE(list->data)){
+      ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+    }
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 gchar*
@@ -797,7 +796,7 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
   
   /* recall - find ports */
   g_object_get(effect_line->channel,
-	       "play", &start_recall,
+	       "recall", &start_recall,
 	       NULL);
 
   /* get by effect */
@@ -917,7 +916,7 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
       
       pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
       
-      /* get port name and uri */
+      /* get port name */
       pthread_mutex_lock(plugin_port_mutex);
 
       port_name = g_strdup(AGS_PLUGIN_PORT(plugin_port->data)->port_name);
@@ -950,6 +949,7 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 
       g_free(plugin_name);
       g_free(control_port);
+      g_free(port_name);
       
       /* ladspa conversion */
       ladspa_conversion = NULL;
@@ -988,8 +988,10 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
     
 	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
       }
-
-      line_member->conversion = (AgsConversion *) ladspa_conversion;
+      
+      g_object_set(line_member,
+		   "conversion", ladspa_conversion,
+		   NULL);
 
       /* child widget */
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
@@ -1078,7 +1080,6 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
       gtk_widget_show_all((GtkWidget *) line_member);
       
       /* iterate */
-      port = port->next;
       x++;
 
       if(x % AGS_EFFECT_LINE_COLUMNS_COUNT == 0){
@@ -1137,13 +1138,6 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
   base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
   
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
-
-  /* get uri */
-  pthread_mutex_lock(base_plugin_mutex);
-
-  uri = g_strdup(lv2_plugin->uri);
-  
-  pthread_mutex_unlock(base_plugin_mutex);
 
   /* retrieve position within table  */
   x = 0;
@@ -1231,6 +1225,13 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
   gtk_widget_show_all(separator);
   
   y++;
+
+  /* get uri */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  uri = g_strdup(lv2_plugin->uri);
+  
+  pthread_mutex_unlock(base_plugin_mutex);
 
   /* load ports */
   g_object_get(lv2_plugin,
@@ -1351,7 +1352,9 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 	lv2_conversion->flags |= AGS_LV2_CONVERSION_LOGARITHMIC;
       }
 
-      line_member->conversion = (AgsConversion *) lv2_conversion;
+      g_object_set(line_member,
+		   conversion, lv2_conversion,
+		   NULL);
 
       /* child widget */
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
@@ -1415,7 +1418,8 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
       }else if(AGS_IS_INDICATOR(child_widget) ||
 	       AGS_IS_LED(child_widget)){
 	g_hash_table_insert(ags_effect_line_indicator_queue_draw,
-			    child_widget, ags_effect_line_indicator_queue_draw_timeout);
+			    child_widget,
+			    ags_effect_line_indicator_queue_draw_timeout);
 	
 	effect_line->queued_drawing = g_list_prepend(effect_line->queued_drawing,
 						     child_widget);
@@ -1451,6 +1455,8 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
     plugin_port = plugin_port->next;
     k++;
   }
+
+  g_free(uri);
   
   return(g_list_concat(g_list_copy(port),
 		       g_list_copy(recall_port)));
@@ -1587,6 +1593,8 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
   }
 
   if(recall == NULL){
+    g_list_free(start_recall);
+
     return;
   }
 
@@ -1599,7 +1607,7 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
   
-  /* destroy separator */
+  /* get filename and effect */
   pthread_mutex_lock(recall_mutex);
 
   filename = g_strdup(AGS_RECALL(recall->data)->filename);
@@ -1639,7 +1647,11 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
   g_list_free(control_start);
     
   /* destroy controls */
-  port = AGS_RECALL(recall->data)->port;
+  g_object_get(recall->data,
+	       "port", &start_port,
+	       NULL);
+  
+  port = start_port;
   remove_specifier = NULL;
   i = 0;
   
@@ -1677,13 +1689,18 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
 	break;
       }
 	
+      /* iterate */
       control = control->next;
     }
 
     g_list_free(control_start);
-    
+
+    /* iterate */
     port = port->next;
   }
+
+  g_list_free(start_recall);
+  g_list_free(start_port);
 
   if(remove_specifier != NULL){
     remove_specifier[i] = NULL;
@@ -1798,7 +1815,7 @@ ags_effect_line_real_find_port(AgsEffectLine *effect_line)
  *
  * Lookup ports of associated recalls.
  *
- * Returns: an #GList containing all related #AgsPort
+ * Returns: a #GList-struct containing all related #AgsPort
  *
  * Since: 2.0.0
  */
