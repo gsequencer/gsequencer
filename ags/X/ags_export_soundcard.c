@@ -483,7 +483,7 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
   
   GtkTreeModel *model;
   
-  GList *soundcard;
+  GList *start_soundcard, *soundcard;
   GList *card, *card_start;
   
   gchar *backend;
@@ -492,16 +492,18 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
   export_window = gtk_widget_get_ancestor(export_soundcard,
 					  AGS_TYPE_EXPORT_WINDOW);
  
-  soundcard = NULL;
+  start_soundcard = NULL;
   
   if(export_window != NULL &&
      export_window->application_context != NULL){
-    soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(export_window->application_context));
+    start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(export_window->application_context));
   }
 
   card_start = NULL;
   backend = gtk_combo_box_text_get_active_text(export_soundcard->backend);
 
+  soundcard = start_soundcard;
+  
   if(backend != NULL){
     if(!g_ascii_strncasecmp(backend,
 			    "alsa",
@@ -582,6 +584,8 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
       }
     }
   }
+
+  g_list_free(start_soundcard);
   
   model = gtk_combo_box_get_model(GTK_COMBO_BOX(export_soundcard->card));
   gtk_list_store_clear(GTK_LIST_STORE(model));

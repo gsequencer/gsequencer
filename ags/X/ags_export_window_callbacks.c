@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,16 +19,8 @@
 
 #include <ags/X/ags_export_window_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_connectable.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-#include <ags/audio/thread/ags_export_thread.h>
-
-#include <ags/audio/task/ags_export_output.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
@@ -104,37 +96,17 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
 {
   AgsWindow *window;
 
-  AgsMutexManager *mutex_manager;
-
   gchar *str;
   
   gdouble delay_factor;
   gdouble delay;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   /* retrieve window */
   window = export_window->main_window;
 
-  /* retrieve soundcard mutex */
-  pthread_mutex_lock(application_mutex);
-
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) window->soundcard);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* get some properties */
-  pthread_mutex_lock(soundcard_mutex);
-
   delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard));
   delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(window->soundcard));
-
-  pthread_mutex_unlock(soundcard_mutex);
 
   /* update duration */
   str = ags_time_get_uptime_from_offset(gtk_spin_button_get_value(export_window->tact) * 16.0,
@@ -153,36 +125,27 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
   AgsWindow *window;
   AgsMachine *machine;
   
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
+  AgsThread *main_loop;
+  
   AgsApplicationContext *application_context;
   
   GList *machines_start;
-  gboolean success;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
+  gboolean success;
 
   window = AGS_XORG_APPLICATION_CONTEXT(export_window->application_context)->window;
 
   application_context = (AgsApplicationContext *) window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-      
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task and soundcard thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
+  g_object_get(application_context,
+	       "main-loop", &main_loop,
+	       NULL);
   
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+
+  
+  /* collect */  
   machines_start = NULL;
 
   if(gtk_toggle_button_get_active((GtkToggleButton *) toggle_button)){
@@ -314,20 +277,9 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       gdouble delay;
       gdouble delay_factor;
       
-      pthread_mutex_lock(application_mutex);
-
-      soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) window->soundcard);
-  
-      pthread_mutex_unlock(application_mutex);
-
       /* create task */
-      pthread_mutex_lock(soundcard_mutex);
-
       delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(window->soundcard));
       delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard));
-	
-      pthread_mutex_unlock(soundcard_mutex);
 
       /*  */
       tic = (gtk_spin_button_get_value(export_window->tact) + 1) * (16.0 * delay);

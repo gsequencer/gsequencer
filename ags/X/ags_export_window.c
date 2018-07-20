@@ -106,6 +106,7 @@ ags_export_window_class_init(AgsExportWindowClass *export_window)
 {
   GObjectClass *gobject;
   GtkWidgetClass *widget;
+
   GParamSpec *param_spec;
 
   ags_export_window_parent_class = g_type_class_peek_parent(export_window);
@@ -124,7 +125,7 @@ ags_export_window_class_init(AgsExportWindowClass *export_window)
    *
    * The assigned #AgsApplicationContext to give control of application.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("assigned application context"),
@@ -140,7 +141,7 @@ ags_export_window_class_init(AgsExportWindowClass *export_window)
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -558,7 +559,7 @@ ags_export_window_delete_event(GtkWidget *widget, GdkEventAny *event)
  * 
  * Reload soundcard editor.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
@@ -569,23 +570,15 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
   GtkAlignment *alignment;
   GtkButton *remove_button;
   
-  AgsMutexManager *mutex_manager;
-
   AgsApplicationContext *application_context;
 
-  GList *list;
+  GList *start_list, *list;
 
   gchar *backend;
   gchar *str;
   
   guint i;
   
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   /* retrieve main window and application context */
   main_window = export_window->main_window;
 
@@ -595,23 +588,11 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
     return;
   }
   
-  /* retrieve soundcard */
-  pthread_mutex_lock(application_mutex);
-
-  list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
-  
-  pthread_mutex_unlock(application_mutex);
+  list =
+    start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
   /* create export soundcard */
   for(i = 0; list != NULL; i++){
-    /* get soundcar mutex */
-    pthread_mutex_lock(application_mutex);
-
-    soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) list->data);
-  
-    pthread_mutex_unlock(application_mutex);
-
     /* create GtkHBox */
     hbox = (GtkHBox *) gtk_hbox_new(FALSE,
 				    0);
@@ -649,9 +630,9 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
     backend = NULL;
 
     if(AGS_IS_DEVOUT(list->data)){
-      if((AGS_DEVOUT_ALSA & (AGS_DEVOUT(list->data)->flags)) != 0){
+      if(ags_devout_test_flags(AGS_DEVOUT(list->data), AGS_DEVOUT_ALSA)){
 	backend = "alsa";
-      }else if((AGS_DEVOUT_OSS & (AGS_DEVOUT(list->data)->flags)) != 0){
+      }else if(ags_devout_test_flags(AGS_DEVOUT(list->data), AGS_DEVOUT_OSS)){
 	backend = "oss";
       }
     }else if(AGS_IS_JACK_DEVOUT(list->data)){
@@ -667,11 +648,7 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
     ags_export_soundcard_refresh_card(export_soundcard);
     
     /* set card */
-    pthread_mutex_lock(soundcard_mutex);
-
     str = ags_soundcard_get_device(AGS_SOUNDCARD(list->data));
-
-    pthread_mutex_unlock(soundcard_mutex);
 
     ags_export_soundcard_set_card(export_soundcard,
 				  str);
@@ -695,23 +672,26 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
     /* iterate */
     list = list->next;
   }
+
+  g_list_free(start_list);
 }
 
 /**
  * ags_export_window_new:
  * 
- * Instantiate an #AgsExportWindow
+ * Create a new instance of #AgsExportWindow
  * 
- * Returns: an #AgsExportWindow
+ * Returns: the #AgsExportWindow
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsExportWindow*
 ags_export_window_new()
 {
   AgsExportWindow *export_window;
 
-  export_window = (AgsExportWindow *) g_object_new(AGS_TYPE_EXPORT_WINDOW, NULL);
+  export_window = (AgsExportWindow *) g_object_new(AGS_TYPE_EXPORT_WINDOW,
+						   NULL);
 
   return(export_window);
 }

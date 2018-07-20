@@ -32,7 +32,7 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
 
   AgsApplicationContext *application_context;
 
-  GList *soundcard;
+  GList *start_soundcard, *soundcard;
 
   gchar *backend;
   gchar *device;
@@ -52,12 +52,14 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
   ags_export_soundcard_refresh_card(export_soundcard);
 
   /* get soundcard */
-  soundcard = NULL;
+  start_soundcard = NULL;
 
   if(application_context != NULL){
-    soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+    start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   }
 
+  soundcard = start_soundcard;
+  
   backend = gtk_combo_box_text_get_active_text(export_soundcard->backend);
   device = gtk_combo_box_text_get_active_text(export_soundcard->card);
 
@@ -146,6 +148,8 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
     soundcard = soundcard->next;
   }
 
+  g_list_free(start_soundcard);
+  
   if(!found_card){
     g_object_set(export_soundcard,
 		 "soundcard", NULL,
@@ -161,7 +165,7 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
 
   AgsApplicationContext *application_context;
 
-  GList *soundcard;
+  GList *start_soundcard, *soundcard;
 
   gchar *backend;
   gchar *device;
@@ -178,12 +182,14 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
   }
 
   /* get soundcard */
-  soundcard = NULL;
+  start_soundcard = NULL;
     
   if(application_context != NULL){
-    soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+    start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   }
 
+  soundcard = start_soundcard;
+  
   backend = gtk_combo_box_text_get_active_text(export_soundcard->backend);
   device = gtk_combo_box_text_get_active_text(export_soundcard->card);
 
@@ -272,6 +278,8 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
     soundcard = soundcard->next;
   }
 
+  g_list_free(start_soundcard);
+  
   if(!found_card){
     g_object_set(export_soundcard,
 		 "soundcard", NULL,
