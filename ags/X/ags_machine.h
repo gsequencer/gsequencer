@@ -189,7 +189,7 @@ void ags_machine_set_run(AgsMachine *machine,
 			 gboolean run);
 void ags_machine_set_run_extended(AgsMachine *machine,
 				  gboolean run,
-				  gboolean sequencer, gboolean notation);
+				  gboolean sequencer, gboolean notation, gboolean wave, gboolean midi);
 
 GtkListStore* ags_machine_get_possible_links(AgsMachine *machine);
 GtkListStore* ags_machine_get_possible_audio_output_connections(AgsMachine *machine);
