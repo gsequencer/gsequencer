@@ -390,6 +390,7 @@ ags_link_editor_reset(AgsApplicable *applicable)
 		   NULL);
 
       /* get machine */
+      //FIXME:JK: don't access AgsAudio to obtain widget
       link_machine = (AgsMachine *) link_audio->machine;
 
     }else{

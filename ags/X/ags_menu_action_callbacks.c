@@ -304,35 +304,22 @@ ags_menu_action_add_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_add_panel_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsApplicationContext *application_context;
   AgsWindow *window;
   AgsPanel *panel;
+
+  AgsGuiThread *gui_thread;
   
   AgsAddAudio *add_audio;
 
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsGuiThread *gui_thread;
+  AgsApplicationContext *application_context;
 
-  pthread_mutex_t *application_mutex;
-    
   application_context = ags_application_context_get_instance();
+
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
-  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(application_context)->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
-
+  /* create panel */
   panel = ags_panel_new(G_OBJECT(window->soundcard));
 
   add_audio = ags_add_audio_new(window->application_context,
@@ -360,35 +347,22 @@ ags_menu_action_add_panel_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_add_mixer_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsApplicationContext *application_context;
   AgsWindow *window;
   AgsMixer *mixer;
 
-  AgsAddAudio *add_audio;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
-  pthread_mutex_t *application_mutex;
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
     
   application_context = ags_application_context_get_instance();
+
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
   
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(application_context)->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
-
+  /* create mixer */
   mixer = ags_mixer_new(G_OBJECT(window->soundcard));
 
   add_audio = ags_add_audio_new(window->application_context,
@@ -415,36 +389,23 @@ ags_menu_action_add_mixer_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_add_drum_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsApplicationContext *application_context;
   AgsWindow *window;
   AgsDrum *drum;
 
-  AgsAddAudio *add_audio;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
-  pthread_mutex_t *application_mutex;
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
     
   application_context = ags_application_context_get_instance();
+
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+
+  /* create drum */
   drum = ags_drum_new(G_OBJECT(window->soundcard));
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(application_context)->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
   
   add_audio = ags_add_audio_new(window->application_context,
 				AGS_MACHINE(drum)->audio);
@@ -473,36 +434,23 @@ ags_menu_action_add_drum_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_add_matrix_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsApplicationContext *application_context;
   AgsWindow *window;
   AgsMatrix *matrix;
 
-  AgsAddAudio *add_audio;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
-  pthread_mutex_t *application_mutex;
-  
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+
   application_context = ags_application_context_get_instance();
+
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
   
+  /* create matrix */
   matrix = ags_matrix_new(G_OBJECT(window->soundcard));
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(application_context)->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
 
   add_audio = ags_add_audio_new(window->application_context,
 				AGS_MACHINE(matrix)->audio);
@@ -531,36 +479,23 @@ ags_menu_action_add_matrix_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_add_synth_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsApplicationContext *application_context;
   AgsWindow *window;
   AgsSynth *synth;
 
-  AgsAddAudio *add_audio;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
-  pthread_mutex_t *application_mutex;
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
     
   application_context = ags_application_context_get_instance();
+
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+
+  /* create synth */
   synth = ags_synth_new(G_OBJECT(window->soundcard));
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(application_context)->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
 
   add_audio = ags_add_audio_new(window->application_context,
 				AGS_MACHINE(synth)->audio);
@@ -584,36 +519,23 @@ ags_menu_action_add_synth_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_add_syncsynth_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsApplicationContext *application_context;
   AgsWindow *window;
   AgsSyncsynth *syncsynth;
 
-  AgsAddAudio *add_audio;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
-  pthread_mutex_t *application_mutex;
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
   
   application_context = ags_application_context_get_instance();
+
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+
+  /* create syncsynth */
   syncsynth = ags_syncsynth_new(G_OBJECT(window->soundcard));
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(application_context)->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
 
   add_audio = ags_add_audio_new(window->application_context,
 				AGS_MACHINE(syncsynth)->audio);
@@ -637,36 +559,23 @@ ags_menu_action_add_syncsynth_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_add_ffplayer_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsApplicationContext *application_context;
   AgsWindow *window;
   AgsFFPlayer *ffplayer;
 
-  AgsAddAudio *add_audio;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
-  pthread_mutex_t *application_mutex;
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
   
   application_context = ags_application_context_get_instance();
+
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+
+  /* create ffplayer */
   ffplayer = ags_ffplayer_new(G_OBJECT(window->soundcard));
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);    
-
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(application_context)->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
 
   add_audio = ags_add_audio_new(window->application_context,
 				AGS_MACHINE(ffplayer)->audio);
@@ -691,36 +600,23 @@ ags_menu_action_add_ffplayer_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_add_audiorec_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsApplicationContext *application_context;
   AgsWindow *window;
   AgsAudiorec *audiorec;
 
-  AgsAddAudio *add_audio;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
-  pthread_mutex_t *application_mutex;
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
   
   application_context = ags_application_context_get_instance();
+
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+
+  /* create audiorec */
   audiorec = ags_audiorec_new(G_OBJECT(window->soundcard));
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);    
-
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(application_context)->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
 
   add_audio = ags_add_audio_new(window->application_context,
 				AGS_MACHINE(audiorec)->audio);
@@ -745,15 +641,14 @@ ags_menu_action_add_audiorec_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_add_ladspa_bridge_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsApplicationContext *application_context;
   AgsWindow *window;
   AgsLadspaBridge *ladspa_bridge;
 
+  AgsGuiThread *gui_thread;
+
   AgsAddAudio *add_audio;
 
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsGuiThread *gui_thread;
+  AgsApplicationContext *application_context;
 
   gchar *filename, *effect;
   
@@ -765,24 +660,15 @@ ags_menu_action_add_ladspa_bridge_callback(GtkWidget *menu_item, gpointer data)
 			     AGS_MENU_ITEM_EFFECT_KEY);
   
   application_context = ags_application_context_get_instance();
+
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+
+  /* create ladspa bridge */
   ladspa_bridge = ags_ladspa_bridge_new(G_OBJECT(window->soundcard),
 					filename,
 					effect);
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(application_context)->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
   
   add_audio = ags_add_audio_new(window->application_context,
 				AGS_MACHINE(ladspa_bridge)->audio);
@@ -813,19 +699,16 @@ ags_menu_action_add_ladspa_bridge_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_add_dssi_bridge_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsApplicationContext *application_context;
   AgsWindow *window;
   AgsDssiBridge *dssi_bridge;
 
-  AgsAddAudio *add_audio;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+
   gchar *filename, *effect;
-  
-  pthread_mutex_t *application_mutex;
 
   filename = g_object_get_data((GObject *) menu_item,
 			       AGS_MENU_ITEM_FILENAME_KEY);
@@ -833,24 +716,15 @@ ags_menu_action_add_dssi_bridge_callback(GtkWidget *menu_item, gpointer data)
 			     AGS_MENU_ITEM_EFFECT_KEY);
   
   application_context = ags_application_context_get_instance();
+
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+
+  /* create dssi bridge */
   dssi_bridge = ags_dssi_bridge_new(G_OBJECT(window->soundcard),
 				    filename,
 				    effect);
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(application_context)->main_loop;
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
   
   add_audio = ags_add_audio_new(window->application_context,
 				AGS_MACHINE(dssi_bridge)->audio);
@@ -881,21 +755,18 @@ ags_menu_action_add_dssi_bridge_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_add_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsApplicationContext *application_context;
   AgsWindow *window;
   AgsLv2Bridge *lv2_bridge;
 
+  AgsGuiThread *gui_thread;
+
   AgsAddAudio *add_audio;
 
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsGuiThread *gui_thread;
+  AgsApplicationContext *application_context;
 
   AgsLv2Plugin *lv2_plugin;
 
   gchar *filename, *effect;
-  
-  pthread_mutex_t *application_mutex;
     
   filename = g_object_get_data((GObject *) menu_item,
 			       AGS_MENU_ITEM_FILENAME_KEY);
@@ -903,14 +774,16 @@ ags_menu_action_add_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
 			     AGS_MENU_ITEM_EFFECT_KEY);
   
   application_context = ags_application_context_get_instance();
+
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+
+  /* create lv2 bridge */
   lv2_bridge = ags_lv2_bridge_new(G_OBJECT(window->soundcard),
 				  filename,
 				  effect);
     
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       filename, effect);
   
@@ -939,17 +812,6 @@ ags_menu_action_add_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
     ags_machine_popup_add_edit_options((AgsMachine *) lv2_bridge,
 				       (AGS_MACHINE_POPUP_ENVELOPE));
   }
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(application_context)->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
   
   add_audio = ags_add_audio_new(window->application_context,
 				AGS_MACHINE(lv2_bridge)->audio);
@@ -987,19 +849,16 @@ ags_menu_action_add_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
 void
 ags_menu_action_add_live_dssi_bridge_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsApplicationContext *application_context;
   AgsWindow *window;
   AgsLiveDssiBridge *live_dssi_bridge;
 
-  AgsAddAudio *add_audio;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+
   gchar *filename, *effect;
-  
-  pthread_mutex_t *application_mutex;
 
   filename = g_object_get_data((GObject *) menu_item,
 			       AGS_MENU_ITEM_FILENAME_KEY);
@@ -1007,24 +866,15 @@ ags_menu_action_add_live_dssi_bridge_callback(GtkWidget *menu_item, gpointer dat
 			     AGS_MENU_ITEM_EFFECT_KEY);
   
   application_context = ags_application_context_get_instance();
+
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+
+  /* create live dssi bridge */
   live_dssi_bridge = ags_live_dssi_bridge_new(G_OBJECT(window->soundcard),
 					      filename,
 					      effect);
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(application_context)->main_loop;
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
   
   add_audio = ags_add_audio_new(window->application_context,
 				AGS_MACHINE(live_dssi_bridge)->audio);
@@ -1055,21 +905,18 @@ ags_menu_action_add_live_dssi_bridge_callback(GtkWidget *menu_item, gpointer dat
 void
 ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
 {
-  AgsApplicationContext *application_context;
   AgsWindow *window;
   AgsLiveLv2Bridge *live_lv2_bridge;
 
+  AgsGuiThread *gui_thread;
+
   AgsAddAudio *add_audio;
 
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsGuiThread *gui_thread;
+  AgsApplicationContext *application_context;
 
   AgsLv2Plugin *lv2_plugin;
 
   gchar *filename, *effect;
-  
-  pthread_mutex_t *application_mutex;
     
   filename = g_object_get_data((GObject *) menu_item,
 			       AGS_MENU_ITEM_FILENAME_KEY);
@@ -1077,28 +924,19 @@ ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data
 			     AGS_MENU_ITEM_EFFECT_KEY);
   
   application_context = ags_application_context_get_instance();
+
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+
+  /* create live lv2 bridge */
   live_lv2_bridge = ags_live_lv2_bridge_new(G_OBJECT(window->soundcard),
 					    filename,
 					    effect);
-    
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       filename, effect);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(application_context)->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
-  
+    
   add_audio = ags_add_audio_new(window->application_context,
 				AGS_MACHINE(live_lv2_bridge)->audio);
   ags_gui_thread_schedule_task(gui_thread,
@@ -1299,6 +1137,7 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
   }
 
   application_context = ags_application_context_get_instance();
+
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   gtk_show_about_dialog((GtkWindow *) window,
