@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,6 +42,7 @@ void ags_navigation_get_property(GObject *gobject,
 				 GValue *value,
 				 GParamSpec *param_spec);
 void ags_navigation_finalize(GObject *gobject);
+
 void ags_navigation_connect(AgsConnectable *connectable);
 void ags_navigation_disconnect(AgsConnectable *connectable);
 
@@ -131,7 +132,7 @@ ags_navigation_class_init(AgsNavigationClass *navigation)
    *
    * The assigned #AgsSoundcard to use as default sink.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -152,6 +153,8 @@ ags_navigation_class_init(AgsNavigationClass *navigation)
    * @tact: the new position
    *
    * The ::change-position seeks the stream.
+   * 
+   * Since: 2.0.0
    */
   navigation_signals[CHANGE_POSITION] =
     g_signal_new("change-position",
@@ -328,6 +331,7 @@ ags_navigation_set_property(GObject *gobject,
       }
       
       if(soundcard != NULL){
+	//FIXME:JK: no direct callback
 	g_signal_connect_after(soundcard, "stop",
 			       G_CALLBACK(ags_navigation_soundcard_stop_callback), (gpointer) navigation);
 	
@@ -364,12 +368,25 @@ ags_navigation_get_property(GObject *gobject,
 }
 
 void
+ags_navigation_finalize(GObject *gobject)
+{
+  /* call parent */
+  G_OBJECT_CLASS(ags_navigation_parent_class)->finalize(gobject);
+}
+
+void
 ags_navigation_connect(AgsConnectable *connectable)
 {
   AgsNavigation *navigation;
 
   navigation = AGS_NAVIGATION(connectable);
 
+  if((AGS_NAVIGATION_CONNECTED & (navigation->flags)) != 0){
+    return;
+  }
+
+  navigation->flags |= AGS_NAVIGATION_CONNECTED;
+  
   g_signal_connect((GObject *) navigation->expander, "clicked",
 		   G_CALLBACK(ags_navigation_expander_callback), (gpointer) navigation);
 
@@ -423,13 +440,96 @@ ags_navigation_connect(AgsConnectable *connectable)
 void
 ags_navigation_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
-}
+  AgsNavigation *navigation;
 
-void
-ags_navigation_finalize(GObject *gobject)
-{
-  /* empty */
+  navigation = AGS_NAVIGATION(connectable);
+
+  if((AGS_NAVIGATION_CONNECTED & (navigation->flags)) == 0){
+    return;
+  }
+
+  navigation->flags &= (~AGS_NAVIGATION_CONNECTED);
+  
+  g_object_disconnect((GObject *) navigation->expander,
+		      "clicked",
+		      G_CALLBACK(ags_navigation_expander_callback),
+		      (gpointer) navigation,
+		      NULL);
+
+  g_object_disconnect((GObject *) navigation->bpm,
+		      "value-changed",
+		      G_CALLBACK(ags_navigation_bpm_callback),
+		      (gpointer) navigation,
+		      NULL);
+
+  g_object_disconnect((GObject *) navigation->rewind,
+		      "clicked",
+		      G_CALLBACK(ags_navigation_rewind_callback),
+		      (gpointer) navigation,
+		      NULL);
+
+  g_object_disconnect((GObject *) navigation->previous,
+		      "clicked",
+		      G_CALLBACK(ags_navigation_prev_callback),
+		      (gpointer) navigation,
+		      NULL);
+
+  g_object_disconnect((GObject *) navigation->play,
+		      "clicked",
+		      G_CALLBACK(ags_navigation_play_callback),
+		      (gpointer) navigation,
+		      NULL);
+
+  g_object_disconnect((GObject *) navigation->stop,
+		      "clicked",
+		      G_CALLBACK(ags_navigation_stop_callback),
+		      (gpointer) navigation,
+		      NULL);
+
+  g_object_disconnect((GObject *) navigation->next,
+		      "clicked",
+		      G_CALLBACK(ags_navigation_next_callback),
+		      (gpointer) navigation,
+		      NULL);
+
+  g_object_disconnect((GObject *) navigation->forward,
+		      "clicked",
+		      G_CALLBACK(ags_navigation_forward_callback),
+		      (gpointer) navigation,
+		      NULL);
+
+  g_object_disconnect((GObject *) navigation->loop,
+		      "clicked",
+		      G_CALLBACK(ags_navigation_loop_callback),
+		      (gpointer) navigation,
+		      NULL);
+
+  g_object_disconnect((GObject *) navigation->position_tact,
+		      "value-changed",
+		      G_CALLBACK(ags_navigation_position_tact_callback),
+		      (gpointer) navigation,
+		      NULL);
+
+  if(navigation->soundcard != NULL){
+    g_object_disconnect(navigation->soundcard,
+			"stop",
+			G_CALLBACK(ags_navigation_soundcard_stop_callback),
+			(gpointer) navigation,
+			NULL);
+  }
+  
+  /* expansion */
+  g_object_disconnect((GObject *) navigation->loop_left_tact,
+		      "value-changed",
+		      G_CALLBACK(ags_navigation_loop_left_tact_callback),
+		      (gpointer) navigation,
+		      NULL);
+
+  g_object_disconnect((GObject *) navigation->loop_right_tact,
+		      "value-changed",
+		      G_CALLBACK(ags_navigation_loop_right_tact_callback),
+		      (gpointer) navigation,
+		      NULL);
 }
 
 void
@@ -440,8 +540,6 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 
   AgsSeekSoundcard *seek_soundcard;
 
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
@@ -455,38 +553,18 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   guint note_offset;
   gboolean move_forward;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-  
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
 
   application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     window->soundcard);
-					     
-  pthread_mutex_unlock(application_mutex);
-
   /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER_GET_GUI_THREAD(main_loop));
 
   /* seek soundcard */
-  pthread_mutex_lock(soundcard_mutex);
-
   note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard));
   
   delay = ags_soundcard_get_delay(AGS_SOUNDCARD(window->soundcard));
   delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard));
-  
-  pthread_mutex_unlock(soundcard_mutex);
   
   tact = note_offset - navigation->start_tact;
   
@@ -525,7 +603,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
  * Change tact position of editor. The scrollbar is adjustet
  * and its playback position seeked.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_navigation_change_position(AgsNavigation *navigation,
@@ -550,7 +628,7 @@ ags_navigation_change_position(AgsNavigation *navigation,
  *
  * Returns: tact as time string
  *
- * Since: 1.0.0 
+ * Since: 2.0.0 
  */
 gchar*
 ags_navigation_tact_to_time_string(gdouble tact,
@@ -596,7 +674,7 @@ ags_navigation_tact_to_time_string(gdouble tact,
  *
  * Updates time as string.
  *
- * Since: 1.0.0 
+ * Since: 2.0.0 
  */
 void
 ags_navigation_update_time_string(double tact,
@@ -712,7 +790,7 @@ ags_navigation_absolute_tact_to_time_string(gdouble tact,
  *
  * Enables/Disables the #AgsNavigation to control the tree.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_navigation_set_seeking_sensitive(AgsNavigation *navigation,
@@ -737,35 +815,15 @@ ags_navigation_duration_time_queue_draw(GtkWidget *widget)
 {
   AgsNavigation *navigation;
 
-  AgsMutexManager *mutex_manager;
-
   gchar *str;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-
   navigation = AGS_NAVIGATION(widget);
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   if(!AGS_IS_SOUNDCARD(navigation->soundcard)){
     return(TRUE);
   }
-
-  /* lookup soundcard mutex */
-  pthread_mutex_lock(application_mutex);
-
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) navigation->soundcard);
-	
-  pthread_mutex_unlock(application_mutex);
-
-  pthread_mutex_lock(soundcard_mutex);
   
   str = ags_soundcard_get_uptime(AGS_SOUNDCARD(navigation->soundcard));
-
-  pthread_mutex_unlock(soundcard_mutex);
 
   g_object_set(navigation->duration_time,
 	       "label", str,
@@ -780,11 +838,11 @@ ags_navigation_duration_time_queue_draw(GtkWidget *widget)
 /**
  * ags_navigation_new:
  *
- * Creates an #AgsNavigation to control the tree.
+ * Create a new instance of #AgsNavigation to control the tree.
  *
- * Returns: a new #AgsNavigation
+ * Returns: the new #AgsNavigation
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsNavigation*
 ags_navigation_new()

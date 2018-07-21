@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,8 +34,8 @@
 #define AGS_IS_MIDI_DIALOG_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_MIDI_DIALOG))
 #define AGS_MIDI_DIALOG_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_MIDI_DIALOG, AgsMidiDialogClass))
 
-#define AGS_MIDI_DIALOG_DEFAULT_VERSION "0.7.0\0"
-#define AGS_MIDI_DIALOG_DEFAULT_BUILD_ID "CEST 02-11-2015 19:44\0"
+#define AGS_MIDI_DIALOG_DEFAULT_VERSION "0.7.0"
+#define AGS_MIDI_DIALOG_DEFAULT_BUILD_ID "CEST 02-11-2015 19:44"
 
 typedef struct _AgsMidiDialog AgsMidiDialog;
 typedef struct _AgsMidiDialogClass AgsMidiDialogClass;

@@ -19,15 +19,8 @@
 
 #include <ags/X/ags_midi_preferences_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/audio/ags_sound_provider.h>
-
-#include <ags/audio/jack/ags_jack_server.h>
-#include <ags/audio/jack/ags_jack_devout.h>
-
-#include <ags/audio/thread/ags_sequencer_thread.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
@@ -65,40 +58,42 @@ ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_pr
   AgsSequencerEditor *sequencer_editor;
 
   AgsSequencerThread *sequencer_thread;
+
+  AgsThread *main_loop;
   
   AgsApplicationContext *application_context;
 
-  GList *list;
   GObject *sequencer;
 
-  pthread_mutex_t *application_mutex;
+  GList *start_list, *list;
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(midi_preferences),
 							   AGS_TYPE_PREFERENCES);
   window = (AgsWindow *) preferences->window;
 
   application_context = (AgsApplicationContext *) window->application_context;
-  application_mutex = window->application_mutex;
-
+  g_object_get(application_context,
+	       "main-loop", &main_loop,
+	       NULL);
+  
   /* retrieve first sequencer */
   sequencer = NULL;
-  
-  pthread_mutex_lock(application_mutex);
 
-  list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
+  list =
+    start_list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
   
   if(list != NULL){
     sequencer = list->data;
   }
 
-  pthread_mutex_unlock(application_mutex);
-
+  g_list_free(start_list);
+  
   /* sequencer editor */
   sequencer_editor = ags_sequencer_editor_new();
 
   if(sequencer != NULL){
     sequencer_editor->sequencer = sequencer;
-    sequencer_editor->sequencer_thread = (GObject *) ags_thread_find_type((AgsThread *) application_context->main_loop,
+    sequencer_editor->sequencer_thread = (GObject *) ags_thread_find_type(main_loop,
 									  AGS_TYPE_SEQUENCER_THREAD);
   }
   
@@ -122,19 +117,12 @@ ags_midi_preferences_remove_sequencer_editor_callback(GtkWidget *button,
   AgsPreferences *preferences;
   AgsSequencerEditor *sequencer_editor;
 
-  AgsApplicationContext *application_context;
-
   GList *list;
   GObject *sequencer;
-
-  pthread_mutex_t *application_mutex;
   
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(midi_preferences),
 							   AGS_TYPE_PREFERENCES);
   window = (AgsWindow *) preferences->window;
-
-  application_context = (AgsApplicationContext *) window->application_context;
-  application_mutex = window->application_mutex;
 
   sequencer_editor = (AgsSequencerEditor *) gtk_widget_get_ancestor(button,
 								    AGS_TYPE_SEQUENCER_EDITOR);
