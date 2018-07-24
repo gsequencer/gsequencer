@@ -35,10 +35,16 @@
 typedef struct _AgsOutputCollectionEditor AgsOutputCollectionEditor;
 typedef struct _AgsOutputCollectionEditorClass AgsOutputCollectionEditorClass;
 
+typedef enum{
+  AGS_OUTPUT_COLLECTION_EDITOR_CONNECTED    = 1,
+};
+
 struct _AgsOutputCollectionEditor
 {
   GtkTable table;
 
+  guint flags;
+  
   GType channel_type;
 
   GtkSpinButton *first_line;
