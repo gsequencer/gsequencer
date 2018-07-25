@@ -146,7 +146,7 @@ ags_window_class_init(AgsWindowClass *window)
    *
    * The assigned main AgsSoundcard.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -162,7 +162,7 @@ ags_window_class_init(AgsWindowClass *window)
    *
    * The assigned application context.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("assigned application context"),
@@ -591,7 +591,7 @@ ags_window_delete_event(GtkWidget *widget, GdkEventAny *event)
  * 
  * Returns: a new #GList containing #AgsMachineCounter for know machines
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_window_standard_machine_counter_alloc()
@@ -649,7 +649,7 @@ ags_window_standard_machine_counter_alloc()
  * 
  * Returns: an #AgsMachineCounter
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMachineCounter*
 ags_window_find_machine_counter(AgsWindow *window,
@@ -677,7 +677,7 @@ ags_window_find_machine_counter(AgsWindow *window,
  *
  * Keep track of count of machines. Increment window's counter.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_window_increment_machine_counter(AgsWindow *window,
@@ -700,7 +700,7 @@ ags_window_increment_machine_counter(AgsWindow *window,
  *
  * Keep track of count of machines. Decrement window's counter.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_window_decrement_machine_counter(AgsWindow *window,
@@ -727,7 +727,7 @@ ags_window_decrement_machine_counter(AgsWindow *window,
  * 
  * Returns: an #AgsMachineCounter
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMachineCounter*
 ags_machine_counter_alloc(gchar *version, gchar *build_id,
@@ -770,7 +770,7 @@ ags_window_show_error(AgsWindow *window,
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 gboolean
 ags_window_load_file_timeout(AgsWindow *window)
@@ -842,7 +842,7 @@ ags_window_load_file_timeout(AgsWindow *window)
  *
  * Returns: a new #AgsWindow
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsWindow*
 ags_window_new(GObject *application_context)

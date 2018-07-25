@@ -20,10 +20,8 @@
 #include <ags/X/ags_wave_window.h>
 #include <ags/X/ags_wave_window_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/audio/ags_notation.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_navigation.h>

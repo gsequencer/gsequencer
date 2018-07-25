@@ -19,14 +19,8 @@
 
 #include <ags/X/ags_window_callbacks.h>
 
-#include <ags/file/ags_file.h>
-
-#include <ags/object/ags_application_context.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task_thread.h>
-
-#include <ags/audio/task/ags_save_file.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/file/ags_simple_file.h>
 
