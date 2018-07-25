@@ -223,6 +223,12 @@ ags_ladspa_manager_finalize(GObject *gobject)
 
   ladspa_manager = AGS_LADSPA_MANAGER(gobject);
 
+  pthread_mutex_destroy(ladspa_manager->obj_mutex);
+  free(ladspa_manager->obj_mutex);
+
+  pthread_mutexattr_destroy(ladspa_manager->obj_mutexattr);
+  free(ladspa_manager->obj_mutexattr);
+
   ladspa_plugin = ladspa_manager->ladspa_plugin;
 
   g_list_free_full(ladspa_plugin,

@@ -63,7 +63,7 @@ ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
 
       if(audio != NULL){
 	//FIXME:JK: don't access AgsAudio to obtain widget	
-	machine = AGS_MACHINE(audio->machine);
+	machine = AGS_MACHINE(audio->machine_widget);
     
 	model = GTK_TREE_MODEL(ags_machine_get_possible_links(machine));
   
@@ -149,7 +149,7 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
 		 NULL);
 
     //FIXME:JK: don't access AgsAudio to obtain widget
-    machine = AGS_MACHINE(audio->machine);
+    machine = AGS_MACHINE(audio->machine_widget);
     
     model = gtk_combo_box_get_model(link_editor->combo);
 

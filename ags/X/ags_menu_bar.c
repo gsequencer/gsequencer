@@ -864,7 +864,8 @@ ags_lv2_bridge_menu_new()
   GList *list, *start;
   
   pthread_mutex_t *lv2_manager_mutex;
-
+  pthread_mutex_t *base_plugin_mutex;  
+  
   menu = (GtkMenu *) gtk_menu_new();
 
   lv2_manager = ags_lv2_manager_get_instance();

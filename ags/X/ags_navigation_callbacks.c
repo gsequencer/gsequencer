@@ -165,7 +165,7 @@ ags_navigation_play_callback(GtkWidget *widget,
       
       ags_machine_set_run_extended(machine,
 				   TRUE,
-				   !gtk_toggle_button_get_active((GtkToggleButton *) navigation->exclude_sequencer), TRUE);
+				   !gtk_toggle_button_get_active((GtkToggleButton *) navigation->exclude_sequencer), TRUE, FALSE, FALSE);
     }
 
     machines = machines->next;
@@ -198,7 +198,7 @@ ags_navigation_stop_callback(GtkWidget *widget,
       
       ags_machine_set_run_extended(machine,
 				   FALSE,
-				   !gtk_toggle_button_get_active((GtkToggleButton *) navigation->exclude_sequencer), TRUE);
+				   !gtk_toggle_button_get_active((GtkToggleButton *) navigation->exclude_sequencer), TRUE, FALSE, FALSE);
     }
 
     machines = machines->next;
@@ -302,9 +302,9 @@ ags_navigation_loop_callback(GtkWidget *widget,
       audio = machine->audio;
 
       /* do it so */
-      list = g_object_get(audio,
-			  "play", &list_start,
-			  NULL);
+      g_object_get(audio,
+		   "play", &list_start,
+		   NULL);
 
       while((list = ags_recall_find_type(list,
 					 AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
@@ -468,9 +468,9 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
       
 
       /* do it so */
-      list = g_object_get(audio,
-			  "play", &list_start,
-			  NULL);
+      g_object_get(audio,
+		   "play", &list_start,
+		   NULL);
 
       while((list = ags_recall_find_type(list,
 					 AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){

@@ -500,7 +500,7 @@ ags_output_collection_editor_check(AgsOutputCollectionEditor *output_collection_
     model = gtk_combo_box_get_model(GTK_COMBO_BOX(output_collection_editor->soundcard));
     gtk_tree_model_get(model,
 		       &iter,
-		       1, &soundcard,
+		       1, &output_soundcard,
 		       -1);
 
     ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),

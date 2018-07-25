@@ -26,6 +26,7 @@
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
+#include <ags/X/ags_machine_editor.h>
 #include <ags/X/ags_line_editor.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
@@ -391,7 +392,7 @@ ags_link_editor_reset(AgsApplicable *applicable)
 
       /* get machine */
       //FIXME:JK: don't access AgsAudio to obtain widget
-      link_machine = (AgsMachine *) link_audio->machine;
+      link_machine = (AgsMachine *) link_audio->machine_widget;
     }else{
       link_machine = NULL;
     }
@@ -426,11 +427,7 @@ ags_link_editor_reset(AgsApplicable *applicable)
       if(link_channel == NULL){
 	gtk_spin_button_set_value(link_editor->spin_button, 0);
       }else{
-	pthread_mutex_lock(link_channel_mutex);
-	
 	gtk_spin_button_set_value(link_editor->spin_button, link_channel->line);
-
-	pthread_mutex_unlock(link_channel_mutex);
       }
     }else{
       gtk_combo_box_set_active(link_editor->combo,

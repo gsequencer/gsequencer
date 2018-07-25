@@ -125,6 +125,7 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
   guint y;
 
   pthread_mutex_t *base_plugin_mutex;
+  pthread_mutex_t *plugin_port_mutex;
 
   /* retrieve filename and uri */
   list_start = 

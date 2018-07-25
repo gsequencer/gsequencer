@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -66,6 +66,8 @@ enum{
 
 static gpointer ags_lv2_manager_parent_class = NULL;
 
+static pthread_mutex_t ags_lv2_manager_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 AgsLv2Manager *ags_lv2_manager = NULL;
 gchar **ags_lv2_default_path = NULL;
 
@@ -119,7 +121,7 @@ ags_lv2_manager_class_init(AgsLv2ManagerClass *lv2_manager)
    *
    * The assigned locale.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("locale",
 				   "locale of lv2 manager",
@@ -134,6 +136,21 @@ ags_lv2_manager_class_init(AgsLv2ManagerClass *lv2_manager)
 void
 ags_lv2_manager_init(AgsLv2Manager *lv2_manager)
 {  
+  /* lv2 manager mutex */
+  lv2_manager->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(lv2_manager->obj_mutexattr);
+  pthread_mutexattr_settype(lv2_manager->obj_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(lv2_manager->obj_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  lv2_manager->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(lv2_manager->obj_mutex,
+		     lv2_manager->obj_mutexattr);
+
   /* initialize lv2 plugin blacklist */
   lv2_manager->lv2_plugin_blacklist = NULL;
 
@@ -306,6 +323,12 @@ ags_lv2_manager_finalize(GObject *gobject)
 
   lv2_manager = AGS_LV2_MANAGER(gobject);
 
+  pthread_mutex_destroy(lv2_manager->obj_mutex);
+  free(lv2_manager->obj_mutex);
+
+  pthread_mutexattr_destroy(lv2_manager->obj_mutexattr);
+  free(lv2_manager->obj_mutexattr);
+
   lv2_plugin = lv2_manager->lv2_plugin;
 
   g_list_free_full(lv2_plugin,
@@ -320,13 +343,28 @@ ags_lv2_manager_finalize(GObject *gobject)
 }
 
 /**
+ * ags_lv2_manager_get_class_mutex:
+ * 
+ * Get class mutex.
+ * 
+ * Returns: the class mutex of #AgsLv2Manager
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_lv2_manager_get_class_mutex()
+{
+  return(&ags_lv2_manager_class_mutex);
+}
+
+/**
  * ags_lv2_manager_get_default_path:
  * 
  * Get lv2 manager default plugin path.
  *
  * Returns: the plugin default search path as a string vector
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar**
 ags_lv2_manager_get_default_path()
@@ -340,7 +378,7 @@ ags_lv2_manager_get_default_path()
  * 
  * Set lv2 manager default plugin path.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_lv2_manager_set_default_path(gchar** default_path)
@@ -356,29 +394,62 @@ ags_lv2_manager_set_default_path(gchar** default_path)
  *
  * Returns: a %NULL-terminated array of filenames
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar**
 ags_lv2_manager_get_filenames(AgsLv2Manager *lv2_manager)
 {
-  GList *lv2_plugin;
+  GList *start_lv2_plugin, *lv2_plugin;
   
   gchar **filenames;
   
   guint i;
   gboolean contains_filename;
 
+  pthread_mutex_t *lv2_manager_mutex;
+  pthread_mutex_t *base_plugin_mutex;
+
   if(!AGS_IS_LV2_MANAGER(lv2_manager)){
     return(NULL);
   }
   
-  lv2_plugin = lv2_manager->lv2_plugin;
+  /* get lv2 manager mutex */
+  pthread_mutex_lock(ags_lv2_manager_get_class_mutex());
+  
+  lv2_manager_mutex = lv2_manager->obj_mutex;
+  
+  pthread_mutex_unlock(ags_lv2_manager_get_class_mutex());
+
+  /* collect */
+  pthread_mutex_lock(lv2_manager_mutex);
+
+  lv2_plugin = 
+    start_lv2_plugin = g_list_copy(lv2_manager->lv2_plugin);
+
+  pthread_mutex_unlock(lv2_manager_mutex);
+
   filenames = NULL;
   
   for(i = 0; lv2_plugin != NULL;){
+    gchar *filename;
+    
+    /* get base plugin mutex */
+    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+    base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin->data)->obj_mutex;
+    
+    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+    /* duplicate filename */
+    pthread_mutex_lock(base_plugin_mutex);
+
+    filename = g_strdup(AGS_BASE_PLUGIN(lv2_plugin->data)->filename);
+
+    pthread_mutex_unlock(base_plugin_mutex);
+
     if(filenames == NULL){
       filenames = (gchar **) malloc(2 * sizeof(gchar *));
-      filenames[i] = AGS_BASE_PLUGIN(lv2_plugin->data)->filename;
+      filenames[i] = filename;
       filenames[i + 1] = NULL;
 
       i++;
@@ -394,7 +465,7 @@ ags_lv2_manager_get_filenames(AgsLv2Manager *lv2_manager)
       if(!contains_filename){
 	filenames = (gchar **) realloc(filenames,
 				       (i + 2) * sizeof(gchar *));
-	filenames[i] = AGS_BASE_PLUGIN(lv2_plugin->data)->filename;
+	filenames[i] = filename;
 	filenames[i + 1] = NULL;
 	
 	i++;
@@ -403,6 +474,8 @@ ags_lv2_manager_get_filenames(AgsLv2Manager *lv2_manager)
     
     lv2_plugin = lv2_plugin->next;
   }
+
+  g_list_free(start_lv2_plugin);
 
   return(filenames);
 }
@@ -417,7 +490,7 @@ ags_lv2_manager_get_filenames(AgsLv2Manager *lv2_manager)
  *
  * Returns: the #AgsLv2Plugin-struct
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLv2Plugin*
 ags_lv2_manager_find_lv2_plugin(AgsLv2Manager *lv2_manager,
@@ -425,7 +498,12 @@ ags_lv2_manager_find_lv2_plugin(AgsLv2Manager *lv2_manager,
 {
   AgsLv2Plugin *lv2_plugin;
   
-  GList *list;
+  GList *start_list, *list;
+
+  gboolean success;  
+
+  pthread_mutex_t *lv2_manager_mutex;
+  pthread_mutex_t *base_plugin_mutex;
 
   if(!AGS_IS_LV2_MANAGER(lv2_manager) ||
      filename == NULL ||
@@ -433,22 +511,57 @@ ags_lv2_manager_find_lv2_plugin(AgsLv2Manager *lv2_manager,
     return(NULL);
   }
   
-  list = lv2_manager->lv2_plugin;
+  /* get lv2 manager mutex */
+  pthread_mutex_lock(ags_lv2_manager_get_class_mutex());
+  
+  lv2_manager_mutex = lv2_manager->obj_mutex;
+  
+  pthread_mutex_unlock(ags_lv2_manager_get_class_mutex());
+
+  /* collect */
+  pthread_mutex_lock(lv2_manager_mutex);
+
+  list = 
+    start_list = g_list_copy(lv2_manager->lv2_plugin);
+
+  pthread_mutex_unlock(lv2_manager_mutex);
+
+  success = FALSE;
   
   while(list != NULL){
     lv2_plugin = AGS_LV2_PLUGIN(list->data);
+
+    /* get base plugin mutex */
+    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+    base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
     
-    if(!g_ascii_strcasecmp(AGS_BASE_PLUGIN(lv2_plugin)->filename,
-			   filename) &&
-       !g_ascii_strcasecmp(AGS_BASE_PLUGIN(lv2_plugin)->effect,
-			   effect)){
-      return(lv2_plugin);
+    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+    /* check filename and effect */
+    pthread_mutex_lock(base_plugin_mutex);
+
+    success = (!g_strcmp0(AGS_BASE_PLUGIN(lv2_plugin)->filename,
+			  filename) &&
+	       !g_strcmp0(AGS_BASE_PLUGIN(lv2_plugin)->effect,
+			  effect)) ? TRUE: FALSE;
+    
+    pthread_mutex_unlock(base_plugin_mutex);
+    
+    if(success){
+      break;
     }
 
     list = list->next;
   }
 
-  return(NULL);
+  g_list_free(start_list);
+
+  if(!success){
+    lv2_plugin = NULL;
+  }
+
+  return(lv2_plugin);
 }
 
 /**
@@ -458,17 +571,29 @@ ags_lv2_manager_find_lv2_plugin(AgsLv2Manager *lv2_manager,
  * 
  * Load blacklisted plugin filenames.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_lv2_manager_load_blacklist(AgsLv2Manager *lv2_manager,
 			       gchar *blacklist_filename)
 {
+  pthread_mutex_t *lv2_manager_mutex;
+
   if(!AGS_IS_LV2_MANAGER(lv2_manager) ||
      blacklist_filename == NULL){
     return;
   }
   
+  /* get lv2 manager mutex */
+  pthread_mutex_lock(ags_lv2_manager_get_class_mutex());
+  
+  lv2_manager_mutex = lv2_manager->obj_mutex;
+  
+  pthread_mutex_unlock(ags_lv2_manager_get_class_mutex());
+
+  /* fill in */
+  pthread_mutex_lock(lv2_manager_mutex);
+
   if(g_file_test(blacklist_filename,
 		 (G_FILE_TEST_EXISTS |
 		  G_FILE_TEST_IS_REGULAR))){
@@ -484,6 +609,8 @@ ags_lv2_manager_load_blacklist(AgsLv2Manager *lv2_manager,
 							 str);
     }
   }
+
+  pthread_mutex_unlock(lv2_manager_mutex);
 } 
 
 /**
@@ -496,7 +623,7 @@ ags_lv2_manager_load_blacklist(AgsLv2Manager *lv2_manager,
  *
  * Load @filename specified plugin.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
@@ -531,7 +658,7 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
 
   uint32_t i;
 
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_t *lv2_manager_mutex;
 
   if(!AGS_IS_LV2_MANAGER(lv2_manager) ||
      !AGS_IS_TURTLE(manifest) ||
@@ -541,8 +668,15 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
     return;
   }
   
-  /* load plugin */
-  pthread_mutex_lock(&(mutex));
+  /* get lv2 manager mutex */
+  pthread_mutex_lock(ags_lv2_manager_get_class_mutex());
+  
+  lv2_manager_mutex = lv2_manager->obj_mutex;
+  
+  pthread_mutex_unlock(ags_lv2_manager_get_class_mutex());
+
+  /* load */
+  pthread_mutex_lock(lv2_manager_mutex);
 
   path = g_strdup_printf("%s/%s",
 			 lv2_path,
@@ -557,7 +691,7 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
     g_warning("ags_lv2_manager.c - failed to load static object file");    
     dlerror();
     
-    pthread_mutex_unlock(&(mutex));
+    pthread_mutex_unlock(lv2_manager_mutex);
 
     return;
   }
@@ -785,7 +919,7 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
     effect_list = effect_list->next;
   }
 
-  pthread_mutex_unlock(&(mutex));
+  pthread_mutex_unlock(lv2_manager_mutex);
 
   g_hash_table_destroy(lv2_manager->current_plugin_node);
   
@@ -800,7 +934,7 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
  * 
  * Load preset.
  * 
- * Since: 1.0.0.8
+ * Since: 2.0.0
  */
 void
 ags_lv2_manager_load_preset(AgsLv2Manager *lv2_manager,
@@ -939,8 +1073,10 @@ ags_lv2_manager_load_preset(AgsLv2Manager *lv2_manager,
 			      "uri", uri,
 			      NULL);
     ags_lv2_preset_parse_turtle(lv2_preset);
-    lv2_plugin->preset = g_list_append(lv2_plugin->preset,
-				       lv2_preset);
+
+    g_object_set(lv2_plugin,
+		 "preset", lv2_preset,
+		 NULL);
     
     /* iterate */
     preset_list = preset_list->next;
@@ -953,7 +1089,7 @@ ags_lv2_manager_load_preset(AgsLv2Manager *lv2_manager,
  * 
  * Loads all available plugins.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
@@ -1240,22 +1376,20 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
  *
  * Returns: the #AgsLv2Manager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLv2Manager*
 ags_lv2_manager_get_instance()
 {
   static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-  pthread_mutex_lock(&(mutex));
+  pthread_mutex_lock(&mutex);
 
   if(ags_lv2_manager == NULL){
     ags_lv2_manager = ags_lv2_manager_new(AGS_LV2_MANAGER_DEFAULT_LOCALE);
-
-    pthread_mutex_unlock(&(mutex));
-  }else{
-    pthread_mutex_unlock(&(mutex));
   }
+  
+  pthread_mutex_unlock(&mutex);
 
   return(ags_lv2_manager);
 }
@@ -1264,11 +1398,11 @@ ags_lv2_manager_get_instance()
  * ags_lv2_manager_new:
  * @locale: the default locale
  *
- * Creates an #AgsLv2Manager
+ * Create a new instance of #AgsLv2Manager
  *
- * Returns: a new #AgsLv2Manager
+ * Returns: the new #AgsLv2Manager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLv2Manager*
 ags_lv2_manager_new(gchar *locale)

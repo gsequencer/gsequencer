@@ -1224,8 +1224,6 @@ ags_soundcard_editor_remove_sink(AgsSoundcardEditor *soundcard_editor,
     }
   }else{
     g_warning("distributed manager not found");
-
-    pthread_mutex_unlock(application_mutex);
     
     return;
   }

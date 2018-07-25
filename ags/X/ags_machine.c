@@ -382,7 +382,7 @@ ags_machine_init(AgsMachine *machine)
   g_object_ref(G_OBJECT(machine->audio));
 
   machine->audio->flags |= AGS_AUDIO_CAN_NEXT_ACTIVE;
-  machine->audio->machine = (GObject *) machine;
+  machine->audio->machine_widget = (GObject *) machine;
 
   /* AgsAudio related forwarded signals */
   g_signal_connect_after(G_OBJECT(machine), "resize-audio-channels",
@@ -623,6 +623,7 @@ ags_machine_set_property(GObject *gobject,
 	  AgsPad *pad;
 
 	  AgsChannel *input, *output;
+	  AgsChannel *channel;
 	  
 	  guint audio_channels;
 	  guint output_pads, input_pads;
@@ -1710,6 +1711,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
 
   AgsGuiThread *gui_thread;
 
+  AgsApplicationContext *application_context;
+
   GList *start_list;
   
   gboolean no_soundcard;
@@ -1798,7 +1801,15 @@ ags_machine_set_run_extended(AgsMachine *machine,
 
     /* create cancel task */
     cancel_audio = ags_cancel_audio_new(machine->audio,
-					FALSE, sequencer, notation);
+					AGS_SOUND_SCOPE_SEQUENCER);
+    
+    /* append AgsCancelAudio */
+    ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+				 cancel_audio);
+
+    /* create cancel task */
+    cancel_audio = ags_cancel_audio_new(machine->audio,
+					AGS_SOUND_SCOPE_NOTATION);
     
     /* append AgsCancelAudio */
     ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
@@ -1976,6 +1987,8 @@ ags_machine_open_files(AgsMachine *machine,
 
   AgsGuiThread *gui_thread;
 
+  AgsApplicationContext *application_context;
+  
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
   
   application_context = (AgsApplicationContext *) window->application_context;
@@ -2196,17 +2209,16 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 				  "method"),
 		       "AgsAudio::set-audio-channels",
 		       28)){
-	  GValue *value;
-	  
 	  guint audio_channels, audio_channels_old;
+	  gint position;
+	  
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
+				    "audio-channels");
+	  audio_channels = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
 
-	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
-				     "audio-channels");
-	  audio_channels = g_value_get_uint(value);
-
-	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
-				     "audio-channels-old");
-	  audio_channels_old = g_value_get_uint(value);
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
+				    "audio-channels-old");
+	  audio_channels = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
 
 	  /* resize audio channels */
 	  ags_machine_resize_audio_channels(machine,
@@ -2215,23 +2227,22 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 				  "method"),
 		       "AgsAudio::set-pads",
 		       19)){
-	  GValue *value;
-
 	  GType channel_type;
 	  
 	  guint pads, pads_old;
-
-	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
-				     "channel-type");
-	  channel_type = g_value_get_ulong(value);
+	  gint position;
 	  
-	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
+				     "channel-type");
+	  channel_type = g_value_get_ulong(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
+	  
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
 				     "pads");
-	  pads = g_value_get_uint(value);
+	  pads = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
 
-	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
 				     "pads-old");
-	  pads_old = g_value_get_uint(value);
+	  pads_old = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
 
 	  /* resize pads */
 	  ags_machine_resize_pads(machine,
@@ -2242,12 +2253,11 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 		       "AgsAudio::done",
 		       15)){
 	  AgsRecallID *recall_id;
+	  gint position;
 	  
-	  GValue *value;
-
-	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
 				     "recall-id");
-	  recall_id = g_value_get_object(value);
+	  recall_id = g_value_get_object(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
 
 	  /* done */
 	  ags_machine_done(machine,

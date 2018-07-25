@@ -218,6 +218,12 @@ ags_dssi_manager_finalize(GObject *gobject)
 
   dssi_manager = AGS_DSSI_MANAGER(gobject);
 
+  pthread_mutex_destroy(dssi_manager->obj_mutex);
+  free(dssi_manager->obj_mutex);
+
+  pthread_mutexattr_destroy(dssi_manager->obj_mutexattr);
+  free(dssi_manager->obj_mutexattr);
+  
   dssi_plugin = dssi_manager->dssi_plugin;
 
   g_list_free_full(dssi_plugin,

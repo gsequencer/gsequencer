@@ -22,6 +22,7 @@
 #include <ags/libags.h>
 
 #include <ags/plugin/ags_lv2_plugin.h>
+#include <ags/plugin/ags_lv2_preset.h>
 #include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2_event_manager.h>
 #include <ags/plugin/ags_lv2_uri_map_manager.h>
@@ -100,6 +101,7 @@ enum{
   PROP_FOAF_NAME,
   PROP_FOAF_HOMEPAGE,
   PROP_FOAF_MBOX,
+  PROP_PRESET,
 };
 
 enum{
@@ -301,6 +303,21 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
 				  PROP_FOAF_MBOX,
 				  param_spec);
 
+  /**
+   * AgsLv2Plugin:preset:
+   *
+   * The assigned preset.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("preset",
+				    i18n_pspec("preset of the plugin"),
+				    i18n_pspec("The preset of this plugin"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PRESET,
+				  param_spec);
+  
   /* AgsBasePluginClass */
   base_plugin = (AgsBasePluginClass *) lv2_plugin;
 
@@ -601,6 +618,28 @@ ags_lv2_plugin_set_property(GObject *gobject,
       pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
+  case PROP_PRESET:
+    {
+      AgsLv2Preset *lv2_preset;
+
+      lv2_preset = g_value_get_pointer(value);
+
+      pthread_mutex_lock(base_plugin_mutex);
+
+      if(lv2_preset == NULL ||
+	 g_list_find(lv2_plugin->preset, lv2_preset) != NULL){
+	pthread_mutex_unlock(base_plugin_mutex);
+      
+	return;
+      }
+
+      lv2_plugin->preset = g_list_append(lv2_plugin->preset,
+					 lv2_preset);
+      g_object_ref(lv2_preset);
+      
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -708,6 +747,15 @@ ags_lv2_plugin_get_property(GObject *gobject,
       pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
+  case PROP_PRESET:
+    {
+      pthread_mutex_lock(base_plugin_mutex);
+
+      g_value_set_pointer(value, g_list_copy(lv2_plugin->preset));
+
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -733,6 +781,13 @@ ags_lv2_plugin_dispose(GObject *gobject)
     lv2_plugin->turtle = NULL;
   }
 
+  if(lv2_plugin->preset != NULL){
+    g_list_free_full(lv2_plugin->preset,
+		     g_object_unref);
+
+    lv2_plugin->preset = NULL;
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_plugin_parent_class)->dispose(gobject);
 }
@@ -766,6 +821,11 @@ ags_lv2_plugin_finalize(GObject *gobject)
     free(lv2_plugin->feature);
   }
 
+  if(lv2_plugin->preset != NULL){
+    g_list_free_full(lv2_plugin->preset,
+		     g_object_unref);
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_plugin_parent_class)->finalize(gobject);
 }

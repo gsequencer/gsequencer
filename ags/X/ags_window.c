@@ -389,7 +389,7 @@ ags_window_set_property(GObject *gobject,
       }
 
       if(application_context != NULL){
-	window->application_mutex = application_context->mutex;
+	window->application_mutex = application_context->obj_mutex;
 	
 	g_object_ref(application_context);
       }

@@ -1935,7 +1935,7 @@ ags_effect_line_message_monitor_timeout(AgsEffectLine *effect_line)
 	  gint position;
 	  
 	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
-				 "filename");
+				    "filename");
 	  filename = g_value_get_string(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
 
 	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,

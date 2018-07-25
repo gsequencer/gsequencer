@@ -260,7 +260,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
 	ags_machine_set_run_extended(machine,
 				     TRUE,
-				     !gtk_toggle_button_get_active((GtkToggleButton *) export_window->exclude_sequencer), TRUE);
+				     !gtk_toggle_button_get_active((GtkToggleButton *) export_window->exclude_sequencer), TRUE, FALSE, FALSE);
 	success = TRUE;
       }
 

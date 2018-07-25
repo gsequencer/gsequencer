@@ -70,11 +70,6 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
 {
   AgsWindow *window;
 
-  AgsSetInputDevice *set_input_device;
-
-  AgsGuiThread *gui_thread;
-
-  AgsApplicationContext *application_context;
   GObject *sequencer;
 
   GtkTreeIter current;
@@ -93,11 +88,6 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
 							      AGS_TYPE_PREFERENCES))->window);
   sequencer = sequencer_editor->sequencer;
 
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  /* get gui thread */
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-  
   /*  */
   use_alsa = FALSE;
 
@@ -137,10 +127,8 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
   
   /* reset dialog */
   if(card != NULL){
-    set_input_device = ags_set_input_device_new(sequencer,
-						  card);
-    ags_gui_thread_schedule_task(gui_thread,
-				 set_input_device);
+    ags_sequencer_set_device(AGS_SEQUENCER(sequencer),
+			     card);
   }
 }
 

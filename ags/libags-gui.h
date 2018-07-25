@@ -24,6 +24,7 @@
 #include <ags/widget/ags_container.h>
 #include <ags/widget/ags_dial.h>
 #include <ags/widget/ags_expander_set.h>
+#include <ags/widget/ags_expander.h>
 #include <ags/widget/ags_hindicator.h>
 #include <ags/widget/ags_hlevel_box.h>
 #include <ags/widget/ags_hscale_box.h>

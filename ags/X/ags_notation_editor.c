@@ -461,16 +461,6 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
 			(gpointer) notation_editor,
 			NULL);
   }
-
-  /* get audio mutex */
-  if(machine != NULL){
-    pthread_mutex_lock(application_mutex);
-  
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
-  
-    pthread_mutex_unlock(application_mutex);
-  }
   
   /* notebook - remove tabs */
   length = g_list_length(notation_editor->notebook->tab);
@@ -509,7 +499,7 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
     guint channel_count;
 
     /* get channel count */
-    if((AGS_AUDIO_NOTATION_DEFAULT & (machine->audio->flags)) != 0){
+    if(ags_audio_test_behaviour_flags(machine->audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT)){
       g_object_get(machine->audio,
 		   "input-pads", &channel_count,
 		   NULL);
@@ -689,8 +679,6 @@ ags_notation_editor_delete_note(AgsNotationEditor *notation_editor,
     
     timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET);
 
-    pthread_mutex_lock(audio_mutex);
-
     i = 0;
 
     while((i = ags_notebook_next_active_tab(notation_editor->notebook,
@@ -784,8 +772,6 @@ ags_notation_editor_select_region(AgsNotationEditor *notation_editor,
     timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
     timestamp->flags |= AGS_TIMESTAMP_OFFSET;
     
-    pthread_mutex_lock(audio_mutex);
-
     i = 0;
 
     g_object_get(machine->audio,
@@ -832,8 +818,7 @@ ags_notation_edit_play_channel(AgsNotationEdit *notation_edit,
   AgsGuiThread *gui_thread;
 
   AgsStartSoundcard *start_soundcard;
-  AgsInitChannel *init_channel;
-  AgsAppendChannel *append_channel;
+  AgsStartChannel *start_channel;
 
   AgsApplicationContext *application_context;
 
@@ -860,10 +845,10 @@ ags_notation_edit_play_channel(AgsNotationEdit *notation_edit,
   task = NULL;
 
   /* start playback */
-  append_channel = ags_start_channel_new(channel,
-					 AGS_SOUND_SCOPE_PLAYBACK);
+  start_channel = ags_start_channel_new(channel,
+					AGS_SOUND_SCOPE_PLAYBACK);
   task = g_list_prepend(task,
-			append_channel);
+			start_channel);
 
   /* create start task */
   start_soundcard = ags_start_soundcard_new(application_context);
@@ -909,6 +894,8 @@ ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
     guint audio_flags;
     guint output_pads, input_pads;
 
+    pthread_mutex_t *audio_mutex;
+    
     notation_edit = notation_editor->notation_edit;
     machine = notation_editor->selected_machine;
   
@@ -966,7 +953,7 @@ ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
 					     FALSE);
 
       if(current_note != NULL){
-	if((AGS_AUDIO_NOTATION_DEFAULT & audio_flags) == 0){
+	if(ags_audio_test_behaviour_flags(machine->audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT)){
 	  channel = ags_channel_nth(output,
 				    i);
 	}else{
@@ -974,9 +961,9 @@ ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
 				    i);
 	}
 	
-	if((AGS_AUDIO_REVERSE_MAPPING & audio_flags) != 0){
+	if(ags_audio_test_behaviour_flags(machine->audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
 	  channel = ags_channel_pad_nth(channel,
-					(((AGS_AUDIO_NOTATION_DEFAULT & audio_flags) == 0) ? output_pads: input_pads) - notation_edit->cursor_position_y - 1);
+					(ags_audio_test_behaviour_flags(machine->audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT) ? output_pads: input_pads) - notation_edit->cursor_position_y - 1);
 	}else{
 	  channel = ags_channel_pad_nth(channel,
 					notation_edit->cursor_position_y);

@@ -67,7 +67,7 @@ ags_notation_editor_resize_pads_callback(AgsMachine *machine, GType channel_type
   audio = machine->audio;
 
   /* verify pads */
-  if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_NOTATION_DEFAULT)){
+  if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT)){
     if(!g_type_is_a(channel_type,
 		    AGS_TYPE_INPUT)){
       return;
@@ -91,7 +91,7 @@ ags_notation_editor_resize_pads_callback(AgsMachine *machine, GType channel_type
 
 
 void
-ags_notation_editor_init_channel_launch_callback(AgsTask *task, AgsNote *note)
+ags_notation_editor_start_channel_launch_callback(AgsTask *task, AgsNote *note)
 {
   AgsAudio *audio;
   AgsChannel *channel;
@@ -108,7 +108,7 @@ ags_notation_editor_init_channel_launch_callback(AgsTask *task, AgsNote *note)
   
   GValue value = {0,};
 
-  channel = AGS_INIT_CHANNEL(task)->channel;
+  channel = AGS_START_CHANNEL(task)->channel;
 
   /* get some fields */
   g_object_get(channel,
@@ -167,9 +167,9 @@ ags_notation_editor_init_channel_launch_callback(AgsTask *task, AgsNote *note)
 
       ags_recycling_create_audio_signal_with_frame_count(recycling,
 							 audio_signal,
-							 (note_x1 - note_x0) * ((gdouble) samplerate / notation_delay),
+							 (note_x1 - note_x0) * ((gdouble) samplerate / delay),
 							 0.0, 0);
-      audio_signal->stream_current = audio_signal->stream_beginning;
+      audio_signal->stream_current = audio_signal->stream;
       ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
   
       /*

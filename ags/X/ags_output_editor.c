@@ -282,7 +282,7 @@ ags_output_editor_reset(AgsApplicable *applicable)
     line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(output_editor),
 							  AGS_TYPE_LINE_EDITOR));
 
-    soundcard = NULL;
+    output_soundcard = NULL;
     audio = NULL;
     channel = line_editor->channel;
     
@@ -325,13 +325,8 @@ ags_output_editor_reset(AgsApplicable *applicable)
 		   "output-soundcard-channel", &audio_channel,
 		   NULL);
       
-      if(audio_connection != NULL){
-	gtk_spin_button_set_value(output_editor->audio_channel,
-				  audio_channel);
-      }else{
-	gtk_spin_button_set_value(output_editor->audio_channel,
-				  0);
-      }
+      gtk_spin_button_set_value(output_editor->audio_channel,
+				audio_channel);
     }else{
       gtk_combo_box_set_active(output_editor->soundcard,
 			       0);

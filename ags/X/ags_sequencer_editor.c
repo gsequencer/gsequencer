@@ -562,6 +562,8 @@ ags_sequencer_editor_add_jack(AgsSequencerEditor *sequencer_editor,
   AgsThread *main_loop;
   AgsThread *sequencer_thread;
 
+  AgsApplicationContext *application_context;
+
   GList *sound_server;
   GList *card_name, *card_uri;
 
@@ -579,8 +581,6 @@ ags_sequencer_editor_add_jack(AgsSequencerEditor *sequencer_editor,
     jack_server = AGS_JACK_SERVER(sound_server->data);
   }else{
     g_warning("distributed manager not found");
-
-    pthread_mutex_unlock(application_mutex);
     
     return;
   }
@@ -781,7 +781,6 @@ ags_sequencer_editor_add_sequencer(AgsSequencerEditor *sequencer_editor,
 
   if(g_list_find(ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context)),
 		 sequencer) != NULL){
-    pthread_mutex_unlock(application_mutex);  
   
     return;
   }
@@ -791,8 +790,6 @@ ags_sequencer_editor_add_sequencer(AgsSequencerEditor *sequencer_editor,
   ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context)),
 						 sequencer));
-
-  pthread_mutex_unlock(application_mutex);  
     
   g_object_ref(sequencer);
 

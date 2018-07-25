@@ -83,11 +83,6 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 {
   AgsWindow *window;
 
-  AgsGuiThread *gui_thread;
-
-  AgsSetOutputDevice *set_output_device;
-
-  AgsApplicationContext *application_context;
   GObject *soundcard;
 
   GtkTreeIter current;
@@ -112,11 +107,6 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 							      AGS_TYPE_PREFERENCES))->window);
   soundcard = soundcard_editor->soundcard;
 
-  application_context = (AgsApplicationContext *) window->application_context;
-  
-  /* get gui thread */
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-  
   /*  */
   use_alsa = FALSE;
 
@@ -177,10 +167,8 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
   }
 
   if(card != NULL){
-    set_output_device = ags_set_output_device_new(soundcard,
-						  card);
-    ags_gui_thread_schedule_task(gui_thread,
-				 set_output_device);
+    ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
+			     card);
     
     gtk_spin_button_set_range(soundcard_editor->audio_channels,
 			      channels_min, channels_max);

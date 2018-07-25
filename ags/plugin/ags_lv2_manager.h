@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,7 +37,7 @@
 #define AGS_IS_LV2_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2_MANAGER))
 #define AGS_LV2_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2_MANAGER, AgsLv2ManagerClass))
 
-#define AGS_LV2_MANAGER_DEFAULT_LOCALE "en-gb\0"
+#define AGS_LV2_MANAGER_DEFAULT_LOCALE "en-gb"
 
 typedef struct _AgsLv2Manager AgsLv2Manager;
 typedef struct _AgsLv2ManagerClass AgsLv2ManagerClass;
@@ -45,6 +45,9 @@ typedef struct _AgsLv2ManagerClass AgsLv2ManagerClass;
 struct _AgsLv2Manager
 {
   GObject object;
+
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
 
   gchar *locale;
 
@@ -60,6 +63,8 @@ struct _AgsLv2ManagerClass
 };
 
 GType ags_lv2_manager_get_type(void);
+
+pthread_mutex_t* ags_lv2_manager_get_class_mutex();
 
 gchar** ags_lv2_manager_get_default_path();
 void ags_lv2_manager_set_default_path(gchar** default_path);

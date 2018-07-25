@@ -131,11 +131,7 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
     }
   }else{
     if((AGS_MACHINE_SOLO & (machine->flags)) != 0){
-      pthread_mutex_lock(current_mutex);
-
       is_output = (AGS_IS_OUTPUT(pad->channel))? TRUE: FALSE;
-      
-      pthread_mutex_unlock(current_mutex);
 
       container = (GtkContainer *) (is_output ? machine->output: machine->input);
       list_start = 
@@ -249,8 +245,8 @@ ags_pad_start_channel_launch_callback(AgsTask *task,
 		 "playback", &playback,
 		 NULL);
 
-    recll_id = ags_playback_get_recall_id(playback,
-					  AGS_SOUND_SCOPE_PLAYBACK);
+    recall_id = ags_playback_get_recall_id(playback,
+					   AGS_SOUND_SCOPE_PLAYBACK);
     
     if(playback == NULL ||
        recall_id == NULL){
@@ -288,7 +284,7 @@ ags_pad_start_channel_launch_callback(AgsTask *task,
 	ags_recycling_create_audio_signal_with_defaults(recycling,
 							audio_signal,
 							0.0, 0);
-	audio_signal->stream_current = audio_signal->stream_beginning;
+	audio_signal->stream_current = audio_signal->stream;
 	ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
 	
 	/*

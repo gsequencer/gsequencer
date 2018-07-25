@@ -558,7 +558,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   application_context = (AgsApplicationContext *) window->application_context;
 
   /* get task thread */
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER_GET_GUI_THREAD(main_loop));
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* seek soundcard */
   note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard));

@@ -1209,7 +1209,7 @@ ags_line_add_lv2_effect(AgsLine *line,
   /* get base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
   
-  base_plugin_mutex = AGS_BASE_PLUGIN(ladspa_plugin)->obj_mutex;
+  base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
   
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
@@ -1307,7 +1307,7 @@ ags_line_add_lv2_effect(AgsLine *line,
   pthread_mutex_unlock(base_plugin_mutex);
   
   /* load ports */
-  g_object_get(ladspa_plugin,
+  g_object_get(lv2_plugin,
 	       "plugin-port", &start_plugin_port,
 	       NULL);
 
@@ -1336,22 +1336,6 @@ ags_line_add_lv2_effect(AgsLine *line,
 
       disable_seemless = FALSE;
       
-      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	disable_seemless = TRUE;
-	
-      	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	  widget_type = AGS_TYPE_LED;
-	}else{
-	  widget_type = GTK_TYPE_TOGGLE_BUTTON;
-	}
-      }else{
-	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	  widget_type = AGS_TYPE_HINDICATOR;
-	}else{
-	  widget_type = AGS_TYPE_DIAL;
-	}
-      }
-
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
 	disable_seemless = TRUE;
 
@@ -1435,7 +1419,7 @@ ags_line_add_lv2_effect(AgsLine *line,
       }
 
       g_object_set(line_member,
-		   conversion, lv2_conversion,
+		   "conversion", lv2_conversion,
 		   NULL);
 
       /* child widget */
@@ -1641,7 +1625,7 @@ ags_line_real_remove_effect(AgsLine *line,
 						   AGS_TYPE_MACHINE);
     
   /* get nth_effect */
-  g_object_get(effect_line->channel,
+  g_object_get(line->channel,
 	       "play", &start_recall,
 	       NULL);
   
@@ -2006,18 +1990,18 @@ ags_line_message_monitor_timeout(AgsLine *line)
 	  GList *pad_editor, *pad_editor_start;
 	  GList *line_editor, *line_editor_start;
 	  GList *control_type_name;
-
-	  GValue *value;
 	  
 	  gchar *filename, *effect;
 
-	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
-				     "filename");
-	  filename = g_value_get_string(value);
+	  gint position;
+	  
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
+				    "filename");
+	  filename = g_value_get_string(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
 
-	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
-				     "effect");
-	  effect = g_value_get_string(value);
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
+				    "effect");
+	  effect = g_value_get_string(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
 
 	  /* get machine and machine editor */
 	  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
@@ -2164,11 +2148,12 @@ ags_line_message_monitor_timeout(AgsLine *line)
 			     16)){
 	  AgsRecallID *recall_id;
 	  
-	  GValue *value;
+	  gint position;
 
-	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
-				     "recall-id");
-	  recall_id = g_value_get_object(value);
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
+				    "recall-id");
+	  
+	  recall_id = g_value_get_object(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
 
 	  /* done */
 	  ags_line_done(line,

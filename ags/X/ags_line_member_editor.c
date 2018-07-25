@@ -251,7 +251,7 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 						    AGS_TYPE_RECALL_LADSPA,
 						    AGS_TYPE_RECALL_LV2,
 						    G_TYPE_NONE)) != NULL){
-    if((AGS_RECALL_BULK_MODE & (AGS_RECALL(recall->data)->flags)) != 0){
+    if(ags_recall_test_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE)){
       recall = recall->next;
 
       continue;
@@ -286,14 +286,18 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
     filename = NULL;
     effect = NULL;
     
+    g_object_get(G_OBJECT(recall->data),
+		 "filename", &filename,
+		 NULL);
+
     if(AGS_IS_RECALL_LADSPA(recall->data)){
-      filename = AGS_RECALL_LADSPA(recall->data)->filename;
-      effect = AGS_RECALL_LADSPA(recall->data)->effect;
+      g_object_get(G_OBJECT(recall->data),
+		   "effect", &effect,
+		   NULL);
     }else if(AGS_IS_RECALL_LV2(recall->data)){
-      filename = AGS_RECALL_LV2(recall->data)->filename;
-      effect = AGS_RECALL_LV2(recall->data)->effect;
-    }else{
-      g_critical("unsupported recall");
+      g_object_get(G_OBJECT(recall->data),
+		   "uri", &effect,
+		   NULL);
     }
 
     str = g_strdup_printf("%s - %s",
@@ -315,11 +319,11 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
 /**
  * ags_line_member_editor_new:
  *
- * Creates an #AgsLineMemberEditor
+ * Create a new instance of #AgsLineMemberEditor
  *
- * Returns: a new #AgsLineMemberEditor
+ * Returns: the new #AgsLineMemberEditor
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLineMemberEditor*
 ags_line_member_editor_new()
