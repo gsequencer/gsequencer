@@ -1,3 +1,8 @@
+ags (1.4.35)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential infinite loop in ags_simple_file.c
+
 ags (1.4.34)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

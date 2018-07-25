@@ -5615,7 +5615,7 @@ ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset
 
 	parameter = NULL;
 
-	ags_simple_file_read_preset(simple_file, child, &parameter);
+	ags_simple_file_read_property(simple_file, child, &parameter);
 
 	ags_preset_add_parameter(gobject,
 				 parameter->name, &(parameter->value));
