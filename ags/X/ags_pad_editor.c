@@ -42,8 +42,10 @@ void ags_pad_editor_get_property(GObject *gobject,
 				 guint prop_id,
 				 GValue *value,
 				 GParamSpec *param_spec);
+
 void ags_pad_editor_connect(AgsConnectable *connectable);
 void ags_pad_editor_disconnect(AgsConnectable *connectable);
+
 void ags_pad_editor_set_update(AgsApplicable *applicable, gboolean update);
 void ags_pad_editor_apply(AgsApplicable *applicable);
 void ags_pad_editor_reset(AgsApplicable *applicable);

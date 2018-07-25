@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -117,6 +117,17 @@ ags_notation_editor_init_channel_launch_callback(AgsTask *task, AgsNote *note)
 	       "playback", &playback,
 	       NULL);
 
+  recall_id = ags_playback_get_recall_id(playback, AGS_SOUND_SCOPE_PLAYBACK);
+    
+#ifdef AGS_DEBUG
+  g_message("launch");
+#endif
+
+  if(playback == NULL ||
+     recall_id == NULL){
+    return;
+  }
+
   /* get presets */
   ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
 			    NULL,
@@ -125,16 +136,8 @@ ags_notation_editor_init_channel_launch_callback(AgsTask *task, AgsNote *note)
 			    NULL);
 
   delay = ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard));
-  
-#ifdef AGS_DEBUG
-  g_message("launch");
-#endif
 
-  if(playback == NULL ||
-     (recall_id = ags_playback_get_recall_id(playback, AGS_SOUND_SCOPE_PLAYBACK)) == NULL){
-    return;
-  }
-
+  /* get some fields */
   g_object_get(channel,
 	       "first-recycling", &recycling,
 	       "last-recycling", &last_recycling,
