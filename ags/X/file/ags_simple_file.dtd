@@ -29,6 +29,14 @@
 	  value            CDATA     #REQUIRED
 	  >
 
+<!-- strv -->
+<!ELEMENT ags-sf-strv (ags-sf-str*)>
+
+<!ELEMENT ags-sf-str (#CDATA)>
+
+<!-- value -->
+<!ELEMENT ags-sf-value (ags-sf-value*)>
+
 <!-- GUI -->
 <!ELEMENT ags-sf-window (ags-sf-machine-list*, ags-sf-editor, ags-sf-automation-editor)>
 <!ATTLIST ags-sf-window
@@ -191,7 +199,7 @@
 <!-- preset -->
 <!ELEMENT ags-sf-preset-list (ags-sf-preset*)>
 
-<!ELEMENT ags-sf-preset (ags-sf-property*)>
+<!ELEMENT ags-sf-preset (ags-sf-strv, ags-sf-value*)>
 <!ATTLIST ags-sf-preset
 	  scope                 CDATA    #REQUIRED
 	  preset-name           CDATA    #REQUIRED

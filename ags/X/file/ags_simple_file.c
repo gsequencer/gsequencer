@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -102,6 +102,8 @@ void ags_simple_file_real_read_start(AgsSimpleFile *simple_file);
 void ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig **config);
 void ags_simple_file_read_property_list(AgsSimpleFile *simple_file, xmlNode *node, GList **property);
 void ags_simple_file_read_property(AgsSimpleFile *simple_file, xmlNode *node, GParameter **property);
+void ags_simple_file_read_strv(AgsSimpleFile *simple_file, xmlNode *node, gchar ***strv);
+void ags_simple_file_read_value(AgsSimpleFile *simple_file, xmlNode *node, GValue **value);
 void ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow **window);
 void ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
 					AgsWindow *window);
@@ -155,6 +157,8 @@ xmlNode* ags_simple_file_write_config(AgsSimpleFile *simple_file, xmlNode *paren
 xmlNode* ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWindow *window);
 xmlNode* ags_simple_file_write_property_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *property);
 xmlNode* ags_simple_file_write_property(AgsSimpleFile *simple_file, xmlNode *parent, GParameter *property);
+xmlNode* ags_simple_file_write_strv(AgsSimpleFile *simple_file, xmlNode *parent, gchar **strv);
+xmlNode* ags_simple_file_write_value(AgsSimpleFile *simple_file, xmlNode *parent, GValue *value);
 xmlNode* ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWindow *window);
 xmlNode* ags_simple_file_write_machine_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *machine);
 xmlNode* ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMachine *machine);
@@ -1416,6 +1420,133 @@ ags_simple_file_read_property(AgsSimpleFile *simple_file, xmlNode *node, GParame
 }
 
 void
+ags_simple_file_read_strv(AgsSimpleFile *simple_file, xmlNode *node, gchar ***strv)
+{
+  xmlNode *child;
+  
+  gchar **current;
+
+  guint i;
+  
+  current = NULL;
+  
+  child = node->children;
+
+  i = 0;
+  
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-str",
+		     11)){
+	if(current == NULL){
+	  current = malloc(2 * sizeof(gchar *));
+	}else{
+	  current = realloc(current,
+			    (i + 2) * sizeof(gchar *));
+	}
+
+	current[i] = xmlNodeGetContent(child);
+	
+	i++;
+      }
+    }
+
+    child = child->next;
+  }
+
+  /* set return value */
+  strv[0] = current;
+}
+
+void
+ags_simple_file_read_value(AgsSimpleFile *simple_file, xmlNode *node, GValue **value)
+{
+  GValue *current;
+
+  gchar *str, *type;
+  
+  current = value[0];
+  
+  str = xmlGetProp(node,
+		   "value");
+
+  type = xmlGetProp(node,
+		    "type");
+
+  if(str != NULL){
+    if(!g_strcmp0(type,
+		  "gboolean")){
+      g_value_init(current,
+		   G_TYPE_BOOLEAN);
+      
+      if(!g_strcmp0(str,
+		    "false")){
+	g_value_set_boolean(current,
+			    FALSE);
+      }else{
+	g_value_set_boolean(current,
+			    TRUE);
+      }
+    }else if(!g_strcmp0(type,
+			"guint")){
+      guint val;
+
+      g_value_init(current,
+		   G_TYPE_UINT);
+      
+      val = g_ascii_strtoull(str,
+			     NULL,
+			     10);
+
+      g_value_set_uint(current,
+		       val);
+    }else if(!g_strcmp0(type,
+			"gint")){
+      gint val;
+
+      g_value_init(current,
+		   G_TYPE_UINT);
+      
+      val = g_ascii_strtoll(str,
+			    NULL,
+			    10);
+
+      g_value_set_int(current,
+		      val);
+    }else if(!g_strcmp0(type,
+			"gdouble")){
+      gdouble val;
+      
+      g_value_init(current,
+		   G_TYPE_DOUBLE);
+
+      val = g_ascii_strtod(str,
+			   NULL);
+
+      g_value_set_double(current,
+			 val);
+    }else if(!g_strcmp0(type,
+			"AgsComplex")){
+      AgsComplex z;
+      
+      g_value_init(current,
+		   AGS_TYPE_COMPLEX);
+
+      sscanf(str, "%f %f", &(z[0]), &(z[1]));
+      g_value_set_boxed(current,
+			&z);
+    }else{
+      g_value_init(current,
+		   G_TYPE_STRING);
+
+      g_value_set_string(current,
+			 str);
+    }
+  }
+}
+
+void
 ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow **window)
 {
   AgsWindow *gobject;
@@ -1817,9 +1948,10 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
       gobject->audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 				AGS_AUDIO_INPUT_HAS_RECYCLING |
 				AGS_AUDIO_SYNC |
-				AGS_AUDIO_ASYNC |
-				AGS_AUDIO_HAS_NOTATION | 
-				AGS_AUDIO_NOTATION_DEFAULT);
+				AGS_AUDIO_ASYNC);
+      gobject->audio->ability_flags |= (AGS_SOUND_ABILITY_NOTATION);
+      gobject->audio->behaviour_flags |= (AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT);
+      
       gobject->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 			 AGS_MACHINE_REVERSE_NOTATION);
 
@@ -1854,9 +1986,9 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
       gobject->audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 				AGS_AUDIO_INPUT_HAS_RECYCLING |
 				AGS_AUDIO_SYNC |
-				AGS_AUDIO_ASYNC |
-				AGS_AUDIO_HAS_NOTATION | 
-				AGS_AUDIO_NOTATION_DEFAULT);
+				AGS_AUDIO_ASYNC);
+      gobject->audio->ability_flags |= (AGS_SOUND_ABILITY_NOTATION);
+      gobject->audio->behaviour_flags |= (AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT);
       gobject->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 			 AGS_MACHINE_REVERSE_NOTATION);
 
@@ -1893,7 +2025,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 		   "reverse-mapping");
   if(!g_strcmp0(str,
 		"true")){
-    gobject->audio->flags |= AGS_AUDIO_REVERSE_MAPPING;
+    gobject->audio->behaviour_flags |= AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING;
   }
   
   /* connect AgsMachine */
@@ -2544,15 +2676,10 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     ags_ffplayer_open_filename(ffplayer,
 			       str);
 
-    if(ffplayer->ipatch == NULL ||
-       ffplayer->ipatch->base == NULL){
+    if(ffplayer->ipatch == NULL){
       return;
     }
 
-#ifdef AGS_WITH_LIBINSTPATCH
-    while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ffplayer->ipatch->base))->mutex) != 0);    
-#endif
-    
     /* preset */
     model = gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->preset));
 
@@ -2574,10 +2701,6 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
       }while(gtk_tree_model_iter_next(model,
 				      &iter));
     }
-
-#ifdef AGS_WITH_LIBINSTPATCH
-    while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ffplayer->ipatch->base))->mutex) != 0);
-#endif
     
     /* instrument */
     model = gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument));
@@ -2600,10 +2723,6 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
       }while(gtk_tree_model_iter_next(model,
 				      &iter));
     }
-
-#ifdef AGS_WITH_LIBINSTPATCH
-    while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ffplayer->ipatch->base))->mutex) != 0);
-#endif
   }
 
   void ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDssiBridge *dssi_bridge){
@@ -3696,8 +3815,8 @@ ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
 
     /* read audio signal */
     audio_file = ags_audio_file_new(filename,
-				    machine->audio->soundcard,
-				    file_channel, 1);
+				    machine->audio->output_soundcard,
+				    file_channel);
 
     ags_audio_file_open(audio_file);
     ags_audio_file_read_audio_signal(audio_file);
@@ -3857,8 +3976,8 @@ ags_simple_file_read_channel_line_launch(AgsFileLaunch *file_launch,
 
     /* read audio signal */
     audio_file = ags_audio_file_new(filename,
-				    channel->soundcard,
-				    file_channel, 1);
+				    channel->output_soundcard,
+				    file_channel);
 
     ags_audio_file_open(audio_file);
     ags_audio_file_read_audio_signal(audio_file);
@@ -5491,6 +5610,8 @@ ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset
   xmlNode *child;
   
   xmlChar *str;
+
+  guint i;	
   
   file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_node(simple_file,
 								     node->parent->parent);
@@ -5598,20 +5719,31 @@ ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset
 
   /* children */
   child = node->children;
+
+  i = 0;
   
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
-		     "ags-sf-property",
-		     15)){
-	GParameter *parameter;
+		     "ags-sf-strv",
+		     12)){
+	ags_simple_file_read_strv(simple_file, child, &(gobject->parameter_name));
+      }else if(!xmlStrncmp(child->name,
+			   "ags-sf-value",
+			   13)){
+	if(gobject->value == NULL){
+	  gobject->value = g_new0(GValue,
+				  1);
+	}else{
+	  gobject->value = g_renew(GValue,
+				   gobject->value,
+				   i + 1);
+	  memset(&(gobject->value[i]), 0, sizeof(GValue));
+	}
+	
+	ags_simple_file_read_value(simple_file, child, &(gobject->value[i]));
 
-	parameter = NULL;
-
-	ags_simple_file_read_preset(simple_file, child, &parameter);
-
-	ags_preset_add_parameter(gobject,
-				 parameter->name, &(parameter->value));
+	i++;
       }
     }
 
@@ -5754,6 +5886,108 @@ ags_simple_file_write_property(AgsSimpleFile *simple_file, xmlNode *parent, GPar
   xmlNewProp(node,
 	     "name",
 	     property->name);
+
+  xmlNewProp(node,
+	     "value",
+	     val);
+  
+  /* add to parent */
+  xmlAddChild(parent,
+	      node);
+
+  return(node);
+}
+
+xmlNode*
+ags_simple_file_write_strv(AgsSimpleFile *simple_file, xmlNode *parent, gchar **strv)
+{
+  xmlNode *node;
+  xmlNode *child;
+  
+  gchar **current;
+
+  if(strv == NULL){
+    return(NULL);
+  }
+  
+  node = xmlNewNode(NULL,
+		    "ags-sf-strv");
+  
+  /* add to parent */
+  xmlAddChild(parent,
+	      node);
+
+  current = strv;
+
+  while(*current != NULL){
+    child = xmlNewNode(NULL,
+		      "ags-sf-str");
+    
+    xmlNodeAddContent(child,
+		      *current);
+    
+    /* add to parent */
+    xmlAddChild(node,
+		child);
+
+    current++;
+  }
+
+  return(node);
+}
+
+xmlNode*
+ags_simple_file_write_value(AgsSimpleFile *simple_file, xmlNode *parent, GValue *value)
+{
+  xmlNode *node;
+  
+  xmlChar *type_name;
+  xmlChar *val;
+  
+  if(G_VALUE_HOLDS_BOOLEAN(value)){
+    type_name = g_type_name(G_TYPE_BOOLEAN);
+
+    if(g_value_get_boolean(value)){
+      val = g_strdup("true");
+    }else{
+      val = g_strdup("false");
+    }
+  }else if(G_VALUE_HOLDS_UINT(value)){
+    type_name = g_type_name(G_TYPE_UINT);
+
+    val = g_strdup_printf("%u",
+			  g_value_get_uint(value));
+  }else if(G_VALUE_HOLDS_INT(value)){
+    type_name = g_type_name(G_TYPE_INT);
+
+    val = g_strdup_printf("%d",
+			  g_value_get_int(value));
+  }else if(G_VALUE_HOLDS_DOUBLE(value)){
+    type_name = g_type_name(G_TYPE_DOUBLE);
+
+    val = g_strdup_printf("%f",
+			  g_value_get_double(value));
+  }else if(G_VALUE_HOLDS(value,
+			 AGS_TYPE_COMPLEX)){
+    AgsComplex *z;
+    
+    type_name = g_type_name(AGS_TYPE_COMPLEX);
+
+    z = g_value_get_boxed(value);
+    val = g_strdup_printf("%f %f",
+			  z[0][0], z[0][1]);
+  }else{
+    g_warning("ags_simple_file_write_property() - unsupported type");
+    
+    return(NULL);
+  }
+
+  node = xmlNewNode(NULL,
+		    "ags-sf-value");
+  
+  xmlNewProp(node,
+	     "type",
+	     type_name);
 
   xmlNewProp(node,
 	     "value",
@@ -5922,10 +6156,10 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
 	/* device */
 	if(channel != NULL &&
-	   channel->soundcard != NULL){
+	   channel->output_soundcard != NULL){
 	  gchar *device;
 
-	  device = ags_soundcard_get_device(AGS_SOUNDCARD(channel->soundcard));
+	  device = ags_soundcard_get_device(AGS_SOUNDCARD(channel->output_soundcard));
     
 	  if(device != NULL){
 	    xmlNewProp(line,
@@ -6173,10 +6407,10 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   
   /* device */
   if(machine->audio != NULL &&
-     machine->audio->soundcard != NULL){
+     machine->audio->output_soundcard != NULL){
     gchar *device;
 
-    device = ags_soundcard_get_device(AGS_SOUNDCARD(machine->audio->soundcard));
+    device = ags_soundcard_get_device(AGS_SOUNDCARD(machine->audio->output_soundcard));
     
     if(device != NULL){
       xmlNewProp(node,
@@ -6194,7 +6428,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	     (xmlChar *) "bank_1",
 	     (xmlChar *) g_strdup_printf("%d", machine->bank_1));
   
-  if((AGS_AUDIO_REVERSE_MAPPING & (machine->audio->flags)) != 0){
+  if((AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING & (machine->audio->behaviour_flags)) != 0){
     xmlNewProp(node,
 	       "reverse-mapping",
 	       "true");
@@ -6936,10 +7170,10 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
   
   /* device */
   if(line->channel != NULL &&
-     line->channel->soundcard != NULL){
+     line->channel->output_soundcard != NULL){
     gchar *device;
 
-    device = ags_soundcard_get_device(AGS_SOUNDCARD(line->channel->soundcard));
+    device = ags_soundcard_get_device(AGS_SOUNDCARD(line->channel->output_soundcard));
     
     if(device != NULL){
       xmlNewProp(node,
@@ -7723,7 +7957,7 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
 	      child);
 
   /* note */
-  list = notation->notes;
+  list = notation->note;
 
   while(list != NULL){
     child = xmlNewNode(NULL,
@@ -7918,7 +8152,6 @@ ags_simple_file_write_preset(AgsSimpleFile *simple_file, xmlNode *parent, AgsPre
   xmlNode *child;
   
   guint i;
-  gboolean found_preset;
   
   node = xmlNewNode(NULL,
 		    "ags-sf-preset");
@@ -7958,15 +8191,13 @@ ags_simple_file_write_preset(AgsSimpleFile *simple_file, xmlNode *parent, AgsPre
 	     g_strdup_printf("%d", preset->x_end));
 
   /* parameter */
-  found_preset = FALSE;
+  ags_simple_file_write_strv(simple_file, node, preset->parameter_name);
   
   for(i = 0; i < preset->n_params; i++){
-    found_preset = TRUE;
-
-    ags_simple_file_write_property(simple_file, node, &(preset->parameter[i]));
+    ags_simple_file_write_value(simple_file, node, &(preset->value[i]));
   }
   
-  if(found_preset){
+  if(preset->n_params > 0){
     /* add to parent */
     xmlAddChild(parent,
 		node);
