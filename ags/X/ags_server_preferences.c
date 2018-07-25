@@ -20,11 +20,7 @@
 #include <ags/X/ags_server_preferences.h>
 #include <ags/X/ags_server_preferences_callbacks.h>
 
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
-#include <ags/object/ags_applicable.h>
+#include <ags/libags.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
@@ -35,13 +31,13 @@ void ags_server_preferences_class_init(AgsServerPreferencesClass *server_prefere
 void ags_server_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_server_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_server_preferences_init(AgsServerPreferences *server_preferences);
+
 void ags_server_preferences_connect(AgsConnectable *connectable);
 void ags_server_preferences_disconnect(AgsConnectable *connectable);
+
 void ags_server_preferences_set_update(AgsApplicable *applicable, gboolean update);
 void ags_server_preferences_apply(AgsApplicable *applicable);
 void ags_server_preferences_reset(AgsApplicable *applicable);
-static void ags_server_preferences_finalize(GObject *gobject);
-void ags_server_preferences_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_server_preferences
@@ -104,20 +100,7 @@ ags_server_preferences_get_type(void)
 void
 ags_server_preferences_class_init(AgsServerPreferencesClass *server_preferences)
 {
-  GObjectClass *gobject;
-  GtkWidgetClass *widget;
-
   ags_server_preferences_parent_class = g_type_class_peek_parent(server_preferences);
-
-  /* GtkObjectClass */
-  gobject = (GObjectClass *) server_preferences;
-
-  gobject->finalize = ags_server_preferences_finalize;
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) server_preferences;
-
-  widget->show = ags_server_preferences_show;
 }
 
 void
@@ -282,30 +265,14 @@ ags_server_preferences_reset(AgsApplicable *applicable)
   //TODO:JK: implement me
 }
 
-static void
-ags_server_preferences_finalize(GObject *gobject)
-{
-}
-
-void
-ags_server_preferences_show(GtkWidget *widget)
-{
-  AgsServerPreferences *server_preferences;
-  pthread_t thread;
-
-  server_preferences = AGS_SERVER_PREFERENCES(widget);
-  
-  GTK_WIDGET_CLASS(ags_server_preferences_parent_class)->show(widget);
-}
-
 /**
  * ags_server_preferences_new:
  *
- * Creates an #AgsServerPreferences
+ * Create a new instance of #AgsServerPreferences
  *
- * Returns: a new #AgsServerPreferences
+ * Returns: the new #AgsServerPreferences
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsServerPreferences*
 ags_server_preferences_new()

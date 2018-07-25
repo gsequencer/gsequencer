@@ -30,8 +30,10 @@ void ags_property_collection_editor_class_init(AgsPropertyCollectionEditorClass 
 void ags_property_collection_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_property_collection_editor_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_property_collection_editor_init(AgsPropertyCollectionEditor *property_collection_editor);
+
 void ags_property_collection_editor_connect(AgsConnectable *connectable);
 void ags_property_collection_editor_disconnect(AgsConnectable *connectable);
+
 void ags_property_collection_editor_set_update(AgsApplicable *applicable, gboolean update);
 void ags_property_collection_editor_apply(AgsApplicable *applicable);
 void ags_property_collection_editor_reset(AgsApplicable *applicable);
@@ -230,7 +232,7 @@ ags_property_collection_editor_reset(AgsApplicable *applicable)
  *
  * Returns: a new #AgsPropertyCollectionEditor
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPropertyCollectionEditor*
 ags_property_collection_editor_new(GType child_type,

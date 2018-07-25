@@ -38,44 +38,18 @@ ags_pad_editor_resize_audio_channels_callback(AgsMachine *machine,
 
     AgsChannel *channel, *next_pad;
 
-    AgsMutexManager *mutex_manager;
-
     guint i;
 
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *channel_mutex;
-    
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-    /* lookup channel mutex */
-    pthread_mutex_lock(application_mutex);
-
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     pad_editor->pad);
-    
-    pthread_mutex_unlock(application_mutex);
-
     /* get some channel fields */
-    pthread_mutex_lock(channel_mutex);
-
-    next_pad = pad_editor->pad->next_pad;
-
-    pthread_mutex_unlock(channel_mutex);
+    g_ojbect_get(pad_editor->pad,
+		 "next-pad", &next_pad,
+		 NULL);
 
     /* get current last of pad */
     channel = ags_channel_nth(pad_editor->pad,
 			      audio_channels_old);
 
     while(channel != next_pad){
-      /* lookup channel mutex */
-      pthread_mutex_lock(application_mutex);
-
-      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       channel);
-    
-      pthread_mutex_unlock(application_mutex);
-
       /* instantiate line editor */
       line_editor = ags_line_editor_new(channel);
       line_editor->editor_type_count = pad_editor->editor_type_count;
@@ -93,11 +67,9 @@ ags_pad_editor_resize_audio_channels_callback(AgsMachine *machine,
       gtk_widget_show_all(GTK_WIDGET(line_editor));
 
       /* iterate */
-      pthread_mutex_lock(channel_mutex);
-      
-      channel = channel->next;
-
-      pthread_mutex_unlock(channel_mutex);
+      g_object_get(channel,
+		   "next", &channel,
+		   NULL);
     }
   }else{
     GList *list, *list_next, *list_start;

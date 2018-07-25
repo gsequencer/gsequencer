@@ -20,6 +20,9 @@
 #ifndef __AGS_SERVER_PREFERENCES_H__
 #define __AGS_SERVER_PREFERENCES_H__
 
+#include <glib.h>
+#include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_SERVER_PREFERENCES                (ags_server_preferences_get_type())

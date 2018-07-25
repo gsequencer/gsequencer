@@ -16,11 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #ifndef __AGS_PROPERTY_LISTING_EDITOR_H__
 #define __AGS_PROPERTY_LISTING_EDITOR_H__
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #include <ags/X/ags_property_editor.h>

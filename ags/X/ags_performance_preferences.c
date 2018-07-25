@@ -31,13 +31,13 @@ void ags_performance_preferences_class_init(AgsPerformancePreferencesClass *perf
 void ags_performance_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_performance_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_performance_preferences_init(AgsPerformancePreferences *performance_preferences);
+
 void ags_performance_preferences_connect(AgsConnectable *connectable);
 void ags_performance_preferences_disconnect(AgsConnectable *connectable);
+
 void ags_performance_preferences_set_update(AgsApplicable *applicable, gboolean update);
 void ags_performance_preferences_apply(AgsApplicable *applicable);
 void ags_performance_preferences_reset(AgsApplicable *applicable);
-static void ags_performance_preferences_finalize(GObject *gobject);
-void ags_performance_preferences_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_performance_preferences
@@ -100,20 +100,7 @@ ags_performance_preferences_get_type(void)
 void
 ags_performance_preferences_class_init(AgsPerformancePreferencesClass *performance_preferences)
 {
-  GObjectClass *gobject;
-  GtkWidgetClass *widget;
-
   ags_performance_preferences_parent_class = g_type_class_peek_parent(performance_preferences);
-
-  /* GtkObjectClass */
-  gobject = (GObjectClass *) performance_preferences;
-
-  gobject->finalize = ags_performance_preferences_finalize;
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) performance_preferences;
-
-  widget->show = ags_performance_preferences_show;
 }
 
 void
@@ -451,26 +438,14 @@ ags_performance_preferences_reset(AgsApplicable *applicable)
   //TODO:JK: implement me
 }
 
-static void
-ags_performance_preferences_finalize(GObject *gobject)
-{
-  G_OBJECT_CLASS(ags_performance_preferences_parent_class)->finalize(gobject);
-}
-
-void
-ags_performance_preferences_show(GtkWidget *widget)
-{  
-  GTK_WIDGET_CLASS(ags_performance_preferences_parent_class)->show(widget);
-}
-
 /**
  * ags_performance_preferences_new:
  *
- * Creates an #AgsPerformancePreferences
+ * Create a new instance of #AgsPerformancePreferences
  *
- * Returns: a new #AgsPerformancePreferences
+ * Returns: the new #AgsPerformancePreferences
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPerformancePreferences*
 ags_performance_preferences_new()

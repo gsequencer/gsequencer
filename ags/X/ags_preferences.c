@@ -38,12 +38,14 @@ void ags_preferences_class_init(AgsPreferencesClass *preferences);
 void ags_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_preferences_init(AgsPreferences *preferences);
+
 void ags_preferences_connect(AgsConnectable *connectable);
 void ags_preferences_disconnect(AgsConnectable *connectable);
+
 void ags_preferences_set_update(AgsApplicable *applicable, gboolean update);
 void ags_preferences_apply(AgsApplicable *applicable);
 void ags_preferences_reset(AgsApplicable *applicable);
-static void ags_preferences_finalize(GObject *gobject);
+
 void ags_preferences_show(GtkWidget *widget);
 void ags_preferences_show_all(GtkWidget *widget);
 
@@ -108,15 +110,9 @@ ags_preferences_get_type(void)
 void
 ags_preferences_class_init(AgsPreferencesClass *preferences)
 {
-  GObjectClass *gobject;
   GtkWidgetClass *widget;
 
   ags_preferences_parent_class = g_type_class_peek_parent(preferences);
-
-  /* GtkObjectClass */
-  gobject = (GObjectClass *) preferences;
-
-  gobject->finalize = ags_preferences_finalize;
 
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) preferences;
@@ -321,12 +317,6 @@ ags_preferences_reset(AgsApplicable *applicable)
   }
 }
 
-static void
-ags_preferences_finalize(GObject *gobject)
-{
-  G_OBJECT_CLASS(ags_preferences_parent_class)->finalize(gobject);
-}
-
 void
 ags_preferences_show(GtkWidget *widget)
 {
@@ -373,11 +363,11 @@ ags_preferences_show_all(GtkWidget *widget)
 /**
  * ags_preferences_new:
  *
- * Creates an #AgsPreferences
+ * Create a new instance of #AgsPreferences
  *
- * Returns: a new #AgsPreferences
+ * Returns: the new #AgsPreferences
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPreferences*
 ags_preferences_new()

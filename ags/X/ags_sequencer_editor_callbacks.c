@@ -19,20 +19,8 @@
 
 #include <ags/X/ags_sequencer_editor_callbacks.h>
 
-#include <ags/object/ags_sequencer.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task.h>
-
-#include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_midiin.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/audio/jack/ags_jack_server.h>
-#include <ags/audio/jack/ags_jack_midiin.h>
-
-#include <ags/audio/task/ags_set_input_device.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
@@ -84,8 +72,6 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
 
   AgsSetInputDevice *set_input_device;
 
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
@@ -103,27 +89,14 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
 
   GError *error;
 
-  pthread_mutex_t *application_mutex;
-
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
 							      AGS_TYPE_PREFERENCES))->window);
   sequencer = sequencer_editor->sequencer;
 
   application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task and sequencer thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
+  /* get gui thread */
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
   
   /*  */
   use_alsa = FALSE;
@@ -178,31 +151,16 @@ ags_sequencer_editor_add_jack_callback(GtkWidget *button,
   AgsWindow *window;
   AgsAddSequencerEditorJack *add_sequencer_editor_jack;
 
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
-
-  pthread_mutex_t *application_mutex;  
 
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
 							      AGS_TYPE_PREFERENCES))->window);
   application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task and sequencer thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
+  /* get gui thread */
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* create set input device task */
   add_sequencer_editor_jack = ags_add_sequencer_editor_jack_new(sequencer_editor);
@@ -219,31 +177,17 @@ ags_sequencer_editor_remove_jack_callback(GtkWidget *button,
   AgsWindow *window;
   AgsRemoveSequencerEditorJack *remove_sequencer_editor_jack;
 
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
 
-  pthread_mutex_t *application_mutex;  
-
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
 							      AGS_TYPE_PREFERENCES))->window);
+
   application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
   /* get gui thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* create set input device task */
   remove_sequencer_editor_jack = ags_remove_sequencer_editor_jack_new(sequencer_editor,

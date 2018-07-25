@@ -386,7 +386,7 @@ ags_pad_editor_reset(AgsApplicable *applicable)
  *
  * Is called as channel gets modified.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
@@ -406,35 +406,17 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
     
     AgsChannel *next_pad;
 
-    AgsMutexManager *mutex_manager;
-
     gchar *str;
     
     guint pad;
     guint i;
 
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *channel_mutex;
-    
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-    /* lookup channel mutex */
-    pthread_mutex_lock(application_mutex);
-
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     channel);
-    
-    pthread_mutex_unlock(application_mutex);
-
     /* get some channel fields */
-    pthread_mutex_lock(channel_mutex);
+    g_object_get(channel,
+		 "pad", &pad,
+		 "next-pad", &next_pad,
+		 NULL);
     
-    next_pad = channel->next_pad;
-    pad = channel->pad;
-
-    pthread_mutex_unlock(channel_mutex);
-
     /* set label */
     str = g_strdup_printf("%s: %u",
 			  i18n("pad"),
@@ -449,14 +431,6 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
 		      GTK_WIDGET(pad_editor->line_editor));
 
     while(channel != next_pad){
-      /* lookup channel mutex */
-      pthread_mutex_lock(application_mutex);
-
-      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       channel);
-    
-      pthread_mutex_unlock(application_mutex);
-      
       /* instantiate line editor */
       line_editor = ags_line_editor_new(NULL);
       line_editor->editor_type_count = pad_editor->editor_type_count;
@@ -476,11 +450,9 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
 			 0);
 
       /* iterate */
-      pthread_mutex_lock(channel_mutex);
-      
-      channel = channel->next;
-
-      pthread_mutex_unlock(channel_mutex);
+      g_object_get(channel,
+		   "next", &channel,
+		   NULL);
     }
   }else{
     gtk_expander_set_label(pad_editor->line_editor_expander,
@@ -490,13 +462,13 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
 
 /**
  * ags_pad_editor_new:
- * @channel: the channel to edit
+ * @channel: the #AgsChannel to edit
  *
- * Creates an #AgsPadEditor
+ * Create a new instance of #AgsPadEditor
  *
- * Returns: a new #AgsPadEditor
+ * Returns: the new #AgsPadEditor
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPadEditor*
 ags_pad_editor_new(AgsChannel *channel)

@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_PLUGIN_BROWSER                (ags_plugin_browser_get_type())
@@ -44,7 +45,7 @@ struct _AgsPluginBrowser
 
   guint flags;
   
-  GtkWidget *parent;
+  GtkWidget *parent_window;
 
   GtkComboBoxText *plugin_type;
 
@@ -70,6 +71,6 @@ GType ags_plugin_browser_get_type(void);
 gchar* ags_plugin_browser_get_plugin_filename(AgsPluginBrowser *plugin_browser);
 gchar* ags_plugin_browser_get_plugin_effect(AgsPluginBrowser *plugin_browser);
 
-AgsPluginBrowser* ags_plugin_browser_new(GtkWidget *parent);
+AgsPluginBrowser* ags_plugin_browser_new(GtkWidget *parent_window);
 
 #endif /*__AGS_PLUGIN_BROWSER_H__*/

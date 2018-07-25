@@ -29,9 +29,9 @@
 void ags_property_editor_class_init(AgsPropertyEditorClass *property_editor);
 void ags_property_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_property_editor_init(AgsPropertyEditor *property_editor);
+
 void ags_property_editor_connect(AgsConnectable *connectable);
 void ags_property_editor_disconnect(AgsConnectable *connectable);
-void ags_property_editor_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_property_editor
@@ -145,20 +145,14 @@ ags_property_editor_disconnect(AgsConnectable *connectable)
 		      NULL);
 }
 
-void
-ags_property_editor_show(GtkWidget *widget)
-{
-  AgsPropertyEditor *property_editor = (AgsPropertyEditor *) widget;
-}
-
 /**
  * ags_property_editor_new:
  *
- * Creates an #AgsPropertyEditor
+ * Create a new instance of #AgsPropertyEditor
  *
- * Returns: a new #AgsPropertyEditor
+ * Returns: the new #AgsPropertyEditor
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPropertyEditor*
 ags_property_editor_new()

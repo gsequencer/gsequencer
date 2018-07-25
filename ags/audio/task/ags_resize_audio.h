@@ -20,6 +20,7 @@
 #ifndef __AGS_RESIZE_AUDIO_H__
 #define __AGS_RESIZE_AUDIO_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #include <ags/libags.h>
