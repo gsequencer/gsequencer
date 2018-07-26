@@ -1548,39 +1548,15 @@ deprecated_libgsequencer_task_h_sources =
 
 libgsequencer_task_h_sources = \
 	$(deprecated_libgsequencer_task_h_sources) \
-	ags/X/task/ags_add_bulk_member.h \
-	ags/X/task/ags_add_line_member.h \
-	ags/X/task/ags_add_sequencer_editor_jack.h \
-	ags/X/task/ags_add_soundcard_editor_sink.h \
-	ags/X/task/ags_blink_cell_pattern_cursor.h \
-	ags/X/task/ags_change_indicator.h \
-	ags/X/task/ags_change_tact.h \
-	ags/X/task/ags_display_tact.h \
-	ags/X/task/ags_remove_sequencer_editor_jack.h \
-	ags/X/task/ags_remove_soundcard_editor_sink.h \
 	ags/X/task/ags_simple_file_read.h \
-	ags/X/task/ags_simple_file_write.h \
-	ags/X/task/ags_toggle_led.h \
-	ags/X/task/ags_update_bulk_member.h
+	ags/X/task/ags_simple_file_write.h
 
 deprecated_libgsequencer_task_c_sources =
 
 libgsequencer_task_c_sources = \
 	$(deprecated_libgsequencer_task_c_sources) \
-	ags/X/task/ags_add_bulk_member.c \
-	ags/X/task/ags_add_line_member.c \
-	ags/X/task/ags_add_sequencer_editor_jack.c \
-	ags/X/task/ags_add_soundcard_editor_sink.c \
-	ags/X/task/ags_blink_cell_pattern_cursor.c \
-	ags/X/task/ags_change_indicator.c \
-	ags/X/task/ags_change_tact.c \
-	ags/X/task/ags_display_tact.c \
-	ags/X/task/ags_remove_sequencer_editor_jack.c \
-	ags/X/task/ags_remove_soundcard_editor_sink.c \
 	ags/X/task/ags_simple_file_read.c \
-	ags/X/task/ags_simple_file_write.c \
-	ags/X/task/ags_toggle_led.c \
-	ags/X/task/ags_update_bulk_member.c
+	ags/X/task/ags_simple_file_write.c
 
 # libgsequencer - import
 deprecated_libgsequencer_import_h_sources =

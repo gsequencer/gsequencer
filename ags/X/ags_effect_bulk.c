@@ -30,9 +30,6 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
-#include <ags/X/task/ags_add_bulk_member.h>
-#include <ags/X/task/ags_update_bulk_member.h>
-
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -2530,7 +2527,6 @@ void
 ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
 				   guint nth)
 {
-  AgsAddBulkMember *add_bulk_member;
   GtkAdjustment *adjustment;
   
   AgsChannel *current;
@@ -2702,16 +2698,9 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 					   guint old_size)
 {
   AgsWindow *window;
-  AgsUpdateBulkMember *update_bulk_member;
-
-  AgsGuiThread *gui_thread;
 
   AgsChannel *current;
-
-  AgsApplicationContext *application_context;
   
-  GList *task;
-  GList *effect_bulk_plugin;
   GList *start_list, *list;
 
   guint pads;
@@ -2721,11 +2710,7 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) effect_bulk,
 						 AGS_TYPE_WINDOW);
-  
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  gui_thread = (AgsGuiThread *) ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-  
+    
   /* get audio mutex */
   pthread_mutex_lock(ags_audio_get_class_mutex());
 
@@ -2735,7 +2720,7 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
   
   /* retrieve channel */
   pthread_mutex_lock(audio_mutex);
-
+  
   if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
     current = effect_bulk->audio->output;
     
@@ -2753,27 +2738,7 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
   }
 
   /* collect bulk member */
-  task = NULL;
-
-  list =
-    start_list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
-
-  while(list != NULL){
-    if(AGS_IS_BULK_MEMBER(list->data)){
-      /* create task */
-      update_bulk_member = ags_update_bulk_member_new((GtkWidget *) effect_bulk,
-						      list->data,
-						      new_size,
-						      old_size,
-						      FALSE);
-      task = g_list_prepend(task,
-			    update_bulk_member);
-    }
-      
-    list = list->next;
-  }
-
-  g_list_free(start_list);
+  start_list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
 
   if(new_size > old_size){  
     /* add effect */
@@ -2788,12 +2753,104 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 
 	while(effect_bulk_plugin != NULL){
 	  GList *recall_list;
+	  GList *start_play, *play;
+	  GList *start_recall, *recall;
+	  GList *start_port, *port;
 	  
 	  recall_list = ags_channel_add_effect(current,
 					       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->filename,
 					       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->effect);
 	  g_list_free(recall_list);
+
+	  /* get play/recall */
+	  g_object_get(current,
+		       "play", &start_play,
+		       "recall", &start_recall,
+		       NULL);
+
+	  /* get effect - play context */
+	  play = ags_recall_find_recall_id_with_effect(start_play,
+						       NULL,
+						       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->filename,
+						       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->effect);
+
+	  if(play != NULL){
+	    g_object_get(play->data,
+			 "port", &start_port,
+			 NULL);
+	    
+	    port = start_port;
+
+	    while(port != NULL){
+	      AgsBulkMember *bulk_member;
+
+	      AgsBulkPort *bulk_port;
+
+	      list = ags_bulk_member_find_effect_and_specifier(start_list,
+							       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->filename,
+							       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->effect,
+							       AGS_PORT(port->data)->specifier);
+
+	      if(list != NULL){
+		bulk_member = list->data;
+		
+		bulk_port = ags_bulk_port_alloc(port->data,
+						i, j);
+		bulk_member->bulk_port = g_list_prepend(bulk_member->bulk_port,
+							bulk_port);
+	      }
+
+	      /* iterate */
+	      port = port->next;
+	    }
+
+	    g_list_free(start_port);
+	  }
+
+	  g_list_free(start_play);
+
+	  /* get effect - recall context */
+	  recall = ags_recall_find_recall_id_with_effect(start_recall,
+							 NULL,
+							 AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->filename,
+							 AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->effect);
+
+	  if(recall != NULL){
+	    g_object_get(recall->data,
+			 "port", &start_port,
+			 NULL);
+	    
+	    port = start_port;
+
+	    while(port != NULL){
+	      AgsBulkMember *bulk_member;
+
+	      AgsBulkPort *bulk_port;
+
+	      list = ags_bulk_member_find_effect_and_specifier(start_list,
+							       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->filename,
+							       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->effect,
+							       AGS_PORT(port->data)->specifier);
+
+	      if(list != NULL){
+		bulk_member = list->data;
+		
+		bulk_port = ags_bulk_port_alloc(port->data,
+						i, j);
+		bulk_member->bulk_port = g_list_prepend(bulk_member->bulk_port,
+							bulk_port);
+	      }
+
+	      /* iterate */
+	      port = port->next;
+	    }
+
+	    g_list_free(start_port);
+	  }
+
+	  g_list_free(start_recall);
 	  
+	  /* iterate */
 	  effect_bulk_plugin = effect_bulk_plugin->next;
 	}
 
@@ -2803,12 +2860,42 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 		     NULL);
       }
     }
+  }else{
+    /* remove port */
+    list = start_list;
+    
+    while(list != NULL){
+      GList *start_bulk_port, *bulk_port;
+      
+      if(!AGS_IS_BULK_MEMBER(list->data)){
+	list = list->next;
+	
+	continue;
+      }
+
+      /* bulk port */
+      start_bulk_port = g_list_copy(AGS_BULK_MEMBER(list->data)->bulk_port);
+
+      bulk_port = start_bulk_port;
+
+      while(bulk_port != NULL){
+	if(AGS_BULK_PORT(bulk_port->data)->audio_channel >= new_size){
+	  AGS_BULK_MEMBER(list->data)->bulk_port = g_list_remove(AGS_BULK_MEMBER(list->data)->bulk_port,
+								 bulk_port->data);
+	}
+	    
+	/* iterate */
+	bulk_port = bulk_port->next;
+      }
+
+      g_list_free(start_bulk_port);
+	  
+      /* iterate */
+      list = list->next;
+    }
   }
-  
-  /* launch tasks */
-  task = g_list_reverse(task);      
-  ags_gui_thread_schedule_task_list(gui_thread,
-				    task);
+
+  g_list_free(start_list);
 }
 
 void
@@ -2831,16 +2918,8 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 				 guint new_size,
 				 guint old_size)
 {
-  AgsWindow *window;
-  AgsUpdateBulkMember *update_bulk_member;
-
-  AgsGuiThread *gui_thread;
-
   AgsChannel *current;
-
-  AgsApplicationContext *application_context;
   
-  GList *task;
   GList *effect_bulk_plugin;
   GList *list;
 
@@ -2848,13 +2927,6 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
   guint i, j;
 
   pthread_mutex_t *audio_mutex;
-
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) effect_bulk,
-						 AGS_TYPE_WINDOW);
-  
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  gui_thread = (AgsGuiThread *) ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* get audio mutex */
   pthread_mutex_lock(ags_audio_get_class_mutex());
@@ -2881,25 +2953,7 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
   }
   
   /* collect bulk member */
-  task = NULL;
-
   list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
-
-  while(list != NULL){
-    if(AGS_IS_BULK_MEMBER(list->data)){
-      /* create task */
-      update_bulk_member = ags_update_bulk_member_new((GtkWidget *) effect_bulk,
-						      list->data,
-						      new_size,
-						      old_size,
-						      TRUE);
-      task = g_list_prepend(task,
-			    update_bulk_member);
-      
-    }
-      
-    list = list->next;
-  }
    
   if(new_size > old_size){ 
     /* add effect */
@@ -2914,12 +2968,104 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 
 	while(effect_bulk_plugin != NULL){
 	  GList *recall_list;
+	  GList *start_play, *play;
+	  GList *start_recall, *recall;
+	  GList *start_port, *port;
 	  
 	  recall_list = ags_channel_add_effect(current,
 					       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->filename,
 					       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->effect);
 	  g_list_free(recall_list);
 
+	  /* get play/recall */
+	  g_object_get(current,
+		       "play", &start_play,
+		       "recall", &start_recall,
+		       NULL);
+
+	  /* get effect - play context */
+	  play = ags_recall_find_recall_id_with_effect(start_play,
+						       NULL,
+						       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->filename,
+						       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->effect);
+
+	  if(play != NULL){
+	    g_object_get(play->data,
+			 "port", &start_port,
+			 NULL);
+	    
+	    port = start_port;
+
+	    while(port != NULL){
+	      AgsBulkMember *bulk_member;
+
+	      AgsBulkPort *bulk_port;
+
+	      list = ags_bulk_member_find_effect_and_specifier(start_list,
+							       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->filename,
+							       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->effect,
+							       AGS_PORT(port->data)->specifier);
+
+	      if(list != NULL){
+		bulk_member = list->data;
+		
+		bulk_port = ags_bulk_port_alloc(port->data,
+						i, j);
+		bulk_member->bulk_port = g_list_prepend(bulk_member->bulk_port,
+							bulk_port);
+	      }
+
+	      /* iterate */
+	      port = port->next;
+	    }
+
+	    g_list_free(start_port);
+	  }
+
+	  g_list_free(start_play);
+
+	  /* get effect - recall context */
+	  recall = ags_recall_find_recall_id_with_effect(start_recall,
+							 NULL,
+							 AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->filename,
+							 AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->effect);
+
+	  if(recall != NULL){
+	    g_object_get(recall->data,
+			 "port", &start_port,
+			 NULL);
+	    
+	    port = start_port;
+
+	    while(port != NULL){
+	      AgsBulkMember *bulk_member;
+
+	      AgsBulkPort *bulk_port;
+
+	      list = ags_bulk_member_find_effect_and_specifier(start_list,
+							       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->filename,
+							       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->effect,
+							       AGS_PORT(port->data)->specifier);
+
+	      if(list != NULL){
+		bulk_member = list->data;
+		
+		bulk_port = ags_bulk_port_alloc(port->data,
+						i, j);
+		bulk_member->bulk_port = g_list_prepend(bulk_member->bulk_port,
+							bulk_port);
+	      }
+
+	      /* iterate */
+	      port = port->next;
+	    }
+
+	    g_list_free(start_port);
+	  }
+
+	  g_list_free(start_recall);
+	  
+	  /* iterate */
 	  effect_bulk_plugin = effect_bulk_plugin->next;
 	}
 
@@ -2929,12 +3075,42 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 		     NULL);
       }
     }
+  }else{
+    /* remove port */
+    list = start_list;
+    
+    while(list != NULL){
+      GList *start_bulk_port, *bulk_port;
+      
+      if(!AGS_IS_BULK_MEMBER(list->data)){
+	list = list->next;
+	
+	continue;
+      }
+
+      /* bulk port */
+      start_bulk_port = g_list_copy(AGS_BULK_MEMBER(list->data)->bulk_port);
+
+      bulk_port = start_bulk_port;
+
+      while(bulk_port != NULL){
+	if(AGS_BULK_PORT(bulk_port->data)->pad >= new_size){
+	  AGS_BULK_MEMBER(list->data)->bulk_port = g_list_remove(AGS_BULK_MEMBER(list->data)->bulk_port,
+								 bulk_port->data);
+	}
+	    
+	/* iterate */
+	bulk_port = bulk_port->next;
+      }
+
+      g_list_free(start_bulk_port);
+	  
+      /* iterate */
+      list = list->next;
+    }
   }
-  
-  /* launch tasks */
-  task = g_list_reverse(task);      
-  ags_gui_thread_schedule_task_list(gui_thread,
-				    task);
+
+  g_list_free(start_list);
 }
 
 void

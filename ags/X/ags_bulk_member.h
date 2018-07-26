@@ -105,13 +105,17 @@ struct _AgsBulkMemberClass
 struct _AgsBulkPort
 {
   AgsPort *port;
+
+  guint pad;
+  guint audio_channel;
+  
   gpointer port_data;
   gboolean active;
 };
 
 GType ags_bulk_member_get_type(void);
 
-AgsBulkPort* ags_bulk_port_alloc(AgsPort *port);
+AgsBulkPort* ags_bulk_port_alloc(AgsPort *port, guint pad, guint audio_channel);
 void ags_bulk_port_free(AgsBulkPort *bulk_port);
 
 GList* ags_bulk_port_find(GList *list, AgsPort *port);
@@ -124,6 +128,10 @@ void ags_bulk_member_change_port(AgsBulkMember *bulk_member,
 				 gpointer port_data);
 
 GList* ags_bulk_member_find_port(AgsBulkMember *bulk_member);
+
+GList* ags_bulk_member_find_effect_and_specifier(GList *bulk_member,
+						 gchar *filename, gchar *effect,
+						 gchar *specifier);
 
 AgsBulkMember* ags_bulk_member_new();
 

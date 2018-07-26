@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -665,7 +665,8 @@ ags_bulk_member_set_property(GObject *gobject,
 	}
       }
       
-      bulk_port = ags_bulk_port_alloc(port);
+      bulk_port = ags_bulk_port_alloc(port,
+				      0, 0);
       bulk_member->bulk_port = g_list_prepend(bulk_member->bulk_port,
 					      bulk_port);
     }
@@ -685,7 +686,8 @@ ags_bulk_member_set_property(GObject *gobject,
 	return;
       }
 
-      bulk_port = ags_bulk_port_alloc(port);
+      bulk_port = ags_bulk_port_alloc(port,
+				      0, 0);
       bulk_member->recall_bulk_port = g_list_prepend(bulk_member->recall_bulk_port,
 						     bulk_port);
     }
@@ -956,6 +958,8 @@ ags_bulk_member_get_widget(AgsBulkMember *bulk_member)
 /**
  * ags_bulk_port_alloc:
  * @port: the #AgsPort to set
+ * @pad: the pad
+ * @audio_channel: the audio channel
  * 
  * Allocate #AgsBulkPort-struct.
  *
@@ -964,7 +968,8 @@ ags_bulk_member_get_widget(AgsBulkMember *bulk_member)
  * Since: 2.0.0
  */
 AgsBulkPort*
-ags_bulk_port_alloc(AgsPort *port)
+ags_bulk_port_alloc(AgsPort *port,
+		    guint pad, guint audio_channel)
 {
   AgsBulkPort *bulk_port;
 
@@ -972,7 +977,10 @@ ags_bulk_port_alloc(AgsPort *port)
 
   bulk_port->port = port;
   g_object_ref(port);
-  
+
+  bulk_port->pad = pad;
+  bulk_port->audio_channel = audio_channel;
+    
   bulk_port->port_data = &(port->port_value);
   bulk_port->active = FALSE;
   
@@ -1505,6 +1513,53 @@ ags_bulk_member_find_port(AgsBulkMember *bulk_member)
   g_object_unref((GObject *) bulk_member);
 
   return(list);
+}
+
+/**
+ * ags_bulk_member_find_effect_and_specifier:
+ * @bulk_member: the #GList-struct containing #AgsBulkMember
+ * @filename: the filename
+ * @effect: the effect
+ * @specifier: the specifier
+ * 
+ * Find next matching bulk member by effect and specifier.
+ * 
+ * Returns: the next matching #GList-struct or %NULL if not found
+ *
+ * Since: 2.0.0
+ */
+GList*
+ags_bulk_member_find_effect_and_specifier(GList *bulk_member,
+					  gchar *filename, gchar *effect,
+					  gchar *specifier)
+{
+  if(filename == NULL ||
+     effect == NULL ||
+     specifier == NULL){
+    return(NULL);
+  }
+  
+  while(bulk_member != NULL){
+    if(!AGS_IS_BULK_MEMBER(bulk_member->data)){
+      bulk_member = bulk_member->next;
+
+      continue;
+    }
+    
+    if(!g_strcmp0(AGS_BULK_MEMBER(bulk_member->data)->filename,
+		  filename) &&
+       !g_strcmp0(AGS_BULK_MEMBER(bulk_member->data)->effect,
+		  effect) &&
+       !g_strcmp0(AGS_BULK_MEMBER(bulk_member->data)->specifier,
+		  specifier)){
+      break;
+    }
+    
+    /* iterate */
+    bulk_member = bulk_member->next;
+  }
+  
+  return(bulk_member);
 }
 
 /**
