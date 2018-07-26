@@ -28,9 +28,6 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
-#include <ags/X/task/ags_add_sequencer_editor_jack.h>
-#include <ags/X/task/ags_remove_sequencer_editor_jack.h>
-
 #include <ags/config.h>
 
 void
@@ -136,52 +133,14 @@ void
 ags_sequencer_editor_add_jack_callback(GtkWidget *button,
 				       AgsSequencerEditor *sequencer_editor)
 {
-  AgsWindow *window;
-  AgsAddSequencerEditorJack *add_sequencer_editor_jack;
-
-  AgsGuiThread *gui_thread;
-
-  AgsApplicationContext *application_context;
-
-  window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
-							      AGS_TYPE_PREFERENCES))->window);
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  /* get gui thread */
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-
-  /* create set input device task */
-  add_sequencer_editor_jack = ags_add_sequencer_editor_jack_new(sequencer_editor);
-
-  /* append AgsSetAudioChannels */
-  ags_gui_thread_schedule_task(gui_thread,
-			       add_sequencer_editor_jack);
+  ags_sequencer_editor_add_source(sequencer_editor,
+				  NULL);
 }
 
 void
 ags_sequencer_editor_remove_jack_callback(GtkWidget *button,
 					  AgsSequencerEditor *sequencer_editor)
 {
-  AgsWindow *window;
-  AgsRemoveSequencerEditorJack *remove_sequencer_editor_jack;
-
-  AgsGuiThread *gui_thread;
-
-  AgsApplicationContext *application_context;
-
-  window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
-							      AGS_TYPE_PREFERENCES))->window);
-
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  /* get gui thread */
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-
-  /* create set input device task */
-  remove_sequencer_editor_jack = ags_remove_sequencer_editor_jack_new(sequencer_editor,
-								      gtk_combo_box_text_get_active_text(sequencer_editor->card));
-
-  /* append AgsSetAudioChannels */
-  ags_gui_thread_schedule_task(gui_thread,
-			       remove_sequencer_editor_jack);
+  ags_sequencer_editor_remove_source(sequencer_editor,
+				     gtk_combo_box_text_get_active_text(sequencer_editor->card));
 }

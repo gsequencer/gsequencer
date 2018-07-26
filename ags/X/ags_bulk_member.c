@@ -1412,8 +1412,12 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
   while(channel != NULL){
     GList *list_start;
 
+    guint pad, audio_channel;
+
     /* play context */
     g_object_get(channel,
+		 "pad", &pad,
+		 "audio-channel", &audio_channel,
 		 "play", &list_start,
 		 NULL);
     
@@ -1422,7 +1426,8 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
     if(channel_port != NULL &&
        ags_bulk_port_find(bulk_member->bulk_port, channel_port) == NULL){
       bulk_member->bulk_port = g_list_prepend(bulk_member->bulk_port,
-					      ags_bulk_port_alloc(channel_port));
+					      ags_bulk_port_alloc(channel_port,
+								  pad, audio_channel));
     }
 
     g_list_free(list_start);
@@ -1437,7 +1442,8 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
     if(recall_channel_port != NULL &&
        ags_bulk_port_find(bulk_member->recall_bulk_port, recall_channel_port) == NULL){
       bulk_member->recall_bulk_port = g_list_prepend(bulk_member->recall_bulk_port,
-						     ags_bulk_port_alloc(recall_channel_port));
+						     ags_bulk_port_alloc(recall_channel_port,
+									 pad, audio_channel));
     }
 
     g_list_free(list_start);
@@ -1463,7 +1469,8 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
     if(audio_port != NULL &&
        ags_bulk_port_find(bulk_member->bulk_port, audio_port) == NULL){
       bulk_member->bulk_port = g_list_prepend(bulk_member->bulk_port,
-					      ags_bulk_port_alloc(audio_port));
+					      ags_bulk_port_alloc(audio_port,
+								  0, 0));
     }
     
     g_list_free(list_start);
@@ -1478,7 +1485,8 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
     if(recall_audio_port != NULL &&
        ags_bulk_port_find(bulk_member->recall_bulk_port, recall_audio_port) == NULL){
       bulk_member->recall_bulk_port = g_list_prepend(bulk_member->recall_bulk_port,
-						     ags_bulk_port_alloc(recall_audio_port));
+						     ags_bulk_port_alloc(recall_audio_port,
+									 0, 0));
     }
     
     g_list_free(list_start);

@@ -754,20 +754,8 @@ am__objects_27 = $(am__objects_1) \
 	ags/X/thread/libgsequencer_la-ags_gui_thread.lo \
 	ags/X/thread/libgsequencer_la-ags_simple_autosave_thread.lo
 am__objects_28 = $(am__objects_1) \
-	ags/X/task/libgsequencer_la-ags_add_bulk_member.lo \
-	ags/X/task/libgsequencer_la-ags_add_line_member.lo \
-	ags/X/task/libgsequencer_la-ags_add_sequencer_editor_jack.lo \
-	ags/X/task/libgsequencer_la-ags_add_soundcard_editor_sink.lo \
-	ags/X/task/libgsequencer_la-ags_blink_cell_pattern_cursor.lo \
-	ags/X/task/libgsequencer_la-ags_change_indicator.lo \
-	ags/X/task/libgsequencer_la-ags_change_tact.lo \
-	ags/X/task/libgsequencer_la-ags_display_tact.lo \
-	ags/X/task/libgsequencer_la-ags_remove_sequencer_editor_jack.lo \
-	ags/X/task/libgsequencer_la-ags_remove_soundcard_editor_sink.lo \
 	ags/X/task/libgsequencer_la-ags_simple_file_read.lo \
-	ags/X/task/libgsequencer_la-ags_simple_file_write.lo \
-	ags/X/task/libgsequencer_la-ags_toggle_led.lo \
-	ags/X/task/libgsequencer_la-ags_update_bulk_member.lo
+	ags/X/task/libgsequencer_la-ags_simple_file_write.lo
 am__objects_29 = $(am__objects_1) \
 	ags/X/import/libgsequencer_la-ags_midi_import_wizard.lo \
 	ags/X/import/libgsequencer_la-ags_midi_import_wizard_callbacks.lo \
@@ -4354,38 +4342,14 @@ libgsequencer_thread_c_sources = \
 deprecated_libgsequencer_task_h_sources = 
 libgsequencer_task_h_sources = \
 	$(deprecated_libgsequencer_task_h_sources) \
-	ags/X/task/ags_add_bulk_member.h \
-	ags/X/task/ags_add_line_member.h \
-	ags/X/task/ags_add_sequencer_editor_jack.h \
-	ags/X/task/ags_add_soundcard_editor_sink.h \
-	ags/X/task/ags_blink_cell_pattern_cursor.h \
-	ags/X/task/ags_change_indicator.h \
-	ags/X/task/ags_change_tact.h \
-	ags/X/task/ags_display_tact.h \
-	ags/X/task/ags_remove_sequencer_editor_jack.h \
-	ags/X/task/ags_remove_soundcard_editor_sink.h \
 	ags/X/task/ags_simple_file_read.h \
-	ags/X/task/ags_simple_file_write.h \
-	ags/X/task/ags_toggle_led.h \
-	ags/X/task/ags_update_bulk_member.h
+	ags/X/task/ags_simple_file_write.h
 
 deprecated_libgsequencer_task_c_sources = 
 libgsequencer_task_c_sources = \
 	$(deprecated_libgsequencer_task_c_sources) \
-	ags/X/task/ags_add_bulk_member.c \
-	ags/X/task/ags_add_line_member.c \
-	ags/X/task/ags_add_sequencer_editor_jack.c \
-	ags/X/task/ags_add_soundcard_editor_sink.c \
-	ags/X/task/ags_blink_cell_pattern_cursor.c \
-	ags/X/task/ags_change_indicator.c \
-	ags/X/task/ags_change_tact.c \
-	ags/X/task/ags_display_tact.c \
-	ags/X/task/ags_remove_sequencer_editor_jack.c \
-	ags/X/task/ags_remove_soundcard_editor_sink.c \
 	ags/X/task/ags_simple_file_read.c \
-	ags/X/task/ags_simple_file_write.c \
-	ags/X/task/ags_toggle_led.c \
-	ags/X/task/ags_update_bulk_member.c
+	ags/X/task/ags_simple_file_write.c
 
 
 # libgsequencer - import
@@ -6193,46 +6157,10 @@ ags/X/task/$(am__dirstamp):
 ags/X/task/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) ags/X/task/$(DEPDIR)
 	@: > ags/X/task/$(DEPDIR)/$(am__dirstamp)
-ags/X/task/libgsequencer_la-ags_add_bulk_member.lo:  \
-	ags/X/task/$(am__dirstamp) \
-	ags/X/task/$(DEPDIR)/$(am__dirstamp)
-ags/X/task/libgsequencer_la-ags_add_line_member.lo:  \
-	ags/X/task/$(am__dirstamp) \
-	ags/X/task/$(DEPDIR)/$(am__dirstamp)
-ags/X/task/libgsequencer_la-ags_add_sequencer_editor_jack.lo:  \
-	ags/X/task/$(am__dirstamp) \
-	ags/X/task/$(DEPDIR)/$(am__dirstamp)
-ags/X/task/libgsequencer_la-ags_add_soundcard_editor_sink.lo:  \
-	ags/X/task/$(am__dirstamp) \
-	ags/X/task/$(DEPDIR)/$(am__dirstamp)
-ags/X/task/libgsequencer_la-ags_blink_cell_pattern_cursor.lo:  \
-	ags/X/task/$(am__dirstamp) \
-	ags/X/task/$(DEPDIR)/$(am__dirstamp)
-ags/X/task/libgsequencer_la-ags_change_indicator.lo:  \
-	ags/X/task/$(am__dirstamp) \
-	ags/X/task/$(DEPDIR)/$(am__dirstamp)
-ags/X/task/libgsequencer_la-ags_change_tact.lo:  \
-	ags/X/task/$(am__dirstamp) \
-	ags/X/task/$(DEPDIR)/$(am__dirstamp)
-ags/X/task/libgsequencer_la-ags_display_tact.lo:  \
-	ags/X/task/$(am__dirstamp) \
-	ags/X/task/$(DEPDIR)/$(am__dirstamp)
-ags/X/task/libgsequencer_la-ags_remove_sequencer_editor_jack.lo:  \
-	ags/X/task/$(am__dirstamp) \
-	ags/X/task/$(DEPDIR)/$(am__dirstamp)
-ags/X/task/libgsequencer_la-ags_remove_soundcard_editor_sink.lo:  \
-	ags/X/task/$(am__dirstamp) \
-	ags/X/task/$(DEPDIR)/$(am__dirstamp)
 ags/X/task/libgsequencer_la-ags_simple_file_read.lo:  \
 	ags/X/task/$(am__dirstamp) \
 	ags/X/task/$(DEPDIR)/$(am__dirstamp)
 ags/X/task/libgsequencer_la-ags_simple_file_write.lo:  \
-	ags/X/task/$(am__dirstamp) \
-	ags/X/task/$(DEPDIR)/$(am__dirstamp)
-ags/X/task/libgsequencer_la-ags_toggle_led.lo:  \
-	ags/X/task/$(am__dirstamp) \
-	ags/X/task/$(DEPDIR)/$(am__dirstamp)
-ags/X/task/libgsequencer_la-ags_update_bulk_member.lo:  \
 	ags/X/task/$(am__dirstamp) \
 	ags/X/task/$(DEPDIR)/$(am__dirstamp)
 ags/X/import/$(am__dirstamp):
@@ -7639,20 +7567,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_synth_input_line.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_synth_input_line_callbacks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/machine/$(DEPDIR)/libgsequencer_la-ags_synth_input_pad.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_bulk_member.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_line_member.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_sequencer_editor_jack.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_soundcard_editor_sink.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_blink_cell_pattern_cursor.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_change_indicator.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_change_tact.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_display_tact.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_remove_sequencer_editor_jack.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_remove_soundcard_editor_sink.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_simple_file_read.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_simple_file_write.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_toggle_led.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/X/task/$(DEPDIR)/libgsequencer_la-ags_update_bulk_member.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/thread/$(DEPDIR)/libgsequencer_la-ags_gui_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/thread/$(DEPDIR)/libgsequencer_la-ags_simple_autosave_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_acceleration.Plo@am__quote@
@@ -11387,76 +11303,6 @@ ags/X/thread/libgsequencer_la-ags_simple_autosave_thread.lo: ags/X/thread/ags_si
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/thread/libgsequencer_la-ags_simple_autosave_thread.lo `test -f 'ags/X/thread/ags_simple_autosave_thread.c' || echo '$(srcdir)/'`ags/X/thread/ags_simple_autosave_thread.c
 
-ags/X/task/libgsequencer_la-ags_add_bulk_member.lo: ags/X/task/ags_add_bulk_member.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/task/libgsequencer_la-ags_add_bulk_member.lo -MD -MP -MF ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_bulk_member.Tpo -c -o ags/X/task/libgsequencer_la-ags_add_bulk_member.lo `test -f 'ags/X/task/ags_add_bulk_member.c' || echo '$(srcdir)/'`ags/X/task/ags_add_bulk_member.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_bulk_member.Tpo ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_bulk_member.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/task/ags_add_bulk_member.c' object='ags/X/task/libgsequencer_la-ags_add_bulk_member.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/task/libgsequencer_la-ags_add_bulk_member.lo `test -f 'ags/X/task/ags_add_bulk_member.c' || echo '$(srcdir)/'`ags/X/task/ags_add_bulk_member.c
-
-ags/X/task/libgsequencer_la-ags_add_line_member.lo: ags/X/task/ags_add_line_member.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/task/libgsequencer_la-ags_add_line_member.lo -MD -MP -MF ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_line_member.Tpo -c -o ags/X/task/libgsequencer_la-ags_add_line_member.lo `test -f 'ags/X/task/ags_add_line_member.c' || echo '$(srcdir)/'`ags/X/task/ags_add_line_member.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_line_member.Tpo ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_line_member.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/task/ags_add_line_member.c' object='ags/X/task/libgsequencer_la-ags_add_line_member.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/task/libgsequencer_la-ags_add_line_member.lo `test -f 'ags/X/task/ags_add_line_member.c' || echo '$(srcdir)/'`ags/X/task/ags_add_line_member.c
-
-ags/X/task/libgsequencer_la-ags_add_sequencer_editor_jack.lo: ags/X/task/ags_add_sequencer_editor_jack.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/task/libgsequencer_la-ags_add_sequencer_editor_jack.lo -MD -MP -MF ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_sequencer_editor_jack.Tpo -c -o ags/X/task/libgsequencer_la-ags_add_sequencer_editor_jack.lo `test -f 'ags/X/task/ags_add_sequencer_editor_jack.c' || echo '$(srcdir)/'`ags/X/task/ags_add_sequencer_editor_jack.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_sequencer_editor_jack.Tpo ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_sequencer_editor_jack.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/task/ags_add_sequencer_editor_jack.c' object='ags/X/task/libgsequencer_la-ags_add_sequencer_editor_jack.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/task/libgsequencer_la-ags_add_sequencer_editor_jack.lo `test -f 'ags/X/task/ags_add_sequencer_editor_jack.c' || echo '$(srcdir)/'`ags/X/task/ags_add_sequencer_editor_jack.c
-
-ags/X/task/libgsequencer_la-ags_add_soundcard_editor_sink.lo: ags/X/task/ags_add_soundcard_editor_sink.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/task/libgsequencer_la-ags_add_soundcard_editor_sink.lo -MD -MP -MF ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_soundcard_editor_sink.Tpo -c -o ags/X/task/libgsequencer_la-ags_add_soundcard_editor_sink.lo `test -f 'ags/X/task/ags_add_soundcard_editor_sink.c' || echo '$(srcdir)/'`ags/X/task/ags_add_soundcard_editor_sink.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_soundcard_editor_sink.Tpo ags/X/task/$(DEPDIR)/libgsequencer_la-ags_add_soundcard_editor_sink.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/task/ags_add_soundcard_editor_sink.c' object='ags/X/task/libgsequencer_la-ags_add_soundcard_editor_sink.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/task/libgsequencer_la-ags_add_soundcard_editor_sink.lo `test -f 'ags/X/task/ags_add_soundcard_editor_sink.c' || echo '$(srcdir)/'`ags/X/task/ags_add_soundcard_editor_sink.c
-
-ags/X/task/libgsequencer_la-ags_blink_cell_pattern_cursor.lo: ags/X/task/ags_blink_cell_pattern_cursor.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/task/libgsequencer_la-ags_blink_cell_pattern_cursor.lo -MD -MP -MF ags/X/task/$(DEPDIR)/libgsequencer_la-ags_blink_cell_pattern_cursor.Tpo -c -o ags/X/task/libgsequencer_la-ags_blink_cell_pattern_cursor.lo `test -f 'ags/X/task/ags_blink_cell_pattern_cursor.c' || echo '$(srcdir)/'`ags/X/task/ags_blink_cell_pattern_cursor.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/task/$(DEPDIR)/libgsequencer_la-ags_blink_cell_pattern_cursor.Tpo ags/X/task/$(DEPDIR)/libgsequencer_la-ags_blink_cell_pattern_cursor.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/task/ags_blink_cell_pattern_cursor.c' object='ags/X/task/libgsequencer_la-ags_blink_cell_pattern_cursor.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/task/libgsequencer_la-ags_blink_cell_pattern_cursor.lo `test -f 'ags/X/task/ags_blink_cell_pattern_cursor.c' || echo '$(srcdir)/'`ags/X/task/ags_blink_cell_pattern_cursor.c
-
-ags/X/task/libgsequencer_la-ags_change_indicator.lo: ags/X/task/ags_change_indicator.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/task/libgsequencer_la-ags_change_indicator.lo -MD -MP -MF ags/X/task/$(DEPDIR)/libgsequencer_la-ags_change_indicator.Tpo -c -o ags/X/task/libgsequencer_la-ags_change_indicator.lo `test -f 'ags/X/task/ags_change_indicator.c' || echo '$(srcdir)/'`ags/X/task/ags_change_indicator.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/task/$(DEPDIR)/libgsequencer_la-ags_change_indicator.Tpo ags/X/task/$(DEPDIR)/libgsequencer_la-ags_change_indicator.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/task/ags_change_indicator.c' object='ags/X/task/libgsequencer_la-ags_change_indicator.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/task/libgsequencer_la-ags_change_indicator.lo `test -f 'ags/X/task/ags_change_indicator.c' || echo '$(srcdir)/'`ags/X/task/ags_change_indicator.c
-
-ags/X/task/libgsequencer_la-ags_change_tact.lo: ags/X/task/ags_change_tact.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/task/libgsequencer_la-ags_change_tact.lo -MD -MP -MF ags/X/task/$(DEPDIR)/libgsequencer_la-ags_change_tact.Tpo -c -o ags/X/task/libgsequencer_la-ags_change_tact.lo `test -f 'ags/X/task/ags_change_tact.c' || echo '$(srcdir)/'`ags/X/task/ags_change_tact.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/task/$(DEPDIR)/libgsequencer_la-ags_change_tact.Tpo ags/X/task/$(DEPDIR)/libgsequencer_la-ags_change_tact.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/task/ags_change_tact.c' object='ags/X/task/libgsequencer_la-ags_change_tact.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/task/libgsequencer_la-ags_change_tact.lo `test -f 'ags/X/task/ags_change_tact.c' || echo '$(srcdir)/'`ags/X/task/ags_change_tact.c
-
-ags/X/task/libgsequencer_la-ags_display_tact.lo: ags/X/task/ags_display_tact.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/task/libgsequencer_la-ags_display_tact.lo -MD -MP -MF ags/X/task/$(DEPDIR)/libgsequencer_la-ags_display_tact.Tpo -c -o ags/X/task/libgsequencer_la-ags_display_tact.lo `test -f 'ags/X/task/ags_display_tact.c' || echo '$(srcdir)/'`ags/X/task/ags_display_tact.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/task/$(DEPDIR)/libgsequencer_la-ags_display_tact.Tpo ags/X/task/$(DEPDIR)/libgsequencer_la-ags_display_tact.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/task/ags_display_tact.c' object='ags/X/task/libgsequencer_la-ags_display_tact.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/task/libgsequencer_la-ags_display_tact.lo `test -f 'ags/X/task/ags_display_tact.c' || echo '$(srcdir)/'`ags/X/task/ags_display_tact.c
-
-ags/X/task/libgsequencer_la-ags_remove_sequencer_editor_jack.lo: ags/X/task/ags_remove_sequencer_editor_jack.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/task/libgsequencer_la-ags_remove_sequencer_editor_jack.lo -MD -MP -MF ags/X/task/$(DEPDIR)/libgsequencer_la-ags_remove_sequencer_editor_jack.Tpo -c -o ags/X/task/libgsequencer_la-ags_remove_sequencer_editor_jack.lo `test -f 'ags/X/task/ags_remove_sequencer_editor_jack.c' || echo '$(srcdir)/'`ags/X/task/ags_remove_sequencer_editor_jack.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/task/$(DEPDIR)/libgsequencer_la-ags_remove_sequencer_editor_jack.Tpo ags/X/task/$(DEPDIR)/libgsequencer_la-ags_remove_sequencer_editor_jack.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/task/ags_remove_sequencer_editor_jack.c' object='ags/X/task/libgsequencer_la-ags_remove_sequencer_editor_jack.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/task/libgsequencer_la-ags_remove_sequencer_editor_jack.lo `test -f 'ags/X/task/ags_remove_sequencer_editor_jack.c' || echo '$(srcdir)/'`ags/X/task/ags_remove_sequencer_editor_jack.c
-
-ags/X/task/libgsequencer_la-ags_remove_soundcard_editor_sink.lo: ags/X/task/ags_remove_soundcard_editor_sink.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/task/libgsequencer_la-ags_remove_soundcard_editor_sink.lo -MD -MP -MF ags/X/task/$(DEPDIR)/libgsequencer_la-ags_remove_soundcard_editor_sink.Tpo -c -o ags/X/task/libgsequencer_la-ags_remove_soundcard_editor_sink.lo `test -f 'ags/X/task/ags_remove_soundcard_editor_sink.c' || echo '$(srcdir)/'`ags/X/task/ags_remove_soundcard_editor_sink.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/task/$(DEPDIR)/libgsequencer_la-ags_remove_soundcard_editor_sink.Tpo ags/X/task/$(DEPDIR)/libgsequencer_la-ags_remove_soundcard_editor_sink.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/task/ags_remove_soundcard_editor_sink.c' object='ags/X/task/libgsequencer_la-ags_remove_soundcard_editor_sink.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/task/libgsequencer_la-ags_remove_soundcard_editor_sink.lo `test -f 'ags/X/task/ags_remove_soundcard_editor_sink.c' || echo '$(srcdir)/'`ags/X/task/ags_remove_soundcard_editor_sink.c
-
 ags/X/task/libgsequencer_la-ags_simple_file_read.lo: ags/X/task/ags_simple_file_read.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/task/libgsequencer_la-ags_simple_file_read.lo -MD -MP -MF ags/X/task/$(DEPDIR)/libgsequencer_la-ags_simple_file_read.Tpo -c -o ags/X/task/libgsequencer_la-ags_simple_file_read.lo `test -f 'ags/X/task/ags_simple_file_read.c' || echo '$(srcdir)/'`ags/X/task/ags_simple_file_read.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/task/$(DEPDIR)/libgsequencer_la-ags_simple_file_read.Tpo ags/X/task/$(DEPDIR)/libgsequencer_la-ags_simple_file_read.Plo
@@ -11470,20 +11316,6 @@ ags/X/task/libgsequencer_la-ags_simple_file_write.lo: ags/X/task/ags_simple_file
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/task/ags_simple_file_write.c' object='ags/X/task/libgsequencer_la-ags_simple_file_write.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/task/libgsequencer_la-ags_simple_file_write.lo `test -f 'ags/X/task/ags_simple_file_write.c' || echo '$(srcdir)/'`ags/X/task/ags_simple_file_write.c
-
-ags/X/task/libgsequencer_la-ags_toggle_led.lo: ags/X/task/ags_toggle_led.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/task/libgsequencer_la-ags_toggle_led.lo -MD -MP -MF ags/X/task/$(DEPDIR)/libgsequencer_la-ags_toggle_led.Tpo -c -o ags/X/task/libgsequencer_la-ags_toggle_led.lo `test -f 'ags/X/task/ags_toggle_led.c' || echo '$(srcdir)/'`ags/X/task/ags_toggle_led.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/task/$(DEPDIR)/libgsequencer_la-ags_toggle_led.Tpo ags/X/task/$(DEPDIR)/libgsequencer_la-ags_toggle_led.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/task/ags_toggle_led.c' object='ags/X/task/libgsequencer_la-ags_toggle_led.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/task/libgsequencer_la-ags_toggle_led.lo `test -f 'ags/X/task/ags_toggle_led.c' || echo '$(srcdir)/'`ags/X/task/ags_toggle_led.c
-
-ags/X/task/libgsequencer_la-ags_update_bulk_member.lo: ags/X/task/ags_update_bulk_member.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/task/libgsequencer_la-ags_update_bulk_member.lo -MD -MP -MF ags/X/task/$(DEPDIR)/libgsequencer_la-ags_update_bulk_member.Tpo -c -o ags/X/task/libgsequencer_la-ags_update_bulk_member.lo `test -f 'ags/X/task/ags_update_bulk_member.c' || echo '$(srcdir)/'`ags/X/task/ags_update_bulk_member.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/task/$(DEPDIR)/libgsequencer_la-ags_update_bulk_member.Tpo ags/X/task/$(DEPDIR)/libgsequencer_la-ags_update_bulk_member.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/task/ags_update_bulk_member.c' object='ags/X/task/libgsequencer_la-ags_update_bulk_member.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/task/libgsequencer_la-ags_update_bulk_member.lo `test -f 'ags/X/task/ags_update_bulk_member.c' || echo '$(srcdir)/'`ags/X/task/ags_update_bulk_member.c
 
 ags/X/import/libgsequencer_la-ags_midi_import_wizard.lo: ags/X/import/ags_midi_import_wizard.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/import/libgsequencer_la-ags_midi_import_wizard.lo -MD -MP -MF ags/X/import/$(DEPDIR)/libgsequencer_la-ags_midi_import_wizard.Tpo -c -o ags/X/import/libgsequencer_la-ags_midi_import_wizard.lo `test -f 'ags/X/import/ags_midi_import_wizard.c' || echo '$(srcdir)/'`ags/X/import/ags_midi_import_wizard.c

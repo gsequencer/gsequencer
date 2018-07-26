@@ -27,9 +27,6 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
-#include <ags/X/task/ags_change_tact.h>
-#include <ags/X/task/ags_display_tact.h>
-
 void
 ags_navigation_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,
 				   gpointer data)

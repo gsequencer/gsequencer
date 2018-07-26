@@ -29,9 +29,6 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
-#include <ags/X/task/ags_add_soundcard_editor_sink.h>
-#include <ags/X/task/ags_remove_soundcard_editor_sink.h>
-
 #include <ags/config.h>
 
 void
@@ -185,56 +182,16 @@ void
 ags_soundcard_editor_add_sink_callback(GtkWidget *button,
 				       AgsSoundcardEditor *soundcard_editor)
 {
-  AgsWindow *window;
-  AgsAddSoundcardEditorSink *add_soundcard_editor_sink;
-
-  AgsGuiThread *gui_thread;
-
-  AgsApplicationContext *application_context;
-
-  window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
-							      AGS_TYPE_PREFERENCES))->window);
-
-  application_context = (AgsApplicationContext *) window->application_context;
-  
-
-  /* get task and soundcard thread */
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-  
-  /* create set output device task */
-  add_soundcard_editor_sink = ags_add_soundcard_editor_sink_new(soundcard_editor);
-
-  /* append AgsSetAudioChannels */
-  ags_gui_thread_schedule_task(gui_thread,
-			       add_soundcard_editor_sink);
+  ags_soundcard_editor_add_sink(soundcard_editor,
+				NULL);
 }
 
 void
 ags_soundcard_editor_remove_sink_callback(GtkWidget *button,
 					  AgsSoundcardEditor *soundcard_editor)
 {
-  AgsWindow *window;
-  AgsRemoveSoundcardEditorSink *remove_soundcard_editor_sink;
-
-  AgsGuiThread *gui_thread;
-
-  AgsApplicationContext *application_context;
-
-  window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
-							      AGS_TYPE_PREFERENCES))->window);
-
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  /* get gui thread */
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-
-  /* create set output device task */
-  remove_soundcard_editor_sink = ags_remove_soundcard_editor_sink_new(soundcard_editor,
-								      gtk_combo_box_text_get_active_text(soundcard_editor->card));
-
-  /* append AgsSetAudioChannels */
-  ags_gui_thread_schedule_task(gui_thread,
-			       remove_soundcard_editor_sink);
+  ags_soundcard_editor_remove_sink(soundcard_editor,
+				   gtk_combo_box_text_get_active_text(soundcard_editor->card));
 }
 
 void

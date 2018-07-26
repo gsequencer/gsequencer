@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -605,14 +605,9 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
   AgsMachine *machine;
   AgsNotebook *notebook;	  
 
-  AgsMutexManager *mutex_manager;
-
   double zoom_factor;
   gint i;
   gboolean retval;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
 
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
 								      AGS_TYPE_AUTOMATION_EDITOR);
@@ -643,17 +638,6 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
       notebook = automation_editor->input_notebook;
     }
     
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-    /* get audio mutex */
-    pthread_mutex_lock(application_mutex);  
-    
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
-  
-    pthread_mutex_unlock(application_mutex);
-
     /* zoom */
     zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom));
 

@@ -2532,7 +2532,7 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
   AgsChannel *current;
 
   AgsEffectBulkPlugin *effect_bulk_plugin;
-
+  
   GList *start_list, *list;
 
   gchar *filename, *effect;
@@ -2748,6 +2748,8 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 
       /*  */      
       for(j = old_size; j < new_size; j++){
+	GList *effect_bulk_plugin;
+	
 	/* add effect */
 	effect_bulk_plugin = effect_bulk->plugin;
 
@@ -2920,8 +2922,7 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 {
   AgsChannel *current;
   
-  GList *effect_bulk_plugin;
-  GList *list;
+  GList *start_list, *list;
 
   guint audio_channels;
   guint i, j;
@@ -2963,6 +2964,8 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
     /*  */
     for(i = old_size; i < new_size; i++){
       for(j = 0; j < audio_channels; j++){
+	GList *effect_bulk_plugin;
+	
 	/* add effect */
 	effect_bulk_plugin = effect_bulk->plugin;
 
