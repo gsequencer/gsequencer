@@ -455,10 +455,8 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
   AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
-
-  xmlNode *clipboard;
   
-  GList *notation, *imported_notation;
+  GList *imported_notation;
   
   gchar *machine_type;
   
@@ -513,18 +511,15 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
 
   /* apply notation */
   imported_notation = track_collection_mapper->notation;
-  notation = machine->audio->notation;
+  g_list_free_full(machine->audio->notation,
+		   g_object_unref);
 
-  ags_notation_add_all_to_selection(imported_notation->data);
-  clipboard = ags_notation_copy_selection(imported_notation->data);
+  machine->audio->notation = imported_notation;
   
-  while(notation != NULL){
-    ags_notation_insert_from_clipboard(notation->data,
-				       clipboard,
-				       0, 0,
-				       0, 0);
+  while(imported_notation != NULL){
+    g_object_ref(imported_notation->data);
     
-    notation = notation->next;
+    imported_notation = imported_notation->next;
   }
 
   /* add audio */  
@@ -599,6 +594,8 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 
   AgsNotation *current_notation;
   AgsNote *note;
+  
+  AgsTimestamp *timestamp;
 
   xmlNode *current, *child;
   GList *track, *notation_start, *notation;
@@ -607,6 +604,7 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   guint audio_channels;
   guint n_key_on, n_key_off;
   guint x, y, velocity;
+  guint prev_x;
   guint default_length;
   guint i;
   gboolean pattern;
@@ -625,8 +623,8 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   for(i = 0; i < audio_channels; i++){
     current_notation = ags_notation_new(NULL,
 					i);
-    notation_start = g_list_prepend(notation_start,
-				    current_notation);
+    notation_start = ags_notation_add(notation_start,
+				      current_notation);
   }
 
   track_collection_mapper->notation = notation_start;
@@ -639,11 +637,19 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   if(default_length == 0){
     default_length = 1;
   }
+
+  timestamp = ags_timestamp_new();
+
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
+  timestamp->timer.ags_offset.offset = 0;
+  
+  prev_x = 0;
   
   while(track != NULL){
     current = track->data;
     
-    notation = notation_start;
     child = current->children;
 
     while(child != NULL){
@@ -668,7 +674,7 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 
 	  notation = notation_start;
 	  
-	  while(notation != NULL){
+	  for(i = 0; i < audio_channels; i++){
 	    note = ags_note_new();
 	    note->x[0] = x;
 	    note->x[1] = x + default_length;
@@ -676,7 +682,25 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 	    ags_complex_set(&(note->attack),
 			    velocity);
 
-	    ags_notation_add_note(notation->data,
+	    if(x >= prev_x + AGS_NOTATION_DEFAULT_OFFSET){
+	      current_notation = ags_notation_new(NULL,
+						  i);
+	      ags_timestamp_set_ags_offset(current_notation->timestamp,
+					   AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET));
+	      
+	      notation_start = ags_notation_add(notation_start,
+						current_notation);
+
+	    }else{
+	      ags_timestamp_set_ags_offset(timestamp,
+					   AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET));
+
+	      notation = ags_notation_find_near_timestamp(notation_start, i,
+							  timestamp);
+	      current_notation = notation->data;
+	    }
+	    
+	    ags_notation_add_note(current_notation,
 				  note,
 				  FALSE);
 	    
@@ -703,25 +727,31 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 					      NULL,
 					      10);
 	  
-	  while(notation != NULL){
-	    list = ags_note_find_prev(AGS_NOTATION(notation->data)->notes,
-				      x, y);
+	  for(i = 0; i < audio_channels; i++){
+	    notation = g_list_last(notation_start);
 
-	    if(list != NULL){
-	      note = list->data;
+	    while(notation != NULL){
+	      list = ags_note_find_prev(AGS_NOTATION(notation->data)->note,
+					x, y);
 
-	      if(note->x[0] == x){
-		note->x[1] = x + 1;
-	      }else{
-		note->x[1] = x;
-	      }
+	      if(list != NULL){
+		note = list->data;
+
+		if(note->x[0] == x){
+		  note->x[1] = x + 1;
+		}else{
+		  note->x[1] = x;
+		}
 	      
-	      note->y = y;
-	      ags_complex_set(&(note->release),
-			      velocity);
-	    }
+		note->y = y;
+		ags_complex_set(&(note->release),
+				velocity);
+
+		break;
+	      }
 	    
-	    notation = notation->next;
+	      notation = notation->prev;
+	    }
 	  }
 	  
 	  n_key_off++;
@@ -734,6 +764,8 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
     track = track->next;
   }
 
+  g_object_unref(timestamp);
+  
   /* populate machine_type */
   gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
 				 g_type_name(AGS_TYPE_SYNCSYNTH));
