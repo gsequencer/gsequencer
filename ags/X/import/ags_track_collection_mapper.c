@@ -451,10 +451,8 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
   AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
-
-  xmlNode *clipboard;
   
-  GList *notation, *imported_notation;
+  GList *imported_notation;
   
   gchar *machine_type;
   
@@ -511,18 +509,15 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
 
   /* apply notation */
   imported_notation = track_collection_mapper->notation;
-  notation = machine->audio->notation;
-
-  ags_notation_add_all_to_selection(imported_notation->data);
-  clipboard = ags_notation_copy_selection(imported_notation->data);
+  g_list_free_full(machine->audio->notation,
+		   g_object_unref);
   
-  while(notation != NULL){
-    ags_notation_insert_from_clipboard(notation->data,
-				       clipboard,
-				       0, 0,
-				       0, 0);
+  machine->audio->notation = imported_notation;
+  
+  while(imported_notation != NULL){
+    g_object_ref(imported_notation->data);
     
-    notation = notation->next;
+    imported_notation = imported_notation->next;
   }
 
   /* add audio */  
