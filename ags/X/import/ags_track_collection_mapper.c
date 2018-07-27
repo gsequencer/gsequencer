@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -143,7 +143,7 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
    *
    * The tracks as xmlNode to parse.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("track",
 				    i18n_pspec("assigned track"),
@@ -158,7 +158,7 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
    *
    * The instruments as string to parse.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("instrument",
 				   i18n_pspec("assigned instrument"),
@@ -174,7 +174,7 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
    *
    * The sequences as string to parse.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("sequence",
 				   i18n_pspec("assigned sequence"),
@@ -501,11 +501,13 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
 
   /* set size */
   ags_audio_set_audio_channels(machine->audio,
-			       gtk_spin_button_get_value_as_int(track_collection_mapper->audio_channels));
+			       gtk_spin_button_get_value_as_int(track_collection_mapper->audio_channels), 0);
   ags_audio_set_pads(machine->audio,
-		     AGS_TYPE_OUTPUT, 1);
+		     AGS_TYPE_OUTPUT,
+		     1, 0);
   ags_audio_set_pads(machine->audio,
-		     AGS_TYPE_INPUT, 128);
+		     AGS_TYPE_INPUT,
+		     128, 0);
 
   /* apply notation */
   imported_notation = track_collection_mapper->notation;
@@ -555,7 +557,7 @@ ags_track_collection_mapper_reset(AgsApplicable *applicable)
  *
  * Returns: the next matching #GList
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_track_collection_mapper_find_instrument_with_sequence(GList *track_collection_mapper,
@@ -586,7 +588,7 @@ ags_track_collection_mapper_find_instrument_with_sequence(GList *track_collectio
  *
  * Maps XML tracks to #AgsNotation
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mapper)
@@ -595,6 +597,8 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 
   AgsNotation *current_notation;
   AgsNote *note;
+  
+  AgsTimestamp *timestamp;
 
   xmlNode *current, *child;
   GList *track, *notation_start, *notation;
@@ -603,6 +607,7 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   guint audio_channels;
   guint n_key_on, n_key_off;
   guint x, y, velocity;
+  guint prev_x;
   guint default_length;
   guint i;
   gboolean pattern;
@@ -621,8 +626,8 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   for(i = 0; i < audio_channels; i++){
     current_notation = ags_notation_new(NULL,
 					i);
-    notation_start = g_list_prepend(notation_start,
-				    current_notation);
+    notation_start = ags_notation_add(notation_start,
+				      current_notation);
   }
 
   track_collection_mapper->notation = notation_start;
@@ -635,11 +640,19 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
   if(default_length == 0){
     default_length = 1;
   }
+
+  timestamp = ags_timestamp_new();
+
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
+  timestamp->timer.ags_offset.offset = 0;
+  
+  prev_x = 0;
   
   while(track != NULL){
     current = track->data;
     
-    notation = notation_start;
     child = current->children;
 
     while(child != NULL){
@@ -664,7 +677,7 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 
 	  notation = notation_start;
 	  
-	  while(notation != NULL){
+	  for(i = 0; i < audio_channels; i++){
 	    note = ags_note_new();
 	    note->x[0] = x;
 	    note->x[1] = x + default_length;
@@ -672,7 +685,25 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 	    ags_complex_set(&(note->attack),
 			    velocity);
 
-	    ags_notation_add_note(notation->data,
+	    if(x >= prev_x + AGS_NOTATION_DEFAULT_OFFSET){
+	      current_notation = ags_notation_new(NULL,
+						  i);
+	      ags_timestamp_set_ags_offset(current_notation->timestamp,
+					   AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET));
+	      
+	      notation_start = ags_notation_add(notation_start,
+						current_notation);
+
+	    }else{
+	      ags_timestamp_set_ags_offset(timestamp,
+					   AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET));
+
+	      notation = ags_notation_find_near_timestamp(notation_start, i,
+							  timestamp);
+	      current_notation = notation->data;
+	    }
+	    
+	    ags_notation_add_note(current_notation,
 				  note,
 				  FALSE);
 	    
@@ -699,25 +730,31 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 					      NULL,
 					      10);
 	  
-	  while(notation != NULL){
-	    list = ags_note_find_prev(AGS_NOTATION(notation->data)->notes,
-				      x, y);
+	  for(i = 0; i < audio_channels; i++){
+	    notation = g_list_last(notation_start);
 
-	    if(list != NULL){
-	      note = list->data;
+	    while(notation != NULL){
+	      list = ags_note_find_prev(AGS_NOTATION(notation->data)->note,
+					x, y);
 
-	      if(note->x[0] == x){
-		note->x[1] = x + 1;
-	      }else{
-		note->x[1] = x;
-	      }
+	      if(list != NULL){
+		note = list->data;
+
+		if(note->x[0] == x){
+		  note->x[1] = x + 1;
+		}else{
+		  note->x[1] = x;
+		}
 	      
-	      note->y = y;
-	      ags_complex_set(&(note->release),
-			      velocity);
-	    }
+		note->y = y;
+		ags_complex_set(&(note->release),
+				velocity);
+
+		break;
+	      }
 	    
-	    notation = notation->next;
+	      notation = notation->prev;
+	    }
 	  }
 	  
 	  n_key_off++;
@@ -730,6 +767,8 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
     track = track->next;
   }
 
+  g_object_unref(timestamp);
+  
   /* populate machine_type */
   gtk_combo_box_text_append_text(track_collection_mapper->machine_type,
 				 g_type_name(AGS_TYPE_SYNCSYNTH));
@@ -754,7 +793,7 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
  *
  * Returns: a new #AgsTrackCollectionMapper
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsTrackCollectionMapper*
 ags_track_collection_mapper_new()
