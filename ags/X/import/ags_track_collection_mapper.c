@@ -685,15 +685,13 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 	    if(x >= prev_x + AGS_NOTATION_DEFAULT_OFFSET){
 	      current_notation = ags_notation_new(NULL,
 						  i);
-	      ags_timestamp_set_ags_offset(current_notation->timestamp,
-					   AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET));
+	      current_notation->timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET);
 	      
 	      notation_start = ags_notation_add(notation_start,
 						current_notation);
 
 	    }else{
-	      ags_timestamp_set_ags_offset(timestamp,
-					   AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET));
+	      timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET);
 
 	      notation = ags_notation_find_near_timestamp(notation_start, i,
 							  timestamp);
@@ -731,7 +729,7 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 	    notation = g_list_last(notation_start);
 
 	    while(notation != NULL){
-	      list = ags_note_find_prev(AGS_NOTATION(notation->data)->note,
+	      list = ags_note_find_prev(AGS_NOTATION(notation->data)->notes,
 					x, y);
 
 	      if(list != NULL){

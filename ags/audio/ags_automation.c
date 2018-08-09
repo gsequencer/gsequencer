@@ -2045,8 +2045,8 @@ ags_automation_insert_from_clipboard_extended(AgsAutomation *automation,
 		    format) ||
 	 !xmlStrcmp(AGS_AUTOMATION_CLIPBOARD_LEGACY_FORMAT,
 		    format)){
-	x_boundary = xmlGetProp(automation_node, "x_boundary");
-	y_boundary = xmlGetProp(automation_node, "y_boundary");
+	x_boundary = xmlGetProp(automation_node, "x-boundary");
+	y_boundary = xmlGetProp(automation_node, "y-boundary");
 
 	ags_automation_insert_native_scale_from_clipboard(automation,
 							  automation_node, version,

@@ -1774,6 +1774,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 								    timestamp);
 
       if(list_automation == NULL){
+	AgsChannel *channel;
 	AgsPort *play_port, *recall_port;
 	
 	automation = ags_automation_new(machine->audio,
@@ -1870,7 +1871,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 	}
 
 	x_boundary = g_ascii_strtoull(xmlGetProp(automation_node,
-						 "x_boundary"),
+						 "x-boundary"),
 				      NULL,
 				      10);
 
