@@ -3133,7 +3133,7 @@ ags_thread_loop(void *ptr)
     pthread_mutex_lock(thread->start_mutex);
       
     g_atomic_int_set(&(thread->start_done),
-		     TRUE);    
+		     TRUE);
       
     if(g_atomic_int_get(&(thread->start_wait)) == TRUE){
       pthread_cond_broadcast(thread->start_cond);

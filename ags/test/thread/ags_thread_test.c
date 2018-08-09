@@ -180,7 +180,7 @@ ags_thread_test_sync()
   }
 
   /* wait until all waiting */
-  while(n_waiting < AGS_THREAD_TEST_SYNC_N_THREADS + 1){
+  while(g_atomic_int_get(&n_waiting) < AGS_THREAD_TEST_SYNC_N_THREADS + 1){
     usleep(4);
   }
 
@@ -211,7 +211,7 @@ ags_thread_test_sync()
   }
 
   /* wait until all waiting */
-  while(n_waiting < AGS_THREAD_TEST_SYNC_N_THREADS + 1){
+  while(g_atomic_int_get(&n_waiting) < AGS_THREAD_TEST_SYNC_N_THREADS + 1){
     usleep(4);
   }
 
@@ -242,7 +242,7 @@ ags_thread_test_sync()
   }
 
   /* wait until all waiting */
-  while(n_waiting < AGS_THREAD_TEST_SYNC_N_THREADS + 1){
+  while(g_atomic_int_get(&n_waiting) < AGS_THREAD_TEST_SYNC_N_THREADS + 1){
     usleep(4);
   }
 

@@ -163,6 +163,7 @@ int
 ags_automation_test_init_suite()
 {
   audio = ags_audio_new(NULL);
+  g_object_ref(audio);
   
   return(0);
 }

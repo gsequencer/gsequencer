@@ -20,11 +20,14 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/libags.h>
-
 #include <CUnit/CUnit.h>
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
+
+#include <stdlib.h>
+#include <unistd.h>
+
+#include <ags/libags.h>
 
 int ags_thread_pool_test_init_suite();
 int ags_thread_pool_test_clean_suite();
@@ -65,8 +68,10 @@ ags_thread_pool_test_pull()
   AgsThread *parent;
   AgsReturnableThread *returnable_thread;
 
-  parent = g_object_new(AGS_TYPE_THREAD,
+  parent = g_object_new(AGS_TYPE_GENERIC_MAIN_LOOP,
 			NULL);
+  ags_connectable_connect(AGS_CONNECTABLE(parent));
+  ags_thread_start(parent);
   
   thread_pool = ags_thread_pool_new(parent);
   ags_thread_pool_start(thread_pool);
