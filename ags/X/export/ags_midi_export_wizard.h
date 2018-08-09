@@ -25,9 +25,8 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/audio/midi/ags_midi_builder.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #define AGS_TYPE_MIDI_EXPORT_WIZARD                (ags_midi_export_wizard_get_type())
 #define AGS_MIDI_EXPORT_WIZARD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MIDI_EXPORT_WIZARD, AgsMidiExportWizard))
@@ -36,7 +35,7 @@
 #define AGS_IS_MIDI_EXPORT_WIZARD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MIDI_EXPORT_WIZARD))
 #define AGS_MIDI_EXPORT_WIZARD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_MIDI_EXPORT_WIZARD, AgsMidiExportWizardClass))
 
-#define AGS_MIDI_EXPORT_WIZARD_DEFAULT_FILENAME "out.mid\0"
+#define AGS_MIDI_EXPORT_WIZARD_DEFAULT_FILENAME "out.mid"
 
 #define AGS_MIDI_EXPORT_WIZARD_DEFAULT_TIMES (30)
 #define AGS_MIDI_EXPORT_WIZARD_DEFAULT_CLICKS (4)
@@ -77,6 +76,6 @@ struct _AgsMidiExportWizardClass
 
 GType ags_midi_export_wizard_get_type(void);
 
-AgsMidiExportWizard* ags_midi_export_wizard_new();
+AgsMidiExportWizard* ags_midi_export_wizard_new(GtkWidget *main_window);
 
 #endif /*__AGS_MIDI_EXPORT_WIZARD_H__*/

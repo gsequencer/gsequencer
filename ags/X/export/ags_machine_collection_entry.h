@@ -35,10 +35,16 @@
 typedef struct _AgsMachineCollectionEntry AgsMachineCollectionEntry;
 typedef struct _AgsMachineCollectionEntryClass AgsMachineCollectionEntryClass;
 
+typedef enum{
+  AGS_MACHINE_COLLECTION_ENTRY_CONNECTED    = 1,
+}AgsMachineCollectionEntryFlags;
+
 struct _AgsMachineCollectionEntry
 {
   GtkTable table;
 
+  guint flags;
+  
   GtkWidget *machine;
 
   GtkCheckButton *enabled;
@@ -56,6 +62,6 @@ struct _AgsMachineCollectionEntryClass
 
 GType ags_machine_collection_entry_get_type(void);
 
-AgsMachineCollectionEntry* ags_machine_collection_entry_new();
+AgsMachineCollectionEntry* ags_machine_collection_entry_new(AgsMachine *machine);
 
 #endif /*__AGS_MACHINE_COLLECTION_ENTRY_H__*/

@@ -19,7 +19,8 @@
 
 #include <ags/X/export/ags_midi_export_wizard_callbacks.h>
 
-#include <ags/object/ags_applicable.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 

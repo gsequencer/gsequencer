@@ -20,9 +20,8 @@
 #include <ags/X/export/ags_midi_export_wizard.h>
 #include <ags/X/export/ags_midi_export_wizard_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 
@@ -43,11 +42,14 @@ void ags_midi_export_wizard_get_property(GObject *gobject,
 					 guint prop_id,
 					 GValue *value,
 					 GParamSpec *param_spec);
+
 void ags_midi_export_wizard_connect(AgsConnectable *connectable);
 void ags_midi_export_wizard_disconnect(AgsConnectable *connectable);
+
 void ags_midi_export_wizard_set_update(AgsApplicable *applicable, gboolean update);
 void ags_midi_export_wizard_apply(AgsApplicable *applicable);
 void ags_midi_export_wizard_reset(AgsApplicable *applicable);
+
 void ags_midi_export_wizard_show(GtkWidget *widget);
 
 /**
@@ -120,6 +122,7 @@ ags_midi_export_wizard_class_init(AgsMidiExportWizardClass *midi_export_wizard)
 {
   GObjectClass *gobject;
   GtkWidgetClass *widget;
+
   GParamSpec *param_spec;
 
   ags_midi_export_wizard_parent_class = g_type_class_peek_parent(midi_export_wizard);
@@ -139,7 +142,7 @@ ags_midi_export_wizard_class_init(AgsMidiExportWizardClass *midi_export_wizard)
    *
    * The assigned #AgsApplicationContext to give control of application.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("assigned application context"),
@@ -155,7 +158,7 @@ ags_midi_export_wizard_class_init(AgsMidiExportWizardClass *midi_export_wizard)
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -488,19 +491,21 @@ ags_midi_export_wizard_show(GtkWidget *widget)
 
 /**
  * ags_midi_export_wizard_new:
+ * @main_window: the #AgsWindow
  *
- * Creates an #AgsMidiExportWizard
+ * Create a new instance of #AgsMidiExportWizard
  *
- * Returns: a new #AgsMidiExportWizard
+ * Returns: the new #AgsMidiExportWizard
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMidiExportWizard*
-ags_midi_export_wizard_new()
+ags_midi_export_wizard_new(GtkWidget *main_window)
 {
   AgsMidiExportWizard *midi_export_wizard;
 
   midi_export_wizard = (AgsMidiExportWizard *) g_object_new(AGS_TYPE_MIDI_EXPORT_WIZARD,
+							    "main-window", main_window,
 							    NULL);
   
   return(midi_export_wizard);
