@@ -1728,19 +1728,44 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 						  AgsTimestamp *timestamp,
 						  gboolean match_line, gboolean no_duplicates)
   {    
+    AgsChannel *output, *input;
     AgsAutomation *automation;
 		
+    AgsMutexManager *mutex_manager;
+
     GList *list_automation;
     
     guint first_x;
     guint current_x;
     gint i;
 
-    first_x = -1;
+    pthread_mutex_t *application_mutex;
+    pthread_mutex_t *audio_mutex;
+
+    mutex_manager = ags_mutex_manager_get_instance();
+    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+    
+    /* get audio mutex */
+    pthread_mutex_lock(application_mutex);
+
+    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
+					   (GObject *) machine->audio);
+  
+    pthread_mutex_unlock(application_mutex);
+
+    /* get some fields */
+    pthread_mutex_lock(audio_mutex);
+
+    output = machine->audio->output;
+    input = machine->audio->input;
+
+    pthread_mutex_unlock(audio_mutex);
 
     /*  */
     i = 0;
 		
+    first_x = -1;
+
     while(notebook == NULL ||
 	  (i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){		  
@@ -1749,6 +1774,9 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 								    timestamp);
 
       if(list_automation == NULL){
+	AgsChannel *channel;
+	AgsPort *play_port, *recall_port;
+	
 	automation = ags_automation_new(machine->audio,
 					i,
 					automation_editor->focused_automation_edit->channel_type,
@@ -1756,6 +1784,52 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 	automation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
 	machine->audio->automation = ags_automation_add(machine->audio->automation,
 							automation);
+	g_object_ref(automation);
+
+	/* port */
+	if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
+	  channel = ags_channel_nth(output,
+				    i);
+
+	  play_port = ags_channel_find_port_by_specifier_and_scope(channel,
+								   automation_editor->focused_automation_edit->control_name,
+								   TRUE);
+
+	  recall_port = ags_channel_find_port_by_specifier_and_scope(channel,
+								     automation_editor->focused_automation_edit->control_name,
+								     FALSE);
+	}else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
+	  channel = ags_channel_nth(input,
+				    i);
+
+	  play_port = ags_channel_find_port_by_specifier_and_scope(channel,
+								   automation_editor->focused_automation_edit->control_name,
+								   TRUE);
+
+	  recall_port = ags_channel_find_port_by_specifier_and_scope(channel,
+								     automation_editor->focused_automation_edit->control_name,
+								     FALSE);
+	}else{
+	  play_port = ags_audio_find_port_by_specifier_and_scope(machine->audio,
+								 automation_editor->focused_automation_edit->control_name,
+								 TRUE);
+
+	  recall_port = ags_audio_find_port_by_specifier_and_scope(machine->audio,
+								   automation_editor->focused_automation_edit->control_name,
+								   FALSE);
+	}
+
+	if(play_port != NULL){
+	  play_port->automation = ags_automation_add(play_port->automation,
+						     automation);
+	  g_object_ref(automation); 
+	}
+
+	if(recall_port != NULL){
+	  recall_port->automation = ags_automation_add(recall_port->automation,
+						       automation);
+	  g_object_ref(automation); 
+	}
       }else{
 	automation = AGS_AUTOMATION(list_automation->data);
       }
@@ -1778,8 +1852,8 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 	while(child != NULL){
 	  if(child->type == XML_ELEMENT_NODE){
 	    if(!xmlStrncmp(child->name,
-			   "note",
-			   5)){
+			   "acceleration",
+			   13)){
 	      guint tmp;
 
 	      tmp = g_ascii_strtoull(xmlGetProp(child,
@@ -1797,7 +1871,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 	}
 
 	x_boundary = g_ascii_strtoull(xmlGetProp(automation_node,
-						 "x_boundary"),
+						 "x-boundary"),
 				      NULL,
 				      10);
 
@@ -1830,8 +1904,8 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 	while(child != NULL){
 	  if(child->type == XML_ELEMENT_NODE){
 	    if(!xmlStrncmp(child->name,
-			   "note",
-			   5)){
+			   "acceleration",
+			   13)){
 	      guint tmp;
 
 	      tmp = g_ascii_strtoull(xmlGetProp(child,

@@ -4,6 +4,10 @@ ags (1.4.35)
 	* fixed potential data-race in ags_thread_pool.c
 	* fixed missing ref count of parent with AgsThreadPool
 	* fixed wrong argument to pthread_create() in ags_thread_pool.c
+	* fixed potential infinite loop in ags_simple_file.c
+	* fixed missing segmented notation in MIDI import
+	* fixed AgsAutomationEditor paste missing port automation
+	* fixed AgsNotationEditor paste wrong ref count
 
 ags (1.4.34)
 
