@@ -1211,6 +1211,7 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
 	notation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
 	machine->audio->notation = ags_notation_add(machine->audio->notation,
 						    notation);
+	g_object_ref(notation);
       }else{
 	notation = AGS_NOTATION(list_notation->data);
       }
