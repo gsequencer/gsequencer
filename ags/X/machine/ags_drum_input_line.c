@@ -291,26 +291,11 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
   AgsRecycling *first_recycling;
   AgsAudioSignal *template;
   
-  AgsMutexManager *mutex_manager;
+  GObject *output_soundcard;
 
-  GObject *soundcard;
-
+  GList *start_list;
+  
   guint nth_line;
-  
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *channel_mutex;
-  pthread_mutex_t *recycling_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get channel mutex */
-  pthread_mutex_lock(application_mutex);
-
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) channel);
-  
-  pthread_mutex_unlock(application_mutex);
 
   if(line->channel != NULL){
     old_channel = line->channel;
@@ -324,42 +309,30 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 
   if(channel != NULL){
     /* get some fields */
-    pthread_mutex_lock(channel_mutex);
-
-    soundcard = channel->soundcard;
-
-    first_recycling = channel->first_recycling;
-
-    nth_line = channel->line;
+    g_object_get(channel,
+		 "output-soundcard", &output_soundcard,
+		 "first-recycling", &first_recycling,
+		 "line", &nth_line,
+		 NULL);
     
 #ifdef AGS_DEBUG
     g_message("ags_drum_input_line_set_channel - channel: %u",
 	      nth_line);
 #endif
 
-    pthread_mutex_unlock(channel_mutex);
-
-    /* get recycling mutex */
-    pthread_mutex_lock(application_mutex);
-    
-    recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) first_recycling);
-    
-    pthread_mutex_unlock(application_mutex);
-
     /* get some fields */
-    pthread_mutex_lock(recycling_mutex);
-
-    template = ags_audio_signal_get_template(first_recycling->audio_signal);
+    g_object_get(first_recycling,
+		 "audio-signal", &start_list,
+		 NULL);
     
-    pthread_mutex_unlock(recycling_mutex);
-
+    template = ags_audio_signal_get_template(start_list);
+    
     /* create audio signal */
-    if(soundcard != NULL &&
+    if(output_soundcard != NULL &&
        template == NULL){
       AgsAudioSignal *audio_signal;
 
-      audio_signal = ags_audio_signal_new(soundcard,
+      audio_signal = ags_audio_signal_new(output_soundcard,
 					  (GObject *) first_recycling,
 					  NULL);
       audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
@@ -410,7 +383,7 @@ ags_drum_input_line_map_recall(AgsLine *line,
   AgsAudio *audio;
   AgsChannel *source;
   AgsChannel *current;
-  AgsPattern *pattern;
+  AgsPort *port;
   AgsRecallHandler *recall_handler;
 
   AgsCopyPatternChannel *copy_pattern_channel;
@@ -419,63 +392,25 @@ ags_drum_input_line_map_recall(AgsLine *line,
   AgsPeakChannelRun *recall_peak_channel_run, *play_peak_channel_run;
   AgsStreamChannelRun *stream_channel_run;
 
-  AgsMutexManager *mutex_manager;
-
-  AgsConfig *config;
-  
-  GList *list;
-
-  gchar *str;
+  GList *start_play, *play;
+  GList *start_recall, *recall;
   
   guint pad, audio_channel;
   guint i;
-  gboolean rt_safe;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *source_mutex;
 
   if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0 ||
      (AGS_LINE_PREMAPPED_RECALL & (line->flags)) != 0){
     return;
   }
 
-  config = ags_config_get_instance();
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  source = line->channel;
-  
-  rt_safe = TRUE;
-
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "rt-safe");
-
-  if(str != NULL &&
-     !g_ascii_strncasecmp(str,
-			  "FALSE",
-			  6)){
-    rt_safe = FALSE;
-  }
-
-  /* lookup source mutex */
-  pthread_mutex_lock(application_mutex);
-
-  source_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) source);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* get some fields */
-  pthread_mutex_lock(source_mutex);
-
-  audio = (AgsAudio *) source->audio;
-
-  pad = source->pad;
-  audio_channel = source->audio_channel;
-
-  pthread_mutex_unlock(source_mutex);
+  g_object_get(source,
+	       "audio", &audio,
+	       "pad", &pad,
+	       "audio-channel", &audio_channel,
+	       "play", &start_play,
+	       "recall", &start_recall,
+	       NULL);
 
   /* ags-peak */
   ags_recall_factory_create(audio,
@@ -501,25 +436,34 @@ ags_drum_input_line_map_recall(AgsLine *line,
 			    0);
 
   /* set pattern object on port */
-  pthread_mutex_lock(source_mutex);
-
-  list = ags_recall_template_find_type(source->recall,
+  recall = ags_recall_template_find_type(start_recall,
 				       AGS_TYPE_COPY_PATTERN_CHANNEL);
 
-  if(list != NULL){
-    copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(list->data);
-    list = source->pattern;
+  if(recall != NULL){
+    GList *pattern;
+
+    GValue pattern_value = {0,};
     
-    pattern = AGS_PATTERN(list->data);
-    copy_pattern_channel->pattern->port_value.ags_port_object = (GObject *) pattern;
-  
-    ags_portlet_set_port(AGS_PORTLET(pattern),
-			 (GObject *) copy_pattern_channel->pattern);
+    copy_pattern_channel = AGS_COPY_PATTERN_CHANNEL(recall->data);
+    g_object_get(copy_pattern_channel,
+		 "pattern", &port,
+		 NULL);
+
+    g_object_get(source,
+		 "pattern", &pattern,
+		 NULL);
+
+    g_value_init(&pattern_value,
+		 G_TYPE_UINT64);
+    
+    g_value_set_object(&pattern_value,
+		       pattern->data);
+
+    ags_port_safe_write(port,
+			&pattern_value);
   }
 
-  pthread_mutex_unlock(source_mutex);
-
-  if(rt_safe){
+  if(ags_recall_global_get_rt_safe()){
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-rt-stream",
@@ -543,25 +487,27 @@ ags_drum_input_line_map_recall(AgsLine *line,
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
 
-  pthread_mutex_lock(source_mutex);
+  play = start_play;
 
-  list = source->play;
-
-  while((list = ags_recall_find_type(list, AGS_TYPE_PLAY_CHANNEL)) != NULL){
+  while((play = ags_recall_find_type(play, AGS_TYPE_PLAY_CHANNEL)) != NULL){
     GValue audio_channel_value = {0,};
 
-    play_channel = AGS_PLAY_CHANNEL(list->data);    
-
-    g_value_init(&audio_channel_value, G_TYPE_UINT64);
+    play_channel = AGS_PLAY_CHANNEL(play->data);    
+    g_object_get(play_channel,
+		 "audio-channel", &port,
+		 NULL);
+    
+    g_value_init(&audio_channel_value,
+		 G_TYPE_UINT64);
+    
     g_value_set_uint64(&audio_channel_value,
 		       audio_channel);
-    ags_port_safe_write(play_channel->audio_channel,
+
+    ags_port_safe_write(port,
 			&audio_channel_value);
     
-    list = list->next;
+    play = play->next;
   }
-
-  pthread_mutex_unlock(source_mutex);
   
   /* ags-volume */
   ags_recall_factory_create(audio,
@@ -588,7 +534,7 @@ ags_drum_input_line_map_recall(AgsLine *line,
 			    0);
 
   /* ags-stream */
-  if(!rt_safe){
+  if(!ags_recall_global_get_rt_safe()){
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-stream",
@@ -601,21 +547,17 @@ ags_drum_input_line_map_recall(AgsLine *line,
 			      0);
 
     /* set up dependencies */
-    pthread_mutex_lock(source_mutex);
-
-    list = ags_recall_find_type(source->play,
+    play = ags_recall_find_type(start_play,
 				AGS_TYPE_PLAY_CHANNEL_RUN);
-    play_channel_run = AGS_PLAY_CHANNEL_RUN(list->data);
+    play_channel_run = AGS_PLAY_CHANNEL_RUN(play->data);
 
-    list = ags_recall_find_type(source->play,
+    play = ags_recall_find_type(start_play,
 				AGS_TYPE_STREAM_CHANNEL_RUN);
-    stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
+    stream_channel_run = AGS_STREAM_CHANNEL_RUN(play->data);
 
     g_object_set(G_OBJECT(play_channel_run),
 		 "stream-channel-run", stream_channel_run,
 		 NULL);
-
-    pthread_mutex_unlock(source_mutex);
   }
   
   /* call parent */
