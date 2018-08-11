@@ -25,6 +25,9 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
 #include <ags/X/ags_machine.h>
 
 #define AGS_TYPE_AUDIOREC                (ags_audiorec_get_type())

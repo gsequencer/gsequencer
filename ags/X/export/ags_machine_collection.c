@@ -349,7 +349,7 @@ ags_machine_collection_reload(AgsMachineCollection *machine_collection)
   
   while(machine != NULL){
     if(AGS_MACHINE(machine->data)->audio != NULL &&
-       (AGS_AUDIO_HAS_NOTATION & (AGS_MACHINE(machine->data)->audio->flags)) != 0){
+       ags_audio_test_ability_flags(AGS_MACHINE(machine->data)->audio, AGS_SOUND_ABILITY_NOTATION)){
       ags_machine_collection_add_entry(machine_collection,
 				       machine->data);
     }

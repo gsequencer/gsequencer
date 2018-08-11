@@ -386,7 +386,7 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
 
   g_object_get(machine->audio,
 	       "notation", &start_notation,
-	       NULL)
+	       NULL);
   
   midi_builder = midi_export_wizard->midi_builder;
   pulse_unit = midi_export_wizard->pulse_unit;
@@ -394,7 +394,7 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
   bpm = midi_builder->midi_header->beat;
   division = midi_builder->midi_header->division;
   
-  notation_count = g_list_length(notation_start);
+  notation_count = g_list_length(start_notation);
 
   if(midi_builder->current_midi_track == NULL){
     initial_track = TRUE;
@@ -621,7 +621,7 @@ ags_machine_collection_entry_reset(AgsApplicable *applicable)
  * Since: 2.0.0
  */
 AgsMachineCollectionEntry*
-ags_machine_collection_entry_new(AgsMachine *machine)
+ags_machine_collection_entry_new(GtkWidget *machine)
 {
   AgsMachineCollectionEntry *machine_collection_entry;
 

@@ -30,17 +30,21 @@ void ags_audiorec_class_init(AgsAudiorecClass *audiorec);
 void ags_audiorec_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_audiorec_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_audiorec_init(AgsAudiorec *audiorec);
+void ags_audiorec_finalize(GObject *gobject);
+
 void ags_audiorec_connect(AgsConnectable *connectable);
 void ags_audiorec_disconnect(AgsConnectable *connectable);
-void ags_audiorec_finalize(GObject *gobject);
-void ags_audiorec_show(GtkWidget *widget);
-void ags_audiorec_map_recall(AgsMachine *machine);
+
 gchar* ags_audiorec_get_name(AgsPlugin *plugin);
 void ags_audiorec_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_audiorec_get_xml_type(AgsPlugin *plugin);
 void ags_audiorec_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 void ags_audiorec_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_audiorec_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
+
+void ags_audiorec_show(GtkWidget *widget);
+
+void ags_audiorec_map_recall(AgsMachine *machine);
 
 void ags_audiorec_resize_audio_channels(AgsMachine *machine,
 					guint audio_channels, guint audio_channels_old,
@@ -287,6 +291,7 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 void
 ags_audiorec_finalize(GObject *gobject)
 {
+  /* call parent */
   G_OBJECT_CLASS(ags_audiorec_parent_class)->finalize(gobject);
 }
 
@@ -363,6 +368,31 @@ ags_audiorec_disconnect(AgsConnectable *connectable)
 		      NULL);
 }
 
+
+gchar*
+ags_audiorec_get_name(AgsPlugin *plugin)
+{
+  return(AGS_AUDIOREC(plugin)->name);
+}
+
+void
+ags_audiorec_set_name(AgsPlugin *plugin, gchar *name)
+{
+  AGS_AUDIOREC(plugin)->name = name;
+}
+
+gchar*
+ags_audiorec_get_xml_type(AgsPlugin *plugin)
+{
+  return(AGS_AUDIOREC(plugin)->xml_type);
+}
+
+void
+ags_audiorec_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  AGS_AUDIOREC(plugin)->xml_type = xml_type;
+}
+
 void
 ags_audiorec_show(GtkWidget *widget)
 {
@@ -416,30 +446,6 @@ void
 ags_audiorec_input_map_recall(AgsAudiorec *audiorec, guint input_pad_start)
 {
   //TODO:JK: implement me
-}
-
-gchar*
-ags_audiorec_get_name(AgsPlugin *plugin)
-{
-  return(AGS_AUDIOREC(plugin)->name);
-}
-
-void
-ags_audiorec_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AGS_AUDIOREC(plugin)->name = name;
-}
-
-gchar*
-ags_audiorec_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_AUDIOREC(plugin)->xml_type);
-}
-
-void
-ags_audiorec_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_AUDIOREC(plugin)->xml_type = xml_type;
 }
 
 void

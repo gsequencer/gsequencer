@@ -62,6 +62,6 @@ struct _AgsMachineCollectionEntryClass
 
 GType ags_machine_collection_entry_get_type(void);
 
-AgsMachineCollectionEntry* ags_machine_collection_entry_new(AgsMachine *machine);
+AgsMachineCollectionEntry* ags_machine_collection_entry_new(GtkWidget *machine);
 
 #endif /*__AGS_MACHINE_COLLECTION_ENTRY_H__*/

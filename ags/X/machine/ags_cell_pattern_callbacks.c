@@ -31,7 +31,7 @@
 
 #include <math.h>
 
-void ags_cell_pattern_init_channel_launch_callback(AgsTask *task, gpointer data);
+void ags_cell_pattern_start_channel_launch_callback(AgsTask *task, AgsNote *note);
 
 gboolean
 ags_cell_pattern_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsCellPattern *cell_pattern)
@@ -69,19 +69,14 @@ ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventB
     AgsAudio *audio;
     AgsChannel *input;
     AgsChannel *channel;
-
-    AgsMutexManager *mutex_manager;
-
+    AgsPattern *pattern;
+    
     guint input_lines;
     guint i, j;
     guint index1;
     
-    pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
     pthread_mutex_t *channel_mutex;
-
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
     machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						     AGS_TYPE_MACHINE);
@@ -89,12 +84,11 @@ ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventB
     audio = machine->audio;
     
     /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_audio_get_class_mutex());
 
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) audio);
+    audio_mutex = audio->obj_mutex;
   
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_audio_get_class_mutex());
 
     /* get some fields */
     pthread_mutex_lock(audio_mutex);
@@ -115,21 +109,22 @@ ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventB
 			      input_lines - ((guint) GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value + i) - 1);
 
     /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_channel_get_class_mutex());
 
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
+    channel_mutex = channel->obj_mutex;
   
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
     /* toggle pattern */
     pthread_mutex_lock(channel_mutex);
-    
-    ags_pattern_toggle_bit(channel->pattern->data,
-			   0, index1,
-			   j);
+
+    pattern = channel->pattern->data;
 
     pthread_mutex_unlock(channel_mutex);
+
+    ags_pattern_toggle_bit(pattern,
+			   0, index1,
+			   j);
 
     /* queue draw */
     gtk_widget_queue_draw(cell_pattern->drawing_area);
@@ -186,126 +181,62 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   AgsChannel *input;
   AgsChannel *channel;
 
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-
   guint input_lines;
-  
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
 
+  pthread_mutex_t *channel_mutex;
+  
   auto void ags_cell_pattern_drawing_area_key_release_event_play_channel(AgsChannel *channel);
 
   void ags_cell_pattern_drawing_area_key_release_event_play_channel(AgsChannel *channel){
-    GObject *soundcard;
+    AgsGuiThread *gui_thread;
+    
     AgsAudio *audio;
     
     AgsStartSoundcard *start_soundcard;
-    AgsInitChannel *init_channel;
-    AgsAppendChannel *append_channel;
-
-    AgsMutexManager *mutex_manager;
-    AgsThread *main_loop;
-    AgsGuiThread *gui_thread;
-    AgsSoundcardThread *soundcard_thread;
+    AgsStartChannel *start_channel;
 
     AgsApplicationContext *application_context;
+
+    GObject *soundcard;
     
-    GList *tasks;
-
-    gboolean no_soundcard;
-
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *audio_mutex;
-    pthread_mutex_t *channel_mutex;
+    GList *task;
 
     application_context = (AgsApplicationContext *) window->application_context;
     
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+    gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
-    no_soundcard = FALSE;
+    /* get soundcard */
+    g_object_get(channel,
+		 "output-soundcard", &soundcard,
+		 "audio", &audio,
+		 NULL);
 
-    pthread_mutex_lock(application_mutex);
-
-    if(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)) == NULL){
-      no_soundcard = TRUE;
-    }
-
-    pthread_mutex_unlock(application_mutex);
-
-    if(no_soundcard){
-      g_message("No soundcard available");
-      
+    if(soundcard == NULL){
       return;
     }
 
-    /* lookup channel mutex */
-    pthread_mutex_lock(application_mutex);
+    task = NULL;
 
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
-
-    pthread_mutex_unlock(application_mutex);
-
-    pthread_mutex_lock(channel_mutex);
-  
-    soundcard = channel->soundcard;
-    audio = (AgsAudio *) channel->audio;
-
-    pthread_mutex_unlock(channel_mutex);
-  
-    /* lookup audio mutex */
-    pthread_mutex_lock(application_mutex);
-
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) audio);
-    
-    pthread_mutex_unlock(application_mutex);
-
-    pthread_mutex_lock(audio_mutex);
-  
-    main_loop = (AgsThread *) application_context->main_loop;
-    
-    gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-							 AGS_TYPE_GUI_THREAD);
-    soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type(main_loop,
-								   AGS_TYPE_SOUNDCARD_THREAD);
-
-    tasks = NULL;
-
-    /* init channel for playback */
-    init_channel = ags_init_channel_new(channel, FALSE,
-					TRUE, FALSE, FALSE);
-    g_signal_connect_after(G_OBJECT(init_channel), "launch",
-			   G_CALLBACK(ags_cell_pattern_init_channel_launch_callback), NULL);
-    tasks = g_list_prepend(tasks, init_channel);
-    
-    /* append channel for playback */
-    append_channel = ags_append_channel_new(G_OBJECT(main_loop),
-					    G_OBJECT(channel));
-    tasks = g_list_prepend(tasks, append_channel);
+    /* start playback */
+    start_channel = ags_start_channel_new(channel,
+					  AGS_SOUND_SCOPE_PLAYBACK);
+    task = g_list_prepend(task,
+			  start_channel);
 
     /* create start task */
     start_soundcard = ags_start_soundcard_new(application_context);
-    tasks = g_list_prepend(tasks,
-			   start_soundcard);
+    task = g_list_prepend(task,
+			  start_soundcard);
 
     /* perform playback */
-    tasks = g_list_reverse(tasks);
+    task = g_list_reverse(task);
     ags_gui_thread_schedule_task_list(gui_thread,
-				      tasks);
-
-    pthread_mutex_unlock(audio_mutex);
+				      task);
   }
   
   if(event->keyval == GDK_KEY_Tab){
     return(FALSE);
   }
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						   AGS_TYPE_MACHINE);
@@ -316,32 +247,11 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   audio = machine->audio;
 
   /* get some fields */
-  pthread_mutex_lock(application_mutex);
+  g_object_get(audio,
+	       "input", &input,
+	       "input-lines", &input_lines,
+	       NULL);
   
-  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(window->application_context)->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* get some fields */
-  pthread_mutex_lock(audio_mutex);
-
-  input = audio->input;
-
-  input_lines = audio->input_lines;
-    
-  pthread_mutex_unlock(audio_mutex);
-
   switch(event->keyval){
   case GDK_KEY_Control_L:
     {
@@ -357,6 +267,8 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   case GDK_KEY_leftarrow:
     {
       if(cell_pattern->cursor_x > 0){
+	AgsPattern *pattern;
+	
 	gboolean bit_is_on;
 	
 	cell_pattern->cursor_x -= 1;
@@ -366,20 +278,21 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 				  input_lines - cell_pattern->cursor_y - 1);
 	  
 	/* get channel mutex */
-	pthread_mutex_lock(application_mutex);
+	pthread_mutex_lock(ags_channel_get_class_mutex());
 
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) channel);
+	channel_mutex = channel->obj_mutex;
   
-	pthread_mutex_unlock(application_mutex);
+	pthread_mutex_unlock(ags_channel_get_class_mutex());
 
 	/* check bit */
 	pthread_mutex_lock(channel_mutex);
 
-	bit_is_on = (ags_pattern_get_bit(channel->pattern->data,
-					 0, machine->bank_1, cell_pattern->cursor_x)) ? TRUE: FALSE;
+	pattern = channel->pattern->data;
 	
 	pthread_mutex_unlock(channel_mutex);
+
+	bit_is_on = (ags_pattern_get_bit(pattern,
+					 0, machine->bank_1, cell_pattern->cursor_x)) ? TRUE: FALSE;
 	
 	if(bit_is_on){
 	  ags_cell_pattern_drawing_area_key_release_event_play_channel(channel);
@@ -391,6 +304,8 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   case GDK_KEY_rightarrow:
     {
       if(cell_pattern->cursor_x < cell_pattern->n_cols){
+	AgsPattern *pattern;
+	
 	gboolean bit_is_on;
 	
 	cell_pattern->cursor_x += 1;
@@ -400,16 +315,23 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 				  input_lines - cell_pattern->cursor_y - 1);
 
 	/* get channel mutex */
-	pthread_mutex_lock(application_mutex);
+	pthread_mutex_lock(ags_channel_get_class_mutex());
 
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) channel);
+	channel_mutex = channel->obj_mutex;
   
-	pthread_mutex_unlock(application_mutex);
+	pthread_mutex_unlock(ags_channel_get_class_mutex());
 
 	/* check bit */
-	if(ags_pattern_get_bit(channel->pattern->data,
-			       0, machine->bank_1, cell_pattern->cursor_x)){
+	pthread_mutex_lock(channel_mutex);
+
+	pattern = channel->pattern->data;
+	
+	pthread_mutex_unlock(channel_mutex);
+
+	bit_is_on = ags_pattern_get_bit(pattern,
+					0, machine->bank_1, cell_pattern->cursor_x);
+	
+	if(bit_is_on){
 	  ags_cell_pattern_drawing_area_key_release_event_play_channel(channel);
 	}
       }
@@ -419,6 +341,8 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   case GDK_KEY_uparrow:
     {
       if(cell_pattern->cursor_y > 0){
+	AgsPattern *pattern;
+	
 	gboolean bit_is_on;
 	
 	cell_pattern->cursor_y -= 1;
@@ -428,20 +352,21 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 				  input_lines - cell_pattern->cursor_y - 1);
 
 	/* get channel mutex */
-	pthread_mutex_lock(application_mutex);
+	pthread_mutex_lock(ags_channel_get_class_mutex());
 
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) channel);
+	channel_mutex = channel->obj_mutex;
   
-	pthread_mutex_unlock(application_mutex);
+	pthread_mutex_unlock(ags_channel_get_class_mutex());
 
 	/* check bit */
 	pthread_mutex_lock(channel_mutex);
 
-	bit_is_on = (ags_pattern_get_bit(channel->pattern->data,
-					 0, machine->bank_1, cell_pattern->cursor_x)) ? TRUE: FALSE;
+	pattern = channel->pattern->data;
 	
 	pthread_mutex_unlock(channel_mutex);
+
+	bit_is_on = (ags_pattern_get_bit(pattern,
+					 0, machine->bank_1, cell_pattern->cursor_x)) ? TRUE: FALSE;
 	
 	if(bit_is_on){
 	  ags_cell_pattern_drawing_area_key_release_event_play_channel(channel);
@@ -458,6 +383,8 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   case GDK_KEY_downarrow:
     {
       if(cell_pattern->cursor_y < cell_pattern->n_rows){
+	AgsPattern *pattern;
+	
 	gboolean bit_is_on;
 	
 	cell_pattern->cursor_y += 1;
@@ -467,21 +394,22 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 				  input_lines - cell_pattern->cursor_y - 1);
 
 	/* get channel mutex */
-	pthread_mutex_lock(application_mutex);
+	pthread_mutex_lock(ags_channel_get_class_mutex());
 
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) channel);
+	channel_mutex = channel->obj_mutex;
   
-	pthread_mutex_unlock(application_mutex);
+	pthread_mutex_unlock(ags_channel_get_class_mutex());
 
 	/* check bit */
 	pthread_mutex_lock(channel_mutex);
 
-	bit_is_on = (ags_pattern_get_bit(channel->pattern->data,
-					 0, machine->bank_1, cell_pattern->cursor_x)) ? TRUE: FALSE;
+	pattern = channel->pattern->data;
 	
 	pthread_mutex_unlock(channel_mutex);
-	
+
+	bit_is_on = (ags_pattern_get_bit(pattern,
+					 0, machine->bank_1, cell_pattern->cursor_x)) ? TRUE: FALSE;
+		
 	if(bit_is_on){
 	  ags_cell_pattern_drawing_area_key_release_event_play_channel(channel);
 	}
@@ -495,6 +423,8 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     break;
   case GDK_KEY_space:
     {
+      AgsPattern *pattern;
+
       guint i, j;
       guint index1;
       
@@ -506,17 +436,26 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
       channel = ags_channel_nth(input,
 				input_lines - i - 1);
       
+      /* get channel mutex */
+      pthread_mutex_lock(ags_channel_get_class_mutex());
+
+      channel_mutex = channel->obj_mutex;
+  
+      pthread_mutex_unlock(ags_channel_get_class_mutex());
+      
       /* toggle pattern */
       pthread_mutex_lock(channel_mutex);
-    
+
+      pattern = channel->pattern->data;
+	
+      pthread_mutex_unlock(channel_mutex);
+
       ags_pattern_toggle_bit(channel->pattern->data,
 			     0, index1,
 			     j);
 
-      pthread_mutex_unlock(channel_mutex);
-
       /* play pattern */
-      if(!ags_pattern_get_bit(channel->pattern->data,
+      if(!ags_pattern_get_bit(pattern,
 			      0, index1, j)){
 	ags_cell_pattern_drawing_area_key_release_event_play_channel(channel);
       }
@@ -537,156 +476,120 @@ ags_cell_pattern_adjustment_value_changed_callback(GtkWidget *widget, AgsCellPat
 }
 
 void
-ags_cell_pattern_init_channel_launch_callback(AgsTask *task, gpointer data)
+ags_cell_pattern_start_channel_launch_callback(AgsTask *task, AgsNote *note)
 {
+  AgsAudio *audio;
   AgsChannel *channel;
-  AgsRecycling *first_recycling, *last_recycling;
+  AgsRecycling *recycling, *last_recycling;
   AgsRecycling *end_recycling;
-  AgsRecycling *recycling;
-  AgsNote *note;
+  AgsAudioSignal *audio_signal;
+  AgsPlayback *playback;
+  AgsRecallID *recall_id;
   
-  AgsAddAudioSignal *add_audio_signal;
-
-  AgsMutexManager *mutex_manager;
-
-  GObject *soundcard;
-
-  GList *recall, *tmp;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *channel_mutex;
-  pthread_mutex_t *recycling_mutex;
-
-  channel = AGS_INIT_CHANNEL(task)->channel;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get channel mutex */
-  pthread_mutex_lock(application_mutex);
-
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
+  GObject *output_soundcard;
   
-  pthread_mutex_unlock(application_mutex);
+  gdouble delay;
+  guint samplerate;
+  
+  GValue value = {0,};
+
+  channel = AGS_START_CHANNEL(task)->channel;
+
+  /* get some fields */
+  g_object_get(channel,
+	       "audio", &audio,
+	       "output-soundcard", &output_soundcard,
+	       "playback", &playback,
+	       NULL);
+
+  recall_id = ags_playback_get_recall_id(playback, AGS_SOUND_SCOPE_PLAYBACK);
 
 #ifdef AGS_DEBUG
   g_message("launch");
 #endif
-  
-  /* get some fields */
-  pthread_mutex_lock(channel_mutex);
 
-  soundcard = channel->soundcard;
-  
-  if(AGS_PLAYBACK(channel->playback) == NULL ||
-     AGS_PLAYBACK(channel->playback)->recall_id[0] == NULL){    
-    pthread_mutex_unlock(channel_mutex);
-  
+  if(playback == NULL ||
+     recall_id == NULL){
     return;
   }
 
-  /* connect done */
-  recall = ags_recall_find_provider_with_recycling_context(channel->play,
-							   G_OBJECT(channel),
-							   G_OBJECT(AGS_PLAYBACK(channel->playback)->recall_id[0]->recycling_context));
+  /* get presets */
+  ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
+			    NULL,
+			    &samplerate,
+			    NULL,
+			    NULL);
+
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard));
+
+  /* get some fields */
+  g_object_get(channel,
+	       "first-recycling", &recycling,
+	       "last-recycling", &last_recycling,
+	       NULL);
+
+  g_object_get(last_recycling,
+	       "next", &end_recycling,
+	       NULL);
+
+  /* add audio signal */  
+  while(recycling != end_recycling){
+    if(!ags_recall_global_get_rt_safe()){
+      guint note_x0, note_x1;
+      
+      audio_signal = ags_audio_signal_new((GObject *) output_soundcard,
+					  (GObject *) recycling,
+					  (GObject *) recall_id);
+      g_object_set(audio_signal,
+		   "note", note,
+		   NULL);
+
+      /* add audio signal */
+      g_object_get(note,
+		   "x0", &note_x0,
+		   "x1", &note_x1,
+		   NULL);
+
+      ags_recycling_create_audio_signal_with_frame_count(recycling,
+							 audio_signal,
+							 (note_x1 - note_x0) * ((gdouble) samplerate / delay),
+							 0.0, 0);
+      audio_signal->stream_current = audio_signal->stream;
+      ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
   
-  tmp = recall;
-  recall = ags_recall_find_type(recall,
-				AGS_TYPE_PLAY_CHANNEL_RUN);
-  //TODO:JK: fix me
-  //    g_list_free(tmp);
-  first_recycling = channel->first_recycling;
-  last_recycling = channel->last_recycling;
+      /*
+       * emit add_audio_signal on AgsRecycling
+       */
+      ags_recycling_add_audio_signal(recycling,
+				     audio_signal);
+    }else{
+      GList *start_list, *list;
 
-  pthread_mutex_unlock(channel_mutex);
+      g_object_get(recycling,
+		   "audio-signal", &start_list,
+		   NULL);
+      
+      audio_signal = NULL;
+      list = ags_audio_signal_get_by_recall_id(start_list,
+					       recall_id);
+	    
+      if(list != NULL){
+	audio_signal = list->data;
 
-  if(recall != NULL){
-    AgsAudioSignal *audio_signal;
-    AgsNote *note;
-    
-    pthread_mutex_lock(channel_mutex);
-
-    note = AGS_PLAYBACK(channel->playback)->play_note;
-
-    pthread_mutex_unlock(channel_mutex);
-
-    /* get recycling mutex */
-    pthread_mutex_lock(application_mutex);
-
-    recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) last_recycling);
-  
-    pthread_mutex_unlock(application_mutex);
-
-    /* get some fields */
-    pthread_mutex_lock(recycling_mutex);
-    
-    end_recycling = last_recycling->next;
-
-    pthread_mutex_unlock(recycling_mutex);
-
-    /* add audio signal */
-    recycling = first_recycling;
-
-    while(recycling != end_recycling){
-      /* get recycling mutex */
-      pthread_mutex_lock(application_mutex);
-
-      recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) recycling);
-  
-      pthread_mutex_unlock(application_mutex);
-
-      if(!AGS_RECALL(recall->data)->rt_safe){
-	/* audio signal */
-	audio_signal = ags_audio_signal_new((GObject *) soundcard,
-					    (GObject *) recycling,
-					    (GObject *) AGS_RECALL(recall->data)->recall_id);
 	g_object_set(audio_signal,
 		     "note", note,
 		     NULL);
-
-	/* add audio signal */
-	ags_recycling_create_audio_signal_with_defaults(recycling,
-							audio_signal,
-							0.0, 0);
-	audio_signal->stream_current = audio_signal->stream_beginning;
-	ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
-  
-	/*
-	 * emit add_audio_signal on AgsRecycling
-	 */
-	ags_recycling_add_audio_signal(recycling,
-				       audio_signal);
-      }else{
-	GList *list;
-
-	pthread_mutex_lock(recycling_mutex);
-	    
-	audio_signal = NULL;
-	list = ags_audio_signal_get_by_recall_id(recycling->audio_signal,
-						 AGS_RECALL(recall->data)->recall_id);
-	    
-	if(list != NULL){
-	  audio_signal = list->data;
-
-	  g_object_set(audio_signal,
-		       "note", note,
-		       NULL);
-	}
-
-	note->rt_offset = 0;
-
-	pthread_mutex_unlock(recycling_mutex);
       }
-      
-      /* iterate */
-      pthread_mutex_lock(recycling_mutex);
-      
-      recycling = recycling->next;
 
-      pthread_mutex_unlock(recycling_mutex);
-    }    
+      g_list_free(start_list);
+
+      g_object_set(note,
+		   "rt-offset", 0,
+		   NULL);
+    }
+
+    g_object_get(recycling,
+		 "next", &recycling,
+		 NULL);
   }
 }

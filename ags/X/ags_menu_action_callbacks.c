@@ -1101,16 +1101,16 @@ ags_menu_action_midi_export_track_callback(GtkWidget *menu_item, gpointer data)
   AgsWindow *window;
 
   application_context = ags_application_context_get_instance();
+
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
   if(window->midi_export_wizard != NULL){
     return;
   }
 
-  window->midi_export_wizard = ags_midi_export_wizard_new();
+  window->midi_export_wizard = ags_midi_export_wizard_new(window);
   g_object_set(window->midi_export_wizard,
 	       "application-context", application_context,
-	       "main-window", window,
 	       NULL);
 
   ags_connectable_connect(AGS_CONNECTABLE(window->midi_export_wizard));
