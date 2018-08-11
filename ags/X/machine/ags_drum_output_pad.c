@@ -32,9 +32,10 @@ void ags_drum_output_pad_class_init(AgsDrumOutputPadClass *drum_output_pad);
 void ags_drum_output_pad_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_output_pad_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_drum_output_pad_init(AgsDrumOutputPad *drum_output_pad);
-void ags_drum_output_pad_destroy(GtkObject *object);
+
 void ags_drum_output_pad_connect(AgsConnectable *connectable);
 void ags_drum_output_pad_disconnect(AgsConnectable *connectable);
+
 gchar* ags_drum_output_pad_get_name(AgsPlugin *plugin);
 void ags_drum_output_pad_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_drum_output_pad_get_xml_type(AgsPlugin *plugin);
@@ -193,12 +194,6 @@ ags_drum_output_pad_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
 }
 
 void
-ags_drum_output_pad_destroy(GtkObject *object)
-{
-  /* empty */
-}
-
-void
 ags_drum_output_pad_set_channel(AgsPad *pad, AgsChannel *channel)
 {
   AGS_PAD_CLASS(ags_drum_output_pad_parent_class)->set_channel(pad, channel);
@@ -220,9 +215,9 @@ ags_drum_output_pad_resize_lines(AgsPad *pad, GType line_type,
  * ags_drum_output_pad_new:
  * @channel: the assigned channel
  *
- * Creates an #AgsDrumOutputPad
+ * Create a new instance of #AgsDrumOutputPad
  *
- * Returns: a new #AgsDrumOutputPad
+ * Returns: the new #AgsDrumOutputPad
  *
  * Since: 1.0.0
  */
