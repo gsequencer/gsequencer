@@ -110,13 +110,11 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
   GtkFileChooserDialog *file_chooser;
   GtkSpinButton *spin_button;
 
+  AgsGuiThread *gui_thread;
+
   AgsAudioFile *audio_file;
 
   AgsOpenSingleFile *open_single_file;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsGuiThread *gui_thread;
   
   AgsApplicationContext *application_context;
   
@@ -135,19 +133,7 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
   
   application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get main loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* find task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   if(response == GTK_RESPONSE_ACCEPT){
     name0 = gtk_file_chooser_get_filename((GtkFileChooser *) file_chooser);
@@ -185,7 +171,7 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
     }
 
     ags_gui_thread_schedule_task(gui_thread,
-				open_single_file);
+				 open_single_file);
 
     gtk_widget_destroy((GtkWidget *) file_chooser);
   }else if(response == GTK_RESPONSE_CANCEL){
