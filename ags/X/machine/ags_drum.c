@@ -517,33 +517,23 @@ ags_drum_map_recall(AgsMachine *machine)
   AgsPlayNotationAudio *recall_notation_audio;
   AgsPlayNotationAudioRun *recall_notation_audio_run;
 
-  AgsMutexManager *mutex_manager;
-
-  GList *list;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
+  GList *start_play, *play;
+  GList *start_recall, *recall;
   
   if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
     return;
   }
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
 						 AGS_TYPE_WINDOW);
   
   audio = machine->audio;
-  
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
 
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
+  g_object_get(audio,
+	       "play", &start_play,
+	       "recall", &recall_play,
+	       NULL);
 
   /* ags-delay */
   ags_recall_factory_create(audio,
@@ -556,19 +546,15 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_PLAY),
 			    0);
 
-  pthread_mutex_lock(audio_mutex);
-
-  list = ags_recall_find_type(audio->play,
+  play = ags_recall_find_type(start_play,
 			      AGS_TYPE_DELAY_AUDIO_RUN);
 
-  if(list != NULL){
-    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
+  if(play != NULL){
+    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(play->data);
     //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
   }else{
     play_delay_audio_run = NULL;
   }
-
-  pthread_mutex_unlock(audio_mutex);
   
   /* ags-count-beats */
   ags_recall_factory_create(audio,
@@ -581,13 +567,11 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_PLAY),
 			    0);
   
-  pthread_mutex_lock(audio_mutex);
-
-  list = ags_recall_find_type(audio->play,
+  play = ags_recall_find_type(start_play,
 			      AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
 
-  if(list != NULL){
-    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
+  if(play != NULL){
+    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(play->data);
 
     /* set dependency */  
     g_object_set(G_OBJECT(play_count_beats_audio_run),
@@ -600,8 +584,6 @@ ags_drum_map_recall(AgsMachine *machine)
     play_count_beats_audio_run = NULL;
   }
 
-  pthread_mutex_unlock(audio_mutex);
-
   /* ags-copy-pattern */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -613,13 +595,11 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
 
-  pthread_mutex_lock(audio_mutex);
+  recall = ags_recall_find_type(start_recall,
+				AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
 
-  list = ags_recall_find_type(audio->recall,
-			      AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
-
-  if(list != NULL){
-    recall_copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(list->data);
+  if(recall != NULL){
+    recall_copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall->data);
 
     /* set dependency */
     g_object_set(G_OBJECT(recall_copy_pattern_audio_run),
@@ -627,8 +607,6 @@ ags_drum_map_recall(AgsMachine *machine)
 		 "count-beats-audio-run", play_count_beats_audio_run,
 		 NULL);
   }
-
-  pthread_mutex_unlock(audio_mutex);
 
   /* ags-record-midi */
   ags_recall_factory_create(audio,
@@ -641,13 +619,11 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
 
-  pthread_mutex_lock(audio_mutex);
+  recall = ags_recall_find_type(start_recall,
+				AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
 
-  list = ags_recall_find_type(audio->recall,
-			      AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
-
-  if(list != NULL){
-    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(list->data);
+  if(recall != NULL){
+    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall->data);
     
     /* set dependency */
     g_object_set(G_OBJECT(recall_record_midi_audio_run),
@@ -660,8 +636,6 @@ ags_drum_map_recall(AgsMachine *machine)
 		 NULL);
   }  
 
-  pthread_mutex_unlock(audio_mutex);
-
   /* ags-play-notation */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -673,13 +647,11 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
 
-  pthread_mutex_lock(audio_mutex);
+  recall = ags_recall_find_type(start_recall,
+				AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
 
-  list = ags_recall_find_type(audio->recall,
-			      AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
-
-  if(list != NULL){
-    recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
+  if(recall != NULL){
+    recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(recall->data);
 
     /* set dependency */
     g_object_set(G_OBJECT(recall_notation_audio_run),
@@ -692,8 +664,9 @@ ags_drum_map_recall(AgsMachine *machine)
 		 NULL);
   }
 
-  pthread_mutex_unlock(audio_mutex);
-
+  g_list_free(start_play);
+  g_list_free(start_recall);
+  
   /* call parent */
   AGS_MACHINE_CLASS(ags_drum_parent_class)->map_recall(machine);
 }
