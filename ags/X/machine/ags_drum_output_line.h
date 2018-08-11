@@ -25,6 +25,9 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
 #include <ags/X/ags_line.h>
 
 #define AGS_TYPE_DRUM_OUTPUT_LINE                (ags_drum_output_line_get_type())

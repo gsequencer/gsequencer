@@ -30,53 +30,13 @@ ags_drum_output_line_resize_pads_callback(AgsDrum *drum, GType channel_type,
 					  AgsDrumOutputLine *output_line)
 {
   AgsAudio *audio;
-  
-  AgsConfig *config;
-
-  gchar *str;
-
-  gboolean rt_safe;
-  gboolean performance_mode;
 
   audio = AGS_MACHINE(drum)->audio;
-  
-  config = ags_config_get_instance();
-  
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "engine-mode");
 
-  rt_safe = TRUE;
-  performance_mode = TRUE;
-
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "rt-safe");
-
-  if(str != NULL &&
-     !g_ascii_strncasecmp(str,
-			  "FALSE",
-			  6)){
-    rt_safe = FALSE;
-  }
-
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "engine-mode");
-
-  if(str != NULL &&
-     !g_ascii_strncasecmp(str,
-			  "performance",
-			  12)){
-    performance_mode = TRUE;
-  }else{
-    performance_mode = FALSE;
-  }
-
-  if(channel_type == AGS_TYPE_INPUT){
+  if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
     if(pads_new > pads_old){
-      if(rt_safe ||
-	 performance_mode){
+      if(ags_recall_global_get_rt_safe() ||
+	 ags_recall_global_get_performance_mode()){
 	/* ags-copy */
 	ags_recall_factory_create(audio,
 				  NULL, NULL,
@@ -87,9 +47,6 @@ ags_drum_output_line_resize_pads_callback(AgsDrum *drum, GType channel_type,
 				   AGS_RECALL_FACTORY_RECALL |
 				   AGS_RECALL_FACTORY_ADD),
 				  0);
-	
-	/* set performance mode */
-	performance_mode = TRUE;
       }else{
 	/* ags-buffer */
 	ags_recall_factory_create(audio,
