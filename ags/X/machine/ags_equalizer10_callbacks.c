@@ -62,33 +62,13 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
       AgsChannel *channel;
       AgsPort *port;
             
-      AgsMutexManager *mutex_manager;
-      
       guint i;
 
-      pthread_mutex_t *application_mutex;
-      pthread_mutex_t *audio_mutex;
-      pthread_mutex_t *channel_mutex;
-  
-      mutex_manager = ags_mutex_manager_get_instance();
-      application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);      
-
-      /* lookup audio mutex */
-      pthread_mutex_lock(application_mutex);
-
-      audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) audio);
-  
-      pthread_mutex_unlock(application_mutex);
-
       /* get some fields */
-      pthread_mutex_lock(audio_mutex);
-
-      audio_channels = audio->audio_channels;
-
-      channel = audio->input;
-  
-      pthread_mutex_unlock(audio_mutex);
+      g_object_get(audio,
+		   "audio-channels", &audio_channels,
+		   "input", &channel,
+		   NULL);
   
       /* ags-analyse */
       ags_recall_factory_create(audio,
@@ -105,18 +85,16 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
       channel = ags_channel_nth(channel, audio_channels_old);
       
       for(i = audio_channels_old; i < audio_channels; i++){
-	/* lookup channel mutex */
-	pthread_mutex_lock(application_mutex);
+	GList *start_play, *play;
+	GList *start_recall, *recall;
 
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) channel);
-    
-	pthread_mutex_unlock(application_mutex);
-
+	g_object_get(channel,
+		     "play", &start_play,
+		     "recall", &start_recall,
+		     NULL);
+	
 	/* peak 28Hz  - find port */
-	pthread_mutex_lock(channel_mutex);
-
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./peak-28hz[0]");
 
 	if(port != NULL){
@@ -126,7 +104,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 							    port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./peak-28hz[0]");
 
 	if(port != NULL){
@@ -137,7 +115,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 	}
 
 	/* peak 56Hz  - find port */
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./peak-56hz[0]");
 
 	if(port != NULL){
@@ -147,7 +125,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 							    port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./peak-56hz[0]");
 
 	if(port != NULL){
@@ -158,7 +136,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 	}
 
 	/* peak 112Hz  - find port */
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./peak-112hz[0]");
 
 	if(port != NULL){
@@ -168,7 +146,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 							     port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./peak-112hz[0]");
 
 	if(port != NULL){
@@ -179,7 +157,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 	}
 
 	/* peak 224Hz  - find port */
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./peak-224hz[0]");
 
 	if(port != NULL){
@@ -189,7 +167,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 							     port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./peak-224hz[0]");
 
 	if(port != NULL){
@@ -200,7 +178,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 	}
 
 	/* peak 448Hz  - find port */
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./peak-448hz[0]");
 
 	if(port != NULL){
@@ -210,7 +188,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 							     port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./peak-448hz[0]");
 
 	if(port != NULL){
@@ -221,7 +199,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 	}
 
 	/* peak 896Hz  - find port */
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./peak-896hz[0]");
 
 	if(port != NULL){
@@ -231,7 +209,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 							     port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./peak-896hz[0]");
 
 	if(port != NULL){
@@ -242,7 +220,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 	}
 
 	/* peak 1792Hz  - find port */
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./peak-1792hz[0]");
 
 	if(port != NULL){
@@ -252,7 +230,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 							      port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./peak-1792hz[0]");
 
 	if(port != NULL){
@@ -263,7 +241,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 	}
 
 	/* peak 3584Hz  - find port */
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./peak-3584hz[0]");
 
 	if(port != NULL){
@@ -273,7 +251,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 							      port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./peak-3584hz[0]");
 
 	if(port != NULL){
@@ -284,7 +262,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 	}
 
 	/* peak 7168Hz  - find port */
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./peak-7168hz[0]");
 
 	if(port != NULL){
@@ -294,7 +272,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 							      port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./peak-7168hz[0]");
 
 	if(port != NULL){
@@ -305,7 +283,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 	}
 
 	/* peak 14336Hz  - find port */
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./peak-14336hz[0]");
 
 	if(port != NULL){
@@ -315,7 +293,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 							       port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./peak-14336hz[0]");
 
 	if(port != NULL){
@@ -326,7 +304,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 	}
 
 	/* pressure  - find port */
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./pressure[0]");
 
 	if(port != NULL){
@@ -336,7 +314,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 							    port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./pressure[0]");
 
 	if(port != NULL){
@@ -346,10 +324,13 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 							      port);
 	}
 
+	g_list_free(start_play);
+	g_list_free(start_recall);
+
 	/* iterate */
-	channel = channel->next;
-    
-	pthread_mutex_unlock(channel_mutex);
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
       }
     }
   }else{
@@ -666,36 +647,16 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
       AgsChannel *channel;
       AgsPort *port;
       
-      AgsMutexManager *mutex_manager;
-      
       guint audio_channels;
       guint i;
 
-      pthread_mutex_t *application_mutex;
-      pthread_mutex_t *audio_mutex;
-      pthread_mutex_t *channel_mutex;
-  
-      mutex_manager = ags_mutex_manager_get_instance();
-      application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);      
-
       audio = AGS_MACHINE(equalizer10)->audio;
-
-      /* lookup audio mutex */
-      pthread_mutex_lock(application_mutex);
-
-      audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) audio);
-  
-      pthread_mutex_unlock(application_mutex);
   
       /* get some fields */
-      pthread_mutex_lock(audio_mutex);
-
-      audio_channels = audio->audio_channels;
-
-      channel = audio->input;
-  
-      pthread_mutex_unlock(audio_mutex);
+      g_object_get(audio,
+		   "audio-channels", &audio_channels,
+		   "input", &channel,
+		   NULL);
   
       /* ags-analyse */
       ags_recall_factory_create(audio,
@@ -710,18 +671,13 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 				0);
 
       for(i = 0; i < audio_channels; i++){
-	/* lookup channel mutex */
-	pthread_mutex_lock(application_mutex);
-
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) channel);
-    
-	pthread_mutex_unlock(application_mutex);
+	g_object_get(channel,
+		     "play", &start_play,
+		     "recall", &start_recall,
+		     NULL);
 
 	/* peak 28Hz  - find port */
-	pthread_mutex_lock(channel_mutex);
-
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./peak-28hz[0]");
 
 	if(port != NULL){
@@ -731,7 +687,7 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 							    port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./peak-28hz[0]");
 
 	if(port != NULL){
@@ -742,7 +698,7 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 	}
 
 	/* peak 56Hz  - find port */
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./peak-56hz[0]");
 
 	if(port != NULL){
@@ -752,7 +708,7 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 							    port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./peak-56hz[0]");
 
 	if(port != NULL){
@@ -763,7 +719,7 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 	}
 
 	/* peak 112Hz  - find port */
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./peak-112hz[0]");
 
 	if(port != NULL){
@@ -773,7 +729,7 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 							     port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./peak-112hz[0]");
 
 	if(port != NULL){
@@ -784,7 +740,7 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 	}
 
 	/* peak 224Hz  - find port */
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./peak-224hz[0]");
 
 	if(port != NULL){
@@ -794,7 +750,7 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 							     port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./peak-224hz[0]");
 
 	if(port != NULL){
@@ -805,7 +761,7 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 	}
 
 	/* peak 448Hz  - find port */
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./peak-448hz[0]");
 
 	if(port != NULL){
@@ -815,7 +771,7 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 							     port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./peak-448hz[0]");
 
 	if(port != NULL){
@@ -826,7 +782,7 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 	}
 
 	/* peak 896Hz  - find port */
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./peak-896hz[0]");
 
 	if(port != NULL){
@@ -836,7 +792,7 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 							     port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./peak-896hz[0]");
 
 	if(port != NULL){
@@ -847,7 +803,7 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 	}
 
 	/* peak 1792Hz  - find port */
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./peak-1792hz[0]");
 
 	if(port != NULL){
@@ -857,7 +813,7 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 							      port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./peak-1792hz[0]");
 
 	if(port != NULL){
@@ -868,7 +824,7 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 	}
 
 	/* peak 3584Hz  - find port */
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./peak-3584hz[0]");
 
 	if(port != NULL){
@@ -878,7 +834,7 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 							      port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./peak-3584hz[0]");
 
 	if(port != NULL){
@@ -889,7 +845,7 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 	}
 
 	/* peak 7168Hz  - find port */
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./peak-7168hz[0]");
 
 	if(port != NULL){
@@ -899,7 +855,7 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 							      port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./peak-7168hz[0]");
 
 	if(port != NULL){
@@ -910,7 +866,7 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 	}
 
 	/* peak 14336Hz  - find port */
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./peak-14336hz[0]");
 
 	if(port != NULL){
@@ -920,7 +876,7 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 							       port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./peak-14336hz[0]");
 
 	if(port != NULL){
@@ -931,7 +887,7 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 	}
 
 	/* pressure  - find port */
-	port = ags_equalizer10_find_specifier(channel->play,
+	port = ags_equalizer10_find_specifier(start_play,
 					      "./pressure[0]");
 
 	if(port != NULL){
@@ -941,7 +897,7 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 							    port);
 	}
 
-	port = ags_equalizer10_find_specifier(channel->recall,
+	port = ags_equalizer10_find_specifier(start_recall,
 					      "./pressure[0]");
 
 	if(port != NULL){
@@ -951,10 +907,13 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 							      port);
 	}
 
-	/* iterate */
-	channel = channel->next;
+	g_list_free(start_play);
+	g_list_free(start_recall);
     
-	pthread_mutex_unlock(channel_mutex);
+	/* iterate */
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
       }
     }
   }
