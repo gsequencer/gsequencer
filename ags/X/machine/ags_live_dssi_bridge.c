@@ -1220,11 +1220,8 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
   LADSPA_PortDescriptor *port_descriptor;
   LADSPA_PortRangeHintDescriptor hint_descriptor;
 
-  GList *port;
-  GList *list;
+  GList *start_plugin_port, *plugin_port;
 
-  gchar *str;
-  
   unsigned long samplerate;
   unsigned long effect_index;
   gdouble step;
@@ -1272,6 +1269,10 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
       port_count = plugin_descriptor->LADSPA_Plugin->PortCount;
       port_descriptor = plugin_descriptor->LADSPA_Plugin->PortDescriptors;
 
+      g_object_get(dssi_plugin,
+		   "plugin-port", &start_plugin_port,
+		   NULL);
+  
       live_dssi_bridge->port_values = (LADSPA_Data *) malloc(plugin_descriptor->LADSPA_Plugin->PortCount * sizeof(LADSPA_Data));
       
       for(i = 0; i < port_count; i++){
@@ -1280,25 +1281,23 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
 	     LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
 	    AgsDssiPlugin *dssi_plugin;
 
-	    GList *list;
-
 	    gchar *specifier;
 	    
 	    dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
 							    live_dssi_bridge->filename, live_dssi_bridge->effect);
 
-	    list = AGS_BASE_PLUGIN(dssi_plugin)->port;
+	    plugin_port = start_plugin_port;
  	    specifier = plugin_descriptor->LADSPA_Plugin->PortNames[i];
 
-	    while(list != NULL){
+	    while(plugin_port != NULL){
 	      if(!g_strcmp0(specifier,
-			    AGS_PLUGIN_PORT(list->data)->port_name)){
-		live_dssi_bridge->port_values[i] = g_value_get_float(AGS_PLUGIN_PORT(list->data)->default_value);
+			    AGS_PLUGIN_PORT(plugin_port->data)->port_name)){
+		live_dssi_bridge->port_values[i] = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
 
 		break;
 	      }
 
-	      list = list->next;
+	      plugin_port = plugin_port->next;
 	    }
 	    
 	    plugin_descriptor->LADSPA_Plugin->connect_port(live_dssi_bridge->ladspa_handle,
@@ -1307,7 +1306,7 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
 	  }
 	}
       }
-      
+
       if(plugin_descriptor->get_program != NULL){
 	for(i = 0; (program_descriptor = plugin_descriptor->get_program(live_dssi_bridge->ladspa_handle, i)) != NULL; i++){
 	  gtk_list_store_append(model, &iter);
@@ -1318,6 +1317,8 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
 			     -1);
 	}
       }
+
+      g_list_free(start_plugin_port);
     }
   }
   

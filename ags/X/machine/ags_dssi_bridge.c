@@ -798,7 +798,7 @@ ags_dssi_bridge_resize_audio_channels(AgsMachine *machine,
 
     /* resize audio signal */
     while(channel != NULL){
-      /* get some fields */
+      /* get next pad */
       g_object_get(channel,
 		   "next-pad", &next_pad,
 		   NULL);
@@ -1433,6 +1433,8 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
 
   AgsDssiPlugin *dssi_plugin;
 
+  GList *start_plugin_port, *plugin_port;
+
   void *plugin_so;
   DSSI_Descriptor_Function dssi_descriptor;
   DSSI_Descriptor *plugin_descriptor;
@@ -1482,6 +1484,10 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
       port_count = plugin_descriptor->LADSPA_Plugin->PortCount;
       port_descriptor = plugin_descriptor->LADSPA_Plugin->PortDescriptors;
 
+      g_object_get(dssi_plugin,
+		   "plugin-port", &start_plugin_port,
+		   NULL);
+
       dssi_bridge->port_values = (LADSPA_Data *) malloc(plugin_descriptor->LADSPA_Plugin->PortCount * sizeof(LADSPA_Data));
       
       for(i = 0; i < port_count; i++){
@@ -1490,25 +1496,23 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
 	     LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
 	    AgsDssiPlugin *dssi_plugin;
 
-	    GList *list;
-
 	    gchar *specifier;
 	    
 	    dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
 							    dssi_bridge->filename, dssi_bridge->effect);
 
-	    list = AGS_BASE_PLUGIN(dssi_plugin)->port;
+	    plugin_port = start_plugin_port;
  	    specifier = plugin_descriptor->LADSPA_Plugin->PortNames[i];
 
-	    while(list != NULL){
+	    while(plugin_port != NULL){
 	      if(!g_strcmp0(specifier,
-			    AGS_PLUGIN_PORT(list->data)->port_name)){
-		dssi_bridge->port_values[i] = g_value_get_float(AGS_PLUGIN_PORT(list->data)->default_value);
+			    AGS_PLUGIN_PORT(plugin_port->data)->port_name)){
+		dssi_bridge->port_values[i] = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
 
 		break;
 	      }
 
-	      list = list->next;
+	      plugin_port = plugin_port->next;
 	    }
 	    
 	    plugin_descriptor->LADSPA_Plugin->connect_port(dssi_bridge->ladspa_handle,
@@ -1528,6 +1532,8 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
 			     -1);
 	}
       }
+
+      g_list_free(start_plugin_port);
     }
   }
   
