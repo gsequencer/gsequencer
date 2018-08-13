@@ -1860,17 +1860,14 @@ ags_live_lv2_bridge_new(GObject *soundcard,
 			gchar *effect)
 {
   AgsLiveLv2Bridge *live_lv2_bridge;
-  GValue value = {0,};
 
   live_lv2_bridge = (AgsLiveLv2Bridge *) g_object_new(AGS_TYPE_LIVE_LV2_BRIDGE,
 						      NULL);
 
   if(soundcard != NULL){
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, soundcard);
-    g_object_set_property(G_OBJECT(AGS_MACHINE(live_lv2_bridge)->audio),
-			  "soundcard", &value);
-    g_value_unset(&value);
+    g_object_set(AGS_MACHINE(live_lv2_bridge)->audio,
+		 "output-soundcard", soundcard,
+		 NULL);
   }
 
   g_object_set(live_lv2_bridge,
